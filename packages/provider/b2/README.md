@@ -45,6 +45,8 @@ const b2 = createB2({
 
 <code>PUT https://s3.us-west-004.backblazeb2.com/{bucket}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api)
 
 ```typescript
@@ -59,6 +61,8 @@ Source: [`packages/provider/b2/src/b2.ts`](src/b2.ts)
 <summary><code>DELETE</code> <b><code>b2.buckets.del</code></b></summary>
 
 <code>DELETE https://s3.us-west-004.backblazeb2.com/{bucket}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api)
 
@@ -75,6 +79,8 @@ Source: [`packages/provider/b2/src/b2.ts`](src/b2.ts)
 
 <code>DELETE https://s3.us-west-004.backblazeb2.com/{bucket}?cors</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api)
 
 ```typescript
@@ -89,6 +95,8 @@ Source: [`packages/provider/b2/src/b2.ts`](src/b2.ts)
 <summary><code>DELETE</code> <b><code>b2.buckets.delEncryption</code></b></summary>
 
 <code>DELETE https://s3.us-west-004.backblazeb2.com/{bucket}?encryption</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api)
 
@@ -105,6 +113,8 @@ Source: [`packages/provider/b2/src/b2.ts`](src/b2.ts)
 
 <code>GET https://s3.us-west-004.backblazeb2.com/{bucket}?acl</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api)
 
 ```typescript
@@ -119,6 +129,8 @@ Source: [`packages/provider/b2/src/b2.ts`](src/b2.ts)
 <summary><code>GET</code> <b><code>b2.buckets.getCors</code></b></summary>
 
 <code>GET https://s3.us-west-004.backblazeb2.com/{bucket}?cors</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api)
 
@@ -135,6 +147,8 @@ Source: [`packages/provider/b2/src/b2.ts`](src/b2.ts)
 
 <code>GET https://s3.us-west-004.backblazeb2.com/{bucket}?encryption</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api)
 
 ```typescript
@@ -149,6 +163,8 @@ Source: [`packages/provider/b2/src/b2.ts`](src/b2.ts)
 <summary><code>GET</code> <b><code>b2.buckets.getObjectLockConfiguration</code></b></summary>
 
 <code>GET https://s3.us-west-004.backblazeb2.com/{bucket}?object-lock</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api)
 
@@ -165,6 +181,8 @@ Source: [`packages/provider/b2/src/b2.ts`](src/b2.ts)
 
 <code>GET https://s3.us-west-004.backblazeb2.com/{bucket}?versioning</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api)
 
 ```typescript
@@ -179,6 +197,8 @@ Source: [`packages/provider/b2/src/b2.ts`](src/b2.ts)
 <summary><code>HEAD</code> <b><code>b2.buckets.head</code></b></summary>
 
 <code>HEAD https://s3.us-west-004.backblazeb2.com/{bucket}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api)
 
@@ -195,6 +215,8 @@ Source: [`packages/provider/b2/src/b2.ts`](src/b2.ts)
 
 <code>GET https://s3.us-west-004.backblazeb2.com/</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api)
 
 ```typescript
@@ -209,6 +231,8 @@ Source: [`packages/provider/b2/src/b2.ts`](src/b2.ts)
 <summary><code>GET</code> <b><code>b2.buckets.location</code></b></summary>
 
 <code>GET https://s3.us-west-004.backblazeb2.com/{bucket}?location</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api)
 
@@ -225,6 +249,8 @@ Source: [`packages/provider/b2/src/b2.ts`](src/b2.ts)
 
 <code>PUT https://s3.us-west-004.backblazeb2.com/{bucket}?acl</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api)
 
 ```typescript
@@ -239,6 +265,8 @@ Source: [`packages/provider/b2/src/b2.ts`](src/b2.ts)
 <summary><code>PUT</code> <b><code>b2.buckets.putCors</code></b></summary>
 
 <code>PUT https://s3.us-west-004.backblazeb2.com/{bucket}?cors</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api)
 
@@ -255,6 +283,8 @@ Source: [`packages/provider/b2/src/b2.ts`](src/b2.ts)
 
 <code>PUT https://s3.us-west-004.backblazeb2.com/{bucket}?encryption</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api)
 
 ```typescript
@@ -269,6 +299,8 @@ Source: [`packages/provider/b2/src/b2.ts`](src/b2.ts)
 <summary><code>PUT</code> <b><code>b2.buckets.putObjectLockConfiguration</code></b></summary>
 
 <code>PUT https://s3.us-west-004.backblazeb2.com/{bucket}?object-lock</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api)
 
@@ -287,6 +319,8 @@ Source: [`packages/provider/b2/src/b2.ts`](src/b2.ts)
 
 <code>DELETE https://s3.us-west-004.backblazeb2.com/{bucket}/{key}{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api)
 
 ```typescript
@@ -301,6 +335,8 @@ Source: [`packages/provider/b2/src/b2.ts`](src/b2.ts)
 <summary><code>POST</code> <b><code>b2.objects.completeMultipartUpload</code></b></summary>
 
 <code>POST https://s3.us-west-004.backblazeb2.com/{bucket}/{key}{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api)
 
@@ -317,6 +353,8 @@ Source: [`packages/provider/b2/src/b2.ts`](src/b2.ts)
 
 <code>PUT https://s3.us-west-004.backblazeb2.com/{bucket}/{key}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api)
 
 ```typescript
@@ -331,6 +369,8 @@ Source: [`packages/provider/b2/src/b2.ts`](src/b2.ts)
 <summary><code>POST</code> <b><code>b2.objects.createMultipartUpload</code></b></summary>
 
 <code>POST https://s3.us-west-004.backblazeb2.com/{bucket}/{key}?uploads</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api)
 
@@ -347,6 +387,8 @@ Source: [`packages/provider/b2/src/b2.ts`](src/b2.ts)
 
 <code>DELETE https://s3.us-west-004.backblazeb2.com/{bucket}/{key}{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api)
 
 ```typescript
@@ -361,6 +403,8 @@ Source: [`packages/provider/b2/src/b2.ts`](src/b2.ts)
 <summary><code>POST</code> <b><code>b2.objects.delMany</code></b></summary>
 
 <code>POST https://s3.us-west-004.backblazeb2.com/{bucket}?delete</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api)
 
@@ -377,6 +421,8 @@ Source: [`packages/provider/b2/src/b2.ts`](src/b2.ts)
 
 <code>GET https://s3.us-west-004.backblazeb2.com/{bucket}/{key}{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api)
 
 ```typescript
@@ -391,6 +437,8 @@ Source: [`packages/provider/b2/src/b2.ts`](src/b2.ts)
 <summary><code>GET</code> <b><code>b2.objects.getAcl</code></b></summary>
 
 <code>GET https://s3.us-west-004.backblazeb2.com/{bucket}/{key}?acl{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api)
 
@@ -407,6 +455,8 @@ Source: [`packages/provider/b2/src/b2.ts`](src/b2.ts)
 
 <code>GET https://s3.us-west-004.backblazeb2.com/{bucket}/{key}?legal-hold{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api)
 
 ```typescript
@@ -421,6 +471,8 @@ Source: [`packages/provider/b2/src/b2.ts`](src/b2.ts)
 <summary><code>GET</code> <b><code>b2.objects.getRetention</code></b></summary>
 
 <code>GET https://s3.us-west-004.backblazeb2.com/{bucket}/{key}?retention{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api)
 
@@ -437,6 +489,8 @@ Source: [`packages/provider/b2/src/b2.ts`](src/b2.ts)
 
 <code>GET https://s3.us-west-004.backblazeb2.com/{bucket}/{key}{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api)
 
 ```typescript
@@ -451,6 +505,8 @@ Source: [`packages/provider/b2/src/b2.ts`](src/b2.ts)
 <summary><code>HEAD</code> <b><code>b2.objects.head</code></b></summary>
 
 <code>HEAD https://s3.us-west-004.backblazeb2.com/{bucket}/{key}{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api)
 
@@ -467,6 +523,8 @@ Source: [`packages/provider/b2/src/b2.ts`](src/b2.ts)
 
 <code>GET https://s3.us-west-004.backblazeb2.com/{bucket}?list-type=2{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api)
 
 ```typescript
@@ -481,6 +539,8 @@ Source: [`packages/provider/b2/src/b2.ts`](src/b2.ts)
 <summary><code>GET</code> <b><code>b2.objects.listLegacy</code></b></summary>
 
 <code>GET https://s3.us-west-004.backblazeb2.com/{bucket}{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api)
 
@@ -497,6 +557,8 @@ Source: [`packages/provider/b2/src/b2.ts`](src/b2.ts)
 
 <code>GET https://s3.us-west-004.backblazeb2.com/{bucket}?uploads{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api)
 
 ```typescript
@@ -511,6 +573,8 @@ Source: [`packages/provider/b2/src/b2.ts`](src/b2.ts)
 <summary><code>GET</code> <b><code>b2.objects.listParts</code></b></summary>
 
 <code>GET https://s3.us-west-004.backblazeb2.com/{bucket}/{key}{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api)
 
@@ -527,6 +591,8 @@ Source: [`packages/provider/b2/src/b2.ts`](src/b2.ts)
 
 <code>GET https://s3.us-west-004.backblazeb2.com/{bucket}?versions{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api)
 
 ```typescript
@@ -541,6 +607,8 @@ Source: [`packages/provider/b2/src/b2.ts`](src/b2.ts)
 <summary><code>PUT</code> <b><code>b2.objects.put</code></b></summary>
 
 <code>PUT https://s3.us-west-004.backblazeb2.com/{bucket}/{key}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api)
 
@@ -557,6 +625,8 @@ Source: [`packages/provider/b2/src/b2.ts`](src/b2.ts)
 
 <code>PUT https://s3.us-west-004.backblazeb2.com/{bucket}/{key}?acl{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api)
 
 ```typescript
@@ -571,6 +641,8 @@ Source: [`packages/provider/b2/src/b2.ts`](src/b2.ts)
 <summary><code>PUT</code> <b><code>b2.objects.putLegalHold</code></b></summary>
 
 <code>PUT https://s3.us-west-004.backblazeb2.com/{bucket}/{key}?legal-hold{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api)
 
@@ -587,6 +659,8 @@ Source: [`packages/provider/b2/src/b2.ts`](src/b2.ts)
 
 <code>PUT https://s3.us-west-004.backblazeb2.com/{bucket}/{key}?retention{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api)
 
 ```typescript
@@ -602,6 +676,8 @@ Source: [`packages/provider/b2/src/b2.ts`](src/b2.ts)
 
 <code>PUT https://s3.us-west-004.backblazeb2.com/{bucket}/{key}{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api)
 
 ```typescript
@@ -616,6 +692,8 @@ Source: [`packages/provider/b2/src/b2.ts`](src/b2.ts)
 <summary><code>PUT</code> <b><code>b2.objects.uploadPartCopy</code></b></summary>
 
 <code>PUT https://s3.us-west-004.backblazeb2.com/{bucket}/{key}{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api)
 

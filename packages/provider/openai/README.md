@@ -37,6 +37,8 @@ const openai = createOpenAi({ apiKey: process.env.OPENAI_API_KEY! });
 
 <code>POST https://api.openai.com/v1/audio/speech</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
@@ -52,6 +54,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 
 <code>POST https://api.openai.com/v1/audio/transcriptions</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
@@ -66,6 +70,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 <summary><code>POST</code> <b><code>openai.v1.audio.translations</code></b></summary>
 
 <code>POST https://api.openai.com/v1/audio/translations</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
@@ -84,6 +90,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 
 <code>GET https://api.openai.com/v1/batches/{idOrOpts}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
@@ -99,6 +107,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 
 <code>POST https://api.openai.com/v1/batches</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
@@ -113,6 +123,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 <summary><code>POST</code> <b><code>openai.v1.batches.cancel</code></b></summary>
 
 <code>POST https://api.openai.com/v1/batches/{id}/cancel</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
@@ -131,6 +143,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 
 <code>DELETE https://api.openai.com/v1/chat/completions/{id}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
@@ -145,6 +159,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 <summary><code>GET</code> <b><code>openai.v1.chat.completions</code></b></summary>
 
 <code>GET https://api.openai.com/v1/chat/completions/{idOrOpts}</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
@@ -161,6 +177,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 
 <code>GET https://api.openai.com/v1/chat/completions/{id}/messages</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
@@ -175,6 +193,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 <summary><code>POST</code> <b><code>openai.v1.chat.completions</code></b></summary>
 
 <code>POST https://api.openai.com/v1/chat/completions/{id}</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
@@ -193,6 +213,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 
 <code>GET https://chatgpt.com/backend-api/wham/usage</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://developers.openai.com/codex/pricing)
 
 ```typescript
@@ -209,6 +231,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 <summary><code>POST</code> <b><code>openai.v1.completions</code></b></summary>
 
 <code>POST https://api.openai.com/v1/completions</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference/completions/create)
 
@@ -227,6 +251,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 
 <code>POST https://api.openai.com/v1/containers</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference/containers/createContainers)
 
 ```typescript
@@ -244,6 +270,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 
 <code>GET https://api.openai.com/v1/conversations/{conversationId}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference/conversations/retrieve)
 
 ```typescript
@@ -258,6 +286,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 <summary><code>POST</code> <b><code>openai.v1.conversations</code></b></summary>
 
 <code>POST https://api.openai.com/v1/conversations</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
@@ -276,6 +306,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 
 <code>POST https://api.openai.com/v1/embeddings</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
@@ -292,6 +324,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 <summary><code>POST</code> <b><code>openai.v1.evals</code></b></summary>
 
 <code>POST https://api.openai.com/v1/evals</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference/evals/create)
 
@@ -310,6 +344,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 
 <code>DELETE https://api.openai.com/v1/files/{id}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
@@ -324,6 +360,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 <summary><code>GET</code> <b><code>openai.v1.files</code></b></summary>
 
 <code>GET https://api.openai.com/v1/files/{idOrOpts}</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
@@ -340,6 +378,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 
 <code>GET https://api.openai.com/v1/files/{id}/content</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
@@ -354,6 +394,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 <summary><code>POST</code> <b><code>openai.v1.files</code></b></summary>
 
 <code>POST https://api.openai.com/v1/files</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
@@ -372,6 +414,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 
 <code>DELETE https://api.openai.com/v1/fine_tuning/checkpoints/{checkpoint}/permissions/{permissionId}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
@@ -386,6 +430,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 <summary><code>GET</code> <b><code>openai.v1.fineTuning.checkpoints.permissions</code></b></summary>
 
 <code>GET https://api.openai.com/v1/fine_tuning/checkpoints/{checkpoint}/permissions</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
@@ -402,6 +448,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 
 <code>GET https://api.openai.com/v1/fine_tuning/jobs/{idOrOpts}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
@@ -416,6 +464,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 <summary><code>GET</code> <b><code>openai.v1.fineTuning.jobs.checkpoints</code></b></summary>
 
 <code>GET https://api.openai.com/v1/fine_tuning/jobs/{id}/checkpoints</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
@@ -432,6 +482,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 
 <code>GET https://api.openai.com/v1/fine_tuning/jobs/{id}/events</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
@@ -446,6 +498,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 <summary><code>POST</code> <b><code>openai.v1.fineTuning.checkpoints.permissions</code></b></summary>
 
 <code>POST https://api.openai.com/v1/fine_tuning/checkpoints/{checkpoint}/permissions</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
@@ -462,6 +516,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 
 <code>POST https://api.openai.com/v1/fine_tuning/jobs</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
@@ -476,6 +532,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 <summary><code>POST</code> <b><code>openai.v1.fineTuning.jobs.cancel</code></b></summary>
 
 <code>POST https://api.openai.com/v1/fine_tuning/jobs/{id}/cancel</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
@@ -492,6 +550,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 
 <code>POST https://api.openai.com/v1/fine_tuning/jobs/{id}/pause</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
@@ -506,6 +566,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 <summary><code>POST</code> <b><code>openai.v1.fineTuning.jobs.resume</code></b></summary>
 
 <code>POST https://api.openai.com/v1/fine_tuning/jobs/{id}/resume</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
@@ -524,6 +586,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 
 <code>POST https://api.openai.com/v1/images/edits</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
@@ -539,6 +603,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 
 <code>POST https://api.openai.com/v1/images/generations</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
@@ -553,6 +619,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 <summary><code>POST</code> <b><code>openai.v1.images.variations</code></b></summary>
 
 <code>POST https://api.openai.com/v1/images/variations</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
@@ -571,6 +639,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 
 <code>DELETE https://api.openai.com/v1/models/{id}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
@@ -585,6 +655,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 <summary><code>GET</code> <b><code>openai.v1.models</code></b></summary>
 
 <code>GET https://api.openai.com/v1/models/{id}</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
@@ -603,6 +675,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 
 <code>POST https://api.openai.com/v1/moderations</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
@@ -620,6 +694,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 
 <code>GET https://api.openai.com/v1/organization/costs</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference/usage)
 
 ```typescript
@@ -634,6 +710,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 <summary><code>GET</code> <b><code>openai.v1.organization.projects</code></b></summary>
 
 <code>GET https://api.openai.com/v1/organization/projects/{idOrOpts}</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference/projects)
 
@@ -650,6 +728,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 
 <code>GET https://api.openai.com/v1/organization/projects/{projectId}/rate_limits</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference/project-rate-limits)
 
 ```typescript
@@ -664,6 +744,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 <summary><code>GET</code> <b><code>openai.v1.organization.usage.audioSpeeches</code></b></summary>
 
 <code>GET https://api.openai.com/v1/organization/usage/audio_speeches</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference/usage)
 
@@ -680,6 +762,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 
 <code>GET https://api.openai.com/v1/organization/usage/audio_transcriptions</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference/usage)
 
 ```typescript
@@ -694,6 +778,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 <summary><code>GET</code> <b><code>openai.v1.organization.usage.codeInterpreterSessions</code></b></summary>
 
 <code>GET https://api.openai.com/v1/organization/usage/code_interpreter_sessions</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference/usage)
 
@@ -710,6 +796,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 
 <code>GET https://api.openai.com/v1/organization/usage/completions</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference/usage)
 
 ```typescript
@@ -724,6 +812,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 <summary><code>GET</code> <b><code>openai.v1.organization.usage.embeddings</code></b></summary>
 
 <code>GET https://api.openai.com/v1/organization/usage/embeddings</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference/usage)
 
@@ -740,6 +830,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 
 <code>GET https://api.openai.com/v1/organization/usage/images</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference/usage)
 
 ```typescript
@@ -755,6 +847,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 
 <code>GET https://api.openai.com/v1/organization/usage/moderations</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference/usage)
 
 ```typescript
@@ -769,6 +863,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 <summary><code>GET</code> <b><code>openai.v1.organization.usage.vectorStores</code></b></summary>
 
 <code>GET https://api.openai.com/v1/organization/usage/vector_stores</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference/usage)
 
@@ -787,6 +883,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 
 <code>POST https://api.openai.com/v1/realtime/client_secrets</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference/realtime-sessions/create-client-secret)
 
 ```typescript
@@ -804,6 +902,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 
 <code>DELETE https://api.openai.com/v1/responses/{id}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
@@ -818,6 +918,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 <summary><code>GET</code> <b><code>openai.v1.responses</code></b></summary>
 
 <code>GET https://api.openai.com/v1/responses/{id}</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
@@ -834,6 +936,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 
 <code>GET https://api.openai.com/v1/responses/{id}/input_items</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
@@ -848,6 +952,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 <summary><code>POST</code> <b><code>openai.v1.responses</code></b></summary>
 
 <code>POST https://api.openai.com/v1/responses</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
@@ -864,6 +970,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 
 <code>POST https://api.openai.com/v1/responses/{id}/cancel</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
@@ -879,6 +987,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 
 <code>POST https://api.openai.com/v1/responses/compact</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
@@ -893,6 +1003,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 <summary><code>POST</code> <b><code>openai.v1.responses.inputTokens</code></b></summary>
 
 <code>POST https://api.openai.com/v1/responses/input_tokens</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
@@ -911,6 +1023,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 
 <code>POST https://api.openai.com/v1/uploads</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference/uploads/create)
 
 ```typescript
@@ -927,6 +1041,8 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 <summary><code>POST</code> <b><code>openai.v1.vectorStores</code></b></summary>
 
 <code>POST https://api.openai.com/v1/vector_stores</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference/vector-stores/create)
 

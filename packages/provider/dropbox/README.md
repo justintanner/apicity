@@ -41,6 +41,8 @@ Tokens are only sent in the `Authorization: Bearer ...` header.
 
 <code>POST https://api.dropboxapi.com/2/check/user</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.dropbox.com/developers/documentation/http/documentation#check-user)
 
 ```typescript
@@ -58,6 +60,8 @@ Source: [`packages/provider/dropbox/src/dropbox.ts`](src/dropbox.ts)
 
 <code>POST https://api.dropboxapi.com/2/files/copy_v2</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.dropbox.com/developers/documentation/http/documentation#files-copy_v2)
 
 ```typescript
@@ -72,6 +76,8 @@ Source: [`packages/provider/dropbox/src/dropbox.ts`](src/dropbox.ts)
 <summary><code>POST</code> <b><code>dropbox.files.createFolderV2</code></b></summary>
 
 <code>POST https://api.dropboxapi.com/2/files/create_folder_v2</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.dropbox.com/developers/documentation/http/documentation#files-create_folder_v2)
 
@@ -88,6 +94,8 @@ Source: [`packages/provider/dropbox/src/dropbox.ts`](src/dropbox.ts)
 
 <code>POST https://api.dropboxapi.com/2/files/delete_v2</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.dropbox.com/developers/documentation/http/documentation#files-delete_v2)
 
 ```typescript
@@ -102,6 +110,8 @@ Source: [`packages/provider/dropbox/src/dropbox.ts`](src/dropbox.ts)
 <summary><code>POST</code> <b><code>dropbox.files.download</code></b></summary>
 
 <code>POST https://content.dropboxapi.com/2/files/download</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.dropbox.com/developers/documentation/http/documentation#files-download)
 
@@ -118,6 +128,8 @@ Source: [`packages/provider/dropbox/src/dropbox.ts`](src/dropbox.ts)
 
 <code>POST https://api.dropboxapi.com/2/files/get_metadata</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.dropbox.com/developers/documentation/http/documentation#files-get_metadata)
 
 ```typescript
@@ -132,6 +144,8 @@ Source: [`packages/provider/dropbox/src/dropbox.ts`](src/dropbox.ts)
 <summary><code>POST</code> <b><code>dropbox.files.listFolder</code></b></summary>
 
 <code>POST https://api.dropboxapi.com/2/files/list_folder</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.dropbox.com/developers/documentation/http/documentation#files-list_folder)
 
@@ -148,6 +162,8 @@ Source: [`packages/provider/dropbox/src/dropbox.ts`](src/dropbox.ts)
 
 <code>POST https://api.dropboxapi.com/2/files/list_folder/continue</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.dropbox.com/developers/documentation/http/documentation#files-list_folder-continue)
 
 ```typescript
@@ -163,6 +179,8 @@ Source: [`packages/provider/dropbox/src/dropbox.ts`](src/dropbox.ts)
 
 <code>POST https://api.dropboxapi.com/2/files/move_v2</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.dropbox.com/developers/documentation/http/documentation#files-move_v2)
 
 ```typescript
@@ -177,6 +195,8 @@ Source: [`packages/provider/dropbox/src/dropbox.ts`](src/dropbox.ts)
 <summary><code>POST</code> <b><code>dropbox.files.upload</code></b></summary>
 
 <code>POST https://content.dropboxapi.com/2/files/upload</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.dropbox.com/developers/documentation/http/documentation#files-upload)
 
@@ -195,6 +215,8 @@ Source: [`packages/provider/dropbox/src/dropbox.ts`](src/dropbox.ts)
 
 <code>POST https://api.dropboxapi.com/2/sharing/create_shared_link_with_settings</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.dropbox.com/developers/documentation/http/documentation#sharing-create_shared_link_with_settings)
 
 ```typescript
@@ -209,6 +231,8 @@ Source: [`packages/provider/dropbox/src/dropbox.ts`](src/dropbox.ts)
 <summary><code>POST</code> <b><code>dropbox.sharing.listSharedLinks</code></b></summary>
 
 <code>POST https://api.dropboxapi.com/2/sharing/list_shared_links</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.dropbox.com/developers/documentation/http/documentation#sharing-list_shared_links)
 
@@ -226,6 +250,8 @@ Source: [`packages/provider/dropbox/src/dropbox.ts`](src/dropbox.ts)
 <summary><code>POST</code> <b><code>dropbox.users.getCurrentAccount</code></b></summary>
 
 <code>POST https://api.dropboxapi.com/2/users/get_current_account</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.dropbox.com/developers/documentation/http/documentation#users-get_current_account)
 

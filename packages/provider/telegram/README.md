@@ -73,6 +73,8 @@ await telegram.sendPhoto({
 
 <code>POST https://api.telegram.org/bot{token}/addStickerToSet</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#addstickertoset)
 
 ```typescript
@@ -89,6 +91,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.answerCallbackQuery</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/answerCallbackQuery</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#answercallbackquery)
 
@@ -107,6 +111,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/answerChatJoinRequestQuery</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#answerchatjoinrequestquery)
 
 ```typescript
@@ -123,6 +129,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.answerGuestQuery</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/answerGuestQuery</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#answerguestquery)
 
@@ -141,6 +149,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/answerInlineQuery</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#answerinlinequery)
 
 ```typescript
@@ -157,6 +167,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.answerPreCheckoutQuery</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/answerPreCheckoutQuery</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#answerprecheckoutquery)
 
@@ -175,6 +187,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/answerShippingQuery</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#answershippingquery)
 
 ```typescript
@@ -191,6 +205,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.answerWebAppQuery</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/answerWebAppQuery</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#answerwebappquery)
 
@@ -209,6 +225,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/approveChatJoinRequest</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#approvechatjoinrequest)
 
 ```typescript
@@ -225,6 +243,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.approveSuggestedPost</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/approveSuggestedPost</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#approvesuggestedpost)
 
@@ -243,6 +263,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/banChatMember</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#banchatmember)
 
 ```typescript
@@ -259,6 +281,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.banChatSenderChat</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/banChatSenderChat</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#banchatsenderchat)
 
@@ -277,6 +301,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/close</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#close)
 
 ```typescript
@@ -293,6 +319,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.closeForumTopic</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/closeForumTopic</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#closeforumtopic)
 
@@ -311,6 +339,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/closeGeneralForumTopic</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#closegeneralforumtopic)
 
 ```typescript
@@ -327,6 +357,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.convertGiftToStars</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/convertGiftToStars</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#convertgifttostars)
 
@@ -345,6 +377,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/copyMessage</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#copymessage)
 
 ```typescript
@@ -361,6 +395,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.copyMessages</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/copyMessages</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#copymessages)
 
@@ -379,6 +415,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/createChatInviteLink</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#createchatinvitelink)
 
 ```typescript
@@ -395,6 +433,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.createChatSubscriptionInviteLink</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/createChatSubscriptionInviteLink</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#createchatsubscriptioninvitelink)
 
@@ -413,6 +453,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/createForumTopic</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#createforumtopic)
 
 ```typescript
@@ -429,6 +471,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.createInvoiceLink</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/createInvoiceLink</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#createinvoicelink)
 
@@ -447,6 +491,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/createNewStickerSet</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#createnewstickerset)
 
 ```typescript
@@ -463,6 +509,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.declineChatJoinRequest</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/declineChatJoinRequest</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#declinechatjoinrequest)
 
@@ -481,6 +529,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/declineSuggestedPost</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#declinesuggestedpost)
 
 ```typescript
@@ -497,6 +547,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.deleteAllMessageReactions</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/deleteAllMessageReactions</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#deleteallmessagereactions)
 
@@ -515,6 +567,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/deleteBusinessMessages</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#deletebusinessmessages)
 
 ```typescript
@@ -531,6 +585,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.deleteChatPhoto</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/deleteChatPhoto</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#deletechatphoto)
 
@@ -549,6 +605,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/deleteChatStickerSet</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#deletechatstickerset)
 
 ```typescript
@@ -565,6 +623,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.deleteForumTopic</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/deleteForumTopic</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#deleteforumtopic)
 
@@ -583,6 +643,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/deleteMessage</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#deletemessage)
 
 ```typescript
@@ -599,6 +661,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.deleteMessageReaction</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/deleteMessageReaction</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#deletemessagereaction)
 
@@ -617,6 +681,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/deleteMessages</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#deletemessages)
 
 ```typescript
@@ -633,6 +699,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.deleteMyCommands</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/deleteMyCommands</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#deletemycommands)
 
@@ -651,6 +719,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/deleteStickerFromSet</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#deletestickerfromset)
 
 ```typescript
@@ -667,6 +737,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.deleteStickerSet</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/deleteStickerSet</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#deletestickerset)
 
@@ -685,6 +757,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/deleteStory</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#deletestory)
 
 ```typescript
@@ -701,6 +775,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.deleteWebhook</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/deleteWebhook</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#deletewebhook)
 
@@ -719,6 +795,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/editChatInviteLink</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#editchatinvitelink)
 
 ```typescript
@@ -735,6 +813,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.editChatSubscriptionInviteLink</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/editChatSubscriptionInviteLink</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#editchatsubscriptioninvitelink)
 
@@ -753,6 +833,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/editForumTopic</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#editforumtopic)
 
 ```typescript
@@ -769,6 +851,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.editGeneralForumTopic</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/editGeneralForumTopic</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#editgeneralforumtopic)
 
@@ -787,6 +871,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/editMessageCaption</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#editmessagecaption)
 
 ```typescript
@@ -803,6 +889,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.editMessageChecklist</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/editMessageChecklist</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#editmessagechecklist)
 
@@ -821,6 +909,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/editMessageLiveLocation</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#editmessagelivelocation)
 
 ```typescript
@@ -837,6 +927,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.editMessageMedia</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/editMessageMedia</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#editmessagemedia)
 
@@ -855,6 +947,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/editMessageReplyMarkup</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#editmessagereplymarkup)
 
 ```typescript
@@ -871,6 +965,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.editMessageText</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/editMessageText</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#editmessagetext)
 
@@ -889,6 +985,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/editStory</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#editstory)
 
 ```typescript
@@ -905,6 +1003,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.editUserStarSubscription</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/editUserStarSubscription</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#edituserstarsubscription)
 
@@ -923,6 +1023,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/exportChatInviteLink</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#exportchatinvitelink)
 
 ```typescript
@@ -939,6 +1041,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.forwardMessage</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/forwardMessage</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#forwardmessage)
 
@@ -957,6 +1061,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/forwardMessages</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#forwardmessages)
 
 ```typescript
@@ -973,6 +1079,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.getAvailableGifts</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/getAvailableGifts</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#getavailablegifts)
 
@@ -991,6 +1099,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/getBusinessAccountGifts</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#getbusinessaccountgifts)
 
 ```typescript
@@ -1007,6 +1117,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.getBusinessAccountStarBalance</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/getBusinessAccountStarBalance</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#getbusinessaccountstarbalance)
 
@@ -1025,6 +1137,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/getBusinessConnection</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#getbusinessconnection)
 
 ```typescript
@@ -1041,6 +1155,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.getChat</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/getChat</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#getchat)
 
@@ -1059,6 +1175,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/getChatAdministrators</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#getchatadministrators)
 
 ```typescript
@@ -1075,6 +1193,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.getChatGifts</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/getChatGifts</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#getchatgifts)
 
@@ -1093,6 +1213,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/getChatMember</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#getchatmember)
 
 ```typescript
@@ -1109,6 +1231,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.getChatMemberCount</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/getChatMemberCount</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#getchatmembercount)
 
@@ -1127,6 +1251,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/getChatMenuButton</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#getchatmenubutton)
 
 ```typescript
@@ -1143,6 +1269,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.getCustomEmojiStickers</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/getCustomEmojiStickers</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#getcustomemojistickers)
 
@@ -1161,6 +1289,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/getFile</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#getfile)
 
 ```typescript
@@ -1177,6 +1307,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.getForumTopicIconStickers</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/getForumTopicIconStickers</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#getforumtopiciconstickers)
 
@@ -1195,6 +1327,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/getGameHighScores</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#getgamehighscores)
 
 ```typescript
@@ -1211,6 +1345,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.getManagedBotAccessSettings</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/getManagedBotAccessSettings</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#getmanagedbotaccesssettings)
 
@@ -1229,6 +1365,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/getManagedBotToken</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#getmanagedbottoken)
 
 ```typescript
@@ -1245,6 +1383,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.getMe</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/getMe</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#getme)
 
@@ -1263,6 +1403,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/getMyCommands</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#getmycommands)
 
 ```typescript
@@ -1279,6 +1421,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.getMyDefaultAdministratorRights</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/getMyDefaultAdministratorRights</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#getmydefaultadministratorrights)
 
@@ -1297,6 +1441,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/getMyDescription</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#getmydescription)
 
 ```typescript
@@ -1313,6 +1459,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.getMyName</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/getMyName</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#getmyname)
 
@@ -1331,6 +1479,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/getMyShortDescription</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#getmyshortdescription)
 
 ```typescript
@@ -1347,6 +1497,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.getMyStarBalance</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/getMyStarBalance</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#getmystarbalance)
 
@@ -1365,6 +1517,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/getStarTransactions</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#getstartransactions)
 
 ```typescript
@@ -1381,6 +1535,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.getStickerSet</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/getStickerSet</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#getstickerset)
 
@@ -1399,6 +1555,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/getUpdates</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#getupdates)
 
 ```typescript
@@ -1415,6 +1573,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.getUserChatBoosts</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/getUserChatBoosts</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#getuserchatboosts)
 
@@ -1433,6 +1593,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/getUserGifts</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#getusergifts)
 
 ```typescript
@@ -1449,6 +1611,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.getUserPersonalChatMessages</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/getUserPersonalChatMessages</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#getuserpersonalchatmessages)
 
@@ -1467,6 +1631,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/getUserProfileAudios</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#getuserprofileaudios)
 
 ```typescript
@@ -1483,6 +1649,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.getUserProfilePhotos</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/getUserProfilePhotos</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#getuserprofilephotos)
 
@@ -1501,6 +1669,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/getWebhookInfo</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#getwebhookinfo)
 
 ```typescript
@@ -1517,6 +1687,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.giftPremiumSubscription</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/giftPremiumSubscription</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#giftpremiumsubscription)
 
@@ -1535,6 +1707,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/hideGeneralForumTopic</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#hidegeneralforumtopic)
 
 ```typescript
@@ -1551,6 +1725,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.leaveChat</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/leaveChat</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#leavechat)
 
@@ -1569,6 +1745,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/logOut</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#logout)
 
 ```typescript
@@ -1585,6 +1763,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.pinChatMessage</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/pinChatMessage</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#pinchatmessage)
 
@@ -1603,6 +1783,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/postStory</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#poststory)
 
 ```typescript
@@ -1619,6 +1801,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.promoteChatMember</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/promoteChatMember</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#promotechatmember)
 
@@ -1637,6 +1821,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/readBusinessMessage</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#readbusinessmessage)
 
 ```typescript
@@ -1653,6 +1839,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.refundStarPayment</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/refundStarPayment</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#refundstarpayment)
 
@@ -1671,6 +1859,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/removeBusinessAccountProfilePhoto</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#removebusinessaccountprofilephoto)
 
 ```typescript
@@ -1687,6 +1877,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.removeChatVerification</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/removeChatVerification</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#removechatverification)
 
@@ -1705,6 +1897,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/removeMyProfilePhoto</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#removemyprofilephoto)
 
 ```typescript
@@ -1721,6 +1915,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.removeUserVerification</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/removeUserVerification</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#removeuserverification)
 
@@ -1739,6 +1935,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/reopenForumTopic</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#reopenforumtopic)
 
 ```typescript
@@ -1755,6 +1953,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.reopenGeneralForumTopic</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/reopenGeneralForumTopic</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#reopengeneralforumtopic)
 
@@ -1773,6 +1973,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/replaceManagedBotToken</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#replacemanagedbottoken)
 
 ```typescript
@@ -1789,6 +1991,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.replaceStickerInSet</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/replaceStickerInSet</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#replacestickerinset)
 
@@ -1807,6 +2011,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/repostStory</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#repoststory)
 
 ```typescript
@@ -1823,6 +2029,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.restrictChatMember</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/restrictChatMember</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#restrictchatmember)
 
@@ -1841,6 +2049,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/revokeChatInviteLink</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#revokechatinvitelink)
 
 ```typescript
@@ -1857,6 +2067,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.savePreparedInlineMessage</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/savePreparedInlineMessage</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#savepreparedinlinemessage)
 
@@ -1875,6 +2087,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/savePreparedKeyboardButton</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#savepreparedkeyboardbutton)
 
 ```typescript
@@ -1891,6 +2105,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.sendAnimation</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/sendAnimation</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#sendanimation)
 
@@ -1909,6 +2125,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/sendAudio</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#sendaudio)
 
 ```typescript
@@ -1925,6 +2143,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.sendChatAction</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/sendChatAction</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#sendchataction)
 
@@ -1943,6 +2163,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/sendChatJoinRequestWebApp</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#sendchatjoinrequestwebapp)
 
 ```typescript
@@ -1959,6 +2181,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.sendChecklist</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/sendChecklist</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#sendchecklist)
 
@@ -1977,6 +2201,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/sendContact</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#sendcontact)
 
 ```typescript
@@ -1993,6 +2219,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.sendDice</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/sendDice</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#senddice)
 
@@ -2011,6 +2239,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/sendDocument</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#senddocument)
 
 ```typescript
@@ -2027,6 +2257,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.sendGame</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/sendGame</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#sendgame)
 
@@ -2045,6 +2277,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/sendGift</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#sendgift)
 
 ```typescript
@@ -2061,6 +2295,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.sendInvoice</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/sendInvoice</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#sendinvoice)
 
@@ -2079,6 +2315,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/sendLivePhoto</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#sendlivephoto)
 
 ```typescript
@@ -2095,6 +2333,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.sendLocation</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/sendLocation</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#sendlocation)
 
@@ -2113,6 +2353,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/sendMediaGroup</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#sendmediagroup)
 
 ```typescript
@@ -2129,6 +2371,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.sendMessage</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/sendMessage</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#sendmessage)
 
@@ -2147,6 +2391,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/sendMessageDraft</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#sendmessagedraft)
 
 ```typescript
@@ -2163,6 +2409,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.sendPaidMedia</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/sendPaidMedia</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#sendpaidmedia)
 
@@ -2181,6 +2429,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/sendPhoto</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#sendphoto)
 
 ```typescript
@@ -2197,6 +2447,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.sendPoll</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/sendPoll</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#sendpoll)
 
@@ -2215,6 +2467,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/sendRichMessage</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#sendrichmessage)
 
 ```typescript
@@ -2231,6 +2485,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.sendRichMessageDraft</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/sendRichMessageDraft</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#sendrichmessagedraft)
 
@@ -2249,6 +2505,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/sendSticker</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#sendsticker)
 
 ```typescript
@@ -2265,6 +2523,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.sendVenue</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/sendVenue</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#sendvenue)
 
@@ -2283,6 +2543,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/sendVideo</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#sendvideo)
 
 ```typescript
@@ -2299,6 +2561,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.sendVideoNote</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/sendVideoNote</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#sendvideonote)
 
@@ -2317,6 +2581,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/sendVoice</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#sendvoice)
 
 ```typescript
@@ -2333,6 +2599,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.setBusinessAccountBio</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/setBusinessAccountBio</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#setbusinessaccountbio)
 
@@ -2351,6 +2619,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/setBusinessAccountGiftSettings</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#setbusinessaccountgiftsettings)
 
 ```typescript
@@ -2367,6 +2637,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.setBusinessAccountName</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/setBusinessAccountName</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#setbusinessaccountname)
 
@@ -2385,6 +2657,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/setBusinessAccountProfilePhoto</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#setbusinessaccountprofilephoto)
 
 ```typescript
@@ -2401,6 +2675,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.setBusinessAccountUsername</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/setBusinessAccountUsername</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#setbusinessaccountusername)
 
@@ -2419,6 +2695,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/setChatAdministratorCustomTitle</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#setchatadministratorcustomtitle)
 
 ```typescript
@@ -2435,6 +2713,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.setChatDescription</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/setChatDescription</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#setchatdescription)
 
@@ -2453,6 +2733,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/setChatMemberTag</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#setchatmembertag)
 
 ```typescript
@@ -2469,6 +2751,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.setChatMenuButton</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/setChatMenuButton</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#setchatmenubutton)
 
@@ -2487,6 +2771,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/setChatPermissions</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#setchatpermissions)
 
 ```typescript
@@ -2503,6 +2789,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.setChatPhoto</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/setChatPhoto</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#setchatphoto)
 
@@ -2521,6 +2809,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/setChatStickerSet</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#setchatstickerset)
 
 ```typescript
@@ -2537,6 +2827,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.setChatTitle</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/setChatTitle</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#setchattitle)
 
@@ -2555,6 +2847,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/setCustomEmojiStickerSetThumbnail</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#setcustomemojistickersetthumbnail)
 
 ```typescript
@@ -2571,6 +2865,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.setGameScore</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/setGameScore</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#setgamescore)
 
@@ -2589,6 +2885,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/setManagedBotAccessSettings</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#setmanagedbotaccesssettings)
 
 ```typescript
@@ -2605,6 +2903,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.setMessageReaction</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/setMessageReaction</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#setmessagereaction)
 
@@ -2623,6 +2923,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/setMyCommands</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#setmycommands)
 
 ```typescript
@@ -2639,6 +2941,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.setMyDefaultAdministratorRights</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/setMyDefaultAdministratorRights</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#setmydefaultadministratorrights)
 
@@ -2657,6 +2961,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/setMyDescription</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#setmydescription)
 
 ```typescript
@@ -2673,6 +2979,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.setMyName</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/setMyName</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#setmyname)
 
@@ -2691,6 +2999,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/setMyProfilePhoto</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#setmyprofilephoto)
 
 ```typescript
@@ -2707,6 +3017,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.setMyShortDescription</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/setMyShortDescription</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#setmyshortdescription)
 
@@ -2725,6 +3037,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/setPassportDataErrors</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#setpassportdataerrors)
 
 ```typescript
@@ -2741,6 +3055,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.setStickerEmojiList</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/setStickerEmojiList</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#setstickeremojilist)
 
@@ -2759,6 +3075,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/setStickerKeywords</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#setstickerkeywords)
 
 ```typescript
@@ -2775,6 +3093,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.setStickerMaskPosition</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/setStickerMaskPosition</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#setstickermaskposition)
 
@@ -2793,6 +3113,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/setStickerPositionInSet</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#setstickerpositioninset)
 
 ```typescript
@@ -2809,6 +3131,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.setStickerSetThumbnail</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/setStickerSetThumbnail</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#setstickersetthumbnail)
 
@@ -2827,6 +3151,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/setStickerSetTitle</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#setstickersettitle)
 
 ```typescript
@@ -2843,6 +3169,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.setUserEmojiStatus</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/setUserEmojiStatus</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#setuseremojistatus)
 
@@ -2861,6 +3189,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/setWebhook</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#setwebhook)
 
 ```typescript
@@ -2877,6 +3207,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.stopMessageLiveLocation</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/stopMessageLiveLocation</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#stopmessagelivelocation)
 
@@ -2895,6 +3227,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/stopPoll</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#stoppoll)
 
 ```typescript
@@ -2911,6 +3245,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.transferBusinessAccountStars</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/transferBusinessAccountStars</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#transferbusinessaccountstars)
 
@@ -2929,6 +3265,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/transferGift</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#transfergift)
 
 ```typescript
@@ -2945,6 +3283,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.unbanChatMember</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/unbanChatMember</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#unbanchatmember)
 
@@ -2963,6 +3303,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/unbanChatSenderChat</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#unbanchatsenderchat)
 
 ```typescript
@@ -2979,6 +3321,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.unhideGeneralForumTopic</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/unhideGeneralForumTopic</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#unhidegeneralforumtopic)
 
@@ -2997,6 +3341,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/unpinAllChatMessages</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#unpinallchatmessages)
 
 ```typescript
@@ -3013,6 +3359,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.unpinAllForumTopicMessages</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/unpinAllForumTopicMessages</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#unpinallforumtopicmessages)
 
@@ -3031,6 +3379,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/unpinAllGeneralForumTopicMessages</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#unpinallgeneralforumtopicmessages)
 
 ```typescript
@@ -3047,6 +3397,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.unpinChatMessage</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/unpinChatMessage</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#unpinchatmessage)
 
@@ -3065,6 +3417,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/upgradeGift</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#upgradegift)
 
 ```typescript
@@ -3081,6 +3435,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.uploadStickerFile</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/uploadStickerFile</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#uploadstickerfile)
 
@@ -3099,6 +3455,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 
 <code>POST https://api.telegram.org/bot{token}/verifyChat</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://core.telegram.org/bots/api#verifychat)
 
 ```typescript
@@ -3115,6 +3473,8 @@ Source: [`packages/provider/telegram/src/telegram.ts`](src/telegram.ts)
 <summary><code>POST</code> <b><code>telegram.verifyUser</code></b></summary>
 
 <code>POST https://api.telegram.org/bot{token}/verifyUser</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://core.telegram.org/bots/api#verifyuser)
 

@@ -212,6 +212,8 @@ try {
 
 <code>POST https://catbox.moe/user/api.php</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://catbox.moe/tools.php)
 
 ```typescript
@@ -228,6 +230,8 @@ Source: [`packages/provider/free-media-upload/src/freeMediaUpload.ts`](src/freeM
 <summary><code>POST</code> <b><code>free-media-upload.filebin.upload</code></b></summary>
 
 <code>POST https://filebin.net/{bin}/{filename}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://filebin.net/)
 
@@ -246,6 +250,8 @@ Source: [`packages/provider/free-media-upload/src/freeMediaUpload.ts`](src/freeM
 
 <code>POST https://upload.gofile.io/uploadfile</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://gofile.io/api)
 
 ```typescript
@@ -262,6 +268,8 @@ Source: [`packages/provider/free-media-upload/src/freeMediaUpload.ts`](src/freeM
 <summary><code>POST</code> <b><code>free-media-upload.litterbox.upload</code></b></summary>
 
 <code>POST https://litterbox.catbox.moe/resources/internals/api.php</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://litterbox.catbox.moe/)
 
@@ -280,6 +288,8 @@ Source: [`packages/provider/free-media-upload/src/freeMediaUpload.ts`](src/freeM
 
 <code>POST https://temp.sh/upload</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://temp.sh/)
 
 ```typescript
@@ -296,6 +306,8 @@ Source: [`packages/provider/free-media-upload/src/freeMediaUpload.ts`](src/freeM
 <summary><code>POST</code> <b><code>free-media-upload.tflink.upload</code></b></summary>
 
 <code>POST https://tmpfile.link/api/upload</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://tmpfile.link/)
 
@@ -314,6 +326,8 @@ Source: [`packages/provider/free-media-upload/src/freeMediaUpload.ts`](src/freeM
 
 <code>POST https://tmpfiles.org/api/v1/upload</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://tmpfiles.org/)
 
 ```typescript
@@ -330,6 +344,8 @@ Source: [`packages/provider/free-media-upload/src/freeMediaUpload.ts`](src/freeM
 <summary><code>POST</code> <b><code>free-media-upload.uguu.upload</code></b></summary>
 
 <code>POST https://uguu.se/upload</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://uguu.se/)
 

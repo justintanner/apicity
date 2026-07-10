@@ -178,6 +178,8 @@ console.log(
 
 <code>POST https://api.fireworks.ai/v1/accounts/{accountId}/users/{userId}/apiKeys</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -192,6 +194,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>DELETE</code> <b><code>fireworks.inference.v1.accounts.apiKeys</code></b></summary>
 
 <code>DELETE https://api.fireworks.ai/v1/accounts/{accountId}/users/{userId}/apiKeys:delete</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -208,6 +212,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>GET https://api.fireworks.ai/v1/accounts/{accountId}/users/{userId}/apiKeys</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -222,6 +228,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.batchInferenceJobs.create</code></b></summary>
 
 <code>POST https://api.fireworks.ai/v1/accounts/{accountId}/batchInferenceJobs</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -238,6 +246,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>DELETE https://api.fireworks.ai/v1/accounts/{accountId}/batchInferenceJobs/{jobId}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -252,6 +262,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.batchInferenceJobs</code></b></summary>
 
 <code>GET https://api.fireworks.ai/v1/accounts/{accountId}/batchInferenceJobs/{jobId}</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -268,6 +280,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>GET https://api.fireworks.ai/v1/accounts/{accountId}/batchInferenceJobs</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -282,6 +296,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.datasets.create</code></b></summary>
 
 <code>POST https://api.fireworks.ai/v1/accounts/{accountId}/datasets</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -298,6 +314,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>DELETE https://api.fireworks.ai/v1/accounts/{accountId}/datasets/{datasetId}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -312,6 +330,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.datasets</code></b></summary>
 
 <code>GET https://api.fireworks.ai/v1/accounts/{accountId}/datasets/{datasetId}</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -328,6 +348,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>GET https://api.fireworks.ai/v1/accounts/{accountId}/datasets/{datasetId}:getDownloadEndpoint</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -342,6 +364,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.datasets.getUploadEndpoint</code></b></summary>
 
 <code>POST https://api.fireworks.ai/v1/accounts/{accountId}/datasets/{datasetId}:getUploadEndpoint</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -358,6 +382,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>GET https://api.fireworks.ai/v1/accounts/{accountId}/datasets</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -372,6 +398,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>PATCH</code> <b><code>fireworks.inference.v1.accounts.datasets.update</code></b></summary>
 
 <code>PATCH https://api.fireworks.ai/v1/accounts/{accountId}/datasets/{datasetId}</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -388,6 +416,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>POST https://api.fireworks.ai/v1/accounts/{accountId}/datasets/{datasetId}:validateUpload</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -402,6 +432,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.deployedModels.create</code></b></summary>
 
 <code>POST https://api.fireworks.ai/v1/accounts/{accountId}/deployedModels</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -418,6 +450,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>DELETE https://api.fireworks.ai/v1/accounts/{accountId}/deployedModels/{deployedModelId}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -432,6 +466,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.deployedModels</code></b></summary>
 
 <code>GET https://api.fireworks.ai/v1/accounts/{accountId}/deployedModels/{deployedModelId}</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -448,6 +484,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>GET https://api.fireworks.ai/v1/accounts/{accountId}/deployedModels</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -462,6 +500,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>PATCH</code> <b><code>fireworks.inference.v1.accounts.deployedModels.update</code></b></summary>
 
 <code>PATCH https://api.fireworks.ai/v1/accounts/{accountId}/deployedModels/{deployedModelId}</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -478,6 +518,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>GET https://api.fireworks.ai/v1/accounts/{accountId}/deploymentShapes/{shapeId}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -492,6 +534,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.deploymentShapes.versions</code></b></summary>
 
 <code>GET https://api.fireworks.ai/v1/accounts/{accountId}/deploymentShapes/{shapeId}/versions/{versionId}</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -508,6 +552,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>GET https://api.fireworks.ai/v1/accounts/{accountId}/deploymentShapes/{shapeId}/versions</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -522,6 +568,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.deployments.create</code></b></summary>
 
 <code>POST https://api.fireworks.ai/v1/accounts/{accountId}/deployments</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -538,6 +586,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>DELETE https://api.fireworks.ai/v1/accounts/{accountId}/deployments/{deploymentId}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -552,6 +602,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.deployments</code></b></summary>
 
 <code>GET https://api.fireworks.ai/v1/accounts/{accountId}/deployments/{deploymentId}</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -568,6 +620,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>GET https://api.fireworks.ai/v1/accounts/{accountId}/deployments</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -582,6 +636,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>PATCH</code> <b><code>fireworks.inference.v1.accounts.deployments.scale</code></b></summary>
 
 <code>PATCH https://api.fireworks.ai/v1/accounts/{accountId}/deployments/{deploymentId}:scale</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -598,6 +654,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>POST https://api.fireworks.ai/v1/accounts/{accountId}/deployments/{deploymentId}:undelete</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -612,6 +670,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>PATCH</code> <b><code>fireworks.inference.v1.accounts.deployments.update</code></b></summary>
 
 <code>PATCH https://api.fireworks.ai/v1/accounts/{accountId}/deployments/{deploymentId}</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -628,6 +688,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>POST https://api.fireworks.ai/v1/accounts/{accountId}/dpoJobs</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -642,6 +704,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>DELETE</code> <b><code>fireworks.inference.v1.accounts.dpoJobs</code></b></summary>
 
 <code>DELETE https://api.fireworks.ai/v1/accounts/{accountId}/dpoJobs/{jobId}</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -658,6 +722,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>GET https://api.fireworks.ai/v1/accounts/{accountId}/dpoJobs/{jobId}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -672,6 +738,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.dpoJobs.getMetricsFileEndpoint</code></b></summary>
 
 <code>GET https://api.fireworks.ai/v1/accounts/{accountId}/dpoJobs/{jobId}:getMetricsFileEndpoint</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -688,6 +756,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>GET https://api.fireworks.ai/v1/accounts/{accountId}/dpoJobs</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -702,6 +772,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.dpoJobs.resume</code></b></summary>
 
 <code>POST https://api.fireworks.ai/v1/accounts/{accountId}/dpoJobs/{jobId}:resume</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -718,6 +790,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>POST https://api.fireworks.ai/v1/accounts/{accountId}/evaluationJobs</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -732,6 +806,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>DELETE</code> <b><code>fireworks.inference.v1.accounts.evaluationJobs</code></b></summary>
 
 <code>DELETE https://api.fireworks.ai/v1/accounts/{accountId}/evaluationJobs/{evaluationJobId}</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -748,6 +824,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>GET https://api.fireworks.ai/v1/accounts/{accountId}/evaluationJobs/{evaluationJobId}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -762,6 +840,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.evaluationJobs.getExecutionLogEndpoint</code></b></summary>
 
 <code>GET https://api.fireworks.ai/v1/accounts/{accountId}/evaluationJobs/{evaluationJobId}:getExecutionLogEndpoint</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -778,6 +858,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>GET https://api.fireworks.ai/v1/accounts/{accountId}/evaluationJobs</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -792,6 +874,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.evaluators.create</code></b></summary>
 
 <code>POST https://api.fireworks.ai/v1/accounts/{accountId}/evaluatorsV2</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -808,6 +892,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>DELETE https://api.fireworks.ai/v1/accounts/{accountId}/evaluators/{evaluatorId}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -822,6 +908,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.evaluators</code></b></summary>
 
 <code>GET https://api.fireworks.ai/v1/accounts/{accountId}/evaluators/{evaluatorId}</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -838,6 +926,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>GET https://api.fireworks.ai/v1/accounts/{accountId}/evaluators/{evaluatorId}:getBuildLogEndpoint</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -852,6 +942,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.evaluators.getSourceCodeSignedUrl</code></b></summary>
 
 <code>GET https://api.fireworks.ai/v1/accounts/{accountId}/evaluators/{evaluatorId}:getSourceCodeSignedUrl</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -868,6 +960,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>POST https://api.fireworks.ai/v1/accounts/{accountId}/evaluators/{evaluatorId}:getUploadEndpoint</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -882,6 +976,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.evaluators.list</code></b></summary>
 
 <code>GET https://api.fireworks.ai/v1/accounts/{accountId}/evaluators</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -898,6 +994,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>PATCH https://api.fireworks.ai/v1/accounts/{accountId}/evaluators/{evaluatorId}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -912,6 +1010,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.evaluators.validateUpload</code></b></summary>
 
 <code>POST https://api.fireworks.ai/v1/accounts/{accountId}/evaluators/{evaluatorId}:validateUpload</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -928,6 +1028,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>GET https://api.fireworks.ai/v1/accounts/{accountId}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -942,6 +1044,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.list</code></b></summary>
 
 <code>GET https://api.fireworks.ai/v1/accounts</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -958,6 +1062,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>POST https://api.fireworks.ai/v1/accounts/{accountId}/models</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -972,6 +1078,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>DELETE</code> <b><code>fireworks.inference.v1.accounts.models</code></b></summary>
 
 <code>DELETE https://api.fireworks.ai/v1/accounts/{accountId}/models/{modelId}</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -988,6 +1096,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>GET https://api.fireworks.ai/v1/accounts/{accountId}/models/{modelId}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -1002,6 +1112,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.models.getDownloadEndpoint</code></b></summary>
 
 <code>GET https://api.fireworks.ai/v1/accounts/{accountId}/models/{modelId}:getDownloadEndpoint</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1018,6 +1130,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>POST https://api.fireworks.ai/v1/accounts/{accountId}/models/{modelId}:getUploadEndpoint</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -1032,6 +1146,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.models.list</code></b></summary>
 
 <code>GET https://api.fireworks.ai/v1/accounts/{accountId}/models</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1048,6 +1164,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>POST https://api.fireworks.ai/v1/accounts/{accountId}/models/{modelId}:prepare</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -1062,6 +1180,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>PATCH</code> <b><code>fireworks.inference.v1.accounts.models.update</code></b></summary>
 
 <code>PATCH https://api.fireworks.ai/v1/accounts/{accountId}/models/{modelId}</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1078,6 +1198,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>GET https://api.fireworks.ai/v1/accounts/{accountId}/models/{modelId}:validateUpload</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -1092,6 +1214,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.reinforcementFineTuningJobs.create</code></b></summary>
 
 <code>POST https://api.fireworks.ai/v1/accounts/{accountId}/reinforcementFineTuningJobs</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1108,6 +1232,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>DELETE https://api.fireworks.ai/v1/accounts/{accountId}/reinforcementFineTuningJobs/{jobId}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -1122,6 +1248,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.reinforcementFineTuningJobs</code></b></summary>
 
 <code>GET https://api.fireworks.ai/v1/accounts/{accountId}/reinforcementFineTuningJobs/{jobId}</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1138,6 +1266,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>GET https://api.fireworks.ai/v1/accounts/{accountId}/reinforcementFineTuningJobs</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -1152,6 +1282,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.reinforcementFineTuningJobs.resume</code></b></summary>
 
 <code>POST https://api.fireworks.ai/v1/accounts/{accountId}/reinforcementFineTuningJobs/{jobId}:resume</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1168,6 +1300,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>POST https://api.fireworks.ai/v1/accounts/{accountId}/rlorTrainerJobs</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -1182,6 +1316,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>DELETE</code> <b><code>fireworks.inference.v1.accounts.rlorTrainerJobs</code></b></summary>
 
 <code>DELETE https://api.fireworks.ai/v1/accounts/{accountId}/rlorTrainerJobs/{jobId}</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1198,6 +1334,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>POST https://api.fireworks.ai/v1/accounts/{accountId}/rlorTrainerJobs/{jobId}:executeTrainStep</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -1212,6 +1350,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.rlorTrainerJobs</code></b></summary>
 
 <code>GET https://api.fireworks.ai/v1/accounts/{accountId}/rlorTrainerJobs/{jobId}</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1228,6 +1368,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>GET https://api.fireworks.ai/v1/accounts/{accountId}/rlorTrainerJobs</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -1242,6 +1384,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.rlorTrainerJobs.resume</code></b></summary>
 
 <code>POST https://api.fireworks.ai/v1/accounts/{accountId}/rlorTrainerJobs/{jobId}:resume</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1258,6 +1402,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>POST https://api.fireworks.ai/v1/accounts/{accountId}/secrets</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -1272,6 +1418,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>DELETE</code> <b><code>fireworks.inference.v1.accounts.secrets</code></b></summary>
 
 <code>DELETE https://api.fireworks.ai/v1/accounts/{accountId}/secrets/{secretId}</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1288,6 +1436,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>GET https://api.fireworks.ai/v1/accounts/{accountId}/secrets/{secretId}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -1302,6 +1452,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.secrets.list</code></b></summary>
 
 <code>GET https://api.fireworks.ai/v1/accounts/{accountId}/secrets</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1318,6 +1470,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>PATCH https://api.fireworks.ai/v1/accounts/{accountId}/secrets/{secretId}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -1332,6 +1486,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.supervisedFineTuningJobs.create</code></b></summary>
 
 <code>POST https://api.fireworks.ai/v1/accounts/{accountId}/supervisedFineTuningJobs</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1348,6 +1504,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>DELETE https://api.fireworks.ai/v1/accounts/{param}/supervisedFineTuningJobs/{param}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -1362,6 +1520,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.supervisedFineTuningJobs</code></b></summary>
 
 <code>GET https://api.fireworks.ai/v1/accounts/{param}/supervisedFineTuningJobs/{param}</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1378,6 +1538,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>GET https://api.fireworks.ai/v1/accounts/{accountId}/supervisedFineTuningJobs</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -1392,6 +1554,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.supervisedFineTuningJobs.resume</code></b></summary>
 
 <code>POST https://api.fireworks.ai/v1/accounts/{param}/supervisedFineTuningJobs/{param}:resume</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1408,6 +1572,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>POST https://api.fireworks.ai/v1/accounts/{accountId}/users</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -1422,6 +1588,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.users</code></b></summary>
 
 <code>GET https://api.fireworks.ai/v1/accounts/{accountId}/users/{userId}</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1438,6 +1606,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>GET https://api.fireworks.ai/v1/accounts/{accountId}/users</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -1452,6 +1622,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>PATCH</code> <b><code>fireworks.inference.v1.accounts.users.update</code></b></summary>
 
 <code>PATCH https://api.fireworks.ai/v1/accounts/{accountId}/users/{userId}</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1468,6 +1640,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>GET https://api.fireworks.ai/v1/accounts/{accountId}/batch_job/{batchId}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -1482,6 +1656,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>POST</code> <b><code>fireworks.inference.v1.audio.batch.transcriptions</code></b></summary>
 
 <code>POST https://api.fireworks.ai/inference/v1/audio/transcriptions</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1498,6 +1674,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>POST https://api.fireworks.ai/inference/v1/audio/translations</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -1512,6 +1690,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>POST</code> <b><code>fireworks.inference.v1.audio.transcriptions</code></b></summary>
 
 <code>POST https://api.fireworks.ai/inference/v1/audio/transcriptions</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1528,6 +1708,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>POST https://api.fireworks.ai/inference/v1/audio/translations</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -1542,6 +1724,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>POST</code> <b><code>fireworks.inference.v1.chat.completions</code></b></summary>
 
 <code>POST https://api.fireworks.ai/inference/v1/chat/completions</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1558,6 +1742,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>POST https://api.fireworks.ai/inference/v1/completions</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -1572,6 +1758,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>POST</code> <b><code>fireworks.inference.v1.embeddings</code></b></summary>
 
 <code>POST https://api.fireworks.ai/inference/v1/embeddings</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1588,6 +1776,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>POST https://api.fireworks.ai/inference/v1/rerank</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -1602,6 +1792,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.users.update</code></b></summary>
 
 <code>POST https://api.fireworks.ai/v1/accounts/{accountId}/users/{userId}</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1618,6 +1810,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>POST https://api.fireworks.ai/inference/v1/messages</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -1632,6 +1826,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>POST</code> <b><code>fireworks.inference.v1.workflows.getResult</code></b></summary>
 
 <code>POST https://api.fireworks.ai/inference/v1/workflows/accounts/fireworks/models/{model}/get_result</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1648,6 +1844,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>POST https://api.fireworks.ai/inference/v1/workflows/accounts/fireworks/models/{model}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -1663,6 +1861,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <code>POST https://api.fireworks.ai/inference/v1/workflows/accounts/fireworks/models/{model}/text_to_image</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -1677,6 +1877,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <summary><code>POST</code> <b><code>fireworks.inference.v1.messages</code></b></summary>
 
 <code>POST https://api.fireworks.ai/inference/v1/messages</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 

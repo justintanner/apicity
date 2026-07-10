@@ -21,6 +21,23 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, "..");
 const TSV_PATH = path.join(__dirname, "endpoint-docs.tsv");
+const COST_TIERS_TSV_PATH = path.join(__dirname, "endpoint-cost-tiers.tsv");
+
+function loadCostTierMap() {
+  const map = new Map();
+  if (!fsSync.existsSync(COST_TIERS_TSV_PATH)) return map;
+  const text = fsSync.readFileSync(COST_TIERS_TSV_PATH, "utf8");
+  const lines = text.split("\n").filter(Boolean);
+  for (let i = 1; i < lines.length; i++) {
+    const [provider, dotPath, method, tier] = lines[i].split("\t");
+    map.set(`${provider}\t${dotPath}\t${method}`, tier);
+  }
+  return map;
+}
+
+// Canonical per-endpoint cost tier (from @apicity/cost via the generated
+// scripts/endpoint-cost-tiers.tsv). Surfaced in each endpoint's docs.
+const COST_TIER_MAP = loadCostTierMap();
 
 function loadEndpointDocsRows() {
   const rows = [];
@@ -732,7 +749,7 @@ function renderSimpleFunctionsAuthenticatedGuide() {
   ].join("\n");
 }
 
-function renderEndpointDetails(ep, providerName, docsUrl) {
+function renderEndpointDetails(ep, providerName, docsUrl, tier) {
   const method = ep.method ?? "";
   const dotPath = displayDotPath(providerName, ep);
   const headerCode = method ? `<code>${method}</code> ` : "";
@@ -741,6 +758,7 @@ function renderEndpointDetails(ep, providerName, docsUrl) {
   const urlLine = ep.fullUrl
     ? `<code>${method ? method + " " : ""}${ep.fullUrl}</code>`
     : "";
+  const tierLine = tier ? `Cost tier: <code>${tier}</code>` : "";
   const docsLine =
     docsUrl && docsUrl.length > 0 ? `[Upstream docs ↗](${docsUrl})` : "";
   const noteLine =
@@ -755,6 +773,7 @@ function renderEndpointDetails(ep, providerName, docsUrl) {
 
   const lines = ["<details>", `<summary>${summary}</summary>`, ""];
   if (urlLine) lines.push(urlLine, "");
+  if (tierLine) lines.push(tierLine, "");
   if (docsLine) lines.push(docsLine, "");
   if (noteLine) lines.push(noteLine, "");
   lines.push("```typescript", usage, "```", "");
@@ -806,11 +825,16 @@ function renderApiReference(providerName, endpoints) {
             fullUrl: ep.fullUrl ?? cleanTsvValue(docRow.fullUrl),
           }
         : ep;
+      const tierKey = `${providerName}\t${
+        docRow?.dotPath ?? enrichedEndpoint.fullDotPath ?? enrichedEndpoint.dotPath
+      }\t${docRow?.method ?? enrichedEndpoint.method ?? ""}`;
+      const tier = COST_TIER_MAP.get(tierKey) ?? "prohibitive";
       sections.push(
         renderEndpointDetails(
           enrichedEndpoint,
           providerName,
-          docRow?.docsUrl ?? ""
+          docRow?.docsUrl ?? "",
+          tier
         )
       );
     }

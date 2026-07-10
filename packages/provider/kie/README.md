@@ -485,6 +485,8 @@ defaults to `false`.
 
 <code>GET https://api.kie.ai/api/v1/chat/credit</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.kie.ai/common-api/get-account-credits)
 
 ```typescript
@@ -501,6 +503,8 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 <summary><code>POST</code> <b><code>kie.claude.post.v1.messages</code></b></summary>
 
 <code>POST https://api.kie.ai/claude/v1/messages</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.kie.ai/market/claude/claude-sonnet-4-6)
 
@@ -519,6 +523,8 @@ Source: [`packages/provider/kie/src/claude.ts`](src/claude.ts)
 
 <code>POST https://api.kie.ai/codex/v1/responses</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.kie.ai/market/chat/gpt-5-5)
 
 ```typescript
@@ -535,6 +541,8 @@ Source: [`packages/provider/kie/src/responses.ts`](src/responses.ts)
 <summary><code>POST</code> <b><code>kie.post.api.v1.common.downloadUrl</code></b></summary>
 
 <code>POST https://api.kie.ai/api/v1/common/download-url</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.kie.ai/common-api/download-url)
 
@@ -553,6 +561,8 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 
 <code>POST https://kieai.redpandaai.co/api/file-base64-upload</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.kie.ai/file-upload-api/upload-file-base-64)
 
 ```typescript
@@ -569,6 +579,8 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 <summary><code>POST</code> <b><code>kie.post.api.fileStreamUpload</code></b></summary>
 
 <code>POST https://kieai.redpandaai.co/api/file-stream-upload</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.kie.ai/file-upload-api/upload-file-stream)
 
@@ -587,6 +599,8 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 
 <code>POST https://kieai.redpandaai.co/api/file-url-upload</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.kie.ai/file-upload-api/upload-file-url)
 
 ```typescript
@@ -604,6 +618,8 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 
 <code>GET https://api.kie.ai/api/v1/flux/kontext/record-info?taskId={taskId}</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.kie.ai/flux-kontext-api/get-image-details)
 
 ```typescript
@@ -618,6 +634,8 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 <summary><code>POST</code> <b><code>kie.post.api.v1.flux.kontext.generate</code></b></summary>
 
 <code>POST https://api.kie.ai/api/v1/flux/kontext/generate</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.kie.ai/flux-kontext-api/generate-or-edit-image)
 
@@ -636,6 +654,8 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 
 <code>POST https://api.kie.ai/gemini/v1/models/gemini-3-5-flash:streamGenerateContent</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.kie.ai/market/gemini/gemini-3-5-flash)
 
 ```typescript
@@ -652,6 +672,8 @@ Source: [`packages/provider/kie/src/gemini.ts`](src/gemini.ts)
 <summary><code>POST</code> <b><code>kie.gemini31Pro.post.v1.chat.completions</code></b></summary>
 
 <code>POST https://api.kie.ai/gemini-3.1-pro/v1/chat/completions</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.kie.ai/market/gemini/gemini-3-1-pro)
 
@@ -670,6 +692,8 @@ Source: [`packages/provider/kie/src/gemini-31-pro.ts`](src/gemini-31-pro.ts)
 
 <code>GET https://api.kie.ai/api/v1/generate/record-info?taskId={taskId}</code>
 
+Cost tier: <code>prohibitive</code>
+
 ```typescript
 const res = await kie.suno.get.api.v1.generate.recordInfo({ /* ... */ });
 ```
@@ -682,6 +706,8 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 <summary><code>POST</code> <b><code>kie.suno.post.api.v1.generate</code></b></summary>
 
 <code>POST https://api.kie.ai/api/v1/generate</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.kie.ai/suno-api/generate-music)
 
@@ -698,6 +724,8 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 
 <code>POST https://api.kie.ai/api/v1/generate/add-instrumental</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.kie.ai/suno-api/add-instrumental)
 
 ```typescript
@@ -712,6 +740,8 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 <summary><code>POST</code> <b><code>kie.suno.post.api.v1.generate.addVocals</code></b></summary>
 
 <code>POST https://api.kie.ai/api/v1/generate/add-vocals</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.kie.ai/suno-api/add-vocals)
 
@@ -728,6 +758,8 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 
 <code>POST https://api.kie.ai/api/v1/generate/extend</code>
 
+Cost tier: <code>prohibitive</code>
+
 ```typescript
 const res = await kie.suno.post.api.v1.generate.extend({ /* ... */ });
 ```
@@ -740,6 +772,8 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 <summary><code>POST</code> <b><code>kie.suno.post.api.v1.generate.mashup</code></b></summary>
 
 <code>POST https://api.kie.ai/api/v1/generate/mashup</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.kie.ai/suno-api/generate-mashup)
 
@@ -756,6 +790,8 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 
 <code>POST https://api.kie.ai/api/v1/generate/replace-section</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.kie.ai/suno-api/replace-section)
 
 ```typescript
@@ -770,6 +806,8 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 <summary><code>POST</code> <b><code>kie.suno.post.api.v1.generate.sounds</code></b></summary>
 
 <code>POST https://api.kie.ai/api/v1/generate/sounds</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.kie.ai/suno-api/generate-sounds)
 
@@ -786,6 +824,8 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 
 <code>POST https://api.kie.ai/api/v1/generate/upload-cover</code>
 
+Cost tier: <code>prohibitive</code>
+
 ```typescript
 const res = await kie.suno.post.api.v1.generate.uploadCover({ /* ... */ });
 ```
@@ -798,6 +838,8 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 <summary><code>POST</code> <b><code>kie.suno.post.api.v1.generate.uploadExtend</code></b></summary>
 
 <code>POST https://api.kie.ai/api/v1/generate/upload-extend</code>
+
+Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await kie.suno.post.api.v1.generate.uploadExtend({ /* ... */ });
@@ -814,6 +856,8 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 
 <code>GET https://api.kie.ai/api/v1/gpt4o-image/record-info?taskId={taskId}</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.kie.ai/4o-image-api/get-4-o-image-details)
 
 ```typescript
@@ -828,6 +872,8 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 <summary><code>POST</code> <b><code>kie.post.api.v1.gpt4oImage.generate</code></b></summary>
 
 <code>POST https://api.kie.ai/api/v1/gpt4o-image/generate</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.kie.ai/4o-image-api/generate-4-o-image)
 
@@ -846,6 +892,8 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 
 <code>GET https://api.kie.ai/api/v1/jobs/recordInfo?taskId={taskId}</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.kie.ai/market/common/get-task-detail)
 
 ```typescript
@@ -860,6 +908,8 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 <summary><code>POST</code> <b><code>kie.post.api.v1.jobs.createTask</code></b></summary>
 
 <code>POST https://api.kie.ai/api/v1/jobs/createTask</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.kie.ai/market/quickstart)
 
@@ -878,6 +928,8 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 
 <code>GET https://api.kie.ai/api/v1/lyrics/record-info?taskId={taskId}</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.kie.ai/suno-api/get-lyrics-details)
 
 ```typescript
@@ -892,6 +944,8 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 <summary><code>POST</code> <b><code>kie.suno.post.api.v1.lyrics</code></b></summary>
 
 <code>POST https://api.kie.ai/api/v1/lyrics</code>
+
+Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await kie.suno.post.api.v1.lyrics({ /* ... */ });
@@ -908,6 +962,8 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 
 <code>POST https://api.kie.ai/api/v1/midi/generate</code>
 
+Cost tier: <code>prohibitive</code>
+
 ```typescript
 const res = await kie.suno.post.api.v1.midi.generate({ /* ... */ });
 ```
@@ -923,6 +979,8 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 
 <code>GET https://api.kie.ai/api/v1/mj/record-info?taskId={taskId}</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.kie.ai/mj-api/get-mj-task-details)
 
 ```typescript
@@ -937,6 +995,8 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 <summary><code>POST</code> <b><code>kie.post.api.v1.mj.generate</code></b></summary>
 
 <code>POST https://api.kie.ai/api/v1/mj/generate</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.kie.ai/mj-api/generate-mj-image)
 
@@ -955,6 +1015,8 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 
 <code>POST https://api.kie.ai/api/v1/mp4/generate</code>
 
+Cost tier: <code>prohibitive</code>
+
 ```typescript
 const res = await kie.suno.post.api.v1.mp4.generate({ /* ... */ });
 ```
@@ -970,6 +1032,8 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 
 <code>POST https://api.kie.ai/api/v1/omni/audio/create</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.kie.ai/market/gemini-omni-audio)
 
 ```typescript
@@ -984,6 +1048,8 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 <summary><code>POST</code> <b><code>kie.post.api.v1.omni.character.create</code></b></summary>
 
 <code>POST https://api.kie.ai/api/v1/omni/character/create</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.kie.ai/market/gemini-omni-character)
 
@@ -1002,6 +1068,8 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 
 <code>GET https://api.kie.ai/api/v1/runway/record-detail?taskId={taskId}</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.kie.ai/runway-api/get-ai-video-details)
 
 ```typescript
@@ -1017,6 +1085,8 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 
 <code>POST https://api.kie.ai/api/v1/runway/extend</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.kie.ai/runway-api/extend-ai-video)
 
 ```typescript
@@ -1031,6 +1101,8 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 <summary><code>POST</code> <b><code>kie.post.api.v1.runway.generate</code></b></summary>
 
 <code>POST https://api.kie.ai/api/v1/runway/generate</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.kie.ai/runway-api/generate-ai-video)
 
@@ -1049,6 +1121,8 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 
 <code>POST https://api.kie.ai/api/v1/style/generate</code>
 
+Cost tier: <code>prohibitive</code>
+
 ```typescript
 const res = await kie.suno.post.api.v1.style.generate({ /* ... */ });
 ```
@@ -1063,6 +1137,8 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 <summary><code>GET</code> <b><code>kie.veo.get.api.v1.veo.get1080pVideo</code></b></summary>
 
 <code>GET https://api.kie.ai/api/v1/veo/get-1080p-video?taskId={taskId}</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.kie.ai/veo3-api/get-veo-3-1080-p-video)
 
@@ -1079,6 +1155,8 @@ Source: [`packages/provider/kie/src/veo.ts`](src/veo.ts)
 
 <code>GET https://api.kie.ai/api/v1/veo/record-info?taskId={taskId}</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.kie.ai/veo3-api/get-veo-3-video-details)
 
 ```typescript
@@ -1094,6 +1172,8 @@ Source: [`packages/provider/kie/src/veo.ts`](src/veo.ts)
 
 <code>POST https://api.kie.ai/api/v1/veo/extend</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.kie.ai/veo3-api/extend-video)
 
 ```typescript
@@ -1108,6 +1188,8 @@ Source: [`packages/provider/kie/src/veo.ts`](src/veo.ts)
 <summary><code>POST</code> <b><code>kie.veo.post.api.v1.veo.generate</code></b></summary>
 
 <code>POST https://api.kie.ai/api/v1/veo/generate</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.kie.ai/veo3-api/generate-veo-3-video)
 
@@ -1126,6 +1208,8 @@ Source: [`packages/provider/kie/src/veo.ts`](src/veo.ts)
 
 <code>POST https://api.kie.ai/api/v1/vocal-removal/generate</code>
 
+Cost tier: <code>prohibitive</code>
+
 ```typescript
 const res = await kie.suno.post.api.v1.vocalRemoval.generate({ /* ... */ });
 ```
@@ -1140,6 +1224,8 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 <summary><code>POST</code> <b><code>kie.suno.post.api.v1.wav.generate</code></b></summary>
 
 <code>POST https://api.kie.ai/api/v1/wav/generate</code>
+
+Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await kie.suno.post.api.v1.wav.generate({ /* ... */ });

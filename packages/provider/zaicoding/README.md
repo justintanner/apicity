@@ -37,6 +37,8 @@ const zaicoding = createZaiCoding({ apiKey: process.env.ZAI_CODING_PLAN_API_KEY!
 
 <code>POST https://api.z.ai/api/coding/paas/v4/chat/completions</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.z.ai/api-reference/llm/chat-completion)
 
 ```typescript
@@ -54,6 +56,8 @@ Source: [`packages/provider/zaicoding/src/zaicoding.ts`](src/zaicoding.ts)
 
 <code>GET https://api.z.ai/api/monitor/usage/model-usage</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.z.ai/api-reference/introduction)
 
 ```typescript
@@ -69,6 +73,8 @@ Source: [`packages/provider/zaicoding/src/zaicoding.ts`](src/zaicoding.ts)
 
 <code>GET https://api.z.ai/api/monitor/usage/quota/limit</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.z.ai/api-reference/introduction)
 
 ```typescript
@@ -83,6 +89,8 @@ Source: [`packages/provider/zaicoding/src/zaicoding.ts`](src/zaicoding.ts)
 <summary><code>GET</code> <b><code>zaicoding.api.monitor.usage.toolUsage</code></b></summary>
 
 <code>GET https://api.z.ai/api/monitor/usage/tool-usage</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.z.ai/api-reference/introduction)
 

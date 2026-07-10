@@ -37,6 +37,8 @@ const youtube = createYouTube({ apiKey: process.env.YOUTUBE_API_KEY! });
 
 <code>GET https://www.googleapis.com/youtube/v3/channels{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.google.com/youtube/v3/docs/channels/list)
 
 ```typescript
@@ -54,6 +56,8 @@ Source: [`packages/provider/youtube/src/youtube.ts`](src/youtube.ts)
 
 <code>GET https://www.youtube.com/watch?v={videoId}</code>
 
+Cost tier: <code>cheap</code>
+
 ```typescript
 const res = await youtube.transcripts({ /* ... */ });
 ```
@@ -66,6 +70,8 @@ Source: [`packages/provider/youtube/src/youtube.ts`](src/youtube.ts)
 
 <details>
 <summary><b><code>youtube.videoMetadata</code></b></summary>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.google.com/youtube/player_parameters)
 
@@ -84,6 +90,8 @@ Source: [`packages/provider/youtube/src/youtube.ts`](src/youtube.ts)
 
 <code>POST https://www.googleapis.com/youtube/v3/videos{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.google.com/youtube/v3/docs/videos/insert)
 
 ```typescript
@@ -98,6 +106,8 @@ Source: [`packages/provider/youtube/src/youtube.ts`](src/youtube.ts)
 <summary><code>GET</code> <b><code>youtube.videos.list</code></b></summary>
 
 <code>GET https://www.googleapis.com/youtube/v3/videos{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.google.com/youtube/v3/docs/videos/list)
 

@@ -100,6 +100,8 @@ const openf1 = createOpenF1({
 
 <code>GET https://api.openf1.org/v1/car_data{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://openf1.org/docs/#car-data)
 
 ```typescript
@@ -116,6 +118,8 @@ Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)
 <summary><code>GET</code> <b><code>openf1.v1.championshipDrivers</code></b></summary>
 
 <code>GET https://api.openf1.org/v1/championship_drivers{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://openf1.org/docs/#drivers-championship-beta)
 
@@ -134,6 +138,8 @@ Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)
 
 <code>GET https://api.openf1.org/v1/championship_teams{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://openf1.org/docs/#teams-championship-beta)
 
 ```typescript
@@ -150,6 +156,8 @@ Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)
 <summary><code>GET</code> <b><code>openf1.v1.drivers</code></b></summary>
 
 <code>GET https://api.openf1.org/v1/drivers{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://openf1.org/docs/#drivers)
 
@@ -168,6 +176,8 @@ Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)
 
 <code>GET https://api.openf1.org/v1/intervals{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://openf1.org/docs/#intervals)
 
 ```typescript
@@ -184,6 +194,8 @@ Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)
 <summary><code>GET</code> <b><code>openf1.v1.laps</code></b></summary>
 
 <code>GET https://api.openf1.org/v1/laps{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://openf1.org/docs/#laps)
 
@@ -202,6 +214,8 @@ Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)
 
 <code>GET https://api.openf1.org/v1/location{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://openf1.org/docs/#location)
 
 ```typescript
@@ -218,6 +232,8 @@ Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)
 <summary><code>GET</code> <b><code>openf1.v1.meetings</code></b></summary>
 
 <code>GET https://api.openf1.org/v1/meetings{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://openf1.org/docs/#meetings)
 
@@ -236,6 +252,8 @@ Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)
 
 <code>GET https://api.openf1.org/v1/overtakes{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://openf1.org/docs/#overtakes)
 
 ```typescript
@@ -252,6 +270,8 @@ Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)
 <summary><code>GET</code> <b><code>openf1.v1.pit</code></b></summary>
 
 <code>GET https://api.openf1.org/v1/pit{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://openf1.org/docs/#pit)
 
@@ -270,6 +290,8 @@ Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)
 
 <code>GET https://api.openf1.org/v1/position{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://openf1.org/docs/#position)
 
 ```typescript
@@ -286,6 +308,8 @@ Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)
 <summary><code>GET</code> <b><code>openf1.v1.raceControl</code></b></summary>
 
 <code>GET https://api.openf1.org/v1/race_control{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://openf1.org/docs/#race-control)
 
@@ -304,6 +328,8 @@ Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)
 
 <code>GET https://api.openf1.org/v1/session_result{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://openf1.org/docs/#session-result)
 
 ```typescript
@@ -320,6 +346,8 @@ Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)
 <summary><code>GET</code> <b><code>openf1.v1.sessions</code></b></summary>
 
 <code>GET https://api.openf1.org/v1/sessions{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://openf1.org/docs/#sessions)
 
@@ -338,6 +366,8 @@ Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)
 
 <code>GET https://api.openf1.org/v1/starting_grid{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://openf1.org/docs/#starting-grid)
 
 ```typescript
@@ -354,6 +384,8 @@ Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)
 <summary><code>GET</code> <b><code>openf1.v1.stints</code></b></summary>
 
 <code>GET https://api.openf1.org/v1/stints{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://openf1.org/docs/#stints)
 
@@ -372,6 +404,8 @@ Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)
 
 <code>GET https://api.openf1.org/v1/team_radio{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://openf1.org/docs/#team-radio)
 
 ```typescript
@@ -388,6 +422,8 @@ Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)
 <summary><code>POST</code> <b><code>openf1.token</code></b></summary>
 
 <code>POST https://api.openf1.org/token</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://openf1.org/auth.html)
 
@@ -408,6 +444,8 @@ Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)
 <summary><code>GET</code> <b><code>openf1.v1.weather</code></b></summary>
 
 <code>GET https://api.openf1.org/v1/weather{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://openf1.org/docs/#weather)
 

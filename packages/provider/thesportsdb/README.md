@@ -172,6 +172,8 @@ const highlights = await thesportsdb.v2.lookup.eventHighlights({
 
 <code>GET https://www.thesportsdb.com/api/v2/json/all/countries</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-all)
 
 ```typescript
@@ -187,6 +189,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v2/json/all/leagues</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-all)
 
 ```typescript
@@ -201,6 +205,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 <summary><code>GET</code> <b><code>thesportsdb.v2.all.sports</code></b></summary>
 
 <code>GET https://www.thesportsdb.com/api/v2/json/all/sports</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-all)
 
@@ -219,6 +225,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/all_countries.php</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://thedatadb.readme.io/reference/getallcountries)
 
 ```typescript
@@ -235,6 +243,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 <summary><code>GET</code> <b><code>thesportsdb.v1.allLeagues</code></b></summary>
 
 <code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/all_leagues.php</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-list)
 
@@ -253,6 +263,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/all_sports.php</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://thedatadb.readme.io/reference/getallsports)
 
 ```typescript
@@ -269,6 +281,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 <summary><code>GET</code> <b><code>thesportsdb.v1.eventResults</code></b></summary>
 
 <code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/eventresults.php{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-lookup)
 
@@ -287,6 +301,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/eventsday.php{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-schedule)
 
 ```typescript
@@ -303,6 +319,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 <summary><code>GET</code> <b><code>thesportsdb.v1.eventshighlights</code></b></summary>
 
 <code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/eventshighlights.php{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-video)
 
@@ -321,6 +339,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/eventslast.php{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-schedule)
 
 ```typescript
@@ -337,6 +357,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 <summary><code>GET</code> <b><code>thesportsdb.v1.eventsnext</code></b></summary>
 
 <code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/eventsnext.php{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-schedule)
 
@@ -355,6 +377,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/eventsnextleague.php{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-schedule)
 
 ```typescript
@@ -371,6 +395,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 <summary><code>GET</code> <b><code>thesportsdb.v1.eventspastleague</code></b></summary>
 
 <code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/eventspastleague.php{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-schedule)
 
@@ -389,6 +415,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/eventsseason.php{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-schedule)
 
 ```typescript
@@ -405,6 +433,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 <summary><code>GET</code> <b><code>thesportsdb.v1.eventstv</code></b></summary>
 
 <code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/eventstv.php{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-schedule)
 
@@ -423,6 +453,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v2/json/filter/tv/channel/{channel}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-filter)
 
 ```typescript
@@ -437,6 +469,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 <summary><code>GET</code> <b><code>thesportsdb.v2.filter.tv.channelid</code></b></summary>
 
 <code>GET https://www.thesportsdb.com/api/v2/json/filter/tv/channelid/{idChannel}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-filter)
 
@@ -453,6 +487,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v2/json/filter/tv/country/{country}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-filter)
 
 ```typescript
@@ -468,6 +504,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v2/json/filter/tv/day/{date}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-filter)
 
 ```typescript
@@ -482,6 +520,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 <summary><code>GET</code> <b><code>thesportsdb.v2.filter.tv.sport</code></b></summary>
 
 <code>GET https://www.thesportsdb.com/api/v2/json/filter/tv/sport/{sport}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-filter)
 
@@ -500,6 +540,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v2/json/list/players/{idTeam}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-list)
 
 ```typescript
@@ -514,6 +556,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 <summary><code>GET</code> <b><code>thesportsdb.v2.list.seasonposters</code></b></summary>
 
 <code>GET https://www.thesportsdb.com/api/v2/json/list/seasonposters/{idLeague}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-list)
 
@@ -530,6 +574,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v2/json/list/seasons/{idLeague}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-list)
 
 ```typescript
@@ -544,6 +590,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 <summary><code>GET</code> <b><code>thesportsdb.v2.list.teams</code></b></summary>
 
 <code>GET https://www.thesportsdb.com/api/v2/json/list/teams/{idLeague}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-list)
 
@@ -562,6 +610,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v2/json/livescore/all</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-livescores)
 
 ```typescript
@@ -577,6 +627,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v2/json/livescore/{leagueId}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-livescores)
 
 ```typescript
@@ -591,6 +643,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 <summary><code>GET</code> <b><code>thesportsdb.v2.livescore.bySport</code></b></summary>
 
 <code>GET https://www.thesportsdb.com/api/v2/json/livescore/{sport}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-livescores)
 
@@ -609,6 +663,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v2/json/lookup/event/{idEvent}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
 
 ```typescript
@@ -623,6 +679,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 <summary><code>GET</code> <b><code>thesportsdb.v2.lookup.eventHighlights</code></b></summary>
 
 <code>GET https://www.thesportsdb.com/api/v2/json/lookup/event_highlights/{idEvent}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
 
@@ -639,6 +697,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v2/json/lookup/event_lineup/{idEvent}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
 
 ```typescript
@@ -653,6 +713,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 <summary><code>GET</code> <b><code>thesportsdb.v2.lookup.eventResults</code></b></summary>
 
 <code>GET https://www.thesportsdb.com/api/v2/json/lookup/event_results/{idEvent}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
 
@@ -669,6 +731,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v2/json/lookup/event_stats/{idEvent}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
 
 ```typescript
@@ -683,6 +747,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 <summary><code>GET</code> <b><code>thesportsdb.v2.lookup.eventTimeline</code></b></summary>
 
 <code>GET https://www.thesportsdb.com/api/v2/json/lookup/event_timeline/{idEvent}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
 
@@ -699,6 +765,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v2/json/lookup/event_tv/{idEvent}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
 
 ```typescript
@@ -713,6 +781,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 <summary><code>GET</code> <b><code>thesportsdb.v2.lookup.league</code></b></summary>
 
 <code>GET https://www.thesportsdb.com/api/v2/json/lookup/league/{idLeague}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
 
@@ -729,6 +799,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v2/json/lookup/player/{idPlayer}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
 
 ```typescript
@@ -743,6 +815,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 <summary><code>GET</code> <b><code>thesportsdb.v2.lookup.playerContracts</code></b></summary>
 
 <code>GET https://www.thesportsdb.com/api/v2/json/lookup/player_contracts/{idPlayer}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
 
@@ -759,6 +833,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v2/json/lookup/player_honours/{idPlayer}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
 
 ```typescript
@@ -773,6 +849,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 <summary><code>GET</code> <b><code>thesportsdb.v2.lookup.playerMilestones</code></b></summary>
 
 <code>GET https://www.thesportsdb.com/api/v2/json/lookup/player_milestones/{idPlayer}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
 
@@ -789,6 +867,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v2/json/lookup/player_results/{idPlayer}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
 
 ```typescript
@@ -803,6 +883,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 <summary><code>GET</code> <b><code>thesportsdb.v2.lookup.playerStats</code></b></summary>
 
 <code>GET https://www.thesportsdb.com/api/v2/json/lookup/player_stats/{idPlayer}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
 
@@ -819,6 +901,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v2/json/lookup/player_teams/{idPlayer}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
 
 ```typescript
@@ -833,6 +917,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 <summary><code>GET</code> <b><code>thesportsdb.v2.lookup.team</code></b></summary>
 
 <code>GET https://www.thesportsdb.com/api/v2/json/lookup/team/{idTeam}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
 
@@ -849,6 +935,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v2/json/lookup/team_equipment/{idTeam}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
 
 ```typescript
@@ -863,6 +951,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 <summary><code>GET</code> <b><code>thesportsdb.v2.lookup.venue</code></b></summary>
 
 <code>GET https://www.thesportsdb.com/api/v2/json/lookup/venue/{idVenue}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
 
@@ -879,6 +969,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupequipment.php{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide)
 
 ```typescript
@@ -893,6 +985,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 <summary><code>GET</code> <b><code>thesportsdb.v1.lookup.league</code></b></summary>
 
 <code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupleague.php{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide)
 
@@ -909,6 +1003,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookuptable.php{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide)
 
 ```typescript
@@ -924,6 +1020,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupteam.php{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide)
 
 ```typescript
@@ -938,6 +1036,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 <summary><code>GET</code> <b><code>thesportsdb.v1.lookup.venue</code></b></summary>
 
 <code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupvenue.php{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide)
 
@@ -956,6 +1056,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookup_all_players.php{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-list)
 
 ```typescript
@@ -972,6 +1074,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 <summary><code>GET</code> <b><code>thesportsdb.v1.lookupcontracts</code></b></summary>
 
 <code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupcontracts.php?id={idPlayer}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://thedatadb.readme.io/reference/getcontractsbyplayerid)
 
@@ -990,6 +1094,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupevent.php{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-lookup)
 
 ```typescript
@@ -1006,6 +1112,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 <summary><code>GET</code> <b><code>thesportsdb.v1.lookupEventStats</code></b></summary>
 
 <code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupeventstats.php{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-lookup)
 
@@ -1024,6 +1132,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupformerteams.php?id={idPlayer}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://thedatadb.readme.io/reference/getformerteamsbyplayerid)
 
 ```typescript
@@ -1040,6 +1150,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 <summary><code>GET</code> <b><code>thesportsdb.v1.lookuphonours</code></b></summary>
 
 <code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookuphonours.php?id={idPlayer}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://thedatadb.readme.io/reference/gethonourbyid)
 
@@ -1058,6 +1170,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookuplineup.php{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-lookup)
 
 ```typescript
@@ -1074,6 +1188,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 <summary><code>GET</code> <b><code>thesportsdb.v1.lookupmilestones</code></b></summary>
 
 <code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupmilestones.php?id={idPlayer}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://thedatadb.readme.io/reference/getmilestonesbyplayerid)
 
@@ -1092,6 +1208,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupplayer.php?id={idPlayer}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://thedatadb.readme.io/reference/getplayerbyid)
 
 ```typescript
@@ -1108,6 +1226,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 <summary><code>GET</code> <b><code>thesportsdb.v1.lookupplayerstats</code></b></summary>
 
 <code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupplayerstats.php?id={idPlayer}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide)
 
@@ -1126,6 +1246,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookuptimeline.php{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-lookup)
 
 ```typescript
@@ -1142,6 +1264,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 <summary><code>GET</code> <b><code>thesportsdb.v1.lookupTv</code></b></summary>
 
 <code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookuptv.php{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-lookup)
 
@@ -1160,6 +1284,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/playerresults.php?id={idPlayer}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide)
 
 ```typescript
@@ -1177,6 +1303,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v2/json/schedule/full/team/{idTeam}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-schedule)
 
 ```typescript
@@ -1191,6 +1319,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 <summary><code>GET</code> <b><code>thesportsdb.v2.schedule.league</code></b></summary>
 
 <code>GET https://www.thesportsdb.com/api/v2/json/schedule/league/{idLeague}/{season}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-schedule)
 
@@ -1207,6 +1337,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v2/json/schedule/next/league/{idLeague}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-schedule)
 
 ```typescript
@@ -1221,6 +1353,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 <summary><code>GET</code> <b><code>thesportsdb.v2.schedule.next.team</code></b></summary>
 
 <code>GET https://www.thesportsdb.com/api/v2/json/schedule/next/team/{idTeam}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-schedule)
 
@@ -1237,6 +1371,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v2/json/schedule/next/venue/{idVenue}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-schedule)
 
 ```typescript
@@ -1251,6 +1387,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 <summary><code>GET</code> <b><code>thesportsdb.v2.schedule.previous.league</code></b></summary>
 
 <code>GET https://www.thesportsdb.com/api/v2/json/schedule/previous/league/{idLeague}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-schedule)
 
@@ -1267,6 +1405,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v2/json/schedule/previous/team/{idTeam}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-schedule)
 
 ```typescript
@@ -1281,6 +1421,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 <summary><code>GET</code> <b><code>thesportsdb.v2.schedule.previous.venue</code></b></summary>
 
 <code>GET https://www.thesportsdb.com/api/v2/json/schedule/previous/venue/{idVenue}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-schedule)
 
@@ -1299,6 +1441,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v2/json/search/event/{eventName}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-search)
 
 ```typescript
@@ -1313,6 +1457,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 <summary><code>GET</code> <b><code>thesportsdb.v2.search.league</code></b></summary>
 
 <code>GET https://www.thesportsdb.com/api/v2/json/search/league/{leagueName}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-search)
 
@@ -1329,6 +1475,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v2/json/search/player/{playerName}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-search)
 
 ```typescript
@@ -1344,6 +1492,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v2/json/search/team/{teamName}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-search)
 
 ```typescript
@@ -1358,6 +1508,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 <summary><code>GET</code> <b><code>thesportsdb.v2.search.venue</code></b></summary>
 
 <code>GET https://www.thesportsdb.com/api/v2/json/search/venue/{venueName}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-search)
 
@@ -1376,6 +1528,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/search_all_leagues.php{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-list)
 
 ```typescript
@@ -1392,6 +1546,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 <summary><code>GET</code> <b><code>thesportsdb.v1.searchAllSeasons</code></b></summary>
 
 <code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/search_all_seasons.php{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-list)
 
@@ -1410,6 +1566,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/search_all_teams.php{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-list)
 
 ```typescript
@@ -1426,6 +1584,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 <summary><code>GET</code> <b><code>thesportsdb.v1.searchEvents</code></b></summary>
 
 <code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/searchevents.php{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-search)
 
@@ -1444,6 +1604,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/searchfilename.php{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-search)
 
 ```typescript
@@ -1460,6 +1622,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 <summary><code>GET</code> <b><code>thesportsdb.v1.searchPlayers</code></b></summary>
 
 <code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/searchplayers.php{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://thedatadb.readme.io/reference/getplayerbyname)
 
@@ -1478,6 +1642,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 <code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/searchteams.php{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://thedatadb.readme.io/reference/getteambyname)
 
 ```typescript
@@ -1494,6 +1660,8 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 <summary><code>GET</code> <b><code>thesportsdb.v1.searchVenues</code></b></summary>
 
 <code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/searchvenues.php{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://thedatadb.readme.io/reference/getvenuebyname)
 

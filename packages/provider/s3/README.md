@@ -43,6 +43,8 @@ const s3 = createS3({
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateBucket.html)
 
 ```typescript
@@ -57,6 +59,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>POST</code> <b><code>s3.buckets.createMetadataConfiguration</code></b></summary>
 
 <code>POST https://s3.us-east-1.amazonaws.com/{bucket}?metadataConfiguration</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateBucketMetadataConfiguration.html)
 
@@ -73,6 +77,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>POST https://s3.us-east-1.amazonaws.com/{bucket}?metadataTable</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateBucketMetadataTableConfiguration.html)
 
 ```typescript
@@ -87,6 +93,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>GET</code> <b><code>s3.buckets.createSession</code></b></summary>
 
 <code>GET https://s3express-{param}.{param}.amazonaws.com/{bucket}?session</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateSession.html)
 
@@ -103,6 +111,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>DELETE https://s3.us-east-1.amazonaws.com/{bucket}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucket.html)
 
 ```typescript
@@ -117,6 +127,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>DELETE</code> <b><code>s3.buckets.delAnalytics</code></b></summary>
 
 <code>DELETE https://s3.us-east-1.amazonaws.com/{bucket}?analytics{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketAnalyticsConfiguration.html)
 
@@ -133,6 +145,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>DELETE https://s3.us-east-1.amazonaws.com/{bucket}?cors</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketCors.html)
 
 ```typescript
@@ -147,6 +161,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>DELETE</code> <b><code>s3.buckets.delEncryption</code></b></summary>
 
 <code>DELETE https://s3.us-east-1.amazonaws.com/{bucket}?encryption</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketEncryption.html)
 
@@ -163,6 +179,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>DELETE https://s3.us-east-1.amazonaws.com/{bucket}?intelligent-tiering{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketIntelligentTieringConfiguration.html)
 
 ```typescript
@@ -177,6 +195,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>DELETE</code> <b><code>s3.buckets.delInventory</code></b></summary>
 
 <code>DELETE https://s3.us-east-1.amazonaws.com/{bucket}?inventory{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketInventoryConfiguration.html)
 
@@ -193,6 +213,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>DELETE https://s3.us-east-1.amazonaws.com/{bucket}?lifecycle</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketLifecycle.html)
 
 ```typescript
@@ -207,6 +229,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>DELETE</code> <b><code>s3.buckets.delMetadataConfiguration</code></b></summary>
 
 <code>DELETE https://s3.us-east-1.amazonaws.com/{bucket}?metadataConfiguration</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketMetadataConfiguration.html)
 
@@ -223,6 +247,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>DELETE https://s3.us-east-1.amazonaws.com/{bucket}?metadataTable</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketMetadataTableConfiguration.html)
 
 ```typescript
@@ -237,6 +263,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>DELETE</code> <b><code>s3.buckets.delMetrics</code></b></summary>
 
 <code>DELETE https://s3.us-east-1.amazonaws.com/{bucket}?metrics{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketMetricsConfiguration.html)
 
@@ -253,6 +281,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>DELETE https://s3.us-east-1.amazonaws.com/{bucket}?ownershipControls</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketOwnershipControls.html)
 
 ```typescript
@@ -267,6 +297,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>DELETE</code> <b><code>s3.buckets.delPolicy</code></b></summary>
 
 <code>DELETE https://s3.us-east-1.amazonaws.com/{bucket}?policy</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketPolicy.html)
 
@@ -283,6 +315,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>DELETE https://s3.us-east-1.amazonaws.com/{bucket}?publicAccessBlock</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeletePublicAccessBlock.html)
 
 ```typescript
@@ -297,6 +331,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>DELETE</code> <b><code>s3.buckets.delReplication</code></b></summary>
 
 <code>DELETE https://s3.us-east-1.amazonaws.com/{bucket}?replication</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketReplication.html)
 
@@ -313,6 +349,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>DELETE https://s3.us-east-1.amazonaws.com/{bucket}?tagging</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketTagging.html)
 
 ```typescript
@@ -327,6 +365,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>DELETE</code> <b><code>s3.buckets.delWebsite</code></b></summary>
 
 <code>DELETE https://s3.us-east-1.amazonaws.com/{bucket}?website</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketWebsite.html)
 
@@ -343,6 +383,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}?abac</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketAbac.html)
 
 ```typescript
@@ -357,6 +399,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>GET</code> <b><code>s3.buckets.getAccelerateConfiguration</code></b></summary>
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}?accelerate</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketAccelerateConfiguration.html)
 
@@ -373,6 +417,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}?acl</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketAcl.html)
 
 ```typescript
@@ -387,6 +433,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>GET</code> <b><code>s3.buckets.getAnalytics</code></b></summary>
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}?analytics{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketAnalyticsConfiguration.html)
 
@@ -403,6 +451,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}?cors</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketCors.html)
 
 ```typescript
@@ -417,6 +467,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>GET</code> <b><code>s3.buckets.getEncryption</code></b></summary>
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}?encryption</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketEncryption.html)
 
@@ -433,6 +485,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}?intelligent-tiering{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketIntelligentTieringConfiguration.html)
 
 ```typescript
@@ -447,6 +501,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>GET</code> <b><code>s3.buckets.getInventory</code></b></summary>
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}?inventory{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketInventoryConfiguration.html)
 
@@ -463,6 +519,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}?lifecycle</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketLifecycleConfiguration.html)
 
 ```typescript
@@ -477,6 +535,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>GET</code> <b><code>s3.buckets.getLifecycleLegacy</code></b></summary>
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}?lifecycle</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketLifecycle.html)
 
@@ -493,6 +553,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}?logging</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketLogging.html)
 
 ```typescript
@@ -507,6 +569,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>GET</code> <b><code>s3.buckets.getMetadataConfiguration</code></b></summary>
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}?metadataConfiguration</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketMetadataConfiguration.html)
 
@@ -523,6 +587,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}?metadataTable</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketMetadataTableConfiguration.html)
 
 ```typescript
@@ -537,6 +603,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>GET</code> <b><code>s3.buckets.getMetrics</code></b></summary>
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}?metrics{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketMetricsConfiguration.html)
 
@@ -553,6 +621,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}?notification</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketNotificationConfiguration.html)
 
 ```typescript
@@ -567,6 +637,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>GET</code> <b><code>s3.buckets.getNotificationLegacy</code></b></summary>
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}?notification</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketNotification.html)
 
@@ -583,6 +655,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}?object-lock</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectLockConfiguration.html)
 
 ```typescript
@@ -597,6 +671,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>GET</code> <b><code>s3.buckets.getOwnershipControls</code></b></summary>
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}?ownershipControls</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketOwnershipControls.html)
 
@@ -613,6 +689,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}?policy</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketPolicy.html)
 
 ```typescript
@@ -627,6 +705,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>GET</code> <b><code>s3.buckets.getPolicyStatus</code></b></summary>
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}?policyStatus</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketPolicyStatus.html)
 
@@ -643,6 +723,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}?publicAccessBlock</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetPublicAccessBlock.html)
 
 ```typescript
@@ -657,6 +739,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>GET</code> <b><code>s3.buckets.getReplication</code></b></summary>
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}?replication</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketReplication.html)
 
@@ -673,6 +757,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}?requestPayment</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketRequestPayment.html)
 
 ```typescript
@@ -687,6 +773,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>GET</code> <b><code>s3.buckets.getTagging</code></b></summary>
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}?tagging</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketTagging.html)
 
@@ -703,6 +791,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}?versioning</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketVersioning.html)
 
 ```typescript
@@ -717,6 +807,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>GET</code> <b><code>s3.buckets.getWebsite</code></b></summary>
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}?website</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketWebsite.html)
 
@@ -733,6 +825,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>HEAD https://s3.us-east-1.amazonaws.com/{bucket}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_HeadBucket.html)
 
 ```typescript
@@ -747,6 +841,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>GET</code> <b><code>s3.buckets.list</code></b></summary>
 
 <code>GET https://s3.us-east-1.amazonaws.com/</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListBuckets.html)
 
@@ -763,6 +859,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}?analytics{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListBucketAnalyticsConfigurations.html)
 
 ```typescript
@@ -777,6 +875,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>GET</code> <b><code>s3.buckets.listDirectory</code></b></summary>
 
 <code>GET https://s3express-control.{param}.amazonaws.com/{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListDirectoryBuckets.html)
 
@@ -793,6 +893,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}?intelligent-tiering{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListBucketIntelligentTieringConfigurations.html)
 
 ```typescript
@@ -807,6 +909,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>GET</code> <b><code>s3.buckets.listInventory</code></b></summary>
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}?inventory{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListBucketInventoryConfigurations.html)
 
@@ -823,6 +927,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}?metrics{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListBucketMetricsConfigurations.html)
 
 ```typescript
@@ -837,6 +943,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>GET</code> <b><code>s3.buckets.location</code></b></summary>
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}?location</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketLocation.html)
 
@@ -853,6 +961,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?abac</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketAbac.html)
 
 ```typescript
@@ -867,6 +977,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>PUT</code> <b><code>s3.buckets.putAccelerateConfiguration</code></b></summary>
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?accelerate</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketAccelerateConfiguration.html)
 
@@ -883,6 +995,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?acl</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketAcl.html)
 
 ```typescript
@@ -897,6 +1011,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>PUT</code> <b><code>s3.buckets.putAnalytics</code></b></summary>
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?analytics{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketAnalyticsConfiguration.html)
 
@@ -913,6 +1029,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?cors</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketCors.html)
 
 ```typescript
@@ -927,6 +1045,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>PUT</code> <b><code>s3.buckets.putEncryption</code></b></summary>
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?encryption</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketEncryption.html)
 
@@ -943,6 +1063,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?intelligent-tiering{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketIntelligentTieringConfiguration.html)
 
 ```typescript
@@ -957,6 +1079,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>PUT</code> <b><code>s3.buckets.putInventory</code></b></summary>
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?inventory{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketInventoryConfiguration.html)
 
@@ -973,6 +1097,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?lifecycle</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketLifecycleConfiguration.html)
 
 ```typescript
@@ -987,6 +1113,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>PUT</code> <b><code>s3.buckets.putLifecycleLegacy</code></b></summary>
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?lifecycle</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketLifecycle.html)
 
@@ -1003,6 +1131,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?logging</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketLogging.html)
 
 ```typescript
@@ -1017,6 +1147,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>PUT</code> <b><code>s3.buckets.putMetrics</code></b></summary>
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?metrics{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketMetricsConfiguration.html)
 
@@ -1033,6 +1165,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?notification</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketNotificationConfiguration.html)
 
 ```typescript
@@ -1047,6 +1181,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>PUT</code> <b><code>s3.buckets.putNotificationLegacy</code></b></summary>
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?notification</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketNotification.html)
 
@@ -1063,6 +1199,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?object-lock</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObjectLockConfiguration.html)
 
 ```typescript
@@ -1077,6 +1215,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>PUT</code> <b><code>s3.buckets.putOwnershipControls</code></b></summary>
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?ownershipControls</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketOwnershipControls.html)
 
@@ -1093,6 +1233,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?policy</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketPolicy.html)
 
 ```typescript
@@ -1107,6 +1249,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>PUT</code> <b><code>s3.buckets.putPublicAccessBlock</code></b></summary>
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?publicAccessBlock</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutPublicAccessBlock.html)
 
@@ -1123,6 +1267,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?replication</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketReplication.html)
 
 ```typescript
@@ -1137,6 +1283,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>PUT</code> <b><code>s3.buckets.putRequestPayment</code></b></summary>
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?requestPayment</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketRequestPayment.html)
 
@@ -1153,6 +1301,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?tagging</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketTagging.html)
 
 ```typescript
@@ -1167,6 +1317,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>PUT</code> <b><code>s3.buckets.putVersioning</code></b></summary>
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?versioning</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketVersioning.html)
 
@@ -1183,6 +1335,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?website</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketWebsite.html)
 
 ```typescript
@@ -1198,6 +1352,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?metadataInventoryTable</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_UpdateBucketMetadataInventoryTableConfiguration.html)
 
 ```typescript
@@ -1212,6 +1368,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>PUT</code> <b><code>s3.buckets.updateMetadataJournalTable</code></b></summary>
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?metadataJournalTable</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_UpdateBucketMetadataJournalTableConfiguration.html)
 
@@ -1230,6 +1388,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>POST https://{param}.s3-object-lambda.{param}.amazonaws.com/WriteGetObjectResponse</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_WriteGetObjectResponse.html)
 
 ```typescript
@@ -1247,6 +1407,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>DELETE https://s3.us-east-1.amazonaws.com/{bucket}/{key}{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_AbortMultipartUpload.html)
 
 ```typescript
@@ -1261,6 +1423,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>POST</code> <b><code>s3.objects.completeMultipartUpload</code></b></summary>
 
 <code>POST https://s3.us-east-1.amazonaws.com/{bucket}/{key}{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_CompleteMultipartUpload.html)
 
@@ -1277,6 +1441,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}/{key}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_CopyObject.html)
 
 ```typescript
@@ -1291,6 +1457,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>POST</code> <b><code>s3.objects.createMultipartUpload</code></b></summary>
 
 <code>POST https://s3.us-east-1.amazonaws.com/{bucket}/{key}?uploads</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateMultipartUpload.html)
 
@@ -1307,6 +1475,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>DELETE https://s3.us-east-1.amazonaws.com/{bucket}/{key}{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteObject.html)
 
 ```typescript
@@ -1321,6 +1491,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>POST</code> <b><code>s3.objects.delMany</code></b></summary>
 
 <code>POST https://s3.us-east-1.amazonaws.com/{bucket}?delete</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteObjects.html)
 
@@ -1337,6 +1509,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>DELETE https://s3.us-east-1.amazonaws.com/{bucket}/{key}?tagging{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteObjectTagging.html)
 
 ```typescript
@@ -1351,6 +1525,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>GET</code> <b><code>s3.objects.get</code></b></summary>
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}/{key}{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObject.html)
 
@@ -1367,6 +1543,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}/{key}?acl{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectAcl.html)
 
 ```typescript
@@ -1381,6 +1559,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>GET</code> <b><code>s3.objects.getAttributes</code></b></summary>
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}/{key}?attributes{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectAttributes.html)
 
@@ -1397,6 +1577,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}/{key}?legal-hold{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectLegalHold.html)
 
 ```typescript
@@ -1411,6 +1593,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>GET</code> <b><code>s3.objects.getRetention</code></b></summary>
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}/{key}?retention{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectRetention.html)
 
@@ -1427,6 +1611,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}/{key}{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObject.html)
 
 ```typescript
@@ -1441,6 +1627,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>GET</code> <b><code>s3.objects.getTagging</code></b></summary>
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}/{key}?tagging{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectTagging.html)
 
@@ -1457,6 +1645,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}/{key}?torrent{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectTorrent.html)
 
 ```typescript
@@ -1471,6 +1661,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>HEAD</code> <b><code>s3.objects.head</code></b></summary>
 
 <code>HEAD https://s3.us-east-1.amazonaws.com/{bucket}/{key}{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_HeadObject.html)
 
@@ -1487,6 +1679,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}?list-type=2{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjectsV2.html)
 
 ```typescript
@@ -1501,6 +1695,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>GET</code> <b><code>s3.objects.listLegacy</code></b></summary>
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjects.html)
 
@@ -1517,6 +1713,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}?uploads{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListMultipartUploads.html)
 
 ```typescript
@@ -1531,6 +1729,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>GET</code> <b><code>s3.objects.listParts</code></b></summary>
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}/{key}{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListParts.html)
 
@@ -1547,6 +1747,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}?versions{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjectVersions.html)
 
 ```typescript
@@ -1561,6 +1763,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>PUT</code> <b><code>s3.objects.put</code></b></summary>
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}/{key}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObject.html)
 
@@ -1577,6 +1781,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}/{key}?acl{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObjectAcl.html)
 
 ```typescript
@@ -1591,6 +1797,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>PUT</code> <b><code>s3.objects.putLegalHold</code></b></summary>
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}/{key}?legal-hold{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObjectLegalHold.html)
 
@@ -1607,6 +1815,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}/{key}?retention{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObjectRetention.html)
 
 ```typescript
@@ -1621,6 +1831,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>PUT</code> <b><code>s3.objects.putTagging</code></b></summary>
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}/{key}?tagging{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObjectTagging.html)
 
@@ -1637,6 +1849,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>PUT https://s3express-{param}.{param}.amazonaws.com/{bucket}/{key}?renameObject</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_RenameObject.html)
 
 ```typescript
@@ -1651,6 +1865,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>POST</code> <b><code>s3.objects.restore</code></b></summary>
 
 <code>POST https://s3.us-east-1.amazonaws.com/{bucket}/{key}?restore{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_RestoreObject.html)
 
@@ -1667,6 +1883,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>POST https://s3.us-east-1.amazonaws.com/{bucket}/{key}?select&select-type=2</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_SelectObjectContent.html)
 
 ```typescript
@@ -1681,6 +1899,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>PUT</code> <b><code>s3.objects.updateEncryption</code></b></summary>
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}/{key}?encryption{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_UpdateObjectEncryption.html)
 
@@ -1697,6 +1917,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}/{key}{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPart.html)
 
 ```typescript
@@ -1711,6 +1933,8 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 <summary><code>PUT</code> <b><code>s3.objects.uploadPartCopy</code></b></summary>
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}/{key}{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPartCopy.html)
 

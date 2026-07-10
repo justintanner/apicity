@@ -37,6 +37,8 @@ const dolthub = createDoltHub({ apiKey: process.env.DOLTHUB_API_KEY! });
 
 <code>POST https://www.dolthub.com/api/v1alpha1/{owner}/{database}/branches</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.dolthub.com/docs/products/dolthub/api/database)
 
 ```typescript
@@ -51,6 +53,8 @@ Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)
 <summary><code>GET</code> <b><code>dolthub.v1alpha1.branches.list</code></b></summary>
 
 <code>GET https://www.dolthub.com/api/v1alpha1/{owner}/{database}/branches</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.dolthub.com/docs/products/dolthub/api/database)
 
@@ -67,6 +71,8 @@ Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)
 
 <code>POST https://www.dolthub.com/api/v1alpha1/database</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.dolthub.com/docs/products/dolthub/api/database)
 
 ```typescript
@@ -81,6 +87,8 @@ Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)
 <summary><code>POST</code> <b><code>dolthub.v1alpha1.pulls.create</code></b></summary>
 
 <code>POST https://www.dolthub.com/api/v1alpha1/{owner}/{database}/pulls</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.dolthub.com/docs/products/dolthub/api/database)
 
@@ -97,6 +105,8 @@ Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)
 
 <code>GET https://www.dolthub.com/api/v1alpha1/{owner}/{database}/pulls/{pullId}</code>
 
+Cost tier: <code>cheap</code>
+
 ```typescript
 const res = await dolthub.v1alpha1.pulls({ /* ... */ });
 ```
@@ -109,6 +119,8 @@ Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)
 <summary><code>GET</code> <b><code>dolthub.v1alpha1.pulls.list</code></b></summary>
 
 <code>GET https://www.dolthub.com/api/v1alpha1/{owner}/{database}/pulls{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.dolthub.com/docs/products/dolthub/api/database)
 
@@ -125,6 +137,8 @@ Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)
 
 <code>POST https://www.dolthub.com/api/v1alpha1/{owner}/{database}/pulls/{pullId}/merge</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.dolthub.com/docs/products/dolthub/api/database)
 
 ```typescript
@@ -139,6 +153,8 @@ Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)
 <summary><code>GET</code> <b><code>dolthub.v1alpha1.sql.read</code></b></summary>
 
 <code>GET https://www.dolthub.com/api/v1alpha1/{owner}/{database}{refPath}{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.dolthub.com/docs/products/dolthub/api/sql)
 
@@ -155,6 +171,8 @@ Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)
 
 <code>POST https://www.dolthub.com/api/v1alpha1/{owner}/{database}/write/{fromBranch}/{toBranch}{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.dolthub.com/docs/products/dolthub/api/sql)
 
 ```typescript
@@ -170,6 +188,8 @@ Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)
 
 <code>GET https://www.dolthub.com/api/v1alpha1/{owner}/{database}/write{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://www.dolthub.com/docs/products/dolthub/api/sql)
 
 ```typescript
@@ -184,6 +204,8 @@ Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)
 <summary><code>GET</code> <b><code>dolthub.v1alpha1.user</code></b></summary>
 
 <code>GET https://www.dolthub.com/api/v1alpha1/user</code>
+
+Cost tier: <code>cheap</code>
 
 ```typescript
 const res = await dolthub.v1alpha1.user({ /* ... */ });

@@ -300,6 +300,8 @@ console.log(post.id);
 
 <code>GET https://graph.instagram.com/v25.0/{containerId}{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.facebook.com/docs/instagram-platform/reference/ig-container/)
 
 ```typescript
@@ -317,6 +319,8 @@ Source: [`packages/provider/meta/src/meta.ts`](src/meta.ts)
 
 <code>POST https://graph.instagram.com/v25.0/{igUserId}/media</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.facebook.com/docs/instagram-platform/instagram-graph-api/reference/ig-user/media/)
 
 ```typescript
@@ -333,6 +337,8 @@ Source: [`packages/provider/meta/src/meta.ts`](src/meta.ts)
 <summary><code>POST</code> <b><code>meta.v25.mediaPublish</code></b></summary>
 
 <code>POST https://graph.instagram.com/v25.0/{igUserId}/media_publish</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.facebook.com/docs/instagram-platform/instagram-graph-api/reference/ig-user/media_publish/)
 

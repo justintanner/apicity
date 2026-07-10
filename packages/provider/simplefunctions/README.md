@@ -122,6 +122,8 @@ a local API key.
 
 <code>GET https://simplefunctions.dev/api/agent/feed/{topic}{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/agent)
 
 ```typescript
@@ -136,6 +138,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.agent.inspect</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/agent/inspect/{ticker}{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/agent)
 
@@ -152,6 +156,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/agent/world{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/world-state)
 
 ```typescript
@@ -166,6 +172,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.agent.world.delta</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/agent/world/delta{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/world-state)
 
@@ -182,6 +190,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/agent/world/feed</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/world-state)
 
 ```typescript
@@ -196,6 +206,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.agent.world.path</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/agent/world/{path}{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/world-state)
 
@@ -214,6 +226,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/alert-deliveries{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/watch-alerts)
 
 ```typescript
@@ -231,6 +245,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/alert-rules{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/watch-alerts)
 
 ```typescript
@@ -245,6 +261,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>POST</code> <b><code>simplefunctions.api.alertRules.create</code></b></summary>
 
 <code>POST https://simplefunctions.dev/api/alert-rules</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/watch-alerts)
 
@@ -261,6 +279,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>DELETE https://simplefunctions.dev/api/alert-rules/{id}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/watch-alerts)
 
 ```typescript
@@ -275,6 +295,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.alertRules.retrieve</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/alert-rules/{id}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/watch-alerts)
 
@@ -291,6 +313,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>POST https://simplefunctions.dev/api/alert-rules/{id}/test</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/watch-alerts)
 
 ```typescript
@@ -305,6 +329,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>PATCH</code> <b><code>simplefunctions.api.alertRules.update</code></b></summary>
 
 <code>PATCH https://simplefunctions.dev/api/alert-rules/{id}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/watch-alerts)
 
@@ -323,6 +349,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>POST https://simplefunctions.dev/api/auth/cli</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/keys)
 
 ```typescript
@@ -338,6 +366,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>POST https://simplefunctions.dev/api/auth/cli/complete</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/keys)
 
 ```typescript
@@ -352,6 +382,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.auth.cli.poll</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/auth/cli/poll{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/keys)
 
@@ -370,6 +402,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/calibration{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/index-regime)
 
 ```typescript
@@ -386,6 +420,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.changes</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/changes{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/reference/daily-data)
 
@@ -404,6 +440,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/contracts/tools</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/contract-tools)
 
 ```typescript
@@ -420,6 +458,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.dashboard.usage</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/dashboard/usage{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/account)
 
@@ -438,6 +478,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>POST https://simplefunctions.dev/api/dashboard2/market-watch/panels</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/market-watch)
 
 ```typescript
@@ -452,6 +494,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>DELETE</code> <b><code>simplefunctions.api.dashboard2.marketWatch.panels</code></b></summary>
 
 <code>DELETE https://simplefunctions.dev/api/dashboard2/market-watch/panels/{id}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/market-watch)
 
@@ -468,6 +512,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>POST https://simplefunctions.dev/api/dashboard2/market-watch/panels/reorder</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/market-watch)
 
 ```typescript
@@ -482,6 +528,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>POST</code> <b><code>simplefunctions.api.dashboard2.marketWatch.panels</code></b></summary>
 
 <code>POST https://simplefunctions.dev/api/dashboard2/market-watch/panels/{id}/run</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/market-watch)
 
@@ -498,6 +546,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>PATCH https://simplefunctions.dev/api/dashboard2/market-watch/panels/{id}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/market-watch)
 
 ```typescript
@@ -512,6 +562,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.dashboard2.marketWatchV2</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/dashboard2/market-watch-v2{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/market-watch)
 
@@ -529,6 +581,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.data.v1.candles</code></b></summary>
 
 <code>GET https://data.simplefunctions.dev/v1/candles/{ticker}{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/reference/realtime-data)
 
@@ -548,6 +602,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://data.simplefunctions.dev/v1/heartbeat</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/reference/realtime-data)
 
 ```typescript
@@ -562,6 +618,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.data.v1.markets</code></b></summary>
 
 <code>GET https://data.simplefunctions.dev/v1/markets{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/reference/realtime-data)
 
@@ -581,6 +639,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://data.simplefunctions.dev/v1/markets/featured{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/reference/realtime-data)
 
 ```typescript
@@ -596,6 +656,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://data.simplefunctions.dev/v1/markets/{ticker}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/reference/realtime-data)
 
 ```typescript
@@ -610,6 +672,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.data.v1.movers</code></b></summary>
 
 <code>GET https://data.simplefunctions.dev/v1/movers{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/reference/realtime-data)
 
@@ -631,6 +695,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://data.simplefunctions.dev/v1/orderbook/{ticker}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/reference/realtime-data)
 
 ```typescript
@@ -645,6 +711,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.data.v1.search</code></b></summary>
 
 <code>GET https://data.simplefunctions.dev/v1/search{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/reference/realtime-data)
 
@@ -665,6 +733,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://data.simplefunctions.dev/v1/snapshot</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/reference/realtime-data)
 
 ```typescript
@@ -679,6 +749,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.data.v1.trades</code></b></summary>
 
 <code>GET https://data.simplefunctions.dev/v1/trades/{ticker}{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/reference/realtime-data)
 
@@ -697,6 +769,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/edges{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/index-regime)
 
 ```typescript
@@ -713,6 +787,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.feed</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/feed{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/account)
 
@@ -731,6 +807,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/intents{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/execution-intents)
 
 ```typescript
@@ -745,6 +823,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>POST</code> <b><code>simplefunctions.api.intents.create</code></b></summary>
 
 <code>POST https://simplefunctions.dev/api/intents</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/execution-intents)
 
@@ -761,6 +841,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>DELETE https://simplefunctions.dev/api/intents/{id}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/execution-intents)
 
 ```typescript
@@ -776,6 +858,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/intents/{id}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/execution-intents)
 
 ```typescript
@@ -790,6 +874,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>PATCH</code> <b><code>simplefunctions.api.intents.update</code></b></summary>
 
 <code>PATCH https://simplefunctions.dev/api/intents/{id}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/execution-intents)
 
@@ -808,6 +894,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/keys{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/keys)
 
 ```typescript
@@ -823,6 +911,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>POST https://simplefunctions.dev/api/keys</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/keys)
 
 ```typescript
@@ -837,6 +927,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>DELETE</code> <b><code>simplefunctions.api.keys</code></b></summary>
 
 <code>DELETE https://simplefunctions.dev/api/keys/{id}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/keys)
 
@@ -855,6 +947,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/mcp/{transport}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/tools)
 
 ```typescript
@@ -869,6 +963,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>POST</code> <b><code>simplefunctions.api.mcp.call</code></b></summary>
 
 <code>POST https://simplefunctions.dev/api/mcp/{transport}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/tools)
 
@@ -887,6 +983,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/portfolio/activity{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
 ```typescript
@@ -901,6 +999,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.portfolio.attribution.daily</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/portfolio/attribution/daily{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
@@ -917,6 +1017,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/portfolio/attribution/grouped{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
 ```typescript
@@ -931,6 +1033,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.portfolio.config</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/portfolio/config</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
@@ -947,6 +1051,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>PUT https://simplefunctions.dev/api/portfolio/config{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
 ```typescript
@@ -961,6 +1067,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.portfolio.fills</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/portfolio/fills{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
@@ -977,6 +1085,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/portfolio/ledger{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
 ```typescript
@@ -991,6 +1101,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>POST</code> <b><code>simplefunctions.api.portfolio.ledger.import.kalshi</code></b></summary>
 
 <code>POST https://simplefunctions.dev/api/portfolio/ledger/import/kalshi{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
@@ -1007,6 +1119,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>POST https://simplefunctions.dev/api/portfolio/ledger/import/kalshi/pull{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
 ```typescript
@@ -1021,6 +1135,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>POST</code> <b><code>simplefunctions.api.portfolio.ledger.import.polymarket</code></b></summary>
 
 <code>POST https://simplefunctions.dev/api/portfolio/ledger/import/polymarket{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
@@ -1037,6 +1153,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/portfolio/positions{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
 ```typescript
@@ -1051,6 +1169,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.portfolio.risk</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/portfolio/risk{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
@@ -1067,6 +1187,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>POST https://simplefunctions.dev/api/portfolio/secrets{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
 ```typescript
@@ -1081,6 +1203,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>DELETE</code> <b><code>simplefunctions.api.portfolio.secrets</code></b></summary>
 
 <code>DELETE https://simplefunctions.dev/api/portfolio/secrets{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
@@ -1097,6 +1221,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/portfolio/state</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
 ```typescript
@@ -1111,6 +1237,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>PUT</code> <b><code>simplefunctions.api.portfolio.state.update</code></b></summary>
 
 <code>PUT https://simplefunctions.dev/api/portfolio/state{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
@@ -1127,6 +1255,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/portfolio/strategy{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
 ```typescript
@@ -1141,6 +1271,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>POST</code> <b><code>simplefunctions.api.portfolio.strategy.create</code></b></summary>
 
 <code>POST https://simplefunctions.dev/api/portfolio/strategy{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
@@ -1157,6 +1289,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>DELETE https://simplefunctions.dev/api/portfolio/strategy{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
 ```typescript
@@ -1171,6 +1305,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>PUT</code> <b><code>simplefunctions.api.portfolio.strategy.update</code></b></summary>
 
 <code>PUT https://simplefunctions.dev/api/portfolio/strategy{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
@@ -1187,6 +1323,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/portfolio/ticks{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
 ```typescript
@@ -1201,6 +1339,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>POST</code> <b><code>simplefunctions.api.portfolio.ticks.create</code></b></summary>
 
 <code>POST https://simplefunctions.dev/api/portfolio/ticks{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
@@ -1217,6 +1357,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/portfolio/ticks/{id}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
 ```typescript
@@ -1231,6 +1373,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.portfolio.trades</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/portfolio/trades{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
@@ -1247,6 +1391,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>POST https://simplefunctions.dev/api/portfolio/trades{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
 ```typescript
@@ -1261,6 +1407,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.portfolio.trades.retrieve</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/portfolio/trades/{id}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
@@ -1277,6 +1425,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>POST https://simplefunctions.dev/api/portfolio/trigger{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
 ```typescript
@@ -1291,6 +1441,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.portfolio.views</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/portfolio/views{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
@@ -1307,6 +1459,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>POST https://simplefunctions.dev/api/portfolio/views{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
 ```typescript
@@ -1322,6 +1476,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>DELETE https://simplefunctions.dev/api/portfolio/views{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
 ```typescript
@@ -1336,6 +1492,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>PUT</code> <b><code>simplefunctions.api.portfolio.views.update</code></b></summary>
 
 <code>PUT https://simplefunctions.dev/api/portfolio/views{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
@@ -1354,6 +1512,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/prompt</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/tools)
 
 ```typescript
@@ -1371,6 +1531,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>POST https://simplefunctions.dev/api/proxy/stt</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/tools)
 
 ```typescript
@@ -1385,6 +1547,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>POST</code> <b><code>simplefunctions.api.proxy.tts</code></b></summary>
 
 <code>POST https://simplefunctions.dev/api/proxy/tts</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/tools)
 
@@ -1403,6 +1567,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/public/answer/{slug}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
 
 ```typescript
@@ -1417,6 +1583,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.public.briefing</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/public/briefing{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/reference/daily-data)
 
@@ -1433,6 +1601,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/public/calendar{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/index-regime)
 
 ```typescript
@@ -1447,6 +1617,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.public.calibration</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/public/calibration{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/index-regime)
 
@@ -1463,6 +1635,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/public/congress/member/{id}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
 
 ```typescript
@@ -1477,6 +1651,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.public.congress.members</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/public/congress/members{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
 
@@ -1493,6 +1669,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/public/contagion{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
 
 ```typescript
@@ -1507,6 +1685,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.public.context</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/public/context{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/reference/daily-data)
 
@@ -1523,6 +1703,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/public/cross-venue/pairs{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
 
 ```typescript
@@ -1537,6 +1719,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.public.crossVenue.stats</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/public/cross-venue/stats{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
 
@@ -1553,6 +1737,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/public/databento{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
 
 ```typescript
@@ -1567,6 +1753,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.public.diff</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/public/diff{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
 
@@ -1583,6 +1771,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>POST https://simplefunctions.dev/api/public/discuss</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
 
 ```typescript
@@ -1597,6 +1787,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.public.fred</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/public/fred{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/gov-econ)
 
@@ -1613,6 +1805,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/public/glossary{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/reference/daily-data)
 
 ```typescript
@@ -1627,6 +1821,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.public.glossary.entry</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/public/glossary/{slug}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/reference/daily-data)
 
@@ -1643,6 +1839,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/public/guide</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
 
 ```typescript
@@ -1657,6 +1855,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.public.highlights</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/public/highlights{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
 
@@ -1673,6 +1873,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/public/ideas{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/reference/daily-data)
 
 ```typescript
@@ -1687,6 +1889,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.public.ideas.byId</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/public/ideas/{id}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/reference/daily-data)
 
@@ -1703,6 +1907,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/public/index</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/index-regime)
 
 ```typescript
@@ -1717,6 +1923,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.public.index.history</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/public/index/history{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/index-regime)
 
@@ -1733,6 +1941,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/public/legislation{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/gov-econ)
 
 ```typescript
@@ -1747,6 +1957,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.public.legislation.byBillId</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/public/legislation/{billId}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/gov-econ)
 
@@ -1763,6 +1975,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/public/liquidity-by-theme{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
 
 ```typescript
@@ -1778,6 +1992,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/public/live-tickers{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
 
 ```typescript
@@ -1792,6 +2008,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.public.market</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/public/market/{ticker}{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/market-detail)
 
@@ -1810,6 +2028,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.public.market.candles</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/public/market/{ticker}/candles{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
 
@@ -1831,6 +2051,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/public/market/{ticker}/history</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/market-detail)
 
 ```typescript
@@ -1848,6 +2070,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/public/market-microstructure-history{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
 
 ```typescript
@@ -1862,6 +2086,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.public.markets</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/public/markets{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
 
@@ -1878,6 +2104,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/public/newmarkets{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
 
 ```typescript
@@ -1892,6 +2120,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.public.odds</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/public/odds{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
 
@@ -1908,6 +2138,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/public/odds.md{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
 
 ```typescript
@@ -1922,6 +2154,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.public.opinions</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/public/opinions{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
 
@@ -1938,6 +2172,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/public/opinions/{slug}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
 
 ```typescript
@@ -1952,6 +2188,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.public.query</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/public/query{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/query)
 
@@ -1972,6 +2210,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/public/query-econ{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/gov-econ)
 
 ```typescript
@@ -1986,6 +2226,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.public.queryGov</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/public/query-gov{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/gov-econ)
 
@@ -2002,6 +2244,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/public/regime/scan{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/index-regime)
 
 ```typescript
@@ -2016,6 +2260,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.public.scan</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/public/scan{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
 
@@ -2032,6 +2278,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/public/screen{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
 
 ```typescript
@@ -2046,6 +2294,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.public.screenByTickers</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/public/screen-by-tickers{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
 
@@ -2062,6 +2312,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/public/search{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
 
 ```typescript
@@ -2076,6 +2328,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.public.skill</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/public/skill/{slug}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
 
@@ -2092,6 +2346,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/public/skills{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
 
 ```typescript
@@ -2106,6 +2362,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.public.technicals</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/public/technicals{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
 
@@ -2122,6 +2380,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/public/technicals/{slug}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
 
 ```typescript
@@ -2136,6 +2396,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.public.theses</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/public/theses{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/reference/daily-data)
 
@@ -2152,6 +2414,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/public/thesis/{slug}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/reference/daily-data)
 
 ```typescript
@@ -2166,6 +2430,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.public.topic</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/public/topic/{slug}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
 
@@ -2182,6 +2448,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/public/trad-markets{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
 
 ```typescript
@@ -2197,6 +2465,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/public/yield-curves</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
 
 ```typescript
@@ -2211,6 +2481,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.public.yieldCurves.event</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/public/yield-curves/{event}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
 
@@ -2229,6 +2501,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/runtime/exec{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/execution-intents)
 
 ```typescript
@@ -2243,6 +2517,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>POST</code> <b><code>simplefunctions.api.runtime.exec.trigger</code></b></summary>
 
 <code>POST https://simplefunctions.dev/api/runtime/exec</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/execution-intents)
 
@@ -2261,6 +2537,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>POST https://simplefunctions.dev/api/signup</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/keys)
 
 ```typescript
@@ -2277,6 +2555,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.skills</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/skills{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/tools)
 
@@ -2295,6 +2575,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/thesis{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/thesis)
 
 ```typescript
@@ -2309,6 +2591,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>POST</code> <b><code>simplefunctions.api.thesis.augment</code></b></summary>
 
 <code>POST https://simplefunctions.dev/api/thesis/{id}/augment{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/thesis)
 
@@ -2325,6 +2609,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/thesis/by-ticker/{ticker}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/thesis)
 
 ```typescript
@@ -2339,6 +2625,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.thesis.changes</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/thesis/{id}/changes{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/thesis)
 
@@ -2355,6 +2643,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/thesis/{id}/context</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/thesis)
 
 ```typescript
@@ -2369,6 +2659,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>POST</code> <b><code>simplefunctions.api.thesis.create</code></b></summary>
 
 <code>POST https://simplefunctions.dev/api/thesis/create{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/thesis)
 
@@ -2385,6 +2677,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>DELETE https://simplefunctions.dev/api/thesis/{id}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/thesis)
 
 ```typescript
@@ -2399,6 +2693,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>POST</code> <b><code>simplefunctions.api.thesis.evaluate</code></b></summary>
 
 <code>POST https://simplefunctions.dev/api/thesis/{id}/evaluate</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/thesis)
 
@@ -2415,6 +2711,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/thesis/{id}/evaluations</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/thesis)
 
 ```typescript
@@ -2429,6 +2727,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>POST</code> <b><code>simplefunctions.api.thesis.fork</code></b></summary>
 
 <code>POST https://simplefunctions.dev/api/thesis/{id}/fork</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/thesis)
 
@@ -2445,6 +2745,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/thesis/{id}/heartbeat</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/thesis)
 
 ```typescript
@@ -2459,6 +2761,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>PATCH</code> <b><code>simplefunctions.api.thesis.heartbeat.update</code></b></summary>
 
 <code>PATCH https://simplefunctions.dev/api/thesis/{id}/heartbeat</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/thesis)
 
@@ -2475,6 +2779,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>POST https://simplefunctions.dev/api/thesis/{id}/nodes</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/thesis)
 
 ```typescript
@@ -2489,6 +2795,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>POST</code> <b><code>simplefunctions.api.thesis.positions.create</code></b></summary>
 
 <code>POST https://simplefunctions.dev/api/thesis/{id}/positions</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/thesis)
 
@@ -2505,6 +2813,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>DELETE https://simplefunctions.dev/api/thesis/{id}/positions/{posId}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/thesis)
 
 ```typescript
@@ -2519,6 +2829,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.thesis.positions.list</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/thesis/{id}/positions</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/thesis)
 
@@ -2535,6 +2847,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>PATCH https://simplefunctions.dev/api/thesis/{id}/positions/{posId}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/thesis)
 
 ```typescript
@@ -2549,6 +2863,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.thesis.prompt</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/thesis/{id}/prompt</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/thesis)
 
@@ -2565,6 +2881,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>POST https://simplefunctions.dev/api/thesis/{id}/publish</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/thesis)
 
 ```typescript
@@ -2579,6 +2897,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.thesis.retrieve</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/thesis/{id}{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/thesis)
 
@@ -2595,6 +2915,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>POST https://simplefunctions.dev/api/thesis/{id}/signal</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/thesis)
 
 ```typescript
@@ -2609,6 +2931,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>POST</code> <b><code>simplefunctions.api.thesis.strategies.create</code></b></summary>
 
 <code>POST https://simplefunctions.dev/api/thesis/{id}/strategies</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/thesis)
 
@@ -2625,6 +2949,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>DELETE https://simplefunctions.dev/api/thesis/{id}/strategies/{sid}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/thesis)
 
 ```typescript
@@ -2639,6 +2965,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.thesis.strategies.list</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/thesis/{id}/strategies{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/thesis)
 
@@ -2655,6 +2983,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>PATCH https://simplefunctions.dev/api/thesis/{id}/strategies/{sid}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/thesis)
 
 ```typescript
@@ -2669,6 +2999,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>DELETE</code> <b><code>simplefunctions.api.thesis.unpublish</code></b></summary>
 
 <code>DELETE https://simplefunctions.dev/api/thesis/{id}/publish</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/thesis)
 
@@ -2685,6 +3017,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>PATCH https://simplefunctions.dev/api/thesis/{id}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/thesis)
 
 ```typescript
@@ -2699,6 +3033,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.thesis.videoData</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/thesis/{id}/video-data</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/thesis)
 
@@ -2715,6 +3051,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>POST https://simplefunctions.dev/api/thesis/{id}/videos</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/thesis)
 
 ```typescript
@@ -2730,6 +3068,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/thesis/{id}/videos</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/thesis)
 
 ```typescript
@@ -2744,6 +3084,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>POST</code> <b><code>simplefunctions.api.thesis.whatif</code></b></summary>
 
 <code>POST https://simplefunctions.dev/api/thesis/{id}/whatif</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/thesis)
 
@@ -2762,6 +3104,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/tools{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/tools)
 
 ```typescript
@@ -2779,6 +3123,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/watch{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/watch-alerts)
 
 ```typescript
@@ -2793,6 +3139,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>POST</code> <b><code>simplefunctions.api.watch.create</code></b></summary>
 
 <code>POST https://simplefunctions.dev/api/watch</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/watch-alerts)
 
@@ -2809,6 +3157,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>DELETE https://simplefunctions.dev/api/watch/{id}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/watch-alerts)
 
 ```typescript
@@ -2823,6 +3173,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>POST</code> <b><code>simplefunctions.api.watch.identify</code></b></summary>
 
 <code>POST https://simplefunctions.dev/api/watch/identify</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/watch-alerts)
 
@@ -2839,6 +3191,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>POST https://simplefunctions.dev/api/watch/{id}/refresh</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/watch-alerts)
 
 ```typescript
@@ -2854,6 +3208,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/watch/{id}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/watch-alerts)
 
 ```typescript
@@ -2868,6 +3224,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>PATCH</code> <b><code>simplefunctions.api.watch.update</code></b></summary>
 
 <code>PATCH https://simplefunctions.dev/api/watch/{id}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/watch-alerts)
 
@@ -2886,6 +3244,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/webhook-endpoints{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/watch-alerts)
 
 ```typescript
@@ -2900,6 +3260,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>POST</code> <b><code>simplefunctions.api.webhookEndpoints.create</code></b></summary>
 
 <code>POST https://simplefunctions.dev/api/webhook-endpoints</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/watch-alerts)
 
@@ -2916,6 +3278,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>DELETE https://simplefunctions.dev/api/webhook-endpoints/{id}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/watch-alerts)
 
 ```typescript
@@ -2931,6 +3295,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>POST https://simplefunctions.dev/api/webhook-endpoints/{id}/test</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/watch-alerts)
 
 ```typescript
@@ -2945,6 +3311,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>PATCH</code> <b><code>simplefunctions.api.webhookEndpoints.update</code></b></summary>
 
 <code>PATCH https://simplefunctions.dev/api/webhook-endpoints/{id}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/watch-alerts)
 
@@ -2963,6 +3331,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/x/account{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/inventory/surface-map)
 
 ```typescript
@@ -2977,6 +3347,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.x.news</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/x/news{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/inventory/surface-map)
 
@@ -2993,6 +3365,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 <code>GET https://simplefunctions.dev/api/x/search{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.simplefunctions.dev/inventory/surface-map)
 
 ```typescript
@@ -3007,6 +3381,8 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <summary><code>GET</code> <b><code>simplefunctions.api.x.volume</code></b></summary>
 
 <code>GET https://simplefunctions.dev/api/x/volume{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/inventory/surface-map)
 

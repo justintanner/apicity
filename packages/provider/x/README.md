@@ -267,6 +267,8 @@ console.log(tweet.data.text);
 
 <code>GET https://api.x.com/2/media/upload{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.x.com/x-api/media/get-media-upload-status)
 
 ```typescript
@@ -281,6 +283,8 @@ Source: [`packages/provider/x/src/x.ts`](src/x.ts)
 <summary><code>POST</code> <b><code>x.v2.media.upload.append</code></b></summary>
 
 <code>POST https://api.x.com/2/media/upload/{id}/append</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.x.com/x-api/media/append-media-upload)
 
@@ -297,6 +301,8 @@ Source: [`packages/provider/x/src/x.ts`](src/x.ts)
 
 <code>POST https://api.x.com/2/media/upload/{id}/finalize</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.x.com/x-api/media/finalize-media-upload)
 
 ```typescript
@@ -311,6 +317,8 @@ Source: [`packages/provider/x/src/x.ts`](src/x.ts)
 <summary><code>POST</code> <b><code>x.v2.media.upload.initialize</code></b></summary>
 
 <code>POST https://api.x.com/2/media/upload/initialize</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.x.com/x-api/media/media-upload-initialize)
 
@@ -329,6 +337,8 @@ Source: [`packages/provider/x/src/x.ts`](src/x.ts)
 
 <code>POST https://api.x.com/2/tweets</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://docs.x.com/x-api/posts/create-post)
 
 ```typescript
@@ -345,6 +355,8 @@ Source: [`packages/provider/x/src/x.ts`](src/x.ts)
 <summary><code>GET</code> <b><code>x.v2.users.me</code></b></summary>
 
 <code>GET https://api.x.com/2/users/me{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.x.com/x-api/users/get-my-user)
 

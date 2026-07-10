@@ -178,6 +178,8 @@ console.log(
 
 <code>DELETE https://api.anthropic.com/v1/files/{fileId}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
@@ -192,6 +194,8 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 <summary><code>GET</code> <b><code>anthropic.v1.files.content</code></b></summary>
 
 <code>GET https://api.anthropic.com/v1/files/{fileId}/content</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
@@ -208,6 +212,8 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 
 <code>GET https://api.anthropic.com/v1/files</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
@@ -223,6 +229,8 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 
 <code>GET https://api.anthropic.com/v1/files/{fileId}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
@@ -237,6 +245,8 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 <summary><code>POST</code> <b><code>anthropic.v1.files</code></b></summary>
 
 <code>POST https://api.anthropic.com/v1/files</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
@@ -255,6 +265,8 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 
 <code>DELETE https://api.anthropic.com/v1/messages/batches/{batchId}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
@@ -269,6 +281,8 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 <summary><code>GET</code> <b><code>anthropic.v1.messages.batches.list</code></b></summary>
 
 <code>GET https://api.anthropic.com/v1/messages/batches</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
@@ -285,6 +299,8 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 
 <code>GET https://api.anthropic.com/v1/messages/batches/{batchId}/results</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
@@ -299,6 +315,8 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 <summary><code>GET</code> <b><code>anthropic.v1.messages.batches.retrieve</code></b></summary>
 
 <code>GET https://api.anthropic.com/v1/messages/batches/{batchId}</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
@@ -315,6 +333,8 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 
 <code>POST https://api.anthropic.com/v1/messages</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
@@ -330,6 +350,8 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 
 <code>POST https://api.anthropic.com/v1/messages</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
@@ -344,6 +366,8 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 <summary><code>POST</code> <b><code>anthropic.v1.messages.batches</code></b></summary>
 
 <code>POST https://api.anthropic.com/v1/messages/batches</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
@@ -360,6 +384,8 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 
 <code>POST https://api.anthropic.com/v1/messages/batches/{batchId}/cancel</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
@@ -374,6 +400,8 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 <summary><code>POST</code> <b><code>anthropic.v1.messages.countTokens</code></b></summary>
 
 <code>POST https://api.anthropic.com/v1/messages/count_tokens</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
@@ -390,6 +418,8 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 
 <code>POST https://api.anthropic.com/v1/messages</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
@@ -405,6 +435,8 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 
 <code>POST https://api.anthropic.com/v1/messages/batches</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
@@ -419,6 +451,8 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 <summary><code>POST</code> <b><code>anthropic.v1.messages.countTokens</code></b></summary>
 
 <code>POST https://api.anthropic.com/v1/messages/count_tokens</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
@@ -437,6 +471,8 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 
 <code>GET https://api.anthropic.com/v1/models</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
@@ -451,6 +487,8 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 <summary><code>GET</code> <b><code>anthropic.v1.models.retrieve</code></b></summary>
 
 <code>GET https://api.anthropic.com/v1/models/{modelId}</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
@@ -469,6 +507,8 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 
 <code>GET https://api.anthropic.com/api/oauth/usage</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
@@ -486,6 +526,8 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 
 <code>DELETE https://api.anthropic.com/v1/skills/{skillId}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
@@ -500,6 +542,8 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 <summary><code>DELETE</code> <b><code>anthropic.v1.skills.versions.del</code></b></summary>
 
 <code>DELETE https://api.anthropic.com/v1/skills/{skillId}/versions/{version}</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
@@ -516,6 +560,8 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 
 <code>GET https://api.anthropic.com/v1/skills</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
@@ -530,6 +576,8 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 <summary><code>GET</code> <b><code>anthropic.v1.skills.retrieve</code></b></summary>
 
 <code>GET https://api.anthropic.com/v1/skills/{skillId}</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
@@ -546,6 +594,8 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 
 <code>GET https://api.anthropic.com/v1/skills/{skillId}/versions</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
@@ -561,6 +611,8 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 
 <code>POST https://api.anthropic.com/v1/skills</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
@@ -575,6 +627,8 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 <summary><code>POST</code> <b><code>anthropic.v1.skills.versions.create</code></b></summary>
 
 <code>POST https://api.anthropic.com/v1/skills/{skillId}/versions</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 

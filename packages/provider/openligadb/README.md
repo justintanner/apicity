@@ -146,6 +146,8 @@ example `openligadb.getavailablegroups.schema.safeParse(input)`.
 
 <code>GET https://api.openligadb.de/getavailablegroups/{leagueShortcut}/{leagueSeason}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://api.openligadb.de/swagger/v1/swagger.json)
 
 ```typescript
@@ -163,6 +165,8 @@ Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
 
 <code>GET https://api.openligadb.de/getavailableleagues</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://api.openligadb.de/swagger/v1/swagger.json)
 
 ```typescript
@@ -177,6 +181,8 @@ Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
 <summary><code>GET</code> <b><code>openligadb.getavailableleagues.bySeason</code></b></summary>
 
 <code>GET https://api.openligadb.de/getavailableleagues/{season}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://api.openligadb.de/swagger/v1/swagger.json)
 
@@ -195,6 +201,8 @@ Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
 
 <code>GET https://api.openligadb.de/getavailablesports</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://api.openligadb.de/swagger/v1/swagger.json)
 
 ```typescript
@@ -212,6 +220,8 @@ Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
 
 <code>GET https://api.openligadb.de/getavailableteams/{leagueShortcut}/{leagueSeason}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://api.openligadb.de/swagger/v1/swagger.json)
 
 ```typescript
@@ -228,6 +238,8 @@ Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
 <summary><code>GET</code> <b><code>openligadb.getbltable</code></b></summary>
 
 <code>GET https://api.openligadb.de/getbltable/{leagueShortcut}/{leagueSeason}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://api.openligadb.de/swagger/v1/swagger.json)
 
@@ -249,6 +261,8 @@ Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
 
 <code>GET https://api.openligadb.de/getcurrentgroup/{leagueShortcut}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://api.openligadb.de/swagger/v1/swagger.json)
 
 ```typescript
@@ -265,6 +279,8 @@ Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
 <summary><code>GET</code> <b><code>openligadb.getgoalgetters</code></b></summary>
 
 <code>GET https://api.openligadb.de/getgoalgetters/{leagueShortcut}/{leagueSeason}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://api.openligadb.de/swagger/v1/swagger.json)
 
@@ -286,6 +302,8 @@ Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
 
 <code>GET https://api.openligadb.de/getgrouptable/{leagueShortcut}/{leagueSeason}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://api.openligadb.de/swagger/v1/swagger.json)
 
 ```typescript
@@ -305,6 +323,8 @@ Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
 <summary><code>GET</code> <b><code>openligadb.getlastchangedate</code></b></summary>
 
 <code>GET https://api.openligadb.de/getlastchangedate/{leagueShortcut}/{leagueSeason}/{groupOrderId}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://api.openligadb.de/swagger/v1/swagger.json)
 
@@ -327,6 +347,8 @@ Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
 
 <code>GET https://api.openligadb.de/getlastmatchbyleagueshortcut/{leagueShortcut}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://api.openligadb.de/swagger/v1/swagger.json)
 
 ```typescript
@@ -343,6 +365,8 @@ Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
 <summary><code>GET</code> <b><code>openligadb.getlastmatchbyleagueteam</code></b></summary>
 
 <code>GET https://api.openligadb.de/getlastmatchbyleagueteam/{leagueId}/{teamId}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://api.openligadb.de/swagger/v1/swagger.json)
 
@@ -364,6 +388,8 @@ Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
 
 <code>GET https://api.openligadb.de/getmatchdata/{matchId}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://api.openligadb.de/swagger/index.html)
 
 ```typescript
@@ -378,6 +404,8 @@ Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
 <summary><code>GET</code> <b><code>openligadb.getmatchdata.byLeagueSeason</code></b></summary>
 
 <code>GET https://api.openligadb.de/getmatchdata/{leagueShortcut}/{leagueSeason}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://api.openligadb.de/swagger/index.html)
 
@@ -396,6 +424,8 @@ Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
 <summary><code>GET</code> <b><code>openligadb.getmatchdata.byLeagueSeasonGroup</code></b></summary>
 
 <code>GET https://api.openligadb.de/getmatchdata/{leagueShortcut}/{leagueSeason}/{groupOrderId}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://api.openligadb.de/swagger/index.html)
 
@@ -416,6 +446,8 @@ Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
 
 <code>GET https://api.openligadb.de/getmatchdata/{leagueShortcut}/{leagueSeason}/{teamFilterstring}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://api.openligadb.de/swagger/index.html)
 
 ```typescript
@@ -435,6 +467,8 @@ Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
 
 <code>GET https://api.openligadb.de/getmatchdata/{teamId1}/{teamId2}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://api.openligadb.de/swagger/index.html)
 
 ```typescript
@@ -451,6 +485,8 @@ Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
 <summary><code>GET</code> <b><code>openligadb.getmatchesbyteam</code></b></summary>
 
 <code>GET https://api.openligadb.de/getmatchesbyteam/{teamFilterstring}/{weekCountPast}/{weekCountFuture}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://api.openligadb.de/swagger/v1/swagger.json)
 
@@ -473,6 +509,8 @@ Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
 
 <code>GET https://api.openligadb.de/getmatchesbyteamid/{teamId}/{weekCountPast}/{weekCountFuture}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://api.openligadb.de/swagger/v1/swagger.json)
 
 ```typescript
@@ -494,6 +532,8 @@ Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
 
 <code>GET https://api.openligadb.de/getnextmatchbyleagueshortcut/{leagueShortcut}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://api.openligadb.de/swagger/v1/swagger.json)
 
 ```typescript
@@ -510,6 +550,8 @@ Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
 <summary><code>GET</code> <b><code>openligadb.getnextmatchbyleagueteam</code></b></summary>
 
 <code>GET https://api.openligadb.de/getnextmatchbyleagueteam/{leagueId}/{teamId}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://api.openligadb.de/swagger/v1/swagger.json)
 
@@ -531,6 +573,8 @@ Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
 
 <code>GET https://api.openligadb.de/getresultinfos/{leagueId}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://api.openligadb.de/swagger/v1/swagger.json)
 
 ```typescript
@@ -547,6 +591,8 @@ Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
 <summary><code>GET</code> <b><code>openligadb.swagger.v1.swaggerJson</code></b></summary>
 
 <code>GET https://api.openligadb.de/swagger/v1/swagger.json</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://api.openligadb.de/swagger/v1/swagger.json)
 

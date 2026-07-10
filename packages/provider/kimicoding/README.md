@@ -37,6 +37,8 @@ const kimicoding = createKimiCoding({ apiKey: process.env.KIMICODING_API_KEY! })
 
 <code>GET https://api.kimi.com/coding/v1/models</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://platform.moonshot.ai/docs)
 
 ```typescript
@@ -51,6 +53,8 @@ Source: [`packages/provider/kimicoding/src/kimicoding.ts`](src/kimicoding.ts)
 <summary><code>POST</code> <b><code>kimicoding.coding.v1.countTokens</code></b></summary>
 
 <code>POST https://api.kimi.com/coding/v1/tokens/count</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://platform.moonshot.ai/docs)
 
@@ -67,6 +71,8 @@ Source: [`packages/provider/kimicoding/src/kimicoding.ts`](src/kimicoding.ts)
 
 <code>POST https://api.kimi.com/coding/v1/embeddings</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://platform.moonshot.ai/docs)
 
 ```typescript
@@ -82,6 +88,8 @@ Source: [`packages/provider/kimicoding/src/kimicoding.ts`](src/kimicoding.ts)
 
 <code>POST https://api.kimi.com/coding/v1/messages</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://platform.moonshot.ai/docs)
 
 ```typescript
@@ -96,6 +104,8 @@ Source: [`packages/provider/kimicoding/src/kimicoding.ts`](src/kimicoding.ts)
 <summary><code>POST</code> <b><code>kimicoding.coding.v1.messages</code></b></summary>
 
 <code>POST https://api.kimi.com/coding/v1/messages</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://platform.moonshot.ai/docs)
 

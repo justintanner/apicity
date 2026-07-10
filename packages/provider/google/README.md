@@ -38,6 +38,8 @@ const google = createGoogle({ apiKey: process.env.GOOGLE_API_KEY! });
 
 <code>POST https://aiplatform.googleapis.com/v1/publishers/google/models/{model}:countTokens</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.cloud.google.com/gemini-enterprise-agent-platform/reference/express-mode/rest/v1/publishers.models/countTokens)
 
 ```typescript
@@ -57,6 +59,8 @@ Source: [`packages/provider/google/src/google.ts`](src/google.ts)
 <summary><code>POST</code> <b><code>google.v1.publishers.google.models.generateContent</code></b></summary>
 
 <code>POST https://aiplatform.googleapis.com/v1/publishers/google/models/{model}:generateContent</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.cloud.google.com/vertex-ai/generative-ai/docs/reference/express-mode/rest/v1/publishers.models/generateContent)
 
@@ -80,6 +84,8 @@ Source: [`packages/provider/google/src/google.ts`](src/google.ts)
 
 <code>POST https://cloudcode-pa.googleapis.com/v1internal:retrieveUserQuota</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://cloud.google.com/gemini/docs/quotas)
 
 ```typescript
@@ -94,6 +100,8 @@ Source: [`packages/provider/google/src/google.ts`](src/google.ts)
 <summary><code>POST</code> <b><code>google.v1internal.retrieveUserQuotaSummary</code></b></summary>
 
 <code>POST https://cloudcode-pa.googleapis.com/v1internal:retrieveUserQuotaSummary</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://cloud.google.com/gemini/docs/quotas)
 

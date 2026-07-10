@@ -37,6 +37,8 @@ const googleflow = createGoogleFlow({ apiKey: process.env.GOOGLE_FLOW_API_KEY! }
 
 <code>DELETE https://api.useapi.net/v1/google-flow/accounts/{email}</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://useapi.net/docs/api-google-flow-v1/delete-google-flow-accounts-email)
 
 ```typescript
@@ -51,6 +53,8 @@ Source: [`packages/provider/googleflow/src/google.ts`](src/google.ts)
 <summary><code>GET</code> <b><code>googleflow.v1.accounts</code></b></summary>
 
 <code>GET https://api.useapi.net/v1/google-flow/accounts</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://useapi.net/docs/api-google-flow-v1/get-google-flow-accounts)
 
@@ -67,6 +71,8 @@ Source: [`packages/provider/googleflow/src/google.ts`](src/google.ts)
 
 <code>GET https://api.useapi.net/v1/google-flow/accounts/captcha-providers</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://useapi.net/docs/api-google-flow-v1/get-google-flow-accounts-captcha-providers)
 
 ```typescript
@@ -81,6 +87,8 @@ Source: [`packages/provider/googleflow/src/google.ts`](src/google.ts)
 <summary><code>GET</code> <b><code>googleflow.v1.accounts.captchaStats</code></b></summary>
 
 <code>GET https://api.useapi.net/v1/google-flow/accounts/captcha-stats{query}</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://useapi.net/docs/api-google-flow-v1/get-google-flow-accounts-captcha-stats)
 
@@ -97,6 +105,8 @@ Source: [`packages/provider/googleflow/src/google.ts`](src/google.ts)
 
 <code>GET https://api.useapi.net/v1/google-flow/accounts/{email}</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://useapi.net/docs/api-google-flow-v1/get-google-flow-accounts-email)
 
 ```typescript
@@ -112,6 +122,8 @@ Source: [`packages/provider/googleflow/src/google.ts`](src/google.ts)
 
 <code>POST https://api.useapi.net/v1/google-flow/accounts</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://useapi.net/docs/api-google-flow-v1/post-google-flow-accounts)
 
 ```typescript
@@ -126,6 +138,8 @@ Source: [`packages/provider/googleflow/src/google.ts`](src/google.ts)
 <summary><code>POST</code> <b><code>googleflow.v1.accounts.captchaProviders</code></b></summary>
 
 <code>POST https://api.useapi.net/v1/google-flow/accounts/captcha-providers</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://useapi.net/docs/api-google-flow-v1/post-google-flow-accounts-captcha-providers)
 
@@ -144,6 +158,8 @@ Source: [`packages/provider/googleflow/src/google.ts`](src/google.ts)
 
 <code>GET https://api.useapi.net/v1/google-flow/assets/{mediaGenerationId}</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://useapi.net/docs/api-google-flow-v1/get-google-flow-assets-mediagenerationid)
 
 ```typescript
@@ -158,6 +174,8 @@ Source: [`packages/provider/googleflow/src/google.ts`](src/google.ts)
 <summary><code>POST</code> <b><code>googleflow.v1.assets</code></b></summary>
 
 <code>POST https://api.useapi.net/v1/google-flow/assets</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://useapi.net/docs/api-google-flow-v1/post-google-flow-assets-email)
 
@@ -176,6 +194,8 @@ Source: [`packages/provider/googleflow/src/google.ts`](src/google.ts)
 
 <code>DELETE https://api.useapi.net/v1/google-flow/characters/{ref}</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://useapi.net/docs/api-google-flow-v1/delete-google-flow-characters-ref)
 
 ```typescript
@@ -190,6 +210,8 @@ Source: [`packages/provider/googleflow/src/google.ts`](src/google.ts)
 <summary><code>GET</code> <b><code>googleflow.v1.characters</code></b></summary>
 
 <code>GET https://api.useapi.net/v1/google-flow/characters{query}</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://useapi.net/docs/api-google-flow-v1/get-google-flow-characters)
 
@@ -206,6 +228,8 @@ Source: [`packages/provider/googleflow/src/google.ts`](src/google.ts)
 
 <code>GET https://api.useapi.net/v1/google-flow/characters/{ref}</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://useapi.net/docs/api-google-flow-v1/get-google-flow-characters-ref)
 
 ```typescript
@@ -220,6 +244,8 @@ Source: [`packages/provider/googleflow/src/google.ts`](src/google.ts)
 <summary><code>POST</code> <b><code>googleflow.v1.characters</code></b></summary>
 
 <code>POST https://api.useapi.net/v1/google-flow/characters</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://useapi.net/docs/api-google-flow-v1/post-google-flow-characters)
 
@@ -238,6 +264,8 @@ Source: [`packages/provider/googleflow/src/google.ts`](src/google.ts)
 
 <code>POST https://api.useapi.net/v1/google-flow/images</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://useapi.net/docs/api-google-flow-v1/post-google-flow-images)
 
 ```typescript
@@ -252,6 +280,8 @@ Source: [`packages/provider/googleflow/src/google.ts`](src/google.ts)
 <summary><code>POST</code> <b><code>googleflow.v1.images.upscale</code></b></summary>
 
 <code>POST https://api.useapi.net/v1/google-flow/images/upscale</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://useapi.net/docs/api-google-flow-v1/post-google-flow-images-upscale)
 
@@ -270,6 +300,8 @@ Source: [`packages/provider/googleflow/src/google.ts`](src/google.ts)
 
 <code>GET https://api.useapi.net/v1/google-flow/jobs{query}</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://useapi.net/docs/api-google-flow-v1/get-google-flow-jobs)
 
 ```typescript
@@ -284,6 +316,8 @@ Source: [`packages/provider/googleflow/src/google.ts`](src/google.ts)
 <summary><code>GET</code> <b><code>googleflow.v1.jobs.retrieve</code></b></summary>
 
 <code>GET https://api.useapi.net/v1/google-flow/jobs/{jobId}</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://useapi.net/docs/api-google-flow-v1/get-google-flow-jobs-jobid)
 
@@ -302,6 +336,8 @@ Source: [`packages/provider/googleflow/src/google.ts`](src/google.ts)
 
 <code>POST https://api.useapi.net/v1/google-flow/videos</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos)
 
 ```typescript
@@ -316,6 +352,8 @@ Source: [`packages/provider/googleflow/src/google.ts`](src/google.ts)
 <summary><code>POST</code> <b><code>googleflow.v1.videos.concatenate</code></b></summary>
 
 <code>POST https://api.useapi.net/v1/google-flow/videos/concatenate</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-concatenate)
 
@@ -332,6 +370,8 @@ Source: [`packages/provider/googleflow/src/google.ts`](src/google.ts)
 
 <code>POST https://api.useapi.net/v1/google-flow/videos/extend</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-extend)
 
 ```typescript
@@ -347,6 +387,8 @@ Source: [`packages/provider/googleflow/src/google.ts`](src/google.ts)
 
 <code>POST https://api.useapi.net/v1/google-flow/videos/gif</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-gif)
 
 ```typescript
@@ -361,6 +403,8 @@ Source: [`packages/provider/googleflow/src/google.ts`](src/google.ts)
 <summary><code>POST</code> <b><code>googleflow.v1.videos.upscale</code></b></summary>
 
 <code>POST https://api.useapi.net/v1/google-flow/videos/upscale</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-upscale)
 
@@ -379,6 +423,8 @@ Source: [`packages/provider/googleflow/src/google.ts`](src/google.ts)
 
 <code>DELETE https://api.useapi.net/v1/google-flow/voices/{ref}</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://useapi.net/docs/api-google-flow-v1/delete-google-flow-voices-ref)
 
 ```typescript
@@ -393,6 +439,8 @@ Source: [`packages/provider/googleflow/src/google.ts`](src/google.ts)
 <summary><code>GET</code> <b><code>googleflow.v1.voices</code></b></summary>
 
 <code>GET https://api.useapi.net/v1/google-flow/voices{query}</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://useapi.net/docs/api-google-flow-v1/get-google-flow-voices)
 
@@ -409,6 +457,8 @@ Source: [`packages/provider/googleflow/src/google.ts`](src/google.ts)
 
 <code>GET https://api.useapi.net/v1/google-flow/voices/{ref}</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://useapi.net/docs/api-google-flow-v1/get-google-flow-voices-ref)
 
 ```typescript
@@ -423,6 +473,8 @@ Source: [`packages/provider/googleflow/src/google.ts`](src/google.ts)
 <summary><code>POST</code> <b><code>googleflow.v1.voices</code></b></summary>
 
 <code>POST https://api.useapi.net/v1/google-flow/voices</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://useapi.net/docs/api-google-flow-v1/post-google-flow-voices)
 

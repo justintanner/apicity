@@ -130,6 +130,8 @@ console.log(result.spritesheet?.url);
 
 <code>POST https://api.fal.ai/v1/fal-ai/bytedance/seed-speech/tts/v2</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://fal.ai/models/fal-ai/bytedance/seed-speech/tts/v2/api)
 
 ```typescript
@@ -144,6 +146,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <summary><code>POST</code> <b><code>fal.bytedance.seedance2p0.fast.imageToVideo</code></b></summary>
 
 <code>POST https://api.fal.ai/v1/bytedance/seedance-2.0/fast/image-to-video</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.fal.ai)
 
@@ -160,6 +164,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 <code>POST https://api.fal.ai/v1/bytedance/seedance-2.0/fast/reference-to-video</code>
 
+Cost tier: <code>prohibitive</code>
+
 ```typescript
 const res = await fal.bytedance.seedance2p0.fast.referenceToVideo({ /* ... */ });
 ```
@@ -172,6 +178,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <summary><code>POST</code> <b><code>fal.bytedance.seedance2p0.fast.textToVideo</code></b></summary>
 
 <code>POST https://api.fal.ai/v1/bytedance/seedance-2.0/fast/text-to-video</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.fal.ai)
 
@@ -188,6 +196,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 <code>POST https://api.fal.ai/v1/bytedance/seedance-2.0/image-to-video</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
@@ -203,6 +213,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 <code>POST https://api.fal.ai/v1/bytedance/seedance-2.0/reference-to-video</code>
 
+Cost tier: <code>prohibitive</code>
+
 ```typescript
 const res = await fal.bytedance.seedance2p0.referenceToVideo({ /* ... */ });
 ```
@@ -215,6 +227,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <summary><code>POST</code> <b><code>fal.bytedance.seedance2p0.textToVideo</code></b></summary>
 
 <code>POST https://api.fal.ai/v1/bytedance/seedance-2.0/text-to-video</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.fal.ai)
 
@@ -231,6 +245,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 <code>POST https://api.fal.ai/v1/fal-ai/bytedance/seedream/v5/lite/edit</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
@@ -245,6 +261,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <summary><code>POST</code> <b><code>fal.bytedance.seedream.v5.lite.textToImage</code></b></summary>
 
 <code>POST https://api.fal.ai/v1/fal-ai/bytedance/seedream/v5/lite/text-to-image</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.fal.ai)
 
@@ -263,6 +281,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 <code>POST https://api.fal.ai/v1/fal-ai/elevenlabs/speech-to-text/scribe-v2</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
@@ -280,6 +300,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 <code>POST https://api.fal.ai/v1/fal-ai/gpt-image-1.5</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
@@ -294,6 +316,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <summary><code>POST</code> <b><code>fal.gptImage1p5.edit</code></b></summary>
 
 <code>POST https://api.fal.ai/v1/fal-ai/gpt-image-1.5/edit</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.fal.ai)
 
@@ -312,6 +336,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 <code>POST https://api.fal.ai/v1/fal-ai/hunyuan-image/v3/instruct/edit</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
@@ -329,6 +355,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 <code>POST https://api.fal.ai/v1/fal-ai/kling-video/o3/4k/image-to-video</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
@@ -343,6 +371,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <summary><code>POST</code> <b><code>fal.klingVideo.o3p4k.referenceToVideo</code></b></summary>
 
 <code>POST https://api.fal.ai/v1/fal-ai/kling-video/o3/4k/reference-to-video</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.fal.ai)
 
@@ -359,6 +389,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 <code>POST https://api.fal.ai/v1/fal-ai/kling-video/o3/4k/text-to-video</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
@@ -373,6 +405,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <summary><code>POST</code> <b><code>fal.klingVideo.v3.pro.imageToVideo</code></b></summary>
 
 <code>POST https://api.fal.ai/v1/fal-ai/kling-video/v3/pro/image-to-video</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.fal.ai)
 
@@ -389,6 +423,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 <code>POST https://api.fal.ai/v1/fal-ai/kling-video/v3/pro/text-to-video</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
@@ -404,6 +440,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 <code>POST https://api.fal.ai/v1/fal-ai/kling-video/v3/standard/image-to-video</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
@@ -418,6 +456,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <summary><code>POST</code> <b><code>fal.klingVideo.v3.standard.textToVideo</code></b></summary>
 
 <code>POST https://api.fal.ai/v1/fal-ai/kling-video/v3/standard/text-to-video</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.fal.ai)
 
@@ -436,6 +476,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 <code>DELETE https://api.fal.ai/v1/models/requests/{param}/payloads</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
@@ -450,6 +492,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <summary><code>GET</code> <b><code>fal.v1.models</code></b></summary>
 
 <code>GET https://api.fal.ai/v1/models</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.fal.ai)
 
@@ -466,6 +510,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 <code>GET https://api.fal.ai/v1/models/pricing</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
@@ -480,6 +526,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <summary><code>GET</code> <b><code>fal.v1.models.requests.byEndpoint</code></b></summary>
 
 <code>GET https://api.fal.ai/v1/models/requests/by-endpoint</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.fal.ai)
 
@@ -496,6 +544,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 <code>GET https://api.fal.ai/v1/models/requests/{param}/payloads</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
@@ -510,6 +560,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <summary><code>POST</code> <b><code>fal.v1.models.pricing.estimate</code></b></summary>
 
 <code>POST https://api.fal.ai/v1/models/pricing/estimate</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.fal.ai)
 
@@ -526,6 +578,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 <code>GET https://api.fal.ai/v1/models</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
@@ -540,6 +594,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <summary><code>GET</code> <b><code>fal.v1.models.pricing</code></b></summary>
 
 <code>GET https://api.fal.ai/v1/models/pricing</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.fal.ai)
 
@@ -556,6 +612,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 <code>POST https://api.fal.ai/v1/models/pricing/estimate</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
@@ -571,6 +629,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 <code>GET https://api.fal.ai/v1/models/requests/by-endpoint</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
@@ -585,6 +645,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <summary><code>DELETE</code> <b><code>fal.v1.models.requests.payloads</code></b></summary>
 
 <code>DELETE https://api.fal.ai/v1/models/requests/{param}/payloads</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.fal.ai)
 
@@ -603,6 +665,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 <code>POST https://api.fal.ai/v1/fal-ai/nano-banana/edit</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
@@ -617,6 +681,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <summary><code>POST</code> <b><code>fal.nanoBanana.textToImage</code></b></summary>
 
 <code>POST https://api.fal.ai/v1/fal-ai/nano-banana</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.fal.ai)
 
@@ -635,6 +701,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 <code>POST https://api.fal.ai/v1/fal-ai/nano-banana-2/edit</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
@@ -649,6 +717,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <summary><code>POST</code> <b><code>fal.nanoBanana2.textToImage</code></b></summary>
 
 <code>POST https://api.fal.ai/v1/fal-ai/nano-banana-2</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.fal.ai)
 
@@ -667,6 +737,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 <code>POST https://api.fal.ai/v1/google/nano-banana-lite/edit</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://fal.ai/models/google/nano-banana-lite/edit/api)
 
 ```typescript
@@ -681,6 +753,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <summary><code>POST</code> <b><code>fal.nanoBanana2Lite.textToImage</code></b></summary>
 
 <code>POST https://api.fal.ai/v1/google/nano-banana-2-lite</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://fal.ai/models/google/nano-banana-2-lite/api)
 
@@ -699,6 +773,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 <code>POST https://api.fal.ai/v1/fal-ai/nano-banana-pro/edit</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
@@ -713,6 +789,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <summary><code>POST</code> <b><code>fal.nanoBananaPro.textToImage</code></b></summary>
 
 <code>POST https://api.fal.ai/v1/fal-ai/nano-banana-pro</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.fal.ai)
 
@@ -731,6 +809,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 <code>POST https://api.fal.ai/v1/POST</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
@@ -745,6 +825,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <summary><code>POST</code> <b><code>fal.v1.queue.submit</code></b></summary>
 
 <code>POST https://api.fal.ai/v1/POST</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.fal.ai)
 
@@ -763,6 +845,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 <code>POST https://api.fal.ai/v1/fal-ai/qwen-image</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
@@ -777,6 +861,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <summary><code>POST</code> <b><code>fal.qwenImage.edit</code></b></summary>
 
 <code>POST https://api.fal.ai/v1/fal-ai/qwen-image-edit</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.fal.ai)
 
@@ -795,6 +881,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 <code>POST https://api.fal.ai/v1/serverless/logs/stream</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
@@ -810,6 +898,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 <code>POST https://api.fal.ai/v1/serverless/files/file/local/{param}</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
@@ -824,6 +914,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <summary><code>POST</code> <b><code>fal.v1.serverless.files.uploadUrl</code></b></summary>
 
 <code>POST https://api.fal.ai/v1/serverless/files/file/url/{param}</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.fal.ai)
 
@@ -840,6 +932,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 <code>POST https://api.fal.ai/v1/serverless/files/file/local/{param}</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
@@ -855,6 +949,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 <code>POST https://api.fal.ai/v1/serverless/files/file/url/{param}</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
@@ -869,6 +965,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <summary><code>POST</code> <b><code>fal.v1.serverless.logs</code></b></summary>
 
 <code>POST https://api.fal.ai/v1/serverless/logs/stream</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.fal.ai)
 
@@ -887,6 +985,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 <code>POST https://api.fal.ai/v1/fal-ai/sora-2/image-to-video</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
@@ -901,6 +1001,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <summary><code>POST</code> <b><code>fal.sora2.textToVideo</code></b></summary>
 
 <code>POST https://api.fal.ai/v1/fal-ai/sora-2/text-to-video</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.fal.ai)
 
@@ -919,6 +1021,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 <code>POST https://rest.fal.ai/storage/upload/complete-multipart</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
@@ -934,6 +1038,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 <code>POST https://rest.fal.ai/storage/upload/initiate</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
@@ -948,6 +1054,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <summary><code>POST</code> <b><code>fal.storage.upload.initiateMultipart</code></b></summary>
 
 <code>POST https://rest.fal.ai/storage/upload/initiate-multipart</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.fal.ai)
 
@@ -966,6 +1074,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 <code>POST https://api.fal.ai/v1/fal-ai/veo3.1/image-to-video</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
@@ -980,6 +1090,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <summary><code>POST</code> <b><code>fal.veo3p1.textToVideo</code></b></summary>
 
 <code>POST https://api.fal.ai/v1/fal-ai/veo3.1</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.fal.ai)
 
@@ -998,6 +1110,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 <code>POST https://api.fal.ai/v1/fal-ai/wan/v2.7/edit</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
@@ -1013,6 +1127,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 <code>POST https://api.fal.ai/v1/fal-ai/wan/v2.7/edit-video</code>
 
+Cost tier: <code>prohibitive</code>
+
 ```typescript
 const res = await fal.wan.v2p7.editVideo({ /* ... */ });
 ```
@@ -1025,6 +1141,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <summary><code>POST</code> <b><code>fal.wan.v2p7.imageToVideo</code></b></summary>
 
 <code>POST https://api.fal.ai/v1/fal-ai/wan/v2.7/image-to-video</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.fal.ai)
 
@@ -1041,6 +1159,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 <code>POST https://api.fal.ai/v1/fal-ai/wan/v2.7/pro/edit</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
@@ -1055,6 +1175,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <summary><code>POST</code> <b><code>fal.wan.v2p7.pro.textToImage</code></b></summary>
 
 <code>POST https://api.fal.ai/v1/fal-ai/wan/v2.7/pro/text-to-image</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.fal.ai)
 
@@ -1071,6 +1193,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 <code>POST https://api.fal.ai/v1/fal-ai/wan/v2.7/reference-to-video</code>
 
+Cost tier: <code>prohibitive</code>
+
 ```typescript
 const res = await fal.wan.v2p7.referenceToVideo({ /* ... */ });
 ```
@@ -1083,6 +1207,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <summary><code>POST</code> <b><code>fal.wan.v2p7.textToImage</code></b></summary>
 
 <code>POST https://api.fal.ai/v1/fal-ai/wan/v2.7/text-to-image</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.fal.ai)
 
@@ -1098,6 +1224,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <summary><code>POST</code> <b><code>fal.wan.v2p7.textToVideo</code></b></summary>
 
 <code>POST https://api.fal.ai/v1/fal-ai/wan/v2.7/text-to-video</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.fal.ai)
 
@@ -1116,6 +1244,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 <code>GET https://api.fal.ai/v1/workflows</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
@@ -1130,6 +1260,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <summary><code>GET</code> <b><code>fal.v1.workflows</code></b></summary>
 
 <code>GET https://api.fal.ai/v1/workflows</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.fal.ai)
 
@@ -1148,6 +1280,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 <code>POST https://api.fal.ai/v1/xai/grok-imagine-image</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
@@ -1162,6 +1296,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <summary><code>POST</code> <b><code>fal.xai.grokImagineImage.edit</code></b></summary>
 
 <code>POST https://api.fal.ai/v1/xai/grok-imagine-image/edit</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.fal.ai)
 
@@ -1178,6 +1314,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 <code>POST https://api.fal.ai/v1/xai/grok-imagine-video/edit-video</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
@@ -1192,6 +1330,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <summary><code>POST</code> <b><code>fal.xai.grokImagineVideo.extendVideo</code></b></summary>
 
 <code>POST https://api.fal.ai/v1/xai/grok-imagine-video/extend-video</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.fal.ai)
 
@@ -1208,6 +1348,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 <code>POST https://api.fal.ai/v1/xai/grok-imagine-video/image-to-video</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
@@ -1222,6 +1364,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <summary><code>POST</code> <b><code>fal.xai.grokImagineVideo.referenceToVideo</code></b></summary>
 
 <code>POST https://api.fal.ai/v1/xai/grok-imagine-video/reference-to-video</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.fal.ai)
 

@@ -286,6 +286,8 @@ docs for supported content types, size limits, and the
 
 <code>GET https://api.x.ai/v1/api-key</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.x.ai/developers/rest-api-reference/inference/other)
 
 ```typescript
@@ -303,6 +305,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 
 <code>GET https://api.x.ai/v1/batches/{paramsOrIdOrSignal}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
@@ -317,6 +321,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 <summary><code>GET</code> <b><code>xai.v1.batches.requests</code></b></summary>
 
 <code>GET https://api.x.ai/v1/batches/{batchId}/requests{query}</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
@@ -333,6 +339,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 
 <code>GET https://api.x.ai/v1/batches/{batchId}/results{query}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
@@ -347,6 +355,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 <summary><code>POST</code> <b><code>xai.v1.batches</code></b></summary>
 
 <code>POST https://api.x.ai/v1/batches</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
@@ -363,6 +373,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 
 <code>POST https://api.x.ai/v1/batches/{batchId}:cancel</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
@@ -377,6 +389,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 <summary><code>POST</code> <b><code>xai.v1.batches.requests</code></b></summary>
 
 <code>POST https://api.x.ai/v1/batches/{batchId}/requests</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
@@ -395,6 +409,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 
 <code>GET https://api.x.ai/v1/chat/deferred-completion/{requestId}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
@@ -409,6 +425,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 <summary><code>POST</code> <b><code>xai.v1.chat.completions</code></b></summary>
 
 <code>POST https://api.x.ai/v1/chat/completions</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
@@ -427,6 +445,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 
 <code>DELETE https://api.x.ai/v1/custom-voices/{voiceId}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.x.ai/developers/model-capabilities/audio/custom-voices)
 
 ```typescript
@@ -441,6 +461,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 <summary><code>GET</code> <b><code>xai.v1.customVoices</code></b></summary>
 
 <code>GET https://api.x.ai/v1/custom-voices/{paramsOrVoiceIdOrSignal}</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.x.ai/developers/model-capabilities/audio/custom-voices)
 
@@ -457,6 +479,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 
 <code>GET https://api.x.ai/v1/custom-voices/{voiceId}/audio</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.x.ai/developers/model-capabilities/audio/custom-voices)
 
 ```typescript
@@ -472,6 +496,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 
 <code>PATCH https://api.x.ai/v1/custom-voices/{voiceId}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.x.ai/developers/model-capabilities/audio/custom-voices)
 
 ```typescript
@@ -486,6 +512,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 <summary><code>POST</code> <b><code>xai.v1.customVoices</code></b></summary>
 
 <code>POST https://api.x.ai/v1/custom-voices</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.x.ai/developers/model-capabilities/audio/custom-voices)
 
@@ -504,6 +532,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 
 <code>POST https://api.x.ai/v1/documents/search</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
@@ -521,6 +551,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 
 <code>DELETE https://api.x.ai/v1/files/{fileId}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
@@ -535,6 +567,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 <summary><code>GET</code> <b><code>xai.v1.files</code></b></summary>
 
 <code>GET https://api.x.ai/v1/files/{paramsOrFileIdOrSignal}</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
@@ -551,6 +585,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 
 <code>GET https://api.x.ai/v1/files/{fileId}/content</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
@@ -565,6 +601,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 <summary><code>POST</code> <b><code>xai.v1.files</code></b></summary>
 
 <code>POST https://api.x.ai/v1/files</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
@@ -581,6 +619,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 
 <code>POST https://api.x.ai/v1/files/{fileId}/public-url</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.x.ai/developers/files/public-urls)
 
 ```typescript
@@ -595,6 +635,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 <summary><code>POST</code> <b><code>xai.v1.files.publicUrl.revoke</code></b></summary>
 
 <code>POST https://api.x.ai/v1/files/{fileId}/public-url/revoke</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.x.ai/developers/files/public-urls)
 
@@ -613,6 +655,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 
 <code>GET https://api.x.ai/v1/image-generation-models/{modelIdOrSignal}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
@@ -630,6 +674,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 
 <code>POST https://api.x.ai/v1/images/edits</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.x.ai/developers/rest-api-reference/inference/images)
 
 ```typescript
@@ -644,6 +690,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 <summary><code>POST</code> <b><code>xai.v1.images.generations</code></b></summary>
 
 <code>POST https://api.x.ai/v1/images/generations</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.x.ai/developers/rest-api-reference/inference/images)
 
@@ -662,6 +710,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 
 <code>GET https://api.x.ai/v1/language-models/{modelIdOrSignal}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
@@ -679,6 +729,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 
 <code>DELETE https://management-api.x.ai/v1/collections/{collectionId}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
@@ -693,6 +745,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 <summary><code>DELETE</code> <b><code>xai.managementApi.v1.collections.documents</code></b></summary>
 
 <code>DELETE https://management-api.x.ai/v1/collections/{collectionId}/documents/{fileId}</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
@@ -709,6 +763,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 
 <code>GET https://management-api.x.ai/auth/teams/{teamId}/api-keys{query}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.x.ai/developers/rest-api-reference/management/auth)
 
 ```typescript
@@ -723,6 +779,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 <summary><code>GET</code> <b><code>xai.managementApi.v1.billing.teams.postpaid.invoice.preview</code></b></summary>
 
 <code>GET https://management-api.x.ai/v1/billing/teams/{teamId}/postpaid/invoice/preview</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.x.ai/developers/rest-api-reference/management/billing)
 
@@ -739,6 +797,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 
 <code>GET https://management-api.x.ai/v1/billing/teams/{teamId}/postpaid/spending-limits</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.x.ai/developers/rest-api-reference/management/billing)
 
 ```typescript
@@ -753,6 +813,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 <summary><code>GET</code> <b><code>xai.managementApi.v1.billing.teams.prepaid.balance</code></b></summary>
 
 <code>GET https://management-api.x.ai/v1/billing/teams/{teamId}/prepaid/balance</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.x.ai/developers/rest-api-reference/management/billing)
 
@@ -769,6 +831,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 
 <code>GET https://management-api.x.ai/v1/collections/{paramsOrIdOrSignal}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
@@ -783,6 +847,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 <summary><code>GET</code> <b><code>xai.managementApi.v1.collections.documents</code></b></summary>
 
 <code>GET https://management-api.x.ai/v1/collections/{collectionId}/documents/{paramsOrFileId}</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
@@ -799,6 +865,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 
 <code>GET https://management-api.x.ai/v1/collections/{collectionId}/documents:batchGet{query}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
@@ -813,6 +881,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 <summary><code>PATCH</code> <b><code>xai.managementApi.v1.collections.documents</code></b></summary>
 
 <code>PATCH https://management-api.x.ai/v1/collections/{collectionId}/documents/{fileId}</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
@@ -829,6 +899,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 
 <code>POST https://management-api.x.ai/v1/billing/teams/{teamId}/usage</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.x.ai/developers/rest-api-reference/management/billing)
 
 ```typescript
@@ -843,6 +915,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 <summary><code>POST</code> <b><code>xai.managementApi.v1.collections</code></b></summary>
 
 <code>POST https://management-api.x.ai/v1/collections</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
@@ -859,6 +933,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 
 <code>POST https://management-api.x.ai/v1/collections/{collectionId}/documents/{fileId}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
@@ -873,6 +949,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 <summary><code>PUT</code> <b><code>xai.managementApi.v1.collections</code></b></summary>
 
 <code>PUT https://management-api.x.ai/v1/collections/{collectionId}</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
@@ -891,6 +969,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 
 <code>GET https://api.x.ai/v1/models/{modelIdOrSignal}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
@@ -907,6 +987,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 <summary><code>POST</code> <b><code>xai.v1.realtime.clientSecrets</code></b></summary>
 
 <code>POST https://api.x.ai/v1/realtime/client_secrets</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
@@ -925,6 +1007,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 
 <code>DELETE https://api.x.ai/v1/responses/{id}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
@@ -939,6 +1023,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 <summary><code>GET</code> <b><code>xai.v1.responses</code></b></summary>
 
 <code>GET https://api.x.ai/v1/responses/{id}</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
@@ -955,6 +1041,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 
 <code>POST https://api.x.ai/v1/responses</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
@@ -969,6 +1057,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 <summary><code>POST</code> <b><code>xai.v1.responses.compact</code></b></summary>
 
 <code>POST https://api.x.ai/v1/responses/compact</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
@@ -987,6 +1077,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 
 <code>POST https://api.x.ai/v1/stt</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
@@ -1003,6 +1095,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 <summary><code>POST</code> <b><code>xai.v1.tokenizeText</code></b></summary>
 
 <code>POST https://api.x.ai/v1/tokenize-text</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
@@ -1021,6 +1115,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 
 <code>POST https://api.x.ai/v1/tts</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
@@ -1037,6 +1133,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 <summary><code>GET</code> <b><code>xai.v1.videoGenerationModels</code></b></summary>
 
 <code>GET https://api.x.ai/v1/video-generation-models/{modelIdOrSignal}</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
@@ -1055,6 +1153,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 
 <code>GET https://api.x.ai/v1/videos/{requestId}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
@@ -1069,6 +1169,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 <summary><code>POST</code> <b><code>xai.v1.videos.edits</code></b></summary>
 
 <code>POST https://api.x.ai/v1/videos/edits</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
@@ -1085,6 +1187,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 
 <code>POST https://api.x.ai/v1/videos/extensions</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
@@ -1100,6 +1204,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 
 <code>POST https://api.x.ai/v1/videos/generations</code>
 
+Cost tier: <code>prohibitive</code>
+
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
@@ -1114,6 +1220,8 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 <summary><code>POST</code> <b><code>xai.v1.videos.generations.imageToVideo</code></b></summary>
 
 <code>POST https://api.x.ai/v1/videos/generations</code>
+
+Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.x.ai/developers/model-capabilities/video/image-to-video)
 

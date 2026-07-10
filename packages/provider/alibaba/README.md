@@ -200,6 +200,8 @@ console.log(
 
 <code>GET https://dashscope.aliyuncs.com/compatible-mode/v1/models</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://help.aliyun.com/zh/model-studio)
 
 ```typescript
@@ -214,6 +216,8 @@ Source: [`packages/provider/alibaba/src/alibaba.ts`](src/alibaba.ts)
 <summary><code>POST</code> <b><code>alibaba.compatibleMode.v1.chat.completions</code></b></summary>
 
 <code>POST https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://help.aliyun.com/zh/model-studio)
 
@@ -232,6 +236,8 @@ Source: [`packages/provider/alibaba/src/alibaba.ts`](src/alibaba.ts)
 
 <code>POST https://dashscope.aliyuncs.com/api/v1/services/aigc/image-generation/generation</code>
 
+Cost tier: <code>expensive</code>
+
 ```typescript
 const res = await alibaba.api.v1.services.aigc.imageGeneration.generation({ /* ... */ });
 ```
@@ -244,6 +250,8 @@ Source: [`packages/provider/alibaba/src/alibaba.ts`](src/alibaba.ts)
 <summary><code>POST</code> <b><code>alibaba.api.v1.services.aigc.multimodalGeneration.generation</code></b></summary>
 
 <code>POST https://dashscope.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://www.alibabacloud.com/help/en/model-studio/qwen-image-edit)
 
@@ -259,6 +267,8 @@ Source: [`packages/provider/alibaba/src/alibaba.ts`](src/alibaba.ts)
 <summary><code>POST</code> <b><code>alibaba.api.v1.services.aigc.videoGeneration.videoSynthesis</code></b></summary>
 
 <code>POST https://dashscope.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://help.aliyun.com/zh/model-studio)
 
@@ -277,6 +287,8 @@ Source: [`packages/provider/alibaba/src/alibaba.ts`](src/alibaba.ts)
 
 <code>GET https://dashscope.aliyuncs.com/api/v1/tasks/{taskId}</code>
 
+Cost tier: <code>expensive</code>
+
 [Upstream docs ↗](https://help.aliyun.com/zh/model-studio)
 
 ```typescript
@@ -293,6 +305,8 @@ Source: [`packages/provider/alibaba/src/alibaba.ts`](src/alibaba.ts)
 <summary><code>GET</code> <b><code>alibaba.api.v1.uploads</code></b></summary>
 
 <code>GET https://dashscope.aliyuncs.com/api/v1/uploads</code>
+
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://help.aliyun.com/zh/model-studio)
 

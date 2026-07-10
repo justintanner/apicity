@@ -94,6 +94,8 @@ separate binary/checksum handling and tests.
 
 <code>GET https://api.binance.com/api/v3/aggTrades{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#compressedaggregate-trades-list)
 
 ```typescript
@@ -110,6 +112,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.api.v3.avgPrice</code></b></summary>
 
 <code>GET https://api.binance.com/api/v3/avgPrice{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#current-average-price)
 
@@ -128,6 +132,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://dapi.binance.com/futures/data/basis{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Basis)
 
 ```typescript
@@ -142,6 +148,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.coinMFutures.data.deliveryPrice</code></b></summary>
 
 <code>GET https://dapi.binance.com/futures/data/delivery-price{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Delivery-Price)
 
@@ -158,6 +166,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://dapi.binance.com/futures/data/globalLongShortAccountRatio{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Long-Short-Ratio)
 
 ```typescript
@@ -172,6 +182,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.coinMFutures.data.openInterestHist</code></b></summary>
 
 <code>GET https://dapi.binance.com/futures/data/openInterestHist{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Open-Interest-Statistics)
 
@@ -188,6 +200,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://dapi.binance.com/futures/data/takerBuySellVol{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Taker-Buy-Sell-Volume)
 
 ```typescript
@@ -203,6 +217,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://dapi.binance.com/futures/data/topLongShortAccountRatio{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Top-Long-Short-Account-Ratio)
 
 ```typescript
@@ -217,6 +233,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.coinMFutures.data.topLongShortPositionRatio</code></b></summary>
 
 <code>GET https://dapi.binance.com/futures/data/topLongShortPositionRatio{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Top-Trader-Long-Short-Ratio)
 
@@ -235,6 +253,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://dapi.binance.com/dapi/v1/aggTrades{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Compressed-Aggregate-Trades-List)
 
 ```typescript
@@ -249,6 +269,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.dapi.v1.constituents</code></b></summary>
 
 <code>GET https://dapi.binance.com/dapi/v1/constituents{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Index-Constituents)
 
@@ -265,6 +287,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://dapi.binance.com/dapi/v1/continuousKlines{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Continuous-Contract-Kline-Candlestick-Data)
 
 ```typescript
@@ -279,6 +303,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.dapi.v1.depth</code></b></summary>
 
 <code>GET https://dapi.binance.com/dapi/v1/depth{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Order-Book)
 
@@ -295,6 +321,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://dapi.binance.com/dapi/v1/exchangeInfo</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Exchange-Information)
 
 ```typescript
@@ -309,6 +337,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.dapi.v1.fundingInfo</code></b></summary>
 
 <code>GET https://dapi.binance.com/dapi/v1/fundingInfo</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Get-Funding-Info)
 
@@ -325,6 +355,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://dapi.binance.com/dapi/v1/fundingRate{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Get-Funding-Rate-History-of-Perpetual-Futures)
 
 ```typescript
@@ -339,6 +371,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.dapi.v1.indexPriceKlines</code></b></summary>
 
 <code>GET https://dapi.binance.com/dapi/v1/indexPriceKlines{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Index-Price-Kline-Candlestick-Data)
 
@@ -355,6 +389,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://dapi.binance.com/dapi/v1/klines{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Kline-Candlestick-Data)
 
 ```typescript
@@ -369,6 +405,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.dapi.v1.markPriceKlines</code></b></summary>
 
 <code>GET https://dapi.binance.com/dapi/v1/markPriceKlines{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Mark-Price-Kline-Candlestick-Data)
 
@@ -385,6 +423,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://dapi.binance.com/dapi/v1/openInterest{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Open-Interest)
 
 ```typescript
@@ -399,6 +439,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.dapi.v1.ping</code></b></summary>
 
 <code>GET https://dapi.binance.com/dapi/v1/ping</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Test-Connectivity)
 
@@ -415,6 +457,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://dapi.binance.com/dapi/v1/premiumIndex{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Index-Price-and-Mark-Price)
 
 ```typescript
@@ -429,6 +473,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.dapi.v1.premiumIndexKlines</code></b></summary>
 
 <code>GET https://dapi.binance.com/dapi/v1/premiumIndexKlines{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Premium-Index-Kline-Data)
 
@@ -445,6 +491,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://dapi.binance.com/dapi/v1/ticker/bookTicker{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Symbol-Order-Book-Ticker)
 
 ```typescript
@@ -459,6 +507,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.dapi.v1.ticker.price</code></b></summary>
 
 <code>GET https://dapi.binance.com/dapi/v1/ticker/price{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Symbol-Price-Ticker)
 
@@ -475,6 +525,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://dapi.binance.com/dapi/v1/ticker/24hr{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/24hr-Ticker-Price-Change-Statistics)
 
 ```typescript
@@ -490,6 +542,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://dapi.binance.com/dapi/v1/time</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Check-Server-time)
 
 ```typescript
@@ -504,6 +558,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.dapi.v1.trades</code></b></summary>
 
 <code>GET https://dapi.binance.com/dapi/v1/trades{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Recent-Trades-List)
 
@@ -522,6 +578,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://api.binance.com/api/v3/depth{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#order-book)
 
 ```typescript
@@ -539,6 +597,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://eapi.binance.com/eapi/v1/blockTrades{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/options-trading/market-data/Recent-Block-Trade-List)
 
 ```typescript
@@ -553,6 +613,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.eapi.v1.depth</code></b></summary>
 
 <code>GET https://eapi.binance.com/eapi/v1/depth{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/options-trading/market-data/Order-Book)
 
@@ -569,6 +631,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://eapi.binance.com/eapi/v1/exchangeInfo</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/options-trading/market-data/Exchange-Information)
 
 ```typescript
@@ -583,6 +647,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.eapi.v1.exerciseHistory</code></b></summary>
 
 <code>GET https://eapi.binance.com/eapi/v1/exerciseHistory{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/options-trading/market-data/Historical-Exercise-Records)
 
@@ -599,6 +665,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://eapi.binance.com/eapi/v1/index{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/options-trading/market-data/Symbol-Price-Ticker)
 
 ```typescript
@@ -613,6 +681,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.eapi.v1.klines</code></b></summary>
 
 <code>GET https://eapi.binance.com/eapi/v1/klines{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/options-trading/market-data/Kline-Candlestick-Data)
 
@@ -629,6 +699,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://eapi.binance.com/eapi/v1/mark{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/options-trading/market-data/Option-Mark-Price)
 
 ```typescript
@@ -643,6 +715,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.eapi.v1.openInterest</code></b></summary>
 
 <code>GET https://eapi.binance.com/eapi/v1/openInterest{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/options-trading/market-data/Open-Interest)
 
@@ -659,6 +733,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://eapi.binance.com/eapi/v1/ping</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/options-trading/market-data/Test-Connectivity)
 
 ```typescript
@@ -673,6 +749,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.eapi.v1.ticker</code></b></summary>
 
 <code>GET https://eapi.binance.com/eapi/v1/ticker{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/options-trading/market-data/24hr-Ticker-Price-Change-Statistics)
 
@@ -689,6 +767,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://eapi.binance.com/eapi/v1/time</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/options-trading/market-data/Check-Server-Time)
 
 ```typescript
@@ -703,6 +783,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.eapi.v1.trades</code></b></summary>
 
 <code>GET https://eapi.binance.com/eapi/v1/trades{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/options-trading/market-data/Recent-Trades-List)
 
@@ -721,6 +803,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://api.binance.com/api/v3/exchangeInfo{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/binance-spot-api-docs/rest-api/general-endpoints#exchange-information)
 
 ```typescript
@@ -737,6 +821,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.api.v3.executionRules</code></b></summary>
 
 <code>GET https://api.binance.com/api/v3/executionRules{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/binance-spot-api-docs/rest-api/general-endpoints#query-execution-rules)
 
@@ -755,6 +841,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://fapi.binance.com/fapi/v1/aggTrades{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Compressed-Aggregate-Trades-List)
 
 ```typescript
@@ -769,6 +857,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.fapi.v1.assetIndex</code></b></summary>
 
 <code>GET https://fapi.binance.com/fapi/v1/assetIndex{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Multi-Assets-Mode-Asset-Index)
 
@@ -785,6 +875,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://fapi.binance.com/fapi/v1/constituents{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Index-Constituents)
 
 ```typescript
@@ -799,6 +891,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.fapi.v1.continuousKlines</code></b></summary>
 
 <code>GET https://fapi.binance.com/fapi/v1/continuousKlines{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Continuous-Contract-Kline-Candlestick-Data)
 
@@ -815,6 +909,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://fapi.binance.com/fapi/v1/depth{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Order-Book)
 
 ```typescript
@@ -829,6 +925,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.fapi.v1.exchangeInfo</code></b></summary>
 
 <code>GET https://fapi.binance.com/fapi/v1/exchangeInfo</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Exchange-Information)
 
@@ -845,6 +943,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://fapi.binance.com/fapi/v1/fundingInfo</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Get-Funding-Rate-Info)
 
 ```typescript
@@ -859,6 +959,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.fapi.v1.fundingRate</code></b></summary>
 
 <code>GET https://fapi.binance.com/fapi/v1/fundingRate{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Get-Funding-Rate-History)
 
@@ -875,6 +977,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://fapi.binance.com/fapi/v1/indexInfo{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Composite-Index-Symbol-Information)
 
 ```typescript
@@ -889,6 +993,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.fapi.v1.indexPriceKlines</code></b></summary>
 
 <code>GET https://fapi.binance.com/fapi/v1/indexPriceKlines{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Index-Price-Kline-Candlestick-Data)
 
@@ -905,6 +1011,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://fapi.binance.com/fapi/v1/insuranceBalance{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Insurance-Fund-Balance)
 
 ```typescript
@@ -919,6 +1027,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.fapi.v1.klines</code></b></summary>
 
 <code>GET https://fapi.binance.com/fapi/v1/klines{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Kline-Candlestick-Data)
 
@@ -935,6 +1045,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://fapi.binance.com/fapi/v1/markPriceKlines{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Mark-Price-Kline-Candlestick-Data)
 
 ```typescript
@@ -949,6 +1061,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.fapi.v1.openInterest</code></b></summary>
 
 <code>GET https://fapi.binance.com/fapi/v1/openInterest{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Open-Interest)
 
@@ -965,6 +1079,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://fapi.binance.com/fapi/v1/ping</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Test-Connectivity)
 
 ```typescript
@@ -979,6 +1095,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.fapi.v1.premiumIndex</code></b></summary>
 
 <code>GET https://fapi.binance.com/fapi/v1/premiumIndex{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Mark-Price)
 
@@ -995,6 +1113,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://fapi.binance.com/fapi/v1/premiumIndexKlines{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Premium-Index-Kline-Data)
 
 ```typescript
@@ -1009,6 +1129,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.fapi.v1.rpiDepth</code></b></summary>
 
 <code>GET https://fapi.binance.com/fapi/v1/rpiDepth{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Order-Book-RPI)
 
@@ -1025,6 +1147,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://fapi.binance.com/fapi/v1/symbolAdlRisk{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/ADL-Risk)
 
 ```typescript
@@ -1039,6 +1163,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.fapi.v1.ticker.bookTicker</code></b></summary>
 
 <code>GET https://fapi.binance.com/fapi/v1/ticker/bookTicker{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Symbol-Order-Book-Ticker)
 
@@ -1055,6 +1181,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://fapi.binance.com/fapi/v1/ticker/24hr{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/24hr-Ticker-Price-Change-Statistics)
 
 ```typescript
@@ -1069,6 +1197,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.fapi.v1.time</code></b></summary>
 
 <code>GET https://fapi.binance.com/fapi/v1/time</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Check-Server-Time)
 
@@ -1085,6 +1215,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://fapi.binance.com/fapi/v1/trades{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Recent-Trades-List)
 
 ```typescript
@@ -1100,6 +1232,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://fapi.binance.com/fapi/v1/tradingSchedule</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Trading-Schedule)
 
 ```typescript
@@ -1114,6 +1248,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.fapi.v2.ticker.price</code></b></summary>
 
 <code>GET https://fapi.binance.com/fapi/v2/ticker/price{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Symbol-Price-Ticker-v2)
 
@@ -1132,6 +1268,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://fapi.binance.com/futures/data/basis{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Basis)
 
 ```typescript
@@ -1146,6 +1284,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.futures.data.deliveryPrice</code></b></summary>
 
 <code>GET https://fapi.binance.com/futures/data/delivery-price{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Delivery-Price)
 
@@ -1162,6 +1302,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://fapi.binance.com/futures/data/globalLongShortAccountRatio{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Long-Short-Ratio)
 
 ```typescript
@@ -1176,6 +1318,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.futures.data.openInterestHist</code></b></summary>
 
 <code>GET https://fapi.binance.com/futures/data/openInterestHist{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Open-Interest-Statistics)
 
@@ -1192,6 +1336,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://fapi.binance.com/futures/data/takerlongshortRatio{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Taker-BuySell-Volume)
 
 ```typescript
@@ -1207,6 +1353,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://fapi.binance.com/futures/data/topLongShortAccountRatio{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Top-Long-Short-Account-Ratio)
 
 ```typescript
@@ -1221,6 +1369,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.futures.data.topLongShortPositionRatio</code></b></summary>
 
 <code>GET https://fapi.binance.com/futures/data/topLongShortPositionRatio{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Top-Trader-Long-Short-Ratio)
 
@@ -1239,6 +1389,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://api.binance.com/api/v3/historicalBlockTrades{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#historical-block-trades)
 
 ```typescript
@@ -1255,6 +1407,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.api.v3.historicalTrades</code></b></summary>
 
 <code>GET https://api.binance.com/api/v3/historicalTrades{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#old-trade-lookup)
 
@@ -1273,6 +1427,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://api.binance.com/api/v3/klines{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#klinecandlestick-data)
 
 ```typescript
@@ -1289,6 +1445,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.api.v3.ping</code></b></summary>
 
 <code>GET https://api.binance.com/api/v3/ping</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/binance-spot-api-docs/rest-api/general-endpoints#test-connectivity)
 
@@ -1307,6 +1465,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://eapi.binance.com/eapi/v1/ping</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/options-trading/market-data/Test-Connectivity)
 
 ```typescript
@@ -1321,6 +1481,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.public.spot.api.v3.ping</code></b></summary>
 
 <code>GET https://api.binance.com/api/v3/ping</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/binance-spot-api-docs/rest-api/general-endpoints#test-connectivity)
 
@@ -1337,6 +1499,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://data-api.binance.vision/api/v3/ping</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/binance-spot-api-docs/faqs/market_data_only)
 
 ```typescript
@@ -1351,6 +1515,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.public.usdMFutures.fapi.v1.ping</code></b></summary>
 
 <code>GET https://fapi.binance.com/fapi/v1/ping</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Test-Connectivity)
 
@@ -1369,6 +1535,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://api.binance.com/api/v3/referencePrice{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#query-reference-price)
 
 ```typescript
@@ -1383,6 +1551,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.api.v3.referencePrice.calculation</code></b></summary>
 
 <code>GET https://api.binance.com/api/v3/referencePrice/calculation{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#query-reference-price-calculation)
 
@@ -1401,6 +1571,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://api.binance.com/api/v3/ticker{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#rolling-window-price-change-statistics)
 
 ```typescript
@@ -1415,6 +1587,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.api.v3.ticker.bookTicker</code></b></summary>
 
 <code>GET https://api.binance.com/api/v3/ticker/bookTicker{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#symbol-order-book-ticker)
 
@@ -1431,6 +1605,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://api.binance.com/api/v3/ticker/price{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#symbol-price-ticker)
 
 ```typescript
@@ -1446,6 +1622,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://api.binance.com/api/v3/ticker/tradingDay{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#trading-day-ticker)
 
 ```typescript
@@ -1460,6 +1638,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.api.v3.ticker.twentyFourHr</code></b></summary>
 
 <code>GET https://api.binance.com/api/v3/ticker/24hr{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#24hr-ticker-price-change-statistics)
 
@@ -1478,6 +1658,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://api.binance.com/api/v3/time</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/binance-spot-api-docs/rest-api/general-endpoints#check-server-time)
 
 ```typescript
@@ -1495,6 +1677,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://api.binance.com/api/v3/trades{query}</code>
 
+Cost tier: <code>cheap</code>
+
 [Upstream docs ↗](https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#recent-trades-list)
 
 ```typescript
@@ -1511,6 +1695,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.api.v3.uiKlines</code></b></summary>
 
 <code>GET https://api.binance.com/api/v3/uiKlines{query}</code>
+
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#uiklines)
 

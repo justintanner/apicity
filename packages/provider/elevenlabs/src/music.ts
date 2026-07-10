@@ -60,6 +60,7 @@ export function createMusicEndpoints(ctx: ElevenLabsContext) {
     { schema: ElevenLabsMusicPlanRequestSchema }
   );
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/music/stream
   // Docs: https://elevenlabs.io/docs/api-reference/music/compose-stream
   const composeMusicStream = Object.assign(

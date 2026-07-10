@@ -282,6 +282,7 @@ export function createStudioEndpoints(ctx: ElevenLabsContext) {
     { schema: undefined }
   );
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/studio/projects/{projectId}/snapshots/{snapshotId}/stream
   // Docs: https://elevenlabs.io/docs/api-reference/studio/stream-project-audio
   const studioStreamProjectSnapshot = Object.assign(
@@ -482,6 +483,7 @@ export function createStudioEndpoints(ctx: ElevenLabsContext) {
     { schema: undefined }
   );
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/studio/projects/{projectId}/chapters/{chapterId}/snapshots/{chapterSnapshotId}/stream
   // Docs: https://elevenlabs.io/docs/api-reference/studio/stream-chapter-audio
   const studioStreamChapterSnapshot = Object.assign(

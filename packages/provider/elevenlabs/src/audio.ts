@@ -48,6 +48,7 @@ export function createAudioEndpoints(ctx: ElevenLabsContext) {
     { schema: ElevenLabsSoundGenerationRequestSchema }
   );
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/audio-isolation/stream
   // Docs: https://elevenlabs.io/docs/api-reference/audio-isolation/stream
   const audioIsolationStream = Object.assign(
@@ -134,6 +135,7 @@ export function createAudioEndpoints(ctx: ElevenLabsContext) {
     }
   );
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/audio-native/content
   // Docs: https://elevenlabs.io/docs/api-reference/audio-native/update-content
   const updateAudioNativeContentFromUrl = Object.assign(

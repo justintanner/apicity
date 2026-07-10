@@ -569,6 +569,7 @@ export function createConvaiEndpoints(ctx: ElevenLabsContext) {
     { schema: undefined }
   );
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/convai/agents/{agentId}/simulate-conversation/stream
   // Docs: https://elevenlabs.io/docs/api-reference/agents/simulate-conversation-stream
   const simulateConversationStream = Object.assign(
@@ -2411,6 +2412,7 @@ export function createConvaiEndpoints(ctx: ElevenLabsContext) {
     { schema: ElevenLabsAssignConversationTagsRequestSchema }
   );
 
+  // sig-ok: intentional
   // DELETE https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/tags/{tagId}
   // Docs: https://elevenlabs.io/docs/api-reference/conversations/tags/unassign
   const unassignConversationTag = Object.assign(
@@ -2429,6 +2431,7 @@ export function createConvaiEndpoints(ctx: ElevenLabsContext) {
     { schema: undefined }
   );
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/analysis/run
   // Docs: https://elevenlabs.io/docs/api-reference/conversations/analysis/run-analysis
   const runConversationAnalysis = Object.assign(
@@ -2446,6 +2449,7 @@ export function createConvaiEndpoints(ctx: ElevenLabsContext) {
     { schema: undefined }
   );
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/analysis/evaluations/run
   // Docs: https://elevenlabs.io/docs/api-reference/conversations/analysis/run-evaluation
   const runConversationEvaluations = Object.assign(
@@ -2842,6 +2846,7 @@ export function createConvaiEndpoints(ctx: ElevenLabsContext) {
     { schema: ElevenLabsListKnowledgeBaseDocumentChunksRequestSchema }
   );
 
+  // sig-ok: intentional
   // GET https://api.elevenlabs.io/v1/convai/knowledge-base/{documentationId}/chunk/{chunkId}
   // Docs: https://elevenlabs.io/docs/api-reference/knowledge-base/get-chunk
   const getKnowledgeBaseDocumentChunk = Object.assign(
@@ -2952,6 +2957,7 @@ export function createConvaiEndpoints(ctx: ElevenLabsContext) {
     { schema: undefined }
   );
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/convai/knowledge-base/rag-index
   // Docs: https://elevenlabs.io/docs/api-reference/knowledge-base/compute-rag-index-batch
   const computeKnowledgeBaseRagIndexes = Object.assign(
@@ -2986,6 +2992,7 @@ export function createConvaiEndpoints(ctx: ElevenLabsContext) {
     { schema: undefined }
   );
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/convai/knowledge-base/{documentationId}/rag-index
   // Docs: https://elevenlabs.io/docs/api-reference/knowledge-base/compute-rag-index
   const computeKnowledgeBaseDocumentRagIndex = Object.assign(

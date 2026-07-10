@@ -5,6 +5,7 @@ import type { ElevenLabsContext } from "./transport";
 export function createSpeechToSpeechEndpoints(ctx: ElevenLabsContext) {
   const { makeMultipartBinaryRequest, appendFormField, optionalQuery } = ctx;
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/speech-to-speech/{voiceId}/stream
   // Docs: https://elevenlabs.io/docs/api-reference/speech-to-speech/stream
   const speechToSpeechStream = Object.assign(

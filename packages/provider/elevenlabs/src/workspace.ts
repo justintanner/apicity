@@ -158,6 +158,7 @@ export function createWorkspaceEndpoints(ctx: ElevenLabsContext) {
     { schema: ElevenLabsSearchWorkspaceGroupsRequestSchema }
   );
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/workspace/groups/{groupId}/members
   // Docs: https://elevenlabs.io/docs/api-reference/workspace/groups/members/add
   const addWorkspaceGroupMember = Object.assign(

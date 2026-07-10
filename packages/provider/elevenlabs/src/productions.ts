@@ -138,6 +138,7 @@ export function createProductionsEndpoints(ctx: ElevenLabsContext) {
     { schema: undefined }
   );
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/productions/orders/{orderId}/items
   // Docs: https://elevenlabs.io/docs/api-reference/productions/orders/items/upsert
   const upsertOrderItem = Object.assign(
@@ -156,6 +157,7 @@ export function createProductionsEndpoints(ctx: ElevenLabsContext) {
     { schema: ElevenLabsUpsertOrderItemRequestSchema }
   );
 
+  // sig-ok: intentional
   // DELETE https://api.elevenlabs.io/v1/productions/orders/{orderId}/items/{itemId}
   // Docs: https://elevenlabs.io/docs/api-reference/productions/orders/items/remove
   const removeOrderItem = Object.assign(
@@ -174,6 +176,7 @@ export function createProductionsEndpoints(ctx: ElevenLabsContext) {
     { schema: undefined }
   );
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/productions/orders/{orderId}/media
   // Docs: https://elevenlabs.io/docs/api-reference/productions/orders/media/register
   const registerOrderMedia = Object.assign(

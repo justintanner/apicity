@@ -166,6 +166,7 @@ export function createVoicesEndpoints(ctx: ElevenLabsContext) {
     );
   };
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/voices/add/{publicUserId}/{voiceId}
   // Docs: https://elevenlabs.io/docs/api-reference/voices/share
   const addSharedVoice = Object.assign(
@@ -344,6 +345,7 @@ export function createVoicesEndpoints(ctx: ElevenLabsContext) {
     { schema: ElevenLabsCreatePvcVoiceRequestSchema }
   );
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/voices/pvc/{voiceId}
   // Docs: https://elevenlabs.io/docs/api-reference/voices/pvc/edit
   const editPvcVoice = Object.assign(
@@ -421,6 +423,7 @@ export function createVoicesEndpoints(ctx: ElevenLabsContext) {
     { schema: ElevenLabsUpdatePvcVoiceSampleRequestSchema }
   );
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/voices/pvc/{voiceId}/samples
   // Docs: https://elevenlabs.io/docs/api-reference/voices/pvc/samples/create
   const addPvcSamples = Object.assign(

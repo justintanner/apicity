@@ -133,6 +133,7 @@ export function createDubbingEndpoints(ctx: ElevenLabsContext) {
     { schema: undefined }
   );
 
+  // sig-ok: intentional
   // GET https://api.elevenlabs.io/v1/dubbing/{dubbingId}/transcripts/{languageCode}/format/{formatType}
   // Docs: https://elevenlabs.io/docs/api-reference/dubbing/transcripts/get
   const getDubbingTranscript = Object.assign(

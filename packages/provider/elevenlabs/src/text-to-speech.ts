@@ -28,6 +28,7 @@ export function createTextToSpeechEndpoints(ctx: ElevenLabsContext) {
     buildQueryString,
   } = ctx;
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/text-to-speech/{voiceId}/stream/with-timestamps
   // Docs: https://elevenlabs.io/docs/api-reference/text-to-speech/stream-with-timestamps
   const textToSpeechStreamWithTimestamps = Object.assign(
@@ -55,6 +56,7 @@ export function createTextToSpeechEndpoints(ctx: ElevenLabsContext) {
     { schema: ElevenLabsTextToSpeechRequestSchema }
   );
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/text-to-speech/{voiceId}/stream
   // Docs: https://elevenlabs.io/docs/api-reference/text-to-speech/stream
   const textToSpeechStream = Object.assign(
@@ -131,6 +133,7 @@ export function createTextToSpeechEndpoints(ctx: ElevenLabsContext) {
     }
   );
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/text-to-dialogue/stream/with-timestamps
   // Docs: https://elevenlabs.io/docs/api-reference/text-to-dialogue/stream-with-timestamps
   const textToDialogueStreamWithTimestamps = Object.assign(
@@ -157,6 +160,7 @@ export function createTextToSpeechEndpoints(ctx: ElevenLabsContext) {
     { schema: ElevenLabsTextToDialogueRequestSchema }
   );
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/text-to-dialogue/stream
   // Docs: https://elevenlabs.io/docs/api-reference/text-to-dialogue/stream
   const textToDialogueStream = Object.assign(
@@ -283,6 +287,7 @@ export function createTextToSpeechEndpoints(ctx: ElevenLabsContext) {
     { schema: ElevenLabsVoiceRemixRequestSchema }
   );
 
+  // sig-ok: intentional
   // GET https://api.elevenlabs.io/v1/text-to-voice/{generatedVoiceId}/stream
   // Docs: https://elevenlabs.io/docs/api-reference/text-to-voice/stream
   const textToVoiceStream = Object.assign(

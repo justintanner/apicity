@@ -159,7 +159,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.audioIsolation({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/audio.ts`](src/audio.ts)
 
 </details>
 
@@ -176,7 +176,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.audioIsolation.history.delete({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/audio.ts`](src/audio.ts)
 
 </details>
 
@@ -193,7 +193,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.audioIsolation.history.list({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/audio.ts`](src/audio.ts)
 
 </details>
 
@@ -210,7 +210,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.audioIsolation.stream({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/audio.ts`](src/audio.ts)
 
 </details>
 
@@ -229,7 +229,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.audioNative({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/audio.ts`](src/audio.ts)
 
 </details>
 
@@ -246,7 +246,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.audioNative.content.fromUrl({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/audio.ts`](src/audio.ts)
 
 </details>
 
@@ -263,7 +263,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.audioNative.content.update({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/audio.ts`](src/audio.ts)
 
 </details>
 
@@ -280,7 +280,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.audioNative.settings({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/audio.ts`](src/audio.ts)
 
 </details>
 
@@ -299,7 +299,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.agent.knowledgeBase.size({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -316,7 +316,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.agent.llmUsage.calculate({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -333,7 +333,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.agentTesting.bulkMove({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -350,7 +350,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.agentTesting.create({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -367,7 +367,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.agentTesting.delete({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -384,7 +384,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.agentTesting.folders.create({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -401,7 +401,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.agentTesting.folders.delete({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -418,7 +418,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.agentTesting.folders.get({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -435,7 +435,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.agentTesting.folders.update({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -452,7 +452,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.agentTesting.get({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -469,7 +469,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.agentTesting.list({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -486,7 +486,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.agentTesting.summaries({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -503,7 +503,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.agentTesting.update({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -520,7 +520,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.agents.avatar({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -537,7 +537,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.agents.branches({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -554,7 +554,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.agents.branches.create({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -571,7 +571,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.agents.branches.get({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -588,7 +588,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.agents.branches.merge({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -605,7 +605,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.agents.branches.mergePreview({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -622,7 +622,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.agents.branches.rebase({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -639,7 +639,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.agents.branches.rebasePreview({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -656,7 +656,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.agents.branches.update({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -673,7 +673,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.agents.create({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -690,7 +690,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.agents.delete({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -707,7 +707,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.agents.deployments({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -724,7 +724,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.agents.drafts.create({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -741,7 +741,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.agents.drafts.delete({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -758,7 +758,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.agents.duplicate({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -775,7 +775,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.agents.get({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -792,7 +792,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.agents.link({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -809,7 +809,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.agents.list({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -826,7 +826,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.agents.runTests({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -843,7 +843,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.agents.simulateConversation({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -860,7 +860,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.agents.simulateConversation.stream({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -877,7 +877,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.agents.summaries({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -894,7 +894,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.agents.topics({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -911,7 +911,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.agents.update({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -928,7 +928,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.agents.versions.get({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -945,7 +945,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.agents.widget({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -962,7 +962,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.analytics.liveCount({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -979,7 +979,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.batchCalling.cancel({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -996,7 +996,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.batchCalling.delete({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1013,7 +1013,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.batchCalling.get({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1030,7 +1030,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.batchCalling.retry({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1047,7 +1047,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.batchCalling.submit({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1064,7 +1064,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.batchCalling.workspace({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1081,7 +1081,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.conversation.getSignedUrl({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1098,7 +1098,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.conversation.token({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1115,7 +1115,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.conversations.analysis({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1132,7 +1132,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.conversations.analysis.evaluations({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1149,7 +1149,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.conversations.audio({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1166,7 +1166,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.conversations.delete({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1183,7 +1183,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.conversations.feedback({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1200,7 +1200,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.conversations.files({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1217,7 +1217,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.conversations.files.delete({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1234,7 +1234,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.conversations.get({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1251,7 +1251,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.conversations.list({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1268,7 +1268,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.conversations.messages.smartSearch({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1285,7 +1285,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.conversations.messages.textSearch({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1302,7 +1302,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.conversations.sipMessages({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1319,7 +1319,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.conversations.tags({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1336,7 +1336,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.conversations.tags.unassign({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1353,7 +1353,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.environmentVariables.create({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1370,7 +1370,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.environmentVariables.get({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1387,7 +1387,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.environmentVariables.list({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1404,7 +1404,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.environmentVariables.update({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1421,7 +1421,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.exotel.outboundCall({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1438,7 +1438,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.knowledgeBase.bulkMove({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1455,7 +1455,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.knowledgeBase.chunks({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1472,7 +1472,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.knowledgeBase.chunks.get({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1489,7 +1489,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.knowledgeBase.content({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1506,7 +1506,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.knowledgeBase.delete({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1523,7 +1523,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.knowledgeBase.dependentAgents({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1540,7 +1540,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.knowledgeBase.file({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1557,7 +1557,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.knowledgeBase.folder({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1574,7 +1574,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.knowledgeBase.get({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1591,7 +1591,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.knowledgeBase.list({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1608,7 +1608,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.knowledgeBase.move({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1625,7 +1625,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.knowledgeBase.ragIndex({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1642,7 +1642,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.knowledgeBase.ragIndex.batch({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1659,7 +1659,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.knowledgeBase.ragIndex.compute({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1676,7 +1676,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.knowledgeBase.ragIndex.delete({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1693,7 +1693,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.knowledgeBase.ragIndex.get({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1710,7 +1710,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.knowledgeBase.refresh({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1727,7 +1727,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.knowledgeBase.search({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1744,7 +1744,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.knowledgeBase.sourceFileUrl({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1761,7 +1761,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.knowledgeBase.summaries({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1778,7 +1778,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.knowledgeBase.text({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1795,7 +1795,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.knowledgeBase.update({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1812,7 +1812,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.knowledgeBase.updateFile({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1829,7 +1829,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.knowledgeBase.url({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1846,7 +1846,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.llm.list({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1863,7 +1863,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.llmUsage.calculate({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1880,7 +1880,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.mcpServers.create({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1897,7 +1897,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.mcpServers.delete({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1914,7 +1914,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.mcpServers.get({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1931,7 +1931,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.mcpServers.list({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1948,7 +1948,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.mcpServers.toolApprovals.create({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1965,7 +1965,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.mcpServers.toolApprovals.delete({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1982,7 +1982,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.mcpServers.toolConfigs.create({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -1999,7 +1999,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.mcpServers.toolConfigs.delete({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2016,7 +2016,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.mcpServers.toolConfigs.get({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2033,7 +2033,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.mcpServers.toolConfigs.update({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2050,7 +2050,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.mcpServers.tools({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2067,7 +2067,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.mcpServers.update({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2084,7 +2084,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.phoneNumbers.create({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2101,7 +2101,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.phoneNumbers.delete({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2118,7 +2118,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.phoneNumbers.get({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2135,7 +2135,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.phoneNumbers.list({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2152,7 +2152,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.phoneNumbers.sipMessages({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2169,7 +2169,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.phoneNumbers.update({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2186,7 +2186,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.secrets.create({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2203,7 +2203,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.secrets.delete({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2220,7 +2220,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.secrets.dependencies({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2237,7 +2237,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.secrets.get({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2254,7 +2254,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.secrets.list({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2271,7 +2271,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.secrets.update({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2288,7 +2288,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.settings({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2305,7 +2305,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.settings.dashboard({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2322,7 +2322,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.settings.dashboard.update({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2339,7 +2339,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.settings.update({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2356,7 +2356,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.sipTrunk.outboundCall({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2373,7 +2373,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.tags.create({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2390,7 +2390,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.tags.delete({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2407,7 +2407,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.tags.get({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2424,7 +2424,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.tags.list({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2441,7 +2441,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.tags.update({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2458,7 +2458,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.testInvocations.get({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2475,7 +2475,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.testInvocations.list({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2492,7 +2492,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.testInvocations.resubmit({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2509,7 +2509,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.tools.create({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2526,7 +2526,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.tools.delete({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2543,7 +2543,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.tools.dependentAgents({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2560,7 +2560,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.tools.executions({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2577,7 +2577,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.tools.get({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2594,7 +2594,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.tools.list({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2611,7 +2611,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.tools.update({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2628,7 +2628,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.twilio.outboundCall({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2645,7 +2645,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.twilio.registerCall({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2662,7 +2662,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.users.list({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2679,7 +2679,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.whatsapp.outboundCall({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2696,7 +2696,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.whatsapp.outboundMessage({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2713,7 +2713,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.whatsappAccounts.delete({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2730,7 +2730,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.whatsappAccounts.get({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2747,7 +2747,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.whatsappAccounts.list({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2764,7 +2764,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.convai.whatsappAccounts.update({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
 
 </details>
 
@@ -2783,7 +2783,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.docs();
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/models.ts`](src/models.ts)
 
 </details>
 
@@ -2802,7 +2802,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.dubbing.audio.get({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/dubbing.ts`](src/dubbing.ts)
 
 </details>
 
@@ -2819,7 +2819,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.dubbing.create({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/dubbing.ts`](src/dubbing.ts)
 
 </details>
 
@@ -2836,7 +2836,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.dubbing.delete({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/dubbing.ts`](src/dubbing.ts)
 
 </details>
 
@@ -2853,7 +2853,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.dubbing.get({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/dubbing.ts`](src/dubbing.ts)
 
 </details>
 
@@ -2870,7 +2870,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.dubbing.list({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/dubbing.ts`](src/dubbing.ts)
 
 </details>
 
@@ -2887,7 +2887,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.dubbing.resource.get({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/dubbing.ts`](src/dubbing.ts)
 
 </details>
 
@@ -2904,7 +2904,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.dubbing.transcripts.get({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/dubbing.ts`](src/dubbing.ts)
 
 </details>
 
@@ -2923,7 +2923,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.forcedAlignment({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/speech-to-text.ts`](src/speech-to-text.ts)
 
 </details>
 
@@ -2940,7 +2940,7 @@ Cost tier: <code>prohibitive</code>
 const res = await elevenlabs.v1.history.audio({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/history.ts`](src/history.ts)
 
 </details>
 
@@ -2955,7 +2955,7 @@ Cost tier: <code>prohibitive</code>
 const res = await elevenlabs.v1.history.delete({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/history.ts`](src/history.ts)
 
 </details>
 
@@ -2970,7 +2970,7 @@ Cost tier: <code>prohibitive</code>
 const res = await elevenlabs.v1.history.download({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/history.ts`](src/history.ts)
 
 </details>
 
@@ -2985,7 +2985,7 @@ Cost tier: <code>prohibitive</code>
 const res = await elevenlabs.v1.history.get({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/history.ts`](src/history.ts)
 
 </details>
 
@@ -3000,7 +3000,7 @@ Cost tier: <code>prohibitive</code>
 const res = await elevenlabs.v1.history.list({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/history.ts`](src/history.ts)
 
 </details>
 
@@ -3019,7 +3019,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.models();
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/models.ts`](src/models.ts)
 
 </details>
 
@@ -3038,7 +3038,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.music({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/music.ts`](src/music.ts)
 
 </details>
 
@@ -3055,7 +3055,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.music.detailed({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/music.ts`](src/music.ts)
 
 </details>
 
@@ -3072,7 +3072,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.music.plan({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/music.ts`](src/music.ts)
 
 </details>
 
@@ -3089,7 +3089,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.music.stemSeparation({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/music.ts`](src/music.ts)
 
 </details>
 
@@ -3106,7 +3106,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.music.stream({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/music.ts`](src/music.ts)
 
 </details>
 
@@ -3123,7 +3123,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.music.upload({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/music.ts`](src/music.ts)
 
 </details>
 
@@ -3140,7 +3140,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.music.videoToMusic({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/music.ts`](src/music.ts)
 
 </details>
 
@@ -3159,7 +3159,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.productions.orders.create({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/productions.ts`](src/productions.ts)
 
 </details>
 
@@ -3176,7 +3176,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.productions.orders.deliverables({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/productions.ts`](src/productions.ts)
 
 </details>
 
@@ -3193,7 +3193,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.productions.orders.get({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/productions.ts`](src/productions.ts)
 
 </details>
 
@@ -3210,7 +3210,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.productions.orders.items.remove({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/productions.ts`](src/productions.ts)
 
 </details>
 
@@ -3227,7 +3227,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.productions.orders.items.upsert({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/productions.ts`](src/productions.ts)
 
 </details>
 
@@ -3244,7 +3244,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.productions.orders.languages({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/productions.ts`](src/productions.ts)
 
 </details>
 
@@ -3261,7 +3261,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.productions.orders.list({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/productions.ts`](src/productions.ts)
 
 </details>
 
@@ -3278,7 +3278,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.productions.orders.media.get({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/productions.ts`](src/productions.ts)
 
 </details>
 
@@ -3295,7 +3295,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.productions.orders.media.register({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/productions.ts`](src/productions.ts)
 
 </details>
 
@@ -3312,7 +3312,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.productions.orders.submit({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/productions.ts`](src/productions.ts)
 
 </details>
 
@@ -3329,7 +3329,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.productions.orders.update({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/productions.ts`](src/productions.ts)
 
 </details>
 
@@ -3348,7 +3348,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.pronunciationDictionaries.addFromFile({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/pronunciation-dictionaries.ts`](src/pronunciation-dictionaries.ts)
 
 </details>
 
@@ -3365,7 +3365,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.pronunciationDictionaries.addFromRules({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/pronunciation-dictionaries.ts`](src/pronunciation-dictionaries.ts)
 
 </details>
 
@@ -3382,7 +3382,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.pronunciationDictionaries.addRules({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/pronunciation-dictionaries.ts`](src/pronunciation-dictionaries.ts)
 
 </details>
 
@@ -3399,7 +3399,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.pronunciationDictionaries.download({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/pronunciation-dictionaries.ts`](src/pronunciation-dictionaries.ts)
 
 </details>
 
@@ -3416,7 +3416,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.pronunciationDictionaries.get({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/pronunciation-dictionaries.ts`](src/pronunciation-dictionaries.ts)
 
 </details>
 
@@ -3433,7 +3433,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.pronunciationDictionaries.list({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/pronunciation-dictionaries.ts`](src/pronunciation-dictionaries.ts)
 
 </details>
 
@@ -3450,7 +3450,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.pronunciationDictionaries.removeRules({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/pronunciation-dictionaries.ts`](src/pronunciation-dictionaries.ts)
 
 </details>
 
@@ -3467,7 +3467,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.pronunciationDictionaries.setRules({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/pronunciation-dictionaries.ts`](src/pronunciation-dictionaries.ts)
 
 </details>
 
@@ -3484,7 +3484,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.pronunciationDictionaries.update({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/pronunciation-dictionaries.ts`](src/pronunciation-dictionaries.ts)
 
 </details>
 
@@ -3503,7 +3503,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.serviceAccounts.apiKeys.create({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/service-accounts.ts`](src/service-accounts.ts)
 
 </details>
 
@@ -3520,7 +3520,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.serviceAccounts.apiKeys.delete({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/service-accounts.ts`](src/service-accounts.ts)
 
 </details>
 
@@ -3537,7 +3537,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.serviceAccounts.apiKeys.list({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/service-accounts.ts`](src/service-accounts.ts)
 
 </details>
 
@@ -3554,7 +3554,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.serviceAccounts.apiKeys.update({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/service-accounts.ts`](src/service-accounts.ts)
 
 </details>
 
@@ -3571,7 +3571,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.serviceAccounts.list({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/service-accounts.ts`](src/service-accounts.ts)
 
 </details>
 
@@ -3590,7 +3590,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.sharedVoices({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/voices.ts`](src/voices.ts)
 
 </details>
 
@@ -3609,7 +3609,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.similarVoices({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/voices.ts`](src/voices.ts)
 
 </details>
 
@@ -3628,7 +3628,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.singleUseToken({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/user.ts`](src/user.ts)
 
 </details>
 
@@ -3647,7 +3647,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.soundGeneration({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/audio.ts`](src/audio.ts)
 
 </details>
 
@@ -3666,7 +3666,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.speechEngine.create({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/speech-engine.ts`](src/speech-engine.ts)
 
 </details>
 
@@ -3683,7 +3683,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.speechEngine.delete({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/speech-engine.ts`](src/speech-engine.ts)
 
 </details>
 
@@ -3700,7 +3700,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.speechEngine.get({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/speech-engine.ts`](src/speech-engine.ts)
 
 </details>
 
@@ -3717,7 +3717,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.speechEngine.list({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/speech-engine.ts`](src/speech-engine.ts)
 
 </details>
 
@@ -3734,7 +3734,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.speechEngine.update({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/speech-engine.ts`](src/speech-engine.ts)
 
 </details>
 
@@ -3753,7 +3753,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.speechToSpeech({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/speech-to-speech.ts`](src/speech-to-speech.ts)
 
 </details>
 
@@ -3770,7 +3770,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.speechToSpeech.stream({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/speech-to-speech.ts`](src/speech-to-speech.ts)
 
 </details>
 
@@ -3789,7 +3789,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.speechToText({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/speech-to-text.ts`](src/speech-to-text.ts)
 
 </details>
 
@@ -3806,7 +3806,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.speechToText.transcripts.delete({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/speech-to-text.ts`](src/speech-to-text.ts)
 
 </details>
 
@@ -3823,7 +3823,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.speechToText.transcripts.get({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/speech-to-text.ts`](src/speech-to-text.ts)
 
 </details>
 
@@ -3842,7 +3842,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.studio.podcasts.create({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/studio.ts`](src/studio.ts)
 
 </details>
 
@@ -3859,7 +3859,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.studio.projects.chapters.convert({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/studio.ts`](src/studio.ts)
 
 </details>
 
@@ -3876,7 +3876,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.studio.projects.chapters.create({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/studio.ts`](src/studio.ts)
 
 </details>
 
@@ -3893,7 +3893,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.studio.projects.chapters.delete({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/studio.ts`](src/studio.ts)
 
 </details>
 
@@ -3910,7 +3910,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.studio.projects.chapters.get({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/studio.ts`](src/studio.ts)
 
 </details>
 
@@ -3927,7 +3927,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.studio.projects.chapters.list({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/studio.ts`](src/studio.ts)
 
 </details>
 
@@ -3944,7 +3944,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.studio.projects.chapters.snapshots.get({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/studio.ts`](src/studio.ts)
 
 </details>
 
@@ -3961,7 +3961,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.studio.projects.chapters.snapshots.list({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/studio.ts`](src/studio.ts)
 
 </details>
 
@@ -3978,7 +3978,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.studio.projects.chapters.snapshots.stream({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/studio.ts`](src/studio.ts)
 
 </details>
 
@@ -3995,7 +3995,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.studio.projects.chapters.update({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/studio.ts`](src/studio.ts)
 
 </details>
 
@@ -4012,7 +4012,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.studio.projects.content.update({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/studio.ts`](src/studio.ts)
 
 </details>
 
@@ -4029,7 +4029,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.studio.projects.convert({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/studio.ts`](src/studio.ts)
 
 </details>
 
@@ -4046,7 +4046,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.studio.projects.create({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/studio.ts`](src/studio.ts)
 
 </details>
 
@@ -4063,7 +4063,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.studio.projects.delete({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/studio.ts`](src/studio.ts)
 
 </details>
 
@@ -4080,7 +4080,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.studio.projects.get({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/studio.ts`](src/studio.ts)
 
 </details>
 
@@ -4097,7 +4097,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.studio.projects.list({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/studio.ts`](src/studio.ts)
 
 </details>
 
@@ -4114,7 +4114,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.studio.projects.mutedTracks.get({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/studio.ts`](src/studio.ts)
 
 </details>
 
@@ -4131,7 +4131,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.studio.projects.pronunciationDictionaries.create({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/studio.ts`](src/studio.ts)
 
 </details>
 
@@ -4148,7 +4148,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.studio.projects.snapshots.archive({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/studio.ts`](src/studio.ts)
 
 </details>
 
@@ -4165,7 +4165,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.studio.projects.snapshots.get({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/studio.ts`](src/studio.ts)
 
 </details>
 
@@ -4182,7 +4182,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.studio.projects.snapshots.list({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/studio.ts`](src/studio.ts)
 
 </details>
 
@@ -4199,7 +4199,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.studio.projects.snapshots.stream({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/studio.ts`](src/studio.ts)
 
 </details>
 
@@ -4216,7 +4216,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.studio.projects.update({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/studio.ts`](src/studio.ts)
 
 </details>
 
@@ -4235,7 +4235,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.textToDialogue({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/text-to-speech.ts`](src/text-to-speech.ts)
 
 </details>
 
@@ -4252,7 +4252,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.textToDialogue.stream({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/text-to-speech.ts`](src/text-to-speech.ts)
 
 </details>
 
@@ -4267,7 +4267,7 @@ Cost tier: <code>prohibitive</code>
 const res = await elevenlabs.v1.textToDialogue.withTimestamps({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/text-to-speech.ts`](src/text-to-speech.ts)
 
 </details>
 
@@ -4282,7 +4282,7 @@ Cost tier: <code>prohibitive</code>
 const res = await elevenlabs.v1.textToDialogue.withTimestamps({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/text-to-speech.ts`](src/text-to-speech.ts)
 
 </details>
 
@@ -4301,7 +4301,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.textToSpeech("voice_id", { /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/text-to-speech.ts`](src/text-to-speech.ts)
 
 </details>
 
@@ -4318,7 +4318,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.textToSpeech.stream({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/text-to-speech.ts`](src/text-to-speech.ts)
 
 </details>
 
@@ -4335,7 +4335,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.textToSpeech.withTimestamps({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/text-to-speech.ts`](src/text-to-speech.ts)
 
 </details>
 
@@ -4352,7 +4352,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.textToSpeech.withTimestamps({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/text-to-speech.ts`](src/text-to-speech.ts)
 
 </details>
 
@@ -4371,7 +4371,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.textToVoice({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/text-to-speech.ts`](src/text-to-speech.ts)
 
 </details>
 
@@ -4388,7 +4388,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.textToVoice.design({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/text-to-speech.ts`](src/text-to-speech.ts)
 
 </details>
 
@@ -4405,7 +4405,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.textToVoice.remix({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/text-to-speech.ts`](src/text-to-speech.ts)
 
 </details>
 
@@ -4422,7 +4422,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.textToVoice.stream({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/text-to-speech.ts`](src/text-to-speech.ts)
 
 </details>
 
@@ -4441,7 +4441,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.usage.characterStats({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/models.ts`](src/models.ts)
 
 </details>
 
@@ -4460,7 +4460,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.user({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/user.ts`](src/user.ts)
 
 </details>
 
@@ -4477,7 +4477,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.user.subscription();
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/user.ts`](src/user.ts)
 
 </details>
 
@@ -4496,7 +4496,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.voices("voice_id", { /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/voices.ts`](src/voices.ts)
 
 </details>
 
@@ -4513,7 +4513,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.voices.add({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/voices.ts`](src/voices.ts)
 
 </details>
 
@@ -4530,7 +4530,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.voices.add.share({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/voices.ts`](src/voices.ts)
 
 </details>
 
@@ -4547,7 +4547,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.voices.delete({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/voices.ts`](src/voices.ts)
 
 </details>
 
@@ -4564,7 +4564,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.voices.edit({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/voices.ts`](src/voices.ts)
 
 </details>
 
@@ -4581,7 +4581,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.voices.list({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/voices.ts`](src/voices.ts)
 
 </details>
 
@@ -4598,7 +4598,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.voices.pvc({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/voices.ts`](src/voices.ts)
 
 </details>
 
@@ -4615,7 +4615,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.voices.pvc.captcha("voice_id", { recording });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/voices.ts`](src/voices.ts)
 
 </details>
 
@@ -4632,7 +4632,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.voices.pvc.captcha.get("voice_id");
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/voices.ts`](src/voices.ts)
 
 </details>
 
@@ -4647,7 +4647,7 @@ Cost tier: <code>prohibitive</code>
 const res = await elevenlabs.v1.voices.pvc.edit({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/voices.ts`](src/voices.ts)
 
 </details>
 
@@ -4664,7 +4664,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.voices.pvc.samples("voice_id", "sample_id", { /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/voices.ts`](src/voices.ts)
 
 </details>
 
@@ -4679,7 +4679,7 @@ Cost tier: <code>prohibitive</code>
 const res = await elevenlabs.v1.voices.pvc.samples.add({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/voices.ts`](src/voices.ts)
 
 </details>
 
@@ -4694,7 +4694,7 @@ Cost tier: <code>prohibitive</code>
 const res = await elevenlabs.v1.voices.pvc.samples.audio({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/voices.ts`](src/voices.ts)
 
 </details>
 
@@ -4711,7 +4711,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.voices.pvc.samples.delete("voice_id", "sample_id");
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/voices.ts`](src/voices.ts)
 
 </details>
 
@@ -4728,7 +4728,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.voices.pvc.samples.separateSpeakers("voice_id", "sample_id");
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/voices.ts`](src/voices.ts)
 
 </details>
 
@@ -4743,7 +4743,7 @@ Cost tier: <code>prohibitive</code>
 const res = await elevenlabs.v1.voices.pvc.samples.speakers({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/voices.ts`](src/voices.ts)
 
 </details>
 
@@ -4760,7 +4760,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.voices.pvc.samples.speakers.audio("voice_id", "sample_id", "speaker_id");
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/voices.ts`](src/voices.ts)
 
 </details>
 
@@ -4777,7 +4777,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.voices.pvc.samples.waveform("voice_id", "sample_id");
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/voices.ts`](src/voices.ts)
 
 </details>
 
@@ -4794,7 +4794,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.voices.pvc.train("voice_id", { /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/voices.ts`](src/voices.ts)
 
 </details>
 
@@ -4811,7 +4811,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.voices.pvc.verification("voice_id", { /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/voices.ts`](src/voices.ts)
 
 </details>
 
@@ -4828,7 +4828,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.voices.samples.audio({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/voices.ts`](src/voices.ts)
 
 </details>
 
@@ -4845,7 +4845,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.voices.samples.delete({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/voices.ts`](src/voices.ts)
 
 </details>
 
@@ -4862,7 +4862,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.voices.settings("voice_id");
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/voices.ts`](src/voices.ts)
 
 </details>
 
@@ -4879,7 +4879,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.voices.settings.default({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/voices.ts`](src/voices.ts)
 
 </details>
 
@@ -4896,7 +4896,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.voices.settings.edit({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/voices.ts`](src/voices.ts)
 
 </details>
 
@@ -4913,7 +4913,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v2.voices({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/voices.ts`](src/voices.ts)
 
 </details>
 
@@ -4932,7 +4932,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.workspace.analytics.query.usageByProductOverTime({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/workspace.ts`](src/workspace.ts)
 
 </details>
 
@@ -4949,7 +4949,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.workspace.analytics.requests({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/workspace.ts`](src/workspace.ts)
 
 </details>
 
@@ -4966,7 +4966,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.workspace.auditLogs({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/workspace.ts`](src/workspace.ts)
 
 </details>
 
@@ -4983,7 +4983,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.workspace.authConnections.create({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/workspace.ts`](src/workspace.ts)
 
 </details>
 
@@ -5000,7 +5000,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.workspace.authConnections.delete({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/workspace.ts`](src/workspace.ts)
 
 </details>
 
@@ -5017,7 +5017,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.workspace.authConnections.list({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/workspace.ts`](src/workspace.ts)
 
 </details>
 
@@ -5034,7 +5034,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.workspace.authConnections.update({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/workspace.ts`](src/workspace.ts)
 
 </details>
 
@@ -5051,7 +5051,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.workspace.groups.list({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/workspace.ts`](src/workspace.ts)
 
 </details>
 
@@ -5068,7 +5068,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.workspace.groups.members.add({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/workspace.ts`](src/workspace.ts)
 
 </details>
 
@@ -5085,7 +5085,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.workspace.groups.members.remove({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/workspace.ts`](src/workspace.ts)
 
 </details>
 
@@ -5102,7 +5102,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.workspace.groups.search({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/workspace.ts`](src/workspace.ts)
 
 </details>
 
@@ -5119,7 +5119,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.workspace.invites.add({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/workspace.ts`](src/workspace.ts)
 
 </details>
 
@@ -5136,7 +5136,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.workspace.invites.addBulk({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/workspace.ts`](src/workspace.ts)
 
 </details>
 
@@ -5153,7 +5153,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.workspace.invites.delete({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/workspace.ts`](src/workspace.ts)
 
 </details>
 
@@ -5170,7 +5170,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.workspace.members.update({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/workspace.ts`](src/workspace.ts)
 
 </details>
 
@@ -5187,7 +5187,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.workspace.resources.get({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/workspace.ts`](src/workspace.ts)
 
 </details>
 
@@ -5204,7 +5204,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.workspace.resources.share({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/workspace.ts`](src/workspace.ts)
 
 </details>
 
@@ -5221,7 +5221,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.workspace.resources.unshare({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/workspace.ts`](src/workspace.ts)
 
 </details>
 
@@ -5238,7 +5238,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.workspace.webhooks.create({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/workspace.ts`](src/workspace.ts)
 
 </details>
 
@@ -5255,7 +5255,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.workspace.webhooks.delete({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/workspace.ts`](src/workspace.ts)
 
 </details>
 
@@ -5272,7 +5272,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.workspace.webhooks.list({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/workspace.ts`](src/workspace.ts)
 
 </details>
 
@@ -5289,7 +5289,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.workspace.webhooks.update({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/workspace.ts`](src/workspace.ts)
 
 </details>
 
@@ -5308,7 +5308,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.workspaces.apiKeys.disable({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/workspace.ts`](src/workspace.ts)
 
 </details>
 
@@ -5325,7 +5325,7 @@ Cost tier: <code>expensive</code>
 const res = await elevenlabs.v1.workspaces.apiKeys.thirdPartyDisabling({ /* ... */ });
 ```
 
-Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+Source: [`packages/provider/elevenlabs/src/workspace.ts`](src/workspace.ts)
 
 </details>
 

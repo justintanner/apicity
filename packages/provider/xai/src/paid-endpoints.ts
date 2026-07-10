@@ -1,3 +1,5 @@
+// AUTO-GENERATED from packages/provider/cost/src/paid-endpoints.ts; do not edit.
+// Edit the canonical file and run `pnpm run gen:shared`.
 /**
  * Exact paid-endpoint registry.
  *
@@ -33,6 +35,124 @@ export interface PaidEndpointEntry {
  * review. Keep the list small and explicit.
  */
 export const PAID_ENDPOINTS: readonly PaidEndpointEntry[] = [
+  {
+    key: {
+      provider: "kie",
+      method: "POST",
+      dotPath: "api.v1.jobs.createTask",
+    },
+    info: {
+      reason:
+        "Media generation task that incurs direct marginal compute cost per job",
+      estimatorId: "kie-per-unit",
+      costNotes:
+        "Billed per unit (seconds/images/songs) based on model and resolution",
+    },
+  },
+  {
+    key: {
+      provider: "kie",
+      method: "POST",
+      dotPath: "api.v1.veo.generate",
+    },
+    info: {
+      reason:
+        "Direct VEO video generation task that incurs direct marginal compute cost",
+      estimatorId: "kie-per-unit",
+      costNotes: "Billed per video generation based on model and duration",
+    },
+  },
+  {
+    key: {
+      provider: "kie",
+      method: "POST",
+      dotPath: "api.v1.veo.extend",
+    },
+    info: {
+      reason:
+        "Direct VEO video extension task that incurs direct marginal compute cost",
+      estimatorId: "kie-per-unit",
+      costNotes: "Billed per video extension based on model and duration",
+    },
+  },
+  {
+    key: {
+      provider: "kie",
+      method: "GET",
+      dotPath: "api.v1.veo.get1080pVideo",
+    },
+    info: {
+      reason:
+        "Direct VEO 1080p render request that can incur direct marginal compute cost",
+      estimatorId: "kie-per-unit",
+      costNotes: "Billed per 1080p render request when processing is required",
+    },
+  },
+  {
+    key: {
+      provider: "kie",
+      method: "POST",
+      dotPath: "api.v1.flux.kontext.generate",
+    },
+    info: {
+      reason:
+        "Flux Kontext image generation/edit task that incurs direct marginal compute cost",
+      estimatorId: "kie-per-unit",
+      costNotes: "Billed per image generation based on model (pro/max)",
+    },
+  },
+  {
+    key: {
+      provider: "kie",
+      method: "POST",
+      dotPath: "api.v1.gpt4oImage.generate",
+    },
+    info: {
+      reason:
+        "4o Image generation/edit task that incurs direct marginal compute cost",
+      estimatorId: "kie-per-unit",
+      costNotes: "Billed per image generation based on size and fallback model",
+    },
+  },
+  {
+    key: {
+      provider: "kie",
+      method: "POST",
+      dotPath: "api.v1.mj.generate",
+    },
+    info: {
+      reason:
+        "Midjourney image/video generation task that incurs direct marginal compute cost",
+      estimatorId: "kie-per-unit",
+      costNotes: "Billed per generation based on task type, speed, and version",
+    },
+  },
+  {
+    key: {
+      provider: "kie",
+      method: "POST",
+      dotPath: "api.v1.runway.generate",
+    },
+    info: {
+      reason:
+        "Runway video generation task that incurs direct marginal compute cost",
+      estimatorId: "kie-per-unit",
+      costNotes: "Billed per video generation based on duration and quality",
+    },
+  },
+  {
+    key: {
+      provider: "kie",
+      method: "POST",
+      dotPath: "api.v1.runway.extend",
+    },
+    info: {
+      reason:
+        "Runway video extension task that incurs direct marginal compute cost",
+      estimatorId: "kie-per-unit",
+      costNotes: "Billed per video extension based on quality",
+    },
+  },
   {
     key: {
       provider: "xai",

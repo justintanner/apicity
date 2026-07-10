@@ -1,3 +1,5 @@
+// AUTO-GENERATED from packages/provider/cost/src/cost-tier.ts; do not edit.
+// Edit the canonical file and run `pnpm run gen:shared`.
 /**
  * Canonical cost-tier policy for the whole monorepo.
  *

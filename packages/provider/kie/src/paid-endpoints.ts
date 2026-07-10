@@ -1,3 +1,5 @@
+// AUTO-GENERATED from packages/provider/cost/src/paid-endpoints.ts; do not edit.
+// Edit the canonical file and run `pnpm run gen:shared`.
 /**
  * Exact paid-endpoint registry.
  *
@@ -149,6 +151,74 @@ export const PAID_ENDPOINTS: readonly PaidEndpointEntry[] = [
         "Runway video extension task that incurs direct marginal compute cost",
       estimatorId: "kie-per-unit",
       costNotes: "Billed per video extension based on quality",
+    },
+  },
+  {
+    key: {
+      provider: "xai",
+      method: "POST",
+      dotPath: "v1.images.generations",
+    },
+    info: {
+      reason: "Image generation task that incurs direct compute cost",
+      costNotes: "Billed per image based on model and resolution",
+    },
+  },
+  {
+    key: {
+      provider: "xai",
+      method: "POST",
+      dotPath: "v1.images.edits",
+    },
+    info: {
+      reason: "Image edit task that incurs direct compute cost",
+      costNotes: "Billed per image edit based on model and resolution",
+    },
+  },
+  {
+    key: {
+      provider: "xai",
+      method: "POST",
+      dotPath: "v1.videos.generations",
+    },
+    info: {
+      reason: "Video generation task that incurs direct compute cost",
+      costNotes: "Billed per video generation based on duration and model",
+    },
+  },
+  {
+    key: {
+      provider: "xai",
+      method: "POST",
+      dotPath: "v1.videos.generations.imageToVideo",
+    },
+    info: {
+      reason:
+        "Grok Imagine image-to-video generation incurs direct compute cost",
+      costNotes:
+        "Billed per video generation based on duration, resolution, and input image",
+    },
+  },
+  {
+    key: {
+      provider: "xai",
+      method: "POST",
+      dotPath: "v1.videos.edits",
+    },
+    info: {
+      reason: "Video edit task that incurs direct compute cost",
+      costNotes: "Billed per video edit based on duration and model",
+    },
+  },
+  {
+    key: {
+      provider: "xai",
+      method: "POST",
+      dotPath: "v1.videos.extensions",
+    },
+    info: {
+      reason: "Video extension task that incurs direct compute cost",
+      costNotes: "Billed per video extension based on duration and model",
     },
   },
 ];

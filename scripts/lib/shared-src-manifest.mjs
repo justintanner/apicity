@@ -51,6 +51,24 @@ export const sharedSrcEntries = [
     ],
   },
   {
+    id: "paid-endpoints",
+    class: "helper",
+    source: "packages/provider/cost/src/paid-endpoints.ts",
+    targets: [
+      "packages/provider/kie/src/paid-endpoints.ts",
+      "packages/provider/xai/src/paid-endpoints.ts",
+    ],
+  },
+  {
+    id: "cost-tier",
+    class: "helper",
+    source: "packages/provider/cost/src/cost-tier.ts",
+    targets: [
+      "packages/provider/kie/src/cost-tier.ts",
+      "packages/provider/xai/src/cost-tier.ts",
+    ],
+  },
+  {
     id: "s3-b2-factory",
     class: "helper",
     source: "packages/provider/s3/src/s3.ts",

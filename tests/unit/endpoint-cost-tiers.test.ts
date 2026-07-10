@@ -37,7 +37,11 @@ import {
 
 const REPO_ROOT = path.resolve(fileURLToPath(import.meta.url), "../../..");
 const SURFACE_PATH = path.join(REPO_ROOT, "scripts", "endpoint-docs.tsv");
-const ARTIFACT_PATH = path.join(REPO_ROOT, "scripts", "endpoint-cost-tiers.tsv");
+const ARTIFACT_PATH = path.join(
+  REPO_ROOT,
+  "scripts",
+  "endpoint-cost-tiers.tsv"
+);
 
 interface SurfaceEndpoint {
   provider: string;
@@ -90,7 +94,9 @@ function renderArtifact(rows: ClassifiedRow[]): string {
     "\t"
   );
   const body = sorted
-    .map((r) => [r.provider, r.dotPath, r.method, r.tier, r.rationale].join("\t"))
+    .map((r) =>
+      [r.provider, r.dotPath, r.method, r.tier, r.rationale].join("\t")
+    )
     .join("\n");
   return header + "\n" + body + "\n";
 }
@@ -132,9 +138,10 @@ describe("endpoint cost-tier classification — completeness", () => {
     const missing = providers.filter(
       (p) => !ENDPOINT_COST_POLICIES.some((pol) => pol.match.provider === p)
     );
-    expect(missing, `providers without any cost policy: ${missing.join(", ")}`).toEqual(
-      []
-    );
+    expect(
+      missing,
+      `providers without any cost policy: ${missing.join(", ")}`
+    ).toEqual([]);
   });
 });
 
@@ -157,9 +164,10 @@ describe("endpoint cost-tier classification — fail-closed invariants", () => {
       );
       return tier === "cheap";
     }).map((e) => `${e.key.provider}.${e.key.dotPath} [${e.key.method}]`);
-    expect(offenders, `paid endpoints misclassified as cheap: ${offenders}`).toEqual(
-      []
-    );
+    expect(
+      offenders,
+      `paid endpoints misclassified as cheap: ${offenders}`
+    ).toEqual([]);
   });
 
   it("every paid endpoint is present on the surface (registry not stale)", () => {
@@ -167,9 +175,10 @@ describe("endpoint cost-tier classification — fail-closed invariants", () => {
     const missing = PAID_ENDPOINTS.filter(
       (entry) => !surfaceKeys.has(endpointKey(entry.key))
     ).map((e) => `${e.key.provider}.${e.key.dotPath} [${e.key.method}]`);
-    expect(missing, `paid endpoints absent from the surface: ${missing}`).toEqual(
-      []
-    );
+    expect(
+      missing,
+      `paid endpoints absent from the surface: ${missing}`
+    ).toEqual([]);
   });
 
   it("never classifies a priced provider as cheap", () => {

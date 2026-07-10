@@ -112,12 +112,14 @@ export const ENDPOINT_COST_POLICIES: readonly EndpointCostPolicy[] = [
   {
     match: { provider: "s3" },
     tier: "cheap",
-    rationale: "S3-compatible object-storage request ops; per-request cost << $0.01",
+    rationale:
+      "S3-compatible object-storage request ops; per-request cost << $0.01",
   },
   {
     match: { provider: "b2" },
     tier: "cheap",
-    rationale: "Backblaze B2 S3-compatible request ops; per-request cost << $0.01",
+    rationale:
+      "Backblaze B2 S3-compatible request ops; per-request cost << $0.01",
   },
   {
     match: { provider: "dolthub" },
@@ -143,7 +145,8 @@ export const ENDPOINT_COST_POLICIES: readonly EndpointCostPolicy[] = [
   {
     match: { provider: "meta" },
     tier: "cheap",
-    rationale: "Instagram Graph posting API; free, no per-call USD compute cost",
+    rationale:
+      "Instagram Graph posting API; free, no per-call USD compute cost",
   },
   {
     match: { provider: "x" },
@@ -153,14 +156,16 @@ export const ENDPOINT_COST_POLICIES: readonly EndpointCostPolicy[] = [
   {
     match: { provider: "youtube" },
     tier: "cheap",
-    rationale: "YouTube Data API v3; quota-limited but free (no USD compute cost)",
+    rationale:
+      "YouTube Data API v3; quota-limited but free (no USD compute cost)",
   },
 
   // ── expensive: metered token/unit cost, bounded per typical call ────────
   {
     match: { provider: "openai" },
     tier: "expensive",
-    rationale: "Metered LLM/inference provider; per-call token cost bills real money",
+    rationale:
+      "Metered LLM/inference provider; per-call token cost bills real money",
   },
   {
     match: { provider: "anthropic" },
@@ -170,17 +175,20 @@ export const ENDPOINT_COST_POLICIES: readonly EndpointCostPolicy[] = [
   {
     match: { provider: "xai" },
     tier: "expensive",
-    rationale: "Metered LLM/inference provider; per-call token cost bills real money",
+    rationale:
+      "Metered LLM/inference provider; per-call token cost bills real money",
   },
   {
     match: { provider: "fireworks" },
     tier: "expensive",
-    rationale: "Metered LLM/inference provider; per-call token cost bills real money",
+    rationale:
+      "Metered LLM/inference provider; per-call token cost bills real money",
   },
   {
     match: { provider: "alibaba" },
     tier: "expensive",
-    rationale: "Metered Qwen LLM provider; per-call token cost bills real money",
+    rationale:
+      "Metered Qwen LLM provider; per-call token cost bills real money",
   },
   {
     match: { provider: "kimicoding" },
@@ -190,12 +198,14 @@ export const ENDPOINT_COST_POLICIES: readonly EndpointCostPolicy[] = [
   {
     match: { provider: "zaicoding" },
     tier: "expensive",
-    rationale: "Metered z.ai coding LLM provider; per-call token cost bills real money",
+    rationale:
+      "Metered z.ai coding LLM provider; per-call token cost bills real money",
   },
   {
     match: { provider: "google" },
     tier: "expensive",
-    rationale: "Metered Gemini generateContent; per-call token cost bills real money",
+    rationale:
+      "Metered Gemini generateContent; per-call token cost bills real money",
   },
   {
     match: { provider: "elevenlabs" },
@@ -232,7 +242,11 @@ export const ENDPOINT_COST_POLICIES: readonly EndpointCostPolicy[] = [
   // xAI image/video generation: these mirror the paid-endpoint registry and
   // incur direct media-generation cost, unlike xAI's metered text endpoints.
   {
-    match: { provider: "xai", method: "POST", dotPath: "v1.images.generations" },
+    match: {
+      provider: "xai",
+      method: "POST",
+      dotPath: "v1.images.generations",
+    },
     tier: "prohibitive",
     rationale: "Image generation; direct media-generation cost per image",
   },
@@ -242,7 +256,11 @@ export const ENDPOINT_COST_POLICIES: readonly EndpointCostPolicy[] = [
     rationale: "Image edit; direct media-generation cost per image",
   },
   {
-    match: { provider: "xai", method: "POST", dotPath: "v1.videos.generations" },
+    match: {
+      provider: "xai",
+      method: "POST",
+      dotPath: "v1.videos.generations",
+    },
     tier: "prohibitive",
     rationale: "Video generation; direct media-generation cost per video",
   },
@@ -253,7 +271,8 @@ export const ENDPOINT_COST_POLICIES: readonly EndpointCostPolicy[] = [
       dotPath: "v1.videos.generations.imageToVideo",
     },
     tier: "prohibitive",
-    rationale: "Image-to-video generation; direct media-generation cost per video",
+    rationale:
+      "Image-to-video generation; direct media-generation cost per video",
   },
   {
     match: { provider: "xai", method: "POST", dotPath: "v1.videos.edits" },
@@ -270,7 +289,9 @@ export const ENDPOINT_COST_POLICIES: readonly EndpointCostPolicy[] = [
 /** Specificity score: a more specific match (more fixed fields) wins. */
 function policySpecificity(match: EndpointCostPolicyMatch): number {
   // dotPath is the strongest signal, then method. Provider alone scores 0.
-  return (match.dotPath !== undefined ? 2 : 0) + (match.method !== undefined ? 1 : 0);
+  return (
+    (match.dotPath !== undefined ? 2 : 0) + (match.method !== undefined ? 1 : 0)
+  );
 }
 
 /**

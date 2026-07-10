@@ -9,6 +9,17 @@ export {
   isCostPolicyKnown,
 } from "./cost-tier";
 export type { CostTier, TierEstimate } from "./cost-tier";
+export {
+  ENDPOINT_COST_POLICIES,
+  classifyEndpoint,
+  resolveEndpointCostPolicy,
+  isEndpointExplicitlyClassified,
+} from "./endpoint-cost-policy";
+export type {
+  EndpointCostTier,
+  EndpointCostPolicy,
+  EndpointCostPolicyMatch,
+} from "./endpoint-cost-policy";
 export { PRICING, PRICING_AS_OF } from "./pricing/index";
 export { MODEL_SLUGS, MODEL_DISPLAY, modelSlug, modelDisplay } from "./slugs";
 export type { SlugProviderId, SlugModelId } from "./slugs";

@@ -1,0 +1,1572 @@
+provider	dotPath	method	tier	rationale
+alibaba	api.v1.services.aigc.imageGeneration.generation	POST	expensive	Metered Qwen LLM provider; per-call token cost bills real money
+alibaba	api.v1.services.aigc.multimodalGeneration.generation	POST	expensive	Metered Qwen LLM provider; per-call token cost bills real money
+alibaba	api.v1.services.aigc.videoGeneration.videoSynthesis	POST	expensive	Metered Qwen LLM provider; per-call token cost bills real money
+alibaba	api.v1.tasks	GET	expensive	Metered Qwen LLM provider; per-call token cost bills real money
+alibaba	api.v1.uploads	GET	expensive	Metered Qwen LLM provider; per-call token cost bills real money
+alibaba	compatibleMode.v1.chat.completions	POST	expensive	Metered Qwen LLM provider; per-call token cost bills real money
+alibaba	compatibleMode.v1.models	GET	expensive	Metered Qwen LLM provider; per-call token cost bills real money
+anthropic	api.oauth.usage	GET	expensive	Metered LLM provider; per-call token cost bills real money
+anthropic	v1.files	POST	expensive	Metered LLM provider; per-call token cost bills real money
+anthropic	v1.files.content	GET	expensive	Metered LLM provider; per-call token cost bills real money
+anthropic	v1.files.del	DELETE	expensive	Metered LLM provider; per-call token cost bills real money
+anthropic	v1.files.list	GET	expensive	Metered LLM provider; per-call token cost bills real money
+anthropic	v1.files.retrieve	GET	expensive	Metered LLM provider; per-call token cost bills real money
+anthropic	v1.messages	POST	expensive	Metered LLM provider; per-call token cost bills real money
+anthropic	v1.messages.batches	POST	expensive	Metered LLM provider; per-call token cost bills real money
+anthropic	v1.messages.batches.cancel	POST	expensive	Metered LLM provider; per-call token cost bills real money
+anthropic	v1.messages.batches.del	DELETE	expensive	Metered LLM provider; per-call token cost bills real money
+anthropic	v1.messages.batches.list	GET	expensive	Metered LLM provider; per-call token cost bills real money
+anthropic	v1.messages.batches.results	GET	expensive	Metered LLM provider; per-call token cost bills real money
+anthropic	v1.messages.batches.retrieve	GET	expensive	Metered LLM provider; per-call token cost bills real money
+anthropic	v1.messages.countTokens	POST	expensive	Metered LLM provider; per-call token cost bills real money
+anthropic	v1.models.list	GET	expensive	Metered LLM provider; per-call token cost bills real money
+anthropic	v1.models.retrieve	GET	expensive	Metered LLM provider; per-call token cost bills real money
+anthropic	v1.skills.create	POST	expensive	Metered LLM provider; per-call token cost bills real money
+anthropic	v1.skills.del	DELETE	expensive	Metered LLM provider; per-call token cost bills real money
+anthropic	v1.skills.list	GET	expensive	Metered LLM provider; per-call token cost bills real money
+anthropic	v1.skills.retrieve	GET	expensive	Metered LLM provider; per-call token cost bills real money
+anthropic	v1.skills.versions.create	POST	expensive	Metered LLM provider; per-call token cost bills real money
+anthropic	v1.skills.versions.del	DELETE	expensive	Metered LLM provider; per-call token cost bills real money
+anthropic	v1.skills.versions.list	GET	expensive	Metered LLM provider; per-call token cost bills real money
+b2	buckets.create	PUT	cheap	Backblaze B2 S3-compatible request ops; per-request cost << $0.01
+b2	buckets.del	DELETE	cheap	Backblaze B2 S3-compatible request ops; per-request cost << $0.01
+b2	buckets.delCors	DELETE	cheap	Backblaze B2 S3-compatible request ops; per-request cost << $0.01
+b2	buckets.delEncryption	DELETE	cheap	Backblaze B2 S3-compatible request ops; per-request cost << $0.01
+b2	buckets.getAcl	GET	cheap	Backblaze B2 S3-compatible request ops; per-request cost << $0.01
+b2	buckets.getCors	GET	cheap	Backblaze B2 S3-compatible request ops; per-request cost << $0.01
+b2	buckets.getEncryption	GET	cheap	Backblaze B2 S3-compatible request ops; per-request cost << $0.01
+b2	buckets.getObjectLockConfiguration	GET	cheap	Backblaze B2 S3-compatible request ops; per-request cost << $0.01
+b2	buckets.getVersioning	GET	cheap	Backblaze B2 S3-compatible request ops; per-request cost << $0.01
+b2	buckets.head	HEAD	cheap	Backblaze B2 S3-compatible request ops; per-request cost << $0.01
+b2	buckets.list	GET	cheap	Backblaze B2 S3-compatible request ops; per-request cost << $0.01
+b2	buckets.location	GET	cheap	Backblaze B2 S3-compatible request ops; per-request cost << $0.01
+b2	buckets.putAcl	PUT	cheap	Backblaze B2 S3-compatible request ops; per-request cost << $0.01
+b2	buckets.putCors	PUT	cheap	Backblaze B2 S3-compatible request ops; per-request cost << $0.01
+b2	buckets.putEncryption	PUT	cheap	Backblaze B2 S3-compatible request ops; per-request cost << $0.01
+b2	buckets.putObjectLockConfiguration	PUT	cheap	Backblaze B2 S3-compatible request ops; per-request cost << $0.01
+b2	objects.abortMultipartUpload	DELETE	cheap	Backblaze B2 S3-compatible request ops; per-request cost << $0.01
+b2	objects.completeMultipartUpload	POST	cheap	Backblaze B2 S3-compatible request ops; per-request cost << $0.01
+b2	objects.copy	PUT	cheap	Backblaze B2 S3-compatible request ops; per-request cost << $0.01
+b2	objects.createMultipartUpload	POST	cheap	Backblaze B2 S3-compatible request ops; per-request cost << $0.01
+b2	objects.del	DELETE	cheap	Backblaze B2 S3-compatible request ops; per-request cost << $0.01
+b2	objects.delMany	POST	cheap	Backblaze B2 S3-compatible request ops; per-request cost << $0.01
+b2	objects.get	GET	cheap	Backblaze B2 S3-compatible request ops; per-request cost << $0.01
+b2	objects.getAcl	GET	cheap	Backblaze B2 S3-compatible request ops; per-request cost << $0.01
+b2	objects.getLegalHold	GET	cheap	Backblaze B2 S3-compatible request ops; per-request cost << $0.01
+b2	objects.getRetention	GET	cheap	Backblaze B2 S3-compatible request ops; per-request cost << $0.01
+b2	objects.getStream	GET	cheap	Backblaze B2 S3-compatible request ops; per-request cost << $0.01
+b2	objects.head	HEAD	cheap	Backblaze B2 S3-compatible request ops; per-request cost << $0.01
+b2	objects.list	GET	cheap	Backblaze B2 S3-compatible request ops; per-request cost << $0.01
+b2	objects.listLegacy	GET	cheap	Backblaze B2 S3-compatible request ops; per-request cost << $0.01
+b2	objects.listMultipartUploads	GET	cheap	Backblaze B2 S3-compatible request ops; per-request cost << $0.01
+b2	objects.listParts	GET	cheap	Backblaze B2 S3-compatible request ops; per-request cost << $0.01
+b2	objects.listVersions	GET	cheap	Backblaze B2 S3-compatible request ops; per-request cost << $0.01
+b2	objects.put	PUT	cheap	Backblaze B2 S3-compatible request ops; per-request cost << $0.01
+b2	objects.putAcl	PUT	cheap	Backblaze B2 S3-compatible request ops; per-request cost << $0.01
+b2	objects.putLegalHold	PUT	cheap	Backblaze B2 S3-compatible request ops; per-request cost << $0.01
+b2	objects.putRetention	PUT	cheap	Backblaze B2 S3-compatible request ops; per-request cost << $0.01
+b2	objects.uploadPart	PUT	cheap	Backblaze B2 S3-compatible request ops; per-request cost << $0.01
+b2	objects.uploadPartCopy	PUT	cheap	Backblaze B2 S3-compatible request ops; per-request cost << $0.01
+binance	api.v3.aggTrades	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	api.v3.avgPrice	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	api.v3.depth	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	api.v3.exchangeInfo	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	api.v3.executionRules	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	api.v3.historicalBlockTrades	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	api.v3.historicalTrades	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	api.v3.klines	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	api.v3.ping	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	api.v3.referencePrice	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	api.v3.referencePrice.calculation	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	api.v3.ticker	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	api.v3.ticker.bookTicker	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	api.v3.ticker.price	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	api.v3.ticker.tradingDay	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	api.v3.ticker.twentyFourHr	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	api.v3.time	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	api.v3.trades	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	api.v3.uiKlines	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	coinMFutures.data.basis	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	coinMFutures.data.deliveryPrice	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	coinMFutures.data.globalLongShortAccountRatio	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	coinMFutures.data.openInterestHist	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	coinMFutures.data.takerBuySellVol	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	coinMFutures.data.topLongShortAccountRatio	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	coinMFutures.data.topLongShortPositionRatio	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	dapi.v1.aggTrades	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	dapi.v1.constituents	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	dapi.v1.continuousKlines	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	dapi.v1.depth	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	dapi.v1.exchangeInfo	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	dapi.v1.fundingInfo	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	dapi.v1.fundingRate	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	dapi.v1.indexPriceKlines	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	dapi.v1.klines	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	dapi.v1.markPriceKlines	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	dapi.v1.openInterest	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	dapi.v1.ping	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	dapi.v1.premiumIndex	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	dapi.v1.premiumIndexKlines	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	dapi.v1.ticker.bookTicker	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	dapi.v1.ticker.price	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	dapi.v1.ticker.twentyFourHr	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	dapi.v1.time	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	dapi.v1.trades	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	eapi.v1.blockTrades	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	eapi.v1.depth	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	eapi.v1.exchangeInfo	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	eapi.v1.exerciseHistory	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	eapi.v1.index	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	eapi.v1.klines	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	eapi.v1.mark	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	eapi.v1.openInterest	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	eapi.v1.ping	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	eapi.v1.ticker	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	eapi.v1.time	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	eapi.v1.trades	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	fapi.v1.aggTrades	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	fapi.v1.assetIndex	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	fapi.v1.constituents	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	fapi.v1.continuousKlines	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	fapi.v1.depth	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	fapi.v1.exchangeInfo	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	fapi.v1.fundingInfo	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	fapi.v1.fundingRate	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	fapi.v1.indexInfo	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	fapi.v1.indexPriceKlines	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	fapi.v1.insuranceBalance	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	fapi.v1.klines	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	fapi.v1.markPriceKlines	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	fapi.v1.openInterest	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	fapi.v1.ping	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	fapi.v1.premiumIndex	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	fapi.v1.premiumIndexKlines	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	fapi.v1.rpiDepth	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	fapi.v1.symbolAdlRisk	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	fapi.v1.ticker.bookTicker	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	fapi.v1.ticker.twentyFourHr	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	fapi.v1.time	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	fapi.v1.trades	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	fapi.v1.tradingSchedule	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	fapi.v2.ticker.price	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	futures.data.basis	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	futures.data.deliveryPrice	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	futures.data.globalLongShortAccountRatio	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	futures.data.openInterestHist	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	futures.data.takerlongshortRatio	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	futures.data.topLongShortAccountRatio	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	futures.data.topLongShortPositionRatio	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	public.coinMFutures.dapi.v1.ping	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	public.options.eapi.v1.ping	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	public.spot.api.v3.ping	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	public.spotData.api.v3.ping	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+binance	public.usdMFutures.fapi.v1.ping	GET	cheap	Public spot market-data REST; no per-call USD compute cost
+dolthub	v1alpha1.branches.create	POST	cheap	DoltHub SQL/database API; no per-call USD compute cost
+dolthub	v1alpha1.branches.list	GET	cheap	DoltHub SQL/database API; no per-call USD compute cost
+dolthub	v1alpha1.database.create	POST	cheap	DoltHub SQL/database API; no per-call USD compute cost
+dolthub	v1alpha1.pulls	GET	cheap	DoltHub SQL/database API; no per-call USD compute cost
+dolthub	v1alpha1.pulls.create	POST	cheap	DoltHub SQL/database API; no per-call USD compute cost
+dolthub	v1alpha1.pulls.list	GET	cheap	DoltHub SQL/database API; no per-call USD compute cost
+dolthub	v1alpha1.pulls.merge	POST	cheap	DoltHub SQL/database API; no per-call USD compute cost
+dolthub	v1alpha1.sql.read	GET	cheap	DoltHub SQL/database API; no per-call USD compute cost
+dolthub	v1alpha1.sql.write	POST	cheap	DoltHub SQL/database API; no per-call USD compute cost
+dolthub	v1alpha1.sql.writePoll	GET	cheap	DoltHub SQL/database API; no per-call USD compute cost
+dolthub	v1alpha1.user	GET	cheap	DoltHub SQL/database API; no per-call USD compute cost
+dropbox	check.user	POST	cheap	Dropbox file/metadata operations; no per-call USD compute cost
+dropbox	files.copyV2	POST	cheap	Dropbox file/metadata operations; no per-call USD compute cost
+dropbox	files.createFolderV2	POST	cheap	Dropbox file/metadata operations; no per-call USD compute cost
+dropbox	files.deleteV2	POST	cheap	Dropbox file/metadata operations; no per-call USD compute cost
+dropbox	files.download	POST	cheap	Dropbox file/metadata operations; no per-call USD compute cost
+dropbox	files.getMetadata	POST	cheap	Dropbox file/metadata operations; no per-call USD compute cost
+dropbox	files.listFolder	POST	cheap	Dropbox file/metadata operations; no per-call USD compute cost
+dropbox	files.listFolderContinue	POST	cheap	Dropbox file/metadata operations; no per-call USD compute cost
+dropbox	files.moveV2	POST	cheap	Dropbox file/metadata operations; no per-call USD compute cost
+dropbox	files.upload	POST	cheap	Dropbox file/metadata operations; no per-call USD compute cost
+dropbox	sharing.createSharedLinkWithSettings	POST	cheap	Dropbox file/metadata operations; no per-call USD compute cost
+dropbox	sharing.listSharedLinks	POST	cheap	Dropbox file/metadata operations; no per-call USD compute cost
+dropbox	users.getCurrentAccount	POST	cheap	Dropbox file/metadata operations; no per-call USD compute cost
+elevenlabs	docs	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.audioIsolation	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.audioIsolation.history.delete	DELETE	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.audioIsolation.history.list	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.audioIsolation.stream	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.audioNative	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.audioNative.content.fromUrl	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.audioNative.content.update	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.audioNative.settings	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.agent.knowledgeBase.size	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.agent.llmUsage.calculate	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.agentTesting.bulkMove	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.agentTesting.create	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.agentTesting.delete	DELETE	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.agentTesting.folders.create	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.agentTesting.folders.delete	DELETE	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.agentTesting.folders.get	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.agentTesting.folders.update	PATCH	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.agentTesting.get	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.agentTesting.list	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.agentTesting.summaries	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.agentTesting.update	PUT	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.agents.avatar	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.agents.branches	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.agents.branches.create	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.agents.branches.get	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.agents.branches.merge	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.agents.branches.mergePreview	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.agents.branches.rebase	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.agents.branches.rebasePreview	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.agents.branches.update	PATCH	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.agents.create	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.agents.delete	DELETE	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.agents.deployments	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.agents.drafts.create	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.agents.drafts.delete	DELETE	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.agents.duplicate	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.agents.get	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.agents.link	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.agents.list	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.agents.runTests	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.agents.simulateConversation	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.agents.simulateConversation.stream	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.agents.summaries	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.agents.topics	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.agents.update	PATCH	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.agents.versions.get	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.agents.widget	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.analytics.liveCount	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.batchCalling.cancel	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.batchCalling.delete	DELETE	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.batchCalling.get	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.batchCalling.retry	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.batchCalling.submit	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.batchCalling.workspace	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.conversation.getSignedUrl	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.conversation.token	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.conversations.analysis	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.conversations.analysis.evaluations	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.conversations.audio	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.conversations.delete	DELETE	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.conversations.feedback	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.conversations.files	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.conversations.files.delete	DELETE	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.conversations.get	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.conversations.list	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.conversations.messages.smartSearch	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.conversations.messages.textSearch	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.conversations.sipMessages	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.conversations.tags	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.conversations.tags.unassign	DELETE	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.environmentVariables.create	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.environmentVariables.get	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.environmentVariables.list	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.environmentVariables.update	PATCH	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.exotel.outboundCall	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.knowledgeBase.bulkMove	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.knowledgeBase.chunks	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.knowledgeBase.chunks.get	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.knowledgeBase.content	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.knowledgeBase.delete	DELETE	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.knowledgeBase.dependentAgents	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.knowledgeBase.file	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.knowledgeBase.folder	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.knowledgeBase.get	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.knowledgeBase.list	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.knowledgeBase.move	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.knowledgeBase.ragIndex	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.knowledgeBase.ragIndex.batch	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.knowledgeBase.ragIndex.compute	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.knowledgeBase.ragIndex.delete	DELETE	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.knowledgeBase.ragIndex.get	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.knowledgeBase.refresh	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.knowledgeBase.search	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.knowledgeBase.sourceFileUrl	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.knowledgeBase.summaries	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.knowledgeBase.text	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.knowledgeBase.update	PATCH	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.knowledgeBase.updateFile	PATCH	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.knowledgeBase.url	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.llm.list	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.llmUsage.calculate	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.mcpServers.create	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.mcpServers.delete	DELETE	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.mcpServers.get	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.mcpServers.list	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.mcpServers.toolApprovals.create	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.mcpServers.toolApprovals.delete	DELETE	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.mcpServers.toolConfigs.create	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.mcpServers.toolConfigs.delete	DELETE	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.mcpServers.toolConfigs.get	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.mcpServers.toolConfigs.update	PATCH	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.mcpServers.tools	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.mcpServers.update	PATCH	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.phoneNumbers.create	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.phoneNumbers.delete	DELETE	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.phoneNumbers.get	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.phoneNumbers.list	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.phoneNumbers.sipMessages	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.phoneNumbers.update	PATCH	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.secrets.create	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.secrets.delete	DELETE	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.secrets.dependencies	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.secrets.get	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.secrets.list	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.secrets.update	PATCH	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.settings	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.settings.dashboard	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.settings.dashboard.update	PATCH	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.settings.update	PATCH	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.sipTrunk.outboundCall	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.tags.create	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.tags.delete	DELETE	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.tags.get	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.tags.list	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.tags.update	PATCH	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.testInvocations.get	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.testInvocations.list	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.testInvocations.resubmit	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.tools.create	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.tools.delete	DELETE	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.tools.dependentAgents	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.tools.executions	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.tools.get	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.tools.list	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.tools.update	PATCH	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.twilio.outboundCall	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.twilio.registerCall	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.users.list	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.whatsapp.outboundCall	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.whatsapp.outboundMessage	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.whatsappAccounts.delete	DELETE	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.whatsappAccounts.get	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.whatsappAccounts.list	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.convai.whatsappAccounts.update	PATCH	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.dubbing.audio.get	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.dubbing.create	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.dubbing.delete	DELETE	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.dubbing.get	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.dubbing.list	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.dubbing.resource.get	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.dubbing.transcripts.get	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.forcedAlignment	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.models	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.music	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.music.detailed	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.music.plan	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.music.stemSeparation	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.music.stream	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.music.upload	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.music.videoToMusic	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.productions.orders.create	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.productions.orders.deliverables	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.productions.orders.get	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.productions.orders.items.remove	DELETE	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.productions.orders.items.upsert	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.productions.orders.languages	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.productions.orders.list	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.productions.orders.media.get	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.productions.orders.media.register	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.productions.orders.submit	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.productions.orders.update	PATCH	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.pronunciationDictionaries	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.pronunciationDictionaries.addFromFile	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.pronunciationDictionaries.addFromRules	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.pronunciationDictionaries.addRules	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.pronunciationDictionaries.download	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.pronunciationDictionaries.list	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.pronunciationDictionaries.removeRules	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.pronunciationDictionaries.setRules	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.pronunciationDictionaries.update	PATCH	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.serviceAccounts.apiKeys.create	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.serviceAccounts.apiKeys.delete	DELETE	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.serviceAccounts.apiKeys.list	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.serviceAccounts.apiKeys.update	PATCH	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.serviceAccounts.list	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.sharedVoices	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.similarVoices	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.singleUseToken	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.soundGeneration	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.speechEngine.create	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.speechEngine.delete	DELETE	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.speechEngine.get	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.speechEngine.list	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.speechEngine.update	PATCH	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.speechToSpeech	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.speechToSpeech.stream	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.speechToText	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.speechToText.transcripts.delete	DELETE	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.speechToText.transcripts.get	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.studio.podcasts.create	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.studio.projects.chapters.convert	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.studio.projects.chapters.create	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.studio.projects.chapters.delete	DELETE	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.studio.projects.chapters.get	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.studio.projects.chapters.list	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.studio.projects.chapters.snapshots.get	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.studio.projects.chapters.snapshots.list	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.studio.projects.chapters.snapshots.stream	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.studio.projects.chapters.update	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.studio.projects.content.update	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.studio.projects.convert	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.studio.projects.create	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.studio.projects.delete	DELETE	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.studio.projects.get	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.studio.projects.list	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.studio.projects.mutedTracks.get	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.studio.projects.pronunciationDictionaries.create	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.studio.projects.snapshots.archive	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.studio.projects.snapshots.get	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.studio.projects.snapshots.list	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.studio.projects.snapshots.stream	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.studio.projects.update	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.textToDialogue	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.textToSpeech	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.textToSpeech.stream	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.textToSpeech.stream.withTimestamps	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.textToSpeech.withTimestamps	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.textToVoice	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.textToVoice.design	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.textToVoice.remix	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.textToVoice.stream	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.usage.characterStats	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.user	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.user.subscription	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.voices	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.voices.add	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.voices.add.share	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.voices.delete	DELETE	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.voices.edit	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.voices.list	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.voices.pvc	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.voices.pvc.captcha	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.voices.pvc.captcha.get	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.voices.pvc.samples	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.voices.pvc.samples.delete	DELETE	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.voices.pvc.samples.separateSpeakers	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.voices.pvc.samples.speakers.audio	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.voices.pvc.samples.waveform	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.voices.pvc.train	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.voices.pvc.verification	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.voices.samples.audio	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.voices.samples.delete	DELETE	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.voices.settings	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.voices.settings.default	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.voices.settings.edit	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.workspace.analytics.query.usageByProductOverTime	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.workspace.analytics.requests	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.workspace.auditLogs	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.workspace.authConnections.create	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.workspace.authConnections.delete	DELETE	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.workspace.authConnections.list	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.workspace.authConnections.update	PATCH	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.workspace.groups.list	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.workspace.groups.members.add	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.workspace.groups.members.remove	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.workspace.groups.search	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.workspace.invites.add	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.workspace.invites.addBulk	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.workspace.invites.delete	DELETE	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.workspace.members.update	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.workspace.resources.get	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.workspace.resources.share	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.workspace.resources.unshare	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.workspace.webhooks.create	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.workspace.webhooks.delete	DELETE	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.workspace.webhooks.list	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.workspace.webhooks.update	PATCH	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.workspaces.apiKeys.disable	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v1.workspaces.apiKeys.thirdPartyDisabling	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+elevenlabs	v2.voices	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+fal	bytedance.seedSpeech.tts.v2	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	bytedance.seedance2p0.fast.imageToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	bytedance.seedance2p0.fast.referenceToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	bytedance.seedance2p0.fast.textToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	bytedance.seedance2p0.imageToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	bytedance.seedance2p0.referenceToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	bytedance.seedance2p0.textToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	bytedance.seedream.v5.lite.edit	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	bytedance.seedream.v5.lite.textToImage	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	falAi.elevenlabs.speechToText.scribeV2	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	gptImage1p5	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	gptImage1p5.edit	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	hunyuan.v3.instructEdit	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	klingVideo.o3p4k.imageToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	klingVideo.o3p4k.referenceToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	klingVideo.o3p4k.textToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	klingVideo.v3.pro.imageToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	klingVideo.v3.pro.textToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	klingVideo.v3.standard.imageToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	klingVideo.v3.standard.textToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	nanoBanana.edit	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	nanoBanana.textToImage	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	nanoBanana2.edit	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	nanoBanana2.textToImage	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	nanoBanana2Lite.edit	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	nanoBanana2Lite.textToImage	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	nanoBananaPro.edit	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	nanoBananaPro.textToImage	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	qwenImage	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	qwenImage.edit	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	sora2.imageToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	sora2.textToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	storage.upload.completeMultipart	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	storage.upload.initiate	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	storage.upload.initiateMultipart	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	v1.models	GET	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	v1.models.analytics	GET	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	v1.models.pricing	GET	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	v1.models.pricing.estimate	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	v1.models.requests.byEndpoint	GET	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	v1.models.requests.payloads	DELETE	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	v1.models.requests.payloads	GET	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	v1.models.usage	GET	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	v1.queue.submit	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	v1.serverless.files.uploadLocal	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	v1.serverless.files.uploadUrl	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	v1.serverless.logs	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	v1.workflows	GET	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	veo3p1.imageToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	veo3p1.textToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	wan.v2p7.edit	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	wan.v2p7.editVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	wan.v2p7.imageToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	wan.v2p7.pro.edit	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	wan.v2p7.pro.textToImage	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	wan.v2p7.referenceToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	wan.v2p7.textToImage	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	wan.v2p7.textToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	xai.grokImagineImage	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	xai.grokImagineImage.edit	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	xai.grokImagineVideo.editVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	xai.grokImagineVideo.extendVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	xai.grokImagineVideo.imageToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	xai.grokImagineVideo.referenceToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fireworks	inference.v1.accounts	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.apiKeys	DELETE	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.apiKeys.create	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.apiKeys.list	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.batchInferenceJobs	DELETE	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.batchInferenceJobs	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.batchInferenceJobs.create	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.batchInferenceJobs.list	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.datasets	DELETE	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.datasets	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.datasets.create	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.datasets.getDownloadEndpoint	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.datasets.getUploadEndpoint	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.datasets.list	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.datasets.update	PATCH	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.datasets.validateUpload	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.deployedModels	DELETE	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.deployedModels	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.deployedModels.create	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.deployedModels.list	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.deployedModels.update	PATCH	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.deploymentShapes	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.deploymentShapes.versions	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.deploymentShapes.versions.list	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.deployments	DELETE	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.deployments	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.deployments.create	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.deployments.list	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.deployments.scale	PATCH	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.deployments.undelete	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.deployments.update	PATCH	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.dpoJobs	DELETE	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.dpoJobs	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.dpoJobs.create	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.dpoJobs.getMetricsFileEndpoint	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.dpoJobs.list	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.dpoJobs.resume	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.evaluationJobs	DELETE	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.evaluationJobs	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.evaluationJobs.create	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.evaluationJobs.getExecutionLogEndpoint	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.evaluationJobs.list	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.evaluators	DELETE	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.evaluators	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.evaluators.create	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.evaluators.getBuildLogEndpoint	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.evaluators.getSourceCodeSignedUrl	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.evaluators.getUploadEndpoint	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.evaluators.list	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.evaluators.update	PATCH	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.evaluators.validateUpload	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.list	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.models	DELETE	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.models	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.models.create	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.models.getDownloadEndpoint	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.models.getUploadEndpoint	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.models.list	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.models.prepare	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.models.update	PATCH	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.models.validateUpload	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.reinforcementFineTuningJobs	DELETE	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.reinforcementFineTuningJobs	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.reinforcementFineTuningJobs.create	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.reinforcementFineTuningJobs.list	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.reinforcementFineTuningJobs.resume	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.rlorTrainerJobs	DELETE	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.rlorTrainerJobs	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.rlorTrainerJobs.create	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.rlorTrainerJobs.executeTrainStep	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.rlorTrainerJobs.list	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.rlorTrainerJobs.resume	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.secrets	DELETE	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.secrets	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.secrets.create	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.secrets.list	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.secrets.update	PATCH	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.supervisedFineTuningJobs	DELETE	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.supervisedFineTuningJobs	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.supervisedFineTuningJobs.create	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.supervisedFineTuningJobs.list	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.supervisedFineTuningJobs.resume	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.users	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.users.create	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.users.list	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.users.update	PATCH	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.accounts.users.update	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.audio.batch	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.audio.batch.transcriptions	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.audio.batch.translations	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.audio.transcriptions	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.audio.translations	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.chat.completions	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.completions	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.embeddings	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.messages	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.rerank	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.workflows.getResult	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.workflows.kontext	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+fireworks	inference.v1.workflows.textToImage	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+free-media-upload	catbox.upload	POST	cheap	Free file-hosting upload endpoints; no per-call USD cost
+free-media-upload	filebin.upload	POST	cheap	Free file-hosting upload endpoints; no per-call USD cost
+free-media-upload	gofile.upload	POST	cheap	Free file-hosting upload endpoints; no per-call USD cost
+free-media-upload	litterbox.upload	POST	cheap	Free file-hosting upload endpoints; no per-call USD cost
+free-media-upload	tempsh.upload	POST	cheap	Free file-hosting upload endpoints; no per-call USD cost
+free-media-upload	tflink.upload	POST	cheap	Free file-hosting upload endpoints; no per-call USD cost
+free-media-upload	tmpfiles.api.v1.upload	POST	cheap	Free file-hosting upload endpoints; no per-call USD cost
+free-media-upload	uguu.upload	POST	cheap	Free file-hosting upload endpoints; no per-call USD cost
+google	v1.publishers.google.models.countTokens	POST	expensive	Metered Gemini generateContent; per-call token cost bills real money
+google	v1.publishers.google.models.generateContent	POST	expensive	Metered Gemini generateContent; per-call token cost bills real money
+google	v1internal.retrieveUserQuota	POST	expensive	Metered Gemini generateContent; per-call token cost bills real money
+google	v1internal.retrieveUserQuotaSummary	POST	expensive	Metered Gemini generateContent; per-call token cost bills real money
+googleflow	v1.accounts	DELETE	prohibitive	Third-party proxy for Google Flow (Veo) video generation; per-call media-generation cost is high and request-dependent
+googleflow	v1.accounts	GET	prohibitive	Third-party proxy for Google Flow (Veo) video generation; per-call media-generation cost is high and request-dependent
+googleflow	v1.accounts	POST	prohibitive	Third-party proxy for Google Flow (Veo) video generation; per-call media-generation cost is high and request-dependent
+googleflow	v1.accounts.captchaProviders	GET	prohibitive	Third-party proxy for Google Flow (Veo) video generation; per-call media-generation cost is high and request-dependent
+googleflow	v1.accounts.captchaProviders	POST	prohibitive	Third-party proxy for Google Flow (Veo) video generation; per-call media-generation cost is high and request-dependent
+googleflow	v1.accounts.captchaStats	GET	prohibitive	Third-party proxy for Google Flow (Veo) video generation; per-call media-generation cost is high and request-dependent
+googleflow	v1.accounts.retrieve	GET	prohibitive	Third-party proxy for Google Flow (Veo) video generation; per-call media-generation cost is high and request-dependent
+googleflow	v1.assets	POST	prohibitive	Third-party proxy for Google Flow (Veo) video generation; per-call media-generation cost is high and request-dependent
+googleflow	v1.assets.retrieve	GET	prohibitive	Third-party proxy for Google Flow (Veo) video generation; per-call media-generation cost is high and request-dependent
+googleflow	v1.characters	DELETE	prohibitive	Third-party proxy for Google Flow (Veo) video generation; per-call media-generation cost is high and request-dependent
+googleflow	v1.characters	GET	prohibitive	Third-party proxy for Google Flow (Veo) video generation; per-call media-generation cost is high and request-dependent
+googleflow	v1.characters	POST	prohibitive	Third-party proxy for Google Flow (Veo) video generation; per-call media-generation cost is high and request-dependent
+googleflow	v1.characters.retrieve	GET	prohibitive	Third-party proxy for Google Flow (Veo) video generation; per-call media-generation cost is high and request-dependent
+googleflow	v1.images	POST	prohibitive	Third-party proxy for Google Flow (Veo) video generation; per-call media-generation cost is high and request-dependent
+googleflow	v1.images.upscale	POST	prohibitive	Third-party proxy for Google Flow (Veo) video generation; per-call media-generation cost is high and request-dependent
+googleflow	v1.jobs	GET	prohibitive	Third-party proxy for Google Flow (Veo) video generation; per-call media-generation cost is high and request-dependent
+googleflow	v1.jobs.retrieve	GET	prohibitive	Third-party proxy for Google Flow (Veo) video generation; per-call media-generation cost is high and request-dependent
+googleflow	v1.videos	POST	prohibitive	Third-party proxy for Google Flow (Veo) video generation; per-call media-generation cost is high and request-dependent
+googleflow	v1.videos.concatenate	POST	prohibitive	Third-party proxy for Google Flow (Veo) video generation; per-call media-generation cost is high and request-dependent
+googleflow	v1.videos.extend	POST	prohibitive	Third-party proxy for Google Flow (Veo) video generation; per-call media-generation cost is high and request-dependent
+googleflow	v1.videos.gif	POST	prohibitive	Third-party proxy for Google Flow (Veo) video generation; per-call media-generation cost is high and request-dependent
+googleflow	v1.videos.upscale	POST	prohibitive	Third-party proxy for Google Flow (Veo) video generation; per-call media-generation cost is high and request-dependent
+googleflow	v1.voices	DELETE	prohibitive	Third-party proxy for Google Flow (Veo) video generation; per-call media-generation cost is high and request-dependent
+googleflow	v1.voices	GET	prohibitive	Third-party proxy for Google Flow (Veo) video generation; per-call media-generation cost is high and request-dependent
+googleflow	v1.voices	POST	prohibitive	Third-party proxy for Google Flow (Veo) video generation; per-call media-generation cost is high and request-dependent
+googleflow	v1.voices.retrieve	GET	prohibitive	Third-party proxy for Google Flow (Veo) video generation; per-call media-generation cost is high and request-dependent
+kie	api.fileBase64Upload	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.fileStreamUpload	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.fileUrlUpload	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.v1.chat.credit	GET	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.v1.common.downloadUrl	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.v1.flux.kontext.generate	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.v1.flux.kontext.recordInfo	GET	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.v1.generate	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.v1.generate.addInstrumental	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.v1.generate.addVocals	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.v1.generate.extend	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.v1.generate.mashup	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.v1.generate.recordInfo	GET	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.v1.generate.replaceSection	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.v1.generate.sounds	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.v1.generate.uploadCover	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.v1.generate.uploadExtend	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.v1.gpt4oImage.generate	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.v1.gpt4oImage.recordInfo	GET	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.v1.jobs.createTask	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.v1.jobs.recordInfo	GET	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.v1.lyrics	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.v1.lyrics.recordInfo	GET	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.v1.midi.generate	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.v1.mj.generate	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.v1.mj.recordInfo	GET	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.v1.mp4.generate	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.v1.omni.audio.create	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.v1.omni.character.create	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.v1.runway.extend	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.v1.runway.generate	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.v1.runway.recordDetail	GET	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.v1.style.generate	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.v1.veo.extend	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.v1.veo.generate	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.v1.veo.get1080pVideo	GET	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.v1.veo.recordInfo	GET	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.v1.vocalRemoval.generate	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.v1.wav.generate	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	claude.v1.messages	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	codex.v1.responses	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	gemini.v1.models.gemini35Flash.streamGenerateContent	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	gemini31Pro.v1.chat.completions	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kimicoding	coding.v1.countTokens	POST	expensive	Metered LLM provider; per-call token cost bills real money
+kimicoding	coding.v1.embeddings	POST	expensive	Metered LLM provider; per-call token cost bills real money
+kimicoding	coding.v1.messages	POST	expensive	Metered LLM provider; per-call token cost bills real money
+kimicoding	coding.v1.models	GET	expensive	Metered LLM provider; per-call token cost bills real money
+meta	v25.container	GET	cheap	Instagram Graph posting API; free, no per-call USD compute cost
+meta	v25.media	POST	cheap	Instagram Graph posting API; free, no per-call USD compute cost
+meta	v25.mediaPublish	POST	cheap	Instagram Graph posting API; free, no per-call USD compute cost
+openai	codex.usage	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.audio.speech	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.audio.transcriptions	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.audio.translations	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.batches	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.batches	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.batches.cancel	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.chat.completions	DELETE	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.chat.completions	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.chat.completions	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.chat.completions.messages	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.completions	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.containers	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.conversations	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.conversations.retrieve	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.embeddings	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.evals	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.files	DELETE	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.files	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.files	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.files.content	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.fineTuning.checkpoints.permissions	DELETE	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.fineTuning.checkpoints.permissions	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.fineTuning.checkpoints.permissions	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.fineTuning.jobs	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.fineTuning.jobs	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.fineTuning.jobs.cancel	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.fineTuning.jobs.checkpoints	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.fineTuning.jobs.events	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.fineTuning.jobs.pause	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.fineTuning.jobs.resume	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.images.edits	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.images.generations	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.images.variations	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.models	DELETE	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.models	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.moderations	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.organization.costs	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.organization.projects	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.organization.projects.rateLimits	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.organization.usage.audioSpeeches	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.organization.usage.audioTranscriptions	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.organization.usage.codeInterpreterSessions	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.organization.usage.completions	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.organization.usage.embeddings	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.organization.usage.images	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.organization.usage.moderations	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.organization.usage.vectorStores	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.realtime.clientSecrets	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.responses	DELETE	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.responses	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.responses	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.responses.cancel	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.responses.compact	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.responses.inputItems	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.responses.inputTokens	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.uploads	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.vectorStores	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openf1	token	POST	cheap	Free public Formula 1 data API; no per-call USD cost
+openf1	v1.carData	GET	cheap	Free public Formula 1 data API; no per-call USD cost
+openf1	v1.championshipDrivers	GET	cheap	Free public Formula 1 data API; no per-call USD cost
+openf1	v1.championshipTeams	GET	cheap	Free public Formula 1 data API; no per-call USD cost
+openf1	v1.drivers	GET	cheap	Free public Formula 1 data API; no per-call USD cost
+openf1	v1.intervals	GET	cheap	Free public Formula 1 data API; no per-call USD cost
+openf1	v1.laps	GET	cheap	Free public Formula 1 data API; no per-call USD cost
+openf1	v1.location	GET	cheap	Free public Formula 1 data API; no per-call USD cost
+openf1	v1.meetings	GET	cheap	Free public Formula 1 data API; no per-call USD cost
+openf1	v1.overtakes	GET	cheap	Free public Formula 1 data API; no per-call USD cost
+openf1	v1.pit	GET	cheap	Free public Formula 1 data API; no per-call USD cost
+openf1	v1.position	GET	cheap	Free public Formula 1 data API; no per-call USD cost
+openf1	v1.raceControl	GET	cheap	Free public Formula 1 data API; no per-call USD cost
+openf1	v1.sessionResult	GET	cheap	Free public Formula 1 data API; no per-call USD cost
+openf1	v1.sessions	GET	cheap	Free public Formula 1 data API; no per-call USD cost
+openf1	v1.startingGrid	GET	cheap	Free public Formula 1 data API; no per-call USD cost
+openf1	v1.stints	GET	cheap	Free public Formula 1 data API; no per-call USD cost
+openf1	v1.teamRadio	GET	cheap	Free public Formula 1 data API; no per-call USD cost
+openf1	v1.weather	GET	cheap	Free public Formula 1 data API; no per-call USD cost
+openligadb	getavailablegroups	GET	cheap	Free public soccer match-data API; no per-call USD cost
+openligadb	getavailableleagues	GET	cheap	Free public soccer match-data API; no per-call USD cost
+openligadb	getavailableleagues.bySeason	GET	cheap	Free public soccer match-data API; no per-call USD cost
+openligadb	getavailablesports	GET	cheap	Free public soccer match-data API; no per-call USD cost
+openligadb	getavailableteams	GET	cheap	Free public soccer match-data API; no per-call USD cost
+openligadb	getbltable	GET	cheap	Free public soccer match-data API; no per-call USD cost
+openligadb	getcurrentgroup	GET	cheap	Free public soccer match-data API; no per-call USD cost
+openligadb	getgoalgetters	GET	cheap	Free public soccer match-data API; no per-call USD cost
+openligadb	getgrouptable	GET	cheap	Free public soccer match-data API; no per-call USD cost
+openligadb	getlastchangedate	GET	cheap	Free public soccer match-data API; no per-call USD cost
+openligadb	getlastmatchbyleagueshortcut	GET	cheap	Free public soccer match-data API; no per-call USD cost
+openligadb	getlastmatchbyleagueteam	GET	cheap	Free public soccer match-data API; no per-call USD cost
+openligadb	getmatchdata.byId	GET	cheap	Free public soccer match-data API; no per-call USD cost
+openligadb	getmatchdata.byLeagueSeason	GET	cheap	Free public soccer match-data API; no per-call USD cost
+openligadb	getmatchdata.byLeagueSeasonGroup	GET	cheap	Free public soccer match-data API; no per-call USD cost
+openligadb	getmatchdata.byLeagueSeasonTeam	GET	cheap	Free public soccer match-data API; no per-call USD cost
+openligadb	getmatchdata.byTeams	GET	cheap	Free public soccer match-data API; no per-call USD cost
+openligadb	getmatchesbyteam	GET	cheap	Free public soccer match-data API; no per-call USD cost
+openligadb	getmatchesbyteamid	GET	cheap	Free public soccer match-data API; no per-call USD cost
+openligadb	getnextmatchbyleagueshortcut	GET	cheap	Free public soccer match-data API; no per-call USD cost
+openligadb	getnextmatchbyleagueteam	GET	cheap	Free public soccer match-data API; no per-call USD cost
+openligadb	getresultinfos	GET	cheap	Free public soccer match-data API; no per-call USD cost
+openligadb	swagger.v1.swaggerJson	GET	cheap	Free public soccer match-data API; no per-call USD cost
+polymarket	clob.auth.apiKey	DELETE	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.auth.apiKey	POST	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.auth.apiKeys	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.auth.banStatus.closedOnly	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.auth.builderApiKey	DELETE	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.auth.builderApiKey	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.auth.builderApiKey	POST	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.auth.deriveApiKey	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.balanceAllowance	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.balanceAllowance	PUT	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.balanceAllowance.update	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.batchPricesHistory	POST	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.book	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.books	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.books	POST	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.builderTrades	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.cancelAll	DELETE	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.cancelMarketOrders	DELETE	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.clobMarkets	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.data.order	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.data.orders	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.data.trades	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.feeRate	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.feeRateByQuery	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.heartbeats	POST	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.lastTradePrice	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.lastTradesPrices	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.lastTradesPrices	POST	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.marketLiveActivity	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.markets	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.marketsByToken	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.marketsLiveActivity	POST	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.midpoint	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.midpoints	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.midpoints	POST	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.negRisk	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.negRiskByQuery	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.notifications	DELETE	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.notifications	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.order	DELETE	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.order	POST	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.orderScoring	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.orders	DELETE	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.orders	POST	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.ordersScoring	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.ordersScoring	POST	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.placeOrder	POST	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.price	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.prices	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.prices	POST	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.pricesHistory	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.rebates.current	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.rewards.markets.byCondition	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.rewards.markets.current	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.rewards.markets.multi	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.rewards.user	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.rewards.userMarkets	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.rewards.userPercentages	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.rewards.userTotal	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.samplingMarkets	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.samplingSimplifiedMarkets	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.simplifiedMarkets	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.spread	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.spreads	POST	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.tickSize	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.tickSizeByQuery	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.time	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	clob.v1.heartbeats	POST	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	data.accounting.snapshot	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	data.activity	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	data.activity.combos	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	data.builders.leaderboard	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	data.builders.volume	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	data.closedPositions	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	data.health	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	data.holders	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	data.leaderboard	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	data.liveVolume	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	data.marketPositions	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	data.oi	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	data.positions	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	data.positions.combos	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	data.traded	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	data.trades	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	data.value	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	gamma.comments	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	gamma.comments.byUser	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	gamma.events	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	gamma.events.keyset	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	gamma.events.slug	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	gamma.events.tags	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	gamma.markets	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	gamma.markets.keyset	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	gamma.markets.slug	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	gamma.markets.tags	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	gamma.publicProfile	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	gamma.search	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	gamma.series	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	gamma.sports	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	gamma.sports.marketTypes	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	gamma.status	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	gamma.tags	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	gamma.tags.relatedTags	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	gamma.tags.relatedTags.slug	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	gamma.tags.relatedTags.tags	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	gamma.tags.relatedTags.tags.slug	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	gamma.tags.slug	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+polymarket	gamma.teams	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+s3	buckets.create	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.createMetadataConfiguration	POST	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.createMetadataTableConfiguration	POST	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.createSession	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.del	DELETE	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.delAnalytics	DELETE	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.delCors	DELETE	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.delEncryption	DELETE	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.delIntelligentTiering	DELETE	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.delInventory	DELETE	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.delLifecycle	DELETE	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.delMetadataConfiguration	DELETE	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.delMetadataTableConfiguration	DELETE	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.delMetrics	DELETE	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.delOwnershipControls	DELETE	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.delPolicy	DELETE	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.delPublicAccessBlock	DELETE	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.delReplication	DELETE	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.delTagging	DELETE	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.delWebsite	DELETE	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.getAbac	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.getAccelerateConfiguration	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.getAcl	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.getAnalytics	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.getCors	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.getEncryption	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.getIntelligentTiering	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.getInventory	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.getLifecycle	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.getLifecycleLegacy	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.getLogging	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.getMetadataConfiguration	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.getMetadataTableConfiguration	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.getMetrics	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.getNotification	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.getNotificationLegacy	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.getObjectLockConfiguration	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.getOwnershipControls	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.getPolicy	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.getPolicyStatus	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.getPublicAccessBlock	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.getReplication	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.getRequestPayment	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.getTagging	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.getVersioning	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.getWebsite	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.head	HEAD	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.list	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.listAnalytics	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.listDirectory	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.listIntelligentTiering	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.listInventory	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.listMetrics	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.location	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.putAbac	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.putAccelerateConfiguration	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.putAcl	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.putAnalytics	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.putCors	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.putEncryption	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.putIntelligentTiering	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.putInventory	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.putLifecycle	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.putLifecycleLegacy	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.putLogging	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.putMetrics	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.putNotification	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.putNotificationLegacy	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.putObjectLockConfiguration	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.putOwnershipControls	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.putPolicy	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.putPublicAccessBlock	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.putReplication	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.putRequestPayment	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.putTagging	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.putVersioning	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.putWebsite	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.updateMetadataInventoryTable	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	buckets.updateMetadataJournalTable	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	objectLambda.writeGetObjectResponse	POST	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	objects.abortMultipartUpload	DELETE	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	objects.completeMultipartUpload	POST	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	objects.copy	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	objects.createMultipartUpload	POST	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	objects.del	DELETE	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	objects.delMany	POST	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	objects.delTagging	DELETE	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	objects.get	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	objects.getAcl	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	objects.getAttributes	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	objects.getLegalHold	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	objects.getRetention	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	objects.getStream	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	objects.getTagging	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	objects.getTorrent	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	objects.head	HEAD	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	objects.list	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	objects.listLegacy	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	objects.listMultipartUploads	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	objects.listParts	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	objects.listVersions	GET	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	objects.put	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	objects.putAcl	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	objects.putLegalHold	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	objects.putRetention	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	objects.putTagging	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	objects.rename	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	objects.restore	POST	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	objects.selectContent	POST	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	objects.updateEncryption	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	objects.uploadPart	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+s3	objects.uploadPartCopy	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
+simplefunctions	api.agent.feed	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.agent.inspect	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.agent.world	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.agent.world.delta	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.agent.world.feed	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.agent.world.path	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.alertDeliveries	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.alertRules	DELETE	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.alertRules	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.alertRules.create	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.alertRules.retrieve	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.alertRules.test	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.alertRules.update	PATCH	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.auth.cli	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.auth.cli.complete	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.auth.cli.poll	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.calibration	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.changes	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.contracts.tools	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.dashboard.usage	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.dashboard2.marketWatch.panels	DELETE	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.dashboard2.marketWatch.panels	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.dashboard2.marketWatch.panels.create	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.dashboard2.marketWatch.panels.reorder	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.dashboard2.marketWatch.panels.update	PATCH	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.dashboard2.marketWatchV2	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.edges	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.feed	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.intents	DELETE	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.intents	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.intents.create	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.intents.retrieve	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.intents.update	PATCH	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.keys	DELETE	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.keys	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.keys.create	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.mcp	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.mcp.call	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.portfolio.activity	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.portfolio.attribution.daily	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.portfolio.attribution.grouped	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.portfolio.config	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.portfolio.config.update	PUT	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.portfolio.fills	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.portfolio.ledger	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.portfolio.ledger.import.kalshi	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.portfolio.ledger.import.kalshi.pull	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.portfolio.ledger.import.polymarket	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.portfolio.positions	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.portfolio.risk	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.portfolio.secrets	DELETE	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.portfolio.secrets.create	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.portfolio.state	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.portfolio.state.update	PUT	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.portfolio.strategy	DELETE	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.portfolio.strategy	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.portfolio.strategy.create	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.portfolio.strategy.update	PUT	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.portfolio.ticks	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.portfolio.ticks.create	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.portfolio.ticks.retrieve	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.portfolio.trades	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.portfolio.trades.create	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.portfolio.trades.retrieve	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.portfolio.trigger	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.portfolio.views	DELETE	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.portfolio.views	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.portfolio.views.create	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.portfolio.views.update	PUT	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.prompt	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.proxy.stt	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.proxy.tts	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.answer	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.briefing	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.calendar	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.calibration	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.congress.member	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.congress.members	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.contagion	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.context	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.crossVenue.pairs	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.crossVenue.stats	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.databento	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.diff	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.discuss	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.fred	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.glossary	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.glossary.entry	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.guide	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.highlights	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.ideas	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.ideas.byId	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.index	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.index.history	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.legislation	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.legislation.byBillId	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.liquidityByTheme	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.liveTickers	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.market	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.market.candles	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.market.history	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.marketMicrostructureHistory	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.markets	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.newmarkets	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.odds	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.oddsMd	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.opinions	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.opinions.entry	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.query	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.queryEcon	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.queryGov	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.regime.scan	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.scan	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.screen	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.screenByTickers	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.search	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.skill	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.skills	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.technicals	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.technicals.entry	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.theses	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.thesis	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.topic	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.tradMarkets	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.yieldCurves	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.public.yieldCurves.event	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.runtime.exec	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.runtime.exec.trigger	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.signup	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.skills	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.thesis	DELETE	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.thesis	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.thesis.augment	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.thesis.byTicker	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.thesis.changes	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.thesis.context	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.thesis.create	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.thesis.evaluate	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.thesis.evaluations	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.thesis.fork	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.thesis.heartbeat	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.thesis.heartbeat.update	PATCH	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.thesis.nodes	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.thesis.positions	DELETE	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.thesis.positions.create	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.thesis.positions.list	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.thesis.positions.update	PATCH	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.thesis.prompt	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.thesis.publish	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.thesis.retrieve	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.thesis.signal	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.thesis.strategies	DELETE	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.thesis.strategies.create	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.thesis.strategies.list	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.thesis.strategies.update	PATCH	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.thesis.unpublish	DELETE	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.thesis.update	PATCH	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.thesis.videoData	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.thesis.videos.create	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.thesis.videos.list	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.thesis.whatif	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.tools	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.watch	DELETE	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.watch	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.watch.create	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.watch.identify	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.watch.refresh	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.watch.retrieve	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.watch.update	PATCH	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.webhookEndpoints	DELETE	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.webhookEndpoints	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.webhookEndpoints.create	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.webhookEndpoints.test	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.webhookEndpoints.update	PATCH	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.x.account	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.x.news	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.x.search	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.x.volume	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	data.v1.candles	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	data.v1.heartbeat	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	data.v1.markets	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	data.v1.markets.featured	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	data.v1.markets.retrieve	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	data.v1.movers	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	data.v1.orderbook	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	data.v1.search	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	data.v1.snapshot	GET	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	data.v1.trades	GET	cheap	Public agent/world data API; no per-call USD compute cost
+telegram	addStickerToSet	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	answerCallbackQuery	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	answerChatJoinRequestQuery	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	answerGuestQuery	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	answerInlineQuery	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	answerPreCheckoutQuery	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	answerShippingQuery	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	answerWebAppQuery	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	approveChatJoinRequest	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	approveSuggestedPost	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	banChatMember	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	banChatSenderChat	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	close	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	closeForumTopic	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	closeGeneralForumTopic	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	convertGiftToStars	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	copyMessage	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	copyMessages	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	createChatInviteLink	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	createChatSubscriptionInviteLink	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	createForumTopic	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	createInvoiceLink	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	createNewStickerSet	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	declineChatJoinRequest	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	declineSuggestedPost	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	deleteAllMessageReactions	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	deleteBusinessMessages	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	deleteChatPhoto	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	deleteChatStickerSet	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	deleteForumTopic	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	deleteMessage	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	deleteMessageReaction	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	deleteMessages	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	deleteMyCommands	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	deleteStickerFromSet	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	deleteStickerSet	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	deleteStory	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	deleteWebhook	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	editChatInviteLink	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	editChatSubscriptionInviteLink	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	editForumTopic	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	editGeneralForumTopic	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	editMessageCaption	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	editMessageChecklist	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	editMessageLiveLocation	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	editMessageMedia	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	editMessageReplyMarkup	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	editMessageText	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	editStory	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	editUserStarSubscription	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	exportChatInviteLink	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	forwardMessage	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	forwardMessages	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	getAvailableGifts	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	getBusinessAccountGifts	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	getBusinessAccountStarBalance	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	getBusinessConnection	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	getChat	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	getChatAdministrators	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	getChatGifts	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	getChatMember	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	getChatMemberCount	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	getChatMenuButton	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	getCustomEmojiStickers	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	getFile	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	getForumTopicIconStickers	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	getGameHighScores	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	getManagedBotAccessSettings	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	getManagedBotToken	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	getMe	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	getMyCommands	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	getMyDefaultAdministratorRights	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	getMyDescription	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	getMyName	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	getMyShortDescription	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	getMyStarBalance	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	getStarTransactions	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	getStickerSet	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	getUpdates	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	getUserChatBoosts	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	getUserGifts	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	getUserPersonalChatMessages	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	getUserProfileAudios	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	getUserProfilePhotos	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	getWebhookInfo	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	giftPremiumSubscription	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	hideGeneralForumTopic	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	leaveChat	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	logOut	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	pinChatMessage	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	postStory	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	promoteChatMember	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	readBusinessMessage	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	refundStarPayment	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	removeBusinessAccountProfilePhoto	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	removeChatVerification	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	removeMyProfilePhoto	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	removeUserVerification	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	reopenForumTopic	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	reopenGeneralForumTopic	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	replaceManagedBotToken	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	replaceStickerInSet	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	repostStory	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	restrictChatMember	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	revokeChatInviteLink	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	savePreparedInlineMessage	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	savePreparedKeyboardButton	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	sendAnimation	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	sendAudio	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	sendChatAction	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	sendChatJoinRequestWebApp	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	sendChecklist	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	sendContact	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	sendDice	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	sendDocument	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	sendGame	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	sendGift	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	sendInvoice	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	sendLivePhoto	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	sendLocation	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	sendMediaGroup	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	sendMessage	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	sendMessageDraft	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	sendPaidMedia	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	sendPhoto	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	sendPoll	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	sendRichMessage	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	sendRichMessageDraft	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	sendSticker	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	sendVenue	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	sendVideo	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	sendVideoNote	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	sendVoice	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	setBusinessAccountBio	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	setBusinessAccountGiftSettings	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	setBusinessAccountName	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	setBusinessAccountProfilePhoto	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	setBusinessAccountUsername	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	setChatAdministratorCustomTitle	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	setChatDescription	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	setChatMemberTag	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	setChatMenuButton	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	setChatPermissions	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	setChatPhoto	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	setChatStickerSet	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	setChatTitle	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	setCustomEmojiStickerSetThumbnail	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	setGameScore	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	setManagedBotAccessSettings	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	setMessageReaction	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	setMyCommands	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	setMyDefaultAdministratorRights	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	setMyDescription	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	setMyName	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	setMyProfilePhoto	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	setMyShortDescription	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	setPassportDataErrors	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	setStickerEmojiList	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	setStickerKeywords	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	setStickerMaskPosition	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	setStickerPositionInSet	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	setStickerSetThumbnail	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	setStickerSetTitle	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	setUserEmojiStatus	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	setWebhook	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	stopMessageLiveLocation	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	stopPoll	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	transferBusinessAccountStars	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	transferGift	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	unbanChatMember	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	unbanChatSenderChat	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	unhideGeneralForumTopic	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	unpinAllChatMessages	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	unpinAllForumTopicMessages	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	unpinAllGeneralForumTopicMessages	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	unpinChatMessage	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	upgradeGift	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	uploadStickerFile	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	verifyChat	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+telegram	verifyUser	POST	cheap	Telegram Bot API; free, no per-call USD compute cost
+thesportsdb	v1.allCountries	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v1.allLeagues	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v1.allSports	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v1.eventResults	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v1.eventsday	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v1.eventshighlights	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v1.eventslast	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v1.eventsnext	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v1.eventsnextleague	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v1.eventspastleague	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v1.eventsseason	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v1.eventstv	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v1.lookup.equipment	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v1.lookup.league	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v1.lookup.table	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v1.lookup.team	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v1.lookup.venue	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v1.lookupAllPlayers	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v1.lookupEvent	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v1.lookupEventStats	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v1.lookupLineup	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v1.lookupTimeline	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v1.lookupTv	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v1.lookupcontracts	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v1.lookupformerteams	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v1.lookuphonours	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v1.lookupmilestones	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v1.lookupplayer	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v1.lookupplayerstats	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v1.playerresults	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v1.searchAllLeagues	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v1.searchAllSeasons	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v1.searchAllTeams	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v1.searchEvents	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v1.searchFilename	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v1.searchPlayers	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v1.searchTeams	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v1.searchVenues	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.all.countries	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.all.leagues	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.all.sports	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.filter.tv.channel	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.filter.tv.channelid	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.filter.tv.country	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.filter.tv.day	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.filter.tv.sport	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.list.players	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.list.seasonposters	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.list.seasons	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.list.teams	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.livescore.all	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.livescore.byLeague	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.livescore.bySport	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.lookup.event	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.lookup.eventHighlights	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.lookup.eventLineup	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.lookup.eventResults	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.lookup.eventStats	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.lookup.eventTimeline	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.lookup.eventTv	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.lookup.league	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.lookup.player	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.lookup.playerContracts	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.lookup.playerHonours	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.lookup.playerMilestones	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.lookup.playerResults	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.lookup.playerStats	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.lookup.playerTeams	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.lookup.team	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.lookup.teamEquipment	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.lookup.venue	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.schedule.full.team	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.schedule.league	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.schedule.next.league	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.schedule.next.team	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.schedule.next.venue	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.schedule.previous.league	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.schedule.previous.team	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.schedule.previous.venue	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.search.event	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.search.league	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.search.player	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.search.team	GET	cheap	Free public sports-data API; no per-call USD cost
+thesportsdb	v2.search.venue	GET	cheap	Free public sports-data API; no per-call USD cost
+x	v2.media.upload	GET	cheap	X (Twitter) posting API; no per-call USD compute cost
+x	v2.media.upload.append	POST	cheap	X (Twitter) posting API; no per-call USD compute cost
+x	v2.media.upload.finalize	POST	cheap	X (Twitter) posting API; no per-call USD compute cost
+x	v2.media.upload.initialize	POST	cheap	X (Twitter) posting API; no per-call USD compute cost
+x	v2.tweets	POST	cheap	X (Twitter) posting API; no per-call USD compute cost
+x	v2.users.me	GET	cheap	X (Twitter) posting API; no per-call USD compute cost
+xai	managementApi.auth.teams.apiKeys	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	managementApi.v1.billing.teams.postpaid.invoice.preview	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	managementApi.v1.billing.teams.postpaid.spendingLimits	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	managementApi.v1.billing.teams.prepaid.balance	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	managementApi.v1.billing.teams.usage	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	managementApi.v1.collections	DELETE	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	managementApi.v1.collections	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	managementApi.v1.collections	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	managementApi.v1.collections	PUT	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	managementApi.v1.collections.documents	DELETE	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	managementApi.v1.collections.documents	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	managementApi.v1.collections.documents	PATCH	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	managementApi.v1.collections.documents	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	managementApi.v1.collections.documents.batchGet	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	v1.apiKey	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	v1.batches	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	v1.batches	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	v1.batches.cancel	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	v1.batches.requests	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	v1.batches.requests	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	v1.batches.results	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	v1.chat.completions	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	v1.chat.deferredCompletion	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	v1.customVoices	DELETE	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	v1.customVoices	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	v1.customVoices	PATCH	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	v1.customVoices	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	v1.customVoices.audio	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	v1.documents.search	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	v1.files	DELETE	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	v1.files	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	v1.files	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	v1.files.content	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	v1.files.publicUrl	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	v1.files.publicUrl.revoke	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	v1.imageGenerationModels	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	v1.images.edits	POST	prohibitive	Image edit; direct media-generation cost per image
+xai	v1.images.generations	POST	prohibitive	Image generation; direct media-generation cost per image
+xai	v1.languageModels	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	v1.models	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	v1.realtime.clientSecrets	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	v1.responses	DELETE	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	v1.responses	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	v1.responses	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	v1.responses.compact	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	v1.stt	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	v1.tokenizeText	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	v1.tts	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	v1.videoGenerationModels	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	v1.videos	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+xai	v1.videos.edits	POST	prohibitive	Video edit; direct media-generation cost per video
+xai	v1.videos.extensions	POST	prohibitive	Video extension; direct media-generation cost per video
+xai	v1.videos.generations	POST	prohibitive	Video generation; direct media-generation cost per video
+xai	v1.videos.generations.imageToVideo	POST	prohibitive	Image-to-video generation; direct media-generation cost per video
+youtube	channels.list	GET	cheap	YouTube Data API v3; quota-limited but free (no USD compute cost)
+youtube	transcripts	GET	cheap	YouTube Data API v3; quota-limited but free (no USD compute cost)
+youtube	videoMetadata	?	cheap	YouTube Data API v3; quota-limited but free (no USD compute cost)
+youtube	videos.insert	POST	cheap	YouTube Data API v3; quota-limited but free (no USD compute cost)
+youtube	videos.list	GET	cheap	YouTube Data API v3; quota-limited but free (no USD compute cost)
+zaicoding	api.coding.paas.v4.chat.completions	POST	expensive	Metered z.ai coding LLM provider; per-call token cost bills real money
+zaicoding	api.monitor.usage.modelUsage	GET	expensive	Metered z.ai coding LLM provider; per-call token cost bills real money
+zaicoding	api.monitor.usage.quota.limit	GET	expensive	Metered z.ai coding LLM provider; per-call token cost bills real money
+zaicoding	api.monitor.usage.toolUsage	GET	expensive	Metered z.ai coding LLM provider; per-call token cost bills real money

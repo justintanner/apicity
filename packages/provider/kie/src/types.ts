@@ -319,6 +319,8 @@ export type {
   KieResponsesTool,
   KieResponsesRequest,
   KieResponsesParsedRequest,
+  KieGrokResponsesModel,
+  KieGrokResponsesRequest,
 } from "./zod";
 
 // ---------------------------------------------------------------------------
@@ -655,6 +657,7 @@ export interface KieProvider {
   post: {
     api: KiePostApiNamespace;
     codex: import("./responses").KieResponsesProvider["codex"];
+    grok: import("./responses").KieResponsesProvider["grok"];
   };
   get: { api: KieGetApiNamespace };
   modelInputSchemas: Record<KieMediaModel, ModelInputSchema>;

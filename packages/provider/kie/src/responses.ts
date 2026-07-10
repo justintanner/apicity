@@ -1,5 +1,8 @@
 import { KieError } from "./types";
-import { KieResponsesRequestSchema } from "./zod";
+import {
+  KieResponsesRequestSchema,
+  KieGrokResponsesRequestSchema,
+} from "./zod";
 import type { ApicitySchema } from "./types";
 import { sseDataToIterable } from "./sse";
 import { createTransport } from "./transport";
@@ -65,6 +68,19 @@ export type KieResponsesTool =
 
 export interface KieResponsesRequest {
   model: KieResponsesModel;
+  input: string | KieResponsesInputMessage[];
+  stream?: boolean;
+  reasoning?: KieResponsesReasoning;
+  tools?: KieResponsesTool[];
+  tool_choice?: KieResponsesToolChoice;
+}
+
+export type KieGrokResponsesModel = "grok-4-5";
+
+// Identical to KieResponsesRequest apart from the model literal — Grok 4.5 is
+// served through the same Kie Responses machinery as codex/gpt-5-5.
+export interface KieGrokResponsesRequest {
+  model: KieGrokResponsesModel;
   input: string | KieResponsesInputMessage[];
   stream?: boolean;
   reasoning?: KieResponsesReasoning;
@@ -166,9 +182,32 @@ export interface KieResponsesV1Namespace {
   responses: KieResponsesMethod;
 }
 
+export interface KieGrokResponsesMethod {
+  (
+    req: KieGrokResponsesRequest & { stream: true },
+    signal?: AbortSignal
+  ): Promise<AsyncIterable<KieResponsesStreamEvent>>;
+  (
+    req: KieGrokResponsesRequest & { stream?: false },
+    signal?: AbortSignal
+  ): Promise<KieResponsesResponse>;
+  (
+    req: KieGrokResponsesRequest,
+    signal?: AbortSignal
+  ): Promise<KieResponsesResponse | AsyncIterable<KieResponsesStreamEvent>>;
+  schema: ApicitySchema<KieGrokResponsesRequest>;
+}
+
+export interface KieGrokResponsesV1Namespace {
+  responses: KieGrokResponsesMethod;
+}
+
 export interface KieResponsesProvider {
   codex: {
     v1: KieResponsesV1Namespace;
+  };
+  grok: {
+    v1: KieGrokResponsesV1Namespace;
   };
 }
 
@@ -226,46 +265,74 @@ export function createResponsesProvider(
     requestFailedPrefix: "Responses request failed",
   });
 
+  // Shared transport-bound request body for every Kie Responses model. The
+  // codex (gpt-5-5) and grok (grok-4-5) endpoints differ only in their upstream
+  // path, so keep the fetch/stream/error handling in one place.
+  async function sendResponsesRequest(
+    path: string,
+    req: KieResponsesRequest | KieGrokResponsesRequest,
+    signal?: AbortSignal
+  ): Promise<KieResponsesResponse | AsyncIterable<KieResponsesStreamEvent>> {
+    try {
+      const headers = req.stream ? { Accept: "text/event-stream" } : undefined;
+      const res = await transport.raw(path, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(req),
+        signal,
+      });
+
+      if (req.stream) {
+        return parseResponsesStream(res);
+      }
+
+      return (await res.json()) as KieResponsesResponse;
+    } catch (error) {
+      if (error instanceof KieError) throw error;
+      if (error instanceof SyntaxError) {
+        throw new KieError("Failed to parse responses response", 500);
+      }
+      throw new KieError(`Responses request failed: ${error}`, 500);
+    }
+  }
+
   // POST https://api.kie.ai/codex/v1/responses
   // Docs: https://docs.kie.ai/market/chat/gpt-5-5
-  const responses = Object.assign(
+  const codexResponses = Object.assign(
     async function responses(
       req: KieResponsesRequest,
       signal?: AbortSignal
     ): Promise<KieResponsesResponse | AsyncIterable<KieResponsesStreamEvent>> {
-      try {
-        const headers = req.stream
-          ? { Accept: "text/event-stream" }
-          : undefined;
-        const res = await transport.raw("/codex/v1/responses", {
-          method: "POST",
-          headers,
-          body: JSON.stringify(req),
-          signal,
-        });
-
-        if (req.stream) {
-          return parseResponsesStream(res);
-        }
-
-        return (await res.json()) as KieResponsesResponse;
-      } catch (error) {
-        if (error instanceof KieError) throw error;
-        if (error instanceof SyntaxError) {
-          throw new KieError("Failed to parse responses response", 500);
-        }
-        throw new KieError(`Responses request failed: ${error}`, 500);
-      }
+      return sendResponsesRequest("/codex/v1/responses", req, signal);
     },
     {
       schema: KieResponsesRequestSchema,
     }
   ) as KieResponsesMethod;
 
+  // POST https://api.kie.ai/grok/v1/responses
+  // Docs: https://docs.kie.ai/market/chat/grok
+  const grokResponses = Object.assign(
+    async function responses(
+      req: KieGrokResponsesRequest,
+      signal?: AbortSignal
+    ): Promise<KieResponsesResponse | AsyncIterable<KieResponsesStreamEvent>> {
+      return sendResponsesRequest("/grok/v1/responses", req, signal);
+    },
+    {
+      schema: KieGrokResponsesRequestSchema,
+    }
+  ) as KieGrokResponsesMethod;
+
   return {
     codex: {
       v1: {
-        responses,
+        responses: codexResponses,
+      },
+    },
+    grok: {
+      v1: {
+        responses: grokResponses,
       },
     },
   };

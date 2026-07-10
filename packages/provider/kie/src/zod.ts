@@ -2386,6 +2386,31 @@ export type KieResponsesParsedRequest = z.output<
   typeof KieResponsesRequestSchema
 >;
 
+// Grok 4.5 shares the Kie Responses request contract, differing only by model.
+// Reuse the codex input/message/reasoning/tools sub-schemas so the mixed
+// web_search + function rejection (KieResponsesToolsSchema) behaves identically.
+export const KieGrokResponsesModelSchema = z.enum(["grok-4-5"]);
+
+export const KieGrokResponsesRequestSchema = z.object({
+  model: KieGrokResponsesModelSchema,
+  stream: z.boolean().default(false).optional(),
+  input: z.union([
+    z.string().min(1),
+    z.array(KieResponsesInputMessageSchema).min(1),
+  ]),
+  reasoning: KieResponsesReasoningSchema.optional(),
+  tools: KieResponsesToolsSchema.optional(),
+  tool_choice: z.string().optional(),
+});
+
+export type KieGrokResponsesModel = z.infer<typeof KieGrokResponsesModelSchema>;
+export type KieGrokResponsesRequest = z.input<
+  typeof KieGrokResponsesRequestSchema
+>;
+export type KieGrokResponsesParsedRequest = z.output<
+  typeof KieGrokResponsesRequestSchema
+>;
+
 // ---------------------------------------------------------------------------
 // Sub-provider schemas: Claude (via Kie)
 // ---------------------------------------------------------------------------

@@ -95,9 +95,9 @@ describe("example cost-tier gating", () => {
 
   it("shouldRunEndpointByDefault agrees with each example's gate", () => {
     for (const e of EXAMPLES) {
-      expect(
-        shouldRunEndpointByDefault(e.provider, e.method, e.dotPath)
-      ).toBe(e.runByDefault);
+      expect(shouldRunEndpointByDefault(e.provider, e.method, e.dotPath)).toBe(
+        e.runByDefault
+      );
     }
   });
 });

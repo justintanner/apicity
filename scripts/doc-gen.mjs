@@ -826,7 +826,9 @@ function renderApiReference(providerName, endpoints) {
           }
         : ep;
       const tierKey = `${providerName}\t${
-        docRow?.dotPath ?? enrichedEndpoint.fullDotPath ?? enrichedEndpoint.dotPath
+        docRow?.dotPath ??
+        enrichedEndpoint.fullDotPath ??
+        enrichedEndpoint.dotPath
       }\t${docRow?.method ?? enrichedEndpoint.method ?? ""}`;
       const tier = COST_TIER_MAP.get(tierKey) ?? "prohibitive";
       sections.push(

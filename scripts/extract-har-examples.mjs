@@ -548,7 +548,8 @@ function annotateWithCostTier(examples, provider, tierMap) {
     const sp = key.indexOf(" ");
     const method = sp < 0 ? "" : key.slice(0, sp);
     const dotPath = sp < 0 ? key : key.slice(sp + 1);
-    const tier = tierMap.get(`${provider}\t${dotPath}\t${method}`) ?? "prohibitive";
+    const tier =
+      tierMap.get(`${provider}\t${dotPath}\t${method}`) ?? "prohibitive";
     entry.tier = tier;
     entry.runByDefault = tier === "cheap";
   }

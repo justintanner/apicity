@@ -476,7 +476,7 @@ defaults to `false`.
 
 ## API Reference
 
-43 endpoints across 23 groups. Each method mirrors an upstream URL path.
+44 endpoints across 24 groups. Each method mirrors an upstream URL path.
 
 ### chat
 
@@ -882,6 +882,25 @@ const res = await kie.post.api.v1.gpt4oImage.generate({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
+
+</details>
+
+### grok
+
+<details>
+<summary><code>POST</code> <b><code>kie.grok.v1.responses</code></b></summary>
+
+<code>POST https://api.kie.ai/grok/v1/responses</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/market/chat/grok)
+
+```typescript
+const res = await kie.grok.v1.responses({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/responses.ts`](src/responses.ts)
 
 </details>
 

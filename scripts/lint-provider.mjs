@@ -53,6 +53,16 @@ run("endpoint comments (provider)", "node", [
   "--provider",
   provider,
 ]);
+run("endpoint signatures (provider)", "node", [
+  "scripts/check-endpoint-signatures.mjs",
+  "--provider",
+  provider,
+]);
+run("factory signature (provider)", "node", [
+  "scripts/check-factory-signatures.mjs",
+  "--provider",
+  provider,
+]);
 run("orphan recordings (provider)", "node", [
   "scripts/check-orphan-recordings.mjs",
   "--provider",

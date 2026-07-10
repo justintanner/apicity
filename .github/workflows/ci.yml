@@ -65,14 +65,10 @@ jobs:
           test -f packages/provider/alibaba/dist/src/index.js
           test -f packages/provider/alibaba/dist/src/index.d.ts
 
+      # Endpoint & factory signature conventions are enforced by `pnpm run lint`
+      # (lint:signatures + lint:factory in lint:repo).
       - name: Lint
         run: pnpm run lint
-
-      # Advisory only — signature-drift warnings never block (the script always
-      # exits 0). Kept out of `pnpm run lint` so the local lint loop stays fast.
-      - name: Endpoint signature drift (advisory)
-        run: pnpm run lint:signatures
-        continue-on-error: true
 
       - name: Integration tests (replay)
         run: pnpm run test:run

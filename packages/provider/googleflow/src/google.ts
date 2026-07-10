@@ -286,6 +286,7 @@ export function createGoogleFlow(opts: GoogleFlowOptions): GoogleFlowProvider {
           ),
         }
       ),
+      // sig-ok: intentional
       // POST https://api.useapi.net/v1/google-flow/assets
       // Docs: https://useapi.net/docs/api-google-flow-v1/post-google-flow-assets-email
       assets: Object.assign(

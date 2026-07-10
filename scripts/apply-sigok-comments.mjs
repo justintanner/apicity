@@ -1,50 +1,27 @@
 #!/usr/bin/env node
 /**
- * Insert a `// sig-ok: <reason>` comment line above any endpoint whose
- * dotPath drifts from its URL-derived signature. Idempotent — skips
- * endpoints that already carry a `// sig-ok:` line.
+ * Insert acknowledgment comments for endpoints that intentionally deviate from
+ * the enforced conventions in `check-endpoint-signatures.mjs`:
  *
- * Reasons are auto-classified by the kind of drift; tweak by hand later if
- * you want a more specific note.
+ *   // sig-ok: <reason>     — dotPath intentionally diverges from the URL path
+ *   // schema-ok: <reason>  — POST endpoint has no zod request schema
+ *
+ * Idempotent — skips endpoints that already carry the matching acknowledgment.
+ * Detection is shared with the checker, so applying this fixer makes the
+ * checker pass by construction.
  *
  * Usage:
  *   node scripts/apply-sigok-comments.mjs [--dry-run]
  */
 import { loadProject, walkAllEndpoints } from "./lib/endpoint-walk.mjs";
-import { urlToDotPath } from "./lib/url-to-dotpath.mjs";
+import {
+  computeDrift,
+  endpointHasSchema,
+  hasAckComment,
+} from "./lib/endpoint-convention.mjs";
 import fs from "node:fs";
 
-const REST_ALIASES = new Set([
-  "list",
-  "retrieve",
-  "create",
-  "del",
-  "delete",
-  "update",
-  "cancel",
-  "get",
-  "results",
-]);
-
-function arraysEqual(a, b) {
-  if (a.length !== b.length) return false;
-  for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
-  return true;
-}
-
-function matches(actual, expected) {
-  if (arraysEqual(actual, expected)) return true;
-  if (
-    actual.length === expected.length + 1 &&
-    REST_ALIASES.has(actual[actual.length - 1]) &&
-    arraysEqual(actual.slice(0, -1), expected)
-  ) {
-    return true;
-  }
-  return false;
-}
-
-function reasonFor(provider) {
+function sigOkReason(provider) {
   switch (provider) {
     case "free-media-upload":
       return "service-name grouping (multi-host wrapper)";
@@ -61,33 +38,41 @@ function reasonFor(provider) {
   }
 }
 
-function dryRunFlag(argv) {
-  return argv.includes("--dry-run");
-}
-
-function signatureOptions(provider) {
-  return {
-    keepFullHostname: provider === "free-media-upload",
-    ignoredHostLabels: provider === "kie" ? ["kieai"] : [],
-  };
+function schemaOkReason(dotPath) {
+  const tail = dotPath.split(".").pop() ?? "";
+  if (/^(cancel|pause|resume|undelete|revoke|finalize|delete|del)$/.test(tail)) {
+    return "body-less POST (no request payload)";
+  }
+  if (/file|upload|add|import/i.test(dotPath)) {
+    return "multipart/no-JSON-body upload (no request schema)";
+  }
+  return "no request body to validate";
 }
 
 async function main() {
-  const dryRun = dryRunFlag(process.argv);
+  const dryRun = process.argv.includes("--dry-run");
   const project = loadProject();
 
-  const perFile = new Map();
+  const perFile = new Map(); // filePath → [{ nodeStart, lines: [] }]
   const seenNodes = new Set();
 
   for await (const ep of walkAllEndpoints(project)) {
-    if (!ep.fullUrl || ep.fullUrl === "?" || !ep.dotPath) continue;
-    const expected = urlToDotPath(ep.fullUrl, signatureOptions(ep.provider));
-    if (!expected) continue;
-    const actual = ep.dotPath.split(".").filter(Boolean);
-    if (matches(actual, expected)) continue;
-
     const anchor = ep.commentNode ?? ep.propNode;
     if (!anchor) continue;
+
+    const lines = [];
+    const drift = computeDrift(ep);
+    if (drift?.drifts && !hasAckComment(anchor, "sig-ok")) {
+      lines.push(`// sig-ok: ${sigOkReason(ep.provider)}`);
+    }
+    if (
+      ep.method === "POST" &&
+      !endpointHasSchema(ep) &&
+      !hasAckComment(anchor, "schema-ok")
+    ) {
+      lines.push(`// schema-ok: ${schemaOkReason(ep.dotPath)}`);
+    }
+    if (!lines.length) continue;
 
     const filePath = anchor.getSourceFile().getFilePath();
     const nodeStart = anchor.getStart(false);
@@ -96,12 +81,11 @@ async function main() {
     seenNodes.add(nodeKey);
 
     const bucket = perFile.get(filePath) ?? [];
-    bucket.push({ nodeStart, reason: reasonFor(ep.provider) });
+    bucket.push({ nodeStart, lines });
     perFile.set(filePath, bucket);
   }
 
   let inserted = 0;
-  let alreadyMarked = 0;
   const changedFiles = new Set();
 
   for (const [filePath, edits] of perFile) {
@@ -113,29 +97,23 @@ async function main() {
         "",
       ])[0];
 
-      // Find the topmost contiguous comment block above the anchor
+      // Find the top of the contiguous comment block above the anchor so the
+      // acknowledgment sits above the URL/Docs comment, not between them.
       let topOfComments = lineStart;
       let cursor = lineStart;
-      let hasSigOk = false;
       while (cursor > 0) {
         const prevLineEnd = cursor - 1;
         if (prevLineEnd <= 0) break;
         const prevLineStart = text.lastIndexOf("\n", prevLineEnd - 1) + 1;
         const lineText = text.slice(prevLineStart, prevLineEnd).trim();
         if (!lineText.startsWith("//")) break;
-        if (/^\/\/\s*sig-ok\b/.test(lineText)) hasSigOk = true;
         topOfComments = prevLineStart;
         cursor = prevLineStart;
       }
 
-      if (hasSigOk) {
-        alreadyMarked++;
-        continue;
-      }
-
-      const newLine = `${indent}// sig-ok: ${e.reason}\n`;
-      text = text.slice(0, topOfComments) + newLine + text.slice(topOfComments);
-      inserted++;
+      const block = e.lines.map((l) => `${indent}${l}\n`).join("");
+      text = text.slice(0, topOfComments) + block + text.slice(topOfComments);
+      inserted += e.lines.length;
       changedFiles.add(filePath);
     }
 
@@ -145,7 +123,7 @@ async function main() {
   }
 
   console.log(
-    `sig-ok markers: inserted=${inserted} alreadyMarked=${alreadyMarked} files=${changedFiles.size}${dryRun ? " (dry-run)" : ""}`
+    `acknowledgment comments: inserted=${inserted} files=${changedFiles.size}${dryRun ? " (dry-run)" : ""}`
   );
 }
 

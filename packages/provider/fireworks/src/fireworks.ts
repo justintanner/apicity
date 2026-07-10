@@ -984,6 +984,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
             schema: FireworksCreateDeploymentRequestSchema,
           }
         ),
+        // schema-ok: body-less POST (no request payload)
         // sig-ok: Fireworks management endpoints stay under the inference namespace.
         // POST https://api.fireworks.ai/v1/accounts/{accountId}/deployments/{deploymentId}:undelete
         // Docs: https://docs.fireworks.ai/api-reference
@@ -1188,6 +1189,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
             schema: FireworksSFTCreateRequestSchema,
           }
         ),
+        // schema-ok: body-less POST (no request payload)
         // sig-ok: Fireworks management endpoints stay under the inference namespace.
         // POST https://api.fireworks.ai/v1/accounts/{param}/supervisedFineTuningJobs/{param}:resume
         // Docs: https://docs.fireworks.ai/api-reference
@@ -1226,6 +1228,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
             schema: FireworksDpoJobCreateRequestSchema,
           }
         ),
+        // schema-ok: body-less POST (no request payload)
         // sig-ok: Fireworks management endpoints stay under the inference namespace.
         // POST https://api.fireworks.ai/v1/accounts/{accountId}/dpoJobs/{jobId}:resume
         // Docs: https://docs.fireworks.ai/api-reference
@@ -1287,6 +1290,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
             schema: FireworksGetUploadEndpointEvaluatorRequestSchema,
           }
         ),
+        // schema-ok: multipart/no-JSON-body upload (no request schema)
         // sig-ok: Fireworks management endpoints stay under the inference namespace.
         // POST https://api.fireworks.ai/v1/accounts/{accountId}/evaluators/{evaluatorId}:validateUpload
         // Docs: https://docs.fireworks.ai/api-reference
@@ -1354,6 +1358,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
             schema: FireworksRFTCreateRequestSchema,
           }
         ),
+        // schema-ok: body-less POST (no request payload)
         // sig-ok: Fireworks management endpoints stay under the inference namespace.
         // POST https://api.fireworks.ai/v1/accounts/{accountId}/reinforcementFineTuningJobs/{jobId}:resume
         // Docs: https://docs.fireworks.ai/api-reference
@@ -1415,6 +1420,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
             schema: FireworksRlorTrainerJobExecuteStepRequestSchema,
           }
         ),
+        // schema-ok: body-less POST (no request payload)
         // sig-ok: Fireworks management endpoints stay under the inference namespace.
         // POST https://api.fireworks.ai/v1/accounts/{accountId}/rlorTrainerJobs/{jobId}:resume
         // Docs: https://docs.fireworks.ai/api-reference

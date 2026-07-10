@@ -653,6 +653,7 @@ export function createOpenAi(opts: OpenAiOptions): OpenAiProvider {
             schema: OpenAiResponseInputTokensRequestSchema,
           }
         ),
+        // schema-ok: body-less POST (no request payload)
         // POST https://api.openai.com/v1/responses/{id}/cancel
         // Docs: https://platform.openai.com/docs/api-reference
         cancel: Object.assign(
@@ -746,6 +747,7 @@ export function createOpenAi(opts: OpenAiOptions): OpenAiProvider {
       },
       {
         schema: OpenAiBatchCreateRequestSchema,
+        // schema-ok: body-less POST (no request payload)
         // POST https://api.openai.com/v1/batches/{id}/cancel
         // Docs: https://platform.openai.com/docs/api-reference
         cancel: Object.assign(
@@ -775,6 +777,7 @@ export function createOpenAi(opts: OpenAiOptions): OpenAiProvider {
         },
         {
           schema: OpenAiFineTuningJobCreateRequestSchema,
+          // schema-ok: body-less POST (no request payload)
           // POST https://api.openai.com/v1/fine_tuning/jobs/{id}/cancel
           // Docs: https://platform.openai.com/docs/api-reference
           cancel: Object.assign(
@@ -789,6 +792,7 @@ export function createOpenAi(opts: OpenAiOptions): OpenAiProvider {
             },
             {}
           ),
+          // schema-ok: body-less POST (no request payload)
           // POST https://api.openai.com/v1/fine_tuning/jobs/{id}/pause
           // Docs: https://platform.openai.com/docs/api-reference
           pause: Object.assign(
@@ -803,6 +807,7 @@ export function createOpenAi(opts: OpenAiOptions): OpenAiProvider {
             },
             {}
           ),
+          // schema-ok: body-less POST (no request payload)
           // POST https://api.openai.com/v1/fine_tuning/jobs/{id}/resume
           // Docs: https://platform.openai.com/docs/api-reference
           resume: Object.assign(
@@ -1401,6 +1406,7 @@ export function createOpenAi(opts: OpenAiOptions): OpenAiProvider {
   // GET codex namespace — ChatGPT-plan usage, served by the Codex backend
   // (codexBaseURL) rather than the api.openai.com platform.
   const getCodex = {
+    // sig-ok: intentional
     // GET https://chatgpt.com/backend-api/wham/usage
     // Docs: https://developers.openai.com/codex/pricing
     usage: async (signal?: AbortSignal): Promise<OpenAiCodexUsageResponse> => {

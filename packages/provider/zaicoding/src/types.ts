@@ -14,6 +14,10 @@ export interface ZaiCodingOptions {
   apiKey?: string;
   /** Override the API origin. Defaults to `https://api.z.ai`. */
   baseUrl?: string;
+  /** Per-request timeout in milliseconds. Defaults to 30000. */
+  timeout?: number;
+  /** Custom fetch implementation (e.g. for testing). Defaults to global `fetch`. */
+  fetch?: typeof fetch;
 }
 
 /* ------------------------------------------------------------------ *

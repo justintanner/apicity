@@ -133,6 +133,7 @@ export function createX(opts: XOptions): XProvider {
     { schema: XMediaUploadAppendRequestSchema }
   );
 
+  // schema-ok: body-less POST (no request payload)
   // sig-ok: numeric URL segments (`/2/`) become identifier-safe (`v2`)
   // POST https://api.x.com/2/media/upload/{id}/finalize
   // Docs: https://docs.x.com/x-api/media/finalize-media-upload

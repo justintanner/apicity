@@ -541,6 +541,7 @@ export function createClobProvider(
     );
   }
 
+  // schema-ok: no request body to validate
   // POST https://clob.polymarket.com/auth/api-key
   // Docs: https://docs.polymarket.com/api-reference/authentication.md
   async function clobAuthApiKey(
@@ -623,6 +624,7 @@ export function createClobProvider(
     );
   }
 
+  // schema-ok: no request body to validate
   // POST https://clob.polymarket.com/auth/builder-api-key
   // Docs: https://docs.polymarket.com/api-spec/clob-openapi.yaml
   async function clobAuthBuilderApiKeyPost(
@@ -1057,6 +1059,7 @@ export function createClobProvider(
     );
   }
 
+  // schema-ok: no request body to validate
   // POST https://clob.polymarket.com/heartbeats
   // Docs: https://docs.polymarket.com/api-reference/trade/send-heartbeat.md
   async function clobHeartbeats(

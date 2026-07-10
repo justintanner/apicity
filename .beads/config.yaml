@@ -57,3 +57,6 @@ gc.endpoint_status: verified
 sync.remote: "git+https://github.com/justintanner/apicity.git"
 
 federation.remote: "git+https://github.com/justintanner/apicity.git"
+dolt.host: superlzy-dolt
+dolt.port: 3306
+dolt.user: superlzy

@@ -255,6 +255,7 @@ export function createDropbox(opts: DropboxOptions = {}): DropboxProvider {
     }
   }
 
+  // sig-ok: intentional
   // POST https://api.dropboxapi.com/2/check/user
   // Docs: https://www.dropbox.com/developers/documentation/http/documentation#check-user
   const checkUser = Object.assign(
@@ -272,6 +273,7 @@ export function createDropbox(opts: DropboxOptions = {}): DropboxProvider {
     { schema: DropboxCheckUserRequestSchema }
   );
 
+  // sig-ok: intentional
   // POST https://api.dropboxapi.com/2/users/get_current_account
   // Docs: https://www.dropbox.com/developers/documentation/http/documentation#users-get_current_account
   const getCurrentAccount = Object.assign(
@@ -288,6 +290,7 @@ export function createDropbox(opts: DropboxOptions = {}): DropboxProvider {
     { schema: undefined }
   );
 
+  // sig-ok: intentional
   // POST https://api.dropboxapi.com/2/files/list_folder
   // Docs: https://www.dropbox.com/developers/documentation/http/documentation#files-list_folder
   const listFolder = Object.assign(
@@ -305,6 +308,7 @@ export function createDropbox(opts: DropboxOptions = {}): DropboxProvider {
     { schema: DropboxFilesListFolderRequestSchema }
   );
 
+  // sig-ok: intentional
   // POST https://api.dropboxapi.com/2/files/list_folder/continue
   // Docs: https://www.dropbox.com/developers/documentation/http/documentation#files-list_folder-continue
   const listFolderContinue = Object.assign(
@@ -322,6 +326,7 @@ export function createDropbox(opts: DropboxOptions = {}): DropboxProvider {
     { schema: DropboxFilesListFolderContinueRequestSchema }
   );
 
+  // sig-ok: intentional
   // POST https://api.dropboxapi.com/2/files/get_metadata
   // Docs: https://www.dropbox.com/developers/documentation/http/documentation#files-get_metadata
   const getMetadata = Object.assign(
@@ -339,6 +344,7 @@ export function createDropbox(opts: DropboxOptions = {}): DropboxProvider {
     { schema: DropboxFilesGetMetadataRequestSchema }
   );
 
+  // sig-ok: intentional
   // POST https://api.dropboxapi.com/2/files/create_folder_v2
   // Docs: https://www.dropbox.com/developers/documentation/http/documentation#files-create_folder_v2
   const createFolderV2 = Object.assign(
@@ -356,6 +362,7 @@ export function createDropbox(opts: DropboxOptions = {}): DropboxProvider {
     { schema: DropboxFilesCreateFolderV2RequestSchema }
   );
 
+  // sig-ok: intentional
   // POST https://api.dropboxapi.com/2/files/delete_v2
   // Docs: https://www.dropbox.com/developers/documentation/http/documentation#files-delete_v2
   const deleteV2 = Object.assign(
@@ -373,6 +380,7 @@ export function createDropbox(opts: DropboxOptions = {}): DropboxProvider {
     { schema: DropboxFilesDeleteV2RequestSchema }
   );
 
+  // sig-ok: intentional
   // POST https://api.dropboxapi.com/2/files/copy_v2
   // Docs: https://www.dropbox.com/developers/documentation/http/documentation#files-copy_v2
   const copyV2 = Object.assign(
@@ -390,6 +398,7 @@ export function createDropbox(opts: DropboxOptions = {}): DropboxProvider {
     { schema: DropboxFilesRelocationRequestSchema }
   );
 
+  // sig-ok: intentional
   // POST https://api.dropboxapi.com/2/files/move_v2
   // Docs: https://www.dropbox.com/developers/documentation/http/documentation#files-move_v2
   const moveV2 = Object.assign(
@@ -407,6 +416,7 @@ export function createDropbox(opts: DropboxOptions = {}): DropboxProvider {
     { schema: DropboxFilesRelocationRequestSchema }
   );
 
+  // sig-ok: intentional
   // POST https://content.dropboxapi.com/2/files/upload
   // Docs: https://www.dropbox.com/developers/documentation/http/documentation#files-upload
   const upload = Object.assign(
@@ -424,6 +434,7 @@ export function createDropbox(opts: DropboxOptions = {}): DropboxProvider {
     { schema: DropboxFilesUploadRequestSchema }
   );
 
+  // sig-ok: intentional
   // POST https://content.dropboxapi.com/2/files/download
   // Docs: https://www.dropbox.com/developers/documentation/http/documentation#files-download
   const download = Object.assign(
@@ -438,6 +449,7 @@ export function createDropbox(opts: DropboxOptions = {}): DropboxProvider {
     { schema: DropboxFilesDownloadRequestSchema }
   );
 
+  // sig-ok: intentional
   // POST https://api.dropboxapi.com/2/sharing/create_shared_link_with_settings
   // Docs: https://www.dropbox.com/developers/documentation/http/documentation#sharing-create_shared_link_with_settings
   const createSharedLinkWithSettings = Object.assign(
@@ -455,6 +467,7 @@ export function createDropbox(opts: DropboxOptions = {}): DropboxProvider {
     { schema: DropboxSharingCreateSharedLinkWithSettingsRequestSchema }
   );
 
+  // sig-ok: intentional
   // POST https://api.dropboxapi.com/2/sharing/list_shared_links
   // Docs: https://www.dropbox.com/developers/documentation/http/documentation#sharing-list_shared_links
   const listSharedLinks = Object.assign(

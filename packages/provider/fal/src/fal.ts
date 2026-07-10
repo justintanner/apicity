@@ -819,6 +819,7 @@ export function createFal(opts: FalOptions): FalProvider {
     base: runBaseURL,
   });
 
+  // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/google/nano-banana-2-lite
   // Docs: https://fal.ai/models/google/nano-banana-2-lite/api
   const nanoBanana2LiteTextToImage = jsonBody<
@@ -831,6 +832,7 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/google/nano-banana-lite/edit
   // Docs: https://fal.ai/models/google/nano-banana-lite/edit/api
   const nanoBanana2LiteEdit = jsonBody<

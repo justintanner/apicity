@@ -28,6 +28,8 @@ export function createZaiCoding(
     throw new ZaiCodingError("ZAI_CODING_PLAN_API_KEY is required");
   }
   const baseURL = options.baseUrl ?? "https://api.z.ai";
+  const fetchImpl = options.fetch ?? fetch;
+  const timeout = options.timeout ?? 30000;
 
   async function send(
     path: string,
@@ -47,9 +49,18 @@ export function createZaiCoding(
       headers.set("Content-Type", "application/json");
     }
 
+    // Fall back to a client-side timeout when the caller doesn't pass a signal.
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+    const requestSignal = init.signal ?? controller.signal;
+
     let response: Response;
     try {
-      response = await fetch(url.toString(), { ...init, headers });
+      response = await fetchImpl(url.toString(), {
+        ...init,
+        headers,
+        signal: requestSignal,
+      });
     } catch (error) {
       throw new ZaiCodingError(
         `Failed to reach ${url.toString()}: ${
@@ -58,6 +69,8 @@ export function createZaiCoding(
         undefined,
         error
       );
+    } finally {
+      clearTimeout(timeoutId);
     }
 
     if (!response.ok) {

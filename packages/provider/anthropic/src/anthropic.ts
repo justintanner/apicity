@@ -326,6 +326,7 @@ export function createAnthropic(opts: AnthropicOptions): AnthropicProvider {
         },
         {
           schema: AnthropicBatchCreateRequestSchema,
+          // schema-ok: body-less POST (no request payload)
           // POST https://api.anthropic.com/v1/messages/batches/{batchId}/cancel
           // Docs: https://docs.anthropic.com/en/api
           cancel: async function cancel(

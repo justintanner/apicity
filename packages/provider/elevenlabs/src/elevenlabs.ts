@@ -1547,6 +1547,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     );
   };
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/voices/add/{publicUserId}/{voiceId}
   // Docs: https://elevenlabs.io/docs/api-reference/voices/share
   const addSharedVoice = Object.assign(
@@ -1725,6 +1726,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: ElevenLabsCreatePvcVoiceRequestSchema }
   );
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/voices/pvc/{voiceId}
   // Docs: https://elevenlabs.io/docs/api-reference/voices/pvc/edit
   const editPvcVoice = Object.assign(
@@ -1802,6 +1804,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: ElevenLabsUpdatePvcVoiceSampleRequestSchema }
   );
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/voices/pvc/{voiceId}/samples
   // Docs: https://elevenlabs.io/docs/api-reference/voices/pvc/samples/create
   const addPvcSamples = Object.assign(
@@ -2004,6 +2007,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: ElevenLabsSoundGenerationRequestSchema }
   );
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/audio-isolation/stream
   // Docs: https://elevenlabs.io/docs/api-reference/audio-isolation/stream
   const audioIsolationStream = Object.assign(
@@ -2090,6 +2094,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     }
   );
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/audio-native/content
   // Docs: https://elevenlabs.io/docs/api-reference/audio-native/update-content
   const updateAudioNativeContentFromUrl = Object.assign(
@@ -2229,6 +2234,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: ElevenLabsMusicPlanRequestSchema }
   );
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/music/stream
   // Docs: https://elevenlabs.io/docs/api-reference/music/compose-stream
   const composeMusicStream = Object.assign(
@@ -2539,6 +2545,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: undefined }
   );
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/productions/orders/{orderId}/items
   // Docs: https://elevenlabs.io/docs/api-reference/productions/orders/items/upsert
   const upsertOrderItem = Object.assign(
@@ -2557,6 +2564,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: ElevenLabsUpsertOrderItemRequestSchema }
   );
 
+  // sig-ok: intentional
   // DELETE https://api.elevenlabs.io/v1/productions/orders/{orderId}/items/{itemId}
   // Docs: https://elevenlabs.io/docs/api-reference/productions/orders/items/remove
   const removeOrderItem = Object.assign(
@@ -2575,6 +2583,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: undefined }
   );
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/productions/orders/{orderId}/media
   // Docs: https://elevenlabs.io/docs/api-reference/productions/orders/media/register
   const registerOrderMedia = Object.assign(
@@ -2654,6 +2663,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     orders: productionsOrders,
   };
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/text-to-speech/{voiceId}/stream/with-timestamps
   // Docs: https://elevenlabs.io/docs/api-reference/text-to-speech/stream-with-timestamps
   const textToSpeechStreamWithTimestamps = Object.assign(
@@ -2681,6 +2691,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: ElevenLabsTextToSpeechRequestSchema }
   );
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/text-to-speech/{voiceId}/stream
   // Docs: https://elevenlabs.io/docs/api-reference/text-to-speech/stream
   const textToSpeechStream = Object.assign(
@@ -2757,6 +2768,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     }
   );
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/text-to-dialogue/stream/with-timestamps
   // Docs: https://elevenlabs.io/docs/api-reference/text-to-dialogue/stream-with-timestamps
   const textToDialogueStreamWithTimestamps = Object.assign(
@@ -2783,6 +2795,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: ElevenLabsTextToDialogueRequestSchema }
   );
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/text-to-dialogue/stream
   // Docs: https://elevenlabs.io/docs/api-reference/text-to-dialogue/stream
   const textToDialogueStream = Object.assign(
@@ -2909,6 +2922,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: ElevenLabsVoiceRemixRequestSchema }
   );
 
+  // sig-ok: intentional
   // GET https://api.elevenlabs.io/v1/text-to-voice/{generatedVoiceId}/stream
   // Docs: https://elevenlabs.io/docs/api-reference/text-to-voice/stream
   const textToVoiceStream = Object.assign(
@@ -3111,6 +3125,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: undefined }
   );
 
+  // sig-ok: intentional
   // GET https://api.elevenlabs.io/v1/dubbing/{dubbingId}/transcripts/{languageCode}/format/{formatType}
   // Docs: https://elevenlabs.io/docs/api-reference/dubbing/transcripts/get
   const getDubbingTranscript = Object.assign(
@@ -3380,6 +3395,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: undefined }
   );
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/studio/projects/{projectId}/snapshots/{snapshotId}/stream
   // Docs: https://elevenlabs.io/docs/api-reference/studio/stream-project-audio
   const studioStreamProjectSnapshot = Object.assign(
@@ -3580,6 +3596,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: undefined }
   );
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/studio/projects/{projectId}/chapters/{chapterId}/snapshots/{chapterSnapshotId}/stream
   // Docs: https://elevenlabs.io/docs/api-reference/studio/stream-chapter-audio
   const studioStreamChapterSnapshot = Object.assign(
@@ -3646,6 +3663,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     },
   };
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/speech-to-speech/{voiceId}/stream
   // Docs: https://elevenlabs.io/docs/api-reference/speech-to-speech/stream
   const speechToSpeechStream = Object.assign(
@@ -3876,6 +3894,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: ElevenLabsSearchWorkspaceGroupsRequestSchema }
   );
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/workspace/groups/{groupId}/members
   // Docs: https://elevenlabs.io/docs/api-reference/workspace/groups/members/add
   const addWorkspaceGroupMember = Object.assign(
@@ -4523,6 +4542,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: undefined }
   );
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/convai/agents/{agentId}/simulate-conversation/stream
   // Docs: https://elevenlabs.io/docs/api-reference/agents/simulate-conversation-stream
   const simulateConversationStream = Object.assign(
@@ -6445,6 +6465,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: ElevenLabsAssignConversationTagsRequestSchema }
   );
 
+  // sig-ok: intentional
   // DELETE https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/tags/{tagId}
   // Docs: https://elevenlabs.io/docs/api-reference/conversations/tags/unassign
   const unassignConversationTag = Object.assign(
@@ -6463,6 +6484,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: undefined }
   );
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/analysis/run
   // Docs: https://elevenlabs.io/docs/api-reference/conversations/analysis/run-analysis
   const runConversationAnalysis = Object.assign(
@@ -6480,6 +6502,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: undefined }
   );
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/analysis/evaluations/run
   // Docs: https://elevenlabs.io/docs/api-reference/conversations/analysis/run-evaluation
   const runConversationEvaluations = Object.assign(
@@ -6876,6 +6899,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: ElevenLabsListKnowledgeBaseDocumentChunksRequestSchema }
   );
 
+  // sig-ok: intentional
   // GET https://api.elevenlabs.io/v1/convai/knowledge-base/{documentationId}/chunk/{chunkId}
   // Docs: https://elevenlabs.io/docs/api-reference/knowledge-base/get-chunk
   const getKnowledgeBaseDocumentChunk = Object.assign(
@@ -6986,6 +7010,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: undefined }
   );
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/convai/knowledge-base/rag-index
   // Docs: https://elevenlabs.io/docs/api-reference/knowledge-base/compute-rag-index-batch
   const computeKnowledgeBaseRagIndexes = Object.assign(
@@ -7020,6 +7045,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: undefined }
   );
 
+  // sig-ok: intentional
   // POST https://api.elevenlabs.io/v1/convai/knowledge-base/{documentationId}/rag-index
   // Docs: https://elevenlabs.io/docs/api-reference/knowledge-base/compute-rag-index
   const computeKnowledgeBaseDocumentRagIndex = Object.assign(

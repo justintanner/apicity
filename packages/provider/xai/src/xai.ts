@@ -570,6 +570,7 @@ export function createXai(opts: XaiOptions): XaiProvider {
     },
     {
       schema: XaiBatchCreateRequestSchema,
+      // schema-ok: body-less POST (no request payload)
       // POST https://api.x.ai/v1/batches/{batchId}:cancel
       // Docs: https://docs.x.ai/docs/api-reference
       cancel: async function cancelBatch(
@@ -583,6 +584,7 @@ export function createXai(opts: XaiOptions): XaiProvider {
           signal
         );
       },
+      // schema-ok: no request body to validate
       // POST https://api.x.ai/v1/batches/{batchId}/requests
       // Docs: https://docs.x.ai/docs/api-reference
       requests: async function addRequests(
@@ -606,6 +608,7 @@ export function createXai(opts: XaiOptions): XaiProvider {
     },
     {
       schema: XaiCollectionCreateRequestSchema,
+      // schema-ok: no request body to validate
       // POST https://management-api.x.ai/v1/collections/{collectionId}/documents/{fileId}
       // Docs: https://docs.x.ai/docs/api-reference
       documents: async function addDocument(
@@ -1211,6 +1214,7 @@ export function createXai(opts: XaiOptions): XaiProvider {
                 }
               ),
             },
+            // schema-ok: multipart/no-JSON-body upload (no request schema)
             // POST https://api.x.ai/v1/files
             // Docs: https://docs.x.ai/docs/api-reference
             files: Object.assign(
@@ -1254,6 +1258,7 @@ export function createXai(opts: XaiOptions): XaiProvider {
                   },
                   {
                     schema: XaiFilePublicUrlRequestSchema,
+                    // schema-ok: body-less POST (no request payload)
                     // POST https://api.x.ai/v1/files/{fileId}/public-url/revoke
                     // Docs: https://docs.x.ai/developers/files/public-urls
                     revoke: async function revokeFilePublicUrl(

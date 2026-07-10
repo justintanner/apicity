@@ -17,3 +17,9 @@ packages/provider/*/README.md
 # recursively scans every nested worktree — each a full repo copy — producing
 # false `format:check`/`ci:local` failures and near-hangs in agent home worktrees.
 worktrees/
+# Gas City molecule scratch — untracked build artifacts and per-bead work dirs
+# written into shared agent home worktrees, absent on clean CI checkouts.
+# Without these, `prettier --check .` flags the generated Markdown and per-bead
+# files as unformatted, producing false `format:check`/`ci:local` failures.
+plans/
+/ac-*/

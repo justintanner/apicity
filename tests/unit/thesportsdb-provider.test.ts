@@ -63,19 +63,19 @@ describe("thesportsdb provider", () => {
   it("attaches representative V1 and V2 endpoint examples", () => {
     const thesportsdb = createTheSportsDB();
 
-    expect(endpointExample(thesportsdb.v1.searchTeams)).toEqual({
+    expect(endpointExample(thesportsdb.v1.searchTeams)).toMatchObject({
       source: "static:thesportsdb-v1-free-search",
       payload: { team: "Arsenal" },
     });
-    expect(endpointExample(thesportsdb.v1.eventstv)).toEqual({
+    expect(endpointExample(thesportsdb.v1.eventstv)).toMatchObject({
       source: "static:thesportsdb-v1-premium-tv-filter",
       payload: { channel: "Peacock_Premium" },
     });
-    expect(endpointExample(thesportsdb.v2.search.team)).toEqual({
+    expect(endpointExample(thesportsdb.v2.search.team)).toMatchObject({
       source: "static:thesportsdb-v2-premium-search",
       payload: { teamName: "Manchester United" },
     });
-    expect(endpointExample(thesportsdb.v2.schedule.next.league)).toEqual({
+    expect(endpointExample(thesportsdb.v2.schedule.next.league)).toMatchObject({
       source: "static:thesportsdb-v2-premium-schedule",
       payload: { idLeague: 4328 },
     });

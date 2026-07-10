@@ -19,6 +19,7 @@ import {
   GoogleGenerateContentRequestSchema,
 } from "./zod";
 import { attachExamples } from "./example";
+import { createTransport } from "./transport";
 
 interface GoogleErrorBody {
   error?:
@@ -39,17 +40,6 @@ function isGoogleErrorBody(value: unknown): value is GoogleErrorBody {
   );
 }
 
-function attachAbortHandler(
-  signal: AbortSignal,
-  controller: AbortController
-): void {
-  if (signal.aborted) {
-    controller.abort();
-    return;
-  }
-  signal.addEventListener("abort", () => controller.abort(), { once: true });
-}
-
 function formatErrorMessage(status: number, body: unknown): string {
   if (isGoogleErrorBody(body)) {
     if (typeof body.error === "string") {
@@ -63,6 +53,21 @@ function formatErrorMessage(status: number, body: unknown): string {
     }
   }
   return `Google API error: ${status}`;
+}
+
+// Google surfaces a machine-readable status string (e.g. RESOURCE_EXHAUSTED)
+// under `error.status`; carry it through as the error code when present.
+function parseGoogleErrorBody(
+  status: number,
+  body: unknown
+): { message: string; code?: string } {
+  const code =
+    isGoogleErrorBody(body) &&
+    typeof body.error === "object" &&
+    body.error !== null
+      ? body.error.status
+      : undefined;
+  return { message: formatErrorMessage(status, body), code };
 }
 
 function parseWithSchema<TReq>(schema: z.ZodType<TReq>, req: TReq): TReq {
@@ -87,64 +92,36 @@ export function createGoogle(opts: GoogleOptions): GoogleProvider {
     opts.cloudCodeBaseURL ?? "https://cloudcode-pa.googleapis.com"
   ).replace(/\/+$/, "");
   const oauthToken = opts.oauthToken ?? opts.apiKey;
-  const doFetch = opts.fetch ?? fetch;
   const timeout = opts.timeout ?? 30000;
 
-  // POST against the Cloud Code backend (cloudcode-pa.googleapis.com). Unlike
-  // the rest of the factory this authenticates with an OAuth bearer token (the
-  // Antigravity login), not the x-goog-api-key header.
+  // Express-mode surface: x-goog-api-key auth against the aiplatform host.
+  const transport = createTransport({
+    baseUrl: normalizedBaseURL,
+    timeoutMs: timeout,
+    fetchImpl: opts.fetch,
+    defaultHeaders: () => ({ "x-goog-api-key": opts.apiKey }),
+    parseErrorBody: parseGoogleErrorBody,
+    errorClass: GoogleError,
+  });
+
+  // Cloud Code backend (cloudcode-pa.googleapis.com). Unlike the rest of the
+  // factory this authenticates with an OAuth bearer token (the Antigravity
+  // login), not the x-goog-api-key header.
+  const cloudCodeTransport = createTransport({
+    baseUrl: cloudCodeBaseURL,
+    timeoutMs: timeout,
+    fetchImpl: opts.fetch,
+    defaultHeaders: () => ({ Authorization: `Bearer ${oauthToken}` }),
+    parseErrorBody: parseGoogleErrorBody,
+    errorClass: GoogleError,
+  });
+
   async function makeCloudCodeRequest<T>(
     path: string,
     body: unknown,
     signal?: AbortSignal
   ): Promise<T> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-    if (signal) {
-      attachAbortHandler(signal, controller);
-    }
-
-    try {
-      const res = await doFetch(`${cloudCodeBaseURL}${path}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${oauthToken}`,
-        },
-        body: JSON.stringify(body),
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        let resBody: unknown = null;
-        try {
-          resBody = await res.json();
-        } catch {
-          // ignore parse errors
-        }
-        const code =
-          isGoogleErrorBody(resBody) &&
-          typeof resBody.error === "object" &&
-          resBody.error !== null
-            ? resBody.error.status
-            : undefined;
-        throw new GoogleError(
-          formatErrorMessage(res.status, resBody),
-          res.status,
-          resBody,
-          code
-        );
-      }
-
-      return (await res.json()) as T;
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof GoogleError) throw error;
-      throw new GoogleError(`Google request failed: ${error}`, 500);
-    }
+    return cloudCodeTransport.postJson<T>(path, body, { signal });
   }
 
   async function makeRequest<T>(
@@ -152,53 +129,7 @@ export function createGoogle(opts: GoogleOptions): GoogleProvider {
     body: unknown,
     signal?: AbortSignal
   ): Promise<T> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-    if (signal) {
-      attachAbortHandler(signal, controller);
-    }
-
-    try {
-      const res = await doFetch(`${normalizedBaseURL}${path}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": opts.apiKey,
-        },
-        body: JSON.stringify(body),
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        let resBody: unknown = null;
-        try {
-          resBody = await res.json();
-        } catch {
-          // ignore parse errors
-        }
-        const code =
-          isGoogleErrorBody(resBody) &&
-          typeof resBody.error === "object" &&
-          resBody.error !== null
-            ? resBody.error.status
-            : undefined;
-        throw new GoogleError(
-          formatErrorMessage(res.status, resBody),
-          res.status,
-          resBody,
-          code
-        );
-      }
-
-      return (await res.json()) as T;
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof GoogleError) throw error;
-      throw new GoogleError(`Google request failed: ${error}`, 500);
-    }
+    return transport.postJson<T>(path, body, { signal });
   }
 
   const postV1 = {

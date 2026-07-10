@@ -111,6 +111,9 @@ export const sharedSrcEntries = [
       "packages/provider/fireworks/src/transport.ts",
       "packages/provider/kie/src/transport.ts",
       "packages/provider/anthropic/src/transport.ts",
+      "packages/provider/meta/src/transport.ts",
+      "packages/provider/x/src/transport.ts",
+      "packages/provider/google/src/transport.ts",
     ],
   },
 ];

@@ -20,139 +20,56 @@ import {
   XTweetCreateRequestSchema,
 } from "./zod";
 import { attachExamples } from "./example";
+import { createTransport } from "./transport";
+
+// X v2 errors come in two shapes: `{ errors: [{ message, code, ... }] }`
+// for batched/validation failures, or `{ title, detail, status, type }` for
+// single problems. Surface whichever the server sent so the caller sees the
+// actual reason rather than a generic "X API error: 400".
+function formatErrorMessage(status: number, body: unknown): string {
+  if (typeof body === "object" && body !== null) {
+    const b = body as {
+      errors?: Array<{ message?: string }>;
+      title?: string;
+      detail?: string;
+    };
+    if (Array.isArray(b.errors) && b.errors.length > 0) {
+      const first = b.errors[0];
+      if (first?.message) {
+        return `X API error ${status}: ${first.message}`;
+      }
+    }
+    if (b.detail) return `X API error ${status}: ${b.detail}`;
+    if (b.title) return `X API error ${status}: ${b.title}`;
+  }
+  return `X API error: ${status}`;
+}
 
 export function createX(opts: XOptions): XProvider {
   const baseURL = opts.baseURL ?? "https://api.x.com";
-  const doFetch = opts.fetch ?? fetch;
   const timeout = opts.timeout ?? 30000;
 
-  function attachAbortHandler(
-    signal: AbortSignal,
-    controller: AbortController
-  ): void {
-    if (signal.aborted) {
-      controller.abort();
-      return;
-    }
-    signal.addEventListener("abort", () => controller.abort(), { once: true });
-  }
+  const transport = createTransport({
+    baseUrl: baseURL,
+    timeoutMs: timeout,
+    fetchImpl: opts.fetch,
+    defaultHeaders: () => ({ Authorization: `Bearer ${opts.accessToken}` }),
+    parseErrorBody: (status, body) => ({
+      message: formatErrorMessage(status, body),
+    }),
+    errorClass: XError,
+  });
 
-  // X v2 errors come in two shapes: `{ errors: [{ message, code, ... }] }`
-  // for batched/validation failures, or `{ title, detail, status, type }` for
-  // single problems. Surface whichever the server sent so the caller sees the
-  // actual reason rather than a generic "X API error: 400".
-  function formatErrorMessage(status: number, body: unknown): string {
-    if (typeof body === "object" && body !== null) {
-      const b = body as {
-        errors?: Array<{ message?: string }>;
-        title?: string;
-        detail?: string;
-      };
-      if (Array.isArray(b.errors) && b.errors.length > 0) {
-        const first = b.errors[0];
-        if (first?.message) {
-          return `X API error ${status}: ${first.message}`;
-        }
-      }
-      if (b.detail) return `X API error ${status}: ${b.detail}`;
-      if (b.title) return `X API error ${status}: ${b.title}`;
-    }
-    return `X API error: ${status}`;
-  }
-
-  async function makeJsonRequest<T>(
-    method: "GET" | "POST" | "DELETE",
+  // Finalize is a POST with no body and no Content-Type header; use raw() so
+  // the request stays byte-identical to the recorded fixture.
+  async function makeEmptyPost<T>(
     path: string,
-    body: unknown,
     signal?: AbortSignal
   ): Promise<T> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-    if (signal) {
-      attachAbortHandler(signal, controller);
-    }
-
     try {
-      const headers: Record<string, string> = {
-        Authorization: `Bearer ${opts.accessToken}`,
-      };
-      const init: RequestInit = {
-        method,
-        headers,
-        signal: controller.signal,
-      };
-
-      if (body !== undefined) {
-        headers["Content-Type"] = "application/json";
-        init.body = JSON.stringify(body);
-      }
-
-      const res = await doFetch(`${baseURL}${path}`, init);
-
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        let resBody: unknown = null;
-        try {
-          resBody = await res.json();
-        } catch {
-          // ignore parse errors
-        }
-        throw new XError(
-          formatErrorMessage(res.status, resBody),
-          res.status,
-          resBody
-        );
-      }
-
+      const res = await transport.raw(path, { method: "POST", signal });
       return (await res.json()) as T;
     } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof XError) throw error;
-      throw new XError(`X request failed: ${error}`, 500);
-    }
-  }
-
-  async function makeFormRequest<T>(
-    path: string,
-    form: FormData,
-    signal?: AbortSignal
-  ): Promise<T> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-    if (signal) {
-      attachAbortHandler(signal, controller);
-    }
-
-    try {
-      const res = await doFetch(`${baseURL}${path}`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${opts.accessToken}` },
-        body: form,
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        let resBody: unknown = null;
-        try {
-          resBody = await res.json();
-        } catch {
-          // ignore parse errors
-        }
-        throw new XError(
-          formatErrorMessage(res.status, resBody),
-          res.status,
-          resBody
-        );
-      }
-
-      return (await res.json()) as T;
-    } catch (error) {
-      clearTimeout(timeoutId);
       if (error instanceof XError) throw error;
       throw new XError(`X request failed: ${error}`, 500);
     }
@@ -186,11 +103,10 @@ export function createX(opts: XOptions): XProvider {
       req: XMediaUploadInitializeRequest,
       signal?: AbortSignal
     ): Promise<XMediaUploadInitializeResponse> => {
-      return makeJsonRequest<XMediaUploadInitializeResponse>(
-        "POST",
+      return transport.postJson<XMediaUploadInitializeResponse>(
         "/2/media/upload/initialize",
         req,
-        signal
+        { signal }
       );
     },
     { schema: XMediaUploadInitializeRequestSchema }
@@ -208,10 +124,10 @@ export function createX(opts: XOptions): XProvider {
       const form = new FormData();
       form.append("media", req.media);
       form.append("segment_index", String(req.segment_index));
-      return makeFormRequest<XMediaUploadAppendResponse>(
+      return transport.postForm<XMediaUploadAppendResponse>(
         `/2/media/upload/${encodeURIComponent(id)}/append`,
         form,
-        signal
+        { signal }
       );
     },
     { schema: XMediaUploadAppendRequestSchema }
@@ -224,10 +140,8 @@ export function createX(opts: XOptions): XProvider {
     id: string,
     signal?: AbortSignal
   ): Promise<XMediaUploadFinalizeResponse> {
-    return makeJsonRequest<XMediaUploadFinalizeResponse>(
-      "POST",
+    return makeEmptyPost<XMediaUploadFinalizeResponse>(
       `/2/media/upload/${encodeURIComponent(id)}/finalize`,
-      undefined,
       signal
     );
   }
@@ -240,11 +154,9 @@ export function createX(opts: XOptions): XProvider {
     signal?: AbortSignal
   ): Promise<XMediaUploadStatusResponse> {
     const query = `?media_id=${encodeURIComponent(mediaId)}&command=STATUS`;
-    return makeJsonRequest<XMediaUploadStatusResponse>(
-      "GET",
+    return transport.getJson<XMediaUploadStatusResponse>(
       `/2/media/upload${query}`,
-      undefined,
-      signal
+      { signal }
     );
   }
 
@@ -257,12 +169,9 @@ export function createX(opts: XOptions): XProvider {
       signal?: AbortSignal
     ): Promise<XUsersMeResponse> => {
       const query = makeUsersMeQuery(req);
-      return makeJsonRequest<XUsersMeResponse>(
-        "GET",
-        `/2/users/me${query}`,
-        undefined,
-        signal
-      );
+      return transport.getJson<XUsersMeResponse>(`/2/users/me${query}`, {
+        signal,
+      });
     },
     { schema: XUsersMeRequestSchema }
   );
@@ -275,12 +184,9 @@ export function createX(opts: XOptions): XProvider {
       req: XTweetCreateRequest,
       signal?: AbortSignal
     ): Promise<XTweetCreateResponse> => {
-      return makeJsonRequest<XTweetCreateResponse>(
-        "POST",
-        "/2/tweets",
-        req,
-        signal
-      );
+      return transport.postJson<XTweetCreateResponse>("/2/tweets", req, {
+        signal,
+      });
     },
     { schema: XTweetCreateRequestSchema }
   );

@@ -2407,9 +2407,6 @@ export type KieGrokResponsesModel = z.infer<typeof KieGrokResponsesModelSchema>;
 export type KieGrokResponsesRequest = z.input<
   typeof KieGrokResponsesRequestSchema
 >;
-export type KieGrokResponsesParsedRequest = z.output<
-  typeof KieGrokResponsesRequestSchema
->;
 
 // ---------------------------------------------------------------------------
 // Sub-provider schemas: Claude (via Kie)

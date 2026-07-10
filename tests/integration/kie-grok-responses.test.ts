@@ -252,4 +252,38 @@ describe("kie grok 4.5 responses", () => {
       message: "Kie Responses API error 401: Invalid bearer token.",
     } satisfies Partial<KieError>);
   });
+
+  it("wraps a non-JSON success body as KieError 500", async () => {
+    const provider = createKie({
+      apiKey: "sk-test-key",
+      fetch: async () =>
+        new Response("<html>not json</html>", {
+          status: 200,
+          headers: { "content-type": "text/html" },
+        }),
+    });
+
+    await expect(
+      provider.post.grok.v1.responses({
+        model: "grok-4-5",
+        input: "Hello.",
+      })
+    ).rejects.toMatchObject({
+      name: "KieError",
+      status: 500,
+      message: "Failed to parse responses response",
+    } satisfies Partial<KieError>);
+  });
+
+  it("accepts a valid request via schema safeParse", () => {
+    const provider = createKie({ apiKey: "sk-test-key" });
+    const parsed = provider.post.grok.v1.responses.schema.safeParse({
+      model: "grok-4-5",
+      input: "What is the weather?",
+      reasoning: { effort: "high" },
+      tools: [{ type: "web_search" }],
+    });
+
+    expect(parsed.success).toBe(true);
+  });
 });

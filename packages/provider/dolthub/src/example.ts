@@ -20,8 +20,8 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "payload": {
       "owner": "apicity-fork-probe"
     },
-    "tier": "prohibitive",
-    "runByDefault": false
+    "tier": "cheap",
+    "runByDefault": true
   }
 };
 

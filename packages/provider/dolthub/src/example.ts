@@ -14,7 +14,16 @@ export interface EndpointExample {
   runByDefault: boolean;
 }
 
-const EXAMPLES: Record<string, EndpointExample> = {};
+const EXAMPLES: Record<string, EndpointExample> = {
+  "POST api.v2.databases.forks.create": {
+    "source": "dolthub/fork-create-unauthenticated",
+    "payload": {
+      "owner": "apicity-fork-probe"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  }
+};
 
 export default EXAMPLES;
 

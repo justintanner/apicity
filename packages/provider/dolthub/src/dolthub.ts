@@ -23,6 +23,8 @@ import {
   DoltHubPullMergeRequest,
   DoltHubPullMergeResponse,
   DoltHubUserGetResponse,
+  DoltHubForkCreateRequest,
+  DoltHubForkCreateResponse,
 } from "./types";
 import {
   DoltHubSqlReadRequestSchema,
@@ -35,6 +37,7 @@ import {
   DoltHubPullCreateRequestSchema,
   DoltHubPullGetRequestSchema,
   DoltHubPullMergeRequestSchema,
+  DoltHubForkCreateRequestSchema,
 } from "./zod";
 
 export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
@@ -117,6 +120,99 @@ export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
       }
 
       return (await res.json()) as T;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof DoltHubError) throw error;
+      throw new DoltHubError(`DoltHub request failed: ${error}`, 500);
+    }
+  }
+
+  // --- v2 API transport --------------------------------------------------
+  // The v2 API (https://www.dolthub.com/api/v2/...) differs from v1alpha1 in
+  // three ways: Bearer auth, a uniform `{ data, meta }` success envelope, and
+  // a single RFC 9457 problem-details error model. `makeV2Request` centralizes
+  // all three so v2 endpoints only describe method/path/body.
+
+  interface DoltHubV2ProblemDetails {
+    status?: number;
+    code?: string;
+    title?: string;
+    detail?: string;
+  }
+
+  function v2ProblemDetails(body: unknown): DoltHubV2ProblemDetails {
+    if (typeof body !== "object" || body === null) return {};
+    const b = body as Record<string, unknown>;
+    return {
+      status: typeof b.status === "number" ? b.status : undefined,
+      code: typeof b.code === "string" ? b.code : undefined,
+      title: typeof b.title === "string" ? b.title : undefined,
+      detail: typeof b.detail === "string" ? b.detail : undefined,
+    };
+  }
+
+  function v2Error(status: number, body: unknown): DoltHubError {
+    const { code, title, detail } = v2ProblemDetails(body);
+    const summary = detail ?? title;
+    const message = summary
+      ? `DoltHub API error ${status}: ${summary}`
+      : `DoltHub API error: ${status}`;
+    return new DoltHubError(message, status, body, { code, title, detail });
+  }
+
+  async function makeV2Request<T>(
+    method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
+    path: string,
+    body?: unknown,
+    signal?: AbortSignal
+  ): Promise<T> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    if (signal) {
+      attachAbortHandler(signal, controller);
+    }
+
+    try {
+      const headers: Record<string, string> = {};
+      if (opts?.apiToken) {
+        headers.authorization = `Bearer ${opts.apiToken}`;
+      }
+      const init: RequestInit = {
+        method,
+        headers,
+        signal: controller.signal,
+      };
+
+      if (body !== undefined) {
+        headers["Content-Type"] = "application/json";
+        init.body = JSON.stringify(body);
+      }
+
+      const res = await doFetch(`${baseURL}${path}`, init);
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        let resBody: unknown = null;
+        try {
+          resBody = await res.json();
+        } catch {
+          // ignore parse errors
+        }
+        throw v2Error(res.status, resBody);
+      }
+
+      // Every 2xx v2 body is the `{ data, meta }` envelope; unwrap `data`.
+      const envelope = (await res.json()) as { data?: T } | T;
+      if (
+        typeof envelope === "object" &&
+        envelope !== null &&
+        "data" in envelope
+      ) {
+        return (envelope as { data: T }).data;
+      }
+      return envelope as T;
     } catch (error) {
       clearTimeout(timeoutId);
       if (error instanceof DoltHubError) throw error;
@@ -379,6 +475,26 @@ export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
     { schema: undefined }
   );
 
+  // sig-ok: semantic DoltHub v2 forks namespace over dynamic repo URL
+  // POST https://www.dolthub.com/api/v2/databases/{owner}/{database}/forks
+  // Docs: https://www.dolthub.com/docs/products/dolthub/api/v2/database
+  const forkCreate = Object.assign(
+    async (
+      req: DoltHubForkCreateRequest,
+      signal?: AbortSignal
+    ): Promise<DoltHubForkCreateResponse> => {
+      const owner = encodeURIComponent(req.owner);
+      const database = encodeURIComponent(req.database);
+      return makeV2Request<DoltHubForkCreateResponse>(
+        "POST",
+        `/api/v2/databases/${owner}/${database}/forks`,
+        { owner: req.newOwner },
+        signal
+      );
+    },
+    { schema: DoltHubForkCreateRequestSchema }
+  );
+
   return {
     v1alpha1: {
       sql: {
@@ -401,6 +517,15 @@ export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
       },
       user: {
         get: userGet,
+      },
+    },
+    api: {
+      v2: {
+        databases: {
+          forks: {
+            create: forkCreate,
+          },
+        },
       },
     },
   };

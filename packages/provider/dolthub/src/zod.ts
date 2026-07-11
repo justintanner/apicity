@@ -189,3 +189,24 @@ export type DoltHubPullMergeRequestInput = DoltHubPullMergeRequest;
 export type DoltHubPullMergeParsedRequest = z.output<
   typeof DoltHubPullMergeRequestSchema
 >;
+
+// ---------------------------------------------------------------------------
+// v2 — forks
+// ---------------------------------------------------------------------------
+
+export const DoltHubForkCreateRequestSchema = z.object({
+  // Source database owner (URL path segment).
+  owner: z.string().min(1),
+  // Source database name (URL path segment).
+  database: z.string().min(1),
+  // Owner (user or organization) that will own the new fork (request body).
+  newOwner: z.string().min(1),
+});
+
+export type DoltHubForkCreateRequest = z.input<
+  typeof DoltHubForkCreateRequestSchema
+>;
+export type DoltHubForkCreateRequestInput = DoltHubForkCreateRequest;
+export type DoltHubForkCreateParsedRequest = z.output<
+  typeof DoltHubForkCreateRequestSchema
+>;

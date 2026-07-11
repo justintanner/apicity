@@ -19,6 +19,8 @@ export type {
   DoltHubPullGetParsedRequest,
   DoltHubPullMergeRequestInput,
   DoltHubPullMergeParsedRequest,
+  DoltHubForkCreateRequestInput,
+  DoltHubForkCreateParsedRequest,
 } from "./zod";
 
 // ---------------------------------------------------------------------------
@@ -28,12 +30,29 @@ export type {
 export class DoltHubError extends Error {
   status: number;
   body: unknown;
+  /**
+   * Stable, machine-readable error code from the v2 RFC 9457 problem-details
+   * body (e.g. `UNAUTHENTICATED`). Absent for v1alpha1 errors.
+   */
+  code?: string;
+  /** Short, human-readable summary of the problem type (v2 problem details). */
+  title?: string;
+  /** Human-readable explanation specific to this occurrence (v2 problem details). */
+  detail?: string;
 
-  constructor(message: string, status: number, body?: unknown) {
+  constructor(
+    message: string,
+    status: number,
+    body?: unknown,
+    details?: { code?: string; title?: string; detail?: string }
+  ) {
     super(message);
     this.name = "DoltHubError";
     this.status = status;
     this.body = body ?? null;
+    this.code = details?.code;
+    this.title = details?.title;
+    this.detail = details?.detail;
   }
 }
 
@@ -337,6 +356,58 @@ export interface DoltHubUserGetMethod {
 }
 
 // ---------------------------------------------------------------------------
+// v2 API — shared models
+// ---------------------------------------------------------------------------
+
+/**
+ * Reference to an in-progress async operation, returned in v2 `202` responses.
+ * Pass `id` to `GET /api/v2/operations/{id}` (or follow `href`) to poll for
+ * completion.
+ */
+export interface DoltHubOperationRef {
+  id: string;
+  href: string;
+}
+
+// ---------------------------------------------------------------------------
+// v2 API — forks
+// ---------------------------------------------------------------------------
+
+export interface DoltHubForkCreateRequest {
+  /** Source database owner (URL path segment). */
+  owner: string;
+  /** Source database name (URL path segment). */
+  database: string;
+  /** Owner (user or organization) that will own the new fork (request body). */
+  newOwner: string;
+}
+
+export type DoltHubForkCreateResponse = DoltHubOperationRef;
+
+export interface DoltHubForkCreateMethod {
+  (
+    req: DoltHubForkCreateRequest,
+    signal?: AbortSignal
+  ): Promise<DoltHubForkCreateResponse>;
+}
+
+export interface DoltHubV2ForksNamespace {
+  create: DoltHubForkCreateMethod;
+}
+
+export interface DoltHubV2DatabasesNamespace {
+  forks: DoltHubV2ForksNamespace;
+}
+
+export interface DoltHubV2Namespace {
+  databases: DoltHubV2DatabasesNamespace;
+}
+
+export interface DoltHubApiNamespace {
+  v2: DoltHubV2Namespace;
+}
+
+// ---------------------------------------------------------------------------
 // Provider interface
 // ---------------------------------------------------------------------------
 
@@ -356,4 +427,5 @@ export interface DoltHubProvider {
       get: DoltHubUserGetMethod;
     };
   };
+  api: DoltHubApiNamespace;
 }

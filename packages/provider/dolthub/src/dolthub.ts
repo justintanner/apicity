@@ -27,6 +27,7 @@ import {
   DoltHubForkCreateResponse,
   DoltHubOperationsGetRequest,
   DoltHubOperationsGetResponse,
+  DoltHubV2UserGetResponse,
 } from "./types";
 import {
   DoltHubSqlReadRequestSchema,
@@ -516,6 +517,21 @@ export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
     { schema: undefined }
   );
 
+  // sig-ok: semantic DoltHub v2 user namespace over API root URL
+  // GET https://www.dolthub.com/api/v2/user
+  // Docs: https://www.dolthub.com/docs/products/dolthub/api/v2/user
+  const userGetV2 = Object.assign(
+    async (signal?: AbortSignal): Promise<DoltHubV2UserGetResponse> => {
+      return makeV2Request<DoltHubV2UserGetResponse>(
+        "GET",
+        "/api/v2/user",
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
   return {
     v1alpha1: {
       sql: {
@@ -549,6 +565,9 @@ export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
         },
         operations: {
           get: operationsGet,
+        },
+        user: {
+          get: userGetV2,
         },
       },
     },

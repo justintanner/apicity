@@ -476,9 +476,57 @@ export interface DoltHubV2OperationsNamespace {
   get: DoltHubOperationsGetMethod;
 }
 
+// ---------------------------------------------------------------------------
+// v2 API — user
+// ---------------------------------------------------------------------------
+
+/** A single email address on a v2 user profile. */
+export interface DoltHubV2UserEmail {
+  /** The email address itself. */
+  address: string;
+  /** Whether this is the account's primary email address. */
+  is_primary: boolean;
+  /** Whether ownership of this address has been verified. */
+  is_verified: boolean;
+}
+
+/**
+ * The authenticated caller's profile as returned by the v2 API, unwrapped from
+ * the `{ data, meta }` envelope. v2 uses snake_case field names and a richer
+ * profile than the camelCase v1alpha1 `DoltHubUser`, so it is typed distinctly
+ * (the two API versions can diverge without a breaking change).
+ */
+export interface DoltHubV2User {
+  /** The user's unique handle. */
+  username: string;
+  /** The user's human-readable display name. */
+  display_name: string;
+  /** Free-form profile biography, when set. */
+  bio?: string;
+  /** Free-form profile location, when set. */
+  location?: string;
+  /** The user's website URL, when set. */
+  website_url?: string;
+  /** URL of the user's profile picture, when set. */
+  profile_pic_url?: string;
+  /** The email addresses associated with the account. */
+  email_addresses: DoltHubV2UserEmail[];
+}
+
+export type DoltHubV2UserGetResponse = DoltHubV2User;
+
+export interface DoltHubV2UserGetMethod {
+  (signal?: AbortSignal): Promise<DoltHubV2UserGetResponse>;
+}
+
+export interface DoltHubV2UserNamespace {
+  get: DoltHubV2UserGetMethod;
+}
+
 export interface DoltHubV2Namespace {
   databases: DoltHubV2DatabasesNamespace;
   operations: DoltHubV2OperationsNamespace;
+  user: DoltHubV2UserNamespace;
 }
 
 export interface DoltHubApiNamespace {

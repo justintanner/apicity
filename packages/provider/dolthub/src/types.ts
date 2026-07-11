@@ -369,6 +369,61 @@ export interface DoltHubOperationRef {
   href: string;
 }
 
+/**
+ * Lifecycle state of an async v2 operation. Poll `GET /api/v2/operations/{id}`
+ * until the status is a terminal `succeeded` or `failed`.
+ */
+export type DoltHubOperationStatus =
+  | "queued"
+  | "running"
+  | "succeeded"
+  | "failed";
+
+/** The kind of work an async v2 operation performs. */
+export type DoltHubOperationType =
+  | "import"
+  | "merge"
+  | "sql_write"
+  | "fork"
+  | "dolt_ci";
+
+/** Error details recorded when an operation reaches the `failed` status. */
+export interface DoltHubOperationError {
+  /** HTTP-equivalent status code for the failure. */
+  status: number;
+  /** Stable, machine-readable error code (SCREAMING_SNAKE_CASE). */
+  code: string;
+  /** Short, human-readable summary of the failure. */
+  title: string;
+  /** Human-readable explanation of the failure, when available. */
+  detail?: string;
+}
+
+/**
+ * A long-running async v2 operation. Every async mutation returns an
+ * `OperationRef`; poll `GET /api/v2/operations/{id}` until `status` is the
+ * terminal `succeeded` or `failed`. The `id` is opaque — pass it back verbatim.
+ */
+export interface DoltHubOperation {
+  /** Opaque operation identifier; pass verbatim to the poll endpoint. */
+  id: string;
+  /** The kind of work this operation performs. */
+  type: DoltHubOperationType;
+  /** Current lifecycle state. */
+  status: DoltHubOperationStatus;
+  /** When the operation was enqueued. */
+  created_at: string;
+  /** Reserved for a future cancel endpoint; always `false` today. */
+  cancelable: boolean;
+  /** Error details, present when `status` is `failed`. */
+  error?: DoltHubOperationError;
+  /**
+   * Result payload, present when `status` is `succeeded`. Shape depends on
+   * `type` (e.g. `fork` -> `{ database: { owner, name } }`).
+   */
+  result?: Record<string, unknown>;
+}
+
 // ---------------------------------------------------------------------------
 // v2 API — forks
 // ---------------------------------------------------------------------------
@@ -399,8 +454,31 @@ export interface DoltHubV2DatabasesNamespace {
   forks: DoltHubV2ForksNamespace;
 }
 
+// ---------------------------------------------------------------------------
+// v2 API — operations
+// ---------------------------------------------------------------------------
+
+export interface DoltHubOperationsGetRequest {
+  /** Opaque operation id from an `OperationRef` (URL path segment). */
+  id: string;
+}
+
+export type DoltHubOperationsGetResponse = DoltHubOperation;
+
+export interface DoltHubOperationsGetMethod {
+  (
+    req: DoltHubOperationsGetRequest,
+    signal?: AbortSignal
+  ): Promise<DoltHubOperationsGetResponse>;
+}
+
+export interface DoltHubV2OperationsNamespace {
+  get: DoltHubOperationsGetMethod;
+}
+
 export interface DoltHubV2Namespace {
   databases: DoltHubV2DatabasesNamespace;
+  operations: DoltHubV2OperationsNamespace;
 }
 
 export interface DoltHubApiNamespace {

@@ -452,6 +452,76 @@ export interface DoltHubV2ForksNamespace {
 
 export interface DoltHubV2DatabasesNamespace {
   forks: DoltHubV2ForksNamespace;
+  sql: DoltHubV2SqlNamespace;
+}
+
+// ---------------------------------------------------------------------------
+// v2 API — SQL read
+// ---------------------------------------------------------------------------
+
+/**
+ * One column of a v2 SQL read result set. v2 returns column metadata separately
+ * from the row values (rows are positional), so the schema is described once
+ * here per column. Typed distinctly from the v1alpha1 `DoltHubSchemaColumn`
+ * (which is `{ columnName, columnType }`) — the two API versions can diverge.
+ */
+export interface DoltHubV2SqlReadColumn {
+  /** Column name (or alias) as it appears in the result set. */
+  name: string;
+  /** SQL type of the column, e.g. `"VARCHAR(255)"` or `"BIGINT"`. */
+  type: string;
+  /** Whether the column is part of the source table's primary key. */
+  is_primary_key: boolean;
+  /** Originating table name, or `""` for computed/aggregate columns. */
+  source_table: string;
+}
+
+/**
+ * A single v2 SQL read result row: positional values aligned to the response
+ * `columns` array (v2 returns rows as arrays, not objects keyed by column
+ * name). Every cell is a stringified value or `null`.
+ */
+export type DoltHubV2SqlRow = (string | null)[];
+
+/**
+ * The unwrapped `data` payload of a v2 SQL read. v2 uses snake_case field names
+ * and a column/row split, so it is typed distinctly from the v1alpha1
+ * `DoltHubSqlReadResponse` (the two API versions can diverge independently).
+ */
+export interface DoltHubV2SqlReadResponse {
+  /** Column metadata, one entry per selected column. */
+  columns: DoltHubV2SqlReadColumn[];
+  /** Result rows as positional value arrays aligned to `columns`. */
+  rows: DoltHubV2SqlRow[];
+  /**
+   * Query execution state. Documented values:
+   * `"success"`, `"error"`, `"timeout"`, `"row_limit"`, `"not_workspace"`.
+   */
+  status: string;
+  /** Optional query-level warnings emitted alongside a successful read. */
+  warnings?: string[];
+}
+
+export interface DoltHubV2SqlReadRequest {
+  /** Database owner (URL path segment). */
+  owner: string;
+  /** Database name (URL path segment). */
+  database: string;
+  /** Branch, tag, or commit hash to query against (v2 `ref` query param). */
+  ref?: string;
+  /** The read-only SQL query to execute (v2 `q` query param). */
+  query: string;
+}
+
+export interface DoltHubV2SqlReadMethod {
+  (
+    req: DoltHubV2SqlReadRequest,
+    signal?: AbortSignal
+  ): Promise<DoltHubV2SqlReadResponse>;
+}
+
+export interface DoltHubV2SqlNamespace {
+  read: DoltHubV2SqlReadMethod;
 }
 
 // ---------------------------------------------------------------------------

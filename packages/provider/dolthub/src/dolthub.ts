@@ -28,6 +28,8 @@ import {
   DoltHubOperationsGetRequest,
   DoltHubOperationsGetResponse,
   DoltHubV2UserGetResponse,
+  DoltHubV2SqlReadRequest,
+  DoltHubV2SqlReadResponse,
 } from "./types";
 import {
   DoltHubSqlReadRequestSchema,
@@ -532,6 +534,27 @@ export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
     { schema: undefined }
   );
 
+  // sig-ok: semantic DoltHub v2 SQL read namespace over dynamic repo URL
+  // GET https://www.dolthub.com/api/v2/databases/{owner}/{database}/sql{query}
+  // Docs: https://www.dolthub.com/docs/products/dolthub/api/v2/database
+  const sqlReadV2 = Object.assign(
+    async (
+      req: DoltHubV2SqlReadRequest,
+      signal?: AbortSignal
+    ): Promise<DoltHubV2SqlReadResponse> => {
+      const owner = encodeURIComponent(req.owner);
+      const database = encodeURIComponent(req.database);
+      const query = buildQuery({ ref: req.ref, q: req.query });
+      return makeV2Request<DoltHubV2SqlReadResponse>(
+        "GET",
+        `/api/v2/databases/${owner}/${database}/sql${query}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
   return {
     v1alpha1: {
       sql: {
@@ -561,6 +584,9 @@ export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
         databases: {
           forks: {
             create: forkCreate,
+          },
+          sql: {
+            read: sqlReadV2,
           },
         },
         operations: {

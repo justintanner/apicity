@@ -476,6 +476,7 @@ anthropic	v1.skills.versions.create	POST	https://api.anthropic.com/v1/skills/{sk
 anthropic	v1.skills.versions.del	DELETE	https://api.anthropic.com/v1/skills/{skillId}/versions/{version}	https://docs.anthropic.com/en/api
 anthropic	v1.skills.versions.list	GET	https://api.anthropic.com/v1/skills/{skillId}/versions	https://docs.anthropic.com/en/api
 dolthub	api.v2.databases.forks.create	POST	https://www.dolthub.com/api/v2/databases/{owner}/{database}/forks	https://www.dolthub.com/docs/products/dolthub/api/v2/database
+dolthub	api.v2.databases.sql.read	GET	https://www.dolthub.com/api/v2/databases/{owner}/{database}/sql{query}	https://www.dolthub.com/docs/products/dolthub/api/v2/database
 dolthub	api.v2.operations.get	GET	https://www.dolthub.com/api/v2/operations/{operationId}	https://www.dolthub.com/docs/products/dolthub/api/v2/operations
 dolthub	api.v2.user.get	GET	https://www.dolthub.com/api/v2/user	https://www.dolthub.com/docs/products/dolthub/api/v2/user
 dolthub	v1alpha1.branches.create	POST	https://www.dolthub.com/api/v1alpha1/{owner}/{database}/branches	https://www.dolthub.com/docs/products/dolthub/api/database

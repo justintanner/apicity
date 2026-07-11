@@ -164,6 +164,7 @@ binance	public.spotData.api.v3.ping	GET	cheap	Public spot market-data REST; no p
 binance	public.usdMFutures.fapi.v1.ping	GET	cheap	Public spot market-data REST; no per-call USD compute cost
 dolthub	api.v2.databases.forks.create	POST	cheap	DoltHub SQL/database API; no per-call USD compute cost
 dolthub	api.v2.operations.get	GET	cheap	DoltHub SQL/database API; no per-call USD compute cost
+dolthub	api.v2.user.get	GET	cheap	DoltHub SQL/database API; no per-call USD compute cost
 dolthub	v1alpha1.branches.create	POST	cheap	DoltHub SQL/database API; no per-call USD compute cost
 dolthub	v1alpha1.branches.list	GET	cheap	DoltHub SQL/database API; no per-call USD compute cost
 dolthub	v1alpha1.database.create	POST	cheap	DoltHub SQL/database API; no per-call USD compute cost

@@ -60,3 +60,7 @@ federation.remote: "git+https://github.com/justintanner/apicity.git"
 dolt.host: superlzy-dolt
 dolt.port: 3306
 dolt.user: superlzy
+
+# Never register dolt backup remotes from clones (they resolve server-side
+# and pollute the dolt container); central DoltHub sync owns backups.
+backup.enabled: false

@@ -191,3 +191,11 @@ harness-telegram-messages.json
 # which carries the central Dolt credential). Never commit.
 mise.local.toml
 .mise.local.toml
+
+# Gas City runtime scratch on rig checkouts: molecule per-bead work dirs,
+# build plans, and pack-materialized formula copies. Recreated by the
+# dispatcher; never commit. Tracked formulas (mol-apicity-*) are unaffected;
+# use `git add -f` to track a new formula intentionally.
+/ac-*/
+/plans/
+.beads/formulas/*

@@ -1,7 +1,7 @@
 {
   "name": "apicity",
   "version": "0.1.0",
-  "description": "Standalone AI provider packages — @apicity/openai, @apicity/xai, @apicity/fal, @apicity/google, @apicity/kimicoding, @apicity/kie, @apicity/anthropic, @apicity/fireworks, @apicity/alibaba, @apicity/binance, @apicity/dropbox, @apicity/elevenlabs, @apicity/s3, @apicity/b2, @apicity/free-media-upload, @apicity/x, @apicity/meta, @apicity/polymarket, @apicity/youtube, @apicity/dolthub, @apicity/simplefunctions, @apicity/telegram, @apicity/openligadb, @apicity/openf1, @apicity/thesportsdb, @apicity/cost, and @apicity/mcp-server",
+  "description": "Standalone AI provider packages — @apicity/openai, @apicity/xai, @apicity/fal, @apicity/google, @apicity/kimicoding, @apicity/kie, @apicity/anthropic, @apicity/fireworks, @apicity/alibaba, @apicity/binance, @apicity/dropbox, @apicity/elevenlabs, @apicity/s3, @apicity/b2, @apicity/free-media-upload, @apicity/x, @apicity/meta, @apicity/polymarket, @apicity/youtube, @apicity/dolthub, @apicity/simplefunctions, @apicity/telegram, @apicity/quo, @apicity/openligadb, @apicity/openf1, @apicity/thesportsdb, @apicity/cost, and @apicity/mcp-server",
   "type": "module",
   "engines": {
     "node": ">=18.12.0",
@@ -36,6 +36,7 @@
     "build:meta": "pnpm --filter @apicity/meta run build",
     "build:youtube": "pnpm --filter @apicity/youtube run build",
     "build:telegram": "pnpm --filter @apicity/telegram run build",
+    "build:quo": "pnpm --filter @apicity/quo run build",
     "build:thesportsdb": "pnpm --filter @apicity/thesportsdb run build",
     "build:polymarket": "pnpm --filter @apicity/polymarket run build",
     "build:simplefunctions": "pnpm --filter @apicity/simplefunctions run build",
@@ -69,6 +70,7 @@
     "doc-gen:free-media-upload": "node scripts/doc-gen.mjs free-media-upload",
     "doc-gen:youtube": "node scripts/doc-gen.mjs youtube",
     "doc-gen:telegram": "node scripts/doc-gen.mjs telegram",
+    "doc-gen:quo": "node scripts/doc-gen.mjs quo",
     "doc-gen:thesportsdb": "node scripts/doc-gen.mjs thesportsdb",
     "doc-gen:x": "node scripts/doc-gen.mjs x",
     "doc-gen:meta": "node scripts/doc-gen.mjs meta",

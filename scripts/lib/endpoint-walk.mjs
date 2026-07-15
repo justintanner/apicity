@@ -196,6 +196,11 @@ const PROVIDERS = [
     factoryNames: ["createTelegram"],
   },
   {
+    name: "quo",
+    entryFiles: ["packages/provider/quo/src/quo.ts"],
+    factoryNames: ["createQuo"],
+  },
+  {
     name: "dolthub",
     entryFiles: ["packages/provider/dolthub/src/dolthub.ts"],
     factoryNames: ["createDoltHub"],

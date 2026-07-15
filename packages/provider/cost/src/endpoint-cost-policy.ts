@@ -214,6 +214,12 @@ export const ENDPOINT_COST_POLICIES: readonly EndpointCostPolicy[] = [
       "Metered text-to-speech / audio provider; per-character billing bills " +
       "real money",
   },
+  {
+    match: { provider: "quo" },
+    tier: "expensive",
+    rationale:
+      "Metered SMS provider; per-segment messaging charges bill real money",
+  },
 
   // ── prohibitive: media generation (dollars per call, request-dependent) ─
   {

@@ -142,6 +142,7 @@ One of `--op-vault` + `--op-token`, or `--env-file`, is required.
 | `polymarket` | _(none for public data)_                                  |
 | `youtube`    | `YOUTUBE_ACCESS_TOKEN`                                    |
 | `telegram`   | `TELEGRAM_BOT_KEY`                                        |
+| `quo`        | `QUO_API_KEY`                                             |
 | `free`       | _(none — public APIs)_                                    |
 
 In 1Password mode, the CLI lists the vault once before the server starts and

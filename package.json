@@ -117,7 +117,7 @@
     "dev:preflight:changed": "node scripts/preflight-changed.mjs",
     "dev:preflight:provider": "node scripts/preflight-provider.mjs",
     "ci:local": "pnpm run audit && pnpm run gen:examples:check && pnpm run build && pnpm run lint && pnpm run test:run",
-    "audit": "pnpm audit --audit-level=moderate",
+    "audit": "node scripts/audit.mjs --audit-level=moderate",
     "check:op": "op run --env-file=.env -- node scripts/check-op.mjs",
     "compare:video": "pnpm run build:cost --silent && node scripts/compare-video-cost.mjs",
     "compare:image": "pnpm run build:cost --silent && node scripts/compare-image-cost.mjs"

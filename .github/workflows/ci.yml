@@ -48,7 +48,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Audit dependencies
-        run: pnpm audit --audit-level=moderate
+        run: pnpm run audit
 
       - name: Verify generated examples are current
         run: pnpm run gen:examples:check

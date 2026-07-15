@@ -305,6 +305,12 @@ importers:
         specifier: ^4.4.3
         version: 4.4.3
 
+  packages/provider/quo:
+    dependencies:
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
+
   packages/provider/s3:
     dependencies:
       zod:

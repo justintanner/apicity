@@ -943,6 +943,7 @@ polymarket	gamma.tags.relatedTags.tags	GET	cheap	Gamma/Data/CLOB market-data + t
 polymarket	gamma.tags.relatedTags.tags.slug	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
 polymarket	gamma.tags.slug	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
 polymarket	gamma.teams	GET	cheap	Gamma/Data/CLOB market-data + trading REST; the API call itself has no USD compute cost (order settlement is on-chain, not an API charge)
+quo	v1.messages	POST	expensive	Metered SMS provider; per-segment messaging charges bill real money
 s3	buckets.create	PUT	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
 s3	buckets.createMetadataConfiguration	POST	cheap	S3-compatible object-storage request ops; per-request cost << $0.01
 s3	buckets.createMetadataTableConfiguration	POST	cheap	S3-compatible object-storage request ops; per-request cost << $0.01

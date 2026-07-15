@@ -130,7 +130,7 @@ describe("Quo transport", () => {
     expect(quo.v1.messages.schema).toBe(QuoSendMessageRequestSchema);
     expect(fetchMock).toHaveBeenCalledTimes(1);
     const [input, init] = fetchMock.mock.calls[0];
-    expect(String(input)).toBe("https://api.quo.com/v1/messages");
+    expect(String(input)).toBe("https://api.openphone.com/v1/messages");
     expect(init?.method).toBe("POST");
     expect(new Headers(init?.headers).get("Authorization")).toBe(
       "explicit-key"

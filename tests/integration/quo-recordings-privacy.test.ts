@@ -174,7 +174,7 @@ describe("Quo HAR privacy", () => {
     const phoneHar = structuredClone(safeHar);
     phoneHar.log!.entries!.push({
       request: {
-        headers: [{ name: "x-test", value: "+14155550123" }],
+        headers: [{ name: "x-test", value: "+15555550103" }],
       },
     });
     expect(() => assertPrivacySafeHar(phoneHar, "phone.har", [])).toThrow();

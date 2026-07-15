@@ -60,6 +60,7 @@ const DOCS_HOSTNAME_ALLOWLIST = {
   polymarket: ["docs.polymarket.com"],
   youtube: ["developers.google.com", "github.com"],
   telegram: ["core.telegram.org"],
+  quo: ["www.quo.com"],
   dolthub: ["www.dolthub.com", "dolthub.com"],
   simplefunctions: ["docs.simplefunctions.dev"],
   thesportsdb: ["www.thesportsdb.com", "thedatadb.readme.io"],

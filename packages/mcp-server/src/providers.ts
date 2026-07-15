@@ -227,6 +227,12 @@ export const PROVIDERS: Record<string, ProviderSpec> = {
     importPath: "@apicity/telegram",
     factoryName: "createTelegram",
   },
+  quo: {
+    envVar: "QUO_API_KEY",
+    optionKey: "apiKey",
+    importPath: "@apicity/quo",
+    factoryName: "createQuo",
+  },
   thesportsdb: {
     envVar: "THESPORTSDB_API_KEY",
     optionKey: "apiKey",

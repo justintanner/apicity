@@ -70,6 +70,7 @@
     "@apicity/openligadb": "workspace:*",
     "@apicity/openai": "workspace:*",
     "@apicity/polymarket": "workspace:*",
+    "@apicity/quo": "workspace:*",
     "@apicity/s3": "workspace:*",
     "@apicity/simplefunctions": "workspace:*",
     "@apicity/telegram": "workspace:*",

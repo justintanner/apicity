@@ -143,7 +143,8 @@ export function printHelp(): void {
       "Credentials are read from env vars: OPENAI_API_KEY, XAI_API_KEY, ANTHROPIC_API_KEY,",
       "FIREWORKS_API_KEY, FAL_API_KEY, GOOGLE_API_KEY, KIE_API_KEY,",
       "KIMI_CODING_API_KEY, DASHSCOPE_API_KEY, ELEVENLABS_API_KEY,",
-      "X_ACCESS_TOKEN, IG_ACCESS_TOKEN, YOUTUBE_ACCESS_TOKEN, TELEGRAM_BOT_KEY.",
+      "X_ACCESS_TOKEN, IG_ACCESS_TOKEN, YOUTUBE_ACCESS_TOKEN, TELEGRAM_BOT_KEY,",
+      "QUO_API_KEY.",
       "The 'binance', 'openligadb', and 'free-media-upload' providers need none.",
     ].join("\n")
   );

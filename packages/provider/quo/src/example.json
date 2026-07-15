@@ -1,1 +1,14 @@
-{}
+{
+  "POST v1.messages": {
+    "source": "quo/messages-fixture-rejection",
+    "payload": {
+      "content": "Apicity replay fixture. Do not deliver.",
+      "from": "+15555550101",
+      "to": [
+        "+15555550102"
+      ]
+    },
+    "tier": "expensive",
+    "runByDefault": false
+  }
+}

@@ -14,7 +14,20 @@ export interface EndpointExample {
   runByDefault: boolean;
 }
 
-const EXAMPLES: Record<string, EndpointExample> = {};
+const EXAMPLES: Record<string, EndpointExample> = {
+  "POST v1.messages": {
+    "source": "quo/messages-fixture-rejection",
+    "payload": {
+      "content": "Apicity replay fixture. Do not deliver.",
+      "from": "+15555550101",
+      "to": [
+        "+15555550102"
+      ]
+    },
+    "tier": "expensive",
+    "runByDefault": false
+  }
+};
 
 export default EXAMPLES;
 

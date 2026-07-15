@@ -100,7 +100,7 @@ function assertAuthorizationIsRedacted(har: HarRecording, label: string): void {
     expect(
       header.value,
       `${label} has an unredacted Authorization header`
-    ).toBe("***");
+    ).toBe("Bearer ***");
   }
 }
 
@@ -121,7 +121,7 @@ const safeHar: HarRecording = {
       {
         request: {
           headers: [
-            { name: "authorization", value: "***" },
+            { name: "authorization", value: "Bearer ***" },
             {
               name: "x-quo-fixture-values",
               value: `${FICTIONAL_SENDER} ${FICTIONAL_RECIPIENT}`,

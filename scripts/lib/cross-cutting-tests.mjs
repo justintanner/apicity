@@ -27,7 +27,6 @@ import { repoRoot } from "./provider-scope.mjs";
 export const CROSS_CUTTING_TESTS = [
   "tests/integration/upload-recordings.test.ts",
   "tests/integration/multipart-recordings.test.ts",
-  "tests/integration/quo-recordings-privacy.test.ts",
 ];
 
 /**

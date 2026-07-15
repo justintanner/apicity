@@ -36,7 +36,8 @@ export interface QuoMessage {
   to: string[];
   from: string;
   text: string;
-  phoneNumberId: string;
+  phoneNumberId: string | null;
+  conversationId: string;
   direction: string;
   userId: string;
   status: string;

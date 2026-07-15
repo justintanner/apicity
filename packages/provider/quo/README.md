@@ -27,6 +27,28 @@ import { createQuo } from "@apicity/quo";
 const quo = createQuo({ apiKey: process.env.QUO_API_KEY! });
 ```
 
+## Send A Message
+
+```typescript
+import { createQuo } from "@apicity/quo";
+
+const quo = createQuo({ apiKey: process.env.QUO_API_KEY! });
+
+const response = await quo.v1.messages({
+  content: "Hello from Quo",
+  from: "+15550100001",
+  to: ["+15550100002"],
+});
+
+console.log(response.data.conversationId);
+```
+
+The request schema is available as `quo.v1.messages.schema`. The client
+uses the raw API key as the `Authorization` header, accepts an optional
+`AbortSignal`, clears request timers, and redacts credentials and phone
+numbers from thrown error messages. Prefer `from`; `phoneNumberId` is
+retained only as a deprecated request alias.
+
 ## API Reference
 
 1 endpoint across 1 group. Each method mirrors an upstream URL path.
@@ -36,7 +58,7 @@ const quo = createQuo({ apiKey: process.env.QUO_API_KEY! });
 <details>
 <summary><code>POST</code> <b><code>quo.v1.messages</code></b></summary>
 
-<code>POST https://api.openphone.com/v1/messages</code>
+<code>POST https://api.quo.com/v1/messages</code>
 
 Cost tier: <code>expensive</code>
 
@@ -49,15 +71,6 @@ const res = await quo.v1.messages({ /* ... */ });
 Source: [`packages/provider/quo/src/quo.ts`](src/quo.ts)
 
 </details>
-
-## Middleware
-
-```typescript
-import { createQuo, withRetry } from "@apicity/quo";
-
-const quo = createQuo({ apiKey: process.env.QUO_API_KEY! });
-const models = withRetry(quo.get.v1.models, { retries: 3 });
-```
 
 Part of the [apicity](https://github.com/justintanner/apicity) monorepo.
 

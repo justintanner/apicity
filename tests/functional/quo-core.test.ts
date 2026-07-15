@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, expectTypeOf, it, vi } from "vitest";
 
 import {
   createQuo,
@@ -21,7 +21,8 @@ function successResponse(extra: Record<string, unknown> = {}): Response {
         to: [...REQUEST.to],
         from: REQUEST.from,
         text: REQUEST.content,
-        phoneNumberId: "PN-test",
+        phoneNumberId: null,
+        conversationId: "CN-test",
         direction: "outgoing",
         userId: "US-test",
         status: "queued",
@@ -127,10 +128,14 @@ describe("Quo transport", () => {
     const response = await quo.v1.messages({ ...REQUEST });
 
     expect(response.data.upstreamField).toBe(true);
+    expect(response.data.conversationId).toBe("CN-test");
+    expect(response.data.phoneNumberId).toBeNull();
+    expectTypeOf(response.data.conversationId).toEqualTypeOf<string>();
+    expectTypeOf(response.data.phoneNumberId).toEqualTypeOf<string | null>();
     expect(quo.v1.messages.schema).toBe(QuoSendMessageRequestSchema);
     expect(fetchMock).toHaveBeenCalledTimes(1);
     const [input, init] = fetchMock.mock.calls[0];
-    expect(String(input)).toBe("https://api.openphone.com/v1/messages");
+    expect(String(input)).toBe("https://api.quo.com/v1/messages");
     expect(init?.method).toBe("POST");
     expect(new Headers(init?.headers).get("Authorization")).toBe(
       "explicit-key"

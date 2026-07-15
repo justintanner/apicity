@@ -55,7 +55,7 @@ async function parseBody(response: Response): Promise<unknown> {
 }
 
 export function createQuo(options: QuoOptions = {}): QuoProvider {
-  const baseURL = (options.baseURL ?? "https://api.openphone.com").replace(
+  const baseURL = (options.baseURL ?? "https://api.quo.com").replace(
     /\/+$/,
     ""
   );
@@ -73,7 +73,7 @@ export function createQuo(options: QuoOptions = {}): QuoProvider {
     return key;
   }
 
-  // POST https://api.openphone.com/v1/messages
+  // POST https://api.quo.com/v1/messages
   // Docs: https://www.quo.com/docs/mdx/api-reference/messages/send-a-text-message
   async function sendMessage(
     request: QuoSendMessageRequest,

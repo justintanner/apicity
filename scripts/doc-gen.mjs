@@ -3316,6 +3316,33 @@ function renderTelegramSetup() {
   ].join("\n");
 }
 
+function renderQuoExample() {
+  return [
+    "## Send A Message",
+    "",
+    "```typescript",
+    'import { createQuo } from "@apicity/quo";',
+    "",
+    "const quo = createQuo({ apiKey: process.env.QUO_API_KEY! });",
+    "",
+    "const response = await quo.v1.messages({",
+    '  content: "Hello from Quo",',
+    '  from: "+15550100001",',
+    '  to: ["+15550100002"],',
+    "});",
+    "",
+    "console.log(response.data.conversationId);",
+    "```",
+    "",
+    "The request schema is available as `quo.v1.messages.schema`. The client",
+    "uses the raw API key as the `Authorization` header, accepts an optional",
+    "`AbortSignal`, clears request timers, and redacts credentials and phone",
+    "numbers from thrown error messages. Prefer `from`; `phoneNumberId` is",
+    "retained only as a deprecated request alias.",
+    "",
+  ].join("\n");
+}
+
 function renderOpenLigaDBDiscoveryGuide() {
   return [
     "## Catalog Discovery Flow",
@@ -3436,6 +3463,9 @@ const PROVIDER_AUTH = {
   telegram: {
     field: "botToken",
     env: "TELEGRAM_BOT_KEY",
+    showMiddleware: false,
+  },
+  quo: {
     showMiddleware: false,
   },
   simplefunctions: {
@@ -3754,6 +3784,10 @@ async function generateReadme(providerDir, providerName, endpoints) {
 
   if (providerName === "telegram") {
     sections.push(renderTelegramSetup());
+  }
+
+  if (providerName === "quo") {
+    sections.push(renderQuoExample());
   }
 
   if (providerName === "openligadb") {

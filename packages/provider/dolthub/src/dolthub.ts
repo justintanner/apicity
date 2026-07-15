@@ -30,6 +30,10 @@ import {
   DoltHubV2UserGetResponse,
   DoltHubV2SqlReadRequest,
   DoltHubV2SqlReadResponse,
+  DoltHubV2Envelope,
+  DoltHubV2Meta,
+  DoltHubV2BranchesListRequest,
+  DoltHubV2BranchesListResponse,
 } from "./types";
 import {
   DoltHubSqlReadRequestSchema,
@@ -165,12 +169,12 @@ export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
     return new DoltHubError(message, status, body, { code, title, detail });
   }
 
-  async function makeV2Request<T>(
+  async function makeV2EnvelopeRequest<TData, TMeta = DoltHubV2Meta>(
     method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
     path: string,
     body?: unknown,
     signal?: AbortSignal
-  ): Promise<T> {
+  ): Promise<DoltHubV2Envelope<TData, TMeta>> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
@@ -208,21 +212,31 @@ export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
         throw v2Error(res.status, resBody);
       }
 
-      // Every 2xx v2 body is the `{ data, meta }` envelope; unwrap `data`.
-      const envelope = (await res.json()) as { data?: T } | T;
-      if (
-        typeof envelope === "object" &&
-        envelope !== null &&
-        "data" in envelope
-      ) {
-        return (envelope as { data: T }).data;
-      }
-      return envelope as T;
+      return (await res.json()) as DoltHubV2Envelope<TData, TMeta>;
     } catch (error) {
       clearTimeout(timeoutId);
       if (error instanceof DoltHubError) throw error;
       throw new DoltHubError(`DoltHub request failed: ${error}`, 500);
     }
+  }
+
+  async function makeV2Request<T>(
+    method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
+    path: string,
+    body?: unknown,
+    signal?: AbortSignal
+  ): Promise<T> {
+    // Existing v2 endpoints preserve their unwrapped return values. New
+    // paginated endpoints can use `makeV2EnvelopeRequest` directly.
+    const envelope = await makeV2EnvelopeRequest<T>(method, path, body, signal);
+    if (
+      typeof envelope === "object" &&
+      envelope !== null &&
+      "data" in envelope
+    ) {
+      return envelope.data;
+    }
+    return envelope as T;
   }
 
   function buildQuery(
@@ -555,6 +569,27 @@ export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
     { schema: undefined }
   );
 
+  // sig-ok: semantic DoltHub v2 branches namespace over dynamic repo URL
+  // GET https://www.dolthub.com/api/v2/databases/{owner}/{database}/branches{query}
+  // Docs: https://www.dolthub.com/docs/products/dolthub/api/v2/database
+  const branchesListV2 = Object.assign(
+    async (
+      req: DoltHubV2BranchesListRequest,
+      signal?: AbortSignal
+    ): Promise<DoltHubV2BranchesListResponse> => {
+      const owner = encodeURIComponent(req.owner);
+      const database = encodeURIComponent(req.database);
+      const query = buildQuery({ page_token: req.pageToken });
+      return makeV2EnvelopeRequest(
+        "GET",
+        `/api/v2/databases/${owner}/${database}/branches${query}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
   return {
     v1alpha1: {
       sql: {
@@ -582,6 +617,9 @@ export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
     api: {
       v2: {
         databases: {
+          branches: {
+            list: branchesListV2,
+          },
           forks: {
             create: forkCreate,
           },

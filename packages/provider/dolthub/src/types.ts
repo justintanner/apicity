@@ -450,7 +450,59 @@ export interface DoltHubV2ForksNamespace {
   create: DoltHubForkCreateMethod;
 }
 
+/** Pagination metadata included by cursor-paginated v2 responses. */
+export interface DoltHubV2Meta {
+  /** Opaque cursor for the next page; absent or empty when there is no next page. */
+  next_page_token?: string;
+}
+
+/** The uniform v2 API success envelope. */
+export interface DoltHubV2Envelope<TData, TMeta = DoltHubV2Meta> {
+  data: TData;
+  /** Present when the endpoint has response metadata, such as a page cursor. */
+  meta?: TMeta;
+}
+
+// ---------------------------------------------------------------------------
+// v2 API — branches
+// ---------------------------------------------------------------------------
+
+/** A branch returned by the v2 database branches endpoint. */
+export interface DoltHubV2Branch {
+  /** Branch name. */
+  name: string;
+  /** Commit SHA at the branch head. */
+  head_commit_sha: string;
+  /** ISO-8601 time at which the branch was last updated. */
+  last_updated_at: string;
+}
+
+export interface DoltHubV2BranchesListRequest {
+  /** Database owner (URL path segment). */
+  owner: string;
+  /** Database name (URL path segment). */
+  database: string;
+  /** Opaque cursor from a preceding page's `meta.next_page_token`. */
+  pageToken?: string;
+}
+
+export type DoltHubV2BranchesListResponse = DoltHubV2Envelope<
+  DoltHubV2Branch[]
+>;
+
+export interface DoltHubV2BranchesListMethod {
+  (
+    req: DoltHubV2BranchesListRequest,
+    signal?: AbortSignal
+  ): Promise<DoltHubV2BranchesListResponse>;
+}
+
+export interface DoltHubV2BranchesNamespace {
+  list: DoltHubV2BranchesListMethod;
+}
+
 export interface DoltHubV2DatabasesNamespace {
+  branches: DoltHubV2BranchesNamespace;
   forks: DoltHubV2ForksNamespace;
   sql: DoltHubV2SqlNamespace;
 }

@@ -216,10 +216,7 @@ export default defineConfig({
         __dirname,
         "../packages/provider/quo/src/zod"
       ),
-      "@apicity/quo": path.resolve(
-        __dirname,
-        "../packages/provider/quo/src"
-      ),
+      "@apicity/quo": path.resolve(__dirname, "../packages/provider/quo/src"),
     },
     coverage: {
       provider: "v8",

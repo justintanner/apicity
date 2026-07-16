@@ -18,7 +18,10 @@ describe("Quo messages integration", () => {
 
   it("replays a safely rejected fictional message request", async () => {
     ctx = setupPolly("quo/messages-fixture-rejection");
-    const quo = createQuo();
+    // Explicit key forces the request to be issued so Polly replays the HAR.
+    // Without it, createQuo() throws QuoError(401) before any fetch when
+    // QUO_API_KEY is unset (replay CI), and the fixture is never exercised.
+    const quo = createQuo({ apiKey: "test-key" });
 
     let captured: unknown;
     try {
@@ -33,7 +36,9 @@ describe("Quo messages integration", () => {
 
     expect(captured).toBeInstanceOf(QuoError);
     const error = captured as QuoError;
-    expect(error.status).toBeGreaterThanOrEqual(400);
-    expect(error.status).toBeLessThan(600);
+    // Assert the exact replayed status/code: the 401 missing-key guard can no
+    // longer satisfy this, so a green result proves the HAR was replayed.
+    expect(error.status).toBe(400);
+    expect(error.code).toBe("0202400");
   });
 });

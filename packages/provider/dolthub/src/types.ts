@@ -21,6 +21,8 @@ export type {
   DoltHubPullMergeParsedRequest,
   DoltHubForkCreateRequestInput,
   DoltHubForkCreateParsedRequest,
+  DoltHubV2BranchCreateRequestInput,
+  DoltHubV2BranchCreateParsedRequest,
 } from "./zod";
 
 // ---------------------------------------------------------------------------
@@ -497,8 +499,41 @@ export interface DoltHubV2BranchesListMethod {
   ): Promise<DoltHubV2BranchesListResponse>;
 }
 
+/**
+ * Source revision a newly created v2 branch will point at. A discriminated
+ * union mirroring the v2 spec's `CreateBranchRequest.from`: branch from the
+ * head of an existing `branch`, or from a specific `commit` hash.
+ */
+export type DoltHubV2BranchFrom = { branch: string } | { commit: string };
+
+export interface DoltHubV2BranchCreateRequest {
+  /** Database owner (URL path segment). */
+  owner: string;
+  /** Database name (URL path segment). */
+  database: string;
+  /** The new branch's name (request body). */
+  name: string;
+  /** Source revision the new branch points at (request body). */
+  from: DoltHubV2BranchFrom;
+}
+
+/**
+ * The v2 create-branch response. Creation is synchronous (HTTP 201): the newly
+ * created branch is returned directly in the `{ data, meta }` envelope, reusing
+ * the same `DoltHubV2Branch` shape as the list endpoint.
+ */
+export type DoltHubV2BranchCreateResponse = DoltHubV2Envelope<DoltHubV2Branch>;
+
+export interface DoltHubV2BranchCreateMethod {
+  (
+    req: DoltHubV2BranchCreateRequest,
+    signal?: AbortSignal
+  ): Promise<DoltHubV2BranchCreateResponse>;
+}
+
 export interface DoltHubV2BranchesNamespace {
   list: DoltHubV2BranchesListMethod;
+  create: DoltHubV2BranchCreateMethod;
 }
 
 export interface DoltHubV2DatabasesNamespace {

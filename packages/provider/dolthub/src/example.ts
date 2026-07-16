@@ -15,6 +15,17 @@ export interface EndpointExample {
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
+  "POST api.v2.databases.branches.create": {
+    "source": "dolthub/branch-create-unauthenticated",
+    "payload": {
+      "name": "apicity-branch-probe",
+      "from": {
+        "branch": "main"
+      }
+    },
+    "tier": "cheap",
+    "runByDefault": true
+  },
   "POST api.v2.databases.forks.create": {
     "source": "dolthub/fork-create-unauthenticated",
     "payload": {

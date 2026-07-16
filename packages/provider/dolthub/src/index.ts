@@ -63,6 +63,12 @@ export type {
   DoltHubV2BranchesListRequest,
   DoltHubV2BranchesListResponse,
   DoltHubV2BranchesListMethod,
+  DoltHubV2BranchCreateRequest,
+  DoltHubV2BranchCreateRequestInput,
+  DoltHubV2BranchCreateParsedRequest,
+  DoltHubV2BranchCreateResponse,
+  DoltHubV2BranchCreateMethod,
+  DoltHubV2BranchFrom,
   DoltHubV2Branch,
   DoltHubV2Envelope,
   DoltHubV2Meta,
@@ -98,4 +104,5 @@ export {
   DoltHubPullGetRequestSchema,
   DoltHubPullMergeRequestSchema,
   DoltHubForkCreateRequestSchema,
+  DoltHubV2BranchCreateRequestSchema,
 } from "./zod";

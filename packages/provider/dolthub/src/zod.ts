@@ -210,3 +210,30 @@ export type DoltHubForkCreateRequestInput = DoltHubForkCreateRequest;
 export type DoltHubForkCreateParsedRequest = z.output<
   typeof DoltHubForkCreateRequestSchema
 >;
+
+// ---------------------------------------------------------------------------
+// v2 — branches
+// ---------------------------------------------------------------------------
+
+export const DoltHubV2BranchCreateRequestSchema = z.object({
+  // Database owner (URL path segment).
+  owner: z.string().min(1),
+  // Database name (URL path segment).
+  database: z.string().min(1),
+  // The new branch's name (request body).
+  name: z.string().min(1),
+  // Source revision the new branch points at (request body): a discriminated
+  // union naming either an existing `branch` or a `commit` hash.
+  from: z.union([
+    z.object({ branch: z.string().min(1) }),
+    z.object({ commit: z.string().min(1) }),
+  ]),
+});
+
+export type DoltHubV2BranchCreateRequest = z.input<
+  typeof DoltHubV2BranchCreateRequestSchema
+>;
+export type DoltHubV2BranchCreateRequestInput = DoltHubV2BranchCreateRequest;
+export type DoltHubV2BranchCreateParsedRequest = z.output<
+  typeof DoltHubV2BranchCreateRequestSchema
+>;

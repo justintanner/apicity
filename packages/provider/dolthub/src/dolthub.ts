@@ -34,6 +34,8 @@ import {
   DoltHubV2Meta,
   DoltHubV2BranchesListRequest,
   DoltHubV2BranchesListResponse,
+  DoltHubV2BranchCreateRequest,
+  DoltHubV2BranchCreateResponse,
 } from "./types";
 import {
   DoltHubSqlReadRequestSchema,
@@ -47,6 +49,7 @@ import {
   DoltHubPullGetRequestSchema,
   DoltHubPullMergeRequestSchema,
   DoltHubForkCreateRequestSchema,
+  DoltHubV2BranchCreateRequestSchema,
 } from "./zod";
 
 export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
@@ -590,6 +593,29 @@ export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
     { schema: undefined }
   );
 
+  // sig-ok: semantic DoltHub v2 branches namespace over dynamic repo URL
+  // POST https://www.dolthub.com/api/v2/databases/{owner}/{database}/branches
+  // Docs: https://www.dolthub.com/docs/products/dolthub/api/v2/database
+  const branchCreateV2 = Object.assign(
+    async (
+      req: DoltHubV2BranchCreateRequest,
+      signal?: AbortSignal
+    ): Promise<DoltHubV2BranchCreateResponse> => {
+      const owner = encodeURIComponent(req.owner);
+      const database = encodeURIComponent(req.database);
+      // Only body fields go in the JSON body; owner/database stay in the path.
+      // v2 branch creation is synchronous, so the created branch is preserved
+      // inside the `{ data, meta }` envelope (unlike the async fork endpoint).
+      return makeV2EnvelopeRequest(
+        "POST",
+        `/api/v2/databases/${owner}/${database}/branches`,
+        { name: req.name, from: req.from },
+        signal
+      );
+    },
+    { schema: DoltHubV2BranchCreateRequestSchema }
+  );
+
   return {
     v1alpha1: {
       sql: {
@@ -619,6 +645,7 @@ export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
         databases: {
           branches: {
             list: branchesListV2,
+            create: branchCreateV2,
           },
           forks: {
             create: forkCreate,

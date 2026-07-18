@@ -26,6 +26,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "cheap",
     "runByDefault": true
   },
+  "POST api.v2.databases.create": {
+    "source": "dolthub/database-create-unauthenticated",
+    "payload": {
+      "owner": "apicity",
+      "name": "apicity-database-probe",
+      "visibility": "private"
+    },
+    "tier": "cheap",
+    "runByDefault": true
+  },
   "POST api.v2.databases.forks.create": {
     "source": "dolthub/fork-create-unauthenticated",
     "payload": {

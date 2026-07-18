@@ -237,3 +237,30 @@ export type DoltHubV2BranchCreateRequestInput = DoltHubV2BranchCreateRequest;
 export type DoltHubV2BranchCreateParsedRequest = z.output<
   typeof DoltHubV2BranchCreateRequestSchema
 >;
+
+// ---------------------------------------------------------------------------
+// v2 — databases
+// ---------------------------------------------------------------------------
+
+export const DoltHubV2DatabaseCreateRequestSchema = z.object({
+  // Owner (user or organization) that will own the new database (request body).
+  owner: z.string().min(1),
+  // Database name, unique within the owner (request body).
+  name: z.string().min(1),
+  // Visibility of the new database (request body); required by v2, unlike the
+  // all-optional v1alpha1 body. Deliberate narrowing: the v2 spec types this as
+  // a free-form string, but v1alpha1 uses the public/private union and no other
+  // value is documented.
+  visibility: z.enum(["public", "private"]),
+  // Optional human-readable description (request body).
+  description: z.string().optional(),
+});
+
+export type DoltHubV2DatabaseCreateRequest = z.input<
+  typeof DoltHubV2DatabaseCreateRequestSchema
+>;
+export type DoltHubV2DatabaseCreateRequestInput =
+  DoltHubV2DatabaseCreateRequest;
+export type DoltHubV2DatabaseCreateParsedRequest = z.output<
+  typeof DoltHubV2DatabaseCreateRequestSchema
+>;

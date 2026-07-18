@@ -23,6 +23,8 @@ export type {
   DoltHubForkCreateParsedRequest,
   DoltHubV2BranchCreateRequestInput,
   DoltHubV2BranchCreateParsedRequest,
+  DoltHubV2DatabaseCreateRequestInput,
+  DoltHubV2DatabaseCreateParsedRequest,
 } from "./zod";
 
 // ---------------------------------------------------------------------------
@@ -536,7 +538,80 @@ export interface DoltHubV2BranchesNamespace {
   create: DoltHubV2BranchCreateMethod;
 }
 
+// ---------------------------------------------------------------------------
+// v2 API — databases
+// ---------------------------------------------------------------------------
+
+/**
+ * An `{ owner, name }` pair identifying another database. The v2 spec nests
+ * this shape under a database's `parent` and `network_root`.
+ */
+export interface DoltHubV2DatabaseRef {
+  /** Owner (user or organization) of the referenced database. */
+  owner: string;
+  /** Name of the referenced database, unique within the owner. */
+  name: string;
+}
+
+/** A database returned by the v2 databases endpoints. */
+export interface DoltHubV2Database {
+  /** Owner (user or organization) of the database. */
+  owner: string;
+  /** Database name, unique within the owner. */
+  name: string;
+  /** Human-readable description; absent when the database has none. */
+  description?: string;
+  /**
+   * Whether the database is publicly readable or private. Typed as a
+   * free-form string because the v2 models page enumerates no allowed values.
+   */
+  visibility: string;
+  /** Number of databases in this database's fork network. */
+  fork_network_count: number;
+  /** Number of users who have starred the database. */
+  star_count: number;
+  /** On-disk size of the database in bytes. */
+  size_bytes: number;
+  /** ISO-8601 time of the most recent write; absent when never written to. */
+  last_write_at?: string;
+  /** The database this one was forked from; absent when this is not a fork. */
+  parent?: DoltHubV2DatabaseRef;
+  /**
+   * The original database at the root of this database's fork network; absent
+   * when this database is itself the root.
+   */
+  network_root?: DoltHubV2DatabaseRef;
+}
+
+export interface DoltHubV2DatabaseCreateRequest {
+  /** Owner (user or organization) that will own the new database (request body). */
+  owner: string;
+  /** Database name, unique within the owner (request body). */
+  name: string;
+  /** Visibility of the new database (request body); required by v2. */
+  visibility: "public" | "private";
+  /** Optional human-readable description (request body). */
+  description?: string;
+}
+
+/**
+ * The v2 create-database response. Creation is synchronous (HTTP 201): the
+ * newly created database is returned directly in the `{ data, meta }`
+ * envelope, so the envelope is preserved rather than unwrapped to an
+ * operation reference.
+ */
+export type DoltHubV2DatabaseCreateResponse =
+  DoltHubV2Envelope<DoltHubV2Database>;
+
+export interface DoltHubV2DatabaseCreateMethod {
+  (
+    req: DoltHubV2DatabaseCreateRequest,
+    signal?: AbortSignal
+  ): Promise<DoltHubV2DatabaseCreateResponse>;
+}
+
 export interface DoltHubV2DatabasesNamespace {
+  create: DoltHubV2DatabaseCreateMethod;
   branches: DoltHubV2BranchesNamespace;
   forks: DoltHubV2ForksNamespace;
   sql: DoltHubV2SqlNamespace;

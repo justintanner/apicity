@@ -18,7 +18,12 @@ describe("dolthub v2 database create", () => {
   it("exposes the api.v2.databases.create method with a schema", () => {
     const provider = createDoltHub();
     expect(provider.api.v2.databases.create).toBeInstanceOf(Function);
-    expect(provider.api.v2.databases.create.schema).toBeDefined();
+    // Bind the identity, not just presence: the MCP server derives this
+    // endpoint's tool input JSON Schema from `.schema`, so attaching a
+    // sibling's schema here would ship a wrong tool contract silently.
+    expect(provider.api.v2.databases.create.schema).toBe(
+      DoltHubV2DatabaseCreateRequestSchema
+    );
   });
 
   it("POSTs the create request to the collection root and preserves the envelope", async () => {
@@ -225,6 +230,23 @@ describe("dolthub v2 database create", () => {
       DoltHubV2DatabaseCreateRequestSchema.safeParse({
         owner: "apicity",
         name: "probe-db",
+      }).success
+    ).toBe(false);
+
+    // owner and name are .min(1): present-but-empty is rejected, not just
+    // missing.
+    expect(
+      DoltHubV2DatabaseCreateRequestSchema.safeParse({
+        owner: "",
+        name: "probe-db",
+        visibility: "private",
+      }).success
+    ).toBe(false);
+    expect(
+      DoltHubV2DatabaseCreateRequestSchema.safeParse({
+        owner: "apicity",
+        name: "",
+        visibility: "private",
       }).success
     ).toBe(false);
 

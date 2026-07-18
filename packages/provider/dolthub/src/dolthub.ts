@@ -36,6 +36,8 @@ import {
   DoltHubV2BranchesListResponse,
   DoltHubV2BranchCreateRequest,
   DoltHubV2BranchCreateResponse,
+  DoltHubV2DatabaseCreateRequest,
+  DoltHubV2DatabaseCreateResponse,
 } from "./types";
 import {
   DoltHubSqlReadRequestSchema,
@@ -50,6 +52,7 @@ import {
   DoltHubPullMergeRequestSchema,
   DoltHubForkCreateRequestSchema,
   DoltHubV2BranchCreateRequestSchema,
+  DoltHubV2DatabaseCreateRequestSchema,
 } from "./zod";
 
 export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
@@ -616,6 +619,42 @@ export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
     { schema: DoltHubV2BranchCreateRequestSchema }
   );
 
+  // sig-ok: semantic DoltHub v2 databases namespace over API root URL
+  // POST https://www.dolthub.com/api/v2/databases
+  // Docs: https://www.dolthub.com/docs/products/dolthub/api/v2/database
+  const databaseCreateV2 = Object.assign(
+    async (
+      req: DoltHubV2DatabaseCreateRequest,
+      signal?: AbortSignal
+    ): Promise<DoltHubV2DatabaseCreateResponse> => {
+      // Unlike the all-optional v1alpha1 create body, the v2 spec requires
+      // owner, name, and visibility. `visibility` is deliberately narrowed to
+      // the public/private union: the v2 spec types it as a free-form string,
+      // but v1alpha1 uses that union and no other value is documented.
+      //
+      // The body is built from typed fields explicitly rather than spreading
+      // `req`, so no unexpected key can reach the wire. `description` is
+      // omitted entirely when undefined rather than serialized as null.
+      //
+      // v2 database creation is synchronous, so the created database is
+      // preserved inside the `{ data, meta }` envelope.
+      return makeV2EnvelopeRequest(
+        "POST",
+        "/api/v2/databases",
+        {
+          owner: req.owner,
+          name: req.name,
+          visibility: req.visibility,
+          ...(req.description !== undefined
+            ? { description: req.description }
+            : {}),
+        },
+        signal
+      );
+    },
+    { schema: DoltHubV2DatabaseCreateRequestSchema }
+  );
+
   return {
     v1alpha1: {
       sql: {
@@ -643,6 +682,7 @@ export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
     api: {
       v2: {
         databases: {
+          create: databaseCreateV2,
           branches: {
             list: branchesListV2,
             create: branchCreateV2,

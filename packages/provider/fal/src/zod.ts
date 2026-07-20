@@ -640,11 +640,14 @@ export const FalSeedreamV5LiteEditRequestSchema = z.object({
   image_urls: z.array(z.string()).min(1).max(10),
   image_size: FalSeedreamV5LiteImageSizeSchema.optional(),
   auto_4K: z.boolean().optional(),
-  // Fal's Seedream v5 Lite docs state no upper bound for these counts, so the
-  // bounds are adopted from the sibling Wan v2.7 schemas in this file
-  // (num_images .max(4), max_images .max(5)). Revisit if Fal documents them.
-  num_images: z.number().int().min(1).max(4).optional(),
-  max_images: z.number().int().min(1).max(5).optional(),
+  // Fal documents no upper bound for these counts (OQ-3), and Seedream has no
+  // same-family precedent to borrow one from -- the `.max(4)`/`.max(5)` an
+  // earlier revision took from Wan v2.7 / Nano Banana would have rejected valid
+  // payloads on a bound nobody can cite. Note this schema already accepts 10
+  // `image_urls`, so a 4-image ceiling was very likely wrong. `.int().min(1)`
+  // is what REQ-012 actually mandates; add a maximum only with a doc citation.
+  num_images: z.number().int().min(1).optional(),
+  max_images: z.number().int().min(1).optional(),
   sync_mode: z.boolean().optional(),
   enable_safety_checker: z.boolean().optional(),
 });
@@ -657,10 +660,10 @@ export const FalSeedreamV5LiteTextToImageRequestSchema = z.object({
   prompt: z.string(),
   image_size: FalSeedreamV5LiteImageSizeSchema.optional(),
   auto_4K: z.boolean().optional(),
-  // Bounds adopted from the sibling Wan v2.7 schemas in this file; see the
-  // note on FalSeedreamV5LiteEditRequestSchema above.
-  num_images: z.number().int().min(1).max(4).optional(),
-  max_images: z.number().int().min(1).max(5).optional(),
+  // No documented upper bound; see the note on
+  // FalSeedreamV5LiteEditRequestSchema above.
+  num_images: z.number().int().min(1).optional(),
+  max_images: z.number().int().min(1).optional(),
   sync_mode: z.boolean().optional(),
   enable_safety_checker: z.boolean().optional(),
 });

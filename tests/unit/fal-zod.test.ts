@@ -52,23 +52,15 @@ describe("Fal Zod schema validation", () => {
       ).toBe(true);
     });
 
-    it("should accept num_images at the upper bound", () => {
-      const result = FalSeedreamV5LiteTextToImageRequestSchema.safeParse({
-        prompt: "A lighthouse at dusk",
-        num_images: 4,
-      });
-      expect(result.success).toBe(true);
-    });
-
-    it("should reject num_images above the upper bound", () => {
+    // Review finding R-1: Fal documents no upper bound for these counts and
+    // Seedream has no same-family precedent, so no maximum is enforced. Pinned
+    // so a borrowed ceiling cannot return without a doc citation.
+    it("should accept num_images above the removed ceiling", () => {
       const result = FalSeedreamV5LiteTextToImageRequestSchema.safeParse({
         prompt: "A lighthouse at dusk",
         num_images: 5,
       });
-      expect(result.success).toBe(false);
-      expect(
-        result.error?.issues.some((i) => i.path.includes("num_images"))
-      ).toBe(true);
+      expect(result.success).toBe(true);
     });
 
     it("should reject num_images below the lower bound", () => {
@@ -82,10 +74,10 @@ describe("Fal Zod schema validation", () => {
       ).toBe(true);
     });
 
-    it("should accept max_images at the upper bound", () => {
+    it("should accept max_images above the removed ceiling", () => {
       const result = FalSeedreamV5LiteTextToImageRequestSchema.safeParse({
         prompt: "A lighthouse at dusk",
-        max_images: 5,
+        max_images: 6,
       });
       expect(result.success).toBe(true);
     });
@@ -101,10 +93,10 @@ describe("Fal Zod schema validation", () => {
       ).toBe(true);
     });
 
-    it("should reject max_images above the upper bound", () => {
+    it("should reject max_images below the lower bound", () => {
       const result = FalSeedreamV5LiteTextToImageRequestSchema.safeParse({
         prompt: "A lighthouse at dusk",
-        max_images: 6,
+        max_images: 0,
       });
       expect(result.success).toBe(false);
       expect(
@@ -154,23 +146,23 @@ describe("Fal Zod schema validation", () => {
       ).toBe(true);
     });
 
-    it("should reject num_images above the upper bound", () => {
+    // Review finding R-1: no documented ceiling; see the note above. This
+    // schema already accepts 10 `image_urls`, so a 4-image output cap was very
+    // likely wrong on its own terms.
+    it("should accept num_images above the removed ceiling", () => {
       const result = FalSeedreamV5LiteEditRequestSchema.safeParse({
         prompt: "Make it rain",
         image_urls,
         num_images: 5,
       });
-      expect(result.success).toBe(false);
-      expect(
-        result.error?.issues.some((i) => i.path.includes("num_images"))
-      ).toBe(true);
+      expect(result.success).toBe(true);
     });
 
-    it("should accept max_images at the upper bound", () => {
+    it("should accept max_images above the removed ceiling", () => {
       const result = FalSeedreamV5LiteEditRequestSchema.safeParse({
         prompt: "Make it rain",
         image_urls,
-        max_images: 5,
+        max_images: 6,
       });
       expect(result.success).toBe(true);
     });

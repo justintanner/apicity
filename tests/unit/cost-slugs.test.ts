@@ -112,6 +112,8 @@ describe("MODEL_SLUGS", () => {
       "qwen3.6-plus": "qwen3p6",
       "qwen-image-2.0": "qwen2",
       "wan2.7-image-pro": "wan2p7p",
+      "wan2.7-i2v": "wan2p7",
+      "wan2.7-videoedit": "wan2p7",
     });
   });
 

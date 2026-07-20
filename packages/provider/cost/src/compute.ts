@@ -173,8 +173,26 @@ export function computeEstimate(req: EstimateRequest): CostEstimate {
         ext.data.maxOutputTokens
       );
     }
+    // Alibaba is the one provider that bills both ways: the Qwen chat models
+    // are token-billed, while the Qwen Image / Wan 2.7 media models bill per
+    // image or per second. Route on the pricing entry's own `kind` so an
+    // unknown model still falls through to the token path and its warning.
+    case "alibaba": {
+      const model = asString(req.payload.model);
+      const entry = model ? PRICING.alibaba[model] : undefined;
+      if (entry?.kind === "perUnit") {
+        return evaluatePerUnit("alibaba", req.payload, req.endpoint);
+      }
+      const ext = extractChat("alibaba", req.payload);
+      if (!ext.ok) return failed("tokens-heuristic+table", ext.warnings);
+      return applyTokenRate(
+        "alibaba",
+        ext.data.model,
+        heuristicTokens(ext.data.text),
+        ext.data.maxOutputTokens
+      );
+    }
     case "fireworks":
-    case "alibaba":
     case "kimicoding": {
       const ext = extractChat(req.provider, req.payload);
       if (!ext.ok) return failed("tokens-heuristic+table", ext.warnings);

@@ -144,6 +144,51 @@ describe("PRICING data", () => {
     });
   });
 
+  it("alibaba prices every registered image model per image", () => {
+    const perImage: Record<string, number> = {
+      "qwen-image-2.0": 0.035,
+      "qwen-image-2.0-pro": 0.075,
+      "qwen-image-edit": 0.045,
+      "qwen-image-edit-plus": 0.03,
+      "qwen-image-edit-max": 0.075,
+      "wan2.7-image-pro": 0.075,
+    };
+    for (const [model, rate] of Object.entries(perImage)) {
+      expect(PRICING.alibaba[model]).toMatchObject({
+        kind: "perUnit",
+        unit: "images",
+        rates: { "": rate },
+      });
+    }
+  });
+
+  it("alibaba prices wan2.7 video at a flat per-second rate", () => {
+    for (const model of ["wan2.7-i2v", "wan2.7-videoedit"]) {
+      expect(PRICING.alibaba[model]).toMatchObject({
+        kind: "perUnit",
+        unit: "seconds",
+        select: [],
+        rates: { "": 0.1 },
+      });
+    }
+  });
+
+  it("stamps the new alibaba media rates with their own asOf", () => {
+    const entry = PRICING.alibaba["wan2.7-i2v"];
+    expect(entry.source.asOf).toBe("2026-07-20");
+    expect(entry.source.asOf).not.toBe(PRICING_AS_OF);
+  });
+
+  // AC-017: the slug registry and the pricing table are two halves of one
+  // fact. Registering a slug without a rate produced the split this item
+  // fixes, so walk the registry rather than pinning today's model list.
+  it("has a PRICING entry for every registered alibaba slug", () => {
+    const unpriced = Object.keys(MODEL_SLUGS.alibaba).filter(
+      (model) => PRICING.alibaba[model] === undefined
+    );
+    expect(unpriced).toEqual([]);
+  });
+
   it("openai has token-priced models", () => {
     expect(PRICING.openai["gpt-5"]).toMatchObject({
       kind: "tokens",

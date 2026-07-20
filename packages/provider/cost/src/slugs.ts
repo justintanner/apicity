@@ -165,6 +165,10 @@ export const MODEL_SLUGS = {
     "qwen-image-edit-plus": "qwen2e",
     "qwen-image-edit-max": "qwen2e",
     "wan2.7-image-pro": "wan2p7p",
+    // Video gen via alibaba's direct API. Same underlying models as kie's
+    // wan/2-7-* video entries — slugs intentionally match.
+    "wan2.7-i2v": "wan2p7",
+    "wan2.7-videoedit": "wan2p7",
   },
 
   fireworks: {
@@ -368,6 +372,8 @@ export const MODEL_DISPLAY = {
     "qwen-image-edit-plus": "Qwen Image Edit Plus",
     "qwen-image-edit-max": "Qwen Image Edit Max",
     "wan2.7-image-pro": "Wan 2.7 Image Pro",
+    "wan2.7-i2v": "Wan 2.7",
+    "wan2.7-videoedit": "Wan 2.7 Edit",
   },
 
   fireworks: {

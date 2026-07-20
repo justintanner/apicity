@@ -217,6 +217,119 @@ describe("computeEstimate", () => {
       expect(result.warnings).toEqual([]);
     });
 
+    it("estimates alibaba wan2.7-i2v per second of output", () => {
+      const result = computeEstimate({
+        provider: "alibaba" as const,
+        payload: {
+          model: "wan2.7-i2v",
+          input: { media: [{ type: "first_frame", url: "https://x/a.png" }] },
+          parameters: { resolution: "720P", duration: 5 },
+        },
+      });
+      expect(result.source).toBe("per-unit-table");
+      expect(result.breakdown).toMatchObject({
+        units: 5,
+        unit: "seconds",
+        perUnitUsd: 0.1,
+      });
+      expect(result.usd).toBeCloseTo(0.5, 10);
+      expect(result.rateAsOf).toBe("2026-07-20");
+      expect(result.warnings).toEqual([]);
+    });
+
+    it("estimates alibaba wan2.7-videoedit at the same per-second rate", () => {
+      const result = computeEstimate({
+        provider: "alibaba" as const,
+        payload: {
+          model: "wan2.7-videoedit",
+          input: { media: [{ type: "video", url: "https://x/a.mp4" }] },
+          parameters: { duration: 10 },
+        },
+      });
+      expect(result.usd).toBeCloseTo(1, 10);
+      expect(result.breakdown.perUnitUsd).toBe(0.1);
+      expect(result.warnings).toEqual([]);
+    });
+
+    // The request schema accepts 1080P but the pricing page publishes only a
+    // 720P row, so the flat entry must still estimate rather than warn.
+    it("estimates alibaba video at 1080P and when parameters are omitted", () => {
+      const hd = computeEstimate({
+        provider: "alibaba" as const,
+        payload: {
+          model: "wan2.7-i2v",
+          input: { media: [{ type: "first_frame", url: "https://x/a.png" }] },
+          parameters: { resolution: "1080P", duration: 4 },
+        },
+      });
+      expect(hd.usd).toBeCloseTo(0.4, 10);
+      expect(hd.warnings).toEqual([]);
+
+      const bare = computeEstimate({
+        provider: "alibaba" as const,
+        payload: {
+          model: "wan2.7-i2v",
+          input: { media: [{ type: "first_frame", url: "https://x/a.png" }] },
+        },
+      });
+      expect(bare.breakdown).toMatchObject({ units: 5, perUnitUsd: 0.1 });
+      expect(bare.usd).toBeCloseTo(0.5, 10);
+    });
+
+    // duration: 0 is legal and means "match the source clip"; the length is
+    // only known upstream, so the estimate falls back to the 5s default.
+    it("falls back to the 5s default for alibaba duration 0", () => {
+      const result = computeEstimate({
+        provider: "alibaba" as const,
+        payload: {
+          model: "wan2.7-videoedit",
+          input: { media: [{ type: "video", url: "https://x/a.mp4" }] },
+          parameters: { duration: 0 },
+        },
+      });
+      expect(result.breakdown.units).toBe(5);
+      expect(result.usd).toBeCloseTo(0.5, 10);
+    });
+
+    it("estimates alibaba image models per image, scaling with parameters.n", () => {
+      const one = computeEstimate({
+        provider: "alibaba" as const,
+        payload: {
+          model: "qwen-image-2.0",
+          input: { messages: [] },
+        },
+      });
+      expect(one.breakdown).toMatchObject({
+        units: 1,
+        unit: "images",
+        perUnitUsd: 0.035,
+      });
+      expect(one.usd).toBeCloseTo(0.035, 10);
+
+      const four = computeEstimate({
+        provider: "alibaba" as const,
+        payload: {
+          model: "qwen-image-2.0",
+          input: { messages: [] },
+          parameters: { n: 4 },
+        },
+      });
+      expect(four.usd).toBeCloseTo(0.14, 10);
+    });
+
+    it("still token-prices alibaba chat models after per-unit routing", () => {
+      const result = computeEstimate({
+        provider: "alibaba" as const,
+        payload: {
+          model: "qwen3.6-plus",
+          messages: [{ role: "user", content: "hello" }],
+          max_tokens: 100,
+        },
+      });
+      expect(result.source).toBe("tokens-heuristic+table");
+      expect(result.breakdown.unit).toBe("tokens");
+    });
+
     it("estimates kimicoding with messages", () => {
       const req = {
         provider: "kimicoding" as const,

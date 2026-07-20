@@ -169,8 +169,9 @@ export const GoogleFlowVoicesListRequestSchema = z
     // whose voices to list," and document a 400 "Parameter email is required"
     // when it is missing. Listing is scoped to one account's voices, so there
     // is no single-account fallback here even though POST /images and
-    // POST /videos have one. See the note in the WI-09 summary: AC-006 asked
-    // for this call to be optional, which upstream does not support.
+    // POST /videos have one. AC-006 originally asked for this call to work
+    // without `email`; the criterion was corrected on 2026-07-20 to match the
+    // documented upstream contract.
     email: z.string().min(1),
     source: z.enum(["system", "user"]).optional(),
   })

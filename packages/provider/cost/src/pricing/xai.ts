@@ -51,20 +51,6 @@ const perGenerationImage = (perUnit: number): ModelPricing => ({
   source: mediaSource,
 });
 
-// POST endpoints whose cost is media-generation, not tokens. `computeEstimate`
-// routes an xai request to the per-unit table when `EstimateRequest.endpoint`
-// names one of these; the pricing key stays `payload.model`, so the rate still
-// varies per media model. Dot-paths mirror the provider's method paths (and
-// the rows in scripts/endpoint-docs.tsv).
-export const XAI_MEDIA_ENDPOINTS: ReadonlySet<string> = new Set([
-  "v1.images.generations",
-  "v1.images.edits",
-  "v1.videos.generations",
-  "v1.videos.generations.imageToVideo",
-  "v1.videos.edits",
-  "v1.videos.extensions",
-]);
-
 export const xai: Record<string, ModelPricing> = {
   "grok-build-0.1": grokBuild01,
   "grok-code-fast-1": grokBuild01,

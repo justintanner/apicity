@@ -609,17 +609,31 @@ describe("computeEstimate", () => {
       expect(result.warnings).toEqual([]);
     });
 
-    it("warns when an xai media model is priced without the endpoint discriminator", () => {
+    // Review finding R-3: routing is derived from the pricing entry's own
+    // `kind`, so a media model prices per-unit whether or not the caller
+    // supplies `endpoint`. The earlier revision gated on a hand-maintained
+    // endpoint allowlist and returned 0 with a warning here.
+    it("prices an xai media model without the endpoint discriminator", () => {
       const req = {
         provider: "xai" as const,
         payload: { model: "grok-imagine-video", duration: 10 },
       };
       const result = computeEstimate(req);
-      expect(result.usd).toBe(0);
-      expect(result.source).toBe("tokens-heuristic+table");
-      expect(result.warnings).toContain(
-        "xai 'grok-imagine-video' is per-unit billed; pass the media endpoint via EstimateRequest.endpoint"
-      );
+      expect(result.source).toBe("per-unit-table");
+      expect(result.usd).toBeCloseTo(0.5);
+      expect(result.warnings).toEqual([]);
+    });
+
+    it("prices an xai media model identically with and without endpoint", () => {
+      const payload = { model: "grok-imagine-video", duration: 10 };
+      const withEndpoint = computeEstimate({
+        provider: "xai" as const,
+        endpoint: "v1.videos.generations",
+        payload,
+      });
+      const without = computeEstimate({ provider: "xai" as const, payload });
+      expect(withEndpoint.usd).toBe(without.usd);
+      expect(withEndpoint.source).toBe(without.source);
     });
 
     it("fails per-unit when model is missing", () => {

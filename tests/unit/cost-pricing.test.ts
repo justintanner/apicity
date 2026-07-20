@@ -10,7 +10,6 @@ import {
   PRICING_AS_OF,
 } from "../../packages/provider/cost/src/pricing/index";
 import { MODEL_SLUGS } from "../../packages/provider/cost/src/slugs";
-import { XAI_MEDIA_ENDPOINTS } from "../../packages/provider/cost/src/pricing/xai";
 
 describe("pricing helpers", () => {
   describe("asString", () => {
@@ -219,14 +218,20 @@ describe("PRICING data", () => {
     }
   });
 
-  it("names only xai media POST endpoints as per-unit routes", () => {
-    expect([...XAI_MEDIA_ENDPOINTS].sort()).toEqual([
-      "v1.images.edits",
-      "v1.images.generations",
-      "v1.videos.edits",
-      "v1.videos.extensions",
-      "v1.videos.generations",
-      "v1.videos.generations.imageToVideo",
+  // Review finding R-3: the per-unit route is derived from the table's own
+  // `kind`, so the set of per-unit xai models is pinned here rather than in a
+  // hand-maintained endpoint allowlist that could drift from it.
+  it("marks exactly the Grok Imagine media models as per-unit", () => {
+    const perUnit = Object.entries(PRICING.xai)
+      .filter(([, entry]) => entry.kind === "perUnit")
+      .map(([model]) => model)
+      .sort();
+    expect(perUnit).toEqual([
+      "grok-imagine-image",
+      "grok-imagine-image-quality",
+      "grok-imagine-video",
+      "grok-imagine-video-1.5",
+      "grok-imagine-video-1.5-preview",
     ]);
   });
 

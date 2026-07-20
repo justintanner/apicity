@@ -1,6 +1,5 @@
 import { PRICING, PRICING_AS_OF, type PricedProviderId } from "./pricing/index";
 import { asString } from "./pricing/helpers";
-import { XAI_MEDIA_ENDPOINTS } from "./pricing/xai";
 
 import type { CostEstimate, CostSource, EstimateRequest } from "./types";
 
@@ -38,9 +37,12 @@ function applyTokenRate(
   }
   const source: CostSource = "tokens-heuristic+table";
   if (!entry || entry.kind !== "tokens") {
+    // A per-unit entry reaching the token path means this provider's case in
+    // computeEstimate has no per-unit route yet -- name that, rather than
+    // blaming the caller for an argument that would not help.
     warnings.push(
       entry
-        ? `${provider} '${model}' is per-unit billed; pass the media endpoint via EstimateRequest.endpoint`
+        ? `${provider} '${model}' is per-unit billed but '${provider}' has no per-unit route in computeEstimate`
         : `model '${model}' not found in pricing table for provider '${provider}'`
     );
     return {
@@ -130,26 +132,38 @@ function evaluatePerUnit(
 
 export function computeEstimate(req: EstimateRequest): CostEstimate {
   switch (req.provider) {
-    case "openai":
-    case "anthropic":
+    // xAI bills the Grok Imagine video and image models per second / per
+    // generated image and everything else per token. Route on the pricing
+    // entry's own `kind`: the table already records which models are per-unit,
+    // so a hand-maintained endpoint allowlist would be a second source of
+    // truth that silently misprices whenever xAI ships a media endpoint and
+    // nobody updates it. Unknown models still fall through to the token path
+    // and its warning.
     case "xai": {
-      // xAI media endpoints bill per second of video / per generated image,
-      // not per token. The existing `endpoint` discriminator selects that
-      // path — but unlike Suno, the pricing key stays `payload.model`, so
-      // each media model keeps its own rate. Every other xai endpoint (and
-      // any media call made without the discriminator) stays token-billed.
-      if (
-        req.provider === "xai" &&
-        XAI_MEDIA_ENDPOINTS.has(req.endpoint ?? "")
-      ) {
+      const model = asString(req.payload.model);
+      const entry = model ? PRICING.xai[model] : undefined;
+      if (entry?.kind === "perUnit") {
+        // `undefined`, not `req.endpoint`: evaluatePerUnit treats its third
+        // argument as the pricing key (`endpoint ?? payload.model`), and xai
+        // rates are keyed by model. Forwarding the endpoint here would look up
+        // a key like "v1.videos.generations" and report "not found".
         return evaluatePerUnit("xai", req.payload, undefined);
       }
+      const ext = extractXai(req.payload);
+      if (!ext.ok) return failed("tokens-heuristic+table", ext.warnings);
+      return applyTokenRate(
+        "xai",
+        ext.data.model,
+        heuristicTokens(ext.data.text),
+        ext.data.maxOutputTokens
+      );
+    }
+    case "openai":
+    case "anthropic": {
       const ext =
         req.provider === "openai"
           ? extractOpenAi(req.payload)
-          : req.provider === "anthropic"
-            ? extractAnthropic(req.payload)
-            : extractXai(req.payload);
+          : extractAnthropic(req.payload);
       if (!ext.ok) return failed("tokens-heuristic+table", ext.warnings);
       const inputTokens = heuristicTokens(ext.data.text);
       return applyTokenRate(

@@ -533,17 +533,57 @@ describe("ElevenLabs Zod schema validation", () => {
         ).toBe(false);
       });
 
-      it("applies the most permissive cap statically when model_id is omitted", () => {
+      // Upstream serves an omitted model_id with its default TTS model,
+      // eleven_multilingual_v2, whose cap is 10000 — not with "no model".
+      it("caps text at the default model's limit when model_id is omitted", () => {
+        expect(
+          ElevenLabsTextToSpeechRequestSchema.safeParse({
+            text: "a".repeat(10000),
+          }).success
+        ).toBe(true);
+
+        const result = ElevenLabsTextToSpeechRequestSchema.safeParse({
+          text: "a".repeat(10001),
+        });
+
+        expect(result.success).toBe(false);
+        expect(result.error?.issues.some((i) => i.path.includes("text"))).toBe(
+          true
+        );
+      });
+
+      it("names the default model and both lengths for the reported case", () => {
+        const result = ElevenLabsTextToSpeechRequestSchema.safeParse({
+          text: "a".repeat(25000),
+        });
+
+        expect(result.success).toBe(false);
+
+        const message = (result.error?.issues ?? [])
+          .map((i) => i.message)
+          .join("\n");
+
+        expect(message).toContain("eleven_multilingual_v2");
+        expect(message).toContain("10000");
+        expect(message).toContain("25000");
+        expect(message).toContain("model_id");
+      });
+
+      // The static bound is still the ceiling — on an explicit large-cap model.
+      it("accepts the static bound for an explicit large-cap model_id", () => {
         expect(
           ElevenLabsTextToSpeechRequestSchema.safeParse({
             text: "a".repeat(40000),
+            model_id: "eleven_flash_v2_5",
           }).success
         ).toBe(true);
-        expect(
-          ElevenLabsTextToSpeechRequestSchema.safeParse({
-            text: "a".repeat(40001),
-          }).success
-        ).toBe(false);
+      });
+
+      it("keeps the static text bound in the MCP JSON Schema", () => {
+        const json = zodToJsonSchema(ElevenLabsTextToSpeechRequestSchema);
+        const props = json.properties as Record<string, JsonSchema>;
+
+        expect(props.text).toMatchObject({ maxLength: 40000 });
       });
 
       it("still enforces the per-model cap for a listed model_id", () => {

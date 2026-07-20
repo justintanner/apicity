@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- The request schema shared by the four text-to-speech endpoints
+  (`v1.textToSpeech.schema`, `.stream.schema`, `.withTimestamps.schema`, and
+  `.stream.withTimestamps.schema` — `ElevenLabsTextToSpeechRequestSchema`) now
+  caps `text` at 10000 characters when `model_id` is omitted, matching
+  ElevenLabs' default model (`eleven_multilingual_v2`). Such requests parsed
+  locally before and failed upstream; set `model_id` explicitly to use a model
+  with a larger cap.
+
 ## [0.1.0] - 2026-05-16
 
 ### Added

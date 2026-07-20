@@ -471,6 +471,14 @@ export const ElevenLabsTextToSpeechModelIdSchema = z
 // using .safeParse directly get the exact per-model cap.
 const ELEVENLABS_TEXT_TO_SPEECH_MAX_TEXT_LENGTH = 40000;
 
+// ElevenLabs serves POST /v1/text-to-speech with this model when the request
+// omits `model_id`. The recorded GET /v1/models response carries no `default`
+// flag, so this comes from ElevenLabs' documentation rather than from evidence
+// in this repo — re-check it against upstream docs before trusting it. This is
+// the single place to update if upstream changes its default; the cap itself is
+// read from ELEVENLABS_TEXT_TO_SPEECH_MODEL_TEXT_LIMITS, never hardcoded.
+const ELEVENLABS_TEXT_TO_SPEECH_DEFAULT_MODEL_ID = "eleven_multilingual_v2";
+
 export const ElevenLabsTextToSpeechRequestSchema = z
   .object({
     text: z.string().min(1).max(ELEVENLABS_TEXT_TO_SPEECH_MAX_TEXT_LENGTH),
@@ -493,18 +501,26 @@ export const ElevenLabsTextToSpeechRequestSchema = z
   })
   .superRefine((req, ctx) => {
     const { model_id } = req;
-    if (model_id === undefined) return;
+    // An omitted model_id is not "no model": upstream serves the request with
+    // its default TTS model, so validate against that model's cap.
+    const isDefaulted = model_id === undefined;
+    const effectiveModelId = isDefaulted
+      ? ELEVENLABS_TEXT_TO_SPEECH_DEFAULT_MODEL_ID
+      : model_id;
     // An id admitted by the alias hatch has no entry in the cap table, so it
     // has no per-model cap — only the static .max() bound on `text` applies.
-    if (!(model_id in ELEVENLABS_TEXT_TO_SPEECH_MODEL_TEXT_LIMITS)) return;
+    if (!(effectiveModelId in ELEVENLABS_TEXT_TO_SPEECH_MODEL_TEXT_LIMITS))
+      return;
     const limit =
       ELEVENLABS_TEXT_TO_SPEECH_MODEL_TEXT_LIMITS[
-        model_id as keyof typeof ELEVENLABS_TEXT_TO_SPEECH_MODEL_TEXT_LIMITS
+        effectiveModelId as keyof typeof ELEVENLABS_TEXT_TO_SPEECH_MODEL_TEXT_LIMITS
       ];
     if (req.text.length > limit) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: `${req.model_id} accepts at most ${limit} characters of text; received ${req.text.length}.`,
+        message: isDefaulted
+          ? `This request omits model_id, so ElevenLabs will use ${effectiveModelId}, which accepts at most ${limit} characters of text; received ${req.text.length}. Set model_id explicitly to use a model with a larger cap.`
+          : `${req.model_id} accepts at most ${limit} characters of text; received ${req.text.length}.`,
         path: ["text"],
       });
     }

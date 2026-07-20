@@ -639,8 +639,12 @@ export const FalSeedreamV5LiteEditRequestSchema = z.object({
   prompt: z.string(),
   image_urls: z.array(z.string()).min(1).max(10),
   image_size: FalSeedreamV5LiteImageSizeSchema.optional(),
-  num_images: z.number().optional(),
-  max_images: z.number().optional(),
+  auto_4K: z.boolean().optional(),
+  // Fal's Seedream v5 Lite docs state no upper bound for these counts, so the
+  // bounds are adopted from the sibling Wan v2.7 schemas in this file
+  // (num_images .max(4), max_images .max(5)). Revisit if Fal documents them.
+  num_images: z.number().int().min(1).max(4).optional(),
+  max_images: z.number().int().min(1).max(5).optional(),
   sync_mode: z.boolean().optional(),
   enable_safety_checker: z.boolean().optional(),
 });
@@ -652,8 +656,11 @@ export const FalSeedreamV5LiteEditRequestSchema = z.object({
 export const FalSeedreamV5LiteTextToImageRequestSchema = z.object({
   prompt: z.string(),
   image_size: FalSeedreamV5LiteImageSizeSchema.optional(),
-  num_images: z.number().optional(),
-  max_images: z.number().optional(),
+  auto_4K: z.boolean().optional(),
+  // Bounds adopted from the sibling Wan v2.7 schemas in this file; see the
+  // note on FalSeedreamV5LiteEditRequestSchema above.
+  num_images: z.number().int().min(1).max(4).optional(),
+  max_images: z.number().int().min(1).max(5).optional(),
   sync_mode: z.boolean().optional(),
   enable_safety_checker: z.boolean().optional(),
 });

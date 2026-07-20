@@ -19,6 +19,11 @@ const GoogleFlowCaptchaFieldsSchema = {
 
 export const GoogleFlowNoRequestSchema = z.object({}).passthrough();
 
+// Required: email is the addressed resource, not an account hint. This schema
+// backs GET/DELETE /accounts/{email}, where email is the URL path segment, and
+// GET /characters, where the docs mark the email query parameter "required."
+// There is no single-account fallback on any of them — omitting email cannot
+// name a resource, so it is required rather than optional.
 export const GoogleFlowEmailRequestSchema = z
   .object({
     email: z.string().min(1),
@@ -88,6 +93,10 @@ export const GoogleFlowAssetUploadRequestSchema = z
   .object({
     body: z.custom<BodyInit>(),
     contentType: z.string().min(1),
+    // Optional: the docs define both POST /assets and POST /assets/{email}.
+    // With one account configured the API uses it automatically; with several,
+    // omitting email triggers load balancing. The factory branches on this to
+    // pick the path, so an absent email is a supported call, not an error.
     email: z.string().optional(),
   })
   .passthrough();
@@ -141,6 +150,10 @@ export const GoogleFlowVoicePresetSchema = z.enum([
 
 export const GoogleFlowVoicesCreateRequestSchema = z
   .object({
+    // Required: the docs state "email is required, the Google Flow account to
+    // create the voice on." A custom voice is persisted on one specific
+    // account, so unlike the generation endpoints there is nothing to load
+    // balance across and no default account to fall back to.
     email: z.string().min(1),
     voice: GoogleFlowVoicePresetSchema,
     displayName: z.string().min(1).max(200),
@@ -152,6 +165,12 @@ export const GoogleFlowVoicesCreateRequestSchema = z
 
 export const GoogleFlowVoicesListRequestSchema = z
   .object({
+    // Required: the docs mark the email query parameter "required. Account
+    // whose voices to list," and document a 400 "Parameter email is required"
+    // when it is missing. Listing is scoped to one account's voices, so there
+    // is no single-account fallback here even though POST /images and
+    // POST /videos have one. See the note in the WI-09 summary: AC-006 asked
+    // for this call to be optional, which upstream does not support.
     email: z.string().min(1),
     source: z.enum(["system", "user"]).optional(),
   })
@@ -176,6 +195,10 @@ const GoogleFlowVeoModelAliasSchema = z
 export const GoogleFlowImagesRequestSchema = z
   .object({
     prompt: z.string().min(1),
+    // Optional: email selects an account rather than naming a resource. One
+    // account configured means it is used automatically; several means the
+    // API load balances on image-generation stats; supplying reference_* also
+    // pins the account the references were uploaded to.
     email: z.string().optional(),
     // Docs enumerate nano-banana-2-lite | nano-banana-2 | nano-banana-pro,
     // but deprecated aliases (nano-banana, imagen-4) are still accepted, so
@@ -233,6 +256,10 @@ export const GoogleFlowImagesUpscaleRequestSchema = z
 export const GoogleFlowVideosRequestSchema = z
   .object({
     prompt: z.string().min(1),
+    // Optional: same account-selection rule as POST /images, load balanced on
+    // video-generation stats. The docs add that startImage, endImage,
+    // referenceImage_*, or referenceVideo_1 let email be omitted outright —
+    // the API reuses the account those references were uploaded to.
     email: z.string().optional(),
     model: z
       .enum([

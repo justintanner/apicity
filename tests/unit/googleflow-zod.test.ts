@@ -1,8 +1,14 @@
 import { describe, it, expect } from "vitest";
 
 import {
-  GoogleFlowVideosRequestSchema,
+  GoogleFlowAssetUploadRequestSchema,
+  GoogleFlowCharactersListRequestSchema,
+  GoogleFlowEmailRequestSchema,
+  GoogleFlowImagesRequestSchema,
   GoogleFlowVideosExtendRequestSchema,
+  GoogleFlowVideosRequestSchema,
+  GoogleFlowVoicesCreateRequestSchema,
+  GoogleFlowVoicesListRequestSchema,
 } from "../../packages/provider/googleflow/src/zod";
 
 // The model union on POST /videos and POST /videos/extend used to end in
@@ -139,6 +145,127 @@ describe("googleflow video model schemas", () => {
         duration,
       });
       expect(result.success).toBe(false);
+    });
+  });
+});
+
+const EMAIL = "user@example.com";
+
+describe("googleflow email requirement split", () => {
+  describe("required: email names the resource, not an account preference", () => {
+    it("rejects a missing email on the account path schema", () => {
+      const result = GoogleFlowEmailRequestSchema.safeParse({});
+      expect(result.success).toBe(false);
+    });
+
+    it("accepts a present email on the account path schema", () => {
+      const result = GoogleFlowEmailRequestSchema.safeParse({ email: EMAIL });
+      expect(result.success).toBe(true);
+    });
+
+    it("rejects an empty email on the account path schema", () => {
+      const result = GoogleFlowEmailRequestSchema.safeParse({ email: "" });
+      expect(result.success).toBe(false);
+    });
+
+    it("rejects a missing email when listing characters", () => {
+      const result = GoogleFlowCharactersListRequestSchema.safeParse({});
+      expect(result.success).toBe(false);
+    });
+
+    it("accepts a present email when listing characters", () => {
+      const result = GoogleFlowCharactersListRequestSchema.safeParse({
+        email: EMAIL,
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("rejects a missing email when creating a voice", () => {
+      const result = GoogleFlowVoicesCreateRequestSchema.safeParse({
+        voice: "Achernar",
+        displayName: "Cheerful Narrator",
+        dialog: "Hello, this is a test voice.",
+        voicePerformance: "Cheerful, energetic delivery",
+      });
+      expect(result.success).toBe(false);
+    });
+
+    it("accepts a present email when creating a voice", () => {
+      const result = GoogleFlowVoicesCreateRequestSchema.safeParse({
+        email: EMAIL,
+        voice: "Achernar",
+        displayName: "Cheerful Narrator",
+        dialog: "Hello, this is a test voice.",
+        voicePerformance: "Cheerful, energetic delivery",
+      });
+      expect(result.success).toBe(true);
+    });
+
+    // Upstream documents GET /voices email as "required" and returns
+    // 400 "Parameter email is required" when it is absent, so listing voices
+    // stays required even though the generation endpoints do not.
+    it("rejects a missing email when listing voices", () => {
+      const result = GoogleFlowVoicesListRequestSchema.safeParse({
+        source: "user",
+      });
+      expect(result.success).toBe(false);
+    });
+
+    it("accepts a present email when listing voices", () => {
+      const result = GoogleFlowVoicesListRequestSchema.safeParse({
+        email: EMAIL,
+        source: "user",
+      });
+      expect(result.success).toBe(true);
+    });
+  });
+
+  describe("optional: the API selects an account when email is omitted", () => {
+    it("accepts an asset upload without an email", () => {
+      const result = GoogleFlowAssetUploadRequestSchema.safeParse({
+        body: "raw-bytes",
+        contentType: "image/png",
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("accepts an asset upload with an email", () => {
+      const result = GoogleFlowAssetUploadRequestSchema.safeParse({
+        body: "raw-bytes",
+        contentType: "image/png",
+        email: EMAIL,
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("accepts an image generation without an email", () => {
+      const result = GoogleFlowImagesRequestSchema.safeParse({
+        prompt: "a cat",
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("accepts an image generation with an email", () => {
+      const result = GoogleFlowImagesRequestSchema.safeParse({
+        prompt: "a cat",
+        email: EMAIL,
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("accepts a video generation without an email", () => {
+      const result = GoogleFlowVideosRequestSchema.safeParse({
+        prompt: "a cat",
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("accepts a video generation with an email", () => {
+      const result = GoogleFlowVideosRequestSchema.safeParse({
+        prompt: "a cat",
+        email: EMAIL,
+      });
+      expect(result.success).toBe(true);
     });
   });
 });

@@ -1,9 +1,78 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 
+import {
+  FalNanoBanana2EditRequestSchema,
+  FalNanoBanana2LiteEditRequestSchema,
+  FalNanoBanana2LiteTextToImageRequestSchema,
+  FalNanoBanana2TextToImageRequestSchema,
+  FalNanoBananaEditRequestSchema,
+  FalNanoBananaProEditRequestSchema,
+  FalNanoBananaProTextToImageRequestSchema,
+  FalNanoBananaTextToImageRequestSchema,
+} from "@apicity/fal/zod";
 import {
   FalSeedreamV5LiteEditRequestSchema,
   FalSeedreamV5LiteTextToImageRequestSchema,
 } from "../../packages/provider/fal/src/zod";
+
+const PROMPT = "a cinematic drone shot over a canyon";
+const IMAGE_URL = "https://example.com/image.png";
+
+// The whole Nano Banana family, with the base payload each schema needs to
+// parse. `image_urls` records whether the schema carries the field at all, so
+// the cap assertions can skip the text-to-image variants that do not.
+const FAMILY = [
+  {
+    name: "FalNanoBanana2TextToImageRequestSchema",
+    schema: FalNanoBanana2TextToImageRequestSchema,
+    base: { prompt: PROMPT },
+    hasImageUrls: false,
+  },
+  {
+    name: "FalNanoBanana2EditRequestSchema",
+    schema: FalNanoBanana2EditRequestSchema,
+    base: { prompt: PROMPT, image_urls: [IMAGE_URL] },
+    hasImageUrls: true,
+  },
+  {
+    name: "FalNanoBanana2LiteTextToImageRequestSchema",
+    schema: FalNanoBanana2LiteTextToImageRequestSchema,
+    base: { prompt: PROMPT },
+    hasImageUrls: false,
+  },
+  {
+    name: "FalNanoBanana2LiteEditRequestSchema",
+    schema: FalNanoBanana2LiteEditRequestSchema,
+    base: { prompt: PROMPT },
+    hasImageUrls: true,
+  },
+  {
+    name: "FalNanoBananaTextToImageRequestSchema",
+    schema: FalNanoBananaTextToImageRequestSchema,
+    base: { prompt: PROMPT },
+    hasImageUrls: false,
+  },
+  {
+    name: "FalNanoBananaEditRequestSchema",
+    schema: FalNanoBananaEditRequestSchema,
+    base: { prompt: PROMPT, image_urls: [IMAGE_URL] },
+    hasImageUrls: true,
+  },
+  {
+    name: "FalNanoBananaProTextToImageRequestSchema",
+    schema: FalNanoBananaProTextToImageRequestSchema,
+    base: { prompt: PROMPT },
+    hasImageUrls: false,
+  },
+  {
+    name: "FalNanoBananaProEditRequestSchema",
+    schema: FalNanoBananaProEditRequestSchema,
+    base: { prompt: PROMPT, image_urls: [IMAGE_URL] },
+    hasImageUrls: true,
+  },
+] as const;
+
+const WITH_IMAGE_URLS = FAMILY.filter((entry) => entry.hasImageUrls);
 
 describe("Fal Zod schema validation", () => {
   describe("Seedream v5 Lite text-to-image schema", () => {
@@ -177,6 +246,82 @@ describe("Fal Zod schema validation", () => {
       expect(
         result.error?.issues.some((i) => i.path.includes("max_images"))
       ).toBe(true);
+    });
+  });
+});
+
+describe("fal Nano Banana family request schemas", () => {
+  describe.each(FAMILY)("$name num_images", ({ schema, base }) => {
+    it("rejects a non-integer count", () => {
+      const result = schema.safeParse({ ...base, num_images: 2.5 });
+      expect(result.success).toBe(false);
+    });
+
+    it("accepts an in-range integer count", () => {
+      const result = schema.safeParse({ ...base, num_images: 2 });
+      expect(result.success).toBe(true);
+    });
+
+    it("accepts the boundary counts 1 and 4", () => {
+      expect(schema.safeParse({ ...base, num_images: 1 }).success).toBe(true);
+      expect(schema.safeParse({ ...base, num_images: 4 }).success).toBe(true);
+    });
+
+    it("rejects counts outside 1..4", () => {
+      expect(schema.safeParse({ ...base, num_images: 0 }).success).toBe(false);
+      expect(schema.safeParse({ ...base, num_images: 5 }).success).toBe(false);
+    });
+  });
+
+  describe.each(FAMILY)("$name seed", ({ schema, base }) => {
+    it("rejects a non-integer seed", () => {
+      const result = schema.safeParse({ ...base, seed: 2.5 });
+      expect(result.success).toBe(false);
+    });
+
+    it("accepts an integer seed", () => {
+      const result = schema.safeParse({ ...base, seed: 2 });
+      expect(result.success).toBe(true);
+    });
+  });
+
+  describe.each(WITH_IMAGE_URLS)("$name image_urls", ({ schema, base }) => {
+    it("accepts an at-cap array of 9 URLs", () => {
+      const result = schema.safeParse({
+        ...base,
+        image_urls: Array(9).fill(IMAGE_URL),
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("rejects an over-cap array of 10 URLs", () => {
+      const result = schema.safeParse({
+        ...base,
+        image_urls: Array(10).fill(IMAGE_URL),
+      });
+      expect(result.success).toBe(false);
+    });
+  });
+
+  // Review finding S1: these two `seed` fields were absent from the plan's line
+  // list, so AC-013's "across the family" claim was unmet without them. Pinned
+  // separately from the table above so a regression names the right schema.
+  describe("seed sites added by review finding S1", () => {
+    it("rejects a non-integer seed on Nano Banana text-to-image", () => {
+      const result = FalNanoBananaTextToImageRequestSchema.safeParse({
+        prompt: PROMPT,
+        seed: 1.5,
+      });
+      expect(result.success).toBe(false);
+    });
+
+    it("rejects a non-integer seed on Nano Banana edit", () => {
+      const result = FalNanoBananaEditRequestSchema.safeParse({
+        prompt: PROMPT,
+        image_urls: [IMAGE_URL],
+        seed: 1.5,
+      });
+      expect(result.success).toBe(false);
     });
   });
 });

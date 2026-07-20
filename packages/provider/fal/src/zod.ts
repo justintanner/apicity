@@ -273,8 +273,8 @@ export const FalSeedance2p0FastReferenceToVideoRequestSchema = z.object({
 
 export const FalNanoBanana2TextToImageRequestSchema = z.object({
   prompt: z.string(),
-  num_images: z.number().optional(),
-  seed: z.number().optional(),
+  num_images: z.number().int().min(1).max(4).optional(),
+  seed: z.number().int().optional(),
   aspect_ratio: z
     .enum([
       "auto",
@@ -309,9 +309,9 @@ export const FalNanoBanana2TextToImageRequestSchema = z.object({
 
 export const FalNanoBanana2EditRequestSchema = z.object({
   prompt: z.string(),
-  image_urls: z.array(z.string()),
-  num_images: z.number().optional(),
-  seed: z.number().optional(),
+  image_urls: z.array(z.string()).max(9),
+  num_images: z.number().int().min(1).max(4).optional(),
+  seed: z.number().int().optional(),
   aspect_ratio: z
     .enum([
       "auto",
@@ -394,7 +394,7 @@ export const FalNanoBanana2LiteTextToImageRequestSchema = z.object({
 
 export const FalNanoBanana2LiteEditRequestSchema =
   FalNanoBanana2LiteTextToImageRequestSchema.extend({
-    image_urls: z.array(z.string()).optional(),
+    image_urls: z.array(z.string()).max(9).optional(),
   });
 
 // ---------------------------------------------------------------------------
@@ -420,7 +420,7 @@ export const FalNanoBananaTextToImageRequestSchema = z.object({
     .optional(),
   output_format: z.enum(["jpeg", "png", "webp"]).optional(),
   safety_tolerance: z.enum(["1", "2", "3", "4", "5", "6"]).optional(),
-  seed: z.number().optional(),
+  seed: z.number().int().optional(),
   sync_mode: z.boolean().optional(),
   limit_generations: z.boolean().optional(),
 });
@@ -431,7 +431,7 @@ export const FalNanoBananaTextToImageRequestSchema = z.object({
 
 export const FalNanoBananaEditRequestSchema = z.object({
   prompt: z.string().min(3).max(50000),
-  image_urls: z.array(z.string()),
+  image_urls: z.array(z.string()).max(9),
   num_images: z.number().int().min(1).max(4).optional(),
   aspect_ratio: z
     .enum([
@@ -450,7 +450,7 @@ export const FalNanoBananaEditRequestSchema = z.object({
     .optional(),
   output_format: z.enum(["jpeg", "png", "webp"]).optional(),
   safety_tolerance: z.enum(["1", "2", "3", "4", "5", "6"]).optional(),
-  seed: z.number().optional(),
+  seed: z.number().int().optional(),
   sync_mode: z.boolean().optional(),
   limit_generations: z.boolean().optional(),
 });
@@ -556,8 +556,8 @@ export const FalQwenImageEditRequestSchema = z.object({
 
 export const FalNanoBananaProTextToImageRequestSchema = z.object({
   prompt: z.string(),
-  num_images: z.number().optional(),
-  seed: z.number().optional(),
+  num_images: z.number().int().min(1).max(4).optional(),
+  seed: z.number().int().optional(),
   aspect_ratio: z
     .enum([
       "auto",
@@ -587,9 +587,9 @@ export const FalNanoBananaProTextToImageRequestSchema = z.object({
 
 export const FalNanoBananaProEditRequestSchema = z.object({
   prompt: z.string(),
-  image_urls: z.array(z.string()),
-  num_images: z.number().optional(),
-  seed: z.number().optional(),
+  image_urls: z.array(z.string()).max(9),
+  num_images: z.number().int().min(1).max(4).optional(),
+  seed: z.number().int().optional(),
   aspect_ratio: z
     .enum([
       "auto",

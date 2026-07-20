@@ -37,7 +37,7 @@ export interface TokenPricing {
   source: RateSource;
 }
 
-// Per-unit providers: kie, elevenlabs, fal.
+// Per-unit providers: kie, elevenlabs, fal, googleflow.
 //
 // `select` is an ordered list of named pickers that read the upstream payload
 // and return string values. The variant key is the values joined by "|",

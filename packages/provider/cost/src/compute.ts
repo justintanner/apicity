@@ -68,13 +68,13 @@ function applyTokenRate(
   };
 }
 
-// Generic dispatcher for per-unit providers (kie, elevenlabs, fal). Reads the
-// pricing key from the explicit `endpoint` discriminator first (used by
-// providers like Suno whose pricing is keyed by endpoint, not model
-// version), then falls back to payload.model / payload.model_id. Looks up
-// the entry, runs `units(payload)` and the ordered selectors, and returns
-// the matching rate. All payload-shape knowledge lives in the model
-// entry's closures.
+// Generic dispatcher for per-unit providers (kie, elevenlabs, fal,
+// googleflow). Reads the pricing key from the explicit `endpoint`
+// discriminator first (used by providers like Suno whose pricing is keyed by
+// endpoint, not model version), then falls back to payload.model /
+// payload.model_id. Looks up the entry, runs `units(payload)` and the ordered
+// selectors, and returns the matching rate. All payload-shape knowledge lives
+// in the model entry's closures.
 function evaluatePerUnit(
   provider: PricedProviderId,
   payload: Record<string, unknown>,
@@ -164,6 +164,8 @@ export function computeEstimate(req: EstimateRequest): CostEstimate {
       return evaluatePerUnit("elevenlabs", req.payload, req.endpoint);
     case "fal":
       return evaluatePerUnit("fal", req.payload, req.endpoint);
+    case "googleflow":
+      return evaluatePerUnit("googleflow", req.payload, req.endpoint);
     case "free-media-upload":
       return {
         usd: 0,

@@ -17,6 +17,7 @@ import { anthropic } from "./anthropic";
 import { elevenlabs } from "./elevenlabs";
 import { fal } from "./fal";
 import { fireworks } from "./fireworks";
+import { googleflow } from "./googleflow";
 import { kie } from "./kie";
 import { kimicoding } from "./kimicoding";
 import { openai } from "./openai";
@@ -25,15 +26,16 @@ import { xai } from "./xai";
 export const PRICING_AS_OF = "2026-04-30";
 
 export const PRICING = {
-  openai,
-  anthropic,
-  xai,
-  kimicoding,
-  fireworks,
   alibaba,
+  anthropic,
   elevenlabs,
-  kie,
   fal,
+  fireworks,
+  googleflow,
+  kie,
+  kimicoding,
+  openai,
+  xai,
 } as const;
 
 export type PricedProviderId = keyof typeof PRICING;

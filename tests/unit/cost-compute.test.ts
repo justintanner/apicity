@@ -543,6 +543,85 @@ describe("computeEstimate", () => {
     });
   });
 
+  describe("googleflow", () => {
+    it("estimates a Veo request as a non-zero USD amount", () => {
+      const req = {
+        provider: "googleflow" as const,
+        payload: { model: "veo-3.1-fast", prompt: "a cat", duration: 8 },
+      };
+      const result = computeEstimate(req);
+      expect(result.usd).toBe(0.4); // 20 credits * $0.02
+      expect(result.source).toBe("per-unit-table");
+      expect(result.breakdown).toEqual({
+        units: 1,
+        unit: "generations",
+        perUnitUsd: 0.4,
+      });
+      expect(result.rateAsOf).toBe("2026-07-20");
+      expect(result.warnings).toEqual([]);
+    });
+
+    it("prices each Veo tier flat, regardless of duration", () => {
+      const at = (model: string, duration: number) =>
+        computeEstimate({
+          provider: "googleflow" as const,
+          payload: { model, prompt: "a cat", duration },
+        }).usd;
+      expect(at("veo-3.1-quality", 8)).toBe(2);
+      expect(at("veo-3.1-lite", 4)).toBe(0.2);
+      expect(at("veo-3.1-lite", 8)).toBe(0.2);
+      // Ultra 20x only, and free of credits there — $0 is the real rate.
+      expect(at("veo-3.1-lite-low-priority", 8)).toBe(0);
+    });
+
+    it("multiplies by count, which is the number of variations", () => {
+      const result = computeEstimate({
+        provider: "googleflow" as const,
+        payload: { model: "veo-3.1-fast", prompt: "a cat", count: 3 },
+      });
+      expect(result.usd).toBeCloseTo(1.2, 10); // 3 * 20 credits * $0.02
+      expect(result.breakdown.units).toBe(3);
+    });
+
+    it("tiers omni-flash by duration and defaults to 8s", () => {
+      const at = (payload: Record<string, unknown>) =>
+        computeEstimate({
+          provider: "googleflow" as const,
+          payload: { model: "omni-flash", prompt: "a cat", ...payload },
+        }).usd;
+      expect(at({ duration: 4 })).toBe(0.3);
+      expect(at({ duration: 6 })).toBe(0.4);
+      expect(at({ duration: 8 })).toBe(0.5);
+      expect(at({ duration: 10 })).toBe(0.6);
+      expect(at({})).toBe(0.5); // upstream default duration is 8
+    });
+
+    it("prices omni-flash video-to-video flat, overriding duration", () => {
+      const result = computeEstimate({
+        provider: "googleflow" as const,
+        payload: {
+          model: "omni-flash",
+          prompt: "a cat",
+          duration: 4,
+          referenceVideo_1: "https://example.com/in.mp4",
+        },
+      });
+      expect(result.usd).toBe(0.8); // 40 credits * $0.02
+      expect(result.warnings).toEqual([]);
+    });
+
+    it("warns for a model outside the registered set", () => {
+      const result = computeEstimate({
+        provider: "googleflow" as const,
+        payload: { model: "veo-typo", prompt: "a cat" },
+      });
+      expect(result.usd).toBe(0);
+      expect(result.warnings).toContain(
+        "model 'veo-typo' not found in pricing table for provider 'googleflow'"
+      );
+    });
+  });
+
   describe("free-media-upload", () => {
     it("returns zero cost for free-media-upload", () => {
       const req = {

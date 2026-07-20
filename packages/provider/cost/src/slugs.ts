@@ -189,6 +189,16 @@ export const MODEL_SLUGS = {
     "fal-ai/nano-banana-pro": "nbp",
     "fal-ai/bytedance/seedream/v5/lite/text-to-image": "sd5",
   },
+
+  googleflow: {
+    "veo-3.1-quality": "veo3p1q",
+    "veo-3.1-fast": "veo3p1f",
+    "veo-3.1-lite": "veo3p1l",
+    "veo-3.1-lite-low-priority": "veo3p1llp",
+    // Same underlying model as kie's "gemini-omni-video" — slug intentionally
+    // matches, as with alibaba's qwen/wan image entries.
+    "omni-flash": "geminiomni",
+  },
 } as const;
 
 export type SlugProviderId = keyof typeof MODEL_SLUGS;
@@ -373,6 +383,14 @@ export const MODEL_DISPLAY = {
     "fal-ai/nano-banana-2": "Nano Banana 2",
     "fal-ai/nano-banana-pro": "Nano Banana Pro",
     "fal-ai/bytedance/seedream/v5/lite/text-to-image": "Seedream 5",
+  },
+
+  googleflow: {
+    "veo-3.1-quality": "Veo 3.1 Quality",
+    "veo-3.1-fast": "Veo 3.1 Fast",
+    "veo-3.1-lite": "Veo 3.1 Lite",
+    "veo-3.1-lite-low-priority": "Veo 3.1 Lite Low Priority",
+    "omni-flash": "Gemini Omni Flash",
   },
 } as const;
 

@@ -351,3 +351,47 @@ describe("modelDisplay", () => {
     );
   });
 });
+
+describe("googleflow slugs", () => {
+  const models = [
+    "veo-3.1-quality",
+    "veo-3.1-fast",
+    "veo-3.1-lite",
+    "veo-3.1-lite-low-priority",
+    "omni-flash",
+  ] as const;
+
+  it("resolves a slug for every registered Google Flow model", () => {
+    for (const model of models) {
+      expect(modelSlug("googleflow", model), model).toBeTruthy();
+    }
+    expect(modelSlug("googleflow", "veo-3.1-quality")).toBe("veo3p1q");
+    expect(modelSlug("googleflow", "veo-3.1-fast")).toBe("veo3p1f");
+    expect(modelSlug("googleflow", "veo-3.1-lite")).toBe("veo3p1l");
+    expect(modelSlug("googleflow", "veo-3.1-lite-low-priority")).toBe(
+      "veo3p1llp"
+    );
+  });
+
+  it("shares the gemini omni slug with kie's gemini-omni-video", () => {
+    expect(modelSlug("googleflow", "omni-flash")).toBe(
+      modelSlug("kie", "gemini-omni-video")
+    );
+  });
+
+  it("resolves a display name for every registered Google Flow model", () => {
+    for (const model of models) {
+      expect(modelDisplay("googleflow", model), model).toBeTruthy();
+    }
+    expect(modelDisplay("googleflow", "veo-3.1-quality")).toBe(
+      "Veo 3.1 Quality"
+    );
+    expect(modelDisplay("googleflow", "omni-flash")).toBe("Gemini Omni Flash");
+  });
+
+  it("keys MODEL_SLUGS.googleflow exactly to MODEL_DISPLAY.googleflow", () => {
+    expect(Object.keys(MODEL_DISPLAY.googleflow)).toEqual(
+      Object.keys(MODEL_SLUGS.googleflow)
+    );
+  });
+});

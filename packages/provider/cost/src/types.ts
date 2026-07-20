@@ -52,7 +52,8 @@ export type EstimateRequest =
         | "alibaba"
         | "kie"
         | "elevenlabs"
-        | "fal";
+        | "fal"
+        | "googleflow";
       payload: Record<string, unknown>;
       endpoint?: string;
     }

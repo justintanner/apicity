@@ -9,6 +9,7 @@ import {
   PRICING,
   PRICING_AS_OF,
 } from "../../packages/provider/cost/src/pricing/index";
+import { MODEL_SLUGS } from "../../packages/provider/cost/src/slugs";
 
 describe("pricing helpers", () => {
   describe("asString", () => {
@@ -285,6 +286,21 @@ describe("PRICING data", () => {
           ).toBeGreaterThanOrEqual(0);
         }
       }
+    }
+  });
+
+  it("has a googleflow rate for every registered googleflow slug", () => {
+    for (const model of Object.keys(MODEL_SLUGS.googleflow)) {
+      expect(PRICING.googleflow[model], model).toBeDefined();
+    }
+  });
+
+  it("stamps googleflow rates with their own asOf, ahead of the global", () => {
+    for (const [model, entry] of Object.entries(PRICING.googleflow)) {
+      expect(entry.source.asOf, model).toBe("2026-07-20");
+      expect(Date.parse(entry.source.asOf as string), model).toBeGreaterThan(
+        Date.parse(PRICING_AS_OF)
+      );
     }
   });
 

@@ -68,7 +68,7 @@ function applyTokenRate(
   };
 }
 
-// Generic dispatcher for per-unit providers (kie, elevenlabs). Reads the
+// Generic dispatcher for per-unit providers (kie, elevenlabs, fal). Reads the
 // pricing key from the explicit `endpoint` discriminator first (used by
 // providers like Suno whose pricing is keyed by endpoint, not model
 // version), then falls back to payload.model / payload.model_id. Looks up
@@ -162,6 +162,8 @@ export function computeEstimate(req: EstimateRequest): CostEstimate {
       return evaluatePerUnit("kie", req.payload, req.endpoint);
     case "elevenlabs":
       return evaluatePerUnit("elevenlabs", req.payload, req.endpoint);
+    case "fal":
+      return evaluatePerUnit("fal", req.payload, req.endpoint);
     case "free-media-upload":
       return {
         usd: 0,
@@ -171,5 +173,14 @@ export function computeEstimate(req: EstimateRequest): CostEstimate {
         rateAsOf: PRICING_AS_OF,
         warnings: [],
       };
+    default: {
+      // Exhaustiveness guard. Widening EstimateRequest without adding a case
+      // above fails to compile *here*, naming the unhandled provider, rather
+      // than as a TS2366 pointing at this function's return type.
+      const unhandled: never = req;
+      throw new Error(
+        `computeEstimate: unhandled request ${JSON.stringify(unhandled)}`
+      );
+    }
   }
 }

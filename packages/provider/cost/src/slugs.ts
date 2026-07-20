@@ -175,6 +175,20 @@ export const MODEL_SLUGS = {
     eleven_multilingual_v2: "elml2",
     eleven_multilingual_v3: "elml3",
   },
+
+  // Keys are fal endpoint ids, matching PRICING.fal. Nano Banana and
+  // Seedream 5 are the same underlying models kie also resells, so their
+  // slugs intentionally match kie's.
+  fal: {
+    "fal-ai/flux/dev": "fluxd",
+    "fal-ai/flux/schnell": "fluxs",
+    "fal-ai/qwen-image": "qwenimg",
+    "fal-ai/nano-banana": "nb",
+    "fal-ai/nano-banana/edit": "nb",
+    "fal-ai/nano-banana-2": "nb2",
+    "fal-ai/nano-banana-pro": "nbp",
+    "fal-ai/bytedance/seedream/v5/lite/text-to-image": "sd5",
+  },
 } as const;
 
 export type SlugProviderId = keyof typeof MODEL_SLUGS;
@@ -348,6 +362,17 @@ export const MODEL_DISPLAY = {
     eleven_turbo_v2_5: "Eleven Turbo 2.5",
     eleven_multilingual_v2: "Eleven Multilingual 2",
     eleven_multilingual_v3: "Eleven Multilingual 3",
+  },
+
+  fal: {
+    "fal-ai/flux/dev": "FLUX.1 Dev",
+    "fal-ai/flux/schnell": "FLUX.1 Schnell",
+    "fal-ai/qwen-image": "Qwen Image",
+    "fal-ai/nano-banana": "Nano Banana",
+    "fal-ai/nano-banana/edit": "Nano Banana Edit",
+    "fal-ai/nano-banana-2": "Nano Banana 2",
+    "fal-ai/nano-banana-pro": "Nano Banana Pro",
+    "fal-ai/bytedance/seedream/v5/lite/text-to-image": "Seedream 5",
   },
 } as const;
 

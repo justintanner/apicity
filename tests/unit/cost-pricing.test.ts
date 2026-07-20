@@ -222,6 +222,41 @@ describe("PRICING data", () => {
     });
   });
 
+  it("fal has flat per-image pricing", () => {
+    expect(PRICING.fal["fal-ai/nano-banana"]).toMatchObject({
+      kind: "perUnit",
+      unit: "images",
+      rates: { "": 0.039 },
+    });
+  });
+
+  it("fal has resolution-tiered per-image pricing", () => {
+    expect(PRICING.fal["fal-ai/nano-banana-pro"]).toMatchObject({
+      kind: "perUnit",
+      unit: "images",
+      rates: { "1K": 0.15, "2K": 0.15, "4K": 0.3 },
+    });
+  });
+
+  it("fal has per-megapixel pricing for area-billed models", () => {
+    expect(PRICING.fal["fal-ai/flux/dev"]).toMatchObject({
+      kind: "perUnit",
+      unit: "megapixels",
+      rates: { "": 0.025 },
+    });
+  });
+
+  it("every fal rate carries a source url and an asOf stamp", () => {
+    for (const [model, entry] of Object.entries(PRICING.fal)) {
+      expect(entry.source.url, `fal/${model} url`).toMatch(
+        /^https:\/\/fal\.ai\/models\//
+      );
+      expect(entry.source.asOf, `fal/${model} asOf`).toMatch(
+        /^\d{4}-\d{2}-\d{2}$/
+      );
+    }
+  });
+
   it("every pricing entry has a source", () => {
     for (const [provider, models] of Object.entries(PRICING)) {
       for (const [model, entry] of Object.entries(models)) {

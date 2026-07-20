@@ -6,7 +6,8 @@ export type CostUnit =
   | "seconds"
   | "images"
   | "songs"
-  | "generations";
+  | "generations"
+  | "megapixels";
 
 export interface CostBreakdown {
   inputTokens?: number;
@@ -35,6 +36,11 @@ export interface CostEstimate {
 // where the model field is the audio model version V3_5/.../V5_5 but
 // pricing varies per endpoint). When set, it takes precedence over
 // payload.model in the pricing lookup. Ignored for token-billed providers.
+//
+// For `fal` it is optional in the type but required in practice: fal payloads
+// carry no model field at all, so the endpoint id ("fal-ai/nano-banana") is the
+// only pricing key. Omitting it is not a compile error — it resolves to a zero
+// estimate carrying the warning "fal: endpoint or payload.model is required".
 export type EstimateRequest =
   | {
       provider:
@@ -45,7 +51,8 @@ export type EstimateRequest =
         | "fireworks"
         | "alibaba"
         | "kie"
-        | "elevenlabs";
+        | "elevenlabs"
+        | "fal";
       payload: Record<string, unknown>;
       endpoint?: string;
     }

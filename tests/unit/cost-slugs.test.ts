@@ -5,6 +5,7 @@ import {
   MODEL_SLUGS,
   MODEL_DISPLAY,
 } from "../../packages/provider/cost/src/slugs";
+import { PRICING } from "../../packages/provider/cost/src/pricing/index";
 
 describe("MODEL_SLUGS", () => {
   it("has all expected providers", () => {
@@ -18,7 +19,35 @@ describe("MODEL_SLUGS", () => {
         "alibaba",
         "fireworks",
         "elevenlabs",
+        "fal",
       ])
+    );
+  });
+
+  it("has fal models keyed by endpoint id", () => {
+    expect(MODEL_SLUGS.fal).toMatchObject({
+      "fal-ai/flux/dev": "fluxd",
+      "fal-ai/flux/schnell": "fluxs",
+      "fal-ai/qwen-image": "qwenimg",
+      "fal-ai/nano-banana": "nb",
+      "fal-ai/nano-banana-2": "nb2",
+      "fal-ai/nano-banana-pro": "nbp",
+      "fal-ai/bytedance/seedream/v5/lite/text-to-image": "sd5",
+    });
+  });
+
+  it("shares slugs with kie for models both providers resell", () => {
+    expect(MODEL_SLUGS.fal["fal-ai/nano-banana"]).toBe(
+      MODEL_SLUGS.kie["nano-banana"]
+    );
+    expect(
+      MODEL_SLUGS.fal["fal-ai/bytedance/seedream/v5/lite/text-to-image"]
+    ).toBe(MODEL_SLUGS.kie["seedream/5-lite-text-to-image"]);
+  });
+
+  it("registers a slug for every fal pricing entry", () => {
+    expect(Object.keys(MODEL_SLUGS.fal).sort()).toEqual(
+      Object.keys(PRICING.fal).sort()
     );
   });
 
@@ -240,6 +269,16 @@ describe("MODEL_DISPLAY", () => {
       eleven_flash_v2_5: "Eleven Flash 2.5",
       eleven_turbo_v2_5: "Eleven Turbo 2.5",
       eleven_multilingual_v2: "Eleven Multilingual 2",
+    });
+  });
+
+  it("has fal display names", () => {
+    expect(MODEL_DISPLAY.fal).toMatchObject({
+      "fal-ai/flux/dev": "FLUX.1 Dev",
+      "fal-ai/nano-banana": "Nano Banana",
+      "fal-ai/nano-banana/edit": "Nano Banana Edit",
+      "fal-ai/nano-banana-pro": "Nano Banana Pro",
+      "fal-ai/bytedance/seedream/v5/lite/text-to-image": "Seedream 5",
     });
   });
 

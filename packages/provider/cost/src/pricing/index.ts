@@ -6,12 +6,16 @@
 // affected entry's `source.url`, update the rate, set `source.asOf` if
 // you want a per-entry stamp; otherwise the global PRICING_AS_OF applies.
 //
-// FAL is intentionally absent: it has no bundled rates because the
-// dispatcher in compute.ts asks the upstream pricing endpoint at runtime.
+// fal rates are bundled here like every other provider. @apicity/fal does
+// expose upstream pricing endpoints (`fal.v1.models.pricing()` and
+// `fal.v1.models.pricing.estimate()`), but computeEstimate never calls them —
+// it is a dependency-free local lookup with no network access at all, so fal
+// resolves against the bundled table in pricing/fal.ts keyed by endpoint id.
 
 import { alibaba } from "./alibaba";
 import { anthropic } from "./anthropic";
 import { elevenlabs } from "./elevenlabs";
+import { fal } from "./fal";
 import { fireworks } from "./fireworks";
 import { kie } from "./kie";
 import { kimicoding } from "./kimicoding";
@@ -29,6 +33,7 @@ export const PRICING = {
   alibaba,
   elevenlabs,
   kie,
+  fal,
 } as const;
 
 export type PricedProviderId = keyof typeof PRICING;

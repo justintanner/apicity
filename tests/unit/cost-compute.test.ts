@@ -383,6 +383,128 @@ describe("computeEstimate", () => {
       );
     });
 
+    it("estimates fal nano-banana per image via the endpoint key", () => {
+      const result = computeEstimate({
+        provider: "fal" as const,
+        endpoint: "fal-ai/nano-banana",
+        payload: { prompt: "a cat" },
+      });
+      expect(result.usd).toBe(0.039);
+      expect(result.currency).toBe("USD");
+      expect(result.source).toBe("per-unit-table");
+      expect(result.breakdown).toEqual({
+        units: 1,
+        unit: "images",
+        perUnitUsd: 0.039,
+      });
+      expect(result.rateAsOf).toBe("2026-07-20");
+      expect(result.warnings).toEqual([]);
+    });
+
+    it("scales fal per-image cost by num_images", () => {
+      const result = computeEstimate({
+        provider: "fal" as const,
+        endpoint: "fal-ai/nano-banana",
+        payload: { prompt: "a cat", num_images: 4 },
+      });
+      expect(result.usd).toBeCloseTo(0.156, 10); // 4 * 0.039
+      expect(result.breakdown.units).toBe(4);
+    });
+
+    it("selects the fal nano-banana-2 rate by resolution", () => {
+      const at = (resolution?: string) =>
+        computeEstimate({
+          provider: "fal" as const,
+          endpoint: "fal-ai/nano-banana-2",
+          payload: resolution ? { resolution } : {},
+        }).usd;
+      expect(at()).toBe(0.08); // defaults to 1K
+      expect(at("0.5K")).toBe(0.06);
+      expect(at("2K")).toBe(0.12);
+      expect(at("4K")).toBe(0.16);
+    });
+
+    it("fails fal when no rate matches the resolution variant", () => {
+      const result = computeEstimate({
+        provider: "fal" as const,
+        endpoint: "fal-ai/nano-banana-2",
+        payload: { resolution: "8K" },
+      });
+      expect(result.usd).toBe(0);
+      expect(result.warnings).toContain(
+        "fal 'fal-ai/nano-banana-2': no rate for variant '8K' (selectors: resolution)"
+      );
+    });
+
+    it("estimates fal flux/dev by megapixels from an explicit image_size", () => {
+      const result = computeEstimate({
+        provider: "fal" as const,
+        endpoint: "fal-ai/flux/dev",
+        payload: { image_size: { width: 2048, height: 2048 } },
+      });
+      // 2048*2048 = 4.19 MP, rounded up to 5 whole megapixels
+      expect(result.usd).toBeCloseTo(0.125, 10);
+      expect(result.breakdown).toEqual({
+        units: 5,
+        unit: "megapixels",
+        perUnitUsd: 0.025,
+      });
+    });
+
+    it("resolves fal image_size presets and assumes 1 MP when omitted", () => {
+      const preset = computeEstimate({
+        provider: "fal" as const,
+        endpoint: "fal-ai/flux/schnell",
+        payload: { image_size: "landscape_16_9", num_images: 2 },
+      });
+      // 1024*576 = 0.59 MP → 1 MP per image, 2 images
+      expect(preset.breakdown.units).toBe(2);
+      expect(preset.usd).toBeCloseTo(0.006, 10);
+
+      const omitted = computeEstimate({
+        provider: "fal" as const,
+        endpoint: "fal-ai/flux/schnell",
+        payload: {},
+      });
+      expect(omitted.breakdown.units).toBe(1);
+      expect(omitted.usd).toBe(0.003);
+    });
+
+    it("fails fal when image_size is present but unrecognized", () => {
+      const result = computeEstimate({
+        provider: "fal" as const,
+        endpoint: "fal-ai/flux/dev",
+        payload: { image_size: "ultrawide_42_9" },
+      });
+      expect(result.usd).toBe(0);
+      expect(result.warnings).toContain(
+        "fal 'fal-ai/flux/dev': could not derive units from payload (check duration / text)"
+      );
+    });
+
+    it("fails fal for an endpoint with no bundled rate", () => {
+      const result = computeEstimate({
+        provider: "fal" as const,
+        endpoint: "fal-ai/not-a-real-model",
+        payload: {},
+      });
+      expect(result.usd).toBe(0);
+      expect(result.warnings).toContain(
+        "model 'fal-ai/not-a-real-model' not found in pricing table for provider 'fal'"
+      );
+    });
+
+    it("fails fal when the endpoint discriminator is missing", () => {
+      const result = computeEstimate({
+        provider: "fal" as const,
+        payload: { prompt: "a cat" },
+      });
+      expect(result.usd).toBe(0);
+      expect(result.warnings).toContain(
+        "fal: endpoint or payload.model is required"
+      );
+    });
+
     it("estimates elevenlabs with model_id field", () => {
       const req = {
         provider: "elevenlabs" as const,

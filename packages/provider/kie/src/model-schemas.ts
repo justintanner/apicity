@@ -429,7 +429,7 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         type: "string",
         required: true,
         enum: ["6", "10"],
-        description: "Extension duration in seconds (default '6')",
+        description: "Extension duration in seconds",
       },
     },
   },

@@ -109,6 +109,33 @@ function bodyFromRequest<TReq extends Record<string, unknown>>(
   return Object.keys(body).length > 0 ? body : undefined;
 }
 
+/**
+ * Percent-encode one path identifier.
+ *
+ * `encodeURIComponent` escapes every character outside its fixed unreserved
+ * set, including `:` and `@`. Both are legal unescaped inside a path segment
+ * (RFC 3986 section 3.3 `pchar`), and useapi.net carries them as significant
+ * bytes: the documented `GET /jobs/{jobId}` example is
+ * `/jobs/j1731859234567v-u12345-email:jo***@gmail.com-bot:google-flow`.
+ * Blanket-escaping turns `job:123@account` into `job%3A123%40account`.
+ *
+ * Encoding as a component first still escapes what genuinely breaks path
+ * parsing — `/`, `?`, `#`, `%`, whitespace, control characters, non-ASCII —
+ * so only `:` and `@` are restored afterwards.
+ *
+ * The `{email}` routes are the one place the docs point the other way: their
+ * curl example is `/accounts/john%40gmail.com`, and the parameter is described
+ * as "URL-encoded if necessary". Both forms are expected to resolve to the
+ * same identifier, because the documented `{jobId}` example above puts a
+ * literal `@` in the path and so the same routing layer must already accept
+ * one undecoded. The policy is applied uniformly at all nine sites per AC-005
+ * rather than split per route; if an `{email}` route is ever observed to 404
+ * on a literal `@`, that assumption — not the helper — is what to revisit.
+ */
+export function encodePathSegment(value: string): string {
+  return encodeURIComponent(value).replace(/%3A/g, ":").replace(/%40/g, "@");
+}
+
 function queryFromRequest<TReq extends Record<string, unknown>>(
   req: TReq
 ): string {
@@ -299,7 +326,7 @@ export function createGoogleFlow(opts: GoogleFlowOptions): GoogleFlowProvider {
             req
           );
           const path = parsed.email
-            ? `/assets/${encodeURIComponent(parsed.email)}`
+            ? `/assets/${encodePathSegment(parsed.email)}`
             : "/assets";
           return makeFlowRequest<GoogleFlowResponse>(
             "POST",
@@ -402,7 +429,7 @@ export function createGoogleFlow(opts: GoogleFlowOptions): GoogleFlowProvider {
           // Docs: https://useapi.net/docs/api-google-flow-v1/get-google-flow-accounts-email
           retrieve: jsonGet<GoogleFlowEmailRequest>(
             GoogleFlowEmailRequestSchema,
-            (req) => `/accounts/${encodeURIComponent(req.email)}`
+            (req) => `/accounts/${encodePathSegment(req.email)}`
           ),
           // GET https://api.useapi.net/v1/google-flow/accounts/captcha-providers
           // Docs: https://useapi.net/docs/api-google-flow-v1/get-google-flow-accounts-captcha-providers
@@ -423,7 +450,7 @@ export function createGoogleFlow(opts: GoogleFlowOptions): GoogleFlowProvider {
         // Docs: https://useapi.net/docs/api-google-flow-v1/get-google-flow-assets-mediagenerationid
         retrieve: jsonGet<GoogleFlowMediaGenerationIdRequest>(
           GoogleFlowMediaGenerationIdRequestSchema,
-          (req) => `/assets/${encodeURIComponent(req.mediaGenerationId)}`
+          (req) => `/assets/${encodePathSegment(req.mediaGenerationId)}`
         ),
       },
       // GET https://api.useapi.net/v1/google-flow/characters{query}
@@ -438,7 +465,7 @@ export function createGoogleFlow(opts: GoogleFlowOptions): GoogleFlowProvider {
           // Docs: https://useapi.net/docs/api-google-flow-v1/get-google-flow-characters-ref
           retrieve: jsonGet<GoogleFlowRefRequest>(
             GoogleFlowRefRequestSchema,
-            (req) => `/characters/${encodeURIComponent(req.ref)}`
+            (req) => `/characters/${encodePathSegment(req.ref)}`
           ),
         }
       ),
@@ -454,7 +481,7 @@ export function createGoogleFlow(opts: GoogleFlowOptions): GoogleFlowProvider {
           // Docs: https://useapi.net/docs/api-google-flow-v1/get-google-flow-voices-ref
           retrieve: jsonGet<GoogleFlowRefRequest>(
             GoogleFlowRefRequestSchema,
-            (req) => `/voices/${encodeURIComponent(req.ref)}`
+            (req) => `/voices/${encodePathSegment(req.ref)}`
           ),
         }
       ),
@@ -470,7 +497,7 @@ export function createGoogleFlow(opts: GoogleFlowOptions): GoogleFlowProvider {
           // Docs: https://useapi.net/docs/api-google-flow-v1/get-google-flow-jobs-jobid
           retrieve: jsonGet<GoogleFlowJobIdRequest>(
             GoogleFlowJobIdRequestSchema,
-            (req) => `/jobs/${encodeURIComponent(req.jobId)}`
+            (req) => `/jobs/${encodePathSegment(req.jobId)}`
           ),
         }
       ),
@@ -484,7 +511,7 @@ export function createGoogleFlow(opts: GoogleFlowOptions): GoogleFlowProvider {
       accounts: jsonBody<GoogleFlowEmailRequest>(
         "DELETE",
         GoogleFlowEmailRequestSchema,
-        (req) => `/accounts/${encodeURIComponent(req.email)}`,
+        (req) => `/accounts/${encodePathSegment(req.email)}`,
         ["email"]
       ),
       // DELETE https://api.useapi.net/v1/google-flow/characters/{ref}
@@ -492,7 +519,7 @@ export function createGoogleFlow(opts: GoogleFlowOptions): GoogleFlowProvider {
       characters: jsonBody<GoogleFlowRefRequest>(
         "DELETE",
         GoogleFlowRefRequestSchema,
-        (req) => `/characters/${encodeURIComponent(req.ref)}`,
+        (req) => `/characters/${encodePathSegment(req.ref)}`,
         ["ref"]
       ),
       // DELETE https://api.useapi.net/v1/google-flow/voices/{ref}
@@ -500,7 +527,7 @@ export function createGoogleFlow(opts: GoogleFlowOptions): GoogleFlowProvider {
       voices: jsonBody<GoogleFlowRefRequest>(
         "DELETE",
         GoogleFlowRefRequestSchema,
-        (req) => `/voices/${encodeURIComponent(req.ref)}`,
+        (req) => `/voices/${encodePathSegment(req.ref)}`,
         ["ref"]
       ),
     },

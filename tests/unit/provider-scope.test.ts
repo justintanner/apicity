@@ -7,6 +7,9 @@ import {
   resolveProviderScope,
 } from "../../scripts/lib/provider-scope.mjs";
 
+const functionalDir = path.join("tests", "functional");
+const unitDir = path.join("tests", "unit");
+
 const originalCwd = process.cwd();
 const originalProviderPath = process.env.APICITY_PROVIDER_PATH;
 const originalInitCwd = process.env.INIT_CWD;
@@ -25,9 +28,12 @@ function restoreEnv(
 function expectOpenAiTests(tests: string[]) {
   expect(tests).toContain(`${integrationDir}/openai-chat.test.ts`);
   expect(tests).toContain(`${integrationDir}/openai-responses.test.ts`);
-  expect(
-    tests.every((test) => test.startsWith(`${integrationDir}/openai`))
-  ).toBe(true);
+  expect(tests).toContain(`${unitDir}/openai-zod.test.ts`);
+  // Matching is by filename, not by directory: every scanned directory is fair
+  // game, so assert on the basename rather than an `integrationDir` prefix.
+  expect(tests.every((test) => path.basename(test).startsWith("openai"))).toBe(
+    true
+  );
 }
 
 describe("resolveProviderScope", () => {
@@ -81,6 +87,7 @@ describe("resolveProviderScope", () => {
         `${integrationDir}/free-media-upload-tflink.test.ts`,
         `${integrationDir}/free-media-upload-tmpfiles.test.ts`,
         `${integrationDir}/free-media-upload-uguu.test.ts`,
+        `${unitDir}/free-media-upload-helpers.test.ts`,
       ],
     });
 
@@ -98,6 +105,7 @@ describe("resolveProviderScope", () => {
         `${integrationDir}/s3-object-core.test.ts`,
         `${integrationDir}/s3-object-governance.test.ts`,
         `${integrationDir}/s3-object-management.test.ts`,
+        `${unitDir}/s3-endpoints.test.ts`,
       ],
     });
   });
@@ -127,6 +135,8 @@ describe("resolveProviderScope", () => {
         `${integrationDir}/x-post-video.test.ts`,
         `${integrationDir}/x-tweets.test.ts`,
         `${integrationDir}/x-users-me.test.ts`,
+        `${unitDir}/x-oauth.test.ts`,
+        `${unitDir}/x-zod.test.ts`,
       ],
     });
   });
@@ -144,6 +154,9 @@ describe("resolveProviderScope", () => {
       tests: [
         `${integrationDir}/telegram-chat-admin-shapes.test.ts`,
         `${integrationDir}/telegram-send-all-types.test.ts`,
+        `${functionalDir}/telegram-send-methods.test.ts`,
+        `${unitDir}/telegram-endpoints.test.ts`,
+        `${unitDir}/telegram-zod.test.ts`,
       ],
     });
   });

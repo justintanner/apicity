@@ -8,7 +8,8 @@ import { repoRoot } from "./provider-scope.mjs";
  * not named after a single provider, the provider-scoped fast gates never run
  * them:
  *
- *   - `test:provider <name>` resolves only `tests/integration/<name>*.test.ts`
+ *   - `test:provider <name>` resolves only `<name>*.test.ts`, in the top level
+ *     of `tests/integration`, `tests/functional`, and `tests/unit`
  *   - `dev:preflight:fast` runs `test:provider` for one provider
  *   - `test:affected` runs `test:provider` per touched provider in providers mode
  *

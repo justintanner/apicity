@@ -8,13 +8,15 @@ export const repoRoot = path.resolve(libDir, "..", "..");
 export const providerRoot = path.join(repoRoot, "packages", "provider");
 export const integrationDir = path.join("tests", "integration");
 
-// Every directory `tests/vitest.integration.ts` includes. The provider gates
-// resolve tests by filename, so a provider-named test is just as reachable in
-// `tests/unit` as in `tests/integration` — scanning only the latter silently
-// skipped files like `tests/unit/fal-zod.test.ts` and
+// The top level of every directory `tests/vitest.integration.ts` includes. The
+// provider gates resolve tests by filename, so a provider-named test is just as
+// reachable in `tests/unit` as in `tests/integration` — scanning only the latter
+// silently skipped files like `tests/unit/fal-zod.test.ts` and
 // `tests/functional/xai-validate.test.ts`, handing a green
-// `dev:preflight:fast` from tests that never executed. Keep this in sync with
-// the `include` list in that config.
+// `dev:preflight:fast` from tests that never executed. The scan below is flat,
+// so provider-named files nested in subdirectories (`tests/unit/kie/…`) stay
+// unreachable from the provider gates. Keep the directory list in sync with the
+// `include` list in that config.
 export const providerTestDirs = [
   integrationDir,
   path.join("tests", "functional"),

@@ -1,6 +1,10 @@
 import { describe, it, expect } from "vitest";
 
 import {
+  zodToJsonSchema,
+  type JsonSchema,
+} from "../../packages/mcp-server/src/schema";
+import {
   ElevenLabsSoundGenerationRequestSchema,
   ElevenLabsTextToDialogueRequestSchema,
   ElevenLabsTextToSpeechRequestSchema,
@@ -17,6 +21,7 @@ import {
   ElevenLabsMergeAgentBranchRequestSchema,
   ElevenLabsPreviewAgentBranchMergeRequestSchema,
   ElevenLabsGetLiveConversationCountRequestSchema,
+  ElevenLabsTextToSpeechModelIdSchema,
   ELEVENLABS_TEXT_TO_SPEECH_MODEL_TEXT_LIMITS,
 } from "../../packages/provider/elevenlabs/src/zod";
 
@@ -540,6 +545,45 @@ describe("ElevenLabs Zod schema validation", () => {
           }).success
         ).toBe(false);
       });
+
+      it("still enforces the per-model cap for a listed model_id", () => {
+        const result = ElevenLabsTextToSpeechRequestSchema.safeParse({
+          text: "a".repeat(6000),
+          model_id: "eleven_v3",
+        });
+
+        expect(result.success).toBe(false);
+        expect(
+          result.error?.issues.some(
+            (i) =>
+              i.path.includes("text") &&
+              i.message.includes("eleven_v3") &&
+              i.message.includes("5000")
+          )
+        ).toBe(true);
+      });
+
+      // A hatched id has no cap-table entry, so only the static bound applies.
+      it("falls back to the static bound for a hatched model_id", () => {
+        expect(
+          ElevenLabsTextToSpeechRequestSchema.safeParse({
+            text: "a".repeat(30000),
+            model_id: "eleven_flash_v3",
+          }).success
+        ).toBe(true);
+      });
+
+      it("still applies the static bound to a hatched model_id", () => {
+        const result = ElevenLabsTextToSpeechRequestSchema.safeParse({
+          text: "a".repeat(45000),
+          model_id: "eleven_flash_v3",
+        });
+
+        expect(result.success).toBe(false);
+        expect(result.error?.issues.some((i) => i.path.includes("text"))).toBe(
+          true
+        );
+      });
     });
 
     describe("model_id enum", () => {
@@ -557,14 +601,42 @@ describe("ElevenLabs Zod schema validation", () => {
       });
 
       it.each([
-        "eleven_typo",
-        // Speech-to-speech only: can_do_text_to_speech is false upstream.
+        // Unreleased point releases: the alias hatch accepts a versioned id
+        // before the enum above catches up.
+        "eleven_flash_v3",
+        "eleven_turbo_v3_5",
+        // These two were previously pinned as rejected because
+        // can_do_text_to_speech is false upstream. The hatch is a shape check,
+        // not an entitlement check — it says the id is well-formed, not that
+        // this endpoint serves it. Upstream stays the authority on
+        // entitlement, exactly as for the accepted Veo alias precedent. The
+        // expectation inverting here is intended.
         "eleven_english_sts_v2",
         "eleven_multilingual_sts_v2",
-        // Undocumented aliases seen only in voice fine-tuning state.
+      ])("accepts versioned alias model_id %p", (model_id) => {
+        const result = ElevenLabsTextToSpeechRequestSchema.safeParse({
+          text: "Hello.",
+          model_id,
+        });
+
+        expect(result.success).toBe(true);
+      });
+
+      it.each([
+        // No version suffix at all — the bare-family-prefix failure case.
+        "eleven_typo",
+        "eleven_flash_v",
+        // Version present but not terminal.
         "eleven_v2_flash",
         "eleven_v2_5_flash",
+        // Empty suffix, empty string.
+        "eleven_",
         "",
+        // Foreign family, and the hatch is case-sensitive.
+        "gpt-4",
+        "ELEVEN_FLASH_V2",
+        // Not a string at all.
+        42,
       ])("rejects model_id %p", (model_id) => {
         const result = ElevenLabsTextToSpeechRequestSchema.safeParse({
           text: "Hello.",
@@ -575,6 +647,33 @@ describe("ElevenLabs Zod schema validation", () => {
         expect(
           result.error?.issues.some((i) => i.path.includes("model_id"))
         ).toBe(true);
+      });
+
+      // Every enumerated id also matches the alias regex, so the enum branch
+      // is redundant for *validation* — its job is MCP client autocomplete.
+      // Nothing else pins it, so deleting it would leave the suite green while
+      // silently dropping every completion. This is that pin.
+      it("keeps all eight ids in the enum branch of the MCP JSON Schema", () => {
+        const json = zodToJsonSchema(ElevenLabsTextToSpeechModelIdSchema);
+        const branches = json.anyOf as JsonSchema[];
+
+        expect(branches).toHaveLength(2);
+        expect(branches[0]).toMatchObject({
+          type: "string",
+          enum: [
+            "eleven_v3",
+            "eleven_flash_v2",
+            "eleven_flash_v2_5",
+            "eleven_monolingual_v1",
+            "eleven_multilingual_v1",
+            "eleven_multilingual_v2",
+            "eleven_turbo_v2",
+            "eleven_turbo_v2_5",
+          ],
+        });
+        // The second branch is the hatch; without it the enum would be closed.
+        expect(branches[1].type).toBe("string");
+        expect(branches[1].pattern).toBeDefined();
       });
     });
   });

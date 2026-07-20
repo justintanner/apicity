@@ -587,7 +587,13 @@ export const KlingVideoRequestSchema = z.object({
   input: z.object({
     prompt: z.string().optional(),
     image_urls: z.array(z.string()).optional(),
-    sound: z.boolean(),
+    // `sound` is optional, not required: modelInputSchemas omits `required`
+    // for it and documents "default false, true when multi_shots". The
+    // default is context-dependent, so it is deliberately left un-`.default()`
+    // as well — pinning `.default(false)` locally would send an explicit
+    // `false` the caller never chose and suppress the upstream promotion to
+    // `true` under multi-shot mode. Let the caller omit it and let Kie decide.
+    sound: z.boolean().optional(),
     duration: KlingDurationSchema,
     aspect_ratio: KlingAspectRatioSchema.optional(),
     mode: KlingModeSchema,
@@ -1039,10 +1045,15 @@ export const GptImage2TextToImageRequestSchema = z.object({
   }),
 });
 
-// Kie's seedream/5-lite createTask rejects requests with `"This field is
-// required"` when `quality` is missing, even though their docs list it as
-// optional with a default. Treat it as required at the SDK boundary so the
-// type system forces callers to pick basic/high.
+// `quality` is required here despite carrying an upstream default. Kie's docs
+// list it as optional defaulting to `basic`, but POST /api/v1/jobs/createTask
+// answers 422 with `{"code":422,"msg":"This field is required"}` when the key
+// is absent from `input` — the documented default is never applied server-side
+// for the seedream/5-lite models. Omitting `.default("basic")` here is
+// deliberate: defaulting locally would paper over the upstream 422 and send a
+// quality the caller never chose. Required-ness forces callers to pick
+// basic/high explicitly. Do not relax to `.optional()` or `.default()` without
+// re-confirming against a live createTask call.
 export const SeedreamImageToImageRequestSchema = z.object({
   model: z.literal("seedream/5-lite-image-to-image"),
   callBackUrl: z.string().optional(),
@@ -1057,6 +1068,10 @@ export const SeedreamImageToImageRequestSchema = z.object({
   }),
 });
 
+// `quality` is required for the same reason as the image-to-image sibling
+// above: Kie documents a `basic` default, but seedream/5-lite createTask
+// answers `"This field is required"` when the key is absent. See the note on
+// SeedreamImageToImageRequestSchema.
 export const SeedreamTextToImageRequestSchema = z.object({
   model: z.literal("seedream/5-lite-text-to-image"),
   callBackUrl: z.string().optional(),

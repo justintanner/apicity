@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 
 import { createKie } from "@apicity/kie";
+import {
+  KlingVideoRequestSchema,
+  SeedreamImageToImageRequestSchema,
+  SeedreamTextToImageRequestSchema,
+  SeedreamProImageToImageRequestSchema,
+  SeedreamProTextToImageRequestSchema,
+} from "../../packages/provider/kie/src/zod";
 
 describe("KIE modelInputSchemas metadata", () => {
   const provider = createKie({ apiKey: "test-key" });
@@ -73,5 +80,141 @@ describe("KIE modelInputSchemas metadata", () => {
     expect(referenceFields.reference_image.maxItems).toBe(9);
     expect(referenceFields.aspect_ratio.enum).toContain("9:21");
     expect(referenceFields.duration.default).toBe(5);
+  });
+});
+
+// REQ-001 / AC-001. Kie documents a `basic` default for Seedream `quality`,
+// but createTask answers "This field is required" when the key is absent, so
+// the schemas declare it required and deliberately carry no `.default()`.
+// These assertions pin that decision so a future "tidy up the defaults" pass
+// cannot silently relax it back to optional.
+describe("KIE Seedream quality stays required (REQ-001)", () => {
+  const schemas = [
+    ["seedream/5-lite-image-to-image", SeedreamImageToImageRequestSchema],
+    ["seedream/5-lite-text-to-image", SeedreamTextToImageRequestSchema],
+    ["seedream/5-pro-image-to-image", SeedreamProImageToImageRequestSchema],
+    ["seedream/5-pro-text-to-image", SeedreamProTextToImageRequestSchema],
+  ] as const;
+
+  const baseInput = (model: string) => {
+    const input: Record<string, unknown> = {
+      prompt: "A quiet harbour at first light",
+    };
+    if (model.includes("image-to-image")) {
+      input.image_urls = ["https://example.com/a.png"];
+    }
+    return input;
+  };
+
+  for (const [model, schema] of schemas) {
+    it(`rejects ${model} without quality`, () => {
+      const result = schema.safeParse({
+        model,
+        input: baseInput(model),
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error?.issues.some((i) => i.path.includes("quality"))).toBe(
+        true
+      );
+    });
+
+    it(`accepts ${model} with an explicit quality`, () => {
+      const result = schema.safeParse({
+        model,
+        input: { ...baseInput(model), quality: "high" },
+      });
+
+      expect(result.success).toBe(true);
+    });
+
+    it(`does not inject a quality default for ${model}`, () => {
+      const result = schema.parse({
+        model,
+        input: { ...baseInput(model), quality: "basic" },
+      });
+
+      // `quality` round-trips exactly as supplied; nothing is defaulted in.
+      expect(result.input.quality).toBe("basic");
+    });
+  }
+});
+
+// REQ-001 / AC-001. `kling-3.0/video` documents `sound` as "default false,
+// true when multi_shots" and modelInputSchemas does not mark it `required`,
+// but zod.ts declared it required. These assertions pin the corrected
+// optional-and-undefaulted treatment: the caller may omit it, and omitting it
+// must not synthesise a `false` that suppresses the upstream promotion to
+// `true` under multi-shot mode.
+describe("KIE kling-3.0/video sound is optional and undefaulted (REQ-001)", () => {
+  const baseInput = {
+    duration: "5",
+    mode: "std",
+    multi_shots: false,
+  };
+
+  it("accepts a request that omits sound", () => {
+    const result = KlingVideoRequestSchema.safeParse({
+      model: "kling-3.0/video",
+      input: { ...baseInput },
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it("does not inject a sound default when omitted", () => {
+    const result = KlingVideoRequestSchema.parse({
+      model: "kling-3.0/video",
+      input: { ...baseInput },
+    });
+
+    // Absent stays absent — Kie applies its own context-dependent default.
+    expect("sound" in result.input).toBe(false);
+    expect(result.input.sound).toBeUndefined();
+  });
+
+  it("round-trips an explicit sound value unchanged", () => {
+    for (const sound of [true, false]) {
+      const result = KlingVideoRequestSchema.parse({
+        model: "kling-3.0/video",
+        input: { ...baseInput, sound },
+      });
+
+      expect(result.input.sound).toBe(sound);
+    }
+  });
+
+  it("still rejects a non-boolean sound", () => {
+    const result = KlingVideoRequestSchema.safeParse({
+      model: "kling-3.0/video",
+      input: { ...baseInput, sound: "yes" },
+    });
+
+    expect(result.success).toBe(false);
+  });
+});
+
+// Drift guard for the audit behind REQ-001. modelInputSchemas is the
+// doc-of-record for which Kie fields are mandatory; zod.ts is what callers
+// actually validate against. The `sound` bug was these two disagreeing, so
+// assert they agree for every field of the audited model rather than only
+// pinning the one field that happened to be wrong.
+describe("KIE kling-3.0/video zod matches modelInputSchemas (REQ-001)", () => {
+  const provider = createKie({ apiKey: "test-key" });
+
+  it("marks exactly the documented-required fields as required", () => {
+    const fields = provider.modelInputSchemas["kling-3.0/video"].fields;
+    const documentedRequired = Object.entries(fields)
+      .filter(([, spec]) => spec.required === true)
+      .map(([name]) => name)
+      .sort();
+
+    const inputShape = KlingVideoRequestSchema.shape.input.shape;
+    const zodRequired = Object.entries(inputShape)
+      .filter(([, schema]) => !schema.safeParse(undefined).success)
+      .map(([name]) => name)
+      .sort();
+
+    expect(zodRequired).toEqual(documentedRequired);
   });
 });

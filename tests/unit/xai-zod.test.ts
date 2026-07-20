@@ -1,6 +1,9 @@
 import { describe, it, expect } from "vitest";
 
-import { XaiVideoGenerateRequestSchema } from "../../packages/provider/xai/src/zod";
+import {
+  XaiResponseRequestSchema,
+  XaiVideoGenerateRequestSchema,
+} from "../../packages/provider/xai/src/zod";
 
 // The reference-image cap is sourced in packages/provider/xai/src/zod.ts:
 // xAI's docs are silent, so the 1-7 bound comes from WaveSpeedAI's hosted
@@ -89,6 +92,112 @@ describe("XaiVideoGenerateRequestSchema reference array caps", () => {
       const result = XaiVideoGenerateRequestSchema.safeParse({
         prompt: "a cat riding a skateboard",
         duration: 16,
+      });
+
+      expect(result.success).toBe(false);
+    });
+  });
+});
+
+// xAI retired Live Search. Probed live on 2026-07-20 with a valid key:
+// `search_parameters` returns HTTP 410 ("Live search is deprecated. Please
+// switch to the Agent Tools API") from both POST /v1/chat/completions and
+// POST /v1/responses, while the same requests without it return 200. The
+// field is therefore rejected outright rather than having its members
+// tightened. See packages/provider/xai/src/zod.ts.
+
+const base = {
+  model: "grok-4-fast",
+  input: "What is AI?",
+};
+
+describe("XaiResponseRequestSchema search contract", () => {
+  describe("search_parameters is retired", () => {
+    it("accepts a request that omits search_parameters", () => {
+      const result = XaiResponseRequestSchema.safeParse(base);
+
+      expect(result.success).toBe(true);
+    });
+
+    it("accepts an explicit undefined search_parameters", () => {
+      const result = XaiResponseRequestSchema.safeParse({
+        ...base,
+        search_parameters: undefined,
+      });
+
+      expect(result.success).toBe(true);
+    });
+
+    it("rejects a previously valid search_parameters object", () => {
+      const result = XaiResponseRequestSchema.safeParse({
+        ...base,
+        search_parameters: { mode: "auto", max_search_results: 5 },
+      });
+
+      expect(result.success).toBe(false);
+      expect(
+        result.error?.issues.some((issue) =>
+          issue.path.includes("search_parameters")
+        )
+      ).toBe(true);
+    });
+
+    it("names the Agent Tools API replacement in the error message", () => {
+      const result = XaiResponseRequestSchema.safeParse({
+        ...base,
+        search_parameters: { mode: "auto" },
+      });
+
+      const message = result.error?.issues.find((issue) =>
+        issue.path.includes("search_parameters")
+      )?.message;
+
+      expect(message).toContain("410");
+      expect(message).toContain("web_search");
+    });
+
+    // The previously loose members are the reason WI-18 existed. Each is now
+    // rejected by the parent field rather than validated individually, which
+    // is strictly stronger than the enum/date tightening the plan proposed.
+    it.each([
+      ["sources as bare strings", { sources: ["web", "x"] }],
+      ["sources as objects", { sources: [{ type: "web" }] }],
+      ["from_date", { from_date: "2026-01-01" }],
+      ["to_date", { to_date: "not-a-date" }],
+      ["return_citations", { return_citations: true }],
+    ])("rejects search_parameters carrying %s", (_label, value) => {
+      const result = XaiResponseRequestSchema.safeParse({
+        ...base,
+        search_parameters: value,
+      });
+
+      expect(result.success).toBe(false);
+    });
+  });
+
+  describe("the replacement contract still validates", () => {
+    it("accepts tools: [{ type: 'web_search' }]", () => {
+      const result = XaiResponseRequestSchema.safeParse({
+        ...base,
+        tools: [{ type: "web_search" }],
+      });
+
+      expect(result.success).toBe(true);
+    });
+
+    it("accepts tools: [{ type: 'web_search_preview' }]", () => {
+      const result = XaiResponseRequestSchema.safeParse({
+        ...base,
+        tools: [{ type: "web_search_preview" }],
+      });
+
+      expect(result.success).toBe(true);
+    });
+
+    it("rejects an unknown tool type", () => {
+      const result = XaiResponseRequestSchema.safeParse({
+        ...base,
+        tools: [{ type: "live_search" }],
       });
 
       expect(result.success).toBe(false);

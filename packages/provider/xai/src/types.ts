@@ -88,7 +88,6 @@ export type {
   XaiResponseTool,
   XaiResponseTextFormat,
   XaiResponseReasoning,
-  XaiResponseSearchParameters,
   XaiResponseRequest,
   XaiResponseRequestInput,
   XaiResponseParsedRequest,

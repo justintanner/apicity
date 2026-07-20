@@ -394,7 +394,6 @@ describe("xAI Zod schema validation", () => {
         tool_choice: "auto",
         store: true,
         stream: false,
-        search_parameters: { mode: "auto", max_search_results: 5 },
         reasoning: { effort: "medium" },
       });
       expect(result.success).toBe(true);
@@ -418,11 +417,14 @@ describe("xAI Zod schema validation", () => {
       );
     });
 
-    it("rejects invalid search_parameters.mode", () => {
+    // xAI retired Live Search; search_parameters now 410s upstream and is
+    // rejected outright rather than validated member-by-member. Full coverage
+    // lives in tests/unit/xai-zod.test.ts.
+    it("rejects search_parameters entirely", () => {
       const result = XaiResponseRequestSchema.safeParse({
         model: "grok-4-fast",
         input: "test",
-        search_parameters: { mode: "invalid" },
+        search_parameters: { mode: "auto" },
       });
       expect(result.success).toBe(false);
       expect(result.error?.issues.length).toBeGreaterThan(0);

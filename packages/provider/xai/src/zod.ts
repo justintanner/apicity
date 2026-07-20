@@ -55,6 +55,14 @@ export const XaiVideoReferenceInputSchema = z.union([
   XaiVideoReferenceSchema,
 ]);
 
+// xAI's own reference-to-video docs say only "one or more reference images" and
+// never name a bound. The 1-7 range below comes from WaveSpeedAI's hosted
+// grok-imagine-video reference-to-video API, which documents the field as
+// "Array of reference image URLs (1-7 images)" — the only published numeric
+// limit for this input. Raise this if xAI documents a higher bound.
+// https://wavespeed.ai/docs/docs-api/x-ai/x-ai-grok-imagine-video-reference-to-video
+const XAI_VIDEO_REFERENCE_IMAGE_MAX = 7;
+
 const XaiImagineStoragePublicUrlOptionsSchema = z.object({
   expires_after: z.number().int().min(3600).max(2592000).optional(),
 });
@@ -274,8 +282,14 @@ export const XaiVideoGenerateRequestSchema = z.object({
   image_file_id: z.string().min(1).optional(),
   video: XaiVideoReferenceSchema.optional(),
   video_file_id: z.string().min(1).optional(),
-  reference_images: z.array(XaiVideoReferenceSchema).optional(),
-  reference_image_file_ids: z.array(z.string().min(1)).optional(),
+  reference_images: z
+    .array(XaiVideoReferenceSchema)
+    .max(XAI_VIDEO_REFERENCE_IMAGE_MAX)
+    .optional(),
+  reference_image_file_ids: z
+    .array(z.string().min(1))
+    .max(XAI_VIDEO_REFERENCE_IMAGE_MAX)
+    .optional(),
   storage_options: XaiImagineStorageOptionsSchema.optional(),
 });
 

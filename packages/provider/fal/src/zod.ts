@@ -309,7 +309,7 @@ export const FalNanoBanana2TextToImageRequestSchema = z.object({
 
 export const FalNanoBanana2EditRequestSchema = z.object({
   prompt: z.string(),
-  image_urls: z.array(z.string()).max(9),
+  image_urls: z.array(z.string()),
   num_images: z.number().int().min(1).max(4).optional(),
   seed: z.number().int().optional(),
   aspect_ratio: z
@@ -394,7 +394,7 @@ export const FalNanoBanana2LiteTextToImageRequestSchema = z.object({
 
 export const FalNanoBanana2LiteEditRequestSchema =
   FalNanoBanana2LiteTextToImageRequestSchema.extend({
-    image_urls: z.array(z.string()).max(9).optional(),
+    image_urls: z.array(z.string()).optional(),
   });
 
 // ---------------------------------------------------------------------------
@@ -431,7 +431,7 @@ export const FalNanoBananaTextToImageRequestSchema = z.object({
 
 export const FalNanoBananaEditRequestSchema = z.object({
   prompt: z.string().min(3).max(50000),
-  image_urls: z.array(z.string()).max(9),
+  image_urls: z.array(z.string()),
   num_images: z.number().int().min(1).max(4).optional(),
   aspect_ratio: z
     .enum([
@@ -587,7 +587,7 @@ export const FalNanoBananaProTextToImageRequestSchema = z.object({
 
 export const FalNanoBananaProEditRequestSchema = z.object({
   prompt: z.string(),
-  image_urls: z.array(z.string()).max(9),
+  image_urls: z.array(z.string()),
   num_images: z.number().int().min(1).max(4).optional(),
   seed: z.number().int().optional(),
   aspect_ratio: z

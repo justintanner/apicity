@@ -285,21 +285,20 @@ describe("fal Nano Banana family request schemas", () => {
     });
   });
 
+  // Review finding R-1: an earlier revision capped these at 9, citing "caps
+  // already established elsewhere in the file". The only base `.max(9)` on
+  // `image_urls` is on the Seedance 2.0 reference-to-video schemas — a video
+  // modality — and image `image_urls` caps at base range over 3, 4, and 10.
+  // There is no documented Nano Banana bound, so rejecting a 10-URL edit would
+  // be the client inventing a limit the API never stated. Pinned so the cap is
+  // not reintroduced without a citation.
   describe.each(WITH_IMAGE_URLS)("$name image_urls", ({ schema, base }) => {
-    it("accepts an at-cap array of 9 URLs", () => {
-      const result = schema.safeParse({
-        ...base,
-        image_urls: Array(9).fill(IMAGE_URL),
-      });
-      expect(result.success).toBe(true);
-    });
-
-    it("rejects an over-cap array of 10 URLs", () => {
+    it("accepts arrays past the removed 9-URL ceiling", () => {
       const result = schema.safeParse({
         ...base,
         image_urls: Array(10).fill(IMAGE_URL),
       });
-      expect(result.success).toBe(false);
+      expect(result.success).toBe(true);
     });
   });
 

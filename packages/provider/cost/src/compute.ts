@@ -37,8 +37,13 @@ function applyTokenRate(
   }
   const source: CostSource = "tokens-heuristic+table";
   if (!entry || entry.kind !== "tokens") {
+    // A per-unit entry reaching the token path means this provider's case in
+    // computeEstimate has no per-unit route yet -- name that, rather than
+    // blaming the caller for an argument that would not help.
     warnings.push(
-      `model '${model}' not found in pricing table for provider '${provider}'`
+      entry
+        ? `${provider} '${model}' is per-unit billed but '${provider}' has no per-unit route in computeEstimate`
+        : `model '${model}' not found in pricing table for provider '${provider}'`
     );
     return {
       usd: 0,
@@ -68,13 +73,13 @@ function applyTokenRate(
   };
 }
 
-// Generic dispatcher for per-unit providers (kie, elevenlabs). Reads the
-// pricing key from the explicit `endpoint` discriminator first (used by
-// providers like Suno whose pricing is keyed by endpoint, not model
-// version), then falls back to payload.model / payload.model_id. Looks up
-// the entry, runs `units(payload)` and the ordered selectors, and returns
-// the matching rate. All payload-shape knowledge lives in the model
-// entry's closures.
+// Generic dispatcher for per-unit providers (kie, elevenlabs, fal,
+// googleflow). Reads the pricing key from the explicit `endpoint`
+// discriminator first (used by providers like Suno whose pricing is keyed by
+// endpoint, not model version), then falls back to payload.model /
+// payload.model_id. Looks up the entry, runs `units(payload)` and the ordered
+// selectors, and returns the matching rate. All payload-shape knowledge lives
+// in the model entry's closures.
 function evaluatePerUnit(
   provider: PricedProviderId,
   payload: Record<string, unknown>,
@@ -127,15 +132,38 @@ function evaluatePerUnit(
 
 export function computeEstimate(req: EstimateRequest): CostEstimate {
   switch (req.provider) {
-    case "openai":
-    case "anthropic":
+    // xAI bills the Grok Imagine video and image models per second / per
+    // generated image and everything else per token. Route on the pricing
+    // entry's own `kind`: the table already records which models are per-unit,
+    // so a hand-maintained endpoint allowlist would be a second source of
+    // truth that silently misprices whenever xAI ships a media endpoint and
+    // nobody updates it. Unknown models still fall through to the token path
+    // and its warning.
     case "xai": {
+      const model = asString(req.payload.model);
+      const entry = model ? PRICING.xai[model] : undefined;
+      if (entry?.kind === "perUnit") {
+        // `undefined`, not `req.endpoint`: evaluatePerUnit treats its third
+        // argument as the pricing key (`endpoint ?? payload.model`), and xai
+        // rates are keyed by model. Forwarding the endpoint here would look up
+        // a key like "v1.videos.generations" and report "not found".
+        return evaluatePerUnit("xai", req.payload, undefined);
+      }
+      const ext = extractXai(req.payload);
+      if (!ext.ok) return failed("tokens-heuristic+table", ext.warnings);
+      return applyTokenRate(
+        "xai",
+        ext.data.model,
+        heuristicTokens(ext.data.text),
+        ext.data.maxOutputTokens
+      );
+    }
+    case "openai":
+    case "anthropic": {
       const ext =
         req.provider === "openai"
           ? extractOpenAi(req.payload)
-          : req.provider === "anthropic"
-            ? extractAnthropic(req.payload)
-            : extractXai(req.payload);
+          : extractAnthropic(req.payload);
       if (!ext.ok) return failed("tokens-heuristic+table", ext.warnings);
       const inputTokens = heuristicTokens(ext.data.text);
       return applyTokenRate(
@@ -145,8 +173,26 @@ export function computeEstimate(req: EstimateRequest): CostEstimate {
         ext.data.maxOutputTokens
       );
     }
+    // Alibaba is the one provider that bills both ways: the Qwen chat models
+    // are token-billed, while the Qwen Image / Wan 2.7 media models bill per
+    // image or per second. Route on the pricing entry's own `kind` so an
+    // unknown model still falls through to the token path and its warning.
+    case "alibaba": {
+      const model = asString(req.payload.model);
+      const entry = model ? PRICING.alibaba[model] : undefined;
+      if (entry?.kind === "perUnit") {
+        return evaluatePerUnit("alibaba", req.payload, req.endpoint);
+      }
+      const ext = extractChat("alibaba", req.payload);
+      if (!ext.ok) return failed("tokens-heuristic+table", ext.warnings);
+      return applyTokenRate(
+        "alibaba",
+        ext.data.model,
+        heuristicTokens(ext.data.text),
+        ext.data.maxOutputTokens
+      );
+    }
     case "fireworks":
-    case "alibaba":
     case "kimicoding": {
       const ext = extractChat(req.provider, req.payload);
       if (!ext.ok) return failed("tokens-heuristic+table", ext.warnings);
@@ -162,6 +208,10 @@ export function computeEstimate(req: EstimateRequest): CostEstimate {
       return evaluatePerUnit("kie", req.payload, req.endpoint);
     case "elevenlabs":
       return evaluatePerUnit("elevenlabs", req.payload, req.endpoint);
+    case "fal":
+      return evaluatePerUnit("fal", req.payload, req.endpoint);
+    case "googleflow":
+      return evaluatePerUnit("googleflow", req.payload, req.endpoint);
     case "free-media-upload":
       return {
         usd: 0,
@@ -171,5 +221,14 @@ export function computeEstimate(req: EstimateRequest): CostEstimate {
         rateAsOf: PRICING_AS_OF,
         warnings: [],
       };
+    default: {
+      // Exhaustiveness guard. Widening EstimateRequest without adding a case
+      // above fails to compile *here*, naming the unhandled provider, rather
+      // than as a TS2366 pointing at this function's return type.
+      const unhandled: never = req;
+      throw new Error(
+        `computeEstimate: unhandled request ${JSON.stringify(unhandled)}`
+      );
+    }
   }
 }

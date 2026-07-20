@@ -9,6 +9,8 @@ import {
   PRICING,
   PRICING_AS_OF,
 } from "../../packages/provider/cost/src/pricing/index";
+import { MODEL_SLUGS } from "../../packages/provider/cost/src/slugs";
+import { computeEstimate } from "../../packages/provider/cost/src/compute";
 
 describe("pricing helpers", () => {
   describe("asString", () => {
@@ -143,6 +145,51 @@ describe("PRICING data", () => {
     });
   });
 
+  it("alibaba prices every registered image model per image", () => {
+    const perImage: Record<string, number> = {
+      "qwen-image-2.0": 0.035,
+      "qwen-image-2.0-pro": 0.075,
+      "qwen-image-edit": 0.045,
+      "qwen-image-edit-plus": 0.03,
+      "qwen-image-edit-max": 0.075,
+      "wan2.7-image-pro": 0.075,
+    };
+    for (const [model, rate] of Object.entries(perImage)) {
+      expect(PRICING.alibaba[model]).toMatchObject({
+        kind: "perUnit",
+        unit: "images",
+        rates: { "": rate },
+      });
+    }
+  });
+
+  it("alibaba prices wan2.7 video at a flat per-second rate", () => {
+    for (const model of ["wan2.7-i2v", "wan2.7-videoedit"]) {
+      expect(PRICING.alibaba[model]).toMatchObject({
+        kind: "perUnit",
+        unit: "seconds",
+        select: [],
+        rates: { "": 0.1 },
+      });
+    }
+  });
+
+  it("stamps the new alibaba media rates with their own asOf", () => {
+    const entry = PRICING.alibaba["wan2.7-i2v"];
+    expect(entry.source.asOf).toBe("2026-07-20");
+    expect(entry.source.asOf).not.toBe(PRICING_AS_OF);
+  });
+
+  // AC-017: the slug registry and the pricing table are two halves of one
+  // fact. Registering a slug without a rate produced the split this item
+  // fixes, so walk the registry rather than pinning today's model list.
+  it("has a PRICING entry for every registered alibaba slug", () => {
+    const unpriced = Object.keys(MODEL_SLUGS.alibaba).filter(
+      (model) => PRICING.alibaba[model] === undefined
+    );
+    expect(unpriced).toEqual([]);
+  });
+
   it("openai has token-priced models", () => {
     expect(PRICING.openai["gpt-5"]).toMatchObject({
       kind: "tokens",
@@ -175,6 +222,63 @@ describe("PRICING data", () => {
     expect(PRICING.xai["grok-code-fast-1-0825"]).toBe(
       PRICING.xai["grok-build-0.1"]
     );
+  });
+
+  it("xai has per-second video rates", () => {
+    expect(PRICING.xai["grok-imagine-video"]).toMatchObject({
+      kind: "perUnit",
+      unit: "seconds",
+      rates: { "": 0.05 },
+    });
+    expect(PRICING.xai["grok-imagine-video-1.5"]).toMatchObject({
+      kind: "perUnit",
+      unit: "seconds",
+      rates: { "": 0.08 },
+    });
+    // The provider exports the preview id; it prices at the released rate.
+    expect(PRICING.xai["grok-imagine-video-1.5-preview"]).toMatchObject({
+      kind: "perUnit",
+      unit: "seconds",
+      rates: { "": 0.08 },
+    });
+  });
+
+  it("xai has per-generation image rates", () => {
+    expect(PRICING.xai["grok-imagine-image"]).toMatchObject({
+      kind: "perUnit",
+      unit: "generations",
+      rates: { "": 0.02 },
+    });
+    expect(PRICING.xai["grok-imagine-image-quality"]).toMatchObject({
+      kind: "perUnit",
+      unit: "generations",
+      rates: { "": 0.05 },
+    });
+  });
+
+  it("every xai media rate carries a source url and asOf stamp", () => {
+    for (const [model, entry] of Object.entries(PRICING.xai)) {
+      if (entry.kind !== "perUnit") continue;
+      expect(entry.source.url, model).toMatch(/^https:\/\/docs\.x\.ai\//);
+      expect(entry.source.asOf, model).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    }
+  });
+
+  // Review finding R-3: the per-unit route is derived from the table's own
+  // `kind`, so the set of per-unit xai models is pinned here rather than in a
+  // hand-maintained endpoint allowlist that could drift from it.
+  it("marks exactly the Grok Imagine media models as per-unit", () => {
+    const perUnit = Object.entries(PRICING.xai)
+      .filter(([, entry]) => entry.kind === "perUnit")
+      .map(([model]) => model)
+      .sort();
+    expect(perUnit).toEqual([
+      "grok-imagine-image",
+      "grok-imagine-image-quality",
+      "grok-imagine-video",
+      "grok-imagine-video-1.5",
+      "grok-imagine-video-1.5-preview",
+    ]);
   });
 
   it("kimicoding has token-priced models", () => {
@@ -222,6 +326,146 @@ describe("PRICING data", () => {
     });
   });
 
+  it("fal has flat per-image pricing", () => {
+    expect(PRICING.fal["fal-ai/nano-banana"]).toMatchObject({
+      kind: "perUnit",
+      unit: "images",
+      rates: { "": 0.039 },
+    });
+  });
+
+  it("fal has resolution-tiered per-image pricing", () => {
+    expect(PRICING.fal["fal-ai/nano-banana-pro"]).toMatchObject({
+      kind: "perUnit",
+      unit: "images",
+      rates: { "1K": 0.15, "2K": 0.15, "4K": 0.3 },
+    });
+  });
+
+  it("fal has per-megapixel pricing for area-billed models", () => {
+    expect(PRICING.fal["fal-ai/flux/dev"]).toMatchObject({
+      kind: "perUnit",
+      unit: "megapixels",
+      rates: { "": 0.025 },
+    });
+  });
+
+  it("every fal rate carries a source url and an asOf stamp", () => {
+    for (const [model, entry] of Object.entries(PRICING.fal)) {
+      expect(entry.source.url, `fal/${model} url`).toMatch(
+        /^https:\/\/fal\.ai\/models\//
+      );
+      expect(entry.source.asOf, `fal/${model} asOf`).toMatch(
+        /^\d{4}-\d{2}-\d{2}$/
+      );
+    }
+  });
+
+  it("kie has flat per-second pricing for the lip-sync models", () => {
+    expect(PRICING.kie["omnihuman-1-5"]).toMatchObject({
+      kind: "perUnit",
+      unit: "seconds",
+      rates: { "": 0.135 },
+    });
+    expect(PRICING.kie["volcengine/video-to-video-lip-sync"]).toMatchObject({
+      kind: "perUnit",
+      unit: "seconds",
+      rates: { "": 0.04 },
+    });
+  });
+
+  it("kie lip-sync entries carry a source url and asOf stamp", () => {
+    for (const model of [
+      "omnihuman-1-5",
+      "volcengine/video-to-video-lip-sync",
+    ]) {
+      const entry = PRICING.kie[model];
+      expect(entry.source.url, model).toMatch(/^https:\/\/kie\.ai\//);
+      expect(entry.source.asOf, model).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    }
+  });
+
+  it("kie lip-sync requests return estimates", () => {
+    const omni = computeEstimate({
+      provider: "kie" as const,
+      payload: {
+        model: "omnihuman-1-5",
+        duration: 8,
+        input: { image_url: "https://example.com/a.png" },
+      },
+    });
+    expect(omni.usd).toBeCloseTo(1.08, 10); // 8 * 0.135
+    expect(omni.source).toBe("per-unit-table");
+    expect(omni.breakdown).toMatchObject({
+      units: 8,
+      unit: "seconds",
+      perUnitUsd: 0.135,
+    });
+    expect(omni.warnings).toEqual([]);
+
+    const lipSync = computeEstimate({
+      provider: "kie" as const,
+      payload: {
+        model: "volcengine/video-to-video-lip-sync",
+        input: { duration: 12, mode: "basic" },
+      },
+    });
+    expect(lipSync.usd).toBeCloseTo(0.48, 10); // 12 * 0.04
+    expect(lipSync.source).toBe("per-unit-table");
+    expect(lipSync.warnings).toEqual([]);
+  });
+
+  it("kie lip-sync rate is flat across mode and resolution", () => {
+    const lite = computeEstimate({
+      provider: "kie" as const,
+      payload: {
+        model: "volcengine/video-to-video-lip-sync",
+        input: { duration: 10, mode: "lite" },
+      },
+    });
+    const basic = computeEstimate({
+      provider: "kie" as const,
+      payload: {
+        model: "volcengine/video-to-video-lip-sync",
+        input: { duration: 10, mode: "basic" },
+      },
+    });
+    expect(lite.usd).toBe(basic.usd);
+
+    const at720 = computeEstimate({
+      provider: "kie" as const,
+      payload: {
+        model: "omnihuman-1-5",
+        duration: 5,
+        input: { output_resolution: "720" },
+      },
+    });
+    const at1080 = computeEstimate({
+      provider: "kie" as const,
+      payload: {
+        model: "omnihuman-1-5",
+        duration: 5,
+        input: { output_resolution: "1080" },
+      },
+    });
+    expect(at720.usd).toBe(at1080.usd);
+  });
+
+  // The variant key is built by joining non-empty selector values, so a v2v
+  // key must not carry the trailing empty resolution segment — "v2v|4|" can
+  // never be produced and would silently price V2V at zero.
+  it("kie gemini-omni-video v2v rate keys have no trailing empty segment", () => {
+    const entry = PRICING.kie["gemini-omni-video"];
+    expect(entry.kind).toBe("perUnit");
+    if (entry.kind !== "perUnit") return;
+
+    const v2vKeys = Object.keys(entry.rates).filter((k) => k.startsWith("v2v"));
+    expect(v2vKeys.sort()).toEqual(["v2v|10", "v2v|4", "v2v|6", "v2v|8"]);
+    for (const key of v2vKeys) {
+      expect(key.endsWith("|"), key).toBe(false);
+    }
+  });
+
   it("every pricing entry has a source", () => {
     for (const [provider, models] of Object.entries(PRICING)) {
       for (const [model, entry] of Object.entries(models)) {
@@ -250,6 +494,21 @@ describe("PRICING data", () => {
           ).toBeGreaterThanOrEqual(0);
         }
       }
+    }
+  });
+
+  it("has a googleflow rate for every registered googleflow slug", () => {
+    for (const model of Object.keys(MODEL_SLUGS.googleflow)) {
+      expect(PRICING.googleflow[model], model).toBeDefined();
+    }
+  });
+
+  it("stamps googleflow rates with their own asOf, ahead of the global", () => {
+    for (const [model, entry] of Object.entries(PRICING.googleflow)) {
+      expect(entry.source.asOf, model).toBe("2026-07-20");
+      expect(Date.parse(entry.source.asOf as string), model).toBeGreaterThan(
+        Date.parse(PRICING_AS_OF)
+      );
     }
   });
 

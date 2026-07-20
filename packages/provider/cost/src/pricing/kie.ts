@@ -32,6 +32,13 @@ const hasVideoListInput = (p: Record<string, unknown>): boolean => {
   return Array.isArray(videoList) && videoList.length > 0;
 };
 
+// Rate-key form of the duration. Upstream sends either a number (8) or a
+// numeric string ("8"), and both must select the same rate — so coerce through
+// coerceSeconds rather than asNumber, which rejects strings and would silently
+// fall back to the default.
+const durationKey = (p: Record<string, unknown>, fallback: number): string =>
+  String(coerceSeconds(asObject(p.input)?.duration ?? p.duration) ?? fallback);
+
 // Image models price per image; units = input.n when present (only
 // wan/2-7-image* uses batch generation today), otherwise 1.
 const imageCount = (p: Record<string, unknown>): number =>
@@ -311,6 +318,35 @@ export const kie: Record<string, ModelPricing> = {
     "happyhorse-1-1/reference-to-video"
   ),
 
+  // omnihuman-1-5: flat 27 credits/s ($0.135). KIE publishes one rate — the
+  // output_resolution (720/1080) and pe_fast_mode switches do not change it.
+  // Like veo3, the schema has no duration field (length follows the driving
+  // audio), so callers must pass duration as a top-level hint.
+  "omnihuman-1-5": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: seconds,
+    select: [],
+    rates: { "": 0.135 },
+    source: { ...page("https://kie.ai/omnihuman-1-5"), asOf: "2026-07-20" },
+  },
+
+  // volcengine/video-to-video-lip-sync: flat 8 credits/s ($0.04). Both
+  // input.mode tiers ("lite"/"basic") bill at the same published rate, so
+  // there is no mode selector. Schema has no duration field (length follows
+  // the source video), so callers must pass duration as a top-level hint.
+  "volcengine/video-to-video-lip-sync": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: seconds,
+    select: [],
+    rates: { "": 0.04 },
+    source: {
+      ...page("https://kie.ai/volcengine-video-to-video-lip-sync"),
+      asOf: "2026-07-20",
+    },
+  },
+
   // bytedance/seedance-2: 6 rates, resolution × videoInput (i2v when
   // input.first_frame_url is present, t2v otherwise).
   "bytedance/seedance-2": {
@@ -463,8 +499,7 @@ export const kie: Record<string, ModelPricing> = {
       },
       {
         name: "duration",
-        pick: (p) =>
-          String(asNumber(asObject(p.input)?.duration) ?? p.duration ?? 4),
+        pick: (p) => durationKey(p, 4),
       },
       {
         name: "resolution",
@@ -474,6 +509,10 @@ export const kie: Record<string, ModelPricing> = {
             : (asString(asObject(p.input)?.resolution) ?? "720p"),
       },
     ],
+    // V2V does not vary by resolution, so its resolution selector yields "",
+    // which evaluatePerUnit drops from the joined variant key. The v2v rate
+    // keys therefore carry no trailing empty segment — writing them as
+    // "v2v|4|" made every V2V request miss the table and price at zero.
     rates: {
       "t2v|4|720p": 0.315,
       "t2v|6|720p": 0.4725,
@@ -487,8 +526,10 @@ export const kie: Record<string, ModelPricing> = {
       "t2v|6|4k": 0.63,
       "t2v|8|4k": 0.84,
       "t2v|10|4k": 1.05,
-      "v2v|4|": 0.84,
-      "v2v|6|": 1.26,
+      "v2v|4": 0.84,
+      "v2v|6": 1.26,
+      "v2v|8": 1.68,
+      "v2v|10": 2.1,
     },
     source: src("google/gemini-omni"),
   },

@@ -49,6 +49,10 @@ export const MODEL_SLUGS = {
     "happyhorse-1-1/image-to-video": "hh1p1",
     "happyhorse-1-1/reference-to-video": "hh1p1",
 
+    // Video — lip sync / avatar
+    "omnihuman-1-5": "oh1p5",
+    "volcengine/video-to-video-lip-sync": "vlipsync",
+
     // Video — Veo
     veo3: "veo3",
     veo3_fast: "veo3f",
@@ -144,6 +148,13 @@ export const MODEL_SLUGS = {
     "grok-4": "grok4",
     "grok-4-fast": "grok4f",
     "grok-4-1-fast": "grok4p1f",
+    // Grok Imagine media models. Same underlying models kie resells as
+    // "grok-imagine/*" — slugs intentionally match kie's "grok" family.
+    "grok-imagine-video": "grokimgv",
+    "grok-imagine-video-1.5": "grokimgv1p5",
+    "grok-imagine-video-1.5-preview": "grokimgv1p5",
+    "grok-imagine-image": "grokimgi",
+    "grok-imagine-image-quality": "grokimgiq",
   },
 
   alibaba: {
@@ -158,6 +169,10 @@ export const MODEL_SLUGS = {
     "qwen-image-edit-plus": "qwen2e",
     "qwen-image-edit-max": "qwen2e",
     "wan2.7-image-pro": "wan2p7p",
+    // Video gen via alibaba's direct API. Same underlying models as kie's
+    // wan/2-7-* video entries — slugs intentionally match.
+    "wan2.7-i2v": "wan2p7",
+    "wan2.7-videoedit": "wan2p7",
   },
 
   fireworks: {
@@ -174,6 +189,30 @@ export const MODEL_SLUGS = {
     eleven_turbo_v2_5: "elt2p5",
     eleven_multilingual_v2: "elml2",
     eleven_multilingual_v3: "elml3",
+  },
+
+  // Keys are fal endpoint ids, matching PRICING.fal. Nano Banana and
+  // Seedream 5 are the same underlying models kie also resells, so their
+  // slugs intentionally match kie's.
+  fal: {
+    "fal-ai/flux/dev": "fluxd",
+    "fal-ai/flux/schnell": "fluxs",
+    "fal-ai/qwen-image": "qwenimg",
+    "fal-ai/nano-banana": "nb",
+    "fal-ai/nano-banana/edit": "nb",
+    "fal-ai/nano-banana-2": "nb2",
+    "fal-ai/nano-banana-pro": "nbp",
+    "fal-ai/bytedance/seedream/v5/lite/text-to-image": "sd5",
+  },
+
+  googleflow: {
+    "veo-3.1-quality": "veo3p1q",
+    "veo-3.1-fast": "veo3p1f",
+    "veo-3.1-lite": "veo3p1l",
+    "veo-3.1-lite-low-priority": "veo3p1llp",
+    // Same underlying model as kie's "gemini-omni-video" — slug intentionally
+    // matches, as with alibaba's qwen/wan image entries.
+    "omni-flash": "geminiomni",
   },
 } as const;
 
@@ -235,6 +274,9 @@ export const MODEL_DISPLAY = {
     "happyhorse-1-1/text-to-video": "HappyHorse 1.1",
     "happyhorse-1-1/image-to-video": "HappyHorse 1.1",
     "happyhorse-1-1/reference-to-video": "HappyHorse 1.1",
+
+    "omnihuman-1-5": "OmniHuman 1.5",
+    "volcengine/video-to-video-lip-sync": "Volcengine Lip Sync",
 
     veo3: "Veo 3",
     veo3_fast: "Veo 3 Fast",
@@ -321,6 +363,11 @@ export const MODEL_DISPLAY = {
     "grok-4": "Grok 4",
     "grok-4-fast": "Grok 4 Fast",
     "grok-4-1-fast": "Grok 4.1 Fast",
+    "grok-imagine-video": "Grok Imagine Video",
+    "grok-imagine-video-1.5": "Grok Imagine Video 1.5",
+    "grok-imagine-video-1.5-preview": "Grok Imagine Video 1.5",
+    "grok-imagine-image": "Grok Imagine Image",
+    "grok-imagine-image-quality": "Grok Imagine Image Quality",
   },
 
   alibaba: {
@@ -332,6 +379,8 @@ export const MODEL_DISPLAY = {
     "qwen-image-edit-plus": "Qwen Image Edit Plus",
     "qwen-image-edit-max": "Qwen Image Edit Max",
     "wan2.7-image-pro": "Wan 2.7 Image Pro",
+    "wan2.7-i2v": "Wan 2.7",
+    "wan2.7-videoedit": "Wan 2.7 Edit",
   },
 
   fireworks: {
@@ -348,6 +397,25 @@ export const MODEL_DISPLAY = {
     eleven_turbo_v2_5: "Eleven Turbo 2.5",
     eleven_multilingual_v2: "Eleven Multilingual 2",
     eleven_multilingual_v3: "Eleven Multilingual 3",
+  },
+
+  fal: {
+    "fal-ai/flux/dev": "FLUX.1 Dev",
+    "fal-ai/flux/schnell": "FLUX.1 Schnell",
+    "fal-ai/qwen-image": "Qwen Image",
+    "fal-ai/nano-banana": "Nano Banana",
+    "fal-ai/nano-banana/edit": "Nano Banana Edit",
+    "fal-ai/nano-banana-2": "Nano Banana 2",
+    "fal-ai/nano-banana-pro": "Nano Banana Pro",
+    "fal-ai/bytedance/seedream/v5/lite/text-to-image": "Seedream 5",
+  },
+
+  googleflow: {
+    "veo-3.1-quality": "Veo 3.1 Quality",
+    "veo-3.1-fast": "Veo 3.1 Fast",
+    "veo-3.1-lite": "Veo 3.1 Lite",
+    "veo-3.1-lite-low-priority": "Veo 3.1 Lite Low Priority",
+    "omni-flash": "Gemini Omni Flash",
   },
 } as const;
 

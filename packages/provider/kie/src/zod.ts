@@ -587,7 +587,13 @@ export const KlingVideoRequestSchema = z.object({
   input: z.object({
     prompt: z.string().optional(),
     image_urls: z.array(z.string()).optional(),
-    sound: z.boolean(),
+    // `sound` is optional, not required: modelInputSchemas omits `required`
+    // for it and documents "default false, true when multi_shots". The
+    // default is context-dependent, so it is deliberately left un-`.default()`
+    // as well — pinning `.default(false)` locally would send an explicit
+    // `false` the caller never chose and suppress the upstream promotion to
+    // `true` under multi-shot mode. Let the caller omit it and let Kie decide.
+    sound: z.boolean().optional(),
     duration: KlingDurationSchema,
     aspect_ratio: KlingAspectRatioSchema.optional(),
     mode: KlingModeSchema,
@@ -796,6 +802,26 @@ export const NanoBananaProRequestSchema = z.object({
   }),
 });
 
+// Seedance reference images are fetched by Kie from the public internet, so a
+// local editor path such as `@asset/photo.png` can never resolve. Carry an
+// explicit message instead of zod's generic "Invalid url" so the failure names
+// what the caller has to supply.
+//
+// Applied to seedance-2-mini only. REQ-002 is scoped to mini, and `.url()`
+// already existed there, so swapping in the message breaks nobody. The
+// seedance-2 / seedance-2-fast siblings stay on `z.array(z.string())`:
+// tightening them to `.url()` would reject payloads those callers can send
+// today, which is its own requirement and its own PR (review finding R-2).
+//
+// The message says "URL", not "HTTPS URL" -- zod's `.url()` accepts `http://`
+// too, so naming HTTPS here would describe a constraint this schema does not
+// enforce.
+const SeedanceReferenceImageUrlSchema = z
+  .string()
+  .url(
+    "must be a publicly reachable URL (for example https://example.com/image.png), not a local path such as @asset/photo.png"
+  );
+
 // Inner input schema kept unrefined so callers can walk `.shape` for slot
 // introspection (see Seedance2InputSchema for full rationale).
 export const Seedance2FastInputSchema = z.object({
@@ -898,7 +924,10 @@ export const Seedance2RequestSchema = Seedance2RequestObjectSchema.refine(
 
 export const Seedance2MiniInputSchema = z.object({
   prompt: z.string().max(20000).optional(),
-  reference_image_urls: z.array(z.string().url()).default([]),
+  reference_image_urls: z
+    .array(SeedanceReferenceImageUrlSchema)
+    .max(9)
+    .default([]),
   reference_video_urls: z.array(z.string().url()).max(3).default([]),
   reference_audio_urls: z.array(z.string().url()).max(3).default([]),
   generate_audio: z.boolean().default(true),
@@ -1016,10 +1045,15 @@ export const GptImage2TextToImageRequestSchema = z.object({
   }),
 });
 
-// Kie's seedream/5-lite createTask rejects requests with `"This field is
-// required"` when `quality` is missing, even though their docs list it as
-// optional with a default. Treat it as required at the SDK boundary so the
-// type system forces callers to pick basic/high.
+// `quality` is required here despite carrying an upstream default. Kie's docs
+// list it as optional defaulting to `basic`, but POST /api/v1/jobs/createTask
+// answers 422 with `{"code":422,"msg":"This field is required"}` when the key
+// is absent from `input` — the documented default is never applied server-side
+// for the seedream/5-lite models. Omitting `.default("basic")` here is
+// deliberate: defaulting locally would paper over the upstream 422 and send a
+// quality the caller never chose. Required-ness forces callers to pick
+// basic/high explicitly. Do not relax to `.optional()` or `.default()` without
+// re-confirming against a live createTask call.
 export const SeedreamImageToImageRequestSchema = z.object({
   model: z.literal("seedream/5-lite-image-to-image"),
   callBackUrl: z.string().optional(),
@@ -1034,6 +1068,10 @@ export const SeedreamImageToImageRequestSchema = z.object({
   }),
 });
 
+// `quality` is required for the same reason as the image-to-image sibling
+// above: Kie documents a `basic` default, but seedream/5-lite createTask
+// answers `"This field is required"` when the key is absent. See the note on
+// SeedreamImageToImageRequestSchema.
 export const SeedreamTextToImageRequestSchema = z.object({
   model: z.literal("seedream/5-lite-text-to-image"),
   callBackUrl: z.string().optional(),

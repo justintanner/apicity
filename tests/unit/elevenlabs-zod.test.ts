@@ -17,6 +17,7 @@ import {
   ElevenLabsMergeAgentBranchRequestSchema,
   ElevenLabsPreviewAgentBranchMergeRequestSchema,
   ElevenLabsGetLiveConversationCountRequestSchema,
+  ELEVENLABS_TEXT_TO_SPEECH_MODEL_TEXT_LIMITS,
 } from "../../packages/provider/elevenlabs/src/zod";
 
 describe("ElevenLabs Zod schema validation", () => {
@@ -53,6 +54,23 @@ describe("ElevenLabs Zod schema validation", () => {
     it("should reject empty text string", () => {
       const result = ElevenLabsSoundGenerationRequestSchema.safeParse({
         text: "",
+      });
+      expect(result.success).toBe(false);
+      expect(result.error?.issues.some((i) => i.path.includes("text"))).toBe(
+        true
+      );
+    });
+
+    it("should accept text at the 450 character maximum", () => {
+      const result = ElevenLabsSoundGenerationRequestSchema.safeParse({
+        text: "a".repeat(450),
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("should reject text above the 450 character maximum", () => {
+      const result = ElevenLabsSoundGenerationRequestSchema.safeParse({
+        text: "a".repeat(451),
       });
       expect(result.success).toBe(false);
       expect(result.error?.issues.some((i) => i.path.includes("text"))).toBe(
@@ -450,6 +468,114 @@ describe("ElevenLabs Zod schema validation", () => {
       expect(result.error?.issues.some((i) => i.path.includes("text"))).toBe(
         true
       );
+    });
+
+    describe("per-model text length caps", () => {
+      // Caps are upstream's own maximum_text_length_per_request, recorded in
+      // tests/recordings/elevenlabs_2379486140/models_343003787.
+      const cases = [
+        { model_id: "eleven_v3", cap: 5000 },
+        { model_id: "eleven_multilingual_v2", cap: 10000 },
+        { model_id: "eleven_turbo_v2", cap: 30000 },
+        { model_id: "eleven_flash_v2_5", cap: 40000 },
+      ] as const;
+
+      it("pins the cap table to the recorded /v1/models values", () => {
+        for (const { model_id, cap } of cases) {
+          expect(ELEVENLABS_TEXT_TO_SPEECH_MODEL_TEXT_LIMITS[model_id]).toBe(
+            cap
+          );
+        }
+      });
+
+      for (const { model_id, cap } of cases) {
+        it(`accepts text at the ${model_id} cap of ${cap}`, () => {
+          const result = ElevenLabsTextToSpeechRequestSchema.safeParse({
+            text: "a".repeat(cap),
+            model_id,
+          });
+
+          expect(result.success).toBe(true);
+        });
+
+        it(`rejects text one character above the ${model_id} cap`, () => {
+          const result = ElevenLabsTextToSpeechRequestSchema.safeParse({
+            text: "a".repeat(cap + 1),
+            model_id,
+          });
+
+          expect(result.success).toBe(false);
+          expect(
+            result.error?.issues.some((i) => i.path.includes("text"))
+          ).toBe(true);
+        });
+      }
+
+      it("distinguishes the caps: text valid for one model fails a stricter one", () => {
+        const text = "a".repeat(10000);
+
+        expect(
+          ElevenLabsTextToSpeechRequestSchema.safeParse({
+            text,
+            model_id: "eleven_multilingual_v2",
+          }).success
+        ).toBe(true);
+        expect(
+          ElevenLabsTextToSpeechRequestSchema.safeParse({
+            text,
+            model_id: "eleven_v3",
+          }).success
+        ).toBe(false);
+      });
+
+      it("applies the most permissive cap statically when model_id is omitted", () => {
+        expect(
+          ElevenLabsTextToSpeechRequestSchema.safeParse({
+            text: "a".repeat(40000),
+          }).success
+        ).toBe(true);
+        expect(
+          ElevenLabsTextToSpeechRequestSchema.safeParse({
+            text: "a".repeat(40001),
+          }).success
+        ).toBe(false);
+      });
+    });
+
+    describe("model_id enum", () => {
+      it("accepts every model with a documented cap", () => {
+        for (const model_id of Object.keys(
+          ELEVENLABS_TEXT_TO_SPEECH_MODEL_TEXT_LIMITS
+        )) {
+          const result = ElevenLabsTextToSpeechRequestSchema.safeParse({
+            text: "Hello.",
+            model_id,
+          });
+
+          expect(result.success).toBe(true);
+        }
+      });
+
+      it.each([
+        "eleven_typo",
+        // Speech-to-speech only: can_do_text_to_speech is false upstream.
+        "eleven_english_sts_v2",
+        "eleven_multilingual_sts_v2",
+        // Undocumented aliases seen only in voice fine-tuning state.
+        "eleven_v2_flash",
+        "eleven_v2_5_flash",
+        "",
+      ])("rejects model_id %p", (model_id) => {
+        const result = ElevenLabsTextToSpeechRequestSchema.safeParse({
+          text: "Hello.",
+          model_id,
+        });
+
+        expect(result.success).toBe(false);
+        expect(
+          result.error?.issues.some((i) => i.path.includes("model_id"))
+        ).toBe(true);
+      });
     });
   });
 

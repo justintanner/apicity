@@ -1,4 +1,4 @@
-import { readdirSync } from "node:fs";
+import { existsSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -8,6 +8,21 @@ export const repoRoot = path.resolve(libDir, "..", "..");
 export const providerRoot = path.join(repoRoot, "packages", "provider");
 export const integrationDir = path.join("tests", "integration");
 
+// The top level of every directory `tests/vitest.integration.ts` includes. The
+// provider gates resolve tests by filename, so a provider-named test is just as
+// reachable in `tests/unit` as in `tests/integration` — scanning only the latter
+// silently skipped files like `tests/unit/fal-zod.test.ts` and
+// `tests/functional/xai-validate.test.ts`, handing a green
+// `dev:preflight:fast` from tests that never executed. The scan below is flat,
+// so provider-named files nested in subdirectories (`tests/unit/kie/…`) stay
+// unreachable from the provider gates. Keep the directory list in sync with the
+// `include` list in that config.
+export const providerTestDirs = [
+  integrationDir,
+  path.join("tests", "functional"),
+  path.join("tests", "unit"),
+];
+
 export function listProviderNames() {
   return readdirSync(providerRoot, { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
@@ -16,15 +31,20 @@ export function listProviderNames() {
 }
 
 export function listProviderTests(provider) {
-  const testDir = path.join(repoRoot, integrationDir);
+  return providerTestDirs.flatMap((dir) => {
+    const testDir = path.join(repoRoot, dir);
 
-  return readdirSync(testDir)
-    .filter((name) => name.endsWith(".test.ts"))
-    .filter(
-      (name) =>
-        name === `${provider}.test.ts` || name.startsWith(`${provider}-`)
-    )
-    .map((name) => path.posix.join(integrationDir, name));
+    // A repo checkout is not required to carry every optional test directory.
+    if (!existsSync(testDir)) return [];
+
+    return readdirSync(testDir)
+      .filter((name) => name.endsWith(".test.ts"))
+      .filter(
+        (name) =>
+          name === `${provider}.test.ts` || name.startsWith(`${provider}-`)
+      )
+      .map((name) => path.posix.join(dir, name));
+  });
 }
 
 export function resolveProviderScope(rawValue) {

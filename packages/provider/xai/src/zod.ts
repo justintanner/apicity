@@ -55,6 +55,14 @@ export const XaiVideoReferenceInputSchema = z.union([
   XaiVideoReferenceSchema,
 ]);
 
+// xAI's own reference-to-video docs say only "one or more reference images" and
+// never name a bound. The 1-7 range below comes from WaveSpeedAI's hosted
+// grok-imagine-video reference-to-video API, which documents the field as
+// "Array of reference image URLs (1-7 images)" — the only published numeric
+// limit for this input. Raise this if xAI documents a higher bound.
+// https://wavespeed.ai/docs/docs-api/x-ai/x-ai-grok-imagine-video-reference-to-video
+const XAI_VIDEO_REFERENCE_IMAGE_MAX = 7;
+
 const XaiImagineStoragePublicUrlOptionsSchema = z.object({
   expires_after: z.number().int().min(3600).max(2592000).optional(),
 });
@@ -274,8 +282,14 @@ export const XaiVideoGenerateRequestSchema = z.object({
   image_file_id: z.string().min(1).optional(),
   video: XaiVideoReferenceSchema.optional(),
   video_file_id: z.string().min(1).optional(),
-  reference_images: z.array(XaiVideoReferenceSchema).optional(),
-  reference_image_file_ids: z.array(z.string().min(1)).optional(),
+  reference_images: z
+    .array(XaiVideoReferenceSchema)
+    .max(XAI_VIDEO_REFERENCE_IMAGE_MAX)
+    .optional(),
+  reference_image_file_ids: z
+    .array(z.string().min(1))
+    .max(XAI_VIDEO_REFERENCE_IMAGE_MAX)
+    .optional(),
   storage_options: XaiImagineStorageOptionsSchema.optional(),
 });
 
@@ -526,14 +540,17 @@ export const XaiResponseReasoningSchema = z.object({
   summary: z.enum(["auto", "concise", "detailed"]).optional(),
 });
 
-export const XaiResponseSearchParametersSchema = z.object({
-  mode: z.enum(["off", "on", "auto"]).optional(),
-  max_search_results: z.number().int().positive().optional(),
-  return_citations: z.boolean().optional(),
-  sources: z.array(z.string()).optional(),
-  from_date: z.string().optional(),
-  to_date: z.string().optional(),
-});
+// xAI retired Live Search. Probed live on 2026-07-20 with a valid key: an
+// otherwise-identical request carrying `search_parameters` returns HTTP 410
+// from BOTH POST /v1/chat/completions and POST /v1/responses —
+// {"error":"Live search is deprecated. Please switch to the Agent Tools API:
+// https://docs.x.ai/docs/guides/tools/overview"} — while the same requests
+// without it return 200. There is no endpoint left that accepts the field, so
+// it is rejected here rather than tightened: a schema error naming the
+// replacement beats a billed round trip that can only 410. The replacement is
+// `tools: [{ type: "web_search" }]`, already modeled by XaiResponseToolSchema.
+const XAI_SEARCH_PARAMETERS_RETIRED =
+  'xAI retired Live Search: `search_parameters` returns HTTP 410 on both /v1/chat/completions and /v1/responses. Use the Agent Tools API instead — `tools: [{ type: "web_search" }]`. See https://docs.x.ai/docs/guides/tools/overview';
 
 export const XaiResponseRequestSchema = z.object({
   model: z.string(),
@@ -567,7 +584,9 @@ export const XaiResponseRequestSchema = z.object({
   metadata: z.record(z.string(), z.string()).optional(),
   text: XaiResponseTextFormatSchema.optional(),
   reasoning: XaiResponseReasoningSchema.optional(),
-  search_parameters: XaiResponseSearchParametersSchema.optional(),
+  search_parameters: z
+    .never({ error: XAI_SEARCH_PARAMETERS_RETIRED })
+    .optional(),
   prompt_cache_key: z.string().optional(),
   parallel_tool_calls: z.boolean().optional(),
   include: z.array(z.string()).optional(),
@@ -903,9 +922,6 @@ export type XaiResponseFileSearchTool = z.infer<
 export type XaiResponseTool = z.infer<typeof XaiResponseToolSchema>;
 export type XaiResponseTextFormat = z.infer<typeof XaiResponseTextFormatSchema>;
 export type XaiResponseReasoning = z.infer<typeof XaiResponseReasoningSchema>;
-export type XaiResponseSearchParameters = z.infer<
-  typeof XaiResponseSearchParametersSchema
->;
 export type XaiResponseRequest = z.input<typeof XaiResponseRequestSchema>;
 export type XaiResponseRequestInput = XaiResponseRequest;
 export type XaiResponseParsedRequest = z.output<

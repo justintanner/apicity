@@ -5,6 +5,7 @@ import {
   MODEL_SLUGS,
   MODEL_DISPLAY,
 } from "../../packages/provider/cost/src/slugs";
+import { PRICING } from "../../packages/provider/cost/src/pricing/index";
 
 describe("MODEL_SLUGS", () => {
   it("has all expected providers", () => {
@@ -18,7 +19,35 @@ describe("MODEL_SLUGS", () => {
         "alibaba",
         "fireworks",
         "elevenlabs",
+        "fal",
       ])
+    );
+  });
+
+  it("has fal models keyed by endpoint id", () => {
+    expect(MODEL_SLUGS.fal).toMatchObject({
+      "fal-ai/flux/dev": "fluxd",
+      "fal-ai/flux/schnell": "fluxs",
+      "fal-ai/qwen-image": "qwenimg",
+      "fal-ai/nano-banana": "nb",
+      "fal-ai/nano-banana-2": "nb2",
+      "fal-ai/nano-banana-pro": "nbp",
+      "fal-ai/bytedance/seedream/v5/lite/text-to-image": "sd5",
+    });
+  });
+
+  it("shares slugs with kie for models both providers resell", () => {
+    expect(MODEL_SLUGS.fal["fal-ai/nano-banana"]).toBe(
+      MODEL_SLUGS.kie["nano-banana"]
+    );
+    expect(
+      MODEL_SLUGS.fal["fal-ai/bytedance/seedream/v5/lite/text-to-image"]
+    ).toBe(MODEL_SLUGS.kie["seedream/5-lite-text-to-image"]);
+  });
+
+  it("registers a slug for every fal pricing entry", () => {
+    expect(Object.keys(MODEL_SLUGS.fal).sort()).toEqual(
+      Object.keys(PRICING.fal).sort()
     );
   });
 
@@ -37,6 +66,8 @@ describe("MODEL_SLUGS", () => {
       "grok-imagine/text-to-video": "grok",
       "happyhorse/text-to-video": "hh",
       "happyhorse-1-1/text-to-video": "hh1p1",
+      "omnihuman-1-5": "oh1p5",
+      "volcengine/video-to-video-lip-sync": "vlipsync",
       veo3: "veo3",
       veo3_fast: "veo3f",
       "nano-banana": "nb",
@@ -83,6 +114,8 @@ describe("MODEL_SLUGS", () => {
       "qwen3.6-plus": "qwen3p6",
       "qwen-image-2.0": "qwen2",
       "wan2.7-image-pro": "wan2p7p",
+      "wan2.7-i2v": "wan2p7",
+      "wan2.7-videoedit": "wan2p7",
     });
   });
 
@@ -144,8 +177,27 @@ describe("modelSlug", () => {
     expect(modelSlug("kie", "kling/v3-turbo-text-to-video")).toBe("kling3t");
   });
 
+  it("resolves kie lip-sync models without throwing", () => {
+    expect(() => modelSlug("kie", "omnihuman-1-5")).not.toThrow();
+    expect(modelSlug("kie", "omnihuman-1-5")).toBe("oh1p5");
+    expect(modelSlug("kie", "volcengine/video-to-video-lip-sync")).toBe(
+      "vlipsync"
+    );
+  });
+
   it("returns correct slug for alibaba qwen3.6-plus", () => {
     expect(modelSlug("alibaba", "qwen3.6-plus")).toBe("qwen3p6");
+  });
+
+  it("returns distinct slugs for xai grok imagine media models", () => {
+    expect(modelSlug("xai", "grok-imagine-video")).toBe("grokimgv");
+    expect(modelSlug("xai", "grok-imagine-video-1.5")).toBe("grokimgv1p5");
+    // The preview id is the same model variant, so it shares the slug.
+    expect(modelSlug("xai", "grok-imagine-video-1.5-preview")).toBe(
+      "grokimgv1p5"
+    );
+    expect(modelSlug("xai", "grok-imagine-image")).toBe("grokimgi");
+    expect(modelSlug("xai", "grok-imagine-image-quality")).toBe("grokimgiq");
   });
 
   it("returns correct slug for fireworks deepseek-v3", () => {
@@ -211,6 +263,8 @@ describe("MODEL_DISPLAY", () => {
       "kling/v3-turbo-image-to-video": "Kling 3.0 Turbo",
       "kling/v3-turbo-text-to-video": "Kling 3.0 Turbo",
       "happyhorse-1-1/text-to-video": "HappyHorse 1.1",
+      "omnihuman-1-5": "OmniHuman 1.5",
+      "volcengine/video-to-video-lip-sync": "Volcengine Lip Sync",
       veo3: "Veo 3",
       veo3_fast: "Veo 3 Fast",
       "suno/generate": "Suno",
@@ -243,6 +297,16 @@ describe("MODEL_DISPLAY", () => {
     });
   });
 
+  it("has fal display names", () => {
+    expect(MODEL_DISPLAY.fal).toMatchObject({
+      "fal-ai/flux/dev": "FLUX.1 Dev",
+      "fal-ai/nano-banana": "Nano Banana",
+      "fal-ai/nano-banana/edit": "Nano Banana Edit",
+      "fal-ai/nano-banana-pro": "Nano Banana Pro",
+      "fal-ai/bytedance/seedream/v5/lite/text-to-image": "Seedream 5",
+    });
+  });
+
   it("every model in SLUGS has a matching display entry", () => {
     for (const [provider, models] of Object.entries(MODEL_SLUGS)) {
       for (const model of Object.keys(models)) {
@@ -267,6 +331,15 @@ describe("modelDisplay", () => {
 
   it("returns correct display for xai grok-4-fast", () => {
     expect(modelDisplay("xai", "grok-4-fast")).toBe("Grok 4 Fast");
+  });
+
+  it("returns correct display for xai grok imagine media models", () => {
+    expect(modelDisplay("xai", "grok-imagine-video")).toBe(
+      "Grok Imagine Video"
+    );
+    expect(modelDisplay("xai", "grok-imagine-image")).toBe(
+      "Grok Imagine Image"
+    );
   });
 
   it("returns correct display for kie veo3", () => {
@@ -309,6 +382,50 @@ describe("modelDisplay", () => {
       modelDisplay("openai", "fake-model")
     ).toThrow(
       "No display name registered for openai/fake-model — add it to packages/provider/cost/src/slugs.ts"
+    );
+  });
+});
+
+describe("googleflow slugs", () => {
+  const models = [
+    "veo-3.1-quality",
+    "veo-3.1-fast",
+    "veo-3.1-lite",
+    "veo-3.1-lite-low-priority",
+    "omni-flash",
+  ] as const;
+
+  it("resolves a slug for every registered Google Flow model", () => {
+    for (const model of models) {
+      expect(modelSlug("googleflow", model), model).toBeTruthy();
+    }
+    expect(modelSlug("googleflow", "veo-3.1-quality")).toBe("veo3p1q");
+    expect(modelSlug("googleflow", "veo-3.1-fast")).toBe("veo3p1f");
+    expect(modelSlug("googleflow", "veo-3.1-lite")).toBe("veo3p1l");
+    expect(modelSlug("googleflow", "veo-3.1-lite-low-priority")).toBe(
+      "veo3p1llp"
+    );
+  });
+
+  it("shares the gemini omni slug with kie's gemini-omni-video", () => {
+    expect(modelSlug("googleflow", "omni-flash")).toBe(
+      modelSlug("kie", "gemini-omni-video")
+    );
+  });
+
+  it("resolves a display name for every registered Google Flow model", () => {
+    for (const model of models) {
+      expect(modelDisplay("googleflow", model), model).toBeTruthy();
+    }
+    expect(modelDisplay("googleflow", "veo-3.1-quality")).toBe(
+      "Veo 3.1 Quality"
+    );
+    expect(modelDisplay("googleflow", "omni-flash")).toBe("Gemini Omni Flash");
+  });
+
+  it("keys MODEL_SLUGS.googleflow exactly to MODEL_DISPLAY.googleflow", () => {
+    expect(Object.keys(MODEL_DISPLAY.googleflow)).toEqual(
+      Object.keys(MODEL_SLUGS.googleflow)
     );
   });
 });

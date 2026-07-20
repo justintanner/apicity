@@ -134,14 +134,14 @@ describe("google flow request contracts", () => {
         email: "user@example.com",
       }),
       "GET",
-      "/accounts/user%40example.com"
+      "/accounts/user@example.com"
     );
     expectRequest(
       await googleFlow.delete.v1.accounts({
         email: "user@example.com",
       }),
       "DELETE",
-      "/accounts/user%40example.com"
+      "/accounts/user@example.com"
     );
     expectRequest(
       await googleFlow.post.v1.accounts.captchaProviders({
@@ -178,7 +178,7 @@ describe("google flow request contracts", () => {
         email: "user@example.com",
       }),
       "POST",
-      "/assets/user%40example.com"
+      "/assets/user@example.com"
     );
     expectRequest(
       await googleFlow.post.v1.assets({

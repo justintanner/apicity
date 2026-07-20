@@ -371,7 +371,7 @@ export type ElevenLabsPvcTrainParsedRequest = z.output<
 // the same request object for ergonomics; the factory strips it out and moves
 // it to the URL query before serialising the body.
 export const ElevenLabsSoundGenerationRequestSchema = z.object({
-  text: z.string().min(1),
+  text: z.string().min(1).max(450),
   model_id: z.string().optional(),
   duration_seconds: z.number().min(0.5).max(30).nullable().optional(),
   prompt_influence: z.number().min(0).max(1).nullable().optional(),
@@ -411,25 +411,73 @@ export const ElevenLabsPronunciationDictionaryLocatorSchema = z
   })
   .passthrough();
 
-export const ElevenLabsTextToSpeechRequestSchema = z.object({
-  text: z.string().min(1),
-  model_id: z.string().optional(),
-  language_code: z.string().nullable().optional(),
-  voice_settings: ElevenLabsVoiceSettingsSchema.nullable().optional(),
-  pronunciation_dictionary_locators: z
-    .array(ElevenLabsPronunciationDictionaryLocatorSchema)
-    .nullable()
-    .optional(),
-  seed: z.number().int().min(0).max(4294967295).nullable().optional(),
-  previous_text: z.string().nullable().optional(),
-  next_text: z.string().nullable().optional(),
-  previous_request_ids: z.array(z.string()).nullable().optional(),
-  next_request_ids: z.array(z.string()).nullable().optional(),
-  use_pvc_as_ivc: z.boolean().optional(),
-  apply_text_normalization: z.enum(["auto", "on", "off"]).optional(),
-  output_format: z.string().optional(),
-  enable_logging: z.boolean().optional(),
-});
+// Per-model text length caps for POST /v1/text-to-speech, keyed by model_id.
+// Values are upstream's own `maximum_text_length_per_request`, taken from the
+// recorded GET /v1/models response
+// (tests/recordings/elevenlabs_2379486140/models_343003787). Only models whose
+// `can_do_text_to_speech` is true are listed — the speech-to-speech models
+// (eleven_english_sts_v2, eleven_multilingual_sts_v2) cannot be used here.
+export const ELEVENLABS_TEXT_TO_SPEECH_MODEL_TEXT_LIMITS = {
+  eleven_v3: 5000,
+  eleven_flash_v2: 30000,
+  eleven_flash_v2_5: 40000,
+  eleven_monolingual_v1: 10000,
+  eleven_multilingual_v1: 10000,
+  eleven_multilingual_v2: 10000,
+  eleven_turbo_v2: 30000,
+  eleven_turbo_v2_5: 40000,
+} as const;
+
+export const ElevenLabsTextToSpeechModelIdSchema = z.enum([
+  "eleven_v3",
+  "eleven_flash_v2",
+  "eleven_flash_v2_5",
+  "eleven_monolingual_v1",
+  "eleven_multilingual_v1",
+  "eleven_multilingual_v2",
+  "eleven_turbo_v2",
+  "eleven_turbo_v2_5",
+]);
+
+// The most permissive documented cap. It is applied statically to `text` so
+// that it survives conversion to MCP tool input JSON Schema; the per-model cap
+// is layered on as a .superRefine below. Cross-field refinements are dropped by
+// that conversion (the converter unwraps ZodEffects to its inner type), so an
+// MCP client sees this permissive bound rather than the per-model one. Callers
+// using .safeParse directly get the exact per-model cap.
+const ELEVENLABS_TEXT_TO_SPEECH_MAX_TEXT_LENGTH = 40000;
+
+export const ElevenLabsTextToSpeechRequestSchema = z
+  .object({
+    text: z.string().min(1).max(ELEVENLABS_TEXT_TO_SPEECH_MAX_TEXT_LENGTH),
+    model_id: ElevenLabsTextToSpeechModelIdSchema.optional(),
+    language_code: z.string().nullable().optional(),
+    voice_settings: ElevenLabsVoiceSettingsSchema.nullable().optional(),
+    pronunciation_dictionary_locators: z
+      .array(ElevenLabsPronunciationDictionaryLocatorSchema)
+      .nullable()
+      .optional(),
+    seed: z.number().int().min(0).max(4294967295).nullable().optional(),
+    previous_text: z.string().nullable().optional(),
+    next_text: z.string().nullable().optional(),
+    previous_request_ids: z.array(z.string()).nullable().optional(),
+    next_request_ids: z.array(z.string()).nullable().optional(),
+    use_pvc_as_ivc: z.boolean().optional(),
+    apply_text_normalization: z.enum(["auto", "on", "off"]).optional(),
+    output_format: z.string().optional(),
+    enable_logging: z.boolean().optional(),
+  })
+  .superRefine((req, ctx) => {
+    if (req.model_id === undefined) return;
+    const limit = ELEVENLABS_TEXT_TO_SPEECH_MODEL_TEXT_LIMITS[req.model_id];
+    if (req.text.length > limit) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `${req.model_id} accepts at most ${limit} characters of text; received ${req.text.length}.`,
+        path: ["text"],
+      });
+    }
+  });
 
 export type ElevenLabsTextToSpeechRequest = z.input<
   typeof ElevenLabsTextToSpeechRequestSchema

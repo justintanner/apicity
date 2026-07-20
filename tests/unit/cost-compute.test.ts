@@ -217,6 +217,119 @@ describe("computeEstimate", () => {
       expect(result.warnings).toEqual([]);
     });
 
+    it("estimates alibaba wan2.7-i2v per second of output", () => {
+      const result = computeEstimate({
+        provider: "alibaba" as const,
+        payload: {
+          model: "wan2.7-i2v",
+          input: { media: [{ type: "first_frame", url: "https://x/a.png" }] },
+          parameters: { resolution: "720P", duration: 5 },
+        },
+      });
+      expect(result.source).toBe("per-unit-table");
+      expect(result.breakdown).toMatchObject({
+        units: 5,
+        unit: "seconds",
+        perUnitUsd: 0.1,
+      });
+      expect(result.usd).toBeCloseTo(0.5, 10);
+      expect(result.rateAsOf).toBe("2026-07-20");
+      expect(result.warnings).toEqual([]);
+    });
+
+    it("estimates alibaba wan2.7-videoedit at the same per-second rate", () => {
+      const result = computeEstimate({
+        provider: "alibaba" as const,
+        payload: {
+          model: "wan2.7-videoedit",
+          input: { media: [{ type: "video", url: "https://x/a.mp4" }] },
+          parameters: { duration: 10 },
+        },
+      });
+      expect(result.usd).toBeCloseTo(1, 10);
+      expect(result.breakdown.perUnitUsd).toBe(0.1);
+      expect(result.warnings).toEqual([]);
+    });
+
+    // The request schema accepts 1080P but the pricing page publishes only a
+    // 720P row, so the flat entry must still estimate rather than warn.
+    it("estimates alibaba video at 1080P and when parameters are omitted", () => {
+      const hd = computeEstimate({
+        provider: "alibaba" as const,
+        payload: {
+          model: "wan2.7-i2v",
+          input: { media: [{ type: "first_frame", url: "https://x/a.png" }] },
+          parameters: { resolution: "1080P", duration: 4 },
+        },
+      });
+      expect(hd.usd).toBeCloseTo(0.4, 10);
+      expect(hd.warnings).toEqual([]);
+
+      const bare = computeEstimate({
+        provider: "alibaba" as const,
+        payload: {
+          model: "wan2.7-i2v",
+          input: { media: [{ type: "first_frame", url: "https://x/a.png" }] },
+        },
+      });
+      expect(bare.breakdown).toMatchObject({ units: 5, perUnitUsd: 0.1 });
+      expect(bare.usd).toBeCloseTo(0.5, 10);
+    });
+
+    // duration: 0 is legal and means "match the source clip"; the length is
+    // only known upstream, so the estimate falls back to the 5s default.
+    it("falls back to the 5s default for alibaba duration 0", () => {
+      const result = computeEstimate({
+        provider: "alibaba" as const,
+        payload: {
+          model: "wan2.7-videoedit",
+          input: { media: [{ type: "video", url: "https://x/a.mp4" }] },
+          parameters: { duration: 0 },
+        },
+      });
+      expect(result.breakdown.units).toBe(5);
+      expect(result.usd).toBeCloseTo(0.5, 10);
+    });
+
+    it("estimates alibaba image models per image, scaling with parameters.n", () => {
+      const one = computeEstimate({
+        provider: "alibaba" as const,
+        payload: {
+          model: "qwen-image-2.0",
+          input: { messages: [] },
+        },
+      });
+      expect(one.breakdown).toMatchObject({
+        units: 1,
+        unit: "images",
+        perUnitUsd: 0.035,
+      });
+      expect(one.usd).toBeCloseTo(0.035, 10);
+
+      const four = computeEstimate({
+        provider: "alibaba" as const,
+        payload: {
+          model: "qwen-image-2.0",
+          input: { messages: [] },
+          parameters: { n: 4 },
+        },
+      });
+      expect(four.usd).toBeCloseTo(0.14, 10);
+    });
+
+    it("still token-prices alibaba chat models after per-unit routing", () => {
+      const result = computeEstimate({
+        provider: "alibaba" as const,
+        payload: {
+          model: "qwen3.6-plus",
+          messages: [{ role: "user", content: "hello" }],
+          max_tokens: 100,
+        },
+      });
+      expect(result.source).toBe("tokens-heuristic+table");
+      expect(result.breakdown.unit).toBe("tokens");
+    });
+
     it("estimates kimicoding with messages", () => {
       const req = {
         provider: "kimicoding" as const,
@@ -350,6 +463,78 @@ describe("computeEstimate", () => {
       );
     });
 
+    // gemini-omni-video's upstream schema types `duration` as a string enum
+    // ("4" | "6" | "8" | "10"), so the string form is the shape real callers
+    // send. Both forms must select the same rate.
+    it("prices gemini-omni-video identically for string and numeric duration", () => {
+      const forDuration = (duration: string | number) =>
+        computeEstimate({
+          provider: "kie" as const,
+          payload: {
+            model: "gemini-omni-video",
+            input: { prompt: "a cat", duration, resolution: "720p" },
+          },
+        });
+
+      const asText = forDuration("8");
+      const asNum = forDuration(8);
+
+      expect(asText.usd).toBe(0.63); // 8s @ 720p, not the 4s rate of 0.315
+      expect(asText.usd).toBe(asNum.usd);
+      expect(asText.breakdown).toEqual(asNum.breakdown);
+      expect(asText.warnings).toEqual([]);
+    });
+
+    it.each([
+      ["4", 0.315],
+      ["6", 0.4725],
+      ["8", 0.63],
+      ["10", 0.7875],
+    ])(
+      "prices gemini-omni-video t2v at %s seconds / 720p",
+      (duration, expected) => {
+        const result = computeEstimate({
+          provider: "kie" as const,
+          payload: {
+            model: "gemini-omni-video",
+            input: { prompt: "a cat", duration, resolution: "720p" },
+          },
+        });
+        expect(result.usd).toBeCloseTo(expected, 10);
+        expect(result.warnings).toEqual([]);
+      }
+    );
+
+    // Regression: v2v rate keys used to carry a trailing empty segment
+    // ("v2v|4|") that evaluatePerUnit's key join drops, so every
+    // video-to-video request missed the table and silently priced at zero.
+    it.each([
+      ["4", 0.84],
+      ["6", 1.26],
+      ["8", 1.68],
+      ["10", 2.1],
+    ])(
+      "prices gemini-omni-video v2v at every accepted duration (%s seconds)",
+      (duration, expected) => {
+        const result = computeEstimate({
+          provider: "kie" as const,
+          payload: {
+            model: "gemini-omni-video",
+            input: {
+              prompt: "a cat",
+              duration,
+              video_list: [
+                { url: "https://example.com/a.mp4", start: 0, ends: 5 },
+              ],
+            },
+          },
+        });
+        expect(result.usd).toBeCloseTo(expected, 10);
+        expect(result.usd).toBeGreaterThan(0);
+        expect(result.warnings).toEqual([]);
+      }
+    );
+
     it("estimates elevenlabs by characters", () => {
       const req = {
         provider: "elevenlabs" as const,
@@ -383,6 +568,128 @@ describe("computeEstimate", () => {
       );
     });
 
+    it("estimates fal nano-banana per image via the endpoint key", () => {
+      const result = computeEstimate({
+        provider: "fal" as const,
+        endpoint: "fal-ai/nano-banana",
+        payload: { prompt: "a cat" },
+      });
+      expect(result.usd).toBe(0.039);
+      expect(result.currency).toBe("USD");
+      expect(result.source).toBe("per-unit-table");
+      expect(result.breakdown).toEqual({
+        units: 1,
+        unit: "images",
+        perUnitUsd: 0.039,
+      });
+      expect(result.rateAsOf).toBe("2026-07-20");
+      expect(result.warnings).toEqual([]);
+    });
+
+    it("scales fal per-image cost by num_images", () => {
+      const result = computeEstimate({
+        provider: "fal" as const,
+        endpoint: "fal-ai/nano-banana",
+        payload: { prompt: "a cat", num_images: 4 },
+      });
+      expect(result.usd).toBeCloseTo(0.156, 10); // 4 * 0.039
+      expect(result.breakdown.units).toBe(4);
+    });
+
+    it("selects the fal nano-banana-2 rate by resolution", () => {
+      const at = (resolution?: string) =>
+        computeEstimate({
+          provider: "fal" as const,
+          endpoint: "fal-ai/nano-banana-2",
+          payload: resolution ? { resolution } : {},
+        }).usd;
+      expect(at()).toBe(0.08); // defaults to 1K
+      expect(at("0.5K")).toBe(0.06);
+      expect(at("2K")).toBe(0.12);
+      expect(at("4K")).toBe(0.16);
+    });
+
+    it("fails fal when no rate matches the resolution variant", () => {
+      const result = computeEstimate({
+        provider: "fal" as const,
+        endpoint: "fal-ai/nano-banana-2",
+        payload: { resolution: "8K" },
+      });
+      expect(result.usd).toBe(0);
+      expect(result.warnings).toContain(
+        "fal 'fal-ai/nano-banana-2': no rate for variant '8K' (selectors: resolution)"
+      );
+    });
+
+    it("estimates fal flux/dev by megapixels from an explicit image_size", () => {
+      const result = computeEstimate({
+        provider: "fal" as const,
+        endpoint: "fal-ai/flux/dev",
+        payload: { image_size: { width: 2048, height: 2048 } },
+      });
+      // 2048*2048 = 4.19 MP, rounded up to 5 whole megapixels
+      expect(result.usd).toBeCloseTo(0.125, 10);
+      expect(result.breakdown).toEqual({
+        units: 5,
+        unit: "megapixels",
+        perUnitUsd: 0.025,
+      });
+    });
+
+    it("resolves fal image_size presets and assumes 1 MP when omitted", () => {
+      const preset = computeEstimate({
+        provider: "fal" as const,
+        endpoint: "fal-ai/flux/schnell",
+        payload: { image_size: "landscape_16_9", num_images: 2 },
+      });
+      // 1024*576 = 0.59 MP → 1 MP per image, 2 images
+      expect(preset.breakdown.units).toBe(2);
+      expect(preset.usd).toBeCloseTo(0.006, 10);
+
+      const omitted = computeEstimate({
+        provider: "fal" as const,
+        endpoint: "fal-ai/flux/schnell",
+        payload: {},
+      });
+      expect(omitted.breakdown.units).toBe(1);
+      expect(omitted.usd).toBe(0.003);
+    });
+
+    it("fails fal when image_size is present but unrecognized", () => {
+      const result = computeEstimate({
+        provider: "fal" as const,
+        endpoint: "fal-ai/flux/dev",
+        payload: { image_size: "ultrawide_42_9" },
+      });
+      expect(result.usd).toBe(0);
+      expect(result.warnings).toContain(
+        "fal 'fal-ai/flux/dev': could not derive units from payload (check duration / text)"
+      );
+    });
+
+    it("fails fal for an endpoint with no bundled rate", () => {
+      const result = computeEstimate({
+        provider: "fal" as const,
+        endpoint: "fal-ai/not-a-real-model",
+        payload: {},
+      });
+      expect(result.usd).toBe(0);
+      expect(result.warnings).toContain(
+        "model 'fal-ai/not-a-real-model' not found in pricing table for provider 'fal'"
+      );
+    });
+
+    it("fails fal when the endpoint discriminator is missing", () => {
+      const result = computeEstimate({
+        provider: "fal" as const,
+        payload: { prompt: "a cat" },
+      });
+      expect(result.usd).toBe(0);
+      expect(result.warnings).toContain(
+        "fal: endpoint or payload.model is required"
+      );
+    });
+
     it("estimates elevenlabs with model_id field", () => {
       const req = {
         provider: "elevenlabs" as const,
@@ -394,6 +701,124 @@ describe("computeEstimate", () => {
       const result = computeEstimate(req);
       expect(result.usd).toBe(0.00024); // 4 * 0.00006
       expect(result.warnings).toEqual([]);
+    });
+
+    it("estimates xai video by duration when the endpoint discriminator is set", () => {
+      const req = {
+        provider: "xai" as const,
+        endpoint: "v1.videos.generations",
+        payload: {
+          model: "grok-imagine-video",
+          prompt: "a cat on a rooftop",
+          duration: 10,
+          resolution: "720p",
+        },
+      };
+      const result = computeEstimate(req);
+      expect(result.usd).toBeCloseTo(0.5, 10); // 10 seconds * 0.05
+      expect(result.source).toBe("per-unit-table");
+      expect(result.breakdown).toEqual({
+        units: 10,
+        unit: "seconds",
+        perUnitUsd: 0.05,
+      });
+      expect(result.warnings).toEqual([]);
+    });
+
+    it("prices xai video 1.5 above the base video model", () => {
+      const req = {
+        provider: "xai" as const,
+        endpoint: "v1.videos.generations",
+        payload: { model: "grok-imagine-video-1.5", duration: 5 },
+      };
+      const result = computeEstimate(req);
+      expect(result.usd).toBeCloseTo(0.4, 10); // 5 seconds * 0.08
+      expect(result.breakdown.unit).toBe("seconds");
+    });
+
+    it("estimates xai images per generation, scaling with n", () => {
+      const req = {
+        provider: "xai" as const,
+        endpoint: "v1.images.generations",
+        payload: { model: "grok-imagine-image", prompt: "a red apple", n: 3 },
+      };
+      const result = computeEstimate(req);
+      expect(result.usd).toBeCloseTo(0.06, 10); // 3 generations * 0.02
+      expect(result.source).toBe("per-unit-table");
+      expect(result.breakdown).toEqual({
+        units: 3,
+        unit: "generations",
+        perUnitUsd: 0.02,
+      });
+      expect(result.warnings).toEqual([]);
+    });
+
+    it("defaults xai image units to a single generation when n is omitted", () => {
+      const req = {
+        provider: "xai" as const,
+        endpoint: "v1.images.edits",
+        payload: { model: "grok-imagine-image-quality" },
+      };
+      const result = computeEstimate(req);
+      expect(result.usd).toBeCloseTo(0.05, 10); // 1 generation * 0.05
+      expect(result.breakdown.units).toBe(1);
+    });
+
+    it("warns when an xai video payload carries no duration", () => {
+      const req = {
+        provider: "xai" as const,
+        endpoint: "v1.videos.edits",
+        payload: { model: "grok-imagine-video" },
+      };
+      const result = computeEstimate(req);
+      expect(result.usd).toBe(0);
+      expect(result.warnings).toContain(
+        "xai 'grok-imagine-video': could not derive units from payload (check duration / text)"
+      );
+    });
+
+    it("keeps xai token pricing on non-media endpoints", () => {
+      const req = {
+        provider: "xai" as const,
+        endpoint: "v1.chat.completions",
+        payload: {
+          model: "grok-4",
+          messages: [{ role: "user", content: "hello" }],
+          max_tokens: 100,
+        },
+      };
+      const result = computeEstimate(req);
+      expect(result.source).toBe("tokens-heuristic+table");
+      expect(result.breakdown.inputUsdPerMillion).toBe(3);
+      expect(result.breakdown.outputUsdPerMillion).toBe(15);
+      expect(result.warnings).toEqual([]);
+    });
+
+    // Review finding R-3: routing is derived from the pricing entry's own
+    // `kind`, so a media model prices per-unit whether or not the caller
+    // supplies `endpoint`. The earlier revision gated on a hand-maintained
+    // endpoint allowlist and returned 0 with a warning here.
+    it("prices an xai media model without the endpoint discriminator", () => {
+      const req = {
+        provider: "xai" as const,
+        payload: { model: "grok-imagine-video", duration: 10 },
+      };
+      const result = computeEstimate(req);
+      expect(result.source).toBe("per-unit-table");
+      expect(result.usd).toBeCloseTo(0.5);
+      expect(result.warnings).toEqual([]);
+    });
+
+    it("prices an xai media model identically with and without endpoint", () => {
+      const payload = { model: "grok-imagine-video", duration: 10 };
+      const withEndpoint = computeEstimate({
+        provider: "xai" as const,
+        endpoint: "v1.videos.generations",
+        payload,
+      });
+      const without = computeEstimate({ provider: "xai" as const, payload });
+      expect(withEndpoint.usd).toBe(without.usd);
+      expect(withEndpoint.source).toBe(without.source);
     });
 
     it("fails per-unit when model is missing", () => {
@@ -417,6 +842,85 @@ describe("computeEstimate", () => {
       expect(result.usd).toBe(0);
       expect(result.warnings).toContain(
         "model 'nonexistent-model' not found in pricing table for provider 'kie'"
+      );
+    });
+  });
+
+  describe("googleflow", () => {
+    it("estimates a Veo request as a non-zero USD amount", () => {
+      const req = {
+        provider: "googleflow" as const,
+        payload: { model: "veo-3.1-fast", prompt: "a cat", duration: 8 },
+      };
+      const result = computeEstimate(req);
+      expect(result.usd).toBe(0.4); // 20 credits * $0.02
+      expect(result.source).toBe("per-unit-table");
+      expect(result.breakdown).toEqual({
+        units: 1,
+        unit: "generations",
+        perUnitUsd: 0.4,
+      });
+      expect(result.rateAsOf).toBe("2026-07-20");
+      expect(result.warnings).toEqual([]);
+    });
+
+    it("prices each Veo tier flat, regardless of duration", () => {
+      const at = (model: string, duration: number) =>
+        computeEstimate({
+          provider: "googleflow" as const,
+          payload: { model, prompt: "a cat", duration },
+        }).usd;
+      expect(at("veo-3.1-quality", 8)).toBe(2);
+      expect(at("veo-3.1-lite", 4)).toBe(0.2);
+      expect(at("veo-3.1-lite", 8)).toBe(0.2);
+      // Ultra 20x only, and free of credits there — $0 is the real rate.
+      expect(at("veo-3.1-lite-low-priority", 8)).toBe(0);
+    });
+
+    it("multiplies by count, which is the number of variations", () => {
+      const result = computeEstimate({
+        provider: "googleflow" as const,
+        payload: { model: "veo-3.1-fast", prompt: "a cat", count: 3 },
+      });
+      expect(result.usd).toBeCloseTo(1.2, 10); // 3 * 20 credits * $0.02
+      expect(result.breakdown.units).toBe(3);
+    });
+
+    it("tiers omni-flash by duration and defaults to 8s", () => {
+      const at = (payload: Record<string, unknown>) =>
+        computeEstimate({
+          provider: "googleflow" as const,
+          payload: { model: "omni-flash", prompt: "a cat", ...payload },
+        }).usd;
+      expect(at({ duration: 4 })).toBe(0.3);
+      expect(at({ duration: 6 })).toBe(0.4);
+      expect(at({ duration: 8 })).toBe(0.5);
+      expect(at({ duration: 10 })).toBe(0.6);
+      expect(at({})).toBe(0.5); // upstream default duration is 8
+    });
+
+    it("prices omni-flash video-to-video flat, overriding duration", () => {
+      const result = computeEstimate({
+        provider: "googleflow" as const,
+        payload: {
+          model: "omni-flash",
+          prompt: "a cat",
+          duration: 4,
+          referenceVideo_1: "https://example.com/in.mp4",
+        },
+      });
+      expect(result.usd).toBe(0.8); // 40 credits * $0.02
+      expect(result.warnings).toEqual([]);
+    });
+
+    it("warns for a model outside the registered set", () => {
+      const result = computeEstimate({
+        provider: "googleflow" as const,
+        payload: { model: "veo-typo", prompt: "a cat" },
+      });
+      expect(result.usd).toBe(0);
+      expect(result.warnings).toContain(
+        "model 'veo-typo' not found in pricing table for provider 'googleflow'"
       );
     });
   });

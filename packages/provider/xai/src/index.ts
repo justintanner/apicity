@@ -128,7 +128,6 @@ export type {
   XaiResponseFileSearchTool,
   XaiResponseTextFormat,
   XaiResponseReasoning,
-  XaiResponseSearchParameters,
   XaiResponseOutputItem,
   XaiResponseOutputMessage,
   XaiResponseOutputContent,

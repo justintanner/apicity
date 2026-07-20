@@ -273,8 +273,8 @@ export const FalSeedance2p0FastReferenceToVideoRequestSchema = z.object({
 
 export const FalNanoBanana2TextToImageRequestSchema = z.object({
   prompt: z.string(),
-  num_images: z.number().optional(),
-  seed: z.number().optional(),
+  num_images: z.number().int().min(1).max(4).optional(),
+  seed: z.number().int().optional(),
   aspect_ratio: z
     .enum([
       "auto",
@@ -310,8 +310,8 @@ export const FalNanoBanana2TextToImageRequestSchema = z.object({
 export const FalNanoBanana2EditRequestSchema = z.object({
   prompt: z.string(),
   image_urls: z.array(z.string()),
-  num_images: z.number().optional(),
-  seed: z.number().optional(),
+  num_images: z.number().int().min(1).max(4).optional(),
+  seed: z.number().int().optional(),
   aspect_ratio: z
     .enum([
       "auto",
@@ -420,7 +420,7 @@ export const FalNanoBananaTextToImageRequestSchema = z.object({
     .optional(),
   output_format: z.enum(["jpeg", "png", "webp"]).optional(),
   safety_tolerance: z.enum(["1", "2", "3", "4", "5", "6"]).optional(),
-  seed: z.number().optional(),
+  seed: z.number().int().optional(),
   sync_mode: z.boolean().optional(),
   limit_generations: z.boolean().optional(),
 });
@@ -450,7 +450,7 @@ export const FalNanoBananaEditRequestSchema = z.object({
     .optional(),
   output_format: z.enum(["jpeg", "png", "webp"]).optional(),
   safety_tolerance: z.enum(["1", "2", "3", "4", "5", "6"]).optional(),
-  seed: z.number().optional(),
+  seed: z.number().int().optional(),
   sync_mode: z.boolean().optional(),
   limit_generations: z.boolean().optional(),
 });
@@ -556,8 +556,8 @@ export const FalQwenImageEditRequestSchema = z.object({
 
 export const FalNanoBananaProTextToImageRequestSchema = z.object({
   prompt: z.string(),
-  num_images: z.number().optional(),
-  seed: z.number().optional(),
+  num_images: z.number().int().min(1).max(4).optional(),
+  seed: z.number().int().optional(),
   aspect_ratio: z
     .enum([
       "auto",
@@ -588,8 +588,8 @@ export const FalNanoBananaProTextToImageRequestSchema = z.object({
 export const FalNanoBananaProEditRequestSchema = z.object({
   prompt: z.string(),
   image_urls: z.array(z.string()),
-  num_images: z.number().optional(),
-  seed: z.number().optional(),
+  num_images: z.number().int().min(1).max(4).optional(),
+  seed: z.number().int().optional(),
   aspect_ratio: z
     .enum([
       "auto",
@@ -639,8 +639,15 @@ export const FalSeedreamV5LiteEditRequestSchema = z.object({
   prompt: z.string(),
   image_urls: z.array(z.string()).min(1).max(10),
   image_size: FalSeedreamV5LiteImageSizeSchema.optional(),
-  num_images: z.number().optional(),
-  max_images: z.number().optional(),
+  auto_4K: z.boolean().optional(),
+  // Fal documents no upper bound for these counts (OQ-3), and Seedream has no
+  // same-family precedent to borrow one from -- the `.max(4)`/`.max(5)` an
+  // earlier revision took from Wan v2.7 / Nano Banana would have rejected valid
+  // payloads on a bound nobody can cite. Note this schema already accepts 10
+  // `image_urls`, so a 4-image ceiling was very likely wrong. `.int().min(1)`
+  // is what REQ-012 actually mandates; add a maximum only with a doc citation.
+  num_images: z.number().int().min(1).optional(),
+  max_images: z.number().int().min(1).optional(),
   sync_mode: z.boolean().optional(),
   enable_safety_checker: z.boolean().optional(),
 });
@@ -652,8 +659,11 @@ export const FalSeedreamV5LiteEditRequestSchema = z.object({
 export const FalSeedreamV5LiteTextToImageRequestSchema = z.object({
   prompt: z.string(),
   image_size: FalSeedreamV5LiteImageSizeSchema.optional(),
-  num_images: z.number().optional(),
-  max_images: z.number().optional(),
+  auto_4K: z.boolean().optional(),
+  // No documented upper bound; see the note on
+  // FalSeedreamV5LiteEditRequestSchema above.
+  num_images: z.number().int().min(1).optional(),
+  max_images: z.number().int().min(1).optional(),
   sync_mode: z.boolean().optional(),
   enable_safety_checker: z.boolean().optional(),
 });

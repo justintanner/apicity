@@ -60,6 +60,23 @@ describe("ElevenLabs Zod schema validation", () => {
       );
     });
 
+    it("should accept text at the 450 character maximum", () => {
+      const result = ElevenLabsSoundGenerationRequestSchema.safeParse({
+        text: "a".repeat(450),
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("should reject text above the 450 character maximum", () => {
+      const result = ElevenLabsSoundGenerationRequestSchema.safeParse({
+        text: "a".repeat(451),
+      });
+      expect(result.success).toBe(false);
+      expect(result.error?.issues.some((i) => i.path.includes("text"))).toBe(
+        true
+      );
+    });
+
     it("should reject duration_seconds below minimum", () => {
       const result = ElevenLabsSoundGenerationRequestSchema.safeParse({
         text: "short sound",

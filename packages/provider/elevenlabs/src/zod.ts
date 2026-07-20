@@ -371,7 +371,7 @@ export type ElevenLabsPvcTrainParsedRequest = z.output<
 // the same request object for ergonomics; the factory strips it out and moves
 // it to the URL query before serialising the body.
 export const ElevenLabsSoundGenerationRequestSchema = z.object({
-  text: z.string().min(1),
+  text: z.string().min(1).max(450),
   model_id: z.string().optional(),
   duration_seconds: z.number().min(0.5).max(30).nullable().optional(),
   prompt_influence: z.number().min(0).max(1).nullable().optional(),

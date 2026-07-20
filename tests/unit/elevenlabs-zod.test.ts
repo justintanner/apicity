@@ -1,6 +1,10 @@
 import { describe, it, expect } from "vitest";
 
 import {
+  zodToJsonSchema,
+  type JsonSchema,
+} from "../../packages/mcp-server/src/schema";
+import {
   ElevenLabsSoundGenerationRequestSchema,
   ElevenLabsTextToDialogueRequestSchema,
   ElevenLabsTextToSpeechRequestSchema,
@@ -17,6 +21,7 @@ import {
   ElevenLabsMergeAgentBranchRequestSchema,
   ElevenLabsPreviewAgentBranchMergeRequestSchema,
   ElevenLabsGetLiveConversationCountRequestSchema,
+  ElevenLabsTextToSpeechModelIdSchema,
   ELEVENLABS_TEXT_TO_SPEECH_MODEL_TEXT_LIMITS,
 } from "../../packages/provider/elevenlabs/src/zod";
 
@@ -642,6 +647,33 @@ describe("ElevenLabs Zod schema validation", () => {
         expect(
           result.error?.issues.some((i) => i.path.includes("model_id"))
         ).toBe(true);
+      });
+
+      // Every enumerated id also matches the alias regex, so the enum branch
+      // is redundant for *validation* — its job is MCP client autocomplete.
+      // Nothing else pins it, so deleting it would leave the suite green while
+      // silently dropping every completion. This is that pin.
+      it("keeps all eight ids in the enum branch of the MCP JSON Schema", () => {
+        const json = zodToJsonSchema(ElevenLabsTextToSpeechModelIdSchema);
+        const branches = json.anyOf as JsonSchema[];
+
+        expect(branches).toHaveLength(2);
+        expect(branches[0]).toMatchObject({
+          type: "string",
+          enum: [
+            "eleven_v3",
+            "eleven_flash_v2",
+            "eleven_flash_v2_5",
+            "eleven_monolingual_v1",
+            "eleven_multilingual_v1",
+            "eleven_multilingual_v2",
+            "eleven_turbo_v2",
+            "eleven_turbo_v2_5",
+          ],
+        });
+        // The second branch is the hatch; without it the enum would be closed.
+        expect(branches[1].type).toBe("string");
+        expect(branches[1].pattern).toBeDefined();
       });
     });
   });

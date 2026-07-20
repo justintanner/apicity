@@ -796,13 +796,27 @@ export const NanoBananaProRequestSchema = z.object({
   }),
 });
 
+// Seedance reference images are fetched by Kie from the public internet, so a
+// local editor path such as `@asset/photo.png` can never resolve. Carry an
+// explicit message instead of zod's generic "Invalid url" so the failure names
+// what the caller has to supply. Shared by seedance-2, seedance-2-fast, and
+// seedance-2-mini to keep `reference_image_urls` reconciled across the family.
+const SeedanceReferenceImageUrlSchema = z
+  .string()
+  .url(
+    "must be a publicly reachable HTTPS URL (for example https://example.com/image.png), not a local path such as @asset/photo.png"
+  );
+
 // Inner input schema kept unrefined so callers can walk `.shape` for slot
 // introspection (see Seedance2InputSchema for full rationale).
 export const Seedance2FastInputSchema = z.object({
   prompt: z.string().min(3).max(20000),
   first_frame_url: z.string().optional(),
   last_frame_url: z.string().optional(),
-  reference_image_urls: z.array(z.string()).max(9).optional(),
+  reference_image_urls: z
+    .array(SeedanceReferenceImageUrlSchema)
+    .max(9)
+    .optional(),
   reference_video_urls: z.array(z.string()).max(3).optional(),
   reference_audio_urls: z.array(z.string()).max(3).optional(),
   /** @deprecated */
@@ -851,7 +865,10 @@ export const Seedance2InputSchema = z.object({
   prompt: z.string().min(3).max(20000),
   first_frame_url: z.string().optional(),
   last_frame_url: z.string().optional(),
-  reference_image_urls: z.array(z.string()).max(9).optional(),
+  reference_image_urls: z
+    .array(SeedanceReferenceImageUrlSchema)
+    .max(9)
+    .optional(),
   reference_video_urls: z.array(z.string()).max(3).optional(),
   reference_audio_urls: z.array(z.string()).max(3).optional(),
   /** @deprecated */
@@ -898,7 +915,10 @@ export const Seedance2RequestSchema = Seedance2RequestObjectSchema.refine(
 
 export const Seedance2MiniInputSchema = z.object({
   prompt: z.string().max(20000).optional(),
-  reference_image_urls: z.array(z.string().url()).default([]),
+  reference_image_urls: z
+    .array(SeedanceReferenceImageUrlSchema)
+    .max(9)
+    .default([]),
   reference_video_urls: z.array(z.string().url()).max(3).default([]),
   reference_audio_urls: z.array(z.string().url()).max(3).default([]),
   generate_audio: z.boolean().default(true),

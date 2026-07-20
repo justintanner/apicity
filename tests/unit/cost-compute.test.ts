@@ -463,6 +463,78 @@ describe("computeEstimate", () => {
       );
     });
 
+    // gemini-omni-video's upstream schema types `duration` as a string enum
+    // ("4" | "6" | "8" | "10"), so the string form is the shape real callers
+    // send. Both forms must select the same rate.
+    it("prices gemini-omni-video identically for string and numeric duration", () => {
+      const forDuration = (duration: string | number) =>
+        computeEstimate({
+          provider: "kie" as const,
+          payload: {
+            model: "gemini-omni-video",
+            input: { prompt: "a cat", duration, resolution: "720p" },
+          },
+        });
+
+      const asText = forDuration("8");
+      const asNum = forDuration(8);
+
+      expect(asText.usd).toBe(0.63); // 8s @ 720p, not the 4s rate of 0.315
+      expect(asText.usd).toBe(asNum.usd);
+      expect(asText.breakdown).toEqual(asNum.breakdown);
+      expect(asText.warnings).toEqual([]);
+    });
+
+    it.each([
+      ["4", 0.315],
+      ["6", 0.4725],
+      ["8", 0.63],
+      ["10", 0.7875],
+    ])(
+      "prices gemini-omni-video t2v at %s seconds / 720p",
+      (duration, expected) => {
+        const result = computeEstimate({
+          provider: "kie" as const,
+          payload: {
+            model: "gemini-omni-video",
+            input: { prompt: "a cat", duration, resolution: "720p" },
+          },
+        });
+        expect(result.usd).toBeCloseTo(expected, 10);
+        expect(result.warnings).toEqual([]);
+      }
+    );
+
+    // Regression: v2v rate keys used to carry a trailing empty segment
+    // ("v2v|4|") that evaluatePerUnit's key join drops, so every
+    // video-to-video request missed the table and silently priced at zero.
+    it.each([
+      ["4", 0.84],
+      ["6", 1.26],
+      ["8", 1.68],
+      ["10", 2.1],
+    ])(
+      "prices gemini-omni-video v2v at every accepted duration (%s seconds)",
+      (duration, expected) => {
+        const result = computeEstimate({
+          provider: "kie" as const,
+          payload: {
+            model: "gemini-omni-video",
+            input: {
+              prompt: "a cat",
+              duration,
+              video_list: [
+                { url: "https://example.com/a.mp4", start: 0, ends: 5 },
+              ],
+            },
+          },
+        });
+        expect(result.usd).toBeCloseTo(expected, 10);
+        expect(result.usd).toBeGreaterThan(0);
+        expect(result.warnings).toEqual([]);
+      }
+    );
+
     it("estimates elevenlabs by characters", () => {
       const req = {
         provider: "elevenlabs" as const,

@@ -451,6 +451,21 @@ describe("PRICING data", () => {
     expect(at720.usd).toBe(at1080.usd);
   });
 
+  // The variant key is built by joining non-empty selector values, so a v2v
+  // key must not carry the trailing empty resolution segment — "v2v|4|" can
+  // never be produced and would silently price V2V at zero.
+  it("kie gemini-omni-video v2v rate keys have no trailing empty segment", () => {
+    const entry = PRICING.kie["gemini-omni-video"];
+    expect(entry.kind).toBe("perUnit");
+    if (entry.kind !== "perUnit") return;
+
+    const v2vKeys = Object.keys(entry.rates).filter((k) => k.startsWith("v2v"));
+    expect(v2vKeys.sort()).toEqual(["v2v|10", "v2v|4", "v2v|6", "v2v|8"]);
+    for (const key of v2vKeys) {
+      expect(key.endsWith("|"), key).toBe(false);
+    }
+  });
+
   it("every pricing entry has a source", () => {
     for (const [provider, models] of Object.entries(PRICING)) {
       for (const [model, entry] of Object.entries(models)) {

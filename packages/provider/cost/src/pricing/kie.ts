@@ -32,6 +32,13 @@ const hasVideoListInput = (p: Record<string, unknown>): boolean => {
   return Array.isArray(videoList) && videoList.length > 0;
 };
 
+// Rate-key form of the duration. Upstream sends either a number (8) or a
+// numeric string ("8"), and both must select the same rate — so coerce through
+// coerceSeconds rather than asNumber, which rejects strings and would silently
+// fall back to the default.
+const durationKey = (p: Record<string, unknown>, fallback: number): string =>
+  String(coerceSeconds(asObject(p.input)?.duration ?? p.duration) ?? fallback);
+
 // Image models price per image; units = input.n when present (only
 // wan/2-7-image* uses batch generation today), otherwise 1.
 const imageCount = (p: Record<string, unknown>): number =>
@@ -492,8 +499,7 @@ export const kie: Record<string, ModelPricing> = {
       },
       {
         name: "duration",
-        pick: (p) =>
-          String(asNumber(asObject(p.input)?.duration) ?? p.duration ?? 4),
+        pick: (p) => durationKey(p, 4),
       },
       {
         name: "resolution",
@@ -503,6 +509,10 @@ export const kie: Record<string, ModelPricing> = {
             : (asString(asObject(p.input)?.resolution) ?? "720p"),
       },
     ],
+    // V2V does not vary by resolution, so its resolution selector yields "",
+    // which evaluatePerUnit drops from the joined variant key. The v2v rate
+    // keys therefore carry no trailing empty segment — writing them as
+    // "v2v|4|" made every V2V request miss the table and price at zero.
     rates: {
       "t2v|4|720p": 0.315,
       "t2v|6|720p": 0.4725,
@@ -516,8 +526,10 @@ export const kie: Record<string, ModelPricing> = {
       "t2v|6|4k": 0.63,
       "t2v|8|4k": 0.84,
       "t2v|10|4k": 1.05,
-      "v2v|4|": 0.84,
-      "v2v|6|": 1.26,
+      "v2v|4": 0.84,
+      "v2v|6": 1.26,
+      "v2v|8": 1.68,
+      "v2v|10": 2.1,
     },
     source: src("google/gemini-omni"),
   },

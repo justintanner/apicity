@@ -157,6 +157,22 @@ export const GoogleFlowVoicesListRequestSchema = z
   })
   .passthrough();
 
+// Upstream keeps accepting deprecated Veo aliases and ships new Veo point
+// releases before this package's enum catches up, so the enums below are
+// unioned with an alias escape hatch. A bare `.or(z.string())` used to be
+// that hatch, but it accepted anything — `model: "veo-typo"` validated
+// cleanly. The hatch is narrowed to versioned Veo identifiers:
+// `veo-<version>` (dotted numeric) plus optional lowercase variant
+// segments, e.g. veo-2, veo-3.0-fast, veo-3.1-lite-low-priority. Anything
+// that is not a versioned Veo id — including typos and models from other
+// families — must be added to the enum explicitly.
+const GoogleFlowVeoModelAliasSchema = z
+  .string()
+  .regex(
+    /^veo-\d+(?:\.\d+)*(?:-[a-z0-9]+)*$/,
+    "Expected a listed model or a versioned Veo alias (e.g. veo-3.1-fast)"
+  );
+
 export const GoogleFlowImagesRequestSchema = z
   .object({
     prompt: z.string().min(1),
@@ -226,7 +242,7 @@ export const GoogleFlowVideosRequestSchema = z
         "veo-3.1-lite-low-priority",
         "omni-flash",
       ])
-      .or(z.string())
+      .or(GoogleFlowVeoModelAliasSchema)
       .optional(),
     // landscape/portrait for all models; Veo also accepts 1:1, 4:3, 3:4.
     // Unioned with string: upstream also accepts undocumented ratio aliases
@@ -298,7 +314,7 @@ export const GoogleFlowVideosExtendRequestSchema = z
         "veo-3.1-lite",
         "veo-3.1-lite-low-priority",
       ])
-      .or(z.string())
+      .or(GoogleFlowVeoModelAliasSchema)
       .optional(),
     count: z.number().int().min(1).max(4).optional(),
     seed: z.number().int().optional(),

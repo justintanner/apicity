@@ -415,8 +415,12 @@ export const ElevenLabsPronunciationDictionaryLocatorSchema = z
 // Values are upstream's own `maximum_text_length_per_request`, taken from the
 // recorded GET /v1/models response
 // (tests/recordings/elevenlabs_2379486140/models_343003787). Only models whose
-// `can_do_text_to_speech` is true are listed — the speech-to-speech models
-// (eleven_english_sts_v2, eleven_multilingual_sts_v2) cannot be used here.
+// `can_do_text_to_speech` is true are listed here. That is a statement about
+// the table, not about what the schema admits: the alias hatch below is a
+// shape check, so a speech-to-speech id (eleven_english_sts_v2,
+// eleven_multilingual_sts_v2) parses, finds no entry in this table, and falls
+// back to the static 40000-character bound on `text`. Upstream remains the
+// authority on which model an endpoint actually serves.
 export const ELEVENLABS_TEXT_TO_SPEECH_MODEL_TEXT_LIMITS = {
   eleven_v3: 5000,
   eleven_flash_v2: 30000,
@@ -428,16 +432,36 @@ export const ELEVENLABS_TEXT_TO_SPEECH_MODEL_TEXT_LIMITS = {
   eleven_turbo_v2_5: 40000,
 } as const;
 
-export const ElevenLabsTextToSpeechModelIdSchema = z.enum([
-  "eleven_v3",
-  "eleven_flash_v2",
-  "eleven_flash_v2_5",
-  "eleven_monolingual_v1",
-  "eleven_multilingual_v1",
-  "eleven_multilingual_v2",
-  "eleven_turbo_v2",
-  "eleven_turbo_v2_5",
-]);
+// Upstream ships new ElevenLabs model versions before this package's enum
+// catches up, so the enum below is unioned with an alias escape hatch. The
+// grammar is taken from the recorded GET /v1/models response
+// (tests/recordings/elevenlabs_2379486140/models_343003787): an id is
+// `eleven_`, then lowercase alphanumeric family segments, then a terminal
+// version `v<digits>` with optional dot-free point releases, e.g.
+// eleven_flash_v3, eleven_turbo_v3_5. Anchoring the version at the *end* is
+// the load-bearing part. A bare family-prefix hatch like
+// `/^eleven_[a-z0-9_]+$/` would wrongly accept `eleven_typo` and
+// `eleven_v2_flash`; anything that is not a versioned ElevenLabs id must be
+// added to the enum explicitly.
+const ElevenLabsModelAliasSchema = z
+  .string()
+  .regex(
+    /^eleven_(?:[a-z0-9]+_)*v\d+(?:_\d+)*$/,
+    "Expected a listed model or a versioned ElevenLabs id (e.g. eleven_flash_v3)"
+  );
+
+export const ElevenLabsTextToSpeechModelIdSchema = z
+  .enum([
+    "eleven_v3",
+    "eleven_flash_v2",
+    "eleven_flash_v2_5",
+    "eleven_monolingual_v1",
+    "eleven_multilingual_v1",
+    "eleven_multilingual_v2",
+    "eleven_turbo_v2",
+    "eleven_turbo_v2_5",
+  ])
+  .or(ElevenLabsModelAliasSchema);
 
 // The most permissive documented cap. It is applied statically to `text` so
 // that it survives conversion to MCP tool input JSON Schema; the per-model cap
@@ -468,8 +492,15 @@ export const ElevenLabsTextToSpeechRequestSchema = z
     enable_logging: z.boolean().optional(),
   })
   .superRefine((req, ctx) => {
-    if (req.model_id === undefined) return;
-    const limit = ELEVENLABS_TEXT_TO_SPEECH_MODEL_TEXT_LIMITS[req.model_id];
+    const { model_id } = req;
+    if (model_id === undefined) return;
+    // An id admitted by the alias hatch has no entry in the cap table, so it
+    // has no per-model cap — only the static .max() bound on `text` applies.
+    if (!(model_id in ELEVENLABS_TEXT_TO_SPEECH_MODEL_TEXT_LIMITS)) return;
+    const limit =
+      ELEVENLABS_TEXT_TO_SPEECH_MODEL_TEXT_LIMITS[
+        model_id as keyof typeof ELEVENLABS_TEXT_TO_SPEECH_MODEL_TEXT_LIMITS
+      ];
     if (req.text.length > limit) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,

@@ -311,6 +311,35 @@ export const kie: Record<string, ModelPricing> = {
     "happyhorse-1-1/reference-to-video"
   ),
 
+  // omnihuman-1-5: flat 27 credits/s ($0.135). KIE publishes one rate — the
+  // output_resolution (720/1080) and pe_fast_mode switches do not change it.
+  // Like veo3, the schema has no duration field (length follows the driving
+  // audio), so callers must pass duration as a top-level hint.
+  "omnihuman-1-5": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: seconds,
+    select: [],
+    rates: { "": 0.135 },
+    source: { ...page("https://kie.ai/omnihuman-1-5"), asOf: "2026-07-20" },
+  },
+
+  // volcengine/video-to-video-lip-sync: flat 8 credits/s ($0.04). Both
+  // input.mode tiers ("lite"/"basic") bill at the same published rate, so
+  // there is no mode selector. Schema has no duration field (length follows
+  // the source video), so callers must pass duration as a top-level hint.
+  "volcengine/video-to-video-lip-sync": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: seconds,
+    select: [],
+    rates: { "": 0.04 },
+    source: {
+      ...page("https://kie.ai/volcengine-video-to-video-lip-sync"),
+      asOf: "2026-07-20",
+    },
+  },
+
   // bytedance/seedance-2: 6 rates, resolution × videoInput (i2v when
   // input.first_frame_url is present, t2v otherwise).
   "bytedance/seedance-2": {

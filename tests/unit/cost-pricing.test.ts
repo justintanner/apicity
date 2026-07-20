@@ -10,6 +10,7 @@ import {
   PRICING_AS_OF,
 } from "../../packages/provider/cost/src/pricing/index";
 import { MODEL_SLUGS } from "../../packages/provider/cost/src/slugs";
+import { computeEstimate } from "../../packages/provider/cost/src/compute";
 
 describe("pricing helpers", () => {
   describe("asString", () => {
@@ -358,6 +359,96 @@ describe("PRICING data", () => {
         /^\d{4}-\d{2}-\d{2}$/
       );
     }
+  });
+
+  it("kie has flat per-second pricing for the lip-sync models", () => {
+    expect(PRICING.kie["omnihuman-1-5"]).toMatchObject({
+      kind: "perUnit",
+      unit: "seconds",
+      rates: { "": 0.135 },
+    });
+    expect(PRICING.kie["volcengine/video-to-video-lip-sync"]).toMatchObject({
+      kind: "perUnit",
+      unit: "seconds",
+      rates: { "": 0.04 },
+    });
+  });
+
+  it("kie lip-sync entries carry a source url and asOf stamp", () => {
+    for (const model of [
+      "omnihuman-1-5",
+      "volcengine/video-to-video-lip-sync",
+    ]) {
+      const entry = PRICING.kie[model];
+      expect(entry.source.url, model).toMatch(/^https:\/\/kie\.ai\//);
+      expect(entry.source.asOf, model).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    }
+  });
+
+  it("kie lip-sync requests return estimates", () => {
+    const omni = computeEstimate({
+      provider: "kie" as const,
+      payload: {
+        model: "omnihuman-1-5",
+        duration: 8,
+        input: { image_url: "https://example.com/a.png" },
+      },
+    });
+    expect(omni.usd).toBeCloseTo(1.08, 10); // 8 * 0.135
+    expect(omni.source).toBe("per-unit-table");
+    expect(omni.breakdown).toMatchObject({
+      units: 8,
+      unit: "seconds",
+      perUnitUsd: 0.135,
+    });
+    expect(omni.warnings).toEqual([]);
+
+    const lipSync = computeEstimate({
+      provider: "kie" as const,
+      payload: {
+        model: "volcengine/video-to-video-lip-sync",
+        input: { duration: 12, mode: "basic" },
+      },
+    });
+    expect(lipSync.usd).toBeCloseTo(0.48, 10); // 12 * 0.04
+    expect(lipSync.source).toBe("per-unit-table");
+    expect(lipSync.warnings).toEqual([]);
+  });
+
+  it("kie lip-sync rate is flat across mode and resolution", () => {
+    const lite = computeEstimate({
+      provider: "kie" as const,
+      payload: {
+        model: "volcengine/video-to-video-lip-sync",
+        input: { duration: 10, mode: "lite" },
+      },
+    });
+    const basic = computeEstimate({
+      provider: "kie" as const,
+      payload: {
+        model: "volcengine/video-to-video-lip-sync",
+        input: { duration: 10, mode: "basic" },
+      },
+    });
+    expect(lite.usd).toBe(basic.usd);
+
+    const at720 = computeEstimate({
+      provider: "kie" as const,
+      payload: {
+        model: "omnihuman-1-5",
+        duration: 5,
+        input: { output_resolution: "720" },
+      },
+    });
+    const at1080 = computeEstimate({
+      provider: "kie" as const,
+      payload: {
+        model: "omnihuman-1-5",
+        duration: 5,
+        input: { output_resolution: "1080" },
+      },
+    });
+    expect(at720.usd).toBe(at1080.usd);
   });
 
   it("every pricing entry has a source", () => {

@@ -66,6 +66,8 @@ describe("MODEL_SLUGS", () => {
       "grok-imagine/text-to-video": "grok",
       "happyhorse/text-to-video": "hh",
       "happyhorse-1-1/text-to-video": "hh1p1",
+      "omnihuman-1-5": "oh1p5",
+      "volcengine/video-to-video-lip-sync": "vlipsync",
       veo3: "veo3",
       veo3_fast: "veo3f",
       "nano-banana": "nb",
@@ -175,6 +177,14 @@ describe("modelSlug", () => {
     expect(modelSlug("kie", "kling/v3-turbo-text-to-video")).toBe("kling3t");
   });
 
+  it("resolves kie lip-sync models without throwing", () => {
+    expect(() => modelSlug("kie", "omnihuman-1-5")).not.toThrow();
+    expect(modelSlug("kie", "omnihuman-1-5")).toBe("oh1p5");
+    expect(modelSlug("kie", "volcengine/video-to-video-lip-sync")).toBe(
+      "vlipsync"
+    );
+  });
+
   it("returns correct slug for alibaba qwen3.6-plus", () => {
     expect(modelSlug("alibaba", "qwen3.6-plus")).toBe("qwen3p6");
   });
@@ -253,6 +263,8 @@ describe("MODEL_DISPLAY", () => {
       "kling/v3-turbo-image-to-video": "Kling 3.0 Turbo",
       "kling/v3-turbo-text-to-video": "Kling 3.0 Turbo",
       "happyhorse-1-1/text-to-video": "HappyHorse 1.1",
+      "omnihuman-1-5": "OmniHuman 1.5",
+      "volcengine/video-to-video-lip-sync": "Volcengine Lip Sync",
       veo3: "Veo 3",
       veo3_fast: "Veo 3 Fast",
       "suno/generate": "Suno",

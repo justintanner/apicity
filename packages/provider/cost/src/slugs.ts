@@ -49,6 +49,10 @@ export const MODEL_SLUGS = {
     "happyhorse-1-1/image-to-video": "hh1p1",
     "happyhorse-1-1/reference-to-video": "hh1p1",
 
+    // Video — lip sync / avatar
+    "omnihuman-1-5": "oh1p5",
+    "volcengine/video-to-video-lip-sync": "vlipsync",
+
     // Video — Veo
     veo3: "veo3",
     veo3_fast: "veo3f",
@@ -270,6 +274,9 @@ export const MODEL_DISPLAY = {
     "happyhorse-1-1/text-to-video": "HappyHorse 1.1",
     "happyhorse-1-1/image-to-video": "HappyHorse 1.1",
     "happyhorse-1-1/reference-to-video": "HappyHorse 1.1",
+
+    "omnihuman-1-5": "OmniHuman 1.5",
+    "volcengine/video-to-video-lip-sync": "Volcengine Lip Sync",
 
     veo3: "Veo 3",
     veo3_fast: "Veo 3 Fast",

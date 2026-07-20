@@ -799,12 +799,21 @@ export const NanoBananaProRequestSchema = z.object({
 // Seedance reference images are fetched by Kie from the public internet, so a
 // local editor path such as `@asset/photo.png` can never resolve. Carry an
 // explicit message instead of zod's generic "Invalid url" so the failure names
-// what the caller has to supply. Shared by seedance-2, seedance-2-fast, and
-// seedance-2-mini to keep `reference_image_urls` reconciled across the family.
+// what the caller has to supply.
+//
+// Applied to seedance-2-mini only. REQ-002 is scoped to mini, and `.url()`
+// already existed there, so swapping in the message breaks nobody. The
+// seedance-2 / seedance-2-fast siblings stay on `z.array(z.string())`:
+// tightening them to `.url()` would reject payloads those callers can send
+// today, which is its own requirement and its own PR (review finding R-2).
+//
+// The message says "URL", not "HTTPS URL" -- zod's `.url()` accepts `http://`
+// too, so naming HTTPS here would describe a constraint this schema does not
+// enforce.
 const SeedanceReferenceImageUrlSchema = z
   .string()
   .url(
-    "must be a publicly reachable HTTPS URL (for example https://example.com/image.png), not a local path such as @asset/photo.png"
+    "must be a publicly reachable URL (for example https://example.com/image.png), not a local path such as @asset/photo.png"
   );
 
 // Inner input schema kept unrefined so callers can walk `.shape` for slot
@@ -813,10 +822,7 @@ export const Seedance2FastInputSchema = z.object({
   prompt: z.string().min(3).max(20000),
   first_frame_url: z.string().optional(),
   last_frame_url: z.string().optional(),
-  reference_image_urls: z
-    .array(SeedanceReferenceImageUrlSchema)
-    .max(9)
-    .optional(),
+  reference_image_urls: z.array(z.string()).max(9).optional(),
   reference_video_urls: z.array(z.string()).max(3).optional(),
   reference_audio_urls: z.array(z.string()).max(3).optional(),
   /** @deprecated */
@@ -865,10 +871,7 @@ export const Seedance2InputSchema = z.object({
   prompt: z.string().min(3).max(20000),
   first_frame_url: z.string().optional(),
   last_frame_url: z.string().optional(),
-  reference_image_urls: z
-    .array(SeedanceReferenceImageUrlSchema)
-    .max(9)
-    .optional(),
+  reference_image_urls: z.array(z.string()).max(9).optional(),
   reference_video_urls: z.array(z.string()).max(3).optional(),
   reference_audio_urls: z.array(z.string()).max(3).optional(),
   /** @deprecated */

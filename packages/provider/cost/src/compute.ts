@@ -1,5 +1,6 @@
 import { PRICING, PRICING_AS_OF, type PricedProviderId } from "./pricing/index";
 import { asString } from "./pricing/helpers";
+import { XAI_MEDIA_ENDPOINTS } from "./pricing/xai";
 
 import type { CostEstimate, CostSource, EstimateRequest } from "./types";
 
@@ -38,7 +39,9 @@ function applyTokenRate(
   const source: CostSource = "tokens-heuristic+table";
   if (!entry || entry.kind !== "tokens") {
     warnings.push(
-      `model '${model}' not found in pricing table for provider '${provider}'`
+      entry
+        ? `${provider} '${model}' is per-unit billed; pass the media endpoint via EstimateRequest.endpoint`
+        : `model '${model}' not found in pricing table for provider '${provider}'`
     );
     return {
       usd: 0,
@@ -130,6 +133,17 @@ export function computeEstimate(req: EstimateRequest): CostEstimate {
     case "openai":
     case "anthropic":
     case "xai": {
+      // xAI media endpoints bill per second of video / per generated image,
+      // not per token. The existing `endpoint` discriminator selects that
+      // path — but unlike Suno, the pricing key stays `payload.model`, so
+      // each media model keeps its own rate. Every other xai endpoint (and
+      // any media call made without the discriminator) stays token-billed.
+      if (
+        req.provider === "xai" &&
+        XAI_MEDIA_ENDPOINTS.has(req.endpoint ?? "")
+      ) {
+        return evaluatePerUnit("xai", req.payload, undefined);
+      }
       const ext =
         req.provider === "openai"
           ? extractOpenAi(req.payload)

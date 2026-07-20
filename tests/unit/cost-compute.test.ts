@@ -518,6 +518,110 @@ describe("computeEstimate", () => {
       expect(result.warnings).toEqual([]);
     });
 
+    it("estimates xai video by duration when the endpoint discriminator is set", () => {
+      const req = {
+        provider: "xai" as const,
+        endpoint: "v1.videos.generations",
+        payload: {
+          model: "grok-imagine-video",
+          prompt: "a cat on a rooftop",
+          duration: 10,
+          resolution: "720p",
+        },
+      };
+      const result = computeEstimate(req);
+      expect(result.usd).toBeCloseTo(0.5, 10); // 10 seconds * 0.05
+      expect(result.source).toBe("per-unit-table");
+      expect(result.breakdown).toEqual({
+        units: 10,
+        unit: "seconds",
+        perUnitUsd: 0.05,
+      });
+      expect(result.warnings).toEqual([]);
+    });
+
+    it("prices xai video 1.5 above the base video model", () => {
+      const req = {
+        provider: "xai" as const,
+        endpoint: "v1.videos.generations",
+        payload: { model: "grok-imagine-video-1.5", duration: 5 },
+      };
+      const result = computeEstimate(req);
+      expect(result.usd).toBeCloseTo(0.4, 10); // 5 seconds * 0.08
+      expect(result.breakdown.unit).toBe("seconds");
+    });
+
+    it("estimates xai images per generation, scaling with n", () => {
+      const req = {
+        provider: "xai" as const,
+        endpoint: "v1.images.generations",
+        payload: { model: "grok-imagine-image", prompt: "a red apple", n: 3 },
+      };
+      const result = computeEstimate(req);
+      expect(result.usd).toBeCloseTo(0.06, 10); // 3 generations * 0.02
+      expect(result.source).toBe("per-unit-table");
+      expect(result.breakdown).toEqual({
+        units: 3,
+        unit: "generations",
+        perUnitUsd: 0.02,
+      });
+      expect(result.warnings).toEqual([]);
+    });
+
+    it("defaults xai image units to a single generation when n is omitted", () => {
+      const req = {
+        provider: "xai" as const,
+        endpoint: "v1.images.edits",
+        payload: { model: "grok-imagine-image-quality" },
+      };
+      const result = computeEstimate(req);
+      expect(result.usd).toBeCloseTo(0.05, 10); // 1 generation * 0.05
+      expect(result.breakdown.units).toBe(1);
+    });
+
+    it("warns when an xai video payload carries no duration", () => {
+      const req = {
+        provider: "xai" as const,
+        endpoint: "v1.videos.edits",
+        payload: { model: "grok-imagine-video" },
+      };
+      const result = computeEstimate(req);
+      expect(result.usd).toBe(0);
+      expect(result.warnings).toContain(
+        "xai 'grok-imagine-video': could not derive units from payload (check duration / text)"
+      );
+    });
+
+    it("keeps xai token pricing on non-media endpoints", () => {
+      const req = {
+        provider: "xai" as const,
+        endpoint: "v1.chat.completions",
+        payload: {
+          model: "grok-4",
+          messages: [{ role: "user", content: "hello" }],
+          max_tokens: 100,
+        },
+      };
+      const result = computeEstimate(req);
+      expect(result.source).toBe("tokens-heuristic+table");
+      expect(result.breakdown.inputUsdPerMillion).toBe(3);
+      expect(result.breakdown.outputUsdPerMillion).toBe(15);
+      expect(result.warnings).toEqual([]);
+    });
+
+    it("warns when an xai media model is priced without the endpoint discriminator", () => {
+      const req = {
+        provider: "xai" as const,
+        payload: { model: "grok-imagine-video", duration: 10 },
+      };
+      const result = computeEstimate(req);
+      expect(result.usd).toBe(0);
+      expect(result.source).toBe("tokens-heuristic+table");
+      expect(result.warnings).toContain(
+        "xai 'grok-imagine-video' is per-unit billed; pass the media endpoint via EstimateRequest.endpoint"
+      );
+    });
+
     it("fails per-unit when model is missing", () => {
       const req = {
         provider: "kie" as const,

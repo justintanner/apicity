@@ -177,6 +177,17 @@ describe("modelSlug", () => {
     expect(modelSlug("alibaba", "qwen3.6-plus")).toBe("qwen3p6");
   });
 
+  it("returns distinct slugs for xai grok imagine media models", () => {
+    expect(modelSlug("xai", "grok-imagine-video")).toBe("grokimgv");
+    expect(modelSlug("xai", "grok-imagine-video-1.5")).toBe("grokimgv1p5");
+    // The preview id is the same model variant, so it shares the slug.
+    expect(modelSlug("xai", "grok-imagine-video-1.5-preview")).toBe(
+      "grokimgv1p5"
+    );
+    expect(modelSlug("xai", "grok-imagine-image")).toBe("grokimgi");
+    expect(modelSlug("xai", "grok-imagine-image-quality")).toBe("grokimgiq");
+  });
+
   it("returns correct slug for fireworks deepseek-v3", () => {
     expect(modelSlug("fireworks", "deepseek-v3")).toBe("ds3");
   });
@@ -306,6 +317,15 @@ describe("modelDisplay", () => {
 
   it("returns correct display for xai grok-4-fast", () => {
     expect(modelDisplay("xai", "grok-4-fast")).toBe("Grok 4 Fast");
+  });
+
+  it("returns correct display for xai grok imagine media models", () => {
+    expect(modelDisplay("xai", "grok-imagine-video")).toBe(
+      "Grok Imagine Video"
+    );
+    expect(modelDisplay("xai", "grok-imagine-image")).toBe(
+      "Grok Imagine Image"
+    );
   });
 
   it("returns correct display for kie veo3", () => {

@@ -10,6 +10,7 @@ import {
   PRICING_AS_OF,
 } from "../../packages/provider/cost/src/pricing/index";
 import { MODEL_SLUGS } from "../../packages/provider/cost/src/slugs";
+import { XAI_MEDIA_ENDPOINTS } from "../../packages/provider/cost/src/pricing/xai";
 
 describe("pricing helpers", () => {
   describe("asString", () => {
@@ -176,6 +177,57 @@ describe("PRICING data", () => {
     expect(PRICING.xai["grok-code-fast-1-0825"]).toBe(
       PRICING.xai["grok-build-0.1"]
     );
+  });
+
+  it("xai has per-second video rates", () => {
+    expect(PRICING.xai["grok-imagine-video"]).toMatchObject({
+      kind: "perUnit",
+      unit: "seconds",
+      rates: { "": 0.05 },
+    });
+    expect(PRICING.xai["grok-imagine-video-1.5"]).toMatchObject({
+      kind: "perUnit",
+      unit: "seconds",
+      rates: { "": 0.08 },
+    });
+    // The provider exports the preview id; it prices at the released rate.
+    expect(PRICING.xai["grok-imagine-video-1.5-preview"]).toMatchObject({
+      kind: "perUnit",
+      unit: "seconds",
+      rates: { "": 0.08 },
+    });
+  });
+
+  it("xai has per-generation image rates", () => {
+    expect(PRICING.xai["grok-imagine-image"]).toMatchObject({
+      kind: "perUnit",
+      unit: "generations",
+      rates: { "": 0.02 },
+    });
+    expect(PRICING.xai["grok-imagine-image-quality"]).toMatchObject({
+      kind: "perUnit",
+      unit: "generations",
+      rates: { "": 0.05 },
+    });
+  });
+
+  it("every xai media rate carries a source url and asOf stamp", () => {
+    for (const [model, entry] of Object.entries(PRICING.xai)) {
+      if (entry.kind !== "perUnit") continue;
+      expect(entry.source.url, model).toMatch(/^https:\/\/docs\.x\.ai\//);
+      expect(entry.source.asOf, model).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    }
+  });
+
+  it("names only xai media POST endpoints as per-unit routes", () => {
+    expect([...XAI_MEDIA_ENDPOINTS].sort()).toEqual([
+      "v1.images.edits",
+      "v1.images.generations",
+      "v1.videos.edits",
+      "v1.videos.extensions",
+      "v1.videos.generations",
+      "v1.videos.generations.imageToVideo",
+    ]);
   });
 
   it("kimicoding has token-priced models", () => {

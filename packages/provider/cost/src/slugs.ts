@@ -144,6 +144,13 @@ export const MODEL_SLUGS = {
     "grok-4": "grok4",
     "grok-4-fast": "grok4f",
     "grok-4-1-fast": "grok4p1f",
+    // Grok Imagine media models. Same underlying models kie resells as
+    // "grok-imagine/*" — slugs intentionally match kie's "grok" family.
+    "grok-imagine-video": "grokimgv",
+    "grok-imagine-video-1.5": "grokimgv1p5",
+    "grok-imagine-video-1.5-preview": "grokimgv1p5",
+    "grok-imagine-image": "grokimgi",
+    "grok-imagine-image-quality": "grokimgiq",
   },
 
   alibaba: {
@@ -345,6 +352,11 @@ export const MODEL_DISPLAY = {
     "grok-4": "Grok 4",
     "grok-4-fast": "Grok 4 Fast",
     "grok-4-1-fast": "Grok 4.1 Fast",
+    "grok-imagine-video": "Grok Imagine Video",
+    "grok-imagine-video-1.5": "Grok Imagine Video 1.5",
+    "grok-imagine-video-1.5-preview": "Grok Imagine Video 1.5",
+    "grok-imagine-image": "Grok Imagine Image",
+    "grok-imagine-image-quality": "Grok Imagine Image Quality",
   },
 
   alibaba: {

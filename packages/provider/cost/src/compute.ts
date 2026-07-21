@@ -73,40 +73,51 @@ function applyTokenRate(
   };
 }
 
-// Generic dispatcher for per-unit providers (kie, elevenlabs, fal,
-// googleflow). Reads the pricing key from the explicit `endpoint`
-// discriminator first (used by providers like Suno whose pricing is keyed by
-// endpoint, not model version), then falls back to payload.model /
-// payload.model_id. Looks up the entry, runs `units(payload)` and the ordered
-// selectors, and returns the matching rate. All payload-shape knowledge lives
-// in the model entry's closures.
+// How evaluatePerUnit derives its pricing-table key. `keyedBy: "endpoint"`
+// is for providers whose tables are keyed by endpoint id (kie, elevenlabs,
+// fal, googleflow — e.g. Suno rows like "suno/generate"): the caller's
+// endpoint takes precedence, falling back to payload.model / payload.model_id.
+// `keyedBy: "model"` is for providers whose per-unit rows are keyed by model
+// name (xai, alibaba): only payload.model / payload.model_id is consulted, so
+// a caller-supplied endpoint can never be mistaken for a table key.
+type PerUnitKey =
+  | { keyedBy: "endpoint"; endpoint: string | undefined }
+  | { keyedBy: "model" };
+
+// Generic dispatcher for per-unit providers. Resolves the pricing key per the
+// explicit `key` discriminator (see PerUnitKey), looks up the entry, runs
+// `units(payload)` and the ordered selectors, and returns the matching rate.
+// All payload-shape knowledge lives in the model entry's closures.
 function evaluatePerUnit(
   provider: PricedProviderId,
   payload: Record<string, unknown>,
-  endpoint: string | undefined
+  key: PerUnitKey
 ): CostEstimate {
-  const model =
-    endpoint ?? asString(payload.model) ?? asString(payload.model_id);
-  if (!model) {
+  const fromPayload = asString(payload.model) ?? asString(payload.model_id);
+  const pricingKey =
+    key.keyedBy === "endpoint" ? (key.endpoint ?? fromPayload) : fromPayload;
+  if (!pricingKey) {
     return failed("per-unit-table", [
-      `${provider}: endpoint or payload.model is required`,
+      key.keyedBy === "endpoint"
+        ? `${provider}: endpoint or payload.model is required`
+        : `${provider}: payload.model is required`,
     ]);
   }
-  const entry = PRICING[provider][model];
+  const entry = PRICING[provider][pricingKey];
   if (!entry) {
     return failed("per-unit-table", [
-      `model '${model}' not found in pricing table for provider '${provider}'`,
+      `model '${pricingKey}' not found in pricing table for provider '${provider}'`,
     ]);
   }
   if (entry.kind !== "perUnit") {
     return failed("per-unit-table", [
-      `${provider} '${model}' is token-billed, not per-unit`,
+      `${provider} '${pricingKey}' is token-billed, not per-unit`,
     ]);
   }
   const units = entry.units(payload);
   if (units === undefined) {
     return failed("per-unit-table", [
-      `${provider} '${model}': could not derive units from payload (check duration / text)`,
+      `${provider} '${pricingKey}': could not derive units from payload (check duration / text)`,
     ]);
   }
   const variantKey = entry.select
@@ -117,7 +128,7 @@ function evaluatePerUnit(
   if (perUnit === undefined) {
     const selectorNames = entry.select.map((s) => s.name).join(", ");
     return failed("per-unit-table", [
-      `${provider} '${model}': no rate for variant '${variantKey}' (selectors: ${selectorNames})`,
+      `${provider} '${pricingKey}': no rate for variant '${variantKey}' (selectors: ${selectorNames})`,
     ]);
   }
   return {
@@ -143,11 +154,8 @@ export function computeEstimate(req: EstimateRequest): CostEstimate {
       const model = asString(req.payload.model);
       const entry = model ? PRICING.xai[model] : undefined;
       if (entry?.kind === "perUnit") {
-        // `undefined`, not `req.endpoint`: evaluatePerUnit treats its third
-        // argument as the pricing key (`endpoint ?? payload.model`), and xai
-        // rates are keyed by model. Forwarding the endpoint here would look up
-        // a key like "v1.videos.generations" and report "not found".
-        return evaluatePerUnit("xai", req.payload, undefined);
+        // xai per-unit rates are keyed by model, never by endpoint.
+        return evaluatePerUnit("xai", req.payload, { keyedBy: "model" });
       }
       const ext = extractXai(req.payload);
       if (!ext.ok) return failed("tokens-heuristic+table", ext.warnings);
@@ -181,7 +189,7 @@ export function computeEstimate(req: EstimateRequest): CostEstimate {
       const model = asString(req.payload.model);
       const entry = model ? PRICING.alibaba[model] : undefined;
       if (entry?.kind === "perUnit") {
-        return evaluatePerUnit("alibaba", req.payload, req.endpoint);
+        return evaluatePerUnit("alibaba", req.payload, { keyedBy: "model" });
       }
       const ext = extractChat("alibaba", req.payload);
       if (!ext.ok) return failed("tokens-heuristic+table", ext.warnings);
@@ -205,13 +213,25 @@ export function computeEstimate(req: EstimateRequest): CostEstimate {
       );
     }
     case "kie":
-      return evaluatePerUnit("kie", req.payload, req.endpoint);
+      return evaluatePerUnit("kie", req.payload, {
+        keyedBy: "endpoint",
+        endpoint: req.endpoint,
+      });
     case "elevenlabs":
-      return evaluatePerUnit("elevenlabs", req.payload, req.endpoint);
+      return evaluatePerUnit("elevenlabs", req.payload, {
+        keyedBy: "endpoint",
+        endpoint: req.endpoint,
+      });
     case "fal":
-      return evaluatePerUnit("fal", req.payload, req.endpoint);
+      return evaluatePerUnit("fal", req.payload, {
+        keyedBy: "endpoint",
+        endpoint: req.endpoint,
+      });
     case "googleflow":
-      return evaluatePerUnit("googleflow", req.payload, req.endpoint);
+      return evaluatePerUnit("googleflow", req.payload, {
+        keyedBy: "endpoint",
+        endpoint: req.endpoint,
+      });
     case "free-media-upload":
       return {
         usd: 0,

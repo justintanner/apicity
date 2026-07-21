@@ -317,6 +317,48 @@ describe("computeEstimate", () => {
       expect(four.usd).toBeCloseTo(0.14, 10);
     });
 
+    // Regression: alibaba per-unit routing used to forward req.endpoint as the
+    // pricing key, so a real dashscope endpoint path missed the model-keyed
+    // PRICING.alibaba table and priced at zero with a not-found warning.
+    it("prices alibaba video per-unit even when the endpoint is set", () => {
+      const payload = {
+        model: "wan2.7-i2v",
+        input: { media: [{ type: "first_frame", url: "https://x/a.png" }] },
+        parameters: { duration: 5 },
+      };
+      const withEndpoint = computeEstimate({
+        provider: "alibaba" as const,
+        endpoint: "api.v1.services.aigc.video-generation.video-synthesis",
+        payload,
+      });
+      expect(withEndpoint.usd).toBeCloseTo(0.5, 10);
+      expect(withEndpoint.source).toBe("per-unit-table");
+      expect(withEndpoint.warnings).toEqual([]);
+
+      const without = computeEstimate({
+        provider: "alibaba" as const,
+        payload,
+      });
+      expect(withEndpoint.usd).toBe(without.usd);
+      expect(withEndpoint.source).toBe(without.source);
+      expect(withEndpoint.breakdown).toEqual(without.breakdown);
+    });
+
+    it("ignores a nonsense endpoint for alibaba image pricing", () => {
+      const result = computeEstimate({
+        provider: "alibaba" as const,
+        endpoint: "not.a.real.endpoint",
+        payload: {
+          model: "qwen-image-2.0",
+          input: { messages: [] },
+          parameters: { n: 2 },
+        },
+      });
+      expect(result.usd).toBeCloseTo(0.07, 10); // 2 images * 0.035
+      expect(result.source).toBe("per-unit-table");
+      expect(result.warnings).toEqual([]);
+    });
+
     it("still token-prices alibaba chat models after per-unit routing", () => {
       const result = computeEstimate({
         provider: "alibaba" as const,
@@ -831,6 +873,24 @@ describe("computeEstimate", () => {
       expect(result.warnings).toContain(
         "kie: endpoint or payload.model is required"
       );
+    });
+
+    // kie stays endpoint-keyed: a priced endpoint path wins over an off-table
+    // payload.model.
+    it("resolves kie pricing by endpoint over an off-table payload.model", () => {
+      const result = computeEstimate({
+        provider: "kie" as const,
+        endpoint: "suno/generate",
+        payload: { model: "chirp-v5-not-in-table" },
+      });
+      expect(result.usd).toBe(0.06);
+      expect(result.source).toBe("per-unit-table");
+      expect(result.breakdown).toEqual({
+        units: 1,
+        unit: "generations",
+        perUnitUsd: 0.06,
+      });
+      expect(result.warnings).toEqual([]);
     });
 
     it("fails per-unit when model not found in pricing table", () => {

@@ -264,3 +264,28 @@ export type DoltHubV2DatabaseCreateRequestInput =
 export type DoltHubV2DatabaseCreateParsedRequest = z.output<
   typeof DoltHubV2DatabaseCreateRequestSchema
 >;
+
+// ---------------------------------------------------------------------------
+// v2 — sql
+// ---------------------------------------------------------------------------
+
+export const DoltHubV2SqlWriteRequestSchema = z.object({
+  // Database owner (URL path segment).
+  owner: z.string().min(1),
+  // Database name (URL path segment).
+  database: z.string().min(1),
+  // Branch the write starts from (request body `from_branch`).
+  fromBranch: z.string().min(1),
+  // Branch the write commits to (request body `to_branch`).
+  toBranch: z.string().min(1),
+  // The write SQL statement (request body `q`).
+  query: z.string().min(1),
+});
+
+export type DoltHubV2SqlWriteRequest = z.input<
+  typeof DoltHubV2SqlWriteRequestSchema
+>;
+export type DoltHubV2SqlWriteRequestInput = DoltHubV2SqlWriteRequest;
+export type DoltHubV2SqlWriteParsedRequest = z.output<
+  typeof DoltHubV2SqlWriteRequestSchema
+>;

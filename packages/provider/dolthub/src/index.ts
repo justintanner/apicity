@@ -85,6 +85,11 @@ export type {
   DoltHubV2SqlReadResponse,
   DoltHubV2SqlReadColumn,
   DoltHubV2SqlRow,
+  DoltHubV2SqlWriteRequest,
+  DoltHubV2SqlWriteResponse,
+  DoltHubV2SqlWriteMethod,
+  DoltHubV2SqlWriteRequestInput,
+  DoltHubV2SqlWriteParsedRequest,
   DoltHubV2OperationsNamespace,
   DoltHubV2UserNamespace,
   DoltHubV2User,
@@ -113,4 +118,5 @@ export {
   DoltHubForkCreateRequestSchema,
   DoltHubV2BranchCreateRequestSchema,
   DoltHubV2DatabaseCreateRequestSchema,
+  DoltHubV2SqlWriteRequestSchema,
 } from "./zod";

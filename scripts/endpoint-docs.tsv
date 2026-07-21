@@ -481,6 +481,7 @@ dolthub	api.v2.databases.forks.create	POST	https://www.dolthub.com/api/v2/databa
 dolthub	api.v2.databases.branches.create	POST	https://www.dolthub.com/api/v2/databases/{owner}/{database}/branches	https://www.dolthub.com/docs/products/dolthub/api/v2/database
 dolthub	api.v2.databases.branches.list	GET	https://www.dolthub.com/api/v2/databases/{owner}/{database}/branches{query}	https://www.dolthub.com/docs/products/dolthub/api/v2/database
 dolthub	api.v2.databases.sql.read	GET	https://www.dolthub.com/api/v2/databases/{owner}/{database}/sql{query}	https://www.dolthub.com/docs/products/dolthub/api/v2/database
+dolthub	api.v2.databases.sql.write	POST	https://www.dolthub.com/api/v2/databases/{owner}/{database}/sql-writes	https://www.dolthub.com/docs/products/dolthub/api/v2/database
 dolthub	api.v2.operations.get	GET	https://www.dolthub.com/api/v2/operations/{operationId}	https://www.dolthub.com/docs/products/dolthub/api/v2/operations
 dolthub	api.v2.user.get	GET	https://www.dolthub.com/api/v2/user	https://www.dolthub.com/docs/products/dolthub/api/v2/user
 dolthub	v1alpha1.branches.create	POST	https://www.dolthub.com/api/v1alpha1/{owner}/{database}/branches	https://www.dolthub.com/docs/products/dolthub/api/database

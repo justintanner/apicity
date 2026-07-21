@@ -30,6 +30,8 @@ import {
   DoltHubV2UserGetResponse,
   DoltHubV2SqlReadRequest,
   DoltHubV2SqlReadResponse,
+  DoltHubV2SqlWriteRequest,
+  DoltHubV2SqlWriteResponse,
   DoltHubV2Envelope,
   DoltHubV2Meta,
   DoltHubV2BranchesListRequest,
@@ -53,6 +55,7 @@ import {
   DoltHubForkCreateRequestSchema,
   DoltHubV2BranchCreateRequestSchema,
   DoltHubV2DatabaseCreateRequestSchema,
+  DoltHubV2SqlWriteRequestSchema,
 } from "./zod";
 
 export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
@@ -575,6 +578,36 @@ export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
     { schema: undefined }
   );
 
+  // sig-ok: v1alpha1.sql.write parity — the endpoint keeps the sibling sql.read
+  // namespace instead of mirroring the literal `sql-writes` URL segment
+  // POST https://www.dolthub.com/api/v2/databases/{owner}/{database}/sql-writes
+  // Docs: https://www.dolthub.com/docs/products/dolthub/api/v2/database
+  const sqlWriteV2 = Object.assign(
+    async (
+      req: DoltHubV2SqlWriteRequest,
+      signal?: AbortSignal
+    ): Promise<DoltHubV2SqlWriteResponse> => {
+      const owner = encodeURIComponent(req.owner);
+      const database = encodeURIComponent(req.database);
+      // A v2 SQL write is asynchronous: upstream answers `202` with an
+      // OperationRef, so the envelope's `data` is unwrapped exactly like the
+      // sibling async `forks.create` (not preserved like the synchronous
+      // `branches.create` / `databases.create`).
+      //
+      // The body is built from typed fields explicitly rather than spreading
+      // `req`, so `owner`/`database` cannot leak out of the path and onto the
+      // wire, and the serialized object carries exactly the three documented
+      // snake_case keys.
+      return makeV2Request<DoltHubV2SqlWriteResponse>(
+        "POST",
+        `/api/v2/databases/${owner}/${database}/sql-writes`,
+        { from_branch: req.fromBranch, to_branch: req.toBranch, q: req.query },
+        signal
+      );
+    },
+    { schema: DoltHubV2SqlWriteRequestSchema }
+  );
+
   // sig-ok: semantic DoltHub v2 branches namespace over dynamic repo URL
   // GET https://www.dolthub.com/api/v2/databases/{owner}/{database}/branches{query}
   // Docs: https://www.dolthub.com/docs/products/dolthub/api/v2/database
@@ -692,6 +725,7 @@ export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
           },
           sql: {
             read: sqlReadV2,
+            write: sqlWriteV2,
           },
         },
         operations: {

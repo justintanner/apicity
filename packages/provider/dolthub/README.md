@@ -28,21 +28,89 @@ const dolthub = createDoltHub({ apiKey: process.env.DOLTHUB_API_KEY! });
 
 ## API Reference
 
-13 endpoints across 3 groups. Each method mirrors an upstream URL path.
+18 endpoints across 4 groups. Each method mirrors an upstream URL path.
 
 ### databases
+
+<details>
+<summary><code>POST</code> <b><code>dolthub.api.v2.databases.branches.create</code></b></summary>
+
+<code>POST https://www.dolthub.com/api/v2/databases/{owner}/{database}/branches</code>
+
+Cost tier: <code>cheap</code>
+
+[Upstream docs ↗](https://www.dolthub.com/docs/products/dolthub/api/v2/database)
+
+```typescript
+const res = await dolthub.api.v2.databases.branches.create({ /* ... */ });
+```
+
+Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>dolthub.api.v2.databases.branches.list</code></b></summary>
+
+<code>GET https://www.dolthub.com/api/v2/databases/{owner}/{database}/branches{query}</code>
+
+Cost tier: <code>cheap</code>
+
+[Upstream docs ↗](https://www.dolthub.com/docs/products/dolthub/api/v2/database)
+
+```typescript
+const res = await dolthub.api.v2.databases.branches.list({ /* ... */ });
+```
+
+Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>dolthub.api.v2.databases.create</code></b></summary>
+
+<code>POST https://www.dolthub.com/api/v2/databases</code>
+
+Cost tier: <code>cheap</code>
+
+[Upstream docs ↗](https://www.dolthub.com/docs/products/dolthub/api/v2/database)
+
+```typescript
+const res = await dolthub.api.v2.databases.create({ /* ... */ });
+```
+
+Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>dolthub.api.v2.databases.forks.create</code></b></summary>
 
 <code>POST https://www.dolthub.com/api/v2/databases/{owner}/{database}/forks</code>
 
-Cost tier: <code>prohibitive</code>
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.dolthub.com/docs/products/dolthub/api/v2/database)
 
 ```typescript
 const res = await dolthub.api.v2.databases.forks.create({ /* ... */ });
+```
+
+Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>dolthub.api.v2.databases.sql.read</code></b></summary>
+
+<code>GET https://www.dolthub.com/api/v2/databases/{owner}/{database}/sql{query}</code>
+
+Cost tier: <code>cheap</code>
+
+[Upstream docs ↗](https://www.dolthub.com/docs/products/dolthub/api/v2/database)
+
+```typescript
+const res = await dolthub.api.v2.databases.sql.read({ /* ... */ });
 ```
 
 Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)
@@ -56,10 +124,27 @@ Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)
 
 <code>GET https://www.dolthub.com/api/v2/operations/{operationId}</code>
 
-Cost tier: <code>prohibitive</code>
+Cost tier: <code>cheap</code>
 
 ```typescript
 const res = await dolthub.api.v2.operations({ /* ... */ });
+```
+
+Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)
+
+</details>
+
+### user
+
+<details>
+<summary><code>GET</code> <b><code>dolthub.api.v2.user</code></b></summary>
+
+<code>GET https://www.dolthub.com/api/v2/user</code>
+
+Cost tier: <code>cheap</code>
+
+```typescript
+const res = await dolthub.api.v2.user({ /* ... */ });
 ```
 
 Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)

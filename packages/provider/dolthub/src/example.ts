@@ -43,6 +43,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
     },
     "tier": "cheap",
     "runByDefault": true
+  },
+  "POST api.v2.databases.sql.write": {
+    "source": "dolthub/sql-write-v2-unauthenticated",
+    "payload": {
+      "from_branch": "main",
+      "to_branch": "apicity-probe",
+      "q": "INSERT INTO apicity_probe (id) VALUES (1)"
+    },
+    "tier": "cheap",
+    "runByDefault": true
   }
 };
 

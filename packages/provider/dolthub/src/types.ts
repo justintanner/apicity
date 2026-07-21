@@ -25,6 +25,8 @@ export type {
   DoltHubV2BranchCreateParsedRequest,
   DoltHubV2DatabaseCreateRequestInput,
   DoltHubV2DatabaseCreateParsedRequest,
+  DoltHubV2SqlWriteRequestInput,
+  DoltHubV2SqlWriteParsedRequest,
 } from "./zod";
 
 // ---------------------------------------------------------------------------
@@ -682,8 +684,41 @@ export interface DoltHubV2SqlReadMethod {
   ): Promise<DoltHubV2SqlReadResponse>;
 }
 
+// ---------------------------------------------------------------------------
+// v2 API — SQL write
+// ---------------------------------------------------------------------------
+
+export interface DoltHubV2SqlWriteRequest {
+  /** Database owner (URL path segment). */
+  owner: string;
+  /** Database name (URL path segment). */
+  database: string;
+  /** Branch the write starts from (v2 body field `from_branch`). */
+  fromBranch: string;
+  /** Branch the write commits to (v2 body field `to_branch`). */
+  toBranch: string;
+  /** The write SQL statement to execute (v2 body field `q`). */
+  query: string;
+}
+
+/**
+ * A v2 SQL write is accepted, not completed: upstream answers `202` with an
+ * operation reference. Pass `id` verbatim to `api.v2.operations.get({ id })`
+ * and poll until `status` is the terminal `succeeded` or `failed`; a succeeded
+ * `sql_write` operation carries its commit in `result` as `{ commit_sha }`.
+ */
+export type DoltHubV2SqlWriteResponse = DoltHubOperationRef;
+
+export interface DoltHubV2SqlWriteMethod {
+  (
+    req: DoltHubV2SqlWriteRequest,
+    signal?: AbortSignal
+  ): Promise<DoltHubV2SqlWriteResponse>;
+}
+
 export interface DoltHubV2SqlNamespace {
   read: DoltHubV2SqlReadMethod;
+  write: DoltHubV2SqlWriteMethod;
 }
 
 // ---------------------------------------------------------------------------

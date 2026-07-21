@@ -28,7 +28,7 @@ const dolthub = createDoltHub({ apiKey: process.env.DOLTHUB_API_KEY! });
 
 ## API Reference
 
-18 endpoints across 4 groups. Each method mirrors an upstream URL path.
+19 endpoints across 4 groups. Each method mirrors an upstream URL path.
 
 ### databases
 
@@ -111,6 +111,23 @@ Cost tier: <code>cheap</code>
 
 ```typescript
 const res = await dolthub.api.v2.databases.sql.read({ /* ... */ });
+```
+
+Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>dolthub.api.v2.databases.sql.write</code></b></summary>
+
+<code>POST https://www.dolthub.com/api/v2/databases/{owner}/{database}/sql-writes</code>
+
+Cost tier: <code>cheap</code>
+
+[Upstream docs ↗](https://www.dolthub.com/docs/products/dolthub/api/v2/database)
+
+```typescript
+const res = await dolthub.api.v2.databases.sql.write({ /* ... */ });
 ```
 
 Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)

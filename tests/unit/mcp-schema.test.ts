@@ -90,7 +90,12 @@ describe("MCP Zod schema introspection helpers", () => {
       "reference_image",
     ]);
 
-    expect(getZodEnumValues(AlibabaVideoSynthesisModelSchema)).toEqual([
+    // The Wan video model enum is open — `z.enum([...]).or(<alias>)` — so it is
+    // a union, and getZodEnumValues only reads plain enums. The listed ids stay
+    // reachable through the JSON Schema the MCP server actually ships, which is
+    // what a client's completion list is built from.
+    expect(getZodEnumValues(AlibabaVideoSynthesisModelSchema)).toEqual([]);
+    expect(enumBranchOf(AlibabaVideoSynthesisModelSchema)).toEqual([
       "wan2.7-i2v",
       "wan2.7-videoedit",
     ]);
@@ -103,14 +108,14 @@ describe("MCP Zod schema introspection helpers", () => {
       "input",
       "parameters",
     ]);
-    expect(getZodEnumValues(objectShape?.model)).toEqual([
+    expect(enumBranchOf(objectShape?.model)).toEqual([
       "wan2.7-i2v",
       "wan2.7-videoedit",
     ]);
 
     const shape = getZodObjectShape(AlibabaVideoSynthesisRequestSchema);
     expect(Object.keys(shape ?? {})).toEqual(["model", "input", "parameters"]);
-    expect(getZodEnumValues(shape?.model)).toEqual([
+    expect(enumBranchOf(shape?.model)).toEqual([
       "wan2.7-i2v",
       "wan2.7-videoedit",
     ]);
@@ -118,8 +123,10 @@ describe("MCP Zod schema introspection helpers", () => {
     const json = zodToJsonSchema(AlibabaVideoSynthesisRequestSchema);
     const properties = propertiesOf(json);
     expect(properties.model).toMatchObject({
-      type: "string",
-      enum: ["wan2.7-i2v", "wan2.7-videoedit"],
+      anyOf: [
+        { type: "string", enum: ["wan2.7-i2v", "wan2.7-videoedit"] },
+        { type: "string" },
+      ],
     });
   });
 });
@@ -172,29 +179,24 @@ describe("MCP Zod schema conversion", () => {
     const branches = requestJson.anyOf as Array<Record<string, unknown>>;
     expect(branches).toHaveLength(2);
 
-    const generationModel = propertiesOf(branches[0]).model;
-    expect(generationModel).toMatchObject({
-      type: "string",
-      enum: [
-        "qwen-image-2.0-pro",
-        "qwen-image-2.0-pro-2026-03-03",
-        "qwen-image-2.0",
-        "qwen-image-2.0-2026-03-03",
-      ],
-    });
+    // Both Qwen enums are open, so each branch's `model` is itself an anyOf of
+    // the listed ids plus the family alias. The listed ids stay first and
+    // complete so MCP clients keep their suggestion list.
+    expect(openEnumBranch(propertiesOf(branches[0]).model)).toEqual([
+      "qwen-image-2.0-pro",
+      "qwen-image-2.0-pro-2026-03-03",
+      "qwen-image-2.0",
+      "qwen-image-2.0-2026-03-03",
+    ]);
 
-    const editModel = propertiesOf(branches[1]).model;
-    expect(editModel).toMatchObject({
-      type: "string",
-      enum: [
-        "qwen-image-edit-max",
-        "qwen-image-edit-max-2026-01-16",
-        "qwen-image-edit-plus",
-        "qwen-image-edit-plus-2025-12-15",
-        "qwen-image-edit-plus-2025-10-30",
-        "qwen-image-edit",
-      ],
-    });
+    expect(openEnumBranch(propertiesOf(branches[1]).model)).toEqual([
+      "qwen-image-edit-max",
+      "qwen-image-edit-max-2026-01-16",
+      "qwen-image-edit-plus",
+      "qwen-image-edit-plus-2025-12-15",
+      "qwen-image-edit-plus-2025-10-30",
+      "qwen-image-edit",
+    ]);
 
     const generationSlots = propertiesOf(
       zodToJsonSchema(AlibabaQwenImageGenerationSlotsSchema)
@@ -304,6 +306,21 @@ describe("MCP Zod schema conversion", () => {
     expect(variants.length).toBeGreaterThan(1);
   });
 });
+
+// An opened model enum converts to `anyOf: [{enum: [...listed]}, {pattern}]`.
+// Both branches matter: the first is the client-facing suggestion list, the
+// second is the escape hatch that keeps a not-yet-listed upstream id valid.
+function openEnumBranch(json: unknown): unknown[] {
+  const branches = (json as JsonSchema).anyOf as JsonSchema[];
+  expect(branches).toHaveLength(2);
+  expect(branches[1].type).toBe("string");
+  expect(branches[1].pattern).toBeDefined();
+  return branches[0].enum as unknown[];
+}
+
+function enumBranchOf(schema: unknown): unknown[] {
+  return openEnumBranch(zodToJsonSchema(schema));
+}
 
 function propertiesOf(schema: unknown): Record<string, JsonSchema> {
   expect(schema).toMatchObject({ type: "object" });

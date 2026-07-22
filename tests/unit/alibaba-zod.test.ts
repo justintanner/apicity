@@ -1,13 +1,21 @@
 import { describe, it, expect } from "vitest";
 
 import {
+  zodToJsonSchema,
+  type JsonSchema,
+} from "../../packages/mcp-server/src/schema";
+import {
   AlibabaChatRequestSchema,
   AlibabaVideoSynthesisModelSchema,
   AlibabaVideoSynthesisRequestObjectSchema,
   AlibabaVideoSynthesisRequestSchema,
   AlibabaImageGenerationRequestSchema,
   AlibabaQwenImageGenerationModelSchema,
+  AlibabaQwenImageGenerationStableModelSchema,
   AlibabaQwenImageEditModelSchema,
+  AlibabaQwenImageEditStableModelSchema,
+  AlibabaQwenImageModelSchema,
+  AlibabaQwenImageStableModelSchema,
   AlibabaQwenImageGenerationSlotsSchema,
   AlibabaQwenImageEditSlotsSchema,
   AlibabaMultimodalGenerationRequestSchema,
@@ -17,6 +25,29 @@ import {
   AlibabaVideoSynthesisModelSchema as PublicAlibabaVideoSynthesisModelSchema,
   AlibabaVideoSynthesisRequestObjectSchema as PublicAlibabaVideoSynthesisRequestObjectSchema,
 } from "../../packages/provider/alibaba/src/index";
+
+// The Wan and Qwen model enums are open: each is `z.enum([...]).or(<alias>)`,
+// so `.options` yields branch *schemas* rather than id strings. The enumerated
+// ids are read back out of the JSON Schema the MCP server emits instead, the
+// same way tests/unit/elevenlabs-zod.test.ts pins its opened enum.
+function enumBranchOf(schema: unknown): unknown[] {
+  const branches = zodToJsonSchema(schema).anyOf as JsonSchema[];
+  expect(branches).toHaveLength(2);
+  // The second branch is the hatch; without it the enum would be closed.
+  expect(branches[1].type).toBe("string");
+  expect(branches[1].pattern).toBeDefined();
+  return branches[0].enum as unknown[];
+}
+
+// The alias branch of an opened schema, read back as a RegExp so a test can
+// ask what the hatch actually accepts.
+function hatchPatternOf(schema: unknown): RegExp {
+  const branches = zodToJsonSchema(schema).anyOf as JsonSchema[];
+  expect(branches).toHaveLength(2);
+  const pattern = branches[1].pattern;
+  expect(typeof pattern).toBe("string");
+  return new RegExp(pattern as string);
+}
 
 describe("Alibaba Zod schema validation", () => {
   describe("null and undefined handling", () => {
@@ -205,12 +236,12 @@ describe("Alibaba Zod schema validation", () => {
 
   describe("AlibabaVideoSynthesisRequestSchema", () => {
     it("should expose video model options without unwrapping refinements", () => {
-      expect(AlibabaVideoSynthesisModelSchema.options).toEqual([
+      expect(enumBranchOf(AlibabaVideoSynthesisModelSchema)).toEqual([
         "wan2.7-i2v",
         "wan2.7-videoedit",
       ]);
-      expect(PublicAlibabaVideoSynthesisModelSchema.options).toEqual(
-        AlibabaVideoSynthesisModelSchema.options
+      expect(enumBranchOf(PublicAlibabaVideoSynthesisModelSchema)).toEqual(
+        enumBranchOf(AlibabaVideoSynthesisModelSchema)
       );
 
       const shape = AlibabaVideoSynthesisRequestObjectSchema.shape;
@@ -788,13 +819,13 @@ describe("Alibaba Zod schema validation", () => {
 
   describe("AlibabaMultimodalGenerationRequestSchema", () => {
     it("should expose separate qwen generation and edit model sets", () => {
-      expect(AlibabaQwenImageGenerationModelSchema.options).toEqual([
+      expect(enumBranchOf(AlibabaQwenImageGenerationModelSchema)).toEqual([
         "qwen-image-2.0-pro",
         "qwen-image-2.0-pro-2026-03-03",
         "qwen-image-2.0",
         "qwen-image-2.0-2026-03-03",
       ]);
-      expect(AlibabaQwenImageEditModelSchema.options).toEqual([
+      expect(enumBranchOf(AlibabaQwenImageEditModelSchema)).toEqual([
         "qwen-image-edit-max",
         "qwen-image-edit-max-2026-01-16",
         "qwen-image-edit-plus",
@@ -1136,6 +1167,363 @@ describe("Alibaba Zod schema validation", () => {
       });
       expect(result.success).toBe(false);
       expect(result.error?.issues.length).toBeGreaterThan(0);
+    });
+  });
+
+  // The Wan and Qwen model enums used to be closed, so an id upstream shipped
+  // before this package caught up failed validation even though the API served
+  // it. Each enum now carries a narrow per-family alias hatch. These pin the
+  // three things a hatch has to do at once: keep every listed id valid, accept
+  // a plausible unlisted id from the same family, and still reject near-miss
+  // typos and ids belonging to another family.
+  describe("model alias hatches", () => {
+    const imageGenerationBase = {
+      input: {
+        messages: [{ role: "user", content: [{ text: "A koi pond" }] }],
+      },
+    };
+
+    describe("AlibabaVideoSynthesisModelSchema", () => {
+      it.each(["wan2.7-i2v", "wan2.7-videoedit"])(
+        "accepts the listed id %j",
+        (model) => {
+          expect(
+            AlibabaVideoSynthesisModelSchema.safeParse(model).success
+          ).toBe(true);
+        }
+      );
+
+      it.each(["wan3.0-i2v", "wan2.8-image-pro"])(
+        "accepts the Wan alias %j",
+        (model) => {
+          expect(
+            AlibabaVideoSynthesisModelSchema.safeParse(model).success
+          ).toBe(true);
+        }
+      );
+
+      it.each(["wan2.7", "wan-2.7-i2v", "wan2.7-", "qwen-image-2.0"])(
+        "rejects %j",
+        (model) => {
+          expect(
+            AlibabaVideoSynthesisModelSchema.safeParse(model).success
+          ).toBe(false);
+        }
+      );
+    });
+
+    describe("AlibabaImageGenerationRequestSchema.model", () => {
+      it.each(["wan2.7-image-pro", "wan2.7-image"])(
+        "accepts the listed id %j",
+        (model) => {
+          expect(
+            AlibabaImageGenerationRequestSchema.safeParse({
+              ...imageGenerationBase,
+              model,
+            }).success
+          ).toBe(true);
+        }
+      );
+
+      it.each(["wan2.8-image-pro", "wan3.0-image"])(
+        "accepts the Wan alias %j",
+        (model) => {
+          expect(
+            AlibabaImageGenerationRequestSchema.safeParse({
+              ...imageGenerationBase,
+              model,
+            }).success
+          ).toBe(true);
+        }
+      );
+
+      it.each(["wan2.7", "wan-2.7-image", "wan2.7-", "qwen-image-2.0"])(
+        "rejects %j",
+        (model) => {
+          expect(
+            AlibabaImageGenerationRequestSchema.safeParse({
+              ...imageGenerationBase,
+              model,
+            }).success
+          ).toBe(false);
+        }
+      );
+
+      // Video synthesis and image generation are the same Wan family — the ids
+      // differ only by task segment — so they deliberately share one alias
+      // const rather than defining two identical ones. This is the only shared
+      // alias in the provider; anything that widens it widens both endpoints,
+      // which is why the sharing is pinned rather than left implicit.
+      it("shares one Wan alias with the video synthesis enum", () => {
+        expect(hatchPatternOf(AlibabaVideoSynthesisModelSchema).source).toBe(
+          hatchPatternOf(AlibabaImageGenerationRequestSchema.shape.model).source
+        );
+      });
+    });
+
+    describe("AlibabaQwenImageGenerationModelSchema", () => {
+      it.each([
+        "qwen-image-2.0-pro",
+        "qwen-image-2.0-pro-2026-03-03",
+        "qwen-image-2.0",
+        "qwen-image-2.0-2026-03-03",
+      ])("accepts the listed id %j", (model) => {
+        expect(
+          AlibabaQwenImageGenerationModelSchema.safeParse(model).success
+        ).toBe(true);
+      });
+
+      it.each(["qwen-image-3.0", "qwen-image-2.1-pro"])(
+        "accepts the qwen-image alias %j",
+        (model) => {
+          expect(
+            AlibabaQwenImageGenerationModelSchema.safeParse(model).success
+          ).toBe(true);
+        }
+      );
+
+      // `qwen-image-edit-max` is a real upstream id — just not a generation
+      // one. Requiring a digit right after `qwen-image-` is what keeps the two
+      // capability surfaces apart.
+      it.each([
+        "qwen-image-edit-max",
+        "qwen-image",
+        "qwen-image-pro",
+        "wan2.7-image",
+      ])("rejects %j", (model) => {
+        expect(
+          AlibabaQwenImageGenerationModelSchema.safeParse(model).success
+        ).toBe(false);
+      });
+    });
+
+    describe("AlibabaQwenImageEditModelSchema", () => {
+      it.each([
+        "qwen-image-edit-max",
+        "qwen-image-edit-max-2026-01-16",
+        "qwen-image-edit-plus",
+        "qwen-image-edit-plus-2025-12-15",
+        "qwen-image-edit-plus-2025-10-30",
+        "qwen-image-edit",
+      ])("accepts the listed id %j", (model) => {
+        expect(AlibabaQwenImageEditModelSchema.safeParse(model).success).toBe(
+          true
+        );
+      });
+
+      it("accepts the qwen-image-edit alias qwen-image-edit-ultra", () => {
+        expect(
+          AlibabaQwenImageEditModelSchema.safeParse("qwen-image-edit-ultra")
+            .success
+        ).toBe(true);
+      });
+
+      it.each(["qwen-image-2.0", "qwen-image-editx", "qwen-image-edi"])(
+        "rejects %j",
+        (model) => {
+          expect(AlibabaQwenImageEditModelSchema.safeParse(model).success).toBe(
+            false
+          );
+        }
+      );
+    });
+
+    // AlibabaQwenImageModelSchema is a union of the two enums above and has no
+    // direct edit of its own — it opens purely as a consequence of them. Its
+    // closed twin AlibabaQwenImageStableModelSchema is a union of the two
+    // curated *stable* subsets and must stay closed for the same reason: an
+    // alias there would readmit precisely the preview and dated-snapshot ids
+    // those subsets exist to exclude.
+    describe("union model schemas", () => {
+      it.each(["qwen-image-3.0", "qwen-image-edit-ultra"])(
+        "AlibabaQwenImageModelSchema opens transitively for %j",
+        (model) => {
+          expect(AlibabaQwenImageModelSchema.safeParse(model).success).toBe(
+            true
+          );
+        }
+      );
+
+      it.each(["qwen-image-editx", "wan2.7-image"])(
+        "AlibabaQwenImageModelSchema still rejects %j",
+        (model) => {
+          expect(AlibabaQwenImageModelSchema.safeParse(model).success).toBe(
+            false
+          );
+        }
+      );
+
+      it.each([
+        "qwen-image-2.0-pro",
+        "qwen-image-2.0",
+        "qwen-image-edit-max",
+        "qwen-image-edit-plus",
+        "qwen-image-edit",
+      ])("AlibabaQwenImageStableModelSchema accepts %j", (model) => {
+        expect(AlibabaQwenImageStableModelSchema.safeParse(model).success).toBe(
+          true
+        );
+      });
+
+      it.each([
+        "qwen-image-3.0",
+        "qwen-image-edit-ultra",
+        "qwen-image-2.0-2026-03-03",
+        "qwen-image-edit-plus-2025-12-15",
+      ])("AlibabaQwenImageStableModelSchema still rejects %j", (model) => {
+        expect(AlibabaQwenImageStableModelSchema.safeParse(model).success).toBe(
+          false
+        );
+      });
+
+      it.each(["qwen-image-3.0", "qwen-image-2.0-2026-03-03"])(
+        "AlibabaQwenImageGenerationStableModelSchema still rejects %j",
+        (model) => {
+          expect(
+            AlibabaQwenImageGenerationStableModelSchema.safeParse(model).success
+          ).toBe(false);
+        }
+      );
+
+      it.each(["qwen-image-edit-ultra", "qwen-image-edit-plus-2025-12-15"])(
+        "AlibabaQwenImageEditStableModelSchema still rejects %j",
+        (model) => {
+          expect(
+            AlibabaQwenImageEditStableModelSchema.safeParse(model).success
+          ).toBe(false);
+        }
+      );
+    });
+
+    // Every listed id also matches its family's alias regex, so the enum branch
+    // carries no validation weight — its only job is MCP client autocomplete.
+    // Nothing else pins that, so a future "dead code" cleanup could delete the
+    // enum branch and leave the suite green while silently dropping every
+    // completion. These are that pin.
+    describe("enum branches are autocomplete-only", () => {
+      it.each([
+        ["AlibabaVideoSynthesisModelSchema", AlibabaVideoSynthesisModelSchema],
+        [
+          "AlibabaQwenImageGenerationModelSchema",
+          AlibabaQwenImageGenerationModelSchema,
+        ],
+        ["AlibabaQwenImageEditModelSchema", AlibabaQwenImageEditModelSchema],
+      ])("%s: the alias alone accepts every listed id", (_name, schema) => {
+        const hatch = hatchPatternOf(schema);
+        const listed = enumBranchOf(schema) as string[];
+
+        expect(listed.length).toBeGreaterThan(0);
+        for (const id of listed) {
+          expect(hatch.test(id)).toBe(true);
+        }
+      });
+
+      it("AlibabaImageGenerationRequestSchema.model: the alias alone accepts every listed id", () => {
+        const modelSchema = AlibabaImageGenerationRequestSchema.shape.model;
+        const hatch = hatchPatternOf(modelSchema);
+
+        expect(enumBranchOf(modelSchema)).toEqual([
+          "wan2.7-image-pro",
+          "wan2.7-image",
+        ]);
+        for (const id of ["wan2.7-image-pro", "wan2.7-image"]) {
+          expect(hatch.test(id)).toBe(true);
+        }
+      });
+    });
+
+    // The eight model-keyed refinements on AlibabaVideoSynthesisRequestSchema
+    // are the reason opening this enum is more than a type change. Six of them
+    // require a media shape and skip for a hatched id; that skip is deliberate
+    // — the hatch asserts an id is well-formed, not that upstream serves it, so
+    // upstream stays the authority on what shape a new model accepts. The
+    // other two *deny* a parameter, so they had to be re-keyed on the listed
+    // ids or they would have denied it to every hatched id too.
+    describe("model-keyed refinements under a hatched Wan id", () => {
+      it("lets a hatched videoedit id set ratio and audio_setting", () => {
+        const result = AlibabaVideoSynthesisRequestSchema.safeParse({
+          model: "wan3.0-videoedit",
+          input: {
+            media: [{ type: "video", url: "https://example.com/vid.mp4" }],
+          },
+          parameters: { ratio: "16:9", audio_setting: "auto" },
+        });
+        expect(result.success).toBe(true);
+      });
+
+      it("still denies ratio and audio_setting to the listed wan2.7-i2v", () => {
+        const result = AlibabaVideoSynthesisRequestSchema.safeParse({
+          model: "wan2.7-i2v",
+          input: {
+            media: [{ type: "first_frame", url: "https://example.com/a.jpg" }],
+          },
+          parameters: { ratio: "16:9", audio_setting: "auto" },
+        });
+        expect(result.success).toBe(false);
+        expect(result.error?.issues.some((i) => i.path.includes("ratio"))).toBe(
+          true
+        );
+        expect(
+          result.error?.issues.some((i) => i.path.includes("audio_setting"))
+        ).toBe(true);
+      });
+
+      it("skips the i2v media-shape rules for a hatched i2v id", () => {
+        // A listed wan2.7-i2v rejects this media set twice over: it has no
+        // first_frame/last_frame/first_clip, and it uses `video`.
+        const media = [{ type: "video", url: "https://example.com/vid.mp4" }];
+
+        expect(
+          AlibabaVideoSynthesisRequestSchema.safeParse({
+            model: "wan2.7-i2v",
+            input: { media },
+          }).success
+        ).toBe(false);
+        expect(
+          AlibabaVideoSynthesisRequestSchema.safeParse({
+            model: "wan3.0-i2v",
+            input: { media },
+          }).success
+        ).toBe(true);
+      });
+
+      it("skips the videoedit media-shape rules for a hatched videoedit id", () => {
+        // A listed wan2.7-videoedit needs exactly one `video` entry and accepts
+        // only video/reference_image.
+        const media = [
+          { type: "first_frame", url: "https://example.com/a.jpg" },
+        ];
+
+        expect(
+          AlibabaVideoSynthesisRequestSchema.safeParse({
+            model: "wan2.7-videoedit",
+            input: { media },
+          }).success
+        ).toBe(false);
+        expect(
+          AlibabaVideoSynthesisRequestSchema.safeParse({
+            model: "wan3.0-videoedit",
+            input: { media },
+          }).success
+        ).toBe(true);
+      });
+
+      it("keeps the model-independent media rules for a hatched id", () => {
+        // The unique-`type` rule is not keyed on the model, so it still fires.
+        const result = AlibabaVideoSynthesisRequestSchema.safeParse({
+          model: "wan3.0-i2v",
+          input: {
+            media: [
+              { type: "first_frame", url: "https://example.com/a.jpg" },
+              { type: "first_frame", url: "https://example.com/b.jpg" },
+            ],
+          },
+        });
+        expect(result.success).toBe(false);
+        expect(result.error?.issues.some((i) => i.path.includes("media"))).toBe(
+          true
+        );
+      });
     });
   });
 

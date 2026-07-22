@@ -100,10 +100,40 @@ export const AlibabaVideoMediaSchema = z.object({
   url: z.string().min(1),
 });
 
-export const AlibabaVideoSynthesisModelSchema = z.enum([
-  "wan2.7-i2v",
-  "wan2.7-videoedit",
-]);
+// Upstream ships new Wan point releases and new task variants on its own
+// cadence, so the Wan enums are unioned with an alias escape hatch. DashScope's
+// Wan id grammar is `wan<version>` — a dot-separated numeric version attached
+// directly to the `wan` prefix — followed by one or more lowercase alphanumeric
+// task/tier segments, e.g. wan2.7-i2v, wan2.7-image-pro, wan3.0-videoedit.
+// Anchoring the version to the prefix is the load-bearing part: a looser
+// `/^wan.*-[a-z0-9-]+$/` would wrongly accept `wan-2.7-i2v` and `wanx-i2v`.
+// Anything that is not a versioned Wan id must be added to the enum explicitly.
+//
+// The video-synthesis enum below and the image-generation request further down
+// share this one alias: they are the same Wan family and differ only by task
+// segment (`wan2.7-i2v` vs `wan2.7-image-pro`).
+const AlibabaWanModelAliasSchema = z
+  .string()
+  .regex(
+    /^wan\d+(?:\.\d+)*-[a-z0-9]+(?:-[a-z0-9]+)*$/,
+    "Expected a listed model or a versioned Wan alias (e.g. wan3.0-i2v)"
+  );
+
+const WAN_VIDEO_SYNTHESIS_MODELS = ["wan2.7-i2v", "wan2.7-videoedit"] as const;
+
+const WAN_VIDEO_SYNTHESIS_MODEL_SET = new Set<string>(
+  WAN_VIDEO_SYNTHESIS_MODELS
+);
+
+// True only for ids this package lists and that are not wan2.7-videoedit. Ids
+// arriving through the alias hatch are deliberately excluded — see the `ratio`
+// and `audio_setting` refinements below.
+const isListedNonVideoEditWanModel = (model: string): boolean =>
+  WAN_VIDEO_SYNTHESIS_MODEL_SET.has(model) && model !== "wan2.7-videoedit";
+
+export const AlibabaVideoSynthesisModelSchema = z
+  .enum(WAN_VIDEO_SYNTHESIS_MODELS)
+  .or(AlibabaWanModelAliasSchema);
 
 export const AlibabaVideoSynthesisInputSchema = z.object({
   prompt: z.string().max(5000).optional(),
@@ -225,8 +255,22 @@ export const AlibabaVideoSynthesisRequestSchema = VideoSynthesisRequest.refine(
     }
   )
 
+  // The six refinements above skip for an id that arrives through the alias
+  // hatch, which is deliberate: the hatch asserts that an id is well-formed,
+  // not that upstream serves it, so upstream stays the authority on the media
+  // shapes a new model accepts.
+  //
+  // The two below deny a parameter rather than requiring one, so the same
+  // "unlisted ids fall through" reading has to be written explicitly. Keyed on
+  // `v.model === "wan2.7-videoedit"` they would deny `ratio` and
+  // `audio_setting` to every hatched id — blocking a future wan3.0-videoedit
+  // from the very fields it exists for. Keyed on the *listed* non-videoedit
+  // ids, listed models keep exactly today's behaviour and unlisted ids are
+  // left to upstream.
   .refine(
-    (v) => v.model === "wan2.7-videoedit" || v.parameters?.ratio === undefined,
+    (v) =>
+      !isListedNonVideoEditWanModel(v.model) ||
+      v.parameters?.ratio === undefined,
     {
       message: "ratio is only supported by wan2.7-videoedit",
       path: ["parameters", "ratio"],
@@ -234,7 +278,7 @@ export const AlibabaVideoSynthesisRequestSchema = VideoSynthesisRequest.refine(
   )
   .refine(
     (v) =>
-      v.model === "wan2.7-videoedit" ||
+      !isListedNonVideoEditWanModel(v.model) ||
       v.parameters?.audio_setting === undefined,
     {
       message: "audio_setting is only supported by wan2.7-videoedit",
@@ -292,8 +336,16 @@ export const AlibabaImageGenerationParametersSchema = z.object({
   bbox_list: z.array(z.array(z.array(z.number()))).optional(),
 });
 
+const WAN_IMAGE_GENERATION_MODELS = [
+  "wan2.7-image-pro",
+  "wan2.7-image",
+] as const;
+
 export const AlibabaImageGenerationRequestSchema = z.object({
-  model: z.enum(["wan2.7-image-pro", "wan2.7-image"]),
+  // Same Wan family as AlibabaVideoSynthesisModelSchema, differing only by task
+  // segment, so it reuses that alias rather than defining an identical second
+  // one.
+  model: z.enum(WAN_IMAGE_GENERATION_MODELS).or(AlibabaWanModelAliasSchema),
   input: AlibabaImageGenerationInputSchema,
   parameters: AlibabaImageGenerationParametersSchema.optional(),
 });
@@ -347,16 +399,59 @@ const QWEN_IMAGE_EDIT_STABLE_MODELS = [
 
 const QWEN_IMAGE_EDIT_MODEL_SET = new Set<string>(QWEN_IMAGE_EDIT_MODELS);
 
-export const AlibabaQwenImageGenerationModelSchema = z.enum(
-  QWEN_IMAGE_GENERATION_MODELS
-);
+// DashScope ships new qwen-image point releases and dated snapshots before this
+// package's enums catch up, so both Qwen enums are unioned with an alias escape
+// hatch. The generation grammar is `qwen-image-<version>` — a dot-separated
+// numeric version — followed by optional lowercase tier or date segments, e.g.
+// qwen-image-3.0, qwen-image-2.1-pro. Requiring a digit immediately after
+// `qwen-image-` is what keeps the edit family out of the generation hatch; a
+// looser `/^qwen-image(?:-[a-z0-9.]+)*$/` would accept `qwen-image-edit-max`
+// here and collapse the two capability surfaces the enums exist to separate.
+//
+// `abort` is what keeps the two families' error reporting apart. The two
+// request schemas below form a union, and zod only surfaces a single branch's
+// own issues when exactly one branch is still "live"; a non-aborting model
+// mismatch leaves both branches live and collapses a precise
+// `input.messages[0].content` issue into a generic union error. Failing this
+// family's grammar makes the whole branch inapplicable, so it stops there.
+const AlibabaQwenImageGenerationModelAliasSchema = z
+  .string()
+  .regex(/^qwen-image-\d+(?:\.\d+)*(?:-[a-z0-9]+)*$/, {
+    error:
+      "Expected a listed model or a versioned qwen-image alias (e.g. qwen-image-3.0)",
+    abort: true,
+  });
 
+// The edit grammar is the literal `qwen-image-edit` prefix followed by optional
+// lowercase tier or date segments, e.g. qwen-image-edit-ultra,
+// qwen-image-edit-max-2026-01-16. Requiring a `-` before each segment is what
+// rejects near-misses such as `qwen-image-editx`.
+// `abort` here for the same reason as the generation alias above.
+const AlibabaQwenImageEditModelAliasSchema = z
+  .string()
+  .regex(/^qwen-image-edit(?:-[a-z0-9]+)*$/, {
+    error:
+      "Expected a listed model or a qwen-image-edit alias (e.g. qwen-image-edit-ultra)",
+    abort: true,
+  });
+
+export const AlibabaQwenImageGenerationModelSchema = z
+  .enum(QWEN_IMAGE_GENERATION_MODELS)
+  .or(AlibabaQwenImageGenerationModelAliasSchema);
+
+// Closed on purpose: a curated stable-only subset that deliberately excludes the
+// preview and dated-snapshot ids in QWEN_IMAGE_GENERATION_MODELS. An open alias
+// would readmit exactly what the subset exists to exclude.
 export const AlibabaQwenImageGenerationStableModelSchema = z.enum(
   QWEN_IMAGE_GENERATION_STABLE_MODELS
 );
 
-export const AlibabaQwenImageEditModelSchema = z.enum(QWEN_IMAGE_EDIT_MODELS);
+export const AlibabaQwenImageEditModelSchema = z
+  .enum(QWEN_IMAGE_EDIT_MODELS)
+  .or(AlibabaQwenImageEditModelAliasSchema);
 
+// Closed on purpose, for the same reason as the generation stable subset above:
+// it curates the dated snapshots out, and an alias would put them back.
 export const AlibabaQwenImageEditStableModelSchema = z.enum(
   QWEN_IMAGE_EDIT_STABLE_MODELS
 );
@@ -366,6 +461,8 @@ export const AlibabaQwenImageModelSchema = z.union([
   AlibabaQwenImageEditModelSchema,
 ]);
 
+// Stays closed transitively: both members are curated stable-only subsets, so
+// admitting an unlisted id here would defeat both of them at once.
 export const AlibabaQwenImageStableModelSchema = z.union([
   AlibabaQwenImageGenerationStableModelSchema,
   AlibabaQwenImageEditStableModelSchema,
@@ -450,8 +547,16 @@ const countAlibabaImageContentParts = (
   image: parts.filter((p) => "image" in p).length,
 });
 
+// A plain union rather than z.discriminatedUnion("model", …): opening the two
+// Qwen enums turns each branch's `model` into a union with no finite value set,
+// and zod cannot build a discriminator map from that — it throws on every
+// parse, listed ids included. The branches stay mutually exclusive by
+// construction (the generation alias requires a digit right after
+// `qwen-image-`, the edit alias requires the literal `edit`), so exactly one
+// branch ever applies to a given id and zod reports that branch's issues with
+// their original paths.
 export const AlibabaMultimodalGenerationRequestSchema = z
-  .discriminatedUnion("model", [
+  .union([
     AlibabaQwenImageGenerationRequestSchema,
     AlibabaQwenImageEditRequestSchema,
   ])

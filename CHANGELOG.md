@@ -29,6 +29,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   overflowing Node's default subprocess buffer.
 - Generated KIE documentation retains the media URL upload guidance added for
   pre-upload asset identifiers.
+- The dependency graph pins `body-parser` to the patched 1.20.6 and 2.3.0
+  release lines for CVE-2026-12590.
 
 ## [0.1.0] - 2026-05-16
 

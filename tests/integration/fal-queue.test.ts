@@ -1,12 +1,16 @@
 import { describe, it, expect } from "vitest";
 import { createFal } from "@apicity/fal";
+import { FalQueueSubmitRequestSchema } from "@apicity/fal/zod";
 
 describe("fal queue validation", () => {
   it("should expose queue submit schema", () => {
     const provider = createFal({
       apiKey: "fal-test-key",
     });
-    expect(provider.v1.queue.submit.schema).toBeDefined();
+    // Bind the identity, not just presence: the MCP server derives this
+    // endpoint's tool input JSON Schema from `.schema`, so attaching a
+    // sibling's schema here would ship a wrong tool contract silently.
+    expect(provider.v1.queue.submit.schema).toBe(FalQueueSubmitRequestSchema);
     expect(typeof provider.v1.queue.submit.schema.safeParse).toBe("function");
   });
 

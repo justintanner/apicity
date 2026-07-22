@@ -5,6 +5,7 @@ import {
   type PollyContext,
 } from "../harness";
 import { createFal } from "@apicity/fal";
+import { FalWanV2p7EditRequestSchema } from "@apicity/fal/zod";
 
 describe("fal wan v2.7 edit integration", () => {
   let ctx: PollyContext;
@@ -108,7 +109,10 @@ describe("fal wan v2.7 edit integration", () => {
   it("should expose schema", () => {
     const provider = createFal({ apiKey: "fal-test-key" });
     const schema = provider.run.wan.v2p7.edit.schema;
-    expect(schema).toBeDefined();
+    // Bind the identity, not just presence: the MCP server derives this
+    // endpoint's tool input JSON Schema from `.schema`, so attaching a
+    // sibling's schema here would ship a wrong tool contract silently.
+    expect(schema).toBe(FalWanV2p7EditRequestSchema);
     expect(typeof schema.safeParse).toBe("function");
   });
 

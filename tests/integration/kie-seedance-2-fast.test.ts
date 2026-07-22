@@ -1,6 +1,7 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
 import { createKie, type MediaGenerationRequest } from "@apicity/kie";
+import { modelInputSchemas } from "../../packages/provider/kie/src/model-schemas";
 import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 describe("kie bytedance/seedance-2-fast integration", () => {
@@ -80,7 +81,10 @@ describe("kie bytedance/seedance-2-fast integration", () => {
     });
     const schema = provider.modelInputSchemas["bytedance/seedance-2-fast"];
 
-    expect(schema).toBeDefined();
+    // Bind the identity, not just presence: consumers build this model's
+    // payloads from its modelInputSchemas descriptor, so attaching a
+    // sibling model's descriptor here would misstate the input contract.
+    expect(schema).toBe(modelInputSchemas["bytedance/seedance-2-fast"]);
     expect(schema.type).toBe("video");
     expect(schema.fields.prompt.required).toBe(true);
     expect(schema.fields.aspect_ratio.enum).toContain("adaptive");

@@ -6,6 +6,7 @@ import {
   type PollyContext,
 } from "../harness";
 import { createKie, type MediaGenerationRequest } from "@apicity/kie";
+import { modelInputSchemas } from "../../packages/provider/kie/src/model-schemas";
 import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 describe("kie wan/2-7-image integration", () => {
@@ -100,7 +101,10 @@ describe("kie wan/2-7-image integration", () => {
     });
     const schema = provider.modelInputSchemas["wan/2-7-image"];
 
-    expect(schema).toBeDefined();
+    // Bind the identity, not just presence: consumers build this model's
+    // payloads from its modelInputSchemas descriptor, so attaching a
+    // sibling model's descriptor here would misstate the input contract.
+    expect(schema).toBe(modelInputSchemas["wan/2-7-image"]);
     expect(schema.type).toBe("image");
     expect(schema.fields.prompt.required).toBe(true);
     expect(schema.fields.prompt.type).toBe("string");

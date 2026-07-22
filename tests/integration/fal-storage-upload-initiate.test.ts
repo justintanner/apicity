@@ -7,6 +7,7 @@ import {
   type PollyContext,
 } from "../harness";
 import { createFal } from "@apicity/fal";
+import { FalStorageUploadInitiateRequestSchema } from "@apicity/fal/zod";
 
 describe("fal storage upload initiate integration", () => {
   let ctx: PollyContext;
@@ -82,7 +83,10 @@ describe("fal storage upload initiate integration", () => {
   it("should expose schema", () => {
     const provider = createFal({ apiKey: "fal-test-key" });
     const schema = provider.storage.upload.initiate.schema;
-    expect(schema).toBeDefined();
+    // Bind the identity, not just presence: the MCP server derives this
+    // endpoint's tool input JSON Schema from `.schema`, so attaching a
+    // sibling's schema here would ship a wrong tool contract silently.
+    expect(schema).toBe(FalStorageUploadInitiateRequestSchema);
     expect(typeof schema.safeParse).toBe("function");
   });
 });

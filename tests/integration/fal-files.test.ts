@@ -1,5 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { createFal } from "@apicity/fal";
+import {
+  FalFilesUploadUrlRequestSchema,
+  FalFilesUploadLocalRequestSchema,
+} from "@apicity/fal/zod";
 
 describe("fal serverless files validation", () => {
   it("should expose serverless files namespace", () => {
@@ -14,7 +18,10 @@ describe("fal serverless files validation", () => {
   it("should expose uploadUrl schema", () => {
     const provider = createFal({ apiKey: "fal-test-key" });
     const schema = provider.v1.serverless.files.uploadUrl.schema;
-    expect(schema).toBeDefined();
+    // Bind the identity, not just presence: the MCP server derives this
+    // endpoint's tool input JSON Schema from `.schema`, so attaching a
+    // sibling's schema here would ship a wrong tool contract silently.
+    expect(schema).toBe(FalFilesUploadUrlRequestSchema);
     expect(typeof schema.safeParse).toBe("function");
   });
 
@@ -48,7 +55,10 @@ describe("fal serverless files validation", () => {
   it("should expose uploadLocal schema", () => {
     const provider = createFal({ apiKey: "fal-test-key" });
     const schema = provider.v1.serverless.files.uploadLocal.schema;
-    expect(schema).toBeDefined();
+    // Bind the identity, not just presence: the MCP server derives this
+    // endpoint's tool input JSON Schema from `.schema`, so attaching a
+    // sibling's schema here would ship a wrong tool contract silently.
+    expect(schema).toBe(FalFilesUploadLocalRequestSchema);
     expect(typeof schema.safeParse).toBe("function");
   });
 

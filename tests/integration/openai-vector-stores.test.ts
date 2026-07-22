@@ -1,6 +1,7 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
 import { createOpenAi } from "@apicity/openai";
+import { OpenAiVectorStoreCreateRequestSchema } from "@apicity/openai/zod";
 
 describe("openai vector stores integration", () => {
   let ctx: PollyContext;
@@ -45,7 +46,12 @@ describe("openai vector stores integration", () => {
     it("should expose schema on create method", () => {
       const provider = createOpenAi({ apiKey: "sk-test-key" });
 
-      expect(provider.post.v1.vectorStores.schema).toBeDefined();
+      // Bind the identity, not just presence: the MCP server derives this
+      // endpoint's tool input JSON Schema from `.schema`, so attaching a
+      // sibling's schema here would ship a wrong tool contract silently.
+      expect(provider.post.v1.vectorStores.schema).toBe(
+        OpenAiVectorStoreCreateRequestSchema
+      );
       expect(typeof provider.post.v1.vectorStores.schema.safeParse).toBe(
         "function"
       );

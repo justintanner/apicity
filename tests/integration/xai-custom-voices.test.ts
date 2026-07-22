@@ -4,6 +4,7 @@ import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
 import { createXai, XaiError } from "@apicity/xai";
+import { XaiCustomVoiceCreateRequestSchema } from "@apicity/xai/zod";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
@@ -72,7 +73,12 @@ describe("xAI custom voices integration", () => {
 
   it("should expose customVoices schema", () => {
     const provider = createXai({ apiKey: "xai-test-key" });
-    expect(provider.post.v1.customVoices.schema).toBeDefined();
+    // Bind the identity, not just presence: the MCP server derives this
+    // endpoint's tool input JSON Schema from `.schema`, so attaching a
+    // sibling's schema here would ship a wrong tool contract silently.
+    expect(provider.post.v1.customVoices.schema).toBe(
+      XaiCustomVoiceCreateRequestSchema
+    );
     expect(typeof provider.post.v1.customVoices.schema.safeParse).toBe(
       "function"
     );

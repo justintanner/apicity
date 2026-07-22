@@ -1,6 +1,7 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
 import { createXaiProvider } from "../xai-provider";
+import { XaiTokenizeTextRequestSchema } from "@apicity/xai/zod";
 
 describe("xai tokenize-text integration", () => {
   let ctx: PollyContext;
@@ -31,7 +32,10 @@ describe("xai tokenize-text integration", () => {
   it("should expose schema with safeParse", () => {
     const provider = createXaiProvider();
     const endpoint = provider.post.v1.tokenizeText;
-    expect(endpoint.schema).toBeDefined();
+    // Bind the identity, not just presence: the MCP server derives this
+    // endpoint's tool input JSON Schema from `.schema`, so attaching a
+    // sibling's schema here would ship a wrong tool contract silently.
+    expect(endpoint.schema).toBe(XaiTokenizeTextRequestSchema);
     expect(typeof endpoint.schema.safeParse).toBe("function");
 
     const valid = endpoint.schema.safeParse({

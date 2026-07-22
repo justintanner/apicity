@@ -2,6 +2,7 @@ import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
 import { createAnthropic } from "@apicity/anthropic";
 import type { AnthropicCountTokensResponse } from "@apicity/anthropic";
+import { AnthropicCountTokensRequestSchema } from "@apicity/anthropic/zod";
 
 describe("anthropic v1.messages.countTokens integration", () => {
   let ctx: PollyContext;
@@ -33,7 +34,12 @@ describe("anthropic v1.messages.countTokens integration", () => {
 
   it("should expose a request schema", () => {
     const provider = createAnthropic({ apiKey: "sk-test" });
-    expect(provider.v1.messages.countTokens.schema).toBeDefined();
+    // Bind the identity, not just presence: the MCP server derives this
+    // endpoint's tool input JSON Schema from `.schema`, so attaching a
+    // sibling's schema here would ship a wrong tool contract silently.
+    expect(provider.v1.messages.countTokens.schema).toBe(
+      AnthropicCountTokensRequestSchema
+    );
     expect(typeof provider.v1.messages.countTokens.schema.safeParse).toBe(
       "function"
     );

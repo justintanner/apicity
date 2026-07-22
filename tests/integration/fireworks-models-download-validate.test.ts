@@ -5,6 +5,10 @@ import {
   FireworksError,
   type FireworksValidateUploadRequest,
 } from "@apicity/fireworks";
+import {
+  FireworksEmptySchema,
+  FireworksValidateUploadRequestSchema,
+} from "@apicity/fireworks/zod";
 
 describe("fireworks models download endpoint and validate upload", () => {
   let ctx: PollyContext;
@@ -110,8 +114,15 @@ describe("fireworks models download endpoint and validate upload", () => {
       const provider = createFireworks({ apiKey: "test" });
       const models = provider.inference.v1.accounts.models;
 
-      expect(models.getDownloadEndpoint.schema).toBeDefined();
-      expect(models.validateUpload.schema).toBeDefined();
+      // Bind the identity, not just presence: the MCP server derives each
+      // endpoint's tool input JSON Schema from `.schema`, so attaching a
+      // sibling's schema here would ship a wrong tool contract silently.
+      // getDownloadEndpoint takes no payload, so it intentionally shares the
+      // provider-wide FireworksEmptySchema with the other body-less GETs.
+      expect(models.getDownloadEndpoint.schema).toBe(FireworksEmptySchema);
+      expect(models.validateUpload.schema).toBe(
+        FireworksValidateUploadRequestSchema
+      );
     });
 
     it("should expose schema.safeParse on methods", () => {

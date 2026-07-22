@@ -5,6 +5,7 @@ import {
   type PollyContext,
 } from "../harness";
 import { createFal } from "@apicity/fal";
+import { FalWanV2p7TextToImageRequestSchema } from "@apicity/fal/zod";
 
 describe("fal wan v2.7 pro text-to-image integration", () => {
   let ctx: PollyContext;
@@ -63,7 +64,10 @@ describe("fal wan v2.7 pro text-to-image integration", () => {
   it("should expose schema", () => {
     const provider = createFal({ apiKey: "fal-test-key" });
     const schema = provider.run.wan.v2p7.pro.textToImage.schema;
-    expect(schema).toBeDefined();
+    // Bind the identity, not just presence: the MCP server derives this
+    // endpoint's tool input JSON Schema from `.schema`, so attaching a
+    // sibling's schema here would ship a wrong tool contract silently.
+    expect(schema).toBe(FalWanV2p7TextToImageRequestSchema);
     expect(typeof schema.safeParse).toBe("function");
   });
 

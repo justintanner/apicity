@@ -5,6 +5,7 @@ import {
   type PollyContext,
 } from "../harness";
 import { createFal } from "@apicity/fal";
+import { FalSeedance2p0FastTextToVideoRequestSchema } from "@apicity/fal/zod";
 
 describe("fal bytedance seedance2p0 fast text-to-video integration", () => {
   let ctx: PollyContext;
@@ -82,7 +83,10 @@ describe("fal bytedance seedance2p0 fast text-to-video integration", () => {
   it("should expose schema", () => {
     const provider = createFal({ apiKey: "fal-test-key" });
     const schema = provider.run.bytedance.seedance2p0.fast.textToVideo.schema;
-    expect(schema).toBeDefined();
+    // Bind the identity, not just presence: the MCP server derives this
+    // endpoint's tool input JSON Schema from `.schema`, so attaching a
+    // sibling's schema here would ship a wrong tool contract silently.
+    expect(schema).toBe(FalSeedance2p0FastTextToVideoRequestSchema);
     expect(typeof schema.safeParse).toBe("function");
   });
 

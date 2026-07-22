@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { createHmac } from "node:crypto";
 import { createKie, type MediaGenerationRequest } from "@apicity/kie";
+import { CreateTaskRequestSchema } from "@apicity/kie/zod";
 import { PayGateError, canonicalHash } from "@apicity/cost";
 import { TEST_PAYGATE_SECRET, mintKieCreateTaskOtp } from "../harness";
 
@@ -254,6 +255,11 @@ describe("kie OTP preflight", () => {
       apiKey: "test-key",
       paygate: { secret: TEST_PAYGATE_SECRET },
     });
-    expect(provider.post.api.v1.jobs.createTask.schema).toBeDefined();
+    // Bind the identity, not just presence: the MCP server derives this
+    // endpoint's tool input JSON Schema from `.schema`, so attaching a
+    // sibling's schema here would ship a wrong tool contract silently.
+    expect(provider.post.api.v1.jobs.createTask.schema).toBe(
+      CreateTaskRequestSchema
+    );
   });
 });

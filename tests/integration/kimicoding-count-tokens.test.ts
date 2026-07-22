@@ -1,12 +1,18 @@
 import { describe, it, expect } from "vitest";
 import { createKimiCoding } from "@apicity/kimicoding";
+import { CountTokensRequestSchema } from "@apicity/kimicoding/zod";
 
 describe("kimicoding count tokens integration", () => {
   it("should have schema", async () => {
     const provider = createKimiCoding({
       apiKey: process.env.KIMI_CODING_API_KEY ?? "sk-test-key",
     });
-    expect(provider.post.coding.v1.countTokens.schema).toBeDefined();
+    // Bind the identity, not just presence: the MCP server derives this
+    // endpoint's tool input JSON Schema from `.schema`, so attaching a
+    // sibling's schema here would ship a wrong tool contract silently.
+    expect(provider.post.coding.v1.countTokens.schema).toBe(
+      CountTokensRequestSchema
+    );
     expect(typeof provider.post.coding.v1.countTokens.schema.safeParse).toBe(
       "function"
     );

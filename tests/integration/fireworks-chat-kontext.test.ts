@@ -5,6 +5,11 @@ import {
   type PollyContext,
 } from "../harness";
 import { createFireworks } from "@apicity/fireworks";
+import {
+  FireworksGetResultRequestSchema,
+  FireworksKontextRequestSchema,
+  FireworksTextToImageRequestSchema,
+} from "@apicity/fireworks/zod";
 
 describe("fireworks kontext endpoint integration", () => {
   let ctx: PollyContext;
@@ -147,9 +152,18 @@ describe("fireworks kontext endpoint integration", () => {
 
     it("should expose payload schemas on workflow methods", () => {
       const provider = createFireworks({ apiKey: "test" });
-      expect(provider.inference.v1.workflows.kontext.schema).toBeDefined();
-      expect(provider.inference.v1.workflows.getResult.schema).toBeDefined();
-      expect(provider.inference.v1.workflows.textToImage.schema).toBeDefined();
+      // Bind the identity, not just presence: the MCP server derives each
+      // endpoint's tool input JSON Schema from `.schema`, so attaching a
+      // sibling's schema here would ship a wrong tool contract silently.
+      expect(provider.inference.v1.workflows.kontext.schema).toBe(
+        FireworksKontextRequestSchema
+      );
+      expect(provider.inference.v1.workflows.getResult.schema).toBe(
+        FireworksGetResultRequestSchema
+      );
+      expect(provider.inference.v1.workflows.textToImage.schema).toBe(
+        FireworksTextToImageRequestSchema
+      );
     });
   });
 });

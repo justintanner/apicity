@@ -1,6 +1,7 @@
 import { describe, expect, test } from "vitest";
 import fs from "node:fs";
 import { createOpenAi } from "@apicity/openai";
+import { OpenAiChatRequestSchema } from "@apicity/openai/zod";
 import { createAlibaba } from "@apicity/alibaba";
 import { createXai } from "@apicity/xai";
 import { createFal } from "@apicity/fal";
@@ -79,7 +80,10 @@ describe("HAR-derived examples on endpoints", () => {
     const example = exampleOf(fn);
     const schema = fn.schema;
     expect(example).toBeDefined();
-    expect(schema).toBeDefined();
+    // Bind the identity, not just presence: the MCP server derives this
+    // endpoint's tool input JSON Schema from `.schema`, so attaching a
+    // sibling's schema here would ship a wrong tool contract silently.
+    expect(schema).toBe(OpenAiChatRequestSchema);
     const result = (
       schema as { safeParse: (v: unknown) => { success: boolean } }
     ).safeParse(example?.payload);

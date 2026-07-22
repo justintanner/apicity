@@ -7,6 +7,7 @@ import {
   type PollyContext,
 } from "../harness";
 import { createMeta } from "@apicity/meta";
+import { MetaMediaPublishRequestSchema } from "@apicity/meta/zod";
 
 const recordingName = "meta/media-publish";
 
@@ -45,7 +46,10 @@ describe("meta post.v25.mediaPublish", () => {
   it("exposes a Zod schema with safeParse", () => {
     const provider = createMeta({ accessToken: "ig-test-token" });
     const endpoint = provider.post.v25.mediaPublish;
-    expect(endpoint.schema).toBeDefined();
+    // Bind the identity, not just presence: the MCP server derives this
+    // endpoint's tool input JSON Schema from `.schema`, so attaching a
+    // sibling's schema here would ship a wrong tool contract silently.
+    expect(endpoint.schema).toBe(MetaMediaPublishRequestSchema);
     expect(typeof endpoint.schema.safeParse).toBe("function");
 
     const valid = endpoint.schema.safeParse({

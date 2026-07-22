@@ -4,6 +4,7 @@ import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
 import { createXai } from "@apicity/xai";
+import { XaiSttRequestSchema } from "@apicity/xai/zod";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
@@ -57,7 +58,10 @@ describe("xAI speech-to-text integration", () => {
 
   it("should expose stt schema", () => {
     const provider = createXai({ apiKey: "xai-test-key" });
-    expect(provider.post.v1.stt.schema).toBeDefined();
+    // Bind the identity, not just presence: the MCP server derives this
+    // endpoint's tool input JSON Schema from `.schema`, so attaching a
+    // sibling's schema here would ship a wrong tool contract silently.
+    expect(provider.post.v1.stt.schema).toBe(XaiSttRequestSchema);
     expect(typeof provider.post.v1.stt.schema.safeParse).toBe("function");
   });
 });

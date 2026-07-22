@@ -13,8 +13,13 @@ describe("dolthub v2 branch create", () => {
     expect(provider.api.v2.databases.branches.create).toBeInstanceOf(Function);
     // Unlike the read-only `list`, the POST method carries a zod request schema.
     // `.schema` is attached via Object.assign; the declared method type omits it.
+    // Bind the identity, not just presence: the MCP server derives this
+    // endpoint's tool input JSON Schema from `.schema`, so attaching a
+    // sibling's schema here would ship a wrong tool contract silently.
     const create = provider.api.v2.databases.branches.create;
-    expect((create as unknown as { schema?: unknown }).schema).toBeDefined();
+    expect((create as unknown as { schema?: unknown }).schema).toBe(
+      DoltHubV2BranchCreateRequestSchema
+    );
   });
 
   it("POSTs the enveloped create request and preserves the branch envelope", async () => {

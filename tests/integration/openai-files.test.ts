@@ -8,6 +8,7 @@ import {
   type PollyContext,
 } from "../harness";
 import { createOpenAi } from "@apicity/openai";
+import { OpenAiFileUploadRequestSchema } from "@apicity/openai/zod";
 
 const MINIMAL_FILES_LIST_RESPONSE = {
   object: "list",
@@ -129,7 +130,10 @@ describe("openai files integration", () => {
   describe("validation", () => {
     it("should expose schema on upload", () => {
       const provider = createOpenAi({ apiKey: "sk-test" });
-      expect(provider.post.v1.files.schema).toBeDefined();
+      // Bind the identity, not just presence: the MCP server derives this
+      // endpoint's tool input JSON Schema from `.schema`, so attaching a
+      // sibling's schema here would ship a wrong tool contract silently.
+      expect(provider.post.v1.files.schema).toBe(OpenAiFileUploadRequestSchema);
       expect(typeof provider.post.v1.files.schema.safeParse).toBe("function");
     });
 

@@ -12,6 +12,7 @@ import {
   Wan27VideoEditDurationValues,
   type MediaGenerationRequest,
 } from "@apicity/kie";
+import { modelInputSchemas } from "../../packages/provider/kie/src/model-schemas";
 import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 describe("kie wan/2-7-videoedit integration", () => {
@@ -121,7 +122,10 @@ describe("kie wan/2-7-videoedit integration", () => {
     });
     const schema = provider.modelInputSchemas["wan/2-7-videoedit"];
 
-    expect(schema).toBeDefined();
+    // Bind the identity, not just presence: consumers build this model's
+    // payloads from its modelInputSchemas descriptor, so attaching a
+    // sibling model's descriptor here would misstate the input contract.
+    expect(schema).toBe(modelInputSchemas["wan/2-7-videoedit"]);
     expect(schema.type).toBe("video");
     expect(schema.fields.video_url.required).toBe(true);
     expect(schema.fields.video_url.type).toBe("string");

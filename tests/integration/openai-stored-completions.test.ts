@@ -6,6 +6,7 @@ import {
   type PollyContext,
 } from "../harness";
 import { createOpenAi } from "@apicity/openai";
+import { OpenAiChatRequestSchema } from "@apicity/openai/zod";
 import type {
   OpenAiStoredCompletionListResponse,
   OpenAiStoredCompletionMessageListResponse,
@@ -88,7 +89,12 @@ describe("openai stored completions integration", () => {
 describe("openai stored completions payload validation", () => {
   it("should expose schema on post method", () => {
     const provider = createOpenAi({ apiKey: "sk-test-key" });
-    expect(provider.post.v1.chat.completions.schema).toBeDefined();
+    // Bind the identity, not just presence: the MCP server derives this
+    // endpoint's tool input JSON Schema from `.schema`, so attaching a
+    // sibling's schema here would ship a wrong tool contract silently.
+    expect(provider.post.v1.chat.completions.schema).toBe(
+      OpenAiChatRequestSchema
+    );
     expect(typeof provider.post.v1.chat.completions.schema.safeParse).toBe(
       "function"
     );

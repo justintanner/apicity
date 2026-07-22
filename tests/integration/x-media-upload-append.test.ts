@@ -8,6 +8,7 @@ import {
   type PollyContext,
 } from "../harness";
 import { createX } from "@apicity/x";
+import { XMediaUploadAppendRequestSchema } from "@apicity/x/zod";
 
 const recordingName = "x/media-upload-append";
 
@@ -47,7 +48,10 @@ describe("x post.v2.media.upload.append", () => {
   it("exposes a Zod schema with safeParse", () => {
     const provider = createX({ accessToken: "x-test-token" });
     const endpoint = provider.post.v2.media.upload.append;
-    expect(endpoint.schema).toBeDefined();
+    // Bind the identity, not just presence: the MCP server derives this
+    // endpoint's tool input JSON Schema from `.schema`, so attaching a
+    // sibling's schema here would ship a wrong tool contract silently.
+    expect(endpoint.schema).toBe(XMediaUploadAppendRequestSchema);
     expect(typeof endpoint.schema.safeParse).toBe("function");
 
     const valid = endpoint.schema.safeParse({

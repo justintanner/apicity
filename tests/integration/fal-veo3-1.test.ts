@@ -5,6 +5,7 @@ import {
   type PollyContext,
 } from "../harness";
 import { createFal } from "@apicity/fal";
+import { FalVeo3p1TextToVideoRequestSchema } from "@apicity/fal/zod";
 
 describe("fal veo3.1 text-to-video integration", () => {
   let ctx: PollyContext;
@@ -75,7 +76,10 @@ describe("fal veo3.1 text-to-video integration", () => {
   it("should expose schema", () => {
     const provider = createFal({ apiKey: "fal-test-key" });
     const schema = provider.run.veo3p1.textToVideo.schema;
-    expect(schema).toBeDefined();
+    // Bind the identity, not just presence: the MCP server derives this
+    // endpoint's tool input JSON Schema from `.schema`, so attaching a
+    // sibling's schema here would ship a wrong tool contract silently.
+    expect(schema).toBe(FalVeo3p1TextToVideoRequestSchema);
     expect(typeof schema.safeParse).toBe("function");
   });
 

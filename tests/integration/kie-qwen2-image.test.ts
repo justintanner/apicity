@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
 import { createKie } from "@apicity/kie";
+import { modelInputSchemas } from "../../packages/provider/kie/src/model-schemas";
 import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 describe("kie qwen2/text-to-image integration", () => {
@@ -125,7 +126,10 @@ describe("kie qwen2/text-to-image integration", () => {
     });
     const schema = provider.modelInputSchemas["qwen2/text-to-image"];
 
-    expect(schema).toBeDefined();
+    // Bind the identity, not just presence: consumers build this model's
+    // payloads from its modelInputSchemas descriptor, so attaching a
+    // sibling model's descriptor here would misstate the input contract.
+    expect(schema).toBe(modelInputSchemas["qwen2/text-to-image"]);
     expect(schema.type).toBe("image");
     expect(schema.fields.prompt.required).toBe(true);
     expect(schema.fields.prompt.maxLength).toBe(800);

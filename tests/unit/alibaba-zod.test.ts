@@ -1170,6 +1170,66 @@ describe("Alibaba Zod schema validation", () => {
     });
   });
 
+  // Opening the two Qwen enums forced z.discriminatedUnion("model", …) down to
+  // a plain z.union, and the comment above
+  // AlibabaMultimodalGenerationRequestSchema is otherwise the only description
+  // of what that costs. These pin both halves of it so a future edit to the
+  // aliases, the refinements, or the union itself cannot regress path
+  // reporting silently.
+  describe("union error paths", () => {
+    // A branch that fails only on non-aborting issues stays live, so zod
+    // surfaces its own issues at the paths they occurred at. `qwen-image-2.0`
+    // is a listed generation id, so only the generation branch is applicable;
+    // four image parts breaks that branch's `<=4 items` bound and refinement.
+    it("keeps original issue paths when the live branch fails non-fatally", () => {
+      const result = AlibabaMultimodalGenerationRequestSchema.safeParse({
+        model: "qwen-image-2.0",
+        input: {
+          messages: [
+            {
+              role: "user",
+              content: [
+                { text: "A koi pond" },
+                { image: "https://example.com/1.jpg" },
+                { image: "https://example.com/2.jpg" },
+                { image: "https://example.com/3.jpg" },
+                { image: "https://example.com/4.jpg" },
+              ],
+            },
+          ],
+        },
+      });
+      expect(result.success).toBe(false);
+      expect(result.error?.issues.map((i) => i.path.join("."))).toContain(
+        "input.messages.0.content"
+      );
+      expect(
+        result.error?.issues.every((i) => i.code === "invalid_union")
+      ).toBe(false);
+    });
+
+    // The documented boundary: a wrong-typed `input` is invalid_type on an
+    // object, which is fatal, so no branch survives and the union collapses to
+    // one pathless issue at the root — for a listed id as much as an aliased
+    // one. Anything relying on `input.*` paths must not assume they appear.
+    it.each([
+      ["listed", "qwen-image-2.0"],
+      ["aliased", "qwen-image-3.0"],
+    ])(
+      "collapses to a pathless invalid_union for a %s id whose input aborts",
+      (_label, model) => {
+        const result = AlibabaMultimodalGenerationRequestSchema.safeParse({
+          model,
+          input: "not-an-object",
+        });
+        expect(result.success).toBe(false);
+        expect(result.error?.issues).toHaveLength(1);
+        expect(result.error?.issues[0].code).toBe("invalid_union");
+        expect(result.error?.issues[0].path).toEqual([]);
+      }
+    );
+  });
+
   // The Wan and Qwen model enums used to be closed, so an id upstream shipped
   // before this package caught up failed validation even though the API served
   // it. Each enum now carries a narrow per-family alias hatch. These pin the

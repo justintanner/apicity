@@ -554,7 +554,12 @@ const countAlibabaImageContentParts = (
 // construction (the generation alias requires a digit right after
 // `qwen-image-`, the edit alias requires the literal `edit`), so exactly one
 // branch ever applies to a given id and zod reports that branch's issues with
-// their original paths.
+// their original paths — except where the surviving branch fails with an
+// aborting issue (a wrong-typed `input`, which is `invalid_type` on an object
+// and therefore fatal). That kills the last live branch, and the union falls
+// back to a single pathless `invalid_union` at the root, for listed ids as
+// much as for aliased ones. Both shapes are pinned in
+// tests/unit/alibaba-zod.test.ts.
 export const AlibabaMultimodalGenerationRequestSchema = z
   .union([
     AlibabaQwenImageGenerationRequestSchema,
@@ -646,9 +651,16 @@ export type AlibabaChatParsedRequest = z.output<
 >;
 export type AlibabaVideoMediaType = z.infer<typeof AlibabaVideoMediaTypeSchema>;
 export type AlibabaVideoMedia = z.infer<typeof AlibabaVideoMediaSchema>;
-export type AlibabaVideoSynthesisModel = z.infer<
-  typeof AlibabaVideoSynthesisModelSchema
->;
+// Written out rather than `z.infer<typeof AlibabaVideoSynthesisModelSchema>`:
+// the schema is `enum | alias`, and `z.infer` over that collapses to bare
+// `string`, which silently drops both autocomplete and typo rejection for
+// every consumer of this exported name. Restating the listed ids and mirroring
+// the runtime hatch with `string & {}` keeps the schema and the type accepting
+// the same values while the literals stay visible in editors. Same treatment
+// for the two Qwen image model aliases below.
+export type AlibabaVideoSynthesisModel =
+  | (typeof WAN_VIDEO_SYNTHESIS_MODELS)[number]
+  | (string & {});
 export type AlibabaVideoSynthesisInput = z.infer<
   typeof AlibabaVideoSynthesisInputSchema
 >;
@@ -694,15 +706,17 @@ export type AlibabaImageGenerationParsedRequest = z.output<
 export type AlibabaImageReferenceSlots = z.infer<
   typeof AlibabaImageReferenceSlotsSchema
 >;
-export type AlibabaQwenImageGenerationModel = z.infer<
-  typeof AlibabaQwenImageGenerationModelSchema
->;
+// Literal ids + hatch rather than `z.infer` — see AlibabaVideoSynthesisModel.
+export type AlibabaQwenImageGenerationModel =
+  | (typeof QWEN_IMAGE_GENERATION_MODELS)[number]
+  | (string & {});
 export type AlibabaQwenImageGenerationStableModel = z.infer<
   typeof AlibabaQwenImageGenerationStableModelSchema
 >;
-export type AlibabaQwenImageEditModel = z.infer<
-  typeof AlibabaQwenImageEditModelSchema
->;
+// Literal ids + hatch rather than `z.infer` — see AlibabaVideoSynthesisModel.
+export type AlibabaQwenImageEditModel =
+  | (typeof QWEN_IMAGE_EDIT_MODELS)[number]
+  | (string & {});
 export type AlibabaQwenImageEditStableModel = z.infer<
   typeof AlibabaQwenImageEditStableModelSchema
 >;

@@ -9,7 +9,10 @@ import {
   PRICING,
   PRICING_AS_OF,
 } from "../../packages/provider/cost/src/pricing/index";
-import { MODEL_SLUGS } from "../../packages/provider/cost/src/slugs";
+import {
+  MODEL_SLUGS,
+  type SlugProviderId,
+} from "../../packages/provider/cost/src/slugs";
 import { computeEstimate } from "../../packages/provider/cost/src/compute";
 
 describe("pricing helpers", () => {
@@ -180,14 +183,58 @@ describe("PRICING data", () => {
     expect(entry.source.asOf).not.toBe(PRICING_AS_OF);
   });
 
-  // AC-017: the slug registry and the pricing table are two halves of one
-  // fact. Registering a slug without a rate produced the split this item
-  // fixes, so walk the registry rather than pinning today's model list.
-  it("has a PRICING entry for every registered alibaba slug", () => {
-    const unpriced = Object.keys(MODEL_SLUGS.alibaba).filter(
-      (model) => PRICING.alibaba[model] === undefined
-    );
-    expect(unpriced).toEqual([]);
+  // The slug registry and the pricing table are two halves of one fact.
+  // Registering a slug without a rate produced the alibaba/googleflow split
+  // this walk generalizes, so walk every provider family of the registry
+  // rather than pinning today's provider or model list.
+  //
+  // Slugs registered in MODEL_SLUGS with intentionally no direct PRICING
+  // entry. Every entry is itself asserted below: it must exist in
+  // MODEL_SLUGS and be absent from PRICING, so a stale entry fails.
+  const UNPRICED_SLUG_ALLOWLIST: Partial<
+    Record<SlugProviderId, readonly string[]>
+  > = {
+    kie: [
+      // Synthetic tier keys over the single mode-tiered "kling-3.0/video"
+      // pricing entry (slugs.ts:10-14).
+      "kling-3.0/video/std",
+      "kling-3.0/video/pro",
+      // OQ-1 (ac-h7kvm.11 requirements): registered but no direct rate;
+      // kie.ai's rate page needs a browser session to verify whether the
+      // model is still purchasable. Priced or delisted in a follow-up bead.
+      "nano-banana",
+    ],
+  };
+
+  it.each(Object.keys(MODEL_SLUGS) as SlugProviderId[])(
+    "has a PRICING entry for every registered %s slug",
+    (provider) => {
+      const allow = new Set(UNPRICED_SLUG_ALLOWLIST[provider] ?? []);
+      const priced = (PRICING as Record<string, Record<string, unknown>>)[
+        provider
+      ];
+      const unpriced = Object.keys(MODEL_SLUGS[provider]).filter(
+        (model) => priced?.[model] === undefined && !allow.has(model)
+      );
+      expect(unpriced, `${provider} registered-but-unpriced`).toEqual([]);
+    }
+  );
+
+  it("keeps the unpriced-slug allowlist registered and rate-free", () => {
+    for (const [provider, models] of Object.entries(UNPRICED_SLUG_ALLOWLIST)) {
+      for (const model of models) {
+        expect(
+          MODEL_SLUGS[provider as SlugProviderId],
+          `${provider}/${model} allowlisted but not registered`
+        ).toHaveProperty([model]);
+        expect(
+          (PRICING as Record<string, Record<string, unknown>>)[provider]?.[
+            model
+          ],
+          `${provider}/${model} allowlisted but priced`
+        ).toBeUndefined();
+      }
+    }
   });
 
   it("openai has token-priced models", () => {
@@ -494,12 +541,6 @@ describe("PRICING data", () => {
           ).toBeGreaterThanOrEqual(0);
         }
       }
-    }
-  });
-
-  it("has a googleflow rate for every registered googleflow slug", () => {
-    for (const model of Object.keys(MODEL_SLUGS.googleflow)) {
-      expect(PRICING.googleflow[model], model).toBeDefined();
     }
   });
 

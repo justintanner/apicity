@@ -153,10 +153,13 @@ describe("Zod runtime compatibility", () => {
     expect(requiredFields(kie)).toEqual(
       expect.arrayContaining(["model", "input"])
     );
-    expect(objectProperties(kie).model).toEqual(
-      expect.objectContaining({
-        enum: expect.arrayContaining(["gpt-image-2-text-to-image"]),
-      })
+    // KieMediaModelSchema is now `z.enum(KIE_MEDIA_MODELS)` unioned with one
+    // alias per vendor family (TRI-001), so `model` converts to a nested
+    // `anyOf` rather than a bare enum. BR-6 is unchanged and is what this
+    // asserts: the id list must still be reachable in the emitted tool input
+    // schema, or MCP clients lose the suggestion list.
+    expect(enumValues(objectProperties(kie).model)).toEqual(
+      expect.arrayContaining(["gpt-image-2-text-to-image"])
     );
 
     const xai = zodToJsonSchema(
@@ -211,6 +214,18 @@ function objectProperties(schema: JsonSchema): Record<string, JsonSchema> {
   expect(schema.type).toBe("object");
   expect(schema.properties).toEqual(expect.any(Object));
   return schema.properties as Record<string, JsonSchema>;
+}
+
+// Collects the enum values a schema exposes, whether it is a bare enum or an
+// open `z.enum([...]).or(<alias>)` union whose enum branch sits inside `anyOf`.
+function enumValues(schema: JsonSchema): string[] {
+  if (Array.isArray(schema.enum)) {
+    return schema.enum.filter(
+      (value): value is string => typeof value === "string"
+    );
+  }
+  const branches = schema.anyOf as JsonSchema[] | undefined;
+  return branches ? branches.flatMap(enumValues) : [];
 }
 
 function requiredFields(schema: JsonSchema): string[] {

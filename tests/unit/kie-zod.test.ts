@@ -1,9 +1,12 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  CreateTaskRequestSchema,
   FluxKontextGenerateRequestSchema,
+  KIE_MEDIA_MODELS,
   KieClaudeRequestSchema,
   KieGrokResponsesRequestSchema,
+  KieMediaModelSchema,
   KieResponsesRequestSchema,
   Seedance2FastInputSchema,
   Seedance2InputSchema,
@@ -12,6 +15,7 @@ import {
   VeoExtendRequestSchema,
   VeoGenerateRequestSchema,
 } from "@apicity/kie/zod";
+import { modelInputSchemas } from "../../packages/provider/kie/src/model-schemas";
 import {
   zodToJsonSchema,
   type JsonSchema,
@@ -358,5 +362,303 @@ describe("TRI-008 VeoExtendRequestSchema.model stays a closed set", () => {
       type: "string",
       enum: ["fast", "quality"],
     });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// TRI-001 KieMediaModelSchema — one escape hatch per vendor family
+// ---------------------------------------------------------------------------
+//
+// KieMediaModelSchema is kie's aggregator catalogue: 47 ids drawn from a dozen
+// unrelated vendors behind one `createTask` endpoint. REQ-006 forbids opening
+// it with a single catch-all regex, so it carries one alias per vendor family
+// and four singletons stay enumerated with no alias at all.
+//
+// BR-4 needs care here that the single-family schemas above do not. A foreign
+// *catalogue* id — `happyhorse/video-edit` on the Kling family — is accepted by
+// KieMediaModelSchema, through the enum branch, and always was: the whole point
+// of the aggregator is that all 47 are valid. So cross-family leakage cannot be
+// asserted with safeParse; it is asserted structurally instead, against the
+// alias patterns themselves ("partitions the catalogue" below). The per-family
+// `rejected` lists therefore carry BR-3 near-miss typos plus BR-4 ids from
+// vendors kie fronts on *other* surfaces (`grok-4-5`, `gpt-5-5`) or under other
+// providers' grammars (`wan2.7-i2v`, `qwen-image-2.0`, `eleven_flash_v3`),
+// none of which is a member of this catalogue.
+
+const MEDIA_MODEL_FAMILIES = [
+  {
+    family: "Kling",
+    listed: [
+      "kling-3.0/video",
+      "kling-3.0/motion-control",
+      "kling/v3-turbo-image-to-video",
+      "kling/v3-turbo-text-to-video",
+    ],
+    aliases: ["kling-3.5/video", "kling/v4-turbo-text-to-video"],
+    rejected: ["kling", "kling-3.0", "kling3.0/video", "Kling-3.0/video"],
+  },
+  {
+    family: "Grok Imagine",
+    listed: [
+      "grok-imagine/text-to-image",
+      "grok-imagine/image-to-image",
+      "grok-imagine/text-to-video",
+      "grok-imagine/image-to-video",
+      "grok-imagine/extend",
+      "grok-imagine/upscale",
+      "grok-imagine-video-1-5-preview",
+    ],
+    aliases: ["grok-imagine/text-to-audio", "grok-imagine-video-2-0-preview"],
+    // `grok-4-5` is kie's own Grok *responses* id — a different surface, and
+    // not a media model.
+    rejected: ["grok-imagine", "grokimagine/extend", "grok-4-5"],
+  },
+  {
+    family: "Nano Banana",
+    listed: ["nano-banana-pro", "nano-banana-2"],
+    aliases: ["nano-banana-3", "nano-banana-pro-max"],
+    rejected: ["nano-banana", "nanobanana-2", "nano_banana_2", "NANO-BANANA-2"],
+  },
+  {
+    family: "GPT Image",
+    listed: [
+      "gpt-image/1.5-image-to-image",
+      "gpt-image-2-image-to-image",
+      "gpt-image-2-text-to-image",
+    ],
+    aliases: ["gpt-image-3-text-to-image", "gpt-image/2.5-image-to-image"],
+    rejected: [
+      "gpt-image",
+      "gpt-image-2",
+      "gptimage-2-text-to-image",
+      "gpt-5-5",
+    ],
+  },
+  {
+    family: "Seedream",
+    listed: [
+      "seedream/5-lite-image-to-image",
+      "seedream/5-lite-text-to-image",
+      "seedream/5-pro-image-to-image",
+      "seedream/5-pro-text-to-image",
+    ],
+    aliases: [
+      "seedream/6-pro-text-to-image",
+      "seedream/5.5-lite-text-to-image",
+    ],
+    rejected: [
+      "seedream/5",
+      "seedream",
+      "seedream-5-pro-text-to-image",
+      "seedream/pro-text-to-image",
+    ],
+  },
+  {
+    family: "Qwen",
+    listed: ["qwen2/text-to-image", "qwen2/image-edit"],
+    aliases: ["qwen3/text-to-image", "qwen2.5/image-edit"],
+    // `qwen-image-2.0` / `qwen-image-edit` are Alibaba's first-party grammar
+    // for a different product line, not kie media ids.
+    rejected: [
+      "qwen/text-to-image",
+      "qwen2",
+      "qwen-image-2.0",
+      "qwen-image-edit",
+    ],
+  },
+  {
+    family: "Seedance",
+    listed: [
+      "bytedance/seedance-2-fast",
+      "bytedance/seedance-2",
+      "bytedance/seedance-2-mini",
+    ],
+    aliases: ["bytedance/seedance-3", "bytedance/seedance-2-pro"],
+    rejected: [
+      "bytedance/seedance",
+      "seedance-2",
+      "bytedance/seedream-5",
+      "bytedance/seedance-2-",
+    ],
+  },
+  {
+    family: "Wan",
+    listed: [
+      "wan/2-7-image-to-video",
+      "wan/2-7-text-to-video",
+      "wan/2-7-r2v",
+      "wan/2-7-videoedit",
+      "wan/2-7-image",
+      "wan/2-7-image-pro",
+    ],
+    aliases: ["wan/2-8-image-to-video", "wan/3-0-r2v"],
+    // `wan2.7-i2v` is Alibaba's dotted, un-namespaced grammar for the same
+    // upstream family — a foreign id on this field.
+    rejected: ["wan/2-7", "wan", "wan/image-to-video", "wan2.7-i2v"],
+  },
+  {
+    family: "HappyHorse",
+    listed: [
+      "happyhorse/text-to-video",
+      "happyhorse/image-to-video",
+      "happyhorse/reference-to-video",
+      "happyhorse/video-edit",
+      "happyhorse-1-1/text-to-video",
+      "happyhorse-1-1/image-to-video",
+      "happyhorse-1-1/reference-to-video",
+    ],
+    aliases: ["happyhorse-2-0/text-to-video", "happyhorse/audio-to-video"],
+    rejected: [
+      "happyhorse",
+      "happyhorse-1-1",
+      "happyhorse1-1/text-to-video",
+      "happyhorse/Video-Edit",
+    ],
+  },
+  {
+    family: "ElevenLabs",
+    listed: [
+      "elevenlabs/audio-isolation",
+      "elevenlabs/text-to-dialogue-v3",
+      "elevenlabs/text-to-speech-multilingual-v2",
+      "elevenlabs/text-to-speech-turbo-2-5",
+      "elevenlabs/sound-effect-v2",
+    ],
+    aliases: ["elevenlabs/text-to-speech-flash-v3", "elevenlabs/music-v2"],
+    // `eleven_flash_v3` is ElevenLabs' own underscored grammar, which the
+    // @apicity/elevenlabs provider validates. It is not a kie media id.
+    rejected: [
+      "elevenlabs",
+      "eleven_flash_v3",
+      "ElevenLabs/audio-isolation",
+      "elevenlabs/Sound-Effect-v2",
+    ],
+  },
+] as const;
+
+// The four ids that deliberately carry no alias: each is the only model kie
+// lists for its vendor, and one sample cannot establish a family grammar.
+const MEDIA_SINGLETON_MODELS = [
+  "omnihuman-1-5",
+  "volcengine/video-to-video-lip-sync",
+  "gemini-omni-video",
+  "sora-watermark-remover",
+] as const;
+
+// `.or()` chaining nests left, so the emitted JSON Schema is a left-deep tree
+// of two-branch `anyOf`s rather than one flat list. Flatten it to leaves.
+function anyOfLeaves(schema: JsonSchema): JsonSchema[] {
+  const branches = schema.anyOf as JsonSchema[] | undefined;
+  return branches ? branches.flatMap(anyOfLeaves) : [schema];
+}
+
+const mediaLeaves = anyOfLeaves(zodToJsonSchema(KieMediaModelSchema));
+const mediaEnumLeaves = mediaLeaves.filter((leaf) => Array.isArray(leaf.enum));
+const mediaAliasPatterns = mediaLeaves
+  .filter((leaf) => typeof leaf.pattern === "string")
+  .map((leaf) => new RegExp(String(leaf.pattern)));
+
+describe("TRI-001 KieMediaModelSchema", () => {
+  // BR-6, and AC-05's no-id-removed-renamed-or-reordered check in executable
+  // form: the enum branch must still be the catalogue, in order.
+  it("keeps the whole catalogue in the enum branch of the MCP JSON Schema", () => {
+    expect(mediaEnumLeaves).toHaveLength(1);
+    expect(mediaEnumLeaves[0]).toMatchObject({
+      type: "string",
+      enum: [...KIE_MEDIA_MODELS],
+    });
+  });
+
+  // AC-07: opened per vendor family, never by one catch-all regex.
+  it("opens the catalogue with one alias per vendor family", () => {
+    expect(mediaAliasPatterns).toHaveLength(MEDIA_MODEL_FAMILIES.length);
+  });
+
+  it.each(MEDIA_SINGLETON_MODELS)(
+    "keeps the singleton %s reachable only through the enum",
+    (model) => {
+      expect(KieMediaModelSchema.safeParse(model).success).toBe(true);
+      expect(mediaAliasPatterns.filter((re) => re.test(model))).toEqual([]);
+    }
+  );
+});
+
+describe.each(MEDIA_MODEL_FAMILIES)(
+  "TRI-001 KieMediaModelSchema $family family",
+  ({ listed, aliases, rejected }) => {
+    it.each(listed)("accepts the listed model %s", (model) => {
+      expect(KieMediaModelSchema.safeParse(model).success).toBe(true);
+    });
+
+    it.each(aliases)("accepts the alias %s", (model) => {
+      expect(KieMediaModelSchema.safeParse(model).success).toBe(true);
+    });
+
+    it.each(rejected)("rejects the model %j", (model) => {
+      expect(KieMediaModelSchema.safeParse(model).success).toBe(false);
+    });
+
+    // The cross-family check safeParse cannot make: this family's alias owns
+    // exactly its own ids. If any alias ever widened toward `.*` it would start
+    // matching another vendor's ids here, long before it matched anything
+    // outside the catalogue.
+    it("partitions the catalogue — one alias owns exactly this family", () => {
+      const family = listed as readonly string[];
+      const owners = family.map((id) =>
+        mediaAliasPatterns.findIndex((re) => re.test(id))
+      );
+
+      expect(owners).not.toContain(-1);
+      expect(new Set(owners).size).toBe(1);
+      for (const id of family) {
+        expect(mediaAliasPatterns.filter((re) => re.test(id))).toHaveLength(1);
+      }
+
+      const owner = mediaAliasPatterns[owners[0]];
+      const foreign = KIE_MEDIA_MODELS.filter((id) => !family.includes(id));
+      expect(foreign.filter((id) => owner.test(id))).toEqual([]);
+    });
+  }
+);
+
+// The single biggest hazard in opening this schema is invisible to `tsc`:
+// `KieMediaModel` keys `Record<KieMediaModel, ModelInputSchema>`, and inferring
+// it off the now-open schema widens it to `string`, which stops that Record
+// requiring an entry per model and stops it rejecting a typo'd key. zod.ts
+// pins that at compile time (KieMediaModelStaysLiteral); this is the runtime
+// half.
+describe("TRI-001 KieMediaModel stays the literal catalogue", () => {
+  it("has exactly one modelInputSchemas entry per listed model", () => {
+    expect(Object.keys(modelInputSchemas).sort()).toEqual(
+      [...KIE_MEDIA_MODELS].sort()
+    );
+  });
+
+  it("yields undefined metadata for a hatched id rather than throwing", () => {
+    const hatched = "kling-3.5/video";
+    expect(KieMediaModelSchema.safeParse(hatched).success).toBe(true);
+    // modelInputSchemas is provider *metadata* (kie.ts) — nothing dispatches on
+    // it — so an id that arrives through the hatch is simply undocumented, not
+    // a runtime failure.
+    expect(
+      (modelInputSchemas as Record<string, unknown>)[hatched]
+    ).toBeUndefined();
+  });
+
+  // BR-5. Opening the envelope's `model` must not loosen the per-model input
+  // contract: CreateTaskRequestSchema pipes the envelope into a union with one
+  // member per *listed* model, so a hatched id still fails there. Same payload,
+  // only the model differs, so the rejection is the model and nothing else.
+  it("still rejects a hatched id at the createTask input contract", () => {
+    const input = { duration: "5", mode: "std", multi_shots: false };
+
+    expect(
+      CreateTaskRequestSchema.safeParse({ model: "kling-3.0/video", input })
+        .success
+    ).toBe(true);
+    expect(
+      CreateTaskRequestSchema.safeParse({ model: "kling-3.5/video", input })
+        .success
+    ).toBe(false);
   });
 });

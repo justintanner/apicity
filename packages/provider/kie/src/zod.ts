@@ -5,7 +5,154 @@ import type { PayGateConfig } from "./paygate";
 // Enums / named union types
 // ---------------------------------------------------------------------------
 
-export const KieMediaModelSchema = z.enum([
+// kie's media catalogue is an *aggregator*: one `createTask` endpoint fronting
+// ~50 ids drawn from a dozen unrelated vendors, each of which ships new ids on
+// its own cadence. CLAUDE.md -> Code Conventions -> "Model-identifier enums
+// stay open" therefore applies — but a single regex wide enough to span
+// `kling-3.0/video`, `nano-banana-2`, `wan/2-7-r2v` and
+// `elevenlabs/sound-effect-v2` at once degenerates toward `.*`, which is the
+// precise failure that rule exists to prevent. So the hatch is one alias *per
+// vendor family*, each anchored on that vendor's own prefix and unioned in
+// separately below. `tests/unit/kie-zod.test.ts` pins the partition: every
+// alias must match all of its own family's listed ids and none of the other
+// catalogue entries.
+
+// Kling ships two id shapes behind this endpoint: a versioned namespace
+// (`kling-3.0/video`) and a bare namespace carrying the version inside the
+// task segment (`kling/v3-turbo-text-to-video`). Both branches are written
+// out. The `/` is load-bearing — `kling3.0/video` is a typo, not an
+// unreleased model — and so is the lowercase-alphanumeric task grammar.
+const KieMediaKlingModelAliasSchema = z
+  .string()
+  .regex(
+    /^kling(?:-\d+(?:\.\d+)*)?\/[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/,
+    "Expected a listed model or a kie Kling alias (e.g. kling-3.5/video)"
+  );
+
+// Grok Imagine also ships two shapes: the slash-namespaced task form
+// (`grok-imagine/upscale`) and a dashed product id
+// (`grok-imagine-video-1-5-preview`). Both are spelled out. The `imagine`
+// segment is what keeps this alias off kie's *other* Grok surface — the
+// text-only `grok-4-5` of KieGrokResponsesRequestSchema is a different family
+// and must not become a valid media model.
+const KieMediaGrokImagineModelAliasSchema = z
+  .string()
+  .regex(
+    /^grok-imagine(?:\/|-)[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/,
+    "Expected a listed model or a kie Grok Imagine alias (e.g. grok-imagine/text-to-audio)"
+  );
+
+// Nano Banana is a flat dashed family: the `nano-banana-` prefix plus one or
+// more variant segments, which may be a tier (`pro`) or a version (`2`). The
+// trailing segment is load-bearing: without it the bare family name
+// `nano-banana` would parse, and the underscored `nano_banana_2` — a
+// plausible transcription of the same product — is not an id kie accepts.
+const KieMediaNanoBananaModelAliasSchema = z
+  .string()
+  .regex(
+    /^nano-banana-[a-z0-9]+(?:-[a-z0-9]+)*$/,
+    "Expected a listed model or a kie Nano Banana alias (e.g. nano-banana-3)"
+  );
+
+// kie's GPT Image ids are `gpt-image`, a `/` or `-` separator, a numeric
+// version, then one or more task segments — both `gpt-image/1.5-image-to-image`
+// and `gpt-image-2-text-to-image` ship today, so both separators are written
+// out. The task suffix is required: `gpt-image-2` alone is the family, not a
+// model, and the version anchor keeps kie's unrelated `gpt-5-5` responses id
+// off this field.
+const KieMediaGptImageModelAliasSchema = z
+  .string()
+  .regex(
+    /^gpt-image(?:\/|-)\d+(?:\.\d+)*(?:-[a-z][a-z0-9]*)+$/,
+    "Expected a listed model or a kie GPT Image alias (e.g. gpt-image-3-text-to-image)"
+  );
+
+// Seedream is namespaced, version-first, then tier and task segments:
+// `seedream/<version>-<tier>-<task>`. Requiring the leading digit after the
+// slash is what separates it from ByteDance's other line in this catalogue —
+// `bytedance/seedance-2` is one character away and a different family.
+const KieMediaSeedreamModelAliasSchema = z
+  .string()
+  .regex(
+    /^seedream\/\d+(?:\.\d+)*(?:-[a-z][a-z0-9]*)+$/,
+    "Expected a listed model or a kie Seedream alias (e.g. seedream/6-pro-text-to-image)"
+  );
+
+// kie's Qwen media ids put the major version in the namespace itself
+// (`qwen2/image-edit`), so the version is required before the `/`. That is a
+// different grammar from Alibaba's first-party `qwen-image-2.0` /
+// `qwen-image-edit` ids, which name a different product line and must not
+// cross over.
+const KieMediaQwenModelAliasSchema = z
+  .string()
+  .regex(
+    /^qwen\d+(?:\.\d+)*\/[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/,
+    "Expected a listed model or a kie Qwen alias (e.g. qwen3/image-edit)"
+  );
+
+// Seedance is versioned with optional size/speed variants under ByteDance's
+// namespace: `bytedance/seedance-<version>[-<variant>]`. The alias is anchored
+// on the `seedance` product, not on the bare `bytedance/` namespace: a
+// wildcard product segment there would silently accept every future ByteDance
+// line, which is the catch-all this file is avoiding.
+const KieMediaSeedanceModelAliasSchema = z
+  .string()
+  .regex(
+    /^bytedance\/seedance-\d+(?:\.\d+)*(?:-[a-z][a-z0-9]*)*$/,
+    "Expected a listed model or a kie Seedance alias (e.g. bytedance/seedance-3)"
+  );
+
+// kie writes Wan versions with dashes inside a namespace
+// (`wan/2-7-image-to-video`), where Alibaba's first-party ids for the same
+// upstream model family use dots and no namespace (`wan2.7-i2v`). The `/` and
+// the dashed version are therefore both load-bearing here, and this alias is
+// deliberately not a reuse of alibaba's AlibabaWanModelAliasSchema.
+const KieMediaWanModelAliasSchema = z
+  .string()
+  .regex(
+    /^wan\/\d+(?:-\d+)*-[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/,
+    "Expected a listed model or a kie Wan alias (e.g. wan/2-8-image-to-video)"
+  );
+
+// HappyHorse ships the same task set under a bare namespace and under a
+// dash-versioned one (`happyhorse/text-to-video`,
+// `happyhorse-1-1/text-to-video`), so the version group is optional and both
+// branches are written out. A namespace on its own (`happyhorse-1-1`) is not
+// a model id.
+const KieMediaHappyHorseModelAliasSchema = z
+  .string()
+  .regex(
+    /^happyhorse(?:-\d+(?:-\d+)*)?\/[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/,
+    "Expected a listed model or a kie HappyHorse alias (e.g. happyhorse-2-0/text-to-video)"
+  );
+
+// kie exposes ElevenLabs as a namespace of dash-joined task ids
+// (`elevenlabs/text-to-speech-turbo-2-5`), with the model version trailing the
+// task rather than leading it. That is a different grammar from ElevenLabs'
+// own underscored `eleven_flash_v3` ids — which the @apicity/elevenlabs
+// provider validates — so an ElevenLabs-native id is a foreign family here and
+// stays rejected.
+const KieMediaElevenLabsModelAliasSchema = z
+  .string()
+  .regex(
+    /^elevenlabs\/[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/,
+    "Expected a listed model or a kie ElevenLabs alias (e.g. elevenlabs/text-to-speech-flash-v3)"
+  );
+
+// The catalogue itself, in upstream's order — not regrouped by family, since
+// reordering would read as renames in review and the alias comments above
+// already state each family's membership.
+//
+// Four ids carry no alias and stay enumerated: `omnihuman-1-5`,
+// `volcengine/video-to-video-lip-sync`, `gemini-omni-video` and
+// `sora-watermark-remover`. Each is the only id kie lists for its vendor, and
+// one sample cannot establish a grammar — nothing here distinguishes a
+// versioned family (`omnihuman-<major>-<minor>`) from a fixed product name, so
+// any regex would be a guess that either rejects the real next release or
+// widens into the wildcard this file exists to avoid. They gain an alias when
+// kie ships a second member; until then a new id from those vendors is an
+// explicit enum addition.
+export const KIE_MEDIA_MODELS = [
   "kling-3.0/video",
   "kling-3.0/motion-control",
   "kling/v3-turbo-image-to-video",
@@ -53,7 +200,20 @@ export const KieMediaModelSchema = z.enum([
   "elevenlabs/text-to-speech-turbo-2-5",
   "elevenlabs/sound-effect-v2",
   "sora-watermark-remover",
-]);
+] as const;
+
+export const KieMediaModelSchema = z
+  .enum(KIE_MEDIA_MODELS)
+  .or(KieMediaKlingModelAliasSchema)
+  .or(KieMediaGrokImagineModelAliasSchema)
+  .or(KieMediaNanoBananaModelAliasSchema)
+  .or(KieMediaGptImageModelAliasSchema)
+  .or(KieMediaSeedreamModelAliasSchema)
+  .or(KieMediaQwenModelAliasSchema)
+  .or(KieMediaSeedanceModelAliasSchema)
+  .or(KieMediaWanModelAliasSchema)
+  .or(KieMediaHappyHorseModelAliasSchema)
+  .or(KieMediaElevenLabsModelAliasSchema);
 
 export const MediaTypeSchema = z.enum([
   "image",
@@ -2644,7 +2804,28 @@ export const CreateTaskRequestSchema = CreateTaskEnvelopeSchema.pipe(
 // Inferred types (source of truth — replaces hand-written interfaces)
 // ---------------------------------------------------------------------------
 
-export type KieMediaModel = z.infer<typeof KieMediaModelSchema>;
+// Deliberately taken from KIE_MEDIA_MODELS rather than
+// `z.infer<typeof KieMediaModelSchema>`: the *schema* is open (per-family
+// alias hatches), but the *type* must stay the literal union of the listed
+// ids, because it keys `Record<KieMediaModel, ModelInputSchema>` in
+// model-schemas.ts and types.ts. Inferring it off the open schema widens it to
+// `string`, which stops that Record requiring an entry per model and stops it
+// rejecting a typo'd key — silently, with no tsc error anywhere.
+export type KieMediaModel = (typeof KIE_MEDIA_MODELS)[number];
+
+type AssertTrue<T extends true> = T;
+
+// Compile-level pin for the line above. `Record<string, …>` and
+// `Record<never, …>` both accept the model-schemas object literal without
+// complaint, so nothing downstream catches a widened KieMediaModel on its own.
+// This does: re-point the type at the open schema and the condition below
+// resolves to `false`, which fails `AssertTrue`'s `extends true` constraint and
+// errors here. The matching runtime pin (every listed id has exactly one
+// modelInputSchemas entry) lives in tests/unit/kie-zod.test.ts.
+export type KieMediaModelStaysLiteral = AssertTrue<
+  string extends KieMediaModel ? false : true
+>;
+
 export type MediaType = z.infer<typeof MediaTypeSchema>;
 
 export type KlingDuration = z.infer<typeof KlingDurationSchema>;

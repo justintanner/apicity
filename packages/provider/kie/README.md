@@ -30,6 +30,15 @@ Resolve `KIE_API_KEY` only in server-side code or trusted job runners.
 Do not expose KIE API keys to browsers, mobile clients, public logs, or
 frontend bundles.
 
+## Media URLs
+
+Request schemas validate the construction boundary and accept any string
+in media input fields — including local slugs such as `@img-ref-1` or
+`@asset/photo.png` for assets that have not been uploaded yet. kie.ai
+fetches media from the public internet at task-creation time, so before
+calling `createTask` you must upload local assets and substitute publicly
+reachable URLs (e.g. `https://example.com/image.png`).
+
 ## Omnihuman 1.5 model slug
 
 KIE's Omnihuman 1.5 model uses the shared

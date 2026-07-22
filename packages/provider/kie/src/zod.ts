@@ -666,7 +666,7 @@ export const Qwen2ImageEditRequestSchema = z.object({
   callBackUrl: z.string().optional(),
   input: z.object({
     prompt: z.string().min(1).max(800),
-    image_url: z.string().url(),
+    image_url: z.string().min(1),
     image_size: z
       .enum(["1:1", "2:3", "3:2", "3:4", "4:3", "9:16", "16:9", "21:9"])
       .default("16:9"),
@@ -802,26 +802,6 @@ export const NanoBananaProRequestSchema = z.object({
   }),
 });
 
-// Seedance reference images are fetched by Kie from the public internet, so a
-// local editor path such as `@asset/photo.png` can never resolve. Carry an
-// explicit message instead of zod's generic "Invalid url" so the failure names
-// what the caller has to supply.
-//
-// Applied to seedance-2-mini only. REQ-002 is scoped to mini, and `.url()`
-// already existed there, so swapping in the message breaks nobody. The
-// seedance-2 / seedance-2-fast siblings stay on `z.array(z.string())`:
-// tightening them to `.url()` would reject payloads those callers can send
-// today, which is its own requirement and its own PR (review finding R-2).
-//
-// The message says "URL", not "HTTPS URL" -- zod's `.url()` accepts `http://`
-// too, so naming HTTPS here would describe a constraint this schema does not
-// enforce.
-const SeedanceReferenceImageUrlSchema = z
-  .string()
-  .url(
-    "must be a publicly reachable URL (for example https://example.com/image.png), not a local path such as @asset/photo.png"
-  );
-
 // Inner input schema kept unrefined so callers can walk `.shape` for slot
 // introspection (see Seedance2InputSchema for full rationale).
 export const Seedance2FastInputSchema = z.object({
@@ -924,12 +904,9 @@ export const Seedance2RequestSchema = Seedance2RequestObjectSchema.refine(
 
 export const Seedance2MiniInputSchema = z.object({
   prompt: z.string().max(20000).optional(),
-  reference_image_urls: z
-    .array(SeedanceReferenceImageUrlSchema)
-    .max(9)
-    .default([]),
-  reference_video_urls: z.array(z.string().url()).max(3).default([]),
-  reference_audio_urls: z.array(z.string().url()).max(3).default([]),
+  reference_image_urls: z.array(z.string()).max(9).default([]),
+  reference_video_urls: z.array(z.string()).max(3).default([]),
+  reference_audio_urls: z.array(z.string()).max(3).default([]),
   generate_audio: z.boolean().default(true),
   resolution: Seedance2MiniResolutionSchema.default("720p"),
   aspect_ratio: Seedance2MiniAspectRatioSchema.default("16:9"),

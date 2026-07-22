@@ -234,7 +234,7 @@ describe("KIE Seedance 2 Mini", () => {
         model: "bytedance/seedance-2-mini",
         input: { reference_audio_urls: ["not-a-url"] },
       }).success
-    ).toBe(false);
+    ).toBe(true);
   });
 
   it("rejects invalid Seedance Mini requests before fetch", async () => {

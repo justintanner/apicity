@@ -67,7 +67,11 @@ export type KieResponsesTool =
   | KieResponsesFunctionTool;
 
 export interface KieResponsesRequest {
-  model: KieResponsesModel;
+  // Open enum: KieResponsesRequestSchema unions the listed ids with
+  // KieOpenAiModelAliasSchema (zod.ts), so a not-yet-listed versioned GPT id
+  // such as `gpt-6` validates. `string & {}` mirrors that hatch here without
+  // collapsing the union, so editors still autocomplete the listed ids.
+  model: KieResponsesModel | (string & {});
   input: string | KieResponsesInputMessage[];
   stream?: boolean;
   reasoning?: KieResponsesReasoning;
@@ -80,7 +84,11 @@ export type KieGrokResponsesModel = "grok-4-5";
 // Identical to KieResponsesRequest apart from the model literal — Grok 4.5 is
 // served through the same Kie Responses machinery as codex/gpt-5-5.
 export interface KieGrokResponsesRequest {
-  model: KieGrokResponsesModel;
+  // Open enum: KieGrokResponsesRequestSchema unions the listed ids with
+  // KieGrokModelAliasSchema (zod.ts), so a not-yet-listed versioned Grok id
+  // such as `grok-5` validates. `string & {}` mirrors that hatch here without
+  // collapsing the union, so editors still autocomplete the listed ids.
+  model: KieGrokResponsesModel | (string & {});
   input: string | KieResponsesInputMessage[];
   stream?: boolean;
   reasoning?: KieResponsesReasoning;

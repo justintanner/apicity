@@ -2065,8 +2065,10 @@ const FluxKontextModelAliasSchema = z
     "Expected a listed model or a Flux Kontext alias (e.g. flux-kontext-ultra)"
   );
 
+const FLUX_KONTEXT_MODELS = ["flux-kontext-pro", "flux-kontext-max"] as const;
+
 export const FluxKontextModelSchema = z
-  .enum(["flux-kontext-pro", "flux-kontext-max"])
+  .enum(FLUX_KONTEXT_MODELS)
   .or(FluxKontextModelAliasSchema);
 
 export const FluxKontextGenerateRequestSchema = z.object({
@@ -2091,7 +2093,17 @@ export type FluxKontextGenerateRequestInput = FluxKontextGenerateRequest;
 export type FluxKontextGenerateParsedRequest = z.output<
   typeof FluxKontextGenerateRequestSchema
 >;
-export type FluxKontextModel = z.infer<typeof FluxKontextModelSchema>;
+// Written out rather than `z.infer<typeof FluxKontextModelSchema>`: the schema
+// is `enum | alias`, and `z.infer` over that collapses to bare `string`, which
+// silently drops both autocomplete and typo rejection for every consumer of
+// this exported name. Restating the listed ids and mirroring the runtime hatch
+// with `string & {}` keeps the schema and the type accepting the same values
+// while the literals stay visible in editors. Same treatment for
+// KieResponsesModel and KieGrokResponsesModel below; KieMediaModel is the one
+// deliberate exception and says why at its own declaration.
+export type FluxKontextModel =
+  | (typeof FLUX_KONTEXT_MODELS)[number]
+  | (string & {});
 export type FluxKontextAspectRatio = z.infer<
   typeof FluxKontextAspectRatioSchema
 >;
@@ -2509,8 +2521,10 @@ const KieOpenAiModelAliasSchema = z
     "Expected a listed model or a versioned GPT alias (e.g. gpt-5-5-mini)"
   );
 
+const KIE_RESPONSES_MODELS = ["gpt-5-5"] as const;
+
 export const KieResponsesModelSchema = z
-  .enum(["gpt-5-5"])
+  .enum(KIE_RESPONSES_MODELS)
   .or(KieOpenAiModelAliasSchema);
 
 export const KieResponsesReasoningEffortSchema = z.enum([
@@ -2600,7 +2614,10 @@ export const KieResponsesRequestSchema = z.object({
   tool_choice: z.string().optional(),
 });
 
-export type KieResponsesModel = z.infer<typeof KieResponsesModelSchema>;
+// Literal ids + hatch rather than `z.infer` — see FluxKontextModel above.
+export type KieResponsesModel =
+  | (typeof KIE_RESPONSES_MODELS)[number]
+  | (string & {});
 export type KieResponsesReasoningEffort = z.infer<
   typeof KieResponsesReasoningEffortSchema
 >;
@@ -2649,8 +2666,10 @@ const KieGrokModelAliasSchema = z
     "Expected a listed model or a versioned Grok alias (e.g. grok-4-5-fast)"
   );
 
+const KIE_GROK_RESPONSES_MODELS = ["grok-4-5"] as const;
+
 export const KieGrokResponsesModelSchema = z
-  .enum(["grok-4-5"])
+  .enum(KIE_GROK_RESPONSES_MODELS)
   .or(KieGrokModelAliasSchema);
 
 export const KieGrokResponsesRequestSchema = z.object({
@@ -2665,7 +2684,10 @@ export const KieGrokResponsesRequestSchema = z.object({
   tool_choice: z.string().optional(),
 });
 
-export type KieGrokResponsesModel = z.infer<typeof KieGrokResponsesModelSchema>;
+// Literal ids + hatch rather than `z.infer` — see FluxKontextModel above.
+export type KieGrokResponsesModel =
+  | (typeof KIE_GROK_RESPONSES_MODELS)[number]
+  | (string & {});
 export type KieGrokResponsesRequest = z.input<
   typeof KieGrokResponsesRequestSchema
 >;
@@ -2811,6 +2833,14 @@ export const CreateTaskRequestSchema = CreateTaskEnvelopeSchema.pipe(
 // model-schemas.ts and types.ts. Inferring it off the open schema widens it to
 // `string`, which stops that Record requiring an entry per model and stops it
 // rejecting a typo'd key — silently, with no tsc error anywhere.
+//
+// This is also the one open-enum type in this file that omits the
+// `| (string & {})` hatch its siblings carry (FluxKontextModel,
+// KieResponsesModel, KieGrokResponsesModel). That is deliberate, not an
+// oversight: the hatch would reintroduce exactly the `string` widening the
+// Record keying above depends on rejecting. Callers that need an unlisted id
+// still get it — the *schema* accepts it, and every request type takes its
+// model field from the schema, not from this alias.
 export type KieMediaModel = (typeof KIE_MEDIA_MODELS)[number];
 
 type AssertTrue<T extends true> = T;

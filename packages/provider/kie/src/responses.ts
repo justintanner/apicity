@@ -96,6 +96,23 @@ export interface KieGrokResponsesRequest {
   tool_choice?: KieResponsesToolChoice;
 }
 
+type AssertTrue<T extends true> = T;
+
+// Compile-level pin for the two `| (string & {})` hatches above. Both request
+// schemas accept an unlisted versioned id, so these interfaces must too. Drop
+// either hatch and the matching line below stops extending its interface,
+// `AssertTrue` sees `false` and errors here. No test can catch that on its own:
+// these are erased before any test runs, and the listed ids keep working either
+// way. Mirrors KieMediaModelStaysLiteral in zod.ts.
+export type KieResponsesRequestTakesUnlistedModel = AssertTrue<
+  { model: "gpt-6"; input: string } extends KieResponsesRequest ? true : false
+>;
+export type KieGrokResponsesRequestTakesUnlistedModel = AssertTrue<
+  { model: "grok-5"; input: string } extends KieGrokResponsesRequest
+    ? true
+    : false
+>;
+
 export interface KieResponsesUsage {
   input_tokens?: number;
   output_tokens?: number;

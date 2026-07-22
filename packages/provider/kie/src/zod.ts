@@ -2856,6 +2856,28 @@ export type KieMediaModelStaysLiteral = AssertTrue<
   string extends KieMediaModel ? false : true
 >;
 
+// The sibling pin, for the open-enum types that *do* carry the
+// `| (string & {})` hatch. `string extends T` is `true` for those by
+// construction, so the check above cannot be reused; this one asks the question
+// that still discriminates them — are there literal members left to
+// autocomplete? Re-point any of the three types below at
+// `z.infer<typeof …Schema>` and its literals vanish, `LiteralPart` resolves to
+// `never`, and `AssertTrue` errors here. Without this, nothing in the repo
+// notices: types are erased before any test runs, and every one of these ids is
+// assignable both before and after the widening.
+type LiteralPart<T> = T extends string ? (string extends T ? never : T) : never;
+type StaysAutocompletable<T> = [LiteralPart<T>] extends [never] ? false : true;
+
+export type FluxKontextModelKeepsLiterals = AssertTrue<
+  StaysAutocompletable<FluxKontextModel>
+>;
+export type KieResponsesModelKeepsLiterals = AssertTrue<
+  StaysAutocompletable<KieResponsesModel>
+>;
+export type KieGrokResponsesModelKeepsLiterals = AssertTrue<
+  StaysAutocompletable<KieGrokResponsesModel>
+>;
+
 export type MediaType = z.infer<typeof MediaTypeSchema>;
 
 export type KlingDuration = z.infer<typeof KlingDurationSchema>;

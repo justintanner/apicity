@@ -1,7 +1,12 @@
 import { PRICING, PRICING_AS_OF, type PricedProviderId } from "./pricing/index";
 import { asString } from "./pricing/helpers";
 
-import type { CostEstimate, CostSource, EstimateRequest } from "./types";
+import type {
+  CostEstimate,
+  CostHints,
+  CostSource,
+  EstimateRequest,
+} from "./types";
 
 import { extractAnthropic } from "./extract/anthropic";
 import { extractChat } from "./extract/chat";
@@ -86,12 +91,17 @@ type PerUnitKey =
 
 // Generic dispatcher for per-unit providers. Resolves the pricing key per the
 // explicit `key` discriminator (see PerUnitKey), looks up the entry, runs
-// `units(payload)` and the ordered selectors, and returns the matching rate.
-// All payload-shape knowledge lives in the model entry's closures.
+// `units(payload, hints)` and the ordered selectors, and returns the matching
+// rate. All payload-shape knowledge lives in the model entry's closures.
+//
+// `hints` is the caller's cost-only channel. It travels beside `payload` for
+// its whole lifetime and is never merged into it, so the bytes canonicalHash /
+// mintOtp sign stay exactly what the caller will POST upstream.
 function evaluatePerUnit(
   provider: PricedProviderId,
   payload: Record<string, unknown>,
-  key: PerUnitKey
+  key: PerUnitKey,
+  hints?: CostHints
 ): CostEstimate {
   const fromPayload = asString(payload.model) ?? asString(payload.model_id);
   const pricingKey =
@@ -114,14 +124,14 @@ function evaluatePerUnit(
       `${provider} '${pricingKey}' is token-billed, not per-unit`,
     ]);
   }
-  const units = entry.units(payload);
+  const units = entry.units(payload, hints);
   if (units === undefined) {
     return failed("per-unit-table", [
-      `${provider} '${pricingKey}': could not derive units from payload (check duration / text)`,
+      `${provider} '${pricingKey}': could not derive units from payload (check duration / text); for endpoints whose schema has no duration, pass costHints.durationSeconds`,
     ]);
   }
   const variantKey = entry.select
-    .map((s) => s.pick(payload))
+    .map((s) => s.pick(payload, hints))
     .filter((v): v is string => Boolean(v))
     .join("|");
   const perUnit = entry.rates[variantKey];
@@ -155,7 +165,12 @@ export function computeEstimate(req: EstimateRequest): CostEstimate {
       const entry = model ? PRICING.xai[model] : undefined;
       if (entry?.kind === "perUnit") {
         // xai per-unit rates are keyed by model, never by endpoint.
-        return evaluatePerUnit("xai", req.payload, { keyedBy: "model" });
+        return evaluatePerUnit(
+          "xai",
+          req.payload,
+          { keyedBy: "model" },
+          req.costHints
+        );
       }
       const ext = extractXai(req.payload);
       if (!ext.ok) return failed("tokens-heuristic+table", ext.warnings);
@@ -189,7 +204,12 @@ export function computeEstimate(req: EstimateRequest): CostEstimate {
       const model = asString(req.payload.model);
       const entry = model ? PRICING.alibaba[model] : undefined;
       if (entry?.kind === "perUnit") {
-        return evaluatePerUnit("alibaba", req.payload, { keyedBy: "model" });
+        return evaluatePerUnit(
+          "alibaba",
+          req.payload,
+          { keyedBy: "model" },
+          req.costHints
+        );
       }
       const ext = extractChat("alibaba", req.payload);
       if (!ext.ok) return failed("tokens-heuristic+table", ext.warnings);
@@ -213,25 +233,33 @@ export function computeEstimate(req: EstimateRequest): CostEstimate {
       );
     }
     case "kie":
-      return evaluatePerUnit("kie", req.payload, {
-        keyedBy: "endpoint",
-        endpoint: req.endpoint,
-      });
+      return evaluatePerUnit(
+        "kie",
+        req.payload,
+        { keyedBy: "endpoint", endpoint: req.endpoint },
+        req.costHints
+      );
     case "elevenlabs":
-      return evaluatePerUnit("elevenlabs", req.payload, {
-        keyedBy: "endpoint",
-        endpoint: req.endpoint,
-      });
+      return evaluatePerUnit(
+        "elevenlabs",
+        req.payload,
+        { keyedBy: "endpoint", endpoint: req.endpoint },
+        req.costHints
+      );
     case "fal":
-      return evaluatePerUnit("fal", req.payload, {
-        keyedBy: "endpoint",
-        endpoint: req.endpoint,
-      });
+      return evaluatePerUnit(
+        "fal",
+        req.payload,
+        { keyedBy: "endpoint", endpoint: req.endpoint },
+        req.costHints
+      );
     case "googleflow":
-      return evaluatePerUnit("googleflow", req.payload, {
-        keyedBy: "endpoint",
-        endpoint: req.endpoint,
-      });
+      return evaluatePerUnit(
+        "googleflow",
+        req.payload,
+        { keyedBy: "endpoint", endpoint: req.endpoint },
+        req.costHints
+      );
     case "free-media-upload":
       return {
         usd: 0,

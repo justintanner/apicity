@@ -607,7 +607,7 @@ describe("computeEstimate", () => {
       const result = computeEstimate(req);
       expect(result.usd).toBe(0);
       expect(result.warnings).toContain(
-        "elevenlabs 'eleven_flash_v2_5': could not derive units from payload (check duration / text)"
+        "elevenlabs 'eleven_flash_v2_5': could not derive units from payload (check duration / text); for endpoints whose schema has no duration, pass costHints.durationSeconds"
       );
     });
 
@@ -706,7 +706,7 @@ describe("computeEstimate", () => {
       });
       expect(result.usd).toBe(0);
       expect(result.warnings).toContain(
-        "fal 'fal-ai/flux/dev': could not derive units from payload (check duration / text)"
+        "fal 'fal-ai/flux/dev': could not derive units from payload (check duration / text); for endpoints whose schema has no duration, pass costHints.durationSeconds"
       );
     });
 
@@ -816,7 +816,7 @@ describe("computeEstimate", () => {
       const result = computeEstimate(req);
       expect(result.usd).toBe(0);
       expect(result.warnings).toContain(
-        "xai 'grok-imagine-video': could not derive units from payload (check duration / text)"
+        "xai 'grok-imagine-video': could not derive units from payload (check duration / text); for endpoints whose schema has no duration, pass costHints.durationSeconds"
       );
     });
 

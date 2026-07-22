@@ -6,6 +6,8 @@
 // per-unit rate keys mirror upstream payload values verbatim — no internal
 // translation layer between what the caller sends and what selects a rate.
 
+import type { CostHints } from "../types";
+
 export type CostUnit =
   | "tokens"
   | "characters"
@@ -44,13 +46,24 @@ export interface TokenPricing {
 // dropping any undefined entry. `rates` maps that key to per-unit USD.
 //
 // A flat-rate model has `select: []` and `rates: { "": <perUnit> }`.
+//
+// `hints` is the caller's cost-only side channel (see CostHints), passed as a
+// sibling of `payload` and never merged into it. It is optional in both the
+// closure contract and at every call site, so an entry that ignores it — every
+// entry today — stays assignable unchanged.
 export interface PerUnitPricing {
   kind: "perUnit";
   unit: CostUnit;
-  units: (payload: Record<string, unknown>) => number | undefined;
+  units: (
+    payload: Record<string, unknown>,
+    hints?: CostHints
+  ) => number | undefined;
   select: ReadonlyArray<{
     name: string;
-    pick: (payload: Record<string, unknown>) => string | undefined;
+    pick: (
+      payload: Record<string, unknown>,
+      hints?: CostHints
+    ) => string | undefined;
   }>;
   rates: Record<string, number>;
   source: RateSource;

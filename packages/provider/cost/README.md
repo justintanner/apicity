@@ -24,7 +24,9 @@ pnpm add @apicity/cost
 `c.estimate(req)` takes the **exact JSON body you would POST upstream** and
 lightly parses out the price-affecting fields (model, resolution, duration,
 message contents, etc.) — the object you build for the real call doubles as
-the estimate input.
+the estimate input. A handful of per-second endpoints bill on a length their
+request body does not carry; those take it out-of-band via `costHints`, never
+inside `payload` — see [Cost-only hints](#cost-only-hints).
 
 ```ts
 import { createCost } from "@apicity/cost";
@@ -133,7 +135,103 @@ and ordered `select` pickers resolve the rate variant from fields like
 `input.resolution` and `input.first_frame_url` (i2v vs t2v). Image models
 price per image; resolution-tiered families require `input.resolution`;
 endpoint-keyed pricing (e.g. Suno) uses the `EstimateRequest.endpoint`
-discriminator instead of `payload.model`.
+discriminator instead of `payload.model`. `endpoint` and `costHints` are the
+only two estimate inputs that are not read out of `payload` — see
+[Cost-only hints](#cost-only-hints) for the second.
+
+## Cost-only hints
+
+Some upstream endpoints bill per second of output while their request schema
+carries **no duration field at all** — the length follows a source or driving
+asset (a video to lip-sync, an audio track, a model-fixed clip). Upstream
+infers it; the caller usually knows it; the payload has nowhere to put it.
+`costHints` is that channel:
+
+```ts
+interface CostHints {
+  durationSeconds?: number;
+}
+```
+
+It is a sibling of `payload` on `EstimateRequest`, not a field inside it:
+
+```ts
+const est = c.estimate({
+  provider: "kie",
+  payload: {
+    model: "omnihuman-1-5",
+    input: { image_url: "...", audio_url: "..." },
+  },
+  costHints: { durationSeconds: 8 }, // driving-audio length, known to the caller
+});
+// → { usd: 1.08, source: "per-unit-table", breakdown: { units: 8, unit: "seconds", perUnitUsd: 0.135 }, ... }
+```
+
+Without the hint the same call returns `usd: 0` plus a missing-units warning —
+`omnihuman-1-5` has no schema field the estimator could read instead.
+
+**`costHints` is not part of the upstream body.** It is read only by the local
+rate tables: never sent upstream, never merged or copied into a request, never
+canonicalized, and never hashed. That is the point of keeping it out of
+`payload` — see [Hash and OTP guarantee](#hash-and-otp-guarantee) below.
+
+### Precedence
+
+Duration resolves in a fixed order (kie):
+
+1. **`payload.input.duration`** — the upstream wire field, what kie actually
+   bills. Present-but-uncoercible stops here rather than falling through, so a
+   malformed wire value never silently prices off another tier.
+2. **`costHints.durationSeconds`** — this channel. A zero, negative or
+   non-numeric hint counts as absent.
+3. **`payload.duration`** — the **deprecated** top-level convention from
+   0.8.0. Still honoured, so existing callers keep their current estimate, but
+   new code should use `costHints.durationSeconds`.
+
+On `xai`, top-level `payload.duration` _is_ the real wire field
+(`v1/videos/generations` posts it), so there the order is `payload.duration`
+then `costHints.durationSeconds`; only `v1/videos/edits`, which has no
+`duration` in its schema, reaches the hint.
+
+### Endpoints that need it
+
+| Provider | Pricing key                          | Length follows     |
+| -------- | ------------------------------------ | ------------------ |
+| `kie`    | `veo3` / `veo3_fast`                 | model-fixed clip   |
+| `kie`    | `happyhorse/video-edit`              | source `video_url` |
+| `kie`    | `kling-3.0/motion-control`           | motion video       |
+| `kie`    | `omnihuman-1-5`                      | driving audio      |
+| `kie`    | `volcengine/video-to-video-lip-sync` | source video       |
+| `xai`    | `v1/videos/edits`                    | source video       |
+
+Every other per-second entry reads a real wire duration; passing `costHints`
+alongside one is harmless — the wire field wins.
+
+### Hash and OTP guarantee
+
+`costHints` lives outside `payload`, so `canonicalHash(payload)` is
+byte-identical whether or not you estimate with hints, and an OTP minted for a
+payload still verifies after that payload is estimated:
+
+```ts
+const payload = {
+  model: "omnihuman-1-5",
+  input: { image_url: "...", audio_url: "..." },
+};
+const otp = mintOtp(secret, {
+  dotPath: "api.v1.jobs.createTask",
+  request: payload,
+});
+
+c.estimate({ provider: "kie", payload, costHints: { durationSeconds: 8 } });
+
+// same object, unmodified — the OTP's requestHash still matches
+await provider.post.api.v1.jobs.createTask(payload, { otp });
+```
+
+One object can safely serve as estimate input, hashed request, and POST body.
+Putting the duration inside `payload` instead would either ship a field
+upstream never sees or bind the OTP to a hash the real call cannot reproduce.
 
 ## Bundled pricing
 

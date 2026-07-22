@@ -153,7 +153,8 @@ const happyHorse11Video = (slug: string): ModelPricing => ({
 
 export const kie: Record<string, ModelPricing> = {
   // veo3 / veo3_fast — flat per-second rate. Veo schema has no duration
-  // field, so callers must pass duration as a top-level hint.
+  // field, so callers must declare the clip length as
+  // costHints.durationSeconds.
   veo3: flatVideo(0.3, "google/veo3"),
   veo3_fast: flatVideo(0.1, "google/veo3-fast"),
 
@@ -320,8 +321,8 @@ export const kie: Record<string, ModelPricing> = {
   ),
   // happyhorse/video-edit: same tiered rates as the other happyhorse video
   // entries. Schema has no duration field — output duration matches the
-  // source video_url, so callers must pass a top-level `duration` hint
-  // (the seconds picker already falls back to p.duration).
+  // source video_url, so callers must declare that length as
+  // costHints.durationSeconds.
   "happyhorse/video-edit": tieredResolutionVideo(
     { "720p": 0.155, "1080p": 0.265 },
     "happyhorse/image-to-video"
@@ -344,7 +345,7 @@ export const kie: Record<string, ModelPricing> = {
   // omnihuman-1-5: flat 27 credits/s ($0.135). KIE publishes one rate — the
   // output_resolution (720/1080) and pe_fast_mode switches do not change it.
   // Like veo3, the schema has no duration field (length follows the driving
-  // audio), so callers must pass duration as a top-level hint.
+  // audio), so callers must declare that length as costHints.durationSeconds.
   "omnihuman-1-5": {
     kind: "perUnit",
     unit: "seconds",
@@ -357,7 +358,8 @@ export const kie: Record<string, ModelPricing> = {
   // volcengine/video-to-video-lip-sync: flat 8 credits/s ($0.04). Both
   // input.mode tiers ("lite"/"basic") bill at the same published rate, so
   // there is no mode selector. Schema has no duration field (length follows
-  // the source video), so callers must pass duration as a top-level hint.
+  // the source video), so callers must declare that length as
+  // costHints.durationSeconds.
   "volcengine/video-to-video-lip-sync": {
     kind: "perUnit",
     unit: "seconds",

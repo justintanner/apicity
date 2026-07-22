@@ -23,10 +23,11 @@ const mediaSource = {
   asOf: "2026-07-20",
 };
 
-// Video generation bills per second of output. `duration` is a top-level
-// field on the generation/extension payloads; edits inherit the source
-// video's length, so callers must pass a top-level `duration` hint (the same
-// convention kie's veo3 entry uses).
+// Video generation bills per second of output. `duration` is a real top-level
+// wire field on the generation/extension payloads, so it wins; v1/videos/edits
+// has no duration in its schema (the edit inherits the source video's length),
+// so callers must declare that length as costHints.durationSeconds — the same
+// cost-only channel kie's veo3 entry uses.
 const videoSeconds = (
   p: Record<string, unknown>,
   hints?: CostHints

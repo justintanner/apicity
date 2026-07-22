@@ -38,6 +38,7 @@ export type {
 export type {
   CostBreakdown,
   CostEstimate,
+  CostHints,
   CostProvider,
   CostSource,
   EstimateRequest,

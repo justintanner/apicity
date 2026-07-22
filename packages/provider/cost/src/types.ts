@@ -28,6 +28,21 @@ export interface CostEstimate {
   warnings: string[];
 }
 
+// Cost-only inputs that are NOT part of the upstream request body.
+//
+// Some upstream endpoints bill per second while their request schema carries
+// no duration at all -- the output length follows a source or driving asset
+// (kie's omnihuman-1-5, volcengine/video-to-video-lip-sync, ...). The caller
+// knows that length; upstream infers it. `costHints` is how the caller tells
+// the estimator, without contaminating the body it POSTs or the bytes
+// canonicalHash/mintOtp sign.
+//
+// Additive by design: new hint fields are optional, so adding one is never a
+// breaking change.
+export interface CostHints {
+  durationSeconds?: number;
+}
+
 // All provider routes are pure-table lookups. Token-billed providers
 // approximate input tokens via chars/4 (no upstream tokenizer call).
 //
@@ -56,6 +71,7 @@ export type EstimateRequest =
         | "googleflow";
       payload: Record<string, unknown>;
       endpoint?: string;
+      costHints?: CostHints;
     }
   | { provider: "free-media-upload" };
 

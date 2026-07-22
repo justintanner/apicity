@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 import { createFal } from "../../packages/provider/fal/src/fal";
+import { FAL_ENDPOINT_REQUEST_SCHEMAS } from "../../packages/provider/fal/src/zod";
 import { computeEstimate } from "../../packages/provider/cost/src/compute";
 import {
   fal as falPricing,
@@ -96,6 +97,62 @@ const est = (endpoint: string, payload: Record<string, unknown>) =>
   computeEstimate({ provider: "fal", endpoint, payload });
 
 describe("fal video pricing estimates", () => {
+  // Every REQ-001 endpoint id must be a registered fal endpoint and either a
+  // PRICING.fal key or on the documented dynamic-path list — never silently
+  // absent, and never both (AC-1).
+  const REQ_001_ENDPOINTS = [
+    "bytedance/seedance-2.0/text-to-video",
+    "bytedance/seedance-2.0/image-to-video",
+    "bytedance/seedance-2.0/reference-to-video",
+    "bytedance/seedance-2.0/fast/text-to-video",
+    "bytedance/seedance-2.0/fast/image-to-video",
+    "bytedance/seedance-2.0/fast/reference-to-video",
+    "fal-ai/wan/v2.7/text-to-video",
+    "fal-ai/wan/v2.7/image-to-video",
+    "fal-ai/wan/v2.7/reference-to-video",
+    "fal-ai/wan/v2.7/edit-video",
+    "fal-ai/kling-video/v3/pro/text-to-video",
+    "fal-ai/kling-video/v3/pro/image-to-video",
+    "fal-ai/kling-video/v3/standard/text-to-video",
+    "fal-ai/kling-video/v3/standard/image-to-video",
+    "fal-ai/kling-video/o3/4k/text-to-video",
+    "fal-ai/kling-video/o3/4k/image-to-video",
+    "fal-ai/kling-video/o3/4k/reference-to-video",
+    "fal-ai/veo3.1",
+    "fal-ai/veo3.1/image-to-video",
+    "fal-ai/sora-2/text-to-video",
+    "fal-ai/sora-2/image-to-video",
+    "xai/grok-imagine-video/image-to-video",
+    "xai/grok-imagine-video/reference-to-video",
+    "xai/grok-imagine-video/extend-video",
+    "xai/grok-imagine-video/edit-video",
+  ];
+
+  it("covers every REQ-001 endpoint statically or on the dynamic list", () => {
+    const dynamic: readonly string[] = FAL_DYNAMIC_PRICING_ENDPOINTS;
+    expect(REQ_001_ENDPOINTS).toHaveLength(25);
+    for (const endpoint of REQ_001_ENDPOINTS) {
+      expect(endpoint in FAL_ENDPOINT_REQUEST_SCHEMAS, endpoint).toBe(true);
+      const priced = endpoint in falPricing;
+      const isDynamic = dynamic.includes(endpoint);
+      expect(priced || isDynamic, endpoint).toBe(true);
+      expect(priced && isDynamic, endpoint).toBe(false);
+    }
+  });
+
+  it("leaves no registered fal endpoint silently unpriced", () => {
+    const dynamic: readonly string[] = FAL_DYNAMIC_PRICING_ENDPOINTS;
+    const unpriced = Object.keys(FAL_ENDPOINT_REQUEST_SCHEMAS).filter(
+      (endpoint) => !(endpoint in falPricing) && !dynamic.includes(endpoint)
+    );
+    // Audio is an explicit non-goal of ac-h7kvm.7 (follow-up bead); every
+    // other registered endpoint is priced or documented as dynamic.
+    expect(unpriced.sort()).toEqual([
+      "fal-ai/bytedance/seed-speech/tts/v2",
+      "fal-ai/elevenlabs/speech-to-text/scribe-v2",
+    ]);
+  });
+
   it("prices flat per-second families (sora 2, kling o3 4k, wan r2v)", () => {
     const sora = est("fal-ai/sora-2/text-to-video", {
       prompt: "p",

@@ -720,10 +720,44 @@ export type AlibabaQwenImageEditModel =
 export type AlibabaQwenImageEditStableModel = z.infer<
   typeof AlibabaQwenImageEditStableModelSchema
 >;
-export type AlibabaQwenImageModel = z.infer<typeof AlibabaQwenImageModelSchema>;
+// Named members rather than `z.infer` — see AlibabaVideoSynthesisModel. The
+// schema here unions the two opened schemas above, so `z.infer` over it yields
+// `string | string` = bare `string`, undoing for the union exactly what the two
+// member types just did for themselves.
+export type AlibabaQwenImageModel =
+  | AlibabaQwenImageGenerationModel
+  | AlibabaQwenImageEditModel;
 export type AlibabaQwenImageStableModel = z.infer<
   typeof AlibabaQwenImageStableModelSchema
 >;
+
+type AssertTrue<T extends true> = T;
+
+// Compile-level pin for the four open-enum types above. Each carries the
+// `| (string & {})` hatch, so `string extends T` is `true` for all of them by
+// construction and cannot discriminate; this asks the question that can — are
+// there literal members left to autocomplete? Re-point any of them at
+// `z.infer<typeof …Schema>` and its literals vanish, `LiteralPart` resolves to
+// `never`, and `AssertTrue` errors here. Without this, nothing in the repo
+// notices: types are erased before any test runs, and every one of these ids is
+// assignable both before and after the widening. Mirrors the pins in
+// kie/src/zod.ts.
+type LiteralPart<T> = T extends string ? (string extends T ? never : T) : never;
+type StaysAutocompletable<T> = [LiteralPart<T>] extends [never] ? false : true;
+
+export type AlibabaVideoSynthesisModelKeepsLiterals = AssertTrue<
+  StaysAutocompletable<AlibabaVideoSynthesisModel>
+>;
+export type AlibabaQwenImageGenerationModelKeepsLiterals = AssertTrue<
+  StaysAutocompletable<AlibabaQwenImageGenerationModel>
+>;
+export type AlibabaQwenImageEditModelKeepsLiterals = AssertTrue<
+  StaysAutocompletable<AlibabaQwenImageEditModel>
+>;
+export type AlibabaQwenImageModelKeepsLiterals = AssertTrue<
+  StaysAutocompletable<AlibabaQwenImageModel>
+>;
+
 export type AlibabaQwenImageTextSlots = z.infer<
   typeof AlibabaQwenImageTextSlotsSchema
 >;

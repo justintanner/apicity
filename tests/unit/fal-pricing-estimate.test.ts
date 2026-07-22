@@ -177,6 +177,15 @@ describe("fal video pricing estimates", () => {
     });
     expect(kling.usd).toBeCloseTo(4.2, 10);
 
+    // The o3 4k image-to-video twin bills the same flat rate.
+    expect(
+      est("fal-ai/kling-video/o3/4k/image-to-video", {
+        prompt: "p",
+        image_url: "u",
+        duration: "10",
+      }).usd
+    ).toBeCloseTo(4.2, 10);
+
     // Kling duration defaults to "5".
     expect(
       est("fal-ai/kling-video/o3/4k/reference-to-video", {
@@ -259,6 +268,15 @@ describe("fal video pricing estimates", () => {
       }).usd
     ).toBeCloseTo(1.26, 10);
 
+    // Standard image-to-video, audio left at its default: $0.126/s.
+    expect(
+      est("fal-ai/kling-video/v3/standard/image-to-video", {
+        prompt: "p",
+        start_image_url: "u",
+        duration: "5",
+      }).usd
+    ).toBeCloseTo(0.63, 10);
+
     expect(
       est("fal-ai/veo3.1", {
         prompt: "p",
@@ -293,6 +311,16 @@ describe("fal video pricing estimates", () => {
       }).usd
     ).toBeCloseTo(1.512, 10);
 
+    // image-to-video shares the text-to-video token rates.
+    expect(
+      est("bytedance/seedance-2.0/image-to-video", {
+        prompt: "p",
+        image_url: "u",
+        duration: "5",
+        resolution: "720p",
+      }).usd
+    ).toBeCloseTo(1.512, 10);
+
     // Omitted resolution defaults to 720p; fast bills $0.0112/1000 tokens.
     expect(
       est("bytedance/seedance-2.0/fast/image-to-video", {
@@ -320,6 +348,16 @@ describe("fal video pricing estimates", () => {
         resolution: "720p",
       }).usd
     ).toBeCloseTo(0.9072, 10);
+
+    // The fast reference-to-video twin: $0.24192/s × 0.6 with video inputs.
+    expect(
+      est("bytedance/seedance-2.0/fast/reference-to-video", {
+        prompt: "p",
+        video_urls: ["u"],
+        duration: "5",
+        resolution: "720p",
+      }).usd
+    ).toBeCloseTo(0.72576, 10);
 
     // Image references only: full price.
     expect(
@@ -418,6 +456,7 @@ describe("fal edit/image pricing estimates", () => {
 
   it("covers every REQ-002 endpoint statically or on the dynamic list", () => {
     const dynamic: readonly string[] = FAL_DYNAMIC_PRICING_ENDPOINTS;
+    expect(REQ_002_ENDPOINTS).toHaveLength(15);
     for (const endpoint of REQ_002_ENDPOINTS) {
       const priced = endpoint in falPricing;
       const isDynamic = dynamic.includes(endpoint);
@@ -493,14 +532,20 @@ describe("fal edit/image pricing estimates", () => {
     expect(qwen.usd).toBeCloseTo(0.06, 10); // 1 MP assumed per image
   });
 
-  it("warns on hunyuan 'auto' image_size instead of guessing an area", () => {
-    const result = estimate("fal-ai/hunyuan-image/v3/instruct/edit", {
-      image_size: "auto",
-    });
-    expect(result.usd).toBe(0);
-    expect(result.warnings).toContain(
-      "fal 'fal-ai/hunyuan-image/v3/instruct/edit': could not derive units from payload (check duration / text)"
-    );
+  it("warns on hunyuan image_size omitted or 'auto' instead of guessing", () => {
+    // image_size defaults to "auto" upstream, which has no fixed dimensions,
+    // so the minimal valid payload — no image_size at all — must warn exactly
+    // like the explicit spelling rather than fall back to 1 MP/image.
+    for (const payload of [
+      { prompt: "recolor", image_urls: ["https://example.com/a.png"] },
+      { image_size: "auto" },
+    ]) {
+      const result = estimate("fal-ai/hunyuan-image/v3/instruct/edit", payload);
+      expect(result.usd).toBe(0);
+      expect(result.warnings).toContain(
+        "fal 'fal-ai/hunyuan-image/v3/instruct/edit': could not derive units from payload (check duration / text)"
+      );
+    }
   });
 
   it("selects gpt-image-1.5 rates on the quality × size grid", () => {

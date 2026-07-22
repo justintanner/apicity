@@ -56,10 +56,12 @@ function maxImageCount(p: Record<string, unknown>): number {
 // and then multiplied by the image count.
 //
 // When `image_size` is absent the caller gets fal's model default, which is
-// ~1 MP for every model priced this way — so we assume 1 MP/image rather
-// than refusing to estimate. An `image_size` that is present but
-// unrecognized returns undefined, which surfaces as a warning instead of a
-// silently wrong number.
+// ~1 MP for most models priced this way — so we assume 1 MP/image rather
+// than refusing to estimate. Entries whose documented default has no fixed
+// dimensions (hunyuan instruct edit defaults to "auto") pass their own
+// `units` reader to `perMegapixel` so the omitted field warns instead. An
+// `image_size` that is present but unrecognized returns undefined, which
+// surfaces as a warning instead of a silently wrong number.
 function megapixels(p: Record<string, unknown>): number | undefined {
   const size = p.image_size;
   if (size === undefined) return imageCount(p);
@@ -111,11 +113,12 @@ const perImageByResolution = (
 const perMegapixel = (
   endpointId: string,
   usd: number,
-  on?: string
+  on?: string,
+  units: (p: Record<string, unknown>) => number | undefined = megapixels
 ): ModelPricing => ({
   kind: "perUnit",
   unit: "megapixels",
-  units: megapixels,
+  units,
   select: [],
   rates: { "": usd },
   source: source(endpointId, on),
@@ -138,13 +141,6 @@ const perMegapixel = (
 // seconds, grok extend's $0.01/s source-video seconds, grok's $0.002
 // image-input surcharge) depend on source media not present in the payload;
 // estimates cover the output component only.
-
-const videoAsOf = "2026-07-22";
-
-const videoSource = (endpointId: string) => ({
-  url: `https://fal.ai/models/${endpointId}`,
-  asOf: videoAsOf,
-});
 
 // Whole digit-string seconds ("5" → 5). Kling publishes duration as a bare
 // string, seedance as a digit-string enum; anything else — "5s", numbers,
@@ -206,7 +202,7 @@ const perSecond = (
   units: seconds,
   select: [],
   rates: { "": usd },
-  source: videoSource(endpointId),
+  source: source(endpointId, sweepAsOf),
 });
 
 const perSecondTiered = (
@@ -223,7 +219,7 @@ const perSecondTiered = (
   units: seconds,
   select,
   rates,
-  source: videoSource(endpointId),
+  source: source(endpointId, sweepAsOf),
 });
 
 // Seedance 2.0 bills tokens — height × width × 24 / 1024 per output second —
@@ -253,6 +249,48 @@ const seedanceReferenceRates = (usdPerThousandTokens: number) => {
     "480p|video": base["480p"] * 0.6,
     "720p|video": base["720p"] * 0.6,
   };
+};
+
+// Rate tables shared by the variants of one family — the generation/edit
+// twins and the text-to-video/image-to-video pairs bill identically, so each
+// grid is named once. Sharing by reference is safe (compute.ts only reads
+// `entry.rates[variantKey]`) and it keeps a re-sweep from updating one half
+// of a pair while its twin silently keeps the old price.
+const NANO_BANANA_2_RATES: Record<string, number> = {
+  "0.5K": 0.06,
+  "1K": 0.08,
+  "2K": 0.12,
+  "4K": 0.16,
+};
+
+const NANO_BANANA_PRO_RATES: Record<string, number> = {
+  "1K": 0.15,
+  "2K": 0.15,
+  "4K": 0.3,
+};
+
+const WAN_2P7_VIDEO_RATES: Record<string, number> = {
+  "720p": 0.1,
+  "1080p": 0.15,
+};
+
+const KLING_V3_PRO_RATES: Record<string, number> = {
+  true: 0.168,
+  false: 0.112,
+};
+
+const KLING_V3_STANDARD_RATES: Record<string, number> = {
+  true: 0.126,
+  false: 0.084,
+};
+
+const VEO_3P1_RATES: Record<string, number> = {
+  "720p|false": 0.2,
+  "720p|true": 0.4,
+  "1080p|false": 0.2,
+  "1080p|true": 0.4,
+  "4k|false": 0.4,
+  "4k|true": 0.6,
 };
 
 // GPT Image 1.5 prices per image on a quality × size grid. `quality`
@@ -329,19 +367,16 @@ export const fal: Record<string, ModelPricing> = {
   "fal-ai/nano-banana/edit": perImage("fal-ai/nano-banana/edit", 0.039),
 
   // Image — Nano Banana 2: 1K base, 0.5K ×0.75, 2K ×1.5, 4K ×2
-  "fal-ai/nano-banana-2": perImageByResolution("fal-ai/nano-banana-2", {
-    "0.5K": 0.06,
-    "1K": 0.08,
-    "2K": 0.12,
-    "4K": 0.16,
-  }),
+  "fal-ai/nano-banana-2": perImageByResolution(
+    "fal-ai/nano-banana-2",
+    NANO_BANANA_2_RATES
+  ),
 
   // Image — Nano Banana Pro: flat until 4K, which bills at double
-  "fal-ai/nano-banana-pro": perImageByResolution("fal-ai/nano-banana-pro", {
-    "1K": 0.15,
-    "2K": 0.15,
-    "4K": 0.3,
-  }),
+  "fal-ai/nano-banana-pro": perImageByResolution(
+    "fal-ai/nano-banana-pro",
+    NANO_BANANA_PRO_RATES
+  ),
 
   // Image — Seedream 5 Lite (flat per image at any supported size)
   "fal-ai/bytedance/seedream/v5/lite/text-to-image": perImage(
@@ -359,21 +394,12 @@ export const fal: Record<string, ModelPricing> = {
   // web-search surcharge is prompt-dependent and excluded)
   "fal-ai/nano-banana-2/edit": perImageByResolution(
     "fal-ai/nano-banana-2/edit",
-    {
-      "0.5K": 0.06,
-      "1K": 0.08,
-      "2K": 0.12,
-      "4K": 0.16,
-    },
+    NANO_BANANA_2_RATES,
     sweepAsOf
   ),
   "fal-ai/nano-banana-pro/edit": perImageByResolution(
     "fal-ai/nano-banana-pro/edit",
-    {
-      "1K": 0.15,
-      "2K": 0.15,
-      "4K": 0.3,
-    },
+    NANO_BANANA_PRO_RATES,
     sweepAsOf
   ),
 
@@ -410,12 +436,14 @@ export const fal: Record<string, ModelPricing> = {
   ),
 
   // Image — Hunyuan Image 3 instruct edit (area-priced). image_size defaults
-  // to "auto" upstream; an explicit "auto" has no fixed dimensions, so it
-  // takes the megapixels() warning path rather than a guessed area.
+  // to "auto" upstream, which has no fixed dimensions — so an omitted field
+  // is as underivable as an explicit "auto" and takes the same warning path
+  // rather than megapixels()' 1 MP/image fallback.
   "fal-ai/hunyuan-image/v3/instruct/edit": perMegapixel(
     "fal-ai/hunyuan-image/v3/instruct/edit",
     0.09,
-    sweepAsOf
+    sweepAsOf,
+    (p) => (p.image_size === undefined ? undefined : megapixels(p))
   ),
 
   // Image — Qwen Image Edit (area-priced like fal-ai/qwen-image)
@@ -477,13 +505,13 @@ export const fal: Record<string, ModelPricing> = {
   "fal-ai/wan/v2.7/text-to-video": perSecondTiered(
     "fal-ai/wan/v2.7/text-to-video",
     [resolutionTier("1080p")],
-    { "720p": 0.1, "1080p": 0.15 },
+    WAN_2P7_VIDEO_RATES,
     numericSeconds(5)
   ),
   "fal-ai/wan/v2.7/image-to-video": perSecondTiered(
     "fal-ai/wan/v2.7/image-to-video",
     [resolutionTier("1080p")],
-    { "720p": 0.1, "1080p": 0.15 },
+    WAN_2P7_VIDEO_RATES,
     numericSeconds(5)
   ),
   "fal-ai/wan/v2.7/reference-to-video": perSecond(
@@ -503,25 +531,25 @@ export const fal: Record<string, ModelPricing> = {
   "fal-ai/kling-video/v3/pro/text-to-video": perSecondTiered(
     "fal-ai/kling-video/v3/pro/text-to-video",
     [generateAudio],
-    { true: 0.168, false: 0.112 },
+    KLING_V3_PRO_RATES,
     klingSeconds
   ),
   "fal-ai/kling-video/v3/pro/image-to-video": perSecondTiered(
     "fal-ai/kling-video/v3/pro/image-to-video",
     [generateAudio],
-    { true: 0.168, false: 0.112 },
+    KLING_V3_PRO_RATES,
     klingSeconds
   ),
   "fal-ai/kling-video/v3/standard/text-to-video": perSecondTiered(
     "fal-ai/kling-video/v3/standard/text-to-video",
     [generateAudio],
-    { true: 0.126, false: 0.084 },
+    KLING_V3_STANDARD_RATES,
     klingSeconds
   ),
   "fal-ai/kling-video/v3/standard/image-to-video": perSecondTiered(
     "fal-ai/kling-video/v3/standard/image-to-video",
     [generateAudio],
-    { true: 0.126, false: 0.084 },
+    KLING_V3_STANDARD_RATES,
     klingSeconds
   ),
 
@@ -547,27 +575,13 @@ export const fal: Record<string, ModelPricing> = {
   "fal-ai/veo3.1": perSecondTiered(
     "fal-ai/veo3.1",
     [resolutionTier("720p"), generateAudio],
-    {
-      "720p|false": 0.2,
-      "720p|true": 0.4,
-      "1080p|false": 0.2,
-      "1080p|true": 0.4,
-      "4k|false": 0.4,
-      "4k|true": 0.6,
-    },
+    VEO_3P1_RATES,
     veoSeconds
   ),
   "fal-ai/veo3.1/image-to-video": perSecondTiered(
     "fal-ai/veo3.1/image-to-video",
     [resolutionTier("720p"), generateAudio],
-    {
-      "720p|false": 0.2,
-      "720p|true": 0.4,
-      "1080p|false": 0.2,
-      "1080p|true": 0.4,
-      "4k|false": 0.4,
-      "4k|true": 0.6,
-    },
+    VEO_3P1_RATES,
     veoSeconds
   ),
 

@@ -81,65 +81,208 @@ export type {
   FalSora2TextToVideoParams,
   FalSora2ImageToVideoParams,
   FalHunyuanImageV3InstructEditParams,
+  FalSeedance2p0ImageToVideoRequest,
+  FalSeedance2p0ImageToVideoRequestInput,
+  FalSeedance2p0ImageToVideoParsedRequest,
+  FalSeedance2p0TextToVideoRequest,
+  FalSeedance2p0TextToVideoRequestInput,
+  FalSeedance2p0TextToVideoParsedRequest,
+  FalSeedance2p0FastImageToVideoRequest,
+  FalSeedance2p0FastImageToVideoRequestInput,
+  FalSeedance2p0FastImageToVideoParsedRequest,
+  FalSeedance2p0FastTextToVideoRequest,
+  FalSeedance2p0FastTextToVideoRequestInput,
+  FalSeedance2p0FastTextToVideoParsedRequest,
+  FalSeedance2p0ReferenceToVideoRequest,
+  FalSeedance2p0ReferenceToVideoRequestInput,
+  FalSeedance2p0ReferenceToVideoParsedRequest,
+  FalSeedance2p0FastReferenceToVideoRequest,
+  FalSeedance2p0FastReferenceToVideoRequestInput,
+  FalSeedance2p0FastReferenceToVideoParsedRequest,
+  FalNanoBananaProEditRequest,
+  FalNanoBananaProEditRequestInput,
+  FalNanoBananaProEditParsedRequest,
+  FalNanoBananaProTextToImageRequest,
+  FalNanoBananaProTextToImageRequestInput,
+  FalNanoBananaProTextToImageParsedRequest,
+  FalNanoBananaTextToImageRequest,
+  FalNanoBananaTextToImageRequestInput,
+  FalNanoBananaTextToImageParsedRequest,
+  FalNanoBananaEditRequest,
+  FalNanoBananaEditRequestInput,
+  FalNanoBananaEditParsedRequest,
+  FalNanoBanana2TextToImageRequest,
+  FalNanoBanana2TextToImageRequestInput,
+  FalNanoBanana2TextToImageParsedRequest,
+  FalNanoBanana2EditRequest,
+  FalNanoBanana2EditRequestInput,
+  FalNanoBanana2EditParsedRequest,
+  FalNanoBanana2LiteTextToImageRequest,
+  FalNanoBanana2LiteTextToImageRequestInput,
+  FalNanoBanana2LiteTextToImageParsedRequest,
+  FalNanoBanana2LiteEditRequest,
+  FalNanoBanana2LiteEditRequestInput,
+  FalNanoBanana2LiteEditParsedRequest,
+  FalSeedreamV5LiteEditRequest,
+  FalSeedreamV5LiteEditRequestInput,
+  FalSeedreamV5LiteEditParsedRequest,
+  FalSeedreamV5LiteTextToImageRequest,
+  FalSeedreamV5LiteTextToImageRequestInput,
+  FalSeedreamV5LiteTextToImageParsedRequest,
+  FalSeedSpeechTtsV2Request,
+  FalSeedSpeechTtsV2RequestInput,
+  FalSeedSpeechTtsV2ParsedRequest,
+  FalElevenlabsSpeechToTextScribeV2Request,
+  FalElevenlabsSpeechToTextScribeV2RequestInput,
+  FalElevenlabsSpeechToTextScribeV2ParsedRequest,
+  FalWanV2p7TextToImageRequest,
+  FalWanV2p7TextToImageRequestInput,
+  FalWanV2p7TextToImageParsedRequest,
+  FalWanV2p7EditRequest,
+  FalWanV2p7EditRequestInput,
+  FalWanV2p7EditParsedRequest,
+  FalWanV2p7TextToVideoRequest,
+  FalWanV2p7TextToVideoRequestInput,
+  FalWanV2p7TextToVideoParsedRequest,
+  FalWanV2p7ImageToVideoRequest,
+  FalWanV2p7ImageToVideoRequestInput,
+  FalWanV2p7ImageToVideoParsedRequest,
+  FalWanV2p7ReferenceToVideoRequest,
+  FalWanV2p7ReferenceToVideoRequestInput,
+  FalWanV2p7ReferenceToVideoParsedRequest,
+  FalWanV2p7EditVideoRequest,
+  FalWanV2p7EditVideoRequestInput,
+  FalWanV2p7EditVideoParsedRequest,
+  FalXaiGrokImagineImageEditRequest,
+  FalXaiGrokImagineImageEditRequestInput,
+  FalXaiGrokImagineImageEditParsedRequest,
+  FalSora2TextToVideoRequest,
+  FalSora2TextToVideoRequestInput,
+  FalSora2TextToVideoParsedRequest,
+  FalSora2ImageToVideoRequest,
+  FalSora2ImageToVideoRequestInput,
+  FalSora2ImageToVideoParsedRequest,
+  FalHunyuanImageV3InstructEditRequest,
+  FalHunyuanImageV3InstructEditRequestInput,
+  FalHunyuanImageV3InstructEditParsedRequest,
+  FalKlingVideoV3ProImageToVideoRequest,
+  FalKlingVideoV3ProImageToVideoRequestInput,
+  FalKlingVideoV3ProImageToVideoParsedRequest,
+  FalKlingVideoV3ProTextToVideoRequest,
+  FalKlingVideoV3ProTextToVideoRequestInput,
+  FalKlingVideoV3ProTextToVideoParsedRequest,
+  FalKlingVideoV3StandardImageToVideoRequest,
+  FalKlingVideoV3StandardImageToVideoRequestInput,
+  FalKlingVideoV3StandardImageToVideoParsedRequest,
+  FalKlingVideoV3StandardTextToVideoRequest,
+  FalKlingVideoV3StandardTextToVideoRequestInput,
+  FalKlingVideoV3StandardTextToVideoParsedRequest,
+  FalKlingVideoO3p4kImageToVideoRequest,
+  FalKlingVideoO3p4kImageToVideoRequestInput,
+  FalKlingVideoO3p4kImageToVideoParsedRequest,
+  FalKlingVideoO3p4kReferenceToVideoRequest,
+  FalKlingVideoO3p4kReferenceToVideoRequestInput,
+  FalKlingVideoO3p4kReferenceToVideoParsedRequest,
+  FalKlingVideoO3p4kTextToVideoRequest,
+  FalKlingVideoO3p4kTextToVideoRequestInput,
+  FalKlingVideoO3p4kTextToVideoParsedRequest,
+  FalVeo3p1TextToVideoRequest,
+  FalVeo3p1TextToVideoRequestInput,
+  FalVeo3p1TextToVideoParsedRequest,
+  FalVeo3p1ImageToVideoRequest,
+  FalVeo3p1ImageToVideoRequestInput,
+  FalVeo3p1ImageToVideoParsedRequest,
+  FalXaiGrokImagineVideoImageToVideoRequest,
+  FalXaiGrokImagineVideoImageToVideoRequestInput,
+  FalXaiGrokImagineVideoImageToVideoParsedRequest,
+  FalXaiGrokImagineVideoReferenceToVideoRequest,
+  FalXaiGrokImagineVideoReferenceToVideoRequestInput,
+  FalXaiGrokImagineVideoReferenceToVideoParsedRequest,
+  FalXaiGrokImagineVideoExtendVideoRequest,
+  FalXaiGrokImagineVideoExtendVideoRequestInput,
+  FalXaiGrokImagineVideoExtendVideoParsedRequest,
+  FalXaiGrokImagineVideoEditVideoRequest,
+  FalXaiGrokImagineVideoEditVideoRequestInput,
+  FalXaiGrokImagineVideoEditVideoParsedRequest,
+  FalXaiGrokImagineImageRequest,
+  FalXaiGrokImagineImageRequestInput,
+  FalXaiGrokImagineImageParsedRequest,
+  FalQwenImageEditRequest,
+  FalQwenImageEditRequestInput,
+  FalQwenImageEditParsedRequest,
+  FalGptImage1p5EditRequest,
+  FalGptImage1p5EditRequestInput,
+  FalGptImage1p5EditParsedRequest,
+  FalGptImage1p5Request,
+  FalGptImage1p5RequestInput,
+  FalGptImage1p5ParsedRequest,
+  FalQwenImageRequest,
+  FalQwenImageRequestInput,
+  FalQwenImageParsedRequest,
+  FalEndpointId,
+  FalEndpointInputMap,
+  FalQueueSubmitRequest,
 } from "./zod";
 
 // Re-import for use in this file's interface definitions
 import type {
   FalEstimateRequest,
   FalQueueSubmitParams,
+  FalQueueSubmitRequest,
   FalLogsStreamParams,
   FalFilesUploadUrlParams,
   FalFilesUploadLocalParams,
   FalDeletePayloadsParams,
-  FalSeedance2p0ImageToVideoParams,
-  FalSeedance2p0TextToVideoParams,
-  FalSeedance2p0FastImageToVideoParams,
-  FalSeedance2p0FastTextToVideoParams,
-  FalSeedance2p0ReferenceToVideoParams,
-  FalSeedance2p0FastReferenceToVideoParams,
-  FalNanoBananaProTextToImageParams,
-  FalNanoBananaProEditParams,
-  FalNanoBanana2TextToImageParams,
-  FalNanoBanana2EditParams,
-  FalNanoBanana2LiteTextToImageParams,
-  FalNanoBanana2LiteEditParams,
-  FalSeedreamV5LiteEditParams,
-  FalSeedreamV5LiteTextToImageParams,
-  FalSeedSpeechTtsV2Params,
-  FalElevenlabsSpeechToTextScribeV2Params,
-  FalWanV2p7TextToImageParams,
-  FalWanV2p7EditParams,
-  FalWanV2p7TextToVideoParams,
-  FalWanV2p7ImageToVideoParams,
-  FalWanV2p7ReferenceToVideoParams,
-  FalWanV2p7EditVideoParams,
-  FalXaiGrokImagineImageParams,
-  FalXaiGrokImagineImageEditParams,
-  FalQwenImageParams,
-  FalQwenImageEditParams,
-  FalGptImage1p5Params,
-  FalGptImage1p5EditParams,
-  FalNanoBananaTextToImageParams,
-  FalNanoBananaEditParams,
-  FalXaiGrokImagineVideoImageToVideoParams,
-  FalXaiGrokImagineVideoReferenceToVideoParams,
-  FalXaiGrokImagineVideoExtendVideoParams,
-  FalXaiGrokImagineVideoEditVideoParams,
-  FalVeo3p1TextToVideoParams,
-  FalVeo3p1ImageToVideoParams,
   FalStorageUploadInitiateParams,
   FalStorageUploadInitiateMultipartParams,
   FalStorageUploadCompleteMultipartParams,
-  FalKlingVideoV3ProImageToVideoParams,
-  FalKlingVideoV3ProTextToVideoParams,
-  FalKlingVideoV3StandardImageToVideoParams,
-  FalKlingVideoV3StandardTextToVideoParams,
-  FalKlingVideoO3p4kImageToVideoParams,
-  FalKlingVideoO3p4kReferenceToVideoParams,
-  FalKlingVideoO3p4kTextToVideoParams,
-  FalSora2TextToVideoParams,
-  FalSora2ImageToVideoParams,
-  FalHunyuanImageV3InstructEditParams,
+  FalSeedreamV5LiteTextToImageParams,
+  FalSeedance2p0ImageToVideoRequest,
+  FalSeedance2p0TextToVideoRequest,
+  FalSeedance2p0FastImageToVideoRequest,
+  FalSeedance2p0FastTextToVideoRequest,
+  FalSeedance2p0ReferenceToVideoRequest,
+  FalSeedance2p0FastReferenceToVideoRequest,
+  FalNanoBananaProEditRequest,
+  FalNanoBananaProTextToImageRequest,
+  FalNanoBananaTextToImageRequest,
+  FalNanoBananaEditRequest,
+  FalNanoBanana2TextToImageRequest,
+  FalNanoBanana2EditRequest,
+  FalNanoBanana2LiteTextToImageRequest,
+  FalNanoBanana2LiteEditRequest,
+  FalSeedreamV5LiteEditRequest,
+  FalSeedreamV5LiteTextToImageRequest,
+  FalSeedSpeechTtsV2Request,
+  FalElevenlabsSpeechToTextScribeV2Request,
+  FalWanV2p7TextToImageRequest,
+  FalWanV2p7EditRequest,
+  FalWanV2p7TextToVideoRequest,
+  FalWanV2p7ImageToVideoRequest,
+  FalWanV2p7ReferenceToVideoRequest,
+  FalWanV2p7EditVideoRequest,
+  FalXaiGrokImagineImageEditRequest,
+  FalSora2TextToVideoRequest,
+  FalSora2ImageToVideoRequest,
+  FalHunyuanImageV3InstructEditRequest,
+  FalKlingVideoV3ProImageToVideoRequest,
+  FalKlingVideoV3ProTextToVideoRequest,
+  FalKlingVideoV3StandardImageToVideoRequest,
+  FalKlingVideoV3StandardTextToVideoRequest,
+  FalKlingVideoO3p4kImageToVideoRequest,
+  FalKlingVideoO3p4kReferenceToVideoRequest,
+  FalKlingVideoO3p4kTextToVideoRequest,
+  FalVeo3p1TextToVideoRequest,
+  FalVeo3p1ImageToVideoRequest,
+  FalXaiGrokImagineVideoImageToVideoRequest,
+  FalXaiGrokImagineVideoReferenceToVideoRequest,
+  FalXaiGrokImagineVideoExtendVideoRequest,
+  FalXaiGrokImagineVideoEditVideoRequest,
+  FalXaiGrokImagineImageRequest,
+  FalQwenImageEditRequest,
+  FalGptImage1p5EditRequest,
+  FalGptImage1p5Request,
+  FalQwenImageRequest,
 } from "./zod";
 
 // Error types returned by fal API
@@ -1212,8 +1355,8 @@ interface FalModelsNamespace {
 }
 
 interface FalQueueSubmitMethod {
-  (
-    params: FalQueueSubmitParams,
+  <Id extends string>(
+    params: FalQueueSubmitRequest<Id>,
     signal?: AbortSignal
   ): Promise<FalQueueSubmitResponse>;
   schema: ApicitySchema<FalQueueSubmitParams>;
@@ -1304,45 +1447,45 @@ interface FalV1Namespace {
 // ==================== fal.run run-namespace ====================
 
 type FalSeedance2p0ImageToVideoFn = ((
-  params: FalSeedance2p0ImageToVideoParams,
+  params: FalSeedance2p0ImageToVideoRequest,
   signal?: AbortSignal
 ) => Promise<FalSeedance2p0ImageToVideoResponse>) & {
-  schema: ApicitySchema<FalSeedance2p0ImageToVideoParams>;
+  schema: ApicitySchema<FalSeedance2p0ImageToVideoRequest>;
 };
 
 type FalSeedance2p0TextToVideoFn = ((
-  params: FalSeedance2p0TextToVideoParams,
+  params: FalSeedance2p0TextToVideoRequest,
   signal?: AbortSignal
 ) => Promise<FalSeedance2p0TextToVideoResponse>) & {
-  schema: ApicitySchema<FalSeedance2p0TextToVideoParams>;
+  schema: ApicitySchema<FalSeedance2p0TextToVideoRequest>;
 };
 
 type FalSeedance2p0FastImageToVideoFn = ((
-  params: FalSeedance2p0FastImageToVideoParams,
+  params: FalSeedance2p0FastImageToVideoRequest,
   signal?: AbortSignal
 ) => Promise<FalSeedance2p0FastImageToVideoResponse>) & {
-  schema: ApicitySchema<FalSeedance2p0FastImageToVideoParams>;
+  schema: ApicitySchema<FalSeedance2p0FastImageToVideoRequest>;
 };
 
 type FalSeedance2p0FastTextToVideoFn = ((
-  params: FalSeedance2p0FastTextToVideoParams,
+  params: FalSeedance2p0FastTextToVideoRequest,
   signal?: AbortSignal
 ) => Promise<FalSeedance2p0FastTextToVideoResponse>) & {
-  schema: ApicitySchema<FalSeedance2p0FastTextToVideoParams>;
+  schema: ApicitySchema<FalSeedance2p0FastTextToVideoRequest>;
 };
 
 type FalSeedance2p0ReferenceToVideoFn = ((
-  params: FalSeedance2p0ReferenceToVideoParams,
+  params: FalSeedance2p0ReferenceToVideoRequest,
   signal?: AbortSignal
 ) => Promise<FalSeedance2p0ReferenceToVideoResponse>) & {
-  schema: ApicitySchema<FalSeedance2p0ReferenceToVideoParams>;
+  schema: ApicitySchema<FalSeedance2p0ReferenceToVideoRequest>;
 };
 
 type FalSeedance2p0FastReferenceToVideoFn = ((
-  params: FalSeedance2p0FastReferenceToVideoParams,
+  params: FalSeedance2p0FastReferenceToVideoRequest,
   signal?: AbortSignal
 ) => Promise<FalSeedance2p0FastReferenceToVideoResponse>) & {
-  schema: ApicitySchema<FalSeedance2p0FastReferenceToVideoParams>;
+  schema: ApicitySchema<FalSeedance2p0FastReferenceToVideoRequest>;
 };
 
 export interface FalRunBytedanceSeedance2p0FastNamespace {
@@ -1372,10 +1515,10 @@ export interface FalRunBytedanceSeedreamNamespace {
 }
 
 type FalSeedSpeechTtsV2Fn = ((
-  params: FalSeedSpeechTtsV2Params,
+  params: FalSeedSpeechTtsV2Request,
   signal?: AbortSignal
 ) => Promise<FalSeedSpeechTtsV2Response>) & {
-  schema: ApicitySchema<FalSeedSpeechTtsV2Params>;
+  schema: ApicitySchema<FalSeedSpeechTtsV2Request>;
 };
 
 export interface FalRunBytedanceSeedSpeechTtsNamespace {
@@ -1393,17 +1536,17 @@ export interface FalRunBytedanceNamespace {
 }
 
 type FalNanoBananaProEditFn = ((
-  params: FalNanoBananaProEditParams,
+  params: FalNanoBananaProEditRequest,
   signal?: AbortSignal
 ) => Promise<FalNanoBananaProEditResponse>) & {
-  schema: ApicitySchema<FalNanoBananaProEditParams>;
+  schema: ApicitySchema<FalNanoBananaProEditRequest>;
 };
 
 type FalNanoBananaProTextToImageFn = ((
-  params: FalNanoBananaProTextToImageParams,
+  params: FalNanoBananaProTextToImageRequest,
   signal?: AbortSignal
 ) => Promise<FalNanoBananaProTextToImageResponse>) & {
-  schema: ApicitySchema<FalNanoBananaProTextToImageParams>;
+  schema: ApicitySchema<FalNanoBananaProTextToImageRequest>;
 };
 
 export interface FalRunNanoBananaProNamespace {
@@ -1412,17 +1555,17 @@ export interface FalRunNanoBananaProNamespace {
 }
 
 type FalNanoBanana2TextToImageFn = ((
-  params: FalNanoBanana2TextToImageParams,
+  params: FalNanoBanana2TextToImageRequest,
   signal?: AbortSignal
 ) => Promise<FalNanoBanana2TextToImageResponse>) & {
-  schema: ApicitySchema<FalNanoBanana2TextToImageParams>;
+  schema: ApicitySchema<FalNanoBanana2TextToImageRequest>;
 };
 
 type FalNanoBanana2EditFn = ((
-  params: FalNanoBanana2EditParams,
+  params: FalNanoBanana2EditRequest,
   signal?: AbortSignal
 ) => Promise<FalNanoBanana2EditResponse>) & {
-  schema: ApicitySchema<FalNanoBanana2EditParams>;
+  schema: ApicitySchema<FalNanoBanana2EditRequest>;
 };
 
 export interface FalRunNanoBanana2Namespace {
@@ -1431,17 +1574,17 @@ export interface FalRunNanoBanana2Namespace {
 }
 
 type FalNanoBanana2LiteTextToImageFn = ((
-  params: FalNanoBanana2LiteTextToImageParams,
+  params: FalNanoBanana2LiteTextToImageRequest,
   signal?: AbortSignal
 ) => Promise<FalNanoBanana2LiteTextToImageResponse>) & {
-  schema: ApicitySchema<FalNanoBanana2LiteTextToImageParams>;
+  schema: ApicitySchema<FalNanoBanana2LiteTextToImageRequest>;
 };
 
 type FalNanoBanana2LiteEditFn = ((
-  params: FalNanoBanana2LiteEditParams,
+  params: FalNanoBanana2LiteEditRequest,
   signal?: AbortSignal
 ) => Promise<FalNanoBanana2LiteEditResponse>) & {
-  schema: ApicitySchema<FalNanoBanana2LiteEditParams>;
+  schema: ApicitySchema<FalNanoBanana2LiteEditRequest>;
 };
 
 export interface FalRunNanoBanana2LiteNamespace {
@@ -1450,59 +1593,59 @@ export interface FalRunNanoBanana2LiteNamespace {
 }
 
 type FalSeedreamV5LiteEditFn = ((
-  params: FalSeedreamV5LiteEditParams,
+  params: FalSeedreamV5LiteEditRequest,
   signal?: AbortSignal
 ) => Promise<FalSeedreamV5LiteEditResponse>) & {
-  schema: ApicitySchema<FalSeedreamV5LiteEditParams>;
+  schema: ApicitySchema<FalSeedreamV5LiteEditRequest>;
 };
 
 type FalSeedreamV5LiteTextToImageFn = ((
-  params: FalSeedreamV5LiteTextToImageParams,
+  params: FalSeedreamV5LiteTextToImageRequest,
   signal?: AbortSignal
 ) => Promise<FalSeedreamV5LiteTextToImageResponse>) & {
-  schema: ApicitySchema<FalSeedreamV5LiteTextToImageParams>;
+  schema: ApicitySchema<FalSeedreamV5LiteTextToImageRequest>;
 };
 
 type FalWanV2p7TextToImageFn = ((
-  params: FalWanV2p7TextToImageParams,
+  params: FalWanV2p7TextToImageRequest,
   signal?: AbortSignal
 ) => Promise<FalWanV2p7TextToImageResponse>) & {
-  schema: ApicitySchema<FalWanV2p7TextToImageParams>;
+  schema: ApicitySchema<FalWanV2p7TextToImageRequest>;
 };
 
 type FalWanV2p7EditFn = ((
-  params: FalWanV2p7EditParams,
+  params: FalWanV2p7EditRequest,
   signal?: AbortSignal
 ) => Promise<FalWanV2p7EditResponse>) & {
-  schema: ApicitySchema<FalWanV2p7EditParams>;
+  schema: ApicitySchema<FalWanV2p7EditRequest>;
 };
 
 type FalWanV2p7TextToVideoFn = ((
-  params: FalWanV2p7TextToVideoParams,
+  params: FalWanV2p7TextToVideoRequest,
   signal?: AbortSignal
 ) => Promise<FalWanV2p7TextToVideoResponse>) & {
-  schema: ApicitySchema<FalWanV2p7TextToVideoParams>;
+  schema: ApicitySchema<FalWanV2p7TextToVideoRequest>;
 };
 
 type FalWanV2p7ImageToVideoFn = ((
-  params: FalWanV2p7ImageToVideoParams,
+  params: FalWanV2p7ImageToVideoRequest,
   signal?: AbortSignal
 ) => Promise<FalWanV2p7ImageToVideoResponse>) & {
-  schema: ApicitySchema<FalWanV2p7ImageToVideoParams>;
+  schema: ApicitySchema<FalWanV2p7ImageToVideoRequest>;
 };
 
 type FalWanV2p7ReferenceToVideoFn = ((
-  params: FalWanV2p7ReferenceToVideoParams,
+  params: FalWanV2p7ReferenceToVideoRequest,
   signal?: AbortSignal
 ) => Promise<FalWanV2p7ReferenceToVideoResponse>) & {
-  schema: ApicitySchema<FalWanV2p7ReferenceToVideoParams>;
+  schema: ApicitySchema<FalWanV2p7ReferenceToVideoRequest>;
 };
 
 type FalWanV2p7EditVideoFn = ((
-  params: FalWanV2p7EditVideoParams,
+  params: FalWanV2p7EditVideoRequest,
   signal?: AbortSignal
 ) => Promise<FalWanV2p7EditVideoResponse>) & {
-  schema: ApicitySchema<FalWanV2p7EditVideoParams>;
+  schema: ApicitySchema<FalWanV2p7EditVideoRequest>;
 };
 
 export interface FalRunWanV2p7ProNamespace {
@@ -1525,46 +1668,46 @@ export interface FalRunWanNamespace {
 }
 
 type FalXaiGrokImagineImageEditFn = ((
-  params: FalXaiGrokImagineImageEditParams,
+  params: FalXaiGrokImagineImageEditRequest,
   signal?: AbortSignal
 ) => Promise<FalXaiGrokImagineImageEditResponse>) & {
-  schema: ApicitySchema<FalXaiGrokImagineImageEditParams>;
+  schema: ApicitySchema<FalXaiGrokImagineImageEditRequest>;
 };
 
 type FalXaiGrokImagineImageFn = ((
-  params: FalXaiGrokImagineImageParams,
+  params: FalXaiGrokImagineImageRequest,
   signal?: AbortSignal
 ) => Promise<FalXaiGrokImagineImageResponse>) & {
-  schema: ApicitySchema<FalXaiGrokImagineImageParams>;
+  schema: ApicitySchema<FalXaiGrokImagineImageRequest>;
   edit: FalXaiGrokImagineImageEditFn;
 };
 
 type FalXaiGrokImagineVideoImageToVideoFn = ((
-  params: FalXaiGrokImagineVideoImageToVideoParams,
+  params: FalXaiGrokImagineVideoImageToVideoRequest,
   signal?: AbortSignal
 ) => Promise<FalXaiGrokImagineVideoImageToVideoResponse>) & {
-  schema: ApicitySchema<FalXaiGrokImagineVideoImageToVideoParams>;
+  schema: ApicitySchema<FalXaiGrokImagineVideoImageToVideoRequest>;
 };
 
 type FalXaiGrokImagineVideoReferenceToVideoFn = ((
-  params: FalXaiGrokImagineVideoReferenceToVideoParams,
+  params: FalXaiGrokImagineVideoReferenceToVideoRequest,
   signal?: AbortSignal
 ) => Promise<FalXaiGrokImagineVideoReferenceToVideoResponse>) & {
-  schema: ApicitySchema<FalXaiGrokImagineVideoReferenceToVideoParams>;
+  schema: ApicitySchema<FalXaiGrokImagineVideoReferenceToVideoRequest>;
 };
 
 type FalXaiGrokImagineVideoExtendVideoFn = ((
-  params: FalXaiGrokImagineVideoExtendVideoParams,
+  params: FalXaiGrokImagineVideoExtendVideoRequest,
   signal?: AbortSignal
 ) => Promise<FalXaiGrokImagineVideoExtendVideoResponse>) & {
-  schema: ApicitySchema<FalXaiGrokImagineVideoExtendVideoParams>;
+  schema: ApicitySchema<FalXaiGrokImagineVideoExtendVideoRequest>;
 };
 
 type FalXaiGrokImagineVideoEditVideoFn = ((
-  params: FalXaiGrokImagineVideoEditVideoParams,
+  params: FalXaiGrokImagineVideoEditVideoRequest,
   signal?: AbortSignal
 ) => Promise<FalXaiGrokImagineVideoEditVideoResponse>) & {
-  schema: ApicitySchema<FalXaiGrokImagineVideoEditVideoParams>;
+  schema: ApicitySchema<FalXaiGrokImagineVideoEditVideoRequest>;
 };
 
 export interface FalRunXaiGrokImagineVideoNamespace {
@@ -1580,47 +1723,47 @@ export interface FalRunXaiNamespace {
 }
 
 type FalQwenImageEditFn = ((
-  params: FalQwenImageEditParams,
+  params: FalQwenImageEditRequest,
   signal?: AbortSignal
 ) => Promise<FalQwenImageEditResponse>) & {
-  schema: ApicitySchema<FalQwenImageEditParams>;
+  schema: ApicitySchema<FalQwenImageEditRequest>;
 };
 
 type FalQwenImageFn = ((
-  params: FalQwenImageParams,
+  params: FalQwenImageRequest,
   signal?: AbortSignal
 ) => Promise<FalQwenImageResponse>) & {
-  schema: ApicitySchema<FalQwenImageParams>;
+  schema: ApicitySchema<FalQwenImageRequest>;
   edit: FalQwenImageEditFn;
 };
 
 type FalGptImage1p5EditFn = ((
-  params: FalGptImage1p5EditParams,
+  params: FalGptImage1p5EditRequest,
   signal?: AbortSignal
 ) => Promise<FalGptImage1p5EditResponse>) & {
-  schema: ApicitySchema<FalGptImage1p5EditParams>;
+  schema: ApicitySchema<FalGptImage1p5EditRequest>;
 };
 
 type FalGptImage1p5Fn = ((
-  params: FalGptImage1p5Params,
+  params: FalGptImage1p5Request,
   signal?: AbortSignal
 ) => Promise<FalGptImage1p5Response>) & {
-  schema: ApicitySchema<FalGptImage1p5Params>;
+  schema: ApicitySchema<FalGptImage1p5Request>;
   edit: FalGptImage1p5EditFn;
 };
 
 type FalNanoBananaTextToImageFn = ((
-  params: FalNanoBananaTextToImageParams,
+  params: FalNanoBananaTextToImageRequest,
   signal?: AbortSignal
 ) => Promise<FalNanoBananaTextToImageResponse>) & {
-  schema: ApicitySchema<FalNanoBananaTextToImageParams>;
+  schema: ApicitySchema<FalNanoBananaTextToImageRequest>;
 };
 
 type FalNanoBananaEditFn = ((
-  params: FalNanoBananaEditParams,
+  params: FalNanoBananaEditRequest,
   signal?: AbortSignal
 ) => Promise<FalNanoBananaEditResponse>) & {
-  schema: ApicitySchema<FalNanoBananaEditParams>;
+  schema: ApicitySchema<FalNanoBananaEditRequest>;
 };
 
 export interface FalRunNanoBananaNamespace {
@@ -1629,17 +1772,17 @@ export interface FalRunNanoBananaNamespace {
 }
 
 type FalVeo3p1TextToVideoFn = ((
-  params: FalVeo3p1TextToVideoParams,
+  params: FalVeo3p1TextToVideoRequest,
   signal?: AbortSignal
 ) => Promise<FalVeo3p1TextToVideoResponse>) & {
-  schema: ApicitySchema<FalVeo3p1TextToVideoParams>;
+  schema: ApicitySchema<FalVeo3p1TextToVideoRequest>;
 };
 
 type FalVeo3p1ImageToVideoFn = ((
-  params: FalVeo3p1ImageToVideoParams,
+  params: FalVeo3p1ImageToVideoRequest,
   signal?: AbortSignal
 ) => Promise<FalVeo3p1ImageToVideoResponse>) & {
-  schema: ApicitySchema<FalVeo3p1ImageToVideoParams>;
+  schema: ApicitySchema<FalVeo3p1ImageToVideoRequest>;
 };
 
 export interface FalRunVeo3p1Namespace {
@@ -1648,31 +1791,31 @@ export interface FalRunVeo3p1Namespace {
 }
 
 type FalKlingVideoV3ProImageToVideoFn = ((
-  params: FalKlingVideoV3ProImageToVideoParams,
+  params: FalKlingVideoV3ProImageToVideoRequest,
   signal?: AbortSignal
 ) => Promise<FalKlingVideoV3ProImageToVideoResponse>) & {
-  schema: ApicitySchema<FalKlingVideoV3ProImageToVideoParams>;
+  schema: ApicitySchema<FalKlingVideoV3ProImageToVideoRequest>;
 };
 
 type FalKlingVideoV3ProTextToVideoFn = ((
-  params: FalKlingVideoV3ProTextToVideoParams,
+  params: FalKlingVideoV3ProTextToVideoRequest,
   signal?: AbortSignal
 ) => Promise<FalKlingVideoV3ProTextToVideoResponse>) & {
-  schema: ApicitySchema<FalKlingVideoV3ProTextToVideoParams>;
+  schema: ApicitySchema<FalKlingVideoV3ProTextToVideoRequest>;
 };
 
 type FalKlingVideoV3StandardImageToVideoFn = ((
-  params: FalKlingVideoV3StandardImageToVideoParams,
+  params: FalKlingVideoV3StandardImageToVideoRequest,
   signal?: AbortSignal
 ) => Promise<FalKlingVideoV3StandardImageToVideoResponse>) & {
-  schema: ApicitySchema<FalKlingVideoV3StandardImageToVideoParams>;
+  schema: ApicitySchema<FalKlingVideoV3StandardImageToVideoRequest>;
 };
 
 type FalKlingVideoV3StandardTextToVideoFn = ((
-  params: FalKlingVideoV3StandardTextToVideoParams,
+  params: FalKlingVideoV3StandardTextToVideoRequest,
   signal?: AbortSignal
 ) => Promise<FalKlingVideoV3StandardTextToVideoResponse>) & {
-  schema: ApicitySchema<FalKlingVideoV3StandardTextToVideoParams>;
+  schema: ApicitySchema<FalKlingVideoV3StandardTextToVideoRequest>;
 };
 
 export interface FalRunKlingVideoV3ProNamespace {
@@ -1691,24 +1834,24 @@ export interface FalRunKlingVideoV3Namespace {
 }
 
 type FalKlingVideoO3p4kImageToVideoFn = ((
-  params: FalKlingVideoO3p4kImageToVideoParams,
+  params: FalKlingVideoO3p4kImageToVideoRequest,
   signal?: AbortSignal
 ) => Promise<FalKlingVideoO3p4kImageToVideoResponse>) & {
-  schema: ApicitySchema<FalKlingVideoO3p4kImageToVideoParams>;
+  schema: ApicitySchema<FalKlingVideoO3p4kImageToVideoRequest>;
 };
 
 type FalKlingVideoO3p4kReferenceToVideoFn = ((
-  params: FalKlingVideoO3p4kReferenceToVideoParams,
+  params: FalKlingVideoO3p4kReferenceToVideoRequest,
   signal?: AbortSignal
 ) => Promise<FalKlingVideoO3p4kReferenceToVideoResponse>) & {
-  schema: ApicitySchema<FalKlingVideoO3p4kReferenceToVideoParams>;
+  schema: ApicitySchema<FalKlingVideoO3p4kReferenceToVideoRequest>;
 };
 
 type FalKlingVideoO3p4kTextToVideoFn = ((
-  params: FalKlingVideoO3p4kTextToVideoParams,
+  params: FalKlingVideoO3p4kTextToVideoRequest,
   signal?: AbortSignal
 ) => Promise<FalKlingVideoO3p4kTextToVideoResponse>) & {
-  schema: ApicitySchema<FalKlingVideoO3p4kTextToVideoParams>;
+  schema: ApicitySchema<FalKlingVideoO3p4kTextToVideoRequest>;
 };
 
 export interface FalRunKlingVideoO3p4kNamespace {
@@ -1723,17 +1866,17 @@ export interface FalRunKlingVideoNamespace {
 }
 
 type FalSora2TextToVideoFn = ((
-  params: FalSora2TextToVideoParams,
+  params: FalSora2TextToVideoRequest,
   signal?: AbortSignal
 ) => Promise<FalSora2TextToVideoResponse>) & {
-  schema: ApicitySchema<FalSora2TextToVideoParams>;
+  schema: ApicitySchema<FalSora2TextToVideoRequest>;
 };
 
 type FalSora2ImageToVideoFn = ((
-  params: FalSora2ImageToVideoParams,
+  params: FalSora2ImageToVideoRequest,
   signal?: AbortSignal
 ) => Promise<FalSora2ImageToVideoResponse>) & {
-  schema: ApicitySchema<FalSora2ImageToVideoParams>;
+  schema: ApicitySchema<FalSora2ImageToVideoRequest>;
 };
 
 export interface FalRunSora2Namespace {
@@ -1742,10 +1885,10 @@ export interface FalRunSora2Namespace {
 }
 
 type FalHunyuanImageV3InstructEditFn = ((
-  params: FalHunyuanImageV3InstructEditParams,
+  params: FalHunyuanImageV3InstructEditRequest,
   signal?: AbortSignal
 ) => Promise<FalHunyuanImageV3InstructEditResponse>) & {
-  schema: ApicitySchema<FalHunyuanImageV3InstructEditParams>;
+  schema: ApicitySchema<FalHunyuanImageV3InstructEditRequest>;
 };
 
 export interface FalRunHunyuanV3Namespace {
@@ -1776,10 +1919,10 @@ export interface FalRunNamespace {
 // ==================== fal.run fal-ai namespace ====================
 
 type FalElevenlabsSpeechToTextScribeV2Fn = ((
-  params: FalElevenlabsSpeechToTextScribeV2Params,
+  params: FalElevenlabsSpeechToTextScribeV2Request,
   signal?: AbortSignal
 ) => Promise<FalElevenlabsSpeechToTextScribeV2Response>) & {
-  schema: ApicitySchema<FalElevenlabsSpeechToTextScribeV2Params>;
+  schema: ApicitySchema<FalElevenlabsSpeechToTextScribeV2Request>;
 };
 
 export interface FalRunElevenlabsSpeechToTextNamespace {

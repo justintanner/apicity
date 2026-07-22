@@ -1305,103 +1305,367 @@ export type FalDeletePayloadsParams = z.infer<
 export type FalSeedance2p0ImageToVideoParams = z.infer<
   typeof FalSeedance2p0ImageToVideoRequestSchema
 >;
+export type FalSeedance2p0ImageToVideoRequest = z.input<
+  typeof FalSeedance2p0ImageToVideoRequestSchema
+>;
+export type FalSeedance2p0ImageToVideoRequestInput =
+  FalSeedance2p0ImageToVideoRequest;
+export type FalSeedance2p0ImageToVideoParsedRequest = z.output<
+  typeof FalSeedance2p0ImageToVideoRequestSchema
+>;
 export type FalSeedance2p0TextToVideoParams = z.infer<
+  typeof FalSeedance2p0TextToVideoRequestSchema
+>;
+export type FalSeedance2p0TextToVideoRequest = z.input<
+  typeof FalSeedance2p0TextToVideoRequestSchema
+>;
+export type FalSeedance2p0TextToVideoRequestInput =
+  FalSeedance2p0TextToVideoRequest;
+export type FalSeedance2p0TextToVideoParsedRequest = z.output<
   typeof FalSeedance2p0TextToVideoRequestSchema
 >;
 export type FalSeedance2p0FastImageToVideoParams = z.infer<
   typeof FalSeedance2p0FastImageToVideoRequestSchema
 >;
+export type FalSeedance2p0FastImageToVideoRequest = z.input<
+  typeof FalSeedance2p0FastImageToVideoRequestSchema
+>;
+export type FalSeedance2p0FastImageToVideoRequestInput =
+  FalSeedance2p0FastImageToVideoRequest;
+export type FalSeedance2p0FastImageToVideoParsedRequest = z.output<
+  typeof FalSeedance2p0FastImageToVideoRequestSchema
+>;
 export type FalSeedance2p0FastTextToVideoParams = z.infer<
+  typeof FalSeedance2p0FastTextToVideoRequestSchema
+>;
+export type FalSeedance2p0FastTextToVideoRequest = z.input<
+  typeof FalSeedance2p0FastTextToVideoRequestSchema
+>;
+export type FalSeedance2p0FastTextToVideoRequestInput =
+  FalSeedance2p0FastTextToVideoRequest;
+export type FalSeedance2p0FastTextToVideoParsedRequest = z.output<
   typeof FalSeedance2p0FastTextToVideoRequestSchema
 >;
 export type FalSeedance2p0ReferenceToVideoParams = z.infer<
   typeof FalSeedance2p0ReferenceToVideoRequestSchema
 >;
+export type FalSeedance2p0ReferenceToVideoRequest = z.input<
+  typeof FalSeedance2p0ReferenceToVideoRequestSchema
+>;
+export type FalSeedance2p0ReferenceToVideoRequestInput =
+  FalSeedance2p0ReferenceToVideoRequest;
+export type FalSeedance2p0ReferenceToVideoParsedRequest = z.output<
+  typeof FalSeedance2p0ReferenceToVideoRequestSchema
+>;
 export type FalSeedance2p0FastReferenceToVideoParams = z.infer<
+  typeof FalSeedance2p0FastReferenceToVideoRequestSchema
+>;
+export type FalSeedance2p0FastReferenceToVideoRequest = z.input<
+  typeof FalSeedance2p0FastReferenceToVideoRequestSchema
+>;
+export type FalSeedance2p0FastReferenceToVideoRequestInput =
+  FalSeedance2p0FastReferenceToVideoRequest;
+export type FalSeedance2p0FastReferenceToVideoParsedRequest = z.output<
   typeof FalSeedance2p0FastReferenceToVideoRequestSchema
 >;
 export type FalNanoBananaProTextToImageParams = z.infer<
   typeof FalNanoBananaProTextToImageRequestSchema
 >;
+export type FalNanoBananaProTextToImageRequest = z.input<
+  typeof FalNanoBananaProTextToImageRequestSchema
+>;
+export type FalNanoBananaProTextToImageRequestInput =
+  FalNanoBananaProTextToImageRequest;
+export type FalNanoBananaProTextToImageParsedRequest = z.output<
+  typeof FalNanoBananaProTextToImageRequestSchema
+>;
 export type FalNanoBananaProEditParams = z.infer<
+  typeof FalNanoBananaProEditRequestSchema
+>;
+export type FalNanoBananaProEditRequest = z.input<
+  typeof FalNanoBananaProEditRequestSchema
+>;
+export type FalNanoBananaProEditRequestInput = FalNanoBananaProEditRequest;
+export type FalNanoBananaProEditParsedRequest = z.output<
   typeof FalNanoBananaProEditRequestSchema
 >;
 export type FalNanoBanana2TextToImageParams = z.infer<
   typeof FalNanoBanana2TextToImageRequestSchema
 >;
+export type FalNanoBanana2TextToImageRequest = z.input<
+  typeof FalNanoBanana2TextToImageRequestSchema
+>;
+export type FalNanoBanana2TextToImageRequestInput =
+  FalNanoBanana2TextToImageRequest;
+export type FalNanoBanana2TextToImageParsedRequest = z.output<
+  typeof FalNanoBanana2TextToImageRequestSchema
+>;
 export type FalNanoBanana2EditParams = z.infer<
+  typeof FalNanoBanana2EditRequestSchema
+>;
+export type FalNanoBanana2EditRequest = z.input<
+  typeof FalNanoBanana2EditRequestSchema
+>;
+export type FalNanoBanana2EditRequestInput = FalNanoBanana2EditRequest;
+export type FalNanoBanana2EditParsedRequest = z.output<
   typeof FalNanoBanana2EditRequestSchema
 >;
 export type FalNanoBanana2LiteTextToImageParams = z.infer<
   typeof FalNanoBanana2LiteTextToImageRequestSchema
 >;
+export type FalNanoBanana2LiteTextToImageRequest = z.input<
+  typeof FalNanoBanana2LiteTextToImageRequestSchema
+>;
+export type FalNanoBanana2LiteTextToImageRequestInput =
+  FalNanoBanana2LiteTextToImageRequest;
+export type FalNanoBanana2LiteTextToImageParsedRequest = z.output<
+  typeof FalNanoBanana2LiteTextToImageRequestSchema
+>;
 export type FalNanoBanana2LiteEditParams = z.infer<
+  typeof FalNanoBanana2LiteEditRequestSchema
+>;
+export type FalNanoBanana2LiteEditRequest = z.input<
+  typeof FalNanoBanana2LiteEditRequestSchema
+>;
+export type FalNanoBanana2LiteEditRequestInput = FalNanoBanana2LiteEditRequest;
+export type FalNanoBanana2LiteEditParsedRequest = z.output<
   typeof FalNanoBanana2LiteEditRequestSchema
 >;
 export type FalSeedreamV5LiteEditParams = z.infer<
   typeof FalSeedreamV5LiteEditRequestSchema
 >;
+export type FalSeedreamV5LiteEditRequest = z.input<
+  typeof FalSeedreamV5LiteEditRequestSchema
+>;
+export type FalSeedreamV5LiteEditRequestInput = FalSeedreamV5LiteEditRequest;
+export type FalSeedreamV5LiteEditParsedRequest = z.output<
+  typeof FalSeedreamV5LiteEditRequestSchema
+>;
 export type FalSeedreamV5LiteTextToImageParams = z.infer<
+  typeof FalSeedreamV5LiteTextToImageRequestSchema
+>;
+export type FalSeedreamV5LiteTextToImageRequest = z.input<
+  typeof FalSeedreamV5LiteTextToImageRequestSchema
+>;
+export type FalSeedreamV5LiteTextToImageRequestInput =
+  FalSeedreamV5LiteTextToImageRequest;
+export type FalSeedreamV5LiteTextToImageParsedRequest = z.output<
   typeof FalSeedreamV5LiteTextToImageRequestSchema
 >;
 export type FalSeedSpeechTtsV2Params = z.infer<
   typeof FalSeedSpeechTtsV2RequestSchema
 >;
+export type FalSeedSpeechTtsV2Request = z.input<
+  typeof FalSeedSpeechTtsV2RequestSchema
+>;
+export type FalSeedSpeechTtsV2RequestInput = FalSeedSpeechTtsV2Request;
+export type FalSeedSpeechTtsV2ParsedRequest = z.output<
+  typeof FalSeedSpeechTtsV2RequestSchema
+>;
 export type FalElevenlabsSpeechToTextScribeV2Params = z.infer<
+  typeof FalElevenlabsSpeechToTextScribeV2RequestSchema
+>;
+export type FalElevenlabsSpeechToTextScribeV2Request = z.input<
+  typeof FalElevenlabsSpeechToTextScribeV2RequestSchema
+>;
+export type FalElevenlabsSpeechToTextScribeV2RequestInput =
+  FalElevenlabsSpeechToTextScribeV2Request;
+export type FalElevenlabsSpeechToTextScribeV2ParsedRequest = z.output<
   typeof FalElevenlabsSpeechToTextScribeV2RequestSchema
 >;
 export type FalWanV2p7TextToImageParams = z.infer<
   typeof FalWanV2p7TextToImageRequestSchema
 >;
+export type FalWanV2p7TextToImageRequest = z.input<
+  typeof FalWanV2p7TextToImageRequestSchema
+>;
+export type FalWanV2p7TextToImageRequestInput = FalWanV2p7TextToImageRequest;
+export type FalWanV2p7TextToImageParsedRequest = z.output<
+  typeof FalWanV2p7TextToImageRequestSchema
+>;
 export type FalWanV2p7EditParams = z.infer<typeof FalWanV2p7EditRequestSchema>;
+export type FalWanV2p7EditRequest = z.input<typeof FalWanV2p7EditRequestSchema>;
+export type FalWanV2p7EditRequestInput = FalWanV2p7EditRequest;
+export type FalWanV2p7EditParsedRequest = z.output<
+  typeof FalWanV2p7EditRequestSchema
+>;
 export type FalWanV2p7TextToVideoParams = z.infer<
+  typeof FalWanV2p7TextToVideoRequestSchema
+>;
+export type FalWanV2p7TextToVideoRequest = z.input<
+  typeof FalWanV2p7TextToVideoRequestSchema
+>;
+export type FalWanV2p7TextToVideoRequestInput = FalWanV2p7TextToVideoRequest;
+export type FalWanV2p7TextToVideoParsedRequest = z.output<
   typeof FalWanV2p7TextToVideoRequestSchema
 >;
 export type FalWanV2p7ImageToVideoParams = z.infer<
   typeof FalWanV2p7ImageToVideoRequestSchema
 >;
+export type FalWanV2p7ImageToVideoRequest = z.input<
+  typeof FalWanV2p7ImageToVideoRequestSchema
+>;
+export type FalWanV2p7ImageToVideoRequestInput = FalWanV2p7ImageToVideoRequest;
+export type FalWanV2p7ImageToVideoParsedRequest = z.output<
+  typeof FalWanV2p7ImageToVideoRequestSchema
+>;
 export type FalWanV2p7ReferenceToVideoParams = z.infer<
+  typeof FalWanV2p7ReferenceToVideoRequestSchema
+>;
+export type FalWanV2p7ReferenceToVideoRequest = z.input<
+  typeof FalWanV2p7ReferenceToVideoRequestSchema
+>;
+export type FalWanV2p7ReferenceToVideoRequestInput =
+  FalWanV2p7ReferenceToVideoRequest;
+export type FalWanV2p7ReferenceToVideoParsedRequest = z.output<
   typeof FalWanV2p7ReferenceToVideoRequestSchema
 >;
 export type FalWanV2p7EditVideoParams = z.infer<
   typeof FalWanV2p7EditVideoRequestSchema
 >;
+export type FalWanV2p7EditVideoRequest = z.input<
+  typeof FalWanV2p7EditVideoRequestSchema
+>;
+export type FalWanV2p7EditVideoRequestInput = FalWanV2p7EditVideoRequest;
+export type FalWanV2p7EditVideoParsedRequest = z.output<
+  typeof FalWanV2p7EditVideoRequestSchema
+>;
 export type FalXaiGrokImagineImageParams = z.infer<
+  typeof FalXaiGrokImagineImageRequestSchema
+>;
+export type FalXaiGrokImagineImageRequest = z.input<
+  typeof FalXaiGrokImagineImageRequestSchema
+>;
+export type FalXaiGrokImagineImageRequestInput = FalXaiGrokImagineImageRequest;
+export type FalXaiGrokImagineImageParsedRequest = z.output<
   typeof FalXaiGrokImagineImageRequestSchema
 >;
 export type FalXaiGrokImagineImageEditParams = z.infer<
   typeof FalXaiGrokImagineImageEditRequestSchema
 >;
+export type FalXaiGrokImagineImageEditRequest = z.input<
+  typeof FalXaiGrokImagineImageEditRequestSchema
+>;
+export type FalXaiGrokImagineImageEditRequestInput =
+  FalXaiGrokImagineImageEditRequest;
+export type FalXaiGrokImagineImageEditParsedRequest = z.output<
+  typeof FalXaiGrokImagineImageEditRequestSchema
+>;
 export type FalQwenImageParams = z.infer<typeof FalQwenImageRequestSchema>;
+export type FalQwenImageRequest = z.input<typeof FalQwenImageRequestSchema>;
+export type FalQwenImageRequestInput = FalQwenImageRequest;
+export type FalQwenImageParsedRequest = z.output<
+  typeof FalQwenImageRequestSchema
+>;
 export type FalQwenImageEditParams = z.infer<
   typeof FalQwenImageEditRequestSchema
 >;
+export type FalQwenImageEditRequest = z.input<
+  typeof FalQwenImageEditRequestSchema
+>;
+export type FalQwenImageEditRequestInput = FalQwenImageEditRequest;
+export type FalQwenImageEditParsedRequest = z.output<
+  typeof FalQwenImageEditRequestSchema
+>;
 export type FalGptImage1p5Params = z.infer<typeof FalGptImage1p5RequestSchema>;
+export type FalGptImage1p5Request = z.input<typeof FalGptImage1p5RequestSchema>;
+export type FalGptImage1p5RequestInput = FalGptImage1p5Request;
+export type FalGptImage1p5ParsedRequest = z.output<
+  typeof FalGptImage1p5RequestSchema
+>;
 export type FalGptImage1p5EditParams = z.infer<
+  typeof FalGptImage1p5EditRequestSchema
+>;
+export type FalGptImage1p5EditRequest = z.input<
+  typeof FalGptImage1p5EditRequestSchema
+>;
+export type FalGptImage1p5EditRequestInput = FalGptImage1p5EditRequest;
+export type FalGptImage1p5EditParsedRequest = z.output<
   typeof FalGptImage1p5EditRequestSchema
 >;
 export type FalNanoBananaTextToImageParams = z.infer<
   typeof FalNanoBananaTextToImageRequestSchema
 >;
+export type FalNanoBananaTextToImageRequest = z.input<
+  typeof FalNanoBananaTextToImageRequestSchema
+>;
+export type FalNanoBananaTextToImageRequestInput =
+  FalNanoBananaTextToImageRequest;
+export type FalNanoBananaTextToImageParsedRequest = z.output<
+  typeof FalNanoBananaTextToImageRequestSchema
+>;
 export type FalNanoBananaEditParams = z.infer<
+  typeof FalNanoBananaEditRequestSchema
+>;
+export type FalNanoBananaEditRequest = z.input<
+  typeof FalNanoBananaEditRequestSchema
+>;
+export type FalNanoBananaEditRequestInput = FalNanoBananaEditRequest;
+export type FalNanoBananaEditParsedRequest = z.output<
   typeof FalNanoBananaEditRequestSchema
 >;
 export type FalXaiGrokImagineVideoImageToVideoParams = z.infer<
   typeof FalXaiGrokImagineVideoImageToVideoRequestSchema
 >;
+export type FalXaiGrokImagineVideoImageToVideoRequest = z.input<
+  typeof FalXaiGrokImagineVideoImageToVideoRequestSchema
+>;
+export type FalXaiGrokImagineVideoImageToVideoRequestInput =
+  FalXaiGrokImagineVideoImageToVideoRequest;
+export type FalXaiGrokImagineVideoImageToVideoParsedRequest = z.output<
+  typeof FalXaiGrokImagineVideoImageToVideoRequestSchema
+>;
 export type FalXaiGrokImagineVideoReferenceToVideoParams = z.infer<
+  typeof FalXaiGrokImagineVideoReferenceToVideoRequestSchema
+>;
+export type FalXaiGrokImagineVideoReferenceToVideoRequest = z.input<
+  typeof FalXaiGrokImagineVideoReferenceToVideoRequestSchema
+>;
+export type FalXaiGrokImagineVideoReferenceToVideoRequestInput =
+  FalXaiGrokImagineVideoReferenceToVideoRequest;
+export type FalXaiGrokImagineVideoReferenceToVideoParsedRequest = z.output<
   typeof FalXaiGrokImagineVideoReferenceToVideoRequestSchema
 >;
 export type FalXaiGrokImagineVideoExtendVideoParams = z.infer<
   typeof FalXaiGrokImagineVideoExtendVideoRequestSchema
 >;
+export type FalXaiGrokImagineVideoExtendVideoRequest = z.input<
+  typeof FalXaiGrokImagineVideoExtendVideoRequestSchema
+>;
+export type FalXaiGrokImagineVideoExtendVideoRequestInput =
+  FalXaiGrokImagineVideoExtendVideoRequest;
+export type FalXaiGrokImagineVideoExtendVideoParsedRequest = z.output<
+  typeof FalXaiGrokImagineVideoExtendVideoRequestSchema
+>;
 export type FalXaiGrokImagineVideoEditVideoParams = z.infer<
+  typeof FalXaiGrokImagineVideoEditVideoRequestSchema
+>;
+export type FalXaiGrokImagineVideoEditVideoRequest = z.input<
+  typeof FalXaiGrokImagineVideoEditVideoRequestSchema
+>;
+export type FalXaiGrokImagineVideoEditVideoRequestInput =
+  FalXaiGrokImagineVideoEditVideoRequest;
+export type FalXaiGrokImagineVideoEditVideoParsedRequest = z.output<
   typeof FalXaiGrokImagineVideoEditVideoRequestSchema
 >;
 export type FalVeo3p1TextToVideoParams = z.infer<
   typeof FalVeo3p1TextToVideoRequestSchema
 >;
+export type FalVeo3p1TextToVideoRequest = z.input<
+  typeof FalVeo3p1TextToVideoRequestSchema
+>;
+export type FalVeo3p1TextToVideoRequestInput = FalVeo3p1TextToVideoRequest;
+export type FalVeo3p1TextToVideoParsedRequest = z.output<
+  typeof FalVeo3p1TextToVideoRequestSchema
+>;
 export type FalVeo3p1ImageToVideoParams = z.infer<
+  typeof FalVeo3p1ImageToVideoRequestSchema
+>;
+export type FalVeo3p1ImageToVideoRequest = z.input<
+  typeof FalVeo3p1ImageToVideoRequestSchema
+>;
+export type FalVeo3p1ImageToVideoRequestInput = FalVeo3p1ImageToVideoRequest;
+export type FalVeo3p1ImageToVideoParsedRequest = z.output<
   typeof FalVeo3p1ImageToVideoRequestSchema
 >;
 export type FalStorageUploadInitiateParams = z.infer<
@@ -1416,22 +1680,76 @@ export type FalStorageUploadCompleteMultipartParams = z.infer<
 export type FalKlingVideoV3ProImageToVideoParams = z.infer<
   typeof FalKlingVideoV3ProImageToVideoRequestSchema
 >;
+export type FalKlingVideoV3ProImageToVideoRequest = z.input<
+  typeof FalKlingVideoV3ProImageToVideoRequestSchema
+>;
+export type FalKlingVideoV3ProImageToVideoRequestInput =
+  FalKlingVideoV3ProImageToVideoRequest;
+export type FalKlingVideoV3ProImageToVideoParsedRequest = z.output<
+  typeof FalKlingVideoV3ProImageToVideoRequestSchema
+>;
 export type FalKlingVideoV3ProTextToVideoParams = z.infer<
+  typeof FalKlingVideoV3ProTextToVideoRequestSchema
+>;
+export type FalKlingVideoV3ProTextToVideoRequest = z.input<
+  typeof FalKlingVideoV3ProTextToVideoRequestSchema
+>;
+export type FalKlingVideoV3ProTextToVideoRequestInput =
+  FalKlingVideoV3ProTextToVideoRequest;
+export type FalKlingVideoV3ProTextToVideoParsedRequest = z.output<
   typeof FalKlingVideoV3ProTextToVideoRequestSchema
 >;
 export type FalKlingVideoV3StandardImageToVideoParams = z.infer<
   typeof FalKlingVideoV3StandardImageToVideoRequestSchema
 >;
+export type FalKlingVideoV3StandardImageToVideoRequest = z.input<
+  typeof FalKlingVideoV3StandardImageToVideoRequestSchema
+>;
+export type FalKlingVideoV3StandardImageToVideoRequestInput =
+  FalKlingVideoV3StandardImageToVideoRequest;
+export type FalKlingVideoV3StandardImageToVideoParsedRequest = z.output<
+  typeof FalKlingVideoV3StandardImageToVideoRequestSchema
+>;
 export type FalKlingVideoV3StandardTextToVideoParams = z.infer<
+  typeof FalKlingVideoV3StandardTextToVideoRequestSchema
+>;
+export type FalKlingVideoV3StandardTextToVideoRequest = z.input<
+  typeof FalKlingVideoV3StandardTextToVideoRequestSchema
+>;
+export type FalKlingVideoV3StandardTextToVideoRequestInput =
+  FalKlingVideoV3StandardTextToVideoRequest;
+export type FalKlingVideoV3StandardTextToVideoParsedRequest = z.output<
   typeof FalKlingVideoV3StandardTextToVideoRequestSchema
 >;
 export type FalSora2TextToVideoParams = z.infer<
   typeof FalSora2TextToVideoRequestSchema
 >;
+export type FalSora2TextToVideoRequest = z.input<
+  typeof FalSora2TextToVideoRequestSchema
+>;
+export type FalSora2TextToVideoRequestInput = FalSora2TextToVideoRequest;
+export type FalSora2TextToVideoParsedRequest = z.output<
+  typeof FalSora2TextToVideoRequestSchema
+>;
 export type FalSora2ImageToVideoParams = z.infer<
   typeof FalSora2ImageToVideoRequestSchema
 >;
+export type FalSora2ImageToVideoRequest = z.input<
+  typeof FalSora2ImageToVideoRequestSchema
+>;
+export type FalSora2ImageToVideoRequestInput = FalSora2ImageToVideoRequest;
+export type FalSora2ImageToVideoParsedRequest = z.output<
+  typeof FalSora2ImageToVideoRequestSchema
+>;
 export type FalHunyuanImageV3InstructEditParams = z.infer<
+  typeof FalHunyuanImageV3InstructEditRequestSchema
+>;
+export type FalHunyuanImageV3InstructEditRequest = z.input<
+  typeof FalHunyuanImageV3InstructEditRequestSchema
+>;
+export type FalHunyuanImageV3InstructEditRequestInput =
+  FalHunyuanImageV3InstructEditRequest;
+export type FalHunyuanImageV3InstructEditParsedRequest = z.output<
   typeof FalHunyuanImageV3InstructEditRequestSchema
 >;
 
@@ -1473,6 +1791,14 @@ export const FalKlingVideoO3p4kImageToVideoRequestSchema = z.object({
 });
 
 export type FalKlingVideoO3p4kImageToVideoParams = z.infer<
+  typeof FalKlingVideoO3p4kImageToVideoRequestSchema
+>;
+export type FalKlingVideoO3p4kImageToVideoRequest = z.input<
+  typeof FalKlingVideoO3p4kImageToVideoRequestSchema
+>;
+export type FalKlingVideoO3p4kImageToVideoRequestInput =
+  FalKlingVideoO3p4kImageToVideoRequest;
+export type FalKlingVideoO3p4kImageToVideoParsedRequest = z.output<
   typeof FalKlingVideoO3p4kImageToVideoRequestSchema
 >;
 
@@ -1528,6 +1854,14 @@ export const FalKlingVideoO3p4kReferenceToVideoRequestSchema = z.object({
 export type FalKlingVideoO3p4kReferenceToVideoParams = z.infer<
   typeof FalKlingVideoO3p4kReferenceToVideoRequestSchema
 >;
+export type FalKlingVideoO3p4kReferenceToVideoRequest = z.input<
+  typeof FalKlingVideoO3p4kReferenceToVideoRequestSchema
+>;
+export type FalKlingVideoO3p4kReferenceToVideoRequestInput =
+  FalKlingVideoO3p4kReferenceToVideoRequest;
+export type FalKlingVideoO3p4kReferenceToVideoParsedRequest = z.output<
+  typeof FalKlingVideoO3p4kReferenceToVideoRequestSchema
+>;
 
 // ---------------------------------------------------------------------------
 // Kling Video o3 4k text-to-video
@@ -1568,4 +1902,104 @@ export const FalKlingVideoO3p4kTextToVideoRequestSchema = z.object({
 export type FalKlingVideoO3p4kTextToVideoParams = z.infer<
   typeof FalKlingVideoO3p4kTextToVideoRequestSchema
 >;
+export type FalKlingVideoO3p4kTextToVideoRequest = z.input<
+  typeof FalKlingVideoO3p4kTextToVideoRequestSchema
+>;
+export type FalKlingVideoO3p4kTextToVideoRequestInput =
+  FalKlingVideoO3p4kTextToVideoRequest;
+export type FalKlingVideoO3p4kTextToVideoParsedRequest = z.output<
+  typeof FalKlingVideoO3p4kTextToVideoRequestSchema
+>;
 export type FalOptions = z.infer<typeof FalOptionsSchema>;
+
+// ---------------------------------------------------------------------------
+// Endpoint registry — every jsonBody endpoint path (as sent to queue.submit
+// as endpoint_id, i.e. without the leading slash) mapped to its request schema
+// ---------------------------------------------------------------------------
+
+export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "bytedance/seedance-2.0/image-to-video":
+    FalSeedance2p0ImageToVideoRequestSchema,
+  "bytedance/seedance-2.0/text-to-video":
+    FalSeedance2p0TextToVideoRequestSchema,
+  "bytedance/seedance-2.0/fast/image-to-video":
+    FalSeedance2p0FastImageToVideoRequestSchema,
+  "bytedance/seedance-2.0/fast/text-to-video":
+    FalSeedance2p0FastTextToVideoRequestSchema,
+  "bytedance/seedance-2.0/reference-to-video":
+    FalSeedance2p0ReferenceToVideoRequestSchema,
+  "bytedance/seedance-2.0/fast/reference-to-video":
+    FalSeedance2p0FastReferenceToVideoRequestSchema,
+  "fal-ai/nano-banana-pro/edit": FalNanoBananaProEditRequestSchema,
+  "fal-ai/nano-banana-pro": FalNanoBananaProTextToImageRequestSchema,
+  "fal-ai/nano-banana": FalNanoBananaTextToImageRequestSchema,
+  "fal-ai/nano-banana/edit": FalNanoBananaEditRequestSchema,
+  "fal-ai/nano-banana-2": FalNanoBanana2TextToImageRequestSchema,
+  "fal-ai/nano-banana-2/edit": FalNanoBanana2EditRequestSchema,
+  "google/nano-banana-2-lite": FalNanoBanana2LiteTextToImageRequestSchema,
+  "google/nano-banana-lite/edit": FalNanoBanana2LiteEditRequestSchema,
+  "fal-ai/bytedance/seedream/v5/lite/edit": FalSeedreamV5LiteEditRequestSchema,
+  "fal-ai/bytedance/seedream/v5/lite/text-to-image":
+    FalSeedreamV5LiteTextToImageRequestSchema,
+  "fal-ai/bytedance/seed-speech/tts/v2": FalSeedSpeechTtsV2RequestSchema,
+  "fal-ai/elevenlabs/speech-to-text/scribe-v2":
+    FalElevenlabsSpeechToTextScribeV2RequestSchema,
+  "fal-ai/wan/v2.7/text-to-image": FalWanV2p7TextToImageRequestSchema,
+  "fal-ai/wan/v2.7/edit": FalWanV2p7EditRequestSchema,
+  "fal-ai/wan/v2.7/pro/text-to-image": FalWanV2p7TextToImageRequestSchema,
+  "fal-ai/wan/v2.7/pro/edit": FalWanV2p7EditRequestSchema,
+  "fal-ai/wan/v2.7/text-to-video": FalWanV2p7TextToVideoRequestSchema,
+  "fal-ai/wan/v2.7/image-to-video": FalWanV2p7ImageToVideoRequestSchema,
+  "fal-ai/wan/v2.7/reference-to-video": FalWanV2p7ReferenceToVideoRequestSchema,
+  "fal-ai/wan/v2.7/edit-video": FalWanV2p7EditVideoRequestSchema,
+  "xai/grok-imagine-image/edit": FalXaiGrokImagineImageEditRequestSchema,
+  "fal-ai/sora-2/text-to-video": FalSora2TextToVideoRequestSchema,
+  "fal-ai/sora-2/image-to-video": FalSora2ImageToVideoRequestSchema,
+  "fal-ai/hunyuan-image/v3/instruct/edit":
+    FalHunyuanImageV3InstructEditRequestSchema,
+  "fal-ai/kling-video/v3/pro/image-to-video":
+    FalKlingVideoV3ProImageToVideoRequestSchema,
+  "fal-ai/kling-video/v3/pro/text-to-video":
+    FalKlingVideoV3ProTextToVideoRequestSchema,
+  "fal-ai/kling-video/v3/standard/image-to-video":
+    FalKlingVideoV3StandardImageToVideoRequestSchema,
+  "fal-ai/kling-video/v3/standard/text-to-video":
+    FalKlingVideoV3StandardTextToVideoRequestSchema,
+  "fal-ai/kling-video/o3/4k/image-to-video":
+    FalKlingVideoO3p4kImageToVideoRequestSchema,
+  "fal-ai/kling-video/o3/4k/reference-to-video":
+    FalKlingVideoO3p4kReferenceToVideoRequestSchema,
+  "fal-ai/kling-video/o3/4k/text-to-video":
+    FalKlingVideoO3p4kTextToVideoRequestSchema,
+  "fal-ai/veo3.1": FalVeo3p1TextToVideoRequestSchema,
+  "fal-ai/veo3.1/image-to-video": FalVeo3p1ImageToVideoRequestSchema,
+  "xai/grok-imagine-video/image-to-video":
+    FalXaiGrokImagineVideoImageToVideoRequestSchema,
+  "xai/grok-imagine-video/reference-to-video":
+    FalXaiGrokImagineVideoReferenceToVideoRequestSchema,
+  "xai/grok-imagine-video/extend-video":
+    FalXaiGrokImagineVideoExtendVideoRequestSchema,
+  "xai/grok-imagine-video/edit-video":
+    FalXaiGrokImagineVideoEditVideoRequestSchema,
+  "xai/grok-imagine-image": FalXaiGrokImagineImageRequestSchema,
+  "fal-ai/qwen-image-edit": FalQwenImageEditRequestSchema,
+  "fal-ai/gpt-image-1.5/edit": FalGptImage1p5EditRequestSchema,
+  "fal-ai/gpt-image-1.5": FalGptImage1p5RequestSchema,
+  "fal-ai/qwen-image": FalQwenImageRequestSchema,
+} as const;
+
+export type FalEndpointId = keyof typeof FAL_ENDPOINT_REQUEST_SCHEMAS;
+
+export type FalEndpointInputMap = {
+  [K in FalEndpointId]: z.input<(typeof FAL_ENDPOINT_REQUEST_SCHEMAS)[K]>;
+};
+
+export type FalQueueSubmitRequest<Id extends string = string> = Omit<
+  FalQueueSubmitParams,
+  "endpoint_id" | "input"
+> & {
+  endpoint_id: Id;
+  input: Id extends FalEndpointId
+    ? FalEndpointInputMap[Id]
+    : Record<string, unknown>;
+};

@@ -37,77 +37,77 @@ import {
   FalWorkflowGetResponse,
   FalAppsQueueParams,
   FalAppsQueueResponse,
-  FalSeedance2p0ImageToVideoParams,
+  FalSeedance2p0ImageToVideoRequest,
   FalSeedance2p0ImageToVideoResponse,
-  FalSeedance2p0TextToVideoParams,
+  FalSeedance2p0TextToVideoRequest,
   FalSeedance2p0TextToVideoResponse,
-  FalSeedance2p0FastImageToVideoParams,
+  FalSeedance2p0FastImageToVideoRequest,
   FalSeedance2p0FastImageToVideoResponse,
-  FalSeedance2p0FastTextToVideoParams,
+  FalSeedance2p0FastTextToVideoRequest,
   FalSeedance2p0FastTextToVideoResponse,
-  FalSeedance2p0ReferenceToVideoParams,
+  FalSeedance2p0ReferenceToVideoRequest,
   FalSeedance2p0ReferenceToVideoResponse,
-  FalSeedance2p0FastReferenceToVideoParams,
+  FalSeedance2p0FastReferenceToVideoRequest,
   FalSeedance2p0FastReferenceToVideoResponse,
-  FalNanoBananaProTextToImageParams,
+  FalNanoBananaProTextToImageRequest,
   FalNanoBananaProTextToImageResponse,
-  FalNanoBananaProEditParams,
+  FalNanoBananaProEditRequest,
   FalNanoBananaProEditResponse,
-  FalNanoBanana2TextToImageParams,
+  FalNanoBanana2TextToImageRequest,
   FalNanoBanana2TextToImageResponse,
-  FalNanoBanana2EditParams,
+  FalNanoBanana2EditRequest,
   FalNanoBanana2EditResponse,
-  FalNanoBanana2LiteTextToImageParams,
+  FalNanoBanana2LiteTextToImageRequest,
   FalNanoBanana2LiteTextToImageResponse,
-  FalNanoBanana2LiteEditParams,
+  FalNanoBanana2LiteEditRequest,
   FalNanoBanana2LiteEditResponse,
-  FalSeedreamV5LiteEditParams,
+  FalSeedreamV5LiteEditRequest,
   FalSeedreamV5LiteEditResponse,
-  FalSeedreamV5LiteTextToImageParams,
+  FalSeedreamV5LiteTextToImageRequest,
   FalSeedreamV5LiteTextToImageResponse,
-  FalSeedSpeechTtsV2Params,
+  FalSeedSpeechTtsV2Request,
   FalSeedSpeechTtsV2Response,
-  FalElevenlabsSpeechToTextScribeV2Params,
+  FalElevenlabsSpeechToTextScribeV2Request,
   FalElevenlabsSpeechToTextScribeV2Response,
-  FalWanV2p7TextToImageParams,
+  FalWanV2p7TextToImageRequest,
   FalWanV2p7TextToImageResponse,
-  FalWanV2p7EditParams,
+  FalWanV2p7EditRequest,
   FalWanV2p7EditResponse,
-  FalWanV2p7TextToVideoParams,
+  FalWanV2p7TextToVideoRequest,
   FalWanV2p7TextToVideoResponse,
-  FalWanV2p7ImageToVideoParams,
+  FalWanV2p7ImageToVideoRequest,
   FalWanV2p7ImageToVideoResponse,
-  FalWanV2p7ReferenceToVideoParams,
+  FalWanV2p7ReferenceToVideoRequest,
   FalWanV2p7ReferenceToVideoResponse,
-  FalWanV2p7EditVideoParams,
+  FalWanV2p7EditVideoRequest,
   FalWanV2p7EditVideoResponse,
-  FalXaiGrokImagineImageParams,
+  FalXaiGrokImagineImageRequest,
   FalXaiGrokImagineImageResponse,
-  FalXaiGrokImagineImageEditParams,
+  FalXaiGrokImagineImageEditRequest,
   FalXaiGrokImagineImageEditResponse,
-  FalQwenImageParams,
+  FalQwenImageRequest,
   FalQwenImageResponse,
-  FalQwenImageEditParams,
+  FalQwenImageEditRequest,
   FalQwenImageEditResponse,
-  FalGptImage1p5Params,
+  FalGptImage1p5Request,
   FalGptImage1p5Response,
-  FalGptImage1p5EditParams,
+  FalGptImage1p5EditRequest,
   FalGptImage1p5EditResponse,
-  FalNanoBananaTextToImageParams,
+  FalNanoBananaTextToImageRequest,
   FalNanoBananaTextToImageResponse,
-  FalNanoBananaEditParams,
+  FalNanoBananaEditRequest,
   FalNanoBananaEditResponse,
-  FalXaiGrokImagineVideoImageToVideoParams,
+  FalXaiGrokImagineVideoImageToVideoRequest,
   FalXaiGrokImagineVideoImageToVideoResponse,
-  FalXaiGrokImagineVideoReferenceToVideoParams,
+  FalXaiGrokImagineVideoReferenceToVideoRequest,
   FalXaiGrokImagineVideoReferenceToVideoResponse,
-  FalXaiGrokImagineVideoExtendVideoParams,
+  FalXaiGrokImagineVideoExtendVideoRequest,
   FalXaiGrokImagineVideoExtendVideoResponse,
-  FalXaiGrokImagineVideoEditVideoParams,
+  FalXaiGrokImagineVideoEditVideoRequest,
   FalXaiGrokImagineVideoEditVideoResponse,
-  FalVeo3p1TextToVideoParams,
+  FalVeo3p1TextToVideoRequest,
   FalVeo3p1TextToVideoResponse,
-  FalVeo3p1ImageToVideoParams,
+  FalVeo3p1ImageToVideoRequest,
   FalVeo3p1ImageToVideoResponse,
   FalStorageLifecycle,
   FalStorageUploadInitiateParams,
@@ -115,25 +115,25 @@ import {
   FalStorageUploadCompleteMultipartParams,
   FalStorageUploadInitiateResponse,
   FalStorageNamespace,
-  FalKlingVideoV3ProImageToVideoParams,
+  FalKlingVideoV3ProImageToVideoRequest,
   FalKlingVideoV3ProImageToVideoResponse,
-  FalKlingVideoV3ProTextToVideoParams,
+  FalKlingVideoV3ProTextToVideoRequest,
   FalKlingVideoV3ProTextToVideoResponse,
-  FalKlingVideoV3StandardImageToVideoParams,
+  FalKlingVideoV3StandardImageToVideoRequest,
   FalKlingVideoV3StandardImageToVideoResponse,
-  FalKlingVideoV3StandardTextToVideoParams,
+  FalKlingVideoV3StandardTextToVideoRequest,
   FalKlingVideoV3StandardTextToVideoResponse,
-  FalKlingVideoO3p4kImageToVideoParams,
+  FalKlingVideoO3p4kImageToVideoRequest,
   FalKlingVideoO3p4kImageToVideoResponse,
-  FalKlingVideoO3p4kReferenceToVideoParams,
+  FalKlingVideoO3p4kReferenceToVideoRequest,
   FalKlingVideoO3p4kReferenceToVideoResponse,
-  FalKlingVideoO3p4kTextToVideoParams,
+  FalKlingVideoO3p4kTextToVideoRequest,
   FalKlingVideoO3p4kTextToVideoResponse,
-  FalSora2TextToVideoParams,
+  FalSora2TextToVideoRequest,
   FalSora2TextToVideoResponse,
-  FalSora2ImageToVideoParams,
+  FalSora2ImageToVideoRequest,
   FalSora2ImageToVideoResponse,
-  FalHunyuanImageV3InstructEditParams,
+  FalHunyuanImageV3InstructEditRequest,
   FalHunyuanImageV3InstructEditResponse,
   FalRunNamespace,
 } from "./types";
@@ -681,7 +681,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/bytedance/seedance-2.0/image-to-video
   // Docs: https://docs.fal.ai
   const bytedanceSeedance2p0ImageToVideo = jsonBody<
-    FalSeedance2p0ImageToVideoParams,
+    FalSeedance2p0ImageToVideoRequest,
     FalSeedance2p0ImageToVideoResponse
   >(
     "POST",
@@ -694,7 +694,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/bytedance/seedance-2.0/text-to-video
   // Docs: https://docs.fal.ai
   const bytedanceSeedance2p0TextToVideo = jsonBody<
-    FalSeedance2p0TextToVideoParams,
+    FalSeedance2p0TextToVideoRequest,
     FalSeedance2p0TextToVideoResponse
   >(
     "POST",
@@ -707,7 +707,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/bytedance/seedance-2.0/fast/image-to-video
   // Docs: https://docs.fal.ai
   const bytedanceSeedance2p0FastImageToVideo = jsonBody<
-    FalSeedance2p0FastImageToVideoParams,
+    FalSeedance2p0FastImageToVideoRequest,
     FalSeedance2p0FastImageToVideoResponse
   >(
     "POST",
@@ -720,7 +720,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/bytedance/seedance-2.0/fast/text-to-video
   // Docs: https://docs.fal.ai
   const bytedanceSeedance2p0FastTextToVideo = jsonBody<
-    FalSeedance2p0FastTextToVideoParams,
+    FalSeedance2p0FastTextToVideoRequest,
     FalSeedance2p0FastTextToVideoResponse
   >(
     "POST",
@@ -733,7 +733,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/bytedance/seedance-2.0/reference-to-video
   // Docs: https://docs.fal.ai
   const bytedanceSeedance2p0ReferenceToVideo = jsonBody<
-    FalSeedance2p0ReferenceToVideoParams,
+    FalSeedance2p0ReferenceToVideoRequest,
     FalSeedance2p0ReferenceToVideoResponse
   >(
     "POST",
@@ -746,7 +746,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/bytedance/seedance-2.0/fast/reference-to-video
   // Docs: https://docs.fal.ai
   const bytedanceSeedance2p0FastReferenceToVideo = jsonBody<
-    FalSeedance2p0FastReferenceToVideoParams,
+    FalSeedance2p0FastReferenceToVideoRequest,
     FalSeedance2p0FastReferenceToVideoResponse
   >(
     "POST",
@@ -759,7 +759,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/fal-ai/nano-banana-pro/edit
   // Docs: https://docs.fal.ai
   const nanoBananaProEdit = jsonBody<
-    FalNanoBananaProEditParams,
+    FalNanoBananaProEditRequest,
     FalNanoBananaProEditResponse
   >("POST", "/fal-ai/nano-banana-pro/edit", FalNanoBananaProEditRequestSchema, {
     base: runBaseURL,
@@ -770,7 +770,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/fal-ai/nano-banana-pro
   // Docs: https://docs.fal.ai
   const nanoBananaProTextToImage = jsonBody<
-    FalNanoBananaProTextToImageParams,
+    FalNanoBananaProTextToImageRequest,
     FalNanoBananaProTextToImageResponse
   >(
     "POST",
@@ -783,7 +783,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/fal-ai/nano-banana
   // Docs: https://docs.fal.ai
   const nanoBananaTextToImage = jsonBody<
-    FalNanoBananaTextToImageParams,
+    FalNanoBananaTextToImageRequest,
     FalNanoBananaTextToImageResponse
   >("POST", "/fal-ai/nano-banana", FalNanoBananaTextToImageRequestSchema, {
     base: runBaseURL,
@@ -793,7 +793,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/fal-ai/nano-banana/edit
   // Docs: https://docs.fal.ai
   const nanoBananaEdit = jsonBody<
-    FalNanoBananaEditParams,
+    FalNanoBananaEditRequest,
     FalNanoBananaEditResponse
   >("POST", "/fal-ai/nano-banana/edit", FalNanoBananaEditRequestSchema, {
     base: runBaseURL,
@@ -803,7 +803,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/fal-ai/nano-banana-2
   // Docs: https://docs.fal.ai
   const nanoBanana2TextToImage = jsonBody<
-    FalNanoBanana2TextToImageParams,
+    FalNanoBanana2TextToImageRequest,
     FalNanoBanana2TextToImageResponse
   >("POST", "/fal-ai/nano-banana-2", FalNanoBanana2TextToImageRequestSchema, {
     base: runBaseURL,
@@ -813,7 +813,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/fal-ai/nano-banana-2/edit
   // Docs: https://docs.fal.ai
   const nanoBanana2Edit = jsonBody<
-    FalNanoBanana2EditParams,
+    FalNanoBanana2EditRequest,
     FalNanoBanana2EditResponse
   >("POST", "/fal-ai/nano-banana-2/edit", FalNanoBanana2EditRequestSchema, {
     base: runBaseURL,
@@ -823,7 +823,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/google/nano-banana-2-lite
   // Docs: https://fal.ai/models/google/nano-banana-2-lite/api
   const nanoBanana2LiteTextToImage = jsonBody<
-    FalNanoBanana2LiteTextToImageParams,
+    FalNanoBanana2LiteTextToImageRequest,
     FalNanoBanana2LiteTextToImageResponse
   >(
     "POST",
@@ -836,7 +836,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/google/nano-banana-lite/edit
   // Docs: https://fal.ai/models/google/nano-banana-lite/edit/api
   const nanoBanana2LiteEdit = jsonBody<
-    FalNanoBanana2LiteEditParams,
+    FalNanoBanana2LiteEditRequest,
     FalNanoBanana2LiteEditResponse
   >(
     "POST",
@@ -849,7 +849,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/fal-ai/bytedance/seedream/v5/lite/edit
   // Docs: https://docs.fal.ai
   const seedreamV5LiteEdit = jsonBody<
-    FalSeedreamV5LiteEditParams,
+    FalSeedreamV5LiteEditRequest,
     FalSeedreamV5LiteEditResponse
   >(
     "POST",
@@ -862,7 +862,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/fal-ai/bytedance/seedream/v5/lite/text-to-image
   // Docs: https://docs.fal.ai
   const seedreamV5LiteTextToImage = jsonBody<
-    FalSeedreamV5LiteTextToImageParams,
+    FalSeedreamV5LiteTextToImageRequest,
     FalSeedreamV5LiteTextToImageResponse
   >(
     "POST",
@@ -875,7 +875,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/fal-ai/bytedance/seed-speech/tts/v2
   // Docs: https://fal.ai/models/fal-ai/bytedance/seed-speech/tts/v2/api
   const seedSpeechTtsV2 = jsonBody<
-    FalSeedSpeechTtsV2Params,
+    FalSeedSpeechTtsV2Request,
     FalSeedSpeechTtsV2Response
   >(
     "POST",
@@ -888,7 +888,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/fal-ai/elevenlabs/speech-to-text/scribe-v2
   // Docs: https://docs.fal.ai
   const elevenlabsSpeechToTextScribeV2 = jsonBody<
-    FalElevenlabsSpeechToTextScribeV2Params,
+    FalElevenlabsSpeechToTextScribeV2Request,
     FalElevenlabsSpeechToTextScribeV2Response
   >(
     "POST",
@@ -901,7 +901,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/fal-ai/wan/v2.7/text-to-image
   // Docs: https://docs.fal.ai
   const wanV2p7TextToImage = jsonBody<
-    FalWanV2p7TextToImageParams,
+    FalWanV2p7TextToImageRequest,
     FalWanV2p7TextToImageResponse
   >(
     "POST",
@@ -913,7 +913,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/wan/v2.7/edit
   // Docs: https://docs.fal.ai
-  const wanV2p7Edit = jsonBody<FalWanV2p7EditParams, FalWanV2p7EditResponse>(
+  const wanV2p7Edit = jsonBody<FalWanV2p7EditRequest, FalWanV2p7EditResponse>(
     "POST",
     "/fal-ai/wan/v2.7/edit",
     FalWanV2p7EditRequestSchema,
@@ -924,7 +924,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/fal-ai/wan/v2.7/pro/text-to-image
   // Docs: https://docs.fal.ai
   const wanV2p7ProTextToImage = jsonBody<
-    FalWanV2p7TextToImageParams,
+    FalWanV2p7TextToImageRequest,
     FalWanV2p7TextToImageResponse
   >(
     "POST",
@@ -936,18 +936,18 @@ export function createFal(opts: FalOptions): FalProvider {
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/wan/v2.7/pro/edit
   // Docs: https://docs.fal.ai
-  const wanV2p7ProEdit = jsonBody<FalWanV2p7EditParams, FalWanV2p7EditResponse>(
-    "POST",
-    "/fal-ai/wan/v2.7/pro/edit",
-    FalWanV2p7EditRequestSchema,
-    { base: runBaseURL }
-  );
+  const wanV2p7ProEdit = jsonBody<
+    FalWanV2p7EditRequest,
+    FalWanV2p7EditResponse
+  >("POST", "/fal-ai/wan/v2.7/pro/edit", FalWanV2p7EditRequestSchema, {
+    base: runBaseURL,
+  });
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/wan/v2.7/text-to-video
   // Docs: https://docs.fal.ai
   const wanV2p7TextToVideo = jsonBody<
-    FalWanV2p7TextToVideoParams,
+    FalWanV2p7TextToVideoRequest,
     FalWanV2p7TextToVideoResponse
   >(
     "POST",
@@ -960,7 +960,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/fal-ai/wan/v2.7/image-to-video
   // Docs: https://docs.fal.ai
   const wanV2p7ImageToVideo = jsonBody<
-    FalWanV2p7ImageToVideoParams,
+    FalWanV2p7ImageToVideoRequest,
     FalWanV2p7ImageToVideoResponse
   >(
     "POST",
@@ -973,7 +973,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/fal-ai/wan/v2.7/reference-to-video
   // Docs: https://docs.fal.ai
   const wanV2p7ReferenceToVideo = jsonBody<
-    FalWanV2p7ReferenceToVideoParams,
+    FalWanV2p7ReferenceToVideoRequest,
     FalWanV2p7ReferenceToVideoResponse
   >(
     "POST",
@@ -986,7 +986,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/fal-ai/wan/v2.7/edit-video
   // Docs: https://docs.fal.ai
   const wanV2p7EditVideo = jsonBody<
-    FalWanV2p7EditVideoParams,
+    FalWanV2p7EditVideoRequest,
     FalWanV2p7EditVideoResponse
   >("POST", "/fal-ai/wan/v2.7/edit-video", FalWanV2p7EditVideoRequestSchema, {
     base: runBaseURL,
@@ -996,7 +996,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/xai/grok-imagine-image/edit
   // Docs: https://docs.fal.ai
   const xaiGrokImagineImageEdit = jsonBody<
-    FalXaiGrokImagineImageEditParams,
+    FalXaiGrokImagineImageEditRequest,
     FalXaiGrokImagineImageEditResponse
   >(
     "POST",
@@ -1009,7 +1009,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/fal-ai/sora-2/text-to-video
   // Docs: https://docs.fal.ai
   const sora2TextToVideo = jsonBody<
-    FalSora2TextToVideoParams,
+    FalSora2TextToVideoRequest,
     FalSora2TextToVideoResponse
   >("POST", "/fal-ai/sora-2/text-to-video", FalSora2TextToVideoRequestSchema, {
     base: runBaseURL,
@@ -1019,7 +1019,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/fal-ai/sora-2/image-to-video
   // Docs: https://docs.fal.ai
   const sora2ImageToVideo = jsonBody<
-    FalSora2ImageToVideoParams,
+    FalSora2ImageToVideoRequest,
     FalSora2ImageToVideoResponse
   >(
     "POST",
@@ -1032,7 +1032,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/fal-ai/hunyuan-image/v3/instruct/edit
   // Docs: https://docs.fal.ai
   const hunyuanImageV3InstructEdit = jsonBody<
-    FalHunyuanImageV3InstructEditParams,
+    FalHunyuanImageV3InstructEditRequest,
     FalHunyuanImageV3InstructEditResponse
   >(
     "POST",
@@ -1045,7 +1045,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/fal-ai/kling-video/v3/pro/image-to-video
   // Docs: https://docs.fal.ai
   const klingVideoV3ProImageToVideo = jsonBody<
-    FalKlingVideoV3ProImageToVideoParams,
+    FalKlingVideoV3ProImageToVideoRequest,
     FalKlingVideoV3ProImageToVideoResponse
   >(
     "POST",
@@ -1058,7 +1058,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/fal-ai/kling-video/v3/pro/text-to-video
   // Docs: https://docs.fal.ai
   const klingVideoV3ProTextToVideo = jsonBody<
-    FalKlingVideoV3ProTextToVideoParams,
+    FalKlingVideoV3ProTextToVideoRequest,
     FalKlingVideoV3ProTextToVideoResponse
   >(
     "POST",
@@ -1071,7 +1071,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/fal-ai/kling-video/v3/standard/image-to-video
   // Docs: https://docs.fal.ai
   const klingVideoV3StandardImageToVideo = jsonBody<
-    FalKlingVideoV3StandardImageToVideoParams,
+    FalKlingVideoV3StandardImageToVideoRequest,
     FalKlingVideoV3StandardImageToVideoResponse
   >(
     "POST",
@@ -1084,7 +1084,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/fal-ai/kling-video/v3/standard/text-to-video
   // Docs: https://docs.fal.ai
   const klingVideoV3StandardTextToVideo = jsonBody<
-    FalKlingVideoV3StandardTextToVideoParams,
+    FalKlingVideoV3StandardTextToVideoRequest,
     FalKlingVideoV3StandardTextToVideoResponse
   >(
     "POST",
@@ -1097,7 +1097,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/fal-ai/kling-video/o3/4k/image-to-video
   // Docs: https://docs.fal.ai
   const klingVideoO3p4kImageToVideo = jsonBody<
-    FalKlingVideoO3p4kImageToVideoParams,
+    FalKlingVideoO3p4kImageToVideoRequest,
     FalKlingVideoO3p4kImageToVideoResponse
   >(
     "POST",
@@ -1110,7 +1110,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/fal-ai/kling-video/o3/4k/reference-to-video
   // Docs: https://docs.fal.ai
   const klingVideoO3p4kReferenceToVideo = jsonBody<
-    FalKlingVideoO3p4kReferenceToVideoParams,
+    FalKlingVideoO3p4kReferenceToVideoRequest,
     FalKlingVideoO3p4kReferenceToVideoResponse
   >(
     "POST",
@@ -1123,7 +1123,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/fal-ai/kling-video/o3/4k/text-to-video
   // Docs: https://docs.fal.ai
   const klingVideoO3p4kTextToVideo = jsonBody<
-    FalKlingVideoO3p4kTextToVideoParams,
+    FalKlingVideoO3p4kTextToVideoRequest,
     FalKlingVideoO3p4kTextToVideoResponse
   >(
     "POST",
@@ -1136,7 +1136,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/fal-ai/veo3.1
   // Docs: https://docs.fal.ai
   const veo3p1TextToVideo = jsonBody<
-    FalVeo3p1TextToVideoParams,
+    FalVeo3p1TextToVideoRequest,
     FalVeo3p1TextToVideoResponse
   >("POST", "/fal-ai/veo3.1", FalVeo3p1TextToVideoRequestSchema, {
     base: runBaseURL,
@@ -1146,7 +1146,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/fal-ai/veo3.1/image-to-video
   // Docs: https://docs.fal.ai
   const veo3p1ImageToVideo = jsonBody<
-    FalVeo3p1ImageToVideoParams,
+    FalVeo3p1ImageToVideoRequest,
     FalVeo3p1ImageToVideoResponse
   >(
     "POST",
@@ -1159,7 +1159,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/xai/grok-imagine-video/image-to-video
   // Docs: https://docs.fal.ai
   const xaiGrokImagineVideoImageToVideo = jsonBody<
-    FalXaiGrokImagineVideoImageToVideoParams,
+    FalXaiGrokImagineVideoImageToVideoRequest,
     FalXaiGrokImagineVideoImageToVideoResponse
   >(
     "POST",
@@ -1172,7 +1172,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/xai/grok-imagine-video/reference-to-video
   // Docs: https://docs.fal.ai
   const xaiGrokImagineVideoReferenceToVideo = jsonBody<
-    FalXaiGrokImagineVideoReferenceToVideoParams,
+    FalXaiGrokImagineVideoReferenceToVideoRequest,
     FalXaiGrokImagineVideoReferenceToVideoResponse
   >(
     "POST",
@@ -1185,7 +1185,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/xai/grok-imagine-video/extend-video
   // Docs: https://docs.fal.ai
   const xaiGrokImagineVideoExtendVideo = jsonBody<
-    FalXaiGrokImagineVideoExtendVideoParams,
+    FalXaiGrokImagineVideoExtendVideoRequest,
     FalXaiGrokImagineVideoExtendVideoResponse
   >(
     "POST",
@@ -1198,7 +1198,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/xai/grok-imagine-video/edit-video
   // Docs: https://docs.fal.ai
   const xaiGrokImagineVideoEditVideo = jsonBody<
-    FalXaiGrokImagineVideoEditVideoParams,
+    FalXaiGrokImagineVideoEditVideoRequest,
     FalXaiGrokImagineVideoEditVideoResponse
   >(
     "POST",
@@ -1211,7 +1211,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/xai/grok-imagine-image
   // Docs: https://docs.fal.ai
   const xaiGrokImagineImage = Object.assign(
-    jsonBody<FalXaiGrokImagineImageParams, FalXaiGrokImagineImageResponse>(
+    jsonBody<FalXaiGrokImagineImageRequest, FalXaiGrokImagineImageResponse>(
       "POST",
       "/xai/grok-imagine-image",
       FalXaiGrokImagineImageRequestSchema,
@@ -1226,7 +1226,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/fal-ai/qwen-image-edit
   // Docs: https://docs.fal.ai
   const qwenImageEdit = jsonBody<
-    FalQwenImageEditParams,
+    FalQwenImageEditRequest,
     FalQwenImageEditResponse
   >("POST", "/fal-ai/qwen-image-edit", FalQwenImageEditRequestSchema, {
     base: runBaseURL,
@@ -1236,7 +1236,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/fal-ai/gpt-image-1.5/edit
   // Docs: https://docs.fal.ai
   const gptImage1p5Edit = jsonBody<
-    FalGptImage1p5EditParams,
+    FalGptImage1p5EditRequest,
     FalGptImage1p5EditResponse
   >("POST", "/fal-ai/gpt-image-1.5/edit", FalGptImage1p5EditRequestSchema, {
     base: runBaseURL,
@@ -1246,7 +1246,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/fal-ai/gpt-image-1.5
   // Docs: https://docs.fal.ai
   const gptImage1p5 = Object.assign(
-    jsonBody<FalGptImage1p5Params, FalGptImage1p5Response>(
+    jsonBody<FalGptImage1p5Request, FalGptImage1p5Response>(
       "POST",
       "/fal-ai/gpt-image-1.5",
       FalGptImage1p5RequestSchema,
@@ -1261,7 +1261,7 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/fal-ai/qwen-image
   // Docs: https://docs.fal.ai
   const qwenImage = Object.assign(
-    jsonBody<FalQwenImageParams, FalQwenImageResponse>(
+    jsonBody<FalQwenImageRequest, FalQwenImageResponse>(
       "POST",
       "/fal-ai/qwen-image",
       FalQwenImageRequestSchema,

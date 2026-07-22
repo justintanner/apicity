@@ -2,8 +2,10 @@ import { describe, expect, it, vi } from "vitest";
 
 import { createFal } from "../../packages/provider/fal/src/fal";
 import { computeEstimate } from "../../packages/provider/cost/src/compute";
-import { PRICING } from "../../packages/provider/cost/src/pricing/index";
-import { FAL_DYNAMIC_PRICED_ENDPOINTS } from "../../packages/provider/cost/src/pricing/fal";
+import {
+  fal as falPricing,
+  FAL_DYNAMIC_PRICING_ENDPOINTS,
+} from "../../packages/provider/cost/src/pricing/fal";
 import { MODEL_SLUGS } from "../../packages/provider/cost/src/slugs";
 
 function jsonResponse(body: unknown): Response {
@@ -328,20 +330,191 @@ describe("fal video pricing estimates", () => {
     expect(veo.usd).toBe(0);
     expect(veo.warnings.join(" ")).toMatch(/no rate for variant/);
   });
+});
 
-  it("keeps dynamic-priced endpoints out of both registries", () => {
-    expect(FAL_DYNAMIC_PRICED_ENDPOINTS).toContain(
-      "xai/grok-imagine-video/edit-video"
+// Static estimates for the REQ-002 edit/image endpoints (ac-h7kvm.7 WI-3).
+// Rates were sourced from each endpoint's fal.ai page on 2026-07-22; the
+// evidence table lives on bead ac-rx647.
+describe("fal edit/image pricing estimates", () => {
+  const estimate = (endpoint: string, payload: Record<string, unknown> = {}) =>
+    computeEstimate({ provider: "fal" as const, endpoint, payload });
+
+  // Every REQ-002 endpoint id must be a PRICING.fal key or on the documented
+  // dynamic-path list — never silently absent, and never both.
+  const REQ_002_ENDPOINTS = [
+    "fal-ai/nano-banana-pro/edit",
+    "fal-ai/nano-banana-2/edit",
+    "google/nano-banana-2-lite",
+    "google/nano-banana-lite/edit",
+    "fal-ai/bytedance/seedream/v5/lite/edit",
+    "fal-ai/wan/v2.7/text-to-image",
+    "fal-ai/wan/v2.7/edit",
+    "fal-ai/wan/v2.7/pro/text-to-image",
+    "fal-ai/wan/v2.7/pro/edit",
+    "xai/grok-imagine-image",
+    "xai/grok-imagine-image/edit",
+    "fal-ai/hunyuan-image/v3/instruct/edit",
+    "fal-ai/qwen-image-edit",
+    "fal-ai/gpt-image-1.5",
+    "fal-ai/gpt-image-1.5/edit",
+  ];
+
+  it("covers every REQ-002 endpoint statically or on the dynamic list", () => {
+    const dynamic: readonly string[] = FAL_DYNAMIC_PRICING_ENDPOINTS;
+    for (const endpoint of REQ_002_ENDPOINTS) {
+      const priced = endpoint in falPricing;
+      const isDynamic = dynamic.includes(endpoint);
+      expect(priced || isDynamic, endpoint).toBe(true);
+      expect(priced && isDynamic, endpoint).toBe(false);
+    }
+  });
+
+  it("estimates the flat per-image edit endpoints", () => {
+    const seedream = estimate("fal-ai/bytedance/seedream/v5/lite/edit", {
+      prompt: "recolor",
+      image_urls: ["https://example.com/a.png"],
+    });
+    expect(seedream.usd).toBe(0.035);
+    expect(seedream.breakdown).toEqual({
+      units: 1,
+      unit: "images",
+      perUnitUsd: 0.035,
+    });
+    expect(seedream.rateAsOf).toBe("2026-07-22");
+    expect(seedream.warnings).toEqual([]);
+
+    expect(estimate("fal-ai/wan/v2.7/edit", { num_images: 2 }).usd).toBe(0.06);
+    expect(estimate("fal-ai/wan/v2.7/pro/edit", { num_images: 2 }).usd).toBe(
+      0.15
     );
-    for (const endpoint of FAL_DYNAMIC_PRICED_ENDPOINTS) {
-      expect(PRICING.fal[endpoint], endpoint).toBeUndefined();
+    expect(estimate("xai/grok-imagine-image").usd).toBe(0.02);
+    // Edit folds fal's stated $0.002 image-input component into the rate.
+    expect(estimate("xai/grok-imagine-image/edit").usd).toBe(0.022);
+  });
+
+  it("counts wan text-to-image output from max_images", () => {
+    // The Wan 2.7 t2i schemas define max_images, not num_images.
+    const result = estimate("fal-ai/wan/v2.7/text-to-image", {
+      prompt: "a cat",
+      max_images: 3,
+    });
+    expect(result.usd).toBeCloseTo(0.09, 10); // 3 * 0.03
+    expect(result.breakdown.units).toBe(3);
+
+    const pro = estimate("fal-ai/wan/v2.7/pro/text-to-image", {
+      prompt: "a cat",
+    });
+    expect(pro.usd).toBe(0.075); // defaults to 1 image
+  });
+
+  it("prices nano-banana edits as their generation counterparts", () => {
+    // nano-banana-2/edit mirrors the nano-banana-2 resolution tiers.
+    expect(estimate("fal-ai/nano-banana-2/edit").usd).toBe(0.08); // 1K default
+    expect(
+      estimate("fal-ai/nano-banana-2/edit", { resolution: "2K" }).usd
+    ).toBe(0.12);
+    // nano-banana-pro/edit is flat until 4K, which bills double.
+    expect(estimate("fal-ai/nano-banana-pro/edit").usd).toBe(0.15);
+    expect(
+      estimate("fal-ai/nano-banana-pro/edit", { resolution: "4K" }).usd
+    ).toBe(0.3);
+  });
+
+  it("estimates the per-megapixel edit endpoints", () => {
+    const hunyuan = estimate("fal-ai/hunyuan-image/v3/instruct/edit", {
+      image_size: { width: 2048, height: 2048 },
+    });
+    // 2048*2048 = 4.19 MP, rounded up to 5 whole megapixels
+    expect(hunyuan.usd).toBeCloseTo(0.45, 10);
+    expect(hunyuan.breakdown).toEqual({
+      units: 5,
+      unit: "megapixels",
+      perUnitUsd: 0.09,
+    });
+
+    const qwen = estimate("fal-ai/qwen-image-edit", { num_images: 2 });
+    expect(qwen.usd).toBeCloseTo(0.06, 10); // 1 MP assumed per image
+  });
+
+  it("warns on hunyuan 'auto' image_size instead of guessing an area", () => {
+    const result = estimate("fal-ai/hunyuan-image/v3/instruct/edit", {
+      image_size: "auto",
+    });
+    expect(result.usd).toBe(0);
+    expect(result.warnings).toContain(
+      "fal 'fal-ai/hunyuan-image/v3/instruct/edit': could not derive units from payload (check duration / text)"
+    );
+  });
+
+  it("selects gpt-image-1.5 rates on the quality × size grid", () => {
+    // fal defaults quality to high and generation image_size to 1024x1024.
+    expect(estimate("fal-ai/gpt-image-1.5").usd).toBe(0.133);
+    expect(
+      estimate("fal-ai/gpt-image-1.5", {
+        quality: "low",
+        image_size: "1536x1024",
+      }).usd
+    ).toBe(0.013);
+    expect(
+      estimate("fal-ai/gpt-image-1.5", {
+        quality: "medium",
+        image_size: "1024x1536",
+      }).usd
+    ).toBe(0.051);
+    expect(estimate("fal-ai/gpt-image-1.5", { num_images: 2 }).usd).toBeCloseTo(
+      0.266,
+      10
+    );
+    expect(
+      estimate("fal-ai/gpt-image-1.5/edit", {
+        quality: "low",
+        image_size: "1024x1024",
+      }).usd
+    ).toBe(0.009);
+  });
+
+  it("warns on gpt-image-1.5/edit when image_size is omitted or auto", () => {
+    // The edit endpoint defaults image_size to "auto", which has no fixed
+    // row in fal's price grid — warn rather than guess a square rate.
+    for (const payload of [{}, { image_size: "auto" }]) {
+      const result = estimate("fal-ai/gpt-image-1.5/edit", payload);
+      expect(result.usd).toBe(0);
+      expect(result.warnings).toContain(
+        "fal 'fal-ai/gpt-image-1.5/edit': no rate for variant 'high|auto' (selectors: quality, image_size)"
+      );
+    }
+  });
+
+  it("warns on an unrecognized gpt-image-1.5 quality selector", () => {
+    const result = estimate("fal-ai/gpt-image-1.5", { quality: "ultra" });
+    expect(result.usd).toBe(0);
+    expect(result.warnings).toContain(
+      "fal 'fal-ai/gpt-image-1.5': no rate for variant 'ultra|1024x1024' (selectors: quality, image_size)"
+    );
+  });
+
+  it("keeps every dynamic-priced endpoint out of both registries", () => {
+    // The nano-banana lite pair is token-metered with no published
+    // tokens-per-image constant, and grok's edit-video bills the source
+    // video's length, which is not a request field — so all three are
+    // deliberately absent from PRICING.fal and MODEL_SLUGS.fal; the true
+    // price comes from fal's POST /v1/models/pricing/estimate API.
+    expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toEqual([
+      "google/nano-banana-2-lite",
+      "google/nano-banana-lite/edit",
+      "xai/grok-imagine-video/edit-video",
+    ]);
+    for (const endpoint of FAL_DYNAMIC_PRICING_ENDPOINTS) {
+      expect(falPricing[endpoint], endpoint).toBeUndefined();
       expect(
         (MODEL_SLUGS.fal as Record<string, string>)[endpoint],
         endpoint
       ).toBeUndefined();
-      const res = est(endpoint, { prompt: "p", video_url: "u" });
-      expect(res.usd).toBe(0);
-      expect(res.warnings.join(" ")).toMatch(/not found in pricing table/);
+      const result = estimate(endpoint, { prompt: "a cat" });
+      expect(result.usd).toBe(0);
+      expect(result.warnings).toContain(
+        `model '${endpoint}' not found in pricing table for provider 'fal'`
+      );
     }
   });
 });

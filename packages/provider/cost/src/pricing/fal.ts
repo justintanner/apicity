@@ -19,9 +19,14 @@ import { asNumber, asObject, asString } from "./helpers";
 
 const asOf = "2026-07-20";
 
-const source = (endpointId: string) => ({
+// Entries from the ac-h7kvm.7 pricing sweep were read on this later date
+// (evidence recorded on bead ac-rx647: page pricingInfoOverride +
+// endpointBilling JSON, corroborated by live GET /v1/models/pricing).
+const sweepAsOf = "2026-07-22";
+
+const source = (endpointId: string, on: string = asOf) => ({
   url: `https://fal.ai/models/${endpointId}`,
-  asOf,
+  asOf: on,
 });
 
 // fal's `image_size` is either a named preset or an explicit
@@ -37,6 +42,13 @@ const PRESET_DIMENSIONS: Record<string, readonly [number, number]> = {
 
 function imageCount(p: Record<string, unknown>): number {
   return asNumber(p.num_images) ?? 1;
+}
+
+// Wan 2.7 text-to-image (base and pro) has no `num_images` field — its
+// schema caps output with `max_images` instead, so that is the payload's
+// only image-count signal.
+function maxImageCount(p: Record<string, unknown>): number {
+  return asNumber(p.max_images) ?? 1;
 }
 
 // Billable megapixels across the whole request. fal rounds each image up to
@@ -69,34 +81,44 @@ const resolution = {
   pick: (p: Record<string, unknown>) => asString(p.resolution) ?? "1K",
 };
 
-const perImage = (endpointId: string, usd: number): ModelPricing => ({
+const perImage = (
+  endpointId: string,
+  usd: number,
+  on?: string,
+  units: (p: Record<string, unknown>) => number | undefined = imageCount
+): ModelPricing => ({
   kind: "perUnit",
   unit: "images",
-  units: imageCount,
+  units,
   select: [],
   rates: { "": usd },
-  source: source(endpointId),
+  source: source(endpointId, on),
 });
 
 const perImageByResolution = (
   endpointId: string,
-  rates: Record<string, number>
+  rates: Record<string, number>,
+  on?: string
 ): ModelPricing => ({
   kind: "perUnit",
   unit: "images",
   units: imageCount,
   select: [resolution],
   rates,
-  source: source(endpointId),
+  source: source(endpointId, on),
 });
 
-const perMegapixel = (endpointId: string, usd: number): ModelPricing => ({
+const perMegapixel = (
+  endpointId: string,
+  usd: number,
+  on?: string
+): ModelPricing => ({
   kind: "perUnit",
   unit: "megapixels",
   units: megapixels,
   select: [],
   rates: { "": usd },
-  source: source(endpointId),
+  source: source(endpointId, on),
 });
 
 // ---------------------------------------------------------------------------
@@ -233,18 +255,66 @@ const seedanceReferenceRates = (usdPerThousandTokens: number) => {
   };
 };
 
-// Endpoints whose price cannot be derived from the request payload — by
-// design they appear in neither PRICING.fal nor MODEL_SLUGS.fal, so the
-// estimate reports them as unpriced instead of guessing; the true price
-// comes from fal's POST /v1/models/pricing/estimate API.
+// GPT Image 1.5 prices per image on a quality × size grid. `quality`
+// defaults to "high"; the generation endpoint defaults `image_size` to
+// 1024x1024 while the edit endpoint defaults it to "auto", which has no
+// fixed row — an omitted or "auto" size on edit surfaces as a warning
+// instead of a guessed square rate. The prompt-dependent token components
+// (text in $0.005/1k, text out $0.010/1k, image in $0.008/1k on edit) are
+// excluded from the static per-image estimate.
+const GPT_IMAGE_1P5_RATES: Record<string, number> = {
+  "low|1024x1024": 0.009,
+  "low|1536x1024": 0.013,
+  "low|1024x1536": 0.013,
+  "medium|1024x1024": 0.034,
+  "medium|1536x1024": 0.05,
+  "medium|1024x1536": 0.051,
+  "high|1024x1024": 0.133,
+  "high|1536x1024": 0.199,
+  "high|1024x1536": 0.2,
+};
+
+const gptImagePerImage = (
+  endpointId: string,
+  defaultSize: string
+): ModelPricing => ({
+  kind: "perUnit",
+  unit: "images",
+  units: imageCount,
+  select: [
+    {
+      name: "quality",
+      pick: (p) => asString(p.quality) ?? "high",
+    },
+    {
+      name: "image_size",
+      pick: (p) => asString(p.image_size) ?? defaultSize,
+    },
+  ],
+  rates: GPT_IMAGE_1P5_RATES,
+  source: source(endpointId, sweepAsOf),
+});
+
+// Endpoints whose fal pricing is genuinely dynamic — the price is not
+// derivable from the request payload at estimate time, so they are
+// deliberately absent from the table below (and from MODEL_SLUGS.fal, which
+// must stay key-identical to it). The estimate reports them as unpriced
+// instead of guessing; the true price comes from fal's
+// POST /v1/models/pricing/estimate API.
 //
+//   - google/nano-banana-2-lite, google/nano-banana-lite/edit: billed purely
+//     per token (text in/out $0.3125/$1.875 per 1M, image output $37.50/1M at
+//     a fixed 1K size) and fal publishes no tokens-per-image constant, so any
+//     static per-image rate would be invented.
 //   - xai/grok-imagine-video/edit-video: billed per output second at
 //     $0.05/s (480p) / $0.07/s (720p) plus $0.01/s of source-video input,
 //     but the schema has no duration field — the output length equals the
 //     source video's length, which is not a request field.
-export const FAL_DYNAMIC_PRICED_ENDPOINTS: readonly string[] = [
+export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
+  "google/nano-banana-2-lite",
+  "google/nano-banana-lite/edit",
   "xai/grok-imagine-video/edit-video",
-];
+] as const;
 
 export const fal: Record<string, ModelPricing> = {
   // Image — Flux (area-priced)
@@ -277,6 +347,89 @@ export const fal: Record<string, ModelPricing> = {
   "fal-ai/bytedance/seedream/v5/lite/text-to-image": perImage(
     "fal-ai/bytedance/seedream/v5/lite/text-to-image",
     0.035
+  ),
+  "fal-ai/bytedance/seedream/v5/lite/edit": perImage(
+    "fal-ai/bytedance/seedream/v5/lite/edit",
+    0.035,
+    sweepAsOf
+  ),
+
+  // Image — Nano Banana 2 / Pro edit (priced as their generation
+  // counterparts, the nano-banana/edit precedent; the page's optional
+  // web-search surcharge is prompt-dependent and excluded)
+  "fal-ai/nano-banana-2/edit": perImageByResolution(
+    "fal-ai/nano-banana-2/edit",
+    {
+      "0.5K": 0.06,
+      "1K": 0.08,
+      "2K": 0.12,
+      "4K": 0.16,
+    },
+    sweepAsOf
+  ),
+  "fal-ai/nano-banana-pro/edit": perImageByResolution(
+    "fal-ai/nano-banana-pro/edit",
+    {
+      "1K": 0.15,
+      "2K": 0.15,
+      "4K": 0.3,
+    },
+    sweepAsOf
+  ),
+
+  // Image — Wan 2.7 (flat per image; the pro tier bills higher). The
+  // text-to-image variants count images from `max_images` — their schema
+  // has no `num_images`.
+  "fal-ai/wan/v2.7/text-to-image": perImage(
+    "fal-ai/wan/v2.7/text-to-image",
+    0.03,
+    sweepAsOf,
+    maxImageCount
+  ),
+  "fal-ai/wan/v2.7/edit": perImage("fal-ai/wan/v2.7/edit", 0.03, sweepAsOf),
+  "fal-ai/wan/v2.7/pro/text-to-image": perImage(
+    "fal-ai/wan/v2.7/pro/text-to-image",
+    0.075,
+    sweepAsOf,
+    maxImageCount
+  ),
+  "fal-ai/wan/v2.7/pro/edit": perImage(
+    "fal-ai/wan/v2.7/pro/edit",
+    0.075,
+    sweepAsOf
+  ),
+
+  // Image — Grok Imagine (flat per image; the 1k|2k resolution field is not
+  // price-tiered on the page). Edit folds in fal's stated $0.002 image-input
+  // component: $0.02 output + $0.002 input = $0.022 per image.
+  "xai/grok-imagine-image": perImage("xai/grok-imagine-image", 0.02, sweepAsOf),
+  "xai/grok-imagine-image/edit": perImage(
+    "xai/grok-imagine-image/edit",
+    0.022,
+    sweepAsOf
+  ),
+
+  // Image — Hunyuan Image 3 instruct edit (area-priced). image_size defaults
+  // to "auto" upstream; an explicit "auto" has no fixed dimensions, so it
+  // takes the megapixels() warning path rather than a guessed area.
+  "fal-ai/hunyuan-image/v3/instruct/edit": perMegapixel(
+    "fal-ai/hunyuan-image/v3/instruct/edit",
+    0.09,
+    sweepAsOf
+  ),
+
+  // Image — Qwen Image Edit (area-priced like fal-ai/qwen-image)
+  "fal-ai/qwen-image-edit": perMegapixel(
+    "fal-ai/qwen-image-edit",
+    0.03,
+    sweepAsOf
+  ),
+
+  // Image — GPT Image 1.5 (per image on a quality × size grid)
+  "fal-ai/gpt-image-1.5": gptImagePerImage("fal-ai/gpt-image-1.5", "1024x1024"),
+  "fal-ai/gpt-image-1.5/edit": gptImagePerImage(
+    "fal-ai/gpt-image-1.5/edit",
+    "auto"
   ),
 
   // Video — Seedance 2.0 (token-metered; see seedanceRates)

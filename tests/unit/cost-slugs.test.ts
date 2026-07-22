@@ -43,6 +43,21 @@ describe("MODEL_SLUGS", () => {
     expect(
       MODEL_SLUGS.fal["fal-ai/bytedance/seedream/v5/lite/text-to-image"]
     ).toBe(MODEL_SLUGS.kie["seedream/5-lite-text-to-image"]);
+    expect(MODEL_SLUGS.fal["fal-ai/bytedance/seedream/v5/lite/edit"]).toBe(
+      MODEL_SLUGS.kie["seedream/5-lite-image-to-image"]
+    );
+    expect(MODEL_SLUGS.fal["xai/grok-imagine-image"]).toBe(
+      MODEL_SLUGS.kie["grok-imagine/text-to-image"]
+    );
+    expect(MODEL_SLUGS.fal["xai/grok-imagine-image/edit"]).toBe(
+      MODEL_SLUGS.kie["grok-imagine/image-to-image"]
+    );
+    expect(MODEL_SLUGS.fal["fal-ai/wan/v2.7/text-to-image"]).toBe(
+      MODEL_SLUGS.kie["wan/2-7-image"]
+    );
+    expect(MODEL_SLUGS.fal["fal-ai/wan/v2.7/pro/text-to-image"]).toBe(
+      MODEL_SLUGS.kie["wan/2-7-image-pro"]
+    );
   });
 
   it("registers a slug for every fal pricing entry", () => {

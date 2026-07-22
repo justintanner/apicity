@@ -16,6 +16,13 @@ export const SimpleFunctionsSourceSchema = z.enum([
   "content",
   "traditional",
 ]);
+// Deliberately closed — examined against the "Model-identifier enums stay open"
+// rule and kept as a `z.enum`. These are not upstream model ids: they are a
+// local tier vocabulary this API defines itself, so there is no upstream cadence
+// shipping new members and no id grammar an alias regex could match. CLAUDE.md
+// names this schema by name as a counterexample to that rule, alongside
+// `quality`, `vad_model` and `apply_text_normalization`. A new tier here is an
+// upstream API change, and is added to this enum explicitly.
 export const SimpleFunctionsModelSchema = z.enum(["cheap", "medium", "heavy"]);
 export const SimpleFunctionsNextActionsSchema = z.literal("off");
 export const SimpleFunctionsNoRequestSchema = z.undefined();

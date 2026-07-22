@@ -2,6 +2,8 @@
 // payload values. Promoted from extract/messages.ts and extract/kie.ts so
 // pricing entries can stand alone without depending on the extract module.
 
+import type { CostHints } from "../types";
+
 export function asString(x: unknown): string | undefined {
   return typeof x === "string" ? x : undefined;
 }
@@ -31,4 +33,19 @@ export function coerceSeconds(d: unknown): number | undefined {
     }
   }
   return undefined;
+}
+
+// Reads the caller-declared duration out of the cost-only hint channel. Lives
+// here rather than in kie.ts because xai applies the same rule.
+//
+// asNumber already rejects non-numbers, NaN and Infinity, so `> 0` is the only
+// rule this adds: a zero, negative or unusable hint is treated as ABSENT and
+// falls through to the entry's remaining duration tiers and then to the
+// missing-units warning — never to a negative or NaN usd. The positivity rule
+// deliberately applies at the hint tier only; coerceSeconds keeps its current
+// behaviour, so a payload carrying a negative wire duration prices exactly as
+// it does today.
+export function hintSeconds(hints?: CostHints): number | undefined {
+  const n = asNumber(hints?.durationSeconds);
+  return n !== undefined && n > 0 ? n : undefined;
 }

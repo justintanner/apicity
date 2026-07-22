@@ -1,5 +1,12 @@
+import type { CostHints } from "../types";
 import type { ModelPricing } from "./types";
-import { asNumber, asObject, asString, coerceSeconds } from "./helpers";
+import {
+  asNumber,
+  asObject,
+  asString,
+  coerceSeconds,
+  hintSeconds,
+} from "./helpers";
 
 // Source URL is the kie marketplace or product page for the relevant model.
 // Rates verified 2026-04-30 unless an entry notes a newer date. Rate keys mirror
@@ -11,10 +18,23 @@ import { asNumber, asObject, asString, coerceSeconds } from "./helpers";
 const src = (slug: string) => ({ url: `https://kie.ai/market/${slug}` });
 const page = (url: string) => ({ url });
 
-// Most kie video models read seconds from input.duration (top-level duration
-// is accepted as a fallback for veo, whose schema has no duration field).
-const seconds = (p: Record<string, unknown>): number | undefined =>
-  coerceSeconds(asObject(p.input)?.duration ?? p.duration);
+// Seconds of output, resolved in a fixed precedence:
+//   1. payload.input.duration — the upstream wire field, what kie actually
+//      bills. Present-but-uncoercible stops here rather than falling through,
+//      so a malformed wire value never silently prices off another tier.
+//   2. costHints.durationSeconds — the declared cost-only channel, for models
+//      whose schema has no duration field (veo, and the edit/extend endpoints
+//      that inherit the source clip's length).
+//   3. payload.duration — the deprecated 0.8.0 top-level convention, still
+//      honoured so existing callers keep their current estimate.
+const seconds = (
+  p: Record<string, unknown>,
+  hints?: CostHints
+): number | undefined => {
+  const wire = asObject(p.input)?.duration;
+  if (wire !== undefined && wire !== null) return coerceSeconds(wire);
+  return hintSeconds(hints) ?? coerceSeconds(p.duration);
+};
 
 const inputResolution = (p: Record<string, unknown>): string | undefined =>
   asString(asObject(p.input)?.resolution);
@@ -32,12 +52,15 @@ const hasVideoListInput = (p: Record<string, unknown>): boolean => {
   return Array.isArray(videoList) && videoList.length > 0;
 };
 
-// Rate-key form of the duration. Upstream sends either a number (8) or a
-// numeric string ("8"), and both must select the same rate — so coerce through
-// coerceSeconds rather than asNumber, which rejects strings and would silently
-// fall back to the default.
-const durationKey = (p: Record<string, unknown>, fallback: number): string =>
-  String(coerceSeconds(asObject(p.input)?.duration ?? p.duration) ?? fallback);
+// Rate-key form of the duration. Resolved through `seconds` so the tier order
+// can never diverge between units derivation and rate selection — including
+// the coerceSeconds (not asNumber) reading that makes a numeric string ("8")
+// select the same rate as the number 8 instead of falling to the default.
+const durationKey = (
+  p: Record<string, unknown>,
+  hints: CostHints | undefined,
+  fallback: number
+): string => String(seconds(p, hints) ?? fallback);
 
 // Image models price per image; units = input.n when present (only
 // wan/2-7-image* uses batch generation today), otherwise 1.
@@ -499,7 +522,7 @@ export const kie: Record<string, ModelPricing> = {
       },
       {
         name: "duration",
-        pick: (p) => durationKey(p, 4),
+        pick: (p, hints) => durationKey(p, hints, 4),
       },
       {
         name: "resolution",

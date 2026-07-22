@@ -1,5 +1,6 @@
+import type { CostHints } from "../types";
 import type { ModelPricing } from "./types";
-import { asNumber, coerceSeconds } from "./helpers";
+import { asNumber, coerceSeconds, hintSeconds } from "./helpers";
 
 const source = { url: "https://docs.x.ai" };
 const grokBuild01Source = {
@@ -26,8 +27,10 @@ const mediaSource = {
 // field on the generation/extension payloads; edits inherit the source
 // video's length, so callers must pass a top-level `duration` hint (the same
 // convention kie's veo3 entry uses).
-const videoSeconds = (p: Record<string, unknown>): number | undefined =>
-  coerceSeconds(p.duration);
+const videoSeconds = (
+  p: Record<string, unknown>,
+  hints?: CostHints
+): number | undefined => coerceSeconds(p.duration) ?? hintSeconds(hints);
 
 // Image generation bills per generated image. `n` is the batch size on
 // v1/images/generations; edits produce a single image and omit it.

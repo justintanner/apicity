@@ -191,9 +191,10 @@ export const MODEL_SLUGS = {
     eleven_multilingual_v3: "elml3",
   },
 
-  // Keys are fal endpoint ids, matching PRICING.fal. Nano Banana and
-  // Seedream 5 are the same underlying models kie also resells, so their
-  // slugs intentionally match kie's.
+  // Keys are fal endpoint ids, matching PRICING.fal. Nano Banana,
+  // Seedream 5, Seedance 2, Wan 2.7, Kling v3, and Grok Imagine are the
+  // same underlying models kie also resells, so their slugs intentionally
+  // match kie's.
   fal: {
     "fal-ai/flux/dev": "fluxd",
     "fal-ai/flux/schnell": "fluxs",
@@ -203,6 +204,43 @@ export const MODEL_SLUGS = {
     "fal-ai/nano-banana-2": "nb2",
     "fal-ai/nano-banana-pro": "nbp",
     "fal-ai/bytedance/seedream/v5/lite/text-to-image": "sd5",
+
+    // Video — Seedance 2.0
+    "bytedance/seedance-2.0/text-to-video": "sd2",
+    "bytedance/seedance-2.0/image-to-video": "sd2",
+    "bytedance/seedance-2.0/reference-to-video": "sd2",
+    "bytedance/seedance-2.0/fast/text-to-video": "sd2f",
+    "bytedance/seedance-2.0/fast/image-to-video": "sd2f",
+    "bytedance/seedance-2.0/fast/reference-to-video": "sd2f",
+
+    // Video — Wan 2.7
+    "fal-ai/wan/v2.7/text-to-video": "wan2p7",
+    "fal-ai/wan/v2.7/image-to-video": "wan2p7",
+    "fal-ai/wan/v2.7/reference-to-video": "wan2p7",
+    "fal-ai/wan/v2.7/edit-video": "wan2p7",
+
+    // Video — Kling v3 / o3 4K (kie has no o3 counterpart, so the o3
+    // family gets its own slug in the kling3 family)
+    "fal-ai/kling-video/v3/pro/text-to-video": "kling3p",
+    "fal-ai/kling-video/v3/pro/image-to-video": "kling3p",
+    "fal-ai/kling-video/v3/standard/text-to-video": "kling3s",
+    "fal-ai/kling-video/v3/standard/image-to-video": "kling3s",
+    "fal-ai/kling-video/o3/4k/text-to-video": "klingo3",
+    "fal-ai/kling-video/o3/4k/image-to-video": "klingo3",
+    "fal-ai/kling-video/o3/4k/reference-to-video": "klingo3",
+
+    // Video — Veo 3.1
+    "fal-ai/veo3.1": "veo3p1",
+    "fal-ai/veo3.1/image-to-video": "veo3p1",
+
+    // Video — Sora 2
+    "fal-ai/sora-2/text-to-video": "sora2",
+    "fal-ai/sora-2/image-to-video": "sora2",
+
+    // Video — Grok Imagine
+    "xai/grok-imagine-video/image-to-video": "grok",
+    "xai/grok-imagine-video/reference-to-video": "grok",
+    "xai/grok-imagine-video/extend-video": "grok",
   },
 
   googleflow: {
@@ -408,6 +446,36 @@ export const MODEL_DISPLAY = {
     "fal-ai/nano-banana-2": "Nano Banana 2",
     "fal-ai/nano-banana-pro": "Nano Banana Pro",
     "fal-ai/bytedance/seedream/v5/lite/text-to-image": "Seedream 5",
+
+    "bytedance/seedance-2.0/text-to-video": "Seedance 2",
+    "bytedance/seedance-2.0/image-to-video": "Seedance 2",
+    "bytedance/seedance-2.0/reference-to-video": "Seedance 2",
+    "bytedance/seedance-2.0/fast/text-to-video": "Seedance 2 Fast",
+    "bytedance/seedance-2.0/fast/image-to-video": "Seedance 2 Fast",
+    "bytedance/seedance-2.0/fast/reference-to-video": "Seedance 2 Fast",
+
+    "fal-ai/wan/v2.7/text-to-video": "Wan 2.7",
+    "fal-ai/wan/v2.7/image-to-video": "Wan 2.7",
+    "fal-ai/wan/v2.7/reference-to-video": "Wan 2.7",
+    "fal-ai/wan/v2.7/edit-video": "Wan 2.7 Edit",
+
+    "fal-ai/kling-video/v3/pro/text-to-video": "Kling v3 Pro",
+    "fal-ai/kling-video/v3/pro/image-to-video": "Kling v3 Pro",
+    "fal-ai/kling-video/v3/standard/text-to-video": "Kling v3 Standard",
+    "fal-ai/kling-video/v3/standard/image-to-video": "Kling v3 Standard",
+    "fal-ai/kling-video/o3/4k/text-to-video": "Kling o3 4K",
+    "fal-ai/kling-video/o3/4k/image-to-video": "Kling o3 4K",
+    "fal-ai/kling-video/o3/4k/reference-to-video": "Kling o3 4K",
+
+    "fal-ai/veo3.1": "Veo 3.1",
+    "fal-ai/veo3.1/image-to-video": "Veo 3.1",
+
+    "fal-ai/sora-2/text-to-video": "Sora 2",
+    "fal-ai/sora-2/image-to-video": "Sora 2",
+
+    "xai/grok-imagine-video/image-to-video": "Grok Imagine",
+    "xai/grok-imagine-video/reference-to-video": "Grok Imagine",
+    "xai/grok-imagine-video/extend-video": "Grok Extend",
   },
 
   googleflow: {

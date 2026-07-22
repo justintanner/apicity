@@ -14,6 +14,10 @@ import {
   type SlugProviderId,
 } from "../../packages/provider/cost/src/slugs";
 import { computeEstimate } from "../../packages/provider/cost/src/compute";
+import type {
+  CostHints,
+  EstimateRequest,
+} from "../../packages/provider/cost/src/types";
 
 describe("pricing helpers", () => {
   describe("asString", () => {
@@ -450,16 +454,46 @@ describe("PRICING data", () => {
     });
     expect(omni.warnings).toEqual([]);
 
+    // The lip-sync schema declares no duration field — the output length
+    // follows the source video — so the seconds arrive through the cost-only
+    // hint rather than through a wire field the caller cannot actually send.
     const lipSync = computeEstimate({
+      provider: "kie" as const,
+      payload: {
+        model: "volcengine/video-to-video-lip-sync",
+        input: { mode: "basic" },
+      },
+      costHints: { durationSeconds: 12 },
+    });
+    expect(lipSync.usd).toBeCloseTo(0.48, 10); // 12 * 0.04
+    expect(lipSync.source).toBe("per-unit-table");
+    expect(lipSync.warnings).toEqual([]);
+  });
+
+  // Back-compat for the pre-hint fixture this test used to carry: callers that
+  // already stuff seconds into the payload keep the estimate they had, whether
+  // they use input.duration or the deprecated top-level duration.
+  it("kie lip-sync still prices legacy payload durations (back-compat)", () => {
+    const viaInput = computeEstimate({
       provider: "kie" as const,
       payload: {
         model: "volcengine/video-to-video-lip-sync",
         input: { duration: 12, mode: "basic" },
       },
     });
-    expect(lipSync.usd).toBeCloseTo(0.48, 10); // 12 * 0.04
-    expect(lipSync.source).toBe("per-unit-table");
-    expect(lipSync.warnings).toEqual([]);
+    expect(viaInput.usd).toBeCloseTo(0.48, 10); // 12 * 0.04
+    expect(viaInput.warnings).toEqual([]);
+
+    const viaTopLevel = computeEstimate({
+      provider: "kie" as const,
+      payload: {
+        model: "volcengine/video-to-video-lip-sync",
+        duration: 12,
+        input: { mode: "basic" },
+      },
+    });
+    expect(viaTopLevel.usd).toBe(viaInput.usd);
+    expect(viaTopLevel.warnings).toEqual([]);
   });
 
   it("kie lip-sync rate is flat across mode and resolution", () => {
@@ -564,5 +598,258 @@ describe("PRICING data", () => {
         }
       }
     }
+  });
+});
+
+// The kie video entries whose upstream schema carries no duration field at
+// all: the output length follows a source clip or a driving audio track, so
+// the payload can never bound the estimate on its own.
+//
+// Every payload here is deliberately duration-free — `costHints` is the only
+// seconds source. The tiered entries still carry their selector value
+// (`input.resolution` for happyhorse, `input.mode` for kling motion-control);
+// without it the variant key is "" and the estimate fails on "no rate for
+// variant" rather than on units, which would make `warnings: []` unreachable
+// for reasons that have nothing to do with the hint.
+const HINT_ONLY_KIE = [
+  {
+    label: "happyhorse/video-edit @720p",
+    model: "happyhorse/video-edit",
+    input: {
+      video_url: "https://example.com/in.mp4",
+      resolution: "720p",
+    } as Record<string, unknown>,
+    seconds: 6,
+    perUnitUsd: 0.155,
+  },
+  {
+    label: "happyhorse/video-edit @1080p",
+    model: "happyhorse/video-edit",
+    input: {
+      video_url: "https://example.com/in.mp4",
+      resolution: "1080p",
+    } as Record<string, unknown>,
+    seconds: 6,
+    perUnitUsd: 0.265,
+  },
+  {
+    label: "kling-3.0/motion-control @720p",
+    model: "kling-3.0/motion-control",
+    input: {
+      video_url: "https://example.com/in.mp4",
+      mode: "720p",
+    } as Record<string, unknown>,
+    seconds: 5,
+    perUnitUsd: 0.1,
+  },
+  {
+    label: "kling-3.0/motion-control @1080p",
+    model: "kling-3.0/motion-control",
+    input: {
+      video_url: "https://example.com/in.mp4",
+      mode: "1080p",
+    } as Record<string, unknown>,
+    seconds: 5,
+    perUnitUsd: 0.135,
+  },
+  {
+    label: "omnihuman-1-5",
+    model: "omnihuman-1-5",
+    input: {
+      image_url: "https://example.com/a.png",
+      audio_url: "https://example.com/a.mp3",
+    } as Record<string, unknown>,
+    seconds: 8,
+    perUnitUsd: 0.135,
+  },
+  {
+    label: "volcengine/video-to-video-lip-sync",
+    model: "volcengine/video-to-video-lip-sync",
+    input: {
+      video_url: "https://example.com/in.mp4",
+      mode: "basic",
+    } as Record<string, unknown>,
+    seconds: 12,
+    perUnitUsd: 0.04,
+  },
+  {
+    label: "veo3",
+    model: "veo3",
+    input: { prompt: "a sunset" } as Record<string, unknown>,
+    seconds: 8,
+    perUnitUsd: 0.3,
+  },
+  {
+    label: "veo3_fast",
+    model: "veo3_fast",
+    input: { prompt: "a sunset" } as Record<string, unknown>,
+    seconds: 8,
+    perUnitUsd: 0.1,
+  },
+];
+
+describe("kie costHints.durationSeconds", () => {
+  it.each(HINT_ONLY_KIE)(
+    "bounds $label from the hint alone",
+    ({ model, input, seconds, perUnitUsd }) => {
+      const costHints: CostHints = { durationSeconds: seconds };
+      const req: EstimateRequest = {
+        provider: "kie",
+        payload: { model, input },
+        costHints,
+      };
+      const result = computeEstimate(req);
+
+      expect(result.usd).toBeCloseTo(seconds * perUnitUsd, 10);
+      expect(result.source).toBe("per-unit-table");
+      expect(result.breakdown).toEqual({
+        units: seconds,
+        unit: "seconds",
+        perUnitUsd,
+      });
+      expect(result.warnings).toEqual([]);
+    }
+  );
+
+  it.each(HINT_ONLY_KIE)(
+    "tells a $label caller which field to pass when nothing bounds it",
+    ({ model, input }) => {
+      const result = computeEstimate({
+        provider: "kie" as const,
+        payload: { model, input },
+      });
+
+      expect(result.usd).toBe(0);
+      expect(result.warnings).toHaveLength(1);
+      expect(result.warnings[0]).toContain("costHints.durationSeconds");
+      expect(result.warnings[0]).toContain(model);
+    }
+  );
+
+  // Precedence tier 1: the wire field is what upstream actually bills, so a
+  // present input.duration outranks any hint.
+  it("bills the wire input.duration over a conflicting hint", () => {
+    const result = computeEstimate({
+      provider: "kie" as const,
+      payload: {
+        model: "wan/2-7-text-to-video",
+        input: { prompt: "a sunset", duration: 8 },
+      },
+      costHints: { durationSeconds: 3 },
+    });
+
+    expect(result.usd).toBeCloseTo(0.8, 10); // 8 * 0.10, not 3 * 0.10
+    expect(result.breakdown.units).toBe(8);
+    expect(result.warnings).toEqual([]);
+  });
+
+  // Precedence tier 3: the deprecated top-level convention keeps its 0.8.0
+  // estimate for callers who never adopt the hint.
+  it("keeps the legacy top-level duration estimate unchanged", () => {
+    const result = computeEstimate({
+      provider: "kie" as const,
+      payload: { model: "veo3", duration: 8 },
+    });
+
+    expect(result.usd).toBeCloseTo(2.4, 10); // 8 * 0.30
+    expect(result.breakdown.units).toBe(8);
+    expect(result.warnings).toEqual([]);
+  });
+
+  // Precedence tier 2 beats tier 3: with no wire field in play, the declared
+  // hint wins over the deprecated top-level channel.
+  it("lets the hint outrank the deprecated top-level duration", () => {
+    const result = computeEstimate({
+      provider: "kie" as const,
+      payload: { model: "veo3", duration: 8 },
+      costHints: { durationSeconds: 4 },
+    });
+
+    expect(result.usd).toBeCloseTo(1.2, 10); // 4 * 0.30
+    expect(result.breakdown.units).toBe(4);
+    expect(result.warnings).toEqual([]);
+  });
+
+  it.each(["5s", "5"])(
+    "still coerces the string wire duration %s",
+    (duration) => {
+      const result = computeEstimate({
+        provider: "kie" as const,
+        payload: {
+          model: "kling-3.0/motion-control",
+          input: {
+            video_url: "https://example.com/in.mp4",
+            mode: "720p",
+            duration,
+          },
+        },
+      });
+
+      expect(result.usd).toBeCloseTo(0.5, 10); // 5 * 0.10
+      expect(result.breakdown.units).toBe(5);
+      expect(result.warnings).toEqual([]);
+    }
+  );
+
+  // An unusable hint is ABSENT, not a number to multiply by: it must fall
+  // through to the missing-units warning rather than produce -0.20 or NaN.
+  it.each([
+    { label: "zero", costHints: { durationSeconds: 0 } as CostHints },
+    { label: "negative", costHints: { durationSeconds: -5 } as CostHints },
+    { label: "NaN", costHints: { durationSeconds: NaN } as CostHints },
+    {
+      label: "Infinity",
+      costHints: { durationSeconds: Infinity } as CostHints,
+    },
+    {
+      // Untyped JS callers can reach this path; the guard is runtime, not
+      // compile-time.
+      label: "a non-number",
+      costHints: { durationSeconds: "12" } as unknown as CostHints,
+    },
+  ])(
+    "rejects $label durationSeconds without inventing a number",
+    ({ costHints }) => {
+      const result = computeEstimate({
+        provider: "kie" as const,
+        payload: {
+          model: "volcengine/video-to-video-lip-sync",
+          input: { video_url: "https://example.com/in.mp4", mode: "basic" },
+        },
+        costHints,
+      });
+
+      expect(result.usd).toBe(0);
+      expect(Number.isFinite(result.usd)).toBe(true);
+      expect(result.usd).toBeGreaterThanOrEqual(0);
+      expect(result.warnings).toHaveLength(1);
+      expect(result.warnings[0]).toContain("costHints.durationSeconds");
+    }
+  );
+
+  // gemini-omni-video reads the duration twice: once for units and once as a
+  // rate-key selector. The hint must reach both, or a hinted call silently
+  // prices off the 4-second default row.
+  it("selects the same gemini-omni-video rate row from the hint as from the wire", () => {
+    const viaWire = computeEstimate({
+      provider: "kie" as const,
+      payload: {
+        model: "gemini-omni-video",
+        input: { prompt: "a cat", duration: 6, resolution: "720p" },
+      },
+    });
+    const viaHint = computeEstimate({
+      provider: "kie" as const,
+      payload: {
+        model: "gemini-omni-video",
+        input: { prompt: "a cat", resolution: "720p" },
+      },
+      costHints: { durationSeconds: 6 },
+    });
+
+    expect(viaWire.usd).toBeCloseTo(0.4725, 10); // the 6s row, not the 4s 0.315
+    expect(viaHint.usd).toBe(viaWire.usd);
+    expect(viaHint.breakdown).toEqual(viaWire.breakdown);
+    expect(viaHint.warnings).toEqual([]);
   });
 });

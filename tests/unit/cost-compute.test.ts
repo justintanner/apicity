@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { computeEstimate } from "../../packages/provider/cost/src/compute";
+import { canonicalHash } from "../../packages/provider/cost/src/paygate";
 import { PRICING_AS_OF } from "../../packages/provider/cost/src/pricing/index";
 
 describe("computeEstimate", () => {
@@ -820,6 +821,41 @@ describe("computeEstimate", () => {
       );
     });
 
+    // The channel the warning above names has to work for xai too:
+    // XaiVideoEditRequestSchema declares no duration (an edit inherits the
+    // source clip's length), so the hint is the only way to bound this call.
+    it("bounds an xai video edit through costHints.durationSeconds", () => {
+      const result = computeEstimate({
+        provider: "xai" as const,
+        endpoint: "v1.videos.edits",
+        payload: { model: "grok-imagine-video" },
+        costHints: { durationSeconds: 6 },
+      });
+      expect(result.usd).toBeCloseTo(0.3, 10); // 6 seconds * 0.05
+      expect(result.source).toBe("per-unit-table");
+      expect(result.breakdown).toEqual({
+        units: 6,
+        unit: "seconds",
+        perUnitUsd: 0.05,
+      });
+      expect(result.warnings).toEqual([]);
+    });
+
+    // xai payloads are flat, so its wire field is the top-level `duration` —
+    // and it still outranks a conflicting hint, exactly as input.duration does
+    // for kie.
+    it("bills the xai wire duration over a conflicting hint", () => {
+      const result = computeEstimate({
+        provider: "xai" as const,
+        endpoint: "v1.videos.edits",
+        payload: { model: "grok-imagine-video", duration: 6 },
+        costHints: { durationSeconds: 99 },
+      });
+      expect(result.usd).toBeCloseTo(0.3, 10); // 6 * 0.05, not 99 * 0.05
+      expect(result.breakdown.units).toBe(6);
+      expect(result.warnings).toEqual([]);
+    });
+
     it("keeps xai token pricing on non-media endpoints", () => {
       const req = {
         provider: "xai" as const,
@@ -1044,6 +1080,60 @@ describe("computeEstimate", () => {
       const result = computeEstimate(req);
       expect(result.breakdown.outputTokens).toBe(60);
       expect(result.warnings).toEqual([]);
+    });
+  });
+
+  // A hint is a cost-only input: it must never reach the bytes the caller
+  // POSTs upstream, and therefore never the bytes canonicalHash / mintOtp
+  // sign. If estimating with a hint could change either, an OTP minted for a
+  // payload before the estimate would stop verifying after it.
+  describe("cost hints stay off the wire", () => {
+    const buildPayload = () => ({
+      model: "omnihuman-1-5",
+      input: {
+        image_url: "https://example.com/a.png",
+        audio_url: "https://example.com/a.mp3",
+      },
+    });
+
+    it("leaves canonicalHash(payload) byte-identical with and without a hint", () => {
+      const payload = buildPayload();
+      const before = canonicalHash(payload);
+
+      computeEstimate({ provider: "kie" as const, payload });
+      const withoutHint = canonicalHash(payload);
+
+      const hinted = computeEstimate({
+        provider: "kie" as const,
+        payload,
+        costHints: { durationSeconds: 8 },
+      });
+      const withHint = canonicalHash(payload);
+
+      // The hint did bound the estimate — otherwise this test would pass
+      // trivially on a code path that never reads costHints at all.
+      expect(hinted.usd).toBeCloseTo(1.08, 10); // 8 * 0.135
+
+      expect(before).toMatch(/^sha256:[0-9a-f]{64}$/);
+      expect(withoutHint).toBe(before);
+      expect(withHint).toBe(before);
+    });
+
+    it("does not mutate the caller's payload or add own keys", () => {
+      const payload = buildPayload();
+      const snapshot = structuredClone(payload);
+      const keysBefore = Object.keys(payload);
+
+      computeEstimate({
+        provider: "kie" as const,
+        payload,
+        costHints: { durationSeconds: 8 },
+      });
+
+      expect(payload).toEqual(snapshot);
+      expect(Object.keys(payload)).toEqual(keysBefore);
+      expect("costHints" in payload).toBe(false);
+      expect("durationSeconds" in payload).toBe(false);
     });
   });
 });

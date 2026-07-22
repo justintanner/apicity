@@ -543,7 +543,7 @@ describe("fal edit/image pricing estimates", () => {
       const result = estimate("fal-ai/hunyuan-image/v3/instruct/edit", payload);
       expect(result.usd).toBe(0);
       expect(result.warnings).toContain(
-        "fal 'fal-ai/hunyuan-image/v3/instruct/edit': could not derive units from payload (check duration / text); for endpoints whose schema has no duration, pass costHints.durationSeconds"
+        "fal 'fal-ai/hunyuan-image/v3/instruct/edit': could not derive units from payload (check duration / text)"
       );
     }
   });

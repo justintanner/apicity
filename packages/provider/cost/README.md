@@ -195,14 +195,25 @@ then `costHints.durationSeconds`; only `v1/videos/edits`, which has no
 
 ### Endpoints that need it
 
-| Provider | Pricing key                          | Length follows     |
-| -------- | ------------------------------------ | ------------------ |
-| `kie`    | `veo3` / `veo3_fast`                 | model-fixed clip   |
-| `kie`    | `happyhorse/video-edit`              | source `video_url` |
-| `kie`    | `kling-3.0/motion-control`           | motion video       |
-| `kie`    | `omnihuman-1-5`                      | driving audio      |
-| `kie`    | `volcengine/video-to-video-lip-sync` | source video       |
-| `xai`    | `v1/videos/edits`                    | source video       |
+| Provider | Pricing key                                      | Length follows     |
+| -------- | ------------------------------------------------ | ------------------ |
+| `kie`    | `veo3` / `veo3_fast`                             | model-fixed clip   |
+| `kie`    | `happyhorse/video-edit`                          | source `video_url` |
+| `kie`    | `kling-3.0/motion-control`                       | motion video       |
+| `kie`    | `omnihuman-1-5`                                  | driving audio      |
+| `kie`    | `volcengine/video-to-video-lip-sync`             | source video       |
+| `xai`    | `v1/videos/edits`                                | source video       |
+| `fal`    | `bytedance/seedance-2.0/text-to-video`           | model picks length |
+| `fal`    | `bytedance/seedance-2.0/image-to-video`          | model picks length |
+| `fal`    | `bytedance/seedance-2.0/reference-to-video`      | model picks length |
+| `fal`    | `bytedance/seedance-2.0/fast/text-to-video`      | model picks length |
+| `fal`    | `bytedance/seedance-2.0/fast/image-to-video`     | model picks length |
+| `fal`    | `bytedance/seedance-2.0/fast/reference-to-video` | model picks length |
+| `fal`    | `fal-ai/wan/v2.7/edit-video`                     | source video       |
+
+The six seedance rows default `duration` to `"auto"` and wan edit-video
+defaults it to `0` ("match the source clip"). Neither spelling is a length, so
+both reach the hint exactly like an omitted field would.
 
 Every other per-second entry reads a real wire duration; passing `costHints`
 alongside one is harmless — the wire field wins.

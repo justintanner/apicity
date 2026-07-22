@@ -743,6 +743,38 @@ describe("kie costHints.durationSeconds", () => {
     expect(result.warnings).toEqual([]);
   });
 
+  // Tier 1 is a stop, not a probe. A present-but-uncoercible input.duration
+  // means the wire value is malformed, so pricing must fail loudly rather than
+  // fall through to the hint or to the deprecated top-level field and quote a
+  // number the caller never asked upstream for.
+  it("stops at an uncoercible wire input.duration instead of falling through", () => {
+    const hinted = computeEstimate({
+      provider: "kie" as const,
+      payload: {
+        model: "wan/2-7-text-to-video",
+        input: { prompt: "a sunset", duration: "about eight" },
+      },
+      costHints: { durationSeconds: 6 },
+    });
+
+    expect(hinted.usd).toBe(0); // not 0.6 — the hint must not rescue it
+    expect(hinted.warnings).toHaveLength(1);
+    expect(hinted.warnings[0]).toContain("costHints.durationSeconds");
+
+    const alsoLegacy = computeEstimate({
+      provider: "kie" as const,
+      payload: {
+        model: "wan/2-7-text-to-video",
+        duration: 8,
+        input: { prompt: "a sunset", duration: "about eight" },
+      },
+      costHints: { durationSeconds: 6 },
+    });
+
+    expect(alsoLegacy.usd).toBe(0); // not 0.8 either
+    expect(alsoLegacy.warnings).toHaveLength(1);
+  });
+
   // Precedence tier 3: the deprecated top-level convention keeps its 0.8.0
   // estimate for callers who never adopt the hint.
   it("keeps the legacy top-level duration estimate unchanged", () => {

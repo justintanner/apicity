@@ -126,8 +126,16 @@ function evaluatePerUnit(
   }
   const units = entry.units(payload, hints);
   if (units === undefined) {
+    // Only a seconds-billed entry can be bounded by a duration hint. Naming
+    // the channel to a characters / images / megapixels / generations caller
+    // is dead advice, so gate on the entry's own unit — table data, not a
+    // provider name.
+    const hintAdvice =
+      entry.unit === "seconds"
+        ? "; for endpoints whose schema has no duration, pass costHints.durationSeconds"
+        : "";
     return failed("per-unit-table", [
-      `${provider} '${pricingKey}': could not derive units from payload (check duration / text); for endpoints whose schema has no duration, pass costHints.durationSeconds`,
+      `${provider} '${pricingKey}': could not derive units from payload (check duration / text)${hintAdvice}`,
     ]);
   }
   const variantKey = entry.select

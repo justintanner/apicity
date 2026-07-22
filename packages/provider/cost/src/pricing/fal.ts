@@ -1,5 +1,6 @@
+import type { CostHints } from "../types";
 import type { ModelPricing } from "./types";
-import { asNumber, asObject, asString } from "./helpers";
+import { asNumber, asObject, asString, hintSeconds } from "./helpers";
 
 // fal bills image generation per generated image, not per token. Unlike the
 // other per-unit providers, the payload carries no model field — the model
@@ -152,9 +153,12 @@ function digitSeconds(d: unknown): number | undefined {
 
 // Seedance's duration default is "auto" — the model picks the output length —
 // so an omitted (or explicit "auto") duration has no billed default to
-// assume and must warn.
-const seedanceSeconds = (p: Record<string, unknown>): number | undefined =>
-  digitSeconds(p.duration);
+// assume. A caller who knows the clip length declares it through the
+// cost-only hint channel; without either, this still warns.
+const seedanceSeconds = (
+  p: Record<string, unknown>,
+  hints?: CostHints
+): number | undefined => digitSeconds(p.duration) ?? hintSeconds(hints);
 
 // Kling duration is a digit string defaulting to "5".
 const klingSeconds = (p: Record<string, unknown>): number | undefined =>
@@ -173,10 +177,14 @@ const numericSeconds =
     p.duration === undefined ? defaultSeconds : asNumber(p.duration);
 
 // wan edit-video's duration defaults to 0, meaning "match the source
-// video" — a length that is not in the payload, so nothing is derivable.
-const wanEditSeconds = (p: Record<string, unknown>): number | undefined => {
+// video" — a length that is not in the payload, so it can only come from the
+// caller's cost-only hint channel.
+const wanEditSeconds = (
+  p: Record<string, unknown>,
+  hints?: CostHints
+): number | undefined => {
   const n = asNumber(p.duration);
-  return n === undefined || n === 0 ? undefined : n;
+  return n === undefined || n === 0 ? hintSeconds(hints) : n;
 };
 
 const resolutionTier = (defaultTier: string) => ({
@@ -195,7 +203,7 @@ const generateAudio = {
 const perSecond = (
   endpointId: string,
   usd: number,
-  seconds: (p: Record<string, unknown>) => number | undefined
+  seconds: (p: Record<string, unknown>, hints?: CostHints) => number | undefined
 ): ModelPricing => ({
   kind: "perUnit",
   unit: "seconds",
@@ -212,7 +220,7 @@ const perSecondTiered = (
     pick: (payload: Record<string, unknown>) => string | undefined;
   }>,
   rates: Record<string, number>,
-  seconds: (p: Record<string, unknown>) => number | undefined
+  seconds: (p: Record<string, unknown>, hints?: CostHints) => number | undefined
 ): ModelPricing => ({
   kind: "perUnit",
   unit: "seconds",

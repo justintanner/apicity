@@ -14,7 +14,12 @@ export type SunoModel =
 
 export interface SunoGenerateRequest {
   prompt: string;
-  model: SunoModel;
+  // Open enum: SunoGenerateRequestSchema unions the listed ids with
+  // SunoModelAliasSchema (zod.ts), so a not-yet-listed Suno version id such as
+  // `V6` validates. `string & {}` mirrors that hatch here without collapsing
+  // the union, so editors still autocomplete SunoModel. The sibling Suno
+  // request schemas stay closed, so their `model` stays narrow.
+  model: SunoModel | (string & {});
   instrumental: boolean;
   customMode: boolean;
   callBackUrl: string;

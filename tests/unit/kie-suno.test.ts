@@ -136,15 +136,29 @@ describe("KIE Suno provider", () => {
       }
     );
 
+    // `model` is now an open enum (SunoModelAliasSchema in zod.ts), so the
+    // not-yet-listed version `V6` validates by design and can no longer stand
+    // in for an unknown literal here. The negative keeps its job with a
+    // near-miss of a listed id — `V4-5` uses a hyphen where Suno's grammar
+    // uses an underscore. Full accept/alias/reject coverage for every opened
+    // kie model field lives in tests/unit/kie-zod.test.ts.
     it("rejects an unknown model literal", () => {
       const result = SunoGenerateRequestSchema.safeParse({
         ...VALID_GENERATE,
-        model: "V6",
+        model: "V4-5",
       });
       expect(result.success).toBe(false);
       expect(result.error?.issues.some((i) => i.path.includes("model"))).toBe(
         true
       );
+    });
+
+    it("accepts a not-yet-listed Suno version alias", () => {
+      const result = SunoGenerateRequestSchema.safeParse({
+        ...VALID_GENERATE,
+        model: "V6",
+      });
+      expect(result.success).toBe(true);
     });
 
     it.each(ALL_MODELS)("accepts model %s", (model) => {

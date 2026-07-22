@@ -1740,9 +1740,25 @@ const CreateTaskEnvelopeSchema = z.object({
 // Sub-provider schemas: Veo
 // ---------------------------------------------------------------------------
 
+// kie ships new Veo point releases behind this endpoint before the enum
+// catches up, so the enum below is unioned with an alias escape hatch. kie's
+// Veo grammar is *underscored*: `veo<major>` followed by optional lowercase
+// variant segments joined by `_`, e.g. veo3, veo3_fast, veo4_fast. That is a
+// different grammar from googleflow's dotted `veo-3.1-fast`, so this alias is
+// deliberately not a reuse of GoogleFlowVeoModelAliasSchema. An unnarrowed
+// string hatch would accept the hyphenated typo `veo3-fast` and even
+// `gpt-4o`; anything that is not an underscored kie Veo id must be added to
+// the enum explicitly.
+const KieVeoModelAliasSchema = z
+  .string()
+  .regex(
+    /^veo\d+(?:_[a-z0-9]+)*$/,
+    "Expected a listed model or an underscored kie Veo alias (e.g. veo4_fast)"
+  );
+
 export const VeoGenerateRequestSchema = z.object({
   prompt: z.string().min(1),
-  model: z.enum(["veo3", "veo3_fast"]).optional(),
+  model: z.enum(["veo3", "veo3_fast"]).or(KieVeoModelAliasSchema).optional(),
   aspectRatio: z.enum(["16:9", "9:16", "Auto"]).optional(),
   generationType: z
     .enum([
@@ -1760,6 +1776,11 @@ export const VeoGenerateRequestSchema = z.object({
 export const VeoExtendRequestSchema = z.object({
   taskId: z.string().min(1),
   prompt: z.string().min(1),
+  // Deliberately closed: `fast | quality` is a rendering-tier vocabulary, not
+  // a model registry — the same counterexample class CLAUDE.md names alongside
+  // `quality` and SimpleFunctionsModelSchema. Upstream does not ship new tiers
+  // on its own cadence, so no alias hatch belongs here; a new tier is an
+  // explicit enum addition.
   model: z.enum(["fast", "quality"]).optional(),
   seeds: z.number().optional(),
   watermark: z.string().optional(),
@@ -1868,10 +1889,25 @@ export const FluxKontextAspectRatioSchema = z.enum([
   "9:16",
 ]);
 
-export const FluxKontextModelSchema = z.enum([
-  "flux-kontext-pro",
-  "flux-kontext-max",
-]);
+// Black Forest Labs adds Flux Kontext tiers before this package's enum catches
+// up, so the enum below is unioned with an alias escape hatch. The grammar is
+// the `flux-kontext-` family prefix followed by one or more lowercase
+// alphanumeric variant segments, e.g. flux-kontext-pro, flux-kontext-max,
+// flux-kontext-ultra. The trailing segment is the load-bearing part: an
+// unnarrowed string hatch — or one that stopped at the family prefix — would
+// accept the bare family name `flux-kontext` and the uppercased
+// `FLUX-KONTEXT-PRO`. Anything that is not a variant-suffixed Flux Kontext id
+// must be added to the enum explicitly.
+const FluxKontextModelAliasSchema = z
+  .string()
+  .regex(
+    /^flux-kontext-[a-z0-9]+(?:-[a-z0-9]+)*$/,
+    "Expected a listed model or a Flux Kontext alias (e.g. flux-kontext-ultra)"
+  );
+
+export const FluxKontextModelSchema = z
+  .enum(["flux-kontext-pro", "flux-kontext-max"])
+  .or(FluxKontextModelAliasSchema);
 
 export const FluxKontextGenerateRequestSchema = z.object({
   prompt: z.string().min(1),
@@ -2212,9 +2248,26 @@ export type RunwayRecordDetailResponseSchemaType = z.infer<
 // Sub-provider schemas: Suno
 // ---------------------------------------------------------------------------
 
+// Suno ships new model versions before this package's enum catches up, so the
+// enum below is unioned with an alias escape hatch. Suno's grammar is an
+// uppercase `V`, a major version, optional `_`-joined point releases, and an
+// optional `PLUS`/`ALL` capability suffix, e.g. V4_5PLUS, V5_5, V6. Case and
+// separator are the load-bearing parts: an unnarrowed string hatch would
+// accept the lowercase `v5`, the hyphenated `V4-5`, the mixed-case `V4_5plus`
+// and even `music_v1`. Anything that is not a Suno version id must be added to
+// the enum explicitly.
+const SunoModelAliasSchema = z
+  .string()
+  .regex(
+    /^V\d+(?:_\d+)*(?:PLUS|ALL)?$/,
+    "Expected a listed model or a Suno version alias (e.g. V5_5PLUS)"
+  );
+
 export const SunoGenerateRequestSchema = z.object({
   prompt: z.string().min(1),
-  model: z.enum(["V3_5", "V4", "V4_5", "V4_5PLUS", "V4_5ALL", "V5", "V5_5"]),
+  model: z
+    .enum(["V3_5", "V4", "V4_5", "V4_5PLUS", "V4_5ALL", "V5", "V5_5"])
+    .or(SunoModelAliasSchema),
   instrumental: z.boolean(),
   customMode: z.boolean(),
   callBackUrl: z.string().min(1),
@@ -2281,7 +2334,24 @@ export type KieChatParsedRequest = z.output<typeof KieChatRequestSchema>;
 // Sub-provider schemas: Responses (GPT-5.5 via Kie)
 // ---------------------------------------------------------------------------
 
-export const KieResponsesModelSchema = z.enum(["gpt-5-5"]);
+// kie exposes new OpenAI GPT point releases behind the Responses endpoint
+// before this package's enum catches up, so the enum below is unioned with an
+// alias escape hatch. The grammar is `gpt-` then a version whose parts are
+// joined by `-` or `.`, then optional lowercase variant segments, e.g.
+// gpt-5-5, gpt-6, gpt-5-5-mini. An unnarrowed string hatch would accept the
+// spelled-out `gpt-five`, the truncated `gpt-`, and even a Grok id on an
+// OpenAI-only field; anything that is not a versioned GPT id must be added to
+// the enum explicitly.
+const KieOpenAiModelAliasSchema = z
+  .string()
+  .regex(
+    /^gpt-\d+(?:[-.]\d+)*(?:-[a-z0-9]+)*$/,
+    "Expected a listed model or a versioned GPT alias (e.g. gpt-5-5-mini)"
+  );
+
+export const KieResponsesModelSchema = z
+  .enum(["gpt-5-5"])
+  .or(KieOpenAiModelAliasSchema);
 
 export const KieResponsesReasoningEffortSchema = z.enum([
   "low",
@@ -2404,7 +2474,24 @@ export type KieResponsesParsedRequest = z.output<
 // Grok 4.5 shares the Kie Responses request contract, differing only by model.
 // Reuse the codex input/message/reasoning/tools sub-schemas so the mixed
 // web_search + function rejection (KieResponsesToolsSchema) behaves identically.
-export const KieGrokResponsesModelSchema = z.enum(["grok-4-5"]);
+//
+// xAI ships new Grok point releases on its own cadence, so the enum below gets
+// the same treatment as its GPT sibling. The grammar is `grok-` then a version
+// whose parts are joined by `-` or `.`, then optional lowercase variant
+// segments, e.g. grok-4-5, grok-5, grok-4-5-fast. This is a separate alias
+// from KieOpenAiModelAliasSchema on purpose: sharing one would make `gpt-5-5`
+// a valid Grok model. Anything that is not a versioned Grok id must be added
+// to the enum explicitly.
+const KieGrokModelAliasSchema = z
+  .string()
+  .regex(
+    /^grok-\d+(?:[-.]\d+)*(?:-[a-z0-9]+)*$/,
+    "Expected a listed model or a versioned Grok alias (e.g. grok-4-5-fast)"
+  );
+
+export const KieGrokResponsesModelSchema = z
+  .enum(["grok-4-5"])
+  .or(KieGrokModelAliasSchema);
 
 export const KieGrokResponsesRequestSchema = z.object({
   model: KieGrokResponsesModelSchema,
@@ -2451,8 +2538,25 @@ export const KieClaudeMessageSchema = z.object({
   content: z.union([z.string(), z.array(KieClaudeContentPartSchema)]),
 });
 
+// Anthropic ships new Claude releases before this package's enum catches up,
+// so the enum below is unioned with an alias escape hatch. The grammar is
+// `claude-`, a lowercase family name, at least one `-`-joined numeric version
+// part, then optional lowercase variant segments, e.g. claude-sonnet-4-6,
+// claude-haiku-4-5, claude-opus-5-0. Requiring both the family name and the
+// version is the load-bearing part: an unnarrowed string hatch would accept
+// the versionless `claude-sonnet`, the familyless `claude-4-6`, and `gpt-5-5`
+// on a Claude-only field. Anything else must be added to the enum explicitly.
+const KieClaudeModelAliasSchema = z
+  .string()
+  .regex(
+    /^claude-[a-z]+(?:-\d+)+(?:-[a-z0-9]+)*$/,
+    "Expected a listed model or a versioned Claude alias (e.g. claude-opus-5-0)"
+  );
+
 export const KieClaudeRequestSchema = z.object({
-  model: z.enum(["claude-sonnet-4-6", "claude-haiku-4-5"]),
+  model: z
+    .enum(["claude-sonnet-4-6", "claude-haiku-4-5"])
+    .or(KieClaudeModelAliasSchema),
   messages: z.array(KieClaudeMessageSchema),
   tools: z.array(KieClaudeToolSchema).optional(),
   thinkingFlag: z.boolean().optional(),

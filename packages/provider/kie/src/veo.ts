@@ -19,7 +19,11 @@ export type VeoGenerationType =
 
 export interface VeoGenerateRequest {
   prompt: string;
-  model?: VeoModel;
+  // Open enum: VeoGenerateRequestSchema unions the listed ids with
+  // KieVeoModelAliasSchema (zod.ts), so a not-yet-listed underscored kie Veo
+  // id such as `veo4_fast` validates. `string & {}` mirrors that hatch here
+  // without collapsing the union, so editors still autocomplete VeoModel.
+  model?: VeoModel | (string & {});
   aspectRatio?: "16:9" | "9:16" | "Auto";
   generationType?: VeoGenerationType;
   imageUrls?: string[];

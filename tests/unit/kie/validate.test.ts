@@ -1494,10 +1494,15 @@ describe("kie Zod schema validation", () => {
       );
     });
 
+    // `model` is now an open enum (SunoModelAliasSchema in zod.ts): any
+    // uppercase `V<version>` id matches the family grammar, so the unlisted
+    // `V3` validates by design. The negative keeps its job with a case typo,
+    // which the grammar still rejects. Full accept/alias/reject coverage lives
+    // in tests/unit/kie-zod.test.ts.
     it("should reject sunoGenerate with invalid model enum value", () => {
       const invalid = SunoGenerateRequestSchema.safeParse({
         prompt: "test",
-        model: "V3",
+        model: "v3",
         instrumental: true,
         customMode: false,
         callBackUrl: "https://example.com/callback",

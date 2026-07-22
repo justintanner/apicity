@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { collectPackages, selectAdvisories } from "../../scripts/audit.mjs";
+import {
+  collectPackages,
+  installedPackages,
+  selectAdvisories,
+} from "../../scripts/audit.mjs";
 
 describe("bulk audit helpers", () => {
   it("collects every resolved dependency version from workspace trees", () => {
@@ -54,6 +58,36 @@ describe("bulk audit helpers", () => {
         title: "Critical issue",
         url: undefined,
       },
+    ]);
+  });
+
+  it("allows a large recursive pnpm inventory", () => {
+    const calls: unknown[][] = [];
+    const packages = installedPackages((...args: unknown[]) => {
+      calls.push(args);
+      return {
+        status: 0,
+        stdout: JSON.stringify([
+          { dependencies: { alpha: { version: "1.2.3" } } },
+        ]),
+        stderr: "",
+      };
+    });
+
+    expect(packages).toEqual({ alpha: ["1.2.3"] });
+    expect(calls).toEqual([
+      [
+        "pnpm",
+        [
+          "list",
+          "--recursive",
+          "--depth",
+          "Infinity",
+          "--json",
+          "--lockfile-only",
+        ],
+        { encoding: "utf8", maxBuffer: 16 * 1024 * 1024 },
+      ],
     ]);
   });
 });

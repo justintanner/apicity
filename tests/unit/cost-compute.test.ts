@@ -317,6 +317,16 @@ describe("computeEstimate", () => {
         },
       });
       expect(four.usd).toBeCloseTo(0.14, 10);
+
+      const wan = computeEstimate({
+        provider: "alibaba" as const,
+        payload: {
+          model: "wan2.7-image",
+          input: { messages: [] },
+          parameters: { n: 3 },
+        },
+      });
+      expect(wan.usd).toBeCloseTo(0.09, 10);
     });
 
     // Regression: alibaba per-unit routing used to forward req.endpoint as the
@@ -479,6 +489,24 @@ describe("computeEstimate", () => {
       expect(result.warnings).toEqual([]);
     });
 
+    it("estimates KIE Nano Banana per image", () => {
+      const result = computeEstimate({
+        provider: "kie" as const,
+        payload: {
+          model: "nano-banana",
+          input: { prompt: "a cat" },
+        },
+      });
+
+      expect(result.usd).toBe(0.02);
+      expect(result.breakdown).toEqual({
+        units: 1,
+        unit: "images",
+        perUnitUsd: 0.02,
+      });
+      expect(result.warnings).toEqual([]);
+    });
+
     it("estimates kie kling-3.0/video with sound variant", () => {
       const req = {
         provider: "kie" as const,
@@ -490,6 +518,25 @@ describe("computeEstimate", () => {
       const result = computeEstimate(req);
       expect(result.usd).toBe(0.5); // 5 * 0.1
       expect(result.warnings).toEqual([]);
+    });
+
+    it("promotes omitted Kling sound when multi_shots is true", () => {
+      const estimate = (sound?: boolean) =>
+        computeEstimate({
+          provider: "kie" as const,
+          payload: {
+            model: "kling-3.0/video",
+            input: {
+              duration: 5,
+              mode: "std",
+              multi_shots: true,
+              ...(sound === undefined ? {} : { sound }),
+            },
+          },
+        });
+
+      expect(estimate().usd).toBe(0.5);
+      expect(estimate(false).usd).toBeCloseTo(0.35, 10);
     });
 
     it("fails kie when no rate matches variant", () => {
@@ -680,7 +727,7 @@ describe("computeEstimate", () => {
       });
     });
 
-    it("resolves fal image_size presets and assumes 1 MP when omitted", () => {
+    it("resolves fal image_size presets and documented defaults", () => {
       const preset = computeEstimate({
         provider: "fal" as const,
         endpoint: "fal-ai/flux/schnell",
@@ -690,13 +737,25 @@ describe("computeEstimate", () => {
       expect(preset.breakdown.units).toBe(2);
       expect(preset.usd).toBeCloseTo(0.006, 10);
 
-      const omitted = computeEstimate({
-        provider: "fal" as const,
-        endpoint: "fal-ai/flux/schnell",
-        payload: {},
-      });
-      expect(omitted.breakdown.units).toBe(1);
-      expect(omitted.usd).toBe(0.003);
+      for (const endpoint of [
+        "fal-ai/flux/dev",
+        "fal-ai/flux/schnell",
+        "fal-ai/qwen-image",
+      ]) {
+        const omitted = computeEstimate({
+          provider: "fal" as const,
+          endpoint,
+          payload: {},
+        });
+        const explicit = computeEstimate({
+          provider: "fal" as const,
+          endpoint,
+          payload: { image_size: "landscape_4_3" },
+        });
+
+        expect(omitted.usd, endpoint).toBe(explicit.usd);
+        expect(omitted.breakdown.units, endpoint).toBe(1);
+      }
     });
 
     it("fails fal when image_size is present but unrecognized", () => {

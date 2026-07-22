@@ -56,16 +56,17 @@ function maxImageCount(p: Record<string, unknown>): number {
 // the next whole megapixel before charging, so the ceil is applied per image
 // and then multiplied by the image count.
 //
-// When `image_size` is absent the caller gets fal's model default, which is
-// ~1 MP for most models priced this way — so we assume 1 MP/image rather
-// than refusing to estimate. Entries whose documented default has no fixed
-// dimensions (hunyuan instruct edit defaults to "auto") pass their own
-// `units` reader to `perMegapixel` so the omitted field warns instead. An
-// `image_size` that is present but unrecognized returns undefined, which
-// surfaces as a warning instead of a silently wrong number.
-function megapixels(p: Record<string, unknown>): number | undefined {
-  const size = p.image_size;
-  if (size === undefined) return imageCount(p);
+// When `image_size` is absent, use only an endpoint default verified from that
+// endpoint's own fal.ai page. An endpoint with no documented fixed default
+// leaves `defaultPreset` undefined and warns instead of silently guessing.
+// An `image_size` that is present but unrecognized follows the same warning
+// path.
+function megapixels(
+  p: Record<string, unknown>,
+  defaultPreset?: string
+): number | undefined {
+  const size = p.image_size ?? defaultPreset;
+  if (size === undefined) return undefined;
 
   const preset = asString(size);
   const dims = preset ? PRESET_DIMENSIONS[preset] : undefined;
@@ -115,11 +116,11 @@ const perMegapixel = (
   endpointId: string,
   usd: number,
   on?: string,
-  units: (p: Record<string, unknown>) => number | undefined = megapixels
+  defaultPreset?: string
 ): ModelPricing => ({
   kind: "perUnit",
   unit: "megapixels",
-  units,
+  units: (p) => megapixels(p, defaultPreset),
   select: [],
   rates: { "": usd },
   source: source(endpointId, on),
@@ -364,11 +365,26 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 
 export const fal: Record<string, ModelPricing> = {
   // Image — Flux (area-priced)
-  "fal-ai/flux/dev": perMegapixel("fal-ai/flux/dev", 0.025),
-  "fal-ai/flux/schnell": perMegapixel("fal-ai/flux/schnell", 0.003),
+  "fal-ai/flux/dev": perMegapixel(
+    "fal-ai/flux/dev",
+    0.025,
+    undefined,
+    "landscape_4_3"
+  ),
+  "fal-ai/flux/schnell": perMegapixel(
+    "fal-ai/flux/schnell",
+    0.003,
+    undefined,
+    "landscape_4_3"
+  ),
 
   // Image — Qwen Image (area-priced)
-  "fal-ai/qwen-image": perMegapixel("fal-ai/qwen-image", 0.02),
+  "fal-ai/qwen-image": perMegapixel(
+    "fal-ai/qwen-image",
+    0.02,
+    undefined,
+    "landscape_4_3"
+  ),
 
   // Image — Nano Banana (flat per image; edit is priced as generation)
   "fal-ai/nano-banana": perImage("fal-ai/nano-banana", 0.039),
@@ -445,16 +461,16 @@ export const fal: Record<string, ModelPricing> = {
 
   // Image — Hunyuan Image 3 instruct edit (area-priced). image_size defaults
   // to "auto" upstream, which has no fixed dimensions — so an omitted field
-  // is as underivable as an explicit "auto" and takes the same warning path
-  // rather than megapixels()' 1 MP/image fallback.
+  // is as underivable as an explicit "auto" and takes the warning path.
   "fal-ai/hunyuan-image/v3/instruct/edit": perMegapixel(
     "fal-ai/hunyuan-image/v3/instruct/edit",
     0.09,
-    sweepAsOf,
-    (p) => (p.image_size === undefined ? undefined : megapixels(p))
+    sweepAsOf
   ),
 
-  // Image — Qwen Image Edit (area-priced like fal-ai/qwen-image)
+  // Image — Qwen Image Edit (area-priced like fal-ai/qwen-image). Its fal.ai
+  // page publishes no fixed image_size default, so omission warns rather than
+  // assuming the generation endpoint's landscape_4_3 default.
   "fal-ai/qwen-image-edit": perMegapixel(
     "fal-ai/qwen-image-edit",
     0.03,

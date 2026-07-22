@@ -524,7 +524,12 @@ export const ElevenLabsTextToSpeechRequestSchema = z
         path: ["text"],
       });
     }
-  });
+  })
+  .describe(
+    "Text accepts at most 10000 characters when model_id is omitted " +
+      "(ElevenLabs defaults to eleven_multilingual_v2). Explicit model_id " +
+      "values use their model-specific limits, up to 40000 characters."
+  );
 
 export type ElevenLabsTextToSpeechRequest = z.input<
   typeof ElevenLabsTextToSpeechRequestSchema

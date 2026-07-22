@@ -128,6 +128,7 @@ describe("MODEL_SLUGS", () => {
       "qwen3.5-0.8b": "qwen3p5",
       "qwen3.6-plus": "qwen3p6",
       "qwen-image-2.0": "qwen2",
+      "wan2.7-image": "wan2p7",
       "wan2.7-image-pro": "wan2p7p",
       "wan2.7-i2v": "wan2p7",
       "wan2.7-videoedit": "wan2p7",
@@ -202,6 +203,15 @@ describe("modelSlug", () => {
 
   it("returns correct slug for alibaba qwen3.6-plus", () => {
     expect(modelSlug("alibaba", "qwen3.6-plus")).toBe("qwen3p6");
+  });
+
+  it("shares Wan 2.7 image slugs across Alibaba and KIE", () => {
+    expect(modelSlug("alibaba", "wan2.7-image")).toBe(
+      modelSlug("kie", "wan/2-7-image")
+    );
+    expect(modelSlug("alibaba", "wan2.7-image-pro")).toBe(
+      modelSlug("kie", "wan/2-7-image-pro")
+    );
   });
 
   it("returns distinct slugs for xai grok imagine media models", () => {

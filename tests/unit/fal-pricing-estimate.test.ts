@@ -528,8 +528,25 @@ describe("fal edit/image pricing estimates", () => {
       perUnitUsd: 0.09,
     });
 
-    const qwen = estimate("fal-ai/qwen-image-edit", { num_images: 2 });
-    expect(qwen.usd).toBeCloseTo(0.06, 10); // 1 MP assumed per image
+    const qwen = estimate("fal-ai/qwen-image-edit", {
+      image_size: "square_hd",
+      num_images: 2,
+    });
+    // 1024x1024 = 1.049 MP, rounded up to 2 MP per image.
+    expect(qwen.usd).toBeCloseTo(0.12, 10);
+    expect(qwen.breakdown.units).toBe(4);
+  });
+
+  it("warns when qwen image edit omits its undocumented size", () => {
+    const result = estimate("fal-ai/qwen-image-edit", {
+      prompt: "recolor",
+      image_url: "https://example.com/a.png",
+    });
+
+    expect(result.usd).toBe(0);
+    expect(result.warnings).toContain(
+      "fal 'fal-ai/qwen-image-edit': could not derive units from payload (check duration / text)"
+    );
   });
 
   it("warns on hunyuan image_size omitted or 'auto' instead of guessing", () => {

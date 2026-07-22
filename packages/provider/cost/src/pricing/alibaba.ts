@@ -11,6 +11,7 @@ const source = {
 // publishes a Chinese-mainland column at different figures (e.g. $0.086012/s
 // for wan2.7-i2v against $0.10/s international) — do not mix the two.
 const mediaSource = { ...source, asOf: "2026-07-20" };
+const wan27ImageSource = { ...source, asOf: "2026-07-22" };
 
 // DashScope image endpoints carry the batch count in `parameters.n`
 // (1-12 for wan2.7-image*, 1-6 for the qwen-image* family). Absent means a
@@ -19,13 +20,16 @@ const mediaSource = { ...source, asOf: "2026-07-20" };
 const imageCount = (p: Record<string, unknown>): number =>
   asNumber(asObject(p.parameters)?.n) ?? 1;
 
-const flatImage = (perUnit: number): ModelPricing => ({
+const flatImage = (
+  perUnit: number,
+  rateSource: typeof mediaSource = mediaSource
+): ModelPricing => ({
   kind: "perUnit",
   unit: "images",
   units: imageCount,
   select: [],
   rates: { "": perUnit },
-  source: mediaSource,
+  source: rateSource,
 });
 
 // `parameters.duration` is the requested output length in seconds. The
@@ -70,9 +74,9 @@ export const alibaba: Record<string, ModelPricing> = {
   "qwen-image-edit-plus": flatImage(0.03),
   "qwen-image-edit-max": flatImage(0.075),
 
-  // Image — Wan 2.7. Note the non-pro `wan2.7-image` tier ($0.03/image) is
-  // not registered in slugs.ts, so it has no entry here.
-  "wan2.7-image-pro": flatImage(0.075),
+  // Image — Wan 2.7, International-region list rates.
+  "wan2.7-image": flatImage(0.03, wan27ImageSource),
+  "wan2.7-image-pro": flatImage(0.075, wan27ImageSource),
 
   // Video — Wan 2.7 image-to-video and instruction-based video editing.
   "wan2.7-i2v": flatVideo(0.1),

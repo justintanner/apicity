@@ -579,11 +579,14 @@ describe("ElevenLabs Zod schema validation", () => {
         ).toBe(true);
       });
 
-      it("keeps the static text bound in the MCP JSON Schema", () => {
+      it("documents the conditional cap in the MCP JSON Schema", () => {
         const json = zodToJsonSchema(ElevenLabsTextToSpeechRequestSchema);
         const props = json.properties as Record<string, JsonSchema>;
 
         expect(props.text).toMatchObject({ maxLength: 40000 });
+        expect(json.description).toContain("10000");
+        expect(json.description).toContain("model_id is omitted");
+        expect(json.description).toContain("40000");
       });
 
       it("still enforces the per-model cap for a listed model_id", () => {

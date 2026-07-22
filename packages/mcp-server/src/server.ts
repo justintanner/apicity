@@ -80,6 +80,10 @@ function describe(
   cost: CostHelpers
 ): string {
   const lines = [`${ep.method} ${ep.fullUrl}`, `Docs: ${ep.docsUrl}`];
+  const schemaDescription = ep.jsonSchema.description;
+  if (typeof schemaDescription === "string" && schemaDescription.trim()) {
+    lines.push(schemaDescription.trim());
+  }
   if (cost.isPaidEndpoint(ep.provider, ep.method, ep.dotPath)) {
     lines.push(
       "PAID endpoint: requires an operator-minted `otp` (one-time approval). " +

@@ -9,7 +9,11 @@
  */
 
 import { spawnSync } from "node:child_process";
-import { repoRoot, resolveProviderScope } from "./lib/provider-scope.mjs";
+import {
+  hasEndpointDocsRows,
+  repoRoot,
+  resolveProviderScope,
+} from "./lib/provider-scope.mjs";
 
 const ESLINT_BIN = "./node_modules/eslint/bin/eslint.js";
 const ESLINT_CACHE = "node_modules/.cache/eslint/";
@@ -48,21 +52,28 @@ run("eslint (scoped)", "node", [
   ESLINT_CACHE,
 ]);
 
-run("endpoint comments (provider)", "node", [
-  "scripts/check-endpoint-comments.mjs",
-  "--provider",
-  provider,
-]);
-run("endpoint signatures (provider)", "node", [
-  "scripts/check-endpoint-signatures.mjs",
-  "--provider",
-  provider,
-]);
-run("factory signature (provider)", "node", [
-  "scripts/check-factory-signatures.mjs",
-  "--provider",
-  provider,
-]);
+if (hasEndpointDocsRows(provider)) {
+  run("endpoint comments (provider)", "node", [
+    "scripts/check-endpoint-comments.mjs",
+    "--provider",
+    provider,
+  ]);
+  run("endpoint signatures (provider)", "node", [
+    "scripts/check-endpoint-signatures.mjs",
+    "--provider",
+    provider,
+  ]);
+  run("factory signature (provider)", "node", [
+    "scripts/check-factory-signatures.mjs",
+    "--provider",
+    provider,
+  ]);
+} else {
+  console.error(
+    `\n> endpoint contract checks (provider)\n` +
+      `skipped: ${provider} has no endpoint-docs.tsv rows`
+  );
+}
 run("orphan recordings (provider)", "node", [
   "scripts/check-orphan-recordings.mjs",
   "--provider",

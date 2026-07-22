@@ -80,6 +80,36 @@ describe("apicity-mcp provider registry", () => {
     }
   });
 
+  it("documents ElevenLabs' omitted-model TTS limit on all four tools", async () => {
+    const previous = process.env.ELEVENLABS_API_KEY;
+    process.env.ELEVENLABS_API_KEY = "dummy-elevenlabs-key";
+
+    try {
+      const endpoints = await buildRegistry({
+        enabledProviders: ["elevenlabs"],
+      });
+      const paths = [
+        "v1.textToSpeech",
+        "v1.textToSpeech.stream",
+        "v1.textToSpeech.withTimestamps",
+        "v1.textToSpeech.stream.withTimestamps",
+      ];
+
+      for (const dotPath of paths) {
+        const endpoint = findEndpoint(endpoints, "elevenlabs", "POST", dotPath);
+        const description = endpoint.jsonSchema.description;
+
+        expect(description, dotPath).toContain("10000");
+        expect(description, dotPath).toContain("model_id is omitted");
+        expect(propertiesOf(endpoint.jsonSchema).text).toMatchObject({
+          maxLength: 40000,
+        });
+      }
+    } finally {
+      restoreEnv("ELEVENLABS_API_KEY", previous);
+    }
+  });
+
   // Regression: `{query}` is a query-string placeholder, not a path segment.
   // Treating it as a path param made the MCP call `fn(queryString, body)` instead
   // of `fn(req, signal)`, dropping every filter and crashing on a body

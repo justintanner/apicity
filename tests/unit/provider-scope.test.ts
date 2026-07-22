@@ -2,6 +2,8 @@ import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
   integrationDir,
+  hasEndpointDocsRows,
+  mcpServerDir,
   providerRoot,
   repoRoot,
   resolveProviderScope,
@@ -66,6 +68,27 @@ describe("resolveProviderScope", () => {
       input: "@apicity/openai",
     });
     expectOpenAiTests(scoped.tests);
+  });
+
+  it("resolves the endpoint-less MCP workspace package", () => {
+    const byName = resolveProviderScope("mcp-server");
+    const byPath = resolveProviderScope("packages/mcp-server/src/server.ts");
+
+    for (const scope of [byName, byPath]) {
+      expect(scope).toMatchObject({
+        provider: "mcp-server",
+        packageDir: mcpServerDir,
+      });
+      expect(scope.tests).toContain(`${unitDir}/mcp-schema.test.ts`);
+      expect(scope.tests).toContain(`${unitDir}/mcp-provider-registry.test.ts`);
+    }
+  });
+
+  it("distinguishes endpoint-less packages without admitting typos", () => {
+    expect(hasEndpointDocsRows("openai")).toBe(true);
+    expect(hasEndpointDocsRows("b2")).toBe(true);
+    expect(hasEndpointDocsRows("cost")).toBe(false);
+    expect(hasEndpointDocsRows("mcp-server")).toBe(false);
   });
 
   it("resolves relative and absolute provider package paths", () => {

@@ -159,6 +159,7 @@ describe("PRICING data", () => {
       "qwen-image-edit": 0.045,
       "qwen-image-edit-plus": 0.03,
       "qwen-image-edit-max": 0.075,
+      "wan2.7-image": 0.03,
       "wan2.7-image-pro": 0.075,
     };
     for (const [model, rate] of Object.entries(perImage)) {
@@ -203,10 +204,6 @@ describe("PRICING data", () => {
       // pricing entry (slugs.ts:10-14).
       "kling-3.0/video/std",
       "kling-3.0/video/pro",
-      // OQ-1 (ac-h7kvm.11 requirements): registered but no direct rate;
-      // kie.ai's rate page needs a browser session to verify whether the
-      // model is still purchasable. Priced or delisted in a follow-up bead.
-      "nano-banana",
     ],
   };
 
@@ -359,6 +356,18 @@ describe("PRICING data", () => {
       kind: "perUnit",
       unit: "seconds",
       rates: { "": 0.3 },
+    });
+  });
+
+  it("kie prices the registered Nano Banana image model", () => {
+    expect(PRICING.kie["nano-banana"]).toMatchObject({
+      kind: "perUnit",
+      unit: "images",
+      rates: { "": 0.02 },
+      source: {
+        url: "https://kie.ai/nano-banana",
+        asOf: "2026-07-22",
+      },
     });
   });
 

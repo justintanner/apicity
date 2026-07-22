@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 
 const BULK_AUDIT_URL =
   "https://registry.npmjs.org/-/npm/v1/security/advisories/bulk";
+const PNPM_LIST_MAX_BUFFER = 16 * 1024 * 1024;
 const SEVERITY_RANK = {
   info: 0,
   low: 1,
@@ -98,11 +99,11 @@ function parseArgs(argv) {
   return auditLevel;
 }
 
-function installedPackages() {
-  const result = spawnSync(
+export function installedPackages(runCommand = spawnSync) {
+  const result = runCommand(
     "pnpm",
     ["list", "--recursive", "--depth", "Infinity", "--json", "--lockfile-only"],
-    { encoding: "utf8" }
+    { encoding: "utf8", maxBuffer: PNPM_LIST_MAX_BUFFER }
   );
   if (result.error) throw result.error;
   if (result.status !== 0) {

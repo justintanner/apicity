@@ -1,4 +1,4 @@
-import { existsSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -6,6 +6,7 @@ const libDir = path.dirname(fileURLToPath(import.meta.url));
 
 export const repoRoot = path.resolve(libDir, "..", "..");
 export const providerRoot = path.join(repoRoot, "packages", "provider");
+export const mcpServerDir = path.join("packages", "mcp-server");
 export const integrationDir = path.join("tests", "integration");
 
 // The top level of every directory `tests/vitest.integration.ts` includes. The
@@ -24,13 +25,20 @@ export const providerTestDirs = [
 ];
 
 export function listProviderNames() {
-  return readdirSync(providerRoot, { withFileTypes: true })
+  const providers = readdirSync(providerRoot, { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
-    .map((entry) => entry.name)
-    .sort();
+    .map((entry) => entry.name);
+
+  if (existsSync(path.join(repoRoot, mcpServerDir))) {
+    providers.push("mcp-server");
+  }
+
+  return providers.sort();
 }
 
 export function listProviderTests(provider) {
+  const prefixes = provider === "mcp-server" ? ["mcp"] : [provider];
+
   return providerTestDirs.flatMap((dir) => {
     const testDir = path.join(repoRoot, dir);
 
@@ -39,9 +47,11 @@ export function listProviderTests(provider) {
 
     return readdirSync(testDir)
       .filter((name) => name.endsWith(".test.ts"))
-      .filter(
-        (name) =>
-          name === `${provider}.test.ts` || name.startsWith(`${provider}-`)
+      .filter((name) =>
+        prefixes.some(
+          (prefix) =>
+            name === `${prefix}.test.ts` || name.startsWith(`${prefix}-`)
+        )
       )
       .map((name) => path.posix.join(dir, name));
   });
@@ -57,7 +67,10 @@ export function resolveProviderScope(rawValue) {
     if (provider) {
       return {
         provider,
-        packageDir: path.posix.join("packages", "provider", provider),
+        packageDir:
+          provider === "mcp-server"
+            ? mcpServerDir
+            : path.posix.join("packages", "provider", provider),
         tests: listProviderTests(provider),
         source: candidate.source,
         input: candidate.value,
@@ -129,6 +142,13 @@ function resolveProviderPath(value, providers) {
 }
 
 function resolveNormalizedProviderPath(normalized, providers) {
+  if (
+    providers.includes("mcp-server") &&
+    /(?:^|\/)packages\/mcp-server(?:\/|$)/.test(normalized)
+  ) {
+    return "mcp-server";
+  }
+
   const packageMatch = normalized.match(/(?:^|\/)packages\/provider\/([^/]+)/);
 
   if (packageMatch && providers.includes(packageMatch[1])) {
@@ -170,4 +190,16 @@ function formatUsage(providers) {
     "",
     `Known providers: ${providers.join(", ")}`,
   ].join("\n");
+}
+
+export function hasEndpointDocsRows(provider) {
+  const tsv = readFileSync(
+    path.join(repoRoot, "scripts", "endpoint-docs.tsv"),
+    "utf8"
+  );
+
+  return tsv
+    .split("\n")
+    .slice(1)
+    .some((line) => line.split("\t", 1)[0] === provider);
 }

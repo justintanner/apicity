@@ -168,7 +168,13 @@ export const kie: Record<string, ModelPricing> = {
       { name: "mode", pick: inputMode },
       {
         name: "sound",
-        pick: (p) => (asObject(p.input)?.sound === true ? "sound" : undefined),
+        pick: (p) => {
+          const input = asObject(p.input);
+          return input?.sound === true ||
+            (input?.sound === undefined && input?.multi_shots === true)
+            ? "sound"
+            : undefined;
+        },
       },
     ],
     rates: {
@@ -269,8 +275,9 @@ export const kie: Record<string, ModelPricing> = {
   // grok-imagine/extend: flat per-generation, 4 rates indexed by
   // (extend_times, resolution). The kie schema only carries extend_times
   // and task_id — resolution is inherited from the source video. Callers
-  // must pass a top-level `resolution` hint (mirrors veo3's top-level
-  // `duration` hint), otherwise the lookup misses with a clear warning.
+  // must pass top-level `resolution` as pricing-only metadata. Resolution is
+  // not part of CostHints yet, so this legacy side field remains distinct
+  // from the durationSeconds hint channel.
   "grok-imagine/extend": {
     kind: "perUnit",
     unit: "generations",
@@ -446,6 +453,11 @@ export const kie: Record<string, ModelPricing> = {
   // (nano-banana-2, gpt-image-2) require input.resolution; flat-rate
   // families (qwen2, seedream/5-lite) only need the model string.
   // wan/2-7-image accepts an `n` field for batch generation.
+  // KIE's dedicated Nano Banana page lists 4 credits (~$0.02) per image.
+  "nano-banana": {
+    ...flatImage(0.02, "google/nano-banana"),
+    source: { ...page("https://kie.ai/nano-banana"), asOf: "2026-07-22" },
+  },
   "nano-banana-2": tieredImage(
     { "1K": 0.04, "2K": 0.06, "4K": 0.09 },
     "google/nano-banana-2",

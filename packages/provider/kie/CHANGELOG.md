@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Seedance 2 Mini reference media and Qwen2 image-edit media fields accept
+  pre-upload asset identifiers as plain strings.
+- Generated documentation clarifies that pre-upload identifiers must be
+  replaced with publicly reachable URLs before creating a KIE task.
+
 ## [0.1.0] - 2026-05-16
 
 ### Added

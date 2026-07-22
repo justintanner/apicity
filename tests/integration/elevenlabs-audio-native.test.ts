@@ -1,6 +1,17 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { createElevenLabs, ElevenLabsError } from "@apicity/elevenlabs";
+import {
+  createElevenLabs,
+  ElevenLabsError,
+  type ElevenLabsAudioNativeMethod,
+} from "@apicity/elevenlabs";
+
+// `audioNative` is attached to `v1` at runtime (audio area factory) but the
+// declared `ElevenLabsV1Namespace` omits it; reach it via a structural cast.
+function audioNativeOf(provider: { v1: unknown }): ElevenLabsAudioNativeMethod {
+  return (provider.v1 as { audioNative: ElevenLabsAudioNativeMethod })
+    .audioNative;
+}
 
 function readArticle(): Blob {
   const html =
@@ -23,7 +34,8 @@ describe("elevenlabs v1.audioNative", () => {
       apiKey: process.env.ELEVENLABS_API_KEY ?? "elevenlabs-test-key",
     });
 
-    const project = await provider.v1.audioNative({
+    const audioNative = audioNativeOf(provider);
+    const project = await audioNative({
       name: "Apicity Audio Native Test",
       file: readArticle(),
       auto_convert: false,
@@ -34,13 +46,13 @@ describe("elevenlabs v1.audioNative", () => {
     expect(typeof project.converting).toBe("boolean");
     expect(typeof project.html_snippet).toBe("string");
 
-    const settings = await provider.v1.audioNative.settings(project.project_id);
+    const settings = await audioNative.settings(project.project_id);
     expect(typeof settings.enabled).toBe("boolean");
 
-    const updated = await provider.v1.audioNative.content.update(
-      project.project_id,
-      { file: readArticle(), auto_convert: false }
-    );
+    const updated = await audioNative.content.update(project.project_id, {
+      file: readArticle(),
+      auto_convert: false,
+    });
 
     expect(updated.project_id).toBe(project.project_id);
     expect(typeof updated.converting).toBe("boolean");
@@ -58,7 +70,7 @@ describe("elevenlabs v1.audioNative", () => {
     // given source URL. With no such project it returns a 404 — exercising the
     // request path and surfacing the API contract via ElevenLabsError.
     await expect(
-      provider.v1.audioNative.content.fromUrl({
+      audioNativeOf(provider).content.fromUrl({
         url: "https://elevenlabs.io/blog",
         title: "Apicity Audio Native URL",
         author: "Apicity",

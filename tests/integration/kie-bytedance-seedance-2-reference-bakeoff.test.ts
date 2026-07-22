@@ -7,7 +7,7 @@ import {
   getPollyMode,
   type PollyContext,
 } from "../harness";
-import { createKie } from "@apicity/kie";
+import { createKie, type MediaGenerationRequest } from "@apicity/kie";
 import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 // Reference-video bake-off: Seedance 2 (the non-fast tier) as a separate
@@ -26,7 +26,7 @@ const PROMPT = `The reference images show a white cat with mismatched yellow and
 In the scene, the man sits cross-legged on the sand. The white cat climbs onto his lap, purrs, and lifts a paw to bat playfully at his blue tie. The man smiles and waves at the camera with his free hand.`;
 
 async function uploadFixture(
-  provider: ReturnType<typeof kie>,
+  provider: ReturnType<typeof createKie>,
   filename: string,
   mimeType: string
 ): Promise<string> {
@@ -80,7 +80,7 @@ describe("kie bytedance/seedance-2 reference bake-off", () => {
           web_search: false,
           nsfw_checker: false,
         },
-      };
+      } satisfies MediaGenerationRequest;
       const task = await provider.post.api.v1.jobs.createTask(
         request,
         mintKieCreateTaskOtp(request)

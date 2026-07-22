@@ -55,7 +55,8 @@ describe("fal bytedance seedance2p0 fast text-to-video integration", () => {
     const v =
       provider.run.bytedance.seedance2p0.fast.textToVideo.schema.safeParse({});
     expect(v.success).toBe(false);
-    expect(v.error?.issues.some((i) => i.path.includes("prompt"))).toBe(true);
+    if (v.success) throw new Error("expected failure");
+    expect(v.error.issues.some((i) => i.path.includes("prompt"))).toBe(true);
   });
 
   it("should reject payload with invalid resolution", () => {

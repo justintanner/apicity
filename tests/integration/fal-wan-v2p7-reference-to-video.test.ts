@@ -24,7 +24,8 @@ describe("fal wan v2.7 reference-to-video schema", () => {
     });
 
     expect(v.success).toBe(false);
-    expect(v.error?.issues.some((i) => i.path.includes("duration"))).toBe(true);
+    if (v.success) throw new Error("expected failure");
+    expect(v.error.issues.some((i) => i.path.includes("duration"))).toBe(true);
   });
 
   it("preserves zero duration on source-clip edit-video", () => {

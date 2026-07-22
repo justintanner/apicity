@@ -9,7 +9,7 @@ function jsonResponse(body: unknown, status = 200): Response {
   });
 }
 
-function audioResponse(bytes: Uint8Array): Response {
+function audioResponse(bytes: Uint8Array<ArrayBuffer>): Response {
   return new Response(bytes, {
     status: 200,
     headers: { "Content-Type": "audio/wav" },

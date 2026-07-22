@@ -58,7 +58,8 @@ describe("fal wan v2.7 image-to-video integration", () => {
     const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.wan.v2p7.imageToVideo.schema.safeParse({});
     expect(v.success).toBe(false);
-    expect(v.error?.issues.some((i) => i.path.includes("prompt"))).toBe(true);
+    if (v.success) throw new Error("expected failure");
+    expect(v.error.issues.some((i) => i.path.includes("prompt"))).toBe(true);
   });
 
   it("should reject payload with wrong enum value", () => {

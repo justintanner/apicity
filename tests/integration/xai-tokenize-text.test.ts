@@ -42,6 +42,7 @@ describe("xai tokenize-text integration", () => {
 
     const invalid = endpoint.schema.safeParse({});
     expect(invalid.success).toBe(false);
+    if (invalid.success) throw new Error("expected safeParse failure");
     expect(invalid.error?.issues.length).toBeGreaterThan(0);
   });
 });

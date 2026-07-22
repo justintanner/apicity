@@ -30,7 +30,7 @@ describe("xai video edits integration", () => {
     };
     const result = await provider.post.v1.videos.edits(
       req,
-      mintXaiOtp("v1.videos.edits", req)
+      mintXaiOtp("v1.videos.edits", req) as unknown as AbortSignal
     );
     expect(result.request_id).toBeTruthy();
     expect(typeof result.request_id).toBe("string");

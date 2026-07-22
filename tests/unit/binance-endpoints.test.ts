@@ -64,7 +64,9 @@ describe("Binance endpoint wiring", () => {
     await binance.public.coinMFutures.dapi.v1.ping();
     await binance.public.options.eapi.v1.ping();
 
-    const calls = mockFetch.mock.calls as Array<[string, RequestInit]>;
+    const calls = mockFetch.mock.calls as unknown as Array<
+      [string, RequestInit]
+    >;
     expect(calls.map(([url]) => url)).toEqual([
       "https://spot.public.local/api/v3/ping",
       "https://spot-data.public.local/api/v3/ping",
@@ -103,7 +105,9 @@ describe("Binance endpoint wiring", () => {
     await binance.dapi.v1.trades({ symbol: "BTCUSD_PERP" });
     await binance.eapi.v1.trades({ symbol: "BTC-260626-140000-C" });
 
-    const calls = mockFetch.mock.calls as Array<[string, RequestInit]>;
+    const calls = mockFetch.mock.calls as unknown as Array<
+      [string, RequestInit]
+    >;
     expect(calls.map(([url]) => url)).toEqual([
       "https://fapi.public.local/fapi/v1/trades?symbol=BTCUSDT",
       "https://futures.public.local/futures/data/openInterestHist?symbol=BTCUSDT&period=5m",

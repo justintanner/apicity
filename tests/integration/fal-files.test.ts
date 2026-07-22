@@ -31,10 +31,9 @@ describe("fal serverless files validation", () => {
     const provider = createFal({ apiKey: "fal-test-key" });
     const result = provider.v1.serverless.files.uploadUrl.schema.safeParse({});
     expect(result.success).toBe(false);
-    expect(result.error?.issues.some((i) => i.path.includes("file"))).toBe(
-      true
-    );
-    expect(result.error?.issues.some((i) => i.path.includes("url"))).toBe(true);
+    if (result.success) throw new Error("expected failure");
+    expect(result.error.issues.some((i) => i.path.includes("file"))).toBe(true);
+    expect(result.error.issues.some((i) => i.path.includes("url"))).toBe(true);
   });
 
   it("should validate uploadUrl params - wrong types", () => {
@@ -68,12 +67,11 @@ describe("fal serverless files validation", () => {
       {}
     );
     expect(result.success).toBe(false);
+    if (result.success) throw new Error("expected failure");
     expect(
-      result.error?.issues.some((i) => i.path.includes("target_path"))
+      result.error.issues.some((i) => i.path.includes("target_path"))
     ).toBe(true);
-    expect(result.error?.issues.some((i) => i.path.includes("file"))).toBe(
-      true
-    );
+    expect(result.error.issues.some((i) => i.path.includes("file"))).toBe(true);
   });
 
   it("should validate uploadLocal params - optional unzip field", () => {

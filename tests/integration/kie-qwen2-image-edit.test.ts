@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { createKie } from "@apicity/kie";
+import { createKie, type MediaGenerationRequest } from "@apicity/kie";
 import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 describe("kie qwen2/image-edit integration", () => {
@@ -27,7 +27,7 @@ describe("kie qwen2/image-edit integration", () => {
         image_size: "1:1",
         output_format: "png",
       },
-    };
+    } satisfies MediaGenerationRequest;
     const task = await provider.post.api.v1.jobs.createTask(
       request,
       mintKieCreateTaskOtp(request)
@@ -65,6 +65,7 @@ describe("kie qwen2/image-edit integration", () => {
       input: {},
     });
     expect(invalid.success).toBe(false);
+    if (invalid.success) throw new Error("expected failure");
     expect(invalid.error?.issues.length).toBeGreaterThan(0);
 
     const invalidArrayUrl =

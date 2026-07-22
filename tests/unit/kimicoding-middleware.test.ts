@@ -319,7 +319,7 @@ describe("middleware", () => {
       const fn = vi
         .fn()
         .mockImplementation(() => createSuccessfulStream(["a", "b", "c"]));
-      const wrapped = withStreamRetry(fn);
+      const wrapped = withStreamRetry<string, string>(fn);
 
       const results = await runWithFakeTimers(async () => {
         const out: string[] = [];
@@ -338,7 +338,7 @@ describe("middleware", () => {
         .mockImplementationOnce(() => createFailingStream(["a", "b"], 1))
         .mockImplementationOnce(() => createSuccessfulStream(["a", "b", "c"]));
 
-      const wrapped = withStreamRetry(fn, {
+      const wrapped = withStreamRetry<string, string>(fn, {
         retries: 2,
         baseMs: 10,
         jitter: false,
@@ -412,7 +412,10 @@ describe("middleware", () => {
       }
 
       const fn = vi.fn().mockImplementation(() => slowStream());
-      const wrapped = withStreamRetry(fn, { retries: 2, baseMs: 10 });
+      const wrapped = withStreamRetry<string, string>(fn, {
+        retries: 2,
+        baseMs: 10,
+      });
 
       const controller = new AbortController();
 
@@ -436,7 +439,7 @@ describe("middleware", () => {
 
     it("should handle empty stream", async () => {
       const fn = vi.fn().mockImplementation(() => createSuccessfulStream([]));
-      const wrapped = withStreamRetry(fn);
+      const wrapped = withStreamRetry<string, string>(fn);
 
       const results = await runWithFakeTimers(async () => {
         const out: string[] = [];
@@ -468,7 +471,7 @@ describe("middleware", () => {
       const fn1 = vi.fn().mockImplementation(() => createStream(["a", "b"]));
       const fn2 = vi.fn().mockImplementation(() => createStream(["c", "d"]));
 
-      const wrapped = withStreamFallback([fn1, fn2]);
+      const wrapped = withStreamFallback<string, string>([fn1, fn2]);
       const results = await runWithFakeTimers(async () => {
         const out: string[] = [];
         for await (const value of wrapped("request")) {
@@ -486,7 +489,7 @@ describe("middleware", () => {
       const fn1 = vi.fn().mockImplementation(() => createFailingStream("fail"));
       const fn2 = vi.fn().mockImplementation(() => createStream(["c", "d"]));
 
-      const wrapped = withStreamFallback([fn1, fn2]);
+      const wrapped = withStreamFallback<string, string>([fn1, fn2]);
       const results = await runWithFakeTimers(async () => {
         const out: string[] = [];
         for await (const value of wrapped("request")) {
@@ -531,7 +534,9 @@ describe("middleware", () => {
       const fn1 = vi.fn().mockImplementation(() => createFailingStream("fail"));
       const fn2 = vi.fn().mockImplementation(() => createStream(["a"]));
 
-      const wrapped = withStreamFallback([fn1, fn2], { onFallback });
+      const wrapped = withStreamFallback<string, string>([fn1, fn2], {
+        onFallback,
+      });
       await runWithFakeTimers(async () => {
         const out: string[] = [];
         for await (const value of wrapped("request")) {
@@ -565,7 +570,7 @@ describe("middleware", () => {
     it("should work with single stream function", async () => {
       const fn = vi.fn().mockImplementation(() => createStream(["a", "b"]));
 
-      const wrapped = withStreamFallback([fn]);
+      const wrapped = withStreamFallback<string, string>([fn]);
       const results = await runWithFakeTimers(async () => {
         const out: string[] = [];
         for await (const value of wrapped("request")) {
@@ -582,7 +587,7 @@ describe("middleware", () => {
       const fn2 = vi.fn().mockImplementation(() => createFailingStream("2"));
       const fn3 = vi.fn().mockImplementation(() => createStream(["success"]));
 
-      const wrapped = withStreamFallback([fn1, fn2, fn3]);
+      const wrapped = withStreamFallback<string, string>([fn1, fn2, fn3]);
       const results = await runWithFakeTimers(async () => {
         const out: string[] = [];
         for await (const value of wrapped("request")) {

@@ -40,9 +40,11 @@ describe("check-op env validation", () => {
       ].join("\n")
     );
 
-    expect(findLiteralAssignments(assignments).map(({ name }) => name)).toEqual(
-      ["XAI_API_KEY", "ANTHROPIC_API_KEY", "GOOGLE_API_KEY"]
-    );
+    expect(
+      findLiteralAssignments(assignments).map(
+        ({ name }: { name: string }) => name
+      )
+    ).toEqual(["XAI_API_KEY", "ANTHROPIC_API_KEY", "GOOGLE_API_KEY"]);
   });
 
   it("rejects literal and non-1Password assignments by variable name", () => {

@@ -58,6 +58,7 @@ describe("kie gemini 3.1 pro openai chat completions", () => {
     });
 
     expect(valid.success).toBe(true);
+    if (!valid.success) throw new Error("expected success");
     expect(valid.data.stream).toBe(true);
     expect(valid.data.include_thoughts).toBe(true);
     expect(valid.data.reasoning_effort).toBe("high");
@@ -168,6 +169,7 @@ describe("kie gemini 3.1 pro openai chat completions", () => {
     expect(body.reasoning_effort).toBe("low");
     expect(body.messages).toHaveLength(2);
     expect("choices" in result).toBe(true);
+    if (!("choices" in result)) throw new Error("expected non-stream result");
     expect(result.model).toBe("gemini-3.1-pro");
     expect(result.credits_consumed).toBe(27);
     expect(result.usage?.completion_tokens_details?.reasoning_tokens).toBe(374);

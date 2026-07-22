@@ -97,7 +97,7 @@ describe("xai Grok Imagine image generation and edits", () => {
 
     const result = await provider.post.v1.images.generations(
       req,
-      mintXaiOtp(GENERATIONS_DOT_PATH, req)
+      mintXaiOtp(GENERATIONS_DOT_PATH, req) as unknown as AbortSignal
     );
 
     expect(calls).toEqual([
@@ -152,7 +152,7 @@ describe("xai Grok Imagine image generation and edits", () => {
 
     const result = await provider.post.v1.images.edits(
       req,
-      mintXaiOtp(EDITS_DOT_PATH, req)
+      mintXaiOtp(EDITS_DOT_PATH, req) as unknown as AbortSignal
     );
 
     expect(calls).toEqual([
@@ -207,7 +207,7 @@ describe("xai Grok Imagine image generation and edits", () => {
 
     const result = await provider.post.v1.images.edits(
       req,
-      mintXaiOtp(EDITS_DOT_PATH, req)
+      mintXaiOtp(EDITS_DOT_PATH, req) as unknown as AbortSignal
     );
 
     expect(calls).toEqual([
@@ -250,7 +250,7 @@ describe("xai Grok Imagine image generation and edits", () => {
 
     const result = await provider.post.v1.images.edits(
       req,
-      mintXaiOtp(EDITS_DOT_PATH, req)
+      mintXaiOtp(EDITS_DOT_PATH, req) as unknown as AbortSignal
     );
 
     expect(calls).toEqual([
@@ -297,7 +297,7 @@ describe("xai Grok Imagine image generation and edits", () => {
 
     const result = await provider.post.v1.images.edits(
       req,
-      mintXaiOtp(EDITS_DOT_PATH, req)
+      mintXaiOtp(EDITS_DOT_PATH, req) as unknown as AbortSignal
     );
 
     expect(calls).toEqual([

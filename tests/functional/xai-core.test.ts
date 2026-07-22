@@ -522,7 +522,8 @@ describe("xAI provider core", () => {
       const provider = createXai({ apiKey: "sk-test" });
       const result = provider.post.v1.chat.completions.schema.safeParse({});
       expect(result.success).toBe(false);
-      expect(result.error?.issues.length).toBeGreaterThan(0);
+      if (result.success) throw new Error("expected safeParse failure");
+      expect(result.error.issues.length).toBeGreaterThan(0);
     });
   });
 });

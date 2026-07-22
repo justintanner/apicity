@@ -62,15 +62,18 @@ describe("fireworks kontext endpoint integration", () => {
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
 
-      // Submit kontext job that supports streaming
+      // Submit kontext job that supports streaming. `stream` is accepted by
+      // the endpoint but absent from the declared request type, so the payload
+      // is hoisted out of the call to bypass excess-property checking only.
+      const streamingRequest = {
+        prompt: "A serene landscape",
+        stream: true,
+        seed: 42,
+        output_format: "png",
+      } as const;
       const result = await provider.inference.v1.workflows.kontext(
         "flux-kontext-pro",
-        {
-          prompt: "A serene landscape",
-          stream: true,
-          seed: 42,
-          output_format: "png",
-        }
+        streamingRequest
       );
 
       expect(result).toBeDefined();

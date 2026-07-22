@@ -66,9 +66,10 @@ describe("fal xai/grok-imagine-video reference-to-video integration", () => {
     const v =
       provider.run.xai.grokImagineVideo.referenceToVideo.schema.safeParse({});
     expect(v.success).toBe(false);
-    expect(v.error?.issues.some((i) => i.path.includes("prompt"))).toBe(true);
+    if (v.success) throw new Error("expected failure");
+    expect(v.error.issues.some((i) => i.path.includes("prompt"))).toBe(true);
     expect(
-      v.error?.issues.some((i) => i.path.includes("reference_image_urls"))
+      v.error.issues.some((i) => i.path.includes("reference_image_urls"))
     ).toBe(true);
   });
 

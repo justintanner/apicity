@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { createHmac } from "node:crypto";
-import { createKie } from "@apicity/kie";
+import { createKie, type MediaGenerationRequest } from "@apicity/kie";
 import { PayGateError, canonicalHash } from "@apicity/cost";
 import { TEST_PAYGATE_SECRET, mintKieCreateTaskOtp } from "../harness";
 
@@ -33,7 +33,7 @@ const REQUEST = {
     prompt: "test",
     aspect_ratio: "1:1",
   },
-};
+} satisfies MediaGenerationRequest;
 
 // Builds a syntactically valid OTP envelope bound to REQUEST but with caller
 // chosen field overrides (used for the expired / wrong-secret cases).

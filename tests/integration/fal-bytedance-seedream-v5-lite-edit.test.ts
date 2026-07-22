@@ -63,8 +63,9 @@ describe("fal bytedance seedream v5 lite edit integration", () => {
     const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.bytedance.seedream.v5.lite.edit.schema.safeParse({});
     expect(v.success).toBe(false);
-    expect(v.error?.issues.some((i) => i.path.includes("prompt"))).toBe(true);
-    expect(v.error?.issues.some((i) => i.path.includes("image_urls"))).toBe(
+    if (v.success) throw new Error("expected failure");
+    expect(v.error.issues.some((i) => i.path.includes("prompt"))).toBe(true);
+    expect(v.error.issues.some((i) => i.path.includes("image_urls"))).toBe(
       true
     );
   });

@@ -49,7 +49,8 @@ describe("fal wan v2.7 text-to-image integration", () => {
     const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.wan.v2p7.textToImage.schema.safeParse({});
     expect(v.success).toBe(false);
-    expect(v.error?.issues.some((i) => i.path.includes("prompt"))).toBe(true);
+    if (v.success) throw new Error("expected failure");
+    expect(v.error.issues.some((i) => i.path.includes("prompt"))).toBe(true);
   });
 
   it("should reject payload with wrong enum value for image_size", () => {

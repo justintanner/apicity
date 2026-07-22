@@ -129,6 +129,8 @@ const sharedRequestScenarios: SharedRequestScenario[] = [
         baseURL: opts.baseURL,
         fetch: opts.fetch,
         timeout: opts.timeout,
+        // @ts-expect-error — deliberately off-schema body ({ taskId } vs the
+        // declared { url }): this infra test only asserts URL construction
       }).post.api.v1.common.downloadUrl({ taskId: "task_123" }),
     successBody: {
       code: 200,

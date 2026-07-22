@@ -5,7 +5,7 @@ import {
   teardownPolly,
   type PollyContext,
 } from "../harness";
-import { createKie } from "@apicity/kie";
+import { createKie, type MediaGenerationRequest } from "@apicity/kie";
 import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 describe("kie grok-imagine video integration", () => {
@@ -33,7 +33,7 @@ describe("kie grok-imagine video integration", () => {
           duration: 6,
           resolution: "480p",
         },
-      };
+      } satisfies MediaGenerationRequest;
       const task = await provider.post.api.v1.jobs.createTask(
         request,
         mintKieCreateTaskOtp(request)
@@ -42,7 +42,9 @@ describe("kie grok-imagine video integration", () => {
       expect(task.data?.taskId).toBeTruthy();
       expect(typeof task.data?.taskId).toBe("string");
 
-      const info = await provider.get.api.v1.jobs.recordInfo(task.data?.taskId);
+      const info = await provider.get.api.v1.jobs.recordInfo(
+        task.data!.taskId!
+      );
 
       expect(info.data?.taskId).toBe(task.data?.taskId);
       expect(["waiting", "queuing", "generating", "success", "fail"]).toContain(
@@ -78,7 +80,7 @@ describe("kie grok-imagine video integration", () => {
           extend_at: 0,
           extend_times: "6",
         },
-      };
+      } as unknown as MediaGenerationRequest;
       const extend = await provider.post.api.v1.jobs.createTask(
         request,
         mintKieCreateTaskOtp(request)
@@ -111,7 +113,7 @@ describe("kie grok-imagine video integration", () => {
         input: {
           task_id: "d43f0d0ab29f28fdfcf68a9dccbd7a42",
         },
-      };
+      } satisfies MediaGenerationRequest;
       const upscale = await provider.post.api.v1.jobs.createTask(
         request,
         mintKieCreateTaskOtp(request)

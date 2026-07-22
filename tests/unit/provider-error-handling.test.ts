@@ -80,7 +80,7 @@ function createAbortablePendingFetch(): typeof fetch {
   ) as unknown as typeof fetch;
 }
 
-async function getThrownError<T>(
+async function getThrownError<T extends Error>(
   promise: Promise<unknown>,
   ErrorClass: ErrorConstructor<T>
 ): Promise<T> {
@@ -267,9 +267,13 @@ const requestErrorCases: Array<RequestErrorCase<Error>> = [
         apiKey: "el-test",
         fetch: fetchImpl,
         timeout,
-      }).post.v1.speechToText({
-        file: new Blob(["test"]),
-      });
+      }).post.v1.speechToText(
+        // @ts-expect-error — deliberately minimal payload without the required
+        // model_id: this error-path test never dispatches a real request body
+        {
+          file: new Blob(["test"]),
+        }
+      );
     },
     rateLimitBody: { detail: { message: "Slow down" } },
     expectedRateLimitMessage: "ElevenLabs API error 429: Slow down",

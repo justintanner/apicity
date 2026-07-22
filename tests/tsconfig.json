@@ -1,0 +1,24 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "baseUrl": "..",
+    "types": ["node", "vitest/globals"],
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "allowJs": true,
+    "checkJs": false,
+    "paths": {
+      "@apicity/*/zod": ["packages/provider/*/src/zod"],
+      "@apicity/*": ["packages/provider/*/src"]
+    }
+  },
+  "include": ["**/*.ts", "**/*.tsx"],
+  // zod-compat-consumer.ts deliberately imports built dist/ declarations that
+  // do not exist on a fresh worktree; zod-compatibility.test.ts compiles it
+  // with its own dedicated tsc invocation after building those packages.
+  "exclude": [
+    "recordings",
+    "fixtures/harness-generated",
+    "fixtures/zod-compat-consumer.ts"
+  ]
+}

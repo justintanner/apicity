@@ -62,10 +62,9 @@ describe("fal xai/grok-imagine-video extend-video integration", () => {
       {}
     );
     expect(v.success).toBe(false);
-    expect(v.error?.issues.some((i) => i.path.includes("prompt"))).toBe(true);
-    expect(v.error?.issues.some((i) => i.path.includes("video_url"))).toBe(
-      true
-    );
+    if (v.success) throw new Error("expected failure");
+    expect(v.error.issues.some((i) => i.path.includes("prompt"))).toBe(true);
+    expect(v.error.issues.some((i) => i.path.includes("video_url"))).toBe(true);
   });
 
   it("should reject payload with duration below range", () => {

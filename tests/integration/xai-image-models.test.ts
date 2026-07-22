@@ -16,6 +16,9 @@ describe("xAI image generation models integration", () => {
   it("should list image generation models", async () => {
     const provider = createXaiProvider();
     const result = await provider.get.v1.imageGenerationModels();
+    if (!("models" in result)) {
+      throw new Error("expected image generation model list response");
+    }
     expect(result.models).toBeDefined();
     expect(Array.isArray(result.models)).toBe(true);
     expect(result.models.length).toBeGreaterThan(0);

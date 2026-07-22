@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { createKie } from "@apicity/kie";
+import { createKie, type Omnihuman15Request } from "@apicity/kie";
 import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 describe("kie omnihuman 1.5", () => {
@@ -26,7 +26,7 @@ describe("kie omnihuman 1.5", () => {
       fetch: fetchImpl,
       paygate: { secret: TEST_PAYGATE_SECRET },
     });
-    const request = {
+    const request: Omnihuman15Request = {
       model: "omnihuman-1-5",
       input: {
         image_url: "https://example.com/portrait.png",

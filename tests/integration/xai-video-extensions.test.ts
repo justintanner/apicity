@@ -26,11 +26,11 @@ describe("xai video extensions integration", () => {
       video: {
         url: "https://vidgen.x.ai/xai-vidgen-bucket/xai-video-sample.mp4",
       },
-      duration: 5,
+      duration: 5 as const,
     };
     const result = await provider.post.v1.videos.extensions(
       req,
-      mintXaiOtp("v1.videos.extensions", req)
+      mintXaiOtp("v1.videos.extensions", req) as unknown as AbortSignal
     );
 
     expect(result.request_id).toBeTruthy();
@@ -47,11 +47,11 @@ describe("xai video extensions integration", () => {
       video: {
         url: "https://vidgen.x.ai/xai-vidgen-bucket/xai-video-sample.mp4",
       },
-      duration: 10,
+      duration: 10 as const,
     };
     const result = await provider.post.v1.videos.extensions(
       req,
-      mintXaiOtp("v1.videos.extensions", req)
+      mintXaiOtp("v1.videos.extensions", req) as unknown as AbortSignal
     );
 
     expect(result.request_id).toBeTruthy();

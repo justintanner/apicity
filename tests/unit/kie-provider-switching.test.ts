@@ -50,12 +50,16 @@ describe("KIE provider switching", () => {
       fetch: mockFetch,
     });
 
-    await provider.suno.post.api.v1.generate({
-      prompt: "Write a synthwave track",
-      model: "V4",
-      instrumental: true,
-      customMode: false,
-    });
+    await provider.suno.post.api.v1.generate(
+      // @ts-expect-error — deliberately omits required callBackUrl: the test
+      // asserts the raw body is passed through to the suno namespace as-is
+      {
+        prompt: "Write a synthwave track",
+        model: "V4",
+        instrumental: true,
+        customMode: false,
+      }
+    );
 
     const [url, init] = mockFetch.mock.calls[0];
     expect(url).toBe("https://api.kie.ai/api/v1/generate");
@@ -114,7 +118,7 @@ describe("KIE provider switching", () => {
     });
 
     const payload = {
-      audio_id: "achernar",
+      audio_id: "achernar" as const,
       name: "Narrator",
       voice_description: "A calm narration voice.",
       example_dialogue: "Hello from Kie.",

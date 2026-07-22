@@ -97,7 +97,7 @@ describe("mintOtp", () => {
 
     // Payload no longer carries maxSpendUsd.
     expect(
-      (parsed.payload as Record<string, unknown>).maxSpendUsd
+      (parsed.payload as unknown as Record<string, unknown>).maxSpendUsd
     ).toBeUndefined();
 
     // Verify the HMAC signature with verifyOtp as the oracle.

@@ -122,6 +122,7 @@ describe("KIE request utilities", () => {
         });
       } catch (error) {
         expect(error).toBeInstanceOf(KieError);
+        if (!(error instanceof KieError)) throw error;
         expect(error.message).toBe("Kie API error 400: Invalid parameters");
         expect(error.status).toBe(400);
       }
@@ -143,6 +144,7 @@ describe("KIE request utilities", () => {
         });
       } catch (error) {
         expect(error).toBeInstanceOf(KieError);
+        if (!(error instanceof KieError)) throw error;
         expect(error.message).toBe("Kie API error: 500");
       }
     });
@@ -163,6 +165,7 @@ describe("KIE request utilities", () => {
         });
       } catch (error) {
         expect(error).toBeInstanceOf(KieError);
+        if (!(error instanceof KieError)) throw error;
         expect(error.message).toBe("Kie API error: 500");
       }
     });
@@ -179,6 +182,7 @@ describe("KIE request utilities", () => {
         });
       } catch (error) {
         expect(error).toBeInstanceOf(KieError);
+        if (!(error instanceof KieError)) throw error;
         expect(error.message).toContain("Request failed");
         expect(error.status).toBe(500);
       }
@@ -343,6 +347,7 @@ describe("KIE request utilities", () => {
         });
       } catch (error) {
         expect(error).toBeInstanceOf(KieError);
+        if (!(error instanceof KieError)) throw error;
         expect(error.body).toEqual(errorBody);
       }
     });

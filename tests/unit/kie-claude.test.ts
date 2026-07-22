@@ -271,7 +271,8 @@ describe("KIE Claude provider", () => {
         messages: [{ role: "user", content: "Hello" }],
       });
       expect(result.success).toBe(false);
-      expect(result.error?.issues.length).toBeGreaterThan(0);
+      if (result.success) throw new Error("expected failure");
+      expect(result.error.issues.length).toBeGreaterThan(0);
     });
 
     it("messages schema should check model enum", () => {
@@ -281,7 +282,8 @@ describe("KIE Claude provider", () => {
         messages: [{ role: "user", content: "Hello" }],
       });
       expect(result.success).toBe(false);
-      expect(result.error?.issues.some((i) => i.path.includes("model"))).toBe(
+      if (result.success) throw new Error("expected failure");
+      expect(result.error.issues.some((i) => i.path.includes("model"))).toBe(
         true
       );
     });
@@ -308,7 +310,8 @@ describe("KIE Claude provider", () => {
         messages: [{ role: "system", content: "System prompt" }],
       });
       expect(result.success).toBe(false);
-      expect(result.error?.issues.length).toBeGreaterThan(0);
+      if (result.success) throw new Error("expected failure");
+      expect(result.error.issues.length).toBeGreaterThan(0);
     });
   });
 

@@ -58,7 +58,7 @@ describe("harness request body helpers", () => {
     const file = new Blob(["audio-bytes"], { type: "audio/mpeg" });
     const formDataLike = {
       [Symbol.toStringTag]: "FormData",
-      entries: function* (): Iterable<[string, FormDataEntryValue]> {
+      entries: function* (): Iterable<[string, Blob | string]> {
         yield ["file", file];
         yield ["model", "whisper-v3"];
       },

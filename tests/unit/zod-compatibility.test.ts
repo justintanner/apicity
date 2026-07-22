@@ -57,10 +57,21 @@ describe("Zod runtime compatibility", () => {
   }, 120000);
 
   it("validates built provider schemas through the unified Zod 4 runtime", async () => {
+    // dist/ exists only after the beforeAll build, so the static tests/
+    // typecheck gate (which runs on fresh worktrees) must not resolve these
+    // specifiers; import through a variable and type the result from source.
+    const importBuilt = <T>(distPath: string): Promise<T> =>
+      import(distPath) as Promise<T>;
     const [{ createKie }, { createOpenAi }, { createXai }] = await Promise.all([
-      import("../../packages/provider/kie/dist/src/index.js"),
-      import("../../packages/provider/openai/dist/src/index.js"),
-      import("../../packages/provider/xai/dist/src/index.js"),
+      importBuilt<typeof import("@apicity/kie")>(
+        "../../packages/provider/kie/dist/src/index.js"
+      ),
+      importBuilt<typeof import("@apicity/openai")>(
+        "../../packages/provider/openai/dist/src/index.js"
+      ),
+      importBuilt<typeof import("@apicity/xai")>(
+        "../../packages/provider/xai/dist/src/index.js"
+      ),
     ]);
 
     const openai = createOpenAi({ apiKey: "sk-test" });

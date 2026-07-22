@@ -7,7 +7,7 @@ import {
   getPollyMode,
   type PollyContext,
 } from "../harness";
-import { createKie } from "@apicity/kie";
+import { createKie, type MediaGenerationRequest } from "@apicity/kie";
 import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 // End-to-end Telegram-media check for Kling 3.0 Turbo (`kling-3.0/video`),
@@ -98,7 +98,7 @@ describe("kie kling-3.0 turbo upload cat+man e2e", () => {
           mode: "std",
           multi_shots: false,
         },
-      };
+      } satisfies MediaGenerationRequest;
       const task = await provider.post.api.v1.jobs.createTask(
         request,
         mintKieCreateTaskOtp(request)

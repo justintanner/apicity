@@ -161,6 +161,8 @@ describe("kie gemini 3.5 flash", () => {
     expect(body.stream).toBe(false);
     expect(body.contents).toHaveLength(1);
     expect("candidates" in result).toBe(true);
+    if (!("candidates" in result))
+      throw new Error("expected non-stream result");
     expect(
       result.candidates?.[0]?.content?.parts?.[0]?.functionCall?.name
     ).toBe("get_weather_forecast");

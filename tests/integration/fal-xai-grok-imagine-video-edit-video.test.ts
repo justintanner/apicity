@@ -69,10 +69,9 @@ describe("fal xai/grok-imagine-video edit-video integration", () => {
     const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.xai.grokImagineVideo.editVideo.schema.safeParse({});
     expect(v.success).toBe(false);
-    expect(v.error?.issues.some((i) => i.path.includes("prompt"))).toBe(true);
-    expect(v.error?.issues.some((i) => i.path.includes("video_url"))).toBe(
-      true
-    );
+    if (v.success) throw new Error("expected failure");
+    expect(v.error.issues.some((i) => i.path.includes("prompt"))).toBe(true);
+    expect(v.error.issues.some((i) => i.path.includes("video_url"))).toBe(true);
   });
 
   it("should reject payload with wrong resolution", () => {

@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { createKie } from "@apicity/kie";
+import { createKie, type Gpt4oImageGenerateRequest } from "@apicity/kie";
 import { mintKieGpt4oImageOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 describe("kie gpt4o-image generate integration", () => {
@@ -26,7 +26,7 @@ describe("kie gpt4o-image generate integration", () => {
           "A cinematic night city poster with neon reflections on a rainy street.",
         size: "3:2",
         isEnhance: true,
-      };
+      } satisfies Gpt4oImageGenerateRequest;
 
       const task = await provider.post.api.v1.gpt4oImage.generate(
         request,

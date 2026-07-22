@@ -36,7 +36,7 @@ describe("fal pricing estimate verb surface", () => {
     ).toBe(false);
     expect(mockFetch).toHaveBeenCalledTimes(1);
 
-    const [url, init] = mockFetch.mock.calls[0] as [
+    const [url, init] = mockFetch.mock.calls[0] as unknown as [
       RequestInfo | URL,
       RequestInit,
     ];
@@ -71,7 +71,7 @@ describe("fal pricing estimate verb surface", () => {
     expect(provider.post.v1.models.pricing.estimate.schema).toBeDefined();
     expect(mockFetch).toHaveBeenCalledTimes(1);
 
-    const [url, init] = mockFetch.mock.calls[0] as [
+    const [url, init] = mockFetch.mock.calls[0] as unknown as [
       RequestInfo | URL,
       RequestInit,
     ];

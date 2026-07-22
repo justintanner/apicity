@@ -268,8 +268,10 @@ describe("anthropic sse", () => {
         events.push(event);
       }
       expect(events).toHaveLength(2);
-      expect((events[0] as { valid: boolean }).valid).toBe(true);
-      expect((events[1] as { also_valid: boolean }).also_valid).toBe(true);
+      expect((events[0] as unknown as { valid: boolean }).valid).toBe(true);
+      expect((events[1] as unknown as { also_valid: boolean }).also_valid).toBe(
+        true
+      );
     });
 
     it("should handle empty JSON data", async () => {

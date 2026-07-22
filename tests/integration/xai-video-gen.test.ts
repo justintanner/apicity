@@ -25,13 +25,13 @@ describe("xai video generation integration", () => {
       prompt:
         "A white cat with heterochromia eyes walking across a rooftop at golden hour, cinematic drone shot",
       model: "grok-imagine-video" as const,
-      duration: 10,
+      duration: 10 as const,
       aspect_ratio: "16:9" as const,
       resolution: "720p" as const,
     };
     const result = await provider.post.v1.videos.generations(
       req,
-      mintXaiOtp("v1.videos.generations", req)
+      mintXaiOtp("v1.videos.generations", req) as unknown as AbortSignal
     );
 
     expect(result.request_id).toBeTruthy();

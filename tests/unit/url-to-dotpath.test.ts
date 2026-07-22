@@ -4,6 +4,13 @@ import {
   urlToDotString,
 } from "../../scripts/lib/url-to-dotpath.mjs";
 
+// The .mjs default `ignoredHostLabels = []` infers as never[]; retype the
+// option to its real string[] shape for the calls that pass labels.
+const urlToDotPathWithOptions = urlToDotPath as (
+  url: string,
+  options?: { keepFullHostname?: boolean; ignoredHostLabels?: string[] }
+) => string[] | null;
+
 describe("urlToDotPath", () => {
   it("converts relative URL path segments to dotted namespace parts", () => {
     expect(urlToDotPath("/v1/language-models")).toEqual([
@@ -69,12 +76,12 @@ describe("urlToDotPath", () => {
 
   it("ignores configured provider-owned host labels", () => {
     expect(
-      urlToDotPath("https://queue.fal.run/requests", {
+      urlToDotPathWithOptions("https://queue.fal.run/requests", {
         ignoredHostLabels: ["queue"],
       })
     ).toEqual(["requests"]);
     expect(
-      urlToDotPath("https://kieai.erweima.ai/v1/jobs", {
+      urlToDotPathWithOptions("https://kieai.erweima.ai/v1/jobs", {
         ignoredHostLabels: ["kieai"],
       })
     ).toEqual(["v1", "jobs"]);

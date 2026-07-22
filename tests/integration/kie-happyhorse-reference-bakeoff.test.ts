@@ -7,7 +7,7 @@ import {
   getPollyMode,
   type PollyContext,
 } from "../harness";
-import { createKie } from "@apicity/kie";
+import { createKie, type MediaGenerationRequest } from "@apicity/kie";
 import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 // Reference-video bake-off: HappyHorse (fifth column).
@@ -28,7 +28,7 @@ import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 const PROMPT = `On a sandy beach with the ocean behind, character2 sits cross-legged on the sand. character1 climbs onto character2's lap, purrs, and lifts a paw to bat playfully at his blue tie. character2 smiles and waves at the camera with his free hand. character1 is a white cat with mismatched yellow and blue eyes. character2 is a man wearing a blue suit and a blue tie.`;
 
 async function uploadFixture(
-  provider: ReturnType<typeof kie>,
+  provider: ReturnType<typeof createKie>,
   filename: string,
   mimeType: string
 ): Promise<string> {
@@ -76,7 +76,7 @@ describe("kie happyhorse/reference-to-video bake-off", () => {
           duration: 3,
           seed: 1308038620,
         },
-      };
+      } satisfies MediaGenerationRequest;
       const task = await provider.post.api.v1.jobs.createTask(
         request,
         mintKieCreateTaskOtp(request)

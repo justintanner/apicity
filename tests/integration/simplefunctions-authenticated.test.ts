@@ -7,6 +7,7 @@ import {
   SimpleFunctionsIdRequestSchema,
   SimpleFunctionsOptionalQueryRequestSchema,
   SimpleFunctionsRecordRequestSchema,
+  type SimpleFunctionsOptionalQueryRequest,
 } from "@apicity/simplefunctions";
 
 interface FetchCall {
@@ -118,9 +119,12 @@ describe("simplefunctions authenticated workflow-state reads", () => {
       nextCursor: "watch_next",
     });
     await expect(
+      // The declared request type's catchall index signature contradicts its
+      // own `query` object property, so this valid payload needs a cast
+      // through the specific declared request type.
       provider.api.alertRules({
         query: { watch_id: "watch_1", enabled: true, limit: 2 },
-      })
+      } as unknown as SimpleFunctionsOptionalQueryRequest)
     ).resolves.toMatchObject({
       rules: [{ id: "rule_1" }],
       total: 1,

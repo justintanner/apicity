@@ -152,6 +152,9 @@ Line 3`;
       const largeData = "A".repeat(100000);
       const result = imageBase64(largeData, "image/jpeg");
 
+      if (result.source.type !== "base64") {
+        throw new Error("expected base64 source");
+      }
       expect(result.source.data).toBe(largeData);
       expect(result.source.data).toHaveLength(100000);
     });

@@ -4,7 +4,7 @@ import {
   teardownPolly,
   type PollyContext,
 } from "../harness";
-import { createKie } from "@apicity/kie";
+import { createKie, type MediaGenerationRequest } from "@apicity/kie";
 import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 describe("kie kling-3.0 motion-control integration", () => {
@@ -40,7 +40,7 @@ describe("kie kling-3.0 motion-control integration", () => {
           background_source: "input_video",
           duration: "5s",
         },
-      };
+      } as unknown as MediaGenerationRequest;
       const task = await provider.post.api.v1.jobs.createTask(
         request,
         mintKieCreateTaskOtp(request)
@@ -49,7 +49,9 @@ describe("kie kling-3.0 motion-control integration", () => {
       expect(task.data?.taskId).toBeTruthy();
       expect(typeof task.data?.taskId).toBe("string");
 
-      const info = await provider.get.api.v1.jobs.recordInfo(task.data?.taskId);
+      const info = await provider.get.api.v1.jobs.recordInfo(
+        task.data!.taskId!
+      );
 
       expect(info.data?.taskId).toBe(task.data?.taskId);
       expect(["waiting", "queuing", "generating", "success", "fail"]).toContain(

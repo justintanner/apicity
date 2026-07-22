@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { createKie } from "@apicity/kie";
+import { createKie, type RunwayGenerateRequest } from "@apicity/kie";
 import { mintKieRunwayOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 describe("kie runway generate integration", () => {
@@ -27,7 +27,7 @@ describe("kie runway generate integration", () => {
         quality: "720p",
         aspectRatio: "16:9",
         callBackUrl: "https://example.com/runway-callback",
-      };
+      } satisfies RunwayGenerateRequest;
 
       const task = await provider.post.api.v1.runway.generate(
         request,

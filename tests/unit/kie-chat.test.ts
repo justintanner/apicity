@@ -183,7 +183,8 @@ describe("KIE Chat provider", () => {
         model: "gpt-5.5",
       });
       expect(result.success).toBe(false);
-      expect(result.error?.issues.length).toBeGreaterThan(0);
+      if (result.success) throw new Error("expected failure");
+      expect(result.error.issues.length).toBeGreaterThan(0);
     });
 
     it("completions schema should check message roles", () => {
@@ -193,7 +194,8 @@ describe("KIE Chat provider", () => {
         messages: [{ role: "invalid", content: "Hello" }],
       });
       expect(result.success).toBe(false);
-      expect(result.error?.issues.length).toBeGreaterThan(0);
+      if (result.success) throw new Error("expected failure");
+      expect(result.error.issues.length).toBeGreaterThan(0);
     });
   });
 

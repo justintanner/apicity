@@ -12,7 +12,9 @@ describe("dolthub v2 branch create", () => {
     expect(provider.api.v2.databases.branches).toBeDefined();
     expect(provider.api.v2.databases.branches.create).toBeInstanceOf(Function);
     // Unlike the read-only `list`, the POST method carries a zod request schema.
-    expect(provider.api.v2.databases.branches.create.schema).toBeDefined();
+    // `.schema` is attached via Object.assign; the declared method type omits it.
+    const create = provider.api.v2.databases.branches.create;
+    expect((create as unknown as { schema?: unknown }).schema).toBeDefined();
   });
 
   it("POSTs the enveloped create request and preserves the branch envelope", async () => {

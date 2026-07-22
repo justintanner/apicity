@@ -27,7 +27,9 @@ describe("kie download url", () => {
     // Either way, we verify the schema/endpoint works
     expect([200, 404, 422]).toContain(result.code);
     if (result.code === 200) {
-      expect(result.data?.url).toBeTruthy();
+      expect(
+        (result.data as unknown as { url?: string } | undefined)?.url
+      ).toBeTruthy();
       expect(result.msg).toBe("success");
     }
   });
@@ -48,6 +50,7 @@ describe("kie download url", () => {
     const invalidResult =
       provider.post.api.v1.common.downloadUrl.schema.safeParse({});
     expect(invalidResult.success).toBe(false);
+    if (invalidResult.success) throw new Error("expected failure");
     expect(invalidResult.error?.issues.length).toBeGreaterThan(0);
   });
 });

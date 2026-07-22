@@ -199,7 +199,7 @@ function redactRequestPostDataTextSecrets(
 ): void {
   const postData = recording.request?.postData;
   const text = postData?.text;
-  if (typeof text !== "string") return;
+  if (!postData || typeof text !== "string") return;
   const secretKeys = new Set(REQUEST_POST_DATA_SECRET_KEYS);
   if (recording.request?.url?.includes("api.telegram.org/bot")) {
     for (const key of TELEGRAM_REQUEST_POST_DATA_SECRET_KEYS) {
@@ -313,9 +313,9 @@ export function redactPersistedHarSecrets(
   redactRequestPostDataTextSecrets(recording);
   redactDashScopeResponseHeaders(recording.response?.headers);
 
-  const responseText = recording.response?.content?.text;
-  if (typeof responseText === "string") {
-    recording.response.content.text = redactResponseTextSecrets(responseText);
+  const responseContent = recording.response?.content;
+  if (responseContent && typeof responseContent.text === "string") {
+    responseContent.text = redactResponseTextSecrets(responseContent.text);
   }
   redactGuestTokenResponseBody(recording);
   redactFireworksApiKeyResponseBody(recording);
@@ -453,7 +453,12 @@ export function summarizeJsonRequestBodyMedia(
 ): void {
   const postData = recording.request?.postData;
   const text = postData?.text;
-  if (!isJsonMimeType(postData?.mimeType) || typeof text !== "string") return;
+  if (
+    !postData ||
+    !isJsonMimeType(postData.mimeType) ||
+    typeof text !== "string"
+  )
+    return;
 
   let parsed: unknown;
   try {
@@ -736,9 +741,10 @@ function redactIdentifierSecrets(value: unknown): {
   return { value: redactedObject, redacted };
 }
 
-function redactedRequestId(req: { identifiers?: unknown }): string | undefined {
-  if (!req.identifiers) return undefined;
-  const result = redactIdentifierSecrets(req.identifiers);
+function redactedRequestId(req: unknown): string | undefined {
+  const identifiers = (req as { identifiers?: unknown }).identifiers;
+  if (!identifiers) return undefined;
+  const result = redactIdentifierSecrets(identifiers);
   if (!result.redacted) return undefined;
   const serialized = stableStringify(result.value);
   if (!serialized) return undefined;

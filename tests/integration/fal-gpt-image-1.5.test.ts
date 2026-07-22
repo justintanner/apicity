@@ -51,7 +51,8 @@ describe("fal gpt-image-1.5 text-to-image integration", () => {
     const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.gptImage1p5.schema.safeParse({});
     expect(v.success).toBe(false);
-    expect(v.error?.issues.some((i) => i.path.includes("prompt"))).toBe(true);
+    if (v.success) throw new Error("expected failure");
+    expect(v.error.issues.some((i) => i.path.includes("prompt"))).toBe(true);
   });
 
   it("should reject payload with wrong enum value", () => {

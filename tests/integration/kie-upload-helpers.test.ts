@@ -7,7 +7,11 @@ import {
   mintKieCreateTaskOtp,
   type PollyContext,
 } from "../harness";
-import { createKie, submitMediaJob } from "@apicity/kie";
+import {
+  createKie,
+  submitMediaJob,
+  type MediaGenerationRequest,
+} from "@apicity/kie";
 
 describe("kie helper functions", () => {
   let ctx: PollyContext;
@@ -29,7 +33,7 @@ describe("kie helper functions", () => {
           prompt: "A red apple on a wooden table",
           aspect_ratio: "1:1",
         },
-      };
+      } satisfies MediaGenerationRequest;
       const taskId = await submitMediaJob(
         provider,
         request,

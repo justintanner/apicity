@@ -5,7 +5,7 @@ import {
   getPollyMode,
   type PollyContext,
 } from "../harness";
-import { createKie } from "@apicity/kie";
+import { createKie, type MediaGenerationRequest } from "@apicity/kie";
 import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 describe("kie happyhorse-1-1/text-to-video integration", () => {
@@ -35,7 +35,7 @@ describe("kie happyhorse-1-1/text-to-video integration", () => {
           aspect_ratio: "16:9",
           duration: 3,
         },
-      };
+      } satisfies MediaGenerationRequest;
       const task = await provider.post.api.v1.jobs.createTask(
         request,
         mintKieCreateTaskOtp(request)

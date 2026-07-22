@@ -55,7 +55,8 @@ describe("fal wan v2.7 edit integration", () => {
       prompt: "a cat",
     });
     expect(v.success).toBe(false);
-    expect(v.error?.issues.some((i) => i.path.includes("image_urls"))).toBe(
+    if (v.success) throw new Error("expected failure");
+    expect(v.error.issues.some((i) => i.path.includes("image_urls"))).toBe(
       true
     );
   });

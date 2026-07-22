@@ -7,7 +7,7 @@ import {
   getPollyMode,
   type PollyContext,
 } from "../harness";
-import { createKie } from "@apicity/kie";
+import { createKie, type MediaGenerationRequest } from "@apicity/kie";
 import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 // Grok Imagine Video 1.5 Preview (grok-imagine-video-1-5-preview) — a new
@@ -58,7 +58,7 @@ describe("kie grok-imagine-video-1-5-preview integration", () => {
           duration: 8,
           nsfw_checker: true,
         },
-      };
+      } satisfies MediaGenerationRequest;
       const task = await provider.post.api.v1.jobs.createTask(
         request,
         mintKieCreateTaskOtp(request)

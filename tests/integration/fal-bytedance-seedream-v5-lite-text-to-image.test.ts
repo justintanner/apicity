@@ -54,7 +54,8 @@ describe("fal bytedance seedream v5 lite text-to-image integration", () => {
     const v =
       provider.run.bytedance.seedream.v5.lite.textToImage.schema.safeParse({});
     expect(v.success).toBe(false);
-    expect(v.error?.issues.some((i) => i.path.includes("prompt"))).toBe(true);
+    if (v.success) throw new Error("expected failure");
+    expect(v.error.issues.some((i) => i.path.includes("prompt"))).toBe(true);
   });
 
   it("should reject payload with wrong enum value for image_size", () => {

@@ -24,6 +24,16 @@ interface HarEntry {
   };
 }
 
+interface EndpointExample {
+  source: string;
+  payload: unknown;
+}
+
+// `.example` is attached to endpoint functions at runtime (gen:examples) but
+// absent from their declared types; read it through a structural cast.
+const exampleOf = (endpoint: unknown): EndpointExample | undefined =>
+  (endpoint as { example?: EndpointExample }).example;
+
 function loadEndpointDocRows(): EndpointDocRow[] {
   return fs
     .readFileSync("scripts/endpoint-docs.tsv", "utf-8")
@@ -54,7 +64,7 @@ function loadHarEntries(path: string): HarEntry[] {
 describe("HAR-derived examples on endpoints", () => {
   test("openai chat completions has the chat-hello payload attached", () => {
     const client = createOpenAi({ apiKey: "test-key" });
-    const ex = client.post.v1.chat.completions.example;
+    const ex = exampleOf(client.post.v1.chat.completions);
     expect(ex).toBeDefined();
     expect(ex?.source).toBe("openai/chat-hello");
     expect(ex?.payload).toMatchObject({
@@ -66,7 +76,7 @@ describe("HAR-derived examples on endpoints", () => {
   test("an example payload validates against its endpoint's schema", () => {
     const client = createOpenAi({ apiKey: "test-key" });
     const fn = client.post.v1.chat.completions;
-    const example = fn.example;
+    const example = exampleOf(fn);
     const schema = fn.schema;
     expect(example).toBeDefined();
     expect(schema).toBeDefined();
@@ -81,8 +91,9 @@ describe("HAR-derived examples on endpoints", () => {
     // shape. This sanity-checks that the extractor picks a faithful payload
     // and didn't strip out distinguishing fields.
     const client = createAlibaba({ apiKey: "test-key" });
-    const ex =
-      client.post.api.v1.services.aigc.multimodalGeneration.generation.example;
+    const ex = exampleOf(
+      client.post.api.v1.services.aigc.multimodalGeneration.generation
+    );
     expect(ex).toBeDefined();
     const payload = ex?.payload as Record<string, unknown>;
     expect(payload).toHaveProperty("model");
@@ -91,7 +102,7 @@ describe("HAR-derived examples on endpoints", () => {
 
   test("xai chat completions gets a green-path example via the lenient matcher", () => {
     const client = createXai({ apiKey: "test-key" });
-    const ex = client.post.v1.chat.completions.example;
+    const ex = exampleOf(client.post.v1.chat.completions);
     expect(ex).toBeDefined();
     expect(ex?.source).toBe("xai/chat-hello");
   });
@@ -99,7 +110,7 @@ describe("HAR-derived examples on endpoints", () => {
   test("xai documents search example validates against its endpoint schema", () => {
     const client = createXai({ apiKey: "test-key" });
     const fn = client.post.v1.documents.search;
-    const ex = fn.example;
+    const ex = exampleOf(fn);
     expect(ex).toBeDefined();
     expect(ex?.source).toBe("xai/documents-search");
     const result = fn.schema.safeParse(ex?.payload);
@@ -109,9 +120,9 @@ describe("HAR-derived examples on endpoints", () => {
   test("xai files public URL examples cover create, revoke, and list filters", () => {
     const client = createXai({ apiKey: "test-key" });
     const createFn = client.post.v1.files.publicUrl;
-    const createEx = createFn.example;
-    const revokeEx = client.post.v1.files.publicUrl.revoke.example;
-    const listEx = client.get.v1.files.example;
+    const createEx = exampleOf(createFn);
+    const revokeEx = exampleOf(client.post.v1.files.publicUrl.revoke);
+    const listEx = exampleOf(client.get.v1.files);
 
     expect(createEx?.source).toBe("static:xai-files-public-url-create");
     expect(createFn.schema.safeParse(createEx?.payload).success).toBe(true);
@@ -127,7 +138,7 @@ describe("HAR-derived examples on endpoints", () => {
 
   test("fal veo3.1 image-to-video keeps its image payload", () => {
     const client = createFal({ apiKey: "test-key" });
-    const ex = client.run.veo3p1.imageToVideo.example;
+    const ex = exampleOf(client.run.veo3p1.imageToVideo);
     expect(ex).toBeDefined();
     expect(ex?.source).toBe("fal/veo3-1-image-to-video");
     expect(ex?.payload).toMatchObject({
@@ -152,7 +163,7 @@ describe("HAR-derived examples on endpoints", () => {
   test("fal storage upload initiate has a schema-valid example", () => {
     const client = createFal({ apiKey: "test-key" });
     const fn = client.storage.upload.initiate;
-    const ex = fn.example;
+    const ex = exampleOf(fn);
     expect(ex).toBeDefined();
     expect(ex?.source).toBe("fal/storage-upload-initiate");
     const result = fn.schema.safeParse(ex?.payload);
@@ -199,7 +210,7 @@ describe("HAR-derived examples on endpoints", () => {
     const client = createFireworks({ apiKey: "test-key" });
 
     const kontext = client.inference.v1.workflows.kontext;
-    const kontextExample = kontext.example;
+    const kontextExample = exampleOf(kontext);
     expect(kontextExample).toBeDefined();
     expect(kontextExample?.source).toBe("fireworks/kontext-async-job");
     expect(kontext.schema.safeParse(kontextExample?.payload).success).toBe(
@@ -207,7 +218,7 @@ describe("HAR-derived examples on endpoints", () => {
     );
 
     const getResult = client.inference.v1.workflows.getResult;
-    const getResultExample = getResult.example;
+    const getResultExample = exampleOf(getResult);
     expect(getResultExample).toBeDefined();
     expect(getResultExample?.source).toBe("fireworks/kontext-async-job");
     expect(getResult.schema.safeParse(getResultExample?.payload).success).toBe(
@@ -217,8 +228,9 @@ describe("HAR-derived examples on endpoints", () => {
 
   test("fireworks RFT jobs list uses its bodyless HAR as coverage", () => {
     const client = createFireworks({ apiKey: "test-key" });
-    const ex =
-      client.inference.v1.accounts.reinforcementFineTuningJobs.list.example;
+    const ex = exampleOf(
+      client.inference.v1.accounts.reinforcementFineTuningJobs.list
+    );
     expect(ex).toBeDefined();
     expect(ex?.source).toBe("fireworks/rft-jobs-list");
     expect(ex?.payload).toEqual({});
@@ -226,7 +238,7 @@ describe("HAR-derived examples on endpoints", () => {
 
   test("polymarket gamma comments uses the complete query HAR as coverage", () => {
     const client = createPolymarket();
-    const ex = client.get.gamma.comments.example;
+    const ex = exampleOf(client.get.gamma.comments);
 
     expect(ex).toBeDefined();
     expect(ex?.source).toBe("polymarket/gamma-comments-list");
@@ -235,12 +247,12 @@ describe("HAR-derived examples on endpoints", () => {
       parent_entity_id: 16167,
       limit: 2,
     });
-    expect(client.get.gamma.comments.byUser.example).toBeUndefined();
+    expect(exampleOf(client.get.gamma.comments.byUser)).toBeUndefined();
   });
 
   test("youtube videos.insert uses a sanitized upload example", () => {
     const client = createYouTube({ accessToken: "test-token" });
-    const ex = client.videos.insert.example;
+    const ex = exampleOf(client.videos.insert);
 
     expect(ex).toBeDefined();
     expect(ex?.source).toBe("youtube/videos-insert");

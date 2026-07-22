@@ -76,7 +76,8 @@ describe("fal bytedance seed speech tts v2", () => {
     const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.bytedance.seedSpeech.tts.v2.schema.safeParse({});
     expect(v.success).toBe(false);
-    expect(v.error?.issues.some((i) => i.path.includes("text"))).toBe(true);
+    if (v.success) throw new Error("expected safeParse failure");
+    expect(v.error.issues.some((i) => i.path.includes("text"))).toBe(true);
   });
 
   it("should reject invalid enum and range values", () => {

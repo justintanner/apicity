@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { createKie, KieError } from "@apicity/kie";
+import { createKie, KieError, type RunwayExtendRequest } from "@apicity/kie";
 import { mintKieRunwayOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 describe("kie runway extend integration", () => {
@@ -29,7 +29,7 @@ describe("kie runway extend integration", () => {
         taskId: "apicity-test-nonexistent-task-id-do-not-record-real",
         prompt: "Continue the scene with a slow zoom out.",
         quality: "720p",
-      };
+      } satisfies RunwayExtendRequest;
 
       try {
         const result = await provider.post.api.v1.runway.extend(

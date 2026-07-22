@@ -11,7 +11,7 @@ const REQUEST = {
   content: "Hello from a test",
   from: "+15550100001",
   to: ["+15550100002"],
-} as const;
+};
 
 function successResponse(extra: Record<string, unknown> = {}): Response {
   return Response.json(

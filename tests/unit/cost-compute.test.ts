@@ -14,7 +14,8 @@ describe("computeEstimate", () => {
         },
       };
       const result = computeEstimate(req);
-      expect(result.ok).toBeUndefined(); // CostEstimate has no ok field
+      // CostEstimate has no ok field
+      expect((result as unknown as { ok?: unknown }).ok).toBeUndefined();
       expect(result.usd).toBeGreaterThan(0);
       expect(result.currency).toBe("USD");
       expect(result.source).toBe("tokens-heuristic+table");

@@ -35,7 +35,7 @@ describe("kie qwen2/text-to-image integration", () => {
     expect(task.data?.taskId).toBeTruthy();
     expect(typeof task.data?.taskId).toBe("string");
 
-    const info = await provider.get.api.v1.jobs.recordInfo(task.data?.taskId);
+    const info = await provider.get.api.v1.jobs.recordInfo(task.data!.taskId!);
 
     expect(info.data?.taskId).toBe(task.data?.taskId);
     expect(["waiting", "queuing", "generating", "success", "fail"]).toContain(
@@ -70,6 +70,7 @@ describe("kie qwen2/text-to-image integration", () => {
       },
     });
     expect(missingPrompt.success).toBe(false);
+    if (missingPrompt.success) throw new Error("expected failure");
     expect(JSON.stringify(missingPrompt.error?.issues)).toContain("prompt");
 
     const invalidSize = schema.safeParse({

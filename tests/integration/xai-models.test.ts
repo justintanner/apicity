@@ -14,6 +14,7 @@ describe("xai models integration", () => {
     ctx = setupPolly("xai/models-list");
     const provider = createXaiProvider();
     const result = await provider.get.v1.models();
+    if (!("data" in result)) throw new Error("expected model list response");
     expect(result.object).toBe("list");
     expect(Array.isArray(result.data)).toBe(true);
     expect(result.data.length).toBeGreaterThan(0);
@@ -28,6 +29,7 @@ describe("xai models integration", () => {
     ctx = setupPolly("xai/models-get");
     const provider = createXaiProvider();
     const result = await provider.get.v1.models("grok-3");
+    if ("data" in result) throw new Error("expected a single model");
     expect(result.id).toBe("grok-3");
     expect(result.object).toBe("model");
     expect(result.owned_by).toBeTruthy();
@@ -39,6 +41,9 @@ describe("xai models integration", () => {
     ctx = setupPolly("xai/language-models-list");
     const provider = createXaiProvider();
     const result = await provider.get.v1.languageModels();
+    if (!("models" in result)) {
+      throw new Error("expected language model list response");
+    }
     expect(Array.isArray(result.models)).toBe(true);
     expect(result.models.length).toBeGreaterThan(0);
     const model = result.models[0];
@@ -58,6 +63,7 @@ describe("xai models integration", () => {
     ctx = setupPolly("xai/language-models-get");
     const provider = createXaiProvider();
     const result = await provider.get.v1.languageModels("grok-3");
+    if ("models" in result) throw new Error("expected a single language model");
     expect(result.id).toBe("grok-3");
     expect(result.object).toBe("model");
     expect(result.fingerprint).toBeTruthy();
@@ -74,6 +80,9 @@ describe("xai models integration", () => {
     ctx = setupPolly("xai/image-generation-models-list");
     const provider = createXaiProvider();
     const result = await provider.get.v1.imageGenerationModels();
+    if (!("models" in result)) {
+      throw new Error("expected image generation model list response");
+    }
     expect(Array.isArray(result.models)).toBe(true);
     expect(result.models.length).toBeGreaterThan(0);
     const model = result.models[0];
@@ -94,6 +103,9 @@ describe("xai models integration", () => {
       const provider = createXaiProvider();
       const result =
         await provider.get.v1.imageGenerationModels("grok-imagine-image");
+      if ("models" in result) {
+        throw new Error("expected a single image generation model");
+      }
       expect(result.id).toBe("grok-imagine-image");
       expect(result.object).toBe("model");
       expect(result.fingerprint).toBeTruthy();
@@ -108,6 +120,9 @@ describe("xai models integration", () => {
     ctx = setupPolly("xai/video-generation-models-list");
     const provider = createXaiProvider();
     const result = await provider.get.v1.videoGenerationModels();
+    if (!("models" in result)) {
+      throw new Error("expected video generation model list response");
+    }
     expect(Array.isArray(result.models)).toBe(true);
     expect(result.models.length).toBeGreaterThan(0);
     const model = result.models[0];
@@ -126,6 +141,9 @@ describe("xai models integration", () => {
     const provider = createXaiProvider();
     const result =
       await provider.get.v1.videoGenerationModels("grok-imagine-video");
+    if ("models" in result) {
+      throw new Error("expected a single video generation model");
+    }
     expect(result.id).toBe("grok-imagine-video");
     expect(result.object).toBe("model");
     expect(result.fingerprint).toBeTruthy();

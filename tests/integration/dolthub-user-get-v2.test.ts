@@ -12,7 +12,8 @@ describe("dolthub v2 user get", () => {
   it("should carry no request schema (parameterless read endpoint)", () => {
     const provider = createDoltHub();
     // REQ-002: the read endpoint has no POST body and therefore no `.schema`.
-    expect(provider.api.v2.user.get.schema).toBeUndefined();
+    const get = provider.api.v2.user.get;
+    expect((get as unknown as { schema?: unknown }).schema).toBeUndefined();
   });
 
   it("should issue a single Bearer GET to /api/v2/user and unwrap the envelope", async () => {
@@ -155,6 +156,7 @@ describe("dolthub v2 user get integration", () => {
     expect(err.code).toBe("UNAUTHENTICATED");
     expect(err.title).toBeTruthy();
     // REQ-002: the callable carries no request schema.
-    expect(provider.api.v2.user.get.schema).toBeUndefined();
+    const get = provider.api.v2.user.get;
+    expect((get as unknown as { schema?: unknown }).schema).toBeUndefined();
   });
 });

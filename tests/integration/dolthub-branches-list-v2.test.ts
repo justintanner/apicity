@@ -7,7 +7,8 @@ describe("dolthub v2 branches list", () => {
     const provider = createDoltHub();
     expect(provider.api.v2.databases.branches).toBeDefined();
     expect(provider.api.v2.databases.branches.list).toBeInstanceOf(Function);
-    expect(provider.api.v2.databases.branches.list.schema).toBeUndefined();
+    const list = provider.api.v2.databases.branches.list;
+    expect((list as unknown as { schema?: unknown }).schema).toBeUndefined();
   });
 
   it("preserves the paginated envelope and serializes pageToken", async () => {
@@ -48,7 +49,7 @@ describe("dolthub v2 branches list", () => {
         last_updated_at: "2024-01-15T12:34:56Z",
       },
     ]);
-    expect(result.meta.next_page_token).toBe("next-page");
+    expect(result.meta?.next_page_token).toBe("next-page");
 
     const parsed = new URL(capturedUrl);
     expect(parsed.origin + parsed.pathname).toBe(

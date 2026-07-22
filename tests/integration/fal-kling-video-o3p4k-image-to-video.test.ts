@@ -59,9 +59,8 @@ describe("fal kling-video o3/4k image-to-video integration", () => {
     const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.klingVideo.o3p4k.imageToVideo.schema.safeParse({});
     expect(v.success).toBe(false);
-    expect(v.error?.issues.some((i) => i.path.includes("image_url"))).toBe(
-      true
-    );
+    if (v.success) throw new Error("expected failure");
+    expect(v.error.issues.some((i) => i.path.includes("image_url"))).toBe(true);
   });
 
   it("should reject payload with invalid duration", () => {

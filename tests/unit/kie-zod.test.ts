@@ -10,7 +10,10 @@ const HTTPS_URL = "https://example.com/image.png";
 const LOCAL_PATH = "@asset/photo.png";
 
 function urlIssueMessages(
-  result: ReturnType<typeof Seedance2MiniInputSchema.safeParse>
+  result:
+    | ReturnType<typeof Seedance2MiniInputSchema.safeParse>
+    | ReturnType<typeof Seedance2InputSchema.safeParse>
+    | ReturnType<typeof Seedance2FastInputSchema.safeParse>
 ): string[] {
   return (result.error?.issues ?? [])
     .filter((issue) => issue.path.includes("reference_image_urls"))

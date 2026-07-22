@@ -49,7 +49,13 @@ describe("anthropic v1.messages multi-turn code review", () => {
     expect(result.content.length).toBeGreaterThan(0);
 
     const text = result.content
-      .filter((b): b is AnthropicTextBlock => b.type === "text")
+      .filter(
+        (b): b is AnthropicTextBlock =>
+          typeof b === "object" &&
+          b !== null &&
+          "type" in b &&
+          b.type === "text"
+      )
       .map((b) => b.text)
       .join("");
     expect(text.length).toBeGreaterThan(0);

@@ -24,7 +24,8 @@ describe("dolthub v2 sql write", () => {
     // Bind the identity, not just presence: the MCP server derives this
     // endpoint's tool input JSON Schema from `.schema`, so attaching a
     // sibling's schema here would ship a wrong tool contract silently.
-    expect(provider.api.v2.databases.sql.write.schema).toBe(
+    const write = provider.api.v2.databases.sql.write;
+    expect((write as unknown as { schema?: unknown }).schema).toBe(
       DoltHubV2SqlWriteRequestSchema
     );
   });

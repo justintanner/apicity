@@ -63,9 +63,10 @@ describe("fal kling-video v3 standard image-to-video integration", () => {
       {}
     );
     expect(v.success).toBe(false);
-    expect(
-      v.error?.issues.some((i) => i.path.includes("start_image_url"))
-    ).toBe(true);
+    if (v.success) throw new Error("expected failure");
+    expect(v.error.issues.some((i) => i.path.includes("start_image_url"))).toBe(
+      true
+    );
   });
 
   it("should reject payload with cfg_scale out of range", () => {

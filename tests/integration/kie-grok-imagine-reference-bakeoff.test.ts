@@ -7,7 +7,7 @@ import {
   getPollyMode,
   type PollyContext,
 } from "../harness";
-import { createKie } from "@apicity/kie";
+import { createKie, type MediaGenerationRequest } from "@apicity/kie";
 import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 // Reference-video bake-off: Grok Imagine half of the pair.
@@ -25,7 +25,7 @@ const PROMPT = `@Image1 and @Image2 show the same white cat with mismatched yell
 In the scene, @Image3 sits cross-legged on the sand in the setting from @Image4. @Image1 climbs onto @Image3's lap, purrs, and lifts a paw to bat playfully at his blue tie. @Image3 smiles and waves at the camera with his free hand.`;
 
 async function uploadFixture(
-  provider: ReturnType<typeof kie>,
+  provider: ReturnType<typeof createKie>,
   filename: string,
   mimeType: string
 ): Promise<string> {
@@ -78,7 +78,7 @@ describe("kie grok-imagine reference bake-off", () => {
           mode: "fun",
           nsfw_checker: false,
         },
-      };
+      } satisfies MediaGenerationRequest;
       const task = await provider.post.api.v1.jobs.createTask(
         request,
         mintKieCreateTaskOtp(request)

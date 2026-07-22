@@ -49,7 +49,8 @@ describe("fal sora-2 text-to-video integration", () => {
     const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.sora2.textToVideo.schema.safeParse({});
     expect(v.success).toBe(false);
-    expect(v.error?.issues.some((i) => i.path.includes("prompt"))).toBe(true);
+    if (v.success) throw new Error("expected failure");
+    expect(v.error.issues.some((i) => i.path.includes("prompt"))).toBe(true);
   });
 
   it("should reject payload with invalid duration", () => {

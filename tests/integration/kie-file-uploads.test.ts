@@ -76,6 +76,7 @@ describe("kie upload endpoints", () => {
       {}
     );
     expect(invalidStream.success).toBe(false);
+    if (invalidStream.success) throw new Error("expected failure");
     expect(invalidStream.error?.issues.length).toBeGreaterThan(0);
 
     const validUrl = provider.post.api.fileUrlUpload.schema.safeParse({
@@ -89,6 +90,7 @@ describe("kie upload endpoints", () => {
       uploadPath: "images",
     });
     expect(invalidUrl.success).toBe(false);
+    if (invalidUrl.success) throw new Error("expected failure");
     expect(
       invalidUrl.error?.issues.some((issue) => issue.path.includes("fileUrl"))
     ).toBe(true);
@@ -105,6 +107,7 @@ describe("kie upload endpoints", () => {
       {}
     );
     expect(invalidBase64.success).toBe(false);
+    if (invalidBase64.success) throw new Error("expected failure");
     expect(
       invalidBase64.error?.issues.some((issue) =>
         issue.path.includes("base64Data")

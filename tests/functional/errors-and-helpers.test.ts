@@ -58,7 +58,7 @@ describe("error classes", () => {
       const err = new FalError(
         "auth failed",
         401,
-        "authentication_error",
+        "authorization_error",
         "req-123",
         "https://docs.fal.ai",
         { error: "bad key" }
@@ -66,7 +66,7 @@ describe("error classes", () => {
       expect(err.name).toBe("FalError");
       expect(err.message).toBe("auth failed");
       expect(err.status).toBe(401);
-      expect(err.type).toBe("authentication_error");
+      expect(err.type).toBe("authorization_error");
       expect(err.request_id).toBe("req-123");
       expect(err.docs_url).toBe("https://docs.fal.ai");
       expect(err.body).toEqual({ error: "bad key" });
@@ -196,6 +196,9 @@ describe("kimicoding content helpers", () => {
         "image/webp",
       ] as const) {
         const block = imageBase64("data", mt);
+        if (block.source.type !== "base64") {
+          throw new Error("expected a base64 source");
+        }
         expect(block.source.media_type).toBe(mt);
       }
     });

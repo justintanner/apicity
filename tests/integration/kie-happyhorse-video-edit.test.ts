@@ -7,7 +7,7 @@ import {
   getPollyMode,
   type PollyContext,
 } from "../harness";
-import { createKie } from "@apicity/kie";
+import { createKie, type MediaGenerationRequest } from "@apicity/kie";
 import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 describe("kie happyhorse/video-edit integration", () => {
@@ -51,7 +51,7 @@ describe("kie happyhorse/video-edit integration", () => {
           audio_setting: "auto",
           seed: 1764574909,
         },
-      };
+      } as unknown as MediaGenerationRequest;
       const task = await provider.post.api.v1.jobs.createTask(
         request,
         mintKieCreateTaskOtp(request)

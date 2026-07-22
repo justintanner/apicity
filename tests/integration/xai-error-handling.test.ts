@@ -56,6 +56,7 @@ describe("xAI error handling integration", () => {
     const provider = createXaiProvider();
 
     const result = await provider.get.v1.models();
+    if (!("data" in result)) throw new Error("expected model list response");
     expect(result.data).toBeDefined();
   });
 });

@@ -16,6 +16,9 @@ describe("xAI language models integration", () => {
   it("should list language models", async () => {
     const provider = createXaiProvider();
     const result = await provider.get.v1.languageModels();
+    if (!("models" in result)) {
+      throw new Error("expected language model list response");
+    }
     expect(result.models).toBeDefined();
     expect(Array.isArray(result.models)).toBe(true);
     expect(result.models.length).toBeGreaterThan(0);

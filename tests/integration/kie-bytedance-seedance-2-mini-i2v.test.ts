@@ -7,7 +7,7 @@ import {
   getPollyMode,
   type PollyContext,
 } from "../harness";
-import { createKie } from "@apicity/kie";
+import { createKie, type MediaGenerationRequest } from "@apicity/kie";
 import { Seedance2MiniTaskResultJsonSchema } from "@apicity/kie/zod";
 import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
@@ -56,7 +56,7 @@ describe("kie bytedance/seedance-2-mini i2v integration", () => {
           web_search: false,
           nsfw_checker: false,
         },
-      };
+      } satisfies MediaGenerationRequest;
       expect(
         provider.post.api.v1.jobs.createTask.schema.safeParse(request).success
       ).toBe(true);

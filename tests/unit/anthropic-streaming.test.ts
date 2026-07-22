@@ -76,15 +76,23 @@ function assembleStreamMessage(
 
   for (const event of events) {
     if (event.type === "content_block_start") {
-      if (event.content_block.type === "text") {
-        textBlocks.set(event.index, event.content_block.text);
+      const contentBlock = event.content_block as
+        | { type: "text"; text: string }
+        | {
+            type: "tool_use";
+            id: string;
+            name: string;
+            input: Record<string, unknown>;
+          };
+      if (contentBlock.type === "text") {
+        textBlocks.set(event.index, contentBlock.text);
       }
 
-      if (event.content_block.type === "tool_use") {
+      if (contentBlock.type === "tool_use") {
         toolBlocks.set(event.index, {
-          id: event.content_block.id,
-          name: event.content_block.name,
-          input: event.content_block.input,
+          id: contentBlock.id,
+          name: contentBlock.name,
+          input: contentBlock.input,
           partialJson: "",
         });
       }

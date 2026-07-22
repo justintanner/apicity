@@ -27,10 +27,11 @@ describe("fal queue validation", () => {
     });
     const result = provider.v1.queue.submit.schema.safeParse({});
     expect(result.success).toBe(false);
+    if (result.success) throw new Error("expected failure");
     expect(
-      result.error?.issues.some((i) => i.path.includes("endpoint_id"))
+      result.error.issues.some((i) => i.path.includes("endpoint_id"))
     ).toBe(true);
-    expect(result.error?.issues.some((i) => i.path.includes("input"))).toBe(
+    expect(result.error.issues.some((i) => i.path.includes("input"))).toBe(
       true
     );
   });

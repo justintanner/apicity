@@ -35,7 +35,7 @@ describe("xai image generation integration", () => {
     } satisfies XaiImageGenerateRequest;
     const result = await provider.post.v1.images.generations(
       req,
-      mintXaiOtp("v1.images.generations", req)
+      mintXaiOtp("v1.images.generations", req) as unknown as AbortSignal
     );
 
     expect(result.data).toBeInstanceOf(Array);
@@ -53,7 +53,7 @@ describe("xai image generation integration", () => {
     } satisfies XaiImageGenerateRequest;
     const result = await provider.post.v1.images.generations(
       req,
-      mintXaiOtp("v1.images.generations", req)
+      mintXaiOtp("v1.images.generations", req) as unknown as AbortSignal
     );
 
     expect(result.data).toHaveLength(2);
@@ -72,7 +72,7 @@ describe("xai image generation integration", () => {
     } satisfies XaiImageGenerateRequest;
     const result = await provider.post.v1.images.generations(
       req,
-      mintXaiOtp("v1.images.generations", req)
+      mintXaiOtp("v1.images.generations", req) as unknown as AbortSignal
     );
 
     expect(result.data).toBeInstanceOf(Array);
@@ -89,7 +89,7 @@ describe("xai image generation integration", () => {
     } satisfies XaiImageGenerateRequest;
     const result = await provider.post.v1.images.generations(
       req,
-      mintXaiOtp("v1.images.generations", req)
+      mintXaiOtp("v1.images.generations", req) as unknown as AbortSignal
     );
 
     expect(result.data).toBeInstanceOf(Array);
@@ -107,7 +107,7 @@ describe("xai image generation integration", () => {
     } satisfies XaiImageGenerateRequest;
     const result = await provider.post.v1.images.generations(
       req,
-      mintXaiOtp("v1.images.generations", req)
+      mintXaiOtp("v1.images.generations", req) as unknown as AbortSignal
     );
 
     expect(result.data).toBeInstanceOf(Array);
@@ -130,7 +130,7 @@ describe("xai image generation integration", () => {
       } satisfies XaiImageEditRequest;
       const result = await provider.post.v1.images.edits(
         req,
-        mintXaiOtp("v1.images.edits", req)
+        mintXaiOtp("v1.images.edits", req) as unknown as AbortSignal
       );
 
       expect(result.data).toBeInstanceOf(Array);
@@ -153,7 +153,7 @@ describe("xai image generation integration", () => {
     } satisfies XaiImageEditRequest;
     const result = await provider.post.v1.images.edits(
       req,
-      mintXaiOtp("v1.images.edits", req)
+      mintXaiOtp("v1.images.edits", req) as unknown as AbortSignal
     );
 
     expect(result.data).toBeInstanceOf(Array);

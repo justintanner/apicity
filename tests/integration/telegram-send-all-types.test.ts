@@ -88,7 +88,8 @@ describe("telegram send all message types", () => {
     expect(text.result.text).toMatch(/^apicity telegram HAR text/);
     expect(photo.ok).toBe(true);
     expect(photo.result.caption).toMatch(/^apicity telegram HAR photo/);
-    expect(photo.result.photo?.length).toBeGreaterThan(0);
+    const photoSizes = photo.result.photo as unknown[] | undefined;
+    expect(photoSizes?.length).toBeGreaterThan(0);
     expect(video.ok).toBe(true);
     expect(video.result.caption).toMatch(/^apicity telegram HAR video/);
     expect(video.result.video).toBeTruthy();

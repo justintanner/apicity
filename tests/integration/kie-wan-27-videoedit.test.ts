@@ -7,7 +7,11 @@ import {
   getPollyMode,
   type PollyContext,
 } from "../harness";
-import { createKie, Wan27VideoEditDurationValues } from "@apicity/kie";
+import {
+  createKie,
+  Wan27VideoEditDurationValues,
+  type MediaGenerationRequest,
+} from "@apicity/kie";
 import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 describe("kie wan/2-7-videoedit integration", () => {
@@ -56,7 +60,7 @@ describe("kie wan/2-7-videoedit integration", () => {
           watermark: false,
           nsfw_checker: false,
         },
-      };
+      } satisfies MediaGenerationRequest;
       const task = await provider.post.api.v1.jobs.createTask(
         request,
         mintKieCreateTaskOtp(request)
@@ -106,6 +110,7 @@ describe("kie wan/2-7-videoedit integration", () => {
       input: {},
     });
     expect(invalid.success).toBe(false);
+    if (invalid.success) throw new Error("expected failure");
     expect(invalid.error?.issues.length).toBeGreaterThan(0);
   });
 

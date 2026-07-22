@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { createKie } from "@apicity/kie";
+import { createKie, type FluxKontextGenerateRequest } from "@apicity/kie";
 import { mintKieFluxKontextOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 describe("kie flux-kontext generate integration", () => {
@@ -27,7 +27,7 @@ describe("kie flux-kontext generate integration", () => {
         aspectRatio: "16:9",
         model: "flux-kontext-pro",
         outputFormat: "jpeg",
-      };
+      } satisfies FluxKontextGenerateRequest;
 
       const task = await provider.post.api.v1.flux.kontext.generate(
         request,

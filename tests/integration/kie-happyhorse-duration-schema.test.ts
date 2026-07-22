@@ -74,7 +74,8 @@ describe("kie happyhorse duration schema", () => {
   it("exposes matching HappyHorse duration metadata without adding video-edit duration", () => {
     const provider = createKie({ apiKey: "test-key" });
 
-    for (const model of Object.keys(validInputs)) {
+    const models = Object.keys(validInputs) as (keyof typeof validInputs)[];
+    for (const model of models) {
       const duration = provider.modelInputSchemas[model].fields.duration;
 
       expect(duration.type).toBe("integer");

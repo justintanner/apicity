@@ -228,7 +228,7 @@ function collectTelegramFixtureLeaks(dir: string): string[] {
   for (const file of collectRecordingHars(dir)) {
     const raw = readFileSync(file, "utf8");
     const relativePath = path.relative(process.cwd(), file);
-    const har = JSON.parse(raw) as FixtureHar & {
+    const har = JSON.parse(raw) as {
       log?: {
         entries?: Array<
           FixtureHarEntry & {

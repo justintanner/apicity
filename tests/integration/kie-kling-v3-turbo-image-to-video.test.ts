@@ -5,7 +5,7 @@ import {
   getPollyMode,
   type PollyContext,
 } from "../harness";
-import { createKie } from "@apicity/kie";
+import { createKie, type MediaGenerationRequest } from "@apicity/kie";
 import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 const KLING_V3_TURBO_IMAGE_TO_VIDEO_REQUEST = {
@@ -18,7 +18,7 @@ const KLING_V3_TURBO_IMAGE_TO_VIDEO_REQUEST = {
     duration: "5",
     resolution: "720p",
   },
-} as const;
+} satisfies MediaGenerationRequest;
 
 describe("kie kling/v3-turbo-image-to-video integration", () => {
   let ctx: PollyContext;

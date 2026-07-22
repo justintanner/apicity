@@ -7,7 +7,7 @@ import {
   getPollyMode,
   type PollyContext,
 } from "../harness";
-import { createKie } from "@apicity/kie";
+import { createKie, type MediaGenerationRequest } from "@apicity/kie";
 import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 // Reference-video bake-off: Kling 3.0 in **4K mode** (separate column from
@@ -22,7 +22,7 @@ import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 const PROMPT = `On a sandy beach with the ocean behind, [blue_suit_man] sits cross-legged on the sand. [white_cat] climbs onto his lap, purrs, and lifts a paw to bat playfully at his blue tie. [blue_suit_man] smiles and waves at the camera with his free hand.`;
 
 async function uploadFixture(
-  provider: ReturnType<typeof kie>,
+  provider: ReturnType<typeof createKie>,
   filename: string,
   mimeType: string
 ): Promise<string> {
@@ -85,7 +85,7 @@ describe("kie kling-3.0 4K reference bake-off", () => {
           mode: "4K",
           multi_shots: false,
         },
-      };
+      } satisfies MediaGenerationRequest;
       const task = await provider.post.api.v1.jobs.createTask(
         request,
         mintKieCreateTaskOtp(request)

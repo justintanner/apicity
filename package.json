@@ -76,7 +76,7 @@
     "doc-gen:meta": "node scripts/doc-gen.mjs meta",
     "doc-gen:simplefunctions": "node scripts/doc-gen.mjs simplefunctions",
     "clean": "rm -rf packages/provider/*/dist",
-    "typecheck": "pnpm -r --filter './packages/**' exec tsc --noEmit -p tsconfig.json",
+    "typecheck": "pnpm -r --filter './packages/**' exec tsc --noEmit -p tsconfig.json && tsc --noEmit -p tests/tsconfig.json",
     "typecheck:provider": "node scripts/typecheck-provider.mjs",
     "lint": "pnpm run format:check && pnpm run lint:full",
     "lint:full": "pnpm run lint:eslint && pnpm run lint:repo",

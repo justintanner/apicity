@@ -12,6 +12,7 @@ describe("xAI validation error integration", () => {
     });
 
     expect(result.success).toBe(false);
+    if (result.success) throw new Error("expected safeParse failure");
     expect(result.error?.issues.length).toBeGreaterThan(0);
   });
 
@@ -23,6 +24,7 @@ describe("xAI validation error integration", () => {
     });
 
     expect(result.success).toBe(false);
+    if (result.success) throw new Error("expected safeParse failure");
     expect(result.error?.issues.length).toBeGreaterThan(0);
   });
 
@@ -35,6 +37,7 @@ describe("xAI validation error integration", () => {
     });
 
     expect(result.success).toBe(false);
+    if (result.success) throw new Error("expected safeParse failure");
     expect(result.error?.issues.length).toBeGreaterThan(0);
   });
 
@@ -47,6 +50,7 @@ describe("xAI validation error integration", () => {
     });
 
     expect(result.success).toBe(false);
+    if (result.success) throw new Error("expected safeParse failure");
     expect(result.error?.issues.length).toBeGreaterThan(0);
   });
 
@@ -60,6 +64,7 @@ describe("xAI validation error integration", () => {
     });
 
     expect(result.success).toBe(false);
+    if (result.success) throw new Error("expected safeParse failure");
     expect(result.error?.issues.length).toBeGreaterThan(0);
   });
 
@@ -71,6 +76,7 @@ describe("xAI validation error integration", () => {
     });
 
     expect(result.success).toBe(false);
+    if (result.success) throw new Error("expected safeParse failure");
     expect(result.error?.issues.length).toBeGreaterThan(0);
   });
 });

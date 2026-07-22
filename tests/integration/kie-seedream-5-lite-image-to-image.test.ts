@@ -5,7 +5,7 @@ import {
   getPollyMode,
   type PollyContext,
 } from "../harness";
-import { createKie } from "@apicity/kie";
+import { createKie, type MediaGenerationRequest } from "@apicity/kie";
 import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 describe("kie seedream/5-lite-image-to-image integration", () => {
@@ -38,7 +38,7 @@ describe("kie seedream/5-lite-image-to-image integration", () => {
           quality: "basic",
           nsfw_checker: false,
         },
-      };
+      } satisfies MediaGenerationRequest;
       const task = await provider.post.api.v1.jobs.createTask(
         request,
         mintKieCreateTaskOtp(request)

@@ -7,7 +7,7 @@ import {
   getPollyMode,
   type PollyContext,
 } from "../harness";
-import { createKie } from "@apicity/kie";
+import { createKie, type MediaGenerationRequest } from "@apicity/kie";
 import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 // Reference-video bake-off: Wan 2.7 half of the pair.
@@ -25,7 +25,7 @@ The setting is a sandy beach with the ocean behind.
 In the scene, the man sits cross-legged on the sand. The white cat climbs onto his lap, purrs, and lifts a paw to bat playfully at his blue tie. The man smiles and waves at the camera with his free hand.`;
 
 async function uploadFixture(
-  provider: ReturnType<typeof kie>,
+  provider: ReturnType<typeof createKie>,
   filename: string,
   mimeType: string
 ): Promise<string> {
@@ -80,7 +80,7 @@ describe("kie wan/2-7-r2v reference bake-off", () => {
           nsfw_checker: false,
           seed: 1308038620,
         },
-      };
+      } satisfies MediaGenerationRequest;
       const task = await provider.post.api.v1.jobs.createTask(
         request,
         mintKieCreateTaskOtp(request)

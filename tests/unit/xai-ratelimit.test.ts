@@ -21,8 +21,8 @@ async function runWithFakeTimers<T>(action: () => Promise<T>): Promise<T> {
   return result;
 }
 
-function delay(ms: number): Promise<void> {
-  return vi.advanceTimersByTimeAsync(ms);
+async function delay(ms: number): Promise<void> {
+  await vi.advanceTimersByTimeAsync(ms);
 }
 
 describe("createRateLimiter", () => {

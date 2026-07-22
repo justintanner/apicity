@@ -264,7 +264,7 @@ describe("withFallback", () => {
       throw new Error("fail");
     };
     const fn2 = async (): Promise<Result> => ({ data: "success", count: 42 });
-    const fb = withFallback<Result, string>([fn1, fn2]);
+    const fb = withFallback<string, Result>([fn1, fn2]);
     const result = await fb("ignored");
     expect(result).toEqual({ data: "success", count: 42 });
   });

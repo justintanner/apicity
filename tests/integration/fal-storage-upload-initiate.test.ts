@@ -62,10 +62,9 @@ describe("fal storage upload initiate integration", () => {
     const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.storage.upload.initiate.schema.safeParse({});
     expect(v.success).toBe(false);
-    expect(v.error?.issues.some((i) => i.path.includes("file_name"))).toBe(
-      true
-    );
-    expect(v.error?.issues.some((i) => i.path.includes("content_type"))).toBe(
+    if (v.success) throw new Error("expected failure");
+    expect(v.error.issues.some((i) => i.path.includes("file_name"))).toBe(true);
+    expect(v.error.issues.some((i) => i.path.includes("content_type"))).toBe(
       true
     );
   });

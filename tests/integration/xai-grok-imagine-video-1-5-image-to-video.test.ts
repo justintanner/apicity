@@ -70,14 +70,14 @@ describe("xai video generations default model", () => {
     const provider = createProvider(fetch);
     const req = {
       prompt: "A cinematic tracking shot through a rain-lit city street",
-      duration: 10,
+      duration: 10 as const,
       aspect_ratio: "16:9" as const,
       resolution: "720p" as const,
     };
 
     const result = await provider.post.v1.videos.generations(
       req,
-      mintXaiOtp(VIDEO_GENERATIONS_DOT_PATH, req)
+      mintXaiOtp(VIDEO_GENERATIONS_DOT_PATH, req) as unknown as AbortSignal
     );
 
     expect(result.request_id).toBe("vid_req_default");
@@ -101,12 +101,12 @@ describe("xai video generations default model", () => {
     const req = {
       prompt: "A bright product reveal against a white studio background",
       model: "grok-imagine-video",
-      duration: 10,
+      duration: 10 as const,
     };
 
     const result = await provider.post.v1.videos.generations(
       req,
-      mintXaiOtp(VIDEO_GENERATIONS_DOT_PATH, req)
+      mintXaiOtp(VIDEO_GENERATIONS_DOT_PATH, req) as unknown as AbortSignal
     );
 
     expect(result.request_id).toBe("vid_req_explicit");
@@ -126,7 +126,7 @@ describe("xai video generations default model", () => {
     const req = {
       prompt: "A camera pulls back through a neon city",
       model: "grok-imagine-video",
-      duration: 5,
+      duration: 5 as const,
       image_file_id: "file_city_neon",
       reference_image_file_ids: ["file_sign", "file_street"],
       storage_options: {
@@ -137,7 +137,7 @@ describe("xai video generations default model", () => {
 
     const result = await provider.post.v1.videos.generations(
       req,
-      mintXaiOtp(VIDEO_GENERATIONS_DOT_PATH, req)
+      mintXaiOtp(VIDEO_GENERATIONS_DOT_PATH, req) as unknown as AbortSignal
     );
 
     expect(result.request_id).toBe("vid_req_files");
@@ -180,7 +180,7 @@ describe("xai video stored file inputs", () => {
       model: "grok-imagine-video",
       prompt: "Continue through the city",
       video_file_id: "file_rainy_city",
-      duration: 5,
+      duration: 5 as const,
       storage_options: {
         filename: "rainy-city-extended.mp4",
         public_url: false,
@@ -189,11 +189,11 @@ describe("xai video stored file inputs", () => {
 
     const edit = await provider.post.v1.videos.edits(
       editReq,
-      mintXaiOtp(VIDEO_EDITS_DOT_PATH, editReq)
+      mintXaiOtp(VIDEO_EDITS_DOT_PATH, editReq) as unknown as AbortSignal
     );
     const extension = await provider.post.v1.videos.extensions(
       extendReq,
-      mintXaiOtp(VIDEO_EXTENSIONS_DOT_PATH, extendReq)
+      mintXaiOtp(VIDEO_EXTENSIONS_DOT_PATH, extendReq) as unknown as AbortSignal
     );
 
     expect(edit.request_id).toBe("vid_edit_file");
@@ -247,7 +247,7 @@ describe("xai Grok Imagine Video 1.5 image-to-video helper", () => {
     const req = {
       prompt: "Animate the still image into a slow cinematic dolly shot",
       image: "https://example.com/still.png",
-      duration: 12,
+      duration: 12 as const,
       resolution: "720p" as const,
       pollIntervalMs: 0,
       maxPolls: 3,
@@ -255,7 +255,7 @@ describe("xai Grok Imagine Video 1.5 image-to-video helper", () => {
 
     const result = await provider.post.v1.videos.generations.imageToVideo(
       req,
-      mintXaiOtp(DOT_PATH, req)
+      mintXaiOtp(DOT_PATH, req) as unknown as AbortSignal
     );
 
     expect(result).toMatchObject({
@@ -310,7 +310,7 @@ describe("xai Grok Imagine Video 1.5 image-to-video helper", () => {
     const req = {
       prompt: "A camera pulls back through the city",
       image_file_id: "file_city_neon",
-      duration: 5,
+      duration: 5 as const,
       storage_options: {
         filename: "city-loop.mp4",
         public_url: true,
@@ -321,7 +321,7 @@ describe("xai Grok Imagine Video 1.5 image-to-video helper", () => {
 
     const result = await provider.post.v1.videos.generations.imageToVideo(
       req,
-      mintXaiOtp(DOT_PATH, req)
+      mintXaiOtp(DOT_PATH, req) as unknown as AbortSignal
     );
 
     expect(result.video.file_output?.file_id).toBe("file_video_123");
@@ -404,7 +404,7 @@ describe("xai Grok Imagine Video 1.5 image-to-video helper", () => {
       await expect(
         provider.post.v1.videos.generations.imageToVideo(
           req,
-          mintXaiOtp(DOT_PATH, req)
+          mintXaiOtp(DOT_PATH, req) as unknown as AbortSignal
         )
       ).rejects.toMatchObject({
         name: "XaiError",

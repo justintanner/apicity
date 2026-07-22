@@ -304,7 +304,7 @@ describe("withFallback", () => {
       throw new Error("fail");
     };
     const fn2 = async (): Promise<Result> => ({ data: "success", count: 42 });
-    const fb = withFallback<Result, string>([fn1, fn2]);
+    const fb = withFallback<string, Result>([fn1, fn2]);
     const result = await fb("ignored");
     expect(result).toEqual({ data: "success", count: 42 });
   });
@@ -473,7 +473,11 @@ describe("withRateLimit", () => {
     // the two real timers must race on the platform clock. Deterministic fake
     // timers won't reproduce the "slot still held while timeout elapses" race.
     const slow = withRateLimit(async () => {
-      const { promise, resolve } = Promise.withResolvers<void>();
+      const { promise, resolve } = (
+        Promise as unknown as {
+          withResolvers<T>(): { promise: Promise<T>; resolve: () => void };
+        }
+      ).withResolvers<void>();
       setTimeout(resolve, 100);
       await promise;
       return "slow";

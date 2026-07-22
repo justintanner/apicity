@@ -31,7 +31,7 @@ describe("paid endpoint semantics — regression", () => {
       prompt: "test",
       aspect_ratio: "1:1",
     },
-  };
+  } as const;
   const VEO_GENERATE_REQUEST = {
     prompt: "A short product reveal video",
     model: "veo3",

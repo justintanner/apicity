@@ -24,6 +24,7 @@ describe("xai batches integration", () => {
       expect(created.state.num_requests).toBe(0);
 
       const list = await provider.get.v1.batches();
+      if (!("batches" in list)) throw new Error("expected batch list response");
       expect(list.batches.length).toBeGreaterThan(0);
       const found = list.batches.find((b) => b.batch_id === created.batch_id);
       expect(found).toBeTruthy();
@@ -47,6 +48,7 @@ describe("xai batches integration", () => {
         name: "Get Test Batch",
       });
       const fetched = await provider.get.v1.batches(created.batch_id);
+      if ("batches" in fetched) throw new Error("expected a single batch");
       expect(fetched.batch_id).toBe(created.batch_id);
       expect(fetched.name).toBe("Get Test Batch");
     });

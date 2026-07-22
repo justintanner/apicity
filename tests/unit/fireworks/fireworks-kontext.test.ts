@@ -55,7 +55,7 @@ describe("fireworks workflows.kontext", () => {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ safety_tolerance: 6, ...payload }),
+      body: JSON.stringify(Object.assign({ safety_tolerance: 6 }, payload)),
     });
   });
 

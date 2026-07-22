@@ -13,7 +13,8 @@ describe("dolthub v2 sql read", () => {
     const provider = createDoltHub();
     // REQ-002: the v2 SQL read is a GET with query params, so it has no request
     // body and therefore no `.schema` (mirrors the v2 user-get read endpoint).
-    expect(provider.api.v2.databases.sql.read.schema).toBeUndefined();
+    const read = provider.api.v2.databases.sql.read;
+    expect((read as unknown as { schema?: unknown }).schema).toBeUndefined();
   });
 
   it("should issue a single Bearer GET to the v2 sql path and unwrap the envelope", async () => {
@@ -214,6 +215,7 @@ describe("dolthub v2 sql read integration", () => {
     // Rows are positional arrays aligned to `columns`.
     expect(Array.isArray(result.rows[0])).toBe(true);
     // REQ-002: the callable carries no request schema.
-    expect(provider.api.v2.databases.sql.read.schema).toBeUndefined();
+    const read = provider.api.v2.databases.sql.read;
+    expect((read as unknown as { schema?: unknown }).schema).toBeUndefined();
   });
 });

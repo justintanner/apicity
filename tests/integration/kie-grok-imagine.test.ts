@@ -5,7 +5,7 @@ import {
   getPollyMode,
   type PollyContext,
 } from "../harness";
-import { createKie } from "@apicity/kie";
+import { createKie, type MediaGenerationRequest } from "@apicity/kie";
 import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 describe("kie grok-imagine full lifecycle", () => {
@@ -37,7 +37,7 @@ describe("kie grok-imagine full lifecycle", () => {
           prompt: "A red panda sitting on a mossy log in a bamboo forest",
           aspect_ratio: "1:1",
         },
-      };
+      } satisfies MediaGenerationRequest;
       const task = await provider.post.api.v1.jobs.createTask(
         request,
         mintKieCreateTaskOtp(request)
@@ -96,7 +96,7 @@ describe("kie grok-imagine full lifecycle", () => {
             "https://static.aiquickdraw.com/tools/example/1767694885407_pObJoMcy.png",
           ],
         },
-      };
+      } satisfies MediaGenerationRequest;
       const task = await provider.post.api.v1.jobs.createTask(
         request,
         mintKieCreateTaskOtp(request)

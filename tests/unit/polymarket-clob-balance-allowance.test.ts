@@ -8,7 +8,10 @@ import { createClobProvider } from "../../packages/provider/polymarket/src/clob"
 // reads the empty signer instead of the funded proxy — the bug that reported a
 // $0 balance for a funded account. The provider must default `signature_type`
 // to the configured `clobSignatureType`, while still honoring an explicit value.
-function clobWithCapture(captured: string[], clobSignatureType?: number) {
+function clobWithCapture(
+  captured: string[],
+  clobSignatureType?: 0 | 1 | 2 | 3
+) {
   const stubFetch = (async (url: string | URL) => {
     captured.push(String(url));
     return new Response(JSON.stringify({ balance: "0", allowances: {} }), {

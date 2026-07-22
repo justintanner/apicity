@@ -38,7 +38,7 @@ const ALL_MODELS = [
 
 const VALID_GENERATE = {
   prompt: "A happy pop song about summer",
-  model: "V4",
+  model: "V4" as const,
   instrumental: false,
   customMode: true,
   callBackUrl: "https://example.com/cb",
@@ -251,7 +251,8 @@ describe("KIE Suno provider", () => {
         const result =
           provider.post.api.v1.generate.extend.schema.safeParse(partial);
         expect(result.success).toBe(false);
-        expect(result.error?.issues.some((i) => i.path.includes(field))).toBe(
+        if (result.success) throw new Error("expected failure");
+        expect(result.error.issues.some((i) => i.path.includes(field))).toBe(
           true
         );
       }

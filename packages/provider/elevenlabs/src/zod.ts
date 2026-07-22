@@ -578,11 +578,28 @@ export type ElevenLabsTextToDialogueParsedRequest = z.output<
 // POST /v1/speech-to-text
 // ---------------------------------------------------------------------------
 
+// ElevenLabs ships new Scribe model versions before this package's enum catches
+// up, so the enum below is unioned with an alias escape hatch. The upstream
+// grammar for this family is literal `scribe_v`, then a version `<digits>` with
+// optional underscore-separated point releases, e.g. scribe_v3, scribe_v2_5.
+// Anchoring the version at the *end* is the load-bearing part: a looser hatch
+// like `/^scribe_.+$/` would wrongly accept `scribe_typo`. The `scribe_` prefix
+// also keeps the modality boundary — `eleven_flash_v3` is a text-to-speech id
+// and must not become a valid speech-to-text `model_id`.
+const ElevenLabsScribeModelAliasSchema = z
+  .string()
+  .regex(
+    /^scribe_v\d+(?:_\d+)*$/,
+    "Expected a listed model or a versioned ElevenLabs Scribe id (e.g. scribe_v3)"
+  );
+
 // Multipart form: exactly one of `file` or `cloud_storage_url` is required.
 // `enable_logging` is a query-string parameter; the factory strips it from the
 // body and moves it to the URL.
 export const ElevenLabsSpeechToTextRequestSchema = z.object({
-  model_id: z.enum(["scribe_v1", "scribe_v2"]),
+  model_id: z
+    .enum(["scribe_v1", "scribe_v2"])
+    .or(ElevenLabsScribeModelAliasSchema),
   file: z.custom<Blob>().optional(),
   cloud_storage_url: z.string().url().nullable().optional(),
   source_url: z.string().url().nullable().optional(),
@@ -874,7 +891,23 @@ const ElevenLabsMusicCompositionPlanSchema = z.union([
   ElevenLabsCompositionPlanSchema,
 ]);
 
-const ElevenLabsMusicModelIdSchema = z.enum(["music_v1", "music_v2"]);
+// ElevenLabs ships new music model versions before this package's enum catches
+// up, so the enum below is unioned with an alias escape hatch. The upstream
+// grammar for this family is literal `music_v`, then a version `<digits>` with
+// optional underscore-separated point releases, e.g. music_v3, music_v2_5.
+// Anchoring the version at the *end* is the load-bearing part: a looser hatch
+// like `/^music_.+$/` would wrongly accept `music_typo`. Anything that is not a
+// versioned music id must be added to the enum explicitly.
+const ElevenLabsMusicModelAliasSchema = z
+  .string()
+  .regex(
+    /^music_v\d+(?:_\d+)*$/,
+    "Expected a listed model or a versioned ElevenLabs music id (e.g. music_v3)"
+  );
+
+const ElevenLabsMusicModelIdSchema = z
+  .enum(["music_v1", "music_v2"])
+  .or(ElevenLabsMusicModelAliasSchema);
 
 // `output_format` is a query-string parameter, not a body field. As with the
 // other audio endpoints, it is carried on the same request object and the
@@ -3187,6 +3220,11 @@ const ElevenLabsKnowledgeBaseDocumentTypeSchema = z.enum([
   "folder",
 ]);
 
+// Deliberately closed. Unlike the ElevenLabs model families above, these are
+// two curated third-party embedding models that ElevenLabs selected rather than
+// versions of one upstream line; they share no id grammar a regex could express
+// without degenerating toward `.*`. A new option here is a product decision, so
+// it is added to this enum explicitly.
 const ElevenLabsKnowledgeBaseEmbeddingModelSchema = z.enum([
   "e5_mistral_7b_instruct",
   "multilingual_e5_large_instruct",
@@ -4292,9 +4330,31 @@ export type ElevenLabsCreateVoiceFromPreviewParsedRequest = z.output<
 // POST /v1/text-to-voice/design
 // ---------------------------------------------------------------------------
 
+// ElevenLabs ships new text-to-voice model versions before this package's enum
+// catches up, so the enum below is unioned with an alias escape hatch. The
+// upstream grammar is `eleven_`, then optional lowercase alphanumeric family
+// segments, then the literal modality segment `ttv_`, then a terminal version
+// `v<digits>` with optional underscore-separated point releases, e.g.
+// eleven_ttv_v4, eleven_multilingual_ttv_v3_5.
+//
+// This deliberately does not reuse `ElevenLabsModelAliasSchema`: that
+// text-to-speech hatch already matches both enumerated ids here, but it would
+// also make `eleven_flash_v3` — a text-to-speech model — a valid voice-design
+// `model_id`. Requiring `ttv_` before the terminal version keeps the modality
+// boundary, at the cost of two near-identical alias consts in this file.
+const ElevenLabsTtvModelAliasSchema = z
+  .string()
+  .regex(
+    /^eleven_(?:[a-z0-9]+_)*ttv_v\d+(?:_\d+)*$/,
+    "Expected a listed model or a versioned ElevenLabs text-to-voice id (e.g. eleven_ttv_v4)"
+  );
+
 export const ElevenLabsVoiceDesignRequestSchema = z.object({
   voice_description: z.string().min(20).max(1000),
-  model_id: z.enum(["eleven_multilingual_ttv_v2", "eleven_ttv_v3"]).optional(),
+  model_id: z
+    .enum(["eleven_multilingual_ttv_v2", "eleven_ttv_v3"])
+    .or(ElevenLabsTtvModelAliasSchema)
+    .optional(),
   text: z.string().min(100).max(1000).nullable().optional(),
   auto_generate_text: z.boolean().optional(),
   loudness: z.number().min(-1.0).max(1.0).optional(),

@@ -9,6 +9,10 @@ import {
   ElevenLabsTextToDialogueRequestSchema,
   ElevenLabsTextToSpeechRequestSchema,
   ElevenLabsSpeechToTextRequestSchema,
+  ElevenLabsComposeMusicRequestSchema,
+  ElevenLabsMusicPlanRequestSchema,
+  ElevenLabsVideoToMusicRequestSchema,
+  ElevenLabsVoiceDesignRequestSchema,
   ElevenLabsPvcTrainRequestSchema,
   ElevenLabsWorkspaceAnalyticsRequestsRequestSchema,
   ElevenLabsGetAgentSummariesRequestSchema,
@@ -429,6 +433,78 @@ describe("ElevenLabs Zod schema validation", () => {
       });
       expect(result.success).toBe(true);
     });
+
+    describe("model_id enum", () => {
+      it.each(["scribe_v1", "scribe_v2"])(
+        "should accept the listed model_id %p",
+        (model_id) => {
+          const result = ElevenLabsSpeechToTextRequestSchema.safeParse({
+            model_id,
+          });
+
+          expect(result.success).toBe(true);
+        }
+      );
+
+      it.each([
+        // Unreleased versions: the alias hatch accepts a versioned Scribe id
+        // before the enum above catches up.
+        "scribe_v3",
+        "scribe_v2_5",
+      ])("should accept the Scribe alias %p", (model_id) => {
+        const result = ElevenLabsSpeechToTextRequestSchema.safeParse({
+          model_id,
+        });
+
+        expect(result.success).toBe(true);
+      });
+
+      it.each([
+        // Near-miss typos of a listed id: the family separator is an
+        // underscore, and the version must be present and terminal.
+        "scribe-v1",
+        "scribev1",
+        "scribe_v",
+        "scribe_v1_",
+        // Foreign families — including another ElevenLabs modality. The hatch
+        // is a shape check scoped to Scribe, so a text-to-speech id stays out.
+        "eleven_flash_v3",
+        "music_v1",
+        // The hatch is case-sensitive; empty string is not a version.
+        "SCRIBE_V1",
+        "",
+        // Not a string at all.
+        42,
+      ])("should reject the model_id %p", (model_id) => {
+        const result = ElevenLabsSpeechToTextRequestSchema.safeParse({
+          model_id,
+        });
+
+        expect(result.success).toBe(false);
+        expect(
+          result.error?.issues.some((i) => i.path.includes("model_id"))
+        ).toBe(true);
+      });
+
+      // Every enumerated id also matches the alias regex, so the enum branch is
+      // redundant for *validation* — its job is MCP client autocomplete.
+      // Nothing else pins it, so deleting it would leave the suite green while
+      // silently dropping every completion. This is that pin.
+      it("keeps both ids in the enum branch of the MCP JSON Schema", () => {
+        const props = zodToJsonSchema(ElevenLabsSpeechToTextRequestSchema)
+          .properties as Record<string, JsonSchema>;
+        const branches = props.model_id.anyOf as JsonSchema[];
+
+        expect(branches).toHaveLength(2);
+        expect(branches[0]).toMatchObject({
+          type: "string",
+          enum: ["scribe_v1", "scribe_v2"],
+        });
+        // The second branch is the hatch; without it the enum would be closed.
+        expect(branches[1].type).toBe("string");
+        expect(branches[1].pattern).toBeDefined();
+      });
+    });
   });
 
   describe("text to speech schema", () => {
@@ -800,6 +876,193 @@ describe("ElevenLabs Zod schema validation", () => {
       expect(result.error?.issues.some((i) => i.path.includes("sort"))).toBe(
         true
       );
+    });
+  });
+
+  describe("music schema model_id enum", () => {
+    const composeBase = { prompt: "A slow piano ballad." };
+
+    it.each(["music_v1", "music_v2"])(
+      "should accept the listed model_id %p",
+      (model_id) => {
+        const result = ElevenLabsComposeMusicRequestSchema.safeParse({
+          ...composeBase,
+          model_id,
+        });
+
+        expect(result.success).toBe(true);
+      }
+    );
+
+    it.each([
+      // Unreleased versions: the alias hatch accepts a versioned music id
+      // before the enum above catches up.
+      "music_v3",
+      "music_v2_5",
+    ])("should accept the music alias %p", (model_id) => {
+      const result = ElevenLabsComposeMusicRequestSchema.safeParse({
+        ...composeBase,
+        model_id,
+      });
+
+      expect(result.success).toBe(true);
+    });
+
+    it.each([
+      // Near-miss typos of a listed id: the family separator is an underscore,
+      // and the version must be present and terminal.
+      "music-v1",
+      "musicv1",
+      "music_v",
+      "music_v1_",
+      // Foreign families — including another ElevenLabs modality.
+      "eleven_flash_v3",
+      "scribe_v1",
+      // The hatch is case-sensitive; empty string is not a version.
+      "MUSIC_V1",
+      "",
+      // Not a string at all.
+      42,
+    ])("should reject the model_id %p", (model_id) => {
+      const result = ElevenLabsComposeMusicRequestSchema.safeParse({
+        ...composeBase,
+        model_id,
+      });
+
+      expect(result.success).toBe(false);
+      expect(
+        result.error?.issues.some((i) => i.path.includes("model_id"))
+      ).toBe(true);
+    });
+
+    it("should still allow model_id to be omitted", () => {
+      const result = ElevenLabsComposeMusicRequestSchema.safeParse(composeBase);
+
+      expect(result.success).toBe(true);
+    });
+
+    // The same const backs /v1/music/plan and /v1/music/video-to-music, so
+    // opening it opens all three request schemas at once.
+    it("should open the other two music request schemas too", () => {
+      expect(
+        ElevenLabsMusicPlanRequestSchema.safeParse({
+          prompt: "A slow piano ballad.",
+          model_id: "music_v3",
+        }).success
+      ).toBe(true);
+      expect(
+        ElevenLabsVideoToMusicRequestSchema.safeParse({
+          videos: [new Blob(["clip"])],
+          model_id: "music_v3",
+        }).success
+      ).toBe(true);
+    });
+
+    // Every enumerated id also matches the alias regex, so the enum branch is
+    // redundant for *validation* — its job is MCP client autocomplete. Nothing
+    // else pins it, so deleting it would leave the suite green while silently
+    // dropping every completion. This is that pin.
+    it("keeps both ids in the enum branch of the MCP JSON Schema", () => {
+      const props = zodToJsonSchema(ElevenLabsComposeMusicRequestSchema)
+        .properties as Record<string, JsonSchema>;
+      const branches = props.model_id.anyOf as JsonSchema[];
+
+      expect(branches).toHaveLength(2);
+      expect(branches[0]).toMatchObject({
+        type: "string",
+        enum: ["music_v1", "music_v2"],
+      });
+      // The second branch is the hatch; without it the enum would be closed.
+      expect(branches[1].type).toBe("string");
+      expect(branches[1].pattern).toBeDefined();
+    });
+  });
+
+  describe("voice design schema model_id enum", () => {
+    const designBase = {
+      voice_description:
+        "A warm, low-pitched narrator with a measured, unhurried delivery.",
+    };
+
+    it.each(["eleven_multilingual_ttv_v2", "eleven_ttv_v3"])(
+      "should accept the listed model_id %p",
+      (model_id) => {
+        const result = ElevenLabsVoiceDesignRequestSchema.safeParse({
+          ...designBase,
+          model_id,
+        });
+
+        expect(result.success).toBe(true);
+      }
+    );
+
+    it.each([
+      // Unreleased versions: the alias hatch accepts a versioned text-to-voice
+      // id before the enum above catches up.
+      "eleven_ttv_v4",
+      "eleven_multilingual_ttv_v3_5",
+    ])("should accept the text-to-voice alias %p", (model_id) => {
+      const result = ElevenLabsVoiceDesignRequestSchema.safeParse({
+        ...designBase,
+        model_id,
+      });
+
+      expect(result.success).toBe(true);
+    });
+
+    it.each([
+      // A text-to-speech id. The broader `ElevenLabsModelAliasSchema` would
+      // accept this; requiring the `ttv_` modality segment is what keeps this
+      // cross-family value out.
+      "eleven_flash_v3",
+      "eleven_multilingual_v2",
+      // Near-miss typos: the version must be present and terminal, and the
+      // `eleven_` prefix is required.
+      "eleven_ttv",
+      "eleven_ttv_v",
+      "eleven_ttv_v3_",
+      "ttv_v3",
+      // Foreign family; the hatch is case-sensitive; empty string.
+      "music_v1",
+      "ELEVEN_TTV_V3",
+      "",
+      // Not a string at all.
+      42,
+    ])("should reject the model_id %p", (model_id) => {
+      const result = ElevenLabsVoiceDesignRequestSchema.safeParse({
+        ...designBase,
+        model_id,
+      });
+
+      expect(result.success).toBe(false);
+      expect(
+        result.error?.issues.some((i) => i.path.includes("model_id"))
+      ).toBe(true);
+    });
+
+    it("should still allow model_id to be omitted", () => {
+      const result = ElevenLabsVoiceDesignRequestSchema.safeParse(designBase);
+
+      expect(result.success).toBe(true);
+    });
+
+    // Every enumerated id also matches the alias regex, so the enum branch is
+    // redundant for *validation* — its job is MCP client autocomplete. Nothing
+    // else pins it, so deleting it would leave the suite green while silently
+    // dropping every completion. This is that pin.
+    it("keeps both ids in the enum branch of the MCP JSON Schema", () => {
+      const props = zodToJsonSchema(ElevenLabsVoiceDesignRequestSchema)
+        .properties as Record<string, JsonSchema>;
+      const branches = props.model_id.anyOf as JsonSchema[];
+
+      expect(branches).toHaveLength(2);
+      expect(branches[0]).toMatchObject({
+        type: "string",
+        enum: ["eleven_multilingual_ttv_v2", "eleven_ttv_v3"],
+      });
+      // The second branch is the hatch; without it the enum would be closed.
+      expect(branches[1].type).toBe("string");
+      expect(branches[1].pattern).toBeDefined();
     });
   });
 });

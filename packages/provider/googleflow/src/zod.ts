@@ -1511,6 +1511,156 @@ export const GoogleFlowAssetsRetrieveResponseSchema = z
   })
   .passthrough();
 
+// -- Characters response family (GF-S9) --------------------------------------
+// Typed, permissive (describe-never-restrict) views of the googleflow CHARACTERS
+// surface: the POST /characters create 200 body, the GET /characters list 200
+// body, the GET /characters/:ref retrieve 200 body, and the shared three-state
+// voice-block union those bodies embed. Every object level is `.passthrough()`;
+// a field is required only where the useapi.net Model block marks it
+// always-present (a `?` in the Model becomes `.optional()` here). These DESCRIBE
+// received data and never guard the wire — the characters endpoints stay
+// non-validating (`post.v1.characters`, `get.v1.characters` /
+// `get.v1.characters.retrieve` keep returning Promise<GoogleFlowResponse>); the
+// schemas are consumer/MCP metadata only. Shapes confirmed against the
+// useapi.net Model blocks (fetched 2026-07-22, curl + Chrome UA):
+//   [characters]     https://useapi.net/docs/api-google-flow-v1/post-google-flow-characters
+//   [characters-ls]  https://useapi.net/docs/api-google-flow-v1/get-google-flow-characters
+//   [characters-get] https://useapi.net/docs/api-google-flow-v1/get-google-flow-characters-ref
+// No live characters account was configured at implementation time (autonomous
+// headless run), so every schema below is pinned straight from the docs and
+// tagged `doc-derived, not yet live-verified`.
+
+// Shared voice block embedded in list/retrieve character entries. The docs
+// describe three object states plus a fourth "no voice" state (handled by the
+// `voice` field being `.optional()` on each entry, NOT by this union). The
+// states are discriminated STRUCTURALLY (a live voice carries `mediaId`, a
+// preset carries `voice`+`displayName` without `workflowId`/`mediaId`, an orphan
+// carries `deleted`), NOT with z.discriminatedUnion, so a member missing
+// `source` still parses (OQ-2: `source` is kept `.optional()` even though the
+// Model marks it present on live/preset, staying permissive). Members are
+// ordered live -> preset -> orphan for legible errors; each is `.passthrough()`.
+// `voice` and `baseVoice` stay `z.string()` (upstream-volatile: the `voice` echo
+// may be an encoded user reference-id, not only a preset name such as "Achernar"
+// / "Umbriel"), never GoogleFlowVoicePresetSchema. `audioUrl` is present on
+// retrieve's live voice but absent on list's, so it is optional here.
+// [characters-ls]/[characters-get] Model -> `voice`. doc-derived, not yet
+// live-verified.
+export const GoogleFlowCharacterVoiceSchema = z.union([
+  // (a) live user voice.
+  z
+    .object({
+      source: z.literal("user").optional(),
+      voice: z.string(),
+      workflowId: z.string(),
+      mediaId: z.string(),
+      displayName: z.string().optional(),
+      baseVoice: z.string().optional(),
+      dialog: z.string().optional(),
+      voicePerformance: z.string().optional(),
+      audioUrl: z.string().optional(),
+    })
+    .passthrough(),
+  // (b) system voice preset (minimal — no workflow/media).
+  z
+    .object({
+      source: z.literal("system").optional(),
+      voice: z.string(),
+      displayName: z.string(),
+    })
+    .passthrough(),
+  // (c) orphan user voice — attached then deleted upstream (no source/audioUrl).
+  z
+    .object({
+      workflowId: z.string(),
+      deleted: z.literal(true),
+    })
+    .passthrough(),
+]);
+
+// POST /characters 200 body. Per the [characters] Model the always-present
+// fields are `entityId`, `character` (the reference-id used for character_1..7
+// on POST /videos & POST /images), `displayName`, and `imageReferences`
+// (`{ mediaId }` items). `personalityNotes` is documented-optional, and `voice`
+// is an OPTIONAL plain STRING echo (the encoded user reference-id, or the
+// Title-case system preset name) — NOT the voice union (OQ-4).
+// [characters] Model -> 200 OK. doc-derived, not yet live-verified.
+export const GoogleFlowCharactersCreateResponseSchema = z
+  .object({
+    entityId: z.string(),
+    character: z.string(),
+    displayName: z.string(),
+    personalityNotes: z.string().optional(),
+    imageReferences: z.array(z.object({ mediaId: z.string() }).passthrough()),
+    voice: z.string().optional(),
+  })
+  .passthrough();
+
+// GET /characters 200 body: `{ characters: [...] }`. This list endpoint is
+// intentionally fast — it does NOT resolve image preview URLs or voice audio
+// URLs, so each entry's `imageReferences` items carry only `workflowId` (itself
+// documented-optional in the Model) and a live `voice` block has no `audioUrl`.
+// Per the [characters-ls] Model each entry's always-present fields are
+// `character`, `entityId`, and `displayName`; everything else
+// (`personalityNotes`, the `imageReferences` item `workflowId`, `voice`,
+// `thumbnailMediaId`, `createTime`, `updateTime`) is optional. Timestamps stay
+// `z.string()` with no datetime refinement (OQ-3). Every object level is
+// `.passthrough()`.
+// [characters-ls] Model -> 200 OK. doc-derived, not yet live-verified.
+export const GoogleFlowCharactersListResponseSchema = z
+  .object({
+    characters: z.array(
+      z
+        .object({
+          character: z.string(),
+          entityId: z.string(),
+          displayName: z.string(),
+          personalityNotes: z.string().optional(),
+          imageReferences: z.array(
+            z.object({ workflowId: z.string().optional() }).passthrough()
+          ),
+          voice: GoogleFlowCharacterVoiceSchema.optional(),
+          thumbnailMediaId: z.string().optional(),
+          createTime: z.string().optional(),
+          updateTime: z.string().optional(),
+        })
+        .passthrough()
+    ),
+  })
+  .passthrough();
+
+// GET /characters/:ref 200 body: resolves a single character with all media URLs
+// included. Per the [characters-get] Model the always-present fields are
+// `character`, `entityId`, and `displayName`; `imageReferences` is present but
+// its richer items (`workflowId`, `mediaId` "populated when the image media is
+// resolvable", `previewUrl` signed ~6h) are each documented-optional. `voice`
+// (whose live state additionally carries `audioUrl`), `personalityNotes`,
+// `thumbnailMediaId`, `thumbnailUrl`, and the `createTime`/`updateTime`
+// timestamps (OQ-3, no datetime refinement) are optional. Every object level is
+// `.passthrough()`.
+// [characters-get] Model -> 200 OK. doc-derived, not yet live-verified.
+export const GoogleFlowCharactersRetrieveResponseSchema = z
+  .object({
+    character: z.string(),
+    entityId: z.string(),
+    displayName: z.string(),
+    personalityNotes: z.string().optional(),
+    imageReferences: z.array(
+      z
+        .object({
+          workflowId: z.string().optional(),
+          mediaId: z.string().optional(),
+          previewUrl: z.string().optional(),
+        })
+        .passthrough()
+    ),
+    voice: GoogleFlowCharacterVoiceSchema.optional(),
+    thumbnailMediaId: z.string().optional(),
+    thumbnailUrl: z.string().optional(),
+    createTime: z.string().optional(),
+    updateTime: z.string().optional(),
+  })
+  .passthrough();
+
 export type GoogleFlowOptions = z.infer<typeof GoogleFlowOptionsSchema>;
 export type GoogleFlowNoRequest = z.input<typeof GoogleFlowNoRequestSchema>;
 export type GoogleFlowEmailRequest = z.input<
@@ -1624,4 +1774,16 @@ export type GoogleFlowAssetsUploadVideoResponse = z.output<
 >;
 export type GoogleFlowAssetsRetrieveResponse = z.output<
   typeof GoogleFlowAssetsRetrieveResponseSchema
+>;
+export type GoogleFlowCharacterVoice = z.output<
+  typeof GoogleFlowCharacterVoiceSchema
+>;
+export type GoogleFlowCharactersCreateResponse = z.output<
+  typeof GoogleFlowCharactersCreateResponseSchema
+>;
+export type GoogleFlowCharactersListResponse = z.output<
+  typeof GoogleFlowCharactersListResponseSchema
+>;
+export type GoogleFlowCharactersRetrieveResponse = z.output<
+  typeof GoogleFlowCharactersRetrieveResponseSchema
 >;

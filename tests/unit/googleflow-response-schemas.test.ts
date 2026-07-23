@@ -20,6 +20,10 @@ import {
   GoogleFlowAssetsUploadImageResponseSchema,
   GoogleFlowAssetsUploadVideoResponseSchema,
   GoogleFlowAssetsRetrieveResponseSchema,
+  GoogleFlowCharacterVoiceSchema,
+  GoogleFlowCharactersCreateResponseSchema,
+  GoogleFlowCharactersListResponseSchema,
+  GoogleFlowCharactersRetrieveResponseSchema,
 } from "../../packages/provider/googleflow/src/zod";
 
 // The GF-S1 response primitives DESCRIBE upstream shapes permissively: every
@@ -1291,5 +1295,299 @@ describe("GoogleFlowAssetsRetrieveResponseSchema", () => {
       mediaGenerationId: "user:1-image:abc",
     });
     expect(result.success).toBe(true);
+  });
+});
+
+// -- Characters response family (GF-S9) --------------------------------------
+// Doc-example literals transcribed from the useapi.net characters Model blocks
+// (post-google-flow-characters / get-google-flow-characters /
+// get-google-flow-characters-ref, fetched 2026-07-22, curl + Chrome UA).
+
+const charactersCreateDocBody = {
+  entityId: "f470f1b5-...",
+  character:
+    "user:12345-email:6a6f...-character:f470f1b5-...-imgs:2-voice:d990a2f9-...",
+  displayName: "Carol",
+  personalityNotes: "A curious traveler with a sharp wit",
+  imageReferences: [{ mediaId: "abc123..." }, { mediaId: "def456..." }],
+  voice: "user:12345-email:6a6f...-voice:d990a2f9-...-mid:d55b6d59-...",
+};
+
+// GET /characters entries: a live user voice (no audioUrl on list), a system
+// preset, an orphan (deleted) voice, and a fourth entry with `voice` omitted —
+// covering all four documented voice states.
+const charactersListDocBody = {
+  characters: [
+    {
+      character:
+        "user:12345-email:6a6f...-character:f470f1b5-...-imgs:2-voice:d990a2f9-...",
+      entityId: "f470f1b5-...",
+      displayName: "Carol",
+      personalityNotes: "A curious traveler with a sharp wit",
+      imageReferences: [{ workflowId: "wf-a..." }, { workflowId: "wf-b..." }],
+      voice: {
+        source: "user",
+        voice: "user:12345-email:6a6f...-voice:d990a2f9-...-mid:d55b6d59-...",
+        workflowId: "d990a2f9-...",
+        mediaId: "d55b6d59-...",
+        displayName: "Cheerful Narrator",
+        baseVoice: "Achernar",
+        dialog: "Hello, this is a test voice.",
+        voicePerformance: "Cheerful, energetic delivery",
+      },
+      thumbnailMediaId: "thumb-a...",
+      createTime: "2026-06-05T18:14:07.706641Z",
+      updateTime: "2026-06-05T18:14:16.004078Z",
+    },
+    {
+      character:
+        "user:12345-email:6a6f...-character:60831b31-...-imgs:1-voice:umbriel",
+      entityId: "60831b31-...",
+      displayName: "Frank",
+      imageReferences: [{ workflowId: "wf-d..." }],
+      voice: { source: "system", voice: "Umbriel", displayName: "Umbriel" },
+      thumbnailMediaId: "thumb-d...",
+      createTime: "2026-06-05T22:42:18.901333Z",
+      updateTime: "2026-06-05T22:42:24.882179Z",
+    },
+    {
+      character: "user:12345-email:6a6f...-character:8a4b0541-...-imgs:1",
+      entityId: "8a4b0541-...",
+      displayName: "Eve",
+      imageReferences: [{ workflowId: "wf-c..." }],
+      voice: { workflowId: "ccd7615f-...", deleted: true },
+      thumbnailMediaId: "thumb-c...",
+      createTime: "2026-06-05T18:15:37.734955Z",
+      updateTime: "2026-06-05T18:15:41.167097Z",
+    },
+    {
+      character: "user:12345-email:6a6f...-character:11112222-...-imgs:1",
+      entityId: "11112222-...",
+      displayName: "Grace",
+      imageReferences: [{ workflowId: "wf-e..." }],
+    },
+  ],
+};
+
+// GET /characters/:ref: richer imageReferences items (workflowId + mediaId +
+// previewUrl) and a live voice carrying audioUrl plus thumbnailUrl.
+const charactersRetrieveDocBody = {
+  character:
+    "user:12345-email:6a6f...-character:f470f1b5-...-imgs:2-voice:d990a2f9-...",
+  entityId: "f470f1b5-...",
+  displayName: "Carol",
+  personalityNotes: "A curious traveler with a sharp wit",
+  imageReferences: [
+    {
+      workflowId: "wf-a...",
+      mediaId: "media-a...",
+      previewUrl:
+        "https://flow-content.google/image/media-a...?Expires=...&Signature=...",
+    },
+    {
+      workflowId: "wf-b...",
+      mediaId: "media-b...",
+      previewUrl:
+        "https://flow-content.google/image/media-b...?Expires=...&Signature=...",
+    },
+  ],
+  voice: {
+    voice: "user:12345-email:6a6f...-voice:d990a2f9-...-mid:d55b6d59-...",
+    workflowId: "d990a2f9-...",
+    mediaId: "d55b6d59-...",
+    displayName: "Cheerful Narrator",
+    baseVoice: "Achernar",
+    dialog: "Hello, this is a test voice.",
+    voicePerformance: "Cheerful, energetic delivery",
+    audioUrl:
+      "https://flow-content.google/audio/d55b6d59-...?Expires=...&Signature=...",
+  },
+  thumbnailMediaId: "thumb-a...",
+  thumbnailUrl:
+    "https://flow-content.google/image/thumb-a...?Expires=...&Signature=...",
+  createTime: "2026-06-05T18:14:07.706641Z",
+  updateTime: "2026-06-05T18:14:16.004078Z",
+};
+
+describe("GoogleFlowCharactersCreateResponseSchema", () => {
+  it("parses the [characters] documented create 200 body (voice as string echo)", () => {
+    const result = GoogleFlowCharactersCreateResponseSchema.safeParse(
+      charactersCreateDocBody
+    );
+    expect(result.success).toBe(true);
+    const parsed = GoogleFlowCharactersCreateResponseSchema.parse(
+      charactersCreateDocBody
+    );
+    expect(parsed.entityId).toBe("f470f1b5-...");
+    expect(parsed.imageReferences[0].mediaId).toBe("abc123...");
+    // `voice` is a plain string echo here, NOT the voice union (OQ-4).
+    expect(parsed.voice).toBe(
+      "user:12345-email:6a6f...-voice:d990a2f9-...-mid:d55b6d59-..."
+    );
+  });
+
+  it("parses a create body with `voice` absent", () => {
+    const result = GoogleFlowCharactersCreateResponseSchema.safeParse({
+      entityId: "60831b31-...",
+      character: "user:12345-email:6a6f...-character:60831b31-...-imgs:1",
+      displayName: "Frank",
+      imageReferences: [{ mediaId: "ghi789..." }],
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("preserves an unknown extra field via .passthrough()", () => {
+    const parsed = GoogleFlowCharactersCreateResponseSchema.parse({
+      ...charactersCreateDocBody,
+      internalTraceId: "gf-char-1",
+    }) as Record<string, unknown>;
+    expect(parsed.internalTraceId).toBe("gf-char-1");
+  });
+});
+
+describe("GoogleFlowCharactersListResponseSchema", () => {
+  it("parses the [characters-ls] documented list 200 body (all voice states)", () => {
+    const result = GoogleFlowCharactersListResponseSchema.safeParse(
+      charactersListDocBody
+    );
+    expect(result.success).toBe(true);
+    const parsed = GoogleFlowCharactersListResponseSchema.parse(
+      charactersListDocBody
+    );
+    expect(parsed.characters).toHaveLength(4);
+
+    // Entry 0: live user voice (object union), no audioUrl on the list surface.
+    const live = parsed.characters[0].voice as unknown as Record<
+      string,
+      unknown
+    >;
+    expect(live.source).toBe("user");
+    expect(live.mediaId).toBe("d55b6d59-...");
+    expect(live.audioUrl).toBeUndefined();
+
+    // Entry 1: system preset voice.
+    const preset = parsed.characters[1].voice as unknown as Record<
+      string,
+      unknown
+    >;
+    expect(preset.source).toBe("system");
+    expect(preset.voice).toBe("Umbriel");
+
+    // Entry 2: orphan (deleted) voice — parses without a `source` field.
+    const orphan = parsed.characters[2].voice as unknown as Record<
+      string,
+      unknown
+    >;
+    expect(orphan.deleted).toBe(true);
+    expect(orphan.workflowId).toBe("ccd7615f-...");
+
+    // Entry 3: voice omitted entirely.
+    expect(parsed.characters[3].voice).toBeUndefined();
+  });
+
+  it("preserves unknown extras via .passthrough() at entry and item level", () => {
+    const parsed = GoogleFlowCharactersListResponseSchema.parse({
+      characters: [
+        {
+          character: "user:1-character:abc",
+          entityId: "abc",
+          displayName: "Hank",
+          imageReferences: [{ workflowId: "wf-x", extraItemKey: "keep-me" }],
+          internalEntryKey: "keep-me-too",
+        },
+      ],
+    }) as unknown as { characters: Record<string, unknown>[] };
+    const entry = parsed.characters[0];
+    expect(entry.internalEntryKey).toBe("keep-me-too");
+    const items = entry.imageReferences as Record<string, unknown>[];
+    expect(items[0].extraItemKey).toBe("keep-me");
+  });
+});
+
+describe("GoogleFlowCharactersRetrieveResponseSchema", () => {
+  it("parses the [characters-get] documented retrieve 200 body (richer items + audioUrl)", () => {
+    const result = GoogleFlowCharactersRetrieveResponseSchema.safeParse(
+      charactersRetrieveDocBody
+    );
+    expect(result.success).toBe(true);
+    const parsed = GoogleFlowCharactersRetrieveResponseSchema.parse(
+      charactersRetrieveDocBody
+    );
+    // Richer imageReferences items carry workflowId + mediaId + previewUrl.
+    expect(parsed.imageReferences[0].mediaId).toBe("media-a...");
+    expect(parsed.imageReferences[0].previewUrl).toBe(
+      "https://flow-content.google/image/media-a...?Expires=...&Signature=..."
+    );
+    // The live voice on retrieve additionally carries audioUrl.
+    const voice = parsed.voice as unknown as Record<string, unknown>;
+    expect(voice.audioUrl).toBe(
+      "https://flow-content.google/audio/d55b6d59-...?Expires=...&Signature=..."
+    );
+    expect(parsed.thumbnailUrl).toBe(
+      "https://flow-content.google/image/thumb-a...?Expires=...&Signature=..."
+    );
+  });
+
+  it("preserves an unknown extra field via .passthrough()", () => {
+    const parsed = GoogleFlowCharactersRetrieveResponseSchema.parse({
+      ...charactersRetrieveDocBody,
+      internalTraceId: "gf-char-get-1",
+    }) as Record<string, unknown>;
+    expect(parsed.internalTraceId).toBe("gf-char-get-1");
+  });
+});
+
+describe("GoogleFlowCharacterVoiceSchema", () => {
+  it("parses the live user voice state (list variant, no audioUrl)", () => {
+    const result = GoogleFlowCharacterVoiceSchema.safeParse({
+      source: "user",
+      voice: "user:12345-email:6a6f...-voice:d990a2f9-...-mid:d55b6d59-...",
+      workflowId: "d990a2f9-...",
+      mediaId: "d55b6d59-...",
+      displayName: "Cheerful Narrator",
+      baseVoice: "Achernar",
+      dialog: "Hello, this is a test voice.",
+      voicePerformance: "Cheerful, energetic delivery",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("parses the live user voice state with audioUrl (retrieve variant)", () => {
+    const result = GoogleFlowCharacterVoiceSchema.safeParse({
+      source: "user",
+      voice: "user:12345-email:6a6f...-voice:d990a2f9-...",
+      workflowId: "d990a2f9-...",
+      mediaId: "d55b6d59-...",
+      audioUrl:
+        "https://flow-content.google/audio/d55b6d59-...?Expires=...&Signature=...",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("parses the system preset voice state", () => {
+    const result = GoogleFlowCharacterVoiceSchema.safeParse({
+      source: "system",
+      voice: "Umbriel",
+      displayName: "Umbriel",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("parses the orphan (deleted) voice state without a source field", () => {
+    const result = GoogleFlowCharacterVoiceSchema.safeParse({
+      workflowId: "ccd7615f-...",
+      deleted: true,
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("preserves an unknown extra key on a voice member via .passthrough()", () => {
+    const parsed = GoogleFlowCharacterVoiceSchema.parse({
+      source: "system",
+      voice: "Umbriel",
+      displayName: "Umbriel",
+      internalVoiceKey: "keep-me",
+    }) as Record<string, unknown>;
+    expect(parsed.internalVoiceKey).toBe("keep-me");
   });
 });

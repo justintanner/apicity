@@ -60,6 +60,10 @@ export type {
   GoogleFlowAssetsUploadImageResponse,
   GoogleFlowAssetsUploadVideoResponse,
   GoogleFlowAssetsRetrieveResponse,
+  GoogleFlowCharacterVoice,
+  GoogleFlowCharactersCreateResponse,
+  GoogleFlowCharactersListResponse,
+  GoogleFlowCharactersRetrieveResponse,
 } from "./zod";
 
 export interface GoogleFlowResponse {

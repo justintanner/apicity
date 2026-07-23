@@ -64,6 +64,10 @@ export type {
   GoogleFlowAssetsUploadImageResponse,
   GoogleFlowAssetsUploadVideoResponse,
   GoogleFlowAssetsRetrieveResponse,
+  GoogleFlowCharacterVoice,
+  GoogleFlowCharactersCreateResponse,
+  GoogleFlowCharactersListResponse,
+  GoogleFlowCharactersRetrieveResponse,
 } from "./zod";
 
 export {
@@ -108,4 +112,8 @@ export {
   GoogleFlowAssetsUploadImageResponseSchema,
   GoogleFlowAssetsUploadVideoResponseSchema,
   GoogleFlowAssetsRetrieveResponseSchema,
+  GoogleFlowCharacterVoiceSchema,
+  GoogleFlowCharactersCreateResponseSchema,
+  GoogleFlowCharactersListResponseSchema,
+  GoogleFlowCharactersRetrieveResponseSchema,
 } from "./zod";

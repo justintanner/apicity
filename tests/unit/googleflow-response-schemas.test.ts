@@ -9,6 +9,8 @@ import {
   GoogleFlowVideosResponseSchema,
   GoogleFlowVideosUpscaleResponseSchema,
   GoogleFlowVideosExtendResponseSchema,
+  GoogleFlowImageMediaEntrySchema,
+  GoogleFlowImagesResponseSchema,
 } from "../../packages/provider/googleflow/src/zod";
 
 // The GF-S1 response primitives DESCRIBE upstream shapes permissively: every
@@ -433,5 +435,125 @@ describe("GoogleFlowVideosExtendResponseSchema", () => {
     expect(GoogleFlowVideosExtendResponseSchema).toBe(
       GoogleFlowVideosResponseSchema
     );
+  });
+});
+
+// GF-S5 image-generation SYNC response family. The literals below are copied
+// from the useapi.net google-flow Model -> 200 OK block
+// (post-google-flow-images, fetched 2026-07-22). The generated-image payload
+// nests under image.generatedImage; the doc example has no remainingCredits
+// (unlike [videos]), so it is not declared — passthrough preserves it if a
+// future body carries it.
+
+// A full [images] media[] entry: image.generatedImage with an internal response
+// model id (modelNameType), mediaVisibility, fifeUrl, aspectRatio, requestData.
+const imagesDocExampleMediaEntry = {
+  name: "…redacted…",
+  workflowId: "…redacted…",
+  image: {
+    generatedImage: {
+      seed: 123456,
+      mediaGenerationId: "user:12345…redacted…",
+      mediaVisibility: "PRIVATE",
+      prompt: "A serene mountain landscape at sunset with vibrant colors",
+      modelNameType: "HARBOR_SEAL",
+      workflowId: "…redacted…",
+      fifeUrl: "https://storage.googleapis.com/…redacted…",
+      aspectRatio: "IMAGE_ASPECT_RATIO_LANDSCAPE",
+      requestData: {
+        promptInputs: [
+          {
+            textInput:
+              "A serene mountain landscape at sunset with vibrant colors",
+          },
+        ],
+        imageGenerationRequestData: { imageGenerationImageInputs: [] },
+      },
+    },
+  },
+};
+
+const imagesDocExampleBody = {
+  jobId: "j1731859345678i-u12345-email:jo***@gmail.com-bot:google-flow",
+  media: [imagesDocExampleMediaEntry],
+  captcha: {
+    service: "AntiCaptcha",
+    taskId: "abc123...",
+    durationMs: 3500,
+    attempts: [
+      {
+        service: "AntiCaptcha",
+        taskId: "abc123...",
+        durationMs: 3500,
+        success: true,
+      },
+    ],
+  },
+};
+
+describe("GoogleFlowImageMediaEntrySchema", () => {
+  it("parses a full [images] media[] entry (all generatedImage fields)", () => {
+    const result = GoogleFlowImageMediaEntrySchema.safeParse(
+      imagesDocExampleMediaEntry
+    );
+    expect(result.success).toBe(true);
+  });
+
+  it("parses a minimal entry (every field optional by default, OQ-3)", () => {
+    const result = GoogleFlowImageMediaEntrySchema.safeParse({
+      image: { generatedImage: { mediaGenerationId: "m-1" } },
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("preserves an undeclared generatedImage field via .passthrough()", () => {
+    const parsed = GoogleFlowImageMediaEntrySchema.parse({
+      image: {
+        generatedImage: { mediaGenerationId: "m-1", futureField: true },
+      },
+    });
+    const generatedImage = (parsed.image?.generatedImage ?? {}) as Record<
+      string,
+      unknown
+    >;
+    expect(generatedImage.futureField).toBe(true);
+  });
+
+  it("tolerates a novel modelNameType string (open response vocabulary, REQ-002)", () => {
+    const result = GoogleFlowImageMediaEntrySchema.safeParse({
+      image: { generatedImage: { modelNameType: "SOME_FUTURE_MODEL_2027" } },
+    });
+    expect(result.success).toBe(true);
+  });
+});
+
+describe("GoogleFlowImagesResponseSchema", () => {
+  it("parses the documented 200 body without a captcha", () => {
+    const result = GoogleFlowImagesResponseSchema.safeParse({
+      jobId: "j-1",
+      media: [imagesDocExampleMediaEntry],
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("parses the same body plus a GF-S1 captcha object (reuse)", () => {
+    const result =
+      GoogleFlowImagesResponseSchema.safeParse(imagesDocExampleBody);
+    expect(result.success).toBe(true);
+  });
+
+  it("requires jobId (a body missing it fails)", () => {
+    expect(
+      GoogleFlowImagesResponseSchema.safeParse({ media: [] }).success
+    ).toBe(false);
+  });
+
+  it("preserves an unknown top-level field via .passthrough()", () => {
+    const parsed = GoogleFlowImagesResponseSchema.parse({
+      jobId: "j-1",
+      media: [],
+      remainingCredits: 18760,
+    });
+    expect((parsed as Record<string, unknown>).remainingCredits).toBe(18760);
   });
 });

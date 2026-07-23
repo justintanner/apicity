@@ -53,6 +53,8 @@ export type {
   GoogleFlowVideosResponse,
   GoogleFlowVideosUpscaleResponse,
   GoogleFlowVideosExtendResponse,
+  GoogleFlowImageMediaEntry,
+  GoogleFlowImagesResponse,
 } from "./zod";
 
 export {
@@ -86,4 +88,6 @@ export {
   GoogleFlowVideosResponseSchema,
   GoogleFlowVideosUpscaleResponseSchema,
   GoogleFlowVideosExtendResponseSchema,
+  GoogleFlowImageMediaEntrySchema,
+  GoogleFlowImagesResponseSchema,
 } from "./zod";

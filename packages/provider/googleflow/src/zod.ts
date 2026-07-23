@@ -1092,6 +1092,77 @@ export const GoogleFlowVideosUpscaleResponseSchema = z
 export const GoogleFlowVideosExtendResponseSchema =
   GoogleFlowVideosResponseSchema;
 
+// -- Image response family (GF-S5) ------------------------------------------
+// Typed, permissive (describe-never-restrict) view of the image-generation SYNC
+// response body for POST /images. The symmetric image half of the GF-S4 video
+// family: every object level is `.passthrough()`; every field is optional unless
+// the useapi.net Model block marks it always-present (only the top-level jobId
+// and media[] are required); internal response model ids and volatile
+// visibility/aspect enums are plain `z.string()` with known values in comments
+// only. These DESCRIBE received data and never guard the wire — the provider
+// stays non-validating and endpoint return types remain
+// Promise<GoogleFlowResponse>; the schemas are consumer/MCP metadata only.
+// Shape confirmed against the useapi.net Model block (fetched 2026-07-22,
+// curl + Chrome UA):
+//   [images] https://useapi.net/docs/api-google-flow-v1/post-google-flow-images
+
+// One entry of the images `media[]` array. The generated-image payload nests
+// under `image.generatedImage`; every object level is `.passthrough()` and every
+// field is optional (OQ-3 default — the [images] Model block shows the fields in
+// its 200 OK example but never marks them always-present, so nothing inside the
+// entry is required). `modelNameType` is an internal, upstream-volatile response
+// model id typed plain `z.string()` (describe-only) — never a closed `z.enum` and
+// never a `.or(z.string())` open-enum union; that guard belongs to the
+// POST /images request model registry, not this response id. `mediaVisibility` is
+// likewise a plain `z.string()` (see GoogleFlowMediaVisibilitySchema). Composes
+// no GF-S1 primitive at the entry level; reuses none redefined.
+// [images] Model -> 200 OK, `media[]`.
+export const GoogleFlowImageMediaEntrySchema = z
+  .object({
+    name: z.string().optional(),
+    workflowId: z.string().optional(),
+    image: z
+      .object({
+        generatedImage: z
+          .object({
+            seed: z.number().optional(),
+            mediaGenerationId: z.string().optional(),
+            // known values: PRIVATE | PUBLIC (see GoogleFlowMediaVisibilitySchema).
+            mediaVisibility: z.string().optional(),
+            prompt: z.string().optional(),
+            // Internal, upstream-volatile response model id (describe-only).
+            // known values: HARBOR_SEAL | GEM_PIX_2 | NARWHAL (current), plus
+            // IMAGEN_3_5 | R2I | GEM_PIX on older jobs.
+            modelNameType: z.string().optional(),
+            workflowId: z.string().optional(),
+            fifeUrl: z.string().optional(),
+            // known values: IMAGE_ASPECT_RATIO_LANDSCAPE | *_PORTRAIT | ...
+            aspectRatio: z.string().optional(),
+            requestData: z.object({}).passthrough().optional(),
+          })
+          .passthrough()
+          .optional(),
+      })
+      .passthrough()
+      .optional(),
+  })
+  .passthrough();
+
+// POST /images sync 200 body. `jobId` and `media` are the only always-present
+// top-level fields (mirroring the GF-S4 A2 decision); `captcha` is optional and
+// reuses the GF-S1 GoogleFlowCaptchaResultSchema primitive rather than redefining
+// it. The [images] doc example carries no `remainingCredits` (unlike [videos]),
+// so it is not declared — `.passthrough()` preserves it if a future response ever
+// adds it (OQ-2).
+// [images] Model -> 200 OK.
+export const GoogleFlowImagesResponseSchema = z
+  .object({
+    jobId: z.string(),
+    media: z.array(GoogleFlowImageMediaEntrySchema),
+    captcha: GoogleFlowCaptchaResultSchema.optional(),
+  })
+  .passthrough();
+
 export type GoogleFlowOptions = z.infer<typeof GoogleFlowOptionsSchema>;
 export type GoogleFlowNoRequest = z.input<typeof GoogleFlowNoRequestSchema>;
 export type GoogleFlowEmailRequest = z.input<
@@ -1174,4 +1245,10 @@ export type GoogleFlowVideosUpscaleResponse = z.output<
 >;
 export type GoogleFlowVideosExtendResponse = z.output<
   typeof GoogleFlowVideosExtendResponseSchema
+>;
+export type GoogleFlowImageMediaEntry = z.output<
+  typeof GoogleFlowImageMediaEntrySchema
+>;
+export type GoogleFlowImagesResponse = z.output<
+  typeof GoogleFlowImagesResponseSchema
 >;

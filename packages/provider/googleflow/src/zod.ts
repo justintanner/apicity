@@ -376,6 +376,136 @@ export const GoogleFlowJobsRequestSchema = z
   })
   .passthrough();
 
+// -- Response primitives ----------------------------------------------------
+// Shared response sub-objects that later googleflow response-family slices
+// (GF-S4..GF-S10) compose. They DESCRIBE upstream responses permissively
+// (`.passthrough()` at every object level, optional-unless-documented fields,
+// upstream-volatile string enums as `z.string()` with known values in comments
+// only) rather than restrict them. The provider stays non-validating, so these
+// are consumer metadata only, never runtime guards. Shapes confirmed against
+// the useapi.net Model blocks (fetched 2026-07-22, curl + Chrome UA):
+//   videos: https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos
+//   images: https://useapi.net/docs/api-google-flow-v1/post-google-flow-images
+
+// Captcha result returned inside video/image responses. Documented in the
+// videos/images Model -> "200 OK" blocks as the top-level `captcha` object:
+//   { service, taskId, durationMs,
+//     attempts: [{ service, taskId, durationMs, success }] }
+// The docs show these only in JSON examples (never as always-present typed
+// fields), so every field is optional except `attempt.success` (a boolean).
+// `attempt.error` is kept independent of GoogleFlowApiErrorSchema (plan OQ-2)
+// and permissive because the docs do not enumerate its shape.
+// Docs: post-google-flow-videos / post-google-flow-images (Model -> 200 OK, `captcha`).
+export const GoogleFlowCaptchaResultSchema = z
+  .object({
+    service: z.string().optional(),
+    taskId: z.string().optional(),
+    durationMs: z.number().optional(),
+    attempts: z
+      .array(
+        z
+          .object({
+            service: z.string().optional(),
+            taskId: z.string().optional(),
+            durationMs: z.number().optional(),
+            success: z.boolean(),
+            error: z.unknown().optional(),
+          })
+          .passthrough()
+      )
+      .optional(),
+  })
+  .passthrough();
+
+// Shared error / HTTP-429 envelope, documented in the videos/images
+// Model -> "Error" blocks ("Error response structure (applies to both sync and
+// async modes)"). The top-level `error` is documented as an always-present
+// summary string, but captcha-provider failures prefix it
+// (`captcha_quality:` = low reCAPTCHA score / rejected token;
+// `Captcha service failed:` = provider outage, e.g.
+// "Captcha service failed: ERROR_ZERO_BALANCE") and the structured
+// `{ code, message, status, details? }` form also appears (the docs nest it
+// under `response.error`; the requirements model it directly on `error`), so
+// `error` accepts both the string and object forms.
+// `retryAfter`, `skipReasons`, and `message` are the load-balancer empty-set
+// 429 siblings (`error === "no_eligible_account"`). The docs give `retryAfter`
+// as an ISO-8601 timestamp string and `skipReasons` as
+// `Array<{ email, reason, model }>`; both are widened here to also accept the
+// simpler number / string[] forms so callers on either shape parse. Every
+// object level `.passthrough()`.
+// Docs: post-google-flow-videos / post-google-flow-images (Model -> Error / 400 / 503).
+export const GoogleFlowApiErrorSchema = z
+  .object({
+    error: z.union([
+      z.string(),
+      z
+        .object({
+          code: z.number().optional(),
+          message: z.string().optional(),
+          status: z.string().optional(),
+          details: z.array(z.object({}).passthrough()).optional(),
+        })
+        .passthrough(),
+    ]),
+    // HTTP status-code sibling, e.g. `{ error: "Captcha service failed: ...",
+    // code: 503 }`.
+    code: z.number().optional(),
+    message: z.string().optional(),
+    retryAfter: z.union([z.string(), z.number()]).optional(),
+    skipReasons: z
+      .array(
+        z.union([
+          z.string(),
+          z
+            .object({
+              email: z.string().optional(),
+              reason: z.string().optional(),
+              model: z.string().optional(),
+            })
+            .passthrough(),
+        ])
+      )
+      .optional(),
+  })
+  .passthrough();
+
+// Per-media generation status, documented in the videos Model -> "200 OK"
+// block under `media[].mediaMetadata.mediaStatus`:
+//   { mediaGenerationStatus: string, error?: { code, message } }
+// `mediaGenerationStatus` is an upstream-volatile string enum, typed
+// `z.string()` with known values in this comment only (never enforced):
+//   MEDIA_GENERATION_STATUS_SUCCESSFUL | MEDIA_GENERATION_STATUS_FAILED
+// plus any future MEDIA_GENERATION_STATUS_* value. `.passthrough()`.
+// Docs: post-google-flow-videos (Model -> 200 OK, `mediaMetadata.mediaStatus`).
+export const GoogleFlowMediaStatusSchema = z
+  .object({
+    mediaGenerationStatus: z.string(),
+    error: z
+      .object({
+        code: z.number().optional(),
+        message: z.string().optional(),
+      })
+      .passthrough()
+      .optional(),
+  })
+  .passthrough();
+
+// Media visibility helper. The visibility flag ships under a different key per
+// endpoint: video responses put `visibility` on `media[].mediaMetadata`
+// (`"PRIVATE"`); image responses put `mediaVisibility` on
+// `media[].image.generatedImage` (`"PRIVATE"`). Both are upstream-volatile
+// strings (known values `PRIVATE` | `PUBLIC`), typed `z.string()` and listed
+// here only. All fields optional and `.passthrough()`, so GF-S4/GF-S5 can
+// compose this at whatever nesting level their endpoint uses.
+// Docs: post-google-flow-videos (Model -> 200 OK, `mediaMetadata.visibility`) /
+//       post-google-flow-images (Model -> 200 OK, `generatedImage.mediaVisibility`).
+export const GoogleFlowMediaVisibilitySchema = z
+  .object({
+    visibility: z.string().optional(),
+    mediaVisibility: z.string().optional(),
+  })
+  .passthrough();
+
 export type GoogleFlowOptions = z.infer<typeof GoogleFlowOptionsSchema>;
 export type GoogleFlowNoRequest = z.input<typeof GoogleFlowNoRequestSchema>;
 export type GoogleFlowEmailRequest = z.input<
@@ -434,3 +564,16 @@ export type GoogleFlowVideosConcatenateRequest = z.input<
   typeof GoogleFlowVideosConcatenateRequestSchema
 >;
 export type GoogleFlowJobsRequest = z.input<typeof GoogleFlowJobsRequestSchema>;
+
+// Response-primitive type aliases. `z.output` (not `z.input`) because these
+// describe data the caller receives after parsing.
+export type GoogleFlowCaptchaResult = z.output<
+  typeof GoogleFlowCaptchaResultSchema
+>;
+export type GoogleFlowApiError = z.output<typeof GoogleFlowApiErrorSchema>;
+export type GoogleFlowMediaStatus = z.output<
+  typeof GoogleFlowMediaStatusSchema
+>;
+export type GoogleFlowMediaVisibility = z.output<
+  typeof GoogleFlowMediaVisibilitySchema
+>;

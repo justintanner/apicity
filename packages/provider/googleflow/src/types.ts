@@ -46,6 +46,10 @@ export type {
   GoogleFlowVideosExtendRequest,
   GoogleFlowVideosConcatenateRequest,
   GoogleFlowJobsRequest,
+  GoogleFlowCaptchaResult,
+  GoogleFlowApiError,
+  GoogleFlowMediaStatus,
+  GoogleFlowMediaVisibility,
 } from "./zod";
 
 export interface GoogleFlowResponse {

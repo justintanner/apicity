@@ -45,6 +45,10 @@ export type {
   GoogleFlowVideosExtendRequest,
   GoogleFlowVideosConcatenateRequest,
   GoogleFlowJobsRequest,
+  GoogleFlowCaptchaResult,
+  GoogleFlowApiError,
+  GoogleFlowMediaStatus,
+  GoogleFlowMediaVisibility,
 } from "./zod";
 
 export {
@@ -70,4 +74,8 @@ export {
   GoogleFlowVideosExtendRequestSchema,
   GoogleFlowVideosConcatenateRequestSchema,
   GoogleFlowJobsRequestSchema,
+  GoogleFlowCaptchaResultSchema,
+  GoogleFlowApiErrorSchema,
+  GoogleFlowMediaStatusSchema,
+  GoogleFlowMediaVisibilitySchema,
 } from "./zod";

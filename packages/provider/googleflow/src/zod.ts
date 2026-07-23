@@ -1163,6 +1163,67 @@ export const GoogleFlowImagesResponseSchema = z
   })
   .passthrough();
 
+// -- Encoded-payload response family (GF-S6) --------------------------------
+// Typed, permissive (describe-never-restrict) views of the three synchronous
+// googleflow endpoints whose 200 body is a small base64-encoded media payload
+// rather than a `media[]` array: POST /images/upscale (`encodedImage`),
+// POST /videos/gif (`encodedGif`), and POST /videos/concatenate
+// (`encodedVideo`). Completes the response-family coverage begun by GF-S4
+// (video media[]) and GF-S5 (image media[]). Every object level is
+// `.passthrough()`; a field is required only where the useapi.net Model block
+// marks it always-present. These DESCRIBE received data and never guard the
+// wire — the provider stays non-validating and endpoint return types remain
+// Promise<GoogleFlowResponse>; the schemas are consumer/MCP metadata only.
+// Shapes confirmed against the useapi.net Model blocks (fetched 2026-07-22,
+// curl + Chrome UA):
+//   [images/upscale]     https://useapi.net/docs/api-google-flow-v1/post-google-flow-images-upscale
+//   [videos/gif]         https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-gif
+//   [videos/concatenate] https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-concatenate
+
+// POST /images/upscale sync 200 body: base64 image payload. `encodedImage` is
+// the only always-present field; `captcha` is optional and reuses the GF-S1
+// GoogleFlowCaptchaResultSchema primitive (never redefined), so its nested
+// attempts[] passthrough carries through. `.passthrough()` preserves any
+// undocumented top-level extra.
+// [images/upscale] Model -> 200 OK.
+export const GoogleFlowImagesUpscaleResponseSchema = z
+  .object({
+    encodedImage: z.string(),
+    captcha: GoogleFlowCaptchaResultSchema.optional(),
+  })
+  .passthrough();
+
+// POST /videos/gif sync 200 body: base64 GIF payload. `encodedGif` is the sole
+// always-present field; the doc Model also lists an optional `error?` envelope
+// which is not declared (OQ-1 — GF-S4/GF-S5 precedent; the GF-S1
+// GoogleFlowApiErrorSchema models the error envelope and `.passthrough()`
+// preserves an inline `error` regardless).
+// [videos/gif] Model -> 200 OK.
+export const GoogleFlowVideosGifResponseSchema = z
+  .object({
+    encodedGif: z.string(),
+  })
+  .passthrough();
+
+// POST /videos/concatenate sync 200 body: base64 MP4 payload. All four fields
+// are always-present per the doc Model. `status` is a plain `z.string()`
+// describe-only response lifecycle string, not a request model registry, so a
+// novel MEDIA_GENERATION_STATUS_* parses — never a closed z.enum and never a
+// `.or(z.string())` open-enum union. `.passthrough()` preserves any undocumented
+// top-level extra (the doc Model also lists an optional `error?` envelope,
+// undeclared per OQ-1).
+// [videos/concatenate] Model -> 200 OK.
+export const GoogleFlowVideosConcatenateResponseSchema = z
+  .object({
+    jobId: z.string(),
+    // known values: MEDIA_GENERATION_STATUS_SUCCESSFUL |
+    // MEDIA_GENERATION_STATUS_FAILED, plus future MEDIA_GENERATION_STATUS_*
+    status: z.string(),
+    inputsCount: z.number(),
+    encodedVideo: z.string(),
+  })
+  .passthrough();
+
 export type GoogleFlowOptions = z.infer<typeof GoogleFlowOptionsSchema>;
 export type GoogleFlowNoRequest = z.input<typeof GoogleFlowNoRequestSchema>;
 export type GoogleFlowEmailRequest = z.input<
@@ -1251,4 +1312,13 @@ export type GoogleFlowImageMediaEntry = z.output<
 >;
 export type GoogleFlowImagesResponse = z.output<
   typeof GoogleFlowImagesResponseSchema
+>;
+export type GoogleFlowImagesUpscaleResponse = z.output<
+  typeof GoogleFlowImagesUpscaleResponseSchema
+>;
+export type GoogleFlowVideosGifResponse = z.output<
+  typeof GoogleFlowVideosGifResponseSchema
+>;
+export type GoogleFlowVideosConcatenateResponse = z.output<
+  typeof GoogleFlowVideosConcatenateResponseSchema
 >;

@@ -11,6 +11,9 @@ import {
   GoogleFlowVideosExtendResponseSchema,
   GoogleFlowImageMediaEntrySchema,
   GoogleFlowImagesResponseSchema,
+  GoogleFlowImagesUpscaleResponseSchema,
+  GoogleFlowVideosGifResponseSchema,
+  GoogleFlowVideosConcatenateResponseSchema,
 } from "../../packages/provider/googleflow/src/zod";
 
 // The GF-S1 response primitives DESCRIBE upstream shapes permissively: every
@@ -555,5 +558,136 @@ describe("GoogleFlowImagesResponseSchema", () => {
       remainingCredits: 18760,
     });
     expect((parsed as Record<string, unknown>).remainingCredits).toBe(18760);
+  });
+});
+
+// GF-S6 encoded-payload SYNC response family. The literals below are copied from
+// the useapi.net google-flow Model -> 200 OK blocks (post-google-flow-images-
+// upscale / -videos-gif / -videos-concatenate, fetched 2026-07-22). Each 200
+// body is a small base64-encoded media payload rather than a media[] array;
+// every schema DESCRIBES upstream permissively (.passthrough() at every level),
+// requires only the doc-always-present fields, and keeps the concatenate
+// `status` an open z.string().
+
+describe("GoogleFlowImagesUpscaleResponseSchema", () => {
+  // [images/upscale] Model -> 200 OK: { encodedImage, captcha }.
+  const upscaleDocBody = {
+    encodedImage: "/9j/4AAQSkZJRgABAQAAAQABAAD...base64 encoded image data...",
+    captcha: {
+      service: "AntiCaptcha",
+      taskId: "abc123...",
+      durationMs: 3500,
+      attempts: [
+        {
+          service: "AntiCaptcha",
+          taskId: "abc123...",
+          durationMs: 3500,
+          success: true,
+        },
+      ],
+    },
+  };
+
+  it("parses the documented upscale 200 body (encodedImage + captcha)", () => {
+    expect(
+      GoogleFlowImagesUpscaleResponseSchema.safeParse(upscaleDocBody).success
+    ).toBe(true);
+  });
+
+  it("parses a minimal body without a captcha (captcha optional)", () => {
+    expect(
+      GoogleFlowImagesUpscaleResponseSchema.safeParse({
+        encodedImage: "/9j/4AAQSkZJRg...",
+      }).success
+    ).toBe(true);
+  });
+
+  it("requires encodedImage (a captcha-only body fails)", () => {
+    expect(
+      GoogleFlowImagesUpscaleResponseSchema.safeParse({ captcha: {} }).success
+    ).toBe(false);
+  });
+
+  it("preserves unknown top-level and nested captcha fields via .passthrough()", () => {
+    const parsed = GoogleFlowImagesUpscaleResponseSchema.parse({
+      encodedImage: "/9j/4AAQSkZJRg...",
+      remainingCredits: 42,
+      captcha: {
+        attempts: [{ success: true, futureField: true }],
+      },
+    }) as Record<string, unknown>;
+    // Top-level unknown field survives.
+    expect(parsed.remainingCredits).toBe(42);
+    // Unknown field nested inside captcha.attempts[] survives too.
+    const captcha = parsed.captcha as Record<string, unknown>;
+    const firstAttempt = (captcha.attempts as Record<string, unknown>[])[0];
+    expect(firstAttempt.futureField).toBe(true);
+  });
+});
+
+describe("GoogleFlowVideosGifResponseSchema", () => {
+  it("parses the documented gif 200 body", () => {
+    expect(
+      GoogleFlowVideosGifResponseSchema.safeParse({
+        encodedGif:
+          "R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7...",
+      }).success
+    ).toBe(true);
+  });
+
+  it("requires encodedGif (an empty body fails)", () => {
+    expect(GoogleFlowVideosGifResponseSchema.safeParse({}).success).toBe(false);
+  });
+
+  it("preserves an unknown top-level field via .passthrough()", () => {
+    const parsed = GoogleFlowVideosGifResponseSchema.parse({
+      encodedGif: "R0lGODlh...",
+      remainingCredits: 42,
+    });
+    expect((parsed as Record<string, unknown>).remainingCredits).toBe(42);
+  });
+});
+
+describe("GoogleFlowVideosConcatenateResponseSchema", () => {
+  // [videos/concatenate] Model -> 200 OK: { jobId, status, inputsCount,
+  // encodedVideo } — all four always-present.
+  const concatDocBody = {
+    jobId: "j1737312345678v-u12345-email:jo***@gmail.com-bot:google-flow",
+    status: "MEDIA_GENERATION_STATUS_SUCCESSFUL",
+    inputsCount: 3,
+    encodedVideo: "AAAAIGZ0eXBpc29t...~21MB base64...",
+  };
+
+  it("parses the documented concatenate 200 body", () => {
+    expect(
+      GoogleFlowVideosConcatenateResponseSchema.safeParse(concatDocBody).success
+    ).toBe(true);
+  });
+
+  it("requires all four fields (a body missing inputsCount fails)", () => {
+    expect(
+      GoogleFlowVideosConcatenateResponseSchema.safeParse({
+        jobId: concatDocBody.jobId,
+        status: concatDocBody.status,
+        encodedVideo: concatDocBody.encodedVideo,
+      }).success
+    ).toBe(false);
+  });
+
+  it("tolerates a novel status string (open response vocabulary, REQ-004)", () => {
+    expect(
+      GoogleFlowVideosConcatenateResponseSchema.safeParse({
+        ...concatDocBody,
+        status: "MEDIA_GENERATION_STATUS_SOME_FUTURE_STATE",
+      }).success
+    ).toBe(true);
+  });
+
+  it("preserves an unknown top-level field via .passthrough()", () => {
+    const parsed = GoogleFlowVideosConcatenateResponseSchema.parse({
+      ...concatDocBody,
+      remainingCredits: 42,
+    });
+    expect((parsed as Record<string, unknown>).remainingCredits).toBe(42);
   });
 });

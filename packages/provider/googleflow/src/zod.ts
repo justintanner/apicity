@@ -298,67 +298,467 @@ export const GoogleFlowImagesUpscaleRequestSchema = z
   })
   .passthrough();
 
-export const GoogleFlowVideosRequestSchema = z
+// -- POST /videos request: ordered per-model union -------------------------
+// A single permissive object cannot express that (for example) only omni-flash
+// accepts duration 10, that veo-3.1-quality has no reference-image mode, or
+// that omni-flash forbids the numeric aspectRatio hatch. POST /videos is
+// therefore an ORDERED z.union of per-model `.passthrough()` branches (first
+// match wins), NOT a z.discriminatedUnion: a discriminated union needs a
+// required literal discriminator on every branch, which is incompatible with
+// the optional-`model` default branch and the regex-predicate alias fallback.
+// Every branch stays `.passthrough()`, so unmodeled/forward-compatible fields
+// keep flowing — the schema is consumer/MCP metadata only and the provider is
+// non-validating on the wire.
+// [videos] https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos
+
+// The five model ids that own a dedicated branch. The alias fallback refines
+// its `model` to EXCLUDE these so a request such as
+// `{ model: "veo-3.1-fast", duration: 10 }` cannot fail the fast branch and
+// then launder through the permissive fallback (the exclusion refine is
+// load-bearing — routing invariant 2).
+const VIDEOS_ENUMERATED_MODELS = [
+  "veo-3.1-fast",
+  "veo-3.1-quality",
+  "veo-3.1-lite",
+  "veo-3.1-lite-low-priority",
+  "omni-flash",
+] as const;
+
+// Model-agnostic fields shared by every branch; only model, aspectRatio,
+// duration, and the reference/keyframe slots differ per model. They are grouped
+// (head / count-seed / tail) and each branch composes them in the SAME field
+// order as the pre-GF-S3 single object, so `safeParse` (which the factory runs
+// via jsonBody) re-serializes request bodies byte-identically and the committed
+// recordings replay without a re-record.
+//
+// Leading fields: `prompt` stays a plain non-empty string — inline
+// `@character_N` / `@referenceImage_N` / `@referenceAudio_N` markers inside the
+// prompt text are not schema-expressible.
+const videosHeadFields = {
+  prompt: z.string().min(1),
+  // Optional: same account-selection rule as POST /images, load balanced on
+  // video-generation stats. startImage/endImage/referenceImage_*/
+  // referenceVideo_1 also let email be omitted (the API reuses the account the
+  // references were uploaded to).
+  email: z.string().optional(),
+};
+
+// Fields declared just after duration in the original object order.
+const videosCountSeedFields = {
+  count: z.number().int().min(1).max(4).optional(),
+  seed: z.number().int().optional(),
+};
+
+// Trailing fields (async + reply callbacks + captcha), declared last in the
+// original object order.
+const videosTailFields = {
+  async: z.boolean().optional(),
+  replyUrl: z.string().url().optional(),
+  replyRef: z.string().optional(),
+  ...GoogleFlowCaptchaFieldsSchema,
+};
+
+// startImage/endImage keyframes, on every Veo and omni branch (both recorded
+// POST /videos requests carry startImage).
+const videosKeyframeFields = {
+  startImage: z.string().optional(),
+  endImage: z.string().optional(),
+};
+
+// referenceAudio slots stay bare strings: the 30 system-voice presets are
+// documentation-volatile, so they are not enumerated here (OQ-4).
+// [videos §Reference Audio] https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos
+const videosReferenceAudioFields = {
+  referenceAudio_1: z.string().optional(),
+  referenceAudio_2: z.string().optional(),
+  referenceAudio_3: z.string().optional(),
+  referenceAudio_4: z.string().optional(),
+  referenceAudio_5: z.string().optional(),
+};
+
+// Fast-family reference slots: referenceImage_1..3 / character_1..3. Declaring
+// only 1..3 does NOT by itself reject referenceImage_4 (every branch is
+// `.passthrough()`); the slot budget is enforced by the branch superRefine.
+// [videos §Reference Images] https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos
+const videosFastReferenceFields = {
+  referenceImage_1: z.string().optional(),
+  referenceImage_2: z.string().optional(),
+  referenceImage_3: z.string().optional(),
+  character_1: z.string().optional(),
+  character_2: z.string().optional(),
+  character_3: z.string().optional(),
+};
+
+// omni-flash reference slots: referenceImage_1..7 / character_1..7. Same
+// passthrough caveat as the fast family — the 1..7 budget is enforced by the
+// branch superRefine, not by these declarations.
+// [videos §Reference Images] https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos
+const videosOmniReferenceFields = {
+  referenceImage_1: z.string().optional(),
+  referenceImage_2: z.string().optional(),
+  referenceImage_3: z.string().optional(),
+  referenceImage_4: z.string().optional(),
+  referenceImage_5: z.string().optional(),
+  referenceImage_6: z.string().optional(),
+  referenceImage_7: z.string().optional(),
+  character_1: z.string().optional(),
+  character_2: z.string().optional(),
+  character_3: z.string().optional(),
+  character_4: z.string().optional(),
+  character_5: z.string().optional(),
+  character_6: z.string().optional(),
+  character_7: z.string().optional(),
+};
+
+// aspectRatio for the Veo branches: documented named/numeric ratios plus a
+// numeric hatch so undocumented ratios (e.g. 16:9, exercised by the recorded
+// i2v request) keep parsing while free-text typos ("landscap") are rejected.
+// [videos §Aspect Ratio] https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos
+const veoAspectRatioSchema = z
+  .enum(["landscape", "portrait", "1:1", "4:3", "3:4"])
+  .or(z.string().regex(/^\d+:\d+$/));
+
+// Veo fast family (fast/lite/lite-low-priority) duration: 8 s default; 4 s and
+// 6 s are Ultra-plan-gated upstream but accepted here (plan gating is NOT
+// schema-enforced — comment only, REQ-010).
+// [videos §Model Capabilities] https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos
+const veoFastDurationSchema = z
+  .union([z.literal(4), z.literal(6), z.literal(8)])
+  .optional();
+
+// omni-flash / alias-fallback duration: 4/6/8/10 (10 s is omni-only among the
+// enumerated models; the fallback keeps today's permissive 4|6|8|10 domain).
+// [videos §Model Capabilities] https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos
+const videosWideDurationSchema = z
+  .union([z.literal(4), z.literal(6), z.literal(8), z.literal(10)])
+  .optional();
+
+// Branch superRefine helpers (pure). Because every branch is `.passthrough()`,
+// slot budgets and mode constraints must be enforced explicitly here, not by
+// which optional keys a branch declares (plan-review finding F1). Each issue
+// carries an explicit `path` so error paths stay precise under the union.
+interface VideosRefinementIssue {
+  path: string[];
+  message: string;
+}
+
+// Present referenceImage_N / character_N slots whose index exceeds `maxIndex`
+// (maxIndex 0 = the branch has no reference-image mode at all).
+function overBudgetReferenceSlotIssues(
+  value: Record<string, unknown>,
+  maxIndex: number,
+  message: string
+): VideosRefinementIssue[] {
+  const issues: VideosRefinementIssue[] = [];
+  for (const prefix of ["referenceImage_", "character_"]) {
+    for (const [key, v] of Object.entries(value)) {
+      if (!key.startsWith(prefix) || v === undefined) continue;
+      const index = Number(key.slice(prefix.length));
+      if (Number.isInteger(index) && index > maxIndex) {
+        issues.push({ path: [key], message });
+      }
+    }
+  }
+  return issues;
+}
+
+// Whether any in-budget (index 1..maxIndex) referenceImage_* or character_*
+// slot is present.
+function hasInBudgetReference(
+  value: Record<string, unknown>,
+  maxIndex: number
+): boolean {
+  for (const prefix of ["referenceImage_", "character_"]) {
+    for (const [key, v] of Object.entries(value)) {
+      if (!key.startsWith(prefix) || v === undefined) continue;
+      const index = Number(key.slice(prefix.length));
+      if (Number.isInteger(index) && index >= 1 && index <= maxIndex) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+// endImage requires startImage; referenceImage_* is mutually exclusive with the
+// startImage/endImage keyframes (reference-to-video vs keyframe modes).
+function videosKeyframeIssues(
+  value: Record<string, unknown>
+): VideosRefinementIssue[] {
+  const issues: VideosRefinementIssue[] = [];
+  const hasStart = value.startImage !== undefined;
+  const hasEnd = value.endImage !== undefined;
+  if (hasEnd && !hasStart) {
+    issues.push({
+      path: ["endImage"],
+      message: "endImage requires startImage",
+    });
+  }
+  const hasReferenceImage = Object.entries(value).some(
+    ([key, v]) => key.startsWith("referenceImage_") && v !== undefined
+  );
+  if (hasReferenceImage && (hasStart || hasEnd)) {
+    issues.push({
+      path: ["referenceImage_1"],
+      message:
+        "referenceImage_* cannot be combined with startImage/endImage keyframes",
+    });
+  }
+  return issues;
+}
+
+// Fast-family (veo-3.1-fast / -lite / -lite-low-priority) branch constraints:
+// referenceImage_1..3 / character_1..3 budget, plus reference-to-video duration.
+function veoFastFamilyIssues(
+  value: Record<string, unknown>
+): VideosRefinementIssue[] {
+  const issues = overBudgetReferenceSlotIssues(
+    value,
+    3,
+    "veo-3.1 fast/lite models accept at most referenceImage_1..3 / character_1..3"
+  );
+  // Reference-to-video (REQ-005/006, F2): with an in-budget reference present,
+  // an explicitly-set duration must be 8. An ABSENT duration is valid — upstream
+  // defaults it to 8, so the refine must NOT reject an omitted duration.
+  if (
+    hasInBudgetReference(value, 3) &&
+    value.duration !== undefined &&
+    value.duration !== 8
+  ) {
+    issues.push({
+      path: ["duration"],
+      message: "reference-to-video generation only supports duration 8",
+    });
+  }
+  issues.push(...videosKeyframeIssues(value));
+  return issues;
+}
+
+// omni-flash video-to-video (referenceVideo_1) constraints: no explicit
+// duration alongside a source video (upstream derives it from the trim window);
+// the frame-index window is valid only alongside referenceVideo_1, with end
+// strictly after start (field-level min/max already bound 0-239 / 1-240).
+// [videos §Video-to-Video] https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos
+function omniV2VIssues(
+  value: Record<string, unknown>
+): VideosRefinementIssue[] {
+  const issues: VideosRefinementIssue[] = [];
+  const hasSourceVideo = value.referenceVideo_1 !== undefined;
+  if (hasSourceVideo && value.duration !== undefined) {
+    issues.push({
+      path: ["duration"],
+      message:
+        "omni-flash video-to-video (referenceVideo_1) does not accept an explicit duration",
+    });
+  }
+  const hasStartFrame = value.startFrameIndex_1 !== undefined;
+  const hasEndFrame = value.endFrameIndex_1 !== undefined;
+  if ((hasStartFrame || hasEndFrame) && !hasSourceVideo) {
+    issues.push({
+      path: [hasStartFrame ? "startFrameIndex_1" : "endFrameIndex_1"],
+      message: "startFrameIndex_1/endFrameIndex_1 require referenceVideo_1",
+    });
+  }
+  if (
+    typeof value.startFrameIndex_1 === "number" &&
+    typeof value.endFrameIndex_1 === "number" &&
+    value.endFrameIndex_1 <= value.startFrameIndex_1
+  ) {
+    issues.push({
+      path: ["endFrameIndex_1"],
+      message: "endFrameIndex_1 must be greater than startFrameIndex_1",
+    });
+  }
+  return issues;
+}
+
+// Branch 1 (default): only this branch makes `model` optional, so an omitted
+// model routes solely here (routing invariant 1).
+const veoFastVideosSchema = z
   .object({
-    prompt: z.string().min(1),
-    // Optional: same account-selection rule as POST /images, load balanced on
-    // video-generation stats. The docs add that startImage, endImage,
-    // referenceImage_*, or referenceVideo_1 let email be omitted outright —
-    // the API reuses the account those references were uploaded to.
-    email: z.string().optional(),
-    model: z
-      .enum([
-        "veo-3.1-quality",
-        "veo-3.1-fast",
-        "veo-3.1-lite",
-        "veo-3.1-lite-low-priority",
-        "omni-flash",
-      ])
-      .or(GoogleFlowVeoModelAliasSchema)
-      .optional(),
-    // landscape/portrait for all models; Veo also accepts 1:1, 4:3, 3:4.
-    // Unioned with string: upstream also accepts undocumented ratio aliases
-    // (e.g. 16:9, exercised by the recorded i2v test).
+    ...videosHeadFields,
+    model: z.literal("veo-3.1-fast").optional(),
+    aspectRatio: veoAspectRatioSchema.optional(),
+    duration: veoFastDurationSchema,
+    ...videosCountSeedFields,
+    ...videosKeyframeFields,
+    ...videosFastReferenceFields,
+    ...videosReferenceAudioFields,
+    ...videosTailFields,
+  })
+  .passthrough()
+  .superRefine((value, ctx) => {
+    for (const issue of veoFastFamilyIssues(value as Record<string, unknown>)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: issue.path,
+        message: issue.message,
+      });
+    }
+  });
+
+// Branch 2: veo-3.1-quality renders 8 s clips only and has no reference-image
+// mode. Model required.
+const veoQualityVideosSchema = z
+  .object({
+    ...videosHeadFields,
+    model: z.literal("veo-3.1-quality"),
+    aspectRatio: veoAspectRatioSchema.optional(),
+    // veo-3.1-quality: 8 s only. [videos §Model Capabilities]
+    duration: z.literal(8).optional(),
+    ...videosCountSeedFields,
+    ...videosKeyframeFields,
+    ...videosTailFields,
+  })
+  .passthrough()
+  .superRefine((value, ctx) => {
+    const record = value as Record<string, unknown>;
+    const issues = [
+      ...overBudgetReferenceSlotIssues(
+        record,
+        0,
+        "veo-3.1-quality does not support referenceImage_*/character_* inputs"
+      ),
+      ...videosKeyframeIssues(record),
+    ];
+    for (const issue of issues) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: issue.path,
+        message: issue.message,
+      });
+    }
+  });
+
+// Branch 3: veo-3.1-lite. Same shape/constraints as the fast branch; model
+// required.
+const veoLiteVideosSchema = z
+  .object({
+    ...videosHeadFields,
+    model: z.literal("veo-3.1-lite"),
+    aspectRatio: veoAspectRatioSchema.optional(),
+    duration: veoFastDurationSchema,
+    ...videosCountSeedFields,
+    ...videosKeyframeFields,
+    ...videosFastReferenceFields,
+    ...videosReferenceAudioFields,
+    ...videosTailFields,
+  })
+  .passthrough()
+  .superRefine((value, ctx) => {
+    for (const issue of veoFastFamilyIssues(value as Record<string, unknown>)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: issue.path,
+        message: issue.message,
+      });
+    }
+  });
+
+// Branch 4: veo-3.1-lite-low-priority (Ultra-$199 gated upstream — gating is
+// comment-only, REQ-010). Same shape/constraints as the fast branch; model
+// required.
+const veoLiteLowPriorityVideosSchema = z
+  .object({
+    ...videosHeadFields,
+    model: z.literal("veo-3.1-lite-low-priority"),
+    aspectRatio: veoAspectRatioSchema.optional(),
+    duration: veoFastDurationSchema,
+    ...videosCountSeedFields,
+    ...videosKeyframeFields,
+    ...videosFastReferenceFields,
+    ...videosReferenceAudioFields,
+    ...videosTailFields,
+  })
+  .passthrough()
+  .superRefine((value, ctx) => {
+    for (const issue of veoFastFamilyIssues(value as Record<string, unknown>)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: issue.path,
+        message: issue.message,
+      });
+    }
+  });
+
+// Branch 5: omni-flash. CLOSED aspectRatio enum (no numeric hatch, rejects
+// "1:1"), 4/6/8/10 duration, referenceImage_1..7, and the V2V trim window.
+const omniFlashVideosSchema = z
+  .object({
+    ...videosHeadFields,
+    model: z.literal("omni-flash"),
+    // omni-flash: closed aspect-ratio enum, no numeric hatch.
+    // [videos §Aspect Ratio]
+    aspectRatio: z.enum(["landscape", "portrait"]).optional(),
+    duration: videosWideDurationSchema,
+    ...videosCountSeedFields,
+    ...videosKeyframeFields,
+    ...videosOmniReferenceFields,
+    ...videosReferenceAudioFields,
+    referenceVideo_1: z.string().optional(),
+    // Omni Flash V2V trim window on a 24 fps virtual timeline.
+    // [videos §Video-to-Video]
+    startFrameIndex_1: z.number().int().min(0).max(239).optional(),
+    endFrameIndex_1: z.number().int().min(1).max(240).optional(),
+    ...videosTailFields,
+  })
+  .passthrough()
+  .superRefine((value, ctx) => {
+    const record = value as Record<string, unknown>;
+    const issues = [
+      ...overBudgetReferenceSlotIssues(
+        record,
+        7,
+        "omni-flash accepts at most referenceImage_1..7 / character_1..7"
+      ),
+      ...omniV2VIssues(record),
+      ...videosKeyframeIssues(record),
+    ];
+    for (const issue of issues) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: issue.path,
+        message: issue.message,
+      });
+    }
+  });
+
+// Branch 6 (alias fallback): forward-compatible for unlisted Veo point
+// releases. `model` is REQUIRED (routing invariant 1) and must be a well-formed
+// Veo alias that is NOT one of the five enumerated ids (routing invariant 2).
+// Otherwise permissive — today's domain: 4/6/8/10 duration, string aspectRatio,
+// passthrough everything.
+const videosAliasFallbackSchema = z
+  .object({
+    ...videosHeadFields,
+    model: GoogleFlowVeoModelAliasSchema.refine(
+      (m) => !(VIDEOS_ENUMERATED_MODELS as readonly string[]).includes(m),
+      { message: "enumerated models are validated by their own branch" }
+    ),
     aspectRatio: z
       .enum(["landscape", "portrait", "1:1", "4:3", "3:4"])
       .or(z.string())
       .optional(),
-    duration: z
-      .union([z.literal(4), z.literal(6), z.literal(8), z.literal(10)])
-      .optional(),
-    count: z.number().int().min(1).max(4).optional(),
-    seed: z.number().int().optional(),
-    startImage: z.string().optional(),
-    endImage: z.string().optional(),
-    referenceImage_1: z.string().optional(),
-    referenceImage_2: z.string().optional(),
-    referenceImage_3: z.string().optional(),
-    referenceImage_4: z.string().optional(),
-    referenceImage_5: z.string().optional(),
-    referenceImage_6: z.string().optional(),
-    referenceImage_7: z.string().optional(),
-    character_1: z.string().optional(),
-    character_2: z.string().optional(),
-    character_3: z.string().optional(),
-    character_4: z.string().optional(),
-    character_5: z.string().optional(),
-    character_6: z.string().optional(),
-    character_7: z.string().optional(),
-    referenceAudio_1: z.string().optional(),
-    referenceAudio_2: z.string().optional(),
-    referenceAudio_3: z.string().optional(),
-    referenceAudio_4: z.string().optional(),
-    referenceAudio_5: z.string().optional(),
+    duration: videosWideDurationSchema,
+    ...videosCountSeedFields,
+    ...videosKeyframeFields,
+    ...videosOmniReferenceFields,
+    ...videosReferenceAudioFields,
     referenceVideo_1: z.string().optional(),
-    // Omni Flash V2V trim window on a 24 fps virtual timeline.
-    startFrameIndex_1: z.number().int().min(0).max(239).optional(),
-    endFrameIndex_1: z.number().int().min(1).max(240).optional(),
-    async: z.boolean().optional(),
-    replyUrl: z.string().url().optional(),
-    replyRef: z.string().optional(),
-    ...GoogleFlowCaptchaFieldsSchema,
+    ...videosTailFields,
   })
   .passthrough();
+
+// Ordered union: first match wins. Only the fast (default) branch makes `model`
+// optional, so an omitted model routes solely to veo-3.1-fast.
+export const GoogleFlowVideosRequestSchema = z.union([
+  veoFastVideosSchema,
+  veoQualityVideosSchema,
+  veoLiteVideosSchema,
+  veoLiteLowPriorityVideosSchema,
+  omniFlashVideosSchema,
+  videosAliasFallbackSchema,
+]);
 
 export const GoogleFlowVideosUpscaleRequestSchema = z
   .object({

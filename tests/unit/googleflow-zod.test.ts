@@ -1,6 +1,10 @@
 import { describe, it, expect } from "vitest";
 
 import {
+  zodToJsonSchema,
+  type JsonSchema,
+} from "../../packages/mcp-server/src/schema";
+import {
   GoogleFlowAssetUploadRequestSchema,
   GoogleFlowCharactersListRequestSchema,
   GoogleFlowEmailRequestSchema,
@@ -128,13 +132,34 @@ describe("googleflow video model schemas", () => {
     });
   });
 
-  // duration was already closed to 4/6/8/10 before this change; these pin
-  // that it stayed that way.
+  // GF-S3: with `model` omitted the request routes to the veo-3.1-fast default
+  // branch, which accepts 4/6/8 and rejects 10. duration 10 is omni-only among
+  // the enumerated models.
   describe("GoogleFlowVideosRequestSchema duration", () => {
-    it.each([4, 6, 8, 10])("should accept duration %i", (duration) => {
+    it.each([4, 6, 8])(
+      "accepts duration %i when model is omitted (routes to veo-3.1-fast)",
+      (duration) => {
+        const result = GoogleFlowVideosRequestSchema.safeParse({
+          ...videosBase,
+          duration,
+        });
+        expect(result.success).toBe(true);
+      }
+    );
+
+    it("rejects duration 10 when model is omitted (fast branch caps at 8)", () => {
       const result = GoogleFlowVideosRequestSchema.safeParse({
         ...videosBase,
-        duration,
+        duration: 10,
+      });
+      expect(result.success).toBe(false);
+    });
+
+    it("accepts duration 10 on omni-flash", () => {
+      const result = GoogleFlowVideosRequestSchema.safeParse({
+        ...videosBase,
+        model: "omni-flash",
+        duration: 10,
       });
       expect(result.success).toBe(true);
     });
@@ -146,6 +171,131 @@ describe("googleflow video model schemas", () => {
       });
       expect(result.success).toBe(false);
     });
+  });
+});
+
+// GF-S3: GoogleFlowVideosRequestSchema is now an ordered per-model z.union.
+// Each row pins one routing/narrowing invariant. safeParse cases are spread
+// onto the prompt-bearing base — `prompt` stays required, so a bare {model,…}
+// would otherwise fail on the missing-prompt issue instead of the intended one
+// (plan-review note N1).
+const videosMatrix: Array<[Record<string, unknown>, boolean]> = [
+  // duration truth table
+  [{ model: "veo-3.1-quality", duration: 8 }, true],
+  [{ model: "veo-3.1-quality", duration: 4 }, false],
+  [{ duration: 10 }, false], // model omitted ⇒ fast default rejects 10
+  [{ model: "omni-flash", duration: 10 }, true],
+  // aspectRatio: omni-flash closed enum vs the Veo numeric hatch
+  [{ model: "omni-flash", aspectRatio: "1:1" }, false],
+  [{ model: "omni-flash", aspectRatio: "landscape" }, true],
+  [{ model: "veo-3.1-fast", aspectRatio: "16:9" }, true],
+  [{ model: "veo-3.1-fast", aspectRatio: "landscap" }, false],
+  // model routing: unlisted alias parses; enumerated id cannot launder through
+  // the fallback (routing invariant 2)
+  [{ model: "veo-3.2-fast", duration: 10 }, true],
+  [{ model: "veo-3.1-fast", duration: 10 }, false],
+  [{ model: "veo-typo" }, false],
+  // reference-slot budgets (plan-review finding F1)
+  [{ model: "veo-3.1-quality", referenceImage_1: "x" }, false],
+  [{ model: "veo-3.1-fast", referenceImage_4: "x" }, false],
+  [{ model: "veo-3.1-fast", referenceImage_3: "x" }, true],
+  [{ model: "omni-flash", referenceImage_7: "x" }, true],
+  [{ model: "omni-flash", referenceImage_8: "x" }, false],
+  // R2V duration (F2): an absent duration is valid; an explicit non-8 rejected
+  [{ model: "veo-3.1-fast", referenceImage_1: "x" }, true],
+  [{ model: "veo-3.1-fast", referenceImage_1: "x", duration: 8 }, true],
+  [{ model: "veo-3.1-fast", referenceImage_1: "x", duration: 4 }, false],
+  // keyframe pairing + reference/keyframe exclusivity
+  [{ endImage: "y" }, false],
+  [{ startImage: "s", endImage: "y" }, true],
+  [{ model: "veo-3.1-fast", referenceImage_1: "x", startImage: "s" }, false],
+  // omni V2V: explicit duration forbidden alongside referenceVideo_1
+  [{ model: "omni-flash", referenceVideo_1: "v" }, true],
+  [{ model: "omni-flash", referenceVideo_1: "v", duration: 8 }, false],
+  // omni frame-index window: requires referenceVideo_1, end > start
+  [
+    {
+      model: "omni-flash",
+      referenceVideo_1: "v",
+      startFrameIndex_1: 10,
+      endFrameIndex_1: 20,
+    },
+    true,
+  ],
+  [
+    {
+      model: "omni-flash",
+      referenceVideo_1: "v",
+      startFrameIndex_1: 20,
+      endFrameIndex_1: 10,
+    },
+    false,
+  ],
+  [{ model: "omni-flash", startFrameIndex_1: 10, endFrameIndex_1: 20 }, false],
+];
+
+// Both committed POST /videos recordings must still parse unchanged (REQ-012).
+const recordedVideosRequests: Array<[string, Record<string, unknown>]> = [
+  [
+    "google-flow_3038927025/i2v_2225424348",
+    {
+      model: "veo-3.1-quality",
+      aspectRatio: "16:9",
+      startImage: "test-asset-123",
+    },
+  ],
+  [
+    "google-flow_3038927025/omni-i2v_568603646",
+    {
+      model: "omni-flash",
+      aspectRatio: "landscape",
+      startImage: "test-omni-asset-123",
+    },
+  ],
+];
+
+describe("GoogleFlowVideosRequestSchema per-model union (GF-S3)", () => {
+  it.each(videosMatrix)("safeParse(%j) success === %s", (input, expected) => {
+    const result = GoogleFlowVideosRequestSchema.safeParse({
+      ...videosBase,
+      ...input,
+    });
+    expect(result.success).toBe(expected);
+  });
+
+  it.each(recordedVideosRequests)(
+    "parses the committed recorded request %s",
+    (_name, body) => {
+      const result = GoogleFlowVideosRequestSchema.safeParse({
+        ...videosBase,
+        ...body,
+      });
+      expect(result.success).toBe(true);
+    }
+  );
+
+  // REQ-013 / OQ-3: the union renders as JSON-Schema `anyOf` with a per-model
+  // `const` model on each enumerated branch (so MCP autocomplete keeps every
+  // listed id), plus the alias-fallback pattern branch.
+  it("renders as anyOf with per-model const model values (MCP)", () => {
+    const json = zodToJsonSchema(GoogleFlowVideosRequestSchema);
+    const branches = json.anyOf as JsonSchema[] | undefined;
+    expect(Array.isArray(branches)).toBe(true);
+    const modelConsts = (branches ?? [])
+      .map((branch) => {
+        const props = (branch.properties ?? {}) as Record<string, JsonSchema>;
+        return props.model?.const;
+      })
+      .filter((value): value is string => typeof value === "string");
+    expect(modelConsts).toEqual(
+      expect.arrayContaining([
+        "veo-3.1-fast",
+        "veo-3.1-quality",
+        "veo-3.1-lite",
+        "veo-3.1-lite-low-priority",
+        "omni-flash",
+      ])
+    );
   });
 });
 

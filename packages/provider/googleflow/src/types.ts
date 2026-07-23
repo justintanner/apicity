@@ -50,6 +50,10 @@ export type {
   GoogleFlowApiError,
   GoogleFlowMediaStatus,
   GoogleFlowMediaVisibility,
+  GoogleFlowVideoMediaEntry,
+  GoogleFlowVideosResponse,
+  GoogleFlowVideosUpscaleResponse,
+  GoogleFlowVideosExtendResponse,
 } from "./zod";
 
 export interface GoogleFlowResponse {

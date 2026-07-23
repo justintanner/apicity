@@ -49,6 +49,10 @@ export type {
   GoogleFlowApiError,
   GoogleFlowMediaStatus,
   GoogleFlowMediaVisibility,
+  GoogleFlowVideoMediaEntry,
+  GoogleFlowVideosResponse,
+  GoogleFlowVideosUpscaleResponse,
+  GoogleFlowVideosExtendResponse,
 } from "./zod";
 
 export {
@@ -78,4 +82,8 @@ export {
   GoogleFlowApiErrorSchema,
   GoogleFlowMediaStatusSchema,
   GoogleFlowMediaVisibilitySchema,
+  GoogleFlowVideoMediaEntrySchema,
+  GoogleFlowVideosResponseSchema,
+  GoogleFlowVideosUpscaleResponseSchema,
+  GoogleFlowVideosExtendResponseSchema,
 } from "./zod";

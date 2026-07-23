@@ -950,6 +950,148 @@ export const GoogleFlowMediaVisibilitySchema = z
   })
   .passthrough();
 
+// -- Video response family (GF-S4) -----------------------------------------
+// Typed, permissive (describe-never-restrict) views of the video-generation
+// SYNC response bodies for POST /videos, /videos/upscale, and /videos/extend.
+// Every object level is `.passthrough()`; every field is optional unless the
+// useapi.net Model block marks it always-present (only media[].mediaGenerationId
+// and the reused mediaStatus.mediaGenerationStatus stay required); internal
+// model ids and volatile status/aspect enums are plain `z.string()` with known
+// values in comments only. These DESCRIBE received data and never guard the
+// wire — the provider stays non-validating and endpoint return types remain
+// Promise<GoogleFlowResponse>; the schemas are consumer/MCP metadata only.
+// Shapes confirmed against the useapi.net Model blocks (fetched 2026-07-22,
+// curl + Chrome UA):
+//   [videos]      https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos
+//   [vid-upscale] https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-upscale
+//   [extend]      https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-extend
+
+// One entry of the videos `media[]` array. Composes the GF-S1
+// GoogleFlowMediaStatusSchema primitive for mediaMetadata.mediaStatus (never
+// redefines it). The stub-only `media[].url` key (present in the committed
+// recordings, absent from the docs) is NOT declared — it survives parsing via
+// `.passthrough()`. Only mediaGenerationId is required on the entry; every other
+// field/object is optional (OQ-1/A1). `generatedVideo.model` and the volatile
+// aspectRatio/status strings are plain `z.string()` (REQ-007), never a
+// `.or(z.string())` open-enum union — these are describe-only response ids, not
+// the POST /videos request model registry.
+// [videos] Model -> 200 OK, `media[]`.
+export const GoogleFlowVideoMediaEntrySchema = z
+  .object({
+    name: z.string().optional(),
+    projectId: z.string().optional(),
+    workflowId: z.string().optional(),
+    workflowStepId: z.string().optional(),
+    mediaMetadata: z
+      .object({
+        createTime: z.string().optional(),
+        mediaTitle: z.string().optional(),
+        requestData: z.object({}).passthrough().optional(),
+        mediaStatus: GoogleFlowMediaStatusSchema.optional(),
+        // known values: PRIVATE | PUBLIC (see GoogleFlowMediaVisibilitySchema).
+        visibility: z.string().optional(),
+      })
+      .passthrough()
+      .optional(),
+    video: z
+      .object({
+        generatedVideo: z
+          .object({
+            seed: z.number().optional(),
+            prompt: z.string().optional(),
+            // Internal, upstream-volatile snake_case model id (describe-only).
+            // known values: veo_3_1_t2v, veo_3_1_upsampler_1080p (plus other
+            // veo_3_1_* generation / upsampler ids).
+            model: z.string().optional(),
+            baseImageMediaGenerationId: z.string().optional(),
+            isLooped: z.boolean().optional(),
+            // known values: VIDEO_ASPECT_RATIO_LANDSCAPE | *_PORTRAIT | ...
+            aspectRatio: z.string().optional(),
+            upsampleMetadata: z.object({}).passthrough().optional(),
+          })
+          .passthrough()
+          .optional(),
+        dimensions: z
+          .object({
+            // e.g. "8s", "0s".
+            length: z.string().optional(),
+          })
+          .passthrough()
+          .optional(),
+        operation: z
+          .object({
+            name: z.string().optional(),
+          })
+          .passthrough()
+          .optional(),
+      })
+      .passthrough()
+      .optional(),
+    mediaGenerationId: z.string(),
+    videoUrl: z.string().optional(),
+    thumbnailUrl: z.string().optional(),
+  })
+  .passthrough();
+
+// POST /videos sync 200 body. `jobId` and `media` are the only always-present
+// top-level fields (every doc example and committed stub carries both, A2);
+// `remainingCredits` and `captcha` are independently optional (OQ-2). Reuses the
+// GF-S1 GoogleFlowCaptchaResultSchema primitive for `captcha`.
+// [videos] Model -> 200 OK.
+export const GoogleFlowVideosResponseSchema = z
+  .object({
+    jobId: z.string(),
+    media: z.array(GoogleFlowVideoMediaEntrySchema),
+    remainingCredits: z.number().optional(),
+    captcha: GoogleFlowCaptchaResultSchema.optional(),
+  })
+  .passthrough();
+
+// POST /videos/upscale sync 200 body: the /videos fields (spread from
+// GoogleFlowVideosResponseSchema.shape) PLUS the still-populated legacy
+// `operations[]` array — the docs return both `operations[]` (legacy, with
+// fifeUrl) and `media[]` (current, with videoUrl). The inner
+// operation.metadata.video object stays `.passthrough()` + all-optional (A3), so
+// its undeclared keys (seed, model, mediaGenerationId, ...) flow through.
+// [vid-upscale] Model -> 200 OK, `operations[]`.
+export const GoogleFlowVideosUpscaleResponseSchema = z
+  .object({
+    ...GoogleFlowVideosResponseSchema.shape,
+    operations: z
+      .array(
+        z
+          .object({
+            operation: z
+              .object({
+                metadata: z
+                  .object({
+                    video: z
+                      .object({
+                        fifeUrl: z.string().optional(),
+                        servingBaseUri: z.string().optional(),
+                        upsampleResolution: z.string().optional(),
+                      })
+                      .passthrough(),
+                  })
+                  .passthrough(),
+                name: z.string().optional(),
+              })
+              .passthrough(),
+          })
+          .passthrough()
+      )
+      .optional(),
+  })
+  .passthrough();
+
+// POST /videos/extend sync 200 body. The [extend] Model block is field-identical
+// to [videos] today (same jobId / media[] / remainingCredits / captcha shape),
+// so this is a deliberate direct alias, not a duplicate object (OQ-3). If a
+// future doc revision adds extend-only fields, split it into its own schema then.
+// [extend] Model -> 200 OK.
+export const GoogleFlowVideosExtendResponseSchema =
+  GoogleFlowVideosResponseSchema;
+
 export type GoogleFlowOptions = z.infer<typeof GoogleFlowOptionsSchema>;
 export type GoogleFlowNoRequest = z.input<typeof GoogleFlowNoRequestSchema>;
 export type GoogleFlowEmailRequest = z.input<
@@ -1020,4 +1162,16 @@ export type GoogleFlowMediaStatus = z.output<
 >;
 export type GoogleFlowMediaVisibility = z.output<
   typeof GoogleFlowMediaVisibilitySchema
+>;
+export type GoogleFlowVideoMediaEntry = z.output<
+  typeof GoogleFlowVideoMediaEntrySchema
+>;
+export type GoogleFlowVideosResponse = z.output<
+  typeof GoogleFlowVideosResponseSchema
+>;
+export type GoogleFlowVideosUpscaleResponse = z.output<
+  typeof GoogleFlowVideosUpscaleResponseSchema
+>;
+export type GoogleFlowVideosExtendResponse = z.output<
+  typeof GoogleFlowVideosExtendResponseSchema
 >;

@@ -58,6 +58,9 @@ export type {
   GoogleFlowImagesUpscaleResponse,
   GoogleFlowVideosGifResponse,
   GoogleFlowVideosConcatenateResponse,
+  GoogleFlowJobRecord,
+  GoogleFlowJobCreatedResponse,
+  GoogleFlowJobsStatsResponse,
 } from "./zod";
 
 export {
@@ -96,4 +99,7 @@ export {
   GoogleFlowImagesUpscaleResponseSchema,
   GoogleFlowVideosGifResponseSchema,
   GoogleFlowVideosConcatenateResponseSchema,
+  GoogleFlowJobRecordSchema,
+  GoogleFlowJobCreatedResponseSchema,
+  GoogleFlowJobsStatsResponseSchema,
 } from "./zod";

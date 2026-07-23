@@ -14,6 +14,9 @@ import {
   GoogleFlowImagesUpscaleResponseSchema,
   GoogleFlowVideosGifResponseSchema,
   GoogleFlowVideosConcatenateResponseSchema,
+  GoogleFlowJobRecordSchema,
+  GoogleFlowJobCreatedResponseSchema,
+  GoogleFlowJobsStatsResponseSchema,
 } from "../../packages/provider/googleflow/src/zod";
 
 // The GF-S1 response primitives DESCRIBE upstream shapes permissively: every
@@ -689,5 +692,406 @@ describe("GoogleFlowVideosConcatenateResponseSchema", () => {
       remainingCredits: 42,
     });
     expect((parsed as Record<string, unknown>).remainingCredits).toBe(42);
+  });
+});
+
+// The GF-S7 jobs & async-job response family. Fixtures are copied from the
+// useapi.net Model blocks (fetched 2026-07-22):
+//   [jobs-id] get-google-flow-jobs-jobid (Video Job / Image Job / Job failed),
+//   [jobs]    get-google-flow-jobs (options= stats block),
+//   the async 201 tabs on post-google-flow-videos / -extend / -upscale.
+
+describe("GoogleFlowJobRecordSchema", () => {
+  // [jobs-id] Model -> 200 OK -> "Video job (completed)".
+  const completedVideoJob = {
+    jobid: "j1731859234567v-u12345-email:jo***@gmail.com-bot:google-flow",
+    type: "video",
+    status: "completed",
+    created: "2025-11-17T12:34:56.789Z",
+    updated: "2025-11-17T12:37:23.456Z",
+    request: {
+      email: "jo***@gmail.com",
+      prompt:
+        "A serene mountain landscape at sunset with camera slowly panning right",
+      model: "veo-3.1-fast",
+      aspectRatio: "landscape",
+      count: 2,
+      seed: 123456,
+      async: true,
+      replyUrl: "https://your-domain.com/webhook",
+    },
+    response: {
+      media: [
+        {
+          name: "a1d95d21-75d2-482d-a354-14ef8802ce66",
+          projectId: "9f63078c-...redacted...",
+          workflowId: "fa986834-...redacted...",
+          workflowStepId: "CAE",
+          mediaMetadata: {
+            createTime: "2026-05-20T23:14:02.931677Z",
+            mediaTitle:
+              "A serene mountain landscape at sunset with camera slowly panning right",
+            requestData: {
+              videoGenerationRequestData: { "...": "..." },
+              clientPlatform: "CLIENT_PLATFORM_WEB",
+            },
+            mediaStatus: {
+              mediaGenerationStatus: "MEDIA_GENERATION_STATUS_SUCCESSFUL",
+            },
+            visibility: "PRIVATE",
+          },
+          video: {
+            generatedVideo: {
+              seed: 123456,
+              prompt:
+                "A serene mountain landscape at sunset with camera slowly panning right",
+              model: "veo_3_1_t2v",
+              baseImageMediaGenerationId: "",
+              isLooped: false,
+              aspectRatio: "VIDEO_ASPECT_RATIO_LANDSCAPE",
+            },
+            dimensions: { length: "8s" },
+            operation: { name: "a1d95d21-...redacted..." },
+          },
+          mediaGenerationId:
+            "user:12345-email:6a6f...-video:a1d95d21-...redacted...",
+          videoUrl:
+            "https://flow-content.google/video/a1d95d21-...redacted...?Expires=...",
+          thumbnailUrl:
+            "https://flow-content.google/image/a1d95d21-...redacted...?Expires=...",
+        },
+      ],
+      remainingCredits: 14845,
+      captcha: {
+        service: "CapSolver",
+        taskId: "abc123...",
+        durationMs: 3500,
+        attempts: [
+          {
+            service: "CapSolver",
+            taskId: "abc123...",
+            durationMs: 3500,
+            success: true,
+          },
+        ],
+      },
+    },
+  };
+
+  // [jobs-id] Model -> 200 OK -> "Image job (completed)".
+  const completedImageJob = {
+    jobid: "j1731859345678i-u12345-email:an***@gmail.com-bot:google-flow",
+    type: "image",
+    status: "completed",
+    created: "2025-11-17T12:45:12.345Z",
+    updated: "2025-11-17T12:45:34.678Z",
+    request: {
+      email: "an***@gmail.com",
+      prompt: "A serene mountain landscape at sunset with vibrant colors",
+      model: "nano-banana-2-lite",
+      aspectRatio: "landscape",
+      count: 4,
+      replyUrl: "https://your-domain.com/webhook",
+      replyRef: "custom-reference-123",
+    },
+    response: {
+      media: [
+        {
+          name: "…redacted…",
+          image: {
+            generatedImage: {
+              seed: 987654,
+              mediaGenerationId: "user:12345…redacted…",
+              fifeUrl: "https://storage.googleapis.com/...",
+              prompt:
+                "A serene mountain landscape at sunset with vibrant colors",
+            },
+          },
+        },
+      ],
+      captcha: {
+        service: "AntiCaptcha",
+        taskId: "abc123...",
+        durationMs: 3200,
+        attempts: [
+          {
+            service: "AntiCaptcha",
+            taskId: "abc123...",
+            durationMs: 3200,
+            success: true,
+          },
+        ],
+      },
+    },
+  };
+
+  // [jobs-id] Model -> 200 OK -> "Job failed". `error` / `errorDetails` / `code`
+  // populated; `errorDetails` is the documented optional string.
+  const failedJob = {
+    jobid: "j1731859567890i-u12345-email:an***@gmail.com-bot:google-flow",
+    type: "image",
+    status: "failed",
+    created: "2025-11-17T13:00:12.345Z",
+    updated: "2025-11-17T13:00:45.678Z",
+    request: {
+      email: "an***@gmail.com",
+      prompt: "Generate an image",
+      model: "nano-banana-2",
+    },
+    error: "API error: 500",
+    errorDetails: "Upstream model returned an internal error",
+    code: 500,
+    response: {
+      error: {
+        code: 500,
+        message: "Internal error encountered.",
+        status: "INTERNAL",
+      },
+    },
+  };
+
+  it("parses the completed-video job record", () => {
+    expect(GoogleFlowJobRecordSchema.safeParse(completedVideoJob).success).toBe(
+      true
+    );
+  });
+
+  it("reuses the GF-S4 video media-entry schema for response.media[]", () => {
+    // AC-5: the embedded video media entry parses via the GF-S4 schema, not a
+    // redefined shape.
+    expect(
+      GoogleFlowVideoMediaEntrySchema.safeParse(
+        completedVideoJob.response.media[0]
+      ).success
+    ).toBe(true);
+    // AC-5: response.captcha parses via the GF-S1 captcha primitive.
+    expect(
+      GoogleFlowCaptchaResultSchema.safeParse(
+        completedVideoJob.response.captcha
+      ).success
+    ).toBe(true);
+  });
+
+  it("parses the completed-image job record", () => {
+    expect(GoogleFlowJobRecordSchema.safeParse(completedImageJob).success).toBe(
+      true
+    );
+  });
+
+  it("reuses the GF-S5 image media-entry schema for response.media[]", () => {
+    // AC-5: the embedded image media entry parses via the GF-S5 schema.
+    expect(
+      GoogleFlowImageMediaEntrySchema.safeParse(
+        completedImageJob.response.media[0]
+      ).success
+    ).toBe(true);
+  });
+
+  it("parses a failed job record with populated error/errorDetails/code", () => {
+    expect(GoogleFlowJobRecordSchema.safeParse(failedJob).success).toBe(true);
+  });
+
+  it("rejects a status outside the closed enum (queued) — AC-3", () => {
+    const result = GoogleFlowJobRecordSchema.safeParse({
+      ...completedVideoJob,
+      status: "queued",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("preserves unknown top-level and nested fields via .passthrough()", () => {
+    const parsed = GoogleFlowJobRecordSchema.parse({
+      ...completedVideoJob,
+      internalTrace: "gf-trace-1",
+      response: { ...completedVideoJob.response, futureField: true },
+    }) as Record<string, unknown>;
+    // Top-level unknown field survives.
+    expect(parsed.internalTrace).toBe("gf-trace-1");
+    // Unknown field nested inside `response` survives too.
+    const response = parsed.response as Record<string, unknown>;
+    expect(response.futureField).toBe(true);
+  });
+});
+
+describe("GoogleFlowJobCreatedResponseSchema", () => {
+  // [videos] Model -> 201 Created: a job record with pending
+  // `response.operations[]` and no finished `response.media`.
+  const createdVideoJob201 = {
+    jobid: "j1731859234567v-u12345-email:jo***@gmail.com-bot:google-flow",
+    type: "video",
+    status: "created",
+    created: "2025-11-17T12:34:56.789Z",
+    request: {
+      async: true,
+      prompt:
+        "A serene mountain landscape at sunset with camera slowly panning right",
+      email: "jo***@gmail.com",
+      model: "veo-3.1-fast",
+      aspectRatio: "landscape",
+      duration: 8,
+      count: 2,
+      seed: 123456,
+      replyUrl: "https://your-domain.com/webhook",
+      replyRef: "custom-reference-123",
+    },
+    response: {
+      operations: [
+        {
+          operation: { name: "1450903d...redacted...9c86f0" },
+          sceneId: "1450903d...redacted...9c86f0",
+          status: "MEDIA_GENERATION_STATUS_PENDING",
+        },
+        {
+          operation: { name: "f2eec9bd...redacted...e16f7a" },
+          sceneId: "f2eec9bd...redacted...e16f7a",
+          status: "MEDIA_GENERATION_STATUS_PENDING",
+        },
+      ],
+      captcha: {
+        service: "AntiCaptcha",
+        taskId: "14af1dbb-885c-4e25-8121-7a79489dfd0e",
+        durationMs: 5357,
+      },
+    },
+  };
+
+  it("parses the 201-created body (operations[] present, no finished media)", () => {
+    const parsed = GoogleFlowJobCreatedResponseSchema.parse(createdVideoJob201);
+    const response = parsed.response as Record<string, unknown>;
+    // Pending operations present...
+    expect((response.operations as unknown[]).length).toBe(2);
+    // ...and no finished media on the created body.
+    expect(response.media).toBeUndefined();
+  });
+
+  it("covers the extend/upscale 201 shape (response.captcha only)", () => {
+    // [extend]/[vid-upscale] Model -> 201 Created: same job-record shape with
+    // only `response.captcha` and no operations. OQ-2: one shared shape.
+    const result = GoogleFlowJobCreatedResponseSchema.safeParse({
+      jobid: "j1737312345678v-u12345-email:jo***@gmail.com-bot:google-flow",
+      type: "video",
+      status: "created",
+      created: "2026-01-29T12:34:56.789Z",
+      request: {
+        async: true,
+        prompt: "The camera slowly pans right revealing a majestic waterfall",
+        mediaGenerationId: "user:12345-email:6a6f...-video:CAMaJDMx...",
+      },
+      response: {
+        captcha: {
+          service: "AntiCaptcha",
+          taskId: "14af1dbb-885c-4e25-8121-7a79489dfd0e",
+          durationMs: 5357,
+        },
+      },
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("preserves an unknown top-level field via .passthrough()", () => {
+    const parsed = GoogleFlowJobCreatedResponseSchema.parse({
+      jobid: "j1731859234567v-...",
+      type: "video",
+      status: "created",
+      created: "2025-11-17T12:34:56.789Z",
+      response: { operations: [] },
+      pollAfterMs: 5000,
+    }) as Record<string, unknown>;
+    expect(parsed.pollAfterMs).toBe(5000);
+  });
+});
+
+describe("GoogleFlowJobsStatsResponseSchema", () => {
+  // [jobs] Model -> 200 OK (options= stats block). The three fixtures exercise
+  // the `videos` / `images` / `combined` groups, each exposing `summary` plus an
+  // optional `executing` / `history` map (populated by options=executing /
+  // options=history).
+  it("parses the videos-group stats (summary + executing)", () => {
+    const result = GoogleFlowJobsStatsResponseSchema.safeParse({
+      emails: ["jo***@gmail.com"],
+      videos: {
+        summary: {
+          "jo***@gmail.com": {
+            executing: 1,
+            completed: 5,
+            failed: 0,
+            rateLimited: 0,
+            avgResponseTime: 12000,
+            score: 6,
+          },
+        },
+        executing: {
+          "j1731859234567v-...": {
+            email: "jo***@gmail.com",
+            timestamp: 1731859234567,
+            elapsed: "01:23",
+          },
+        },
+      },
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("parses the images-group stats (summary + history)", () => {
+    const result = GoogleFlowJobsStatsResponseSchema.safeParse({
+      emails: ["an***@gmail.com"],
+      images: {
+        summary: {
+          "an***@gmail.com": {
+            executing: 0,
+            completed: 3,
+            failed: 1,
+            rateLimited: 0,
+            avgResponseTime: 8000,
+            score: 13,
+          },
+        },
+        history: {
+          "j1731859345678i-...": {
+            email: "an***@gmail.com",
+            timestamp: 1731859345678,
+            httpStatus: 200,
+            responseTime: 4200,
+          },
+        },
+      },
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("parses the combined-group stats (summary only)", () => {
+    const result = GoogleFlowJobsStatsResponseSchema.safeParse({
+      emails: ["jo***@gmail.com", "an***@gmail.com"],
+      combined: {
+        summary: {
+          "jo***@gmail.com": {
+            executing: 1,
+            completed: 8,
+            failed: 0,
+            rateLimited: 0,
+            avgResponseTime: 10000,
+            score: 7,
+          },
+          "an***@gmail.com": {
+            executing: 0,
+            completed: 3,
+            failed: 1,
+            rateLimited: 0,
+            avgResponseTime: 8000,
+            score: 13,
+          },
+        },
+      },
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("preserves an unknown top-level field via .passthrough()", () => {
+    const parsed = GoogleFlowJobsStatsResponseSchema.parse({
+      emails: ["jo***@gmail.com"],
+      combined: { summary: {} },
+      generatedAt: "2026-07-22T00:00:00Z",
+    }) as Record<string, unknown>;
+    expect(parsed.generatedAt).toBe("2026-07-22T00:00:00Z");
   });
 });

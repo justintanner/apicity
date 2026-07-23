@@ -54,6 +54,9 @@ export type {
   GoogleFlowVideosResponse,
   GoogleFlowVideosUpscaleResponse,
   GoogleFlowVideosExtendResponse,
+  GoogleFlowJobRecord,
+  GoogleFlowJobCreatedResponse,
+  GoogleFlowJobsStatsResponse,
 } from "./zod";
 
 export interface GoogleFlowResponse {

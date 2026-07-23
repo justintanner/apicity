@@ -1224,6 +1224,209 @@ export const GoogleFlowVideosConcatenateResponseSchema = z
   })
   .passthrough();
 
+// -- Jobs & async-job response family (GF-S7) -------------------------------
+// Typed, permissive (describe-never-restrict) views of the googleflow
+// asynchronous JOB surface: the GET /jobs/:jobid job record, the POST
+// /videos|/videos/extend|/videos/upscale async 201-created body, and the
+// GET /jobs?options= load-balancer stats block. Every object level is
+// `.passthrough()`; a field is required only where the useapi.net Model block
+// marks it always-present. The only closed enums in the family are the job
+// record's `type` and `status` (DP-1 / REQ-006) — every other volatile string
+// (response ids, per-operation status, ...) stays plain `z.string()`, never a
+// `.or(z.string())` open-enum union, because these are describe-only RESPONSE
+// fields, not request model registries. These DESCRIBE received data and never
+// guard the wire — the jobs endpoints stay non-validating (`get.v1.jobs` /
+// `get.v1.jobs.retrieve` keep returning Promise<GoogleFlowResponse>); the
+// schemas are consumer/MCP metadata only. Shapes confirmed against the
+// useapi.net Model blocks (fetched 2026-07-22, curl + Chrome UA):
+//   [jobs]        https://useapi.net/docs/api-google-flow-v1/get-google-flow-jobs
+//   [jobs-id]     https://useapi.net/docs/api-google-flow-v1/get-google-flow-jobs-jobid
+//   [videos]      https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos
+//   [extend]      https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-extend
+//   [vid-upscale] https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-upscale
+
+// One persisted job record, returned by GET /jobs/:jobid (and echoed by the
+// async 201 body — see GoogleFlowJobCreatedResponseSchema). `jobid` (lowercase,
+// NOT `jobId`) is the one always-present identity field. `type` and `status`
+// are the only closed enums: `type` is z.enum(["video","image"]) (DP-1) and
+// `status` is z.enum(["created","started","completed","failed"]) (REQ-006) — a
+// value outside either set fails to parse even though the surrounding object
+// stays `.passthrough()`. `request` is a permissive echo of the submitted fields
+// (keys not enumerated, OQ-1). `response.media[]` reuses the GF-S4 video / GF-S5
+// image media-entry schemas (video-first union; both members are permissive so
+// this is reuse/documentation, not strict discrimination — an image entry lacks
+// the top-level mediaGenerationId the video member requires, so it falls through
+// to the image shape) and `response.captcha` reuses the GF-S1 captcha primitive;
+// none redefined (AC-5). `updated`, `response`, `remainingCredits`, `error`,
+// `errorDetails`, and `code` all stay optional (OQ-3).
+// [jobs-id] Model -> 200 OK (Video Job / Image Job); [jobs] Model.
+export const GoogleFlowJobRecordSchema = z
+  .object({
+    jobid: z.string(),
+    type: z.enum(["video", "image"]),
+    status: z.enum(["created", "started", "completed", "failed"]),
+    created: z.string(),
+    updated: z.string().optional(),
+    // Permissive echo of the submitted request fields; keys are not enumerated
+    // so any submitted shape (video or image request) survives (OQ-1).
+    request: z.object({}).passthrough(),
+    response: z
+      .object({
+        // Video entries resolve to the GF-S4 schema (top-level mediaGenerationId
+        // required); image entries fall through to the all-optional GF-S5 schema.
+        media: z
+          .array(
+            z.union([
+              GoogleFlowVideoMediaEntrySchema,
+              GoogleFlowImageMediaEntrySchema,
+            ])
+          )
+          .optional(),
+        // A completed record may still echo the legacy pending operations array.
+        operations: z.array(z.object({}).passthrough()).optional(),
+        remainingCredits: z.number().optional(),
+        captcha: GoogleFlowCaptchaResultSchema.optional(),
+        // The docs nest the structured failure under `response.error`
+        // ({ code, message, status }); kept permissive here.
+        error: z.unknown().optional(),
+      })
+      .passthrough()
+      .optional(),
+    // Top-level failure summary. Reuses the GF-S1 string|object union so both the
+    // documented "API error: 500" string and the structured object form parse.
+    error: GoogleFlowApiErrorSchema.shape.error.optional(),
+    // Documented as a string ("Additional error details"); kept permissive.
+    errorDetails: z.unknown().optional(),
+    // Documented as a number (HTTP status when failed); widened to also accept a
+    // string form defensively.
+    code: z.union([z.number(), z.string()]).optional(),
+  })
+  .passthrough();
+
+// A single pending async operation, present in the 201-created
+// `response.operations[]` while generation runs in the background. Every field
+// is optional + `.passthrough()`; `status` is the describe-only pending marker
+// (known value MEDIA_GENERATION_STATUS_PENDING), a plain `z.string()`.
+const GoogleFlowPendingOperationSchema = z
+  .object({
+    operation: z
+      .object({
+        name: z.string().optional(),
+        metadata: z.object({}).passthrough().optional(),
+      })
+      .passthrough()
+      .optional(),
+    sceneId: z.string().optional(),
+    status: z.string().optional(),
+  })
+  .passthrough();
+
+// POST /videos|/videos/extend|/videos/upscale async 201-created body. A single
+// permissive shape covers all three async 201 tabs (OQ-2). The live 201 body is
+// itself a job record (jobid / type / status:"created" / created / request /
+// response) whose still-pending work sits under `response.operations[]` (each
+// carrying a per-scene MEDIA_GENERATION_STATUS_PENDING status) with NO finished
+// `response.media`; the extend/upscale 201s carry only `response.captcha`.
+// Because operations is not present on every tab, nothing is required here —
+// every field is optional + `.passthrough()`, and `response.captcha` reuses the
+// GF-S1 primitive. (The plan's suggested flat top-level `operations` is also
+// tolerated as an optional field, but the confirmed useapi.net Model nests it
+// under `response`.)
+// [videos]/[extend]/[vid-upscale] Model -> 201 Created.
+export const GoogleFlowJobCreatedResponseSchema = z
+  .object({
+    jobid: z.string().optional(),
+    // camelCase variant tolerated defensively.
+    jobId: z.string().optional(),
+    // known values: video | image (the closed enum lives on
+    // GoogleFlowJobRecordSchema; kept permissive here).
+    type: z.string().optional(),
+    // known value at creation: "created" (the closed lifecycle enum lives on
+    // GoogleFlowJobRecordSchema); plain here to describe every 201 variant.
+    status: z.string().optional(),
+    created: z.string().optional(),
+    updated: z.string().optional(),
+    request: z.object({}).passthrough().optional(),
+    response: z
+      .object({
+        operations: z.array(GoogleFlowPendingOperationSchema).optional(),
+        captcha: GoogleFlowCaptchaResultSchema.optional(),
+      })
+      .passthrough()
+      .optional(),
+    // Tolerated flat placement (see comment above); the live Model nests these
+    // under `response.operations`.
+    operations: z.array(GoogleFlowPendingOperationSchema).optional(),
+  })
+  .passthrough();
+
+// Per-account counters inside a stats `summary` map, keyed by account email.
+// All six documented fields are numbers; the record stays `.passthrough()` so a
+// future counter survives (OQ-4).
+const GoogleFlowJobsStatsPerEmailCountersSchema = z
+  .object({
+    executing: z.number().optional(),
+    completed: z.number().optional(),
+    failed: z.number().optional(),
+    rateLimited: z.number().optional(),
+    avgResponseTime: z.number().optional(),
+    score: z.number().optional(),
+  })
+  .passthrough();
+
+// One media-kind stats group (videos | images | combined). `summary` is the
+// always-present per-email counter map; `executing` and `history` are populated
+// only for options=executing / options=history (both keyed by jobId). Volatile
+// string fields (email, elapsed) stay `z.string()`; the numeric fields are typed
+// but every record object stays `.passthrough()` (OQ-4).
+const GoogleFlowJobsStatsGroupSchema = z
+  .object({
+    summary: z.record(z.string(), GoogleFlowJobsStatsPerEmailCountersSchema),
+    executing: z
+      .record(
+        z.string(),
+        z
+          .object({
+            email: z.string().optional(),
+            timestamp: z.number().optional(),
+            elapsed: z.string().optional(),
+          })
+          .passthrough()
+      )
+      .optional(),
+    history: z
+      .record(
+        z.string(),
+        z
+          .object({
+            email: z.string().optional(),
+            timestamp: z.number().optional(),
+            httpStatus: z.number().optional(),
+            responseTime: z.number().optional(),
+          })
+          .passthrough()
+      )
+      .optional(),
+  })
+  .passthrough();
+
+// GET /jobs?options=summary|executing|history load-balancer stats block. The
+// top-level object carries `emails` (all healthy account emails) plus the three
+// media-kind groups `videos` / `images` / `combined`, each the shared stats-group
+// shape above. A single schema with all groups optional parses every `options=`
+// variant (they differ only in which sub-fields — summary / executing / history
+// — are populated). `.passthrough()` at every level. (Reconciling the request
+// `options` enum with these response groups is A2 backlog, not GF-S7.)
+// [jobs] Model -> 200 OK (options= stats block).
+export const GoogleFlowJobsStatsResponseSchema = z
+  .object({
+    emails: z.array(z.string()).optional(),
+    videos: GoogleFlowJobsStatsGroupSchema.optional(),
+    images: GoogleFlowJobsStatsGroupSchema.optional(),
+    combined: GoogleFlowJobsStatsGroupSchema.optional(),
+  })
+  .passthrough();
+
 export type GoogleFlowOptions = z.infer<typeof GoogleFlowOptionsSchema>;
 export type GoogleFlowNoRequest = z.input<typeof GoogleFlowNoRequestSchema>;
 export type GoogleFlowEmailRequest = z.input<
@@ -1321,4 +1524,11 @@ export type GoogleFlowVideosGifResponse = z.output<
 >;
 export type GoogleFlowVideosConcatenateResponse = z.output<
   typeof GoogleFlowVideosConcatenateResponseSchema
+>;
+export type GoogleFlowJobRecord = z.output<typeof GoogleFlowJobRecordSchema>;
+export type GoogleFlowJobCreatedResponse = z.output<
+  typeof GoogleFlowJobCreatedResponseSchema
+>;
+export type GoogleFlowJobsStatsResponse = z.output<
+  typeof GoogleFlowJobsStatsResponseSchema
 >;

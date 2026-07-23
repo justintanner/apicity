@@ -220,9 +220,6 @@ GitHub Actions (`ci.yml`): two jobs — **test** (guard against cassette re-reco
   never a bare `.or(z.string())`, which accepts typos. The known ids stay
   enumerated so MCP clients keep autocomplete. See
   `GoogleFlowVeoModelAliasSchema` in `packages/provider/googleflow/src/zod.ts`.
-  (The `model` field of `GoogleFlowImagesRequestSchema` in that same file still
-  uses the bare form this rule replaces; it predates the rule and is tracked in
-  `ac-vlqxm`.)
   Fixed vocabularies that are _not_ model registries — `quality`, `vad_model`,
   `apply_text_normalization`, tier enums like `SimpleFunctionsModelSchema` —
   stay closed `z.enum`s.

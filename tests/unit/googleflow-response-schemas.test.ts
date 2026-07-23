@@ -17,6 +17,9 @@ import {
   GoogleFlowJobRecordSchema,
   GoogleFlowJobCreatedResponseSchema,
   GoogleFlowJobsStatsResponseSchema,
+  GoogleFlowAssetsUploadImageResponseSchema,
+  GoogleFlowAssetsUploadVideoResponseSchema,
+  GoogleFlowAssetsRetrieveResponseSchema,
 } from "../../packages/provider/googleflow/src/zod";
 
 // The GF-S1 response primitives DESCRIBE upstream shapes permissively: every
@@ -1093,5 +1096,200 @@ describe("GoogleFlowJobsStatsResponseSchema", () => {
       generatedAt: "2026-07-22T00:00:00Z",
     }) as Record<string, unknown>;
     expect(parsed.generatedAt).toBe("2026-07-22T00:00:00Z");
+  });
+});
+
+// GF-S8 assets response family. The literals below are copied from the
+// useapi.net google-flow Model -> 200 OK blocks
+// (post-google-flow-assets-email / get-google-flow-assets-mediagenerationid,
+// fetched 2026-07-22). The two POST /assets upload bodies are DISTINCT: the
+// image upload carries a `workflow` object and always-present `width`/`height`;
+// the video upload has no `workflow`, an optional `media`, and a
+// `durationSeconds`. The stub-vs-docs divergence (a `media[]` array wrapper in
+// the committed i2v recording) is resolved in favor of the docs — see the
+// image-upload passthrough test below.
+
+const assetsImageUploadDocBody = {
+  media: {
+    name: "ff9aa5cc-...redacted...",
+    projectId: "5c37e988-...redacted...",
+    workflowId: "69603881-...redacted...",
+    workflowStepId: "CAE",
+    mediaMetadata: {
+      createTime: "2026-02-27T16:34:25.128454Z",
+      requestData: { clientPlatform: "CLIENT_PLATFORM_WEB" },
+      visibility: "PRIVATE",
+    },
+    image: {
+      userUploadedImage: { aspectRatio: "IMAGE_ASPECT_RATIO_UNSPECIFIED" },
+      dimensions: { width: 1024, height: 1024 },
+    },
+  },
+  workflow: {
+    name: "69603881-...redacted...",
+    metadata: {
+      displayName: "upload.webp",
+      createTime: "2026-02-27T16:34:25.128454Z",
+      primaryMediaId: "ff9aa5cc-...redacted...",
+    },
+    projectId: "5c37e988-...redacted...",
+  },
+  mediaGenerationId: {
+    mediaGenerationId: "user:12345-email:6a6f...-image:ff9aa5cc-...redacted...",
+  },
+  width: 1024,
+  height: 1024,
+  email: "jo***@gmail.com",
+};
+
+const assetsVideoUploadDocBody = {
+  media: {
+    name: "07c542b0-...redacted...",
+    projectId: "5c37e988-...redacted...",
+    workflowId: "290a1f7a-...redacted...",
+    workflowStepId: "CAE",
+    mediaMetadata: {
+      createTime: "2026-05-20T23:04:23.089821Z",
+      requestData: { clientPlatform: "CLIENT_PLATFORM_WEB" },
+      mediaStatus: { mediaGenerationStatus: "MEDIA_GENERATION_STATUS_PENDING" },
+      visibility: "PRIVATE",
+    },
+    video: {
+      dimensions: { width: 1280, height: 720, length: "11.940s" },
+      videoOffset: { startOffset: "0s", endOffset: "11.940s" },
+      userUploadedVideo: { encodedVideo: "" },
+    },
+  },
+  mediaGenerationId: {
+    mediaGenerationId: "user:12345-email:6a6f...-video:07c542b0-...redacted...",
+  },
+  durationSeconds: 11.94,
+  width: 1280,
+  height: 720,
+  email: "jo***@gmail.com",
+};
+
+const assetsRetrieveDocBody = {
+  url: "https://storage.googleapis.com/...signed-url-with-expiry...",
+  mediaGenerationId: "user:12345-email:6a6f...-image:ff9aa5cc-...redacted...",
+};
+
+describe("GoogleFlowAssetsUploadImageResponseSchema", () => {
+  it("parses the [assets] documented image-upload 200 body", () => {
+    const result = GoogleFlowAssetsUploadImageResponseSchema.safeParse(
+      assetsImageUploadDocBody
+    );
+    expect(result.success).toBe(true);
+    const parsed = GoogleFlowAssetsUploadImageResponseSchema.parse(
+      assetsImageUploadDocBody
+    );
+    // The reference id nests one level: mediaGenerationId.mediaGenerationId.
+    expect(parsed.mediaGenerationId.mediaGenerationId).toBe(
+      "user:12345-email:6a6f...-image:ff9aa5cc-...redacted..."
+    );
+    expect(parsed.width).toBe(1024);
+    expect(parsed.height).toBe(1024);
+    expect(parsed.email).toBe("jo***@gmail.com");
+  });
+
+  it("preserves an unknown extra via .passthrough(); the stub media[] wrapper is never the typed shape", () => {
+    const parsed = GoogleFlowAssetsUploadImageResponseSchema.parse({
+      ...assetsImageUploadDocBody,
+      internalTraceId: "gf-trace-1",
+    }) as Record<string, unknown>;
+    expect(parsed.internalTraceId).toBe("gf-trace-1");
+
+    // The committed i2v stub returns POST /assets as
+    // `{"media":[{"mediaGenerationId":{"mediaGenerationId":"..."}}]}` — a
+    // `media[]` ARRAY the docs never describe. Docs win: `media` is typed as an
+    // OBJECT and the always-present top-level fields are absent, so the stub's
+    // array-wrapped form is NOT the documented shape. It is never encoded as a
+    // typed field; only untyped `.passthrough()` data would ever carry it.
+    const i2vStubBody = {
+      media: [{ mediaGenerationId: { mediaGenerationId: "test-asset-123" } }],
+    };
+    expect(
+      GoogleFlowAssetsUploadImageResponseSchema.safeParse(i2vStubBody).success
+    ).toBe(false);
+  });
+
+  it("parses an object carrying only the documented always-present fields", () => {
+    const result = GoogleFlowAssetsUploadImageResponseSchema.safeParse({
+      media: {},
+      mediaGenerationId: { mediaGenerationId: "user:1-image:abc" },
+      width: 512,
+      height: 512,
+      email: "jo***@gmail.com",
+    });
+    expect(result.success).toBe(true);
+  });
+});
+
+describe("GoogleFlowAssetsUploadVideoResponseSchema", () => {
+  it("parses the [assets] documented video-upload 200 body (distinct from image)", () => {
+    const result = GoogleFlowAssetsUploadVideoResponseSchema.safeParse(
+      assetsVideoUploadDocBody
+    );
+    expect(result.success).toBe(true);
+    const parsed = GoogleFlowAssetsUploadVideoResponseSchema.parse(
+      assetsVideoUploadDocBody
+    );
+    expect(parsed.mediaGenerationId.mediaGenerationId).toBe(
+      "user:12345-email:6a6f...-video:07c542b0-...redacted..."
+    );
+    expect(parsed.durationSeconds).toBe(11.94);
+    expect(parsed.email).toBe("jo***@gmail.com");
+  });
+
+  it("preserves an unknown extra field via .passthrough()", () => {
+    const parsed = GoogleFlowAssetsUploadVideoResponseSchema.parse({
+      ...assetsVideoUploadDocBody,
+      loadBalancerNote: "auto-selected",
+    }) as Record<string, unknown>;
+    expect(parsed.loadBalancerNote).toBe("auto-selected");
+  });
+
+  it("parses an object carrying only the always-present fields (media/dimensions optional)", () => {
+    const result = GoogleFlowAssetsUploadVideoResponseSchema.safeParse({
+      mediaGenerationId: { mediaGenerationId: "user:1-video:abc" },
+      email: "jo***@gmail.com",
+    });
+    expect(result.success).toBe(true);
+  });
+});
+
+describe("GoogleFlowAssetsRetrieveResponseSchema", () => {
+  it("parses the [assets-dl] documented retrieve 200 body", () => {
+    const result = GoogleFlowAssetsRetrieveResponseSchema.safeParse(
+      assetsRetrieveDocBody
+    );
+    expect(result.success).toBe(true);
+    const parsed = GoogleFlowAssetsRetrieveResponseSchema.parse(
+      assetsRetrieveDocBody
+    );
+    expect(parsed.url).toBe(
+      "https://storage.googleapis.com/...signed-url-with-expiry..."
+    );
+    // Here `mediaGenerationId` is a plain string echo of the path parameter,
+    // not the nested `{ mediaGenerationId }` object of the upload responses.
+    expect(parsed.mediaGenerationId).toBe(
+      "user:12345-email:6a6f...-image:ff9aa5cc-...redacted..."
+    );
+  });
+
+  it("preserves an unknown extra field via .passthrough()", () => {
+    const parsed = GoogleFlowAssetsRetrieveResponseSchema.parse({
+      ...assetsRetrieveDocBody,
+      expiresInSeconds: 21600,
+    }) as Record<string, unknown>;
+    expect(parsed.expiresInSeconds).toBe(21600);
+  });
+
+  it("parses an object carrying only the documented always-present fields", () => {
+    const result = GoogleFlowAssetsRetrieveResponseSchema.safeParse({
+      url: "https://storage.googleapis.com/signed",
+      mediaGenerationId: "user:1-image:abc",
+    });
+    expect(result.success).toBe(true);
   });
 });

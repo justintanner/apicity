@@ -61,6 +61,9 @@ export type {
   GoogleFlowJobRecord,
   GoogleFlowJobCreatedResponse,
   GoogleFlowJobsStatsResponse,
+  GoogleFlowAssetsUploadImageResponse,
+  GoogleFlowAssetsUploadVideoResponse,
+  GoogleFlowAssetsRetrieveResponse,
 } from "./zod";
 
 export {
@@ -102,4 +105,7 @@ export {
   GoogleFlowJobRecordSchema,
   GoogleFlowJobCreatedResponseSchema,
   GoogleFlowJobsStatsResponseSchema,
+  GoogleFlowAssetsUploadImageResponseSchema,
+  GoogleFlowAssetsUploadVideoResponseSchema,
+  GoogleFlowAssetsRetrieveResponseSchema,
 } from "./zod";

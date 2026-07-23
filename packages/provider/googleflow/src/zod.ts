@@ -1427,6 +1427,90 @@ export const GoogleFlowJobsStatsResponseSchema = z
   })
   .passthrough();
 
+// -- Assets response family (GF-S8) -----------------------------------------
+// Typed, permissive (describe-never-restrict) views of the googleflow ASSETS
+// surface: the two documented POST /assets upload 200 bodies (image upload and
+// the DISTINCT video upload) and the GET /assets/:mediaGenerationId retrieve 200
+// body. Every object level is `.passthrough()`; a field is required only where
+// the useapi.net Model block marks it always-present. These DESCRIBE received
+// data and never guard the wire — the assets endpoints stay non-validating
+// (`post.v1.assets` / `get.v1.assets.retrieve` keep returning
+// Promise<GoogleFlowResponse>); the schemas are consumer/MCP metadata only.
+// Shapes confirmed against the useapi.net Model blocks (fetched 2026-07-22,
+// curl + Chrome UA):
+//   [assets]    https://useapi.net/docs/api-google-flow-v1/post-google-flow-assets-email
+//   [assets-dl] https://useapi.net/docs/api-google-flow-v1/get-google-flow-assets-mediagenerationid
+//
+// Stub-vs-docs divergence (REQ-005): the committed i2v stub recording returns
+// `{"media":[{"mediaGenerationId":{"mediaGenerationId":"..."}}]}` for
+// POST /assets — a `media[]` ARRAY wrapper the docs never describe. The docs
+// win: `media` is typed as an OBJECT and the top-level `mediaGenerationId` is a
+// `{ mediaGenerationId }` object, so the stub's array form is never a typed
+// field; it would only ever survive as untyped `.passthrough()` data. No live
+// POST /assets account was configured at implementation time (autonomous
+// headless run, OQ-1), so the two upload schemas are pinned straight from the
+// docs and tagged `doc-derived, not yet live-verified`; the existing i2v /
+// omni-i2v stub recordings are left untouched (no wire change in this slice).
+
+// POST /assets image-upload 200 body. Returned when Content-Type is
+// image/png | image/jpeg | image/webp. Per the [assets] image Model the
+// always-present fields are `media` (full Google Flow media object, image{}
+// sub-object), the top-level `mediaGenerationId: { mediaGenerationId }` object
+// (the reference id for subsequent calls), `width`, `height`, and `email`;
+// `workflow` is the one documented-optional field. `.passthrough()` at every
+// level preserves the doc's deep `media`/`workflow` sub-objects and any
+// undocumented top-level extra (including the divergent stub `media[]` wrapper)
+// without typing them.
+// [assets] Model -> 200 OK (image upload). doc-derived, not yet live-verified.
+export const GoogleFlowAssetsUploadImageResponseSchema = z
+  .object({
+    media: z.object({}).passthrough(),
+    workflow: z.object({}).passthrough().optional(),
+    mediaGenerationId: z
+      .object({ mediaGenerationId: z.string() })
+      .passthrough(),
+    width: z.number(),
+    height: z.number(),
+    email: z.string(),
+  })
+  .passthrough();
+
+// POST /assets video-upload 200 body. Returned when Content-Type is video/mp4.
+// A DISTINCT shape from the image upload (OQ-2): only `mediaGenerationId`
+// (`{ mediaGenerationId }`, reused as referenceVideo_1 on POST /videos) and
+// `email` are always-present per the [assets] video Model; `media` (mirrors the
+// image object with a video{} sub-object instead of image{}), `durationSeconds`,
+// `width`, and `height` are all documented-optional. It carries no `workflow`
+// field, so it is modeled as its own `.passthrough()` object rather than sharing
+// the image schema.
+// [assets] Model -> 200 OK (video upload). doc-derived, not yet live-verified.
+export const GoogleFlowAssetsUploadVideoResponseSchema = z
+  .object({
+    media: z.object({}).passthrough().optional(),
+    mediaGenerationId: z
+      .object({ mediaGenerationId: z.string() })
+      .passthrough(),
+    durationSeconds: z.number().optional(),
+    width: z.number().optional(),
+    height: z.number().optional(),
+    email: z.string(),
+  })
+  .passthrough();
+
+// GET /assets/:mediaGenerationId retrieve 200 body: resolves a signed Google
+// Cloud Storage download URL for a previously uploaded asset. Per the
+// [assets-dl] Model both fields are always-present — `url` (signed GCS URL,
+// valid ~6h) and `mediaGenerationId` (a plain string echo of the request path
+// parameter, NOT the nested `{ mediaGenerationId }` object of the upload
+// responses). `.passthrough()` preserves any undocumented extra.
+// [assets-dl] Model -> 200 OK.
+export const GoogleFlowAssetsRetrieveResponseSchema = z
+  .object({
+    url: z.string(),
+    mediaGenerationId: z.string(),
+  })
+  .passthrough();
+
 export type GoogleFlowOptions = z.infer<typeof GoogleFlowOptionsSchema>;
 export type GoogleFlowNoRequest = z.input<typeof GoogleFlowNoRequestSchema>;
 export type GoogleFlowEmailRequest = z.input<
@@ -1531,4 +1615,13 @@ export type GoogleFlowJobCreatedResponse = z.output<
 >;
 export type GoogleFlowJobsStatsResponse = z.output<
   typeof GoogleFlowJobsStatsResponseSchema
+>;
+export type GoogleFlowAssetsUploadImageResponse = z.output<
+  typeof GoogleFlowAssetsUploadImageResponseSchema
+>;
+export type GoogleFlowAssetsUploadVideoResponse = z.output<
+  typeof GoogleFlowAssetsUploadVideoResponseSchema
+>;
+export type GoogleFlowAssetsRetrieveResponse = z.output<
+  typeof GoogleFlowAssetsRetrieveResponseSchema
 >;

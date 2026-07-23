@@ -193,6 +193,21 @@ const GoogleFlowVeoModelAliasSchema = z
     "Expected a listed model or a versioned Veo alias (e.g. veo-3.1-fast)"
   );
 
+// Upstream ships new nano-banana point releases before this enum catches up,
+// so the enum below is unioned with a versioned-family alias instead of a bare
+// `.or(z.string())` (which accepted typos like "nano-banna-2"). The hatch
+// matches `nano-banana` optionally followed by dotted-numeric version segments
+// and lowercase variant segments, e.g. nano-banana-2, nano-banana-2-lite,
+// nano-banana-3. Anything not structurally a nano-banana id — misspellings and
+// other families — must be enumerated explicitly.
+// [images] https://useapi.net/docs/api-googleflow-v1/post-google-flow-images
+const GoogleFlowNanoBananaModelAliasSchema = z
+  .string()
+  .regex(
+    /^nano-banana(?:-\d+(?:\.\d+)*)?(?:-[a-z0-9]+)*$/,
+    "Expected a listed model or a well-formed nano-banana alias (e.g. nano-banana-2)"
+  );
+
 export const GoogleFlowImagesRequestSchema = z
   .object({
     prompt: z.string().min(1),
@@ -201,12 +216,22 @@ export const GoogleFlowImagesRequestSchema = z
     // API load balances on image-generation stats; supplying reference_* also
     // pins the account the references were uploaded to.
     email: z.string().optional(),
-    // Docs enumerate nano-banana-2-lite | nano-banana-2 | nano-banana-pro,
-    // but deprecated aliases (nano-banana, imagen-4) are still accepted, so
-    // the enum is unioned with string to stay resilient to upstream changes.
+    // Docs enumerate nano-banana-2-lite | nano-banana-2 | nano-banana-pro. Two
+    // deprecated aliases are still accepted and stay enumerated for MCP
+    // autocomplete: `nano-banana` (maps to nano-banana-2) and `imagen-4` (maps
+    // to nano-banana-2-lite; Google removed Imagen from Flow in July 2026).
+    // `imagen-4` does not match the nano-banana grammar, so it must be listed
+    // explicitly.
+    // [images] https://useapi.net/docs/api-googleflow-v1/post-google-flow-images
     model: z
-      .enum(["nano-banana-2-lite", "nano-banana-2", "nano-banana-pro"])
-      .or(z.string())
+      .enum([
+        "nano-banana-2-lite",
+        "nano-banana-2",
+        "nano-banana-pro",
+        "nano-banana", // deprecated alias → nano-banana-2
+        "imagen-4", // deprecated alias → nano-banana-2-lite (Imagen removed 2026-07)
+      ])
+      .or(GoogleFlowNanoBananaModelAliasSchema)
       .optional(),
     // Legacy aliases landscape (16:9) and portrait (9:16) are still accepted.
     aspectRatio: z
@@ -222,7 +247,8 @@ export const GoogleFlowImagesRequestSchema = z
       ])
       .optional(),
     count: z.number().int().min(1).max(4).optional(),
-    seed: z.number().int().optional(),
+    // Upstream documents seed as an integer >= 0. [images]
+    seed: z.number().int().min(0).optional(),
     reference_1: z.string().optional(),
     reference_2: z.string().optional(),
     reference_3: z.string().optional(),
@@ -244,7 +270,25 @@ export const GoogleFlowImagesRequestSchema = z
     replyRef: z.string().optional(),
     ...GoogleFlowCaptchaFieldsSchema,
   })
-  .passthrough();
+  .passthrough()
+  .superRefine((value, ctx) => {
+    if (value.aspectRatio !== "auto") return;
+    const hasReference = Object.entries(value).some(
+      ([key, v]) =>
+        (key.startsWith("reference_") || key.startsWith("character_")) &&
+        typeof v === "string" &&
+        v.length > 0
+    );
+    if (!hasReference) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["aspectRatio"],
+        // [images] "auto" is valid only for image-to-image (a reference input).
+        message:
+          'aspectRatio "auto" requires at least one reference_* or character_* input',
+      });
+    }
+  });
 
 export const GoogleFlowImagesUpscaleRequestSchema = z
   .object({

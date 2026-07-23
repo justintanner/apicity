@@ -149,6 +149,39 @@ describe("googleflow video model schemas", () => {
   });
 });
 
+// GF-S2 tightens GoogleFlowImagesRequestSchema: `model` now uses the open-enum
+// + nano-banana family-alias hatch (a typo like "nano-banna-2" no longer slips
+// through a bare `.or(z.string())`, and foreign families like "gpt-image-1" /
+// "veo-3.1-fast" are rejected), `seed` carries the documented `>= 0` bound, and
+// `aspectRatio: "auto"` is rejected unless an image-to-image reference input
+// (reference_* or character_*) is present.
+const imagesCases: Array<[Record<string, unknown>, boolean]> = [
+  // model: listed ids, a well-formed unlisted alias, and deprecated aliases
+  [{ prompt: "x", model: "nano-banana-pro" }, true],
+  [{ prompt: "x", model: "nano-banana-3" }, true],
+  [{ prompt: "x", model: "nano-banana" }, true],
+  [{ prompt: "x", model: "imagen-4" }, true],
+  // model: a misspelled stem and foreign families are rejected
+  [{ prompt: "x", model: "nano-banna-2" }, false],
+  [{ prompt: "x", model: "gpt-image-1" }, false],
+  [{ prompt: "x", model: "veo-3.1-fast" }, false],
+  // seed: documented lower bound of 0
+  [{ prompt: "x", seed: 0 }, true],
+  [{ prompt: "x", seed: 5 }, true],
+  [{ prompt: "x", seed: -1 }, false],
+  // aspectRatio "auto" requires a reference_* or character_* input
+  [{ prompt: "x", aspectRatio: "auto" }, false],
+  [{ prompt: "x", aspectRatio: "auto", reference_1: "m" }, true],
+  [{ prompt: "x", aspectRatio: "auto", character_1: "c" }, true],
+];
+
+describe("GoogleFlowImagesRequestSchema strictness (GF-S2)", () => {
+  it.each(imagesCases)("safeParse(%j) success === %s", (input, expected) => {
+    const result = GoogleFlowImagesRequestSchema.safeParse(input);
+    expect(result.success).toBe(expected);
+  });
+});
+
 const EMAIL = "user@example.com";
 
 describe("googleflow email requirement split", () => {

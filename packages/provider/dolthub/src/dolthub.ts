@@ -36,6 +36,8 @@ import {
   DoltHubV2Meta,
   DoltHubV2BranchesListRequest,
   DoltHubV2BranchesListResponse,
+  DoltHubV2PullsListRequest,
+  DoltHubV2PullsListResponse,
   DoltHubV2BranchCreateRequest,
   DoltHubV2BranchCreateResponse,
   DoltHubV2DatabaseCreateRequest,
@@ -629,6 +631,27 @@ export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
     { schema: undefined }
   );
 
+  // sig-ok: semantic DoltHub v2 pulls namespace over dynamic repo URL
+  // GET https://www.dolthub.com/api/v2/databases/{owner}/{database}/pulls{query}
+  // Docs: https://www.dolthub.com/docs/products/dolthub/api/v2/database
+  const pullsListV2 = Object.assign(
+    async (
+      req: DoltHubV2PullsListRequest,
+      signal?: AbortSignal
+    ): Promise<DoltHubV2PullsListResponse> => {
+      const owner = encodeURIComponent(req.owner);
+      const database = encodeURIComponent(req.database);
+      const query = buildQuery({ page_token: req.pageToken });
+      return makeV2EnvelopeRequest(
+        "GET",
+        `/api/v2/databases/${owner}/${database}/pulls${query}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
   // sig-ok: semantic DoltHub v2 branches namespace over dynamic repo URL
   // POST https://www.dolthub.com/api/v2/databases/{owner}/{database}/branches
   // Docs: https://www.dolthub.com/docs/products/dolthub/api/v2/database
@@ -719,6 +742,9 @@ export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
           branches: {
             list: branchesListV2,
             create: branchCreateV2,
+          },
+          pulls: {
+            list: pullsListV2,
           },
           forks: {
             create: forkCreate,

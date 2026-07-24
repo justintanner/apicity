@@ -541,6 +541,55 @@ export interface DoltHubV2BranchesNamespace {
 }
 
 // ---------------------------------------------------------------------------
+// v2 API — pulls
+// ---------------------------------------------------------------------------
+
+/**
+ * A pull-request summary returned by the v2 database pulls list endpoint. The
+ * v2 surface is snake_case (cf. `DoltHubV2Branch.head_commit_sha`), so it is
+ * typed distinctly from the camelCase v1alpha1 `DoltHubPullRequest`. This is
+ * the compact `PullSummary` model the v2 spec returns from the list endpoint,
+ * not the fuller single-pull `get` shape (the two API versions and surfaces can
+ * diverge without a breaking change).
+ */
+export interface DoltHubV2Pull {
+  /** Sequential pull-request number, unique within the database. */
+  pull_number: number;
+  /** Pull-request title. */
+  title: string;
+  /** Free-form description; absent when the pull request has none. */
+  description?: string;
+  /** Lifecycle state, e.g. `"open"`, `"closed"`, `"merged"`. */
+  state: string;
+  /** ISO-8601 time at which the pull request was created. */
+  created_at: string;
+  /** Username of the user who opened the pull request. */
+  creator: string;
+}
+
+export interface DoltHubV2PullsListRequest {
+  /** Database owner (URL path segment). */
+  owner: string;
+  /** Database name (URL path segment). */
+  database: string;
+  /** Opaque cursor from a preceding page's `meta.next_page_token`. */
+  pageToken?: string;
+}
+
+export type DoltHubV2PullsListResponse = DoltHubV2Envelope<DoltHubV2Pull[]>;
+
+export interface DoltHubV2PullsListMethod {
+  (
+    req: DoltHubV2PullsListRequest,
+    signal?: AbortSignal
+  ): Promise<DoltHubV2PullsListResponse>;
+}
+
+export interface DoltHubV2PullsNamespace {
+  list: DoltHubV2PullsListMethod;
+}
+
+// ---------------------------------------------------------------------------
 // v2 API — databases
 // ---------------------------------------------------------------------------
 
@@ -615,6 +664,7 @@ export interface DoltHubV2DatabaseCreateMethod {
 export interface DoltHubV2DatabasesNamespace {
   create: DoltHubV2DatabaseCreateMethod;
   branches: DoltHubV2BranchesNamespace;
+  pulls: DoltHubV2PullsNamespace;
   forks: DoltHubV2ForksNamespace;
   sql: DoltHubV2SqlNamespace;
 }

@@ -14,10 +14,11 @@ export const integrationDir = path.join("tests", "integration");
 // reachable in `tests/unit` as in `tests/integration` — scanning only the latter
 // silently skipped files like `tests/unit/fal-zod.test.ts` and
 // `tests/functional/xai-validate.test.ts`, handing a green
-// `dev:preflight:fast` from tests that never executed. The scan below is flat,
-// so provider-named files nested in subdirectories (`tests/unit/kie/…`) stay
-// unreachable from the provider gates. Keep the directory list in sync with the
-// `include` list in that config.
+// `dev:preflight:fast` from tests that never executed. `listProviderTests` also
+// descends exactly one level into an immediate subdirectory named after the
+// provider (`tests/unit/kie/…`), so provider suites nested one directory deep are
+// reachable too. Keep the directory list in sync with the `include` list in that
+// config.
 export const providerTestDirs = [
   integrationDir,
   path.join("tests", "functional"),
@@ -39,21 +40,46 @@ export function listProviderNames() {
 export function listProviderTests(provider) {
   const prefixes = provider === "mcp-server" ? ["mcp"] : [provider];
 
+  const matchesPrefix = (name) =>
+    prefixes.some(
+      (prefix) => name === `${prefix}.test.ts` || name.startsWith(`${prefix}-`)
+    );
+
   return providerTestDirs.flatMap((dir) => {
     const testDir = path.join(repoRoot, dir);
 
     // A repo checkout is not required to carry every optional test directory.
     if (!existsSync(testDir)) return [];
 
-    return readdirSync(testDir)
+    const entries = readdirSync(testDir, { withFileTypes: true });
+
+    // Flat scan: top-level `<prefix>.test.ts` / `<prefix>-*.test.ts` files. The
+    // `isFile()` guard keeps a directory that merely ends in `.test.ts` from
+    // being mistaken for a test file.
+    const flat = entries
+      .filter((entry) => entry.isFile())
+      .map((entry) => entry.name)
       .filter((name) => name.endsWith(".test.ts"))
-      .filter((name) =>
-        prefixes.some(
-          (prefix) =>
-            name === `${prefix}.test.ts` || name.startsWith(`${prefix}-`)
-        )
-      )
+      .filter(matchesPrefix)
       .map((name) => path.posix.join(dir, name));
+
+    // Nested scan: descend exactly one level into an immediate subdirectory
+    // named after the provider (one of `prefixes`) and take EVERY `*.test.ts`
+    // inside it. The filename-prefix filter is deliberately NOT re-applied
+    // here — nested suites are attributed by their directory name, not their
+    // filename — so `tests/unit/kie/validate.test.ts` and
+    // `tests/unit/anthropic/schemas.test.ts`, which do not carry the provider
+    // prefix, are still selected. Recursion stops at depth one: no directory
+    // below the matched subdirectory is walked.
+    const nested = entries
+      .filter((entry) => entry.isDirectory() && prefixes.includes(entry.name))
+      .flatMap((entry) =>
+        readdirSync(path.join(testDir, entry.name))
+          .filter((name) => name.endsWith(".test.ts"))
+          .map((name) => path.posix.join(dir, entry.name, name))
+      );
+
+    return [...flat, ...nested];
   });
 }
 

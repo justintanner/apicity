@@ -6,9 +6,11 @@ import {
 } from "../../scripts/lib/affected-provider-tests.mjs";
 
 const providers = [
+  "anthropic",
   "free-media-upload",
   "google",
   "googleflow",
+  "kie",
   "openai",
   "x",
   "xai",
@@ -71,6 +73,25 @@ describe("detectProviderForChangedFile", () => {
         providers
       )
     ).toBe("free-media-upload");
+  });
+
+  it("maps nested tests/unit/<provider>/ suites by directory name", () => {
+    expect(
+      detectProviderForChangedFile("tests/unit/kie/validate.test.ts", providers)
+    ).toBe("kie");
+    expect(
+      detectProviderForChangedFile(
+        "tests/functional/anthropic/schemas.test.ts",
+        providers
+      )
+    ).toBe("anthropic");
+    // A non-provider subdirectory (`shared`) has no slug match and stays full.
+    expect(
+      detectProviderForChangedFile(
+        "tests/unit/shared/provider-infrastructure.test.ts",
+        providers
+      )
+    ).toBe("");
   });
 
   it("maps provider recording directories", () => {
@@ -141,6 +162,16 @@ describe("classifyChangedFiles", () => {
     ).toEqual({
       mode: "providers",
       providers: ["openai"],
+      fullReasons: [],
+    });
+  });
+
+  it("scopes a nested unit test edit to its provider", () => {
+    expect(
+      classifyChangedFiles(["tests/unit/kie/validate.test.ts"], providers)
+    ).toEqual({
+      mode: "providers",
+      providers: ["kie"],
       fullReasons: [],
     });
   });

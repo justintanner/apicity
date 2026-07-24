@@ -133,6 +133,45 @@ describe("resolveProviderScope", () => {
     });
   });
 
+  it("selects nested tests/unit/<provider>/ suites by directory name", () => {
+    // `kie/validate.test.ts` does not carry the `kie` filename prefix, so only
+    // directory-name attribution reaches it. Baseline was 95 flat paths; the
+    // nested file lifts the count past that.
+    const kie = resolveProviderScope("kie");
+    expect(kie.tests).toContain(`${unitDir}/kie/validate.test.ts`);
+    expect(kie.tests.length).toBeGreaterThan(95);
+
+    // `anthropic/schemas.test.ts` likewise lacks the provider prefix.
+    expect(resolveProviderScope("anthropic").tests).toContain(
+      `${unitDir}/anthropic/schemas.test.ts`
+    );
+
+    // The prefix-carrying `fireworks/fireworks-*` files come in via the same
+    // nested scan, not the flat one (they live one directory deep).
+    const fireworks = resolveProviderScope("fireworks");
+    expect(fireworks.tests).toContain(
+      `${unitDir}/fireworks/fireworks-kontext.test.ts`
+    );
+    expect(fireworks.tests).toContain(
+      `${unitDir}/fireworks/fireworks-model-prep.test.ts`
+    );
+  });
+
+  it("attributes nested suites only to a matching provider directory", () => {
+    // `tests/unit/shared/` is not a provider directory: no scope may claim it.
+    for (const provider of ["kie", "anthropic", "fireworks", "fal", "openai"]) {
+      const { tests } = resolveProviderScope(provider);
+      expect(tests.some((test) => test.startsWith(`${unitDir}/shared/`))).toBe(
+        false
+      );
+    }
+
+    // Top-level provider files stay selected — the nested scan is additive.
+    expect(resolveProviderScope("fal").tests).toContain(
+      `${unitDir}/fal-zod.test.ts`
+    );
+  });
+
   it("resolves integration test paths by longest provider prefix", () => {
     expect(
       resolveProviderScope("tests/integration/xai-chat.test.ts")

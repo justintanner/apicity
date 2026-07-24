@@ -47,6 +47,21 @@ export function detectProviderForChangedFile(filePath, providers) {
     return providerFromSlug(stripTestSuffix(testMatch[1]), providers);
   }
 
+  // Nested provider suites live one directory deep under any of the three test
+  // roots (`tests/unit/kie/validate.test.ts`). Attribute them by the
+  // subdirectory name — mirroring `listProviderTests`, which selects the same
+  // files. The regex requires two path segments after the root, so top-level
+  // `tests/integration/x.test.ts` (handled above) and `tests/recordings/…`
+  // (handled below) are untouched. `tests/unit/shared/…` resolves to slug
+  // `shared`, which `providerFromSlug` leaves unmapped, so it stays in full mode.
+  const nestedTestMatch = normalized.match(
+    /^tests\/(?:integration|functional|unit)\/([^/]+)\/[^/]+\.test\.tsx?$/
+  );
+
+  if (nestedTestMatch) {
+    return providerFromSlug(nestedTestMatch[1], providers);
+  }
+
   const recordingMatch = normalized.match(/^tests\/recordings\/([^/]+)/);
 
   if (recordingMatch) {

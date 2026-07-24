@@ -150,6 +150,7 @@ infers it; the caller usually knows it; the payload has nowhere to put it.
 ```ts
 interface CostHints {
   durationSeconds?: number;
+  googleFlowPlan?: "pro" | "ultra" | (string & {});
 }
 ```
 
@@ -217,6 +218,70 @@ both reach the hint exactly like an omitted field would.
 
 Every other per-second entry reads a real wire duration; passing `costHints`
 alongside one is harmless — the wire field wins.
+
+### Plan tier (googleflow)
+
+`googleflow` bills in **Google Flow credits**, not USD, so a USD estimate is
+`credits x the plan's credit value`. Two Google AI plan tiers set that value,
+and — where upstream documents it — the per-generation credit cost:
+
+| Tier            | Credit value    | Notes                                                                     |
+| --------------- | --------------- | ------------------------------------------------------------------------- |
+| `pro` (default) | `$0.02`/credit  | Google AI Pro; the non-Ultra credit costs.                                |
+| `ultra`         | `$0.008`/credit | Google AI Ultra 20x; Veo Lite/Fast credit costs are halved (10→5, 20→10). |
+
+`costHints.googleFlowPlan` selects the tier. It **defaults to `pro`** when
+omitted, so existing callers get byte-for-byte the same estimate as before this
+field existed (the Pro basis is the deliberate over-estimate, the safe direction
+for a pay-gate):
+
+```ts
+// default (omitted) — Pro basis
+c.estimate({
+  provider: "googleflow",
+  payload: { model: "veo-3.1-fast", prompt: "a cat" },
+}).usd; // → 0.40  (20 credits × $0.02)
+
+// Ultra 20x account
+c.estimate({
+  provider: "googleflow",
+  payload: { model: "veo-3.1-fast", prompt: "a cat" },
+  costHints: { googleFlowPlan: "ultra" },
+}).usd; // → 0.08  (10 credits × $0.008)
+```
+
+Per-model USD by tier (`source.asOf: "2026-07-20"`):
+
+| Model                        | Pro USD                 | Ultra USD               |
+| ---------------------------- | ----------------------- | ----------------------- |
+| `veo-3.1-quality`            | $2.00                   | $0.80                   |
+| `veo-3.1-fast`               | $0.40                   | $0.08                   |
+| `veo-3.1-lite`               | $0.20                   | $0.04                   |
+| `veo-3.1-lite-low-priority`  | $0.00                   | $0.00                   |
+| `omni-flash` (4/6/8/10s)     | $0.30/$0.40/$0.50/$0.60 | $0.12/$0.16/$0.20/$0.24 |
+| `omni-flash` reference-video | $0.80                   | $0.32                   |
+
+Ultra is strictly lower than Pro for every priced model **except**
+`veo-3.1-lite-low-priority`, which is `$0` on both tiers (it is an Ultra-only,
+zero-credit generation).
+
+An **unrecognized** tier falls back to the Pro basis (never `$0`, never an
+under-charge) and adds a warning naming the value:
+
+```ts
+const est = c.estimate({
+  provider: "googleflow",
+  payload: { model: "veo-3.1-fast", prompt: "a cat" },
+  costHints: { googleFlowPlan: "platinum" },
+});
+est.usd; // → 0.40  (Pro over-estimate)
+est.warnings; // → ["googleflow: unknown plan tier 'platinum', using Pro basis"]
+```
+
+Like every `costHints` field, `googleFlowPlan` is **cost-only**: it is read only
+by the local rate table, never merged into `payload`, never sent upstream, and
+never canonicalized or signed — see [Hash and OTP
+guarantee](#hash-and-otp-guarantee) below.
 
 ### Hash and OTP guarantee
 

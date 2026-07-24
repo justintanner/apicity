@@ -66,6 +66,12 @@ export interface PerUnitPricing {
     ) => string | undefined;
   }>;
   rates: Record<string, number>;
+  // Optional cost-only warnings derived from the payload and hints (e.g. an
+  // unrecognized googleflow plan tier that fell back to the Pro basis). Omitted
+  // by every entry that does not need it, so existing entries stay assignable
+  // unchanged; when present, evaluatePerUnit surfaces its return as the estimate
+  // `warnings`. Never affects the price, the payload, or canonicalHash/mintOtp.
+  warn?: (payload: Record<string, unknown>, hints?: CostHints) => string[];
   source: RateSource;
 }
 

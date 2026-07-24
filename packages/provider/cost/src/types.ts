@@ -41,6 +41,16 @@ export interface CostEstimate {
 // breaking change.
 export interface CostHints {
   durationSeconds?: number;
+  // Google Flow plan tier that sets the googleflow credit->USD basis. Omitted
+  // => "pro" (the safe over-estimate default, byte-for-byte the pre-selector
+  // output); "ultra" prices on the Google AI Ultra 20x basis. The (string & {})
+  // member keeps autocomplete for the two known literals while still accepting a
+  // runtime-sourced value: an unrecognized tier warns and falls back to "pro"
+  // rather than being a compile error. Cost-only, like the rest of CostHints:
+  // never merged into payload, never canonicalHash'd, never signed. A future
+  // Gemini list-rate USD source (REQ-004) would land as a second additive field
+  // (e.g. googleFlowRateSource) here, non-breaking.
+  googleFlowPlan?: "pro" | "ultra" | (string & {});
 }
 
 // All provider routes are pure-table lookups. Token-billed providers

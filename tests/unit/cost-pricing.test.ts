@@ -596,6 +596,29 @@ describe("PRICING data", () => {
     }
   });
 
+  // REQ-003 table shape: every googleflow variant exposes both a `pro` and an
+  // `ultra` rate, and the Ultra rate never exceeds the Pro rate — so selecting
+  // Ultra can only lower (or, for the free lite-low-priority, equal) the cost.
+  it("googleflow exposes a pro and ultra rate per variant, ultra <= pro", () => {
+    for (const [model, entry] of Object.entries(PRICING.googleflow)) {
+      expect(entry.kind, model).toBe("perUnit");
+      if (entry.kind !== "perUnit") continue;
+      const proKeys = Object.keys(entry.rates).filter(
+        (k) => k === "pro" || k.endsWith("|pro")
+      );
+      expect(proKeys.length, `${model} pro rates`).toBeGreaterThan(0);
+      for (const proKey of proKeys) {
+        const ultraKey =
+          proKey === "pro" ? "ultra" : proKey.replace(/\|pro$/, "|ultra");
+        expect(entry.rates, `${model} ${ultraKey}`).toHaveProperty(ultraKey);
+        expect(
+          entry.rates[ultraKey],
+          `${model} ${ultraKey} <= ${proKey}`
+        ).toBeLessThanOrEqual(entry.rates[proKey]);
+      }
+    }
+  });
+
   it("per-unit entries have at least one rate", () => {
     for (const [provider, models] of Object.entries(PRICING)) {
       for (const [model, entry] of Object.entries(models)) {

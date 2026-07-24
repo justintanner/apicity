@@ -1079,6 +1079,143 @@ describe("computeEstimate", () => {
         "model 'veo-typo' not found in pricing table for provider 'googleflow'"
       );
     });
+
+    // --- plan-tier selector (costHints.googleFlowPlan) ---
+
+    const priceGoogleflow = (
+      model: string,
+      extra: Record<string, unknown> = {},
+      costHints?: { googleFlowPlan?: string }
+    ) =>
+      computeEstimate({
+        provider: "googleflow" as const,
+        payload: { model, prompt: "a cat", ...extra },
+        ...(costHints ? { costHints } : {}),
+      });
+
+    // AC-1 / REQ-001: every priced entry, with no costHints, returns exactly
+    // the pre-selector Pro-basis USD, an empty warnings list, and the same
+    // rateAsOf. This is the default-parity sweep across all model entries.
+    it("default (no costHints) prices every entry on the Pro basis", () => {
+      const cases: Array<[string, Record<string, unknown>, number]> = [
+        ["veo-3.1-quality", {}, 2],
+        ["veo-3.1-fast", {}, 0.4],
+        ["veo-3.1-lite", {}, 0.2],
+        ["veo-3.1-lite-low-priority", {}, 0],
+        ["omni-flash", { duration: 4 }, 0.3],
+        ["omni-flash", { duration: 6 }, 0.4],
+        ["omni-flash", { duration: 8 }, 0.5],
+        ["omni-flash", { duration: 10 }, 0.6],
+        ["omni-flash", { referenceVideo_1: "https://example.com/in.mp4" }, 0.8],
+      ];
+      for (const [model, extra, expected] of cases) {
+        const result = priceGoogleflow(model, extra);
+        const label = `${model} ${JSON.stringify(extra)}`;
+        expect(result.usd, label).toBe(expected);
+        expect(result.warnings, `${label} warnings`).toEqual([]);
+        expect(result.rateAsOf, `${label} rateAsOf`).toBe("2026-07-20");
+        expect(result.source, `${label} source`).toBe("per-unit-table");
+      }
+    });
+
+    it("an explicit pro tier is byte-for-byte the omitted default", () => {
+      const withHint = priceGoogleflow(
+        "veo-3.1-fast",
+        {},
+        { googleFlowPlan: "pro" }
+      );
+      const withoutHint = priceGoogleflow("veo-3.1-fast");
+      expect(withHint).toEqual(withoutHint);
+      expect(withHint.usd).toBe(0.4);
+      expect(withHint.warnings).toEqual([]);
+    });
+
+    // AC-3 / REQ-003: Ultra returns the documented, lower USD, keeps the same
+    // source / rateAsOf, and emits no warning.
+    it("ultra tier prices on the Ultra basis, strictly below Pro", () => {
+      const cases: Array<[string, Record<string, unknown>, number]> = [
+        ["veo-3.1-quality", {}, 0.8],
+        ["veo-3.1-fast", {}, 0.08],
+        ["veo-3.1-lite", {}, 0.04],
+        ["omni-flash", { duration: 4 }, 0.12],
+        ["omni-flash", { duration: 6 }, 0.16],
+        ["omni-flash", { duration: 8 }, 0.2],
+        ["omni-flash", { duration: 10 }, 0.24],
+        [
+          "omni-flash",
+          { referenceVideo_1: "https://example.com/in.mp4" },
+          0.32,
+        ],
+      ];
+      for (const [model, extra, expectedUltra] of cases) {
+        const ultra = priceGoogleflow(model, extra, {
+          googleFlowPlan: "ultra",
+        });
+        const pro = priceGoogleflow(model, extra);
+        const label = `${model} ${JSON.stringify(extra)}`;
+        expect(ultra.usd, `${label} ultra usd`).toBe(expectedUltra);
+        expect(ultra.usd, `${label} ultra < pro`).toBeLessThan(pro.usd);
+        expect(ultra.breakdown.perUnitUsd, `${label} perUnitUsd`).toBe(
+          expectedUltra
+        );
+        expect(ultra.warnings, `${label} ultra warnings`).toEqual([]);
+        expect(ultra.rateAsOf, `${label} ultra rateAsOf`).toBe("2026-07-20");
+      }
+    });
+
+    it("veo-3.1-lite-low-priority is free on both tiers (Ultra-only edge case)", () => {
+      expect(priceGoogleflow("veo-3.1-lite-low-priority").usd).toBe(0);
+      expect(
+        priceGoogleflow(
+          "veo-3.1-lite-low-priority",
+          {},
+          { googleFlowPlan: "ultra" }
+        ).usd
+      ).toBe(0);
+    });
+
+    // AC-4 / REQ-005: an unrecognized tier falls back to the Pro over-estimate
+    // (never 0, never an under-charge) and warns, naming the value.
+    it("unknown plan tier falls back to Pro and warns naming the value", () => {
+      const result = priceGoogleflow(
+        "veo-3.1-fast",
+        {},
+        { googleFlowPlan: "platinum" }
+      );
+      expect(result.usd).toBe(0.4); // Pro basis: not 0, not the Ultra 0.08
+      expect(result.warnings).toContain(
+        "googleflow: unknown plan tier 'platinum', using Pro basis"
+      );
+    });
+
+    it("unknown plan tier still resolves on the omni-flash cross-product", () => {
+      const result = priceGoogleflow(
+        "omni-flash",
+        { duration: 8 },
+        { googleFlowPlan: "platinum" }
+      );
+      // Pro duration-8, not the zero-USD "no rate for variant" path.
+      expect(result.usd).toBe(0.5);
+      expect(result.warnings).toContain(
+        "googleflow: unknown plan tier 'platinum', using Pro basis"
+      );
+    });
+
+    // AC-2 / REQ-002: the tier is a cost-only side channel. A tier placed in
+    // the payload the estimator would forward is ignored — it prices as the Pro
+    // default, proving googleFlowPlan is read only from costHints.
+    it("reads the tier only from costHints, never from payload", () => {
+      const inPayload = computeEstimate({
+        provider: "googleflow" as const,
+        payload: {
+          model: "veo-3.1-fast",
+          prompt: "a cat",
+          googleFlowPlan: "ultra",
+        },
+      });
+      expect(inPayload.usd).toBe(0.4); // Pro default; payload field ignored
+      expect(inPayload.warnings).toEqual([]);
+    });
   });
 
   describe("free-media-upload", () => {

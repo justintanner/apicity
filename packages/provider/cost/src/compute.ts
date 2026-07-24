@@ -155,7 +155,9 @@ function evaluatePerUnit(
     source: "per-unit-table",
     breakdown: { units, unit: entry.unit, perUnitUsd: perUnit },
     rateAsOf: entry.source.asOf ?? PRICING_AS_OF,
-    warnings: [],
+    // Cost-only warnings from the entry's optional `warn` hook (e.g. googleflow
+    // unknown-plan-tier fallback). Inert for every entry that omits `warn`.
+    warnings: entry.warn?.(payload, hints) ?? [],
   };
 }
 

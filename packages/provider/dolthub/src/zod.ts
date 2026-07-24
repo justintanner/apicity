@@ -289,3 +289,42 @@ export type DoltHubV2SqlWriteRequestInput = DoltHubV2SqlWriteRequest;
 export type DoltHubV2SqlWriteParsedRequest = z.output<
   typeof DoltHubV2SqlWriteRequestSchema
 >;
+
+// ---------------------------------------------------------------------------
+// v2 — pulls
+// ---------------------------------------------------------------------------
+
+// A branch reference in a v2 create-pull body: the database that owns the
+// branch (`{ owner, name }`) plus the branch name within it. Shared by both
+// `from_branch` and `to_branch`; kept snake_case to mirror the v2 wire shape
+// exactly (confirmed from the v2 OpenAPI spec).
+const DoltHubV2PullBranchRefSchema = z.object({
+  database: z.object({
+    owner: z.string().min(1),
+    name: z.string().min(1),
+  }),
+  branch_name: z.string().min(1),
+});
+
+export const DoltHubV2PullCreateRequestSchema = z.object({
+  // Database owner receiving the pull request (URL path segment).
+  owner: z.string().min(1),
+  // Database name receiving the pull request (URL path segment).
+  database: z.string().min(1),
+  // Pull-request title (request body); required by v2.
+  title: z.string().min(1),
+  // Optional free-form description (request body).
+  description: z.string().optional(),
+  // Source branch the pull request merges from (request body `from_branch`).
+  from_branch: DoltHubV2PullBranchRefSchema,
+  // Target branch the pull request merges into (request body `to_branch`).
+  to_branch: DoltHubV2PullBranchRefSchema,
+});
+
+export type DoltHubV2PullCreateRequest = z.input<
+  typeof DoltHubV2PullCreateRequestSchema
+>;
+export type DoltHubV2PullCreateRequestInput = DoltHubV2PullCreateRequest;
+export type DoltHubV2PullCreateParsedRequest = z.output<
+  typeof DoltHubV2PullCreateRequestSchema
+>;

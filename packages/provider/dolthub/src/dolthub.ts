@@ -38,6 +38,8 @@ import {
   DoltHubV2BranchesListResponse,
   DoltHubV2PullsListRequest,
   DoltHubV2PullsListResponse,
+  DoltHubV2PullCreateRequest,
+  DoltHubV2PullCreateResponse,
   DoltHubV2BranchCreateRequest,
   DoltHubV2BranchCreateResponse,
   DoltHubV2DatabaseCreateRequest,
@@ -58,6 +60,7 @@ import {
   DoltHubV2BranchCreateRequestSchema,
   DoltHubV2DatabaseCreateRequestSchema,
   DoltHubV2SqlWriteRequestSchema,
+  DoltHubV2PullCreateRequestSchema,
 } from "./zod";
 
 export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
@@ -652,6 +655,55 @@ export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
     { schema: undefined }
   );
 
+  // sig-ok: semantic DoltHub v2 pulls namespace over dynamic repo URL
+  // POST https://www.dolthub.com/api/v2/databases/{owner}/{database}/pulls
+  // Docs: https://www.dolthub.com/docs/products/dolthub/api/v2/database
+  const pullCreateV2 = Object.assign(
+    async (
+      req: DoltHubV2PullCreateRequest,
+      signal?: AbortSignal
+    ): Promise<DoltHubV2PullCreateResponse> => {
+      const owner = encodeURIComponent(req.owner);
+      const database = encodeURIComponent(req.database);
+      // Only body fields go in the JSON body; owner/database stay in the path.
+      // Each branch reference is rebuilt from explicit typed fields rather than
+      // spreading `req`, so no unexpected key can reach the wire and the body
+      // carries exactly the documented snake_case keys (`from_branch` /
+      // `to_branch`, each `{ database: { owner, name }, branch_name }`).
+      // `description` is omitted entirely when undefined rather than sent null.
+      //
+      // v2 pull creation is synchronous (HTTP 201), so the created pull is
+      // preserved inside the `{ data, meta }` envelope (unlike the async fork /
+      // sql-write operations, which unwrap to an OperationRef).
+      return makeV2EnvelopeRequest(
+        "POST",
+        `/api/v2/databases/${owner}/${database}/pulls`,
+        {
+          title: req.title,
+          ...(req.description !== undefined
+            ? { description: req.description }
+            : {}),
+          from_branch: {
+            database: {
+              owner: req.from_branch.database.owner,
+              name: req.from_branch.database.name,
+            },
+            branch_name: req.from_branch.branch_name,
+          },
+          to_branch: {
+            database: {
+              owner: req.to_branch.database.owner,
+              name: req.to_branch.database.name,
+            },
+            branch_name: req.to_branch.branch_name,
+          },
+        },
+        signal
+      );
+    },
+    { schema: DoltHubV2PullCreateRequestSchema }
+  );
+
   // sig-ok: semantic DoltHub v2 branches namespace over dynamic repo URL
   // POST https://www.dolthub.com/api/v2/databases/{owner}/{database}/branches
   // Docs: https://www.dolthub.com/docs/products/dolthub/api/v2/database
@@ -745,6 +797,7 @@ export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
           },
           pulls: {
             list: pullsListV2,
+            create: pullCreateV2,
           },
           forks: {
             create: forkCreate,

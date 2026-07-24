@@ -23,6 +23,29 @@ describe("dolthub provider structure", () => {
     expect(provider.v1alpha1.user.get).toBeInstanceOf(Function);
   });
 
+  it("should expose the api.v2 databases pulls namespace", () => {
+    const provider = createDoltHub();
+    expect(provider.api).toBeDefined();
+    expect(provider.api.v2).toBeDefined();
+    expect(provider.api.v2.databases).toBeDefined();
+    expect(provider.api.v2.databases.pulls).toBeDefined();
+    // The v2 pulls surface currently exposes the read-only `list` (GET, no
+    // schema) and the mutating `create` (POST, with a zod `.schema`).
+    expect(provider.api.v2.databases.pulls.list).toBeInstanceOf(Function);
+    expect(provider.api.v2.databases.pulls.create).toBeInstanceOf(Function);
+    expect(
+      (provider.api.v2.databases.pulls.list as unknown as { schema?: unknown })
+        .schema
+    ).toBeUndefined();
+    expect(
+      (
+        provider.api.v2.databases.pulls.create as unknown as {
+          schema?: unknown;
+        }
+      ).schema
+    ).toBeDefined();
+  });
+
   it("should throw DoltHubError on HTTP error", async () => {
     const provider = createDoltHub({
       fetch: async () =>

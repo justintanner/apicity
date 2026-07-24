@@ -27,6 +27,8 @@ export type {
   DoltHubV2DatabaseCreateParsedRequest,
   DoltHubV2SqlWriteRequestInput,
   DoltHubV2SqlWriteParsedRequest,
+  DoltHubV2PullCreateRequestInput,
+  DoltHubV2PullCreateParsedRequest,
 } from "./zod";
 
 // ---------------------------------------------------------------------------
@@ -585,8 +587,79 @@ export interface DoltHubV2PullsListMethod {
   ): Promise<DoltHubV2PullsListResponse>;
 }
 
+/**
+ * A branch reference in the v2 pull API: the database that owns the branch
+ * (`{ owner, name }`) plus the branch name within it. Used for both a create
+ * request's `from_branch` / `to_branch` inputs and the resolved branch fields
+ * on the returned pull. Snake_case to mirror the v2 wire shape.
+ */
+export interface DoltHubV2PullBranchRef {
+  /** The database the branch belongs to (`{ owner, name }`). */
+  database: DoltHubV2DatabaseRef;
+  /** The branch name within that database. */
+  branch_name: string;
+}
+
+/**
+ * The fuller single-pull v2 model returned when creating a pull request
+ * (HTTP 201). Unlike the compact `DoltHubV2Pull` list summary, it also carries
+ * the resolved `from_branch` / `to_branch` references — the `DoltHubV2Pull` doc
+ * comment already notes that the list summary and the single-pull shape can
+ * diverge. Snake_case to mirror the v2 wire.
+ */
+export interface DoltHubV2PullDetail {
+  /** Sequential pull-request number, unique within the database. */
+  pull_number: number;
+  /** Pull-request title. */
+  title: string;
+  /** Free-form description; absent when the pull request has none. */
+  description?: string;
+  /** Lifecycle state, e.g. `"open"`, `"closed"`, `"merged"`. */
+  state: string;
+  /** The source branch the pull request merges from. */
+  from_branch: DoltHubV2PullBranchRef;
+  /** The target branch the pull request merges into. */
+  to_branch: DoltHubV2PullBranchRef;
+  /** ISO-8601 time at which the pull request was created. */
+  created_at: string;
+  /** Username of the user who opened the pull request. */
+  creator: string;
+}
+
+export interface DoltHubV2PullCreateRequest {
+  /** Database owner receiving the pull request (URL path segment). */
+  owner: string;
+  /** Database name receiving the pull request (URL path segment). */
+  database: string;
+  /** Pull-request title (request body). */
+  title: string;
+  /** Optional free-form description (request body). */
+  description?: string;
+  /** Source branch the pull request merges from (request body `from_branch`). */
+  from_branch: DoltHubV2PullBranchRef;
+  /** Target branch the pull request merges into (request body `to_branch`). */
+  to_branch: DoltHubV2PullBranchRef;
+}
+
+/**
+ * The v2 create-pull response. Creation is synchronous (HTTP 201): the newly
+ * created pull request is returned directly in the `{ data, meta }` envelope
+ * (unlike the async fork / sql-write operations, which return an
+ * `OperationRef`), using the fuller `DoltHubV2PullDetail` model.
+ */
+export type DoltHubV2PullCreateResponse =
+  DoltHubV2Envelope<DoltHubV2PullDetail>;
+
+export interface DoltHubV2PullCreateMethod {
+  (
+    req: DoltHubV2PullCreateRequest,
+    signal?: AbortSignal
+  ): Promise<DoltHubV2PullCreateResponse>;
+}
+
 export interface DoltHubV2PullsNamespace {
   list: DoltHubV2PullsListMethod;
+  create: DoltHubV2PullCreateMethod;
 }
 
 // ---------------------------------------------------------------------------

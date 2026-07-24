@@ -15,7 +15,7 @@ overrides:
   lodash-es@<=4.17.23: 4.18.0
   glob@<=10.5.0: 13.0.6
   vite@<6.4.3: 6.4.3
-  postcss@<8.5.12: 8.5.12
+  postcss@<8.5.18: 8.5.18
   ip-address@<10.1.1: 10.1.1
   fast-uri: 3.1.4
   hono@<4.12.27: 4.12.27
@@ -1718,8 +1718,8 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
-  postcss@8.5.12:
-    resolution: {integrity: sha512-W62t/Se6rA0Az3DfCL0AqJwXuKwBeYg6nOaIgzP+xZ7N5BFCI7DYi1qs6ygUYT6rvfi6t9k65UMLJC+PHZpDAA==}
+  postcss@8.5.18:
+    resolution: {integrity: sha512-xdB1oSLHbz1vRWgCDalrCqEFTWzFlhqFC5tIHLMOSUIjhm3XXQ1qrFy8S/ESr1JYRRXqM3c1QFiMZUJdUTqyMQ==}
     engines: {node: ^10 || ^12 || >=14}
 
   prelude-ls@1.2.1:
@@ -3436,7 +3436,7 @@ snapshots:
     optionalDependencies:
       fsevents: 2.3.2
 
-  postcss@8.5.12:
+  postcss@8.5.18:
     dependencies:
       nanoid: 3.3.12
       picocolors: 1.1.1
@@ -3769,7 +3769,7 @@ snapshots:
       esbuild: 0.28.1
       fdir: 6.5.0(picomatch@4.0.4)
       picomatch: 4.0.4
-      postcss: 8.5.12
+      postcss: 8.5.18
       rollup: 4.59.0
       tinyglobby: 0.2.17
     optionalDependencies:

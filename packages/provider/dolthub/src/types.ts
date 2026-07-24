@@ -29,6 +29,8 @@ export type {
   DoltHubV2SqlWriteParsedRequest,
   DoltHubV2PullCreateRequestInput,
   DoltHubV2PullCreateParsedRequest,
+  DoltHubV2PullMergeRequestInput,
+  DoltHubV2PullMergeParsedRequest,
 } from "./zod";
 
 // ---------------------------------------------------------------------------
@@ -680,10 +682,36 @@ export interface DoltHubV2PullGetMethod {
   ): Promise<DoltHubV2PullGetResponse>;
 }
 
+export interface DoltHubV2PullMergeRequest {
+  /** Database owner (URL path segment). */
+  owner: string;
+  /** Database name (URL path segment). */
+  database: string;
+  /** Sequential pull-request number to merge (URL path segment `pull_number`). */
+  pullNumber: number;
+}
+
+/**
+ * A v2 pull merge is accepted, not completed: upstream answers `202` with an
+ * operation reference (empty request body, exactly like `v1alpha1.pulls.merge`).
+ * Pass `id` verbatim to `api.v2.operations.get({ id })` and poll until `status`
+ * is the terminal `succeeded` or `failed`; a succeeded `merge` operation echoes
+ * the merged pull in `result` as `{ pull_id }`.
+ */
+export type DoltHubV2PullMergeResponse = DoltHubOperationRef;
+
+export interface DoltHubV2PullMergeMethod {
+  (
+    req: DoltHubV2PullMergeRequest,
+    signal?: AbortSignal
+  ): Promise<DoltHubV2PullMergeResponse>;
+}
+
 export interface DoltHubV2PullsNamespace {
   list: DoltHubV2PullsListMethod;
   create: DoltHubV2PullCreateMethod;
   get: DoltHubV2PullGetMethod;
+  merge: DoltHubV2PullMergeMethod;
 }
 
 // ---------------------------------------------------------------------------

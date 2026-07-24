@@ -29,12 +29,13 @@ describe("dolthub provider structure", () => {
     expect(provider.api.v2).toBeDefined();
     expect(provider.api.v2.databases).toBeDefined();
     expect(provider.api.v2.databases.pulls).toBeDefined();
-    // The v2 pulls surface currently exposes the read-only `list` (GET, no
-    // schema) and `get` (GET, no schema), plus the mutating `create` (POST,
-    // with a zod `.schema`).
+    // The v2 pulls surface exposes the read-only `list` (GET, no schema) and
+    // `get` (GET, no schema), plus the mutating `create` and `merge` (POST,
+    // each with a zod `.schema`).
     expect(provider.api.v2.databases.pulls.list).toBeInstanceOf(Function);
     expect(provider.api.v2.databases.pulls.create).toBeInstanceOf(Function);
     expect(provider.api.v2.databases.pulls.get).toBeInstanceOf(Function);
+    expect(provider.api.v2.databases.pulls.merge).toBeInstanceOf(Function);
     expect(
       (provider.api.v2.databases.pulls.list as unknown as { schema?: unknown })
         .schema
@@ -46,6 +47,13 @@ describe("dolthub provider structure", () => {
     expect(
       (
         provider.api.v2.databases.pulls.create as unknown as {
+          schema?: unknown;
+        }
+      ).schema
+    ).toBeDefined();
+    expect(
+      (
+        provider.api.v2.databases.pulls.merge as unknown as {
           schema?: unknown;
         }
       ).schema

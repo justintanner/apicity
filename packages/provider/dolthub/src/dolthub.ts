@@ -42,6 +42,8 @@ import {
   DoltHubV2PullCreateResponse,
   DoltHubV2PullGetRequest,
   DoltHubV2PullGetResponse,
+  DoltHubV2PullMergeRequest,
+  DoltHubV2PullMergeResponse,
   DoltHubV2BranchCreateRequest,
   DoltHubV2BranchCreateResponse,
   DoltHubV2DatabaseCreateRequest,
@@ -63,6 +65,7 @@ import {
   DoltHubV2DatabaseCreateRequestSchema,
   DoltHubV2SqlWriteRequestSchema,
   DoltHubV2PullCreateRequestSchema,
+  DoltHubV2PullMergeRequestSchema,
 } from "./zod";
 
 export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
@@ -733,6 +736,34 @@ export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
     { schema: undefined }
   );
 
+  // sig-ok: semantic DoltHub v2 pulls namespace over dynamic repo URL
+  // POST https://www.dolthub.com/api/v2/databases/{owner}/{database}/pulls/{pullNumber}/merge
+  // Docs: https://www.dolthub.com/docs/products/dolthub/api/v2/database
+  const pullMergeV2 = Object.assign(
+    async (
+      req: DoltHubV2PullMergeRequest,
+      signal?: AbortSignal
+    ): Promise<DoltHubV2PullMergeResponse> => {
+      const owner = encodeURIComponent(req.owner);
+      const database = encodeURIComponent(req.database);
+      const pullNumber = encodeURIComponent(String(req.pullNumber));
+      // A v2 pull merge is asynchronous: upstream answers `202` with an
+      // OperationRef, so the envelope's `data` is unwrapped exactly like the
+      // sibling async `sql.write` / `forks.create` (not preserved like the
+      // synchronous `branches.create`). The merge body is empty — every
+      // request field is a path segment — so no body is sent, mirroring the
+      // v1alpha1 `pulls.merge`. Callers poll `api.v2.operations.get({ id })`
+      // until `status` reaches the terminal `succeeded` / `failed`.
+      return makeV2Request<DoltHubV2PullMergeResponse>(
+        "POST",
+        `/api/v2/databases/${owner}/${database}/pulls/${pullNumber}/merge`,
+        undefined,
+        signal
+      );
+    },
+    { schema: DoltHubV2PullMergeRequestSchema }
+  );
+
   // sig-ok: semantic DoltHub v2 branches namespace over dynamic repo URL
   // POST https://www.dolthub.com/api/v2/databases/{owner}/{database}/branches
   // Docs: https://www.dolthub.com/docs/products/dolthub/api/v2/database
@@ -828,6 +859,7 @@ export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
             list: pullsListV2,
             create: pullCreateV2,
             get: pullGetV2,
+            merge: pullMergeV2,
           },
           forks: {
             create: forkCreate,

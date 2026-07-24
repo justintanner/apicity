@@ -78,6 +78,11 @@ export type {
   DoltHubV2PullGetRequest,
   DoltHubV2PullGetResponse,
   DoltHubV2PullGetMethod,
+  DoltHubV2PullMergeRequest,
+  DoltHubV2PullMergeRequestInput,
+  DoltHubV2PullMergeParsedRequest,
+  DoltHubV2PullMergeResponse,
+  DoltHubV2PullMergeMethod,
   DoltHubV2BranchCreateRequest,
   DoltHubV2BranchCreateRequestInput,
   DoltHubV2BranchCreateParsedRequest,
@@ -135,4 +140,5 @@ export {
   DoltHubV2DatabaseCreateRequestSchema,
   DoltHubV2SqlWriteRequestSchema,
   DoltHubV2PullCreateRequestSchema,
+  DoltHubV2PullMergeRequestSchema,
 } from "./zod";

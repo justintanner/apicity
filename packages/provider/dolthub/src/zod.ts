@@ -328,3 +328,22 @@ export type DoltHubV2PullCreateRequestInput = DoltHubV2PullCreateRequest;
 export type DoltHubV2PullCreateParsedRequest = z.output<
   typeof DoltHubV2PullCreateRequestSchema
 >;
+
+export const DoltHubV2PullMergeRequestSchema = z.object({
+  // Database owner (URL path segment).
+  owner: z.string().min(1),
+  // Database name (URL path segment).
+  database: z.string().min(1),
+  // Sequential pull-request number to merge (URL path segment `pull_number`).
+  // The v2 merge body is empty, exactly like v1alpha1's merge, so every field
+  // here is a path segment and none reaches the wire body.
+  pullNumber: z.number().int().nonnegative(),
+});
+
+export type DoltHubV2PullMergeRequest = z.input<
+  typeof DoltHubV2PullMergeRequestSchema
+>;
+export type DoltHubV2PullMergeRequestInput = DoltHubV2PullMergeRequest;
+export type DoltHubV2PullMergeParsedRequest = z.output<
+  typeof DoltHubV2PullMergeRequestSchema
+>;

@@ -40,6 +40,8 @@ import {
   DoltHubV2PullsListResponse,
   DoltHubV2PullCreateRequest,
   DoltHubV2PullCreateResponse,
+  DoltHubV2PullGetRequest,
+  DoltHubV2PullGetResponse,
   DoltHubV2BranchCreateRequest,
   DoltHubV2BranchCreateResponse,
   DoltHubV2DatabaseCreateRequest,
@@ -704,6 +706,33 @@ export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
     { schema: DoltHubV2PullCreateRequestSchema }
   );
 
+  // sig-ok: semantic DoltHub v2 pulls namespace over dynamic repo URL
+  // GET https://www.dolthub.com/api/v2/databases/{owner}/{database}/pulls/{pullNumber}
+  // Docs: https://www.dolthub.com/docs/products/dolthub/api/v2/database
+  const pullGetV2 = Object.assign(
+    async (
+      req: DoltHubV2PullGetRequest,
+      signal?: AbortSignal
+    ): Promise<DoltHubV2PullGetResponse> => {
+      const owner = encodeURIComponent(req.owner);
+      const database = encodeURIComponent(req.database);
+      // `pull_number` is a numeric path segment; coerce to string before
+      // encoding so a caller-supplied value can never break the URL.
+      const pullNumber = encodeURIComponent(String(req.pull_number));
+      // A GET carries no body. The single-pull `get` returns the fuller
+      // `DoltHubV2PullDetail` (with structured from_branch/to_branch), so the
+      // `{ data, meta }` envelope is preserved via `makeV2EnvelopeRequest`,
+      // mirroring `pullsListV2`.
+      return makeV2EnvelopeRequest(
+        "GET",
+        `/api/v2/databases/${owner}/${database}/pulls/${pullNumber}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
   // sig-ok: semantic DoltHub v2 branches namespace over dynamic repo URL
   // POST https://www.dolthub.com/api/v2/databases/{owner}/{database}/branches
   // Docs: https://www.dolthub.com/docs/products/dolthub/api/v2/database
@@ -798,6 +827,7 @@ export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
           pulls: {
             list: pullsListV2,
             create: pullCreateV2,
+            get: pullGetV2,
           },
           forks: {
             create: forkCreate,

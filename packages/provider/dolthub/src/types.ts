@@ -602,10 +602,11 @@ export interface DoltHubV2PullBranchRef {
 
 /**
  * The fuller single-pull v2 model returned when creating a pull request
- * (HTTP 201). Unlike the compact `DoltHubV2Pull` list summary, it also carries
- * the resolved `from_branch` / `to_branch` references — the `DoltHubV2Pull` doc
- * comment already notes that the list summary and the single-pull shape can
- * diverge. Snake_case to mirror the v2 wire.
+ * (HTTP 201) and by the pull `get` endpoint. Unlike the compact
+ * `DoltHubV2Pull` list summary, it also carries the resolved `from_branch` /
+ * `to_branch` references — the `DoltHubV2Pull` doc comment already notes that
+ * the list summary and the single-pull shape can diverge. Snake_case to mirror
+ * the v2 wire.
  */
 export interface DoltHubV2PullDetail {
   /** Sequential pull-request number, unique within the database. */
@@ -657,9 +658,32 @@ export interface DoltHubV2PullCreateMethod {
   ): Promise<DoltHubV2PullCreateResponse>;
 }
 
+export interface DoltHubV2PullGetRequest {
+  /** Database owner (URL path segment). */
+  owner: string;
+  /** Database name (URL path segment). */
+  database: string;
+  /** Sequential pull-request number to fetch (URL path segment). */
+  pull_number: number;
+}
+
+/**
+ * The v2 single-pull response. `get` returns the fuller `DoltHubV2PullDetail`
+ * inside the `{ data, meta }` envelope, not the compact list summary.
+ */
+export type DoltHubV2PullGetResponse = DoltHubV2Envelope<DoltHubV2PullDetail>;
+
+export interface DoltHubV2PullGetMethod {
+  (
+    req: DoltHubV2PullGetRequest,
+    signal?: AbortSignal
+  ): Promise<DoltHubV2PullGetResponse>;
+}
+
 export interface DoltHubV2PullsNamespace {
   list: DoltHubV2PullsListMethod;
   create: DoltHubV2PullCreateMethod;
+  get: DoltHubV2PullGetMethod;
 }
 
 // ---------------------------------------------------------------------------

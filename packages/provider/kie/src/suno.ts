@@ -1,5 +1,5 @@
 import { createKieTransport, kieRequest } from "./request";
-import { SunoGenerateRequestSchema } from "./zod";
+import { SunoGenerateRequestSchema, SunoModelAliasSchema } from "./zod";
 import { z } from "zod";
 import type { ApicitySchema } from "./types";
 
@@ -18,7 +18,8 @@ export interface SunoGenerateRequest {
   // SunoModelAliasSchema (zod.ts), so a not-yet-listed Suno version id such as
   // `V6` validates. `string & {}` mirrors that hatch here without collapsing
   // the union, so editors still autocomplete SunoModel. The sibling Suno
-  // request schemas stay closed, so their `model` stays narrow.
+  // request schemas in suno.ts likewise union SunoModelAliasSchema, so their
+  // `model` accepts the same version aliases as zod.ts.
   model: SunoModel | (string & {});
   instrumental: boolean;
   customMode: boolean;
@@ -37,7 +38,7 @@ export interface SunoExtendRequest {
   defaultParamFlag: boolean;
   audioId: string;
   prompt: string;
-  model: SunoModel;
+  model: SunoModel | (string & {});
   callBackUrl: string;
   style?: string;
   title?: string;
@@ -169,7 +170,7 @@ export interface SunoUploadCoverRequest {
   prompt: string;
   customMode: boolean;
   instrumental: boolean;
-  model: SunoModel;
+  model: SunoModel | (string & {});
   callBackUrl: string;
   style?: string;
   title?: string;
@@ -186,7 +187,7 @@ export interface SunoUploadExtendRequest {
   defaultParamFlag: boolean;
   instrumental: boolean;
   continueAt: number;
-  model: SunoModel;
+  model: SunoModel | (string & {});
   callBackUrl: string;
   prompt?: string;
   style?: string;
@@ -216,7 +217,7 @@ export type SunoMashupModel =
 export interface SunoMashupRequest {
   uploadUrlList: [string, string];
   customMode: boolean;
-  model: SunoMashupModel;
+  model: SunoMashupModel | (string & {});
   callBackUrl: string;
   prompt?: string;
   style?: string;
@@ -271,7 +272,7 @@ export type SunoSoundsKey =
 
 export interface SunoSoundsRequest {
   prompt: string;
-  model: SunoSoundsModel;
+  model: SunoSoundsModel | (string & {});
   soundLoop?: boolean;
   soundTempo?: number;
   soundKey?: SunoSoundsKey;
@@ -284,7 +285,7 @@ export interface SunoAddInstrumentalRequest {
   title: string;
   tags: string;
   callBackUrl: string;
-  model: SunoModel;
+  model: SunoModel | (string & {});
   negativeTags?: string;
   vocalGender?: "m" | "f";
   styleWeight?: number;
@@ -299,7 +300,7 @@ export interface SunoAddVocalsRequest {
   style: string;
   negativeTags: string;
   callBackUrl: string;
-  model: SunoModel;
+  model: SunoModel | (string & {});
   vocalGender?: "m" | "f";
   styleWeight?: number;
   weirdnessConstraint?: number;
@@ -461,7 +462,9 @@ const SunoExtendRequestSchema = z.object({
   defaultParamFlag: z.boolean(),
   audioId: z.string().min(1),
   prompt: z.string().min(1),
-  model: z.enum(["V3_5", "V4", "V4_5", "V4_5PLUS", "V4_5ALL", "V5", "V5_5"]),
+  model: z
+    .enum(["V3_5", "V4", "V4_5", "V4_5PLUS", "V4_5ALL", "V5", "V5_5"])
+    .or(SunoModelAliasSchema),
   callBackUrl: z.string().min(1),
   style: z.string().optional(),
   title: z.string().optional(),
@@ -555,7 +558,9 @@ const SunoUploadCoverRequestSchema = z.object({
   prompt: z.string().min(1),
   customMode: z.boolean(),
   instrumental: z.boolean(),
-  model: z.enum(["V3_5", "V4", "V4_5", "V4_5PLUS", "V4_5ALL", "V5", "V5_5"]),
+  model: z
+    .enum(["V3_5", "V4", "V4_5", "V4_5PLUS", "V4_5ALL", "V5", "V5_5"])
+    .or(SunoModelAliasSchema),
   callBackUrl: z.string().min(1),
   style: z.string().optional(),
   title: z.string().optional(),
@@ -572,7 +577,9 @@ const SunoUploadExtendRequestSchema = z.object({
   defaultParamFlag: z.boolean(),
   instrumental: z.boolean(),
   continueAt: z.number(),
-  model: z.enum(["V3_5", "V4", "V4_5", "V4_5PLUS", "V4_5ALL", "V5", "V5_5"]),
+  model: z
+    .enum(["V3_5", "V4", "V4_5", "V4_5PLUS", "V4_5ALL", "V5", "V5_5"])
+    .or(SunoModelAliasSchema),
   callBackUrl: z.string().min(1),
   prompt: z.string().optional(),
   style: z.string().optional(),
@@ -594,7 +601,9 @@ const SunoMidiRequestSchema = z.object({
 const SunoMashupRequestSchema = z.object({
   uploadUrlList: z.tuple([z.string().min(1), z.string().min(1)]),
   customMode: z.boolean(),
-  model: z.enum(["V4", "V4_5", "V4_5PLUS", "V4_5ALL", "V5", "V5_5"]),
+  model: z
+    .enum(["V4", "V4_5", "V4_5PLUS", "V4_5ALL", "V5", "V5_5"])
+    .or(SunoModelAliasSchema),
   callBackUrl: z.string().min(1),
   prompt: z.string().optional(),
   style: z.string().optional(),
@@ -621,7 +630,7 @@ const SunoReplaceSectionRequestSchema = z.object({
 
 const SunoSoundsRequestSchema = z.object({
   prompt: z.string().min(1),
-  model: z.enum(["V5", "V5_5"]),
+  model: z.enum(["V5", "V5_5"]).or(SunoModelAliasSchema),
   soundLoop: z.boolean().optional(),
   soundTempo: z.number().min(1).max(300).optional(),
   soundKey: z
@@ -661,7 +670,9 @@ const SunoAddInstrumentalRequestSchema = z.object({
   title: z.string().min(1),
   tags: z.string().min(1),
   callBackUrl: z.string().min(1),
-  model: z.enum(["V3_5", "V4", "V4_5", "V4_5PLUS", "V4_5ALL", "V5", "V5_5"]),
+  model: z
+    .enum(["V3_5", "V4", "V4_5", "V4_5PLUS", "V4_5ALL", "V5", "V5_5"])
+    .or(SunoModelAliasSchema),
   negativeTags: z.string().optional(),
   vocalGender: z.enum(["m", "f"]).optional(),
   styleWeight: z.number().min(0).max(1).optional(),
@@ -676,7 +687,9 @@ const SunoAddVocalsRequestSchema = z.object({
   style: z.string().min(1),
   negativeTags: z.string().min(1),
   callBackUrl: z.string().min(1),
-  model: z.enum(["V3_5", "V4", "V4_5", "V4_5PLUS", "V4_5ALL", "V5", "V5_5"]),
+  model: z
+    .enum(["V3_5", "V4", "V4_5", "V4_5PLUS", "V4_5ALL", "V5", "V5_5"])
+    .or(SunoModelAliasSchema),
   vocalGender: z.enum(["m", "f"]).optional(),
   styleWeight: z.number().min(0).max(1).optional(),
   weirdnessConstraint: z.number().min(0).max(1).optional(),

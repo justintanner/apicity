@@ -2428,7 +2428,7 @@ export type RunwayRecordDetailResponseSchemaType = z.infer<
 // accept the lowercase `v5`, the hyphenated `V4-5`, the mixed-case `V4_5plus`
 // and even `music_v1`. Anything that is not a Suno version id must be added to
 // the enum explicitly.
-const SunoModelAliasSchema = z
+export const SunoModelAliasSchema = z
   .string()
   .regex(
     /^V\d+(?:_\d+)*(?:PLUS|ALL)?$/,

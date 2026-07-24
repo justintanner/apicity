@@ -309,6 +309,9 @@ export const FalNanoBanana2TextToImageRequestSchema = z.object({
 
 export const FalNanoBanana2EditRequestSchema = z.object({
   prompt: z.string(),
+  // Fal documents no `image_urls` cap (no `maxItems`); leave it unbounded.
+  // The consumer-reported 14 and an earlier `.max(9)` are uncited.
+  // Docs: https://fal.ai/models/fal-ai/nano-banana-2/edit
   image_urls: z.array(z.string()),
   num_images: z.number().int().min(1).max(4).optional(),
   seed: z.number().int().optional(),
@@ -587,6 +590,9 @@ export const FalNanoBananaProTextToImageRequestSchema = z.object({
 
 export const FalNanoBananaProEditRequestSchema = z.object({
   prompt: z.string(),
+  // Fal documents no `image_urls` cap (no `maxItems`); leave it unbounded.
+  // The consumer-reported 14 and an earlier `.max(9)` are uncited.
+  // Docs: https://fal.ai/models/fal-ai/nano-banana-pro/edit
   image_urls: z.array(z.string()),
   num_images: z.number().int().min(1).max(4).optional(),
   seed: z.number().int().optional(),
@@ -617,6 +623,9 @@ export const FalNanoBananaProEditRequestSchema = z.object({
 // Bytedance Seedream v5 Lite (shared image_size)
 // ---------------------------------------------------------------------------
 
+// Fal documents `auto_4K` as an `image_size` preset (not a standalone boolean)
+// on both Seedream 5 Lite surfaces.
+// Docs: https://fal.ai/models/fal-ai/bytedance/seedream/v5/lite/edit
 const FalSeedreamV5LiteImageSizeSchema = z.union([
   z.enum([
     "square_hd",
@@ -627,6 +636,7 @@ const FalSeedreamV5LiteImageSizeSchema = z.union([
     "landscape_16_9",
     "auto_2K",
     "auto_3K",
+    "auto_4K",
   ]),
   z.object({ width: z.number(), height: z.number() }),
 ]);
@@ -638,16 +648,15 @@ const FalSeedreamV5LiteImageSizeSchema = z.union([
 export const FalSeedreamV5LiteEditRequestSchema = z.object({
   prompt: z.string(),
   image_urls: z.array(z.string()).min(1).max(10),
+  // `auto_4K` is an `image_size` preset, not a boolean; see
+  // FalSeedreamV5LiteImageSizeSchema above. `return_byteplus_urls` is
+  // documented only on the text-to-image surface, so it is absent here.
+  // Docs: https://fal.ai/models/fal-ai/bytedance/seedream/v5/lite/edit
   image_size: FalSeedreamV5LiteImageSizeSchema.optional(),
-  auto_4K: z.boolean().optional(),
-  // Fal documents no upper bound for these counts (OQ-3), and Seedream has no
-  // same-family precedent to borrow one from -- the `.max(4)`/`.max(5)` an
-  // earlier revision took from Wan v2.7 / Nano Banana would have rejected valid
-  // payloads on a bound nobody can cite. Note this schema already accepts 10
-  // `image_urls`, so a 4-image ceiling was very likely wrong. `.int().min(1)`
-  // is what REQ-012 actually mandates; add a maximum only with a doc citation.
-  num_images: z.number().int().min(1).optional(),
-  max_images: z.number().int().min(1).optional(),
+  // Fal documents `num_images` and `max_images` as integers in [1, 6].
+  // Docs: https://fal.ai/models/fal-ai/bytedance/seedream/v5/lite/edit
+  num_images: z.number().int().min(1).max(6).optional(),
+  max_images: z.number().int().min(1).max(6).optional(),
   sync_mode: z.boolean().optional(),
   enable_safety_checker: z.boolean().optional(),
 });
@@ -658,12 +667,18 @@ export const FalSeedreamV5LiteEditRequestSchema = z.object({
 
 export const FalSeedreamV5LiteTextToImageRequestSchema = z.object({
   prompt: z.string(),
+  // `auto_4K` is an `image_size` preset, not a standalone boolean; see
+  // FalSeedreamV5LiteImageSizeSchema above.
+  // Docs: https://fal.ai/models/fal-ai/bytedance/seedream/v5/lite/text-to-image
   image_size: FalSeedreamV5LiteImageSizeSchema.optional(),
-  auto_4K: z.boolean().optional(),
-  // No documented upper bound; see the note on
-  // FalSeedreamV5LiteEditRequestSchema above.
-  num_images: z.number().int().min(1).optional(),
-  max_images: z.number().int().min(1).optional(),
+  // Fal documents `return_byteplus_urls` (boolean, default false), on the
+  // text-to-image surface only.
+  // Docs: https://fal.ai/models/fal-ai/bytedance/seedream/v5/lite/text-to-image
+  return_byteplus_urls: z.boolean().optional(),
+  // Fal documents `num_images` and `max_images` as integers in [1, 6].
+  // Docs: https://fal.ai/models/fal-ai/bytedance/seedream/v5/lite/text-to-image
+  num_images: z.number().int().min(1).max(6).optional(),
+  max_images: z.number().int().min(1).max(6).optional(),
   sync_mode: z.boolean().optional(),
   enable_safety_checker: z.boolean().optional(),
 });

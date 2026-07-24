@@ -120,6 +120,7 @@ describe("fal bytedance seedream v5 lite edit integration", () => {
     "landscape_16_9",
     "auto_2K",
     "auto_3K",
+    "auto_4K",
   ])("should accept image_size preset %s", (preset) => {
     const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.bytedance.seedream.v5.lite.edit.schema.safeParse({
@@ -130,14 +131,16 @@ describe("fal bytedance seedream v5 lite edit integration", () => {
     expect(v.success).toBe(true);
   });
 
-  it("should reject image_size auto_4K (not supported upstream)", () => {
+  // Fal documents auto_4K as an image_size preset:
+  // https://fal.ai/models/fal-ai/bytedance/seedream/v5/lite/edit
+  it("should accept image_size auto_4K (documented preset)", () => {
     const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.bytedance.seedream.v5.lite.edit.schema.safeParse({
       prompt: "a cat",
       image_urls: ["https://example.com/cat.png"],
       image_size: "auto_4K",
     });
-    expect(v.success).toBe(false);
+    expect(v.success).toBe(true);
   });
 
   it("should expose schema", () => {

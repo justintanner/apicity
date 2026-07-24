@@ -83,23 +83,35 @@ describe("Fal Zod schema validation", () => {
       expect(result.success).toBe(true);
     });
 
-    it("should accept auto_4K", () => {
+    // Fal documents auto_4K as an image_size preset, not a boolean flag:
+    // https://fal.ai/models/fal-ai/bytedance/seedream/v5/lite/text-to-image
+    it("should accept image_size auto_4K", () => {
       const result = FalSeedreamV5LiteTextToImageRequestSchema.safeParse({
         prompt: "A lighthouse at dusk",
-        auto_4K: true,
+        image_size: "auto_4K",
       });
       expect(result.success).toBe(true);
     });
 
-    it("should reject a non-boolean auto_4K", () => {
+    it("should reject an unknown image_size preset", () => {
       const result = FalSeedreamV5LiteTextToImageRequestSchema.safeParse({
         prompt: "A lighthouse at dusk",
-        auto_4K: "yes",
+        image_size: "auto_8K",
       });
       expect(result.success).toBe(false);
-      expect(result.error?.issues.some((i) => i.path.includes("auto_4K"))).toBe(
-        true
-      );
+      expect(
+        result.error?.issues.some((i) => i.path.includes("image_size"))
+      ).toBe(true);
+    });
+
+    // Fal documents return_byteplus_urls (boolean) on text-to-image only:
+    // https://fal.ai/models/fal-ai/bytedance/seedream/v5/lite/text-to-image
+    it("should carry return_byteplus_urls", () => {
+      const parsed = FalSeedreamV5LiteTextToImageRequestSchema.parse({
+        prompt: "A lighthouse at dusk",
+        return_byteplus_urls: true,
+      });
+      expect(parsed.return_byteplus_urls).toBe(true);
     });
 
     it("should accept an integer num_images", () => {
@@ -121,15 +133,26 @@ describe("Fal Zod schema validation", () => {
       ).toBe(true);
     });
 
-    // Review finding R-1: Fal documents no upper bound for these counts and
-    // Seedream has no same-family precedent, so no maximum is enforced. Pinned
-    // so a borrowed ceiling cannot return without a doc citation.
-    it("should accept num_images above the removed ceiling", () => {
+    // Fal documents num_images/max_images as integers in [1, 6]:
+    // https://fal.ai/models/fal-ai/bytedance/seedream/v5/lite/text-to-image
+    it("accepts counts at the documented max 6", () => {
       const result = FalSeedreamV5LiteTextToImageRequestSchema.safeParse({
         prompt: "A lighthouse at dusk",
-        num_images: 5,
+        num_images: 6,
+        max_images: 6,
       });
       expect(result.success).toBe(true);
+    });
+
+    it("rejects num_images over 6", () => {
+      const result = FalSeedreamV5LiteTextToImageRequestSchema.safeParse({
+        prompt: "A lighthouse at dusk",
+        num_images: 7,
+      });
+      expect(result.success).toBe(false);
+      expect(
+        result.error?.issues.some((i) => i.path.includes("num_images"))
+      ).toBe(true);
     });
 
     it("should reject num_images below the lower bound", () => {
@@ -143,12 +166,15 @@ describe("Fal Zod schema validation", () => {
       ).toBe(true);
     });
 
-    it("should accept max_images above the removed ceiling", () => {
+    it("rejects max_images over 6", () => {
       const result = FalSeedreamV5LiteTextToImageRequestSchema.safeParse({
         prompt: "A lighthouse at dusk",
-        max_images: 6,
+        max_images: 7,
       });
-      expect(result.success).toBe(true);
+      expect(result.success).toBe(false);
+      expect(
+        result.error?.issues.some((i) => i.path.includes("max_images"))
+      ).toBe(true);
     });
 
     it("should reject a non-integer max_images", () => {
@@ -185,13 +211,27 @@ describe("Fal Zod schema validation", () => {
       expect(result.success).toBe(true);
     });
 
-    it("should accept auto_4K", () => {
+    // Fal documents auto_4K as an image_size preset, not a boolean flag:
+    // https://fal.ai/models/fal-ai/bytedance/seedream/v5/lite/edit
+    it("should accept image_size auto_4K", () => {
       const result = FalSeedreamV5LiteEditRequestSchema.safeParse({
         prompt: "Make it rain",
         image_urls,
-        auto_4K: true,
+        image_size: "auto_4K",
       });
       expect(result.success).toBe(true);
+    });
+
+    // return_byteplus_urls is documented on text-to-image only, so the edit
+    // schema does not carry it (unknown keys are stripped, not accepted):
+    // https://fal.ai/models/fal-ai/bytedance/seedream/v5/lite/edit
+    it("should not carry return_byteplus_urls", () => {
+      const parsed = FalSeedreamV5LiteEditRequestSchema.parse({
+        prompt: "Make it rain",
+        image_urls,
+        return_byteplus_urls: true,
+      });
+      expect("return_byteplus_urls" in parsed).toBe(false);
     });
 
     it("should accept an integer num_images", () => {
@@ -215,25 +255,40 @@ describe("Fal Zod schema validation", () => {
       ).toBe(true);
     });
 
-    // Review finding R-1: no documented ceiling; see the note above. This
-    // schema already accepts 10 `image_urls`, so a 4-image output cap was very
-    // likely wrong on its own terms.
-    it("should accept num_images above the removed ceiling", () => {
+    // Fal documents num_images/max_images as integers in [1, 6]:
+    // https://fal.ai/models/fal-ai/bytedance/seedream/v5/lite/edit
+    it("accepts counts at the documented max 6", () => {
       const result = FalSeedreamV5LiteEditRequestSchema.safeParse({
         prompt: "Make it rain",
         image_urls,
-        num_images: 5,
+        num_images: 6,
+        max_images: 6,
       });
       expect(result.success).toBe(true);
     });
 
-    it("should accept max_images above the removed ceiling", () => {
+    it("rejects num_images over 6", () => {
       const result = FalSeedreamV5LiteEditRequestSchema.safeParse({
         prompt: "Make it rain",
         image_urls,
-        max_images: 6,
+        num_images: 7,
       });
-      expect(result.success).toBe(true);
+      expect(result.success).toBe(false);
+      expect(
+        result.error?.issues.some((i) => i.path.includes("num_images"))
+      ).toBe(true);
+    });
+
+    it("rejects max_images over 6", () => {
+      const result = FalSeedreamV5LiteEditRequestSchema.safeParse({
+        prompt: "Make it rain",
+        image_urls,
+        max_images: 7,
+      });
+      expect(result.success).toBe(false);
+      expect(
+        result.error?.issues.some((i) => i.path.includes("max_images"))
+      ).toBe(true);
     });
 
     it("should reject a non-integer max_images", () => {

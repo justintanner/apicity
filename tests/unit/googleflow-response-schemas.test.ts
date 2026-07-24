@@ -24,6 +24,13 @@ import {
   GoogleFlowCharactersCreateResponseSchema,
   GoogleFlowCharactersListResponseSchema,
   GoogleFlowCharactersRetrieveResponseSchema,
+  GoogleFlowVoiceSchema,
+  GoogleFlowVoicesCreateResponseSchema,
+  GoogleFlowVoicesListResponseSchema,
+  GoogleFlowVoicesRetrieveResponseSchema,
+  GoogleFlowAccountsListResponseSchema,
+  GoogleFlowCaptchaProvidersResponseSchema,
+  GoogleFlowCaptchaStatsResponseSchema,
 } from "../../packages/provider/googleflow/src/zod";
 
 // The GF-S1 response primitives DESCRIBE upstream shapes permissively: every
@@ -1589,5 +1596,437 @@ describe("GoogleFlowCharacterVoiceSchema", () => {
       internalVoiceKey: "keep-me",
     }) as Record<string, unknown>;
     expect(parsed.internalVoiceKey).toBe("keep-me");
+  });
+});
+
+// -- Voices + accounts/captcha response family (GF-S10) ----------------------
+// Doc-example literals transcribed from the useapi.net Model blocks (fetched
+// 2026-07-24, curl + Chrome UA): post-google-flow-voices / get-google-flow-
+// voices / get-google-flow-voices-ref / get-google-flow-accounts /
+// get+post-google-flow-accounts-captcha-providers /
+// get-google-flow-accounts-captcha-stats.
+
+// POST /voices 200 OK: the created user voice (audioUrl present).
+const voicesCreateDocBody = {
+  voice: "user:12345-email:6a6f...-voice:d990a2f9-...-mid:d55b6d59-...",
+  source: "user",
+  workflowId: "d990a2f9-...",
+  mediaId: "d55b6d59-...",
+  displayName: "Cheerful Narrator",
+  baseVoice: "Achernar",
+  dialog: "Hello, this is a test voice.",
+  voicePerformance: "Cheerful, energetic delivery",
+  audioUrl:
+    "https://flow-content.google/audio/d55b6d59-...?Expires=...&KeyName=labs-flow-prod-cdn-key&Signature=...",
+};
+
+// GET /voices 200 OK: a system preset (static sampleUrl) and a user voice (no
+// audioUrl on the list surface).
+const voicesListDocBody = {
+  voices: [
+    {
+      voice: "Achernar",
+      source: "system",
+      displayName: "Achernar",
+      sampleUrl:
+        "https://www.gstatic.com/aitestkitchen/voices/samples/Achernar.wav",
+    },
+    {
+      voice: "user:12345-email:6a6f...-voice:d990a2f9-...-mid:d55b6d59-...",
+      source: "user",
+      displayName: "Cheerful Narrator",
+      workflowId: "d990a2f9-...",
+      mediaId: "d55b6d59-...",
+      baseVoice: "Achernar",
+      dialog: "Hello, this is a test voice.",
+      voicePerformance: "Cheerful, energetic delivery",
+      createTime: "2026-06-05T18:25:32.847291Z",
+    },
+  ],
+};
+
+// GET /voices/:ref 200 OK: the two documented single-voice variants.
+const voicesRetrieveSystemBody = {
+  voice: "Achernar",
+  source: "system",
+  displayName: "Achernar",
+  sampleUrl:
+    "https://www.gstatic.com/aitestkitchen/voices/samples/Achernar.wav",
+};
+const voicesRetrieveUserBody = {
+  voice: "user:12345-email:6a6f...-voice:d990a2f9-...-mid:d55b6d59-...",
+  source: "user",
+  displayName: "Cheerful Narrator",
+  workflowId: "d990a2f9-...",
+  mediaId: "d55b6d59-...",
+  baseVoice: "Achernar",
+  dialog: "Hello, this is a test voice.",
+  voicePerformance: "Cheerful, energetic delivery",
+  createTime: "2026-06-05T18:25:32.847291Z",
+  audioUrl:
+    "https://flow-content.google/audio/d55b6d59-...?Expires=...&Signature=...",
+};
+
+describe("GoogleFlowVoiceSchema", () => {
+  it("parses the system-preset variant (sampleUrl, no audio/media) — AC5", () => {
+    expect(
+      GoogleFlowVoiceSchema.safeParse(voicesRetrieveSystemBody).success
+    ).toBe(true);
+  });
+
+  it("parses the user-created variant (audioUrl + workflow/media) — AC5", () => {
+    expect(
+      GoogleFlowVoiceSchema.safeParse(voicesRetrieveUserBody).success
+    ).toBe(true);
+  });
+
+  it("requires voice/source/displayName (a body missing voice fails)", () => {
+    expect(
+      GoogleFlowVoiceSchema.safeParse({ source: "system", displayName: "X" })
+        .success
+    ).toBe(false);
+  });
+
+  it("tolerates a novel source string (open response vocabulary, AC9)", () => {
+    expect(
+      GoogleFlowVoiceSchema.safeParse({
+        voice: "Achernar",
+        source: "future-source",
+        displayName: "Achernar",
+      }).success
+    ).toBe(true);
+  });
+
+  it("preserves an unknown extra field via .passthrough()", () => {
+    const parsed = GoogleFlowVoiceSchema.parse({
+      ...voicesRetrieveSystemBody,
+      internalVoiceKey: "keep-me",
+    }) as Record<string, unknown>;
+    expect(parsed.internalVoiceKey).toBe("keep-me");
+  });
+});
+
+describe("GoogleFlowVoicesCreateResponseSchema", () => {
+  it("parses the [voices] documented create 200 body (user voice)", () => {
+    const result =
+      GoogleFlowVoicesCreateResponseSchema.safeParse(voicesCreateDocBody);
+    expect(result.success).toBe(true);
+    const parsed =
+      GoogleFlowVoicesCreateResponseSchema.parse(voicesCreateDocBody);
+    expect(parsed.voice).toBe(
+      "user:12345-email:6a6f...-voice:d990a2f9-...-mid:d55b6d59-..."
+    );
+    expect(parsed.baseVoice).toBe("Achernar");
+  });
+
+  it("parses a create body with audioUrl absent (transient resolution)", () => {
+    expect(
+      GoogleFlowVoicesCreateResponseSchema.safeParse({
+        voice: "user:1-voice:abc",
+        source: "user",
+        workflowId: "wf-abc",
+        mediaId: "mid-abc",
+        displayName: "Narrator",
+        baseVoice: "Achernar",
+        dialog: "Hi.",
+        voicePerformance: "Calm",
+      }).success
+    ).toBe(true);
+  });
+
+  it("preserves an unknown extra field via .passthrough()", () => {
+    const parsed = GoogleFlowVoicesCreateResponseSchema.parse({
+      ...voicesCreateDocBody,
+      internalTraceId: "gf-voice-1",
+    }) as Record<string, unknown>;
+    expect(parsed.internalTraceId).toBe("gf-voice-1");
+  });
+});
+
+describe("GoogleFlowVoicesListResponseSchema", () => {
+  it("parses the [voices-ls] documented list 200 body (system + user entries)", () => {
+    const result =
+      GoogleFlowVoicesListResponseSchema.safeParse(voicesListDocBody);
+    expect(result.success).toBe(true);
+    const parsed = GoogleFlowVoicesListResponseSchema.parse(voicesListDocBody);
+    expect(parsed.voices).toHaveLength(2);
+    // The system entry carries sampleUrl; the user list entry has no audioUrl.
+    const system = parsed.voices[0] as Record<string, unknown>;
+    expect(system.sampleUrl).toBe(
+      "https://www.gstatic.com/aitestkitchen/voices/samples/Achernar.wav"
+    );
+    const user = parsed.voices[1] as Record<string, unknown>;
+    expect(user.mediaId).toBe("d55b6d59-...");
+    expect(user.audioUrl).toBeUndefined();
+  });
+
+  it("parses an empty voices array (no voices created yet)", () => {
+    expect(
+      GoogleFlowVoicesListResponseSchema.safeParse({ voices: [] }).success
+    ).toBe(true);
+  });
+
+  it("preserves unknown extras via .passthrough() at envelope and entry level", () => {
+    const parsed = GoogleFlowVoicesListResponseSchema.parse({
+      voices: [
+        {
+          voice: "Achernar",
+          source: "system",
+          displayName: "Achernar",
+          extraEntryKey: "keep-me",
+        },
+      ],
+      nextPageToken: "tok-1",
+    }) as unknown as {
+      voices: Record<string, unknown>[];
+      nextPageToken: unknown;
+    };
+    expect(parsed.nextPageToken).toBe("tok-1");
+    expect(parsed.voices[0].extraEntryKey).toBe("keep-me");
+  });
+});
+
+describe("GoogleFlowVoicesRetrieveResponseSchema", () => {
+  it("parses the [voices-get] system voice 200 body", () => {
+    expect(
+      GoogleFlowVoicesRetrieveResponseSchema.safeParse(voicesRetrieveSystemBody)
+        .success
+    ).toBe(true);
+  });
+
+  it("parses the [voices-get] user voice 200 body (audioUrl present)", () => {
+    const parsed = GoogleFlowVoicesRetrieveResponseSchema.parse(
+      voicesRetrieveUserBody
+    ) as Record<string, unknown>;
+    expect(parsed.audioUrl).toBe(
+      "https://flow-content.google/audio/d55b6d59-...?Expires=...&Signature=..."
+    );
+  });
+
+  it("reuses the shared GoogleFlowVoiceSchema object", () => {
+    expect(GoogleFlowVoicesRetrieveResponseSchema).toBe(GoogleFlowVoiceSchema);
+  });
+});
+
+// GET /accounts 200 OK: the documented map keyed by account email.
+const accountsListDocBody = {
+  "a***@gmail.com": {
+    created: "2025-11-09T22:02:04.802Z",
+    health: "OK",
+    nextRefresh: { scheduledFor: "2025-12-01T11:46:01.000Z" },
+    project: {
+      projectId: "a7e08e13-a6ea-4945-9841-cb4147e4f024",
+      projectTitle: "Nov 11 - 02:56",
+    },
+    sessionData: { expires: "2025-12-01T12:46:01.000Z" },
+  },
+  "b***@gmail.com": {
+    created: "2025-11-10T02:56:58.864Z",
+    health: "OK",
+    nextRefresh: { scheduledFor: "2025-12-01T09:13:16.000Z" },
+    project: {
+      projectId: "47050a10-06f4-4469-8ab0-6d294c703508",
+      projectTitle: "Nov 11 - 02:56",
+    },
+    sessionData: { expires: "2025-12-01T10:13:16.000Z" },
+  },
+};
+
+describe("GoogleFlowAccountsListResponseSchema", () => {
+  it("parses the [accounts] documented list 200 body (map keyed by email)", () => {
+    const result =
+      GoogleFlowAccountsListResponseSchema.safeParse(accountsListDocBody);
+    expect(result.success).toBe(true);
+    const parsed =
+      GoogleFlowAccountsListResponseSchema.parse(accountsListDocBody);
+    const entryA = parsed["a***@gmail.com"] as Record<string, unknown>;
+    expect(entryA.health).toBe("OK");
+    const project = entryA.project as Record<string, unknown>;
+    expect(project.projectId).toBe("a7e08e13-a6ea-4945-9841-cb4147e4f024");
+  });
+
+  it("parses a Record<email,{...}> with only `health` present, five fields absent — AC6", () => {
+    const result = GoogleFlowAccountsListResponseSchema.safeParse({
+      "john@gmail.com": { health: "OK" },
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("parses an empty object (no accounts configured)", () => {
+    expect(GoogleFlowAccountsListResponseSchema.safeParse({}).success).toBe(
+      true
+    );
+  });
+
+  it("requires health on each account entry (an entry missing it fails)", () => {
+    expect(
+      GoogleFlowAccountsListResponseSchema.safeParse({
+        "john@gmail.com": { created: "2025-11-09T22:02:04.802Z" },
+      }).success
+    ).toBe(false);
+  });
+
+  it("preserves an unknown extra field via .passthrough()", () => {
+    const parsed = GoogleFlowAccountsListResponseSchema.parse({
+      "john@gmail.com": { health: "OK", futureField: true },
+    });
+    const entry = parsed["john@gmail.com"] as Record<string, unknown>;
+    expect(entry.futureField).toBe(true);
+  });
+});
+
+describe("GoogleFlowCaptchaProvidersResponseSchema", () => {
+  it("parses the [captcha-prov] body with providers configured (masked keys)", () => {
+    expect(
+      GoogleFlowCaptchaProvidersResponseSchema.safeParse({
+        CapSolver: "abc12…",
+        AntiCaptcha: "def34…",
+      }).success
+    ).toBe(true);
+  });
+
+  it("parses the no-providers body (freeCaptchaCredits only)", () => {
+    expect(
+      GoogleFlowCaptchaProvidersResponseSchema.safeParse({
+        freeCaptchaCredits: 300,
+      }).success
+    ).toBe(true);
+  });
+
+  it("parses an empty body (all fields optional)", () => {
+    expect(GoogleFlowCaptchaProvidersResponseSchema.safeParse({}).success).toBe(
+      true
+    );
+  });
+
+  it("preserves an unlisted provider key via .passthrough()", () => {
+    const parsed = GoogleFlowCaptchaProvidersResponseSchema.parse({
+      CapSolver: "abc12…",
+      FutureCaptcha: "zzz99…",
+    }) as Record<string, unknown>;
+    expect(parsed.FutureCaptcha).toBe("zzz99…");
+  });
+});
+
+// GET /accounts/captcha-stats 200 OK: the documented example body.
+const captchaStatsDocBody = {
+  date: "2026-02-03",
+  total: 42,
+  summary: {
+    from: "2026-02-03T00:05:23.000Z",
+    to: "2026-02-03T23:58:47.000Z",
+    time_span: "23 hours 53 minutes",
+    sample_size_by_provider: { CapSolver: 24, AntiCaptcha: 10, EzCaptcha: 8 },
+    success_rate_by_provider: {
+      CapSolver: 73.2,
+      AntiCaptcha: 80.5,
+      EzCaptcha: 68.4,
+    },
+    sample_size_by_tier: { PAYGATE_TIER_TWO: 30, PAYGATE_TIER_ONE: 12 },
+    success_rate_by_tier: { PAYGATE_TIER_TWO: 81.0, PAYGATE_TIER_ONE: 66.7 },
+    sample_size_by_sku: { WS_ULTRA: 22, G1_TIER2: 8, G1_TIER1: 12 },
+    success_rate_by_sku: { WS_ULTRA: 84.1, G1_TIER2: 75.0, G1_TIER1: 66.7 },
+    by_status_code_images: {
+      "200": 69.1,
+      "403": 8.5,
+      "429:PUBLIC_ERROR_UNUSUAL_ACTIVITY_TOO_MUCH_TRAFFIC": 12.3,
+      "429:PUBLIC_ERROR_PER_MODEL_DAILY_QUOTA_REACHED": 4.1,
+      "429:PUBLIC_ERROR_USER_REQUESTS_THROTTLED": 1.0,
+      "429:PUBLIC_ERROR_USER_QUOTA_REACHED": 1.4,
+      "503": 3.6,
+    },
+    by_status_code_videos: {
+      "200": 67.5,
+      "403": 17.6,
+      "429:PUBLIC_ERROR_UNUSUAL_ACTIVITY_TOO_MUCH_TRAFFIC": 8.7,
+      "429:PUBLIC_ERROR_USER_REQUESTS_THROTTLED": 1.0,
+      "429:PUBLIC_ERROR_USER_QUOTA_REACHED": 1.4,
+      "503": 3.8,
+    },
+    avg_captcha_ms: 8500,
+    avg_api_ms: 1200,
+    avg_attempt: 1.2,
+    lookup: {
+      tiers: { PAYGATE_TIER_TWO: "Ultra $199", PAYGATE_TIER_ONE: "Pro" },
+      skus: {
+        WS_ULTRA: "Workspace Ultra",
+        G1_TIER2: "Ultra $199",
+        G1_TIER1: "Pro",
+      },
+    },
+  },
+  data: [
+    {
+      timestamp: "2026-02-03T10:30:00.000Z",
+      jobId: "20260203103000123-user:123-bot:google-flow",
+      provider: "AntiCaptcha",
+      taskId: "abc123-task-id",
+      route: "post-videos",
+      statusText: "OK",
+      pageAction: "VIDEO_GENERATION",
+      error: "",
+      reason: "",
+      tier: "PAYGATE_TIER_TWO",
+      sku: "WS_ULTRA",
+      statusCode: 200,
+      captchaDurationMs: 8500,
+      apiDurationMs: 1200,
+      attemptNumber: 1,
+    },
+  ],
+};
+
+describe("GoogleFlowCaptchaStatsResponseSchema", () => {
+  it("parses the [captcha-stats] documented 200 body (summary + data row)", () => {
+    const result =
+      GoogleFlowCaptchaStatsResponseSchema.safeParse(captchaStatsDocBody);
+    expect(result.success).toBe(true);
+    const parsed =
+      GoogleFlowCaptchaStatsResponseSchema.parse(captchaStatsDocBody);
+    expect(parsed.total).toBe(42);
+    expect(parsed.data).toHaveLength(1);
+    const summary = parsed.summary as Record<string, unknown>;
+    const rateByProvider = summary.success_rate_by_provider as Record<
+      string,
+      number
+    >;
+    expect(rateByProvider.CapSolver).toBe(73.2);
+  });
+
+  it("requires total (a summary-less body without it fails)", () => {
+    expect(
+      GoogleFlowCaptchaStatsResponseSchema.safeParse({ data: [] }).success
+    ).toBe(false);
+  });
+
+  it("parses the anonymized/no-data shape (total + empty data, no summary)", () => {
+    expect(
+      GoogleFlowCaptchaStatsResponseSchema.safeParse({ total: 0, data: [] })
+        .success
+    ).toBe(true);
+  });
+
+  it("tolerates a novel tier/sku string in a data row (open vocabulary, AC9)", () => {
+    const result = GoogleFlowCaptchaStatsResponseSchema.safeParse({
+      total: 1,
+      data: [
+        {
+          timestamp: "2026-02-03T10:30:00.000Z",
+          provider: "AntiCaptcha",
+          tier: "PAYGATE_TIER_FUTURE",
+          sku: "G1_FUTURE",
+          statusCode: 200,
+        },
+      ],
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("preserves an unknown top-level field via .passthrough()", () => {
+    const parsed = GoogleFlowCaptchaStatsResponseSchema.parse({
+      ...captchaStatsDocBody,
+      generatedAt: "2026-07-24T00:00:00Z",
+    }) as Record<string, unknown>;
+    expect(parsed.generatedAt).toBe("2026-07-24T00:00:00Z");
   });
 });

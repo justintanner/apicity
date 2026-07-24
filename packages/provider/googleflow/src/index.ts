@@ -68,6 +68,13 @@ export type {
   GoogleFlowCharactersCreateResponse,
   GoogleFlowCharactersListResponse,
   GoogleFlowCharactersRetrieveResponse,
+  GoogleFlowVoice,
+  GoogleFlowVoicesCreateResponse,
+  GoogleFlowVoicesListResponse,
+  GoogleFlowVoicesRetrieveResponse,
+  GoogleFlowAccountsListResponse,
+  GoogleFlowCaptchaProvidersResponse,
+  GoogleFlowCaptchaStatsResponse,
 } from "./zod";
 
 export {
@@ -116,4 +123,11 @@ export {
   GoogleFlowCharactersCreateResponseSchema,
   GoogleFlowCharactersListResponseSchema,
   GoogleFlowCharactersRetrieveResponseSchema,
+  GoogleFlowVoiceSchema,
+  GoogleFlowVoicesCreateResponseSchema,
+  GoogleFlowVoicesListResponseSchema,
+  GoogleFlowVoicesRetrieveResponseSchema,
+  GoogleFlowAccountsListResponseSchema,
+  GoogleFlowCaptchaProvidersResponseSchema,
+  GoogleFlowCaptchaStatsResponseSchema,
 } from "./zod";

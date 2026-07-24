@@ -64,6 +64,13 @@ export type {
   GoogleFlowCharactersCreateResponse,
   GoogleFlowCharactersListResponse,
   GoogleFlowCharactersRetrieveResponse,
+  GoogleFlowVoice,
+  GoogleFlowVoicesCreateResponse,
+  GoogleFlowVoicesListResponse,
+  GoogleFlowVoicesRetrieveResponse,
+  GoogleFlowAccountsListResponse,
+  GoogleFlowCaptchaProvidersResponse,
+  GoogleFlowCaptchaStatsResponse,
 } from "./zod";
 
 export interface GoogleFlowResponse {

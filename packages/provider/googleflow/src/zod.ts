@@ -1661,6 +1661,231 @@ export const GoogleFlowCharactersRetrieveResponseSchema = z
   })
   .passthrough();
 
+// -- Voices + accounts/captcha response family (GF-S10) ----------------------
+// Typed, permissive (describe-never-restrict) views of the last untyped
+// googleflow response surfaces: the VOICES family (POST /voices create, GET
+// /voices list, GET /voices/:ref retrieve), the ACCOUNTS list (GET /accounts),
+// and the CAPTCHA surfaces (GET/POST /accounts/captcha-providers and
+// GET /accounts/captcha-stats). Every object level is `.passthrough()`; a field
+// is required only where the useapi.net Model block marks it always-present (a
+// `?` in the Model becomes `.optional()` here). These DESCRIBE received data and
+// never guard the wire — the endpoints stay non-validating (they keep returning
+// Promise<GoogleFlowResponse>); the schemas are consumer/MCP metadata only.
+// Shapes confirmed against the useapi.net Model blocks (fetched 2026-07-24,
+// curl + Chrome UA):
+//   [voices]        https://useapi.net/docs/api-google-flow-v1/post-google-flow-voices
+//   [voices-ls]     https://useapi.net/docs/api-google-flow-v1/get-google-flow-voices
+//   [voices-get]    https://useapi.net/docs/api-google-flow-v1/get-google-flow-voices-ref
+//   [accounts]      https://useapi.net/docs/api-google-flow-v1/get-google-flow-accounts
+//   [captcha-prov]  https://useapi.net/docs/api-google-flow-v1/get-google-flow-accounts-captcha-providers
+//                   https://useapi.net/docs/api-google-flow-v1/post-google-flow-accounts-captcha-providers
+//   [captcha-stats] https://useapi.net/docs/api-google-flow-v1/get-google-flow-accounts-captcha-stats
+// No live useapi.net Google Flow account was configured at implementation time
+// (autonomous headless run), so every schema below is pinned straight from the
+// docs and tagged `doc-derived, not yet live-verified`.
+
+// Shared voice object embedded in the voices list/retrieve bodies. The docs
+// describe two variants discriminated by `source`: a SYSTEM preset (carries a
+// static gstatic `sampleUrl`, no workflow/media) and a USER voice (carries
+// `workflowId`/`mediaId`/`baseVoice`, and on retrieve a fresh signed
+// `audioUrl`). Per OQ-3 both variants are modeled as ONE permissive
+// `.passthrough()` object with `sampleUrl` and `audioUrl` both `.optional()`
+// (rather than a z.union) so neither is rejected and an unlisted field survives.
+// The fields present in both variants (`voice`, `source`, `displayName`) stay
+// required; the variant-specific fields are optional. `voice` and `baseVoice`
+// stay open `z.string()` — `voice` is a preset name (e.g. "Achernar") for a
+// system voice but an encoded reference-id for a user voice, and `baseVoice`
+// names a preset — never GoogleFlowVoicePresetSchema. `source` is an open
+// `z.string()` (known values "system" | "user"). Timestamp-like fields
+// (`createTime`) stay `z.string()` with no datetime refinement (OQ-4).
+// [voices-ls]/[voices-get] Model. doc-derived, not yet live-verified.
+export const GoogleFlowVoiceSchema = z
+  .object({
+    voice: z.string(),
+    source: z.string(), // "system" | "user"
+    displayName: z.string(),
+    sampleUrl: z.string().optional(), // system variant: static gstatic asset
+    audioUrl: z.string().optional(), // user variant (retrieve): signed ~6h URL
+    workflowId: z.string().optional(), // user variant
+    mediaId: z.string().optional(), // user variant
+    baseVoice: z.string().optional(), // user variant: base system preset
+    dialog: z.string().optional(),
+    voicePerformance: z.string().optional(),
+    createTime: z.string().optional(),
+  })
+  .passthrough();
+
+// POST /voices 200 body: the created user voice. Per the [voices] Model every
+// field is always-present except `audioUrl` (the signed ~6h playback URL, which
+// is "occasionally absent on transient resolution failure"). `voice` is the
+// encoded reference-id used for referenceAudio_1..5 / character voice / GET
+// /voices/:ref; `source` is always "user" here (open `z.string()`); `baseVoice`
+// names one of the 30 system presets (open `z.string()`).
+// [voices] Model -> 200 OK. doc-derived, not yet live-verified.
+export const GoogleFlowVoicesCreateResponseSchema = z
+  .object({
+    voice: z.string(),
+    source: z.string(), // always "user" on create
+    workflowId: z.string(),
+    mediaId: z.string(),
+    displayName: z.string(),
+    baseVoice: z.string(),
+    dialog: z.string(),
+    voicePerformance: z.string(),
+    audioUrl: z.string().optional(),
+  })
+  .passthrough();
+
+// GET /voices 200 body: `{ voices: [...] }`. Per the [voices-ls] Model the list
+// endpoint is intentionally fast and does NOT resolve `audioUrl` for user voices
+// (call GET /voices/:ref for that); system voices carry their static `sampleUrl`
+// inline. Each entry is the shared voice object; the `voices` array is
+// always-present (empty when no voices exist). Every object level
+// `.passthrough()`.
+// [voices-ls] Model -> 200 OK. doc-derived, not yet live-verified.
+export const GoogleFlowVoicesListResponseSchema = z
+  .object({
+    voices: z.array(GoogleFlowVoiceSchema),
+  })
+  .passthrough();
+
+// GET /voices/:ref 200 body: a single voice resolved by reference-id. A system
+// voice short-circuits to the static `sampleUrl`; a user voice resolves a fresh
+// signed `audioUrl` (~6h TTL, "occasionally absent on transient resolution
+// failure"). Structurally identical to the shared voice object, so it reuses
+// GoogleFlowVoiceSchema (accepting both variants — AC5).
+// [voices-get] Model -> 200 OK. doc-derived, not yet live-verified.
+export const GoogleFlowVoicesRetrieveResponseSchema = GoogleFlowVoiceSchema;
+
+// GET /accounts 200 body: a map of configured accounts keyed by account email
+// (an empty object when none are configured), NOT a fixed-key object — modeled
+// as `z.record`. Per the [accounts] Model each account summary always carries
+// `health` (open `z.string()`: "OK" | "<error message>", so NOT a closed enum),
+// and optionally `error`, `created` (ISO 8601, no datetime refinement — OQ-4),
+// `sessionData`, `project`, and `nextRefresh`. The nested wrapper objects keep
+// their documented always-present fields required and stay `.passthrough()`.
+// [accounts] Model -> 200 OK. doc-derived, not yet live-verified.
+export const GoogleFlowAccountsListResponseSchema = z.record(
+  z.string(),
+  z
+    .object({
+      health: z.string(), // "OK" | "<error message>"
+      error: z.string().optional(),
+      created: z.string().optional(),
+      sessionData: z.object({ expires: z.string() }).passthrough().optional(),
+      project: z
+        .object({
+          projectId: z.string(),
+          projectTitle: z.string(),
+        })
+        .passthrough()
+        .optional(),
+      nextRefresh: z
+        .object({ scheduledFor: z.string() })
+        .passthrough()
+        .optional(),
+    })
+    .passthrough()
+);
+
+// GET and POST /accounts/captcha-providers 200 body. OQ-2: the fetched GET and
+// POST Model blocks are field-identical (both return masked keys for configured
+// providers), so ONE shared schema covers both surfaces. Per the [captcha-prov]
+// Model "all fields are optional": each configured provider echoes a masked API
+// key (omitted when not configured), and `freeCaptchaCredits` appears only when
+// no providers are configured and free credits remain. Provider keys mirror the
+// request schema; `.passthrough()` keeps an unlisted provider from being
+// rejected.
+// [captcha-prov] Model -> 200 OK. doc-derived, not yet live-verified.
+export const GoogleFlowCaptchaProvidersResponseSchema = z
+  .object({
+    CapSolver: z.string().optional(),
+    AntiCaptcha: z.string().optional(),
+    YesCaptcha: z.string().optional(),
+    CapMonster: z.string().optional(),
+    SolveCaptcha: z.string().optional(),
+    "2Captcha": z.string().optional(),
+    EzCaptcha: z.string().optional(),
+    freeCaptchaCredits: z.number().optional(),
+  })
+  .passthrough();
+
+// The `summary` aggregate inside a captcha-stats body (omitted when there is no
+// data). Its scalar/record fields are kept `.optional()` so an evolving
+// analytics payload never rejects — mirroring the GF-S7 jobs-stats block, whose
+// nested counters are optional "so a future counter survives". Provider/tier/sku
+// keys inside the record maps are open (Google extends the tier/sku enums on its
+// own cadence — the docs even note "unknown enums map to themselves"). Every
+// object level `.passthrough()`.
+const GoogleFlowCaptchaStatsSummarySchema = z
+  .object({
+    from: z.string().optional(),
+    to: z.string().optional(),
+    time_span: z.string().optional(),
+    sample_size_by_provider: z.record(z.string(), z.number()).optional(),
+    success_rate_by_provider: z.record(z.string(), z.number()).optional(),
+    sample_size_by_tier: z.record(z.string(), z.number()).optional(),
+    success_rate_by_tier: z.record(z.string(), z.number()).optional(),
+    sample_size_by_sku: z.record(z.string(), z.number()).optional(),
+    success_rate_by_sku: z.record(z.string(), z.number()).optional(),
+    by_status_code_images: z.record(z.string(), z.number()).optional(),
+    by_status_code_videos: z.record(z.string(), z.number()).optional(),
+    avg_captcha_ms: z.number().optional(),
+    avg_api_ms: z.number().optional(),
+    avg_attempt: z.number().optional(),
+    lookup: z
+      .object({
+        tiers: z.record(z.string(), z.string()).optional(),
+        skus: z.record(z.string(), z.string()).optional(),
+      })
+      .passthrough()
+      .optional(),
+  })
+  .passthrough();
+
+// One per-request row inside a captcha-stats `data[]` array. Row fields are kept
+// `.optional()` for the same evolving-telemetry reason as the summary above (the
+// docs note `tier`/`sku` were added later and older rows carry them empty), and
+// the volatile string fields (`provider`, `route`, `statusText`, `pageAction`,
+// `reason`, `tier`, `sku`) stay open `z.string()`. `.passthrough()`.
+const GoogleFlowCaptchaStatsRowSchema = z
+  .object({
+    timestamp: z.string().optional(),
+    jobId: z.string().optional(),
+    provider: z.string().optional(),
+    taskId: z.string().optional(),
+    route: z.string().optional(),
+    statusText: z.string().optional(),
+    pageAction: z.string().optional(),
+    error: z.string().optional(),
+    reason: z.string().optional(),
+    tier: z.string().optional(),
+    sku: z.string().optional(),
+    statusCode: z.number().optional(),
+    captchaDurationMs: z.number().optional(),
+    apiDurationMs: z.number().optional(),
+    attemptNumber: z.number().optional(),
+  })
+  .passthrough();
+
+// GET /accounts/captcha-stats 200 body. Per the [captcha-stats] Model `total`
+// (records returned) and `data` (the per-request rows, an empty array in
+// anonymized/summary-only mode) are always-present; `date`/`limit`/`provider`
+// (the applied filters) and `summary` (the aggregate, omitted when there is no
+// data) are optional. `provider` stays open `z.string()`. Every object level
+// `.passthrough()`.
+// [captcha-stats] Model -> 200 OK. doc-derived, not yet live-verified.
+export const GoogleFlowCaptchaStatsResponseSchema = z
+  .object({
+    date: z.string().optional(),
+    limit: z.number().optional(),
+    provider: z.string().optional(),
+    total: z.number(),
+    summary: GoogleFlowCaptchaStatsSummarySchema.optional(),
+    data: z.array(GoogleFlowCaptchaStatsRowSchema),
+  })
+  .passthrough();
+
 export type GoogleFlowOptions = z.infer<typeof GoogleFlowOptionsSchema>;
 export type GoogleFlowNoRequest = z.input<typeof GoogleFlowNoRequestSchema>;
 export type GoogleFlowEmailRequest = z.input<
@@ -1786,4 +2011,23 @@ export type GoogleFlowCharactersListResponse = z.output<
 >;
 export type GoogleFlowCharactersRetrieveResponse = z.output<
   typeof GoogleFlowCharactersRetrieveResponseSchema
+>;
+export type GoogleFlowVoice = z.output<typeof GoogleFlowVoiceSchema>;
+export type GoogleFlowVoicesCreateResponse = z.output<
+  typeof GoogleFlowVoicesCreateResponseSchema
+>;
+export type GoogleFlowVoicesListResponse = z.output<
+  typeof GoogleFlowVoicesListResponseSchema
+>;
+export type GoogleFlowVoicesRetrieveResponse = z.output<
+  typeof GoogleFlowVoicesRetrieveResponseSchema
+>;
+export type GoogleFlowAccountsListResponse = z.output<
+  typeof GoogleFlowAccountsListResponseSchema
+>;
+export type GoogleFlowCaptchaProvidersResponse = z.output<
+  typeof GoogleFlowCaptchaProvidersResponseSchema
+>;
+export type GoogleFlowCaptchaStatsResponse = z.output<
+  typeof GoogleFlowCaptchaStatsResponseSchema
 >;

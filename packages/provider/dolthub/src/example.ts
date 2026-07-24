@@ -44,6 +44,28 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "cheap",
     "runByDefault": true
   },
+  "POST api.v2.databases.pulls.create": {
+    "source": "dolthub/pulls-create-unauthenticated",
+    "payload": {
+      "title": "apicity-pull-probe",
+      "from_branch": {
+        "database": {
+          "owner": "dolthub",
+          "name": "ip-to-country"
+        },
+        "branch_name": "apicity-branch-probe"
+      },
+      "to_branch": {
+        "database": {
+          "owner": "dolthub",
+          "name": "ip-to-country"
+        },
+        "branch_name": "main"
+      }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v2.databases.sql.write": {
     "source": "dolthub/sql-write-v2-unauthenticated",
     "payload": {

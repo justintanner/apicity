@@ -63,8 +63,8 @@ const EXAMPLES: Record<string, EndpointExample> = {
         "branch_name": "main"
       }
     },
-    "tier": "prohibitive",
-    "runByDefault": false
+    "tier": "cheap",
+    "runByDefault": true
   },
   "POST api.v2.databases.sql.write": {
     "source": "dolthub/sql-write-v2-unauthenticated",

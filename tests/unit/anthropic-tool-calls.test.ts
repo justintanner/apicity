@@ -69,7 +69,7 @@ describe("anthropic tool calls", () => {
     expect(JSON.parse(String(init?.body))).toEqual(messageRequest);
     expect(result.stop_reason).toBe("tool_use");
 
-    const toolUseBlock = (result.content as Array<{ type: string }>).find(
+    const toolUseBlock = result.content.find(
       (block) => block.type === "tool_use"
     );
 

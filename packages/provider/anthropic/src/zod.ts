@@ -87,9 +87,12 @@ export const AnthropicFileBlockSchema = z.object({
   }),
 });
 
-export const AnthropicContentBlockSchema: z.ZodType = z.discriminatedUnion(
-  "type",
-  [
+// Annotated with the explicit `AnthropicContentBlock` union (rather than a bare
+// `z.ZodType`) so the two `z.lazy(() => AnthropicContentBlockSchema)` recursion
+// sites above infer precise blocks instead of `unknown`, and so the exported
+// `AnthropicContentBlock` type below stays a concrete block union.
+export const AnthropicContentBlockSchema: z.ZodType<AnthropicContentBlock> =
+  z.discriminatedUnion("type", [
     AnthropicTextBlockSchema,
     AnthropicImageBlockSchema,
     AnthropicDocumentBlockSchema,
@@ -100,8 +103,7 @@ export const AnthropicContentBlockSchema: z.ZodType = z.discriminatedUnion(
     AnthropicServerToolUseBlockSchema,
     AnthropicServerToolResultBlockSchema,
     AnthropicFileBlockSchema,
-  ]
-);
+  ]);
 
 export const AnthropicMessageSchema = z.object({
   role: z.enum(["user", "assistant"]),
@@ -403,9 +405,15 @@ export type AnthropicDocumentBlock = z.infer<
   typeof AnthropicDocumentBlockSchema
 >;
 export type AnthropicToolUseBlock = z.infer<typeof AnthropicToolUseBlockSchema>;
-export type AnthropicToolResultBlock = z.infer<
-  typeof AnthropicToolResultBlockSchema
->;
+// Hand-written (not `z.infer`) because its `content` recurses into
+// `AnthropicContentBlock` via `z.lazy`; a `z.infer` alias would circularly
+// reference itself. Mirrors `AnthropicToolResultBlockSchema` exactly.
+export interface AnthropicToolResultBlock {
+  type: "tool_result";
+  tool_use_id: string;
+  content?: string | AnthropicContentBlock[];
+  is_error?: boolean;
+}
 export type AnthropicThinkingBlock = z.infer<
   typeof AnthropicThinkingBlockSchema
 >;
@@ -415,11 +423,29 @@ export type AnthropicRedactedThinkingBlock = z.infer<
 export type AnthropicServerToolUseBlock = z.infer<
   typeof AnthropicServerToolUseBlockSchema
 >;
-export type AnthropicServerToolResultBlock = z.infer<
-  typeof AnthropicServerToolResultBlockSchema
->;
+// Hand-written (not `z.infer`) for the same recursion reason as
+// `AnthropicToolResultBlock`. Mirrors `AnthropicServerToolResultBlockSchema`.
+export interface AnthropicServerToolResultBlock {
+  type: "server_tool_result";
+  tool_use_id: string;
+  content: AnthropicContentBlock[];
+}
 export type AnthropicFileBlock = z.infer<typeof AnthropicFileBlockSchema>;
-export type AnthropicContentBlock = z.infer<typeof AnthropicContentBlockSchema>;
+// Hand-written union of the ten block types, rather than
+// `z.infer<typeof AnthropicContentBlockSchema>`: the schema is annotated
+// `z.ZodType<AnthropicContentBlock>`, so a `z.infer` of it would resolve back to
+// `unknown`. Discriminants are unchanged, so the union stays exhaustive.
+export type AnthropicContentBlock =
+  | AnthropicTextBlock
+  | AnthropicImageBlock
+  | AnthropicDocumentBlock
+  | AnthropicToolUseBlock
+  | AnthropicToolResultBlock
+  | AnthropicThinkingBlock
+  | AnthropicRedactedThinkingBlock
+  | AnthropicServerToolUseBlock
+  | AnthropicServerToolResultBlock
+  | AnthropicFileBlock;
 export type AnthropicMessage = z.infer<typeof AnthropicMessageSchema>;
 export type AnthropicToolInputSchema = z.infer<
   typeof AnthropicToolInputSchemaSchema

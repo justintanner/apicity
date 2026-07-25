@@ -76,14 +76,7 @@ function assembleStreamMessage(
 
   for (const event of events) {
     if (event.type === "content_block_start") {
-      const contentBlock = event.content_block as
-        | { type: "text"; text: string }
-        | {
-            type: "tool_use";
-            id: string;
-            name: string;
-            input: Record<string, unknown>;
-          };
+      const contentBlock = event.content_block;
       if (contentBlock.type === "text") {
         textBlocks.set(event.index, contentBlock.text);
       }

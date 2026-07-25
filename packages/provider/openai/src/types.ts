@@ -4,7 +4,7 @@ import type {
   ChatToolCall,
   ChatUsage,
 } from "./chat-fragments-types";
-import type { OpenAiUploadCreateRequest } from "./zod";
+import type { OpenAiUploadCreateRequest, OpenAiResponseReasoning } from "./zod";
 
 // ---------------------------------------------------------------------------
 // Request types — derived from Zod schemas (source of truth in zod.ts)
@@ -503,6 +503,7 @@ export interface OpenAiResponseResponse {
   top_p?: number | null;
   max_output_tokens?: number | null;
   previous_response_id?: string | null;
+  reasoning?: OpenAiResponseReasoning | null;
 }
 
 // Responses API input_items list options
@@ -1290,7 +1291,13 @@ export interface OpenAiPostV1ImagesVariations {
 }
 
 export interface OpenAiPostV1Files {
-  (req: OpenAiFileUploadRequest, signal?: AbortSignal): Promise<OpenAiFile>;
+  // `filename` is a display name callers may carry alongside the Blob; the
+  // runtime derives the multipart filename from the Blob itself, so it is
+  // type-only and intentionally absent from the request schema.
+  (
+    req: OpenAiFileUploadRequest & { filename?: string },
+    signal?: AbortSignal
+  ): Promise<OpenAiFile>;
   schema: z.ZodType<OpenAiFileUploadRequest>;
 }
 

@@ -32,15 +32,11 @@ describe("openai files content download integration", () => {
     // Upload a file first
     const fileContent = JSON.stringify({ test: "content" });
     const blob = new Blob([fileContent], { type: "application/json" });
-    // `filename` is forwarded to the multipart body at runtime but absent
-    // from the declared request type; hoisting the payload out of the call
-    // bypasses excess-property checking only.
-    const uploadRequest = {
+    const created = await provider.post.v1.files({
       file: blob,
       purpose: "batch",
       filename: "content-test.json",
-    } as const;
-    const created = await provider.post.v1.files(uploadRequest);
+    });
     createdFileId = created.id;
 
     // Get content URL

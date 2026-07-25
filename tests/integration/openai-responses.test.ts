@@ -150,11 +150,9 @@ describe("openai responses integration", () => {
     });
     expect(result.id).toBeTruthy();
     expect(result.status).toBe("completed");
-    // `reasoning` is present in the recorded response but absent from the
-    // declared OpenAiResponseResponse type.
-    expect(
-      (result as unknown as { reasoning?: unknown }).reasoning
-    ).toBeDefined();
+    // `reasoning` is present in the recorded response and declared on the
+    // OpenAiResponseResponse type.
+    expect(result.reasoning).toBeDefined();
     const message = result.output.find(
       (item) => item.type === "message"
     ) as OpenAiResponseOutputMessage;

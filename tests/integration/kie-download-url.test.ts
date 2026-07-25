@@ -27,9 +27,10 @@ describe("kie download url", () => {
     // Either way, we verify the schema/endpoint works
     expect([200, 404, 422]).toContain(result.code);
     if (result.code === 200) {
-      expect(
-        (result.data as unknown as { url?: string } | undefined)?.url
-      ).toBeTruthy();
+      // DownloadUrlResponse = KieApiEnvelope<string>: the temporary download
+      // URL is the envelope string `data`, not a nested { url } object.
+      expect(typeof result.data).toBe("string");
+      expect(result.data).toBeTruthy();
       expect(result.msg).toBe("success");
     }
   });

@@ -28,7 +28,7 @@ const dolthub = createDoltHub({ apiKey: process.env.DOLTHUB_API_KEY! });
 
 ## API Reference
 
-19 endpoints across 4 groups. Each method mirrors an upstream URL path.
+23 endpoints across 4 groups. Each method mirrors an upstream URL path.
 
 ### databases
 
@@ -94,6 +94,72 @@ Cost tier: <code>cheap</code>
 
 ```typescript
 const res = await dolthub.api.v2.databases.forks.create({ /* ... */ });
+```
+
+Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>dolthub.api.v2.databases.pulls.create</code></b></summary>
+
+<code>POST https://www.dolthub.com/api/v2/databases/{owner}/{database}/pulls</code>
+
+Cost tier: <code>cheap</code>
+
+[Upstream docs ↗](https://www.dolthub.com/docs/products/dolthub/api/v2/database)
+
+```typescript
+const res = await dolthub.api.v2.databases.pulls.create({ /* ... */ });
+```
+
+Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>dolthub.api.v2.databases.pulls</code></b></summary>
+
+<code>GET https://www.dolthub.com/api/v2/databases/{owner}/{database}/pulls/{pullNumber}</code>
+
+Cost tier: <code>cheap</code>
+
+```typescript
+const res = await dolthub.api.v2.databases.pulls({ /* ... */ });
+```
+
+Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>dolthub.api.v2.databases.pulls.list</code></b></summary>
+
+<code>GET https://www.dolthub.com/api/v2/databases/{owner}/{database}/pulls{query}</code>
+
+Cost tier: <code>cheap</code>
+
+[Upstream docs ↗](https://www.dolthub.com/docs/products/dolthub/api/v2/database)
+
+```typescript
+const res = await dolthub.api.v2.databases.pulls.list({ /* ... */ });
+```
+
+Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>dolthub.api.v2.databases.pulls.merge</code></b></summary>
+
+<code>POST https://www.dolthub.com/api/v2/databases/{owner}/{database}/pulls/{pullNumber}/merge</code>
+
+Cost tier: <code>cheap</code>
+
+[Upstream docs ↗](https://www.dolthub.com/docs/products/dolthub/api/v2/database)
+
+```typescript
+const res = await dolthub.api.v2.databases.pulls.merge({ /* ... */ });
 ```
 
 Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)

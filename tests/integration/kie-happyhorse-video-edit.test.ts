@@ -43,7 +43,6 @@ describe("kie happyhorse/video-edit integration", () => {
 
       const request = {
         model: "happyhorse/video-edit",
-        duration: 5,
         input: {
           prompt: "Restyle the scene to look like a watercolor painting",
           video_url: videoUpload.data!.downloadUrl,
@@ -51,7 +50,7 @@ describe("kie happyhorse/video-edit integration", () => {
           audio_setting: "auto",
           seed: 1764574909,
         },
-      } as unknown as MediaGenerationRequest;
+      } satisfies MediaGenerationRequest;
       const task = await provider.post.api.v1.jobs.createTask(
         request,
         mintKieCreateTaskOtp(request)

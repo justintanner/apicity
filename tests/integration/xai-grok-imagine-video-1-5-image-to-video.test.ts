@@ -77,7 +77,7 @@ describe("xai video generations default model", () => {
 
     const result = await provider.post.v1.videos.generations(
       req,
-      mintXaiOtp(VIDEO_GENERATIONS_DOT_PATH, req) as unknown as AbortSignal
+      mintXaiOtp(VIDEO_GENERATIONS_DOT_PATH, req)
     );
 
     expect(result.request_id).toBe("vid_req_default");
@@ -106,7 +106,7 @@ describe("xai video generations default model", () => {
 
     const result = await provider.post.v1.videos.generations(
       req,
-      mintXaiOtp(VIDEO_GENERATIONS_DOT_PATH, req) as unknown as AbortSignal
+      mintXaiOtp(VIDEO_GENERATIONS_DOT_PATH, req)
     );
 
     expect(result.request_id).toBe("vid_req_explicit");
@@ -137,7 +137,7 @@ describe("xai video generations default model", () => {
 
     const result = await provider.post.v1.videos.generations(
       req,
-      mintXaiOtp(VIDEO_GENERATIONS_DOT_PATH, req) as unknown as AbortSignal
+      mintXaiOtp(VIDEO_GENERATIONS_DOT_PATH, req)
     );
 
     expect(result.request_id).toBe("vid_req_files");
@@ -189,11 +189,11 @@ describe("xai video stored file inputs", () => {
 
     const edit = await provider.post.v1.videos.edits(
       editReq,
-      mintXaiOtp(VIDEO_EDITS_DOT_PATH, editReq) as unknown as AbortSignal
+      mintXaiOtp(VIDEO_EDITS_DOT_PATH, editReq)
     );
     const extension = await provider.post.v1.videos.extensions(
       extendReq,
-      mintXaiOtp(VIDEO_EXTENSIONS_DOT_PATH, extendReq) as unknown as AbortSignal
+      mintXaiOtp(VIDEO_EXTENSIONS_DOT_PATH, extendReq)
     );
 
     expect(edit.request_id).toBe("vid_edit_file");
@@ -255,7 +255,7 @@ describe("xai Grok Imagine Video 1.5 image-to-video helper", () => {
 
     const result = await provider.post.v1.videos.generations.imageToVideo(
       req,
-      mintXaiOtp(DOT_PATH, req) as unknown as AbortSignal
+      mintXaiOtp(DOT_PATH, req)
     );
 
     expect(result).toMatchObject({
@@ -321,7 +321,7 @@ describe("xai Grok Imagine Video 1.5 image-to-video helper", () => {
 
     const result = await provider.post.v1.videos.generations.imageToVideo(
       req,
-      mintXaiOtp(DOT_PATH, req) as unknown as AbortSignal
+      mintXaiOtp(DOT_PATH, req)
     );
 
     expect(result.video.file_output?.file_id).toBe("file_video_123");
@@ -404,7 +404,7 @@ describe("xai Grok Imagine Video 1.5 image-to-video helper", () => {
       await expect(
         provider.post.v1.videos.generations.imageToVideo(
           req,
-          mintXaiOtp(DOT_PATH, req) as unknown as AbortSignal
+          mintXaiOtp(DOT_PATH, req)
         )
       ).rejects.toMatchObject({
         name: "XaiError",

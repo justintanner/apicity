@@ -31,7 +31,7 @@ describe("xai video generation integration", () => {
     };
     const result = await provider.post.v1.videos.generations(
       req,
-      mintXaiOtp("v1.videos.generations", req) as unknown as AbortSignal
+      mintXaiOtp("v1.videos.generations", req)
     );
 
     expect(result.request_id).toBeTruthy();

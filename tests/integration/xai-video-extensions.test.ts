@@ -30,7 +30,7 @@ describe("xai video extensions integration", () => {
     };
     const result = await provider.post.v1.videos.extensions(
       req,
-      mintXaiOtp("v1.videos.extensions", req) as unknown as AbortSignal
+      mintXaiOtp("v1.videos.extensions", req)
     );
 
     expect(result.request_id).toBeTruthy();
@@ -51,7 +51,7 @@ describe("xai video extensions integration", () => {
     };
     const result = await provider.post.v1.videos.extensions(
       req,
-      mintXaiOtp("v1.videos.extensions", req) as unknown as AbortSignal
+      mintXaiOtp("v1.videos.extensions", req)
     );
 
     expect(result.request_id).toBeTruthy();

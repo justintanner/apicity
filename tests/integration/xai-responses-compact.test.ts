@@ -1,8 +1,4 @@
 import { describe, it, expect, afterEach } from "vitest";
-import type {
-  XaiResponseCompactRequest,
-  XaiResponseCompactResponse,
-} from "@apicity/xai";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
 import { createXaiProvider } from "../xai-provider";
 
@@ -16,14 +12,7 @@ describe("xai responses compact API", () => {
   it("should compact a responses input window", async () => {
     ctx = setupPolly("xai/responses-compact");
     const provider = createXaiProvider();
-    // `compact` is attached to the responses endpoint at runtime via
-    // Object.assign but is missing from the declared XaiPostResponsesMethod.
-    const responses = provider.post.v1.responses as unknown as {
-      compact: (
-        req: XaiResponseCompactRequest
-      ) => Promise<XaiResponseCompactResponse>;
-    };
-    const result = await responses.compact({
+    const result = await provider.post.v1.responses.compact({
       model: "grok-4-fast",
       input: [
         { role: "system", content: "You are a concise science tutor." },

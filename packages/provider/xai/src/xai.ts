@@ -376,9 +376,11 @@ export function createXai(opts: XaiOptions): XaiProvider {
   // POST https://api.x.ai/v1/videos/generations
   // Docs: https://docs.x.ai/developers/model-capabilities/video/image-to-video
   async function imageToVideo(
-    req: XaiGrokImagineVideo15ImageToVideoRequest,
-    signal?: AbortSignal
+    req: XaiGrokImagineVideo15ImageToVideoRequest
   ): Promise<XaiGrokImagineVideo15ImageToVideoResponse> {
+    // Paid endpoint (v1.videos.generations.imageToVideo): withPaidGate invokes
+    // this leaf as fn(req), so the caller-facing second argument is the
+    // pay-gate approval, not an AbortSignal.
     if (
       req.model !== undefined &&
       req.model !== XAI_GROK_IMAGINE_VIDEO_1_5_PREVIEW
@@ -426,8 +428,7 @@ export function createXai(opts: XaiOptions): XaiProvider {
     const start = await makeRequest<XaiVideoAsyncResponse>(
       "POST",
       "/videos/generations",
-      generationRequest,
-      signal
+      generationRequest
     );
     let lastStatus: XaiVideoResult | undefined;
 
@@ -435,8 +436,7 @@ export function createXai(opts: XaiOptions): XaiProvider {
       const status = await makeRequest<XaiVideoResult>(
         "GET",
         `/videos/${encodeURIComponent(start.request_id)}`,
-        undefined,
-        signal
+        undefined
       );
       lastStatus = {
         ...status,
@@ -469,7 +469,7 @@ export function createXai(opts: XaiOptions): XaiProvider {
       }
 
       if (poll < maxPolls - 1) {
-        await waitForPollInterval(pollIntervalMs, signal);
+        await waitForPollInterval(pollIntervalMs);
       }
     }
 
@@ -1122,15 +1122,12 @@ export function createXai(opts: XaiOptions): XaiProvider {
               // Docs: https://docs.x.ai/developers/rest-api-reference/inference/images
               generations: Object.assign(
                 async function generations(
-                  req: XaiImageGenerateRequest,
-                  signal?: AbortSignal
+                  req: XaiImageGenerateRequest
                 ): Promise<XaiImageResponse> {
-                  return await makeRequest(
-                    "POST",
-                    "/images/generations",
-                    req,
-                    signal
-                  );
+                  // Paid endpoint: withPaidGate invokes this leaf as fn(req),
+                  // so the caller-facing second argument is the pay-gate
+                  // approval (handled by the wrapper), not an AbortSignal.
+                  return await makeRequest("POST", "/images/generations", req);
                 },
                 {
                   schema: XaiImageGenerateRequestSchema,
@@ -1140,14 +1137,14 @@ export function createXai(opts: XaiOptions): XaiProvider {
               // Docs: https://docs.x.ai/developers/rest-api-reference/inference/images
               edits: Object.assign(
                 async function edits(
-                  req: XaiImageEditRequest,
-                  signal?: AbortSignal
+                  req: XaiImageEditRequest
                 ): Promise<XaiImageResponse> {
+                  // Paid endpoint: withPaidGate invokes this leaf as fn(req);
+                  // the caller-facing second argument is the pay-gate approval.
                   return await makeRequest(
                     "POST",
                     "/images/edits",
-                    normalizeImageEditRequest(req),
-                    signal
+                    normalizeImageEditRequest(req)
                   );
                 },
                 {
@@ -1160,14 +1157,14 @@ export function createXai(opts: XaiOptions): XaiProvider {
               // Docs: https://docs.x.ai/docs/api-reference
               generations: Object.assign(
                 async function generations(
-                  req: XaiVideoGenerateRequest,
-                  signal?: AbortSignal
+                  req: XaiVideoGenerateRequest
                 ): Promise<XaiVideoAsyncResponse> {
+                  // Paid endpoint: withPaidGate invokes this leaf as fn(req);
+                  // the caller-facing second argument is the pay-gate approval.
                   return await makeRequest(
                     "POST",
                     "/videos/generations",
-                    applyVideoGenerationDefaults(req),
-                    signal
+                    applyVideoGenerationDefaults(req)
                   );
                 },
                 {
@@ -1181,14 +1178,14 @@ export function createXai(opts: XaiOptions): XaiProvider {
               // Docs: https://docs.x.ai/docs/api-reference
               edits: Object.assign(
                 async function edits(
-                  req: XaiVideoEditRequest,
-                  signal?: AbortSignal
+                  req: XaiVideoEditRequest
                 ): Promise<XaiVideoAsyncResponse> {
+                  // Paid endpoint: withPaidGate invokes this leaf as fn(req);
+                  // the caller-facing second argument is the pay-gate approval.
                   return await makeRequest(
                     "POST",
                     "/videos/edits",
-                    normalizeVideoEditRequest(req),
-                    signal
+                    normalizeVideoEditRequest(req)
                   );
                 },
                 {
@@ -1199,14 +1196,14 @@ export function createXai(opts: XaiOptions): XaiProvider {
               // Docs: https://docs.x.ai/docs/api-reference
               extensions: Object.assign(
                 async function extensions(
-                  req: XaiVideoExtendRequest,
-                  signal?: AbortSignal
+                  req: XaiVideoExtendRequest
                 ): Promise<XaiVideoAsyncResponse> {
+                  // Paid endpoint: withPaidGate invokes this leaf as fn(req);
+                  // the caller-facing second argument is the pay-gate approval.
                   return await makeRequest(
                     "POST",
                     "/videos/extensions",
-                    normalizeVideoExtendRequest(req),
-                    signal
+                    normalizeVideoExtendRequest(req)
                   );
                 },
                 {

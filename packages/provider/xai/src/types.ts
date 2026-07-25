@@ -1,4 +1,5 @@
 import type { XaiGrokImagineVideo15ImageToVideoRequest } from "./zod";
+import type { PayGateApproval } from "./paygate";
 
 export interface ApicitySchemaIssue {
   path: readonly PropertyKey[];
@@ -592,6 +593,7 @@ export interface XaiResponseUsage {
 
 import type {
   XaiResponseRequest,
+  XaiResponseCompactRequest,
   XaiResponseReasoning,
   XaiResponseTextFormat,
   XaiResponseTool,
@@ -1192,20 +1194,23 @@ interface XaiChatCompletionsMethod {
 interface XaiImageGenerationsMethod {
   (
     req: XaiImageGenerateRequest,
-    signal?: AbortSignal
+    approval?: PayGateApproval
   ): Promise<XaiImageResponse>;
   schema: ApicitySchema<XaiImageGenerateRequest>;
 }
 
 interface XaiImageEditsMethod {
-  (req: XaiImageEditRequest, signal?: AbortSignal): Promise<XaiImageResponse>;
+  (
+    req: XaiImageEditRequest,
+    approval?: PayGateApproval
+  ): Promise<XaiImageResponse>;
   schema: ApicitySchema<XaiImageEditRequest>;
 }
 
 interface XaiVideoGenerationsMethod {
   (
     req: XaiVideoGenerateRequest,
-    signal?: AbortSignal
+    approval?: PayGateApproval
   ): Promise<XaiVideoAsyncResponse>;
   schema: ApicitySchema<XaiVideoGenerateRequest>;
   imageToVideo: XaiGrokImagineVideo15ImageToVideoMethod;
@@ -1214,7 +1219,7 @@ interface XaiVideoGenerationsMethod {
 interface XaiGrokImagineVideo15ImageToVideoMethod {
   (
     req: XaiGrokImagineVideo15ImageToVideoRequest,
-    signal?: AbortSignal
+    approval?: PayGateApproval
   ): Promise<XaiGrokImagineVideo15ImageToVideoResponse>;
   schema: ApicitySchema<XaiGrokImagineVideo15ImageToVideoRequest>;
 }
@@ -1222,7 +1227,7 @@ interface XaiGrokImagineVideo15ImageToVideoMethod {
 interface XaiVideoEditsMethod {
   (
     req: XaiVideoEditRequest,
-    signal?: AbortSignal
+    approval?: PayGateApproval
   ): Promise<XaiVideoAsyncResponse>;
   schema: ApicitySchema<XaiVideoEditRequest>;
 }
@@ -1230,14 +1235,23 @@ interface XaiVideoEditsMethod {
 interface XaiVideoExtensionsMethod {
   (
     req: XaiVideoExtendRequest,
-    signal?: AbortSignal
+    approval?: PayGateApproval
   ): Promise<XaiVideoAsyncResponse>;
   schema: ApicitySchema<XaiVideoExtendRequest>;
+}
+
+interface XaiResponsesCompactMethod {
+  (
+    req: XaiResponseCompactRequest,
+    signal?: AbortSignal
+  ): Promise<XaiResponseCompactResponse>;
+  schema: ApicitySchema<XaiResponseCompactRequest>;
 }
 
 interface XaiPostResponsesMethod {
   (req: XaiResponseRequest, signal?: AbortSignal): Promise<XaiResponseResponse>;
   schema: ApicitySchema<XaiResponseRequest>;
+  compact: XaiResponsesCompactMethod;
 }
 
 interface XaiBillingUsageMethod {

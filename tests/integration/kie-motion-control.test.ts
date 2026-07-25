@@ -38,9 +38,8 @@ describe("kie kling-3.0 motion-control integration", () => {
           mode: "720p",
           character_orientation: "video",
           background_source: "input_video",
-          duration: "5s",
         },
-      } as unknown as MediaGenerationRequest;
+      } satisfies MediaGenerationRequest;
       const task = await provider.post.api.v1.jobs.createTask(
         request,
         mintKieCreateTaskOtp(request)

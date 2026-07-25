@@ -22,9 +22,7 @@ describe("dolthub v2 database create", () => {
     // endpoint's tool input JSON Schema from `.schema`, so attaching a
     // sibling's schema here would ship a wrong tool contract silently.
     const create = provider.api.v2.databases.create;
-    expect((create as unknown as { schema?: unknown }).schema).toBe(
-      DoltHubV2DatabaseCreateRequestSchema
-    );
+    expect(create.schema).toBe(DoltHubV2DatabaseCreateRequestSchema);
   });
 
   it("POSTs the create request to the collection root and preserves the envelope", async () => {

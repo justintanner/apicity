@@ -3,6 +3,10 @@ export { createDoltHub } from "./dolthub";
 export { DoltHubError } from "./types";
 
 export type {
+  ApicitySchema,
+  ApicitySchemaError,
+  ApicitySchemaIssue,
+  ApicitySafeParseResult,
   DoltHubProvider,
   DoltHubOptions,
   DoltHubSqlReadRequest,

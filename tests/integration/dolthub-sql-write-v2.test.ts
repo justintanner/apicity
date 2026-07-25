@@ -25,9 +25,7 @@ describe("dolthub v2 sql write", () => {
     // endpoint's tool input JSON Schema from `.schema`, so attaching a
     // sibling's schema here would ship a wrong tool contract silently.
     const write = provider.api.v2.databases.sql.write;
-    expect((write as unknown as { schema?: unknown }).schema).toBe(
-      DoltHubV2SqlWriteRequestSchema
-    );
+    expect(write.schema).toBe(DoltHubV2SqlWriteRequestSchema);
   });
 
   it("POSTs the write to the sql-writes path with exactly the documented body", async () => {

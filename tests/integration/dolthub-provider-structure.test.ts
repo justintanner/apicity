@@ -44,20 +44,8 @@ describe("dolthub provider structure", () => {
       (provider.api.v2.databases.pulls.get as unknown as { schema?: unknown })
         .schema
     ).toBeUndefined();
-    expect(
-      (
-        provider.api.v2.databases.pulls.create as unknown as {
-          schema?: unknown;
-        }
-      ).schema
-    ).toBeDefined();
-    expect(
-      (
-        provider.api.v2.databases.pulls.merge as unknown as {
-          schema?: unknown;
-        }
-      ).schema
-    ).toBeDefined();
+    expect(provider.api.v2.databases.pulls.create.schema).toBeDefined();
+    expect(provider.api.v2.databases.pulls.merge.schema).toBeDefined();
   });
 
   it("should throw DoltHubError on HTTP error", async () => {

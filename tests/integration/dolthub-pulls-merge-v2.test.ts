@@ -25,9 +25,7 @@ describe("dolthub v2 pulls merge", () => {
     // endpoint's tool input JSON Schema from `.schema`, so attaching a
     // sibling's schema here would ship a wrong tool contract silently.
     const merge = provider.api.v2.databases.pulls.merge;
-    expect((merge as unknown as { schema?: unknown }).schema).toBe(
-      DoltHubV2PullMergeRequestSchema
-    );
+    expect(merge.schema).toBe(DoltHubV2PullMergeRequestSchema);
   });
 
   it("POSTs to the merge path with an empty body and Bearer auth", async () => {

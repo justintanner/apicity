@@ -34,6 +34,37 @@ export type {
 } from "./zod";
 
 // ---------------------------------------------------------------------------
+// Schema metadata
+// ---------------------------------------------------------------------------
+
+/**
+ * Structural view of the zod request schema a POST method attaches as `.schema`
+ * via `Object.assign`. The concrete runtime value is the provider's zod schema
+ * (exported from `zod.ts`); the public method types advertise this decoupled
+ * shape — mirroring the `@apicity/kie` convention — so consumers can
+ * `.safeParse` / `.parse` a request without depending on the zod runtime types.
+ */
+export interface ApicitySchemaIssue {
+  path: readonly PropertyKey[];
+  message: string;
+  code?: string;
+}
+
+export interface ApicitySchemaError {
+  issues: readonly ApicitySchemaIssue[];
+}
+
+export type ApicitySafeParseResult<T> =
+  | { success: true; data: T }
+  | { success: false; error: ApicitySchemaError };
+
+export interface ApicitySchema<T = unknown> {
+  parse(data: unknown): T;
+  safeParse(data: unknown): ApicitySafeParseResult<T>;
+  description?: string;
+}
+
+// ---------------------------------------------------------------------------
 // Error class
 // ---------------------------------------------------------------------------
 
@@ -537,6 +568,8 @@ export interface DoltHubV2BranchCreateMethod {
     req: DoltHubV2BranchCreateRequest,
     signal?: AbortSignal
   ): Promise<DoltHubV2BranchCreateResponse>;
+  /** Zod request schema attached at runtime via `Object.assign`. */
+  schema: ApicitySchema<DoltHubV2BranchCreateRequest>;
 }
 
 export interface DoltHubV2BranchesNamespace {
@@ -658,6 +691,8 @@ export interface DoltHubV2PullCreateMethod {
     req: DoltHubV2PullCreateRequest,
     signal?: AbortSignal
   ): Promise<DoltHubV2PullCreateResponse>;
+  /** Zod request schema attached at runtime via `Object.assign`. */
+  schema: ApicitySchema<DoltHubV2PullCreateRequest>;
 }
 
 export interface DoltHubV2PullGetRequest {
@@ -705,6 +740,8 @@ export interface DoltHubV2PullMergeMethod {
     req: DoltHubV2PullMergeRequest,
     signal?: AbortSignal
   ): Promise<DoltHubV2PullMergeResponse>;
+  /** Zod request schema attached at runtime via `Object.assign`. */
+  schema: ApicitySchema<DoltHubV2PullMergeRequest>;
 }
 
 export interface DoltHubV2PullsNamespace {
@@ -784,6 +821,8 @@ export interface DoltHubV2DatabaseCreateMethod {
     req: DoltHubV2DatabaseCreateRequest,
     signal?: AbortSignal
   ): Promise<DoltHubV2DatabaseCreateResponse>;
+  /** Zod request schema attached at runtime via `Object.assign`. */
+  schema: ApicitySchema<DoltHubV2DatabaseCreateRequest>;
 }
 
 export interface DoltHubV2DatabasesNamespace {
@@ -889,6 +928,8 @@ export interface DoltHubV2SqlWriteMethod {
     req: DoltHubV2SqlWriteRequest,
     signal?: AbortSignal
   ): Promise<DoltHubV2SqlWriteResponse>;
+  /** Zod request schema attached at runtime via `Object.assign`. */
+  schema: ApicitySchema<DoltHubV2SqlWriteRequest>;
 }
 
 export interface DoltHubV2SqlNamespace {

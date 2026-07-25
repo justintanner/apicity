@@ -99,6 +99,28 @@ function parseArgs(argv) {
   return auditLevel;
 }
 
+/**
+ * Result shape consumed by {@link installedPackages}. Only the fields the
+ * function reads are declared, so a test can inject a small honest fake
+ * without satisfying the full `spawnSync` overload set. `spawnSync`'s richer
+ * `SpawnSyncReturns` remains assignable to this shape.
+ *
+ * @typedef {object} PnpmListResult
+ * @property {Error} [error]
+ * @property {number | null} status
+ * @property {string} stdout
+ * @property {string} stderr
+ */
+
+/**
+ * Collect resolved dependency versions from the `pnpm list` inventory. The
+ * command runner is injectable for testing and typed by the fields this
+ * function reads, not the full `spawnSync` overload set; `spawnSync` (the
+ * default) remains assignable to it.
+ *
+ * @param {(command: string, args: readonly string[], options: import("node:child_process").SpawnSyncOptionsWithStringEncoding) => PnpmListResult} [runCommand]
+ * @returns {Record<string, string[]>}
+ */
 export function installedPackages(runCommand = spawnSync) {
   const result = runCommand(
     "pnpm",

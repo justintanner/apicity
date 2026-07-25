@@ -80,7 +80,7 @@ describe("kie grok-imagine video integration", () => {
           extend_at: 0,
           extend_times: "6",
         },
-      } as unknown as MediaGenerationRequest;
+      } satisfies MediaGenerationRequest;
       const extend = await provider.post.api.v1.jobs.createTask(
         request,
         mintKieCreateTaskOtp(request)

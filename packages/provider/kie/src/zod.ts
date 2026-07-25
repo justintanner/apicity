@@ -920,10 +920,14 @@ export const GrokVideo15PreviewRequestSchema = z.object({
 export const GrokVideoExtendRequestSchema = z.object({
   model: z.literal("grok-imagine/extend"),
   callBackUrl: z.string().optional(),
+  // Top-level cost hint naming the source video's resolution (recording sends
+  // "480p"); reuses the closed Grok Imagine resolution vocabulary.
+  resolution: GrokImagineResolutionSchema.optional(),
   input: z.object({
     task_id: z.string().min(1).max(100),
     prompt: z.string().min(1).max(5000),
-    extend_at: z.string(),
+    // Extend position in seconds; the recording sends the integer 0.
+    extend_at: z.number().int().min(0),
     extend_times: GrokImagineDurationSchema,
   }),
 });

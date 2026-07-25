@@ -7517,6 +7517,7 @@ export interface ElevenLabsV1Namespace {
   similarVoices: ElevenLabsSimilarVoicesMethod;
   soundGeneration: ElevenLabsSoundGenerationMethod;
   audioIsolation: ElevenLabsAudioIsolationMethod;
+  audioNative: ElevenLabsAudioNativeMethod;
   forcedAlignment: ElevenLabsForcedAlignmentMethod;
   music: ElevenLabsMusicMethod;
   speechEngine: ElevenLabsSpeechEngineNamespace;
@@ -7659,6 +7660,7 @@ export interface ElevenLabsPostV1Namespace {
   pronunciationDictionaries: ElevenLabsPostPronunciationDictionariesNamespace;
   soundGeneration: ElevenLabsSoundGenerationMethod;
   audioIsolation: ElevenLabsAudioIsolationMethod;
+  audioNative: ElevenLabsAudioNativeMethod;
   forcedAlignment: ElevenLabsForcedAlignmentMethod;
   music: ElevenLabsMusicMethod;
   speechEngine: {
@@ -7996,6 +7998,9 @@ export interface ElevenLabsGetV1Namespace {
     history: {
       list: ElevenLabsAudioIsolationHistoryListMethod;
     };
+  };
+  audioNative: {
+    settings: ElevenLabsAudioNativeProjectSettingsMethod;
   };
   speechEngine: {
     list: ElevenLabsListSpeechEnginesMethod;

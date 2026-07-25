@@ -1,17 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import {
-  createElevenLabs,
-  ElevenLabsError,
-  type ElevenLabsAudioNativeMethod,
-} from "@apicity/elevenlabs";
-
-// `audioNative` is attached to `v1` at runtime (audio area factory) but the
-// declared `ElevenLabsV1Namespace` omits it; reach it via a structural cast.
-function audioNativeOf(provider: { v1: unknown }): ElevenLabsAudioNativeMethod {
-  return (provider.v1 as { audioNative: ElevenLabsAudioNativeMethod })
-    .audioNative;
-}
+import { createElevenLabs, ElevenLabsError } from "@apicity/elevenlabs";
 
 function readArticle(): Blob {
   const html =
@@ -34,7 +23,7 @@ describe("elevenlabs v1.audioNative", () => {
       apiKey: process.env.ELEVENLABS_API_KEY ?? "elevenlabs-test-key",
     });
 
-    const audioNative = audioNativeOf(provider);
+    const audioNative = provider.v1.audioNative;
     const project = await audioNative({
       name: "Apicity Audio Native Test",
       file: readArticle(),
@@ -70,7 +59,7 @@ describe("elevenlabs v1.audioNative", () => {
     // given source URL. With no such project it returns a 404 — exercising the
     // request path and surfacing the API contract via ElevenLabsError.
     await expect(
-      audioNativeOf(provider).content.fromUrl({
+      provider.v1.audioNative.content.fromUrl({
         url: "https://elevenlabs.io/blog",
         title: "Apicity Audio Native URL",
         author: "Apicity",

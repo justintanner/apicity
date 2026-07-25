@@ -1,10 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import {
-  createFireworks,
-  FireworksError,
-  type FireworksValidateUploadRequest,
-} from "@apicity/fireworks";
+import { createFireworks, FireworksError } from "@apicity/fireworks";
 import {
   FireworksEmptySchema,
   FireworksValidateUploadRequestSchema,
@@ -54,12 +50,12 @@ describe("fireworks models download endpoint and validate upload", () => {
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
 
-      // `readMask` is sent as a query param at runtime but is absent from the
-      // declared (all-optional) request type, which rejects it outright.
+      // `readMask` is an optional request field sent as a query param at
+      // runtime and declared on the request type.
       const err = await provider.inference.v1.accounts.models
         .validateUpload(accountId, modelId, {
           readMask: "status,errors",
-        } as unknown as FireworksValidateUploadRequest)
+        })
         .catch((e: unknown) => e);
 
       expect(err).toBeInstanceOf(FireworksError);

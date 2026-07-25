@@ -372,6 +372,7 @@ export const FireworksKontextRequestSchema = z.object({
   webhook_secret: z.string().nullable().optional(),
   prompt_upsampling: z.boolean().optional(),
   safety_tolerance: z.number().optional(),
+  stream: z.boolean().optional(),
 });
 
 export const FireworksGetResultRequestSchema = z.object({
@@ -413,6 +414,7 @@ export const FireworksValidateUploadRequestSchema = z.object({
   skipHfConfigValidation: z.boolean().optional(),
   trustRemoteCode: z.boolean().optional(),
   configOnly: z.boolean().optional(),
+  readMask: z.string().optional(),
 });
 
 // ---------------------------------------------------------------------------

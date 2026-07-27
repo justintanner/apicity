@@ -24,6 +24,18 @@ export type {
   CountTokensRequestInput,
   CountTokensParsedRequest,
   KimiCodingOptions,
+  OpenAiChatTextPart,
+  OpenAiChatImageUrlPart,
+  OpenAiChatContentPart,
+  OpenAiChatMessageContent,
+  OpenAiChatToolCall,
+  OpenAiChatMessage,
+  OpenAiToolFunction,
+  OpenAiTool,
+  OpenAiToolChoice,
+  OpenAiChatCompletionRequest,
+  OpenAiChatCompletionRequestInput,
+  OpenAiChatCompletionParsedRequest,
 } from "./zod";
 
 // ---------------------------------------------------------------------------
@@ -107,11 +119,82 @@ export interface CountTokensResponse {
   input_tokens: number;
 }
 
+// Usage object on OpenAI chat completions (raw API shape)
+export interface OpenAiChatUsage {
+  prompt_tokens: number;
+  completion_tokens: number;
+  total_tokens: number;
+}
+
+// Assistant message inside an OpenAI chat completion choice
+export interface OpenAiChatCompletionMessage {
+  role: string;
+  content: string | null;
+  reasoning_content?: string;
+  tool_calls?: OpenAiChatToolCall[];
+}
+
+export interface OpenAiChatCompletionChoice {
+  index: number;
+  message: OpenAiChatCompletionMessage;
+  finish_reason: string;
+}
+
+// Raw OpenAI chat completion response
+export interface OpenAiChatCompletion {
+  id: string;
+  object: "chat.completion";
+  created: number;
+  model: string;
+  choices: OpenAiChatCompletionChoice[];
+  usage?: OpenAiChatUsage;
+}
+
+// Tool call delta inside a streaming chunk (partial, reassembles by index)
+export interface OpenAiChatToolCallDelta {
+  index: number;
+  id?: string;
+  type?: "function";
+  function?: {
+    name?: string;
+    arguments?: string;
+  };
+}
+
+// Delta inside an OpenAI streaming chunk choice
+export interface OpenAiChatCompletionDelta {
+  role?: string;
+  content?: string;
+  reasoning_content?: string;
+  tool_calls?: OpenAiChatToolCallDelta[];
+}
+
+export interface OpenAiChatCompletionChunkChoice {
+  index: number;
+  delta: OpenAiChatCompletionDelta;
+  finish_reason: string | null;
+}
+
+// Raw OpenAI chat completion streaming chunk
+export interface OpenAiChatCompletionChunk {
+  id: string;
+  object: "chat.completion.chunk";
+  created: number;
+  model: string;
+  choices: OpenAiChatCompletionChunkChoice[];
+  usage?: OpenAiChatUsage;
+}
+
 // ---------------------------------------------------------------------------
 // Method interface types (endpoint shapes with .schema)
 // ---------------------------------------------------------------------------
 
-import type { ChatRequest, EmbeddingRequest, CountTokensRequest } from "./zod";
+import type {
+  ChatRequest,
+  EmbeddingRequest,
+  CountTokensRequest,
+  OpenAiChatToolCall,
+} from "./zod";
 
 interface KimiCodingStreamMethod {
   (req: ChatRequest, signal?: AbortSignal): AsyncIterable<AnthropicStreamEvent>;

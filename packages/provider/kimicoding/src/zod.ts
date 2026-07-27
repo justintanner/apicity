@@ -98,6 +98,77 @@ export const CountTokensRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// OpenAI-compatible chat completions
+// ---------------------------------------------------------------------------
+
+export const OpenAiChatTextPartSchema = z.object({
+  type: z.literal("text"),
+  text: z.string(),
+});
+
+export const OpenAiChatImageUrlPartSchema = z.object({
+  type: z.literal("image_url"),
+  image_url: z.object({
+    url: z.string(),
+    detail: z.enum(["auto", "low", "high"]).optional(),
+  }),
+});
+
+export const OpenAiChatContentPartSchema = z.discriminatedUnion("type", [
+  OpenAiChatTextPartSchema,
+  OpenAiChatImageUrlPartSchema,
+]);
+
+export const OpenAiChatToolCallSchema = z.object({
+  id: z.string(),
+  type: z.literal("function"),
+  function: z.object({
+    name: z.string(),
+    arguments: z.string(),
+  }),
+});
+
+export const OpenAiChatMessageSchema = z.object({
+  role: z.enum(["system", "user", "assistant", "tool"]),
+  content: z.union([z.string(), z.array(OpenAiChatContentPartSchema)]),
+  tool_calls: z.array(OpenAiChatToolCallSchema).optional(),
+  tool_call_id: z.string().optional(),
+  name: z.string().optional(),
+});
+
+export const OpenAiToolFunctionSchema = z.object({
+  name: z.string(),
+  description: z.string().optional(),
+  parameters: z.record(z.string(), z.unknown()).optional(),
+});
+
+export const OpenAiToolSchema = z.object({
+  type: z.literal("function"),
+  function: OpenAiToolFunctionSchema,
+});
+
+export const OpenAiToolChoiceSchema = z.union([
+  z.enum(["auto", "none", "required"]),
+  z.object({
+    type: z.literal("function"),
+    function: z.object({ name: z.string() }),
+  }),
+]);
+
+export const OpenAiChatCompletionRequestSchema = z.object({
+  model: z.string(),
+  messages: z.array(OpenAiChatMessageSchema),
+  temperature: z.number().optional(),
+  top_p: z.number().optional(),
+  max_tokens: z.number().int().positive().optional(),
+  stop: z.union([z.string(), z.array(z.string())]).optional(),
+  stream: z.boolean().optional(),
+  tools: z.array(OpenAiToolSchema).optional(),
+  tool_choice: OpenAiToolChoiceSchema.optional(),
+  reasoning_effort: z.string().optional(),
+});
+
+// ---------------------------------------------------------------------------
 // Options
 // ---------------------------------------------------------------------------
 
@@ -138,3 +209,21 @@ export type CountTokensParsedRequest = z.output<
   typeof CountTokensRequestSchema
 >;
 export type KimiCodingOptions = z.infer<typeof KimiCodingOptionsSchema>;
+export type OpenAiChatTextPart = z.infer<typeof OpenAiChatTextPartSchema>;
+export type OpenAiChatImageUrlPart = z.infer<
+  typeof OpenAiChatImageUrlPartSchema
+>;
+export type OpenAiChatContentPart = z.infer<typeof OpenAiChatContentPartSchema>;
+export type OpenAiChatMessageContent = string | OpenAiChatContentPart[];
+export type OpenAiChatToolCall = z.infer<typeof OpenAiChatToolCallSchema>;
+export type OpenAiChatMessage = z.infer<typeof OpenAiChatMessageSchema>;
+export type OpenAiToolFunction = z.infer<typeof OpenAiToolFunctionSchema>;
+export type OpenAiTool = z.infer<typeof OpenAiToolSchema>;
+export type OpenAiToolChoice = z.infer<typeof OpenAiToolChoiceSchema>;
+export type OpenAiChatCompletionRequest = z.input<
+  typeof OpenAiChatCompletionRequestSchema
+>;
+export type OpenAiChatCompletionRequestInput = OpenAiChatCompletionRequest;
+export type OpenAiChatCompletionParsedRequest = z.output<
+  typeof OpenAiChatCompletionRequestSchema
+>;

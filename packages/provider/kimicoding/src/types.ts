@@ -252,6 +252,40 @@ export interface OpenAiChatCompletionChunk {
 }
 
 // ---------------------------------------------------------------------------
+// Model catalog and reasoning effort
+// ---------------------------------------------------------------------------
+
+/**
+ * Kimi Code model catalog, per the official model documentation:
+ * https://www.kimi.com/code/docs/en/kimi-code/models.html
+ *
+ * Reasoning effort defaults to "high"; "none" (or omitting the field)
+ * disables thinking; unknown values are rejected by the upstream API with
+ * HTTP 400.
+ *
+ * Multimodal constraints: all four models accept image inputs; video inputs
+ * are supported on every model except "k3-256k".
+ */
+export const KIMI_CODING_MODELS = [
+  "k3",
+  "k3-256k",
+  "kimi-for-coding",
+  "kimi-for-coding-highspeed",
+] as const;
+
+/** Model ID derived from {@link KIMI_CODING_MODELS}. */
+export type KimiCodingModelId = (typeof KIMI_CODING_MODELS)[number];
+
+/**
+ * Reasoning-effort levels accepted by Kimi Code, per
+ * https://www.kimi.com/code/docs/en/kimi-code/models.html
+ *
+ * Defaults to "high"; "none" (or omitting the field) disables thinking;
+ * unknown values yield an upstream HTTP 400.
+ */
+export const KIMI_CODING_REASONING_EFFORTS = ["low", "high", "max"] as const;
+
+// ---------------------------------------------------------------------------
 // Method interface types (endpoint shapes with .schema)
 // ---------------------------------------------------------------------------
 

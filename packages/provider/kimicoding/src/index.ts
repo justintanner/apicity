@@ -7,6 +7,8 @@ export {
 
 export { KimiCodingError } from "./types";
 
+export { KIMI_CODING_MODELS, KIMI_CODING_REASONING_EFFORTS } from "./types";
+
 export {
   withRetry,
   withFallback,
@@ -69,6 +71,7 @@ export type {
   MessageContent,
   Role,
   KimiCodingModel,
+  KimiCodingModelId,
   KimiCodingModelListResponse,
   OpenAiChatTextPart,
   OpenAiChatImageUrlPart,

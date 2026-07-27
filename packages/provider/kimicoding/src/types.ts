@@ -193,6 +193,7 @@ import type {
   ChatRequest,
   EmbeddingRequest,
   CountTokensRequest,
+  OpenAiChatCompletionRequest,
   OpenAiChatToolCall,
 } from "./zod";
 
@@ -216,6 +217,22 @@ interface KimiCodingCountTokensMethod {
   schema: z.ZodType<CountTokensRequest>;
 }
 
+interface KimiCodingChatCompletionsMethod {
+  (
+    req: OpenAiChatCompletionRequest,
+    signal?: AbortSignal
+  ): Promise<OpenAiChatCompletion>;
+  schema: z.ZodType<OpenAiChatCompletionRequest>;
+}
+
+interface KimiCodingChatCompletionsStreamMethod {
+  (
+    req: OpenAiChatCompletionRequest,
+    signal?: AbortSignal
+  ): AsyncIterable<OpenAiChatCompletionChunk>;
+  schema: z.ZodType<OpenAiChatCompletionRequest>;
+}
+
 interface KimiCodingGetV1 {
   models(signal?: AbortSignal): Promise<KimiCodingModelListResponse>;
 }
@@ -224,10 +241,12 @@ interface KimiCodingPostV1 {
   messages: KimiCodingMessagesMethod;
   embeddings: KimiCodingEmbeddingsMethod;
   countTokens: KimiCodingCountTokensMethod;
+  chat: { completions: KimiCodingChatCompletionsMethod };
 }
 
 interface KimiCodingPostStreamV1 {
   messages: KimiCodingStreamMethod;
+  chat: { completions: KimiCodingChatCompletionsStreamMethod };
 }
 
 export interface Provider {

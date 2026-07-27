@@ -14,6 +14,23 @@ bd close <id>         # Complete work
 bd dolt push          # Push beads data to remote
 ```
 
+## Dolt Sync Recovery
+
+**Symptom:** `bd dolt pull` fails with `Error 1105: cannot merge with uncommitted changes` after a bd schema migration.
+
+**Invariant:** the `ignored_schema_migrations` bookkeeping table must stay UNTRACKED and listed in `dolt_ignore`. `dolt_ignore` follows git-ignore semantics: it exempts only untracked tables from Dolt's merge preflight. A tracked-but-dirty bookkeeping table blocks every pull.
+
+**Validated recovery** (the only supported procedure — it preserves all bookkeeping rows in the working set):
+
+```sql
+CALL DOLT_RM('--cached','ignored_schema_migrations');
+CALL DOLT_COMMIT('-m','untrack ignored_schema_migrations');
+```
+
+NEVER `dolt add -f` / force-commit the table: that re-tracks it and re-creates the hazard on the next migration.
+
+**Verification:** run `scripts/check-bd-dolt-sync.sh` for the repeatable scratch + live check.
+
 ## Non-Interactive Shell Commands
 
 **ALWAYS use non-interactive flags** with file operations to avoid hanging on confirmation prompts.

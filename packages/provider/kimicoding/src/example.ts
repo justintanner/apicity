@@ -15,6 +15,21 @@ export interface EndpointExample {
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
+  "POST coding.v1.chat.completions": {
+    "source": "kimicoding/openai-chat-basic",
+    "payload": {
+      "model": "k3-256k",
+      "messages": [
+        {
+          "role": "user",
+          "content": "What is 17 * 23? Think briefly, then answer with just the number."
+        }
+      ],
+      "reasoning_effort": "low"
+    },
+    "tier": "expensive",
+    "runByDefault": false
+  },
   "POST coding.v1.embeddings": {
     "source": "kimicoding/embeddings-hello",
     "payload": {
@@ -25,17 +40,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "runByDefault": false
   },
   "POST coding.v1.messages": {
-    "source": "kimicoding/chat-hi",
+    "source": "kimicoding/messages-rate-limit",
     "payload": {
-      "model": "k2p5",
-      "max_tokens": 32768,
+      "model": "k3-256k",
+      "max_tokens": 256,
       "messages": [
         {
           "role": "user",
           "content": "hi"
         }
-      ],
-      "temperature": 0
+      ]
     },
     "tier": "expensive",
     "runByDefault": false

@@ -57,6 +57,21 @@ export function createKimiCoding(opts: KimiCodingOptions): KimiCodingProvider {
   const baseURL = opts.baseURL ?? "https://api.kimi.com/coding/";
   const timeout = opts.timeout ?? 30000;
 
+  // Dual Base URL support (REQ-005): the transport joins
+  // `${baseUrl}${path}` with no separator handling, and every request
+  // path below starts with `v1/`. For the OpenAI-compatible Base URL
+  // (pathname ends in `/v1`), hand the transport `trimmed + "/"` and
+  // drop the `v1/` prefix from request paths so absolute upstream URLs
+  // keep a single `v1` segment with no duplication and no missing
+  // separator. Any other base passes through unchanged (legacy behavior:
+  // the base is expected to end with `/` and paths keep their `v1/`
+  // prefix), so default `https://api.kimi.com/coding/` handling stays
+  // byte-identical.
+  const trimmed = baseURL.replace(/\/+$/, "");
+  const openAIBase = new URL(trimmed).pathname.endsWith("/v1");
+  const transportBaseUrl = openAIBase ? `${trimmed}/` : baseURL;
+  const pathPrefix = openAIBase ? "" : "v1/";
+
   function buildHeaders(): Record<string, string> {
     return {
       Authorization: `Bearer ${opts.apiKey}`,
@@ -65,7 +80,7 @@ export function createKimiCoding(opts: KimiCodingOptions): KimiCodingProvider {
   }
 
   const transport = createTransport({
-    baseUrl: baseURL,
+    baseUrl: transportBaseUrl,
     timeoutMs: timeout,
     fetchImpl: opts.fetch,
     defaultHeaders: buildHeaders,
@@ -95,7 +110,7 @@ export function createKimiCoding(opts: KimiCodingOptions): KimiCodingProvider {
     req: ChatRequest,
     signal?: AbortSignal
   ): AsyncIterable<AnthropicStreamEvent> {
-    const res = await transport.raw("v1/messages", {
+    const res = await transport.raw(`${pathPrefix}messages`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(req),
@@ -122,9 +137,13 @@ export function createKimiCoding(opts: KimiCodingOptions): KimiCodingProvider {
     req: ChatRequest,
     signal?: AbortSignal
   ): Promise<AnthropicMessage> {
-    return await transport.postJson<AnthropicMessage>("v1/messages", req, {
-      signal,
-    });
+    return await transport.postJson<AnthropicMessage>(
+      `${pathPrefix}messages`,
+      req,
+      {
+        signal,
+      }
+    );
   }
 
   // POST https://api.kimi.com/coding/v1/embeddings
@@ -133,9 +152,13 @@ export function createKimiCoding(opts: KimiCodingOptions): KimiCodingProvider {
     req: EmbeddingRequest,
     signal?: AbortSignal
   ): Promise<EmbeddingResponse> {
-    return await transport.postJson<EmbeddingResponse>("v1/embeddings", req, {
-      signal,
-    });
+    return await transport.postJson<EmbeddingResponse>(
+      `${pathPrefix}embeddings`,
+      req,
+      {
+        signal,
+      }
+    );
   }
 
   // sig-ok: ergonomic name (URL is /tokens/count)
@@ -146,7 +169,7 @@ export function createKimiCoding(opts: KimiCodingOptions): KimiCodingProvider {
     signal?: AbortSignal
   ): Promise<CountTokensResponse> {
     return await transport.postJson<CountTokensResponse>(
-      "v1/tokens/count",
+      `${pathPrefix}tokens/count`,
       req,
       { signal }
     );
@@ -174,7 +197,7 @@ export function createKimiCoding(opts: KimiCodingOptions): KimiCodingProvider {
     signal?: AbortSignal
   ): Promise<KimiCodingModelListResponse> {
     return await makeGetRequest<KimiCodingModelListResponse>(
-      "v1/models",
+      `${pathPrefix}models`,
       signal
     );
   }

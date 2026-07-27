@@ -11,7 +11,13 @@ export type {
   ImageSource,
   TextContentBlock,
   ImageContentBlock,
+  ToolUseContentBlock,
+  ToolResultContentBlock,
   ContentBlock,
+  SystemPrompt,
+  Tool,
+  ToolChoice,
+  ThinkingConfig,
   MessageContent,
   ChatMessage,
   ChatRequest,
@@ -43,11 +49,42 @@ export type {
 // ---------------------------------------------------------------------------
 
 // Raw Anthropic content block in response
-export interface AnthropicContentBlock {
-  type: "text" | "thinking";
-  text?: string;
-  thinking?: string;
+export interface AnthropicTextContentBlock {
+  type: "text";
+  text: string;
 }
+
+export interface ThinkingContentBlock {
+  type: "thinking";
+  thinking: string;
+  signature?: string;
+}
+
+export interface AnthropicRedactedThinkingContentBlock {
+  type: "redacted_thinking";
+  data: string;
+}
+
+export interface AnthropicToolUseContentBlock {
+  type: "tool_use";
+  id: string;
+  name: string;
+  input: Record<string, unknown>;
+}
+
+export interface AnthropicToolResultContentBlock {
+  type: "tool_result";
+  tool_use_id: string;
+  content: string | Array<TextContentBlock | ImageContentBlock>;
+  is_error?: boolean;
+}
+
+export type AnthropicContentBlock =
+  | AnthropicTextContentBlock
+  | ThinkingContentBlock
+  | AnthropicRedactedThinkingContentBlock
+  | AnthropicToolUseContentBlock
+  | AnthropicToolResultContentBlock;
 
 // Raw Anthropic Messages API response
 export interface AnthropicMessage {
@@ -63,14 +100,42 @@ export interface AnthropicMessage {
   };
 }
 
+// Documented Anthropic SSE event types
+export type AnthropicStreamEventType =
+  | "message_start"
+  | "content_block_start"
+  | "content_block_delta"
+  | "content_block_stop"
+  | "message_delta"
+  | "message_stop"
+  | "ping"
+  | "error";
+
+// Documented Anthropic SSE delta types (content_block_delta payloads)
+export type AnthropicStreamDeltaType =
+  | "text_delta"
+  | "thinking_delta"
+  | "input_json_delta"
+  | "signature_delta";
+
+// Payload of an Anthropic SSE "error" event
+export interface AnthropicStreamError {
+  type: string;
+  message: string;
+}
+
 // Raw Anthropic SSE event
 export interface AnthropicStreamEvent {
-  type: string;
+  type: AnthropicStreamEventType;
   index?: number;
   delta?: {
-    type?: string;
+    type?: AnthropicStreamDeltaType;
     text?: string;
-    stop_reason?: string;
+    thinking?: string;
+    partial_json?: string;
+    signature?: string;
+    stop_reason?: string | null;
+    stop_sequence?: string | null;
   };
   content_block?: AnthropicContentBlock;
   message?: AnthropicMessage;
@@ -78,6 +143,7 @@ export interface AnthropicStreamEvent {
     input_tokens?: number;
     output_tokens?: number;
   };
+  error?: AnthropicStreamError;
 }
 
 // Models API types
@@ -195,6 +261,8 @@ import type {
   CountTokensRequest,
   OpenAiChatCompletionRequest,
   OpenAiChatToolCall,
+  TextContentBlock,
+  ImageContentBlock,
 } from "./zod";
 
 interface KimiCodingStreamMethod {

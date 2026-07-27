@@ -30,9 +30,28 @@ export const ImageContentBlockSchema = z.object({
   source: ImageSourceSchema,
 });
 
+export const ToolUseContentBlockSchema = z.object({
+  type: z.literal("tool_use"),
+  id: z.string(),
+  name: z.string(),
+  input: z.record(z.string(), z.unknown()),
+});
+
+export const ToolResultContentBlockSchema = z.object({
+  type: z.literal("tool_result"),
+  tool_use_id: z.string(),
+  content: z.union([
+    z.string(),
+    z.array(z.union([TextContentBlockSchema, ImageContentBlockSchema])),
+  ]),
+  is_error: z.boolean().optional(),
+});
+
 export const ContentBlockSchema = z.discriminatedUnion("type", [
   TextContentBlockSchema,
   ImageContentBlockSchema,
+  ToolUseContentBlockSchema,
+  ToolResultContentBlockSchema,
 ]);
 
 export const ChatMessageSchema = z.object({
@@ -44,15 +63,41 @@ export const ChatMessageSchema = z.object({
 // Chat / Messages
 // ---------------------------------------------------------------------------
 
+export const SystemPromptSchema = z.union([
+  z.string(),
+  z.array(TextContentBlockSchema),
+]);
+
+export const ToolSchema = z.object({
+  name: z.string(),
+  description: z.string().optional(),
+  input_schema: z.record(z.string(), z.unknown()),
+});
+
+export const ToolChoiceSchema = z.discriminatedUnion("type", [
+  z.object({ type: z.literal("auto") }),
+  z.object({ type: z.literal("any") }),
+  z.object({ type: z.literal("tool"), name: z.string() }),
+  z.object({ type: z.literal("none") }),
+]);
+
+export const ThinkingConfigSchema = z.object({
+  type: z.enum(["enabled", "disabled"]),
+  budget_tokens: z.number().int().positive().optional(),
+});
+
 export const ChatRequestSchema = z.object({
   model: z.string(),
   messages: z.array(ChatMessageSchema),
   max_tokens: z.number().int().positive(),
-  system: z.string().optional(),
+  system: SystemPromptSchema.optional(),
   temperature: z.number().optional(),
   top_p: z.number().optional(),
   stop_sequences: z.array(z.string()).optional(),
   stream: z.boolean().optional(),
+  tools: z.array(ToolSchema).optional(),
+  tool_choice: ToolChoiceSchema.optional(),
+  thinking: ThinkingConfigSchema.optional(),
 });
 
 // ---------------------------------------------------------------------------
@@ -193,7 +238,15 @@ export type UrlImageSource = z.infer<typeof UrlImageSourceSchema>;
 export type ImageSource = z.infer<typeof ImageSourceSchema>;
 export type TextContentBlock = z.infer<typeof TextContentBlockSchema>;
 export type ImageContentBlock = z.infer<typeof ImageContentBlockSchema>;
+export type ToolUseContentBlock = z.infer<typeof ToolUseContentBlockSchema>;
+export type ToolResultContentBlock = z.infer<
+  typeof ToolResultContentBlockSchema
+>;
 export type ContentBlock = z.infer<typeof ContentBlockSchema>;
+export type SystemPrompt = z.infer<typeof SystemPromptSchema>;
+export type Tool = z.infer<typeof ToolSchema>;
+export type ToolChoice = z.infer<typeof ToolChoiceSchema>;
+export type ThinkingConfig = z.infer<typeof ThinkingConfigSchema>;
 export type MessageContent = string | ContentBlock[];
 export type ChatMessage = z.infer<typeof ChatMessageSchema>;
 export type Role = ChatMessage["role"];

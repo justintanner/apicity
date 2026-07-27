@@ -47,37 +47,34 @@ Two consequences:
 
 Untrack the table on **all** sync ends. Never force-add and commit it.
 
-1. Snapshot the rows (untracked temp table):
+1. Primary recovery: run the shipped guard in fix mode on each sync end:
 
-   ```sql
-   CREATE TABLE ism_repair_backup AS SELECT * FROM ignored_schema_migrations;
+   ```bash
+   scripts/check-beads-dolt-ignore.sh --fix
    ```
 
-2. Untrack and commit the untrack:
+   The guard detects any `dolt_ignore`d table that is tracked at HEAD and
+   untracks it with `DOLT_RM --cached`, which succeeds even when the table
+   is dirty — the exact post-migration state that blocks pulls, where plain
+   `DOLT_RM` refuses with "unstaged changes".
+
+2. Manual SQL fallback (what the guard runs), when the script is
+   unavailable:
 
    ```sql
-   CALL DOLT_RM('ignored_schema_migrations');
+   CALL DOLT_RM('--cached', 'ignored_schema_migrations');
    CALL DOLT_COMMIT('-m', 'untrack session-local ignored_schema_migrations');
    ```
 
-   `DOLT_RM` also drops the working-set table; the backup preserves the
-   data.
+   `--cached` untracks without dropping the working-set table, so the
+   bookkeeping rows survive untouched and no backup table is needed. bd's
+   `dolt_ignore` entry keeps the table untracked afterwards.
 
-3. Recreate the table untracked and drop the backup:
-
-   ```sql
-   CREATE TABLE ignored_schema_migrations AS SELECT * FROM ism_repair_backup;
-   DROP TABLE ism_repair_backup;
-   ```
-
-   bd's `dolt_ignore` entry keeps the recreated table untracked, and the
-   bookkeeping rows remain queryable.
-
-4. Propagate the untrack commit to the Dolt remote (`refs/dolt/data`) via
+3. Propagate the untrack commit to the Dolt remote (`refs/dolt/data`) via
    `bd dolt push` so remote HEAD also stops tracking the table. This
    prevents the "stomped by merge" variant.
 
-5. Check every other database that syncs the same remote. If any of them
+4. Check every other database that syncs the same remote. If any of them
    still tracks the table, repeat the repair there **before** it pushes,
    or the tracked table returns on the next pull.
 

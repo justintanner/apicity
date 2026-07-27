@@ -22,18 +22,21 @@ import {
 import { attachExamples } from "./example";
 import { createTransport } from "./transport";
 
-interface AnthropicErrorBody {
-  error?: { message?: string; type?: string };
+// Covers the Anthropic envelope {error:{message,type}} and the OpenAI
+// envelope {error:{message,type,code}}; both map error.message.
+interface ErrorEnvelopeBody {
+  error?: { message?: string; type?: string; code?: string };
 }
 
-function isAnthropicErrorBody(x: unknown): x is AnthropicErrorBody {
-  return (
-    typeof x === "object" &&
-    x !== null &&
-    "error" in x &&
-    typeof (x as { error?: unknown }).error === "object"
-  );
+function isErrorEnvelopeBody(x: unknown): x is ErrorEnvelopeBody {
+  if (typeof x !== "object" || x === null || !("error" in x)) {
+    return false;
+  }
+  return typeof x.error === "object";
 }
+
+// Plain-text upstream errors look like "error, status code: 429 ...".
+const STATUS_TEXT_ERROR_RE = /^error, status code: \d+/;
 
 export function textBlock(text: string): TextContentBlock {
   return { type: "text", text };
@@ -69,15 +72,20 @@ export function createKimiCoding(opts: KimiCodingOptions): KimiCodingProvider {
     timeoutMs: timeout,
     fetchImpl: opts.fetch,
     defaultHeaders: buildHeaders,
-    parseErrorBody: (status, body) => {
-      let message = `KimiCoding error: ${status}`;
+    parseErrorBody: (status, body, text) => {
       if (
-        isAnthropicErrorBody(body) &&
+        isErrorEnvelopeBody(body) &&
         typeof body.error?.message === "string"
       ) {
-        message = `KimiCoding error ${status}: ${body.error.message}`;
+        return {
+          message: `KimiCoding error ${status}: ${body.error.message}`,
+        };
       }
-      return { message };
+      const trimmed = text.trim();
+      if (STATUS_TEXT_ERROR_RE.test(trimmed)) {
+        return { message: `KimiCoding error ${status}: ${trimmed}` };
+      }
+      return { message: `KimiCoding error: ${status}` };
     },
     errorClass: KimiCodingError,
   });

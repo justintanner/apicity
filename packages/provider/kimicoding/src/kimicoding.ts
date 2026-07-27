@@ -12,12 +12,16 @@ import {
   EmbeddingResponse,
   CountTokensRequest,
   CountTokensResponse,
+  OpenAiChatCompletionRequest,
+  OpenAiChatCompletion,
+  OpenAiChatCompletionChunk,
 } from "./types";
 import { sseToIterable } from "./sse";
 import {
   ChatRequestSchema,
   EmbeddingRequestSchema,
   CountTokensRequestSchema,
+  OpenAiChatCompletionRequestSchema,
 } from "./zod";
 import { attachExamples } from "./example";
 import { createTransport } from "./transport";
@@ -152,6 +156,46 @@ export function createKimiCoding(opts: KimiCodingOptions): KimiCodingProvider {
     );
   }
 
+  // POST https://api.kimi.com/coding/v1/chat/completions
+  // Docs: https://www.kimi.com/code/docs/en/
+  async function chatCompletionsImpl(
+    req: OpenAiChatCompletionRequest,
+    signal?: AbortSignal
+  ): Promise<OpenAiChatCompletion> {
+    return await transport.postJson<OpenAiChatCompletion>(
+      "v1/chat/completions",
+      req,
+      { signal }
+    );
+  }
+
+  // POST https://api.kimi.com/coding/v1/chat/completions
+  // Docs: https://www.kimi.com/code/docs/en/
+  async function* streamChatCompletionsImpl(
+    req: OpenAiChatCompletionRequest,
+    signal?: AbortSignal
+  ): AsyncIterable<OpenAiChatCompletionChunk> {
+    const res = await transport.raw("v1/chat/completions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...req, stream: true }),
+      signal,
+    });
+
+    for await (const { data } of sseToIterable(res)) {
+      if (data === "[DONE]") {
+        break;
+      }
+
+      try {
+        const parsed: OpenAiChatCompletionChunk = JSON.parse(data);
+        yield parsed;
+      } catch {
+        // ignore non-JSON lines
+      }
+    }
+  }
+
   const messages = Object.assign(chatImpl, {
     schema: ChatRequestSchema,
   });
@@ -168,6 +212,14 @@ export function createKimiCoding(opts: KimiCodingOptions): KimiCodingProvider {
     schema: CountTokensRequestSchema,
   });
 
+  const chatCompletions = Object.assign(chatCompletionsImpl, {
+    schema: OpenAiChatCompletionRequestSchema,
+  });
+
+  const streamChatCompletions = Object.assign(streamChatCompletionsImpl, {
+    schema: OpenAiChatCompletionRequestSchema,
+  });
+
   // GET https://api.kimi.com/coding/v1/models
   // Docs: https://platform.moonshot.ai/docs
   async function listModelsFn(
@@ -181,8 +233,22 @@ export function createKimiCoding(opts: KimiCodingOptions): KimiCodingProvider {
 
   return attachExamples({
     post: {
-      coding: { v1: { messages, embeddings, countTokens } },
-      stream: { coding: { v1: { messages: streamMessages } } },
+      coding: {
+        v1: {
+          messages,
+          embeddings,
+          countTokens,
+          chat: { completions: chatCompletions },
+        },
+      },
+      stream: {
+        coding: {
+          v1: {
+            messages: streamMessages,
+            chat: { completions: streamChatCompletions },
+          },
+        },
+      },
     },
     get: { coding: { v1: { models: listModelsFn } } },
   });

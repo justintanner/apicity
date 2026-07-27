@@ -30,7 +30,7 @@ const DOCS_HOSTNAME_ALLOWLIST = {
   fireworks: ["docs.fireworks.ai", "fireworks.ai"],
   fal: ["docs.fal.ai", "fal.ai"],
   kie: ["docs.kie.ai", "kie.ai"],
-  kimicoding: ["platform.moonshot.ai", "platform.moonshot.cn"],
+  kimicoding: ["platform.moonshot.ai", "platform.moonshot.cn", "www.kimi.com"],
   google: ["docs.cloud.google.com", "cloud.google.com"],
   googleflow: ["useapi.net"],
   alibaba: [

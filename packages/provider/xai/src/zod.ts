@@ -55,13 +55,14 @@ export const XaiVideoReferenceInputSchema = z.union([
   XaiVideoReferenceSchema,
 ]);
 
-// xAI's own reference-to-video docs say only "one or more reference images" and
-// never name a bound. The 1-7 range below comes from WaveSpeedAI's hosted
-// grok-imagine-video reference-to-video API, which documents the field as
-// "Array of reference image URLs (1-7 images)" — the only published numeric
-// limit for this input. Raise this if xAI documents a higher bound.
-// https://wavespeed.ai/docs/docs-api/x-ai/x-ai-grok-imagine-video-reference-to-video
+// xAI primary reference-to-video docs: "A maximum of 7 reference images can be
+// provided per request." and "The maximum duration allowed when using reference
+// images is 10 seconds."
+// https://docs.x.ai/developers/model-capabilities/video/reference-to-video
 const XAI_VIDEO_REFERENCE_IMAGE_MAX = 7;
+// "The maximum duration allowed when using reference images is 10 seconds."
+// https://docs.x.ai/developers/model-capabilities/video/reference-to-video
+const XAI_VIDEO_REFERENCE_DURATION_MAX = 10;
 
 const XaiImagineStoragePublicUrlOptionsSchema = z.object({
   expires_after: z.number().int().min(3600).max(2592000).optional(),
@@ -272,26 +273,41 @@ const XaiVideoExtendDurationSchema = z.union([
   z.literal(10),
 ]);
 
-export const XaiVideoGenerateRequestSchema = z.object({
-  prompt: z.string().min(1),
-  model: z.string().optional(),
-  duration: XaiVideoGenerateDurationSchema.optional(),
-  aspect_ratio: XaiVideoAspectRatioSchema.optional(),
-  resolution: XaiVideoResolutionSchema.optional(),
-  image: XaiVideoReferenceSchema.optional(),
-  image_file_id: z.string().min(1).optional(),
-  video: XaiVideoReferenceSchema.optional(),
-  video_file_id: z.string().min(1).optional(),
-  reference_images: z
-    .array(XaiVideoReferenceSchema)
-    .max(XAI_VIDEO_REFERENCE_IMAGE_MAX)
-    .optional(),
-  reference_image_file_ids: z
-    .array(z.string().min(1))
-    .max(XAI_VIDEO_REFERENCE_IMAGE_MAX)
-    .optional(),
-  storage_options: XaiImagineStorageOptionsSchema.optional(),
-});
+export const XaiVideoGenerateRequestSchema = z
+  .object({
+    prompt: z.string().min(1),
+    model: z.string().optional(),
+    duration: XaiVideoGenerateDurationSchema.optional(),
+    aspect_ratio: XaiVideoAspectRatioSchema.optional(),
+    resolution: XaiVideoResolutionSchema.optional(),
+    image: XaiVideoReferenceSchema.optional(),
+    image_file_id: z.string().min(1).optional(),
+    video: XaiVideoReferenceSchema.optional(),
+    video_file_id: z.string().min(1).optional(),
+    reference_images: z
+      .array(XaiVideoReferenceSchema)
+      .max(XAI_VIDEO_REFERENCE_IMAGE_MAX)
+      .optional(),
+    reference_image_file_ids: z
+      .array(z.string().min(1))
+      .max(XAI_VIDEO_REFERENCE_IMAGE_MAX)
+      .optional(),
+    storage_options: XaiImagineStorageOptionsSchema.optional(),
+  })
+  // xAI primary reference-to-video docs: "The maximum duration allowed when using
+  // reference images is 10 seconds."
+  // https://docs.x.ai/developers/model-capabilities/video/reference-to-video
+  .refine(
+    (value) =>
+      value.duration === undefined ||
+      value.duration <= XAI_VIDEO_REFERENCE_DURATION_MAX ||
+      ((value.reference_images?.length ?? 0) === 0 &&
+        (value.reference_image_file_ids?.length ?? 0) === 0),
+    {
+      message:
+        "Duration must be 10 seconds or less when using reference images",
+    }
+  );
 
 export const XaiGrokImagineVideo15ImageToVideoRequestSchema = z
   .object({

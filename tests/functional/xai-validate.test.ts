@@ -159,7 +159,6 @@ describe("xAI Zod schema validation", () => {
         duration: 10,
         aspect_ratio: "16:9",
         resolution: "720p",
-        image: { url: "https://example.com/image.jpg" },
         reference_images: [{ url: "https://example.com/ref1.jpg" }],
       });
       expect(result.success).toBe(true);
@@ -169,7 +168,6 @@ describe("xAI Zod schema validation", () => {
       const result = XaiVideoGenerateRequestSchema.safeParse({
         prompt: "Animate this image",
         model: "grok-imagine-video",
-        image_file_id: "file_city",
         reference_image_file_ids: ["file_subject", "file_outfit"],
         storage_options: { filename: "city.mp4", public_url: true },
       });
@@ -200,6 +198,147 @@ describe("xAI Zod schema validation", () => {
       });
       expect(result.success).toBe(false);
       expect(result.error?.issues.length).toBeGreaterThan(0);
+    });
+  });
+
+  // REQ-001 mode exclusivity, per xAI's primary reference-to-video doc
+  // https://docs.x.ai/developers/model-capabilities/video/reference-to-video:
+  // "Reference images cannot be combined with image-to-video or video
+  // editing. Only one mode can be active per request, determined by the
+  // parameters on the request."
+  describe("video generation mode exclusivity (REQ-001)", () => {
+    const MODE_GROUPS = {
+      reference: {
+        label: "reference_images/reference_image_file_ids",
+        spellings: [
+          { reference_images: [{ url: "https://example.com/ref.jpg" }] },
+          { reference_image_file_ids: ["file_ref"] },
+        ],
+      },
+      imageToVideo: {
+        label: "image/image_file_id",
+        spellings: [
+          { image: { url: "https://example.com/image.jpg" } },
+          { image_file_id: "file_image" },
+        ],
+      },
+      videoEdit: {
+        label: "video/video_file_id",
+        spellings: [
+          { video: { url: "https://example.com/video.mp4" } },
+          { video_file_id: "file_video" },
+        ],
+      },
+    } as const;
+
+    const CROSS_GROUP_PAIRS: [
+      keyof typeof MODE_GROUPS,
+      keyof typeof MODE_GROUPS,
+    ][] = [
+      ["reference", "imageToVideo"],
+      ["reference", "videoEdit"],
+      ["imageToVideo", "videoEdit"],
+    ];
+
+    for (const [groupA, groupB] of CROSS_GROUP_PAIRS) {
+      MODE_GROUPS[groupA].spellings.forEach((fieldsA, indexA) => {
+        MODE_GROUPS[groupB].spellings.forEach((fieldsB, indexB) => {
+          it(
+            `rejects ${groupA} x ${groupB} ` +
+              `(spellings ${indexA + 1} x ${indexB + 1})`,
+            () => {
+              const result = XaiVideoGenerateRequestSchema.safeParse({
+                prompt: "A cat walking",
+                ...fieldsA,
+                ...fieldsB,
+              });
+              expect(result.success).toBe(false);
+              const messages = (result.error?.issues ?? []).map(
+                (issue) => issue.message
+              );
+              expect(
+                messages.some(
+                  (message) =>
+                    message.includes(MODE_GROUPS[groupA].label) &&
+                    message.includes(MODE_GROUPS[groupB].label)
+                )
+              ).toBe(true);
+            }
+          );
+        });
+      });
+    }
+
+    it("accepts an empty reference_images array with image-to-video", () => {
+      const result = XaiVideoGenerateRequestSchema.safeParse({
+        prompt: "Animate this image",
+        image: { url: "https://example.com/image.jpg" },
+        reference_images: [],
+      });
+      expect(result.success).toBe(true);
+    });
+
+    for (const group of Object.keys(
+      MODE_GROUPS
+    ) as (keyof typeof MODE_GROUPS)[]) {
+      MODE_GROUPS[group].spellings.forEach((fields, index) => {
+        it(`accepts ${group} alone (spelling ${index + 1})`, () => {
+          const result = XaiVideoGenerateRequestSchema.safeParse({
+            prompt: "A cat walking",
+            ...fields,
+          });
+          expect(result.success).toBe(true);
+        });
+      });
+    }
+  });
+
+  // REQ-002 reference model matrix, per the same primary doc: "grok-imagine-
+  // video-1.5 does not support this mode." (every reference-to-video example
+  // uses grok-imagine-video).
+  describe("video generation reference model matrix (REQ-002)", () => {
+    const UNSUPPORTED_REFERENCE_MODELS = [
+      "grok-imagine-video-1.5",
+      "grok-imagine-video-1.5-preview",
+      "grok-imagine-video-1.5-2026-05-30",
+    ];
+    const REFERENCE_SPELLINGS = [
+      { reference_images: [{ url: "https://example.com/ref.jpg" }] },
+      { reference_image_file_ids: ["file_ref"] },
+    ];
+
+    for (const model of UNSUPPORTED_REFERENCE_MODELS) {
+      REFERENCE_SPELLINGS.forEach((fields, index) => {
+        it(`rejects ${model} with references (spelling ${index + 1})`, () => {
+          const result = XaiVideoGenerateRequestSchema.safeParse({
+            prompt: "A cat walking",
+            model,
+            ...fields,
+          });
+          expect(result.success).toBe(false);
+          const messages = (result.error?.issues ?? []).map(
+            (issue) => issue.message
+          );
+          expect(
+            messages.some(
+              (message) =>
+                message.includes("grok-imagine-video-1.5") &&
+                message.includes("reference")
+            )
+          ).toBe(true);
+        });
+      });
+    }
+
+    REFERENCE_SPELLINGS.forEach((fields, index) => {
+      it(`accepts grok-imagine-video with references (spelling ${index + 1})`, () => {
+        const result = XaiVideoGenerateRequestSchema.safeParse({
+          prompt: "A cat walking",
+          model: "grok-imagine-video",
+          ...fields,
+        });
+        expect(result.success).toBe(true);
+      });
     });
   });
 

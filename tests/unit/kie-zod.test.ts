@@ -132,6 +132,148 @@ describe("KIE Zod schema validation", () => {
       expect(result.data?.reference_image_urls).toBeUndefined();
     });
   });
+
+  // pixverse-v6/text-to-video keeps `prompt`, `aspect_ratio`, `quality`, and
+  // `duration` required even though the upstream spec documents defaults
+  // (16:9 / 720p / 5) — the documented-defaults trap seedream/seedance
+  // already hit, so the server never applies them and neither do we. Every
+  // case goes through CreateTaskRequestSchema, the same createTask boundary
+  // the kie.ts guard runs, which also proves the request schema is wired
+  // into the MediaGenerationRequestSchema union (BR-3).
+  describe("pixverse-v6/text-to-video", () => {
+    const SPEC_PROMPT =
+      "A cinematic sunrise illuminates a mist-shrouded mountain lake; the " +
+      "camera slowly sweeps across the water's surface as a flock of birds " +
+      "flies overhead.";
+    const specRequest = {
+      model: "pixverse-v6/text-to-video",
+      input: {
+        prompt: SPEC_PROMPT,
+        aspect_ratio: "16:9",
+        quality: "720p",
+        duration: 5,
+        generate_audio_switch: false,
+        generate_multi_clip_switch: false,
+        seed: 123456789,
+      },
+    };
+
+    it("parses and round-trips the spec example payload", () => {
+      const parsed = CreateTaskRequestSchema.safeParse(specRequest);
+      expect(parsed.success).toBe(true);
+      expect(parsed.data).toEqual(specRequest);
+    });
+
+    it("defaults both generate switches to false when omitted", () => {
+      const input: Record<string, unknown> = { ...specRequest.input };
+      delete input.generate_audio_switch;
+      delete input.generate_multi_clip_switch;
+      const parsed = CreateTaskRequestSchema.safeParse({
+        ...specRequest,
+        input,
+      });
+      expect(parsed.success).toBe(true);
+      expect(parsed.data?.input).toMatchObject({
+        generate_audio_switch: false,
+        generate_multi_clip_switch: false,
+      });
+    });
+
+    it.each(["prompt", "aspect_ratio", "quality", "duration"])(
+      "rejects a payload missing the required %s",
+      (field) => {
+        const input: Record<string, unknown> = { ...specRequest.input };
+        delete input[field];
+        expect(
+          CreateTaskRequestSchema.safeParse({ ...specRequest, input }).success
+        ).toBe(false);
+      }
+    );
+
+    it.each(["16:9", "4:3", "1:1", "3:4", "9:16", "2:3", "3:2", "21:9"])(
+      "accepts aspect_ratio %s",
+      (aspect_ratio) => {
+        expect(
+          CreateTaskRequestSchema.safeParse({
+            ...specRequest,
+            input: { ...specRequest.input, aspect_ratio },
+          }).success
+        ).toBe(true);
+      }
+    );
+
+    it.each(["4:5", "16:10"])("rejects aspect_ratio %s", (aspect_ratio) => {
+      expect(
+        CreateTaskRequestSchema.safeParse({
+          ...specRequest,
+          input: { ...specRequest.input, aspect_ratio },
+        }).success
+      ).toBe(false);
+    });
+
+    it.each(["360p", "540p", "720p", "1080p"])(
+      "accepts quality %s",
+      (quality) => {
+        expect(
+          CreateTaskRequestSchema.safeParse({
+            ...specRequest,
+            input: { ...specRequest.input, quality },
+          }).success
+        ).toBe(true);
+      }
+    );
+
+    it.each(["480p", "2160p"])("rejects quality %s", (quality) => {
+      expect(
+        CreateTaskRequestSchema.safeParse({
+          ...specRequest,
+          input: { ...specRequest.input, quality },
+        }).success
+      ).toBe(false);
+    });
+
+    it.each([1, 15])(
+      "accepts duration at the inclusive boundary %s",
+      (duration) => {
+        expect(
+          CreateTaskRequestSchema.safeParse({
+            ...specRequest,
+            input: { ...specRequest.input, duration },
+          }).success
+        ).toBe(true);
+      }
+    );
+
+    it.each([0, 16])("rejects duration %s", (duration) => {
+      expect(
+        CreateTaskRequestSchema.safeParse({
+          ...specRequest,
+          input: { ...specRequest.input, duration },
+        }).success
+      ).toBe(false);
+    });
+
+    it.each([0, 2147483647])(
+      "accepts seed at the inclusive boundary %s",
+      (seed) => {
+        expect(
+          CreateTaskRequestSchema.safeParse({
+            ...specRequest,
+            input: { ...specRequest.input, seed },
+          }).success
+        ).toBe(true);
+      }
+    );
+
+    it.each([-1, 2147483648])("rejects seed %s", (seed) => {
+      expect(
+        CreateTaskRequestSchema.safeParse({
+          ...specRequest,
+          input: { ...specRequest.input, seed },
+        }).success
+      ).toBe(false);
+    });
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -369,15 +511,15 @@ describe("TRI-008 VeoExtendRequestSchema.model stays a closed set", () => {
 // TRI-001 KieMediaModelSchema — one escape hatch per vendor family
 // ---------------------------------------------------------------------------
 //
-// KieMediaModelSchema is kie's aggregator catalogue: 47 ids drawn from a dozen
+// KieMediaModelSchema is kie's aggregator catalogue: 48 ids drawn from a dozen
 // unrelated vendors behind one `createTask` endpoint. REQ-006 forbids opening
 // it with a single catch-all regex, so it carries one alias per vendor family
-// and four singletons stay enumerated with no alias at all.
+// and five singletons stay enumerated with no alias at all.
 //
 // BR-4 needs care here that the single-family schemas above do not. A foreign
 // *catalogue* id — `happyhorse/video-edit` on the Kling family — is accepted by
 // KieMediaModelSchema, through the enum branch, and always was: the whole point
-// of the aggregator is that all 47 are valid. So cross-family leakage cannot be
+// of the aggregator is that all 48 are valid. So cross-family leakage cannot be
 // asserted with safeParse; it is asserted structurally instead, against the
 // alias patterns themselves ("partitions the catalogue" below). The per-family
 // `rejected` lists therefore carry BR-3 near-miss typos plus BR-4 ids from
@@ -536,13 +678,14 @@ const MEDIA_MODEL_FAMILIES = [
   },
 ] as const;
 
-// The four ids that deliberately carry no alias: each is the only model kie
+// The five ids that deliberately carry no alias: each is the only model kie
 // lists for its vendor, and one sample cannot establish a family grammar.
 const MEDIA_SINGLETON_MODELS = [
   "omnihuman-1-5",
   "volcengine/video-to-video-lip-sync",
   "gemini-omni-video",
   "sora-watermark-remover",
+  "pixverse-v6/text-to-video",
 ] as const;
 
 // `.or()` chaining nests left, so the emitted JSON Schema is a left-deep tree

@@ -6,8 +6,9 @@ import {
 } from "../../packages/provider/xai/src/zod";
 
 // The reference-image cap is sourced in packages/provider/xai/src/zod.ts:
-// xAI's docs are silent, so the 1-7 bound comes from WaveSpeedAI's hosted
-// grok-imagine-video reference-to-video API.
+// xAI's primary reference-to-video docs state "A maximum of 7 reference
+// images can be provided per request."
+// https://docs.x.ai/developers/model-capabilities/video/reference-to-video
 const REFERENCE_IMAGE_MAX = 7;
 
 const reference = (index: number) => ({
@@ -96,6 +97,104 @@ describe("XaiVideoGenerateRequestSchema reference array caps", () => {
 
       expect(result.success).toBe(false);
     });
+  });
+});
+
+// xAI primary reference-to-video docs: "The maximum duration allowed when
+// using reference images is 10 seconds."
+// https://docs.x.ai/developers/model-capabilities/video/reference-to-video
+describe("XaiVideoGenerateRequestSchema reference-mode duration cap", () => {
+  const DURATIONS_ABOVE_CAP = [11, 12, 13, 14, 15] as const;
+  const DURATIONS_WITHIN_CAP = [1, 5, 10] as const;
+
+  it("rejects durations above 10 seconds with reference_images", () => {
+    for (const duration of DURATIONS_ABOVE_CAP) {
+      const result = XaiVideoGenerateRequestSchema.safeParse({
+        prompt: "a cat riding a skateboard",
+        duration,
+        reference_images: [reference(0)],
+      });
+
+      expect(result.success).toBe(false);
+      expect(
+        result.error?.issues.some((issue) =>
+          issue.message.includes("10 seconds")
+        )
+      ).toBe(true);
+    }
+  });
+
+  it("rejects durations above 10 seconds with reference_image_file_ids", () => {
+    for (const duration of DURATIONS_ABOVE_CAP) {
+      const result = XaiVideoGenerateRequestSchema.safeParse({
+        prompt: "a cat riding a skateboard",
+        duration,
+        reference_image_file_ids: [fileId(0)],
+      });
+
+      expect(result.success).toBe(false);
+      expect(
+        result.error?.issues.some((issue) =>
+          issue.message.includes("10 seconds")
+        )
+      ).toBe(true);
+    }
+  });
+
+  it("accepts durations up to the 10-second boundary with reference_images", () => {
+    for (const duration of DURATIONS_WITHIN_CAP) {
+      const result = XaiVideoGenerateRequestSchema.safeParse({
+        prompt: "a cat riding a skateboard",
+        duration,
+        reference_images: [reference(0)],
+      });
+
+      expect(result.success).toBe(true);
+    }
+  });
+
+  it("accepts the 10-second boundary with reference_image_file_ids", () => {
+    const result = XaiVideoGenerateRequestSchema.safeParse({
+      prompt: "a cat riding a skateboard",
+      duration: 10,
+      reference_image_file_ids: [fileId(0)],
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts a 15-second duration when no reference fields are present", () => {
+    const result = XaiVideoGenerateRequestSchema.safeParse({
+      prompt: "a cat riding a skateboard",
+      duration: 15,
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts a 15-second duration with an empty reference_images array", () => {
+    const result = XaiVideoGenerateRequestSchema.safeParse({
+      prompt: "a cat riding a skateboard",
+      duration: 15,
+      reference_images: [],
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it("still rejects eight reference images under the .max(7) cap", () => {
+    const result = XaiVideoGenerateRequestSchema.safeParse({
+      prompt: "a cat riding a skateboard",
+      duration: 10,
+      reference_images: Array.from({ length: 8 }, (_, i) => reference(i)),
+    });
+
+    expect(result.success).toBe(false);
+    expect(
+      result.error?.issues.some((issue) =>
+        issue.path.includes("reference_images")
+      )
+    ).toBe(true);
   });
 });
 

@@ -105,7 +105,12 @@ import {
   XaiCustomVoiceCreateRequestSchema,
   XaiCustomVoiceUpdateRequestSchema,
   XaiBillingUsageRequestSchema,
+  XAI_GROK_IMAGINE_VIDEO,
+  XAI_GROK_IMAGINE_VIDEO_1_5_PREFIX,
   XAI_GROK_IMAGINE_VIDEO_1_5_PREVIEW,
+  XAI_VIDEO_REFERENCE_MODE_UNSUPPORTED_MODEL_MESSAGE,
+  buildXaiVideoModeExclusivityMessage,
+  computeXaiVideoModeGroups,
 } from "./zod";
 import { attachExamples } from "./example";
 import { createTransport, type Transport } from "./transport";
@@ -282,11 +287,54 @@ function normalizeVideoExtendRequest(
 function applyVideoGenerationDefaults(
   req: XaiVideoGenerateRequest
 ): XaiVideoGenerateRequest {
+  // Pre-transport guard: this helper runs only in the /v1/videos/generations
+  // leaf, so these checks fire before any billed request. They mirror the
+  // XaiVideoGenerateRequestSchema refinement (same helper, same messages)
+  // because leaf `.schema` attachments are caller-facing metadata that
+  // nothing on the paid call path invokes. Verified live 2026-07-28 against
+  // xAI's primary reference-to-video doc
+  // https://docs.x.ai/developers/model-capabilities/video/reference-to-video:
+  // "Reference images cannot be combined with image-to-video or video
+  // editing. Only one mode can be active per request, determined by the
+  // parameters on the request."
+  // "grok-imagine-video-1.5 does not support this mode."
+  const groups = computeXaiVideoModeGroups(req);
+  const activeGroupCount =
+    Number(groups.reference) +
+    Number(groups.imageToVideo) +
+    Number(groups.videoEdit);
+  if (activeGroupCount >= 2) {
+    throw new XaiError(buildXaiVideoModeExclusivityMessage(groups), 400);
+  }
+  // Guard the raw request so defaulting can never mask an explicit 1.5
+  // family model paired with reference mode (base, -preview, and dated
+  // variants are aliases of the same unsupported model).
+  if (
+    groups.reference &&
+    req.model !== undefined &&
+    req.model.startsWith(XAI_GROK_IMAGINE_VIDEO_1_5_PREFIX)
+  ) {
+    throw new XaiError(XAI_VIDEO_REFERENCE_MODE_UNSUPPORTED_MODEL_MESSAGE, 400);
+  }
   const normalized = normalizeVideoGenerateRequest(req);
   if (normalized.model !== undefined) return normalized;
+  // Default/supported-model behavior, per the primary reference-to-video
+  // doc cited above: every reference-to-video example uses
+  // "grok-imagine-video" and the grok-imagine-video-1.5 family does not
+  // support reference mode, so model-less reference requests default to
+  // XAI_GROK_IMAGINE_VIDEO; all other model-less requests keep the 1.5
+  // preview default. The post-fold check is OR'ed with the original
+  // file-ids spelling so the degenerate both-spellings input
+  // (reference_images: [] plus non-empty reference_image_file_ids) still
+  // takes the reference default, matching the schema's group test.
+  const referenceActive =
+    (normalized.reference_images?.length ?? 0) > 0 ||
+    (req.reference_image_file_ids?.length ?? 0) > 0;
   return {
     ...normalized,
-    model: XAI_GROK_IMAGINE_VIDEO_1_5_PREVIEW,
+    model: referenceActive
+      ? XAI_GROK_IMAGINE_VIDEO
+      : XAI_GROK_IMAGINE_VIDEO_1_5_PREVIEW,
   };
 }
 

@@ -143,15 +143,15 @@ const KieMediaElevenLabsModelAliasSchema = z
 // reordering would read as renames in review and the alias comments above
 // already state each family's membership.
 //
-// Four ids carry no alias and stay enumerated: `omnihuman-1-5`,
-// `volcengine/video-to-video-lip-sync`, `gemini-omni-video` and
-// `sora-watermark-remover`. Each is the only id kie lists for its vendor, and
-// one sample cannot establish a grammar — nothing here distinguishes a
-// versioned family (`omnihuman-<major>-<minor>`) from a fixed product name, so
-// any regex would be a guess that either rejects the real next release or
-// widens into the wildcard this file exists to avoid. They gain an alias when
-// kie ships a second member; until then a new id from those vendors is an
-// explicit enum addition.
+// Five ids carry no alias and stay enumerated: `omnihuman-1-5`,
+// `volcengine/video-to-video-lip-sync`, `gemini-omni-video`,
+// `sora-watermark-remover` and `pixverse-v6/text-to-video`. Each is the only
+// id kie lists for its vendor, and one sample cannot establish a grammar —
+// nothing here distinguishes a versioned family (`omnihuman-<major>-<minor>`)
+// from a fixed product name, so any regex would be a guess that either
+// rejects the real next release or widens into the wildcard this file exists
+// to avoid. They gain an alias when kie ships a second member; until then a
+// new id from those vendors is an explicit enum addition.
 export const KIE_MEDIA_MODELS = [
   "kling-3.0/video",
   "kling-3.0/motion-control",
@@ -200,6 +200,7 @@ export const KIE_MEDIA_MODELS = [
   "elevenlabs/text-to-speech-turbo-2-5",
   "elevenlabs/sound-effect-v2",
   "sora-watermark-remover",
+  "pixverse-v6/text-to-video",
 ] as const;
 
 export const KieMediaModelSchema = z
@@ -1728,6 +1729,36 @@ export const Wan27ImageProRequestSchema =
     wan27Image4KRefinement
   );
 
+// PixVerse V6 text-to-video. The upstream spec documents defaults for
+// aspect_ratio (16:9), quality (720p), and duration (5) yet still marks them
+// required — the server never applies documented defaults (the same trap
+// seedream/seedance hit), so the schema keeps them required and records the
+// defaults only in the modelInputSchemas registry metadata.
+export const PixverseV6TextToVideoInputSchema = z.object({
+  prompt: z.string().min(3).max(5000),
+  aspect_ratio: z.enum([
+    "16:9",
+    "4:3",
+    "1:1",
+    "3:4",
+    "9:16",
+    "2:3",
+    "3:2",
+    "21:9",
+  ]),
+  quality: z.enum(["360p", "540p", "720p", "1080p"]),
+  duration: z.number().int().min(1).max(15),
+  generate_audio_switch: z.boolean().default(false),
+  generate_multi_clip_switch: z.boolean().default(false),
+  seed: z.number().int().min(0).max(2147483647).optional(),
+});
+
+export const PixverseV6TextToVideoRequestSchema = z.object({
+  model: z.literal("pixverse-v6/text-to-video"),
+  callBackUrl: z.string().url().optional(),
+  input: PixverseV6TextToVideoInputSchema,
+});
+
 // ---------------------------------------------------------------------------
 // Wan 2.7 task result schemas (parsed from KieTaskInfoData.resultJson)
 //
@@ -2815,6 +2846,7 @@ export const MediaGenerationRequestSchema = z.union([
   ElevenLabsTextToSpeechTurbo25RequestSchema,
   ElevenLabsSoundEffectV2RequestSchema,
   SoraWatermarkRequestSchema,
+  PixverseV6TextToVideoRequestSchema,
 ]);
 
 // ---------------------------------------------------------------------------
@@ -3147,6 +3179,16 @@ export type SoraWatermarkRequest = z.input<typeof SoraWatermarkRequestSchema>;
 export type SoraWatermarkRequestInput = SoraWatermarkRequest;
 export type SoraWatermarkParsedRequest = z.output<
   typeof SoraWatermarkRequestSchema
+>;
+export type PixverseV6TextToVideoInput = z.infer<
+  typeof PixverseV6TextToVideoInputSchema
+>;
+export type PixverseV6TextToVideoRequest = z.input<
+  typeof PixverseV6TextToVideoRequestSchema
+>;
+export type PixverseV6TextToVideoRequestInput = PixverseV6TextToVideoRequest;
+export type PixverseV6TextToVideoParsedRequest = z.output<
+  typeof PixverseV6TextToVideoRequestSchema
 >;
 export type Wan27ImageToVideoRequest = z.input<
   typeof Wan27ImageToVideoRequestSchema

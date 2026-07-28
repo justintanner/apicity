@@ -256,13 +256,21 @@ describe("xai video generations pre-transport mode guard", () => {
     expect(calls).toHaveLength(0);
   });
 
-  const REFERENCE_SPELLINGS = [
+  const REFERENCE_SPELLINGS: ReadonlyArray<
+    readonly [
+      string,
+      (
+        | { reference_images: Array<{ url: string }> }
+        | { reference_image_file_ids: string[] }
+      ),
+    ]
+  > = [
     [
       "reference_images",
       { reference_images: [{ url: "https://example.com/ref.png" }] },
     ],
     ["reference_image_file_ids", { reference_image_file_ids: ["file_ref"] }],
-  ] as const;
+  ];
 
   for (const [spelling, fields] of REFERENCE_SPELLINGS) {
     it(`rejects ${MODEL} with ${spelling} without consuming the queued fetch`, async () => {

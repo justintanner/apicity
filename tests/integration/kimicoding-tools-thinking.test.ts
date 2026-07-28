@@ -4,6 +4,7 @@ import {
   createKimiCoding,
   KimiCodingError,
   type AnthropicStreamEvent,
+  type ContentBlock,
 } from "@apicity/kimicoding";
 
 const WEATHER_TOOL = {
@@ -73,7 +74,10 @@ describe("kimicoding Anthropic tools and thinking", () => {
           role: "user",
           content: "What is the weather in Paris? Use the get_weather tool.",
         },
-        { role: "assistant", content: first.content },
+        // Replay the recorded assistant turn verbatim (including thinking
+        // blocks, which the API accepts on the request side); the static
+        // request content union is narrower than the response block union.
+        { role: "assistant", content: first.content as ContentBlock[] },
         {
           role: "user",
           content: [

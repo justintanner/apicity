@@ -281,7 +281,6 @@ describe("Zod schema validation edge cases", () => {
     it("should accept stored file IDs in video generations", () => {
       const result = XaiVideoGenerateRequestSchema.safeParse({
         prompt: "Generate video",
-        image_file_id: "file_start",
         reference_image_file_ids: ["file_ref_1", "file_ref_2"],
         storage_options: { filename: "generated.mp4" },
       });

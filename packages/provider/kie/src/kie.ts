@@ -52,6 +52,7 @@ import {
   Gpt4oImageRecordInfoResponseSchema,
   Seedance2MiniRecordInfoResponseSchema,
   Seedance2MiniRequestSchema,
+  PixverseV6TextToVideoRequestSchema,
 } from "./zod";
 import { modelInputSchemas } from "./model-schemas";
 import { createVeoProvider } from "./veo";
@@ -152,6 +153,30 @@ function validateGeminiOmniVideoRequest(req: MediaGenerationRequest): void {
   });
 }
 
+function validatePixverseV6TextToVideoRequest(
+  req: MediaGenerationRequest
+): void {
+  if (req.model !== "pixverse-v6/text-to-video") {
+    return;
+  }
+
+  const parsed = PixverseV6TextToVideoRequestSchema.safeParse(req);
+  if (parsed.success) {
+    return;
+  }
+
+  const message = parsed.error.issues
+    .map((issue) => {
+      const path = issue.path.length ? `${issue.path.join(".")}: ` : "";
+      return `${path}${issue.message}`;
+    })
+    .join("; ");
+
+  throw new KieError(`Invalid Kie createTask request: ${message}`, 400, {
+    issues: parsed.error.issues,
+  });
+}
+
 function inferMimeType(filename: string): string | undefined {
   const ext = filename.split(".").pop()?.toLowerCase();
   return ext ? MIME_TYPES[ext] : undefined;
@@ -192,6 +217,7 @@ export function createKie(opts: KieOptions): KieProvider {
     validateGrokImageToVideoRequest(req);
     validateSeedance2MiniRequest(req);
     validateGeminiOmniVideoRequest(req);
+    validatePixverseV6TextToVideoRequest(req);
 
     return await transport.postJson<TaskResponse>(
       "/api/v1/jobs/createTask",

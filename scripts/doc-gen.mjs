@@ -3419,6 +3419,9 @@ const PROVIDER_AUTH = {
   googleflow: {
     env: "GOOGLE_FLOW_API_KEY",
   },
+  dolthub: {
+    field: "apiToken",
+  },
   zaicoding: {
     env: "ZAI_CODING_PLAN_API_KEY",
     showMiddleware: false,

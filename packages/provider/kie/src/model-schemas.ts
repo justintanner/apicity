@@ -1629,6 +1629,66 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  "pixverse-v6/text-to-video": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 3,
+        maxLength: 5000,
+        description: "Video generation prompt (3-5000 chars)",
+      },
+      aspect_ratio: {
+        type: "string",
+        required: true,
+        enum: ["16:9", "4:3", "1:1", "3:4", "9:16", "2:3", "3:2", "21:9"],
+        default: "16:9",
+        description:
+          "Output video aspect ratio (default 16:9; spec-required despite documented default)",
+      },
+      quality: {
+        type: "string",
+        required: true,
+        enum: ["360p", "540p", "720p", "1080p"],
+        default: "720p",
+        description:
+          "Output video resolution (default 720p; spec-required despite documented default)",
+      },
+      duration: {
+        type: "integer",
+        required: true,
+        minimum: 1,
+        maximum: 15,
+        default: 5,
+        description:
+          "Output video duration in seconds, 1-15 (default 5; spec-required despite documented default)",
+      },
+      generate_audio_switch: {
+        type: "boolean",
+        default: false,
+        description:
+          "Generate audio synchronized with the video content (default false)",
+      },
+      generate_multi_clip_switch: {
+        type: "boolean",
+        default: false,
+        description: "Generate a multi-clip video (default false)",
+      },
+      seed: {
+        type: "integer",
+        minimum: 0,
+        maximum: 2147483647,
+        description: "Random seed (0-2147483647)",
+      },
+      callBackUrl: {
+        type: "string",
+        description:
+          "Top-level callback URL for task completion notification (optional URI)",
+      },
+    },
+  },
+
   "happyhorse/text-to-video": {
     type: "video",
     fields: {

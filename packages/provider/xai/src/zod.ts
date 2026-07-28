@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+export const XAI_GROK_IMAGINE_VIDEO = "grok-imagine-video";
 export const XAI_GROK_IMAGINE_VIDEO_1_5_PREVIEW =
   "grok-imagine-video-1.5-preview";
 export const XAI_GROK_IMAGINE_IMAGE_QUALITY = "grok-imagine-image-quality";
@@ -270,6 +271,72 @@ const XaiVideoExtendDurationSchema = z.union([
   z.literal(10),
 ]);
 
+// Mode-selector groups for a video generation request. Both the schema
+// refinement on XaiVideoGenerateRequestSchema and the pre-transport guard in
+// xai.ts compute the groups and messages through these shared helpers so the
+// two enforcement layers can never disagree.
+export interface XaiVideoModeGroupsCandidate {
+  image?: unknown;
+  image_file_id?: unknown;
+  video?: unknown;
+  video_file_id?: unknown;
+  reference_images?: readonly unknown[];
+  reference_image_file_ids?: readonly unknown[];
+}
+
+export interface XaiVideoModeGroups {
+  reference: boolean;
+  imageToVideo: boolean;
+  videoEdit: boolean;
+}
+
+export function computeXaiVideoModeGroups(
+  candidate: XaiVideoModeGroupsCandidate
+): XaiVideoModeGroups {
+  return {
+    // An empty array on either reference spelling does NOT activate
+    // reference mode.
+    reference:
+      (candidate.reference_images?.length ?? 0) > 0 ||
+      (candidate.reference_image_file_ids?.length ?? 0) > 0,
+    imageToVideo:
+      candidate.image !== undefined || candidate.image_file_id !== undefined,
+    videoEdit:
+      candidate.video !== undefined || candidate.video_file_id !== undefined,
+  };
+}
+
+const XAI_VIDEO_MODE_GROUP_LABELS: Record<keyof XaiVideoModeGroups, string> = {
+  reference: "reference (reference_images/reference_image_file_ids)",
+  imageToVideo: "image-to-video (image/image_file_id)",
+  videoEdit: "video editing (video/video_file_id)",
+};
+
+// Names only the mode groups actually active; call with >= 2 active groups.
+export function buildXaiVideoModeExclusivityMessage(
+  groups: XaiVideoModeGroups
+): string {
+  const active = (
+    Object.keys(XAI_VIDEO_MODE_GROUP_LABELS) as (keyof XaiVideoModeGroups)[]
+  )
+    .filter((key) => groups[key])
+    .map((key) => XAI_VIDEO_MODE_GROUP_LABELS[key]);
+  const [first, ...rest] = active;
+  return (
+    `Only one video mode can be active per request: ${first} cannot be ` +
+    `combined with ${rest.join(" or ")}`
+  );
+}
+
+// Family prefix covering the grok-imagine-video-1.5 base identifier, the
+// -preview alias, and dated variants such as -2026-05-30 (all aliases of the
+// same model per xAI's model metadata).
+export const XAI_GROK_IMAGINE_VIDEO_1_5_PREFIX = "grok-imagine-video-1.5";
+
+export const XAI_VIDEO_REFERENCE_MODE_UNSUPPORTED_MODEL_MESSAGE =
+  "grok-imagine-video-1.5 does not support reference mode " +
+  "(reference_images/reference_image_file_ids); use grok-imagine-video for " +
+  "reference-to-video";
 export const XaiVideoGenerateRequestSchema = z
   .object({
     prompt: z.string().min(1),
@@ -302,7 +369,36 @@ export const XaiVideoGenerateRequestSchema = z
         "duration must be at most 10 seconds when using reference images",
       path: ["duration"],
     }
-  );
+  )
+  // Verified live 2026-07-28 against xAI's primary reference-to-video doc
+  // https://docs.x.ai/developers/model-capabilities/video/reference-to-video:
+  // "Reference images cannot be combined with image-to-video or video
+  // editing. Only one mode can be active per request, determined by the
+  // parameters on the request."
+  // "grok-imagine-video-1.5 does not support this mode."
+  .superRefine((value, ctx) => {
+    const groups = computeXaiVideoModeGroups(value);
+    const activeCount =
+      Number(groups.reference) +
+      Number(groups.imageToVideo) +
+      Number(groups.videoEdit);
+    if (activeCount >= 2) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: buildXaiVideoModeExclusivityMessage(groups),
+      });
+    }
+    if (
+      groups.reference &&
+      value.model !== undefined &&
+      value.model.startsWith(XAI_GROK_IMAGINE_VIDEO_1_5_PREFIX)
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: XAI_VIDEO_REFERENCE_MODE_UNSUPPORTED_MODEL_MESSAGE,
+      });
+    }
+  });
 
 export const XaiGrokImagineVideo15ImageToVideoRequestSchema = z
   .object({

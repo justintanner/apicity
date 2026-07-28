@@ -1681,11 +1681,6 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         maximum: 2147483647,
         description: "Random seed (0-2147483647)",
       },
-      callBackUrl: {
-        type: "string",
-        description:
-          "Top-level callback URL for task completion notification (optional URI)",
-      },
     },
   },
 

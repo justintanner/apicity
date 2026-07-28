@@ -318,21 +318,14 @@ function applyVideoGenerationDefaults(
   }
   const normalized = normalizeVideoGenerateRequest(req);
   if (normalized.model !== undefined) return normalized;
-  // Default/supported-model behavior, per the primary reference-to-video
-  // doc cited above: every reference-to-video example uses
-  // "grok-imagine-video" and the grok-imagine-video-1.5 family does not
-  // support reference mode, so model-less reference requests default to
-  // XAI_GROK_IMAGINE_VIDEO; all other model-less requests keep the 1.5
-  // preview default. The post-fold check is OR'ed with the original
-  // file-ids spelling so the degenerate both-spellings input
-  // (reference_images: [] plus non-empty reference_image_file_ids) still
-  // takes the reference default, matching the schema's group test.
-  const referenceActive =
-    (normalized.reference_images?.length ?? 0) > 0 ||
-    (req.reference_image_file_ids?.length ?? 0) > 0;
+  // Default, per the primary reference-to-video doc cited above: every
+  // reference-to-video example uses "grok-imagine-video" and the
+  // grok-imagine-video-1.5 family does not support reference mode, so
+  // model-less reference requests default to XAI_GROK_IMAGINE_VIDEO; all
+  // other model-less requests keep the 1.5 preview default.
   return {
     ...normalized,
-    model: referenceActive
+    model: groups.reference
       ? XAI_GROK_IMAGINE_VIDEO
       : XAI_GROK_IMAGINE_VIDEO_1_5_PREVIEW,
   };

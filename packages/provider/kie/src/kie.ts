@@ -99,7 +99,21 @@ const MIME_TYPES: Record<string, string> = {
 // The key is KieMediaModel, not string, so a mistyped id fails tsc here rather
 // than silently never matching the .find() below — which would leave the guard
 // dormant and let an unvalidated payload reach the network.
-const CREATE_TASK_GUARDS: ReadonlyArray<readonly [KieMediaModel, z.ZodType]> = [
+//
+// Membership rule, readable from these two lists alone: every id in
+// KIE_MEDIA_MODELS appears in exactly one of CREATE_TASK_GUARDS (validated
+// before transport) or CREATE_TASK_GUARD_EXEMPTIONS (deliberately not
+// validated, pointing at a reviewed reason). Neither list on its own is the
+// rule — the rule is that their union is exactly the catalogue, and
+// `everyKieMediaModelIsDecided` below is what enforces it: a model in neither
+// list stops that constant from compiling and tsc names the id. So "must this
+// model be guarded?" is answered here rather than from memory — a new model
+// must join one list or the other, and which one is the reviewed decision.
+//
+// `as const satisfies` rather than a `:` annotation: the annotation checks the
+// rows but erases their literals, and the pin needs to read the guarded ids
+// back out. The per-row check on the id is unchanged.
+export const CREATE_TASK_GUARDS = [
   ["grok-imagine/image-to-video", GrokImageToVideoRequestSchema],
   ["bytedance/seedance-2-mini", Seedance2MiniRequestSchema],
   ["gemini-omni-video", GeminiOmniVideoRequestSchema],
@@ -108,7 +122,107 @@ const CREATE_TASK_GUARDS: ReadonlyArray<readonly [KieMediaModel, z.ZodType]> = [
   ["pixverse-v6/transition", PixverseV6TransitionRequestSchema],
   ["pixverse-v6/extend", PixverseV6ExtendRequestSchema],
   ["pixverse-v6/reference-to-video", PixverseV6ReferenceToVideoRequestSchema],
-];
+] as const satisfies ReadonlyArray<readonly [KieMediaModel, z.ZodType]>;
+
+// Why a model may sit outside CREATE_TASK_GUARDS. Each key is a reviewed
+// category whose reasoning is stated once, here; each exempt model below points
+// at one. Keys rather than a free string per model on purpose: 44 hand-written
+// reasons would be 44 near-copies, and near-copies get pasted without reading —
+// the exact silence this pair of lists exists to prevent. A model that fits
+// neither category needs a new key added here, visibly, in the same diff.
+export const GUARD_EXEMPTION_REASONS = {
+  notYetGuarded:
+    "Pre-transport validation has been switched on per model as endpoints " +
+    "were recorded; this model has not been through that pass, so its " +
+    "payload is validated by kie.ai rather than locally. Moving it into " +
+    "CREATE_TASK_GUARDS widens guard coverage, which is a behaviour change " +
+    "and needs its own review — tracked by ac-bgkfzh.",
+  refinementNotYetEnforced:
+    "The model's request schema carries cross-field rules (.refine / " +
+    ".superRefine) that are NOT enforced before the request leaves the " +
+    "process. Checked for this exemption: adding the guard row would break " +
+    "no recorded replay — wan/2-7-image-to-video's recorded payload already " +
+    "satisfies its schema, so its row can be added as soon as the coverage " +
+    "question is taken up, and volcengine/video-to-video-lip-sync has no " +
+    "recording at all. Left off deliberately so coverage widens by one " +
+    "reviewed decision rather than by which schemas happen to carry a " +
+    "refinement — tracked by ac-bgkfzh.",
+} as const;
+
+// The other half of the membership rule: every KIE_MEDIA_MODELS id that is not
+// guarded above is listed here with the reason it is not. Rows follow
+// KIE_MEDIA_MODELS order. `satisfies Partial<Record<KieMediaModel, …>>` keeps
+// typo and stale-entry checking on the keys, exactly as the guard table's
+// KieMediaModel key type does.
+export const CREATE_TASK_GUARD_EXEMPTIONS = {
+  "kling-3.0/video": "notYetGuarded",
+  "kling-3.0/motion-control": "notYetGuarded",
+  "kling/v3-turbo-image-to-video": "notYetGuarded",
+  "kling/v3-turbo-text-to-video": "notYetGuarded",
+  "grok-imagine/text-to-image": "notYetGuarded",
+  "grok-imagine/image-to-image": "notYetGuarded",
+  "grok-imagine/text-to-video": "notYetGuarded",
+  "grok-imagine-video-1-5-preview": "notYetGuarded",
+  "nano-banana-pro": "notYetGuarded",
+  "nano-banana-2": "notYetGuarded",
+  "gpt-image/1.5-image-to-image": "notYetGuarded",
+  "gpt-image-2-image-to-image": "notYetGuarded",
+  "gpt-image-2-text-to-image": "notYetGuarded",
+  "seedream/5-lite-image-to-image": "notYetGuarded",
+  "seedream/5-lite-text-to-image": "notYetGuarded",
+  "seedream/5-pro-image-to-image": "notYetGuarded",
+  "seedream/5-pro-text-to-image": "notYetGuarded",
+  "grok-imagine/extend": "notYetGuarded",
+  "grok-imagine/upscale": "notYetGuarded",
+  "qwen2/text-to-image": "notYetGuarded",
+  "qwen2/image-edit": "notYetGuarded",
+  "bytedance/seedance-2-fast": "notYetGuarded",
+  "bytedance/seedance-2": "notYetGuarded",
+  "wan/2-7-image-to-video": "refinementNotYetEnforced",
+  "wan/2-7-text-to-video": "notYetGuarded",
+  "wan/2-7-r2v": "notYetGuarded",
+  "wan/2-7-videoedit": "notYetGuarded",
+  "wan/2-7-image": "notYetGuarded",
+  "wan/2-7-image-pro": "notYetGuarded",
+  "happyhorse/text-to-video": "notYetGuarded",
+  "happyhorse/image-to-video": "notYetGuarded",
+  "happyhorse/reference-to-video": "notYetGuarded",
+  "happyhorse/video-edit": "notYetGuarded",
+  "happyhorse-1-1/text-to-video": "notYetGuarded",
+  "happyhorse-1-1/image-to-video": "notYetGuarded",
+  "happyhorse-1-1/reference-to-video": "notYetGuarded",
+  "omnihuman-1-5": "notYetGuarded",
+  "volcengine/video-to-video-lip-sync": "refinementNotYetEnforced",
+  "elevenlabs/audio-isolation": "notYetGuarded",
+  "elevenlabs/text-to-dialogue-v3": "notYetGuarded",
+  "elevenlabs/text-to-speech-multilingual-v2": "notYetGuarded",
+  "elevenlabs/text-to-speech-turbo-2-5": "notYetGuarded",
+  "elevenlabs/sound-effect-v2": "notYetGuarded",
+  "sora-watermark-remover": "notYetGuarded",
+} as const satisfies Partial<
+  Record<KieMediaModel, keyof typeof GUARD_EXEMPTION_REASONS>
+>;
+
+type GuardedKieMediaModel = (typeof CREATE_TASK_GUARDS)[number][0];
+type ExemptKieMediaModel = keyof typeof CREATE_TASK_GUARD_EXEMPTIONS;
+type UndecidedKieMediaModel = Exclude<
+  KieMediaModel,
+  GuardedKieMediaModel | ExemptKieMediaModel
+>;
+
+// The compile pin. While the two lists above cover KIE_MEDIA_MODELS exactly,
+// UndecidedKieMediaModel is `never` and this type is `true`. Add a model to
+// KIE_MEDIA_MODELS and to neither list and it becomes that model's literal
+// type, so the assignment below stops compiling and tsc names the id:
+//   Type 'true' is not assignable to type '"pixverse-v7/text-to-video"'.
+// The assignment is load-bearing — a type alias resolving to a model literal is
+// not by itself an error.
+export type EveryKieMediaModelIsDecided = [UndecidedKieMediaModel] extends [
+  never,
+]
+  ? true
+  : UndecidedKieMediaModel;
+export const everyKieMediaModelIsDecided: EveryKieMediaModelIsDecided = true;
 
 function validateCreateTaskRequest(req: MediaGenerationRequest): void {
   const guard = CREATE_TASK_GUARDS.find(([model]) => model === req.model);

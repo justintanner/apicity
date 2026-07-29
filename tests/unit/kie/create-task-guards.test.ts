@@ -99,6 +99,12 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
         "pixverse-v6/reference-to-video",
         "pixverse-v6/text-to-video",
         "pixverse-v6/transition",
+        "qwen2/image-edit",
+        "qwen2/text-to-image",
+        "seedream/5-lite-image-to-image",
+        "seedream/5-lite-text-to-image",
+        "seedream/5-pro-image-to-image",
+        "seedream/5-pro-text-to-image",
       ].sort()
     );
   });

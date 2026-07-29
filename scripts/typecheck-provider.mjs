@@ -5,11 +5,22 @@
  * This is the fast path for local provider development. It deliberately falls
  * back to the full monorepo typecheck when the branch changes another package
  * or shared TypeScript/package config, so shared-package errors are not hidden.
+ *
+ * No provider package tsconfig covers `tests/**`, so a diff that touches the
+ * tests project adds a `tests/tsconfig.json` check on top of the provider
+ * tsconfig instead of reporting green on files it never compiles. That costs
+ * one extra `pnpm run typecheck:tests` (~25s) rather than the ~105s full
+ * typecheck, so the fast path stays fast. `scripts/lib/tests-project.mjs`
+ * decides which paths belong to the tests project.
  */
 
 import { spawnSync } from "node:child_process";
 import path from "node:path";
 import { repoRoot, resolveProviderScope } from "./lib/provider-scope.mjs";
+import {
+  TESTS_TYPECHECK_STEP,
+  isTestsProjectFile,
+} from "./lib/tests-project.mjs";
 
 const red = (s) => `\x1b[31m${s}\x1b[0m`;
 const cyan = (s) => `\x1b[36m${s}\x1b[0m`;
@@ -43,22 +54,28 @@ const diff = listChangedFiles(options.baseRef);
 const fallbackReasons = diff.error
   ? [{ file: options.baseRef, reason: diff.error }]
   : classifyFallbackReasons(diff.files, scope);
+const testsProjectFiles = diff.files.filter(isTestsProjectFile);
 
 console.error(dim(`typecheck:provider ${provider}`));
 console.error(dim(`base ref: ${options.baseRef}`));
 
-if (fallbackReasons.length > 0) {
-  console.error(
-    dim("shared/package changes detected; running full typecheck instead:")
-  );
-  for (const item of fallbackReasons.slice(0, 12)) {
-    console.error(dim(`  - ${item.file}: ${item.reason}`));
+process.exit(runSelectedSteps());
+
+function runSelectedSteps() {
+  // The full typecheck already ends in the tests project, so it never needs a
+  // second tests-project invocation.
+  if (fallbackReasons.length > 0) {
+    console.error(
+      dim("shared/package changes detected; running full typecheck instead:")
+    );
+    logTruncated(
+      fallbackReasons.map((item) => `${item.file}: ${item.reason}`),
+      12
+    );
+
+    return runStep("pnpm", ["run", "typecheck"]);
   }
-  if (fallbackReasons.length > 12) {
-    console.error(dim(`  - ... ${fallbackReasons.length - 12} more`));
-  }
-  run("pnpm", ["run", "typecheck"]);
-} else {
+
   if (diff.files.length === 0) {
     console.error(dim("no branch diff detected; using provider tsconfig"));
   } else {
@@ -66,7 +83,38 @@ if (fallbackReasons.length > 0) {
       dim("provider-scoped diff detected; using provider tsconfig")
     );
   }
-  run("pnpm", ["exec", "tsc", "--noEmit", "-p", pkgTsconfig]);
+
+  const providerStatus = runStep("pnpm", [
+    "exec",
+    "tsc",
+    "--noEmit",
+    "-p",
+    pkgTsconfig,
+  ]);
+
+  // Stop on a provider failure: the tests project pulls the same provider
+  // sources in through its `@apicity/*` path mapping, so a second run would
+  // spend ~25s reprinting errors the reader already has.
+  if (providerStatus !== 0 || testsProjectFiles.length === 0) {
+    return providerStatus;
+  }
+
+  console.error(
+    dim("tests-project files changed; also checking tests/tsconfig.json:")
+  );
+  logTruncated(testsProjectFiles, 12);
+
+  // TESTS_TYPECHECK_STEP.args is frozen; spawnSync gets its own copy.
+  return runStep(TESTS_TYPECHECK_STEP.command, [...TESTS_TYPECHECK_STEP.args]);
+}
+
+function logTruncated(lines, limit) {
+  for (const line of lines.slice(0, limit)) {
+    console.error(dim(`  - ${line}`));
+  }
+  if (lines.length > limit) {
+    console.error(dim(`  - ... ${lines.length - limit} more`));
+  }
 }
 
 function parseArgs(args) {
@@ -229,11 +277,13 @@ function isRepoTypecheckConfig(file) {
   );
 }
 
-function run(command, args) {
+// Returns the exit status instead of exiting, so one invocation can run more
+// than one command; the caller owns the single `process.exit`.
+function runStep(command, args) {
   console.error(dim(`command: ${formatCommand(command, args)}`));
   const result = spawnSync(command, args, { cwd: repoRoot, stdio: "inherit" });
 
-  process.exit(result.status ?? 1);
+  return result.status ?? 1;
 }
 
 function formatCommand(command, args) {

@@ -854,14 +854,16 @@ latest release.
 
 Propagate the release version bump back to `main` so `main` and `stable` do
 not drift after publishing, then verify a fresh consumer install resolves the
-published artifact and the entrypoint loads.
+published artifact and the entrypoint loads. The checkout ends on `main` and
+must stay there: the rig checkout is shared by every subsequent work session,
+and `stable` only moves during a release. (Leaving the checkout on `stable`
+here is what caused work commits to land on `stable` after v0.8.2.)
 
 ```bash
 git checkout main
 git pull --ff-only origin main
 git merge --ff-only stable
 git push origin main
-git checkout stable
 ```
 
 **If `merge --ff-only` fails:** `main` has moved since the release started.
@@ -883,7 +885,7 @@ broken. STOP and mail Witness — `npm deprecate` may be needed for this
 version before the next release.
 
 **Exit criteria:** `origin/main` and `origin/stable` point at the release
-commit, the working branch is back on `stable`, and the smoke install + import
+commit, the working branch ends on `main`, and the smoke install + import
 succeed.
 
 # Sub-step 9: Close the release bead

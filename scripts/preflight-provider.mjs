@@ -14,12 +14,10 @@
  * packages/provider/<provider>, or an integration test path. With no argument,
  * the script tries APICITY_PROVIDER_PATH, pnpm's INIT_CWD, then process.cwd().
  *
- * Steps:
- *   1. prettier --write  on the provider package dir + its integration tests
- *   2. lint:provider     scoped ESLint + provider-relevant repo checks
- *   3. typecheck:tests   whole tests/ project (tests/tsconfig.json)
- *   4. test:provider     typecheck the package + replay its tests
- *   5. cross-cutting     whole-corpus recording-enumeration tests
+ * The checklist itself lives in scripts/lib/fast-gate-steps.mjs — the single
+ * definition this script prints from and the documentation guard reads. It is
+ * deliberately not restated here: a copy in this docstring is exactly the kind
+ * of second list that goes stale.
  *
  * Step 3 is the one step here that is NOT scoped: `tests/tsconfig.json` is a
  * single whole-tree project, so the step runs unconditionally and a type error
@@ -42,6 +40,7 @@
 
 import { spawnSync } from "node:child_process";
 import { listCrossCuttingTests } from "./lib/cross-cutting-tests.mjs";
+import { FAST_GATE_STEPS } from "./lib/fast-gate-steps.mjs";
 import { repoRoot, resolveProviderScope } from "./lib/provider-scope.mjs";
 import { TESTS_TYPECHECK_STEP } from "./lib/tests-project.mjs";
 
@@ -83,11 +82,9 @@ const crossCuttingTests = listCrossCuttingTests();
 
 console.error(`Fast provider preflight: ${provider}`);
 console.error("Steps:");
-console.error("  1. prettier --write (provider package + tests)");
-console.error("  2. lint:provider");
-console.error(`  3. ${TESTS_TYPECHECK_STEP.title}`);
-console.error("  4. test:provider (provider typecheck + replay)");
-console.error("  5. cross-cutting recording-enumeration tests");
+FAST_GATE_STEPS.forEach((step, index) => {
+  console.error(`  ${index + 1}. ${step.title}`);
+});
 
 function run(title, cmd, args, { repro } = {}) {
   console.error(`\n▸ ${title}`);

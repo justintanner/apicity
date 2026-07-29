@@ -1684,6 +1684,251 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  "pixverse-v6/image-to-video": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 3,
+        maxLength: 5000,
+        description: "Video generation prompt (3-5000 chars)",
+      },
+      image_urls: {
+        type: "array",
+        required: true,
+        minItems: 1,
+        maxItems: 2,
+        description:
+          "Source image URLs (up to 2; JPG/JPEG/PNG/WebP, max 20MB each)",
+        items: {
+          type: "string",
+        },
+      },
+      quality: {
+        type: "string",
+        required: true,
+        enum: ["360p", "540p", "720p", "1080p"],
+        default: "720p",
+        description:
+          "Output video resolution (default 720p; spec-required despite documented default)",
+      },
+      duration: {
+        type: "integer",
+        minimum: 1,
+        maximum: 15,
+        default: 5,
+        description:
+          "Output video duration in seconds, 1-15 (default 5; required unless template_id is set, and mutually exclusive with it)",
+      },
+      template_id: {
+        type: "string",
+        minLength: 1,
+        description:
+          "PixVerse effect template; fixes the duration, so duration must be omitted (ids listed at https://docs.kie.ai/market/pixverse/image-to-video)",
+      },
+      generate_audio_switch: {
+        type: "boolean",
+        default: false,
+        description:
+          "Generate audio synchronized with the video content (default false)",
+      },
+      generate_multi_clip_switch: {
+        type: "boolean",
+        default: false,
+        description: "Generate a multi-clip video (default false)",
+      },
+      seed: {
+        type: "integer",
+        minimum: 0,
+        maximum: 2147483647,
+        description: "Random seed (0-2147483647)",
+      },
+    },
+  },
+
+  "pixverse-v6/transition": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 3,
+        maxLength: 5000,
+        description: "Video generation prompt (3-5000 chars)",
+      },
+      first_frame_image_url: {
+        type: "string",
+        required: true,
+        description: "First frame image URL (JPG/JPEG/PNG/WebP, max 20MB)",
+      },
+      last_frame_image_url: {
+        type: "string",
+        required: true,
+        description: "Last frame image URL (JPG/JPEG/PNG/WebP, max 20MB)",
+      },
+      quality: {
+        type: "string",
+        required: true,
+        enum: ["360p", "540p", "720p", "1080p"],
+        default: "720p",
+        description:
+          "Output video resolution (default 720p; spec-required despite documented default)",
+      },
+      duration: {
+        type: "integer",
+        required: true,
+        minimum: 1,
+        maximum: 15,
+        default: 5,
+        description:
+          "Output video duration in seconds, 1-15 (default 5; spec-required despite documented default)",
+      },
+      generate_audio_switch: {
+        type: "boolean",
+        default: false,
+        description:
+          "Generate audio synchronized with the video content (default false)",
+      },
+      seed: {
+        type: "integer",
+        minimum: 0,
+        maximum: 2147483647,
+        description: "Random seed (0-2147483647)",
+      },
+    },
+  },
+
+  // Upstream models `input` as an anyOf of two variants that differ only in
+  // the discriminator, so `taskId` and `video_url` are each required in their
+  // own variant and neither is required in this flat map. Exactly one must be
+  // sent. Unlike its three siblings, `extend` documents no defaults at all.
+  "pixverse-v6/extend": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 3,
+        maxLength: 5000,
+        description: "Video generation prompt (3-5000 chars)",
+      },
+      taskId: {
+        type: "string",
+        description:
+          "taskId of a successful parent video task to extend; mutually exclusive with video_url",
+      },
+      video_url: {
+        type: "string",
+        description:
+          "URL of the video to extend; mutually exclusive with taskId",
+      },
+      quality: {
+        type: "string",
+        required: true,
+        enum: ["360p", "540p", "720p", "1080p"],
+        description: "Output video resolution",
+      },
+      duration: {
+        type: "integer",
+        required: true,
+        minimum: 1,
+        maximum: 15,
+        description: "Output video duration in seconds, 1-15",
+      },
+      generate_audio_switch: {
+        type: "boolean",
+        description: "Generate audio synchronized with the video content",
+      },
+      seed: {
+        type: "integer",
+        minimum: 0,
+        maximum: 2147483647,
+        description: "Random seed (0-2147483647)",
+      },
+    },
+  },
+
+  "pixverse-v6/reference-to-video": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 3,
+        maxLength: 5000,
+        description: "Video generation prompt (3-5000 chars)",
+      },
+      image_references: {
+        type: "array",
+        required: true,
+        minItems: 1,
+        maxItems: 7,
+        description:
+          "Reference images (1-7); ref_name values are addressable as @name in the prompt and must be unique within the list",
+        items: {
+          type: "object",
+          properties: {
+            image_url: {
+              type: "string",
+              required: true,
+              description: "Reference image URL",
+            },
+            type: {
+              type: "string",
+              enum: ["subject", "background"],
+              default: "subject",
+              description: "How the reference is used",
+            },
+            ref_name: {
+              type: "string",
+              minLength: 1,
+              maxLength: 30,
+              description: "Name referenced in the prompt via @name",
+            },
+          },
+        },
+      },
+      aspect_ratio: {
+        type: "string",
+        required: true,
+        enum: ["16:9", "4:3", "1:1", "3:4", "9:16", "2:3", "3:2", "21:9"],
+        default: "16:9",
+        description:
+          "Output video aspect ratio (default 16:9; spec-required despite documented default)",
+      },
+      quality: {
+        type: "string",
+        required: true,
+        enum: ["360p", "540p", "720p", "1080p"],
+        default: "720p",
+        description:
+          "Output video resolution (default 720p; spec-required despite documented default)",
+      },
+      duration: {
+        type: "integer",
+        required: true,
+        minimum: 1,
+        maximum: 15,
+        default: 5,
+        description:
+          "Output video duration in seconds, 1-15 (default 5; spec-required despite documented default)",
+      },
+      generate_audio_switch: {
+        type: "boolean",
+        default: false,
+        description:
+          "Generate audio synchronized with the video content (default false)",
+      },
+      seed: {
+        type: "integer",
+        minimum: 0,
+        maximum: 2147483647,
+        description: "Random seed (0-2147483647)",
+      },
+    },
+  },
+
   "happyhorse/text-to-video": {
     type: "video",
     fields: {

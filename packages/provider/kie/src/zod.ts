@@ -139,19 +139,31 @@ const KieMediaElevenLabsModelAliasSchema = z
     "Expected a listed model or a kie ElevenLabs alias (e.g. elevenlabs/text-to-speech-flash-v3)"
   );
 
+// kie namespaces PixVerse by dashed product version, then the task slug:
+// `pixverse-v6/text-to-video`. The `-v` prefix on the version is what
+// separates a real id from the bare product name — `pixverse/…` and
+// `pixverse6/…` are typos, not future releases — and the task segment is
+// required because `pixverse-v6` alone names the family, not a model.
+const KieMediaPixverseModelAliasSchema = z
+  .string()
+  .regex(
+    /^pixverse-v\d+(?:\.\d+)*\/[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/,
+    "Expected a listed model or a kie PixVerse alias (e.g. pixverse-v7/text-to-video)"
+  );
+
 // The catalogue itself, in upstream's order — not regrouped by family, since
 // reordering would read as renames in review and the alias comments above
 // already state each family's membership.
 //
-// Five ids carry no alias and stay enumerated: `omnihuman-1-5`,
-// `volcengine/video-to-video-lip-sync`, `gemini-omni-video`,
-// `sora-watermark-remover` and `pixverse-v6/text-to-video`. Each is the only
-// id kie lists for its vendor, and one sample cannot establish a grammar —
-// nothing here distinguishes a versioned family (`omnihuman-<major>-<minor>`)
-// from a fixed product name, so any regex would be a guess that either
-// rejects the real next release or widens into the wildcard this file exists
-// to avoid. They gain an alias when kie ships a second member; until then a
-// new id from those vendors is an explicit enum addition.
+// Four ids carry no alias and stay enumerated: `omnihuman-1-5`,
+// `volcengine/video-to-video-lip-sync`, `gemini-omni-video` and
+// `sora-watermark-remover`. Each is the only id kie lists for its vendor, and
+// one sample cannot establish a grammar — nothing here distinguishes a
+// versioned family (`omnihuman-<major>-<minor>`) from a fixed product name, so
+// any regex would be a guess that either rejects the real next release or
+// widens into the wildcard this file exists to avoid. They gain an alias when
+// kie ships a second member; until then a new id from those vendors is an
+// explicit enum addition.
 export const KIE_MEDIA_MODELS = [
   "kling-3.0/video",
   "kling-3.0/motion-control",
@@ -201,6 +213,10 @@ export const KIE_MEDIA_MODELS = [
   "elevenlabs/sound-effect-v2",
   "sora-watermark-remover",
   "pixverse-v6/text-to-video",
+  "pixverse-v6/image-to-video",
+  "pixverse-v6/transition",
+  "pixverse-v6/extend",
+  "pixverse-v6/reference-to-video",
 ] as const;
 
 export const KieMediaModelSchema = z
@@ -214,7 +230,8 @@ export const KieMediaModelSchema = z
   .or(KieMediaSeedanceModelAliasSchema)
   .or(KieMediaWanModelAliasSchema)
   .or(KieMediaHappyHorseModelAliasSchema)
-  .or(KieMediaElevenLabsModelAliasSchema);
+  .or(KieMediaElevenLabsModelAliasSchema)
+  .or(KieMediaPixverseModelAliasSchema);
 
 export const MediaTypeSchema = z.enum([
   "image",

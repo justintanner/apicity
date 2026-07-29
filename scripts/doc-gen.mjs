@@ -4,6 +4,10 @@
  *
  * Generates README.md files with a collapsible API Reference section
  * sourced from the endpoint walker + endpoint-docs.tsv.
+ *
+ *   node scripts/doc-gen.mjs              # regenerate every provider README
+ *   node scripts/doc-gen.mjs <provider>   # regenerate one provider README
+ *   node scripts/doc-gen.mjs --check      # exit 1 if any README is stale
  */
 
 import fs from "node:fs/promises";
@@ -3839,7 +3843,10 @@ async function generateReadme(providerDir, providerName, endpoints) {
   return sections.join("\n");
 }
 
-async function regenerate(providerName, endpointsByProvider) {
+// Pure: renders a provider's README and reports how many endpoints it
+// documents, without touching disk. Both the write path and --check go
+// through this so the two can never drift.
+async function renderProviderReadme(providerName, endpointsByProvider) {
   const providerDir = path.join(
     REPO_ROOT,
     "packages",
@@ -3849,39 +3856,105 @@ async function regenerate(providerName, endpointsByProvider) {
   const readmePath = path.join(providerDir, "README.md");
   const endpoints = endpointsByProvider.get(providerName) ?? [];
   const readme = await generateReadme(providerDir, providerName, endpoints);
-  await fs.writeFile(readmePath, readme, "utf8");
   // Report what the README actually documents, not the raw walk: collapsed
   // verb aliases would otherwise make this line disagree with the header.
   const { rendered } = resolveEndpointLabels(providerName, endpoints);
+  return { readmePath, readme, renderedCount: rendered.length };
+}
+
+async function regenerate(providerName, endpointsByProvider) {
+  const { readmePath, readme, renderedCount } = await renderProviderReadme(
+    providerName,
+    endpointsByProvider
+  );
+  await fs.writeFile(readmePath, readme, "utf8");
   console.log(
-    `✅ Generated ${path.relative(REPO_ROOT, readmePath)} (${rendered.length} endpoints)`
+    `✅ Generated ${path.relative(REPO_ROOT, readmePath)} (${renderedCount} endpoints)`
   );
 }
 
+// Drift mode: compare the committed README against freshly rendered output and
+// write nothing. Mirrors `gen:shared:check` (scripts/sync-shared-src.mjs) so
+// both drift gates report the same way. A missing README is stale, not a crash.
+async function checkProviderReadme(providerName, endpointsByProvider) {
+  const { readmePath, readme } = await renderProviderReadme(
+    providerName,
+    endpointsByProvider
+  );
+  let current = null;
+  try {
+    current = await fs.readFile(readmePath, "utf8");
+  } catch (error) {
+    if (!error || error.code !== "ENOENT") throw error;
+  }
+  return current === readme ? null : path.relative(REPO_ROOT, readmePath);
+}
+
+const KNOWN_FLAGS = new Set(["--check"]);
+
 async function main() {
-  const args = process.argv.slice(2);
+  // `pnpm run doc-gen -- --check` forwards the bare `--` separator through to
+  // argv, so drop it before classifying — otherwise the unknown-flag guard
+  // below rejects pnpm's own passthrough syntax.
+  const args = process.argv.slice(2).filter((a) => a !== "--");
+  const flags = args.filter((a) => a.startsWith("--"));
+  const positional = args.filter((a) => !a.startsWith("--"));
+
+  const unknown = flags.filter((f) => !KNOWN_FLAGS.has(f));
+  if (unknown.length > 0) {
+    console.error(`Unknown flag(s): ${unknown.join(", ")}`);
+    console.error("Usage: node scripts/doc-gen.mjs [--check] [<provider>]");
+    process.exitCode = 1;
+    return;
+  }
+
+  const check = flags.includes("--check");
   const endpointsByProvider = await collectEndpointsByProvider();
 
   let providers;
-  if (args.length === 0) {
+  if (positional.length === 0) {
     providers = [
       ...new Set([...PROVIDERS.map((p) => p.name), ...TSV_ONLY_PROVIDERS]),
     ];
   } else {
-    const raw = args[0];
+    const raw = positional[0];
     const providerName = raw.startsWith("packages/")
       ? path.basename(path.resolve(raw))
       : raw;
     providers = [providerName];
   }
 
+  const stale = [];
+  let failed = false;
+
   for (const name of providers) {
     try {
-      await regenerate(name, endpointsByProvider);
+      if (check) {
+        const stalePath = await checkProviderReadme(name, endpointsByProvider);
+        if (stalePath) stale.push(stalePath);
+      } else {
+        await regenerate(name, endpointsByProvider);
+      }
     } catch (error) {
       console.error(`❌ Error generating docs for ${name}: ${error.message}`);
       process.exitCode = 1;
+      failed = true;
     }
+  }
+
+  if (!check) return;
+
+  if (stale.length > 0) {
+    for (const stalePath of stale) {
+      console.error(`stale: ${stalePath}`);
+    }
+    console.error("Run `pnpm run doc-gen` and commit the result.");
+    process.exitCode = 1;
+    return;
+  }
+
+  if (!failed) {
+    console.log("Generated provider READMEs are up to date.");
   }
 }
 

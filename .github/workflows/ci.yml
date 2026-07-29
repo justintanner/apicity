@@ -53,6 +53,13 @@ jobs:
       - name: Verify generated examples are current
         run: pnpm run gen:examples:check
 
+      # Must run BEFORE the build: `pnpm run build` ends in `doc-gen`, which
+      # rewrites the very files this step inspects, so a check placed after it
+      # would compare regenerated output against itself and pass on a stale
+      # commit every time.
+      - name: Verify generated provider READMEs are current
+        run: pnpm run doc-gen:check
+
       - name: Build packages
         run: pnpm run build
 

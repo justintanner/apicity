@@ -5,12 +5,14 @@ import { mintOtp } from "../../packages/provider/kie/src/paygate";
 import { kieRequest } from "../../packages/provider/kie/src/request";
 import { KieError } from "../../packages/provider/kie/src/types";
 import type {
+  GeminiOmniVideoRequest,
   GrokImageToVideoRequest,
   HappyHorse11ImageToVideoRequest,
   HappyHorse11ReferenceToVideoRequest,
   HappyHorse11TextToVideoRequest,
   VolcengineVideoToVideoLipSyncRequest,
 } from "../../packages/provider/kie/src/types";
+import { TEST_PAYGATE_SECRET, mintKieCreateTaskOtp } from "../harness";
 
 describe("KIE request utilities", () => {
   afterEach(() => {
@@ -678,6 +680,57 @@ describe("KIE request utilities", () => {
           }),
         })
       ).rejects.toThrow("at most 7 image_urls");
+      expect(mockFetch).not.toHaveBeenCalled();
+    });
+
+    // Provider-level dispatch pin for `gemini-omni-video`: the model-specific
+    // schema is exercised elsewhere only through `safeParse`, so without this
+    // test dropping the model's row from the `createTask` guard set would leave
+    // the suite green.
+    it("should reject an over-quota gemini-omni-video request before fetch", async () => {
+      const mockFetch = vi.fn();
+      const provider = createKie({
+        apiKey: "test-key",
+        baseURL: "https://api.kie.ai",
+        fetch: mockFetch,
+        paygate: { secret: TEST_PAYGATE_SECRET },
+      });
+      // image_urls (3) + video_list (1) * 2 + character_ids (3) = 8 > 7.
+      const request: GeminiOmniVideoRequest = {
+        model: "gemini-omni-video",
+        input: {
+          prompt: "Animate every supplied reference at once.",
+          image_urls: [
+            "https://example.com/scene-1.png",
+            "https://example.com/scene-2.png",
+            "https://example.com/scene-3.png",
+          ],
+          video_list: [
+            {
+              url: "https://example.com/source.mp4",
+              start: 0,
+              ends: 4,
+            },
+          ],
+          character_ids: ["char_1", "char_2", "char_3"],
+          duration: "6",
+        },
+      };
+
+      const rejection = await provider.post.api.v1.jobs
+        .createTask(request, mintKieCreateTaskOtp(request))
+        .then(
+          () => undefined,
+          (error: unknown) => error
+        );
+
+      expect(rejection).toBeInstanceOf(KieError);
+      const error = rejection as KieError;
+      expect(error.status).toBe(400);
+      expect(error.message).toContain("quota exceeded");
+      const body = error.body as { issues?: unknown };
+      expect(Array.isArray(body.issues)).toBe(true);
+      expect((body.issues as unknown[]).length).toBeGreaterThan(0);
       expect(mockFetch).not.toHaveBeenCalled();
     });
 

@@ -237,8 +237,8 @@ MCP server's `--paygate-secret-file` wiring.
   Integration tests record/replay via Polly.js (no keys needed for replay).
 - **Provider-scoped loop** — use
   `pnpm run dev:preflight:fast -- <name-or-path>` as the fast pre-push
-  checklist for narrow provider work. It prints and runs the steps:
-  <!-- fast-gate-steps:start -->Prettier on the provider
+  checklist for narrow provider work. It prints and runs the
+  steps: <!-- fast-gate-steps:start -->Prettier on the provider
   package/tests<!-- fast-gate-step:format -->,
   `lint:provider`<!-- fast-gate-step:lint -->, the whole tests-project
   typecheck (`typecheck:tests`, unscoped by

@@ -19,12 +19,17 @@
  * deliberately not restated here: a copy in this docstring is exactly the kind
  * of second list that goes stale.
  *
- * Step 3 is the one step here that is NOT scoped: `tests/tsconfig.json` is a
- * single whole-tree project, so the step runs unconditionally and a type error
- * in any file it compiles fails this gate whichever provider it was invoked
- * for. Why that step exists and what it costs: scripts/lib/tests-project.mjs.
+ * Steps are named by their `FAST_GATE_STEPS` id, never by position: the banner
+ * numbers itself from the list, so an ordinal written down here goes stale the
+ * moment a step is inserted anywhere but the end.
  *
- * Step 5 runs the cross-cutting integration tests (see
+ * Step `typecheck-tests` is the one step here that is NOT scoped:
+ * `tests/tsconfig.json` is a single whole-tree project, so the step runs
+ * unconditionally and a type error in any file it compiles fails this gate
+ * whichever provider it was invoked for. Why that step exists and what it
+ * costs: scripts/lib/tests-project.mjs.
+ *
+ * Step `cross-cutting` runs the cross-cutting integration tests (see
  * scripts/lib/cross-cutting-tests.mjs) that enumerate ALL recordings and assert
  * against a hardcoded allowlist. They are not provider-scoped, so `test:provider`
  * alone skips them and a recording added under one provider can break the
@@ -107,7 +112,7 @@ function printUsage() {
   );
 }
 
-// 1. Format the provider package + its tests only.
+// Step `format`: the provider package + its tests only.
 run("prettier --write (scoped)", "pnpm", [
   "exec",
   "prettier",
@@ -115,7 +120,7 @@ run("prettier --write (scoped)", "pnpm", [
   ...targets,
 ]);
 
-// 2. Lint the same scope and provider-relevant repository checks.
+// Step `lint`: the same scope, plus provider-relevant repository checks.
 run(`lint:provider ${provider}`, "pnpm", [
   "run",
   "lint:provider",
@@ -123,7 +128,8 @@ run(`lint:provider ${provider}`, "pnpm", [
   provider,
 ]);
 
-// 3. Typecheck the whole tests project. Unconditional and provider-independent:
+// Step `typecheck-tests`: the whole tests project. Unconditional and
+// provider-independent:
 // tests/tsconfig.json is a single whole-tree project, so per-provider or
 // per-diff scoping would reopen the gap for shared helpers under tests/
 // (ac-6g2rnr). No passthrough — those are Vitest args, not tsc args.
@@ -134,7 +140,7 @@ run(
   { repro: TESTS_TYPECHECK_STEP.repro }
 );
 
-// 4. Typecheck the provider package, then replay its tests.
+// Step `test-provider`: typecheck the provider package, then replay its tests.
 run(`test:provider ${provider}`, "pnpm", [
   "run",
   "test:provider",
@@ -142,7 +148,7 @@ run(`test:provider ${provider}`, "pnpm", [
   ...passthrough,
 ]);
 
-// 5. Cross-cutting recording-enumeration tests. Not provider-scoped, so
+// Step `cross-cutting`: recording-enumeration tests. Not provider-scoped, so
 // test:provider skips them — but a recording added under this provider can
 // break their whole-corpus allowlist. Run them here so the fast gate cannot
 // pass a broken allowlist (ac-05hrc). Filesystem-only, no network/replay.

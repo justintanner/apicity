@@ -12,8 +12,13 @@
  * `scripts/lib/tests-project.mjs` documents for itself: no filesystem access
  * and no import of `provider-scope.mjs`, so the guard test can import this
  * module cheaply and stay filesystem-only. The one import is
- * `TESTS_TYPECHECK_STEP`, which keeps step 3's title single-sourced where it
- * already lives.
+ * `TESTS_TYPECHECK_STEP`, which keeps the `typecheck-tests` step's title
+ * single-sourced where it already lives.
+ *
+ * Steps are referred to by `id` here and in `scripts/preflight-provider.mjs`,
+ * never by position. The banner numbers itself from this array, so a written-down
+ * ordinal goes stale the moment a step is inserted anywhere but the end — the
+ * drift this module exists to prevent, one layer down.
  */
 import { TESTS_TYPECHECK_STEP } from "./tests-project.mjs";
 
@@ -33,10 +38,10 @@ export const FAST_GATE_DOC_SURFACES = Object.freeze([
  * - `id` — stable identity, `[a-z0-9-]+`. It is what the documentation markers
  *   name and what every failure message quotes, so renaming one is a visible,
  *   guarded change rather than a silent drift.
- * - `title` — the exact string the script prints after `  N. `. Steps 1, 2, 4,
- *   and 5 carry the literals the script printed before it was rewired; step 3
- *   is `TESTS_TYPECHECK_STEP.title`, so the printed checklist stays
- *   byte-identical.
+ * - `title` — the exact string the script prints after `  N. `. Every step but
+ *   `typecheck-tests` carries the literal the script printed before it was
+ *   rewired; `typecheck-tests` takes `TESTS_TYPECHECK_STEP.title`, so the
+ *   printed checklist stays byte-identical.
  * - `prose` — one required substring per surface. The surfaces legitimately
  *   paraphrase (`scoped format` in `CLAUDE.md` against `Prettier on the
  *   provider package/tests` in `README.md`), so printed titles cannot be

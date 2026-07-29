@@ -206,6 +206,47 @@ describe("tests-project helper", () => {
       expect(invocations).toHaveLength(FAST_GATE_STEPS.length);
     });
 
+    it("runs the steps in the order the banner prints them", () => {
+      // The count above pins how many call sites exist, not which is which.
+      // Reorder two FAST_GATE_STEPS entries, or swap two `run(...)`
+      // statements, and the count is unchanged, every title still resolves,
+      // and the docs guard does not assert order by design — so the banner
+      // would misdescribe the order the gate actually runs. That is the same
+      // "documentation that lies about the gate" defect this change exists to
+      // close, displaced from prose into the banner.
+      //
+      // The label a call site passes is deliberately not the step's `title`
+      // (it carries runtime context: the provider name, the scope), so the
+      // binding cannot be derived — it is written out here, in order, and the
+      // first assertion is what keeps this table honest against the list.
+      const callSiteLabels: ReadonlyArray<readonly [string, string]> = [
+        ["format", "prettier --write"],
+        ["lint", "lint:provider"],
+        ["typecheck-tests", "TESTS_TYPECHECK_STEP.title"],
+        ["test-provider", "test:provider"],
+        ["cross-cutting", "cross-cutting recording tests"],
+      ];
+
+      expect(callSiteLabels.map(([id]) => id)).toEqual(
+        FAST_GATE_STEPS.map((step) => step.id)
+      );
+
+      // First argument of each top-level `run(` call, in source order. `[^,]+`
+      // crosses the newline of the one call whose label sits on its own line
+      // but cannot cross into the second argument.
+      const labels = [...source.matchAll(/^run\(\s*([^,]+),/gm)].map((match) =>
+        match[1].trim()
+      );
+
+      expect(labels).toHaveLength(callSiteLabels.length);
+      for (const [index, [id, expected]] of callSiteLabels.entries()) {
+        expect(
+          labels[index],
+          `call site ${index + 1} should be '${id}'`
+        ).toContain(expected);
+      }
+    });
+
     it("runs the step as an unguarded statement, with a repro line", () => {
       // REQ-002: this step "must not be skipped". Asserting only that the
       // source mentions TESTS_TYPECHECK_STEP.command does not enforce that —

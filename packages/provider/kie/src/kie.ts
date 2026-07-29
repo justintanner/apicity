@@ -66,6 +66,12 @@ import {
   Wan27VideoEditRequestSchema,
   Wan27ImageRequestSchema,
   Wan27ImageProRequestSchema,
+  GrokTextToImageRequestSchema,
+  GrokImageToImageRequestSchema,
+  GrokTextToVideoRequestSchema,
+  GrokVideo15PreviewRequestSchema,
+  GrokVideoExtendRequestSchema,
+  GrokVideoUpscaleRequestSchema,
 } from "./zod";
 import { modelInputSchemas } from "./model-schemas";
 import { createVeoProvider } from "./veo";
@@ -122,7 +128,13 @@ const MIME_TYPES: Record<string, string> = {
 // rows but erases their literals, and the pin needs to read the guarded ids
 // back out. The per-row check on the id is unchanged.
 export const CREATE_TASK_GUARDS = [
+  ["grok-imagine/text-to-image", GrokTextToImageRequestSchema],
+  ["grok-imagine/image-to-image", GrokImageToImageRequestSchema],
+  ["grok-imagine/text-to-video", GrokTextToVideoRequestSchema],
   ["grok-imagine/image-to-video", GrokImageToVideoRequestSchema],
+  ["grok-imagine-video-1-5-preview", GrokVideo15PreviewRequestSchema],
+  ["grok-imagine/extend", GrokVideoExtendRequestSchema],
+  ["grok-imagine/upscale", GrokVideoUpscaleRequestSchema],
   ["bytedance/seedance-2-fast", Seedance2FastRequestSchema],
   ["bytedance/seedance-2", Seedance2RequestSchema],
   ["bytedance/seedance-2-mini", Seedance2MiniRequestSchema],
@@ -171,10 +183,6 @@ export const CREATE_TASK_GUARD_EXEMPTIONS = {
   "kling-3.0/motion-control": "notYetGuarded",
   "kling/v3-turbo-image-to-video": "notYetGuarded",
   "kling/v3-turbo-text-to-video": "notYetGuarded",
-  "grok-imagine/text-to-image": "notYetGuarded",
-  "grok-imagine/image-to-image": "notYetGuarded",
-  "grok-imagine/text-to-video": "notYetGuarded",
-  "grok-imagine-video-1-5-preview": "notYetGuarded",
   "nano-banana-pro": "notYetGuarded",
   "nano-banana-2": "notYetGuarded",
   "gpt-image/1.5-image-to-image": "notYetGuarded",
@@ -184,8 +192,6 @@ export const CREATE_TASK_GUARD_EXEMPTIONS = {
   "seedream/5-lite-text-to-image": "notYetGuarded",
   "seedream/5-pro-image-to-image": "notYetGuarded",
   "seedream/5-pro-text-to-image": "notYetGuarded",
-  "grok-imagine/extend": "notYetGuarded",
-  "grok-imagine/upscale": "notYetGuarded",
   "qwen2/text-to-image": "notYetGuarded",
   "qwen2/image-edit": "notYetGuarded",
   "happyhorse/text-to-video": "notYetGuarded",

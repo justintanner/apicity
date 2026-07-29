@@ -277,9 +277,11 @@ describe("doc-gen endpoint labels", () => {
 
     // Two different callables (`KimiCoding["post"]["stream"]` is real public
     // API), so both render — and neither may fall back to the shared
-    // `displayDotPath` value they both carry.
+    // `displayDotPath` value they both carry. The relabelled sibling keeps its
+    // leading verb: the README prints the label as a call, so it has to
+    // resolve, and `kimicoding.stream.coding.v1.messages` does not exist.
     expect(rendered).toEqual([direct, streaming]);
     expect(labels.get(direct)).toBe("coding.v1.messages");
-    expect(labels.get(streaming)).toBe("stream.coding.v1.messages");
+    expect(labels.get(streaming)).toBe("post.stream.coding.v1.messages");
   });
 });

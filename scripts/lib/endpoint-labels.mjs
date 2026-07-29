@@ -105,7 +105,8 @@ function streamSegmentCount(ep) {
  *   3. otherwise the canonical sub-group — fewest `STREAM_KEYS` segments,
  *      tie-broken by shortest then lexicographically-first `calleeDotPath` —
  *      keeps the base label, and every other sub-group is labelled with its
- *      own `calleeDotPath`.
+ *      own `fullDotPath` (the real access path, so the rendered label
+ *      resolves — `calleeDotPath` groups but does not necessarily resolve).
  *
  * Rule 3 is what keeps `fal v1.serverless.logs POST` (a real TSV row whose
  * definition site is `v1.serverless.logs.stream`) on its documented label
@@ -155,7 +156,18 @@ export function resolveEndpointLabels(providerName, endpoints) {
       isMoreCanonical(cur, best) ? cur : best
     );
     for (const survivor of survivors) {
-      labels.set(survivor.ep, survivor === canonical ? base : survivor.callee);
+      // `callee` is the *identity* key — "are these two sites the same
+      // endpoint?" — and need not resolve on the provider object, because
+      // stripping the leading verb is what makes verb aliases compare equal.
+      // The label chosen here is *rendered* as a copy-pasteable call, so it
+      // must resolve; use `fullDotPath`, which is by construction the real
+      // access path from the provider root.
+      labels.set(
+        survivor.ep,
+        survivor === canonical
+          ? base
+          : (survivor.ep.fullDotPath ?? survivor.callee)
+      );
     }
   }
 

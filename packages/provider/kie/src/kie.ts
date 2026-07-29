@@ -58,6 +58,9 @@ import {
   PixverseV6TransitionRequestSchema,
   PixverseV6ExtendRequestSchema,
   PixverseV6ReferenceToVideoRequestSchema,
+  Omnihuman15RequestSchema,
+  VolcengineVideoToVideoLipSyncRequestSchema,
+  SoraWatermarkRequestSchema,
 } from "./zod";
 import { modelInputSchemas } from "./model-schemas";
 import { createVeoProvider } from "./veo";
@@ -116,7 +119,13 @@ const MIME_TYPES: Record<string, string> = {
 export const CREATE_TASK_GUARDS = [
   ["grok-imagine/image-to-video", GrokImageToVideoRequestSchema],
   ["bytedance/seedance-2-mini", Seedance2MiniRequestSchema],
+  ["omnihuman-1-5", Omnihuman15RequestSchema],
+  [
+    "volcengine/video-to-video-lip-sync",
+    VolcengineVideoToVideoLipSyncRequestSchema,
+  ],
   ["gemini-omni-video", GeminiOmniVideoRequestSchema],
+  ["sora-watermark-remover", SoraWatermarkRequestSchema],
   ["pixverse-v6/text-to-video", PixverseV6TextToVideoRequestSchema],
   ["pixverse-v6/image-to-video", PixverseV6ImageToVideoRequestSchema],
   ["pixverse-v6/transition", PixverseV6TransitionRequestSchema],
@@ -187,14 +196,11 @@ export const CREATE_TASK_GUARD_EXEMPTIONS = {
   "happyhorse-1-1/text-to-video": "notYetGuarded",
   "happyhorse-1-1/image-to-video": "notYetGuarded",
   "happyhorse-1-1/reference-to-video": "notYetGuarded",
-  "omnihuman-1-5": "notYetGuarded",
-  "volcengine/video-to-video-lip-sync": "notYetGuarded",
   "elevenlabs/audio-isolation": "notYetGuarded",
   "elevenlabs/text-to-dialogue-v3": "notYetGuarded",
   "elevenlabs/text-to-speech-multilingual-v2": "notYetGuarded",
   "elevenlabs/text-to-speech-turbo-2-5": "notYetGuarded",
   "elevenlabs/sound-effect-v2": "notYetGuarded",
-  "sora-watermark-remover": "notYetGuarded",
 } as const satisfies Partial<
   Record<KieMediaModel, keyof typeof GUARD_EXEMPTION_REASONS>
 >;

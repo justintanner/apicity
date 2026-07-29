@@ -94,11 +94,14 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
         "bytedance/seedance-2-mini",
         "gemini-omni-video",
         "grok-imagine/image-to-video",
+        "omnihuman-1-5",
         "pixverse-v6/extend",
         "pixverse-v6/image-to-video",
         "pixverse-v6/reference-to-video",
         "pixverse-v6/text-to-video",
         "pixverse-v6/transition",
+        "sora-watermark-remover",
+        "volcengine/video-to-video-lip-sync",
       ].sort()
     );
   });

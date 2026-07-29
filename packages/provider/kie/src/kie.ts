@@ -58,6 +58,11 @@ import {
   PixverseV6TransitionRequestSchema,
   PixverseV6ExtendRequestSchema,
   PixverseV6ReferenceToVideoRequestSchema,
+  NanoBananaProRequestSchema,
+  NanoBanana2RequestSchema,
+  GptImageToImageRequestSchema,
+  GptImage2ImageToImageRequestSchema,
+  GptImage2TextToImageRequestSchema,
 } from "./zod";
 import { modelInputSchemas } from "./model-schemas";
 import { createVeoProvider } from "./veo";
@@ -115,6 +120,11 @@ const MIME_TYPES: Record<string, string> = {
 // back out. The per-row check on the id is unchanged.
 export const CREATE_TASK_GUARDS = [
   ["grok-imagine/image-to-video", GrokImageToVideoRequestSchema],
+  ["nano-banana-pro", NanoBananaProRequestSchema],
+  ["nano-banana-2", NanoBanana2RequestSchema],
+  ["gpt-image/1.5-image-to-image", GptImageToImageRequestSchema],
+  ["gpt-image-2-image-to-image", GptImage2ImageToImageRequestSchema],
+  ["gpt-image-2-text-to-image", GptImage2TextToImageRequestSchema],
   ["bytedance/seedance-2-mini", Seedance2MiniRequestSchema],
   ["gemini-omni-video", GeminiOmniVideoRequestSchema],
   ["pixverse-v6/text-to-video", PixverseV6TextToVideoRequestSchema],
@@ -159,11 +169,6 @@ export const CREATE_TASK_GUARD_EXEMPTIONS = {
   "grok-imagine/image-to-image": "notYetGuarded",
   "grok-imagine/text-to-video": "notYetGuarded",
   "grok-imagine-video-1-5-preview": "notYetGuarded",
-  "nano-banana-pro": "notYetGuarded",
-  "nano-banana-2": "notYetGuarded",
-  "gpt-image/1.5-image-to-image": "notYetGuarded",
-  "gpt-image-2-image-to-image": "notYetGuarded",
-  "gpt-image-2-text-to-image": "notYetGuarded",
   "seedream/5-lite-image-to-image": "notYetGuarded",
   "seedream/5-lite-text-to-image": "notYetGuarded",
   "seedream/5-pro-image-to-image": "notYetGuarded",

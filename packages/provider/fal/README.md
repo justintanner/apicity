@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-72 endpoints across 19 groups. Each method mirrors an upstream URL path.
+63 endpoints across 19 groups. Each method mirrors an upstream URL path.
 
 ### bytedance
 
@@ -472,74 +472,6 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 ### models
 
 <details>
-<summary><code>DELETE</code> <b><code>fal.v1.models.requests.payloads</code></b></summary>
-
-<code>DELETE https://api.fal.ai/v1/models/requests/{param}/payloads</code>
-
-Cost tier: <code>prohibitive</code>
-
-[Upstream docs ↗](https://docs.fal.ai)
-
-```typescript
-const res = await fal.v1.models.requests.payloads({ /* ... */ });
-```
-
-Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
-
-</details>
-
-<details>
-<summary><code>GET</code> <b><code>fal.v1.models</code></b></summary>
-
-<code>GET https://api.fal.ai/v1/models</code>
-
-Cost tier: <code>prohibitive</code>
-
-[Upstream docs ↗](https://docs.fal.ai)
-
-```typescript
-const res = await fal.v1.models({ /* ... */ });
-```
-
-Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
-
-</details>
-
-<details>
-<summary><code>GET</code> <b><code>fal.v1.models.pricing</code></b></summary>
-
-<code>GET https://api.fal.ai/v1/models/pricing</code>
-
-Cost tier: <code>prohibitive</code>
-
-[Upstream docs ↗](https://docs.fal.ai)
-
-```typescript
-const res = await fal.v1.models.pricing({ /* ... */ });
-```
-
-Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
-
-</details>
-
-<details>
-<summary><code>GET</code> <b><code>fal.v1.models.requests.byEndpoint</code></b></summary>
-
-<code>GET https://api.fal.ai/v1/models/requests/by-endpoint</code>
-
-Cost tier: <code>prohibitive</code>
-
-[Upstream docs ↗](https://docs.fal.ai)
-
-```typescript
-const res = await fal.v1.models.requests.byEndpoint({ /* ... */ });
-```
-
-Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
-
-</details>
-
-<details>
 <summary><code>GET</code> <b><code>fal.v1.models.requests.payloads</code></b></summary>
 
 <code>GET https://api.fal.ai/v1/models/requests/{param}/payloads</code>
@@ -550,23 +482,6 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.v1.models.requests.payloads({ /* ... */ });
-```
-
-Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
-
-</details>
-
-<details>
-<summary><code>POST</code> <b><code>fal.v1.models.pricing.estimate</code></b></summary>
-
-<code>POST https://api.fal.ai/v1/models/pricing/estimate</code>
-
-Cost tier: <code>prohibitive</code>
-
-[Upstream docs ↗](https://docs.fal.ai)
-
-```typescript
-const res = await fal.v1.models.pricing.estimate({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -821,23 +736,6 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 </details>
 
-<details>
-<summary><code>POST</code> <b><code>fal.v1.queue.submit</code></b></summary>
-
-<code>POST https://api.fal.ai/v1/POST</code>
-
-Cost tier: <code>prohibitive</code>
-
-[Upstream docs ↗](https://docs.fal.ai)
-
-```typescript
-const res = await fal.v1.queue.submit({ /* ... */ });
-```
-
-Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
-
-</details>
-
 ### qwenImage
 
 <details>
@@ -877,7 +775,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 ### serverless
 
 <details>
-<summary><code>POST</code> <b><code>fal.v1.serverless.logs</code></b></summary>
+<summary><code>POST</code> <b><code>fal.stream.v1.serverless.logs.stream</code></b></summary>
 
 <code>POST https://api.fal.ai/v1/serverless/logs/stream</code>
 
@@ -886,41 +784,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.v1.serverless.logs({ /* ... */ });
-```
-
-Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
-
-</details>
-
-<details>
-<summary><code>POST</code> <b><code>fal.v1.serverless.files.uploadLocal</code></b></summary>
-
-<code>POST https://api.fal.ai/v1/serverless/files/file/local/{param}</code>
-
-Cost tier: <code>prohibitive</code>
-
-[Upstream docs ↗](https://docs.fal.ai)
-
-```typescript
-const res = await fal.v1.serverless.files.uploadLocal({ /* ... */ });
-```
-
-Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
-
-</details>
-
-<details>
-<summary><code>POST</code> <b><code>fal.v1.serverless.files.uploadUrl</code></b></summary>
-
-<code>POST https://api.fal.ai/v1/serverless/files/file/url/{param}</code>
-
-Cost tier: <code>prohibitive</code>
-
-[Upstream docs ↗](https://docs.fal.ai)
-
-```typescript
-const res = await fal.v1.serverless.files.uploadUrl({ /* ... */ });
+const res = await fal.stream.v1.serverless.logs.stream({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -1238,23 +1102,6 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 </details>
 
 ### workflows
-
-<details>
-<summary><code>GET</code> <b><code>fal.v1.workflows</code></b></summary>
-
-<code>GET https://api.fal.ai/v1/workflows</code>
-
-Cost tier: <code>prohibitive</code>
-
-[Upstream docs ↗](https://docs.fal.ai)
-
-```typescript
-const res = await fal.v1.workflows({ /* ... */ });
-```
-
-Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
-
-</details>
 
 <details>
 <summary><code>GET</code> <b><code>fal.v1.workflows</code></b></summary>

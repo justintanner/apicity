@@ -4257,14 +4257,14 @@ Source: [`packages/provider/elevenlabs/src/text-to-speech.ts`](src/text-to-speec
 </details>
 
 <details>
-<summary><code>POST</code> <b><code>elevenlabs.v1.textToDialogue.withTimestamps</code></b></summary>
+<summary><code>POST</code> <b><code>elevenlabs.v1.textToDialogue.stream.withTimestamps</code></b></summary>
 
 <code>POST https://api.elevenlabs.io/v1/text-to-dialogue/stream/with-timestamps</code>
 
 Cost tier: <code>prohibitive</code>
 
 ```typescript
-const res = await elevenlabs.v1.textToDialogue.withTimestamps({ /* ... */ });
+const res = await elevenlabs.v1.textToDialogue.stream.withTimestamps({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/text-to-speech.ts`](src/text-to-speech.ts)
@@ -4323,7 +4323,7 @@ Source: [`packages/provider/elevenlabs/src/text-to-speech.ts`](src/text-to-speec
 </details>
 
 <details>
-<summary><code>POST</code> <b><code>elevenlabs.v1.textToSpeech.withTimestamps</code></b></summary>
+<summary><code>POST</code> <b><code>elevenlabs.v1.textToSpeech.stream.withTimestamps</code></b></summary>
 
 <code>POST https://api.elevenlabs.io/v1/text-to-speech/{voiceId}/stream/with-timestamps</code>
 
@@ -4332,7 +4332,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://elevenlabs.io/docs/api-reference/text-to-speech/convert-with-timestamps)
 
 ```typescript
-const res = await elevenlabs.v1.textToSpeech.withTimestamps({ /* ... */ });
+const res = await elevenlabs.v1.textToSpeech.stream.withTimestamps({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/text-to-speech.ts`](src/text-to-speech.ts)

@@ -93,7 +93,13 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
       [
         "bytedance/seedance-2-mini",
         "gemini-omni-video",
+        "grok-imagine-video-1-5-preview",
+        "grok-imagine/extend",
+        "grok-imagine/image-to-image",
         "grok-imagine/image-to-video",
+        "grok-imagine/text-to-image",
+        "grok-imagine/text-to-video",
+        "grok-imagine/upscale",
         "pixverse-v6/extend",
         "pixverse-v6/image-to-video",
         "pixverse-v6/reference-to-video",

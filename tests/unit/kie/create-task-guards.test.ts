@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import type { z } from "zod";
 
 import { KIE_MEDIA_MODELS } from "@apicity/kie/zod";
 import {
@@ -37,6 +38,17 @@ import {
 
 const guarded = CREATE_TASK_GUARDS.map(([model]) => model as string);
 const exempt = Object.keys(CREATE_TASK_GUARD_EXEMPTIONS);
+
+// Every kie media request schema pins its own model id with a z.literal, so the
+// schema can be asked which model it is for rather than taken on trust from the
+// row it was written into. `as unknown as` is load-bearing: a row's static
+// schema type is the union of the concrete schema types, and the z.ZodType the
+// table is declared against has no `.shape` at all.
+//
+// zod 4 keeps .refine()/.superRefine() rules on the same ZodObject rather than
+// wrapping it, so `.shape.model.value` resolves on refinement-carrying schemas
+// too — which is why this can walk the table rather than special-case it.
+type ModelPinned = z.ZodObject<{ model: z.ZodLiteral<string> }>;
 
 describe("CREATE_TASK_GUARDS membership rule", () => {
   // The compile pin in kie.ts fires first and names the id; this is the
@@ -88,7 +100,13 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
 
   // Not a count for its own sake — it makes any change to the guarded set show
   // up as a deliberate edit to this list.
-  it("guards exactly the models guarded at f6c99b54", () => {
+  //
+  // The list is the point, not the number: it grows by exactly one deliberate
+  // edit per slice of the guard pass tracked by ac-bgkfzh, from the 8 ids below
+  // to all 52 of KIE_MEDIA_MODELS. Later slices touch these ids and nothing
+  // else — the name deliberately does not cite a commit, so it stays true as
+  // the list grows.
+  it("guards exactly the models pinned in this list", () => {
     expect([...guarded].sort()).toEqual(
       [
         "bytedance/seedance-2-mini",
@@ -101,5 +119,41 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
         "pixverse-v6/transition",
       ].sort()
     );
+  });
+});
+
+// Membership says each model is decided; these say each decided row says what
+// it means to say. Both are invisible to the compile pin, which only ever sees
+// the set of ids.
+describe("CREATE_TASK_GUARDS rows", () => {
+  // The one assertion that survives 44 hand-written rows being added by hand.
+  // A row pairing `seedream/5-lite-text-to-image` with
+  // `SeedreamProTextToImageRequestSchema` type-checks (both sides are valid
+  // members of their own type), passes every other test in this file, and
+  // silently validates the wrong contract — four seedream names differing by
+  // one word each are one slip apart. Reading the id back off the schema is the
+  // only check here that a reviewer's eye is not the last line of defence.
+  it("pairs each guarded model with the schema that pins its id", () => {
+    for (const [model, schema] of CREATE_TASK_GUARDS) {
+      const pinned = (schema as unknown as ModelPinned).shape.model.value;
+      expect(
+        pinned,
+        `row ${model} is paired with a schema pinning ${pinned}`
+      ).toBe(model);
+    }
+  });
+
+  // Catalogue order is how a reader checks the table against KIE_MEDIA_MODELS
+  // at a glance, and how each slice knows where to insert. Asserted rather than
+  // left to convention so the final table diffs cleanly against the catalogue.
+  it("lists its rows in KIE_MEDIA_MODELS order", () => {
+    const catalogueOrder = KIE_MEDIA_MODELS.filter((id) =>
+      guarded.includes(id)
+    );
+    expect(
+      guarded,
+      `CREATE_TASK_GUARDS rows are out of KIE_MEDIA_MODELS order; expected ` +
+        `${catalogueOrder.join(", ")}`
+    ).toEqual(catalogueOrder);
   });
 });

@@ -17,10 +17,22 @@
  * Steps:
  *   1. prettier --write  on the provider package dir + its integration tests
  *   2. lint:provider     scoped ESLint + provider-relevant repo checks
- *   3. test:provider     typecheck the package + replay its tests
- *   4. cross-cutting     whole-corpus recording-enumeration tests
+ *   3. typecheck:tests   whole tests/ project (tests/tsconfig.json)
+ *   4. test:provider     typecheck the package + replay its tests
+ *   5. cross-cutting     whole-corpus recording-enumeration tests
  *
- * Step 4 runs the cross-cutting integration tests (see
+ * Step 3 runs the tests project (see scripts/lib/tests-project.mjs) because no
+ * provider package tsconfig includes `tests/**`, and Vitest compiles test files
+ * through esbuild, which strips types without checking them — so replaying a
+ * test proves nothing about its types. `tests/tsconfig.json` is whole-tree, so
+ * the step is unconditional and provider-independent: a type error in any test
+ * file fails this gate whichever provider it was invoked for. That is the exact
+ * failure class that reached main twice (kimicoding's content union, xai's
+ * readonly spread, both fixed test-side in 73c8b0cc) with the scoped gate green.
+ * It costs one `tsc -p tests/tsconfig.json` (~25s), well short of the ~105s full
+ * `pnpm run typecheck`, which this gate must never invoke.
+ *
+ * Step 5 runs the cross-cutting integration tests (see
  * scripts/lib/cross-cutting-tests.mjs) that enumerate ALL recordings and assert
  * against a hardcoded allowlist. They are not provider-scoped, so `test:provider`
  * alone skips them and a recording added under one provider can break the
@@ -28,8 +40,6 @@
  * reach main and go red in full CI (ac-05hrc). They are filesystem-only (~1s).
  *
  * For typecheck-only loops, use `pnpm run typecheck:provider -- <provider>`.
- * This preflight intentionally reuses the provider `tsc` check already run by
- * `test:provider` instead of repeating a standalone typecheck step.
  *
  * Usage: node scripts/preflight-provider.mjs <provider-or-path>
  *        pnpm run dev:preflight:fast -- openai
@@ -39,6 +49,7 @@
 import { spawnSync } from "node:child_process";
 import { listCrossCuttingTests } from "./lib/cross-cutting-tests.mjs";
 import { repoRoot, resolveProviderScope } from "./lib/provider-scope.mjs";
+import { TESTS_TYPECHECK_STEP } from "./lib/tests-project.mjs";
 
 const rawArgs = process.argv.slice(2).filter((arg) => arg !== "--");
 
@@ -80,14 +91,18 @@ console.error(`Fast provider preflight: ${provider}`);
 console.error("Steps:");
 console.error("  1. prettier --write (provider package + tests)");
 console.error("  2. lint:provider");
-console.error("  3. test:provider (provider typecheck + replay)");
-console.error("  4. cross-cutting recording-enumeration tests");
+console.error(`  3. ${TESTS_TYPECHECK_STEP.title}`);
+console.error("  4. test:provider (provider typecheck + replay)");
+console.error("  5. cross-cutting recording-enumeration tests");
 
-function run(title, cmd, args) {
+function run(title, cmd, args, { repro } = {}) {
   console.error(`\n▸ ${title}`);
   const result = spawnSync(cmd, args, { cwd: repoRoot, stdio: "inherit" });
   if (result.status !== 0) {
     console.error(`\n✗ ${title} failed (exit ${result.status ?? 1})`);
+    if (repro) {
+      console.error(`  reproduce: ${repro}`);
+    }
     process.exit(result.status ?? 1);
   }
 }
@@ -117,7 +132,18 @@ run(`lint:provider ${provider}`, "pnpm", [
   provider,
 ]);
 
-// 3. Typecheck the provider package, then replay its tests.
+// 3. Typecheck the whole tests project. Unconditional and provider-independent:
+// tests/tsconfig.json is a single whole-tree project, so per-provider or
+// per-diff scoping would reopen the gap for shared helpers under tests/
+// (ac-6g2rnr). No passthrough — those are Vitest args, not tsc args.
+run(
+  TESTS_TYPECHECK_STEP.title,
+  TESTS_TYPECHECK_STEP.command,
+  [...TESTS_TYPECHECK_STEP.args],
+  { repro: TESTS_TYPECHECK_STEP.repro }
+);
+
+// 4. Typecheck the provider package, then replay its tests.
 run(`test:provider ${provider}`, "pnpm", [
   "run",
   "test:provider",
@@ -125,7 +151,7 @@ run(`test:provider ${provider}`, "pnpm", [
   ...passthrough,
 ]);
 
-// 4. Cross-cutting recording-enumeration tests. Not provider-scoped, so
+// 5. Cross-cutting recording-enumeration tests. Not provider-scoped, so
 // test:provider skips them — but a recording added under this provider can
 // break their whole-corpus allowlist. Run them here so the fast gate cannot
 // pass a broken allowlist (ac-05hrc). Filesystem-only, no network/replay.

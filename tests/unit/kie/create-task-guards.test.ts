@@ -8,27 +8,32 @@ import {
 } from "../../../packages/provider/kie/src/kie";
 
 // This file is the runtime half of a compile-pin/runtime-pin pair: the pin in
-// kie.ts (`everyKieMediaModelIsDecided`) fires strictly earlier, at tsc time.
+// kie.ts (`EveryKieMediaModelIsDecided`) fires strictly earlier, at tsc time.
 // The pair is deliberate, and all three reasons for it are load-bearing:
 //
-// 1. Message quality. `Type 'true' is not assignable to type '"…"'` names the
-//    id but not the fix. The assertions below say what to do about it.
+// 1. Message quality. `Type '"…"' does not satisfy the constraint 'true'` names
+//    the id but not the fix. The assertions below say what to do about it.
 // 2. Invariants the types cannot see. A model in *both* lists is legal to the
 //    compiler (the `Exclude` still empties), and so is an exemption whose
 //    reason is `""`. Both are silent regressions of the "excluded only by an
 //    explicit, reviewed entry" rule.
 // 3. Coverage messages in general. Measured: 1 undecided model → tsc names the
-//    id verbatim; 43 undecided → `Type 'true' is not assignable to type
-//    'UndecidedKieMediaModel'`, the alias name, with no ids at all. The compile
-//    pin is the earlier, coarser half; this test is the primary mechanism for
-//    naming the offending ids, because it enumerates every one of them.
+//    id verbatim; ≥ 2 undecided → `Type 'UndecidedKieMediaModel' does not
+//    satisfy the constraint 'true'`, the alias name, elaborated with exactly
+//    one representative id and never the rest. The compile pin is the earlier,
+//    coarser half; this test is the primary mechanism for naming the offending
+//    ids, because it enumerates every one of them.
 //
 // The repo already uses this same pairing for KieMediaModel itself
 // (zod.ts's catalogue pin ↔ tests/unit/kie-zod.test.ts).
 //
-// Scope: registry shape only. Behaviour-level guard coverage stays in
-// tests/unit/kie-pixverse-v6.test.ts's `describe.each(GUARD_MODELS)`, the same
-// split tests/unit/kie-model-input-schemas.test.ts already uses.
+// Scope: registry shape only. Behaviour-level guard coverage lives across
+// tests/unit/kie-pixverse-v6.test.ts (whose `describe.each(GUARD_MODELS)` table
+// drives 4 of the 8 guarded models, with `pixverse-v6/text-to-video` covered by
+// its own describe block above it), tests/unit/kie-request.test.ts
+// (`grok-imagine/image-to-video`, `gemini-omni-video`) and
+// tests/unit/kie-seedance-2-mini.test.ts — the same split
+// tests/unit/kie-model-input-schemas.test.ts already uses.
 
 const guarded = CREATE_TASK_GUARDS.map(([model]) => model as string);
 const exempt = Object.keys(CREATE_TASK_GUARD_EXEMPTIONS);

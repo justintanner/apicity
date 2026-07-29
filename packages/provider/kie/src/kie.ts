@@ -105,8 +105,8 @@ const MIME_TYPES: Record<string, string> = {
 // before transport) or CREATE_TASK_GUARD_EXEMPTIONS (deliberately not
 // validated, pointing at a reviewed reason). Neither list on its own is the
 // rule — the rule is that their union is exactly the catalogue, and
-// `everyKieMediaModelIsDecided` below is what enforces it: a model in neither
-// list stops that constant from compiling and tsc names the id. So "must this
+// `EveryKieMediaModelIsDecided` below is what enforces it: a model in neither
+// list stops that type from compiling and tsc names the id. So "must this
 // model be guarded?" is answered here rather than from memory — a new model
 // must join one list or the other, and which one is the reviewed decision.
 //
@@ -140,11 +140,7 @@ export const GUARD_EXEMPTION_REASONS = {
   refinementNotYetEnforced:
     "The model's request schema carries cross-field rules (.refine / " +
     ".superRefine) that are NOT enforced before the request leaves the " +
-    "process. Checked for this exemption: adding the guard row would break " +
-    "no recorded replay — wan/2-7-image-to-video's recorded payload already " +
-    "satisfies its schema, so its row can be added as soon as the coverage " +
-    "question is taken up, and volcengine/video-to-video-lip-sync has no " +
-    "recording at all. Left off deliberately so coverage widens by one " +
+    "process. Left off deliberately so coverage widens by one " +
     "reviewed decision rather than by which schemas happen to carry a " +
     "refinement — tracked by ac-bgkfzh.",
 } as const;
@@ -192,7 +188,7 @@ export const CREATE_TASK_GUARD_EXEMPTIONS = {
   "happyhorse-1-1/image-to-video": "notYetGuarded",
   "happyhorse-1-1/reference-to-video": "notYetGuarded",
   "omnihuman-1-5": "notYetGuarded",
-  "volcengine/video-to-video-lip-sync": "refinementNotYetEnforced",
+  "volcengine/video-to-video-lip-sync": "notYetGuarded",
   "elevenlabs/audio-isolation": "notYetGuarded",
   "elevenlabs/text-to-dialogue-v3": "notYetGuarded",
   "elevenlabs/text-to-speech-multilingual-v2": "notYetGuarded",
@@ -210,19 +206,26 @@ type UndecidedKieMediaModel = Exclude<
   GuardedKieMediaModel | ExemptKieMediaModel
 >;
 
+type AssertTrue<T extends true> = T;
+
 // The compile pin. While the two lists above cover KIE_MEDIA_MODELS exactly,
-// UndecidedKieMediaModel is `never` and this type is `true`. Add a model to
-// KIE_MEDIA_MODELS and to neither list and it becomes that model's literal
-// type, so the assignment below stops compiling and tsc names the id:
-//   Type 'true' is not assignable to type '"pixverse-v7/text-to-video"'.
-// The assignment is load-bearing — a type alias resolving to a model literal is
-// not by itself an error.
-export type EveryKieMediaModelIsDecided = [UndecidedKieMediaModel] extends [
-  never,
-]
-  ? true
-  : UndecidedKieMediaModel;
-export const everyKieMediaModelIsDecided: EveryKieMediaModelIsDecided = true;
+// UndecidedKieMediaModel is `never` and the argument resolves to `true`. Add a
+// model to KIE_MEDIA_MODELS and to neither list and it resolves to that model's
+// literal type instead, which fails AssertTrue's `extends true` constraint, so
+// this type stops compiling and tsc names the id:
+//   Type '"pixverse-v7/text-to-video"' does not satisfy the constraint 'true'.
+// The AssertTrue wrapper is load-bearing — a bare type alias resolving to a
+// model literal is not by itself an error. Same idiom as zod.ts's catalogue
+// pins and responses.ts's model-passthrough pins, five of which likewise have
+// no importer.
+//
+// The `export` is also load-bearing, and not for consumers: nothing imports
+// this. Drop it and @typescript-eslint/no-unused-vars fails the build, which
+// invites deleting the pin instead — and deleting it is silent, because no
+// test imports it either. Leave it exported.
+export type EveryKieMediaModelIsDecided = AssertTrue<
+  [UndecidedKieMediaModel] extends [never] ? true : UndecidedKieMediaModel
+>;
 
 function validateCreateTaskRequest(req: MediaGenerationRequest): void {
   const guard = CREATE_TASK_GUARDS.find(([model]) => model === req.model);

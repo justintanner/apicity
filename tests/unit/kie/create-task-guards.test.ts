@@ -29,11 +29,12 @@ import {
 //
 // Scope: registry shape only. Behaviour-level guard coverage lives across
 // tests/unit/kie-pixverse-v6.test.ts (whose `describe.each(GUARD_MODELS)` table
-// drives 4 of the 8 guarded models, with `pixverse-v6/text-to-video` covered by
-// its own describe block above it), tests/unit/kie-request.test.ts
-// (`grok-imagine/image-to-video`, `gemini-omni-video`) and
-// tests/unit/kie-seedance-2-mini.test.ts — the same split
-// tests/unit/kie-model-input-schemas.test.ts already uses.
+// drives 4 of the pixverse-v6 models, with `pixverse-v6/text-to-video` covered
+// by its own describe block above it), tests/unit/kie-request.test.ts
+// (`grok-imagine/image-to-video`, `gemini-omni-video`),
+// tests/unit/kie-seedance-2-mini.test.ts, and — for the four kling models —
+// tests/unit/kie/validate.test.ts plus the kie-kling-* integration replays —
+// the same split tests/unit/kie-model-input-schemas.test.ts already uses.
 
 const guarded = CREATE_TASK_GUARDS.map(([model]) => model as string);
 const exempt = Object.keys(CREATE_TASK_GUARD_EXEMPTIONS);
@@ -88,9 +89,19 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
 
   // Not a count for its own sake — it makes any change to the guarded set show
   // up as a deliberate edit to this list.
-  it("guards exactly the models guarded at f6c99b54", () => {
+  //
+  // The list is the full guarded membership, not a snapshot of one commit: it
+  // grows by one deliberate edit per vendor-family slice of ac-bgkfzh and ends
+  // at the whole of KIE_MEDIA_MODELS. Spelled out rather than derived from
+  // KIE_MEDIA_MODELS on purpose — deriving it would make the assertion
+  // self-referential and stop it catching a wrong catalogue.
+  it("guards exactly the reviewed membership", () => {
     expect([...guarded].sort()).toEqual(
       [
+        "kling-3.0/video",
+        "kling-3.0/motion-control",
+        "kling/v3-turbo-image-to-video",
+        "kling/v3-turbo-text-to-video",
         "bytedance/seedance-2-mini",
         "gemini-omni-video",
         "grok-imagine/image-to-video",

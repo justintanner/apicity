@@ -1746,28 +1746,39 @@ export const Wan27ImageProRequestSchema =
     wan27Image4KRefinement
   );
 
+// PixVerse V6 shared value domains. Every model in the family draws prompt,
+// quality, duration, and seed from these same ranges, and the two that expose
+// aspect_ratio (text-to-video, reference-to-video) share its eight values, so
+// each domain is spelled out once here rather than per model.
+const PixverseV6PromptSchema = z.string().min(3).max(5000);
+const PixverseV6QualitySchema = z.enum(["360p", "540p", "720p", "1080p"]);
+const PixverseV6AspectRatioSchema = z.enum([
+  "16:9",
+  "4:3",
+  "1:1",
+  "3:4",
+  "9:16",
+  "2:3",
+  "3:2",
+  "21:9",
+]);
+const PixverseV6DurationSchema = z.number().int().min(1).max(15);
+const PixverseV6SeedSchema = z.number().int().min(0).max(2147483647);
+
 // PixVerse V6 text-to-video. The upstream spec documents defaults for
 // aspect_ratio (16:9), quality (720p), and duration (5) yet still marks them
 // required — the server never applies documented defaults (the same trap
 // seedream/seedance hit), so the schema keeps them required and records the
-// defaults only in the modelInputSchemas registry metadata.
+// defaults only in the modelInputSchemas registry metadata. The same holds for
+// every PixVerse V6 model below.
 export const PixverseV6TextToVideoInputSchema = z.object({
-  prompt: z.string().min(3).max(5000),
-  aspect_ratio: z.enum([
-    "16:9",
-    "4:3",
-    "1:1",
-    "3:4",
-    "9:16",
-    "2:3",
-    "3:2",
-    "21:9",
-  ]),
-  quality: z.enum(["360p", "540p", "720p", "1080p"]),
-  duration: z.number().int().min(1).max(15),
+  prompt: PixverseV6PromptSchema,
+  aspect_ratio: PixverseV6AspectRatioSchema,
+  quality: PixverseV6QualitySchema,
+  duration: PixverseV6DurationSchema,
   generate_audio_switch: z.boolean().default(false),
   generate_multi_clip_switch: z.boolean().default(false),
-  seed: z.number().int().min(0).max(2147483647).optional(),
+  seed: PixverseV6SeedSchema.optional(),
 });
 
 export const PixverseV6TextToVideoRequestSchema = z.object({
@@ -1775,6 +1786,145 @@ export const PixverseV6TextToVideoRequestSchema = z.object({
   callBackUrl: z.string().url().optional(),
   input: PixverseV6TextToVideoInputSchema,
 });
+
+// PixVerse V6 image-to-video. Upstream carries no aspect_ratio field here, and
+// duration is exclusive with template_id: a template fixes the duration, so
+// passing both is rejected. image_urls' 1..2 bounds are an SDK-side tightening
+// — upstream encodes neither minItems nor maxItems and states "up to 2" only
+// in prose.
+export const PixverseV6ImageToVideoInputSchema = z.object({
+  prompt: PixverseV6PromptSchema,
+  image_urls: z.array(z.string().url()).min(1).max(2),
+  quality: PixverseV6QualitySchema,
+  duration: PixverseV6DurationSchema.optional(),
+  template_id: z.string().min(1).optional(),
+  generate_audio_switch: z.boolean().default(false),
+  generate_multi_clip_switch: z.boolean().default(false),
+  seed: PixverseV6SeedSchema.optional(),
+});
+
+export const PixverseV6ImageToVideoRequestSchema = z
+  .object({
+    model: z.literal("pixverse-v6/image-to-video"),
+    callBackUrl: z.string().url().optional(),
+    input: PixverseV6ImageToVideoInputSchema,
+  })
+  .superRefine((v, ctx) => {
+    // Presence, not truthiness: `Boolean(0)` would read a supplied
+    // `duration: 0` as absent and emit a spurious exclusivity issue on top of
+    // the range failure. (The grok-imagine precedent above uses
+    // `Boolean(image_urls?.length)` because there an empty array *is* absent —
+    // not the same case.)
+    const hasDuration = v.input.duration !== undefined;
+    const hasTemplateId = v.input.template_id !== undefined;
+
+    if (hasDuration === hasTemplateId) {
+      ctx.addIssue({
+        code: "custom",
+        message:
+          "pixverse-v6/image-to-video requires exactly one of duration or template_id",
+        path: ["input", "duration"],
+      });
+    }
+  });
+
+// PixVerse V6 first & last frame transition. No aspect_ratio and no
+// generate_multi_clip_switch upstream; both frame URLs are required.
+export const PixverseV6TransitionInputSchema = z.object({
+  prompt: PixverseV6PromptSchema,
+  first_frame_image_url: z.string().url(),
+  last_frame_image_url: z.string().url(),
+  quality: PixverseV6QualitySchema,
+  duration: PixverseV6DurationSchema,
+  generate_audio_switch: z.boolean().default(false),
+  seed: PixverseV6SeedSchema.optional(),
+});
+
+export const PixverseV6TransitionRequestSchema = z.object({
+  model: z.literal("pixverse-v6/transition"),
+  callBackUrl: z.string().url().optional(),
+  input: PixverseV6TransitionInputSchema,
+});
+
+// PixVerse V6 extend. The camelCase `taskId` beside snake_case `video_url` is
+// upstream's own inconsistency, reproduced verbatim because renaming it would
+// silently produce 422s. Upstream encodes the exclusivity as a two-variant
+// anyOf, and its prose calls the two fields "mutually exclusive"; the
+// refinement below is that rule. generate_audio_switch is optional rather than
+// defaulted here: extend is the one model in the family for which upstream
+// documents no default for it.
+export const PixverseV6ExtendInputSchema = z.object({
+  prompt: PixverseV6PromptSchema,
+  duration: PixverseV6DurationSchema,
+  quality: PixverseV6QualitySchema,
+  taskId: z.string().min(1).optional(),
+  video_url: z.string().url().optional(),
+  generate_audio_switch: z.boolean().optional(),
+  seed: PixverseV6SeedSchema.optional(),
+});
+
+export const PixverseV6ExtendRequestSchema = z
+  .object({
+    model: z.literal("pixverse-v6/extend"),
+    callBackUrl: z.string().url().optional(),
+    input: PixverseV6ExtendInputSchema,
+  })
+  .superRefine((v, ctx) => {
+    if ((v.input.taskId !== undefined) === (v.input.video_url !== undefined)) {
+      ctx.addIssue({
+        code: "custom",
+        message:
+          "pixverse-v6/extend requires exactly one of taskId or video_url",
+        path: ["input", "video_url"],
+      });
+    }
+  });
+
+const PixverseV6ImageReferenceSchema = z.object({
+  image_url: z.string().url(),
+  type: z.enum(["subject", "background"]).default("subject"),
+  ref_name: z.string().min(1).max(30).optional(),
+});
+
+// PixVerse V6 reference-to-video. aspect_ratio and quality are required here
+// even though both document defaults — upstream's required array wins.
+export const PixverseV6ReferenceToVideoInputSchema = z.object({
+  prompt: PixverseV6PromptSchema,
+  image_references: z.array(PixverseV6ImageReferenceSchema).min(1).max(7),
+  aspect_ratio: PixverseV6AspectRatioSchema,
+  quality: PixverseV6QualitySchema,
+  duration: PixverseV6DurationSchema,
+  generate_audio_switch: z.boolean().default(false),
+  seed: PixverseV6SeedSchema.optional(),
+});
+
+export const PixverseV6ReferenceToVideoRequestSchema = z
+  .object({
+    model: z.literal("pixverse-v6/reference-to-video"),
+    callBackUrl: z.string().url().optional(),
+    input: PixverseV6ReferenceToVideoInputSchema,
+  })
+  .superRefine((v, ctx) => {
+    // Upstream: "ref_name must be unique within the same list." A duplicate
+    // makes an `@name` mention in the prompt ambiguous. Unnamed references are
+    // not compared — ref_name is optional, so any number may be omitted.
+    const seen = new Set<string>();
+
+    for (const [index, reference] of v.input.image_references.entries()) {
+      const refName = reference.ref_name;
+      if (refName === undefined) continue;
+
+      if (seen.has(refName)) {
+        ctx.addIssue({
+          code: "custom",
+          message: `pixverse-v6/reference-to-video requires unique ref_name values within image_references (duplicate: ${refName})`,
+          path: ["input", "image_references", index, "ref_name"],
+        });
+      }
+
+      seen.add(refName);
+    }
+  });
 
 // ---------------------------------------------------------------------------
 // Wan 2.7 task result schemas (parsed from KieTaskInfoData.resultJson)
@@ -2864,6 +3014,10 @@ export const MediaGenerationRequestSchema = z.union([
   ElevenLabsSoundEffectV2RequestSchema,
   SoraWatermarkRequestSchema,
   PixverseV6TextToVideoRequestSchema,
+  PixverseV6ImageToVideoRequestSchema,
+  PixverseV6TransitionRequestSchema,
+  PixverseV6ExtendRequestSchema,
+  PixverseV6ReferenceToVideoRequestSchema,
 ]);
 
 // ---------------------------------------------------------------------------
@@ -3206,6 +3360,45 @@ export type PixverseV6TextToVideoRequest = z.input<
 export type PixverseV6TextToVideoRequestInput = PixverseV6TextToVideoRequest;
 export type PixverseV6TextToVideoParsedRequest = z.output<
   typeof PixverseV6TextToVideoRequestSchema
+>;
+export type PixverseV6ImageToVideoInput = z.infer<
+  typeof PixverseV6ImageToVideoInputSchema
+>;
+export type PixverseV6ImageToVideoRequest = z.input<
+  typeof PixverseV6ImageToVideoRequestSchema
+>;
+export type PixverseV6ImageToVideoRequestInput = PixverseV6ImageToVideoRequest;
+export type PixverseV6ImageToVideoParsedRequest = z.output<
+  typeof PixverseV6ImageToVideoRequestSchema
+>;
+export type PixverseV6TransitionInput = z.infer<
+  typeof PixverseV6TransitionInputSchema
+>;
+export type PixverseV6TransitionRequest = z.input<
+  typeof PixverseV6TransitionRequestSchema
+>;
+export type PixverseV6TransitionRequestInput = PixverseV6TransitionRequest;
+export type PixverseV6TransitionParsedRequest = z.output<
+  typeof PixverseV6TransitionRequestSchema
+>;
+export type PixverseV6ExtendInput = z.infer<typeof PixverseV6ExtendInputSchema>;
+export type PixverseV6ExtendRequest = z.input<
+  typeof PixverseV6ExtendRequestSchema
+>;
+export type PixverseV6ExtendRequestInput = PixverseV6ExtendRequest;
+export type PixverseV6ExtendParsedRequest = z.output<
+  typeof PixverseV6ExtendRequestSchema
+>;
+export type PixverseV6ReferenceToVideoInput = z.infer<
+  typeof PixverseV6ReferenceToVideoInputSchema
+>;
+export type PixverseV6ReferenceToVideoRequest = z.input<
+  typeof PixverseV6ReferenceToVideoRequestSchema
+>;
+export type PixverseV6ReferenceToVideoRequestInput =
+  PixverseV6ReferenceToVideoRequest;
+export type PixverseV6ReferenceToVideoParsedRequest = z.output<
+  typeof PixverseV6ReferenceToVideoRequestSchema
 >;
 export type Wan27ImageToVideoRequest = z.input<
   typeof Wan27ImageToVideoRequestSchema

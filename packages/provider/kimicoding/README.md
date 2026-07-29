@@ -28,7 +28,7 @@ const kimicoding = createKimiCoding({ apiKey: process.env.KIMICODING_API_KEY! })
 
 ## API Reference
 
-5 endpoints across 1 group. Each method mirrors an upstream URL path.
+7 endpoints across 1 group. Each method mirrors an upstream URL path.
 
 ### coding
 
@@ -43,6 +43,23 @@ Cost tier: <code>expensive</code>
 
 ```typescript
 const res = await kimicoding.coding.v1.models({ /* ... */ });
+```
+
+Source: [`packages/provider/kimicoding/src/kimicoding.ts`](src/kimicoding.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>kimicoding.coding.v1.chat.completions</code></b></summary>
+
+<code>POST https://api.kimi.com/coding/v1/chat/completions</code>
+
+Cost tier: <code>expensive</code>
+
+[Upstream docs ↗](https://www.kimi.com/code/docs/en/)
+
+```typescript
+const res = await kimicoding.coding.v1.chat.completions({ /* ... */ });
 ```
 
 Source: [`packages/provider/kimicoding/src/kimicoding.ts`](src/kimicoding.ts)
@@ -101,7 +118,24 @@ Source: [`packages/provider/kimicoding/src/kimicoding.ts`](src/kimicoding.ts)
 </details>
 
 <details>
-<summary><code>POST</code> <b><code>kimicoding.coding.v1.messages</code></b></summary>
+<summary><code>POST</code> <b><code>kimicoding.stream.coding.v1.chat.completions</code></b></summary>
+
+<code>POST https://api.kimi.com/coding/v1/chat/completions</code>
+
+Cost tier: <code>expensive</code>
+
+[Upstream docs ↗](https://www.kimi.com/code/docs/en/)
+
+```typescript
+const res = await kimicoding.stream.coding.v1.chat.completions({ /* ... */ });
+```
+
+Source: [`packages/provider/kimicoding/src/kimicoding.ts`](src/kimicoding.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>kimicoding.stream.coding.v1.messages</code></b></summary>
 
 <code>POST https://api.kimi.com/coding/v1/messages</code>
 
@@ -110,7 +144,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.moonshot.ai/docs)
 
 ```typescript
-const res = await kimicoding.coding.v1.messages({ /* ... */ });
+const res = await kimicoding.stream.coding.v1.messages({ /* ... */ });
 ```
 
 Source: [`packages/provider/kimicoding/src/kimicoding.ts`](src/kimicoding.ts)

@@ -169,7 +169,7 @@ console.log(
 
 ## API Reference
 
-27 endpoints across 5 groups. Each method mirrors an upstream URL path.
+24 endpoints across 5 groups. Each method mirrors an upstream URL path.
 
 ### files
 
@@ -329,7 +329,7 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 </details>
 
 <details>
-<summary><code>POST</code> <b><code>anthropic.v1.messages</code></b></summary>
+<summary><code>POST</code> <b><code>anthropic.stream.v1.messages</code></b></summary>
 
 <code>POST https://api.anthropic.com/v1/messages</code>
 
@@ -338,41 +338,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.messages({ /* ... */ });
-```
-
-Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
-
-</details>
-
-<details>
-<summary><code>POST</code> <b><code>anthropic.v1.messages</code></b></summary>
-
-<code>POST https://api.anthropic.com/v1/messages</code>
-
-Cost tier: <code>expensive</code>
-
-[Upstream docs ↗](https://docs.anthropic.com/en/api)
-
-```typescript
-const res = await anthropic.v1.messages({ /* ... */ });
-```
-
-Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
-
-</details>
-
-<details>
-<summary><code>POST</code> <b><code>anthropic.v1.messages.batches</code></b></summary>
-
-<code>POST https://api.anthropic.com/v1/messages/batches</code>
-
-Cost tier: <code>expensive</code>
-
-[Upstream docs ↗](https://docs.anthropic.com/en/api)
-
-```typescript
-const res = await anthropic.v1.messages.batches({ /* ... */ });
+const res = await anthropic.stream.v1.messages({ /* ... */ });
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -390,23 +356,6 @@ Cost tier: <code>expensive</code>
 
 ```typescript
 const res = await anthropic.v1.messages.batches.cancel({ /* ... */ });
-```
-
-Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
-
-</details>
-
-<details>
-<summary><code>POST</code> <b><code>anthropic.v1.messages.countTokens</code></b></summary>
-
-<code>POST https://api.anthropic.com/v1/messages/count_tokens</code>
-
-Cost tier: <code>expensive</code>
-
-[Upstream docs ↗](https://docs.anthropic.com/en/api)
-
-```typescript
-const res = await anthropic.v1.messages.countTokens({ /* ... */ });
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)

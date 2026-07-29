@@ -87,6 +87,13 @@ import {
   SeedreamProTextToImageRequestSchema,
   Qwen2TextToImageRequestSchema,
   Qwen2ImageEditRequestSchema,
+  HappyHorseTextToVideoRequestSchema,
+  HappyHorseImageToVideoRequestSchema,
+  HappyHorseReferenceToVideoRequestSchema,
+  HappyHorseVideoEditRequestSchema,
+  HappyHorse11TextToVideoRequestSchema,
+  HappyHorse11ImageToVideoRequestSchema,
+  HappyHorse11ReferenceToVideoRequestSchema,
 } from "./zod";
 import { modelInputSchemas } from "./model-schemas";
 import { createVeoProvider } from "./veo";
@@ -174,6 +181,16 @@ export const CREATE_TASK_GUARDS = [
   ["wan/2-7-videoedit", Wan27VideoEditRequestSchema],
   ["wan/2-7-image", Wan27ImageRequestSchema],
   ["wan/2-7-image-pro", Wan27ImageProRequestSchema],
+  ["happyhorse/text-to-video", HappyHorseTextToVideoRequestSchema],
+  ["happyhorse/image-to-video", HappyHorseImageToVideoRequestSchema],
+  ["happyhorse/reference-to-video", HappyHorseReferenceToVideoRequestSchema],
+  ["happyhorse/video-edit", HappyHorseVideoEditRequestSchema],
+  ["happyhorse-1-1/text-to-video", HappyHorse11TextToVideoRequestSchema],
+  ["happyhorse-1-1/image-to-video", HappyHorse11ImageToVideoRequestSchema],
+  [
+    "happyhorse-1-1/reference-to-video",
+    HappyHorse11ReferenceToVideoRequestSchema,
+  ],
   ["gemini-omni-video", GeminiOmniVideoRequestSchema],
   ["pixverse-v6/text-to-video", PixverseV6TextToVideoRequestSchema],
   ["pixverse-v6/image-to-video", PixverseV6ImageToVideoRequestSchema],
@@ -203,13 +220,6 @@ export const GUARD_EXEMPTION_REASONS = {
 // typo and stale-entry checking on the keys, exactly as the guard table's
 // KieMediaModel key type does.
 export const CREATE_TASK_GUARD_EXEMPTIONS = {
-  "happyhorse/text-to-video": "notYetGuarded",
-  "happyhorse/image-to-video": "notYetGuarded",
-  "happyhorse/reference-to-video": "notYetGuarded",
-  "happyhorse/video-edit": "notYetGuarded",
-  "happyhorse-1-1/text-to-video": "notYetGuarded",
-  "happyhorse-1-1/image-to-video": "notYetGuarded",
-  "happyhorse-1-1/reference-to-video": "notYetGuarded",
   "omnihuman-1-5": "notYetGuarded",
   "volcengine/video-to-video-lip-sync": "notYetGuarded",
   "elevenlabs/audio-isolation": "notYetGuarded",

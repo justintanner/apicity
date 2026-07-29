@@ -109,16 +109,22 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
   it("guards exactly the models pinned in this list", () => {
     expect([...guarded].sort()).toEqual(
       [
+        "grok-imagine/image-to-video",
         "bytedance/seedance-2-fast",
         "bytedance/seedance-2",
         "bytedance/seedance-2-mini",
+        "wan/2-7-image-to-video",
+        "wan/2-7-text-to-video",
+        "wan/2-7-r2v",
+        "wan/2-7-videoedit",
+        "wan/2-7-image",
+        "wan/2-7-image-pro",
         "gemini-omni-video",
-        "grok-imagine/image-to-video",
-        "pixverse-v6/extend",
-        "pixverse-v6/image-to-video",
-        "pixverse-v6/reference-to-video",
         "pixverse-v6/text-to-video",
+        "pixverse-v6/image-to-video",
         "pixverse-v6/transition",
+        "pixverse-v6/extend",
+        "pixverse-v6/reference-to-video",
       ].sort()
     );
   });

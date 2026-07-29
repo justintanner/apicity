@@ -81,7 +81,7 @@ pnpm run test:provider -- <name-or-path> # Typecheck + replay one provider
 pnpm run dev:record -- <file>    # Safe record for a NEW test (record-missing + 1Password)
 pnpm run dev:rerecord -- <file>  # Destructive re-record (file filter required)
 pnpm run format:changed -- [paths...] # Prettier only changed or supplied files
-pnpm run dev:preflight:fast -- <name-or-path> # Fast provider gate: scoped format+lint+typecheck+test
+pnpm run dev:preflight:fast -- <name-or-path> # Fast provider gate: scoped format+lint, whole tests-project typecheck, provider typecheck+test
 pnpm run dev:preflight:provider -- <name-or-path> # Explicit alias for the fast provider gate
 pnpm run dev:preflight:changed -- [paths...] # Changed-file format/lint plus full typecheck+test
 pnpm run dev:preflight           # Full local gate: format + typecheck + lint:after-format + test:run
@@ -97,7 +97,8 @@ Provider-scoped commands accept either `openai`-style names or paths such as
 `packages/provider/openai/src/openai.ts` and
 `tests/integration/openai-chat.test.ts`. For narrow provider work, use
 `pnpm run dev:preflight:fast -- <name-or-path>`; it prints the scoped
-format, lint, typecheck, and replay steps as it runs them. From inside a
+format and lint steps, the whole tests-project typecheck, and the provider
+typecheck and replay steps as it runs them. From inside a
 provider package, run `pnpm -w run dev:preflight:fast` to infer the provider
 from pnpm's `INIT_CWD`. Keep `pnpm run dev:preflight` and
 `pnpm run ci:local` for shared scripts/config, package metadata, docs, test

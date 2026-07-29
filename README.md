@@ -237,8 +237,9 @@ MCP server's `--paygate-secret-file` wiring.
   Integration tests record/replay via Polly.js (no keys needed for replay).
 - **Provider-scoped loop** — use
   `pnpm run dev:preflight:fast -- <name-or-path>` as the fast pre-push
-  checklist for narrow provider work. It prints and runs the scoped steps:
-  Prettier on the provider package/tests, `lint:provider`, then
+  checklist for narrow provider work. It prints and runs the steps:
+  Prettier on the provider package/tests, `lint:provider`, the whole
+  tests-project typecheck (`typecheck:tests`, unscoped by design), then
   `test:provider` for provider typecheck + replay tests. `<name-or-path>` can
   be `openai`, `packages/provider/openai/src/openai.ts`, or a matching
   `tests/integration/openai-*.test.ts` path. From a provider package,

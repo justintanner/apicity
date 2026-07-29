@@ -6,12 +6,11 @@
  * back to the full monorepo typecheck when the branch changes another package
  * or shared TypeScript/package config, so shared-package errors are not hidden.
  *
- * No provider package tsconfig covers `tests/**`, so a diff that touches the
- * tests project adds a `tests/tsconfig.json` check on top of the provider
- * tsconfig instead of reporting green on files it never compiles. That costs
- * one extra `pnpm run typecheck:tests` (~25s) rather than the ~105s full
- * typecheck, so the fast path stays fast. `scripts/lib/tests-project.mjs`
- * decides which paths belong to the tests project.
+ * A diff that touches the tests project adds a `tests/tsconfig.json` check on
+ * top of the provider tsconfig, instead of reporting green on files the
+ * provider project never compiles. `scripts/lib/tests-project.mjs` decides
+ * which paths belong to the tests project, and owns why that step exists and
+ * what it costs.
  */
 
 import { spawnSync } from "node:child_process";
@@ -94,7 +93,8 @@ function runSelectedSteps() {
 
   // Stop on a provider failure: the tests project pulls the same provider
   // sources in through its `@apicity/*` path mapping, so a second run would
-  // spend ~25s reprinting errors the reader already has.
+  // spend a full tests-project typecheck reprinting errors the reader already
+  // has.
   if (providerStatus !== 0 || testsProjectFiles.length === 0) {
     return providerStatus;
   }

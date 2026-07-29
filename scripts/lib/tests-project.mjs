@@ -14,11 +14,14 @@
  * A test file with a type error therefore passes both fast gates and only goes
  * red in full CI, where `pnpm run typecheck` runs the tests project.
  *
- * This module is the single source of truth for what the tests project covers
- * and how it is invoked, so the two consumers agree by construction instead of
- * each carrying its own copy of the `tests/tsconfig.json` exclude list — the
- * same reason `scripts/lib/cross-cutting-tests.mjs` exists (ac-05hrc). Keeping
- * the knowledge here also lets the regression test assert on exported data
+ * This module is the single source of truth for what the tests project covers,
+ * how it is invoked, and what that costs — so both gates and the docs point
+ * here instead of each restating it. What the two consumers actually share is
+ * `TESTS_TYPECHECK_STEP`, which makes them invoke the project identically by
+ * construction; the `tests/tsconfig.json` exclude list below has a single
+ * consumer (`isTestsProjectFile`, called only from `typecheck-provider.mjs`)
+ * and lives here for the same reason `scripts/lib/cross-cutting-tests.mjs`
+ * exists (ac-05hrc): the regression test can then assert on exported data
  * rather than shelling out to a full gate run, so it stays filesystem-only.
  *
  * Dependency-free by design: importing it must not pull in `provider-scope.mjs`
@@ -39,6 +42,13 @@ export const TESTS_PROJECT_EXCLUDES = [
 // script rather than re-spelling `tsc --noEmit -p tests/tsconfig.json` keeps
 // package.json the single definition of the command, and `repro` is printed on
 // failure so the output always names a command the reader can paste verbatim.
+//
+// What it costs, and why a fast gate can afford it: one `tsc` run over the
+// tests project — measured at 22.5s, 25.5s, and 35s on three machines while
+// this was built (ac-6g2rnr) — against the ~105s of the full
+// `pnpm run typecheck`, which no fast gate invokes. That margin is the whole
+// argument for running this step unconditionally. It is a measured property
+// that grows with the test tree, so re-measure before quoting it as current.
 export const TESTS_TYPECHECK_STEP = Object.freeze({
   title: "typecheck:tests (whole tests/ project)",
   command: "pnpm",

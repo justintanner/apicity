@@ -40,7 +40,7 @@ pnpm run build:kimicoding        # Build single package (also: build:google, bui
 pnpm run gen:shared              # Sync canonical shared/provider-src files into provider copies
 pnpm run gen:shared:check        # Check shared provider copies for drift
 pnpm run typecheck               # Type-check all packages (tsc --noEmit; no emit, no docs)
-pnpm run typecheck:provider -- <name-or-path> # Type-check one provider; falls back to full on shared/package diffs
+pnpm run typecheck:provider -- <name-or-path> # Type-check one provider (+ tests project when the diff touches it); falls back to full on shared/package diffs
 pnpm run lint                    # Full lint: prettier --check + ESLint + repo checks (NO build)
 pnpm run lint:after-format       # Full lint minus prettier --check; safe after pnpm run format
 pnpm run lint:provider <name-or-path> # Scoped ESLint + provider-relevant repo checks

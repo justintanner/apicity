@@ -182,9 +182,24 @@ describe("tests-project helper", () => {
       ).toHaveLength(1);
     });
 
-    it("runs the step unconditionally, with a repro line on failure", () => {
-      expect(source).toContain("TESTS_TYPECHECK_STEP.command");
-      expect(source).toContain("repro: TESTS_TYPECHECK_STEP.repro");
+    it("runs the step as an unguarded statement, with a repro line", () => {
+      // REQ-002: this step "must not be skipped". Asserting only that the
+      // source mentions TESTS_TYPECHECK_STEP.command does not enforce that —
+      // wrapping the call in `if (process.env.SKIP_TESTS_TYPECHECK !== "1")`
+      // leaves such an assertion green. So pin the call's *position*: every
+      // step in this gate is a bare `run(...)` statement at column 0, and
+      // Prettier indents anything nested inside a guard block, so an
+      // unindented `run(` is the check that a guard cannot survive.
+      //
+      // `[^;]*` cannot cross a statement boundary, so the arguments matched
+      // here belong to this one call. Comments are stripped first, so a
+      // commented-out example cannot satisfy the assertion.
+      const invocation = stripComments(source).match(
+        /^run\([^;]*TESTS_TYPECHECK_STEP\.command[^;]*\);$/m
+      );
+
+      expect(invocation).not.toBeNull();
+      expect(invocation?.[0]).toContain("repro: TESTS_TYPECHECK_STEP.repro");
     });
 
     it("never invokes the full monorepo typecheck", () => {

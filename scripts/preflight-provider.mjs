@@ -21,16 +21,10 @@
  *   4. test:provider     typecheck the package + replay its tests
  *   5. cross-cutting     whole-corpus recording-enumeration tests
  *
- * Step 3 runs the tests project (see scripts/lib/tests-project.mjs) because no
- * provider package tsconfig includes `tests/**`, and Vitest compiles test files
- * through esbuild, which strips types without checking them — so replaying a
- * test proves nothing about its types. `tests/tsconfig.json` is whole-tree, so
- * the step is unconditional and provider-independent: a type error in any test
- * file fails this gate whichever provider it was invoked for. That is the exact
- * failure class that reached main twice (kimicoding's content union, xai's
- * readonly spread, both fixed test-side in 73c8b0cc) with the scoped gate green.
- * It costs one `tsc -p tests/tsconfig.json` (~25s), well short of the ~105s full
- * `pnpm run typecheck`, which this gate must never invoke.
+ * Step 3 is the one step here that is NOT scoped: `tests/tsconfig.json` is a
+ * single whole-tree project, so the step runs unconditionally and a type error
+ * in any file it compiles fails this gate whichever provider it was invoked
+ * for. Why that step exists and what it costs: scripts/lib/tests-project.mjs.
  *
  * Step 5 runs the cross-cutting integration tests (see
  * scripts/lib/cross-cutting-tests.mjs) that enumerate ALL recordings and assert

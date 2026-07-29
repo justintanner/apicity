@@ -57,49 +57,139 @@ describe.each([...FAST_GATE_DOC_SURFACES])("%s", (surface) => {
 // These cases are what turn the acceptance criteria from manual procedures into
 // assertions. They perturb the *step list* or a *copy of the text*, never the
 // files on disk, and run against the real documentation.
-describe("fast-gate documentation guard", () => {
+//
+// Parameterized over every surface, not just CLAUDE.md: AC-5 clause 1 says
+// deleting the region from *any one* of them fails the guard naming that file,
+// and `checkFastGateDocs` is surface-agnostic by construction — so the cheap way
+// to keep it that way is to run the negative cases against all three.
+describe.each([...FAST_GATE_DOC_SURFACES])(
+  "fast-gate documentation guard — %s",
+  (surface) => {
+    it("fails when the gate gains a step the docs do not mention", () => {
+      const problems = checkFastGateDocs(surface, readSurface(surface), [
+        ...FAST_GATE_STEPS,
+        {
+          id: "sixth-step",
+          title: "a sixth step nobody documented",
+          prose: { [surface]: "a sixth step nobody documented" },
+        },
+      ]);
+      expect(problems).toContain(
+        `${surface}: step 'sixth-step' is run by the fast gate but not documented here`
+      );
+    });
+
+    it("fails when the docs describe a step the gate no longer runs", () => {
+      const withoutCrossCutting = FAST_GATE_STEPS.filter(
+        (step) => step.id !== "cross-cutting"
+      );
+      const problems = checkFastGateDocs(
+        surface,
+        readSurface(surface),
+        withoutCrossCutting
+      );
+      expect(problems).toContain(
+        `${surface}: step 'cross-cutting' is documented here but the fast gate no longer runs it`
+      );
+    });
+
+    it("fails on a missing anchor rather than checking nothing", () => {
+      const withoutRegion = readSurface(surface)
+        .replace("<!-- fast-gate-steps:start -->", "")
+        .replace("<!-- fast-gate-steps:end -->", "");
+      const problems = checkFastGateDocs(surface, withoutRegion);
+      expect(problems).toContain(
+        `${surface}: expected exactly one <!-- fast-gate-steps:start --> marker, found 0`
+      );
+      expect(problems).toContain(
+        `${surface}: expected exactly one <!-- fast-gate-steps:end --> marker, found 0`
+      );
+    });
+
+    it("fails when the end anchor precedes the start anchor", () => {
+      // Swapping the anchors leaves one of each, so both count checks pass and
+      // the region would slice backwards. Saying so beats the alternative: an
+      // empty region makes every step look undocumented and buries the cause
+      // under five unrelated problems.
+      const placeholder = "<!-- fast-gate-steps:swapped -->";
+      const swapped = readSurface(surface)
+        .replace("<!-- fast-gate-steps:start -->", placeholder)
+        .replace(
+          "<!-- fast-gate-steps:end -->",
+          "<!-- fast-gate-steps:start -->"
+        )
+        .replace(placeholder, "<!-- fast-gate-steps:end -->");
+
+      expect(checkFastGateDocs(surface, swapped)).toEqual([
+        `${surface}: the <!-- fast-gate-steps:end --> marker appears before <!-- fast-gate-steps:start -->`,
+      ]);
+    });
+
+    it("fails when one step is marked twice inside the region", () => {
+      // First occurrence wins for span purposes, so a copy-pasted marker would
+      // otherwise be inert. It is reported on its own because the second copy
+      // silently truncates the *next* step's evidence span.
+      const marker = "<!-- fast-gate-step:format -->";
+      const text = readSurface(surface);
+      const doubled = text.replace(marker, `${marker}${marker}`);
+      expect(doubled).not.toBe(text);
+
+      expect(checkFastGateDocs(surface, doubled)).toContain(
+        `${surface}: step 'format' is documented more than once inside the region`
+      );
+    });
+
+    it("fails when a step declares no required prose for this surface", () => {
+      // The completeness half of the contract: a step added to FAST_GATE_STEPS
+      // without a `prose` entry for every guarded surface is red at the
+      // definition rather than silently unchecked on the surfaces it forgot.
+      const proseless = FAST_GATE_STEPS.map((step) => {
+        if (step.id !== "lint") return step;
+        const prose = { ...step.prose };
+        delete prose[surface];
+        return { ...step, prose };
+      });
+
+      expect(
+        checkFastGateDocs(surface, readSurface(surface), proseless)
+      ).toContain(
+        `${surface}: step 'lint' declares no required prose for this surface in scripts/lib/fast-gate-steps.mjs`
+      );
+    });
+
+    it("ignores a step marker planted outside the region", () => {
+      // Moving a marker past the end anchor must not keep its step
+      // "documented" — otherwise the region boundary is advisory and the guard
+      // can be satisfied from anywhere in the file, which is the whole-file
+      // substring search REQ-004 rules out, reached by another route.
+      const inside =
+        "<!-- fast-gate-step:cross-cutting --><!-- fast-gate-steps:end -->";
+      const text = readSurface(surface);
+      expect(text).toContain(inside);
+
+      const outside = text.replace(
+        inside,
+        "<!-- fast-gate-steps:end --><!-- fast-gate-step:cross-cutting -->"
+      );
+      expect(checkFastGateDocs(surface, outside)).toEqual([
+        `${surface}: step 'cross-cutting' is run by the fast gate but not documented here`,
+      ]);
+    });
+
+    it("does not depend on which line the region sits on", () => {
+      // AC-5 clause 2. Every offset the guard computes is a string index, so
+      // shifting the whole file down must not change the verdict.
+      const shifted = `# Shifted\n\nfiller paragraph\n\n${readSurface(surface)}`;
+      expect(checkFastGateDocs(surface, shifted)).toEqual([]);
+    });
+  }
+);
+
+// Stays CLAUDE.md-only: it depends on that file's exact in-region wording and on
+// the same phrase appearing outside the region, which the other two surfaces do
+// not reproduce.
+describe("fast-gate documentation guard — region scoping", () => {
   const surface = "CLAUDE.md";
-
-  it("fails when the gate gains a step the docs do not mention", () => {
-    const problems = checkFastGateDocs(surface, readSurface(surface), [
-      ...FAST_GATE_STEPS,
-      {
-        id: "sixth-step",
-        title: "a sixth step nobody documented",
-        prose: { [surface]: "a sixth step nobody documented" },
-      },
-    ]);
-    expect(problems).toContain(
-      `${surface}: step 'sixth-step' is run by the fast gate but not documented here`
-    );
-  });
-
-  it("fails when the docs describe a step the gate no longer runs", () => {
-    const withoutCrossCutting = FAST_GATE_STEPS.filter(
-      (step) => step.id !== "cross-cutting"
-    );
-    const problems = checkFastGateDocs(
-      surface,
-      readSurface(surface),
-      withoutCrossCutting
-    );
-    expect(problems).toContain(
-      `${surface}: step 'cross-cutting' is documented here but the fast gate no longer runs it`
-    );
-  });
-
-  it("fails on a missing anchor rather than checking nothing", () => {
-    const withoutRegion = readSurface(surface)
-      .replace("<!-- fast-gate-steps:start -->", "")
-      .replace("<!-- fast-gate-steps:end -->", "");
-    const problems = checkFastGateDocs(surface, withoutRegion);
-    expect(problems).toContain(
-      `${surface}: expected exactly one <!-- fast-gate-steps:start --> marker, found 0`
-    );
-    expect(problems).toContain(
-      `${surface}: expected exactly one <!-- fast-gate-steps:end --> marker, found 0`
-    );
-  });
 
   it("is region-scoped, not whole-file", () => {
     // `whole tests-project typecheck` appears three times in CLAUDE.md: once

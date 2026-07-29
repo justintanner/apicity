@@ -29,20 +29,13 @@ import {
 //
 // Scope: registry shape only. Behaviour-level guard coverage lives across
 // tests/unit/kie-pixverse-v6.test.ts (whose `describe.each(GUARD_MODELS)` table
-// drives 4 of the 12 guarded models, with `pixverse-v6/text-to-video` covered
+// drives 4 of the 10 guarded models, with `pixverse-v6/text-to-video` covered
 // by its own describe block above it), tests/unit/kie-request.test.ts
 // (`grok-imagine/image-to-video`, `gemini-omni-video`),
-// tests/unit/kie-seedance-2-mini.test.ts, and tests/unit/kie/validate.test.ts
-// (the kling and grok-imagine core request schemas, at the schema rather than
-// the guard boundary) — the same split
-// tests/unit/kie-model-input-schemas.test.ts already uses.
-//
-// The kling four and the grok-imagine core three are the exception to that
-// split: tests/unit/kie/validate.test.ts exercises their schemas directly
-// (accept the documented payload, reject a second image_url, enforce the
-// prompt/duration bounds), but nothing yet drives one through createTask to
-// observe the guard throwing. The registry rows below are pinned; the throw
-// path for them is not.
+// tests/unit/kie-seedance-2-mini.test.ts, and
+// tests/integration/kie-more-models.test.ts (`nano-banana-pro` and
+// `nano-banana-2`, at the request-schema rather than the guard boundary) — the
+// same split tests/unit/kie-model-input-schemas.test.ts already uses.
 
 const guarded = CREATE_TASK_GUARDS.map(([model]) => model as string);
 const exempt = Object.keys(CREATE_TASK_GUARD_EXEMPTIONS);
@@ -111,6 +104,8 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
         "kling-3.0/video",
         "kling/v3-turbo-image-to-video",
         "kling/v3-turbo-text-to-video",
+        "nano-banana-2",
+        "nano-banana-pro",
         "pixverse-v6/extend",
         "pixverse-v6/image-to-video",
         "pixverse-v6/reference-to-video",

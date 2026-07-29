@@ -83,6 +83,201 @@ describe("KIE modelInputSchemas metadata", () => {
   });
 });
 
+// ---------------------------------------------------------------------------
+// PixVerse V6 registry entries (REQ-007, AC-3)
+// ---------------------------------------------------------------------------
+//
+// modelInputSchemas is the surface a consumer reads to discover a model's
+// fields without opening zod.ts (US-3), so these assert the public metadata
+// itself — enum membership, ranges, documented defaults, array bounds, and the
+// nested image_references item shape — not the zod schema behind it. The
+// documented defaults are the point of BR-8: they are recorded here precisely
+// because the schema deliberately does *not* apply them.
+
+describe("KIE PixVerse V6 modelInputSchemas metadata (REQ-007)", () => {
+  const provider = createKie({ apiKey: "test-key" });
+  const QUALITIES = ["360p", "540p", "720p", "1080p"];
+  const ASPECT_RATIOS = [
+    "16:9",
+    "4:3",
+    "1:1",
+    "3:4",
+    "9:16",
+    "2:3",
+    "3:2",
+    "21:9",
+  ];
+
+  it.each([
+    "pixverse-v6/text-to-video",
+    "pixverse-v6/image-to-video",
+    "pixverse-v6/transition",
+    "pixverse-v6/extend",
+    "pixverse-v6/reference-to-video",
+  ] as const)("types %s as a video model with a 3-5000 prompt", (model) => {
+    const entry = provider.modelInputSchemas[model];
+
+    expect(entry.type).toBe("video");
+    expect(entry.fields.prompt).toMatchObject({
+      type: "string",
+      required: true,
+      minLength: 3,
+      maxLength: 5000,
+    });
+    expect(entry.fields.quality.enum).toEqual(QUALITIES);
+    expect(entry.fields.seed).toMatchObject({
+      type: "integer",
+      minimum: 0,
+      maximum: 2147483647,
+    });
+  });
+
+  it("documents image-to-video's 1-2 image_urls and its exclusive pair", () => {
+    const fields =
+      provider.modelInputSchemas["pixverse-v6/image-to-video"].fields;
+
+    expect(fields.image_urls).toMatchObject({
+      type: "array",
+      required: true,
+      minItems: 1,
+      maxItems: 2,
+    });
+    expect(fields.image_urls.items?.type).toBe("string");
+    expect(fields.quality.required).toBe(true);
+    expect(fields.quality.default).toBe("720p");
+
+    // Neither half of the duration/template_id pair is unconditionally
+    // required, so neither is flagged `required` — the exclusivity lives in
+    // the zod refinement and is spelled out in the descriptions.
+    expect(fields.duration).toMatchObject({
+      type: "integer",
+      minimum: 1,
+      maximum: 15,
+      default: 5,
+    });
+    expect(fields.duration.required).toBeUndefined();
+    expect(fields.template_id.required).toBeUndefined();
+    expect(fields.template_id.minLength).toBe(1);
+    expect(fields.duration.description).toContain("template_id");
+    expect(fields.template_id.description).toContain("duration");
+
+    expect(fields.generate_audio_switch.default).toBe(false);
+    expect(fields.generate_multi_clip_switch.default).toBe(false);
+    // BR-3: aspect ratio applies only to text-to-video and the fusion mode.
+    expect(fields.aspect_ratio).toBeUndefined();
+  });
+
+  it("documents transition's two required frame URLs and no multi-clip switch", () => {
+    const fields = provider.modelInputSchemas["pixverse-v6/transition"].fields;
+
+    expect(fields.first_frame_image_url).toMatchObject({
+      type: "string",
+      required: true,
+    });
+    expect(fields.last_frame_image_url).toMatchObject({
+      type: "string",
+      required: true,
+    });
+    expect(fields.duration).toMatchObject({
+      type: "integer",
+      required: true,
+      minimum: 1,
+      maximum: 15,
+      default: 5,
+    });
+    expect(fields.quality.default).toBe("720p");
+    expect(fields.generate_audio_switch.default).toBe(false);
+    expect(fields.generate_multi_clip_switch).toBeUndefined();
+    expect(fields.aspect_ratio).toBeUndefined();
+  });
+
+  it("documents extend's exclusive sources and its absent defaults", () => {
+    const fields = provider.modelInputSchemas["pixverse-v6/extend"].fields;
+
+    expect(fields.taskId.type).toBe("string");
+    expect(fields.video_url.type).toBe("string");
+    expect(fields.taskId.required).toBeUndefined();
+    expect(fields.video_url.required).toBeUndefined();
+    expect(fields.taskId.description).toContain("video_url");
+    expect(fields.video_url.description).toContain("taskId");
+
+    expect(fields.quality.required).toBe(true);
+    expect(fields.duration).toMatchObject({
+      type: "integer",
+      required: true,
+      minimum: 1,
+      maximum: 15,
+    });
+
+    // Alone in the family, extend documents no defaults at all upstream, so
+    // the registry must not invent any.
+    expect(fields.quality.default).toBeUndefined();
+    expect(fields.duration.default).toBeUndefined();
+    expect(fields.generate_audio_switch.default).toBeUndefined();
+  });
+
+  it("documents reference-to-video's 1-7 references and their item shape", () => {
+    const fields =
+      provider.modelInputSchemas["pixverse-v6/reference-to-video"].fields;
+
+    expect(fields.image_references).toMatchObject({
+      type: "array",
+      required: true,
+      minItems: 1,
+      maxItems: 7,
+    });
+
+    const item = fields.image_references.items;
+    expect(item?.type).toBe("object");
+    const properties = item?.properties ?? {};
+    expect(Object.keys(properties).sort()).toEqual([
+      "image_url",
+      "ref_name",
+      "type",
+    ]);
+    expect(properties.image_url).toMatchObject({
+      type: "string",
+      required: true,
+    });
+    expect(properties.type).toMatchObject({
+      type: "string",
+      enum: ["subject", "background"],
+      default: "subject",
+    });
+    expect(properties.ref_name).toMatchObject({
+      type: "string",
+      minLength: 1,
+      maxLength: 30,
+    });
+    expect(properties.ref_name.required).toBeUndefined();
+
+    expect(fields.aspect_ratio).toMatchObject({
+      type: "string",
+      required: true,
+      default: "16:9",
+    });
+    expect(fields.aspect_ratio.enum).toEqual(ASPECT_RATIOS);
+    expect(fields.duration.default).toBe(5);
+    expect(fields.generate_multi_clip_switch).toBeUndefined();
+  });
+});
+
+// AC-3. `callBackUrl` is a top-level envelope field on createTask, not model
+// input. It leaked into the pixverse-v6/text-to-video registry entry once and
+// was removed in review; asserting it across the whole registry rather than
+// only the PixVerse rows means the next entry to copy the mistake fails here.
+describe("KIE modelInputSchemas never expose callBackUrl as an input field", () => {
+  const provider = createKie({ apiKey: "test-key" });
+
+  it("has no callBackUrl field on any model", () => {
+    const offenders = Object.entries(provider.modelInputSchemas)
+      .filter(([, entry]) => "callBackUrl" in entry.fields)
+      .map(([model]) => model);
+
+    expect(offenders).toEqual([]);
+  });
+});
+
 // REQ-001 / AC-001. Kie documents a `basic` default for Seedream `quality`,
 // but createTask answers "This field is required" when the key is absent, so
 // the schemas declare it required and deliberately carry no `.default()`.

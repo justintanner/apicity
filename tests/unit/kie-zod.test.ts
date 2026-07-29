@@ -274,6 +274,405 @@ describe("KIE Zod schema validation", () => {
       ).toBe(false);
     });
   });
+
+  // ------------------------------------------------------------------------
+  // The four remaining PixVerse V6 models (REQ-002..REQ-005)
+  // ------------------------------------------------------------------------
+  //
+  // Same boundary as the text-to-video block above — CreateTaskRequestSchema,
+  // not the per-model schema — so each of the four is proven joined into the
+  // MediaGenerationRequest union and reachable through the id the caller
+  // actually sends (BR-1). Required-field, quality, duration, seed, and prompt
+  // behaviour is identical family-wide and is table-driven here; the fields
+  // only one model declares (image_urls, image_references, aspect_ratio) and
+  // the two exclusivity rules get their own blocks below.
+
+  const PIXVERSE_PROMPT =
+    "The subject walks through the neon-lit alley as rain begins to fall.";
+  const PIXVERSE_QUALITIES = ["360p", "540p", "720p", "1080p"];
+  const PIXVERSE_ASPECT_RATIOS = [
+    "16:9",
+    "4:3",
+    "1:1",
+    "3:4",
+    "9:16",
+    "2:3",
+    "3:2",
+    "21:9",
+  ];
+  const FRAME_URL = "https://example.com/frame.png";
+  const REFERENCE_URL = "https://example.com/subject.png";
+
+  // CreateTaskRequestSchema's output is a union of ~50 per-model shapes, so a
+  // model-specific field is not readable off it without widening. The
+  // assertions below are the point; the static type of the union is not.
+  function parsedInput(result: {
+    data?: { input: unknown };
+  }): Record<string, unknown> {
+    return (result.data?.input ?? {}) as Record<string, unknown>;
+  }
+
+  interface NestedIssue {
+    readonly path?: readonly PropertyKey[];
+    readonly message?: string;
+    readonly errors?: readonly (readonly NestedIssue[])[];
+  }
+
+  // A failed union is reported one of two ways: as the issues of the single
+  // branch zod judged the intended match, or — when no branch is a clear
+  // match — as one `invalid_union` issue carrying every branch's issues nested
+  // under `errors`. Which one comes back depends on the payload, so flatten to
+  // leaves rather than writing assertions against one shape.
+  function issueLeaves(issues: readonly NestedIssue[] = []): NestedIssue[] {
+    return issues.flatMap((issue) =>
+      issue.errors ? issueLeaves(issue.errors.flat()) : [issue]
+    );
+  }
+
+  const issueMessages = (result: {
+    error?: { issues: readonly NestedIssue[] };
+  }) => issueLeaves(result.error?.issues).map((issue) => issue.message);
+
+  const issuePaths = (result: { error?: { issues: readonly NestedIssue[] } }) =>
+    issueLeaves(result.error?.issues).map((issue) => issue.path ?? []);
+
+  interface PixverseFamilyCase {
+    readonly model: string;
+    readonly input: Record<string, unknown>;
+    readonly required: readonly string[];
+  }
+
+  const PIXVERSE_V6_MODELS: readonly PixverseFamilyCase[] = [
+    {
+      model: "pixverse-v6/image-to-video",
+      input: {
+        prompt: PIXVERSE_PROMPT,
+        image_urls: [FRAME_URL],
+        quality: "720p",
+        duration: 5,
+      },
+      // `duration` is deliberately absent: it is required only in the sense
+      // that exactly one of duration/template_id must be present, which the
+      // exclusivity block below owns.
+      required: ["prompt", "image_urls", "quality"],
+    },
+    {
+      model: "pixverse-v6/transition",
+      input: {
+        prompt: PIXVERSE_PROMPT,
+        first_frame_image_url: "https://example.com/first.png",
+        last_frame_image_url: "https://example.com/last.png",
+        quality: "720p",
+        duration: 5,
+      },
+      required: [
+        "prompt",
+        "first_frame_image_url",
+        "last_frame_image_url",
+        "quality",
+        "duration",
+      ],
+    },
+    {
+      model: "pixverse-v6/extend",
+      input: {
+        prompt: PIXVERSE_PROMPT,
+        duration: 5,
+        quality: "720p",
+        video_url: "https://example.com/clip.mp4",
+      },
+      // Likewise: taskId/video_url is an exclusivity rule, not a plain
+      // required field.
+      required: ["prompt", "duration", "quality"],
+    },
+    {
+      model: "pixverse-v6/reference-to-video",
+      input: {
+        prompt: PIXVERSE_PROMPT,
+        image_references: [{ image_url: REFERENCE_URL }],
+        aspect_ratio: "16:9",
+        quality: "720p",
+        duration: 5,
+      },
+      required: [
+        "prompt",
+        "image_references",
+        "aspect_ratio",
+        "quality",
+        "duration",
+      ],
+    },
+  ];
+
+  describe.each(PIXVERSE_V6_MODELS)("$model", ({ model, input, required }) => {
+    const parse = (patch: Record<string, unknown>) =>
+      CreateTaskRequestSchema.safeParse({
+        model,
+        input: { ...input, ...patch },
+      });
+
+    it("accepts the documented payload", () => {
+      expect(parse({}).success).toBe(true);
+    });
+
+    it.each(required)("rejects a payload missing the required %s", (field) => {
+      const partial: Record<string, unknown> = { ...input };
+      delete partial[field];
+      expect(
+        CreateTaskRequestSchema.safeParse({ model, input: partial }).success
+      ).toBe(false);
+    });
+
+    it.each(PIXVERSE_QUALITIES)("accepts quality %s", (quality) => {
+      expect(parse({ quality }).success).toBe(true);
+    });
+
+    it.each(["480p", "2160p"])("rejects quality %s", (quality) => {
+      expect(parse({ quality }).success).toBe(false);
+    });
+
+    it.each([1, 15])(
+      "accepts duration at the inclusive boundary %s",
+      (duration) => {
+        expect(parse({ duration }).success).toBe(true);
+      }
+    );
+
+    it.each([0, 16])("rejects duration %s", (duration) => {
+      expect(parse({ duration }).success).toBe(false);
+    });
+
+    it.each([0, 2147483647])(
+      "accepts seed at the inclusive boundary %s",
+      (seed) => {
+        expect(parse({ seed }).success).toBe(true);
+      }
+    );
+
+    it.each([-1, 2147483648])("rejects seed %s", (seed) => {
+      expect(parse({ seed }).success).toBe(false);
+    });
+
+    it.each([3, 5000])("accepts a prompt of %s characters", (length) => {
+      expect(parse({ prompt: "p".repeat(length) }).success).toBe(true);
+    });
+
+    it.each([2, 5001])("rejects a prompt of %s characters", (length) => {
+      expect(parse({ prompt: "p".repeat(length) }).success).toBe(false);
+    });
+  });
+
+  // BR-3/BR-4. image_urls is 1..2 (upstream states "up to 2" in prose only),
+  // duration is exclusive with template_id because a template fixes the
+  // duration, and there is no aspect_ratio on this model at all.
+  describe("pixverse-v6/image-to-video cardinality and exclusivity", () => {
+    const base = {
+      prompt: PIXVERSE_PROMPT,
+      image_urls: [FRAME_URL],
+      quality: "720p",
+    };
+    const parseInput = (patch: Record<string, unknown>) =>
+      CreateTaskRequestSchema.safeParse({
+        model: "pixverse-v6/image-to-video",
+        input: { ...base, duration: 5, ...patch },
+      });
+
+    it.each([1, 2])("accepts %s image_urls", (count) => {
+      expect(
+        parseInput({ image_urls: Array(count).fill(FRAME_URL) }).success
+      ).toBe(true);
+    });
+
+    it.each([0, 3])("rejects %s image_urls", (count) => {
+      expect(
+        parseInput({ image_urls: Array(count).fill(FRAME_URL) }).success
+      ).toBe(false);
+    });
+
+    it.each([
+      ["duration alone", { duration: 5 }],
+      ["template_id alone", { template_id: "t-neon-rain" }],
+    ])("accepts a payload carrying %s", (_label, patch) => {
+      expect(
+        CreateTaskRequestSchema.safeParse({
+          model: "pixverse-v6/image-to-video",
+          input: { ...base, ...patch },
+        }).success
+      ).toBe(true);
+    });
+
+    it.each([
+      ["both duration and template_id", { duration: 5, template_id: "t-1" }],
+      ["neither duration nor template_id", {}],
+    ])("rejects a payload carrying %s", (_label, patch) => {
+      const result = CreateTaskRequestSchema.safeParse({
+        model: "pixverse-v6/image-to-video",
+        input: { ...base, ...patch },
+      });
+
+      expect(result.success).toBe(false);
+      expect(issueMessages(result)).toContain(
+        "pixverse-v6/image-to-video requires exactly one of duration or template_id"
+      );
+    });
+
+    // BR-3: no aspect_ratio field upstream. A caller who copies the
+    // text-to-video payload gets it dropped rather than silently honoured.
+    it("carries no aspect_ratio field — a supplied one is stripped", () => {
+      const result = parseInput({ aspect_ratio: "16:9" });
+
+      expect(result.success).toBe(true);
+      expect(parsedInput(result)).not.toHaveProperty("aspect_ratio");
+    });
+  });
+
+  // BR-6. Upstream models `input` as a two-variant anyOf keyed on the source
+  // field; the schema's superRefine is that rule, stated once.
+  describe("pixverse-v6/extend source exclusivity", () => {
+    const base = { prompt: PIXVERSE_PROMPT, duration: 5, quality: "720p" };
+    const parseInput = (patch: Record<string, unknown>) =>
+      CreateTaskRequestSchema.safeParse({
+        model: "pixverse-v6/extend",
+        input: { ...base, ...patch },
+      });
+
+    it.each([
+      ["taskId", { taskId: "task-abc123" }],
+      ["video_url", { video_url: "https://example.com/clip.mp4" }],
+    ])("accepts a payload sourced by %s alone", (_label, patch) => {
+      expect(parseInput(patch).success).toBe(true);
+    });
+
+    it.each([
+      [
+        "both taskId and video_url",
+        { taskId: "task-abc123", video_url: "https://example.com/clip.mp4" },
+      ],
+      ["neither taskId nor video_url", {}],
+    ])("rejects a payload carrying %s", (_label, patch) => {
+      const result = parseInput(patch);
+
+      expect(result.success).toBe(false);
+      expect(issueMessages(result)).toContain(
+        "pixverse-v6/extend requires exactly one of taskId or video_url"
+      );
+    });
+  });
+
+  // BR-7. 1..7 references, each an object with a required image_url plus an
+  // optional type (defaulting to subject) and an optional 1..30 char ref_name
+  // that must be unique across the list.
+  describe("pixverse-v6/reference-to-video image_references", () => {
+    const base = {
+      prompt: PIXVERSE_PROMPT,
+      aspect_ratio: "16:9",
+      quality: "720p",
+      duration: 5,
+    };
+    const parseReferences = (image_references: unknown) =>
+      CreateTaskRequestSchema.safeParse({
+        model: "pixverse-v6/reference-to-video",
+        input: { ...base, image_references },
+      });
+    const references = (count: number) =>
+      Array.from({ length: count }, (_unused, index) => ({
+        image_url: `https://example.com/reference-${index}.png`,
+      }));
+
+    it.each([1, 7])("accepts %s image_references", (count) => {
+      expect(parseReferences(references(count)).success).toBe(true);
+    });
+
+    it.each([0, 8])("rejects %s image_references", (count) => {
+      expect(parseReferences(references(count)).success).toBe(false);
+    });
+
+    it("rejects a reference that omits image_url", () => {
+      const result = parseReferences([{ type: "subject", ref_name: "hero" }]);
+
+      expect(result.success).toBe(false);
+      expect(
+        issuePaths(result).some((path) => path.includes("image_url"))
+      ).toBe(true);
+    });
+
+    it("accepts a background reference with a 30-character ref_name", () => {
+      const ref_name = "r".repeat(30);
+      const result = parseReferences([
+        { image_url: REFERENCE_URL, type: "background", ref_name },
+      ]);
+
+      expect(result.success).toBe(true);
+      expect(parsedInput(result).image_references).toEqual([
+        { image_url: REFERENCE_URL, type: "background", ref_name },
+      ]);
+    });
+
+    it("rejects a ref_name of 31 characters", () => {
+      expect(
+        parseReferences([
+          { image_url: REFERENCE_URL, ref_name: "r".repeat(31) },
+        ]).success
+      ).toBe(false);
+    });
+
+    it("defaults an omitted reference type to subject", () => {
+      const result = parseReferences([{ image_url: REFERENCE_URL }]);
+
+      expect(result.success).toBe(true);
+      expect(parsedInput(result).image_references).toEqual([
+        { image_url: REFERENCE_URL, type: "subject" },
+      ]);
+    });
+
+    // Upstream: "ref_name must be unique within the same list" — a duplicate
+    // makes an `@name` mention in the prompt ambiguous. Unnamed references are
+    // exempt, so two of them are not a collision.
+    it("rejects duplicate ref_name values", () => {
+      const result = parseReferences([
+        { image_url: REFERENCE_URL, ref_name: "hero" },
+        { image_url: FRAME_URL, ref_name: "hero" },
+      ]);
+
+      expect(result.success).toBe(false);
+      expect(issueMessages(result)).toContain(
+        "pixverse-v6/reference-to-video requires unique ref_name values within image_references (duplicate: hero)"
+      );
+    });
+
+    it("accepts several references that all omit ref_name", () => {
+      expect(parseReferences(references(3)).success).toBe(true);
+    });
+
+    it.each(PIXVERSE_ASPECT_RATIOS)(
+      "accepts aspect_ratio %s",
+      (aspect_ratio) => {
+        expect(
+          CreateTaskRequestSchema.safeParse({
+            model: "pixverse-v6/reference-to-video",
+            input: {
+              ...base,
+              aspect_ratio,
+              image_references: references(1),
+            },
+          }).success
+        ).toBe(true);
+      }
+    );
+
+    it.each(["4:5", "16:10"])("rejects aspect_ratio %s", (aspect_ratio) => {
+      expect(
+        CreateTaskRequestSchema.safeParse({
+          model: "pixverse-v6/reference-to-video",
+          input: {
+            ...base,
+            aspect_ratio,
+            image_references: references(1),
+          },
+        }).success
+      ).toBe(false);
+    });
+  });
 });
 
 // ---------------------------------------------------------------------------

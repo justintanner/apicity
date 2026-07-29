@@ -109,6 +109,10 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
   it("guards exactly the models pinned in this list", () => {
     expect([...guarded].sort()).toEqual(
       [
+        "kling-3.0/video",
+        "kling-3.0/motion-control",
+        "kling/v3-turbo-image-to-video",
+        "kling/v3-turbo-text-to-video",
         "grok-imagine/text-to-image",
         "grok-imagine/image-to-image",
         "grok-imagine/text-to-video",

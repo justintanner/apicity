@@ -483,13 +483,19 @@ the public GitHub release page for the pushed `v{{version}}` tag.
 A retried release (publish succeeded but a later sub-step failed) must not error
 on an already-existing tag. Create the tag only when missing, and treat an
 already-pushed tag as success.
+
+`stable` is protected by the `stable-release-only` GitHub ruleset: normal
+pushes are rejected, and only the release deploy key
+(`/gc/.gc/secrets/apicity-stable-deploy-key`) bypasses it. Push `stable`
+through that key; the tag is not restricted and pushes over `origin` as usual.
 ```bash
 if git rev-parse -q --verify "refs/tags/v{{version}}" >/dev/null; then
   echo "Tag v{{version}} already exists locally — skipping creation."
 else
   git tag -a v{{version}} -m "Release Apicity v{{version}}"
 fi
-git push origin stable
+GIT_SSH_COMMAND="ssh -i /gc/.gc/secrets/apicity-stable-deploy-key -o IdentitiesOnly=yes -o UserKnownHostsFile=/gc/.gc/secrets/github-known-hosts -o StrictHostKeyChecking=accept-new" \
+  git push git@github.com:justintanner/apicity.git stable
 git push origin v{{version}} || echo "Tag v{{version}} already on origin — continuing."
 ```
 

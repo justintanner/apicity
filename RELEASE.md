@@ -16,6 +16,12 @@ the npm `latest` tag.
 The release flow is: feature work → green `main` tests and CI →
 fast-forward `stable` → publish.
 
+`stable` is enforced by the `stable-release-only` GitHub ruleset: all pushes
+are rejected except through the release deploy key
+(`/gc/.gc/secrets/apicity-stable-deploy-key` on the server) or by a repo
+admin. Agent work sessions cannot move `stable` — if a push to `stable` is
+rejected, that is working as intended; land the work on `main`.
+
 ## Versioning
 
 Use only standard three-part semver versions:

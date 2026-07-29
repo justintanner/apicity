@@ -26,6 +26,7 @@ import {
   RunwayExtendRequest,
   RunwayRecordDetail,
 } from "./types";
+import type { z } from "zod";
 import type { FluxKontextRecordInfoResponse } from "./zod";
 import {
   CreateTaskRequestSchema,
@@ -53,6 +54,10 @@ import {
   Seedance2MiniRecordInfoResponseSchema,
   Seedance2MiniRequestSchema,
   PixverseV6TextToVideoRequestSchema,
+  PixverseV6ImageToVideoRequestSchema,
+  PixverseV6TransitionRequestSchema,
+  PixverseV6ExtendRequestSchema,
+  PixverseV6ReferenceToVideoRequestSchema,
 } from "./zod";
 import { modelInputSchemas } from "./model-schemas";
 import { createVeoProvider } from "./veo";
@@ -87,80 +92,27 @@ const MIME_TYPES: Record<string, string> = {
   m4a: "audio/mp4",
 };
 
-function validateGrokImageToVideoRequest(req: MediaGenerationRequest): void {
-  if (req.model !== "grok-imagine/image-to-video") {
+// Models whose createTask payload is validated before the request leaves the
+// process. Each row is a model id and the schema that rejects a malformed
+// payload for it; a model with no row here is passed through untouched.
+const CREATE_TASK_GUARDS: ReadonlyArray<readonly [string, z.ZodType]> = [
+  ["grok-imagine/image-to-video", GrokImageToVideoRequestSchema],
+  ["bytedance/seedance-2-mini", Seedance2MiniRequestSchema],
+  ["gemini-omni-video", GeminiOmniVideoRequestSchema],
+  ["pixverse-v6/text-to-video", PixverseV6TextToVideoRequestSchema],
+  ["pixverse-v6/image-to-video", PixverseV6ImageToVideoRequestSchema],
+  ["pixverse-v6/transition", PixverseV6TransitionRequestSchema],
+  ["pixverse-v6/extend", PixverseV6ExtendRequestSchema],
+  ["pixverse-v6/reference-to-video", PixverseV6ReferenceToVideoRequestSchema],
+];
+
+function validateCreateTaskRequest(req: MediaGenerationRequest): void {
+  const guard = CREATE_TASK_GUARDS.find(([model]) => model === req.model);
+  if (!guard) {
     return;
   }
 
-  const parsed = GrokImageToVideoRequestSchema.safeParse(req);
-  if (parsed.success) {
-    return;
-  }
-
-  const message = parsed.error.issues
-    .map((issue) => {
-      const path = issue.path.length ? `${issue.path.join(".")}: ` : "";
-      return `${path}${issue.message}`;
-    })
-    .join("; ");
-
-  throw new KieError(`Invalid Kie createTask request: ${message}`, 400, {
-    issues: parsed.error.issues,
-  });
-}
-
-function validateSeedance2MiniRequest(req: MediaGenerationRequest): void {
-  if (req.model !== "bytedance/seedance-2-mini") {
-    return;
-  }
-
-  const parsed = Seedance2MiniRequestSchema.safeParse(req);
-  if (parsed.success) {
-    return;
-  }
-
-  const message = parsed.error.issues
-    .map((issue) => {
-      const path = issue.path.length ? `${issue.path.join(".")}: ` : "";
-      return `${path}${issue.message}`;
-    })
-    .join("; ");
-
-  throw new KieError(`Invalid Kie createTask request: ${message}`, 400, {
-    issues: parsed.error.issues,
-  });
-}
-
-function validateGeminiOmniVideoRequest(req: MediaGenerationRequest): void {
-  if (req.model !== "gemini-omni-video") {
-    return;
-  }
-
-  const parsed = GeminiOmniVideoRequestSchema.safeParse(req);
-  if (parsed.success) {
-    return;
-  }
-
-  const message = parsed.error.issues
-    .map((issue) => {
-      const path = issue.path.length ? `${issue.path.join(".")}: ` : "";
-      return `${path}${issue.message}`;
-    })
-    .join("; ");
-
-  throw new KieError(`Invalid Kie createTask request: ${message}`, 400, {
-    issues: parsed.error.issues,
-  });
-}
-
-function validatePixverseV6TextToVideoRequest(
-  req: MediaGenerationRequest
-): void {
-  if (req.model !== "pixverse-v6/text-to-video") {
-    return;
-  }
-
-  const parsed = PixverseV6TextToVideoRequestSchema.safeParse(req);
+  const parsed = guard[1].safeParse(req);
   if (parsed.success) {
     return;
   }
@@ -214,10 +166,7 @@ export function createKie(opts: KieOptions): KieProvider {
   async function createTask(
     req: MediaGenerationRequest
   ): Promise<TaskResponse> {
-    validateGrokImageToVideoRequest(req);
-    validateSeedance2MiniRequest(req);
-    validateGeminiOmniVideoRequest(req);
-    validatePixverseV6TextToVideoRequest(req);
+    validateCreateTaskRequest(req);
 
     return await transport.postJson<TaskResponse>(
       "/api/v1/jobs/createTask",

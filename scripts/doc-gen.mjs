@@ -16,6 +16,10 @@ import {
   PROVIDERS,
   TSV_ONLY_PROVIDERS,
 } from "./lib/endpoint-walk.mjs";
+import {
+  displayDotPath,
+  resolveEndpointLabels,
+} from "./lib/endpoint-labels.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -451,40 +455,6 @@ function formatUsageSnippet(providerName, dotPath) {
   return `const res = await ${call}({ /* ... */ });`;
 }
 
-function displayDotPath(providerName, ep) {
-  if (providerName !== "kie") {
-    if (
-      providerName === "elevenlabs" &&
-      ep.fullDotPath &&
-      ep.dotPath &&
-      ep.fullDotPath.startsWith(`${ep.dotPath}.`)
-    ) {
-      const suffix = ep.fullDotPath.slice(ep.dotPath.length + 1);
-      if (REST_ALIAS_SUFFIXES.has(suffix)) return ep.fullDotPath;
-    }
-    return ep.dotPath;
-  }
-
-  if (ep.file.endsWith("/suno.ts")) return `suno.${ep.fullDotPath}`;
-  if (ep.file.endsWith("/veo.ts")) return `veo.${ep.fullDotPath}`;
-  if (ep.file.endsWith("/chat.ts")) return `chat.${ep.fullDotPath}`;
-  if (ep.file.endsWith("/claude.ts")) return ep.fullDotPath;
-  return ep.fullDotPath ?? ep.dotPath;
-}
-
-const REST_ALIAS_SUFFIXES = new Set([
-  "list",
-  "retrieve",
-  "create",
-  "del",
-  "delete",
-  "update",
-  "cancel",
-  "get",
-  "stream",
-  "results",
-]);
-
 const ENDPOINT_NOTES = new Map([
   [
     "polymarket\tclob.markets\tGET",
@@ -749,9 +719,9 @@ function renderSimpleFunctionsAuthenticatedGuide() {
   ].join("\n");
 }
 
-function renderEndpointDetails(ep, providerName, docsUrl, tier) {
+function renderEndpointDetails(ep, providerName, docsUrl, tier, label) {
   const method = ep.method ?? "";
-  const dotPath = displayDotPath(providerName, ep);
+  const dotPath = label;
   const headerCode = method ? `<code>${method}</code> ` : "";
   const summary = `${headerCode}<b><code>${providerName}${dotPath ? "." + dotPath : ""}</code></b>`;
 
@@ -802,14 +772,17 @@ function groupEndpoints(endpoints) {
 
 function renderApiReference(providerName, endpoints) {
   const sections = ["## API Reference", ""];
-  if (endpoints.length === 0) {
+  // Verb aliases of one path collapse to a single block; genuinely distinct
+  // siblings (stream variants) keep a block each under a distinct label.
+  const { labels, rendered } = resolveEndpointLabels(providerName, endpoints);
+  if (rendered.length === 0) {
     sections.push("_No endpoints discovered for this provider yet._", "");
     return sections.join("\n");
   }
 
-  const groups = groupEndpoints(endpoints);
+  const groups = groupEndpoints(rendered);
   sections.push(
-    `${endpoints.length} endpoint${endpoints.length === 1 ? "" : "s"} across ${groups.size} group${groups.size === 1 ? "" : "s"}. Each method mirrors an upstream URL path.`,
+    `${rendered.length} endpoint${rendered.length === 1 ? "" : "s"} across ${groups.size} group${groups.size === 1 ? "" : "s"}. Each method mirrors an upstream URL path.`,
     ""
   );
 
@@ -836,7 +809,8 @@ function renderApiReference(providerName, endpoints) {
           enrichedEndpoint,
           providerName,
           docRow?.docsUrl ?? "",
-          tier
+          tier,
+          labels.get(ep) ?? displayDotPath(providerName, ep)
         )
       );
     }
@@ -3876,8 +3850,11 @@ async function regenerate(providerName, endpointsByProvider) {
   const endpoints = endpointsByProvider.get(providerName) ?? [];
   const readme = await generateReadme(providerDir, providerName, endpoints);
   await fs.writeFile(readmePath, readme, "utf8");
+  // Report what the README actually documents, not the raw walk: collapsed
+  // verb aliases would otherwise make this line disagree with the header.
+  const { rendered } = resolveEndpointLabels(providerName, endpoints);
   console.log(
-    `✅ Generated ${path.relative(REPO_ROOT, readmePath)} (${endpoints.length} endpoints)`
+    `✅ Generated ${path.relative(REPO_ROOT, readmePath)} (${rendered.length} endpoints)`
   );
 }
 

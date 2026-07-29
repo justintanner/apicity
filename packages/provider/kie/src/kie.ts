@@ -27,7 +27,7 @@ import {
   RunwayRecordDetail,
 } from "./types";
 import type { z } from "zod";
-import type { FluxKontextRecordInfoResponse } from "./zod";
+import type { FluxKontextRecordInfoResponse, KieMediaModel } from "./zod";
 import {
   CreateTaskRequestSchema,
   DownloadUrlRequestSchema,
@@ -95,7 +95,11 @@ const MIME_TYPES: Record<string, string> = {
 // Models whose createTask payload is validated before the request leaves the
 // process. Each row is a model id and the schema that rejects a malformed
 // payload for it; a model with no row here is passed through untouched.
-const CREATE_TASK_GUARDS: ReadonlyArray<readonly [string, z.ZodType]> = [
+//
+// The key is KieMediaModel, not string, so a mistyped id fails tsc here rather
+// than silently never matching the .find() below — which would leave the guard
+// dormant and let an unvalidated payload reach the network.
+const CREATE_TASK_GUARDS: ReadonlyArray<readonly [KieMediaModel, z.ZodType]> = [
   ["grok-imagine/image-to-video", GrokImageToVideoRequestSchema],
   ["bytedance/seedance-2-mini", Seedance2MiniRequestSchema],
   ["gemini-omni-video", GeminiOmniVideoRequestSchema],

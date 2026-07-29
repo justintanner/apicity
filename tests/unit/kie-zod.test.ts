@@ -1084,7 +1084,11 @@ const MEDIA_MODEL_FAMILIES = [
       "pixverse-v6/extend",
       "pixverse-v6/reference-to-video",
     ],
-    aliases: ["pixverse-v7/text-to-video", "pixverse-v6.5/image-to-video"],
+    aliases: [
+      "pixverse-v6/motion-brush",
+      "pixverse-v7/text-to-video",
+      "pixverse-v6.5/image-to-video",
+    ],
     rejected: [
       "pixverse",
       "pixverse-v6",

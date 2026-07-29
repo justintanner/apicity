@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
+import { FAST_GATE_STEPS } from "../../scripts/lib/fast-gate-steps.mjs";
 import { repoRoot } from "../../scripts/lib/provider-scope.mjs";
 import {
   TESTS_PROJECT_EXCLUDES,
@@ -164,22 +165,45 @@ describe("tests-project helper", () => {
       expect(source).toContain("TESTS_TYPECHECK_STEP");
     });
 
-    it("prints the tests-project step in its checklist", () => {
-      const stepList = [
-        ...source.matchAll(
-          /console\.error\(\s*(["'`])( {2}\d+\. [^"'`\n]*)\1\s*\)/g
-        ),
-      ].map((match) =>
-        match[2].replace(
-          "${TESTS_TYPECHECK_STEP.title}",
-          TESTS_TYPECHECK_STEP.title
-        )
-      );
-
-      expect(stepList).toHaveLength(5);
+    // Replaces the former `prints the tests-project step in its checklist`,
+    // which scraped the five literal `console.error("  N. ...")` calls out of
+    // the source. Those literals are gone: the script now prints from
+    // FAST_GATE_STEPS (REQ-001), so that regex matches nothing and its
+    // `toHaveLength(5)` could only fail. The same three properties it proved —
+    // the step is in the checklist, the checklist has five entries, and the
+    // printed list is the one the gate runs — are asserted below against the
+    // shared export instead of against a rendering of it, which is the
+    // precedent both meta-tests in this file already state.
+    it("carries the tests-project step exactly once in the shared list", () => {
       expect(
-        stepList.filter((entry) => entry.includes("typecheck:tests"))
+        FAST_GATE_STEPS.filter(
+          (step) => step.title === TESTS_TYPECHECK_STEP.title
+        )
       ).toHaveLength(1);
+    });
+
+    it("prints its checklist from the shared step list", () => {
+      expect(source).toContain("./lib/fast-gate-steps.mjs");
+      expect(source).toContain("FAST_GATE_STEPS");
+    });
+
+    it("keeps no literal numbered step line of its own", () => {
+      // AC-1's no-duplicate clause. A reintroduced `console.error("  6. ...")`
+      // would be a second list that FAST_GATE_STEPS cannot keep honest.
+      expect(source).not.toMatch(/console\.error\(\s*(["'`])\s{2}\d+\. /);
+    });
+
+    it("runs one step per printed entry", () => {
+      // Print and run are separate by design — each `run(...)` needs runtime
+      // context (targets, provider, passthrough, crossCuttingTests) and its own
+      // repro, and keeping them unindented statements is what the guard-check
+      // below relies on. This count is what pins the two halves together, so a
+      // step added to the list without a call site is red.
+      //
+      // `function run(` does not match: the line starts with `function`.
+      const invocations = source.match(/^run\(/gm) ?? [];
+
+      expect(invocations).toHaveLength(FAST_GATE_STEPS.length);
     });
 
     it("runs the step as an unguarded statement, with a repro line", () => {

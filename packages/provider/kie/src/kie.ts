@@ -76,6 +76,11 @@ import {
   KlingMotionControlRequestSchema,
   KlingV3TurboImageToVideoRequestSchema,
   KlingV3TurboTextToVideoRequestSchema,
+  NanoBananaProRequestSchema,
+  NanoBanana2RequestSchema,
+  GptImageToImageRequestSchema,
+  GptImage2ImageToImageRequestSchema,
+  GptImage2TextToImageRequestSchema,
 } from "./zod";
 import { modelInputSchemas } from "./model-schemas";
 import { createVeoProvider } from "./veo";
@@ -141,6 +146,11 @@ export const CREATE_TASK_GUARDS = [
   ["grok-imagine/text-to-video", GrokTextToVideoRequestSchema],
   ["grok-imagine/image-to-video", GrokImageToVideoRequestSchema],
   ["grok-imagine-video-1-5-preview", GrokVideo15PreviewRequestSchema],
+  ["nano-banana-pro", NanoBananaProRequestSchema],
+  ["nano-banana-2", NanoBanana2RequestSchema],
+  ["gpt-image/1.5-image-to-image", GptImageToImageRequestSchema],
+  ["gpt-image-2-image-to-image", GptImage2ImageToImageRequestSchema],
+  ["gpt-image-2-text-to-image", GptImage2TextToImageRequestSchema],
   ["grok-imagine/extend", GrokVideoExtendRequestSchema],
   ["grok-imagine/upscale", GrokVideoUpscaleRequestSchema],
   ["bytedance/seedance-2-fast", Seedance2FastRequestSchema],
@@ -187,11 +197,6 @@ export const GUARD_EXEMPTION_REASONS = {
 // typo and stale-entry checking on the keys, exactly as the guard table's
 // KieMediaModel key type does.
 export const CREATE_TASK_GUARD_EXEMPTIONS = {
-  "nano-banana-pro": "notYetGuarded",
-  "nano-banana-2": "notYetGuarded",
-  "gpt-image/1.5-image-to-image": "notYetGuarded",
-  "gpt-image-2-image-to-image": "notYetGuarded",
-  "gpt-image-2-text-to-image": "notYetGuarded",
   "seedream/5-lite-image-to-image": "notYetGuarded",
   "seedream/5-lite-text-to-image": "notYetGuarded",
   "seedream/5-pro-image-to-image": "notYetGuarded",

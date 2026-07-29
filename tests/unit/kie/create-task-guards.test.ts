@@ -29,11 +29,17 @@ import {
 //
 // Scope: registry shape only. Behaviour-level guard coverage lives across
 // tests/unit/kie-pixverse-v6.test.ts (whose `describe.each(GUARD_MODELS)` table
-// drives 4 of the 8 guarded models, with `pixverse-v6/text-to-video` covered by
-// its own describe block above it), tests/unit/kie-request.test.ts
+// drives 4 of the 12 guarded models, with `pixverse-v6/text-to-video` covered
+// by its own describe block above it), tests/unit/kie-request.test.ts
 // (`grok-imagine/image-to-video`, `gemini-omni-video`) and
 // tests/unit/kie-seedance-2-mini.test.ts — the same split
 // tests/unit/kie-model-input-schemas.test.ts already uses.
+//
+// The four kling ids are the exception to that split: tests/unit/kie/
+// validate.test.ts exercises their schemas directly (accept the documented
+// payload, reject a second image_url, enforce the prompt/duration bounds), but
+// nothing yet drives one through createTask to observe the guard throwing. The
+// registry rows below are pinned; the throw path for kling is not.
 
 const guarded = CREATE_TASK_GUARDS.map(([model]) => model as string);
 const exempt = Object.keys(CREATE_TASK_GUARD_EXEMPTIONS);
@@ -88,12 +94,16 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
 
   // Not a count for its own sake — it makes any change to the guarded set show
   // up as a deliberate edit to this list.
-  it("guards exactly the models guarded at f6c99b54", () => {
+  it("guards exactly the models guarded at f6c99b54 plus the kling four", () => {
     expect([...guarded].sort()).toEqual(
       [
         "bytedance/seedance-2-mini",
         "gemini-omni-video",
         "grok-imagine/image-to-video",
+        "kling-3.0/motion-control",
+        "kling-3.0/video",
+        "kling/v3-turbo-image-to-video",
+        "kling/v3-turbo-text-to-video",
         "pixverse-v6/extend",
         "pixverse-v6/image-to-video",
         "pixverse-v6/reference-to-video",

@@ -48,6 +48,10 @@ import {
   RunwayRecordDetailResponseSchema,
   FluxKontextRecordInfoRequestSchema,
   FluxKontextRecordInfoResponseSchema,
+  KlingVideoRequestSchema,
+  KlingMotionControlRequestSchema,
+  KlingV3TurboImageToVideoRequestSchema,
+  KlingV3TurboTextToVideoRequestSchema,
   GrokImageToVideoRequestSchema,
   RecordInfoRequestSchema,
   Gpt4oImageRecordInfoResponseSchema,
@@ -114,6 +118,10 @@ const MIME_TYPES: Record<string, string> = {
 // rows but erases their literals, and the pin needs to read the guarded ids
 // back out. The per-row check on the id is unchanged.
 export const CREATE_TASK_GUARDS = [
+  ["kling-3.0/video", KlingVideoRequestSchema],
+  ["kling-3.0/motion-control", KlingMotionControlRequestSchema],
+  ["kling/v3-turbo-image-to-video", KlingV3TurboImageToVideoRequestSchema],
+  ["kling/v3-turbo-text-to-video", KlingV3TurboTextToVideoRequestSchema],
   ["grok-imagine/image-to-video", GrokImageToVideoRequestSchema],
   ["bytedance/seedance-2-mini", Seedance2MiniRequestSchema],
   ["gemini-omni-video", GeminiOmniVideoRequestSchema],
@@ -151,10 +159,6 @@ export const GUARD_EXEMPTION_REASONS = {
 // typo and stale-entry checking on the keys, exactly as the guard table's
 // KieMediaModel key type does.
 export const CREATE_TASK_GUARD_EXEMPTIONS = {
-  "kling-3.0/video": "notYetGuarded",
-  "kling-3.0/motion-control": "notYetGuarded",
-  "kling/v3-turbo-image-to-video": "notYetGuarded",
-  "kling/v3-turbo-text-to-video": "notYetGuarded",
   "grok-imagine/text-to-image": "notYetGuarded",
   "grok-imagine/image-to-image": "notYetGuarded",
   "grok-imagine/text-to-video": "notYetGuarded",

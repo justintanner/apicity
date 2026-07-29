@@ -91,6 +91,8 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
   it("guards exactly the models guarded at f6c99b54", () => {
     expect([...guarded].sort()).toEqual(
       [
+        "bytedance/seedance-2-fast",
+        "bytedance/seedance-2",
         "bytedance/seedance-2-mini",
         "gemini-omni-video",
         "grok-imagine/image-to-video",

@@ -49,6 +49,8 @@ import {
   FluxKontextRecordInfoRequestSchema,
   FluxKontextRecordInfoResponseSchema,
   GrokImageToVideoRequestSchema,
+  NanoBananaProRequestSchema,
+  NanoBanana2RequestSchema,
   RecordInfoRequestSchema,
   Gpt4oImageRecordInfoResponseSchema,
   Seedance2MiniRecordInfoResponseSchema,
@@ -115,6 +117,8 @@ const MIME_TYPES: Record<string, string> = {
 // back out. The per-row check on the id is unchanged.
 export const CREATE_TASK_GUARDS = [
   ["grok-imagine/image-to-video", GrokImageToVideoRequestSchema],
+  ["nano-banana-pro", NanoBananaProRequestSchema],
+  ["nano-banana-2", NanoBanana2RequestSchema],
   ["bytedance/seedance-2-mini", Seedance2MiniRequestSchema],
   ["gemini-omni-video", GeminiOmniVideoRequestSchema],
   ["pixverse-v6/text-to-video", PixverseV6TextToVideoRequestSchema],
@@ -159,8 +163,6 @@ export const CREATE_TASK_GUARD_EXEMPTIONS = {
   "grok-imagine/image-to-image": "notYetGuarded",
   "grok-imagine/text-to-video": "notYetGuarded",
   "grok-imagine-video-1-5-preview": "notYetGuarded",
-  "nano-banana-pro": "notYetGuarded",
-  "nano-banana-2": "notYetGuarded",
   "gpt-image/1.5-image-to-image": "notYetGuarded",
   "gpt-image-2-image-to-image": "notYetGuarded",
   "gpt-image-2-text-to-image": "notYetGuarded",

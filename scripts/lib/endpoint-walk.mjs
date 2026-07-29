@@ -219,9 +219,16 @@ const PROVIDERS = [
 
 const TSV_ONLY_PROVIDERS = ["b2"];
 
-const METHOD_KEYS = new Set(["post", "get", "put", "delete", "patch", "head"]);
+export const METHOD_KEYS = new Set([
+  "post",
+  "get",
+  "put",
+  "delete",
+  "patch",
+  "head",
+]);
 
-const STREAM_KEYS = new Set(["stream", "ws", "run"]);
+export const STREAM_KEYS = new Set(["stream", "ws", "run"]);
 
 function selectProviders(providerNames = []) {
   if (providerNames.length === 0) return PROVIDERS;

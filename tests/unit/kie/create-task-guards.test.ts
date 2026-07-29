@@ -92,6 +92,11 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
     expect([...guarded].sort()).toEqual(
       [
         "bytedance/seedance-2-mini",
+        "elevenlabs/audio-isolation",
+        "elevenlabs/sound-effect-v2",
+        "elevenlabs/text-to-dialogue-v3",
+        "elevenlabs/text-to-speech-multilingual-v2",
+        "elevenlabs/text-to-speech-turbo-2-5",
         "gemini-omni-video",
         "grok-imagine/image-to-video",
         "pixverse-v6/extend",

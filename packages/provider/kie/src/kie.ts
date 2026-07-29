@@ -58,6 +58,11 @@ import {
   PixverseV6TransitionRequestSchema,
   PixverseV6ExtendRequestSchema,
   PixverseV6ReferenceToVideoRequestSchema,
+  ElevenLabsAudioIsolationRequestSchema,
+  ElevenLabsTextToDialogueV3RequestSchema,
+  ElevenLabsTextToSpeechMultilingualV2RequestSchema,
+  ElevenLabsTextToSpeechTurbo25RequestSchema,
+  ElevenLabsSoundEffectV2RequestSchema,
 } from "./zod";
 import { modelInputSchemas } from "./model-schemas";
 import { createVeoProvider } from "./veo";
@@ -117,6 +122,17 @@ export const CREATE_TASK_GUARDS = [
   ["grok-imagine/image-to-video", GrokImageToVideoRequestSchema],
   ["bytedance/seedance-2-mini", Seedance2MiniRequestSchema],
   ["gemini-omni-video", GeminiOmniVideoRequestSchema],
+  ["elevenlabs/audio-isolation", ElevenLabsAudioIsolationRequestSchema],
+  ["elevenlabs/text-to-dialogue-v3", ElevenLabsTextToDialogueV3RequestSchema],
+  [
+    "elevenlabs/text-to-speech-multilingual-v2",
+    ElevenLabsTextToSpeechMultilingualV2RequestSchema,
+  ],
+  [
+    "elevenlabs/text-to-speech-turbo-2-5",
+    ElevenLabsTextToSpeechTurbo25RequestSchema,
+  ],
+  ["elevenlabs/sound-effect-v2", ElevenLabsSoundEffectV2RequestSchema],
   ["pixverse-v6/text-to-video", PixverseV6TextToVideoRequestSchema],
   ["pixverse-v6/image-to-video", PixverseV6ImageToVideoRequestSchema],
   ["pixverse-v6/transition", PixverseV6TransitionRequestSchema],
@@ -189,11 +205,6 @@ export const CREATE_TASK_GUARD_EXEMPTIONS = {
   "happyhorse-1-1/reference-to-video": "notYetGuarded",
   "omnihuman-1-5": "notYetGuarded",
   "volcengine/video-to-video-lip-sync": "notYetGuarded",
-  "elevenlabs/audio-isolation": "notYetGuarded",
-  "elevenlabs/text-to-dialogue-v3": "notYetGuarded",
-  "elevenlabs/text-to-speech-multilingual-v2": "notYetGuarded",
-  "elevenlabs/text-to-speech-turbo-2-5": "notYetGuarded",
-  "elevenlabs/sound-effect-v2": "notYetGuarded",
   "sora-watermark-remover": "notYetGuarded",
 } as const satisfies Partial<
   Record<KieMediaModel, keyof typeof GUARD_EXEMPTION_REASONS>

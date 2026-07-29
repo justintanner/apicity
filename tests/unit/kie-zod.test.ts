@@ -511,15 +511,15 @@ describe("TRI-008 VeoExtendRequestSchema.model stays a closed set", () => {
 // TRI-001 KieMediaModelSchema — one escape hatch per vendor family
 // ---------------------------------------------------------------------------
 //
-// KieMediaModelSchema is kie's aggregator catalogue: 48 ids drawn from a dozen
+// KieMediaModelSchema is kie's aggregator catalogue: 52 ids drawn from a dozen
 // unrelated vendors behind one `createTask` endpoint. REQ-006 forbids opening
 // it with a single catch-all regex, so it carries one alias per vendor family
-// and five singletons stay enumerated with no alias at all.
+// and four singletons stay enumerated with no alias at all.
 //
 // BR-4 needs care here that the single-family schemas above do not. A foreign
 // *catalogue* id — `happyhorse/video-edit` on the Kling family — is accepted by
 // KieMediaModelSchema, through the enum branch, and always was: the whole point
-// of the aggregator is that all 48 are valid. So cross-family leakage cannot be
+// of the aggregator is that all 52 are valid. So cross-family leakage cannot be
 // asserted with safeParse; it is asserted structurally instead, against the
 // alias patterns themselves ("partitions the catalogue" below). The per-family
 // `rejected` lists therefore carry BR-3 near-miss typos plus BR-4 ids from
@@ -676,16 +676,34 @@ const MEDIA_MODEL_FAMILIES = [
       "elevenlabs/Sound-Effect-v2",
     ],
   },
+  {
+    family: "PixVerse",
+    listed: [
+      "pixverse-v6/text-to-video",
+      "pixverse-v6/image-to-video",
+      "pixverse-v6/transition",
+      "pixverse-v6/extend",
+      "pixverse-v6/reference-to-video",
+    ],
+    aliases: ["pixverse-v7/text-to-video", "pixverse-v6.5/image-to-video"],
+    rejected: [
+      "pixverse",
+      "pixverse-v6",
+      "pixverse-v6/",
+      "pixverse6/text-to-video",
+      "pixverse/text-to-video",
+      "PixVerse-V6/text-to-video",
+    ],
+  },
 ] as const;
 
-// The five ids that deliberately carry no alias: each is the only model kie
+// The four ids that deliberately carry no alias: each is the only model kie
 // lists for its vendor, and one sample cannot establish a family grammar.
 const MEDIA_SINGLETON_MODELS = [
   "omnihuman-1-5",
   "volcengine/video-to-video-lip-sync",
   "gemini-omni-video",
   "sora-watermark-remover",
-  "pixverse-v6/text-to-video",
 ] as const;
 
 // `.or()` chaining nests left, so the emitted JSON Schema is a left-deep tree

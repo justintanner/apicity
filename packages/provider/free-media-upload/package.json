@@ -1,6 +1,6 @@
 {
   "name": "@apicity/free-media-upload",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "description": "Zero-auth file hosting wrapper for catbox, gofile, uguu, filebin, litterbox, tempsh, tflink, and tmpfiles — eight providers behind one typed surface.",
   "license": "MIT",
   "repository": {

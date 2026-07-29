@@ -329,7 +329,7 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 </details>
 
 <details>
-<summary><code>POST</code> <b><code>anthropic.stream.v1.messages</code></b></summary>
+<summary><code>POST</code> <b><code>anthropic.post.stream.v1.messages</code></b></summary>
 
 <code>POST https://api.anthropic.com/v1/messages</code>
 
@@ -338,7 +338,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.stream.v1.messages({ /* ... */ });
+const res = await anthropic.post.stream.v1.messages({ /* ... */ });
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)

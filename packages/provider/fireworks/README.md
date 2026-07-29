@@ -1874,7 +1874,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 </details>
 
 <details>
-<summary><code>POST</code> <b><code>fireworks.stream.inference.v1.messages</code></b></summary>
+<summary><code>POST</code> <b><code>fireworks.post.stream.inference.v1.messages</code></b></summary>
 
 <code>POST https://api.fireworks.ai/inference/v1/messages</code>
 
@@ -1883,7 +1883,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.stream.inference.v1.messages({ /* ... */ });
+const res = await fireworks.post.stream.inference.v1.messages({ /* ... */ });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)

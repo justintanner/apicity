@@ -775,7 +775,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 ### serverless
 
 <details>
-<summary><code>POST</code> <b><code>fal.stream.v1.serverless.logs.stream</code></b></summary>
+<summary><code>POST</code> <b><code>fal.post.stream.v1.serverless.logs.stream</code></b></summary>
 
 <code>POST https://api.fal.ai/v1/serverless/logs/stream</code>
 
@@ -784,7 +784,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.stream.v1.serverless.logs.stream({ /* ... */ });
+const res = await fal.post.stream.v1.serverless.logs.stream({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

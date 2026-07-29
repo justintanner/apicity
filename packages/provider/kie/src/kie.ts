@@ -53,6 +53,8 @@ import {
   Gpt4oImageRecordInfoResponseSchema,
   Seedance2MiniRecordInfoResponseSchema,
   Seedance2MiniRequestSchema,
+  Seedance2FastRequestSchema,
+  Seedance2RequestSchema,
   PixverseV6TextToVideoRequestSchema,
   PixverseV6ImageToVideoRequestSchema,
   PixverseV6TransitionRequestSchema,
@@ -115,6 +117,8 @@ const MIME_TYPES: Record<string, string> = {
 // back out. The per-row check on the id is unchanged.
 export const CREATE_TASK_GUARDS = [
   ["grok-imagine/image-to-video", GrokImageToVideoRequestSchema],
+  ["bytedance/seedance-2-fast", Seedance2FastRequestSchema],
+  ["bytedance/seedance-2", Seedance2RequestSchema],
   ["bytedance/seedance-2-mini", Seedance2MiniRequestSchema],
   ["gemini-omni-video", GeminiOmniVideoRequestSchema],
   ["pixverse-v6/text-to-video", PixverseV6TextToVideoRequestSchema],
@@ -172,8 +176,6 @@ export const CREATE_TASK_GUARD_EXEMPTIONS = {
   "grok-imagine/upscale": "notYetGuarded",
   "qwen2/text-to-image": "notYetGuarded",
   "qwen2/image-edit": "notYetGuarded",
-  "bytedance/seedance-2-fast": "refinementNotYetEnforced",
-  "bytedance/seedance-2": "refinementNotYetEnforced",
   "wan/2-7-image-to-video": "refinementNotYetEnforced",
   "wan/2-7-text-to-video": "notYetGuarded",
   "wan/2-7-r2v": "notYetGuarded",

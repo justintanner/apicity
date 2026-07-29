@@ -59,7 +59,7 @@ pnpm run test                    # Run tests in watch mode
 # Dev workflow (discrete per-phase aliases)
 pnpm run dev:record -- <file>    # Safe record for a NEW test (record-missing + 1Password)
 pnpm run dev:rerecord -- <file>  # Destructive re-record (guarded by tests/record.mjs)
-pnpm run dev:preflight:fast -- <name-or-path> # fast provider gate: scoped format/lint/typecheck/tests
+pnpm run dev:preflight:fast -- <name-or-path> # fast provider gate: scoped format/lint, whole tests-project typecheck, provider typecheck/tests
 pnpm run dev:preflight:provider <name-or-path> # explicit alias for the fast provider gate
 pnpm run dev:preflight:changed   # changed-file format/lint plus full typecheck + replay suite
 pnpm run dev:preflight           # full local gate: format + typecheck + lint:after-format + test:run
@@ -138,18 +138,31 @@ All tests use Polly.js HTTP record/replay (no mocks):
 - **Config**: `tests/vitest.integration.ts` — includes `tests/integration/**/*.test.{ts,tsx}`, `tests/functional/**/*.test.{ts,tsx}`, and `tests/unit/**/*.test.{ts,tsx}`; 30s timeout
 - **Setup**: `tests/integration-setup.ts` — aliases `@apicity/*` to source directories so tests run against source (not dist)
 
-**Scope the loop to one provider.** While working on a single provider, don't replay the whole suite — run only that provider's tests with `pnpm test:provider <name-or-path>` (resolves `<name>.test.ts` + `<name>-*.test.ts` across the top level of `tests/integration`, `tests/functional`, and `tests/unit`, plus every `*.test.ts` in a one-directory-deep subdirectory named after the provider, e.g. `tests/unit/kie/`). The argument can be a provider name, a path under `packages/provider/<name>`, or a matching integration test path. From inside a provider package, `pnpm -w run test:provider` and `pnpm -w run dev:preflight:fast` infer the provider from pnpm's `INIT_CWD`. For committed, staged, unstaged, or untracked provider-only diffs, `pnpm run test:affected` auto-selects the touched provider tests. It falls back to full `pnpm run test:run` for shared scripts/config, package metadata, unit or functional tests, docs, and other ambiguous changes. Run full `pnpm run test:run` directly when you need an explicit complete local replay. The **full suite is GitHub CI's responsibility**; locally you only need the provider you're touching. `pnpm run dev:preflight:fast -- <name-or-path>` prints and runs the fast provider checklist: scoped format, scoped lint, provider typecheck, provider replay, and the cross-cutting recording-enumeration tests. Use `pnpm run dev:preflight` or `pnpm run ci:local` for shared tooling, package metadata, docs, test harness changes, release prep, or any ambiguous diff that needs the full repository gate.
+**Scope the loop to one provider.** While working on a single provider, don't replay the whole suite — run only that provider's tests with `pnpm test:provider <name-or-path>` (resolves `<name>.test.ts` + `<name>-*.test.ts` across the top level of `tests/integration`, `tests/functional`, and `tests/unit`, plus every `*.test.ts` in a one-directory-deep subdirectory named after the provider, e.g. `tests/unit/kie/`). The argument can be a provider name, a path under `packages/provider/<name>`, or a matching integration test path. From inside a provider package, `pnpm -w run test:provider` and `pnpm -w run dev:preflight:fast` infer the provider from pnpm's `INIT_CWD`. For committed, staged, unstaged, or untracked provider-only diffs, `pnpm run test:affected` auto-selects the touched provider tests. It falls back to full `pnpm run test:run` for shared scripts/config, package metadata, unit or functional tests, docs, and other ambiguous changes. Run full `pnpm run test:run` directly when you need an explicit complete local replay. The **full suite is GitHub CI's responsibility**; locally you only need the provider you're touching. `pnpm run dev:preflight:fast -- <name-or-path>` prints and runs the fast provider checklist: scoped format, scoped lint, the whole tests-project typecheck (`tsc --noEmit -p tests/tsconfig.json`), provider typecheck, provider replay, and the cross-cutting recording-enumeration tests. Use `pnpm run dev:preflight` or `pnpm run ci:local` for shared tooling, package metadata, docs, test harness changes, release prep, or any ambiguous diff that needs the full repository gate.
 
 **Cross-cutting recording tests always run in the fast gates.** A few integration tests (`tests/integration/upload-recordings.test.ts`, `tests/integration/multipart-recordings.test.ts`) enumerate the ENTIRE `tests/recordings` corpus and assert it matches a hardcoded allowlist. They are not named after a single provider, so `test:provider <name>` alone skips them — which once let a new upload recording missing from the allowlist pass the fast gate, merge, and go red in full CI. Both `dev:preflight:fast` and `test:affected` (in its provider-scoped path) therefore also run the cross-cutting tests listed in `scripts/lib/cross-cutting-tests.mjs`. They are filesystem-only (no Polly/network, ~1s). When you add a test that walks the whole recordings tree, add it to that list.
+
+**The tests-project typecheck always runs in the fast provider gate.** No provider package `tsconfig.json` includes `tests/**`, and Vitest compiles test files through esbuild, which strips types without checking them — so replaying a test proves nothing about its types. That gap went red on `main` twice with the scoped gate green (kimicoding's content union, xai's readonly spread; both fixed test-side in `73c8b0cc`). `dev:preflight:fast` therefore runs `pnpm run typecheck:tests` (`tsc --noEmit -p tests/tsconfig.json`) unconditionally and whole-tree: the step is not filtered by provider scope, so a type error in any file the tests project compiles fails the gate whichever provider you invoked it for. It costs one `tsc` run — measured at 22.5s, 25.5s, and 35s on three machines during this work — against the ~105s of the full `pnpm run typecheck`, which the fast gate still never invokes. `scripts/lib/tests-project.mjs` holds the invocation and the list of paths the project covers, shared with `typecheck:provider`. `test:affected` does **not** run this step: it is a test-selection helper, not the pre-push gate.
 
 For typecheck-only local iteration, use
 `pnpm run typecheck:provider -- <name-or-path>`. It checks
 `origin/main...HEAD` plus staged and unstaged files: provider-only diffs run
 that provider's `tsconfig.json`; diffs that touch another package or shared
 package/TypeScript config fall back to the full `pnpm run typecheck` so
-shared-package errors are not missed. `dev:preflight:provider` does not run a
-separate root typecheck step because `test:provider` already runs the selected
-provider's `tsc --noEmit` check before replaying tests.
+shared-package errors are not missed. When a provider-scoped diff also touches
+a file the tests project compiles (`tests/**/*.ts(x)` outside the excludes in
+`tests/tsconfig.json`), it runs `pnpm run typecheck:tests` after the provider
+tsconfig, skipping it only when that first check already failed; the fallback
+path needs no such step because
+`pnpm run typecheck` already ends in the tests project. Two limits worth
+knowing: the diff comes from git, so a brand-new test file that has never been
+`git add`ed is not seen; and a change to provider _source_ that breaks a test's
+types still classifies as provider-only here, so `typecheck:provider` will not
+catch it — `dev:preflight:fast`, whose tests-project step is unconditional,
+will. `dev:preflight:provider` still does not run the full monorepo typecheck,
+but it does run `tsc --noEmit -p tests/tsconfig.json` in addition to the
+selected provider's `tsc --noEmit` check that `test:provider` performs before
+replaying tests.
 
 Timing baseline recorded on 2026-06-30 in a fresh worktree:
 `pnpm run typecheck` completed in 105.61s real time, while
@@ -263,7 +276,7 @@ stay in sync. `pnpm run lint` includes `gen:shared:check` and fails on drift.
 | 2 | Record fixtures   | `pnpm run dev:record -- tests/integration/<file>.test.ts`        |
 | 3 | Verify replay     | `pnpm run test:provider <name-or-path>` or `pnpm run test:affected` for provider-only diffs |
 | 4 | Telegram preview  | `pnpm run harness:telegram -- --dry-run`                         |
-| 5 | Pre-push          | `pnpm run dev:preflight:fast -- <name-or-path>` for provider work, `pnpm run dev:preflight:changed` for known changed-file work, or `dev:preflight` for full |
+| 5 | Pre-push          | `pnpm run dev:preflight:fast -- <name-or-path>` for provider work (includes the whole tests-project typecheck), `pnpm run dev:preflight:changed` for known changed-file work, or `dev:preflight` for full |
 | 6 | CI dry-run        | `pnpm run ci:local`                                              |
 | 7 | Push + open PR    | `git push -u origin HEAD && gh pr create`                        |
 | 8 | CI                | _(automatic — replay suite on PR; Telegram per changed recording on push to main)_ |

@@ -81,6 +81,12 @@ import {
   GptImageToImageRequestSchema,
   GptImage2ImageToImageRequestSchema,
   GptImage2TextToImageRequestSchema,
+  SeedreamImageToImageRequestSchema,
+  SeedreamTextToImageRequestSchema,
+  SeedreamProImageToImageRequestSchema,
+  SeedreamProTextToImageRequestSchema,
+  Qwen2TextToImageRequestSchema,
+  Qwen2ImageEditRequestSchema,
 } from "./zod";
 import { modelInputSchemas } from "./model-schemas";
 import { createVeoProvider } from "./veo";
@@ -151,8 +157,14 @@ export const CREATE_TASK_GUARDS = [
   ["gpt-image/1.5-image-to-image", GptImageToImageRequestSchema],
   ["gpt-image-2-image-to-image", GptImage2ImageToImageRequestSchema],
   ["gpt-image-2-text-to-image", GptImage2TextToImageRequestSchema],
+  ["seedream/5-lite-image-to-image", SeedreamImageToImageRequestSchema],
+  ["seedream/5-lite-text-to-image", SeedreamTextToImageRequestSchema],
+  ["seedream/5-pro-image-to-image", SeedreamProImageToImageRequestSchema],
+  ["seedream/5-pro-text-to-image", SeedreamProTextToImageRequestSchema],
   ["grok-imagine/extend", GrokVideoExtendRequestSchema],
   ["grok-imagine/upscale", GrokVideoUpscaleRequestSchema],
+  ["qwen2/text-to-image", Qwen2TextToImageRequestSchema],
+  ["qwen2/image-edit", Qwen2ImageEditRequestSchema],
   ["bytedance/seedance-2-fast", Seedance2FastRequestSchema],
   ["bytedance/seedance-2", Seedance2RequestSchema],
   ["bytedance/seedance-2-mini", Seedance2MiniRequestSchema],
@@ -197,12 +209,6 @@ export const GUARD_EXEMPTION_REASONS = {
 // typo and stale-entry checking on the keys, exactly as the guard table's
 // KieMediaModel key type does.
 export const CREATE_TASK_GUARD_EXEMPTIONS = {
-  "seedream/5-lite-image-to-image": "notYetGuarded",
-  "seedream/5-lite-text-to-image": "notYetGuarded",
-  "seedream/5-pro-image-to-image": "notYetGuarded",
-  "seedream/5-pro-text-to-image": "notYetGuarded",
-  "qwen2/text-to-image": "notYetGuarded",
-  "qwen2/image-edit": "notYetGuarded",
   "happyhorse/text-to-video": "notYetGuarded",
   "happyhorse/image-to-video": "notYetGuarded",
   "happyhorse/reference-to-video": "notYetGuarded",

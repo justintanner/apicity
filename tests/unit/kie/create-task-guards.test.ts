@@ -109,7 +109,13 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
   it("guards exactly the models pinned in this list", () => {
     expect([...guarded].sort()).toEqual(
       [
+        "grok-imagine/text-to-image",
+        "grok-imagine/image-to-image",
+        "grok-imagine/text-to-video",
         "grok-imagine/image-to-video",
+        "grok-imagine-video-1-5-preview",
+        "grok-imagine/extend",
+        "grok-imagine/upscale",
         "bytedance/seedance-2-fast",
         "bytedance/seedance-2",
         "bytedance/seedance-2-mini",

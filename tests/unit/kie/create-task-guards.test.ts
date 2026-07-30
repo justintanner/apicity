@@ -29,21 +29,13 @@ import {
 //
 // Scope: registry shape only. Behaviour-level guard coverage lives across
 // tests/unit/kie-pixverse-v6.test.ts (whose `describe.each(GUARD_MODELS)` table
-// drives 4 of the 11 guarded models, with `pixverse-v6/text-to-video` covered
+// drives 4 of the 12 guarded models, with `pixverse-v6/text-to-video` covered
 // by its own describe block above it), tests/unit/kie-request.test.ts
 // (`grok-imagine/image-to-video`, `gemini-omni-video`),
-// tests/unit/kie-seedance-2-mini.test.ts, and — for the gpt-image-2 pair, at
-// the request-schema rather than the guard boundary —
-// tests/integration/kie-gpt-image-2-image-to-image.test.ts,
-// tests/integration/kie-gpt-image-2-text-to-image.test.ts and
-// tests/unit/kie/validate.test.ts. Same split
-// tests/unit/kie-model-input-schemas.test.ts already uses.
-//
-// `gpt-image/1.5-image-to-image` is the one guarded id with no coverage beyond
-// this file and the catalogue pin in tests/unit/kie-zod.test.ts: it has no
-// createTask call site and no recording anywhere in the repo, so its row rests
-// on `GptImageToImageRequestSchema`'s own `model: z.literal(...)` and on the
-// membership assertions below.
+// tests/unit/kie-seedance-2-mini.test.ts and — for the four seedream models —
+// the four tests/integration/kie-seedream-5-*.test.ts files plus the "Seedream
+// quality stays required" block in tests/unit/kie-model-input-schemas.test.ts,
+// which is also where this same split is already used.
 
 const guarded = CREATE_TASK_GUARDS.map(([model]) => model as string);
 const exempt = Object.keys(CREATE_TASK_GUARD_EXEMPTIONS);
@@ -122,6 +114,10 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
         "pixverse-v6/reference-to-video",
         "pixverse-v6/text-to-video",
         "pixverse-v6/transition",
+        "seedream/5-lite-image-to-image",
+        "seedream/5-lite-text-to-image",
+        "seedream/5-pro-image-to-image",
+        "seedream/5-pro-text-to-image",
       ].sort()
     );
   });

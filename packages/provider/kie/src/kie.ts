@@ -94,6 +94,8 @@ import {
   HappyHorse11TextToVideoRequestSchema,
   HappyHorse11ImageToVideoRequestSchema,
   HappyHorse11ReferenceToVideoRequestSchema,
+  Omnihuman15RequestSchema,
+  VolcengineVideoToVideoLipSyncRequestSchema,
 } from "./zod";
 import { modelInputSchemas } from "./model-schemas";
 import { createVeoProvider } from "./veo";
@@ -201,6 +203,11 @@ export const CREATE_TASK_GUARDS = [
     "happyhorse-1-1/reference-to-video",
     HappyHorse11ReferenceToVideoRequestSchema,
   ],
+  ["omnihuman-1-5", Omnihuman15RequestSchema],
+  [
+    "volcengine/video-to-video-lip-sync",
+    VolcengineVideoToVideoLipSyncRequestSchema,
+  ],
   ["gemini-omni-video", GeminiOmniVideoRequestSchema],
   ["pixverse-v6/text-to-video", PixverseV6TextToVideoRequestSchema],
   ["pixverse-v6/image-to-video", PixverseV6ImageToVideoRequestSchema],
@@ -230,8 +237,6 @@ export const GUARD_EXEMPTION_REASONS = {
 // typo and stale-entry checking on the keys, exactly as the guard table's
 // KieMediaModel key type does.
 export const CREATE_TASK_GUARD_EXEMPTIONS = {
-  "omnihuman-1-5": "notYetGuarded",
-  "volcengine/video-to-video-lip-sync": "notYetGuarded",
   "elevenlabs/audio-isolation": "notYetGuarded",
   "elevenlabs/text-to-dialogue-v3": "notYetGuarded",
   "elevenlabs/text-to-speech-multilingual-v2": "notYetGuarded",

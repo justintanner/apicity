@@ -29,11 +29,21 @@ import {
 //
 // Scope: registry shape only. Behaviour-level guard coverage lives across
 // tests/unit/kie-pixverse-v6.test.ts (whose `describe.each(GUARD_MODELS)` table
-// drives 4 of the 8 guarded models, with `pixverse-v6/text-to-video` covered by
-// its own describe block above it), tests/unit/kie-request.test.ts
-// (`grok-imagine/image-to-video`, `gemini-omni-video`) and
-// tests/unit/kie-seedance-2-mini.test.ts — the same split
+// drives 4 of the 11 guarded models, with `pixverse-v6/text-to-video` covered
+// by its own describe block above it), tests/unit/kie-request.test.ts
+// (`grok-imagine/image-to-video`, `gemini-omni-video`),
+// tests/unit/kie-seedance-2-mini.test.ts, and — for the gpt-image-2 pair, at
+// the request-schema rather than the guard boundary —
+// tests/integration/kie-gpt-image-2-image-to-image.test.ts,
+// tests/integration/kie-gpt-image-2-text-to-image.test.ts and
+// tests/unit/kie/validate.test.ts. Same split
 // tests/unit/kie-model-input-schemas.test.ts already uses.
+//
+// `gpt-image/1.5-image-to-image` is the one guarded id with no coverage beyond
+// this file and the catalogue pin in tests/unit/kie-zod.test.ts: it has no
+// createTask call site and no recording anywhere in the repo, so its row rests
+// on `GptImageToImageRequestSchema`'s own `model: z.literal(...)` and on the
+// membership assertions below.
 
 const guarded = CREATE_TASK_GUARDS.map(([model]) => model as string);
 const exempt = Object.keys(CREATE_TASK_GUARD_EXEMPTIONS);
@@ -88,11 +98,14 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
 
   // Not a count for its own sake — it makes any change to the guarded set show
   // up as a deliberate edit to this list.
-  it("guards exactly the models guarded at f6c99b54", () => {
+  it("guards exactly the reviewed guarded set", () => {
     expect([...guarded].sort()).toEqual(
       [
         "bytedance/seedance-2-mini",
         "gemini-omni-video",
+        "gpt-image-2-image-to-image",
+        "gpt-image-2-text-to-image",
+        "gpt-image/1.5-image-to-image",
         "grok-imagine/image-to-video",
         "pixverse-v6/extend",
         "pixverse-v6/image-to-video",

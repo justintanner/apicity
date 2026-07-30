@@ -1,0 +1,84 @@
+{
+  "_comment": "Pinned v0.8.3..v0.8.4 regression window for the release-notes generator. Captured with `git log --format='%h%x09%s' v0.8.3..v0.8.4`. `commits` deliberately keeps the `chore(release):` commit so REQ-002 is exercised rather than assumed, and `packages` is deliberately NOT name-sorted so the REQ-008 sort assertion is not vacuous.",
+  "version": "0.8.4",
+  "previousTag": "v0.8.3",
+  "currentTag": "v0.8.4",
+  "range": "v0.8.3..v0.8.4",
+  "commits": [
+    {
+      "hash": "066095d5",
+      "subject": "chore(release): @apicity/* → 0.8.4"
+    },
+    {
+      "hash": "aa9f6805",
+      "subject": "fix(kie): label all refined exempt models refinementNotYetEnforced (ac-mc4r2d)"
+    },
+    {
+      "hash": "65d71e2b",
+      "subject": "fix(kie): correct guard exemption rationale and adopt AssertTrue pin (ac-moheyi)"
+    },
+    {
+      "hash": "79c3da30",
+      "subject": "test(kie): pin CREATE_TASK_GUARDS membership at runtime (ac-5p1oyr)"
+    },
+    {
+      "hash": "f4d37765",
+      "subject": "feat(kie): force every media model into a guard decision (ac-8j6lex)"
+    }
+  ],
+  "expected": {
+    "new": ["kie: force every media model into a guard decision"],
+    "updated": [
+      "kie: label all refined exempt models refinementNotYetEnforced",
+      "kie: correct guard exemption rationale and adopt AssertTrue pin",
+      "kie: pin CREATE_TASK_GUARDS membership at runtime"
+    ],
+    "body": "## New\n\n- kie: force every media model into a guard decision\n\n## Updated\n\n- kie: label all refined exempt models refinementNotYetEnforced\n- kie: correct guard exemption rationale and adopt AssertTrue pin\n- kie: pin CREATE_TASK_GUARDS membership at runtime"
+  },
+  "beads": [
+    {
+      "id": "ac-smk2h9",
+      "title": "Implement owned work",
+      "issue_type": "task",
+      "status": "closed",
+      "close_reason": "Implemented owned work in the item worktree",
+      "metadata": {
+        "gc.root_bead_id": "ac-4x14od"
+      }
+    },
+    {
+      "id": "ac-jgxq7t",
+      "title": "Finalize workflow",
+      "issue_type": "task",
+      "status": "closed",
+      "close_reason": "Workflow finalized",
+      "metadata": {
+        "gc.kind": "workflow-finalize"
+      }
+    },
+    {
+      "id": "ac-h2m9qd",
+      "title": "Step spec for Implement owned work",
+      "issue_type": "task",
+      "status": "closed",
+      "close_reason": "Step spec satisfied",
+      "metadata": {
+        "gc.step_ref": "do-work.implement"
+      }
+    },
+    {
+      "id": "ac-hhxpy8",
+      "title": "W1: add scripts/lib/fast-gate-steps.mjs shared step definition",
+      "issue_type": "task",
+      "status": "closed",
+      "close_reason": "Merged to main"
+    }
+  ],
+  "packages": [
+    { "name": "@apicity/xai", "version": "0.8.4" },
+    { "name": "@apicity/alibaba", "version": "0.8.4" },
+    { "name": "@apicity/mcp-server", "version": "0.8.4" },
+    { "name": "@apicity/kie", "version": "0.8.4" },
+    { "name": "@apicity/openai", "version": "0.8.4" }
+  ]
+}

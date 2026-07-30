@@ -166,9 +166,10 @@ const MIME_TYPES: Record<string, string> = {
 //
 // A row's schema may be `.refine`-wrapped — the two bytedance/seedance-2 rows
 // are the first such rows the table holds, and three of the six wan/2-7 rows
-// are the next. Two things were measured on them rather than assumed: `z.ZodType` in the `satisfies` clause accepts the wrapped schema,
-// because zod 4 keeps `.refine()` a `ZodObject` carrying a check rather than
-// the `ZodEffects` zod 3 returned, so no row needs unwrapping to an inner
+// are the next. Two things were measured on them rather than assumed:
+// `z.ZodType` in the `satisfies` clause accepts the wrapped schema, because
+// zod 4 keeps `.refine()` a `ZodObject` carrying a check rather than the
+// `ZodEffects` zod 3 returned, so no row needs unwrapping to an inner
 // `*RequestObjectSchema`; and `.safeParse` still reports the refinement's own
 // `path`, so a cross-field failure reaches the `KieError` message with the
 // field named (`input.first_frame_url: …`) rather than as a pathless string.

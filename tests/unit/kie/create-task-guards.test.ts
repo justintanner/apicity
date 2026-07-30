@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { z } from "zod";
 
 import { KIE_MEDIA_MODELS } from "@apicity/kie/zod";
 import { CREATE_TASK_GUARDS } from "../../../packages/provider/kie/src/kie";
@@ -50,10 +51,10 @@ import { CREATE_TASK_GUARDS } from "../../../packages/provider/kie/src/kie";
 //   gpt-image-2 pair in its two tests/integration/kie-gpt-image-2-*.test.ts
 //   files, and `omnihuman-1-5`/`volcengine/video-to-video-lip-sync` in
 //   tests/functional/kie-omnihuman.test.ts and tests/functional/schemas.test.ts.
-// - Pinned here and nowhere else: `gpt-image/1.5-image-to-image` and
-//   `sora-watermark-remover` have no createTask call site and no recording
-//   anywhere in the repo, so their rows rest on their schemas' own
-//   `model: z.literal(...)` and on the assertions below.
+// - Pinned here and nowhere else: `gpt-image/1.5-image-to-image`,
+//   `sora-watermark-remover` and `wan/2-7-text-to-video` have no createTask
+//   call site, no recording and no schema fixture anywhere in the repo, so
+//   their rows rest entirely on the assertions below.
 //
 // That split is the same one tests/unit/kie-model-input-schemas.test.ts
 // already uses. It is a gap in guard-throw coverage, not in membership.
@@ -94,6 +95,45 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
       `Duplicate CREATE_TASK_GUARDS rows: ${duplicated.join(", ")}. ` +
         `validateCreateTaskRequest uses .find(), so only the first row for an ` +
         `id ever runs and the rest are dormant guards.`
+    ).toEqual([]);
+  });
+
+  // The two assertions above read element 0 of a row and nothing reads element
+  // 1, so a row can name one model and carry another model's schema and stay
+  // green everywhere. The compile pin cannot see it either: the `satisfies
+  // ReadonlyArray<readonly [KieMediaModel, z.ZodType]>` clause in kie.ts
+  // constrains the schema to `z.ZodType` without correlating it to the id.
+  // Such a row rejects every valid payload for its model before transport.
+  //
+  // Most rows self-report — the literal mismatch turns a call site or a schema
+  // fixture red — but the three listed at the top of this file have neither,
+  // so for them this walk is the only thing standing between a mispaired row
+  // and a model that is 100% locally unusable with CI still green.
+  //
+  // Reading the literal back needs no unwrapping: zod 4 keeps a `.refine()`-ed
+  // object a ZodObject carrying a check, so all 52 rows expose `.shape`
+  // directly — the same measurement the table comment in kie.ts records. A row
+  // whose literal cannot be read is reported rather than skipped, because
+  // skipping is how this assertion would go quiet if that ever changes.
+  it("pairs every guard row with its own model's schema", () => {
+    const mispaired = CREATE_TASK_GUARDS.flatMap(([model, schema]) => {
+      const field = schema instanceof z.ZodObject ? schema.shape.model : null;
+      if (!(field instanceof z.ZodLiteral)) {
+        return `${model} -> no readable model literal`;
+      }
+      const pinned = [...field.values].map((value) => String(value));
+      return pinned.length === 1 && pinned[0] === model
+        ? []
+        : `${model} -> ${pinned.join(" | ") || "nothing"}`;
+    });
+    expect(
+      mispaired,
+      `These CREATE_TASK_GUARDS rows pair a model id with a schema pinned to ` +
+        `a different model (row id -> what its schema pins): ` +
+        `${mispaired.join(", ")}. Give each row the *RequestSchema whose ` +
+        `model field is z.literal(<that row's id>). ` +
+        `validateCreateTaskRequest looks the row up by id, so a mispaired ` +
+        `row rejects every valid payload for its model.`
     ).toEqual([]);
   });
 

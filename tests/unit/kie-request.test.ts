@@ -11,6 +11,7 @@ import type {
   HappyHorse11ReferenceToVideoRequest,
   HappyHorse11TextToVideoRequest,
   VolcengineVideoToVideoLipSyncRequest,
+  Wan27ImageToVideoRequest,
 } from "../../packages/provider/kie/src/types";
 import { TEST_PAYGATE_SECRET, mintKieCreateTaskOtp } from "../harness";
 
@@ -731,6 +732,67 @@ describe("KIE request utilities", () => {
       const body = error.body as { issues?: unknown };
       expect(Array.isArray(body.issues)).toBe(true);
       expect((body.issues as unknown[]).length).toBeGreaterThan(0);
+      expect(mockFetch).not.toHaveBeenCalled();
+    });
+
+    // The one test that asserts the widened guard coverage rather than merely
+    // observing it. `wan/2-7-image-to-video` is one of the models the sweep
+    // moved into CREATE_TASK_GUARDS, and it is picked deliberately: the payload
+    // below is valid TypeScript — `first_frame_url`, `last_frame_url` and
+    // `first_clip_url` are each optional, and only the schema's refinement says
+    // one of them must be present — so nothing but the runtime guard can catch
+    // it. That is the caller-visible story: a local error naming the field
+    // instead of a remote kie.ai error naming nothing.
+    //
+    // The fetch stub throws rather than resolving, so it is not only the
+    // `not.toHaveBeenCalled()` line that fails if the model's guard row is
+    // dropped — `createTask` would fall through to the transport and the
+    // rejection would be that Error, failing the `KieError` assertions too.
+    it("should reject a guarded wan/2-7-image-to-video payload before fetch", async () => {
+      const mockFetch = vi.fn(() => {
+        throw new Error(
+          "createTask must not reach fetch for wan/2-7-image-to-video"
+        );
+      });
+      const provider = createKie({
+        apiKey: "test-key",
+        baseURL: "https://api.kie.ai",
+        fetch: mockFetch,
+        paygate: { secret: TEST_PAYGATE_SECRET },
+      });
+      // No first_frame_url, last_frame_url or first_clip_url: an
+      // image-to-video request carrying no image.
+      const request: Wan27ImageToVideoRequest = {
+        model: "wan/2-7-image-to-video",
+        input: {
+          prompt: "A slow dolly across an empty studio.",
+          resolution: "1080p",
+          duration: 5,
+        },
+      };
+
+      const rejection: unknown = await provider.post.api.v1.jobs
+        .createTask(request, mintKieCreateTaskOtp(request))
+        .catch((error: unknown) => error);
+
+      expect(rejection).toBeInstanceOf(KieError);
+      const error = rejection as KieError;
+      expect(error.status).toBe(400);
+      expect(error.message).toContain("Invalid Kie createTask request");
+      // The field path, not just the sentence: `validateCreateTaskRequest`
+      // prefixes each issue with its dotted path, and a refinement carries the
+      // `path` its schema declares.
+      expect(error.message).toContain("input.first_frame_url:");
+      expect(error.message).toContain(
+        "requires at least one of first_frame_url, last_frame_url, or " +
+          "first_clip_url"
+      );
+      const { issues } = error.body as {
+        issues: readonly { path: readonly (string | number)[] }[];
+      };
+      expect(issues.map((issue) => issue.path)).toEqual([
+        ["input", "first_frame_url"],
+      ]);
       expect(mockFetch).not.toHaveBeenCalled();
     });
 

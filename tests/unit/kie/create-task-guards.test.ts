@@ -29,13 +29,11 @@ import {
 //
 // Scope: registry shape only. Behaviour-level guard coverage lives across
 // tests/unit/kie-pixverse-v6.test.ts (whose `describe.each(GUARD_MODELS)` table
-// drives 4 of the 12 guarded models, with `pixverse-v6/text-to-video` covered
+// drives 4 of the 10 guarded models, with `pixverse-v6/text-to-video` covered
 // by its own describe block above it), tests/unit/kie-request.test.ts
-// (`grok-imagine/image-to-video`, `gemini-omni-video`),
-// tests/unit/kie-seedance-2-mini.test.ts and — for the four seedream models —
-// the four tests/integration/kie-seedream-5-*.test.ts files plus the "Seedream
-// quality stays required" block in tests/unit/kie-model-input-schemas.test.ts,
-// which is also where this same split is already used.
+// (`grok-imagine/image-to-video`, `gemini-omni-video`) and
+// tests/unit/kie-seedance-2-mini.test.ts — the same split
+// tests/unit/kie-model-input-schemas.test.ts already uses.
 
 const guarded = CREATE_TASK_GUARDS.map(([model]) => model as string);
 const exempt = Object.keys(CREATE_TASK_GUARD_EXEMPTIONS);
@@ -99,10 +97,12 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
         "gpt-image-2-text-to-image",
         "gpt-image/1.5-image-to-image",
         "grok-imagine-video-1-5-preview",
+        "grok-imagine/extend",
         "grok-imagine/image-to-image",
         "grok-imagine/image-to-video",
         "grok-imagine/text-to-image",
         "grok-imagine/text-to-video",
+        "grok-imagine/upscale",
         "kling-3.0/motion-control",
         "kling-3.0/video",
         "kling/v3-turbo-image-to-video",

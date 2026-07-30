@@ -23,6 +23,27 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
 
+      # The release-notes regression test renders v0.8.3..v0.8.4 from real
+      # history. Fetch just those two tags instead of putting `fetch-depth: 0`
+      # on this job: the pack is ~939 MiB and this job runs on every push and
+      # PR, while the fetch below moves 187 objects / ~22 KiB.
+      #
+      # depth=6, not 1: measured in a shallow clone, `--depth=1` lands both
+      # tagged commits as shallow roots, so `git log v0.8.3..v0.8.4` walks 1
+      # commit instead of 5. The window is 5 commits, and depth 6 also pulls
+      # v0.8.3's commit as v0.8.4's sixth ancestor, so the two tags are
+      # genuinely connected (`git merge-base --is-ancestor` succeeds). Depth 5
+      # prints the right 5 commits only because the two tags truncate into
+      # disjoint graphs — correct by coincidence, not by ancestry.
+      - name: Fetch release-notes regression tags
+        run: |
+          git fetch --no-tags --depth=6 origin \
+            +refs/tags/v0.8.3:refs/tags/v0.8.3 \
+            +refs/tags/v0.8.4:refs/tags/v0.8.4
+          git rev-parse -q --verify refs/tags/v0.8.3
+          git rev-parse -q --verify refs/tags/v0.8.4
+          git merge-base --is-ancestor v0.8.3 v0.8.4
+
       # CI replays cassettes only. Re-recording is a deliberate, local-only act
       # behind `pnpm run dev:record` / `dev:rerecord`; never let it run in CI.
       - name: Guard against cassette re-recording

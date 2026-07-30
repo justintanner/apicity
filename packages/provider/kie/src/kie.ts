@@ -96,6 +96,11 @@ import {
   HappyHorse11ReferenceToVideoRequestSchema,
   Omnihuman15RequestSchema,
   VolcengineVideoToVideoLipSyncRequestSchema,
+  ElevenLabsAudioIsolationRequestSchema,
+  ElevenLabsTextToDialogueV3RequestSchema,
+  ElevenLabsTextToSpeechMultilingualV2RequestSchema,
+  ElevenLabsTextToSpeechTurbo25RequestSchema,
+  ElevenLabsSoundEffectV2RequestSchema,
 } from "./zod";
 import { modelInputSchemas } from "./model-schemas";
 import { createVeoProvider } from "./veo";
@@ -209,6 +214,17 @@ export const CREATE_TASK_GUARDS = [
     VolcengineVideoToVideoLipSyncRequestSchema,
   ],
   ["gemini-omni-video", GeminiOmniVideoRequestSchema],
+  ["elevenlabs/audio-isolation", ElevenLabsAudioIsolationRequestSchema],
+  ["elevenlabs/text-to-dialogue-v3", ElevenLabsTextToDialogueV3RequestSchema],
+  [
+    "elevenlabs/text-to-speech-multilingual-v2",
+    ElevenLabsTextToSpeechMultilingualV2RequestSchema,
+  ],
+  [
+    "elevenlabs/text-to-speech-turbo-2-5",
+    ElevenLabsTextToSpeechTurbo25RequestSchema,
+  ],
+  ["elevenlabs/sound-effect-v2", ElevenLabsSoundEffectV2RequestSchema],
   ["pixverse-v6/text-to-video", PixverseV6TextToVideoRequestSchema],
   ["pixverse-v6/image-to-video", PixverseV6ImageToVideoRequestSchema],
   ["pixverse-v6/transition", PixverseV6TransitionRequestSchema],
@@ -218,10 +234,11 @@ export const CREATE_TASK_GUARDS = [
 
 // Why a model may sit outside CREATE_TASK_GUARDS. Each key is a reviewed
 // category whose reasoning is stated once, here; each exempt model below points
-// at one. Keys rather than a free string per model on purpose: 44 hand-written
-// reasons would be 44 near-copies, and near-copies get pasted without reading —
-// the exact silence this pair of lists exists to prevent. A model that fits
-// neither category needs a new key added here, visibly, in the same diff.
+// at one. Keys rather than a free string per model on purpose: the exempt list
+// below started at 44 entries, and 44 hand-written reasons would be 44
+// near-copies — near-copies get pasted without reading, the exact silence this
+// pair of lists exists to prevent. A model that fits neither category needs a
+// new key added here, visibly, in the same diff.
 export const GUARD_EXEMPTION_REASONS = {
   notYetGuarded:
     "Pre-transport validation has been switched on per model as endpoints " +
@@ -237,11 +254,6 @@ export const GUARD_EXEMPTION_REASONS = {
 // typo and stale-entry checking on the keys, exactly as the guard table's
 // KieMediaModel key type does.
 export const CREATE_TASK_GUARD_EXEMPTIONS = {
-  "elevenlabs/audio-isolation": "notYetGuarded",
-  "elevenlabs/text-to-dialogue-v3": "notYetGuarded",
-  "elevenlabs/text-to-speech-multilingual-v2": "notYetGuarded",
-  "elevenlabs/text-to-speech-turbo-2-5": "notYetGuarded",
-  "elevenlabs/sound-effect-v2": "notYetGuarded",
   "sora-watermark-remover": "notYetGuarded",
 } as const satisfies Partial<
   Record<KieMediaModel, keyof typeof GUARD_EXEMPTION_REASONS>

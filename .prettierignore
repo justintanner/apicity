@@ -23,3 +23,25 @@ worktrees/
 # files as unformatted, producing false `format:check`/`ci:local` failures.
 plans/
 /ac-*/
+# Gas City / agent tooling scratch written into shared rig checkouts. Every
+# path here is untracked and absent on a clean CI checkout; without them
+# `prettier --check .` flags them and `format:check`/`ci:local` fail for
+# reasons unrelated to the change under test. Anchored with a leading slash:
+# each is repo-root scratch, so an unanchored pattern would also shadow a
+# same-named path nested anywhere in the tree.
+/.codex/
+/.playwright-mcp/
+/apicity/
+/schemas/
+/packs.lock
+/ref2video-*.json
+# `.agents/` is TRACKED (hooks.json, rules/**, skills/beads/**), so a blanket
+# `.agents/` ignore would silently drop shipped files from the gate. Only the
+# gc-managed entries are excluded: the ownership manifest, and the
+# `<pack>.<skill>` directories the skill vendor materializes. Tracked
+# `skills/beads/` has no dot in its name, so `*.*/` cannot reach it. The
+# discriminator keys on the dot in both directions: a gc-managed skill
+# directory named without a dot would not be matched here and would re-break
+# `format:check`.
+/.agents/skills/.gc-skill-ownership.json
+/.agents/skills/*.*/

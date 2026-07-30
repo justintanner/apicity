@@ -81,6 +81,12 @@ import {
   Qwen2ImageEditRequestSchema,
   Seedance2FastRequestSchema,
   Seedance2RequestSchema,
+  Wan27ImageToVideoRequestSchema,
+  Wan27TextToVideoRequestSchema,
+  Wan27RefToVideoRequestSchema,
+  Wan27VideoEditRequestSchema,
+  Wan27ImageRequestSchema,
+  Wan27ImageProRequestSchema,
 } from "./zod";
 import { modelInputSchemas } from "./model-schemas";
 import { createVeoProvider } from "./veo";
@@ -137,13 +143,15 @@ const MIME_TYPES: Record<string, string> = {
 // rows but erases their literals, and the pin needs to read the guarded ids
 // back out. The per-row check on the id is unchanged.
 //
-// A row's schema may be `.refine`-wrapped (the two bytedance/seedance-2 rows
-// are, and more follow). Two things were measured on those rows rather than
-// assumed: `z.ZodType` in the `satisfies` clause accepts the wrapped schema —
-// zod 4 keeps `.refine()` a `ZodType`, so no row needs unwrapping to the inner
-// `*RequestObjectSchema` — and `.safeParse` still reports the refinement's own
-// `path`, so a cross-field failure reaches the `KieError` message named
-// (`input.reference_image_urls: …`) rather than as a pathless string.
+// A row's schema may be `.refine`-wrapped — the two bytedance/seedance-2 rows
+// above are the first such rows the table holds, and three of the six wan/2-7
+// rows added here are the next. Two things were measured on them rather than
+// assumed: `z.ZodType` in the `satisfies` clause accepts the wrapped schema,
+// because zod 4 keeps `.refine()` a `ZodObject` carrying a check rather than
+// the `ZodEffects` zod 3 returned, so no row needs unwrapping to an inner
+// `*RequestObjectSchema`; and `.safeParse` still reports the refinement's own
+// `path`, so a cross-field failure reaches the `KieError` message with the
+// field named (`input.first_frame_url: …`) rather than as a pathless string.
 export const CREATE_TASK_GUARDS = [
   ["kling-3.0/video", KlingVideoRequestSchema],
   ["kling-3.0/motion-control", KlingMotionControlRequestSchema],
@@ -170,6 +178,12 @@ export const CREATE_TASK_GUARDS = [
   ["bytedance/seedance-2-fast", Seedance2FastRequestSchema],
   ["bytedance/seedance-2", Seedance2RequestSchema],
   ["bytedance/seedance-2-mini", Seedance2MiniRequestSchema],
+  ["wan/2-7-image-to-video", Wan27ImageToVideoRequestSchema],
+  ["wan/2-7-text-to-video", Wan27TextToVideoRequestSchema],
+  ["wan/2-7-r2v", Wan27RefToVideoRequestSchema],
+  ["wan/2-7-videoedit", Wan27VideoEditRequestSchema],
+  ["wan/2-7-image", Wan27ImageRequestSchema],
+  ["wan/2-7-image-pro", Wan27ImageProRequestSchema],
   ["gemini-omni-video", GeminiOmniVideoRequestSchema],
   ["pixverse-v6/text-to-video", PixverseV6TextToVideoRequestSchema],
   ["pixverse-v6/image-to-video", PixverseV6ImageToVideoRequestSchema],
@@ -191,12 +205,6 @@ export const GUARD_EXEMPTION_REASONS = {
     "payload is validated by kie.ai rather than locally. Moving it into " +
     "CREATE_TASK_GUARDS widens guard coverage, which is a behaviour change " +
     "and needs its own review — tracked by ac-bgkfzh.",
-  refinementNotYetEnforced:
-    "The model's request schema carries cross-field rules (.refine / " +
-    ".superRefine) that are NOT enforced before the request leaves the " +
-    "process. Left off deliberately so coverage widens by one " +
-    "reviewed decision rather than by which schemas happen to carry a " +
-    "refinement — tracked by ac-bgkfzh.",
 } as const;
 
 // The other half of the membership rule: every KIE_MEDIA_MODELS id that is not
@@ -205,12 +213,6 @@ export const GUARD_EXEMPTION_REASONS = {
 // typo and stale-entry checking on the keys, exactly as the guard table's
 // KieMediaModel key type does.
 export const CREATE_TASK_GUARD_EXEMPTIONS = {
-  "wan/2-7-image-to-video": "refinementNotYetEnforced",
-  "wan/2-7-text-to-video": "notYetGuarded",
-  "wan/2-7-r2v": "notYetGuarded",
-  "wan/2-7-videoedit": "notYetGuarded",
-  "wan/2-7-image": "refinementNotYetEnforced",
-  "wan/2-7-image-pro": "refinementNotYetEnforced",
   "happyhorse/text-to-video": "notYetGuarded",
   "happyhorse/image-to-video": "notYetGuarded",
   "happyhorse/reference-to-video": "notYetGuarded",

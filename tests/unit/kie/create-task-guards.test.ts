@@ -29,7 +29,7 @@ import {
 //
 // Scope: registry shape only. Behaviour-level guard coverage lives across
 // tests/unit/kie-pixverse-v6.test.ts (whose `describe.each(GUARD_MODELS)` table
-// drives 4 of the 10 guarded models, with `pixverse-v6/text-to-video` covered
+// drives 4 of the 14 guarded models, with `pixverse-v6/text-to-video` covered
 // by its own describe block above it), tests/unit/kie-request.test.ts
 // (`grok-imagine/image-to-video`, `gemini-omni-video`) and
 // tests/unit/kie-seedance-2-mini.test.ts — the same split
@@ -122,6 +122,12 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
         "seedream/5-lite-text-to-image",
         "seedream/5-pro-image-to-image",
         "seedream/5-pro-text-to-image",
+        "wan/2-7-image",
+        "wan/2-7-image-pro",
+        "wan/2-7-image-to-video",
+        "wan/2-7-r2v",
+        "wan/2-7-text-to-video",
+        "wan/2-7-videoedit",
       ].sort()
     );
   });

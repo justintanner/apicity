@@ -164,6 +164,15 @@ describe("evaluateShadowSets", () => {
     },
   ];
 
+  const BOTH_CLASS = [
+    {
+      id: "generated-examples-ts",
+      axis: "both",
+      globs: ["packages/provider/*/src/example.ts"],
+      why: "fixture",
+    },
+  ];
+
   // AC-7 fail case (REQ-012): the guard must be proven to fail on a synthetic
   // shadowed tracked file, not merely to pass on today's tree.
   it("reports a shadowed tracked file with no baseline class as unexplained", () => {
@@ -210,14 +219,6 @@ describe("evaluateShadowSets", () => {
   // Staleness is per axis, not a union: a `both` class that still matches on
   // one axis must not keep its dead half alive.
   it("flags the dead half of an `axis: both` class", () => {
-    const both = [
-      {
-        id: "generated-examples-ts",
-        axis: "both",
-        globs: ["packages/provider/*/src/example.ts"],
-        why: "fixture",
-      },
-    ];
     const result = evaluateShadowSets(
       {
         prettier: [
@@ -229,7 +230,7 @@ describe("evaluateShadowSets", () => {
         ],
         eslint: [],
       },
-      both,
+      BOTH_CLASS,
       []
     );
     expect(result.unexplained).toEqual([]);
@@ -239,14 +240,6 @@ describe("evaluateShadowSets", () => {
   });
 
   it("keeps an `axis: both` class green when both axes match", () => {
-    const both = [
-      {
-        id: "generated-examples-ts",
-        axis: "both",
-        globs: ["packages/provider/*/src/example.ts"],
-        why: "fixture",
-      },
-    ];
     const result = evaluateShadowSets(
       {
         prettier: [
@@ -258,7 +251,7 @@ describe("evaluateShadowSets", () => {
         ],
         eslint: [eslintRecord("packages/provider/openai/src/example.ts")],
       },
-      both,
+      BOTH_CLASS,
       []
     );
     expect(result.stale).toEqual([]);

@@ -91,7 +91,14 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 // load-bearing, not cosmetic — without it the ESLint axis is meaningless.
 // The current absolutes are printed by `--list`; they are deliberately not
 // pinned here, because a comment that names a count goes stale in silence.
-const LINTABLE = /\.(?:js|mjs|cjs|ts|tsx)$/;
+//
+// The authority is the *resolved* config, not the two literal `files:` blocks
+// in `eslint.config.mjs` (`:42`, `:52`). `.cts` and `.mts` appear in neither,
+// yet the spread-in `tseslint.configs.recommended` (`eslint.config.mjs:40`)
+// still lints them — `isPathIgnored` is false and 265 rules resolve for each.
+// No `.cts`/`.mts` file is tracked today, so including them changes no current
+// count; the point is that the first one to land reaches this axis.
+const LINTABLE = /\.(?:js|mjs|cjs|ts|tsx|cts|mts)$/;
 
 const PRETTIER = "prettier";
 const ESLINT = "eslint";
@@ -459,14 +466,14 @@ function runCheckIgnore(cwd, excludesFile, trackedBuffer, env) {
 }
 
 async function collectEslintShadowed(lintable) {
+  if (lintable.length === 0) return [];
   // Imported lazily so `--help` and the unit test do not pay for loading ESLint.
   const { ESLint } = await import("eslint");
   const eslint = new ESLint({ cwd: root });
   // Resolving the flat config array is a ~1.6 s one-off that the first
   // `isPathIgnored` pays for; every later call is served from that cache.
   // Awaiting the rest in a batch rather than one at a time takes the
-  // tail from ~2.1 s to ~0.2 s, which is what keeps REQ-006's 2 s budget.
-  if (lintable.length === 0) return [];
+  // tail from ~2.1 s to ~0.2 s, which is what dominates this script's cost.
   const [first, ...rest] = lintable;
   const verdicts = [
     await eslint.isPathIgnored(first),

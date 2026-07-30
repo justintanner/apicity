@@ -58,6 +58,8 @@ import {
   PixverseV6TransitionRequestSchema,
   PixverseV6ExtendRequestSchema,
   PixverseV6ReferenceToVideoRequestSchema,
+  Omnihuman15RequestSchema,
+  VolcengineVideoToVideoLipSyncRequestSchema,
 } from "./zod";
 import { modelInputSchemas } from "./model-schemas";
 import { createVeoProvider } from "./veo";
@@ -116,6 +118,11 @@ const MIME_TYPES: Record<string, string> = {
 export const CREATE_TASK_GUARDS = [
   ["grok-imagine/image-to-video", GrokImageToVideoRequestSchema],
   ["bytedance/seedance-2-mini", Seedance2MiniRequestSchema],
+  ["omnihuman-1-5", Omnihuman15RequestSchema],
+  [
+    "volcengine/video-to-video-lip-sync",
+    VolcengineVideoToVideoLipSyncRequestSchema,
+  ],
   ["gemini-omni-video", GeminiOmniVideoRequestSchema],
   ["pixverse-v6/text-to-video", PixverseV6TextToVideoRequestSchema],
   ["pixverse-v6/image-to-video", PixverseV6ImageToVideoRequestSchema],
@@ -187,8 +194,6 @@ export const CREATE_TASK_GUARD_EXEMPTIONS = {
   "happyhorse-1-1/text-to-video": "notYetGuarded",
   "happyhorse-1-1/image-to-video": "notYetGuarded",
   "happyhorse-1-1/reference-to-video": "notYetGuarded",
-  "omnihuman-1-5": "notYetGuarded",
-  "volcengine/video-to-video-lip-sync": "notYetGuarded",
   "elevenlabs/audio-isolation": "notYetGuarded",
   "elevenlabs/text-to-dialogue-v3": "notYetGuarded",
   "elevenlabs/text-to-speech-multilingual-v2": "notYetGuarded",

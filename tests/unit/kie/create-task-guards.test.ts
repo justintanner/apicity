@@ -29,11 +29,19 @@ import {
 //
 // Scope: registry shape only. Behaviour-level guard coverage lives across
 // tests/unit/kie-pixverse-v6.test.ts (whose `describe.each(GUARD_MODELS)` table
-// drives 4 of the 8 guarded models, with `pixverse-v6/text-to-video` covered by
-// its own describe block above it), tests/unit/kie-request.test.ts
+// drives 4 of the 10 guarded models, with `pixverse-v6/text-to-video` covered
+// by its own describe block above it), tests/unit/kie-request.test.ts
 // (`grok-imagine/image-to-video`, `gemini-omni-video`) and
 // tests/unit/kie-seedance-2-mini.test.ts — the same split
 // tests/unit/kie-model-input-schemas.test.ts already uses.
+//
+// The two S11 rows (`omnihuman-1-5`, `volcengine/video-to-video-lip-sync`) have
+// no guard-rejection test of their own: their only payload-building call sites
+// are the serialization tests in tests/functional/kie-omnihuman.test.ts and
+// tests/unit/kie-request.test.ts, which prove an accepted payload still reaches
+// the wire unchanged. Their schemas are exercised directly in
+// tests/functional/schemas.test.ts (`Omnihuman15RequestSchema`) and
+// tests/unit/kie/validate.test.ts (`VolcengineVideoToVideoLipSyncRequestSchema`).
 
 const guarded = CREATE_TASK_GUARDS.map(([model]) => model as string);
 const exempt = Object.keys(CREATE_TASK_GUARD_EXEMPTIONS);
@@ -88,17 +96,19 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
 
   // Not a count for its own sake — it makes any change to the guarded set show
   // up as a deliberate edit to this list.
-  it("guards exactly the models guarded at f6c99b54", () => {
+  it("guards exactly the models guarded after S11", () => {
     expect([...guarded].sort()).toEqual(
       [
         "bytedance/seedance-2-mini",
         "gemini-omni-video",
         "grok-imagine/image-to-video",
+        "omnihuman-1-5",
         "pixverse-v6/extend",
         "pixverse-v6/image-to-video",
         "pixverse-v6/reference-to-video",
         "pixverse-v6/text-to-video",
         "pixverse-v6/transition",
+        "volcengine/video-to-video-lip-sync",
       ].sort()
     );
   });

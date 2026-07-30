@@ -58,11 +58,10 @@
 // class, but it also matches `packages/provider/cost/README.md`, which is
 // hand-written and stays in the gate solely because of the
 // `!packages/provider/cost/README.md` negation in `.prettierignore`. The day
-// that negation is deleted, the class would absorb
-// the file and the guard would stay green on the one README the design singles
-// out as deliberately checked. Classes must therefore be written as tightly as
-// the rationale that justifies them; where tightness is not enough, SENTINELS
-// below names the file outright.
+// that negation is deleted, the class would absorb the file and the guard would
+// stay green on the one README the design singles out as deliberately checked.
+// Classes must therefore be written as tightly as the rationale that justifies
+// them; where tightness is not enough, SENTINELS below names the file outright.
 //
 // ESLINT ATTRIBUTION — flat config does not expose WHICH `ignores` entry matched
 // (`calculateConfigForFile` throws for ignored paths). Failures on that axis are
@@ -182,6 +181,15 @@ const BASELINE = [
       "`.opencode/**` entry. Same out-of-scope reasoning as `omp-hook`.",
   },
 ];
+
+// Staleness is keyed by `id`, so two classes sharing one would share a counter
+// and the dead one could never be reported stale — the exact rot this guard
+// exists to prevent, in the guard itself. Reachable the first time a class is
+// copied and its globs edited but not its id.
+const baselineIds = new Set(BASELINE.map((entry) => entry.id));
+if (baselineIds.size !== BASELINE.length) {
+  throw new Error("BASELINE ids must be unique — staleness is keyed by id.");
+}
 
 // Files asserted to never be shadowed, whatever BASELINE says. A sentinel is
 // checked before classification, so no baseline class can absorb it.
@@ -456,7 +464,7 @@ async function collectEslintShadowed(lintable) {
   const eslint = new ESLint({ cwd: root });
   // Resolving the flat config array is a ~1.6 s one-off that the first
   // `isPathIgnored` pays for; every later call is served from that cache.
-  // Awaiting the remaining 986 in a batch rather than one at a time takes the
+  // Awaiting the rest in a batch rather than one at a time takes the
   // tail from ~2.1 s to ~0.2 s, which is what keeps REQ-006's 2 s budget.
   if (lintable.length === 0) return [];
   const [first, ...rest] = lintable;

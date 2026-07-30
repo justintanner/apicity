@@ -12,10 +12,12 @@ packages/provider/*/README.md
 # Prettier. Checking them makes `format:check` (and CI) fail whenever the
 # tooling rewrites them unformatted.
 .beads/
-# Polecat per-bead git worktrees (git-excluded via .git/info/exclude, 0 tracked
-# files, absent on clean CI checkouts). Without this, `prettier --check .`
-# recursively scans every nested worktree — each a full repo copy — producing
-# false `format:check`/`ci:local` failures and near-hangs in agent home worktrees.
+# Polecat per-bead git worktrees: untracked but NOT git-excluded —
+# `.git/info/exclude` has zero effective lines and `git status --porcelain`
+# reports `?? worktrees/` — with 0 tracked files and absent on clean CI
+# checkouts. Without this, `prettier --check .` recursively scans every nested
+# worktree — each a full repo copy — producing false `format:check`/`ci:local`
+# failures and near-hangs in agent home worktrees.
 worktrees/
 # Gas City molecule scratch — untracked build artifacts and per-bead work dirs
 # written into shared agent home worktrees, absent on clean CI checkouts.

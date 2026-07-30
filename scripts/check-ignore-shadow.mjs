@@ -49,15 +49,16 @@
 //   `core.excludesFile`, which git ranks BELOW `.gitignore`, whereas Prettier
 //   applies both ignore files together. Where the two files disagree about one
 //   path the resolved answer is not guaranteed to match Prettier's. Measured
-//   set-identical on the tree at `f6a9798b` (99 paths, zero difference in either
-//   direction against a `prettier.getFileInfo` loop over all 1850 tracked
-//   files). The git form is also ~900x faster: 20 ms against 18 s.
+//   set-identical on the tree at `f6a9798b` (~99 paths, zero difference in
+//   either direction against a `prettier.getFileInfo` loop over every tracked
+//   file). The git form is also ~900x faster: 20 ms against 18 s.
 //
 // BASELINE CLASSES — a class glob broader than the file set it was written for
 // is a hole. `packages/provider/*/README.md` reads like the generated-README
 // class, but it also matches `packages/provider/cost/README.md`, which is
-// hand-written and stays in the gate solely because of the negation at
-// `.prettierignore:9`. The day that negation is deleted, the class would absorb
+// hand-written and stays in the gate solely because of the
+// `!packages/provider/cost/README.md` negation in `.prettierignore`. The day
+// that negation is deleted, the class would absorb
 // the file and the guard would stay green on the one README the design singles
 // out as deliberately checked. Classes must therefore be written as tightly as
 // the rationale that justifies them; where tightness is not enough, SENTINELS
@@ -85,10 +86,12 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 // Requirements mechanic 3: ESLint's `isPathIgnored` conflates "ignored" with
 // "not a lintable file type". Flat config has no `files` entry for `.md`,
-// `.json`, `.har` and most of the tree, so over all 1850 tracked files it
-// returns true for 893. Filtering to the extensions the flat config actually
-// lints yields 30, which is the usable signal. This filter is load-bearing, not
-// cosmetic — without it the ESLint axis is meaningless.
+// `.json`, `.har` and most of the tree, so it returns true for roughly half of
+// every tracked file. Filtering to the extensions the flat config actually
+// lints cuts that to a few dozen, which is the usable signal. This filter is
+// load-bearing, not cosmetic — without it the ESLint axis is meaningless.
+// The current absolutes are printed by `--list`; they are deliberately not
+// pinned here, because a comment that names a count goes stale in silence.
 const LINTABLE = /\.(?:js|mjs|cjs|ts|tsx)$/;
 
 const PRETTIER = "prettier";
@@ -127,8 +130,8 @@ const BASELINE = [
     globs: ["packages/provider/*/README.md"],
     // Narrowed deliberately — see SENTINELS and the header note on class
     // breadth. `cost/README.md` is hand-written and is excluded from the shadow
-    // set only by `.prettierignore:9`; if it ever becomes shadowed it must
-    // surface, not be absorbed by this class.
+    // set only by the `!packages/provider/cost/README.md` negation; if it ever
+    // becomes shadowed it must surface, not be absorbed by this class.
     except: ["packages/provider/cost/README.md"],
     why:
       "Written by `pnpm run doc-gen` (scripts/doc-gen.mjs); the generator owns " +
@@ -186,11 +189,15 @@ const SENTINELS = [
   {
     path: "packages/provider/cost/README.md",
     axis: PRETTIER,
+    // Cites the PATTERN TEXT, not a line number: this string is printed to a
+    // developer while the gate is red, and inserting one line above the
+    // negation would otherwise point them at the wrong place.
     why:
-      "Hand-written, and kept in `format:check` only by the negation at " +
-      "`.prettierignore:9` (`!packages/provider/cost/README.md`) sitting below " +
-      "the generated-README pattern at `.prettierignore:8`. If it is shadowed, " +
-      "either that negation was deleted or a broader pattern landed below it.",
+      "Hand-written, and kept in `format:check` only by the " +
+      "`!packages/provider/cost/README.md` negation in `.prettierignore`, " +
+      "which sits below the `packages/provider/*/README.md` pattern. If it is " +
+      "shadowed, either that negation was deleted or a broader pattern landed " +
+      "below it.",
   },
 ];
 
@@ -468,7 +475,10 @@ async function collectEslintShadowed(lintable) {
 }
 
 function describeRecord(record) {
-  if (record.source === ESLINT_SOURCE) {
+  // Branches on the axis, not on the source filename: both call sites carry
+  // `axis`, and renaming `eslint.config.mjs` must not turn this into
+  // `ignored by eslint.config.mjs:null [null]`.
+  if (record.axis === ESLINT) {
     return `ignored by ${ESLINT_SOURCE} \`ignores\`  [no line info from flat config]`;
   }
   return `ignored by ${record.source}:${record.line}  [${record.pattern}]`;
@@ -521,9 +531,10 @@ async function main() {
     for (const row of [...baselined, ...unexplained, ...sentinelHits].sort(
       (a, b) => a.axis.localeCompare(b.axis) || a.path.localeCompare(b.path)
     )) {
-      console.log(
-        `${row.axis.padEnd(8)} ${row.classId || "UNBASELINED"}\t${row.path}`
-      );
+      // Sentinel hits carry no `classId` but are not unbaselined — they are
+      // asserted never to be shadowed at all.
+      const label = row.classId || (row.why ? "SENTINEL" : "UNBASELINED");
+      console.log(`${row.axis.padEnd(8)} ${label}\t${row.path}`);
     }
     console.log(
       `\n${shadowed.prettier.length} shadowed on the prettier axis, ` +
@@ -593,7 +604,11 @@ async function main() {
   return 0;
 }
 
-// Run as CLI only (importing for tests must not exit the process).
-if (import.meta.url === `file://${process.argv[1]}`) {
+// Run as CLI only (importing for tests must not exit the process). Compares
+// through `fileURLToPath` rather than building a `file://` string: `argv[1]` is
+// not percent-encoded, so the string form is false for any checkout path
+// containing a space — `main()` would never run and `lint:ignores` would report
+// success having examined nothing.
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
   process.exit(await main());
 }

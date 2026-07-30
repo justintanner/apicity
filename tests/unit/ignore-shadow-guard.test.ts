@@ -277,8 +277,9 @@ describe("evaluateShadowSets", () => {
 
   // The generated-README class glob (`packages/provider/*/README.md`) also
   // matches cost/README.md, which is hand-written and stays in `format:check`
-  // only because of the negation at `.prettierignore:9`. If that negation is
-  // ever deleted, the class must NOT absorb the file and leave the gate green.
+  // only because of the `!packages/provider/cost/README.md` negation. If that
+  // negation is ever deleted, the class must NOT absorb the file and leave the
+  // gate green.
   // Runs against the real BASELINE and SENTINELS on purpose.
   it("does not let the generated-README class absorb cost/README.md", () => {
     const record = prettierRecord(
@@ -293,7 +294,46 @@ describe("evaluateShadowSets", () => {
       path: "packages/provider/cost/README.md",
       axis: "prettier",
     });
-    expect(result.sentinelHits[0].why).toMatch(/\.prettierignore:9/);
+    // Pins the PATTERN TEXT the message must name, not a line number: a
+    // citation like `.prettierignore:9` keeps passing this assertion long
+    // after an inserted line has made it point somewhere else.
+    expect(result.sentinelHits[0].why).toMatch(
+      /!packages\/provider\/cost\/README\.md/
+    );
+  });
+
+  // `except` is the second line of defence behind SENTINELS: in the shipped
+  // config the sentinel check runs first and `continue`s, so this branch never
+  // fires there. It exists for the day the sentinel is removed — and an
+  // untested defence is one refactor from vanishing. Fixture class, EMPTY
+  // sentinels, so only the `except` branch can produce the verdict.
+  it("does not baseline a path its class excludes", () => {
+    const cls = [
+      {
+        id: "generated-readmes",
+        axis: "prettier",
+        globs: ["packages/provider/*/README.md"],
+        except: ["packages/provider/cost/README.md"],
+        why: "fixture",
+      },
+    ];
+    const result = evaluateShadowSets(
+      {
+        prettier: [
+          prettierRecord(
+            "packages/provider/cost/README.md",
+            8,
+            "packages/provider/*/README.md"
+          ),
+        ],
+        eslint: [],
+      },
+      cls,
+      []
+    );
+    expect(result.baselined).toEqual([]);
+    expect(result.unexplained).toHaveLength(1);
+    expect(result.unexplained[0].path).toBe("packages/provider/cost/README.md");
   });
 
   it("still baselines the other generated READMEs", () => {

@@ -91,6 +91,8 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
   it("guards exactly the reviewed guarded set", () => {
     expect([...guarded].sort()).toEqual(
       [
+        "bytedance/seedance-2-fast",
+        "bytedance/seedance-2",
         "bytedance/seedance-2-mini",
         "gemini-omni-video",
         "gpt-image-2-image-to-image",

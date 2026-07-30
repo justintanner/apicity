@@ -79,6 +79,8 @@ import {
   SeedreamProTextToImageRequestSchema,
   Qwen2TextToImageRequestSchema,
   Qwen2ImageEditRequestSchema,
+  Seedance2FastRequestSchema,
+  Seedance2RequestSchema,
 } from "./zod";
 import { modelInputSchemas } from "./model-schemas";
 import { createVeoProvider } from "./veo";
@@ -134,6 +136,14 @@ const MIME_TYPES: Record<string, string> = {
 // `as const satisfies` rather than a `:` annotation: the annotation checks the
 // rows but erases their literals, and the pin needs to read the guarded ids
 // back out. The per-row check on the id is unchanged.
+//
+// A row's schema may be `.refine`-wrapped (the two bytedance/seedance-2 rows
+// are, and more follow). Two things were measured on those rows rather than
+// assumed: `z.ZodType` in the `satisfies` clause accepts the wrapped schema —
+// zod 4 keeps `.refine()` a `ZodType`, so no row needs unwrapping to the inner
+// `*RequestObjectSchema` — and `.safeParse` still reports the refinement's own
+// `path`, so a cross-field failure reaches the `KieError` message named
+// (`input.reference_image_urls: …`) rather than as a pathless string.
 export const CREATE_TASK_GUARDS = [
   ["kling-3.0/video", KlingVideoRequestSchema],
   ["kling-3.0/motion-control", KlingMotionControlRequestSchema],
@@ -157,6 +167,8 @@ export const CREATE_TASK_GUARDS = [
   ["grok-imagine/upscale", GrokVideoUpscaleRequestSchema],
   ["qwen2/text-to-image", Qwen2TextToImageRequestSchema],
   ["qwen2/image-edit", Qwen2ImageEditRequestSchema],
+  ["bytedance/seedance-2-fast", Seedance2FastRequestSchema],
+  ["bytedance/seedance-2", Seedance2RequestSchema],
   ["bytedance/seedance-2-mini", Seedance2MiniRequestSchema],
   ["gemini-omni-video", GeminiOmniVideoRequestSchema],
   ["pixverse-v6/text-to-video", PixverseV6TextToVideoRequestSchema],
@@ -193,8 +205,6 @@ export const GUARD_EXEMPTION_REASONS = {
 // typo and stale-entry checking on the keys, exactly as the guard table's
 // KieMediaModel key type does.
 export const CREATE_TASK_GUARD_EXEMPTIONS = {
-  "bytedance/seedance-2-fast": "refinementNotYetEnforced",
-  "bytedance/seedance-2": "refinementNotYetEnforced",
   "wan/2-7-image-to-video": "refinementNotYetEnforced",
   "wan/2-7-text-to-video": "notYetGuarded",
   "wan/2-7-r2v": "notYetGuarded",

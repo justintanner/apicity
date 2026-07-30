@@ -58,6 +58,8 @@ import {
   PixverseV6TransitionRequestSchema,
   PixverseV6ExtendRequestSchema,
   PixverseV6ReferenceToVideoRequestSchema,
+  Seedance2FastRequestSchema,
+  Seedance2RequestSchema,
 } from "./zod";
 import { modelInputSchemas } from "./model-schemas";
 import { createVeoProvider } from "./veo";
@@ -113,8 +115,18 @@ const MIME_TYPES: Record<string, string> = {
 // `as const satisfies` rather than a `:` annotation: the annotation checks the
 // rows but erases their literals, and the pin needs to read the guarded ids
 // back out. The per-row check on the id is unchanged.
+//
+// A row's schema may be `.refine`-wrapped (the two bytedance/seedance-2 rows
+// are, and more follow). Two things were measured on those rows rather than
+// assumed: `z.ZodType` in the `satisfies` clause accepts the wrapped schema —
+// zod 4 keeps `.refine()` a `ZodType`, so no row needs unwrapping to the inner
+// `*RequestObjectSchema` — and `.safeParse` still reports the refinement's own
+// `path`, so a cross-field failure reaches the `KieError` message named
+// (`input.reference_image_urls: …`) rather than as a pathless string.
 export const CREATE_TASK_GUARDS = [
   ["grok-imagine/image-to-video", GrokImageToVideoRequestSchema],
+  ["bytedance/seedance-2-fast", Seedance2FastRequestSchema],
+  ["bytedance/seedance-2", Seedance2RequestSchema],
   ["bytedance/seedance-2-mini", Seedance2MiniRequestSchema],
   ["gemini-omni-video", GeminiOmniVideoRequestSchema],
   ["pixverse-v6/text-to-video", PixverseV6TextToVideoRequestSchema],
@@ -172,8 +184,6 @@ export const CREATE_TASK_GUARD_EXEMPTIONS = {
   "grok-imagine/upscale": "notYetGuarded",
   "qwen2/text-to-image": "notYetGuarded",
   "qwen2/image-edit": "notYetGuarded",
-  "bytedance/seedance-2-fast": "refinementNotYetEnforced",
-  "bytedance/seedance-2": "refinementNotYetEnforced",
   "wan/2-7-image-to-video": "refinementNotYetEnforced",
   "wan/2-7-text-to-video": "notYetGuarded",
   "wan/2-7-r2v": "notYetGuarded",

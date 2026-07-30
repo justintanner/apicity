@@ -109,6 +109,8 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
         "kling/v3-turbo-text-to-video",
         "nano-banana-2",
         "nano-banana-pro",
+        "qwen2/image-edit",
+        "qwen2/text-to-image",
         "pixverse-v6/extend",
         "pixverse-v6/image-to-video",
         "pixverse-v6/reference-to-video",

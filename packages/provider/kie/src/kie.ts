@@ -77,6 +77,8 @@ import {
   SeedreamTextToImageRequestSchema,
   SeedreamProImageToImageRequestSchema,
   SeedreamProTextToImageRequestSchema,
+  Qwen2TextToImageRequestSchema,
+  Qwen2ImageEditRequestSchema,
 } from "./zod";
 import { modelInputSchemas } from "./model-schemas";
 import { createVeoProvider } from "./veo";
@@ -153,6 +155,8 @@ export const CREATE_TASK_GUARDS = [
   ["seedream/5-pro-text-to-image", SeedreamProTextToImageRequestSchema],
   ["grok-imagine/extend", GrokVideoExtendRequestSchema],
   ["grok-imagine/upscale", GrokVideoUpscaleRequestSchema],
+  ["qwen2/text-to-image", Qwen2TextToImageRequestSchema],
+  ["qwen2/image-edit", Qwen2ImageEditRequestSchema],
   ["bytedance/seedance-2-mini", Seedance2MiniRequestSchema],
   ["gemini-omni-video", GeminiOmniVideoRequestSchema],
   ["pixverse-v6/text-to-video", PixverseV6TextToVideoRequestSchema],
@@ -189,8 +193,6 @@ export const GUARD_EXEMPTION_REASONS = {
 // typo and stale-entry checking on the keys, exactly as the guard table's
 // KieMediaModel key type does.
 export const CREATE_TASK_GUARD_EXEMPTIONS = {
-  "qwen2/text-to-image": "notYetGuarded",
-  "qwen2/image-edit": "notYetGuarded",
   "bytedance/seedance-2-fast": "refinementNotYetEnforced",
   "bytedance/seedance-2": "refinementNotYetEnforced",
   "wan/2-7-image-to-video": "refinementNotYetEnforced",

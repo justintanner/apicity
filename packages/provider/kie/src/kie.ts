@@ -59,6 +59,9 @@ import {
   GrokVideo15PreviewRequestSchema,
   NanoBananaProRequestSchema,
   NanoBanana2RequestSchema,
+  GptImageToImageRequestSchema,
+  GptImage2ImageToImageRequestSchema,
+  GptImage2TextToImageRequestSchema,
   RecordInfoRequestSchema,
   Gpt4oImageRecordInfoResponseSchema,
   Seedance2MiniRecordInfoResponseSchema,
@@ -135,6 +138,9 @@ export const CREATE_TASK_GUARDS = [
   ["grok-imagine-video-1-5-preview", GrokVideo15PreviewRequestSchema],
   ["nano-banana-pro", NanoBananaProRequestSchema],
   ["nano-banana-2", NanoBanana2RequestSchema],
+  ["gpt-image/1.5-image-to-image", GptImageToImageRequestSchema],
+  ["gpt-image-2-image-to-image", GptImage2ImageToImageRequestSchema],
+  ["gpt-image-2-text-to-image", GptImage2TextToImageRequestSchema],
   ["bytedance/seedance-2-mini", Seedance2MiniRequestSchema],
   ["gemini-omni-video", GeminiOmniVideoRequestSchema],
   ["pixverse-v6/text-to-video", PixverseV6TextToVideoRequestSchema],
@@ -171,9 +177,6 @@ export const GUARD_EXEMPTION_REASONS = {
 // typo and stale-entry checking on the keys, exactly as the guard table's
 // KieMediaModel key type does.
 export const CREATE_TASK_GUARD_EXEMPTIONS = {
-  "gpt-image/1.5-image-to-image": "notYetGuarded",
-  "gpt-image-2-image-to-image": "notYetGuarded",
-  "gpt-image-2-text-to-image": "notYetGuarded",
   "seedream/5-lite-image-to-image": "notYetGuarded",
   "seedream/5-lite-text-to-image": "notYetGuarded",
   "seedream/5-pro-image-to-image": "notYetGuarded",

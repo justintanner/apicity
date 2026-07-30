@@ -29,11 +29,13 @@ import {
 //
 // Scope: registry shape only. Behaviour-level guard coverage lives across
 // tests/unit/kie-pixverse-v6.test.ts (whose `describe.each(GUARD_MODELS)` table
-// drives 4 of the 8 guarded models, with `pixverse-v6/text-to-video` covered by
-// its own describe block above it), tests/unit/kie-request.test.ts
-// (`grok-imagine/image-to-video`, `gemini-omni-video`) and
-// tests/unit/kie-seedance-2-mini.test.ts — the same split
-// tests/unit/kie-model-input-schemas.test.ts already uses.
+// drives 4 of the 12 guarded models, with `pixverse-v6/text-to-video` covered
+// by its own describe block above it), tests/unit/kie-request.test.ts
+// (`grok-imagine/image-to-video`, `gemini-omni-video`),
+// tests/unit/kie-seedance-2-mini.test.ts and — for the four seedream models —
+// the four tests/integration/kie-seedream-5-*.test.ts files plus the "Seedream
+// quality stays required" block in tests/unit/kie-model-input-schemas.test.ts,
+// which is also where this same split is already used.
 
 const guarded = CREATE_TASK_GUARDS.map(([model]) => model as string);
 const exempt = Object.keys(CREATE_TASK_GUARD_EXEMPTIONS);
@@ -88,7 +90,7 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
 
   // Not a count for its own sake — it makes any change to the guarded set show
   // up as a deliberate edit to this list.
-  it("guards exactly the models guarded at f6c99b54", () => {
+  it("guards exactly the reviewed guarded set", () => {
     expect([...guarded].sort()).toEqual(
       [
         "bytedance/seedance-2-mini",
@@ -99,6 +101,10 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
         "pixverse-v6/reference-to-video",
         "pixverse-v6/text-to-video",
         "pixverse-v6/transition",
+        "seedream/5-lite-image-to-image",
+        "seedream/5-lite-text-to-image",
+        "seedream/5-pro-image-to-image",
+        "seedream/5-pro-text-to-image",
       ].sort()
     );
   });

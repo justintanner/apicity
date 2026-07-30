@@ -58,6 +58,10 @@ import {
   PixverseV6TransitionRequestSchema,
   PixverseV6ExtendRequestSchema,
   PixverseV6ReferenceToVideoRequestSchema,
+  SeedreamImageToImageRequestSchema,
+  SeedreamTextToImageRequestSchema,
+  SeedreamProImageToImageRequestSchema,
+  SeedreamProTextToImageRequestSchema,
 } from "./zod";
 import { modelInputSchemas } from "./model-schemas";
 import { createVeoProvider } from "./veo";
@@ -115,6 +119,10 @@ const MIME_TYPES: Record<string, string> = {
 // back out. The per-row check on the id is unchanged.
 export const CREATE_TASK_GUARDS = [
   ["grok-imagine/image-to-video", GrokImageToVideoRequestSchema],
+  ["seedream/5-lite-image-to-image", SeedreamImageToImageRequestSchema],
+  ["seedream/5-lite-text-to-image", SeedreamTextToImageRequestSchema],
+  ["seedream/5-pro-image-to-image", SeedreamProImageToImageRequestSchema],
+  ["seedream/5-pro-text-to-image", SeedreamProTextToImageRequestSchema],
   ["bytedance/seedance-2-mini", Seedance2MiniRequestSchema],
   ["gemini-omni-video", GeminiOmniVideoRequestSchema],
   ["pixverse-v6/text-to-video", PixverseV6TextToVideoRequestSchema],
@@ -164,10 +172,6 @@ export const CREATE_TASK_GUARD_EXEMPTIONS = {
   "gpt-image/1.5-image-to-image": "notYetGuarded",
   "gpt-image-2-image-to-image": "notYetGuarded",
   "gpt-image-2-text-to-image": "notYetGuarded",
-  "seedream/5-lite-image-to-image": "notYetGuarded",
-  "seedream/5-lite-text-to-image": "notYetGuarded",
-  "seedream/5-pro-image-to-image": "notYetGuarded",
-  "seedream/5-pro-text-to-image": "notYetGuarded",
   "grok-imagine/extend": "notYetGuarded",
   "grok-imagine/upscale": "notYetGuarded",
   "qwen2/text-to-image": "notYetGuarded",

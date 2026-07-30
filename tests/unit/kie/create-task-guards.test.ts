@@ -29,7 +29,7 @@ import {
 //
 // Scope: registry shape only. Behaviour-level guard coverage lives across
 // tests/unit/kie-pixverse-v6.test.ts (whose `describe.each(GUARD_MODELS)` table
-// drives 4 of the 14 guarded models, with `pixverse-v6/text-to-video` covered
+// drives 4 of the 15 guarded models, with `pixverse-v6/text-to-video` covered
 // by its own describe block above it), tests/unit/kie-request.test.ts
 // (`grok-imagine/image-to-video`, `gemini-omni-video`) and
 // tests/unit/kie-seedance-2-mini.test.ts — the same split
@@ -105,6 +105,13 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
         "grok-imagine/text-to-image",
         "grok-imagine/text-to-video",
         "grok-imagine/upscale",
+        "happyhorse-1-1/image-to-video",
+        "happyhorse-1-1/reference-to-video",
+        "happyhorse-1-1/text-to-video",
+        "happyhorse/image-to-video",
+        "happyhorse/reference-to-video",
+        "happyhorse/text-to-video",
+        "happyhorse/video-edit",
         "kling-3.0/motion-control",
         "kling-3.0/video",
         "kling/v3-turbo-image-to-video",

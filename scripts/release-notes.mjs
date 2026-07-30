@@ -40,9 +40,12 @@ const USAGE =
   "[--release-bead <id>] [--beads off|enrich]";
 
 export function parseArgs(argv) {
+  // `--release-bead` is the only way in. The heredoc also read a `RELEASE_BEAD`
+  // environment variable; nothing in the repository ever set it, so the
+  // fallback was an untestable second entry point to the same option.
   const options = {
     version: "",
-    releaseBead: process.env.RELEASE_BEAD || "",
+    releaseBead: "",
     beadMode: "off",
     help: false,
   };
@@ -172,11 +175,13 @@ export function readPackages() {
       .map((entry) => `packages/provider/${entry.name}`),
   ];
 
+  // Deliberately unsorted: `renderNotes()` owns REQ-008's ordering so the pure
+  // function can be proven to sort from an unsorted input. Sorting here as well
+  // made the code and that comment disagree about who owns the requirement.
   return dirs
     .filter((dir) => existsSync(`${dir}/package.json`))
     .map((dir) => JSON.parse(readFileSync(`${dir}/package.json`, "utf8")))
-    .filter((pkg) => pkg.name && pkg.name.startsWith("@apicity/"))
-    .sort((a, b) => a.name.localeCompare(b.name));
+    .filter((pkg) => pkg.name && pkg.name.startsWith("@apicity/"));
 }
 
 export function findPreviousTag(currentTag) {
@@ -338,9 +343,13 @@ export function readClosedWork(
   const work = Array.isArray(issues) ? issues : [];
   return {
     previousDate,
+    // No standalone `isGasCityBead` filter: `isInfrastructureIssue()` opens
+    // with that exact test, so a second one here gave REQ-006 two enforcement
+    // points inside one function and neither could fail alone. The deliberate
+    // defence-in-depth copy is the one in `renderNotes()`, which guards a
+    // different code path.
     work: work
       .filter((issue) => issue.id !== releaseBead)
-      .filter((issue) => !isGasCityBead(issue))
       .filter((issue) => !isReleaseTrackingIssue(issue))
       .filter((issue) => !isInfrastructureIssue(issue))
       .filter((issue) => !isAdministrativeClosureIssue(issue))

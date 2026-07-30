@@ -65,10 +65,22 @@ export function renderLine(subject) {
   return stripBeadSuffix(humanize(subject));
 }
 
+/**
+ * REQ-002's three release-commit forms: `chore(release):`, `fix(release):`, and
+ * a bare `@apicity/* → <version>`.
+ *
+ * The second alternative anchors on start-of-subject-or-whitespace rather than
+ * `\b`. `@` is a non-word character, so `\b@apicity` asserts a transition that
+ * only exists when the *preceding* character is a word character — never at the
+ * start of a subject and never after a space, which is exactly where the bare
+ * form appears. With `\b` the clause matched only inside `chore(release):
+ * @apicity/* → 0.8.4`, where alternative 1 had already matched, so the third
+ * form REQ-002 names never fired on its own.
+ */
 export function isReleaseCommit(commit) {
   return (
     /^(chore|fix)\(release\):/i.test(commit.subject) ||
-    /\b@apicity\/\*\s+(to|→)\s+\d/i.test(commit.subject)
+    /(?:^|\s)@apicity\/\*\s+(to|→)\s+\d/i.test(commit.subject)
   );
 }
 

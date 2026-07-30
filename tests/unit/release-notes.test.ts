@@ -2,9 +2,12 @@ import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import {
+  classifyCommit,
   isGasCityBead,
+  isReleaseCommit,
+  renderLine,
   renderNotes,
 } from "../../scripts/lib/release-notes.mjs";
 import {
@@ -12,10 +15,27 @@ import {
   isAdministrativeClosureIssue,
   isInfrastructureIssue,
   isReleaseTrackingIssue,
+  parseArgs,
+  readClosedWork,
   shippedInPreviousRelease,
 } from "../../scripts/release-notes.mjs";
 import { repoRoot } from "../../scripts/lib/provider-scope.mjs";
 import fixture from "../fixtures/release-notes/v0.8.4.json";
+
+/**
+ * Only `execFileSync` is faked, and only so the composed `readClosedWork()`
+ * pass can be driven from canned `bd` rows without a live bead store. The rest
+ * of `node:child_process` stays real — the AC-7 and CLI exit-contract suites
+ * below drive actual subprocesses through `spawnSync`.
+ */
+const { execFileSyncMock } = vi.hoisted(() => ({
+  execFileSyncMock: vi.fn<(command: string, args: string[]) => string>(),
+}));
+
+vi.mock("node:child_process", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("node:child_process")>();
+  return { ...actual, execFileSync: execFileSyncMock };
+});
 
 /**
  * Regression coverage for the release-notes generator (bead `ac-a17xvp`).
@@ -49,9 +69,16 @@ function renderFixture(beadMode: "off" | "enrich") {
 }
 
 /**
- * Internal process vocabulary that must never reach a published page (AC-2,
- * REQ-009). `Summary`, `Released Work`, `What's Changed`, and
- * `Release Maintenance` are headings the bead-primary generator used to emit.
+ * Internal process vocabulary that must never reach a published page on the
+ * default `--beads=off` path (AC-2, REQ-009). `Summary`, `Released Work`,
+ * `What's Changed`, and `Release Maintenance` are headings the bead-primary
+ * generator used to emit.
+ *
+ * The list is deliberately not asserted against `--beads=enrich`: bead titles
+ * carry work-breakdown vocabulary that the rendering path does not strip, and
+ * pretending otherwise understated a disclosed risk. The enrichment path's real
+ * contract — REQ-006, no Gas City bead on any path — is pinned separately, and
+ * the shapes it genuinely cannot clean are pinned below.
  */
 const FORBIDDEN_OUTPUT = [
   /ac-/,
@@ -84,13 +111,40 @@ describe("release-notes rendering (pinned v0.8.4 window)", () => {
     expect(notes.newItems.length + notes.updatedItems.length).toBe(4);
   });
 
-  it("AC-2/REQ-009 — emits no process vocabulary on either bead mode", () => {
-    for (const beadMode of ["off", "enrich"] as const) {
-      const { markdown } = renderFixture(beadMode);
-      for (const pattern of FORBIDDEN_OUTPUT) {
-        expect(markdown, `${beadMode}: ${pattern}`).not.toMatch(pattern);
-      }
+  it("AC-2/REQ-009 — the default path emits no process vocabulary", () => {
+    const { markdown } = renderFixture("off");
+    for (const pattern of FORBIDDEN_OUTPUT) {
+      expect(markdown, `off: ${pattern}`).not.toMatch(pattern);
     }
+  });
+
+  it("AC-2/REQ-009 — enrichment output is not publishable unreviewed", () => {
+    // `humanize()` strips only a leading conventional-commit prefix and
+    // `stripBeadSuffix()` only a trailing bead id, so a mid-title `Slice N:` or
+    // `(ac-…)` reaches the page verbatim. That is why REQ-009 is scoped to the
+    // default path and why the formula tells the operator to review
+    // `--beads=enrich` output by hand. Pinned so the gap lives in the suite
+    // rather than only in prose — and so a future claim that enrichment is
+    // safe by construction has to delete an assertion to make it.
+    const { markdown } = renderNotes({
+      version: fixture.version,
+      commits: fixture.commits,
+      beads: [
+        {
+          id: "ac-icktfl",
+          title: "W3: land Slice 2: the mid-title (ac-icktfl) shape",
+          issue_type: "task",
+        },
+      ],
+      packages: fixture.packages,
+      beadMode: "enrich",
+      range: fixture.range,
+    });
+
+    expect(markdown).toContain("Slice 2:");
+    expect(markdown).toContain("(ac-icktfl)");
+    // The same bead cannot reach the default path at all.
+    expect(renderFixture("off").markdown).not.toContain("Slice 2:");
   });
 
   it("AC-3/REQ-006 — Gas City beads are excluded on the enrichment path", () => {
@@ -337,6 +391,25 @@ describe("release-notes bead predicates", () => {
         close_reason: "closed per user request",
       })
     ).toBe(true);
+    // The `molecule cleanup:` / `molecule autoclose:` branch lost its only
+    // coverage when the heredoc-extraction suite was retired; these reasons are
+    // written by molecule teardown, not by a human, and read as ordinary work.
+    expect(
+      isAdministrativeClosureIssue({
+        id: "ac-molclean",
+        title: "Wire up the second guard",
+        close_reason: "molecule cleanup: closing stale step beads",
+      })
+    ).toBe(true);
+    expect(
+      isAdministrativeClosureIssue({
+        id: "ac-molauto",
+        title: "Wire up the third guard",
+        metadata: {
+          close_reason: "molecule autoclose: parent molecule completed",
+        },
+      })
+    ).toBe(true);
     expect(
       isAdministrativeClosureIssue({
         id: "ac-ship",
@@ -399,5 +472,251 @@ describe("release-notes bead predicates", () => {
         close_reason: "Merged to main at abc123",
       })
     ).toBe(false);
+  });
+});
+
+describe("release-notes commit predicates", () => {
+  // REQ-002 names three release-commit forms. The fixture window only carries
+  // the `chore(release):` one, so the bare `@apicity/* → <version>` clause was
+  // covered on paper by a commit that the first alternative already matched.
+  // Four of these five bare forms returned `false` before the anchor fix.
+  it.each([
+    ["chore(release): @apicity/* → 0.8.4", true],
+    ["fix(release): re-tag 0.8.4 after the botched push", true],
+    ["@apicity/* → 0.8.5", true],
+    ["@apicity/* to 0.8.5", true],
+    ["release: @apicity/* → 0.8.5", true],
+    ["bump @apicity/* → 0.8.5", true],
+    ["feat(kie): force every media model into a guard decision", false],
+    ["docs: mention @apicity/kie in the readme", false],
+    ["chore: tidy the @apicity/* changelog wording", false],
+  ])("REQ-002 — isReleaseCommit(%j) is %s", (subject, expected) => {
+    expect(isReleaseCommit({ subject })).toBe(expected);
+  });
+
+  it("REQ-005 — classifies prefixed subjects by conventional type", () => {
+    expect(classifyCommit({ subject: "feat(kie): add a guard" })).toBe("new");
+    expect(classifyCommit({ subject: "feat: add a guard" })).toBe("new");
+    expect(classifyCommit({ subject: "fix(kie): correct a guard" })).toBe(
+      "updated"
+    );
+    expect(classifyCommit({ subject: "refactor: move the guard" })).toBe(
+      "updated"
+    );
+  });
+
+  it("classifies unprefixed subjects by leading verb (TS-4 over REQ-005)", () => {
+    // REQ-005's literal text says every *unprefixed* subject is `Updated`;
+    // `classifyCommit()` keeps a leading-verb heuristic instead. TS-4 requires
+    // preserving this function's behavior, so TS-4 governs and the requirement
+    // row now records that. Pinned in both directions so the disagreement
+    // cannot be resolved silently by a future edit to either side.
+    expect(classifyCommit({ subject: "add a release-notes fixture" })).toBe(
+      "new"
+    );
+    expect(classifyCommit({ subject: "introduce the pure renderer" })).toBe(
+      "new"
+    );
+    expect(classifyCommit({ subject: "tighten the release regex" })).toBe(
+      "updated"
+    );
+    expect(
+      classifyCommit({ subject: "release notes are commit-primary" })
+    ).toBe("updated");
+  });
+
+  it("REQ-003/OQ-3 — strips flat and dotted bead-id suffixes", () => {
+    expect(renderLine("feat(kie): x (ac-8j6lex)")).toBe("kie: x");
+    // OQ-3 resolved the `ac-` grammar to include dotted molecule ids. No
+    // fixture commit carries one, so the assumption was unpinned.
+    expect(renderLine("feat(kie): x (ac-h7kvm.23.3)")).toBe("kie: x");
+    // The strict grammar is the point: ordinary parenthesised text survives.
+    expect(renderLine("feat(kie): x (see the migration guide)")).toBe(
+      "kie: x (see the migration guide)"
+    );
+  });
+});
+
+describe("release-notes CLI argument parsing", () => {
+  // `parseArgs` has four distinct throw paths and only its happy path was
+  // reached end-to-end, through the AC-6 subprocess.
+  it("parses the happy path with defaults", () => {
+    expect(parseArgs(["--version", "0.8.4"])).toEqual({
+      version: "0.8.4",
+      releaseBead: "",
+      beadMode: "off",
+      help: false,
+    });
+  });
+
+  it("accepts inline `--flag=value` forms and strips a leading v", () => {
+    expect(parseArgs(["--version=v0.8.4", "--beads=enrich"])).toEqual({
+      version: "0.8.4",
+      releaseBead: "",
+      beadMode: "enrich",
+      help: false,
+    });
+    expect(
+      parseArgs(["--version", "0.8.4", "--release-bead", "ac-rel"])
+    ).toEqual({
+      version: "0.8.4",
+      releaseBead: "ac-rel",
+      beadMode: "off",
+      help: false,
+    });
+  });
+
+  it("rejects an unknown argument", () => {
+    expect(() => parseArgs(["--version", "0.8.4", "--bogus"])).toThrow(
+      'unknown argument "--bogus"'
+    );
+  });
+
+  it("rejects a --beads value that is neither off nor enrich", () => {
+    expect(() => parseArgs(["--version", "0.8.4", "--beads=bogus"])).toThrow(
+      '--beads must be "off" or "enrich"'
+    );
+  });
+
+  it("rejects a flag whose value is missing", () => {
+    expect(() => parseArgs(["--version"])).toThrow(
+      "--version requires a value"
+    );
+    expect(() => parseArgs(["--version="])).toThrow(
+      "--version requires a value"
+    );
+    expect(() => parseArgs(["--version", "--beads=off"])).toThrow(
+      "--version requires a value"
+    );
+  });
+
+  it("requires --version unless --help was passed", () => {
+    expect(() => parseArgs([])).toThrow("--version is required");
+    expect(parseArgs(["--help"]).help).toBe(true);
+    expect(parseArgs(["-h"]).help).toBe(true);
+  });
+});
+
+describe("release-notes composed bead pass", () => {
+  /**
+   * REQ-006 end to end through the impure half. The predicates are unit-tested
+   * individually above, but `readClosedWork()` is where they are composed, and
+   * composition is what the defect was: the old generator ran a bead query and
+   * handed the survivors straight to the renderer. Driving canned `bd` rows
+   * through `readClosedWork()` + `renderNotes()` is the assertion that no Gas
+   * City title can reach markdown, and it needs no live bead store.
+   */
+  const closedRows = [
+    {
+      id: "ac-gcroot",
+      title: "Implement owned work",
+      issue_type: "task",
+      close_reason: "Implemented owned work in the item worktree",
+      metadata: { "gc.root_bead_id": "ac-4x14od" },
+    },
+    {
+      id: "ac-gckind",
+      title: "Finalize workflow",
+      issue_type: "task",
+      close_reason: "Workflow finalized",
+      metadata: { "gc.kind": "workflow-finalize" },
+    },
+    {
+      id: "ac-gcstep",
+      title: "Step spec for Implement owned work",
+      issue_type: "task",
+      close_reason: "Step spec satisfied",
+      metadata: { "gc.step_ref": "do-work.implement" },
+    },
+    {
+      id: "ac-mol1",
+      title: "mol: release housekeeping",
+      issue_type: "task",
+      close_reason: "Molecule complete",
+    },
+    {
+      id: "ac-cancelled",
+      title: "Abandoned experiment",
+      issue_type: "task",
+      close_reason: "closed per user request",
+    },
+    {
+      id: "ac-reltrack",
+      title: "Release Apicity 0.8.4",
+      issue_type: "task",
+      close_reason: "Published Apicity v0.8.4",
+    },
+    {
+      id: "ac-shipped",
+      title: "Backfill the v0.8.3 rate table",
+      issue_type: "task",
+      close_reason: "Shipped in v0.8.3",
+    },
+    {
+      // Deliberately not release-tracking-shaped: only the `--release-bead` id
+      // filter can drop this row, so that filter is proven rather than shadowed.
+      id: "ac-relbead",
+      title: "Coordinate the 0.8.5 release train",
+      issue_type: "task",
+      close_reason: "Published",
+    },
+    {
+      id: "ac-keep",
+      title: "feat(kie): add a second guard decision (ac-keep)",
+      issue_type: "task",
+      close_reason: "Merged to main",
+    },
+  ];
+
+  it("REQ-006 — no Gas City bead survives readClosedWork into markdown", () => {
+    execFileSyncMock.mockImplementation((command: string) => {
+      if (command === "git") return "2026-07-01T00:00:00+00:00\n";
+      if (command === "bd") return `${JSON.stringify(closedRows)}\n`;
+      throw new Error(`unexpected command: ${command}`);
+    });
+
+    const { previousDate, work } = readClosedWork(
+      // No previous release bead, so the window opens at the tag date — the
+      // `git for-each-ref` leg of the mock.
+      null,
+      "v0.8.3",
+      "2026-07-20T00:00:00+00:00",
+      "ac-relbead"
+    );
+
+    expect(previousDate).toBe("2026-07-01T00:00:00+00:00");
+    // Every other row is dropped by exactly one filter: Gas City metadata,
+    // `mol:` title, administrative close reason, release-tracking title, the
+    // previous release's own work, and the release bead passed by id.
+    expect(work.map((issue) => issue.id)).toEqual(["ac-keep"]);
+
+    const { markdown, newItems, updatedItems } = renderNotes({
+      version: "0.8.5",
+      commits: [
+        { hash: "abc1234", subject: "chore(release): @apicity/* → 0.8.5" },
+      ],
+      beads: work,
+      packages: fixture.packages,
+      beadMode: "enrich",
+      range: "v0.8.4..v0.8.5",
+    });
+
+    expect(newItems).toEqual(["kie: add a second guard decision"]);
+    expect(updatedItems).toEqual([]);
+    for (const row of closedRows.filter((issue) => issue.metadata)) {
+      expect(markdown).not.toContain(row.title);
+    }
+    expect(markdown).not.toMatch(/ac-/);
+  });
+
+  it("treats an unusable bd query as an empty window, not a crash", () => {
+    execFileSyncMock.mockImplementation((command: string) => {
+      if (command === "git") return "2026-07-01T00:00:00+00:00\n";
+      throw new Error("bd: command not found");
+    });
+
+    expect(
+      readClosedWork(null, "v0.8.3", "2026-07-20T00:00:00+00:00", "").work
+    ).toEqual([]);
   });
 });

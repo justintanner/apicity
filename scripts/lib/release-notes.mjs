@@ -76,11 +76,16 @@ export function renderLine(subject) {
  * form appears. With `\b` the clause matched only inside `chore(release):
  * @apicity/* → 0.8.4`, where alternative 1 had already matched, so the third
  * form REQ-002 names never fired on its own.
+ *
+ * That anchoring made the clause's tail matter: a bare `\d` also matched prose
+ * like `docs: link @apicity/* to 3 worked examples`, and a `true` here *drops*
+ * the commit from New/Updated with no diagnostic. REQ-002's form names a
+ * version, so require `<major>.<minor>` rather than any digit.
  */
 export function isReleaseCommit(commit) {
   return (
     /^(chore|fix)\(release\):/i.test(commit.subject) ||
-    /(?:^|\s)@apicity\/\*\s+(to|→)\s+\d/i.test(commit.subject)
+    /(?:^|\s)@apicity\/\*\s+(to|→)\s+v?\d+\.\d+/i.test(commit.subject)
   );
 }
 

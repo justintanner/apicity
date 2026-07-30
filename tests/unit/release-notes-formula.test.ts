@@ -59,8 +59,21 @@ describe("mol-apicity-release workflow", () => {
     // lockstep edit into a named failure.
     const ci = fs.readFileSync(".github/workflows/ci.yml", "utf8");
 
-    expect(ci).toContain(`refs/tags/${fixture.previousTag}`);
-    expect(ci).toContain(`refs/tags/${fixture.currentTag}`);
+    // Scoped to the fetch ref-specs, not the whole file: `ci.yml` names each
+    // tag twice — once here, once in the sibling `git rev-parse --verify`
+    // guard — so a bare `refs/tags/vX` substring check stays green when only
+    // the fetch is left unrepinned.
+    expect(ci).toContain(
+      `+refs/tags/${fixture.previousTag}:refs/tags/${fixture.previousTag}`
+    );
+    expect(ci).toContain(
+      `+refs/tags/${fixture.currentTag}:refs/tags/${fixture.currentTag}`
+    );
+    // The depth is the one value in that step that took an experiment to
+    // derive: the window plus `previousTag`'s own commit. Unpinned, a stale
+    // depth surfaces as an AC-7 commit-subject mismatch pointing at the
+    // fixture instead of at `ci.yml`.
+    expect(ci).toContain(`--depth=${fixture.commits.length + 1}`);
     expect(ci).toContain(
       `git merge-base --is-ancestor ${fixture.previousTag} ${fixture.currentTag}`
     );

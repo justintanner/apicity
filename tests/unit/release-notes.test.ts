@@ -490,6 +490,11 @@ describe("release-notes commit predicates", () => {
     ["feat(kie): force every media model into a guard decision", false],
     ["docs: mention @apicity/kie in the readme", false],
     ["chore: tidy the @apicity/* changelog wording", false],
+    // The anchor fix activated the bare clause, which then over-matched any
+    // digit after `to`/`→`. A release commit names a version, not a count —
+    // returning `true` here silently drops the commit from New/Updated.
+    ["docs: link @apicity/* to 3 worked examples", false],
+    ["feat: pin @apicity/* to 2 supported node versions", false],
   ])("REQ-002 — isReleaseCommit(%j) is %s", (subject, expected) => {
     expect(isReleaseCommit({ subject })).toBe(expected);
   });

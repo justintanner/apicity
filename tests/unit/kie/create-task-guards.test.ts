@@ -29,11 +29,14 @@ import {
 //
 // Scope: registry shape only. Behaviour-level guard coverage lives across
 // tests/unit/kie-pixverse-v6.test.ts (whose `describe.each(GUARD_MODELS)` table
-// drives 4 of the 8 guarded models, with `pixverse-v6/text-to-video` covered by
-// its own describe block above it), tests/unit/kie-request.test.ts
+// drives 4 of the 13 guarded models, with `pixverse-v6/text-to-video` covered
+// by its own describe block above it), tests/unit/kie-request.test.ts
 // (`grok-imagine/image-to-video`, `gemini-omni-video`) and
 // tests/unit/kie-seedance-2-mini.test.ts — the same split
-// tests/unit/kie-model-input-schemas.test.ts already uses.
+// tests/unit/kie-model-input-schemas.test.ts already uses. The five
+// `elevenlabs/*` rows are covered at the schema level by
+// tests/unit/kie/validate.test.ts § "elevenlabs text-to-audio models"; a
+// through-the-guard rejection test for them is not here yet.
 
 const guarded = CREATE_TASK_GUARDS.map(([model]) => model as string);
 const exempt = Object.keys(CREATE_TASK_GUARD_EXEMPTIONS);
@@ -87,11 +90,19 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
   });
 
   // Not a count for its own sake — it makes any change to the guarded set show
-  // up as a deliberate edit to this list.
-  it("guards exactly the models guarded at f6c99b54", () => {
+  // up as a deliberate edit to this list. Widening guard coverage is a
+  // behaviour change, so it has to be spelled out here in the same diff that
+  // moves the id out of CREATE_TASK_GUARD_EXEMPTIONS; the name is anchored to
+  // the list rather than to a commit so it does not go stale as the set grows.
+  it("guards exactly the models pinned in this list", () => {
     expect([...guarded].sort()).toEqual(
       [
         "bytedance/seedance-2-mini",
+        "elevenlabs/audio-isolation",
+        "elevenlabs/sound-effect-v2",
+        "elevenlabs/text-to-dialogue-v3",
+        "elevenlabs/text-to-speech-multilingual-v2",
+        "elevenlabs/text-to-speech-turbo-2-5",
         "gemini-omni-video",
         "grok-imagine/image-to-video",
         "pixverse-v6/extend",

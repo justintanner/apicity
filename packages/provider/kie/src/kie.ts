@@ -101,6 +101,7 @@ import {
   ElevenLabsTextToSpeechMultilingualV2RequestSchema,
   ElevenLabsTextToSpeechTurbo25RequestSchema,
   ElevenLabsSoundEffectV2RequestSchema,
+  SoraWatermarkRequestSchema,
 } from "./zod";
 import { modelInputSchemas } from "./model-schemas";
 import { createVeoProvider } from "./veo";
@@ -143,24 +144,29 @@ const MIME_TYPES: Record<string, string> = {
 // than silently never matching the .find() below — which would leave the guard
 // dormant and let an unvalidated payload reach the network.
 //
-// Membership rule, readable from these two lists alone: every id in
-// KIE_MEDIA_MODELS appears in exactly one of CREATE_TASK_GUARDS (validated
-// before transport) or CREATE_TASK_GUARD_EXEMPTIONS (deliberately not
-// validated, pointing at a reviewed reason). Neither list on its own is the
-// rule — the rule is that their union is exactly the catalogue, and
-// `EveryKieMediaModelIsDecided` below is what enforces it: a model in neither
-// list stops that type from compiling and tsc names the id. So "must this
-// model be guarded?" is answered here rather than from memory — a new model
-// must join one list or the other, and which one is the reviewed decision.
+// Membership rule, readable from this one list: every id in KIE_MEDIA_MODELS
+// has a row here. There is no second list and no exemption map — a model is
+// either in the catalogue and guarded, or not in the catalogue.
+// `EveryKieMediaModelIsDecided` below is what enforces it: a catalogue id with
+// no row stops that type from compiling and tsc names the id. So a new model
+// cannot be added to KIE_MEDIA_MODELS and left unvalidated by omission.
+//
+// The rule was previously "in exactly one of this table or
+// CREATE_TASK_GUARD_EXEMPTIONS", with the exemption entry pointing at a
+// reviewed reason key. Both are gone: the last exempt id gained its row in the
+// same commit that deleted them, and an empty map left standing would
+// pre-authorise the next exemption instead of forcing it through review. If a
+// model genuinely must reach kie.ai unvalidated, that needs a new mechanism
+// argued for in its own diff — not a one-line entry in scaffolding that was
+// already there.
 //
 // `as const satisfies` rather than a `:` annotation: the annotation checks the
 // rows but erases their literals, and the pin needs to read the guarded ids
 // back out. The per-row check on the id is unchanged.
 //
 // A row's schema may be `.refine`-wrapped — the two bytedance/seedance-2 rows
-// above are the first such rows the table holds, and three of the six wan/2-7
-// rows added here are the next. Two things were measured on them rather than
-// assumed: `z.ZodType` in the `satisfies` clause accepts the wrapped schema,
+// are the first such rows the table holds, and three of the six wan/2-7 rows
+// are the next. Two things were measured on them rather than assumed: `z.ZodType` in the `satisfies` clause accepts the wrapped schema,
 // because zod 4 keeps `.refine()` a `ZodObject` carrying a check rather than
 // the `ZodEffects` zod 3 returned, so no row needs unwrapping to an inner
 // `*RequestObjectSchema`; and `.safeParse` still reports the refinement's own
@@ -225,6 +231,7 @@ export const CREATE_TASK_GUARDS = [
     ElevenLabsTextToSpeechTurbo25RequestSchema,
   ],
   ["elevenlabs/sound-effect-v2", ElevenLabsSoundEffectV2RequestSchema],
+  ["sora-watermark-remover", SoraWatermarkRequestSchema],
   ["pixverse-v6/text-to-video", PixverseV6TextToVideoRequestSchema],
   ["pixverse-v6/image-to-video", PixverseV6ImageToVideoRequestSchema],
   ["pixverse-v6/transition", PixverseV6TransitionRequestSchema],
@@ -232,45 +239,14 @@ export const CREATE_TASK_GUARDS = [
   ["pixverse-v6/reference-to-video", PixverseV6ReferenceToVideoRequestSchema],
 ] as const satisfies ReadonlyArray<readonly [KieMediaModel, z.ZodType]>;
 
-// Why a model may sit outside CREATE_TASK_GUARDS. Each key is a reviewed
-// category whose reasoning is stated once, here; each exempt model below points
-// at one. Keys rather than a free string per model on purpose: the exempt list
-// below started at 44 entries, and 44 hand-written reasons would be 44
-// near-copies — near-copies get pasted without reading, the exact silence this
-// pair of lists exists to prevent. A model that fits neither category needs a
-// new key added here, visibly, in the same diff.
-export const GUARD_EXEMPTION_REASONS = {
-  notYetGuarded:
-    "Pre-transport validation has been switched on per model as endpoints " +
-    "were recorded; this model has not been through that pass, so its " +
-    "payload is validated by kie.ai rather than locally. Moving it into " +
-    "CREATE_TASK_GUARDS widens guard coverage, which is a behaviour change " +
-    "and needs its own review — tracked by ac-bgkfzh.",
-} as const;
-
-// The other half of the membership rule: every KIE_MEDIA_MODELS id that is not
-// guarded above is listed here with the reason it is not. Rows follow
-// KIE_MEDIA_MODELS order. `satisfies Partial<Record<KieMediaModel, …>>` keeps
-// typo and stale-entry checking on the keys, exactly as the guard table's
-// KieMediaModel key type does.
-export const CREATE_TASK_GUARD_EXEMPTIONS = {
-  "sora-watermark-remover": "notYetGuarded",
-} as const satisfies Partial<
-  Record<KieMediaModel, keyof typeof GUARD_EXEMPTION_REASONS>
->;
-
 type GuardedKieMediaModel = (typeof CREATE_TASK_GUARDS)[number][0];
-type ExemptKieMediaModel = keyof typeof CREATE_TASK_GUARD_EXEMPTIONS;
-type UndecidedKieMediaModel = Exclude<
-  KieMediaModel,
-  GuardedKieMediaModel | ExemptKieMediaModel
->;
+type UndecidedKieMediaModel = Exclude<KieMediaModel, GuardedKieMediaModel>;
 
 type AssertTrue<T extends true> = T;
 
-// The compile pin. While the two lists above cover KIE_MEDIA_MODELS exactly,
+// The compile pin. While the table above covers KIE_MEDIA_MODELS exactly,
 // UndecidedKieMediaModel is `never` and the argument resolves to `true`. Add a
-// model to KIE_MEDIA_MODELS and to neither list and it resolves to that model's
+// model to KIE_MEDIA_MODELS and give it no row and it resolves to that model's
 // literal type instead, which fails AssertTrue's `extends true` constraint, so
 // this type stops compiling and tsc names the id:
 //   Type '"pixverse-v7/text-to-video"' does not satisfy the constraint 'true'.

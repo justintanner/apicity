@@ -92,12 +92,14 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 // The current absolutes are printed by `--list`; they are deliberately not
 // pinned here, because a comment that names a count goes stale in silence.
 //
-// The authority is the *resolved* config, not the two literal `files:` blocks
-// in `eslint.config.mjs` (`:42`, `:52`). `.cts` and `.mts` appear in neither,
-// yet the spread-in `tseslint.configs.recommended` (`eslint.config.mjs:40`)
-// still lints them — `isPathIgnored` is false and 265 rules resolve for each.
-// No `.cts`/`.mts` file is tracked today, so including them changes no current
-// count; the point is that the first one to land reaches this axis.
+// The authority is the *resolved* config, not the literal `files:` blocks in
+// `eslint.config.mjs`. `.cts` and `.mts` appear in neither, yet the spread-in
+// `tseslint.configs.recommended` still lints them — `isPathIgnored` is false
+// for both. Re-check with `isPathIgnored("probe.cts")` after changing that
+// config: an extension missing here is a file the ESLint axis never examines
+// and never reports. No `.cts`/`.mts` file is tracked today, so including them
+// changes no current count; the point is that the first one to land reaches
+// this axis.
 const LINTABLE = /\.(?:js|mjs|cjs|ts|tsx|cts|mts)$/;
 
 const PRETTIER = "prettier";
@@ -470,10 +472,14 @@ async function collectEslintShadowed(lintable) {
   // Imported lazily so `--help` and the unit test do not pay for loading ESLint.
   const { ESLint } = await import("eslint");
   const eslint = new ESLint({ cwd: root });
-  // Resolving the flat config array is a ~1.6 s one-off that the first
+  // Resolving the flat config array is a one-off that the first
   // `isPathIgnored` pays for; every later call is served from that cache.
-  // Awaiting the rest in a batch rather than one at a time takes the
-  // tail from ~2.1 s to ~0.2 s, which is what dominates this script's cost.
+  // That resolve, not the fan-out, dominates this axis — measured at ~0.65 s
+  // against ~0.16 s for the entire batched tail. The `await` before the
+  // `Promise.all` is what makes that asymmetry visible: one call pays, the
+  // rest are cache hits. Flattening it into a single `Promise.all` measures
+  // no faster (means within ~5%, ranges overlapping), so there is nothing to
+  // gain by tidying the split away.
   const [first, ...rest] = lintable;
   const verdicts = [
     await eslint.isPathIgnored(first),
@@ -543,13 +549,15 @@ async function main() {
     evaluateShadowSets(shadowed);
 
   if (options.list) {
-    for (const row of [...baselined, ...unexplained, ...sentinelHits].sort(
+    const rows = [
+      ...baselined.map((row) => ({ ...row, label: row.classId })),
+      ...unexplained.map((row) => ({ ...row, label: "UNBASELINED" })),
+      ...sentinelHits.map((row) => ({ ...row, label: "SENTINEL" })),
+    ].sort(
       (a, b) => a.axis.localeCompare(b.axis) || a.path.localeCompare(b.path)
-    )) {
-      // Sentinel hits carry no `classId` but are not unbaselined — they are
-      // asserted never to be shadowed at all.
-      const label = row.classId || (row.why ? "SENTINEL" : "UNBASELINED");
-      console.log(`${row.axis.padEnd(8)} ${label}\t${row.path}`);
+    );
+    for (const row of rows) {
+      console.log(`${row.axis.padEnd(8)} ${row.label}\t${row.path}`);
     }
     console.log(
       `\n${shadowed.prettier.length} shadowed on the prettier axis, ` +

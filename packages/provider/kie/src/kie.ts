@@ -137,23 +137,16 @@ const MIME_TYPES: Record<string, string> = {
 };
 
 // Models whose createTask payload is validated before the request leaves the
-// process. Each row is a model id and the schema that rejects a malformed
-// payload for it. Every KIE_MEDIA_MODELS id has a row, so the `.find()` miss
-// in validateCreateTaskRequest is unreachable for a catalogue model; an id
-// from outside the catalogue (an untyped or MCP caller) still falls through it
-// unvalidated.
+// process. Each entry is a model id and the schema that rejects a malformed
+// payload for it. Every KIE_MEDIA_MODELS id carries an entry here — not most
+// of them, not the ones that happened to get recorded — and the table's
+// `satisfies Record<KieMediaModel, z.ZodType>` clause enforces that membership
+// rule. Tsc names every missing id up to five; at six or more it names the
+// first four and reports the remainder as `and N more.`
 //
-// The key is KieMediaModel, not string, so a mistyped id fails tsc here rather
-// than silently never matching the .find() below — which would leave the guard
-// dormant and let an unvalidated payload reach the network.
-//
-// Membership rule, readable from this list alone: every id in KIE_MEDIA_MODELS
-// carries a row here. Not most of them, not the ones that happened to get
-// recorded — every one. `EveryKieMediaModelIsDecided` below is what enforces
-// it: a catalogue id with no row stops that type from compiling and tsc names
-// the id. So "must this model be guarded?" is not a question this file leaves
-// open; adding a model to KIE_MEDIA_MODELS and not to this table does not
-// build.
+// The key is KieMediaModel, not string, so a mistyped id fails at the table
+// with TS2353 rather than becoming an unreachable guard. Duplicate keys fail
+// at the repeated entry with TS1117.
 //
 // This table used to have a second half: a list of ids deliberately left
 // unvalidated, each pointing at a reviewed reason. The pass that guarded the
@@ -164,107 +157,81 @@ const MIME_TYPES: Record<string, string> = {
 // reason map in one visible diff, which is a reviewable change rather than
 // filling in a blank someone already left open.
 //
-// `as const satisfies` rather than a `:` annotation: the annotation checks the
-// rows but erases their literals, and the pin needs to read the guarded ids
-// back out. The per-row check on the id is unchanged.
-export const CREATE_TASK_GUARDS = [
-  ["kling-3.0/video", KlingVideoRequestSchema],
-  ["kling-3.0/motion-control", KlingMotionControlRequestSchema],
-  ["kling/v3-turbo-image-to-video", KlingV3TurboImageToVideoRequestSchema],
-  ["kling/v3-turbo-text-to-video", KlingV3TurboTextToVideoRequestSchema],
-  ["grok-imagine/text-to-image", GrokTextToImageRequestSchema],
-  ["grok-imagine/image-to-image", GrokImageToImageRequestSchema],
-  ["grok-imagine/text-to-video", GrokTextToVideoRequestSchema],
-  ["grok-imagine/image-to-video", GrokImageToVideoRequestSchema],
-  ["grok-imagine-video-1-5-preview", GrokVideo15PreviewRequestSchema],
-  ["nano-banana-pro", NanoBananaProRequestSchema],
-  ["nano-banana-2", NanoBanana2RequestSchema],
-  ["gpt-image/1.5-image-to-image", GptImageToImageRequestSchema],
-  ["gpt-image-2-image-to-image", GptImage2ImageToImageRequestSchema],
-  ["gpt-image-2-text-to-image", GptImage2TextToImageRequestSchema],
-  ["seedream/5-lite-image-to-image", SeedreamImageToImageRequestSchema],
-  ["seedream/5-lite-text-to-image", SeedreamTextToImageRequestSchema],
-  ["seedream/5-pro-image-to-image", SeedreamProImageToImageRequestSchema],
-  ["seedream/5-pro-text-to-image", SeedreamProTextToImageRequestSchema],
-  ["grok-imagine/extend", GrokVideoExtendRequestSchema],
-  ["grok-imagine/upscale", GrokVideoUpscaleRequestSchema],
-  ["qwen2/text-to-image", Qwen2TextToImageRequestSchema],
-  ["qwen2/image-edit", Qwen2ImageEditRequestSchema],
-  ["bytedance/seedance-2-fast", Seedance2FastRequestSchema],
-  ["bytedance/seedance-2", Seedance2RequestSchema],
-  ["bytedance/seedance-2-mini", Seedance2MiniRequestSchema],
-  ["wan/2-7-image-to-video", Wan27ImageToVideoRequestSchema],
-  ["wan/2-7-text-to-video", Wan27TextToVideoRequestSchema],
-  ["wan/2-7-r2v", Wan27RefToVideoRequestSchema],
-  ["wan/2-7-videoedit", Wan27VideoEditRequestSchema],
-  ["wan/2-7-image", Wan27ImageRequestSchema],
-  ["wan/2-7-image-pro", Wan27ImageProRequestSchema],
-  ["happyhorse/text-to-video", HappyHorseTextToVideoRequestSchema],
-  ["happyhorse/image-to-video", HappyHorseImageToVideoRequestSchema],
-  ["happyhorse/reference-to-video", HappyHorseReferenceToVideoRequestSchema],
-  ["happyhorse/video-edit", HappyHorseVideoEditRequestSchema],
-  ["happyhorse-1-1/text-to-video", HappyHorse11TextToVideoRequestSchema],
-  ["happyhorse-1-1/image-to-video", HappyHorse11ImageToVideoRequestSchema],
-  [
-    "happyhorse-1-1/reference-to-video",
+// `as const` keeps readonly, per-key concrete schema types; `satisfies` checks
+// the total mapping without erasing those value types to `z.ZodType`.
+// validateCreateTaskRequest uses an own-property lookup so an untyped or MCP
+// caller's non-catalogue id still falls through unvalidated.
+export const CREATE_TASK_GUARDS = {
+  "kling-3.0/video": KlingVideoRequestSchema,
+  "kling-3.0/motion-control": KlingMotionControlRequestSchema,
+  "kling/v3-turbo-image-to-video": KlingV3TurboImageToVideoRequestSchema,
+  "kling/v3-turbo-text-to-video": KlingV3TurboTextToVideoRequestSchema,
+  "grok-imagine/text-to-image": GrokTextToImageRequestSchema,
+  "grok-imagine/image-to-image": GrokImageToImageRequestSchema,
+  "grok-imagine/text-to-video": GrokTextToVideoRequestSchema,
+  "grok-imagine/image-to-video": GrokImageToVideoRequestSchema,
+  "grok-imagine-video-1-5-preview": GrokVideo15PreviewRequestSchema,
+  "nano-banana-pro": NanoBananaProRequestSchema,
+  "nano-banana-2": NanoBanana2RequestSchema,
+  "gpt-image/1.5-image-to-image": GptImageToImageRequestSchema,
+  "gpt-image-2-image-to-image": GptImage2ImageToImageRequestSchema,
+  "gpt-image-2-text-to-image": GptImage2TextToImageRequestSchema,
+  "seedream/5-lite-image-to-image": SeedreamImageToImageRequestSchema,
+  "seedream/5-lite-text-to-image": SeedreamTextToImageRequestSchema,
+  "seedream/5-pro-image-to-image": SeedreamProImageToImageRequestSchema,
+  "seedream/5-pro-text-to-image": SeedreamProTextToImageRequestSchema,
+  "grok-imagine/extend": GrokVideoExtendRequestSchema,
+  "grok-imagine/upscale": GrokVideoUpscaleRequestSchema,
+  "qwen2/text-to-image": Qwen2TextToImageRequestSchema,
+  "qwen2/image-edit": Qwen2ImageEditRequestSchema,
+  "bytedance/seedance-2-fast": Seedance2FastRequestSchema,
+  "bytedance/seedance-2": Seedance2RequestSchema,
+  "bytedance/seedance-2-mini": Seedance2MiniRequestSchema,
+  "wan/2-7-image-to-video": Wan27ImageToVideoRequestSchema,
+  "wan/2-7-text-to-video": Wan27TextToVideoRequestSchema,
+  "wan/2-7-r2v": Wan27RefToVideoRequestSchema,
+  "wan/2-7-videoedit": Wan27VideoEditRequestSchema,
+  "wan/2-7-image": Wan27ImageRequestSchema,
+  "wan/2-7-image-pro": Wan27ImageProRequestSchema,
+  "happyhorse/text-to-video": HappyHorseTextToVideoRequestSchema,
+  "happyhorse/image-to-video": HappyHorseImageToVideoRequestSchema,
+  "happyhorse/reference-to-video": HappyHorseReferenceToVideoRequestSchema,
+  "happyhorse/video-edit": HappyHorseVideoEditRequestSchema,
+  "happyhorse-1-1/text-to-video": HappyHorse11TextToVideoRequestSchema,
+  "happyhorse-1-1/image-to-video": HappyHorse11ImageToVideoRequestSchema,
+  "happyhorse-1-1/reference-to-video":
     HappyHorse11ReferenceToVideoRequestSchema,
-  ],
-  ["omnihuman-1-5", Omnihuman15RequestSchema],
-  [
-    "volcengine/video-to-video-lip-sync",
+  "omnihuman-1-5": Omnihuman15RequestSchema,
+  "volcengine/video-to-video-lip-sync":
     VolcengineVideoToVideoLipSyncRequestSchema,
-  ],
-  ["gemini-omni-video", GeminiOmniVideoRequestSchema],
-  ["elevenlabs/audio-isolation", ElevenLabsAudioIsolationRequestSchema],
-  ["elevenlabs/text-to-dialogue-v3", ElevenLabsTextToDialogueV3RequestSchema],
-  [
-    "elevenlabs/text-to-speech-multilingual-v2",
+  "gemini-omni-video": GeminiOmniVideoRequestSchema,
+  "elevenlabs/audio-isolation": ElevenLabsAudioIsolationRequestSchema,
+  "elevenlabs/text-to-dialogue-v3": ElevenLabsTextToDialogueV3RequestSchema,
+  "elevenlabs/text-to-speech-multilingual-v2":
     ElevenLabsTextToSpeechMultilingualV2RequestSchema,
-  ],
-  [
-    "elevenlabs/text-to-speech-turbo-2-5",
+  "elevenlabs/text-to-speech-turbo-2-5":
     ElevenLabsTextToSpeechTurbo25RequestSchema,
-  ],
-  ["elevenlabs/sound-effect-v2", ElevenLabsSoundEffectV2RequestSchema],
-  ["sora-watermark-remover", SoraWatermarkRequestSchema],
-  ["pixverse-v6/text-to-video", PixverseV6TextToVideoRequestSchema],
-  ["pixverse-v6/image-to-video", PixverseV6ImageToVideoRequestSchema],
-  ["pixverse-v6/transition", PixverseV6TransitionRequestSchema],
-  ["pixverse-v6/extend", PixverseV6ExtendRequestSchema],
-  ["pixverse-v6/reference-to-video", PixverseV6ReferenceToVideoRequestSchema],
-] as const satisfies ReadonlyArray<readonly [KieMediaModel, z.ZodType]>;
-
-type GuardedKieMediaModel = (typeof CREATE_TASK_GUARDS)[number][0];
-type UndecidedKieMediaModel = Exclude<KieMediaModel, GuardedKieMediaModel>;
-
-type AssertTrue<T extends true> = T;
-
-// The compile pin. While CREATE_TASK_GUARDS covers KIE_MEDIA_MODELS exactly,
-// UndecidedKieMediaModel is `never` and the argument resolves to `true`. Add a
-// model to KIE_MEDIA_MODELS and not to the table and it resolves to that
-// model's literal type instead, which fails AssertTrue's `extends true`
-// constraint, so this type stops compiling and tsc names the id:
-//   Type '"pixverse-v7/text-to-video"' does not satisfy the constraint 'true'.
-// The AssertTrue wrapper is load-bearing — a bare type alias resolving to a
-// model literal is not by itself an error. Same idiom as zod.ts's catalogue
-// pins and responses.ts's model-passthrough pins, five of which likewise have
-// no importer.
-//
-// The `export` is also load-bearing, and not for consumers: nothing imports
-// this. Drop it and @typescript-eslint/no-unused-vars fails the build, which
-// invites deleting the pin instead — and deleting it is silent, because no
-// test imports it either. Leave it exported.
-export type EveryKieMediaModelIsDecided = AssertTrue<
-  [UndecidedKieMediaModel] extends [never] ? true : UndecidedKieMediaModel
->;
+  "elevenlabs/sound-effect-v2": ElevenLabsSoundEffectV2RequestSchema,
+  "sora-watermark-remover": SoraWatermarkRequestSchema,
+  "pixverse-v6/text-to-video": PixverseV6TextToVideoRequestSchema,
+  "pixverse-v6/image-to-video": PixverseV6ImageToVideoRequestSchema,
+  "pixverse-v6/transition": PixverseV6TransitionRequestSchema,
+  "pixverse-v6/extend": PixverseV6ExtendRequestSchema,
+  "pixverse-v6/reference-to-video": PixverseV6ReferenceToVideoRequestSchema,
+} as const satisfies Record<KieMediaModel, z.ZodType>;
 
 function validateCreateTaskRequest(req: MediaGenerationRequest): void {
-  const guard = CREATE_TASK_GUARDS.find(([model]) => model === req.model);
+  const guard: z.ZodType | undefined = Object.prototype.hasOwnProperty.call(
+    CREATE_TASK_GUARDS,
+    req.model
+  )
+    ? CREATE_TASK_GUARDS[req.model]
+    : undefined;
   if (!guard) {
     return;
   }
 
-  const parsed = guard[1].safeParse(req);
+  const parsed = guard.safeParse(req);
   if (parsed.success) {
     return;
   }

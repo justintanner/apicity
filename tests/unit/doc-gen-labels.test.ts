@@ -9,11 +9,10 @@
  * verb aliases of one path to a single block and gives genuinely distinct
  * siblings distinct labels; this file pins both halves of that.
  *
- * Never import `scripts/doc-gen.mjs` here — it calls `main()` at module scope,
- * so importing it would regenerate every README as a side effect. That is why
- * the label layer lives in its own module, and why the three doc-gen-private
- * helpers this file needs (`cleanTsvValue`, the TSV index, and the docs-row
- * lookup) are mirrored below rather than imported.
+ * `scripts/doc-gen.mjs` is safe to import because its CLI `main()` is guarded
+ * to run only on direct entry. The label layer still lives in its own module,
+ * and the three doc-gen-private helpers this file needs (`cleanTsvValue`, the
+ * TSV index, and the docs-row lookup) are mirrored below rather than imported.
  */
 import { readFileSync } from "node:fs";
 import path from "node:path";
@@ -27,6 +26,7 @@ import {
   walkAllEndpoints,
 } from "../../scripts/lib/endpoint-walk.mjs";
 import { repoRoot } from "../../scripts/lib/provider-scope.mjs";
+import { renderApiReference } from "../../scripts/doc-gen.mjs";
 
 interface WalkedEndpoint {
   provider: string;
@@ -220,6 +220,15 @@ function describeCollisions(
   }
   return collisions;
 }
+
+describe("doc-gen API reference", () => {
+  it("renders the exact fallback and zero count for no endpoints", () => {
+    expect(renderApiReference("empty-provider", [])).toEqual({
+      text: "## API Reference\n\n_No endpoints discovered for this provider yet._\n",
+      renderedCount: 0,
+    });
+  });
+});
 
 let endpointsByProvider: Map<string, WalkedEndpoint[]>;
 let docsRows: DocsRow[];

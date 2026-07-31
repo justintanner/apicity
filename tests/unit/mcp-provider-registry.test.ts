@@ -70,10 +70,11 @@ describe("apicity-mcp provider registry", () => {
         minLength: 1,
         maxLength: 5000,
       });
-      expect(input.duration).toMatchObject({
-        type: "integer",
-        minimum: 6,
-        maximum: 30,
+      expect(input.duration).toEqual({
+        anyOf: [
+          { type: "integer", minimum: 6, maximum: 30 },
+          { type: "string", pattern: "^(?:[6-9]|[12][0-9]|30)$" },
+        ],
       });
     } finally {
       restoreEnv("KIE_API_KEY", previous);

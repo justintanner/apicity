@@ -7,6 +7,7 @@ import { KieError } from "../../packages/provider/kie/src/types";
 import type {
   GeminiOmniVideoRequest,
   GrokImageToVideoRequest,
+  GrokTextToVideoRequest,
   HappyHorse11ImageToVideoRequest,
   HappyHorse11ReferenceToVideoRequest,
   HappyHorse11TextToVideoRequest,
@@ -413,18 +414,20 @@ describe("KIE request utilities", () => {
       expect(JSON.parse(init.body as string)).toEqual(request);
     });
 
-    it("should serialize Grok Imagine image-to-video createTask requests", async () => {
+    it("should preserve Grok numeric-string durations in createTask requests", async () => {
       const secret = "test-paygate-secret";
-      const mockFetch = vi.fn().mockResolvedValue(
-        new Response(
-          JSON.stringify({
-            code: 200,
-            msg: "success",
-            data: {
-              taskId: "task_grok-imagine-image-to-video_1234567890",
-            },
-          }),
-          { status: 200 }
+      const mockFetch = vi.fn().mockImplementation(() =>
+        Promise.resolve(
+          new Response(
+            JSON.stringify({
+              code: 200,
+              msg: "success",
+              data: {
+                taskId: "task_grok-imagine-video_1234567890",
+              },
+            }),
+            { status: 200 }
+          )
         )
       );
 
@@ -434,45 +437,101 @@ describe("KIE request utilities", () => {
         fetch: mockFetch,
         paygate: { secret },
       });
-      const request: GrokImageToVideoRequest = {
-        model: "grok-imagine/image-to-video",
-        input: {
-          image_urls: [
-            "https://tempfileb.aiquickdraw.com/kieai/market/1782021652978_JJVOCSKk.jpg",
-            "https://tempfileb.aiquickdraw.com/kieai/market/1782021652866_7WyovwDT.jpeg",
-            "https://tempfileb.aiquickdraw.com/kieai/market/1782021653019_DJmk5khc.jpeg",
-          ],
-          index: 0,
-          prompt:
-            "the thai sergent arrests the tourist for petting the cat wrong",
-          duration: 8,
-          resolution: "480p",
-          aspect_ratio: "16:9",
-          mode: "normal",
-          nsfw_checker: true,
-        },
-        callBackUrl: "https://example.com/kie-callback",
-      };
+      const requests: Array<GrokTextToVideoRequest | GrokImageToVideoRequest> =
+        [
+          {
+            model: "grok-imagine/text-to-video",
+            input: {
+              prompt: "A neon train moving through rain",
+              duration: "6",
+            },
+          },
+          {
+            model: "grok-imagine/image-to-video",
+            input: {
+              image_urls: ["https://example.com/reference.png"],
+              duration: "6",
+            },
+          },
+        ];
 
-      const result = await provider.post.api.v1.jobs.createTask(request, {
-        otp: mintOtp(secret, {
-          dotPath: "api.v1.jobs.createTask",
-          request,
-        }),
-      });
+      for (const request of requests) {
+        await provider.post.api.v1.jobs.createTask(request, {
+          otp: mintOtp(secret, {
+            dotPath: "api.v1.jobs.createTask",
+            request,
+          }),
+        });
+      }
 
-      expect(result.data?.taskId).toBe(
-        "task_grok-imagine-image-to-video_1234567890"
-      );
-      expect(mockFetch).toHaveBeenCalledTimes(1);
-      const [url, init] = mockFetch.mock.calls[0];
-      expect(url).toBe("https://api.kie.ai/api/v1/jobs/createTask");
-      expect(init.method).toBe("POST");
-      expect(init.headers).toEqual({
-        Authorization: "Bearer test-key",
-        "Content-Type": "application/json",
+      expect(mockFetch).toHaveBeenCalledTimes(2);
+      for (const [index, [url, init]] of mockFetch.mock.calls.entries()) {
+        expect(url).toBe("https://api.kie.ai/api/v1/jobs/createTask");
+        expect(init.method).toBe("POST");
+        expect(init.headers).toEqual({
+          Authorization: "Bearer test-key",
+          "Content-Type": "application/json",
+        });
+        const body = JSON.parse(init.body as string) as {
+          input: { duration: unknown };
+        };
+        expect(body).toEqual(requests[index]);
+        expect(body.input.duration).toBe("6");
+      }
+    });
+
+    it("should reject invalid Grok durations before fetch", async () => {
+      const secret = "test-paygate-secret";
+      const mockFetch = vi.fn();
+      const provider = createKie({
+        apiKey: "test-key",
+        baseURL: "https://api.kie.ai",
+        fetch: mockFetch,
+        paygate: { secret },
       });
-      expect(JSON.parse(init.body as string)).toEqual(request);
+      const requests: Array<GrokTextToVideoRequest | GrokImageToVideoRequest> =
+        [
+          {
+            model: "grok-imagine/text-to-video",
+            input: { prompt: "Animate this", duration: "31" },
+          },
+          {
+            model: "grok-imagine/image-to-video",
+            input: {
+              image_urls: ["https://example.com/reference.png"],
+              duration: 5,
+            },
+          },
+        ];
+
+      for (const request of requests) {
+        const rejection = await provider.post.api.v1.jobs
+          .createTask(request, {
+            otp: mintOtp(secret, {
+              dotPath: "api.v1.jobs.createTask",
+              request,
+            }),
+          })
+          .then(
+            () => undefined,
+            (error: unknown) => error
+          );
+
+        expect(rejection).toBeInstanceOf(KieError);
+        const error = rejection as KieError;
+        expect(error.status).toBe(400);
+        expect(error.message).toContain("input.duration");
+        const body = error.body as {
+          issues?: Array<{ path?: PropertyKey[] }>;
+        };
+        expect(
+          body.issues?.some(
+            (issue) => issue.path?.join(".") === "input.duration"
+          )
+        ).toBe(true);
+      }
+
+      expect(mockFetch).not.toHaveBeenCalled();
     });
 
     it("should serialize HappyHorse 1.1 createTask requests", async () => {

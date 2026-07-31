@@ -11,7 +11,9 @@ import {
   SunoGenerateRequestSchema,
   KieChatRequestSchema,
   KieClaudeRequestSchema,
+  GrokImageToVideoDurationSchema,
   GrokImageToVideoRequestSchema,
+  GrokTextToVideoDurationSchema,
   GrokTextToVideoRequestSchema,
   GrokVideo15PreviewRequestSchema,
   GptImage2ImageToImageRequestSchema,
@@ -186,21 +188,109 @@ describe("kie Zod schema validation", () => {
       expect(result.data.input.nsfw_checker).toBe(false);
     });
 
-    it("should reject string durations on current image-to-video", () => {
-      const request = {
-        model: "grok-imagine/image-to-video",
-        input: {
-          image_urls: ["https://example.com/reference.png"],
-          duration: "6",
-        },
-      };
+    it("should preserve bounded numeric and canonical-string durations", () => {
+      const durationSchemas = [
+        GrokTextToVideoDurationSchema,
+        GrokImageToVideoDurationSchema,
+      ];
 
-      const result = GrokImageToVideoRequestSchema.safeParse(request);
+      for (const schema of durationSchemas) {
+        for (const duration of [6, 30, "6", "30"] as const) {
+          const result = schema.safeParse(duration);
+          expect(result.success).toBe(true);
+          if (!result.success) continue;
+          expect(result.data).toBe(duration);
+        }
+      }
+    });
 
-      expect(result.success).toBe(false);
-      expect(
-        result.error?.issues.some((i) => i.path.includes("duration"))
-      ).toBe(true);
+    it("should reject invalid Grok durations in both exported schemas", () => {
+      const durationSchemas = [
+        GrokTextToVideoDurationSchema,
+        GrokImageToVideoDurationSchema,
+      ];
+      const invalidDurations = [
+        5,
+        31,
+        6.5,
+        "5",
+        "31",
+        "6.5",
+        "06",
+        " 6",
+        "six",
+      ] as const;
+
+      for (const schema of durationSchemas) {
+        for (const duration of invalidDurations) {
+          expect(schema.safeParse(duration).success).toBe(false);
+        }
+      }
+    });
+
+    it("should preserve Grok durations through the media request union", () => {
+      const models = [
+        "grok-imagine/text-to-video",
+        "grok-imagine/image-to-video",
+      ] as const;
+
+      for (const model of models) {
+        for (const duration of [6, 30, "6", "30"] as const) {
+          const request =
+            model === "grok-imagine/text-to-video"
+              ? { model, input: { prompt: "Animate this", duration } }
+              : { model, input: { task_id: "grok-image-task", duration } };
+          const result = MediaGenerationRequestSchema.safeParse(request);
+
+          expect(result.success).toBe(true);
+          if (!result.success) continue;
+          expect(
+            (result.data as { input: { duration: number | string } }).input
+              .duration
+          ).toBe(duration);
+        }
+      }
+    });
+
+    it("should reject invalid Grok durations through the media request union", () => {
+      const models = [
+        "grok-imagine/text-to-video",
+        "grok-imagine/image-to-video",
+      ] as const;
+      const invalidDurations = [
+        5,
+        31,
+        6.5,
+        "5",
+        "31",
+        "6.5",
+        "06",
+        " 6",
+        "six",
+      ] as const;
+
+      for (const model of models) {
+        for (const duration of invalidDurations) {
+          const request =
+            model === "grok-imagine/text-to-video"
+              ? { model, input: { prompt: "Animate this", duration } }
+              : { model, input: { task_id: "grok-image-task", duration } };
+          const result = MediaGenerationRequestSchema.safeParse(request);
+
+          expect(result.success).toBe(false);
+        }
+      }
+    });
+
+    it("should keep text-to-video duration optional", () => {
+      const result = GrokTextToVideoRequestSchema.safeParse({
+        model: "grok-imagine/text-to-video",
+        input: { prompt: "Animate this" },
+      });
+
+      expect(result.success).toBe(true);
+      if (!result.success) return;
+      expect(Object.hasOwn(result.data.input, "duration")).toBe(false);
     });
 
     it("should validate external image URLs and image formats", () => {

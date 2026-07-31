@@ -27,7 +27,6 @@ interface NumericVariant {
   kind: NumericKind;
   minimum?: number;
   maximum?: number;
-  defaultValue?: unknown;
   values?: string[];
   pattern?: string;
 }
@@ -36,6 +35,8 @@ interface DerivedRow {
   model: string;
   path: string;
   required: boolean;
+  hasDefault: boolean;
+  defaultValue?: unknown;
   variants: NumericVariant[];
 }
 
@@ -132,9 +133,6 @@ function numericVariant(schema: JsonSchema): NumericVariant | undefined {
       ...(typeof schema.maximum === "number"
         ? { maximum: schema.maximum }
         : {}),
-      ...(Object.hasOwn(schema, "default")
-        ? { defaultValue: schema.default }
-        : {}),
     };
   }
 
@@ -148,9 +146,6 @@ function numericVariant(schema: JsonSchema): NumericVariant | undefined {
     return {
       kind: "numeric-string-enum",
       values: [...schema.enum],
-      ...(Object.hasOwn(schema, "default")
-        ? { defaultValue: schema.default }
-        : {}),
     };
   }
 
@@ -161,9 +156,6 @@ function numericVariant(schema: JsonSchema): NumericVariant | undefined {
     return {
       kind: "numeric-string-pattern",
       pattern: schema.pattern,
-      ...(Object.hasOwn(schema, "default")
-        ? { defaultValue: schema.default }
-        : {}),
     };
   }
 
@@ -175,16 +167,26 @@ function addNumericRow(
   model: string,
   path: string,
   required: boolean,
-  variant: NumericVariant
+  variant: NumericVariant,
+  hasDefault: boolean,
+  defaultValue: unknown
 ): void {
   const key = `${model}::${path}`;
   const row = rows.get(key) ?? {
     model,
     path,
     required,
+    hasDefault,
+    ...(hasDefault ? { defaultValue } : {}),
     variants: [],
   };
   row.required = row.required && required;
+  if (
+    row.hasDefault !== hasDefault ||
+    (hasDefault && !Object.is(row.defaultValue, defaultValue))
+  ) {
+    throw new Error(`Conflicting defaults for ${model}.${path}`);
+  }
 
   const serialized = JSON.stringify(variant);
   if (!row.variants.some((current) => JSON.stringify(current) === serialized)) {
@@ -198,8 +200,12 @@ function walkInputSchema(
   model: string,
   schema: JsonSchema,
   path: string,
-  required: boolean
+  required: boolean,
+  inheritedDefault?: { value: unknown }
 ): void {
+  const defaultValue = Object.hasOwn(schema, "default")
+    ? { value: schema.default }
+    : inheritedDefault;
   const branchKeys = ["anyOf", "oneOf"].filter((key) =>
     Object.hasOwn(schema, key)
   );
@@ -215,7 +221,7 @@ function walkInputSchema(
       schema[key],
       `${model}.${path}.${key}`
     )) {
-      walkInputSchema(rows, model, branch, path, required);
+      walkInputSchema(rows, model, branch, path, required, defaultValue);
     }
     return;
   }
@@ -256,7 +262,15 @@ function walkInputSchema(
 
   const variant = numericVariant(schema);
   if (variant) {
-    addNumericRow(rows, model, path, required, variant);
+    addNumericRow(
+      rows,
+      model,
+      path,
+      required,
+      variant,
+      defaultValue !== undefined,
+      defaultValue?.value
+    );
     return;
   }
 
@@ -326,10 +340,6 @@ function formatVariant(variant: NumericVariant): string {
   if (variant.maximum !== undefined) {
     details.push(`max=${variant.maximum}`);
   }
-  if (variant.defaultValue !== undefined) {
-    details.push(`default=${formatValue(variant.defaultValue)}`);
-  }
-
   return escapeMarkdownCell(details.join(" "));
 }
 
@@ -338,7 +348,10 @@ function formatLocalContract(row: DerivedRow): string {
     .sort((left, right) => left.kind.localeCompare(right.kind))
     .map(formatVariant)
     .join(" + ");
-  return `${row.required ? "required" : "optional"}; ${variants}`;
+  const defaultValue = row.hasDefault
+    ? ` default=${formatValue(row.defaultValue)}`
+    : "";
+  return `${row.required ? "required" : "optional"}; ${variants}${defaultValue}`;
 }
 
 function parseInventory(): AuditRow[] {

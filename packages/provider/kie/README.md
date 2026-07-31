@@ -136,7 +136,7 @@ const imageVideo = await kie.post.api.v1.jobs.createTask({
     prompt: "@image1 smiles and waves at the camera",
     aspect_ratio: "16:9",
     mode: "fun",
-    duration: 6,
+    duration: "6",
     resolution: "720p",
     nsfw_checker: true,
   },
@@ -150,7 +150,16 @@ upstream limit is 7 images and 10 MB per image. `mode: "spicy"` is
 only available when sourcing the image from a previous Grok `task_id`,
 not from external image URLs.
 Active image-to-video prompts are capped at 4096 characters, and
-`duration` must be a whole number from 6 to 30 seconds.
+both Grok video models accept `duration` as either a JSON integer or a
+canonical decimal integer string from 6 through 30. Values such as `6` and
+`"6"` are forwarded in the representation supplied by the caller; Apicity
+does not coerce between them. Whitespace, signs, decimals, leading zeroes, and
+out-of-range values remain invalid. See KIE's current
+[text-to-video](https://docs.kie.ai/market/grok-imagine/text-to-video.md) and
+[image-to-video](https://docs.kie.ai/market/grok-imagine/image-to-video.md)
+sources and the repository's
+[numeric-input compatibility audit](../../../docs/kie-numeric-input-compatibility.md)
+for the evidence and field-specific decisions.
 
 `createTask` returns `{ code, msg, data: { taskId } }`. For production
 workloads, pass `callBackUrl` so KIE can notify you when the job

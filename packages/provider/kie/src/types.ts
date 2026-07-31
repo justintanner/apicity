@@ -450,8 +450,17 @@ export type GeminiOmniAudioCreateResponse =
 // Model input schema types (for parameter discovery / UI generation)
 // ---------------------------------------------------------------------------
 
+export type PayloadFieldType =
+  | "string"
+  | "number"
+  | "integer"
+  | "boolean"
+  | "array"
+  | "object";
+
 export interface PayloadFieldSchema {
-  type: "string" | "number" | "integer" | "boolean" | "array" | "object";
+  type: PayloadFieldType;
+  acceptedTypes?: readonly PayloadFieldType[];
   required?: boolean;
   description?: string;
   enum?: readonly (string | number | boolean)[];

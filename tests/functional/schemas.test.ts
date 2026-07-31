@@ -559,7 +559,7 @@ describe("schema + validatePayload integration", () => {
         prompt: "x".repeat(4097),
         aspect_ratio: "auto",
         mode: "normal",
-        duration: "6",
+        duration: "06",
       },
     });
 
@@ -1158,6 +1158,10 @@ describe("kie modelInputSchemas", () => {
     expect(textToVideo.fields.prompt.description).toContain("5000");
     expect(textToVideo.fields.mode.enum).toEqual(["fun", "normal", "spicy"]);
     expect(textToVideo.fields.duration.type).toBe("integer");
+    expect(textToVideo.fields.duration.acceptedTypes).toEqual([
+      "integer",
+      "string",
+    ]);
     expect(textToVideo.fields.duration.minimum).toBe(6);
     expect(textToVideo.fields.duration.maximum).toBe(30);
     expect(textToVideo.fields.duration.default).toBe(6);
@@ -1175,6 +1179,10 @@ describe("kie modelInputSchemas", () => {
     expect(imageToVideo.fields.mode.enum).toEqual(["fun", "normal", "spicy"]);
     expect(imageToVideo.fields.mode.description).toContain("task_id");
     expect(imageToVideo.fields.duration.type).toBe("integer");
+    expect(imageToVideo.fields.duration.acceptedTypes).toEqual([
+      "integer",
+      "string",
+    ]);
     expect(imageToVideo.fields.duration.minimum).toBe(6);
     expect(imageToVideo.fields.duration.maximum).toBe(30);
     expect(imageToVideo.fields.duration.default).toBe(6);

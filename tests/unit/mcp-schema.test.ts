@@ -167,9 +167,10 @@ describe("MCP Zod schema conversion", () => {
 
     expect(inputProps.prompt.minLength).toBe(1);
     expect(inputProps.prompt.maxLength).toBe(5000);
-    expect(inputProps.duration.type).toBe("integer");
-    expect(inputProps.duration.minimum).toBe(6);
-    expect(inputProps.duration.maximum).toBe(30);
+    expect(inputProps.duration.anyOf).toEqual([
+      { type: "integer", minimum: 6, maximum: 30 },
+      { type: "string", pattern: "^(?:[6-9]|[12][0-9]|30)$" },
+    ]);
   });
 
   it("exposes split Alibaba Qwen image model and slot schemas", () => {
@@ -241,7 +242,13 @@ describe("MCP Zod schema conversion", () => {
       enum: ["480p", "720p"],
       default: "480p",
     });
-    expect(inputProperties.duration).toMatchObject({ default: 6 });
+    expect(inputProperties.duration).toEqual({
+      anyOf: [
+        { type: "integer", minimum: 6, maximum: 30 },
+        { type: "string", pattern: "^(?:[6-9]|[12][0-9]|30)$" },
+      ],
+      default: 6,
+    });
     expect(inputProperties.nsfw_checker).toMatchObject({
       type: "boolean",
       default: false,

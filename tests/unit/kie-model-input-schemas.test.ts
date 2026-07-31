@@ -13,20 +13,30 @@ describe("KIE modelInputSchemas metadata", () => {
   const provider = createKie({ apiKey: "test-key" });
 
   it("exposes Grok manual constraints as public metadata", () => {
-    const fields =
+    const imageFields =
       provider.modelInputSchemas["grok-imagine/image-to-video"].fields;
+    const textFields =
+      provider.modelInputSchemas["grok-imagine/text-to-video"].fields;
 
-    expect(fields.prompt.maxLength).toBe(4096);
-    expect(fields.image_urls.minItems).toBe(1);
-    expect(fields.image_urls.maxItems).toBe(7);
-    expect(fields.index.type).toBe("integer");
-    expect(fields.index.minimum).toBe(0);
-    expect(fields.index.maximum).toBe(5);
-    expect(fields.index.default).toBe(0);
-    expect(fields.duration.type).toBe("integer");
-    expect(fields.duration.minimum).toBe(6);
-    expect(fields.duration.maximum).toBe(30);
-    expect(fields.duration.default).toBe(6);
+    expect(imageFields.prompt.maxLength).toBe(4096);
+    expect(imageFields.image_urls.minItems).toBe(1);
+    expect(imageFields.image_urls.maxItems).toBe(7);
+    expect(imageFields.index.type).toBe("integer");
+    expect(imageFields.index.minimum).toBe(0);
+    expect(imageFields.index.maximum).toBe(5);
+    expect(imageFields.index.default).toBe(0);
+
+    for (const fields of [textFields, imageFields]) {
+      expect(fields.duration.type).toBe("integer");
+      expect(fields.duration.acceptedTypes).toEqual(["integer", "string"]);
+      expect(fields.duration.minimum).toBe(6);
+      expect(fields.duration.maximum).toBe(30);
+      expect(fields.duration.default).toBe(6);
+      expect(fields.duration.description).toContain("^(?:[6-9]|[12][0-9]|30)$");
+      expect(fields.duration.description).toContain(
+        "preserves the supplied representation"
+      );
+    }
   });
 
   it("exposes Wan image numeric, string, and array constraints", () => {

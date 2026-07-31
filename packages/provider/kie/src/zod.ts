@@ -572,9 +572,19 @@ export const GrokImageToVideoAspectRatioSchema = z.enum([
   "9:16",
 ]);
 
-export const GrokTextToVideoDurationSchema = z.number().int().min(6).max(30);
+const GrokDurationNumberSchema = z.number().int().min(6).max(30);
 
-export const GrokImageToVideoDurationSchema = z.number().int().min(6).max(30);
+const GrokDurationStringSchema = z.string().regex(/^(?:[6-9]|[12][0-9]|30)$/);
+
+export const GrokTextToVideoDurationSchema = z.union([
+  GrokDurationNumberSchema,
+  GrokDurationStringSchema,
+]);
+
+export const GrokImageToVideoDurationSchema = z.union([
+  GrokDurationNumberSchema,
+  GrokDurationStringSchema,
+]);
 
 export const GrokImagineDurationSchema = z.enum(["6", "10"]);
 

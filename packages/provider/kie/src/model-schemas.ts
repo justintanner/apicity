@@ -285,10 +285,12 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
       duration: {
         type: "integer",
+        acceptedTypes: ["integer", "string"],
         minimum: 6,
         maximum: 30,
         default: 6,
-        description: "Duration in seconds (6-30, default 6)",
+        description:
+          "Duration in whole seconds (6-30, default 6); accepts an integer or a canonical decimal string matching ^(?:[6-9]|[12][0-9]|30)$ and preserves the supplied representation",
       },
       resolution: {
         type: "string",
@@ -339,10 +341,12 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
       duration: {
         type: "integer",
+        acceptedTypes: ["integer", "string"],
         minimum: 6,
         maximum: 30,
         default: 6,
-        description: "Duration in whole seconds (6-30, default 6)",
+        description:
+          "Duration in whole seconds (6-30, default 6); accepts an integer or a canonical decimal string matching ^(?:[6-9]|[12][0-9]|30)$ and preserves the supplied representation",
       },
       resolution: {
         type: "string",

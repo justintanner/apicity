@@ -268,7 +268,11 @@ function main() {
   return 1;
 }
 
-// Run as CLI only (importing for tests must not exit the process).
-if (import.meta.url === `file://${process.argv[1]}`) {
+// Run as CLI only (importing for tests must not exit the process). Compares
+// through `fileURLToPath` rather than building a `file://` string: `argv[1]` is
+// not percent-encoded, so the string form is false for any checkout path
+// containing a space — `main()` would never run and `lint:timers` would report
+// success having examined nothing.
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
   process.exit(main());
 }

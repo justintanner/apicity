@@ -784,7 +784,7 @@ function groupEndpoints(endpoints) {
   return new Map([...groups.entries()].sort(([a], [b]) => a.localeCompare(b)));
 }
 
-function renderApiReference(providerName, endpoints) {
+export function renderApiReference(providerName, endpoints) {
   const sections = ["## API Reference", ""];
   // Verb aliases of one path collapse to a single block; genuinely distinct
   // siblings (stream variants) keep a block each under a distinct label.
@@ -3976,4 +3976,6 @@ async function main() {
   }
 }
 
-main();
+if (process.argv[1] === __filename) {
+  main();
+}

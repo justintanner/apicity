@@ -525,10 +525,98 @@ function usage() {
   );
 }
 
-async function main() {
+/**
+ * One shadowed tracked file. `line` and `pattern` are null on the ESLint axis —
+ * flat config does not expose which `ignores` entry matched.
+ *
+ * @typedef {object} ShadowRecord
+ * @property {string} path
+ * @property {string} source
+ * @property {number | null} line
+ * @property {string | null} pattern
+ */
+
+/**
+ * A documented baseline class, as in BASELINE above.
+ *
+ * @typedef {object} BaselineClass
+ * @property {string} id
+ * @property {string} axis `prettier`, `eslint` or `both`
+ * @property {string[]} globs
+ * @property {string} why
+ * @property {string[]} [except]
+ */
+
+/**
+ * A file asserted never to be shadowed, as in SENTINELS above.
+ *
+ * @typedef {object} Sentinel
+ * @property {string} path
+ * @property {string} axis
+ * @property {string} why
+ */
+
+/**
+ * What `main`'s injected `collect` must return. The NUL-framed buffer
+ * `trackedFiles()` produces is consumed entirely inside the collector and never
+ * crosses this seam, so `tracked` is a plain path list on both sides of it.
+ *
+ * @typedef {object} ShadowSets
+ * @property {string[]} tracked
+ * @property {string[]} lintable
+ * @property {{ prettier: ShadowRecord[], eslint: ShadowRecord[] }} shadowed
+ */
+
+/**
+ * Production collector: the real `git ls-files` input and both real axes. This
+ * is the half of the guard that needs a repository, a temp directory and
+ * ESLint; injecting a replacement is what lets the unit test drive every exit
+ * of `main` in-process.
+ *
+ * @returns {Promise<ShadowSets>}
+ */
+async function collectShadowSets() {
+  const tracked = trackedFiles();
+  const lintable = tracked.list.filter((f) => LINTABLE.test(f));
+  return {
+    tracked: tracked.list,
+    lintable,
+    shadowed: {
+      prettier: collectPrettierShadowed(tracked.buffer),
+      eslint: await collectEslintShadowed(lintable),
+    },
+  };
+}
+
+/**
+ * The guard's entire enforcement mechanism: classify the shadow sets, print the
+ * report, and return the process exit code. Exported so the unit test asserts
+ * the verdicts themselves rather than only the pure helpers they are built
+ * from — this function is where `failed` is decided.
+ *
+ * `baseline` and `sentinels` are parameters, not constants read from module
+ * scope, because `evaluateShadowSets` derives staleness from baseline classes
+ * that matched nothing: against the real 8-class BASELINE an empty shadow set
+ * makes every class stale, so the clean exit would be unreachable from a test.
+ * Every default is the production wiring, so a plain `main()` behaves exactly
+ * as it did before the seam existed.
+ *
+ * @param {object} [options]
+ * @param {string[]} [options.argv] arguments, node and script path already dropped
+ * @param {() => Promise<ShadowSets>} [options.collect]
+ * @param {BaselineClass[]} [options.baseline]
+ * @param {Sentinel[]} [options.sentinels]
+ * @returns {Promise<number>} process exit code
+ */
+export async function main({
+  argv = process.argv.slice(2),
+  collect = collectShadowSets,
+  baseline = BASELINE,
+  sentinels = SENTINELS,
+} = {}) {
   let options;
   try {
-    options = parseArgs(process.argv.slice(2));
+    options = parseArgs(argv);
   } catch (error) {
     console.error(error instanceof Error ? error.message : String(error));
     return 1;
@@ -539,14 +627,12 @@ async function main() {
     return 0;
   }
 
-  const tracked = trackedFiles();
-  const lintable = tracked.list.filter((f) => LINTABLE.test(f));
-  const shadowed = {
-    prettier: collectPrettierShadowed(tracked.buffer),
-    eslint: await collectEslintShadowed(lintable),
-  };
-  const { baselined, unexplained, sentinelHits, stale } =
-    evaluateShadowSets(shadowed);
+  const { tracked, lintable, shadowed } = await collect();
+  const { baselined, unexplained, sentinelHits, stale } = evaluateShadowSets(
+    shadowed,
+    baseline,
+    sentinels
+  );
 
   if (options.list) {
     const rows = [
@@ -562,7 +648,7 @@ async function main() {
     console.log(
       `\n${shadowed.prettier.length} shadowed on the prettier axis, ` +
         `${shadowed.eslint.length} on the eslint axis ` +
-        `(${tracked.list.length} tracked files, ${lintable.length} lintable).`
+        `(${tracked.length} tracked files, ${lintable.length} lintable).`
     );
     return 0;
   }
@@ -619,9 +705,9 @@ async function main() {
   if (failed) return 1;
 
   console.log(
-    `✓ check-ignore-shadow: ${tracked.list.length} tracked files examined ` +
+    `✓ check-ignore-shadow: ${tracked.length} tracked files examined ` +
       `(${lintable.length} lintable), ${baselined.length} shadowed and ` +
-      `baselined across ${BASELINE.length} classes ` +
+      `baselined across ${baseline.length} classes ` +
       `(${shadowed.prettier.length} prettier, ${shadowed.eslint.length} eslint).`
   );
   return 0;

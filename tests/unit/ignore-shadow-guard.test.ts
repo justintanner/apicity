@@ -3,15 +3,17 @@
 // Proves the deliverable's acceptance: the guard FAILS on a synthetic tracked
 // file that an ignore pattern shadows, and passes once that file is covered by
 // a documented baseline class. Exercises the pure exported functions from
-// scripts/check-ignore-shadow.mjs, so every case runs in-process with no
-// subprocess, no network and no keys.
+// scripts/check-ignore-shadow.mjs and `main()`, which is not pure but takes its
+// shadow sets, baseline and sentinels as injected collaborators, so every case
+// runs in-process with no subprocess, no network and no keys.
 //
 // NOTE: this file contains ignore patterns and `git check-ignore` output as
 // FIXTURE STRINGS. It is not configuration — nothing here is read by Prettier,
 // ESLint or git. Same self-reference hazard as tests/unit/test-timer-guard.test.ts.
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   evaluateShadowSets,
+  main,
   matchesGlob,
   parseCheckIgnoreRecords,
   recordsFromCheckIgnore,
@@ -356,5 +358,207 @@ describe("evaluateShadowSets", () => {
       sentinelHits: [],
       stale: [],
     });
+  });
+});
+
+// `main()` is the guard's entire enforcement mechanism, and the four exports
+// above are only the pieces it is assembled from: editing `if (failed) return 1`
+// to `return 0` leaves every assertion above green while the guard stops
+// guarding. These cases drive `main()` itself through all eight of its exits.
+//
+// The collaborators are injected, never stubbed at module scope. `baseline` and
+// `sentinels` have to be parameters for the clean case to exist at all —
+// staleness is derived from classes that matched nothing, so an empty shadow set
+// against the real 8-class BASELINE makes every class stale.
+describe("main", () => {
+  // Only feed the two totals lines; the verdicts come from `shadowed`.
+  const TRACKED = ["a.ts", "b.md", "c.mjs"];
+  const LINTABLE_FILES = ["a.ts", "c.mjs"];
+
+  const UNMATCHED_CLASS = [
+    {
+      id: "agents-scratch",
+      axis: "prettier",
+      globs: [".agents/**"],
+      why: "fixture",
+    },
+  ];
+
+  const COST_README = "packages/provider/cost/README.md";
+  const COST_SENTINEL = [
+    { path: COST_README, axis: "prettier", why: "fixture" },
+  ];
+
+  function collectOf(shadowed: {
+    prettier: ReturnType<typeof prettierRecord>[];
+    eslint: ReturnType<typeof eslintRecord>[];
+  }) {
+    return async () => ({
+      tracked: TRACKED,
+      lintable: LINTABLE_FILES,
+      shadowed,
+    });
+  }
+
+  const EMPTY = collectOf({ prettier: [], eslint: [] });
+
+  // `--help` and `--bogus` return before the collector is reached. Injecting a
+  // throwing one is what proves that, and is what keeps the no-subprocess claim
+  // in this file's header true for the argv cases.
+  const neverCollect = async (): Promise<never> => {
+    throw new Error("collect() must not run for an argv-only exit");
+  };
+
+  async function runMain(options: Parameters<typeof main>[0]) {
+    const out: string[] = [];
+    const err: string[] = [];
+    const log = vi
+      .spyOn(console, "log")
+      .mockImplementation((...args: unknown[]) => {
+        out.push(args.map(String).join(" "));
+      });
+    const error = vi
+      .spyOn(console, "error")
+      .mockImplementation((...args: unknown[]) => {
+        err.push(args.map(String).join(" "));
+      });
+    try {
+      const code = await main(options);
+      return { code, stdout: out.join("\n"), stderr: err.join("\n") };
+    } finally {
+      // Restored here so a failing assertion cannot leave `console` stubbed for
+      // the next test; `tests/vitest.integration.ts` sets none of
+      // `restoreMocks` / `mockReset` / `clearMocks`.
+      log.mockRestore();
+      error.mockRestore();
+    }
+  }
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  // REQ-001: matched by SHAPE. The real counts moved three times in ~25 minutes
+  // during this work; pinning one re-creates the silent-rot risk the comment at
+  // scripts/check-ignore-shadow.mjs:92-93 refuses.
+  it("exits 0 and prints the success line when nothing is shadowed", async () => {
+    const result = await runMain({
+      argv: [],
+      collect: EMPTY,
+      baseline: [],
+      sentinels: [],
+    });
+    expect(result.code).toBe(0);
+    expect(result.stdout).toMatch(
+      /^✓ check-ignore-shadow: \d+ tracked files examined/
+    );
+    expect(result.stderr).toBe("");
+  });
+
+  it("exits 1 when a sentinel file is shadowed", async () => {
+    const result = await runMain({
+      argv: [],
+      collect: collectOf({
+        prettier: [prettierRecord(COST_README, 8, "packages/provider/*/*.md")],
+        eslint: [],
+      }),
+      baseline: [],
+      sentinels: COST_SENTINEL,
+    });
+    expect(result.code).toBe(1);
+    expect(result.stderr).toContain(
+      "a deliberately-checked file is now shadowed"
+    );
+  });
+
+  it("exits 1 when a shadowed tracked file has no baseline class", async () => {
+    const result = await runMain({
+      argv: [],
+      collect: collectOf({
+        prettier: [prettierRecord(".agents/hooks.json")],
+        eslint: [],
+      }),
+      baseline: [],
+      sentinels: [],
+    });
+    expect(result.code).toBe(1);
+    expect(result.stderr).toContain("tracked files are hidden from a gate");
+  });
+
+  it("exits 1 when a baseline class matches nothing", async () => {
+    const result = await runMain({
+      argv: [],
+      collect: EMPTY,
+      baseline: UNMATCHED_CLASS,
+      sentinels: [],
+    });
+    expect(result.code).toBe(1);
+    expect(result.stderr).toContain("stale baseline entries");
+  });
+
+  // REQ-007: the only case that catches an early-return refactor. `failed` is
+  // set by three sequential `if` blocks that all run before `if (failed)`;
+  // converting any of them to an early `return 1` keeps the three single-verdict
+  // cases above green while silently dropping the later sections.
+  it("reports all three verdicts in one run", async () => {
+    const result = await runMain({
+      argv: [],
+      collect: collectOf({
+        prettier: [
+          prettierRecord(COST_README, 8, "packages/provider/*/*.md"),
+          prettierRecord("scripts/orphan.mjs", 3, "scripts/*.mjs"),
+        ],
+        eslint: [],
+      }),
+      baseline: UNMATCHED_CLASS,
+      sentinels: COST_SENTINEL,
+    });
+    expect(result.code).toBe(1);
+    expect(result.stderr).toContain(
+      "a deliberately-checked file is now shadowed"
+    );
+    expect(result.stderr).toContain("tracked files are hidden from a gate");
+    expect(result.stderr).toContain("stale baseline entries");
+  });
+
+  it("exits 1 naming an unknown argument", async () => {
+    const result = await runMain({
+      argv: ["--bogus"],
+      collect: neverCollect,
+      baseline: [],
+      sentinels: [],
+    });
+    expect(result.code).toBe(1);
+    expect(result.stderr).toContain("Unknown argument: --bogus");
+  });
+
+  it("exits 0 printing usage for --help", async () => {
+    const result = await runMain({
+      argv: ["--help"],
+      collect: neverCollect,
+      baseline: [],
+      sentinels: [],
+    });
+    expect(result.code).toBe(0);
+    expect(result.stdout).toContain("--list");
+    expect(result.stdout).toContain("--help");
+  });
+
+  // OQ-3: asserts exit 0 and the PRESENCE of the totals line, not its numbers.
+  it("exits 0 listing shadowed files for --list", async () => {
+    const result = await runMain({
+      argv: ["--list"],
+      collect: collectOf({
+        prettier: [prettierRecord(".agents/hooks.json")],
+        eslint: [eslintRecord("scripts/orphan.mjs")],
+      }),
+      baseline: [],
+      sentinels: [],
+    });
+    expect(result.code).toBe(0);
+    expect(result.stdout).toContain(".agents/hooks.json");
+    expect(result.stdout).toMatch(
+      /\d+ shadowed on the prettier axis, \d+ on the eslint axis \(\d+ tracked files, \d+ lintable\)\./
+    );
   });
 });

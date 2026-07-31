@@ -404,9 +404,11 @@ describe("main", () => {
 
   // `--help` and `--bogus` return before the collector is reached. Injecting a
   // throwing one is what proves that, and is what keeps the no-subprocess claim
-  // in this file's header true for the argv cases.
+  // in this file's header true for the argv cases. It is also `runMain`'s
+  // default, so a case that forgets to inject one fails loudly instead of
+  // silently spawning `git`/ESLint through the production collector.
   const neverCollect = async (): Promise<never> => {
-    throw new Error("collect() must not run for an argv-only exit");
+    throw new Error("collect() must not run: this case did not inject one");
   };
 
   async function runMain(options: Parameters<typeof main>[0]) {
@@ -423,11 +425,12 @@ describe("main", () => {
         err.push(args.map(String).join(" "));
       });
     try {
-      const code = await main(options);
+      const code = await main({ collect: neverCollect, ...options });
       return { code, stdout: out.join("\n"), stderr: err.join("\n") };
     } finally {
-      // Restored here so a failing assertion cannot leave `console` stubbed for
-      // the next test; `tests/vitest.integration.ts` sets none of
+      // Restored here so a `main()` that throws — `neverCollect` is the way that
+      // happens — cannot leave `console` stubbed for the next test;
+      // `tests/vitest.integration.ts` sets none of
       // `restoreMocks` / `mockReset` / `clearMocks`.
       log.mockRestore();
       error.mockRestore();
@@ -450,7 +453,7 @@ describe("main", () => {
     });
     expect(result.code).toBe(0);
     expect(result.stdout).toMatch(
-      /^✓ check-ignore-shadow: \d+ tracked files examined/
+      /^✓ check-ignore-shadow: \d+ tracked files examined \(\d+ lintable\), \d+ shadowed and baselined across \d+ classes \(\d+ prettier, \d+ eslint\)\.$/
     );
     expect(result.stderr).toBe("");
   });

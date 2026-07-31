@@ -75,6 +75,7 @@ pnpm run harness:screenshot:media # Generate + screenshot ONLY media-bearing rec
 
 # Secrets
 pnpm run check:op                # Verify 1Password service account is working
+pnpm run gc:review-proof -- --watch <file> -- <command> [args...]
 
 # Standalone HAR viewer
 npx tsx tests/harness-serve.ts path/to/file.har        # View specific HAR file(s)
@@ -82,6 +83,25 @@ npx tsx tests/harness-serve.ts tests/recordings/       # View a directory of rec
 npx tsx tests/harness-serve.ts --html out.html <paths> # Generate self-contained HTML
 npx tsx tests/harness-serve.ts --git-approve <paths>   # Enable approve button (git add)
 ```
+
+### Concurrent Review Proofs
+
+Gas City starter review lanes can share one source-anchor worktree. Every proof
+command run from a shared review worktree must use `gc:review-proof` and name
+each source file whose contents make the result meaningful:
+
+```bash
+pnpm run gc:review-proof -- \
+  --watch packages/provider/kie/src/kie.ts \
+  --watch packages/provider/kie/src/zod.ts \
+  -- pnpm run test:provider kie
+```
+
+The runner prints SHA-256 snapshots before and after the command, watches the
+files while it runs, preserves the command's exit status when they stay stable,
+and exits 86 if it observes interference. Discard an interfered result and run
+the proof again. Never make and restore mutation probes in a shared source
+anchor; use an isolated worktree for any proof that intentionally edits source.
 
 ## Architecture
 

@@ -91,7 +91,27 @@ pnpm run harness:telegram -- --all <pattern> --dry-run # Preview ANY recording b
 
 pnpm run check:op                # Verify 1Password service account is working
 pnpm run harness                 # Local HAR viewer at localhost:3475
+pnpm run gc:review-proof -- --watch <file> -- <command> [args...]
 ```
+
+## Concurrent Review Proofs
+
+Gas City starter review lanes can share one source-anchor worktree. Every proof
+command run from a shared review worktree must use `gc:review-proof` and name
+each source file whose contents make the result meaningful:
+
+```bash
+pnpm run gc:review-proof -- \
+  --watch packages/provider/kie/src/kie.ts \
+  --watch packages/provider/kie/src/zod.ts \
+  -- pnpm run test:provider kie
+```
+
+The runner prints SHA-256 snapshots before and after the command, watches the
+files while it runs, preserves the command's exit status when they stay stable,
+and exits 86 if it observes interference. Discard an interfered result and run
+the proof again. Never make and restore mutation probes in a shared source
+anchor; use an isolated worktree for any proof that intentionally edits source.
 
 Provider-scoped commands accept either `openai`-style names or paths such as
 `packages/provider/openai/src/openai.ts` and

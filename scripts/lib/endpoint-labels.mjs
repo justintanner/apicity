@@ -60,6 +60,19 @@ const REST_ALIAS_SUFFIXES = new Set([
 ]);
 
 /**
+ * Does this provider's surface carry a leading HTTP-verb namespace?
+ *
+ * Every provider but `s3` declares endpoints under a leading verb segment
+ * (`get.v1.models`), so that segment is a namespace and is stripped when
+ * comparing callee identity. `s3` declares its endpoints without one, so its
+ * first segment is a real path segment and must never be stripped — doing so
+ * would make unrelated `s3` endpoints compare equal and collapse.
+ */
+function hasVerbNamespace(providerName) {
+  return providerName !== "s3";
+}
+
+/**
  * `ep.fullDotPath` with **leading** HTTP-verb segments removed and nothing
  * else. Two definition sites that share a callee path are verb aliases of one
  * endpoint.
@@ -71,14 +84,14 @@ const REST_ALIAS_SUFFIXES = new Set([
 export function calleeDotPath(providerName, ep) {
   const segs = (ep.fullDotPath ?? ep.dotPath ?? "").split(".");
   let i = 0;
-  if (providerName !== "s3") {
+  if (hasVerbNamespace(providerName)) {
     while (i < segs.length && METHOD_KEYS.has(segs[i].toLowerCase())) i++;
   }
   return segs.slice(i).join(".") || (ep.dotPath ?? "");
 }
 
 function hasLeadingVerb(providerName, ep) {
-  if (providerName === "s3") return false;
+  if (!hasVerbNamespace(providerName)) return false;
   const first = (ep.fullDotPath ?? "").split(".")[0] ?? "";
   return METHOD_KEYS.has(first.toLowerCase());
 }

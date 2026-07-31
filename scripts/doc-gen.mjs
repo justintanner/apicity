@@ -734,9 +734,8 @@ function renderSimpleFunctionsAuthenticatedGuide() {
   ].join("\n");
 }
 
-function renderEndpointDetails(ep, providerName, docsUrl, tier, label) {
+function renderEndpointDetails(ep, providerName, docsUrl, tier, dotPath) {
   const method = ep.method ?? "";
-  const dotPath = label;
   const headerCode = method ? `<code>${method}</code> ` : "";
   const summary = `${headerCode}<b><code>${providerName}${dotPath ? "." + dotPath : ""}</code></b>`;
 
@@ -792,7 +791,7 @@ function renderApiReference(providerName, endpoints) {
   const { labels, rendered } = resolveEndpointLabels(providerName, endpoints);
   if (rendered.length === 0) {
     sections.push("_No endpoints discovered for this provider yet._", "");
-    return sections.join("\n");
+    return { text: sections.join("\n"), renderedCount: 0 };
   }
 
   const groups = groupEndpoints(rendered);
@@ -805,7 +804,7 @@ function renderApiReference(providerName, endpoints) {
   for (const [group, list] of groups) {
     sections.push(`### ${group}`, "");
     for (const ep of list) {
-      const label = labels.get(ep) ?? displayDotPath(providerName, ep);
+      const label = labels.get(ep);
       const docRow = resolveEndpointDocRow(docs, ep, providerName, label);
       const enrichedEndpoint = docRow
         ? {
@@ -831,7 +830,7 @@ function renderApiReference(providerName, endpoints) {
       );
     }
   }
-  return sections.join("\n");
+  return { text: sections.join("\n"), renderedCount: rendered.length };
 }
 
 async function extractProviderMetadata(providerDir) {
@@ -3821,7 +3820,8 @@ async function generateReadme(providerDir, providerName, endpoints) {
     );
   }
 
-  sections.push(renderApiReference(providerName, endpoints));
+  const apiReference = renderApiReference(providerName, endpoints);
+  sections.push(apiReference.text);
 
   if (showMiddleware) {
     sections.push("## Middleware");
@@ -3852,12 +3852,17 @@ async function generateReadme(providerDir, providerName, endpoints) {
   sections.push("MIT — see [LICENSE](LICENSE).");
   sections.push("");
 
-  return sections.join("\n");
+  return {
+    readme: sections.join("\n"),
+    renderedCount: apiReference.renderedCount,
+  };
 }
 
 // Pure: renders a provider's README and reports how many endpoints it
 // documents, without touching disk. Both the write path and --check go
-// through this so the two can never drift.
+// through this, and the count is threaded out of the single
+// `resolveEndpointLabels` call that produced the README header — so neither
+// the bytes nor the count can drift.
 async function renderProviderReadme(providerName, endpointsByProvider) {
   const providerDir = path.join(
     REPO_ROOT,
@@ -3867,11 +3872,12 @@ async function renderProviderReadme(providerName, endpointsByProvider) {
   );
   const readmePath = path.join(providerDir, "README.md");
   const endpoints = endpointsByProvider.get(providerName) ?? [];
-  const readme = await generateReadme(providerDir, providerName, endpoints);
-  // Report what the README actually documents, not the raw walk: collapsed
-  // verb aliases would otherwise make this line disagree with the header.
-  const { rendered } = resolveEndpointLabels(providerName, endpoints);
-  return { readmePath, readme, renderedCount: rendered.length };
+  const { readme, renderedCount } = await generateReadme(
+    providerDir,
+    providerName,
+    endpoints
+  );
+  return { readmePath, readme, renderedCount };
 }
 
 async function regenerate(providerName, endpointsByProvider) {

@@ -154,7 +154,7 @@ function renderedBlocks(
   return (rendered as WalkedEndpoint[]).map((ep) => {
     // One binding for both, mirroring `renderApiReference`: the lookup key and
     // the rendered heading cannot drift apart.
-    const label = labels.get(ep) ?? displayDotPath(provider, ep);
+    const label = labels.get(ep);
     return {
       endpoint: ep,
       label,
@@ -255,6 +255,12 @@ describe("doc-gen endpoint labels", () => {
     expect(collisions).toEqual([]);
   });
 
+  // Fence, not a regression guard. `before` and `after` are both computed from
+  // live code, so reverting `resolveEndpointLabels` to identity makes the two
+  // sets equal and this passes vacuously. Its job is to catch a *future*
+  // over-aggressive collapse rule, which would shrink `after` only. The guard
+  // on the original bug is the "renders each (label, method) pair at most once
+  // per provider" case above.
   it("keeps a block for every endpoint-docs.tsv row that had one", () => {
     const before = new Set<string>();
     const after = new Set<string>();

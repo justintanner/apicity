@@ -8,7 +8,7 @@
 // kie's /api/v1/jobs/createTask endpoint. Rates come from the bundled
 // @apicity/cost PRICING table — no API keys, no network, instant.
 
-import { cost } from "../packages/provider/cost/dist/src/index.js";
+import { createCost } from "../packages/provider/cost/dist/src/index.js";
 
 const argv = process.argv.slice(2);
 const args = Object.fromEntries(
@@ -121,7 +121,7 @@ const lineup = [
     label: "qwen2 image-edit",
     payload: {
       model: "qwen2/image-edit",
-      input: { prompt: "x", image_url: ["https://example.com/x.jpg"] },
+      input: { prompt: "x", image_url: "https://example.com/x.jpg" },
     },
   },
   {
@@ -144,7 +144,7 @@ const lineup = [
   },
 ];
 
-const c = cost();
+const c = createCost();
 
 // Patches `n` into a kie image payload when the upstream schema accepts it
 // (currently wan/2-7-image and wan/2-7-image-pro). Other kie image schemas

@@ -81,6 +81,7 @@ describe("kie wan/2-7-image integration", () => {
       model: "wan/2-7-image",
       input: {
         prompt: "A cat sitting on a windowsill",
+        resolution: "2K",
       },
     });
     expect(valid.success).toBe(true);

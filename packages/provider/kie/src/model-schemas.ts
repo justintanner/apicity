@@ -1352,8 +1352,10 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
       resolution: {
         type: "string",
+        required: true,
         enum: ["1K", "2K", "4K"],
-        description: "Output resolution (default 2K)",
+        description:
+          "Output resolution; required when aspect_ratio is present, including when the aspect_ratio default is applied",
       },
       thinking_mode: {
         type: "boolean",
@@ -1423,9 +1425,10 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
       resolution: {
         type: "string",
+        required: true,
         enum: ["1K", "2K", "4K"],
         description:
-          "Output resolution (default 2K, 4K only for text-to-image in standard mode)",
+          "Output resolution; required when aspect_ratio is present, including when the aspect_ratio default is applied; 4K only for text-to-image in standard mode",
       },
       thinking_mode: {
         type: "boolean",

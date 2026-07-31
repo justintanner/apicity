@@ -1676,7 +1676,7 @@ const Wan27ImageInputShape = {
   aspect_ratio: Wan27ImageAspectRatioSchema.default("16:9"),
   enable_sequential: z.boolean().optional(),
   n: z.number().int().min(1).max(12).optional(),
-  resolution: Wan27ImageResolutionSchema.default("2K"),
+  resolution: Wan27ImageResolutionSchema.optional(),
   thinking_mode: z.boolean().optional(),
   color_palette: z
     .array(Wan27ImageColorPaletteSchema)

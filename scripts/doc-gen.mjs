@@ -82,9 +82,20 @@ function cleanTsvValue(value) {
   return value && value !== "?" ? value : null;
 }
 
-function resolveEndpointDocRow(docs, ep, providerName) {
+/**
+ * The `scripts/endpoint-docs.tsv` row that documents one rendered block.
+ *
+ * `label` is the heading the block renders under (from `resolveEndpointLabels`)
+ * and is tried first: a row naming the rendered label describes exactly that
+ * block. `displayDotPath` stays in the list as the *fallback* that keeps a
+ * relabelled stream sibling on its canonical sibling's row while no row names
+ * the label itself.
+ */
+function resolveEndpointDocRow(docs, ep, providerName, label) {
   const displayPath = displayDotPath(providerName, ep);
-  const dotPaths = [displayPath, ep.dotPath].filter(Boolean);
+  const dotPaths = [
+    ...new Set([label, displayPath, ep.dotPath].filter(Boolean)),
+  ];
   const method = ep.method ?? "?";
 
   for (const dotPath of dotPaths) {
@@ -794,7 +805,8 @@ function renderApiReference(providerName, endpoints) {
   for (const [group, list] of groups) {
     sections.push(`### ${group}`, "");
     for (const ep of list) {
-      const docRow = resolveEndpointDocRow(docs, ep, providerName);
+      const label = labels.get(ep) ?? displayDotPath(providerName, ep);
+      const docRow = resolveEndpointDocRow(docs, ep, providerName, label);
       const enrichedEndpoint = docRow
         ? {
             ...ep,
@@ -814,7 +826,7 @@ function renderApiReference(providerName, endpoints) {
           providerName,
           docRow?.docsUrl ?? "",
           tier,
-          labels.get(ep) ?? displayDotPath(providerName, ep)
+          label
         )
       );
     }

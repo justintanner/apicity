@@ -4329,7 +4329,7 @@ Source: [`packages/provider/elevenlabs/src/text-to-speech.ts`](src/text-to-speec
 
 Cost tier: <code>expensive</code>
 
-[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/text-to-speech/convert-with-timestamps)
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/text-to-speech/stream-with-timestamps)
 
 ```typescript
 const res = await elevenlabs.v1.textToSpeech.stream.withTimestamps({ /* ... */ });

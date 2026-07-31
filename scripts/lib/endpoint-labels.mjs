@@ -20,9 +20,10 @@ import { METHOD_KEYS, STREAM_KEYS } from "./endpoint-walk.mjs";
 
 /**
  * The rendered label for a single endpoint, ignoring collisions with its
- * siblings. Also the docs-row lookup key used by `resolveEndpointDocRow` in
- * `doc-gen.mjs` — that call site intentionally keeps using this function so a
- * relabelled block still resolves to its canonical sibling's TSV row.
+ * siblings. Also the **fallback** docs-row lookup key in
+ * `resolveEndpointDocRow` (`doc-gen.mjs`): that resolver keys on the rendered
+ * label first, and falls back to this value so a relabelled block with no row
+ * of its own still resolves to its canonical sibling's TSV row.
  */
 export function displayDotPath(providerName, ep) {
   if (providerName !== "kie") {

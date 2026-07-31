@@ -42,6 +42,7 @@ interface DocsRow {
   dotPath: string;
   method: string;
   fullUrl: string;
+  docsUrl: string;
 }
 
 interface DocsIndex {
@@ -69,12 +70,13 @@ function loadDocsRows(): DocsRow[] {
     .filter(Boolean)
     .slice(1)
     .map((line) => {
-      const [provider, dotPath, method, fullUrl] = line.split("\t");
+      const [provider, dotPath, method, fullUrl, docsUrl] = line.split("\t");
       return {
         provider: provider ?? "",
         dotPath: dotPath ?? "",
         method: method ?? "",
         fullUrl: fullUrl ?? "",
+        docsUrl: docsUrl ?? "",
       };
     });
 }
@@ -95,15 +97,21 @@ function buildDocsIndex(rows: DocsRow[]): DocsIndex {
 
 /**
  * Mirrors `resolveEndpointDocRow` in `scripts/doc-gen.mjs`, including its
- * deliberate use of `displayDotPath` rather than the resolved label — that is
- * what makes a relabelled stream block resolve to its canonical sibling's row.
+ * candidate order: the rendered `label` is tried first, so a row naming the
+ * label wins, and `displayDotPath` is the fallback that keeps a relabelled
+ * stream block on its canonical sibling's row while no such row exists.
  */
 function resolveDocRow(
   docs: DocsIndex,
   provider: string,
-  ep: WalkedEndpoint
+  ep: WalkedEndpoint,
+  label: string
 ): DocsRow | null {
-  const dotPaths = [displayDotPath(provider, ep), ep.dotPath].filter(Boolean);
+  const dotPaths = [
+    ...new Set(
+      [label, displayDotPath(provider, ep), ep.dotPath].filter(Boolean)
+    ),
+  ];
   const method = ep.method ?? "?";
   for (const dotPath of dotPaths) {
     const row = docs.byKey.get(`${ep.provider}\t${dotPath}\t${method}`);
@@ -128,10 +136,11 @@ function resolveDocRow(
 function enrichedMethod(
   docs: DocsIndex,
   provider: string,
-  ep: WalkedEndpoint
+  ep: WalkedEndpoint,
+  label: string
 ): string {
   if (ep.method) return ep.method;
-  const row = resolveDocRow(docs, provider, ep);
+  const row = resolveDocRow(docs, provider, ep, label);
   return (row && cleanTsvValue(row.method)) ?? "";
 }
 
@@ -142,28 +151,39 @@ function renderedBlocks(
   endpoints: WalkedEndpoint[]
 ): RenderedBlock[] {
   const { labels, rendered } = resolveEndpointLabels(provider, endpoints);
-  return (rendered as WalkedEndpoint[]).map((ep) => ({
-    endpoint: ep,
-    label: labels.get(ep) ?? displayDotPath(provider, ep),
-    method: enrichedMethod(docs, provider, ep),
-  }));
+  return (rendered as WalkedEndpoint[]).map((ep) => {
+    // One binding for both, mirroring `renderApiReference`: the lookup key and
+    // the rendered heading cannot drift apart.
+    const label = labels.get(ep) ?? displayDotPath(provider, ep);
+    return {
+      endpoint: ep,
+      label,
+      method: enrichedMethod(docs, provider, ep, label),
+    };
+  });
 }
 
 /**
  * The blocks a provider README rendered *before* the fix: one per walked site,
  * labelled unconditionally by `displayDotPath`. Only used as the baseline the
  * TSV-coverage guard compares against.
+ *
+ * Passing `displayDotPath` as the label is deliberate: this helper models the
+ * pre-`ff186aa4` rendering, so it must stay on the old lookup key.
  */
 function unresolvedBlocks(
   docs: DocsIndex,
   provider: string,
   endpoints: WalkedEndpoint[]
 ): RenderedBlock[] {
-  return endpoints.map((ep) => ({
-    endpoint: ep,
-    label: displayDotPath(provider, ep),
-    method: enrichedMethod(docs, provider, ep),
-  }));
+  return endpoints.map((ep) => {
+    const label = displayDotPath(provider, ep);
+    return {
+      endpoint: ep,
+      label,
+      method: enrichedMethod(docs, provider, ep, label),
+    };
+  });
 }
 
 function coverageKey(provider: string, block: RenderedBlock): string {
@@ -172,6 +192,11 @@ function coverageKey(provider: string, block: RenderedBlock): string {
 
 function rowCoverageKey(row: DocsRow): string {
   return `${row.provider}\t${row.dotPath}\t${cleanTsvValue(row.method) ?? ""}`;
+}
+
+/** A resolved row reduced to the identity the README output depends on. */
+function rowIdentity(row: DocsRow | null): string {
+  return row ? `${row.provider} ${row.dotPath} ${row.method}` : "(no row)";
 }
 
 function describeCollisions(
@@ -283,5 +308,57 @@ describe("doc-gen endpoint labels", () => {
     expect(rendered).toEqual([direct, streaming]);
     expect(labels.get(direct)).toBe("coding.v1.messages");
     expect(labels.get(streaming)).toBe("post.stream.coding.v1.messages");
+  });
+
+  it("prefers an exact endpoint-docs.tsv row for the rendered label", () => {
+    // Scope caveat: this sweeps every *walked* provider, while production
+    // `collectEndpointsByProvider` also injects `TSV_ONLY_PROVIDERS = ["b2"]`
+    // from TSV rows. Harmless — those blocks are synthesised with
+    // `fullDotPath === dotPath`, so their label always equals `displayDotPath`
+    // and no resolution can move.
+    const differences: string[] = [];
+    for (const [provider, endpoints] of endpointsByProvider) {
+      const { labels, rendered } = resolveEndpointLabels(provider, endpoints);
+      for (const ep of rendered as WalkedEndpoint[]) {
+        const fallback = displayDotPath(provider, ep);
+        const label = labels.get(ep) ?? fallback;
+        const before = resolveDocRow(docs, provider, ep, fallback);
+        const after = resolveDocRow(docs, provider, ep, label);
+        if (rowIdentity(before) !== rowIdentity(after)) {
+          differences.push(
+            `${provider} ${ep.fullDotPath}: ` +
+              `${rowIdentity(before)} -> ${rowIdentity(after)}`
+          );
+        }
+      }
+    }
+
+    // Exact equality, not a count: a future relabelling that collides with an
+    // unrelated row fails here and names the block that moved.
+    expect(differences).toEqual([
+      "elevenlabs v1.textToSpeech.stream.withTimestamps: " +
+        "elevenlabs v1.textToSpeech.withTimestamps POST -> " +
+        "elevenlabs v1.textToSpeech.stream.withTimestamps POST",
+    ]);
+  });
+
+  it("links the elevenlabs streaming block to the streaming docs page", () => {
+    const endpoints = endpointsByProvider.get("elevenlabs") ?? [];
+    const block = renderedBlocks(docs, "elevenlabs", endpoints).find(
+      (candidate) => candidate.label === "v1.textToSpeech.stream.withTimestamps"
+    );
+    if (!block) {
+      throw new Error(
+        "no elevenlabs block rendered under " +
+          "v1.textToSpeech.stream.withTimestamps"
+      );
+    }
+
+    const row = resolveDocRow(docs, "elevenlabs", block.endpoint, block.label);
+
+    expect(row?.dotPath).toBe("v1.textToSpeech.stream.withTimestamps");
+    expect(row?.docsUrl).toBe(
+      "https://elevenlabs.io/docs/api-reference/text-to-speech/stream-with-timestamps"
+    );
   });
 });

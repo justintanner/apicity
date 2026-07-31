@@ -9,7 +9,7 @@
 // per-iteration. Rates come from the bundled @apicity/cost PRICING table —
 // no API keys, no network, instant.
 
-import { cost } from "../packages/provider/cost/dist/src/index.js";
+import { createCost } from "../packages/provider/cost/dist/src/index.js";
 
 const argv = process.argv.slice(2);
 const args = Object.fromEntries(
@@ -197,7 +197,7 @@ const lineup = [
   },
 ];
 
-const c = cost();
+const c = createCost();
 
 // Patches `duration` into the kie payload at either the top level (veo) or
 // nested under `input` (marketplace shape). Returns a fresh object so the

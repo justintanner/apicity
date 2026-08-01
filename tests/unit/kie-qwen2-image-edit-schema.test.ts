@@ -19,6 +19,16 @@ const SEED_CASES = [
   { label: "zero", seed: 0, accepted: true },
   { label: "positive integer", seed: 42, accepted: true },
   { label: "negative integer", seed: -1, accepted: true },
+  {
+    label: "integer above the safe range",
+    seed: Number.MAX_SAFE_INTEGER + 1,
+    accepted: true,
+  },
+  {
+    label: "integer below the safe range",
+    seed: Number.MIN_SAFE_INTEGER - 1,
+    accepted: true,
+  },
   { label: "fraction", seed: 0.5, accepted: false },
   { label: "numeric string", seed: "1", accepted: false },
 ] as const;

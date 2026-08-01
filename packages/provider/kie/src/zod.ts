@@ -859,7 +859,7 @@ export const Qwen2ImageEditRequestSchema = z.object({
       .enum(["1:1", "2:3", "3:2", "3:4", "4:3", "9:16", "16:9", "21:9"])
       .default("16:9"),
     output_format: z.enum(["jpeg", "png"]).default("png"),
-    seed: z.number().int().optional(),
+    seed: z.number().multipleOf(1).optional(),
     nsfw_checker: z.boolean().default(false),
   }),
 });

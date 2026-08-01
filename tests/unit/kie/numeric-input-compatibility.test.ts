@@ -60,6 +60,12 @@ const CLASSIFICATIONS = new Set([
   "unknown",
 ]);
 const CONFIDENCE_LEVELS = new Set(["high", "medium", "low"]);
+const REVIEWED_NUMERIC_STRING_PATTERNS = new Set([
+  "^[1-9]\\d*$",
+  "^(?:[6-9]|[12][0-9]|30)$",
+  // Regression sentinel: numeric-only, but absent from the former samples.
+  "^7$",
+]);
 
 function isRecord(value: unknown): value is JsonSchema {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -91,39 +97,10 @@ function isNumericString(value: unknown): value is string {
   );
 }
 
-function isNumericStringPattern(pattern: string): boolean {
-  let expression: RegExp;
-  try {
-    expression = new RegExp(pattern);
-  } catch {
-    return false;
-  }
-
-  const numericSamples = [
-    "-1",
-    "0",
-    "1",
-    "3",
-    "4",
-    "5",
-    "6",
-    "8",
-    "10",
-    "15",
-    "30",
-    "720",
-    "1080",
-    "1.5",
-  ];
-  const nonNumericSamples = ["", "x", "x1", "1x", "1:1", "1x1"];
-
-  return (
-    numericSamples.some((sample) => expression.test(sample)) &&
-    nonNumericSamples.every((sample) => !expression.test(sample))
-  );
-}
-
-function numericVariant(schema: JsonSchema): NumericVariant | undefined {
+function numericVariant(
+  schema: JsonSchema,
+  location: string
+): NumericVariant | undefined {
   if (schema.type === "integer" || schema.type === "number") {
     return {
       kind: schema.type,
@@ -139,6 +116,16 @@ function numericVariant(schema: JsonSchema): NumericVariant | undefined {
   if (schema.type !== "string") return undefined;
 
   if (
+    typeof schema.pattern === "string" &&
+    !REVIEWED_NUMERIC_STRING_PATTERNS.has(schema.pattern)
+  ) {
+    throw new Error(
+      `Unclassified patterned string at ${location}: ` +
+        JSON.stringify(schema.pattern)
+    );
+  }
+
+  if (
     Array.isArray(schema.enum) &&
     schema.enum.length > 0 &&
     schema.enum.every(isNumericString)
@@ -149,10 +136,7 @@ function numericVariant(schema: JsonSchema): NumericVariant | undefined {
     };
   }
 
-  if (
-    typeof schema.pattern === "string" &&
-    isNumericStringPattern(schema.pattern)
-  ) {
+  if (typeof schema.pattern === "string") {
     return {
       kind: "numeric-string-pattern",
       pattern: schema.pattern,
@@ -260,7 +244,7 @@ function walkInputSchema(
     return;
   }
 
-  const variant = numericVariant(schema);
+  const variant = numericVariant(schema, `${model}.${path}`);
   if (variant) {
     addNumericRow(
       rows,
@@ -430,6 +414,26 @@ function parseInventory(): AuditRow[] {
 }
 
 describe("KIE numeric input compatibility inventory", () => {
+  it("retains reviewed numeric-only patterns outside the former samples", () => {
+    expect(
+      numericVariant(
+        { type: "string", pattern: "^7$" },
+        "fixture-model.input.duration"
+      )
+    ).toEqual({ kind: "numeric-string-pattern", pattern: "^7$" });
+  });
+
+  it("fails closed on unclassified mixed patterns with their location", () => {
+    expect(() =>
+      numericVariant(
+        { type: "string", pattern: "^(?:6|cat)$" },
+        "fixture-model.input.duration"
+      )
+    ).toThrowError(
+      'Unclassified patterned string at fixture-model.input.duration: "^(?:6|cat)$"'
+    );
+  });
+
   it("matches every catalogue-linked numeric input path exactly", () => {
     const expected = deriveNumericRows();
     const actual = parseInventory();

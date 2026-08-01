@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Qwen2 image-edit seed validation and discovery metadata now follow KIE's
+  published integer contract. This narrows caller-visible validation: replace
+  fractional seed values with an integer or omit `seed` before upgrading.
 - Seedance 2 Mini reference media and Qwen2 image-edit media fields accept
   pre-upload asset identifiers as plain strings.
 - Generated documentation clarifies that pre-upload identifiers must be

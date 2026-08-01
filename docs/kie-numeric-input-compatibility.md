@@ -74,7 +74,57 @@ The one allowed live probe established the missing numeric image-to-video fact:
 - Result: HTTP 200; envelope `code: 200`, `msg: "success"`, and a task id was
   present. The task id is deliberately not retained here.
 
-## Decision
+## Grok Extend evidence gate
+
+The official Grok Extend Markdown (`DOC-07`) was fetched once at
+`2026-08-01T10:29:50Z`. Its SHA-256 remained
+`6a495e8b4787c6e063da393a5455d119c478a295960e3361535f3fa631fbf1b4`,
+byte-for-byte identical to the 2026-07-31 snapshot. The current source still
+contains these internally conflicting facts:
+
+| Evidence dimension            | `input.extend_at`                                                         | `input.extend_times`                                        |
+| ----------------------------- | ------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| OpenAPI property declaration  | JSON `number`; minimum `2`; default `2`; no maximum or integer constraint | JSON `number`; no default, bounds, or machine-readable enum |
+| Prose                         | "Optional field"                                                          | "Required field"; names durations `6` and `10`              |
+| OpenAPI `required` membership | present                                                                   | present                                                     |
+| Request example               | JSON number `2`                                                           | JSON string `"6"`                                           |
+| Historical HAR                | JSON number `0`                                                           | JSON string `"6"`                                           |
+| Historical result             | HTTP `200`; envelope `code: 200`, `msg: "success"`, task id present       | same request and result                                     |
+| Current live observation      | none                                                                      | none                                                        |
+| Vendor clarification          | none recorded                                                             | none recorded                                               |
+
+The historical request started at `2026-04-16T07:18:51.533Z`. Its immutable
+fixture is
+`tests/recordings/kie_2079838932/grok-video-extend_884144663/recording.har`
+with SHA-256
+`994e2713d18af423bed0cdd71dcdcfb723484261d2c34818d01b9612588e47f6`.
+That result proves only that the exact number-`0`/string-`"6"` request was
+accepted on that date. It does not prove current omission, defaulting,
+fractional behavior, lower bounds, numeric `extend_times`, or the `"10"` case.
+
+The resulting contract matrix is intentionally explicit about what remains
+unresolved:
+
+| Contract dimension                        | `input.extend_at`                                                                                                                                                          | `input.extend_times`                                                                                                                         | Status                                          |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| Accepted JSON type(s)                     | Number is supported by both the current declaration and historical request; numeric strings have no evidence                                                               | Current declaration says number, while the current example and historical request use string; number, string, or both cannot yet be selected | `extend_at` resolved; `extend_times` unresolved |
+| Requiredness                              | Prose says optional, but the same OpenAPI schema lists it as required; the historical request included it                                                                  | Declaration, prose, and `required` membership say required                                                                                   | `extend_at` unresolved; `extend_times` resolved |
+| Omission/default ownership                | KIE advertises default `2`, but omission has not been observed and conflicts with `required` membership; Apicity must not inject a default                                 | Required and no default is declared                                                                                                          | `extend_at` unresolved; `extend_times` resolved |
+| Integer/fractional semantics              | OpenAPI says general number; only integer examples/traffic exist; fractional acceptance or normalization is unknown                                                        | The documented duration set is integral, but accepted JSON representation remains unresolved                                                 | unresolved                                      |
+| Bounds                                    | Current declaration has minimum `2` and no maximum; historical `0` succeeded, so the current lower bound is unresolved and absence of a declared maximum is not live proof | Only discrete durations `6` and `10` are named; no continuous range is declared                                                              | `extend_at` unresolved; duration set resolved   |
+| Discrete values                           | No discrete set is declared                                                                                                                                                | Prose names exactly `6` and `10`; the declaration does not encode an enum                                                                    | resolved independently of JSON representation   |
+| Representation preservation/normalization | Any selected Apicity contract must forward the supplied number unchanged; no coercion or upstream normalization is evidenced                                               | Any accepted number/string forms must remain distinct on the wire; no coercion or normalization is evidenced                                 | policy resolved; accepted union unresolved      |
+
+No direct vendor clarification was available in the approved context. The
+separately gated eight-case live matrix was not authorized: no reusable 480p
+source task, credentials authorization, `$0.50` ceiling approval, or stop-rule
+approval was supplied. Consequently no KIE request, source generation, retry,
+poll, download, or fixture write occurred; the call count and cost were both
+zero.
+
+## Decisions
+
+### Existing Grok duration decision
 
 Both `grok-imagine/text-to-video.input.duration` and
 `grok-imagine/image-to-video.input.duration` are classified `both`. Their local
@@ -87,13 +137,29 @@ declaration alone does not authorize a speculative numeric-string widening.
 Unknown rows stay unknown, and documented discrepancies remain unchanged until
 their linked Beads work establishes a deliberate contract.
 
+### Grok Extend decision status
+
+No final Grok Extend compatibility contract is selected. The unchanged
+official source is still contradictory on `extend_at` requiredness and on the
+JSON representation of `extend_times`, and it does not resolve omission,
+current lower-bound compatibility, or fractional semantics. Selecting a wider
+or narrower client contract from these facts would be a guess.
+
+This evidence gate therefore requires a human decision: either provide direct
+vendor clarification covering every unresolved matrix cell or explicitly
+authorize the exact bounded probe and its prerequisites from the approved
+implementation plan. Until then, the existing Apicity runtime behavior remains
+unchanged and downstream schema, metadata, test, and pricing work stays
+blocked.
+
 ## Follow-up discrepancies
 
 The audit found five unrelated evidence groups that are concrete enough for
 separate work but outside this item's two-field decision:
 
-- `ac-4up9pn` — reconcile Grok Extend types, optionality, default, and lower
-  bound against current docs and historical traffic.
+- `ac-4up9pn` — human decision required for Grok Extend: the official source
+  remained contradictory on 2026-08-01, and neither complete vendor
+  clarification nor the separately approved bounded probe was available.
 - `ac-6uehjf` — decide whether Qwen2 image-edit `seed` is integer-only; the
   current local schema accepts fractions while `DOC-09` declares integer.
 - `ac-07mm6l` — reconcile the Seedance 2 Mini duration default (`15` locally,
@@ -106,6 +172,8 @@ separate work but outside this item's two-field decision:
 ## Official source registry
 
 All hashes cover the exact UTF-8 Markdown response retrieved on 2026-07-31.
+`DOC-07` was fetched again at `2026-08-01T10:29:50Z` and retained the same
+hash.
 
 | ID     | URL                                                                     | SHA-256                                                            |
 | ------ | ----------------------------------------------------------------------- | ------------------------------------------------------------------ |

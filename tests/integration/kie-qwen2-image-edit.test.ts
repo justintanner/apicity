@@ -57,9 +57,23 @@ describe("kie qwen2/image-edit integration", () => {
       input: {
         prompt: "Edit this image",
         image_url: "https://example.com/image.jpg",
+        seed: 42,
       },
     });
     expect(valid.success).toBe(true);
+    if (!valid.success) throw valid.error;
+    expect(valid.data).toMatchObject({ input: { seed: 42 } });
+
+    const invalidFractionalSeed =
+      provider.post.api.v1.jobs.createTask.schema.safeParse({
+        model: "qwen2/image-edit",
+        input: {
+          prompt: "Edit this image",
+          image_url: "https://example.com/image.jpg",
+          seed: 0.5,
+        },
+      });
+    expect(invalidFractionalSeed.success).toBe(false);
 
     // Missing required model field
     const invalid = provider.post.api.v1.jobs.createTask.schema.safeParse({
@@ -113,7 +127,8 @@ describe("kie qwen2/image-edit integration", () => {
     expect(schema.fields.output_format.required).toBeUndefined();
     expect(schema.fields.output_format.default).toBe("png");
     expect(schema.fields.output_format.enum).toEqual(["jpeg", "png"]);
-    expect(schema.fields.seed).toBeDefined();
+    expect(schema.fields.seed.type).toBe("integer");
+    expect(schema.fields.seed).not.toHaveProperty("default");
     expect(schema.fields.nsfw_checker).toBeDefined();
     expect(schema.fields.nsfw_checker.type).toBe("boolean");
     expect(schema.fields.nsfw_checker.default).toBe(false);

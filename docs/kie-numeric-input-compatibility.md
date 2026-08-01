@@ -82,20 +82,37 @@ schemas accept bounded integer numbers or canonical decimal integer strings
 from 6 through 30, preserve the supplied representation, retain the numeric
 image-to-video default `6`, and reject coercive or noncanonical forms.
 
-Every other row retains its current local behavior in this item. A current
-declaration alone does not authorize a speculative numeric-string widening.
-Unknown rows stay unknown, and documented discrepancies remain unchanged until
-their linked Beads work establishes a deliberate contract.
+Rows outside the Grok duration and Qwen2 image-edit seed decisions retain their
+current local behavior. A current declaration alone does not authorize a
+speculative numeric-string widening. Unknown rows stay unknown, and documented
+discrepancies remain unchanged until their linked Beads work establishes a
+deliberate contract.
+
+## Qwen2 image-edit seed evidence and decision
+
+KIE's official Qwen2 image-edit Markdown OpenAPI is
+https://docs.kie.ai/market/qwen2/image-edit.md (`DOC-09`). It was retrieved on
+2026-07-31 and verified unchanged on 2026-08-01, with SHA-256
+`669abb6a6fb2b41f99539e15e312c315318f10e7f2b88535130f83d03eaaf781`.
+The source declares `input.seed` optional with JSON type `integer`, shows the
+JSON number `0` in its request example, and declares no minimum, maximum, or
+default.
+
+No live fractional-seed observation or vendor clarification is available.
+Accordingly, this record does not claim that the current KIE service rejects
+fractions and does not infer a service default. Apicity follows the normative
+published contract: when supplied, `seed` must be an integer JSON number;
+omission remains absent; and no bounds, default, coercion, normalization, or
+other transformation is introduced. Supplied integers are preserved, while
+fractions and numeric strings are rejected by local validation.
 
 ## Follow-up discrepancies
 
-The audit found five unrelated evidence groups that are concrete enough for
-separate work but outside this item's two-field decision:
+The audit still tracks four unrelated evidence groups that are concrete enough
+for separate work outside the decisions recorded above:
 
 - `ac-4up9pn` — reconcile Grok Extend types, optionality, default, and lower
   bound against current docs and historical traffic.
-- `ac-6uehjf` — decide whether Qwen2 image-edit `seed` is integer-only; the
-  current local schema accepts fractions while `DOC-09` declares integer.
 - `ac-07mm6l` — reconcile the Seedance 2 Mini duration default (`15` locally,
   `5` in `DOC-12`).
 - `ac-kxdmvm` — decide whether Wan 2.7 image bounding-box coordinates are
@@ -168,7 +185,7 @@ this evidence item makes no runtime contract change for the row.
 | grok-imagine/extend                       | input.extend_at               | required; integer min=0                                                                              | DOC-07 @ 2026-07-31 | number min=2 default=2                      | number (2)          | current doc/local discrepancy; ac-4up9pn    | number-only         | high       | retain pending ac-4up9pn                 |
 | grok-imagine/extend                       | input.extend_times            | required; numeric-string enum="6","10"                                                               | DOC-07 @ 2026-07-31 | number                                      | string ("6")        | current doc/local discrepancy; ac-4up9pn    | unknown             | medium     | retain pending ac-4up9pn                 |
 | qwen2/text-to-image                       | input.seed                    | optional; integer                                                                                    | DOC-08 @ 2026-07-31 | integer                                     | number (0)          | none beyond current OpenAPI                 | number-only         | high       | retain current behavior                  |
-| qwen2/image-edit                          | input.seed                    | optional; number                                                                                     | DOC-09 @ 2026-07-31 | integer                                     | number (0)          | current doc/local discrepancy; ac-6uehjf    | number-only         | high       | retain pending ac-6uehjf                 |
+| qwen2/image-edit                          | input.seed                    | optional; integer                                                                                    | DOC-09 @ 2026-07-31 | integer                                     | number (0)          | no fractional observation or clarification  | number-only         | high       | align with official integer contract     |
 | bytedance/seedance-2-fast                 | input.duration                | optional; integer min=4 max=15 default=5                                                             | DOC-10 @ 2026-07-31 | integer default=5                           | number (15)         | none beyond current OpenAPI                 | number-only         | high       | retain current behavior                  |
 | bytedance/seedance-2                      | input.duration                | optional; integer min=4 max=15 default=5                                                             | DOC-11 @ 2026-07-31 | integer default=5                           | number (15)         | none beyond current OpenAPI                 | number-only         | high       | retain current behavior                  |
 | bytedance/seedance-2-mini                 | input.duration                | optional; integer min=4 max=15 default=15                                                            | DOC-12 @ 2026-07-31 | integer default=5                           | number (15)         | current doc/local discrepancy; ac-07mm6l    | number-only         | high       | retain pending ac-07mm6l                 |

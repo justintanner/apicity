@@ -1050,8 +1050,9 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         description: "Image format (default png)",
       },
       seed: {
-        type: "number",
-        description: "Random seed",
+        type: "integer",
+        description:
+          "Optional integer random seed (no documented bounds or default)",
       },
       nsfw_checker: {
         type: "boolean",

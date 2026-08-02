@@ -586,6 +586,9 @@ export const GrokImageToVideoDurationSchema = z.union([
   GrokDurationStringSchema,
 ]);
 
+// The bounded Grok Extend matrix recorded in
+// docs/kie-numeric-input-compatibility.md accepts only these JSON strings.
+// Keep the caller's representation unchanged; do not coerce numbers.
 export const GrokImagineDurationSchema = z.enum(["6", "10"]);
 
 export const GrokImagineResolutionSchema = z.enum(["480p", "720p"]);
@@ -954,8 +957,9 @@ export const GrokVideoExtendRequestSchema = z.object({
   input: z.object({
     task_id: z.string().min(1).max(100),
     prompt: z.string().min(1).max(5000),
-    // Extend position in seconds; the recording sends the integer 0.
-    extend_at: z.number().int().min(0),
+    // Current evidence accepts fractional positions and rejects omission.
+    // KIE applies no usable default, so preserve the required number as sent.
+    extend_at: z.number().min(0),
     extend_times: GrokImagineDurationSchema,
   }),
 });

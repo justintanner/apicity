@@ -26,6 +26,7 @@ import {
   CreateTaskRequestSchema,
   GrokImageToVideoRequestSchema,
   GrokTextToVideoRequestSchema,
+  GrokVideoExtendRequestSchema,
   Seedance2FastRequestSchema,
   Wan27VideoEditRequestSchema,
 } from "../../packages/provider/kie/src/zod";
@@ -171,6 +172,27 @@ describe("MCP Zod schema conversion", () => {
       { type: "integer", minimum: 6, maximum: 30 },
       { type: "string", pattern: "^(?:[6-9]|[12][0-9]|30)$" },
     ]);
+  });
+
+  it("exposes the exact Grok Extend field contract", () => {
+    const schema = zodToJsonSchema(GrokVideoExtendRequestSchema);
+    const inputSchema = propertiesOf(schema).input;
+    const inputProperties = propertiesOf(inputSchema);
+
+    expect(inputSchema.required).toEqual([
+      "task_id",
+      "prompt",
+      "extend_at",
+      "extend_times",
+    ]);
+    expect(inputProperties.extend_at).toEqual({
+      type: "number",
+      minimum: 0,
+    });
+    expect(inputProperties.extend_times).toEqual({
+      type: "string",
+      enum: ["6", "10"],
+    });
   });
 
   it("exposes split Alibaba Qwen image model and slot schemas", () => {

@@ -425,15 +425,18 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         description: "Extension prompt",
       },
       extend_at: {
-        type: "string",
+        type: "number",
         required: true,
-        description: "Starting position for extension",
+        minimum: 0,
+        description:
+          "Required extension position (number >= 0, including fractions); preserved without coercion or a client default",
       },
       extend_times: {
         type: "string",
         required: true,
         enum: ["6", "10"],
-        description: "Extension duration in seconds",
+        description:
+          'Required extension duration as the exact string "6" or "10"; numbers are rejected and values are preserved without coercion',
       },
     },
   },

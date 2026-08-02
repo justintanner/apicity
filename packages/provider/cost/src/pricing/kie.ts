@@ -273,11 +273,12 @@ export const kie: Record<string, ModelPricing> = {
   },
 
   // grok-imagine/extend: flat per-generation, 4 rates indexed by
-  // (extend_times, resolution). The kie schema only carries extend_times
-  // and task_id — resolution is inherited from the source video. Callers
-  // must pass top-level `resolution` as pricing-only metadata. Resolution is
-  // not part of CostHints yet, so this legacy side field remains distinct
-  // from the durationSeconds hint channel.
+  // (extend_times, resolution). The evidenced request contract keeps
+  // extend_times as the exact strings "6" and "10"; numeric values do not
+  // select a tier. Resolution is inherited from the source video, so callers
+  // pass top-level `resolution` as pricing-only metadata. Resolution is not
+  // part of CostHints yet, so this legacy side field remains distinct from the
+  // durationSeconds hint channel.
   "grok-imagine/extend": {
     kind: "perUnit",
     unit: "generations",

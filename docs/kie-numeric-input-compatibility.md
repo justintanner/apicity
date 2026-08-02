@@ -282,6 +282,149 @@ Until that input exists, the existing Apicity runtime behavior remains
 unchanged and downstream schema, metadata, test, documentation, and pricing
 work stays blocked. Authorization alone is not recorded as service evidence.
 
+### Continuation run `ac-c9zybp`: authorized one-read boundary
+
+This continuation starts at `2026-08-02T12:19:30Z` from reviewed repository
+anchor `14ad882c1479826c4d3735c35fd2207d100aaba4` on `main`, equal to
+`origin/main` with no tracked diff. Pre-existing untracked Gas City, launcher,
+and user paths are excluded from this work. `pnpm run check:op` passed before
+dispatch.
+
+The run consumes the local recovery in
+`plans/ac-4up9pn/build/source-task-recovery.ac-lw5h1b.md` and manual decision
+`ac-q8gjzt=read-ok`, answered at `2026-08-02T11:45:34Z`. That decision
+authorizes exactly one zero-cost `GET` to host `api.kie.ai`, path
+`/api/v1/jobs/recordInfo`, and query
+`taskId=0937ee21b9c17913a0ec7fc9d7a9eae6`. It authorizes no retry,
+alternative task ID, source create, poll, callback, media download, or fixture
+write. The recovered identifier is an input to this read, not service
+evidence by itself.
+
+Starting run counters are zero new source creates, zero task-detail reads,
+zero matrix creates, and `$0.00` new spend. Historical consumed accounting
+remains separate: the earlier source run made one create and three polls at a
+conservative maximum of `$0.048`. Only after this saved response confirms the
+same terminally successful six-second 480p source may the standing
+`ac-egtr46=approve-probe` authority resume the eight-case matrix under its
+eight-create and `$0.50` ceilings.
+
+File-first evidence is rooted at
+`plans/ac-4up9pn/build/evidence/ac-c9zybp/`. Before dispatch, the one-shot
+runner exclusively creates `task-detail.attempt.json`; it refuses to run when
+that marker or `task-detail-response.raw.json` already exists. The raw
+response is written with mode `0600` and fsynced before projection. Its digest,
+safe HTTP metadata, exact raw `param`, safe projection, and terminal outcome
+use the sibling `task-detail-*` paths. Request data and API output are never
+printed by the runner. `op run` stdout is not evidence because 1Password masks
+every digit `3`; restricted files and their hashes are authoritative.
+
+The single GET was dispatched at `2026-08-02T12:24:18.209Z` and returned at
+`2026-08-02T12:24:18.510Z`. HTTP status was `200`; the KIE envelope had
+`code: 200`, `msg: "success"`, and non-null data. The exact recovered task ID
+matched, state was `success`, model was `grok-imagine/text-to-video`, and both
+failure fields were empty. The saved raw response hashes to
+`a35a728896255181f0583554afd5470e26f76434263e9ee574a6e9f77f0faf56`.
+The exact raw `param` value hashes to
+`94b582fd1279dc9e223a0de78dfb5f763756be58083a1ccf6ca21e450fc575b4`;
+its outer JSON contains a string-valued `input`, and that nested JSON records
+number `duration: 6` and string `resolution: "480p"`. Incidental result URLs
+remain restricted and are not published here.
+
+The first local outcome artifact conservatively labeled the observation
+blocked because it compared timestamps for exact millisecond equality. It
+recorded `createTime: 1785654543000` and
+`completeTime: 1785654568000`, while recovery retained
+`1785654543003` and `1785654568023`. The response values are whole-second
+representations of the same Unix seconds, differing only by 3 ms and 23 ms.
+The independent offline validator preserves the first outcome, hashes both
+inputs, and applies the plan's non-contradiction rule: exact equality or the
+same Unix second when KIE returns zero milliseconds. All identity, envelope,
+state, model, failure, serialization, duration, resolution, and timestamp
+checks pass in `task-detail-offline-validation.json`. The source confirmation
+gate is therefore satisfied without another request.
+
+Final pre-matrix accounting is zero new source creates, `1 of 1` task-detail
+GETs, zero retries, zero polls, zero callbacks, zero downloads, zero fixture
+writes, and `$0.00` new spend. The historical source run remains one create,
+three polls, and at most `$0.048` separately.
+
+### Continuation run `ac-c9zybp`: frozen Extend matrix
+
+The confirmed source ID, constant prompt
+`The blue sphere drifts slowly as the camera pans right.`, and top-level
+`resolution: "480p"` are frozen for all eight cases. Every payload uses model
+`grok-imagine/extend`, the same `task_id`, no callback, and changes only
+`extend_at` and `extend_times` in this order:
+
+| Order | Case        | `extend_at` | `extend_times` | Maximum cost | Cumulative ceiling |
+| ----- | ----------- | ----------- | -------------- | ------------ | ------------------ |
+| 1     | control     | `2`         | `"6"`          | `$0.05`      | `$0.05`            |
+| 2     | omission    | omitted     | `"6"`          | `$0.05`      | `$0.10`            |
+| 3     | lower zero  | `0`         | `"6"`          | `$0.05`      | `$0.15`            |
+| 4     | lower one   | `1`         | `"6"`          | `$0.05`      | `$0.20`            |
+| 5     | fraction    | `2.5`       | `"6"`          | `$0.05`      | `$0.25`            |
+| 6     | numeric six | `2`         | `6`            | `$0.05`      | `$0.30`            |
+| 7     | string ten  | `2`         | `"10"`         | `$0.10`      | `$0.40`            |
+| 8     | numeric ten | `2`         | `10`           | `$0.10`      | `$0.50`            |
+
+The current local schema intentionally rejects three candidate forms before
+transport, so the evidence runner binds each exact raw payload through the
+repository's OTP pay gate and then performs one direct POST to the existing
+`createTask` URL. This keeps the approval check payload-bound without changing
+or bypassing product source. A local no-network preflight proves the pay gate
+dispatches exactly once. Before every external dispatch, an exclusive
+per-case marker and exact payload file are fsynced; raw response bytes, HTTP
+metadata, digest, safe projection, and outcome use matching `matrix-*` paths.
+No case is retried. Extend tasks are not polled, callbacks are absent, output
+is not downloaded, and no fixture is written. Matrix counters start at zero
+calls and `$0.00`; their hard ceilings remain eight calls and `$0.50`.
+
+### Continuation run `ac-c9zybp`: matrix observations and decision
+
+The matrix ran from `2026-08-02T12:32:31Z` through
+`2026-08-02T12:32:42.242Z` and completed all eight cases in the frozen order.
+Each response had HTTP status `200`; KIE used envelope `code: 200` and
+`msg: "success"` for accepted requests, and envelope `code: 500` with a
+field-specific message for rejected requests. The create responses establish
+submission acceptance or rejection only; no output behavior is inferred.
+
+| Order | Case        | Exact variant                         | Observation                                  | Returned task ID                   | Raw-response SHA-256                                               |
+| ----- | ----------- | ------------------------------------- | -------------------------------------------- | ---------------------------------- | ------------------------------------------------------------------ |
+| 1     | control     | `extend_at: 2`, `extend_times: "6"`   | accepted                                     | `8779ac76caaf8931f6e7d784cb00f59f` | `9deb8afa5dec5c496e0f96e69047a6e04fd8baf79e638d44d298c14cc00e07bb` |
+| 2     | omission    | omit `extend_at`, `extend_times: "6"` | rejected: `This field is required`           | none                               | `67f6da88e6a8c443a6c23821ac73a048ad18da7d64c2321208371f7b4d6ee0b1` |
+| 3     | lower zero  | `extend_at: 0`, `extend_times: "6"`   | accepted                                     | `381d1468f8224be23c0f762ef1a9d00d` | `48e0c73bd50c7138e26e7c316c8bc343be034e3176238f91131f664e33faf6ca` |
+| 4     | lower one   | `extend_at: 1`, `extend_times: "6"`   | accepted                                     | `515a0f4e95adf79c48370a07d4810237` | `e1705ce6f6e1026e0c65f2139488d053806401e536192a296c498eeed87d26e6` |
+| 5     | fraction    | `extend_at: 2.5`, `extend_times: "6"` | accepted                                     | `43de4ae8215106411dac3d8791b5cf82` | `a2cb7f15597b7dbfc7ae067d889411975ae20e561b36bd0cbdbeaa660b2e045c` |
+| 6     | numeric six | `extend_at: 2`, `extend_times: 6`     | rejected: `extend_times it must be a string` | none                               | `a73753654a09c41f0d578fc437cb2bc831268813436abae3ed9e995f28a66056` |
+| 7     | string ten  | `extend_at: 2`, `extend_times: "10"`  | accepted                                     | `af4581028a65c6146b4b16062d76d1d0` | `9f9a45e76b85d62cf6205308422ab43b8351f5eccca32eea71237c989f434dc3` |
+| 8     | numeric ten | `extend_at: 2`, `extend_times: 10`    | rejected: `extend_times it must be a string` | none                               | `a73753654a09c41f0d578fc437cb2bc831268813436abae3ed9e995f28a66056` |
+
+The selected contract is complete and representable without coercion:
+
+| Contract dimension           | `input.extend_at`                                                                    | `input.extend_times`                                                                  |
+| ---------------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------- |
+| Accepted JSON types          | number only                                                                          | string only                                                                           |
+| Requiredness                 | required; omission was rejected                                                      | required; no omission case is needed because every source agrees                      |
+| Default ownership            | no Apicity default; KIE's advertised `2` is not usable because omission was rejected | no default                                                                            |
+| Integer/fractional semantics | general number; `2.5` was accepted                                                   | discrete string values only                                                           |
+| Bounds and values            | minimum `0`; no fixed maximum                                                        | exactly `"6"` and `"10"`                                                              |
+| Representation policy        | forward the caller's number unchanged                                                | forward the caller's canonical string unchanged; reject numbers and malformed strings |
+
+Accordingly, Apicity keeps `extend_at` required and minimum `0`, removes its
+unsupported integer-only restriction, and does not materialize a default. It
+keeps `extend_times` required as the exact string enum `"6" | "10"`; numeric
+`6` and `10` are not added. Discovery metadata, generated caller docs, direct
+and guarded tests, the derived inventory, and cost fixtures must express the
+same decision. The price selector remains string-only because that is the
+evidenced provider contract.
+
+Final evidence accounting is zero new source creates, one zero-cost
+task-detail GET, eight matrix creates, and at most `$0.50` matrix spend.
+Retries, source polls, Extend polls, callbacks, downloads, fixture writes, and
+historical-HAR task reuse are all zero. The earlier source run's one create,
+three polls, and at most `$0.048` remain historical accounting, not new
+authority.
+
 ## Qwen2 image-edit seed evidence and decision
 
 KIE's official Qwen2 image-edit Markdown OpenAPI is
@@ -314,6 +457,12 @@ for separate work outside the decisions recorded above:
   integer-only; both local schemas currently accept fractions.
 - `ac-elwd7r` — reconcile ElevenLabs media stability, similarity, style, and
   speed bounds/defaults with the current OpenAPI exports.
+
+Status update at `2026-08-02T12:32:42.242Z`: the later `ac-c9zybp`
+continuation resolved `ac-4up9pn` through the saved source confirmation and
+completed matrix recorded above. The other three follow-up groups remain open;
+the historical blocked status in the list is retained as the earlier run's
+truthful state.
 
 ## Official source registry
 
@@ -379,8 +528,8 @@ this evidence item makes no runtime contract change for the row.
 | grok-imagine/image-to-video               | input.index                   | optional; integer min=0 max=5 default=0                                                              | DOC-05 @ 2026-07-31 | integer min=0 max=5 default=0               | number (0)          | none beyond current OpenAPI                 | number-only         | high       | retain current behavior                  |
 | grok-imagine/image-to-video               | input.duration                | optional; integer min=6 max=30 + numeric-string pattern=^(?:[6-9]&#124;[12][0-9]&#124;30)$ default=6 | DOC-05 @ 2026-07-31 | string                                      | string ("6")        | HAR string "6" -> 200; live number 6 -> 200 | both                | high       | accept bounded number + canonical string |
 | grok-imagine-video-1-5-preview            | input.duration                | optional; integer min=1 max=15 default=8                                                             | DOC-06 @ 2026-07-31 | integer multipleOf=1 min=1 max=15 default=8 | absent              | none beyond current OpenAPI                 | number-only         | medium     | retain current behavior                  |
-| grok-imagine/extend                       | input.extend_at               | required; integer min=0                                                                              | DOC-07 @ 2026-07-31 | number min=2 default=2                      | number (2)          | probe blocked before call; ac-4up9pn        | number-only         | high       | retain pending ac-4up9pn                 |
-| grok-imagine/extend                       | input.extend_times            | required; numeric-string enum="6","10"                                                               | DOC-07 @ 2026-07-31 | number                                      | string ("6")        | probe blocked before call; ac-4up9pn        | unknown             | medium     | retain pending ac-4up9pn                 |
+| grok-imagine/extend                       | input.extend_at               | required; number min=0                                                                               | DOC-07 @ 2026-07-31 | number min=2 default=2                      | number (2)          | matrix 0/1/2/2.5 -> 200; omit -> 500        | number-only         | high       | require general number min=0; no default |
+| grok-imagine/extend                       | input.extend_times            | required; numeric-string enum="6","10"                                                               | DOC-07 @ 2026-07-31 | number                                      | string ("6")        | matrix "6"/"10" -> 200; 6/10 -> 500         | numeric-string-only | high       | retain exact strings; reject numbers     |
 | qwen2/text-to-image                       | input.seed                    | optional; integer                                                                                    | DOC-08 @ 2026-07-31 | integer                                     | number (0)          | none beyond current OpenAPI                 | number-only         | high       | retain current behavior                  |
 | qwen2/image-edit                          | input.seed                    | optional; integer                                                                                    | DOC-09 @ 2026-07-31 | integer                                     | number (0)          | no fractional observation or clarification  | number-only         | high       | align with official integer contract     |
 | bytedance/seedance-2-fast                 | input.duration                | optional; integer min=4 max=15 default=5                                                             | DOC-10 @ 2026-07-31 | integer default=5                           | number (15)         | none beyond current OpenAPI                 | number-only         | high       | retain current behavior                  |

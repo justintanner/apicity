@@ -39,6 +39,30 @@ describe("KIE modelInputSchemas metadata", () => {
     }
   });
 
+  it("exposes the evidence-backed Grok Extend contract", () => {
+    const fields = provider.modelInputSchemas["grok-imagine/extend"].fields;
+
+    expect(fields.extend_at).toMatchObject({
+      type: "number",
+      required: true,
+      minimum: 0,
+    });
+    expect(fields.extend_at.default).toBeUndefined();
+    expect(fields.extend_at.maximum).toBeUndefined();
+    expect(fields.extend_at.description).toContain("including fractions");
+    expect(fields.extend_at.description).toContain("without coercion");
+
+    expect(fields.extend_times).toMatchObject({
+      type: "string",
+      required: true,
+      enum: ["6", "10"],
+    });
+    expect(fields.extend_times.acceptedTypes).toBeUndefined();
+    expect(fields.extend_times.default).toBeUndefined();
+    expect(fields.extend_times.description).toContain("numbers are rejected");
+    expect(fields.extend_times.description).toContain("without coercion");
+  });
+
   it("exposes Wan image numeric, string, and array constraints", () => {
     const fields = provider.modelInputSchemas["wan/2-7-image-pro"].fields;
 

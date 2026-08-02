@@ -405,7 +405,7 @@ describe("cost.estimate — pure-table (no network)", () => {
         input: {
           task_id: "abc",
           prompt: "more",
-          extend_at: "5",
+          extend_at: 2,
           extend_times: "10",
         },
         resolution: "720p",
@@ -416,6 +416,55 @@ describe("cost.estimate — pure-table (no network)", () => {
     expect(r.usd).toBeCloseTo(0.15, 6);
   });
 
+  it.each([
+    { extendTimes: "6", resolution: "480p", expected: 0.05 },
+    { extendTimes: "6", resolution: "720p", expected: 0.1 },
+    { extendTimes: "10", resolution: "480p", expected: 0.1 },
+    { extendTimes: "10", resolution: "720p", expected: 0.15 },
+  ])(
+    "kie grok-imagine/extend prices string $extendTimes at $resolution",
+    ({ extendTimes, resolution, expected }) => {
+      const r = createCost().estimate({
+        provider: "kie",
+        payload: {
+          model: "grok-imagine/extend",
+          resolution,
+          input: {
+            task_id: "abc",
+            prompt: "more",
+            extend_at: 2.5,
+            extend_times: extendTimes,
+          },
+        },
+      });
+
+      expect(r.breakdown.perUnitUsd).toBe(expected);
+      expect(r.usd).toBeCloseTo(expected, 6);
+    }
+  );
+
+  it.each([6, 10, 7, "7", 6.5])(
+    "kie grok-imagine/extend does not price unsupported duration %j",
+    (extendTimes) => {
+      const r = createCost().estimate({
+        provider: "kie",
+        payload: {
+          model: "grok-imagine/extend",
+          resolution: "480p",
+          input: {
+            task_id: "abc",
+            prompt: "more",
+            extend_at: 2,
+            extend_times: extendTimes,
+          },
+        },
+      });
+
+      expect(r.usd).toBe(0);
+      expect(r.warnings.length).toBeGreaterThan(0);
+    }
+  );
+
   it("kie grok-imagine/extend without resolution hint warns", () => {
     const c = createCost();
     const r = c.estimate({
@@ -425,7 +474,7 @@ describe("cost.estimate — pure-table (no network)", () => {
         input: {
           task_id: "abc",
           prompt: "more",
-          extend_at: "5",
+          extend_at: 2,
           extend_times: "6",
         },
       },

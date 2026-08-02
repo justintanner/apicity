@@ -1102,7 +1102,7 @@ export const Seedance2MiniInputSchema = z.object({
   generate_audio: z.boolean().default(true),
   resolution: Seedance2MiniResolutionSchema.default("720p"),
   aspect_ratio: Seedance2MiniAspectRatioSchema.default("16:9"),
-  duration: z.number().int().min(4).max(15).default(15),
+  duration: z.number().int().min(4).max(15).default(5),
   web_search: z.boolean().default(false),
   nsfw_checker: z.boolean().default(true),
 });

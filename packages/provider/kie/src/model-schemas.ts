@@ -679,8 +679,8 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         type: "integer",
         minimum: 4,
         maximum: 15,
-        default: 15,
-        description: "Duration in seconds, 4-15 (default 15)",
+        default: 5,
+        description: "Duration in seconds, 4-15 (default 5)",
       },
       web_search: {
         type: "boolean",

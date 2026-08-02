@@ -199,3 +199,19 @@ mise.local.toml
 /ac-*/
 /plans/
 .beads/formulas/*
+
+# More Gas City / agent-harness runtime dirt on rig checkouts. All of it is
+# recreated by the dispatcher or the agent vendor; an untracked file here
+# blocks the build pipeline's safe-start check. Never commit; never prune
+# /worktrees/ by hand (approved-but-unlanded tips can live only there).
+/worktrees/
+/schemas/
+/packs.lock
+/.codex/
+/.playwright-mcp/
+/apicity/
+
+# gc-materialized skills (core.gc-*, gascity.*, ...). Hand-authored skills
+# like beads/ stay tracked; use `git add -f` to track a new one intentionally.
+/.agents/skills/*
+!/.agents/skills/beads/

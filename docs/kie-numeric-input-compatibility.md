@@ -74,7 +74,95 @@ The one allowed live probe established the missing numeric image-to-video fact:
 - Result: HTTP 200; envelope `code: 200`, `msg: "success"`, and a task id was
   present. The task id is deliberately not retained here.
 
-## Decision
+## Grok Extend evidence gate
+
+The official Grok Extend Markdown (`DOC-07`) was fetched once at
+`2026-08-02T01:05:13.612Z`. Its SHA-256 remained
+`6a495e8b4787c6e063da393a5455d119c478a295960e3361535f3fa631fbf1b4`,
+byte-for-byte identical to the 2026-07-31 snapshot. The current source still
+contains these internally conflicting facts:
+
+| Evidence dimension            | `input.extend_at`                                                         | `input.extend_times`                                        |
+| ----------------------------- | ------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| OpenAPI property declaration  | JSON `number`; minimum `2`; default `2`; no maximum or integer constraint | JSON `number`; no default, bounds, or machine-readable enum |
+| Prose                         | "Optional field"                                                          | "Required field"; names durations `6` and `10`              |
+| OpenAPI `required` membership | present                                                                   | present                                                     |
+| Request example               | JSON number `2`                                                           | JSON string `"6"`                                           |
+| Historical HAR                | JSON number `0`                                                           | JSON string `"6"`                                           |
+| Historical result             | HTTP `200`; envelope `code: 200`, `msg: "success"`, task id present       | same request and result                                     |
+| Current live observation      | none                                                                      | none                                                        |
+| Vendor clarification          | none recorded                                                             | none recorded                                               |
+
+The historical request started at `2026-04-16T07:18:51.533Z`. Its immutable
+fixture is
+`tests/recordings/kie_2079838932/grok-video-extend_884144663/recording.har`
+with SHA-256
+`994e2713d18af423bed0cdd71dcdcfb723484261d2c34818d01b9612588e47f6`.
+That result proves only that the exact number-`0`/string-`"6"` request was
+accepted on that date. It does not prove current omission, defaulting,
+fractional behavior, lower bounds, numeric `extend_times`, or the `"10"` case.
+
+### Authorization and bounded source preflight
+
+Two later human decisions are inputs to this continuation without changing
+the facts available to the earlier run:
+
+- `approve-probe` was recorded at `2026-08-01T13:57:30Z`. It approves the
+  eight sequential matrix cases, their no-retry stop rules, and a maximum
+  matrix cost of `$0.50`.
+- `generate-new` was recorded at `2026-08-02T00:30:30Z`. It approves at most
+  one additional KIE request to create a fresh 480p source video and describes
+  its expected cost as about `$0.01`.
+
+The new run consumed both decisions as execution inputs but did not consume a
+paid-call allowance. `pnpm run check:op` passed on 2026-08-02. The supported
+minimum source request selected for preflight, but not submitted, was:
+
+```json
+{
+  "model": "grok-imagine/text-to-video",
+  "input": {
+    "prompt": "A blue sphere drifts above a quiet lake.",
+    "duration": 6,
+    "resolution": "480p"
+  }
+}
+```
+
+This candidate reached two authorization boundaries before dispatch:
+
+- KIE's public price is `$0.008` per second for 480p Grok Imagine
+  text-to-video, and the supported minimum duration is 6 seconds. Its
+  conservative maximum is therefore `$0.048`, not the approximately `$0.01`
+  described by the source-generation decision.
+- The create response contains a task id but not completed-task or confirmed
+  resolution evidence. KIE documents the separate task-details endpoint or a
+  callback as the way to establish completion. This run's no-polling and
+  no-callback boundary therefore cannot establish the completed 480p source
+  precondition after only the authorized create request.
+
+No KIE request was submitted. Source-generation calls, matrix calls, retries,
+polls, callbacks, downloads, and fixture writes were all zero. Source cost,
+matrix cost, and total cost were `$0.00`. The historical HAR task id was not
+used. Continuing would require expanding the approved source cost expectation
+and completion-observation boundary, so execution stopped before provider or
+pricing source changed.
+
+The resulting contract matrix remains explicit about what is unresolved:
+
+| Contract dimension                        | `input.extend_at`                                                                                                                                                          | `input.extend_times`                                                                                                                         | Status                                          |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| Accepted JSON type(s)                     | Number is supported by both the current declaration and historical request; numeric strings have no evidence                                                               | Current declaration says number, while the current example and historical request use string; number, string, or both cannot yet be selected | `extend_at` resolved; `extend_times` unresolved |
+| Requiredness                              | Prose says optional, but the same OpenAPI schema lists it as required; the historical request included it                                                                  | Declaration, prose, and `required` membership say required                                                                                   | `extend_at` unresolved; `extend_times` resolved |
+| Omission/default ownership                | KIE advertises default `2`, but omission has not been observed and conflicts with `required` membership; Apicity must not inject a default                                 | Required and no default is declared                                                                                                          | `extend_at` unresolved; `extend_times` resolved |
+| Integer/fractional semantics              | OpenAPI says general number; only integer examples/traffic exist; fractional acceptance or normalization is unknown                                                        | The documented duration set is integral, but accepted JSON representation remains unresolved                                                 | unresolved                                      |
+| Bounds                                    | Current declaration has minimum `2` and no maximum; historical `0` succeeded, so the current lower bound is unresolved and absence of a declared maximum is not live proof | Only discrete durations `6` and `10` are named; no continuous range is declared                                                              | `extend_at` unresolved; duration set resolved   |
+| Discrete values                           | No discrete set is declared                                                                                                                                                | Prose names exactly `6` and `10`; the declaration does not encode an enum                                                                    | resolved independently of JSON representation   |
+| Representation preservation/normalization | Any selected Apicity contract must forward the supplied number unchanged; no coercion or upstream normalization is evidenced                                               | Any accepted number/string forms must remain distinct on the wire; no coercion or normalization is evidenced                                 | policy resolved; accepted union unresolved      |
+
+## Decisions
+
+### Existing Grok duration decision
 
 Both `grok-imagine/text-to-video.input.duration` and
 `grok-imagine/image-to-video.input.duration` are classified `both`. Their local
@@ -87,6 +175,19 @@ current local behavior. A current declaration alone does not authorize a
 speculative numeric-string widening. Unknown rows stay unknown, and documented
 discrepancies remain unchanged until their linked Beads work establishes a
 deliberate contract.
+
+### Grok Extend decision status
+
+No final Grok Extend compatibility contract is selected. The current source
+remains contradictory, and the authorized live matrix could not begin without
+implicitly widening the source-generation decision. A narrower continuation
+must either provide a completed reusable 480p KIE task id or explicitly approve
+the supported source request's `$0.048` maximum together with a bounded way to
+observe successful completion and resolution.
+
+Until that input exists, the existing Apicity runtime behavior remains
+unchanged and downstream schema, metadata, test, documentation, and pricing
+work stays blocked. Authorization alone is not recorded as service evidence.
 
 ## Qwen2 image-edit seed evidence and decision
 
@@ -111,8 +212,9 @@ fractions and numeric strings are rejected by local validation.
 The audit still tracks four unrelated evidence groups that are concrete enough
 for separate work outside the decisions recorded above:
 
-- `ac-4up9pn` — reconcile Grok Extend types, optionality, default, and lower
-  bound against current docs and historical traffic.
+- `ac-4up9pn` — the Grok Extend matrix remains blocked before its first call on
+  the source-generation cost and completion-observation boundary recorded
+  above.
 - `ac-07mm6l` — reconcile the Seedance 2 Mini duration default (`15` locally,
   `5` in `DOC-12`).
 - `ac-kxdmvm` — decide whether Wan 2.7 image bounding-box coordinates are
@@ -123,6 +225,8 @@ for separate work outside the decisions recorded above:
 ## Official source registry
 
 All hashes cover the exact UTF-8 Markdown response retrieved on 2026-07-31.
+`DOC-07` was fetched again at `2026-08-02T01:05:13.612Z` and retained the same
+hash.
 
 | ID     | URL                                                                     | SHA-256                                                            |
 | ------ | ----------------------------------------------------------------------- | ------------------------------------------------------------------ |
@@ -182,8 +286,8 @@ this evidence item makes no runtime contract change for the row.
 | grok-imagine/image-to-video               | input.index                   | optional; integer min=0 max=5 default=0                                                              | DOC-05 @ 2026-07-31 | integer min=0 max=5 default=0               | number (0)          | none beyond current OpenAPI                 | number-only         | high       | retain current behavior                  |
 | grok-imagine/image-to-video               | input.duration                | optional; integer min=6 max=30 + numeric-string pattern=^(?:[6-9]&#124;[12][0-9]&#124;30)$ default=6 | DOC-05 @ 2026-07-31 | string                                      | string ("6")        | HAR string "6" -> 200; live number 6 -> 200 | both                | high       | accept bounded number + canonical string |
 | grok-imagine-video-1-5-preview            | input.duration                | optional; integer min=1 max=15 default=8                                                             | DOC-06 @ 2026-07-31 | integer multipleOf=1 min=1 max=15 default=8 | absent              | none beyond current OpenAPI                 | number-only         | medium     | retain current behavior                  |
-| grok-imagine/extend                       | input.extend_at               | required; integer min=0                                                                              | DOC-07 @ 2026-07-31 | number min=2 default=2                      | number (2)          | current doc/local discrepancy; ac-4up9pn    | number-only         | high       | retain pending ac-4up9pn                 |
-| grok-imagine/extend                       | input.extend_times            | required; numeric-string enum="6","10"                                                               | DOC-07 @ 2026-07-31 | number                                      | string ("6")        | current doc/local discrepancy; ac-4up9pn    | unknown             | medium     | retain pending ac-4up9pn                 |
+| grok-imagine/extend                       | input.extend_at               | required; integer min=0                                                                              | DOC-07 @ 2026-07-31 | number min=2 default=2                      | number (2)          | probe blocked before call; ac-4up9pn        | number-only         | high       | retain pending ac-4up9pn                 |
+| grok-imagine/extend                       | input.extend_times            | required; numeric-string enum="6","10"                                                               | DOC-07 @ 2026-07-31 | number                                      | string ("6")        | probe blocked before call; ac-4up9pn        | unknown             | medium     | retain pending ac-4up9pn                 |
 | qwen2/text-to-image                       | input.seed                    | optional; integer                                                                                    | DOC-08 @ 2026-07-31 | integer                                     | number (0)          | none beyond current OpenAPI                 | number-only         | high       | retain current behavior                  |
 | qwen2/image-edit                          | input.seed                    | optional; integer                                                                                    | DOC-09 @ 2026-07-31 | integer                                     | number (0)          | no fractional observation or clarification  | number-only         | high       | align with official integer contract     |
 | bytedance/seedance-2-fast                 | input.duration                | optional; integer min=4 max=15 default=5                                                             | DOC-10 @ 2026-07-31 | integer default=5                           | number (15)         | none beyond current OpenAPI                 | number-only         | high       | retain current behavior                  |

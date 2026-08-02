@@ -160,6 +160,98 @@ The resulting contract matrix remains explicit about what is unresolved:
 | Discrete values                           | No discrete set is declared                                                                                                                                                | Prose names exactly `6` and `10`; the declaration does not encode an enum                                                                    | resolved independently of JSON representation   |
 | Representation preservation/normalization | Any selected Apicity contract must forward the supplied number unchanged; no coercion or upstream normalization is evidenced                                               | Any accepted number/string forms must remain distinct on the wire; no coercion or normalization is evidenced                                 | policy resolved; accepted union unresolved      |
 
+### Continuation run `ac-rqfacx`: frozen pre-dispatch boundary
+
+This continuation consumes the later manual decision `ac-ct24hp`, answered
+`approve-spend` at `2026-08-02T05:19:34Z`. Together, the three recorded human
+decisions authorize exactly this run boundary:
+
+- `ac-egtr46=approve-probe` at `2026-08-01T13:57:30Z`: at most eight
+  sequential Extend creates under the recorded stop rules and a conservative
+  matrix ceiling of `$0.50`;
+- `ac-lnlcvk=generate-new` at `2026-08-02T00:30:30Z`: at most one fresh 480p
+  source-video create; and
+- `ac-ct24hp=approve-spend` at `2026-08-02T05:19:34Z`: the supported six-second
+  source request at a conservative maximum of `$0.048`, plus bounded status
+  polling to establish completion.
+
+The repository started at `0b0b828200c8f54261e16d37a6019d8c132e42da` on
+`main`, equal to `origin/main`, with no tracked diff. Untracked Gas City and
+user paths were present and are excluded from this work. Credential preflight
+`pnpm run check:op` passed before dispatch. DOC-07 was fetched exactly once at
+`2026-08-02T07:06:20Z`; the response contained 12,968 bytes and retained
+SHA-256
+`6a495e8b4787c6e063da393a5455d119c478a295960e3361535f3fa631fbf1b4`,
+so the official declaration had not drifted.
+
+The single permitted source-create payload is frozen as:
+
+```json
+{
+  "model": "grok-imagine/text-to-video",
+  "input": {
+    "prompt": "A blue sphere drifts above a quiet lake.",
+    "duration": 6,
+    "resolution": "480p"
+  }
+}
+```
+
+The source create has no automatic retry. If it returns a successful task ID,
+this run calls `/api/v1/jobs/recordInfo` at a 10-second cadence and stops at
+the earlier of 120 task-detail requests or 20 minutes from source creation.
+Every poll is counted and timestamped. Polling stops early on `success` or
+`fail`, and stops without retry on the first HTTP/API error, malformed
+response, mismatched task ID, or unrecognized state. The matrix may begin only
+after task details establish `success`, the same task ID, and `480p` in the
+recorded source parameters.
+
+At this frozen boundary, source creates, source polls, matrix creates, retries,
+callbacks, downloads, and fixture writes were all zero; source, matrix, and
+total cost were `$0.00`. The run will not use the historical HAR task ID,
+enable recording mode, register a callback, download generated media, or
+retry any create. Its hard maxima are one source create, `$0.048` source cost,
+120 source polls and 20 minutes, eight matrix creates, `$0.50` matrix cost, and
+nine total paid creates at a conservative `$0.548` total maximum.
+
+### Continuation run `ac-rqfacx`: source observation and stop outcome
+
+The source create was dispatched once at `2026-08-02T07:09:02.687Z`. It
+returned HTTP `200`, envelope `code: 200`, `msg: "success"`, and a task ID.
+The task ID matched all later task-detail responses. The `op run` output
+masker concealed two characters in the retained transcript, so the durable
+redacted identifier is
+`09[masked]7ee21b9c1791[masked]a0ec7fc9d7a9eae6`; it is not silently
+reconstructed or reused here.
+
+Three task-detail requests followed at the frozen 10-second cadence:
+
+| Poll | Timestamp              | HTTP / API    | State     | Retained parameter projection                                            |
+| ---- | ---------------------- | ------------- | --------- | ------------------------------------------------------------------------ |
+| 1    | `2026-08-02T07:09:12Z` | `200` / `200` | `waiting` | model `grok-imagine/text-to-video`; duration and resolution not retained |
+| 2    | `2026-08-02T07:09:22Z` | `200` / `200` | `waiting` | model `grok-imagine/text-to-video`; duration and resolution not retained |
+| 3    | `2026-08-02T07:09:32Z` | `200` / `200` | `success` | model `grok-imagine/text-to-video`; duration and resolution not retained |
+
+The terminal response reported `costTime: 24` and no failure code or message.
+It proved current successful completion for the same task and model, but the
+run's redacted projection decoded only the outer `param` object and attempted
+object-shaped access to its `input` member. The historical task-detail fixture
+shows that KIE may serialize `input` as a nested JSON string; the current
+runner did not retain or decode that inner value. Consequently, the durable
+observation does not prove that the completed source was `480p`, even though
+the create payload requested `480p`. Inferring resolution from the submitted
+payload would collapse request evidence into completion evidence.
+
+The frozen protocol required polling to stop on terminal `success`, so no
+additional status request was made to repair the projection. The matrix
+precondition was not met and no Extend case ran. Final accounting is one
+source create, three source polls, zero matrix creates, zero retries, zero
+callbacks, zero downloads, and zero fixture writes. Conservative source and
+total cost are at most `$0.048`; matrix cost is `$0.00`. Provider schema,
+discovery metadata, generated documentation, tests, and pricing source remain
+unchanged. The exact blocker is missing durable current 480p confirmation
+after the one-create allowance was consumed and terminal polling stopped.
+
 ## Decisions
 
 ### Existing Grok duration decision
@@ -179,11 +271,12 @@ deliberate contract.
 ### Grok Extend decision status
 
 No final Grok Extend compatibility contract is selected. The current source
-remains contradictory, and the authorized live matrix could not begin without
-implicitly widening the source-generation decision. A narrower continuation
-must either provide a completed reusable 480p KIE task id or explicitly approve
-the supported source request's `$0.048` maximum together with a bounded way to
-observe successful completion and resolution.
+remains contradictory. The authorized source request completed successfully,
+but its retained task-detail projection did not preserve the nested resolution
+field, so the eight-case matrix remained at zero calls. A narrower
+continuation must supply durable evidence that a reusable completed KIE task is
+`480p` and its exact task ID, or explicitly authorize a new bounded source
+observation after review of the consumed one-create allowance.
 
 Until that input exists, the existing Apicity runtime behavior remains
 unchanged and downstream schema, metadata, test, documentation, and pricing
@@ -212,9 +305,9 @@ fractions and numeric strings are rejected by local validation.
 The audit still tracks four unrelated evidence groups that are concrete enough
 for separate work outside the decisions recorded above:
 
-- `ac-4up9pn` — the Grok Extend matrix remains blocked before its first call on
-  the source-generation cost and completion-observation boundary recorded
-  above.
+- `ac-4up9pn` — the Grok Extend matrix remains blocked before its first call.
+  One authorized source create completed, but the retained terminal projection
+  did not preserve 480p evidence and the one-create allowance is consumed.
 - `ac-07mm6l` — reconcile the Seedance 2 Mini duration default (`15` locally,
   `5` in `DOC-12`).
 - `ac-kxdmvm` — decide whether Wan 2.7 image bounding-box coordinates are
@@ -225,8 +318,8 @@ for separate work outside the decisions recorded above:
 ## Official source registry
 
 All hashes cover the exact UTF-8 Markdown response retrieved on 2026-07-31.
-`DOC-07` was fetched again at `2026-08-02T01:05:13.612Z` and retained the same
-hash.
+`DOC-07` was fetched again at `2026-08-02T01:05:13.612Z` and at
+`2026-08-02T07:06:20Z`; both snapshots retained the same hash.
 
 | ID     | URL                                                                     | SHA-256                                                            |
 | ------ | ----------------------------------------------------------------------- | ------------------------------------------------------------------ |

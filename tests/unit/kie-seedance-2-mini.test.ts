@@ -1,5 +1,11 @@
-import { describe, expect, it, vi } from "vitest";
-import { createKie, KieError, type Seedance2MiniRequest } from "@apicity/kie";
+import { describe, expect, expectTypeOf, it, vi } from "vitest";
+import {
+  createKie,
+  KieError,
+  type Seedance2MiniParsedRequest,
+  type Seedance2MiniRequest,
+  type Seedance2MiniRequestInput,
+} from "@apicity/kie";
 import {
   Seedance2MiniRecordInfoResponseSchema,
   Seedance2MiniRequestSchema,
@@ -58,6 +64,44 @@ describe("KIE Seedance 2 Mini", () => {
       "Content-Type": "application/json",
     });
     expect(JSON.parse(init.body as string)).toEqual(request);
+  });
+
+  it("validates omitted duration without adding it to the request body", async () => {
+    const mockFetch = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          code: 200,
+          msg: "success",
+          data: { taskId: "seedance-mini-task-default" },
+        }),
+        { status: 200 }
+      )
+    );
+    const provider = createKie({
+      apiKey: "test-key",
+      baseURL: "https://api.kie.ai",
+      fetch: mockFetch,
+      paygate: { secret: TEST_PAYGATE_SECRET },
+    });
+    const request = {
+      model: "bytedance/seedance-2-mini",
+      input: {
+        prompt: "A short clip that relies on the server duration default.",
+      },
+    } satisfies Seedance2MiniRequestInput;
+
+    expect(Seedance2MiniRequestSchema.parse(request).input.duration).toBe(5);
+
+    await provider.post.api.v1.jobs.createTask(
+      request,
+      mintKieCreateTaskOtp(request)
+    );
+
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+    const [, init] = mockFetch.mock.calls[0];
+    const body = JSON.parse(init.body as string);
+    expect(body).toEqual(request);
+    expect(body.input).not.toHaveProperty("duration");
   });
 
   it("parses recordInfo responses and Seedance Mini resultJson", async () => {
@@ -181,6 +225,13 @@ describe("KIE Seedance 2 Mini", () => {
   });
 
   it("validates defaults, enums, ranges, prompt length, and media arrays", () => {
+    expectTypeOf<
+      Seedance2MiniRequestInput["input"]["duration"]
+    >().toEqualTypeOf<number | undefined>();
+    expectTypeOf<
+      Seedance2MiniParsedRequest["input"]["duration"]
+    >().toEqualTypeOf<number>();
+
     const parsed = Seedance2MiniRequestSchema.safeParse({
       model: "bytedance/seedance-2-mini",
       input: {},
@@ -194,23 +245,28 @@ describe("KIE Seedance 2 Mini", () => {
       expect(parsed.data.input.generate_audio).toBe(true);
       expect(parsed.data.input.resolution).toBe("720p");
       expect(parsed.data.input.aspect_ratio).toBe("16:9");
-      expect(parsed.data.input.duration).toBe(15);
+      expect(parsed.data.input.duration).toBe(5);
       expect(parsed.data.input.web_search).toBe(false);
       expect(parsed.data.input.nsfw_checker).toBe(true);
     }
 
-    expect(
-      Seedance2MiniRequestSchema.safeParse({
+    for (const duration of [4, 15]) {
+      const explicit = Seedance2MiniRequestSchema.parse({
         model: "bytedance/seedance-2-mini",
-        input: { duration: 3 },
-      }).success
-    ).toBe(false);
-    expect(
-      Seedance2MiniRequestSchema.safeParse({
-        model: "bytedance/seedance-2-mini",
-        input: { duration: 15.5 },
-      }).success
-    ).toBe(false);
+        input: { duration },
+      });
+      expect(explicit.input.duration).toBe(duration);
+    }
+
+    for (const duration of [3, 16, 15.5]) {
+      expect(
+        Seedance2MiniRequestSchema.safeParse({
+          model: "bytedance/seedance-2-mini",
+          input: { duration },
+        }).success
+      ).toBe(false);
+    }
+
     expect(
       Seedance2MiniRequestSchema.safeParse({
         model: "bytedance/seedance-2-mini",

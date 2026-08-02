@@ -1147,7 +1147,7 @@ describe("kie modelInputSchemas", () => {
     expect(schema.fields.duration.type).toBe("integer");
     expect(schema.fields.duration.minimum).toBe(4);
     expect(schema.fields.duration.maximum).toBe(15);
-    expect(schema.fields.duration.default).toBe(15);
+    expect(schema.fields.duration.default).toBe(5);
     expect(schema.fields.web_search.default).toBe(false);
     expect(schema.fields.nsfw_checker.default).toBe(true);
   });

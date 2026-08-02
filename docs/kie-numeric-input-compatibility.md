@@ -451,8 +451,8 @@ for separate work outside the decisions recorded above:
 - `ac-4up9pn` — the Grok Extend matrix remains blocked before its first call.
   One authorized source create completed, but the retained terminal projection
   did not preserve 480p evidence and the one-create allowance is consumed.
-- `ac-07mm6l` — reconcile the Seedance 2 Mini duration default (`15` locally,
-  `5` in `DOC-12`).
+- `ac-07mm6l` — reconcile the then-current Seedance 2 Mini duration default
+  (`15` locally, `5` in `DOC-12`).
 - `ac-kxdmvm` — decide whether Wan 2.7 image bounding-box coordinates are
   integer-only; both local schemas currently accept fractions.
 - `ac-elwd7r` — reconcile ElevenLabs media stability, similarity, style, and
@@ -463,6 +463,10 @@ continuation resolved `ac-4up9pn` through the saved source confirmation and
 completed matrix recorded above. The other three follow-up groups remain open;
 the historical blocked status in the list is retained as the earlier run's
 truthful state.
+
+Status update at `2026-08-02T19:16:00Z`: `ac-07mm6l` is resolved. The local
+Seedance 2 Mini duration default is now `5`, aligned with `DOC-12`. The two
+unrelated Wan 2.7 and ElevenLabs follow-up groups remain open.
 
 ## Official source registry
 

@@ -1518,13 +1518,41 @@ export const GeminiOmniVideoRequestSchema = z
     }
   });
 
+export const ElevenLabsTextToSpeechNumericContract = {
+  stability: { minimum: 0, maximum: 1, default: 0.5 },
+  similarity_boost: { minimum: 0, maximum: 1, default: 0.75 },
+  style: { minimum: 0, maximum: 1, default: 0 },
+  speed: { minimum: 0.7, maximum: 1.2, default: 1 },
+} as const;
+
+export const ElevenLabsTextToDialogueStabilityContract = {
+  values: [0, 0.5, 1],
+  default: 0.5,
+} as const;
+
 const ElevenLabsTextToSpeechInputSchema = z.object({
   text: z.string().min(1),
   voice: z.string().min(1),
-  stability: z.number().optional(),
-  similarity_boost: z.number().optional(),
-  style: z.number().optional(),
-  speed: z.number().optional(),
+  stability: z
+    .number()
+    .min(ElevenLabsTextToSpeechNumericContract.stability.minimum)
+    .max(ElevenLabsTextToSpeechNumericContract.stability.maximum)
+    .default(ElevenLabsTextToSpeechNumericContract.stability.default),
+  similarity_boost: z
+    .number()
+    .min(ElevenLabsTextToSpeechNumericContract.similarity_boost.minimum)
+    .max(ElevenLabsTextToSpeechNumericContract.similarity_boost.maximum)
+    .default(ElevenLabsTextToSpeechNumericContract.similarity_boost.default),
+  style: z
+    .number()
+    .min(ElevenLabsTextToSpeechNumericContract.style.minimum)
+    .max(ElevenLabsTextToSpeechNumericContract.style.maximum)
+    .default(ElevenLabsTextToSpeechNumericContract.style.default),
+  speed: z
+    .number()
+    .min(ElevenLabsTextToSpeechNumericContract.speed.minimum)
+    .max(ElevenLabsTextToSpeechNumericContract.speed.maximum)
+    .default(ElevenLabsTextToSpeechNumericContract.speed.default),
   timestamps: z.boolean().optional(),
   previous_text: z.string().optional(),
   next_text: z.string().optional(),
@@ -1551,7 +1579,13 @@ export const ElevenLabsTextToDialogueV3RequestSchema = z.object({
         })
       )
       .min(1),
-    stability: z.number().optional(),
+    stability: z
+      .union([
+        z.literal(ElevenLabsTextToDialogueStabilityContract.values[0]),
+        z.literal(ElevenLabsTextToDialogueStabilityContract.values[1]),
+        z.literal(ElevenLabsTextToDialogueStabilityContract.values[2]),
+      ])
+      .default(ElevenLabsTextToDialogueStabilityContract.default),
   }),
 });
 

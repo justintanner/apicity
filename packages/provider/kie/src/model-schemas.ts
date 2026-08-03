@@ -1,5 +1,7 @@
 import type { KieMediaModel, ModelInputSchema } from "./types";
 import {
+  ElevenLabsTextToDialogueStabilityContract,
+  ElevenLabsTextToSpeechNumericContract,
   HAPPYHORSE_DURATION_MAX_SECONDS,
   HAPPYHORSE_DURATION_MIN_SECONDS,
   Wan27VideoEditDurationValues,
@@ -11,6 +13,33 @@ const happyHorseDurationField = {
   maximum: HAPPYHORSE_DURATION_MAX_SECONDS,
   default: 5,
   description: `Duration in seconds, ${HAPPYHORSE_DURATION_MIN_SECONDS}-${HAPPYHORSE_DURATION_MAX_SECONDS} (default 5)`,
+} as const;
+
+const elevenLabsTextToSpeechNumericFields = {
+  stability: {
+    type: "number",
+    ...ElevenLabsTextToSpeechNumericContract.stability,
+    description:
+      "Inclusive 0-1; direct schema parsing defaults to 0.5 while createTask preserves an omitted field",
+  },
+  similarity_boost: {
+    type: "number",
+    ...ElevenLabsTextToSpeechNumericContract.similarity_boost,
+    description:
+      "Inclusive 0-1; direct schema parsing defaults to 0.75 while createTask preserves an omitted field",
+  },
+  style: {
+    type: "number",
+    ...ElevenLabsTextToSpeechNumericContract.style,
+    description:
+      "Inclusive 0-1; direct schema parsing defaults to 0 while createTask preserves an omitted field",
+  },
+  speed: {
+    type: "number",
+    ...ElevenLabsTextToSpeechNumericContract.speed,
+    description:
+      "Inclusive 0.7-1.2; direct schema parsing defaults to 1 while createTask preserves an omitted field",
+  },
 } as const;
 
 const happyHorse11AspectRatios = [
@@ -1508,7 +1537,10 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
       stability: {
         type: "number",
-        description: "Voice stability setting",
+        enum: ElevenLabsTextToDialogueStabilityContract.values,
+        default: ElevenLabsTextToDialogueStabilityContract.default,
+        description:
+          "Discrete values 0, 0.5, or 1; direct schema parsing defaults to 0.5 while createTask preserves an omitted field",
       },
     },
   },
@@ -1526,22 +1558,7 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         required: true,
         description: "Voice name or voice ID",
       },
-      stability: {
-        type: "number",
-        description: "Voice stability setting",
-      },
-      similarity_boost: {
-        type: "number",
-        description: "Voice similarity boost",
-      },
-      style: {
-        type: "number",
-        description: "Style exaggeration setting",
-      },
-      speed: {
-        type: "number",
-        description: "Speech speed",
-      },
+      ...elevenLabsTextToSpeechNumericFields,
       timestamps: {
         type: "boolean",
         description: "Return timestamp metadata when supported",
@@ -1574,22 +1591,7 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         required: true,
         description: "Voice name or voice ID",
       },
-      stability: {
-        type: "number",
-        description: "Voice stability setting",
-      },
-      similarity_boost: {
-        type: "number",
-        description: "Voice similarity boost",
-      },
-      style: {
-        type: "number",
-        description: "Style exaggeration setting",
-      },
-      speed: {
-        type: "number",
-        description: "Speech speed",
-      },
+      ...elevenLabsTextToSpeechNumericFields,
       timestamps: {
         type: "boolean",
         description: "Return timestamp metadata when supported",

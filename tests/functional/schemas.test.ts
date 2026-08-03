@@ -1256,14 +1256,36 @@ describe("kie modelInputSchemas", () => {
   });
 
   it("elevenlabs text-to-audio models expose audio metadata", () => {
-    const tts = modelInputSchemas["elevenlabs/text-to-speech-turbo-2-5"];
-    expect(tts.type).toBe("audio");
-    expect(tts.fields.text.required).toBe(true);
-    expect(tts.fields.voice.required).toBe(true);
+    const multilingual =
+      modelInputSchemas["elevenlabs/text-to-speech-multilingual-v2"];
+    const turbo = modelInputSchemas["elevenlabs/text-to-speech-turbo-2-5"];
+    const numericContracts = {
+      stability: { minimum: 0, maximum: 1, default: 0.5 },
+      similarity_boost: { minimum: 0, maximum: 1, default: 0.75 },
+      style: { minimum: 0, maximum: 1, default: 0 },
+      speed: { minimum: 0.7, maximum: 1.2, default: 1 },
+    } as const;
+
+    for (const tts of [multilingual, turbo]) {
+      expect(tts.type).toBe("audio");
+      expect(tts.fields.text.required).toBe(true);
+      expect(tts.fields.voice.required).toBe(true);
+      for (const [field, contract] of Object.entries(numericContracts)) {
+        expect(tts.fields[field]).toMatchObject({
+          type: "number",
+          ...contract,
+        });
+      }
+    }
 
     const dialogue = modelInputSchemas["elevenlabs/text-to-dialogue-v3"];
     expect(dialogue.type).toBe("audio");
     expect(dialogue.fields.dialogue.required).toBe(true);
+    expect(dialogue.fields.stability).toMatchObject({
+      type: "number",
+      enum: [0, 0.5, 1],
+      default: 0.5,
+    });
   });
 
   it("volcengine video-to-video lip sync exposes required media fields", () => {

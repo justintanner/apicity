@@ -5,6 +5,9 @@ import { mintOtp } from "../../packages/provider/kie/src/paygate";
 import { kieRequest } from "../../packages/provider/kie/src/request";
 import { KieError } from "../../packages/provider/kie/src/types";
 import type {
+  ElevenLabsTextToDialogueV3Request,
+  ElevenLabsTextToSpeechMultilingualV2Request,
+  ElevenLabsTextToSpeechTurbo25Request,
   GeminiOmniVideoRequest,
   GrokImageToVideoRequest,
   GrokTextToVideoRequest,
@@ -412,6 +415,184 @@ describe("KIE request utilities", () => {
         "Content-Type": "application/json",
       });
       expect(JSON.parse(init.body as string)).toEqual(request);
+    });
+
+    it("should preserve ElevenLabs numeric omissions and explicit values", async () => {
+      const secret = "test-paygate-secret";
+      const mockFetch = vi.fn().mockImplementation(() =>
+        Promise.resolve(
+          new Response(
+            JSON.stringify({
+              code: 200,
+              msg: "success",
+              data: { taskId: "task_elevenlabs_1234567890" },
+            }),
+            { status: 200 }
+          )
+        )
+      );
+      const provider = createKie({
+        apiKey: "test-key",
+        baseURL: "https://api.kie.ai",
+        fetch: mockFetch,
+        paygate: { secret },
+      });
+      const requests: Array<
+        | ElevenLabsTextToDialogueV3Request
+        | ElevenLabsTextToSpeechMultilingualV2Request
+        | ElevenLabsTextToSpeechTurbo25Request
+      > = [
+        {
+          model: "elevenlabs/text-to-speech-multilingual-v2",
+          input: {
+            text: "Omitted numeric settings remain omitted.",
+            voice: "Rachel",
+            language_code: "en",
+          },
+        },
+        {
+          model: "elevenlabs/text-to-speech-turbo-2-5",
+          input: {
+            text: "Omitted numeric settings remain omitted.",
+            voice: "Rachel",
+            timestamps: false,
+          },
+        },
+        {
+          model: "elevenlabs/text-to-dialogue-v3",
+          input: {
+            dialogue: [{ text: "No wire default.", voice: "Rachel" }],
+          },
+        },
+        {
+          model: "elevenlabs/text-to-speech-multilingual-v2",
+          input: {
+            text: "Preserve lower boundaries.",
+            voice: "Rachel",
+            stability: 0,
+            similarity_boost: 0,
+            style: 0,
+            speed: 0.7,
+          },
+        },
+        {
+          model: "elevenlabs/text-to-speech-turbo-2-5",
+          input: {
+            text: "Preserve upper boundaries.",
+            voice: "Rachel",
+            stability: 1,
+            similarity_boost: 1,
+            style: 1,
+            speed: 1.2,
+          },
+        },
+        {
+          model: "elevenlabs/text-to-dialogue-v3",
+          input: {
+            dialogue: [{ text: "Keep stability one.", voice: "Rachel" }],
+            stability: 1,
+          },
+        },
+      ];
+
+      for (const request of requests) {
+        await provider.post.api.v1.jobs.createTask(request, {
+          otp: mintOtp(secret, {
+            dotPath: "api.v1.jobs.createTask",
+            request,
+          }),
+        });
+      }
+
+      expect(mockFetch).toHaveBeenCalledTimes(requests.length);
+      const bodies = mockFetch.mock.calls.map(([, init]) =>
+        JSON.parse(init.body as string)
+      ) as Array<{ model: string; input: Record<string, unknown> }>;
+      expect(bodies).toEqual(requests);
+
+      for (const body of bodies.slice(0, 2)) {
+        for (const field of [
+          "stability",
+          "similarity_boost",
+          "style",
+          "speed",
+        ]) {
+          expect(Object.hasOwn(body.input, field)).toBe(false);
+        }
+      }
+      expect(Object.hasOwn(bodies[2].input, "stability")).toBe(false);
+    });
+
+    it("should reject invalid ElevenLabs numeric values before fetch", async () => {
+      const secret = "test-paygate-secret";
+      const mockFetch = vi.fn();
+      const provider = createKie({
+        apiKey: "test-key",
+        baseURL: "https://api.kie.ai",
+        fetch: mockFetch,
+        paygate: { secret },
+      });
+      const cases = [
+        {
+          request: {
+            model: "elevenlabs/text-to-speech-multilingual-v2",
+            input: {
+              text: "Reject low stability.",
+              voice: "Rachel",
+              stability: -0.01,
+            },
+          } satisfies ElevenLabsTextToSpeechMultilingualV2Request,
+          expectedPath: "input.stability",
+        },
+        {
+          request: {
+            model: "elevenlabs/text-to-speech-turbo-2-5",
+            input: {
+              text: "Reject high speed.",
+              voice: "Rachel",
+              speed: 1.21,
+            },
+          } satisfies ElevenLabsTextToSpeechTurbo25Request,
+          expectedPath: "input.speed",
+        },
+        {
+          request: {
+            model: "elevenlabs/text-to-dialogue-v3",
+            input: {
+              dialogue: [{ text: "Reject 0.25.", voice: "Rachel" }],
+              stability: 0.25,
+            },
+          } as unknown as ElevenLabsTextToDialogueV3Request,
+          expectedPath: "input.stability",
+        },
+      ];
+
+      for (const { request, expectedPath } of cases) {
+        const rejection = await provider.post.api.v1.jobs
+          .createTask(request, {
+            otp: mintOtp(secret, {
+              dotPath: "api.v1.jobs.createTask",
+              request,
+            }),
+          })
+          .then(
+            () => undefined,
+            (error: unknown) => error
+          );
+
+        expect(rejection).toBeInstanceOf(KieError);
+        const error = rejection as KieError;
+        expect(error.status).toBe(400);
+        expect(error.message).toContain(expectedPath);
+        const body = error.body as {
+          issues?: Array<{ path?: PropertyKey[] }>;
+        };
+        expect(
+          body.issues?.some((issue) => issue.path?.join(".") === expectedPath)
+        ).toBe(true);
+      }
+
+      expect(mockFetch).not.toHaveBeenCalled();
     });
 
     it("should preserve Grok numeric-string durations in createTask requests", async () => {

@@ -20,6 +20,7 @@ const INVENTORY_END = "<!-- numeric-inventory:end -->";
 type NumericKind =
   | "integer"
   | "number"
+  | "numeric-enum"
   | "numeric-string-enum"
   | "numeric-string-pattern";
 
@@ -27,7 +28,7 @@ interface NumericVariant {
   kind: NumericKind;
   minimum?: number;
   maximum?: number;
-  values?: string[];
+  values?: Array<string | number>;
   pattern?: string;
 }
 
@@ -201,10 +202,25 @@ function walkInputSchema(
   }
   if (branchKeys.length === 1) {
     const key = branchKeys[0];
-    for (const branch of asSchemaArray(
-      schema[key],
-      `${model}.${path}.${key}`
-    )) {
+    const branches = asSchemaArray(schema[key], `${model}.${path}.${key}`);
+    const numericConstants = branches.map((branch) => branch.const);
+    if (
+      numericConstants.length > 0 &&
+      numericConstants.every((value) => typeof value === "number")
+    ) {
+      addNumericRow(
+        rows,
+        model,
+        path,
+        required,
+        { kind: "numeric-enum", values: numericConstants as number[] },
+        defaultValue !== undefined,
+        defaultValue?.value
+      );
+      return;
+    }
+
+    for (const branch of branches) {
       walkInputSchema(rows, model, branch, path, required, defaultValue);
     }
     return;
@@ -308,7 +324,9 @@ function escapeMarkdownCell(value: string): string {
 function formatVariant(variant: NumericVariant): string {
   const details: string[] = [];
 
-  if (variant.kind === "numeric-string-enum") {
+  if (variant.kind === "numeric-enum") {
+    details.push(`number enum=${variant.values?.map(formatValue).join(",")}`);
+  } else if (variant.kind === "numeric-string-enum") {
     details.push(
       `numeric-string enum=${variant.values?.map(formatValue).join(",")}`
     );
@@ -414,6 +432,27 @@ function parseInventory(): AuditRow[] {
 }
 
 describe("KIE numeric input compatibility inventory", () => {
+  it("retains discrete numeric literal unions", () => {
+    const rows = new Map<string, DerivedRow>();
+    walkInputSchema(
+      rows,
+      "fixture-model",
+      {
+        anyOf: [{ const: 0 }, { const: 0.5 }, { const: 1 }],
+        default: 0.5,
+      },
+      "input.stability",
+      false
+    );
+
+    const row = rows.get("fixture-model::input.stability");
+    expect(row).toBeDefined();
+    if (!row) throw new Error("Expected numeric literal union inventory row");
+    expect(formatLocalContract(row)).toBe(
+      "optional; number enum=0,0.5,1 default=0.5"
+    );
+  });
+
   it("retains reviewed numeric-only patterns outside the former samples", () => {
     expect(
       numericVariant(

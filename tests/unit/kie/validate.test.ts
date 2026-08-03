@@ -1019,6 +1019,193 @@ describe("kie Zod schema validation", () => {
   });
 
   describe("elevenlabs text-to-audio models", () => {
+    const textToSpeechModels = [
+      {
+        model: "elevenlabs/text-to-speech-multilingual-v2",
+        schema: ElevenLabsTextToSpeechMultilingualV2RequestSchema,
+      },
+      {
+        model: "elevenlabs/text-to-speech-turbo-2-5",
+        schema: ElevenLabsTextToSpeechTurbo25RequestSchema,
+      },
+    ] as const;
+
+    for (const { model, schema } of textToSpeechModels) {
+      it(`should default omitted numeric settings for ${model}`, () => {
+        const request = {
+          model,
+          input: {
+            text: "Defaults stay local to schema parsing.",
+            voice: "Rachel",
+          },
+        };
+        const result = schema.safeParse(request);
+
+        expect(result.success).toBe(true);
+        if (!result.success) throw result.error;
+        expect(result.data.input).toMatchObject({
+          stability: 0.5,
+          similarity_boost: 0.75,
+          style: 0,
+          speed: 1,
+        });
+
+        for (const composedSchema of [
+          MediaGenerationRequestSchema,
+          CreateTaskRequestSchema,
+        ]) {
+          const composedResult = composedSchema.safeParse(request);
+          expect(composedResult.success).toBe(true);
+          if (!composedResult.success) throw composedResult.error;
+          expect(composedResult.data.input).toMatchObject({
+            stability: 0.5,
+            similarity_boost: 0.75,
+            style: 0,
+            speed: 1,
+          });
+        }
+      });
+
+      it(`should accept TTS boundaries and preserve values for ${model}`, () => {
+        const settings = [
+          {
+            stability: 0,
+            similarity_boost: 0,
+            style: 0,
+            speed: 0.7,
+          },
+          {
+            stability: 1,
+            similarity_boost: 1,
+            style: 1,
+            speed: 1.2,
+          },
+          {
+            stability: 0.25,
+            similarity_boost: 0.6,
+            style: 0.4,
+            speed: 0.95,
+          },
+        ];
+
+        for (const numericSettings of settings) {
+          const result = schema.safeParse({
+            model,
+            input: {
+              text: "Preserve explicit values.",
+              voice: "Rachel",
+              ...numericSettings,
+            },
+          });
+
+          expect(result.success).toBe(true);
+          if (!result.success) throw result.error;
+          expect(result.data.input).toMatchObject(numericSettings);
+        }
+      });
+
+      it(`should reject every out-of-range TTS setting for ${model}`, () => {
+        const invalidSettings = [
+          ["stability", -0.01],
+          ["stability", 1.01],
+          ["similarity_boost", -0.01],
+          ["similarity_boost", 1.01],
+          ["style", -0.01],
+          ["style", 1.01],
+          ["speed", 0.69],
+          ["speed", 1.21],
+        ] as const;
+
+        for (const [field, value] of invalidSettings) {
+          const result = schema.safeParse({
+            model,
+            input: {
+              text: "Reject invalid values.",
+              voice: "Rachel",
+              [field]: value,
+            },
+          });
+
+          expect(result.success).toBe(false);
+          expect(
+            result.error?.issues.some(
+              (issue) => issue.path.join(".") === `input.${field}`
+            )
+          ).toBe(true);
+        }
+      });
+
+      it(`should require text and voice for ${model}`, () => {
+        for (const field of ["text", "voice"] as const) {
+          const input: Record<string, unknown> = {
+            text: "Required text.",
+            voice: "Rachel",
+          };
+          delete input[field];
+          const result = schema.safeParse({ model, input });
+
+          expect(result.success).toBe(false);
+          expect(
+            result.error?.issues.some(
+              (issue) => issue.path.join(".") === `input.${field}`
+            )
+          ).toBe(true);
+        }
+      });
+    }
+
+    it("should enforce dialogue stability values and its default", () => {
+      const request = {
+        model: "elevenlabs/text-to-dialogue-v3",
+        input: {
+          dialogue: [{ text: "Hello.", voice: "Rachel" }],
+        },
+      } as const;
+      const defaulted =
+        ElevenLabsTextToDialogueV3RequestSchema.safeParse(request);
+
+      expect(defaulted.success).toBe(true);
+      if (!defaulted.success) throw defaulted.error;
+      expect(defaulted.data.input.stability).toBe(0.5);
+
+      for (const composedSchema of [
+        MediaGenerationRequestSchema,
+        CreateTaskRequestSchema,
+      ]) {
+        const composedResult = composedSchema.safeParse(request);
+        expect(composedResult.success).toBe(true);
+        if (!composedResult.success) throw composedResult.error;
+        expect(composedResult.data).toMatchObject({
+          input: { stability: 0.5 },
+        });
+      }
+
+      for (const stability of [0, 0.5, 1] as const) {
+        const result = ElevenLabsTextToDialogueV3RequestSchema.safeParse({
+          ...request,
+          input: { ...request.input, stability },
+        });
+
+        expect(result.success).toBe(true);
+        if (!result.success) throw result.error;
+        expect(result.data.input.stability).toBe(stability);
+      }
+
+      for (const stability of [-0.5, 0.25, 0.75, 1.5]) {
+        const result = ElevenLabsTextToDialogueV3RequestSchema.safeParse({
+          ...request,
+          input: { ...request.input, stability },
+        });
+
+        expect(result.success).toBe(false);
+        expect(
+          result.error?.issues.some(
+            (issue) => issue.path.join(".") === "input.stability"
+          )
+        ).toBe(true);
+      }
+    });
+
     it("should accept text-to-speech turbo requests", () => {
       const request = {
         model: "elevenlabs/text-to-speech-turbo-2-5",

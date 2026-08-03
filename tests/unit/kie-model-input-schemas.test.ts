@@ -115,6 +115,44 @@ describe("KIE modelInputSchemas metadata", () => {
     expect(referenceFields.aspect_ratio.enum).toContain("9:21");
     expect(referenceFields.duration.default).toBe(5);
   });
+
+  it("exposes exact ElevenLabs numeric contracts", () => {
+    const multilingualFields =
+      provider.modelInputSchemas["elevenlabs/text-to-speech-multilingual-v2"]
+        .fields;
+    const turboFields =
+      provider.modelInputSchemas["elevenlabs/text-to-speech-turbo-2-5"].fields;
+    const expected = {
+      stability: { minimum: 0, maximum: 1, default: 0.5 },
+      similarity_boost: { minimum: 0, maximum: 1, default: 0.75 },
+      style: { minimum: 0, maximum: 1, default: 0 },
+      speed: { minimum: 0.7, maximum: 1.2, default: 1 },
+    } as const;
+
+    for (const [field, contract] of Object.entries(expected)) {
+      expect(multilingualFields[field]).toMatchObject({
+        type: "number",
+        ...contract,
+      });
+      expect(turboFields[field]).toEqual(multilingualFields[field]);
+      expect(multilingualFields[field].description).toContain("schema parsing");
+      expect(multilingualFields[field].description).toContain("createTask");
+    }
+
+    const dialogueStability =
+      provider.modelInputSchemas["elevenlabs/text-to-dialogue-v3"].fields
+        .stability;
+    expect(dialogueStability).toMatchObject({
+      type: "number",
+      enum: [0, 0.5, 1],
+      default: 0.5,
+    });
+    expect(dialogueStability.minimum).toBeUndefined();
+    expect(dialogueStability.maximum).toBeUndefined();
+    expect(dialogueStability.description).toContain("Discrete");
+    expect(dialogueStability.description).toContain("schema parsing");
+    expect(dialogueStability.description).toContain("createTask");
+  });
 });
 
 // ---------------------------------------------------------------------------

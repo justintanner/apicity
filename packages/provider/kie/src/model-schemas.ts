@@ -19,26 +19,22 @@ const elevenLabsTextToSpeechNumericFields = {
   stability: {
     type: "number",
     ...ElevenLabsTextToSpeechNumericContract.stability,
-    description:
-      "Inclusive 0-1; direct schema parsing defaults to 0.5 while createTask preserves an omitted field",
+    description: `Inclusive ${ElevenLabsTextToSpeechNumericContract.stability.minimum}-${ElevenLabsTextToSpeechNumericContract.stability.maximum}; direct schema parsing defaults to ${ElevenLabsTextToSpeechNumericContract.stability.default} while createTask preserves an omitted field`,
   },
   similarity_boost: {
     type: "number",
     ...ElevenLabsTextToSpeechNumericContract.similarity_boost,
-    description:
-      "Inclusive 0-1; direct schema parsing defaults to 0.75 while createTask preserves an omitted field",
+    description: `Inclusive ${ElevenLabsTextToSpeechNumericContract.similarity_boost.minimum}-${ElevenLabsTextToSpeechNumericContract.similarity_boost.maximum}; direct schema parsing defaults to ${ElevenLabsTextToSpeechNumericContract.similarity_boost.default} while createTask preserves an omitted field`,
   },
   style: {
     type: "number",
     ...ElevenLabsTextToSpeechNumericContract.style,
-    description:
-      "Inclusive 0-1; direct schema parsing defaults to 0 while createTask preserves an omitted field",
+    description: `Inclusive ${ElevenLabsTextToSpeechNumericContract.style.minimum}-${ElevenLabsTextToSpeechNumericContract.style.maximum}; direct schema parsing defaults to ${ElevenLabsTextToSpeechNumericContract.style.default} while createTask preserves an omitted field`,
   },
   speed: {
     type: "number",
     ...ElevenLabsTextToSpeechNumericContract.speed,
-    description:
-      "Inclusive 0.7-1.2; direct schema parsing defaults to 1 while createTask preserves an omitted field",
+    description: `Inclusive ${ElevenLabsTextToSpeechNumericContract.speed.minimum}-${ElevenLabsTextToSpeechNumericContract.speed.maximum}; direct schema parsing defaults to ${ElevenLabsTextToSpeechNumericContract.speed.default} while createTask preserves an omitted field`,
   },
 } as const;
 
@@ -1539,8 +1535,7 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         type: "number",
         enum: ElevenLabsTextToDialogueStabilityContract.values,
         default: ElevenLabsTextToDialogueStabilityContract.default,
-        description:
-          "Discrete values 0, 0.5, or 1; direct schema parsing defaults to 0.5 while createTask preserves an omitted field",
+        description: `Discrete values ${ElevenLabsTextToDialogueStabilityContract.values.join(", ")}; direct schema parsing defaults to ${ElevenLabsTextToDialogueStabilityContract.default} while createTask preserves an omitted field`,
       },
     },
   },

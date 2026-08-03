@@ -25,6 +25,22 @@ const happyHorse11AspectRatios = [
   "21:9",
 ] as const;
 
+const wan27ImageBboxListField = {
+  type: "array",
+  description:
+    "Interactive editing bounding boxes, max 2 per image; each box has exactly four integer coordinates in [x1, y1, x2, y2] format",
+  items: {
+    type: "array",
+    maxItems: 2,
+    items: {
+      type: "array",
+      minItems: 4,
+      maxItems: 4,
+      items: { type: "integer" },
+    },
+  },
+} as const;
+
 export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
   "kling-3.0/video": {
     type: "video",
@@ -1377,11 +1393,7 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         description:
           "Custom color theme with 3-10 {hex, ratio} entries (only when sequential=false)",
       },
-      bbox_list: {
-        type: "array",
-        description:
-          "Interactive editing bounding boxes, max 2 per image, format [x1, y1, x2, y2]",
-      },
+      bbox_list: wan27ImageBboxListField,
       watermark: {
         type: "boolean",
         description: "Add watermark (default false)",
@@ -1450,11 +1462,7 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         description:
           "Custom color theme with 3-10 {hex, ratio} entries (only when sequential=false)",
       },
-      bbox_list: {
-        type: "array",
-        description:
-          "Interactive editing bounding boxes, max 2 per image, format [x1, y1, x2, y2]",
-      },
+      bbox_list: wan27ImageBboxListField,
       watermark: {
         type: "boolean",
         description: "Add watermark (default false)",

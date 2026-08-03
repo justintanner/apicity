@@ -16,7 +16,7 @@ duplicate rows, missing rows, extra rows, and stale local-contract cells all
 fail with the affected model and path.
 
 At this revision the derived inventory has 66 unique paths across 37 of the 52
-catalogue models: 44 integer branches, 16 general-number branches, five
+catalogue models: 46 integer branches, 14 general-number branches, five
 numeric-string enums, and one numeric-string pattern. These are measured facts,
 not permanent expected counts; the model/path set is derived on every test run.
 
@@ -443,6 +443,23 @@ omission remains absent; and no bounds, default, coercion, normalization, or
 other transformation is introduced. Supplied integers are preserved, while
 fractions and numeric strings are rejected by local validation.
 
+## WAN 2.7 image bounding-box evidence and decision
+
+KIE's official WAN 2.7 image Markdown OpenAPI exports were retrieved again on
+2026-08-03 and remained byte-for-byte identical to the 2026-07-31 snapshots:
+
+- https://docs.kie.ai/market/wan/2-7-image.md (`DOC-17`) has SHA-256
+  `8d1c13c0c9cd155968888fe1ba8053bcd5e11bc6b135876aae65037074ad0160`.
+- https://docs.kie.ai/market/wan/2-7-image-pro.md (`DOC-18`) has SHA-256
+  `af2473f0149e9a033736be23b35ed060aef26c15c8242db7a2ca54560145b7f3`.
+
+Both sources declare every `input.bbox_list[][][]` coordinate as a JSON
+`integer`. Apicity follows that published integer contract for both model IDs:
+supplied coordinates must be integer JSON numbers and remain unbounded and
+uncoerced. No paid or live fractional probe was run. This decision does not
+claim an observed KIE rejection, rounding, normalization, or other live
+fractional behavior.
+
 ## Follow-up discrepancies
 
 The audit still tracks four unrelated evidence groups that are concrete enough
@@ -468,11 +485,18 @@ Status update at `2026-08-02T19:16:00Z`: `ac-07mm6l` is resolved. The local
 Seedance 2 Mini duration default is now `5`, aligned with `DOC-12`. The two
 unrelated Wan 2.7 and ElevenLabs follow-up groups remain open.
 
+Status update at `2026-08-03`: `ac-kxdmvm` is resolved by following the
+unchanged published integer contract for both WAN 2.7 image bounding-box
+coordinate leaves. No paid or live fractional probe occurred. The unrelated
+ElevenLabs follow-up group remains open.
+
 ## Official source registry
 
 All hashes cover the exact UTF-8 Markdown response retrieved on 2026-07-31.
 `DOC-07` was fetched again at `2026-08-02T01:05:13.612Z` and at
 `2026-08-02T07:06:20Z`; both snapshots retained the same hash.
+`DOC-17` and `DOC-18` were fetched again on 2026-08-03 and remained
+byte-for-byte identical to the registered snapshots.
 
 | ID     | URL                                                                     | SHA-256                                                            |
 | ------ | ----------------------------------------------------------------------- | ------------------------------------------------------------------ |
@@ -548,10 +572,10 @@ this evidence item makes no runtime contract change for the row.
 | wan/2-7-videoedit                         | input.duration                | optional; integer min=0 max=10                                                                       | DOC-16 @ 2026-07-31 | integer min=0 max=10 default=0              | number (0)          | none beyond current OpenAPI                 | number-only         | high       | retain current behavior                  |
 | wan/2-7-videoedit                         | input.seed                    | optional; integer min=0 max=2147483647                                                               | DOC-16 @ 2026-07-31 | integer min=0 max=2147483647                | number (0)          | none beyond current OpenAPI                 | number-only         | high       | retain current behavior                  |
 | wan/2-7-image                             | input.n                       | optional; integer min=1 max=12                                                                       | DOC-17 @ 2026-07-31 | integer                                     | number (4)          | none beyond current OpenAPI                 | number-only         | high       | retain current behavior                  |
-| wan/2-7-image                             | input.bbox_list[][][]         | optional; number                                                                                     | DOC-17 @ 2026-07-31 | integer                                     | absent              | current doc/local discrepancy; ac-kxdmvm    | number-only         | medium     | retain pending ac-kxdmvm                 |
+| wan/2-7-image                             | input.bbox_list[][][]         | optional; integer                                                                                    | DOC-17 @ 2026-08-03 | integer                                     | absent              | no fractional live observation              | number-only         | medium     | align with published integer contract    |
 | wan/2-7-image                             | input.seed                    | optional; integer min=0 max=2147483647                                                               | DOC-17 @ 2026-07-31 | integer min=0 max=2147483647 default=0      | number (0)          | none beyond current OpenAPI                 | number-only         | high       | retain current behavior                  |
 | wan/2-7-image-pro                         | input.n                       | optional; integer min=1 max=12                                                                       | DOC-18 @ 2026-07-31 | integer                                     | number (4)          | none beyond current OpenAPI                 | number-only         | high       | retain current behavior                  |
-| wan/2-7-image-pro                         | input.bbox_list[][][]         | optional; number                                                                                     | DOC-18 @ 2026-07-31 | integer                                     | absent              | current doc/local discrepancy; ac-kxdmvm    | number-only         | medium     | retain pending ac-kxdmvm                 |
+| wan/2-7-image-pro                         | input.bbox_list[][][]         | optional; integer                                                                                    | DOC-18 @ 2026-08-03 | integer                                     | absent              | no fractional live observation              | number-only         | medium     | align with published integer contract    |
 | wan/2-7-image-pro                         | input.seed                    | optional; integer min=0 max=2147483647                                                               | DOC-18 @ 2026-07-31 | integer min=0 max=2147483647 default=0      | number (0)          | none beyond current OpenAPI                 | number-only         | high       | retain current behavior                  |
 | happyhorse/text-to-video                  | input.duration                | optional; integer min=3 max=15                                                                       | DOC-19 @ 2026-07-31 | integer min=3 max=15 default=5              | number (5)          | none beyond current OpenAPI                 | number-only         | high       | retain current behavior                  |
 | happyhorse/text-to-video                  | input.seed                    | optional; integer min=0 max=2147483647                                                               | DOC-19 @ 2026-07-31 | integer min=0 max=2147483647 default=0      | number (1622429582) | none beyond current OpenAPI                 | number-only         | high       | retain current behavior                  |

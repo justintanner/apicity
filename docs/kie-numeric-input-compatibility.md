@@ -16,7 +16,7 @@ duplicate rows, missing rows, extra rows, and stale local-contract cells all
 fail with the affected model and path.
 
 At this revision the derived inventory has 66 unique paths across 37 of the 52
-catalogue models: 44 integer branches, 16 general-number branches, five
+catalogue models: 46 integer branches, 14 general-number branches, five
 numeric-string enums, and one numeric-string pattern. These are measured facts,
 not permanent expected counts; the model/path set is derived on every test run.
 
@@ -443,18 +443,37 @@ omission remains absent; and no bounds, default, coercion, normalization, or
 other transformation is introduced. Supplied integers are preserved, while
 fractions and numeric strings are rejected by local validation.
 
+## WAN 2.7 image bounding-box evidence and decision
+
+KIE's official WAN 2.7 image Markdown OpenAPI exports are
+https://docs.kie.ai/market/wan/2-7-image.md (`DOC-17`) and
+https://docs.kie.ai/market/wan/2-7-image-pro.md (`DOC-18`). Both were retrieved
+again on 2026-08-03 and remained byte-for-byte identical to the 2026-07-31
+snapshots. Their SHA-256 hashes are respectively
+`8d1c13c0c9cd155968888fe1ba8053bcd5e11bc6b135876aae65037074ad0160` and
+`af2473f0149e9a033736be23b35ed060aef26c15c8242db7a2ca54560145b7f3`.
+Each export declares every `input.bbox_list[][][]` coordinate leaf as an
+`integer`.
+
+No paid or live fractional-coordinate probe was performed, and no vendor
+clarification is available. This record therefore does not claim that KIE's
+live service rejects, rounds, truncates, clamps, or otherwise normalizes
+fractions. Apicity follows the normative published contract: supplied bounding
+box coordinates must be integer JSON numbers, remain unbounded and
+untransformed, and are rejected locally when fractional or non-numeric.
+
 ## Follow-up discrepancies
 
-The audit still tracks four unrelated evidence groups that are concrete enough
-for separate work outside the decisions recorded above:
+The audit records four evidence groups that were concrete enough for separate
+work outside the decisions recorded above:
 
 - `ac-4up9pn` — the Grok Extend matrix remains blocked before its first call.
   One authorized source create completed, but the retained terminal projection
   did not preserve 480p evidence and the one-create allowance is consumed.
 - `ac-07mm6l` — reconcile the Seedance 2 Mini duration default (`15` locally,
   `5` in `DOC-12`).
-- `ac-kxdmvm` — decide whether Wan 2.7 image bounding-box coordinates are
-  integer-only; both local schemas currently accept fractions.
+- `ac-kxdmvm` — resolved on 2026-08-03 by aligning both WAN 2.7 image models
+  with the unchanged published integer-coordinate contract.
 - `ac-elwd7r` — reconcile ElevenLabs media stability, similarity, style, and
   speed bounds/defaults with the current OpenAPI exports.
 
@@ -464,11 +483,17 @@ completed matrix recorded above. The other three follow-up groups remain open;
 the historical blocked status in the list is retained as the earlier run's
 truthful state.
 
+Status update on 2026-08-03: `ac-kxdmvm` is resolved by the WAN 2.7
+bounding-box decision recorded above. `ac-07mm6l` and `ac-elwd7r` remain open;
+the historical `ac-4up9pn` entry remains resolved by its later continuation.
+
 ## Official source registry
 
 All hashes cover the exact UTF-8 Markdown response retrieved on 2026-07-31.
 `DOC-07` was fetched again at `2026-08-02T01:05:13.612Z` and at
 `2026-08-02T07:06:20Z`; both snapshots retained the same hash.
+`DOC-17` and `DOC-18` were fetched again on 2026-08-03 and both remained
+byte-for-byte identical to their registered snapshots.
 
 | ID     | URL                                                                     | SHA-256                                                            |
 | ------ | ----------------------------------------------------------------------- | ------------------------------------------------------------------ |
@@ -544,10 +569,10 @@ this evidence item makes no runtime contract change for the row.
 | wan/2-7-videoedit                         | input.duration                | optional; integer min=0 max=10                                                                       | DOC-16 @ 2026-07-31 | integer min=0 max=10 default=0              | number (0)          | none beyond current OpenAPI                 | number-only         | high       | retain current behavior                  |
 | wan/2-7-videoedit                         | input.seed                    | optional; integer min=0 max=2147483647                                                               | DOC-16 @ 2026-07-31 | integer min=0 max=2147483647                | number (0)          | none beyond current OpenAPI                 | number-only         | high       | retain current behavior                  |
 | wan/2-7-image                             | input.n                       | optional; integer min=1 max=12                                                                       | DOC-17 @ 2026-07-31 | integer                                     | number (4)          | none beyond current OpenAPI                 | number-only         | high       | retain current behavior                  |
-| wan/2-7-image                             | input.bbox_list[][][]         | optional; number                                                                                     | DOC-17 @ 2026-07-31 | integer                                     | absent              | current doc/local discrepancy; ac-kxdmvm    | number-only         | medium     | retain pending ac-kxdmvm                 |
+| wan/2-7-image                             | input.bbox_list[][][]         | optional; integer                                                                                    | DOC-17 @ 2026-08-03 | integer                                     | absent              | no fractional live observation              | number-only         | medium     | align with published integer contract    |
 | wan/2-7-image                             | input.seed                    | optional; integer min=0 max=2147483647                                                               | DOC-17 @ 2026-07-31 | integer min=0 max=2147483647 default=0      | number (0)          | none beyond current OpenAPI                 | number-only         | high       | retain current behavior                  |
 | wan/2-7-image-pro                         | input.n                       | optional; integer min=1 max=12                                                                       | DOC-18 @ 2026-07-31 | integer                                     | number (4)          | none beyond current OpenAPI                 | number-only         | high       | retain current behavior                  |
-| wan/2-7-image-pro                         | input.bbox_list[][][]         | optional; number                                                                                     | DOC-18 @ 2026-07-31 | integer                                     | absent              | current doc/local discrepancy; ac-kxdmvm    | number-only         | medium     | retain pending ac-kxdmvm                 |
+| wan/2-7-image-pro                         | input.bbox_list[][][]         | optional; integer                                                                                    | DOC-18 @ 2026-08-03 | integer                                     | absent              | no fractional live observation              | number-only         | medium     | align with published integer contract    |
 | wan/2-7-image-pro                         | input.seed                    | optional; integer min=0 max=2147483647                                                               | DOC-18 @ 2026-07-31 | integer min=0 max=2147483647 default=0      | number (0)          | none beyond current OpenAPI                 | number-only         | high       | retain current behavior                  |
 | happyhorse/text-to-video                  | input.duration                | optional; integer min=3 max=15                                                                       | DOC-19 @ 2026-07-31 | integer min=3 max=15 default=5              | number (5)          | none beyond current OpenAPI                 | number-only         | high       | retain current behavior                  |
 | happyhorse/text-to-video                  | input.seed                    | optional; integer min=0 max=2147483647                                                               | DOC-19 @ 2026-07-31 | integer min=0 max=2147483647 default=0      | number (1622429582) | none beyond current OpenAPI                 | number-only         | high       | retain current behavior                  |

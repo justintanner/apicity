@@ -1697,7 +1697,9 @@ const Wan27ImageInputShape = {
     .min(3)
     .max(10)
     .optional(),
-  bbox_list: z.array(z.array(z.array(z.number()).length(4)).max(2)).optional(),
+  bbox_list: z
+    .array(z.array(z.array(z.number().multipleOf(1)).length(4)).max(2))
+    .optional(),
   watermark: z.boolean().optional(),
   seed: z.number().int().min(0).max(2147483647).optional(),
   nsfw_checker: z.boolean().default(false),

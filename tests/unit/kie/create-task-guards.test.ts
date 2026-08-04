@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { z } from "zod";
+
+import { KieError } from "@apicity/kie";
 
 import {
   KIE_MEDIA_MODELS,
@@ -41,14 +42,47 @@ const guarded = Object.keys(CREATE_TASK_GUARDS);
 
 // Every kie media request schema pins its own model id with a z.literal, so the
 // schema can be asked which model it is for rather than taken on trust from the
-// entry it was written into. `as unknown as` is load-bearing: an entry's static
-// schema type is the union of the concrete schema types, and the z.ZodType the
-// table is declared against has no `.shape` at all.
+// entry it was written into. The registry's static value type does not expose
+// `.shape`, so this diagnostic view keeps each layer optional and lets Vitest
+// report a malformed row instead of a property-access TypeError.
 //
 // zod 4 keeps .refine()/.superRefine() rules on the same ZodObject rather than
 // wrapping it, so `.shape.model.value` resolves on refinement-carrying schemas
 // too — which is why this can walk the table rather than special-case it.
-type ModelPinned = z.ZodObject<{ model: z.ZodLiteral<string> }>;
+interface ModelPinnedShape {
+  shape?: {
+    model?: {
+      value?: unknown;
+    };
+  };
+}
+
+const guardedRejectionCases = [
+  {
+    name: "wan/2-7-image-to-video without a frame or clip URL",
+    request: {
+      model: "wan/2-7-image-to-video",
+      input: { prompt: "Animate this scene." },
+    },
+  },
+  {
+    name: "kling/v3-turbo-text-to-video with an empty prompt",
+    request: {
+      model: "kling/v3-turbo-text-to-video",
+      input: { prompt: "" },
+    },
+  },
+  {
+    name: "elevenlabs/audio-isolation without audio_url",
+    request: {
+      model: "elevenlabs/audio-isolation",
+      input: {},
+    },
+  },
+] satisfies ReadonlyArray<{
+  name: string;
+  request: Record<string, unknown>;
+}>;
 
 afterEach(() => vi.restoreAllMocks());
 
@@ -63,10 +97,12 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
       `These kie media models have no CREATE_TASK_GUARDS entry: ` +
         `${undecided.join(", ")}. Add one — the model id paired with the ` +
         `*RequestSchema that z.literal-pins that same id — in ` +
-        `packages/provider/kie/src/kie.ts, in KIE_MEDIA_MODELS order. There ` +
-        `is no exemption list to add it to instead; if this model genuinely ` +
-        `cannot be validated before transport, reintroducing that list is a ` +
-        `reviewed change, not a blank to fill in.`
+        `packages/provider/kie/src/kie.ts and add the same id to the explicit ` +
+        `membership pin in tests/unit/kie/create-task-guards.test.ts, both ` +
+        `in KIE_MEDIA_MODELS order. There is no exemption list to add it to ` +
+        `instead; if this model genuinely cannot be validated before ` +
+        `transport, reintroducing that list is a reviewed change, not a ` +
+        `blank to fill in.`
     ).toEqual([]);
   });
 
@@ -80,6 +116,10 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
   // entry silently dropped alongside its catalogue entry stays green. Written
   // out, removing a model takes two deliberate edits and shows both in the diff.
   it("guards exactly the models pinned in this list", () => {
+    expect(
+      guarded,
+      "Update this deliberate 52-entry pin when the guarded model set changes"
+    ).toHaveLength(52);
     expect([...guarded].sort()).toEqual(
       [
         "kling-3.0/video",
@@ -151,11 +191,23 @@ describe("CREATE_TASK_GUARDS entries", () => {
   // one word each are one slip apart. Reading the id back off the schema is the
   // only check here that a reviewer's eye is not the last line of defence.
   it("pairs each guarded model with the schema that pins its id", () => {
+    expect(
+      guarded,
+      "CREATE_TASK_GUARDS must not be empty before checking schema pairings"
+    ).not.toHaveLength(0);
     for (const [model, schema] of Object.entries(CREATE_TASK_GUARDS)) {
-      const pinned = (schema as unknown as ModelPinned).shape.model.value;
+      const pinned =
+        typeof schema === "object" && schema !== null
+          ? (schema as ModelPinnedShape).shape?.model?.value
+          : undefined;
       expect(
         pinned,
-        `entry ${model} is paired with a schema pinning ${pinned}`
+        `CREATE_TASK_GUARDS entry ${model} must expose a literal model at ` +
+          `shape.model.value`
+      ).toBeTypeOf("string");
+      expect(
+        pinned,
+        `entry ${model} is paired with a schema pinning ${String(pinned)}`
       ).toBe(model);
     }
   });
@@ -164,15 +216,62 @@ describe("CREATE_TASK_GUARDS entries", () => {
   // at a glance, and how each slice knows where to insert. Asserted rather than
   // left to convention so the final table diffs cleanly against the catalogue.
   it("lists its entries in KIE_MEDIA_MODELS order", () => {
-    const catalogueOrder = KIE_MEDIA_MODELS.filter((id) =>
-      guarded.includes(id)
-    );
+    expect(
+      guarded,
+      "CREATE_TASK_GUARDS must not be empty before checking catalogue order"
+    ).not.toHaveLength(0);
+    const catalogueOrder = [...KIE_MEDIA_MODELS];
     expect(
       guarded,
       `CREATE_TASK_GUARDS entries are out of KIE_MEDIA_MODELS order; expected ` +
         `${catalogueOrder.join(", ")}`
     ).toEqual(catalogueOrder);
   });
+});
+
+describe("CREATE_TASK_GUARDS provider-boundary rejection", () => {
+  it.each(guardedRejectionCases)(
+    "rejects $name before transport",
+    async ({ request }) => {
+      const mockFetch = vi.fn<typeof fetch>(() => {
+        throw new Error("fetch must not run for a guarded invalid request");
+      });
+      const provider = createKie({
+        apiKey: "test-key",
+        fetch: mockFetch,
+        paygate: { secret: TEST_PAYGATE_SECRET },
+      });
+
+      const rejection = await provider.post.api.v1.jobs
+        .createTask(
+          // These fixtures are intentionally invalid for their paired schemas.
+          request as unknown as MediaGenerationRequest,
+          mintKieCreateTaskOtp(request)
+        )
+        .then(
+          () => undefined,
+          (error: unknown) => error
+        );
+
+      expect(rejection).toBeInstanceOf(KieError);
+      if (!(rejection instanceof KieError)) {
+        throw new Error("Expected createTask to reject with KieError");
+      }
+      expect(rejection.status).toBe(400);
+      expect(
+        rejection.message.startsWith("Invalid Kie createTask request: ")
+      ).toBe(true);
+      const issues =
+        typeof rejection.body === "object" &&
+        rejection.body !== null &&
+        "issues" in rejection.body
+          ? rejection.body.issues
+          : undefined;
+      expect(Array.isArray(issues)).toBe(true);
+      expect(issues).not.toHaveLength(0);
+      expect(mockFetch).not.toHaveBeenCalled();
+    }
+  );
 });
 
 describe("CREATE_TASK_GUARDS lookup", () => {

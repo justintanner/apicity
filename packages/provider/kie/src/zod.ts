@@ -155,7 +155,7 @@ const KieMediaPixverseModelAliasSchema = z
 // reordering would read as renames in review and the alias comments above
 // already state each family's membership.
 //
-// Four ids carry no alias and stay enumerated: `omnihuman-1-5`,
+// Four singleton ids carry no alias and stay enumerated: `omnihuman-1-5`,
 // `volcengine/video-to-video-lip-sync`, `gemini-omni-video` and
 // `sora-watermark-remover`. Each is the only id kie lists for its vendor, and
 // one sample cannot establish a grammar — nothing here distinguishes a
@@ -164,6 +164,10 @@ const KieMediaPixverseModelAliasSchema = z
 // widens into the wildcard this file exists to avoid. They gain an alias when
 // kie ships a second member; until then a new id from those vendors is an
 // explicit enum addition.
+//
+// MiniMax H3 also stays enum-only even though it has three task variants. The
+// approved surface is exactly these H3 ids; the variants do not establish a
+// version grammar or authorize arbitrary future task slugs.
 export const KIE_MEDIA_MODELS = [
   "kling-3.0/video",
   "kling-3.0/motion-control",
@@ -217,6 +221,9 @@ export const KIE_MEDIA_MODELS = [
   "pixverse-v6/transition",
   "pixverse-v6/extend",
   "pixverse-v6/reference-to-video",
+  "minimax-h3/text-to-video",
+  "minimax-h3/image-to-video",
+  "minimax-h3/reference-to-video",
 ] as const;
 
 export const KieMediaModelSchema = z
@@ -746,6 +753,39 @@ export const Seedance2MiniTaskStateSchema = z.enum([
   "success",
   "fail",
 ]);
+
+export const MiniMaxH3PromptSchema = z.string().min(1).max(7000);
+export const MiniMaxH3DurationSchema = z.number().int().min(4).max(15);
+export const MiniMaxH3ResolutionSchema = z.enum(["768P", "2K"]);
+export const MiniMaxH3FixedAspectRatioSchema = z.enum([
+  "21:9",
+  "16:9",
+  "4:3",
+  "1:1",
+  "3:4",
+  "9:16",
+]);
+export const MiniMaxH3ReferenceAspectRatioSchema = z.enum([
+  "adaptive",
+  ...MiniMaxH3FixedAspectRatioSchema.options,
+]);
+
+const MINIMAX_H3_MEDIA_ADDRESS_PROTOCOLS = new Set(["http:", "https:", "oss:"]);
+
+function isMiniMaxH3MediaAddress(value: string): boolean {
+  try {
+    return MINIMAX_H3_MEDIA_ADDRESS_PROTOCOLS.has(new URL(value).protocol);
+  } catch {
+    return false;
+  }
+}
+
+export const MiniMaxH3MediaAddressSchema = z
+  .string()
+  .url()
+  .refine(isMiniMaxH3MediaAddress, {
+    message: "Expected an HTTP, HTTPS, or OSS media address",
+  });
 
 // ---------------------------------------------------------------------------
 // Sub-schemas (composable building blocks)
@@ -1976,6 +2016,92 @@ export const PixverseV6ReferenceToVideoRequestSchema = z
     }
   });
 
+export const MiniMaxH3TextToVideoInputSchema = z
+  .object({
+    prompt: MiniMaxH3PromptSchema,
+    aspect_ratio: MiniMaxH3FixedAspectRatioSchema,
+    duration: MiniMaxH3DurationSchema,
+    resolution: MiniMaxH3ResolutionSchema.optional(),
+  })
+  .strict();
+
+export const MiniMaxH3TextToVideoRequestSchema = z.object({
+  model: z.literal("minimax-h3/text-to-video"),
+  callBackUrl: z.string().url().optional(),
+  input: MiniMaxH3TextToVideoInputSchema,
+});
+
+export const MiniMaxH3ImageToVideoInputSchema = z
+  .object({
+    prompt: MiniMaxH3PromptSchema,
+    first_frame_url: MiniMaxH3MediaAddressSchema.optional(),
+    last_frame_url: MiniMaxH3MediaAddressSchema.optional(),
+    duration: MiniMaxH3DurationSchema,
+    resolution: MiniMaxH3ResolutionSchema.optional(),
+  })
+  .strict();
+
+export const MiniMaxH3ImageToVideoRequestSchema = z
+  .object({
+    model: z.literal("minimax-h3/image-to-video"),
+    callBackUrl: z.string().url().optional(),
+    input: MiniMaxH3ImageToVideoInputSchema,
+  })
+  .superRefine((value, ctx) => {
+    if (
+      value.input.first_frame_url === undefined &&
+      value.input.last_frame_url === undefined
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        message:
+          "At least one of input.first_frame_url or input.last_frame_url is required",
+        path: ["input", "first_frame_url"],
+      });
+    }
+  });
+
+export const MiniMaxH3ReferenceToVideoInputSchema = z
+  .object({
+    prompt: MiniMaxH3PromptSchema,
+    reference_image_urls: z
+      .array(MiniMaxH3MediaAddressSchema)
+      .max(9)
+      .optional(),
+    reference_video_urls: z
+      .array(MiniMaxH3MediaAddressSchema)
+      .max(3)
+      .optional(),
+    reference_audio_urls: z
+      .array(MiniMaxH3MediaAddressSchema)
+      .max(3)
+      .optional(),
+    aspect_ratio: MiniMaxH3ReferenceAspectRatioSchema.optional(),
+    duration: MiniMaxH3DurationSchema,
+    resolution: MiniMaxH3ResolutionSchema.optional(),
+  })
+  .strict();
+
+export const MiniMaxH3ReferenceToVideoRequestSchema = z
+  .object({
+    model: z.literal("minimax-h3/reference-to-video"),
+    callBackUrl: z.string().url().optional(),
+    input: MiniMaxH3ReferenceToVideoInputSchema,
+  })
+  .superRefine((value, ctx) => {
+    const hasImageReference = Boolean(value.input.reference_image_urls?.length);
+    const hasVideoReference = Boolean(value.input.reference_video_urls?.length);
+
+    if (!hasImageReference && !hasVideoReference) {
+      ctx.addIssue({
+        code: "custom",
+        message:
+          "At least one non-empty input.reference_image_urls or input.reference_video_urls array is required",
+        path: ["input", "reference_image_urls"],
+      });
+    }
+  });
+
 // ---------------------------------------------------------------------------
 // Wan 2.7 task result schemas (parsed from KieTaskInfoData.resultJson)
 //
@@ -3068,6 +3194,9 @@ export const MediaGenerationRequestSchema = z.union([
   PixverseV6TransitionRequestSchema,
   PixverseV6ExtendRequestSchema,
   PixverseV6ReferenceToVideoRequestSchema,
+  MiniMaxH3TextToVideoRequestSchema,
+  MiniMaxH3ImageToVideoRequestSchema,
+  MiniMaxH3ReferenceToVideoRequestSchema,
 ]);
 
 // ---------------------------------------------------------------------------
@@ -3214,6 +3343,16 @@ export type Seedance2MiniAspectRatio = z.infer<
 export type Seedance2MiniTaskState = z.infer<
   typeof Seedance2MiniTaskStateSchema
 >;
+export type MiniMaxH3Prompt = z.infer<typeof MiniMaxH3PromptSchema>;
+export type MiniMaxH3Duration = z.infer<typeof MiniMaxH3DurationSchema>;
+export type MiniMaxH3Resolution = z.infer<typeof MiniMaxH3ResolutionSchema>;
+export type MiniMaxH3FixedAspectRatio = z.infer<
+  typeof MiniMaxH3FixedAspectRatioSchema
+>;
+export type MiniMaxH3ReferenceAspectRatio = z.infer<
+  typeof MiniMaxH3ReferenceAspectRatioSchema
+>;
+export type MiniMaxH3MediaAddress = z.infer<typeof MiniMaxH3MediaAddressSchema>;
 
 export type KlingElement = z.infer<typeof KlingElementSchema>;
 export type MultiShotPrompt = z.infer<typeof MultiShotPromptSchema>;
@@ -3449,6 +3588,46 @@ export type PixverseV6ReferenceToVideoRequestInput =
   PixverseV6ReferenceToVideoRequest;
 export type PixverseV6ReferenceToVideoParsedRequest = z.output<
   typeof PixverseV6ReferenceToVideoRequestSchema
+>;
+export type MiniMaxH3TextToVideoInput = z.input<
+  typeof MiniMaxH3TextToVideoInputSchema
+>;
+export type MiniMaxH3TextToVideoParsedInput = z.output<
+  typeof MiniMaxH3TextToVideoInputSchema
+>;
+export type MiniMaxH3TextToVideoRequest = z.input<
+  typeof MiniMaxH3TextToVideoRequestSchema
+>;
+export type MiniMaxH3TextToVideoRequestInput = MiniMaxH3TextToVideoRequest;
+export type MiniMaxH3TextToVideoParsedRequest = z.output<
+  typeof MiniMaxH3TextToVideoRequestSchema
+>;
+export type MiniMaxH3ImageToVideoInput = z.input<
+  typeof MiniMaxH3ImageToVideoInputSchema
+>;
+export type MiniMaxH3ImageToVideoParsedInput = z.output<
+  typeof MiniMaxH3ImageToVideoInputSchema
+>;
+export type MiniMaxH3ImageToVideoRequest = z.input<
+  typeof MiniMaxH3ImageToVideoRequestSchema
+>;
+export type MiniMaxH3ImageToVideoRequestInput = MiniMaxH3ImageToVideoRequest;
+export type MiniMaxH3ImageToVideoParsedRequest = z.output<
+  typeof MiniMaxH3ImageToVideoRequestSchema
+>;
+export type MiniMaxH3ReferenceToVideoInput = z.input<
+  typeof MiniMaxH3ReferenceToVideoInputSchema
+>;
+export type MiniMaxH3ReferenceToVideoParsedInput = z.output<
+  typeof MiniMaxH3ReferenceToVideoInputSchema
+>;
+export type MiniMaxH3ReferenceToVideoRequest = z.input<
+  typeof MiniMaxH3ReferenceToVideoRequestSchema
+>;
+export type MiniMaxH3ReferenceToVideoRequestInput =
+  MiniMaxH3ReferenceToVideoRequest;
+export type MiniMaxH3ReferenceToVideoParsedRequest = z.output<
+  typeof MiniMaxH3ReferenceToVideoRequestSchema
 >;
 export type Wan27ImageToVideoRequest = z.input<
   typeof Wan27ImageToVideoRequestSchema

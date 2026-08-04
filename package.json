@@ -123,6 +123,7 @@
     "dev:preflight:provider": "node scripts/preflight-provider.mjs",
     "ci:local": "pnpm run audit && pnpm run gen:examples:check && pnpm run doc-gen:check && pnpm run build && pnpm run typecheck:tests && pnpm run lint && pnpm run test:run",
     "audit": "node scripts/audit.mjs --audit-level=moderate",
+    "audit:op-env": "node scripts/audit-op-env.mjs",
     "check:op": "op run --env-file=.env -- node scripts/check-op.mjs",
     "compare:video": "pnpm run build:cost --silent && node scripts/compare-video-cost.mjs",
     "compare:image": "pnpm run build:cost --silent && node scripts/compare-image-cost.mjs"

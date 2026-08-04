@@ -1,9 +1,11 @@
 # KIE numeric input compatibility audit
 
-Retrieved and observed on 2026-07-31. This audit covers numeric-valued input
-properties reachable from every current `KIE_MEDIA_MODELS` entry through its
-`CREATE_TASK_GUARDS` schema. It is an evidence and decision record, not a claim
-that fields with similar names share an upstream contract.
+The base sweep was retrieved and observed on 2026-07-31; the MiniMax H3 rows
+use the approved upstream snapshots retrieved on 2026-08-04. This audit covers
+numeric-valued input properties reachable from every current
+`KIE_MEDIA_MODELS` entry through its `CREATE_TASK_GUARDS` schema. It is an
+evidence and decision record, not a claim that fields with similar names share
+an upstream contract.
 
 ## Method
 
@@ -15,15 +17,15 @@ Rows are deduplicated by model and input path. Unsupported schema branches,
 duplicate rows, missing rows, extra rows, and stale local-contract cells all
 fail with the affected model and path.
 
-At this revision the derived inventory has 66 unique paths across 37 of the 52
-catalogue models: 46 integer branches, 13 general-number branches, one numeric
+At this revision the derived inventory has 69 unique paths across 40 of the 55
+catalogue models: 49 integer branches, 13 general-number branches, one numeric
 literal enum, five numeric-string enums, and one numeric-string pattern. These
 are measured facts, not permanent expected counts; the model/path set is
 derived on every test run.
 
 For upstream evidence, the sweep resolved English Markdown OpenAPI exports
 from `llms.txt` before considering alternate pages. The current index matched
-50 of 52 catalogue ids. It has no model-specific export for
+53 of 55 catalogue ids. It has no model-specific export for
 `elevenlabs/sound-effect-v2` or `sora-watermark-remover`; only the former has a
 numeric inventory row. A missing page, an absent example, or a conflict between
 a declaration and example remains explicit rather than being treated as proof
@@ -538,6 +540,9 @@ byte-for-byte identical to the registered snapshots.
 | DOC-35 | https://docs.kie.ai/market/pixverse/transition.md                       | `9b8d6898d05205e5ed28773892f128fdc07c3fce3ad208297349f7ef445d6808` |
 | DOC-36 | https://docs.kie.ai/market/pixverse/extend.md                           | `092639d6883e0220f54b89775e9439546ecf837b809a7f2e658c864797950cd2` |
 | DOC-37 | https://docs.kie.ai/market/pixverse/reference-to-video.md               | `787e3d8cce37bb2679eef55671d3acf3b401716b9ca87f11070862fa4e9b0e7a` |
+| DOC-38 | https://docs.kie.ai/market/minimax-h3/text-to-video.md                  | `c607d9ad9831132ba5993c2ab2bb586a64ade36f2e0cc14d7705ca5839e20239` |
+| DOC-39 | https://docs.kie.ai/market/minimax-h3/image-to-video.md                 | `03c053ae3a71bae492905348da8d8da6b562568d6a564171b6e1785a41497c5b` |
+| DOC-40 | https://docs.kie.ai/market/minimax-h3/reference-to-video.md             | `5af016278f46ab9fa0ed7a99daf36cde3d7dcbb7a0de6cbf5db5e55be67d5e10` |
 
 ## Numeric inventory
 
@@ -615,5 +620,8 @@ this evidence item makes no runtime contract change for the row.
 | pixverse-v6/extend                        | input.seed                    | optional; integer min=0 max=2147483647                                                               | DOC-36 @ 2026-07-31 | integer min=0 max=2147483647                | number (123456)     | none beyond current OpenAPI                 | number-only         | high       | retain current behavior                      |
 | pixverse-v6/reference-to-video            | input.duration                | required; integer min=1 max=15                                                                       | DOC-37 @ 2026-07-31 | integer min=1 max=15 default=5              | number (5)          | none beyond current OpenAPI                 | number-only         | high       | retain current behavior                      |
 | pixverse-v6/reference-to-video            | input.seed                    | optional; integer min=0 max=2147483647                                                               | DOC-37 @ 2026-07-31 | integer min=0 max=2147483647                | number (123456789)  | none beyond current OpenAPI                 | number-only         | high       | retain current behavior                      |
+| minimax-h3/text-to-video                  | input.duration                | required; integer min=4 max=15                                                                       | DOC-38 @ 2026-08-04 | integer min=4 max=15 default=6              | number (6)          | none beyond current OpenAPI                 | number-only         | high       | enforce integer range; do not inject default |
+| minimax-h3/image-to-video                 | input.duration                | required; integer min=4 max=15                                                                       | DOC-39 @ 2026-08-04 | integer min=4 max=15 default=6              | number (6)          | none beyond current OpenAPI                 | number-only         | high       | enforce integer range; do not inject default |
+| minimax-h3/reference-to-video             | input.duration                | required; integer min=4 max=15                                                                       | DOC-40 @ 2026-08-04 | integer min=4 max=15 default=6              | number (6)          | none beyond current OpenAPI                 | number-only         | high       | enforce integer range; do not inject default |
 
 <!-- numeric-inventory:end -->

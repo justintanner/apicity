@@ -334,6 +334,196 @@ describe("KIE PixVerse V6 modelInputSchemas metadata (REQ-007)", () => {
   });
 });
 
+// ---------------------------------------------------------------------------
+// MiniMax H3 registry entries (REQ-005 through REQ-007, AC-5 and AC-6)
+// ---------------------------------------------------------------------------
+
+describe("KIE MiniMax H3 modelInputSchemas metadata (REQ-007)", () => {
+  const provider = createKie({ apiKey: "test-key" });
+  const MODELS = [
+    "minimax-h3/text-to-video",
+    "minimax-h3/image-to-video",
+    "minimax-h3/reference-to-video",
+  ] as const;
+  const FIXED_ASPECT_RATIOS = ["21:9", "16:9", "4:3", "1:1", "3:4", "9:16"];
+
+  function expectDescription(
+    description: string | undefined,
+    fragments: readonly string[]
+  ): void {
+    for (const fragment of fragments) {
+      expect(description).toContain(fragment);
+    }
+  }
+
+  it("exposes exactly three video models with every and only their input fields", () => {
+    const miniMaxModels = Object.keys(provider.modelInputSchemas).filter(
+      (model) => model.startsWith("minimax-h3/")
+    );
+    expect(miniMaxModels).toEqual(MODELS);
+
+    const expectedFields = {
+      "minimax-h3/text-to-video": [
+        "prompt",
+        "aspect_ratio",
+        "duration",
+        "resolution",
+      ],
+      "minimax-h3/image-to-video": [
+        "prompt",
+        "first_frame_url",
+        "last_frame_url",
+        "duration",
+        "resolution",
+      ],
+      "minimax-h3/reference-to-video": [
+        "prompt",
+        "reference_image_urls",
+        "reference_video_urls",
+        "reference_audio_urls",
+        "aspect_ratio",
+        "duration",
+        "resolution",
+      ],
+    } as const;
+
+    for (const model of MODELS) {
+      const entry = provider.modelInputSchemas[model];
+      expect(entry.type).toBe("video");
+      expect(Object.keys(entry.fields)).toEqual(expectedFields[model]);
+      expect(entry.fields.callBackUrl).toBeUndefined();
+    }
+  });
+
+  it("documents shared prompt, duration, and resolution contracts", () => {
+    for (const model of MODELS) {
+      const fields = provider.modelInputSchemas[model].fields;
+
+      expect(fields.prompt).toMatchObject({
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 7000,
+      });
+      expect(fields.duration).toMatchObject({
+        type: "integer",
+        required: true,
+        minimum: 4,
+        maximum: 15,
+        default: 6,
+      });
+      expect(fields.duration.description).toContain("requires callers");
+      expect(fields.resolution).toMatchObject({
+        type: "string",
+        enum: ["768P", "2K"],
+        default: "2K",
+      });
+      expect(fields.resolution.required).toBeUndefined();
+      expect(fields.resolution.description).toContain(
+        "not synthesized locally"
+      );
+    }
+  });
+
+  it("documents text-to-video's fixed required aspect ratio", () => {
+    const fields =
+      provider.modelInputSchemas["minimax-h3/text-to-video"].fields;
+
+    expect(fields.aspect_ratio).toMatchObject({
+      type: "string",
+      required: true,
+      enum: FIXED_ASPECT_RATIOS,
+    });
+    expect(fields.aspect_ratio.default).toBeUndefined();
+    expect(fields.aspect_ratio.description).toContain(
+      "adaptive is not accepted"
+    );
+  });
+
+  it("documents image-to-video frame dependencies and remote restrictions", () => {
+    const fields =
+      provider.modelInputSchemas["minimax-h3/image-to-video"].fields;
+
+    for (const name of ["first_frame_url", "last_frame_url"] as const) {
+      const field = fields[name];
+      expect(field.type).toBe("string");
+      expect(field.required).toBeUndefined();
+      expectDescription(field.description, [
+        "HTTP, HTTPS, or OSS",
+        "at least one of first_frame_url or last_frame_url is required",
+        "not inspected locally",
+        "JPG/JPEG/PNG/WEBP/HEIC/HEIF",
+        "30 MB",
+        "256-5760",
+        "0.4-2.5",
+      ]);
+    }
+  });
+
+  it("documents reference list caps, dependencies, and URL protocols", () => {
+    const fields =
+      provider.modelInputSchemas["minimax-h3/reference-to-video"].fields;
+    const references = [
+      ["reference_image_urls", 9],
+      ["reference_video_urls", 3],
+      ["reference_audio_urls", 3],
+    ] as const;
+
+    for (const [name, maxItems] of references) {
+      const field = fields[name];
+      expect(field).toMatchObject({ type: "array", maxItems });
+      expect(field.required).toBeUndefined();
+      expect(field.items?.type).toBe("string");
+      expectDescription(field.items?.description, ["HTTP", "HTTPS", "OSS"]);
+    }
+
+    expectDescription(fields.reference_image_urls.description, [
+      "at least one of reference_image_urls or reference_video_urls",
+      "not inspected locally",
+      "JPG/JPEG/PNG/WEBP/HEIC/HEIF",
+      "30 MB",
+      "256-5760",
+      "0.4-2.5",
+    ]);
+    expectDescription(fields.reference_video_urls.description, [
+      "at least one of reference_image_urls or reference_video_urls",
+      "not inspected locally",
+      "MP4/MOV",
+      "H.264/H.265",
+      "AAC/MP3",
+      "50 MB",
+      "2-15 seconds",
+      "15 seconds combined",
+      "256-5760",
+      "0.4-2.5",
+      "23.976-60",
+    ]);
+    expectDescription(fields.reference_audio_urls.description, [
+      "cannot be the sole reference",
+      "not inspected locally",
+      "WAV/MP3",
+      "15 MB",
+      "2-15 seconds",
+      "15 seconds combined",
+    ]);
+  });
+
+  it("documents reference-to-video's optional adaptive aspect ratio", () => {
+    const fields =
+      provider.modelInputSchemas["minimax-h3/reference-to-video"].fields;
+
+    expect(fields.aspect_ratio).toMatchObject({
+      type: "string",
+      enum: ["adaptive", ...FIXED_ASPECT_RATIOS],
+      default: "adaptive",
+    });
+    expect(fields.aspect_ratio.required).toBeUndefined();
+    expect(fields.aspect_ratio.description).toContain(
+      "not synthesized locally"
+    );
+  });
+});
+
 // AC-3. `callBackUrl` is a top-level envelope field on createTask, not model
 // input. It leaked into the pixverse-v6/text-to-video registry entry once and
 // was removed in review; asserting it across the whole registry rather than

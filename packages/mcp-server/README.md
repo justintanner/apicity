@@ -28,9 +28,9 @@ npx -y @apicity/mcp-server@latest \
 npx -y @apicity/mcp-server@latest --env-file ~/.config/apicity/.env
 
 # Combined mode: file settings first, then missing secrets from 1Password
-npx -y @apicity/mcp-server@latest \
-  --env-file ~/.config/apicity/public.env \
-  --op-vault apicity --op-token "$OP_SERVICE_ACCOUNT_TOKEN"
+npx -y <mcp-package-spec> \
+  --env-file <public-env-path> \
+  --op-vault <vault> --op-token "$OP_SERVICE_ACCOUNT_TOKEN"
 ```
 
 Use `@latest` with `npx`; bare `npx -y @apicity/mcp-server` can reuse an older
@@ -181,8 +181,8 @@ not choose an account-specific default. Supply it through one of these paths:
 
   ```bash
   POLYMARKET_SIGNATURE_TYPE="$VERIFIED_POLYMARKET_SIGNATURE_TYPE" \
-    npx -y @apicity/mcp-server@latest \
-      --op-vault apicity --op-token "$OP_SERVICE_ACCOUNT_TOKEN"
+    npx -y <mcp-package-spec> \
+      --op-vault <vault> --op-token "$OP_SERVICE_ACCOUNT_TOKEN"
   ```
 
 `--op-vault` intentionally does not resolve `POLYMARKET_SIGNATURE_TYPE`. If

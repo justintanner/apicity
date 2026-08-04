@@ -18,15 +18,15 @@ export interface ProviderSpec {
     | "oauthToken";
   importPath: string;
   factoryName: string;
-  // Extra env vars (beyond `envVar`) this provider needs resolved from the
-  // secret store. Used by providers like polymarket whose factory takes a
-  // bundle of credentials rather than a single `optionKey` value.
+  // Secret-backed env vars (beyond `envVar`) this provider needs resolved.
+  // Used by providers like polymarket whose factory takes a credential bundle
+  // rather than a single `optionKey` value.
   extraEnvVars?: string[];
 }
 
-// Polymarket's CLOB trading factory takes a credential bundle, not a single
-// key. These names match both the `op://<vault>/<NAME>/password` references and
-// the keys read in `instantiateProvider` below.
+// Polymarket's CLOB trading factory takes a secret-backed credential bundle,
+// not a single key. Public settings such as POLYMARKET_SIGNATURE_TYPE must be
+// supplied separately through the environment or an env file.
 export const POLYMARKET_ENV_VARS = [
   "POLYMARKET_CLOB_API_KEY",
   "POLYMARKET_CLOB_API_SECRET",
@@ -34,21 +34,43 @@ export const POLYMARKET_ENV_VARS = [
   "POLYMARKET_ADDRESS",
   "POLYMARKET_PRIVATE_KEY",
   "POLYMARKET_FUNDER_ADDRESS",
-  "POLYMARKET_SIGNATURE_TYPE",
 ];
 
 export const S3_ENV_VARS = ["S3_SECRET_ACCESS_KEY"];
 export const B2_ENV_VARS = ["B2_SECRET_ACCESS_KEY", "B2_REGION"];
 
-function polymarketOptionsFromEnv(): Record<string, unknown> {
-  const signatureType = process.env.POLYMARKET_SIGNATURE_TYPE;
+const POLYMARKET_SIGNATURE_TYPES = ["0", "1", "2", "3"] as const;
+
+export function polymarketOptionsFromEnv(
+  env: NodeJS.ProcessEnv = process.env
+): Record<string, unknown> {
+  const signatureType = env.POLYMARKET_SIGNATURE_TYPE;
+  const hasCredentials = POLYMARKET_ENV_VARS.some(
+    (envVar) => env[envVar] !== undefined && env[envVar] !== ""
+  );
+
+  if (!signatureType) {
+    if (hasCredentials) {
+      throw new Error(
+        "POLYMARKET_SIGNATURE_TYPE is required when Polymarket credentials " +
+          "are configured."
+      );
+    }
+  } else if (
+    !POLYMARKET_SIGNATURE_TYPES.includes(
+      signatureType as (typeof POLYMARKET_SIGNATURE_TYPES)[number]
+    )
+  ) {
+    throw new Error("POLYMARKET_SIGNATURE_TYPE must be one of 0, 1, 2, or 3.");
+  }
+
   return {
-    clobApiKey: process.env.POLYMARKET_CLOB_API_KEY,
-    clobApiSecret: process.env.POLYMARKET_CLOB_API_SECRET,
-    clobApiPassphrase: process.env.POLYMARKET_CLOB_API_PASSPHRASE,
-    clobAddress: process.env.POLYMARKET_ADDRESS,
-    clobPrivateKey: process.env.POLYMARKET_PRIVATE_KEY,
-    clobFunderAddress: process.env.POLYMARKET_FUNDER_ADDRESS,
+    clobApiKey: env.POLYMARKET_CLOB_API_KEY,
+    clobApiSecret: env.POLYMARKET_CLOB_API_SECRET,
+    clobApiPassphrase: env.POLYMARKET_CLOB_API_PASSPHRASE,
+    clobAddress: env.POLYMARKET_ADDRESS,
+    clobPrivateKey: env.POLYMARKET_PRIVATE_KEY,
+    clobFunderAddress: env.POLYMARKET_FUNDER_ADDRESS,
     clobSignatureType: signatureType ? Number(signatureType) : undefined,
   };
 }
@@ -248,6 +270,8 @@ export async function instantiateProvider(
   spec: ProviderSpec,
   paygateSecret?: string
 ): Promise<InstantiatedProvider | null> {
+  const polymarketOptions =
+    name === "polymarket" ? polymarketOptionsFromEnv() : undefined;
   const mod = (await import(spec.importPath)) as Record<string, unknown>;
   const factory = mod[spec.factoryName];
   if (typeof factory !== "function") {
@@ -262,7 +286,7 @@ export async function instantiateProvider(
     // Always instantiate: read-only market data works with no creds, and the
     // trading endpoints pick up the wallet/credential bundle when present.
     return (factory as (opts: Record<string, unknown>) => InstantiatedProvider)(
-      polymarketOptionsFromEnv()
+      polymarketOptions as Record<string, unknown>
     );
   }
   if (name === "s3") {

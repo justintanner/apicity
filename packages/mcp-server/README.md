@@ -26,12 +26,17 @@ npx -y @apicity/mcp-server@latest \
 
 # .env file mode (no 1Password)
 npx -y @apicity/mcp-server@latest --env-file ~/.config/apicity/.env
+
+# Combined mode: file settings first, then missing secrets from 1Password
+npx -y @apicity/mcp-server@latest \
+  --env-file ~/.config/apicity/public.env \
+  --op-vault apicity --op-token "$OP_SERVICE_ACCOUNT_TOKEN"
 ```
 
 Use `@latest` with `npx`; bare `npx -y @apicity/mcp-server` can reuse an older
 cached package that does not understand newer flags.
 
-Credentials come from one of two modes:
+Provider credentials and settings can come from either source or both:
 
 - **1Password** — put each provider secret in a 1Password item named after the
   env var (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, etc.) with the value in the
@@ -39,8 +44,10 @@ Credentials come from one of two modes:
   `--op-token` accepts a literal token, `env:VAR`, `$VAR`, or an existing env
   var name; `APICITY_OP_VAULT` and `APICITY_OP_SERVICE_TOKEN` work instead of
   the flags.
-- **.env file** — a plain dotenv file of `KEY=VALUE` provider credentials.
-  Vars already set in the environment win; `op://` values are skipped.
+- **.env file** — a plain dotenv file of `KEY=VALUE` provider settings.
+  Vars already set in the environment win; `op://` values are skipped. When
+  the 1Password flags are also present, it fills only the secrets still
+  missing after the file loads.
 
 ### Claude Code
 
@@ -108,15 +115,15 @@ args = [
 
 One of `--op-vault` + `--op-token`, or `--env-file`, is required.
 
-| Flag                           | Description                                                                                                                            |
-| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `--op-vault <vault>`           | Resolve missing provider credentials from `op://<vault>/<ENV_VAR>/password` (or `APICITY_OP_VAULT`).                                   |
-| `--op-token <token>`           | 1Password service-account token, `env:VAR`, `$VAR`, or env var name (or `APICITY_OP_SERVICE_TOKEN`). `--op-service-token` is an alias. |
-| `--env-file <path>`            | Load provider credentials from a dotenv-style file instead of 1Password. Set env vars win; `op://` values skip.                        |
-| `--output-dir <path>`          | Override where binary results and downloaded media URLs land. Defaults to `CLAUDE_PROJECT_DIR`, then cwd.                              |
-| `--providers <csv>`            | Allow-list of providers (default: every one with its env var set).                                                                     |
-| `--paygate-secret-file <path>` | File holding the shared HMAC secret used to verify paid-endpoint OTPs (see [Paid endpoints](#paid-endpoints)).                         |
-| `--help`                       | Print usage.                                                                                                                           |
+| Flag                           | Description                                                                                                                             |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `--op-vault <vault>`           | Resolve missing provider credentials from `op://<vault>/<ENV_VAR>/password` (or `APICITY_OP_VAULT`).                                    |
+| `--op-token <token>`           | 1Password service-account token, `env:VAR`, `$VAR`, or env var name (or `APICITY_OP_SERVICE_TOKEN`). `--op-service-token` is an alias.  |
+| `--env-file <path>`            | Load provider settings from a dotenv-style file. Set env vars win; `op://` values skip; combine with 1Password to fill missing secrets. |
+| `--output-dir <path>`          | Override where binary results and downloaded media URLs land. Defaults to `CLAUDE_PROJECT_DIR`, then cwd.                               |
+| `--providers <csv>`            | Allow-list of providers (default: every one with its env var set).                                                                      |
+| `--paygate-secret-file <path>` | File holding the shared HMAC secret used to verify paid-endpoint OTPs (see [Paid endpoints](#paid-endpoints)).                          |
+| `--help`                       | Print usage.                                                                                                                            |
 
 ### Credentials
 
@@ -152,6 +159,37 @@ already set are left untouched. With `--providers`, a missing requested secret
 is a startup error; without it, missing vault items are skipped. With
 `--env-file`, 1Password is skipped entirely (unless the op flags are also
 given, in which case 1Password fills whatever the file left missing).
+
+#### Polymarket CLOB credentials and signature type
+
+Polymarket public market-data tools need no credentials. Credentialed CLOB
+tools use the secret-backed bundle `POLYMARKET_CLOB_API_KEY`,
+`POLYMARKET_CLOB_API_SECRET`, `POLYMARKET_CLOB_API_PASSPHRASE`,
+`POLYMARKET_ADDRESS`, `POLYMARKET_PRIVATE_KEY`, and
+`POLYMARKET_FUNDER_ADDRESS`.
+
+`POLYMARKET_SIGNATURE_TYPE` is public configuration, not a secret. Set it to
+the account's verified exact value (`0`, `1`, `2`, or `3`); the MCP server does
+not choose an account-specific default. Supply it through one of these paths:
+
+- Put the literal in the file passed to `--env-file`, then combine that flag
+  with `--op-vault` and `--op-token` so 1Password fills the credential bundle.
+  For example, an account verified as type `2` uses the line
+  `POLYMARKET_SIGNATURE_TYPE=2`.
+- Set it in the MCP launcher's environment while using `--op-vault`, for
+  example:
+
+  ```bash
+  POLYMARKET_SIGNATURE_TYPE="$VERIFIED_POLYMARKET_SIGNATURE_TYPE" \
+    npx -y @apicity/mcp-server@latest \
+      --op-vault apicity --op-token "$OP_SERVICE_ACCOUNT_TOKEN"
+  ```
+
+`--op-vault` intentionally does not resolve `POLYMARKET_SIGNATURE_TYPE`. If
+any credential-bundle value is present while the signature type is missing or
+unsupported, Polymarket fails to load with a name-only configuration error
+before provider construction. With no credential bundle, credential-free
+read-only Polymarket remains available without a signature type.
 
 ## Tool naming
 

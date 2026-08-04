@@ -8,26 +8,17 @@
 // kie's /api/v1/jobs/createTask endpoint. Rates come from the bundled
 // @apicity/cost PRICING table — no API keys, no network, instant.
 
-import { createCost } from "../packages/provider/cost/dist/src/index.js";
+import { fileURLToPath } from "node:url";
 
-const argv = process.argv.slice(2);
-const args = Object.fromEntries(
-  argv
-    .filter((a) => a.startsWith("--"))
-    .map((a) => {
-      const [k, v = "true"] = a.replace(/^--/, "").split("=");
-      return [k, v];
-    })
-);
+export const createTaskEndpointAssociation = Object.freeze({
+  provider: "kie",
+  endpoint: "post.api.v1.jobs.createTask",
+});
 
-const counts = (args.counts ?? "1,4,10")
-  .split(",")
-  .map((s) => Number(s.trim()))
-  .filter((n) => Number.isInteger(n) && n > 0);
-
-const lineup = [
+export const lineup = [
   // nano-banana-2 — 3 tiers by resolution.
   {
+    ...createTaskEndpointAssociation,
     label: "nano-banana-2 1K",
     payload: {
       model: "nano-banana-2",
@@ -35,6 +26,7 @@ const lineup = [
     },
   },
   {
+    ...createTaskEndpointAssociation,
     label: "nano-banana-2 2K",
     payload: {
       model: "nano-banana-2",
@@ -42,6 +34,7 @@ const lineup = [
     },
   },
   {
+    ...createTaskEndpointAssociation,
     label: "nano-banana-2 4K",
     payload: {
       model: "nano-banana-2",
@@ -50,6 +43,7 @@ const lineup = [
   },
   // gpt-image-2 — 3 tiers by resolution, t2i and i2i share the same rates.
   {
+    ...createTaskEndpointAssociation,
     label: "gpt-image-2 t2i 1K",
     payload: {
       model: "gpt-image-2-text-to-image",
@@ -57,6 +51,7 @@ const lineup = [
     },
   },
   {
+    ...createTaskEndpointAssociation,
     label: "gpt-image-2 t2i 2K",
     payload: {
       model: "gpt-image-2-text-to-image",
@@ -64,6 +59,7 @@ const lineup = [
     },
   },
   {
+    ...createTaskEndpointAssociation,
     label: "gpt-image-2 t2i 4K",
     payload: {
       model: "gpt-image-2-text-to-image",
@@ -71,6 +67,7 @@ const lineup = [
     },
   },
   {
+    ...createTaskEndpointAssociation,
     label: "gpt-image-2 i2i 1K",
     payload: {
       model: "gpt-image-2-image-to-image",
@@ -82,6 +79,7 @@ const lineup = [
     },
   },
   {
+    ...createTaskEndpointAssociation,
     label: "gpt-image-2 i2i 2K",
     payload: {
       model: "gpt-image-2-image-to-image",
@@ -93,6 +91,7 @@ const lineup = [
     },
   },
   {
+    ...createTaskEndpointAssociation,
     label: "gpt-image-2 i2i 4K",
     payload: {
       model: "gpt-image-2-image-to-image",
@@ -105,19 +104,29 @@ const lineup = [
   },
   // wan/2.7 image — bills per-image; supports `n` for batch.
   {
+    ...createTaskEndpointAssociation,
     label: "wan-2.7 image",
-    payload: { model: "wan/2-7-image", input: { prompt: "x" } },
+    payload: {
+      model: "wan/2-7-image",
+      input: { prompt: "x", resolution: "1K" },
+    },
   },
   {
+    ...createTaskEndpointAssociation,
     label: "wan-2.7 image pro",
-    payload: { model: "wan/2-7-image-pro", input: { prompt: "x" } },
+    payload: {
+      model: "wan/2-7-image-pro",
+      input: { prompt: "x", resolution: "1K" },
+    },
   },
   // qwen2 / seedream — flat per-image rates, no tiers.
   {
+    ...createTaskEndpointAssociation,
     label: "qwen2 t2i",
     payload: { model: "qwen2/text-to-image", input: { prompt: "x" } },
   },
   {
+    ...createTaskEndpointAssociation,
     label: "qwen2 image-edit",
     payload: {
       model: "qwen2/image-edit",
@@ -125,6 +134,7 @@ const lineup = [
     },
   },
   {
+    ...createTaskEndpointAssociation,
     label: "seedream/5-lite t2i",
     payload: {
       model: "seedream/5-lite-text-to-image",
@@ -132,6 +142,7 @@ const lineup = [
     },
   },
   {
+    ...createTaskEndpointAssociation,
     label: "seedream/5-lite i2i",
     payload: {
       model: "seedream/5-lite-image-to-image",
@@ -144,55 +155,88 @@ const lineup = [
   },
 ];
 
-const c = createCost();
-
 // Patches `n` into a kie image payload when the upstream schema accepts it
 // (currently wan/2-7-image and wan/2-7-image-pro). Other kie image schemas
 // don't expose a batch field — for those we leave the payload alone and the
 // rate-table multiplier (units = 1 per call) is multiplied externally.
-function withKieN(payload, n) {
+export function withKieN(payload, n) {
   const supportsN =
     payload.model === "wan/2-7-image" || payload.model === "wan/2-7-image-pro";
   if (!supportsN) return payload;
   return { ...payload, input: { ...payload.input, n } };
 }
 
-const rows = [];
-for (const entry of lineup) {
-  const cells = {};
-  let source = null;
-  const warnings = new Set();
-  for (const n of counts) {
-    const supportsN =
-      entry.payload.model === "wan/2-7-image" ||
-      entry.payload.model === "wan/2-7-image-pro";
-    let est = c.estimate({
-      provider: "kie",
-      payload: withKieN(entry.payload, n),
-    });
-    if (!supportsN) est = { ...est, usd: est.usd * n };
-    cells[n] = { usd: est.usd };
-    source = est.source;
-    for (const w of est.warnings) warnings.add(w);
-  }
-  rows.push({ label: entry.label, source, cells, warnings: [...warnings] });
+export function schemaValidationCases(entry) {
+  return [
+    { name: "canonical", payload: entry.payload },
+    { name: "representative", payload: withKieN(entry.payload, 4) },
+  ];
 }
 
-const sortKey = counts[0];
-rows.sort((a, b) => {
-  const av = a.cells[sortKey];
-  const bv = b.cells[sortKey];
-  const aHas = av && Number.isFinite(av.usd);
-  const bHas = bv && Number.isFinite(bv.usd);
-  if (aHas && bHas) return av.usd - bv.usd;
-  if (aHas) return -1;
-  if (bHas) return 1;
+export async function main(argv = process.argv.slice(2), dependencies = {}) {
+  const args = Object.fromEntries(
+    argv
+      .filter((argument) => argument.startsWith("--"))
+      .map((argument) => {
+        const [key, value = "true"] = argument.replace(/^--/, "").split("=");
+        return [key, value];
+      })
+  );
+  const counts = (args.counts ?? "1,4,10")
+    .split(",")
+    .map((value) => Number(value.trim()))
+    .filter((value) => Number.isInteger(value) && value > 0);
+  const createCost =
+    dependencies.createCost ??
+    (await import("../packages/provider/cost/dist/src/index.js")).createCost;
+  const stdout = dependencies.stdout ?? process.stdout;
+  const cost = createCost();
+  const rows = [];
+
+  for (const entry of lineup) {
+    const cells = {};
+    let source = null;
+    const warnings = new Set();
+    for (const count of counts) {
+      const supportsN =
+        entry.payload.model === "wan/2-7-image" ||
+        entry.payload.model === "wan/2-7-image-pro";
+      let estimate = cost.estimate({
+        provider: "kie",
+        payload: withKieN(entry.payload, count),
+      });
+      if (!supportsN) {
+        estimate = { ...estimate, usd: estimate.usd * count };
+      }
+      cells[count] = { usd: estimate.usd };
+      source = estimate.source;
+      for (const warning of estimate.warnings) warnings.add(warning);
+    }
+    rows.push({
+      label: entry.label,
+      source,
+      cells,
+      warnings: [...warnings],
+    });
+  }
+
+  const sortKey = counts[0];
+  rows.sort((a, b) => {
+    const av = a.cells[sortKey];
+    const bv = b.cells[sortKey];
+    const aHas = av && Number.isFinite(av.usd);
+    const bHas = bv && Number.isFinite(bv.usd);
+    if (aHas && bHas) return av.usd - bv.usd;
+    if (aHas) return -1;
+    if (bHas) return 1;
+    return 0;
+  });
+
+  renderTable({ rows, counts, stdout });
   return 0;
-});
+}
 
-renderTable({ rows, counts });
-
-function renderTable({ rows, counts }) {
+function renderTable({ rows, counts, stdout }) {
   const labelWidth = Math.max(8, ...rows.map((r) => r.label.length));
   const colWidth = 10;
   const head =
@@ -211,8 +255,8 @@ function renderTable({ rows, counts }) {
     "|" +
     "-".repeat(24) +
     "|";
-  console.log(head);
-  console.log(sep);
+  writeLine(stdout, head);
+  writeLine(stdout, sep);
   for (const r of rows) {
     const cells = counts
       .map((n) => {
@@ -221,7 +265,8 @@ function renderTable({ rows, counts }) {
         return ("$" + cell.usd.toFixed(4)).padStart(colWidth);
       })
       .join(" | ");
-    console.log(
+    writeLine(
+      stdout,
       "| " +
         r.label.padEnd(labelWidth) +
         " | " +
@@ -235,7 +280,29 @@ function renderTable({ rows, counts }) {
     r.warnings.map((w) => `${r.label}: ${w}`)
   );
   if (allWarnings.length) {
-    console.log("\nwarnings:");
-    for (const w of allWarnings) console.log("  · " + w);
+    writeLine(stdout, "\nwarnings:");
+    for (const warning of allWarnings) {
+      writeLine(stdout, "  · " + warning);
+    }
   }
+}
+
+function writeLine(stream, value) {
+  stream.write(`${value}\n`);
+}
+
+function formatError(error) {
+  return error instanceof Error ? error.message : String(error);
+}
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  main().then(
+    (status) => {
+      process.exitCode = status;
+    },
+    (error) => {
+      process.stderr.write(`compare-image-cost: ${formatError(error)}\n`);
+      process.exitCode = 1;
+    }
+  );
 }

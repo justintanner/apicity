@@ -41,7 +41,7 @@ pnpm run gen:shared              # Sync canonical shared/provider-src files into
 pnpm run gen:shared:check        # Check shared provider copies for drift
 pnpm run typecheck               # Type-check all packages (tsc --noEmit; no emit, no docs)
 pnpm run typecheck:provider -- <name-or-path> # Type-check one provider (+ tests project when the diff touches it); falls back to full on shared/package diffs
-pnpm run lint                    # Full lint: prettier --check + ESLint + repo checks (NO build)
+pnpm run lint                    # Full lint; compare-payload check builds KIE into ignored dist
 pnpm run lint:after-format       # Full lint minus prettier --check; safe after pnpm run format
 pnpm run lint:provider <name-or-path> # Scoped ESLint + provider-relevant repo checks
 pnpm run lint:fix                # Auto-fix lint issues
@@ -82,6 +82,11 @@ npx tsx tests/harness-serve.ts tests/recordings/       # View a directory of rec
 npx tsx tests/harness-serve.ts --html out.html <paths> # Generate self-contained HTML
 npx tsx tests/harness-serve.ts --git-approve <paths>   # Enable approve button (git add)
 ```
+
+`pnpm run lint` intentionally rebuilds only `@apicity/kie` before the
+compare-cost payload schema repository check. This makes the guard reliable on
+a clean checkout without trusting stale output; the generated
+`packages/provider/kie/dist/` directory remains ignored.
 
 ## Architecture
 

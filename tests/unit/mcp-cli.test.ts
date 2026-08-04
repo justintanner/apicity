@@ -216,6 +216,20 @@ describe("1Password credential resolution", () => {
     ]);
   });
 
+  it("resolves only Polymarket's secret-backed credential bundle", () => {
+    expect(getProviderEnvVars(["polymarket"])).toEqual([
+      "POLYMARKET_CLOB_API_KEY",
+      "POLYMARKET_CLOB_API_SECRET",
+      "POLYMARKET_CLOB_API_PASSPHRASE",
+      "POLYMARKET_ADDRESS",
+      "POLYMARKET_PRIVATE_KEY",
+      "POLYMARKET_FUNDER_ADDRESS",
+    ]);
+    expect(getProviderEnvVars(["polymarket"])).not.toContain(
+      "POLYMARKET_SIGNATURE_TYPE"
+    );
+  });
+
   it("rejects unknown providers", () => {
     expect(() => getProviderEnvVars(["openai", "missing"])).toThrow(
       "Unknown provider in --providers: missing"

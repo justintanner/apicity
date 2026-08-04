@@ -8,6 +8,8 @@ import {
   KieGrokResponsesRequestSchema,
   KieMediaModelSchema,
   KieResponsesRequestSchema,
+  MiniMaxH3ImageToVideoRequestSchema,
+  MiniMaxH3ReferenceToVideoRequestSchema,
   Seedance2FastInputSchema,
   Seedance2InputSchema,
   Seedance2MiniInputSchema,
@@ -130,6 +132,115 @@ describe("KIE Zod schema validation", () => {
       });
       expect(result.success).toBe(true);
       expect(result.data?.reference_image_urls).toBeUndefined();
+    });
+  });
+
+  describe("MiniMax H3 request schemas", () => {
+    it.each([
+      {
+        model: "minimax-h3/text-to-video",
+        input: {
+          prompt: "A lighthouse sweeps across a moonlit sea.",
+          aspect_ratio: "16:9",
+          duration: 4,
+          resolution: "768P",
+        },
+      },
+      {
+        model: "minimax-h3/image-to-video",
+        input: {
+          prompt: "Animate the final frame with a slow camera move.",
+          last_frame_url: "oss://examples/final-frame.png",
+          duration: 15,
+          resolution: "2K",
+        },
+      },
+      {
+        model: "minimax-h3/reference-to-video",
+        input: {
+          prompt: "Match the reference motion and ambient sound.",
+          reference_video_urls: ["http://example.com/reference.mp4"],
+          reference_audio_urls: ["https://example.com/reference.mp3"],
+          aspect_ratio: "adaptive",
+          duration: 4,
+        },
+      },
+    ])("accepts and preserves $model through createTask", (request) => {
+      const result = CreateTaskRequestSchema.safeParse(request);
+      expect(result.success).toBe(true);
+      expect(result.data).toEqual(request);
+    });
+
+    it("rejects image-to-video without either boundary frame", () => {
+      const result = MiniMaxH3ImageToVideoRequestSchema.safeParse({
+        model: "minimax-h3/image-to-video",
+        input: { prompt: "Animate this scene.", duration: 4 },
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error?.issues).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            path: ["input", "first_frame_url"],
+          }),
+        ])
+      );
+    });
+
+    it("rejects audio-only reference-to-video", () => {
+      const result = MiniMaxH3ReferenceToVideoRequestSchema.safeParse({
+        model: "minimax-h3/reference-to-video",
+        input: {
+          prompt: "Use this soundtrack.",
+          reference_audio_urls: ["https://example.com/reference.mp3"],
+          duration: 4,
+        },
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error?.issues).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            path: ["input", "reference_image_urls"],
+          }),
+        ])
+      );
+    });
+
+    it.each([
+      {
+        model: "minimax-h3/text-to-video",
+        input: {
+          prompt: "Strict text request.",
+          aspect_ratio: "16:9",
+          duration: 4,
+          first_frame_url: "https://example.com/frame.png",
+        },
+      },
+      {
+        model: "minimax-h3/image-to-video",
+        input: {
+          prompt: "Strict image request.",
+          first_frame_url: "https://example.com/frame.png",
+          aspect_ratio: "16:9",
+          duration: 4,
+        },
+      },
+    ])("rejects cross-mode fields for $model", (request) => {
+      expect(CreateTaskRequestSchema.safeParse(request).success).toBe(false);
+    });
+
+    it("rejects unsupported media-address protocols", () => {
+      expect(
+        MiniMaxH3ImageToVideoRequestSchema.safeParse({
+          model: "minimax-h3/image-to-video",
+          input: {
+            prompt: "Animate this frame.",
+            first_frame_url: "ftp://example.com/frame.png",
+            duration: 4,
+          },
+        }).success
+      ).toBe(false);
     });
   });
 
@@ -910,15 +1021,16 @@ describe("TRI-008 VeoExtendRequestSchema.model stays a closed set", () => {
 // TRI-001 KieMediaModelSchema — one escape hatch per vendor family
 // ---------------------------------------------------------------------------
 //
-// KieMediaModelSchema is kie's aggregator catalogue: 52 ids drawn from a dozen
+// KieMediaModelSchema is kie's aggregator catalogue: 55 ids drawn from a dozen
 // unrelated vendors behind one `createTask` endpoint. REQ-006 forbids opening
 // it with a single catch-all regex, so it carries one alias per vendor family
-// and four singletons stay enumerated with no alias at all.
+// while four singletons and the three exact MiniMax H3 modes stay enumerated
+// with no alias at all.
 //
 // BR-4 needs care here that the single-family schemas above do not. A foreign
 // *catalogue* id — `happyhorse/video-edit` on the Kling family — is accepted by
 // KieMediaModelSchema, through the enum branch, and always was: the whole point
-// of the aggregator is that all 52 are valid. So cross-family leakage cannot be
+// of the aggregator is that all 55 are valid. So cross-family leakage cannot be
 // asserted with safeParse; it is asserted structurally instead, against the
 // alias patterns themselves ("partitions the catalogue" below). The per-family
 // `rejected` lists therefore carry BR-3 near-miss typos plus BR-4 ids from
@@ -1109,6 +1221,20 @@ const MEDIA_SINGLETON_MODELS = [
   "sora-watermark-remover",
 ] as const;
 
+const MINIMAX_H3_EXACT_ONLY_MODELS = [
+  "minimax-h3/text-to-video",
+  "minimax-h3/image-to-video",
+  "minimax-h3/reference-to-video",
+] as const;
+
+const MINIMAX_H3_REJECTED_MODELS = [
+  "minimax-h4/text-to-video",
+  "minimax-h3/audio-to-video",
+  "minimaxh3/text-to-video",
+  "minimax_h3/text_to_video",
+  "MINIMAX-H3/TEXT-TO-VIDEO",
+] as const;
+
 // `.or()` chaining nests left, so the emitted JSON Schema is a left-deep tree
 // of two-branch `anyOf`s rather than one flat list. Flatten it to leaves.
 function anyOfLeaves(schema: JsonSchema): JsonSchema[] {
@@ -1143,6 +1269,21 @@ describe("TRI-001 KieMediaModelSchema", () => {
     (model) => {
       expect(KieMediaModelSchema.safeParse(model).success).toBe(true);
       expect(mediaAliasPatterns.filter((re) => re.test(model))).toEqual([]);
+    }
+  );
+
+  it.each(MINIMAX_H3_EXACT_ONLY_MODELS)(
+    "keeps MiniMax H3 model %s reachable only through the enum",
+    (model) => {
+      expect(KieMediaModelSchema.safeParse(model).success).toBe(true);
+      expect(mediaAliasPatterns.filter((re) => re.test(model))).toEqual([]);
+    }
+  );
+
+  it.each(MINIMAX_H3_REJECTED_MODELS)(
+    "rejects the out-of-scope MiniMax model %j",
+    (model) => {
+      expect(KieMediaModelSchema.safeParse(model).success).toBe(false);
     }
   );
 });

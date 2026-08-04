@@ -33,6 +33,15 @@ export const FAST_GATE_DOC_SURFACES = Object.freeze([
 ]);
 
 /**
+ * One step in the fast provider gate and its required documentation prose.
+ *
+ * @typedef {object} FastGateStep
+ * @property {string} id
+ * @property {string} title
+ * @property {Readonly<Record<string, string>>} prose
+ */
+
+/**
  * The gate's steps, in the order `scripts/preflight-provider.mjs` runs them.
  *
  * - `id` — stable identity, `[a-z0-9-]+`. It is what the documentation markers
@@ -49,21 +58,21 @@ export const FAST_GATE_DOC_SURFACES = Object.freeze([
  *   surface in `FAST_GATE_DOC_SURFACES`; the guard asserts that completeness,
  *   so adding a step without its evidence is itself red.
  *
- * The `@type` annotations on `prose` are load-bearing, not decoration.
+ * The named collection-level contract is load-bearing, not decoration.
  * `tests/tsconfig.json` sets `allowJs: true, checkJs: false`, so this module is
  * never type-checked itself but its *inferred* types are enforced at every TS
- * call site. Without the annotation, `Object.freeze({"CLAUDE.md": "...", ...})`
+ * call site. Without the contract, `Object.freeze({"CLAUDE.md": "...", ...})`
  * infers a literal-keyed `Readonly<{...}>`, and the guard's natural
  * completeness assertion — iterate `FAST_GATE_DOC_SURFACES`, read
- * `step.prose[surface]` — fails `typecheck:tests` with TS7053. Annotating the
- * field fixes every call site at once and states the contract where the field
- * is defined.
+ * `step.prose[surface]` — fails `typecheck:tests` with TS7053. Typing the
+ * collection fixes every call site at once and states the contract where new
+ * steps enter the list.
  */
+/** @type {ReadonlyArray<FastGateStep>} */
 export const FAST_GATE_STEPS = Object.freeze([
   Object.freeze({
     id: "format",
     title: "prettier --write (provider package + tests)",
-    /** @type {Readonly<Record<string, string>>} */
     prose: Object.freeze({
       "CLAUDE.md": "scoped format",
       "README.md": "Prettier on the provider package/tests",
@@ -73,7 +82,6 @@ export const FAST_GATE_STEPS = Object.freeze([
   Object.freeze({
     id: "lint",
     title: "lint:provider",
-    /** @type {Readonly<Record<string, string>>} */
     prose: Object.freeze({
       "CLAUDE.md": "scoped lint",
       "README.md": "`lint:provider`",
@@ -83,7 +91,6 @@ export const FAST_GATE_STEPS = Object.freeze([
   Object.freeze({
     id: "typecheck-tests",
     title: TESTS_TYPECHECK_STEP.title,
-    /** @type {Readonly<Record<string, string>>} */
     prose: Object.freeze({
       "CLAUDE.md": "whole tests-project typecheck",
       "README.md": "whole tests-project typecheck",
@@ -93,7 +100,6 @@ export const FAST_GATE_STEPS = Object.freeze([
   Object.freeze({
     id: "test-provider",
     title: "test:provider (provider typecheck + replay)",
-    /** @type {Readonly<Record<string, string>>} */
     prose: Object.freeze({
       "CLAUDE.md": "provider typecheck and replay",
       "README.md": "`test:provider` for provider typecheck + replay",
@@ -103,7 +109,6 @@ export const FAST_GATE_STEPS = Object.freeze([
   Object.freeze({
     id: "cross-cutting",
     title: "cross-cutting recording-enumeration tests",
-    /** @type {Readonly<Record<string, string>>} */
     prose: Object.freeze({
       "CLAUDE.md": "cross-cutting recording-enumeration tests",
       "README.md": "cross-cutting recording-enumeration tests",
@@ -118,10 +123,6 @@ const REGION_END = /<!--\s*fast-gate-steps:end\s*-->/g;
 // Cannot match the region markers: after `fast-gate-step` in
 // `fast-gate-steps:start` comes `s`, not `:`.
 const STEP_MARKER = /<!--\s*fast-gate-step:([a-z0-9-]+)\s*-->/g;
-
-function matchAll(pattern, text) {
-  return [...text.matchAll(new RegExp(pattern.source, pattern.flags))];
-}
 
 function collapseWhitespace(text) {
   return text.replace(/\s+/g, " ").trim();
@@ -144,14 +145,14 @@ function collapseWhitespace(text) {
  *
  * @param {string} surface - Repo-relative path, for the problem messages.
  * @param {string} text - That file's full contents.
- * @param {ReadonlyArray<{id: string, title: string, prose: Readonly<Record<string, string>>}>} [steps]
+ * @param {ReadonlyArray<FastGateStep>} [steps]
  * @returns {string[]}
  */
 export function checkFastGateDocs(surface, text, steps = FAST_GATE_STEPS) {
   const problems = [];
 
-  const starts = matchAll(REGION_START, text);
-  const ends = matchAll(REGION_END, text);
+  const starts = [...text.matchAll(REGION_START)];
+  const ends = [...text.matchAll(REGION_END)];
 
   // An absent anchor fails rather than silently checking nothing.
   if (starts.length !== 1) {
@@ -177,7 +178,7 @@ export function checkFastGateDocs(surface, text, steps = FAST_GATE_STEPS) {
   }
 
   const region = text.slice(regionStart, end.index);
-  const markers = matchAll(STEP_MARKER, region);
+  const markers = [...region.matchAll(STEP_MARKER)];
 
   // First occurrence wins for span purposes; a repeat is reported on its own.
   const firstMarkerIndex = new Map();
@@ -235,7 +236,7 @@ export function checkFastGateDocs(surface, text, steps = FAST_GATE_STEPS) {
 
     if (!span.includes(collapseWhitespace(expected))) {
       problems.push(
-        `${surface}: step '${step.id}' is marked here but its text is missing the expected "${expected}"`
+        `${surface}: step '${step.id}' is marked here but its text is missing the expected "${expected}"; marker '<!-- fast-gate-step:${step.id} -->' must directly follow the phrase it binds`
       );
     }
   }

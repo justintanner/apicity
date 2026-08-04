@@ -242,12 +242,11 @@ MCP server's `--paygate-secret-file` wiring.
   package/tests<!-- fast-gate-step:format -->,
   `lint:provider`<!-- fast-gate-step:lint -->, the whole tests-project
   typecheck (`typecheck:tests`, unscoped by
-  design)<!-- fast-gate-step:typecheck-tests -->, `test:provider` for provider
-  typecheck + replay<!-- fast-gate-step:test-provider -->, then the
-  cross-cutting recording-enumeration
-  tests<!-- fast-gate-step:cross-cutting --><!-- fast-gate-steps:end -->.
-  `<name-or-path>` can
-  be `openai`, `packages/provider/openai/src/openai.ts`, or a matching
+  design)<!-- fast-gate-step:typecheck-tests -->, `test:provider` for
+  provider typecheck + replay<!-- fast-gate-step:test-provider -->, then the
+  cross-cutting recording-enumeration tests<!-- fast-gate-step:cross-cutting --><!-- fast-gate-steps:end -->.
+  `<name-or-path>` can be `openai`,
+  `packages/provider/openai/src/openai.ts`, or a matching
   `tests/integration/openai-*.test.ts` path. From a provider package,
   `pnpm -w run dev:preflight:fast` infers the provider from `INIT_CWD`.
   Use `pnpm run test:provider -- <name-or-path>` for test-only loops,

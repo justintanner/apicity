@@ -212,7 +212,7 @@ describe("fast-gate documentation guard — region scoping", () => {
 
     const problems = checkFastGateDocs(surface, gutted);
     expect(problems).toContain(
-      `${surface}: step 'typecheck-tests' is marked here but its text is missing the expected "whole tests-project typecheck"`
+      `${surface}: step 'typecheck-tests' is marked here but its text is missing the expected "whole tests-project typecheck"; marker '<!-- fast-gate-step:typecheck-tests -->' must directly follow the phrase it binds`
     );
   });
 });

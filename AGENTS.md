@@ -100,11 +100,10 @@ Provider-scoped commands accept either `openai`-style names or paths such as
 the <!-- fast-gate-steps:start -->scoped format<!-- fast-gate-step:format -->
 and scoped lint<!-- fast-gate-step:lint --> steps, the whole tests-project
 typecheck<!-- fast-gate-step:typecheck-tests -->, the provider typecheck and
-replay<!-- fast-gate-step:test-provider -->, and the cross-cutting
-recording-enumeration
-tests<!-- fast-gate-step:cross-cutting --><!-- fast-gate-steps:end --> as it
-runs them. From inside a
-provider package, run `pnpm -w run dev:preflight:fast` to infer the provider
+replay<!-- fast-gate-step:test-provider -->, and the
+cross-cutting recording-enumeration tests<!-- fast-gate-step:cross-cutting --><!-- fast-gate-steps:end -->
+as it runs them. From inside a provider package, run
+`pnpm -w run dev:preflight:fast` to infer the provider
 from pnpm's `INIT_CWD`. Keep `pnpm run dev:preflight` and
 `pnpm run ci:local` for shared scripts/config, package metadata, docs, test
 harness changes, release prep, or any ambiguous diff that needs the full

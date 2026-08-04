@@ -219,7 +219,7 @@ describe("1Password environment audit", () => {
     expect(isExactSentinelOutput(`${OP_ENV_AUDIT_SENTINEL}\n`)).toBe(false);
     expect(
       isExactSentinelOutput(
-        "apicity-op-sentinel:012<concealed by 1Password>456789"
+        OP_ENV_AUDIT_SENTINEL.replace("3", "<concealed by 1Password>")
       )
     ).toBe(false);
 

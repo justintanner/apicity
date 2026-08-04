@@ -5,7 +5,7 @@
 | Field                         | Value                                                              |
 | ----------------------------- | ------------------------------------------------------------------ |
 | Verification date             | `2026-08-04`                                                       |
-| Result                        | `blocked`                                                          |
+| Result                        | `pass`                                                             |
 | Implementation baseline       | `bb44429b2395911e9bc42a96d86769b4057e0e79`                         |
 | `.env` SHA-256                | `d3944d5de721602e7800d1e5559a74562c6be5316ca5b04383a868b8b75c4bcc` |
 | Active assignments            | `44`                                                               |
@@ -99,35 +99,31 @@ Unicode code points and are not present in this report.
 
 | Field                        | Value                                                              |
 | ---------------------------- | ------------------------------------------------------------------ |
-| Expected sentinel SHA-256    | `e4910119509a0fd201919b1867700c1801167d773c50f835a6d0f83a2682c760` |
+| Expected sentinel SHA-256    | `56e2c44ec348aad63583ffb0a9c5096e8bde10e543f56c6a57cd317f15457df0` |
 | Contains every decimal digit | `true`                                                             |
-| Exact byte match             | `false`                                                            |
-| Concealment marker present   | `true`                                                             |
-| Sentinel result              | `fail`                                                             |
-| Failure classification       | `non-decimal-prefix-reference-collision`                           |
+| Exact byte match             | `true`                                                             |
+| Concealment marker present   | `false`                                                            |
+| Sentinel result              | `pass`                                                             |
+| Failure classification       | `none`                                                             |
 | Resolved value disclosed     | `false`                                                            |
 
-The full masking-enabled environment concealed part of the sentinel's
-non-decimal prefix because it overlaps a longer protected value. The audit
-proved that no one- or two-character active reference remains, so this result
-does not establish decimal-digit concealment. It does mean the fixed sentinel
-cannot provide the required exact-byte proof in the current environment.
-Masking remained enabled, and neither the protected value nor child stdout was
-printed or persisted.
+The full masking-enabled environment reproduced the collision-resistant fixed
+sentinel byte-for-byte. The sentinel contains every decimal digit, no
+concealment marker appeared, and masking remained enabled throughout the
+proof. Neither the sentinel bytes nor child stdout is persisted in this
+report; only the expected hash and boolean result are recorded.
 
 ## Command Evidence
 
 | Command                          | Result                               |
 | -------------------------------- | ------------------------------------ |
 | `pnpm run check:op`              | `pass`                               |
-| `pnpm run audit:op-env`          | `fail` — sentinel proof only         |
+| `pnpm run audit:op-env`          | `pass`                               |
 | In-memory report disclosure scan | `pass` — zero resolved-value matches |
 
 The credential policy resolved every active 1Password reference. The audit
-then enumerated all 43 references successfully and failed only its exact
-sentinel check. Completion remains blocked until the audit owner supplies a
-sentinel proof whose public framing does not collide with an active protected
-value, while preserving normal 1Password masking and every decimal digit.
+enumerated all 43 references successfully, found no short-value risk, and
+passed its exact sentinel check under normal masking.
 
 ## Disclosure Review
 

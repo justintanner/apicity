@@ -7,7 +7,7 @@ import {
   OP_ENV_SOURCES,
 } from "./op-env-policy.mjs";
 
-export const OP_ENV_AUDIT_SENTINEL = "apicity-op-sentinel:0123456789";
+export const OP_ENV_AUDIT_SENTINEL = "gc-mask-proof-v2:0123456789";
 
 export const OP_ENV_AUDIT_DISPOSITIONS = Object.freeze({
   NO_ACTION_REQUIRED: "no_action_required",

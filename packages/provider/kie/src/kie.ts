@@ -151,14 +151,9 @@ const MIME_TYPES: Record<string, string> = {
 // with TS2353 rather than becoming an unreachable guard. Duplicate keys fail
 // at the repeated entry with TS1117.
 //
-// This table used to have a second half: a list of ids deliberately left
-// unvalidated, each pointing at a reviewed reason. The pass that guarded the
-// last of them emptied that list, and deleted it in the same change rather
-// than leaving it behind — an empty exemption table is a pre-authorisation,
-// the one edit that reopens the hole without looking like a decision. A future
-// model that genuinely cannot be guarded reintroduces the table *and* its
-// reason map in one visible diff, which is a reviewable change rather than
-// filling in a blank someone already left open.
+// If a future model genuinely cannot be guarded, reintroduce an exemption
+// table and its reason map together in one visible, reviewable diff; an empty
+// exemption table would silently pre-authorize bypasses.
 //
 // `as const` keeps readonly, per-key concrete schema types; `satisfies` checks
 // the total mapping without erasing those value types to `z.ZodType`.

@@ -4,6 +4,9 @@ import {
   ElevenLabsTextToSpeechNumericContract,
   HAPPYHORSE_DURATION_MAX_SECONDS,
   HAPPYHORSE_DURATION_MIN_SECONDS,
+  MiniMaxH3FixedAspectRatioSchema,
+  MiniMaxH3ReferenceAspectRatioSchema,
+  MiniMaxH3ResolutionSchema,
   Wan27VideoEditDurationValues,
 } from "./zod";
 
@@ -64,6 +67,37 @@ const wan27ImageBboxListField = {
       items: { type: "integer" },
     },
   },
+} as const;
+
+const miniMaxH3PromptField = {
+  type: "string",
+  required: true,
+  minLength: 1,
+  maxLength: 7000,
+  description: "Video generation prompt (1-7000 characters)",
+} as const;
+
+const miniMaxH3DurationField = {
+  type: "integer",
+  required: true,
+  minimum: 4,
+  maximum: 15,
+  default: 6,
+  description:
+    "Duration in seconds, 4-15; documented upstream default 6, but the SDK requires callers to supply it",
+} as const;
+
+const miniMaxH3ResolutionField = {
+  type: "string",
+  enum: MiniMaxH3ResolutionSchema.options,
+  default: "2K",
+  description:
+    "Output resolution; documented upstream default 2K, not synthesized locally when omitted",
+} as const;
+
+const miniMaxH3MediaAddressItem = {
+  type: "string",
+  description: "HTTP, HTTPS, or OSS media URL",
 } as const;
 
 export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
@@ -2364,6 +2398,81 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         default: "720p",
         description: "Output resolution (default 720p)",
       },
+    },
+  },
+
+  // Sources:
+  // - https://docs.kie.ai/market/minimax-h3/text-to-video
+  // - https://docs.kie.ai/market/minimax-h3/image-to-video
+  // - https://docs.kie.ai/market/minimax-h3/reference-to-video
+  "minimax-h3/text-to-video": {
+    type: "video",
+    fields: {
+      prompt: miniMaxH3PromptField,
+      aspect_ratio: {
+        type: "string",
+        required: true,
+        enum: MiniMaxH3FixedAspectRatioSchema.options,
+        description: "Output aspect ratio; adaptive is not accepted",
+      },
+      duration: miniMaxH3DurationField,
+      resolution: miniMaxH3ResolutionField,
+    },
+  },
+
+  "minimax-h3/image-to-video": {
+    type: "video",
+    fields: {
+      prompt: miniMaxH3PromptField,
+      first_frame_url: {
+        type: "string",
+        description:
+          "HTTP, HTTPS, or OSS first-frame URL; at least one of first_frame_url or last_frame_url is required. Upstream media restrictions (not inspected locally): JPG/JPEG/PNG/WEBP/HEIC/HEIF, at most 30 MB, side length 256-5760 px, and aspect ratio 0.4-2.5",
+      },
+      last_frame_url: {
+        type: "string",
+        description:
+          "HTTP, HTTPS, or OSS last-frame URL; at least one of first_frame_url or last_frame_url is required. Upstream media restrictions (not inspected locally): JPG/JPEG/PNG/WEBP/HEIC/HEIF, at most 30 MB, side length 256-5760 px, and aspect ratio 0.4-2.5",
+      },
+      duration: miniMaxH3DurationField,
+      resolution: miniMaxH3ResolutionField,
+    },
+  },
+
+  "minimax-h3/reference-to-video": {
+    type: "video",
+    fields: {
+      prompt: miniMaxH3PromptField,
+      reference_image_urls: {
+        type: "array",
+        maxItems: 9,
+        description:
+          "HTTP, HTTPS, or OSS reference image URLs (max 9); at least one of reference_image_urls or reference_video_urls must be non-empty. Upstream media restrictions (not inspected locally): JPG/JPEG/PNG/WEBP/HEIC/HEIF, at most 30 MB per image, side length 256-5760 px, and aspect ratio 0.4-2.5",
+        items: miniMaxH3MediaAddressItem,
+      },
+      reference_video_urls: {
+        type: "array",
+        maxItems: 3,
+        description:
+          "HTTP, HTTPS, or OSS reference video URLs (max 3); at least one of reference_image_urls or reference_video_urls must be non-empty. Upstream media restrictions (not inspected locally): MP4/MOV with H.264/H.265 video and AAC/MP3 audio, at most 50 MB per file, 2-15 seconds per file and 15 seconds combined, side length 256-5760 px, aspect ratio 0.4-2.5, and frame rate 23.976-60 fps",
+        items: miniMaxH3MediaAddressItem,
+      },
+      reference_audio_urls: {
+        type: "array",
+        maxItems: 3,
+        description:
+          "HTTP, HTTPS, or OSS reference audio URLs (max 3); audio cannot be the sole reference and must accompany an image or video. Upstream media restrictions (not inspected locally): WAV/MP3, at most 15 MB per file, 2-15 seconds per file and 15 seconds combined",
+        items: miniMaxH3MediaAddressItem,
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: MiniMaxH3ReferenceAspectRatioSchema.options,
+        default: "adaptive",
+        description:
+          "Output aspect ratio; documented upstream default adaptive, not synthesized locally when omitted",
+      },
+      duration: miniMaxH3DurationField,
+      resolution: miniMaxH3ResolutionField,
     },
   },
 };

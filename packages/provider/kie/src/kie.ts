@@ -60,6 +60,9 @@ import {
   PixverseV6TransitionRequestSchema,
   PixverseV6ExtendRequestSchema,
   PixverseV6ReferenceToVideoRequestSchema,
+  MiniMaxH3TextToVideoRequestSchema,
+  MiniMaxH3ImageToVideoRequestSchema,
+  MiniMaxH3ReferenceToVideoRequestSchema,
   Wan27ImageToVideoRequestSchema,
   Wan27TextToVideoRequestSchema,
   Wan27RefToVideoRequestSchema,
@@ -218,6 +221,9 @@ export const CREATE_TASK_GUARDS = {
   "pixverse-v6/transition": PixverseV6TransitionRequestSchema,
   "pixverse-v6/extend": PixverseV6ExtendRequestSchema,
   "pixverse-v6/reference-to-video": PixverseV6ReferenceToVideoRequestSchema,
+  "minimax-h3/text-to-video": MiniMaxH3TextToVideoRequestSchema,
+  "minimax-h3/image-to-video": MiniMaxH3ImageToVideoRequestSchema,
+  "minimax-h3/reference-to-video": MiniMaxH3ReferenceToVideoRequestSchema,
 } as const satisfies Record<KieMediaModel, z.ZodType>;
 
 function validateCreateTaskRequest(req: MediaGenerationRequest): void {

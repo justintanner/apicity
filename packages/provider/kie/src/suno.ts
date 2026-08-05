@@ -106,6 +106,41 @@ export interface SunoWavRequest {
   callBackUrl: string;
 }
 
+export interface SunoWavRecordInfoRequest {
+  taskId: string;
+}
+
+export type SunoWavTaskStatus =
+  | "PENDING"
+  | "SUCCESS"
+  | "CREATE_TASK_FAILED"
+  | "GENERATE_WAV_FAILED"
+  | "CALLBACK_EXCEPTION";
+
+export interface SunoWavRecordInfoData {
+  taskId: string;
+  musicId: string;
+  callbackUrl: string;
+  musicIndex: number;
+  completeTime?: string | null;
+  response?: {
+    audioWavUrl: string;
+    [key: string]: unknown;
+  } | null;
+  successFlag: SunoWavTaskStatus;
+  createTime: string;
+  errorCode: number | null;
+  errorMessage: string | null;
+  [key: string]: unknown;
+}
+
+export interface SunoWavRecordInfoResponse {
+  code: number;
+  msg?: string;
+  data?: SunoWavRecordInfoData | null;
+  [key: string]: unknown;
+}
+
 export interface SunoVocalRemovalRequest {
   taskId: string;
   audioId: string;
@@ -420,6 +455,12 @@ interface SunoWavMethod {
   schema: ApicitySchema<SunoWavRequest>;
 }
 
+interface SunoWavRecordInfoMethod {
+  (taskId: string): Promise<SunoWavRecordInfoResponse>;
+  schema: ApicitySchema<SunoWavRecordInfoRequest>;
+  responseSchema: ApicitySchema<SunoWavRecordInfoResponse>;
+}
+
 interface SunoVocalRemovalMethod {
   (req: SunoVocalRemovalRequest): Promise<SunoSubmitResponse>;
   schema: ApicitySchema<SunoVocalRemovalRequest>;
@@ -541,6 +582,9 @@ interface SunoV1GetNamespace {
   midi: {
     recordInfo: SunoMidiRecordInfoMethod;
   };
+  wav: {
+    recordInfo: SunoWavRecordInfoMethod;
+  };
 }
 
 interface SunoPostApiNamespace {
@@ -581,6 +625,49 @@ const SunoWavRequestSchema = z.object({
   audioId: z.string().min(1),
   callBackUrl: z.string().min(1),
 });
+
+const SunoWavRecordInfoRequestSchema = z
+  .object({
+    taskId: z.string().min(1),
+  })
+  .passthrough();
+
+const SunoWavTaskStatusSchema = z.enum([
+  "PENDING",
+  "SUCCESS",
+  "CREATE_TASK_FAILED",
+  "GENERATE_WAV_FAILED",
+  "CALLBACK_EXCEPTION",
+]);
+
+const SunoWavRecordInfoDataSchema = z
+  .object({
+    taskId: z.string(),
+    musicId: z.string(),
+    callbackUrl: z.string(),
+    musicIndex: z.number().int(),
+    completeTime: z.string().nullable().optional(),
+    response: z
+      .object({
+        audioWavUrl: z.string(),
+      })
+      .passthrough()
+      .nullable()
+      .optional(),
+    successFlag: SunoWavTaskStatusSchema,
+    createTime: z.string(),
+    errorCode: z.number().int().nullable(),
+    errorMessage: z.string().nullable(),
+  })
+  .passthrough();
+
+const SunoWavRecordInfoResponseSchema = z
+  .object({
+    code: z.number().int(),
+    msg: z.string().optional(),
+    data: SunoWavRecordInfoDataSchema.nullable().optional(),
+  })
+  .passthrough();
 
 const SunoVocalRemovalRequestSchema = z.object({
   taskId: z.string().min(1),
@@ -950,6 +1037,17 @@ export function createSunoProvider(
     });
   }
 
+  // GET https://api.kie.ai/api/v1/wav/record-info?taskId={taskId}
+  // Docs: https://docs.kie.ai/suno-api/get-wav-details
+  async function wavRecordInfo(
+    taskId: string
+  ): Promise<SunoWavRecordInfoResponse> {
+    return kieRequest<SunoWavRecordInfoResponse>(transport, {
+      method: "GET",
+      path: `/api/v1/wav/record-info?taskId=${encodeURIComponent(taskId)}`,
+    });
+  }
+
   // POST https://api.kie.ai/api/v1/vocal-removal/generate
   // Docs: https://docs.kie.ai/suno-api/separate-vocals
   async function vocalRemovalGenerate(
@@ -1213,6 +1311,12 @@ export function createSunoProvider(
             recordInfo: Object.assign(midiRecordInfo, {
               schema: SunoMidiRecordInfoRequestSchema,
               responseSchema: SunoMidiRecordInfoResponseSchema,
+            }),
+          },
+          wav: {
+            recordInfo: Object.assign(wavRecordInfo, {
+              schema: SunoWavRecordInfoRequestSchema,
+              responseSchema: SunoWavRecordInfoResponseSchema,
             }),
           },
         },

@@ -125,7 +125,7 @@ function runMain(options: NonNullable<Parameters<typeof main>[0]> = {}): {
 function runPackageGuard(root: string) {
   return spawnSync(
     "pnpm",
-    ["run", "lint:file-url-entry-guards", "--root", root],
+    ["run", "lint:file-url-entry-guards", "--", "--root", root],
     {
       cwd: repositoryRoot,
       encoding: "utf8",

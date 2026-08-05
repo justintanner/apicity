@@ -199,15 +199,16 @@ export function scanRepository(root, dependencies = {}) {
 function parseArgs(argv, defaultRoot) {
   if (!Array.isArray(argv)) throw new TypeError("argv must be an array");
 
+  const normalizedArgv = argv[0] === "--" ? argv.slice(1) : argv;
   let selectedRoot = defaultRoot;
   let sawRoot = false;
-  for (let index = 0; index < argv.length; index++) {
-    const argument = argv[index];
+  for (let index = 0; index < normalizedArgv.length; index++) {
+    const argument = normalizedArgv[index];
     if (argument !== "--root") {
       throw new Error(`Unknown argument: ${argument}`);
     }
     if (sawRoot) throw new Error("--root may be specified only once");
-    const value = argv[++index];
+    const value = normalizedArgv[++index];
     if (typeof value !== "string" || value.length === 0) {
       throw new Error("--root requires a path");
     }

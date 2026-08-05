@@ -1,6 +1,6 @@
 {
   "name": "@apicity/quo",
-  "version": "0.8.4",
+  "version": "0.8.5",
   "description": "Quo API provider for sending SMS text messages.",
   "license": "MIT",
   "repository": {

@@ -39,6 +39,14 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "GET api.v1.midi.recordInfo": {
+    "source": "kie/midi/record-info-not-found",
+    "payload": {
+      "taskId": "apicity-test-nonexistent-task-id-do-not-record-real"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "GET api.v1.mj.recordInfo": {
     "source": "kie/mj/record-info-not-found",
     "payload": {

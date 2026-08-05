@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 
 import { createSunoProvider } from "../../packages/provider/kie/src/suno";
 import { SunoGenerateRequestSchema } from "../../packages/provider/kie/src/zod";
+import type { SunoMidiRecordInfoResponse } from "@apicity/kie";
 
 interface CapturedRequest {
   url: string;
@@ -958,6 +959,211 @@ describe("KIE Suno provider", () => {
       expect(captured[0].url).toBe(
         "https://api.kie.ai/api/v1/generate/record-info?taskId=weird%2Fid%20with%20space"
       );
+    });
+  });
+
+  describe("GET /api/v1/midi/record-info", () => {
+    // The populated example from https://docs.kie.ai/suno-api/get-midi-details.
+    const POPULATED = {
+      code: 200,
+      msg: "success",
+      data: {
+        taskId: "5c79****be8e",
+        recordTaskId: -1,
+        audioId: "e231****-****-****-****-****8cadc7dc",
+        callbackUrl: "https://example.callback",
+        completeTime: 1760335255000,
+        createTime: 1760335251000,
+        successFlag: 1,
+        errorCode: null,
+        errorMessage: null,
+        midiData: {
+          state: "complete",
+          instruments: [
+            {
+              name: "Drums",
+              notes: [
+                {
+                  pitch: 73,
+                  start: 0.036458333333333336,
+                  end: 0.18229166666666666,
+                  velocity: 1,
+                },
+              ],
+            },
+          ],
+        },
+      },
+    };
+
+    it("exposes a callable with request and response schema metadata", () => {
+      const { provider } = createProvider();
+      const recordInfo = provider.get.api.v1.midi.recordInfo;
+      expect(typeof recordInfo).toBe("function");
+      expect(typeof recordInfo.schema.safeParse).toBe("function");
+      expect(typeof recordInfo.responseSchema.safeParse).toBe("function");
+    });
+
+    it("issues a bodyless GET with the percent-encoded taskId", async () => {
+      const { provider, captured } = createProvider(POPULATED);
+      const result: SunoMidiRecordInfoResponse =
+        await provider.get.api.v1.midi.recordInfo(
+          "midi/job?attempt=1&source=test"
+        );
+      expect(captured[0].url).toBe(
+        "https://api.kie.ai/api/v1/midi/record-info" +
+          "?taskId=midi%2Fjob%3Fattempt%3D1%26source%3Dtest"
+      );
+      expect(captured[0].init?.method).toBe("GET");
+      expect(captured[0].init?.body).toBeUndefined();
+      expect(result.data?.successFlag).toBe(1);
+      expect(result.data?.midiData?.instruments?.[0].notes[0].pitch).toBe(73);
+    });
+
+    it("accepts the documented populated response", () => {
+      const { provider } = createProvider();
+      const result =
+        provider.get.api.v1.midi.recordInfo.responseSchema.safeParse(POPULATED);
+      expect(result.success).toBe(true);
+    });
+
+    it("accepts every documented successFlag", () => {
+      const { provider } = createProvider();
+      for (const successFlag of [0, 1, 2, 3]) {
+        const result =
+          provider.get.api.v1.midi.recordInfo.responseSchema.safeParse({
+            code: 200,
+            msg: "success",
+            data: { taskId: "task-1", successFlag },
+          });
+        expect(result.success).toBe(true);
+      }
+    });
+
+    it("accepts empty MIDI data and an empty instrument list", () => {
+      const { provider } = createProvider();
+      const schema = provider.get.api.v1.midi.recordInfo.responseSchema;
+      expect(
+        schema.safeParse({
+          code: 200,
+          data: { taskId: "task-1", successFlag: 1, midiData: {} },
+        }).success
+      ).toBe(true);
+      expect(
+        schema.safeParse({
+          code: 200,
+          data: {
+            taskId: "task-1",
+            successFlag: 1,
+            midiData: { state: "complete", instruments: [] },
+          },
+        }).success
+      ).toBe(true);
+    });
+
+    it("accepts nullable and string-coded failure details", () => {
+      const { provider } = createProvider();
+      const schema = provider.get.api.v1.midi.recordInfo.responseSchema;
+      expect(
+        schema.safeParse({
+          code: 200,
+          data: {
+            taskId: "task-1",
+            successFlag: 3,
+            errorCode: "GENERATE_MIDI_FAILED",
+            errorMessage: "midi generation failed",
+            midiData: null,
+            completeTime: null,
+          },
+        }).success
+      ).toBe(true);
+      expect(
+        schema.safeParse({
+          code: 200,
+          data: {
+            taskId: "task-1",
+            successFlag: 2,
+            errorCode: null,
+            errorMessage: null,
+          },
+        }).success
+      ).toBe(true);
+    });
+
+    it("keeps forward-compatible fields at every object level", () => {
+      const { provider } = createProvider();
+      const withExtras = {
+        code: 200,
+        msg: "success",
+        requestId: "req-extra",
+        data: {
+          taskId: "task-1",
+          successFlag: 1,
+          futureField: "keep-me",
+          midiData: {
+            state: "complete",
+            tempo: 120,
+            instruments: [
+              {
+                name: "Drums",
+                program: 0,
+                notes: [
+                  { pitch: 73, start: 0, end: 1, velocity: 1, channel: 9 },
+                ],
+              },
+            ],
+          },
+        },
+      };
+      const result =
+        provider.get.api.v1.midi.recordInfo.responseSchema.safeParse(
+          withExtras
+        );
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data).toEqual(withExtras);
+      }
+    });
+
+    it("accepts the missing-task envelope", () => {
+      const { provider } = createProvider();
+      const result =
+        provider.get.api.v1.midi.recordInfo.responseSchema.safeParse({
+          code: 200,
+          msg: "success",
+          data: null,
+        });
+      expect(result.success).toBe(true);
+    });
+
+    it("requires a non-empty taskId", () => {
+      const { provider } = createProvider();
+      const schema = provider.get.api.v1.midi.recordInfo.schema;
+      expect(schema.safeParse({}).success).toBe(false);
+      expect(schema.safeParse({ taskId: "" }).success).toBe(false);
+      expect(schema.safeParse({ taskId: "task-1" }).success).toBe(true);
+    });
+
+    it("rejects non-numeric note values", () => {
+      const { provider } = createProvider();
+      const result =
+        provider.get.api.v1.midi.recordInfo.responseSchema.safeParse({
+          code: 200,
+          data: {
+            taskId: "task-1",
+            successFlag: 1,
+            midiData: {
+              state: "complete",
+              instruments: [
+                {
+                  name: "Drums",
+                  notes: [{ pitch: "73", start: 0, end: 1, velocity: 1 }],
+                },
+              ],
+            },
+          },
+        });
+      expect(result.success).toBe(false);
     });
   });
 

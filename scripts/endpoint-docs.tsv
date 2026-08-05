@@ -1016,6 +1016,7 @@ kie	api.v1.jobs.recordInfo	GET	https://api.kie.ai/api/v1/jobs/recordInfo?taskId=
 kie	api.v1.lyrics	POST	https://api.kie.ai/api/v1/lyrics
 kie	api.v1.lyrics.recordInfo	GET	https://api.kie.ai/api/v1/lyrics/record-info?taskId={taskId}	https://docs.kie.ai/suno-api/get-lyrics-details
 kie	api.v1.midi.generate	POST	https://api.kie.ai/api/v1/midi/generate
+kie	api.v1.midi.recordInfo	GET	https://api.kie.ai/api/v1/midi/record-info?taskId={taskId}	https://docs.kie.ai/suno-api/get-midi-details
 kie	api.v1.mj.generate	POST	https://api.kie.ai/api/v1/mj/generate	https://docs.kie.ai/mj-api/generate-mj-image
 kie	api.v1.mj.recordInfo	GET	https://api.kie.ai/api/v1/mj/record-info?taskId={taskId}	https://docs.kie.ai/mj-api/get-mj-task-details
 kie	api.v1.mp4.generate	POST	https://api.kie.ai/api/v1/mp4/generate

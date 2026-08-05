@@ -206,6 +206,54 @@ export interface SunoMidiRequest {
   audioId?: string;
 }
 
+export interface SunoMidiRecordInfoRequest {
+  taskId: string;
+}
+
+// 0 pending, 1 success, 2 task creation failed, 3 MIDI generation failed.
+export type SunoMidiSuccessFlag = 0 | 1 | 2 | 3;
+
+export interface SunoMidiNote {
+  pitch: number;
+  start: number;
+  end: number;
+  velocity: number;
+}
+
+export interface SunoMidiInstrument {
+  name: string;
+  notes: SunoMidiNote[];
+}
+
+export interface SunoMidiData {
+  // Kie returns an empty `midiData` object when the source track was separated
+  // with `type: split_stem`, so both fields are optional.
+  state?: string;
+  instruments?: SunoMidiInstrument[];
+}
+
+export interface SunoMidiRecordInfoData {
+  taskId: string;
+  successFlag: SunoMidiSuccessFlag;
+  recordTaskId?: number;
+  audioId?: string;
+  callbackUrl?: string;
+  createTime?: number;
+  completeTime?: number | null;
+  // Documented as a nullable string; the sibling Suno pollers return numeric
+  // codes, so both are accepted rather than rejected.
+  errorCode?: string | number | null;
+  errorMessage?: string | null;
+  midiData?: SunoMidiData | null;
+}
+
+export interface SunoMidiRecordInfoResponse {
+  code: number;
+  msg?: string;
+  // Kie returns `data: null` (not a 4xx) when the taskId doesn't exist.
+  data?: SunoMidiRecordInfoData | null;
+}
+
 export type SunoMashupModel =
   | "V4"
   | "V4_5"
@@ -380,6 +428,12 @@ interface SunoMidiMethod {
   schema: ApicitySchema<SunoMidiRequest>;
 }
 
+interface SunoMidiRecordInfoMethod {
+  (taskId: string): Promise<SunoMidiRecordInfoResponse>;
+  schema: ApicitySchema<SunoMidiRecordInfoRequest>;
+  responseSchema: ApicitySchema<SunoMidiRecordInfoResponse>;
+}
+
 interface SunoMashupMethod {
   (req: SunoMashupRequest): Promise<SunoSubmitResponse>;
   schema: ApicitySchema<SunoMashupRequest>;
@@ -441,6 +495,9 @@ interface SunoV1GetNamespace {
   };
   lyrics: {
     recordInfo: SunoLyricsRecordInfoMethod;
+  };
+  midi: {
+    recordInfo: SunoMidiRecordInfoMethod;
   };
 }
 
@@ -597,6 +654,66 @@ const SunoMidiRequestSchema = z.object({
   callBackUrl: z.string().min(1),
   audioId: z.string().optional(),
 });
+
+const SunoMidiRecordInfoRequestSchema = z.object({
+  taskId: z.string().min(1),
+});
+
+const SunoMidiSuccessFlagSchema = z.union([
+  z.literal(0),
+  z.literal(1),
+  z.literal(2),
+  z.literal(3),
+]);
+
+const SunoMidiNoteSchema = z
+  .object({
+    pitch: z.number(),
+    start: z.number(),
+    end: z.number(),
+    velocity: z.number(),
+  })
+  .passthrough();
+
+const SunoMidiInstrumentSchema = z
+  .object({
+    name: z.string(),
+    notes: z.array(SunoMidiNoteSchema),
+  })
+  .passthrough();
+
+const SunoMidiDataSchema = z
+  .object({
+    state: z.string().optional(),
+    instruments: z.array(SunoMidiInstrumentSchema).optional(),
+  })
+  .passthrough();
+
+const SunoMidiRecordInfoResponseSchema = z
+  .object({
+    code: z.number().int(),
+    msg: z.string().optional(),
+    data: z
+      .object({
+        taskId: z.string(),
+        successFlag: SunoMidiSuccessFlagSchema,
+        recordTaskId: z.number().int().optional(),
+        audioId: z.string().optional(),
+        callbackUrl: z.string().optional(),
+        createTime: z.number().int().optional(),
+        completeTime: z.number().int().nullable().optional(),
+        errorCode: z
+          .union([z.string(), z.number().int()])
+          .nullable()
+          .optional(),
+        errorMessage: z.string().nullable().optional(),
+        midiData: SunoMidiDataSchema.nullable().optional(),
+      })
+      .passthrough()
+      .nullable()
+      .optional(),
+  })
+  .passthrough();
 
 const SunoMashupRequestSchema = z.object({
   uploadUrlList: z.tuple([z.string().min(1), z.string().min(1)]),
@@ -846,6 +963,17 @@ export function createSunoProvider(
     });
   }
 
+  // GET https://api.kie.ai/api/v1/midi/record-info?taskId={taskId}
+  // Docs: https://docs.kie.ai/suno-api/get-midi-details
+  async function midiRecordInfo(
+    taskId: string
+  ): Promise<SunoMidiRecordInfoResponse> {
+    return kieRequest<SunoMidiRecordInfoResponse>(transport, {
+      method: "GET",
+      path: `/api/v1/midi/record-info?taskId=${encodeURIComponent(taskId)}`,
+    });
+  }
+
   // POST https://api.kie.ai/api/v1/generate/mashup
   // Docs: https://docs.kie.ai/suno-api/generate-mashup
   async function mashupGenerate(
@@ -982,6 +1110,12 @@ export function createSunoProvider(
             recordInfo: Object.assign(lyricsRecordInfo, {
               schema: SunoLyricsRecordInfoRequestSchema,
               responseSchema: SunoLyricsRecordInfoResponseSchema,
+            }),
+          },
+          midi: {
+            recordInfo: Object.assign(midiRecordInfo, {
+              schema: SunoMidiRecordInfoRequestSchema,
+              responseSchema: SunoMidiRecordInfoResponseSchema,
             }),
           },
         },

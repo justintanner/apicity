@@ -63,6 +63,14 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "GET api.v1.mp4.recordInfo": {
+    "source": "kie/mp4/record-info-not-found",
+    "payload": {
+      "taskId": "apicity-test-nonexistent-task-id-do-not-record-real"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "GET api.v1.runway.recordDetail": {
     "source": "kie/runway/record-detail-not-found",
     "payload": {

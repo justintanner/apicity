@@ -780,6 +780,31 @@ describe("KIE Suno provider", () => {
       ).toBe(true);
     });
 
+    // Typed reads, not just a passthrough parse: the response schema is
+    // `.passthrough()`, so a positive safeParse stays green even if a
+    // documented field is dropped from the schema. Reading each field off the
+    // typed result makes `tsc -p tests/tsconfig.json` fail on that regression,
+    // including for the optional/nullable members a negative parse cannot
+    // reach.
+    it("types every documented field on the response", async () => {
+      const { provider } = createProvider(successResponse);
+      const result = await provider.get.api.v1.mp4.recordInfo("task-1");
+      const data = result.data;
+
+      expect(result.code).toBe(200);
+      expect(result.msg).toBe("success");
+      expect(data?.taskId).toBe("task-1");
+      expect(data?.musicId).toBe("music-1");
+      expect(data?.callbackUrl).toBe("https://example.com/callback");
+      expect(data?.musicIndex).toBe(0);
+      expect(data?.completeTime).toBe("2025-01-01 00:10:00");
+      expect(data?.createTime).toBe("2025-01-01 00:00:00");
+      expect(data?.successFlag).toBe("SUCCESS");
+      expect(data?.response?.videoUrl).toBe("https://example.com/video.mp4");
+      expect(data?.errorCode).toBeNull();
+      expect(data?.errorMessage).toBeNull();
+    });
+
     it("URL-encodes the taskId as one query value", async () => {
       const { provider, captured } = createProvider({
         code: 200,
@@ -849,6 +874,32 @@ describe("KIE Suno provider", () => {
         });
 
       expect(result.success).toBe(false);
+    });
+
+    it.each([
+      "taskId",
+      "musicId",
+      "callbackUrl",
+      "musicIndex",
+      "createTime",
+    ] as const)("rejects data missing required field %s", (field) => {
+      const { provider } = createProvider();
+      const data: Record<string, unknown> = { ...successResponse.data };
+      delete data[field];
+
+      const result =
+        provider.get.api.v1.mp4.recordInfo.responseSchema.safeParse({
+          ...successResponse,
+          data,
+        });
+
+      if (result.success) {
+        throw new Error(`expected data missing ${field} to be rejected`);
+      }
+
+      expect(result.error.issues.some((i) => i.path.includes(field))).toBe(
+        true
+      );
     });
   });
 

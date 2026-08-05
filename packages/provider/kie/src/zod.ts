@@ -598,7 +598,9 @@ export const GrokImageToVideoDurationSchema = z.union([
 // Keep the caller's representation unchanged; do not coerce numbers.
 export const GrokImagineDurationSchema = z.enum(["6", "10"]);
 
-export const GrokImagineResolutionSchema = z.enum(["480p", "720p"]);
+export const GrokImagineResolutionSchema = z.enum(["480p", "720p", "1080p"]);
+
+const GrokImagineLegacyResolutionSchema = z.enum(["480p", "720p"]);
 
 const GROK_IMAGINE_IMAGE_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp"];
 
@@ -971,6 +973,18 @@ export const GrokImageToVideoRequestSchema = z
         path: ["input", "mode"],
       });
     }
+
+    if (
+      v.input.resolution === "1080p" &&
+      (v.input.image_urls?.length ?? 0) > 1
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        message:
+          "grok-imagine/image-to-video accepts exactly 1 image_url at 1080p",
+        path: ["input", "image_urls"],
+      });
+    }
   });
 
 // Legacy preview compatibility slug. Current KIE Grok Imagine 1.5 public docs
@@ -982,7 +996,7 @@ export const GrokVideo15PreviewRequestSchema = z.object({
     prompt: z.string().max(4096).optional(),
     image_urls: z.array(z.string()).min(1),
     aspect_ratio: GrokVideo15AspectRatioSchema.default("auto"),
-    resolution: GrokImagineResolutionSchema.default("480p"),
+    resolution: GrokImagineLegacyResolutionSchema.default("480p"),
     duration: z.number().int().min(1).max(15).default(8),
     nsfw_checker: z.boolean().default(true),
   }),
@@ -992,8 +1006,8 @@ export const GrokVideoExtendRequestSchema = z.object({
   model: z.literal("grok-imagine/extend"),
   callBackUrl: z.string().optional(),
   // Top-level cost hint naming the source video's resolution (recording sends
-  // "480p"); reuses the closed Grok Imagine resolution vocabulary.
-  resolution: GrokImagineResolutionSchema.optional(),
+  // "480p"); retains the evidence-backed legacy resolution vocabulary.
+  resolution: GrokImagineLegacyResolutionSchema.optional(),
   input: z.object({
     task_id: z.string().min(1).max(100),
     prompt: z.string().min(1).max(5000),

@@ -17,14 +17,29 @@ describe("KIE modelInputSchemas metadata", () => {
       provider.modelInputSchemas["grok-imagine/image-to-video"].fields;
     const textFields =
       provider.modelInputSchemas["grok-imagine/text-to-video"].fields;
+    const previewFields =
+      provider.modelInputSchemas["grok-imagine-video-1-5-preview"].fields;
+    const textToImageFields =
+      provider.modelInputSchemas["grok-imagine/text-to-image"].fields;
 
     expect(imageFields.prompt.maxLength).toBe(4096);
     expect(imageFields.image_urls.minItems).toBe(1);
     expect(imageFields.image_urls.maxItems).toBe(7);
+    expect(imageFields.image_urls.description).toContain("JPEG/PNG/WEBP");
+    expect(imageFields.image_urls.description).toContain("max 7");
+    expect(imageFields.image_urls.description).toContain("10MB each");
+    expect(imageFields.image_urls.description).toContain("max 1 at 1080p");
+    expect(imageFields.image_urls.description).toContain(
+      "mutually exclusive with task_id"
+    );
     expect(imageFields.index.type).toBe("integer");
     expect(imageFields.index.minimum).toBe(0);
     expect(imageFields.index.maximum).toBe(5);
     expect(imageFields.index.default).toBe(0);
+    expect(textFields.resolution.enum).toEqual(["480p", "720p", "1080p"]);
+    expect(imageFields.resolution.enum).toEqual(["480p", "720p", "1080p"]);
+    expect(previewFields.resolution.enum).toEqual(["480p", "720p"]);
+    expect(Object.hasOwn(textToImageFields, "resolution")).toBe(false);
 
     for (const fields of [textFields, imageFields]) {
       expect(fields.duration.type).toBe("integer");

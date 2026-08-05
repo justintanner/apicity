@@ -164,7 +164,8 @@ describe("MCP Zod schema conversion", () => {
 
   it("preserves constraints from a KIE Zod-derived model request schema", () => {
     const schema = zodToJsonSchema(GrokTextToVideoRequestSchema);
-    const inputProps = propertiesOf(propertiesOf(schema).input);
+    const inputSchema = propertiesOf(schema).input;
+    const inputProps = propertiesOf(inputSchema);
 
     expect(inputProps.prompt.minLength).toBe(1);
     expect(inputProps.prompt.maxLength).toBe(5000);
@@ -172,6 +173,12 @@ describe("MCP Zod schema conversion", () => {
       { type: "integer", minimum: 6, maximum: 30 },
       { type: "string", pattern: "^(?:[6-9]|[12][0-9]|30)$" },
     ]);
+    expect(inputProps.resolution).toEqual({
+      type: "string",
+      enum: ["480p", "720p", "1080p"],
+    });
+    expect(inputSchema.required).not.toContain("resolution");
+    expect(inputProps.resolution.default).toBeUndefined();
   });
 
   it("exposes the exact Grok Extend field contract", () => {
@@ -192,6 +199,10 @@ describe("MCP Zod schema conversion", () => {
     expect(inputProperties.extend_times).toEqual({
       type: "string",
       enum: ["6", "10"],
+    });
+    expect(propertiesOf(schema).resolution).toEqual({
+      type: "string",
+      enum: ["480p", "720p"],
     });
   });
 
@@ -261,9 +272,12 @@ describe("MCP Zod schema conversion", () => {
     });
     expect(inputProperties.resolution).toMatchObject({
       type: "string",
-      enum: ["480p", "720p"],
+      enum: ["480p", "720p", "1080p"],
       default: "480p",
     });
+    expect(json.type).toBe("object");
+    expect(requestProperties.input.type).toBe("object");
+    expect(inputProperties.image_urls.maxItems).toBe(7);
     expect(inputProperties.duration).toEqual({
       anyOf: [
         { type: "integer", minimum: 6, maximum: 30 },

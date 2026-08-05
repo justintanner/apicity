@@ -79,9 +79,24 @@ const guardedRejectionCases = [
       input: {},
     },
   },
+  {
+    name: "grok image-to-video with multiple 1080p external images",
+    request: {
+      model: "grok-imagine/image-to-video",
+      input: {
+        image_urls: [
+          "https://example.com/first.png",
+          "https://example.com/second.webp",
+        ],
+        resolution: "1080p",
+      },
+    },
+    expectedPath: "input.image_urls",
+  },
 ] satisfies ReadonlyArray<{
   name: string;
   request: Record<string, unknown>;
+  expectedPath?: string;
 }>;
 
 afterEach(() => vi.restoreAllMocks());
@@ -235,7 +250,7 @@ describe("CREATE_TASK_GUARDS entries", () => {
 describe("CREATE_TASK_GUARDS provider-boundary rejection", () => {
   it.each(guardedRejectionCases)(
     "rejects $name before transport",
-    async ({ request }) => {
+    async ({ request, expectedPath }) => {
       const mockFetch = vi.fn<typeof fetch>(() => {
         throw new Error("fetch must not run for a guarded invalid request");
       });
@@ -272,6 +287,15 @@ describe("CREATE_TASK_GUARDS provider-boundary rejection", () => {
           : undefined;
       expect(Array.isArray(issues)).toBe(true);
       expect(issues).not.toHaveLength(0);
+      if (expectedPath && Array.isArray(issues)) {
+        expect(
+          issues.some((issue: unknown) => {
+            if (typeof issue !== "object" || issue === null) return false;
+            const path = "path" in issue ? issue.path : undefined;
+            return Array.isArray(path) && path.join(".") === expectedPath;
+          })
+        ).toBe(true);
+      }
       expect(mockFetch).not.toHaveBeenCalled();
     }
   );

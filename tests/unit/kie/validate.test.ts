@@ -13,14 +13,19 @@ import {
   KieClaudeRequestSchema,
   GrokImageToVideoDurationSchema,
   GrokImageToVideoRequestSchema,
+  type GrokImageToVideoRequestInput,
+  GrokTextToImageRequestSchema,
   GrokTextToVideoDurationSchema,
   GrokTextToVideoRequestSchema,
+  type GrokTextToVideoRequestInput,
   GrokVideo15PreviewRequestSchema,
+  type GrokVideo15PreviewRequestInput,
   GptImage2ImageToImageRequestSchema,
   GptImage2TextToImageRequestSchema,
   KlingV3TurboImageToVideoRequestSchema,
   KlingV3TurboTextToVideoRequestSchema,
   MediaGenerationRequestSchema,
+  type MediaGenerationRequest,
   HappyHorseImageToVideoRequestSchema,
   HappyHorseTextToVideoRequestSchema,
   HappyHorse11CreateTaskResponseSchema,
@@ -38,6 +43,41 @@ import {
   GeminiOmniCharacterCreateRequestSchema,
   GeminiOmniCharacterCreateResponseSchema,
 } from "../../../packages/provider/kie/src/zod";
+
+const grokSevenImageUrls = Array.from(
+  { length: 7 },
+  (_, index) => `https://example.com/reference-${index + 1}.jpg`
+);
+
+const grokTextToVideo1080pRequest = {
+  model: "grok-imagine/text-to-video",
+  input: {
+    prompt: "A neon train moving through a rain-soaked city at night",
+    resolution: "1080p",
+  },
+} satisfies GrokTextToVideoRequestInput;
+
+const grokImageToVideo1080pRequest = {
+  model: "grok-imagine/image-to-video",
+  input: {
+    image_urls: ["https://example.com/reference.webp"],
+    resolution: "1080p",
+  },
+} satisfies GrokImageToVideoRequestInput;
+
+const grokCurrent1080pMediaRequests = [
+  grokTextToVideo1080pRequest,
+  grokImageToVideo1080pRequest,
+] satisfies MediaGenerationRequest[];
+
+const grokPreview1080pRequest = {
+  model: "grok-imagine-video-1-5-preview",
+  input: {
+    image_urls: ["https://example.com/reference.png"],
+    // @ts-expect-error 1080p is intentionally unavailable on the legacy slug.
+    resolution: "1080p",
+  },
+} satisfies GrokVideo15PreviewRequestInput;
 
 describe("kie Zod schema validation", () => {
   describe("basic validation", () => {
@@ -120,25 +160,19 @@ describe("kie Zod schema validation", () => {
   });
 
   describe("grok imagine 1.5 current suite slugs", () => {
-    it("should accept the current text-to-video request shape", () => {
-      const request = {
-        model: "grok-imagine/text-to-video",
-        input: {
-          prompt: "A neon train moving through a rain-soaked city at night",
-          aspect_ratio: "16:9",
-          mode: "normal",
-          duration: 6,
-          resolution: "480p",
-          nsfw_checker: true,
-        },
-      };
+    it("should accept and preserve 1080p for current text-to-video", () => {
+      const direct = GrokTextToVideoRequestSchema.safeParse(
+        grokTextToVideo1080pRequest
+      );
+      const media = MediaGenerationRequestSchema.safeParse(
+        grokTextToVideo1080pRequest
+      );
 
-      expect(GrokTextToVideoRequestSchema.safeParse(request).success).toBe(
-        true
-      );
-      expect(MediaGenerationRequestSchema.safeParse(request).success).toBe(
-        true
-      );
+      expect(direct.success).toBe(true);
+      expect(media.success).toBe(true);
+      if (!direct.success || !media.success) return;
+      expect(direct.data.input.resolution).toBe("1080p");
+      expect(media.data).toMatchObject({ input: { resolution: "1080p" } });
     });
 
     it("should accept the current image-to-video sample with three images", () => {
@@ -168,6 +202,35 @@ describe("kie Zod schema validation", () => {
       expect(MediaGenerationRequestSchema.safeParse(request).success).toBe(
         true
       );
+    });
+
+    it("should accept 1080p image-to-video with one image or task_id", () => {
+      const taskIdRequest = {
+        model: "grok-imagine/image-to-video",
+        input: {
+          task_id: "grok-image-task",
+          resolution: "1080p",
+        },
+      } satisfies GrokImageToVideoRequestInput;
+
+      for (const request of [grokImageToVideo1080pRequest, taskIdRequest]) {
+        const direct = GrokImageToVideoRequestSchema.safeParse(request);
+        const media = MediaGenerationRequestSchema.safeParse(request);
+
+        expect(direct.success).toBe(true);
+        expect(media.success).toBe(true);
+        if (!direct.success || !media.success) continue;
+        expect(direct.data.input.resolution).toBe("1080p");
+        expect(media.data).toMatchObject({ input: { resolution: "1080p" } });
+      }
+    });
+
+    it("should accept typed current 1080p requests through the media union", () => {
+      for (const request of grokCurrent1080pMediaRequests) {
+        expect(MediaGenerationRequestSchema.safeParse(request).success).toBe(
+          true
+        );
+      }
     });
 
     it("should apply current image-to-video defaults", () => {
@@ -282,7 +345,7 @@ describe("kie Zod schema validation", () => {
       }
     });
 
-    it("should keep text-to-video duration optional", () => {
+    it("should keep text-to-video duration and resolution optional", () => {
       const result = GrokTextToVideoRequestSchema.safeParse({
         model: "grok-imagine/text-to-video",
         input: { prompt: "Animate this" },
@@ -291,6 +354,7 @@ describe("kie Zod schema validation", () => {
       expect(result.success).toBe(true);
       if (!result.success) return;
       expect(Object.hasOwn(result.data.input, "duration")).toBe(false);
+      expect(Object.hasOwn(result.data.input, "resolution")).toBe(false);
     });
 
     it("should validate external image URLs and image formats", () => {
@@ -346,6 +410,80 @@ describe("kie Zod schema validation", () => {
         )
       ).toBe(true);
     });
+
+    it("should keep one through seven images valid below 1080p", () => {
+      for (const resolution of ["480p", "720p"] as const) {
+        for (const image_urls of [
+          grokSevenImageUrls.slice(0, 1),
+          grokSevenImageUrls,
+        ]) {
+          expect(
+            GrokImageToVideoRequestSchema.safeParse({
+              model: "grok-imagine/image-to-video",
+              input: { image_urls, resolution },
+            }).success
+          ).toBe(true);
+        }
+      }
+
+      const omittedResolution = GrokImageToVideoRequestSchema.safeParse({
+        model: "grok-imagine/image-to-video",
+        input: { image_urls: grokSevenImageUrls },
+      });
+      expect(omittedResolution.success).toBe(true);
+      if (!omittedResolution.success) return;
+      expect(omittedResolution.data.input.resolution).toBe("480p");
+    });
+
+    it("should reject multiple external images at 1080p", () => {
+      for (const image_urls of [
+        grokSevenImageUrls.slice(0, 2),
+        grokSevenImageUrls,
+      ]) {
+        const result = GrokImageToVideoRequestSchema.safeParse({
+          model: "grok-imagine/image-to-video",
+          input: { image_urls, resolution: "1080p" },
+        });
+
+        expect(result.success).toBe(false);
+        if (result.success) continue;
+        expect(
+          result.error.issues.some(
+            (issue) => issue.path.join(".") === "input.image_urls"
+          )
+        ).toBe(true);
+      }
+    });
+
+    it.each(["2160p", "cinema"])(
+      "should reject unknown current resolution %s directly and in the media union",
+      (resolution) => {
+        const textRequest = {
+          model: "grok-imagine/text-to-video",
+          input: { prompt: "Animate this", resolution },
+        };
+        const imageRequest = {
+          model: "grok-imagine/image-to-video",
+          input: {
+            image_urls: ["https://example.com/reference.png"],
+            resolution,
+          },
+        };
+
+        expect(
+          GrokTextToVideoRequestSchema.safeParse(textRequest).success
+        ).toBe(false);
+        expect(
+          GrokImageToVideoRequestSchema.safeParse(imageRequest).success
+        ).toBe(false);
+        expect(
+          MediaGenerationRequestSchema.safeParse(textRequest).success
+        ).toBe(false);
+        expect(
+          MediaGenerationRequestSchema.safeParse(imageRequest).success
+        ).toBe(false);
+      }
+    );
 
     it("should accept task_id plus index instead of image_urls", () => {
       const request = {
@@ -412,6 +550,24 @@ describe("kie Zod schema validation", () => {
       expect(MediaGenerationRequestSchema.safeParse(request).success).toBe(
         true
       );
+      expect(
+        GrokVideo15PreviewRequestSchema.safeParse(grokPreview1080pRequest)
+          .success
+      ).toBe(false);
+    });
+
+    it("should keep resolution absent from text-to-image input", () => {
+      const result = GrokTextToImageRequestSchema.safeParse({
+        model: "grok-imagine/text-to-image",
+        input: {
+          prompt: "A neon train at night",
+          resolution: "1080p",
+        },
+      });
+
+      expect(result.success).toBe(true);
+      if (!result.success) return;
+      expect(Object.hasOwn(result.data.input, "resolution")).toBe(false);
     });
 
     it("should not invent a stable 1.5 slug absent from KIE docs", () => {

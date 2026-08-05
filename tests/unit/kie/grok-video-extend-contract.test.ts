@@ -30,6 +30,13 @@ const typedFixtures = [
   } satisfies GrokVideoExtendRequestInput,
 ] satisfies MediaGenerationRequest[];
 
+const unsupported1080pExtendRequest = {
+  model: "grok-imagine/extend",
+  // @ts-expect-error 1080p is intentionally unavailable on the Extend cost hint.
+  resolution: "1080p",
+  input: { ...baseInput, extend_at: 0, extend_times: "6" },
+} satisfies GrokVideoExtendRequestInput;
+
 function rawRequest(
   extendAt: unknown,
   extendTimes: unknown,
@@ -47,6 +54,19 @@ function rawRequest(
 }
 
 describe("KIE Grok Extend evidence-backed contract", () => {
+  it("keeps the top-level resolution hint limited to 480p and 720p", () => {
+    const result = GrokVideoExtendRequestSchema.safeParse(
+      unsupported1080pExtendRequest
+    );
+
+    expect(result.success).toBe(false);
+    expect(
+      result.error?.issues.some(
+        (issue) => issue.path.join(".") === "resolution"
+      )
+    ).toBe(true);
+  });
+
   it.each([0, 1, 2, 2.5, 10_000])(
     "accepts and preserves extend_at number %s",
     (extendAt) => {

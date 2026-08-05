@@ -369,7 +369,7 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
       resolution: {
         type: "string",
-        enum: ["480p", "720p"],
+        enum: ["480p", "720p", "1080p"],
         description: "Output resolution (default 480p)",
       },
       nsfw_checker: {
@@ -393,7 +393,7 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         minItems: 1,
         maxItems: 7,
         description:
-          "External JPEG/PNG/WEBP image URLs (max 7, 10MB each); mutually exclusive with task_id",
+          "External JPEG/PNG/WEBP image URLs (max 7, 10MB each; max 1 at 1080p); mutually exclusive with task_id",
         items: { type: "string" },
       },
       task_id: {
@@ -425,7 +425,7 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
       resolution: {
         type: "string",
-        enum: ["480p", "720p"],
+        enum: ["480p", "720p", "1080p"],
         description: "Output resolution (default 480p)",
       },
       aspect_ratio: {

@@ -1294,6 +1294,72 @@ describe("KIE Suno provider", () => {
       ).toBe(true);
     });
 
+    it("pins every documented field of the response contract", () => {
+      const { provider } = createProvider();
+      const recordInfo = provider.get.api.v1.wav.recordInfo;
+
+      const parsed = recordInfo.responseSchema.parse(populatedResponse);
+      expectTypeOf(parsed.code).toEqualTypeOf<number>();
+      expectTypeOf(parsed.msg).toEqualTypeOf<string | undefined>();
+
+      const data = parsed.data;
+      if (!data) throw new Error("expected populated data");
+
+      // Each read below is a typed position. SunoWavRecordInfoData carries an
+      // index signature, so dropping a field from the interface degrades it to
+      // `unknown` here and fails `pnpm run typecheck:tests` — which safeParse
+      // and toEqual cannot catch, since both pass unknown keys through.
+      expectTypeOf(data.taskId).toEqualTypeOf<string>();
+      expectTypeOf(data.musicId).toEqualTypeOf<string>();
+      expectTypeOf(data.callbackUrl).toEqualTypeOf<string>();
+      expectTypeOf(data.musicIndex).toEqualTypeOf<number>();
+      expectTypeOf(data.successFlag).toEqualTypeOf<SunoWavTaskStatus>();
+      expectTypeOf(data.createTime).toEqualTypeOf<string>();
+      expectTypeOf(data.completeTime).toEqualTypeOf<
+        string | null | undefined
+      >();
+      expectTypeOf(data.errorCode).toEqualTypeOf<number | null>();
+      expectTypeOf(data.errorMessage).toEqualTypeOf<string | null>();
+      expectTypeOf(data.response?.audioWavUrl).toEqualTypeOf<
+        string | undefined
+      >();
+
+      expect(data.taskId).toBe("wav-task-1");
+      expect(data.response?.audioWavUrl).toBe("https://cdn.kie.ai/audio.wav");
+    });
+
+    it("accepts a failed conversion envelope with a non-null error", () => {
+      const { provider } = createProvider();
+      const result =
+        provider.get.api.v1.wav.recordInfo.responseSchema.safeParse({
+          ...populatedResponse,
+          data: {
+            ...populatedResponse.data,
+            successFlag: "GENERATE_WAV_FAILED",
+            response: null,
+            completeTime: null,
+            errorCode: 500,
+            errorMessage: "wav conversion failed",
+          },
+        });
+
+      expect(result.success).toBe(true);
+      if (!result.success) throw new Error("expected success");
+      expect(result.data.data?.errorCode).toBe(500);
+      expect(result.data.data?.errorMessage).toBe("wav conversion failed");
+    });
+
+    it("rejects an undocumented successFlag", () => {
+      const { provider } = createProvider();
+
+      expect(
+        provider.get.api.v1.wav.recordInfo.responseSchema.safeParse({
+          ...populatedResponse,
+          data: { ...populatedResponse.data, successFlag: "BOGUS" },
+        }).success
+      ).toBe(false);
+    });
+
     it.each(WAV_TASK_STATUSES)(
       "accepts the documented %s status",
       (successFlag) => {

@@ -175,6 +175,15 @@ describe("evaluateShadowSets", () => {
     },
   ];
 
+  const MULTI_GLOB_CLASS = [
+    {
+      id: "gitignored-yet-tracked",
+      axis: "prettier",
+      globs: ["CLAUDE.md", "test-branch-protection.txt"],
+      why: "fixture",
+    },
+  ];
+
   // AC-7 fail case (REQ-012): the guard must be proven to fail on a synthetic
   // shadowed tracked file, not merely to pass on today's tree.
   it("reports a shadowed tracked file with no baseline class as unexplained", () => {
@@ -215,7 +224,122 @@ describe("evaluateShadowSets", () => {
       AGENTS_CLASS,
       []
     );
-    expect(result.stale).toEqual([{ id: "agents-scratch", axis: "prettier" }]);
+    expect(result.stale).toEqual([
+      { id: "agents-scratch", glob: ".agents/**", axis: "prettier" },
+    ]);
+  });
+
+  it("reports only the retired sibling glob in a partially live class", () => {
+    const result = evaluateShadowSets(
+      { prettier: [prettierRecord("CLAUDE.md")], eslint: [] },
+      MULTI_GLOB_CLASS,
+      []
+    );
+    expect(result.unexplained).toEqual([]);
+    expect(result.baselined).toHaveLength(1);
+    expect(result.baselined[0]).toMatchObject({
+      path: "CLAUDE.md",
+      classId: "gitignored-yet-tracked",
+    });
+    expect(result.stale).toEqual([
+      {
+        id: "gitignored-yet-tracked",
+        glob: "test-branch-protection.txt",
+        axis: "prettier",
+      },
+    ]);
+  });
+
+  it("keeps every glob fresh when each has a matching record", () => {
+    const result = evaluateShadowSets(
+      {
+        prettier: [
+          prettierRecord("CLAUDE.md"),
+          prettierRecord("test-branch-protection.txt"),
+        ],
+        eslint: [],
+      },
+      MULTI_GLOB_CLASS,
+      []
+    );
+    expect(result.unexplained).toEqual([]);
+    expect(result.baselined).toHaveLength(2);
+    expect(result.stale).toEqual([]);
+  });
+
+  it("reports one stale entry for every dead glob in declaration order", () => {
+    const result = evaluateShadowSets(
+      { prettier: [], eslint: [] },
+      MULTI_GLOB_CLASS,
+      []
+    );
+    expect(result.stale).toEqual([
+      {
+        id: "gitignored-yet-tracked",
+        glob: "CLAUDE.md",
+        axis: "prettier",
+      },
+      {
+        id: "gitignored-yet-tracked",
+        glob: "test-branch-protection.txt",
+        axis: "prettier",
+      },
+    ]);
+  });
+
+  it("credits every matching glob inside the selected class", () => {
+    const baseline = [
+      {
+        id: "overlapping-readmes",
+        axis: "prettier",
+        globs: ["packages/**", "packages/provider/*/README.md"],
+        why: "fixture",
+      },
+    ];
+    const result = evaluateShadowSets(
+      {
+        prettier: [prettierRecord("packages/provider/openai/README.md")],
+        eslint: [],
+      },
+      baseline,
+      []
+    );
+    expect(result.baselined).toHaveLength(1);
+    expect(result.stale).toEqual([]);
+  });
+
+  it("credits only the first matching baseline class", () => {
+    const baseline = [
+      {
+        id: "first-readmes",
+        axis: "prettier",
+        globs: ["packages/**", "packages/provider/*/README.md"],
+        why: "fixture",
+      },
+      {
+        id: "later-readme",
+        axis: "prettier",
+        globs: ["packages/provider/openai/README.md"],
+        why: "fixture",
+      },
+    ];
+    const result = evaluateShadowSets(
+      {
+        prettier: [prettierRecord("packages/provider/openai/README.md")],
+        eslint: [],
+      },
+      baseline,
+      []
+    );
+    expect(result.baselined).toHaveLength(1);
+    expect(result.baselined[0].classId).toBe("first-readmes");
+    expect(result.stale).toEqual([
+      {
+        id: "later-readme",
+        glob: "packages/provider/openai/README.md",
+        axis: "prettier",
+      },
+    ]);
   });
 
   // Staleness is per axis, not a union: a `both` class that still matches on
@@ -237,7 +361,11 @@ describe("evaluateShadowSets", () => {
     );
     expect(result.unexplained).toEqual([]);
     expect(result.stale).toEqual([
-      { id: "generated-examples-ts", axis: "eslint" },
+      {
+        id: "generated-examples-ts",
+        glob: "packages/provider/*/src/example.ts",
+        axis: "eslint",
+      },
     ]);
   });
 
@@ -329,6 +457,13 @@ describe("evaluateShadowSets", () => {
     expect(result.baselined).toEqual([]);
     expect(result.unexplained).toHaveLength(1);
     expect(result.unexplained[0].path).toBe("packages/provider/cost/README.md");
+    expect(result.stale).toEqual([
+      {
+        id: "generated-readmes",
+        glob: "packages/provider/*/README.md",
+        axis: "prettier",
+      },
+    ]);
   });
 
   it("still baselines the other generated READMEs", () => {
@@ -497,6 +632,9 @@ describe("main", () => {
     });
     expect(result.code).toBe(1);
     expect(result.stderr).toContain("stale baseline entries");
+    expect(result.stderr).toContain("agents-scratch");
+    expect(result.stderr).toContain(".agents/**");
+    expect(result.stderr).toContain("[prettier]");
   });
 
   // REQ-007: the only case that catches an early-return refactor. `failed` is

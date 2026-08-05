@@ -51,7 +51,8 @@
 //   path the resolved answer is not guaranteed to match Prettier's. Measured
 //   set-identical on the tree at `f6a9798b` (~99 paths, zero difference in
 //   either direction against a `prettier.getFileInfo` loop over every tracked
-//   file). The git form is also ~900x faster: 20 ms against 18 s.
+//   file). In that same measurement the git form was ~900x faster: 20 ms
+//   against 18 s.
 //
 // BASELINE CLASSES — a class glob broader than the file set it was written for
 // is a hole. `packages/provider/*/README.md` reads like the generated-README
@@ -95,11 +96,11 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 // The authority is the *resolved* config, not the literal `files:` blocks in
 // `eslint.config.mjs`. `.cts` and `.mts` appear in neither, yet the spread-in
 // `tseslint.configs.recommended` still lints them — `isPathIgnored` is false
-// for both. Re-check with `isPathIgnored("probe.cts")` after changing that
-// config: an extension missing here is a file the ESLint axis never examines
-// and never reports. No `.cts`/`.mts` file is tracked today, so including them
-// changes no current count; the point is that the first one to land reaches
-// this axis.
+// for both. Re-check with `new ESLint({ cwd }).isPathIgnored("probe.cts")`
+// after changing that config: an extension missing here is a file the ESLint
+// axis never examines and never reports. No `.cts`/`.mts` file is tracked
+// today, so including them changes no current count; the point is that the
+// first one to land reaches this axis.
 const LINTABLE = /\.(?:js|mjs|cjs|ts|tsx|cts|mts)$/;
 
 const PRETTIER = "prettier";
@@ -191,10 +192,11 @@ const BASELINE = [
   },
 ];
 
-// Staleness is keyed by `id`, so two classes sharing one would share a counter
-// and the dead one could never be reported stale — the exact rot this guard
-// exists to prevent, in the guard itself. Reachable the first time a class is
-// copied and its globs edited but not its id.
+// Staleness is keyed first by `id` and then by exact glob, so two classes
+// sharing one would share counters and the dead one could never be reported
+// stale — the exact rot this guard exists to prevent, in the guard itself.
+// Reachable the first time a class is copied and its globs edited but not its
+// id.
 const baselineIds = new Set(BASELINE.map((entry) => entry.id));
 if (baselineIds.size !== BASELINE.length) {
   throw new Error("BASELINE ids must be unique — staleness is keyed by id.");
@@ -326,12 +328,17 @@ export function evaluateShadowSets(
   const baselined = [];
   const unexplained = [];
   const sentinelHits = [];
-  // Per-axis match counts, so an `axis: "both"` class must justify itself on
-  // EACH declared axis. Union semantics would let a `both` class keep matching
-  // on one axis after the other's pattern is retired, and the dead half would
-  // never surface.
+  // Per-glob, per-axis match counts, so every declared glob must justify itself
+  // on EACH declared axis. Union semantics at either level would let one axis
+  // or sibling glob keep matching after another is retired, and the dead entry
+  // would never surface.
   const matchCounts = new Map(
-    baseline.map((entry) => [entry.id, { [PRETTIER]: 0, [ESLINT]: 0 }])
+    baseline.map((entry) => [
+      entry.id,
+      new Map(
+        entry.globs.map((glob) => [glob, { [PRETTIER]: 0, [ESLINT]: 0 }])
+      ),
+    ])
   );
 
   for (const [axis, records] of axes) {
@@ -349,7 +356,11 @@ export function evaluateShadowSets(
           classMatches(candidate, record.path)
       );
       if (entry) {
-        matchCounts.get(entry.id)[axis]++;
+        for (const glob of entry.globs) {
+          if (matchesGlob(glob, record.path)) {
+            matchCounts.get(entry.id).get(glob)[axis]++;
+          }
+        }
         baselined.push({ axis, ...record, classId: entry.id });
       } else {
         unexplained.push({ axis, ...record });
@@ -359,10 +370,13 @@ export function evaluateShadowSets(
 
   const stale = [];
   for (const entry of baseline) {
-    const counts = matchCounts.get(entry.id);
-    for (const axis of [PRETTIER, ESLINT]) {
-      if (classCoversAxis(entry, axis) && counts[axis] === 0) {
-        stale.push({ id: entry.id, axis });
+    const globCounts = matchCounts.get(entry.id);
+    for (const glob of entry.globs) {
+      const counts = globCounts.get(glob);
+      for (const axis of [PRETTIER, ESLINT]) {
+        if (classCoversAxis(entry, axis) && counts[axis] === 0) {
+          stale.push({ id: entry.id, glob, axis });
+        }
       }
     }
   }
@@ -472,14 +486,13 @@ async function collectEslintShadowed(lintable) {
   // Imported lazily so `--help` and the unit test do not pay for loading ESLint.
   const { ESLint } = await import("eslint");
   const eslint = new ESLint({ cwd: root });
-  // Resolving the flat config array is a one-off that the first
-  // `isPathIgnored` pays for; every later call is served from that cache.
-  // That resolve, not the fan-out, dominates this axis — measured at ~0.65 s
-  // against ~0.16 s for the entire batched tail. The `await` before the
-  // `Promise.all` is what makes that asymmetry visible: one call pays, the
-  // rest are cache hits. Flattening it into a single `Promise.all` measures
-  // no faster (means within ~5%, ranges overlapping), so there is nothing to
-  // gain by tidying the split away.
+  // Config resolution measured about 3.75x to 4.75x the entire batched tail in
+  // every cited sample; ~0.65 s against ~0.16 s was one observation on one
+  // host. The `await` before the `Promise.all` makes that asymmetry visible:
+  // the first `isPathIgnored` pays for resolving the flat config array and the
+  // rest are cache hits. Flattening it into one `Promise.all` measures no
+  // faster (means within ~5%, ranges overlapping), so there is nothing to gain
+  // by tidying the split away.
   const [first, ...rest] = lintable;
   const verdicts = [
     await eslint.isPathIgnored(first),
@@ -692,13 +705,14 @@ export async function main({
     console.error("✗ check-ignore-shadow: stale baseline entries.\n");
     for (const entry of stale) {
       console.error(
-        `  ${entry.id}  [${entry.axis}]  matches no currently-shadowed tracked file`
+        `  ${entry.id}  ${entry.glob}  [${entry.axis}]  matches no currently-shadowed tracked file`
       );
     }
     console.error(
-      "\nThe ignore pattern this class explained is gone. Remove the class (or " +
-        "its dead axis) from BASELINE in scripts/check-ignore-shadow.mjs so the " +
-        "allowlist cannot rot the way the ignore list it guards did.\n"
+      "\nThe exact glob named above no longer explains a shadowed file. Remove " +
+        "or correct that dead glob (or its dead axis) in BASELINE in " +
+        "scripts/check-ignore-shadow.mjs so the allowlist cannot rot the way " +
+        "the ignore list it guards did.\n"
     );
   }
 

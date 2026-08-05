@@ -82,6 +82,11 @@ describe("KIE Suno provider", () => {
       expect(typeof provider.get.api.v1.generate.recordInfo).toBe("function");
     });
 
+    it("exposes the get.api.v1.mp4.recordInfo endpoint", () => {
+      const { provider } = createProvider();
+      expect(typeof provider.get.api.v1.mp4.recordInfo).toBe("function");
+    });
+
     it("attaches a zod schema to every method that accepts a request body", () => {
       const { provider } = createProvider();
       const v1 = provider.post.api.v1;
@@ -726,6 +731,122 @@ describe("KIE Suno provider", () => {
         ...VALID_ADD_VOCALS,
         negativeTags: "",
       });
+
+      expect(result.success).toBe(false);
+    });
+  });
+
+  describe("GET /api/v1/mp4/record-info", () => {
+    const successResponse = {
+      code: 200,
+      msg: "success",
+      data: {
+        taskId: "task-1",
+        musicId: "music-1",
+        callbackUrl: "https://example.com/callback",
+        musicIndex: 0,
+        completeTime: "2025-01-01 00:10:00",
+        response: {
+          videoUrl: "https://example.com/video.mp4",
+        },
+        successFlag: "SUCCESS",
+        createTime: "2025-01-01 00:00:00",
+        errorCode: null,
+        errorMessage: null,
+      },
+    };
+
+    it("attaches request and response schema metadata", () => {
+      const { provider } = createProvider();
+      const recordInfo = provider.get.api.v1.mp4.recordInfo;
+      expect(typeof recordInfo.schema.safeParse).toBe("function");
+      expect(typeof recordInfo.responseSchema.safeParse).toBe("function");
+    });
+
+    it("sends GET and preserves documented success data", async () => {
+      const { provider, captured } = createProvider(successResponse);
+      const result = await provider.get.api.v1.mp4.recordInfo("task-1");
+
+      expect(captured[0].url).toBe(
+        "https://api.kie.ai/api/v1/mp4/record-info?taskId=task-1"
+      );
+      expect(captured[0].init?.method).toBe("GET");
+      expect(result.data?.response?.videoUrl).toBe(
+        "https://example.com/video.mp4"
+      );
+      expect(
+        provider.get.api.v1.mp4.recordInfo.responseSchema.safeParse(result)
+          .success
+      ).toBe(true);
+    });
+
+    it("URL-encodes the taskId as one query value", async () => {
+      const { provider, captured } = createProvider({
+        code: 200,
+        msg: "success",
+        data: null,
+      });
+
+      await provider.get.api.v1.mp4.recordInfo("weird/id with space&next?yes");
+
+      expect(captured[0].url).toBe(
+        "https://api.kie.ai/api/v1/mp4/record-info?taskId=weird%2Fid%20with%20space%26next%3Fyes"
+      );
+    });
+
+    it("preserves and validates a successful null-data response", async () => {
+      const responseBody = { code: 200, msg: "success", data: null };
+      const { provider } = createProvider(responseBody);
+
+      const result = await provider.get.api.v1.mp4.recordInfo("unknown-task");
+
+      expect(result).toEqual(responseBody);
+      expect(
+        provider.get.api.v1.mp4.recordInfo.responseSchema.safeParse(result)
+          .success
+      ).toBe(true);
+    });
+
+    it("requires a non-empty taskId in request schema metadata", () => {
+      const { provider } = createProvider();
+      const schema = provider.get.api.v1.mp4.recordInfo.schema;
+
+      expect(schema.safeParse({ taskId: "task-1" }).success).toBe(true);
+      expect(schema.safeParse({}).success).toBe(false);
+      expect(schema.safeParse({ taskId: "" }).success).toBe(false);
+    });
+
+    it.each([
+      "PENDING",
+      "SUCCESS",
+      "CREATE_TASK_FAILED",
+      "GENERATE_MP4_FAILED",
+    ] as const)("accepts documented successFlag %s", (successFlag) => {
+      const { provider } = createProvider();
+      const result =
+        provider.get.api.v1.mp4.recordInfo.responseSchema.safeParse({
+          ...successResponse,
+          data: {
+            ...successResponse.data,
+            completeTime: null,
+            response: null,
+            successFlag,
+          },
+        });
+
+      expect(result.success).toBe(true);
+    });
+
+    it("rejects an undocumented successFlag", () => {
+      const { provider } = createProvider();
+      const result =
+        provider.get.api.v1.mp4.recordInfo.responseSchema.safeParse({
+          ...successResponse,
+          data: {
+            ...successResponse.data,
+            successFlag: "CALLBACK_EXCEPTION",
+          },
+        });
 
       expect(result.success).toBe(false);
     });

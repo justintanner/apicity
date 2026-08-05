@@ -368,6 +368,37 @@ describe("dynamic discovery and module contracts", () => {
 });
 
 describe("fail-closed validation", () => {
+  it("validates the stored payload as the canonical case", () => {
+    const result = validateCompareCostModules(
+      [
+        {
+          sourcePath: "scripts/compare-fixture-cost.mjs",
+          lineup: [
+            {
+              label: "invalid stored payload",
+              provider: "fixture",
+              endpoint: "generate",
+              payload: null,
+            },
+          ],
+          schemaValidationCases: () => [
+            { name: "canonical", payload: { prompt: "valid substitute" } },
+            { name: "representative", payload: { prompt: "valid case" } },
+          ],
+        },
+      ],
+      passingRegistry()
+    );
+    const diagnostics = result.diagnostics.join("\n");
+
+    expect(result.ok).toBe(false);
+    expect(result).toMatchObject({ rows: 1, cases: 2 });
+    expect(diagnostics).toContain('row "invalid stored payload"');
+    expect(diagnostics).toContain('case "canonical"');
+    expect(diagnostics).toContain("Expected an object");
+    expect(diagnostics).not.toContain('case "representative"');
+  });
+
   it("aggregates row, case, materializer, and schema-contract errors", () => {
     const rows = [
       {
@@ -542,5 +573,54 @@ describe("fail-closed validation", () => {
     expect(schemaFailure).toBe(1);
     expect(schemaErrors.text()).toContain("input.value: Seeded rejection");
     expect(schemaErrors.text()).not.toContain("offline-schema-check");
+  });
+
+  it("stops before row validation when the schema registry cannot load", async () => {
+    const sourcePath = "scripts/compare-fixture-cost.mjs";
+    const brokenSourcePath = "scripts/compare-broken-cost.mjs";
+    const errors = captureOutput();
+    const status = await main({
+      root: repositoryRoot,
+      stdout: captureOutput().stream,
+      stderr: errors.stream,
+      discoverCompareCostScripts: async () => [sourcePath, brokenSourcePath],
+      loadCompareCostModule: async (
+        _filePath: string,
+        options: { sourcePath: string }
+      ) => {
+        if (options.sourcePath === brokenSourcePath) {
+          throw new Error("seeded module load failure");
+        }
+        return {
+          sourcePath,
+          lineup: [
+            {
+              label: "fixture",
+              provider: "fixture",
+              endpoint: "generate",
+              payload: {},
+            },
+          ],
+          schemaValidationCases: (row: { payload: object }) => [
+            { name: "canonical", payload: row.payload },
+          ],
+        };
+      },
+      importKie: async () => {
+        throw new Error("seeded schema registry load failure");
+      },
+    });
+    const output = errors.text();
+
+    expect(status).toBe(1);
+    expect(output).toContain(
+      "fail — 2 files, 0 rows, 0 cases, 0 skips, 2 errors"
+    );
+    expect(output).toContain(brokenSourcePath);
+    expect(output).toContain("seeded module load failure");
+    expect(output.match(/seeded schema registry load failure/g)).toHaveLength(
+      1
+    );
+    expect(output).not.toContain("unknown provider/endpoint association");
   });
 });

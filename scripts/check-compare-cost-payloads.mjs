@@ -463,10 +463,32 @@ function validateRow({
     return 0;
   }
 
+  const canonicalIndex = cases.findIndex(
+    (caseValue) =>
+      caseValue &&
+      typeof caseValue === "object" &&
+      typeof caseValue.name === "string" &&
+      caseValue.name.trim() === "canonical"
+  );
+  let validationCases;
+  if (canonicalIndex === -1) {
+    diagnostics.push(
+      `${diagnosticContext({ ...context, caseName: "canonical" })} :: ` +
+        "setup: schemaValidationCases must include a named canonical case"
+    );
+    validationCases = [{ name: "canonical", payload: row.payload }, ...cases];
+  } else {
+    validationCases = [...cases];
+    validationCases[canonicalIndex] = {
+      ...cases[canonicalIndex],
+      payload: row.payload,
+    };
+  }
+
   const seenNames = new Set();
-  for (let caseIndex = 0; caseIndex < cases.length; caseIndex++) {
+  for (let caseIndex = 0; caseIndex < validationCases.length; caseIndex++) {
     validateCase({
-      caseValue: cases[caseIndex],
+      caseValue: validationCases[caseIndex],
       caseIndex,
       seenNames,
       schema,
@@ -474,7 +496,7 @@ function validateRow({
       diagnostics,
     });
   }
-  return cases.length;
+  return validationCases.length;
 }
 
 /** Validate every row and case while aggregating deterministic diagnostics. */
@@ -626,6 +648,18 @@ export async function main(dependencies = {}) {
       "schema registry :: setup: unable to load built @apicity/kie; run " +
         `\`pnpm run build:kie --silent\` first: ${formatError(error)}`
     );
+    const result = {
+      files: files.length,
+      rows: 0,
+      cases: 0,
+      skips: 0,
+      diagnostics: setupDiagnostics,
+    };
+    writeLine(stderr, resultSummary(result, "fail"));
+    for (const diagnostic of result.diagnostics) {
+      writeLine(stderr, `- ${diagnostic}`);
+    }
+    return 1;
   }
 
   const validation =

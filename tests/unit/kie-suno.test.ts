@@ -1,4 +1,9 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, expectTypeOf } from "vitest";
+import {
+  createKie,
+  type SunoWavRecordInfoResponse,
+  type SunoWavTaskStatus,
+} from "@apicity/kie";
 
 import { createSunoProvider } from "../../packages/provider/kie/src/suno";
 import { SunoGenerateRequestSchema } from "../../packages/provider/kie/src/zod";
@@ -35,6 +40,14 @@ const ALL_MODELS = [
   "V5",
   "V5_5",
 ] as const;
+
+const WAV_TASK_STATUSES = [
+  "PENDING",
+  "SUCCESS",
+  "CREATE_TASK_FAILED",
+  "GENERATE_WAV_FAILED",
+  "CALLBACK_EXCEPTION",
+] as const satisfies readonly SunoWavTaskStatus[];
 
 const VALID_GENERATE = {
   prompt: "A happy pop song about summer",
@@ -787,6 +800,88 @@ describe("KIE Suno provider", () => {
         "https://api.kie.ai/api/v1/generate/record-info?taskId=weird%2Fid%20with%20space"
       );
     });
+  });
+
+  describe("GET /api/v1/wav/record-info", () => {
+    const populatedResponse = {
+      code: 200,
+      msg: "success",
+      data: {
+        taskId: "wav-task-1",
+        musicId: "music-1",
+        callbackUrl: "https://example.com/wav-callback",
+        musicIndex: 0,
+        completeTime: "2026-08-05T00:01:00Z",
+        response: {
+          audioWavUrl: "https://cdn.kie.ai/audio.wav",
+          futureResponseField: "preserved",
+        },
+        successFlag: "SUCCESS",
+        createTime: "2026-08-05T00:00:00Z",
+        errorCode: null,
+        errorMessage: null,
+        futureDataField: "preserved",
+      },
+      futureEnvelopeField: "preserved",
+    } as const;
+
+    it("uses the public provider surface and encodes the taskId", async () => {
+      const { fetch, captured } = makeStubFetch(populatedResponse);
+      const provider = createKie({
+        apiKey: "test-api-key",
+        baseURL: "https://api.kie.ai",
+        fetch,
+      });
+
+      const result = await provider.suno.get.api.v1.wav.recordInfo(
+        "wav/job?attempt=1&source=test"
+      );
+
+      expectTypeOf(result).toEqualTypeOf<SunoWavRecordInfoResponse>();
+      expect(captured).toHaveLength(1);
+      expect(captured[0].url).toBe(
+        "https://api.kie.ai/api/v1/wav/record-info?taskId=wav%2Fjob%3Fattempt%3D1%26source%3Dtest"
+      );
+      expect(captured[0].init?.method).toBe("GET");
+      expect(captured[0].init?.body).toBeUndefined();
+      expect(result).toEqual(populatedResponse);
+    });
+
+    it("accepts populated and null-data response envelopes", () => {
+      const { provider } = createProvider();
+      const recordInfo = provider.get.api.v1.wav.recordInfo;
+
+      const populatedResult =
+        recordInfo.responseSchema.safeParse(populatedResponse);
+      expect(populatedResult.success).toBe(true);
+      if (!populatedResult.success) throw new Error("expected success");
+      expect(populatedResult.data).toEqual(populatedResponse);
+
+      expect(
+        recordInfo.responseSchema.safeParse({
+          code: 200,
+          msg: "success",
+          data: null,
+        }).success
+      ).toBe(true);
+    });
+
+    it.each(WAV_TASK_STATUSES)(
+      "accepts the documented %s status",
+      (successFlag) => {
+        const { provider } = createProvider();
+        const result =
+          provider.get.api.v1.wav.recordInfo.responseSchema.safeParse({
+            ...populatedResponse,
+            data: {
+              ...populatedResponse.data,
+              successFlag,
+            },
+          });
+
+        expect(result.success).toBe(true);
+      }
+    );
   });
 
   describe("authorization header", () => {

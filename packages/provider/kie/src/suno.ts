@@ -121,6 +121,39 @@ export interface SunoMp4Request {
   domainName?: string;
 }
 
+export interface SunoMp4RecordInfoRequest {
+  taskId: string;
+}
+
+export type SunoMp4TaskStatus =
+  | "PENDING"
+  | "SUCCESS"
+  | "CREATE_TASK_FAILED"
+  | "GENERATE_MP4_FAILED";
+
+export interface SunoMp4RecordInfoResult {
+  videoUrl?: string;
+}
+
+export interface SunoMp4RecordInfoData {
+  taskId: string;
+  musicId: string;
+  callbackUrl: string;
+  musicIndex: number;
+  completeTime?: string | null;
+  response?: SunoMp4RecordInfoResult | null;
+  successFlag: SunoMp4TaskStatus;
+  createTime: string;
+  errorCode?: number | null;
+  errorMessage?: string | null;
+}
+
+export interface SunoMp4RecordInfoResponse {
+  code: number;
+  msg?: string;
+  data?: SunoMp4RecordInfoData | null;
+}
+
 export interface SunoLyricsRequest {
   prompt: string;
   callBackUrl: string;
@@ -349,6 +382,12 @@ interface SunoMp4Method {
   schema: ApicitySchema<SunoMp4Request>;
 }
 
+interface SunoMp4RecordInfoMethod {
+  (taskId: string): Promise<SunoMp4RecordInfoResponse>;
+  schema: ApicitySchema<SunoMp4RecordInfoRequest>;
+  responseSchema: ApicitySchema<SunoMp4RecordInfoResponse>;
+}
+
 interface SunoLyricsMethod {
   (req: SunoLyricsRequest): Promise<SunoSubmitResponse>;
   schema: ApicitySchema<SunoLyricsRequest>;
@@ -439,6 +478,9 @@ interface SunoV1GetNamespace {
   generate: {
     recordInfo: (taskId: string) => Promise<SunoRecordInfoResponse>;
   };
+  mp4: {
+    recordInfo: SunoMp4RecordInfoMethod;
+  };
   lyrics: {
     recordInfo: SunoLyricsRecordInfoMethod;
   };
@@ -496,6 +538,44 @@ const SunoMp4RequestSchema = z.object({
   callBackUrl: z.string().min(1),
   author: z.string().max(50).optional(),
   domainName: z.string().max(50).optional(),
+});
+
+const SunoMp4RecordInfoRequestSchema = z.object({
+  taskId: z.string().min(1),
+});
+
+const SunoMp4TaskStatusSchema = z.enum([
+  "PENDING",
+  "SUCCESS",
+  "CREATE_TASK_FAILED",
+  "GENERATE_MP4_FAILED",
+]);
+
+const SunoMp4RecordInfoResultSchema = z
+  .object({
+    videoUrl: z.string().optional(),
+  })
+  .passthrough();
+
+const SunoMp4RecordInfoDataSchema = z
+  .object({
+    taskId: z.string(),
+    musicId: z.string(),
+    callbackUrl: z.string(),
+    musicIndex: z.number().int(),
+    completeTime: z.string().nullable().optional(),
+    response: SunoMp4RecordInfoResultSchema.nullable().optional(),
+    successFlag: SunoMp4TaskStatusSchema,
+    createTime: z.string(),
+    errorCode: z.number().int().nullable().optional(),
+    errorMessage: z.string().nullable().optional(),
+  })
+  .passthrough();
+
+const SunoMp4RecordInfoResponseSchema = z.object({
+  code: z.number().int(),
+  msg: z.string().optional(),
+  data: SunoMp4RecordInfoDataSchema.nullable().optional(),
 });
 
 const SunoLyricsRequestSchema = z.object({
@@ -775,6 +855,17 @@ export function createSunoProvider(
     });
   }
 
+  // GET https://api.kie.ai/api/v1/mp4/record-info?taskId={taskId}
+  // Docs: https://docs.kie.ai/suno-api/get-music-video-details
+  async function mp4RecordInfo(
+    taskId: string
+  ): Promise<SunoMp4RecordInfoResponse> {
+    return kieRequest<SunoMp4RecordInfoResponse>(transport, {
+      method: "GET",
+      path: `/api/v1/mp4/record-info?taskId=${encodeURIComponent(taskId)}`,
+    });
+  }
+
   // POST https://api.kie.ai/api/v1/lyrics
   // Docs: https://docs.kie.ai/suno-api/generate-lyrics
   async function lyricsGenerate(
@@ -977,6 +1068,12 @@ export function createSunoProvider(
         v1: {
           generate: {
             recordInfo,
+          },
+          mp4: {
+            recordInfo: Object.assign(mp4RecordInfo, {
+              schema: SunoMp4RecordInfoRequestSchema,
+              responseSchema: SunoMp4RecordInfoResponseSchema,
+            }),
           },
           lyrics: {
             recordInfo: Object.assign(lyricsRecordInfo, {

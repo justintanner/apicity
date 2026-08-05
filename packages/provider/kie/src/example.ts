@@ -88,6 +88,14 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "GET api.v1.wav.recordInfo": {
+    "source": "kie/wav/record-info-not-found",
+    "payload": {
+      "taskId": "apicity-test-nonexistent-task-id-do-not-record-real"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.fileBase64Upload": {
     "source": "kie/file-uploads/base64",
     "payload": {

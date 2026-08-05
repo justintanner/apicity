@@ -555,7 +555,7 @@ defaults to `false`.
 
 ## API Reference
 
-44 endpoints across 24 groups. Each method mirrors an upstream URL path.
+45 endpoints across 24 groups. Each method mirrors an upstream URL path.
 
 ### chat
 
@@ -1317,6 +1317,23 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 </details>
 
 ### wav
+
+<details>
+<summary><code>GET</code> <b><code>kie.suno.get.api.v1.wav.recordInfo</code></b></summary>
+
+<code>GET https://api.kie.ai/api/v1/wav/record-info?taskId={taskId}</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/suno-api/get-wav-details)
+
+```typescript
+const res = await kie.suno.get.api.v1.wav.recordInfo({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>kie.suno.post.api.v1.wav.generate</code></b></summary>

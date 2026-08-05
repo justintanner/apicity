@@ -1,6 +1,7 @@
 {
   "name": "apicity",
   "version": "0.1.0",
+  "private": true,
   "description": "Standalone AI provider packages — @apicity/openai, @apicity/xai, @apicity/fal, @apicity/google, @apicity/kimicoding, @apicity/kie, @apicity/anthropic, @apicity/fireworks, @apicity/alibaba, @apicity/binance, @apicity/dropbox, @apicity/elevenlabs, @apicity/s3, @apicity/b2, @apicity/free-media-upload, @apicity/x, @apicity/meta, @apicity/polymarket, @apicity/youtube, @apicity/dolthub, @apicity/simplefunctions, @apicity/telegram, @apicity/quo, @apicity/openligadb, @apicity/openf1, @apicity/thesportsdb, @apicity/cost, and @apicity/mcp-server",
   "type": "module",
   "engines": {

@@ -1136,6 +1136,23 @@ describe("KIE Suno provider", () => {
       expect(result.success).toBe(true);
     });
 
+    it("resolves rather than throws on the missing-task envelope", async () => {
+      // HTTP 200 with data:null is Kie's not-found shape; the transport must
+      // return it to the caller instead of raising.
+      const { provider } = createProvider({
+        code: 200,
+        msg: "success",
+        data: null,
+      });
+      const result: SunoMidiRecordInfoResponse =
+        await provider.get.api.v1.midi.recordInfo(
+          "apicity-test-nonexistent-task-id-do-not-record-real"
+        );
+      expect(result.code).toBe(200);
+      expect(result.msg).toBe("success");
+      expect(result.data).toBeNull();
+    });
+
     it("requires a non-empty taskId", () => {
       const { provider } = createProvider();
       const schema = provider.get.api.v1.midi.recordInfo.schema;

@@ -1056,6 +1056,23 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 ### midi
 
 <details>
+<summary><code>GET</code> <b><code>kie.suno.get.api.v1.midi.recordInfo</code></b></summary>
+
+<code>GET https://api.kie.ai/api/v1/midi/record-info?taskId={taskId}</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/suno-api/get-midi-details)
+
+```typescript
+const res = await kie.suno.get.api.v1.midi.recordInfo({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
+
+</details>
+
+<details>
 <summary><code>POST</code> <b><code>kie.suno.post.api.v1.midi.generate</code></b></summary>
 
 <code>POST https://api.kie.ai/api/v1/midi/generate</code>

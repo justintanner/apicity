@@ -32,6 +32,7 @@ describe("compare-cost payload gate wiring", () => {
         "pnpm run lint:factory && " +
         "pnpm run lint:recordings && " +
         "pnpm run lint:timers && " +
+        "pnpm run lint:file-url-entry-guards && " +
         "pnpm run lint:ignores && " +
         "pnpm run gen:shared:check && " +
         "pnpm run lint:compare-payloads"

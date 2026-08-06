@@ -1034,6 +1034,7 @@ kie	api.v1.suno.cover.recordInfo	GET	https://api.kie.ai/api/v1/suno/cover/record
 kie	api.v1.veo.extend	POST	https://api.kie.ai/api/v1/veo/extend	https://docs.kie.ai/veo3-api/extend-video
 kie	api.v1.veo.generate	POST	https://api.kie.ai/api/v1/veo/generate	https://docs.kie.ai/veo3-api/generate-veo-3-video
 kie	api.v1.veo.get1080pVideo	GET	https://api.kie.ai/api/v1/veo/get-1080p-video?taskId={taskId}	https://docs.kie.ai/veo3-api/get-veo-3-1080-p-video
+kie	api.v1.veo.get4kVideo	POST	https://api.kie.ai/api/v1/veo/get-4k-video	https://docs.kie.ai/veo3-api/get-veo-3-4k-video
 kie	api.v1.veo.recordInfo	GET	https://api.kie.ai/api/v1/veo/record-info?taskId={taskId}	https://docs.kie.ai/veo3-api/get-veo-3-video-details
 kie	api.v1.vocalRemoval.generate	POST	https://api.kie.ai/api/v1/vocal-removal/generate
 kie	api.v1.vocalRemoval.recordInfo	GET	https://api.kie.ai/api/v1/vocal-removal/record-info?taskId={taskId}	https://docs.kie.ai/suno-api/get-vocal-separation-details

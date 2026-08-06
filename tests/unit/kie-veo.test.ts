@@ -6,6 +6,8 @@ import {
   VeoExtendRequestSchema,
   VeoGet1080pVideoRequestSchema,
   VeoGet1080pVideoResponseSchema,
+  VeoGet4kVideoRequestSchema,
+  VeoGet4kVideoResponseSchema,
 } from "../../packages/provider/kie/src/zod";
 
 describe("KIE Veo provider", () => {
@@ -23,6 +25,7 @@ describe("KIE Veo provider", () => {
       expect(provider.post.api.v1.veo).toBeDefined();
       expect(provider.post.api.v1.veo.generate).toBeDefined();
       expect(provider.post.api.v1.veo.extend).toBeDefined();
+      expect(provider.post.api.v1.veo.get4kVideo).toBeDefined();
       expect(provider.get).toBeDefined();
       expect(provider.get.api).toBeDefined();
       expect(provider.get.api.v1).toBeDefined();
@@ -43,6 +46,11 @@ describe("KIE Veo provider", () => {
     it("should have callable get1080pVideo method", () => {
       const provider = createProvider();
       expect(typeof provider.get.api.v1.veo.get1080pVideo).toBe("function");
+    });
+
+    it("should have callable get4kVideo method", () => {
+      const provider = createProvider();
+      expect(typeof provider.post.api.v1.veo.get4kVideo).toBe("function");
     });
   });
 
@@ -70,6 +78,13 @@ describe("KIE Veo provider", () => {
     it("should expose request and response safeParse", () => {
       expect(typeof VeoGet1080pVideoRequestSchema.safeParse).toBe("function");
       expect(typeof VeoGet1080pVideoResponseSchema.safeParse).toBe("function");
+    });
+  });
+
+  describe("VeoGet4kVideo schemas", () => {
+    it("should expose request and response safeParse", () => {
+      expect(typeof VeoGet4kVideoRequestSchema.safeParse).toBe("function");
+      expect(typeof VeoGet4kVideoResponseSchema.safeParse).toBe("function");
     });
   });
 
@@ -313,6 +328,78 @@ describe("KIE Veo provider", () => {
     });
   });
 
+  describe("get4kVideo payload validation", () => {
+    it("should validate valid request payload", () => {
+      const result = VeoGet4kVideoRequestSchema.safeParse({
+        taskId: "veo-task-123",
+        index: 0,
+        callBackUrl: "https://example.com/4k-callback",
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("should validate minimal request payload", () => {
+      const result = VeoGet4kVideoRequestSchema.safeParse({
+        taskId: "veo-task-123",
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("should reject missing taskId", () => {
+      const result = VeoGet4kVideoRequestSchema.safeParse({ index: 0 });
+      expect(result.success).toBe(false);
+      expect(result.error?.issues.some((i) => i.path.includes("taskId"))).toBe(
+        true
+      );
+    });
+
+    it("should reject negative index", () => {
+      const result = VeoGet4kVideoRequestSchema.safeParse({
+        taskId: "veo-task-123",
+        index: -1,
+      });
+      expect(result.success).toBe(false);
+      expect(result.error?.issues.some((i) => i.path.includes("index"))).toBe(
+        true
+      );
+    });
+
+    it("should validate response payload with null urls", () => {
+      const result = VeoGet4kVideoResponseSchema.safeParse({
+        code: 200,
+        msg: "success",
+        data: {
+          taskId: "veo-task-123",
+          resultUrls: null,
+          imageUrls: null,
+        },
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("should validate response payload with result urls", () => {
+      const result = VeoGet4kVideoResponseSchema.safeParse({
+        code: 200,
+        msg: "success",
+        data: {
+          taskId: "veo-task-123",
+          resultUrls: ["https://example.com/video-4k.mp4"],
+          imageUrls: ["https://example.com/thumb.jpg"],
+        },
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("should validate null data envelope", () => {
+      const result = VeoGet4kVideoResponseSchema.safeParse({
+        code: 422,
+        msg: "Record does not exist",
+        data: null,
+      });
+      expect(result.success).toBe(true);
+    });
+  });
+
   describe("provider method validation", () => {
     it("generate should have schema attached", () => {
       const provider = createProvider();
@@ -365,6 +452,17 @@ describe("KIE Veo provider", () => {
         }).success
       ).toBe(true);
     });
+
+    it("get4kVideo should have request and response schemas attached", () => {
+      const provider = createProvider();
+      expect(provider.post.api.v1.veo.get4kVideo.schema).toBeDefined();
+      expect(provider.post.api.v1.veo.get4kVideo.responseSchema).toBeDefined();
+      expect(
+        provider.post.api.v1.veo.get4kVideo.schema.safeParse({
+          taskId: "task-123",
+        }).success
+      ).toBe(true);
+    });
   });
 
   describe("get1080pVideo request dispatch", () => {
@@ -402,6 +500,55 @@ describe("KIE Veo provider", () => {
         "https://api.kie.ai/api/v1/veo/get-1080p-video?taskId=task%20id%2Fwith%20spaces&index=0"
       );
       expect(calls[0].init?.method).toBe("GET");
+      expect(calls[0].init?.headers).toMatchObject({
+        Authorization: "Bearer test-api-key",
+        "Content-Type": "application/json",
+      });
+    });
+  });
+
+  describe("get4kVideo request dispatch", () => {
+    it("POSTs JSON body with taskId, index, and callBackUrl", async () => {
+      const calls: Array<{ input: RequestInfo | URL; init?: RequestInit }> = [];
+      const provider = createVeoProvider(
+        "https://api.kie.ai",
+        "test-api-key",
+        async (input, init) => {
+          calls.push({ input, init });
+
+          return new Response(
+            JSON.stringify({
+              code: 200,
+              msg: "success",
+              data: {
+                taskId: "task-123",
+                resultUrls: null,
+                imageUrls: null,
+              },
+            }),
+            {
+              status: 200,
+              headers: { "Content-Type": "application/json" },
+            }
+          );
+        },
+        30000
+      );
+
+      const request = {
+        taskId: "task-123",
+        index: 0,
+        callBackUrl: "https://example.com/4k-callback",
+      };
+      const result = await provider.post.api.v1.veo.get4kVideo(request);
+
+      expect(result.data?.taskId).toBe("task-123");
+      expect(calls).toHaveLength(1);
+      expect(String(calls[0].input)).toBe(
+        "https://api.kie.ai/api/v1/veo/get-4k-video"
+      );
+      expect(calls[0].init?.method).toBe("POST");
+      expect(JSON.parse(String(calls[0].init?.body))).toEqual(request);
       expect(calls[0].init?.headers).toMatchObject({
         Authorization: "Bearer test-api-key",
         "Content-Type": "application/json",

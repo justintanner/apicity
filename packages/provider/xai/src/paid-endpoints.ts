@@ -92,6 +92,20 @@ export const PAID_ENDPOINTS: readonly PaidEndpointEntry[] = [
     key: {
       provider: "kie",
       method: "POST",
+      dotPath: "api.v1.veo.get4kVideo",
+    },
+    info: {
+      reason:
+        "Direct VEO 4K render request that can incur direct marginal compute cost",
+      estimatorId: "kie-per-unit",
+      costNotes:
+        "Billed per 4K render request; extra cost ~2x Fast mode generation",
+    },
+  },
+  {
+    key: {
+      provider: "kie",
+      method: "POST",
       dotPath: "api.v1.flux.kontext.generate",
     },
     info: {

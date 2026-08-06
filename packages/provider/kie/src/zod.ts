@@ -4227,6 +4227,28 @@ export const VeoGet1080pVideoResponseSchema = z.object({
     .optional(),
 });
 
+// Docs: https://docs.kie.ai/veo3-api/get-veo-3-4k-video
+// POST body (unlike 1080p which is GET + query). Additional credits; optional
+// callBackUrl for completion notifications.
+export const VeoGet4kVideoRequestSchema = z.object({
+  taskId: z.string().min(1),
+  index: z.number().int().min(0).optional(),
+  callBackUrl: z.string().optional(),
+});
+
+export const VeoGet4kVideoResponseSchema = z.object({
+  code: z.number(),
+  msg: z.string().optional(),
+  data: z
+    .object({
+      taskId: z.string().optional(),
+      resultUrls: z.array(z.string()).nullable().optional(),
+      imageUrls: z.array(z.string()).nullable().optional(),
+    })
+    .nullable()
+    .optional(),
+});
+
 export const VeoRecordInfoRequestSchema = z.object({
   taskId: z.string().min(1),
 });
@@ -4285,6 +4307,14 @@ export type VeoGet1080pVideoParsedRequest = z.output<
 >;
 export type VeoGet1080pVideoResponse = z.output<
   typeof VeoGet1080pVideoResponseSchema
+>;
+export type VeoGet4kVideoRequest = z.input<typeof VeoGet4kVideoRequestSchema>;
+export type VeoGet4kVideoRequestInput = VeoGet4kVideoRequest;
+export type VeoGet4kVideoParsedRequest = z.output<
+  typeof VeoGet4kVideoRequestSchema
+>;
+export type VeoGet4kVideoResponse = z.output<
+  typeof VeoGet4kVideoResponseSchema
 >;
 export type VeoRecordInfoRequest = z.input<typeof VeoRecordInfoRequestSchema>;
 export type VeoRecordInfoRequestInput = VeoRecordInfoRequest;

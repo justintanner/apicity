@@ -988,7 +988,8 @@ export function mintKieVeoOtp(
   dotPath:
     | "api.v1.veo.generate"
     | "api.v1.veo.extend"
-    | "api.v1.veo.get1080pVideo",
+    | "api.v1.veo.get1080pVideo"
+    | "api.v1.veo.get4kVideo",
   request: Record<string, unknown>
 ): { otp: string } {
   return {

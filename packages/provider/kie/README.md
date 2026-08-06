@@ -555,7 +555,7 @@ defaults to `false`.
 
 ## API Reference
 
-61 endpoints across 32 groups. Each method mirrors an upstream URL path.
+62 endpoints across 32 groups. Each method mirrors an upstream URL path.
 
 ### aleph
 
@@ -1511,6 +1511,23 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await kie.veo.post.api.v1.veo.generate({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/veo.ts`](src/veo.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>kie.veo.post.api.v1.veo.get4kVideo</code></b></summary>
+
+<code>POST https://api.kie.ai/api/v1/veo/get-4k-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/veo3-api/get-veo-3-4k-video)
+
+```typescript
+const res = await kie.veo.post.api.v1.veo.get4kVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/veo.ts`](src/veo.ts)

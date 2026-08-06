@@ -4,6 +4,8 @@ import {
   VeoExtendRequestSchema,
   VeoGet1080pVideoRequestSchema,
   VeoGet1080pVideoResponseSchema,
+  VeoGet4kVideoRequestSchema,
+  VeoGet4kVideoResponseSchema,
   VeoRecordInfoRequestSchema,
   VeoRecordInfoResponseSchema,
 } from "./zod";
@@ -56,6 +58,12 @@ export interface VeoGet1080pVideoRequest {
   index?: number;
 }
 
+export interface VeoGet4kVideoRequest {
+  taskId: string;
+  index?: number;
+  callBackUrl?: string;
+}
+
 export interface VeoRecordInfoRequest {
   taskId: string;
 }
@@ -103,6 +111,16 @@ export interface VeoGet1080pVideoResponse {
   } | null;
 }
 
+export interface VeoGet4kVideoResponse {
+  code: number;
+  msg?: string;
+  data?: {
+    taskId?: string;
+    resultUrls?: string[] | null;
+    imageUrls?: string[] | null;
+  } | null;
+}
+
 interface VeoGenerateMethod {
   (
     req: VeoGenerateRequest,
@@ -134,9 +152,19 @@ interface VeoGet1080pVideoMethod {
   responseSchema: ApicitySchema<VeoGet1080pVideoResponse>;
 }
 
+interface VeoGet4kVideoMethod {
+  (
+    req: VeoGet4kVideoRequest,
+    approval?: PayGateApproval
+  ): Promise<VeoGet4kVideoResponse>;
+  schema: ApicitySchema<VeoGet4kVideoRequest>;
+  responseSchema: ApicitySchema<VeoGet4kVideoResponse>;
+}
+
 interface VeoVeoNamespace {
   generate: VeoGenerateMethod;
   extend: VeoExtendMethod;
+  get4kVideo: VeoGet4kVideoMethod;
 }
 
 interface VeoGetVeoNamespace {
@@ -226,6 +254,18 @@ export function createVeoProvider(
     });
   }
 
+  // POST https://api.kie.ai/api/v1/veo/get-4k-video
+  // Docs: https://docs.kie.ai/veo3-api/get-veo-3-4k-video
+  async function get4kVideo(
+    req: VeoGet4kVideoRequest
+  ): Promise<VeoGet4kVideoResponse> {
+    return kieRequest<VeoGet4kVideoResponse>(transport, {
+      method: "POST",
+      path: "/api/v1/veo/get-4k-video",
+      body: req,
+    });
+  }
+
   return {
     post: {
       api: {
@@ -236,6 +276,10 @@ export function createVeoProvider(
             }),
             extend: Object.assign(submitExtend, {
               schema: VeoExtendRequestSchema,
+            }),
+            get4kVideo: Object.assign(get4kVideo, {
+              schema: VeoGet4kVideoRequestSchema,
+              responseSchema: VeoGet4kVideoResponseSchema,
             }),
           },
         },

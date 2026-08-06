@@ -12,6 +12,7 @@ describe("paid-endpoint registry", () => {
       { method: "POST", dotPath: "api.v1.veo.generate" },
       { method: "POST", dotPath: "api.v1.veo.extend" },
       { method: "GET", dotPath: "api.v1.veo.get1080pVideo" },
+      { method: "POST", dotPath: "api.v1.veo.get4kVideo" },
     ];
     for (const { method, dotPath } of entries) {
       const entry = PAID_ENDPOINTS.find(
@@ -50,6 +51,9 @@ describe("paid-endpoint registry", () => {
     ).toBeDefined();
     expect(
       lookupPaidEndpoint("kie", "GET", "api.v1.veo.get1080pVideo")
+    ).toBeDefined();
+    expect(
+      lookupPaidEndpoint("kie", "POST", "api.v1.veo.get4kVideo")
     ).toBeDefined();
     expect(
       lookupPaidEndpoint("xai", "POST", "v1.videos.generations.imageToVideo")
@@ -100,6 +104,7 @@ describe("paid-endpoint registry", () => {
     expect(isPaidEndpoint("kie", "POST", "api.v1.veo.generate")).toBe(true);
     expect(isPaidEndpoint("kie", "POST", "api.v1.veo.extend")).toBe(true);
     expect(isPaidEndpoint("kie", "GET", "api.v1.veo.get1080pVideo")).toBe(true);
+    expect(isPaidEndpoint("kie", "POST", "api.v1.veo.get4kVideo")).toBe(true);
     expect(
       isPaidEndpoint("xai", "POST", "v1.videos.generations.imageToVideo")
     ).toBe(true);

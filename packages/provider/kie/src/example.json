@@ -424,6 +424,15 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v1.veo.get4kVideo": {
+    "source": "kie/veo/get-4k-video",
+    "payload": {
+      "taskId": "apicity-test-veo-4k-not-found",
+      "index": 0
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v1.vocalRemoval.generate": {
     "source": "kie/suno/vocal-removal-bogus-ids",
     "payload": {

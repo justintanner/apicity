@@ -6,7 +6,7 @@ import { asObject, asString, coerceSeconds, hintSeconds } from "./helpers";
 // Rates verified 2026-04-30 unless an entry notes a newer date. Rate keys mirror
 // the upstream payload values verbatim
 // (kling: payload.input.mode is "std"|"pro"|"4K"; seedance: payload.input.
-// resolution is "480p"|"720p"|"1080p"; etc.) — there is no internal
+// resolution is "480p"|"720p"|"1080p"|"4k"; etc.) — there is no internal
 // translation layer between the caller's payload and the rate selector.
 
 const src = (slug: string) => ({ url: `https://kie.ai/market/${slug}` });
@@ -892,13 +892,18 @@ export const kie: Record<string, ModelPricing> = {
   // Seedance2InputSchema accepts resolution "4k" — lowercase, the spelling
   // upstream's request grammar actually takes. The uppercase "4K" from the
   // pricing page label is rejected on the wire ({"code":422,"msg":"Invalid
-  // resolution"}, recorded 2026-08-06 under ac-8cfo6r WI-4), so the rate keys
-  // below follow the payload value, as veo3 and gemini-omni already do.
+  // resolution"}, observed live 2026-08-06 under ac-8cfo6r WI-4 and not
+  // retained as a committed fixture), so the rate keys below follow the
+  // payload value, as veo3 and gemini-omni already do.
   // inputResolution reads input.resolution verbatim with no case folding, so
-  // key and schema member must stay byte-identical. The seedance-2 4k rows in
-  // scripts/compare-video-cost.mjs are the standing guard on that linkage:
-  // every lineup row is validated against the shipped schema, so a drift to
-  // "4K" on either side fails `pnpm run lint:compare-payloads`.
+  // key and schema member must stay byte-identical. Two checks hold that:
+  // the seedance-2 4k rows in scripts/compare-video-cost.mjs fail
+  // `pnpm run lint:compare-payloads` if the SCHEMA member drifts (every lineup
+  // row is parsed against the shipped schema), and the 4k pin in
+  // tests/unit/cost-pricing.test.ts fails if EITHER side drifts (it parses,
+  // then estimates the parsed payload, and rejects a "not found in pricing
+  // table" warning). The lint never loads @apicity/cost, so it cannot see a
+  // rate-key rename on its own.
   "bytedance/seedance-2": {
     kind: "perUnit",
     unit: "seconds",

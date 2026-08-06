@@ -2535,7 +2535,8 @@ describe("kie stale-family refresh (REQ-004)", () => {
   // case-sensitive "4k|i2v" / "4k|t2v" rate keys: the payload goes through the
   // request schema before it reaches the estimator, so a drift to "4K" on
   // either side fails here instead of silently quoting $0. The seedance-2 4k
-  // rows in scripts/compare-video-cost.mjs guard the same link at lint time.
+  // rows in scripts/compare-video-cost.mjs guard the schema half of that link
+  // at lint time.
   it.each([
     { label: "with video input (i2v)", i2v: true, perUnitUsd: 0.64 },
     { label: "without video input (t2v)", i2v: false, perUnitUsd: 1.04 },

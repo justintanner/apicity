@@ -10,10 +10,13 @@ import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 // Recorded evidence that upstream accepts the 4K tier for bytedance/seedance-2,
 // spelled `"4k"` — lowercase, matching the enum kie documents at
-// docs.kie.ai/market/bytedance/seedance-2 (["480p","720p","1080p","4k"]). The
-// uppercase `"4K"` taken from the pricing page's label is rejected on the wire:
-// createTask answers `{"code":422,"msg":"Invalid resolution"}` (recorded
-// 2026-08-06 under ac-8cfo6r WI-4).
+// https://docs.kie.ai/market/bytedance/seedance-2
+// (["480p","720p","1080p","4k"]), the authority for that spelling. The
+// uppercase `"4K"` taken from the pricing page's label is rejected on the
+// wire: createTask answered `{"code":422,"msg":"Invalid resolution"}` when it
+// was tried live on 2026-08-06 (ac-8cfo6r WI-4, first attempt). That failure
+// was not retained as a committed fixture — the HAR below holds the accepted
+// `"4k"` request only.
 //
 // Reaching the wire at all requires Seedance2InputSchema.resolution to list the
 // value — the client-side CREATE_TASK_GUARDS entry for this model rejects an

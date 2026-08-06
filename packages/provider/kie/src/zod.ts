@@ -2359,10 +2359,14 @@ export const Seedance2InputSchema = z.object({
   return_last_frame: z.boolean().optional(),
   generate_audio: z.boolean().optional(),
   // "4k" is lowercase, matching the enum kie documents at
-  // docs.kie.ai/market/bytedance/seedance-2 (["480p","720p","1080p","4k"]).
-  // The uppercase "4K" from the pricing page label is rejected on the wire:
-  // createTask answers {"code":422,"msg":"Invalid resolution"} (recorded
-  // 2026-08-06, see tests/integration/kie-bytedance-seedance-2-4k.test.ts).
+  // https://docs.kie.ai/market/bytedance/seedance-2
+  // (["480p","720p","1080p","4k"]) — that page is the authority for this
+  // member. The uppercase "4K" from the pricing page label is rejected on the
+  // wire: createTask answered {"code":422,"msg":"Invalid resolution"} when it
+  // was tried live on 2026-08-06 (ac-8cfo6r WI-4, first attempt). That 422 was
+  // not retained as a committed fixture — the recording behind
+  // tests/integration/kie-bytedance-seedance-2-4k.test.ts holds the accepted
+  // "4k" request only.
   resolution: z.enum(["480p", "720p", "1080p", "4k"]).optional(),
   aspect_ratio: z
     .enum(["1:1", "4:3", "3:4", "16:9", "9:16", "21:9", "adaptive"])

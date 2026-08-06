@@ -138,10 +138,12 @@ describe("KIE Zod schema validation", () => {
   });
 
   // The 4K member's exact spelling is load-bearing on both sides. Upstream
-  // takes only lowercase "4k" — uppercase "4K" answers {"code":422,"msg":
-  // "Invalid resolution"} (recorded 2026-08-06, see
-  // tests/integration/kie-bytedance-seedance-2-4k.test.ts) — and @apicity/cost
-  // keys the tier off case-sensitive "4k|i2v" / "4k|t2v"
+  // takes only lowercase "4k" per
+  // https://docs.kie.ai/market/bytedance/seedance-2 — uppercase "4K" answered
+  // {"code":422,"msg":"Invalid resolution"} when it was tried live on
+  // 2026-08-06 (ac-8cfo6r WI-4, first attempt; not retained as a committed
+  // fixture) — and @apicity/cost keys the tier off case-sensitive
+  // "4k|i2v" / "4k|t2v"
   // (packages/provider/cost/src/pricing/kie.ts), so a drift to "4K" would
   // either be refused on the wire or miss the rate table and quote $0. Pin the
   // spelling against the request schema CREATE_TASK_GUARDS actually enforces.

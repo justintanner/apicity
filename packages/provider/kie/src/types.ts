@@ -166,6 +166,9 @@ export type {
   DownloadUrlRequest,
   DownloadUrlRequestInput,
   DownloadUrlParsedRequest,
+  Gpt4oImageDownloadUrlRequest,
+  Gpt4oImageDownloadUrlRequestInput,
+  Gpt4oImageDownloadUrlParsedRequest,
   KieOptions,
   // Standalone parameter union types
   KlingDuration,
@@ -374,6 +377,9 @@ export interface UploadMediaResponse {
 
 export type DownloadUrlResponse = KieApiEnvelope<string>;
 
+/** Same envelope as common download-url: `data` is the temporary URL string. */
+export type Gpt4oImageDownloadUrlResponse = KieApiEnvelope<string>;
+
 export type KieTaskState =
   | "waiting"
   | "queuing"
@@ -536,6 +542,7 @@ export interface ModelInputSchema {
 import type {
   MediaGenerationRequest,
   DownloadUrlRequest,
+  Gpt4oImageDownloadUrlRequest,
   UploadMediaRequest,
   FileUrlUploadRequest,
   FileBase64UploadRequest,
@@ -566,6 +573,11 @@ interface KieCreateTaskMethod {
 interface KieDownloadUrlMethod {
   (req: DownloadUrlRequest): Promise<DownloadUrlResponse>;
   schema: ApicitySchema<DownloadUrlRequest>;
+}
+
+interface KieGpt4oImageDownloadUrlMethod {
+  (req: Gpt4oImageDownloadUrlRequest): Promise<Gpt4oImageDownloadUrlResponse>;
+  schema: ApicitySchema<Gpt4oImageDownloadUrlRequest>;
 }
 
 interface KieFileStreamUploadMethod {
@@ -687,6 +699,7 @@ interface KiePostApiNamespace {
     };
     gpt4oImage: {
       generate: KieGpt4oImageGenerateMethod;
+      downloadUrl: KieGpt4oImageDownloadUrlMethod;
     };
     mj: {
       generate: KieMjGenerateMethod;

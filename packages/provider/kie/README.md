@@ -555,7 +555,7 @@ defaults to `false`.
 
 ## API Reference
 
-47 endpoints across 24 groups. Each method mirrors an upstream URL path.
+48 endpoints across 24 groups. Each method mirrors an upstream URL path.
 
 ### chat
 
@@ -948,6 +948,23 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 </details>
 
 <details>
+<details>
+<summary><code>POST</code> <b><code>kie.post.api.v1.gpt4oImage.downloadUrl</code></b></summary>
+
+<code>POST https://api.kie.ai/api/v1/gpt4o-image/download-url</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/4o-image-api/get-4-o-image-download-url)
+
+```typescript
+const res = await kie.post.api.v1.gpt4oImage.downloadUrl({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
+
+</details>
+
 <summary><code>POST</code> <b><code>kie.post.api.v1.gpt4oImage.generate</code></b></summary>
 
 <code>POST https://api.kie.ai/api/v1/gpt4o-image/generate</code>

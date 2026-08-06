@@ -289,6 +289,15 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v1.gpt4oImage.downloadUrl": {
+    "source": "kie/gpt4o-image/download-url-not-found",
+    "payload": {
+      "taskId": "apicity-test-nonexistent-task-id-do-not-record-real",
+      "url": "https://tempfile.aiquickdraw.com/v/apicity-test-nonexistent.png"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v1.gpt4oImage.generate": {
     "source": "kie/gpt4o-image-generate",
     "payload": {

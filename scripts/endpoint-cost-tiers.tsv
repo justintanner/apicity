@@ -709,6 +709,7 @@ kie	api.v1.generate.replaceSection	POST	prohibitive	Media-generation provider (v
 kie	api.v1.generate.sounds	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
 kie	api.v1.generate.uploadCover	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
 kie	api.v1.generate.uploadExtend	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.v1.gpt4oImage.downloadUrl	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
 kie	api.v1.gpt4oImage.generate	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
 kie	api.v1.gpt4oImage.recordInfo	GET	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
 kie	api.v1.jobs.createTask	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1

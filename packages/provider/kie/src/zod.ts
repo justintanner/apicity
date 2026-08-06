@@ -2237,6 +2237,14 @@ export const DownloadUrlRequestSchema = z.object({
   url: z.string().min(1),
 });
 
+// POST /api/v1/gpt4o-image/download-url — convert a 4o image URL to a
+// temporary direct download URL (valid ~20 minutes). Distinct from the
+// common download-url route, which only takes `url`.
+export const Gpt4oImageDownloadUrlRequestSchema = z.object({
+  taskId: z.string().min(1),
+  url: z.string().min(1),
+});
+
 export const GeminiOmniAudioCreateRequestSchema = z.object({
   audio_id: GeminiOmniAudioVoiceIdSchema,
   name: z.string().min(1).max(210),
@@ -3890,6 +3898,13 @@ export type DownloadUrlRequest = z.input<typeof DownloadUrlRequestSchema>;
 export type DownloadUrlRequestInput = DownloadUrlRequest;
 export type DownloadUrlParsedRequest = z.output<
   typeof DownloadUrlRequestSchema
+>;
+export type Gpt4oImageDownloadUrlRequest = z.input<
+  typeof Gpt4oImageDownloadUrlRequestSchema
+>;
+export type Gpt4oImageDownloadUrlRequestInput = Gpt4oImageDownloadUrlRequest;
+export type Gpt4oImageDownloadUrlParsedRequest = z.output<
+  typeof Gpt4oImageDownloadUrlRequestSchema
 >;
 export type GeminiOmniAudioVoiceId = z.infer<
   typeof GeminiOmniAudioVoiceIdSchema

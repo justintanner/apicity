@@ -8,6 +8,8 @@ import {
   KieApiEnvelope,
   DownloadUrlRequest,
   DownloadUrlResponse,
+  Gpt4oImageDownloadUrlRequest,
+  Gpt4oImageDownloadUrlResponse,
   UploadMediaRequest,
   UploadMediaResponse,
   FileUrlUploadRequest,
@@ -32,6 +34,7 @@ import type { FluxKontextRecordInfoResponse, KieMediaModel } from "./zod";
 import {
   CreateTaskRequestSchema,
   DownloadUrlRequestSchema,
+  Gpt4oImageDownloadUrlRequestSchema,
   UploadMediaRequestSchema,
   FileUrlUploadRequestSchema,
   FileBase64UploadRequestSchema,
@@ -456,6 +459,17 @@ export function createKie(opts: KieOptions): KieProvider {
     });
   }
 
+  // POST https://api.kie.ai/api/v1/gpt4o-image/download-url
+  // Docs: https://docs.kie.ai/4o-image-api/get-4-o-image-download-url
+  async function gpt4oImageDownloadUrl(
+    req: Gpt4oImageDownloadUrlRequest
+  ): Promise<Gpt4oImageDownloadUrlResponse> {
+    return await transport.postJson<Gpt4oImageDownloadUrlResponse>(
+      "/api/v1/gpt4o-image/download-url",
+      req
+    );
+  }
+
   // POST https://api.kie.ai/api/v1/mj/generate
   // Docs: https://docs.kie.ai/mj-api/generate-mj-image
   async function mjGenerate(req: MjGenerateRequest): Promise<TaskResponse> {
@@ -607,6 +621,9 @@ export function createKie(opts: KieOptions): KieProvider {
               gpt4oImage: {
                 generate: Object.assign(gpt4oImageGenerate, {
                   schema: Gpt4oImageGenerateRequestSchema,
+                }),
+                downloadUrl: Object.assign(gpt4oImageDownloadUrl, {
+                  schema: Gpt4oImageDownloadUrlRequestSchema,
                 }),
               },
               mj: {

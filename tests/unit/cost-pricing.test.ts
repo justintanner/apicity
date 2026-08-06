@@ -2530,11 +2530,12 @@ describe("kie stale-family refresh (REQ-004)", () => {
     }
   );
 
-  // seedance-2's new 4K tier. `computeEstimate` does not schema-validate, so
-  // these two cells are reachable here even though the shipped
-  // Seedance2InputSchema.resolution enum cannot express "4K" yet (ac-8cfo6r) —
-  // which is exactly why they are covered by unit tests and not by a
-  // compare-cost lineup row.
+  // seedance-2's 4K tier, schema-reachable as of ac-8cfo6r. This pins the link
+  // between the shipped Seedance2InputSchema.resolution member and the
+  // case-sensitive "4K|i2v" / "4K|t2v" rate keys: the payload goes through the
+  // request schema before it reaches the estimator, so a drift to "4k" on
+  // either side fails here instead of silently quoting $0. The seedance-2 4K
+  // rows in scripts/compare-video-cost.mjs guard the same link at lint time.
   it.each([
     { label: "with video input (i2v)", i2v: true, perUnitUsd: 0.64 },
     { label: "without video input (t2v)", i2v: false, perUnitUsd: 1.04 },

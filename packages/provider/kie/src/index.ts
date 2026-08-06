@@ -251,6 +251,19 @@ export {
   KieGemini25FlashToolFunctionSchema,
   KieGemini25FlashToolSchema,
   KieGemini25FlashToolTypeSchema,
+  KieGemini3FlashChatCompletionsRequestSchema,
+  KieGemini3FlashContentItemSchema,
+  KieGemini3FlashContentItemTypeSchema,
+  KieGemini3FlashMediaContentItemSchema,
+  KieGemini3FlashMessageRoleSchema,
+  KieGemini3FlashMessageSchema,
+  KieGemini3FlashReasoningEffortSchema,
+  KieGemini3FlashResponseFormatSchema,
+  KieGemini3FlashTextContentItemSchema,
+  KieGemini3FlashToolFunctionParametersSchema,
+  KieGemini3FlashToolFunctionSchema,
+  KieGemini3FlashToolSchema,
+  KieGemini3FlashToolTypeSchema,
   KieGeminiInlineDataSchema,
   KieGeminiPartSchema,
   KieGeminiRoleSchema,
@@ -320,6 +333,7 @@ export { createGeminiProvider } from "./gemini";
 export { createResponsesProvider } from "./responses";
 export { createGemini31ProProvider } from "./gemini-31-pro";
 export { createGemini25FlashProvider } from "./gemini-25-flash";
+export { createGemini3FlashProvider } from "./gemini-3-flash";
 
 // Export SSE utility
 export { sseDataToIterable as sseToIterable } from "./sse";
@@ -832,6 +846,21 @@ export type {
   KieGemini25FlashToolFunction,
   KieGemini25FlashToolFunctionParameters,
   KieGemini25FlashToolType,
+  KieGemini3FlashChatCompletionsRequest,
+  KieGemini3FlashChatCompletionsRequestInput,
+  KieGemini3FlashChatCompletionsParsedRequest,
+  KieGemini3FlashContentItem,
+  KieGemini3FlashContentItemType,
+  KieGemini3FlashMediaContentItem,
+  KieGemini3FlashMessage,
+  KieGemini3FlashMessageRole,
+  KieGemini3FlashReasoningEffort,
+  KieGemini3FlashResponseFormat,
+  KieGemini3FlashTextContentItem,
+  KieGemini3FlashTool,
+  KieGemini3FlashToolFunction,
+  KieGemini3FlashToolFunctionParameters,
+  KieGemini3FlashToolType,
 } from "./zod";
 
 export type {
@@ -869,3 +898,15 @@ export type {
   KieGemini25FlashCompletionTokensDetails,
   KieGemini25FlashProvider,
 } from "./gemini-25-flash";
+
+export type {
+  KieGemini3FlashChatChoice,
+  KieGemini3FlashChatCompletionChunk,
+  KieGemini3FlashChatCompletionResponse,
+  KieGemini3FlashChatCompletionsResult,
+  KieGemini3FlashChatDelta,
+  KieGemini3FlashChatMessage,
+  KieGemini3FlashChatUsage,
+  KieGemini3FlashCompletionTokensDetails,
+  KieGemini3FlashProvider,
+} from "./gemini-3-flash";

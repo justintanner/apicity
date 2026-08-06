@@ -555,7 +555,7 @@ defaults to `false`.
 
 ## API Reference
 
-54 endpoints across 28 groups. Each method mirrors an upstream URL path.
+56 endpoints across 29 groups. Each method mirrors an upstream URL path.
 
 ### aleph
 
@@ -799,6 +799,25 @@ const res = await kie.gemini31Pro.post.v1.chat.completions({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/gemini-31-pro.ts`](src/gemini-31-pro.ts)
+
+</details>
+
+### gemini3Flash
+
+<details>
+<summary><code>POST</code> <b><code>kie.gemini3Flash.post.v1.chat.completions</code></b></summary>
+
+<code>POST https://api.kie.ai/gemini-3-flash/v1/chat/completions</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/market/gemini/gemini-3-flash)
+
+```typescript
+const res = await kie.gemini3Flash.post.v1.chat.completions({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/gemini-3-flash.ts`](src/gemini-3-flash.ts)
 
 </details>
 
@@ -1471,6 +1490,23 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await kie.suno.get.api.v1.voice.validateInfo({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>kie.suno.post.api.v1.voice.checkVoice</code></b></summary>
+
+<code>POST https://api.kie.ai/api/v1/voice/check-voice</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/suno-api/suno-voice-check-voice)
+
+```typescript
+const res = await kie.suno.post.api.v1.voice.checkVoice({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)

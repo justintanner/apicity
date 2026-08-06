@@ -115,7 +115,7 @@ const EXAMPLES: Record<string, EndpointExample> = {
   "GET api.v1.veo.recordInfo": {
     "source": "kie/veo/aspect-ratio-probe",
     "payload": {
-      "taskId": "0819326cc7fddfd620baf6e1f0db7e2b"
+      "taskId": "833080d158b26214aeb43071aadac0d0"
     },
     "tier": "prohibitive",
     "runByDefault": false
@@ -421,10 +421,10 @@ const EXAMPLES: Record<string, EndpointExample> = {
   "POST api.v1.veo.generate": {
     "source": "kie/veo/aspect-ratio-probe",
     "payload": {
-      "prompt": "Apicity aspect probe snake_case: solid blue sky, still camera, no people",
+      "prompt": "Apicity aspect probe camelCase: solid blue sky, still camera, no people",
       "model": "veo3_lite",
       "generationType": "TEXT_2_VIDEO",
-      "aspect_ratio": "9:16",
+      "aspectRatio": "9:16",
       "duration": 4,
       "resolution": "720p"
     },
@@ -471,6 +471,46 @@ const EXAMPLES: Record<string, EndpointExample> = {
         }
       ],
       "stream": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST gemini25Flash.v1.chat.completions": {
+    "source": "kie/gemini-25-flash-chat-auth-error",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "ping"
+            }
+          ]
+        }
+      ],
+      "stream": false,
+      "include_thoughts": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST gemini3Flash.v1.chat.completions": {
+    "source": "kie/gemini-3-flash-chat-auth-error",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "ping"
+            }
+          ]
+        }
+      ],
+      "stream": false,
+      "include_thoughts": false
     },
     "tier": "prohibitive",
     "runByDefault": false

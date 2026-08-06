@@ -747,6 +747,7 @@ export interface KieProvider {
   gemini: import("./gemini").KieGeminiProvider["gemini"];
   gemini31Pro: import("./gemini-31-pro").KieGemini31ProProvider["gemini31Pro"];
   gemini25Flash: import("./gemini-25-flash").KieGemini25FlashProvider["gemini25Flash"];
+  gemini3Flash: import("./gemini-3-flash").KieGemini3FlashProvider["gemini3Flash"];
 }
 
 // Error class

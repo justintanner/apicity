@@ -7,6 +7,8 @@ import {
   SeedreamTextToImageRequestSchema,
   SeedreamProImageToImageRequestSchema,
   SeedreamProTextToImageRequestSchema,
+  Seedream45TextToImageRequestSchema,
+  Seedream45EditRequestSchema,
 } from "../../packages/provider/kie/src/zod";
 
 describe("KIE modelInputSchemas metadata", () => {
@@ -831,13 +833,15 @@ describe("KIE Seedream quality stays required (REQ-001)", () => {
     ["seedream/5-lite-text-to-image", SeedreamTextToImageRequestSchema],
     ["seedream/5-pro-image-to-image", SeedreamProImageToImageRequestSchema],
     ["seedream/5-pro-text-to-image", SeedreamProTextToImageRequestSchema],
+    ["seedream/4.5-text-to-image", Seedream45TextToImageRequestSchema],
+    ["seedream/4.5-edit", Seedream45EditRequestSchema],
   ] as const;
 
   const baseInput = (model: string) => {
     const input: Record<string, unknown> = {
       prompt: "A quiet harbour at first light",
     };
-    if (model.includes("image-to-image")) {
+    if (model.includes("image-to-image") || model.endsWith("-edit")) {
       input.image_urls = ["https://example.com/a.png"];
     }
     return input;

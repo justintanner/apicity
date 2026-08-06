@@ -249,11 +249,17 @@ export const CREATE_TASK_GUARDS = {
 } as const satisfies Record<KieMediaModel, z.ZodType>;
 
 function validateCreateTaskRequest(req: MediaGenerationRequest): void {
+  // MediaGenerationRequest includes alias-only model ids that have request
+  // schemas but are not KIE_MEDIA_MODELS entries (e.g. seedream/4.5-*). Those
+  // fall through unvalidated here; only catalogue ids have CREATE_TASK_GUARDS
+  // entries. Index after the own-property check via KieMediaModel so the wider
+  // MediaGenerationRequest model union does not fail tsc on the lookup.
+  const model = req.model;
   const guard: z.ZodType | undefined = Object.prototype.hasOwnProperty.call(
     CREATE_TASK_GUARDS,
-    req.model
+    model
   )
-    ? CREATE_TASK_GUARDS[req.model]
+    ? CREATE_TASK_GUARDS[model as KieMediaModel]
     : undefined;
   if (!guard) {
     return;

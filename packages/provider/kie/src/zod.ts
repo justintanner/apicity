@@ -2058,6 +2058,42 @@ export const SeedreamProTextToImageRequestSchema = z.object({
   }),
 });
 
+// seedream/4.5-text-to-image is an alias-accepted Seedream id (matches
+// KieMediaSeedreamModelAliasSchema) that still needs its own createTask
+// request member so CreateTaskRequestSchema accepts it.
+// Docs: https://docs.kie.ai/market/seedream/4-5-text-to-image
+// OpenAPI lists aspect_ratio + quality as required; quality is kept required
+// without `.default()` for the same documented-defaults trap as seedream/5-*.
+export const Seedream45TextToImageRequestSchema = z.object({
+  model: z.literal("seedream/4.5-text-to-image"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().min(3).max(3000),
+    aspect_ratio: z
+      .enum(["1:1", "4:3", "3:4", "16:9", "9:16", "2:3", "3:2", "21:9"])
+      .default("1:1"),
+    quality: z.enum(["basic", "high"]),
+    nsfw_checker: z.boolean().default(false),
+  }),
+});
+
+// seedream/4.5-edit is the image-edit sibling of 4.5 text-to-image: same
+// aspect ratios (including 21:9) and quality tiers, plus image_urls (max 14).
+// Docs: https://docs.kie.ai/market/seedream/4-5-edit
+export const Seedream45EditRequestSchema = z.object({
+  model: z.literal("seedream/4.5-edit"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().min(3).max(3000),
+    image_urls: z.array(z.string()).min(1).max(14),
+    aspect_ratio: z
+      .enum(["1:1", "4:3", "3:4", "16:9", "9:16", "2:3", "3:2", "21:9"])
+      .default("1:1"),
+    quality: z.enum(["basic", "high"]),
+    nsfw_checker: z.boolean().default(false),
+  }),
+});
+
 export const SoraWatermarkRequestSchema = z.object({
   model: z.literal("sora-watermark-remover"),
   callBackUrl: z.string().optional(),
@@ -4044,6 +4080,8 @@ export const MediaGenerationRequestSchema = z.union([
   SeedreamTextToImageRequestSchema,
   SeedreamProImageToImageRequestSchema,
   SeedreamProTextToImageRequestSchema,
+  Seedream45TextToImageRequestSchema,
+  Seedream45EditRequestSchema,
   Qwen2TextToImageRequestSchema,
   Qwen2ImageEditRequestSchema,
   QwenTextToImageRequestSchema,
@@ -4464,6 +4502,18 @@ export type SeedreamProTextToImageRequest = z.input<
 export type SeedreamProTextToImageRequestInput = SeedreamProTextToImageRequest;
 export type SeedreamProTextToImageParsedRequest = z.output<
   typeof SeedreamProTextToImageRequestSchema
+>;
+export type Seedream45TextToImageRequest = z.input<
+  typeof Seedream45TextToImageRequestSchema
+>;
+export type Seedream45TextToImageRequestInput = Seedream45TextToImageRequest;
+export type Seedream45TextToImageParsedRequest = z.output<
+  typeof Seedream45TextToImageRequestSchema
+>;
+export type Seedream45EditRequest = z.input<typeof Seedream45EditRequestSchema>;
+export type Seedream45EditRequestInput = Seedream45EditRequest;
+export type Seedream45EditParsedRequest = z.output<
+  typeof Seedream45EditRequestSchema
 >;
 export type SoraWatermarkRequest = z.input<typeof SoraWatermarkRequestSchema>;
 export type SoraWatermarkRequestInput = SoraWatermarkRequest;

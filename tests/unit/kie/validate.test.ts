@@ -38,6 +38,8 @@ import {
   QwenTextToImageRequestSchema,
   QwenImageEditRequestSchema,
   QwenImageToImageRequestSchema,
+  Seedream45TextToImageRequestSchema,
+  Seedream45EditRequestSchema,
   ElevenLabsTextToSpeechTurbo25RequestSchema,
   ElevenLabsTextToSpeechMultilingualV2RequestSchema,
   ElevenLabsTextToDialogueV3RequestSchema,
@@ -1301,6 +1303,120 @@ describe("kie Zod schema validation", () => {
         });
         expect(bad.success).toBe(false);
       }
+    });
+  });
+
+  describe("seedream 4.5 createTask models", () => {
+    it("should accept the documented 4.5 text-to-image request", () => {
+      const request = {
+        model: "seedream/4.5-text-to-image",
+        callBackUrl: "https://example.com/callback",
+        input: {
+          prompt: "A full-process cafe design tool promotional image in 16:9",
+          aspect_ratio: "1:1",
+          quality: "basic",
+          nsfw_checker: false,
+        },
+      };
+
+      const result = Seedream45TextToImageRequestSchema.safeParse(request);
+      expect(result.success).toBe(true);
+      expect(MediaGenerationRequestSchema.safeParse(request).success).toBe(
+        true
+      );
+      expect(CreateTaskRequestSchema.safeParse(request).success).toBe(true);
+    });
+
+    it("should require quality for 4.5 text-to-image and default aspect_ratio", () => {
+      const missingQuality = Seedream45TextToImageRequestSchema.safeParse({
+        model: "seedream/4.5-text-to-image",
+        input: {
+          prompt: "A quiet harbour at first light",
+        },
+      });
+      expect(missingQuality.success).toBe(false);
+      expect(
+        missingQuality.error?.issues.some((i) => i.path.includes("quality"))
+      ).toBe(true);
+
+      const withQuality = Seedream45TextToImageRequestSchema.parse({
+        model: "seedream/4.5-text-to-image",
+        input: {
+          prompt: "A quiet harbour at first light",
+          quality: "high",
+        },
+      });
+      expect(withQuality.input.aspect_ratio).toBe("1:1");
+      expect(withQuality.input.quality).toBe("high");
+      expect(withQuality.input.nsfw_checker).toBe(false);
+    });
+
+    it("should accept the documented 4.5 edit request", () => {
+      const request = {
+        model: "seedream/4.5-edit",
+        callBackUrl: "https://example.com/callback",
+        input: {
+          prompt:
+            "Keep the model's pose; change clothing material to clear water",
+          image_urls: [
+            "https://static.aiquickdraw.com/tools/example/1764851484363_ScV1s2aq.webp",
+          ],
+          aspect_ratio: "1:1",
+          quality: "basic",
+          nsfw_checker: true,
+        },
+      };
+
+      const result = Seedream45EditRequestSchema.safeParse(request);
+      expect(result.success).toBe(true);
+      expect(MediaGenerationRequestSchema.safeParse(request).success).toBe(
+        true
+      );
+      expect(CreateTaskRequestSchema.safeParse(request).success).toBe(true);
+    });
+
+    it("should require image_urls and quality for 4.5 edit", () => {
+      const missingImages = Seedream45EditRequestSchema.safeParse({
+        model: "seedream/4.5-edit",
+        input: {
+          prompt: "Change the clothing material",
+          quality: "basic",
+        },
+      });
+      expect(missingImages.success).toBe(false);
+      expect(
+        missingImages.error?.issues.some((i) => i.path.includes("image_urls"))
+      ).toBe(true);
+
+      const missingQuality = Seedream45EditRequestSchema.safeParse({
+        model: "seedream/4.5-edit",
+        input: {
+          prompt: "Change the clothing material",
+          image_urls: ["https://example.com/source.png"],
+        },
+      });
+      expect(missingQuality.success).toBe(false);
+      expect(
+        missingQuality.error?.issues.some((i) => i.path.includes("quality"))
+      ).toBe(true);
+    });
+
+    it("should reject more than 14 image_urls on 4.5 edit", () => {
+      const result = Seedream45EditRequestSchema.safeParse({
+        model: "seedream/4.5-edit",
+        input: {
+          prompt: "Change the clothing material",
+          image_urls: Array.from(
+            { length: 15 },
+            (_, i) => `https://example.com/${i}.png`
+          ),
+          quality: "basic",
+        },
+      });
+      expect(result.success).toBe(false);
+      expect(
+        result.error?.issues.some((i) => i.path.includes("image_urls"))
+      ).toBe(true);
     });
   });
 

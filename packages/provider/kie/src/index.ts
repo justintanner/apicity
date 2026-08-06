@@ -25,6 +25,18 @@ export type {
   VeoGet4kVideoCallbackPayload,
 } from "./callbacks-veo";
 
+// Flux Kontext callback payload
+export {
+  FluxKontextCallbackInfoSchema,
+  FluxKontextCallbackDataSchema,
+  FluxKontextCallbackPayloadSchema,
+} from "./callbacks-flux-kontext";
+export type {
+  FluxKontextCallbackInfo,
+  FluxKontextCallbackData,
+  FluxKontextCallbackPayload,
+} from "./callbacks-flux-kontext";
+
 // Export reusable schema metadata
 export {
   GeminiOmniAudioCreateRequestSchema,

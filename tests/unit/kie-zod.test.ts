@@ -1021,18 +1021,18 @@ describe("TRI-008 VeoExtendRequestSchema.model stays a closed set", () => {
 // TRI-001 KieMediaModelSchema — one escape hatch per vendor family
 // ---------------------------------------------------------------------------
 //
-// KieMediaModelSchema is kie's aggregator catalogue: 69 ids drawn from a dozen
+// KieMediaModelSchema is kie's aggregator catalogue: 73 ids drawn from a dozen
 // unrelated vendors behind one `createTask` endpoint. REQ-006 forbids opening
 // it with a single catch-all regex, so it carries one alias per vendor family
 // while singletons (omnihuman, volcengine, gemini-omni, sora-watermark,
-// recraft, topaz, infinitalk, z-image), the three exact MiniMax H3 modes, the
-// two Google TTS modes, and unversioned Qwen v1 stay enumerated with no alias
-// at all.
+// recraft, topaz, infinitalk, z-image), Flux-2 (four exact modes), the three
+// exact MiniMax H3 modes, the two Google TTS modes, and unversioned Qwen v1
+// stay enumerated with no alias at all.
 //
 // BR-4 needs care here that the single-family schemas above do not. A foreign
 // *catalogue* id — `happyhorse/video-edit` on the Kling family — is accepted by
 // KieMediaModelSchema, through the enum branch, and always was: the whole point
-// of the aggregator is that all 69 are valid. So cross-family leakage cannot be
+// of the aggregator is that all 73 are valid. So cross-family leakage cannot be
 // asserted with safeParse; it is asserted structurally instead, against the
 // alias patterns themselves ("partitions the catalogue" below). The per-family
 // `rejected` lists therefore carry BR-3 near-miss typos plus BR-4 ids from
@@ -1281,6 +1281,25 @@ const TOPAZ_REJECTED_MODELS = [
   "topaz/audio-upscale",
 ] as const;
 
+// Flux-2 is enum-only like Topaz: four task variants under one vendor, no
+// open alias hatch (the task segment is not a version grammar).
+const FLUX2_EXACT_ONLY_MODELS = [
+  "flux-2/flex-image-to-image",
+  "flux-2/flex-text-to-image",
+  "flux-2/pro-image-to-image",
+  "flux-2/pro-text-to-image",
+] as const;
+
+const FLUX2_REJECTED_MODELS = [
+  "flux-2",
+  "flux-2/",
+  "flux2/pro-text-to-image",
+  "flux-2/pro",
+  "flux-2/pro_text_to_image",
+  "Flux-2/pro-text-to-image",
+  "flux-2/max-text-to-image",
+] as const;
+
 // Unversioned Qwen v1 is enum-only: the Qwen family alias requires a digit
 // before `/` (`qwen2/*`), and operator ruling ac-ly4x9j forbids widening it.
 const QWEN_V1_EXACT_ONLY_MODELS = [
@@ -1376,6 +1395,21 @@ describe("TRI-001 KieMediaModelSchema", () => {
 
   it.each(TOPAZ_REJECTED_MODELS)(
     "rejects the out-of-scope Topaz model %j",
+    (model) => {
+      expect(KieMediaModelSchema.safeParse(model).success).toBe(false);
+    }
+  );
+
+  it.each(FLUX2_EXACT_ONLY_MODELS)(
+    "keeps Flux-2 model %s reachable only through the enum",
+    (model) => {
+      expect(KieMediaModelSchema.safeParse(model).success).toBe(true);
+      expect(mediaAliasPatterns.filter((re) => re.test(model))).toEqual([]);
+    }
+  );
+
+  it.each(FLUX2_REJECTED_MODELS)(
+    "rejects the out-of-scope Flux-2 model %j",
     (model) => {
       expect(KieMediaModelSchema.safeParse(model).success).toBe(false);
     }

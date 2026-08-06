@@ -75,6 +75,10 @@ import {
   TopazVideoUpscaleRequestSchema,
   InfinitalkFromAudioRequestSchema,
   ZImageRequestSchema,
+  Flux2ProTextToImageRequestSchema,
+  Flux2FlexTextToImageRequestSchema,
+  Flux2ProImageToImageRequestSchema,
+  Flux2FlexImageToImageRequestSchema,
   Wan27ImageToVideoRequestSchema,
   Wan27TextToVideoRequestSchema,
   Wan27RefToVideoRequestSchema,
@@ -256,6 +260,10 @@ export const CREATE_TASK_GUARDS = {
   "topaz/video-upscale": TopazVideoUpscaleRequestSchema,
   "infinitalk/from-audio": InfinitalkFromAudioRequestSchema,
   "z-image": ZImageRequestSchema,
+  "flux-2/flex-image-to-image": Flux2FlexImageToImageRequestSchema,
+  "flux-2/flex-text-to-image": Flux2FlexTextToImageRequestSchema,
+  "flux-2/pro-image-to-image": Flux2ProImageToImageRequestSchema,
+  "flux-2/pro-text-to-image": Flux2ProTextToImageRequestSchema,
 } as const satisfies Record<KieMediaModel, z.ZodType>;
 
 function validateCreateTaskRequest(req: MediaGenerationRequest): void {

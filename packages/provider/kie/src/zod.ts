@@ -258,6 +258,12 @@ export const KIE_MEDIA_MODELS = [
   // Singleton vendor ids (no alias hatch yet).
   "infinitalk/from-audio",
   "z-image",
+  // Flux-2 image models — enum-only vendor (no alias hatch; task segment is
+  // not a version grammar). Doc path uses `flux2`; model ids use `flux-2/…`.
+  "flux-2/flex-image-to-image",
+  "flux-2/flex-text-to-image",
+  "flux-2/pro-image-to-image",
+  "flux-2/pro-text-to-image",
 ] as const;
 
 export const KieMediaModelSchema = z
@@ -3091,6 +3097,86 @@ export const ZImageRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// Flux-2 market createTask models (pro + flex, text/image to image)
+// Docs: https://docs.kie.ai/market/flux2/pro-text-to-image and siblings
+// Note: doc path segment is `flux2`; model ids are `flux-2/…`.
+// ---------------------------------------------------------------------------
+
+// Text-to-image aspect ratios (pro + flex share the same closed set; no auto).
+export const Flux2TextToImageAspectRatioSchema = z.enum([
+  "1:1",
+  "4:3",
+  "3:4",
+  "16:9",
+  "9:16",
+  "3:2",
+  "2:3",
+]);
+
+// Image-to-image adds `auto` (match first input image ratio).
+export const Flux2ImageToImageAspectRatioSchema = z.enum([
+  "1:1",
+  "4:3",
+  "3:4",
+  "16:9",
+  "9:16",
+  "3:2",
+  "2:3",
+  "auto",
+]);
+
+export const Flux2ResolutionSchema = z.enum(["1K", "2K"]);
+
+// Shared input shape for flux-2/*-text-to-image (pro and flex).
+// OpenAPI marks prompt, aspect_ratio, and resolution required (documented
+// defaults 1:1 / 1K). Keep them required without local defaults so callers
+// choose. prompt length is 3–5000.
+const Flux2TextToImageInputSchema = z.object({
+  prompt: z.string().min(3).max(5000),
+  aspect_ratio: Flux2TextToImageAspectRatioSchema,
+  resolution: Flux2ResolutionSchema,
+  nsfw_checker: z.boolean().default(false),
+});
+
+// Shared input shape for flux-2/*-image-to-image (pro and flex).
+// input_urls is 1–8 reference image URLs after upload.
+const Flux2ImageToImageInputSchema = z.object({
+  input_urls: z.array(z.string()).min(1).max(8),
+  prompt: z.string().min(3).max(5000),
+  aspect_ratio: Flux2ImageToImageAspectRatioSchema,
+  resolution: Flux2ResolutionSchema,
+  nsfw_checker: z.boolean().default(false),
+});
+
+// Docs: https://docs.kie.ai/market/flux2/pro-text-to-image
+export const Flux2ProTextToImageRequestSchema = z.object({
+  model: z.literal("flux-2/pro-text-to-image"),
+  callBackUrl: z.string().optional(),
+  input: Flux2TextToImageInputSchema,
+});
+
+// Docs: https://docs.kie.ai/market/flux2/flex-text-to-image
+export const Flux2FlexTextToImageRequestSchema = z.object({
+  model: z.literal("flux-2/flex-text-to-image"),
+  callBackUrl: z.string().optional(),
+  input: Flux2TextToImageInputSchema,
+});
+
+// Docs: https://docs.kie.ai/market/flux2/pro-image-to-image
+export const Flux2ProImageToImageRequestSchema = z.object({
+  model: z.literal("flux-2/pro-image-to-image"),
+  callBackUrl: z.string().optional(),
+  input: Flux2ImageToImageInputSchema,
+});
+
+// Docs: https://docs.kie.ai/market/flux2/flex-image-to-image
+export const Flux2FlexImageToImageRequestSchema = z.object({
+  model: z.literal("flux-2/flex-image-to-image"),
+  callBackUrl: z.string().optional(),
+  input: Flux2ImageToImageInputSchema,
+});
+
+// ---------------------------------------------------------------------------
 // Wan 2.7 task result schemas (parsed from KieTaskInfoData.resultJson)
 //
 // kie wraps async task results in a JSON envelope on `resultJson`. Both image
@@ -4266,6 +4352,10 @@ export const MediaGenerationRequestSchema = z.union([
   TopazVideoUpscaleRequestSchema,
   InfinitalkFromAudioRequestSchema,
   ZImageRequestSchema,
+  Flux2ProTextToImageRequestSchema,
+  Flux2FlexTextToImageRequestSchema,
+  Flux2ProImageToImageRequestSchema,
+  Flux2FlexImageToImageRequestSchema,
 ]);
 
 // ---------------------------------------------------------------------------
@@ -4829,6 +4919,41 @@ export type ZImageAspectRatio = z.infer<typeof ZImageAspectRatioSchema>;
 export type ZImageRequest = z.input<typeof ZImageRequestSchema>;
 export type ZImageRequestInput = ZImageRequest;
 export type ZImageParsedRequest = z.output<typeof ZImageRequestSchema>;
+export type Flux2TextToImageAspectRatio = z.infer<
+  typeof Flux2TextToImageAspectRatioSchema
+>;
+export type Flux2ImageToImageAspectRatio = z.infer<
+  typeof Flux2ImageToImageAspectRatioSchema
+>;
+export type Flux2Resolution = z.infer<typeof Flux2ResolutionSchema>;
+export type Flux2ProTextToImageRequest = z.input<
+  typeof Flux2ProTextToImageRequestSchema
+>;
+export type Flux2ProTextToImageRequestInput = Flux2ProTextToImageRequest;
+export type Flux2ProTextToImageParsedRequest = z.output<
+  typeof Flux2ProTextToImageRequestSchema
+>;
+export type Flux2FlexTextToImageRequest = z.input<
+  typeof Flux2FlexTextToImageRequestSchema
+>;
+export type Flux2FlexTextToImageRequestInput = Flux2FlexTextToImageRequest;
+export type Flux2FlexTextToImageParsedRequest = z.output<
+  typeof Flux2FlexTextToImageRequestSchema
+>;
+export type Flux2ProImageToImageRequest = z.input<
+  typeof Flux2ProImageToImageRequestSchema
+>;
+export type Flux2ProImageToImageRequestInput = Flux2ProImageToImageRequest;
+export type Flux2ProImageToImageParsedRequest = z.output<
+  typeof Flux2ProImageToImageRequestSchema
+>;
+export type Flux2FlexImageToImageRequest = z.input<
+  typeof Flux2FlexImageToImageRequestSchema
+>;
+export type Flux2FlexImageToImageRequestInput = Flux2FlexImageToImageRequest;
+export type Flux2FlexImageToImageParsedRequest = z.output<
+  typeof Flux2FlexImageToImageRequestSchema
+>;
 export type Wan27ImageToVideoRequest = z.input<
   typeof Wan27ImageToVideoRequestSchema
 >;

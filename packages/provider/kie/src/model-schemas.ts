@@ -3053,4 +3053,152 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
     },
   },
+
+  // https://docs.kie.ai/market/flux2/flex-image-to-image
+  "flux-2/flex-image-to-image": {
+    type: "image",
+    fields: {
+      input_urls: {
+        type: "array",
+        required: true,
+        minItems: 1,
+        maxItems: 8,
+        description:
+          "Input reference image URLs after upload (1-8; jpeg/png/webp, max 10 MB each)",
+        items: { type: "string" },
+      },
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 3,
+        maxLength: 5000,
+        description: "Image generation prompt (3-5000 chars)",
+      },
+      aspect_ratio: {
+        type: "string",
+        required: true,
+        enum: ["1:1", "4:3", "3:4", "16:9", "9:16", "3:2", "2:3", "auto"],
+        description:
+          "Output aspect ratio (documented default 1:1; auto matches first input)",
+      },
+      resolution: {
+        type: "string",
+        required: true,
+        enum: ["1K", "2K"],
+        description: "Output resolution (documented default 1K)",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description:
+          "When false, content filtering is disabled (documented default false)",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/flux2/flex-text-to-image
+  "flux-2/flex-text-to-image": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 3,
+        maxLength: 5000,
+        description: "Image generation prompt (3-5000 chars)",
+      },
+      aspect_ratio: {
+        type: "string",
+        required: true,
+        enum: ["1:1", "4:3", "3:4", "16:9", "9:16", "3:2", "2:3"],
+        description: "Output aspect ratio (documented default 1:1)",
+      },
+      resolution: {
+        type: "string",
+        required: true,
+        enum: ["1K", "2K"],
+        description: "Output resolution (documented default 1K)",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description:
+          "When false, content filtering is disabled (documented default false)",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/flux2/pro-image-to-image
+  "flux-2/pro-image-to-image": {
+    type: "image",
+    fields: {
+      input_urls: {
+        type: "array",
+        required: true,
+        minItems: 1,
+        maxItems: 8,
+        description:
+          "Input reference image URLs after upload (1-8; jpeg/png/webp, max 10 MB each)",
+        items: { type: "string" },
+      },
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 3,
+        maxLength: 5000,
+        description: "Image generation prompt (3-5000 chars)",
+      },
+      aspect_ratio: {
+        type: "string",
+        required: true,
+        enum: ["1:1", "4:3", "3:4", "16:9", "9:16", "3:2", "2:3", "auto"],
+        description:
+          "Output aspect ratio (documented default 1:1; auto matches first input)",
+      },
+      resolution: {
+        type: "string",
+        required: true,
+        enum: ["1K", "2K"],
+        description: "Output resolution (documented default 1K)",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description:
+          "When false, content filtering is disabled (documented default false)",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/flux2/pro-text-to-image
+  "flux-2/pro-text-to-image": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 3,
+        maxLength: 5000,
+        description: "Image generation prompt (3-5000 chars)",
+      },
+      aspect_ratio: {
+        type: "string",
+        required: true,
+        enum: ["1:1", "4:3", "3:4", "16:9", "9:16", "3:2", "2:3"],
+        description: "Output aspect ratio (documented default 1:1)",
+      },
+      resolution: {
+        type: "string",
+        required: true,
+        enum: ["1K", "2K"],
+        description: "Output resolution (documented default 1K)",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description:
+          "When false, content filtering is disabled (documented default false)",
+      },
+    },
+  },
 };

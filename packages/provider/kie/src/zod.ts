@@ -182,6 +182,10 @@ const KieMediaPixverseModelAliasSchema = z
 // `qwen/image-to-image`) is also enum-only: the Qwen alias requires a digit
 // before `/` for `qwen2/*` (and future versioned) ids, and was deliberately
 // not widened (ac-ly4x9j).
+//
+// `infinitalk/from-audio` and `z-image` are single-sample vendors — each is the
+// only id kie documents for its product — so both stay enum-only with no alias
+// hatch until a second family member ships (zod.ts:155-166 convention).
 export const KIE_MEDIA_MODELS = [
   "kling-3.0/video",
   "kling-3.0/motion-control",
@@ -248,6 +252,9 @@ export const KIE_MEDIA_MODELS = [
   "google/gemini-3-1-flash-tts",
   "topaz/image-upscale",
   "topaz/video-upscale",
+  // Singleton vendor ids (no alias hatch yet).
+  "infinitalk/from-audio",
+  "z-image",
 ] as const;
 
 export const KieMediaModelSchema = z
@@ -2955,6 +2962,48 @@ export const TopazVideoUpscaleRequestSchema = z.object({
   }),
 });
 
+// Infinitalk talking-head video from a portrait + audio drive.
+// Docs: https://docs.kie.ai/market/infinitalk/from-audio
+export const InfinitalkFromAudioResolutionSchema = z.enum(["480p", "720p"]);
+
+export const InfinitalkFromAudioRequestSchema = z.object({
+  model: z.literal("infinitalk/from-audio"),
+  callBackUrl: z.string().url().optional(),
+  input: z.object({
+    // File URL after upload (jpeg/png/webp, max 10 MB) — not file content.
+    image_url: z.string().min(1),
+    // File URL after upload (mpeg/wav/aac/mp4/ogg, max 10 MB) — not file content.
+    audio_url: z.string().min(1),
+    prompt: z.string().min(1).max(5000),
+    // Optional; documented default is "480p".
+    resolution: InfinitalkFromAudioResolutionSchema.optional(),
+    // Documented valid range is 10000–1000000.
+    seed: z.number().int().min(10000).max(1000000).optional(),
+  }),
+});
+
+// Z-Image text-to-image singleton.
+// Docs: https://docs.kie.ai/market/z-image/z-image
+export const ZImageAspectRatioSchema = z.enum([
+  "1:1",
+  "4:3",
+  "3:4",
+  "16:9",
+  "9:16",
+]);
+
+export const ZImageRequestSchema = z.object({
+  model: z.literal("z-image"),
+  callBackUrl: z.string().url().optional(),
+  input: z.object({
+    prompt: z.string().min(1).max(1000),
+    // Required by the OpenAPI `required` list (documented default is "1:1").
+    aspect_ratio: ZImageAspectRatioSchema,
+    // Optional; documented default is false.
+    nsfw_checker: z.boolean().default(false),
+  }),
+});
+
 // ---------------------------------------------------------------------------
 // Wan 2.7 task result schemas (parsed from KieTaskInfoData.resultJson)
 //
@@ -4126,6 +4175,8 @@ export const MediaGenerationRequestSchema = z.union([
   GoogleGemini31FlashTtsRequestSchema,
   TopazImageUpscaleRequestSchema,
   TopazVideoUpscaleRequestSchema,
+  InfinitalkFromAudioRequestSchema,
+  ZImageRequestSchema,
 ]);
 
 // ---------------------------------------------------------------------------
@@ -4643,6 +4694,20 @@ export type TopazVideoUpscaleRequestInput = TopazVideoUpscaleRequest;
 export type TopazVideoUpscaleParsedRequest = z.output<
   typeof TopazVideoUpscaleRequestSchema
 >;
+export type InfinitalkFromAudioResolution = z.infer<
+  typeof InfinitalkFromAudioResolutionSchema
+>;
+export type InfinitalkFromAudioRequest = z.input<
+  typeof InfinitalkFromAudioRequestSchema
+>;
+export type InfinitalkFromAudioRequestInput = InfinitalkFromAudioRequest;
+export type InfinitalkFromAudioParsedRequest = z.output<
+  typeof InfinitalkFromAudioRequestSchema
+>;
+export type ZImageAspectRatio = z.infer<typeof ZImageAspectRatioSchema>;
+export type ZImageRequest = z.input<typeof ZImageRequestSchema>;
+export type ZImageRequestInput = ZImageRequest;
+export type ZImageParsedRequest = z.output<typeof ZImageRequestSchema>;
 export type Wan27ImageToVideoRequest = z.input<
   typeof Wan27ImageToVideoRequestSchema
 >;

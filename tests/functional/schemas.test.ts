@@ -1361,6 +1361,36 @@ describe("kie modelInputSchemas", () => {
     expect(schema.fields.strength.default).toBe(0.8);
   });
 
+  it("infinitalk from-audio exposes required portrait, audio, and prompt", () => {
+    const schema = modelInputSchemas["infinitalk/from-audio"];
+
+    expect(schema.type).toBe("video");
+    expect(schema.fields.image_url.required).toBe(true);
+    expect(schema.fields.audio_url.required).toBe(true);
+    expect(schema.fields.prompt.required).toBe(true);
+    expect(schema.fields.prompt.maxLength).toBe(5000);
+    expect(schema.fields.resolution.enum).toEqual(["480p", "720p"]);
+    expect(schema.fields.seed.minimum).toBe(10000);
+    expect(schema.fields.seed.maximum).toBe(1000000);
+  });
+
+  it("z-image exposes required prompt and aspect_ratio", () => {
+    const schema = modelInputSchemas["z-image"];
+
+    expect(schema.type).toBe("image");
+    expect(schema.fields.prompt.required).toBe(true);
+    expect(schema.fields.prompt.maxLength).toBe(1000);
+    expect(schema.fields.aspect_ratio.required).toBe(true);
+    expect(schema.fields.aspect_ratio.enum).toEqual([
+      "1:1",
+      "4:3",
+      "3:4",
+      "16:9",
+      "9:16",
+    ]);
+    expect(schema.fields.nsfw_checker.default).toBe(false);
+  });
+
   it("omnihuman 1.5 exposes required portrait and audio fields", () => {
     const schema = modelInputSchemas["omnihuman-1-5"];
 

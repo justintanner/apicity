@@ -40,6 +40,8 @@ import {
   QwenImageToImageRequestSchema,
   Seedream45TextToImageRequestSchema,
   Seedream45EditRequestSchema,
+  InfinitalkFromAudioRequestSchema,
+  ZImageRequestSchema,
   ElevenLabsTextToSpeechTurbo25RequestSchema,
   ElevenLabsTextToSpeechMultilingualV2RequestSchema,
   ElevenLabsTextToDialogueV3RequestSchema,
@@ -1529,6 +1531,140 @@ describe("kie Zod schema validation", () => {
       expect(
         missingUrl.error?.issues.some((i) => i.path.includes("video_url"))
       ).toBe(true);
+    });
+  });
+
+  describe("infinitalk from-audio model", () => {
+    it("should accept the documented from-audio request", () => {
+      const request = {
+        model: "infinitalk/from-audio",
+        callBackUrl: "https://your-domain.com/api/callback",
+        input: {
+          image_url:
+            "https://file.aiquickdraw.com/custom-page/akr/section-images/1757329269873ggqj2hz3.png",
+          audio_url:
+            "https://file.aiquickdraw.com/custom-page/akr/section-images/1757329255705mmqwrnri.mp3",
+          prompt: "A young woman with long dark hair talking on a podcast.",
+          resolution: "480p",
+        },
+      };
+
+      const result = InfinitalkFromAudioRequestSchema.safeParse(request);
+      expect(result.success).toBe(true);
+      expect(MediaGenerationRequestSchema.safeParse(request).success).toBe(
+        true
+      );
+      expect(CreateTaskRequestSchema.safeParse(request).success).toBe(true);
+    });
+
+    it("should require image_url, audio_url, and prompt", () => {
+      const missing = InfinitalkFromAudioRequestSchema.safeParse({
+        model: "infinitalk/from-audio",
+        input: {
+          image_url: "https://example.com/portrait.png",
+        },
+      });
+      expect(missing.success).toBe(false);
+      expect(
+        missing.error?.issues.some((i) => i.path.includes("audio_url"))
+      ).toBe(true);
+      expect(missing.error?.issues.some((i) => i.path.includes("prompt"))).toBe(
+        true
+      );
+    });
+
+    it("should accept optional resolution and seed in range", () => {
+      const result = InfinitalkFromAudioRequestSchema.safeParse({
+        model: "infinitalk/from-audio",
+        input: {
+          image_url: "https://example.com/portrait.png",
+          audio_url: "https://example.com/voice.mp3",
+          prompt: "A host speaking into a microphone",
+          resolution: "720p",
+          seed: 42000,
+        },
+      });
+      expect(result.success).toBe(true);
+
+      const outOfRange = InfinitalkFromAudioRequestSchema.safeParse({
+        model: "infinitalk/from-audio",
+        input: {
+          image_url: "https://example.com/portrait.png",
+          audio_url: "https://example.com/voice.mp3",
+          prompt: "A host speaking into a microphone",
+          seed: 1,
+        },
+      });
+      expect(outOfRange.success).toBe(false);
+      expect(
+        outOfRange.error?.issues.some((i) => i.path.includes("seed"))
+      ).toBe(true);
+    });
+  });
+
+  describe("z-image model", () => {
+    it("should accept the documented z-image request", () => {
+      const request = {
+        model: "z-image",
+        callBackUrl: "https://your-domain.com/api/callback",
+        input: {
+          prompt:
+            "Generate a photorealistic image of a cafe terrace in the Marais.",
+          aspect_ratio: "1:1",
+          nsfw_checker: true,
+        },
+      };
+
+      const result = ZImageRequestSchema.safeParse(request);
+      expect(result.success).toBe(true);
+      expect(MediaGenerationRequestSchema.safeParse(request).success).toBe(
+        true
+      );
+      expect(CreateTaskRequestSchema.safeParse(request).success).toBe(true);
+    });
+
+    it("should require prompt and aspect_ratio", () => {
+      const missingRatio = ZImageRequestSchema.safeParse({
+        model: "z-image",
+        input: {
+          prompt: "A red bicycle leaning against a brick wall",
+        },
+      });
+      expect(missingRatio.success).toBe(false);
+      expect(
+        missingRatio.error?.issues.some((i) => i.path.includes("aspect_ratio"))
+      ).toBe(true);
+
+      const missingPrompt = ZImageRequestSchema.safeParse({
+        model: "z-image",
+        input: {
+          aspect_ratio: "16:9",
+        },
+      });
+      expect(missingPrompt.success).toBe(false);
+      expect(
+        missingPrompt.error?.issues.some((i) => i.path.includes("prompt"))
+      ).toBe(true);
+    });
+
+    it("should reject invalid aspect ratios and overlong prompts", () => {
+      const badRatio = ZImageRequestSchema.safeParse({
+        model: "z-image",
+        input: {
+          prompt: "A cat on a windowsill",
+          aspect_ratio: "21:9",
+        },
+      });
+      expect(badRatio.success).toBe(false);
+
+      const longPrompt = ZImageRequestSchema.safeParse({
+        model: "z-image",
+        input: {
+          prompt: "x".repeat(1001),
+          aspect_ratio: "1:1",
+        },
+      });
+      expect(longPrompt.success).toBe(false);
     });
   });
 

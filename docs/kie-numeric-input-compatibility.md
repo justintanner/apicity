@@ -551,6 +551,7 @@ byte-for-byte identical to the registered snapshots.
 | DOC-45 | https://docs.kie.ai/market/qwen/text-to-image.md                        | `759e044e4d09bf1a9b28ccd996d135b4f66b9651766f815027c5cb626d3e9cc1` |
 | DOC-46 | https://docs.kie.ai/market/qwen/image-edit.md                           | `e7f62d6033c0e34f6aceb3b196fce59a9284075dcc019e9708ed6e31c1e828ea` |
 | DOC-47 | https://docs.kie.ai/market/qwen/image-to-image.md                       | `1c271ad205c8d34c14966b85f5b212e51921df529c8a9f5161a92c6f180e6bba` |
+| DOC-48 | https://docs.kie.ai/market/infinitalk/from-audio.md                     | `19eccc3ccf827942d6b10ebd6aa45bcb31a3e0fd83a08e4ea22be2f42c5e2dfc` |
 
 ## Numeric inventory
 
@@ -646,5 +647,6 @@ this evidence item makes no runtime contract change for the row.
 | qwen/image-to-image                       | input.seed                    | optional; integer                                                                                    | DOC-47 @ 2026-08-06 | integer                                     | absent              | none beyond current OpenAPI                 | number-only         | medium     | retain integer seed; reject strings          |
 | qwen/image-to-image                       | input.num_inference_steps     | optional; number min=2 max=250 default=30                                                            | DOC-47 @ 2026-08-06 | number min=2 max=250 default=30             | number (30)         | none beyond current OpenAPI                 | number-only         | high       | enforce bounds; default matches OpenAPI      |
 | qwen/image-to-image                       | input.guidance_scale          | optional; number min=0 max=20 default=2.5                                                            | DOC-47 @ 2026-08-06 | number min=0 max=20 default=2.5             | number (2.5)        | none beyond current OpenAPI                 | number-only         | high       | enforce bounds; default matches OpenAPI      |
+| infinitalk/from-audio                     | input.seed                    | optional; integer min=10000 max=1000000                                                              | DOC-48 @ 2026-08-06 | number                                      | absent              | none beyond current OpenAPI                 | number-only         | high       | enforce integer range; do not inject default |
 
 <!-- numeric-inventory:end -->

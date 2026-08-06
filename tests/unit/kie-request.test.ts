@@ -19,6 +19,8 @@ import type {
   QwenTextToImageRequest,
   QwenImageEditRequest,
   QwenImageToImageRequest,
+  InfinitalkFromAudioRequest,
+  ZImageRequest,
   VolcengineVideoToVideoLipSyncRequest,
 } from "../../packages/provider/kie/src/types";
 import { TEST_PAYGATE_SECRET, mintKieCreateTaskOtp } from "../harness";
@@ -691,6 +693,123 @@ describe("KIE request utilities", () => {
       await expect(
         provider.post.api.v1.jobs.createTask(
           request as unknown as TopazImageUpscaleRequest,
+          mintKieCreateTaskOtp(request)
+        )
+      ).rejects.toBeInstanceOf(KieError);
+      expect(mockFetch).not.toHaveBeenCalled();
+    });
+
+    it("should serialize Infinitalk from-audio createTask requests", async () => {
+      const secret = "test-paygate-secret";
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            code: 200,
+            msg: "success",
+            data: {
+              taskId: "task_infinitalk_1765186308151",
+            },
+          }),
+          { status: 200 }
+        )
+      );
+
+      const provider = createKie({
+        apiKey: "test-key",
+        baseURL: "https://api.kie.ai",
+        fetch: mockFetch,
+        paygate: { secret },
+      });
+      const request: InfinitalkFromAudioRequest = {
+        model: "infinitalk/from-audio",
+        callBackUrl: "https://example.com/callback",
+        input: {
+          image_url: "https://example.com/portrait.png",
+          audio_url: "https://example.com/voice.mp3",
+          prompt: "A young woman with long dark hair talking on a podcast.",
+          resolution: "480p",
+        },
+      };
+
+      const result = await provider.post.api.v1.jobs.createTask(request, {
+        otp: mintOtp(secret, {
+          dotPath: "api.v1.jobs.createTask",
+          request,
+        }),
+      });
+
+      expect(result.data?.taskId).toBe("task_infinitalk_1765186308151");
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      const [url, init] = mockFetch.mock.calls[0];
+      expect(url).toBe("https://api.kie.ai/api/v1/jobs/createTask");
+      expect(init.method).toBe("POST");
+      expect(JSON.parse(init.body as string)).toEqual(request);
+    });
+
+    it("should serialize z-image createTask requests", async () => {
+      const secret = "test-paygate-secret";
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            code: 200,
+            msg: "success",
+            data: {
+              taskId: "task_z-image_1765174270120",
+            },
+          }),
+          { status: 200 }
+        )
+      );
+
+      const provider = createKie({
+        apiKey: "test-key",
+        baseURL: "https://api.kie.ai",
+        fetch: mockFetch,
+        paygate: { secret },
+      });
+      const request: ZImageRequest = {
+        model: "z-image",
+        input: {
+          prompt: "A cafe terrace in the Marais on a spring morning",
+          aspect_ratio: "1:1",
+        },
+      };
+
+      const result = await provider.post.api.v1.jobs.createTask(request, {
+        otp: mintOtp(secret, {
+          dotPath: "api.v1.jobs.createTask",
+          request,
+        }),
+      });
+
+      expect(result.data?.taskId).toBe("task_z-image_1765174270120");
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      const [, init] = mockFetch.mock.calls[0];
+      expect(JSON.parse(init.body as string)).toEqual(request);
+    });
+
+    it("should reject invalid Infinitalk payloads before fetch", async () => {
+      const mockFetch = vi.fn().mockImplementation(() => {
+        throw new Error("createTask must not reach fetch for infinitalk");
+      });
+
+      const provider = createKie({
+        apiKey: "test-key",
+        baseURL: "https://api.kie.ai",
+        fetch: mockFetch,
+        paygate: { secret: TEST_PAYGATE_SECRET },
+      });
+      const request = {
+        model: "infinitalk/from-audio",
+        input: {
+          image_url: "https://example.com/portrait.png",
+          // missing audio_url and prompt
+        },
+      };
+
+      await expect(
+        provider.post.api.v1.jobs.createTask(
+          request as unknown as InfinitalkFromAudioRequest,
           mintKieCreateTaskOtp(request)
         )
       ).rejects.toBeInstanceOf(KieError);

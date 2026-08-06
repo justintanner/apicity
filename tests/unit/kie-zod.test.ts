@@ -1021,16 +1021,18 @@ describe("TRI-008 VeoExtendRequestSchema.model stays a closed set", () => {
 // TRI-001 KieMediaModelSchema — one escape hatch per vendor family
 // ---------------------------------------------------------------------------
 //
-// KieMediaModelSchema is kie's aggregator catalogue: 64 ids drawn from a dozen
+// KieMediaModelSchema is kie's aggregator catalogue: 66 ids drawn from a dozen
 // unrelated vendors behind one `createTask` endpoint. REQ-006 forbids opening
 // it with a single catch-all regex, so it carries one alias per vendor family
-// while four singletons, the three exact MiniMax H3 modes, the two Google TTS
-// modes, Topaz, and unversioned Qwen v1 stay enumerated with no alias at all.
+// while singletons (omnihuman, volcengine, gemini-omni, sora-watermark,
+// recraft, topaz, infinitalk, z-image), the three exact MiniMax H3 modes, the
+// two Google TTS modes, and unversioned Qwen v1 stay enumerated with no alias
+// at all.
 //
 // BR-4 needs care here that the single-family schemas above do not. A foreign
 // *catalogue* id — `happyhorse/video-edit` on the Kling family — is accepted by
 // KieMediaModelSchema, through the enum branch, and always was: the whole point
-// of the aggregator is that all 64 are valid. So cross-family leakage cannot be
+// of the aggregator is that all 66 are valid. So cross-family leakage cannot be
 // asserted with safeParse; it is asserted structurally instead, against the
 // alias patterns themselves ("partitions the catalogue" below). The per-family
 // `rejected` lists therefore carry BR-3 near-miss typos plus BR-4 ids from
@@ -1229,6 +1231,8 @@ const MEDIA_SINGLETON_MODELS = [
   "sora-watermark-remover",
   "recraft/crisp-upscale",
   "recraft/remove-background",
+  "infinitalk/from-audio",
+  "z-image",
 ] as const;
 
 const MINIMAX_H3_EXACT_ONLY_MODELS = [

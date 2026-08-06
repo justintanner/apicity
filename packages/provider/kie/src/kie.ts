@@ -72,6 +72,8 @@ import {
   GoogleGemini31FlashTtsRequestSchema,
   TopazImageUpscaleRequestSchema,
   TopazVideoUpscaleRequestSchema,
+  InfinitalkFromAudioRequestSchema,
+  ZImageRequestSchema,
   Wan27ImageToVideoRequestSchema,
   Wan27TextToVideoRequestSchema,
   Wan27RefToVideoRequestSchema,
@@ -246,6 +248,8 @@ export const CREATE_TASK_GUARDS = {
   "google/gemini-3-1-flash-tts": GoogleGemini31FlashTtsRequestSchema,
   "topaz/image-upscale": TopazImageUpscaleRequestSchema,
   "topaz/video-upscale": TopazVideoUpscaleRequestSchema,
+  "infinitalk/from-audio": InfinitalkFromAudioRequestSchema,
+  "z-image": ZImageRequestSchema,
 } as const satisfies Record<KieMediaModel, z.ZodType>;
 
 function validateCreateTaskRequest(req: MediaGenerationRequest): void {

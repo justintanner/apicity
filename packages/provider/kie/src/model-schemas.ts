@@ -2867,4 +2867,70 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
     },
   },
+
+  // - https://docs.kie.ai/market/infinitalk/from-audio
+  "infinitalk/from-audio": {
+    type: "video",
+    fields: {
+      image_url: {
+        type: "string",
+        required: true,
+        description:
+          "Portrait image URL (jpeg/png/webp after upload; max 10 MB; resized/center-cropped to aspect ratio)",
+      },
+      audio_url: {
+        type: "string",
+        required: true,
+        description:
+          "Driving audio URL (mpeg/wav/aac/mp4/ogg after upload; max 10 MB)",
+      },
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 5000,
+        description: "Text prompt guiding video generation (max 5000 chars)",
+      },
+      resolution: {
+        type: "string",
+        enum: ["480p", "720p"],
+        default: "480p",
+        description: "Output video resolution (default 480p)",
+      },
+      seed: {
+        type: "integer",
+        minimum: 10000,
+        maximum: 1000000,
+        description: "Random seed for reproducibility (10000–1000000)",
+      },
+    },
+  },
+
+  // - https://docs.kie.ai/market/z-image/z-image
+  "z-image": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 1000,
+        description: "Image generation prompt (max 1000 chars)",
+      },
+      aspect_ratio: {
+        type: "string",
+        required: true,
+        enum: ["1:1", "4:3", "3:4", "16:9", "9:16"],
+        default: "1:1",
+        description:
+          "Output aspect ratio (required by upstream; documented default 1:1)",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description:
+          "When false, content filtering is disabled (documented default false)",
+      },
+    },
+  },
 };

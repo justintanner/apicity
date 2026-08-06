@@ -806,6 +806,73 @@ describe("KIE Topaz modelInputSchemas metadata", () => {
   });
 });
 
+// Infinitalk + z-image singleton registry entries
+// ---------------------------------------------------------------------------
+
+describe("KIE singleton vendor modelInputSchemas metadata", () => {
+  const provider = createKie({ apiKey: "test-key" });
+
+  it("exposes infinitalk/from-audio video fields", () => {
+    const schema = provider.modelInputSchemas["infinitalk/from-audio"];
+    expect(schema.type).toBe("video");
+    expect(Object.keys(schema.fields).sort()).toEqual([
+      "audio_url",
+      "image_url",
+      "prompt",
+      "resolution",
+      "seed",
+    ]);
+    expect(schema.fields.image_url).toMatchObject({
+      type: "string",
+      required: true,
+    });
+    expect(schema.fields.audio_url).toMatchObject({
+      type: "string",
+      required: true,
+    });
+    expect(schema.fields.prompt).toMatchObject({
+      type: "string",
+      required: true,
+      maxLength: 5000,
+    });
+    expect(schema.fields.resolution).toMatchObject({
+      type: "string",
+      enum: ["480p", "720p"],
+      default: "480p",
+    });
+    expect(schema.fields.seed).toMatchObject({
+      type: "integer",
+      minimum: 10000,
+      maximum: 1000000,
+    });
+  });
+
+  it("exposes z-image image fields", () => {
+    const schema = provider.modelInputSchemas["z-image"];
+    expect(schema.type).toBe("image");
+    expect(Object.keys(schema.fields).sort()).toEqual([
+      "aspect_ratio",
+      "nsfw_checker",
+      "prompt",
+    ]);
+    expect(schema.fields.prompt).toMatchObject({
+      type: "string",
+      required: true,
+      maxLength: 1000,
+    });
+    expect(schema.fields.aspect_ratio).toMatchObject({
+      type: "string",
+      required: true,
+      enum: ["1:1", "4:3", "3:4", "16:9", "9:16"],
+      default: "1:1",
+    });
+    expect(schema.fields.nsfw_checker).toMatchObject({
+      type: "boolean",
+      default: false,
+    });
+  });
+});
+
 // AC-3. `callBackUrl` is a top-level envelope field on createTask, not model
 // input. It leaked into the pixverse-v6/text-to-video registry entry once and
 // was removed in review; asserting it across the whole registry rather than

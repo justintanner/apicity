@@ -3,6 +3,8 @@ import { createKie } from "@apicity/kie";
 import {
   TEST_PAYGATE_SECRET,
   mintKieCreateTaskOtp,
+  mintKieOmniOtp,
+  mintKieSunoOtp,
   mintKieVeoOtp,
 } from "../harness";
 
@@ -48,28 +50,26 @@ describe("KIE provider switching", () => {
       apiKey: "test-key",
       baseURL: "https://api.kie.ai",
       fetch: mockFetch,
+      paygate: { secret: TEST_PAYGATE_SECRET },
     });
 
+    const request = {
+      prompt: "Write a synthwave track",
+      model: "V4",
+      instrumental: true,
+      customMode: false,
+      callBackUrl: "https://example.com/cb",
+    };
+
     await provider.suno.post.api.v1.generate(
-      // @ts-expect-error — deliberately omits required callBackUrl: the test
-      // asserts the raw body is passed through to the suno namespace as-is
-      {
-        prompt: "Write a synthwave track",
-        model: "V4",
-        instrumental: true,
-        customMode: false,
-      }
+      request,
+      mintKieSunoOtp("api.v1.generate", request)
     );
 
     const [url, init] = mockFetch.mock.calls[0];
     expect(url).toBe("https://api.kie.ai/api/v1/generate");
     expect(init.method).toBe("POST");
-    expect(JSON.parse(init.body as string)).toEqual({
-      prompt: "Write a synthwave track",
-      model: "V4",
-      instrumental: true,
-      customMode: false,
-    });
+    expect(JSON.parse(init.body as string)).toEqual(request);
   });
 
   it("routes Claude requests through the claude namespace", async () => {
@@ -115,6 +115,7 @@ describe("KIE provider switching", () => {
       apiKey: "test-key",
       baseURL: "https://api.kie.ai",
       fetch: mockFetch,
+      paygate: { secret: TEST_PAYGATE_SECRET },
     });
 
     const payload = {
@@ -128,7 +129,10 @@ describe("KIE provider switching", () => {
       provider.post.api.v1.omni.audio.create.schema.safeParse(payload).success
     ).toBe(true);
 
-    const result = await provider.post.api.v1.omni.audio.create(payload);
+    const result = await provider.post.api.v1.omni.audio.create(
+      payload,
+      mintKieOmniOtp("api.v1.omni.audio.create", payload)
+    );
 
     expect(result.data?.audioId).toBe("audio-1");
     expect(result.data?.kieAudioId).toBe("audio-1");
@@ -157,6 +161,7 @@ describe("KIE provider switching", () => {
       apiKey: "test-key",
       baseURL: "https://api.kie.ai",
       fetch: mockFetch,
+      paygate: { secret: TEST_PAYGATE_SECRET },
     });
 
     const payload = {
@@ -171,7 +176,10 @@ describe("KIE provider switching", () => {
         .success
     ).toBe(true);
 
-    const result = await provider.post.api.v1.omni.character.create(payload);
+    const result = await provider.post.api.v1.omni.character.create(
+      payload,
+      mintKieOmniOtp("api.v1.omni.character.create", payload)
+    );
 
     expect(
       provider.post.api.v1.omni.character.create.responseSchema.safeParse(

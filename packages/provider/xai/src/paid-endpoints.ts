@@ -153,6 +153,100 @@ export const PAID_ENDPOINTS: readonly PaidEndpointEntry[] = [
       costNotes: "Billed per video extension based on quality",
     },
   },
+  // Operator ruling ac-y1s96b / ask ac-ua82k5: gate all seven task-creating
+  // Suno + omni routes (exact match; no wildcards).
+  {
+    key: {
+      provider: "kie",
+      method: "POST",
+      dotPath: "api.v1.generate",
+    },
+    info: {
+      reason:
+        "Suno music generation task that incurs direct marginal compute cost",
+      estimatorId: "kie-per-unit",
+      costNotes: "Billed per song generation based on model",
+    },
+  },
+  {
+    key: {
+      provider: "kie",
+      method: "POST",
+      dotPath: "api.v1.mp4.generate",
+    },
+    info: {
+      reason:
+        "Suno music-video generation task that incurs direct marginal compute cost",
+      estimatorId: "kie-per-unit",
+      costNotes: "Billed per mp4 conversion",
+    },
+  },
+  {
+    key: {
+      provider: "kie",
+      method: "POST",
+      dotPath: "api.v1.wav.generate",
+    },
+    info: {
+      reason:
+        "Suno WAV conversion task that incurs direct marginal compute cost",
+      estimatorId: "kie-per-unit",
+      costNotes: "Billed per wav conversion",
+    },
+  },
+  {
+    key: {
+      provider: "kie",
+      method: "POST",
+      dotPath: "api.v1.vocalRemoval.generate",
+    },
+    info: {
+      reason:
+        "Suno vocal-separation task that incurs direct marginal compute cost",
+      estimatorId: "kie-per-unit",
+      costNotes:
+        "Billed per separation based on type (separate_vocal/split_stem)",
+    },
+  },
+  {
+    key: {
+      provider: "kie",
+      method: "POST",
+      dotPath: "api.v1.midi.generate",
+    },
+    info: {
+      reason:
+        "Suno MIDI extraction task that incurs direct marginal compute cost",
+      estimatorId: "kie-per-unit",
+      costNotes: "Billed per midi extraction",
+    },
+  },
+  {
+    key: {
+      provider: "kie",
+      method: "POST",
+      dotPath: "api.v1.omni.audio.create",
+    },
+    info: {
+      reason:
+        "Gemini Omni audio voice-preset creation that incurs direct marginal compute cost",
+      estimatorId: "kie-per-unit",
+      costNotes: "Billed per omni audio voice create",
+    },
+  },
+  {
+    key: {
+      provider: "kie",
+      method: "POST",
+      dotPath: "api.v1.omni.character.create",
+    },
+    info: {
+      reason:
+        "Gemini Omni character creation that incurs direct marginal compute cost",
+      estimatorId: "kie-per-unit",
+      costNotes: "Billed per omni character create",
+    },
+  },
   {
     key: {
       provider: "xai",

@@ -1052,6 +1052,39 @@ export function mintKieRunwayOtp(
   };
 }
 
+export function mintKieSunoOtp(
+  dotPath:
+    | "api.v1.generate"
+    | "api.v1.mp4.generate"
+    | "api.v1.wav.generate"
+    | "api.v1.vocalRemoval.generate"
+    | "api.v1.midi.generate",
+  request: Record<string, unknown>
+): { otp: string } {
+  return {
+    otp: mintOtp(TEST_PAYGATE_SECRET, {
+      provider: "kie",
+      method: "POST",
+      dotPath,
+      request,
+    }),
+  };
+}
+
+export function mintKieOmniOtp(
+  dotPath: "api.v1.omni.audio.create" | "api.v1.omni.character.create",
+  request: Record<string, unknown>
+): { otp: string } {
+  return {
+    otp: mintOtp(TEST_PAYGATE_SECRET, {
+      provider: "kie",
+      method: "POST",
+      dotPath,
+      request,
+    }),
+  };
+}
+
 export function mintXaiOtp(
   dotPath: string,
   request: Record<string, unknown>

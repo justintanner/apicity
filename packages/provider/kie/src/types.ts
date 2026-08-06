@@ -559,13 +559,17 @@ interface KieFileBase64UploadMethod {
 }
 
 interface KieGeminiOmniAudioCreateMethod {
-  (req: GeminiOmniAudioCreateRequest): Promise<GeminiOmniAudioCreateResponse>;
+  (
+    req: GeminiOmniAudioCreateRequest,
+    approval?: KieApproval
+  ): Promise<GeminiOmniAudioCreateResponse>;
   schema: ApicitySchema<GeminiOmniAudioCreateRequest>;
 }
 
 interface KieGeminiOmniCharacterCreateMethod {
   (
-    req: GeminiOmniCharacterCreateRequest
+    req: GeminiOmniCharacterCreateRequest,
+    approval?: KieApproval
   ): Promise<GeminiOmniCharacterCreateResponse>;
   schema: ApicitySchema<GeminiOmniCharacterCreateRequest>;
   responseSchema: ApicitySchema<GeminiOmniCharacterCreateResponse>;

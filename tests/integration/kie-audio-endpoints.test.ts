@@ -5,7 +5,11 @@ import {
   GeminiOmniAudioCreateRequestSchema,
   GeminiOmniAudioVoiceIds,
 } from "@apicity/kie";
-import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
+import {
+  mintKieCreateTaskOtp,
+  mintKieOmniOtp,
+  TEST_PAYGATE_SECRET,
+} from "../harness";
 
 describe("kie audio endpoints integration", () => {
   let ctx: PollyContext;
@@ -55,15 +59,21 @@ describe("kie audio endpoints integration", () => {
 
     const provider = createKie({
       apiKey: process.env.KIE_API_KEY ?? "kie-test-key",
+      paygate: { secret: TEST_PAYGATE_SECRET },
     });
 
-    const result = await provider.post.api.v1.omni.audio.create({
-      audio_id: "achernar",
+    const request = {
+      audio_id: "achernar" as const,
       name: "Apicity HAR Test Narrator",
       voice_description:
         "A calm, clear, friendly voice for a short API smoke test.",
       example_dialogue: "Hello from the Apicity Kie audio HAR test.",
-    });
+    };
+
+    const result = await provider.post.api.v1.omni.audio.create(
+      request,
+      mintKieOmniOtp("api.v1.omni.audio.create", request)
+    );
 
     expect(result).toBeDefined();
     expect(result.code).toBe(200);

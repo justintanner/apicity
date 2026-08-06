@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
 import { createKie } from "@apicity/kie";
+import { mintKieSunoOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 describe("kie suno generate (submit)", () => {
   let ctx: PollyContext;
@@ -16,16 +17,22 @@ describe("kie suno generate (submit)", () => {
   it("submits a music generation task and returns a taskId", async () => {
     const provider = createKie({
       apiKey: process.env.KIE_API_KEY ?? "kie-test-key",
+      paygate: { secret: TEST_PAYGATE_SECRET },
     });
 
-    const result = await provider.suno.post.api.v1.generate({
+    const request = {
       prompt:
         "A short upbeat lo-fi loop, gentle piano, no vocals, summer afternoon",
-      model: "V4_5",
+      model: "V4_5" as const,
       instrumental: true,
       customMode: false,
       callBackUrl: "https://example.com/cb",
-    });
+    };
+
+    const result = await provider.suno.post.api.v1.generate(
+      request,
+      mintKieSunoOtp("api.v1.generate", request)
+    );
 
     expect([200, 422, 451]).toContain(result.code);
     if (result.code === 200) {

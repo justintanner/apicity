@@ -547,7 +547,14 @@ export function createKie(opts: KieOptions): KieProvider {
           createVeoProvider(baseURL, opts.apiKey, doFetch, timeout),
           { config: paygate }
         ),
-        suno: createSunoProvider(baseURL, opts.apiKey, doFetch, timeout),
+        // Nested gate so Suno task-creating leaves (api.v1.generate, wav,
+        // mp4, vocalRemoval, midi) match PAID_ENDPOINTS exact keys. Free
+        // record-info / style helpers stay unlisted and unblocked.
+        suno: withPaidGate(
+          "kie",
+          createSunoProvider(baseURL, opts.apiKey, doFetch, timeout),
+          { config: paygate }
+        ),
         chat: createChatProvider(baseURL, opts.apiKey, doFetch, timeout),
         ...createClaudeProvider(baseURL, opts.apiKey, doFetch, timeout),
         ...createGeminiProvider(baseURL, opts.apiKey, doFetch, timeout),

@@ -125,16 +125,39 @@ describe("KIE per-model cost gates (REQ-005 / AC-5)", () => {
     });
   });
 
-  describe("pay-gate coverage decision (option b)", () => {
+  describe("pay-gate coverage decision (ac-y1s96b / ask ac-ua82k5)", () => {
     it("keeps the umbrella createTask OTP-gated", () => {
       expect(isPaidEndpoint("kie", "POST", UMBRELLA_CREATE_TASK)).toBe(true);
     });
 
-    it("intentionally does NOT OTP-gate the six dedicated family endpoints", () => {
-      // Documented decision: these are cost-gated (prohibitive) but not per-unit
-      // OTP-paid. Adding them to PAID_ENDPOINTS would require an OTP for every
-      // call and break their existing un-OTP integration tests.
-      for (const dotPath of ALL_FAMILY_ENDPOINTS) {
+    // Operator ruling: these seven task-creating Suno/omni routes are OTP-paid.
+    const OTP_PAID_FAMILY_ENDPOINTS = [
+      "api.v1.generate",
+      "api.v1.omni.audio.create",
+      "api.v1.omni.character.create",
+    ] as const;
+
+    it("OTP-gates the operator-approved Suno generate and Omni create routes", () => {
+      for (const dotPath of OTP_PAID_FAMILY_ENDPOINTS) {
+        expect(isPaidEndpoint("kie", "POST", dotPath)).toBe(true);
+      }
+      for (const extra of [
+        "api.v1.mp4.generate",
+        "api.v1.wav.generate",
+        "api.v1.vocalRemoval.generate",
+        "api.v1.midi.generate",
+      ] as const) {
+        expect(isPaidEndpoint("kie", "POST", extra)).toBe(true);
+      }
+    });
+
+    it("leaves non-task-creating family siblings free of OTP", () => {
+      // Sibling generate helpers remain cost-gated prohibitive but not OTP-paid.
+      const freeSiblings = ALL_FAMILY_ENDPOINTS.filter(
+        (dotPath) =>
+          !(OTP_PAID_FAMILY_ENDPOINTS as readonly string[]).includes(dotPath)
+      );
+      for (const dotPath of freeSiblings) {
         expect(isPaidEndpoint("kie", "POST", dotPath)).toBe(false);
       }
     });
@@ -167,12 +190,11 @@ describe("KIE per-model cost gates (REQ-005 / AC-5)", () => {
         true
       );
 
-      // The six family endpoints agree (not OTP-paid) in both views.
+      // Family endpoints agree between cost package and mcp-server view.
       for (const dotPath of ALL_FAMILY_ENDPOINTS) {
         expect(helpers.isPaidEndpoint("kie", "POST", dotPath)).toBe(
           isPaidEndpoint("kie", "POST", dotPath)
         );
-        expect(helpers.isPaidEndpoint("kie", "POST", dotPath)).toBe(false);
       }
     });
   });

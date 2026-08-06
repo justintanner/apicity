@@ -731,6 +731,7 @@ kie	api.v1.veo.generate	POST	prohibitive	Media-generation provider (video/image/
 kie	api.v1.veo.get1080pVideo	GET	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
 kie	api.v1.veo.recordInfo	GET	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
 kie	api.v1.vocalRemoval.generate	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.v1.vocalRemoval.recordInfo	GET	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
 kie	api.v1.wav.generate	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
 kie	api.v1.wav.recordInfo	GET	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
 kie	claude.v1.messages	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1

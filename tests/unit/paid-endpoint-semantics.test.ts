@@ -77,6 +77,21 @@ describe("paid endpoint semantics — regression", () => {
     });
   });
 
+  describe("Suno + omni task-creating routes are paid (ac-y1s96b)", () => {
+    it.each([
+      "api.v1.generate",
+      "api.v1.mp4.generate",
+      "api.v1.wav.generate",
+      "api.v1.vocalRemoval.generate",
+      "api.v1.midi.generate",
+      "api.v1.omni.audio.create",
+      "api.v1.omni.character.create",
+    ] as const)("isPaidEndpoint returns true for %s", (dotPath) => {
+      expect(isPaidEndpoint("kie", "POST", dotPath)).toBe(true);
+      expect(lookupPaidEndpoint("kie", "POST", dotPath)).toBeDefined();
+    });
+  });
+
   describe("no bypass: paid endpoints fail closed without a pay gate", () => {
     it("createTask throws paygate-not-configured when constructed without paygate", async () => {
       const provider = createKie({

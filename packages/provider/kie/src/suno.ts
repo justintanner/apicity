@@ -494,7 +494,10 @@ interface SunoSubmitResponse {
 }
 
 interface SunoGenerateCallable {
-  (req: SunoGenerateRequest): Promise<SunoSubmitResponse>;
+  (
+    req: SunoGenerateRequest,
+    approval?: import("./paygate").PayGateApproval
+  ): Promise<SunoSubmitResponse>;
   schema: ApicitySchema<SunoGenerateRequest>;
   extend: SunoExtendMethod;
   uploadCover: SunoUploadCoverMethod;
@@ -512,7 +515,10 @@ interface SunoExtendMethod {
 }
 
 interface SunoWavMethod {
-  (req: SunoWavRequest): Promise<SunoSubmitResponse>;
+  (
+    req: SunoWavRequest,
+    approval?: import("./paygate").PayGateApproval
+  ): Promise<SunoSubmitResponse>;
   schema: ApicitySchema<SunoWavRequest>;
 }
 
@@ -523,7 +529,10 @@ interface SunoWavRecordInfoMethod {
 }
 
 interface SunoVocalRemovalMethod {
-  (req: SunoVocalRemovalRequest): Promise<SunoSubmitResponse>;
+  (
+    req: SunoVocalRemovalRequest,
+    approval?: import("./paygate").PayGateApproval
+  ): Promise<SunoSubmitResponse>;
   schema: ApicitySchema<SunoVocalRemovalRequest>;
 }
 
@@ -534,7 +543,10 @@ interface SunoVocalRemovalRecordInfoMethod {
 }
 
 interface SunoMp4Method {
-  (req: SunoMp4Request): Promise<SunoSubmitResponse>;
+  (
+    req: SunoMp4Request,
+    approval?: import("./paygate").PayGateApproval
+  ): Promise<SunoSubmitResponse>;
   schema: ApicitySchema<SunoMp4Request>;
 }
 
@@ -571,7 +583,10 @@ interface SunoUploadExtendMethod {
 }
 
 interface SunoMidiMethod {
-  (req: SunoMidiRequest): Promise<SunoSubmitResponse>;
+  (
+    req: SunoMidiRequest,
+    approval?: import("./paygate").PayGateApproval
+  ): Promise<SunoSubmitResponse>;
   schema: ApicitySchema<SunoMidiRequest>;
 }
 

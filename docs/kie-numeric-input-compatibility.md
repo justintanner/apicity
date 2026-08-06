@@ -1,8 +1,9 @@
 # KIE numeric input compatibility audit
 
 The base sweep was retrieved and observed on 2026-07-31; the MiniMax H3 rows
-use the approved upstream snapshots retrieved on 2026-08-04. This audit covers
-numeric-valued input properties reachable from every current
+use the approved upstream snapshots retrieved on 2026-08-04; the Google Gemini
+TTS rows use the approved upstream snapshots retrieved on 2026-08-06. This
+audit covers numeric-valued input properties reachable from every current
 `KIE_MEDIA_MODELS` entry through its `CREATE_TASK_GUARDS` schema. It is an
 evidence and decision record, not a claim that fields with similar names share
 an upstream contract.
@@ -17,15 +18,15 @@ Rows are deduplicated by model and input path. Unsupported schema branches,
 duplicate rows, missing rows, extra rows, and stale local-contract cells all
 fail with the affected model and path.
 
-At this revision the derived inventory has 69 unique paths across 40 of the 55
-catalogue models: 49 integer branches, 13 general-number branches, one numeric
+At this revision the derived inventory has 71 unique paths across 42 of the 57
+catalogue models: 49 integer branches, 15 general-number branches, one numeric
 literal enum, five numeric-string enums, and one numeric-string pattern. These
 are measured facts, not permanent expected counts; the model/path set is
 derived on every test run.
 
 For upstream evidence, the sweep resolved English Markdown OpenAPI exports
 from `llms.txt` before considering alternate pages. The current index matched
-53 of 55 catalogue ids. It has no model-specific export for
+55 of 57 catalogue ids. It has no model-specific export for
 `elevenlabs/sound-effect-v2` or `sora-watermark-remover`; only the former has a
 numeric inventory row. A missing page, an absent example, or a conflict between
 a declaration and example remains explicit rather than being treated as proof
@@ -543,6 +544,8 @@ byte-for-byte identical to the registered snapshots.
 | DOC-38 | https://docs.kie.ai/market/minimax-h3/text-to-video.md                  | `c607d9ad9831132ba5993c2ab2bb586a64ade36f2e0cc14d7705ca5839e20239` |
 | DOC-39 | https://docs.kie.ai/market/minimax-h3/image-to-video.md                 | `03c053ae3a71bae492905348da8d8da6b562568d6a564171b6e1785a41497c5b` |
 | DOC-40 | https://docs.kie.ai/market/minimax-h3/reference-to-video.md             | `5af016278f46ab9fa0ed7a99daf36cde3d7dcbb7a0de6cbf5db5e55be67d5e10` |
+| DOC-41 | https://docs.kie.ai/google/gemini-2-5-pro-tts.md                        | `b9aaabce44a2ef7adc1fe349df4ee6f92b354b441f5e57c4877ab5d0324570ac` |
+| DOC-42 | https://docs.kie.ai/market/google/gemini-3-1-flash-tts.md               | `b54d49a925d3877a272ca276bf7d499acae01b673e0e168c7b1adde817e49b08` |
 
 ## Numeric inventory
 
@@ -623,5 +626,7 @@ this evidence item makes no runtime contract change for the row.
 | minimax-h3/text-to-video                  | input.duration                | required; integer min=4 max=15                                                                       | DOC-38 @ 2026-08-04 | integer min=4 max=15 default=6              | number (6)          | none beyond current OpenAPI                 | number-only         | high       | enforce integer range; do not inject default |
 | minimax-h3/image-to-video                 | input.duration                | required; integer min=4 max=15                                                                       | DOC-39 @ 2026-08-04 | integer min=4 max=15 default=6              | number (6)          | none beyond current OpenAPI                 | number-only         | high       | enforce integer range; do not inject default |
 | minimax-h3/reference-to-video             | input.duration                | required; integer min=4 max=15                                                                       | DOC-40 @ 2026-08-04 | integer min=4 max=15 default=6              | number (6)          | none beyond current OpenAPI                 | number-only         | high       | enforce integer range; do not inject default |
+| google/gemini-2-5-pro-tts                 | input.temperature             | optional; number min=0 max=2                                                                         | DOC-41 @ 2026-08-06 | number min=0 max=2 default=1                | number (1)          | none beyond current OpenAPI                 | number-only         | high       | enforce bounds; do not inject default        |
+| google/gemini-3-1-flash-tts               | input.temperature             | optional; number min=0 max=2                                                                         | DOC-42 @ 2026-08-06 | number min=0 max=2 default=1                | number (1)          | none beyond current OpenAPI                 | number-only         | high       | enforce bounds; do not inject default        |
 
 <!-- numeric-inventory:end -->

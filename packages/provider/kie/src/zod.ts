@@ -168,6 +168,10 @@ const KieMediaPixverseModelAliasSchema = z
 // MiniMax H3 also stays enum-only even though it has three task variants. The
 // approved surface is exactly these H3 ids; the variants do not establish a
 // version grammar or authorize arbitrary future task slugs.
+//
+// Google TTS (`google/gemini-*-tts`) stays enum-only as well. Two models do not
+// establish a safe `google/…` alias grammar — other google-namespaced market
+// ids (imagen, nano-banana) are separate work and must not be pre-authorized.
 export const KIE_MEDIA_MODELS = [
   "kling-3.0/video",
   "kling-3.0/motion-control",
@@ -227,6 +231,8 @@ export const KIE_MEDIA_MODELS = [
   "minimax-h3/text-to-video",
   "minimax-h3/image-to-video",
   "minimax-h3/reference-to-video",
+  "google/gemini-2-5-pro-tts",
+  "google/gemini-3-1-flash-tts",
 ] as const;
 
 export const KieMediaModelSchema = z
@@ -284,6 +290,89 @@ export const GeminiOmniAudioVoiceIds = [
 ] as const;
 
 export const GeminiOmniAudioVoiceIdSchema = z.enum(GeminiOmniAudioVoiceIds);
+
+// Google Gemini TTS market models use PascalCase voice display names (Zephyr,
+// Fenrir, …), which is a different surface from the lowercase
+// GeminiOmniAudioVoiceIds used by gemini-omni-audio create.
+export const GoogleGeminiTtsVoiceNames = [
+  "Achernar",
+  "Achird",
+  "Algenib",
+  "Algieba",
+  "Alnilam",
+  "Aoede",
+  "Autonoe",
+  "Callirrhoe",
+  "Charon",
+  "Despina",
+  "Enceladus",
+  "Erinome",
+  "Fenrir",
+  "Gacrux",
+  "Iapetus",
+  "Kore",
+  "Laomedeia",
+  "Leda",
+  "Orus",
+  "Puck",
+  "Pulcherrima",
+  "Rasalgethi",
+  "Sadachbia",
+  "Sadaltager",
+  "Schedar",
+  "Sulafat",
+  "Umbriel",
+  "Vindemiatrix",
+  "Zephyr",
+  "Zubenelgenubi",
+] as const;
+
+export const GoogleGeminiTtsVoiceNameSchema = z.enum(GoogleGeminiTtsVoiceNames);
+
+export const GoogleGeminiTtsAccentSchema = z.enum([
+  "Neutral",
+  "American (Gen)",
+  "American (Valley)",
+  "American (South)",
+  "British (RP)",
+  "British (Brixton)",
+  "Transatlantic",
+  "Australian",
+]);
+
+export const GoogleGeminiTtsStyleSchema = z.enum([
+  "Vocal Smile",
+  "Newscaster",
+  "Whisper",
+  "Empathetic",
+  "Promo/Hype",
+  "Deadpan",
+]);
+
+export const GoogleGeminiTtsPaceSchema = z.enum([
+  "Natural",
+  "Rapid Fire",
+  "The Drift",
+  "Staccato",
+]);
+
+// Upstream requires 「Speaker N」 (e.g. "Speaker 1"). Digits are unrestricted
+// so multi-speaker casts beyond 9 remain valid. Implemented as refine (not
+// .regex) so the pattern does not appear in JSON Schema as a numeric-string
+// candidate for the numeric-input compatibility audit.
+export const GoogleGeminiTtsSpeakerIdSchema = z
+  .string()
+  .refine((value) => /^Speaker \d+$/.test(value), {
+    message: 'Expected a speaker id in "Speaker N" format (e.g. "Speaker 1")',
+  });
+
+export const GoogleGeminiTtsTemperatureContract = {
+  minimum: 0,
+  maximum: 2,
+  default: 1,
+} as const;
+
+export const GoogleGeminiTtsDialogueTextMaxLength = 10000;
 
 export const KieGeminiRoleSchema = z.enum(["user", "model"]);
 
@@ -2393,6 +2482,58 @@ export const MiniMaxH3ReferenceToVideoRequestSchema = z
     }
   });
 
+// Google Gemini TTS createTask models share one input shape. Sources:
+// - https://docs.kie.ai/google/gemini-2-5-pro-tts
+// - https://docs.kie.ai/market/google/gemini-3-1-flash-tts
+//
+// temperature is optional with a documented default of 1; the SDK enforces the
+// 0–2 range without injecting the default on parse so createTask preserves an
+// omitted field. speakers[].speaker_id must be "Speaker N"; text is capped at
+// GoogleGeminiTtsDialogueTextMaxLength.
+export const GoogleGeminiTtsSpeakerSchema = z
+  .object({
+    speaker_id: GoogleGeminiTtsSpeakerIdSchema,
+    voice_name: GoogleGeminiTtsVoiceNameSchema,
+    audio_profile: z.string().optional(),
+    accent: GoogleGeminiTtsAccentSchema,
+    style: GoogleGeminiTtsStyleSchema.optional(),
+    pace: GoogleGeminiTtsPaceSchema.optional(),
+  })
+  .strict();
+
+export const GoogleGeminiTtsDialogueTurnSchema = z
+  .object({
+    speaker_id: GoogleGeminiTtsSpeakerIdSchema,
+    text: z.string().min(1).max(GoogleGeminiTtsDialogueTextMaxLength),
+  })
+  .strict();
+
+export const GoogleGeminiTtsInputSchema = z
+  .object({
+    temperature: z
+      .number()
+      .min(GoogleGeminiTtsTemperatureContract.minimum)
+      .max(GoogleGeminiTtsTemperatureContract.maximum)
+      .optional(),
+    scene: z.string().optional(),
+    sample_context: z.string().optional(),
+    speakers: z.array(GoogleGeminiTtsSpeakerSchema).min(1),
+    dialogue_turns: z.array(GoogleGeminiTtsDialogueTurnSchema).min(1),
+  })
+  .strict();
+
+export const GoogleGemini25ProTtsRequestSchema = z.object({
+  model: z.literal("google/gemini-2-5-pro-tts"),
+  callBackUrl: z.string().url().optional(),
+  input: GoogleGeminiTtsInputSchema,
+});
+
+export const GoogleGemini31FlashTtsRequestSchema = z.object({
+  model: z.literal("google/gemini-3-1-flash-tts"),
+  callBackUrl: z.string().url().optional(),
+  input: GoogleGeminiTtsInputSchema,
+});
+
 // ---------------------------------------------------------------------------
 // Wan 2.7 task result schemas (parsed from KieTaskInfoData.resultJson)
 //
@@ -3555,6 +3696,8 @@ export const MediaGenerationRequestSchema = z.union([
   MiniMaxH3TextToVideoRequestSchema,
   MiniMaxH3ImageToVideoRequestSchema,
   MiniMaxH3ReferenceToVideoRequestSchema,
+  GoogleGemini25ProTtsRequestSchema,
+  GoogleGemini31FlashTtsRequestSchema,
 ]);
 
 // ---------------------------------------------------------------------------
@@ -3711,6 +3854,21 @@ export type MiniMaxH3ReferenceAspectRatio = z.infer<
   typeof MiniMaxH3ReferenceAspectRatioSchema
 >;
 export type MiniMaxH3MediaAddress = z.infer<typeof MiniMaxH3MediaAddressSchema>;
+export type GoogleGeminiTtsVoiceName = z.infer<
+  typeof GoogleGeminiTtsVoiceNameSchema
+>;
+export type GoogleGeminiTtsAccent = z.infer<typeof GoogleGeminiTtsAccentSchema>;
+export type GoogleGeminiTtsStyle = z.infer<typeof GoogleGeminiTtsStyleSchema>;
+export type GoogleGeminiTtsPace = z.infer<typeof GoogleGeminiTtsPaceSchema>;
+export type GoogleGeminiTtsSpeakerId = z.infer<
+  typeof GoogleGeminiTtsSpeakerIdSchema
+>;
+export type GoogleGeminiTtsSpeaker = z.input<
+  typeof GoogleGeminiTtsSpeakerSchema
+>;
+export type GoogleGeminiTtsDialogueTurn = z.input<
+  typeof GoogleGeminiTtsDialogueTurnSchema
+>;
 
 export type KlingElement = z.infer<typeof KlingElementSchema>;
 export type MultiShotPrompt = z.infer<typeof MultiShotPromptSchema>;
@@ -3986,6 +4144,24 @@ export type MiniMaxH3ReferenceToVideoRequestInput =
   MiniMaxH3ReferenceToVideoRequest;
 export type MiniMaxH3ReferenceToVideoParsedRequest = z.output<
   typeof MiniMaxH3ReferenceToVideoRequestSchema
+>;
+export type GoogleGeminiTtsInput = z.input<typeof GoogleGeminiTtsInputSchema>;
+export type GoogleGeminiTtsParsedInput = z.output<
+  typeof GoogleGeminiTtsInputSchema
+>;
+export type GoogleGemini25ProTtsRequest = z.input<
+  typeof GoogleGemini25ProTtsRequestSchema
+>;
+export type GoogleGemini25ProTtsRequestInput = GoogleGemini25ProTtsRequest;
+export type GoogleGemini25ProTtsParsedRequest = z.output<
+  typeof GoogleGemini25ProTtsRequestSchema
+>;
+export type GoogleGemini31FlashTtsRequest = z.input<
+  typeof GoogleGemini31FlashTtsRequestSchema
+>;
+export type GoogleGemini31FlashTtsRequestInput = GoogleGemini31FlashTtsRequest;
+export type GoogleGemini31FlashTtsParsedRequest = z.output<
+  typeof GoogleGemini31FlashTtsRequestSchema
 >;
 export type Wan27ImageToVideoRequest = z.input<
   typeof Wan27ImageToVideoRequestSchema

@@ -2,6 +2,12 @@ import type { KieMediaModel, ModelInputSchema } from "./types";
 import {
   ElevenLabsTextToDialogueStabilityContract,
   ElevenLabsTextToSpeechNumericContract,
+  GoogleGeminiTtsAccentSchema,
+  GoogleGeminiTtsDialogueTextMaxLength,
+  GoogleGeminiTtsPaceSchema,
+  GoogleGeminiTtsStyleSchema,
+  GoogleGeminiTtsTemperatureContract,
+  GoogleGeminiTtsVoiceNameSchema,
   HAPPYHORSE_DURATION_MAX_SECONDS,
   HAPPYHORSE_DURATION_MIN_SECONDS,
   MiniMaxH3FixedAspectRatioSchema,
@@ -98,6 +104,96 @@ const miniMaxH3ResolutionField = {
 const miniMaxH3MediaAddressItem = {
   type: "string",
   description: "HTTP, HTTPS, or OSS media URL",
+} as const;
+
+const googleGeminiTtsTemperatureField = {
+  type: "number",
+  minimum: GoogleGeminiTtsTemperatureContract.minimum,
+  maximum: GoogleGeminiTtsTemperatureContract.maximum,
+  default: GoogleGeminiTtsTemperatureContract.default,
+  description: `Sampling temperature ${GoogleGeminiTtsTemperatureContract.minimum}-${GoogleGeminiTtsTemperatureContract.maximum}; documented upstream default ${GoogleGeminiTtsTemperatureContract.default}, not synthesized locally when omitted`,
+} as const;
+
+const googleGeminiTtsSpeakerItem = {
+  type: "object",
+  properties: {
+    speaker_id: {
+      type: "string",
+      required: true,
+      description:
+        'Speaker identifier in "Speaker N" format (e.g. "Speaker 1")',
+    },
+    voice_name: {
+      type: "string",
+      required: true,
+      enum: GoogleGeminiTtsVoiceNameSchema.options,
+      description: "PascalCase Gemini TTS voice name",
+    },
+    audio_profile: {
+      type: "string",
+      description: "Free-text audio profile / persona description",
+    },
+    accent: {
+      type: "string",
+      required: true,
+      enum: GoogleGeminiTtsAccentSchema.options,
+      description: "Speaker accent",
+    },
+    style: {
+      type: "string",
+      enum: GoogleGeminiTtsStyleSchema.options,
+      description: "Emotional delivery style",
+    },
+    pace: {
+      type: "string",
+      enum: GoogleGeminiTtsPaceSchema.options,
+      description: "Speaking pace",
+    },
+  },
+} as const;
+
+const googleGeminiTtsDialogueTurnItem = {
+  type: "object",
+  properties: {
+    speaker_id: {
+      type: "string",
+      required: true,
+      description: 'Matching speaker_id from speakers (e.g. "Speaker 1")',
+    },
+    text: {
+      type: "string",
+      required: true,
+      minLength: 1,
+      maxLength: GoogleGeminiTtsDialogueTextMaxLength,
+      description: `Spoken text, optionally with tone tags (max ${GoogleGeminiTtsDialogueTextMaxLength} characters)`,
+    },
+  },
+} as const;
+
+const googleGeminiTtsFields = {
+  temperature: googleGeminiTtsTemperatureField,
+  scene: {
+    type: "string",
+    description: "Scene / ambience description for the dialogue",
+  },
+  sample_context: {
+    type: "string",
+    description: "Overall tone or style context for the dialogue",
+  },
+  speakers: {
+    type: "array",
+    required: true,
+    minItems: 1,
+    description: "Speaker configurations; speaker_id values must be unique",
+    items: googleGeminiTtsSpeakerItem,
+  },
+  dialogue_turns: {
+    type: "array",
+    required: true,
+    minItems: 1,
+    description: "Dialogue turns in sequential playback order",
+    items: googleGeminiTtsDialogueTurnItem,
+  },
 } as const;
 
 export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
@@ -2498,5 +2594,18 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       duration: miniMaxH3DurationField,
       resolution: miniMaxH3ResolutionField,
     },
+  },
+
+  // Sources:
+  // - https://docs.kie.ai/google/gemini-2-5-pro-tts
+  // - https://docs.kie.ai/market/google/gemini-3-1-flash-tts
+  "google/gemini-2-5-pro-tts": {
+    type: "audio",
+    fields: googleGeminiTtsFields,
+  },
+
+  "google/gemini-3-1-flash-tts": {
+    type: "audio",
+    fields: googleGeminiTtsFields,
   },
 };

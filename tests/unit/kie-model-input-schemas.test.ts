@@ -539,6 +539,112 @@ describe("KIE MiniMax H3 modelInputSchemas metadata (REQ-007)", () => {
   });
 });
 
+// ---------------------------------------------------------------------------
+// Google Gemini TTS registry entries
+// ---------------------------------------------------------------------------
+
+describe("KIE Google Gemini TTS modelInputSchemas metadata", () => {
+  const provider = createKie({ apiKey: "test-key" });
+  const MODELS = [
+    "google/gemini-2-5-pro-tts",
+    "google/gemini-3-1-flash-tts",
+  ] as const;
+  const EXPECTED_FIELDS = [
+    "temperature",
+    "scene",
+    "sample_context",
+    "speakers",
+    "dialogue_turns",
+  ] as const;
+
+  it("exposes exactly two audio models with shared input fields", () => {
+    const googleTtsModels = Object.keys(provider.modelInputSchemas).filter(
+      (model) => model.startsWith("google/gemini-") && model.endsWith("-tts")
+    );
+    expect(googleTtsModels).toEqual([...MODELS]);
+
+    for (const model of MODELS) {
+      const entry = provider.modelInputSchemas[model];
+      expect(entry.type).toBe("audio");
+      expect(Object.keys(entry.fields)).toEqual([...EXPECTED_FIELDS]);
+      expect(entry.fields.callBackUrl).toBeUndefined();
+    }
+  });
+
+  it("documents temperature bounds with a metadata-only default", () => {
+    for (const model of MODELS) {
+      const temperature = provider.modelInputSchemas[model].fields.temperature;
+      expect(temperature).toMatchObject({
+        type: "number",
+        minimum: 0,
+        maximum: 2,
+        default: 1,
+      });
+      expect(temperature.required).toBeUndefined();
+      expect(temperature.description).toContain("not synthesized locally");
+    }
+  });
+
+  it("documents required speakers and dialogue_turns object arrays", () => {
+    for (const model of MODELS) {
+      const fields = provider.modelInputSchemas[model].fields;
+
+      expect(fields.speakers).toMatchObject({
+        type: "array",
+        required: true,
+        minItems: 1,
+      });
+      expect(fields.speakers.items?.type).toBe("object");
+      expect(fields.speakers.items?.properties?.speaker_id).toMatchObject({
+        type: "string",
+        required: true,
+      });
+      expect(fields.speakers.items?.properties?.voice_name).toMatchObject({
+        type: "string",
+        required: true,
+      });
+      expect(fields.speakers.items?.properties?.voice_name.enum).toContain(
+        "Zephyr"
+      );
+      expect(fields.speakers.items?.properties?.accent).toMatchObject({
+        type: "string",
+        required: true,
+      });
+      expect(fields.speakers.items?.properties?.accent.enum).toContain(
+        "British (RP)"
+      );
+      expect(fields.speakers.items?.properties?.style?.enum).toContain(
+        "Deadpan"
+      );
+      expect(fields.speakers.items?.properties?.pace?.enum).toContain(
+        "Staccato"
+      );
+
+      expect(fields.dialogue_turns).toMatchObject({
+        type: "array",
+        required: true,
+        minItems: 1,
+      });
+      expect(fields.dialogue_turns.items?.properties?.text).toMatchObject({
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 10000,
+      });
+    }
+  });
+
+  it("documents optional scene and sample_context strings", () => {
+    for (const model of MODELS) {
+      const fields = provider.modelInputSchemas[model].fields;
+      expect(fields.scene).toMatchObject({ type: "string" });
+      expect(fields.scene.required).toBeUndefined();
+      expect(fields.sample_context).toMatchObject({ type: "string" });
+      expect(fields.sample_context.required).toBeUndefined();
+    }
+  });
+});
+
 // AC-3. `callBackUrl` is a top-level envelope field on createTask, not model
 // input. It leaked into the pixverse-v6/text-to-video registry entry once and
 // was removed in review; asserting it across the whole registry rather than

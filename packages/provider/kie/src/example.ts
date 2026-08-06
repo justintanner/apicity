@@ -458,6 +458,15 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v1.suno.cover.generate": {
+    "source": "kie/suno/cover-generate-bogus-task",
+    "payload": {
+      "taskId": "apicity-test-bogus-cover-task-id",
+      "callBackUrl": "https://example.com/cb"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v1.veo.generate": {
     "source": "kie/veo/aspect-ratio-probe",
     "payload": {

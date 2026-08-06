@@ -1033,6 +1033,7 @@ kie	api.v1.runway.recordDetail	GET	https://api.kie.ai/api/v1/runway/record-detai
 kie	api.v1.aleph.generate	POST	https://api.kie.ai/api/v1/aleph/generate	https://docs.kie.ai/runway-api/generate-aleph-video
 kie	api.v1.aleph.recordInfo	GET	https://api.kie.ai/api/v1/aleph/record-info?taskId={taskId}	https://docs.kie.ai/runway-api/get-aleph-video-details
 kie	api.v1.style.generate	POST	https://api.kie.ai/api/v1/style/generate
+kie	api.v1.suno.cover.generate	POST	https://api.kie.ai/api/v1/suno/cover/generate	https://docs.kie.ai/suno-api/cover-suno
 kie	api.v1.suno.cover.recordInfo	GET	https://api.kie.ai/api/v1/suno/cover/record-info?taskId={taskId}	https://docs.kie.ai/suno-api/get-cover-suno-details
 kie	api.v1.veo.extend	POST	https://api.kie.ai/api/v1/veo/extend	https://docs.kie.ai/veo3-api/extend-video
 kie	api.v1.veo.generate	POST	https://api.kie.ai/api/v1/veo/generate	https://docs.kie.ai/veo3-api/generate-veo-3-video

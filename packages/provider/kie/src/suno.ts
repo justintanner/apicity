@@ -329,6 +329,19 @@ export interface SunoVoiceCheckVoiceResponse {
   [key: string]: unknown;
 }
 
+/**
+ * Generate personalized cover images for an existing Suno music task.
+ *
+ * Docs: https://docs.kie.ai/suno-api/cover-suno
+ * Required: taskId (original music generation task). callBackUrl is required
+ * by the product docs even though OpenAPI only marks taskId as required.
+ * Distinct from POST /api/v1/generate/upload-cover (upload-and-cover-audio).
+ */
+export interface SunoCoverGenerateRequest {
+  taskId: string;
+  callBackUrl: string;
+}
+
 export interface SunoCoverRecordInfoRequest {
   taskId: string;
 }
@@ -794,6 +807,14 @@ interface SunoVoiceCheckVoiceMethod {
   responseSchema: ApicitySchema<SunoVoiceCheckVoiceResponse>;
 }
 
+interface SunoCoverGenerateMethod {
+  (
+    req: SunoCoverGenerateRequest,
+    approval?: import("./paygate").PayGateApproval
+  ): Promise<SunoSubmitResponse>;
+  schema: ApicitySchema<SunoCoverGenerateRequest>;
+}
+
 interface SunoCoverRecordInfoMethod {
   (taskId: string): Promise<SunoCoverRecordInfoResponse>;
   schema: ApicitySchema<SunoCoverRecordInfoRequest>;
@@ -919,8 +940,16 @@ interface SunoVoicePostNamespace {
   checkVoice: SunoVoiceCheckVoiceMethod;
 }
 
+interface SunoCoverPostNamespace {
+  generate: SunoCoverGenerateMethod;
+}
+
 interface SunoCoverGetNamespace {
   recordInfo: SunoCoverRecordInfoMethod;
+}
+
+interface SunoSunoPostNamespace {
+  cover: SunoCoverPostNamespace;
 }
 
 interface SunoSunoGetNamespace {
@@ -944,6 +973,7 @@ interface SunoV1PostNamespace {
   wav: SunoWavNamespace;
   vocalRemoval: SunoVocalRemovalNamespace;
   voice: SunoVoicePostNamespace;
+  suno: SunoSunoPostNamespace;
   mp4: SunoMp4Namespace;
   lyrics: SunoLyricsMethod;
   style: SunoStyleNamespace;
@@ -1310,6 +1340,13 @@ const SunoGetTimestampedLyricsResponseSchema = z
     code: z.number().int(),
     msg: z.string().optional(),
     data: SunoGetTimestampedLyricsDataSchema.nullable().optional(),
+  })
+  .passthrough();
+
+const SunoCoverGenerateRequestSchema = z
+  .object({
+    taskId: z.string().min(1),
+    callBackUrl: z.string().min(1),
   })
   .passthrough();
 
@@ -1800,6 +1837,18 @@ export function createSunoProvider(
     });
   }
 
+  // POST https://api.kie.ai/api/v1/suno/cover/generate
+  // Docs: https://docs.kie.ai/suno-api/cover-suno
+  async function coverGenerate(
+    req: SunoCoverGenerateRequest
+  ): Promise<SunoSubmitResponse> {
+    return kieRequest<SunoSubmitResponse>(transport, {
+      method: "POST",
+      path: "/api/v1/suno/cover/generate",
+      body: req,
+    });
+  }
+
   // GET https://api.kie.ai/api/v1/suno/cover/record-info?taskId={taskId}
   // Docs: https://docs.kie.ai/suno-api/get-cover-suno-details
   async function coverRecordInfo(
@@ -2065,6 +2114,15 @@ export function createSunoProvider(
               schema: SunoVoiceCheckVoiceRequestSchema,
               responseSchema: SunoVoiceCheckVoiceResponseSchema,
             }),
+          },
+          suno: {
+            cover: {
+              // POST https://api.kie.ai/api/v1/suno/cover/generate
+              // Docs: https://docs.kie.ai/suno-api/cover-suno
+              generate: Object.assign(coverGenerate, {
+                schema: SunoCoverGenerateRequestSchema,
+              }),
+            },
           },
           mp4: {
             generate: Object.assign(mp4Generate, {

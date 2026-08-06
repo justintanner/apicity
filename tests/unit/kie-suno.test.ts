@@ -94,6 +94,7 @@ describe("KIE Suno provider", () => {
       expect(typeof v1.lyrics).toBe("function");
       expect(typeof v1.style.generate).toBe("function");
       expect(typeof v1.midi.generate).toBe("function");
+      expect(typeof v1.suno.cover.generate).toBe("function");
       expect(typeof v1.generate.mashup).toBe("function");
       expect(typeof v1.generate.replaceSection).toBe("function");
       expect(typeof v1.generate.sounds).toBe("function");
@@ -140,6 +141,7 @@ describe("KIE Suno provider", () => {
       expect(typeof v1.lyrics.schema.safeParse).toBe("function");
       expect(typeof v1.style.generate.schema.safeParse).toBe("function");
       expect(typeof v1.midi.generate.schema.safeParse).toBe("function");
+      expect(typeof v1.suno.cover.generate.schema.safeParse).toBe("function");
       expect(typeof v1.generate.mashup.schema.safeParse).toBe("function");
       expect(typeof v1.generate.replaceSection.schema.safeParse).toBe(
         "function"
@@ -519,6 +521,33 @@ describe("KIE Suno provider", () => {
         delete partial[field];
         const result =
           provider.post.api.v1.midi.generate.schema.safeParse(partial);
+        expect(result.success).toBe(false);
+      }
+    });
+  });
+
+  describe("POST /api/v1/suno/cover/generate", () => {
+    const VALID_COVER = {
+      taskId: "task-1",
+      callBackUrl: "https://example.com/cb",
+    };
+
+    it("posts to /api/v1/suno/cover/generate with the body", async () => {
+      const { provider, captured } = createProvider({ code: 200 });
+      await provider.post.api.v1.suno.cover.generate(VALID_COVER);
+      expect(captured[0].url).toBe(
+        "https://api.kie.ai/api/v1/suno/cover/generate"
+      );
+      expect(JSON.parse(String(captured[0].init?.body))).toEqual(VALID_COVER);
+    });
+
+    it("requires taskId and callBackUrl", () => {
+      const { provider } = createProvider();
+      for (const field of ["taskId", "callBackUrl"] as const) {
+        const partial: Record<string, unknown> = { ...VALID_COVER };
+        delete partial[field];
+        const result =
+          provider.post.api.v1.suno.cover.generate.schema.safeParse(partial);
         expect(result.success).toBe(false);
       }
     });

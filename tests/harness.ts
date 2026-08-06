@@ -1065,7 +1065,8 @@ export function mintKieSunoOtp(
     | "api.v1.vocalRemoval.generate"
     | "api.v1.midi.generate"
     | "api.v1.voice.generate"
-    | "api.v1.voice.validate",
+    | "api.v1.voice.validate"
+    | "api.v1.suno.cover.generate",
   request: Record<string, unknown>
 ): { otp: string } {
   return {

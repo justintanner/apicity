@@ -279,6 +279,19 @@ export const PAID_ENDPOINTS: readonly PaidEndpointEntry[] = [
     key: {
       provider: "kie",
       method: "POST",
+      dotPath: "api.v1.suno.cover.generate",
+    },
+    info: {
+      reason:
+        "Suno cover-image generation task that incurs direct marginal compute cost",
+      estimatorId: "kie-per-unit",
+      costNotes: "Billed per cover image generation for a music task",
+    },
+  },
+  {
+    key: {
+      provider: "kie",
+      method: "POST",
       dotPath: "api.v1.voice.validate",
     },
     info: {

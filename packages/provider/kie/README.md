@@ -555,7 +555,7 @@ defaults to `false`.
 
 ## API Reference
 
-54 endpoints across 29 groups. Each method mirrors an upstream URL path.
+56 endpoints across 29 groups. Each method mirrors an upstream URL path.
 
 ### aleph
 
@@ -922,6 +922,23 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 </details>
 
 <details>
+<summary><code>POST</code> <b><code>kie.suno.post.api.v1.generate.generatePersona</code></b></summary>
+
+<code>POST https://api.kie.ai/api/v1/generate/generate-persona</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/suno-api/generate-persona)
+
+```typescript
+const res = await kie.suno.post.api.v1.generate.generatePersona({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
+
+</details>
+
+<details>
 <summary><code>POST</code> <b><code>kie.suno.post.api.v1.generate.getTimestampedLyrics</code></b></summary>
 
 <code>POST https://api.kie.ai/api/v1/generate/get-timestamped-lyrics</code>
@@ -1265,6 +1282,23 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await kie.suno.get.api.v1.suno.cover.recordInfo({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>kie.suno.post.api.v1.suno.cover.generate</code></b></summary>
+
+<code>POST https://api.kie.ai/api/v1/suno/cover/generate</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/suno-api/cover-suno)
+
+```typescript
+const res = await kie.suno.post.api.v1.suno.cover.generate({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)

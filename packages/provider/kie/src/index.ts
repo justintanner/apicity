@@ -1083,6 +1083,7 @@ export type {
   SunoAlignedWord,
   SunoGetTimestampedLyricsData,
   SunoGetTimestampedLyricsResponse,
+  SunoCoverGenerateRequest,
   SunoCoverRecordInfoRequest,
   SunoCoverSuccessFlag,
   SunoCoverRecordInfoResult,

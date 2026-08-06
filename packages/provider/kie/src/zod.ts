@@ -2358,7 +2358,10 @@ export const Seedance2InputSchema = z.object({
   /** @deprecated */
   return_last_frame: z.boolean().optional(),
   generate_audio: z.boolean().optional(),
-  resolution: z.enum(["480p", "720p", "1080p"]).optional(),
+  // Uppercase "4K" matches the case-sensitive `4K|i2v` / `4K|t2v` rate keys in
+  // @apicity/cost (packages/provider/cost/src/pricing/kie.ts). The lowercase
+  // "4k" used by Veo/Gemini Omni is those families' upstream grammar, not ours.
+  resolution: z.enum(["480p", "720p", "1080p", "4K"]).optional(),
   aspect_ratio: z
     .enum(["1:1", "4:3", "3:4", "16:9", "9:16", "21:9", "adaptive"])
     .optional(),

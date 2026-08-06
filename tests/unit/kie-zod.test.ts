@@ -1021,7 +1021,7 @@ describe("TRI-008 VeoExtendRequestSchema.model stays a closed set", () => {
 // TRI-001 KieMediaModelSchema — one escape hatch per vendor family
 // ---------------------------------------------------------------------------
 //
-// KieMediaModelSchema is kie's aggregator catalogue: 57 ids drawn from a dozen
+// KieMediaModelSchema is kie's aggregator catalogue: 61 ids drawn from a dozen
 // unrelated vendors behind one `createTask` endpoint. REQ-006 forbids opening
 // it with a single catch-all regex, so it carries one alias per vendor family
 // while four singletons, the three exact MiniMax H3 modes, and the two Google
@@ -1030,7 +1030,7 @@ describe("TRI-008 VeoExtendRequestSchema.model stays a closed set", () => {
 // BR-4 needs care here that the single-family schemas above do not. A foreign
 // *catalogue* id — `happyhorse/video-edit` on the Kling family — is accepted by
 // KieMediaModelSchema, through the enum branch, and always was: the whole point
-// of the aggregator is that all 57 are valid. So cross-family leakage cannot be
+// of the aggregator is that all 61 are valid. So cross-family leakage cannot be
 // asserted with safeParse; it is asserted structurally instead, against the
 // alias patterns themselves ("partitions the catalogue" below). The per-family
 // `rejected` lists therefore carry BR-3 near-miss typos plus BR-4 ids from
@@ -1250,6 +1250,23 @@ const GOOGLE_GEMINI_TTS_REJECTED_MODELS = [
   "GOOGLE/GEMINI-2-5-PRO-TTS",
 ] as const;
 
+// Topaz is enum-only like MiniMax H3: two task variants under one vendor, no
+// open alias hatch (the task segment is not a version grammar).
+const TOPAZ_EXACT_ONLY_MODELS = [
+  "topaz/image-upscale",
+  "topaz/video-upscale",
+] as const;
+
+const TOPAZ_REJECTED_MODELS = [
+  "topaz",
+  "topaz/image",
+  "topaz/video",
+  "topaz-image-upscale",
+  "topaz/image_upscale",
+  "Topaz/image-upscale",
+  "topaz/audio-upscale",
+] as const;
+
 // `.or()` chaining nests left, so the emitted JSON Schema is a left-deep tree
 // of two-branch `anyOf`s rather than one flat list. Flatten it to leaves.
 function anyOfLeaves(schema: JsonSchema): JsonSchema[] {
@@ -1312,6 +1329,21 @@ describe("TRI-001 KieMediaModelSchema", () => {
 
   it.each(GOOGLE_GEMINI_TTS_REJECTED_MODELS)(
     "rejects the out-of-scope Google Gemini TTS model %j",
+    (model) => {
+      expect(KieMediaModelSchema.safeParse(model).success).toBe(false);
+    }
+  );
+
+  it.each(TOPAZ_EXACT_ONLY_MODELS)(
+    "keeps Topaz model %s reachable only through the enum",
+    (model) => {
+      expect(KieMediaModelSchema.safeParse(model).success).toBe(true);
+      expect(mediaAliasPatterns.filter((re) => re.test(model))).toEqual([]);
+    }
+  );
+
+  it.each(TOPAZ_REJECTED_MODELS)(
+    "rejects the out-of-scope Topaz model %j",
     (model) => {
       expect(KieMediaModelSchema.safeParse(model).success).toBe(false);
     }

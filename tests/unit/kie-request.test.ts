@@ -14,6 +14,8 @@ import type {
   HappyHorse11ImageToVideoRequest,
   HappyHorse11ReferenceToVideoRequest,
   HappyHorse11TextToVideoRequest,
+  TopazImageUpscaleRequest,
+  TopazVideoUpscaleRequest,
   VolcengineVideoToVideoLipSyncRequest,
 } from "../../packages/provider/kie/src/types";
 import { TEST_PAYGATE_SECRET, mintKieCreateTaskOtp } from "../harness";
@@ -415,6 +417,121 @@ describe("KIE request utilities", () => {
         "Content-Type": "application/json",
       });
       expect(JSON.parse(init.body as string)).toEqual(request);
+    });
+
+    it("should serialize Topaz image-upscale createTask requests", async () => {
+      const secret = "test-paygate-secret";
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            code: 200,
+            msg: "success",
+            data: {
+              taskId: "task_topaz_image_1234567890",
+            },
+          }),
+          { status: 200 }
+        )
+      );
+
+      const provider = createKie({
+        apiKey: "test-key",
+        baseURL: "https://api.kie.ai",
+        fetch: mockFetch,
+        paygate: { secret },
+      });
+      const request: TopazImageUpscaleRequest = {
+        model: "topaz/image-upscale",
+        input: {
+          image_url: "https://example.com/source.png",
+          upscale_factor: "2",
+        },
+        callBackUrl: "https://example.com/callback",
+      };
+
+      const result = await provider.post.api.v1.jobs.createTask(request, {
+        otp: mintOtp(secret, {
+          dotPath: "api.v1.jobs.createTask",
+          request,
+        }),
+      });
+
+      expect(result.data?.taskId).toBe("task_topaz_image_1234567890");
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      const [url, init] = mockFetch.mock.calls[0];
+      expect(url).toBe("https://api.kie.ai/api/v1/jobs/createTask");
+      expect(init.method).toBe("POST");
+      expect(JSON.parse(init.body as string)).toEqual(request);
+    });
+
+    it("should serialize Topaz video-upscale createTask requests", async () => {
+      const secret = "test-paygate-secret";
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            code: 200,
+            msg: "success",
+            data: {
+              taskId: "task_topaz_video_1234567890",
+            },
+          }),
+          { status: 200 }
+        )
+      );
+
+      const provider = createKie({
+        apiKey: "test-key",
+        baseURL: "https://api.kie.ai",
+        fetch: mockFetch,
+        paygate: { secret },
+      });
+      const request: TopazVideoUpscaleRequest = {
+        model: "topaz/video-upscale",
+        input: {
+          video_url: "https://example.com/source.mp4",
+          upscale_factor: "4",
+        },
+      };
+
+      const result = await provider.post.api.v1.jobs.createTask(request, {
+        otp: mintOtp(secret, {
+          dotPath: "api.v1.jobs.createTask",
+          request,
+        }),
+      });
+
+      expect(result.data?.taskId).toBe("task_topaz_video_1234567890");
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      const [, init] = mockFetch.mock.calls[0];
+      expect(JSON.parse(init.body as string)).toEqual(request);
+    });
+
+    it("should reject invalid Topaz image-upscale payloads before fetch", async () => {
+      const mockFetch = vi.fn().mockImplementation(() => {
+        throw new Error("createTask must not reach fetch for topaz");
+      });
+
+      const provider = createKie({
+        apiKey: "test-key",
+        baseURL: "https://api.kie.ai",
+        fetch: mockFetch,
+        paygate: { secret: TEST_PAYGATE_SECRET },
+      });
+      const request = {
+        model: "topaz/image-upscale",
+        input: {
+          image_url: "https://example.com/source.png",
+          upscale_factor: "8",
+        },
+      };
+
+      await expect(
+        provider.post.api.v1.jobs.createTask(
+          request as unknown as TopazImageUpscaleRequest,
+          mintKieCreateTaskOtp(request)
+        )
+      ).rejects.toBeInstanceOf(KieError);
+      expect(mockFetch).not.toHaveBeenCalled();
     });
 
     it("should preserve ElevenLabs numeric omissions and explicit values", async () => {

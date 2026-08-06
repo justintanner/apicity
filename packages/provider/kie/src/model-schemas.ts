@@ -2608,4 +2608,45 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     type: "audio",
     fields: googleGeminiTtsFields,
   },
+
+  // - https://docs.kie.ai/market/topaz/image-upscale
+  // - https://docs.kie.ai/market/topaz/video-upscale
+  "topaz/image-upscale": {
+    type: "image",
+    fields: {
+      image_url: {
+        type: "string",
+        required: true,
+        description:
+          "URL of the image to upscale (jpeg/png/webp after upload; max 10 MB)",
+      },
+      upscale_factor: {
+        type: "string",
+        required: true,
+        enum: ["1", "2", "4"],
+        default: "2",
+        description:
+          'Scale factor as the exact string "1", "2", or "4" (documented default "2"; required by upstream)',
+      },
+    },
+  },
+
+  "topaz/video-upscale": {
+    type: "video",
+    fields: {
+      video_url: {
+        type: "string",
+        required: true,
+        description:
+          "URL of the video to upscale (mp4/quicktime/mkv after upload; max 50 MB)",
+      },
+      upscale_factor: {
+        type: "string",
+        enum: ["1", "2", "4"],
+        default: "2",
+        description:
+          'Scale factor as the exact string "1", "2", or "4" (documented default "2")',
+      },
+    },
+  },
 };

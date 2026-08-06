@@ -1303,6 +1303,26 @@ describe("kie modelInputSchemas", () => {
     expect(schema.fields.templ_start_seconds.type).toBe("number");
   });
 
+  it("topaz image-upscale exposes required image_url and upscale_factor", () => {
+    const schema = modelInputSchemas["topaz/image-upscale"];
+
+    expect(schema.type).toBe("image");
+    expect(schema.fields.image_url.required).toBe(true);
+    expect(schema.fields.upscale_factor.required).toBe(true);
+    expect(schema.fields.upscale_factor.enum).toEqual(["1", "2", "4"]);
+    expect(schema.fields.upscale_factor.default).toBe("2");
+  });
+
+  it("topaz video-upscale exposes required video_url and optional factor", () => {
+    const schema = modelInputSchemas["topaz/video-upscale"];
+
+    expect(schema.type).toBe("video");
+    expect(schema.fields.video_url.required).toBe(true);
+    expect(schema.fields.upscale_factor.required).toBeUndefined();
+    expect(schema.fields.upscale_factor.enum).toEqual(["1", "2", "4"]);
+    expect(schema.fields.upscale_factor.default).toBe("2");
+  });
+
   it("omnihuman 1.5 exposes required portrait and audio fields", () => {
     const schema = modelInputSchemas["omnihuman-1-5"];
 

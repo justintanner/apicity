@@ -70,6 +70,8 @@ import {
   MiniMaxH3ReferenceToVideoRequestSchema,
   GoogleGemini25ProTtsRequestSchema,
   GoogleGemini31FlashTtsRequestSchema,
+  TopazImageUpscaleRequestSchema,
+  TopazVideoUpscaleRequestSchema,
   Wan27ImageToVideoRequestSchema,
   Wan27TextToVideoRequestSchema,
   Wan27RefToVideoRequestSchema,
@@ -235,6 +237,8 @@ export const CREATE_TASK_GUARDS = {
   "minimax-h3/reference-to-video": MiniMaxH3ReferenceToVideoRequestSchema,
   "google/gemini-2-5-pro-tts": GoogleGemini25ProTtsRequestSchema,
   "google/gemini-3-1-flash-tts": GoogleGemini31FlashTtsRequestSchema,
+  "topaz/image-upscale": TopazImageUpscaleRequestSchema,
+  "topaz/video-upscale": TopazVideoUpscaleRequestSchema,
 } as const satisfies Record<KieMediaModel, z.ZodType>;
 
 function validateCreateTaskRequest(req: MediaGenerationRequest): void {

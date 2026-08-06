@@ -33,6 +33,8 @@ import {
   HappyHorse11ReferenceToVideoRequestSchema,
   HappyHorse11TextToVideoRequestSchema,
   VolcengineVideoToVideoLipSyncRequestSchema,
+  TopazImageUpscaleRequestSchema,
+  TopazVideoUpscaleRequestSchema,
   ElevenLabsTextToSpeechTurbo25RequestSchema,
   ElevenLabsTextToSpeechMultilingualV2RequestSchema,
   ElevenLabsTextToDialogueV3RequestSchema,
@@ -1171,6 +1173,118 @@ describe("kie Zod schema validation", () => {
       expect(result.error?.issues.some((i) => i.path.includes("mode"))).toBe(
         true
       );
+    });
+  });
+
+  describe("topaz upscale models", () => {
+    it("should accept the documented image-upscale request", () => {
+      const request = {
+        model: "topaz/image-upscale",
+        callBackUrl: "https://example.com/callback",
+        input: {
+          image_url: "https://static.aiquickdraw.com/tools/example/image.png",
+          upscale_factor: "2",
+        },
+      };
+
+      const result = TopazImageUpscaleRequestSchema.safeParse(request);
+      expect(result.success).toBe(true);
+      expect(MediaGenerationRequestSchema.safeParse(request).success).toBe(
+        true
+      );
+      expect(CreateTaskRequestSchema.safeParse(request).success).toBe(true);
+    });
+
+    it("should require image_url and upscale_factor for image-upscale", () => {
+      const missingFactor = TopazImageUpscaleRequestSchema.safeParse({
+        model: "topaz/image-upscale",
+        input: {
+          image_url: "https://example.com/source.png",
+        },
+      });
+      expect(missingFactor.success).toBe(false);
+      expect(
+        missingFactor.error?.issues.some((i) =>
+          i.path.includes("upscale_factor")
+        )
+      ).toBe(true);
+
+      const missingUrl = TopazImageUpscaleRequestSchema.safeParse({
+        model: "topaz/image-upscale",
+        input: {
+          upscale_factor: "2",
+        },
+      });
+      expect(missingUrl.success).toBe(false);
+      expect(
+        missingUrl.error?.issues.some((i) => i.path.includes("image_url"))
+      ).toBe(true);
+    });
+
+    it("should reject numeric and out-of-enum upscale_factor values", () => {
+      const numeric = TopazImageUpscaleRequestSchema.safeParse({
+        model: "topaz/image-upscale",
+        input: {
+          image_url: "https://example.com/source.png",
+          upscale_factor: 2,
+        },
+      });
+      expect(numeric.success).toBe(false);
+
+      const invalid = TopazImageUpscaleRequestSchema.safeParse({
+        model: "topaz/image-upscale",
+        input: {
+          image_url: "https://example.com/source.png",
+          upscale_factor: "8",
+        },
+      });
+      expect(invalid.success).toBe(false);
+      expect(
+        invalid.error?.issues.some((i) => i.path.includes("upscale_factor"))
+      ).toBe(true);
+    });
+
+    it("should accept video-upscale with only video_url", () => {
+      const request = {
+        model: "topaz/video-upscale",
+        input: {
+          video_url:
+            "https://file.aiquickdraw.com/custom-page/akr/section-images/video.mp4",
+        },
+      };
+
+      const result = TopazVideoUpscaleRequestSchema.safeParse(request);
+      expect(result.success).toBe(true);
+      if (!result.success) return;
+      expect(result.data.input.upscale_factor).toBeUndefined();
+      expect(MediaGenerationRequestSchema.safeParse(request).success).toBe(
+        true
+      );
+      expect(CreateTaskRequestSchema.safeParse(request).success).toBe(true);
+    });
+
+    it("should accept documented video-upscale factors and reject bad ones", () => {
+      for (const factor of ["1", "2", "4"] as const) {
+        const result = TopazVideoUpscaleRequestSchema.safeParse({
+          model: "topaz/video-upscale",
+          input: {
+            video_url: "https://example.com/source.mp4",
+            upscale_factor: factor,
+          },
+        });
+        expect(result.success).toBe(true);
+      }
+
+      const missingUrl = TopazVideoUpscaleRequestSchema.safeParse({
+        model: "topaz/video-upscale",
+        input: {
+          upscale_factor: "2",
+        },
+      });
+      expect(missingUrl.success).toBe(false);
+      expect(
+        missingUrl.error?.issues.some((i) => i.path.includes("video_url"))
+      ).toBe(true);
     });
   });
 

@@ -546,6 +546,8 @@ byte-for-byte identical to the registered snapshots.
 | DOC-40 | https://docs.kie.ai/market/minimax-h3/reference-to-video.md             | `5af016278f46ab9fa0ed7a99daf36cde3d7dcbb7a0de6cbf5db5e55be67d5e10` |
 | DOC-41 | https://docs.kie.ai/google/gemini-2-5-pro-tts.md                        | `b9aaabce44a2ef7adc1fe349df4ee6f92b354b441f5e57c4877ab5d0324570ac` |
 | DOC-42 | https://docs.kie.ai/market/google/gemini-3-1-flash-tts.md               | `b54d49a925d3877a272ca276bf7d499acae01b673e0e168c7b1adde817e49b08` |
+| DOC-43 | https://docs.kie.ai/market/topaz/image-upscale.md                       | `b62f234c238c3b732a9fbc72ea0ef48b4807d96b1ba165ca1cff2f802ac97866` |
+| DOC-44 | https://docs.kie.ai/market/topaz/video-upscale.md                       | `af5913ab87bf9449201d7b0c0046364698702e41accd76ffb1828618818ddc35` |
 
 ## Numeric inventory
 
@@ -628,5 +630,7 @@ this evidence item makes no runtime contract change for the row.
 | minimax-h3/reference-to-video             | input.duration                | required; integer min=4 max=15                                                                       | DOC-40 @ 2026-08-04 | integer min=4 max=15 default=6              | number (6)          | none beyond current OpenAPI                 | number-only         | high       | enforce integer range; do not inject default |
 | google/gemini-2-5-pro-tts                 | input.temperature             | optional; number min=0 max=2                                                                         | DOC-41 @ 2026-08-06 | number min=0 max=2 default=1                | number (1)          | none beyond current OpenAPI                 | number-only         | high       | enforce bounds; do not inject default        |
 | google/gemini-3-1-flash-tts               | input.temperature             | optional; number min=0 max=2                                                                         | DOC-42 @ 2026-08-06 | number min=0 max=2 default=1                | number (1)          | none beyond current OpenAPI                 | number-only         | high       | enforce bounds; do not inject default        |
+| topaz/image-upscale                       | input.upscale_factor          | required; numeric-string enum="1","2","4"                                                            | DOC-43 @ 2026-08-06 | string default="2"                          | string ("2")        | none beyond current OpenAPI                 | numeric-string-only | high       | retain exact strings; reject numbers         |
+| topaz/video-upscale                       | input.upscale_factor          | optional; numeric-string enum="1","2","4"                                                            | DOC-44 @ 2026-08-06 | string default="2"                          | string ("2")        | none beyond current OpenAPI                 | numeric-string-only | high       | retain exact strings; reject numbers         |
 
 <!-- numeric-inventory:end -->

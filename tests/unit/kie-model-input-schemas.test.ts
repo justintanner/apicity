@@ -645,6 +645,62 @@ describe("KIE Google Gemini TTS modelInputSchemas metadata", () => {
   });
 });
 
+// Topaz registry entries
+// ---------------------------------------------------------------------------
+
+describe("KIE Topaz modelInputSchemas metadata", () => {
+  const provider = createKie({ apiKey: "test-key" });
+  const MODELS = ["topaz/image-upscale", "topaz/video-upscale"] as const;
+
+  it("exposes exactly two Topaz models with their input fields", () => {
+    const topazModels = Object.keys(provider.modelInputSchemas).filter(
+      (model) => model.startsWith("topaz/")
+    );
+    expect(topazModels).toEqual(MODELS);
+
+    expect(
+      Object.keys(
+        provider.modelInputSchemas["topaz/image-upscale"].fields
+      ).sort()
+    ).toEqual(["image_url", "upscale_factor"]);
+    expect(
+      Object.keys(
+        provider.modelInputSchemas["topaz/video-upscale"].fields
+      ).sort()
+    ).toEqual(["upscale_factor", "video_url"]);
+  });
+
+  it("documents image-upscale required string factor enum", () => {
+    const fields = provider.modelInputSchemas["topaz/image-upscale"].fields;
+
+    expect(fields.image_url).toMatchObject({
+      type: "string",
+      required: true,
+    });
+    expect(fields.upscale_factor).toMatchObject({
+      type: "string",
+      required: true,
+      enum: ["1", "2", "4"],
+      default: "2",
+    });
+  });
+
+  it("documents video-upscale optional string factor enum", () => {
+    const fields = provider.modelInputSchemas["topaz/video-upscale"].fields;
+
+    expect(fields.video_url).toMatchObject({
+      type: "string",
+      required: true,
+    });
+    expect(fields.upscale_factor).toMatchObject({
+      type: "string",
+      enum: ["1", "2", "4"],
+      default: "2",
+    });
+    expect(fields.upscale_factor.required).toBeUndefined();
+  });
+});
+
 // AC-3. `callBackUrl` is a top-level envelope field on createTask, not model
 // input. It leaked into the pixverse-v6/text-to-video registry entry once and
 // was removed in review; asserting it across the whole registry rather than

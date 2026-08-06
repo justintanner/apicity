@@ -172,6 +172,10 @@ const KieMediaPixverseModelAliasSchema = z
 // Google TTS (`google/gemini-*-tts`) stays enum-only as well. Two models do not
 // establish a safe `google/…` alias grammar — other google-namespaced market
 // ids (imagen, nano-banana) are separate work and must not be pre-authorized.
+// Topaz likewise stays enum-only: `topaz/image-upscale` and
+// `topaz/video-upscale` are the only two ids kie documents for the vendor, and
+// the task segment (`image-upscale` / `video-upscale`) is not a versioned
+// grammar that would justify an open alias hatch.
 export const KIE_MEDIA_MODELS = [
   "kling-3.0/video",
   "kling-3.0/motion-control",
@@ -233,6 +237,8 @@ export const KIE_MEDIA_MODELS = [
   "minimax-h3/reference-to-video",
   "google/gemini-2-5-pro-tts",
   "google/gemini-3-1-flash-tts",
+  "topaz/image-upscale",
+  "topaz/video-upscale",
 ] as const;
 
 export const KieMediaModelSchema = z
@@ -2664,6 +2670,35 @@ export const GoogleGemini31FlashTtsRequestSchema = z.object({
   input: GoogleGeminiTtsInputSchema,
 });
 
+// Topaz upscale factor is a string enum in the upstream OpenAPI (not a number):
+// "1" | "2" | "4". Shared by both Topaz createTask models.
+// Docs: https://docs.kie.ai/market/topaz/image-upscale
+// Docs: https://docs.kie.ai/market/topaz/video-upscale
+export const TopazUpscaleFactorSchema = z.enum(["1", "2", "4"]);
+
+export const TopazImageUpscaleRequestSchema = z.object({
+  model: z.literal("topaz/image-upscale"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    // File URL after upload (jpeg/png/webp, max 10 MB) — not file content.
+    image_url: z.string().min(1),
+    // Required by the image-upscale OpenAPI `required` list (documented default
+    // is "2", but omitting still fails upstream validation).
+    upscale_factor: TopazUpscaleFactorSchema,
+  }),
+});
+
+export const TopazVideoUpscaleRequestSchema = z.object({
+  model: z.literal("topaz/video-upscale"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    // File URL after upload (mp4/quicktime/mkv, max 50 MB) — not file content.
+    video_url: z.string().min(1),
+    // Optional on video-upscale; documented default is "2".
+    upscale_factor: TopazUpscaleFactorSchema.optional(),
+  }),
+});
+
 // ---------------------------------------------------------------------------
 // Wan 2.7 task result schemas (parsed from KieTaskInfoData.resultJson)
 //
@@ -3828,6 +3863,8 @@ export const MediaGenerationRequestSchema = z.union([
   MiniMaxH3ReferenceToVideoRequestSchema,
   GoogleGemini25ProTtsRequestSchema,
   GoogleGemini31FlashTtsRequestSchema,
+  TopazImageUpscaleRequestSchema,
+  TopazVideoUpscaleRequestSchema,
 ]);
 
 // ---------------------------------------------------------------------------
@@ -4292,6 +4329,22 @@ export type GoogleGemini31FlashTtsRequest = z.input<
 export type GoogleGemini31FlashTtsRequestInput = GoogleGemini31FlashTtsRequest;
 export type GoogleGemini31FlashTtsParsedRequest = z.output<
   typeof GoogleGemini31FlashTtsRequestSchema
+>;
+
+export type TopazUpscaleFactor = z.infer<typeof TopazUpscaleFactorSchema>;
+export type TopazImageUpscaleRequest = z.input<
+  typeof TopazImageUpscaleRequestSchema
+>;
+export type TopazImageUpscaleRequestInput = TopazImageUpscaleRequest;
+export type TopazImageUpscaleParsedRequest = z.output<
+  typeof TopazImageUpscaleRequestSchema
+>;
+export type TopazVideoUpscaleRequest = z.input<
+  typeof TopazVideoUpscaleRequestSchema
+>;
+export type TopazVideoUpscaleRequestInput = TopazVideoUpscaleRequest;
+export type TopazVideoUpscaleParsedRequest = z.output<
+  typeof TopazVideoUpscaleRequestSchema
 >;
 export type Wan27ImageToVideoRequest = z.input<
   typeof Wan27ImageToVideoRequestSchema

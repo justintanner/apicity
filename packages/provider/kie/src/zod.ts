@@ -865,6 +865,136 @@ export type KieGemini3FlashChatCompletionsParsedRequest = z.output<
   typeof KieGemini3FlashChatCompletionsRequestSchema
 >;
 
+// Gemini 2.5 Pro OpenAI-compatible chat completions
+// Docs: https://docs.kie.ai/market/gemini/gemini-2-5-pro
+export const KieGemini25ProMessageRoleSchema = z.enum([
+  "developer",
+  "system",
+  "user",
+  "assistant",
+  "tool",
+]);
+
+export const KieGemini25ProContentItemTypeSchema = z.enum([
+  "text",
+  "image_url",
+]);
+
+export const KieGemini25ProToolTypeSchema = z.enum(["function"]);
+
+export const KieGemini25ProReasoningEffortSchema = z.enum(["low", "high"]);
+
+export const KieGemini25ProTextContentItemSchema = z
+  .object({
+    type: z.literal("text"),
+    text: z.string(),
+  })
+  .strict();
+
+export const KieGemini25ProMediaContentItemSchema = z
+  .object({
+    type: z.literal("image_url"),
+    image_url: z.object({ url: z.string().url() }).strict(),
+  })
+  .strict();
+
+export const KieGemini25ProContentItemSchema = z.discriminatedUnion("type", [
+  KieGemini25ProTextContentItemSchema,
+  KieGemini25ProMediaContentItemSchema,
+]);
+
+export const KieGemini25ProMessageSchema = z
+  .object({
+    role: KieGemini25ProMessageRoleSchema,
+    content: z.array(KieGemini25ProContentItemSchema).min(1),
+  })
+  .passthrough();
+
+export const KieGemini25ProToolFunctionParametersSchema = z
+  .object({
+    type: z.literal("object"),
+    properties: z.record(z.string(), z.unknown()).optional(),
+    required: z.array(z.string()).optional(),
+  })
+  .passthrough();
+
+// googleSearch or custom function declarations (mutually exclusive upstream).
+export const KieGemini25ProToolFunctionSchema = z
+  .object({
+    name: z.string().min(1),
+    description: z.string().optional(),
+    parameters: KieGemini25ProToolFunctionParametersSchema.optional(),
+  })
+  .passthrough();
+
+export const KieGemini25ProToolSchema = z
+  .object({
+    type: KieGemini25ProToolTypeSchema,
+    function: KieGemini25ProToolFunctionSchema,
+  })
+  .strict();
+
+export const KieGemini25ProResponseFormatSchema = z
+  .object({
+    type: z.string().optional(),
+    json_schema: z.record(z.string(), z.unknown()).optional(),
+    properties: z.record(z.string(), z.unknown()).optional(),
+  })
+  .passthrough();
+
+export const KieGemini25ProChatCompletionsRequestSchema = z
+  .object({
+    model: z.literal("gemini-2.5-pro").optional(),
+    messages: z.array(KieGemini25ProMessageSchema).min(1),
+    stream: z.boolean().default(true),
+    tools: z.array(KieGemini25ProToolSchema).min(0).optional(),
+    include_thoughts: z.boolean().default(true),
+    reasoning_effort: KieGemini25ProReasoningEffortSchema.default("high"),
+    response_format: KieGemini25ProResponseFormatSchema.optional(),
+  })
+  .passthrough();
+
+export type KieGemini25ProMessageRole = z.infer<
+  typeof KieGemini25ProMessageRoleSchema
+>;
+export type KieGemini25ProContentItemType = z.infer<
+  typeof KieGemini25ProContentItemTypeSchema
+>;
+export type KieGemini25ProToolType = z.infer<
+  typeof KieGemini25ProToolTypeSchema
+>;
+export type KieGemini25ProReasoningEffort = z.infer<
+  typeof KieGemini25ProReasoningEffortSchema
+>;
+export type KieGemini25ProTextContentItem = z.infer<
+  typeof KieGemini25ProTextContentItemSchema
+>;
+export type KieGemini25ProMediaContentItem = z.infer<
+  typeof KieGemini25ProMediaContentItemSchema
+>;
+export type KieGemini25ProContentItem = z.infer<
+  typeof KieGemini25ProContentItemSchema
+>;
+export type KieGemini25ProMessage = z.infer<typeof KieGemini25ProMessageSchema>;
+export type KieGemini25ProToolFunctionParameters = z.infer<
+  typeof KieGemini25ProToolFunctionParametersSchema
+>;
+export type KieGemini25ProToolFunction = z.infer<
+  typeof KieGemini25ProToolFunctionSchema
+>;
+export type KieGemini25ProTool = z.infer<typeof KieGemini25ProToolSchema>;
+export type KieGemini25ProResponseFormat = z.infer<
+  typeof KieGemini25ProResponseFormatSchema
+>;
+export type KieGemini25ProChatCompletionsRequest = z.input<
+  typeof KieGemini25ProChatCompletionsRequestSchema
+>;
+export type KieGemini25ProChatCompletionsRequestInput =
+  KieGemini25ProChatCompletionsRequest;
+export type KieGemini25ProChatCompletionsParsedRequest = z.output<
+  typeof KieGemini25ProChatCompletionsRequestSchema
+>;
+
 export const KlingDurationSchema = z.enum([
   "3",
   "4",

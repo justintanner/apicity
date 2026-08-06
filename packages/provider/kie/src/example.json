@@ -479,6 +479,27 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST gemini25Pro.v1.chat.completions": {
+    "source": "kie/gemini-25-pro-chat-auth-error",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "ping"
+            }
+          ]
+        }
+      ],
+      "stream": false,
+      "include_thoughts": false,
+      "reasoning_effort": "low"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST gemini3Flash.v1.chat.completions": {
     "source": "kie/gemini-3-flash-chat-auth-error",
     "payload": {

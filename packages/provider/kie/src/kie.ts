@@ -125,6 +125,7 @@ import { createResponsesProvider } from "./responses";
 import { createGemini31ProProvider } from "./gemini-31-pro";
 import { createGemini25FlashProvider } from "./gemini-25-flash";
 import { createGemini3FlashProvider } from "./gemini-3-flash";
+import { createGemini25ProProvider } from "./gemini-25-pro";
 import { attachExamples } from "./example";
 import { createReplayStore } from "./paygate";
 import { withPaidGate } from "./with-paid-gate";
@@ -595,6 +596,7 @@ export function createKie(opts: KieOptions): KieProvider {
         ...createGemini31ProProvider(baseURL, opts.apiKey, doFetch, timeout),
         ...createGemini25FlashProvider(baseURL, opts.apiKey, doFetch, timeout),
         ...createGemini3FlashProvider(baseURL, opts.apiKey, doFetch, timeout),
+        ...createGemini25ProProvider(baseURL, opts.apiKey, doFetch, timeout),
         modelInputSchemas,
         post: {
           ...createResponsesProvider(baseURL, opts.apiKey, doFetch, timeout),

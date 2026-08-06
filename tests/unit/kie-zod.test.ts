@@ -887,7 +887,7 @@ const OPENED_MODEL_FIELDS = [
   {
     triage: "TRI-005",
     label: "VeoGenerateRequestSchema.model",
-    listed: ["veo3", "veo3_fast"],
+    listed: ["veo3", "veo3_fast", "veo3_lite"],
     aliases: ["veo4_fast"],
     // BR-3 kie's Veo grammar is underscored, so the hyphenated `veo3-fast` and
     // googleflow's dotted `veo-3.1-fast` are both typos here; BR-4 `gpt-4o`.

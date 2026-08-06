@@ -10,7 +10,9 @@ import {
 import type { PayGateApproval } from "./paygate";
 import type { ApicitySchema } from "./types";
 
-export type VeoModel = "veo3" | "veo3_fast";
+// Documented kie Veo family ids (docs list veo3, veo3_fast, veo3_lite).
+// Runtime also accepts underscored aliases via KieVeoModelAliasSchema.
+export type VeoModel = "veo3" | "veo3_fast" | "veo3_lite";
 
 export type VeoGenerationType =
   | "TEXT_2_VIDEO"

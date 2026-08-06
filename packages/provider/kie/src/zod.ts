@@ -2319,7 +2319,10 @@ export const VeoDurationSchema = z.union([
 
 export const VeoGenerateRequestSchema = z.object({
   prompt: z.string().min(1),
-  model: z.enum(["veo3", "veo3_fast"]).or(KieVeoModelAliasSchema).optional(),
+  model: z
+    .enum(["veo3", "veo3_fast", "veo3_lite"])
+    .or(KieVeoModelAliasSchema)
+    .optional(),
   aspectRatio: z.enum(["16:9", "9:16", "Auto"]).optional(),
   generationType: z
     .enum([
@@ -2439,7 +2442,7 @@ export type VeoSuccessFlag = z.infer<typeof VeoSuccessFlagSchema>;
 export type VeoRecordInfoResult = z.infer<typeof VeoRecordInfoResultSchema>;
 export type VeoRecordInfoData = z.infer<typeof VeoRecordInfoDataSchema>;
 export type VeoRecordInfoResponse = z.infer<typeof VeoRecordInfoResponseSchema>;
-export type VeoModel = "veo3" | "veo3_fast";
+export type VeoModel = "veo3" | "veo3_fast" | "veo3_lite";
 export type VeoGenerationType =
   | "TEXT_2_VIDEO"
   | "REFERENCE_2_VIDEO"

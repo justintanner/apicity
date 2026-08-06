@@ -410,9 +410,10 @@ describe("KIE Veo provider", () => {
   });
 
   describe("VeoModel type", () => {
-    it("should accept valid model values", () => {
+    it("should accept documented model values including veo3_lite", () => {
       const provider = createProvider();
-      const validModels = ["veo3", "veo3_fast"];
+      // Documented family: veo3, veo3_fast, veo3_lite (ac-x16e16).
+      const validModels = ["veo3", "veo3_fast", "veo3_lite"] as const;
 
       for (const model of validModels) {
         const result = provider.post.api.v1.veo.generate.schema.safeParse({

@@ -253,13 +253,6 @@ const happyHorse11Video = (variant: string): ModelPricing => ({
   ),
 });
 
-// MiniMax H3 (Hailuo 03): 2 tiers by resolution. KIE lists 22.5 credits/s
-// ($0.1125) at 768P and 36.5 credits/s ($0.1825) at 2K. Documented
-// upstream default is 2K when input.resolution is omitted. Duration is a
-// required wire field (int 4–15), so no costHints channel is needed.
-// Generation-only rates — KIE also bills optional video-input seconds and
-// extra reference images beyond the free first five; those surcharges are
-// not modeled here (same scope as other video helpers).
 // Veo 3.1 bills PER VIDEO, not per second: kie's page prices each
 // (tier × resolution) cell as a single flat "per video" charge, so `duration`
 // (4|6|8) does not scale the price at all.
@@ -447,6 +440,26 @@ const perCharacterPage = (
   source: pricePage(url),
 });
 
+// MiniMax H3 (Hailuo 03): 2 tiers by resolution. KIE lists 22.5 credits/s
+// ($0.1125) at 768P and 36.5 credits/s ($0.1825) at 2K. Documented
+// upstream default is 2K when input.resolution is omitted. Duration is a
+// required wire field (int 4–15), so no costHints channel is needed.
+// Re-verified against a fresh pricing pull on 2026-08-06 — both rates and
+// both surcharges below still print exactly these cells, so `asOf` stays at
+// that date.
+//
+// Generation-only rates. The page publishes two further MiniMax H3 charges
+// that this table deliberately leaves out, matching the scope of every other
+// video helper here:
+//   1. Input-video seconds at the generation rate — the "MiniMax H3, video
+//      input" rows print the same 22.5 credits/s (768p) and 36.5 credits/s
+//      (2k), so reference_video_urls clips bill on top of the output.
+//   2. Reference images past the first five (which are free) at 11 credits
+//      → $0.055 each — the "MiniMax H3, image input, 768p, 2k" row;
+//      reference_image_urls accepts up to 9.
+// Only the second is derivable from what the estimator sees — the wire
+// fields carry media URLs, not clip lengths — so an estimate for a call that
+// uses either surcharge is a floor, not the final charge.
 const miniMaxH3Video = (slug: string): ModelPricing => ({
   kind: "perUnit",
   unit: "seconds",

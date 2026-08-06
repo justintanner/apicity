@@ -237,6 +237,26 @@ export interface SunoVoiceRecordInfoResponse {
   [key: string]: unknown;
 }
 
+export interface SunoVoiceValidateInfoRequest {
+  taskId: string;
+}
+
+export interface SunoVoiceValidateInfoData {
+  taskId: string;
+  validateInfo: string;
+  status: SunoVoiceTaskStatus;
+  errorCode: number | null;
+  errorMessage: string | null;
+  [key: string]: unknown;
+}
+
+export interface SunoVoiceValidateInfoResponse {
+  code: number;
+  msg?: string;
+  data?: SunoVoiceValidateInfoData | null;
+  [key: string]: unknown;
+}
+
 export interface SunoMp4Request {
   taskId: string;
   audioId: string;
@@ -576,6 +596,12 @@ interface SunoVoiceRecordInfoMethod {
   responseSchema: ApicitySchema<SunoVoiceRecordInfoResponse>;
 }
 
+interface SunoVoiceValidateInfoMethod {
+  (taskId: string): Promise<SunoVoiceValidateInfoResponse>;
+  schema: ApicitySchema<SunoVoiceValidateInfoRequest>;
+  responseSchema: ApicitySchema<SunoVoiceValidateInfoResponse>;
+}
+
 interface SunoMp4Method {
   (
     req: SunoMp4Request,
@@ -669,6 +695,7 @@ interface SunoVocalRemovalGetNamespace {
 
 interface SunoVoiceGetNamespace {
   recordInfo: SunoVoiceRecordInfoMethod;
+  validateInfo: SunoVoiceValidateInfoMethod;
 }
 
 interface SunoMp4Namespace {
@@ -901,6 +928,30 @@ const SunoVoiceRecordInfoResponseSchema = z
     code: z.number().int(),
     msg: z.string().optional(),
     data: SunoVoiceRecordInfoDataSchema.nullable().optional(),
+  })
+  .passthrough();
+
+const SunoVoiceValidateInfoRequestSchema = z
+  .object({
+    taskId: z.string().min(1),
+  })
+  .passthrough();
+
+const SunoVoiceValidateInfoDataSchema = z
+  .object({
+    taskId: z.string(),
+    validateInfo: z.string(),
+    status: SunoVoiceTaskStatusSchema,
+    errorCode: z.number().int().nullable(),
+    errorMessage: z.string().nullable(),
+  })
+  .passthrough();
+
+const SunoVoiceValidateInfoResponseSchema = z
+  .object({
+    code: z.number().int(),
+    msg: z.string().optional(),
+    data: SunoVoiceValidateInfoDataSchema.nullable().optional(),
   })
   .passthrough();
 
@@ -1310,6 +1361,17 @@ export function createSunoProvider(
     });
   }
 
+  // GET https://api.kie.ai/api/v1/voice/validate-info?taskId={taskId}
+  // Docs: https://docs.kie.ai/suno-api/suno-voice-validate-info
+  async function voiceValidateInfo(
+    taskId: string
+  ): Promise<SunoVoiceValidateInfoResponse> {
+    return kieRequest<SunoVoiceValidateInfoResponse>(transport, {
+      method: "GET",
+      path: `/api/v1/voice/validate-info?taskId=${encodeURIComponent(taskId)}`,
+    });
+  }
+
   // POST https://api.kie.ai/api/v1/mp4/generate
   // Docs: https://docs.kie.ai/suno-api/create-music-video
   async function mp4Generate(req: SunoMp4Request): Promise<SunoSubmitResponse> {
@@ -1579,6 +1641,10 @@ export function createSunoProvider(
             recordInfo: Object.assign(voiceRecordInfo, {
               schema: SunoVoiceRecordInfoRequestSchema,
               responseSchema: SunoVoiceRecordInfoResponseSchema,
+            }),
+            validateInfo: Object.assign(voiceValidateInfo, {
+              schema: SunoVoiceValidateInfoRequestSchema,
+              responseSchema: SunoVoiceValidateInfoResponseSchema,
             }),
           },
         },

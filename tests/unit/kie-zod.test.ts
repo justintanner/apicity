@@ -14,6 +14,7 @@ import {
   Seedance2FastInputSchema,
   Seedance2InputSchema,
   Seedance2MiniInputSchema,
+  Seedance2RequestSchema,
   SunoGenerateRequestSchema,
   VeoExtendRequestSchema,
   VeoGenerateRequestSchema,
@@ -133,6 +134,50 @@ describe("KIE Zod schema validation", () => {
       });
       expect(result.success).toBe(true);
       expect(result.data?.reference_image_urls).toBeUndefined();
+    });
+  });
+
+  // The 4K member's exact spelling is load-bearing beyond the SDK boundary:
+  // @apicity/cost keys the tier off case-sensitive "4K|i2v" / "4K|t2v"
+  // (packages/provider/cost/src/pricing/kie.ts), so a lowercase "4k" would
+  // parse here and then miss the rate table, quoting $0 instead of failing.
+  // Pin the spelling against the request schema CREATE_TASK_GUARDS actually
+  // enforces. The end-to-end half of this pin — schema-valid payload reaches
+  // the rate keys — lives in tests/unit/cost-pricing.test.ts.
+  describe("bytedance/seedance-2 resolution 4K spelling", () => {
+    const requestWith = (resolution?: string) => ({
+      model: "bytedance/seedance-2",
+      input: {
+        prompt: "a cinematic drone shot over a canyon",
+        ...(resolution === undefined ? {} : { resolution }),
+      },
+    });
+
+    it('accepts the uppercase "4K" member', () => {
+      const result = Seedance2RequestSchema.safeParse(requestWith("4K"));
+      expect(result.success).toBe(true);
+      expect(result.data?.input.resolution).toBe("4K");
+    });
+
+    it.each(["4k", "2160p"])(
+      "rejects %s as an out-of-vocabulary resolution",
+      (resolution) => {
+        const result = Seedance2RequestSchema.safeParse(
+          requestWith(resolution)
+        );
+        expect(result.success).toBe(false);
+        expect(
+          (result.error?.issues ?? []).some((issue) =>
+            issue.path.includes("resolution")
+          )
+        ).toBe(true);
+      }
+    );
+
+    it("still accepts a payload that omits resolution", () => {
+      const result = Seedance2RequestSchema.safeParse(requestWith());
+      expect(result.success).toBe(true);
+      expect(result.data?.input.resolution).toBeUndefined();
     });
   });
 

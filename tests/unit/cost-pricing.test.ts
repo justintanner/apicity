@@ -19,6 +19,11 @@ import type {
   CostHints,
   EstimateRequest,
 } from "../../packages/provider/cost/src/types";
+// Imported from kie source so the seedance-2 4K pin below can prove the
+// linkage end to end: a payload the shipped SDK schema accepts must land on
+// the rate keys this pricing table publishes. Unit tests reaching into kie
+// source follow existing precedent (tests/unit/kie-model-input-schemas.test.ts).
+import { Seedance2RequestSchema } from "../../packages/provider/kie/src/zod";
 
 describe("pricing helpers", () => {
   describe("asString", () => {
@@ -2534,7 +2539,12 @@ describe("kie stale-family refresh (REQ-004)", () => {
     { label: "with video input (i2v)", i2v: true, perUnitUsd: 0.64 },
     { label: "without video input (t2v)", i2v: false, perUnitUsd: 1.04 },
   ])("prices seedance-2 4K $label", ({ i2v, perUnitUsd }) => {
-    const result = kieEstimate({
+    // Parse first, then estimate the PARSED payload. Feeding the raw literal
+    // would only prove the rate table has a "4K" row; routing it through the
+    // shipped schema proves a payload the SDK actually accepts reaches that
+    // row, so a future "4k" spelling drift breaks this test instead of
+    // silently quoting $0.
+    const parsed = Seedance2RequestSchema.safeParse({
       model: "bytedance/seedance-2",
       input: {
         prompt: "xxx",
@@ -2544,12 +2554,26 @@ describe("kie stale-family refresh (REQ-004)", () => {
       },
     });
 
+    expect(parsed.success).toBe(true);
+    if (!parsed.success) return;
+
+    // Defaults the schema applied — evidence this is the parsed output and
+    // not the literal above. The estimator ignores fields it does not select.
+    expect(parsed.data.input.nsfw_checker).toBe(false);
+
+    const result = kieEstimate(parsed.data);
+
     expect(result.usd).toBeCloseTo(5 * perUnitUsd, 10);
     expect(result.breakdown).toEqual({
       units: 5,
       unit: "seconds",
       perUnitUsd,
     });
+    expect(
+      result.warnings.some((warning) =>
+        warning.includes("not found in pricing table")
+      )
+    ).toBe(false);
   });
 
   // grok-imagine video: both existing tiers rose and 1080p is new. The 1080p

@@ -535,6 +535,26 @@ const EXAMPLES: Record<string, EndpointExample> = {
     },
     "tier": "prohibitive",
     "runByDefault": false
+  },
+  "POST gemini3Pro.v1.chat.completions": {
+    "source": "kie/gemini-3-pro-chat-auth-error",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "ping"
+            }
+          ]
+        }
+      ],
+      "stream": false,
+      "include_thoughts": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   }
 };
 

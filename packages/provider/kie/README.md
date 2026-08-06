@@ -555,7 +555,7 @@ defaults to `false`.
 
 ## API Reference
 
-57 endpoints across 30 groups. Each method mirrors an upstream URL path.
+58 endpoints across 31 groups. Each method mirrors an upstream URL path.
 
 ### aleph
 
@@ -837,6 +837,25 @@ const res = await kie.gemini3Flash.post.v1.chat.completions({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/gemini-3-flash.ts`](src/gemini-3-flash.ts)
+
+</details>
+
+### gemini3Pro
+
+<details>
+<summary><code>POST</code> <b><code>kie.gemini3Pro.post.v1.chat.completions</code></b></summary>
+
+<code>POST https://api.kie.ai/gemini-3-pro/v1/chat/completions</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/market/gemini/gemini-3-pro)
+
+```typescript
+const res = await kie.gemini3Pro.post.v1.chat.completions({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/gemini-3-pro.ts`](src/gemini-3-pro.ts)
 
 </details>
 

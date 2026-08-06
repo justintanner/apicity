@@ -264,6 +264,19 @@ export {
   KieGemini3FlashToolFunctionSchema,
   KieGemini3FlashToolSchema,
   KieGemini3FlashToolTypeSchema,
+  KieGemini3ProChatCompletionsRequestSchema,
+  KieGemini3ProContentItemSchema,
+  KieGemini3ProContentItemTypeSchema,
+  KieGemini3ProMediaContentItemSchema,
+  KieGemini3ProMessageRoleSchema,
+  KieGemini3ProMessageSchema,
+  KieGemini3ProReasoningEffortSchema,
+  KieGemini3ProResponseFormatSchema,
+  KieGemini3ProTextContentItemSchema,
+  KieGemini3ProToolFunctionParametersSchema,
+  KieGemini3ProToolFunctionSchema,
+  KieGemini3ProToolSchema,
+  KieGemini3ProToolTypeSchema,
   KieGemini25ProChatCompletionsRequestSchema,
   KieGemini25ProContentItemSchema,
   KieGemini25ProContentItemTypeSchema,
@@ -347,6 +360,7 @@ export { createResponsesProvider } from "./responses";
 export { createGemini31ProProvider } from "./gemini-31-pro";
 export { createGemini25FlashProvider } from "./gemini-25-flash";
 export { createGemini3FlashProvider } from "./gemini-3-flash";
+export { createGemini3ProProvider } from "./gemini-3-pro";
 export { createGemini25ProProvider } from "./gemini-25-pro";
 
 // Export SSE utility
@@ -897,6 +911,21 @@ export type {
   KieGemini3FlashToolFunction,
   KieGemini3FlashToolFunctionParameters,
   KieGemini3FlashToolType,
+  KieGemini3ProChatCompletionsRequest,
+  KieGemini3ProChatCompletionsRequestInput,
+  KieGemini3ProChatCompletionsParsedRequest,
+  KieGemini3ProContentItem,
+  KieGemini3ProContentItemType,
+  KieGemini3ProMediaContentItem,
+  KieGemini3ProMessage,
+  KieGemini3ProMessageRole,
+  KieGemini3ProReasoningEffort,
+  KieGemini3ProResponseFormat,
+  KieGemini3ProTextContentItem,
+  KieGemini3ProTool,
+  KieGemini3ProToolFunction,
+  KieGemini3ProToolFunctionParameters,
+  KieGemini3ProToolType,
   KieGemini25ProChatCompletionsRequest,
   KieGemini25ProChatCompletionsRequestInput,
   KieGemini25ProChatCompletionsParsedRequest,
@@ -961,6 +990,18 @@ export type {
   KieGemini3FlashCompletionTokensDetails,
   KieGemini3FlashProvider,
 } from "./gemini-3-flash";
+
+export type {
+  KieGemini3ProChatChoice,
+  KieGemini3ProChatCompletionChunk,
+  KieGemini3ProChatCompletionResponse,
+  KieGemini3ProChatCompletionsResult,
+  KieGemini3ProChatDelta,
+  KieGemini3ProChatMessage,
+  KieGemini3ProChatUsage,
+  KieGemini3ProCompletionTokensDetails,
+  KieGemini3ProProvider,
+} from "./gemini-3-pro";
 
 export type {
   KieGemini25ProChatChoice,

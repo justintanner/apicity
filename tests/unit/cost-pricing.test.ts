@@ -14,6 +14,7 @@ import {
   type SlugProviderId,
 } from "../../packages/provider/cost/src/slugs";
 import { computeEstimate } from "../../packages/provider/cost/src/compute";
+import { lookupPaidEndpoint } from "../../packages/provider/cost/src/paid-endpoints";
 import type {
   CostHints,
   EstimateRequest,
@@ -2504,6 +2505,25 @@ describe("kie stale-family refresh (REQ-004)", () => {
     expect(result.usd).toBeCloseTo(0.84, 10);
     expect(result.warnings).toEqual([]);
   });
+
+  // AC-4 paper trail: the two OTP pay-gated Gemini Omni routes that are NOT
+  // the video generator publish no rate in the 2026-08-06 pull (0 of 404
+  // rows), so they are intentionally unpriced rather than silently skipped.
+  // Same treatment as the unpriced bytedance/seedream* ids above — no entry,
+  // fail-safe `prohibitive`, and an estimate that fails loudly instead of
+  // quoting a guessed rate. Delete this pin only when a page row appears.
+  it.each(["api.v1.omni.audio.create", "api.v1.omni.character.create"])(
+    "leaves %s pay-gated but unpriced — no published page row",
+    (dotPath) => {
+      expect(lookupPaidEndpoint("kie", "POST", dotPath)).toBeDefined();
+      expect(PRICING.kie[dotPath]).toBeUndefined();
+
+      const result = kieEstimate({ prompt: "x" }, { endpoint: dotPath });
+
+      expect(result.usd).toBe(0);
+      expect(result.warnings[0]).toContain("not found in pricing table");
+    }
+  );
 
   // seedance-2's new 4K tier. `computeEstimate` does not schema-validate, so
   // these two cells are reachable here even though the shipped

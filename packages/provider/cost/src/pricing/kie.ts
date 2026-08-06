@@ -391,7 +391,8 @@ const tieredVideoPage = (
   source: pricePage(url),
 });
 
-// flatVideo for the families whose evidence is a kie pricing page URL.
+// Flat per-second video rate for the families whose evidence is a kie pricing
+// page URL rather than a /market/ slug.
 const flatVideoPage = (perUnit: number, url: string): ModelPricing => ({
   kind: "perUnit",
   unit: "seconds",
@@ -896,6 +897,13 @@ export const kie: Record<string, ModelPricing> = {
   // schema PR, out of scope for this pricing pass). Until it lands, 4K is
   // covered by unit tests only and stays out of the compare-cost lineup,
   // which validates every row against the shipped schema.
+  //
+  // When that enum lands, the value must be added as exactly "4K" to match the
+  // rate keys below — NOT the "4k" spelling VeoResolutionSchema and
+  // GeminiOmniVideoResolutionSchema use. A lowercase "4k" would be
+  // schema-valid and miss the rate table, and no test would catch it: the 4K
+  // pin in tests/unit/cost-pricing.test.ts calls computeEstimate directly,
+  // which does not schema-validate.
   "bytedance/seedance-2": {
     kind: "perUnit",
     unit: "seconds",
@@ -1622,4 +1630,12 @@ export const kie: Record<string, ModelPricing> = {
     },
     source: pricePage("https://kie.ai/gemini-omni"),
   },
+
+  // The two other OTP pay-gated Gemini Omni routes — `api.v1.omni.audio.create`
+  // and `api.v1.omni.character.create` (paid-endpoints.ts) — are INTENTIONALLY
+  // unpriced: the 2026-08-06 pull publishes no rate for either (0 of 404 rows;
+  // the only omni rows are the gemini-omni-video generation cells above). A
+  // guessed rate would be worse than none, so both keep the fail-safe
+  // `prohibitive` tier they already had and their estimates fail loudly rather
+  // than quoting a number. Pinned negatively in tests/unit/cost-pricing.test.ts.
 };

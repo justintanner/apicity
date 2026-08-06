@@ -468,6 +468,20 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v1.voice.generate": {
+    "source": "kie/suno/voice-generate-bogus-ids",
+    "payload": {
+      "taskId": "apicity-test-bogus-task-id",
+      "verifyUrl": "https://invalid-host-apicity-test.invalid/verify.mp3",
+      "voiceName": "Apicity Test Voice",
+      "description": "error-path fixture only",
+      "style": "Pop",
+      "callBackUrl": "https://example.com/cb",
+      "singerSkillLevel": "beginner"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v1.voice.validate": {
     "source": "kie/suno/voice-validate-bogus-url",
     "payload": {

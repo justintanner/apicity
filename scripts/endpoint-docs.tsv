@@ -1038,6 +1038,7 @@ kie	api.v1.veo.get4kVideo	POST	https://api.kie.ai/api/v1/veo/get-4k-video	https:
 kie	api.v1.veo.recordInfo	GET	https://api.kie.ai/api/v1/veo/record-info?taskId={taskId}	https://docs.kie.ai/veo3-api/get-veo-3-video-details
 kie	api.v1.vocalRemoval.generate	POST	https://api.kie.ai/api/v1/vocal-removal/generate
 kie	api.v1.vocalRemoval.recordInfo	GET	https://api.kie.ai/api/v1/vocal-removal/record-info?taskId={taskId}	https://docs.kie.ai/suno-api/get-vocal-separation-details
+kie	api.v1.voice.generate	POST	https://api.kie.ai/api/v1/voice/generate	https://docs.kie.ai/suno-api/suno-voice-generate
 kie	api.v1.voice.checkVoice	POST	https://api.kie.ai/api/v1/voice/check-voice	https://docs.kie.ai/suno-api/suno-voice-check-voice
 kie	api.v1.voice.recordInfo	GET	https://api.kie.ai/api/v1/voice/record-info?taskId={taskId}	https://docs.kie.ai/suno-api/suno-voice-record-info
 kie	api.v1.voice.validate	POST	https://api.kie.ai/api/v1/voice/validate	https://docs.kie.ai/suno-api/suno-voice-validate

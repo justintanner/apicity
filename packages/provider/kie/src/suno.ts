@@ -258,6 +258,28 @@ export interface SunoVoiceValidateInfoResponse {
 }
 
 /**
+ * Create a custom Suno voice from a validation-phrase recording.
+ *
+ * Docs: https://docs.kie.ai/suno-api/suno-voice-generate
+ * Required: taskId (validation task), verifyUrl (user recording of the phrase).
+ */
+export type SunoVoiceSingerSkillLevel =
+  | "beginner"
+  | "intermediate"
+  | "advanced"
+  | "professional";
+
+export interface SunoVoiceGenerateRequest {
+  taskId: string;
+  verifyUrl: string;
+  voiceName?: string;
+  description?: string;
+  style?: string;
+  callBackUrl?: string;
+  singerSkillLevel?: SunoVoiceSingerSkillLevel;
+}
+
+/**
  * Submit source audio for Suno custom-voice validation-phrase generation.
  *
  * Task-creating: returns a taskId polled via GET /api/v1/voice/validate-info.
@@ -715,6 +737,14 @@ interface SunoVoiceValidateInfoMethod {
   responseSchema: ApicitySchema<SunoVoiceValidateInfoResponse>;
 }
 
+interface SunoVoiceGenerateMethod {
+  (
+    req: SunoVoiceGenerateRequest,
+    approval?: import("./paygate").PayGateApproval
+  ): Promise<SunoSubmitResponse>;
+  schema: ApicitySchema<SunoVoiceGenerateRequest>;
+}
+
 interface SunoVoiceValidateMethod {
   (
     req: SunoVoiceValidateRequest,
@@ -841,6 +871,7 @@ interface SunoVoiceGetNamespace {
 }
 
 interface SunoVoicePostNamespace {
+  generate: SunoVoiceGenerateMethod;
   validate: SunoVoiceValidateMethod;
   checkVoice: SunoVoiceCheckVoiceMethod;
 }
@@ -1109,6 +1140,25 @@ const SunoVoiceValidateInfoResponseSchema = z
     code: z.number().int(),
     msg: z.string().optional(),
     data: SunoVoiceValidateInfoDataSchema.nullable().optional(),
+  })
+  .passthrough();
+
+const SunoVoiceSingerSkillLevelSchema = z.enum([
+  "beginner",
+  "intermediate",
+  "advanced",
+  "professional",
+]);
+
+const SunoVoiceGenerateRequestSchema = z
+  .object({
+    taskId: z.string().min(1),
+    verifyUrl: z.string().min(1),
+    voiceName: z.string().optional(),
+    description: z.string().optional(),
+    style: z.string().optional(),
+    callBackUrl: z.string().optional(),
+    singerSkillLevel: SunoVoiceSingerSkillLevelSchema.optional(),
   })
   .passthrough();
 
@@ -1621,6 +1671,18 @@ export function createSunoProvider(
     });
   }
 
+  // POST https://api.kie.ai/api/v1/voice/generate
+  // Docs: https://docs.kie.ai/suno-api/suno-voice-generate
+  async function voiceGenerate(
+    req: SunoVoiceGenerateRequest
+  ): Promise<SunoSubmitResponse> {
+    return kieRequest<SunoSubmitResponse>(transport, {
+      method: "POST",
+      path: "/api/v1/voice/generate",
+      body: req,
+    });
+  }
+
   // GET https://api.kie.ai/api/v1/voice/record-info?taskId={taskId}
   // Docs: https://docs.kie.ai/suno-api/suno-voice-record-info
   async function voiceRecordInfo(
@@ -1903,6 +1965,9 @@ export function createSunoProvider(
             }),
           },
           voice: {
+            generate: Object.assign(voiceGenerate, {
+              schema: SunoVoiceGenerateRequestSchema,
+            }),
             // POST https://api.kie.ai/api/v1/voice/validate
             // Docs: https://docs.kie.ai/suno-api/suno-voice-validate
             validate: Object.assign(voiceValidate, {

@@ -555,7 +555,7 @@ defaults to `false`.
 
 ## API Reference
 
-62 endpoints across 32 groups. Each method mirrors an upstream URL path.
+64 endpoints across 32 groups. Each method mirrors an upstream URL path.
 
 ### aleph
 
@@ -1615,6 +1615,40 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await kie.suno.post.api.v1.voice.checkVoice({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>kie.suno.post.api.v1.voice.generate</code></b></summary>
+
+<code>POST https://api.kie.ai/api/v1/voice/generate</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/suno-api/suno-voice-generate)
+
+```typescript
+const res = await kie.suno.post.api.v1.voice.generate({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>kie.suno.post.api.v1.voice.validate</code></b></summary>
+
+<code>POST https://api.kie.ai/api/v1/voice/validate</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/suno-api/suno-voice-validate)
+
+```typescript
+const res = await kie.suno.post.api.v1.voice.validate({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)

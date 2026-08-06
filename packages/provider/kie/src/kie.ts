@@ -702,8 +702,9 @@ export function createKie(opts: KieOptions): KieProvider {
           { config: paygate }
         ),
         // Nested gate so Suno task-creating leaves (api.v1.generate, wav,
-        // mp4, vocalRemoval, midi) match PAID_ENDPOINTS exact keys. Free
-        // record-info / style helpers stay unlisted and unblocked.
+        // mp4, vocalRemoval, midi, voice.generate, voice.validate) match
+        // PAID_ENDPOINTS exact keys. Free record-info / style helpers stay
+        // unlisted and unblocked.
         suno: withPaidGate(
           "kie",
           createSunoProvider(baseURL, opts.apiKey, doFetch, timeout),

@@ -995,6 +995,8 @@ export type {
   SunoVoiceValidateInfoRequest,
   SunoVoiceValidateInfoData,
   SunoVoiceValidateInfoResponse,
+  SunoVoiceSingerSkillLevel,
+  SunoVoiceGenerateRequest,
   SunoVoiceValidateRequest,
   SunoVoiceValidateData,
   SunoVoiceValidateResponse,

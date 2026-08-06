@@ -220,6 +220,15 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v1.generate.getTimestampedLyrics": {
+    "source": "kie/suno/get-timestamped-lyrics-not-found",
+    "payload": {
+      "taskId": "apicity-test-nonexistent-task-id-do-not-record-real",
+      "audioId": "apicity-test-nonexistent-audio-id-do-not-record-real"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v1.generate.mashup": {
     "source": "kie/suno/mashup-submit",
     "payload": {

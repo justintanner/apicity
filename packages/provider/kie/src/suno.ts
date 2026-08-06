@@ -522,6 +522,36 @@ export interface SunoReplaceSectionRequest {
   callBackUrl?: string;
 }
 
+/** Retrieve synchronized (timestamped) lyrics for a generated track. */
+export interface SunoGetTimestampedLyricsRequest {
+  taskId: string;
+  audioId: string;
+}
+
+export interface SunoAlignedWord {
+  word?: string;
+  success?: boolean;
+  startS?: number;
+  endS?: number;
+  palign?: number;
+  [key: string]: unknown;
+}
+
+export interface SunoGetTimestampedLyricsData {
+  alignedWords?: SunoAlignedWord[];
+  waveformData?: number[];
+  hootCer?: number;
+  isStreamed?: boolean;
+  [key: string]: unknown;
+}
+
+export interface SunoGetTimestampedLyricsResponse {
+  code: number;
+  msg?: string;
+  data?: SunoGetTimestampedLyricsData | null;
+  [key: string]: unknown;
+}
+
 export type SunoSoundsModel = "V5" | "V5_5";
 
 export type SunoSoundsKey =
@@ -610,6 +640,7 @@ interface SunoGenerateCallable {
   sounds: SunoSoundsMethod;
   addInstrumental: SunoAddInstrumentalMethod;
   addVocals: SunoAddVocalsMethod;
+  getTimestampedLyrics: SunoGetTimestampedLyricsMethod;
 }
 
 interface SunoExtendMethod {
@@ -731,6 +762,14 @@ interface SunoMashupMethod {
 interface SunoReplaceSectionMethod {
   (req: SunoReplaceSectionRequest): Promise<SunoSubmitResponse>;
   schema: ApicitySchema<SunoReplaceSectionRequest>;
+}
+
+interface SunoGetTimestampedLyricsMethod {
+  (
+    req: SunoGetTimestampedLyricsRequest
+  ): Promise<SunoGetTimestampedLyricsResponse>;
+  schema: ApicitySchema<SunoGetTimestampedLyricsRequest>;
+  responseSchema: ApicitySchema<SunoGetTimestampedLyricsResponse>;
 }
 
 interface SunoSoundsMethod {
@@ -1055,6 +1094,40 @@ const SunoVoiceCheckVoiceResponseSchema = z
     code: z.number().int(),
     msg: z.string().optional(),
     data: SunoVoiceCheckVoiceDataSchema.nullable().optional(),
+  })
+  .passthrough();
+
+const SunoGetTimestampedLyricsRequestSchema = z
+  .object({
+    taskId: z.string().min(1),
+    audioId: z.string().min(1),
+  })
+  .passthrough();
+
+const SunoAlignedWordSchema = z
+  .object({
+    word: z.string().optional(),
+    success: z.boolean().optional(),
+    startS: z.number().optional(),
+    endS: z.number().optional(),
+    palign: z.number().int().optional(),
+  })
+  .passthrough();
+
+const SunoGetTimestampedLyricsDataSchema = z
+  .object({
+    alignedWords: z.array(SunoAlignedWordSchema).optional(),
+    waveformData: z.array(z.number()).optional(),
+    hootCer: z.number().optional(),
+    isStreamed: z.boolean().optional(),
+  })
+  .passthrough();
+
+const SunoGetTimestampedLyricsResponseSchema = z
+  .object({
+    code: z.number().int(),
+    msg: z.string().optional(),
+    data: SunoGetTimestampedLyricsDataSchema.nullable().optional(),
   })
   .passthrough();
 
@@ -1659,6 +1732,18 @@ export function createSunoProvider(
     });
   }
 
+  // POST https://api.kie.ai/api/v1/generate/get-timestamped-lyrics
+  // Docs: https://docs.kie.ai/suno-api/get-timestamped-lyrics
+  async function getTimestampedLyrics(
+    req: SunoGetTimestampedLyricsRequest
+  ): Promise<SunoGetTimestampedLyricsResponse> {
+    return kieRequest<SunoGetTimestampedLyricsResponse>(transport, {
+      method: "POST",
+      path: "/api/v1/generate/get-timestamped-lyrics",
+      body: req,
+    });
+  }
+
   // POST https://api.kie.ai/api/v1/generate/sounds
   // Docs: https://docs.kie.ai/suno-api/generate-sounds
   async function soundsGenerate(
@@ -1722,6 +1807,10 @@ export function createSunoProvider(
     }),
     addVocals: Object.assign(addVocalsGenerate, {
       schema: SunoAddVocalsRequestSchema,
+    }),
+    getTimestampedLyrics: Object.assign(getTimestampedLyrics, {
+      schema: SunoGetTimestampedLyricsRequestSchema,
+      responseSchema: SunoGetTimestampedLyricsResponseSchema,
     }),
   });
 

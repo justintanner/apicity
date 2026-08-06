@@ -1003,6 +1003,7 @@ kie	api.v1.generate	POST	https://api.kie.ai/api/v1/generate	https://docs.kie.ai/
 kie	api.v1.generate.addInstrumental	POST	https://api.kie.ai/api/v1/generate/add-instrumental	https://docs.kie.ai/suno-api/add-instrumental
 kie	api.v1.generate.addVocals	POST	https://api.kie.ai/api/v1/generate/add-vocals	https://docs.kie.ai/suno-api/add-vocals
 kie	api.v1.generate.extend	POST	https://api.kie.ai/api/v1/generate/extend
+kie	api.v1.generate.getTimestampedLyrics	POST	https://api.kie.ai/api/v1/generate/get-timestamped-lyrics	https://docs.kie.ai/suno-api/get-timestamped-lyrics
 kie	api.v1.generate.mashup	POST	https://api.kie.ai/api/v1/generate/mashup	https://docs.kie.ai/suno-api/generate-mashup
 kie	api.v1.generate.recordInfo	GET	https://api.kie.ai/api/v1/generate/record-info?taskId={taskId}
 kie	api.v1.generate.replaceSection	POST	https://api.kie.ai/api/v1/generate/replace-section	https://docs.kie.ai/suno-api/replace-section

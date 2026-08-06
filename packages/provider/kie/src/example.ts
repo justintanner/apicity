@@ -15,6 +15,14 @@ export interface EndpointExample {
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
+  "GET api.v1.aleph.recordInfo": {
+    "source": "kie/aleph/record-info-not-found",
+    "payload": {
+      "taskId": "apicity-test-nonexistent-task-id-do-not-record-real"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "GET api.v1.flux.kontext.recordInfo": {
     "source": "kie/flux-kontext-record-info-not-found",
     "payload": {
@@ -100,6 +108,22 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "source": "kie/veo/record-info-not-found",
     "payload": {
       "taskId": "apicity-test-nonexistent-veo-task-id-do-not-record-real"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "GET api.v1.vocalRemoval.recordInfo": {
+    "source": "kie/suno/vocal-removal-record-info-not-found",
+    "payload": {
+      "taskId": "apicity-test-nonexistent-task-id-do-not-record-real"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "GET api.v1.voice.recordInfo": {
+    "source": "kie/suno/voice-record-info-not-found",
+    "payload": {
+      "taskId": "apicity-test-nonexistent-task-id-do-not-record-real"
     },
     "tier": "prohibitive",
     "runByDefault": false

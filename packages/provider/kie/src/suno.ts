@@ -209,6 +209,34 @@ export interface SunoVocalRemovalRecordInfoResponse {
   [key: string]: unknown;
 }
 
+export interface SunoVoiceRecordInfoRequest {
+  taskId: string;
+}
+
+export type SunoVoiceTaskStatus =
+  | "wait_processing"
+  | "processing_validate"
+  | "processing_validate_fail"
+  | "wait_validating"
+  | "success"
+  | "fail";
+
+export interface SunoVoiceRecordInfoData {
+  taskId: string;
+  voiceId: string;
+  status: SunoVoiceTaskStatus;
+  errorCode: number | null;
+  errorMessage: string | null;
+  [key: string]: unknown;
+}
+
+export interface SunoVoiceRecordInfoResponse {
+  code: number;
+  msg?: string;
+  data?: SunoVoiceRecordInfoData | null;
+  [key: string]: unknown;
+}
+
 export interface SunoMp4Request {
   taskId: string;
   audioId: string;
@@ -542,6 +570,12 @@ interface SunoVocalRemovalRecordInfoMethod {
   responseSchema: ApicitySchema<SunoVocalRemovalRecordInfoResponse>;
 }
 
+interface SunoVoiceRecordInfoMethod {
+  (taskId: string): Promise<SunoVoiceRecordInfoResponse>;
+  schema: ApicitySchema<SunoVoiceRecordInfoRequest>;
+  responseSchema: ApicitySchema<SunoVoiceRecordInfoResponse>;
+}
+
 interface SunoMp4Method {
   (
     req: SunoMp4Request,
@@ -633,6 +667,10 @@ interface SunoVocalRemovalGetNamespace {
   recordInfo: SunoVocalRemovalRecordInfoMethod;
 }
 
+interface SunoVoiceGetNamespace {
+  recordInfo: SunoVoiceRecordInfoMethod;
+}
+
 interface SunoMp4Namespace {
   generate: SunoMp4Method;
 }
@@ -672,6 +710,7 @@ interface SunoV1GetNamespace {
     recordInfo: SunoWavRecordInfoMethod;
   };
   vocalRemoval: SunoVocalRemovalGetNamespace;
+  voice: SunoVoiceGetNamespace;
 }
 
 interface SunoPostApiNamespace {
@@ -829,6 +868,39 @@ const SunoVocalRemovalRecordInfoResponseSchema = z
     code: z.number().int(),
     msg: z.string().optional(),
     data: SunoVocalRemovalRecordInfoDataSchema.nullable().optional(),
+  })
+  .passthrough();
+
+const SunoVoiceRecordInfoRequestSchema = z
+  .object({
+    taskId: z.string().min(1),
+  })
+  .passthrough();
+
+const SunoVoiceTaskStatusSchema = z.enum([
+  "wait_processing",
+  "processing_validate",
+  "processing_validate_fail",
+  "wait_validating",
+  "success",
+  "fail",
+]);
+
+const SunoVoiceRecordInfoDataSchema = z
+  .object({
+    taskId: z.string(),
+    voiceId: z.string(),
+    status: SunoVoiceTaskStatusSchema,
+    errorCode: z.number().int().nullable(),
+    errorMessage: z.string().nullable(),
+  })
+  .passthrough();
+
+const SunoVoiceRecordInfoResponseSchema = z
+  .object({
+    code: z.number().int(),
+    msg: z.string().optional(),
+    data: SunoVoiceRecordInfoDataSchema.nullable().optional(),
   })
   .passthrough();
 
@@ -1227,6 +1299,17 @@ export function createSunoProvider(
     });
   }
 
+  // GET https://api.kie.ai/api/v1/voice/record-info?taskId={taskId}
+  // Docs: https://docs.kie.ai/suno-api/suno-voice-record-info
+  async function voiceRecordInfo(
+    taskId: string
+  ): Promise<SunoVoiceRecordInfoResponse> {
+    return kieRequest<SunoVoiceRecordInfoResponse>(transport, {
+      method: "GET",
+      path: `/api/v1/voice/record-info?taskId=${encodeURIComponent(taskId)}`,
+    });
+  }
+
   // POST https://api.kie.ai/api/v1/mp4/generate
   // Docs: https://docs.kie.ai/suno-api/create-music-video
   async function mp4Generate(req: SunoMp4Request): Promise<SunoSubmitResponse> {
@@ -1490,6 +1573,12 @@ export function createSunoProvider(
             recordInfo: Object.assign(vocalRemovalRecordInfo, {
               schema: SunoVocalRemovalRecordInfoRequestSchema,
               responseSchema: SunoVocalRemovalRecordInfoResponseSchema,
+            }),
+          },
+          voice: {
+            recordInfo: Object.assign(voiceRecordInfo, {
+              schema: SunoVoiceRecordInfoRequestSchema,
+              responseSchema: SunoVoiceRecordInfoResponseSchema,
             }),
           },
         },

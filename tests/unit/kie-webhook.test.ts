@@ -93,6 +93,30 @@ describe("kie webhook HMAC helper", () => {
       ).toBe(false);
     });
 
+    it("rejects a wrong timestamp", () => {
+      const signature = independentSign(TASK_ID, TIMESTAMP, SECRET);
+      expect(
+        verifyKieWebhookSignature({
+          secret: SECRET,
+          taskId: TASK_ID,
+          timestamp: "1769670761",
+          signature,
+        })
+      ).toBe(false);
+    });
+
+    it("rejects a signature of the wrong length without throwing", () => {
+      const signature = independentSign(TASK_ID, TIMESTAMP, SECRET);
+      expect(
+        verifyKieWebhookSignature({
+          secret: SECRET,
+          taskId: TASK_ID,
+          timestamp: TIMESTAMP,
+          signature: signature.slice(0, -4),
+        })
+      ).toBe(false);
+    });
+
     it("rejects empty or missing inputs", () => {
       const signature = independentSign(TASK_ID, TIMESTAMP, SECRET);
       expect(
@@ -132,6 +156,12 @@ describe("kie webhook HMAC helper", () => {
       ).toBe(TASK_ID);
     });
 
+    it("falls back to data.taskId", () => {
+      expect(extractKieWebhookTaskId({ data: { taskId: TASK_ID } })).toBe(
+        TASK_ID
+      );
+    });
+
     it("falls back to data.task_id", () => {
       expect(extractKieWebhookTaskId({ data: { task_id: TASK_ID } })).toBe(
         TASK_ID
@@ -154,6 +184,34 @@ describe("kie webhook HMAC helper", () => {
             code: 200,
             data: { task_id: TASK_ID, callbackType: "task_completed" },
           },
+        })
+      ).toBe(true);
+    });
+
+    it("verifies a request carrying Fetch Headers", () => {
+      const signature = signKieWebhook(TASK_ID, TIMESTAMP, SECRET);
+      expect(
+        verifyKieWebhookRequest({
+          secret: SECRET,
+          headers: new Headers({
+            "X-Webhook-Timestamp": TIMESTAMP,
+            "X-Webhook-Signature": signature,
+          }),
+          body: { taskId: TASK_ID },
+        })
+      ).toBe(true);
+    });
+
+    it("accepts Express-style string[] header values", () => {
+      const signature = signKieWebhook(TASK_ID, TIMESTAMP, SECRET);
+      expect(
+        verifyKieWebhookRequest({
+          secret: SECRET,
+          headers: {
+            "x-webhook-timestamp": [TIMESTAMP, "1769670761"],
+            "x-webhook-signature": [signature, "ignored"],
+          },
+          body: { taskId: TASK_ID },
         })
       ).toBe(true);
     });

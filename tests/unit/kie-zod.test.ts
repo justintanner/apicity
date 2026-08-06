@@ -137,14 +137,17 @@ describe("KIE Zod schema validation", () => {
     });
   });
 
-  // The 4K member's exact spelling is load-bearing beyond the SDK boundary:
-  // @apicity/cost keys the tier off case-sensitive "4K|i2v" / "4K|t2v"
-  // (packages/provider/cost/src/pricing/kie.ts), so a lowercase "4k" would
-  // parse here and then miss the rate table, quoting $0 instead of failing.
-  // Pin the spelling against the request schema CREATE_TASK_GUARDS actually
-  // enforces. The end-to-end half of this pin — schema-valid payload reaches
-  // the rate keys — lives in tests/unit/cost-pricing.test.ts.
-  describe("bytedance/seedance-2 resolution 4K spelling", () => {
+  // The 4K member's exact spelling is load-bearing on both sides. Upstream
+  // takes only lowercase "4k" — uppercase "4K" answers {"code":422,"msg":
+  // "Invalid resolution"} (recorded 2026-08-06, see
+  // tests/integration/kie-bytedance-seedance-2-4k.test.ts) — and @apicity/cost
+  // keys the tier off case-sensitive "4k|i2v" / "4k|t2v"
+  // (packages/provider/cost/src/pricing/kie.ts), so a drift to "4K" would
+  // either be refused on the wire or miss the rate table and quote $0. Pin the
+  // spelling against the request schema CREATE_TASK_GUARDS actually enforces.
+  // The end-to-end half of this pin — schema-valid payload reaches the rate
+  // keys — lives in tests/unit/cost-pricing.test.ts.
+  describe("bytedance/seedance-2 resolution 4k spelling", () => {
     const requestWith = (resolution?: string) => ({
       model: "bytedance/seedance-2",
       input: {
@@ -153,13 +156,13 @@ describe("KIE Zod schema validation", () => {
       },
     });
 
-    it('accepts the uppercase "4K" member', () => {
-      const result = Seedance2RequestSchema.safeParse(requestWith("4K"));
+    it('accepts the lowercase "4k" member', () => {
+      const result = Seedance2RequestSchema.safeParse(requestWith("4k"));
       expect(result.success).toBe(true);
-      expect(result.data?.input.resolution).toBe("4K");
+      expect(result.data?.input.resolution).toBe("4k");
     });
 
-    it.each(["4k", "2160p"])(
+    it.each(["4K", "2160p"])(
       "rejects %s as an out-of-vocabulary resolution",
       (resolution) => {
         const result = Seedance2RequestSchema.safeParse(

@@ -1120,7 +1120,7 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
       resolution: {
         type: "string",
-        enum: ["480p", "720p", "1080p", "4K"],
+        enum: ["480p", "720p", "1080p", "4k"],
         description: "Output resolution (default 720p)",
       },
       aspect_ratio: {

@@ -889,13 +889,16 @@ export const kie: Record<string, ModelPricing> = {
   // ($1.04) without.
   //
   // As of ac-8cfo6r the 4K tier is schema-reachable: the shipped
-  // Seedance2InputSchema accepts resolution "4K", spelled uppercase to match
-  // the rate keys below — NOT the "4k" spelling VeoResolutionSchema and
-  // GeminiOmniVideoResolutionSchema use, which would be schema-valid and miss
-  // the rate table. The seedance-2 4K rows in scripts/compare-video-cost.mjs
-  // are the standing guard on that linkage: every lineup row is validated
-  // against the shipped schema, so a drift to "4k" on either side fails
-  // `pnpm run lint:compare-payloads`.
+  // Seedance2InputSchema accepts resolution "4k" — lowercase, the spelling
+  // upstream's request grammar actually takes. The uppercase "4K" from the
+  // pricing page label is rejected on the wire ({"code":422,"msg":"Invalid
+  // resolution"}, recorded 2026-08-06 under ac-8cfo6r WI-4), so the rate keys
+  // below follow the payload value, as veo3 and gemini-omni already do.
+  // inputResolution reads input.resolution verbatim with no case folding, so
+  // key and schema member must stay byte-identical. The seedance-2 4k rows in
+  // scripts/compare-video-cost.mjs are the standing guard on that linkage:
+  // every lineup row is validated against the shipped schema, so a drift to
+  // "4K" on either side fails `pnpm run lint:compare-payloads`.
   "bytedance/seedance-2": {
     kind: "perUnit",
     unit: "seconds",
@@ -914,8 +917,8 @@ export const kie: Record<string, ModelPricing> = {
       "720p|t2v": 0.205,
       "1080p|i2v": 0.31,
       "1080p|t2v": 0.51,
-      "4K|i2v": 0.64,
-      "4K|t2v": 1.04,
+      "4k|i2v": 0.64,
+      "4k|t2v": 1.04,
     },
     source: pricePage(
       "https://kie.ai/seedance-2-0?model=bytedance%2Fseedance-2"

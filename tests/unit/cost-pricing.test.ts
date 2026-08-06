@@ -19,7 +19,7 @@ import type {
   CostHints,
   EstimateRequest,
 } from "../../packages/provider/cost/src/types";
-// Imported from kie source so the seedance-2 4K pin below can prove the
+// Imported from kie source so the seedance-2 4k pin below can prove the
 // linkage end to end: a payload the shipped SDK schema accepts must land on
 // the rate keys this pricing table publishes. Unit tests reaching into kie
 // source follow existing precedent (tests/unit/kie-model-input-schemas.test.ts).
@@ -2532,25 +2532,25 @@ describe("kie stale-family refresh (REQ-004)", () => {
 
   // seedance-2's 4K tier, schema-reachable as of ac-8cfo6r. This pins the link
   // between the shipped Seedance2InputSchema.resolution member and the
-  // case-sensitive "4K|i2v" / "4K|t2v" rate keys: the payload goes through the
-  // request schema before it reaches the estimator, so a drift to "4k" on
-  // either side fails here instead of silently quoting $0. The seedance-2 4K
+  // case-sensitive "4k|i2v" / "4k|t2v" rate keys: the payload goes through the
+  // request schema before it reaches the estimator, so a drift to "4K" on
+  // either side fails here instead of silently quoting $0. The seedance-2 4k
   // rows in scripts/compare-video-cost.mjs guard the same link at lint time.
   it.each([
     { label: "with video input (i2v)", i2v: true, perUnitUsd: 0.64 },
     { label: "without video input (t2v)", i2v: false, perUnitUsd: 1.04 },
-  ])("prices seedance-2 4K $label", ({ i2v, perUnitUsd }) => {
+  ])("prices seedance-2 4k $label", ({ i2v, perUnitUsd }) => {
     // Parse first, then estimate the PARSED payload. Feeding the raw literal
-    // would only prove the rate table has a "4K" row; routing it through the
+    // would only prove the rate table has a "4k" row; routing it through the
     // shipped schema proves a payload the SDK actually accepts reaches that
-    // row, so a future "4k" spelling drift breaks this test instead of
+    // row, so a future "4K" spelling drift breaks this test instead of
     // silently quoting $0.
     const parsed = Seedance2RequestSchema.safeParse({
       model: "bytedance/seedance-2",
       input: {
         prompt: "xxx",
         duration: 5,
-        resolution: "4K",
+        resolution: "4k",
         ...(i2v ? { first_frame_url: "https://example.com/x.jpg" } : {}),
       },
     });

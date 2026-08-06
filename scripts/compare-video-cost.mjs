@@ -294,13 +294,13 @@ export const lineup = [
   },
   {
     ...createTaskEndpointAssociation,
-    label: "seedance-2 4K i2v",
+    label: "seedance-2 4k i2v",
     payload: {
       model: "bytedance/seedance-2",
       input: {
         prompt: "xxx",
         first_frame_url: "https://example.com/x.jpg",
-        resolution: "4K",
+        resolution: "4k",
       },
     },
     audio: "—",
@@ -319,10 +319,10 @@ export const lineup = [
   },
   {
     ...createTaskEndpointAssociation,
-    label: "seedance-2 4K t2v",
+    label: "seedance-2 4k t2v",
     payload: {
       model: "bytedance/seedance-2",
-      input: { prompt: "xxx", resolution: "4K" },
+      input: { prompt: "xxx", resolution: "4k" },
     },
     audio: "—",
   },

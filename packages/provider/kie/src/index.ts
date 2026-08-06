@@ -37,6 +37,27 @@ export type {
   FluxKontextCallbackPayload,
 } from "./callbacks-flux-kontext";
 
+// 4o Image callback payload
+export {
+  Gpt4oImageCallbackInfoSchema,
+  Gpt4oImageCallbackDataSchema,
+  Gpt4oImageCallbackPayloadSchema,
+} from "./callbacks-gpt4o-image";
+export type {
+  Gpt4oImageCallbackInfo,
+  Gpt4oImageCallbackData,
+  Gpt4oImageCallbackPayload,
+} from "./callbacks-gpt4o-image";
+
+export type {
+  RunwayGenerateCallbackData,
+  RunwayGenerateCallbackPayload,
+  RunwayExtendCallbackData,
+  RunwayExtendCallbackPayload,
+  RunwayAlephCallbackData,
+  RunwayAlephCallbackPayload,
+} from "./callbacks-runway";
+
 // Export reusable schema metadata
 export {
   GeminiOmniAudioCreateRequestSchema,

@@ -1021,7 +1021,7 @@ describe("TRI-008 VeoExtendRequestSchema.model stays a closed set", () => {
 // TRI-001 KieMediaModelSchema — one escape hatch per vendor family
 // ---------------------------------------------------------------------------
 //
-// KieMediaModelSchema is kie's aggregator catalogue: 66 ids drawn from a dozen
+// KieMediaModelSchema is kie's aggregator catalogue: 69 ids drawn from a dozen
 // unrelated vendors behind one `createTask` endpoint. REQ-006 forbids opening
 // it with a single catch-all regex, so it carries one alias per vendor family
 // while singletons (omnihuman, volcengine, gemini-omni, sora-watermark,
@@ -1032,7 +1032,7 @@ describe("TRI-008 VeoExtendRequestSchema.model stays a closed set", () => {
 // BR-4 needs care here that the single-family schemas above do not. A foreign
 // *catalogue* id — `happyhorse/video-edit` on the Kling family — is accepted by
 // KieMediaModelSchema, through the enum branch, and always was: the whole point
-// of the aggregator is that all 66 are valid. So cross-family leakage cannot be
+// of the aggregator is that all 69 are valid. So cross-family leakage cannot be
 // asserted with safeParse; it is asserted structurally instead, against the
 // alias patterns themselves ("partitions the catalogue" below). The per-family
 // `rejected` lists therefore carry BR-3 near-miss typos plus BR-4 ids from
@@ -1070,7 +1070,7 @@ const MEDIA_MODEL_FAMILIES = [
   },
   {
     family: "Nano Banana",
-    listed: ["nano-banana-pro", "nano-banana-2"],
+    listed: ["nano-banana-pro", "nano-banana-2", "nano-banana-2-lite"],
     aliases: ["nano-banana-3", "nano-banana-pro-max"],
     rejected: ["nano-banana", "nanobanana-2", "nano_banana_2", "NANO-BANANA-2"],
   },
@@ -1078,6 +1078,7 @@ const MEDIA_MODEL_FAMILIES = [
     family: "GPT Image",
     listed: [
       "gpt-image/1.5-image-to-image",
+      "gpt-image/1.5-text-to-image",
       "gpt-image-2-image-to-image",
       "gpt-image-2-text-to-image",
     ],
@@ -1135,6 +1136,7 @@ const MEDIA_MODEL_FAMILIES = [
       "bytedance/seedance-2-fast",
       "bytedance/seedance-2",
       "bytedance/seedance-2-mini",
+      "bytedance/seedance-1.5-pro",
     ],
     aliases: ["bytedance/seedance-3", "bytedance/seedance-2-pro"],
     rejected: [

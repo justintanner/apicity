@@ -869,6 +869,60 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  // https://docs.kie.ai/market/bytedance/seedance-1-5-pro
+  "bytedance/seedance-1.5-pro": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        maxLength: 20000,
+        description: "Video generation prompt (3-20000 chars)",
+      },
+      input_urls: {
+        type: "array",
+        maxItems: 2,
+        description:
+          "Optional input image URLs for image-to-video (0-2; omit for text-to-video)",
+        items: { type: "string" },
+      },
+      aspect_ratio: {
+        type: "string",
+        required: true,
+        enum: ["1:1", "4:3", "3:4", "16:9", "9:16", "21:9"],
+        description: "Video aspect ratio (documented default 1:1)",
+      },
+      resolution: {
+        type: "string",
+        enum: ["480p", "720p", "1080p"],
+        default: "720p",
+        description: "Output resolution (default 720p)",
+      },
+      duration: {
+        type: "integer",
+        required: true,
+        minimum: 4,
+        maximum: 12,
+        description: "Duration in seconds, 4-12",
+      },
+      fixed_lens: {
+        type: "boolean",
+        default: false,
+        description: "Lock camera for static shots (default false)",
+      },
+      generate_audio: {
+        type: "boolean",
+        default: false,
+        description: "Generate accompanying audio (default false, higher cost)",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description: "Content safety filter (default false)",
+      },
+    },
+  },
+
   "nano-banana-2": {
     type: "image",
     fields: {
@@ -921,6 +975,48 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  // https://docs.kie.ai/market/google/nano-banana-2-lite
+  "nano-banana-2-lite": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        maxLength: 20000,
+        description: "Image generation prompt (max 20000 chars)",
+      },
+      image_urls: {
+        type: "array",
+        maxItems: 10,
+        description:
+          "Optional reference image URLs (max 10; omit or [] for text-to-image)",
+        items: { type: "string" },
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: [
+          "1:1",
+          "1:4",
+          "1:8",
+          "2:3",
+          "3:2",
+          "3:4",
+          "4:1",
+          "4:3",
+          "4:5",
+          "5:4",
+          "8:1",
+          "9:16",
+          "16:9",
+          "21:9",
+          "auto",
+        ],
+        default: "auto",
+        description: "Output aspect ratio (default auto)",
+      },
+    },
+  },
+
   "gpt-image/1.5-image-to-image": {
     type: "image",
     fields: {
@@ -944,6 +1040,30 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         type: "string",
         enum: ["medium", "high"],
         description: "Output quality",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/gpt-image/1-5-text-to-image
+  "gpt-image/1.5-text-to-image": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        description: "Text description of the image to generate",
+      },
+      aspect_ratio: {
+        type: "string",
+        required: true,
+        enum: ["1:1", "2:3", "3:2"],
+        description: "Output aspect ratio (documented default 1:1)",
+      },
+      quality: {
+        type: "string",
+        required: true,
+        enum: ["medium", "high"],
+        description: "Output quality (documented default medium)",
       },
     },
   },

@@ -198,7 +198,9 @@ export const KIE_MEDIA_MODELS = [
   "grok-imagine-video-1-5-preview",
   "nano-banana-pro",
   "nano-banana-2",
+  "nano-banana-2-lite",
   "gpt-image/1.5-image-to-image",
+  "gpt-image/1.5-text-to-image",
   "gpt-image-2-image-to-image",
   "gpt-image-2-text-to-image",
   "seedream/5-lite-image-to-image",
@@ -215,6 +217,7 @@ export const KIE_MEDIA_MODELS = [
   "bytedance/seedance-2-fast",
   "bytedance/seedance-2",
   "bytedance/seedance-2-mini",
+  "bytedance/seedance-1.5-pro",
   "wan/2-7-image-to-video",
   "wan/2-7-text-to-video",
   "wan/2-7-r2v",
@@ -1884,6 +1887,39 @@ export const Seedance2MiniRequestSchema = z.object({
   input: Seedance2MiniInputSchema,
 });
 
+// Docs: https://docs.kie.ai/market/bytedance/seedance-1-5-pro
+// Distinct input shape from seedance-2*: `input_urls` (0-2) instead of
+// first/last/reference frames, plus `fixed_lens`. Duration range is 4-12.
+export const Seedance15ProAspectRatioSchema = z.enum([
+  "1:1",
+  "4:3",
+  "3:4",
+  "16:9",
+  "9:16",
+  "21:9",
+]);
+
+export const Seedance15ProResolutionSchema = z.enum(["480p", "720p", "1080p"]);
+
+export const Seedance15ProInputSchema = z.object({
+  prompt: z.string().min(3).max(20000),
+  input_urls: z.array(z.string()).max(2).optional(),
+  // Required by the OpenAPI `required` list (documented default "1:1").
+  aspect_ratio: Seedance15ProAspectRatioSchema,
+  resolution: Seedance15ProResolutionSchema.default("720p"),
+  // Required; documented range 4-12 seconds.
+  duration: z.number().int().min(4).max(12),
+  fixed_lens: z.boolean().default(false),
+  generate_audio: z.boolean().default(false),
+  nsfw_checker: z.boolean().default(false),
+});
+
+export const Seedance15ProRequestSchema = z.object({
+  model: z.literal("bytedance/seedance-1.5-pro"),
+  callBackUrl: z.string().optional(),
+  input: Seedance15ProInputSchema,
+});
+
 export const NanoBanana2RequestSchema = z.object({
   model: z.literal("nano-banana-2"),
   callBackUrl: z.string().url().optional(),
@@ -1914,6 +1950,37 @@ export const NanoBanana2RequestSchema = z.object({
   }),
 });
 
+// Docs: https://docs.kie.ai/market/google/nano-banana-2-lite
+// Lite uses `image_urls` (not `image_input`) and has no resolution/output_format.
+export const NanoBanana2LiteAspectRatioSchema = z.enum([
+  "1:1",
+  "1:4",
+  "1:8",
+  "2:3",
+  "3:2",
+  "3:4",
+  "4:1",
+  "4:3",
+  "4:5",
+  "5:4",
+  "8:1",
+  "9:16",
+  "16:9",
+  "21:9",
+  "auto",
+]);
+
+export const NanoBanana2LiteRequestSchema = z.object({
+  model: z.literal("nano-banana-2-lite"),
+  callBackUrl: z.string().url().optional(),
+  input: z.object({
+    prompt: z.string().min(1).max(20000),
+    // Optional references; omit or [] for pure text-to-image. Max 10.
+    image_urls: z.array(z.string()).max(10).optional(),
+    aspect_ratio: NanoBanana2LiteAspectRatioSchema.default("auto"),
+  }),
+});
+
 export const GptImageToImageRequestSchema = z.object({
   model: z.literal("gpt-image/1.5-image-to-image"),
   callBackUrl: z.string().optional(),
@@ -1922,6 +1989,25 @@ export const GptImageToImageRequestSchema = z.object({
     prompt: z.string().min(1),
     aspect_ratio: z.enum(["1:1", "2:3", "3:2"]).optional(),
     quality: GptImageQualitySchema.optional(),
+  }),
+});
+
+// Docs: https://docs.kie.ai/market/gpt-image/1-5-text-to-image
+// OpenAPI marks aspect_ratio and quality required (documented defaults 1:1 /
+// medium). Keep them required without local defaults so callers choose.
+export const GptImage15TextToImageAspectRatioSchema = z.enum([
+  "1:1",
+  "2:3",
+  "3:2",
+]);
+
+export const GptImage15TextToImageRequestSchema = z.object({
+  model: z.literal("gpt-image/1.5-text-to-image"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().min(1),
+    aspect_ratio: GptImage15TextToImageAspectRatioSchema,
+    quality: GptImageQualitySchema,
   }),
 });
 
@@ -4122,7 +4208,9 @@ export const MediaGenerationRequestSchema = z.union([
   GrokVideoUpscaleRequestSchema,
   NanoBananaProRequestSchema,
   NanoBanana2RequestSchema,
+  NanoBanana2LiteRequestSchema,
   GptImageToImageRequestSchema,
+  GptImage15TextToImageRequestSchema,
   GptImage2ImageToImageRequestSchema,
   GptImage2TextToImageRequestSchema,
   SeedreamImageToImageRequestSchema,
@@ -4139,6 +4227,7 @@ export const MediaGenerationRequestSchema = z.union([
   Seedance2FastRequestSchema,
   Seedance2RequestSchema,
   Seedance2MiniRequestSchema,
+  Seedance15ProRequestSchema,
   Wan27ImageToVideoRequestSchema,
   Wan27TextToVideoRequestSchema,
   Wan27RefToVideoRequestSchema,
@@ -4487,10 +4576,32 @@ export type Seedance2MiniRequestInput = Seedance2MiniRequest;
 export type Seedance2MiniParsedRequest = z.output<
   typeof Seedance2MiniRequestSchema
 >;
+export type Seedance15ProAspectRatio = z.infer<
+  typeof Seedance15ProAspectRatioSchema
+>;
+export type Seedance15ProResolution = z.infer<
+  typeof Seedance15ProResolutionSchema
+>;
+export type Seedance15ProInput = z.infer<typeof Seedance15ProInputSchema>;
+export type Seedance15ProRequest = z.input<typeof Seedance15ProRequestSchema>;
+export type Seedance15ProRequestInput = Seedance15ProRequest;
+export type Seedance15ProParsedRequest = z.output<
+  typeof Seedance15ProRequestSchema
+>;
 export type NanoBanana2Request = z.input<typeof NanoBanana2RequestSchema>;
 export type NanoBanana2RequestInput = NanoBanana2Request;
 export type NanoBanana2ParsedRequest = z.output<
   typeof NanoBanana2RequestSchema
+>;
+export type NanoBanana2LiteAspectRatio = z.infer<
+  typeof NanoBanana2LiteAspectRatioSchema
+>;
+export type NanoBanana2LiteRequest = z.input<
+  typeof NanoBanana2LiteRequestSchema
+>;
+export type NanoBanana2LiteRequestInput = NanoBanana2LiteRequest;
+export type NanoBanana2LiteParsedRequest = z.output<
+  typeof NanoBanana2LiteRequestSchema
 >;
 export type GptImageToImageRequest = z.input<
   typeof GptImageToImageRequestSchema
@@ -4498,6 +4609,16 @@ export type GptImageToImageRequest = z.input<
 export type GptImageToImageRequestInput = GptImageToImageRequest;
 export type GptImageToImageParsedRequest = z.output<
   typeof GptImageToImageRequestSchema
+>;
+export type GptImage15TextToImageAspectRatio = z.infer<
+  typeof GptImage15TextToImageAspectRatioSchema
+>;
+export type GptImage15TextToImageRequest = z.input<
+  typeof GptImage15TextToImageRequestSchema
+>;
+export type GptImage15TextToImageRequestInput = GptImage15TextToImageRequest;
+export type GptImage15TextToImageParsedRequest = z.output<
+  typeof GptImage15TextToImageRequestSchema
 >;
 export type GptImage2ImageToImageAspectRatio = z.infer<
   typeof GptImage2ImageToImageAspectRatioSchema

@@ -571,6 +571,39 @@ export interface SunoReplaceSectionRequest {
   callBackUrl?: string;
 }
 
+/**
+ * Create a personalized music Persona from a completed generation track.
+ *
+ * Docs: https://docs.kie.ai/suno-api/generate-persona
+ * Required: taskId, audioId, name, description.
+ * Optional: vocalStart, vocalEnd (10–30s window), style.
+ * Returns personaId (not a taskId); persona can be reused via personaId on
+ * generate/extend/upload-cover/upload-extend.
+ */
+export interface SunoGeneratePersonaRequest {
+  taskId: string;
+  audioId: string;
+  name: string;
+  description: string;
+  vocalStart?: number;
+  vocalEnd?: number;
+  style?: string;
+}
+
+export interface SunoGeneratePersonaData {
+  personaId?: string;
+  name?: string;
+  description?: string;
+  [key: string]: unknown;
+}
+
+export interface SunoGeneratePersonaResponse {
+  code: number;
+  msg?: string;
+  data?: SunoGeneratePersonaData | null;
+  [key: string]: unknown;
+}
+
 /** Retrieve synchronized (timestamped) lyrics for a generated track. */
 export interface SunoGetTimestampedLyricsRequest {
   taskId: string;
@@ -689,6 +722,7 @@ interface SunoGenerateCallable {
   sounds: SunoSoundsMethod;
   addInstrumental: SunoAddInstrumentalMethod;
   addVocals: SunoAddVocalsMethod;
+  generatePersona: SunoGeneratePersonaMethod;
   getTimestampedLyrics: SunoGetTimestampedLyricsMethod;
 }
 
@@ -828,6 +862,15 @@ interface SunoMashupMethod {
 interface SunoReplaceSectionMethod {
   (req: SunoReplaceSectionRequest): Promise<SunoSubmitResponse>;
   schema: ApicitySchema<SunoReplaceSectionRequest>;
+}
+
+interface SunoGeneratePersonaMethod {
+  (
+    req: SunoGeneratePersonaRequest,
+    approval?: import("./paygate").PayGateApproval
+  ): Promise<SunoGeneratePersonaResponse>;
+  schema: ApicitySchema<SunoGeneratePersonaRequest>;
+  responseSchema: ApicitySchema<SunoGeneratePersonaResponse>;
 }
 
 interface SunoGetTimestampedLyricsMethod {
@@ -1205,6 +1248,34 @@ const SunoVoiceCheckVoiceResponseSchema = z
     code: z.number().int(),
     msg: z.string().optional(),
     data: SunoVoiceCheckVoiceDataSchema.nullable().optional(),
+  })
+  .passthrough();
+
+const SunoGeneratePersonaRequestSchema = z
+  .object({
+    taskId: z.string().min(1),
+    audioId: z.string().min(1),
+    name: z.string().min(1),
+    description: z.string().min(1),
+    vocalStart: z.number().min(0).optional(),
+    vocalEnd: z.number().min(0).optional(),
+    style: z.string().optional(),
+  })
+  .passthrough();
+
+const SunoGeneratePersonaDataSchema = z
+  .object({
+    personaId: z.string().optional(),
+    name: z.string().optional(),
+    description: z.string().optional(),
+  })
+  .passthrough();
+
+const SunoGeneratePersonaResponseSchema = z
+  .object({
+    code: z.number().int(),
+    msg: z.string().optional(),
+    data: SunoGeneratePersonaDataSchema.nullable().optional(),
   })
   .passthrough();
 
@@ -1867,6 +1938,18 @@ export function createSunoProvider(
     });
   }
 
+  // POST https://api.kie.ai/api/v1/generate/generate-persona
+  // Docs: https://docs.kie.ai/suno-api/generate-persona
+  async function generatePersona(
+    req: SunoGeneratePersonaRequest
+  ): Promise<SunoGeneratePersonaResponse> {
+    return kieRequest<SunoGeneratePersonaResponse>(transport, {
+      method: "POST",
+      path: "/api/v1/generate/generate-persona",
+      body: req,
+    });
+  }
+
   // POST https://api.kie.ai/api/v1/generate/get-timestamped-lyrics
   // Docs: https://docs.kie.ai/suno-api/get-timestamped-lyrics
   async function getTimestampedLyrics(
@@ -1942,6 +2025,10 @@ export function createSunoProvider(
     }),
     addVocals: Object.assign(addVocalsGenerate, {
       schema: SunoAddVocalsRequestSchema,
+    }),
+    generatePersona: Object.assign(generatePersona, {
+      schema: SunoGeneratePersonaRequestSchema,
+      responseSchema: SunoGeneratePersonaResponseSchema,
     }),
     getTimestampedLyrics: Object.assign(getTimestampedLyrics, {
       schema: SunoGetTimestampedLyricsRequestSchema,

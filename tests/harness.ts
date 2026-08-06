@@ -1059,6 +1059,7 @@ export function mintKieRunwayOtp(
 export function mintKieSunoOtp(
   dotPath:
     | "api.v1.generate"
+    | "api.v1.generate.generatePersona"
     | "api.v1.mp4.generate"
     | "api.v1.wav.generate"
     | "api.v1.vocalRemoval.generate"

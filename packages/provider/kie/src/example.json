@@ -230,6 +230,17 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v1.generate.generatePersona": {
+    "source": "kie/suno/generate-persona-not-found",
+    "payload": {
+      "taskId": "apicity-test-nonexistent-task-id-do-not-record-real",
+      "audioId": "apicity-test-nonexistent-audio-id-do-not-record-real",
+      "name": "Apicity Test Persona",
+      "description": "error-path fixture only — nonexistent task/audio ids"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v1.generate.getTimestampedLyrics": {
     "source": "kie/suno/get-timestamped-lyrics-not-found",
     "payload": {

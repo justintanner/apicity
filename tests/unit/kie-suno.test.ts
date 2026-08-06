@@ -99,6 +99,8 @@ describe("KIE Suno provider", () => {
       expect(typeof v1.generate.sounds).toBe("function");
       expect(typeof v1.generate.addInstrumental).toBe("function");
       expect(typeof v1.generate.addVocals).toBe("function");
+      expect(typeof v1.generate.generatePersona).toBe("function");
+      expect(typeof v1.generate.getTimestampedLyrics).toBe("function");
     });
 
     it("exposes the get.api.v1.generate.recordInfo endpoint", () => {
@@ -147,6 +149,15 @@ describe("KIE Suno provider", () => {
         "function"
       );
       expect(typeof v1.generate.addVocals.schema.safeParse).toBe("function");
+      expect(typeof v1.generate.generatePersona.schema.safeParse).toBe(
+        "function"
+      );
+      expect(typeof v1.generate.generatePersona.responseSchema.safeParse).toBe(
+        "function"
+      );
+      expect(typeof v1.generate.getTimestampedLyrics.schema.safeParse).toBe(
+        "function"
+      );
     });
   });
 
@@ -771,6 +782,73 @@ describe("KIE Suno provider", () => {
       });
 
       expect(result.success).toBe(false);
+    });
+  });
+
+  describe("POST /api/v1/generate/generate-persona", () => {
+    const VALID_PERSONA = {
+      taskId: "task-1",
+      audioId: "audio-1",
+      name: "Electronic Pop Singer",
+      description:
+        "A modern electronic music style pop singer, skilled in dynamic rhythms and synthesizer tones",
+    };
+
+    it("posts to /api/v1/generate/generate-persona with the body", async () => {
+      const { provider, captured } = createProvider({
+        code: 200,
+        msg: "success",
+        data: {
+          personaId: "persona-1",
+          name: VALID_PERSONA.name,
+          description: VALID_PERSONA.description,
+        },
+      });
+      await provider.post.api.v1.generate.generatePersona(VALID_PERSONA);
+      expect(captured[0].url).toBe(
+        "https://api.kie.ai/api/v1/generate/generate-persona"
+      );
+      expect(JSON.parse(String(captured[0].init?.body))).toEqual(VALID_PERSONA);
+    });
+
+    it.each(["taskId", "audioId", "name", "description"] as const)(
+      "requires %s",
+      (field) => {
+        const { provider } = createProvider();
+        const partial: Record<string, unknown> = { ...VALID_PERSONA };
+        delete partial[field];
+        const result =
+          provider.post.api.v1.generate.generatePersona.schema.safeParse(
+            partial
+          );
+        expect(result.success).toBe(false);
+      }
+    );
+
+    it("accepts optional vocal window and style", () => {
+      const { provider } = createProvider();
+      const result =
+        provider.post.api.v1.generate.generatePersona.schema.safeParse({
+          ...VALID_PERSONA,
+          vocalStart: 12.5,
+          vocalEnd: 25.8,
+          style: "Electronic Pop",
+        });
+      expect(result.success).toBe(true);
+    });
+
+    it("parses the not-found error envelope via responseSchema", () => {
+      const { provider } = createProvider();
+      const envelope = {
+        code: 422,
+        msg: "The corresponding record does not exist",
+        data: null,
+      };
+      expect(
+        provider.post.api.v1.generate.generatePersona.responseSchema.safeParse(
+          envelope
+        ).success
+      ).toBe(true);
     });
   });
 

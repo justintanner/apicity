@@ -184,6 +184,20 @@ export const PAID_ENDPOINTS: readonly PaidEndpointEntry[] = [
     key: {
       provider: "kie",
       method: "POST",
+      // Exact match only — sibling leaves like mashup/replaceSection are not
+      // gated by the parent `api.v1.generate` entry above.
+      dotPath: "api.v1.generate.generatePersona",
+    },
+    info: {
+      reason: "Suno persona creation that incurs direct marginal compute cost",
+      estimatorId: "kie-per-unit",
+      costNotes: "Billed per persona create from completed audio",
+    },
+  },
+  {
+    key: {
+      provider: "kie",
+      method: "POST",
       dotPath: "api.v1.mp4.generate",
     },
     info: {

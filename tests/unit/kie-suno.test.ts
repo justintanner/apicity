@@ -3,6 +3,8 @@ import {
   createKie,
   type SunoWavRecordInfoResponse,
   type SunoWavTaskStatus,
+  type SunoVocalRemovalRecordInfoResponse,
+  type SunoVocalRemovalTaskStatus,
 } from "@apicity/kie";
 
 import { createSunoProvider } from "../../packages/provider/kie/src/suno";
@@ -49,6 +51,14 @@ const WAV_TASK_STATUSES = [
   "GENERATE_WAV_FAILED",
   "CALLBACK_EXCEPTION",
 ] as const satisfies readonly SunoWavTaskStatus[];
+
+const VOCAL_REMOVAL_TASK_STATUSES = [
+  "PENDING",
+  "SUCCESS",
+  "CREATE_TASK_FAILED",
+  "GENERATE_AUDIO_FAILED",
+  "CALLBACK_EXCEPTION",
+] as const satisfies readonly SunoVocalRemovalTaskStatus[];
 
 const VALID_GENERATE = {
   prompt: "A happy pop song about summer",
@@ -99,6 +109,20 @@ describe("KIE Suno provider", () => {
     it("exposes the get.api.v1.mp4.recordInfo endpoint", () => {
       const { provider } = createProvider();
       expect(typeof provider.get.api.v1.mp4.recordInfo).toBe("function");
+    });
+
+    it("exposes the get.api.v1.vocalRemoval.recordInfo endpoint", () => {
+      const { provider } = createProvider();
+      expect(typeof provider.get.api.v1.vocalRemoval.recordInfo).toBe(
+        "function"
+      );
+      expect(
+        typeof provider.get.api.v1.vocalRemoval.recordInfo.schema.safeParse
+      ).toBe("function");
+      expect(
+        typeof provider.get.api.v1.vocalRemoval.recordInfo.responseSchema
+          .safeParse
+      ).toBe("function");
     });
 
     it("attaches a zod schema to every method that accepts a request body", () => {
@@ -1366,6 +1390,90 @@ describe("KIE Suno provider", () => {
         const { provider } = createProvider();
         const result =
           provider.get.api.v1.wav.recordInfo.responseSchema.safeParse({
+            ...populatedResponse,
+            data: {
+              ...populatedResponse.data,
+              successFlag,
+            },
+          });
+
+        expect(result.success).toBe(true);
+      }
+    );
+  });
+
+  describe("GET /api/v1/vocal-removal/record-info", () => {
+    const populatedResponse = {
+      code: 200,
+      msg: "success",
+      data: {
+        taskId: "vr-task-1",
+        musicId: "music-1",
+        callbackUrl: "https://example.com/vr-callback",
+        musicIndex: 0,
+        completeTime: 1753782937000,
+        response: {
+          vocalUrl: "https://cdn.kie.ai/vocal.mp3",
+          instrumentalUrl: "https://cdn.kie.ai/instrumental.mp3",
+          originData: [
+            {
+              duration: 245.6,
+              audio_url: "https://cdn.kie.ai/vocal.mp3",
+              stem_type_group_name: "Vocals",
+              id: "stem-1",
+            },
+          ],
+        },
+        successFlag: "SUCCESS",
+        createTime: 1753782854000,
+        errorCode: null,
+        errorMessage: null,
+      },
+    } as const;
+
+    it("uses the public provider surface and encodes the taskId", async () => {
+      const { fetch, captured } = makeStubFetch(populatedResponse);
+      const provider = createKie({
+        apiKey: "test-api-key",
+        baseURL: "https://api.kie.ai",
+        fetch,
+      });
+
+      const result = await provider.suno.get.api.v1.vocalRemoval.recordInfo(
+        "vr/job?attempt=1&source=test"
+      );
+
+      expectTypeOf(result).toEqualTypeOf<SunoVocalRemovalRecordInfoResponse>();
+      expect(captured).toHaveLength(1);
+      expect(captured[0].url).toBe(
+        "https://api.kie.ai/api/v1/vocal-removal/record-info?taskId=vr%2Fjob%3Fattempt%3D1%26source%3Dtest"
+      );
+      expect(captured[0].init?.method).toBe("GET");
+      expect(result).toEqual(populatedResponse);
+    });
+
+    it("accepts populated and null-data response envelopes", () => {
+      const { provider } = createProvider();
+      const recordInfo = provider.get.api.v1.vocalRemoval.recordInfo;
+
+      expect(
+        recordInfo.responseSchema.safeParse(populatedResponse).success
+      ).toBe(true);
+      expect(
+        recordInfo.responseSchema.safeParse({
+          code: 200,
+          msg: "success",
+          data: null,
+        }).success
+      ).toBe(true);
+    });
+
+    it.each(VOCAL_REMOVAL_TASK_STATUSES)(
+      "accepts the documented %s status",
+      (successFlag) => {
+        const { provider } = createProvider();
+        const result =
+          provider.get.api.v1.vocalRemoval.recordInfo.responseSchema.safeParse({
             ...populatedResponse,
             data: {
               ...populatedResponse.data,

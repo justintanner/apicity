@@ -148,6 +148,67 @@ export interface SunoVocalRemovalRequest {
   type?: "separate_vocal" | "split_stem";
 }
 
+export interface SunoVocalRemovalRecordInfoRequest {
+  taskId: string;
+}
+
+export type SunoVocalRemovalTaskStatus =
+  | "PENDING"
+  | "SUCCESS"
+  | "CREATE_TASK_FAILED"
+  | "GENERATE_AUDIO_FAILED"
+  | "CALLBACK_EXCEPTION";
+
+export interface SunoVocalRemovalOriginDataItem {
+  duration?: number;
+  audio_url?: string;
+  stem_type_group_name?: string;
+  id?: string;
+  [key: string]: unknown;
+}
+
+export interface SunoVocalRemovalRecordInfoResult {
+  id?: string | null;
+  originUrl?: string | null;
+  originData?: SunoVocalRemovalOriginDataItem[];
+  instrumentalUrl?: string | null;
+  vocalUrl?: string | null;
+  backingVocalsUrl?: string | null;
+  drumsUrl?: string | null;
+  bassUrl?: string | null;
+  guitarUrl?: string | null;
+  pianoUrl?: string | null;
+  keyboardUrl?: string | null;
+  percussionUrl?: string | null;
+  stringsUrl?: string | null;
+  synthUrl?: string | null;
+  fxUrl?: string | null;
+  brassUrl?: string | null;
+  woodwindsUrl?: string | null;
+  [key: string]: unknown;
+}
+
+export interface SunoVocalRemovalRecordInfoData {
+  taskId: string;
+  musicId?: string;
+  callbackUrl?: string;
+  musicIndex?: number;
+  completeTime?: string | number | null;
+  response?: SunoVocalRemovalRecordInfoResult | null;
+  successFlag?: SunoVocalRemovalTaskStatus;
+  createTime?: string | number;
+  errorCode?: number | null;
+  errorMessage?: string | null;
+  [key: string]: unknown;
+}
+
+export interface SunoVocalRemovalRecordInfoResponse {
+  code: number;
+  msg?: string;
+  data?: SunoVocalRemovalRecordInfoData | null;
+  [key: string]: unknown;
+}
+
 export interface SunoMp4Request {
   taskId: string;
   audioId: string;
@@ -466,6 +527,12 @@ interface SunoVocalRemovalMethod {
   schema: ApicitySchema<SunoVocalRemovalRequest>;
 }
 
+interface SunoVocalRemovalRecordInfoMethod {
+  (taskId: string): Promise<SunoVocalRemovalRecordInfoResponse>;
+  schema: ApicitySchema<SunoVocalRemovalRecordInfoRequest>;
+  responseSchema: ApicitySchema<SunoVocalRemovalRecordInfoResponse>;
+}
+
 interface SunoMp4Method {
   (req: SunoMp4Request): Promise<SunoSubmitResponse>;
   schema: ApicitySchema<SunoMp4Request>;
@@ -547,6 +614,10 @@ interface SunoVocalRemovalNamespace {
   generate: SunoVocalRemovalMethod;
 }
 
+interface SunoVocalRemovalGetNamespace {
+  recordInfo: SunoVocalRemovalRecordInfoMethod;
+}
+
 interface SunoMp4Namespace {
   generate: SunoMp4Method;
 }
@@ -585,6 +656,7 @@ interface SunoV1GetNamespace {
   wav: {
     recordInfo: SunoWavRecordInfoMethod;
   };
+  vocalRemoval: SunoVocalRemovalGetNamespace;
 }
 
 interface SunoPostApiNamespace {
@@ -675,6 +747,75 @@ const SunoVocalRemovalRequestSchema = z.object({
   callBackUrl: z.string().min(1),
   type: z.enum(["separate_vocal", "split_stem"]).optional(),
 });
+
+const SunoVocalRemovalRecordInfoRequestSchema = z
+  .object({
+    taskId: z.string().min(1),
+  })
+  .passthrough();
+
+const SunoVocalRemovalTaskStatusSchema = z.enum([
+  "PENDING",
+  "SUCCESS",
+  "CREATE_TASK_FAILED",
+  "GENERATE_AUDIO_FAILED",
+  "CALLBACK_EXCEPTION",
+]);
+
+const SunoVocalRemovalOriginDataItemSchema = z
+  .object({
+    duration: z.number().optional(),
+    audio_url: z.string().optional(),
+    stem_type_group_name: z.string().optional(),
+    id: z.string().optional(),
+  })
+  .passthrough();
+
+const SunoVocalRemovalRecordInfoResultSchema = z
+  .object({
+    id: z.string().nullable().optional(),
+    originUrl: z.string().nullable().optional(),
+    originData: z.array(SunoVocalRemovalOriginDataItemSchema).optional(),
+    instrumentalUrl: z.string().nullable().optional(),
+    vocalUrl: z.string().nullable().optional(),
+    backingVocalsUrl: z.string().nullable().optional(),
+    drumsUrl: z.string().nullable().optional(),
+    bassUrl: z.string().nullable().optional(),
+    guitarUrl: z.string().nullable().optional(),
+    pianoUrl: z.string().nullable().optional(),
+    keyboardUrl: z.string().nullable().optional(),
+    percussionUrl: z.string().nullable().optional(),
+    stringsUrl: z.string().nullable().optional(),
+    synthUrl: z.string().nullable().optional(),
+    fxUrl: z.string().nullable().optional(),
+    brassUrl: z.string().nullable().optional(),
+    woodwindsUrl: z.string().nullable().optional(),
+  })
+  .passthrough();
+
+const SunoVocalRemovalRecordInfoDataSchema = z
+  .object({
+    taskId: z.string(),
+    musicId: z.string().optional(),
+    callbackUrl: z.string().optional(),
+    musicIndex: z.number().int().optional(),
+    // Upstream examples send epoch millis; docs also mention date-time strings.
+    completeTime: z.union([z.string(), z.number()]).nullable().optional(),
+    response: SunoVocalRemovalRecordInfoResultSchema.nullable().optional(),
+    successFlag: SunoVocalRemovalTaskStatusSchema.optional(),
+    createTime: z.union([z.string(), z.number()]).optional(),
+    errorCode: z.number().nullable().optional(),
+    errorMessage: z.string().nullable().optional(),
+  })
+  .passthrough();
+
+const SunoVocalRemovalRecordInfoResponseSchema = z
+  .object({
+    code: z.number().int(),
+    msg: z.string().optional(),
+    data: SunoVocalRemovalRecordInfoDataSchema.nullable().optional(),
+  })
+  .passthrough();
 
 const SunoMp4RequestSchema = z.object({
   taskId: z.string().min(1),
@@ -1060,6 +1201,17 @@ export function createSunoProvider(
     });
   }
 
+  // GET https://api.kie.ai/api/v1/vocal-removal/record-info?taskId={taskId}
+  // Docs: https://docs.kie.ai/suno-api/get-vocal-separation-details
+  async function vocalRemovalRecordInfo(
+    taskId: string
+  ): Promise<SunoVocalRemovalRecordInfoResponse> {
+    return kieRequest<SunoVocalRemovalRecordInfoResponse>(transport, {
+      method: "GET",
+      path: `/api/v1/vocal-removal/record-info?taskId=${encodeURIComponent(taskId)}`,
+    });
+  }
+
   // POST https://api.kie.ai/api/v1/mp4/generate
   // Docs: https://docs.kie.ai/suno-api/create-music-video
   async function mp4Generate(req: SunoMp4Request): Promise<SunoSubmitResponse> {
@@ -1317,6 +1469,12 @@ export function createSunoProvider(
             recordInfo: Object.assign(wavRecordInfo, {
               schema: SunoWavRecordInfoRequestSchema,
               responseSchema: SunoWavRecordInfoResponseSchema,
+            }),
+          },
+          vocalRemoval: {
+            recordInfo: Object.assign(vocalRemovalRecordInfo, {
+              schema: SunoVocalRemovalRecordInfoRequestSchema,
+              responseSchema: SunoVocalRemovalRecordInfoResponseSchema,
             }),
           },
         },

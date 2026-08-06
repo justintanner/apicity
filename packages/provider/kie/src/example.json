@@ -452,6 +452,18 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v1.voice.validate": {
+    "source": "kie/suno/voice-validate-bogus-url",
+    "payload": {
+      "voiceUrl": "https://invalid-host-apicity-test.invalid/user_voice.mp3",
+      "vocalStartS": 0,
+      "vocalEndS": 10,
+      "language": "en",
+      "callBackUrl": "https://example.com/cb"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v1.wav.generate": {
     "source": "kie/suno/wav-bogus-ids",
     "payload": {

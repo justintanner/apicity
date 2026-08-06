@@ -1040,6 +1040,7 @@ kie	api.v1.vocalRemoval.generate	POST	https://api.kie.ai/api/v1/vocal-removal/ge
 kie	api.v1.vocalRemoval.recordInfo	GET	https://api.kie.ai/api/v1/vocal-removal/record-info?taskId={taskId}	https://docs.kie.ai/suno-api/get-vocal-separation-details
 kie	api.v1.voice.checkVoice	POST	https://api.kie.ai/api/v1/voice/check-voice	https://docs.kie.ai/suno-api/suno-voice-check-voice
 kie	api.v1.voice.recordInfo	GET	https://api.kie.ai/api/v1/voice/record-info?taskId={taskId}	https://docs.kie.ai/suno-api/suno-voice-record-info
+kie	api.v1.voice.validate	POST	https://api.kie.ai/api/v1/voice/validate	https://docs.kie.ai/suno-api/suno-voice-validate
 kie	api.v1.voice.validateInfo	GET	https://api.kie.ai/api/v1/voice/validate-info?taskId={taskId}	https://docs.kie.ai/suno-api/suno-voice-validate-info
 kie	api.v1.wav.generate	POST	https://api.kie.ai/api/v1/wav/generate
 kie	api.v1.wav.recordInfo	GET	https://api.kie.ai/api/v1/wav/record-info?taskId={taskId}	https://docs.kie.ai/suno-api/get-wav-details

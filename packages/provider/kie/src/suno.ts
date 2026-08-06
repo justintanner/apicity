@@ -258,6 +258,33 @@ export interface SunoVoiceValidateInfoResponse {
 }
 
 /**
+ * Submit source audio for Suno custom-voice validation-phrase generation.
+ *
+ * Task-creating: returns a taskId polled via GET /api/v1/voice/validate-info.
+ * Required body fields match upstream docs (voiceUrl, vocalStartS, vocalEndS).
+ * Optional: language (en/zh/es/fr/pt/de/ja/ko/hi/ru), callBackUrl.
+ */
+export interface SunoVoiceValidateRequest {
+  voiceUrl: string;
+  vocalStartS: number;
+  vocalEndS: number;
+  language?: string;
+  callBackUrl?: string;
+}
+
+export interface SunoVoiceValidateData {
+  taskId: string;
+  [key: string]: unknown;
+}
+
+export interface SunoVoiceValidateResponse {
+  code: number;
+  msg?: string;
+  data?: SunoVoiceValidateData | null;
+  [key: string]: unknown;
+}
+
+/**
  * Check whether a generated Suno custom voice is available.
  *
  * Upstream documents the body field as snake_case `task_id` (not the repo-wide
@@ -688,6 +715,15 @@ interface SunoVoiceValidateInfoMethod {
   responseSchema: ApicitySchema<SunoVoiceValidateInfoResponse>;
 }
 
+interface SunoVoiceValidateMethod {
+  (
+    req: SunoVoiceValidateRequest,
+    approval?: import("./paygate").PayGateApproval
+  ): Promise<SunoVoiceValidateResponse>;
+  schema: ApicitySchema<SunoVoiceValidateRequest>;
+  responseSchema: ApicitySchema<SunoVoiceValidateResponse>;
+}
+
 interface SunoVoiceCheckVoiceMethod {
   (req: SunoVoiceCheckVoiceRequest): Promise<SunoVoiceCheckVoiceResponse>;
   schema: ApicitySchema<SunoVoiceCheckVoiceRequest>;
@@ -805,6 +841,7 @@ interface SunoVoiceGetNamespace {
 }
 
 interface SunoVoicePostNamespace {
+  validate: SunoVoiceValidateMethod;
   checkVoice: SunoVoiceCheckVoiceMethod;
 }
 
@@ -1072,6 +1109,30 @@ const SunoVoiceValidateInfoResponseSchema = z
     code: z.number().int(),
     msg: z.string().optional(),
     data: SunoVoiceValidateInfoDataSchema.nullable().optional(),
+  })
+  .passthrough();
+
+const SunoVoiceValidateRequestSchema = z
+  .object({
+    voiceUrl: z.string().min(1),
+    vocalStartS: z.number().int(),
+    vocalEndS: z.number().int(),
+    language: z.string().optional(),
+    callBackUrl: z.string().optional(),
+  })
+  .passthrough();
+
+const SunoVoiceValidateDataSchema = z
+  .object({
+    taskId: z.string(),
+  })
+  .passthrough();
+
+const SunoVoiceValidateResponseSchema = z
+  .object({
+    code: z.number().int(),
+    msg: z.string().optional(),
+    data: SunoVoiceValidateDataSchema.nullable().optional(),
   })
   .passthrough();
 
@@ -1582,6 +1643,18 @@ export function createSunoProvider(
     });
   }
 
+  // POST https://api.kie.ai/api/v1/voice/validate
+  // Docs: https://docs.kie.ai/suno-api/suno-voice-validate
+  async function voiceValidate(
+    req: SunoVoiceValidateRequest
+  ): Promise<SunoVoiceValidateResponse> {
+    return kieRequest<SunoVoiceValidateResponse>(transport, {
+      method: "POST",
+      path: "/api/v1/voice/validate",
+      body: req,
+    });
+  }
+
   // POST https://api.kie.ai/api/v1/voice/check-voice
   // Docs: https://docs.kie.ai/suno-api/suno-voice-check-voice
   async function voiceCheckVoice(
@@ -1830,6 +1903,12 @@ export function createSunoProvider(
             }),
           },
           voice: {
+            // POST https://api.kie.ai/api/v1/voice/validate
+            // Docs: https://docs.kie.ai/suno-api/suno-voice-validate
+            validate: Object.assign(voiceValidate, {
+              schema: SunoVoiceValidateRequestSchema,
+              responseSchema: SunoVoiceValidateResponseSchema,
+            }),
             checkVoice: Object.assign(voiceCheckVoice, {
               schema: SunoVoiceCheckVoiceRequestSchema,
               responseSchema: SunoVoiceCheckVoiceResponseSchema,

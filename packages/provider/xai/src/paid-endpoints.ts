@@ -239,6 +239,19 @@ export const PAID_ENDPOINTS: readonly PaidEndpointEntry[] = [
     key: {
       provider: "kie",
       method: "POST",
+      dotPath: "api.v1.voice.validate",
+    },
+    info: {
+      reason:
+        "Suno custom-voice validation-phrase task that incurs direct marginal compute cost",
+      estimatorId: "kie-per-unit",
+      costNotes: "Billed per validation-phrase generation",
+    },
+  },
+  {
+    key: {
+      provider: "kie",
+      method: "POST",
       dotPath: "api.v1.omni.audio.create",
     },
     info: {

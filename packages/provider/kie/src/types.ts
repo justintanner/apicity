@@ -856,6 +856,7 @@ export interface KieProvider {
   gemini31Pro: import("./gemini-31-pro").KieGemini31ProProvider["gemini31Pro"];
   gemini25Flash: import("./gemini-25-flash").KieGemini25FlashProvider["gemini25Flash"];
   gemini3Flash: import("./gemini-3-flash").KieGemini3FlashProvider["gemini3Flash"];
+  gemini35FlashOpenai: import("./gemini-35-flash-openai").KieGemini35FlashOpenaiProvider["gemini35FlashOpenai"];
   gemini3Pro: import("./gemini-3-pro").KieGemini3ProProvider["gemini3Pro"];
   gemini25Pro: import("./gemini-25-pro").KieGemini25ProProvider["gemini25Pro"];
 }

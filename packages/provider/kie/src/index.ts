@@ -265,6 +265,19 @@ export {
   KieGemini3FlashToolFunctionSchema,
   KieGemini3FlashToolSchema,
   KieGemini3FlashToolTypeSchema,
+  KieGemini35FlashOpenaiChatCompletionsRequestSchema,
+  KieGemini35FlashOpenaiContentItemSchema,
+  KieGemini35FlashOpenaiContentItemTypeSchema,
+  KieGemini35FlashOpenaiMediaContentItemSchema,
+  KieGemini35FlashOpenaiMessageRoleSchema,
+  KieGemini35FlashOpenaiMessageSchema,
+  KieGemini35FlashOpenaiReasoningEffortSchema,
+  KieGemini35FlashOpenaiResponseFormatSchema,
+  KieGemini35FlashOpenaiTextContentItemSchema,
+  KieGemini35FlashOpenaiToolFunctionParametersSchema,
+  KieGemini35FlashOpenaiToolFunctionSchema,
+  KieGemini35FlashOpenaiToolSchema,
+  KieGemini35FlashOpenaiToolTypeSchema,
   KieGemini3ProChatCompletionsRequestSchema,
   KieGemini3ProContentItemSchema,
   KieGemini3ProContentItemTypeSchema,
@@ -361,6 +374,7 @@ export { createResponsesProvider } from "./responses";
 export { createGemini31ProProvider } from "./gemini-31-pro";
 export { createGemini25FlashProvider } from "./gemini-25-flash";
 export { createGemini3FlashProvider } from "./gemini-3-flash";
+export { createGemini35FlashOpenaiProvider } from "./gemini-35-flash-openai";
 export { createGemini3ProProvider } from "./gemini-3-pro";
 export { createGemini25ProProvider } from "./gemini-25-pro";
 
@@ -1002,6 +1016,21 @@ export type {
   KieGemini3FlashToolFunction,
   KieGemini3FlashToolFunctionParameters,
   KieGemini3FlashToolType,
+  KieGemini35FlashOpenaiChatCompletionsRequest,
+  KieGemini35FlashOpenaiChatCompletionsRequestInput,
+  KieGemini35FlashOpenaiChatCompletionsParsedRequest,
+  KieGemini35FlashOpenaiContentItem,
+  KieGemini35FlashOpenaiContentItemType,
+  KieGemini35FlashOpenaiMediaContentItem,
+  KieGemini35FlashOpenaiMessage,
+  KieGemini35FlashOpenaiMessageRole,
+  KieGemini35FlashOpenaiReasoningEffort,
+  KieGemini35FlashOpenaiResponseFormat,
+  KieGemini35FlashOpenaiTextContentItem,
+  KieGemini35FlashOpenaiTool,
+  KieGemini35FlashOpenaiToolFunction,
+  KieGemini35FlashOpenaiToolFunctionParameters,
+  KieGemini35FlashOpenaiToolType,
   KieGemini3ProChatCompletionsRequest,
   KieGemini3ProChatCompletionsRequestInput,
   KieGemini3ProChatCompletionsParsedRequest,
@@ -1084,6 +1113,18 @@ export type {
   KieGemini3FlashCompletionTokensDetails,
   KieGemini3FlashProvider,
 } from "./gemini-3-flash";
+
+export type {
+  KieGemini35FlashOpenaiChatChoice,
+  KieGemini35FlashOpenaiChatCompletionChunk,
+  KieGemini35FlashOpenaiChatCompletionResponse,
+  KieGemini35FlashOpenaiChatCompletionsResult,
+  KieGemini35FlashOpenaiChatDelta,
+  KieGemini35FlashOpenaiChatMessage,
+  KieGemini35FlashOpenaiChatUsage,
+  KieGemini35FlashOpenaiCompletionTokensDetails,
+  KieGemini35FlashOpenaiProvider,
+} from "./gemini-35-flash-openai";
 
 export type {
   KieGemini3ProChatChoice,

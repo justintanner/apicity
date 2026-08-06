@@ -208,7 +208,7 @@ URL path, and the package implements 2 of the 10.
 | `POST /gemini-2.5-pro/v1/chat/completions`                                 | **MISSING** | https://docs.kie.ai/market/gemini/gemini-2-5-pro          | `grep -rF "gemini-2.5-pro" src/*.ts` → 0 hits          |
 | `POST /gemini-3-pro/v1/chat/completions`                                   | **MISSING** | https://docs.kie.ai/market/gemini/gemini-3-pro            | `grep -rF "gemini-3-pro" src/*.ts` → 0 hits            |
 | `POST /gemini-3-flash/v1/chat/completions`                                 | **MISSING** | https://docs.kie.ai/market/gemini/gemini-3-flash          | `grep -rF "gemini-3-flash" src/*.ts` → 0 hits          |
-| `POST /gemini-3-5-flash-openai/v1/chat/completions`                        | **MISSING** | https://docs.kie.ai/market/gemini/gemini-3-5-flash-openai | `grep -rF "gemini-3-5-flash-openai" src/*.ts` → 0 hits |
+| `POST /gemini-3-5-flash-openai/v1/chat/completions`                        | IMPLEMENTED | https://docs.kie.ai/market/gemini/gemini-3-5-flash-openai | `gemini-35-flash-openai.ts` gemini35FlashOpenai.v1.chat.completions |
 | `POST /gemini-3-6-flash-openai/v1/chat/completions`                        | **MISSING** | https://docs.kie.ai/market/gemini/gemini-3-6-flash-openai | `grep -rF "gemini-3-6-flash" src/*.ts` → 0 hits        |
 | `POST /gemini/v1/models/gemini-3-6-flash:streamGenerateContent`            | IMPLEMENTED | https://docs.kie.ai/market/gemini/gemini-3-6-flash        | `gemini.ts` gemini36Flash.streamGenerateContent        |
 | `POST /gemini/v1/models/gemini-3-flash-v1betamodels:streamGenerateContent` | **MISSING** | https://docs.kie.ai/market/gemini/gemini-3-flash-v1beta   | `grep -rF "gemini-3-flash" src/*.ts` → 0 hits          |

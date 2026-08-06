@@ -555,7 +555,7 @@ defaults to `false`.
 
 ## API Reference
 
-59 endpoints across 31 groups. Each method mirrors an upstream URL path.
+61 endpoints across 32 groups. Each method mirrors an upstream URL path.
 
 ### aleph
 
@@ -838,6 +838,25 @@ Source: [`packages/provider/kie/src/gemini-31-pro.ts`](src/gemini-31-pro.ts)
 
 </details>
 
+### gemini35FlashOpenai
+
+<details>
+<summary><code>POST</code> <b><code>kie.gemini35FlashOpenai.post.v1.chat.completions</code></b></summary>
+
+<code>POST https://api.kie.ai/gemini-3-5-flash-openai/v1/chat/completions</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/market/gemini/gemini-3-5-flash-openai)
+
+```typescript
+const res = await kie.gemini35FlashOpenai.post.v1.chat.completions({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/gemini-35-flash-openai.ts`](src/gemini-35-flash-openai.ts)
+
+</details>
+
 ### gemini3Flash
 
 <details>
@@ -953,6 +972,23 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await kie.suno.post.api.v1.generate.extend({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>kie.suno.post.api.v1.generate.getTimestampedLyrics</code></b></summary>
+
+<code>POST https://api.kie.ai/api/v1/generate/get-timestamped-lyrics</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/suno-api/get-timestamped-lyrics)
+
+```typescript
+const res = await kie.suno.post.api.v1.generate.getTimestampedLyrics({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)

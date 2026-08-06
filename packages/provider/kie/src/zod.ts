@@ -216,6 +216,9 @@ export const KIE_MEDIA_MODELS = [
   "elevenlabs/text-to-speech-turbo-2-5",
   "elevenlabs/sound-effect-v2",
   "sora-watermark-remover",
+  // Recraft image utilities — singleton vendor ids (no alias hatch yet).
+  "recraft/crisp-upscale",
+  "recraft/remove-background",
   "pixverse-v6/text-to-video",
   "pixverse-v6/image-to-video",
   "pixverse-v6/transition",
@@ -1484,6 +1487,22 @@ export const SoraWatermarkRequestSchema = z.object({
   input: z.object({
     video_url: z.string().min(1),
     upload_method: z.enum(["s3", "oss"]).optional(),
+  }),
+});
+
+export const RecraftCrispUpscaleRequestSchema = z.object({
+  model: z.literal("recraft/crisp-upscale"),
+  callBackUrl: z.string().url().optional(),
+  input: z.object({
+    image: z.string().min(1),
+  }),
+});
+
+export const RecraftRemoveBackgroundRequestSchema = z.object({
+  model: z.literal("recraft/remove-background"),
+  callBackUrl: z.string().url().optional(),
+  input: z.object({
+    image: z.string().min(1),
   }),
 });
 
@@ -3394,6 +3413,8 @@ export const MediaGenerationRequestSchema = z.union([
   ElevenLabsTextToSpeechTurbo25RequestSchema,
   ElevenLabsSoundEffectV2RequestSchema,
   SoraWatermarkRequestSchema,
+  RecraftCrispUpscaleRequestSchema,
+  RecraftRemoveBackgroundRequestSchema,
   PixverseV6TextToVideoRequestSchema,
   PixverseV6ImageToVideoRequestSchema,
   PixverseV6TransitionRequestSchema,

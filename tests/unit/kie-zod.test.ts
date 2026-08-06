@@ -1219,6 +1219,8 @@ const MEDIA_SINGLETON_MODELS = [
   "volcengine/video-to-video-lip-sync",
   "gemini-omni-video",
   "sora-watermark-remover",
+  "recraft/crisp-upscale",
+  "recraft/remove-background",
 ] as const;
 
 const MINIMAX_H3_EXACT_ONLY_MODELS = [

@@ -110,6 +110,8 @@ import {
   Omnihuman15RequestSchema,
   VolcengineVideoToVideoLipSyncRequestSchema,
   SoraWatermarkRequestSchema,
+  RecraftCrispUpscaleRequestSchema,
+  RecraftRemoveBackgroundRequestSchema,
 } from "./zod";
 import { modelInputSchemas } from "./model-schemas";
 import { createVeoProvider } from "./veo";
@@ -217,6 +219,8 @@ export const CREATE_TASK_GUARDS = {
     ElevenLabsTextToSpeechTurbo25RequestSchema,
   "elevenlabs/sound-effect-v2": ElevenLabsSoundEffectV2RequestSchema,
   "sora-watermark-remover": SoraWatermarkRequestSchema,
+  "recraft/crisp-upscale": RecraftCrispUpscaleRequestSchema,
+  "recraft/remove-background": RecraftRemoveBackgroundRequestSchema,
   "pixverse-v6/text-to-video": PixverseV6TextToVideoRequestSchema,
   "pixverse-v6/image-to-video": PixverseV6ImageToVideoRequestSchema,
   "pixverse-v6/transition": PixverseV6TransitionRequestSchema,

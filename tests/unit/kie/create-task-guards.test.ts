@@ -133,8 +133,8 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
   it("guards exactly the models pinned in this list", () => {
     expect(
       guarded,
-      "Update this deliberate 55-entry pin when the guarded model set changes"
-    ).toHaveLength(55);
+      "Update this deliberate 57-entry pin when the guarded model set changes"
+    ).toHaveLength(57);
     expect([...guarded].sort()).toEqual(
       [
         "kling-3.0/video",
@@ -184,6 +184,8 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
         "elevenlabs/text-to-speech-turbo-2-5",
         "elevenlabs/sound-effect-v2",
         "sora-watermark-remover",
+        "recraft/crisp-upscale",
+        "recraft/remove-background",
         "pixverse-v6/text-to-video",
         "pixverse-v6/image-to-video",
         "pixverse-v6/transition",

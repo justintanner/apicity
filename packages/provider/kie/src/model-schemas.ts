@@ -1679,6 +1679,30 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  "recraft/crisp-upscale": {
+    type: "image",
+    fields: {
+      image: {
+        type: "string",
+        required: true,
+        description:
+          "Image URL to upscale (jpeg/png/webp; max 10MB; file URL after upload)",
+      },
+    },
+  },
+
+  "recraft/remove-background": {
+    type: "image",
+    fields: {
+      image: {
+        type: "string",
+        required: true,
+        description:
+          "Image URL for background removal (jpeg/png/webp; max 5MB; file URL after upload)",
+      },
+    },
+  },
+
   "pixverse-v6/text-to-video": {
     type: "video",
     fields: {

@@ -113,9 +113,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "runByDefault": false
   },
   "GET api.v1.veo.recordInfo": {
-    "source": "kie/veo/record-info-not-found",
+    "source": "kie/veo/aspect-ratio-probe",
     "payload": {
-      "taskId": "apicity-test-nonexistent-veo-task-id-do-not-record-real"
+      "taskId": "0819326cc7fddfd620baf6e1f0db7e2b"
     },
     "tier": "prohibitive",
     "runByDefault": false
@@ -414,6 +414,19 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "source": "kie/suno/style-boost",
     "payload": {
       "content": "Pop, Mysterious"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST api.v1.veo.generate": {
+    "source": "kie/veo/aspect-ratio-probe",
+    "payload": {
+      "prompt": "Apicity aspect probe snake_case: solid blue sky, still camera, no people",
+      "model": "veo3_lite",
+      "generationType": "TEXT_2_VIDEO",
+      "aspect_ratio": "9:16",
+      "duration": 4,
+      "resolution": "720p"
     },
     "tier": "prohibitive",
     "runByDefault": false

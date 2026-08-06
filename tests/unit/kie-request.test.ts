@@ -16,6 +16,9 @@ import type {
   HappyHorse11TextToVideoRequest,
   TopazImageUpscaleRequest,
   TopazVideoUpscaleRequest,
+  QwenTextToImageRequest,
+  QwenImageEditRequest,
+  QwenImageToImageRequest,
   VolcengineVideoToVideoLipSyncRequest,
 } from "../../packages/provider/kie/src/types";
 import { TEST_PAYGATE_SECRET, mintKieCreateTaskOtp } from "../harness";
@@ -417,6 +420,166 @@ describe("KIE request utilities", () => {
         "Content-Type": "application/json",
       });
       expect(JSON.parse(init.body as string)).toEqual(request);
+    });
+
+    it("should serialize Qwen v1 text-to-image createTask requests", async () => {
+      const secret = "test-paygate-secret";
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            code: 200,
+            msg: "success",
+            data: {
+              taskId: "task_qwen_text_1234567890",
+            },
+          }),
+          { status: 200 }
+        )
+      );
+
+      const provider = createKie({
+        apiKey: "test-key",
+        baseURL: "https://api.kie.ai",
+        fetch: mockFetch,
+        paygate: { secret },
+      });
+      const request: QwenTextToImageRequest = {
+        model: "qwen/text-to-image",
+        input: {
+          prompt: "a photorealistic cat on a windowsill",
+          image_size: "square_hd",
+        },
+        callBackUrl: "https://example.com/callback",
+      };
+
+      const result = await provider.post.api.v1.jobs.createTask(request, {
+        otp: mintOtp(secret, {
+          dotPath: "api.v1.jobs.createTask",
+          request,
+        }),
+      });
+
+      expect(result.data?.taskId).toBe("task_qwen_text_1234567890");
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      const [url, init] = mockFetch.mock.calls[0];
+      expect(url).toBe("https://api.kie.ai/api/v1/jobs/createTask");
+      expect(init.method).toBe("POST");
+      expect(JSON.parse(init.body as string)).toEqual(request);
+    });
+
+    it("should serialize Qwen v1 image-edit createTask requests", async () => {
+      const secret = "test-paygate-secret";
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            code: 200,
+            msg: "success",
+            data: {
+              taskId: "task_qwen_edit_1234567890",
+            },
+          }),
+          { status: 200 }
+        )
+      );
+
+      const provider = createKie({
+        apiKey: "test-key",
+        baseURL: "https://api.kie.ai",
+        fetch: mockFetch,
+        paygate: { secret },
+      });
+      const request: QwenImageEditRequest = {
+        model: "qwen/image-edit",
+        input: {
+          prompt: "replace the sky with a sunset",
+          image_url: "https://example.com/source.png",
+          num_images: "2",
+        },
+      };
+
+      const result = await provider.post.api.v1.jobs.createTask(request, {
+        otp: mintOtp(secret, {
+          dotPath: "api.v1.jobs.createTask",
+          request,
+        }),
+      });
+
+      expect(result.data?.taskId).toBe("task_qwen_edit_1234567890");
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      const [, init] = mockFetch.mock.calls[0];
+      expect(JSON.parse(init.body as string)).toEqual(request);
+    });
+
+    it("should serialize Qwen v1 image-to-image createTask requests", async () => {
+      const secret = "test-paygate-secret";
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            code: 200,
+            msg: "success",
+            data: {
+              taskId: "task_qwen_i2i_1234567890",
+            },
+          }),
+          { status: 200 }
+        )
+      );
+
+      const provider = createKie({
+        apiKey: "test-key",
+        baseURL: "https://api.kie.ai",
+        fetch: mockFetch,
+        paygate: { secret },
+      });
+      const request: QwenImageToImageRequest = {
+        model: "qwen/image-to-image",
+        input: {
+          prompt: "restyle as watercolor",
+          image_url: "https://example.com/source.png",
+          strength: 0.5,
+        },
+      };
+
+      const result = await provider.post.api.v1.jobs.createTask(request, {
+        otp: mintOtp(secret, {
+          dotPath: "api.v1.jobs.createTask",
+          request,
+        }),
+      });
+
+      expect(result.data?.taskId).toBe("task_qwen_i2i_1234567890");
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      const [, init] = mockFetch.mock.calls[0];
+      expect(JSON.parse(init.body as string)).toEqual(request);
+    });
+
+    it("should reject invalid Qwen v1 image-edit payloads before fetch", async () => {
+      const mockFetch = vi.fn().mockImplementation(() => {
+        throw new Error("createTask must not reach fetch for qwen v1");
+      });
+
+      const provider = createKie({
+        apiKey: "test-key",
+        baseURL: "https://api.kie.ai",
+        fetch: mockFetch,
+        paygate: { secret: TEST_PAYGATE_SECRET },
+      });
+      const request = {
+        model: "qwen/image-edit",
+        input: {
+          prompt: "edit",
+          image_url: "https://example.com/source.png",
+          num_images: "8",
+        },
+      };
+
+      await expect(
+        provider.post.api.v1.jobs.createTask(
+          request as unknown as QwenImageEditRequest,
+          mintKieCreateTaskOtp(request)
+        )
+      ).rejects.toBeInstanceOf(KieError);
+      expect(mockFetch).not.toHaveBeenCalled();
     });
 
     it("should serialize Topaz image-upscale createTask requests", async () => {

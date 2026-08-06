@@ -1021,16 +1021,16 @@ describe("TRI-008 VeoExtendRequestSchema.model stays a closed set", () => {
 // TRI-001 KieMediaModelSchema — one escape hatch per vendor family
 // ---------------------------------------------------------------------------
 //
-// KieMediaModelSchema is kie's aggregator catalogue: 61 ids drawn from a dozen
+// KieMediaModelSchema is kie's aggregator catalogue: 64 ids drawn from a dozen
 // unrelated vendors behind one `createTask` endpoint. REQ-006 forbids opening
 // it with a single catch-all regex, so it carries one alias per vendor family
-// while four singletons, the three exact MiniMax H3 modes, and the two Google
-// TTS modes stay enumerated with no alias at all.
+// while four singletons, the three exact MiniMax H3 modes, the two Google TTS
+// modes, Topaz, and unversioned Qwen v1 stay enumerated with no alias at all.
 //
 // BR-4 needs care here that the single-family schemas above do not. A foreign
 // *catalogue* id — `happyhorse/video-edit` on the Kling family — is accepted by
 // KieMediaModelSchema, through the enum branch, and always was: the whole point
-// of the aggregator is that all 61 are valid. So cross-family leakage cannot be
+// of the aggregator is that all 64 are valid. So cross-family leakage cannot be
 // asserted with safeParse; it is asserted structurally instead, against the
 // alias patterns themselves ("partitions the catalogue" below). The per-family
 // `rejected` lists therefore carry BR-3 near-miss typos plus BR-4 ids from
@@ -1108,13 +1108,17 @@ const MEDIA_MODEL_FAMILIES = [
   },
   {
     family: "Qwen",
+    // Versioned `qwenN/*` only — unversioned `qwen/*` is enum-only (ac-7hi3xx)
+    // and lives outside this family's alias partition.
     listed: ["qwen2/text-to-image", "qwen2/image-edit"],
     aliases: ["qwen3/text-to-image", "qwen2.5/image-edit"],
     // `qwen-image-2.0` / `qwen-image-edit` are Alibaba's first-party grammar
-    // for a different product line, not kie media ids.
+    // for a different product line, not kie media ids. Bare `qwen2` and
+    // underscore typos stay rejected; unversioned catalogue ids are covered
+    // by QWEN_V1_EXACT_ONLY_MODELS below.
     rejected: [
-      "qwen/text-to-image",
       "qwen2",
+      "qwen/text_to_image",
       "qwen-image-2.0",
       "qwen-image-edit",
     ],
@@ -1267,6 +1271,24 @@ const TOPAZ_REJECTED_MODELS = [
   "topaz/audio-upscale",
 ] as const;
 
+// Unversioned Qwen v1 is enum-only: the Qwen family alias requires a digit
+// before `/` (`qwen2/*`), and operator ruling ac-ly4x9j forbids widening it.
+const QWEN_V1_EXACT_ONLY_MODELS = [
+  "qwen/text-to-image",
+  "qwen/image-edit",
+  "qwen/image-to-image",
+] as const;
+
+const QWEN_V1_REJECTED_MODELS = [
+  "qwen",
+  "qwen/text",
+  "qwen/image",
+  "qwen-text-to-image",
+  "qwen/text_to_image",
+  "Qwen/text-to-image",
+  "qwen/text-to-video",
+] as const;
+
 // `.or()` chaining nests left, so the emitted JSON Schema is a left-deep tree
 // of two-branch `anyOf`s rather than one flat list. Flatten it to leaves.
 function anyOfLeaves(schema: JsonSchema): JsonSchema[] {
@@ -1344,6 +1366,21 @@ describe("TRI-001 KieMediaModelSchema", () => {
 
   it.each(TOPAZ_REJECTED_MODELS)(
     "rejects the out-of-scope Topaz model %j",
+    (model) => {
+      expect(KieMediaModelSchema.safeParse(model).success).toBe(false);
+    }
+  );
+
+  it.each(QWEN_V1_EXACT_ONLY_MODELS)(
+    "keeps unversioned Qwen model %s reachable only through the enum",
+    (model) => {
+      expect(KieMediaModelSchema.safeParse(model).success).toBe(true);
+      expect(mediaAliasPatterns.filter((re) => re.test(model))).toEqual([]);
+    }
+  );
+
+  it.each(QWEN_V1_REJECTED_MODELS)(
+    "rejects the out-of-scope unversioned Qwen model %j",
     (model) => {
       expect(KieMediaModelSchema.safeParse(model).success).toBe(false);
     }

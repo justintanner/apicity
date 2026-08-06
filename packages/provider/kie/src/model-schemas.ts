@@ -1236,6 +1236,224 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  // Unversioned Qwen v1 (enum-only; digit-required qwenN/* alias unchanged).
+  // Sources:
+  // - https://docs.kie.ai/market/qwen/text-to-image
+  // - https://docs.kie.ai/market/qwen/image-edit
+  // - https://docs.kie.ai/market/qwen/image-to-image
+  "qwen/text-to-image": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        maxLength: 5000,
+        description: "Image generation prompt (max 5000 chars)",
+      },
+      image_size: {
+        type: "string",
+        enum: [
+          "square",
+          "square_hd",
+          "portrait_4_3",
+          "portrait_16_9",
+          "landscape_4_3",
+          "landscape_16_9",
+        ],
+        default: "square_hd",
+        description: "Output image size token (default square_hd)",
+      },
+      num_inference_steps: {
+        type: "number",
+        minimum: 2,
+        maximum: 250,
+        default: 30,
+        description: "Inference steps (2-250, default 30)",
+      },
+      seed: { type: "integer", description: "Random seed" },
+      guidance_scale: {
+        type: "number",
+        minimum: 0,
+        maximum: 20,
+        default: 2.5,
+        description: "CFG scale (0-20, default 2.5)",
+      },
+      enable_safety_checker: {
+        type: "boolean",
+        description: "Enable model safety checker when true",
+      },
+      output_format: {
+        type: "string",
+        enum: ["png", "jpeg"],
+        default: "png",
+        description: "Image format (default png)",
+      },
+      negative_prompt: {
+        type: "string",
+        maxLength: 500,
+        description: "Negative prompt (max 500 chars)",
+      },
+      acceleration: {
+        type: "string",
+        enum: ["none", "regular", "high"],
+        default: "none",
+        description: "Acceleration level (default none)",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description: "Content safety filter (default false)",
+      },
+    },
+  },
+
+  "qwen/image-edit": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        maxLength: 2000,
+        description: "Image editing prompt (max 2000 chars)",
+      },
+      image_url: {
+        type: "string",
+        required: true,
+        description:
+          "Source image URL to edit (jpeg/png/webp after upload; max 10 MB)",
+      },
+      acceleration: {
+        type: "string",
+        enum: ["none", "regular", "high"],
+        default: "none",
+        description: "Acceleration level (default none)",
+      },
+      image_size: {
+        type: "string",
+        enum: [
+          "square",
+          "square_hd",
+          "portrait_4_3",
+          "portrait_16_9",
+          "landscape_4_3",
+          "landscape_16_9",
+        ],
+        default: "landscape_4_3",
+        description: "Output image size token (default landscape_4_3)",
+      },
+      num_inference_steps: {
+        type: "number",
+        minimum: 2,
+        maximum: 49,
+        default: 25,
+        description: "Inference steps (2-49, default 25)",
+      },
+      seed: { type: "integer", description: "Random seed" },
+      guidance_scale: {
+        type: "number",
+        minimum: 0,
+        maximum: 20,
+        default: 4,
+        description: "CFG scale (0-20, default 4)",
+      },
+      sync_mode: {
+        type: "boolean",
+        description: "Wait for generation before returning when true",
+      },
+      num_images: {
+        type: "string",
+        enum: ["1", "2", "3", "4"],
+        description: 'Number of images as the exact string "1"–"4"',
+      },
+      enable_safety_checker: {
+        type: "boolean",
+        description: "Enable model safety checker when true",
+      },
+      output_format: {
+        type: "string",
+        enum: ["jpeg", "png"],
+        default: "png",
+        description: "Image format (default png)",
+      },
+      negative_prompt: {
+        type: "string",
+        maxLength: 500,
+        description: "Negative prompt (max 500 chars)",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description: "Content safety filter (default false)",
+      },
+    },
+  },
+
+  "qwen/image-to-image": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        maxLength: 5000,
+        description: "Image generation prompt (max 5000 chars)",
+      },
+      image_url: {
+        type: "string",
+        required: true,
+        description:
+          "Reference image URL (jpeg/png/webp after upload; max 10 MB)",
+      },
+      strength: {
+        type: "number",
+        minimum: 0,
+        maximum: 1,
+        default: 0.8,
+        description: "Denoising strength (0-1, default 0.8)",
+      },
+      output_format: {
+        type: "string",
+        enum: ["png", "jpeg"],
+        default: "png",
+        description: "Image format (default png)",
+      },
+      acceleration: {
+        type: "string",
+        enum: ["none", "regular", "high"],
+        default: "none",
+        description: "Acceleration level (default none)",
+      },
+      negative_prompt: {
+        type: "string",
+        maxLength: 500,
+        description: "Negative prompt (max 500 chars)",
+      },
+      seed: { type: "integer", description: "Random seed" },
+      num_inference_steps: {
+        type: "number",
+        minimum: 2,
+        maximum: 250,
+        default: 30,
+        description: "Inference steps (2-250, default 30)",
+      },
+      guidance_scale: {
+        type: "number",
+        minimum: 0,
+        maximum: 20,
+        default: 2.5,
+        description: "CFG scale (0-20, default 2.5)",
+      },
+      enable_safety_checker: {
+        type: "boolean",
+        description: "Enable model safety checker when true",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description: "Content safety filter (default false)",
+      },
+    },
+  },
+
   "wan/2-7-image-to-video": {
     type: "video",
     fields: {

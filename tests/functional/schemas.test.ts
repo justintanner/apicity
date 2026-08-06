@@ -1323,6 +1323,44 @@ describe("kie modelInputSchemas", () => {
     expect(schema.fields.upscale_factor.default).toBe("2");
   });
 
+  it("qwen v1 text-to-image exposes prompt and size tokens", () => {
+    const schema = modelInputSchemas["qwen/text-to-image"];
+
+    expect(schema.type).toBe("image");
+    expect(schema.fields.prompt.required).toBe(true);
+    expect(schema.fields.prompt.maxLength).toBe(5000);
+    expect(schema.fields.image_size.default).toBe("square_hd");
+    expect(schema.fields.image_size.enum).toEqual([
+      "square",
+      "square_hd",
+      "portrait_4_3",
+      "portrait_16_9",
+      "landscape_4_3",
+      "landscape_16_9",
+    ]);
+  });
+
+  it("qwen v1 image-edit exposes required image_url and num_images strings", () => {
+    const schema = modelInputSchemas["qwen/image-edit"];
+
+    expect(schema.type).toBe("image");
+    expect(schema.fields.prompt.required).toBe(true);
+    expect(schema.fields.image_url.required).toBe(true);
+    expect(schema.fields.num_images.enum).toEqual(["1", "2", "3", "4"]);
+    expect(schema.fields.num_inference_steps.maximum).toBe(49);
+  });
+
+  it("qwen v1 image-to-image exposes strength bounds", () => {
+    const schema = modelInputSchemas["qwen/image-to-image"];
+
+    expect(schema.type).toBe("image");
+    expect(schema.fields.prompt.required).toBe(true);
+    expect(schema.fields.image_url.required).toBe(true);
+    expect(schema.fields.strength.minimum).toBe(0);
+    expect(schema.fields.strength.maximum).toBe(1);
+    expect(schema.fields.strength.default).toBe(0.8);
+  });
+
   it("omnihuman 1.5 exposes required portrait and audio fields", () => {
     const schema = modelInputSchemas["omnihuman-1-5"];
 

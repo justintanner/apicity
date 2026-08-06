@@ -78,11 +78,13 @@ const KieMediaSeedreamModelAliasSchema = z
     "Expected a listed model or a kie Seedream alias (e.g. seedream/6-pro-text-to-image)"
   );
 
-// kie's Qwen media ids put the major version in the namespace itself
+// kie's versioned Qwen media ids put the major version in the namespace itself
 // (`qwen2/image-edit`), so the version is required before the `/`. That is a
 // different grammar from Alibaba's first-party `qwen-image-2.0` /
 // `qwen-image-edit` ids, which name a different product line and must not
-// cross over.
+// cross over. Unversioned `qwen/*` ids (text-to-image, image-edit,
+// image-to-image) are deliberate enum-only catalogue entries — the alias is
+// not widened to accept them (operator ruling ac-ly4x9j / ac-7hi3xx).
 const KieMediaQwenModelAliasSchema = z
   .string()
   .regex(
@@ -176,6 +178,10 @@ const KieMediaPixverseModelAliasSchema = z
 // `topaz/video-upscale` are the only two ids kie documents for the vendor, and
 // the task segment (`image-upscale` / `video-upscale`) is not a versioned
 // grammar that would justify an open alias hatch.
+// Unversioned Qwen v1 (`qwen/text-to-image`, `qwen/image-edit`,
+// `qwen/image-to-image`) is also enum-only: the Qwen alias requires a digit
+// before `/` for `qwen2/*` (and future versioned) ids, and was deliberately
+// not widened (ac-ly4x9j).
 export const KIE_MEDIA_MODELS = [
   "kling-3.0/video",
   "kling-3.0/motion-control",
@@ -199,6 +205,9 @@ export const KIE_MEDIA_MODELS = [
   "grok-imagine/upscale",
   "qwen2/text-to-image",
   "qwen2/image-edit",
+  "qwen/text-to-image",
+  "qwen/image-edit",
+  "qwen/image-to-image",
   "bytedance/seedance-2-fast",
   "bytedance/seedance-2",
   "bytedance/seedance-2-mini",
@@ -1260,6 +1269,29 @@ export const Qwen2ImageSizeSchema = z.enum([
   "16:9",
 ]);
 
+// Unversioned Qwen (`qwen/*`) uses fal-style named size tokens, not aspect
+// ratios. Shared by text-to-image and image-edit.
+// Docs: https://docs.kie.ai/market/qwen/text-to-image
+// Docs: https://docs.kie.ai/market/qwen/image-edit
+export const QwenImageSizeSchema = z.enum([
+  "square",
+  "square_hd",
+  "portrait_4_3",
+  "portrait_16_9",
+  "landscape_4_3",
+  "landscape_16_9",
+]);
+
+// Shared acceleration enum for all three unversioned Qwen models.
+// Docs: https://docs.kie.ai/market/qwen/text-to-image
+// Docs: https://docs.kie.ai/market/qwen/image-edit
+// Docs: https://docs.kie.ai/market/qwen/image-to-image
+export const QwenAccelerationSchema = z.enum(["none", "regular", "high"]);
+
+// image-edit documents num_images as a numeric-string enum (not a number).
+// Docs: https://docs.kie.ai/market/qwen/image-edit
+export const QwenImageEditNumImagesSchema = z.enum(["1", "2", "3", "4"]);
+
 export const Wan27ResolutionSchema = z.enum(["720p", "1080p"]);
 
 export const Wan27AspectRatioSchema = z.enum([
@@ -1516,6 +1548,69 @@ export const Qwen2ImageEditRequestSchema = z.object({
       .default("16:9"),
     output_format: z.enum(["jpeg", "png"]).default("png"),
     seed: z.number().multipleOf(1).optional(),
+    nsfw_checker: z.boolean().default(false),
+  }),
+});
+
+// Unversioned Qwen v1 createTask models (enum-only; alias stays digit-required).
+// Docs: https://docs.kie.ai/market/qwen/text-to-image
+export const QwenTextToImageRequestSchema = z.object({
+  model: z.literal("qwen/text-to-image"),
+  callBackUrl: z.string().url().optional(),
+  input: z.object({
+    prompt: z.string().min(1).max(5000),
+    image_size: QwenImageSizeSchema.default("square_hd"),
+    num_inference_steps: z.number().min(2).max(250).default(30),
+    seed: z.number().int().optional(),
+    guidance_scale: z.number().min(0).max(20).default(2.5),
+    enable_safety_checker: z.boolean().optional(),
+    output_format: z.enum(["png", "jpeg"]).default("png"),
+    negative_prompt: z.string().max(500).optional(),
+    acceleration: QwenAccelerationSchema.default("none"),
+    nsfw_checker: z.boolean().default(false),
+  }),
+});
+
+// Docs: https://docs.kie.ai/market/qwen/image-edit
+export const QwenImageEditRequestSchema = z.object({
+  model: z.literal("qwen/image-edit"),
+  callBackUrl: z.string().url().optional(),
+  input: z.object({
+    prompt: z.string().min(1).max(2000),
+    // File URL after upload (jpeg/png/webp, max 10 MB) — not file content.
+    image_url: z.string().min(1),
+    acceleration: QwenAccelerationSchema.default("none"),
+    image_size: QwenImageSizeSchema.default("landscape_4_3"),
+    // OpenAPI declares number with step 1; max 49 (not 250 like t2i/i2i).
+    num_inference_steps: z.number().min(2).max(49).default(25),
+    seed: z.number().int().optional(),
+    guidance_scale: z.number().min(0).max(20).default(4),
+    sync_mode: z.boolean().optional(),
+    // Numeric-string enum per OpenAPI (`"1"` | `"2"` | `"3"` | `"4"`).
+    num_images: QwenImageEditNumImagesSchema.optional(),
+    enable_safety_checker: z.boolean().optional(),
+    output_format: z.enum(["jpeg", "png"]).default("png"),
+    negative_prompt: z.string().max(500).optional(),
+    nsfw_checker: z.boolean().default(false),
+  }),
+});
+
+// Docs: https://docs.kie.ai/market/qwen/image-to-image
+export const QwenImageToImageRequestSchema = z.object({
+  model: z.literal("qwen/image-to-image"),
+  callBackUrl: z.string().url().optional(),
+  input: z.object({
+    prompt: z.string().min(1).max(5000),
+    // File URL after upload (jpeg/png/webp, max 10 MB) — not file content.
+    image_url: z.string().min(1),
+    strength: z.number().min(0).max(1).default(0.8),
+    output_format: z.enum(["png", "jpeg"]).default("png"),
+    acceleration: QwenAccelerationSchema.default("none"),
+    negative_prompt: z.string().max(500).optional(),
+    seed: z.number().int().optional(),
+    num_inference_steps: z.number().min(2).max(250).default(30),
+    guidance_scale: z.number().min(0).max(20).default(2.5),
+    enable_safety_checker: z.boolean().optional(),
     nsfw_checker: z.boolean().default(false),
   }),
 });
@@ -3951,6 +4046,9 @@ export const MediaGenerationRequestSchema = z.union([
   SeedreamProTextToImageRequestSchema,
   Qwen2TextToImageRequestSchema,
   Qwen2ImageEditRequestSchema,
+  QwenTextToImageRequestSchema,
+  QwenImageEditRequestSchema,
+  QwenImageToImageRequestSchema,
   Seedance2FastRequestSchema,
   Seedance2RequestSchema,
   Seedance2MiniRequestSchema,
@@ -4098,6 +4196,11 @@ export type NanoBananaOutputFormat = z.infer<
 >;
 export type GptImageQuality = z.infer<typeof GptImageQualitySchema>;
 export type Qwen2ImageSize = z.infer<typeof Qwen2ImageSizeSchema>;
+export type QwenImageSize = z.infer<typeof QwenImageSizeSchema>;
+export type QwenAcceleration = z.infer<typeof QwenAccelerationSchema>;
+export type QwenImageEditNumImages = z.infer<
+  typeof QwenImageEditNumImagesSchema
+>;
 export type Wan27Resolution = z.infer<typeof Wan27ResolutionSchema>;
 export type Wan27AspectRatio = z.infer<typeof Wan27AspectRatioSchema>;
 export type Wan27AudioSetting = z.infer<typeof Wan27AudioSettingSchema>;
@@ -4212,6 +4315,25 @@ export type Qwen2ImageEditRequest = z.input<typeof Qwen2ImageEditRequestSchema>;
 export type Qwen2ImageEditRequestInput = Qwen2ImageEditRequest;
 export type Qwen2ImageEditParsedRequest = z.output<
   typeof Qwen2ImageEditRequestSchema
+>;
+export type QwenTextToImageRequest = z.input<
+  typeof QwenTextToImageRequestSchema
+>;
+export type QwenTextToImageRequestInput = QwenTextToImageRequest;
+export type QwenTextToImageParsedRequest = z.output<
+  typeof QwenTextToImageRequestSchema
+>;
+export type QwenImageEditRequest = z.input<typeof QwenImageEditRequestSchema>;
+export type QwenImageEditRequestInput = QwenImageEditRequest;
+export type QwenImageEditParsedRequest = z.output<
+  typeof QwenImageEditRequestSchema
+>;
+export type QwenImageToImageRequest = z.input<
+  typeof QwenImageToImageRequestSchema
+>;
+export type QwenImageToImageRequestInput = QwenImageToImageRequest;
+export type QwenImageToImageParsedRequest = z.output<
+  typeof QwenImageToImageRequestSchema
 >;
 export type GrokImageToImageRequest = z.input<
   typeof GrokImageToImageRequestSchema

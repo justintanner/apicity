@@ -35,6 +35,9 @@ import {
   VolcengineVideoToVideoLipSyncRequestSchema,
   TopazImageUpscaleRequestSchema,
   TopazVideoUpscaleRequestSchema,
+  QwenTextToImageRequestSchema,
+  QwenImageEditRequestSchema,
+  QwenImageToImageRequestSchema,
   ElevenLabsTextToSpeechTurbo25RequestSchema,
   ElevenLabsTextToSpeechMultilingualV2RequestSchema,
   ElevenLabsTextToDialogueV3RequestSchema,
@@ -1173,6 +1176,131 @@ describe("kie Zod schema validation", () => {
       expect(result.error?.issues.some((i) => i.path.includes("mode"))).toBe(
         true
       );
+    });
+  });
+
+  describe("qwen v1 unversioned models", () => {
+    it("should accept the documented text-to-image request", () => {
+      const request = {
+        model: "qwen/text-to-image",
+        callBackUrl: "https://example.com/callback",
+        input: {
+          prompt: "a photorealistic cat on a windowsill",
+          image_size: "square_hd",
+          num_inference_steps: 30,
+          guidance_scale: 2.5,
+          output_format: "png",
+          acceleration: "none",
+        },
+      };
+
+      const result = QwenTextToImageRequestSchema.safeParse(request);
+      expect(result.success).toBe(true);
+      expect(MediaGenerationRequestSchema.safeParse(request).success).toBe(
+        true
+      );
+      expect(CreateTaskRequestSchema.safeParse(request).success).toBe(true);
+    });
+
+    it("should require prompt for text-to-image and reject overlong prompts", () => {
+      const missing = QwenTextToImageRequestSchema.safeParse({
+        model: "qwen/text-to-image",
+        input: {},
+      });
+      expect(missing.success).toBe(false);
+      expect(missing.error?.issues.some((i) => i.path.includes("prompt"))).toBe(
+        true
+      );
+
+      const tooLong = QwenTextToImageRequestSchema.safeParse({
+        model: "qwen/text-to-image",
+        input: { prompt: "x".repeat(5001) },
+      });
+      expect(tooLong.success).toBe(false);
+    });
+
+    it("should accept documented image-edit and require image_url", () => {
+      const request = {
+        model: "qwen/image-edit",
+        input: {
+          prompt: "replace the sky with a sunset",
+          image_url:
+            "https://file.aiquickdraw.com/custom-page/akr/section-images/1755603225969i6j87xnw.jpg",
+          num_images: "2",
+        },
+      };
+
+      const result = QwenImageEditRequestSchema.safeParse(request);
+      expect(result.success).toBe(true);
+      if (!result.success) return;
+      expect(result.data.input.image_size).toBe("landscape_4_3");
+      expect(result.data.input.num_inference_steps).toBe(25);
+      expect(result.data.input.guidance_scale).toBe(4);
+      expect(MediaGenerationRequestSchema.safeParse(request).success).toBe(
+        true
+      );
+      expect(CreateTaskRequestSchema.safeParse(request).success).toBe(true);
+
+      const missingUrl = QwenImageEditRequestSchema.safeParse({
+        model: "qwen/image-edit",
+        input: { prompt: "edit me" },
+      });
+      expect(missingUrl.success).toBe(false);
+      expect(
+        missingUrl.error?.issues.some((i) => i.path.includes("image_url"))
+      ).toBe(true);
+    });
+
+    it("should reject non-string and out-of-enum num_images for image-edit", () => {
+      const numeric = QwenImageEditRequestSchema.safeParse({
+        model: "qwen/image-edit",
+        input: {
+          prompt: "edit",
+          image_url: "https://example.com/source.png",
+          num_images: 2,
+        },
+      });
+      expect(numeric.success).toBe(false);
+
+      const invalid = QwenImageEditRequestSchema.safeParse({
+        model: "qwen/image-edit",
+        input: {
+          prompt: "edit",
+          image_url: "https://example.com/source.png",
+          num_images: "5",
+        },
+      });
+      expect(invalid.success).toBe(false);
+    });
+
+    it("should accept image-to-image and enforce strength bounds", () => {
+      const request = {
+        model: "qwen/image-to-image",
+        input: {
+          prompt: "restyle as watercolor",
+          image_url: "https://example.com/source.png",
+          strength: 0.8,
+        },
+      };
+
+      const result = QwenImageToImageRequestSchema.safeParse(request);
+      expect(result.success).toBe(true);
+      expect(MediaGenerationRequestSchema.safeParse(request).success).toBe(
+        true
+      );
+      expect(CreateTaskRequestSchema.safeParse(request).success).toBe(true);
+
+      for (const strength of [-0.1, 1.1] as const) {
+        const bad = QwenImageToImageRequestSchema.safeParse({
+          model: "qwen/image-to-image",
+          input: {
+            prompt: "restyle",
+            image_url: "https://example.com/source.png",
+            strength,
+          },
+        });
+        expect(bad.success).toBe(false);
+      }
     });
   });
 

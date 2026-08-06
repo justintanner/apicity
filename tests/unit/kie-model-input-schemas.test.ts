@@ -645,6 +645,109 @@ describe("KIE Google Gemini TTS modelInputSchemas metadata", () => {
   });
 });
 
+// Unversioned Qwen v1 registry entries
+// ---------------------------------------------------------------------------
+
+describe("KIE Qwen v1 modelInputSchemas metadata", () => {
+  const provider = createKie({ apiKey: "test-key" });
+  const MODELS = [
+    "qwen/image-edit",
+    "qwen/image-to-image",
+    "qwen/text-to-image",
+  ] as const;
+
+  it("exposes exactly three unversioned Qwen models with input fields", () => {
+    const qwenV1Models = Object.keys(provider.modelInputSchemas)
+      .filter(
+        (model) => model.startsWith("qwen/") && !model.startsWith("qwen2")
+      )
+      .sort();
+    expect(qwenV1Models).toEqual([...MODELS].sort());
+
+    expect(
+      Object.keys(
+        provider.modelInputSchemas["qwen/text-to-image"].fields
+      ).sort()
+    ).toEqual(
+      [
+        "acceleration",
+        "enable_safety_checker",
+        "guidance_scale",
+        "image_size",
+        "negative_prompt",
+        "nsfw_checker",
+        "num_inference_steps",
+        "output_format",
+        "prompt",
+        "seed",
+      ].sort()
+    );
+    expect(
+      provider.modelInputSchemas["qwen/image-edit"].fields.image_url.required
+    ).toBe(true);
+    expect(
+      provider.modelInputSchemas["qwen/image-to-image"].fields.image_url
+        .required
+    ).toBe(true);
+  });
+
+  it("documents text-to-image size enum and defaults", () => {
+    const fields = provider.modelInputSchemas["qwen/text-to-image"].fields;
+
+    expect(fields.prompt).toMatchObject({
+      type: "string",
+      required: true,
+      maxLength: 5000,
+    });
+    expect(fields.image_size).toMatchObject({
+      type: "string",
+      default: "square_hd",
+      enum: [
+        "square",
+        "square_hd",
+        "portrait_4_3",
+        "portrait_16_9",
+        "landscape_4_3",
+        "landscape_16_9",
+      ],
+    });
+    expect(fields.num_inference_steps).toMatchObject({
+      type: "number",
+      minimum: 2,
+      maximum: 250,
+      default: 30,
+    });
+  });
+
+  it("documents image-edit numeric-string num_images enum", () => {
+    const fields = provider.modelInputSchemas["qwen/image-edit"].fields;
+
+    expect(fields.num_images).toMatchObject({
+      type: "string",
+      enum: ["1", "2", "3", "4"],
+    });
+    expect(fields.num_images.required).toBeUndefined();
+    expect(fields.image_size.default).toBe("landscape_4_3");
+    expect(fields.num_inference_steps).toMatchObject({
+      type: "number",
+      minimum: 2,
+      maximum: 49,
+      default: 25,
+    });
+  });
+
+  it("documents image-to-image strength bounds", () => {
+    const fields = provider.modelInputSchemas["qwen/image-to-image"].fields;
+
+    expect(fields.strength).toMatchObject({
+      type: "number",
+      minimum: 0,
+      maximum: 1,
+      default: 0.8,
+    });
+  });
+});
+
 // Topaz registry entries
 // ---------------------------------------------------------------------------
 

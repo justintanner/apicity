@@ -2308,6 +2308,15 @@ const KieVeoModelAliasSchema = z
     "Expected a listed model or an underscored kie Veo alias (e.g. veo4_fast)"
   );
 
+// Closed quality/length vocabs: upstream documents a fixed set of resolution
+// and duration values (not a model registry that ships new ids independently).
+export const VeoResolutionSchema = z.enum(["720p", "1080p", "4k"]);
+export const VeoDurationSchema = z.union([
+  z.literal(4),
+  z.literal(6),
+  z.literal(8),
+]);
+
 export const VeoGenerateRequestSchema = z.object({
   prompt: z.string().min(1),
   model: z.enum(["veo3", "veo3_fast"]).or(KieVeoModelAliasSchema).optional(),
@@ -2323,6 +2332,12 @@ export const VeoGenerateRequestSchema = z.object({
   seeds: z.number().optional(),
   watermark: z.string().optional(),
   enableTranslation: z.boolean().optional(),
+  // Docs: https://docs.kie.ai/veo3-api/generate-veo-3-video
+  resolution: VeoResolutionSchema.optional(),
+  duration: VeoDurationSchema.optional(),
+  callBackUrl: z.string().optional(),
+  // Deprecated upstream; still accepted for callers that send it.
+  enableFallback: z.boolean().optional(),
 });
 
 export const VeoExtendRequestSchema = z.object({
@@ -2336,6 +2351,8 @@ export const VeoExtendRequestSchema = z.object({
   model: z.enum(["fast", "quality"]).optional(),
   seeds: z.number().optional(),
   watermark: z.string().optional(),
+  // Docs: https://docs.kie.ai/veo3-api/extend-video
+  callBackUrl: z.string().optional(),
 });
 
 export const VeoGet1080pVideoRequestSchema = z.object({

@@ -155,10 +155,51 @@ describe("KIE Veo provider", () => {
         seeds: 12345,
         watermark: "Sample",
         enableTranslation: true,
+        resolution: "1080p",
+        duration: 8,
+        callBackUrl: "https://example.com/callback",
+        enableFallback: false,
       };
 
       const result = VeoGenerateRequestSchema.safeParse(payload);
       expect(result.success).toBe(true);
+    });
+
+    it("should accept documented resolution and duration values", () => {
+      for (const resolution of ["720p", "1080p", "4k"] as const) {
+        const result = VeoGenerateRequestSchema.safeParse({
+          prompt: "A cat playing piano",
+          resolution,
+        });
+        expect(result.success).toBe(true);
+      }
+      for (const duration of [4, 6, 8] as const) {
+        const result = VeoGenerateRequestSchema.safeParse({
+          prompt: "A cat playing piano",
+          duration,
+        });
+        expect(result.success).toBe(true);
+      }
+    });
+
+    it("should reject invalid resolution and duration", () => {
+      const badRes = VeoGenerateRequestSchema.safeParse({
+        prompt: "Test",
+        resolution: "480p",
+      });
+      expect(badRes.success).toBe(false);
+      expect(
+        badRes.error?.issues.some((i) => i.path.includes("resolution"))
+      ).toBe(true);
+
+      const badDur = VeoGenerateRequestSchema.safeParse({
+        prompt: "Test",
+        duration: 5,
+      });
+      expect(badDur.success).toBe(false);
+      expect(
+        badDur.error?.issues.some((i) => i.path.includes("duration"))
+      ).toBe(true);
     });
   });
 
@@ -220,6 +261,15 @@ describe("KIE Veo provider", () => {
       expect(result.error?.issues.some((i) => i.path.includes("model"))).toBe(
         true
       );
+    });
+
+    it("should accept callBackUrl on extend", () => {
+      const result = VeoExtendRequestSchema.safeParse({
+        taskId: "task-123",
+        prompt: "Extend the video",
+        callBackUrl: "https://example.com/veo-extend-callback",
+      });
+      expect(result.success).toBe(true);
     });
   });
 

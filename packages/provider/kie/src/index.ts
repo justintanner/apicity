@@ -482,6 +482,8 @@ export {
 export type {
   VeoModel,
   VeoGenerationType,
+  VeoResolution,
+  VeoDuration,
   VeoGenerateRequest,
   VeoExtendRequest,
   VeoGet1080pVideoRequest,

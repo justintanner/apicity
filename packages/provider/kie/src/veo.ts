@@ -17,6 +17,9 @@ export type VeoGenerationType =
   | "REFERENCE_2_VIDEO"
   | "FIRST_AND_LAST_FRAMES_2_VIDEO";
 
+export type VeoResolution = "720p" | "1080p" | "4k";
+export type VeoDuration = 4 | 6 | 8;
+
 export interface VeoGenerateRequest {
   prompt: string;
   // Open enum: VeoGenerateRequestSchema unions the listed ids with
@@ -30,6 +33,11 @@ export interface VeoGenerateRequest {
   seeds?: number;
   watermark?: string;
   enableTranslation?: boolean;
+  resolution?: VeoResolution;
+  duration?: VeoDuration;
+  callBackUrl?: string;
+  /** @deprecated Upstream deprecates this; still accepted for wire compat. */
+  enableFallback?: boolean;
 }
 
 export interface VeoExtendRequest {
@@ -38,6 +46,7 @@ export interface VeoExtendRequest {
   model?: "fast" | "quality";
   seeds?: number;
   watermark?: string;
+  callBackUrl?: string;
 }
 
 export interface VeoGet1080pVideoRequest {

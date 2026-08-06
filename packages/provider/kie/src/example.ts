@@ -407,6 +407,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v1.responses": {
+    "source": "kie/api-responses-auth-error",
+    "payload": {
+      "model": "gpt-5.1-codex",
+      "input": "ping",
+      "stream": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v1.runway.extend": {
     "source": "kie/runway/extend-not-found",
     "payload": {

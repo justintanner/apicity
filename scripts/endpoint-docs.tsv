@@ -1025,6 +1025,7 @@ kie	api.v1.mp4.generate	POST	https://api.kie.ai/api/v1/mp4/generate
 kie	api.v1.mp4.recordInfo	GET	https://api.kie.ai/api/v1/mp4/record-info?taskId={taskId}	https://docs.kie.ai/suno-api/get-music-video-details
 kie	api.v1.omni.audio.create	POST	https://api.kie.ai/api/v1/omni/audio/create	https://docs.kie.ai/market/gemini-omni-audio
 kie	api.v1.omni.character.create	POST	https://api.kie.ai/api/v1/omni/character/create	https://docs.kie.ai/market/gemini-omni-character
+kie	api.v1.responses	POST	https://api.kie.ai/api/v1/responses	https://docs.kie.ai/market/codex/gpt-codex
 kie	api.v1.runway.extend	POST	https://api.kie.ai/api/v1/runway/extend	https://docs.kie.ai/runway-api/extend-ai-video
 kie	api.v1.runway.generate	POST	https://api.kie.ai/api/v1/runway/generate	https://docs.kie.ai/runway-api/generate-ai-video
 kie	api.v1.runway.recordDetail	GET	https://api.kie.ai/api/v1/runway/record-detail?taskId={taskId}	https://docs.kie.ai/runway-api/get-ai-video-details

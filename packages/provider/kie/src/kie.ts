@@ -746,78 +746,91 @@ export function createKie(opts: KieOptions): KieProvider {
         ...createGemini3ProProvider(baseURL, opts.apiKey, doFetch, timeout),
         ...createGemini25ProProvider(baseURL, opts.apiKey, doFetch, timeout),
         modelInputSchemas,
-        post: {
-          ...createResponsesProvider(baseURL, opts.apiKey, doFetch, timeout),
-          api: {
-            v1: {
-              jobs: {
-                createTask: Object.assign(createTask, {
-                  schema: CreateTaskRequestSchema,
-                }),
-              },
-              common: {
-                downloadUrl: Object.assign(downloadUrl, {
-                  schema: DownloadUrlRequestSchema,
-                }),
-              },
-              omni: {
-                audio: {
-                  create: Object.assign(omniAudioCreate, {
-                    schema: GeminiOmniAudioCreateRequestSchema,
+        post: (() => {
+          // codex / grok / api.v1.responses share createResponsesProvider.
+          // Merge api.v1.responses into the existing api.v1 namespace so the
+          // explicit `api: { v1: { … } }` object does not overwrite it.
+          const responses = createResponsesProvider(
+            baseURL,
+            opts.apiKey,
+            doFetch,
+            timeout
+          );
+          return {
+            codex: responses.codex,
+            grok: responses.grok,
+            api: {
+              v1: {
+                responses: responses.api.v1.responses,
+                jobs: {
+                  createTask: Object.assign(createTask, {
+                    schema: CreateTaskRequestSchema,
                   }),
                 },
-                character: {
-                  create: Object.assign(omniCharacterCreate, {
-                    schema: GeminiOmniCharacterCreateRequestSchema,
-                    responseSchema: GeminiOmniCharacterCreateResponseSchema,
+                common: {
+                  downloadUrl: Object.assign(downloadUrl, {
+                    schema: DownloadUrlRequestSchema,
+                  }),
+                },
+                omni: {
+                  audio: {
+                    create: Object.assign(omniAudioCreate, {
+                      schema: GeminiOmniAudioCreateRequestSchema,
+                    }),
+                  },
+                  character: {
+                    create: Object.assign(omniCharacterCreate, {
+                      schema: GeminiOmniCharacterCreateRequestSchema,
+                      responseSchema: GeminiOmniCharacterCreateResponseSchema,
+                    }),
+                  },
+                },
+                flux: {
+                  kontext: {
+                    generate: Object.assign(fluxKontextGenerate, {
+                      schema: FluxKontextGenerateRequestSchema,
+                    }),
+                  },
+                },
+                gpt4oImage: {
+                  generate: Object.assign(gpt4oImageGenerate, {
+                    schema: Gpt4oImageGenerateRequestSchema,
+                  }),
+                  downloadUrl: Object.assign(gpt4oImageDownloadUrl, {
+                    schema: Gpt4oImageDownloadUrlRequestSchema,
+                  }),
+                },
+                mj: {
+                  generate: Object.assign(mjGenerate, {
+                    schema: MjGenerateRequestSchema,
+                  }),
+                },
+                runway: {
+                  generate: Object.assign(runwayGenerate, {
+                    schema: RunwayGenerateRequestSchema,
+                  }),
+                  extend: Object.assign(runwayExtend, {
+                    schema: RunwayExtendRequestSchema,
+                  }),
+                },
+                aleph: {
+                  generate: Object.assign(alephGenerate, {
+                    schema: AlephGenerateRequestSchema,
                   }),
                 },
               },
-              flux: {
-                kontext: {
-                  generate: Object.assign(fluxKontextGenerate, {
-                    schema: FluxKontextGenerateRequestSchema,
-                  }),
-                },
-              },
-              gpt4oImage: {
-                generate: Object.assign(gpt4oImageGenerate, {
-                  schema: Gpt4oImageGenerateRequestSchema,
-                }),
-                downloadUrl: Object.assign(gpt4oImageDownloadUrl, {
-                  schema: Gpt4oImageDownloadUrlRequestSchema,
-                }),
-              },
-              mj: {
-                generate: Object.assign(mjGenerate, {
-                  schema: MjGenerateRequestSchema,
-                }),
-              },
-              runway: {
-                generate: Object.assign(runwayGenerate, {
-                  schema: RunwayGenerateRequestSchema,
-                }),
-                extend: Object.assign(runwayExtend, {
-                  schema: RunwayExtendRequestSchema,
-                }),
-              },
-              aleph: {
-                generate: Object.assign(alephGenerate, {
-                  schema: AlephGenerateRequestSchema,
-                }),
-              },
+              fileStreamUpload: Object.assign(fileStreamUpload, {
+                schema: UploadMediaRequestSchema,
+              }),
+              fileUrlUpload: Object.assign(fileUrlUpload, {
+                schema: FileUrlUploadRequestSchema,
+              }),
+              fileBase64Upload: Object.assign(fileBase64Upload, {
+                schema: FileBase64UploadRequestSchema,
+              }),
             },
-            fileStreamUpload: Object.assign(fileStreamUpload, {
-              schema: UploadMediaRequestSchema,
-            }),
-            fileUrlUpload: Object.assign(fileUrlUpload, {
-              schema: FileUrlUploadRequestSchema,
-            }),
-            fileBase64Upload: Object.assign(fileBase64Upload, {
-              schema: FileBase64UploadRequestSchema,
-            }),
-          },
-        },
+          };
+        })(),
         get: {
           api: {
             v1: {

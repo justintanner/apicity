@@ -357,6 +357,8 @@ export {
   KieResponsesWebSearchToolSchema,
   KieGrokResponsesModelSchema,
   KieGrokResponsesRequestSchema,
+  KieApiResponsesModelSchema,
+  KieApiResponsesRequestSchema,
   TaskResponseSchema,
   Wan27VideoEditDurationSchema,
   Wan27VideoEditDurationValues,
@@ -1011,6 +1013,8 @@ export type {
   KieResponsesParsedRequest,
   KieGrokResponsesModel,
   KieGrokResponsesRequest,
+  KieApiResponsesModel,
+  KieApiResponsesRequest,
 } from "./types";
 
 export {
@@ -1137,6 +1141,8 @@ export type {
   KieResponsesProvider,
   KieGrokResponsesMethod,
   KieGrokResponsesV1Namespace,
+  KieApiResponsesMethod,
+  KieApiResponsesV1Namespace,
 } from "./responses";
 
 export type {

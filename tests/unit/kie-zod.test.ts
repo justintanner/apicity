@@ -5,6 +5,7 @@ import {
   FluxKontextGenerateRequestSchema,
   KIE_MEDIA_MODELS,
   KieClaudeRequestSchema,
+  KieApiResponsesRequestSchema,
   KieGrokResponsesRequestSchema,
   KieMediaModelSchema,
   KieResponsesRequestSchema,
@@ -883,6 +884,28 @@ const OPENED_MODEL_FIELDS = [
       ),
     jsonSchema: (): JsonSchema =>
       zodToJsonSchema(KieGrokResponsesRequestSchema),
+  },
+  {
+    triage: "TRI-004b",
+    label: "KieApiResponsesRequestSchema.model",
+    listed: [
+      "gpt-5-codex",
+      "gpt-5.1-codex",
+      "gpt-5.2-codex",
+      "gpt-5.3-codex",
+      "gpt-5.4-codex",
+    ],
+    aliases: ["gpt-5.5-codex", "gpt-6-codex"],
+    // BR-3 bare family / missing -codex suffix; BR-4 sibling gpt-5-5 and grok.
+    rejected: ["gpt", "gpt-5", "gpt-5-5", "gpt-5-codex-extra!", "grok-4-5"],
+    parse: (model: unknown): ModelParseOutcome =>
+      modelOutcome(
+        KieApiResponsesRequestSchema.safeParse({
+          model,
+          input: "summarize this thread",
+        })
+      ),
+    jsonSchema: (): JsonSchema => zodToJsonSchema(KieApiResponsesRequestSchema),
   },
   {
     triage: "TRI-005",

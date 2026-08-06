@@ -2,6 +2,7 @@ import { KieError } from "./types";
 import {
   KieResponsesRequestSchema,
   KieGrokResponsesRequestSchema,
+  KieApiResponsesRequestSchema,
 } from "./zod";
 import type { ApicitySchema } from "./types";
 import { sseDataToIterable } from "./sse";
@@ -96,19 +97,48 @@ export interface KieGrokResponsesRequest {
   tool_choice?: KieResponsesToolChoice;
 }
 
+export type KieApiResponsesModel =
+  | "gpt-5-codex"
+  | "gpt-5.1-codex"
+  | "gpt-5.2-codex"
+  | "gpt-5.3-codex"
+  | "gpt-5.4-codex";
+
+// Identical to KieResponsesRequest apart from the model literal — the unified
+// GPT Codex surface (`POST /api/v1/responses`) shares the same Kie Responses
+// machinery as codex/gpt-5-5 and grok/grok-4-5.
+export interface KieApiResponsesRequest {
+  // Open enum: KieApiResponsesRequestSchema unions the listed ids with
+  // KieApiCodexModelAliasSchema (zod.ts), so a not-yet-listed versioned codex
+  // id such as `gpt-5.5-codex` validates. `string & {}` mirrors that hatch
+  // here without collapsing the union, so editors still autocomplete the
+  // listed ids.
+  model: KieApiResponsesModel | (string & {});
+  input: string | KieResponsesInputMessage[];
+  stream?: boolean;
+  reasoning?: KieResponsesReasoning;
+  tools?: KieResponsesTool[];
+  tool_choice?: KieResponsesToolChoice;
+}
+
 type AssertTrue<T extends true> = T;
 
-// Compile-level pin for the two `| (string & {})` hatches above. Both request
-// schemas accept an unlisted versioned id, so these interfaces must too. Drop
-// either hatch and the matching line below stops extending its interface,
-// `AssertTrue` sees `false` and errors here. No test can catch that on its own:
-// these are erased before any test runs, and the listed ids keep working either
-// way. Mirrors KieMediaModelStaysLiteral in zod.ts.
+// Compile-level pin for the `| (string & {})` hatches above. Request schemas
+// accept an unlisted versioned id, so these interfaces must too. Drop a hatch
+// and the matching line below stops extending its interface, `AssertTrue` sees
+// `false` and errors here. No test can catch that on its own: these are erased
+// before any test runs, and the listed ids keep working either way. Mirrors
+// KieMediaModelStaysLiteral in zod.ts.
 export type KieResponsesRequestTakesUnlistedModel = AssertTrue<
   { model: "gpt-6"; input: string } extends KieResponsesRequest ? true : false
 >;
 export type KieGrokResponsesRequestTakesUnlistedModel = AssertTrue<
   { model: "grok-5"; input: string } extends KieGrokResponsesRequest
+    ? true
+    : false
+>;
+export type KieApiResponsesRequestTakesUnlistedModel = AssertTrue<
+  { model: "gpt-5.5-codex"; input: string } extends KieApiResponsesRequest
     ? true
     : false
 >;
@@ -227,12 +257,35 @@ export interface KieGrokResponsesV1Namespace {
   responses: KieGrokResponsesMethod;
 }
 
+export interface KieApiResponsesMethod {
+  (
+    req: KieApiResponsesRequest & { stream: true },
+    signal?: AbortSignal
+  ): Promise<AsyncIterable<KieResponsesStreamEvent>>;
+  (
+    req: KieApiResponsesRequest & { stream?: false },
+    signal?: AbortSignal
+  ): Promise<KieResponsesResponse>;
+  (
+    req: KieApiResponsesRequest,
+    signal?: AbortSignal
+  ): Promise<KieResponsesResponse | AsyncIterable<KieResponsesStreamEvent>>;
+  schema: ApicitySchema<KieApiResponsesRequest>;
+}
+
+export interface KieApiResponsesV1Namespace {
+  responses: KieApiResponsesMethod;
+}
+
 export interface KieResponsesProvider {
   codex: {
     v1: KieResponsesV1Namespace;
   };
   grok: {
     v1: KieGrokResponsesV1Namespace;
+  };
+  api: {
+    v1: KieApiResponsesV1Namespace;
   };
 }
 
@@ -253,22 +306,71 @@ async function* parseResponsesStream(
   }
 }
 
+function codeToString(code: string | number | undefined): string | undefined {
+  if (typeof code === "string") return code;
+  if (typeof code === "number") return String(code);
+  return undefined;
+}
+
 function formatResponsesError(
   status: number,
   body: unknown
 ): { message: string; code?: string } {
-  if (typeof body === "object" && body !== null && "error" in body) {
-    const err = (body as { error?: { message?: unknown; type?: unknown } })
-      .error;
-    if (typeof err?.message === "string") {
+  if (typeof body === "object" && body !== null) {
+    if ("error" in body) {
+      const err = (body as { error?: { message?: unknown; type?: unknown } })
+        .error;
+      if (typeof err?.message === "string") {
+        return {
+          message: `Kie Responses API error ${status}: ${err.message}`,
+          code: typeof err.type === "string" ? err.type : undefined,
+        };
+      }
+    }
+
+    // Kie business-error envelope (often delivered as HTTP 200):
+    // `{ code: 401, msg: "Unauthorized …" }`.
+    const envelope = body as { msg?: unknown; code?: unknown };
+    if (typeof envelope.msg === "string") {
       return {
-        message: `Kie Responses API error ${status}: ${err.message}`,
-        code: typeof err.type === "string" ? err.type : undefined,
+        message: `Kie Responses API error ${status}: ${envelope.msg}`,
+        code: codeToString(
+          typeof envelope.code === "string" || typeof envelope.code === "number"
+            ? envelope.code
+            : undefined
+        ),
       };
     }
   }
 
   return { message: `Kie Responses API error: ${status}` };
+}
+
+/**
+ * Upstream sometimes returns HTTP 200 with a Kie envelope:
+ * `{ code: 401, msg: "..." }` (no response payload). Surface those as KieError.
+ */
+function throwIfKieErrorEnvelope(body: unknown): void {
+  if (typeof body !== "object" || body === null) return;
+  const record = body as {
+    code?: unknown;
+    output?: unknown;
+    status?: unknown;
+  };
+  if (typeof record.code !== "number") return;
+  if (record.code === 200) return;
+  // Real Responses payloads include `output` and/or a string `status`
+  // (e.g. "completed"); do not treat those as business-error envelopes.
+  if (Array.isArray(record.output)) return;
+  if (typeof record.status === "string") return;
+
+  const formatted = formatResponsesError(record.code, body);
+  throw new KieError(
+    formatted.message,
+    record.code,
+    body,
+    formatted.code ?? codeToString(record.code)
+  );
 }
 
 export function createResponsesProvider(
@@ -291,11 +393,12 @@ export function createResponsesProvider(
   });
 
   // Shared transport-bound request body for every Kie Responses model. The
-  // codex (gpt-5-5) and grok (grok-4-5) endpoints differ only in their upstream
-  // path, so keep the fetch/stream/error handling in one place.
+  // codex (gpt-5-5), grok (grok-4-5), and unified api (gpt-*-codex) endpoints
+  // differ only in their upstream path and model family, so keep the
+  // fetch/stream/error handling in one place.
   async function sendResponsesRequest(
     path: string,
-    req: KieResponsesRequest | KieGrokResponsesRequest,
+    req: KieResponsesRequest | KieGrokResponsesRequest | KieApiResponsesRequest,
     signal?: AbortSignal
   ): Promise<KieResponsesResponse | AsyncIterable<KieResponsesStreamEvent>> {
     try {
@@ -311,7 +414,9 @@ export function createResponsesProvider(
         return parseResponsesStream(res);
       }
 
-      return (await res.json()) as KieResponsesResponse;
+      const json = (await res.json()) as KieResponsesResponse;
+      throwIfKieErrorEnvelope(json);
+      return json;
     } catch (error) {
       if (error instanceof KieError) throw error;
       if (error instanceof SyntaxError) {
@@ -349,6 +454,20 @@ export function createResponsesProvider(
     }
   ) as KieGrokResponsesMethod;
 
+  // POST https://api.kie.ai/api/v1/responses
+  // Docs: https://docs.kie.ai/market/codex/gpt-codex
+  const apiResponses = Object.assign(
+    async function responses(
+      req: KieApiResponsesRequest,
+      signal?: AbortSignal
+    ): Promise<KieResponsesResponse | AsyncIterable<KieResponsesStreamEvent>> {
+      return sendResponsesRequest("/api/v1/responses", req, signal);
+    },
+    {
+      schema: KieApiResponsesRequestSchema,
+    }
+  ) as KieApiResponsesMethod;
+
   return {
     codex: {
       v1: {
@@ -358,6 +477,11 @@ export function createResponsesProvider(
     grok: {
       v1: {
         responses: grokResponses,
+      },
+    },
+    api: {
+      v1: {
+        responses: apiResponses,
       },
     },
   };

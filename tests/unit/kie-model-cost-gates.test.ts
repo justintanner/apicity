@@ -73,7 +73,7 @@ const KIE_MODEL_FAMILY_ENDPOINTS: Record<string, readonly string[]> = {
     "gemini.v1.models.gemini3FlashV1betamodels.streamGenerateContent",
   ],
   Gemini31: ["gemini31Pro.v1.chat.completions"],
-  Codex: ["codex.v1.responses"],
+  Codex: ["codex.v1.responses", "api.v1.responses"],
 };
 
 const ALL_FAMILY_ENDPOINTS: readonly string[] = Object.values(

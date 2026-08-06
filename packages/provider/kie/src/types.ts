@@ -619,6 +619,8 @@ export type {
   KieResponsesParsedRequest,
   KieGrokResponsesModel,
   KieGrokResponsesRequest,
+  KieApiResponsesModel,
+  KieApiResponsesRequest,
 } from "./zod";
 
 // ---------------------------------------------------------------------------
@@ -962,6 +964,7 @@ interface KieFluxKontextRecordInfoMethod {
 // POST namespace
 interface KiePostApiNamespace {
   v1: {
+    responses: import("./responses").KieApiResponsesMethod;
     jobs: { createTask: KieCreateTaskMethod };
     common: { downloadUrl: KieDownloadUrlMethod };
     omni: {

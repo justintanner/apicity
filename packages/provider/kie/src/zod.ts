@@ -5592,6 +5592,53 @@ export type KieGrokResponsesRequest = z.input<
   typeof KieGrokResponsesRequestSchema
 >;
 
+// Unified GPT Codex Responses (`POST /api/v1/responses`). Distinct from the
+// codex-path sibling at `/codex/v1/responses` (gpt-5-5 family) — same request
+// contract, different model family. Docs list five `*-codex` ids; the alias
+// hatch accepts future versioned codex ids such as `gpt-5.5-codex` without a
+// schema bump. Sharing KieOpenAiModelAliasSchema would also accept `gpt-5-5`
+// (the wrong surface), so this grammar requires the `-codex` suffix.
+const KieApiCodexModelAliasSchema = z
+  .string()
+  .regex(
+    /^gpt-\d+(?:\.\d+)*-codex(?:-[a-z0-9]+)*$/,
+    "Expected a listed model or a versioned GPT Codex alias (e.g. gpt-5.5-codex)"
+  );
+
+const KIE_API_RESPONSES_MODELS = [
+  "gpt-5-codex",
+  "gpt-5.1-codex",
+  "gpt-5.2-codex",
+  "gpt-5.3-codex",
+  "gpt-5.4-codex",
+] as const;
+
+export const KieApiResponsesModelSchema = z
+  .enum(KIE_API_RESPONSES_MODELS)
+  .or(KieApiCodexModelAliasSchema);
+
+// Reuse the codex/grok input/message/reasoning/tools sub-schemas so the mixed
+// web_search + function rejection (KieResponsesToolsSchema) behaves identically.
+export const KieApiResponsesRequestSchema = z.object({
+  model: KieApiResponsesModelSchema,
+  stream: z.boolean().default(false).optional(),
+  input: z.union([
+    z.string().min(1),
+    z.array(KieResponsesInputMessageSchema).min(1),
+  ]),
+  reasoning: KieResponsesReasoningSchema.optional(),
+  tools: KieResponsesToolsSchema.optional(),
+  tool_choice: z.string().optional(),
+});
+
+// Literal ids + hatch rather than `z.infer` — see FluxKontextModel above.
+export type KieApiResponsesModel =
+  | (typeof KIE_API_RESPONSES_MODELS)[number]
+  | (string & {});
+export type KieApiResponsesRequest = z.input<
+  typeof KieApiResponsesRequestSchema
+>;
+
 // ---------------------------------------------------------------------------
 // Sub-provider schemas: Claude (via Kie)
 // ---------------------------------------------------------------------------
@@ -5854,6 +5901,9 @@ export type KieResponsesModelKeepsLiterals = AssertTrue<
 >;
 export type KieGrokResponsesModelKeepsLiterals = AssertTrue<
   StaysAutocompletable<KieGrokResponsesModel>
+>;
+export type KieApiResponsesModelKeepsLiterals = AssertTrue<
+  StaysAutocompletable<KieApiResponsesModel>
 >;
 
 export type MediaType = z.infer<typeof MediaTypeSchema>;

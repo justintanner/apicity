@@ -1,6 +1,18 @@
 // Export main provider function and helpers
 export { createKie, submitMediaJob, uploadFile } from "./kie";
 
+// Kie callback webhook HMAC verification (not pay-gate OTP HMAC)
+export {
+  signKieWebhook,
+  verifyKieWebhookSignature,
+  verifyKieWebhookRequest,
+  extractKieWebhookTaskId,
+} from "./webhook";
+export type {
+  VerifyKieWebhookSignatureInput,
+  VerifyKieWebhookRequestInput,
+} from "./webhook";
+
 // Export reusable schema metadata
 export {
   GeminiOmniAudioCreateRequestSchema,

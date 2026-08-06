@@ -1169,7 +1169,24 @@ const MEDIA_MODEL_FAMILIES = [
       "wan/2-7-image",
       "wan/2-7-image-pro",
     ],
-    aliases: ["wan/2-8-image-to-video", "wan/3-0-r2v"],
+    aliases: [
+      "wan/2-8-image-to-video",
+      "wan/3-0-r2v",
+      // Alias-accepted documented models with per-model createTask schemas
+      // (not listed in KIE_MEDIA_MODELS; reach CreateTask via the Wan hatch).
+      "wan/2-2-a14b-image-to-video-turbo",
+      "wan/2-2-a14b-speech-to-video-turbo",
+      "wan/2-2-a14b-text-to-video-turbo",
+      "wan/2-2-animate-move",
+      "wan/2-2-animate-replace",
+      "wan/2-5-image-to-video",
+      "wan/2-5-text-to-video",
+      "wan/2-6-flash-image-to-video",
+      "wan/2-6-flash-video-to-video",
+      "wan/2-6-image-to-video",
+      "wan/2-6-text-to-video",
+      "wan/2-6-video-to-video",
+    ],
     // `wan2.7-i2v` is Alibaba's dotted, un-namespaced grammar for the same
     // upstream family — a foreign id on this field.
     rejected: ["wan/2-7", "wan", "wan/image-to-video", "wan2.7-i2v"],

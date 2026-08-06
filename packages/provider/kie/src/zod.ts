@@ -3300,6 +3300,206 @@ export const Wan27ImageProRequestSchema =
     wan27Image4KRefinement
   );
 
+// ---------------------------------------------------------------------------
+// WAN alias-accepted createTask models (not in KIE_MEDIA_MODELS; they match
+// KieMediaWanModelAliasSchema and need per-model request members so
+// CreateTaskRequestSchema / MediaGenerationRequestSchema accept them).
+// Docs: https://docs.kie.ai/market/wan/
+// ---------------------------------------------------------------------------
+
+export const Wan22A14bTurboResolutionSchema = z.enum(["480p", "720p"]);
+export const Wan22A14bTurboAccelerationSchema = z.enum(["none", "regular"]);
+export const Wan22A14bTurboAspectRatioSchema = z.enum(["16:9", "9:16"]);
+export const Wan22ExtendedResolutionSchema = z.enum(["480p", "580p", "720p"]);
+export const Wan25DurationSchema = z.enum(["5", "10"]);
+export const Wan25ResolutionSchema = z.enum(["720p", "1080p"]);
+export const Wan25AspectRatioSchema = z.enum(["16:9", "9:16", "1:1"]);
+export const Wan26DurationSchema = z.enum(["5", "10", "15"]);
+export const Wan26VideoDurationSchema = z.enum(["5", "10"]);
+export const Wan26ResolutionSchema = z.enum(["720p", "1080p"]);
+
+const wanSeedField = z.number().int().min(0).max(2147483647).optional();
+
+// Docs: https://docs.kie.ai/market/wan/2-2-a14b-image-to-video-turbo
+export const Wan22A14bImageToVideoTurboRequestSchema = z.object({
+  model: z.literal("wan/2-2-a14b-image-to-video-turbo"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    image_url: z.string().min(1),
+    prompt: z.string().min(1).max(5000),
+    resolution: Wan22A14bTurboResolutionSchema.default("720p"),
+    enable_prompt_expansion: z.boolean().optional(),
+    seed: wanSeedField,
+    acceleration: Wan22A14bTurboAccelerationSchema.default("none"),
+    nsfw_checker: z.boolean().default(false),
+  }),
+});
+
+// Docs: https://docs.kie.ai/market/wan/2-2-a14b-speech-to-video-turbo
+export const Wan22A14bSpeechToVideoTurboRequestSchema = z.object({
+  model: z.literal("wan/2-2-a14b-speech-to-video-turbo"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().min(1).max(5000),
+    image_url: z.string().min(1),
+    audio_url: z.string().min(1),
+    num_frames: z.number().int().min(40).max(120).default(80),
+    frames_per_second: z.number().int().min(4).max(60).default(16),
+    resolution: Wan22ExtendedResolutionSchema.default("480p"),
+    negative_prompt: z.string().max(500).optional(),
+    seed: wanSeedField,
+    num_inference_steps: z.number().int().min(2).max(40).default(27),
+    guidance_scale: z.number().min(1).max(10).default(3.5),
+    shift: z.number().min(1).max(10).default(5),
+    nsfw_checker: z.boolean().default(false),
+  }),
+});
+
+// Docs: https://docs.kie.ai/market/wan/2-2-a14b-text-to-video-turbo
+export const Wan22A14bTextToVideoTurboRequestSchema = z.object({
+  model: z.literal("wan/2-2-a14b-text-to-video-turbo"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().min(1).max(5000),
+    resolution: Wan22A14bTurboResolutionSchema.default("720p"),
+    aspect_ratio: Wan22A14bTurboAspectRatioSchema.default("16:9"),
+    enable_prompt_expansion: z.boolean().optional(),
+    seed: wanSeedField,
+    acceleration: Wan22A14bTurboAccelerationSchema.default("none"),
+    nsfw_checker: z.boolean().default(false),
+  }),
+});
+
+// Docs: https://docs.kie.ai/market/wan/2-2-animate-move
+export const Wan22AnimateMoveRequestSchema = z.object({
+  model: z.literal("wan/2-2-animate-move"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    video_url: z.string().min(1),
+    image_url: z.string().min(1),
+    resolution: Wan22ExtendedResolutionSchema.default("480p"),
+    nsfw_checker: z.boolean().default(false),
+  }),
+});
+
+// Docs: https://docs.kie.ai/market/wan/2-2-animate-replace
+export const Wan22AnimateReplaceRequestSchema = z.object({
+  model: z.literal("wan/2-2-animate-replace"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    video_url: z.string().min(1),
+    image_url: z.string().min(1),
+    resolution: Wan22ExtendedResolutionSchema.default("480p"),
+    nsfw_checker: z.boolean().default(false),
+  }),
+});
+
+// Docs: https://docs.kie.ai/market/wan/2-5-image-to-video
+// duration is required with no OpenAPI default — keep required without
+// `.default()` (documented-defaults trap).
+export const Wan25ImageToVideoRequestSchema = z.object({
+  model: z.literal("wan/2-5-image-to-video"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().min(1).max(800),
+    image_url: z.string().min(1),
+    duration: Wan25DurationSchema,
+    resolution: Wan25ResolutionSchema.optional(),
+    negative_prompt: z.string().max(500).optional(),
+    enable_prompt_expansion: z.boolean().optional(),
+    seed: wanSeedField,
+    nsfw_checker: z.boolean().default(false),
+  }),
+});
+
+// Docs: https://docs.kie.ai/market/wan/2-5-text-to-video
+export const Wan25TextToVideoRequestSchema = z.object({
+  model: z.literal("wan/2-5-text-to-video"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().min(1).max(800),
+    duration: Wan25DurationSchema,
+    aspect_ratio: Wan25AspectRatioSchema.optional(),
+    resolution: Wan25ResolutionSchema.optional(),
+    negative_prompt: z.string().max(500).optional(),
+    enable_prompt_expansion: z.boolean().optional(),
+    seed: wanSeedField,
+    nsfw_checker: z.boolean().default(false),
+  }),
+});
+
+// Docs: https://docs.kie.ai/market/wan/2-6-flash-image-to-video
+// `audio` is required (pricing differs with/without sound); no default.
+export const Wan26FlashImageToVideoRequestSchema = z.object({
+  model: z.literal("wan/2-6-flash-image-to-video"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().min(2).max(1500),
+    image_urls: z.array(z.string().min(1)).min(1).max(1),
+    duration: Wan26DurationSchema.default("5"),
+    resolution: Wan26ResolutionSchema.default("1080p"),
+    audio: z.boolean(),
+    multi_shots: z.boolean().optional(),
+    nsfw_checker: z.boolean().default(false),
+  }),
+});
+
+// Docs: https://docs.kie.ai/market/wan/2-6-flash-video-to-video
+export const Wan26FlashVideoToVideoRequestSchema = z.object({
+  model: z.literal("wan/2-6-flash-video-to-video"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().min(2).max(1500),
+    video_urls: z.array(z.string().min(1)).min(1).max(3),
+    duration: Wan26VideoDurationSchema.default("5"),
+    resolution: Wan26ResolutionSchema.default("1080p"),
+    audio: z.boolean().optional(),
+    multi_shots: z.boolean().optional(),
+    nsfw_checker: z.boolean().default(false),
+  }),
+});
+
+// Docs: https://docs.kie.ai/market/wan/2-6-image-to-video
+export const Wan26ImageToVideoRequestSchema = z.object({
+  model: z.literal("wan/2-6-image-to-video"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().min(2).max(5000),
+    image_urls: z.array(z.string().min(1)).min(1).max(1),
+    duration: Wan26DurationSchema.default("5"),
+    resolution: Wan26ResolutionSchema.default("1080p"),
+    multi_shots: z.boolean().default(false),
+    nsfw_checker: z.boolean().default(false),
+  }),
+});
+
+// Docs: https://docs.kie.ai/market/wan/2-6-text-to-video
+export const Wan26TextToVideoRequestSchema = z.object({
+  model: z.literal("wan/2-6-text-to-video"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().min(1).max(5000),
+    duration: Wan26DurationSchema.default("5"),
+    resolution: Wan26ResolutionSchema.default("1080p"),
+    multi_shots: z.boolean().default(false),
+    nsfw_checker: z.boolean().default(false),
+  }),
+});
+
+// Docs: https://docs.kie.ai/market/wan/2-6-video-to-video
+export const Wan26VideoToVideoRequestSchema = z.object({
+  model: z.literal("wan/2-6-video-to-video"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().min(2).max(5000),
+    video_urls: z.array(z.string().min(1)).min(1).max(3),
+    duration: Wan26VideoDurationSchema.default("5"),
+    resolution: Wan26ResolutionSchema.default("1080p"),
+    multi_shots: z.boolean().default(false),
+    nsfw_checker: z.boolean().default(false),
+  }),
+});
+
 // PixVerse V6 shared value domains. Every model in the family draws prompt,
 // quality, duration, and seed from these same ranges, and the two that expose
 // aspect_ratio (text-to-video, reference-to-video) share its eight values, so
@@ -5332,6 +5532,18 @@ export const MediaGenerationRequestSchema = z.union([
   Wan27VideoEditRequestSchema,
   Wan27ImageRequestSchema,
   Wan27ImageProRequestSchema,
+  Wan22A14bImageToVideoTurboRequestSchema,
+  Wan22A14bSpeechToVideoTurboRequestSchema,
+  Wan22A14bTextToVideoTurboRequestSchema,
+  Wan22AnimateMoveRequestSchema,
+  Wan22AnimateReplaceRequestSchema,
+  Wan25ImageToVideoRequestSchema,
+  Wan25TextToVideoRequestSchema,
+  Wan26FlashImageToVideoRequestSchema,
+  Wan26FlashVideoToVideoRequestSchema,
+  Wan26ImageToVideoRequestSchema,
+  Wan26TextToVideoRequestSchema,
+  Wan26VideoToVideoRequestSchema,
   HappyHorseTextToVideoRequestSchema,
   HappyHorseImageToVideoRequestSchema,
   HappyHorseReferenceToVideoRequestSchema,
@@ -6353,6 +6565,111 @@ export type Wan27ImageProRequest = z.input<typeof Wan27ImageProRequestSchema>;
 export type Wan27ImageProRequestInput = Wan27ImageProRequest;
 export type Wan27ImageProParsedRequest = z.output<
   typeof Wan27ImageProRequestSchema
+>;
+export type Wan22A14bTurboResolution = z.infer<
+  typeof Wan22A14bTurboResolutionSchema
+>;
+export type Wan22A14bTurboAcceleration = z.infer<
+  typeof Wan22A14bTurboAccelerationSchema
+>;
+export type Wan22A14bTurboAspectRatio = z.infer<
+  typeof Wan22A14bTurboAspectRatioSchema
+>;
+export type Wan22ExtendedResolution = z.infer<
+  typeof Wan22ExtendedResolutionSchema
+>;
+export type Wan25Duration = z.infer<typeof Wan25DurationSchema>;
+export type Wan25Resolution = z.infer<typeof Wan25ResolutionSchema>;
+export type Wan25AspectRatio = z.infer<typeof Wan25AspectRatioSchema>;
+export type Wan26Duration = z.infer<typeof Wan26DurationSchema>;
+export type Wan26VideoDuration = z.infer<typeof Wan26VideoDurationSchema>;
+export type Wan26Resolution = z.infer<typeof Wan26ResolutionSchema>;
+export type Wan22A14bImageToVideoTurboRequest = z.input<
+  typeof Wan22A14bImageToVideoTurboRequestSchema
+>;
+export type Wan22A14bImageToVideoTurboRequestInput =
+  Wan22A14bImageToVideoTurboRequest;
+export type Wan22A14bImageToVideoTurboParsedRequest = z.output<
+  typeof Wan22A14bImageToVideoTurboRequestSchema
+>;
+export type Wan22A14bSpeechToVideoTurboRequest = z.input<
+  typeof Wan22A14bSpeechToVideoTurboRequestSchema
+>;
+export type Wan22A14bSpeechToVideoTurboRequestInput =
+  Wan22A14bSpeechToVideoTurboRequest;
+export type Wan22A14bSpeechToVideoTurboParsedRequest = z.output<
+  typeof Wan22A14bSpeechToVideoTurboRequestSchema
+>;
+export type Wan22A14bTextToVideoTurboRequest = z.input<
+  typeof Wan22A14bTextToVideoTurboRequestSchema
+>;
+export type Wan22A14bTextToVideoTurboRequestInput =
+  Wan22A14bTextToVideoTurboRequest;
+export type Wan22A14bTextToVideoTurboParsedRequest = z.output<
+  typeof Wan22A14bTextToVideoTurboRequestSchema
+>;
+export type Wan22AnimateMoveRequest = z.input<
+  typeof Wan22AnimateMoveRequestSchema
+>;
+export type Wan22AnimateMoveRequestInput = Wan22AnimateMoveRequest;
+export type Wan22AnimateMoveParsedRequest = z.output<
+  typeof Wan22AnimateMoveRequestSchema
+>;
+export type Wan22AnimateReplaceRequest = z.input<
+  typeof Wan22AnimateReplaceRequestSchema
+>;
+export type Wan22AnimateReplaceRequestInput = Wan22AnimateReplaceRequest;
+export type Wan22AnimateReplaceParsedRequest = z.output<
+  typeof Wan22AnimateReplaceRequestSchema
+>;
+export type Wan25ImageToVideoRequest = z.input<
+  typeof Wan25ImageToVideoRequestSchema
+>;
+export type Wan25ImageToVideoRequestInput = Wan25ImageToVideoRequest;
+export type Wan25ImageToVideoParsedRequest = z.output<
+  typeof Wan25ImageToVideoRequestSchema
+>;
+export type Wan25TextToVideoRequest = z.input<
+  typeof Wan25TextToVideoRequestSchema
+>;
+export type Wan25TextToVideoRequestInput = Wan25TextToVideoRequest;
+export type Wan25TextToVideoParsedRequest = z.output<
+  typeof Wan25TextToVideoRequestSchema
+>;
+export type Wan26FlashImageToVideoRequest = z.input<
+  typeof Wan26FlashImageToVideoRequestSchema
+>;
+export type Wan26FlashImageToVideoRequestInput = Wan26FlashImageToVideoRequest;
+export type Wan26FlashImageToVideoParsedRequest = z.output<
+  typeof Wan26FlashImageToVideoRequestSchema
+>;
+export type Wan26FlashVideoToVideoRequest = z.input<
+  typeof Wan26FlashVideoToVideoRequestSchema
+>;
+export type Wan26FlashVideoToVideoRequestInput = Wan26FlashVideoToVideoRequest;
+export type Wan26FlashVideoToVideoParsedRequest = z.output<
+  typeof Wan26FlashVideoToVideoRequestSchema
+>;
+export type Wan26ImageToVideoRequest = z.input<
+  typeof Wan26ImageToVideoRequestSchema
+>;
+export type Wan26ImageToVideoRequestInput = Wan26ImageToVideoRequest;
+export type Wan26ImageToVideoParsedRequest = z.output<
+  typeof Wan26ImageToVideoRequestSchema
+>;
+export type Wan26TextToVideoRequest = z.input<
+  typeof Wan26TextToVideoRequestSchema
+>;
+export type Wan26TextToVideoRequestInput = Wan26TextToVideoRequest;
+export type Wan26TextToVideoParsedRequest = z.output<
+  typeof Wan26TextToVideoRequestSchema
+>;
+export type Wan26VideoToVideoRequest = z.input<
+  typeof Wan26VideoToVideoRequestSchema
+>;
+export type Wan26VideoToVideoRequestInput = Wan26VideoToVideoRequest;
+export type Wan26VideoToVideoParsedRequest = z.output<
+  typeof Wan26VideoToVideoRequestSchema
 >;
 export type HappyHorseTextToVideoRequest = z.input<
   typeof HappyHorseTextToVideoRequestSchema

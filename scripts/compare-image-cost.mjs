@@ -153,12 +153,231 @@ export const lineup = [
       },
     },
   },
+  // seedream/5-pro — 2 tiers by quality (basic=1K, high=2K).
+  {
+    ...createTaskEndpointAssociation,
+    label: "seedream/5-pro t2i basic",
+    payload: {
+      model: "seedream/5-pro-text-to-image",
+      input: { prompt: "xxx", quality: "basic" },
+    },
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "seedream/5-pro t2i high",
+    payload: {
+      model: "seedream/5-pro-text-to-image",
+      input: { prompt: "xxx", quality: "high" },
+    },
+  },
+  // gpt-image 1.5 — 2 tiers by quality.
+  {
+    ...createTaskEndpointAssociation,
+    label: "gpt-image 1.5 t2i medium",
+    payload: {
+      model: "gpt-image/1.5-text-to-image",
+      input: { prompt: "x", aspect_ratio: "1:1", quality: "medium" },
+    },
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "gpt-image 1.5 t2i high",
+    payload: {
+      model: "gpt-image/1.5-text-to-image",
+      input: { prompt: "x", aspect_ratio: "1:1", quality: "high" },
+    },
+  },
+  // imagen4 — 3 flat tiers.
+  {
+    ...createTaskEndpointAssociation,
+    label: "imagen4",
+    payload: { model: "google/imagen4", input: { prompt: "x" } },
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "imagen4 fast",
+    payload: { model: "google/imagen4-fast", input: { prompt: "x" } },
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "imagen4 ultra",
+    payload: { model: "google/imagen4-ultra", input: { prompt: "x" } },
+  },
+  // flux-2 — 2 tiers by resolution on each of the pro and flex ladders.
+  {
+    ...createTaskEndpointAssociation,
+    label: "flux-2 pro t2i 1K",
+    payload: {
+      model: "flux-2/pro-text-to-image",
+      input: { prompt: "xxx", aspect_ratio: "1:1", resolution: "1K" },
+    },
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "flux-2 pro t2i 2K",
+    payload: {
+      model: "flux-2/pro-text-to-image",
+      input: { prompt: "xxx", aspect_ratio: "1:1", resolution: "2K" },
+    },
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "flux-2 flex t2i 1K",
+    payload: {
+      model: "flux-2/flex-text-to-image",
+      input: { prompt: "xxx", aspect_ratio: "1:1", resolution: "1K" },
+    },
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "flux-2 flex t2i 2K",
+    payload: {
+      model: "flux-2/flex-text-to-image",
+      input: { prompt: "xxx", aspect_ratio: "1:1", resolution: "2K" },
+    },
+  },
+  // ideogram — 3 rendering speeds on each of the V3 and Character ladders.
+  {
+    ...createTaskEndpointAssociation,
+    label: "ideogram v3 t2i TURBO",
+    payload: {
+      model: "ideogram/v3-text-to-image",
+      input: { prompt: "x", rendering_speed: "TURBO" },
+    },
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "ideogram v3 t2i BALANCED",
+    payload: {
+      model: "ideogram/v3-text-to-image",
+      input: { prompt: "x", rendering_speed: "BALANCED" },
+    },
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "ideogram v3 t2i QUALITY",
+    payload: {
+      model: "ideogram/v3-text-to-image",
+      input: { prompt: "x", rendering_speed: "QUALITY" },
+    },
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "ideogram character TURBO",
+    payload: {
+      model: "ideogram/character",
+      input: {
+        prompt: "x",
+        reference_image_urls: ["https://example.com/x.jpg"],
+        rendering_speed: "TURBO",
+      },
+    },
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "ideogram character BALANCED",
+    payload: {
+      model: "ideogram/character",
+      input: {
+        prompt: "x",
+        reference_image_urls: ["https://example.com/x.jpg"],
+        rendering_speed: "BALANCED",
+      },
+    },
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "ideogram character QUALITY",
+    payload: {
+      model: "ideogram/character",
+      input: {
+        prompt: "x",
+        reference_image_urls: ["https://example.com/x.jpg"],
+        rendering_speed: "QUALITY",
+      },
+    },
+  },
+  // qwen — area-billed: the image_size preset sets the billable megapixels,
+  // so two presets of the same model land on different prices.
+  {
+    ...createTaskEndpointAssociation,
+    label: "qwen t2i square_hd",
+    payload: {
+      model: "qwen/text-to-image",
+      input: { prompt: "x", image_size: "square_hd" },
+    },
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "qwen t2i square",
+    payload: {
+      model: "qwen/text-to-image",
+      input: { prompt: "x", image_size: "square" },
+    },
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "qwen image-edit",
+    payload: {
+      model: "qwen/image-edit",
+      input: {
+        prompt: "x",
+        image_url: "https://example.com/x.jpg",
+        image_size: "landscape_4_3",
+      },
+    },
+  },
+  // Flat single-rate image families.
+  {
+    ...createTaskEndpointAssociation,
+    label: "nano-banana-2-lite",
+    payload: { model: "nano-banana-2-lite", input: { prompt: "x" } },
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "z-image",
+    payload: {
+      model: "z-image",
+      input: { prompt: "x", aspect_ratio: "1:1" },
+    },
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "recraft crisp-upscale",
+    payload: {
+      model: "recraft/crisp-upscale",
+      input: { image: "https://example.com/x.jpg" },
+    },
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "recraft remove-background",
+    payload: {
+      model: "recraft/remove-background",
+      input: { image: "https://example.com/x.jpg" },
+    },
+  },
+  // topaz image-upscale carries a cost warning: the page bills by output
+  // resolution, which upscale_factor does not map to.
+  {
+    ...createTaskEndpointAssociation,
+    label: "topaz image-upscale",
+    payload: {
+      model: "topaz/image-upscale",
+      input: {
+        image_url: "https://example.com/x.jpg",
+        upscale_factor: "2",
+      },
+    },
+  },
 ];
 
 // Patches `n` into a kie image payload when the upstream schema accepts it
-// (currently wan/2-7-image and wan/2-7-image-pro). Other kie image schemas
-// don't expose a batch field — for those we leave the payload alone and the
-// rate-table multiplier (units = 1 per call) is multiplied externally.
+// (currently wan/2-7-image and wan/2-7-image-pro). No other kie image schema
+// takes `n`; the ideogram remix/character and qwen/image-edit models express
+// batches as `num_images`, but that enum stops at 4 and so cannot render the
+// 10× column. For every non-`n` row we leave the payload alone and multiply
+// the single-image estimate externally.
 export function withKieN(payload, n) {
   const supportsN =
     payload.model === "wan/2-7-image" || payload.model === "wan/2-7-image-pro";

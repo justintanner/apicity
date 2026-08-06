@@ -1,12 +1,6 @@
 import type { CostHints } from "../types";
 import type { ModelPricing } from "./types";
-import {
-  asNumber,
-  asObject,
-  asString,
-  coerceSeconds,
-  hintSeconds,
-} from "./helpers";
+import { asObject, asString, coerceSeconds, hintSeconds } from "./helpers";
 
 // Source URL is the kie marketplace or product page for the relevant model.
 // Rates verified 2026-04-30 unless an entry notes a newer date. Rate keys mirror
@@ -77,10 +71,55 @@ const durationKey = (
   fallback: number
 ): string => String(seconds(p, hints) ?? fallback);
 
-// Image models price per image; units = input.n when present (only
-// wan/2-7-image* uses batch generation today), otherwise 1.
-const imageCount = (p: Record<string, unknown>): number =>
-  asNumber(asObject(p.input)?.n) ?? 1;
+// Images per createTask request. Two batch spellings appear across kie's image
+// schemas: `input.n` (wan/2-7-image*) and `input.num_images`, which the
+// ideogram and qwen/image-edit schemas declare as a STRING enum
+// ("1"|"2"|"3"|"4"). asNumber rejects strings, so reading num_images through
+// it would silently price `num_images: "3"` as a single image — the numeric
+// coercion below is deliberate. Anything uncoercible (absent, null, an empty
+// or non-numeric string, a non-scalar) falls back to one image.
+const imageCount = (p: Record<string, unknown>): number => {
+  const input = asObject(p.input);
+  const declared = input?.num_images ?? input?.n;
+  const count =
+    typeof declared === "number" || typeof declared === "string"
+      ? Number(declared)
+      : NaN;
+  return Number.isFinite(count) && count > 0 ? count : 1;
+};
+
+// kie's `image_size` presets are the same named tokens fal uses for the same
+// upstream models. kie's market pages publish the token list without pixel
+// dimensions, so the dimensions come from fal's documented values for those
+// presets (pricing/fal.ts PRESET_DIMENSIONS) — kept byte-identical so the two
+// providers cannot drift apart on the same model's area.
+const IMAGE_SIZE_DIMENSIONS: Record<string, readonly [number, number]> = {
+  square: [512, 512],
+  square_hd: [1024, 1024],
+  portrait_4_3: [768, 1024],
+  portrait_16_9: [576, 1024],
+  landscape_4_3: [1024, 768],
+  landscape_16_9: [1024, 576],
+};
+
+// Billable megapixels for the whole request: each image is rounded UP to the
+// next whole megapixel, then multiplied by the image count. kie publishes a
+// per-megapixel rate without documenting its rounding, so this follows the
+// fal rule for the same area-billed models.
+//
+// `defaultPreset` is the model's documented schema default and is applied only
+// when `input.image_size` is absent. A model with no documented default — and
+// a preset that is present but unrecognized — yields undefined units, so the
+// estimate fails with a derivation warning instead of guessing an area.
+const megapixels = (
+  p: Record<string, unknown>,
+  defaultPreset?: string
+): number | undefined => {
+  const preset = asString(asObject(p.input)?.image_size) ?? defaultPreset;
+  const dims = preset ? IMAGE_SIZE_DIMENSIONS[preset] : undefined;
+  if (!dims) return undefined;
+  return Math.ceil((dims[0] * dims[1]) / 1_000_000) * imageCount(p);
+};
 
 const flatVideo = (perUnit: number, slug: string): ModelPricing => ({
   kind: "perUnit",
@@ -127,6 +166,60 @@ const flatImagePage = (perUnit: number, url: string): ModelPricing => ({
   kind: "perUnit",
   unit: "images",
   units: () => 1,
+  select: [],
+  rates: { "": perUnit },
+  source: pricePage(url),
+});
+
+// flatImage for the createTask families whose evidence is a kie.ai pricing
+// page URL rather than a bare /market/<slug> path. Unlike flatImagePage above,
+// units run through imageCount, so the families that do declare a batch field
+// (ideogram remix / character*) scale with it.
+const flatImagePricePage = (perUnit: number, url: string): ModelPricing => ({
+  kind: "perUnit",
+  unit: "images",
+  units: imageCount,
+  select: [],
+  rates: { "": perUnit },
+  source: pricePage(url),
+});
+
+// Per-image entry tiered by ONE nested `input` field — the createTask image
+// families each publish a single price axis (quality, resolution or
+// rendering_speed) and the rate keys mirror that field's values verbatim.
+//
+// `defaultValue` is applied only where upstream documents a default for the
+// field. Where it does not, an omitted field selects no rate and the estimate
+// fails rather than guessing a tier.
+const tieredImagePage = (
+  field: string,
+  rates: Record<string, number>,
+  url: string,
+  defaultValue?: string
+): ModelPricing => ({
+  kind: "perUnit",
+  unit: "images",
+  units: imageCount,
+  select: [
+    {
+      name: field,
+      pick: (p) => asString(asObject(p.input)?.[field]) ?? defaultValue,
+    },
+  ],
+  rates,
+  source: pricePage(url),
+});
+
+// Area-billed image entry: kie prices the Qwen Image family per megapixel of
+// output rather than per image.
+const perMegapixel = (
+  perUnit: number,
+  url: string,
+  defaultPreset?: string
+): ModelPricing => ({
+  kind: "perUnit",
+  unit: "megapixels",
+  units: (p) => megapixels(p, defaultPreset),
   select: [],
   rates: { "": perUnit },
   source: pricePage(url),
@@ -673,6 +766,258 @@ export const kie: Record<string, ModelPricing> = {
   "qwen2/image-edit": flatImage(0.028, "alibaba/qwen-image-2"),
   "seedream/5-lite-text-to-image": flatImage(0.0275, "bytedance/seedream-5"),
   "seedream/5-lite-image-to-image": flatImage(0.0275, "bytedance/seedream-5"),
+
+  // ---------------------------------------------------------------------
+  // createTask image families from the 2026-08-06 pricing pull. All are
+  // model-keyed (flat payload `model` + nested `input`), and every rate key
+  // mirrors an `input` field's upstream value verbatim.
+  //
+  // Absent-field fallbacks follow one rule throughout this block: apply the
+  // documented upstream default where the model's own docs page publishes one,
+  // and omit the fallback where it does not — an omitted field then selects no
+  // rate and the estimate fails instead of quoting an invented tier. The
+  // ideogram entries below are where that rule visibly splits a family.
+  // ---------------------------------------------------------------------
+
+  // Seedream 5 Pro — per image by `input.quality`. The page prices output
+  // resolution (1K $0.035, 1.5K $0.035, 2K $0.07) while the schema's only tier
+  // knob is quality; docs.kie.ai states "Basic outputs 1K images, while High
+  // outputs 2K images", so basic → the $0.035 rows and high → the $0.07 row.
+  // The 1.5K row collapses into `basic` at the same price, so no page row is
+  // lost. `quality` is required upstream but documents a default of "basic",
+  // which is applied as the absent-field fallback.
+  //
+  // EXCLUDED: the page's input-image surcharge (0.5 credits = $0.0025 per
+  // input image beyond the first, which is free) — it bills on media the
+  // estimate does not size. UNPRICEABLE: the page's "Layer Decomposition" rows
+  // (1K/1.5K $0.035, 2K $0.07) have no schema surface to key on.
+  "seedream/5-pro-text-to-image": tieredImagePage(
+    "quality",
+    { basic: 0.035, high: 0.07 },
+    "https://kie.ai/seedream-5-0-pro?model=seedream%2F5-pro-text-to-image",
+    "basic"
+  ),
+  "seedream/5-pro-image-to-image": tieredImagePage(
+    "quality",
+    { basic: 0.035, high: 0.07 },
+    "https://kie.ai/seedream-5-0-pro",
+    "basic"
+  ),
+
+  // Seedream 4.5 — flat $0.0325/image on both published rows. The schema
+  // carries a basic/high quality tier, but the page prices only one rate for
+  // the family, so quality is not a rate key here.
+  //
+  // OQ-3 RESOLVED: the "seedream 4.5" page family's anchors name the model ids
+  // `seedream/4.5-text-to-image` and `seedream/4.5-edit` (alias-accepted by
+  // KieMediaSeedreamModelAliasSchema, each with its own createTask schema), so
+  // those are the keys — a pricing key must equal what the caller puts in
+  // `payload.model`. The enum-listed ByteDance ids are a DIFFERENT product
+  // generation and stay unpriced (fail-safe prohibitive): docs.kie.ai documents
+  // `bytedance/seedream` as "Seedream3.0" and both
+  // `bytedance/seedream-v4-{edit,text-to-image}` as "Seedream4.0", and none of
+  // the three pages publishes a price. Keying $0.0325 to them would quote the
+  // 4.5 rate for 3.0/4.0 traffic.
+  "seedream/4.5-text-to-image": flatImagePricePage(
+    0.0325,
+    "https://kie.ai/seedream-4-5?model=seedream%2F4.5-text-to-image"
+  ),
+  "seedream/4.5-edit": flatImagePricePage(
+    0.0325,
+    "https://kie.ai/seedream-4-5?model=seedream%2F4.5-edit"
+  ),
+
+  // Nano Banana 2 Lite — flat $0.02/image (the page lists one "1k" row, and
+  // the schema's only knob is aspect_ratio).
+  "nano-banana-2-lite": flatImagePricePage(
+    0.02,
+    "https://kie.ai/nano-banana-2-lite"
+  ),
+
+  // GPT Image 1.5 — per image by `input.quality`: medium $0.02, high $0.11.
+  // docs.kie.ai documents the default as "medium" on both models, applied as
+  // the absent-field fallback (the t2i zod schema keeps quality required, so
+  // the fallback only bites on partial payloads there).
+  "gpt-image/1.5-text-to-image": tieredImagePage(
+    "quality",
+    { medium: 0.02, high: 0.11 },
+    "https://kie.ai/gpt-image-1.5?model=gpt-image%2F1.5-text-to-image",
+    "medium"
+  ),
+  "gpt-image/1.5-image-to-image": tieredImagePage(
+    "quality",
+    { medium: 0.02, high: 0.11 },
+    "https://kie.ai/gpt-image-1.5?model=gpt-image%2F1.5-image-to-image",
+    "medium"
+  ),
+
+  // Imagen 4 — three flat per-image tiers. The page prints the base and Fast
+  // rows "per request" and the Ultra row "per image"; the schemas carry no
+  // batch field, so one request is one image either way.
+  "google/imagen4": flatImagePricePage(
+    0.04,
+    "https://kie.ai/google/imagen4?model=google%2Fimagen4"
+  ),
+  "google/imagen4-fast": flatImagePricePage(
+    0.02,
+    "https://kie.ai/google/imagen4?model=google%2Fimagen4-fast"
+  ),
+  "google/imagen4-ultra": flatImagePricePage(
+    0.06,
+    "https://kie.ai/google/imagen4?model=google%2Fimagen4-ultra"
+  ),
+
+  // Namespaced Nano Banana ids — $0.02/image each, the same rate as the bare
+  // `nano-banana` key above. They are distinct pricing keys because they are
+  // distinct model ids on the wire; a caller sending "google/nano-banana"
+  // would otherwise miss the table entirely.
+  "google/nano-banana": flatImagePricePage(0.02, "https://kie.ai/nano-banana"),
+  "google/nano-banana-edit": flatImagePricePage(
+    0.02,
+    "https://kie.ai/nano-banana?model=google%2Fnano-banana-edit"
+  ),
+
+  // Z-Image — flat $0.004/image (aspect_ratio is the only knob).
+  "z-image": flatImagePricePage(0.004, "https://kie.ai/z-image"),
+
+  // Flux 2 — per image by `input.resolution`. Flex is the expensive tier
+  // (1K $0.07, 2K $0.12), Pro the cheap one (1K $0.025, 2K $0.035). The field
+  // is required by the zod schema and documents an upstream default of 1K,
+  // applied as the absent-field fallback.
+  "flux-2/flex-text-to-image": tieredImagePage(
+    "resolution",
+    { "1K": 0.07, "2K": 0.12 },
+    "https://kie.ai/flux-2?model=flux-2%2Fflex-text-to-image",
+    "1K"
+  ),
+  "flux-2/flex-image-to-image": tieredImagePage(
+    "resolution",
+    { "1K": 0.07, "2K": 0.12 },
+    "https://kie.ai/flux-2?model=flux-2%2Fflex-image-to-image",
+    "1K"
+  ),
+  "flux-2/pro-text-to-image": tieredImagePage(
+    "resolution",
+    { "1K": 0.025, "2K": 0.035 },
+    "https://kie.ai/flux-2?model=flux-2%2Fpro-text-to-image",
+    "1K"
+  ),
+  "flux-2/pro-image-to-image": tieredImagePage(
+    "resolution",
+    { "1K": 0.025, "2K": 0.035 },
+    "https://kie.ai/flux-2?model=flux-2%2Fpro-image-to-image",
+    "1K"
+  ),
+
+  // Ideogram — per image by `input.rendering_speed`, two rate ladders: V3
+  // (TURBO $0.0175 / BALANCED $0.035 / QUALITY $0.05) and Character
+  // (TURBO $0.06 / BALANCED $0.09 / QUALITY $0.12).
+  //
+  // The BALANCED fallback is NOT applied uniformly, because upstream does not
+  // document it uniformly: the v3-edit, character, character-edit and
+  // character-remix OpenAPI specs print "Default value: `BALANCED`" (mirrored
+  // as `default: "BALANCED"` in kie's model-schemas.ts), while
+  // v3-text-to-image and v3-remix print the enum with no default at all
+  // (verified against docs.kie.ai 2026-08-06). Those two therefore fail the
+  // estimate on an omitted rendering_speed rather than quoting the middle
+  // tier. NOTE: the v3-text-to-image field *description* in model-schemas.ts
+  // still says "documented default BALANCED"; the live spec does not, and the
+  // spec wins here.
+  //
+  // `num_images` is a STRING enum on v3-remix and the character models and is
+  // honoured through imageCount's numeric coercion — see that helper.
+  "ideogram/v3-text-to-image": tieredImagePage(
+    "rendering_speed",
+    { TURBO: 0.0175, BALANCED: 0.035, QUALITY: 0.05 },
+    "https://kie.ai/ideogram/v3?model=ideogram%2Fv3-text-to-image"
+  ),
+  "ideogram/v3-edit": tieredImagePage(
+    "rendering_speed",
+    { TURBO: 0.0175, BALANCED: 0.035, QUALITY: 0.05 },
+    "https://kie.ai/ideogram/v3?model=ideogram%2Fv3-edit",
+    "BALANCED"
+  ),
+  "ideogram/v3-remix": tieredImagePage(
+    "rendering_speed",
+    { TURBO: 0.0175, BALANCED: 0.035, QUALITY: 0.05 },
+    "https://kie.ai/ideogram/v3?model=ideogram%2Fv3-remix"
+  ),
+  "ideogram/character": tieredImagePage(
+    "rendering_speed",
+    { TURBO: 0.06, BALANCED: 0.09, QUALITY: 0.12 },
+    "https://kie.ai/ideogram/character?model=ideogram%2Fcharacter",
+    "BALANCED"
+  ),
+  "ideogram/character-edit": tieredImagePage(
+    "rendering_speed",
+    { TURBO: 0.06, BALANCED: 0.09, QUALITY: 0.12 },
+    "https://kie.ai/ideogram/character?model=ideogram%2Fcharacter-edit",
+    "BALANCED"
+  ),
+  "ideogram/character-remix": tieredImagePage(
+    "rendering_speed",
+    { TURBO: 0.06, BALANCED: 0.09, QUALITY: 0.12 },
+    "https://kie.ai/ideogram/character?model=ideogram%2Fcharacter-remix",
+    "BALANCED"
+  ),
+
+  // Recraft image utilities — flat per image, no tier field in either schema.
+  "recraft/crisp-upscale": flatImagePricePage(
+    0.0025,
+    "https://kie.ai/recraft-crisp-upscale"
+  ),
+  "recraft/remove-background": flatImagePricePage(
+    0.005,
+    "https://kie.ai/recraft-remove-background"
+  ),
+
+  // Topaz Image Upscaler — the page's three rows are OUTPUT resolutions
+  // (2K $0.05, 4K $0.10, 8K $0.20), but the request schema's only knob is
+  // `upscale_factor` ("1"|"2"|"4"), and docs.kie.ai publishes no mapping from
+  // a factor to an output tier — the output depends on the source image's
+  // resolution, which the payload does not carry. Keying rates by
+  // upscale_factor would be a guess, so this follows the grok-imagine/upscale
+  // precedent: flat at the cheapest published tier, plus a warning that names
+  // the two tiers the estimate cannot address. The warning is cost-only; it
+  // never changes the price.
+  "topaz/image-upscale": {
+    kind: "perUnit",
+    unit: "images",
+    units: imageCount,
+    select: [],
+    rates: { "": 0.05 },
+    warn: () => [
+      "kie 'topaz/image-upscale': billed by OUTPUT resolution (2K $0.05, " +
+        "4K $0.10, 8K $0.20) which the request schema cannot express — " +
+        "upscale_factor has no documented output mapping, so this estimate " +
+        "is the 2K floor",
+    ],
+    source: pricePage("https://kie.ai/topaz-image-upscale"),
+  },
+
+  // Qwen Image — area-billed: $0.02/megapixel for the base pair, $0.03/MP for
+  // the edit model (OQ-4). Units are ceil(megapixels per image) × image count,
+  // resolved from the `input.image_size` preset through the shared
+  // IMAGE_SIZE_DIMENSIONS table; each model's documented schema default is the
+  // absent-field fallback.
+  //
+  // `qwen/image-to-image` has NO size field at all, and docs.kie.ai documents
+  // no default output size for it (the output follows the source image, which
+  // the payload does not size). Rather than guess an area, it carries the
+  // published $0.02/MP rate with no default preset, so the estimate fails with
+  // a units-derivation warning — the page rate stays recorded and visible
+  // instead of the request falling through as "model not found".
+  "qwen/text-to-image": perMegapixel(
+    0.02,
+    "https://kie.ai/qwen-image",
+    "square_hd"
+  ),
+  "qwen/image-to-image": perMegapixel(0.02, "https://kie.ai/qwen-image"),
+  "qwen/image-edit": perMegapixel(
+    0.03,
+    "https://kie.ai/qwen/image-edit",
+    "landscape_4_3"
+  ),
 
   // gpt4o-image/generate — endpoint-keyed. One published rate, 6 credits
   // ($0.03) per image; the schema has no batch field, so one call is one

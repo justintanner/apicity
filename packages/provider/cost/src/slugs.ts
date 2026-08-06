@@ -96,9 +96,59 @@ export const MODEL_SLUGS = {
     "qwen2/text-to-image": "qwen2",
     "qwen2/image-edit": "qwen2",
 
-    // Image — Seedream 5 lite
+    // Image — Seedream 5 lite / 5 pro / 4.5
     "seedream/5-lite-text-to-image": "sd5",
     "seedream/5-lite-image-to-image": "sd5",
+    "seedream/5-pro-text-to-image": "sd5p",
+    "seedream/5-pro-image-to-image": "sd5p",
+    "seedream/4.5-text-to-image": "sd4p5",
+    "seedream/4.5-edit": "sd4p5",
+
+    // Image — Nano Banana 2 Lite + the namespaced google/* Nano Banana ids
+    // (same model as the bare "nano-banana" key, so the same family slug)
+    "nano-banana-2-lite": "nb2l",
+    "google/nano-banana": "nb",
+    "google/nano-banana-edit": "nb",
+
+    // Image — GPT Image 1.5 (matches fal's slug for the same model)
+    "gpt-image/1.5-text-to-image": "gi1p5",
+    "gpt-image/1.5-image-to-image": "gi1p5",
+
+    // Image — Imagen 4
+    "google/imagen4": "imagen4",
+    "google/imagen4-fast": "imagen4f",
+    "google/imagen4-ultra": "imagen4u",
+
+    // Image — Z-Image
+    "z-image": "zimg",
+
+    // Image — Flux 2 (flex and pro are price tiers, so distinct slugs)
+    "flux-2/flex-text-to-image": "flux2f",
+    "flux-2/flex-image-to-image": "flux2f",
+    "flux-2/pro-text-to-image": "flux2p",
+    "flux-2/pro-image-to-image": "flux2p",
+
+    // Image — Ideogram (V3 and Character are separate rate ladders; the
+    // edit/remix variants are modalities of each, so they share its slug)
+    "ideogram/v3-text-to-image": "ideo3",
+    "ideogram/v3-edit": "ideo3",
+    "ideogram/v3-remix": "ideo3",
+    "ideogram/character": "ideochar",
+    "ideogram/character-edit": "ideochar",
+    "ideogram/character-remix": "ideochar",
+
+    // Image — Recraft utilities
+    "recraft/crisp-upscale": "recraftcu",
+    "recraft/remove-background": "recraftrb",
+
+    // Image — Topaz
+    "topaz/image-upscale": "topazimg",
+
+    // Image — Qwen Image (matches fal's "qwenimg" for the same model; the
+    // edit variant shares it per the modality rule, as it does on fal)
+    "qwen/text-to-image": "qwenimg",
+    "qwen/image-to-image": "qwenimg",
+    "qwen/image-edit": "qwenimg",
 
     // Image — GPT-4o Image
     "gpt4o-image/generate": "gi4o",
@@ -391,6 +441,44 @@ export const MODEL_DISPLAY = {
 
     "seedream/5-lite-text-to-image": "Seedream 5",
     "seedream/5-lite-image-to-image": "Seedream 5 Edit",
+    "seedream/5-pro-text-to-image": "Seedream 5 Pro",
+    "seedream/5-pro-image-to-image": "Seedream 5 Pro Edit",
+    "seedream/4.5-text-to-image": "Seedream 4.5",
+    "seedream/4.5-edit": "Seedream 4.5 Edit",
+
+    "nano-banana-2-lite": "Nano Banana 2 Lite",
+    "google/nano-banana": "Nano Banana",
+    "google/nano-banana-edit": "Nano Banana Edit",
+
+    "gpt-image/1.5-text-to-image": "GPT Image 1.5",
+    "gpt-image/1.5-image-to-image": "GPT Image 1.5 Edit",
+
+    "google/imagen4": "Imagen 4",
+    "google/imagen4-fast": "Imagen 4 Fast",
+    "google/imagen4-ultra": "Imagen 4 Ultra",
+
+    "z-image": "Z-Image",
+
+    "flux-2/flex-text-to-image": "Flux 2 Flex",
+    "flux-2/flex-image-to-image": "Flux 2 Flex Edit",
+    "flux-2/pro-text-to-image": "Flux 2 Pro",
+    "flux-2/pro-image-to-image": "Flux 2 Pro Edit",
+
+    "ideogram/v3-text-to-image": "Ideogram V3",
+    "ideogram/v3-edit": "Ideogram V3 Edit",
+    "ideogram/v3-remix": "Ideogram V3 Remix",
+    "ideogram/character": "Ideogram Character",
+    "ideogram/character-edit": "Ideogram Character Edit",
+    "ideogram/character-remix": "Ideogram Character Remix",
+
+    "recraft/crisp-upscale": "Recraft Crisp Upscale",
+    "recraft/remove-background": "Recraft Remove Background",
+
+    "topaz/image-upscale": "Topaz Image Upscale",
+
+    "qwen/text-to-image": "Qwen Image",
+    "qwen/image-to-image": "Qwen Image",
+    "qwen/image-edit": "Qwen Image Edit",
 
     "gpt4o-image/generate": "GPT-4o Image",
 

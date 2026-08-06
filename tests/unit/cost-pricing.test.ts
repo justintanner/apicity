@@ -1240,6 +1240,382 @@ describe("kie suno rows", () => {
   });
 });
 
+// createTask image families added by the same 2026-08-06 pull (REQ-005).
+// Every family gets at least one estimate-level assertion; the blocks below
+// additionally pin the three decisions this item had to make — the seedream
+// 4.5 id mapping, the string-enum image count, and the two places where an
+// omitted field has no documented default to fall back to.
+const IMAGE_FAMILY_RATES = [
+  // Seedream 5 Pro — quality tiers (basic = the page's 1K/1.5K rows).
+  {
+    model: "seedream/5-pro-text-to-image",
+    input: { quality: "basic" },
+    usd: 0.035,
+  },
+  {
+    model: "seedream/5-pro-text-to-image",
+    input: { quality: "high" },
+    usd: 0.07,
+  },
+  {
+    model: "seedream/5-pro-image-to-image",
+    input: { quality: "basic" },
+    usd: 0.035,
+  },
+  {
+    model: "seedream/5-pro-image-to-image",
+    input: { quality: "high" },
+    usd: 0.07,
+  },
+  // Seedream 4.5 — one published rate for the family.
+  { model: "seedream/4.5-text-to-image", input: {}, usd: 0.0325 },
+  { model: "seedream/4.5-edit", input: {}, usd: 0.0325 },
+  // Flat single-rate families.
+  { model: "nano-banana-2-lite", input: {}, usd: 0.02 },
+  { model: "google/nano-banana", input: {}, usd: 0.02 },
+  { model: "google/nano-banana-edit", input: {}, usd: 0.02 },
+  { model: "google/imagen4", input: {}, usd: 0.04 },
+  { model: "google/imagen4-fast", input: {}, usd: 0.02 },
+  { model: "google/imagen4-ultra", input: {}, usd: 0.06 },
+  { model: "z-image", input: {}, usd: 0.004 },
+  { model: "recraft/crisp-upscale", input: {}, usd: 0.0025 },
+  { model: "recraft/remove-background", input: {}, usd: 0.005 },
+  // GPT Image 1.5 — quality tiers on both modalities.
+  {
+    model: "gpt-image/1.5-text-to-image",
+    input: { quality: "medium" },
+    usd: 0.02,
+  },
+  {
+    model: "gpt-image/1.5-text-to-image",
+    input: { quality: "high" },
+    usd: 0.11,
+  },
+  {
+    model: "gpt-image/1.5-image-to-image",
+    input: { quality: "medium" },
+    usd: 0.02,
+  },
+  {
+    model: "gpt-image/1.5-image-to-image",
+    input: { quality: "high" },
+    usd: 0.11,
+  },
+  // Flux 2 — resolution tiers on the flex and pro ladders.
+  {
+    model: "flux-2/flex-text-to-image",
+    input: { resolution: "1K" },
+    usd: 0.07,
+  },
+  {
+    model: "flux-2/flex-text-to-image",
+    input: { resolution: "2K" },
+    usd: 0.12,
+  },
+  {
+    model: "flux-2/flex-image-to-image",
+    input: { resolution: "1K" },
+    usd: 0.07,
+  },
+  {
+    model: "flux-2/flex-image-to-image",
+    input: { resolution: "2K" },
+    usd: 0.12,
+  },
+  {
+    model: "flux-2/pro-text-to-image",
+    input: { resolution: "1K" },
+    usd: 0.025,
+  },
+  {
+    model: "flux-2/pro-text-to-image",
+    input: { resolution: "2K" },
+    usd: 0.035,
+  },
+  {
+    model: "flux-2/pro-image-to-image",
+    input: { resolution: "1K" },
+    usd: 0.025,
+  },
+  {
+    model: "flux-2/pro-image-to-image",
+    input: { resolution: "2K" },
+    usd: 0.035,
+  },
+  // Ideogram — the V3 ladder (the Example Mapping case in requirements.md).
+  {
+    model: "ideogram/v3-text-to-image",
+    input: { rendering_speed: "TURBO" },
+    usd: 0.0175,
+  },
+  {
+    model: "ideogram/v3-text-to-image",
+    input: { rendering_speed: "BALANCED" },
+    usd: 0.035,
+  },
+  {
+    model: "ideogram/v3-text-to-image",
+    input: { rendering_speed: "QUALITY" },
+    usd: 0.05,
+  },
+  {
+    model: "ideogram/v3-edit",
+    input: { rendering_speed: "TURBO" },
+    usd: 0.0175,
+  },
+  {
+    model: "ideogram/v3-remix",
+    input: { rendering_speed: "QUALITY" },
+    usd: 0.05,
+  },
+  // Ideogram — the Character ladder.
+  {
+    model: "ideogram/character",
+    input: { rendering_speed: "TURBO" },
+    usd: 0.06,
+  },
+  {
+    model: "ideogram/character",
+    input: { rendering_speed: "BALANCED" },
+    usd: 0.09,
+  },
+  {
+    model: "ideogram/character",
+    input: { rendering_speed: "QUALITY" },
+    usd: 0.12,
+  },
+  {
+    model: "ideogram/character-edit",
+    input: { rendering_speed: "QUALITY" },
+    usd: 0.12,
+  },
+  {
+    model: "ideogram/character-remix",
+    input: { rendering_speed: "TURBO" },
+    usd: 0.06,
+  },
+  // Topaz — flat at the cheapest published tier (see the warning test below).
+  { model: "topaz/image-upscale", input: { upscale_factor: "2" }, usd: 0.05 },
+];
+
+describe("kie createTask image families (REQ-005)", () => {
+  it.each(IMAGE_FAMILY_RATES)(
+    "prices $model $input at $usd per image",
+    ({ model, input, usd }) => {
+      const result = kieEstimate({ model, input: { prompt: "x", ...input } });
+
+      expect(result.usd).toBeCloseTo(usd, 10);
+      expect(result.source).toBe("per-unit-table");
+      expect(result.breakdown).toEqual({
+        units: 1,
+        unit: "images",
+        perUnitUsd: usd,
+      });
+    }
+  );
+
+  // Documented upstream defaults, applied only where the model's own docs
+  // page publishes one.
+  it.each([
+    { model: "gpt-image/1.5-text-to-image", usd: 0.02, note: "medium" },
+    { model: "gpt-image/1.5-image-to-image", usd: 0.02, note: "medium" },
+    { model: "seedream/5-pro-text-to-image", usd: 0.035, note: "basic" },
+    { model: "flux-2/pro-text-to-image", usd: 0.025, note: "1K" },
+    { model: "flux-2/flex-text-to-image", usd: 0.07, note: "1K" },
+    { model: "ideogram/v3-edit", usd: 0.035, note: "BALANCED" },
+    { model: "ideogram/character", usd: 0.09, note: "BALANCED" },
+    { model: "ideogram/character-edit", usd: 0.09, note: "BALANCED" },
+    { model: "ideogram/character-remix", usd: 0.09, note: "BALANCED" },
+  ])(
+    "falls back to the documented $note default for $model",
+    ({ model, usd }) => {
+      const result = kieEstimate({ model, input: { prompt: "x" } });
+
+      expect(result.usd).toBeCloseTo(usd, 10);
+      expect(result.warnings).toEqual([]);
+    }
+  );
+
+  // The other side of that rule: docs.kie.ai publishes NO rendering_speed
+  // default for these two, so an omitted field must fail rather than quote
+  // the middle tier.
+  it.each(["ideogram/v3-text-to-image", "ideogram/v3-remix"])(
+    "fails %s when rendering_speed is omitted and upstream documents no default",
+    (model) => {
+      const result = kieEstimate({ model, input: { prompt: "x" } });
+
+      expect(result.usd).toBe(0);
+      expect(result.breakdown).toEqual({});
+      expect(result.warnings).toHaveLength(1);
+      expect(result.warnings[0]).toContain("no rate for variant");
+      expect(result.warnings[0]).toContain("rendering_speed");
+    }
+  );
+
+  // OQ-3: the "seedream 4.5" page rate keys the two 4.5 model ids only. The
+  // enum-listed ByteDance ids are Seedream 3.0 / 4.0 per docs.kie.ai and
+  // publish no price row, so they stay unpriced (fail-safe prohibitive).
+  it.each([
+    "bytedance/seedream",
+    "bytedance/seedream-v4-edit",
+    "bytedance/seedream-v4-text-to-image",
+  ])("leaves %s unpriced — no published page row", (model) => {
+    expect(PRICING.kie[model]).toBeUndefined();
+
+    const result = kieEstimate({ model, input: { prompt: "x" } });
+    expect(result.usd).toBe(0);
+    expect(result.warnings[0]).toContain("not found in pricing table");
+  });
+
+  // Plan-review finding 3: ideogram and qwen/image-edit declare `num_images`
+  // as a STRING enum, and asNumber rejects strings — reading it through the
+  // old imageCount would have priced three images as one.
+  it("scales by the string-enum num_images", () => {
+    const result = kieEstimate({
+      model: "ideogram/character",
+      input: {
+        prompt: "x",
+        reference_image_urls: ["https://example.com/x.jpg"],
+        rendering_speed: "TURBO",
+        num_images: "3",
+      },
+    });
+
+    expect(result.usd).toBeCloseTo(0.18, 10);
+    expect(result.breakdown).toEqual({
+      units: 3,
+      unit: "images",
+      perUnitUsd: 0.06,
+    });
+  });
+
+  it("keeps the wan `n` batch field working alongside num_images", () => {
+    const result = kieEstimate({
+      model: "wan/2-7-image",
+      input: { prompt: "x", n: 4 },
+    });
+
+    expect(result.breakdown).toMatchObject({ units: 4, unit: "images" });
+  });
+
+  // The page bills topaz by output resolution, which upscale_factor cannot
+  // express — the estimate is the 2K floor and says so.
+  it("warns that topaz/image-upscale prices only the cheapest tier", () => {
+    const result = kieEstimate({
+      model: "topaz/image-upscale",
+      input: { image_url: "https://example.com/x.jpg", upscale_factor: "4" },
+    });
+
+    expect(result.usd).toBeCloseTo(0.05, 10);
+    expect(result.warnings).toHaveLength(1);
+    expect(result.warnings[0]).toContain("OUTPUT resolution");
+    expect(result.warnings[0]).toContain("2K floor");
+  });
+});
+
+// OQ-4: the Qwen Image family is area-billed. Units are ceil(megapixels per
+// image) x image count, resolved from the `image_size` preset.
+describe("kie qwen per-megapixel pricing (OQ-4)", () => {
+  it.each([
+    { model: "qwen/text-to-image", image_size: "square", mp: 1, usd: 0.02 },
+    { model: "qwen/text-to-image", image_size: "square_hd", mp: 2, usd: 0.04 },
+    {
+      model: "qwen/text-to-image",
+      image_size: "portrait_4_3",
+      mp: 1,
+      usd: 0.02,
+    },
+    {
+      model: "qwen/text-to-image",
+      image_size: "landscape_16_9",
+      mp: 1,
+      usd: 0.02,
+    },
+    { model: "qwen/image-edit", image_size: "landscape_4_3", mp: 1, usd: 0.03 },
+    { model: "qwen/image-edit", image_size: "square_hd", mp: 2, usd: 0.06 },
+  ])(
+    "prices $model $image_size as $mp MP = $usd",
+    ({ model, image_size, mp, usd }) => {
+      const result = kieEstimate({
+        model,
+        input: { prompt: "x", image_size },
+      });
+
+      expect(result.usd).toBeCloseTo(usd, 10);
+      expect(result.breakdown).toEqual({
+        units: mp,
+        unit: "megapixels",
+        perUnitUsd: model === "qwen/image-edit" ? 0.03 : 0.02,
+      });
+      expect(result.warnings).toEqual([]);
+    }
+  );
+
+  // Schema defaults are the absent-field fallback: square_hd (2 MP) for
+  // text-to-image, landscape_4_3 (1 MP) for image-edit.
+  it.each([
+    { model: "qwen/text-to-image", usd: 0.04 },
+    { model: "qwen/image-edit", usd: 0.03 },
+  ])("applies $model's documented image_size default", ({ model, usd }) => {
+    expect(kieEstimate({ model, input: { prompt: "x" } }).usd).toBeCloseTo(
+      usd,
+      10
+    );
+  });
+
+  it("multiplies megapixels by the string-enum num_images", () => {
+    const result = kieEstimate({
+      model: "qwen/image-edit",
+      input: {
+        prompt: "x",
+        image_url: "https://example.com/x.jpg",
+        image_size: "square_hd",
+        num_images: "3",
+      },
+    });
+
+    expect(result.usd).toBeCloseTo(0.18, 10);
+    expect(result.breakdown).toEqual({
+      units: 6,
+      unit: "megapixels",
+      perUnitUsd: 0.03,
+    });
+  });
+
+  // Warn, don't guess: an unrecognized preset has no dimensions to derive an
+  // area from, so the estimate fails instead of assuming a square.
+  it("fails on an unrecognized image_size preset instead of guessing", () => {
+    const result = kieEstimate({
+      model: "qwen/text-to-image",
+      input: { prompt: "x", image_size: "ultra_wide_9000" },
+    });
+
+    expect(result.usd).toBe(0);
+    expect(result.breakdown).toEqual({});
+    expect(result.warnings).toHaveLength(1);
+    expect(result.warnings[0]).toContain("could not derive units");
+  });
+
+  // qwen/image-to-image carries the published $0.02/MP rate but has no size
+  // field and no documented default output size, so no payload can derive an
+  // area. It stays an entry — the rate and the gap are recorded in one place
+  // — and every request warns rather than being priced off an invented size.
+  it("keeps qwen/image-to-image priced but underivable", () => {
+    const entry = PRICING.kie["qwen/image-to-image"];
+    expect(entry.kind).toBe("perUnit");
+    if (entry.kind !== "perUnit") throw new Error("expected a perUnit entry");
+    expect(entry.unit).toBe("megapixels");
+    expect(entry.rates[""]).toBe(0.02);
+
+    const result = kieEstimate({
+      model: "qwen/image-to-image",
+      input: { prompt: "x", image_url: "https://example.com/x.jpg" },
+    });
+    expect(result.usd).toBe(0);
+    expect(result.warnings[0]).toContain("could not derive units");
+  });
+});
+
 describe("kie 2026-08-06 pricing pull provenance", () => {
   it("stamps every entry added or refreshed by this pull", () => {
     for (const model of [
@@ -1260,6 +1636,35 @@ describe("kie 2026-08-06 pricing pull provenance", () => {
       "suno/persona-generate",
       "suno/midi-generate",
       "suno/vocal-removal-generate",
+      "seedream/5-pro-text-to-image",
+      "seedream/5-pro-image-to-image",
+      "seedream/4.5-text-to-image",
+      "seedream/4.5-edit",
+      "nano-banana-2-lite",
+      "gpt-image/1.5-text-to-image",
+      "gpt-image/1.5-image-to-image",
+      "google/imagen4",
+      "google/imagen4-fast",
+      "google/imagen4-ultra",
+      "google/nano-banana",
+      "google/nano-banana-edit",
+      "z-image",
+      "flux-2/flex-text-to-image",
+      "flux-2/flex-image-to-image",
+      "flux-2/pro-text-to-image",
+      "flux-2/pro-image-to-image",
+      "ideogram/v3-text-to-image",
+      "ideogram/v3-edit",
+      "ideogram/v3-remix",
+      "ideogram/character",
+      "ideogram/character-edit",
+      "ideogram/character-remix",
+      "recraft/crisp-upscale",
+      "recraft/remove-background",
+      "topaz/image-upscale",
+      "qwen/text-to-image",
+      "qwen/image-to-image",
+      "qwen/image-edit",
     ]) {
       const entry = PRICING.kie[model];
       expect(entry, model).toBeDefined();

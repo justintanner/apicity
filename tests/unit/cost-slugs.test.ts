@@ -500,11 +500,144 @@ describe("kie pricing-refresh slugs (REQ-007)", () => {
     },
     { model: "suno/persona-generate", slug: "suno", display: "Suno Persona" },
     { model: "suno/midi-generate", slug: "suno", display: "Suno MIDI" },
+    // createTask image families (WI-4).
+    {
+      model: "seedream/5-pro-text-to-image",
+      slug: "sd5p",
+      display: "Seedream 5 Pro",
+    },
+    {
+      model: "seedream/5-pro-image-to-image",
+      slug: "sd5p",
+      display: "Seedream 5 Pro Edit",
+    },
+    {
+      model: "seedream/4.5-text-to-image",
+      slug: "sd4p5",
+      display: "Seedream 4.5",
+    },
+    { model: "seedream/4.5-edit", slug: "sd4p5", display: "Seedream 4.5 Edit" },
+    {
+      model: "nano-banana-2-lite",
+      slug: "nb2l",
+      display: "Nano Banana 2 Lite",
+    },
+    { model: "google/nano-banana", slug: "nb", display: "Nano Banana" },
+    {
+      model: "google/nano-banana-edit",
+      slug: "nb",
+      display: "Nano Banana Edit",
+    },
+    {
+      model: "gpt-image/1.5-text-to-image",
+      slug: "gi1p5",
+      display: "GPT Image 1.5",
+    },
+    {
+      model: "gpt-image/1.5-image-to-image",
+      slug: "gi1p5",
+      display: "GPT Image 1.5 Edit",
+    },
+    { model: "google/imagen4", slug: "imagen4", display: "Imagen 4" },
+    {
+      model: "google/imagen4-fast",
+      slug: "imagen4f",
+      display: "Imagen 4 Fast",
+    },
+    {
+      model: "google/imagen4-ultra",
+      slug: "imagen4u",
+      display: "Imagen 4 Ultra",
+    },
+    { model: "z-image", slug: "zimg", display: "Z-Image" },
+    {
+      model: "flux-2/flex-text-to-image",
+      slug: "flux2f",
+      display: "Flux 2 Flex",
+    },
+    {
+      model: "flux-2/flex-image-to-image",
+      slug: "flux2f",
+      display: "Flux 2 Flex Edit",
+    },
+    {
+      model: "flux-2/pro-text-to-image",
+      slug: "flux2p",
+      display: "Flux 2 Pro",
+    },
+    {
+      model: "flux-2/pro-image-to-image",
+      slug: "flux2p",
+      display: "Flux 2 Pro Edit",
+    },
+    {
+      model: "ideogram/v3-text-to-image",
+      slug: "ideo3",
+      display: "Ideogram V3",
+    },
+    { model: "ideogram/v3-edit", slug: "ideo3", display: "Ideogram V3 Edit" },
+    { model: "ideogram/v3-remix", slug: "ideo3", display: "Ideogram V3 Remix" },
+    {
+      model: "ideogram/character",
+      slug: "ideochar",
+      display: "Ideogram Character",
+    },
+    {
+      model: "ideogram/character-edit",
+      slug: "ideochar",
+      display: "Ideogram Character Edit",
+    },
+    {
+      model: "ideogram/character-remix",
+      slug: "ideochar",
+      display: "Ideogram Character Remix",
+    },
+    {
+      model: "recraft/crisp-upscale",
+      slug: "recraftcu",
+      display: "Recraft Crisp Upscale",
+    },
+    {
+      model: "recraft/remove-background",
+      slug: "recraftrb",
+      display: "Recraft Remove Background",
+    },
+    {
+      model: "topaz/image-upscale",
+      slug: "topazimg",
+      display: "Topaz Image Upscale",
+    },
+    { model: "qwen/text-to-image", slug: "qwenimg", display: "Qwen Image" },
+    { model: "qwen/image-to-image", slug: "qwenimg", display: "Qwen Image" },
+    {
+      model: "qwen/image-edit",
+      slug: "qwenimg",
+      display: "Qwen Image Edit",
+    },
   ])(
     "resolves $model through modelSlug/modelDisplay",
     ({ model, slug, display }) => {
       expect(modelSlug("kie", model as never)).toBe(slug);
       expect(modelDisplay("kie", model as never)).toBe(display);
+    }
+  );
+
+  // Cross-provider parity: kie and fal run the same upstream models, so the
+  // same model must not get two different slugs.
+  it.each([
+    { kieModel: "qwen/text-to-image", falModel: "fal-ai/qwen-image" },
+    { kieModel: "qwen/image-edit", falModel: "fal-ai/qwen-image-edit" },
+    {
+      kieModel: "gpt-image/1.5-text-to-image",
+      falModel: "fal-ai/gpt-image-1.5",
+    },
+    { kieModel: "google/nano-banana", falModel: "fal-ai/nano-banana" },
+  ])(
+    "shares $kieModel's slug with fal's $falModel",
+    ({ kieModel, falModel }) => {
+      expect(modelSlug("kie", kieModel as never)).toBe(
+        modelSlug("fal", falModel as never)
+      );
     }
   );
 

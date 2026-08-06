@@ -219,6 +219,7 @@ export {
   FluxKontextSuccessFlagSchema,
   KieGemini35FlashStreamGenerateContentRequestSchema,
   KieGemini36FlashStreamGenerateContentRequestSchema,
+  KieGemini3FlashV1betamodelsStreamGenerateContentRequestSchema,
   KieGeminiContentSchema,
   KieGeminiFileDataSchema,
   KieGeminiFunctionDeclarationSchema,
@@ -982,6 +983,8 @@ export type {
   KieGemini35FlashStreamGenerateContentParsedRequest,
   KieGemini36FlashStreamGenerateContentRequest,
   KieGemini36FlashStreamGenerateContentParsedRequest,
+  KieGemini3FlashV1betamodelsStreamGenerateContentRequest,
+  KieGemini3FlashV1betamodelsStreamGenerateContentParsedRequest,
   GeminiOmniAudioCreateData,
   GeminiOmniAudioCreateResponse,
   GeminiOmniCharacterCreateData,
@@ -1272,6 +1275,9 @@ export type {
   KieGemini36FlashGenerateContentResponse,
   KieGemini36FlashStreamGenerateContentChunk,
   KieGemini36FlashStreamGenerateContentResult,
+  KieGemini3FlashV1betamodelsGenerateContentResponse,
+  KieGemini3FlashV1betamodelsStreamGenerateContentChunk,
+  KieGemini3FlashV1betamodelsStreamGenerateContentResult,
   KieGeminiProvider,
 } from "./gemini";
 

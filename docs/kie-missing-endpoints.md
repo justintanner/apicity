@@ -268,14 +268,13 @@ properties at https://docs.kie.ai/veo3-api/generate-veo-3-video. `resolution`
 and `duration` are the notable ones — without them a caller cannot select
 output quality or length on the package's most-used video endpoint.
 
-Separately, the docs name the field **`aspect_ratio`** (snake_case) while the
-schema and type use **`aspectRatio`** (camelCase), and `veo.ts:171-181` posts
-the request object through unmodified — there is no key mapping anywhere in the
-package (`grep -rn "aspect_ratio" src/*.ts` matches only `model-schemas.ts`,
-which describes `createTask` market models, never the Veo endpoint). Flagged
-rather than asserted: this is either a real wire-format bug or upstream
-accepting both spellings, and distinguishing them needs one live call. See
-Ambiguities.
+Separately, the OpenAPI docs name the field **`aspect_ratio`** (snake_case)
+while the package schema/type use **`aspectRatio`** (camelCase) with no key
+mapping. **Resolved 2026-08-06 (bead ac-kd11of):** live probes of
+`POST /api/v1/veo/generate` with both spellings (recorded under
+`kie/veo/aspect-ratio-probe`) show upstream accepts **both**, stores
+`aspectRatio` (camelCase) in `paramJson`, and preserves the requested value
+(`9:16`). Package camelCase is correct; no wire-format fix required.
 
 **3. `POST /api/v1/veo/extend` — `callBackUrl` absent.**
 Documented at https://docs.kie.ai/veo3-api/extend-video; not present in
@@ -417,10 +416,11 @@ deliberate is not determinable from the code, and I have not assumed either way.
 
 ## Ambiguities and things deliberately not asserted
 
-1. **Veo `aspect_ratio` vs `aspectRatio`.** Described in PARTIAL detail 2. The
-   docs spec says `aspect_ratio`; the package sends `aspectRatio` with no
-   mapping. Whether upstream accepts both cannot be settled from documentation
-   alone. Needs one live call with each spelling before anyone "fixes" it.
+1. **Veo `aspect_ratio` vs `aspectRatio`.** **RESOLVED (ac-kd11of, 2026-08-06).**
+   Live calls with both spellings succeed; `paramJson` always stores camelCase
+   `aspectRatio` with the requested value. See
+   `tests/integration/kie-veo-aspect-ratio-probe.test.ts` + HAR
+   `kie/veo/aspect-ratio-probe`. No package change required.
 
 2. **Upstream field-name inconsistencies in the custom-voice block.** The specs
    themselves are irregular: `POST /api/v1/voice/regenerate` requires

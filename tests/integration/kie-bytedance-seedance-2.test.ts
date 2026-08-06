@@ -107,6 +107,7 @@ describe("kie bytedance/seedance-2 integration", () => {
     expect(schema.type).toBe("video");
     expect(schema.fields.prompt.required).toBe(true);
     expect(schema.fields.resolution.enum).toContain("1080p");
+    expect(schema.fields.resolution.enum).toContain("4K");
     expect(schema.fields.aspect_ratio.enum).toContain("adaptive");
     expect(schema.fields.web_search.required).toBe(true);
   });

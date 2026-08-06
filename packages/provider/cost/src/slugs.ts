@@ -54,6 +54,17 @@ export const MODEL_SLUGS = {
     "minimax-h3/image-to-video": "mmh3",
     "minimax-h3/reference-to-video": "mmh3",
 
+    // Video — Hailuo 02 / 2.3 (MiniMax). Standard and Pro are separate price
+    // ladders, so the tier letter trails the family slug (s / p); t2v and i2v
+    // are modalities of one tier and share its slug. "2.3" follows the
+    // dots→`p` rule: 2p3.
+    "hailuo/02-text-to-video-standard": "hailuo02s",
+    "hailuo/02-image-to-video-standard": "hailuo02s",
+    "hailuo/02-text-to-video-pro": "hailuo02p",
+    "hailuo/02-image-to-video-pro": "hailuo02p",
+    "hailuo/2-3-image-to-video-standard": "hailuo2p3s",
+    "hailuo/2-3-image-to-video-pro": "hailuo2p3p",
+
     // Video — Kling 2.6 / 2.5 turbo / 2.1 (each generation is its own price
     // ladder, so its own slug; t2v and i2v are modalities and share one)
     "kling-2.6/text-to-video": "kling2p6",
@@ -434,6 +445,13 @@ export const MODEL_DISPLAY = {
     "minimax-h3/text-to-video": "MiniMax H3",
     "minimax-h3/image-to-video": "MiniMax H3",
     "minimax-h3/reference-to-video": "MiniMax H3",
+
+    "hailuo/02-text-to-video-standard": "Hailuo 02",
+    "hailuo/02-image-to-video-standard": "Hailuo 02",
+    "hailuo/02-text-to-video-pro": "Hailuo 02 Pro",
+    "hailuo/02-image-to-video-pro": "Hailuo 02 Pro",
+    "hailuo/2-3-image-to-video-standard": "Hailuo 2.3",
+    "hailuo/2-3-image-to-video-pro": "Hailuo 2.3 Pro",
 
     "kling-2.6/text-to-video": "Kling 2.6",
     "kling-2.6/image-to-video": "Kling 2.6",

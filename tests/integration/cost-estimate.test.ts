@@ -414,15 +414,15 @@ describe("cost.estimate — pure-table (no network)", () => {
       },
     });
     expect(r.breakdown.unit).toBe("generations");
-    expect(r.breakdown.perUnitUsd).toBe(0.15);
-    expect(r.usd).toBeCloseTo(0.15, 6);
+    expect(r.breakdown.perUnitUsd).toBe(0.225);
+    expect(r.usd).toBeCloseTo(0.225, 6);
   });
 
   it.each([
-    { extendTimes: "6", resolution: "480p", expected: 0.05 },
-    { extendTimes: "6", resolution: "720p", expected: 0.1 },
-    { extendTimes: "10", resolution: "480p", expected: 0.1 },
-    { extendTimes: "10", resolution: "720p", expected: 0.15 },
+    { extendTimes: "6", resolution: "480p", expected: 0.072 },
+    { extendTimes: "6", resolution: "720p", expected: 0.135 },
+    { extendTimes: "10", resolution: "480p", expected: 0.12 },
+    { extendTimes: "10", resolution: "720p", expected: 0.225 },
   ])(
     "kie grok-imagine/extend prices string $extendTimes at $resolution",
     ({ extendTimes, resolution, expected }) => {
@@ -485,7 +485,7 @@ describe("cost.estimate — pure-table (no network)", () => {
     expect(r.warnings.some((w) => w.includes("variant '6'"))).toBe(true);
   });
 
-  it("kie happyhorse/video-edit 1080p → $0.265/s with top-level duration hint", () => {
+  it("kie happyhorse/video-edit 1080p → $0.24/s with top-level duration hint", () => {
     const c = createCost();
     const r = c.estimate({
       provider: "kie",
@@ -501,11 +501,11 @@ describe("cost.estimate — pure-table (no network)", () => {
     });
     expect(r.breakdown.unit).toBe("seconds");
     expect(r.breakdown.units).toBe(8);
-    expect(r.breakdown.perUnitUsd).toBe(0.265);
-    expect(r.usd).toBeCloseTo(0.265 * 8, 6);
+    expect(r.breakdown.perUnitUsd).toBe(0.24);
+    expect(r.usd).toBeCloseTo(0.24 * 8, 6);
   });
 
-  it("kie happyhorse/video-edit 720p → $0.155/s", () => {
+  it("kie happyhorse/video-edit 720p → $0.14/s", () => {
     const c = createCost();
     const r = c.estimate({
       provider: "kie",
@@ -519,8 +519,8 @@ describe("cost.estimate — pure-table (no network)", () => {
         duration: 5,
       },
     });
-    expect(r.breakdown.perUnitUsd).toBe(0.155);
-    expect(r.usd).toBeCloseTo(0.155 * 5, 6);
+    expect(r.breakdown.perUnitUsd).toBe(0.14);
+    expect(r.usd).toBeCloseTo(0.14 * 5, 6);
   });
 
   it("kie happyhorse-1-1 video modes resolve 720p pricing", () => {
@@ -545,9 +545,9 @@ describe("cost.estimate — pure-table (no network)", () => {
       expect(r.source).toBe("per-unit-table");
       expect(r.breakdown.unit).toBe("seconds");
       expect(r.breakdown.units).toBe(6);
-      expect(r.breakdown.perUnitUsd).toBe(0.165);
-      expect(r.usd).toBeCloseTo(0.165 * 6, 6);
-      expect(r.rateAsOf).toBe("2026-06-24");
+      expect(r.breakdown.perUnitUsd).toBe(0.1125);
+      expect(r.usd).toBeCloseTo(0.1125 * 6, 6);
+      expect(r.rateAsOf).toBe("2026-08-06");
     }
   });
 
@@ -570,9 +570,9 @@ describe("cost.estimate — pure-table (no network)", () => {
         },
       });
 
-      expect(r.breakdown.perUnitUsd).toBe(0.22);
-      expect(r.usd).toBeCloseTo(0.22 * 5, 6);
-      expect(r.rateAsOf).toBe("2026-06-24");
+      expect(r.breakdown.perUnitUsd).toBe(0.145);
+      expect(r.usd).toBeCloseTo(0.145 * 5, 6);
+      expect(r.rateAsOf).toBe("2026-08-06");
     }
   });
 
@@ -770,7 +770,7 @@ describe("cost.estimate — pure-table (no network)", () => {
     expect(r.usd).toBeCloseTo(0.12, 6);
   });
 
-  it("kie grok-imagine/upscale → flat $0.05/generation", () => {
+  it("kie grok-imagine/upscale → flat $0.05/generation with a tier caveat", () => {
     const c = createCost();
     const r = c.estimate({
       provider: "kie",
@@ -781,6 +781,9 @@ describe("cost.estimate — pure-table (no network)", () => {
     });
     expect(r.breakdown.unit).toBe("generations");
     expect(r.usd).toBeCloseTo(0.05, 6);
+    // The schema exposes only task_id, so the page's two 1080p tiers cannot
+    // be selected — every estimate carries that caveat.
+    expect(r.warnings.some((w) => w.includes("720P→1080P"))).toBe(true);
   });
 
   it("missing max_tokens emits warning", () => {

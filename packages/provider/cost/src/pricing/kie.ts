@@ -121,15 +121,6 @@ const megapixels = (
   return Math.ceil((dims[0] * dims[1]) / 1_000_000) * imageCount(p);
 };
 
-const flatVideo = (perUnit: number, slug: string): ModelPricing => ({
-  kind: "perUnit",
-  unit: "seconds",
-  units: seconds,
-  select: [],
-  rates: { "": perUnit },
-  source: src(slug),
-});
-
 const flatImage = (perUnit: number, slug: string): ModelPricing => ({
   kind: "perUnit",
   unit: "images",
@@ -245,28 +236,8 @@ const tieredImage = (
   rates,
   source: src(slug),
 });
-// Video entry tiered by input.resolution (grok-imagine, happyhorse).
-// Optional `defaultResolution` is applied when the payload omits
-// input.resolution (matches the upstream schema default).
-const tieredResolutionVideo = (
-  rates: Record<string, number>,
-  slug: string,
-  defaultResolution?: string
-): ModelPricing => ({
-  kind: "perUnit",
-  unit: "seconds",
-  units: seconds,
-  select: [
-    {
-      name: "resolution",
-      pick: (p) => asString(asObject(p.input)?.resolution) ?? defaultResolution,
-    },
-  ],
-  rates,
-  source: src(slug),
-});
 
-const happyHorse11Video = (slug: string): ModelPricing => ({
+const happyHorse11Video = (variant: string): ModelPricing => ({
   kind: "perUnit",
   unit: "seconds",
   units: seconds,
@@ -276,8 +247,10 @@ const happyHorse11Video = (slug: string): ModelPricing => ({
       pick: (p) => asString(asObject(p.input)?.resolution) ?? "1080p",
     },
   ],
-  rates: { "720p": 0.165, "1080p": 0.22 },
-  source: { ...src(slug), asOf: "2026-06-24" },
+  rates: { "720p": 0.1125, "1080p": 0.145 },
+  source: pricePage(
+    `https://kie.ai/happyhorse-1-1?model=happyhorse-1-1%2F${variant}`
+  ),
 });
 
 // MiniMax H3 (Hailuo 03): 2 tiers by resolution. KIE lists 22.5 credits/s
@@ -336,10 +309,11 @@ const inputDurationKey = (
 ): string | undefined =>
   scalarKey(asObject(p.input)?.duration) ?? defaultDuration;
 
-// Per-video Kling entry: kie bills these families once per video, so
-// `duration` selects a RATE instead of scaling one — units are fixed at 1 and
-// the costHints.durationSeconds channel does not apply (same shape as veo).
-const klingPerVideo = (
+// Per-video entry keyed by duration (Kling markets, Hailuo 02 standard): kie
+// bills these families once per video, so `duration` selects a RATE instead of
+// scaling one — units are fixed at 1 and the costHints.durationSeconds channel
+// does not apply (same shape as veo).
+const perVideoByDuration = (
   rates: Record<string, number>,
   url: string,
   defaultDuration?: string
@@ -349,6 +323,34 @@ const klingPerVideo = (
   units: () => 1,
   select: [
     { name: "duration", pick: (p) => inputDurationKey(p, defaultDuration) },
+  ],
+  rates,
+  source: pricePage(url),
+});
+
+// Per-video entry keyed by duration × resolution (Hailuo 02 image-to-video
+// standard and both Hailuo 2.3 models). Same per-video basis as
+// `perVideoByDuration`; the second axis exists because kie prices those cells
+// separately. Both defaults mirror the model's documented schema default, so an
+// omitted field prices the documented row instead of failing — but only cells
+// the page actually publishes get a rate, so an unpublished combination (2.3 at
+// 10s/1080P, which upstream documents as unsupported) finds no rate and fails
+// the estimate rather than being invented here.
+const perVideoByDurationAndResolution = (
+  rates: Record<string, number>,
+  url: string,
+  defaultDuration: string,
+  defaultResolution: string
+): ModelPricing => ({
+  kind: "perUnit",
+  unit: "generations",
+  units: () => 1,
+  select: [
+    { name: "duration", pick: (p) => inputDurationKey(p, defaultDuration) },
+    {
+      name: "resolution",
+      pick: (p) => inputResolution(p) ?? defaultResolution,
+    },
   ],
   rates,
   source: pricePage(url),
@@ -568,30 +570,67 @@ export const kie: Record<string, ModelPricing> = {
     source: page("https://kie.ai/kling-3-0-turbo"),
   },
 
-  // wan/2.7 video — all four variants share a flat $0.10/s rate.
-  "wan/2-7-text-to-video": flatVideo(0.1, "alibaba/wan-2.7"),
-  "wan/2-7-image-to-video": flatVideo(0.1, "alibaba/wan-2.7"),
-  "wan/2-7-r2v": flatVideo(0.1, "alibaba/wan-2.7"),
-  "wan/2-7-videoedit": flatVideo(0.1, "alibaba/wan-2.7"),
-
-  // grok-imagine: 2 tiers by resolution. Audio is always on (no toggle in
-  // the kie input schema).
-  "grok-imagine/text-to-video": tieredResolutionVideo(
-    { "480p": 0.008, "720p": 0.015 },
-    "xai/grok-imagine"
+  // wan/2.7 video — resolution-tiered per second as of the 2026-08-06 pull
+  // (was a flat $0.10/s across all four variants, which overcharged 720p by
+  // 25% and undercharged 1080p by 17%). All four variants share the same two
+  // cells: 720p 16 credits/s ($0.08), 1080p 24 credits/s ($0.12). The schemas
+  // declare `resolution` as "720p"|"1080p" and document 1080p as the default,
+  // so an omitted field prices the 1080p row.
+  "wan/2-7-text-to-video": tieredVideoPage(
+    "resolution",
+    { "720p": 0.08, "1080p": 0.12 },
+    "https://kie.ai/wan-2-7-video?model=wan%2F2-7-text-to-video",
+    "1080p"
   ),
-  "grok-imagine/image-to-video": tieredResolutionVideo(
-    { "480p": 0.008, "720p": 0.015 },
-    "xai/grok-imagine"
+  "wan/2-7-image-to-video": tieredVideoPage(
+    "resolution",
+    { "720p": 0.08, "1080p": 0.12 },
+    "https://kie.ai/wan-2-7-video?model=wan%2F2-7-image-to-video",
+    "1080p"
+  ),
+  "wan/2-7-r2v": tieredVideoPage(
+    "resolution",
+    { "720p": 0.08, "1080p": 0.12 },
+    "https://kie.ai/wan-2-7-video?model=wan%2F2-7-r2v",
+    "1080p"
+  ),
+  "wan/2-7-videoedit": tieredVideoPage(
+    "resolution",
+    { "720p": 0.08, "1080p": 0.12 },
+    "https://kie.ai/wan-2-7-video?model=wan%2F2-7-videoedit",
+    "1080p"
   ),
 
-  // grok-imagine-video-1-5-preview: image-to-video, 2 tiers by resolution.
-  // Rates mirror the other grok-imagine video tiers — VERIFY against the kie
-  // marketplace listing before relying on these for billing. Defaults to 480p
-  // (matches the model default) when the payload omits input.resolution.
-  "grok-imagine-video-1-5-preview": tieredResolutionVideo(
-    { "480p": 0.008, "720p": 0.015 },
-    "xai/grok-imagine",
+  // grok-imagine: 3 tiers by resolution as of the 2026-08-06 pull (1080p is
+  // new; 480p and 720p both rose). Audio is always on (no toggle in the kie
+  // input schema). The 1080p cell is DERIVED from credits: both directions
+  // bill 8 credits/s, and while text-to-video prints $0.04, the
+  // image-to-video row prints a malformed "$0.004" — 8 × $0.005 = $0.04 is
+  // the page's own uniform basis, so both directions carry it.
+  //
+  // The schemas document 480p as the default resolution but declare no schema
+  // default, and these two entries have never applied one: an omitted
+  // resolution still finds no rate and fails loudly rather than quoting the
+  // cheapest tier.
+  "grok-imagine/text-to-video": tieredVideoPage(
+    "resolution",
+    { "480p": 0.012, "720p": 0.0225, "1080p": 0.04 },
+    "https://kie.ai/grok-imagine?model=grok-imagine%2Ftext-to-video"
+  ),
+  "grok-imagine/image-to-video": tieredVideoPage(
+    "resolution",
+    { "480p": 0.012, "720p": 0.0225, "1080p": 0.04 },
+    "https://kie.ai/grok-imagine?model=grok-imagine%2Fimage-to-video"
+  ),
+
+  // grok-imagine-video-1-5-preview: image-to-video, 2 tiers by resolution —
+  // the page publishes no 1080p row for this preview model, and its schema
+  // stops at "480p"|"720p". Defaults to 480p (matches the documented model
+  // default) when the payload omits input.resolution.
+  "grok-imagine-video-1-5-preview": tieredVideoPage(
+    "resolution",
+    { "480p": 0.012, "720p": 0.0225 },
+    "https://kie.ai/grok-imagine-video-1.5",
     "480p"
   ),
 
@@ -644,60 +683,78 @@ export const kie: Record<string, ModelPricing> = {
       },
     ],
     rates: {
-      "6|480p": 0.05,
-      "6|720p": 0.1,
-      "10|480p": 0.1,
-      "10|720p": 0.15,
+      "6|480p": 0.072,
+      "6|720p": 0.135,
+      "10|480p": 0.12,
+      "10|720p": 0.225,
     },
-    source: src("xai/grok-imagine"),
+    source: pricePage(
+      "https://kie.ai/grok-imagine?model=grok-imagine%2Fextend"
+    ),
   },
 
-  // grok-imagine/upscale: marketplace lists only the 360p→720p tier at
-  // $0.05 flat. Schema has no tier selector (only task_id).
+  // grok-imagine/upscale: the schema carries only `task_id`, so no tier is
+  // selectable from a request. The entry keeps the page's 360p→720p tier
+  // (10 credits = $0.05) as the single flat rate and warns that the other two
+  // published tiers exist but cannot be addressed — kie now also prices
+  // 720P→1080P at $0.10 and 480P→1080P at $0.15, both chosen by the source
+  // and target resolutions of the referenced task rather than by any field
+  // the caller sends. An estimate for those paths under-quotes by design; a
+  // rate keyed to an unreachable selector would be worse.
   "grok-imagine/upscale": {
     kind: "perUnit",
     unit: "generations",
     units: () => 1,
     select: [],
     rates: { "": 0.05 },
-    source: src("xai/grok-imagine"),
+    warn: () => [
+      "kie 'grok-imagine/upscale': priced at the 360p→720p tier ($0.05). " +
+        "kie also publishes 720P→1080P ($0.10) and 480P→1080P ($0.15), " +
+        "selected by the source/target resolutions the request schema " +
+        "cannot express — those paths are under-estimated.",
+    ],
+    source: pricePage(
+      "https://kie.ai/grok-imagine?model=grok-imagine%2Fupscale"
+    ),
   },
 
-  // happyhorse: 2 tiers by resolution. Audio always on for t2v/i2v/r2v.
-  "happyhorse/text-to-video": tieredResolutionVideo(
-    { "720p": 0.155, "1080p": 0.265 },
-    "happyhorse/image-to-video"
+  // happyhorse (1.0): 2 tiers by resolution. Audio always on for t2v/i2v/r2v.
+  // The 2026-08-06 pull cut both cells: 28 credits/s ($0.14) at 720p and
+  // 48 credits/s ($0.24) at 1080p (was $0.155 / $0.265, i.e. the old table
+  // over-quoted every happyhorse call by ~10%).
+  "happyhorse/text-to-video": tieredVideoPage(
+    "resolution",
+    { "720p": 0.14, "1080p": 0.24 },
+    "https://kie.ai/happyhorse-1-0?model=happyhorse%2Ftext-to-video"
   ),
-  "happyhorse/image-to-video": tieredResolutionVideo(
-    { "720p": 0.155, "1080p": 0.265 },
-    "happyhorse/image-to-video"
+  "happyhorse/image-to-video": tieredVideoPage(
+    "resolution",
+    { "720p": 0.14, "1080p": 0.24 },
+    "https://kie.ai/happyhorse-1-0?model=happyhorse%2Fimage-to-video"
   ),
-  "happyhorse/reference-to-video": tieredResolutionVideo(
-    { "720p": 0.155, "1080p": 0.265 },
-    "happyhorse/image-to-video"
+  "happyhorse/reference-to-video": tieredVideoPage(
+    "resolution",
+    { "720p": 0.14, "1080p": 0.24 },
+    "https://kie.ai/happyhorse-1-0?model=happyhorse%2Freference-to-video"
   ),
   // happyhorse/video-edit: same tiered rates as the other happyhorse video
   // entries. Schema has no duration field — output duration matches the
   // source video_url, so callers must declare that length as
   // costHints.durationSeconds.
-  "happyhorse/video-edit": tieredResolutionVideo(
-    { "720p": 0.155, "1080p": 0.265 },
-    "happyhorse/image-to-video"
+  "happyhorse/video-edit": tieredVideoPage(
+    "resolution",
+    { "720p": 0.14, "1080p": 0.24 },
+    "https://kie.ai/happyhorse-1-0?model=happyhorse%2Fvideo-edit"
   ),
 
-  // happyhorse-1-1: 2 tiers by resolution. KIE lists 33 credits/s ($0.165)
-  // at 720p and 44 credits/s ($0.22) at 1080p. High-tier +10% bonus
-  // credit top-ups lower the effective credit price by about 10%, but this
-  // table stores list USD rates only.
-  "happyhorse-1-1/text-to-video": happyHorse11Video(
-    "happyhorse-1-1/text-to-video"
-  ),
-  "happyhorse-1-1/image-to-video": happyHorse11Video(
-    "happyhorse-1-1/image-to-video"
-  ),
-  "happyhorse-1-1/reference-to-video": happyHorse11Video(
-    "happyhorse-1-1/reference-to-video"
-  ),
+  // happyhorse-1-1: 2 tiers by resolution. The 2026-08-06 pull lists
+  // 22.5 credits/s ($0.1125) at 720p and 29 credits/s ($0.145) at 1080p
+  // (was 33 / 44 credits, $0.165 / $0.22). High-tier +10% bonus credit
+  // top-ups lower the effective credit price by about 10%, but this table
+  // stores list USD rates only.
+  "happyhorse-1-1/text-to-video": happyHorse11Video("text-to-video"),
+  "happyhorse-1-1/image-to-video": happyHorse11Video("image-to-video"),
+  "happyhorse-1-1/reference-to-video": happyHorse11Video("reference-to-video"),
 
   // minimax-h3: 2 tiers by resolution. KIE lists 22.5 credits/s ($0.1125)
   // at 768P and 36.5 credits/s ($0.1825) at 2K (verified kie.ai/pricing
@@ -706,6 +763,78 @@ export const kie: Record<string, ModelPricing> = {
   "minimax-h3/image-to-video": miniMaxH3Video("minimax-h3/image-to-video"),
   "minimax-h3/reference-to-video": miniMaxH3Video(
     "minimax-h3/reference-to-video"
+  ),
+
+  // ---------------------------------------------------------------------
+  // Hailuo 02 and Hailuo 2.3 (MiniMax) — the two families the provider
+  // exposes that had no pricing at all before the 2026-08-06 pull. Both bill
+  // PER VIDEO: kie prices each published (tier × duration × resolution) cell
+  // as one flat charge, so `duration` is a rate dimension and never a unit
+  // count. Every USD cell below is the page's own and agrees with its credit
+  // cell at the uniform 1 credit = $0.005 basis (Pro 6s/1080p: 57 credits =
+  // $0.285), so no rate here is derived.
+  //
+  // Only published cells get keys. Hailuo 2.3 publishes no 10s/1080P row —
+  // upstream documents 10s as unsupported at that resolution — so such a
+  // request finds no rate and the estimate fails loudly instead of quoting an
+  // invented tier.
+  // ---------------------------------------------------------------------
+
+  // Hailuo 02 Pro — the page publishes exactly one cell (1080p, 6s), and the
+  // schemas carry neither a duration nor a resolution field, so the entry is
+  // flat with nothing to select.
+  "hailuo/02-text-to-video-pro": flatGenPage(
+    0.285,
+    "https://kie.ai/hailuo-api?model=hailuo%2F02-text-to-video-pro"
+  ),
+  "hailuo/02-image-to-video-pro": flatGenPage(
+    0.285,
+    "https://kie.ai/hailuo-api?model=hailuo%2F02-image-to-video-pro"
+  ),
+
+  // Hailuo 02 Standard text-to-video — 768p only (the schema has no resolution
+  // field), duration "6"|"10" with documented default "6".
+  "hailuo/02-text-to-video-standard": perVideoByDuration(
+    { "6": 0.15, "10": 0.25 },
+    "https://kie.ai/hailuo-api?model=hailuo%2F02-text-to-video-standard",
+    "6"
+  ),
+
+  // Hailuo 02 Standard image-to-video — duration "6"|"10" (documented default
+  // "10", unusually) × resolution "512P"|"768P" (default "768P"), so an
+  // omitted-field request prices the 10s/768P row.
+  //
+  // The 2026-08-06 page publishes three of these four cells: 10s/768P $0.25,
+  // 6s/512P $0.06 and 10s/512P $0.10. It carries no explicit 6s/768P row, but
+  // REQ-002 prices that cell at the text-to-video Standard 6s/768P rate
+  // (30 credits = $0.15) — the two Standard tiers share every cell the page
+  // does print, so the gap reads as a missing row rather than a missing
+  // capability.
+  "hailuo/02-image-to-video-standard": perVideoByDurationAndResolution(
+    {
+      "6|768P": 0.15,
+      "10|768P": 0.25,
+      "6|512P": 0.06,
+      "10|512P": 0.1,
+    },
+    "https://kie.ai/hailuo-api?model=hailuo%2F02-image-to-video-standard",
+    "10",
+    "768P"
+  ),
+
+  // Hailuo 2.3 image-to-video — duration "6"|"10" (default "6") × resolution
+  // "768P"|"1080P" (default "768P"). No 10s/1080P cell in either tier.
+  "hailuo/2-3-image-to-video-pro": perVideoByDurationAndResolution(
+    { "6|768P": 0.225, "10|768P": 0.45, "6|1080P": 0.4 },
+    "https://kie.ai/hailuo-2-3?model=hailuo%2F2-3-image-to-video-pro",
+    "6",
+    "768P"
+  ),
+  "hailuo/2-3-image-to-video-standard": perVideoByDurationAndResolution(
+    { "6|768P": 0.15, "10|768P": 0.25, "6|1080P": 0.25 },
+    "https://kie.ai/hailuo-2-3?model=hailuo%2F2-3-image-to-video-standard",
+    "6",
+    "768P"
   ),
 
   // omnihuman-1-5: flat 27 credits/s ($0.135). KIE publishes one rate — the
@@ -738,8 +867,22 @@ export const kie: Record<string, ModelPricing> = {
     },
   },
 
-  // bytedance/seedance-2: 6 rates, resolution × videoInput (i2v when
-  // input.first_frame_url is present, t2v otherwise).
+  // bytedance/seedance-2: 8 rates, resolution × videoInput (i2v when
+  // input.first_frame_url is present, t2v otherwise). The 2026-08-06 pull
+  // confirms that discriminator: the page's "with video input" / "no video
+  // input" columns line up cell-for-cell with the six rates already here, and
+  // it adds a 4K tier — 128 credits/s ($0.64) with input, 208 credits/s
+  // ($1.04) without.
+  //
+  // SCHEMA GAP: Seedance2InputSchema.resolution is
+  // z.enum(["480p","720p","1080p"]) — it has no "4K" value — and the kie
+  // provider's CREATE_TASK_GUARDS reject out-of-enum payloads, so no
+  // schema-valid SDK call can reach the two 4K keys today. They are priced
+  // anyway because the estimate engine is payload-driven and upstream bills
+  // the tier; the enum addition is filed separately as ac-8cfo6r (its own kie
+  // schema PR, out of scope for this pricing pass). Until it lands, 4K is
+  // covered by unit tests only and stays out of the compare-cost lineup,
+  // which validates every row against the shipped schema.
   "bytedance/seedance-2": {
     kind: "perUnit",
     unit: "seconds",
@@ -758,8 +901,12 @@ export const kie: Record<string, ModelPricing> = {
       "720p|t2v": 0.205,
       "1080p|i2v": 0.31,
       "1080p|t2v": 0.51,
+      "4K|i2v": 0.64,
+      "4K|t2v": 1.04,
     },
-    source: src("bytedance/seedance-2"),
+    source: pricePage(
+      "https://kie.ai/seedance-2-0?model=bytedance%2Fseedance-2"
+    ),
   },
 
   // bytedance/seedance-2-fast: 4 rates (no 1080p tier).
@@ -868,12 +1015,12 @@ export const kie: Record<string, ModelPricing> = {
   // Kling 2.5 Turbo Pro — per video: 5s $0.21, 10s $0.42. `duration` is
   // optional in the schema and documents an upstream default of 5, applied as
   // the absent-field fallback.
-  "kling/v2-5-turbo-text-to-video-pro": klingPerVideo(
+  "kling/v2-5-turbo-text-to-video-pro": perVideoByDuration(
     { "5": 0.21, "10": 0.42 },
     "https://kie.ai/kling-2-5?model=kling%2Fv2-5-turbo-text-to-video-pro",
     "5"
   ),
-  "kling/v2-5-turbo-image-to-video-pro": klingPerVideo(
+  "kling/v2-5-turbo-image-to-video-pro": perVideoByDuration(
     { "5": 0.21, "10": 0.42 },
     "https://kie.ai/kling-2-5?model=kling%2Fv2-5-turbo-image-to-video-pro",
     "5"
@@ -882,22 +1029,22 @@ export const kie: Record<string, ModelPricing> = {
   // Kling 2.1 — per video, three tiers on one page: Standard $0.125/$0.25,
   // Pro $0.25/$0.50, Master $0.80/$1.60 (5s/10s). Same optional `duration`
   // with a documented default of 5 as the 2.5 turbo pair above.
-  "kling/v2-1-standard": klingPerVideo(
+  "kling/v2-1-standard": perVideoByDuration(
     { "5": 0.125, "10": 0.25 },
     "https://kie.ai/kling/v2-1?model=kling%2Fv2-1-standard",
     "5"
   ),
-  "kling/v2-1-pro": klingPerVideo(
+  "kling/v2-1-pro": perVideoByDuration(
     { "5": 0.25, "10": 0.5 },
     "https://kie.ai/kling/v2-1?model=kling%2Fv2-1-pro",
     "5"
   ),
-  "kling/v2-1-master-text-to-video": klingPerVideo(
+  "kling/v2-1-master-text-to-video": perVideoByDuration(
     { "5": 0.8, "10": 1.6 },
     "https://kie.ai/kling/v2-1?model=kling%2Fv2-1-master-text-to-video",
     "5"
   ),
-  "kling/v2-1-master-image-to-video": klingPerVideo(
+  "kling/v2-1-master-image-to-video": perVideoByDuration(
     { "5": 0.8, "10": 1.6 },
     "https://kie.ai/kling/v2-1?model=kling%2Fv2-1-master-image-to-video",
     "5"
@@ -1403,6 +1550,20 @@ export const kie: Record<string, ModelPricing> = {
     "https://kie.ai/suno-api?model=ai-music-api%2Fgenerate-midi-from-audio"
   ),
 
+  // gemini-omni-video: restructured against the 2026-08-06 pull. Both halves
+  // changed shape, not just price.
+  //
+  // T2V (no video input) still bills per video by duration × resolution, but
+  // 720p and 1080p are now the SAME price (63/84/105/126 credits for
+  // 4/6/8/10s = $0.315/$0.42/$0.525/$0.63) and 4k is its own column
+  // (147/168/189/210 credits = $0.735/$0.84/$0.945/$1.05). The old table had
+  // 720p cheaper than 1080p and 4k priced at the 1080p column.
+  //
+  // V2V (a video_list clip is present) is now flat PER VIDEO by resolution —
+  // upstream documents `duration` as ignored when video input is provided, and
+  // the page prices it accordingly: 720p and 1080p both 168 credits ($0.84),
+  // 4k 252 credits ($1.26). It used to be keyed by duration alone
+  // ($0.84–$2.10), so a 10s v2v request was quoted 2.5× its actual price.
   "gemini-omni-video": {
     kind: "perUnit",
     unit: "generations",
@@ -1412,40 +1573,40 @@ export const kie: Record<string, ModelPricing> = {
         name: "mode",
         pick: (p) => (hasVideoListInput(p) ? "v2v" : "t2v"),
       },
+      // V2V ignores duration upstream, so the selector yields "" there, which
+      // evaluatePerUnit drops from the joined variant key. The v2v rate keys
+      // therefore carry no empty segment — writing them as "v2v||720p" (or,
+      // in the previous shape, "v2v|4|") makes every V2V request miss the
+      // table and price at zero.
       {
         name: "duration",
-        pick: (p, hints) => durationKey(p, hints, 4),
+        pick: (p, hints) =>
+          hasVideoListInput(p) ? "" : durationKey(p, hints, 4),
       },
+      // Resolution now applies to BOTH modes: v2v is priced per resolution
+      // too, so this selector no longer blanks itself for video input.
       {
         name: "resolution",
-        pick: (p) =>
-          hasVideoListInput(p)
-            ? ""
-            : (asString(asObject(p.input)?.resolution) ?? "720p"),
+        pick: (p) => inputResolution(p) ?? "720p",
       },
     ],
-    // V2V does not vary by resolution, so its resolution selector yields "",
-    // which evaluatePerUnit drops from the joined variant key. The v2v rate
-    // keys therefore carry no trailing empty segment — writing them as
-    // "v2v|4|" made every V2V request miss the table and price at zero.
     rates: {
       "t2v|4|720p": 0.315,
-      "t2v|6|720p": 0.4725,
-      "t2v|8|720p": 0.63,
-      "t2v|10|720p": 0.7875,
-      "t2v|4|1080p": 0.42,
-      "t2v|6|1080p": 0.63,
-      "t2v|8|1080p": 0.84,
-      "t2v|10|1080p": 1.05,
-      "t2v|4|4k": 0.42,
-      "t2v|6|4k": 0.63,
-      "t2v|8|4k": 0.84,
+      "t2v|6|720p": 0.42,
+      "t2v|8|720p": 0.525,
+      "t2v|10|720p": 0.63,
+      "t2v|4|1080p": 0.315,
+      "t2v|6|1080p": 0.42,
+      "t2v|8|1080p": 0.525,
+      "t2v|10|1080p": 0.63,
+      "t2v|4|4k": 0.735,
+      "t2v|6|4k": 0.84,
+      "t2v|8|4k": 0.945,
       "t2v|10|4k": 1.05,
-      "v2v|4": 0.84,
-      "v2v|6": 1.26,
-      "v2v|8": 1.68,
-      "v2v|10": 2.1,
+      "v2v|720p": 0.84,
+      "v2v|1080p": 0.84,
+      "v2v|4k": 1.26,
     },
-    source: src("google/gemini-omni"),
+    source: pricePage("https://kie.ai/gemini-omni"),
   },
 };

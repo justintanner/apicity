@@ -661,15 +661,72 @@ describe("kie pricing-refresh slugs (REQ-007)", () => {
     }
   );
 
-  // Cheap forward guard until the superset-parity walk lands: every key this
-  // item priced must be reachable through the slug registry, not just the
-  // hand-listed ones above.
-  it("registers a slug and display for every kie pricing key it added", () => {
-    const missing = Object.keys(PRICING.kie).filter(
-      (model) =>
-        (MODEL_SLUGS.kie as Record<string, string>)[model] === undefined ||
-        (MODEL_DISPLAY.kie as Record<string, string>)[model] === undefined
-    );
-    expect(missing, "kie priced-but-unslugged").toEqual([]);
+  it.each([
+    {
+      model: "hailuo/02-text-to-video-standard",
+      slug: "hailuo02s",
+      display: "Hailuo 02",
+    },
+    {
+      model: "hailuo/02-image-to-video-standard",
+      slug: "hailuo02s",
+      display: "Hailuo 02",
+    },
+    {
+      model: "hailuo/02-text-to-video-pro",
+      slug: "hailuo02p",
+      display: "Hailuo 02 Pro",
+    },
+    {
+      model: "hailuo/02-image-to-video-pro",
+      slug: "hailuo02p",
+      display: "Hailuo 02 Pro",
+    },
+    {
+      model: "hailuo/2-3-image-to-video-standard",
+      slug: "hailuo2p3s",
+      display: "Hailuo 2.3",
+    },
+    {
+      model: "hailuo/2-3-image-to-video-pro",
+      slug: "hailuo2p3p",
+      display: "Hailuo 2.3 Pro",
+    },
+  ])(
+    "resolves $model through modelSlug/modelDisplay",
+    ({ model, slug, display }) => {
+      expect(modelSlug("kie", model as never)).toBe(slug);
+      expect(modelDisplay("kie", model as never)).toBe(display);
+    }
+  );
+
+  // REQ-007 repo-wide, in one walk: every priced kie model must resolve
+  // through BOTH resolvers, which throw rather than fall back. This is a
+  // superset relation, not equality — MODEL_SLUGS deliberately carries extra
+  // keys (e.g. the "kling-3.0/video/std" variant spellings) that no pricing
+  // key names.
+  it("resolves every PRICING.kie key through modelSlug and modelDisplay", () => {
+    const unresolved: string[] = [];
+    for (const model of Object.keys(PRICING.kie)) {
+      try {
+        expect(modelSlug("kie", model as never)).toBeTruthy();
+        expect(modelDisplay("kie", model as never)).toBeTruthy();
+      } catch {
+        unresolved.push(model);
+      }
+    }
+    expect(unresolved, "kie priced-but-unslugged").toEqual([]);
+
+    // The registries are a superset of the pricing table, never the reverse.
+    for (const model of Object.keys(PRICING.kie)) {
+      expect(
+        (MODEL_SLUGS.kie as Record<string, string>)[model],
+        `${model} slug`
+      ).toBeDefined();
+      expect(
+        (MODEL_DISPLAY.kie as Record<string, string>)[model],
+        `${model} display`
+      ).toBeDefined();
+    }
   });
 });

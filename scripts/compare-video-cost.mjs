@@ -165,23 +165,46 @@ export const lineup = [
     },
     audio: "opt",
   },
-  // wan 2.7 — flat per-second rate across t2v / i2v variants.
+  // wan 2.7 — per-second, tiered by resolution. The rows that omit
+  // `resolution` exercise the documented 1080p schema default.
   {
     ...createTaskEndpointAssociation,
-    label: "wan 2.7 t2v",
+    label: "wan 2.7 t2v (default 1080p)",
     payload: { model: "wan/2-7-text-to-video", input: { prompt: "x" } },
     audio: "yes",
   },
   {
     ...createTaskEndpointAssociation,
-    label: "wan 2.7 i2v",
+    label: "wan 2.7 t2v 720p",
+    payload: {
+      model: "wan/2-7-text-to-video",
+      input: { prompt: "x", resolution: "720p" },
+    },
+    audio: "yes",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "wan 2.7 i2v (default 1080p)",
     payload: {
       model: "wan/2-7-image-to-video",
       input: { prompt: "x", first_frame_url: "https://example.com/x.jpg" },
     },
     audio: "yes",
   },
-  // grok-imagine: 2 tiers by resolution, audio always on.
+  {
+    ...createTaskEndpointAssociation,
+    label: "wan 2.7 i2v 720p",
+    payload: {
+      model: "wan/2-7-image-to-video",
+      input: {
+        prompt: "x",
+        first_frame_url: "https://example.com/x.jpg",
+        resolution: "720p",
+      },
+    },
+    audio: "yes",
+  },
+  // grok-imagine: 3 tiers by resolution, audio always on.
   {
     ...createTaskEndpointAssociation,
     label: "grok-imagine 480p",
@@ -197,6 +220,15 @@ export const lineup = [
     payload: {
       model: "grok-imagine/text-to-video",
       input: { prompt: "x", resolution: "720p" },
+    },
+    audio: "yes",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "grok-imagine 1080p",
+    payload: {
+      model: "grok-imagine/text-to-video",
+      input: { prompt: "x", resolution: "1080p" },
     },
     audio: "yes",
   },
@@ -257,6 +289,19 @@ export const lineup = [
         first_frame_url: "https://example.com/x.jpg",
         resolution: "1080p",
       },
+    },
+    audio: "—",
+  },
+  // The t2v direction of the same model: no first_frame_url, which is exactly
+  // the page's "no video input" column and the more expensive half of the
+  // discriminator. (4K is priced in the table but schema-blocked — see the
+  // entry comment in pricing/kie.ts — so it has no row here.)
+  {
+    ...createTaskEndpointAssociation,
+    label: "seedance-2 1080p t2v",
+    payload: {
+      model: "bytedance/seedance-2",
+      input: { prompt: "xxx", resolution: "1080p" },
     },
     audio: "—",
   },
@@ -592,6 +637,228 @@ export const lineup = [
     },
     audio: "yes",
   },
+  // Hailuo 02 / 2.3 — billed PER VIDEO off a "6"|"10" string duration enum, so
+  // one row per published cell and flat duration columns by design (see
+  // FIXED_DURATION_MODELS). The Pro tiers carry no duration or resolution
+  // field at all: kie publishes one 1080p/6s cell for each.
+  {
+    ...createTaskEndpointAssociation,
+    label: "hailuo 02 t2v pro",
+    payload: { model: "hailuo/02-text-to-video-pro", input: { prompt: "x" } },
+    audio: "yes",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "hailuo 02 i2v pro",
+    payload: {
+      model: "hailuo/02-image-to-video-pro",
+      input: { prompt: "x", image_url: "https://example.com/x.jpg" },
+    },
+    audio: "yes",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "hailuo 02 t2v std 6s",
+    payload: {
+      model: "hailuo/02-text-to-video-standard",
+      input: { prompt: "x", duration: "6" },
+    },
+    audio: "yes",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "hailuo 02 t2v std 10s",
+    payload: {
+      model: "hailuo/02-text-to-video-standard",
+      input: { prompt: "x", duration: "10" },
+    },
+    audio: "yes",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "hailuo 02 i2v std 6s 512P",
+    payload: {
+      model: "hailuo/02-image-to-video-standard",
+      input: {
+        prompt: "x",
+        image_url: "https://example.com/x.jpg",
+        duration: "6",
+        resolution: "512P",
+      },
+    },
+    audio: "yes",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "hailuo 02 i2v std 10s 512P",
+    payload: {
+      model: "hailuo/02-image-to-video-standard",
+      input: {
+        prompt: "x",
+        image_url: "https://example.com/x.jpg",
+        duration: "10",
+        resolution: "512P",
+      },
+    },
+    audio: "yes",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "hailuo 02 i2v std 6s 768P",
+    payload: {
+      model: "hailuo/02-image-to-video-standard",
+      input: {
+        prompt: "x",
+        image_url: "https://example.com/x.jpg",
+        duration: "6",
+        resolution: "768P",
+      },
+    },
+    audio: "yes",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "hailuo 02 i2v std 10s 768P",
+    payload: {
+      model: "hailuo/02-image-to-video-standard",
+      input: {
+        prompt: "x",
+        image_url: "https://example.com/x.jpg",
+        duration: "10",
+        resolution: "768P",
+      },
+    },
+    audio: "yes",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "hailuo 2.3 i2v std 6s 768P",
+    payload: {
+      model: "hailuo/2-3-image-to-video-standard",
+      input: {
+        prompt: "x",
+        image_url: "https://example.com/x.jpg",
+        duration: "6",
+        resolution: "768P",
+      },
+    },
+    audio: "yes",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "hailuo 2.3 i2v std 10s 768P",
+    payload: {
+      model: "hailuo/2-3-image-to-video-standard",
+      input: {
+        prompt: "x",
+        image_url: "https://example.com/x.jpg",
+        duration: "10",
+        resolution: "768P",
+      },
+    },
+    audio: "yes",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "hailuo 2.3 i2v std 6s 1080P",
+    payload: {
+      model: "hailuo/2-3-image-to-video-standard",
+      input: {
+        prompt: "x",
+        image_url: "https://example.com/x.jpg",
+        duration: "6",
+        resolution: "1080P",
+      },
+    },
+    audio: "yes",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "hailuo 2.3 i2v pro 6s 768P",
+    payload: {
+      model: "hailuo/2-3-image-to-video-pro",
+      input: {
+        prompt: "x",
+        image_url: "https://example.com/x.jpg",
+        duration: "6",
+        resolution: "768P",
+      },
+    },
+    audio: "yes",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "hailuo 2.3 i2v pro 10s 768P",
+    payload: {
+      model: "hailuo/2-3-image-to-video-pro",
+      input: {
+        prompt: "x",
+        image_url: "https://example.com/x.jpg",
+        duration: "10",
+        resolution: "768P",
+      },
+    },
+    audio: "yes",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "hailuo 2.3 i2v pro 6s 1080P",
+    payload: {
+      model: "hailuo/2-3-image-to-video-pro",
+      input: {
+        prompt: "x",
+        image_url: "https://example.com/x.jpg",
+        duration: "6",
+        resolution: "1080P",
+      },
+    },
+    audio: "yes",
+  },
+  // gemini-omni video-to-video — flat per video by resolution. `duration` is
+  // required by the schema but ignored upstream when a video clip is supplied,
+  // so these rows keep it pinned and stay flat across the duration columns.
+  {
+    ...createTaskEndpointAssociation,
+    label: "gemini-omni v2v 720p",
+    payload: {
+      model: "gemini-omni-video",
+      input: {
+        prompt: "x",
+        duration: "8",
+        resolution: "720p",
+        video_list: [{ url: "https://example.com/in.mp4", start: 0, ends: 5 }],
+      },
+    },
+    audio: "yes",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "gemini-omni v2v 1080p",
+    payload: {
+      model: "gemini-omni-video",
+      input: {
+        prompt: "x",
+        duration: "8",
+        resolution: "1080p",
+        video_list: [{ url: "https://example.com/in.mp4", start: 0, ends: 5 }],
+      },
+    },
+    audio: "yes",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "gemini-omni v2v 4k",
+    payload: {
+      model: "gemini-omni-video",
+      input: {
+        prompt: "x",
+        duration: "8",
+        resolution: "4k",
+        video_list: [{ url: "https://example.com/in.mp4", start: 0, ends: 5 }],
+      },
+    },
+    audio: "yes",
+  },
 ];
 
 // Models whose zod schema has NO duration field: the output length follows a
@@ -607,11 +874,14 @@ const HINT_DURATION_MODELS = new Set([
   "infinitalk/from-audio",
 ]);
 
-// Models that bill PER VIDEO off a fixed duration enum ("5" | "10"): an 8s
-// request is not one upstream accepts, so patching the column's duration in
-// would produce a payload the schema rejects. Each row keeps the tier its own
-// payload names, which makes its columns flat by design — the same way the veo
-// rows above are flat.
+// Models that bill PER VIDEO off a fixed duration enum ("5" | "10" for Kling,
+// "6" | "10" for Hailuo, "4" | "6" | "8" | "10" as strings for gemini-omni):
+// an 8s numeric request is not one upstream accepts, so patching the column's
+// duration in would produce a payload the schema rejects. Each row keeps the
+// tier its own payload names, which makes its columns flat by design — the
+// same way the veo rows above are flat. The two Hailuo Pro models are here for
+// the neighbouring reason: their schemas declare no duration field at all, and
+// they bill per video, so there is nothing to patch and nothing to scale.
 const FIXED_DURATION_MODELS = new Set([
   "kling-2.6/text-to-video",
   "kling-2.6/image-to-video",
@@ -621,6 +891,13 @@ const FIXED_DURATION_MODELS = new Set([
   "kling/v2-1-pro",
   "kling/v2-1-master-text-to-video",
   "kling/v2-1-master-image-to-video",
+  "hailuo/02-text-to-video-pro",
+  "hailuo/02-image-to-video-pro",
+  "hailuo/02-text-to-video-standard",
+  "hailuo/02-image-to-video-standard",
+  "hailuo/2-3-image-to-video-standard",
+  "hailuo/2-3-image-to-video-pro",
+  "gemini-omni-video",
 ]);
 
 // Patches `duration` into the kie payload at either the top level (veo) or

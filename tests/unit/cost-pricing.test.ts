@@ -355,7 +355,7 @@ describe("PRICING data", () => {
     expect(PRICING.kie["wan/2-7-text-to-video"]).toMatchObject({
       kind: "perUnit",
       unit: "seconds",
-      rates: { "": 0.1 },
+      rates: { "720p": 0.08, "1080p": 0.12 },
     });
   });
 
@@ -563,16 +563,19 @@ describe("PRICING data", () => {
   });
 
   // The variant key is built by joining non-empty selector values, so a v2v
-  // key must not carry the trailing empty resolution segment — "v2v|4|" can
-  // never be produced and would silently price V2V at zero.
-  it("kie gemini-omni-video v2v rate keys have no trailing empty segment", () => {
+  // key must not carry an empty duration segment — "v2v||720p" can never be
+  // produced and would silently price V2V at zero. Since the 2026-08-06 pull
+  // v2v is flat per video by RESOLUTION, so the surviving segment is the
+  // resolution, not the duration it used to carry.
+  it("kie gemini-omni-video v2v rate keys carry only mode and resolution", () => {
     const entry = PRICING.kie["gemini-omni-video"];
     expect(entry.kind).toBe("perUnit");
     if (entry.kind !== "perUnit") return;
 
     const v2vKeys = Object.keys(entry.rates).filter((k) => k.startsWith("v2v"));
-    expect(v2vKeys.sort()).toEqual(["v2v|10", "v2v|4", "v2v|6", "v2v|8"]);
+    expect(v2vKeys.sort()).toEqual(["v2v|1080p", "v2v|4k", "v2v|720p"]);
     for (const key of v2vKeys) {
+      expect(key.includes("||"), key).toBe(false);
       expect(key.endsWith("|"), key).toBe(false);
     }
   });
@@ -673,7 +676,7 @@ const HINT_ONLY_KIE = [
       resolution: "720p",
     } as Record<string, unknown>,
     seconds: 6,
-    perUnitUsd: 0.155,
+    perUnitUsd: 0.14,
   },
   {
     label: "happyhorse/video-edit @1080p",
@@ -683,7 +686,7 @@ const HINT_ONLY_KIE = [
       resolution: "1080p",
     } as Record<string, unknown>,
     seconds: 6,
-    perUnitUsd: 0.265,
+    perUnitUsd: 0.24,
   },
   {
     label: "kling-3.0/motion-control @720p",
@@ -736,7 +739,7 @@ const HINT_ONLY_KIE = [
       resolution: "720p",
     } as Record<string, unknown>,
     seconds: 8,
-    perUnitUsd: 0.155,
+    perUnitUsd: 0.14,
   },
   // 2026-08-06 pull: four more per-second families whose schema carries no
   // duration field. Motion-control follows the source clip; the avatar and
@@ -856,12 +859,12 @@ describe("kie costHints.durationSeconds", () => {
       provider: "kie" as const,
       payload: {
         model: "wan/2-7-text-to-video",
-        input: { prompt: "a sunset", duration: 8 },
+        input: { prompt: "a sunset", duration: 8, resolution: "720p" },
       },
       costHints: { durationSeconds: 3 },
     });
 
-    expect(result.usd).toBeCloseTo(0.8, 10); // 8 * 0.10, not 3 * 0.10
+    expect(result.usd).toBeCloseTo(0.64, 10); // 8 * 0.08, not 3 * 0.08
     expect(result.breakdown.units).toBe(8);
     expect(result.warnings).toEqual([]);
   });
@@ -1002,7 +1005,7 @@ describe("kie costHints.durationSeconds", () => {
       costHints: { durationSeconds: 6 },
     });
 
-    expect(viaWire.usd).toBeCloseTo(0.4725, 10); // the 6s row, not the 4s 0.315
+    expect(viaWire.usd).toBeCloseTo(0.42, 10); // the 6s row, not the 4s 0.315
     expect(viaHint.usd).toBe(viaWire.usd);
     expect(viaHint.breakdown).toEqual(viaWire.breakdown);
     expect(viaHint.warnings).toEqual([]);
@@ -2137,6 +2140,30 @@ describe("kie 2026-08-06 pricing pull provenance", () => {
       "elevenlabs/text-to-speech-multilingual-v2",
       "elevenlabs/text-to-speech-turbo-2-5",
       "elevenlabs/text-to-dialogue-v3",
+      "hailuo/02-text-to-video-pro",
+      "hailuo/02-image-to-video-pro",
+      "hailuo/02-text-to-video-standard",
+      "hailuo/02-image-to-video-standard",
+      "hailuo/2-3-image-to-video-standard",
+      "hailuo/2-3-image-to-video-pro",
+      "happyhorse/text-to-video",
+      "happyhorse/image-to-video",
+      "happyhorse/reference-to-video",
+      "happyhorse/video-edit",
+      "happyhorse-1-1/text-to-video",
+      "happyhorse-1-1/image-to-video",
+      "happyhorse-1-1/reference-to-video",
+      "wan/2-7-text-to-video",
+      "wan/2-7-image-to-video",
+      "wan/2-7-r2v",
+      "wan/2-7-videoedit",
+      "grok-imagine/text-to-video",
+      "grok-imagine/image-to-video",
+      "grok-imagine-video-1-5-preview",
+      "grok-imagine/extend",
+      "grok-imagine/upscale",
+      "gemini-omni-video",
+      "bytedance/seedance-2",
     ]) {
       const entry = PRICING.kie[model];
       expect(entry, model).toBeDefined();
@@ -2146,4 +2173,503 @@ describe("kie 2026-08-06 pricing pull provenance", () => {
       expect(entry.source.asOf, `${model} asOf`).toBe("2026-08-06");
     }
   });
+});
+
+// REQ-002 / REQ-003 (AC-2). Hailuo 02 and 2.3 bill per video: `duration` picks
+// a rate row, it never multiplies one, and only cells kie publishes have a
+// rate at all.
+describe("kie Hailuo 02 / 2.3 per-video pricing (REQ-002/003)", () => {
+  it.each([
+    {
+      label: "02 t2v pro (single published cell)",
+      model: "hailuo/02-text-to-video-pro",
+      input: {},
+      usd: 0.285,
+    },
+    {
+      label: "02 i2v pro (single published cell)",
+      model: "hailuo/02-image-to-video-pro",
+      input: { image_url: "https://example.com/x.jpg" },
+      usd: 0.285,
+    },
+    {
+      label: "02 t2v standard 6s",
+      model: "hailuo/02-text-to-video-standard",
+      input: { duration: "6" },
+      usd: 0.15,
+    },
+    {
+      label: "02 t2v standard 10s",
+      model: "hailuo/02-text-to-video-standard",
+      input: { duration: "10" },
+      usd: 0.25,
+    },
+    {
+      label: "02 i2v standard 6s 512P",
+      model: "hailuo/02-image-to-video-standard",
+      input: {
+        image_url: "https://example.com/x.jpg",
+        duration: "6",
+        resolution: "512P",
+      },
+      usd: 0.06,
+    },
+    {
+      label: "02 i2v standard 10s 512P",
+      model: "hailuo/02-image-to-video-standard",
+      input: {
+        image_url: "https://example.com/x.jpg",
+        duration: "10",
+        resolution: "512P",
+      },
+      usd: 0.1,
+    },
+    {
+      label: "02 i2v standard 6s 768P",
+      model: "hailuo/02-image-to-video-standard",
+      input: {
+        image_url: "https://example.com/x.jpg",
+        duration: "6",
+        resolution: "768P",
+      },
+      usd: 0.15,
+    },
+    {
+      label: "02 i2v standard 10s 768P",
+      model: "hailuo/02-image-to-video-standard",
+      input: {
+        image_url: "https://example.com/x.jpg",
+        duration: "10",
+        resolution: "768P",
+      },
+      usd: 0.25,
+    },
+    {
+      label: "2.3 i2v standard 6s 768P",
+      model: "hailuo/2-3-image-to-video-standard",
+      input: {
+        image_url: "https://example.com/x.jpg",
+        duration: "6",
+        resolution: "768P",
+      },
+      usd: 0.15,
+    },
+    {
+      label: "2.3 i2v standard 10s 768P",
+      model: "hailuo/2-3-image-to-video-standard",
+      input: {
+        image_url: "https://example.com/x.jpg",
+        duration: "10",
+        resolution: "768P",
+      },
+      usd: 0.25,
+    },
+    {
+      label: "2.3 i2v standard 6s 1080P",
+      model: "hailuo/2-3-image-to-video-standard",
+      input: {
+        image_url: "https://example.com/x.jpg",
+        duration: "6",
+        resolution: "1080P",
+      },
+      usd: 0.25,
+    },
+    {
+      label: "2.3 i2v pro 6s 768P",
+      model: "hailuo/2-3-image-to-video-pro",
+      input: {
+        image_url: "https://example.com/x.jpg",
+        duration: "6",
+        resolution: "768P",
+      },
+      usd: 0.225,
+    },
+    {
+      label: "2.3 i2v pro 10s 768P",
+      model: "hailuo/2-3-image-to-video-pro",
+      input: {
+        image_url: "https://example.com/x.jpg",
+        duration: "10",
+        resolution: "768P",
+      },
+      usd: 0.45,
+    },
+    {
+      label: "2.3 i2v pro 6s 1080P",
+      model: "hailuo/2-3-image-to-video-pro",
+      input: {
+        image_url: "https://example.com/x.jpg",
+        duration: "6",
+        resolution: "1080P",
+      },
+      usd: 0.4,
+    },
+  ])("prices hailuo $label at $usd per video", ({ model, input, usd }) => {
+    const result = kieEstimate({ model, input: { prompt: "x", ...input } });
+
+    expect(result.usd).toBeCloseTo(usd, 10);
+    expect(result.source).toBe("per-unit-table");
+    expect(result.breakdown).toEqual({
+      units: 1,
+      unit: "generations",
+      perUnitUsd: usd,
+    });
+    expect(result.warnings).toEqual([]);
+  });
+
+  // Documented schema defaults, applied only where the model publishes one.
+  // Note the 02 image-to-video default duration is "10", not "6".
+  it.each([
+    {
+      model: "hailuo/02-text-to-video-standard",
+      note: 'duration "6"',
+      input: {},
+      usd: 0.15,
+    },
+    {
+      model: "hailuo/02-image-to-video-standard",
+      note: 'duration "10" x resolution "768P"',
+      input: { image_url: "https://example.com/x.jpg" },
+      usd: 0.25,
+    },
+    {
+      model: "hailuo/2-3-image-to-video-pro",
+      note: 'duration "6" x resolution "768P"',
+      input: { image_url: "https://example.com/x.jpg" },
+      usd: 0.225,
+    },
+    {
+      model: "hailuo/2-3-image-to-video-standard",
+      note: 'duration "6" x resolution "768P"',
+      input: { image_url: "https://example.com/x.jpg" },
+      usd: 0.15,
+    },
+  ])(
+    "prices $model off its documented default ($note)",
+    ({ model, input, usd }) => {
+      const result = kieEstimate({ model, input: { prompt: "x", ...input } });
+
+      expect(result.usd).toBeCloseTo(usd, 10);
+      expect(result.warnings).toEqual([]);
+    }
+  );
+
+  // AC-2's other half: kie publishes no 10s row at 1080P (upstream documents
+  // it as unsupported), so the estimate must fail rather than invent a cell.
+  it.each([
+    "hailuo/2-3-image-to-video-pro",
+    "hailuo/2-3-image-to-video-standard",
+  ])("does not price %s at the unpublished 10s/1080P combination", (model) => {
+    const result = kieEstimate({
+      model,
+      input: {
+        prompt: "x",
+        image_url: "https://example.com/x.jpg",
+        duration: "10",
+        resolution: "1080P",
+      },
+    });
+
+    expect(result.usd).toBe(0);
+    expect(result.warnings).toHaveLength(1);
+    expect(result.warnings[0]).toContain("no rate for variant '10|1080P'");
+  });
+
+  // Per-video means per video: a duration hint selects nothing and scales
+  // nothing, the same pin the veo and Kling per-video families carry.
+  it("ignores costHints.durationSeconds for a per-video hailuo cell", () => {
+    const result = kieEstimate(
+      {
+        model: "hailuo/2-3-image-to-video-pro",
+        input: {
+          prompt: "x",
+          image_url: "https://example.com/x.jpg",
+          duration: "6",
+          resolution: "768P",
+        },
+      },
+      { costHints: { durationSeconds: 10 } }
+    );
+
+    expect(result.usd).toBeCloseTo(0.225, 10);
+    expect(result.breakdown.units).toBe(1);
+  });
+});
+
+// REQ-004 (AC-3). Every family the 2026-08-06 pull moved, including the two
+// that changed SHAPE and not just price.
+describe("kie stale-family refresh (REQ-004)", () => {
+  // wan 2.7 went from a flat $0.10/s to resolution tiers. The requirements'
+  // worked example: 5s at 720p is $0.40 where the old table said $0.50.
+  it.each([
+    "wan/2-7-text-to-video",
+    "wan/2-7-image-to-video",
+    "wan/2-7-r2v",
+    "wan/2-7-videoedit",
+  ])("prices %s by resolution instead of one flat rate", (model) => {
+    const at720 = kieEstimate({
+      model,
+      input: { prompt: "x", duration: 5, resolution: "720p" },
+    });
+    const at1080 = kieEstimate({
+      model,
+      input: { prompt: "x", duration: 5, resolution: "1080p" },
+    });
+
+    expect(at720.usd).toBeCloseTo(0.4, 10); // 5 * 0.08, was 5 * 0.10
+    expect(at720.breakdown.perUnitUsd).toBe(0.08);
+    expect(at1080.usd).toBeCloseTo(0.6, 10); // 5 * 0.12
+    expect(at1080.breakdown.perUnitUsd).toBe(0.12);
+  });
+
+  it("prices wan 2.7 off its documented 1080p default", () => {
+    const result = kieEstimate({
+      model: "wan/2-7-text-to-video",
+      input: { prompt: "x", duration: 5 },
+    });
+
+    expect(result.usd).toBeCloseTo(0.6, 10);
+    expect(result.warnings).toEqual([]);
+  });
+
+  // gemini-omni t2v: 720p and 1080p are the same price now, and 4k is its own
+  // column rather than a copy of the 1080p one.
+  it.each([
+    { resolution: "720p", duration: 4, usd: 0.315 },
+    { resolution: "720p", duration: 6, usd: 0.42 },
+    { resolution: "720p", duration: 8, usd: 0.525 },
+    { resolution: "720p", duration: 10, usd: 0.63 },
+    { resolution: "1080p", duration: 4, usd: 0.315 },
+    { resolution: "1080p", duration: 10, usd: 0.63 },
+    { resolution: "4k", duration: 4, usd: 0.735 },
+    { resolution: "4k", duration: 6, usd: 0.84 },
+    { resolution: "4k", duration: 8, usd: 0.945 },
+    { resolution: "4k", duration: 10, usd: 1.05 },
+  ])(
+    "prices gemini-omni t2v $duration s at $resolution as $usd",
+    ({ resolution, duration, usd }) => {
+      const result = kieEstimate({
+        model: "gemini-omni-video",
+        input: { prompt: "x", duration: String(duration), resolution },
+      });
+
+      expect(result.usd).toBeCloseTo(usd, 10);
+      expect(result.breakdown.units).toBe(1);
+    }
+  );
+
+  // gemini-omni v2v: flat per video by resolution. The requirements' worked
+  // example — an 8s 1080p v2v request is $0.84, not the old duration-keyed
+  // $1.68 — plus the pin that duration no longer moves the cell at all.
+  it.each([
+    { resolution: "720p", usd: 0.84 },
+    { resolution: "1080p", usd: 0.84 },
+    { resolution: "4k", usd: 1.26 },
+  ])(
+    "prices gemini-omni v2v at $resolution as a flat $usd per video",
+    ({ resolution, usd }) => {
+      for (const duration of ["4", "6", "8", "10"]) {
+        const result = kieEstimate({
+          model: "gemini-omni-video",
+          input: {
+            prompt: "x",
+            duration,
+            resolution,
+            video_list: [
+              { url: "https://example.com/in.mp4", start: 0, ends: 5 },
+            ],
+          },
+        });
+
+        expect(result.usd, `${resolution} @ ${duration}s`).toBeCloseTo(usd, 10);
+        expect(result.breakdown).toEqual({
+          units: 1,
+          unit: "generations",
+          perUnitUsd: usd,
+        });
+      }
+    }
+  );
+
+  it("prices gemini-omni v2v off the documented 720p default", () => {
+    const result = kieEstimate({
+      model: "gemini-omni-video",
+      input: {
+        prompt: "x",
+        duration: "8",
+        video_list: [{ url: "https://example.com/in.mp4", start: 0, ends: 5 }],
+      },
+    });
+
+    expect(result.usd).toBeCloseTo(0.84, 10);
+    expect(result.warnings).toEqual([]);
+  });
+
+  // seedance-2's new 4K tier. `computeEstimate` does not schema-validate, so
+  // these two cells are reachable here even though the shipped
+  // Seedance2InputSchema.resolution enum cannot express "4K" yet (ac-8cfo6r) —
+  // which is exactly why they are covered by unit tests and not by a
+  // compare-cost lineup row.
+  it.each([
+    { label: "with video input (i2v)", i2v: true, perUnitUsd: 0.64 },
+    { label: "without video input (t2v)", i2v: false, perUnitUsd: 1.04 },
+  ])("prices seedance-2 4K $label", ({ i2v, perUnitUsd }) => {
+    const result = kieEstimate({
+      model: "bytedance/seedance-2",
+      input: {
+        prompt: "xxx",
+        duration: 5,
+        resolution: "4K",
+        ...(i2v ? { first_frame_url: "https://example.com/x.jpg" } : {}),
+      },
+    });
+
+    expect(result.usd).toBeCloseTo(5 * perUnitUsd, 10);
+    expect(result.breakdown).toEqual({
+      units: 5,
+      unit: "seconds",
+      perUnitUsd,
+    });
+  });
+
+  // grok-imagine video: both existing tiers rose and 1080p is new. The 1080p
+  // rate is credits-derived (8 credits/s x $0.005) because the page's
+  // image-to-video USD cell prints a malformed "$0.004".
+  it.each([
+    { model: "grok-imagine/text-to-video", resolution: "480p", rate: 0.012 },
+    { model: "grok-imagine/text-to-video", resolution: "720p", rate: 0.0225 },
+    { model: "grok-imagine/text-to-video", resolution: "1080p", rate: 0.04 },
+    { model: "grok-imagine/image-to-video", resolution: "480p", rate: 0.012 },
+    { model: "grok-imagine/image-to-video", resolution: "720p", rate: 0.0225 },
+    { model: "grok-imagine/image-to-video", resolution: "1080p", rate: 0.04 },
+    {
+      model: "grok-imagine-video-1-5-preview",
+      resolution: "480p",
+      rate: 0.012,
+    },
+    {
+      model: "grok-imagine-video-1-5-preview",
+      resolution: "720p",
+      rate: 0.0225,
+    },
+  ])(
+    "prices $model at $resolution as $rate/s",
+    ({ model, resolution, rate }) => {
+      const result = kieEstimate({
+        model,
+        input: { prompt: "x", duration: 6, resolution },
+      });
+
+      expect(result.breakdown.perUnitUsd).toBe(rate);
+      expect(result.usd).toBeCloseTo(6 * rate, 10);
+    }
+  );
+
+  // The preview model publishes no 1080p row, so its schema's top tier is
+  // where the table stops too.
+  it("does not price grok-imagine-video-1-5-preview at 1080p", () => {
+    const result = kieEstimate({
+      model: "grok-imagine-video-1-5-preview",
+      input: { prompt: "x", duration: 6, resolution: "1080p" },
+    });
+
+    expect(result.usd).toBe(0);
+    expect(result.warnings).toHaveLength(1);
+  });
+
+  it.each([
+    { extendTimes: "6", resolution: "480p", usd: 0.072 },
+    { extendTimes: "6", resolution: "720p", usd: 0.135 },
+    { extendTimes: "10", resolution: "480p", usd: 0.12 },
+    { extendTimes: "10", resolution: "720p", usd: 0.225 },
+  ])(
+    "prices grok-imagine/extend $extendTimes s at $resolution as $usd",
+    ({ extendTimes, resolution, usd }) => {
+      const result = kieEstimate({
+        model: "grok-imagine/extend",
+        resolution,
+        input: {
+          task_id: "abc",
+          prompt: "more",
+          extend_at: 2,
+          extend_times: extendTimes,
+        },
+      });
+
+      expect(result.usd).toBeCloseTo(usd, 10);
+      expect(result.breakdown.perUnitUsd).toBe(usd);
+    }
+  );
+
+  // OQ-2's resolution: the upscale schema carries only `task_id`, so the two
+  // 1080p tiers the page publishes cannot be selected. The price stays at the
+  // 360p->720p tier and every estimate says so out loud.
+  it("keeps grok-imagine/upscale flat and warns about the unreachable tiers", () => {
+    const result = kieEstimate({
+      model: "grok-imagine/upscale",
+      input: { task_id: "abc" },
+    });
+
+    expect(result.usd).toBeCloseTo(0.05, 10);
+    expect(result.warnings).toHaveLength(1);
+    expect(result.warnings[0]).toContain("360p→720p");
+    expect(result.warnings[0]).toContain("720P→1080P ($0.10)");
+    expect(result.warnings[0]).toContain("480P→1080P ($0.15)");
+  });
+
+  it.each([
+    { model: "happyhorse/text-to-video", resolution: "720p", rate: 0.14 },
+    { model: "happyhorse/text-to-video", resolution: "1080p", rate: 0.24 },
+    { model: "happyhorse/image-to-video", resolution: "720p", rate: 0.14 },
+    { model: "happyhorse/image-to-video", resolution: "1080p", rate: 0.24 },
+    { model: "happyhorse/reference-to-video", resolution: "720p", rate: 0.14 },
+    {
+      model: "happyhorse/reference-to-video",
+      resolution: "1080p",
+      rate: 0.24,
+    },
+    { model: "happyhorse/video-edit", resolution: "720p", rate: 0.14 },
+    { model: "happyhorse/video-edit", resolution: "1080p", rate: 0.24 },
+    {
+      model: "happyhorse-1-1/text-to-video",
+      resolution: "720p",
+      rate: 0.1125,
+    },
+    {
+      model: "happyhorse-1-1/text-to-video",
+      resolution: "1080p",
+      rate: 0.145,
+    },
+    {
+      model: "happyhorse-1-1/image-to-video",
+      resolution: "720p",
+      rate: 0.1125,
+    },
+    {
+      model: "happyhorse-1-1/image-to-video",
+      resolution: "1080p",
+      rate: 0.145,
+    },
+    {
+      model: "happyhorse-1-1/reference-to-video",
+      resolution: "720p",
+      rate: 0.1125,
+    },
+    {
+      model: "happyhorse-1-1/reference-to-video",
+      resolution: "1080p",
+      rate: 0.145,
+    },
+  ])(
+    "prices $model at $resolution as $rate/s",
+    ({ model, resolution, rate }) => {
+      const result = kieEstimate({
+        model,
+        input: { prompt: "x", duration: 5, resolution },
+      });
+
+      expect(result.breakdown.perUnitUsd).toBe(rate);
+      expect(result.usd).toBeCloseTo(5 * rate, 10);
+    }
+  );
 });

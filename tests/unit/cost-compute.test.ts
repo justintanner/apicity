@@ -572,7 +572,7 @@ describe("computeEstimate", () => {
       const asText = forDuration("8");
       const asNum = forDuration(8);
 
-      expect(asText.usd).toBe(0.63); // 8s @ 720p, not the 4s rate of 0.315
+      expect(asText.usd).toBe(0.525); // 8s @ 720p, not the 4s rate of 0.315
       expect(asText.usd).toBe(asNum.usd);
       expect(asText.breakdown).toEqual(asNum.breakdown);
       expect(asText.warnings).toEqual([]);
@@ -580,9 +580,9 @@ describe("computeEstimate", () => {
 
     it.each([
       ["4", 0.315],
-      ["6", 0.4725],
-      ["8", 0.63],
-      ["10", 0.7875],
+      ["6", 0.42],
+      ["8", 0.525],
+      ["10", 0.63],
     ])(
       "prices gemini-omni-video t2v at %s seconds / 720p",
       (duration, expected) => {
@@ -598,17 +598,17 @@ describe("computeEstimate", () => {
       }
     );
 
-    // Regression: v2v rate keys used to carry a trailing empty segment
-    // ("v2v|4|") that evaluatePerUnit's key join drops, so every
-    // video-to-video request missed the table and silently priced at zero.
-    it.each([
-      ["4", 0.84],
-      ["6", 1.26],
-      ["8", 1.68],
-      ["10", 2.1],
-    ])(
-      "prices gemini-omni-video v2v at every accepted duration (%s seconds)",
-      (duration, expected) => {
+    // Regression: v2v rate keys must never carry an empty segment
+    // ("v2v|4|", and after the 2026-08-06 restructure "v2v||720p"), because
+    // evaluatePerUnit's key join drops it — every video-to-video request then
+    // missed the table and silently priced at zero.
+    //
+    // v2v is flat per video by resolution now: upstream ignores `duration`
+    // once a clip is supplied, so every accepted duration prices the same
+    // 720p-default cell.
+    it.each(["4", "6", "8", "10"])(
+      "prices gemini-omni-video v2v flat at every accepted duration (%s seconds)",
+      (duration) => {
         const result = computeEstimate({
           provider: "kie" as const,
           payload: {
@@ -622,7 +622,7 @@ describe("computeEstimate", () => {
             },
           },
         });
-        expect(result.usd).toBeCloseTo(expected, 10);
+        expect(result.usd).toBeCloseTo(0.84, 10);
         expect(result.usd).toBeGreaterThan(0);
         expect(result.warnings).toEqual([]);
       }

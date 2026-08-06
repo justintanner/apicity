@@ -307,6 +307,37 @@ export interface SunoVoiceValidateResponse {
 }
 
 /**
+ * Regenerate the validation phrase for an existing Suno custom-voice task.
+ *
+ * Docs: https://docs.kie.ai/suno-api/suno-voice-regenerate
+ * Required: taskId, calBackUrl.
+ * Task-creating: returns a taskId polled via GET /api/v1/voice/validate-info.
+ *
+ * `calBackUrl` is upstream-documented with ONE l (not the repo-wide
+ * `callBackUrl`). Ship the documented spelling verbatim — intentional,
+ * operator-approved (ac-7eu6oi / ac-19wcfq). Do not "fix" to callBackUrl.
+ * Live HAR (kie/suno/voice-regenerate-bogus-task) confirmed the server
+ * accepts this one-l field name (422 business envelope for a bogus taskId).
+ */
+export interface SunoVoiceRegenerateRequest {
+  taskId: string;
+  /** Upstream spelling (one l). Not `callBackUrl`. See ac-7eu6oi. */
+  calBackUrl: string;
+}
+
+export interface SunoVoiceRegenerateData {
+  taskId: string;
+  [key: string]: unknown;
+}
+
+export interface SunoVoiceRegenerateResponse {
+  code: number;
+  msg?: string;
+  data?: SunoVoiceRegenerateData | null;
+  [key: string]: unknown;
+}
+
+/**
  * Check whether a generated Suno custom voice is available.
  *
  * Upstream documents the body field as snake_case `task_id` (not the repo-wide
@@ -801,6 +832,15 @@ interface SunoVoiceValidateMethod {
   responseSchema: ApicitySchema<SunoVoiceValidateResponse>;
 }
 
+interface SunoVoiceRegenerateMethod {
+  (
+    req: SunoVoiceRegenerateRequest,
+    approval?: import("./paygate").PayGateApproval
+  ): Promise<SunoVoiceRegenerateResponse>;
+  schema: ApicitySchema<SunoVoiceRegenerateRequest>;
+  responseSchema: ApicitySchema<SunoVoiceRegenerateResponse>;
+}
+
 interface SunoVoiceCheckVoiceMethod {
   (req: SunoVoiceCheckVoiceRequest): Promise<SunoVoiceCheckVoiceResponse>;
   schema: ApicitySchema<SunoVoiceCheckVoiceRequest>;
@@ -937,6 +977,7 @@ interface SunoVoiceGetNamespace {
 interface SunoVoicePostNamespace {
   generate: SunoVoiceGenerateMethod;
   validate: SunoVoiceValidateMethod;
+  regenerate: SunoVoiceRegenerateMethod;
   checkVoice: SunoVoiceCheckVoiceMethod;
 }
 
@@ -1256,6 +1297,29 @@ const SunoVoiceValidateResponseSchema = z
     code: z.number().int(),
     msg: z.string().optional(),
     data: SunoVoiceValidateDataSchema.nullable().optional(),
+  })
+  .passthrough();
+
+// `calBackUrl` is upstream-documented with ONE l (not callBackUrl).
+// Intentional — see SunoVoiceRegenerateRequest and operator ruling ac-7eu6oi.
+const SunoVoiceRegenerateRequestSchema = z
+  .object({
+    taskId: z.string().min(1),
+    calBackUrl: z.string().min(1),
+  })
+  .passthrough();
+
+const SunoVoiceRegenerateDataSchema = z
+  .object({
+    taskId: z.string(),
+  })
+  .passthrough();
+
+const SunoVoiceRegenerateResponseSchema = z
+  .object({
+    code: z.number().int(),
+    msg: z.string().optional(),
+    data: SunoVoiceRegenerateDataSchema.nullable().optional(),
   })
   .passthrough();
 
@@ -1825,6 +1889,18 @@ export function createSunoProvider(
     });
   }
 
+  // POST https://api.kie.ai/api/v1/voice/regenerate
+  // Docs: https://docs.kie.ai/suno-api/suno-voice-regenerate
+  async function voiceRegenerate(
+    req: SunoVoiceRegenerateRequest
+  ): Promise<SunoVoiceRegenerateResponse> {
+    return kieRequest<SunoVoiceRegenerateResponse>(transport, {
+      method: "POST",
+      path: "/api/v1/voice/regenerate",
+      body: req,
+    });
+  }
+
   // POST https://api.kie.ai/api/v1/voice/check-voice
   // Docs: https://docs.kie.ai/suno-api/suno-voice-check-voice
   async function voiceCheckVoice(
@@ -2109,6 +2185,12 @@ export function createSunoProvider(
             validate: Object.assign(voiceValidate, {
               schema: SunoVoiceValidateRequestSchema,
               responseSchema: SunoVoiceValidateResponseSchema,
+            }),
+            // POST https://api.kie.ai/api/v1/voice/regenerate
+            // Docs: https://docs.kie.ai/suno-api/suno-voice-regenerate
+            regenerate: Object.assign(voiceRegenerate, {
+              schema: SunoVoiceRegenerateRequestSchema,
+              responseSchema: SunoVoiceRegenerateResponseSchema,
             }),
             checkVoice: Object.assign(voiceCheckVoice, {
               schema: SunoVoiceCheckVoiceRequestSchema,

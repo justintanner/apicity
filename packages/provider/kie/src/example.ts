@@ -522,6 +522,15 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v1.voice.regenerate": {
+    "source": "kie/suno/voice-regenerate-bogus-task",
+    "payload": {
+      "taskId": "apicity-test-bogus-task-id",
+      "calBackUrl": "https://example.com/cb"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v1.voice.validate": {
     "source": "kie/suno/voice-validate-bogus-url",
     "payload": {

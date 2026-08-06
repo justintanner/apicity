@@ -555,7 +555,7 @@ defaults to `false`.
 
 ## API Reference
 
-56 endpoints across 29 groups. Each method mirrors an upstream URL path.
+57 endpoints across 29 groups. Each method mirrors an upstream URL path.
 
 ### aleph
 
@@ -1490,6 +1490,23 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await kie.suno.post.api.v1.voice.generate({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>kie.suno.post.api.v1.voice.regenerate</code></b></summary>
+
+<code>POST https://api.kie.ai/api/v1/voice/regenerate</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/suno-api/suno-voice-regenerate)
+
+```typescript
+const res = await kie.suno.post.api.v1.voice.regenerate({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)

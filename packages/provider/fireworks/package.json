@@ -1,6 +1,6 @@
 {
   "name": "@apicity/fireworks",
-  "version": "0.8.5",
+  "version": "0.8.6",
   "description": "Fireworks AI provider for chat completions, completions, and embeddings.",
   "license": "MIT",
   "repository": {

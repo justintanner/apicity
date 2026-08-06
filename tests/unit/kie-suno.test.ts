@@ -1020,6 +1020,39 @@ describe("KIE Suno provider", () => {
       expect(result.data?.midiData?.instruments?.[0].notes[0].pitch).toBe(73);
     });
 
+    // Typed reads, not just a passthrough parse: the response schema is
+    // `.passthrough()`, so a positive safeParse stays green even if a
+    // documented field is dropped from the schema. Reading each field off the
+    // typed result makes `tsc -p tests/tsconfig.json` fail on that regression,
+    // including for the optional/nullable members a negative parse cannot
+    // reach.
+    it("types every documented field on the response", async () => {
+      const { provider } = createProvider(POPULATED);
+      const result: SunoMidiRecordInfoResponse =
+        await provider.get.api.v1.midi.recordInfo("task-1");
+      const data = result.data;
+      const instrument = data?.midiData?.instruments?.[0];
+      const note = instrument?.notes[0];
+
+      expect(result.code).toBe(200);
+      expect(result.msg).toBe("success");
+      expect(data?.taskId).toBe("5c79****be8e");
+      expect(data?.recordTaskId).toBe(-1);
+      expect(data?.audioId).toBe("e231****-****-****-****-****8cadc7dc");
+      expect(data?.callbackUrl).toBe("https://example.callback");
+      expect(data?.createTime).toBe(1760335251000);
+      expect(data?.completeTime).toBe(1760335255000);
+      expect(data?.successFlag).toBe(1);
+      expect(data?.errorCode).toBeNull();
+      expect(data?.errorMessage).toBeNull();
+      expect(data?.midiData?.state).toBe("complete");
+      expect(instrument?.name).toBe("Drums");
+      expect(note?.pitch).toBe(73);
+      expect(note?.start).toBe(0.036458333333333336);
+      expect(note?.end).toBe(0.18229166666666666);
+      expect(note?.velocity).toBe(1);
+    });
+
     it("accepts the documented populated response", () => {
       const { provider } = createProvider();
       const result =

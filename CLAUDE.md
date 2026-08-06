@@ -251,12 +251,16 @@ preview the Telegram message → run the gates → open the PR → close the bea
 Two invariants worth knowing:
 
 - **URL comment (lint-enforced)** — a 2-line comment immediately above each
-  endpoint property in the factory, plus a matching
-  `(provider, dotPath, method, fullUrl, docsUrl)` row in
-  `scripts/endpoint-docs.tsv`. Checked by `pnpm run lint:endpoints`; the docs
-  hostname must be on the provider's allow-list in
-  `scripts/check-endpoint-comments.mjs`. For overloaded endpoints, comment the
-  default path.
+  endpoint property in the factory
+  (`// {METHOD} {full upstream URL}` then `// Docs: {docs URL}`). Checked by
+  `pnpm run lint:endpoints` (`scripts/check-endpoint-comments.mjs`); the docs
+  hostname must be on the provider's allow-list. For overloaded endpoints,
+  comment the default path.
+- **endpoint-docs.tsv row (docs inventory, not lint-enforced)** — also add a
+  matching `(provider, dotPath, method, fullUrl, docsUrl)` row in
+  `scripts/endpoint-docs.tsv` (written/refreshed by `pnpm run endpoint-map`).
+  Missing rows do not fail lint or CI; they degrade the generated README API
+  Reference. Keep the tsv in sync when adding endpoints.
 
   ```typescript
   // POST https://api.openai.com/v1/chat/completions

@@ -122,7 +122,8 @@ Telegram message → run the gates → open the PR (one endpoint per PR).
 
 Two invariants worth knowing:
 
-- **URL comment (lint-enforced)** — a 2-line comment immediately above each endpoint property in the factory (`// {METHOD} {full upstream URL}` then `// Docs: {docs URL}`), plus a matching `(provider, dotPath, method, fullUrl, docsUrl)` row in `scripts/endpoint-docs.tsv`. Checked by `pnpm run lint:endpoints`; the docs hostname must be on the provider's allow-list in `scripts/check-endpoint-comments.mjs`. For overloaded endpoints, comment the default path.
+- **URL comment (lint-enforced)** — a 2-line comment immediately above each endpoint property in the factory (`// {METHOD} {full upstream URL}` then `// Docs: {docs URL}`). Checked by `pnpm run lint:endpoints`; the docs hostname must be on the provider's allow-list in `scripts/check-endpoint-comments.mjs`. For overloaded endpoints, comment the default path.
+- **endpoint-docs.tsv row (docs inventory, not lint-enforced)** — also add a matching `(provider, dotPath, method, fullUrl, docsUrl)` row in `scripts/endpoint-docs.tsv` (via `pnpm run endpoint-map`). Missing rows do not fail lint/CI; they degrade the generated README API Reference.
 - **One endpoint per PR.**
 
 ## Integration Test Recording

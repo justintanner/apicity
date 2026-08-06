@@ -737,8 +737,8 @@ kie	api.v1.veo.get4kVideo	POST	prohibitive	Media-generation provider (video/imag
 kie	api.v1.veo.recordInfo	GET	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
 kie	api.v1.vocalRemoval.generate	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
 kie	api.v1.vocalRemoval.recordInfo	GET	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
-kie	api.v1.voice.generate	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
 kie	api.v1.voice.checkVoice	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	api.v1.voice.generate	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
 kie	api.v1.voice.recordInfo	GET	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
 kie	api.v1.voice.validate	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
 kie	api.v1.voice.validateInfo	GET	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
@@ -748,12 +748,12 @@ kie	claude.v1.messages	POST	prohibitive	Media-generation provider (video/image/a
 kie	codex.v1.responses	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
 kie	gemini.v1.models.gemini35Flash.streamGenerateContent	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
 kie	gemini.v1.models.gemini36Flash.streamGenerateContent	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
-kie	gemini31Pro.v1.chat.completions	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
 kie	gemini25Flash.v1.chat.completions	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
-kie	gemini3Flash.v1.chat.completions	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
-kie	gemini35FlashOpenai.v1.chat.completions	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
-kie	gemini3Pro.v1.chat.completions	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
 kie	gemini25Pro.v1.chat.completions	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	gemini31Pro.v1.chat.completions	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	gemini35FlashOpenai.v1.chat.completions	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	gemini3Flash.v1.chat.completions	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	gemini3Pro.v1.chat.completions	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
 kie	grok.v1.responses	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
 kimicoding	coding.v1.chat.completions	POST	expensive	Metered LLM provider; per-call token cost bills real money
 kimicoding	coding.v1.countTokens	POST	expensive	Metered LLM provider; per-call token cost bills real money

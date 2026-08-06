@@ -555,7 +555,7 @@ defaults to `false`.
 
 ## API Reference
 
-65 endpoints across 33 groups. Each method mirrors an upstream URL path.
+54 endpoints across 29 groups. Each method mirrors an upstream URL path.
 
 ### aleph
 
@@ -633,82 +633,6 @@ Source: [`packages/provider/kie/src/responses.ts`](src/responses.ts)
 
 </details>
 
-### common
-
-<details>
-<summary><code>POST</code> <b><code>kie.post.api.v1.common.downloadUrl</code></b></summary>
-
-<code>POST https://api.kie.ai/api/v1/common/download-url</code>
-
-Cost tier: <code>prohibitive</code>
-
-[Upstream docs ↗](https://docs.kie.ai/common-api/download-url)
-
-```typescript
-const res = await kie.post.api.v1.common.downloadUrl({ /* ... */ });
-```
-
-Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
-
-</details>
-
-### fileBase64Upload
-
-<details>
-<summary><code>POST</code> <b><code>kie.post.api.fileBase64Upload</code></b></summary>
-
-<code>POST https://kieai.redpandaai.co/api/file-base64-upload</code>
-
-Cost tier: <code>prohibitive</code>
-
-[Upstream docs ↗](https://docs.kie.ai/file-upload-api/upload-file-base-64)
-
-```typescript
-const res = await kie.post.api.fileBase64Upload({ /* ... */ });
-```
-
-Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
-
-</details>
-
-### fileStreamUpload
-
-<details>
-<summary><code>POST</code> <b><code>kie.post.api.fileStreamUpload</code></b></summary>
-
-<code>POST https://kieai.redpandaai.co/api/file-stream-upload</code>
-
-Cost tier: <code>prohibitive</code>
-
-[Upstream docs ↗](https://docs.kie.ai/file-upload-api/upload-file-stream)
-
-```typescript
-const res = await kie.post.api.fileStreamUpload({ /* ... */ });
-```
-
-Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
-
-</details>
-
-### fileUrlUpload
-
-<details>
-<summary><code>POST</code> <b><code>kie.post.api.fileUrlUpload</code></b></summary>
-
-<code>POST https://kieai.redpandaai.co/api/file-url-upload</code>
-
-Cost tier: <code>prohibitive</code>
-
-[Upstream docs ↗](https://docs.kie.ai/file-upload-api/upload-file-url)
-
-```typescript
-const res = await kie.post.api.fileUrlUpload({ /* ... */ });
-```
-
-Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
-
-</details>
-
 ### flux
 
 <details>
@@ -722,23 +646,6 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await kie.get.api.v1.flux.kontext.recordInfo({ /* ... */ });
-```
-
-Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
-
-</details>
-
-<details>
-<summary><code>POST</code> <b><code>kie.post.api.v1.flux.kontext.generate</code></b></summary>
-
-<code>POST https://api.kie.ai/api/v1/flux/kontext/generate</code>
-
-Cost tier: <code>prohibitive</code>
-
-[Upstream docs ↗](https://docs.kie.ai/flux-kontext-api/generate-or-edit-image)
-
-```typescript
-const res = await kie.post.api.v1.flux.kontext.generate({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
@@ -775,6 +682,23 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await kie.gemini.post.v1.models.gemini36Flash.streamGenerateContent({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/gemini.ts`](src/gemini.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>kie.gemini.post.v1.models.gemini3FlashV1betamodels.streamGenerateContent</code></b></summary>
+
+<code>POST https://api.kie.ai/gemini/v1/models/gemini-3-flash-v1betamodels:streamGenerateContent</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/market/gemini/gemini-3-flash-v1beta)
+
+```typescript
+const res = await kie.gemini.post.v1.models.gemini3FlashV1betamodels.streamGenerateContent({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/gemini.ts`](src/gemini.ts)
@@ -1114,40 +1038,6 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 
 </details>
 
-<details>
-<summary><code>POST</code> <b><code>kie.post.api.v1.gpt4oImage.downloadUrl</code></b></summary>
-
-<code>POST https://api.kie.ai/api/v1/gpt4o-image/download-url</code>
-
-Cost tier: <code>prohibitive</code>
-
-[Upstream docs ↗](https://docs.kie.ai/4o-image-api/get-4-o-image-download-url)
-
-```typescript
-const res = await kie.post.api.v1.gpt4oImage.downloadUrl({ /* ... */ });
-```
-
-Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
-
-</details>
-
-<details>
-<summary><code>POST</code> <b><code>kie.post.api.v1.gpt4oImage.generate</code></b></summary>
-
-<code>POST https://api.kie.ai/api/v1/gpt4o-image/generate</code>
-
-Cost tier: <code>prohibitive</code>
-
-[Upstream docs ↗](https://docs.kie.ai/4o-image-api/generate-4-o-image)
-
-```typescript
-const res = await kie.post.api.v1.gpt4oImage.generate({ /* ... */ });
-```
-
-Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
-
-</details>
-
 ### grok
 
 <details>
@@ -1180,23 +1070,6 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await kie.get.api.v1.jobs.recordInfo({ /* ... */ });
-```
-
-Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
-
-</details>
-
-<details>
-<summary><code>POST</code> <b><code>kie.post.api.v1.jobs.createTask</code></b></summary>
-
-<code>POST https://api.kie.ai/api/v1/jobs/createTask</code>
-
-Cost tier: <code>prohibitive</code>
-
-[Upstream docs ↗](https://docs.kie.ai/market/quickstart)
-
-```typescript
-const res = await kie.post.api.v1.jobs.createTask({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
@@ -1290,23 +1163,6 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 
 </details>
 
-<details>
-<summary><code>POST</code> <b><code>kie.post.api.v1.mj.generate</code></b></summary>
-
-<code>POST https://api.kie.ai/api/v1/mj/generate</code>
-
-Cost tier: <code>prohibitive</code>
-
-[Upstream docs ↗](https://docs.kie.ai/mj-api/generate-mj-image)
-
-```typescript
-const res = await kie.post.api.v1.mj.generate({ /* ... */ });
-```
-
-Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
-
-</details>
-
 ### mp4
 
 <details>
@@ -1341,39 +1197,22 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 
 </details>
 
-### omni
+### responses
 
 <details>
-<summary><code>POST</code> <b><code>kie.post.api.v1.omni.audio.create</code></b></summary>
+<summary><code>POST</code> <b><code>kie.api.v1.responses</code></b></summary>
 
-<code>POST https://api.kie.ai/api/v1/omni/audio/create</code>
+<code>POST https://api.kie.ai/api/v1/responses</code>
 
 Cost tier: <code>prohibitive</code>
 
-[Upstream docs ↗](https://docs.kie.ai/market/gemini-omni-audio)
+[Upstream docs ↗](https://docs.kie.ai/market/codex/gpt-codex)
 
 ```typescript
-const res = await kie.post.api.v1.omni.audio.create({ /* ... */ });
+const res = await kie.api.v1.responses({ /* ... */ });
 ```
 
-Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
-
-</details>
-
-<details>
-<summary><code>POST</code> <b><code>kie.post.api.v1.omni.character.create</code></b></summary>
-
-<code>POST https://api.kie.ai/api/v1/omni/character/create</code>
-
-Cost tier: <code>prohibitive</code>
-
-[Upstream docs ↗](https://docs.kie.ai/market/gemini-omni-character)
-
-```typescript
-const res = await kie.post.api.v1.omni.character.create({ /* ... */ });
-```
-
-Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
+Source: [`packages/provider/kie/src/responses.ts`](src/responses.ts)
 
 </details>
 
@@ -1390,40 +1229,6 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await kie.get.api.v1.runway.recordDetail({ /* ... */ });
-```
-
-Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
-
-</details>
-
-<details>
-<summary><code>POST</code> <b><code>kie.post.api.v1.runway.extend</code></b></summary>
-
-<code>POST https://api.kie.ai/api/v1/runway/extend</code>
-
-Cost tier: <code>prohibitive</code>
-
-[Upstream docs ↗](https://docs.kie.ai/runway-api/extend-ai-video)
-
-```typescript
-const res = await kie.post.api.v1.runway.extend({ /* ... */ });
-```
-
-Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
-
-</details>
-
-<details>
-<summary><code>POST</code> <b><code>kie.post.api.v1.runway.generate</code></b></summary>
-
-<code>POST https://api.kie.ai/api/v1/runway/generate</code>
-
-Cost tier: <code>prohibitive</code>
-
-[Upstream docs ↗](https://docs.kie.ai/runway-api/generate-ai-video)
-
-```typescript
-const res = await kie.post.api.v1.runway.generate({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)

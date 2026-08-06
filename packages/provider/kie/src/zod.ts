@@ -298,6 +298,14 @@ export const KIE_MEDIA_MODELS = [
   "ideogram/v3-edit",
   "ideogram/v3-remix",
   "ideogram/v3-text-to-image",
+  // Hailuo video models — enum-only vendor (task + tier segments are not a
+  // version grammar). Six documented market models; no alias hatch.
+  "hailuo/02-image-to-video-pro",
+  "hailuo/02-image-to-video-standard",
+  "hailuo/02-text-to-video-pro",
+  "hailuo/02-text-to-video-standard",
+  "hailuo/2-3-image-to-video-pro",
+  "hailuo/2-3-image-to-video-standard",
 ] as const;
 
 export const KieMediaModelSchema = z
@@ -3837,6 +3845,123 @@ export const Flux2FlexImageToImageRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// Hailuo market createTask models (02 + 2-3, text/image to video)
+// Docs: https://docs.kie.ai/market/hailuo/02-text-to-video-pro and siblings
+// ---------------------------------------------------------------------------
+
+// Duration is a numeric string enum on all Hailuo models that expose it.
+// OpenAPI declares string "6" | "10"; keep exact strings (reject numbers).
+export const HailuoDurationSchema = z.enum(["6", "10"]);
+
+// 02-image-to-video-standard only (pro has no resolution field).
+export const Hailuo02StandardResolutionSchema = z.enum(["512P", "768P"]);
+
+// 2-3 image-to-video pro + standard.
+export const Hailuo23ResolutionSchema = z.enum(["768P", "1080P"]);
+
+// Shared: 10s is unsupported at 1080P (documented for 2-3 variants).
+function refineHailuoNoTenSecondsAt1080P(
+  input: { duration?: "6" | "10"; resolution?: "768P" | "1080P" },
+  ctx: z.RefinementCtx
+): void {
+  if (input.duration === "10" && input.resolution === "1080P") {
+    ctx.addIssue({
+      code: "custom",
+      message:
+        "hailuo 2-3 image-to-video does not support 10 second videos at 1080P",
+      path: ["duration"],
+    });
+  }
+}
+
+// Docs: https://docs.kie.ai/market/hailuo/02-text-to-video-pro
+// Required: prompt (max 1500). Optional: prompt_optimizer, nsfw_checker.
+export const Hailuo02TextToVideoProRequestSchema = z.object({
+  model: z.literal("hailuo/02-text-to-video-pro"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().min(1).max(1500),
+    prompt_optimizer: z.boolean().optional(),
+    nsfw_checker: z.boolean().default(false),
+  }),
+});
+
+// Docs: https://docs.kie.ai/market/hailuo/02-text-to-video-standard
+// Required: prompt. Optional: duration (default "6"), prompt_optimizer,
+// nsfw_checker. Do not inject duration default so createTask preserves omit.
+export const Hailuo02TextToVideoStandardRequestSchema = z.object({
+  model: z.literal("hailuo/02-text-to-video-standard"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().min(1).max(1500),
+    duration: HailuoDurationSchema.optional(),
+    prompt_optimizer: z.boolean().optional(),
+    nsfw_checker: z.boolean().default(false),
+  }),
+});
+
+// Docs: https://docs.kie.ai/market/hailuo/02-image-to-video-pro
+// Required: prompt, image_url. Optional: end_image_url, prompt_optimizer,
+// nsfw_checker. No duration/resolution fields on pro.
+export const Hailuo02ImageToVideoProRequestSchema = z.object({
+  model: z.literal("hailuo/02-image-to-video-pro"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().min(1).max(1500),
+    // File URL after upload (jpeg/png/webp, max 10 MB) — not file content.
+    image_url: z.string().min(1),
+    end_image_url: z.string().min(1).optional(),
+    prompt_optimizer: z.boolean().optional(),
+    nsfw_checker: z.boolean().default(false),
+  }),
+});
+
+// Docs: https://docs.kie.ai/market/hailuo/02-image-to-video-standard
+// Required: prompt, image_url. Optional: end_image_url, duration (default
+// "10"), resolution (512P|768P, default 768P), prompt_optimizer, nsfw_checker.
+export const Hailuo02ImageToVideoStandardRequestSchema = z.object({
+  model: z.literal("hailuo/02-image-to-video-standard"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().min(1).max(1500),
+    image_url: z.string().min(1),
+    end_image_url: z.string().min(1).optional(),
+    duration: HailuoDurationSchema.optional(),
+    resolution: Hailuo02StandardResolutionSchema.optional(),
+    prompt_optimizer: z.boolean().optional(),
+    nsfw_checker: z.boolean().default(false),
+  }),
+});
+
+// Shared input for hailuo/2-3-image-to-video-{pro,standard}.
+// Required: prompt (max 5000), image_url. Optional: duration (default "6"),
+// resolution (768P|1080P, default 768P), nsfw_checker. No end_image_url or
+// prompt_optimizer on 2-3.
+const Hailuo23ImageToVideoInputSchema = z
+  .object({
+    prompt: z.string().min(1).max(5000),
+    image_url: z.string().min(1),
+    duration: HailuoDurationSchema.optional(),
+    resolution: Hailuo23ResolutionSchema.optional(),
+    nsfw_checker: z.boolean().default(false),
+  })
+  .superRefine(refineHailuoNoTenSecondsAt1080P);
+
+// Docs: https://docs.kie.ai/market/hailuo/2-3-image-to-video-pro
+export const Hailuo23ImageToVideoProRequestSchema = z.object({
+  model: z.literal("hailuo/2-3-image-to-video-pro"),
+  callBackUrl: z.string().optional(),
+  input: Hailuo23ImageToVideoInputSchema,
+});
+
+// Docs: https://docs.kie.ai/market/hailuo/2-3-image-to-video-standard
+export const Hailuo23ImageToVideoStandardRequestSchema = z.object({
+  model: z.literal("hailuo/2-3-image-to-video-standard"),
+  callBackUrl: z.string().optional(),
+  input: Hailuo23ImageToVideoInputSchema,
+});
+
+// ---------------------------------------------------------------------------
 // Wan 2.7 task result schemas (parsed from KieTaskInfoData.resultJson)
 //
 // kie wraps async task results in a JSON envelope on `resultJson`. Both image
@@ -5031,6 +5156,12 @@ export const MediaGenerationRequestSchema = z.union([
   Flux2FlexTextToImageRequestSchema,
   Flux2ProImageToImageRequestSchema,
   Flux2FlexImageToImageRequestSchema,
+  Hailuo02TextToVideoProRequestSchema,
+  Hailuo02TextToVideoStandardRequestSchema,
+  Hailuo02ImageToVideoProRequestSchema,
+  Hailuo02ImageToVideoStandardRequestSchema,
+  Hailuo23ImageToVideoProRequestSchema,
+  Hailuo23ImageToVideoStandardRequestSchema,
   IdeogramV3TextToImageRequestSchema,
   IdeogramV3EditRequestSchema,
   IdeogramV3RemixRequestSchema,
@@ -5836,6 +5967,58 @@ export type IdeogramCharacterRemixRequest = z.input<
 export type IdeogramCharacterRemixRequestInput = IdeogramCharacterRemixRequest;
 export type IdeogramCharacterRemixParsedRequest = z.output<
   typeof IdeogramCharacterRemixRequestSchema
+>;
+export type HailuoDuration = z.infer<typeof HailuoDurationSchema>;
+export type Hailuo02StandardResolution = z.infer<
+  typeof Hailuo02StandardResolutionSchema
+>;
+export type Hailuo23Resolution = z.infer<typeof Hailuo23ResolutionSchema>;
+export type Hailuo02TextToVideoProRequest = z.input<
+  typeof Hailuo02TextToVideoProRequestSchema
+>;
+export type Hailuo02TextToVideoProRequestInput = Hailuo02TextToVideoProRequest;
+export type Hailuo02TextToVideoProParsedRequest = z.output<
+  typeof Hailuo02TextToVideoProRequestSchema
+>;
+export type Hailuo02TextToVideoStandardRequest = z.input<
+  typeof Hailuo02TextToVideoStandardRequestSchema
+>;
+export type Hailuo02TextToVideoStandardRequestInput =
+  Hailuo02TextToVideoStandardRequest;
+export type Hailuo02TextToVideoStandardParsedRequest = z.output<
+  typeof Hailuo02TextToVideoStandardRequestSchema
+>;
+export type Hailuo02ImageToVideoProRequest = z.input<
+  typeof Hailuo02ImageToVideoProRequestSchema
+>;
+export type Hailuo02ImageToVideoProRequestInput =
+  Hailuo02ImageToVideoProRequest;
+export type Hailuo02ImageToVideoProParsedRequest = z.output<
+  typeof Hailuo02ImageToVideoProRequestSchema
+>;
+export type Hailuo02ImageToVideoStandardRequest = z.input<
+  typeof Hailuo02ImageToVideoStandardRequestSchema
+>;
+export type Hailuo02ImageToVideoStandardRequestInput =
+  Hailuo02ImageToVideoStandardRequest;
+export type Hailuo02ImageToVideoStandardParsedRequest = z.output<
+  typeof Hailuo02ImageToVideoStandardRequestSchema
+>;
+export type Hailuo23ImageToVideoProRequest = z.input<
+  typeof Hailuo23ImageToVideoProRequestSchema
+>;
+export type Hailuo23ImageToVideoProRequestInput =
+  Hailuo23ImageToVideoProRequest;
+export type Hailuo23ImageToVideoProParsedRequest = z.output<
+  typeof Hailuo23ImageToVideoProRequestSchema
+>;
+export type Hailuo23ImageToVideoStandardRequest = z.input<
+  typeof Hailuo23ImageToVideoStandardRequestSchema
+>;
+export type Hailuo23ImageToVideoStandardRequestInput =
+  Hailuo23ImageToVideoStandardRequest;
+export type Hailuo23ImageToVideoStandardParsedRequest = z.output<
+  typeof Hailuo23ImageToVideoStandardRequestSchema
 >;
 export type Wan27ImageToVideoRequest = z.input<
   typeof Wan27ImageToVideoRequestSchema

@@ -4225,4 +4225,220 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
     },
   },
+
+  // https://docs.kie.ai/market/hailuo/02-image-to-video-pro
+  "hailuo/02-image-to-video-pro": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 1500,
+        description: "Text prompt describing the desired video animation",
+      },
+      image_url: {
+        type: "string",
+        required: true,
+        description:
+          "Input image to animate (file URL after upload; jpeg/png/webp, max 10 MB)",
+      },
+      end_image_url: {
+        type: "string",
+        description:
+          "Optional last-frame image URL after upload (jpeg/png/webp, max 10 MB)",
+      },
+      prompt_optimizer: {
+        type: "boolean",
+        description: "Whether to use the model's prompt optimizer",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description:
+          "When false, content filtering is disabled (documented default false)",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/hailuo/02-image-to-video-standard
+  "hailuo/02-image-to-video-standard": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 1500,
+        description: "Text prompt describing the video to generate",
+      },
+      image_url: {
+        type: "string",
+        required: true,
+        description:
+          "First-frame image URL after upload (jpeg/png/webp, max 10 MB)",
+      },
+      end_image_url: {
+        type: "string",
+        description:
+          "Optional last-frame image URL after upload (jpeg/png/webp, max 10 MB)",
+      },
+      duration: {
+        type: "string",
+        enum: ["6", "10"],
+        default: "10",
+        description:
+          'Video duration in seconds as a string enum ("6" or "10"; documented default "10")',
+      },
+      resolution: {
+        type: "string",
+        enum: ["512P", "768P"],
+        default: "768P",
+        description: "Output resolution (documented default 768P)",
+      },
+      prompt_optimizer: {
+        type: "boolean",
+        description: "Whether to use the model's prompt optimizer",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description:
+          "When false, content filtering is disabled (documented default false)",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/hailuo/02-text-to-video-pro
+  "hailuo/02-text-to-video-pro": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 1500,
+        description: "Text prompt for video generation",
+      },
+      prompt_optimizer: {
+        type: "boolean",
+        description: "Whether to use the model's prompt optimizer",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description:
+          "When false, content filtering is disabled (documented default false)",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/hailuo/02-text-to-video-standard
+  "hailuo/02-text-to-video-standard": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 1500,
+        description: "Text description for video generation",
+      },
+      duration: {
+        type: "string",
+        enum: ["6", "10"],
+        default: "6",
+        description:
+          'Video duration in seconds as a string enum ("6" or "10"; documented default "6")',
+      },
+      prompt_optimizer: {
+        type: "boolean",
+        description: "Whether to use the model's prompt optimizer",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description:
+          "When false, content filtering is disabled (documented default false)",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/hailuo/2-3-image-to-video-pro
+  "hailuo/2-3-image-to-video-pro": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 5000,
+        description: "Text prompt describing the desired video animation",
+      },
+      image_url: {
+        type: "string",
+        required: true,
+        description:
+          "Input image to animate (file URL after upload; jpeg/png/webp, max 10 MB)",
+      },
+      duration: {
+        type: "string",
+        enum: ["6", "10"],
+        default: "6",
+        description:
+          'Video duration in seconds as a string enum ("6" or "10"; documented default "6"; 10s unsupported at 1080P)',
+      },
+      resolution: {
+        type: "string",
+        enum: ["768P", "1080P"],
+        default: "768P",
+        description: "Output resolution (documented default 768P)",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description:
+          "When false, content filtering is disabled (documented default false)",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/hailuo/2-3-image-to-video-standard
+  "hailuo/2-3-image-to-video-standard": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 5000,
+        description: "Text prompt describing the desired video animation",
+      },
+      image_url: {
+        type: "string",
+        required: true,
+        description:
+          "Input image to animate (file URL after upload; jpeg/png/webp, max 10 MB)",
+      },
+      duration: {
+        type: "string",
+        enum: ["6", "10"],
+        default: "6",
+        description:
+          'Video duration in seconds as a string enum ("6" or "10"; documented default "6"; 10s unsupported at 1080P)',
+      },
+      resolution: {
+        type: "string",
+        enum: ["768P", "1080P"],
+        default: "768P",
+        description: "Output resolution (documented default 768P)",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description:
+          "When false, content filtering is disabled (documented default false)",
+      },
+    },
+  },
 };

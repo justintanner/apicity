@@ -92,6 +92,12 @@ import {
   Flux2FlexTextToImageRequestSchema,
   Flux2ProImageToImageRequestSchema,
   Flux2FlexImageToImageRequestSchema,
+  Hailuo02TextToVideoProRequestSchema,
+  Hailuo02TextToVideoStandardRequestSchema,
+  Hailuo02ImageToVideoProRequestSchema,
+  Hailuo02ImageToVideoStandardRequestSchema,
+  Hailuo23ImageToVideoProRequestSchema,
+  Hailuo23ImageToVideoStandardRequestSchema,
   Omnihuman15HumanIdentificationRequestSchema,
   Omnihuman15SubjectDetectionRequestSchema,
   IdeogramV3TextToImageRequestSchema,
@@ -310,6 +316,14 @@ export const CREATE_TASK_GUARDS = {
   "ideogram/v3-edit": IdeogramV3EditRequestSchema,
   "ideogram/v3-remix": IdeogramV3RemixRequestSchema,
   "ideogram/v3-text-to-image": IdeogramV3TextToImageRequestSchema,
+  "hailuo/02-image-to-video-pro": Hailuo02ImageToVideoProRequestSchema,
+  "hailuo/02-image-to-video-standard":
+    Hailuo02ImageToVideoStandardRequestSchema,
+  "hailuo/02-text-to-video-pro": Hailuo02TextToVideoProRequestSchema,
+  "hailuo/02-text-to-video-standard": Hailuo02TextToVideoStandardRequestSchema,
+  "hailuo/2-3-image-to-video-pro": Hailuo23ImageToVideoProRequestSchema,
+  "hailuo/2-3-image-to-video-standard":
+    Hailuo23ImageToVideoStandardRequestSchema,
 } as const satisfies Record<KieMediaModel, z.ZodType>;
 
 function validateCreateTaskRequest(req: MediaGenerationRequest): void {

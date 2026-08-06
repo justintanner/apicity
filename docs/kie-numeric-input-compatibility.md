@@ -568,6 +568,12 @@ byte-for-byte identical to the registered snapshots.
 | DOC-62 | https://docs.kie.ai/market/bytedance/v1-pro-fast-image-to-video.md      | `9511782f755de53ccf734a511db25368b42bf29b0fcbbab611917ccb90a96137` |
 | DOC-63 | https://docs.kie.ai/market/bytedance/v1-pro-image-to-video.md           | `f26482add7cfe35e661cda5125bdaecaa819d01d2ebfa36a1bcbed195c316948` |
 | DOC-64 | https://docs.kie.ai/market/bytedance/v1-pro-text-to-video.md            | `46619cfc27d6677b75012eeafa82021b48c99a416bf5f53bdcd1a73bad3586f1` |
+| DOC-65 | https://docs.kie.ai/market/hailuo/02-text-to-video-pro.md               | `0d4bd816765e673a34231174aca2ccffc4135d913a45e60858a19cc551bf77d8` |
+| DOC-66 | https://docs.kie.ai/market/hailuo/02-text-to-video-standard.md          | `9b413770266c546ab0b34d1d1f0675075601eb5639a946ddad6956d369c560b3` |
+| DOC-67 | https://docs.kie.ai/market/hailuo/02-image-to-video-pro.md              | `abae2b82a21e91c2400037f8ea3f235fe50383c8777b2714f268ec968b652250` |
+| DOC-68 | https://docs.kie.ai/market/hailuo/02-image-to-video-standard.md         | `42720c92c23c595c080ed4d0736cc7b2e8335b5b1c8d0f72ee36763f55bac18f` |
+| DOC-69 | https://docs.kie.ai/market/hailuo/2-3-image-to-video-pro.md             | `a9685b09fb651b952dd93f3eeca668d57c77136acc8fa31ae969f2835d5ebfc7` |
+| DOC-70 | https://docs.kie.ai/market/hailuo/2-3-image-to-video-standard.md        | `5a76052fa60659a2fd4c7315b649a2adc3b8f138ac56e1a20879eb901b1d7ff2` |
 
 ## Numeric inventory
 
@@ -693,5 +699,9 @@ this evidence item makes no runtime contract change for the row.
 | ideogram/character-remix                  | input.num_images              | optional; numeric-string enum="1","2","3","4"                                                        | DOC-55 @ 2026-08-06 | string enum="1","2","3","4" default="1"     | string ("1")        | none beyond current OpenAPI                 | numeric-string-only | high       | retain exact strings; reject numbers         |
 | ideogram/character-remix                  | input.seed                    | optional; integer                                                                                    | DOC-55 @ 2026-08-06 | integer                                     | absent              | none beyond current OpenAPI                 | number-only         | medium     | retain integer seed; reject strings          |
 | ideogram/character-remix                  | input.strength                | optional; number min=0.1 max=1                                                                       | DOC-55 @ 2026-08-06 | number min=0.1 max=1 default=0.8            | number (0.8)        | none beyond current OpenAPI                 | number-only         | high       | enforce bounds; do not inject default        |
+| hailuo/02-text-to-video-standard          | input.duration                | optional; numeric-string enum="6","10"                                                               | DOC-66 @ 2026-08-06 | string default="6"                          | string ("6")        | none beyond current OpenAPI                 | numeric-string-only | high       | retain exact strings; reject numbers         |
+| hailuo/02-image-to-video-standard         | input.duration                | optional; numeric-string enum="6","10"                                                               | DOC-68 @ 2026-08-06 | string default="10"                         | string ("10")       | none beyond current OpenAPI                 | numeric-string-only | high       | retain exact strings; reject numbers         |
+| hailuo/2-3-image-to-video-pro             | input.duration                | optional; numeric-string enum="6","10"                                                               | DOC-69 @ 2026-08-06 | string default="6"                          | string ("6")        | none beyond current OpenAPI                 | numeric-string-only | high       | retain exact strings; reject numbers         |
+| hailuo/2-3-image-to-video-standard        | input.duration                | optional; numeric-string enum="6","10"                                                               | DOC-70 @ 2026-08-06 | string default="6"                          | string ("6")        | none beyond current OpenAPI                 | numeric-string-only | high       | retain exact strings; reject numbers         |
 
 <!-- numeric-inventory:end -->

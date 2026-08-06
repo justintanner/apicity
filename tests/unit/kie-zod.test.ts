@@ -1021,19 +1021,20 @@ describe("TRI-008 VeoExtendRequestSchema.model stays a closed set", () => {
 // TRI-001 KieMediaModelSchema — one escape hatch per vendor family
 // ---------------------------------------------------------------------------
 //
-// KieMediaModelSchema is kie's aggregator catalogue: 86 ids drawn from a dozen
+// KieMediaModelSchema is kie's aggregator catalogue: 100 ids drawn from a dozen
 // unrelated vendors behind one `createTask` endpoint. REQ-006 forbids opening
 // it with a single catch-all regex, so it carries one alias per vendor family
 // while singletons and fixed-product sets (omnihuman + sub-tasks, volcengine,
 // gemini-omni, sora-watermark, recraft, topaz, infinitalk, z-image), Flux-2
-// (four exact modes), Ideogram (six exact modes), the three exact MiniMax H3
-// modes, the Google market enum set (two TTS + five Imagen/Nano Banana), and
-// unversioned Qwen v1 stay enumerated with no alias at all.
+// (four exact modes), Ideogram (six exact modes), Hailuo (six exact modes),
+// the three exact MiniMax H3 modes, the Google market enum set (two TTS + five
+// Imagen/Nano Banana), and unversioned Qwen v1 stay enumerated with no alias
+// at all.
 //
 // BR-4 needs care here that the single-family schemas above do not. A foreign
 // *catalogue* id — `happyhorse/video-edit` on the Kling family — is accepted by
 // KieMediaModelSchema, through the enum branch, and always was: the whole point
-// of the aggregator is that all 86 are valid. So cross-family leakage cannot be
+// of the aggregator is that all 100 are valid. So cross-family leakage cannot be
 // asserted with safeParse; it is asserted structurally instead, against the
 // alias patterns themselves ("partitions the catalogue" below). The per-family
 // `rejected` lists therefore carry BR-3 near-miss typos plus BR-4 ids from
@@ -1339,6 +1340,26 @@ const IDEOGRAM_REJECTED_MODELS = [
   "ideogram/v4-text-to-image",
 ] as const;
 
+// Hailuo is enum-only: six task+tier variants, no open alias hatch.
+const HAILUO_EXACT_ONLY_MODELS = [
+  "hailuo/02-image-to-video-pro",
+  "hailuo/02-image-to-video-standard",
+  "hailuo/02-text-to-video-pro",
+  "hailuo/02-text-to-video-standard",
+  "hailuo/2-3-image-to-video-pro",
+  "hailuo/2-3-image-to-video-standard",
+] as const;
+
+const HAILUO_REJECTED_MODELS = [
+  "hailuo",
+  "hailuo/",
+  "hailuo/02",
+  "hailuo/02-text-to-video",
+  "hailuo/2-3-text-to-video-pro",
+  "Hailuo/02-text-to-video-pro",
+  "hailuo/02_text_to_video_pro",
+] as const;
+
 // Unversioned Qwen v1 is enum-only: the Qwen family alias requires a digit
 // before `/` (`qwen2/*`), and operator ruling ac-ly4x9j forbids widening it.
 const QWEN_V1_EXACT_ONLY_MODELS = [
@@ -1479,6 +1500,21 @@ describe("TRI-001 KieMediaModelSchema", () => {
 
   it.each(IDEOGRAM_REJECTED_MODELS)(
     "rejects the out-of-scope Ideogram model %j",
+    (model) => {
+      expect(KieMediaModelSchema.safeParse(model).success).toBe(false);
+    }
+  );
+
+  it.each(HAILUO_EXACT_ONLY_MODELS)(
+    "keeps Hailuo model %s reachable only through the enum",
+    (model) => {
+      expect(KieMediaModelSchema.safeParse(model).success).toBe(true);
+      expect(mediaAliasPatterns.filter((re) => re.test(model))).toEqual([]);
+    }
+  );
+
+  it.each(HAILUO_REJECTED_MODELS)(
+    "rejects the out-of-scope Hailuo model %j",
     (model) => {
       expect(KieMediaModelSchema.safeParse(model).success).toBe(false);
     }

@@ -555,7 +555,7 @@ defaults to `false`.
 
 ## API Reference
 
-64 endpoints across 32 groups. Each method mirrors an upstream URL path.
+65 endpoints across 33 groups. Each method mirrors an upstream URL path.
 
 ### aleph
 
@@ -854,6 +854,25 @@ const res = await kie.gemini35FlashOpenai.post.v1.chat.completions({ /* ... */ }
 ```
 
 Source: [`packages/provider/kie/src/gemini-35-flash-openai.ts`](src/gemini-35-flash-openai.ts)
+
+</details>
+
+### gemini36FlashOpenai
+
+<details>
+<summary><code>POST</code> <b><code>kie.gemini36FlashOpenai.post.v1.chat.completions</code></b></summary>
+
+<code>POST https://api.kie.ai/gemini-3-6-flash-openai/v1/chat/completions</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/market/gemini/gemini-3-6-flash-openai)
+
+```typescript
+const res = await kie.gemini36FlashOpenai.post.v1.chat.completions({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/gemini-36-flash-openai.ts`](src/gemini-36-flash-openai.ts)
 
 </details>
 

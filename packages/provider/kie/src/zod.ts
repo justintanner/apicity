@@ -1102,6 +1102,147 @@ export type KieGemini35FlashOpenaiChatCompletionsParsedRequest = z.output<
   typeof KieGemini35FlashOpenaiChatCompletionsRequestSchema
 >;
 
+// Gemini 3.6 Flash OpenAI-compatible chat completions
+// Docs: https://docs.kie.ai/market/gemini/gemini-3-6-flash-openai
+export const KieGemini36FlashOpenaiMessageRoleSchema = z.enum([
+  "developer",
+  "system",
+  "user",
+  "assistant",
+  "tool",
+]);
+
+export const KieGemini36FlashOpenaiContentItemTypeSchema = z.enum([
+  "text",
+  "image_url",
+]);
+
+export const KieGemini36FlashOpenaiReasoningEffortSchema = z.enum([
+  "low",
+  "high",
+]);
+
+export const KieGemini36FlashOpenaiToolTypeSchema = z.enum(["function"]);
+
+export const KieGemini36FlashOpenaiTextContentItemSchema = z
+  .object({
+    type: z.literal("text"),
+    text: z.string(),
+  })
+  .strict();
+
+export const KieGemini36FlashOpenaiMediaContentItemSchema = z
+  .object({
+    type: z.literal("image_url"),
+    image_url: z.object({ url: z.string().url() }).strict(),
+  })
+  .strict();
+
+export const KieGemini36FlashOpenaiContentItemSchema = z.discriminatedUnion(
+  "type",
+  [
+    KieGemini36FlashOpenaiTextContentItemSchema,
+    KieGemini36FlashOpenaiMediaContentItemSchema,
+  ]
+);
+
+export const KieGemini36FlashOpenaiMessageSchema = z
+  .object({
+    role: KieGemini36FlashOpenaiMessageRoleSchema,
+    content: z.array(KieGemini36FlashOpenaiContentItemSchema).min(1),
+  })
+  .passthrough();
+
+export const KieGemini36FlashOpenaiToolFunctionParametersSchema = z
+  .object({
+    type: z.literal("object"),
+    properties: z.record(z.string(), z.unknown()).optional(),
+    required: z.array(z.string()).optional(),
+  })
+  .passthrough();
+
+// googleSearch or custom function declarations (mutually exclusive upstream).
+export const KieGemini36FlashOpenaiToolFunctionSchema = z
+  .object({
+    name: z.string().min(1),
+    description: z.string().optional(),
+    parameters: KieGemini36FlashOpenaiToolFunctionParametersSchema.optional(),
+  })
+  .passthrough();
+
+export const KieGemini36FlashOpenaiToolSchema = z
+  .object({
+    type: KieGemini36FlashOpenaiToolTypeSchema,
+    function: KieGemini36FlashOpenaiToolFunctionSchema,
+  })
+  .strict();
+
+export const KieGemini36FlashOpenaiResponseFormatSchema = z
+  .object({
+    type: z.string().optional(),
+    json_schema: z.record(z.string(), z.unknown()).optional(),
+    properties: z.record(z.string(), z.unknown()).optional(),
+  })
+  .passthrough();
+
+export const KieGemini36FlashOpenaiChatCompletionsRequestSchema = z
+  .object({
+    model: z.literal("gemini-3-6-flash").optional(),
+    messages: z.array(KieGemini36FlashOpenaiMessageSchema).min(1),
+    stream: z.boolean().default(true),
+    tools: z.array(KieGemini36FlashOpenaiToolSchema).min(0).optional(),
+    include_thoughts: z.boolean().default(true),
+    reasoning_effort:
+      KieGemini36FlashOpenaiReasoningEffortSchema.default("high"),
+    response_format: KieGemini36FlashOpenaiResponseFormatSchema.optional(),
+  })
+  .passthrough();
+
+export type KieGemini36FlashOpenaiMessageRole = z.infer<
+  typeof KieGemini36FlashOpenaiMessageRoleSchema
+>;
+export type KieGemini36FlashOpenaiContentItemType = z.infer<
+  typeof KieGemini36FlashOpenaiContentItemTypeSchema
+>;
+export type KieGemini36FlashOpenaiReasoningEffort = z.infer<
+  typeof KieGemini36FlashOpenaiReasoningEffortSchema
+>;
+export type KieGemini36FlashOpenaiToolType = z.infer<
+  typeof KieGemini36FlashOpenaiToolTypeSchema
+>;
+export type KieGemini36FlashOpenaiTextContentItem = z.infer<
+  typeof KieGemini36FlashOpenaiTextContentItemSchema
+>;
+export type KieGemini36FlashOpenaiMediaContentItem = z.infer<
+  typeof KieGemini36FlashOpenaiMediaContentItemSchema
+>;
+export type KieGemini36FlashOpenaiContentItem = z.infer<
+  typeof KieGemini36FlashOpenaiContentItemSchema
+>;
+export type KieGemini36FlashOpenaiMessage = z.infer<
+  typeof KieGemini36FlashOpenaiMessageSchema
+>;
+export type KieGemini36FlashOpenaiToolFunctionParameters = z.infer<
+  typeof KieGemini36FlashOpenaiToolFunctionParametersSchema
+>;
+export type KieGemini36FlashOpenaiToolFunction = z.infer<
+  typeof KieGemini36FlashOpenaiToolFunctionSchema
+>;
+export type KieGemini36FlashOpenaiTool = z.infer<
+  typeof KieGemini36FlashOpenaiToolSchema
+>;
+export type KieGemini36FlashOpenaiResponseFormat = z.infer<
+  typeof KieGemini36FlashOpenaiResponseFormatSchema
+>;
+export type KieGemini36FlashOpenaiChatCompletionsRequest = z.input<
+  typeof KieGemini36FlashOpenaiChatCompletionsRequestSchema
+>;
+export type KieGemini36FlashOpenaiChatCompletionsRequestInput =
+  KieGemini36FlashOpenaiChatCompletionsRequest;
+export type KieGemini36FlashOpenaiChatCompletionsParsedRequest = z.output<
+  typeof KieGemini36FlashOpenaiChatCompletionsRequestSchema
+>;
+
 // Gemini 3 Pro OpenAI-compatible chat completions
 // Docs: https://docs.kie.ai/market/gemini/gemini-3-pro
 export const KieGemini3ProMessageRoleSchema = z.enum([

@@ -2358,7 +2358,12 @@ export const Seedance2InputSchema = z.object({
   /** @deprecated */
   return_last_frame: z.boolean().optional(),
   generate_audio: z.boolean().optional(),
-  resolution: z.enum(["480p", "720p", "1080p"]).optional(),
+  // "4k" is lowercase, matching the enum kie documents at
+  // docs.kie.ai/market/bytedance/seedance-2 (["480p","720p","1080p","4k"]).
+  // The uppercase "4K" from the pricing page label is rejected on the wire:
+  // createTask answers {"code":422,"msg":"Invalid resolution"} (recorded
+  // 2026-08-06, see tests/integration/kie-bytedance-seedance-2-4k.test.ts).
+  resolution: z.enum(["480p", "720p", "1080p", "4k"]).optional(),
   aspect_ratio: z
     .enum(["1:1", "4:3", "3:4", "16:9", "9:16", "21:9", "adaptive"])
     .optional(),

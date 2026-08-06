@@ -3227,4 +3227,377 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
     },
   },
+
+  // - https://docs.kie.ai/market/ideogram/v3-text-to-image
+  // - https://docs.kie.ai/market/ideogram/v3-edit
+  // - https://docs.kie.ai/market/ideogram/v3-remix
+  // - https://docs.kie.ai/market/ideogram/character
+  // - https://docs.kie.ai/market/ideogram/character-edit
+  // - https://docs.kie.ai/market/ideogram/character-remix
+  "ideogram/v3-text-to-image": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 5000,
+        description: "Description of the image to generate (max 5000 chars)",
+      },
+      rendering_speed: {
+        type: "string",
+        enum: ["TURBO", "BALANCED", "QUALITY"],
+        description: "Rendering speed (documented default BALANCED)",
+      },
+      style: {
+        type: "string",
+        enum: ["AUTO", "GENERAL", "REALISTIC", "DESIGN"],
+        description: "Style type; cannot be used with style_codes",
+      },
+      expand_prompt: {
+        type: "boolean",
+        description: "Whether MagicPrompt should enhance the prompt",
+      },
+      image_size: {
+        type: "string",
+        enum: [
+          "square",
+          "square_hd",
+          "portrait_4_3",
+          "portrait_16_9",
+          "landscape_4_3",
+          "landscape_16_9",
+        ],
+        description: "Resolution of the generated image",
+      },
+      seed: {
+        type: "integer",
+        description: "Seed for the random number generator",
+      },
+      negative_prompt: {
+        type: "string",
+        maxLength: 5000,
+        description:
+          "What to exclude from the image (max 5000 chars; prompt wins conflicts)",
+      },
+    },
+  },
+
+  "ideogram/v3-edit": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 5000,
+        description: "Prompt to fill the masked region (max 5000 chars)",
+      },
+      image_url: {
+        type: "string",
+        required: true,
+        description:
+          "Source image URL (jpeg/png/webp after upload; max 10 MB; must match mask dimensions)",
+      },
+      mask_url: {
+        type: "string",
+        required: true,
+        description:
+          "Mask image URL (jpeg/png/webp after upload; max 10 MB; must match image dimensions)",
+      },
+      rendering_speed: {
+        type: "string",
+        enum: ["TURBO", "BALANCED", "QUALITY"],
+        default: "BALANCED",
+        description: "Rendering speed (documented default BALANCED)",
+      },
+      expand_prompt: {
+        type: "boolean",
+        default: true,
+        description:
+          "Whether MagicPrompt should enhance the prompt (documented default true)",
+      },
+      seed: {
+        type: "integer",
+        description: "Seed for the random number generator",
+      },
+    },
+  },
+
+  "ideogram/v3-remix": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 5000,
+        description: "Prompt to remix the image with (max 5000 chars)",
+      },
+      image_url: {
+        type: "string",
+        required: true,
+        description:
+          "Image URL to remix (jpeg/png/webp after upload; max 10 MB)",
+      },
+      rendering_speed: {
+        type: "string",
+        enum: ["TURBO", "BALANCED", "QUALITY"],
+        description: "Rendering speed",
+      },
+      style: {
+        type: "string",
+        enum: ["AUTO", "GENERAL", "REALISTIC", "DESIGN"],
+        description: "Style type; cannot be used with style_codes",
+      },
+      expand_prompt: {
+        type: "boolean",
+        description: "Whether MagicPrompt should enhance the prompt",
+      },
+      image_size: {
+        type: "string",
+        enum: [
+          "square",
+          "square_hd",
+          "portrait_4_3",
+          "portrait_16_9",
+          "landscape_4_3",
+          "landscape_16_9",
+        ],
+        description: "Resolution of the generated image",
+      },
+      num_images: {
+        type: "string",
+        enum: ["1", "2", "3", "4"],
+        description: 'Number of images as the exact string "1"–"4"',
+      },
+      seed: {
+        type: "integer",
+        description: "Seed for the random number generator",
+      },
+      strength: {
+        type: "number",
+        minimum: 0.01,
+        maximum: 1,
+        description: "Strength of the input image in the remix (0.01–1)",
+      },
+      negative_prompt: {
+        type: "string",
+        maxLength: 5000,
+        description:
+          "What to exclude from the image (max 5000 chars; prompt wins conflicts)",
+      },
+    },
+  },
+
+  "ideogram/character": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 5000,
+        description: "Prompt describing the character scene (max 5000 chars)",
+      },
+      reference_image_urls: {
+        type: "array",
+        required: true,
+        description:
+          "Character reference image URLs (only first used; jpeg/png/webp; max 10 MB total)",
+      },
+      rendering_speed: {
+        type: "string",
+        enum: ["TURBO", "BALANCED", "QUALITY"],
+        default: "BALANCED",
+        description: "Rendering speed (documented default BALANCED)",
+      },
+      style: {
+        type: "string",
+        enum: ["AUTO", "REALISTIC", "FICTION"],
+        default: "AUTO",
+        description:
+          "Style type; cannot be used with style_codes (documented default AUTO)",
+      },
+      expand_prompt: {
+        type: "boolean",
+        description: "Whether MagicPrompt should enhance the prompt",
+      },
+      num_images: {
+        type: "string",
+        enum: ["1", "2", "3", "4"],
+        default: "1",
+        description: 'Number of images as the exact string "1"–"4"',
+      },
+      image_size: {
+        type: "string",
+        enum: [
+          "square",
+          "square_hd",
+          "portrait_4_3",
+          "portrait_16_9",
+          "landscape_4_3",
+          "landscape_16_9",
+        ],
+        default: "square_hd",
+        description: "Resolution of the generated image",
+      },
+      seed: {
+        type: "integer",
+        description: "Seed for the random number generator",
+      },
+      negative_prompt: {
+        type: "string",
+        maxLength: 5000,
+        description:
+          "What to exclude from the image (max 5000 chars; prompt wins conflicts)",
+      },
+    },
+  },
+
+  "ideogram/character-edit": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 5000,
+        description: "Prompt to fill the masked region (max 5000 chars)",
+      },
+      image_url: {
+        type: "string",
+        required: true,
+        description:
+          "Source image URL (jpeg/png/webp after upload; max 10 MB; must match mask dimensions)",
+      },
+      mask_url: {
+        type: "string",
+        required: true,
+        description:
+          "Mask image URL (jpeg/png/webp after upload; max 10 MB; must match image dimensions)",
+      },
+      reference_image_urls: {
+        type: "array",
+        required: true,
+        description:
+          "Character reference image URLs (only first used; jpeg/png/webp; max 10 MB total)",
+      },
+      rendering_speed: {
+        type: "string",
+        enum: ["TURBO", "BALANCED", "QUALITY"],
+        default: "BALANCED",
+        description: "Rendering speed (documented default BALANCED)",
+      },
+      style: {
+        type: "string",
+        enum: ["AUTO", "REALISTIC", "FICTION"],
+        default: "AUTO",
+        description:
+          "Style type; cannot be used with style_codes (documented default AUTO)",
+      },
+      expand_prompt: {
+        type: "boolean",
+        description: "Whether MagicPrompt should enhance the prompt",
+      },
+      num_images: {
+        type: "string",
+        enum: ["1", "2", "3", "4"],
+        default: "1",
+        description: 'Number of images as the exact string "1"–"4"',
+      },
+      seed: {
+        type: "integer",
+        description: "Seed for the random number generator",
+      },
+    },
+  },
+
+  "ideogram/character-remix": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 5000,
+        description: "Prompt to remix the image with (max 5000 chars)",
+      },
+      image_url: {
+        type: "string",
+        required: true,
+        description:
+          "Image URL to remix (jpeg/png/webp after upload; max 10 MB)",
+      },
+      reference_image_urls: {
+        type: "array",
+        required: true,
+        description:
+          "Character reference image URLs (only first used; jpeg/png/webp; max 10 MB total)",
+      },
+      rendering_speed: {
+        type: "string",
+        enum: ["TURBO", "BALANCED", "QUALITY"],
+        default: "BALANCED",
+        description: "Rendering speed (documented default BALANCED)",
+      },
+      style: {
+        type: "string",
+        enum: ["AUTO", "REALISTIC", "FICTION"],
+        default: "AUTO",
+        description:
+          "Style type; cannot be used with style_codes (documented default AUTO)",
+      },
+      expand_prompt: {
+        type: "boolean",
+        description: "Whether MagicPrompt should enhance the prompt",
+      },
+      image_size: {
+        type: "string",
+        enum: [
+          "square",
+          "square_hd",
+          "portrait_4_3",
+          "portrait_16_9",
+          "landscape_4_3",
+          "landscape_16_9",
+        ],
+        default: "square_hd",
+        description: "Resolution of the generated image",
+      },
+      num_images: {
+        type: "string",
+        enum: ["1", "2", "3", "4"],
+        default: "1",
+        description: 'Number of images as the exact string "1"–"4"',
+      },
+      seed: {
+        type: "integer",
+        description: "Seed for the random number generator",
+      },
+      strength: {
+        type: "number",
+        minimum: 0.1,
+        maximum: 1,
+        default: 0.8,
+        description: "Strength of the input image in the remix (0.1–1)",
+      },
+      negative_prompt: {
+        type: "string",
+        maxLength: 500,
+        description:
+          "What to exclude from the image (max 500 chars on character-remix)",
+      },
+      image_urls: {
+        type: "array",
+        description:
+          "Style reference image URLs (jpeg/png/webp; max 10 MB total)",
+      },
+      reference_mask_urls: {
+        type: "string",
+        description:
+          "Character-reference mask URL (OpenAPI types as string; only first mask used)",
+      },
+    },
+  },
 };

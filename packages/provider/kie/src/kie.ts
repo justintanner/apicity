@@ -81,6 +81,12 @@ import {
   Flux2FlexImageToImageRequestSchema,
   Omnihuman15HumanIdentificationRequestSchema,
   Omnihuman15SubjectDetectionRequestSchema,
+  IdeogramV3TextToImageRequestSchema,
+  IdeogramV3EditRequestSchema,
+  IdeogramV3RemixRequestSchema,
+  IdeogramCharacterRequestSchema,
+  IdeogramCharacterEditRequestSchema,
+  IdeogramCharacterRemixRequestSchema,
   Wan27ImageToVideoRequestSchema,
   Wan27TextToVideoRequestSchema,
   Wan27RefToVideoRequestSchema,
@@ -269,6 +275,12 @@ export const CREATE_TASK_GUARDS = {
   "flux-2/flex-text-to-image": Flux2FlexTextToImageRequestSchema,
   "flux-2/pro-image-to-image": Flux2ProImageToImageRequestSchema,
   "flux-2/pro-text-to-image": Flux2ProTextToImageRequestSchema,
+  "ideogram/character": IdeogramCharacterRequestSchema,
+  "ideogram/character-edit": IdeogramCharacterEditRequestSchema,
+  "ideogram/character-remix": IdeogramCharacterRemixRequestSchema,
+  "ideogram/v3-edit": IdeogramV3EditRequestSchema,
+  "ideogram/v3-remix": IdeogramV3RemixRequestSchema,
+  "ideogram/v3-text-to-image": IdeogramV3TextToImageRequestSchema,
 } as const satisfies Record<KieMediaModel, z.ZodType>;
 
 function validateCreateTaskRequest(req: MediaGenerationRequest): void {

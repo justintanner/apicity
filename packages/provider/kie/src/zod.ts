@@ -187,6 +187,11 @@ const KieMediaPixverseModelAliasSchema = z
 // `infinitalk/from-audio` and `z-image` are single-sample vendors — each is the
 // only id kie documents for its product — so both stay enum-only with no alias
 // hatch until a second family member ships (zod.ts:155-166 convention).
+//
+// Ideogram likewise stays enum-only: the six documented task slugs
+// (`character`, `character-edit`, `character-remix`, `v3-edit`, `v3-remix`,
+// `v3-text-to-image`) are discrete product surfaces, not a versioned grammar
+// that would justify an open `ideogram/…` alias hatch.
 export const KIE_MEDIA_MODELS = [
   "kling-3.0/video",
   "kling-3.0/motion-control",
@@ -268,6 +273,13 @@ export const KIE_MEDIA_MODELS = [
   "flux-2/flex-text-to-image",
   "flux-2/pro-image-to-image",
   "flux-2/pro-text-to-image",
+  // Ideogram — enum-only vendor (no alias hatch).
+  "ideogram/character",
+  "ideogram/character-edit",
+  "ideogram/character-remix",
+  "ideogram/v3-edit",
+  "ideogram/v3-remix",
+  "ideogram/v3-text-to-image",
 ] as const;
 
 export const KieMediaModelSchema = z
@@ -3132,6 +3144,156 @@ export const ZImageRequestSchema = z.object({
   }),
 });
 
+// Ideogram createTask models — enum-only vendor (no alias hatch).
+// Docs: https://docs.kie.ai/market/ideogram/v3-text-to-image
+// Docs: https://docs.kie.ai/market/ideogram/v3-edit
+// Docs: https://docs.kie.ai/market/ideogram/v3-remix
+// Docs: https://docs.kie.ai/market/ideogram/character
+// Docs: https://docs.kie.ai/market/ideogram/character-edit
+// Docs: https://docs.kie.ai/market/ideogram/character-remix
+export const IdeogramRenderingSpeedSchema = z.enum([
+  "TURBO",
+  "BALANCED",
+  "QUALITY",
+]);
+
+export const IdeogramImageSizeSchema = z.enum([
+  "square",
+  "square_hd",
+  "portrait_4_3",
+  "portrait_16_9",
+  "landscape_4_3",
+  "landscape_16_9",
+]);
+
+// Numeric-string enum per OpenAPI (`"1"` | `"2"` | `"3"` | `"4"`).
+export const IdeogramNumImagesSchema = z.enum(["1", "2", "3", "4"]);
+
+// V3 style surface (text-to-image / remix). Cannot be used with style_codes.
+export const IdeogramV3StyleSchema = z.enum([
+  "AUTO",
+  "GENERAL",
+  "REALISTIC",
+  "DESIGN",
+]);
+
+// Character style surface (character / character-edit / character-remix).
+export const IdeogramCharacterStyleSchema = z.enum([
+  "AUTO",
+  "REALISTIC",
+  "FICTION",
+]);
+
+export const IdeogramV3TextToImageRequestSchema = z.object({
+  model: z.literal("ideogram/v3-text-to-image"),
+  callBackUrl: z.string().url().optional(),
+  input: z.object({
+    prompt: z.string().min(1).max(5000),
+    rendering_speed: IdeogramRenderingSpeedSchema.optional(),
+    style: IdeogramV3StyleSchema.optional(),
+    expand_prompt: z.boolean().optional(),
+    image_size: IdeogramImageSizeSchema.optional(),
+    seed: z.number().int().optional(),
+    negative_prompt: z.string().max(5000).optional(),
+  }),
+});
+
+export const IdeogramV3EditRequestSchema = z.object({
+  model: z.literal("ideogram/v3-edit"),
+  callBackUrl: z.string().url().optional(),
+  input: z.object({
+    prompt: z.string().min(1).max(5000),
+    // File URL after upload (jpeg/png/webp, max 10 MB) — not file content.
+    image_url: z.string().min(1),
+    // File URL after upload (jpeg/png/webp, max 10 MB) — not file content.
+    mask_url: z.string().min(1),
+    rendering_speed: IdeogramRenderingSpeedSchema.optional(),
+    expand_prompt: z.boolean().optional(),
+    seed: z.number().int().optional(),
+  }),
+});
+
+export const IdeogramV3RemixRequestSchema = z.object({
+  model: z.literal("ideogram/v3-remix"),
+  callBackUrl: z.string().url().optional(),
+  input: z.object({
+    prompt: z.string().min(1).max(5000),
+    // File URL after upload (jpeg/png/webp, max 10 MB) — not file content.
+    image_url: z.string().min(1),
+    rendering_speed: IdeogramRenderingSpeedSchema.optional(),
+    style: IdeogramV3StyleSchema.optional(),
+    expand_prompt: z.boolean().optional(),
+    image_size: IdeogramImageSizeSchema.optional(),
+    num_images: IdeogramNumImagesSchema.optional(),
+    seed: z.number().int().optional(),
+    // Documented range 0.01–1 step 0.01.
+    strength: z.number().min(0.01).max(1).optional(),
+    negative_prompt: z.string().max(5000).optional(),
+  }),
+});
+
+export const IdeogramCharacterRequestSchema = z.object({
+  model: z.literal("ideogram/character"),
+  callBackUrl: z.string().url().optional(),
+  input: z.object({
+    prompt: z.string().min(1).max(5000),
+    // Currently only 1 image is supported; rest ignored. Total size max 10 MB.
+    reference_image_urls: z.array(z.string().min(1)).min(1),
+    rendering_speed: IdeogramRenderingSpeedSchema.optional(),
+    style: IdeogramCharacterStyleSchema.optional(),
+    expand_prompt: z.boolean().optional(),
+    num_images: IdeogramNumImagesSchema.optional(),
+    image_size: IdeogramImageSizeSchema.optional(),
+    seed: z.number().int().optional(),
+    negative_prompt: z.string().max(5000).optional(),
+  }),
+});
+
+export const IdeogramCharacterEditRequestSchema = z.object({
+  model: z.literal("ideogram/character-edit"),
+  callBackUrl: z.string().url().optional(),
+  input: z.object({
+    prompt: z.string().min(1).max(5000),
+    // File URL after upload (jpeg/png/webp, max 10 MB) — not file content.
+    image_url: z.string().min(1),
+    // File URL after upload (jpeg/png/webp, max 10 MB) — not file content.
+    mask_url: z.string().min(1),
+    // Currently only 1 image is supported; rest ignored. Total size max 10 MB.
+    reference_image_urls: z.array(z.string().min(1)).min(1),
+    rendering_speed: IdeogramRenderingSpeedSchema.optional(),
+    style: IdeogramCharacterStyleSchema.optional(),
+    expand_prompt: z.boolean().optional(),
+    num_images: IdeogramNumImagesSchema.optional(),
+    seed: z.number().int().optional(),
+  }),
+});
+
+export const IdeogramCharacterRemixRequestSchema = z.object({
+  model: z.literal("ideogram/character-remix"),
+  callBackUrl: z.string().url().optional(),
+  input: z.object({
+    prompt: z.string().min(1).max(5000),
+    // File URL after upload (jpeg/png/webp, max 10 MB) — not file content.
+    image_url: z.string().min(1),
+    // Currently only 1 image is supported; rest ignored. Total size max 10 MB.
+    reference_image_urls: z.array(z.string().min(1)).min(1),
+    rendering_speed: IdeogramRenderingSpeedSchema.optional(),
+    style: IdeogramCharacterStyleSchema.optional(),
+    expand_prompt: z.boolean().optional(),
+    image_size: IdeogramImageSizeSchema.optional(),
+    num_images: IdeogramNumImagesSchema.optional(),
+    seed: z.number().int().optional(),
+    // Documented range 0.1–1 step 0.1.
+    strength: z.number().min(0.1).max(1).optional(),
+    // Character-remix OpenAPI caps negative_prompt at 500 (not 5000).
+    negative_prompt: z.string().max(500).optional(),
+    // Style reference image URLs (jpeg/png/webp, max 10 MB total).
+    image_urls: z.array(z.string().min(1)).optional(),
+    // OpenAPI types this as a string URL (empty string allowed in examples).
+    reference_mask_urls: z.string().optional(),
+  }),
+});
+
 // ---------------------------------------------------------------------------
 // Flux-2 market createTask models (pro + flex, text/image to image)
 // Docs: https://docs.kie.ai/market/flux2/pro-text-to-image and siblings
@@ -4394,6 +4556,12 @@ export const MediaGenerationRequestSchema = z.union([
   Flux2FlexTextToImageRequestSchema,
   Flux2ProImageToImageRequestSchema,
   Flux2FlexImageToImageRequestSchema,
+  IdeogramV3TextToImageRequestSchema,
+  IdeogramV3EditRequestSchema,
+  IdeogramV3RemixRequestSchema,
+  IdeogramCharacterRequestSchema,
+  IdeogramCharacterEditRequestSchema,
+  IdeogramCharacterRemixRequestSchema,
 ]);
 
 // ---------------------------------------------------------------------------
@@ -4991,6 +5159,55 @@ export type Flux2FlexImageToImageRequest = z.input<
 export type Flux2FlexImageToImageRequestInput = Flux2FlexImageToImageRequest;
 export type Flux2FlexImageToImageParsedRequest = z.output<
   typeof Flux2FlexImageToImageRequestSchema
+>;
+export type IdeogramRenderingSpeed = z.infer<
+  typeof IdeogramRenderingSpeedSchema
+>;
+export type IdeogramImageSize = z.infer<typeof IdeogramImageSizeSchema>;
+export type IdeogramNumImages = z.infer<typeof IdeogramNumImagesSchema>;
+export type IdeogramV3Style = z.infer<typeof IdeogramV3StyleSchema>;
+export type IdeogramCharacterStyle = z.infer<
+  typeof IdeogramCharacterStyleSchema
+>;
+export type IdeogramV3TextToImageRequest = z.input<
+  typeof IdeogramV3TextToImageRequestSchema
+>;
+export type IdeogramV3TextToImageRequestInput = IdeogramV3TextToImageRequest;
+export type IdeogramV3TextToImageParsedRequest = z.output<
+  typeof IdeogramV3TextToImageRequestSchema
+>;
+export type IdeogramV3EditRequest = z.input<typeof IdeogramV3EditRequestSchema>;
+export type IdeogramV3EditRequestInput = IdeogramV3EditRequest;
+export type IdeogramV3EditParsedRequest = z.output<
+  typeof IdeogramV3EditRequestSchema
+>;
+export type IdeogramV3RemixRequest = z.input<
+  typeof IdeogramV3RemixRequestSchema
+>;
+export type IdeogramV3RemixRequestInput = IdeogramV3RemixRequest;
+export type IdeogramV3RemixParsedRequest = z.output<
+  typeof IdeogramV3RemixRequestSchema
+>;
+export type IdeogramCharacterRequest = z.input<
+  typeof IdeogramCharacterRequestSchema
+>;
+export type IdeogramCharacterRequestInput = IdeogramCharacterRequest;
+export type IdeogramCharacterParsedRequest = z.output<
+  typeof IdeogramCharacterRequestSchema
+>;
+export type IdeogramCharacterEditRequest = z.input<
+  typeof IdeogramCharacterEditRequestSchema
+>;
+export type IdeogramCharacterEditRequestInput = IdeogramCharacterEditRequest;
+export type IdeogramCharacterEditParsedRequest = z.output<
+  typeof IdeogramCharacterEditRequestSchema
+>;
+export type IdeogramCharacterRemixRequest = z.input<
+  typeof IdeogramCharacterRemixRequestSchema
+>;
+export type IdeogramCharacterRemixRequestInput = IdeogramCharacterRemixRequest;
+export type IdeogramCharacterRemixParsedRequest = z.output<
+  typeof IdeogramCharacterRemixRequestSchema
 >;
 export type Wan27ImageToVideoRequest = z.input<
   typeof Wan27ImageToVideoRequestSchema

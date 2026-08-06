@@ -574,6 +574,72 @@ describe("cost.estimate — pure-table (no network)", () => {
     }
   });
 
+  it("kie minimax-h3 video modes resolve 768P pricing", () => {
+    const c = createCost();
+    for (const model of [
+      "minimax-h3/text-to-video",
+      "minimax-h3/image-to-video",
+      "minimax-h3/reference-to-video",
+    ]) {
+      const r = c.estimate({
+        provider: "kie",
+        payload: {
+          model,
+          input: {
+            prompt: "a paper kite glides above sunlit ocean waves",
+            resolution: "768P",
+            duration: 8,
+          },
+        },
+      });
+
+      expect(r.source).toBe("per-unit-table");
+      expect(r.breakdown.unit).toBe("seconds");
+      expect(r.breakdown.units).toBe(8);
+      expect(r.breakdown.perUnitUsd).toBe(0.1125);
+      expect(r.usd).toBeCloseTo(0.1125 * 8, 6);
+      expect(r.rateAsOf).toBe("2026-08-06");
+    }
+  });
+
+  it("kie minimax-h3 video modes resolve 2K pricing and default", () => {
+    const c = createCost();
+    for (const model of [
+      "minimax-h3/text-to-video",
+      "minimax-h3/image-to-video",
+      "minimax-h3/reference-to-video",
+    ]) {
+      const explicit = c.estimate({
+        provider: "kie",
+        payload: {
+          model,
+          input: {
+            prompt: "a paper kite glides above sunlit ocean waves",
+            resolution: "2K",
+            duration: 6,
+          },
+        },
+      });
+      const omitted = c.estimate({
+        provider: "kie",
+        payload: {
+          model,
+          input: {
+            prompt: "a paper kite glides above sunlit ocean waves",
+            duration: 6,
+          },
+        },
+      });
+
+      expect(explicit.breakdown.perUnitUsd).toBe(0.1825);
+      expect(explicit.usd).toBeCloseTo(0.1825 * 6, 6);
+      expect(explicit.rateAsOf).toBe("2026-08-06");
+      // Documented upstream default is 2K when resolution is omitted.
+      expect(omitted.breakdown.perUnitUsd).toBe(0.1825);
+      expect(omitted.usd).toBeCloseTo(0.1825 * 6, 6);
+    }
+  });
+
   it("kie suno/generate via endpoint hint → $0.06/generation regardless of model version", () => {
     const c = createCost();
     const r = c.estimate({

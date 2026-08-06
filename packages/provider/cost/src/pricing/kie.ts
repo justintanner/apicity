@@ -151,6 +151,27 @@ const happyHorse11Video = (slug: string): ModelPricing => ({
   source: { ...src(slug), asOf: "2026-06-24" },
 });
 
+// MiniMax H3 (Hailuo 03): 2 tiers by resolution. KIE lists 22.5 credits/s
+// ($0.1125) at 768P and 36.5 credits/s ($0.1825) at 2K. Documented
+// upstream default is 2K when input.resolution is omitted. Duration is a
+// required wire field (int 4–15), so no costHints channel is needed.
+// Generation-only rates — KIE also bills optional video-input seconds and
+// extra reference images beyond the free first five; those surcharges are
+// not modeled here (same scope as other video helpers).
+const miniMaxH3Video = (slug: string): ModelPricing => ({
+  kind: "perUnit",
+  unit: "seconds",
+  units: seconds,
+  select: [
+    {
+      name: "resolution",
+      pick: (p) => asString(asObject(p.input)?.resolution) ?? "2K",
+    },
+  ],
+  rates: { "768P": 0.1125, "2K": 0.1825 },
+  source: { ...src(slug), asOf: "2026-08-06" },
+});
+
 export const kie: Record<string, ModelPricing> = {
   // veo3 / veo3_fast — flat per-second rate. Veo schema has no duration
   // field, so callers must declare the clip length as
@@ -348,6 +369,15 @@ export const kie: Record<string, ModelPricing> = {
   ),
   "happyhorse-1-1/reference-to-video": happyHorse11Video(
     "happyhorse-1-1/reference-to-video"
+  ),
+
+  // minimax-h3: 2 tiers by resolution. KIE lists 22.5 credits/s ($0.1125)
+  // at 768P and 36.5 credits/s ($0.1825) at 2K (verified kie.ai/pricing
+  // 2026-08-06). Documented upstream default is 2K.
+  "minimax-h3/text-to-video": miniMaxH3Video("minimax-h3/text-to-video"),
+  "minimax-h3/image-to-video": miniMaxH3Video("minimax-h3/image-to-video"),
+  "minimax-h3/reference-to-video": miniMaxH3Video(
+    "minimax-h3/reference-to-video"
   ),
 
   // omnihuman-1-5: flat 27 credits/s ($0.135). KIE publishes one rate — the

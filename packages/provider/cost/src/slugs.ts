@@ -49,6 +49,11 @@ export const MODEL_SLUGS = {
     "happyhorse-1-1/image-to-video": "hh1p1",
     "happyhorse-1-1/reference-to-video": "hh1p1",
 
+    // Video — MiniMax H3 (Hailuo 03)
+    "minimax-h3/text-to-video": "mmh3",
+    "minimax-h3/image-to-video": "mmh3",
+    "minimax-h3/reference-to-video": "mmh3",
+
     // Video — lip sync / avatar
     "omnihuman-1-5": "oh1p5",
     "volcengine/video-to-video-lip-sync": "vlipsync",
@@ -326,6 +331,10 @@ export const MODEL_DISPLAY = {
     "happyhorse-1-1/text-to-video": "HappyHorse 1.1",
     "happyhorse-1-1/image-to-video": "HappyHorse 1.1",
     "happyhorse-1-1/reference-to-video": "HappyHorse 1.1",
+
+    "minimax-h3/text-to-video": "MiniMax H3",
+    "minimax-h3/image-to-video": "MiniMax H3",
+    "minimax-h3/reference-to-video": "MiniMax H3",
 
     "omnihuman-1-5": "OmniHuman 1.5",
     "volcengine/video-to-video-lip-sync": "Volcengine Lip Sync",

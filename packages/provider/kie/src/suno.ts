@@ -257,6 +257,29 @@ export interface SunoVoiceValidateInfoResponse {
   [key: string]: unknown;
 }
 
+/**
+ * Check whether a generated Suno custom voice is available.
+ *
+ * Upstream documents the body field as snake_case `task_id` (not the repo-wide
+ * camelCase `taskId`). Ship the documented spelling verbatim — intentional,
+ * operator-approved (ac-7eu6oi / ac-n78qxd).
+ */
+export interface SunoVoiceCheckVoiceRequest {
+  task_id: string;
+}
+
+export interface SunoVoiceCheckVoiceData {
+  isAvailable: boolean;
+  [key: string]: unknown;
+}
+
+export interface SunoVoiceCheckVoiceResponse {
+  code: number;
+  msg?: string;
+  data?: SunoVoiceCheckVoiceData | null;
+  [key: string]: unknown;
+}
+
 export interface SunoCoverRecordInfoRequest {
   taskId: string;
 }
@@ -634,6 +657,12 @@ interface SunoVoiceValidateInfoMethod {
   responseSchema: ApicitySchema<SunoVoiceValidateInfoResponse>;
 }
 
+interface SunoVoiceCheckVoiceMethod {
+  (req: SunoVoiceCheckVoiceRequest): Promise<SunoVoiceCheckVoiceResponse>;
+  schema: ApicitySchema<SunoVoiceCheckVoiceRequest>;
+  responseSchema: ApicitySchema<SunoVoiceCheckVoiceResponse>;
+}
+
 interface SunoCoverRecordInfoMethod {
   (taskId: string): Promise<SunoCoverRecordInfoResponse>;
   schema: ApicitySchema<SunoCoverRecordInfoRequest>;
@@ -736,6 +765,10 @@ interface SunoVoiceGetNamespace {
   validateInfo: SunoVoiceValidateInfoMethod;
 }
 
+interface SunoVoicePostNamespace {
+  checkVoice: SunoVoiceCheckVoiceMethod;
+}
+
 interface SunoCoverGetNamespace {
   recordInfo: SunoCoverRecordInfoMethod;
 }
@@ -760,6 +793,7 @@ interface SunoV1PostNamespace {
   generate: SunoGenerateCallable;
   wav: SunoWavNamespace;
   vocalRemoval: SunoVocalRemovalNamespace;
+  voice: SunoVoicePostNamespace;
   mp4: SunoMp4Namespace;
   lyrics: SunoLyricsMethod;
   style: SunoStyleNamespace;
@@ -999,6 +1033,28 @@ const SunoVoiceValidateInfoResponseSchema = z
     code: z.number().int(),
     msg: z.string().optional(),
     data: SunoVoiceValidateInfoDataSchema.nullable().optional(),
+  })
+  .passthrough();
+
+// `task_id` is upstream-documented snake_case (not taskId). Intentional —
+// see SunoVoiceCheckVoiceRequest and operator ruling ac-7eu6oi.
+const SunoVoiceCheckVoiceRequestSchema = z
+  .object({
+    task_id: z.string().min(1),
+  })
+  .passthrough();
+
+const SunoVoiceCheckVoiceDataSchema = z
+  .object({
+    isAvailable: z.boolean(),
+  })
+  .passthrough();
+
+const SunoVoiceCheckVoiceResponseSchema = z
+  .object({
+    code: z.number().int(),
+    msg: z.string().optional(),
+    data: SunoVoiceCheckVoiceDataSchema.nullable().optional(),
   })
   .passthrough();
 
@@ -1453,6 +1509,18 @@ export function createSunoProvider(
     });
   }
 
+  // POST https://api.kie.ai/api/v1/voice/check-voice
+  // Docs: https://docs.kie.ai/suno-api/suno-voice-check-voice
+  async function voiceCheckVoice(
+    req: SunoVoiceCheckVoiceRequest
+  ): Promise<SunoVoiceCheckVoiceResponse> {
+    return kieRequest<SunoVoiceCheckVoiceResponse>(transport, {
+      method: "POST",
+      path: "/api/v1/voice/check-voice",
+      body: req,
+    });
+  }
+
   // GET https://api.kie.ai/api/v1/suno/cover/record-info?taskId={taskId}
   // Docs: https://docs.kie.ai/suno-api/get-cover-suno-details
   async function coverRecordInfo(
@@ -1670,6 +1738,12 @@ export function createSunoProvider(
           vocalRemoval: {
             generate: Object.assign(vocalRemovalGenerate, {
               schema: SunoVocalRemovalRequestSchema,
+            }),
+          },
+          voice: {
+            checkVoice: Object.assign(voiceCheckVoice, {
+              schema: SunoVoiceCheckVoiceRequestSchema,
+              responseSchema: SunoVoiceCheckVoiceResponseSchema,
             }),
           },
           mp4: {

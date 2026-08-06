@@ -7,6 +7,10 @@ import { mintKieVeoOtp, TEST_PAYGATE_SECRET } from "../harness";
  * Live probe (ac-kd11of): does upstream honour camelCase aspectRatio,
  * snake_case aspect_ratio, or both?
  *
+ * Both spellings share one Polly context so record/replay keep both
+ * request pairs in a single HAR (separate `it` blocks with the same
+ * recording name overwrite each other on re-record).
+ *
  * Record with: pnpm run dev:record -- tests/integration/kie-veo-aspect-ratio-probe.test.ts
  * Asserts on submit success + paramJson / record-info echo of the spelling sent.
  */
@@ -21,13 +25,14 @@ describe("kie veo aspect ratio wire spelling probe (ac-kd11of)", () => {
     await teardownPolly(ctx);
   });
 
-  it("accepts camelCase aspectRatio=9:16 and echoes it in task params", async () => {
+  it("accepts camelCase aspectRatio and snake_case aspect_ratio (both echo as aspectRatio)", async () => {
     const provider = createKie({
       apiKey: process.env.KIE_API_KEY ?? "kie-test-key",
       paygate: { secret: TEST_PAYGATE_SECRET },
     });
 
-    const body = {
+    // --- camelCase aspectRatio ---
+    const camelBody = {
       prompt:
         "Apicity aspect probe camelCase: solid blue sky, still camera, no people",
       model: "veo3_lite" as const,
@@ -37,31 +42,27 @@ describe("kie veo aspect ratio wire spelling probe (ac-kd11of)", () => {
       resolution: "720p" as const,
     };
 
-    const submit = await provider.veo.post.api.v1.veo.generate(
-      body,
-      mintKieVeoOtp("api.v1.veo.generate", body)
+    const camelSubmit = await provider.veo.post.api.v1.veo.generate(
+      camelBody,
+      mintKieVeoOtp("api.v1.veo.generate", camelBody)
     );
 
-    expect(submit.code).toBe(200);
-    expect(submit.data?.taskId).toBeTruthy();
-    const taskId = submit.data!.taskId!;
+    expect(camelSubmit.code).toBe(200);
+    expect(camelSubmit.data?.taskId).toBeTruthy();
+    const camelTaskId = camelSubmit.data!.taskId!;
 
-    const info = await provider.veo.get.api.v1.veo.recordInfo(taskId);
-    expect(info.code).toBe(200);
-    expect(info.data?.paramJson).toBeTruthy();
-    const params = JSON.parse(info.data!.paramJson!) as Record<string, unknown>;
+    const camelInfo = await provider.veo.get.api.v1.veo.recordInfo(camelTaskId);
+    expect(camelInfo.code).toBe(200);
+    expect(camelInfo.data?.paramJson).toBeTruthy();
+    const camelParams = JSON.parse(camelInfo.data!.paramJson!) as Record<
+      string,
+      unknown
+    >;
     // Upstream normalizes to camelCase aspectRatio and keeps 9:16.
-    expect(params.aspectRatio).toBe("9:16");
-  });
+    expect(camelParams.aspectRatio).toBe("9:16");
 
-  it("accepts snake_case aspect_ratio=9:16 when sent on the wire", async () => {
-    const provider = createKie({
-      apiKey: process.env.KIE_API_KEY ?? "kie-test-key",
-      paygate: { secret: TEST_PAYGATE_SECRET },
-    });
-
-    // Bypass typed interface: send snake_case via raw body cast for probe.
-    const body = {
+    // --- snake_case aspect_ratio (bypass typed interface for probe) ---
+    const snakeBody = {
       prompt:
         "Apicity aspect probe snake_case: solid blue sky, still camera, no people",
       model: "veo3_lite",
@@ -71,20 +72,23 @@ describe("kie veo aspect ratio wire spelling probe (ac-kd11of)", () => {
       resolution: "720p",
     };
 
-    const submit = await provider.veo.post.api.v1.veo.generate(
-      body as never,
-      mintKieVeoOtp("api.v1.veo.generate", body)
+    const snakeSubmit = await provider.veo.post.api.v1.veo.generate(
+      snakeBody as never,
+      mintKieVeoOtp("api.v1.veo.generate", snakeBody)
     );
 
-    expect(submit.code).toBe(200);
-    expect(submit.data?.taskId).toBeTruthy();
-    const taskId = submit.data!.taskId!;
+    expect(snakeSubmit.code).toBe(200);
+    expect(snakeSubmit.data?.taskId).toBeTruthy();
+    const snakeTaskId = snakeSubmit.data!.taskId!;
 
-    const info = await provider.veo.get.api.v1.veo.recordInfo(taskId);
-    expect(info.code).toBe(200);
-    expect(info.data?.paramJson).toBeTruthy();
-    const params = JSON.parse(info.data!.paramJson!) as Record<string, unknown>;
+    const snakeInfo = await provider.veo.get.api.v1.veo.recordInfo(snakeTaskId);
+    expect(snakeInfo.code).toBe(200);
+    expect(snakeInfo.data?.paramJson).toBeTruthy();
+    const snakeParams = JSON.parse(snakeInfo.data!.paramJson!) as Record<
+      string,
+      unknown
+    >;
     // Snake_case input is also stored as camelCase aspectRatio — both accepted.
-    expect(params.aspectRatio).toBe("9:16");
+    expect(snakeParams.aspectRatio).toBe("9:16");
   });
 });

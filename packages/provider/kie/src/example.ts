@@ -442,6 +442,14 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v1.voice.checkVoice": {
+    "source": "kie/suno/voice-check-voice-not-found",
+    "payload": {
+      "task_id": "apicity-test-nonexistent-task-id-do-not-record-real"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v1.wav.generate": {
     "source": "kie/suno/wav-bogus-ids",
     "payload": {

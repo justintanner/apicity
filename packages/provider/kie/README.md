@@ -555,7 +555,7 @@ defaults to `false`.
 
 ## API Reference
 
-45 endpoints across 24 groups. Each method mirrors an upstream URL path.
+46 endpoints across 24 groups. Each method mirrors an upstream URL path.
 
 ### chat
 

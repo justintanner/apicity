@@ -199,6 +199,19 @@ export const KIE_MEDIA_MODELS = [
   "kling-3.0/motion-control",
   "kling/v3-turbo-image-to-video",
   "kling/v3-turbo-text-to-video",
+  // Documented Kling createTask models (alias-accepted; catalogue for guards
+  // + modelInputSchemas). Docs under https://docs.kie.ai/market/kling/.
+  "kling-2.6/image-to-video",
+  "kling-2.6/motion-control",
+  "kling-2.6/text-to-video",
+  "kling/ai-avatar-pro",
+  "kling/ai-avatar-standard",
+  "kling/v2-1-master-image-to-video",
+  "kling/v2-1-master-text-to-video",
+  "kling/v2-1-pro",
+  "kling/v2-1-standard",
+  "kling/v2-5-turbo-image-to-video-pro",
+  "kling/v2-5-turbo-text-to-video-pro",
   "grok-imagine/text-to-image",
   "grok-imagine/image-to-image",
   "grok-imagine/text-to-video",
@@ -1665,6 +1678,171 @@ export const Wan27ImageColorPaletteSchema = z.object({
 // ---------------------------------------------------------------------------
 // Media request schemas
 // ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Kling market createTask models (2.6 / v2.1 / v2.5 / AI Avatar)
+// Docs: https://docs.kie.ai/market/kling/
+// ---------------------------------------------------------------------------
+
+// Shared numeric-string duration for older Kling market models ("5" | "10").
+export const KlingMarketDurationSchema = z.enum(["5", "10"]);
+
+// Shared CFG scale (0–1, step 0.1 in docs; keep continuous number bounds).
+export const KlingCfgScaleSchema = z.number().min(0).max(1);
+
+// Docs: https://docs.kie.ai/market/kling/text-to-video
+// Required: prompt, sound, aspect_ratio, duration. Prompt max 1000.
+export const Kling26TextToVideoRequestSchema = z.object({
+  model: z.literal("kling-2.6/text-to-video"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().min(1).max(1000),
+    sound: z.boolean(),
+    aspect_ratio: KlingAspectRatioSchema,
+    duration: KlingMarketDurationSchema,
+  }),
+});
+
+// Docs: https://docs.kie.ai/market/kling/image-to-video
+// Required: prompt, image_urls (max 1), sound, duration.
+export const Kling26ImageToVideoRequestSchema = z.object({
+  model: z.literal("kling-2.6/image-to-video"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().min(1).max(1000),
+    image_urls: z.array(z.string().min(1)).min(1).max(1),
+    sound: z.boolean(),
+    duration: KlingMarketDurationSchema,
+  }),
+});
+
+// Docs: https://docs.kie.ai/market/kling/motion-control
+// Required: input_urls (max 1), video_urls (max 1), character_orientation, mode.
+// mode values are 720p|1080p (OpenAPI enum; description mentions std/pro).
+export const Kling26MotionControlRequestSchema = z.object({
+  model: z.literal("kling-2.6/motion-control"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().max(2500).optional(),
+    input_urls: z.array(z.string().min(1)).min(1).max(1),
+    video_urls: z.array(z.string().min(1)).min(1).max(1),
+    character_orientation: z.enum(["image", "video"]),
+    mode: z.enum(["720p", "1080p"]),
+  }),
+});
+
+// Shared AI Avatar input (pro + standard). Prompt required; empty string allowed.
+const KlingAiAvatarInputSchema = z.object({
+  image_url: z.string().min(1),
+  audio_url: z.string().min(1),
+  prompt: z.string().max(5000),
+});
+
+// Docs: https://docs.kie.ai/market/kling/ai-avatar-pro
+export const KlingAiAvatarProRequestSchema = z.object({
+  model: z.literal("kling/ai-avatar-pro"),
+  callBackUrl: z.string().optional(),
+  input: KlingAiAvatarInputSchema,
+});
+
+// Docs: https://docs.kie.ai/market/kling/ai-avatar-standard
+export const KlingAiAvatarStandardRequestSchema = z.object({
+  model: z.literal("kling/ai-avatar-standard"),
+  callBackUrl: z.string().optional(),
+  input: KlingAiAvatarInputSchema,
+});
+
+// Docs: https://docs.kie.ai/market/kling/v2-1-master-image-to-video
+// Required: prompt (max 5000), image_url. Optional: duration, negative_prompt,
+// cfg_scale. Do not inject documented defaults so createTask preserves omit.
+export const KlingV21MasterImageToVideoRequestSchema = z.object({
+  model: z.literal("kling/v2-1-master-image-to-video"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().min(1).max(5000),
+    image_url: z.string().min(1),
+    duration: KlingMarketDurationSchema.optional(),
+    negative_prompt: z.string().max(500).optional(),
+    cfg_scale: KlingCfgScaleSchema.optional(),
+  }),
+});
+
+// Docs: https://docs.kie.ai/market/kling/v2-1-master-text-to-video
+// Required: prompt. Optional: duration, aspect_ratio, negative_prompt, cfg_scale.
+export const KlingV21MasterTextToVideoRequestSchema = z.object({
+  model: z.literal("kling/v2-1-master-text-to-video"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().min(1).max(5000),
+    duration: KlingMarketDurationSchema.optional(),
+    aspect_ratio: KlingAspectRatioSchema.optional(),
+    negative_prompt: z.string().max(500).optional(),
+    cfg_scale: KlingCfgScaleSchema.optional(),
+  }),
+});
+
+// Docs: https://docs.kie.ai/market/kling/v2-1-pro
+// Required: prompt, image_url. Optional: duration, negative_prompt, cfg_scale,
+// tail_image_url.
+export const KlingV21ProRequestSchema = z.object({
+  model: z.literal("kling/v2-1-pro"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().min(1).max(5000),
+    image_url: z.string().min(1),
+    duration: KlingMarketDurationSchema.optional(),
+    negative_prompt: z.string().max(500).optional(),
+    cfg_scale: KlingCfgScaleSchema.optional(),
+    tail_image_url: z.string().min(1).optional(),
+  }),
+});
+
+// Docs: https://docs.kie.ai/market/kling/v2-1-standard
+// Required: prompt, image_url. Optional: duration, negative_prompt, cfg_scale.
+// No tail_image_url on standard.
+export const KlingV21StandardRequestSchema = z.object({
+  model: z.literal("kling/v2-1-standard"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().min(1).max(5000),
+    image_url: z.string().min(1),
+    duration: KlingMarketDurationSchema.optional(),
+    negative_prompt: z.string().max(500).optional(),
+    cfg_scale: KlingCfgScaleSchema.optional(),
+  }),
+});
+
+// Docs: https://docs.kie.ai/market/kling/v25-turbo-image-to-video-pro
+// Required: prompt (max 2500), image_url. Optional: tail_image_url, duration,
+// negative_prompt, cfg_scale. (Upstream schema enum is buggy; model id is
+// kling/v2-5-turbo-image-to-video-pro.)
+export const KlingV25TurboImageToVideoProRequestSchema = z.object({
+  model: z.literal("kling/v2-5-turbo-image-to-video-pro"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().min(1).max(2500),
+    image_url: z.string().min(1),
+    tail_image_url: z.string().min(1).optional(),
+    duration: KlingMarketDurationSchema.optional(),
+    negative_prompt: z.string().max(500).optional(),
+    cfg_scale: KlingCfgScaleSchema.optional(),
+  }),
+});
+
+// Docs: https://docs.kie.ai/market/kling/v25-turbo-text-to-video-pro
+// Required: prompt (max 2500). Optional: duration, aspect_ratio,
+// negative_prompt (max 2500), cfg_scale.
+export const KlingV25TurboTextToVideoProRequestSchema = z.object({
+  model: z.literal("kling/v2-5-turbo-text-to-video-pro"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().min(1).max(2500),
+    duration: KlingMarketDurationSchema.optional(),
+    aspect_ratio: KlingAspectRatioSchema.optional(),
+    negative_prompt: z.string().max(2500).optional(),
+    cfg_scale: KlingCfgScaleSchema.optional(),
+  }),
+});
 
 export const KlingVideoRequestSchema = z.object({
   model: z.literal("kling-3.0/video"),
@@ -5100,6 +5278,17 @@ export const MediaGenerationRequestSchema = z.union([
   KlingMotionControlRequestSchema,
   KlingV3TurboImageToVideoRequestSchema,
   KlingV3TurboTextToVideoRequestSchema,
+  Kling26TextToVideoRequestSchema,
+  Kling26ImageToVideoRequestSchema,
+  Kling26MotionControlRequestSchema,
+  KlingAiAvatarProRequestSchema,
+  KlingAiAvatarStandardRequestSchema,
+  KlingV21MasterImageToVideoRequestSchema,
+  KlingV21MasterTextToVideoRequestSchema,
+  KlingV21ProRequestSchema,
+  KlingV21StandardRequestSchema,
+  KlingV25TurboImageToVideoProRequestSchema,
+  KlingV25TurboTextToVideoProRequestSchema,
   GrokTextToImageRequestSchema,
   GrokImageToImageRequestSchema,
   GrokTextToVideoRequestSchema,
@@ -5406,6 +5595,87 @@ export type KlingV3TurboTextToVideoRequestInput =
   KlingV3TurboTextToVideoRequest;
 export type KlingV3TurboTextToVideoParsedRequest = z.output<
   typeof KlingV3TurboTextToVideoRequestSchema
+>;
+export type KlingMarketDuration = z.infer<typeof KlingMarketDurationSchema>;
+export type KlingCfgScale = z.infer<typeof KlingCfgScaleSchema>;
+export type Kling26TextToVideoRequest = z.input<
+  typeof Kling26TextToVideoRequestSchema
+>;
+export type Kling26TextToVideoRequestInput = Kling26TextToVideoRequest;
+export type Kling26TextToVideoParsedRequest = z.output<
+  typeof Kling26TextToVideoRequestSchema
+>;
+export type Kling26ImageToVideoRequest = z.input<
+  typeof Kling26ImageToVideoRequestSchema
+>;
+export type Kling26ImageToVideoRequestInput = Kling26ImageToVideoRequest;
+export type Kling26ImageToVideoParsedRequest = z.output<
+  typeof Kling26ImageToVideoRequestSchema
+>;
+export type Kling26MotionControlRequest = z.input<
+  typeof Kling26MotionControlRequestSchema
+>;
+export type Kling26MotionControlRequestInput = Kling26MotionControlRequest;
+export type Kling26MotionControlParsedRequest = z.output<
+  typeof Kling26MotionControlRequestSchema
+>;
+export type KlingAiAvatarProRequest = z.input<
+  typeof KlingAiAvatarProRequestSchema
+>;
+export type KlingAiAvatarProRequestInput = KlingAiAvatarProRequest;
+export type KlingAiAvatarProParsedRequest = z.output<
+  typeof KlingAiAvatarProRequestSchema
+>;
+export type KlingAiAvatarStandardRequest = z.input<
+  typeof KlingAiAvatarStandardRequestSchema
+>;
+export type KlingAiAvatarStandardRequestInput = KlingAiAvatarStandardRequest;
+export type KlingAiAvatarStandardParsedRequest = z.output<
+  typeof KlingAiAvatarStandardRequestSchema
+>;
+export type KlingV21MasterImageToVideoRequest = z.input<
+  typeof KlingV21MasterImageToVideoRequestSchema
+>;
+export type KlingV21MasterImageToVideoRequestInput =
+  KlingV21MasterImageToVideoRequest;
+export type KlingV21MasterImageToVideoParsedRequest = z.output<
+  typeof KlingV21MasterImageToVideoRequestSchema
+>;
+export type KlingV21MasterTextToVideoRequest = z.input<
+  typeof KlingV21MasterTextToVideoRequestSchema
+>;
+export type KlingV21MasterTextToVideoRequestInput =
+  KlingV21MasterTextToVideoRequest;
+export type KlingV21MasterTextToVideoParsedRequest = z.output<
+  typeof KlingV21MasterTextToVideoRequestSchema
+>;
+export type KlingV21ProRequest = z.input<typeof KlingV21ProRequestSchema>;
+export type KlingV21ProRequestInput = KlingV21ProRequest;
+export type KlingV21ProParsedRequest = z.output<
+  typeof KlingV21ProRequestSchema
+>;
+export type KlingV21StandardRequest = z.input<
+  typeof KlingV21StandardRequestSchema
+>;
+export type KlingV21StandardRequestInput = KlingV21StandardRequest;
+export type KlingV21StandardParsedRequest = z.output<
+  typeof KlingV21StandardRequestSchema
+>;
+export type KlingV25TurboImageToVideoProRequest = z.input<
+  typeof KlingV25TurboImageToVideoProRequestSchema
+>;
+export type KlingV25TurboImageToVideoProRequestInput =
+  KlingV25TurboImageToVideoProRequest;
+export type KlingV25TurboImageToVideoProParsedRequest = z.output<
+  typeof KlingV25TurboImageToVideoProRequestSchema
+>;
+export type KlingV25TurboTextToVideoProRequest = z.input<
+  typeof KlingV25TurboTextToVideoProRequestSchema
+>;
+export type KlingV25TurboTextToVideoProRequestInput =
+  KlingV25TurboTextToVideoProRequest;
+export type KlingV25TurboTextToVideoProParsedRequest = z.output<
+  typeof KlingV25TurboTextToVideoProRequestSchema
 >;
 export type GrokTextToImageRequest = z.input<
   typeof GrokTextToImageRequestSchema

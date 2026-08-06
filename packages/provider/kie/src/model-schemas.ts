@@ -381,6 +381,349 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  "kling-2.6/text-to-video": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        maxLength: 1000,
+        description: "Video generation prompt",
+      },
+      sound: {
+        type: "boolean",
+        required: true,
+        description: "Whether the generated video contains sound",
+      },
+      aspect_ratio: {
+        type: "string",
+        required: true,
+        enum: ["16:9", "9:16", "1:1"],
+        description: "Output aspect ratio",
+      },
+      duration: {
+        type: "string",
+        required: true,
+        enum: ["5", "10"],
+        description: "Duration in seconds",
+      },
+    },
+  },
+
+  "kling-2.6/image-to-video": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        maxLength: 1000,
+        description: "Video generation prompt",
+      },
+      image_urls: {
+        type: "array",
+        required: true,
+        description: "Input image URL (exactly 1)",
+        items: { type: "string" },
+      },
+      sound: {
+        type: "boolean",
+        required: true,
+        description: "Whether the generated video contains sound",
+      },
+      duration: {
+        type: "string",
+        required: true,
+        enum: ["5", "10"],
+        description: "Duration in seconds",
+      },
+    },
+  },
+
+  "kling-2.6/motion-control": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        maxLength: 2500,
+        description: "Optional motion-control prompt",
+      },
+      input_urls: {
+        type: "array",
+        required: true,
+        description: "Reference image URL (exactly 1)",
+        items: { type: "string" },
+      },
+      video_urls: {
+        type: "array",
+        required: true,
+        description: "Motion video URL (exactly 1)",
+        items: { type: "string" },
+      },
+      character_orientation: {
+        type: "string",
+        required: true,
+        enum: ["image", "video"],
+        description: "Character orientation source",
+      },
+      mode: {
+        type: "string",
+        required: true,
+        enum: ["720p", "1080p"],
+        description: "Output resolution mode",
+      },
+    },
+  },
+
+  "kling/ai-avatar-pro": {
+    type: "video",
+    fields: {
+      image_url: {
+        type: "string",
+        required: true,
+        description: "Avatar image URL",
+      },
+      audio_url: {
+        type: "string",
+        required: true,
+        description: "Driving audio URL",
+      },
+      prompt: {
+        type: "string",
+        required: true,
+        maxLength: 5000,
+        description: "Avatar generation prompt (empty string allowed)",
+      },
+    },
+  },
+
+  "kling/ai-avatar-standard": {
+    type: "video",
+    fields: {
+      image_url: {
+        type: "string",
+        required: true,
+        description: "Avatar image URL",
+      },
+      audio_url: {
+        type: "string",
+        required: true,
+        description: "Driving audio URL",
+      },
+      prompt: {
+        type: "string",
+        required: true,
+        maxLength: 5000,
+        description: "Avatar generation prompt (empty string allowed)",
+      },
+    },
+  },
+
+  "kling/v2-1-master-image-to-video": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        maxLength: 5000,
+        description: "Video generation prompt",
+      },
+      image_url: {
+        type: "string",
+        required: true,
+        description: "Input image URL",
+      },
+      duration: {
+        type: "string",
+        enum: ["5", "10"],
+        description: "Duration in seconds (default 5)",
+      },
+      negative_prompt: {
+        type: "string",
+        maxLength: 500,
+        description: "Negative prompt",
+      },
+      cfg_scale: {
+        type: "number",
+        minimum: 0,
+        maximum: 1,
+        description: "CFG scale 0-1 (default 0.5)",
+      },
+    },
+  },
+
+  "kling/v2-1-master-text-to-video": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        maxLength: 5000,
+        description: "Video generation prompt",
+      },
+      duration: {
+        type: "string",
+        enum: ["5", "10"],
+        description: "Duration in seconds (default 5)",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: ["16:9", "9:16", "1:1"],
+        description: "Output aspect ratio (default 16:9)",
+      },
+      negative_prompt: {
+        type: "string",
+        maxLength: 500,
+        description: "Negative prompt",
+      },
+      cfg_scale: {
+        type: "number",
+        minimum: 0,
+        maximum: 1,
+        description: "CFG scale 0-1 (default 0.5)",
+      },
+    },
+  },
+
+  "kling/v2-1-pro": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        maxLength: 5000,
+        description: "Video generation prompt",
+      },
+      image_url: {
+        type: "string",
+        required: true,
+        description: "Input image URL",
+      },
+      duration: {
+        type: "string",
+        enum: ["5", "10"],
+        description: "Duration in seconds (default 5)",
+      },
+      negative_prompt: {
+        type: "string",
+        maxLength: 500,
+        description: "Negative prompt",
+      },
+      cfg_scale: {
+        type: "number",
+        minimum: 0,
+        maximum: 1,
+        description: "CFG scale 0-1 (default 0.5)",
+      },
+      tail_image_url: {
+        type: "string",
+        description: "Optional end-frame image URL",
+      },
+    },
+  },
+
+  "kling/v2-1-standard": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        maxLength: 5000,
+        description: "Video generation prompt",
+      },
+      image_url: {
+        type: "string",
+        required: true,
+        description: "Input image URL",
+      },
+      duration: {
+        type: "string",
+        enum: ["5", "10"],
+        description: "Duration in seconds (default 5)",
+      },
+      negative_prompt: {
+        type: "string",
+        maxLength: 500,
+        description: "Negative prompt",
+      },
+      cfg_scale: {
+        type: "number",
+        minimum: 0,
+        maximum: 1,
+        description: "CFG scale 0-1 (default 0.5)",
+      },
+    },
+  },
+
+  "kling/v2-5-turbo-image-to-video-pro": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        maxLength: 2500,
+        description: "Video generation prompt",
+      },
+      image_url: {
+        type: "string",
+        required: true,
+        description: "Input image URL",
+      },
+      tail_image_url: {
+        type: "string",
+        description: "Optional end-frame image URL",
+      },
+      duration: {
+        type: "string",
+        enum: ["5", "10"],
+        description: "Duration in seconds (default 5)",
+      },
+      negative_prompt: {
+        type: "string",
+        maxLength: 500,
+        description: "Negative prompt",
+      },
+      cfg_scale: {
+        type: "number",
+        minimum: 0,
+        maximum: 1,
+        description: "CFG scale 0-1 (default 0.5)",
+      },
+    },
+  },
+
+  "kling/v2-5-turbo-text-to-video-pro": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        maxLength: 2500,
+        description: "Video generation prompt",
+      },
+      duration: {
+        type: "string",
+        enum: ["5", "10"],
+        description: "Duration in seconds (default 5)",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: ["16:9", "9:16", "1:1"],
+        description: "Output aspect ratio (default 16:9)",
+      },
+      negative_prompt: {
+        type: "string",
+        maxLength: 2500,
+        description: "Negative prompt",
+      },
+      cfg_scale: {
+        type: "number",
+        minimum: 0,
+        maximum: 1,
+        description: "CFG scale 0-1 (default 0.5)",
+      },
+    },
+  },
+
   "grok-imagine/text-to-image": {
     type: "image",
     fields: {

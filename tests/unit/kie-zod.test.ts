@@ -1021,7 +1021,7 @@ describe("TRI-008 VeoExtendRequestSchema.model stays a closed set", () => {
 // TRI-001 KieMediaModelSchema — one escape hatch per vendor family
 // ---------------------------------------------------------------------------
 //
-// KieMediaModelSchema is kie's aggregator catalogue: 100 ids drawn from a dozen
+// KieMediaModelSchema is kie's aggregator catalogue: 111 ids drawn from a dozen
 // unrelated vendors behind one `createTask` endpoint. REQ-006 forbids opening
 // it with a single catch-all regex, so it carries one alias per vendor family
 // while singletons and fixed-product sets (omnihuman + sub-tasks, volcengine,
@@ -1034,7 +1034,7 @@ describe("TRI-008 VeoExtendRequestSchema.model stays a closed set", () => {
 // BR-4 needs care here that the single-family schemas above do not. A foreign
 // *catalogue* id — `happyhorse/video-edit` on the Kling family — is accepted by
 // KieMediaModelSchema, through the enum branch, and always was: the whole point
-// of the aggregator is that all 100 are valid. So cross-family leakage cannot be
+// of the aggregator is that all 111 are valid. So cross-family leakage cannot be
 // asserted with safeParse; it is asserted structurally instead, against the
 // alias patterns themselves ("partitions the catalogue" below). The per-family
 // `rejected` lists therefore carry BR-3 near-miss typos plus BR-4 ids from
@@ -1050,6 +1050,17 @@ const MEDIA_MODEL_FAMILIES = [
       "kling-3.0/motion-control",
       "kling/v3-turbo-image-to-video",
       "kling/v3-turbo-text-to-video",
+      "kling-2.6/image-to-video",
+      "kling-2.6/motion-control",
+      "kling-2.6/text-to-video",
+      "kling/ai-avatar-pro",
+      "kling/ai-avatar-standard",
+      "kling/v2-1-master-image-to-video",
+      "kling/v2-1-master-text-to-video",
+      "kling/v2-1-pro",
+      "kling/v2-1-standard",
+      "kling/v2-5-turbo-image-to-video-pro",
+      "kling/v2-5-turbo-text-to-video-pro",
     ],
     aliases: ["kling-3.5/video", "kling/v4-turbo-text-to-video"],
     rejected: ["kling", "kling-3.0", "kling3.0/video", "Kling-3.0/video"],

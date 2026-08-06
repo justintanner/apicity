@@ -292,16 +292,37 @@ export const lineup = [
     },
     audio: "—",
   },
+  {
+    ...createTaskEndpointAssociation,
+    label: "seedance-2 4K i2v",
+    payload: {
+      model: "bytedance/seedance-2",
+      input: {
+        prompt: "xxx",
+        first_frame_url: "https://example.com/x.jpg",
+        resolution: "4K",
+      },
+    },
+    audio: "—",
+  },
   // The t2v direction of the same model: no first_frame_url, which is exactly
   // the page's "no video input" column and the more expensive half of the
-  // discriminator. (4K is priced in the table but schema-blocked — see the
-  // entry comment in pricing/kie.ts — so it has no row here.)
+  // discriminator.
   {
     ...createTaskEndpointAssociation,
     label: "seedance-2 1080p t2v",
     payload: {
       model: "bytedance/seedance-2",
       input: { prompt: "xxx", resolution: "1080p" },
+    },
+    audio: "—",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "seedance-2 4K t2v",
+    payload: {
+      model: "bytedance/seedance-2",
+      input: { prompt: "xxx", resolution: "4K" },
     },
     audio: "—",
   },

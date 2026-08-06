@@ -888,22 +888,14 @@ export const kie: Record<string, ModelPricing> = {
   // it adds a 4K tier — 128 credits/s ($0.64) with input, 208 credits/s
   // ($1.04) without.
   //
-  // SCHEMA GAP: Seedance2InputSchema.resolution is
-  // z.enum(["480p","720p","1080p"]) — it has no "4K" value — and the kie
-  // provider's CREATE_TASK_GUARDS reject out-of-enum payloads, so no
-  // schema-valid SDK call can reach the two 4K keys today. They are priced
-  // anyway because the estimate engine is payload-driven and upstream bills
-  // the tier; the enum addition is filed separately as ac-8cfo6r (its own kie
-  // schema PR, out of scope for this pricing pass). Until it lands, 4K is
-  // covered by unit tests only and stays out of the compare-cost lineup,
-  // which validates every row against the shipped schema.
-  //
-  // When that enum lands, the value must be added as exactly "4K" to match the
-  // rate keys below — NOT the "4k" spelling VeoResolutionSchema and
-  // GeminiOmniVideoResolutionSchema use. A lowercase "4k" would be
-  // schema-valid and miss the rate table, and no test would catch it: the 4K
-  // pin in tests/unit/cost-pricing.test.ts calls computeEstimate directly,
-  // which does not schema-validate.
+  // As of ac-8cfo6r the 4K tier is schema-reachable: the shipped
+  // Seedance2InputSchema accepts resolution "4K", spelled uppercase to match
+  // the rate keys below — NOT the "4k" spelling VeoResolutionSchema and
+  // GeminiOmniVideoResolutionSchema use, which would be schema-valid and miss
+  // the rate table. The seedance-2 4K rows in scripts/compare-video-cost.mjs
+  // are the standing guard on that linkage: every lineup row is validated
+  // against the shipped schema, so a drift to "4k" on either side fails
+  // `pnpm run lint:compare-payloads`.
   "bytedance/seedance-2": {
     kind: "perUnit",
     unit: "seconds",

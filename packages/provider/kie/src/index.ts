@@ -13,6 +13,18 @@ export type {
   VerifyKieWebhookRequestInput,
 } from "./webhook";
 
+// Veo callback payload types (inbound callBackUrl bodies)
+export type {
+  VeoCallbackInfo,
+  VeoGenerateCallbackData,
+  VeoGenerateCallbackPayload,
+  VeoExtendCallbackData,
+  VeoExtendCallbackPayload,
+  VeoGet4kVideoCallbackInfo,
+  VeoGet4kVideoCallbackData,
+  VeoGet4kVideoCallbackPayload,
+} from "./callbacks-veo";
+
 // Export reusable schema metadata
 export {
   GeminiOmniAudioCreateRequestSchema,

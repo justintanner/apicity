@@ -555,7 +555,26 @@ defaults to `false`.
 
 ## API Reference
 
-48 endpoints across 24 groups. Each method mirrors an upstream URL path.
+54 endpoints across 28 groups. Each method mirrors an upstream URL path.
+
+### aleph
+
+<details>
+<summary><code>GET</code> <b><code>kie.get.api.v1.aleph.recordInfo</code></b></summary>
+
+<code>GET https://api.kie.ai/api/v1/aleph/record-info?taskId={taskId}</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/runway-api/get-aleph-video-details)
+
+```typescript
+const res = await kie.get.api.v1.aleph.recordInfo({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
+
+</details>
 
 ### chat
 
@@ -742,6 +761,25 @@ const res = await kie.gemini.post.v1.models.gemini35Flash.streamGenerateContent(
 ```
 
 Source: [`packages/provider/kie/src/gemini.ts`](src/gemini.ts)
+
+</details>
+
+### gemini25Flash
+
+<details>
+<summary><code>POST</code> <b><code>kie.gemini25Flash.post.v1.chat.completions</code></b></summary>
+
+<code>POST https://api.kie.ai/gemini-2.5-flash/v1/chat/completions</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/market/gemini/gemini-2-5-flash)
+
+```typescript
+const res = await kie.gemini25Flash.post.v1.chat.completions({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/gemini-25-flash.ts`](src/gemini-25-flash.ts)
 
 </details>
 
@@ -948,7 +986,6 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 </details>
 
 <details>
-<details>
 <summary><code>POST</code> <b><code>kie.post.api.v1.gpt4oImage.downloadUrl</code></b></summary>
 
 <code>POST https://api.kie.ai/api/v1/gpt4o-image/download-url</code>
@@ -965,6 +1002,7 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 
 </details>
 
+<details>
 <summary><code>POST</code> <b><code>kie.post.api.v1.gpt4oImage.generate</code></b></summary>
 
 <code>POST https://api.kie.ai/api/v1/gpt4o-image/generate</code>
@@ -1280,6 +1318,25 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 
 </details>
 
+### suno
+
+<details>
+<summary><code>GET</code> <b><code>kie.suno.get.api.v1.suno.cover.recordInfo</code></b></summary>
+
+<code>GET https://api.kie.ai/api/v1/suno/cover/record-info?taskId={taskId}</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/suno-api/get-cover-suno-details)
+
+```typescript
+const res = await kie.suno.get.api.v1.suno.cover.recordInfo({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
+
+</details>
+
 ### veo
 
 <details>
@@ -1353,6 +1410,23 @@ Source: [`packages/provider/kie/src/veo.ts`](src/veo.ts)
 ### vocalRemoval
 
 <details>
+<summary><code>GET</code> <b><code>kie.suno.get.api.v1.vocalRemoval.recordInfo</code></b></summary>
+
+<code>GET https://api.kie.ai/api/v1/vocal-removal/record-info?taskId={taskId}</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/suno-api/get-vocal-separation-details)
+
+```typescript
+const res = await kie.suno.get.api.v1.vocalRemoval.recordInfo({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
+
+</details>
+
+<details>
 <summary><code>POST</code> <b><code>kie.suno.post.api.v1.vocalRemoval.generate</code></b></summary>
 
 <code>POST https://api.kie.ai/api/v1/vocal-removal/generate</code>
@@ -1361,6 +1435,42 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await kie.suno.post.api.v1.vocalRemoval.generate({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
+
+</details>
+
+### voice
+
+<details>
+<summary><code>GET</code> <b><code>kie.suno.get.api.v1.voice.recordInfo</code></b></summary>
+
+<code>GET https://api.kie.ai/api/v1/voice/record-info?taskId={taskId}</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/suno-api/suno-voice-record-info)
+
+```typescript
+const res = await kie.suno.get.api.v1.voice.recordInfo({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>kie.suno.get.api.v1.voice.validateInfo</code></b></summary>
+
+<code>GET https://api.kie.ai/api/v1/voice/validate-info?taskId={taskId}</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/suno-api/suno-voice-validate-info)
+
+```typescript
+const res = await kie.suno.get.api.v1.voice.validateInfo({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)

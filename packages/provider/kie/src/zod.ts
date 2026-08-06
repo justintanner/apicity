@@ -515,6 +515,132 @@ export type KieGemini31ProChatCompletionsParsedRequest = z.output<
   typeof KieGemini31ProChatCompletionsRequestSchema
 >;
 
+// Gemini 2.5 Flash OpenAI-compatible chat completions
+// Docs: https://docs.kie.ai/market/gemini/gemini-2-5-flash
+export const KieGemini25FlashMessageRoleSchema = z.enum([
+  "developer",
+  "system",
+  "user",
+  "assistant",
+  "tool",
+]);
+
+export const KieGemini25FlashContentItemTypeSchema = z.enum([
+  "text",
+  "image_url",
+]);
+
+export const KieGemini25FlashToolTypeSchema = z.enum(["function"]);
+
+export const KieGemini25FlashTextContentItemSchema = z
+  .object({
+    type: z.literal("text"),
+    text: z.string(),
+  })
+  .strict();
+
+export const KieGemini25FlashMediaContentItemSchema = z
+  .object({
+    type: z.literal("image_url"),
+    image_url: z.object({ url: z.string().url() }).strict(),
+  })
+  .strict();
+
+export const KieGemini25FlashContentItemSchema = z.discriminatedUnion("type", [
+  KieGemini25FlashTextContentItemSchema,
+  KieGemini25FlashMediaContentItemSchema,
+]);
+
+export const KieGemini25FlashMessageSchema = z
+  .object({
+    role: KieGemini25FlashMessageRoleSchema,
+    content: z.array(KieGemini25FlashContentItemSchema).min(1),
+  })
+  .passthrough();
+
+export const KieGemini25FlashToolFunctionParametersSchema = z
+  .object({
+    type: z.literal("object"),
+    properties: z.record(z.string(), z.unknown()).optional(),
+    required: z.array(z.string()).optional(),
+  })
+  .passthrough();
+
+// googleSearch or custom function declarations (mutually exclusive upstream).
+export const KieGemini25FlashToolFunctionSchema = z
+  .object({
+    name: z.string().min(1),
+    description: z.string().optional(),
+    parameters: KieGemini25FlashToolFunctionParametersSchema.optional(),
+  })
+  .passthrough();
+
+export const KieGemini25FlashToolSchema = z
+  .object({
+    type: KieGemini25FlashToolTypeSchema,
+    function: KieGemini25FlashToolFunctionSchema,
+  })
+  .strict();
+
+export const KieGemini25FlashResponseFormatSchema = z
+  .object({
+    type: z.string().optional(),
+    json_schema: z.record(z.string(), z.unknown()).optional(),
+    properties: z.record(z.string(), z.unknown()).optional(),
+  })
+  .passthrough();
+
+export const KieGemini25FlashChatCompletionsRequestSchema = z
+  .object({
+    model: z.literal("gemini-2.5-flash").optional(),
+    messages: z.array(KieGemini25FlashMessageSchema).min(1),
+    stream: z.boolean().default(true),
+    tools: z.array(KieGemini25FlashToolSchema).min(0).optional(),
+    include_thoughts: z.boolean().default(true),
+    response_format: KieGemini25FlashResponseFormatSchema.optional(),
+  })
+  .passthrough();
+
+export type KieGemini25FlashMessageRole = z.infer<
+  typeof KieGemini25FlashMessageRoleSchema
+>;
+export type KieGemini25FlashContentItemType = z.infer<
+  typeof KieGemini25FlashContentItemTypeSchema
+>;
+export type KieGemini25FlashToolType = z.infer<
+  typeof KieGemini25FlashToolTypeSchema
+>;
+export type KieGemini25FlashTextContentItem = z.infer<
+  typeof KieGemini25FlashTextContentItemSchema
+>;
+export type KieGemini25FlashMediaContentItem = z.infer<
+  typeof KieGemini25FlashMediaContentItemSchema
+>;
+export type KieGemini25FlashContentItem = z.infer<
+  typeof KieGemini25FlashContentItemSchema
+>;
+export type KieGemini25FlashMessage = z.infer<
+  typeof KieGemini25FlashMessageSchema
+>;
+export type KieGemini25FlashToolFunctionParameters = z.infer<
+  typeof KieGemini25FlashToolFunctionParametersSchema
+>;
+export type KieGemini25FlashToolFunction = z.infer<
+  typeof KieGemini25FlashToolFunctionSchema
+>;
+export type KieGemini25FlashTool = z.infer<typeof KieGemini25FlashToolSchema>;
+export type KieGemini25FlashResponseFormat = z.infer<
+  typeof KieGemini25FlashResponseFormatSchema
+>;
+export type KieGemini25FlashChatCompletionsRequest = z.input<
+  typeof KieGemini25FlashChatCompletionsRequestSchema
+>;
+export type KieGemini25FlashChatCompletionsRequestInput =
+  KieGemini25FlashChatCompletionsRequest;
+export type KieGemini25FlashChatCompletionsParsedRequest = z.output<
+  typeof KieGemini25FlashChatCompletionsRequestSchema
+>;
+
 export const KlingDurationSchema = z.enum([
   "3",
   "4",

@@ -522,6 +522,16 @@ export const KieGemini35FlashStreamGenerateContentRequestSchema = z
   })
   .passthrough();
 
+// Docs: https://docs.kie.ai/market/gemini/gemini-3-6-flash
+export const KieGemini36FlashStreamGenerateContentRequestSchema = z
+  .object({
+    stream: z.boolean().default(true),
+    contents: z.array(KieGeminiContentSchema).min(1),
+    tools: z.array(KieGeminiToolSchema).optional(),
+    generationConfig: KieGeminiGenerationConfigSchema.optional(),
+  })
+  .passthrough();
+
 export const KieGemini31ProMessageRoleSchema = z.enum([
   "developer",
   "system",
@@ -5253,6 +5263,12 @@ export type KieGemini35FlashStreamGenerateContentRequest = z.input<
 >;
 export type KieGemini35FlashStreamGenerateContentParsedRequest = z.output<
   typeof KieGemini35FlashStreamGenerateContentRequestSchema
+>;
+export type KieGemini36FlashStreamGenerateContentRequest = z.input<
+  typeof KieGemini36FlashStreamGenerateContentRequestSchema
+>;
+export type KieGemini36FlashStreamGenerateContentParsedRequest = z.output<
+  typeof KieGemini36FlashStreamGenerateContentRequestSchema
 >;
 export type KieOptions = z.infer<typeof KieOptionsSchema>;
 

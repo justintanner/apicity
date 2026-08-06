@@ -67,7 +67,10 @@ const KIE_MODEL_FAMILY_ENDPOINTS: Record<string, readonly string[]> = {
   ],
   Omni: ["api.v1.omni.audio.create", "api.v1.omni.character.create"],
   Claude: ["claude.v1.messages"],
-  Gemini: ["gemini.v1.models.gemini35Flash.streamGenerateContent"],
+  Gemini: [
+    "gemini.v1.models.gemini35Flash.streamGenerateContent",
+    "gemini.v1.models.gemini36Flash.streamGenerateContent",
+  ],
   Gemini31: ["gemini31Pro.v1.chat.completions"],
   Codex: ["codex.v1.responses"],
 };

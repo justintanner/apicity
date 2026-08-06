@@ -468,6 +468,24 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST gemini.v1.models.gemini36Flash.streamGenerateContent": {
+    "source": "kie/gemini-36-flash-auth-error",
+    "payload": {
+      "stream": false,
+      "contents": [
+        {
+          "role": "user",
+          "parts": [
+            {
+              "text": "ping"
+            }
+          ]
+        }
+      ]
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST gemini25Flash.v1.chat.completions": {
     "source": "kie/gemini-25-flash-chat-auth-error",
     "payload": {

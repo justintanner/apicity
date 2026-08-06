@@ -49,6 +49,15 @@ export type {
   Gpt4oImageCallbackPayload,
 } from "./callbacks-gpt4o-image";
 
+// Runway callback payloads (generate, extend, aleph)
+export {
+  RunwayGenerateCallbackDataSchema,
+  RunwayGenerateCallbackPayloadSchema,
+  RunwayExtendCallbackDataSchema,
+  RunwayExtendCallbackPayloadSchema,
+  RunwayAlephCallbackDataSchema,
+  RunwayAlephCallbackPayloadSchema,
+} from "./callbacks-runway";
 export type {
   RunwayGenerateCallbackData,
   RunwayGenerateCallbackPayload,

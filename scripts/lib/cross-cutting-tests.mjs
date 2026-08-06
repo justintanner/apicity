@@ -24,10 +24,16 @@ import { repoRoot } from "./provider-scope.mjs";
  * Polly, no network, ~1s), so the cost is negligible.
  *
  * Add any new test that walks the whole `tests/recordings` tree to this list.
+ *
+ * Also include inventory tests that compare committed TSV artifacts against the
+ * live endpoint surface (e.g. endpoint-cost-tiers). Those are not provider-named
+ * either, so without this list a bead that adds an endpoint can ship without its
+ * cost-tier row and only go red in full CI on main (ac-t2gfln).
  */
 export const CROSS_CUTTING_TESTS = [
   "tests/integration/upload-recordings.test.ts",
   "tests/integration/multipart-recordings.test.ts",
+  "tests/unit/endpoint-cost-tiers.test.ts",
 ];
 
 /**

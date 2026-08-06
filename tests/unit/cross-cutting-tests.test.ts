@@ -7,14 +7,25 @@ import {
 } from "../../scripts/lib/cross-cutting-tests.mjs";
 import { repoRoot } from "../../scripts/lib/provider-scope.mjs";
 
+// Recording-enumeration suite (walks the whole tests/recordings tree).
+const RECORDING_ENUMERATION_TESTS = [
+  "tests/integration/upload-recordings.test.ts",
+  "tests/integration/multipart-recordings.test.ts",
+] as const;
+
+// Surface-inventory suite (compares committed TSVs to the live endpoint map).
+const SURFACE_INVENTORY_TESTS = [
+  "tests/unit/endpoint-cost-tiers.test.ts",
+] as const;
+
 describe("cross-cutting integration tests", () => {
-  it("lists at least the recording-enumeration tests", () => {
-    expect(CROSS_CUTTING_TESTS).toContain(
-      "tests/integration/upload-recordings.test.ts"
-    );
-    expect(CROSS_CUTTING_TESTS).toContain(
-      "tests/integration/multipart-recordings.test.ts"
-    );
+  it("lists recording-enumeration and surface-inventory tests", () => {
+    for (const path of RECORDING_ENUMERATION_TESTS) {
+      expect(CROSS_CUTTING_TESTS).toContain(path);
+    }
+    for (const path of SURFACE_INVENTORY_TESTS) {
+      expect(CROSS_CUTTING_TESTS).toContain(path);
+    }
   });
 
   it("every listed test exists on disk", () => {
@@ -26,16 +37,22 @@ describe("cross-cutting integration tests", () => {
     }
   });
 
-  it("every listed test enumerates the whole recordings tree", () => {
-    // The defining property of a cross-cutting test: it recursively walks the
-    // entire tests/recordings corpus (rather than a fixed provider subset), so
-    // a recording added under any provider can break it. Guard the list against
-    // drift by asserting each entry both references the recordings root and
-    // recursively reads a directory.
-    for (const relativePath of listCrossCuttingTests()) {
+  it("recording-enumeration tests walk the whole recordings tree", () => {
+    // Each recording-enumeration entry recursively walks the entire
+    // tests/recordings corpus rather than a fixed provider subset.
+    for (const relativePath of RECORDING_ENUMERATION_TESTS) {
       const source = fs.readFileSync(path.join(repoRoot, relativePath), "utf8");
       expect(source, relativePath).toContain("../recordings");
       expect(source, relativePath).toContain("readdirSync");
+    }
+  });
+
+  it("surface-inventory tests pin a committed endpoint-surface artifact", () => {
+    // Inventory tests must reference the cost-tiers TSV so a missing row after
+    // an endpoint landing fails the fast gate (ac-t2gfln).
+    for (const relativePath of SURFACE_INVENTORY_TESTS) {
+      const source = fs.readFileSync(path.join(repoRoot, relativePath), "utf8");
+      expect(source, relativePath).toContain("endpoint-cost-tiers.tsv");
     }
   });
 

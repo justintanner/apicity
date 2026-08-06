@@ -257,6 +257,38 @@ export interface SunoVoiceValidateInfoResponse {
   [key: string]: unknown;
 }
 
+export interface SunoCoverRecordInfoRequest {
+  taskId: string;
+}
+
+/** Task status flag: 0-Pending, 1-Success, 2-Generating, 3-Generation failed */
+export type SunoCoverSuccessFlag = 0 | 1 | 2 | 3;
+
+export interface SunoCoverRecordInfoResult {
+  images?: string[];
+  [key: string]: unknown;
+}
+
+export interface SunoCoverRecordInfoData {
+  taskId: string;
+  parentTaskId?: string;
+  callbackUrl?: string;
+  completeTime?: string | null;
+  response?: SunoCoverRecordInfoResult | null;
+  successFlag?: SunoCoverSuccessFlag | number;
+  createTime?: string;
+  errorCode?: number | null;
+  errorMessage?: string | null;
+  [key: string]: unknown;
+}
+
+export interface SunoCoverRecordInfoResponse {
+  code: number;
+  msg?: string;
+  data?: SunoCoverRecordInfoData | null;
+  [key: string]: unknown;
+}
+
 export interface SunoMp4Request {
   taskId: string;
   audioId: string;
@@ -602,6 +634,12 @@ interface SunoVoiceValidateInfoMethod {
   responseSchema: ApicitySchema<SunoVoiceValidateInfoResponse>;
 }
 
+interface SunoCoverRecordInfoMethod {
+  (taskId: string): Promise<SunoCoverRecordInfoResponse>;
+  schema: ApicitySchema<SunoCoverRecordInfoRequest>;
+  responseSchema: ApicitySchema<SunoCoverRecordInfoResponse>;
+}
+
 interface SunoMp4Method {
   (
     req: SunoMp4Request,
@@ -698,6 +736,14 @@ interface SunoVoiceGetNamespace {
   validateInfo: SunoVoiceValidateInfoMethod;
 }
 
+interface SunoCoverGetNamespace {
+  recordInfo: SunoCoverRecordInfoMethod;
+}
+
+interface SunoSunoGetNamespace {
+  cover: SunoCoverGetNamespace;
+}
+
 interface SunoMp4Namespace {
   generate: SunoMp4Method;
 }
@@ -738,6 +784,7 @@ interface SunoV1GetNamespace {
   };
   vocalRemoval: SunoVocalRemovalGetNamespace;
   voice: SunoVoiceGetNamespace;
+  suno: SunoSunoGetNamespace;
 }
 
 interface SunoPostApiNamespace {
@@ -952,6 +999,40 @@ const SunoVoiceValidateInfoResponseSchema = z
     code: z.number().int(),
     msg: z.string().optional(),
     data: SunoVoiceValidateInfoDataSchema.nullable().optional(),
+  })
+  .passthrough();
+
+const SunoCoverRecordInfoRequestSchema = z
+  .object({
+    taskId: z.string().min(1),
+  })
+  .passthrough();
+
+const SunoCoverRecordInfoResultSchema = z
+  .object({
+    images: z.array(z.string()).optional(),
+  })
+  .passthrough();
+
+const SunoCoverRecordInfoDataSchema = z
+  .object({
+    taskId: z.string(),
+    parentTaskId: z.string().optional(),
+    callbackUrl: z.string().optional(),
+    completeTime: z.string().nullable().optional(),
+    response: SunoCoverRecordInfoResultSchema.nullable().optional(),
+    successFlag: z.number().int().optional(),
+    createTime: z.string().optional(),
+    errorCode: z.number().int().nullable().optional(),
+    errorMessage: z.string().nullable().optional(),
+  })
+  .passthrough();
+
+const SunoCoverRecordInfoResponseSchema = z
+  .object({
+    code: z.number().int(),
+    msg: z.string().optional(),
+    data: SunoCoverRecordInfoDataSchema.nullable().optional(),
   })
   .passthrough();
 
@@ -1372,6 +1453,17 @@ export function createSunoProvider(
     });
   }
 
+  // GET https://api.kie.ai/api/v1/suno/cover/record-info?taskId={taskId}
+  // Docs: https://docs.kie.ai/suno-api/get-cover-suno-details
+  async function coverRecordInfo(
+    taskId: string
+  ): Promise<SunoCoverRecordInfoResponse> {
+    return kieRequest<SunoCoverRecordInfoResponse>(transport, {
+      method: "GET",
+      path: `/api/v1/suno/cover/record-info?taskId=${encodeURIComponent(taskId)}`,
+    });
+  }
+
   // POST https://api.kie.ai/api/v1/mp4/generate
   // Docs: https://docs.kie.ai/suno-api/create-music-video
   async function mp4Generate(req: SunoMp4Request): Promise<SunoSubmitResponse> {
@@ -1646,6 +1738,14 @@ export function createSunoProvider(
               schema: SunoVoiceValidateInfoRequestSchema,
               responseSchema: SunoVoiceValidateInfoResponseSchema,
             }),
+          },
+          suno: {
+            cover: {
+              recordInfo: Object.assign(coverRecordInfo, {
+                schema: SunoCoverRecordInfoRequestSchema,
+                responseSchema: SunoCoverRecordInfoResponseSchema,
+              }),
+            },
           },
         },
       },

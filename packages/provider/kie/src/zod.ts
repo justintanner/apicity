@@ -226,6 +226,16 @@ export const KIE_MEDIA_MODELS = [
   "bytedance/seedance-2",
   "bytedance/seedance-2-mini",
   "bytedance/seedance-1.5-pro",
+  // ByteDance non-Seedance createTask models — enum-only (Seedance alias is
+  // product-anchored; seedream/v1-* ids do not match it).
+  "bytedance/seedream",
+  "bytedance/seedream-v4-edit",
+  "bytedance/seedream-v4-text-to-image",
+  "bytedance/v1-lite-image-to-video",
+  "bytedance/v1-lite-text-to-video",
+  "bytedance/v1-pro-fast-image-to-video",
+  "bytedance/v1-pro-image-to-video",
+  "bytedance/v1-pro-text-to-video",
   "wan/2-7-image-to-video",
   "wan/2-7-text-to-video",
   "wan/2-7-r2v",
@@ -2099,6 +2109,206 @@ export const Seedance15ProRequestSchema = z.object({
   model: z.literal("bytedance/seedance-1.5-pro"),
   callBackUrl: z.string().optional(),
   input: Seedance15ProInputSchema,
+});
+
+// ---------------------------------------------------------------------------
+// ByteDance non-Seedance createTask models (ac-ww94di)
+// Docs live under market/seedream/* and market/bytedance/v1-* paths; model ids
+// use the bytedance/ namespace. Seedance alias does not cover these products.
+// ---------------------------------------------------------------------------
+
+// Docs: https://docs.kie.ai/market/seedream/seedream (Seedream 3.0)
+export const BytedanceSeedreamImageSizeSchema = z.enum([
+  "square",
+  "square_hd",
+  "portrait_4_3",
+  "portrait_16_9",
+  "landscape_4_3",
+  "landscape_16_9",
+]);
+
+export const BytedanceSeedreamInputSchema = z.object({
+  prompt: z.string().min(3).max(5000),
+  image_size: BytedanceSeedreamImageSizeSchema.default("square_hd"),
+  guidance_scale: z.number().min(1).max(10).default(2.5),
+  seed: z.number().int().optional(),
+});
+
+export const BytedanceSeedreamRequestSchema = z.object({
+  model: z.literal("bytedance/seedream"),
+  callBackUrl: z.string().optional(),
+  input: BytedanceSeedreamInputSchema,
+});
+
+// Shared image_size / resolution enums for Seedream 4.0 text-to-image + edit.
+// Docs: https://docs.kie.ai/market/seedream/seedream-v4-text-to-image
+// Docs: https://docs.kie.ai/market/seedream/seedream-v4-edit
+export const BytedanceSeedreamV4ImageSizeSchema = z.enum([
+  "square",
+  "square_hd",
+  "portrait_4_3",
+  "portrait_3_2",
+  "portrait_16_9",
+  "landscape_4_3",
+  "landscape_3_2",
+  "landscape_16_9",
+  "landscape_21_9",
+]);
+
+export const BytedanceSeedreamV4ImageResolutionSchema = z.enum([
+  "1K",
+  "2K",
+  "4K",
+]);
+
+export const BytedanceSeedreamV4TextToImageInputSchema = z.object({
+  prompt: z.string().min(3).max(5000),
+  image_size: BytedanceSeedreamV4ImageSizeSchema.default("square_hd"),
+  image_resolution: BytedanceSeedreamV4ImageResolutionSchema.default("1K"),
+  max_images: z.number().int().min(1).max(6).default(1),
+  seed: z.number().int().optional(),
+  nsfw_checker: z.boolean().default(false),
+});
+
+export const BytedanceSeedreamV4TextToImageRequestSchema = z.object({
+  model: z.literal("bytedance/seedream-v4-text-to-image"),
+  callBackUrl: z.string().optional(),
+  input: BytedanceSeedreamV4TextToImageInputSchema,
+});
+
+export const BytedanceSeedreamV4EditInputSchema = z.object({
+  prompt: z.string().min(3).max(5000),
+  image_urls: z.array(z.string()).min(1).max(10),
+  image_size: BytedanceSeedreamV4ImageSizeSchema.default("square_hd"),
+  image_resolution: BytedanceSeedreamV4ImageResolutionSchema.default("1K"),
+  max_images: z.number().int().min(1).max(6).default(1),
+  seed: z.number().int().optional(),
+  nsfw_checker: z.boolean().default(false),
+});
+
+export const BytedanceSeedreamV4EditRequestSchema = z.object({
+  model: z.literal("bytedance/seedream-v4-edit"),
+  callBackUrl: z.string().optional(),
+  input: BytedanceSeedreamV4EditInputSchema,
+});
+
+// Shared video field vocabs for bytedance/v1-* models.
+// Docs: https://docs.kie.ai/market/bytedance/v1-pro-text-to-video (and siblings)
+export const BytedanceV1VideoDurationSchema = z.enum(["5", "10"]);
+export const BytedanceV1VideoResolutionSchema = z.enum([
+  "480p",
+  "720p",
+  "1080p",
+]);
+export const BytedanceV1ProFastVideoResolutionSchema = z.enum([
+  "720p",
+  "1080p",
+]);
+export const BytedanceV1LiteTextAspectRatioSchema = z.enum([
+  "16:9",
+  "4:3",
+  "1:1",
+  "3:4",
+  "9:16",
+  "9:21",
+]);
+export const BytedanceV1ProTextAspectRatioSchema = z.enum([
+  "21:9",
+  "16:9",
+  "4:3",
+  "1:1",
+  "3:4",
+  "9:16",
+]);
+
+const bytedanceV1SeedField = z
+  .number()
+  .int()
+  .min(-1)
+  .max(2147483647)
+  .optional();
+
+export const BytedanceV1LiteImageToVideoInputSchema = z.object({
+  prompt: z.string().min(3).max(10000),
+  image_url: z.string().min(1),
+  resolution: BytedanceV1VideoResolutionSchema.default("720p"),
+  duration: BytedanceV1VideoDurationSchema.default("5"),
+  camera_fixed: z.boolean().optional(),
+  seed: bytedanceV1SeedField,
+  enable_safety_checker: z.boolean().optional(),
+  end_image_url: z.string().optional(),
+  nsfw_checker: z.boolean().default(false),
+});
+
+export const BytedanceV1LiteImageToVideoRequestSchema = z.object({
+  model: z.literal("bytedance/v1-lite-image-to-video"),
+  callBackUrl: z.string().optional(),
+  input: BytedanceV1LiteImageToVideoInputSchema,
+});
+
+export const BytedanceV1LiteTextToVideoInputSchema = z.object({
+  prompt: z.string().min(3).max(10000),
+  aspect_ratio: BytedanceV1LiteTextAspectRatioSchema.default("16:9"),
+  resolution: BytedanceV1VideoResolutionSchema.default("720p"),
+  duration: BytedanceV1VideoDurationSchema.default("5"),
+  camera_fixed: z.boolean().optional(),
+  seed: bytedanceV1SeedField,
+  enable_safety_checker: z.boolean().optional(),
+  nsfw_checker: z.boolean().default(false),
+});
+
+export const BytedanceV1LiteTextToVideoRequestSchema = z.object({
+  model: z.literal("bytedance/v1-lite-text-to-video"),
+  callBackUrl: z.string().optional(),
+  input: BytedanceV1LiteTextToVideoInputSchema,
+});
+
+export const BytedanceV1ProFastImageToVideoInputSchema = z.object({
+  prompt: z.string().min(3).max(10000),
+  image_url: z.string().min(1),
+  resolution: BytedanceV1ProFastVideoResolutionSchema.default("720p"),
+  duration: BytedanceV1VideoDurationSchema.default("5"),
+  nsfw_checker: z.boolean().default(false),
+});
+
+export const BytedanceV1ProFastImageToVideoRequestSchema = z.object({
+  model: z.literal("bytedance/v1-pro-fast-image-to-video"),
+  callBackUrl: z.string().optional(),
+  input: BytedanceV1ProFastImageToVideoInputSchema,
+});
+
+export const BytedanceV1ProImageToVideoInputSchema = z.object({
+  prompt: z.string().min(3).max(10000),
+  image_url: z.string().min(1),
+  resolution: BytedanceV1VideoResolutionSchema.default("720p"),
+  duration: BytedanceV1VideoDurationSchema.default("5"),
+  camera_fixed: z.boolean().optional(),
+  seed: bytedanceV1SeedField,
+  enable_safety_checker: z.boolean().optional(),
+  nsfw_checker: z.boolean().default(false),
+});
+
+export const BytedanceV1ProImageToVideoRequestSchema = z.object({
+  model: z.literal("bytedance/v1-pro-image-to-video"),
+  callBackUrl: z.string().optional(),
+  input: BytedanceV1ProImageToVideoInputSchema,
+});
+
+export const BytedanceV1ProTextToVideoInputSchema = z.object({
+  prompt: z.string().min(3).max(10000),
+  aspect_ratio: BytedanceV1ProTextAspectRatioSchema.default("16:9"),
+  resolution: BytedanceV1VideoResolutionSchema.default("720p"),
+  duration: BytedanceV1VideoDurationSchema.default("5"),
+  camera_fixed: z.boolean().optional(),
+  seed: bytedanceV1SeedField,
+  enable_safety_checker: z.boolean().optional(),
+  nsfw_checker: z.boolean().default(false),
+});
+
+export const BytedanceV1ProTextToVideoRequestSchema = z.object({
+  model: z.literal("bytedance/v1-pro-text-to-video"),
+  callBackUrl: z.string().optional(),
+  input: BytedanceV1ProTextToVideoInputSchema,
 });
 
 export const NanoBanana2RequestSchema = z.object({
@@ -4764,6 +4974,14 @@ export const MediaGenerationRequestSchema = z.union([
   Seedance2RequestSchema,
   Seedance2MiniRequestSchema,
   Seedance15ProRequestSchema,
+  BytedanceSeedreamRequestSchema,
+  BytedanceSeedreamV4EditRequestSchema,
+  BytedanceSeedreamV4TextToImageRequestSchema,
+  BytedanceV1LiteImageToVideoRequestSchema,
+  BytedanceV1LiteTextToVideoRequestSchema,
+  BytedanceV1ProFastImageToVideoRequestSchema,
+  BytedanceV1ProImageToVideoRequestSchema,
+  BytedanceV1ProTextToVideoRequestSchema,
   Wan27ImageToVideoRequestSchema,
   Wan27TextToVideoRequestSchema,
   Wan27RefToVideoRequestSchema,
@@ -5140,6 +5358,117 @@ export type Seedance15ProRequest = z.input<typeof Seedance15ProRequestSchema>;
 export type Seedance15ProRequestInput = Seedance15ProRequest;
 export type Seedance15ProParsedRequest = z.output<
   typeof Seedance15ProRequestSchema
+>;
+export type BytedanceSeedreamImageSize = z.infer<
+  typeof BytedanceSeedreamImageSizeSchema
+>;
+export type BytedanceSeedreamInput = z.infer<
+  typeof BytedanceSeedreamInputSchema
+>;
+export type BytedanceSeedreamRequest = z.input<
+  typeof BytedanceSeedreamRequestSchema
+>;
+export type BytedanceSeedreamRequestInput = BytedanceSeedreamRequest;
+export type BytedanceSeedreamParsedRequest = z.output<
+  typeof BytedanceSeedreamRequestSchema
+>;
+export type BytedanceSeedreamV4ImageSize = z.infer<
+  typeof BytedanceSeedreamV4ImageSizeSchema
+>;
+export type BytedanceSeedreamV4ImageResolution = z.infer<
+  typeof BytedanceSeedreamV4ImageResolutionSchema
+>;
+export type BytedanceSeedreamV4TextToImageInput = z.infer<
+  typeof BytedanceSeedreamV4TextToImageInputSchema
+>;
+export type BytedanceSeedreamV4TextToImageRequest = z.input<
+  typeof BytedanceSeedreamV4TextToImageRequestSchema
+>;
+export type BytedanceSeedreamV4TextToImageRequestInput =
+  BytedanceSeedreamV4TextToImageRequest;
+export type BytedanceSeedreamV4TextToImageParsedRequest = z.output<
+  typeof BytedanceSeedreamV4TextToImageRequestSchema
+>;
+export type BytedanceSeedreamV4EditInput = z.infer<
+  typeof BytedanceSeedreamV4EditInputSchema
+>;
+export type BytedanceSeedreamV4EditRequest = z.input<
+  typeof BytedanceSeedreamV4EditRequestSchema
+>;
+export type BytedanceSeedreamV4EditRequestInput =
+  BytedanceSeedreamV4EditRequest;
+export type BytedanceSeedreamV4EditParsedRequest = z.output<
+  typeof BytedanceSeedreamV4EditRequestSchema
+>;
+export type BytedanceV1VideoDuration = z.infer<
+  typeof BytedanceV1VideoDurationSchema
+>;
+export type BytedanceV1VideoResolution = z.infer<
+  typeof BytedanceV1VideoResolutionSchema
+>;
+export type BytedanceV1ProFastVideoResolution = z.infer<
+  typeof BytedanceV1ProFastVideoResolutionSchema
+>;
+export type BytedanceV1LiteTextAspectRatio = z.infer<
+  typeof BytedanceV1LiteTextAspectRatioSchema
+>;
+export type BytedanceV1ProTextAspectRatio = z.infer<
+  typeof BytedanceV1ProTextAspectRatioSchema
+>;
+export type BytedanceV1LiteImageToVideoInput = z.infer<
+  typeof BytedanceV1LiteImageToVideoInputSchema
+>;
+export type BytedanceV1LiteImageToVideoRequest = z.input<
+  typeof BytedanceV1LiteImageToVideoRequestSchema
+>;
+export type BytedanceV1LiteImageToVideoRequestInput =
+  BytedanceV1LiteImageToVideoRequest;
+export type BytedanceV1LiteImageToVideoParsedRequest = z.output<
+  typeof BytedanceV1LiteImageToVideoRequestSchema
+>;
+export type BytedanceV1LiteTextToVideoInput = z.infer<
+  typeof BytedanceV1LiteTextToVideoInputSchema
+>;
+export type BytedanceV1LiteTextToVideoRequest = z.input<
+  typeof BytedanceV1LiteTextToVideoRequestSchema
+>;
+export type BytedanceV1LiteTextToVideoRequestInput =
+  BytedanceV1LiteTextToVideoRequest;
+export type BytedanceV1LiteTextToVideoParsedRequest = z.output<
+  typeof BytedanceV1LiteTextToVideoRequestSchema
+>;
+export type BytedanceV1ProFastImageToVideoInput = z.infer<
+  typeof BytedanceV1ProFastImageToVideoInputSchema
+>;
+export type BytedanceV1ProFastImageToVideoRequest = z.input<
+  typeof BytedanceV1ProFastImageToVideoRequestSchema
+>;
+export type BytedanceV1ProFastImageToVideoRequestInput =
+  BytedanceV1ProFastImageToVideoRequest;
+export type BytedanceV1ProFastImageToVideoParsedRequest = z.output<
+  typeof BytedanceV1ProFastImageToVideoRequestSchema
+>;
+export type BytedanceV1ProImageToVideoInput = z.infer<
+  typeof BytedanceV1ProImageToVideoInputSchema
+>;
+export type BytedanceV1ProImageToVideoRequest = z.input<
+  typeof BytedanceV1ProImageToVideoRequestSchema
+>;
+export type BytedanceV1ProImageToVideoRequestInput =
+  BytedanceV1ProImageToVideoRequest;
+export type BytedanceV1ProImageToVideoParsedRequest = z.output<
+  typeof BytedanceV1ProImageToVideoRequestSchema
+>;
+export type BytedanceV1ProTextToVideoInput = z.infer<
+  typeof BytedanceV1ProTextToVideoInputSchema
+>;
+export type BytedanceV1ProTextToVideoRequest = z.input<
+  typeof BytedanceV1ProTextToVideoRequestSchema
+>;
+export type BytedanceV1ProTextToVideoRequestInput =
+  BytedanceV1ProTextToVideoRequest;
+export type BytedanceV1ProTextToVideoParsedRequest = z.output<
+  typeof BytedanceV1ProTextToVideoRequestSchema
 >;
 export type NanoBanana2Request = z.input<typeof NanoBanana2RequestSchema>;
 export type NanoBanana2RequestInput = NanoBanana2Request;

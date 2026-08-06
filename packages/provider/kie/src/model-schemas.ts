@@ -975,6 +975,406 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  // https://docs.kie.ai/market/seedream/seedream (model id bytedance/seedream)
+  "bytedance/seedream": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 3,
+        maxLength: 5000,
+        description: "Image generation prompt (3-5000 chars)",
+      },
+      image_size: {
+        type: "string",
+        enum: [
+          "square",
+          "square_hd",
+          "portrait_4_3",
+          "portrait_16_9",
+          "landscape_4_3",
+          "landscape_16_9",
+        ],
+        default: "square_hd",
+        description: "Output image size (default square_hd)",
+      },
+      guidance_scale: {
+        type: "number",
+        minimum: 1,
+        maximum: 10,
+        default: 2.5,
+        description: "Prompt adherence strength 1-10 (default 2.5)",
+      },
+      seed: {
+        type: "integer",
+        description: "Random seed for generation",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/seedream/seedream-v4-edit
+  "bytedance/seedream-v4-edit": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 3,
+        maxLength: 5000,
+        description: "Image edit prompt (3-5000 chars)",
+      },
+      image_urls: {
+        type: "array",
+        required: true,
+        minItems: 1,
+        maxItems: 10,
+        description:
+          "Input image URLs after upload (1-10; jpeg/png/webp, max 10 MB each)",
+        items: { type: "string" },
+      },
+      image_size: {
+        type: "string",
+        enum: [
+          "square",
+          "square_hd",
+          "portrait_4_3",
+          "portrait_3_2",
+          "portrait_16_9",
+          "landscape_4_3",
+          "landscape_3_2",
+          "landscape_16_9",
+          "landscape_21_9",
+        ],
+        default: "square_hd",
+        description: "Output image size / aspect (default square_hd)",
+      },
+      image_resolution: {
+        type: "string",
+        enum: ["1K", "2K", "4K"],
+        default: "1K",
+        description: "Pixel scale combined with image_size (default 1K)",
+      },
+      max_images: {
+        type: "integer",
+        minimum: 1,
+        maximum: 6,
+        default: 1,
+        description: "Max images per generation run 1-6 (default 1)",
+      },
+      seed: {
+        type: "integer",
+        description: "Random seed for generation",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description:
+          "When false, content filtering is disabled (documented default false)",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/seedream/seedream-v4-text-to-image
+  "bytedance/seedream-v4-text-to-image": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 3,
+        maxLength: 5000,
+        description: "Image generation prompt (3-5000 chars)",
+      },
+      image_size: {
+        type: "string",
+        enum: [
+          "square",
+          "square_hd",
+          "portrait_4_3",
+          "portrait_3_2",
+          "portrait_16_9",
+          "landscape_4_3",
+          "landscape_3_2",
+          "landscape_16_9",
+          "landscape_21_9",
+        ],
+        default: "square_hd",
+        description: "Output image size / aspect (default square_hd)",
+      },
+      image_resolution: {
+        type: "string",
+        enum: ["1K", "2K", "4K"],
+        default: "1K",
+        description: "Pixel scale combined with image_size (default 1K)",
+      },
+      max_images: {
+        type: "integer",
+        minimum: 1,
+        maximum: 6,
+        default: 1,
+        description: "Max images per generation run 1-6 (default 1)",
+      },
+      seed: {
+        type: "integer",
+        description: "Random seed for generation",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description:
+          "When false, content filtering is disabled (documented default false)",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/bytedance/v1-lite-image-to-video
+  "bytedance/v1-lite-image-to-video": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 3,
+        maxLength: 10000,
+        description: "Video generation prompt (3-10000 chars)",
+      },
+      image_url: {
+        type: "string",
+        required: true,
+        description: "Source image URL after upload (jpeg/png/webp, max 10 MB)",
+      },
+      resolution: {
+        type: "string",
+        enum: ["480p", "720p", "1080p"],
+        default: "720p",
+        description: "Output resolution (default 720p)",
+      },
+      duration: {
+        type: "string",
+        enum: ["5", "10"],
+        default: "5",
+        description: 'Duration in seconds as numeric string "5" or "10"',
+      },
+      camera_fixed: {
+        type: "boolean",
+        description: "Lock camera position when true",
+      },
+      seed: {
+        type: "integer",
+        minimum: -1,
+        maximum: 2147483647,
+        description: "Random seed (-1 for random)",
+      },
+      enable_safety_checker: {
+        type: "boolean",
+        description: "Upstream safety checker toggle",
+      },
+      end_image_url: {
+        type: "string",
+        description: "Optional end-frame image URL after upload",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description:
+          "When false, content filtering is disabled (documented default false)",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/bytedance/v1-lite-text-to-video
+  "bytedance/v1-lite-text-to-video": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 3,
+        maxLength: 10000,
+        description: "Video generation prompt (3-10000 chars)",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: ["16:9", "4:3", "1:1", "3:4", "9:16", "9:21"],
+        default: "16:9",
+        description: "Output aspect ratio (default 16:9; includes 9:21)",
+      },
+      resolution: {
+        type: "string",
+        enum: ["480p", "720p", "1080p"],
+        default: "720p",
+        description: "Output resolution (default 720p)",
+      },
+      duration: {
+        type: "string",
+        enum: ["5", "10"],
+        default: "5",
+        description: 'Duration in seconds as numeric string "5" or "10"',
+      },
+      camera_fixed: {
+        type: "boolean",
+        description: "Lock camera position when true",
+      },
+      seed: {
+        type: "integer",
+        minimum: -1,
+        maximum: 2147483647,
+        description: "Random seed (-1 for random)",
+      },
+      enable_safety_checker: {
+        type: "boolean",
+        description: "Upstream safety checker toggle",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description:
+          "When false, content filtering is disabled (documented default false)",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/bytedance/v1-pro-fast-image-to-video
+  "bytedance/v1-pro-fast-image-to-video": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 3,
+        maxLength: 10000,
+        description: "Video generation prompt (3-10000 chars)",
+      },
+      image_url: {
+        type: "string",
+        required: true,
+        description: "Source image URL after upload (jpeg/png/webp, max 10 MB)",
+      },
+      resolution: {
+        type: "string",
+        enum: ["720p", "1080p"],
+        default: "720p",
+        description: "Output resolution (default 720p; no 480p)",
+      },
+      duration: {
+        type: "string",
+        enum: ["5", "10"],
+        default: "5",
+        description: 'Duration in seconds as numeric string "5" or "10"',
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description:
+          "When false, content filtering is disabled (documented default false)",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/bytedance/v1-pro-image-to-video
+  "bytedance/v1-pro-image-to-video": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 3,
+        maxLength: 10000,
+        description: "Video generation prompt (3-10000 chars)",
+      },
+      image_url: {
+        type: "string",
+        required: true,
+        description: "Source image URL after upload (jpeg/png/webp, max 10 MB)",
+      },
+      resolution: {
+        type: "string",
+        enum: ["480p", "720p", "1080p"],
+        default: "720p",
+        description: "Output resolution (default 720p)",
+      },
+      duration: {
+        type: "string",
+        enum: ["5", "10"],
+        default: "5",
+        description: 'Duration in seconds as numeric string "5" or "10"',
+      },
+      camera_fixed: {
+        type: "boolean",
+        description: "Lock camera position when true",
+      },
+      seed: {
+        type: "integer",
+        minimum: -1,
+        maximum: 2147483647,
+        description: "Random seed (-1 for random)",
+      },
+      enable_safety_checker: {
+        type: "boolean",
+        description: "Upstream safety checker toggle",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description:
+          "When false, content filtering is disabled (documented default false)",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/bytedance/v1-pro-text-to-video
+  "bytedance/v1-pro-text-to-video": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 3,
+        maxLength: 10000,
+        description: "Video generation prompt (3-10000 chars)",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: ["21:9", "16:9", "4:3", "1:1", "3:4", "9:16"],
+        default: "16:9",
+        description: "Output aspect ratio (default 16:9; includes 21:9)",
+      },
+      resolution: {
+        type: "string",
+        enum: ["480p", "720p", "1080p"],
+        default: "720p",
+        description: "Output resolution (default 720p)",
+      },
+      duration: {
+        type: "string",
+        enum: ["5", "10"],
+        default: "5",
+        description: 'Duration in seconds as numeric string "5" or "10"',
+      },
+      camera_fixed: {
+        type: "boolean",
+        description: "Lock camera position when true",
+      },
+      seed: {
+        type: "integer",
+        minimum: -1,
+        maximum: 2147483647,
+        description: "Random seed (-1 for random)",
+      },
+      enable_safety_checker: {
+        type: "boolean",
+        description: "Upstream safety checker toggle",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description:
+          "When false, content filtering is disabled (documented default false)",
+      },
+    },
+  },
+
   // https://docs.kie.ai/market/google/nano-banana-2-lite
   "nano-banana-2-lite": {
     type: "image",

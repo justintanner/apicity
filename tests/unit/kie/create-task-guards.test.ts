@@ -124,7 +124,7 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
   // Not a count for its own sake — it makes any change to the guarded set show
   // up as a deliberate edit to this list.
   //
-  // The list is the point, not the number. It now holds all 86 ids of
+  // The list is the point, not the number. It now holds all 94 ids of
   // KIE_MEDIA_MODELS, which is what makes it worth spelling out rather than
   // asserting `guarded.sort()` equals `[...KIE_MEDIA_MODELS].sort()`: that
   // form is self-referential — it passes whatever the catalogue says, so an
@@ -133,8 +133,8 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
   it("guards exactly the models pinned in this list", () => {
     expect(
       guarded,
-      "Update this deliberate 86-entry pin when the guarded model set changes"
-    ).toHaveLength(86);
+      "Update this deliberate 94-entry pin when the guarded model set changes"
+    ).toHaveLength(94);
     expect([...guarded].sort()).toEqual(
       [
         "kling-3.0/video",
@@ -168,6 +168,14 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
         "bytedance/seedance-2",
         "bytedance/seedance-2-mini",
         "bytedance/seedance-1.5-pro",
+        "bytedance/seedream",
+        "bytedance/seedream-v4-edit",
+        "bytedance/seedream-v4-text-to-image",
+        "bytedance/v1-lite-image-to-video",
+        "bytedance/v1-lite-text-to-video",
+        "bytedance/v1-pro-fast-image-to-video",
+        "bytedance/v1-pro-image-to-video",
+        "bytedance/v1-pro-text-to-video",
         "wan/2-7-image-to-video",
         "wan/2-7-text-to-video",
         "wan/2-7-r2v",

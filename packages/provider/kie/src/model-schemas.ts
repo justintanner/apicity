@@ -2973,6 +2973,231 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     fields: googleGeminiTtsFields,
   },
 
+  // Sources:
+  // - https://docs.kie.ai/market/google/imagen4
+  // - https://docs.kie.ai/market/google/imagen4-fast
+  // - https://docs.kie.ai/market/google/imagen4-ultra
+  "google/imagen4": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 5000,
+        description: "Text prompt describing the image (max 5000 characters)",
+      },
+      negative_prompt: {
+        type: "string",
+        maxLength: 5000,
+        description:
+          "Description of what to discourage in the generated images (max 5000 characters)",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: ["1:1", "16:9", "9:16", "3:4", "4:3", "auto"],
+        default: "1:1",
+        description: "Aspect ratio of the generated image (default 1:1)",
+      },
+      seed: {
+        type: "string",
+        maxLength: 500,
+        description:
+          "Random seed for reproducible generation (string, max 500 characters)",
+      },
+    },
+  },
+
+  "google/imagen4-fast": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 5000,
+        description: "Text prompt describing the image (max 5000 characters)",
+      },
+      negative_prompt: {
+        type: "string",
+        maxLength: 5000,
+        description:
+          "Description of what to discourage in the generated images (max 5000 characters)",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: ["1:1", "16:9", "9:16", "3:4", "4:3", "auto"],
+        default: "16:9",
+        description: "Aspect ratio of the generated image (default 16:9)",
+      },
+      seed: {
+        type: "integer",
+        description: "Random seed for reproducible generation (integer)",
+      },
+    },
+  },
+
+  "google/imagen4-ultra": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 5000,
+        description: "Text prompt describing the image (max 5000 characters)",
+      },
+      negative_prompt: {
+        type: "string",
+        maxLength: 5000,
+        description:
+          "Description of what to discourage in the generated images (max 5000 characters)",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: ["1:1", "16:9", "9:16", "3:4", "4:3", "auto"],
+        default: "1:1",
+        description: "Aspect ratio of the generated image (default 1:1)",
+      },
+      seed: {
+        type: "string",
+        maxLength: 500,
+        description:
+          "Random seed for reproducible generation (string, max 500 characters)",
+      },
+    },
+  },
+
+  // Sources:
+  // - https://docs.kie.ai/market/google/nano-banana
+  // - https://docs.kie.ai/market/google/nano-banana-edit
+  "google/nano-banana": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 5000,
+        description: "Image generation prompt (max 5000 characters)",
+      },
+      output_format: {
+        type: "string",
+        enum: ["png", "jpeg"],
+        default: "png",
+        description: "Output image format (default png)",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: [
+          "1:1",
+          "9:16",
+          "16:9",
+          "3:4",
+          "4:3",
+          "3:2",
+          "2:3",
+          "5:4",
+          "4:5",
+          "21:9",
+          "auto",
+        ],
+        default: "1:1",
+        description: "Aspect ratio of the generated image (default 1:1)",
+      },
+      image_size: {
+        type: "string",
+        enum: [
+          "1:1",
+          "9:16",
+          "16:9",
+          "3:4",
+          "4:3",
+          "3:2",
+          "2:3",
+          "5:4",
+          "4:5",
+          "21:9",
+          "auto",
+        ],
+        default: "1:1",
+        description:
+          "Deprecated: use aspect_ratio. Legacy aspect-ratio field still accepted by upstream",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description:
+          "When false, content filtering is disabled (documented default false)",
+      },
+    },
+  },
+
+  "google/nano-banana-edit": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 5000,
+        description: "Image editing prompt (max 5000 characters)",
+      },
+      image_urls: {
+        type: "array",
+        required: true,
+        minItems: 1,
+        maxItems: 10,
+        description:
+          "Input image URLs after upload (1-10; jpeg/png/webp, max 10 MB each)",
+        items: { type: "string" },
+      },
+      output_format: {
+        type: "string",
+        enum: ["png", "jpeg"],
+        default: "png",
+        description: "Output image format (default png)",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: [
+          "1:1",
+          "9:16",
+          "16:9",
+          "3:4",
+          "4:3",
+          "3:2",
+          "2:3",
+          "5:4",
+          "4:5",
+          "21:9",
+          "auto",
+        ],
+        default: "1:1",
+        description: "Aspect ratio of the generated image (default 1:1)",
+      },
+      image_size: {
+        type: "string",
+        enum: [
+          "1:1",
+          "9:16",
+          "16:9",
+          "3:4",
+          "4:3",
+          "3:2",
+          "2:3",
+          "5:4",
+          "4:5",
+          "21:9",
+          "auto",
+        ],
+        default: "1:1",
+        description:
+          "Deprecated: use aspect_ratio. Legacy aspect-ratio field still accepted by upstream",
+      },
+    },
+  },
+
   // - https://docs.kie.ai/market/topaz/image-upscale
   // - https://docs.kie.ai/market/topaz/video-upscale
   "topaz/image-upscale": {

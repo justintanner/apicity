@@ -172,9 +172,11 @@ const KieMediaPixverseModelAliasSchema = z
 // approved surface is exactly these H3 ids; the variants do not establish a
 // version grammar or authorize arbitrary future task slugs.
 //
-// Google TTS (`google/gemini-*-tts`) stays enum-only as well. Two models do not
-// establish a safe `google/…` alias grammar — other google-namespaced market
-// ids (imagen, nano-banana) are separate work and must not be pre-authorized.
+// Google market ids (`google/gemini-*-tts`, `google/imagen4*`,
+// `google/nano-banana*`) stay enum-only. The five imagen/nano-banana ids plus
+// two TTS models do not establish a safe open `google/…` alias grammar — the
+// product segments (imagen4, nano-banana, gemini-*-tts) are not a versioned
+// family that would justify an open hatch.
 // Topaz likewise stays enum-only: `topaz/image-upscale` and
 // `topaz/video-upscale` are the only two ids kie documents for the vendor, and
 // the task segment (`image-upscale` / `video-upscale`) is not a versioned
@@ -262,6 +264,12 @@ export const KIE_MEDIA_MODELS = [
   "minimax-h3/reference-to-video",
   "google/gemini-2-5-pro-tts",
   "google/gemini-3-1-flash-tts",
+  // Google Imagen 4 + namespaced Nano Banana — enum-only (no google/ alias).
+  "google/imagen4",
+  "google/imagen4-fast",
+  "google/imagen4-ultra",
+  "google/nano-banana",
+  "google/nano-banana-edit",
   "topaz/image-upscale",
   "topaz/video-upscale",
   // Singleton vendor ids (no alias hatch yet).
@@ -3214,6 +3222,109 @@ export const GoogleGemini31FlashTtsRequestSchema = z.object({
   input: GoogleGeminiTtsInputSchema,
 });
 
+// ---------------------------------------------------------------------------
+// Google Imagen 4 + namespaced Nano Banana createTask models
+// Docs: https://docs.kie.ai/market/google/imagen4 and siblings
+// Note: these are `google/…` market ids (enum-only). Flat `nano-banana-*` ids
+// already live elsewhere in this file under the Nano Banana alias family.
+// ---------------------------------------------------------------------------
+
+// Imagen 4 aspect ratios (shared by imagen4 / imagen4-fast / imagen4-ultra).
+export const GoogleImagen4AspectRatioSchema = z.enum([
+  "1:1",
+  "16:9",
+  "9:16",
+  "3:4",
+  "4:3",
+  "auto",
+]);
+
+// imagen4 + imagen4-ultra: seed is a free-form string (max 500).
+// imagen4-fast OpenAPI types seed as integer instead.
+const GoogleImagen4StringSeedInputSchema = z.object({
+  prompt: z.string().min(1).max(5000),
+  negative_prompt: z.string().max(5000).optional(),
+  aspect_ratio: GoogleImagen4AspectRatioSchema.optional(),
+  seed: z.string().max(500).optional(),
+});
+
+const GoogleImagen4FastInputSchema = z.object({
+  prompt: z.string().min(1).max(5000),
+  negative_prompt: z.string().max(5000).optional(),
+  aspect_ratio: GoogleImagen4AspectRatioSchema.optional(),
+  seed: z.number().int().optional(),
+});
+
+// Docs: https://docs.kie.ai/market/google/imagen4
+export const GoogleImagen4RequestSchema = z.object({
+  model: z.literal("google/imagen4"),
+  callBackUrl: z.string().optional(),
+  input: GoogleImagen4StringSeedInputSchema,
+});
+
+// Docs: https://docs.kie.ai/market/google/imagen4-fast
+export const GoogleImagen4FastRequestSchema = z.object({
+  model: z.literal("google/imagen4-fast"),
+  callBackUrl: z.string().optional(),
+  input: GoogleImagen4FastInputSchema,
+});
+
+// Docs: https://docs.kie.ai/market/google/imagen4-ultra
+export const GoogleImagen4UltraRequestSchema = z.object({
+  model: z.literal("google/imagen4-ultra"),
+  callBackUrl: z.string().optional(),
+  input: GoogleImagen4StringSeedInputSchema,
+});
+
+// Namespaced google/nano-banana* (distinct from flat nano-banana-*).
+export const GoogleNanoBananaAspectRatioSchema = z.enum([
+  "1:1",
+  "9:16",
+  "16:9",
+  "3:4",
+  "4:3",
+  "3:2",
+  "2:3",
+  "5:4",
+  "4:5",
+  "21:9",
+  "auto",
+]);
+
+// OpenAPI uses `jpeg` (not `jpg`) for these namespaced google models.
+export const GoogleNanoBananaOutputFormatSchema = z.enum(["png", "jpeg"]);
+
+// Docs: https://docs.kie.ai/market/google/nano-banana
+export const GoogleNanoBananaRequestSchema = z.object({
+  model: z.literal("google/nano-banana"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().min(1).max(5000),
+    output_format: GoogleNanoBananaOutputFormatSchema.optional(),
+    aspect_ratio: GoogleNanoBananaAspectRatioSchema.optional(),
+    // Deprecated upstream in favor of aspect_ratio; still accepted for wire
+    // compatibility with older clients / docs examples.
+    image_size: GoogleNanoBananaAspectRatioSchema.optional(),
+    nsfw_checker: z.boolean().optional(),
+  }),
+});
+
+// Docs: https://docs.kie.ai/market/google/nano-banana-edit
+export const GoogleNanoBananaEditRequestSchema = z.object({
+  model: z.literal("google/nano-banana-edit"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().min(1).max(5000),
+    // 1–10 reference image URLs after upload (jpeg/png/webp, max 10 MB each).
+    image_urls: z.array(z.string()).min(1).max(10),
+    output_format: GoogleNanoBananaOutputFormatSchema.optional(),
+    aspect_ratio: GoogleNanoBananaAspectRatioSchema.optional(),
+    // Deprecated upstream in favor of aspect_ratio; still accepted for wire
+    // compatibility with older clients / docs examples.
+    image_size: GoogleNanoBananaAspectRatioSchema.optional(),
+  }),
+});
+
 // Topaz upscale factor is a string enum in the upstream OpenAPI (not a number):
 // "1" | "2" | "4". Shared by both Topaz createTask models.
 // Docs: https://docs.kie.ai/market/topaz/image-upscale
@@ -4689,6 +4800,11 @@ export const MediaGenerationRequestSchema = z.union([
   MiniMaxH3ReferenceToVideoRequestSchema,
   GoogleGemini25ProTtsRequestSchema,
   GoogleGemini31FlashTtsRequestSchema,
+  GoogleImagen4RequestSchema,
+  GoogleImagen4FastRequestSchema,
+  GoogleImagen4UltraRequestSchema,
+  GoogleNanoBananaRequestSchema,
+  GoogleNanoBananaEditRequestSchema,
   TopazImageUpscaleRequestSchema,
   TopazVideoUpscaleRequestSchema,
   InfinitalkFromAudioRequestSchema,
@@ -5235,6 +5351,48 @@ export type GoogleGemini31FlashTtsRequest = z.input<
 export type GoogleGemini31FlashTtsRequestInput = GoogleGemini31FlashTtsRequest;
 export type GoogleGemini31FlashTtsParsedRequest = z.output<
   typeof GoogleGemini31FlashTtsRequestSchema
+>;
+export type GoogleImagen4AspectRatio = z.infer<
+  typeof GoogleImagen4AspectRatioSchema
+>;
+export type GoogleImagen4Request = z.input<typeof GoogleImagen4RequestSchema>;
+export type GoogleImagen4RequestInput = GoogleImagen4Request;
+export type GoogleImagen4ParsedRequest = z.output<
+  typeof GoogleImagen4RequestSchema
+>;
+export type GoogleImagen4FastRequest = z.input<
+  typeof GoogleImagen4FastRequestSchema
+>;
+export type GoogleImagen4FastRequestInput = GoogleImagen4FastRequest;
+export type GoogleImagen4FastParsedRequest = z.output<
+  typeof GoogleImagen4FastRequestSchema
+>;
+export type GoogleImagen4UltraRequest = z.input<
+  typeof GoogleImagen4UltraRequestSchema
+>;
+export type GoogleImagen4UltraRequestInput = GoogleImagen4UltraRequest;
+export type GoogleImagen4UltraParsedRequest = z.output<
+  typeof GoogleImagen4UltraRequestSchema
+>;
+export type GoogleNanoBananaAspectRatio = z.infer<
+  typeof GoogleNanoBananaAspectRatioSchema
+>;
+export type GoogleNanoBananaOutputFormat = z.infer<
+  typeof GoogleNanoBananaOutputFormatSchema
+>;
+export type GoogleNanoBananaRequest = z.input<
+  typeof GoogleNanoBananaRequestSchema
+>;
+export type GoogleNanoBananaRequestInput = GoogleNanoBananaRequest;
+export type GoogleNanoBananaParsedRequest = z.output<
+  typeof GoogleNanoBananaRequestSchema
+>;
+export type GoogleNanoBananaEditRequest = z.input<
+  typeof GoogleNanoBananaEditRequestSchema
+>;
+export type GoogleNanoBananaEditRequestInput = GoogleNanoBananaEditRequest;
+export type GoogleNanoBananaEditParsedRequest = z.output<
+  typeof GoogleNanoBananaEditRequestSchema
 >;
 
 export type TopazUpscaleFactor = z.infer<typeof TopazUpscaleFactorSchema>;

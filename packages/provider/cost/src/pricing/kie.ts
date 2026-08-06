@@ -321,6 +321,130 @@ const veoPerVideo = (rates: Record<string, number>): ModelPricing => ({
   source: pricePage("https://kie.ai/veo-3-1"),
 });
 
+// Rate-key form of a Kling market `input.duration`. Those schemas type the
+// field as the STRING enum "5"|"10", so the key mirrors the wire value
+// verbatim; scalarKey additionally tolerates the numeric spelling (5) a
+// loosely-typed caller might send, which asString alone would drop.
+//
+// `defaultDuration` is applied only where upstream documents a default. The
+// kling-2.6 pair passes none — `duration` is required there and no default is
+// published, so an omitted field selects no rate and the estimate fails
+// instead of guessing a tier.
+const inputDurationKey = (
+  p: Record<string, unknown>,
+  defaultDuration?: string
+): string | undefined =>
+  scalarKey(asObject(p.input)?.duration) ?? defaultDuration;
+
+// Per-video Kling entry: kie bills these families once per video, so
+// `duration` selects a RATE instead of scaling one — units are fixed at 1 and
+// the costHints.durationSeconds channel does not apply (same shape as veo).
+const klingPerVideo = (
+  rates: Record<string, number>,
+  url: string,
+  defaultDuration?: string
+): ModelPricing => ({
+  kind: "perUnit",
+  unit: "generations",
+  units: () => 1,
+  select: [
+    { name: "duration", pick: (p) => inputDurationKey(p, defaultDuration) },
+  ],
+  rates,
+  source: pricePage(url),
+});
+
+// Kling 2.6 text/image-to-video: 4 per-video rates, duration × sound. The
+// sound selector follows the kling-3.0 pattern (a "sound" segment appended to
+// the key when the toggle is on), minus its multi_shots clause — the 2.6
+// schemas have no multi_shots field.
+const kling26Video = (url: string): ModelPricing => ({
+  kind: "perUnit",
+  unit: "generations",
+  units: () => 1,
+  select: [
+    { name: "duration", pick: (p) => inputDurationKey(p) },
+    {
+      name: "sound",
+      pick: (p) => (asObject(p.input)?.sound === true ? "sound" : undefined),
+    },
+  ],
+  rates: { "5": 0.275, "10": 0.55, "5|sound": 0.55, "10|sound": 1.1 },
+  source: pricePage(url),
+});
+
+// Per-second video entry tiered by ONE nested `input` field, sourced from a
+// kie pricing page URL rather than a /market/ slug. `defaultValue` mirrors the
+// model's documented schema default and is applied only when the field is
+// absent.
+const tieredVideoPage = (
+  field: string,
+  rates: Record<string, number>,
+  url: string,
+  defaultValue?: string
+): ModelPricing => ({
+  kind: "perUnit",
+  unit: "seconds",
+  units: seconds,
+  select: [
+    {
+      name: field,
+      pick: (p) => asString(asObject(p.input)?.[field]) ?? defaultValue,
+    },
+  ],
+  rates,
+  source: pricePage(url),
+});
+
+// flatVideo for the families whose evidence is a kie pricing page URL.
+const flatVideoPage = (perUnit: number, url: string): ModelPricing => ({
+  kind: "perUnit",
+  unit: "seconds",
+  units: seconds,
+  select: [],
+  rates: { "": perUnit },
+  source: pricePage(url),
+});
+
+// kie resells ElevenLabs TTS through createTask and publishes those rates per
+// 1000 characters; the table stores the per-CHARACTER rate (page USD / 1000)
+// so units stay the raw character count, exactly like the elevenlabs provider
+// entries. The text lives under the createTask `input` envelope here, not at
+// the payload root.
+const inputCharacters = (p: Record<string, unknown>): number | undefined => {
+  const text = asString(asObject(p.input)?.text);
+  return text ? text.length : undefined;
+};
+
+// text-to-dialogue bills the whole conversation: every turn's `text` summed.
+// A malformed turn (no string `text`) stops the derivation rather than
+// silently under-billing the rest — the same present-but-uncoercible rule the
+// `seconds` helper applies to durations.
+const dialogueCharacters = (p: Record<string, unknown>): number | undefined => {
+  const dialogue = asObject(p.input)?.dialogue;
+  if (!Array.isArray(dialogue)) return undefined;
+  let total = 0;
+  for (const turn of dialogue) {
+    const text = asString(asObject(turn)?.text);
+    if (text === undefined) return undefined;
+    total += text.length;
+  }
+  return total > 0 ? total : undefined;
+};
+
+const perCharacterPage = (
+  perUnit: number,
+  url: string,
+  units: (p: Record<string, unknown>) => number | undefined = inputCharacters
+): ModelPricing => ({
+  kind: "perUnit",
+  unit: "characters",
+  units,
+  select: [],
+  rates: { "": perUnit },
+  source: pricePage(url),
+});
+
 const miniMaxH3Video = (slug: string): ModelPricing => ({
   kind: "perUnit",
   unit: "seconds",
@@ -684,6 +808,152 @@ export const kie: Record<string, ModelPricing> = {
     source: { ...src("bytedance/seedance-2-mini"), asOf: "2026-06-24" },
   },
 
+  // ---------------------------------------------------------------------
+  // createTask video families from the 2026-08-06 pricing pull. All are
+  // model-keyed (flat payload `model` + nested `input`), and every rate key
+  // mirrors an `input` field's upstream value verbatim. Every USD cell below
+  // is the page's own, and each agrees with its credit cell at the family's
+  // uniform 1 credit = $0.005 basis (e.g. kling 2.6 5s silent: 55 credits =
+  // $0.275), so no rate here is derived.
+  //
+  // Two shapes appear. The Kling per-VIDEO families bill once per generation,
+  // so `duration` selects a rate and units are fixed at 1. The per-SECOND
+  // families multiply their rate by the output length; where the schema has no
+  // duration field (motion-control, ai-avatar, topaz video, infinitalk — the
+  // length follows the driving audio/video), the caller must declare it as
+  // costHints.durationSeconds, exactly like omnihuman-1-5 and the volcengine
+  // lip-sync entry above.
+  // ---------------------------------------------------------------------
+
+  // Kling 2.6 — per video, 4 rates by duration × sound. `duration` ("5"|"10")
+  // and `sound` are both REQUIRED by the 2.6 schemas and neither documents a
+  // default, so there is no duration fallback: an omitted duration selects no
+  // rate and the estimate fails rather than quoting the 5s tier.
+  "kling-2.6/text-to-video": kling26Video(
+    "https://kie.ai/kling-2-6?model=kling-2.6%2Ftext-to-video"
+  ),
+  "kling-2.6/image-to-video": kling26Video(
+    "https://kie.ai/kling-2-6?model=kling-2.6%2Fimage-to-video"
+  ),
+
+  // Kling 2.6 motion-control — per second by `input.mode` ("720p"|"1080p",
+  // lowercase in the schema even though the page prints 720P/1080P). The
+  // schema has no duration field (the output follows the motion video), so
+  // callers must declare that length as costHints.durationSeconds.
+  "kling-2.6/motion-control": tieredVideoPage(
+    "mode",
+    { "720p": 0.055, "1080p": 0.09 },
+    "https://kie.ai/kling-2.6-motion-control"
+  ),
+
+  // Kling AI Avatar — flat per second, one rate per tier (Standard 720p
+  // $0.04, Pro 1080p $0.08). Neither schema carries a resolution knob: the
+  // tier IS the model id, and the page's resolution column is fixed per tier.
+  // No duration field either (length follows the driving audio, page-capped at
+  // 15s), so the seconds come from costHints.durationSeconds.
+  //
+  // The page anchors name older model ids (kling/v1-avatar-standard,
+  // kling/ai-avatar-v1-pro) than the createTask catalogue's
+  // kling/ai-avatar-{standard,pro}; the keys here are the ids callers actually
+  // put in `payload.model`, and the anchor URLs are kept as the rate evidence.
+  "kling/ai-avatar-standard": flatVideoPage(
+    0.04,
+    "https://kie.ai/kling-ai-avatar?model=kling%2Fv1-avatar-standard"
+  ),
+  "kling/ai-avatar-pro": flatVideoPage(
+    0.08,
+    "https://kie.ai/kling-ai-avatar?model=kling%2Fai-avatar-v1-pro"
+  ),
+
+  // Kling 2.5 Turbo Pro — per video: 5s $0.21, 10s $0.42. `duration` is
+  // optional in the schema and documents an upstream default of 5, applied as
+  // the absent-field fallback.
+  "kling/v2-5-turbo-text-to-video-pro": klingPerVideo(
+    { "5": 0.21, "10": 0.42 },
+    "https://kie.ai/kling-2-5?model=kling%2Fv2-5-turbo-text-to-video-pro",
+    "5"
+  ),
+  "kling/v2-5-turbo-image-to-video-pro": klingPerVideo(
+    { "5": 0.21, "10": 0.42 },
+    "https://kie.ai/kling-2-5?model=kling%2Fv2-5-turbo-image-to-video-pro",
+    "5"
+  ),
+
+  // Kling 2.1 — per video, three tiers on one page: Standard $0.125/$0.25,
+  // Pro $0.25/$0.50, Master $0.80/$1.60 (5s/10s). Same optional `duration`
+  // with a documented default of 5 as the 2.5 turbo pair above.
+  "kling/v2-1-standard": klingPerVideo(
+    { "5": 0.125, "10": 0.25 },
+    "https://kie.ai/kling/v2-1?model=kling%2Fv2-1-standard",
+    "5"
+  ),
+  "kling/v2-1-pro": klingPerVideo(
+    { "5": 0.25, "10": 0.5 },
+    "https://kie.ai/kling/v2-1?model=kling%2Fv2-1-pro",
+    "5"
+  ),
+  "kling/v2-1-master-text-to-video": klingPerVideo(
+    { "5": 0.8, "10": 1.6 },
+    "https://kie.ai/kling/v2-1?model=kling%2Fv2-1-master-text-to-video",
+    "5"
+  ),
+  "kling/v2-1-master-image-to-video": klingPerVideo(
+    { "5": 0.8, "10": 1.6 },
+    "https://kie.ai/kling/v2-1?model=kling%2Fv2-1-master-image-to-video",
+    "5"
+  ),
+
+  // Seedance 1.5 Pro — per second, 6 rates by resolution × generate_audio.
+  // Both selectors carry the schema's documented defaults (720p, audio off),
+  // so a payload that omits them prices the page's documented no-audio 720p
+  // row. `duration` is a required int (4-12), so no hint channel is needed.
+  "bytedance/seedance-1.5-pro": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: seconds,
+    select: [
+      { name: "resolution", pick: (p) => inputResolution(p) ?? "720p" },
+      {
+        name: "generate_audio",
+        pick: (p) =>
+          asObject(p.input)?.generate_audio === true ? "audio" : undefined,
+      },
+    ],
+    rates: {
+      "480p": 0.00875,
+      "480p|audio": 0.0175,
+      "720p": 0.0175,
+      "720p|audio": 0.035,
+      "1080p": 0.0375,
+      "1080p|audio": 0.075,
+    },
+    source: pricePage("https://kie.ai/seedance-1-5-pro"),
+  },
+
+  // Topaz Video Upscaler — per second by `input.upscale_factor`. Unlike the
+  // image upscaler above, this page publishes the factors themselves (1x/2x
+  // $0.04, 4x $0.07), so the schema's own knob keys the rates directly and no
+  // floor-plus-warning fallback is needed. The documented default "2" is the
+  // absent-field fallback. No duration field — the output matches the source
+  // clip, so callers declare it as costHints.durationSeconds.
+  "topaz/video-upscale": tieredVideoPage(
+    "upscale_factor",
+    { "1": 0.04, "2": 0.04, "4": 0.07 },
+    "https://kie.ai/topaz-video-upscaler",
+    "2"
+  ),
+
+  // InfiniTalk — per second by `input.resolution` ("480p" $0.015, "720p"
+  // $0.06), with the schema's documented "480p" default as the absent-field
+  // fallback. No duration field (length follows the driving audio, page-capped
+  // at 15s) → costHints.durationSeconds, kling-avatar style.
+  "infinitalk/from-audio": tieredVideoPage(
+    "resolution",
+    { "480p": 0.015, "720p": 0.06 },
+    "https://kie.ai/infinitalk",
+    "480p"
+  ),
+
   // Runway — keyed by ENDPOINT ("runway/generate", "runway/extend"): these are
   // dedicated non-createTask endpoints whose flat payload carries no model id,
   // so the caller supplies the synthetic key as EstimateRequest.endpoint.
@@ -1038,6 +1308,29 @@ export const kie: Record<string, ModelPricing> = {
   // sora-watermark-remover: flat $0.05 per removal (only published rate
   // on the marketplace). Schema has no tier selector.
   "sora-watermark-remover": flatGen(0.05, "openai/sora-2"),
+
+  // ElevenLabs TTS resold through createTask (2026-08-06 pull). kie publishes
+  // these per 1000 characters; each entry stores page USD / 1000 as its
+  // per-character rate, so units are the character count — the same basis as
+  // the elevenlabs provider's own table, which lets a caller compare the two
+  // routes to the same model without a unit conversion. Neither schema has a
+  // price tier, so all three are flat.
+  "elevenlabs/text-to-speech-multilingual-v2": perCharacterPage(
+    0.00006,
+    "https://kie.ai/elevenlabs-tts?model=elevenlabs%2Ftext-to-speech-multilingual-v2"
+  ),
+  "elevenlabs/text-to-speech-turbo-2-5": perCharacterPage(
+    0.00003,
+    "https://kie.ai/elevenlabs-tts?model=elevenlabs%2Ftext-to-speech-turbo-2-5"
+  ),
+  // Dialogue v3 bills the same way but has no single `text` field: the
+  // request is an array of {text, voice} turns, and the charge covers all of
+  // them, so units sum every turn's text.
+  "elevenlabs/text-to-dialogue-v3": perCharacterPage(
+    0.00007,
+    "https://kie.ai/elevenlabs/text-to-dialogue-v3",
+    dialogueCharacters
+  ),
 
   // Suno: keyed by endpoint, NOT by audio model version. The kie payload's
   // `model` field is V3_5/.../V5_5 (audio version), but pricing is the

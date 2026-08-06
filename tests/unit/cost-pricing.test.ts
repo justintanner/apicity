@@ -738,6 +738,77 @@ const HINT_ONLY_KIE = [
     seconds: 8,
     perUnitUsd: 0.155,
   },
+  // 2026-08-06 pull: four more per-second families whose schema carries no
+  // duration field. Motion-control follows the source clip; the avatar and
+  // InfiniTalk models follow the driving audio; topaz follows the input video.
+  {
+    label: "kling-2.6/motion-control @720p",
+    model: "kling-2.6/motion-control",
+    input: {
+      input_urls: ["https://example.com/x.jpg"],
+      video_urls: ["https://example.com/in.mp4"],
+      character_orientation: "image",
+      mode: "720p",
+    } as Record<string, unknown>,
+    seconds: 5,
+    perUnitUsd: 0.055,
+  },
+  {
+    label: "kling-2.6/motion-control @1080p",
+    model: "kling-2.6/motion-control",
+    input: {
+      input_urls: ["https://example.com/x.jpg"],
+      video_urls: ["https://example.com/in.mp4"],
+      character_orientation: "image",
+      mode: "1080p",
+    } as Record<string, unknown>,
+    seconds: 5,
+    perUnitUsd: 0.09,
+  },
+  {
+    label: "kling/ai-avatar-standard",
+    model: "kling/ai-avatar-standard",
+    input: {
+      image_url: "https://example.com/a.png",
+      audio_url: "https://example.com/a.mp3",
+      prompt: "x",
+    } as Record<string, unknown>,
+    seconds: 12,
+    perUnitUsd: 0.04,
+  },
+  {
+    label: "kling/ai-avatar-pro",
+    model: "kling/ai-avatar-pro",
+    input: {
+      image_url: "https://example.com/a.png",
+      audio_url: "https://example.com/a.mp3",
+      prompt: "x",
+    } as Record<string, unknown>,
+    seconds: 12,
+    perUnitUsd: 0.08,
+  },
+  {
+    label: "topaz/video-upscale @4x",
+    model: "topaz/video-upscale",
+    input: {
+      video_url: "https://example.com/in.mp4",
+      upscale_factor: "4",
+    } as Record<string, unknown>,
+    seconds: 10,
+    perUnitUsd: 0.07,
+  },
+  {
+    label: "infinitalk/from-audio @720p",
+    model: "infinitalk/from-audio",
+    input: {
+      image_url: "https://example.com/a.png",
+      audio_url: "https://example.com/a.mp3",
+      prompt: "x",
+      resolution: "720p",
+    } as Record<string, unknown>,
+    seconds: 15,
+    perUnitUsd: 0.06,
+  },
 ];
 
 describe("kie costHints.durationSeconds", () => {
@@ -1616,6 +1687,390 @@ describe("kie qwen per-megapixel pricing (OQ-4)", () => {
   });
 });
 
+// One representative payload per per-VIDEO family added by the 2026-08-06
+// pull. These bill per generation, so `duration` picks a rate rather than
+// scaling one and the expected usd is the published cell itself.
+const VIDEO_PER_VIDEO_RATES = [
+  {
+    model: "kling-2.6/text-to-video",
+    input: { sound: false, aspect_ratio: "16:9", duration: "5" },
+    usd: 0.275,
+  },
+  {
+    model: "kling-2.6/text-to-video",
+    input: { sound: true, aspect_ratio: "16:9", duration: "5" },
+    usd: 0.55,
+  },
+  {
+    model: "kling-2.6/text-to-video",
+    input: { sound: false, aspect_ratio: "16:9", duration: "10" },
+    usd: 0.55,
+  },
+  {
+    model: "kling-2.6/text-to-video",
+    input: { sound: true, aspect_ratio: "16:9", duration: "10" },
+    usd: 1.1,
+  },
+  {
+    model: "kling-2.6/image-to-video",
+    input: {
+      image_urls: ["https://example.com/x.jpg"],
+      sound: true,
+      duration: "10",
+    },
+    usd: 1.1,
+  },
+  {
+    model: "kling/v2-5-turbo-text-to-video-pro",
+    input: { duration: "10" },
+    usd: 0.42,
+  },
+  {
+    model: "kling/v2-5-turbo-image-to-video-pro",
+    input: { image_url: "https://example.com/x.jpg", duration: "5" },
+    usd: 0.21,
+  },
+  {
+    model: "kling/v2-1-standard",
+    input: { image_url: "https://example.com/x.jpg", duration: "10" },
+    usd: 0.25,
+  },
+  {
+    model: "kling/v2-1-pro",
+    input: { image_url: "https://example.com/x.jpg", duration: "10" },
+    usd: 0.5,
+  },
+  {
+    model: "kling/v2-1-master-text-to-video",
+    input: { duration: "10" },
+    usd: 1.6,
+  },
+  {
+    model: "kling/v2-1-master-image-to-video",
+    input: { image_url: "https://example.com/x.jpg", duration: "5" },
+    usd: 0.8,
+  },
+];
+
+// Per-SECOND families added by the same pull. `seconds` is what the payload
+// (or, for the no-duration-field models, the hint) declares; `perUnitUsd` is
+// the published rate.
+const VIDEO_PER_SECOND_RATES = [
+  {
+    label: "seedance-1.5-pro 480p silent",
+    model: "bytedance/seedance-1.5-pro",
+    input: { aspect_ratio: "16:9", resolution: "480p", duration: 4 },
+    seconds: 4,
+    perUnitUsd: 0.00875,
+  },
+  {
+    label: "seedance-1.5-pro 480p audio",
+    model: "bytedance/seedance-1.5-pro",
+    input: {
+      aspect_ratio: "16:9",
+      resolution: "480p",
+      generate_audio: true,
+      duration: 4,
+    },
+    seconds: 4,
+    perUnitUsd: 0.0175,
+  },
+  {
+    label: "seedance-1.5-pro 720p audio",
+    model: "bytedance/seedance-1.5-pro",
+    input: {
+      aspect_ratio: "16:9",
+      resolution: "720p",
+      generate_audio: true,
+      duration: 8,
+    },
+    seconds: 8,
+    perUnitUsd: 0.035,
+  },
+  {
+    label: "seedance-1.5-pro 1080p silent",
+    model: "bytedance/seedance-1.5-pro",
+    input: {
+      aspect_ratio: "16:9",
+      resolution: "1080p",
+      generate_audio: false,
+      duration: 12,
+    },
+    seconds: 12,
+    perUnitUsd: 0.0375,
+  },
+  {
+    label: "seedance-1.5-pro 1080p audio",
+    model: "bytedance/seedance-1.5-pro",
+    input: {
+      aspect_ratio: "16:9",
+      resolution: "1080p",
+      generate_audio: true,
+      duration: 12,
+    },
+    seconds: 12,
+    perUnitUsd: 0.075,
+  },
+];
+
+describe("kie createTask video families (REQ-005)", () => {
+  it.each(VIDEO_PER_VIDEO_RATES)(
+    "prices $model $input at $usd per video",
+    ({ model, input, usd }) => {
+      const result = kieEstimate({ model, input: { prompt: "x", ...input } });
+
+      expect(result.usd).toBeCloseTo(usd, 10);
+      expect(result.source).toBe("per-unit-table");
+      expect(result.breakdown).toEqual({
+        units: 1,
+        unit: "generations",
+        perUnitUsd: usd,
+      });
+      expect(result.warnings).toEqual([]);
+    }
+  );
+
+  it.each(VIDEO_PER_SECOND_RATES)(
+    "prices $label at $perUnitUsd per second",
+    ({ model, input, seconds, perUnitUsd }) => {
+      const result = kieEstimate({ model, input: { prompt: "xxx", ...input } });
+
+      expect(result.usd).toBeCloseTo(seconds * perUnitUsd, 10);
+      expect(result.source).toBe("per-unit-table");
+      expect(result.breakdown).toEqual({
+        units: seconds,
+        unit: "seconds",
+        perUnitUsd,
+      });
+      expect(result.warnings).toEqual([]);
+    }
+  );
+
+  // The per-video families ignore the duration channel that the per-second
+  // ones live on: a 10s hint must not turn the 5s cell into ten of them.
+  it("prices kling 2.1 per video regardless of costHints.durationSeconds", () => {
+    const result = kieEstimate(
+      {
+        model: "kling/v2-1-pro",
+        input: {
+          prompt: "x",
+          image_url: "https://example.com/x.jpg",
+          duration: "5",
+        },
+      },
+      { costHints: { durationSeconds: 10 } }
+    );
+
+    expect(result.usd).toBeCloseTo(0.25, 10);
+    expect(result.breakdown).toEqual({
+      units: 1,
+      unit: "generations",
+      perUnitUsd: 0.25,
+    });
+  });
+
+  // Documented upstream defaults, applied only where the model's own schema
+  // publishes one.
+  it.each([
+    {
+      model: "kling/v2-1-standard",
+      input: { image_url: "https://example.com/x.jpg" },
+      note: "duration 5",
+      usd: 0.125,
+    },
+    {
+      model: "kling/v2-1-pro",
+      input: { image_url: "https://example.com/x.jpg" },
+      note: "duration 5",
+      usd: 0.25,
+    },
+    {
+      model: "kling/v2-1-master-text-to-video",
+      input: {},
+      note: "duration 5",
+      usd: 0.8,
+    },
+    {
+      model: "kling/v2-5-turbo-text-to-video-pro",
+      input: {},
+      note: "duration 5",
+      usd: 0.21,
+    },
+  ])(
+    "falls back to the documented $note default for $model",
+    ({ model, input, usd }) => {
+      const result = kieEstimate({ model, input: { prompt: "x", ...input } });
+
+      expect(result.usd).toBeCloseTo(usd, 10);
+      expect(result.warnings).toEqual([]);
+    }
+  );
+
+  // Seedance 1.5 Pro declares both price selectors with defaults, so an
+  // omitted resolution and audio flag price the documented 720p no-audio row.
+  it("applies the seedance-1.5-pro 720p no-audio defaults", () => {
+    const result = kieEstimate({
+      model: "bytedance/seedance-1.5-pro",
+      input: { prompt: "xxx", aspect_ratio: "16:9", duration: 6 },
+    });
+
+    expect(result.usd).toBeCloseTo(0.105, 10); // 6 × 0.0175
+    expect(result.breakdown).toEqual({
+      units: 6,
+      unit: "seconds",
+      perUnitUsd: 0.0175,
+    });
+    expect(result.warnings).toEqual([]);
+  });
+
+  // The no-duration-field models still take their tier from the payload; the
+  // hint only supplies the length. Both defaults are the schema's own.
+  it.each([
+    {
+      model: "topaz/video-upscale",
+      input: { video_url: "https://example.com/in.mp4" },
+      note: 'upscale_factor "2"',
+      perUnitUsd: 0.04,
+    },
+    {
+      model: "infinitalk/from-audio",
+      input: {
+        image_url: "https://example.com/a.png",
+        audio_url: "https://example.com/a.mp3",
+        prompt: "x",
+      },
+      note: 'resolution "480p"',
+      perUnitUsd: 0.015,
+    },
+  ])(
+    "falls back to the documented $note default for $model",
+    ({ model, input, perUnitUsd }) => {
+      const result = kieEstimate(
+        { model, input },
+        { costHints: { durationSeconds: 10 } }
+      );
+
+      expect(result.usd).toBeCloseTo(10 * perUnitUsd, 10);
+      expect(result.warnings).toEqual([]);
+    }
+  );
+
+  // The other side of that rule: kling 2.6 requires `duration` and documents
+  // no default, so an omitted one must fail rather than quote the 5s tier.
+  it.each(["kling-2.6/text-to-video", "kling-2.6/image-to-video"])(
+    "fails %s when duration is omitted and upstream documents no default",
+    (model) => {
+      const result = kieEstimate({
+        model,
+        input: { prompt: "x", sound: false },
+      });
+
+      expect(result.usd).toBe(0);
+      expect(result.breakdown).toEqual({});
+      expect(result.warnings).toHaveLength(1);
+      expect(result.warnings[0]).toContain("no rate for variant");
+      expect(result.warnings[0]).toContain("duration");
+    }
+  );
+});
+
+// WP5.5: kie publishes these per 1000 characters; the table stores the
+// per-character rate, so units are the raw character count.
+describe("kie ElevenLabs TTS per-character pricing (REQ-005)", () => {
+  it.each([
+    {
+      model: "elevenlabs/text-to-speech-multilingual-v2",
+      perUnitUsd: 0.00006,
+    },
+    { model: "elevenlabs/text-to-speech-turbo-2-5", perUnitUsd: 0.00003 },
+  ])("bills $model by input.text length", ({ model, perUnitUsd }) => {
+    const text = "a".repeat(1000);
+    const result = kieEstimate({ model, input: { text, voice: "Rachel" } });
+
+    expect(result.usd).toBeCloseTo(1000 * perUnitUsd, 10);
+    expect(result.source).toBe("per-unit-table");
+    expect(result.breakdown).toEqual({
+      units: 1000,
+      unit: "characters",
+      perUnitUsd,
+    });
+    expect(result.warnings).toEqual([]);
+  });
+
+  // The published rate is per 1000 characters; a partial thousand bills
+  // pro rata, so the per-character rate must not round up to a block.
+  it("bills a partial thousand characters pro rata", () => {
+    const result = kieEstimate({
+      model: "elevenlabs/text-to-speech-multilingual-v2",
+      input: { text: "hello world", voice: "Rachel" },
+    });
+
+    expect(result.breakdown.units).toBe(11);
+    expect(result.usd).toBeCloseTo(11 * 0.00006, 10);
+  });
+
+  it("sums every dialogue turn for text-to-dialogue-v3", () => {
+    const result = kieEstimate({
+      model: "elevenlabs/text-to-dialogue-v3",
+      input: {
+        dialogue: [
+          { text: "a".repeat(400), voice: "Rachel" },
+          { text: "b".repeat(600), voice: "Adam" },
+        ],
+      },
+    });
+
+    expect(result.usd).toBeCloseTo(1000 * 0.00007, 10);
+    expect(result.breakdown).toEqual({
+      units: 1000,
+      unit: "characters",
+      perUnitUsd: 0.00007,
+    });
+    expect(result.warnings).toEqual([]);
+  });
+
+  // A turn with no usable text means the request cannot be sized; failing is
+  // the fail-safe, since summing the rest would under-bill it.
+  it.each([
+    { label: "a malformed turn", dialogue: [{ voice: "Rachel" }] },
+    { label: "an empty array", dialogue: [] },
+  ])("fails text-to-dialogue-v3 on $label", ({ dialogue }) => {
+    const result = kieEstimate({
+      model: "elevenlabs/text-to-dialogue-v3",
+      input: { dialogue },
+    });
+
+    expect(result.usd).toBe(0);
+    expect(result.warnings).toHaveLength(1);
+    expect(result.warnings[0]).toContain("could not derive units");
+  });
+
+  // Cross-route parity: the same two models are priced by the elevenlabs
+  // provider itself. kie resells at its own rate, but both tables must agree
+  // on the unit, or a caller comparing routes compares different things.
+  it.each([
+    {
+      kieModel: "elevenlabs/text-to-speech-multilingual-v2",
+      directModel: "eleven_multilingual_v2",
+    },
+    {
+      kieModel: "elevenlabs/text-to-speech-turbo-2-5",
+      directModel: "eleven_turbo_v2_5",
+    },
+  ])(
+    "prices $kieModel in the same unit as elevenlabs' own entry",
+    ({ kieModel, directModel }) => {
+      const kieEntry = PRICING.kie[kieModel];
+      const directEntry = PRICING.elevenlabs[directModel];
+
+      expect(kieEntry.kind).toBe("perUnit");
+      expect(directEntry.kind).toBe("perUnit");
+      if (kieEntry.kind !== "perUnit" || directEntry.kind !== "perUnit") return;
+      expect(kieEntry.unit).toBe(directEntry.unit);
+    }
+  );
+});
+
 describe("kie 2026-08-06 pricing pull provenance", () => {
   it("stamps every entry added or refreshed by this pull", () => {
     for (const model of [
@@ -1665,6 +2120,23 @@ describe("kie 2026-08-06 pricing pull provenance", () => {
       "qwen/text-to-image",
       "qwen/image-to-image",
       "qwen/image-edit",
+      "kling-2.6/text-to-video",
+      "kling-2.6/image-to-video",
+      "kling-2.6/motion-control",
+      "kling/ai-avatar-standard",
+      "kling/ai-avatar-pro",
+      "kling/v2-5-turbo-text-to-video-pro",
+      "kling/v2-5-turbo-image-to-video-pro",
+      "kling/v2-1-standard",
+      "kling/v2-1-pro",
+      "kling/v2-1-master-text-to-video",
+      "kling/v2-1-master-image-to-video",
+      "bytedance/seedance-1.5-pro",
+      "topaz/video-upscale",
+      "infinitalk/from-audio",
+      "elevenlabs/text-to-speech-multilingual-v2",
+      "elevenlabs/text-to-speech-turbo-2-5",
+      "elevenlabs/text-to-dialogue-v3",
     ]) {
       const entry = PRICING.kie[model];
       expect(entry, model).toBeDefined();

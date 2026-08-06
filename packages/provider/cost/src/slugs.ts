@@ -54,9 +54,30 @@ export const MODEL_SLUGS = {
     "minimax-h3/image-to-video": "mmh3",
     "minimax-h3/reference-to-video": "mmh3",
 
+    // Video — Kling 2.6 / 2.5 turbo / 2.1 (each generation is its own price
+    // ladder, so its own slug; t2v and i2v are modalities and share one)
+    "kling-2.6/text-to-video": "kling2p6",
+    "kling-2.6/image-to-video": "kling2p6",
+    "kling-2.6/motion-control": "kling2p6mc",
+    "kling/v2-5-turbo-text-to-video-pro": "kling2p5t",
+    "kling/v2-5-turbo-image-to-video-pro": "kling2p5t",
+    "kling/v2-1-standard": "kling2p1s",
+    "kling/v2-1-pro": "kling2p1p",
+    "kling/v2-1-master-text-to-video": "kling2p1m",
+    "kling/v2-1-master-image-to-video": "kling2p1m",
+
+    // Video — Bytedance Seedance 1.5
+    "bytedance/seedance-1.5-pro": "sd1p5p",
+
+    // Video — Topaz
+    "topaz/video-upscale": "topazvid",
+
     // Video — lip sync / avatar
     "omnihuman-1-5": "oh1p5",
     "volcengine/video-to-video-lip-sync": "vlipsync",
+    "kling/ai-avatar-standard": "klingavs",
+    "kling/ai-avatar-pro": "klingavp",
+    "infinitalk/from-audio": "infinitalk",
 
     // Video — Veo (the aux endpoint keys share the family slug: extend and
     // the resolution upgrades are ops on the same model, not price tiers)
@@ -159,6 +180,13 @@ export const MODEL_SLUGS = {
 
     // Image — Sora watermark removal
     "sora-watermark-remover": "soraw",
+
+    // Audio — ElevenLabs TTS resold by kie. Same underlying models as the
+    // elevenlabs provider's own entries, so the same slugs (the cross-provider
+    // rule that already ties kie's qwen/* to fal's).
+    "elevenlabs/text-to-speech-multilingual-v2": "elml2",
+    "elevenlabs/text-to-speech-turbo-2-5": "elt2p5",
+    "elevenlabs/text-to-dialogue-v3": "eldlg3",
 
     // Audio — Suno
     "suno/generate": "suno",
@@ -407,8 +435,25 @@ export const MODEL_DISPLAY = {
     "minimax-h3/image-to-video": "MiniMax H3",
     "minimax-h3/reference-to-video": "MiniMax H3",
 
+    "kling-2.6/text-to-video": "Kling 2.6",
+    "kling-2.6/image-to-video": "Kling 2.6",
+    "kling-2.6/motion-control": "Kling 2.6 Motion",
+    "kling/v2-5-turbo-text-to-video-pro": "Kling 2.5 Turbo Pro",
+    "kling/v2-5-turbo-image-to-video-pro": "Kling 2.5 Turbo Pro",
+    "kling/v2-1-standard": "Kling 2.1",
+    "kling/v2-1-pro": "Kling 2.1 Pro",
+    "kling/v2-1-master-text-to-video": "Kling 2.1 Master",
+    "kling/v2-1-master-image-to-video": "Kling 2.1 Master",
+
+    "bytedance/seedance-1.5-pro": "Seedance 1.5 Pro",
+
+    "topaz/video-upscale": "Topaz Video Upscale",
+
     "omnihuman-1-5": "OmniHuman 1.5",
     "volcengine/video-to-video-lip-sync": "Volcengine Lip Sync",
+    "kling/ai-avatar-standard": "Kling AI Avatar",
+    "kling/ai-avatar-pro": "Kling AI Avatar Pro",
+    "infinitalk/from-audio": "InfiniTalk",
 
     veo3: "Veo 3",
     veo3_fast: "Veo 3 Fast",
@@ -486,6 +531,10 @@ export const MODEL_DISPLAY = {
     "flux-kontext-max": "Flux Kontext Max",
 
     "sora-watermark-remover": "Sora Watermark Remover",
+
+    "elevenlabs/text-to-speech-multilingual-v2": "Eleven Multilingual 2",
+    "elevenlabs/text-to-speech-turbo-2-5": "Eleven Turbo 2.5",
+    "elevenlabs/text-to-dialogue-v3": "Eleven Dialogue 3",
 
     "suno/generate": "Suno",
     "suno/extend": "Suno Extend",

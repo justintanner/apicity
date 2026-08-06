@@ -641,6 +641,26 @@ describe("kie pricing-refresh slugs (REQ-007)", () => {
     }
   );
 
+  // Same rule against the elevenlabs provider: kie resells these two TTS
+  // models, so the resold key must not mint a second slug for them.
+  it.each([
+    {
+      kieModel: "elevenlabs/text-to-speech-multilingual-v2",
+      elevenlabsModel: "eleven_multilingual_v2",
+    },
+    {
+      kieModel: "elevenlabs/text-to-speech-turbo-2-5",
+      elevenlabsModel: "eleven_turbo_v2_5",
+    },
+  ])(
+    "shares $kieModel's slug with elevenlabs' $elevenlabsModel",
+    ({ kieModel, elevenlabsModel }) => {
+      expect(modelSlug("kie", kieModel as never)).toBe(
+        modelSlug("elevenlabs", elevenlabsModel as never)
+      );
+    }
+  );
+
   // Cheap forward guard until the superset-parity walk lands: every key this
   // item priced must be reachable through the slug registry, not just the
   // hand-listed ones above.

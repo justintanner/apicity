@@ -352,10 +352,31 @@ describe("PRICING data", () => {
   });
 
   it("kie has per-unit pricing for video", () => {
-    expect(PRICING.kie.veo3).toMatchObject({
+    expect(PRICING.kie["wan/2-7-text-to-video"]).toMatchObject({
       kind: "perUnit",
       unit: "seconds",
-      rates: { "": 0.3 },
+      rates: { "": 0.1 },
+    });
+  });
+
+  // Veo moved from per-second to per-video: the unit is `generations` and the
+  // rates are keyed by the page's resolution columns, not a bare "" flat rate.
+  it("kie prices veo per video, keyed by resolution", () => {
+    expect(PRICING.kie.veo3).toMatchObject({
+      kind: "perUnit",
+      unit: "generations",
+      rates: { "720p": 1.25, "1080p": 1.275, "4k": 1.85 },
+      source: { url: "https://kie.ai/veo-3-1", asOf: "2026-08-06" },
+    });
+    expect(PRICING.kie.veo3_fast).toMatchObject({
+      kind: "perUnit",
+      unit: "generations",
+      rates: { "720p": 0.3, "1080p": 0.325, "4k": 0.9 },
+    });
+    expect(PRICING.kie.veo3_lite).toMatchObject({
+      kind: "perUnit",
+      unit: "generations",
+      rates: { "720p": 0.15, "1080p": 0.175, "4k": 0.75 },
     });
   });
 
@@ -704,19 +725,18 @@ const HINT_ONLY_KIE = [
     seconds: 12,
     perUnitUsd: 0.04,
   },
+  // veo3 / veo3_fast used to live here. They bill per video now (see the
+  // "kie veo per-video pricing" block below), so no duration channel — wire
+  // field, hint, or deprecated top-level — bounds their estimate any more.
   {
-    label: "veo3",
-    model: "veo3",
-    input: { prompt: "a sunset" } as Record<string, unknown>,
+    label: "happyhorse/video-edit",
+    model: "happyhorse/video-edit",
+    input: {
+      video_url: "https://example.com/in.mp4",
+      resolution: "720p",
+    } as Record<string, unknown>,
     seconds: 8,
-    perUnitUsd: 0.3,
-  },
-  {
-    label: "veo3_fast",
-    model: "veo3_fast",
-    input: { prompt: "a sunset" } as Record<string, unknown>,
-    seconds: 8,
-    perUnitUsd: 0.1,
+    perUnitUsd: 0.155,
   },
 ];
 
@@ -812,10 +832,10 @@ describe("kie costHints.durationSeconds", () => {
   it("keeps the legacy top-level duration estimate unchanged", () => {
     const result = computeEstimate({
       provider: "kie" as const,
-      payload: { model: "veo3", duration: 8 },
+      payload: { model: "omnihuman-1-5", duration: 8 },
     });
 
-    expect(result.usd).toBeCloseTo(2.4, 10); // 8 * 0.30
+    expect(result.usd).toBeCloseTo(1.08, 10); // 8 * 0.135
     expect(result.breakdown.units).toBe(8);
     expect(result.warnings).toEqual([]);
   });
@@ -825,11 +845,11 @@ describe("kie costHints.durationSeconds", () => {
   it("lets the hint outrank the deprecated top-level duration", () => {
     const result = computeEstimate({
       provider: "kie" as const,
-      payload: { model: "veo3", duration: 8 },
+      payload: { model: "omnihuman-1-5", duration: 8 },
       costHints: { durationSeconds: 4 },
     });
 
-    expect(result.usd).toBeCloseTo(1.2, 10); // 4 * 0.30
+    expect(result.usd).toBeCloseTo(0.54, 10); // 4 * 0.135
     expect(result.breakdown.units).toBe(4);
     expect(result.warnings).toEqual([]);
   });
@@ -915,5 +935,338 @@ describe("kie costHints.durationSeconds", () => {
     expect(viaHint.usd).toBe(viaWire.usd);
     expect(viaHint.breakdown).toEqual(viaWire.breakdown);
     expect(viaHint.warnings).toEqual([]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Veo per-video restructure + endpoint-keyed kie entries (REQ-004 veo row,
+// REQ-006, REQ-010). Rates verified against the 2026-08-06 kie pricing pull.
+// ---------------------------------------------------------------------------
+
+const kieEstimate = (
+  payload: Record<string, unknown>,
+  extra: Partial<EstimateRequest> = {}
+) => computeEstimate({ provider: "kie", payload, ...extra } as EstimateRequest);
+
+describe("kie veo per-video pricing", () => {
+  // The behavior-change pin: veo used to bill per second, so a duration hint
+  // scaled the price. It bills per video now, and this rate must not move no
+  // matter what the caller declares.
+  it.each([undefined, 4, 8, 30])(
+    "prices veo3 1080p at $1.275 regardless of costHints.durationSeconds=%s",
+    (durationSeconds) => {
+      const result = kieEstimate(
+        { model: "veo3", prompt: "a sunset", resolution: "1080p" },
+        durationSeconds === undefined
+          ? {}
+          : { costHints: { durationSeconds } as CostHints }
+      );
+
+      expect(result.usd).toBeCloseTo(1.275, 10);
+      expect(result.source).toBe("per-unit-table");
+      expect(result.breakdown).toEqual({
+        units: 1,
+        unit: "generations",
+        perUnitUsd: 1.275,
+      });
+      expect(result.warnings).toEqual([]);
+    }
+  );
+
+  // A wire `duration` is equally inert — the field still exists on the veo
+  // schema, it just no longer scales the bill.
+  it("prices veo3 the same with and without a wire duration", () => {
+    const withDuration = kieEstimate({
+      model: "veo3",
+      prompt: "a sunset",
+      resolution: "4k",
+      duration: 8,
+    });
+    const withoutDuration = kieEstimate({
+      model: "veo3",
+      prompt: "a sunset",
+      resolution: "4k",
+    });
+
+    expect(withDuration.usd).toBeCloseTo(1.85, 10);
+    expect(withoutDuration.usd).toBe(withDuration.usd);
+  });
+
+  it.each([
+    { model: "veo3", resolution: "720p", usd: 1.25 },
+    { model: "veo3", resolution: "1080p", usd: 1.275 },
+    { model: "veo3", resolution: "4k", usd: 1.85 },
+    { model: "veo3_fast", resolution: "720p", usd: 0.3 },
+    { model: "veo3_fast", resolution: "1080p", usd: 0.325 },
+    { model: "veo3_fast", resolution: "4k", usd: 0.9 },
+    { model: "veo3_lite", resolution: "720p", usd: 0.15 },
+    { model: "veo3_lite", resolution: "1080p", usd: 0.175 },
+    { model: "veo3_lite", resolution: "4k", usd: 0.75 },
+  ])("prices $model at $resolution", ({ model, resolution, usd }) => {
+    const result = kieEstimate({ model, prompt: "a sunset", resolution });
+
+    expect(result.usd).toBeCloseTo(usd, 10);
+    expect(result.breakdown.unit).toBe("generations");
+    expect(result.warnings).toEqual([]);
+  });
+
+  // Documented upstream default when `resolution` is omitted.
+  it.each([
+    { model: "veo3", usd: 1.25 },
+    { model: "veo3_fast", usd: 0.3 },
+    { model: "veo3_lite", usd: 0.15 },
+  ])(
+    "falls back to the documented 720p default for $model",
+    ({ model, usd }) => {
+      const result = kieEstimate({ model, prompt: "a sunset" });
+
+      expect(result.usd).toBeCloseTo(usd, 10);
+      expect(result.warnings).toEqual([]);
+    }
+  );
+});
+
+describe("kie veo auxiliary endpoints", () => {
+  it.each([
+    { model: "quality", usd: 1.25 },
+    { model: "fast", usd: 0.3 },
+  ])("prices veo/extend $model per video", ({ model, usd }) => {
+    const result = kieEstimate(
+      { taskId: "t", prompt: "keep going", model },
+      { endpoint: "veo/extend" }
+    );
+
+    expect(result.usd).toBeCloseTo(usd, 10);
+    expect(result.breakdown).toEqual({
+      units: 1,
+      unit: "generations",
+      perUnitUsd: usd,
+    });
+    expect(result.warnings).toEqual([]);
+  });
+
+  // Unlike the model-keyed generate entries, the endpoint key resolves without
+  // `payload.model`, so the documented "fast" default is reachable here.
+  it("applies the documented fast default when veo/extend omits model", () => {
+    const result = kieEstimate(
+      { taskId: "t", prompt: "keep going" },
+      { endpoint: "veo/extend" }
+    );
+
+    expect(result.usd).toBeCloseTo(0.3, 10);
+  });
+
+  // The page's Extend Lite row ($0.15) is unreachable: VeoExtendRequestSchema
+  // has no lite value, so it is recorded in the entry comment, not as a rate.
+  it("has no veo/extend lite rate while the schema enum lacks it", () => {
+    const entry = PRICING.kie["veo/extend"];
+    expect(entry.kind).toBe("perUnit");
+    if (entry.kind !== "perUnit") throw new Error("expected a per-unit entry");
+    expect(Object.keys(entry.rates).sort()).toEqual(["fast", "quality"]);
+  });
+
+  it.each([
+    { endpoint: "veo/get-1080p-video", usd: 0.025 },
+    { endpoint: "veo/get-4k-video", usd: 0.6 },
+  ])("prices $endpoint flat", ({ endpoint, usd }) => {
+    const result = kieEstimate({ taskId: "t" }, { endpoint });
+
+    expect(result.usd).toBeCloseTo(usd, 10);
+    expect(result.breakdown).toEqual({
+      units: 1,
+      unit: "generations",
+      perUnitUsd: usd,
+    });
+  });
+});
+
+describe("kie runway / aleph / gpt4o-image / flux-kontext", () => {
+  // `duration` is numeric on the wire (5 | 10), so this also pins the String
+  // coercion at pick time — asString alone would miss every rate.
+  it.each([
+    { duration: 5, quality: "720p", usd: 0.06 },
+    { duration: 10, quality: "720p", usd: 0.15 },
+    { duration: 5, quality: "1080p", usd: 0.15 },
+  ])(
+    "prices runway/generate $duration s at $quality",
+    ({ duration, quality, usd }) => {
+      const result = kieEstimate(
+        { prompt: "a cat", duration, quality },
+        { endpoint: "runway/generate" }
+      );
+
+      expect(result.usd).toBeCloseTo(usd, 10);
+      expect(result.breakdown).toEqual({
+        units: 1,
+        unit: "generations",
+        perUnitUsd: usd,
+      });
+      expect(result.warnings).toEqual([]);
+    }
+  );
+
+  // Upstream documents 10s @ 1080p as unsupported and publishes no rate, so
+  // the estimate must fail rather than invent one.
+  it("has no runway/generate rate for the unsupported 10s 1080p combo", () => {
+    const result = kieEstimate(
+      { prompt: "a cat", duration: 10, quality: "1080p" },
+      { endpoint: "runway/generate" }
+    );
+
+    expect(result.usd).toBe(0);
+    expect(result.warnings).toHaveLength(1);
+    expect(result.warnings[0]).toContain("10|1080p");
+  });
+
+  it.each([
+    { quality: "720p", usd: 0.06 },
+    { quality: "1080p", usd: 0.15 },
+  ])("prices runway/extend at $quality", ({ quality, usd }) => {
+    const result = kieEstimate(
+      { taskId: "t", prompt: "more", quality },
+      { endpoint: "runway/extend" }
+    );
+
+    expect(result.usd).toBeCloseTo(usd, 10);
+    expect(result.warnings).toEqual([]);
+  });
+
+  it("prices aleph/generate flat per video", () => {
+    const result = kieEstimate(
+      { prompt: "make it snow", videoUrl: "https://example.com/in.mp4" },
+      { endpoint: "aleph/generate" }
+    );
+
+    expect(result.usd).toBeCloseTo(0.55, 10);
+    expect(result.breakdown).toEqual({
+      units: 1,
+      unit: "generations",
+      perUnitUsd: 0.55,
+    });
+  });
+
+  it("prices gpt4o-image/generate flat per image", () => {
+    const result = kieEstimate(
+      { prompt: "a cat", size: "1:1" },
+      { endpoint: "gpt4o-image/generate" }
+    );
+
+    expect(result.usd).toBeCloseTo(0.03, 10);
+    expect(result.breakdown).toEqual({
+      units: 1,
+      unit: "images",
+      perUnitUsd: 0.03,
+    });
+  });
+
+  it.each([
+    { model: "flux-kontext-pro", usd: 0.025 },
+    { model: "flux-kontext-max", usd: 0.05 },
+  ])("prices $model per image", ({ model, usd }) => {
+    const result = kieEstimate({ model, prompt: "a cat" });
+
+    expect(result.usd).toBeCloseTo(usd, 10);
+    expect(result.breakdown).toEqual({
+      units: 1,
+      unit: "images",
+      perUnitUsd: usd,
+    });
+  });
+
+  // Model-keyed entries cannot apply upstream's documented default model: with
+  // no `payload.model` and no caller endpoint there is no pricing key at all,
+  // so the estimate fails by engine rule instead of guessing flux-kontext-pro.
+  it("fails the estimate when flux-kontext omits payload.model", () => {
+    const result = kieEstimate({ prompt: "a cat" });
+
+    expect(result.usd).toBe(0);
+    expect(result.warnings).toHaveLength(1);
+    expect(result.warnings[0]).toContain("endpoint or payload.model");
+  });
+});
+
+describe("kie suno rows", () => {
+  it("prices suno/timestamped-lyrics flat per request", () => {
+    const result = kieEstimate(
+      { taskId: "t", audioId: "a" },
+      { endpoint: "suno/timestamped-lyrics" }
+    );
+
+    expect(result.usd).toBeCloseTo(0.0025, 10);
+    expect(result.breakdown).toEqual({
+      units: 1,
+      unit: "generations",
+      perUnitUsd: 0.0025,
+    });
+    expect(result.warnings).toEqual([]);
+  });
+
+  // Published at 0 credits. These resolve to a real $0 estimate rather than
+  // failing with "model not found" — the reason they are entries at all.
+  it.each([
+    "suno/cover-generate",
+    "suno/persona-generate",
+    "suno/midi-generate",
+  ])("resolves %s to a $0 estimate", (endpoint) => {
+    const result = kieEstimate({ taskId: "t" }, { endpoint });
+
+    expect(result.usd).toBe(0);
+    expect(result.source).toBe("per-unit-table");
+    expect(result.breakdown).toEqual({
+      units: 1,
+      unit: "generations",
+      perUnitUsd: 0,
+    });
+    expect(result.warnings).toEqual([]);
+  });
+
+  // The two schema-representable separate-vocals rates stay as they are; the
+  // page's "Advanced Split" ($0.10) has no schema discriminator to key on.
+  it.each([
+    { type: "separate_vocal", usd: 0.05 },
+    { type: "split_stem", usd: 0.25 },
+  ])("prices suno/vocal-removal-generate $type", ({ type, usd }) => {
+    const result = kieEstimate(
+      {
+        taskId: "t",
+        audioId: "a",
+        callBackUrl: "https://example.com/cb",
+        type,
+      },
+      { endpoint: "suno/vocal-removal-generate" }
+    );
+
+    expect(result.usd).toBeCloseTo(usd, 10);
+  });
+});
+
+describe("kie 2026-08-06 pricing pull provenance", () => {
+  it("stamps every entry added or refreshed by this pull", () => {
+    for (const model of [
+      "veo3",
+      "veo3_fast",
+      "veo3_lite",
+      "veo/extend",
+      "veo/get-1080p-video",
+      "veo/get-4k-video",
+      "runway/generate",
+      "runway/extend",
+      "aleph/generate",
+      "gpt4o-image/generate",
+      "flux-kontext-pro",
+      "flux-kontext-max",
+      "suno/timestamped-lyrics",
+      "suno/cover-generate",
+      "suno/persona-generate",
+      "suno/midi-generate",
+      "suno/vocal-removal-generate",
+    ]) {
+      const entry = PRICING.kie[model];
+      expect(entry, model).toBeDefined();
+      expect(entry.source.url, `${model} url`).toMatch(
+        /^https:\/\/(docs\.)?kie\.ai\//
+      );
+      expect(entry.source.asOf, `${model} asOf`).toBe("2026-08-06");
+    }
   });
 });

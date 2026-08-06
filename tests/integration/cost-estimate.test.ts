@@ -28,16 +28,18 @@ describe("cost.estimate — pure-table (no network)", () => {
     expect(r.warnings).toEqual([]);
   });
 
-  it("kie veo3_fast → 8 seconds × $0.10", () => {
+  // Veo bills per video: the 8-second payload below prices at the flat 720p
+  // Fast rate, not 8 × anything.
+  it("kie veo3_fast → $0.30 per video at the default 720p", () => {
     const c = createCost();
     const r = c.estimate({
       provider: "kie",
       payload: { model: "veo3_fast", prompt: "a sunset", duration: 8 },
     });
-    expect(r.usd).toBeCloseTo(0.8, 6);
+    expect(r.usd).toBeCloseTo(0.3, 6);
     expect(r.source).toBe("per-unit-table");
-    expect(r.breakdown.unit).toBe("seconds");
-    expect(r.breakdown.units).toBe(8);
+    expect(r.breakdown.unit).toBe("generations");
+    expect(r.breakdown.units).toBe(1);
   });
 
   it("kie seedance-2-mini resolves resolution and video-input rates", () => {
@@ -213,7 +215,7 @@ describe("cost.estimate — pure-table (no network)", () => {
     const c = createCost();
     const r = c.estimate({
       provider: "kie",
-      payload: { model: "veo3_fast" },
+      payload: { model: "omnihuman-1-5" },
     });
     expect(r.usd).toBe(0);
     expect(r.warnings[0]).toMatch(/duration/);
@@ -731,8 +733,8 @@ describe("cost.estimate — pure-table (no network)", () => {
 
   it("kie endpoint hint takes precedence over payload.model", () => {
     const c = createCost();
-    // payload.model would resolve to veo3_fast ($0.10/s × 8 = $0.80),
-    // but endpoint=suno/generate forces a flat $0.06 lookup.
+    // payload.model would resolve to veo3_fast ($0.30 per video at the
+    // default 720p), but endpoint=suno/generate forces a flat $0.06 lookup.
     const r = c.estimate({
       provider: "kie",
       endpoint: "suno/generate",

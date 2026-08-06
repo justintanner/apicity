@@ -460,3 +460,63 @@ describe("googleflow slugs", () => {
     );
   });
 });
+
+// Slug + display coverage for the keys the 2026-08-06 kie pricing pull added
+// (REQ-007). Variants of one product share the family slug; the op — extend,
+// resolution upgrade — is metadata, per the grammar at the top of slugs.ts.
+describe("kie pricing-refresh slugs (REQ-007)", () => {
+  it.each([
+    { model: "veo3_lite", slug: "veo3l", display: "Veo 3 Lite" },
+    { model: "veo/extend", slug: "veo3", display: "Veo 3 Extend" },
+    {
+      model: "veo/get-1080p-video",
+      slug: "veo3",
+      display: "Veo 3 1080p Upgrade",
+    },
+    { model: "veo/get-4k-video", slug: "veo3", display: "Veo 3 4K Upgrade" },
+    { model: "runway/generate", slug: "runway", display: "Runway" },
+    { model: "runway/extend", slug: "runway", display: "Runway Extend" },
+    { model: "aleph/generate", slug: "aleph", display: "Runway Aleph" },
+    { model: "gpt4o-image/generate", slug: "gi4o", display: "GPT-4o Image" },
+    {
+      model: "flux-kontext-pro",
+      slug: "fluxkp",
+      display: "Flux Kontext Pro",
+    },
+    {
+      model: "flux-kontext-max",
+      slug: "fluxkm",
+      display: "Flux Kontext Max",
+    },
+    {
+      model: "suno/timestamped-lyrics",
+      slug: "suno",
+      display: "Suno Timestamped Lyrics",
+    },
+    {
+      model: "suno/cover-generate",
+      slug: "suno",
+      display: "Suno Cover Image",
+    },
+    { model: "suno/persona-generate", slug: "suno", display: "Suno Persona" },
+    { model: "suno/midi-generate", slug: "suno", display: "Suno MIDI" },
+  ])(
+    "resolves $model through modelSlug/modelDisplay",
+    ({ model, slug, display }) => {
+      expect(modelSlug("kie", model as never)).toBe(slug);
+      expect(modelDisplay("kie", model as never)).toBe(display);
+    }
+  );
+
+  // Cheap forward guard until the superset-parity walk lands: every key this
+  // item priced must be reachable through the slug registry, not just the
+  // hand-listed ones above.
+  it("registers a slug and display for every kie pricing key it added", () => {
+    const missing = Object.keys(PRICING.kie).filter(
+      (model) =>
+        (MODEL_SLUGS.kie as Record<string, string>)[model] === undefined ||
+        (MODEL_DISPLAY.kie as Record<string, string>)[model] === undefined
+    );
+    expect(missing, "kie priced-but-unslugged").toEqual([]);
+  });
+});

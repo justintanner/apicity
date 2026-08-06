@@ -458,19 +458,21 @@ describe("computeEstimate", () => {
   });
 
   describe("per-unit providers", () => {
-    it("estimates kie veo3 by duration", () => {
+    // Veo bills per video, so `duration` is inert here: the price is the
+    // 720p default cell, not a multiple of 10 seconds.
+    it("estimates kie veo3 per video, not by duration", () => {
       const req = {
         provider: "kie" as const,
         payload: { model: "veo3", duration: 10 },
       };
       const result = computeEstimate(req);
-      expect(result.usd).toBe(3); // 10 seconds * 0.3
+      expect(result.usd).toBe(1.25);
       expect(result.currency).toBe("USD");
       expect(result.source).toBe("per-unit-table");
       expect(result.breakdown).toEqual({
-        units: 10,
-        unit: "seconds",
-        perUnitUsd: 0.3,
+        units: 1,
+        unit: "generations",
+        perUnitUsd: 1.25,
       });
       expect(result.warnings).toEqual([]);
     });

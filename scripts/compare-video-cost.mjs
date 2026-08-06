@@ -6,9 +6,10 @@
 //
 // Each lineup row carries the *exact* JSON body the caller would POST to its
 // associated kie endpoint. Marketplace rows use /api/v1/jobs/createTask;
-// legacy VEO rows use /api/v1/veo/generate. Duration is patched per iteration.
-// Rates come from the bundled @apicity/cost PRICING table — no API keys, no
-// network, instant.
+// VEO rows use /api/v1/veo/generate. Duration is patched per iteration, which
+// moves the per-second rows only — veo bills per video, so its columns are
+// flat by design. Rates come from the bundled @apicity/cost PRICING table —
+// no API keys, no network, instant.
 
 import { fileURLToPath } from "node:url";
 
@@ -27,16 +28,62 @@ export const veoGenerateEndpointAssociation = Object.freeze({
 //   - "opt" = schema exposes an audio toggle (sound / generate_audio /
 //     audio_setting) → caller chooses on or off per request
 export const lineup = [
+  // Veo 3.1 bills per VIDEO, not per second: every duration column below
+  // prints the same number for a given (tier × resolution) cell. The matrix is
+  // fully selector-addressable because the veo generate schema carries
+  // top-level `resolution`, so each page cell gets its own row.
   {
     ...veoGenerateEndpointAssociation,
-    label: "veo3 (4K)",
-    payload: { model: "veo3", prompt: "x" },
+    label: "veo3 quality 720p",
+    payload: { model: "veo3", prompt: "x", resolution: "720p" },
     audio: "yes",
   },
   {
     ...veoGenerateEndpointAssociation,
-    label: "veo3-fast (720p)",
-    payload: { model: "veo3_fast", prompt: "x" },
+    label: "veo3 quality 1080p",
+    payload: { model: "veo3", prompt: "x", resolution: "1080p" },
+    audio: "yes",
+  },
+  {
+    ...veoGenerateEndpointAssociation,
+    label: "veo3 quality 4k",
+    payload: { model: "veo3", prompt: "x", resolution: "4k" },
+    audio: "yes",
+  },
+  {
+    ...veoGenerateEndpointAssociation,
+    label: "veo3-fast 720p",
+    payload: { model: "veo3_fast", prompt: "x", resolution: "720p" },
+    audio: "yes",
+  },
+  {
+    ...veoGenerateEndpointAssociation,
+    label: "veo3-fast 1080p",
+    payload: { model: "veo3_fast", prompt: "x", resolution: "1080p" },
+    audio: "yes",
+  },
+  {
+    ...veoGenerateEndpointAssociation,
+    label: "veo3-fast 4k",
+    payload: { model: "veo3_fast", prompt: "x", resolution: "4k" },
+    audio: "yes",
+  },
+  {
+    ...veoGenerateEndpointAssociation,
+    label: "veo3-lite 720p",
+    payload: { model: "veo3_lite", prompt: "x", resolution: "720p" },
+    audio: "yes",
+  },
+  {
+    ...veoGenerateEndpointAssociation,
+    label: "veo3-lite 1080p",
+    payload: { model: "veo3_lite", prompt: "x", resolution: "1080p" },
+    audio: "yes",
+  },
+  {
+    ...veoGenerateEndpointAssociation,
+    label: "veo3-lite 4k",
+    payload: { model: "veo3_lite", prompt: "x", resolution: "4k" },
     audio: "yes",
   },
   // Kling 3.0 video — kie publishes 6 rates split by mode

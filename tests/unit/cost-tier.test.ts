@@ -150,12 +150,12 @@ describe("classifyEstimate", () => {
   });
 
   it("classifies a real per-unit estimate by its derived usd", () => {
-    // kie veo3_fast: 8 seconds × $0.10 = $0.80 → expensive.
+    // kie veo3_fast: $0.30 per video at the default 720p → expensive.
     const est = computeEstimate({
       provider: "kie",
       payload: { model: "veo3_fast", prompt: "a sunset", duration: 8 },
     });
-    expect(est.usd).toBeCloseTo(0.8, 6);
+    expect(est.usd).toBeCloseTo(0.3, 6);
     expect(classifyEstimate(est)).toBe("expensive");
   });
 

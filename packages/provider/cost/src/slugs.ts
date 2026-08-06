@@ -58,9 +58,19 @@ export const MODEL_SLUGS = {
     "omnihuman-1-5": "oh1p5",
     "volcengine/video-to-video-lip-sync": "vlipsync",
 
-    // Video — Veo
+    // Video — Veo (the aux endpoint keys share the family slug: extend and
+    // the resolution upgrades are ops on the same model, not price tiers)
     veo3: "veo3",
     veo3_fast: "veo3f",
+    veo3_lite: "veo3l",
+    "veo/extend": "veo3",
+    "veo/get-1080p-video": "veo3",
+    "veo/get-4k-video": "veo3",
+
+    // Video — Runway
+    "runway/generate": "runway",
+    "runway/extend": "runway",
+    "aleph/generate": "aleph",
 
     // Video — Gemini Omni
     "gemini-omni-video": "geminiomni",
@@ -90,6 +100,13 @@ export const MODEL_SLUGS = {
     "seedream/5-lite-text-to-image": "sd5",
     "seedream/5-lite-image-to-image": "sd5",
 
+    // Image — GPT-4o Image
+    "gpt4o-image/generate": "gi4o",
+
+    // Image — Flux Kontext
+    "flux-kontext-pro": "fluxkp",
+    "flux-kontext-max": "fluxkm",
+
     // Image — Sora watermark removal
     "sora-watermark-remover": "soraw",
 
@@ -108,6 +125,10 @@ export const MODEL_SLUGS = {
     "suno/sounds-generate": "suno",
     "suno/add-instrumental-generate": "suno",
     "suno/add-vocals-generate": "suno",
+    "suno/timestamped-lyrics": "suno",
+    "suno/cover-generate": "suno",
+    "suno/persona-generate": "suno",
+    "suno/midi-generate": "suno",
   },
 
   kimicoding: {
@@ -341,6 +362,14 @@ export const MODEL_DISPLAY = {
 
     veo3: "Veo 3",
     veo3_fast: "Veo 3 Fast",
+    veo3_lite: "Veo 3 Lite",
+    "veo/extend": "Veo 3 Extend",
+    "veo/get-1080p-video": "Veo 3 1080p Upgrade",
+    "veo/get-4k-video": "Veo 3 4K Upgrade",
+
+    "runway/generate": "Runway",
+    "runway/extend": "Runway Extend",
+    "aleph/generate": "Runway Aleph",
 
     "gemini-omni-video": "Gemini Omni",
 
@@ -363,6 +392,11 @@ export const MODEL_DISPLAY = {
     "seedream/5-lite-text-to-image": "Seedream 5",
     "seedream/5-lite-image-to-image": "Seedream 5 Edit",
 
+    "gpt4o-image/generate": "GPT-4o Image",
+
+    "flux-kontext-pro": "Flux Kontext Pro",
+    "flux-kontext-max": "Flux Kontext Max",
+
     "sora-watermark-remover": "Sora Watermark Remover",
 
     "suno/generate": "Suno",
@@ -379,6 +413,10 @@ export const MODEL_DISPLAY = {
     "suno/sounds-generate": "Suno Sounds",
     "suno/add-instrumental-generate": "Suno Add Instrumental",
     "suno/add-vocals-generate": "Suno Add Vocals",
+    "suno/timestamped-lyrics": "Suno Timestamped Lyrics",
+    "suno/cover-generate": "Suno Cover Image",
+    "suno/persona-generate": "Suno Persona",
+    "suno/midi-generate": "Suno MIDI",
   },
 
   kimicoding: {

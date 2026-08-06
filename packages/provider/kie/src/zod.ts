@@ -157,15 +157,16 @@ const KieMediaPixverseModelAliasSchema = z
 // reordering would read as renames in review and the alias comments above
 // already state each family's membership.
 //
-// Four singleton ids carry no alias and stay enumerated: `omnihuman-1-5`,
-// `volcengine/video-to-video-lip-sync`, `gemini-omni-video` and
-// `sora-watermark-remover`. Each is the only id kie lists for its vendor, and
-// one sample cannot establish a grammar — nothing here distinguishes a
-// versioned family (`omnihuman-<major>-<minor>`) from a fixed product name, so
-// any regex would be a guess that either rejects the real next release or
-// widens into the wildcard this file exists to avoid. They gain an alias when
-// kie ships a second member; until then a new id from those vendors is an
-// explicit enum addition.
+// Singleton / fixed-product ids that stay enum-only with no alias hatch:
+// `omnihuman-1-5` plus its two sub-tasks (`omnihuman-1-5/human-identification`,
+// `omnihuman-1-5/subject-detection`), `volcengine/video-to-video-lip-sync`,
+// `gemini-omni-video`, and `sora-watermark-remover`. Omnihuman's sub-tasks are
+// path-suffixed siblings of a fixed product slug, not a versioned family
+// grammar — nothing here distinguishes `omnihuman-<major>-<minor>` from a
+// product name, so any regex would be a guess that either rejects the real
+// next release or widens into the wildcard this file exists to avoid. They
+// gain an alias only if kie ships a grammar that can be justified; until then
+// each new id from those vendors is an explicit enum addition.
 //
 // MiniMax H3 also stays enum-only even though it has three task variants. The
 // approved surface is exactly these H3 ids; the variants do not establish a
@@ -232,6 +233,9 @@ export const KIE_MEDIA_MODELS = [
   "happyhorse-1-1/image-to-video",
   "happyhorse-1-1/reference-to-video",
   "omnihuman-1-5",
+  // Omnihuman sub-tasks — enum-only siblings of the bare product id (no alias).
+  "omnihuman-1-5/human-identification",
+  "omnihuman-1-5/subject-detection",
   "volcengine/video-to-video-lip-sync",
   "gemini-omni-video",
   "elevenlabs/audio-isolation",
@@ -2358,6 +2362,28 @@ export const Omnihuman15RequestSchema = z.object({
   }),
 });
 
+// Omnihuman 1.5 human identification (portrait subject recognition).
+// Docs: https://docs.kie.ai/market/omnihuman-1-5/human-identification
+export const Omnihuman15HumanIdentificationRequestSchema = z.object({
+  model: z.literal("omnihuman-1-5/human-identification"),
+  callBackUrl: z.string().url().optional(),
+  input: z.object({
+    // Portrait image URL (jpg/png/jpeg, max 5 MB, under 4096x4096).
+    image_url: z.string().url(),
+  }),
+});
+
+// Omnihuman 1.5 subject detection (up to 5 subjects in a portrait).
+// Docs: https://docs.kie.ai/market/omnihuman-1-5/subject-detection
+export const Omnihuman15SubjectDetectionRequestSchema = z.object({
+  model: z.literal("omnihuman-1-5/subject-detection"),
+  callBackUrl: z.string().url().optional(),
+  input: z.object({
+    // Portrait image URL (jpg/png/jpeg, max 5 MB); up to 5 subjects detected.
+    image_url: z.string().url(),
+  }),
+});
+
 export const VolcengineVideoToVideoLipSyncRequestSchema = z.object({
   model: z.literal("volcengine/video-to-video-lip-sync"),
   callBackUrl: z.string().optional(),
@@ -4328,6 +4354,8 @@ export const MediaGenerationRequestSchema = z.union([
   HappyHorse11ImageToVideoRequestSchema,
   HappyHorse11ReferenceToVideoRequestSchema,
   Omnihuman15RequestSchema,
+  Omnihuman15HumanIdentificationRequestSchema,
+  Omnihuman15SubjectDetectionRequestSchema,
   VolcengineVideoToVideoLipSyncRequestSchema,
   GeminiOmniVideoRequestSchema,
   ElevenLabsAudioIsolationRequestSchema,
@@ -5048,6 +5076,22 @@ export type Omnihuman15Request = z.input<typeof Omnihuman15RequestSchema>;
 export type Omnihuman15RequestInput = Omnihuman15Request;
 export type Omnihuman15ParsedRequest = z.output<
   typeof Omnihuman15RequestSchema
+>;
+export type Omnihuman15HumanIdentificationRequest = z.input<
+  typeof Omnihuman15HumanIdentificationRequestSchema
+>;
+export type Omnihuman15HumanIdentificationRequestInput =
+  Omnihuman15HumanIdentificationRequest;
+export type Omnihuman15HumanIdentificationParsedRequest = z.output<
+  typeof Omnihuman15HumanIdentificationRequestSchema
+>;
+export type Omnihuman15SubjectDetectionRequest = z.input<
+  typeof Omnihuman15SubjectDetectionRequestSchema
+>;
+export type Omnihuman15SubjectDetectionRequestInput =
+  Omnihuman15SubjectDetectionRequest;
+export type Omnihuman15SubjectDetectionParsedRequest = z.output<
+  typeof Omnihuman15SubjectDetectionRequestSchema
 >;
 export type VolcengineVideoToVideoLipSyncRequest = z.input<
   typeof VolcengineVideoToVideoLipSyncRequestSchema

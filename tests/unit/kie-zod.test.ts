@@ -1021,18 +1021,18 @@ describe("TRI-008 VeoExtendRequestSchema.model stays a closed set", () => {
 // TRI-001 KieMediaModelSchema — one escape hatch per vendor family
 // ---------------------------------------------------------------------------
 //
-// KieMediaModelSchema is kie's aggregator catalogue: 73 ids drawn from a dozen
+// KieMediaModelSchema is kie's aggregator catalogue: 75 ids drawn from a dozen
 // unrelated vendors behind one `createTask` endpoint. REQ-006 forbids opening
 // it with a single catch-all regex, so it carries one alias per vendor family
-// while singletons (omnihuman, volcengine, gemini-omni, sora-watermark,
-// recraft, topaz, infinitalk, z-image), Flux-2 (four exact modes), the three
-// exact MiniMax H3 modes, the two Google TTS modes, and unversioned Qwen v1
-// stay enumerated with no alias at all.
+// while singletons and fixed-product sets (omnihuman + sub-tasks, volcengine,
+// gemini-omni, sora-watermark, recraft, topaz, infinitalk, z-image), Flux-2
+// (four exact modes), the three exact MiniMax H3 modes, the two Google TTS
+// modes, and unversioned Qwen v1 stay enumerated with no alias at all.
 //
 // BR-4 needs care here that the single-family schemas above do not. A foreign
 // *catalogue* id — `happyhorse/video-edit` on the Kling family — is accepted by
 // KieMediaModelSchema, through the enum branch, and always was: the whole point
-// of the aggregator is that all 73 are valid. So cross-family leakage cannot be
+// of the aggregator is that all 75 are valid. So cross-family leakage cannot be
 // asserted with safeParse; it is asserted structurally instead, against the
 // alias patterns themselves ("partitions the catalogue" below). The per-family
 // `rejected` lists therefore carry BR-3 near-miss typos plus BR-4 ids from

@@ -79,6 +79,8 @@ import {
   Flux2FlexTextToImageRequestSchema,
   Flux2ProImageToImageRequestSchema,
   Flux2FlexImageToImageRequestSchema,
+  Omnihuman15HumanIdentificationRequestSchema,
+  Omnihuman15SubjectDetectionRequestSchema,
   Wan27ImageToVideoRequestSchema,
   Wan27TextToVideoRequestSchema,
   Wan27RefToVideoRequestSchema,
@@ -233,6 +235,9 @@ export const CREATE_TASK_GUARDS = {
   "happyhorse-1-1/reference-to-video":
     HappyHorse11ReferenceToVideoRequestSchema,
   "omnihuman-1-5": Omnihuman15RequestSchema,
+  "omnihuman-1-5/human-identification":
+    Omnihuman15HumanIdentificationRequestSchema,
+  "omnihuman-1-5/subject-detection": Omnihuman15SubjectDetectionRequestSchema,
   "volcengine/video-to-video-lip-sync":
     VolcengineVideoToVideoLipSyncRequestSchema,
   "gemini-omni-video": GeminiOmniVideoRequestSchema,

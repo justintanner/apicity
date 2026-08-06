@@ -2726,6 +2726,32 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  // - https://docs.kie.ai/market/omnihuman-1-5/human-identification
+  "omnihuman-1-5/human-identification": {
+    type: "image",
+    fields: {
+      image_url: {
+        type: "string",
+        required: true,
+        description:
+          "Portrait image URL for human identification (jpg/png/jpeg, max 5 MB, under 4096x4096; recommended single person facing forward)",
+      },
+    },
+  },
+
+  // - https://docs.kie.ai/market/omnihuman-1-5/subject-detection
+  "omnihuman-1-5/subject-detection": {
+    type: "image",
+    fields: {
+      image_url: {
+        type: "string",
+        required: true,
+        description:
+          "Portrait image URL for subject detection (jpg/png/jpeg, max 5 MB; supports up to 5 subjects)",
+      },
+    },
+  },
+
   "volcengine/video-to-video-lip-sync": {
     type: "video",
     fields: {

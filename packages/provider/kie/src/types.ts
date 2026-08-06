@@ -458,6 +458,31 @@ export interface RunwayRecordDetail {
   data?: RunwayRecordDetailData | null;
 }
 
+export interface AlephRecordInfoResponseResult {
+  taskId?: string;
+  resultVideoUrl?: string;
+  resultImageUrl?: string;
+  [key: string]: unknown;
+}
+
+export interface AlephRecordInfoData {
+  taskId: string;
+  paramJson?: string;
+  response?: AlephRecordInfoResponseResult | null;
+  completeTime?: string | null;
+  createTime?: string;
+  successFlag?: 0 | 1 | number;
+  errorCode?: number | null;
+  errorMessage?: string | null;
+  [key: string]: unknown;
+}
+
+export interface AlephRecordInfo {
+  code: number;
+  msg: string;
+  data?: AlephRecordInfoData | null;
+}
+
 export interface GeminiOmniAudioCreateData {
   audioId: string;
   kieAudioId: string;
@@ -630,6 +655,12 @@ interface KieRunwayRecordDetailMethod {
   responseSchema: ApicitySchema<RunwayRecordDetail>;
 }
 
+interface KieAlephRecordInfoMethod {
+  (taskId: string): Promise<AlephRecordInfo>;
+  schema: ApicitySchema<RecordInfoRequest>;
+  responseSchema: ApicitySchema<AlephRecordInfo>;
+}
+
 interface KieFluxKontextRecordInfoMethod {
   (taskId: string): Promise<FluxKontextRecordInfoResponse>;
   schema: ApicitySchema<FluxKontextRecordInfoRequest>;
@@ -677,6 +708,7 @@ interface KieGetApiNamespace {
     gpt4oImage: { recordInfo: KieGpt4oImageRecordInfoMethod };
     mj: { recordInfo: KieMjRecordInfoMethod };
     runway: { recordDetail: KieRunwayRecordDetailMethod };
+    aleph: { recordInfo: KieAlephRecordInfoMethod };
     flux: {
       kontext: {
         recordInfo: KieFluxKontextRecordInfoMethod;

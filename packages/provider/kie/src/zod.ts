@@ -2811,6 +2811,43 @@ export const RunwayRecordDetailResponseSchema = z.object({
   data: RunwayRecordDetailDataSchema.nullable().optional(),
 });
 
+// Aleph (Runway video-to-video) record-info poll shape.
+// Docs: https://docs.kie.ai/runway-api/get-aleph-video-details
+export const AlephRecordInfoResponseResultSchema = z
+  .object({
+    taskId: z.string().optional(),
+    resultVideoUrl: z.string().optional(),
+    resultImageUrl: z.string().optional(),
+  })
+  .passthrough();
+
+export const AlephRecordInfoDataSchema = z
+  .object({
+    taskId: z.string(),
+    paramJson: z.string().optional(),
+    response: AlephRecordInfoResponseResultSchema.nullable().optional(),
+    completeTime: z.string().nullable().optional(),
+    createTime: z.string().optional(),
+    successFlag: z
+      .union([z.literal(0), z.literal(1), z.number().int()])
+      .optional(),
+    errorCode: z.number().int().nullable().optional(),
+    errorMessage: z.string().nullable().optional(),
+  })
+  .passthrough();
+
+export const AlephRecordInfoResponseSchema = z
+  .object({
+    code: z.number().int(),
+    msg: z.string(),
+    data: AlephRecordInfoDataSchema.nullable().optional(),
+  })
+  .passthrough();
+
+export type AlephRecordInfoResponse = z.infer<
+  typeof AlephRecordInfoResponseSchema
+>;
+
 export type RunwayGenerateRequest = z.input<typeof RunwayGenerateRequestSchema>;
 export type RunwayGenerateRequestInput = RunwayGenerateRequest;
 export type RunwayGenerateParsedRequest = z.output<

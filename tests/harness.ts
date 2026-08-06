@@ -1040,7 +1040,10 @@ export function mintKieMjOtp(request: Record<string, unknown>): {
 }
 
 export function mintKieRunwayOtp(
-  dotPath: "api.v1.runway.generate" | "api.v1.runway.extend",
+  dotPath:
+    | "api.v1.runway.generate"
+    | "api.v1.runway.extend"
+    | "api.v1.aleph.generate",
   request: Record<string, unknown>
 ): { otp: string } {
   return {

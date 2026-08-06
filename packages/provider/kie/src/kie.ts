@@ -27,6 +27,7 @@ import {
   RunwayGenerateRequest,
   RunwayExtendRequest,
   RunwayRecordDetail,
+  AlephGenerateRequest,
   AlephRecordInfo,
 } from "./types";
 import type { z } from "zod";
@@ -50,6 +51,7 @@ import {
   RunwayGenerateRequestSchema,
   RunwayExtendRequestSchema,
   RunwayRecordDetailResponseSchema,
+  AlephGenerateRequestSchema,
   AlephRecordInfoResponseSchema,
   FluxKontextRecordInfoRequestSchema,
   FluxKontextRecordInfoResponseSchema,
@@ -657,6 +659,18 @@ export function createKie(opts: KieOptions): KieProvider {
     );
   }
 
+  // POST https://api.kie.ai/api/v1/aleph/generate
+  // Docs: https://docs.kie.ai/runway-api/generate-aleph-video
+  async function alephGenerate(
+    req: AlephGenerateRequest
+  ): Promise<TaskResponse> {
+    return kieRequest<TaskResponse>(transport, {
+      method: "POST",
+      path: "/api/v1/aleph/generate",
+      body: req,
+    });
+  }
+
   // GET https://api.kie.ai/api/v1/aleph/record-info?taskId={taskId}
   // Docs: https://docs.kie.ai/runway-api/get-aleph-video-details
   async function alephRecordInfo(taskId: string): Promise<AlephRecordInfo> {
@@ -785,6 +799,11 @@ export function createKie(opts: KieOptions): KieProvider {
                 }),
                 extend: Object.assign(runwayExtend, {
                   schema: RunwayExtendRequestSchema,
+                }),
+              },
+              aleph: {
+                generate: Object.assign(alephGenerate, {
+                  schema: AlephGenerateRequestSchema,
                 }),
               },
             },

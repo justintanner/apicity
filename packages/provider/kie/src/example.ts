@@ -163,6 +163,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v1.aleph.generate": {
+    "source": "kie/aleph/generate-invalid-video",
+    "payload": {
+      "prompt": "A slow cinematic pan across misty mountains at dawn.",
+      "videoUrl": "https://example.com/apicity-test-nonexistent-video-do-not-record-real.mp4",
+      "callBackUrl": "https://example.com/aleph-callback"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v1.common.downloadUrl": {
     "source": "kie/download-url/convert",
     "payload": {

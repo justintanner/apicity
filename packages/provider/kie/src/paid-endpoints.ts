@@ -167,6 +167,19 @@ export const PAID_ENDPOINTS: readonly PaidEndpointEntry[] = [
       costNotes: "Billed per video extension based on quality",
     },
   },
+  {
+    key: {
+      provider: "kie",
+      method: "POST",
+      dotPath: "api.v1.aleph.generate",
+    },
+    info: {
+      reason:
+        "Runway Aleph video-to-video generation task that incurs direct marginal compute cost",
+      estimatorId: "kie-per-unit",
+      costNotes: "Billed per Aleph video-to-video generation",
+    },
+  },
   // Operator ruling ac-y1s96b / ask ac-ua82k5: gate all seven task-creating
   // Suno + omni routes (exact match; no wildcards).
   {

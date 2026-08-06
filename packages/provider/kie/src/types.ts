@@ -574,6 +574,10 @@ export type {
   RunwayQuality,
   RunwayAspectRatio,
   RunwayDuration,
+  AlephGenerateRequest,
+  AlephGenerateRequestInput,
+  AlephGenerateParsedRequest,
+  AlephAspectRatio,
   FluxKontextRecordInfoRequest,
   FluxKontextRecordInfoRequestInput,
   FluxKontextSuccessFlag,
@@ -826,6 +830,7 @@ import type {
   MjRecordInfoResponse,
   RunwayGenerateRequest,
   RunwayExtendRequest,
+  AlephGenerateRequest,
   FluxKontextRecordInfoRequest,
   FluxKontextRecordInfoResponse,
   RecordInfoRequest,
@@ -937,6 +942,11 @@ interface KieRunwayRecordDetailMethod {
   responseSchema: ApicitySchema<RunwayRecordDetail>;
 }
 
+interface KieAlephGenerateMethod {
+  (req: AlephGenerateRequest, approval?: KieApproval): Promise<TaskResponse>;
+  schema: ApicitySchema<AlephGenerateRequest>;
+}
+
 interface KieAlephRecordInfoMethod {
   (taskId: string): Promise<AlephRecordInfo>;
   schema: ApicitySchema<RecordInfoRequest>;
@@ -977,6 +987,9 @@ interface KiePostApiNamespace {
     runway: {
       generate: KieRunwayGenerateMethod;
       extend: KieRunwayExtendMethod;
+    };
+    aleph: {
+      generate: KieAlephGenerateMethod;
     };
   };
   fileStreamUpload: KieFileStreamUploadMethod;

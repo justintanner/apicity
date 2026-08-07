@@ -881,12 +881,24 @@ export const kie: Record<string, ModelPricing> = {
     },
   },
 
-  // bytedance/seedance-2: 8 rates, resolution × videoInput (i2v when
-  // input.first_frame_url is present, t2v otherwise). The 2026-08-06 pull
-  // confirms that discriminator: the page's "with video input" / "no video
-  // input" columns line up cell-for-cell with the six rates already here, and
-  // it adds a 4K tier — 128 credits/s ($0.64) with input, 208 credits/s
-  // ($1.04) without.
+  // bytedance/seedance-2: 8 rates, resolution × videoInput. The page's two
+  // columns are "with video input" / "no video input", and this family's video
+  // input is input.reference_video_urls — the same hasReferenceVideoInput the
+  // mini entry below already selects on. first_frame_url is an IMAGE seed, so
+  // an image-seeded generation bills in the "no video input" column. The
+  // 2026-08-06 pull supplies the cells, including a 4K tier: 128 credits/s
+  // ($0.64) with video input, 208 credits/s ($1.04) without.
+  //
+  // Billing evidence, which corrected an earlier reading of that discriminator:
+  // tests/recordings/kie_2079838932/bytedance-seedance-2-4k_1424029474/recording.har
+  // sends first_frame_url and NO reference_video_urls at resolution "4k",
+  // duration 4, and its terminal recordInfo reports creditsConsumed 832.0 —
+  // $4.16 at the family's 1 credit = $0.005 basis, exactly 4 s × $1.04, the
+  // "no video input" 4K rate. This entry previously keyed the column off
+  // first_frame_url and so priced that same payload at 4 s × $0.64 = $2.56, a
+  // 38% underestimate flowing into the OTP pay-gate. The mini fixture agrees
+  // from the other side: an image input with no reference video bills 38
+  // credits for 4 s at 480p = 4 × $0.0475, mini's "no video input" rate.
   //
   // As of ac-8cfo6r the 4K tier is schema-reachable: the shipped
   // Seedance2InputSchema accepts resolution "4k" — lowercase, the spelling
@@ -912,25 +924,27 @@ export const kie: Record<string, ModelPricing> = {
       { name: "resolution", pick: inputResolution },
       {
         name: "videoInput",
-        pick: (p) => (asObject(p.input)?.first_frame_url ? "i2v" : "t2v"),
+        pick: (p) => (hasReferenceVideoInput(p) ? "video" : "no-video"),
       },
     ],
     rates: {
-      "480p|i2v": 0.0575,
-      "480p|t2v": 0.095,
-      "720p|i2v": 0.125,
-      "720p|t2v": 0.205,
-      "1080p|i2v": 0.31,
-      "1080p|t2v": 0.51,
-      "4k|i2v": 0.64,
-      "4k|t2v": 1.04,
+      "480p|video": 0.0575,
+      "480p|no-video": 0.095,
+      "720p|video": 0.125,
+      "720p|no-video": 0.205,
+      "1080p|video": 0.31,
+      "1080p|no-video": 0.51,
+      "4k|video": 0.64,
+      "4k|no-video": 1.04,
     },
     source: pricePage(
       "https://kie.ai/seedance-2-0?model=bytedance%2Fseedance-2"
     ),
   },
 
-  // bytedance/seedance-2-fast: 4 rates (no 1080p tier).
+  // bytedance/seedance-2-fast: 4 rates (no 1080p tier). Same page, same column
+  // semantics as seedance-2 above, so the same reference-video discriminator —
+  // by analogy, since no creditsConsumed observation exists for this model.
   "bytedance/seedance-2-fast": {
     kind: "perUnit",
     unit: "seconds",
@@ -939,14 +953,14 @@ export const kie: Record<string, ModelPricing> = {
       { name: "resolution", pick: inputResolution },
       {
         name: "videoInput",
-        pick: (p) => (asObject(p.input)?.first_frame_url ? "i2v" : "t2v"),
+        pick: (p) => (hasReferenceVideoInput(p) ? "video" : "no-video"),
       },
     ],
     rates: {
-      "480p|i2v": 0.045,
-      "480p|t2v": 0.0775,
-      "720p|i2v": 0.1,
-      "720p|t2v": 0.165,
+      "480p|video": 0.045,
+      "480p|no-video": 0.0775,
+      "720p|video": 0.1,
+      "720p|no-video": 0.165,
     },
     source: src("bytedance/seedance-2-fast"),
   },

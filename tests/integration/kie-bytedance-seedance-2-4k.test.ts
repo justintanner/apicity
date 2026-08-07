@@ -28,9 +28,12 @@ import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 //
 // The recorded response reports creditsConsumed 832.0 for 4 s — at the repo's
 // documented 1 credit = $0.005 basis that is $4.16, i.e. 208 credits/s, the
-// "no video input" rate — even though first_frame_url is present. See the
-// WI-4 summary: @apicity/cost's seedance-2 i2v/t2v discriminator keys off
-// first_frame_url and predicts $2.56 for this payload.
+// "no video input" rate — even though first_frame_url is present. That is the
+// billing observation this fixture contributed: @apicity/cost's seedance-2
+// rate discriminator used to key off first_frame_url and predicted $2.56 here,
+// a 38% underestimate. It was corrected under ac-4jaqty to select on
+// input.reference_video_urls (an image seed is not a video input), so cost now
+// prices this payload at the observed $4.16.
 describe("kie bytedance/seedance-2 4K integration", () => {
   let ctx: PollyContext;
 

@@ -252,10 +252,13 @@ export const lineup = [
     },
     audio: "yes",
   },
-  // seedance-2 i2v variants (the rate-bearing direction).
+  // seedance-2 first-frame variants. An image seed is NOT a video input for
+  // this family, so these all price in the page's "no video input" column —
+  // the same column as the prompt-only rows below. The rate-bearing
+  // discriminator is input.reference_video_urls (see the "video" rows).
   {
     ...createTaskEndpointAssociation,
-    label: "seedance-2 480p i2v",
+    label: "seedance-2 480p first-frame (no-video)",
     payload: {
       model: "bytedance/seedance-2",
       input: {
@@ -268,7 +271,7 @@ export const lineup = [
   },
   {
     ...createTaskEndpointAssociation,
-    label: "seedance-2 720p i2v",
+    label: "seedance-2 720p first-frame (no-video)",
     payload: {
       model: "bytedance/seedance-2",
       input: {
@@ -281,7 +284,7 @@ export const lineup = [
   },
   {
     ...createTaskEndpointAssociation,
-    label: "seedance-2 1080p i2v",
+    label: "seedance-2 1080p first-frame (no-video)",
     payload: {
       model: "bytedance/seedance-2",
       input: {
@@ -294,7 +297,7 @@ export const lineup = [
   },
   {
     ...createTaskEndpointAssociation,
-    label: "seedance-2 4k i2v",
+    label: "seedance-2 4k first-frame (no-video)",
     payload: {
       model: "bytedance/seedance-2",
       input: {
@@ -305,12 +308,12 @@ export const lineup = [
     },
     audio: "—",
   },
-  // The t2v direction of the same model: no first_frame_url, which is exactly
-  // the page's "no video input" column and the more expensive half of the
-  // discriminator.
+  // Prompt-only rows for the same model. No reference video either, so they
+  // land in the same "no video input" column as the first-frame rows above —
+  // the more expensive half of the discriminator.
   {
     ...createTaskEndpointAssociation,
-    label: "seedance-2 1080p t2v",
+    label: "seedance-2 1080p prompt-only (no-video)",
     payload: {
       model: "bytedance/seedance-2",
       input: { prompt: "xxx", resolution: "1080p" },
@@ -319,7 +322,7 @@ export const lineup = [
   },
   {
     ...createTaskEndpointAssociation,
-    label: "seedance-2 4k t2v",
+    label: "seedance-2 4k prompt-only (no-video)",
     payload: {
       model: "bytedance/seedance-2",
       input: { prompt: "xxx", resolution: "4k" },
@@ -328,7 +331,7 @@ export const lineup = [
   },
   {
     ...createTaskEndpointAssociation,
-    label: "seedance-2-fast 480p i2v",
+    label: "seedance-2-fast 480p first-frame (no-video)",
     payload: {
       model: "bytedance/seedance-2-fast",
       input: {
@@ -341,12 +344,42 @@ export const lineup = [
   },
   {
     ...createTaskEndpointAssociation,
-    label: "seedance-2-fast 720p i2v",
+    label: "seedance-2-fast 720p first-frame (no-video)",
     payload: {
       model: "bytedance/seedance-2-fast",
       input: {
         prompt: "xxx",
         first_frame_url: "https://example.com/x.jpg",
+        resolution: "720p",
+      },
+    },
+    audio: "—",
+  },
+  // The cheaper "with video input" column, one row per family, so both halves
+  // of the discriminator stay exercised end to end. reference_video_urls is
+  // what selects it; these payloads must omit first/last frame URLs because
+  // both request schemas refine references and frames as mutually exclusive.
+  {
+    ...createTaskEndpointAssociation,
+    label: "seedance-2 4k reference-video (video)",
+    payload: {
+      model: "bytedance/seedance-2",
+      input: {
+        prompt: "xxx",
+        reference_video_urls: ["https://example.com/ref.mp4"],
+        resolution: "4k",
+      },
+    },
+    audio: "—",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "seedance-2-fast 720p reference-video (video)",
+    payload: {
+      model: "bytedance/seedance-2-fast",
+      input: {
+        prompt: "xxx",
+        reference_video_urls: ["https://example.com/ref.mp4"],
         resolution: "720p",
       },
     },

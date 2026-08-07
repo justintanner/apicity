@@ -3475,10 +3475,10 @@ export const Wan27ImageProRequestSchema =
 // per-model request member so CreateTaskRequestSchema /
 // MediaGenerationRequestSchema accept it.
 //
-// The wan 2.2 / 2.5 ids stay alias-only — accepted by the alias, absent from
-// KIE_MEDIA_MODELS. The five wan 2.6 ids are catalogued in KIE_MEDIA_MODELS,
-// because guards and modelInputSchemas are total over KieMediaModel; the alias
-// still covers future family members either way.
+// Ids that are also KIE_MEDIA_MODELS entries additionally require a
+// CREATE_TASK_GUARDS row and a modelInputSchemas descriptor, because both are
+// total over KieMediaModel; the alias covers the rest and future family
+// members either way.
 // Docs: https://docs.kie.ai/market/wan/
 // ---------------------------------------------------------------------------
 

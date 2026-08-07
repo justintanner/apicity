@@ -239,6 +239,98 @@ describe("kie WAN alias createTask models", () => {
     });
   });
 
+  /**
+   * `seed` bounds are not uniform across the 2.2/2.5 fragments: only the two
+   * turbo text-to-video/image-to-video pages document Min 0 / Max 2147483647.
+   * Speech-to-video and both 2.5 pages type `seed` as a bare integer, and no
+   * page's prose promises a server-applied default (a random seed is chosen
+   * when `seed` is omitted), so none of them injects one.
+   */
+  describe("seed bounds follow each model's fragment", () => {
+    const bounded = [
+      {
+        model: "wan/2-2-a14b-image-to-video-turbo" as const,
+        schema: Wan22A14bImageToVideoTurboRequestSchema,
+        input: {
+          image_url: "https://example.com/frame.png",
+          prompt: "A quiet harbour at first light",
+        },
+      },
+      {
+        model: "wan/2-2-a14b-text-to-video-turbo" as const,
+        schema: Wan22A14bTextToVideoTurboRequestSchema,
+        input: { prompt: "A quiet harbour at first light" },
+      },
+    ];
+
+    it.each(bounded)(
+      "bounds seed to 0–2147483647 on $model",
+      ({ model, schema, input }) => {
+        expect(
+          schema.safeParse({ model, input: { ...input, seed: 2147483647 } })
+            .success
+        ).toBe(true);
+        expect(
+          schema.safeParse({ model, input: { ...input, seed: 2147483648 } })
+            .success
+        ).toBe(false);
+        expect(
+          schema.safeParse({ model, input: { ...input, seed: -1 } }).success
+        ).toBe(false);
+      }
+    );
+
+    const unbounded = [
+      {
+        model: "wan/2-2-a14b-speech-to-video-turbo" as const,
+        schema: Wan22A14bSpeechToVideoTurboRequestSchema,
+        input: {
+          prompt: "The lady is talking",
+          image_url: "https://example.com/face.png",
+          audio_url: "https://example.com/speech.mp3",
+        },
+      },
+      {
+        model: "wan/2-5-image-to-video" as const,
+        schema: Wan25ImageToVideoRequestSchema,
+        input: {
+          prompt: "Camera slowly pushes in",
+          image_url: "https://example.com/start.png",
+          duration: "5",
+        },
+      },
+      {
+        model: "wan/2-5-text-to-video" as const,
+        schema: Wan25TextToVideoRequestSchema,
+        input: {
+          prompt: "A flock of birds over a mountain lake",
+          duration: "5",
+        },
+      },
+    ];
+
+    it.each(unbounded)(
+      "leaves seed unbounded on $model",
+      ({ model, schema, input }) => {
+        for (const seed of [-1, 0, 4294967295]) {
+          expect(
+            schema.safeParse({ model, input: { ...input, seed } }).success
+          ).toBe(true);
+        }
+        expect(
+          schema.safeParse({ model, input: { ...input, seed: 1.5 } }).success
+        ).toBe(false);
+      }
+    );
+
+    it("never injects a seed default", () => {
+      for (const { model, schema, input } of [...bounded, ...unbounded]) {
+        const parsed = schema.parse({ model, input });
+        expect(parsed.input.seed).toBeUndefined();
+      }
+    });
+  });
+
   describe("wan/2-6-flash-image-to-video", () => {
     it("requires audio and a single image_url entry", () => {
       const request = {

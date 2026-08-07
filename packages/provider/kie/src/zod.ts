@@ -3481,6 +3481,12 @@ export const Wan26DurationSchema = z.enum(["5", "10", "15"]);
 export const Wan26VideoDurationSchema = z.enum(["5", "10"]);
 export const Wan26ResolutionSchema = z.enum(["720p", "1080p"]);
 
+// Only the 2.2 turbo text-to-video/image-to-video fragments bound `seed`
+// (Min: 0, Max: 2147483647); the speech-to-video and both 2.5 fragments type it
+// as a bare integer, so those use a plain `z.number().int()`. No model gets a
+// `.default()` — every fragment's prose says a random seed is chosen when it is
+// omitted, so injecting the documented `default: 0` would pin generation
+// (documented-defaults trap).
 const wanSeedField = z.number().int().min(0).max(2147483647).optional();
 
 // Docs: https://docs.kie.ai/market/wan/2-2-a14b-image-to-video-turbo
@@ -3510,7 +3516,7 @@ export const Wan22A14bSpeechToVideoTurboRequestSchema = z.object({
     frames_per_second: z.number().int().min(4).max(60).default(16),
     resolution: Wan22ExtendedResolutionSchema.default("480p"),
     negative_prompt: z.string().max(500).optional(),
-    seed: wanSeedField,
+    seed: z.number().int().optional(),
     num_inference_steps: z.number().int().min(2).max(40).default(27),
     guidance_scale: z.number().min(1).max(10).default(3.5),
     shift: z.number().min(1).max(10).default(5),
@@ -3570,7 +3576,7 @@ export const Wan25ImageToVideoRequestSchema = z.object({
     resolution: Wan25ResolutionSchema.optional(),
     negative_prompt: z.string().max(500).optional(),
     enable_prompt_expansion: z.boolean().optional(),
-    seed: wanSeedField,
+    seed: z.number().int().optional(),
     nsfw_checker: z.boolean().default(false),
   }),
 });
@@ -3586,7 +3592,7 @@ export const Wan25TextToVideoRequestSchema = z.object({
     resolution: Wan25ResolutionSchema.optional(),
     negative_prompt: z.string().max(500).optional(),
     enable_prompt_expansion: z.boolean().optional(),
-    seed: wanSeedField,
+    seed: z.number().int().optional(),
     nsfw_checker: z.boolean().default(false),
   }),
 });

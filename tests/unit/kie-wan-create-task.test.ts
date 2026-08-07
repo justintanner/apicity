@@ -18,11 +18,13 @@ import {
 } from "../../packages/provider/kie/src/zod";
 
 /**
- * Alias-accepted WAN createTask models (ac-n4ib21).
- * Not in KIE_MEDIA_MODELS; they match KieMediaWanModelAliasSchema and need
- * per-model request members so CreateTaskRequestSchema accepts them.
+ * WAN createTask models with per-model request members (ac-n4ib21).
+ * The wan/2-2-* and wan/2-5-* ids below are KIE_MEDIA_MODELS entries whose
+ * requests CREATE_TASK_GUARDS validates before transport (ac-t2cgdc); the
+ * wan/2-6-* ids are alias-accepted only — they match KieMediaWanModelAliasSchema
+ * and need per-model request members so CreateTaskRequestSchema accepts them.
  */
-describe("kie WAN alias createTask models", () => {
+describe("kie WAN createTask models", () => {
   describe("wan/2-2-a14b-image-to-video-turbo", () => {
     const request = {
       model: "wan/2-2-a14b-image-to-video-turbo",

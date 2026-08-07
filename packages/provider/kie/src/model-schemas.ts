@@ -75,6 +75,49 @@ const wan27ImageBboxListField = {
   },
 } as const;
 
+// The wan 2.2/2.5 request schemas share one seed contract (`wanSeedField` in
+// zod.ts): optional, integer, 0-2147483647, and deliberately undefaulted. The
+// turbo fragments publish a nominal `default: 0` next to "if None, a random
+// seed is chosen"; recording that default here would have MCP clients prefill
+// a fixed seed, so it is described rather than applied — the same
+// documented-defaults treatment zod.ts already gives it.
+const wanTurboSeedField = {
+  type: "integer",
+  minimum: 0,
+  maximum: 2147483647,
+  description:
+    "Random seed (0-2147483647); omitting it selects a random seed. The fragment's nominal default 0 is documented, not applied.",
+} as const;
+
+// Same local contract, different upstream evidence: the speech-to-video and
+// wan 2.5 fragments declare `seed` as a bare integer with no bounds at all.
+const wanSeedMetadataField = {
+  type: "integer",
+  minimum: 0,
+  maximum: 2147483647,
+  description:
+    "Random seed (0-2147483647); omitting it selects a random seed. The fragment declares no bounds; this range is the shared wan contract.",
+} as const;
+
+// wan 2.5 `duration` is a required string enum and `resolution` is optional,
+// and neither fragment documents a default for either (the only `default:` in
+// both is on `model`). Both stay undefaulted so callers see exactly the
+// contract the zod schemas enforce.
+const wan25DurationField = {
+  type: "string",
+  required: true,
+  enum: ["5", "10"],
+  description:
+    'Clip length in seconds as a string, "5" or "10"; required, with no documented default',
+} as const;
+
+const wan25ResolutionField = {
+  type: "string",
+  enum: ["720p", "1080p"],
+  description:
+    "Video resolution, 720p or 1080p; the fragment documents no default, so an omitted value is left to Kie",
+} as const;
+
 const miniMaxH3PromptField = {
   type: "string",
   required: true,
@@ -2771,6 +2814,301 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         maximum: 2147483647,
         description: "Random seed (0-2147483647)",
       },
+      nsfw_checker: {
+        type: "boolean",
+        description: "Content safety filter (default false)",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/wan/2-2-a14b-image-to-video-turbo
+  "wan/2-2-a14b-image-to-video-turbo": {
+    type: "video",
+    fields: {
+      image_url: {
+        type: "string",
+        required: true,
+        description:
+          "Input image URL, resized and centre-cropped to the chosen aspect ratio (JPEG/PNG/WEBP, max 10MB)",
+      },
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 5000,
+        description: "Positive prompt (max 5000 chars)",
+      },
+      resolution: {
+        type: "string",
+        enum: ["480p", "720p"],
+        default: "720p",
+        description: "Video resolution, 480p or 720p (default 720p)",
+      },
+      enable_prompt_expansion: {
+        type: "boolean",
+        description: "Expand the prompt with an LLM before generating",
+      },
+      seed: wanTurboSeedField,
+      acceleration: {
+        type: "string",
+        enum: ["none", "regular"],
+        default: "none",
+        description:
+          "Acceleration level; more acceleration is faster but lower quality (default none)",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        description: "Content safety filter (default false)",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/wan/2-2-a14b-speech-to-video-turbo
+  "wan/2-2-a14b-speech-to-video-turbo": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 5000,
+        description: "Positive prompt (max 5000 chars)",
+      },
+      image_url: {
+        type: "string",
+        required: true,
+        description:
+          "Input image URL, resized and centre-cropped to the chosen aspect ratio (JPEG/PNG/WEBP, max 10MB)",
+      },
+      audio_url: {
+        type: "string",
+        required: true,
+        description:
+          "Driving audio URL (MP3/WAV/OGG/M4A/FLAC/AAC/WMA, max 10MB)",
+      },
+      num_frames: {
+        type: "integer",
+        minimum: 40,
+        maximum: 120,
+        default: 80,
+        description:
+          "Frames to generate, 40-120 in steps of 4 (default 80); divided by frames_per_second this is the clip length (80/16 = 5s at the defaults)",
+      },
+      frames_per_second: {
+        type: "integer",
+        minimum: 4,
+        maximum: 60,
+        default: 16,
+        description:
+          "Frames per second of the generated video, 4-60 (default 16)",
+      },
+      resolution: {
+        type: "string",
+        enum: ["480p", "580p", "720p"],
+        default: "480p",
+        description: "Video resolution, 480p, 580p, or 720p (default 480p)",
+      },
+      negative_prompt: {
+        type: "string",
+        maxLength: 500,
+        description: "Negative prompt (max 500 chars)",
+      },
+      seed: wanSeedMetadataField,
+      num_inference_steps: {
+        type: "integer",
+        minimum: 2,
+        maximum: 40,
+        default: 27,
+        description:
+          "Sampling steps, 2-40 (default 27); higher is better quality and slower",
+      },
+      guidance_scale: {
+        type: "number",
+        minimum: 1,
+        maximum: 10,
+        default: 3.5,
+        description:
+          "Classifier-free guidance scale, 1-10 in steps of 0.1 (default 3.5)",
+      },
+      shift: {
+        type: "number",
+        minimum: 1,
+        maximum: 10,
+        default: 5,
+        description: "Shift value, 1-10 in steps of 0.1 (default 5)",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        description: "Content safety filter (default false)",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/wan/2-2-a14b-text-to-video-turbo
+  "wan/2-2-a14b-text-to-video-turbo": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 5000,
+        description: "Positive prompt (max 5000 chars)",
+      },
+      resolution: {
+        type: "string",
+        enum: ["480p", "720p"],
+        default: "720p",
+        description: "Video resolution, 480p or 720p (default 720p)",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: ["16:9", "9:16"],
+        default: "16:9",
+        description: "Video aspect ratio, 16:9 or 9:16 (default 16:9)",
+      },
+      enable_prompt_expansion: {
+        type: "boolean",
+        description: "Expand the prompt with an LLM before generating",
+      },
+      seed: wanTurboSeedField,
+      acceleration: {
+        type: "string",
+        enum: ["none", "regular"],
+        default: "none",
+        description:
+          "Acceleration level; more acceleration is faster but lower quality (default none)",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        description: "Content safety filter (default false)",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/wan/2-2-animate-move
+  "wan/2-2-animate-move": {
+    type: "video",
+    fields: {
+      video_url: {
+        type: "string",
+        required: true,
+        description:
+          "Driving video URL whose motion is transferred (MP4/MOV/MKV, max 10MB); the output inherits its length",
+      },
+      image_url: {
+        type: "string",
+        required: true,
+        description:
+          "Character image URL, resized and centre-cropped to the chosen aspect ratio (JPEG/PNG/WEBP, max 10MB)",
+      },
+      resolution: {
+        type: "string",
+        enum: ["480p", "580p", "720p"],
+        default: "480p",
+        description: "Video resolution, 480p, 580p, or 720p (default 480p)",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        description: "Content safety filter (default false)",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/wan/2-2-animate-replace
+  "wan/2-2-animate-replace": {
+    type: "video",
+    fields: {
+      video_url: {
+        type: "string",
+        required: true,
+        description:
+          "Source video URL whose character is replaced (MP4/MOV/MKV, max 10MB); the output inherits its length",
+      },
+      image_url: {
+        type: "string",
+        required: true,
+        description:
+          "Replacement character image URL, resized and centre-cropped to the chosen aspect ratio (JPEG/PNG/WEBP, max 10MB)",
+      },
+      resolution: {
+        type: "string",
+        enum: ["480p", "580p", "720p"],
+        default: "480p",
+        description: "Video resolution, 480p, 580p, or 720p (default 480p)",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        description: "Content safety filter (default false)",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/wan/2-5-image-to-video
+  "wan/2-5-image-to-video": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 800,
+        description: "Positive prompt (max 800 chars)",
+      },
+      image_url: {
+        type: "string",
+        required: true,
+        description:
+          "First-frame image URL, publicly accessible (JPEG/PNG/WEBP, max 10MB)",
+      },
+      duration: wan25DurationField,
+      resolution: wan25ResolutionField,
+      negative_prompt: {
+        type: "string",
+        maxLength: 500,
+        description: "Negative prompt (max 500 chars)",
+      },
+      enable_prompt_expansion: {
+        type: "boolean",
+        description: "Expand the prompt with an LLM before generating",
+      },
+      seed: wanSeedMetadataField,
+      nsfw_checker: {
+        type: "boolean",
+        description: "Content safety filter (default false)",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/wan/2-5-text-to-video
+  "wan/2-5-text-to-video": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 800,
+        description: "Positive prompt in Chinese or English (max 800 chars)",
+      },
+      duration: wan25DurationField,
+      aspect_ratio: {
+        type: "string",
+        enum: ["16:9", "9:16", "1:1"],
+        description:
+          "Video aspect ratio; the fragment documents no default, so an omitted value is left to Kie",
+      },
+      resolution: wan25ResolutionField,
+      negative_prompt: {
+        type: "string",
+        maxLength: 500,
+        description: "Negative prompt (max 500 chars)",
+      },
+      enable_prompt_expansion: {
+        type: "boolean",
+        description: "Expand the prompt with an LLM before generating",
+      },
+      seed: wanSeedMetadataField,
       nsfw_checker: {
         type: "boolean",
         description: "Content safety filter (default false)",

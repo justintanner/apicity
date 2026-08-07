@@ -257,6 +257,15 @@ export const KIE_MEDIA_MODELS = [
   "wan/2-7-videoedit",
   "wan/2-7-image",
   "wan/2-7-image-pro",
+  // Documented WAN 2.2/2.5 createTask models (alias-accepted; catalogue for
+  // guards + modelInputSchemas). Docs under https://docs.kie.ai/market/wan/.
+  "wan/2-2-a14b-image-to-video-turbo",
+  "wan/2-2-a14b-speech-to-video-turbo",
+  "wan/2-2-a14b-text-to-video-turbo",
+  "wan/2-2-animate-move",
+  "wan/2-2-animate-replace",
+  "wan/2-5-image-to-video",
+  "wan/2-5-text-to-video",
   "happyhorse/text-to-video",
   "happyhorse/image-to-video",
   "happyhorse/reference-to-video",
@@ -3464,7 +3473,10 @@ export const Wan27ImageProRequestSchema =
   );
 
 // ---------------------------------------------------------------------------
-// WAN alias-accepted createTask models (not in KIE_MEDIA_MODELS; they match
+// WAN 2.2 / 2.5 / 2.6 createTask models. The seven wan/2-2-* and wan/2-5-*
+// ids below are KIE_MEDIA_MODELS entries whose request members
+// CREATE_TASK_GUARDS validates before transport. The five wan/2-6-* ids are
+// still alias-accepted only (not in KIE_MEDIA_MODELS; they match
 // KieMediaWanModelAliasSchema and need per-model request members so
 // CreateTaskRequestSchema / MediaGenerationRequestSchema accept them).
 // Docs: https://docs.kie.ai/market/wan/

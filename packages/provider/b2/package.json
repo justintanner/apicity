@@ -1,6 +1,6 @@
 {
   "name": "@apicity/b2",
-  "version": "0.8.8",
+  "version": "0.8.9",
   "description": "Backblaze B2 S3-compatible object storage provider.",
   "license": "MIT",
   "repository": {

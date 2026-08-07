@@ -1094,7 +1094,7 @@ describe("TRI-008 VeoExtendRequestSchema.model stays a closed set", () => {
 // TRI-001 KieMediaModelSchema — one escape hatch per vendor family
 // ---------------------------------------------------------------------------
 //
-// KieMediaModelSchema is kie's aggregator catalogue: 111 ids drawn from a dozen
+// KieMediaModelSchema is kie's aggregator catalogue: 120 ids drawn from a dozen
 // unrelated vendors behind one `createTask` endpoint. REQ-006 forbids opening
 // it with a single catch-all regex, so it carries one alias per vendor family
 // while singletons and fixed-product sets (omnihuman + sub-tasks, volcengine,
@@ -1107,7 +1107,7 @@ describe("TRI-008 VeoExtendRequestSchema.model stays a closed set", () => {
 // BR-4 needs care here that the single-family schemas above do not. A foreign
 // *catalogue* id — `happyhorse/video-edit` on the Kling family — is accepted by
 // KieMediaModelSchema, through the enum branch, and always was: the whole point
-// of the aggregator is that all 111 are valid. So cross-family leakage cannot be
+// of the aggregator is that all 120 are valid. So cross-family leakage cannot be
 // asserted with safeParse; it is asserted structurally instead, against the
 // alias patterns themselves ("partitions the catalogue" below). The per-family
 // `rejected` lists therefore carry BR-3 near-miss typos plus BR-4 ids from
@@ -1239,12 +1239,6 @@ const MEDIA_MODEL_FAMILIES = [
       "wan/2-7-videoedit",
       "wan/2-7-image",
       "wan/2-7-image-pro",
-    ],
-    aliases: [
-      "wan/2-8-image-to-video",
-      "wan/3-0-r2v",
-      // Alias-accepted documented models with per-model createTask schemas
-      // (not listed in KIE_MEDIA_MODELS; reach CreateTask via the Wan hatch).
       "wan/2-2-a14b-image-to-video-turbo",
       "wan/2-2-a14b-speech-to-video-turbo",
       "wan/2-2-a14b-text-to-video-turbo",
@@ -1252,6 +1246,12 @@ const MEDIA_MODEL_FAMILIES = [
       "wan/2-2-animate-replace",
       "wan/2-5-image-to-video",
       "wan/2-5-text-to-video",
+    ],
+    aliases: [
+      "wan/2-8-image-to-video",
+      "wan/3-0-r2v",
+      // Alias-accepted documented models with per-model createTask schemas
+      // (not listed in KIE_MEDIA_MODELS; reach CreateTask via the Wan hatch).
       "wan/2-6-flash-image-to-video",
       "wan/2-6-flash-video-to-video",
       "wan/2-6-image-to-video",

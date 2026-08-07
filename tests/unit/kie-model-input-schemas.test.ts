@@ -1028,6 +1028,153 @@ describe("KIE Seedream 4.5 modelInputSchemas metadata (REQ-002)", () => {
   });
 });
 
+// REQ-001 / REQ-006. Cataloguing the seven wan 2.2/2.5 ids gave them
+// modelInputSchemas entries. These pin the constraints worth publishing as
+// metadata rather than the whole field set: the media inputs each op requires,
+// and the two documented-defaults answers the fragments give — the turbo pair
+// publishes no 580p tier (kie prices one, so nothing but this enum records
+// that the SDK cannot reach it), and wan 2.5 documents no default for either
+// `duration` or `resolution`, so neither may be synthesised here.
+describe("KIE wan 2.2/2.5 modelInputSchemas metadata (REQ-001)", () => {
+  const provider = createKie({ apiKey: "test-key" });
+  const MODELS = [
+    "wan/2-2-a14b-image-to-video-turbo",
+    "wan/2-2-a14b-speech-to-video-turbo",
+    "wan/2-2-a14b-text-to-video-turbo",
+    "wan/2-2-animate-move",
+    "wan/2-2-animate-replace",
+    "wan/2-5-image-to-video",
+    "wan/2-5-text-to-video",
+  ] as const;
+  const ANIMATE_MODELS = [
+    "wan/2-2-animate-move",
+    "wan/2-2-animate-replace",
+  ] as const;
+  const WAN_25_MODELS = [
+    "wan/2-5-image-to-video",
+    "wan/2-5-text-to-video",
+  ] as const;
+
+  // The animate pair is the exception: its fragments expose no seed at all.
+  const SEEDED_MODELS = MODELS.filter(
+    (model) =>
+      !ANIMATE_MODELS.includes(model as (typeof ANIMATE_MODELS)[number])
+  );
+
+  it("types all seven as video models with an undefaulted seed", () => {
+    for (const model of MODELS) {
+      const entry = provider.modelInputSchemas[model];
+
+      expect(entry.type).toBe("video");
+      expect(entry.fields.callBackUrl).toBeUndefined();
+    }
+
+    for (const model of SEEDED_MODELS) {
+      const fields = provider.modelInputSchemas[model].fields;
+
+      // The turbo fragments publish `seed` default 0 beside "if None, a random
+      // seed is chosen". Recording that default would make MCP clients prefill
+      // a fixed seed, so the range is published and the default is not.
+      expect(fields.seed).toMatchObject({
+        type: "integer",
+        minimum: 0,
+        maximum: 2147483647,
+      });
+      expect(fields.seed.default).toBeUndefined();
+      expect(fields.seed.required).toBeUndefined();
+    }
+
+    for (const model of ANIMATE_MODELS) {
+      expect(provider.modelInputSchemas[model].fields.seed).toBeUndefined();
+    }
+  });
+
+  it("documents speech-to-video's audio input and frame contracts", () => {
+    const fields =
+      provider.modelInputSchemas["wan/2-2-a14b-speech-to-video-turbo"].fields;
+
+    // The driving audio is what makes this model speech-to-video; without it
+    // the guard now rejects the request before transport.
+    expect(fields.audio_url).toMatchObject({ type: "string", required: true });
+    expect(fields.image_url).toMatchObject({ type: "string", required: true });
+    expect(fields.prompt).toMatchObject({ type: "string", required: true });
+    expect(fields.num_frames).toMatchObject({
+      type: "integer",
+      minimum: 40,
+      maximum: 120,
+      default: 80,
+    });
+    expect(fields.frames_per_second).toMatchObject({
+      type: "integer",
+      minimum: 4,
+      maximum: 60,
+      default: 16,
+    });
+    // Output length is num_frames / frames_per_second — 5s at the defaults —
+    // and there is no `duration` field to say so.
+    expect(fields.duration).toBeUndefined();
+    expect(fields.resolution.enum).toEqual(["480p", "580p", "720p"]);
+  });
+
+  it("documents both animate ops' required video and image inputs", () => {
+    for (const model of ANIMATE_MODELS) {
+      const fields = provider.modelInputSchemas[model].fields;
+
+      expect(fields.video_url).toMatchObject({
+        type: "string",
+        required: true,
+      });
+      expect(fields.image_url).toMatchObject({
+        type: "string",
+        required: true,
+      });
+      // Both inherit the driving clip's length: no duration axis at all.
+      expect(fields.duration).toBeUndefined();
+      expect(fields.resolution).toMatchObject({
+        type: "string",
+        default: "480p",
+      });
+      expect(fields.resolution.enum).toEqual(["480p", "580p", "720p"]);
+    }
+  });
+
+  it("documents wan 2.5's required duration with no injected default", () => {
+    for (const model of WAN_25_MODELS) {
+      const fields = provider.modelInputSchemas[model].fields;
+
+      expect(fields.duration).toMatchObject({
+        type: "string",
+        required: true,
+        enum: ["5", "10"],
+      });
+      expect(fields.duration.default).toBeUndefined();
+      expect(fields.resolution).toMatchObject({ type: "string" });
+      expect(fields.resolution.enum).toEqual(["720p", "1080p"]);
+      expect(fields.resolution.default).toBeUndefined();
+      expect(fields.resolution.required).toBeUndefined();
+      expect(fields.prompt.maxLength).toBe(800);
+    }
+  });
+
+  it("keeps 580p off the turbo pair kie prices it for", () => {
+    for (const model of [
+      "wan/2-2-a14b-image-to-video-turbo",
+      "wan/2-2-a14b-text-to-video-turbo",
+    ] as const) {
+      const fields = provider.modelInputSchemas[model].fields;
+
+      expect(fields.resolution.enum).toEqual(["480p", "720p"]);
+      expect(fields.resolution.default).toBe("720p");
+      expect(fields.acceleration).toMatchObject({
+        type: "string",
+        default: "none",
+      });
+      expect(fields.acceleration.enum).toEqual(["none", "regular"]);
+      expect(fields.prompt.maxLength).toBe(5000);
+    }
+  });
+});
+
 // REQ-001 / AC-001. `kling-3.0/video` documents `sound` as "default false,
 // true when multi_shots" and modelInputSchemas does not mark it `required`,
 // but zod.ts declared it required. These assertions pin the corrected

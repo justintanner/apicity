@@ -1,10 +1,11 @@
 import { readFileSync } from "node:fs";
-import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
-  CallToolRequestSchema,
-  ListToolsRequestSchema,
-} from "@modelcontextprotocol/sdk/types.js";
+  Server,
+  type CacheHint,
+  type ListToolsResult,
+  type McpServerFactory,
+} from "@modelcontextprotocol/server";
+import { serveStdio } from "@modelcontextprotocol/server/stdio";
 import { loadCostHelpers, type CostHelpers } from "./cost.js";
 import { buildRegistry, type Endpoint } from "./registry.js";
 import { type JsonSchema } from "./schema.js";
@@ -24,52 +25,107 @@ export interface StartServerOptions {
   paygateSecret?: string;
 }
 
-export async function startServer(
+/**
+ * Cache metadata emitted on `tools/list` results (MCP revision 2026-07-28,
+ * SEP-2549). The registry is built once from `endpoint-docs.tsv` at startup and
+ * is immutable for the process lifetime, so an hour is safe; the tool set is
+ * deployment-specific (which providers register depends on the credentials in
+ * the environment), so shared caches must not hold it.
+ */
+const TOOLS_LIST_CACHE_HINT: CacheHint = {
+  ttlMs: 3_600_000,
+  cacheScope: "private",
+};
+
+/**
+ * Build the endpoint registry once and return a factory that mints a
+ * configured `Server` per serving unit, which is what `serveStdio` wants: it
+ * pins one instance for the connection after the opening exchange settles the
+ * protocol era.
+ *
+ * This is the seam the in-process round-trip test drives — it pairs the
+ * factory with `serveStdio`'s `transport` option so the test exercises the
+ * same era-aware path production uses. Connecting a bare `Server` to a
+ * transport would serve the 2025 era instead (see the note on `startServer`).
+ *
+ * Exported from `server.ts` but deliberately not re-exported from `index.ts`:
+ * the public surface stays `startServer`/`StartServerOptions`.
+ */
+export async function createServer(
   opts: StartServerOptions = {}
-): Promise<void> {
+): Promise<{ factory: McpServerFactory; endpointCount: number }> {
   const cost = await loadCostHelpers();
   const endpoints = await buildRegistry({
     enabledProviders: opts.enabledProviders,
     paygateSecret: opts.paygateSecret,
   });
 
-  const server = new Server(
-    {
-      name: opts.name ?? "apicity",
-      version: opts.version ?? readPackageVersion(),
-    },
-    { capabilities: { tools: {} } }
-  );
-
   const byName = new Map(endpoints.map((e) => [e.toolName, e]));
 
-  server.setRequestHandler(ListToolsRequestSchema, async () => ({
-    tools: endpoints.map((ep) => ({
-      name: ep.toolName,
-      description: describe(ep, opts.outputDir, cost),
-      inputSchema: buildInputSchema(ep, cost),
-    })),
-  }));
+  const factory: McpServerFactory = () => {
+    const server = new Server(
+      {
+        name: opts.name ?? "apicity",
+        version: opts.version ?? readPackageVersion(),
+      },
+      {
+        capabilities: { tools: {} },
+        cacheHints: { "tools/list": TOOLS_LIST_CACHE_HINT },
+      }
+    );
 
-  server.setRequestHandler(CallToolRequestSchema, async (req) => {
-    const ep = byName.get(req.params.name);
-    if (!ep) {
-      return errorResult(`Unknown tool: ${req.params.name}`);
-    }
-    try {
-      const result = await invoke(ep, req.params.arguments ?? {}, cost);
-      return await formatResult(ep, result, opts.outputDir);
-    } catch (err) {
-      return errorResult(
-        `${ep.toolName} failed: ${(err as Error).message ?? String(err)}`
-      );
-    }
+    server.setRequestHandler("tools/list", async () => ({
+      tools: endpoints.map((ep) => ({
+        name: ep.toolName,
+        description: describe(ep, opts.outputDir, cost),
+        inputSchema: asToolInputSchema(buildInputSchema(ep, cost)),
+      })),
+    }));
+
+    server.setRequestHandler("tools/call", async (req) => {
+      const ep = byName.get(req.params.name);
+      if (!ep) {
+        return errorResult(`Unknown tool: ${req.params.name}`);
+      }
+      try {
+        const result = await invoke(ep, req.params.arguments ?? {}, cost);
+        return await formatResult(ep, result, opts.outputDir);
+      } catch (err) {
+        return errorResult(
+          `${ep.toolName} failed: ${(err as Error).message ?? String(err)}`
+        );
+      }
+    });
+
+    return server;
+  };
+
+  return { factory, endpointCount: endpoints.length };
+}
+
+/**
+ * Serve MCP over stdio on protocol revision 2026-07-28.
+ *
+ * `serveStdio` — not `server.connect(new StdioServerTransport())` — is what
+ * puts the connection on the modern era: it owns the opening exchange, answers
+ * `server/discover`, and runs the era-aware encode seam that stamps
+ * `resultType` and the configured cache fields. A hand-wired `Server` +
+ * transport keeps answering the 2025-era `initialize` handshake instead.
+ *
+ * `legacy: "reject"` is the operator's no-backward-compatibility decision made
+ * explicit: a pre-2026-07-28 opening is answered with the unsupported-version
+ * error naming `2026-07-28` rather than being served on the old era.
+ */
+export async function startServer(
+  opts: StartServerOptions = {}
+): Promise<void> {
+  const { factory, endpointCount } = await createServer(opts);
+  serveStdio(factory, {
+    legacy: "reject",
+    onerror: (err) => console.error(`[apicity-mcp] error: ${err.message}`),
   });
-
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
   console.error(
-    `[apicity-mcp] ready — ${endpoints.length} tools registered` +
+    `[apicity-mcp] ready — ${endpointCount} tools registered` +
       (opts.outputDir ? ` (output dir: ${opts.outputDir})` : "")
   );
 }
@@ -148,6 +204,19 @@ function buildInputSchema(ep: Endpoint, cost: CostHelpers): JsonSchema {
   }
   if (paid) properties.otp = OTP_SCHEMA;
   return { type: "object", properties, required };
+}
+
+type ToolInputSchema = ListToolsResult["tools"][number]["inputSchema"];
+
+/**
+ * Bridge `buildInputSchema`'s loose `JsonSchema` (`Record<string, unknown>`) to
+ * the concrete object-schema shape MCP v2 declares for `Tool.inputSchema`.
+ * Every `buildInputSchema` branch already yields an object schema at runtime,
+ * so this restates that fact at the SDK boundary; the serialized schema is
+ * unchanged.
+ */
+function asToolInputSchema(schema: JsonSchema): ToolInputSchema {
+  return { ...schema, type: "object" } as ToolInputSchema;
 }
 
 /** Add an optional top-level `otp` property to an object schema. */

@@ -1,6 +1,6 @@
 {
   "name": "@apicity/mcp-server",
-  "version": "0.8.7",
+  "version": "0.9.0",
   "description": "Optional MCP (Model Context Protocol) server that exposes every @apicity provider endpoint as a tool.",
   "license": "MIT",
   "repository": {
@@ -43,7 +43,7 @@
   ],
   "author": "Justin Tanner",
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json && node scripts/dist.mjs",
@@ -79,7 +79,7 @@
     "@apicity/xai": "workspace:*",
     "@apicity/youtube": "workspace:*",
     "@apicity/zaicoding": "workspace:*",
-    "@modelcontextprotocol/sdk": "^1.29.0"
+    "@modelcontextprotocol/server": "^2.0.0"
   },
   "homepage": "https://github.com/justintanner/apicity#readme",
   "bugs": {

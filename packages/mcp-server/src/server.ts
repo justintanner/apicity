@@ -112,16 +112,15 @@ export async function createServer(
  * `resultType` and the configured cache fields. A hand-wired `Server` +
  * transport keeps answering the 2025-era `initialize` handshake instead.
  *
- * `legacy: "reject"` is the operator's no-backward-compatibility decision made
- * explicit: a pre-2026-07-28 opening is answered with the unsupported-version
- * error naming `2026-07-28` rather than being served on the old era.
+ * `legacy: "fallback"` allows clients speaking older protocol versions (e.g.
+ * 2025-11-25) to connect and be served on their era instead of being rejected.
  */
 export async function startServer(
   opts: StartServerOptions = {}
 ): Promise<void> {
   const { factory, endpointCount } = await createServer(opts);
   serveStdio(factory, {
-    legacy: "reject",
+    legacy: "fallback",
     onerror: (err) => console.error(`[apicity-mcp] error: ${err.message}`),
   });
   console.error(

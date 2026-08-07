@@ -58,8 +58,10 @@ const k = c.estimate({
     },
   },
 });
-// rate entry reads model + input.resolution + first_frame_url presence (i2v)
-// + input.duration → seedance-2-720p-i2v rate × 8 seconds
+// rate entry reads model + input.resolution + reference-video presence
+// + input.duration. A first_frame_url is an image seed, not a video input, so
+// this payload prices in the "no video input" column → 720p|no-video × 8 s.
+// Pass input.reference_video_urls to reach the cheaper 720p|video rate.
 
 // kie endpoints whose pricing isn't keyed by payload.model (e.g. Suno) take
 // an explicit `endpoint` discriminator that wins the pricing lookup
@@ -132,7 +134,8 @@ Per-unit providers (kie / elevenlabs): payload-shape knowledge lives in each
 rate entry's closures in `src/pricing/kie.ts` / `src/pricing/elevenlabs.ts` —
 `units(payload)` derives the billable quantity (seconds, characters, images)
 and ordered `select` pickers resolve the rate variant from fields like
-`input.resolution` and `input.first_frame_url` (i2v vs t2v). Image models
+`input.resolution` and `input.reference_video_urls` (video vs no-video for the
+seedance-2 family — an image seed is not a video input). Image models
 price per image; resolution-tiered families require `input.resolution`;
 endpoint-keyed pricing (e.g. Suno) uses the `EstimateRequest.endpoint`
 discriminator instead of `payload.model`. `endpoint` and `costHints` are the

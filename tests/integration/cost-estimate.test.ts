@@ -102,7 +102,10 @@ describe("cost.estimate — pure-table (no network)", () => {
     }
   });
 
-  it("kie seedance-2 i2v 720p resolves to seedance-2-720p-i2v rate", () => {
+  // The image seed is not a video input: a first_frame_url payload prices in
+  // the "no video input" column, same as prompt-only. Only
+  // input.reference_video_urls selects the cheaper "video" column.
+  it("kie seedance-2 first_frame 720p resolves to seedance-2-720p-no-video rate", () => {
     const c = createCost();
     const r = c.estimate({
       provider: "kie",
@@ -119,11 +122,32 @@ describe("cost.estimate — pure-table (no network)", () => {
     });
     expect(r.source).toBe("per-unit-table");
     expect(r.breakdown.units).toBe(8);
+    expect(r.breakdown.perUnitUsd).toBe(0.205);
+    expect(r.usd).toBeCloseTo(0.205 * 8, 6);
+  });
+
+  it("kie seedance-2 reference_video 720p resolves to seedance-2-720p-video rate", () => {
+    const c = createCost();
+    const r = c.estimate({
+      provider: "kie",
+      payload: {
+        model: "bytedance/seedance-2",
+        input: {
+          prompt: "x",
+          reference_video_urls: ["https://example.com/ref.mp4"],
+          resolution: "720p",
+          duration: 8,
+          web_search: false,
+        },
+      },
+    });
+    expect(r.source).toBe("per-unit-table");
+    expect(r.breakdown.units).toBe(8);
     expect(r.breakdown.perUnitUsd).toBe(0.125);
     expect(r.usd).toBeCloseTo(0.125 * 8, 6);
   });
 
-  it("kie seedance-2 t2v (no first_frame) resolves to seedance-2-720p-t2v rate", () => {
+  it("kie seedance-2 prompt-only resolves to seedance-2-720p-no-video rate", () => {
     const c = createCost();
     const r = c.estimate({
       provider: "kie",

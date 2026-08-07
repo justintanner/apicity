@@ -19,11 +19,14 @@ import type {
   CostHints,
   EstimateRequest,
 } from "../../packages/provider/cost/src/types";
-// Imported from kie source so the seedance-2 4k pin below can prove the
+// Imported from kie source so the seedance-2 pins below can prove the
 // linkage end to end: a payload the shipped SDK schema accepts must land on
 // the rate keys this pricing table publishes. Unit tests reaching into kie
 // source follow existing precedent (tests/unit/kie-model-input-schemas.test.ts).
-import { Seedance2RequestSchema } from "../../packages/provider/kie/src/zod";
+import {
+  Seedance2RequestSchema,
+  Seedance2FastRequestSchema,
+} from "../../packages/provider/kie/src/zod";
 
 describe("pricing helpers", () => {
   describe("asString", () => {
@@ -2530,30 +2533,103 @@ describe("kie stale-family refresh (REQ-004)", () => {
     }
   );
 
-  // seedance-2's 4K tier, schema-reachable as of ac-8cfo6r. This pins the link
-  // between the shipped Seedance2InputSchema.resolution member and the
-  // case-sensitive "4k|i2v" / "4k|t2v" rate keys: the payload goes through the
-  // request schema before it reaches the estimator, so a drift to "4K" on
-  // either side fails here instead of silently quoting $0. The seedance-2 4k
-  // rows in scripts/compare-video-cost.mjs guard the schema half of that link
-  // at lint time.
+  // seedance-2 rate columns. Two links are pinned here at once, both through
+  // the same parse-then-estimate route:
+  //
+  //   1. schema member <-> rate key (ac-8cfo6r) — the 4K tier is
+  //      schema-reachable and its key is the case-sensitive lowercase "4k", so
+  //      a drift to "4K" on either side fails here instead of silently quoting
+  //      $0. The seedance-2 4k rows in scripts/compare-video-cost.mjs guard
+  //      the schema half of that link at lint time.
+  //   2. selector <-> column (ac-4jaqty) — the column is chosen by
+  //      input.reference_video_urls (the family's actual "video input", shared
+  //      with seedance-2-mini), NOT by the first_frame_url image seed.
+  //
+  // The 4k first-frame row is the observed-billing anchor: the committed
+  // fixture tests/recordings/kie_2079838932/bytedance-seedance-2-4k_1424029474
+  // sends exactly this shape (first_frame_url, no reference video, "4k", 4 s)
+  // and was billed 832 credits = $4.16 at $0.005/credit = 4 x $1.04, the
+  // "no video input" column. Keying off first_frame_url priced it at $2.56.
+  //
+  // Reference-video rows omit first/last frame URLs because the request
+  // schema's refine rejects combining them.
   it.each([
-    { label: "with video input (i2v)", i2v: true, perUnitUsd: 0.64 },
-    { label: "without video input (t2v)", i2v: false, perUnitUsd: 1.04 },
-  ])("prices seedance-2 4k $label", ({ i2v, perUnitUsd }) => {
-    // Parse first, then estimate the PARSED payload. Feeding the raw literal
-    // would only prove the rate table has a "4k" row; routing it through the
-    // shipped schema proves a payload the SDK actually accepts reaches that
-    // row, so a future "4K" spelling drift breaks this test instead of
-    // silently quoting $0.
-    const parsed = Seedance2RequestSchema.safeParse({
-      model: "bytedance/seedance-2",
+    {
+      label: "4k first-frame -> 4k|no-video (the 832-credit anchor)",
+      input: {
+        prompt: "xxx",
+        duration: 4,
+        resolution: "4k",
+        first_frame_url: "https://example.com/x.jpg",
+      },
+      seconds: 4,
+      perUnitUsd: 1.04,
+    },
+    {
+      label: "4k reference-video -> 4k|video",
+      input: {
+        prompt: "xxx",
+        duration: 4,
+        resolution: "4k",
+        reference_video_urls: ["https://example.com/ref.mp4"],
+      },
+      seconds: 4,
+      perUnitUsd: 0.64,
+    },
+    {
+      label: "720p first-frame -> 720p|no-video",
       input: {
         prompt: "xxx",
         duration: 5,
-        resolution: "4k",
-        ...(i2v ? { first_frame_url: "https://example.com/x.jpg" } : {}),
+        resolution: "720p",
+        first_frame_url: "https://example.com/x.jpg",
       },
+      seconds: 5,
+      perUnitUsd: 0.205,
+    },
+    {
+      label: "720p reference-video -> 720p|video",
+      input: {
+        prompt: "xxx",
+        duration: 5,
+        resolution: "720p",
+        reference_video_urls: ["https://example.com/ref.mp4"],
+      },
+      seconds: 5,
+      perUnitUsd: 0.125,
+    },
+    {
+      label: "480p prompt-only -> 480p|no-video",
+      input: { prompt: "xxx", duration: 5, resolution: "480p" },
+      seconds: 5,
+      perUnitUsd: 0.095,
+    },
+    {
+      label: "720p prompt-only -> 720p|no-video",
+      input: { prompt: "xxx", duration: 5, resolution: "720p" },
+      seconds: 5,
+      perUnitUsd: 0.205,
+    },
+    {
+      label: "1080p prompt-only -> 1080p|no-video",
+      input: { prompt: "xxx", duration: 5, resolution: "1080p" },
+      seconds: 5,
+      perUnitUsd: 0.51,
+    },
+    {
+      label: "4k prompt-only -> 4k|no-video",
+      input: { prompt: "xxx", duration: 5, resolution: "4k" },
+      seconds: 5,
+      perUnitUsd: 1.04,
+    },
+  ])("prices seedance-2 $label", ({ input, seconds, perUnitUsd }) => {
+    // Parse first, then estimate the PARSED payload. Feeding the raw literal
+    // would only prove the rate table has a matching row; routing it through
+    // the shipped schema proves a payload the SDK actually accepts reaches
+    // that row.
+    const parsed = Seedance2RequestSchema.safeParse({
+      model: "bytedance/seedance-2",
+      input,
     });
 
     expect(parsed.success).toBe(true);
@@ -2565,9 +2641,74 @@ describe("kie stale-family refresh (REQ-004)", () => {
 
     const result = kieEstimate(parsed.data);
 
-    expect(result.usd).toBeCloseTo(5 * perUnitUsd, 10);
+    expect(result.usd).toBeCloseTo(seconds * perUnitUsd, 10);
     expect(result.breakdown).toEqual({
-      units: 5,
+      units: seconds,
+      unit: "seconds",
+      perUnitUsd,
+    });
+    expect(
+      result.warnings.some((warning) =>
+        warning.includes("not found in pricing table")
+      )
+    ).toBe(false);
+  });
+
+  // seedance-2-fast shares the page and the column semantics, so it shares the
+  // reference-video discriminator. No creditsConsumed observation exists for
+  // this model — these pins hold the mapping and the unchanged prompt-only
+  // values rather than an observed bill.
+  it.each([
+    {
+      label: "720p reference-video -> 720p|video",
+      input: {
+        prompt: "xxx",
+        duration: 5,
+        resolution: "720p",
+        reference_video_urls: ["https://example.com/ref.mp4"],
+      },
+      seconds: 5,
+      perUnitUsd: 0.1,
+    },
+    {
+      label: "480p first-frame -> 480p|no-video",
+      input: {
+        prompt: "xxx",
+        duration: 5,
+        resolution: "480p",
+        first_frame_url: "https://example.com/x.jpg",
+      },
+      seconds: 5,
+      perUnitUsd: 0.0775,
+    },
+    {
+      label: "480p prompt-only -> 480p|no-video",
+      input: { prompt: "xxx", duration: 5, resolution: "480p" },
+      seconds: 5,
+      perUnitUsd: 0.0775,
+    },
+    {
+      label: "720p prompt-only -> 720p|no-video",
+      input: { prompt: "xxx", duration: 5, resolution: "720p" },
+      seconds: 5,
+      perUnitUsd: 0.165,
+    },
+  ])("prices seedance-2-fast $label", ({ input, seconds, perUnitUsd }) => {
+    const parsed = Seedance2FastRequestSchema.safeParse({
+      model: "bytedance/seedance-2-fast",
+      input,
+    });
+
+    expect(parsed.success).toBe(true);
+    if (!parsed.success) return;
+
+    expect(parsed.data.input.nsfw_checker).toBe(false);
+
+    const result = kieEstimate(parsed.data);
+
+    expect(result.usd).toBeCloseTo(seconds * perUnitUsd, 10);
+    expect(result.breakdown).toEqual({
+      units: seconds,
       unit: "seconds",
       perUnitUsd,
     });

@@ -383,11 +383,14 @@ export const CREATE_TASK_GUARDS = {
 } as const satisfies Record<KieMediaModel, z.ZodType>;
 
 function validateCreateTaskRequest(req: MediaGenerationRequest): void {
-  // MediaGenerationRequest includes alias-only model ids that have request
-  // schemas but are not KIE_MEDIA_MODELS entries (e.g. wan/2-5-*). Those
-  // fall through unvalidated here; only catalogue ids have CREATE_TASK_GUARDS
-  // entries. Index after the own-property check via KieMediaModel so the wider
-  // MediaGenerationRequest model union does not fail tsc on the lookup.
+  // Every MediaGenerationRequest union member pins a model id that is a
+  // KIE_MEDIA_MODELS entry today, so a well-typed request always finds its
+  // guard. This stays a lookup rather than a direct index because the model
+  // aliases (KieMediaWanModelAliasSchema and its siblings) deliberately accept
+  // future family members ahead of the catalogue — an untyped or MCP caller can
+  // send such an id, and it falls through unvalidated until that model is
+  // catalogued. Index after the own-property check via KieMediaModel so the
+  // wider MediaGenerationRequest model union does not fail tsc on the lookup.
   const model = req.model;
   const guard: z.ZodType | undefined = Object.prototype.hasOwnProperty.call(
     CREATE_TASK_GUARDS,

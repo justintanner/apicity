@@ -176,8 +176,8 @@ describe("production compare-cost payloads", () => {
     expect(result).toEqual({
       ok: true,
       files: 2,
-      rows: 123,
-      cases: 246,
+      rows: 129,
+      cases: 258,
       skips: 0,
       diagnostics: [],
     });

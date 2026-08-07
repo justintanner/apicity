@@ -351,6 +351,88 @@ export const lineup = [
     },
     audio: "yes",
   },
+  // wan 2.6 — same per-VIDEO duration × resolution basis as 2.5, and flat by
+  // design for the same reason (string duration enum; see
+  // FIXED_DURATION_MODELS). Two differences from 2.5 worth a row each:
+  // `duration` is optional here (all five schemas default it to "5", alongside
+  // resolution "1080p"), and video-to-video caps at "10" while its text- and
+  // image-input siblings reach "15", so the v2v rows stop one duration short of
+  // the others by design. The two wan/2-6-flash-* ids are absent: kie publishes
+  // no rate for them, so they have no PRICING.kie entry to compare (ruling R2).
+  {
+    ...createTaskEndpointAssociation,
+    label: "wan 2.6 t2v 5s 1080p",
+    payload: {
+      model: "wan/2-6-text-to-video",
+      input: { prompt: "x", duration: "5", resolution: "1080p" },
+    },
+    audio: "yes",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "wan 2.6 t2v 15s 720p",
+    payload: {
+      model: "wan/2-6-text-to-video",
+      input: { prompt: "x", duration: "15", resolution: "720p" },
+    },
+    audio: "yes",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "wan 2.6 i2v 5s 720p",
+    payload: {
+      model: "wan/2-6-image-to-video",
+      input: {
+        prompt: "xx",
+        image_urls: ["https://example.com/x.jpg"],
+        duration: "5",
+        resolution: "720p",
+      },
+    },
+    audio: "yes",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "wan 2.6 i2v 15s 1080p",
+    payload: {
+      model: "wan/2-6-image-to-video",
+      input: {
+        prompt: "xx",
+        image_urls: ["https://example.com/x.jpg"],
+        duration: "15",
+        resolution: "1080p",
+      },
+    },
+    audio: "yes",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "wan 2.6 v2v 5s 1080p",
+    payload: {
+      model: "wan/2-6-video-to-video",
+      input: {
+        prompt: "xx",
+        video_urls: ["https://example.com/x.mp4"],
+        duration: "5",
+        resolution: "1080p",
+      },
+    },
+    audio: "yes",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "wan 2.6 v2v 10s 720p",
+    payload: {
+      model: "wan/2-6-video-to-video",
+      input: {
+        prompt: "xx",
+        video_urls: ["https://example.com/x.mp4"],
+        duration: "10",
+        resolution: "720p",
+      },
+    },
+    audio: "yes",
+  },
   // grok-imagine: 3 tiers by resolution, audio always on.
   {
     ...createTaskEndpointAssociation,
@@ -1087,7 +1169,9 @@ const HINT_DURATION_MODELS = new Set([
 // the neighbouring reason: their schemas declare no duration field at all, and
 // they bill per video, so there is nothing to patch and nothing to scale — the
 // two wan 2.2 A14B turbo models join them on exactly that footing (fixed 5s
-// clip, no duration field), while wan 2.5 joins on the string-enum footing.
+// clip, no duration field), while wan 2.5 and 2.6 join on the string-enum
+// footing — 2.6 with the extra wrinkle that video-to-video's enum stops at
+// "10" where its text- and image-input siblings reach "15".
 const FIXED_DURATION_MODELS = new Set([
   "kling-2.6/text-to-video",
   "kling-2.6/image-to-video",
@@ -1108,6 +1192,9 @@ const FIXED_DURATION_MODELS = new Set([
   "wan/2-2-a14b-image-to-video-turbo",
   "wan/2-5-text-to-video",
   "wan/2-5-image-to-video",
+  "wan/2-6-text-to-video",
+  "wan/2-6-image-to-video",
+  "wan/2-6-video-to-video",
 ]);
 
 // Patches `duration` into the kie payload at either the top level (veo) or

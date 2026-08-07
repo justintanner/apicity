@@ -2716,6 +2716,237 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  // https://docs.kie.ai/market/wan/2-6-flash-image-to-video
+  "wan/2-6-flash-image-to-video": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 2,
+        maxLength: 1500,
+        description: "Video generation prompt (2-1500 chars)",
+      },
+      image_urls: {
+        type: "array",
+        required: true,
+        minItems: 1,
+        maxItems: 1,
+        description: "Input image URL (exactly 1; at least 256x256px)",
+        items: { type: "string" },
+      },
+      duration: {
+        type: "string",
+        enum: ["5", "10", "15"],
+        default: "5",
+        description: 'Duration in seconds as numeric string "5", "10" or "15"',
+      },
+      resolution: {
+        type: "string",
+        enum: ["720p", "1080p"],
+        default: "1080p",
+        description: "Video resolution tier (default 1080p)",
+      },
+      audio: {
+        type: "boolean",
+        required: true,
+        description:
+          "Generate the video with audio; required because pricing differs with and without sound",
+      },
+      multi_shots: {
+        type: "boolean",
+        description:
+          "Compose multiple shots with transitions instead of one continuous shot",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description:
+          "When false, content filtering is disabled (documented default false)",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/wan/2-6-flash-video-to-video
+  "wan/2-6-flash-video-to-video": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 2,
+        maxLength: 1500,
+        description: "Video generation prompt (2-1500 chars)",
+      },
+      video_urls: {
+        type: "array",
+        required: true,
+        minItems: 1,
+        maxItems: 3,
+        description: "Input video URLs (1-3; mp4/quicktime/matroska)",
+        items: { type: "string" },
+      },
+      duration: {
+        type: "string",
+        enum: ["5", "10"],
+        default: "5",
+        description: 'Duration in seconds as numeric string "5" or "10"',
+      },
+      resolution: {
+        type: "string",
+        enum: ["720p", "1080p"],
+        default: "1080p",
+        description: "Video resolution tier (default 1080p)",
+      },
+      audio: {
+        type: "boolean",
+        description:
+          "Generate the video with audio; affects cost, and is optional here unlike on flash-image-to-video",
+      },
+      multi_shots: {
+        type: "boolean",
+        description:
+          "Compose multiple shots with transitions instead of one continuous shot",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description:
+          "When false, content filtering is disabled (documented default false)",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/wan/2-6-image-to-video
+  "wan/2-6-image-to-video": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 2,
+        maxLength: 5000,
+        description: "Video generation prompt (2-5000 chars)",
+      },
+      image_urls: {
+        type: "array",
+        required: true,
+        minItems: 1,
+        maxItems: 1,
+        description: "Input image URL (exactly 1; at least 256x256px)",
+        items: { type: "string" },
+      },
+      duration: {
+        type: "string",
+        enum: ["5", "10", "15"],
+        default: "5",
+        description: 'Duration in seconds as numeric string "5", "10" or "15"',
+      },
+      resolution: {
+        type: "string",
+        enum: ["720p", "1080p"],
+        default: "1080p",
+        description: "Video resolution tier (default 1080p)",
+      },
+      multi_shots: {
+        type: "boolean",
+        default: false,
+        description:
+          "Compose multiple shots with transitions instead of one continuous shot",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description:
+          "When false, content filtering is disabled (documented default false)",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/wan/2-6-text-to-video
+  "wan/2-6-text-to-video": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 5000,
+        description: "Video generation prompt (1-5000 chars)",
+      },
+      duration: {
+        type: "string",
+        enum: ["5", "10", "15"],
+        default: "5",
+        description: 'Duration in seconds as numeric string "5", "10" or "15"',
+      },
+      resolution: {
+        type: "string",
+        enum: ["720p", "1080p"],
+        default: "1080p",
+        description: "Video resolution tier (default 1080p)",
+      },
+      multi_shots: {
+        type: "boolean",
+        default: false,
+        description:
+          "Compose multiple shots with transitions instead of one continuous shot",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description:
+          "When false, content filtering is disabled (documented default false)",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/wan/2-6-video-to-video
+  "wan/2-6-video-to-video": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 2,
+        maxLength: 5000,
+        description: "Video generation prompt (2-5000 chars)",
+      },
+      video_urls: {
+        type: "array",
+        required: true,
+        minItems: 1,
+        maxItems: 3,
+        description: "Input video URLs (1-3; mp4/quicktime/matroska)",
+        items: { type: "string" },
+      },
+      duration: {
+        type: "string",
+        enum: ["5", "10"],
+        default: "5",
+        description: 'Duration in seconds as numeric string "5" or "10"',
+      },
+      resolution: {
+        type: "string",
+        enum: ["720p", "1080p"],
+        default: "1080p",
+        description: "Video resolution tier (default 1080p)",
+      },
+      multi_shots: {
+        type: "boolean",
+        default: false,
+        description:
+          "Compose multiple shots with transitions instead of one continuous shot",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description:
+          "When false, content filtering is disabled (documented default false)",
+      },
+    },
+  },
+
   "elevenlabs/audio-isolation": {
     type: "audio",
     fields: {

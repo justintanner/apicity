@@ -17,9 +17,15 @@ const transport = new StdioClientTransport({
   env: { ...process.env },
 });
 
+// Pin the 2026-07-28 era: the server rejects a legacy opening, and the v2
+// client's default mode is `'legacy'`. See scripts/smoke.mjs for why not
+// `'auto'`.
 const client = new Client(
   { name: "demo", version: "0.0.1" },
-  { capabilities: {} }
+  {
+    capabilities: {},
+    versionNegotiation: { mode: { pin: "2026-07-28" } },
+  }
 );
 await client.connect(transport);
 

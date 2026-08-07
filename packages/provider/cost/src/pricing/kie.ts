@@ -322,24 +322,51 @@ const perVideoByDuration = (
 });
 
 // Per-video entry keyed by duration × resolution (Hailuo 02 image-to-video
-// standard and both Hailuo 2.3 models). Same per-video basis as
-// `perVideoByDuration`; the second axis exists because kie prices those cells
-// separately. Both defaults mirror the model's documented schema default, so an
-// omitted field prices the documented row instead of failing — but only cells
-// the page actually publishes get a rate, so an unpublished combination (2.3 at
-// 10s/1080P, which upstream documents as unsupported) finds no rate and fails
-// the estimate rather than being invented here.
+// standard, both Hailuo 2.3 models, and the wan 2.5 pair). Same per-video basis
+// as `perVideoByDuration`; the second axis exists because kie prices those
+// cells separately. Only cells the page actually publishes get a rate, so an
+// unpublished combination (2.3 at 10s/1080P, which upstream documents as
+// unsupported) finds no rate and fails the estimate rather than being invented
+// here.
+//
+// Each default is applied only where upstream documents one — same rule as
+// `perVideoByDuration`. The Hailuo entries pass both, so an omitted field
+// prices the documented row; the wan 2.5 pair passes neither, so an omitted
+// field selects no rate and the estimate fails instead of guessing a cell.
 const perVideoByDurationAndResolution = (
   rates: Record<string, number>,
   url: string,
-  defaultDuration: string,
-  defaultResolution: string
+  defaultDuration?: string,
+  defaultResolution?: string
 ): ModelPricing => ({
   kind: "perUnit",
   unit: "generations",
   units: () => 1,
   select: [
     { name: "duration", pick: (p) => inputDurationKey(p, defaultDuration) },
+    {
+      name: "resolution",
+      pick: (p) => inputResolution(p) ?? defaultResolution,
+    },
+  ],
+  rates,
+  source: pricePage(url),
+});
+
+// Per-video entry keyed by resolution alone (the wan 2.2 A14B turbo pair). Same
+// per-video basis as the two helpers above, minus the duration axis: kie bills
+// these off one fixed ~5s clip and the schemas declare no duration field at
+// all, so there is nothing for a second selector to read and the
+// costHints.durationSeconds channel does not apply.
+const perVideoByResolution = (
+  rates: Record<string, number>,
+  url: string,
+  defaultResolution?: string
+): ModelPricing => ({
+  kind: "perUnit",
+  unit: "generations",
+  units: () => 1,
+  select: [
     {
       name: "resolution",
       pick: (p) => inputResolution(p) ?? defaultResolution,
@@ -583,6 +610,81 @@ export const kie: Record<string, ModelPricing> = {
     rates: { "720p": 0.09, "1080p": 0.1125 },
     source: page("https://kie.ai/kling-3-0-turbo"),
   },
+
+  // wan/2.2 A14B Turbo text/image-to-video — per VIDEO, not per second. kie
+  // bills one fixed ~5s clip and neither schema declares a duration field, so
+  // resolution is the only axis: 480p 40 credits ($0.20), 720p 80 credits
+  // ($0.40). 720p is both the documented and the schema default, so an omitted
+  // resolution prices the 720p row.
+  //
+  // kie also publishes a 580p cell for both directions (60 credits, $0.30) and
+  // it is deliberately absent here: the docs fragments enumerate `resolution`
+  // as 480p|720p only — mirrored by `Wan22A14bTurboResolutionSchema` — so no
+  // request this package can build reaches that row. Add the cell if upstream
+  // ever widens the enum.
+  "wan/2-2-a14b-text-to-video-turbo": perVideoByResolution(
+    { "480p": 0.2, "720p": 0.4 },
+    "https://kie.ai/wan/v2-2?model=wan%2F2-2-a14b-text-to-video-turbo",
+    "720p"
+  ),
+  "wan/2-2-a14b-image-to-video-turbo": perVideoByResolution(
+    { "480p": 0.2, "720p": 0.4 },
+    "https://kie.ai/wan/v2-2?model=wan%2F2-2-a14b-image-to-video-turbo",
+    "720p"
+  ),
+
+  // wan/2.2 A14B Turbo speech-to-video — per SECOND by resolution: 12 / 18 / 24
+  // credits ($0.06 / $0.09 / $0.12). All three cells are reachable
+  // (`Wan22ExtendedResolutionSchema`), and the default pick mirrors the
+  // schema's "480p".
+  //
+  // The schema has no `duration` field, so seconds arrive through
+  // costHints.durationSeconds exactly like the animate pair below.
+  // `num_frames` / `frames_per_second` (defaults 80/16 = 5s) would let the
+  // output length be derived from the wire payload, but the `seconds`
+  // precedence above has no derivation channel and adding one is out of scope
+  // for this entry.
+  "wan/2-2-a14b-speech-to-video-turbo": tieredVideoPage(
+    "resolution",
+    { "480p": 0.06, "580p": 0.09, "720p": 0.12 },
+    "https://kie.ai/wan-speech-to-video-turbo",
+    "480p"
+  ),
+
+  // wan/2.2 Animate move/replace — per SECOND by resolution: 6 / 9.5 / 12.5
+  // credits ($0.03 / $0.0475 / $0.0625). Both ops share one page and one rate
+  // card. Neither schema has a duration field (the output inherits the driving
+  // video's length), so seconds arrive through costHints.durationSeconds.
+  "wan/2-2-animate-move": tieredVideoPage(
+    "resolution",
+    { "480p": 0.03, "580p": 0.0475, "720p": 0.0625 },
+    "https://kie.ai/wan-animate",
+    "480p"
+  ),
+  "wan/2-2-animate-replace": tieredVideoPage(
+    "resolution",
+    { "480p": 0.03, "580p": 0.0475, "720p": 0.0625 },
+    "https://kie.ai/wan-animate",
+    "480p"
+  ),
+
+  // wan/2.5 text/image-to-video — per VIDEO by duration × resolution, with all
+  // four cells published: 5s/720p $0.30, 5s/1080p $0.50, 10s/720p $0.60,
+  // 10s/1080p $1.00.
+  //
+  // Neither axis takes a fallback. `duration` is a required "5"|"10" string
+  // enum with no documented default, and the docs fragments give `resolution`
+  // an enum plus an *example* of 1080p but no `default:` key. An omitted field
+  // therefore selects no rate and fails loudly rather than quoting a tier
+  // upstream never named — the kling-2.6 / grok-imagine precedent.
+  "wan/2-5-text-to-video": perVideoByDurationAndResolution(
+    { "5|720p": 0.3, "5|1080p": 0.5, "10|720p": 0.6, "10|1080p": 1 },
+    "https://kie.ai/wan-2-5?model=wan%2F2-5-text-to-video"
+  ),
+  "wan/2-5-image-to-video": perVideoByDurationAndResolution(
+    { "5|720p": 0.3, "5|1080p": 0.5, "10|720p": 0.6, "10|1080p": 1 },
+    "https://kie.ai/wan-2-5?model=wan%2F2-5-image-to-video"
+  ),
 
   // wan/2.7 video — resolution-tiered per second as of the 2026-08-06 pull
   // (was a flat $0.10/s across all four variants, which overcharged 720p by

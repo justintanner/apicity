@@ -26,6 +26,13 @@ import type {
 import {
   Seedance2RequestSchema,
   Seedance2FastRequestSchema,
+  Wan22A14bTextToVideoTurboRequestSchema,
+  Wan22A14bImageToVideoTurboRequestSchema,
+  Wan22A14bSpeechToVideoTurboRequestSchema,
+  Wan22AnimateMoveRequestSchema,
+  Wan22AnimateReplaceRequestSchema,
+  Wan25TextToVideoRequestSchema,
+  Wan25ImageToVideoRequestSchema,
 } from "../../packages/provider/kie/src/zod";
 
 describe("pricing helpers", () => {
@@ -2859,4 +2866,370 @@ describe("kie stale-family refresh (REQ-004)", () => {
       expect(result.usd).toBeCloseTo(5 * rate, 10);
     }
   );
+});
+
+// REQ-004 (AC-4). The seven wan 2.2 / 2.5 createTask models kie prices but the
+// cost table did not cover. Rates re-checked live against
+// `POST https://api.kie.ai/client/v1/model-pricing/page` on 2026-08-07: all 23
+// wan rows are identical to the 2026-08-06 pull (the only diff in the whole
+// 408-row table is four new bytedance/seedance-2-5 rows), so every entry keeps
+// the `pricePage()` 2026-08-06 stamp rather than a fresh `asOf`.
+//
+// Every estimate below runs on the OUTPUT of the shipped kie request schema,
+// not on a hand-written literal — the seedance-2 precedent above. That is what
+// makes the schema defaults (720p turbo, 480p speech/animate) load-bearing
+// evidence instead of a restatement of the rate table.
+describe("kie wan 2.2 / 2.5 per-model pricing (REQ-004)", () => {
+  const WAN_MODELS = [
+    "wan/2-2-a14b-text-to-video-turbo",
+    "wan/2-2-a14b-image-to-video-turbo",
+    "wan/2-2-a14b-speech-to-video-turbo",
+    "wan/2-2-animate-move",
+    "wan/2-2-animate-replace",
+    "wan/2-5-text-to-video",
+    "wan/2-5-image-to-video",
+  ];
+
+  it.each(WAN_MODELS)("stamps %s with the 2026-08-06 pull provenance", (m) => {
+    const entry = PRICING.kie[m];
+    expect(entry, m).toBeDefined();
+    expect(entry.source.url, `${m} url`).toMatch(/^https:\/\/kie\.ai\//);
+    expect(entry.source.asOf, `${m} asOf`).toBe("2026-08-06");
+  });
+
+  it("prices the A14B turbo pair per video by resolution", () => {
+    for (const model of [
+      "wan/2-2-a14b-text-to-video-turbo",
+      "wan/2-2-a14b-image-to-video-turbo",
+    ]) {
+      expect(PRICING.kie[model], model).toMatchObject({
+        kind: "perUnit",
+        unit: "generations",
+        rates: { "480p": 0.2, "720p": 0.4 },
+      });
+      expect(PRICING.kie[model].source.url).toContain(
+        "https://kie.ai/wan/v2-2?model=wan%2F2-2-a14b-"
+      );
+    }
+  });
+
+  it("prices speech-to-video and the animate pair per second by resolution", () => {
+    expect(PRICING.kie["wan/2-2-a14b-speech-to-video-turbo"]).toMatchObject({
+      kind: "perUnit",
+      unit: "seconds",
+      rates: { "480p": 0.06, "580p": 0.09, "720p": 0.12 },
+      source: { url: "https://kie.ai/wan-speech-to-video-turbo" },
+    });
+
+    for (const model of ["wan/2-2-animate-move", "wan/2-2-animate-replace"]) {
+      expect(PRICING.kie[model], model).toMatchObject({
+        kind: "perUnit",
+        unit: "seconds",
+        rates: { "480p": 0.03, "580p": 0.0475, "720p": 0.0625 },
+        source: { url: "https://kie.ai/wan-animate" },
+      });
+    }
+  });
+
+  it("prices the wan 2.5 pair per video across all four published cells", () => {
+    for (const model of ["wan/2-5-text-to-video", "wan/2-5-image-to-video"]) {
+      expect(PRICING.kie[model], model).toMatchObject({
+        kind: "perUnit",
+        unit: "generations",
+        rates: { "5|720p": 0.3, "5|1080p": 0.5, "10|720p": 0.6, "10|1080p": 1 },
+      });
+      expect(PRICING.kie[model].source.url).toContain(
+        "https://kie.ai/wan-2-5?model=wan%2F2-5-"
+      );
+    }
+  });
+
+  // One representative payload per priced model, each routed through the
+  // shipped schema first so the USD figure is evidence about the SDK's own
+  // output rather than about a literal written to match the table.
+  it("prices a text-to-video turbo clip off the schema's 720p default", () => {
+    const parsed = Wan22A14bTextToVideoTurboRequestSchema.safeParse({
+      model: "wan/2-2-a14b-text-to-video-turbo",
+      input: { prompt: "a hot air balloon over the ice fields" },
+    });
+
+    expect(parsed.success).toBe(true);
+    if (!parsed.success) return;
+    expect(parsed.data.input.resolution).toBe("720p");
+
+    const result = kieEstimate(parsed.data);
+
+    expect(result.usd).toBeCloseTo(0.4, 10);
+    expect(result.breakdown).toEqual({
+      units: 1,
+      unit: "generations",
+      perUnitUsd: 0.4,
+    });
+    expect(result.warnings).toEqual([]);
+  });
+
+  it("prices an image-to-video turbo clip at the 480p cell", () => {
+    const parsed = Wan22A14bImageToVideoTurboRequestSchema.safeParse({
+      model: "wan/2-2-a14b-image-to-video-turbo",
+      input: {
+        image_url: "https://example.com/still.png",
+        prompt: "the camera pushes in",
+        resolution: "480p",
+      },
+    });
+
+    expect(parsed.success).toBe(true);
+    if (!parsed.success) return;
+
+    const result = kieEstimate(parsed.data);
+
+    expect(result.usd).toBeCloseTo(0.2, 10);
+    expect(result.breakdown.perUnitUsd).toBe(0.2);
+    expect(result.warnings).toEqual([]);
+  });
+
+  // The per-video basis, pinned the way veo's is: these two bill one fixed ~5s
+  // clip, so a declared length must not scale the price no matter its value.
+  it.each([undefined, 3, 5, 30])(
+    "keeps the turbo pair at one generation with costHints.durationSeconds=%s",
+    (durationSeconds) => {
+      const result = kieEstimate(
+        {
+          model: "wan/2-2-a14b-text-to-video-turbo",
+          input: { prompt: "x", resolution: "720p" },
+        },
+        durationSeconds === undefined
+          ? {}
+          : { costHints: { durationSeconds } as CostHints }
+      );
+
+      expect(result.usd).toBeCloseTo(0.4, 10);
+      expect(result.breakdown.units).toBe(1);
+    }
+  );
+
+  // kie publishes a 580p turbo cell at $0.30 per video, and it is deliberately
+  // absent from the table: the docs fragment and the shipped schema both
+  // enumerate `resolution` as 480p|720p, so no payload the SDK accepts can
+  // reach that row. Both halves are pinned so a future enum widening trips
+  // here rather than silently pricing at the 720p cell.
+  it("leaves the unreachable 580p turbo cell unpriced", () => {
+    expect(
+      Wan22A14bTextToVideoTurboRequestSchema.safeParse({
+        model: "wan/2-2-a14b-text-to-video-turbo",
+        input: { prompt: "x", resolution: "580p" },
+      }).success
+    ).toBe(false);
+
+    for (const model of [
+      "wan/2-2-a14b-text-to-video-turbo",
+      "wan/2-2-a14b-image-to-video-turbo",
+    ]) {
+      const entry = PRICING.kie[model];
+      expect(entry.kind, model).toBe("perUnit");
+      if (entry.kind !== "perUnit") return;
+
+      expect(Object.keys(entry.rates).sort(), model).toEqual(["480p", "720p"]);
+    }
+  });
+
+  it("prices speech-to-video per second off the schema's 480p default", () => {
+    const parsed = Wan22A14bSpeechToVideoTurboRequestSchema.safeParse({
+      model: "wan/2-2-a14b-speech-to-video-turbo",
+      input: {
+        prompt: "a newsreader delivers the segment",
+        image_url: "https://example.com/anchor.png",
+        audio_url: "https://example.com/vo.mp3",
+      },
+    });
+
+    expect(parsed.success).toBe(true);
+    if (!parsed.success) return;
+    expect(parsed.data.input.resolution).toBe("480p");
+    // 80 frames / 16 fps = 5s of output. The estimator cannot read that —
+    // `seconds` has no frame-count channel — so the caller declares it.
+    expect(parsed.data.input.num_frames).toBe(80);
+    expect(parsed.data.input.frames_per_second).toBe(16);
+
+    const result = kieEstimate(parsed.data, {
+      costHints: { durationSeconds: 5 },
+    });
+
+    expect(result.usd).toBeCloseTo(0.3, 10); // 5 * 0.06
+    expect(result.breakdown).toEqual({
+      units: 5,
+      unit: "seconds",
+      perUnitUsd: 0.06,
+    });
+    expect(result.warnings).toEqual([]);
+  });
+
+  it("prices speech-to-video at the 720p cell", () => {
+    const result = kieEstimate(
+      {
+        model: "wan/2-2-a14b-speech-to-video-turbo",
+        input: {
+          prompt: "x",
+          image_url: "https://example.com/a.png",
+          audio_url: "https://example.com/a.mp3",
+          resolution: "720p",
+        },
+      },
+      { costHints: { durationSeconds: 6 } }
+    );
+
+    expect(result.usd).toBeCloseTo(0.72, 10); // 6 * 0.12
+    expect(result.breakdown.perUnitUsd).toBe(0.12);
+  });
+
+  it("prices animate-move per second off the schema's 480p default", () => {
+    const parsed = Wan22AnimateMoveRequestSchema.safeParse({
+      model: "wan/2-2-animate-move",
+      input: {
+        video_url: "https://example.com/drive.mp4",
+        image_url: "https://example.com/subject.png",
+      },
+    });
+
+    expect(parsed.success).toBe(true);
+    if (!parsed.success) return;
+    expect(parsed.data.input.resolution).toBe("480p");
+
+    const result = kieEstimate(parsed.data, {
+      costHints: { durationSeconds: 8 },
+    });
+
+    expect(result.usd).toBeCloseTo(0.24, 10); // 8 * 0.03
+    expect(result.breakdown.unit).toBe("seconds");
+    expect(result.warnings).toEqual([]);
+  });
+
+  it("prices animate-replace at the 580p and 720p cells", () => {
+    const parsed = Wan22AnimateReplaceRequestSchema.safeParse({
+      model: "wan/2-2-animate-replace",
+      input: {
+        video_url: "https://example.com/drive.mp4",
+        image_url: "https://example.com/subject.png",
+        resolution: "580p",
+      },
+    });
+
+    expect(parsed.success).toBe(true);
+    if (!parsed.success) return;
+
+    const at580 = kieEstimate(parsed.data, {
+      costHints: { durationSeconds: 8 },
+    });
+    expect(at580.usd).toBeCloseTo(0.38, 10); // 8 * 0.0475
+
+    const at720 = kieEstimate(
+      {
+        ...parsed.data,
+        input: { ...parsed.data.input, resolution: "720p" },
+      },
+      { costHints: { durationSeconds: 8 } }
+    );
+    expect(at720.usd).toBeCloseTo(0.5, 10); // 8 * 0.0625
+  });
+
+  // The three per-second models declare no duration field, so an estimate
+  // without the hint must fail loudly and name the channel rather than quote a
+  // one-second clip.
+  it.each([
+    "wan/2-2-a14b-speech-to-video-turbo",
+    "wan/2-2-animate-move",
+    "wan/2-2-animate-replace",
+  ])("fails %s when no duration is declared", (model) => {
+    const result = kieEstimate({ model, input: { resolution: "480p" } });
+
+    expect(result.usd).toBe(0);
+    expect(result.warnings).toHaveLength(1);
+    expect(result.warnings[0]).toContain("costHints.durationSeconds");
+  });
+
+  it.each([
+    { duration: "5", resolution: "720p", usd: 0.3 },
+    { duration: "5", resolution: "1080p", usd: 0.5 },
+    { duration: "10", resolution: "720p", usd: 0.6 },
+    { duration: "10", resolution: "1080p", usd: 1 },
+  ])(
+    "prices wan 2.5 text-to-video $duration s at $resolution as $usd",
+    ({ duration, resolution, usd }) => {
+      const parsed = Wan25TextToVideoRequestSchema.safeParse({
+        model: "wan/2-5-text-to-video",
+        input: { prompt: "a kite over the harbour", duration, resolution },
+      });
+
+      expect(parsed.success).toBe(true);
+      if (!parsed.success) return;
+
+      const result = kieEstimate(parsed.data);
+
+      expect(result.usd).toBeCloseTo(usd, 10);
+      expect(result.breakdown).toEqual({
+        units: 1,
+        unit: "generations",
+        perUnitUsd: usd,
+      });
+      expect(result.warnings).toEqual([]);
+    }
+  );
+
+  it("prices wan 2.5 image-to-video off its own published cells", () => {
+    const parsed = Wan25ImageToVideoRequestSchema.safeParse({
+      model: "wan/2-5-image-to-video",
+      input: {
+        prompt: "the sails fill",
+        image_url: "https://example.com/boat.png",
+        duration: "10",
+        resolution: "1080p",
+      },
+    });
+
+    expect(parsed.success).toBe(true);
+    if (!parsed.success) return;
+
+    const result = kieEstimate(parsed.data);
+
+    expect(result.usd).toBeCloseTo(1, 10);
+    expect(result.breakdown.perUnitUsd).toBe(1);
+    expect(result.warnings).toEqual([]);
+  });
+
+  // The wan 2.5 duration is a per-video SELECTOR, not a multiplier: 10s costs
+  // twice 5s because kie publishes it that way, and units stay at one video.
+  it("selects a wan 2.5 rate with duration instead of scaling one", () => {
+    const at5 = kieEstimate({
+      model: "wan/2-5-text-to-video",
+      input: { prompt: "x", duration: "5", resolution: "720p" },
+    });
+
+    expect(at5.breakdown.units).toBe(1);
+    expect(at5.breakdown.unit).toBe("generations");
+    expect(at5.breakdown.perUnitUsd).toBe(0.3);
+  });
+
+  // Neither wan 2.5 axis has a documented default — the docs fragments give
+  // `resolution` an enum and an *example* of 1080p but no `default:` key, and
+  // `duration` is required — so an omitted field must fail loudly rather than
+  // quote a tier upstream never named (the kling-2.6 / grok-imagine rule).
+  it.each([
+    {
+      label: "resolution omitted",
+      input: { prompt: "x", duration: "5" },
+      variant: "5",
+    },
+    {
+      label: "duration omitted",
+      input: { prompt: "x", resolution: "720p" },
+      variant: "720p",
+    },
+    { label: "both omitted", input: { prompt: "x" }, variant: "" },
+  ])("fails wan 2.5 with $label", ({ input, variant }) => {
+    const result = kieEstimate({ model: "wan/2-5-text-to-video", input });
+
+    expect(result.usd).toBe(0);
+    expect(result.warnings).toHaveLength(1);
+    expect(result.warnings[0]).toContain(`no rate for variant '${variant}'`);
+  });
 });

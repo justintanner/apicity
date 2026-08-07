@@ -27,6 +27,20 @@ export const MODEL_SLUGS = {
     "kling/v3-turbo-image-to-video": "kling3t",
     "kling/v3-turbo-text-to-video": "kling3t",
 
+    // Video — Wan 2.2 (A14B Turbo trio + the Animate pair). All five share the
+    // family slug: there is no separately-priced non-turbo wan 2.2 generation
+    // surface for a tier letter to distinguish, and the animate ops differ by
+    // modality only, which the slug convention treats as metadata.
+    "wan/2-2-a14b-text-to-video-turbo": "wan2p2",
+    "wan/2-2-a14b-image-to-video-turbo": "wan2p2",
+    "wan/2-2-a14b-speech-to-video-turbo": "wan2p2",
+    "wan/2-2-animate-move": "wan2p2",
+    "wan/2-2-animate-replace": "wan2p2",
+
+    // Video — Wan 2.5
+    "wan/2-5-text-to-video": "wan2p5",
+    "wan/2-5-image-to-video": "wan2p5",
+
     // Video — Wan 2.7
     "wan/2-7-text-to-video": "wan2p7",
     "wan/2-7-image-to-video": "wan2p7",
@@ -422,6 +436,15 @@ export const MODEL_DISPLAY = {
     "kling-3.0/motion-control": "Kling 3.0 Motion",
     "kling/v3-turbo-image-to-video": "Kling 3.0 Turbo",
     "kling/v3-turbo-text-to-video": "Kling 3.0 Turbo",
+
+    "wan/2-2-a14b-text-to-video-turbo": "Wan 2.2",
+    "wan/2-2-a14b-image-to-video-turbo": "Wan 2.2",
+    "wan/2-2-a14b-speech-to-video-turbo": "Wan 2.2",
+    "wan/2-2-animate-move": "Wan 2.2 Animate",
+    "wan/2-2-animate-replace": "Wan 2.2 Animate",
+
+    "wan/2-5-text-to-video": "Wan 2.5",
+    "wan/2-5-image-to-video": "Wan 2.5",
 
     "wan/2-7-text-to-video": "Wan 2.7",
     "wan/2-7-image-to-video": "Wan 2.7",

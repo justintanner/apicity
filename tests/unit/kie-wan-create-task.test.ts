@@ -1,6 +1,11 @@
-import { describe, it, expect } from "vitest";
+import { afterEach, describe, it, expect, vi } from "vitest";
 
+import { KieError } from "@apicity/kie";
+
+import { createKie } from "../../packages/provider/kie/src/kie";
+import { TEST_PAYGATE_SECRET, mintKieCreateTaskOtp } from "../harness";
 import {
+  type MediaGenerationRequest,
   CreateTaskRequestSchema,
   MediaGenerationRequestSchema,
   Wan22A14bImageToVideoTurboRequestSchema,
@@ -19,10 +24,13 @@ import {
 
 /**
  * WAN createTask models with per-model request members (ac-n4ib21).
- * The wan/2-2-* and wan/2-5-* ids below are KIE_MEDIA_MODELS entries whose
- * requests CREATE_TASK_GUARDS validates before transport (ac-t2cgdc); the
- * wan/2-6-* ids are alias-accepted only — they match KieMediaWanModelAliasSchema
- * and need per-model request members so CreateTaskRequestSchema accepts them.
+ * Each needs a per-model request member so CreateTaskRequestSchema accepts it.
+ *
+ * The wan/2-2-* and wan/2-5-* ids (ac-t2cgdc) and the five wan/2-6-* ids
+ * (ac-3r4t90) are all KIE_MEDIA_MODELS entries, so they also carry
+ * CREATE_TASK_GUARDS entries and modelInputSchemas descriptors, and their
+ * requests are validated before transport; the guard-level rejection block at
+ * the bottom of this file covers that half.
  */
 describe("kie WAN createTask models", () => {
   describe("wan/2-2-a14b-image-to-video-turbo", () => {
@@ -516,5 +524,128 @@ describe("kie WAN createTask models", () => {
         CreateTaskRequestSchema.safeParse({ model, input: {} }).success
       ).toBe(false);
     }
+  });
+});
+
+// Schema-level parsing above proves the contract; this proves the provider
+// enforces it. Catalogue membership is what buys the wan 2.6 five a
+// CREATE_TASK_GUARDS entry, so an out-of-contract payload now fails locally
+// instead of being transmitted — the alias-only wan 2.2 / 2.5 models have no
+// guard and reach the API unvalidated.
+describe("wan 2.6 createTask guard rejection", () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  const guardRejectionCases = [
+    {
+      name: "wan/2-6-video-to-video with a duration only the 2.6 trio allows",
+      request: {
+        model: "wan/2-6-video-to-video",
+        input: {
+          prompt: "Restyle the clip as a neon noir chase",
+          video_urls: ["https://example.com/source.mp4"],
+          duration: "15",
+        },
+      },
+      expectedPath: "input.duration",
+    },
+    {
+      name: "wan/2-6-image-to-video with two image_urls",
+      request: {
+        model: "wan/2-6-image-to-video",
+        input: {
+          prompt: "Animate this portrait",
+          image_urls: [
+            "https://example.com/a.png",
+            "https://example.com/b.png",
+          ],
+        },
+      },
+      expectedPath: "input.image_urls",
+    },
+  ] satisfies ReadonlyArray<{
+    name: string;
+    request: Record<string, unknown>;
+    expectedPath: string;
+  }>;
+
+  it.each(guardRejectionCases)(
+    "rejects $name before transport",
+    async ({ request, expectedPath }) => {
+      const mockFetch = vi.fn<typeof fetch>(() => {
+        throw new Error("fetch must not run for a guarded invalid request");
+      });
+      const provider = createKie({
+        apiKey: "test-key",
+        fetch: mockFetch,
+        paygate: { secret: TEST_PAYGATE_SECRET },
+      });
+
+      const rejection = await provider.post.api.v1.jobs
+        .createTask(
+          // Intentionally invalid for the paired wan 2.6 schema.
+          request as unknown as MediaGenerationRequest,
+          mintKieCreateTaskOtp(request)
+        )
+        .then(
+          () => undefined,
+          (error: unknown) => error
+        );
+
+      expect(rejection).toBeInstanceOf(KieError);
+      if (!(rejection instanceof KieError)) {
+        throw new Error("Expected createTask to reject with KieError");
+      }
+      expect(rejection.status).toBe(400);
+      const issues =
+        typeof rejection.body === "object" &&
+        rejection.body !== null &&
+        "issues" in rejection.body
+          ? rejection.body.issues
+          : undefined;
+      expect(Array.isArray(issues)).toBe(true);
+      expect(
+        Array.isArray(issues) &&
+          issues.some((issue: unknown) => {
+            if (typeof issue !== "object" || issue === null) return false;
+            const path = "path" in issue ? issue.path : undefined;
+            return Array.isArray(path) && path.join(".") === expectedPath;
+          })
+      ).toBe(true);
+      expect(mockFetch).not.toHaveBeenCalled();
+    }
+  );
+
+  // The other half of the guard contract: a documented payload still reaches
+  // transport, so the new entries reject out-of-contract input without
+  // narrowing what the endpoint accepts.
+  it("transmits a valid wan 2.6 payload", async () => {
+    const mockFetch = vi.fn<typeof fetch>().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          code: 200,
+          msg: "success",
+          data: { taskId: "wan-2-6-task-1" },
+        }),
+        { status: 200 }
+      )
+    );
+    const provider = createKie({
+      apiKey: "test-key",
+      fetch: mockFetch,
+      paygate: { secret: TEST_PAYGATE_SECRET },
+    });
+
+    const request = {
+      model: "wan/2-6-text-to-video",
+      input: { prompt: "A slow pan across a frozen lake", duration: "10" },
+    } satisfies MediaGenerationRequest;
+
+    const result = await provider.post.api.v1.jobs.createTask(
+      request,
+      mintKieCreateTaskOtp(request)
+    );
+
+    expect(result.data?.taskId).toBe("wan-2-6-task-1");
+    expect(mockFetch).toHaveBeenCalledTimes(1);
   });
 });

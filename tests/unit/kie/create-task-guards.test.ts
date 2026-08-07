@@ -132,6 +132,25 @@ const guardedRejectionCases = [
     },
     expectedPath: "input.audio_url",
   },
+  {
+    name: "wan/2-6-text-to-video with an off-enum duration",
+    request: {
+      model: "wan/2-6-text-to-video",
+      input: { prompt: "A slow pan across a frozen lake.", duration: "20" },
+    },
+    expectedPath: "input.duration",
+  },
+  {
+    name: "wan/2-6-flash-image-to-video without the required audio flag",
+    request: {
+      model: "wan/2-6-flash-image-to-video",
+      input: {
+        prompt: "Animate this portrait.",
+        image_urls: ["https://example.com/portrait.png"],
+      },
+    },
+    expectedPath: "input.audio",
+  },
 ] satisfies ReadonlyArray<{
   name: string;
   request: Record<string, unknown>;
@@ -163,7 +182,7 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
   // Not a count for its own sake — it makes any change to the guarded set show
   // up as a deliberate edit to this list.
   //
-  // The list is the point, not the number. It now holds all 120 ids of
+  // The list is the point, not the number. It now holds all 125 ids of
   // KIE_MEDIA_MODELS, which is what makes it worth spelling out rather than
   // asserting `guarded.sort()` equals `[...KIE_MEDIA_MODELS].sort()`: that
   // form is self-referential — it passes whatever the catalogue says, so an
@@ -172,8 +191,8 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
   it("guards exactly the models pinned in this list", () => {
     expect(
       guarded,
-      "Update this deliberate 120-entry pin when the guarded model set changes"
-    ).toHaveLength(120);
+      "Update this deliberate 125-entry pin when the guarded model set changes"
+    ).toHaveLength(125);
     expect([...guarded].sort()).toEqual(
       [
         "kling-3.0/video",
@@ -241,6 +260,11 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
         "wan/2-2-animate-replace",
         "wan/2-5-image-to-video",
         "wan/2-5-text-to-video",
+        "wan/2-6-flash-image-to-video",
+        "wan/2-6-flash-video-to-video",
+        "wan/2-6-image-to-video",
+        "wan/2-6-text-to-video",
+        "wan/2-6-video-to-video",
         "happyhorse/text-to-video",
         "happyhorse/image-to-video",
         "happyhorse/reference-to-video",

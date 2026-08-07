@@ -129,6 +129,9 @@ claude mcp add apicity -- \
 Codex: same command after `codex mcp add apicity --`. Details in
 [@apicity/mcp-server](packages/mcp-server).
 
+The server speaks MCP specification revision 2026-07-28 and needs Node.js 20
+or newer; clients on older MCP revisions are not supported.
+
 ## Middleware
 
 Every endpoint is a plain `(req, signal?) => Promise<T>` function, and every

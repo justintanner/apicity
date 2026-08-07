@@ -7,6 +7,29 @@ from the monorepo's `scripts/endpoint-docs.tsv` (bundled as
 `dist/endpoint-docs.tsv` for installed users), so it stays in lockstep with
 the providers.
 
+## Protocol and requirements
+
+The server implements MCP specification revision **2026-07-28** over stdio,
+and requires **Node.js >= 20**.
+
+What that revision means for a client:
+
+- **Stateless requests.** Every request carries its own protocol version and
+  capabilities in `_meta`. There is no `initialize` handshake and no session
+  id, so each request stands alone and can be retried on its own.
+- **`server/discover`.** Server identity (`apicity`, plus the package
+  version) and the tools capability are read from this RPC.
+- **Cacheable `tools/list`.** The result carries the revision's `ttlMs` and
+  `cacheScope` cache metadata, and the tool order is deterministic (the
+  `endpoint-docs.tsv` order) across repeated calls and across restarts of the
+  same build. The registry is fixed for the life of the process, and the tool
+  set depends on which credentials a given deployment has — so the list is
+  cached privately, never by a shared intermediary, for one hour.
+
+Clients speaking MCP revisions older than 2026-07-28 are **not supported**.
+That is a deliberate clean cutover: there is no dual-protocol negotiation, no
+legacy adapter, and no pre-2026-07-28 code path in the package.
+
 ## Install
 
 ```bash

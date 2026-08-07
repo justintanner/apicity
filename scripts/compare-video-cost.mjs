@@ -204,6 +204,153 @@ export const lineup = [
     },
     audio: "yes",
   },
+  // wan 2.2 A14B turbo — bills PER VIDEO off a fixed 5s clip with no duration
+  // field at all, so these columns are flat by design (see
+  // FIXED_DURATION_MODELS). kie prices three cells (480p / 580p / 720p) but
+  // the shipped Wan22A14bTurboResolutionSchema enum is 480p|720p, so the 580p
+  // cell has no reachable payload and gets no row.
+  {
+    ...createTaskEndpointAssociation,
+    label: "wan 2.2 turbo t2v 480p",
+    payload: {
+      model: "wan/2-2-a14b-text-to-video-turbo",
+      input: { prompt: "x", resolution: "480p" },
+    },
+    audio: "—",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "wan 2.2 turbo t2v 720p",
+    payload: {
+      model: "wan/2-2-a14b-text-to-video-turbo",
+      input: { prompt: "x", resolution: "720p" },
+    },
+    audio: "—",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "wan 2.2 turbo i2v 480p",
+    payload: {
+      model: "wan/2-2-a14b-image-to-video-turbo",
+      input: {
+        prompt: "x",
+        image_url: "https://example.com/x.jpg",
+        resolution: "480p",
+      },
+    },
+    audio: "—",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "wan 2.2 turbo i2v 720p",
+    payload: {
+      model: "wan/2-2-a14b-image-to-video-turbo",
+      input: {
+        prompt: "x",
+        image_url: "https://example.com/x.jpg",
+        resolution: "720p",
+      },
+    },
+    audio: "—",
+  },
+  // wan 2.2 speech-to-video turbo and the two animate modes — per second, and
+  // none of the three declares a duration field, so the length rides the cost
+  // hint and their columns do scale. Each keeps its schema-default resolution
+  // ("480p"), the cheapest of the three cells kie prices; 580p and 720p ride
+  // the same `resolution` selector one row away. Speech-to-video derives its
+  // own length from num_frames/frames_per_second (defaults 80/16 = 5s), but
+  // the hint is the declared seconds channel, so these rows use it.
+  {
+    ...createTaskEndpointAssociation,
+    label: "wan 2.2 s2v turbo 480p",
+    payload: {
+      model: "wan/2-2-a14b-speech-to-video-turbo",
+      input: {
+        prompt: "x",
+        image_url: "https://example.com/x.jpg",
+        audio_url: "https://example.com/x.mp3",
+        resolution: "480p",
+      },
+    },
+    audio: "yes",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "wan 2.2 animate-move 480p",
+    payload: {
+      model: "wan/2-2-animate-move",
+      input: {
+        video_url: "https://example.com/x.mp4",
+        image_url: "https://example.com/x.jpg",
+        resolution: "480p",
+      },
+    },
+    audio: "—",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "wan 2.2 animate-replace 480p",
+    payload: {
+      model: "wan/2-2-animate-replace",
+      input: {
+        video_url: "https://example.com/x.mp4",
+        image_url: "https://example.com/x.jpg",
+        resolution: "480p",
+      },
+    },
+    audio: "—",
+  },
+  // wan 2.5 — bills PER VIDEO across a duration × resolution matrix whose
+  // `duration` is the required "5"|"10" string enum, so patching a numeric
+  // column duration in would produce a payload the schema rejects (the kling
+  // 2.6 / hailuo case). These rows are flat by design and take the two ends of
+  // the matrix; the 5s/1080p and 10s/720p cells ride the same two selectors.
+  {
+    ...createTaskEndpointAssociation,
+    label: "wan 2.5 t2v 5s 720p",
+    payload: {
+      model: "wan/2-5-text-to-video",
+      input: { prompt: "x", duration: "5", resolution: "720p" },
+    },
+    audio: "yes",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "wan 2.5 t2v 10s 1080p",
+    payload: {
+      model: "wan/2-5-text-to-video",
+      input: { prompt: "x", duration: "10", resolution: "1080p" },
+    },
+    audio: "yes",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "wan 2.5 i2v 5s 720p",
+    payload: {
+      model: "wan/2-5-image-to-video",
+      input: {
+        prompt: "x",
+        image_url: "https://example.com/x.jpg",
+        duration: "5",
+        resolution: "720p",
+      },
+    },
+    audio: "yes",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "wan 2.5 i2v 10s 1080p",
+    payload: {
+      model: "wan/2-5-image-to-video",
+      input: {
+        prompt: "x",
+        image_url: "https://example.com/x.jpg",
+        duration: "10",
+        resolution: "1080p",
+      },
+    },
+    audio: "yes",
+  },
   // grok-imagine: 3 tiers by resolution, audio always on.
   {
     ...createTaskEndpointAssociation,
@@ -926,6 +1073,9 @@ const HINT_DURATION_MODELS = new Set([
   "kling/ai-avatar-pro",
   "topaz/video-upscale",
   "infinitalk/from-audio",
+  "wan/2-2-a14b-speech-to-video-turbo",
+  "wan/2-2-animate-move",
+  "wan/2-2-animate-replace",
 ]);
 
 // Models that bill PER VIDEO off a fixed duration enum ("5" | "10" for Kling,
@@ -935,7 +1085,9 @@ const HINT_DURATION_MODELS = new Set([
 // tier its own payload names, which makes its columns flat by design — the
 // same way the veo rows above are flat. The two Hailuo Pro models are here for
 // the neighbouring reason: their schemas declare no duration field at all, and
-// they bill per video, so there is nothing to patch and nothing to scale.
+// they bill per video, so there is nothing to patch and nothing to scale — the
+// two wan 2.2 A14B turbo models join them on exactly that footing (fixed 5s
+// clip, no duration field), while wan 2.5 joins on the string-enum footing.
 const FIXED_DURATION_MODELS = new Set([
   "kling-2.6/text-to-video",
   "kling-2.6/image-to-video",
@@ -952,6 +1104,10 @@ const FIXED_DURATION_MODELS = new Set([
   "hailuo/2-3-image-to-video-standard",
   "hailuo/2-3-image-to-video-pro",
   "gemini-omni-video",
+  "wan/2-2-a14b-text-to-video-turbo",
+  "wan/2-2-a14b-image-to-video-turbo",
+  "wan/2-5-text-to-video",
+  "wan/2-5-image-to-video",
 ]);
 
 // Patches `duration` into the kie payload at either the top level (veo) or

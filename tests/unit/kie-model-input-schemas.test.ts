@@ -1072,14 +1072,24 @@ describe("KIE wan 2.2/2.5 modelInputSchemas metadata (REQ-001)", () => {
     for (const model of SEEDED_MODELS) {
       const fields = provider.modelInputSchemas[model].fields;
 
-      // The turbo fragments publish `seed` default 0 beside "if None, a random
-      // seed is chosen". Recording that default would make MCP clients prefill
-      // a fixed seed, so the range is published and the default is not.
-      expect(fields.seed).toMatchObject({
-        type: "integer",
-        minimum: 0,
-        maximum: 2147483647,
-      });
+      // Only the t2v/i2v turbo fragments bound `seed` (0..2147483647); the
+      // speech-to-video and both 2.5 fragments type it as a bare integer, so
+      // no bounds are published for those. Every seeded fragment publishes
+      // default 0 beside "if None, a random seed is chosen" — recording that
+      // default would make MCP clients prefill a fixed seed, so it is not.
+      const bounded =
+        model === "wan/2-2-a14b-text-to-video-turbo" ||
+        model === "wan/2-2-a14b-image-to-video-turbo";
+
+      expect(fields.seed).toMatchObject(
+        bounded
+          ? { type: "integer", minimum: 0, maximum: 2147483647 }
+          : { type: "integer" }
+      );
+      if (!bounded) {
+        expect(fields.seed.minimum).toBeUndefined();
+        expect(fields.seed.maximum).toBeUndefined();
+      }
       expect(fields.seed.default).toBeUndefined();
       expect(fields.seed.required).toBeUndefined();
     }

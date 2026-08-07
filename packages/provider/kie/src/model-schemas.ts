@@ -75,12 +75,13 @@ const wan27ImageBboxListField = {
   },
 } as const;
 
-// The wan 2.2/2.5 request schemas share one seed contract (`wanSeedField` in
-// zod.ts): optional, integer, 0-2147483647, and deliberately undefaulted. The
-// turbo fragments publish a nominal `default: 0` next to "if None, a random
-// seed is chosen"; recording that default here would have MCP clients prefill
-// a fixed seed, so it is described rather than applied — the same
-// documented-defaults treatment zod.ts already gives it.
+// Only the two 2.2 turbo text-to-video/image-to-video fragments bound `seed`
+// (0-2147483647), matching `wanSeedField` in zod.ts. Speech-to-video and both
+// wan 2.5 fragments declare a bare integer — see `wanSeedMetadataField` below.
+// No model records a default: the turbo fragments publish a nominal
+// `default: 0` next to "if None, a random seed is chosen", and recording it
+// here would have MCP clients prefill a fixed seed, so it is described rather
+// than applied — the same documented-defaults treatment zod.ts gives it.
 const wanTurboSeedField = {
   type: "integer",
   minimum: 0,
@@ -89,14 +90,13 @@ const wanTurboSeedField = {
     "Random seed (0-2147483647); omitting it selects a random seed. The fragment's nominal default 0 is documented, not applied.",
 } as const;
 
-// Same local contract, different upstream evidence: the speech-to-video and
-// wan 2.5 fragments declare `seed` as a bare integer with no bounds at all.
+// Different upstream evidence, so a different local contract: the
+// speech-to-video and wan 2.5 fragments declare `seed` as a bare integer with
+// no bounds at all, and zod.ts leaves those three unbounded to match.
 const wanSeedMetadataField = {
   type: "integer",
-  minimum: 0,
-  maximum: 2147483647,
   description:
-    "Random seed (0-2147483647); omitting it selects a random seed. The fragment declares no bounds; this range is the shared wan contract.",
+    "Random seed; omitting it selects a random seed. The fragment declares no bounds, so none are published.",
 } as const;
 
 // wan 2.5 `duration` is a required string enum and `resolution` is optional,

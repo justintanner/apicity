@@ -137,6 +137,31 @@ const guardedRejectionCases = [
     },
     expectedPath: "input.audio",
   },
+  // The two video-to-video ids cap duration at "10" while their text- and
+  // image-input siblings accept "15", so this payload is off-enum only here.
+  {
+    name: "wan/2-6-video-to-video with a duration only its siblings allow",
+    request: {
+      model: "wan/2-6-video-to-video",
+      input: {
+        prompt: "Restyle the clip as a neon noir chase",
+        video_urls: ["https://example.com/source.mp4"],
+        duration: "15",
+      },
+    },
+    expectedPath: "input.duration",
+  },
+  {
+    name: "wan/2-6-image-to-video with two image_urls",
+    request: {
+      model: "wan/2-6-image-to-video",
+      input: {
+        prompt: "Animate this portrait",
+        image_urls: ["https://example.com/a.png", "https://example.com/b.png"],
+      },
+    },
+    expectedPath: "input.image_urls",
+  },
 ] satisfies ReadonlyArray<{
   name: string;
   request: Record<string, unknown>;

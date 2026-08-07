@@ -384,7 +384,7 @@ export const CREATE_TASK_GUARDS = {
 
 function validateCreateTaskRequest(req: MediaGenerationRequest): void {
   // MediaGenerationRequest includes alias-only model ids that have request
-  // schemas but are not KIE_MEDIA_MODELS entries (e.g. wan/2-6-*). Those
+  // schemas but are not KIE_MEDIA_MODELS entries (e.g. wan/2-5-*). Those
   // fall through unvalidated here; only catalogue ids have CREATE_TASK_GUARDS
   // entries. Index after the own-property check via KieMediaModel so the wider
   // MediaGenerationRequest model union does not fail tsc on the lookup.

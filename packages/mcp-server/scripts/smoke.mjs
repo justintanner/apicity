@@ -24,9 +24,17 @@ const transport = new StdioClientTransport({
   },
 });
 
+// The server runs `serveStdio(..., { legacy: "reject" })`, so the client must
+// negotiate the modern era. The v2 client defaults to `'legacy'` (the 2025
+// connect sequence), which this server answers with -32022. Pin rather than
+// `'auto'`: auto would silently tolerate a legacy server, which is exactly the
+// state this smoke test exists to catch.
 const client = new Client(
   { name: "smoke", version: "0.0.1" },
-  { capabilities: {} }
+  {
+    capabilities: {},
+    versionNegotiation: { mode: { pin: "2026-07-28" } },
+  }
 );
 await client.connect(transport);
 

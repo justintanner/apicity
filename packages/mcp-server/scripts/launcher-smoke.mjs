@@ -1,9 +1,11 @@
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+import { fileURLToPath } from "node:url";
+import { Client } from "@modelcontextprotocol/client";
+import { StdioClientTransport } from "@modelcontextprotocol/client/stdio";
 
 const transport = new StdioClientTransport({
-  command:
-    "/Users/jwt/apicity/packages/mcp-server/scripts/launch-with-1password.sh",
+  command: fileURLToPath(
+    new URL("./launch-with-1password.sh", import.meta.url)
+  ),
 });
 const client = new Client(
   { name: "smoke", version: "0.0.1" },

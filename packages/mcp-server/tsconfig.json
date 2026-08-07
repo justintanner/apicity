@@ -6,8 +6,7 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "module": "ESNext",
-    "moduleResolution": "Node"
+    "module": "ESNext"
   },
   "include": ["src/**/*.ts"]
 }

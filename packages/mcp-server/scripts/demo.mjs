@@ -1,16 +1,19 @@
 // Live demo: spawn apicity-mcp under `op run` (1Password-resolved env), call
 // one zero-cost endpoint per available provider, print the result.
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+import { fileURLToPath } from "node:url";
+import { Client } from "@modelcontextprotocol/client";
+import { StdioClientTransport } from "@modelcontextprotocol/client/stdio";
 
 // Run me via:
-//   op run --env-file=/Users/jwt/apicity/.env -- node packages/mcp-server/scripts/demo.mjs
+//   op run --env-file=.env -- node packages/mcp-server/scripts/demo.mjs
 // `op run` resolves the secrets into THIS process's env, then we pass them
 // into the spawned MCP server's env. We deliberately don't wrap the spawn in
 // `op run` because op buffers stdio and breaks the MCP framing.
+const serverBin = fileURLToPath(new URL("../dist/src/bin.js", import.meta.url));
+
 const transport = new StdioClientTransport({
   command: "node",
-  args: ["/Users/jwt/apicity/packages/mcp-server/dist/src/bin.js"],
+  args: [serverBin],
   env: { ...process.env },
 });
 

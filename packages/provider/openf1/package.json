@@ -1,6 +1,6 @@
 {
   "name": "@apicity/openf1",
-  "version": "0.8.6",
+  "version": "0.8.7",
   "description": "OpenF1 API provider for Formula 1 historical and authenticated live REST data.",
   "license": "MIT",
   "repository": {

@@ -93,6 +93,31 @@ const guardedRejectionCases = [
     },
     expectedPath: "input.image_urls",
   },
+  // Both seedream/4.5 rows exercise guards switched on by cataloguing these
+  // ids: before promotion these exact payloads transmitted unvalidated.
+  {
+    name: "seedream/4.5-text-to-image without quality",
+    request: {
+      model: "seedream/4.5-text-to-image",
+      input: { prompt: "A quiet harbour at first light" },
+    },
+    expectedPath: "input.quality",
+  },
+  {
+    name: "seedream/4.5-edit with 15 image_urls",
+    request: {
+      model: "seedream/4.5-edit",
+      input: {
+        prompt: "Change the clothing material",
+        image_urls: Array.from(
+          { length: 15 },
+          (_, index) => `https://example.com/${index}.png`
+        ),
+        quality: "basic",
+      },
+    },
+    expectedPath: "input.image_urls",
+  },
 ] satisfies ReadonlyArray<{
   name: string;
   request: Record<string, unknown>;
@@ -124,7 +149,7 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
   // Not a count for its own sake — it makes any change to the guarded set show
   // up as a deliberate edit to this list.
   //
-  // The list is the point, not the number. It now holds all 111 ids of
+  // The list is the point, not the number. It now holds all 113 ids of
   // KIE_MEDIA_MODELS, which is what makes it worth spelling out rather than
   // asserting `guarded.sort()` equals `[...KIE_MEDIA_MODELS].sort()`: that
   // form is self-referential — it passes whatever the catalogue says, so an
@@ -133,8 +158,8 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
   it("guards exactly the models pinned in this list", () => {
     expect(
       guarded,
-      "Update this deliberate 111-entry pin when the guarded model set changes"
-    ).toHaveLength(111);
+      "Update this deliberate 113-entry pin when the guarded model set changes"
+    ).toHaveLength(113);
     expect([...guarded].sort()).toEqual(
       [
         "kling-3.0/video",
@@ -168,6 +193,8 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
         "seedream/5-lite-text-to-image",
         "seedream/5-pro-image-to-image",
         "seedream/5-pro-text-to-image",
+        "seedream/4.5-text-to-image",
+        "seedream/4.5-edit",
         "grok-imagine/extend",
         "grok-imagine/upscale",
         "qwen2/text-to-image",

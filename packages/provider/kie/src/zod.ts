@@ -228,6 +228,8 @@ export const KIE_MEDIA_MODELS = [
   "seedream/5-lite-text-to-image",
   "seedream/5-pro-image-to-image",
   "seedream/5-pro-text-to-image",
+  "seedream/4.5-text-to-image",
+  "seedream/4.5-edit",
   "grok-imagine/extend",
   "grok-imagine/upscale",
   "qwen2/text-to-image",
@@ -2889,9 +2891,9 @@ export const SeedreamProTextToImageRequestSchema = z.object({
   }),
 });
 
-// seedream/4.5-text-to-image is an alias-accepted Seedream id (matches
-// KieMediaSeedreamModelAliasSchema) that still needs its own createTask
-// request member so CreateTaskRequestSchema accepts it.
+// seedream/4.5-text-to-image is a catalogued Seedream id: a KIE_MEDIA_MODELS
+// entry whose createTask request member is guarded by CREATE_TASK_GUARDS, so
+// malformed payloads are rejected locally rather than transmitted.
 // Docs: https://docs.kie.ai/market/seedream/4-5-text-to-image
 // OpenAPI lists aspect_ratio + quality as required; quality is kept required
 // without `.default()` for the same documented-defaults trap as seedream/5-*.

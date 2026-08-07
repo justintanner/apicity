@@ -948,6 +948,86 @@ describe("KIE Seedream quality stays required (REQ-001)", () => {
   }
 });
 
+// REQ-002. Cataloguing the two Seedream 4.5 ids gave them modelInputSchemas
+// entries. These assertions pin field parity with the shipped request schemas.
+// The key-set equality is the pointed one: seedream/5-pro carries a png/jpeg
+// `output_format`, the 4.5 fragments document none, and the entries must not
+// invent one by pattern-matching their nearest neighbour.
+describe("KIE Seedream 4.5 modelInputSchemas metadata (REQ-002)", () => {
+  const provider = createKie({ apiKey: "test-key" });
+  const MODELS = ["seedream/4.5-text-to-image", "seedream/4.5-edit"] as const;
+  const ASPECT_RATIOS = [
+    "1:1",
+    "4:3",
+    "3:4",
+    "16:9",
+    "9:16",
+    "2:3",
+    "3:2",
+    "21:9",
+  ];
+
+  it("types both as image models with exactly their documented fields", () => {
+    const expectedFields = {
+      "seedream/4.5-text-to-image": [
+        "prompt",
+        "aspect_ratio",
+        "quality",
+        "nsfw_checker",
+      ],
+      "seedream/4.5-edit": [
+        "image_urls",
+        "prompt",
+        "aspect_ratio",
+        "quality",
+        "nsfw_checker",
+      ],
+    } as const;
+
+    for (const model of MODELS) {
+      const entry = provider.modelInputSchemas[model];
+      expect(entry.type).toBe("image");
+      expect(Object.keys(entry.fields)).toEqual(expectedFields[model]);
+      expect(entry.fields.output_format).toBeUndefined();
+      expect(entry.fields.callBackUrl).toBeUndefined();
+    }
+  });
+
+  it("documents the shared prompt, aspect_ratio, and quality contracts", () => {
+    for (const model of MODELS) {
+      const fields = provider.modelInputSchemas[model].fields;
+
+      expect(fields.prompt).toMatchObject({
+        type: "string",
+        required: true,
+      });
+      expect(fields.prompt.description).toContain("3-3000");
+      expect(fields.aspect_ratio).toMatchObject({ type: "string" });
+      expect(fields.aspect_ratio.enum).toEqual(ASPECT_RATIOS);
+      expect(fields.quality).toMatchObject({
+        type: "string",
+        required: true,
+        enum: ["basic", "high"],
+      });
+      // The documented-defaults trap the zod schemas encode: `quality` is
+      // required and deliberately carries no default here either.
+      expect(fields.quality.default).toBeUndefined();
+      expect(fields.nsfw_checker.type).toBe("boolean");
+    }
+  });
+
+  it("documents the edit model's required 14-item image_urls", () => {
+    const fields = provider.modelInputSchemas["seedream/4.5-edit"].fields;
+
+    expect(fields.image_urls).toMatchObject({
+      type: "array",
+      required: true,
+    });
+    expect(fields.image_urls.items?.type).toBe("string");
+    expect(fields.image_urls.description).toContain("14");
+  });
+});
+
 // REQ-001 / AC-001. `kling-3.0/video` documents `sound` as "default false,
 // true when multi_shots" and modelInputSchemas does not mark it `required`,
 // but zod.ts declared it required. These assertions pin the corrected

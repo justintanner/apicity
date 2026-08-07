@@ -2030,6 +2030,68 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  // https://docs.kie.ai/market/seedream/4-5-text-to-image
+  "seedream/4.5-text-to-image": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        description: "Text description of the image to generate (3-3000 chars)",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: ["1:1", "4:3", "3:4", "16:9", "9:16", "2:3", "3:2", "21:9"],
+        description: "Output aspect ratio (default 1:1)",
+      },
+      quality: {
+        type: "string",
+        required: true,
+        enum: ["basic", "high"],
+        description:
+          "Output quality (basic=2K, high=4K). Required — Kie rejects createTask without it.",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        description: "Content safety filter",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/seedream/4-5-edit
+  "seedream/4.5-edit": {
+    type: "image",
+    fields: {
+      image_urls: {
+        type: "array",
+        required: true,
+        description: "Input image URLs (max 14)",
+        items: { type: "string" },
+      },
+      prompt: {
+        type: "string",
+        required: true,
+        description: "Modification prompt (3-3000 chars)",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: ["1:1", "4:3", "3:4", "16:9", "9:16", "2:3", "3:2", "21:9"],
+        description: "Output aspect ratio (default 1:1)",
+      },
+      quality: {
+        type: "string",
+        required: true,
+        enum: ["basic", "high"],
+        description:
+          "Output quality (basic=2K, high=4K). Required — Kie rejects createTask without it.",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        description: "Content safety filter",
+      },
+    },
+  },
+
   "qwen2/text-to-image": {
     type: "image",
     fields: {

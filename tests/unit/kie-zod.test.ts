@@ -1183,14 +1183,12 @@ const MEDIA_MODEL_FAMILIES = [
       "seedream/5-lite-text-to-image",
       "seedream/5-pro-image-to-image",
       "seedream/5-pro-text-to-image",
+      "seedream/4.5-text-to-image",
+      "seedream/4.5-edit",
     ],
     aliases: [
       "seedream/6-pro-text-to-image",
       "seedream/5.5-lite-text-to-image",
-      // Alias-accepted documented models with per-model createTask schemas
-      // (not listed in KIE_MEDIA_MODELS; reach CreateTask via the Seedream hatch).
-      "seedream/4.5-text-to-image",
-      "seedream/4.5-edit",
     ],
     rejected: [
       "seedream/5",

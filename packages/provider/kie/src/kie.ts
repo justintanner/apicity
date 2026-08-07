@@ -142,6 +142,8 @@ import {
   GptImage15TextToImageRequestSchema,
   GptImage2ImageToImageRequestSchema,
   GptImage2TextToImageRequestSchema,
+  Seedream45EditRequestSchema,
+  Seedream45TextToImageRequestSchema,
   SeedreamImageToImageRequestSchema,
   SeedreamTextToImageRequestSchema,
   SeedreamProImageToImageRequestSchema,
@@ -262,6 +264,8 @@ export const CREATE_TASK_GUARDS = {
   "seedream/5-lite-text-to-image": SeedreamTextToImageRequestSchema,
   "seedream/5-pro-image-to-image": SeedreamProImageToImageRequestSchema,
   "seedream/5-pro-text-to-image": SeedreamProTextToImageRequestSchema,
+  "seedream/4.5-text-to-image": Seedream45TextToImageRequestSchema,
+  "seedream/4.5-edit": Seedream45EditRequestSchema,
   "grok-imagine/extend": GrokVideoExtendRequestSchema,
   "grok-imagine/upscale": GrokVideoUpscaleRequestSchema,
   "qwen2/text-to-image": Qwen2TextToImageRequestSchema,
@@ -355,7 +359,7 @@ export const CREATE_TASK_GUARDS = {
 
 function validateCreateTaskRequest(req: MediaGenerationRequest): void {
   // MediaGenerationRequest includes alias-only model ids that have request
-  // schemas but are not KIE_MEDIA_MODELS entries (e.g. seedream/4.5-*). Those
+  // schemas but are not KIE_MEDIA_MODELS entries (e.g. wan/2-6-*). Those
   // fall through unvalidated here; only catalogue ids have CREATE_TASK_GUARDS
   // entries. Index after the own-property check via KieMediaModel so the wider
   // MediaGenerationRequest model union does not fail tsc on the lookup.

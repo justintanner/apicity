@@ -41,6 +41,13 @@ export const MODEL_SLUGS = {
     "wan/2-5-text-to-video": "wan2p5",
     "wan/2-5-image-to-video": "wan2p5",
 
+    // Video — Wan 2.6 standard trio. The two wan/2-6-flash-* ids get no slug:
+    // kie publishes no flash rate, so they carry no PRICING.kie entry either
+    // and stay unpriced (mayor ruling R2, 2026-08-07).
+    "wan/2-6-text-to-video": "wan2p6",
+    "wan/2-6-image-to-video": "wan2p6",
+    "wan/2-6-video-to-video": "wan2p6",
+
     // Video — Wan 2.7
     "wan/2-7-text-to-video": "wan2p7",
     "wan/2-7-image-to-video": "wan2p7",
@@ -445,6 +452,10 @@ export const MODEL_DISPLAY = {
 
     "wan/2-5-text-to-video": "Wan 2.5",
     "wan/2-5-image-to-video": "Wan 2.5",
+
+    "wan/2-6-text-to-video": "Wan 2.6",
+    "wan/2-6-image-to-video": "Wan 2.6",
+    "wan/2-6-video-to-video": "Wan 2.6",
 
     "wan/2-7-text-to-video": "Wan 2.7",
     "wan/2-7-image-to-video": "Wan 2.7",

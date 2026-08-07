@@ -686,6 +686,85 @@ export const kie: Record<string, ModelPricing> = {
     "https://kie.ai/wan-2-5?model=wan%2F2-5-image-to-video"
   ),
 
+  // wan/2.6 standard trio — per VIDEO by duration × resolution. 1080p is not a
+  // fixed multiple of 720p (5s is 1.493x, 15s is 1.5x), so the tiered
+  // per-second helper cannot express this family: every cell is listed.
+  //   5s  $0.35 / $0.5225      10s $0.70 / $1.0475      15s $1.05 / $1.575
+  //
+  // Two asymmetries against the wan 2.5 pair directly above:
+  //
+  //  - Both axes take a fallback here. All five wan 2.6 schemas document
+  //    `duration` default "5" and `resolution` default "1080p", so an omitted
+  //    field prices the documented 5s/1080p row instead of failing. The 2.5
+  //    pair documents neither default, which is why it passes none.
+  //  - video-to-video stops at 10s. Its Wan26VideoDurationSchema is "5"|"10"
+  //    while the text- and image-input siblings take "5"|"10"|"15", so it gets
+  //    four cells, not six. The kie page prints 15s rows across the family, but
+  //    pricing a duration this model's own guard rejects would quote a video
+  //    that cannot be ordered.
+  //
+  // The two wan/2-6-flash-* ids are deliberately absent: kie publishes no flash
+  // rate on any surface, so they stay unpriced and fail safe into the
+  // prohibitive tier rather than borrowing the standard rate (mayor ruling R2,
+  // 2026-08-07; same discipline as pixverse-v6/*). R2 confirmed this table on
+  // 2026-08-07, one day after the shared pricePage stamp, so each entry carries
+  // its own asOf.
+  "wan/2-6-text-to-video": {
+    ...perVideoByDurationAndResolution(
+      {
+        "5|720p": 0.35,
+        "5|1080p": 0.5225,
+        "10|720p": 0.7,
+        "10|1080p": 1.0475,
+        "15|720p": 1.05,
+        "15|1080p": 1.575,
+      },
+      "https://kie.ai/wan-2-6?model=wan%2F2-6-text-to-video",
+      "5",
+      "1080p"
+    ),
+    source: {
+      ...page("https://kie.ai/wan-2-6?model=wan%2F2-6-text-to-video"),
+      asOf: "2026-08-07",
+    },
+  },
+  "wan/2-6-image-to-video": {
+    ...perVideoByDurationAndResolution(
+      {
+        "5|720p": 0.35,
+        "5|1080p": 0.5225,
+        "10|720p": 0.7,
+        "10|1080p": 1.0475,
+        "15|720p": 1.05,
+        "15|1080p": 1.575,
+      },
+      "https://kie.ai/wan-2-6?model=wan%2F2-6-image-to-video",
+      "5",
+      "1080p"
+    ),
+    source: {
+      ...page("https://kie.ai/wan-2-6?model=wan%2F2-6-image-to-video"),
+      asOf: "2026-08-07",
+    },
+  },
+  "wan/2-6-video-to-video": {
+    ...perVideoByDurationAndResolution(
+      {
+        "5|720p": 0.35,
+        "5|1080p": 0.5225,
+        "10|720p": 0.7,
+        "10|1080p": 1.0475,
+      },
+      "https://kie.ai/wan-2-6?model=wan%2F2-6-video-to-video",
+      "5",
+      "1080p"
+    ),
+    source: {
+      ...page("https://kie.ai/wan-2-6?model=wan%2F2-6-video-to-video"),
+      asOf: "2026-08-07",
+    },
+  },
+
   // wan/2.7 video — resolution-tiered per second as of the 2026-08-06 pull
   // (was a flat $0.10/s across all four variants, which overcharged 720p by
   // 25% and undercharged 1080p by 17%). All four variants share the same two

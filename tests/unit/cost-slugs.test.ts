@@ -84,6 +84,11 @@ describe("MODEL_SLUGS", () => {
       "wan/2-2-animate-replace": "wan2p2",
       "wan/2-5-text-to-video": "wan2p5",
       "wan/2-5-image-to-video": "wan2p5",
+      // The standard trio shares the wan2p6 family slug. The two
+      // wan/2-6-flash-* ids are absent by ruling R2 — unpriced, so unslugged.
+      "wan/2-6-text-to-video": "wan2p6",
+      "wan/2-6-image-to-video": "wan2p6",
+      "wan/2-6-video-to-video": "wan2p6",
       "wan/2-7-text-to-video": "wan2p7",
       "grok-imagine/text-to-video": "grok",
       "happyhorse/text-to-video": "hh",
@@ -305,6 +310,9 @@ describe("MODEL_DISPLAY", () => {
       "wan/2-2-animate-replace": "Wan 2.2 Animate",
       "wan/2-5-text-to-video": "Wan 2.5",
       "wan/2-5-image-to-video": "Wan 2.5",
+      "wan/2-6-text-to-video": "Wan 2.6",
+      "wan/2-6-image-to-video": "Wan 2.6",
+      "wan/2-6-video-to-video": "Wan 2.6",
       "happyhorse-1-1/text-to-video": "HappyHorse 1.1",
       "minimax-h3/text-to-video": "MiniMax H3",
       "minimax-h3/image-to-video": "MiniMax H3",

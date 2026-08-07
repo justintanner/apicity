@@ -33,6 +33,9 @@ import {
   Wan22AnimateReplaceRequestSchema,
   Wan25TextToVideoRequestSchema,
   Wan25ImageToVideoRequestSchema,
+  Wan26TextToVideoRequestSchema,
+  Wan26ImageToVideoRequestSchema,
+  Wan26VideoToVideoRequestSchema,
 } from "../../packages/provider/kie/src/zod";
 
 describe("pricing helpers", () => {
@@ -2944,6 +2947,69 @@ describe("kie wan 2.2 / 2.5 per-model pricing (REQ-004)", () => {
     }
   });
 
+  // Separate from the WAN_MODELS block above on purpose: the wan 2.6 table was
+  // confirmed by mayor ruling R2 on 2026-08-07, a day after the shared
+  // 2026-08-06 pull those entries are stamped with.
+  const WAN_26_PRICED = [
+    "wan/2-6-text-to-video",
+    "wan/2-6-image-to-video",
+    "wan/2-6-video-to-video",
+  ];
+
+  it.each(WAN_26_PRICED)("stamps %s with the R2 confirmation date", (m) => {
+    const entry = PRICING.kie[m];
+    expect(entry, m).toBeDefined();
+    expect(entry.source.url, `${m} url`).toContain(
+      "https://kie.ai/wan-2-6?model=wan%2F2-6-"
+    );
+    expect(entry.source.asOf, `${m} asOf`).toBe("2026-08-07");
+  });
+
+  it("prices the wan 2.6 text/image pair across all six published cells", () => {
+    for (const model of ["wan/2-6-text-to-video", "wan/2-6-image-to-video"]) {
+      expect(PRICING.kie[model], model).toMatchObject({
+        kind: "perUnit",
+        unit: "generations",
+        rates: {
+          "5|720p": 0.35,
+          "5|1080p": 0.5225,
+          "10|720p": 0.7,
+          "10|1080p": 1.0475,
+          "15|720p": 1.05,
+          "15|1080p": 1.575,
+        },
+      });
+    }
+  });
+
+  // Wan26VideoDurationSchema stops at "10" while the text- and image-input
+  // siblings accept "15", so this entry publishes four cells, not six. The kie
+  // page prints 15s rows across the family; pricing one here would quote a
+  // video video-to-video's own guard rejects.
+  it("gives wan 2.6 video-to-video four cells with no 15s row", () => {
+    const entry = PRICING.kie["wan/2-6-video-to-video"];
+    expect(entry.kind).toBe("perUnit");
+    if (entry.kind !== "perUnit") return;
+
+    expect(entry.unit).toBe("generations");
+    expect(entry.rates).toEqual({
+      "5|720p": 0.35,
+      "5|1080p": 0.5225,
+      "10|720p": 0.7,
+      "10|1080p": 1.0475,
+    });
+  });
+
+  // R2: kie publishes no flash rate on any surface, so the pair stays unpriced
+  // and fails safe into the prohibitive tier rather than borrowing the standard
+  // trio's rate. Same discipline as pixverse-v6/*.
+  it.each(["wan/2-6-flash-image-to-video", "wan/2-6-flash-video-to-video"])(
+    "leaves %s unpriced",
+    (model) => {
+      expect(PRICING.kie[model]).toBeUndefined();
+    }
+  );
+
   // One representative payload per priced model, each routed through the
   // shipped schema first so the USD figure is evidence about the SDK's own
   // output rather than about a literal written to match the table.
@@ -3231,5 +3297,119 @@ describe("kie wan 2.2 / 2.5 per-model pricing (REQ-004)", () => {
     expect(result.usd).toBe(0);
     expect(result.warnings).toHaveLength(1);
     expect(result.warnings[0]).toContain(`no rate for variant '${variant}'`);
+  });
+
+  // Both resolutions and all three durations, each routed through the shipped
+  // schema first so the USD figure is evidence about the SDK's own output.
+  // 1080p is not a fixed multiple of 720p here — 5s is 1.493x and 15s is 1.5x —
+  // which is why every cell is listed rather than derived from a tier.
+  it.each([
+    { duration: "5", resolution: "720p", usd: 0.35 },
+    { duration: "5", resolution: "1080p", usd: 0.5225 },
+    { duration: "10", resolution: "720p", usd: 0.7 },
+    { duration: "10", resolution: "1080p", usd: 1.0475 },
+    { duration: "15", resolution: "720p", usd: 1.05 },
+    { duration: "15", resolution: "1080p", usd: 1.575 },
+  ])(
+    "prices wan 2.6 text-to-video $duration s at $resolution as $usd",
+    ({ duration, resolution, usd }) => {
+      const parsed = Wan26TextToVideoRequestSchema.safeParse({
+        model: "wan/2-6-text-to-video",
+        input: { prompt: "a kite over the harbour", duration, resolution },
+      });
+
+      expect(parsed.success).toBe(true);
+      if (!parsed.success) return;
+
+      const result = kieEstimate(parsed.data);
+
+      expect(result.usd).toBeCloseTo(usd, 10);
+      expect(result.breakdown).toEqual({
+        units: 1,
+        unit: "generations",
+        perUnitUsd: usd,
+      });
+      expect(result.warnings).toEqual([]);
+    }
+  );
+
+  it("prices wan 2.6 image-to-video at its top 15s/1080p cell", () => {
+    const parsed = Wan26ImageToVideoRequestSchema.safeParse({
+      model: "wan/2-6-image-to-video",
+      input: {
+        prompt: "the sails fill",
+        image_urls: ["https://example.com/boat.png"],
+        duration: "15",
+        resolution: "1080p",
+      },
+    });
+
+    expect(parsed.success).toBe(true);
+    if (!parsed.success) return;
+
+    const result = kieEstimate(parsed.data);
+
+    expect(result.usd).toBeCloseTo(1.575, 10);
+    expect(result.breakdown.perUnitUsd).toBe(1.575);
+    expect(result.warnings).toEqual([]);
+  });
+
+  // The opposite of the wan 2.5 rule directly above: all five wan 2.6 schemas
+  // document `duration` default "5" and `resolution` default "1080p", so an
+  // omitted field prices the documented row instead of failing. The schema
+  // fills both in, and the pricing entry's own defaults keep a raw payload —
+  // one that never went through the schema — landing on the same cell.
+  it.each([
+    { label: "the schema's applied defaults", viaSchema: true },
+    { label: "a raw payload naming neither field", viaSchema: false },
+  ])("prices wan 2.6 5s/1080p from $label", ({ viaSchema }) => {
+    const input = { prompt: "a still lake at dawn" };
+    const parsed = Wan26TextToVideoRequestSchema.safeParse({
+      model: "wan/2-6-text-to-video",
+      input,
+    });
+
+    expect(parsed.success).toBe(true);
+    if (!parsed.success) return;
+    expect(parsed.data.input.duration).toBe("5");
+    expect(parsed.data.input.resolution).toBe("1080p");
+
+    const result = kieEstimate(
+      viaSchema ? parsed.data : { model: "wan/2-6-text-to-video", input }
+    );
+
+    expect(result.usd).toBeCloseTo(0.5225, 10);
+    expect(result.breakdown.perUnitUsd).toBe(0.5225);
+    expect(result.warnings).toEqual([]);
+  });
+
+  // The duration asymmetry, from both ends: the schema rejects 15s for
+  // video-to-video, and even if a raw payload smuggles it past the SDK the
+  // table has no cell to price it with.
+  it("has no wan 2.6 video-to-video rate at a duration its schema rejects", () => {
+    expect(
+      Wan26VideoToVideoRequestSchema.safeParse({
+        model: "wan/2-6-video-to-video",
+        input: {
+          prompt: "restyle the clip as neon noir",
+          video_urls: ["https://example.com/source.mp4"],
+          duration: "15",
+        },
+      }).success
+    ).toBe(false);
+
+    const result = kieEstimate({
+      model: "wan/2-6-video-to-video",
+      input: {
+        prompt: "restyle the clip as neon noir",
+        video_urls: ["https://example.com/source.mp4"],
+        duration: "15",
+        resolution: "1080p",
+      },
+    });
+
+    expect(result.usd).toBe(0);
+    expect(result.warnings).toHaveLength(1);
+    expect(result.warnings[0]).toContain("no rate for variant '15|1080p'");
   });
 });

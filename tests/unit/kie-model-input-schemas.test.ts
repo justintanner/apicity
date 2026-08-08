@@ -952,9 +952,11 @@ describe("KIE Seedream 5 Pro layer decomposition metadata", () => {
   const provider = createKie({ apiKey: "test-key" });
 
   it("describes the exact image operation contract", () => {
-    const fields =
-      provider.modelInputSchemas["seedream/5-pro-layer-decomposition"].fields;
+    const entry =
+      provider.modelInputSchemas["seedream/5-pro-layer-decomposition"];
+    const fields = entry.fields;
 
+    expect(entry.type).toBe("image");
     expect(Object.keys(fields).sort()).toEqual([
       "image_url",
       "output_format",
@@ -966,6 +968,12 @@ describe("KIE Seedream 5 Pro layer decomposition metadata", () => {
       required: true,
     });
     expect(fields.image_url.description).toContain("remote source image");
+    expect(fields.image_url.description).toContain(
+      "PNG, JPEG, WebP, BMP, TIFF, or GIF"
+    );
+    expect(fields.image_url.description).toContain("30 MB");
+    expect(fields.image_url.description).toContain("262,144-36,000,000 pixels");
+    expect(fields.image_url.description).toContain("1:16-16:1 aspect ratio");
     expect(fields.image_url.description).toContain("HEIC/HEIF");
     expect(fields.image_url.description).toContain("does not fetch");
     expect(fields.prompt).toMatchObject({

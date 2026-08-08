@@ -15,6 +15,8 @@ import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 const IMAGE_URL = "https://example.com/source.webp";
 
 describe("KIE Seedream 5 Pro layer decomposition contract", () => {
+  const provider = createKie({ apiKey: "test-key" });
+
   it("accepts automatic requests and materializes documented defaults", () => {
     const request: SeedreamProLayerDecompositionRequestInput = {
       model: "seedream/5-pro-layer-decomposition",
@@ -30,6 +32,9 @@ describe("KIE Seedream 5 Pro layer decomposition contract", () => {
       output_format: "jpeg",
     });
     expect(MediaGenerationRequestSchema.safeParse(request).success).toBe(true);
+    expect(
+      provider.post.api.v1.jobs.createTask.schema.safeParse(request).success
+    ).toBe(true);
   });
 
   it("preserves targeted values and accepts the full documented enum set", () => {
@@ -54,6 +59,9 @@ describe("KIE Seedream 5 Pro layer decomposition contract", () => {
         size,
         output_format,
       });
+      expect(
+        provider.post.api.v1.jobs.createTask.schema.safeParse(request).success
+      ).toBe(true);
     }
 
     const maxPrompt: SeedreamProLayerDecompositionRequestInput = {

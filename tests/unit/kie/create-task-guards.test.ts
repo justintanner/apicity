@@ -118,6 +118,25 @@ const guardedRejectionCases = [
     },
     expectedPath: "input.image_urls",
   },
+  {
+    name: "seedream/5-pro-layer-decomposition without image_url",
+    request: {
+      model: "seedream/5-pro-layer-decomposition",
+      input: { prompt: "Separate the foreground subject" },
+    },
+    expectedPath: "input.image_url",
+  },
+  {
+    name: "seedream/5-pro-layer-decomposition with jpg output",
+    request: {
+      model: "seedream/5-pro-layer-decomposition",
+      input: {
+        image_url: "https://example.com/source.webp",
+        output_format: "jpg",
+      },
+    },
+    expectedPath: "input.output_format",
+  },
   // Cataloguing the wan 2.2/2.5 ids switched their guards on the same way:
   // speech-to-video's `audio_url` is required by the fragment, and before
   // promotion this payload reached kie unvalidated through the wan alias.
@@ -207,7 +226,7 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
   // Not a count for its own sake — it makes any change to the guarded set show
   // up as a deliberate edit to this list.
   //
-  // The list is the point, not the number. It now holds all 125 ids of
+  // The list is the point, not the number. It now holds all 126 ids of
   // KIE_MEDIA_MODELS, which is what makes it worth spelling out rather than
   // asserting `guarded.sort()` equals `[...KIE_MEDIA_MODELS].sort()`: that
   // form is self-referential — it passes whatever the catalogue says, so an
@@ -216,8 +235,8 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
   it("guards exactly the models pinned in this list", () => {
     expect(
       guarded,
-      "Update this deliberate 125-entry pin when the guarded model set changes"
-    ).toHaveLength(125);
+      "Update this deliberate 126-entry pin when the guarded model set changes"
+    ).toHaveLength(126);
     expect([...guarded].sort()).toEqual(
       [
         "kling-3.0/video",
@@ -251,6 +270,7 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
         "seedream/5-lite-text-to-image",
         "seedream/5-pro-image-to-image",
         "seedream/5-pro-text-to-image",
+        "seedream/5-pro-layer-decomposition",
         "seedream/4.5-text-to-image",
         "seedream/4.5-edit",
         "grok-imagine/extend",

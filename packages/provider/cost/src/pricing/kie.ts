@@ -1442,10 +1442,10 @@ export const kie: Record<string, ModelPricing> = {
   // the family, so quality is not a rate key here.
   //
   // OQ-3 RESOLVED: the "seedream 4.5" page family's anchors name the model ids
-  // `seedream/4.5-text-to-image` and `seedream/4.5-edit` (alias-accepted by
-  // KieMediaSeedreamModelAliasSchema, each with its own createTask schema), so
+  // `seedream/4.5-text-to-image` and `seedream/4.5-edit` (catalogued
+  // KIE_MEDIA_MODELS ids, each with its own createTask schema), so
   // those are the keys — a pricing key must equal what the caller puts in
-  // `payload.model`. The enum-listed ByteDance ids are a DIFFERENT product
+  // `payload.model`. The ByteDance ids are a DIFFERENT product
   // generation and stay unpriced (fail-safe prohibitive): docs.kie.ai documents
   // `bytedance/seedream` as "Seedream3.0" and both
   // `bytedance/seedream-v4-{edit,text-to-image}` as "Seedream4.0", and none of

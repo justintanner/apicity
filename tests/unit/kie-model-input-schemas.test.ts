@@ -948,6 +948,45 @@ describe("KIE Seedream quality stays required (REQ-001)", () => {
   }
 });
 
+describe("KIE Seedream 5 Pro layer decomposition metadata", () => {
+  const provider = createKie({ apiKey: "test-key" });
+
+  it("describes the exact image operation contract", () => {
+    const fields =
+      provider.modelInputSchemas["seedream/5-pro-layer-decomposition"].fields;
+
+    expect(Object.keys(fields).sort()).toEqual([
+      "image_url",
+      "output_format",
+      "prompt",
+      "size",
+    ]);
+    expect(fields.image_url).toMatchObject({
+      type: "string",
+      required: true,
+    });
+    expect(fields.image_url.description).toContain("remote source image");
+    expect(fields.image_url.description).toContain("HEIC/HEIF");
+    expect(fields.image_url.description).toContain("does not fetch");
+    expect(fields.prompt).toMatchObject({
+      type: "string",
+      maxLength: 5000,
+    });
+    expect(fields.prompt.description).toContain("<bbox>");
+    expect(fields.size).toMatchObject({
+      type: "string",
+      enum: ["auto", "1K", "1.5K", "2K"],
+      default: "auto",
+    });
+    expect(fields.output_format).toMatchObject({
+      type: "string",
+      enum: ["png", "jpeg"],
+      default: "jpeg",
+    });
+    expect(fields.output_format.description).toContain("layers remain PNG");
+  });
+});
+
 // REQ-002. Cataloguing the two Seedream 4.5 ids gave them modelInputSchemas
 // entries. These assertions pin field parity with the shipped request schemas.
 // The key-set equality is the pointed one: seedream/5-pro carries a png/jpeg

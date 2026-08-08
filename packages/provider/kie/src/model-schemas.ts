@@ -2073,6 +2073,38 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  // https://docs.kie.ai/market/seedream/5-pro-layer-decomposition
+  "seedream/5-pro-layer-decomposition": {
+    type: "image",
+    fields: {
+      image_url: {
+        type: "string",
+        required: true,
+        description:
+          "Exactly one remote source image URL. Upstream accepts PNG, JPEG, WebP, BMP, TIFF, or GIF up to 30 MB, 262,144-36,000,000 pixels, and 1:16-16:1 aspect ratio; HEIC/HEIF is not supported. These are upstream remote-image constraints; the SDK does not fetch or inspect the binary locally.",
+      },
+      prompt: {
+        type: "string",
+        maxLength: 5000,
+        description:
+          "Optional element-selection prompt (up to 5000 characters). Without a prompt, elements are detected automatically. Passes through <bbox>x1 y1 x2 y2</bbox> markup with normalized 0-1000 coordinates unchanged.",
+      },
+      size: {
+        type: "string",
+        enum: ["auto", "1K", "1.5K", "2K"],
+        default: "auto",
+        description: "Output size (default auto)",
+      },
+      output_format: {
+        type: "string",
+        enum: ["png", "jpeg"],
+        default: "jpeg",
+        description:
+          "Base-image output format (default jpeg); all separated layers remain PNG.",
+      },
+    },
+  },
+
   // https://docs.kie.ai/market/seedream/4-5-text-to-image
   "seedream/4.5-text-to-image": {
     type: "image",

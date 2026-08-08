@@ -228,6 +228,7 @@ export const KIE_MEDIA_MODELS = [
   "seedream/5-lite-text-to-image",
   "seedream/5-pro-image-to-image",
   "seedream/5-pro-text-to-image",
+  "seedream/5-pro-layer-decomposition",
   "seedream/4.5-text-to-image",
   "seedream/4.5-edit",
   "grok-imagine/extend",
@@ -2904,6 +2905,21 @@ export const SeedreamProTextToImageRequestSchema = z.object({
     quality: z.enum(["basic", "high"]),
     output_format: z.enum(["png", "jpeg"]).default("png"),
     nsfw_checker: z.boolean().default(false),
+  }),
+});
+
+// Seedream 5 Pro layer decomposition accepts one remote source image and
+// separates automatically detected or prompt-selected elements into layers.
+// The documented defaults are applied when parsing, while createTask still
+// sends the caller's original request unchanged after validation.
+export const SeedreamProLayerDecompositionRequestSchema = z.object({
+  model: z.literal("seedream/5-pro-layer-decomposition"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    image_url: z.string().url(),
+    prompt: z.string().max(5000).optional(),
+    size: z.enum(["auto", "1K", "1.5K", "2K"]).default("auto"),
+    output_format: z.enum(["png", "jpeg"]).default("jpeg"),
   }),
 });
 
@@ -5782,6 +5798,7 @@ export const MediaGenerationRequestSchema = z.union([
   SeedreamTextToImageRequestSchema,
   SeedreamProImageToImageRequestSchema,
   SeedreamProTextToImageRequestSchema,
+  SeedreamProLayerDecompositionRequestSchema,
   Seedream45TextToImageRequestSchema,
   Seedream45EditRequestSchema,
   Qwen2TextToImageRequestSchema,
@@ -6477,6 +6494,14 @@ export type SeedreamProTextToImageRequest = z.input<
 export type SeedreamProTextToImageRequestInput = SeedreamProTextToImageRequest;
 export type SeedreamProTextToImageParsedRequest = z.output<
   typeof SeedreamProTextToImageRequestSchema
+>;
+export type SeedreamProLayerDecompositionRequest = z.input<
+  typeof SeedreamProLayerDecompositionRequestSchema
+>;
+export type SeedreamProLayerDecompositionRequestInput =
+  SeedreamProLayerDecompositionRequest;
+export type SeedreamProLayerDecompositionParsedRequest = z.output<
+  typeof SeedreamProLayerDecompositionRequestSchema
 >;
 export type Seedream45TextToImageRequest = z.input<
   typeof Seedream45TextToImageRequestSchema

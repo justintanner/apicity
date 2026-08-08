@@ -160,6 +160,7 @@ import {
   SeedreamTextToImageRequestSchema,
   SeedreamProImageToImageRequestSchema,
   SeedreamProTextToImageRequestSchema,
+  SeedreamProLayerDecompositionRequestSchema,
   Qwen2TextToImageRequestSchema,
   Qwen2ImageEditRequestSchema,
   QwenTextToImageRequestSchema,
@@ -276,6 +277,8 @@ export const CREATE_TASK_GUARDS = {
   "seedream/5-lite-text-to-image": SeedreamTextToImageRequestSchema,
   "seedream/5-pro-image-to-image": SeedreamProImageToImageRequestSchema,
   "seedream/5-pro-text-to-image": SeedreamProTextToImageRequestSchema,
+  "seedream/5-pro-layer-decomposition":
+    SeedreamProLayerDecompositionRequestSchema,
   "seedream/4.5-text-to-image": Seedream45TextToImageRequestSchema,
   "seedream/4.5-edit": Seedream45EditRequestSchema,
   "grok-imagine/extend": GrokVideoExtendRequestSchema,

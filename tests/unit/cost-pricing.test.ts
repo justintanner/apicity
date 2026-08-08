@@ -11,6 +11,7 @@ import {
 } from "../../packages/provider/cost/src/pricing/index";
 import {
   MODEL_SLUGS,
+  MODEL_DISPLAY,
   type SlugProviderId,
 } from "../../packages/provider/cost/src/slugs";
 import { computeEstimate } from "../../packages/provider/cost/src/compute";
@@ -366,6 +367,80 @@ describe("PRICING data", () => {
       unit: "seconds",
       rates: { "720p": 0.08, "1080p": 0.12 },
     });
+  });
+
+  it.each([
+    "wan/2-6-text-to-video",
+    "wan/2-6-image-to-video",
+    "wan/2-6-video-to-video",
+  ])("prices %s by duration and resolution", (model) => {
+    const defaultResolution = computeEstimate({
+      provider: "kie",
+      payload: { model, input: {} },
+    });
+    expect(defaultResolution.usd).toBeCloseTo(0.5225, 10);
+    expect(defaultResolution.breakdown).toEqual({
+      units: 1,
+      unit: "generations",
+      perUnitUsd: 0.5225,
+    });
+    expect(defaultResolution.rateAsOf).toBe("2026-08-07");
+
+    const lowerResolution = computeEstimate({
+      provider: "kie",
+      payload: { model, input: { duration: "10", resolution: "720p" } },
+    });
+    expect(lowerResolution.usd).toBeCloseTo(0.7, 10);
+    expect(lowerResolution.breakdown).toEqual({
+      units: 1,
+      unit: "generations",
+      perUnitUsd: 0.7,
+    });
+  });
+
+  it("records the R2 date and source URL for the Wan 2.6 trio", () => {
+    for (const model of [
+      "wan/2-6-text-to-video",
+      "wan/2-6-image-to-video",
+      "wan/2-6-video-to-video",
+    ]) {
+      expect(PRICING.kie[model].source).toEqual({
+        url: `https://kie.ai/wan-2-6?model=${encodeURIComponent(model)}`,
+        asOf: "2026-08-07",
+      });
+    }
+  });
+
+  it("does not price Wan 2.6 video-to-video at unreachable 15 seconds", () => {
+    const result = computeEstimate({
+      provider: "kie",
+      payload: {
+        model: "wan/2-6-video-to-video",
+        input: { duration: "15", resolution: "1080p" },
+      },
+    });
+    expect(result.usd).toBe(0);
+    expect(result.warnings[0]).toContain("no rate for variant '15|1080p'");
+  });
+
+  it("leaves Wan 2.6 flash variants fail-safe and unpriced", () => {
+    const slugs = MODEL_SLUGS.kie as Record<string, string>;
+    for (const model of [
+      "wan/2-6-flash-image-to-video",
+      "wan/2-6-flash-video-to-video",
+    ]) {
+      expect(PRICING.kie[model]).toBeUndefined();
+      expect(slugs[model]).toBeUndefined();
+      expect(
+        (MODEL_DISPLAY.kie as Record<string, string>)[model]
+      ).toBeUndefined();
+      const result = computeEstimate({
+        provider: "kie",
+        payload: { model, input: { duration: "10" } },
+      });
+      expect(result.usd).toBe(0);
+      expect(result.warnings[0]).toContain("not found in pricing table");
+    }
   });
 
   // Veo moved from per-second to per-video: the unit is `generations` and the

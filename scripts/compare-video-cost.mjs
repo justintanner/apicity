@@ -204,6 +204,82 @@ export const lineup = [
     },
     audio: "yes",
   },
+  // Wan 2.6 standard trio — per-video rates keyed by the model's duration
+  // enum and resolution. These rows pin a valid 10-second duration because
+  // the schema accepts "5"/"10"/"15", while the compare script's default
+  // columns include an illustrative 8-second column for other models.
+  {
+    ...createTaskEndpointAssociation,
+    label: "wan 2.6 t2v (default 1080p)",
+    payload: {
+      model: "wan/2-6-text-to-video",
+      input: { prompt: "x", duration: "10" },
+    },
+    audio: "yes",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "wan 2.6 t2v 720p",
+    payload: {
+      model: "wan/2-6-text-to-video",
+      input: { prompt: "x", duration: "10", resolution: "720p" },
+    },
+    audio: "yes",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "wan 2.6 i2v (default 1080p)",
+    payload: {
+      model: "wan/2-6-image-to-video",
+      input: {
+        prompt: "xx",
+        image_urls: ["https://example.com/input.jpg"],
+        duration: "10",
+      },
+    },
+    audio: "yes",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "wan 2.6 i2v 720p",
+    payload: {
+      model: "wan/2-6-image-to-video",
+      input: {
+        prompt: "xx",
+        image_urls: ["https://example.com/input.jpg"],
+        duration: "10",
+        resolution: "720p",
+      },
+    },
+    audio: "yes",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "wan 2.6 v2v (default 1080p)",
+    payload: {
+      model: "wan/2-6-video-to-video",
+      input: {
+        prompt: "xx",
+        video_urls: ["https://example.com/input.mp4"],
+        duration: "10",
+      },
+    },
+    audio: "yes",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "wan 2.6 v2v 720p",
+    payload: {
+      model: "wan/2-6-video-to-video",
+      input: {
+        prompt: "xx",
+        video_urls: ["https://example.com/input.mp4"],
+        duration: "10",
+        resolution: "720p",
+      },
+    },
+    audio: "yes",
+  },
   // grok-imagine: 3 tiers by resolution, audio always on.
   {
     ...createTaskEndpointAssociation,
@@ -952,6 +1028,9 @@ const FIXED_DURATION_MODELS = new Set([
   "hailuo/2-3-image-to-video-standard",
   "hailuo/2-3-image-to-video-pro",
   "gemini-omni-video",
+  "wan/2-6-text-to-video",
+  "wan/2-6-image-to-video",
+  "wan/2-6-video-to-video",
 ]);
 
 // Patches `duration` into the kie payload at either the top level (veo) or

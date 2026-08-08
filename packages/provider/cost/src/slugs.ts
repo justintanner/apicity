@@ -33,6 +33,12 @@ export const MODEL_SLUGS = {
     "wan/2-7-r2v": "wan2p7",
     "wan/2-7-videoedit": "wan2p7",
 
+    // Video — Wan 2.6 standard trio. Flash variants are intentionally
+    // unpriced and therefore have no slug (Mayor ruling R2).
+    "wan/2-6-text-to-video": "wan2p6",
+    "wan/2-6-image-to-video": "wan2p6",
+    "wan/2-6-video-to-video": "wan2p6",
+
     // Video — Grok Imagine
     "grok-imagine/text-to-video": "grok",
     "grok-imagine/image-to-video": "grok",
@@ -427,6 +433,10 @@ export const MODEL_DISPLAY = {
     "wan/2-7-image-to-video": "Wan 2.7",
     "wan/2-7-r2v": "Wan 2.7",
     "wan/2-7-videoedit": "Wan 2.7 Edit",
+
+    "wan/2-6-text-to-video": "Wan 2.6",
+    "wan/2-6-image-to-video": "Wan 2.6",
+    "wan/2-6-video-to-video": "Wan 2.6",
 
     "grok-imagine/text-to-video": "Grok Imagine",
     "grok-imagine/image-to-video": "Grok Imagine",

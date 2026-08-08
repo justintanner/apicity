@@ -149,7 +149,7 @@ afterEach(async () => {
 });
 
 describe("production compare-cost payloads", () => {
-  it("discovers two silent modules and validates all 224 cases", async () => {
+  it("discovers two silent modules and validates all 236 cases", async () => {
     const files = await discoverCompareCostScripts(repositoryRoot);
     expect(files).toHaveLength(2);
     expect(
@@ -176,8 +176,8 @@ describe("production compare-cost payloads", () => {
     expect(result).toEqual({
       ok: true,
       files: 2,
-      rows: 112,
-      cases: 224,
+      rows: 118,
+      cases: 236,
       skips: 0,
       diagnostics: [],
     });

@@ -615,6 +615,70 @@ export const kie: Record<string, ModelPricing> = {
     "1080p"
   ),
 
+  // Wan 2.6 standard trio — per-video rates by duration and resolution. The
+  // 1080p cells are not a fixed multiple of 720p, so each published cell is
+  // listed instead of deriving one axis from the other. The text/image models
+  // accept 5/10/15 seconds; video-to-video stops at 10 seconds.
+  //
+  // The flash variants remain intentionally unpriced: KIE publishes no rate
+  // for them, so cost estimation fails safe instead of borrowing the standard
+  // rate (Mayor ruling R2, 2026-08-07).
+  "wan/2-6-text-to-video": {
+    ...perVideoByDurationAndResolution(
+      {
+        "5|720p": 0.35,
+        "5|1080p": 0.5225,
+        "10|720p": 0.7,
+        "10|1080p": 1.0475,
+        "15|720p": 1.05,
+        "15|1080p": 1.575,
+      },
+      "https://kie.ai/wan-2-6?model=wan%2F2-6-text-to-video",
+      "5",
+      "1080p"
+    ),
+    source: {
+      ...page("https://kie.ai/wan-2-6?model=wan%2F2-6-text-to-video"),
+      asOf: "2026-08-07",
+    },
+  },
+  "wan/2-6-image-to-video": {
+    ...perVideoByDurationAndResolution(
+      {
+        "5|720p": 0.35,
+        "5|1080p": 0.5225,
+        "10|720p": 0.7,
+        "10|1080p": 1.0475,
+        "15|720p": 1.05,
+        "15|1080p": 1.575,
+      },
+      "https://kie.ai/wan-2-6?model=wan%2F2-6-image-to-video",
+      "5",
+      "1080p"
+    ),
+    source: {
+      ...page("https://kie.ai/wan-2-6?model=wan%2F2-6-image-to-video"),
+      asOf: "2026-08-07",
+    },
+  },
+  "wan/2-6-video-to-video": {
+    ...perVideoByDurationAndResolution(
+      {
+        "5|720p": 0.35,
+        "5|1080p": 0.5225,
+        "10|720p": 0.7,
+        "10|1080p": 1.0475,
+      },
+      "https://kie.ai/wan-2-6?model=wan%2F2-6-video-to-video",
+      "5",
+      "1080p"
+    ),
+    source: {
+      ...page("https://kie.ai/wan-2-6?model=wan%2F2-6-video-to-video"),
+      asOf: "2026-08-07",
+    },
+  },
+
   // grok-imagine: 3 tiers by resolution as of the 2026-08-06 pull (1080p is
   // new; 480p and 720p both rose). Audio is always on (no toggle in the kie
   // input schema). The 1080p cell is DERIVED from credits: both directions

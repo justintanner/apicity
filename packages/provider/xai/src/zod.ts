@@ -70,7 +70,7 @@ const XAI_VIDEO_REFERENCE_AUDIO_VOICE_ID_MESSAGE =
 export const XaiVideoReferenceAudioSchema = z.object({
   voice_id: z
     .string()
-    .min(1, "voice_id must not be empty")
+    .min(1, XAI_VIDEO_REFERENCE_AUDIO_VOICE_ID_MESSAGE)
     .refine(
       (value) => value.length === 0 || value.trim().length > 0,
       XAI_VIDEO_REFERENCE_AUDIO_VOICE_ID_MESSAGE
@@ -375,6 +375,7 @@ export interface XaiVideoReferenceValidationCandidate extends XaiVideoModeGroups
 }
 
 const XAI_VIDEO_REFERENCE_IMAGE_COUNT_MESSAGE = `reference images must contain at most ${XAI_VIDEO_REFERENCE_IMAGE_MAX} items`;
+const XAI_VIDEO_REFERENCE_IMAGE_FILE_ID_COUNT_MESSAGE = `reference_image_file_ids must contain at most ${XAI_VIDEO_REFERENCE_IMAGE_MAX} items`;
 const XAI_VIDEO_REFERENCE_AUDIO_COUNT_MESSAGE = `reference_audios must contain at most ${XAI_VIDEO_REFERENCE_AUDIO_MAX} items`;
 const XAI_VIDEO_REFERENCE_AUDIO_MODEL_MESSAGE =
   "reference_audios requires the grok-imagine-video-1.5 model family";
@@ -415,7 +416,7 @@ export function collectXaiVideoReferenceIssues(
     issues.push({
       kind: "image-count",
       path: ["reference_image_file_ids"],
-      message: `reference_image_file_ids must contain at most ${XAI_VIDEO_REFERENCE_IMAGE_MAX} items`,
+      message: XAI_VIDEO_REFERENCE_IMAGE_FILE_ID_COUNT_MESSAGE,
     });
   }
 
@@ -432,10 +433,7 @@ export function collectXaiVideoReferenceIssues(
       typeof referenceAudio === "object" && referenceAudio !== null
         ? (referenceAudio as { voice_id?: unknown }).voice_id
         : undefined;
-    if (
-      typeof voiceId !== "string" ||
-      (voiceId.length > 0 && voiceId.trim().length === 0)
-    ) {
+    if (typeof voiceId !== "string" || voiceId.trim().length === 0) {
       issues.push({
         kind: "voice-id",
         path: ["reference_audios", index, "voice_id"],
@@ -500,7 +498,7 @@ export const XaiVideoGenerateRequestSchema = z
       .array(z.string().min(1))
       .max(
         XAI_VIDEO_REFERENCE_IMAGE_MAX,
-        `reference_image_file_ids must contain at most ${XAI_VIDEO_REFERENCE_IMAGE_MAX} items`
+        XAI_VIDEO_REFERENCE_IMAGE_FILE_ID_COUNT_MESSAGE
       )
       .optional(),
     reference_audios: z

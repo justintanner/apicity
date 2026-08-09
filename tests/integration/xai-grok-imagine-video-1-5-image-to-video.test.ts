@@ -222,6 +222,43 @@ describe("xai video generations default model", () => {
     expect(calls[0]?.body).not.toHaveProperty("image");
   });
 
+  it("transports mixed raw reference images in order without mutation", async () => {
+    const { calls, fetch } = createQueuedFetch([
+      { request_id: "vid_req_mixed_raw_refs" },
+    ]);
+    const provider = createProvider(fetch);
+    const referenceImages = [
+      { url: "https://example.com/reference.png" },
+      { url: "data:image/png;base64,AAAA" },
+      { file_id: "file_reference" },
+    ];
+    const req = {
+      prompt: "The subject from <IMAGE_0> crosses a sunlit plaza",
+      model: "grok-imagine-video-1.5-preview",
+      reference_images: referenceImages,
+    };
+    const original = {
+      prompt: req.prompt,
+      model: req.model,
+      reference_images: referenceImages.map((reference) => ({ ...reference })),
+    };
+
+    await provider.post.v1.videos.generations(
+      req,
+      mintXaiOtp(VIDEO_GENERATIONS_DOT_PATH, req)
+    );
+
+    expect(calls).toEqual([
+      {
+        url: "https://api.x.ai/v1/videos/generations",
+        method: "POST",
+        body: original,
+      },
+    ]);
+    expect(req).toEqual(original);
+    expect(req.reference_images).toBe(referenceImages);
+  });
+
   it("transports audio-only references and preserves caller input", async () => {
     const { calls, fetch } = createQueuedFetch([
       { request_id: "vid_req_audio_ref" },
@@ -313,6 +350,32 @@ describe("xai video generations default model", () => {
       },
     },
     {
+      label: "empty voice",
+      request: {
+        prompt: "A singer walks onto a stage",
+        reference_audios: [{ voice_id: "" }],
+      },
+    },
+    {
+      label: "eight raw reference images",
+      request: {
+        prompt: "A singer walks onto a stage",
+        reference_images: Array.from({ length: 8 }, (_, index) => ({
+          url: `https://example.com/reference-${index}.png`,
+        })),
+      },
+    },
+    {
+      label: "eight reference image file IDs",
+      request: {
+        prompt: "A singer walks onto a stage",
+        reference_image_file_ids: Array.from(
+          { length: 8 },
+          (_, index) => `file_reference_${index}`
+        ),
+      },
+    },
+    {
       label: "legacy duration",
       request: {
         prompt: "A singer walks onto a stage",
@@ -362,6 +425,66 @@ describe("xai video generations pre-transport mode guard", () => {
       "Only one video mode can be active per request"
     );
     expect(calls).toHaveLength(0);
+  });
+
+  it("rejects every reference spelling combined with every source spelling", async () => {
+    const referenceModes = [
+      {
+        label: "reference_images",
+        fields: { reference_images: [{ url: "https://example.com/ref.png" }] },
+      },
+      {
+        label: "reference_image_file_ids",
+        fields: { reference_image_file_ids: ["file_ref"] },
+      },
+      {
+        label: "reference_audios",
+        fields: { reference_audios: [{ voice_id: "eve" }] },
+      },
+    ];
+    const sourceModes = [
+      {
+        label: "image",
+        fields: { image: { url: "https://example.com/image.png" } },
+      },
+      {
+        label: "image_file_id",
+        fields: { image_file_id: "file_image" },
+      },
+      {
+        label: "video",
+        fields: { video: { url: "https://example.com/video.mp4" } },
+      },
+      {
+        label: "video_file_id",
+        fields: { video_file_id: "file_video" },
+      },
+    ];
+
+    for (const referenceMode of referenceModes) {
+      for (const sourceMode of sourceModes) {
+        const { calls, fetch } = createQueuedFetch([
+          { request_id: "vid_req_never_sent" },
+        ]);
+        const provider = createProvider(fetch);
+        const request = {
+          prompt: "A camera pulls back through a neon city",
+          ...referenceMode.fields,
+          ...sourceMode.fields,
+        };
+
+        const error = await provider.post.v1.videos
+          .generations(request, mintXaiOtp(VIDEO_GENERATIONS_DOT_PATH, request))
+          .catch((caught: unknown) => caught);
+
+        expect(
+          error,
+          `${referenceMode.label} + ${sourceMode.label}`
+        ).toBeInstanceOf(XaiError);
+        expect((error as XaiError).status).toBe(400);
+        expect(calls).toHaveLength(0);
+      }
+    }
   });
 
   it("sends a 1.5 reference request once (guard does not over-block)", async () => {

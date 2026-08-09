@@ -43,6 +43,23 @@ describe("XaiVideoGenerateRequestSchema reference constraints", () => {
         )
       ).toBe(true);
     });
+
+    it("accepts ordered mixed URL, data-URI, and file-ID references", () => {
+      const reference_images = [
+        { url: "https://example.com/reference.png" },
+        { url: "data:image/png;base64,AAAA" },
+        { file_id: "file_reference" },
+      ];
+      const result = XaiVideoGenerateRequestSchema.safeParse({
+        prompt: "a cat riding a skateboard",
+        reference_images,
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.success && result.data.reference_images).toEqual(
+        reference_images
+      );
+    });
   });
 
   describe("reference_image_file_ids", () => {

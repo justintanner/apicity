@@ -1,6 +1,6 @@
 {
   "name": "@apicity/mcp-server",
-  "version": "0.8.9",
+  "version": "0.9.0",
   "description": "Optional MCP (Model Context Protocol) server that exposes every @apicity provider endpoint as a tool.",
   "license": "MIT",
   "repository": {

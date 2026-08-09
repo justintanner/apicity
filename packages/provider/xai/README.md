@@ -175,8 +175,7 @@ canonical `grok-imagine-video-1.5` model.
 
 ```typescript
 const video = await xai.post.v1.videos.generations({
-  prompt:
-    "The person from <IMAGE_0> speaks the line with the voice from <AUDIO_0>",
+  prompt: "The person from <IMAGE_0> speaks the line with the voice from <AUDIO_0>",
   model: "grok-imagine-video-1.5",
   reference_images: [{ url: "https://example.com/character.png" }],
   reference_audios: [{ voice_id: "eve" }],

@@ -3,11 +3,13 @@ import { describe, it, expect } from "vitest";
 import {
   XaiResponseRequestSchema,
   XaiVideoGenerateRequestSchema,
+  XaiVideoReferenceAudioSchema,
 } from "../../packages/provider/xai/src/zod";
 
-// xAI's primary reference-to-video docs cap each request at 7 reference images
-// and cap duration at 10 seconds when references are present.
+// xAI's reference-to-video contract caps each request at 7 reference images;
+// legacy grok-imagine-video references retain a 10-second duration cap.
 const REFERENCE_IMAGE_MAX = 7;
+const REFERENCE_AUDIO_MAX = 3;
 
 const reference = (index: number) => ({
   url: `https://example.com/reference-${index}.png`,
@@ -99,23 +101,21 @@ describe("XaiVideoGenerateRequestSchema reference constraints", () => {
       expect(fileResult.success).toBe(true);
     });
 
-    it("rejects 11 seconds with reference images", () => {
+    it("accepts 15 seconds with model-less 1.5 reference images", () => {
       const result = XaiVideoGenerateRequestSchema.safeParse({
         prompt: "a cat riding a skateboard",
-        duration: 11,
+        duration: 15,
         reference_images: [reference(0)],
       });
 
-      expect(result.success).toBe(false);
-      expect(
-        result.error?.issues.some((issue) => issue.path.includes("duration"))
-      ).toBe(true);
+      expect(result.success).toBe(true);
     });
 
-    it("rejects 11 seconds with reference image file ids", () => {
+    it("retains the 10-second cap for legacy reference images", () => {
       const result = XaiVideoGenerateRequestSchema.safeParse({
         prompt: "a cat riding a skateboard",
         duration: 11,
+        model: "grok-imagine-video",
         reference_image_file_ids: [fileId(0)],
       });
 
@@ -132,6 +132,61 @@ describe("XaiVideoGenerateRequestSchema reference constraints", () => {
       });
 
       expect(result.success).toBe(false);
+    });
+  });
+
+  describe("reference_audios", () => {
+    it("accepts zero through three open, mixed-case voice identifiers", () => {
+      for (let count = 0; count <= REFERENCE_AUDIO_MAX; count++) {
+        const result = XaiVideoGenerateRequestSchema.safeParse({
+          prompt: "a singer walks onto a stage",
+          reference_audios: Array.from({ length: count }, (_, index) => ({
+            voice_id: index === 0 ? "Eve" : `voice-${index}`,
+          })),
+        });
+        expect(result.success).toBe(true);
+      }
+    });
+
+    it("rejects four voice references", () => {
+      const result = XaiVideoGenerateRequestSchema.safeParse({
+        prompt: "a singer walks onto a stage",
+        reference_audios: Array.from({ length: 4 }, (_, index) => ({
+          voice_id: `voice-${index}`,
+        })),
+      });
+
+      expect(result.success).toBe(false);
+      expect(
+        result.error?.issues.some((issue) =>
+          issue.path.includes("reference_audios")
+        )
+      ).toBe(true);
+    });
+
+    it.each(["", "   ", "\n\t"])(
+      "rejects a blank voice identifier %j",
+      (voice_id) => {
+        const result = XaiVideoGenerateRequestSchema.safeParse({
+          prompt: "a singer walks onto a stage",
+          reference_audios: [{ voice_id }],
+        });
+
+        expect(result.success).toBe(false);
+        expect(
+          result.error?.issues.some(
+            (issue) =>
+              issue.path.includes("reference_audios") &&
+              issue.path.includes("voice_id")
+          )
+        ).toBe(true);
+      }
+    );
+
+    it("exposes the standalone public voice-reference schema", () => {
+      expect(
+        XaiVideoReferenceAudioSchema.safeParse({ voice_id: "EVE" }).success
+      ).toBe(true);
     });
   });
 });

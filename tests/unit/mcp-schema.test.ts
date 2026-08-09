@@ -30,6 +30,8 @@ import {
   Seedance2FastRequestSchema,
   Wan27VideoEditRequestSchema,
 } from "../../packages/provider/kie/src/zod";
+import { XaiVideoGenerateRequestSchema } from "../../packages/provider/xai/src/zod";
+import type { XaiVideoReferenceAudio } from "../../packages/provider/xai/src";
 
 describe("MCP Zod schema introspection helpers", () => {
   it("extracts enum values without direct unwrap/options access", () => {
@@ -336,6 +338,27 @@ describe("MCP Zod schema conversion", () => {
       minimum: 0,
       maximum: 10,
     });
+  });
+
+  it("exposes xAI reference images and preset voices in MCP JSON Schema", () => {
+    const voice: XaiVideoReferenceAudio = { voice_id: "Eve" };
+    expect(voice.voice_id).toBe("Eve");
+
+    const json = zodToJsonSchema(XaiVideoGenerateRequestSchema);
+    const properties = propertiesOf(json);
+    expect(properties.reference_images).toMatchObject({
+      type: "array",
+      maxItems: 7,
+    });
+    expect(properties.reference_audios).toMatchObject({
+      type: "array",
+      maxItems: 3,
+    });
+    const audioItems = properties.reference_audios.items as JsonSchema;
+    expect(propertiesOf(audioItems)).toMatchObject({
+      voice_id: { type: "string", minLength: 1 },
+    });
+    expect(audioItems.required).toEqual(["voice_id"]);
   });
 
   it("keeps KIE createTask pipeline output visible to MCP consumers", () => {

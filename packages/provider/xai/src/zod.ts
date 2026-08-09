@@ -1,9 +1,17 @@
 import { z } from "zod";
 
 export const XAI_GROK_IMAGINE_VIDEO = "grok-imagine-video";
-export const XAI_GROK_IMAGINE_VIDEO_1_5_PREVIEW =
-  "grok-imagine-video-1.5-preview";
+export const XAI_GROK_IMAGINE_VIDEO_1_5 = "grok-imagine-video-1.5";
+export const XAI_GROK_IMAGINE_VIDEO_1_5_PREVIEW = `${XAI_GROK_IMAGINE_VIDEO_1_5}-preview`;
+export const XAI_GROK_IMAGINE_VIDEO_1_5_PREFIX = XAI_GROK_IMAGINE_VIDEO_1_5;
 export const XAI_GROK_IMAGINE_IMAGE_QUALITY = "grok-imagine-image-quality";
+
+export function isXaiGrokImagineVideo15Model(model: string): boolean {
+  return (
+    model === XAI_GROK_IMAGINE_VIDEO_1_5 ||
+    model.startsWith(`${XAI_GROK_IMAGINE_VIDEO_1_5}-`)
+  );
+}
 
 // ---------------------------------------------------------------------------
 // Sub-schemas (composable building blocks)
@@ -56,11 +64,27 @@ export const XaiVideoReferenceInputSchema = z.union([
   XaiVideoReferenceSchema,
 ]);
 
+const XAI_VIDEO_REFERENCE_AUDIO_VOICE_ID_MESSAGE =
+  "voice_id must not be empty or whitespace-only";
+
+export const XaiVideoReferenceAudioSchema = z.object({
+  voice_id: z
+    .string()
+    .min(1, "voice_id must not be empty")
+    .refine(
+      (value) => value.length === 0 || value.trim().length > 0,
+      XAI_VIDEO_REFERENCE_AUDIO_VOICE_ID_MESSAGE
+    ),
+});
+
 // xAI's reference-to-video docs cap each request at 7 reference images and
-// cap the generated duration at 10 seconds when references are present.
+// support up to 3 preset voice references. The legacy reference-image model
+// retains its 10-second cap; the 1.5 family supports the normal 15 seconds.
 // https://docs.x.ai/developers/model-capabilities/video/reference-to-video
-const XAI_VIDEO_REFERENCE_IMAGE_MAX = 7;
-const XAI_VIDEO_REFERENCE_DURATION_MAX = 10;
+export const XAI_VIDEO_REFERENCE_IMAGE_MAX = 7;
+export const XAI_VIDEO_REFERENCE_AUDIO_MAX = 3;
+export const XAI_VIDEO_REFERENCE_DURATION_MAX = 15;
+export const XAI_VIDEO_LEGACY_REFERENCE_DURATION_MAX = 10;
 
 const XaiImagineStoragePublicUrlOptionsSchema = z.object({
   expires_after: z.number().int().min(3600).max(2592000).optional(),
@@ -282,6 +306,7 @@ export interface XaiVideoModeGroupsCandidate {
   video_file_id?: unknown;
   reference_images?: readonly unknown[];
   reference_image_file_ids?: readonly unknown[];
+  reference_audios?: readonly unknown[];
 }
 
 export interface XaiVideoModeGroups {
@@ -298,7 +323,8 @@ export function computeXaiVideoModeGroups(
     // reference mode.
     reference:
       (candidate.reference_images?.length ?? 0) > 0 ||
-      (candidate.reference_image_file_ids?.length ?? 0) > 0,
+      (candidate.reference_image_file_ids?.length ?? 0) > 0 ||
+      (candidate.reference_audios?.length ?? 0) > 0,
     imageToVideo:
       candidate.image !== undefined || candidate.image_file_id !== undefined,
     videoEdit:
@@ -307,7 +333,8 @@ export function computeXaiVideoModeGroups(
 }
 
 const XAI_VIDEO_MODE_GROUP_LABELS: Record<keyof XaiVideoModeGroups, string> = {
-  reference: "reference (reference_images/reference_image_file_ids)",
+  reference:
+    "reference (reference_images/reference_image_file_ids/reference_audios)",
   imageToVideo: "image-to-video (image/image_file_id)",
   videoEdit: "video editing (video/video_file_id)",
 };
@@ -328,15 +355,129 @@ export function buildXaiVideoModeExclusivityMessage(
   );
 }
 
-// Family prefix covering the grok-imagine-video-1.5 base identifier, the
-// -preview alias, and dated variants such as -2026-05-30 (all aliases of the
-// same model per xAI's model metadata).
-export const XAI_GROK_IMAGINE_VIDEO_1_5_PREFIX = "grok-imagine-video-1.5";
+export type XaiVideoReferenceIssueKind =
+  | "mode"
+  | "image-count"
+  | "audio-count"
+  | "voice-id"
+  | "audio-model"
+  | "duration";
 
-export const XAI_VIDEO_REFERENCE_MODE_UNSUPPORTED_MODEL_MESSAGE =
-  "grok-imagine-video-1.5 does not support reference mode " +
-  "(reference_images/reference_image_file_ids); use grok-imagine-video for " +
-  "reference-to-video";
+export interface XaiVideoReferenceIssue {
+  kind: XaiVideoReferenceIssueKind;
+  path: readonly PropertyKey[];
+  message: string;
+}
+
+export interface XaiVideoReferenceValidationCandidate extends XaiVideoModeGroupsCandidate {
+  model?: unknown;
+  duration?: unknown;
+}
+
+const XAI_VIDEO_REFERENCE_IMAGE_COUNT_MESSAGE = `reference images must contain at most ${XAI_VIDEO_REFERENCE_IMAGE_MAX} items`;
+const XAI_VIDEO_REFERENCE_AUDIO_COUNT_MESSAGE = `reference_audios must contain at most ${XAI_VIDEO_REFERENCE_AUDIO_MAX} items`;
+const XAI_VIDEO_REFERENCE_AUDIO_MODEL_MESSAGE =
+  "reference_audios requires the grok-imagine-video-1.5 model family";
+const XAI_VIDEO_REFERENCE_DURATION_MESSAGE =
+  "duration must be at most 10 seconds for legacy reference-to-video";
+
+export function collectXaiVideoReferenceIssues(
+  candidate: XaiVideoReferenceValidationCandidate
+): XaiVideoReferenceIssue[] {
+  const issues: XaiVideoReferenceIssue[] = [];
+  const groups = computeXaiVideoModeGroups(candidate);
+  const activeGroupCount =
+    Number(groups.reference) +
+    Number(groups.imageToVideo) +
+    Number(groups.videoEdit);
+
+  if (activeGroupCount >= 2) {
+    issues.push({
+      kind: "mode",
+      path: [],
+      message: buildXaiVideoModeExclusivityMessage(groups),
+    });
+  }
+
+  if (
+    (candidate.reference_images?.length ?? 0) > XAI_VIDEO_REFERENCE_IMAGE_MAX
+  ) {
+    issues.push({
+      kind: "image-count",
+      path: ["reference_images"],
+      message: XAI_VIDEO_REFERENCE_IMAGE_COUNT_MESSAGE,
+    });
+  }
+  if (
+    (candidate.reference_image_file_ids?.length ?? 0) >
+    XAI_VIDEO_REFERENCE_IMAGE_MAX
+  ) {
+    issues.push({
+      kind: "image-count",
+      path: ["reference_image_file_ids"],
+      message: `reference_image_file_ids must contain at most ${XAI_VIDEO_REFERENCE_IMAGE_MAX} items`,
+    });
+  }
+
+  const referenceAudios = candidate.reference_audios;
+  if ((referenceAudios?.length ?? 0) > XAI_VIDEO_REFERENCE_AUDIO_MAX) {
+    issues.push({
+      kind: "audio-count",
+      path: ["reference_audios"],
+      message: XAI_VIDEO_REFERENCE_AUDIO_COUNT_MESSAGE,
+    });
+  }
+  referenceAudios?.forEach((referenceAudio, index) => {
+    const voiceId =
+      typeof referenceAudio === "object" && referenceAudio !== null
+        ? (referenceAudio as { voice_id?: unknown }).voice_id
+        : undefined;
+    if (
+      typeof voiceId !== "string" ||
+      (voiceId.length > 0 && voiceId.trim().length === 0)
+    ) {
+      issues.push({
+        kind: "voice-id",
+        path: ["reference_audios", index, "voice_id"],
+        message: XAI_VIDEO_REFERENCE_AUDIO_VOICE_ID_MESSAGE,
+      });
+    }
+  });
+
+  const model =
+    typeof candidate.model === "string" ? candidate.model : undefined;
+  if (
+    (referenceAudios?.length ?? 0) > 0 &&
+    model !== undefined &&
+    !isXaiGrokImagineVideo15Model(model)
+  ) {
+    issues.push({
+      kind: "audio-model",
+      path: ["model"],
+      message: XAI_VIDEO_REFERENCE_AUDIO_MODEL_MESSAGE,
+    });
+  }
+
+  if (groups.reference && typeof candidate.duration === "number") {
+    const maxDuration =
+      model === XAI_GROK_IMAGINE_VIDEO
+        ? XAI_VIDEO_LEGACY_REFERENCE_DURATION_MAX
+        : XAI_VIDEO_REFERENCE_DURATION_MAX;
+    if (candidate.duration > maxDuration) {
+      issues.push({
+        kind: "duration",
+        path: ["duration"],
+        message:
+          maxDuration === XAI_VIDEO_LEGACY_REFERENCE_DURATION_MAX
+            ? XAI_VIDEO_REFERENCE_DURATION_MESSAGE
+            : `duration must be at most ${XAI_VIDEO_REFERENCE_DURATION_MAX} seconds when using references`,
+      });
+    }
+  }
+
+  return issues;
+}
+
 export const XaiVideoGenerateRequestSchema = z
   .object({
     prompt: z.string().min(1),
@@ -350,52 +491,45 @@ export const XaiVideoGenerateRequestSchema = z
     video_file_id: z.string().min(1).optional(),
     reference_images: z
       .array(XaiVideoReferenceSchema)
-      .max(XAI_VIDEO_REFERENCE_IMAGE_MAX)
+      .max(
+        XAI_VIDEO_REFERENCE_IMAGE_MAX,
+        XAI_VIDEO_REFERENCE_IMAGE_COUNT_MESSAGE
+      )
       .optional(),
     reference_image_file_ids: z
       .array(z.string().min(1))
-      .max(XAI_VIDEO_REFERENCE_IMAGE_MAX)
+      .max(
+        XAI_VIDEO_REFERENCE_IMAGE_MAX,
+        `reference_image_file_ids must contain at most ${XAI_VIDEO_REFERENCE_IMAGE_MAX} items`
+      )
+      .optional(),
+    reference_audios: z
+      .array(XaiVideoReferenceAudioSchema)
+      .max(
+        XAI_VIDEO_REFERENCE_AUDIO_MAX,
+        XAI_VIDEO_REFERENCE_AUDIO_COUNT_MESSAGE
+      )
       .optional(),
     storage_options: XaiImagineStorageOptionsSchema.optional(),
   })
-  .refine(
-    (value) =>
-      (value.reference_images === undefined &&
-        value.reference_image_file_ids === undefined) ||
-      value.duration === undefined ||
-      value.duration <= XAI_VIDEO_REFERENCE_DURATION_MAX,
-    {
-      message:
-        "duration must be at most 10 seconds when using reference images",
-      path: ["duration"],
-    }
-  )
   // Verified live 2026-07-28 against xAI's primary reference-to-video doc
   // https://docs.x.ai/developers/model-capabilities/video/reference-to-video:
   // "Reference images cannot be combined with image-to-video or video
   // editing. Only one mode can be active per request, determined by the
   // parameters on the request."
-  // "grok-imagine-video-1.5 does not support this mode."
+  // Reference images and preset voices are supported by the 1.5 family.
   .superRefine((value, ctx) => {
-    const groups = computeXaiVideoModeGroups(value);
-    const activeCount =
-      Number(groups.reference) +
-      Number(groups.imageToVideo) +
-      Number(groups.videoEdit);
-    if (activeCount >= 2) {
+    const crossFieldKinds = new Set<XaiVideoReferenceIssueKind>([
+      "mode",
+      "audio-model",
+      "duration",
+    ]);
+    for (const issue of collectXaiVideoReferenceIssues(value)) {
+      if (!crossFieldKinds.has(issue.kind)) continue;
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: buildXaiVideoModeExclusivityMessage(groups),
-      });
-    }
-    if (
-      groups.reference &&
-      value.model !== undefined &&
-      value.model.startsWith(XAI_GROK_IMAGINE_VIDEO_1_5_PREFIX)
-    ) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: XAI_VIDEO_REFERENCE_MODE_UNSUPPORTED_MODEL_MESSAGE,
+        message: issue.message,
+        path: [...issue.path],
       });
     }
   });
@@ -906,6 +1040,9 @@ export type XaiToolFunction = z.infer<typeof XaiToolFunctionSchema>;
 export type XaiTool = z.infer<typeof XaiToolSchema>;
 export type XaiImageReference = z.infer<typeof XaiImageReferenceSchema>;
 export type XaiVideoReference = z.infer<typeof XaiVideoReferenceSchema>;
+export type XaiVideoReferenceAudio = z.infer<
+  typeof XaiVideoReferenceAudioSchema
+>;
 export type XaiVideoReferenceInput = z.infer<
   typeof XaiVideoReferenceInputSchema
 >;

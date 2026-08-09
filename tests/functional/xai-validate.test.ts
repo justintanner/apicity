@@ -209,10 +209,11 @@ describe("xAI Zod schema validation", () => {
   describe("video generation mode exclusivity (REQ-001)", () => {
     const MODE_GROUPS = {
       reference: {
-        label: "reference_images/reference_image_file_ids",
+        label: "reference_images/reference_image_file_ids/reference_audios",
         spellings: [
           { reference_images: [{ url: "https://example.com/ref.jpg" }] },
           { reference_image_file_ids: ["file_ref"] },
+          { reference_audios: [{ voice_id: "eve" }] },
         ],
       },
       imageToVideo: {
@@ -293,11 +294,10 @@ describe("xAI Zod schema validation", () => {
     }
   });
 
-  // REQ-002 reference model matrix, per the same primary doc: "grok-imagine-
-  // video-1.5 does not support this mode." (every reference-to-video example
-  // uses grok-imagine-video).
+  // REQ-002/REQ-004 reference model matrix: the current capability supports
+  // reference-to-video on the 1.5 family.
   describe("video generation reference model matrix (REQ-002)", () => {
-    const UNSUPPORTED_REFERENCE_MODELS = [
+    const SUPPORTED_REFERENCE_MODELS = [
       "grok-imagine-video-1.5",
       "grok-imagine-video-1.5-preview",
       "grok-imagine-video-1.5-2026-05-30",
@@ -307,25 +307,15 @@ describe("xAI Zod schema validation", () => {
       { reference_image_file_ids: ["file_ref"] },
     ];
 
-    for (const model of UNSUPPORTED_REFERENCE_MODELS) {
+    for (const model of SUPPORTED_REFERENCE_MODELS) {
       REFERENCE_SPELLINGS.forEach((fields, index) => {
-        it(`rejects ${model} with references (spelling ${index + 1})`, () => {
+        it(`accepts ${model} with references (spelling ${index + 1})`, () => {
           const result = XaiVideoGenerateRequestSchema.safeParse({
             prompt: "A cat walking",
             model,
             ...fields,
           });
-          expect(result.success).toBe(false);
-          const messages = (result.error?.issues ?? []).map(
-            (issue) => issue.message
-          );
-          expect(
-            messages.some(
-              (message) =>
-                message.includes("grok-imagine-video-1.5") &&
-                message.includes("reference")
-            )
-          ).toBe(true);
+          expect(result.success).toBe(true);
         });
       });
     }
@@ -339,6 +329,44 @@ describe("xAI Zod schema validation", () => {
         });
         expect(result.success).toBe(true);
       });
+    });
+
+    it("accepts audio-only and combined reference requests", () => {
+      expect(
+        XaiVideoGenerateRequestSchema.safeParse({
+          prompt: "A singer walks onto a stage",
+          model: "grok-imagine-video-1.5",
+          reference_audios: [{ voice_id: "Eve" }],
+        }).success
+      ).toBe(true);
+      expect(
+        XaiVideoGenerateRequestSchema.safeParse({
+          prompt: "The person from <IMAGE_0> speaks with <AUDIO_0>",
+          model: "grok-imagine-video-1.5",
+          reference_images: [{ url: "data:image/png;base64,AAAA" }],
+          reference_audios: [{ voice_id: "eve" }],
+        }).success
+      ).toBe(true);
+    });
+
+    it.each([
+      "grok-imagine-video",
+      "some-other-video-model",
+      "grok-imagine-video-1.50",
+    ])("rejects preset voices for incompatible model %s", (model) => {
+      const result = XaiVideoGenerateRequestSchema.safeParse({
+        prompt: "A singer walks onto a stage",
+        model,
+        reference_audios: [{ voice_id: "eve" }],
+      });
+      expect(result.success).toBe(false);
+      expect(
+        result.error?.issues.some(
+          (issue) =>
+            issue.path.includes("model") &&
+            issue.message.includes("reference_audios")
+        )
+      ).toBe(true);
     });
   });
 

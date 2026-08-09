@@ -32,6 +32,7 @@ export type {
   XaiTool,
   XaiImageReference,
   XaiVideoReference,
+  XaiVideoReferenceAudio,
   XaiVideoReferenceInput,
   XaiImagineStorageOptions,
   XaiFilePublicUrlRequest,

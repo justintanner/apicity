@@ -118,12 +118,11 @@ describe("xai video generations default model", () => {
     });
   });
 
-  // REQ-003 transport default, per the primary reference-to-video doc
+  // REQ-003/REQ-005 transport default, per the current reference-to-video doc
   // https://docs.x.ai/developers/model-capabilities/video/reference-to-video:
-  // every reference-to-video example uses grok-imagine-video and the
-  // grok-imagine-video-1.5 family does not support reference mode, so
-  // model-less reference requests default to grok-imagine-video.
-  it("defaults model-less reference_images requests to grok-imagine-video", async () => {
+  // reference inputs are supported by the 1.5 family, so model-less reference
+  // requests default to the canonical grok-imagine-video-1.5 model.
+  it("defaults model-less reference_images requests to canonical 1.5", async () => {
     const { calls, fetch } = createQueuedFetch([
       { request_id: "vid_req_ref_default" },
     ]);
@@ -145,13 +144,13 @@ describe("xai video generations default model", () => {
       method: "POST",
       body: {
         ...req,
-        model: "grok-imagine-video",
+        model: "grok-imagine-video-1.5",
       },
     });
     expect(req).not.toHaveProperty("model");
   });
 
-  it("defaults model-less reference_image_file_ids requests to grok-imagine-video (post-fold)", async () => {
+  it("defaults model-less reference_image_file_ids requests to canonical 1.5", async () => {
     const { calls, fetch } = createQueuedFetch([
       { request_id: "vid_req_ref_ids_default" },
     ]);
@@ -173,7 +172,7 @@ describe("xai video generations default model", () => {
       method: "POST",
       body: {
         prompt: req.prompt,
-        model: "grok-imagine-video",
+        model: "grok-imagine-video-1.5",
         reference_images: [{ file_id: "file_dancer" }],
       },
     });
@@ -222,16 +221,125 @@ describe("xai video generations default model", () => {
     });
     expect(calls[0]?.body).not.toHaveProperty("image");
   });
+
+  it("transports audio-only references and preserves caller input", async () => {
+    const { calls, fetch } = createQueuedFetch([
+      { request_id: "vid_req_audio_ref" },
+    ]);
+    const provider = createProvider(fetch);
+    const referenceAudios = [{ voice_id: "Eve" }];
+    const req = {
+      prompt: "The speaker uses <AUDIO_0> in a quiet studio",
+      reference_audios: referenceAudios,
+      duration: 15 as const,
+    };
+    const original = {
+      prompt: req.prompt,
+      reference_audios: [{ voice_id: "Eve" }],
+      duration: req.duration,
+    };
+
+    await provider.post.v1.videos.generations(
+      req,
+      mintXaiOtp(VIDEO_GENERATIONS_DOT_PATH, req)
+    );
+
+    expect(req).toEqual(original);
+    expect(req.reference_audios).toBe(referenceAudios);
+    expect(calls).toEqual([
+      {
+        url: "https://api.x.ai/v1/videos/generations",
+        method: "POST",
+        body: {
+          prompt: req.prompt,
+          model: "grok-imagine-video-1.5",
+          reference_audios: [{ voice_id: "Eve" }],
+          duration: 15,
+        },
+      },
+    ]);
+    expect(calls[0]?.body).not.toHaveProperty("reference_audio_ids");
+  });
+
+  it("transports combined image and audio references without rewriting markers", async () => {
+    const { calls, fetch } = createQueuedFetch([
+      { request_id: "vid_req_combined_ref" },
+    ]);
+    const provider = createProvider(fetch);
+    const req = {
+      prompt: "The person from <IMAGE_0> speaks with <AUDIO_0>",
+      model: "grok-imagine-video-1.5-preview",
+      reference_image_file_ids: ["file_person"],
+      reference_audios: [{ voice_id: "eve" }],
+    };
+
+    await provider.post.v1.videos.generations(
+      req,
+      mintXaiOtp(VIDEO_GENERATIONS_DOT_PATH, req)
+    );
+
+    expect(calls[0]?.body).toEqual({
+      prompt: req.prompt,
+      model: req.model,
+      reference_images: [{ file_id: "file_person" }],
+      reference_audios: [{ voice_id: "eve" }],
+    });
+    expect(req).toEqual({
+      prompt: req.prompt,
+      model: req.model,
+      reference_image_file_ids: ["file_person"],
+      reference_audios: [{ voice_id: "eve" }],
+    });
+  });
+
+  it.each([
+    {
+      label: "four voices",
+      request: {
+        prompt: "A singer walks onto a stage",
+        reference_audios: [
+          { voice_id: "a" },
+          { voice_id: "b" },
+          { voice_id: "c" },
+          { voice_id: "d" },
+        ],
+      },
+    },
+    {
+      label: "blank voice",
+      request: {
+        prompt: "A singer walks onto a stage",
+        reference_audios: [{ voice_id: "   " }],
+      },
+    },
+    {
+      label: "legacy duration",
+      request: {
+        prompt: "A singer walks onto a stage",
+        model: "grok-imagine-video",
+        reference_images: [{ url: "https://example.com/ref.png" }],
+        duration: 11 as const,
+      },
+    },
+  ])("rejects $label before fetch", async ({ request }) => {
+    const { calls, fetch } = createQueuedFetch([
+      { request_id: "vid_req_never_sent" },
+    ]);
+    const provider = createProvider(fetch);
+
+    const error = await provider.post.v1.videos
+      .generations(request, mintXaiOtp(VIDEO_GENERATIONS_DOT_PATH, request))
+      .catch((caught: unknown) => caught);
+
+    expect(error).toBeInstanceOf(XaiError);
+    expect((error as XaiError).status).toBe(400);
+    expect(calls).toHaveLength(0);
+  });
 });
 
-// REQ-001/REQ-002 pre-transport guard call path: the generations leaf throws
-// XaiError(400) before any billed request, per the primary reference-to-video
-// doc
-// https://docs.x.ai/developers/model-capabilities/video/reference-to-video:
-// "Reference images cannot be combined with image-to-video or video
-// editing. Only one mode can be active per request, determined by the
-// parameters on the request." and "grok-imagine-video-1.5 does not support
-// this mode."
+// REQ-001/REQ-006/REQ-010 pre-transport guard call path: the generations leaf
+// throws XaiError(400) before any billed request for incompatible modes or
+// invalid reference inputs.
 describe("xai video generations pre-transport mode guard", () => {
   it("rejects a mixed-mode request without consuming the queued fetch", async () => {
     const { calls, fetch } = createQueuedFetch([
@@ -256,55 +364,14 @@ describe("xai video generations pre-transport mode guard", () => {
     expect(calls).toHaveLength(0);
   });
 
-  const REFERENCE_SPELLINGS: ReadonlyArray<
-    readonly [
-      string,
-      (
-        | { reference_images: Array<{ url: string }> }
-        | { reference_image_file_ids: string[] }
-      ),
-    ]
-  > = [
-    [
-      "reference_images",
-      { reference_images: [{ url: "https://example.com/ref.png" }] },
-    ],
-    ["reference_image_file_ids", { reference_image_file_ids: ["file_ref"] }],
-  ];
-
-  for (const [spelling, fields] of REFERENCE_SPELLINGS) {
-    it(`rejects ${MODEL} with ${spelling} without consuming the queued fetch`, async () => {
-      const { calls, fetch } = createQueuedFetch([
-        { request_id: "vid_req_never_sent" },
-      ]);
-      const provider = createProvider(fetch);
-      const req = {
-        prompt: "A camera pulls back through a neon city",
-        model: MODEL,
-        ...fields,
-      };
-
-      const error = await provider.post.v1.videos
-        .generations(req, mintXaiOtp(VIDEO_GENERATIONS_DOT_PATH, req))
-        .catch((caught: unknown) => caught);
-
-      expect(error).toBeInstanceOf(XaiError);
-      expect((error as XaiError).status).toBe(400);
-      expect((error as XaiError).message).toContain(
-        "does not support reference mode"
-      );
-      expect(calls).toHaveLength(0);
-    });
-  }
-
-  it("sends a grok-imagine-video reference request once (guard does not over-block)", async () => {
+  it("sends a 1.5 reference request once (guard does not over-block)", async () => {
     const { calls, fetch } = createQueuedFetch([
       { request_id: "vid_req_ref_ok" },
     ]);
     const provider = createProvider(fetch);
     const req = {
       prompt: "A camera pulls back through a neon city",
-      model: "grok-imagine-video",
+      model: "grok-imagine-video-1.5",
       reference_images: [{ url: "https://example.com/ref.png" }],
     };
 
@@ -320,6 +387,50 @@ describe("xai video generations pre-transport mode guard", () => {
       method: "POST",
       body: req,
     });
+  });
+
+  it("rejects incompatible audio model before fetch", async () => {
+    const { calls, fetch } = createQueuedFetch([
+      { request_id: "vid_req_never_sent" },
+    ]);
+    const provider = createProvider(fetch);
+    const req = {
+      prompt: "A camera pulls back through a neon city",
+      model: "grok-imagine-video",
+      reference_audios: [{ voice_id: "eve" }],
+    };
+
+    const error = await provider.post.v1.videos
+      .generations(req, mintXaiOtp(VIDEO_GENERATIONS_DOT_PATH, req))
+      .catch((caught: unknown) => caught);
+
+    expect(error).toBeInstanceOf(XaiError);
+    expect((error as XaiError).status).toBe(400);
+    expect((error as XaiError).message).toContain("reference_audios");
+    expect(calls).toHaveLength(0);
+  });
+
+  it("rejects audio plus image-to-video before fetch", async () => {
+    const { calls, fetch } = createQueuedFetch([
+      { request_id: "vid_req_never_sent" },
+    ]);
+    const provider = createProvider(fetch);
+    const req = {
+      prompt: "A camera pulls back through a neon city",
+      reference_audios: [{ voice_id: "eve" }],
+      image: { url: "https://example.com/still.png" },
+    };
+
+    const error = await provider.post.v1.videos
+      .generations(req, mintXaiOtp(VIDEO_GENERATIONS_DOT_PATH, req))
+      .catch((caught: unknown) => caught);
+
+    expect(error).toBeInstanceOf(XaiError);
+    expect((error as XaiError).status).toBe(400);
+    expect((error as XaiError).message).toContain(
+      "Only one video mode can be active"
+    );
+    expect(calls).toHaveLength(0);
   });
 });
 

@@ -162,6 +162,33 @@ assets directly and can persist generated assets back to Files storage.
   persistent Files metadata is returned as `file_output` on the
   generated image or completed video.
 
+### Reference-to-video with preset voices
+
+`xai.post.v1.videos.generations` supports reference-to-video requests with
+reference images, one to three preset voices, or both. Image references may
+use public HTTPS URLs, data URIs, or Files API IDs in any mixture. Preset
+voices use open, case-insensitive xAI voice identifiers; Apicity preserves
+each `voice_id` exactly and leaves voice recognition to xAI. The preset-voice
+capability requires the `grok-imagine-video-1.5` family, including its
+`-preview` and dated aliases. Model-less reference requests default to the
+canonical `grok-imagine-video-1.5` model.
+
+```typescript
+const video = await xai.post.v1.videos.generations({
+  prompt:
+    "The person from <IMAGE_0> speaks the line with the voice from <AUDIO_0>",
+  model: "grok-imagine-video-1.5",
+  reference_images: [{ url: "https://example.com/character.png" }],
+  reference_audios: [{ voice_id: "eve" }],
+  duration: 15,
+});
+```
+
+The same callable accepts image-only and audio-only reference requests. Empty
+reference arrays are inactive; reference inputs cannot be combined with the
+`image`, `image_file_id`, `video`, or `video_file_id` source fields. Prompt
+markers such as `<IMAGE_0>` and `<AUDIO_0>` are passed through unchanged.
+
 ### Stored input field map
 
 Use these fields when an image or video already lives in xAI Files

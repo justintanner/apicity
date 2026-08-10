@@ -240,6 +240,7 @@ export const KIE_MEDIA_MODELS = [
   "qwen/image-to-image",
   "bytedance/seedance-2-fast",
   "bytedance/seedance-2",
+  "bytedance/seedance-2-5",
   "bytedance/seedance-2-mini",
   "bytedance/seedance-1.5-pro",
   // ByteDance non-Seedance createTask models — enum-only (Seedance alias is
@@ -2424,6 +2425,91 @@ export const Seedance2RequestSchema = Seedance2RequestObjectSchema.refine(
     path: ["input", "reference_image_urls"],
   }
 );
+
+const Seedance25MediaReferenceSchema = z.string().refine((value) => {
+  if (value.startsWith("asset://")) {
+    return /^asset:\/\/[^\s]+$/.test(value);
+  }
+
+  try {
+    new URL(value);
+    return true;
+  } catch {
+    return false;
+  }
+}, "Expected a valid media URL or non-empty asset:// reference");
+
+// The input is intentionally kept as a plain object so schema consumers can
+// inspect `.shape`; request-level scenario rules live on the outer schema.
+export const Seedance25InputSchema = z.object({
+  prompt: z.string().max(30000).optional(),
+  first_frame_url: Seedance25MediaReferenceSchema.optional(),
+  last_frame_url: Seedance25MediaReferenceSchema.optional(),
+  reference_image_urls: z
+    .array(Seedance25MediaReferenceSchema)
+    .max(30)
+    .optional(),
+  reference_video_urls: z
+    .array(Seedance25MediaReferenceSchema)
+    .max(10)
+    .optional(),
+  reference_audio_urls: z
+    .array(Seedance25MediaReferenceSchema)
+    .max(10)
+    .optional(),
+  return_last_frame: z.boolean().default(false),
+  generate_audio: z.boolean().default(true),
+  resolution: z.enum(["480p", "720p"]).default("720p"),
+  aspect_ratio: z
+    .enum(["1:1", "4:3", "3:4", "16:9", "9:16", "21:9", "adaptive"])
+    .default("adaptive"),
+  duration: z
+    .union([z.literal(-1), z.number().int().min(4).max(30)])
+    .default(5),
+  output_format: z.enum(["mp4", "mov"]).default("mp4"),
+  web_search: z.boolean().optional(),
+  nsfw_checker: z.boolean().default(false),
+});
+
+const Seedance25RequestObjectSchema = z.object({
+  model: z.literal("bytedance/seedance-2-5"),
+  callBackUrl: z.string().url().optional(),
+  input: Seedance25InputSchema,
+});
+
+export const Seedance25RequestSchema =
+  Seedance25RequestObjectSchema.superRefine((value, ctx) => {
+    const { input } = value;
+    const hasFirstFrame = Boolean(input.first_frame_url);
+    const hasLastFrame = Boolean(input.last_frame_url);
+    const hasFrame = hasFirstFrame || hasLastFrame;
+
+    if (hasLastFrame && !hasFirstFrame) {
+      ctx.addIssue({
+        code: "custom",
+        message: "last_frame_url requires first_frame_url",
+        path: ["input", "last_frame_url"],
+      });
+    }
+
+    if (!hasFrame) {
+      return;
+    }
+
+    for (const field of [
+      "reference_image_urls",
+      "reference_video_urls",
+      "reference_audio_urls",
+    ] as const) {
+      if ((input[field]?.length ?? 0) > 0) {
+        ctx.addIssue({
+          code: "custom",
+          message: `${field} cannot be combined with first_frame_url or last_frame_url`,
+          path: ["input", field],
+        });
+      }
+    }
+  });
 
 export const Seedance2MiniInputSchema = z.object({
   prompt: z.string().max(20000).optional(),
@@ -5808,6 +5894,7 @@ export const MediaGenerationRequestSchema = z.union([
   QwenImageToImageRequestSchema,
   Seedance2FastRequestSchema,
   Seedance2RequestSchema,
+  Seedance25RequestSchema,
   Seedance2MiniRequestSchema,
   Seedance15ProRequestSchema,
   BytedanceSeedreamRequestSchema,
@@ -6279,6 +6366,10 @@ export type Seedance2Input = z.infer<typeof Seedance2InputSchema>;
 export type Seedance2Request = z.input<typeof Seedance2RequestSchema>;
 export type Seedance2RequestInput = Seedance2Request;
 export type Seedance2ParsedRequest = z.output<typeof Seedance2RequestSchema>;
+export type Seedance25Input = z.infer<typeof Seedance25InputSchema>;
+export type Seedance25Request = z.input<typeof Seedance25RequestSchema>;
+export type Seedance25RequestInput = Seedance25Request;
+export type Seedance25ParsedRequest = z.output<typeof Seedance25RequestSchema>;
 export type Seedance2MiniInput = z.infer<typeof Seedance2MiniInputSchema>;
 export type Seedance2MiniRequest = z.input<typeof Seedance2MiniRequestSchema>;
 export type Seedance2MiniRequestInput = Seedance2MiniRequest;

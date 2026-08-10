@@ -1187,6 +1187,96 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  "bytedance/seedance-2-5": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        maxLength: 30000,
+        description: "Optional video generation prompt (max 30000 chars)",
+      },
+      first_frame_url: {
+        type: "string",
+        description:
+          "First frame image URL or non-empty asset://{assetId} reference; mutually exclusive with populated reference_*_urls",
+      },
+      last_frame_url: {
+        type: "string",
+        description:
+          "Last frame image URL or non-empty asset://{assetId} reference; requires first_frame_url and is mutually exclusive with populated reference_*_urls",
+      },
+      reference_image_urls: {
+        type: "array",
+        maxItems: 30,
+        description:
+          "Up to 30 image URLs or asset:// refs; JPEG/PNG/WebP/BMP/TIFF/GIF, each under 30 MB with dimensions 300-6000 px and aspect ratio (0.4, 2.5)",
+        items: { type: "string" },
+      },
+      reference_video_urls: {
+        type: "array",
+        maxItems: 10,
+        description:
+          "Up to 10 video URLs or asset:// refs; MP4/MOV, 480p/720p, 2-30 seconds, 24-60 FPS, 300-6000 px dimensions, 409600-927408 pixels, under 200 MB each and 30 seconds total",
+        items: { type: "string" },
+      },
+      reference_audio_urls: {
+        type: "array",
+        maxItems: 10,
+        description:
+          "Up to 10 audio URLs or asset:// refs; WAV/MP3, 2-30 seconds and under 15 MB each",
+        items: { type: "string" },
+      },
+      return_last_frame: {
+        type: "boolean",
+        default: false,
+        description:
+          "Return the last generated frame as an image (default false)",
+      },
+      generate_audio: {
+        type: "boolean",
+        default: true,
+        description: "Generate accompanying audio (default true)",
+      },
+      resolution: {
+        type: "string",
+        enum: ["480p", "720p"],
+        default: "720p",
+        description: "Output resolution (default 720p)",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: ["1:1", "4:3", "3:4", "16:9", "9:16", "21:9", "adaptive"],
+        default: "adaptive",
+        description: "Output aspect ratio (default adaptive)",
+      },
+      duration: {
+        type: "integer",
+        enum: [
+          -1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+          22, 23, 24, 25, 26, 27, 28, 29, 30,
+        ],
+        default: 5,
+        description:
+          "Duration in seconds; -1 selects automatic length, otherwise 4-30 (default 5)",
+      },
+      output_format: {
+        type: "string",
+        enum: ["mp4", "mov"],
+        default: "mp4",
+        description: "Output video format (default mp4)",
+      },
+      web_search: {
+        type: "boolean",
+        description: "Enable web search for generation",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description: "Content safety filter (default false)",
+      },
+    },
+  },
+
   "bytedance/seedance-2-mini": {
     type: "video",
     fields: {

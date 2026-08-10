@@ -1,6 +1,6 @@
 {
   "name": "@apicity/s3",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "S3-compatible object storage provider.",
   "license": "MIT",
   "repository": {

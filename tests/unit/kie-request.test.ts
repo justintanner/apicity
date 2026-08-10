@@ -22,6 +22,7 @@ import type {
   InfinitalkFromAudioRequest,
   ZImageRequest,
   VolcengineVideoToVideoLipSyncRequest,
+  Seedance25Request,
 } from "../../packages/provider/kie/src/types";
 import { TEST_PAYGATE_SECRET, mintKieCreateTaskOtp } from "../harness";
 
@@ -367,6 +368,95 @@ describe("KIE request utilities", () => {
   });
 
   describe("top-level KIE provider helpers", () => {
+    it("serializes a complete Seedance 2.5 frame request", async () => {
+      const secret = "test-paygate-secret";
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            code: 200,
+            msg: "success",
+            data: { taskId: "task_seedance_25_1234567890" },
+          }),
+          { status: 200 }
+        )
+      );
+      const provider = createKie({
+        apiKey: "test-key",
+        baseURL: "https://api.kie.ai",
+        fetch: mockFetch,
+        paygate: { secret },
+      });
+      const request: Seedance25Request = {
+        model: "bytedance/seedance-2-5",
+        input: {
+          prompt: "A quiet city street at sunrise.",
+          first_frame_url: "https://example.com/first.png",
+          last_frame_url: "asset://last-frame",
+          reference_image_urls: [],
+          reference_video_urls: [],
+          reference_audio_urls: [],
+          return_last_frame: true,
+          generate_audio: false,
+          resolution: "480p",
+          aspect_ratio: "21:9",
+          duration: 30,
+          output_format: "mov",
+          web_search: true,
+          nsfw_checker: true,
+        },
+        callBackUrl: "https://example.com/callback",
+      };
+
+      const result = await provider.post.api.v1.jobs.createTask(request, {
+        otp: mintOtp(secret, {
+          dotPath: "api.v1.jobs.createTask",
+          request,
+        }),
+      });
+
+      expect(result.data?.taskId).toBe("task_seedance_25_1234567890");
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      const [url, init] = mockFetch.mock.calls[0];
+      expect(url).toBe("https://api.kie.ai/api/v1/jobs/createTask");
+      expect(init.method).toBe("POST");
+      expect(JSON.parse(init.body as string)).toEqual(request);
+    });
+
+    it("rejects invalid Seedance 2.5 requests as status-400 before fetch", async () => {
+      const mockFetch = vi.fn();
+      const provider = createKie({
+        apiKey: "test-key",
+        baseURL: "https://api.kie.ai",
+        fetch: mockFetch,
+        paygate: { secret: TEST_PAYGATE_SECRET },
+      });
+      const request = {
+        model: "bytedance/seedance-2-5",
+        input: { duration: 3 },
+      };
+
+      const rejection = await provider.post.api.v1.jobs
+        .createTask(
+          request as unknown as Seedance25Request,
+          mintKieCreateTaskOtp(request)
+        )
+        .then(
+          () => undefined,
+          (error: unknown) => error
+        );
+
+      expect(rejection).toBeInstanceOf(KieError);
+      if (!(rejection instanceof KieError)) throw rejection;
+      expect(rejection.status).toBe(400);
+      expect(rejection.message).toContain("input.duration");
+      expect(rejection.body).toMatchObject({
+        issues: expect.arrayContaining([
+          expect.objectContaining({ path: ["input", "duration"] }),
+        ]),
+      });
+      expect(mockFetch).not.toHaveBeenCalled();
+    });
+
     it("should serialize Volcengine lip sync createTask requests", async () => {
       const secret = "test-paygate-secret";
       const mockFetch = vi.fn().mockResolvedValue(

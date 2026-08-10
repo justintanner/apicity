@@ -15,10 +15,13 @@ import {
   Seedance2InputSchema,
   Seedance2MiniInputSchema,
   Seedance2RequestSchema,
+  Seedance25InputSchema,
+  Seedance25RequestSchema,
   SunoGenerateRequestSchema,
   VeoExtendRequestSchema,
   VeoGenerateRequestSchema,
 } from "@apicity/kie/zod";
+import { CREATE_TASK_GUARDS } from "../../packages/provider/kie/src/kie";
 import { modelInputSchemas } from "../../packages/provider/kie/src/model-schemas";
 import {
   zodToJsonSchema,
@@ -27,6 +30,9 @@ import {
 
 const HTTPS_URL = "https://example.com/image.png";
 const LOCAL_PATH = "@asset/photo.png";
+const SEEDANCE25_MODEL = "bytedance/seedance-2-5" as const;
+const SEEDANCE25_PROMPT = "A quiet city street at sunrise.";
+const SEEDANCE25_MEDIA = "https://example.com/media.bin";
 
 function urlIssueMessages(
   result:
@@ -134,6 +140,218 @@ describe("KIE Zod schema validation", () => {
       });
       expect(result.success).toBe(true);
       expect(result.data?.reference_image_urls).toBeUndefined();
+    });
+  });
+
+  describe("bytedance/seedance-2-5", () => {
+    it("accepts every documented field and enum member", () => {
+      const result = Seedance25RequestSchema.safeParse({
+        model: SEEDANCE25_MODEL,
+        callBackUrl: "https://example.com/callback",
+        input: {
+          prompt: SEEDANCE25_PROMPT,
+          first_frame_url: SEEDANCE25_MEDIA,
+          last_frame_url: "asset://last-frame",
+          return_last_frame: true,
+          generate_audio: false,
+          resolution: "480p",
+          aspect_ratio: "21:9",
+          duration: 30,
+          output_format: "mov",
+          web_search: true,
+          nsfw_checker: true,
+        },
+      });
+
+      expect(result.success).toBe(true);
+      if (!result.success) throw result.error;
+      expect(result.data.input).toMatchObject({
+        prompt: SEEDANCE25_PROMPT,
+        first_frame_url: SEEDANCE25_MEDIA,
+        last_frame_url: "asset://last-frame",
+        return_last_frame: true,
+        generate_audio: false,
+        resolution: "480p",
+        aspect_ratio: "21:9",
+        duration: 30,
+        output_format: "mov",
+        web_search: true,
+        nsfw_checker: true,
+      });
+    });
+
+    it("applies documented defaults while preserving text-only input", () => {
+      const result = Seedance25RequestSchema.safeParse({
+        model: SEEDANCE25_MODEL,
+        input: { prompt: SEEDANCE25_PROMPT },
+      });
+
+      expect(result.success).toBe(true);
+      if (!result.success) throw result.error;
+      expect(result.data.input).toMatchObject({
+        return_last_frame: false,
+        generate_audio: true,
+        resolution: "720p",
+        aspect_ratio: "adaptive",
+        duration: 5,
+        output_format: "mp4",
+        nsfw_checker: false,
+      });
+      expect(result.data.input.web_search).toBeUndefined();
+    });
+
+    it.each([-1, 4, 30])("accepts duration boundary %s", (duration) => {
+      expect(Seedance25InputSchema.safeParse({ duration }).success).toBe(true);
+    });
+
+    it.each([3, 31, 4.5, "5"])("rejects duration %j", (duration) => {
+      const result = Seedance25InputSchema.safeParse({ duration });
+      expect(result.success).toBe(false);
+      expect(result.error?.issues).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ path: ["duration"] }),
+        ])
+      );
+    });
+
+    it.each([
+      ["reference_image_urls", 30],
+      ["reference_video_urls", 10],
+      ["reference_audio_urls", 10],
+    ] as const)("accepts %s at its count boundary", (field, count) => {
+      expect(
+        Seedance25InputSchema.safeParse({
+          [field]: Array(count).fill(SEEDANCE25_MEDIA),
+        }).success
+      ).toBe(true);
+    });
+
+    it.each([
+      ["reference_image_urls", 31],
+      ["reference_video_urls", 11],
+      ["reference_audio_urls", 11],
+    ] as const)("rejects %s over its count boundary", (field, count) => {
+      const result = Seedance25InputSchema.safeParse({
+        [field]: Array(count).fill(SEEDANCE25_MEDIA),
+      });
+      expect(result.success).toBe(false);
+      expect(result.error?.issues).toEqual(
+        expect.arrayContaining([expect.objectContaining({ path: [field] })])
+      );
+    });
+
+    it("allows empty reference arrays with frame mode", () => {
+      const result = Seedance25RequestSchema.safeParse({
+        model: SEEDANCE25_MODEL,
+        input: {
+          first_frame_url: SEEDANCE25_MEDIA,
+          reference_image_urls: [],
+          reference_video_urls: [],
+          reference_audio_urls: [],
+        },
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("accepts multimodal reference mode without frame URLs", () => {
+      const result = Seedance25RequestSchema.safeParse({
+        model: SEEDANCE25_MODEL,
+        input: {
+          prompt: SEEDANCE25_PROMPT,
+          reference_image_urls: [SEEDANCE25_MEDIA],
+          reference_video_urls: ["asset://reference-video"],
+          reference_audio_urls: ["https://example.com/reference.wav"],
+        },
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("rejects last-frame-only mode at the last_frame_url path", () => {
+      const result = Seedance25RequestSchema.safeParse({
+        model: SEEDANCE25_MODEL,
+        input: { last_frame_url: SEEDANCE25_MEDIA },
+      });
+      expect(result.success).toBe(false);
+      expect(result.error?.issues).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ path: ["input", "last_frame_url"] }),
+        ])
+      );
+    });
+
+    it.each([
+      "reference_image_urls",
+      "reference_video_urls",
+      "reference_audio_urls",
+    ] as const)(
+      "reports a field-specific issue when %s mixes with frames",
+      (field) => {
+        const result = Seedance25RequestSchema.safeParse({
+          model: SEEDANCE25_MODEL,
+          input: {
+            first_frame_url: SEEDANCE25_MEDIA,
+            [field]: [SEEDANCE25_MEDIA],
+          },
+        });
+        expect(result.success).toBe(false);
+        expect(result.error?.issues).toEqual(
+          expect.arrayContaining([
+            expect.objectContaining({ path: ["input", field] }),
+          ])
+        );
+      }
+    );
+
+    it.each([
+      "first_frame_url",
+      "last_frame_url",
+      "reference_image_urls",
+      "reference_video_urls",
+      "reference_audio_urls",
+    ] as const)("rejects an empty asset:// value in %s", (field) => {
+      const value = field.startsWith("reference_") ? ["asset://"] : "asset://";
+      const result = Seedance25InputSchema.safeParse({ [field]: value });
+      expect(result.success).toBe(false);
+      expect(result.error?.issues).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            path: field.startsWith("reference_") ? [field, 0] : [field],
+          }),
+        ])
+      );
+    });
+
+    it("keeps descriptor fields and the createTask guard in parity", () => {
+      const fields = modelInputSchemas[SEEDANCE25_MODEL].fields;
+      expect(Object.keys(fields).sort()).toEqual(
+        [
+          "aspect_ratio",
+          "duration",
+          "first_frame_url",
+          "generate_audio",
+          "last_frame_url",
+          "nsfw_checker",
+          "output_format",
+          "prompt",
+          "reference_audio_urls",
+          "reference_image_urls",
+          "reference_video_urls",
+          "return_last_frame",
+          "resolution",
+          "web_search",
+        ].sort()
+      );
+      expect(fields.duration).toMatchObject({
+        type: "integer",
+        enum: [-1, ...Array.from({ length: 27 }, (_, index) => index + 4)],
+        default: 5,
+      });
+      expect(fields.reference_image_urls.maxItems).toBe(30);
+      expect(fields.reference_video_urls.maxItems).toBe(10);
+      expect(fields.reference_audio_urls.maxItems).toBe(10);
+      expect(CREATE_TASK_GUARDS[SEEDANCE25_MODEL]).toBe(
+        Seedance25RequestSchema
+      );
     });
   });
 

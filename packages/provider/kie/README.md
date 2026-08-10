@@ -328,6 +328,53 @@ and `aspect_ratio` is one of `16:9`, `4:3`, `1:1`, `3:4`, `9:16`,
 `resolution: "720p"`, `aspect_ratio: "16:9"`, `duration: 5`,
 `web_search: false`, and `nsfw_checker: true`.
 
+## Seedance 2.5 createTask flow
+
+Seedance 2.5 uses the shared KIE jobs endpoints with the exact model slug
+`bytedance/seedance-2-5`. It supports three input modes: prompt-only text
+generation, first-frame image-to-video (optionally with a last frame), and
+multimodal reference-to-video using one or more image, video, and audio
+reference arrays. A `last_frame_url` requires `first_frame_url`; populated
+reference arrays cannot be combined with either frame URL. Empty reference
+arrays are ignored, so they may safely be sent with frame mode.
+
+```typescript
+const task = await kie.post.api.v1.jobs.createTask({
+  model: "bytedance/seedance-2-5",
+  input: {
+    prompt: "A paper boat crosses a sunlit stream.",
+    resolution: "720p",
+    aspect_ratio: "16:9",
+    duration: 5,
+    generate_audio: true,
+  },
+  callBackUrl: "https://example.com/api/kie-callback",
+});
+
+console.log(task.data?.taskId);
+```
+
+The exported schema defaults to `return_last_frame: false`,
+`generate_audio: true`, `resolution: "720p"`, `aspect_ratio: "adaptive"`,
+`duration: 5`, `output_format: "mp4"`, and `nsfw_checker: false`.
+`duration` accepts the number `-1` for automatic length or an integer from 4
+through 30 seconds. `resolution` is `"480p"` or `"720p"`,
+`output_format` is `"mp4"` or `"mov"`, and `aspect_ratio` also accepts
+`"1:1"`, `"4:3"`, `"3:4"`, `"9:16"`, and `"21:9"`.
+
+Media remains caller-owned: upload local files or provide media reachable by
+KIE before creating the task. The schema accepts public media URLs and
+non-empty `asset://` references, but the SDK does not upload, dereference, or
+fetch them. Reference arrays allow up to 30 images, 10 videos, and 10 audio
+files; the upstream format, size, duration, and total-input limits still apply.
+
+Use `callBackUrl` for asynchronous completion notifications. Without a
+callback, poll `kie.get.api.v1.jobs.recordInfo(task.data!.taskId)` until the
+state is `success` or `fail`, then parse the successful `resultJson` string for
+the generated media URLs. See the
+[Seedance 2.5 docs](https://docs.kie.ai/market/bytedance/seedance-2-5) for
+upstream media requirements.
+
 ## Real-world example: Kling 3.0 Turbo createTask payloads
 
 KIE's Kling 3.0 Turbo Quick Start exposes two createTask slugs:

@@ -1,0 +1,68 @@
+import { describe, it, expect, afterEach } from "vitest";
+import {
+  setupPolly,
+  teardownPolly,
+  getPollyMode,
+  type PollyContext,
+} from "../harness";
+import { createKie, type MediaGenerationRequest } from "@apicity/kie";
+import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
+
+describe("kie bytedance/seedance-2-5 integration", () => {
+  let ctx: PollyContext;
+
+  afterEach(async () => {
+    await teardownPolly(ctx);
+  });
+
+  it(
+    "should create a bounded text-to-video task and poll to completion",
+    { timeout: 600_000 },
+    async () => {
+      ctx = setupPolly("kie/bytedance-seedance-2-5");
+
+      const provider = createKie({
+        paygate: { secret: TEST_PAYGATE_SECRET },
+        apiKey: process.env.KIE_API_KEY ?? "test-key",
+      });
+
+      const request = {
+        model: "bytedance/seedance-2-5",
+        input: {
+          prompt: "A red kite drifts across a clear blue sky",
+          resolution: "480p",
+          aspect_ratio: "1:1",
+          duration: 4,
+          output_format: "mp4",
+          generate_audio: false,
+          nsfw_checker: false,
+        },
+      } satisfies MediaGenerationRequest;
+      const task = await provider.post.api.v1.jobs.createTask(
+        request,
+        mintKieCreateTaskOtp(request)
+      );
+
+      expect(task.code).toBe(200);
+      expect(task.data?.taskId).toBeTruthy();
+
+      const pollDelay = getPollyMode() === "replay" ? 0 : 5000;
+      const taskId = task.data!.taskId;
+      let state = "waiting";
+      for (let i = 0; i < 200; i++) {
+        const info = await provider.get.api.v1.jobs.recordInfo(taskId);
+        state = info.data?.state ?? "waiting";
+        if (state === "success" || state === "fail") {
+          expect(info.data?.taskId).toBe(taskId);
+          if (state === "success") {
+            expect(info.data?.resultJson).toBeTruthy();
+          }
+          break;
+        }
+        if (pollDelay) await new Promise((r) => setTimeout(r, pollDelay));
+      }
+
+      expect(state).toBe("success");
+    }
+  );
+});

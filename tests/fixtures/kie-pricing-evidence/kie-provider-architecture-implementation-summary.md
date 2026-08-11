@@ -103,11 +103,11 @@ surfaces; their remaining work is pricing reconciliation or evidence review.
 
 ## Coverage
 
-| ID | Status |
-| --- | --- |
+| ID      | Status  |
+| ------- | ------- |
 | REQ-003 | covered |
 | REQ-004 | covered |
 | REQ-006 | covered |
 | REQ-009 | covered |
 | REQ-012 | covered |
-| WI-3 | covered |
+| WI-3    | covered |

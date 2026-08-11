@@ -93,8 +93,8 @@ preserve the page/capture/source bindings when deriving reports.
 
 ## Coverage
 
-| ID | Status |
-| --- | --- |
+| ID      | Status  |
+| ------- | ------- |
 | REQ-001 | covered |
 | REQ-007 | covered |
-| WI-1 | covered |
+| WI-1    | covered |

@@ -51,7 +51,7 @@ describe("cost.estimate — pure-table (no network)", () => {
         extraInput: {
           reference_video_urls: ["https://example.com/ref.mp4"],
         },
-        expectedPerSecond: 0.03,
+        expectedPerSecond: 0.012,
       },
       {
         label: "480p without video input",
@@ -59,7 +59,7 @@ describe("cost.estimate — pure-table (no network)", () => {
         extraInput: {
           reference_image_urls: ["https://example.com/ref.jpg"],
         },
-        expectedPerSecond: 0.0475,
+        expectedPerSecond: 0.019,
       },
       {
         label: "720p with video input",
@@ -67,13 +67,13 @@ describe("cost.estimate — pure-table (no network)", () => {
         extraInput: {
           reference_video_urls: ["https://example.com/ref.mp4"],
         },
-        expectedPerSecond: 0.0625,
+        expectedPerSecond: 0.025,
       },
       {
         label: "720p without video input",
         resolution: "720p",
         extraInput: {},
-        expectedPerSecond: 0.1025,
+        expectedPerSecond: 0.041,
       },
     ] as const;
 
@@ -506,7 +506,11 @@ describe("cost.estimate — pure-table (no network)", () => {
       },
     });
     expect(r.usd).toBe(0);
-    expect(r.warnings.some((w) => w.includes("variant '6'"))).toBe(true);
+    expect(
+      r.warnings.some((w) =>
+        w.includes("missing required selector(s): resolution")
+      )
+    ).toBe(true);
   });
 
   it("kie happyhorse/video-edit 1080p → $0.24/s with top-level duration hint", () => {
@@ -622,9 +626,9 @@ describe("cost.estimate — pure-table (no network)", () => {
       expect(r.source).toBe("per-unit-table");
       expect(r.breakdown.unit).toBe("seconds");
       expect(r.breakdown.units).toBe(8);
-      expect(r.breakdown.perUnitUsd).toBe(0.1125);
-      expect(r.usd).toBeCloseTo(0.1125 * 8, 6);
-      expect(r.rateAsOf).toBe("2026-08-06");
+      expect(r.breakdown.perUnitUsd).toBe(0.08);
+      expect(r.usd).toBeCloseTo(0.08 * 8, 6);
+      expect(r.rateAsOf).toBe("2026-08-11");
     }
   });
 
@@ -657,12 +661,12 @@ describe("cost.estimate — pure-table (no network)", () => {
         },
       });
 
-      expect(explicit.breakdown.perUnitUsd).toBe(0.1825);
-      expect(explicit.usd).toBeCloseTo(0.1825 * 6, 6);
-      expect(explicit.rateAsOf).toBe("2026-08-06");
+      expect(explicit.breakdown.perUnitUsd).toBe(0.13);
+      expect(explicit.usd).toBeCloseTo(0.13 * 6, 6);
+      expect(explicit.rateAsOf).toBe("2026-08-11");
       // Documented upstream default is 2K when resolution is omitted.
-      expect(omitted.breakdown.perUnitUsd).toBe(0.1825);
-      expect(omitted.usd).toBeCloseTo(0.1825 * 6, 6);
+      expect(omitted.breakdown.perUnitUsd).toBe(0.13);
+      expect(omitted.usd).toBeCloseTo(0.13 * 6, 6);
     }
   });
 
@@ -794,7 +798,7 @@ describe("cost.estimate — pure-table (no network)", () => {
     expect(r.usd).toBeCloseTo(0.12, 6);
   });
 
-  it("kie grok-imagine/upscale → flat $0.05/generation with a tier caveat", () => {
+  it("kie grok-imagine/upscale fails closed without source/target resolution", () => {
     const c = createCost();
     const r = c.estimate({
       provider: "kie",
@@ -803,11 +807,10 @@ describe("cost.estimate — pure-table (no network)", () => {
         input: { task_id: "abc" },
       },
     });
-    expect(r.breakdown.unit).toBe("generations");
-    expect(r.usd).toBeCloseTo(0.05, 6);
-    // The schema exposes only task_id, so the page's two 1080p tiers cannot
-    // be selected — every estimate carries that caveat.
-    expect(r.warnings.some((w) => w.includes("720P→1080P"))).toBe(true);
+    expect(r.source).toBe("per-unit-table");
+    expect(r.breakdown).toEqual({});
+    expect(r.usd).toBe(0);
+    expect(r.warnings.some((w) => w.includes("fails closed"))).toBe(true);
   });
 
   it("missing max_tokens emits warning", () => {

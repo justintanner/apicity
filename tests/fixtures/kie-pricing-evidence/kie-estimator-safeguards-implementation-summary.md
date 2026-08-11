@@ -90,9 +90,9 @@ missing-axis signal for the new contract.
 
 ## Coverage
 
-| ID | Status |
-| --- | --- |
+| ID      | Status  |
+| ------- | ------- |
 | REQ-004 | covered |
 | REQ-008 | covered |
 | REQ-012 | covered |
-| WI-4 | covered |
+| WI-4    | covered |

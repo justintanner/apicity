@@ -1,106 +1,145 @@
 ---
-schema: gc.build.implementation-summary.v1
-workflow:
-  id: ac-j6j2kl
-  formula: do-work
-methodology:
-  pack: gascity
-  name: build-basic
-producer:
-  formula: do-work
-  stage: implement
-  attempt: 1
-status: approved
-trace:
-  upstream:
-    - path: beads/ac-oo9k9q
-      hash: bead:ac-oo9k9q
-    - path: scripts/lib/kie-pricing-reconciliation.mjs
-      hash: sha256:f339696ceb5a6ee68236730171cdf071526345ab42dae47eb98048dfb1f2fe97
-    - path: tests/unit/kie-pricing-reconciliation.test.ts
-      hash: sha256:777118f53ffc1bf61a9de42ad5ca2950081cdeb09099d002f4cc4080d47eabad
-    - path: tests/fixtures/kie-pricing-evidence/kie-pricing-reconciliation-2026-08-11T09-18-45-401Z.json
-      hash: sha256:99983f24cff6e8bd5edaf395ab51c237e9f6cd23de961a39f089e698465ded0a
-    - path: tests/fixtures/kie-pricing-evidence/kie-pricing-reconciliation-2026-08-11T09-18-45-401Z.md
-      hash: sha256:137eab565c8a8969ec0cfe30f4849e3e91165e7c556b2d43d318d94d64546154
-  coverage:
-    - id: REQ-002
-      status: covered
-    - id: REQ-003
-      status: covered
-    - id: REQ-006
-      status: covered
-    - id: REQ-007
-      status: covered
-    - id: WI-2
-      status: covered
+{
+  "schema": "gc.build.implementation-summary.v1",
+  "workflow": { "id": "ac-uiemlk", "formula": "do-work" },
+  "methodology": { "pack": "gascity", "name": "build-basic" },
+  "producer": { "formula": "do-work", "stage": "implement", "attempt": 1 },
+  "status": "approved",
+  "trace":
+    {
+      "upstream":
+        [
+          { "path": "beads/ac-gsoa3v", "hash": "bead:ac-gsoa3v" },
+          {
+            "path": "scripts/lib/kie-pricing-reconciliation.mjs",
+            "hash": "sha256:084873831f4727627dc6bda8387fb1f86049eccb77103360eec76c86403684e8",
+          },
+          {
+            "path": "tests/unit/kie-pricing-reconciliation.test.ts",
+            "hash": "sha256:ddb9720f2b167420bd6361aa9a906b270f2cc52191c6d0b4291dddd32b9839c7",
+          },
+          {
+            "path": "tests/integration/cost-estimate.test.ts",
+            "hash": "sha256:eca0115c9dde8e8f192d875b97a53b853c7bee2b3756f39c4198a01fba7c2a86",
+          },
+          {
+            "path": "tests/fixtures/kie-pricing-evidence/kie-pricing-reconciliation-2026-08-11T09-18-45-401Z.json",
+            "hash": "sha256:09f04fd895082c4cb05313a64670bab3120bd05bf408f58aff417e0eceada5a5",
+          },
+          {
+            "path": "tests/fixtures/kie-pricing-evidence/kie-pricing-reconciliation-2026-08-11T09-18-45-401Z.md",
+            "hash": "sha256:7bd6d8d07fa2e51a7baf19cd6fea4ee8c818b985ec97a8e0fb8896c9b7379707",
+          },
+        ],
+      "coverage":
+        [
+          { "id": "REQ-001", "status": "covered" },
+          { "id": "REQ-002", "status": "covered" },
+          { "id": "REQ-003", "status": "covered" },
+          { "id": "REQ-004", "status": "covered" },
+          { "id": "REQ-005", "status": "covered" },
+          { "id": "REQ-006", "status": "covered" },
+          { "id": "REQ-007", "status": "covered" },
+          { "id": "REQ-008", "status": "covered" },
+          { "id": "REQ-009", "status": "covered" },
+          { "id": "REQ-010", "status": "covered" },
+          { "id": "REQ-011", "status": "covered" },
+          { "id": "REQ-012", "status": "covered" },
+          { "id": "WI-6", "status": "covered" },
+        ],
+    },
+}
 ---
 
-# Implementation Summary: WI-2 Kie pricing reconciliation
+# Implementation Summary: WI6 Kie pricing reconciliation
 
 ## Summary
 
-Added a network-free reconciliation checker that derives the current Kie
-source inventories from TypeScript registries and `scripts/endpoint-docs.tsv`.
-The initial dated manifest covers all 408 frozen official pricing occurrences,
-127 schema models, 71 documented endpoints, 135 runtime pricing keys, and 137
-slug/display keys. The checker reports zero unclassified raw rows and zero
-unclassified ApiCity keys.
-Implemented and canonical-alias rows each have exactly one canonical pricing
-key. The manifest also records 23 schema-without-pricing models and 31
-pricing-only runtime keys, with selector schema sources and explicit
-query/description conflicts.
+Completed the WI6 executable, bidirectional Kie pricing audit against the
+frozen 408-row official snapshot. Implemented rows use concrete selector
+values, schema-valid representative payloads, cost hints where duration is
+inherited, and billing-basis normalization. Runtime Kie rate variants are
+covered by evidence-backed cases or explicit legacy, pricing-only, and
+unreachable exceptions. The checker reports zero unclassified official rows
+and zero unclassified ApiCity keys.
+
+The audit preserves the comparison baseline of 4 added, 0 removed, and 17
+changed rows. Inventory records retain both the pre-WI5 baseline
+(127/135/137/137/23/31/71) and the final WI6 counts
+(127/137/139/139/21/31/71) for models, pricing keys, slug keys, display keys,
+schema-without-pricing, pricing-only keys, and endpoints respectively.
 
 ## Intended Behavior
 
-- Every official occurrence is retained with its row hash, semantic key,
-  evidence URL, exact official fields, and one closed-vocabulary disposition.
-- Every model, endpoint, pricing key, slug, and display key is derived from the
-  current source tree and independently classified with a rationale for
-  explicit omissions.
-- The four official Seedance 2.5 cells are preserved as implemented planned
-  coverage: 480p no-audio $0.140/sec, 480p audio $0.085/sec, 720p no-audio
-  $0.315/sec, and 720p audio $0.190/sec.
-- Snapshot bytes, pull metadata, source registry hashes, row identity, and
-  computed coverage summaries fail closed when stale or mutated.
+- Execute every implemented official cell exactly through `computeEstimate`,
+  including free-nonbillable rows with a per-unit breakdown and no warnings.
+- Exercise every reachable `PRICING.kie` rate variant, with provenance for
+  legacy, pricing-only, unreachable, and structured query/rate conflicts.
+- Normalize per-1000-character and batch-image official units while retaining
+  malformed source spellings explicitly; use named audited exceptions only
+  where the callable contract proves the basis.
+- Assert H3 image and Seedream input-image charges as additive differential
+  components, and keep Topaz image/Grok upscale fail-closed.
+- Reject generic createTask selector pollution, validate representative
+  payloads with `CREATE_TASK_GUARDS`, strip endpoint audit metadata before
+  estimation, and prove Wan speech duration from frame count and frame rate.
 
 ## Changed Files
 
-- `scripts/lib/kie-pricing-reconciliation.mjs` — source inventory extraction,
-  row classification, manifest generation, validation, and Markdown rendering.
-- `tests/unit/kie-pricing-reconciliation.test.ts` — count, Seedance, mutation,
-  checksum, manifest, and human-summary coverage tests.
-- `tests/fixtures/kie-pricing-evidence/kie-pricing-reconciliation-2026-08-11T09-18-45-401Z.json` —
-  initial machine-readable reconciliation manifest.
-- `tests/fixtures/kie-pricing-evidence/kie-pricing-reconciliation-2026-08-11T09-18-45-401Z.md` —
-  initial human-readable reconciliation report.
+- `scripts/lib/kie-pricing-reconciliation.mjs` — executable manifest builder,
+  bidirectional runtime coverage, structured conflicts, inventory baselines,
+  Prettier artifact emission, and safe CLI guard.
+- `tests/unit/kie-pricing-reconciliation.test.ts` — schema-safe executable
+  audit, official-unit equality, additive billing, runtime-variant coverage,
+  conflict, exception, and inventory assertions.
+- `tests/integration/cost-estimate.test.ts` — integrated Kie cost and fail-closed
+  behavior assertions.
+- `tests/fixtures/kie-pricing-evidence/kie-pricing-reconciliation-2026-08-11T09-18-45-401Z.json` — final
+  machine-readable WI6 manifest.
+- `tests/fixtures/kie-pricing-evidence/kie-pricing-reconciliation-2026-08-11T09-18-45-401Z.md` — final
+  generated WI6 report.
+- `tests/fixtures/kie-pricing-evidence/kie-estimator-safeguards-implementation-summary.md` — formatted
+  convoy evidence summary.
+- `tests/fixtures/kie-pricing-evidence/kie-pricing-baseline-2026-08-06.json` — formatted
+  convoy baseline evidence.
+- `tests/fixtures/kie-pricing-evidence/kie-pricing-implementation-summary.md` — formatted
+  convoy evidence summary.
+- `tests/fixtures/kie-pricing-evidence/kie-provider-architecture-implementation-summary.md` — formatted
+  convoy evidence summary.
 
 ## Verification
 
-- First verification command: `node scripts/lib/kie-pricing-reconciliation.mjs check --manifest tests/fixtures/kie-pricing-evidence/kie-pricing-reconciliation-2026-08-11T09-18-45-401Z.json` — exit 0; 408 rows, 127 models, 71 endpoints, 135 pricing keys, 137 slugs, 137 displays, and zero unclassified totals.
-- `/gc/apicity/node_modules/.bin/tsc --noEmit -p tests/tsconfig.json` — exit 0.
-- `/gc/apicity/node_modules/.bin/eslint scripts/lib/kie-pricing-reconciliation.mjs tests/unit/kie-pricing-reconciliation.test.ts` — exit 0.
-- `/gc/apicity/node_modules/.bin/vitest run tests/unit/kie-pricing-reconciliation.test.ts` — exit 0; 1 file and 12 tests passed.
-- Final proof command: `node scripts/lib/kie-pricing-reconciliation.mjs check --manifest tests/fixtures/kie-pricing-evidence/kie-pricing-reconciliation-2026-08-11T09-18-45-401Z.json` — exit 0 after formatting and lint; the committed manifest still reproduces all source inventories and zero-unclassified assertions.
+- `node scripts/lib/kie-pricing-reconciliation.mjs check ...` — passed;
+  408 rows, 127 models, 71 endpoints, 137 pricing keys, 139 slugs and
+  displays, with zero unclassified totals.
+- `vitest run tests/unit/kie-pricing-reconciliation.test.ts` — passed; 19/19.
+- Kie fast gate — passed; 174 files and 2,010 tests, plus 18 cross-cutting
+  tests.
+- Cost fast gate — passed; 13 files and 785 tests, plus 18 cross-cutting
+  tests.
+- `git diff --check` — passed.
+- `pnpm run ci:local` with the required literal PATH — passed.
 
 ## Remaining Risks
 
-This is the initial WI-2 gate. The manifest deliberately records 15 raw rows
-as upstream-unmappable, 35 as unsupported-endpoint, 69 as token-billed, and
-22 schema models as explicit WI-3 architecture handoffs where the current
-estimator or callable source tree cannot prove a safe mapping. Exactly one
-query/description conflict remains: Grok text-to-image versus its
-text-to-video query. WI-3 through WI-6 must resolve those dispositions and
-regenerate the manifest after source and pricing changes. The manifest is
-bound to the immutable 2026-08-11 snapshot and must be regenerated for a new
-official pull.
+The manifest remains bound to the immutable 2026-08-11 official snapshot;
+future source or official pricing changes require a new audited generation.
+No push was performed, per the required independent review boundary.
 
 ## Coverage
 
-| ID | Status |
-| --- | --- |
+| ID      | Status  |
+| ------- | ------- |
+| REQ-001 | covered |
 | REQ-002 | covered |
 | REQ-003 | covered |
+| REQ-004 | covered |
+| REQ-005 | covered |
 | REQ-006 | covered |
 | REQ-007 | covered |
-| WI-2 | covered |
+| REQ-008 | covered |
+| REQ-009 | covered |
+| REQ-010 | covered |
+| REQ-011 | covered |
+| REQ-012 | covered |
+| WI-6    | covered |

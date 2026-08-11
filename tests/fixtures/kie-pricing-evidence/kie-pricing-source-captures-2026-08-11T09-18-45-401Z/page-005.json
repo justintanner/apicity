@@ -1,0 +1,110 @@
+{
+  "code": 200,
+  "msg": "success",
+  "data": {
+    "records": [
+      {
+        "modelDescription": "Gemini 2.5 Pro, Chat, Input",
+        "interfaceType": "chat",
+        "provider": "Google",
+        "creditPrice": "76",
+        "creditUnit": "per million tokens",
+        "usdPrice": "0.38",
+        "falPrice": "1.25",
+        "discountRate": 69.6,
+        "anchor": "https://kie.ai/gemini-2.5-pro",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "kling 2.6 motion control, video to video, 1080P",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "18",
+        "creditUnit": "per second",
+        "usdPrice": "0.09",
+        "falPrice": "0.112",
+        "discountRate": 19.64,
+        "anchor": "https://kie.ai/kling-2.6-motion-control",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "kling 2.6 motion control, video-to-video, 720P",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "11",
+        "creditUnit": "per second",
+        "usdPrice": "0.055",
+        "falPrice": "0.07",
+        "discountRate": 21.43,
+        "anchor": "https://kie.ai/kling-2.6-motion-control",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "gpt image 1.5, image-to-image, high",
+        "interfaceType": "image",
+        "provider": "OpenAI",
+        "creditPrice": "22.0",
+        "creditUnit": "per image",
+        "usdPrice": "0.11",
+        "falPrice": "0.133",
+        "discountRate": 17.29,
+        "anchor": "https://kie.ai/gpt-image-1.5?model=gpt-image%2F1.5-image-to-image",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "gpt image 1.5, image-to-image, medium",
+        "interfaceType": "image",
+        "provider": "OpenAI",
+        "creditPrice": "4.0",
+        "creditUnit": "per image",
+        "usdPrice": "0.02",
+        "falPrice": "0.034",
+        "discountRate": 41.18,
+        "anchor": "https://kie.ai/gpt-image-1.5?model=gpt-image%2F1.5-image-to-image",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "gpt image 1.5, text-to-image, high",
+        "interfaceType": "image",
+        "provider": "OpenAI",
+        "creditPrice": "22.0",
+        "creditUnit": "per image",
+        "usdPrice": "0.11",
+        "falPrice": "0.133",
+        "discountRate": 17.29,
+        "anchor": "https://kie.ai/gpt-image-1.5?model=gpt-image%2F1.5-text-to-image",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "gpt image 1.5, text-to-image, medium",
+        "interfaceType": "image",
+        "provider": "OpenAI",
+        "creditPrice": "4.0",
+        "creditUnit": "per image",
+        "usdPrice": "0.02",
+        "falPrice": "0.034",
+        "discountRate": 41.18,
+        "anchor": "https://kie.ai/gpt-image-1.5?model=gpt-image%2F1.5-text-to-image",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "google imagen4, text-to-image, default",
+        "interfaceType": "image",
+        "provider": "Google",
+        "creditPrice": "8.0",
+        "creditUnit": "per request",
+        "usdPrice": "0.04",
+        "falPrice": "",
+        "discountRate": 0,
+        "anchor": "https://kie.ai/google/imagen4?model=google%2Fimagen4",
+        "discountPrice": false
+      }
+    ],
+    "total": 408,
+    "size": 100,
+    "current": 5,
+    "orders": [],
+    "searchCount": true,
+    "pages": 5
+  }
+}

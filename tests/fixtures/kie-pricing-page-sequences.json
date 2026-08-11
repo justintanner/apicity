@@ -1,0 +1,148 @@
+{
+  "valid": [
+    {
+      "code": 200,
+      "msg": "success",
+      "data": {
+        "records": [
+          {
+            "modelDescription": "Fixture model A",
+            "interfaceType": "video",
+            "provider": "Fixture",
+            "creditPrice": "1",
+            "creditUnit": "per request",
+            "usdPrice": "0.005",
+            "anchor": "https://example.test/a"
+          },
+          {
+            "modelDescription": "Fixture model B",
+            "interfaceType": "image",
+            "provider": "Fixture",
+            "creditPrice": "2",
+            "creditUnit": "per image",
+            "usdPrice": "0.010",
+            "anchor": "https://example.test/b"
+          }
+        ],
+        "total": 3,
+        "size": 2,
+        "current": 1,
+        "pages": 2
+      }
+    },
+    {
+      "code": 200,
+      "msg": "success",
+      "data": {
+        "records": [
+          {
+            "modelDescription": "Fixture model C",
+            "interfaceType": "video",
+            "provider": "Fixture",
+            "creditPrice": "3",
+            "creditUnit": "per second",
+            "usdPrice": "0.015",
+            "anchor": "https://example.test/c"
+          }
+        ],
+        "total": 3,
+        "size": 2,
+        "current": 2,
+        "pages": 2
+      }
+    }
+  ],
+  "changingTotal": [
+    {
+      "code": 200,
+      "data": {
+        "records": [{ "modelDescription": "A" }, { "modelDescription": "B" }],
+        "total": 3,
+        "size": 2,
+        "current": 1,
+        "pages": 2
+      }
+    },
+    {
+      "code": 200,
+      "data": {
+        "records": [{ "modelDescription": "C" }, { "modelDescription": "D" }],
+        "total": 4,
+        "size": 2,
+        "current": 2,
+        "pages": 2
+      }
+    }
+  ],
+  "repeatedPages": [
+    {
+      "code": 200,
+      "data": {
+        "records": [{ "modelDescription": "A" }, { "modelDescription": "B" }],
+        "total": 4,
+        "size": 2,
+        "current": 1,
+        "pages": 2
+      }
+    },
+    {
+      "code": 200,
+      "data": {
+        "records": [{ "modelDescription": "A" }, { "modelDescription": "B" }],
+        "total": 4,
+        "size": 2,
+        "current": 2,
+        "pages": 2
+      }
+    }
+  ],
+  "earlyEmpty": [
+    {
+      "code": 200,
+      "data": {
+        "records": [],
+        "total": 3,
+        "size": 2,
+        "current": 1,
+        "pages": 2
+      }
+    },
+    {
+      "code": 200,
+      "data": {
+        "records": [{ "modelDescription": "C" }],
+        "total": 3,
+        "size": 2,
+        "current": 2,
+        "pages": 2
+      }
+    }
+  ],
+  "duplicateOccurrences": [
+    {
+      "code": 200,
+      "data": {
+        "records": [
+          { "modelDescription": "same", "provider": "Fixture" },
+          { "modelDescription": "same", "provider": "Fixture" }
+        ],
+        "total": 2,
+        "size": 2,
+        "current": 1,
+        "pages": 1
+      }
+    }
+  ],
+  "malformedRows": [
+    {
+      "code": 200,
+      "data": {
+        "records": ["not an object"],
+        "total": 1,
+        "size": 2,
+        "current": 1,
+        "pages": 1
+      }
+    }
+  ]
+}

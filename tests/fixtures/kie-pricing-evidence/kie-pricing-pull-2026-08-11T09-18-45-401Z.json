@@ -1,0 +1,514 @@
+{
+  "schema": "gc.kie-pricing-pull.v1",
+  "endpoint": "https://api.kie.ai/client/v1/model-pricing/page",
+  "method": "POST",
+  "pulledAt": {
+    "startedAt": "2026-08-11T09:18:44.265Z",
+    "completedAt": "2026-08-11T09:18:45.401Z"
+  },
+  "request": {
+    "pageSize": 100
+  },
+  "snapshot": {
+    "path": "tests/fixtures/kie-pricing-evidence/kie-pricing-snapshot-2026-08-11T09-18-45-401Z.json",
+    "sha256": "sha256:5a11661f99a78ec391baa5fc38e9f8d215e3efb4651c237b26a74a46a5f03db7"
+  },
+  "sourceCaptures": {
+    "root": "tests/fixtures/kie-pricing-evidence/kie-pricing-source-captures-2026-08-11T09-18-45-401Z",
+    "sourcesPath": "tests/fixtures/kie-pricing-evidence/kie-pricing-sources-2026-08-11T09-18-45-401Z.json",
+    "files": [
+      {
+        "pageNum": 1,
+        "path": "kie-pricing-source-captures-2026-08-11T09-18-45-401Z/page-001.json",
+        "url": "https://api.kie.ai/client/v1/model-pricing/page",
+        "retrievedAt": "2026-08-11T09:18:45.401Z",
+        "mediaType": "application/json",
+        "bytes": 38902,
+        "sha256": "sha256:0d244c9d9cd5359b2e04a7c804dcab1727d80bbb3fd32d3b9e8350321602577c",
+        "redaction": {
+          "applied": true,
+          "rule": "sensitive response key names"
+        }
+      },
+      {
+        "pageNum": 2,
+        "path": "kie-pricing-source-captures-2026-08-11T09-18-45-401Z/page-002.json",
+        "url": "https://api.kie.ai/client/v1/model-pricing/page",
+        "retrievedAt": "2026-08-11T09:18:45.401Z",
+        "mediaType": "application/json",
+        "bytes": 39444,
+        "sha256": "sha256:9576fc65e3638b31b4fb826e86a84f4b509f667b0f2d78adc018906a8ef5669a",
+        "redaction": {
+          "applied": true,
+          "rule": "sensitive response key names"
+        }
+      },
+      {
+        "pageNum": 3,
+        "path": "kie-pricing-source-captures-2026-08-11T09-18-45-401Z/page-003.json",
+        "url": "https://api.kie.ai/client/v1/model-pricing/page",
+        "retrievedAt": "2026-08-11T09:18:45.401Z",
+        "mediaType": "application/json",
+        "bytes": 40380,
+        "sha256": "sha256:13f3e7f3ad15e2a1a8374a7da1079006a5d986af61bb12a6d260565cfc5a6cac",
+        "redaction": {
+          "applied": true,
+          "rule": "sensitive response key names"
+        }
+      },
+      {
+        "pageNum": 4,
+        "path": "kie-pricing-source-captures-2026-08-11T09-18-45-401Z/page-004.json",
+        "url": "https://api.kie.ai/client/v1/model-pricing/page",
+        "retrievedAt": "2026-08-11T09:18:45.401Z",
+        "mediaType": "application/json",
+        "bytes": 40278,
+        "sha256": "sha256:e225c9a8cbce93c6edc245cc359b850519040936a65a58f98e19fb190b248896",
+        "redaction": {
+          "applied": true,
+          "rule": "sensitive response key names"
+        }
+      },
+      {
+        "pageNum": 5,
+        "path": "kie-pricing-source-captures-2026-08-11T09-18-45-401Z/page-005.json",
+        "url": "https://api.kie.ai/client/v1/model-pricing/page",
+        "retrievedAt": "2026-08-11T09:18:45.401Z",
+        "mediaType": "application/json",
+        "bytes": 3456,
+        "sha256": "sha256:c73babbc76b62d71170ad78babb01d9377a831b670fe96ff44a60959e1a1e4fc",
+        "redaction": {
+          "applied": true,
+          "rule": "sensitive response key names"
+        }
+      }
+    ]
+  },
+  "pages": [
+    {
+      "total": 408,
+      "size": 100,
+      "current": 1,
+      "pages": 5,
+      "rowCount": 100,
+      "identity": "sha256:b0c3c1210a01c78b2e8ea75b64af4b2a818e2ebb74d23db91737f6e28437feb6"
+    },
+    {
+      "total": 408,
+      "size": 100,
+      "current": 2,
+      "pages": 5,
+      "rowCount": 100,
+      "identity": "sha256:68ed8933eb94a90071011571bf9e5ed967c78176fbf25244e73762d6c8c94704"
+    },
+    {
+      "total": 408,
+      "size": 100,
+      "current": 3,
+      "pages": 5,
+      "rowCount": 100,
+      "identity": "sha256:9a2aac4ea0b66dc15377402a9274f59aaa3d7ab2c49716d80825953863f5ea3b"
+    },
+    {
+      "total": 408,
+      "size": 100,
+      "current": 4,
+      "pages": 5,
+      "rowCount": 100,
+      "identity": "sha256:09e797bf3c656b6c766539e8284fff8aa5ece70a677b31335fb2279e2c6908f2"
+    },
+    {
+      "total": 408,
+      "size": 100,
+      "current": 5,
+      "pages": 5,
+      "rowCount": 8,
+      "identity": "sha256:f6b7948d1f50628095c1f3b50b075e788527a0af475d6cbdfc2d7f710adee9e8"
+    }
+  ],
+  "reportedTotal": 408,
+  "capturedTotal": 408,
+  "rawUniqueCount": 408,
+  "semanticUniqueCount": 408,
+  "duplicateAnalysis": {
+    "rawDuplicateOccurrences": 0,
+    "semanticDuplicateOccurrences": 0,
+    "rawDuplicateGroups": [],
+    "semanticDuplicateGroups": []
+  },
+  "responseCompleteness": {
+    "complete": true,
+    "totalsStable": true,
+    "pageIdentitiesStable": true,
+    "noEarlyEmptyPages": true,
+    "termination": "reported-pages"
+  },
+  "comparison": {
+    "baselinePath": "tests/fixtures/kie-pricing-evidence/kie-pricing-baseline-2026-08-06.json",
+    "baselineAsOf": "2026-08-06",
+    "baselineRows": 404,
+    "currentRows": 408,
+    "added": 4,
+    "removed": 0,
+    "changed": 17,
+    "addedRows": [
+      {
+        "modelDescription": "bytedance/seedance-2-5, 720p with video",
+        "interfaceType": "video",
+        "provider": "ByteDance",
+        "creditPrice": "38",
+        "creditUnit": "per second",
+        "usdPrice": "0.190",
+        "falPrice": "0.2838",
+        "discountRate": 33.05,
+        "anchor": "https://kie.ai/seedance-2-5",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "bytedance/seedance-2-5, 720p no video",
+        "interfaceType": "video",
+        "provider": "ByteDance",
+        "creditPrice": "63",
+        "creditUnit": "per second",
+        "usdPrice": "0.315",
+        "falPrice": "0.4730",
+        "discountRate": 33.4,
+        "anchor": "https://kie.ai/seedance-2-5",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "bytedance/seedance-2-5, 480p with video",
+        "interfaceType": "video",
+        "provider": "ByteDance",
+        "creditPrice": "17",
+        "creditUnit": "per second",
+        "usdPrice": "0.085",
+        "falPrice": "0.1323",
+        "discountRate": 35.75,
+        "anchor": "https://kie.ai/seedance-2-5",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "bytedance/seedance-2-5, 480p no video",
+        "interfaceType": "video",
+        "provider": "ByteDance",
+        "creditPrice": "28",
+        "creditUnit": "per second",
+        "usdPrice": "0.140",
+        "falPrice": "0.2205",
+        "discountRate": 36.51,
+        "anchor": "https://kie.ai/seedance-2-5",
+        "discountPrice": false
+      }
+    ],
+    "removedRows": [],
+    "changedRows": [
+      {
+        "key": "[\"MiniMax H3, video input, 768p\",\"video\",\"Hailuo\",\"per second\",\"\"]",
+        "modelDescription": "MiniMax H3, video input, 768p",
+        "before": {
+          "creditPrice": "22.5",
+          "usdPrice": "0.1125",
+          "falPrice": "0.18",
+          "discountRate": 37.5,
+          "discountPrice": false
+        },
+        "after": {
+          "creditPrice": "16",
+          "usdPrice": "0.08",
+          "falPrice": "",
+          "discountRate": 37.5,
+          "discountPrice": false
+        }
+      },
+      {
+        "key": "[\"MiniMax H3, reference to video, 768p\",\"video\",\"Hailuo\",\"per second\",\"https://kie.ai/minimax-h3?model=minimax-h3%2Freference-to-video\"]",
+        "modelDescription": "MiniMax H3, reference to video, 768p",
+        "before": {
+          "creditPrice": "22.5",
+          "usdPrice": "0.1125",
+          "falPrice": "0.18",
+          "discountRate": 37.5,
+          "discountPrice": false
+        },
+        "after": {
+          "creditPrice": "16",
+          "usdPrice": "0.08",
+          "falPrice": "",
+          "discountRate": 37.5,
+          "discountPrice": false
+        }
+      },
+      {
+        "key": "[\"MiniMax H3, image to video, 768p\",\"video\",\"Hailuo\",\"per second\",\"https://kie.ai/minimax-h3?model=minimax-h3%2Fimage-to-video\"]",
+        "modelDescription": "MiniMax H3, image to video, 768p",
+        "before": {
+          "creditPrice": "22.5",
+          "usdPrice": "0.1125",
+          "falPrice": "0.18",
+          "discountRate": 37.5,
+          "discountPrice": false
+        },
+        "after": {
+          "creditPrice": "16",
+          "usdPrice": "0.08",
+          "falPrice": "",
+          "discountRate": 37.5,
+          "discountPrice": false
+        }
+      },
+      {
+        "key": "[\"MiniMax H3, text to video, 768p\",\"video\",\"Hailuo\",\"per second\",\"https://kie.ai/minimax-h3?model=minimax-h3%2Ftext-to-video\"]",
+        "modelDescription": "MiniMax H3, text to video, 768p",
+        "before": {
+          "creditPrice": "22.5",
+          "usdPrice": "0.1125",
+          "falPrice": "0.18",
+          "discountRate": 37.5,
+          "discountPrice": false
+        },
+        "after": {
+          "creditPrice": "16",
+          "usdPrice": "0.08",
+          "falPrice": "",
+          "discountRate": 37.5,
+          "discountPrice": false
+        }
+      },
+      {
+        "key": "[\"MiniMax H3, text to video, 2K\",\"video\",\"Hailuo\",\"per second\",\"https://kie.ai/minimax-h3?model=minimax-h3%2Ftext-to-video\"]",
+        "modelDescription": "MiniMax H3, text to video, 2K",
+        "before": {
+          "creditPrice": "36.5",
+          "usdPrice": "0.1825",
+          "falPrice": "0.26",
+          "discountRate": 29.81,
+          "discountPrice": false
+        },
+        "after": {
+          "creditPrice": "26",
+          "usdPrice": "0.13",
+          "falPrice": "",
+          "discountRate": 29.81,
+          "discountPrice": false
+        }
+      },
+      {
+        "key": "[\"MiniMax H3, image to video, 2K\",\"video\",\"Hailuo\",\"per second\",\"https://kie.ai/minimax-h3?model=minimax-h3%2Fimage-to-video\"]",
+        "modelDescription": "MiniMax H3, image to video, 2K",
+        "before": {
+          "creditPrice": "36.5",
+          "usdPrice": "0.1825",
+          "falPrice": "0.26",
+          "discountRate": 29.81,
+          "discountPrice": false
+        },
+        "after": {
+          "creditPrice": "26",
+          "usdPrice": "0.13",
+          "falPrice": "",
+          "discountRate": 29.81,
+          "discountPrice": false
+        }
+      },
+      {
+        "key": "[\"MiniMax H3, reference to video, 2K\",\"video\",\"Hailuo\",\"per second\",\"https://kie.ai/minimax-h3?model=minimax-h3%2Freference-to-video\"]",
+        "modelDescription": "MiniMax H3, reference to video, 2K",
+        "before": {
+          "creditPrice": "36.5",
+          "usdPrice": "0.1825",
+          "falPrice": "0.26",
+          "discountRate": 29.81,
+          "discountPrice": false
+        },
+        "after": {
+          "creditPrice": "26",
+          "usdPrice": "0.13",
+          "falPrice": "",
+          "discountRate": 29.81,
+          "discountPrice": false
+        }
+      },
+      {
+        "key": "[\"MiniMax H3, video input, 2k\",\"video\",\"Hailuo\",\"per second\",\"\"]",
+        "modelDescription": "MiniMax H3, video input, 2k",
+        "before": {
+          "creditPrice": "36.5",
+          "usdPrice": "0.1825",
+          "falPrice": "0.26",
+          "discountRate": 29.81,
+          "discountPrice": false
+        },
+        "after": {
+          "creditPrice": "26",
+          "usdPrice": "0.13",
+          "falPrice": "",
+          "discountRate": 29.81,
+          "discountPrice": false
+        }
+      },
+      {
+        "key": "[\"MiniMax H3, image input, 768p, 2k\",\"video\",\"Hailuo\",\"per image\",\"\"]",
+        "modelDescription": "MiniMax H3, image input, 768p, 2k",
+        "before": {
+          "creditPrice": "11",
+          "usdPrice": "0.055",
+          "falPrice": "",
+          "discountRate": 0,
+          "discountPrice": false
+        },
+        "after": {
+          "creditPrice": "8",
+          "usdPrice": "0.04",
+          "falPrice": "",
+          "discountRate": 0,
+          "discountPrice": false
+        }
+      },
+      {
+        "key": "[\"bytedance/seedance-2-mini, 720P no video\",\"video\",\"ByteDance\",\"per second\",\"https://kie.ai/seedance-2-0-mini\"]",
+        "modelDescription": "bytedance/seedance-2-mini, 720P no video",
+        "before": {
+          "creditPrice": "20.5",
+          "usdPrice": "0.1025",
+          "falPrice": "0.1547",
+          "discountRate": 33.74,
+          "discountPrice": false
+        },
+        "after": {
+          "creditPrice": "8.2",
+          "usdPrice": "0.041",
+          "falPrice": "0.1547",
+          "discountRate": 73.5,
+          "discountPrice": false
+        }
+      },
+      {
+        "key": "[\"bytedance/seedance-2-mini, 720P with video\",\"video\",\"ByteDance\",\"per second\",\"https://kie.ai/seedance-2-0-mini\"]",
+        "modelDescription": "bytedance/seedance-2-mini, 720P with video",
+        "before": {
+          "creditPrice": "12.5",
+          "usdPrice": "0.0625",
+          "falPrice": "0.0928",
+          "discountRate": 32.65,
+          "discountPrice": false
+        },
+        "after": {
+          "creditPrice": "5",
+          "usdPrice": "0.025",
+          "falPrice": "0.0928",
+          "discountRate": 73.06,
+          "discountPrice": false
+        }
+      },
+      {
+        "key": "[\"bytedance/seedance-2-mini, 480P no video\",\"video\",\"ByteDance\",\"per second\",\"https://kie.ai/seedance-2-0-mini\"]",
+        "modelDescription": "bytedance/seedance-2-mini, 480P no video",
+        "before": {
+          "creditPrice": "9.5",
+          "usdPrice": "0.0475",
+          "falPrice": "0.0721",
+          "discountRate": 34.12,
+          "discountPrice": false
+        },
+        "after": {
+          "creditPrice": "3.8",
+          "usdPrice": "0.019",
+          "falPrice": "0.0721",
+          "discountRate": 73.65,
+          "discountPrice": false
+        }
+      },
+      {
+        "key": "[\"bytedance/seedance-2-mini, 480P with video\",\"video\",\"ByteDance\",\"per second\",\"https://kie.ai/seedance-2-0-mini\"]",
+        "modelDescription": "bytedance/seedance-2-mini, 480P with video",
+        "before": {
+          "creditPrice": "6",
+          "usdPrice": "0.030",
+          "falPrice": "0.0433",
+          "discountRate": 30.72,
+          "discountPrice": false
+        },
+        "after": {
+          "creditPrice": "2.4",
+          "usdPrice": "0.012",
+          "falPrice": "0.0433",
+          "discountRate": 72.29,
+          "discountPrice": false
+        }
+      },
+      {
+        "key": "[\"bytedance/seedance-2 fast, 720p no video input\",\"video\",\"ByteDance\",\"per second\",\"https://kie.ai/seedance-2-0?model=bytedance%2Fseedance-2-fast\"]",
+        "modelDescription": "bytedance/seedance-2 fast, 720p no video input",
+        "before": {
+          "creditPrice": "33",
+          "usdPrice": "0.165",
+          "falPrice": "0.2419",
+          "discountRate": 31.79,
+          "discountPrice": false
+        },
+        "after": {
+          "creditPrice": "24.8",
+          "usdPrice": "0.124",
+          "falPrice": "0.2419",
+          "discountRate": 48.74,
+          "discountPrice": false
+        }
+      },
+      {
+        "key": "[\"bytedance/seedance-2 fast, 720p with video input\",\"video\",\"ByteDance\",\"per second\",\"https://kie.ai/seedance-2-0?model=bytedance%2Fseedance-2-fast\"]",
+        "modelDescription": "bytedance/seedance-2 fast, 720p with video input",
+        "before": {
+          "creditPrice": "20",
+          "usdPrice": "0.10",
+          "falPrice": "0.1451",
+          "discountRate": 31.08,
+          "discountPrice": false
+        },
+        "after": {
+          "creditPrice": "15",
+          "usdPrice": "0.075",
+          "falPrice": "0.1451",
+          "discountRate": 48.31,
+          "discountPrice": false
+        }
+      },
+      {
+        "key": "[\"bytedance/seedance-2 fast, 480p no video input\",\"video\",\"ByteDance\",\"per second\",\"https://kie.ai/seedance-2-0?model=bytedance%2Fseedance-2-fast\"]",
+        "modelDescription": "bytedance/seedance-2 fast, 480p no video input",
+        "before": {
+          "creditPrice": "15.5",
+          "usdPrice": "0.0775",
+          "falPrice": "0.1125",
+          "discountRate": 31.11,
+          "discountPrice": false
+        },
+        "after": {
+          "creditPrice": "11.7",
+          "usdPrice": "0.059",
+          "falPrice": "0.1125",
+          "discountRate": 47.56,
+          "discountPrice": false
+        }
+      },
+      {
+        "key": "[\"bytedance/seedance-2 fast, 480p with video input\",\"video\",\"ByteDance\",\"per second\",\"https://kie.ai/seedance-2-0?model=bytedance%2Fseedance-2-fast\"]",
+        "modelDescription": "bytedance/seedance-2 fast, 480p with video input",
+        "before": {
+          "creditPrice": "9",
+          "usdPrice": "0.045",
+          "falPrice": "0.0675",
+          "discountRate": 33.33,
+          "discountPrice": false
+        },
+        "after": {
+          "creditPrice": "6.8",
+          "usdPrice": "0.034",
+          "falPrice": "0.0675",
+          "discountRate": 49.63,
+          "discountPrice": false
+        }
+      }
+    ]
+  }
+}

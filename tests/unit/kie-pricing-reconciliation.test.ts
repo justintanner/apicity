@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { computeEstimate, PRICING } from "../../packages/provider/cost/src";
 import type {
   CostEstimate,
@@ -15,6 +15,7 @@ import {
   RUNTIME_VARIANT_EXCEPTIONS,
   renderReconciliationMarkdown,
 } from "../../scripts/lib/kie-pricing-reconciliation.mjs";
+import { MODEL_FAMILY_REGISTRATIONS } from "../../scripts/lib/kie-pricing-reconciliation-rules.mjs";
 
 const root = process.cwd();
 const evidenceRoot = path.join(root, "tests/fixtures/kie-pricing-evidence");
@@ -228,6 +229,29 @@ function executableRows(manifest: TestManifest): TestRow[] {
 }
 
 describe("Kie pricing reconciliation", () => {
+  let generatedManifest: TestManifest;
+
+  beforeAll(async () => {
+    generatedManifest = await buildManifest();
+  });
+
+  it("requires every family rule to declare its reconciliation strategies", () => {
+    expect(MODEL_FAMILY_REGISTRATIONS.length).toBeGreaterThan(0);
+    expect(
+      MODEL_FAMILY_REGISTRATIONS.every(
+        (registration) =>
+          registration.mapping.length > 0 &&
+          registration.payloadStrategy.length > 0 &&
+          registration.exceptionDisposition.length > 0
+      )
+    ).toBe(true);
+    expect(
+      new Set(
+        MODEL_FAMILY_REGISTRATIONS.map((registration) => registration.family)
+      ).size
+    ).toBe(MODEL_FAMILY_REGISTRATIONS.length);
+  });
+
   it("derives the authoritative source inventory counts", async () => {
     const inventory = (await collectApiCityInventories(root)) as TestInventory;
 
@@ -301,7 +325,7 @@ describe("Kie pricing reconciliation", () => {
   });
 
   it("builds the mandatory Seedance 2.5 matrix from official cells", async () => {
-    const manifest = await buildManifest();
+    const manifest = generatedManifest;
     const seedance = manifest.rows.filter((row) =>
       row.mappedApiCityKeys.includes("bytedance/seedance-2-5")
     );
@@ -318,7 +342,7 @@ describe("Kie pricing reconciliation", () => {
   });
 
   it("executes every implemented official cell against its live Kie rate", async () => {
-    const manifest = await buildManifest();
+    const manifest = generatedManifest;
     const failures: string[] = [];
     for (const row of implementedRows(manifest)) {
       try {
@@ -426,7 +450,7 @@ describe("Kie pricing reconciliation", () => {
   });
 
   it("safe-parses every createTask representative payload and variant case", async () => {
-    const manifest = await buildManifest();
+    const manifest = generatedManifest;
     const failures: string[] = [];
     for (const row of executableRows(manifest)) {
       const key = row.mappedApiCityKeys[0];
@@ -447,7 +471,7 @@ describe("Kie pricing reconciliation", () => {
   });
 
   it("executes mapped free rows as evidenced zero-cost estimates", async () => {
-    const manifest = await buildManifest();
+    const manifest = generatedManifest;
     const freeRows = executableRows(manifest).filter(
       (row) => row.disposition === "free-nonbillable"
     );
@@ -463,7 +487,7 @@ describe("Kie pricing reconciliation", () => {
   });
 
   it("proves Wan speech duration from frames divided by frames_per_second", async () => {
-    const manifest = await buildManifest();
+    const manifest = generatedManifest;
     const rows = implementedRows(manifest).filter((row) =>
       row.mappedApiCityKeys.includes("wan/2-2-a14b-speech-to-video-turbo")
     );
@@ -489,7 +513,7 @@ describe("Kie pricing reconciliation", () => {
   });
 
   it("covers every reachable live Kie rate variant from official evidence", async () => {
-    const manifest = await buildManifest();
+    const manifest = generatedManifest;
     const cases = executableRows(manifest).flatMap(runtimeCases);
     const covered = new Set(
       cases.map((runtime) => `${runtime.key}|${runtime.variant}`)
@@ -536,7 +560,7 @@ describe("Kie pricing reconciliation", () => {
   });
 
   it("audits each runtime exception against the frozen official rows", async () => {
-    const manifest = await buildManifest();
+    const manifest = generatedManifest;
     const description = (row: TestRow) =>
       String(row.official.modelDescription ?? "");
     const rowsMatching = (pattern: RegExp) =>
@@ -611,7 +635,7 @@ describe("Kie pricing reconciliation", () => {
   });
 
   it("keeps representativeCases distinct from their primary payload", async () => {
-    const manifest = await buildManifest();
+    const manifest = generatedManifest;
     for (const row of executableRows(manifest)) {
       const primary = JSON.stringify(row.representativePayload);
       const cases = (row.representativeCases ?? []).map((payload) =>
@@ -623,7 +647,7 @@ describe("Kie pricing reconciliation", () => {
   });
 
   it("uses explicit operation mappings before family names and rejects query conflicts", async () => {
-    const manifest = await buildManifest();
+    const manifest = generatedManifest;
     const expected = [
       ["Google veo 3.1, Extend, Quality", "veo/extend"],
       ["Google veo 3.1, Extend, Fast", "veo/extend"],

@@ -78,7 +78,9 @@ suite proves omitted optional selectors still work for fal and googleflow.
 - `/gc/apicity/node_modules/.bin/tsc --noEmit -p tests/tsconfig.json` — exit 0.
 - `/gc/apicity/node_modules/.bin/eslint packages/provider/cost/src/pricing/types.ts packages/provider/cost/src/compute.ts tests/unit/cost-compute.test.ts` — exit 0.
 - `/gc/apicity/node_modules/.bin/prettier --check packages/provider/cost/src/pricing/types.ts packages/provider/cost/src/compute.ts tests/unit/cost-compute.test.ts` — exit 0 after formatting.
-- Final proof command: `GC_BEAD_ID=ac-wvxw6k .gc/scripts/checks/build-artifact-valid.sh` — exit 0; the committed summary validates against `gc.build.implementation-summary.v1`.
+- Final behavioral proof command: `/gc/apicity/node_modules/.bin/vitest run --config tests/vitest.integration.ts tests/unit/cost-compute.test.ts tests/unit/cost-pricing.test.ts`
+  — exit 0; 457 tests passed.
+- Structural artifact validation: `GC_BEAD_ID=ac-wvxw6k .gc/scripts/checks/build-artifact-valid.sh` — exit 0; the committed summary validates against `gc.build.implementation-summary.v1`.
 
 ## Remaining Risks
 

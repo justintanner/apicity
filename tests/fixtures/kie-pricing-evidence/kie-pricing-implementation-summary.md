@@ -40,7 +40,8 @@ WI-1 now pulls every official Kie pricing page, validates pagination and row
 integrity, sanitizes the response envelope before persistence, and writes the
 snapshot, pull metadata, page captures, and source facts under the tracked
 canonical evidence root `tests/fixtures/kie-pricing-evidence`. WI-2 and WI-6
-must inherit this root; no `/plans` artifact is part of the delivery.
+inherit this root. The workflow-only `/plans` artifact root is not delivery
+evidence because it is gitignored and unavailable to clean-checkout CI.
 
 The frozen pull contains 408 reported and captured rows. The durable baseline
 comparison is 4 added, 0 removed, and 17 changed, with the complete row lists
@@ -73,16 +74,15 @@ persisted as `addedRows`, `removedRows`, and `changedRows`.
 
 ## Verification
 
-- `pnpm exec tsc --noEmit -p tests/tsconfig.json` — exit 0.
+- First verification command: `pnpm exec tsc --noEmit -p tests/tsconfig.json` — exit 0.
 - `pnpm run lint:after-format` — exit 0; ignore-shadow checked 1992 tracked
   files and found no new shadowed artifact.
 - `pnpm run test:run tests/unit/kie-pricing-audit-pull.test.ts` — exit 0;
   1 file and 19 tests passed.
 - `pnpm run test:run` — exit 0; 705 files and 7100 tests passed.
-- `node scripts/kie-pricing-audit.mjs check --snapshot tests/fixtures/kie-pricing-evidence/kie-pricing-snapshot-2026-08-11T09-18-45-401Z.json --metadata tests/fixtures/kie-pricing-evidence/kie-pricing-pull-2026-08-11T09-18-45-401Z.json` — exit 0; 408 rows, 5 pages, and 5 source captures checked.
+- Final behavioral proof command: `node scripts/kie-pricing-audit.mjs check --snapshot tests/fixtures/kie-pricing-evidence/kie-pricing-snapshot-2026-08-11T09-18-45-401Z.json --metadata tests/fixtures/kie-pricing-evidence/kie-pricing-pull-2026-08-11T09-18-45-401Z.json` — exit 0; 408 rows, 5 pages, and 5 source captures checked.
 - Snapshot SHA-256: `sha256:5a11661f99a78ec391baa5fc38e9f8d215e3efb4651c237b26a74a46a5f03db7`.
-- `git ls-files` contains every required baseline, dated pull, snapshot,
-  source capture, sources index, and page fixture; staged `/plans` paths: 0.
+- Structural evidence: `git ls-files` contains every required baseline, dated pull, snapshot, source capture, sources index, and page fixture; staged `/plans` paths: 0.
 
 ## Remaining Risks
 

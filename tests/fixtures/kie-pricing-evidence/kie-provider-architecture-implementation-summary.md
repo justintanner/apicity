@@ -82,7 +82,9 @@ reconciliation. Operations that need a new Kie route are kept unsupported.
 - `PATH=/gc/apicity/worktrees/ac-9p592t/node_modules/.bin:$PATH pnpm run dev:preflight:fast -- kie`
   — exit 0; provider lint, whole tests-project typecheck, 174 provider files
   and 2,003 tests, plus 3 cross-cutting recording tests passed.
-- Final proof command: `GC_BEAD_ID=ac-l5c52k .gc/scripts/checks/build-artifact-valid.sh`
+- Final behavioral proof command: `/gc/apicity/node_modules/.bin/vitest run --config tests/vitest.integration.ts tests/unit/kie-zod.test.ts`
+  — exit 0; 1 file and 542 tests passed.
+- Structural artifact validation: `GC_BEAD_ID=ac-l5c52k .gc/scripts/checks/build-artifact-valid.sh`
   — exit 0; `build artifact valid` for the recorded summary path.
 
 ## Remaining Risks

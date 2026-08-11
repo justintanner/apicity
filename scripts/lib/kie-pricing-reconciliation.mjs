@@ -4,6 +4,18 @@ import { pathToFileURL } from "node:url";
 import * as prettier from "prettier";
 import { Project, SyntaxKind } from "ts-morph";
 import { canonicalJson, readJson, sha256Bytes } from "./kie-pricing-pull.mjs";
+import {
+  applyPayloadRules,
+  applySelectorRules,
+  endpointPayloadOverrides,
+  explicitOperationKey as registryExplicitOperationKey,
+  familyMappingCandidates,
+  knownFalseMapping as registryKnownFalseMapping,
+  MODEL_FAMILY_REGISTRATIONS,
+  representativePayloadOverride,
+  RUNTIME_VARIANT_EXCEPTIONS as registryRuntimeVariantExceptions,
+  validateFamilyRegistrations,
+} from "./kie-pricing-reconciliation-rules.mjs";
 
 export const RECONCILIATION_SCHEMA = "gc.kie-pricing-reconciliation.v1";
 export const RAW_DISPOSITIONS = Object.freeze([
@@ -22,6 +34,9 @@ export const API_CITY_DISPOSITIONS = Object.freeze([
   "token-billed",
   "upstream-unmappable",
 ]);
+
+validateFamilyRegistrations();
+export { MODEL_FAMILY_REGISTRATIONS };
 
 const SOURCE_FILES = Object.freeze({
   models: "packages/provider/kie/src/zod.ts",
@@ -69,196 +84,7 @@ const DIRECT_ENDPOINT_FIELDS = new Set([
   "version",
 ]);
 
-export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
-  {
-    key: "grok-imagine/image-to-video",
-    variant: "1080p",
-    status: "pricing-only",
-    provenance:
-      "frozen Grok image-to-video 1080p cell publishes $0.004/s; live Kie 1080p tier is $0.04/s",
-    rationale:
-      "No exact official USD evidence matches the reachable runtime tier; the malformed official row is upstream-unmappable.",
-  },
-  {
-    key: "grok-imagine/text-to-image",
-    variant: "",
-    status: "pricing-only",
-    provenance:
-      "frozen snapshot contains a $0.02 default row whose URL query names text-to-video, plus a separate $0.025 quality bundle row",
-    rationale:
-      "The live non-pro default bundle has no conflict-free official cell; the query-conflicted row remains upstream-unmappable and the quality bundle is audited separately.",
-  },
-  {
-    key: "hailuo/02-image-to-video-standard",
-    variant: "6|768P",
-    status: "pricing-only",
-    provenance:
-      "frozen snapshot contains 6s/512p and 10s/768p, but no 6s/768p cell",
-    rationale:
-      "WI6 records the live variant as pricing-only because the frozen source has no exact cell for this selector combination.",
-  },
-  {
-    key: "bytedance/seedance-2",
-    variant: "480p|video",
-    status: "pricing-only",
-    provenance:
-      "frozen Seedance 2 480p reference-video cell publishes $0.057; live runtime rate is $0.0575",
-    rationale:
-      "The official/runtime USD conflict is explicit in WI6 and is not rounded or treated as exact evidence.",
-  },
-  {
-    key: "grok-imagine/upscale",
-    variant: "",
-    status: "unreachable",
-    provenance:
-      "live PRICING.kie contains a zero-rate fail-closed sentinel; the frozen source has no callable selector for Grok upscale",
-    rationale:
-      "The zero entry is an unreachable sentinel, never a free estimate, because source and target resolution selectors are absent from the task request.",
-  },
-  {
-    key: "topaz/image-upscale",
-    variant: "",
-    status: "unreachable",
-    provenance:
-      "live PRICING.kie contains a zero-rate fail-closed sentinel; the frozen Topaz image rows are not expressible by the callable request",
-    rationale:
-      "The zero entry is an unreachable sentinel, never a free estimate, because output-resolution billing cannot be derived from the request schema.",
-  },
-  ...[
-    ["runway/extend", "720p"],
-    ["runway/extend", "1080p"],
-    ["sora-watermark-remover", ""],
-  ].map(([key, variant]) => ({
-    key,
-    variant,
-    status: "pricing-only",
-    provenance:
-      "no matching official occurrence in the frozen 408-row Kie snapshot",
-    rationale:
-      "WI6 records the live runtime option as pricing-only because no exact official cell identifies this variant.",
-  })),
-  {
-    key: "nano-banana",
-    variant: "",
-    status: "legacy",
-    provenance:
-      "frozen snapshot contains nano-banana family rows, but they identify google/nano-banana, nano-banana-2, nano-banana-pro, or google/nano-banana-edit rather than the legacy nano-banana runtime key",
-    rationale:
-      "The legacy family key is retained as legacy; family-name collapse must not substitute it for a concrete official model operation.",
-  },
-  {
-    key: "qwen/image-to-image",
-    variant: "",
-    status: "unreachable",
-    provenance:
-      "frozen Qwen Image image-to-image cell is nonzero, but no output-area or megapixel selector exists in the callable schema",
-    rationale:
-      "The live rate is units-unreachable; it must fail closed rather than injecting undeclared image_size or claiming a free/default area.",
-  },
-]);
-
-const EXPLICIT_OPERATION_MAPPINGS = Object.freeze([
-  {
-    key: "seedream/5-pro-image-to-image",
-    patterns: [/seedream 5 pro,\s*input image/i],
-  },
-  {
-    key: "elevenlabs/text-to-dialogue-v3",
-    patterns: [/elevenlabs.*text to dialogue/i],
-  },
-  {
-    key: "wan/2-2-animate-move",
-    patterns: [/wan 2\.2.*animate.*move/i],
-  },
-  {
-    key: "wan/2-2-animate-replace",
-    patterns: [/wan 2\.2.*animate.*replace/i],
-  },
-  {
-    key: "wan/2-2-a14b-image-to-video-turbo",
-    patterns: [/wan 2\.2,\s*image-to-video/i],
-  },
-  {
-    key: "veo3_fast",
-    patterns: [/google veo 3\.1.*(?:text-to-video|image-to-video).*fast-/i],
-  },
-  {
-    key: "veo3_lite",
-    patterns: [/google veo 3\.1.*(?:text-to-video|image-to-video).*lite-/i],
-  },
-  {
-    key: "nano-banana-2",
-    patterns: [/google nano banana 2\b/i],
-  },
-  {
-    key: "nano-banana-pro",
-    patterns: [/google nano banana pro\b/i],
-  },
-  {
-    key: "suno/lyrics",
-    patterns: [/suno,\s*generate lyrics\b/i],
-  },
-  {
-    key: "suno/upload-extend",
-    patterns: [/suno,\s*upload-and-extend-audio/i],
-  },
-  {
-    key: "suno/vocal-removal-generate",
-    patterns: [/suno,\s*vocal\s+separate/i],
-  },
-  {
-    key: "wan/2-2-a14b-speech-to-video-turbo",
-    patterns: [/wan 2\.2.*speech to video/i],
-  },
-  {
-    key: "veo/extend",
-    patterns: [/google veo 3\.1,\s*extend\b/i],
-  },
-  {
-    key: "veo/get-1080p-video",
-    patterns: [/google veo 3\.1,\s*get 1080p video/i],
-  },
-  {
-    key: "veo/get-4k-video",
-    patterns: [/google veo 3\.1,\s*get 4k video/i],
-  },
-  {
-    key: "veo3_lite",
-    patterns: [/google veo 3\.1.*reference-to-video.*lite/i],
-  },
-  {
-    key: "veo3_fast",
-    patterns: [/google veo 3\.1.*reference-to-video.*fast/i],
-  },
-  {
-    key: "veo3",
-    patterns: [/google veo 3\.1.*reference-to-video.*quality/i],
-  },
-  {
-    key: "google/imagen4-fast",
-    patterns: [/google imagen4.*\bfast\b/i],
-  },
-  {
-    key: "google/imagen4-ultra",
-    patterns: [/google imagen4.*\bultra\b/i],
-  },
-  {
-    key: "google/imagen4",
-    patterns: [/google imagen4.*\bdefault\b/i],
-  },
-  {
-    key: "suno/persona-generate",
-    patterns: [/suno,\s*generate persona/i],
-  },
-  {
-    key: "suno/midi-generate",
-    patterns: [/suno,\s*generate midi/i],
-  },
-  {
-    key: "suno/sounds-generate",
-    patterns: [/suno,\s*generate sounds?/i],
-  },
-]);
+export const RUNTIME_VARIANT_EXCEPTIONS = registryRuntimeVariantExceptions;
 
 export class KiePricingReconciliationError extends Error {
   constructor(code, message, details = {}) {
@@ -569,15 +395,7 @@ function queryModel(anchor) {
 }
 
 function explicitOperationKey(description, pricing) {
-  for (const mapping of EXPLICIT_OPERATION_MAPPINGS) {
-    if (
-      pricing.has(mapping.key) &&
-      mapping.patterns.some((pattern) => pattern.test(description))
-    ) {
-      return mapping.key;
-    }
-  }
-  return undefined;
+  return registryExplicitOperationKey(description, pricing);
 }
 
 function queryOperation(query) {
@@ -627,7 +445,6 @@ function queryDescriptionConflict(raw, inventories) {
 
 function currentKeyCandidates(raw, inventories) {
   const description = String(raw.modelDescription ?? "");
-  const lower = description.toLowerCase();
   const anchor = String(raw.anchor ?? "");
   const query = queryModel(anchor);
   const pricing = new Set(inventories.pricingKeys);
@@ -647,102 +464,12 @@ function currentKeyCandidates(raw, inventories) {
   // occurrence always has one canonical pricing key.
   if (exactDescriptionKeys.length) return [exactDescriptionKeys[0]];
 
-  const candidates = [];
-  const add = (key) => {
-    if (pricing.has(key) && !candidates.includes(key)) candidates.push(key);
-  };
-
-  const patterns = [
-    [/kling 3\.0 turbo.*image-to-video/i, "kling/v3-turbo-image-to-video"],
-    [/kling 3\.0 turbo.*text-to-video/i, "kling/v3-turbo-text-to-video"],
-    [/kling 3\.0, video/i, "kling-3.0/video"],
-    [/kling 3\.0 motion/i, "kling-3.0/motion-control"],
-    [/mini.?max h3.*image to video/i, "minimax-h3/image-to-video"],
-    [/mini.?max h3.*reference to video/i, "minimax-h3/reference-to-video"],
-    [/mini.?max h3.*text to video/i, "minimax-h3/text-to-video"],
-    [/mini.?max h3.*video input/i, "minimax-h3/text-to-video"],
-    [/mini.?max h3.*image input/i, "minimax-h3/image-to-video"],
-    [/happyhorse-1\.1.*image-to-video/i, "happyhorse-1-1/image-to-video"],
-    [
-      /happyhorse-1\.1.*reference-to-video/i,
-      "happyhorse-1-1/reference-to-video",
-    ],
-    [/happyhorse-1\.1.*text-to-video/i, "happyhorse-1-1/text-to-video"],
-    [/happyhorse-1\.0.*image-to-video/i, "happyhorse/image-to-video"],
-    [/happyhorse-1\.0.*reference-to-video/i, "happyhorse/reference-to-video"],
-    [/happyhorse-1\.0.*text-to-video/i, "happyhorse/text-to-video"],
-    [/happyhorse-1\.0.*video-edit/i, "happyhorse/video-edit"],
-    [/google veo 3\.1.*extend/i, "veo/extend"],
-    [/google veo 3\.1.*get 1080/i, "veo/get-1080p-video"],
-    [/google veo 3\.1.*get 4k/i, "veo/get-4k-video"],
-    [/google veo 3\.1.*lite/i, "veo3_lite"],
-    [/google veo 3\.1.*fast/i, "veo3_fast"],
-    [/google veo 3\.1.*quality/i, "veo3"],
-    [/gemini-omni-video/i, "gemini-omni-video"],
-    [/runway aleph/i, "aleph/generate"],
-    [/^runway,/i, "runway/generate"],
-    [/4o image/i, "gpt4o-image/generate"],
-    [/flux1-kontext.*pro/i, "flux-kontext-pro"],
-    [/flux1-kontext.*max/i, "flux-kontext-max"],
-    [/kling ai avtar.*standard/i, "kling/ai-avatar-standard"],
-    [/kling ai avtar.*pro/i, "kling/ai-avatar-pro"],
-    [/mei.?gen-ai infinitetalk/i, "infinitalk/from-audio"],
-    [/volcengine.*lip sync/i, "volcengine/video-to-video-lip-sync"],
-    [/topaz image upscaler/i, "topaz/image-upscale"],
-    [/topaz video upscaler/i, "topaz/video-upscale"],
-    [/recraft crisp upscale/i, "recraft/crisp-upscale"],
-    [/recraft remove background/i, "recraft/remove-background"],
-    [/qwen image.*text-to-image/i, "qwen/text-to-image"],
-    [/qwen image.*image-to-image/i, "qwen/image-to-image"],
-    [/qwen image-edit/i, "qwen/image-edit"],
-    [/google nano banana edit/i, "google/nano-banana-edit"],
-    [/google nano banana,/i, "google/nano-banana"],
-    [/gpt image 1\.5.*image-to-image/i, "gpt-image/1.5-image-to-image"],
-    [/gpt image 1\.5.*text-to-image/i, "gpt-image/1.5-text-to-image"],
-    [/ideogram character-remix/i, "ideogram/character-remix"],
-    [/ideogram character-edit/i, "ideogram/character-edit"],
-    [/ideogram character,/i, "ideogram/character"],
-    [/ideogram v3-remix/i, "ideogram/v3-remix"],
-    [/ideogram v3-edit/i, "ideogram/v3-edit"],
-    [/ideogram v3,.*text-to-image/i, "ideogram/v3-text-to-image"],
-    [/wan 2\.7 video.*videoedit/i, "wan/2-7-videoedit"],
-    [/wan 2\.7 video.*r2v/i, "wan/2-7-r2v"],
-    [/wan 2\.7 video.*image-to-video/i, "wan/2-7-image-to-video"],
-    [/wan 2\.7 video.*text-to-video/i, "wan/2-7-text-to-video"],
-    [/wan 2\.7 image pro/i, "wan/2-7-image-pro"],
-    [/wan 2\.7 image/i, "wan/2-7-image"],
-    [/suno,.*boost music style/i, "suno/style-generate"],
-    [
-      /suno,.*advanced split|suno,.*vocal separate|suno,.*multi-stem/i,
-      "suno/vocal-removal-generate",
-    ],
-    [/suno,.*timestamped lyrics/i, "suno/timestamped-lyrics"],
-    [/suno,.*cover generate/i, "suno/cover-generate"],
-    [/suno,.*generate persona/i, "suno/persona-generate"],
-    [/suno,.*generate midi/i, "suno/midi-generate"],
-    [/suno,.*generate sounds/i, "suno/sounds-generate"],
-    [/suno,.*mashup/i, "suno/mashup-generate"],
-    [/suno,.*replace music section/i, "suno/replace-music-section-generate"],
-    [/suno,.*convert-to-wav/i, "suno/wav-generate"],
-    [/suno,.*generate lyrics/i, "suno/lyrics"],
-    [/suno,.*upload-and-cover/i, "suno/upload-cover"],
-    [/suno,.*create-music-video/i, "suno/mp4-generate"],
-    [/suno,.*upload-and-extend|suno,.*extend music/i, "suno/extend"],
-    [/suno,.*add-instrumental/i, "suno/add-instrumental-generate"],
-    [/suno,.*add-vocals/i, "suno/add-vocals-generate"],
-    [/suno,.*generate\s*$/i, "suno/generate"],
-  ];
-  for (const [pattern, key] of patterns) {
-    if (pattern.test(description)) add(key);
-  }
-
-  if (anchor.includes("/suno-api") && lower.includes("extend")) {
-    add("suno/extend");
-  }
-  if (anchor.includes("/suno-api") && lower.includes("add-vocals")) {
-    add("suno/add-vocals-generate");
-  }
-  return candidates.slice(0, 1);
+  const registeredCandidates = familyMappingCandidates({
+    description,
+    anchor,
+    pricing,
+  });
+  return registeredCandidates.slice(0, 1);
 }
 
 function unitInfo(raw) {
@@ -792,80 +519,12 @@ function selectorValues(raw, key, inventories) {
   const size = text.match(/(?:^|[-,\s])(1k|1\.5k|2k|4k|8k)(?:$|[-,\s])/i);
   if (size) candidates.size = size[1];
   const modelFields = inventories.descriptorFields[key];
-  if (
-    key === "seedream/5-pro-text-to-image" ||
-    key === "seedream/5-pro-image-to-image"
-  ) {
-    candidates.quality = /(?:^|[-,\s])2k(?:$|[-,\s])/i.test(text)
-      ? "high"
-      : /(?:^|[-,\s])(?:1k|1\.5k)(?:$|[-,\s])/i.test(text)
-        ? "basic"
-        : undefined;
-  }
-  if (key === "seedream/5-pro-image-to-image" && /input image/i.test(text)) {
-    candidates.quality = "basic";
-  }
-  if (key === "grok-imagine/extend" && duration) {
-    candidates.extend_times = duration[1];
-    delete candidates.duration;
-  }
-  if (key === "kling-3.0/video" && resolution) {
-    candidates.mode =
-      resolution[1].toLowerCase() === "4k"
-        ? "4K"
-        : resolution[1].toLowerCase() === "1080p"
-          ? "pro"
-          : "std";
-    if (/with audio/i.test(text)) candidates.sound = true;
-  }
-  if (
-    (key === "kling-3.0/motion-control" ||
-      key === "kling-2.6/motion-control") &&
-    resolution
-  ) {
-    candidates.mode = resolution[1].toLowerCase();
-  }
-  if (key === "veo/extend") {
-    if (/quality/i.test(text)) candidates.model = "quality";
-    else if (/fast/i.test(text)) candidates.model = "fast";
-  }
-  if (key === "topaz/video-upscale") {
-    const factor = text.match(/(?:^|[-/\s])([124])x(?:$|[-/\s])/i);
-    if (factor) candidates.upscale_factor = factor[1];
-  }
-  if (key === "runway/generate" || key === "runway/extend") {
-    if (/1080p/i.test(text)) candidates.quality = "1080p";
-    else if (/720p/i.test(text)) candidates.quality = "720p";
-  }
-  if (
-    key.startsWith("ideogram/") &&
-    /\b(?:TURBO|BALANCED|QUALITY)\b/.test(text)
-  ) {
-    candidates.rendering_speed = text.match(/\b(TURBO|BALANCED|QUALITY)\b/)[1];
-  }
-  if (key === "grok-imagine/text-to-image" && /quality/i.test(text)) {
-    candidates.enable_pro = true;
-  }
-  if (key === "nano-banana-pro" && /1\/2k/i.test(text)) {
-    candidates.resolution = "1K";
-  }
-  if (
-    (key === "gpt-image/1.5-text-to-image" ||
-      key === "gpt-image/1.5-image-to-image") &&
-    /\bhigh\b/i.test(text)
-  ) {
-    candidates.quality = "high";
-  }
-  if (key === "kling-2.6/text-to-video" || key === "kling-2.6/image-to-video") {
-    candidates.sound = /with audio/i.test(text);
-  }
-  if (key === "bytedance/seedance-1.5-pro") {
-    candidates.generate_audio = /with audio/i.test(text);
-  }
-  if (key === "suno/vocal-removal-generate") {
-    if (/multi-stem/i.test(text)) candidates.type = "split_stem";
-    if (/vocal\s+separate/i.test(text)) candidates.type = "separate_vocal";
-  }
+  applySelectorRules({
+    key,
+    text,
+    candidates,
+    context: { resolution, duration },
+  });
   const values = {};
   const isCreateTask = inventories.models.includes(key);
   for (const [field, value] of Object.entries(candidates)) {
@@ -942,6 +601,8 @@ function representativePayload(
   const input = { ...selectors };
   const text = String(official.modelDescription ?? "");
   const fields = inventories.descriptorFields[key] ?? {};
+  const registeredOverride = representativePayloadOverride(key, selectors);
+  if (registeredOverride) return registeredOverride;
   if (key === "bytedance/seedance-2-5") {
     return {
       model: key,
@@ -969,173 +630,8 @@ function representativePayload(
       input.text = "a".repeat(1_000);
     }
   }
-  if (key === "seedream/5-pro-image-to-image") {
-    input.image_urls = /input image/i.test(text)
-      ? ["https://example.com/a.png", "https://example.com/b.png"]
-      : ["https://example.com/a.png"];
-  }
-  if (
-    key.startsWith("bytedance/seedance-2") &&
-    key !== "bytedance/seedance-2-5" &&
-    /with video(?: input)?/i.test(text)
-  ) {
-    input.reference_video_urls = ["https://example.com/a.mp4"];
-  }
-  if (key === "kling-2.6/image-to-video") {
-    input.image_urls = ["https://example.com/a.png"];
-  }
-  if (key === "gemini-omni-video" && /with video input/i.test(text)) {
-    input.video_list = [
-      { url: "https://example.com/a.mp4", start: 0, ends: 5 },
-    ];
-  }
-  if (key === "kling-3.0/motion-control") {
-    input.input_urls = ["https://example.com/a.png"];
-    input.video_urls = ["https://example.com/a.mp4"];
-  }
-  if (key === "wan/2-2-animate-move") {
-    input.video_url = "https://example.com/a.mp4";
-    input.image_url = "https://example.com/a.png";
-  }
-  if (key === "wan/2-2-animate-replace") {
-    input.video_url = "https://example.com/a.mp4";
-    input.image_url = "https://example.com/a.png";
-  }
-  if (key === "topaz/video-upscale") {
-    input.video_url = "https://example.com/a.mp4";
-  }
-  if (key.startsWith("minimax-h3/")) {
-    if (!key.endsWith("image-to-video")) input.aspect_ratio = "16:9";
-    if (key.endsWith("reference-to-video")) {
-      input.reference_image_urls = ["https://example.com/a.png"];
-    }
-    if (key.endsWith("image-to-video")) {
-      input.first_frame_url = "https://example.com/a.png";
-    }
-  }
-  if (key === "seedream/5-pro-layer-decomposition") {
-    input.image_url = "https://example.com/a.png";
-  }
-  if (key.includes("happyhorse") && key.includes("image-to-video")) {
-    input.image_urls = ["https://example.com/a.png"];
-  }
-  if (key.includes("happyhorse") && key.includes("reference-to-video")) {
-    input.reference_image = ["https://example.com/a.png"];
-  }
-  if (key.includes("happyhorse") && key.endsWith("video-edit")) {
-    input.video_url = "https://example.com/a.mp4";
-  }
-  if (key.startsWith("kling/v3-turbo-image-to-video")) {
-    input.image_urls = ["https://example.com/a.png"];
-    input.duration = "5";
-  }
-  if (key === "volcengine/video-to-video-lip-sync") {
-    input.mode = "basic";
-    input.video_url = "https://example.com/a.mp4";
-    input.audio_url = "https://example.com/a.mp3";
-  }
-  if (key === "omnihuman-1-5") {
-    input.image_url = "https://example.com/a.png";
-    input.audio_url = "https://example.com/a.mp3";
-  }
-  if (
-    key === "kling/ai-avatar-standard" ||
-    key === "kling/ai-avatar-pro" ||
-    key === "infinitalk/from-audio"
-  ) {
-    input.image_url = "https://example.com/a.png";
-    input.audio_url = "https://example.com/a.mp3";
-  }
-  if (key === "bytedance/seedance-1.5-pro") input.aspect_ratio = "1:1";
-  if (key === "kling-3.0/video") input.multi_shots = false;
-  if (key === "grok-imagine-video-1-5-preview") {
-    input.image_urls = ["https://example.com/a.png"];
-  }
-  if (key === "grok-imagine/text-to-video") input.duration = 6;
-  if (key === "grok-imagine/image-to-video") {
-    input.duration = 6;
-    input.image_urls = ["https://example.com/a.png"];
-  }
-  if (key === "gemini-omni-video" && !Object.hasOwn(input, "duration")) {
-    input.duration = "4";
-  }
-  if (key.includes("hailuo") && key.includes("image-to-video")) {
-    input.image_url = "https://example.com/a.png";
-  }
-  if (key.includes("kling/v2-5-turbo-image-to-video")) {
-    input.image_url = "https://example.com/a.png";
-  }
-  if (key.includes("wan/2-2-a14b-image-to-video")) {
-    input.image_url = "https://example.com/a.png";
-  }
-  if (key.includes("wan/2-5-image-to-video")) {
-    input.image_url = "https://example.com/a.png";
-    input.duration = /10(?:\.0)?s/i.test(text) ? "10" : "5";
-  }
-  if (key.includes("wan/2-5-text-to-video")) {
-    input.duration = /10(?:\.0)?s/i.test(text) ? "10" : "5";
-  }
-  if (key === "wan/2-7-image-to-video") {
-    input.first_frame_url = "https://example.com/a.png";
-  }
-  if (key.includes("wan/2-2-a14b-speech")) {
-    input.image_url = "https://example.com/a.png";
-    input.audio_url = "https://example.com/a.mp3";
-  }
-  if (key.includes("recraft/")) input.image = "https://example.com/a.png";
-  if (key.startsWith("ideogram/")) {
-    if (key.includes("edit") || key.includes("remix")) {
-      input.image_url = "https://example.com/a.png";
-      if (key.includes("edit")) input.mask_url = "https://example.com/m.png";
-    }
-    if (key.includes("character")) {
-      input.reference_image_urls = ["https://example.com/a.png"];
-    }
-  }
-  if (key === "gpt-image-2-image-to-image") {
-    input.input_urls = ["https://example.com/a.png"];
-  }
-  if (key === "qwen/image-edit" || key === "qwen2/image-edit") {
-    input.image_url = "https://example.com/a.png";
-  }
-  if (key === "google/nano-banana-edit") {
-    input.image_urls = ["https://example.com/a.png"];
-  }
-  if (key.includes("flux-2/")) {
-    input.aspect_ratio = "1:1";
-    if (key.includes("image-to-image")) {
-      input.input_urls = ["https://example.com/a.png"];
-    }
-  }
-  if (key === "z-image") input.aspect_ratio = "1:1";
-  if (key.includes("seedream/4.5")) {
-    input.quality = "basic";
-    if (key.includes("image-to-image")) {
-      input.image_urls = ["https://example.com/a.png"];
-    }
-  }
-  if (key.includes("seedream/5-lite")) {
-    input.quality = "basic";
-    if (key.includes("image-to-image")) {
-      input.image_urls = ["https://example.com/a.png"];
-    }
-  }
+  applyPayloadRules({ key, text, input });
   populateRequiredInput(input, fields);
-  if (key === "minimax-h3/image-to-video" && /image input/i.test(text)) {
-    input.first_frame_url = "https://example.com/a.png";
-    input.duration = 5;
-  }
-  if (key === "grok-imagine/text-to-image") input.prompt = "audit";
-  if (key === "grok-imagine/image-to-image") {
-    input.prompt = "audit";
-    input.image_urls = ["https://example.com/a.png"];
-  }
-  if (key === "grok-imagine/extend") {
-    input.task_id = "audit-task";
-    input.prompt = "audit";
-    input.extend_at = 0;
-    delete input.resolution;
-  }
   if (isCreateTask) {
     if (Object.hasOwn(fields, "prompt") && !Object.hasOwn(input, "prompt")) {
       input.prompt = "audit";
@@ -1144,14 +640,7 @@ function representativePayload(
       ? { model: key, resolution: selectors.resolution, input }
       : { model: key, input };
   }
-  const payload = { ...selectors };
-  if (key === "runway/generate") payload.prompt = "audit";
-  if (key === "grok-imagine/extend") {
-    payload.task_id = "audit-task";
-    payload.prompt = "audit";
-    payload.extend_at = 0;
-    payload.input = { extend_times: selectors.extend_times };
-  }
+  const payload = { ...selectors, ...endpointPayloadOverrides(key, selectors) };
   return { endpoint: key, ...payload };
 }
 
@@ -1201,47 +690,7 @@ function auditedUnitInfo(official, key) {
 
 function knownFalseMapping(official, key) {
   const description = String(official.modelDescription ?? "");
-  if (/Google veo 3\.1,\s*Extend,\s*Lite/i.test(description)) {
-    return "Veo Extend Lite is published upstream but is unreachable because the callable Veo Extend schema only accepts fast|quality; it must not be treated as a callable rate.";
-  }
-  if (/Topaz Image Upscaler/i.test(description)) {
-    return "Topaz image pricing is keyed by output resolution, but the callable request only carries an unmapped upscale factor; the estimator must fail closed.";
-  }
-  if (/grok-imagine,\s*upscale/i.test(description)) {
-    return "Grok upscale pricing is keyed by source and target resolutions that are absent from the task_id-only request; the estimator must fail closed.";
-  }
-  if (/Suno,\s*Advanced Split/i.test(description)) {
-    return "Suno Advanced Split is a distinct billed operation whose stem-name selector is absent from the current request schema.";
-  }
-  if (
-    /^wan 2\.2,\s*(?:image-to-video|text-to-video).*580p/i.test(description) &&
-    key?.startsWith("wan/2-2-a14b-") &&
-    !key.includes("speech")
-  ) {
-    return "The official 580p Wan 2.2 cell is not reachable because the standard request schema enum is only 480p|720p.";
-  }
-  if (/MiniMax H3,\s*video input/i.test(description)) {
-    return "MiniMax H3 video-input billing is duration-based, but the reference video duration is not present in the callable request payload.";
-  }
-  if (
-    /bytedance\/seedance-2,\s*480p with video/i.test(description) &&
-    String(official.usdPrice) === "0.057"
-  ) {
-    return "The official Seedance 2 480p reference-video cell publishes $0.057 while the callable runtime rate is $0.0575; retain it as an explicit upstream rate conflict rather than rounding the evidence.";
-  }
-  if (/wan 2\.6,\s*video-to-video,\s*15\.0s/i.test(description)) {
-    return "The official Wan 2.6 15-second video-to-video rows have no callable runtime 15-second variant; the live estimator publishes only 5s and 10s tiers.";
-  }
-  if (
-    /grok-imagine,\s*image-to-video,\s*1080p/i.test(description) &&
-    String(official.usdPrice) === "0.004"
-  ) {
-    return "The official Grok image-to-video cell publishes $0.004/s while the callable 1080p runtime tier is $0.04/s; retain the upstream rate conflict explicitly.";
-  }
-  if (/Qwen Image,\s*image-to-image/i.test(description)) {
-    return "Qwen image-to-image is nonzero in the table, but the callable schema has no output-area field that can derive the per-megapixel units; the estimator must fail closed.";
-  }
-  return undefined;
+  return registryKnownFalseMapping({ description, key, official });
 }
 
 function runtimeRateConflict(official, key) {

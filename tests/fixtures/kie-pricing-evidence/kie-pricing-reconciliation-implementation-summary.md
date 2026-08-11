@@ -109,16 +109,12 @@ schema-without-pricing, pricing-only keys, and endpoints respectively.
 
 ## Verification
 
-- `node scripts/lib/kie-pricing-reconciliation.mjs check ...` — passed;
-  408 rows, 127 models, 71 endpoints, 137 pricing keys, 139 slugs and
-  displays, with zero unclassified totals.
-- `vitest run tests/unit/kie-pricing-reconciliation.test.ts` — passed; 19/19.
-- Kie fast gate — passed; 174 files and 2,010 tests, plus 18 cross-cutting
-  tests.
-- Cost fast gate — passed; 13 files and 785 tests, plus 18 cross-cutting
-  tests.
-- `git diff --check` — passed.
-- `pnpm run ci:local` with the required literal PATH — passed.
+- First verification command: `node scripts/lib/kie-pricing-reconciliation.mjs check --manifest tests/fixtures/kie-pricing-evidence/kie-pricing-reconciliation-2026-08-11T09-18-45-401Z.json` — exit 0; 408 rows, 127 models, 71 endpoints, 137 pricing keys, 139 slugs, 139 displays, and zero unclassified totals.
+- Final behavioral proof command: `/gc/apicity/worktrees/ac-gsoa3v/node_modules/.bin/vitest run --config tests/vitest.integration.ts tests/unit/kie-pricing-reconciliation.test.ts tests/integration/cost-estimate.test.ts` — exit 0; 2 files and 71 tests passed.
+- `PATH=/gc/apicity/worktrees/ac-gsoa3v/node_modules/.bin:$PATH pnpm run dev:preflight:fast -- kie` — exit 0; 174 files and 2,011 tests, plus 18 cross-cutting tests.
+- `PATH=/gc/apicity/worktrees/ac-gsoa3v/node_modules/.bin:$PATH pnpm run dev:preflight:fast -- cost` — exit 0; 13 files and 785 tests, plus 18 cross-cutting tests.
+- `git diff --check` — exit 0.
+- `PATH=/gc/apicity/worktrees/ac-gsoa3v/node_modules/.bin:$PATH pnpm run ci:local` — exit 0; 706 files and 7,143 tests passed.
 
 ## Remaining Risks
 

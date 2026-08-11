@@ -116,7 +116,7 @@ callable pricing keys.
 
 ## Verification
 
-- First verification command: `/gc/apicity/node_modules/.bin/vitest run tests/unit/cost-pricing.test.ts` — stale expectations were corrected while adding the fail-closed and exact-charge regressions.
+- First verification command: `/gc/apicity/node_modules/.bin/vitest run tests/unit/cost-pricing.test.ts` — initial exit 1 while stale expectations were being corrected; this run was not used as final behavioral proof.
 - `/gc/apicity/node_modules/.bin/prettier --write packages/provider/cost/src/pricing/kie.ts packages/provider/cost/src/slugs.ts tests/unit/cost-pricing.test.ts` — exit 0.
 - `/gc/apicity/node_modules/.bin/eslint packages/provider/cost/src/pricing/kie.ts packages/provider/cost/src/slugs.ts tests/unit/cost-pricing.test.ts` — exit 0.
 - `/gc/apicity/node_modules/.bin/tsc --noEmit -p packages/provider/cost/tsconfig.json` — exit 0.
@@ -125,7 +125,8 @@ callable pricing keys.
 - `/gc/apicity/node_modules/.bin/vitest run --config tests/vitest.integration.ts tests/integration/upload-recordings.test.ts tests/integration/multipart-recordings.test.ts tests/unit/endpoint-cost-tiers.test.ts` — exit 0; 18 tests passed.
 - `node scripts/check-orphan-recordings.mjs --provider cost && node scripts/check-test-timers.mjs --provider cost` — exit 0.
 - `pnpm run dev:preflight:fast -- cost` — not runnable in this detached worktree because its local `node_modules` directory is absent; the individual gate commands above passed using the shared launcher installation.
-- Final proof command: `GC_BEAD_ID=ac-j59if0 .gc/scripts/checks/build-artifact-valid.sh` — exit 0; the implementation summary validated as `gc.build.implementation-summary.v1` from the launcher worktree.
+- Final behavioral proof command: `/gc/apicity/node_modules/.bin/vitest run tests/unit/cost-pricing.test.ts tests/unit/cost-slugs.test.ts tests/unit/cost-compute.test.ts` — exit 0; 584 tests passed.
+- Structural artifact validation: `GC_BEAD_ID=ac-j59if0 .gc/scripts/checks/build-artifact-valid.sh` — exit 0; the implementation summary validated as `gc.build.implementation-summary.v1` from the launcher worktree.
 
 ## Remaining Risks
 

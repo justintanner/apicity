@@ -1,7 +1,10 @@
 import { describe, it, expect } from "vitest";
 import { computeEstimate } from "../../packages/provider/cost/src/compute";
 import { canonicalHash } from "../../packages/provider/cost/src/paygate";
-import { PRICING_AS_OF } from "../../packages/provider/cost/src/pricing/index";
+import {
+  PRICING,
+  PRICING_AS_OF,
+} from "../../packages/provider/cost/src/pricing/index";
 
 describe("computeEstimate", () => {
   describe("token-billed providers", () => {
@@ -1001,6 +1004,64 @@ describe("computeEstimate", () => {
       expect(result.warnings).toContain(
         "model 'nonexistent-model' not found in pricing table for provider 'kie'"
       );
+    });
+
+    it("fails before partial lookup when a required selector is missing", () => {
+      const model = "__required-selector-test__";
+      const previous = PRICING.kie[model];
+      PRICING.kie[model] = {
+        kind: "perUnit",
+        unit: "generations",
+        units: () => 1,
+        select: [
+          {
+            name: "quality",
+            required: true,
+            pick: (payload) =>
+              typeof payload.quality === "string" ? payload.quality : undefined,
+          },
+        ],
+        // The empty key represents a real lower-dimensional rate. Without the
+        // required-selector guard, an omitted quality would incorrectly use it.
+        rates: { "": 0.1, high: 0.2 },
+        source: { url: "https://example.com/required-selector-test" },
+      };
+
+      try {
+        const result = computeEstimate({
+          provider: "kie" as const,
+          payload: { model },
+        });
+
+        expect(result.usd).toBe(0);
+        expect(result.breakdown).toEqual({});
+        expect(result.warnings).toEqual([
+          "kie '__required-selector-test__': missing required selector(s): quality",
+        ]);
+      } finally {
+        if (previous) {
+          PRICING.kie[model] = previous;
+        } else {
+          delete PRICING.kie[model];
+        }
+      }
+    });
+
+    it("keeps omitted optional selectors working for non-Kie providers", () => {
+      const fal = computeEstimate({
+        provider: "fal" as const,
+        endpoint: "fal-ai/nano-banana-2",
+        payload: {},
+      });
+      expect(fal.usd).toBe(0.08);
+      expect(fal.warnings).toEqual([]);
+
+      const googleflow = computeEstimate({
+        provider: "googleflow" as const,
+        payload: { model: "veo-3.1-fast", prompt: "a cat" },
+      });
+      expect(googleflow.usd).toBe(0.4);
+      expect(googleflow.warnings).toEqual([]);
     });
   });
 

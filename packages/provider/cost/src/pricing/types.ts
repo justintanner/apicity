@@ -43,7 +43,9 @@ export interface TokenPricing {
 //
 // `select` is an ordered list of named pickers that read the upstream payload
 // and return string values. The variant key is the values joined by "|",
-// dropping any undefined entry. `rates` maps that key to per-unit USD.
+// dropping any undefined optional entry. `rates` maps that key to per-unit
+// USD. A selector marked `required` fails the estimate when its picker returns
+// undefined, before a partial variant key can select a different rate.
 //
 // A flat-rate model has `select: []` and `rates: { "": <perUnit> }`.
 //
@@ -64,6 +66,11 @@ export interface PerUnitPricing {
       payload: Record<string, unknown>,
       hints?: CostHints
     ) => string | undefined;
+    // Evidence-backed billing axes without an upstream default can opt into a
+    // precise missing-selector failure. Omitted means optional for backwards
+    // compatibility, including selectors that intentionally disappear from a
+    // variant key for one mode.
+    required?: boolean;
   }>;
   rates: Record<string, number>;
   // Optional cost-only warnings derived from the payload and hints (e.g. an

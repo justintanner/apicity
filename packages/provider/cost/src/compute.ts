@@ -138,8 +138,24 @@ function evaluatePerUnit(
       `${provider} '${pricingKey}': could not derive units from payload (check duration / text)${hintAdvice}`,
     ]);
   }
-  const variantKey = entry.select
-    .map((s) => s.pick(payload, hints))
+
+  const selections = entry.select.map((selector) => ({
+    selector,
+    value: selector.pick(payload, hints),
+  }));
+  const missingRequired = selections
+    .filter(({ selector, value }) => selector.required && value === undefined)
+    .map(({ selector }) => selector.name);
+  if (missingRequired.length > 0) {
+    return failed("per-unit-table", [
+      `${provider} '${pricingKey}': missing required selector(s): ${missingRequired.join(
+        ", "
+      )}`,
+    ]);
+  }
+
+  const variantKey = selections
+    .map(({ value }) => value)
     .filter((v): v is string => Boolean(v))
     .join("|");
   const perUnit = entry.rates[variantKey];

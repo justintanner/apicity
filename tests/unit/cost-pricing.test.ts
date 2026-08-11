@@ -26,6 +26,12 @@ import type {
 import {
   Seedance2RequestSchema,
   Seedance2FastRequestSchema,
+  Seedance25RequestSchema,
+  SeedreamProTextToImageRequestSchema,
+  SeedreamProImageToImageRequestSchema,
+  SeedreamProLayerDecompositionRequestSchema,
+  MiniMaxH3ImageToVideoRequestSchema,
+  MiniMaxH3ReferenceToVideoRequestSchema,
   Wan22A14bTextToVideoTurboRequestSchema,
   Wan22A14bImageToVideoTurboRequestSchema,
   Wan22A14bSpeechToVideoTurboRequestSchema,
@@ -1352,12 +1358,18 @@ const IMAGE_FAMILY_RATES = [
   },
   {
     model: "seedream/5-pro-image-to-image",
-    input: { quality: "basic" },
+    input: {
+      quality: "basic",
+      image_urls: ["https://example.com/input.png"],
+    },
     usd: 0.035,
   },
   {
     model: "seedream/5-pro-image-to-image",
-    input: { quality: "high" },
+    input: {
+      quality: "high",
+      image_urls: ["https://example.com/input.png"],
+    },
     usd: 0.07,
   },
   // Seedream 4.5 — one published rate for the family.
@@ -1487,8 +1499,6 @@ const IMAGE_FAMILY_RATES = [
     input: { rendering_speed: "TURBO" },
     usd: 0.06,
   },
-  // Topaz — flat at the cheapest published tier (see the warning test below).
-  { model: "topaz/image-upscale", input: { upscale_factor: "2" }, usd: 0.05 },
 ];
 
 describe("kie createTask image families (REQ-005)", () => {
@@ -1512,7 +1522,6 @@ describe("kie createTask image families (REQ-005)", () => {
   it.each([
     { model: "gpt-image/1.5-text-to-image", usd: 0.02, note: "medium" },
     { model: "gpt-image/1.5-image-to-image", usd: 0.02, note: "medium" },
-    { model: "seedream/5-pro-text-to-image", usd: 0.035, note: "basic" },
     { model: "flux-2/pro-text-to-image", usd: 0.025, note: "1K" },
     { model: "flux-2/flex-text-to-image", usd: 0.07, note: "1K" },
     { model: "ideogram/v3-edit", usd: 0.035, note: "BALANCED" },
@@ -1529,6 +1538,70 @@ describe("kie createTask image families (REQ-005)", () => {
     }
   );
 
+  it.each(["seedream/5-pro-text-to-image", "seedream/5-pro-image-to-image"])(
+    "fails %s when live createTask quality is omitted",
+    (model) => {
+      const input =
+        model === "seedream/5-pro-image-to-image"
+          ? { prompt: "x", image_urls: ["https://example.com/input.png"] }
+          : { prompt: "x" };
+      const parsed =
+        model === "seedream/5-pro-image-to-image"
+          ? SeedreamProImageToImageRequestSchema.safeParse({ model, input })
+          : SeedreamProTextToImageRequestSchema.safeParse({ model, input });
+      expect(parsed.success).toBe(false);
+
+      const result = kieEstimate({ model, input });
+
+      expect(result.usd).toBe(0);
+      expect(result.breakdown).toEqual({});
+      expect(result.warnings).toEqual([
+        `kie '${model}': missing required selector(s): quality`,
+      ]);
+    }
+  );
+
+  it("adds Seedream 5 Pro edit input-image charges exactly", () => {
+    const parsed = SeedreamProImageToImageRequestSchema.safeParse({
+      model: "seedream/5-pro-image-to-image",
+      input: {
+        prompt: "edit this image",
+        image_urls: [
+          "https://example.com/one.png",
+          "https://example.com/two.png",
+          "https://example.com/three.png",
+        ],
+        quality: "basic",
+      },
+    });
+
+    expect(parsed.success).toBe(true);
+    if (!parsed.success) return;
+    const result = kieEstimate(parsed.data);
+
+    expect(result.usd).toBeCloseTo(0.04, 10);
+    expect(result.breakdown).toEqual({
+      units: 1,
+      unit: "images",
+      perUnitUsd: 0.035,
+      extraUsd: 0.005,
+    });
+    expect(result.warnings).toEqual([]);
+  });
+
+  it("fails Seedream 5 Pro edit when the surcharge input list is unknown", () => {
+    const result = kieEstimate({
+      model: "seedream/5-pro-image-to-image",
+      input: { prompt: "edit this image", quality: "basic" },
+    });
+
+    expect(result.usd).toBe(0);
+    expect(result.breakdown).toEqual({});
+    expect(result.warnings).toEqual([
+      "kie 'seedream/5-pro-image-to-image': could not derive exact additional charge from payload",
+    ]);
+  });
+
   // The other side of that rule: docs.kie.ai publishes NO rendering_speed
   // default for these two, so an omitted field must fail rather than quote
   // the middle tier.
@@ -1540,7 +1613,7 @@ describe("kie createTask image families (REQ-005)", () => {
       expect(result.usd).toBe(0);
       expect(result.breakdown).toEqual({});
       expect(result.warnings).toHaveLength(1);
-      expect(result.warnings[0]).toContain("no rate for variant");
+      expect(result.warnings[0]).toContain("missing required selector(s)");
       expect(result.warnings[0]).toContain("rendering_speed");
     }
   );
@@ -1592,17 +1665,21 @@ describe("kie createTask image families (REQ-005)", () => {
   });
 
   // The page bills topaz by output resolution, which upscale_factor cannot
-  // express — the estimate is the 2K floor and says so.
-  it("warns that topaz/image-upscale prices only the cheapest tier", () => {
+  // express. No nonzero tier is exact, so the estimator fails closed.
+  it("fails closed when topaz/image-upscale output resolution is unmappable", () => {
     const result = kieEstimate({
       model: "topaz/image-upscale",
       input: { image_url: "https://example.com/x.jpg", upscale_factor: "4" },
     });
 
-    expect(result.usd).toBeCloseTo(0.05, 10);
+    expect(result.usd).toBe(0);
+    expect(result.breakdown).toEqual({});
     expect(result.warnings).toHaveLength(1);
     expect(result.warnings[0]).toContain("OUTPUT resolution");
-    expect(result.warnings[0]).toContain("2K floor");
+    expect(result.warnings[0]).toContain("fails closed");
+    expect(PRICING.kie["topaz/image-upscale"]).toMatchObject({
+      rates: { "": 0 },
+    });
   });
 });
 
@@ -1990,7 +2067,7 @@ describe("kie createTask video families (REQ-005)", () => {
       expect(result.usd).toBe(0);
       expect(result.breakdown).toEqual({});
       expect(result.warnings).toHaveLength(1);
-      expect(result.warnings[0]).toContain("no rate for variant");
+      expect(result.warnings[0]).toContain("missing required selector(s)");
       expect(result.warnings[0]).toContain("duration");
     }
   );
@@ -2095,6 +2172,12 @@ describe("kie ElevenLabs TTS per-character pricing (REQ-005)", () => {
 
 describe("kie 2026-08-06 pricing pull provenance", () => {
   it("stamps every entry added or refreshed by this pull", () => {
+    const refreshedOnAugustEleven = new Set([
+      "suno/vocal-removal-generate",
+      "elevenlabs/text-to-dialogue-v3",
+      "seedream/5-pro-image-to-image",
+      "seedream/5-pro-layer-decomposition",
+    ]);
     for (const model of [
       "veo3",
       "veo3_fast",
@@ -2115,6 +2198,7 @@ describe("kie 2026-08-06 pricing pull provenance", () => {
       "suno/vocal-removal-generate",
       "seedream/5-pro-text-to-image",
       "seedream/5-pro-image-to-image",
+      "seedream/5-pro-layer-decomposition",
       "seedream/4.5-text-to-image",
       "seedream/4.5-edit",
       "nano-banana-2-lite",
@@ -2189,7 +2273,9 @@ describe("kie 2026-08-06 pricing pull provenance", () => {
       expect(entry.source.url, `${model} url`).toMatch(
         /^https:\/\/(docs\.)?kie\.ai\//
       );
-      expect(entry.source.asOf, `${model} asOf`).toBe("2026-08-06");
+      expect(entry.source.asOf, `${model} asOf`).toBe(
+        refreshedOnAugustEleven.has(model) ? "2026-08-11" : "2026-08-06"
+      );
     }
   });
 });
@@ -2678,7 +2764,7 @@ describe("kie stale-family refresh (REQ-004)", () => {
         reference_video_urls: ["https://example.com/ref.mp4"],
       },
       seconds: 5,
-      perUnitUsd: 0.1,
+      perUnitUsd: 0.075,
     },
     {
       label: "480p first-frame -> 480p|no-video",
@@ -2689,19 +2775,19 @@ describe("kie stale-family refresh (REQ-004)", () => {
         first_frame_url: "https://example.com/x.jpg",
       },
       seconds: 5,
-      perUnitUsd: 0.0775,
+      perUnitUsd: 0.059,
     },
     {
       label: "480p prompt-only -> 480p|no-video",
       input: { prompt: "xxx", duration: 5, resolution: "480p" },
       seconds: 5,
-      perUnitUsd: 0.0775,
+      perUnitUsd: 0.059,
     },
     {
       label: "720p prompt-only -> 720p|no-video",
       input: { prompt: "xxx", duration: 5, resolution: "720p" },
       seconds: 5,
-      perUnitUsd: 0.165,
+      perUnitUsd: 0.124,
     },
   ])("prices seedance-2-fast $label", ({ input, seconds, perUnitUsd }) => {
     const parsed = Seedance2FastRequestSchema.safeParse({
@@ -2727,6 +2813,207 @@ describe("kie stale-family refresh (REQ-004)", () => {
         warning.includes("not found in pricing table")
       )
     ).toBe(false);
+  });
+
+  it("uses Seedance 2 Fast's documented 720p fallback when omitted", () => {
+    const parsed = Seedance2FastRequestSchema.safeParse({
+      model: "bytedance/seedance-2-fast",
+      input: { prompt: "xxx", duration: 5 },
+    });
+
+    expect(parsed.success).toBe(true);
+    if (!parsed.success) return;
+    expect(parsed.data.input.resolution).toBeUndefined();
+
+    const result = kieEstimate(parsed.data);
+    expect(result.usd).toBeCloseTo(5 * 0.124, 10);
+    expect(result.breakdown).toEqual({
+      units: 5,
+      unit: "seconds",
+      perUnitUsd: 0.124,
+    });
+    expect(result.warnings).toEqual([]);
+  });
+
+  it.each([
+    { resolution: "480p", generate_audio: false, rate: 0.14 },
+    { resolution: "480p", generate_audio: true, rate: 0.085 },
+    { resolution: "720p", generate_audio: false, rate: 0.315 },
+    { resolution: "720p", generate_audio: true, rate: 0.19 },
+  ])(
+    "prices Seedance 2.5 $resolution $generate_audio at $rate/s",
+    ({ resolution, generate_audio, rate }) => {
+      const parsed = Seedance25RequestSchema.safeParse({
+        model: "bytedance/seedance-2-5",
+        input: {
+          prompt: "a city skyline",
+          duration: 6,
+          resolution,
+          generate_audio,
+        },
+      });
+
+      expect(parsed.success).toBe(true);
+      if (!parsed.success) return;
+
+      const result = kieEstimate(parsed.data);
+      expect(result.usd).toBeCloseTo(6 * rate, 10);
+      expect(result.breakdown).toEqual({
+        units: 6,
+        unit: "seconds",
+        perUnitUsd: rate,
+      });
+      expect(result.warnings).toEqual([]);
+    }
+  );
+
+  it("uses Seedance 2.5 documented defaults and fresh provenance", () => {
+    const parsed = Seedance25RequestSchema.safeParse({
+      model: "bytedance/seedance-2-5",
+      input: {},
+    });
+
+    expect(parsed.success).toBe(true);
+    if (!parsed.success) return;
+    expect(parsed.data.input.duration).toBe(5);
+    expect(parsed.data.input.resolution).toBe("720p");
+    expect(parsed.data.input.generate_audio).toBe(true);
+
+    const result = kieEstimate(parsed.data);
+    expect(result.usd).toBeCloseTo(5 * 0.19, 10);
+    expect(PRICING.kie["bytedance/seedance-2-5"].source).toEqual({
+      url: "https://kie.ai/seedance-2-5",
+      asOf: "2026-08-11",
+    });
+  });
+
+  it("does not price Seedance 2.5's -1 duration sentinel without a hint", () => {
+    const request = {
+      model: "bytedance/seedance-2-5",
+      input: { resolution: "720p", generate_audio: true, duration: -1 },
+    };
+
+    const failed = kieEstimate(request);
+    expect(failed.usd).toBe(0);
+    expect(failed.warnings[0]).toContain("could not derive units");
+
+    const hinted = kieEstimate(request, { costHints: { durationSeconds: 6 } });
+    expect(hinted.usd).toBeCloseTo(6 * 0.19, 10);
+    expect(hinted.breakdown.perUnitUsd).toBe(0.19);
+  });
+
+  it.each([
+    { size: "1K", rate: 0.035 },
+    { size: "1.5K", rate: 0.035 },
+    { size: "2K", rate: 0.07 },
+  ])(
+    "prices callable Seedream layer decomposition at $size",
+    ({ size, rate }) => {
+      const parsed = SeedreamProLayerDecompositionRequestSchema.safeParse({
+        model: "seedream/5-pro-layer-decomposition",
+        input: { image_url: "https://example.com/image.png", size },
+      });
+
+      expect(parsed.success).toBe(true);
+      if (!parsed.success) return;
+      const result = kieEstimate(parsed.data);
+      expect(result.usd).toBeCloseTo(rate, 10);
+      expect(result.breakdown).toEqual({
+        units: 1,
+        unit: "images",
+        perUnitUsd: rate,
+      });
+    }
+  );
+
+  it.each([
+    { imageCount: 1, resolution: "768P", duration: 5, usd: 0.44 },
+    { imageCount: 3, resolution: "2K", duration: 4, usd: 0.64 },
+  ])(
+    "prices MiniMax H3 reference images with exact per-image input charges",
+    ({ imageCount, resolution, duration, usd }) => {
+      const parsed = MiniMaxH3ReferenceToVideoRequestSchema.safeParse({
+        model: "minimax-h3/reference-to-video",
+        input: {
+          prompt: "make a cinematic scene",
+          reference_image_urls: Array.from(
+            { length: imageCount },
+            (_, index) => `https://example.com/ref-${index}.png`
+          ),
+          duration,
+          resolution,
+        },
+      });
+
+      expect(parsed.success).toBe(true);
+      if (!parsed.success) return;
+      const result = kieEstimate(parsed.data);
+
+      expect(result.usd).toBeCloseTo(usd, 10);
+      expect(result.breakdown.extraUsd).toBeCloseTo(imageCount * 0.04, 10);
+      expect(result.warnings).toEqual([]);
+    }
+  );
+
+  it.each([
+    {
+      label: "first_frame_url",
+      input: { first_frame_url: "https://example.com/first.png" },
+      extraUsd: 0.04,
+      usd: 0.44,
+    },
+    {
+      label: "first_frame_url and last_frame_url",
+      input: {
+        first_frame_url: "https://example.com/first.png",
+        last_frame_url: "https://example.com/last.png",
+      },
+      extraUsd: 0.08,
+      usd: 0.48,
+    },
+  ])(
+    "prices MiniMax H3 image-to-video $label input surcharge exactly",
+    ({ input, extraUsd, usd }) => {
+      const parsed = MiniMaxH3ImageToVideoRequestSchema.safeParse({
+        model: "minimax-h3/image-to-video",
+        input: {
+          prompt: "animate the supplied frames",
+          duration: 5,
+          resolution: "768P",
+          ...input,
+        },
+      });
+
+      expect(parsed.success).toBe(true);
+      if (!parsed.success) return;
+      const result = kieEstimate(parsed.data);
+
+      expect(result.usd).toBeCloseTo(usd, 10);
+      expect(result.breakdown.extraUsd).toBeCloseTo(extraUsd, 10);
+      expect(result.warnings).toEqual([]);
+    }
+  );
+
+  it("fails closed for MiniMax H3 reference video input", () => {
+    const parsed = MiniMaxH3ReferenceToVideoRequestSchema.safeParse({
+      model: "minimax-h3/reference-to-video",
+      input: {
+        prompt: "use the reference motion",
+        reference_video_urls: ["https://example.com/ref.mp4"],
+        duration: 5,
+        resolution: "768P",
+      },
+    });
+
+    expect(parsed.success).toBe(true);
+    if (!parsed.success) return;
+    const result = kieEstimate(parsed.data);
+
+    expect(result.usd).toBe(0);
+    expect(result.breakdown).toEqual({});
+    expect(result.warnings).toHaveLength(1);
+    expect(result.warnings[0]).toContain("reference_video_urls");
+    expect(result.warnings[0]).toContain("fails closed");
   });
 
   // grok-imagine video: both existing tiers rose and 1080p is new. The 1080p
@@ -2798,20 +3085,24 @@ describe("kie stale-family refresh (REQ-004)", () => {
     }
   );
 
-  // OQ-2's resolution: the upscale schema carries only `task_id`, so the two
-  // 1080p tiers the page publishes cannot be selected. The price stays at the
-  // 360p->720p tier and every estimate says so out loud.
-  it("keeps grok-imagine/upscale flat and warns about the unreachable tiers", () => {
+  // OQ-2's resolution: the upscale schema carries only `task_id`, so none of
+  // the task-dependent tiers can be selected. The estimate fails closed.
+  it("fails closed for grok-imagine/upscale without task resolutions", () => {
     const result = kieEstimate({
       model: "grok-imagine/upscale",
       input: { task_id: "abc" },
     });
 
-    expect(result.usd).toBeCloseTo(0.05, 10);
+    expect(result.usd).toBe(0);
+    expect(result.breakdown).toEqual({});
     expect(result.warnings).toHaveLength(1);
     expect(result.warnings[0]).toContain("360p→720p");
     expect(result.warnings[0]).toContain("720P→1080P ($0.10)");
     expect(result.warnings[0]).toContain("480P→1080P ($0.15)");
+    expect(result.warnings[0]).toContain("fails closed");
+    expect(PRICING.kie["grok-imagine/upscale"]).toMatchObject({
+      rates: { "": 0 },
+    });
   });
 
   it.each([
@@ -2897,7 +3188,13 @@ describe("kie wan 2.2 / 2.5 per-model pricing (REQ-004)", () => {
     const entry = PRICING.kie[m];
     expect(entry, m).toBeDefined();
     expect(entry.source.url, `${m} url`).toMatch(/^https:\/\/kie\.ai\//);
-    expect(entry.source.asOf, `${m} asOf`).toBe("2026-08-06");
+    expect(entry.source.asOf, `${m} asOf`).toBe(
+      m === "wan/2-2-a14b-speech-to-video-turbo" ||
+        m === "wan/2-2-animate-move" ||
+        m === "wan/2-2-animate-replace"
+        ? "2026-08-11"
+        : "2026-08-06"
+    );
   });
 
   it("prices the A14B turbo pair per video by resolution", () => {
@@ -3112,14 +3409,12 @@ describe("kie wan 2.2 / 2.5 per-model pricing (REQ-004)", () => {
     expect(parsed.success).toBe(true);
     if (!parsed.success) return;
     expect(parsed.data.input.resolution).toBe("480p");
-    // 80 frames / 16 fps = 5s of output. The estimator cannot read that —
-    // `seconds` has no frame-count channel — so the caller declares it.
+    // 80 frames / 16 fps = 5s of output. The estimator derives this directly
+    // from the parsed wire payload; no cost hint is needed.
     expect(parsed.data.input.num_frames).toBe(80);
     expect(parsed.data.input.frames_per_second).toBe(16);
 
-    const result = kieEstimate(parsed.data, {
-      costHints: { durationSeconds: 5 },
-    });
+    const result = kieEstimate(parsed.data);
 
     expect(result.usd).toBeCloseTo(0.3, 10); // 5 * 0.06
     expect(result.breakdown).toEqual({
@@ -3131,21 +3426,45 @@ describe("kie wan 2.2 / 2.5 per-model pricing (REQ-004)", () => {
   });
 
   it("prices speech-to-video at the 720p cell", () => {
-    const result = kieEstimate(
-      {
-        model: "wan/2-2-a14b-speech-to-video-turbo",
-        input: {
-          prompt: "x",
-          image_url: "https://example.com/a.png",
-          audio_url: "https://example.com/a.mp3",
-          resolution: "720p",
-        },
+    const result = kieEstimate({
+      model: "wan/2-2-a14b-speech-to-video-turbo",
+      input: {
+        prompt: "x",
+        image_url: "https://example.com/a.png",
+        audio_url: "https://example.com/a.mp3",
+        num_frames: 120,
+        frames_per_second: 20,
+        resolution: "720p",
       },
-      { costHints: { durationSeconds: 6 } }
-    );
+    });
 
-    expect(result.usd).toBeCloseTo(0.72, 10); // 6 * 0.12
-    expect(result.breakdown.perUnitUsd).toBe(0.12);
+    expect(result.usd).toBeCloseTo(0.72, 10); // 120 / 20 * 0.12
+    expect(result.breakdown).toEqual({
+      units: 6,
+      unit: "seconds",
+      perUnitUsd: 0.12,
+    });
+  });
+
+  it("derives speech-to-video duration from non-default frames and FPS", () => {
+    const result = kieEstimate({
+      model: "wan/2-2-a14b-speech-to-video-turbo",
+      input: {
+        prompt: "x",
+        image_url: "https://example.com/a.png",
+        audio_url: "https://example.com/a.mp3",
+        num_frames: 90,
+        frames_per_second: 30,
+        resolution: "580p",
+      },
+    });
+
+    expect(result.usd).toBeCloseTo(0.27, 10); // 90 / 30 * 0.09
+    expect(result.breakdown).toEqual({
+      units: 3,
+      unit: "seconds",
+      perUnitUsd: 0.09,
+    });
   });
 
   it("prices animate-move per second off the schema's 480p default", () => {
@@ -3198,20 +3517,17 @@ describe("kie wan 2.2 / 2.5 per-model pricing (REQ-004)", () => {
     expect(at720.usd).toBeCloseTo(0.5, 10); // 8 * 0.0625
   });
 
-  // The three per-second models declare no duration field, so an estimate
-  // without the hint must fail loudly and name the channel rather than quote a
-  // one-second clip.
-  it.each([
-    "wan/2-2-a14b-speech-to-video-turbo",
-    "wan/2-2-animate-move",
-    "wan/2-2-animate-replace",
-  ])("fails %s when no duration is declared", (model) => {
-    const result = kieEstimate({ model, input: { resolution: "480p" } });
+  // Animate inherits its driving-video length and still requires the hint.
+  it.each(["wan/2-2-animate-move", "wan/2-2-animate-replace"])(
+    "fails %s when no duration is declared",
+    (model) => {
+      const result = kieEstimate({ model, input: { resolution: "480p" } });
 
-    expect(result.usd).toBe(0);
-    expect(result.warnings).toHaveLength(1);
-    expect(result.warnings[0]).toContain("costHints.durationSeconds");
-  });
+      expect(result.usd).toBe(0);
+      expect(result.warnings).toHaveLength(1);
+      expect(result.warnings[0]).toContain("costHints.durationSeconds");
+    }
+  );
 
   it.each([
     { duration: "5", resolution: "720p", usd: 0.3 },
@@ -3283,20 +3599,18 @@ describe("kie wan 2.2 / 2.5 per-model pricing (REQ-004)", () => {
     {
       label: "resolution omitted",
       input: { prompt: "x", duration: "5" },
-      variant: "5",
     },
     {
       label: "duration omitted",
       input: { prompt: "x", resolution: "720p" },
-      variant: "720p",
     },
-    { label: "both omitted", input: { prompt: "x" }, variant: "" },
-  ])("fails wan 2.5 with $label", ({ input, variant }) => {
+    { label: "both omitted", input: { prompt: "x" } },
+  ])("fails wan 2.5 with $label", ({ input }) => {
     const result = kieEstimate({ model: "wan/2-5-text-to-video", input });
 
     expect(result.usd).toBe(0);
     expect(result.warnings).toHaveLength(1);
-    expect(result.warnings[0]).toContain(`no rate for variant '${variant}'`);
+    expect(result.warnings[0]).toContain("missing required selector(s)");
   });
 
   // Both resolutions and all three durations, each routed through the shipped

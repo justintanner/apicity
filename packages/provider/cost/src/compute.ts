@@ -134,9 +134,15 @@ function evaluatePerUnit(
       entry.unit === "seconds"
         ? "; for endpoints whose schema has no duration, pass costHints.durationSeconds"
         : "";
-    return failed("per-unit-table", [
-      `${provider} '${pricingKey}': could not derive units from payload (check duration / text)${hintAdvice}`,
-    ]);
+    const customWarnings = entry.warn?.(payload, hints) ?? [];
+    return failed(
+      "per-unit-table",
+      customWarnings.length > 0
+        ? customWarnings
+        : [
+            `${provider} '${pricingKey}': could not derive units from payload (check duration / text)${hintAdvice}`,
+          ]
+    );
   }
 
   const selections = entry.select.map((selector) => ({
@@ -165,11 +171,32 @@ function evaluatePerUnit(
       `${provider} '${pricingKey}': no rate for variant '${variantKey}' (selectors: ${selectorNames})`,
     ]);
   }
+  const extraUsd = entry.extra?.(payload, hints);
+  if (
+    entry.extra &&
+    (extraUsd === undefined || !Number.isFinite(extraUsd) || extraUsd < 0)
+  ) {
+    const customWarnings = entry.warn?.(payload, hints) ?? [];
+    return failed(
+      "per-unit-table",
+      customWarnings.length > 0
+        ? customWarnings
+        : [
+            `${provider} '${pricingKey}': could not derive exact additional charge from payload`,
+          ]
+    );
+  }
+  const resolvedExtraUsd = extraUsd ?? 0;
   return {
-    usd: units * perUnit,
+    usd: units * perUnit + resolvedExtraUsd,
     currency: "USD",
     source: "per-unit-table",
-    breakdown: { units, unit: entry.unit, perUnitUsd: perUnit },
+    breakdown: {
+      units,
+      unit: entry.unit,
+      perUnitUsd: perUnit,
+      ...(resolvedExtraUsd > 0 ? { extraUsd: resolvedExtraUsd } : {}),
+    },
     rateAsOf: entry.source.asOf ?? PRICING_AS_OF,
     // Cost-only warnings from the entry's optional `warn` hook (e.g. googleflow
     // unknown-plan-tier fallback). Inert for every entry that omits `warn`.

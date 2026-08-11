@@ -17,6 +17,7 @@ export interface CostBreakdown {
   inputUsdPerMillion?: number;
   outputUsdPerMillion?: number;
   perUnitUsd?: number;
+  extraUsd?: number;
 }
 
 export interface CostEstimate {

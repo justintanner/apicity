@@ -17,6 +17,7 @@ export const MODEL_SLUGS = {
     // Video — Bytedance Seedance
     "bytedance/seedance-2": "sd2",
     "bytedance/seedance-2-fast": "sd2f",
+    "bytedance/seedance-2-5": "sd2p5",
     "bytedance/seedance-2-mini": "sd2m",
 
     // Video — Kling 3.0 (mode-tiered: synthetic suffixed keys)
@@ -154,6 +155,7 @@ export const MODEL_SLUGS = {
     "seedream/5-lite-image-to-image": "sd5",
     "seedream/5-pro-text-to-image": "sd5p",
     "seedream/5-pro-image-to-image": "sd5p",
+    "seedream/5-pro-layer-decomposition": "sd5p",
     "seedream/4.5-text-to-image": "sd4p5",
     "seedream/4.5-edit": "sd4p5",
 
@@ -435,6 +437,7 @@ export const MODEL_DISPLAY = {
   kie: {
     "bytedance/seedance-2": "Seedance 2",
     "bytedance/seedance-2-fast": "Seedance 2 Fast",
+    "bytedance/seedance-2-5": "Seedance 2.5",
     "bytedance/seedance-2-mini": "Seedance 2 Mini",
 
     "kling-3.0/video": "Kling 3.0",
@@ -540,6 +543,7 @@ export const MODEL_DISPLAY = {
     "seedream/5-lite-image-to-image": "Seedream 5 Edit",
     "seedream/5-pro-text-to-image": "Seedream 5 Pro",
     "seedream/5-pro-image-to-image": "Seedream 5 Pro Edit",
+    "seedream/5-pro-layer-decomposition": "Seedream 5 Pro Layer Decomposition",
     "seedream/4.5-text-to-image": "Seedream 4.5",
     "seedream/4.5-edit": "Seedream 4.5 Edit",
 

@@ -1,6 +1,12 @@
 import type { CostHints } from "../types";
 import type { ModelPricing } from "./types";
-import { asObject, asString, coerceSeconds, hintSeconds } from "./helpers";
+import {
+  asNumber,
+  asObject,
+  asString,
+  coerceSeconds,
+  hintSeconds,
+} from "./helpers";
 
 // Source URL is the kie marketplace or product page for the relevant model.
 // Rates verified 2026-04-30 unless an entry notes a newer date. Rate keys mirror
@@ -12,11 +18,10 @@ import { asObject, asString, coerceSeconds, hintSeconds } from "./helpers";
 const src = (slug: string) => ({ url: `https://kie.ai/market/${slug}` });
 const page = (url: string) => ({ url });
 
-// Source stamp for every entry refreshed from the 2026-08-06 kie pricing pull
-// (WP1 snapshot `kie-pricing-snapshot-2026-08-06.json`). REQ-008 wants a page
-// URL plus an asOf on each touched entry, so the date lives in one place
-// rather than being retyped per entry.
-const pricePage = (url: string) => ({ url, asOf: "2026-08-06" });
+// Source stamp for entries refreshed from the dated KIE pricing pulls. REQ-008
+// wants a page URL plus an asOf on each touched entry, so the date lives in one
+// place rather than being retyped per entry.
+const pricePage = (url: string, asOf = "2026-08-06") => ({ url, asOf });
 
 // Seconds of output, resolved in a fixed precedence:
 //   1. payload.input.duration — the upstream wire field, what kie actually
@@ -34,6 +39,47 @@ const seconds = (
   const wire = asObject(p.input)?.duration;
   if (wire !== undefined && wire !== null) return coerceSeconds(wire);
   return hintSeconds(hints) ?? coerceSeconds(p.duration);
+};
+
+// Wan 2.2 speech-to-video publishes frame-count defaults (80 frames at 16
+// frames/s) rather than a duration field. Derive the exact output length from
+// the two finite wire values, applying each documented default independently.
+const wanSpeechSeconds = (p: Record<string, unknown>): number | undefined => {
+  const input = asObject(p.input);
+  const frames = asNumber(
+    input?.num_frames === undefined ? 80 : input.num_frames
+  );
+  const framesPerSecond = asNumber(
+    input?.frames_per_second === undefined ? 16 : input.frames_per_second
+  );
+  if (frames === undefined || frames <= 0) return undefined;
+  if (framesPerSecond === undefined || framesPerSecond <= 0) return undefined;
+  return frames / framesPerSecond;
+};
+
+// Seedance 2.5 reserves -1 as a request-side duration sentinel. It is not a
+// billable duration: only a positive cost hint can replace it. A parsed
+// request with no duration uses the documented five-second default, while a
+// raw request with an explicit invalid/negative duration fails closed.
+const seedance25Seconds = (
+  p: Record<string, unknown>,
+  hints?: CostHints
+): number | undefined => {
+  const wire = asObject(p.input)?.duration;
+  if (wire !== undefined && wire !== null) {
+    const value = coerceSeconds(wire);
+    return value !== undefined && value > 0 ? value : hintSeconds(hints);
+  }
+
+  const hinted = hintSeconds(hints);
+  if (hinted !== undefined) return hinted;
+
+  if (p.duration !== undefined && p.duration !== null) {
+    const value = coerceSeconds(p.duration);
+    return value !== undefined && value > 0 ? value : undefined;
+  }
+
+  return 5;
 };
 
 // Rate-key form of a selector field upstream types as a number. `asString`
@@ -86,6 +132,18 @@ const imageCount = (p: Record<string, unknown>): number => {
       ? Number(declared)
       : NaN;
   return Number.isFinite(count) && count > 0 ? count : 1;
+};
+
+// Seedream 5 Pro edit charges $0.0025 for each input image after the first.
+// The schema caps image_urls at ten, so the surcharge is a finite exact count
+// rather than a media-size guess.
+const seedreamProEditExtra = (
+  p: Record<string, unknown>
+): number | undefined => {
+  const images = asObject(p.input)?.image_urls;
+  if (!Array.isArray(images) || images.length === 0) return undefined;
+  if (images.some((image) => typeof image !== "string")) return undefined;
+  return Math.max(0, images.length - 1) * 0.0025;
 };
 
 // kie's `image_size` presets are the same named tokens fal uses for the same
@@ -186,7 +244,12 @@ const tieredImagePage = (
   field: string,
   rates: Record<string, number>,
   url: string,
-  defaultValue?: string
+  defaultValue?: string,
+  asOf = "2026-08-06",
+  extra?: (
+    payload: Record<string, unknown>,
+    hints?: CostHints
+  ) => number | undefined
 ): ModelPricing => ({
   kind: "perUnit",
   unit: "images",
@@ -195,10 +258,12 @@ const tieredImagePage = (
     {
       name: field,
       pick: (p) => asString(asObject(p.input)?.[field]) ?? defaultValue,
+      ...(defaultValue === undefined ? { required: true } : {}),
     },
   ],
   rates,
-  source: pricePage(url),
+  ...(extra ? { extra } : {}),
+  source: pricePage(url, asOf),
 });
 
 // Area-billed image entry: kie prices the Qwen Image family per megapixel of
@@ -231,6 +296,7 @@ const tieredImage = (
     {
       name: "resolution",
       pick: (p) => asString(asObject(p.input)?.resolution) ?? defaultResolution,
+      ...(defaultResolution === undefined ? { required: true } : {}),
     },
   ],
   rates,
@@ -315,7 +381,11 @@ const perVideoByDuration = (
   unit: "generations",
   units: () => 1,
   select: [
-    { name: "duration", pick: (p) => inputDurationKey(p, defaultDuration) },
+    {
+      name: "duration",
+      pick: (p) => inputDurationKey(p, defaultDuration),
+      ...(defaultDuration === undefined ? { required: true } : {}),
+    },
   ],
   rates,
   source: pricePage(url),
@@ -343,10 +413,15 @@ const perVideoByDurationAndResolution = (
   unit: "generations",
   units: () => 1,
   select: [
-    { name: "duration", pick: (p) => inputDurationKey(p, defaultDuration) },
+    {
+      name: "duration",
+      pick: (p) => inputDurationKey(p, defaultDuration),
+      ...(defaultDuration === undefined ? { required: true } : {}),
+    },
     {
       name: "resolution",
       pick: (p) => inputResolution(p) ?? defaultResolution,
+      ...(defaultResolution === undefined ? { required: true } : {}),
     },
   ],
   rates,
@@ -370,6 +445,7 @@ const perVideoByResolution = (
     {
       name: "resolution",
       pick: (p) => inputResolution(p) ?? defaultResolution,
+      ...(defaultResolution === undefined ? { required: true } : {}),
     },
   ],
   rates,
@@ -385,13 +461,26 @@ const kling26Video = (url: string): ModelPricing => ({
   unit: "generations",
   units: () => 1,
   select: [
-    { name: "duration", pick: (p) => inputDurationKey(p) },
+    { name: "duration", pick: (p) => inputDurationKey(p), required: true },
     {
       name: "sound",
-      pick: (p) => (asObject(p.input)?.sound === true ? "sound" : undefined),
+      pick: (p) => {
+        const sound = asObject(p.input)?.sound;
+        return sound === true
+          ? "sound"
+          : sound === false
+            ? "silent"
+            : undefined;
+      },
+      required: true,
     },
   ],
-  rates: { "5": 0.275, "10": 0.55, "5|sound": 0.55, "10|sound": 1.1 },
+  rates: {
+    "5|silent": 0.275,
+    "10|silent": 0.55,
+    "5|sound": 0.55,
+    "10|sound": 1.1,
+  },
   source: pricePage(url),
 });
 
@@ -403,19 +492,25 @@ const tieredVideoPage = (
   field: string,
   rates: Record<string, number>,
   url: string,
-  defaultValue?: string
+  defaultValue?: string,
+  asOf = "2026-08-06",
+  units: (
+    payload: Record<string, unknown>,
+    hints?: CostHints
+  ) => number | undefined = seconds
 ): ModelPricing => ({
   kind: "perUnit",
   unit: "seconds",
-  units: seconds,
+  units,
   select: [
     {
       name: field,
       pick: (p) => asString(asObject(p.input)?.[field]) ?? defaultValue,
+      ...(defaultValue === undefined ? { required: true } : {}),
     },
   ],
   rates,
-  source: pricePage(url),
+  source: pricePage(url, asOf),
 });
 
 // Flat per-second video rate for the families whose evidence is a kie pricing
@@ -458,37 +553,67 @@ const dialogueCharacters = (p: Record<string, unknown>): number | undefined => {
 const perCharacterPage = (
   perUnit: number,
   url: string,
-  units: (p: Record<string, unknown>) => number | undefined = inputCharacters
+  units: (p: Record<string, unknown>) => number | undefined = inputCharacters,
+  asOf = "2026-08-06"
 ): ModelPricing => ({
   kind: "perUnit",
   unit: "characters",
   units,
   select: [],
   rates: { "": perUnit },
-  source: pricePage(url),
+  source: pricePage(url, asOf),
 });
 
-// MiniMax H3 (Hailuo 03): 2 tiers by resolution. KIE lists 22.5 credits/s
-// ($0.1125) at 768P and 36.5 credits/s ($0.1825) at 2K. Documented
-// upstream default is 2K when input.resolution is omitted. Duration is a
-// required wire field (int 4–15), so no costHints channel is needed.
-// Re-verified against a fresh pricing pull on 2026-08-06 — both rates and
-// both surcharges below still print exactly these cells, so `asOf` stays at
-// that date.
+// MiniMax H3 (Hailuo 03): 2 tiers by resolution. The fresh 2026-08-11 pull
+// lists 16 credits/s ($0.08) at 768P and 26 credits/s ($0.13) at 2K.
+// Documented upstream default is 2K when input.resolution is omitted. Duration
+// is a required wire field (int 4–15), so no costHints channel is needed.
 //
-// Generation-only rates. The page publishes two further MiniMax H3 charges
-// that this table deliberately leaves out, matching the scope of every other
-// video helper here:
-//   1. Input-video seconds at the generation rate — the "MiniMax H3, video
-//      input" rows print the same 22.5 credits/s (768p) and 36.5 credits/s
-//      (2k), so reference_video_urls clips bill on top of the output.
-//   2. Reference images past the first five (which are free) at 11 credits
-//      → $0.055 each — the "MiniMax H3, image input, 768p, 2k" row;
-//      reference_image_urls accepts up to 9.
-// Only the second is derivable from what the estimator sees — the wire
-// fields carry media URLs, not clip lengths — so an estimate for a call that
-// uses either surcharge is a floor, not the final charge.
-const miniMaxH3Video = (slug: string): ModelPricing => ({
+// The page separately charges $0.04 per input image. The callable image and
+// reference-image fields expose finite counts, so that additive charge is
+// exact. Reference-video input carries no clip duration in the request, so
+// those payloads fail closed rather than quoting a generation-only rate.
+const miniMaxH3Extra = (p: Record<string, unknown>): number | undefined => {
+  const input = asObject(p.input);
+  const videos = input?.reference_video_urls;
+  if (videos !== undefined) {
+    if (!Array.isArray(videos)) return undefined;
+    if (videos.length > 0) return undefined;
+  }
+
+  let imageCount = 0;
+  const referenceImages = input?.reference_image_urls;
+  if (referenceImages !== undefined) {
+    if (!Array.isArray(referenceImages)) return undefined;
+    if (referenceImages.some((image) => typeof image !== "string")) {
+      return undefined;
+    }
+    imageCount += referenceImages.length;
+  }
+
+  for (const field of ["first_frame_url", "last_frame_url"]) {
+    const image = input?.[field];
+    if (image === undefined) continue;
+    if (typeof image !== "string") return undefined;
+    imageCount += 1;
+  }
+
+  return imageCount * 0.04;
+};
+
+const miniMaxH3Warning = (p: Record<string, unknown>): string[] => {
+  const videos = asObject(p.input)?.reference_video_urls;
+  if (Array.isArray(videos) && videos.length > 0) {
+    return [
+      "kie MiniMax H3: reference_video_urls carry no clip duration in the " +
+        "request, so the estimate fails closed instead of quoting a " +
+        "generation-only rate",
+    ];
+  }
+  return [];
+};
+
+const miniMaxH3Video = (url: string): ModelPricing => ({
   kind: "perUnit",
   unit: "seconds",
   units: seconds,
@@ -498,8 +623,10 @@ const miniMaxH3Video = (slug: string): ModelPricing => ({
       pick: (p) => asString(asObject(p.input)?.resolution) ?? "2K",
     },
   ],
-  rates: { "768P": 0.1125, "2K": 0.1825 },
-  source: { ...src(slug), asOf: "2026-08-06" },
+  rates: { "768P": 0.08, "2K": 0.13 },
+  extra: miniMaxH3Extra,
+  warn: miniMaxH3Warning,
+  source: pricePage(url, "2026-08-11"),
 });
 
 export const kie: Record<string, ModelPricing> = {
@@ -557,7 +684,7 @@ export const kie: Record<string, ModelPricing> = {
     unit: "seconds",
     units: seconds,
     select: [
-      { name: "mode", pick: inputMode },
+      { name: "mode", pick: inputMode, required: true },
       {
         name: "sound",
         pick: (p) => {
@@ -586,7 +713,7 @@ export const kie: Record<string, ModelPricing> = {
     kind: "perUnit",
     unit: "seconds",
     units: seconds,
-    select: [{ name: "mode", pick: inputMode }],
+    select: [{ name: "mode", pick: inputMode, required: true }],
     rates: { "720p": 0.1, "1080p": 0.135 },
     source: src("kwaivgi/kling-3.0"),
   },
@@ -598,7 +725,7 @@ export const kie: Record<string, ModelPricing> = {
     kind: "perUnit",
     unit: "seconds",
     units: seconds,
-    select: [{ name: "resolution", pick: inputResolution }],
+    select: [{ name: "resolution", pick: inputResolution, required: true }],
     rates: { "720p": 0.09, "1080p": 0.1125 },
     source: page("https://kie.ai/kling-3-0-turbo"),
   },
@@ -606,7 +733,7 @@ export const kie: Record<string, ModelPricing> = {
     kind: "perUnit",
     unit: "seconds",
     units: seconds,
-    select: [{ name: "resolution", pick: inputResolution }],
+    select: [{ name: "resolution", pick: (p) => inputResolution(p) ?? "720p" }],
     rates: { "720p": 0.09, "1080p": 0.1125 },
     source: page("https://kie.ai/kling-3-0-turbo"),
   },
@@ -638,17 +765,15 @@ export const kie: Record<string, ModelPricing> = {
   // (`Wan22ExtendedResolutionSchema`), and the default pick mirrors the
   // schema's "480p".
   //
-  // The schema has no `duration` field, so seconds arrive through
-  // costHints.durationSeconds exactly like the animate pair below.
-  // `num_frames` / `frames_per_second` (defaults 80/16 = 5s) would let the
-  // output length be derived from the wire payload, but the `seconds`
-  // precedence above has no derivation channel and adding one is out of scope
-  // for this entry.
+  // The schema's output length is exact from num_frames / frames_per_second,
+  // including the documented 80/16 defaults and non-default combinations.
   "wan/2-2-a14b-speech-to-video-turbo": tieredVideoPage(
     "resolution",
     { "480p": 0.06, "580p": 0.09, "720p": 0.12 },
     "https://kie.ai/wan-speech-to-video-turbo",
-    "480p"
+    "480p",
+    "2026-08-11",
+    wanSpeechSeconds
   ),
 
   // wan/2.2 Animate move/replace — per SECOND by resolution: 6 / 9.5 / 12.5
@@ -659,13 +784,15 @@ export const kie: Record<string, ModelPricing> = {
     "resolution",
     { "480p": 0.03, "580p": 0.0475, "720p": 0.0625 },
     "https://kie.ai/wan-animate",
-    "480p"
+    "480p",
+    "2026-08-11"
   ),
   "wan/2-2-animate-replace": tieredVideoPage(
     "resolution",
     { "480p": 0.03, "580p": 0.0475, "720p": 0.0625 },
     "https://kie.ai/wan-animate",
-    "480p"
+    "480p",
+    "2026-08-11"
   ),
 
   // wan/2.5 text/image-to-video — per VIDEO by duration × resolution, with all
@@ -870,11 +997,13 @@ export const kie: Record<string, ModelPricing> = {
       {
         name: "extend_times",
         pick: (p) => asString(asObject(p.input)?.extend_times),
+        required: true,
       },
       {
         name: "resolution",
         pick: (p) =>
           asString(asObject(p.input)?.resolution) ?? asString(p.resolution),
+        required: true,
       },
     ],
     rates: {
@@ -889,24 +1018,21 @@ export const kie: Record<string, ModelPricing> = {
   },
 
   // grok-imagine/upscale: the schema carries only `task_id`, so no tier is
-  // selectable from a request. The entry keeps the page's 360p→720p tier
-  // (10 credits = $0.05) as the single flat rate and warns that the other two
-  // published tiers exist but cannot be addressed — kie now also prices
-  // 720P→1080P at $0.10 and 480P→1080P at $0.15, both chosen by the source
-  // and target resolutions of the referenced task rather than by any field
-  // the caller sends. An estimate for those paths under-quotes by design; a
-  // rate keyed to an unreachable selector would be worse.
+  // selectable from a request. Kie publishes 360p→720p at $0.05,
+  // 720P→1080P at $0.10, and 480P→1080P at $0.15; all depend on source and
+  // target resolutions of the referenced task. Fail closed because no
+  // nonzero tier is exact from this payload.
   "grok-imagine/upscale": {
     kind: "perUnit",
     unit: "generations",
-    units: () => 1,
+    units: () => undefined,
     select: [],
-    rates: { "": 0.05 },
+    rates: { "": 0 },
     warn: () => [
-      "kie 'grok-imagine/upscale': priced at the 360p→720p tier ($0.05). " +
-        "kie also publishes 720P→1080P ($0.10) and 480P→1080P ($0.15), " +
-        "selected by the source/target resolutions the request schema " +
-        "cannot express — those paths are under-estimated.",
+      "kie 'grok-imagine/upscale': source/target resolutions are not present " +
+        "in the task_id-only request, so the estimate fails closed rather " +
+        "than selecting among the published 360p→720p ($0.05), " +
+        "720P→1080P ($0.10), and 480P→1080P ($0.15) tiers",
     ],
     source: pricePage(
       "https://kie.ai/grok-imagine?model=grok-imagine%2Fupscale"
@@ -951,13 +1077,17 @@ export const kie: Record<string, ModelPricing> = {
   "happyhorse-1-1/image-to-video": happyHorse11Video("image-to-video"),
   "happyhorse-1-1/reference-to-video": happyHorse11Video("reference-to-video"),
 
-  // minimax-h3: 2 tiers by resolution. KIE lists 22.5 credits/s ($0.1125)
-  // at 768P and 36.5 credits/s ($0.1825) at 2K (verified kie.ai/pricing
-  // 2026-08-06). Documented upstream default is 2K.
-  "minimax-h3/text-to-video": miniMaxH3Video("minimax-h3/text-to-video"),
-  "minimax-h3/image-to-video": miniMaxH3Video("minimax-h3/image-to-video"),
+  // minimax-h3: 2 tiers by resolution. The fresh 2026-08-11 pull lists
+  // 16 credits/s ($0.08) at 768P and 26 credits/s ($0.13) at 2K.
+  // Documented upstream default remains 2K.
+  "minimax-h3/text-to-video": miniMaxH3Video(
+    "https://kie.ai/minimax-h3?model=minimax-h3%2Ftext-to-video"
+  ),
+  "minimax-h3/image-to-video": miniMaxH3Video(
+    "https://kie.ai/minimax-h3?model=minimax-h3%2Fimage-to-video"
+  ),
   "minimax-h3/reference-to-video": miniMaxH3Video(
-    "minimax-h3/reference-to-video"
+    "https://kie.ai/minimax-h3?model=minimax-h3%2Freference-to-video"
   ),
 
   // ---------------------------------------------------------------------
@@ -1102,7 +1232,7 @@ export const kie: Record<string, ModelPricing> = {
     unit: "seconds",
     units: seconds,
     select: [
-      { name: "resolution", pick: inputResolution },
+      { name: "resolution", pick: inputResolution, required: true },
       {
         name: "videoInput",
         pick: (p) => (hasReferenceVideoInput(p) ? "video" : "no-video"),
@@ -1131,44 +1261,84 @@ export const kie: Record<string, ModelPricing> = {
     unit: "seconds",
     units: seconds,
     select: [
-      { name: "resolution", pick: inputResolution },
+      { name: "resolution", pick: (p) => inputResolution(p) ?? "720p" },
       {
         name: "videoInput",
         pick: (p) => (hasReferenceVideoInput(p) ? "video" : "no-video"),
       },
     ],
     rates: {
-      "480p|video": 0.045,
-      "480p|no-video": 0.0775,
-      "720p|video": 0.1,
-      "720p|no-video": 0.165,
+      "480p|video": 0.034,
+      "480p|no-video": 0.059,
+      "720p|video": 0.075,
+      "720p|no-video": 0.124,
     },
-    source: src("bytedance/seedance-2-fast"),
+    source: pricePage(
+      "https://kie.ai/seedance-2-0?model=bytedance%2Fseedance-2-fast",
+      "2026-08-11"
+    ),
+  },
+
+  // bytedance/seedance-2-5: per second by resolution × audio. KIE's page
+  // labels the audio axis "with video" / "no video"; the callable schema
+  // exposes the same discriminator as generate_audio. Resolution defaults to
+  // 720p and audio defaults on, so those defaults are applied only for omitted
+  // fields. All four published cells are retained verbatim.
+  "bytedance/seedance-2-5": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: seedance25Seconds,
+    select: [
+      {
+        name: "resolution",
+        pick: (p) => inputResolution(p) ?? "720p",
+      },
+      {
+        name: "audio",
+        pick: (p) => {
+          const audio = asObject(p.input)?.generate_audio;
+          return audio === undefined
+            ? "audio"
+            : audio === false
+              ? "no-audio"
+              : audio === true
+                ? "audio"
+                : undefined;
+        },
+      },
+    ],
+    rates: {
+      "480p|audio": 0.085,
+      "480p|no-audio": 0.14,
+      "720p|audio": 0.19,
+      "720p|no-audio": 0.315,
+    },
+    source: pricePage("https://kie.ai/seedance-2-5", "2026-08-11"),
   },
 
   // bytedance/seedance-2-mini: 4 rates, resolution x reference video input.
-  // Rates verified 2026-06-24 from the assigned pricing update:
-  // 480p video input = 6 credits/s ($0.030), 480p no video input =
-  // 9.5 credits/s ($0.0475), 720p video input = 12.5 credits/s ($0.0625),
-  // 720p no video input = 20.5 credits/s ($0.1025).
+  // Rates refreshed from the 2026-08-11 pull: 480p video input = 2.4
+  // credits/s ($0.012), 480p no video input = 3.8 credits/s ($0.019),
+  // 720p video input = 5 credits/s ($0.025), 720p no video input =
+  // 8.2 credits/s ($0.041).
   "bytedance/seedance-2-mini": {
     kind: "perUnit",
     unit: "seconds",
     units: seconds,
     select: [
-      { name: "resolution", pick: inputResolution },
+      { name: "resolution", pick: (p) => inputResolution(p) ?? "720p" },
       {
         name: "videoInput",
         pick: (p) => (hasReferenceVideoInput(p) ? "video" : "no-video"),
       },
     ],
     rates: {
-      "480p|video": 0.03,
-      "480p|no-video": 0.0475,
-      "720p|video": 0.0625,
-      "720p|no-video": 0.1025,
+      "480p|video": 0.012,
+      "480p|no-video": 0.019,
+      "720p|video": 0.025,
+      "720p|no-video": 0.041,
     },
-    source: { ...src("bytedance/seedance-2-mini"), asOf: "2026-06-24" },
+    source: pricePage("https://kie.ai/seedance-2-0-mini", "2026-08-11"),
   },
 
   // ---------------------------------------------------------------------
@@ -1334,8 +1504,8 @@ export const kie: Record<string, ModelPricing> = {
     unit: "generations",
     units: () => 1,
     select: [
-      { name: "duration", pick: (p) => scalarKey(p.duration) },
-      { name: "quality", pick: (p) => asString(p.quality) },
+      { name: "duration", pick: (p) => scalarKey(p.duration), required: true },
+      { name: "quality", pick: (p) => asString(p.quality), required: true },
     ],
     rates: { "5|720p": 0.06, "10|720p": 0.15, "5|1080p": 0.15 },
     source: pricePage("https://kie.ai/runway-api"),
@@ -1349,7 +1519,9 @@ export const kie: Record<string, ModelPricing> = {
     kind: "perUnit",
     unit: "generations",
     units: () => 1,
-    select: [{ name: "quality", pick: (p) => asString(p.quality) }],
+    select: [
+      { name: "quality", pick: (p) => asString(p.quality), required: true },
+    ],
     rates: { "720p": 0.06, "1080p": 0.15 },
     source: pricePage("https://kie.ai/runway-api"),
   },
@@ -1417,24 +1589,37 @@ export const kie: Record<string, ModelPricing> = {
   // knob is quality; docs.kie.ai states "Basic outputs 1K images, while High
   // outputs 2K images", so basic → the $0.035 rows and high → the $0.07 row.
   // The 1.5K row collapses into `basic` at the same price, so no page row is
-  // lost. `quality` is required upstream but documents a default of "basic",
-  // which is applied as the absent-field fallback.
+  // lost. Both live createTask schemas require `quality`; no helper default is
+  // applied even though the docs list "basic" as a default.
   //
-  // EXCLUDED: the page's input-image surcharge (0.5 credits = $0.0025 per
-  // input image beyond the first, which is free) — it bills on media the
-  // estimate does not size. UNPRICEABLE: the page's "Layer Decomposition" rows
-  // (1K/1.5K $0.035, 2K $0.07) have no schema surface to key on.
+  // The image-to-image entry adds the exact finite input-image surcharge below
+  // (0.5 credits = $0.0025 per image beyond the first, which is free).
+  // The page's separate Layer Decomposition rows now have their own callable
+  // pricing key below.
   "seedream/5-pro-text-to-image": tieredImagePage(
     "quality",
     { basic: 0.035, high: 0.07 },
-    "https://kie.ai/seedream-5-0-pro?model=seedream%2F5-pro-text-to-image",
-    "basic"
+    "https://kie.ai/seedream-5-0-pro?model=seedream%2F5-pro-text-to-image"
   ),
   "seedream/5-pro-image-to-image": tieredImagePage(
     "quality",
     { basic: 0.035, high: 0.07 },
     "https://kie.ai/seedream-5-0-pro",
-    "basic"
+    undefined,
+    "2026-08-11",
+    seedreamProEditExtra
+  ),
+
+  // Seedream 5 Pro layer decomposition — per image by output size. The
+  // callable schema exposes auto|1K|1.5K|2K and defaults to auto; KIE only
+  // publishes priced 1K/1.5K/2K cells, so auto remains an explicit
+  // unsupported selector rather than inheriting a guessed tier.
+  "seedream/5-pro-layer-decomposition": tieredImagePage(
+    "size",
+    { "1K": 0.035, "1.5K": 0.035, "2K": 0.07 },
+    "https://kie.ai/seedream-5-0-pro",
+    "auto",
+    "2026-08-11"
   ),
 
   // Seedream 4.5 — flat $0.0325/image on both published rows. The schema
@@ -1607,23 +1792,19 @@ export const kie: Record<string, ModelPricing> = {
   // Topaz Image Upscaler — the page's three rows are OUTPUT resolutions
   // (2K $0.05, 4K $0.10, 8K $0.20), but the request schema's only knob is
   // `upscale_factor` ("1"|"2"|"4"), and docs.kie.ai publishes no mapping from
-  // a factor to an output tier — the output depends on the source image's
-  // resolution, which the payload does not carry. Keying rates by
-  // upscale_factor would be a guess, so this follows the grok-imagine/upscale
-  // precedent: flat at the cheapest published tier, plus a warning that names
-  // the two tiers the estimate cannot address. The warning is cost-only; it
-  // never changes the price.
+  // a factor to an output tier. Fail closed because the source image's
+  // resolution is not carried by the payload.
   "topaz/image-upscale": {
     kind: "perUnit",
     unit: "images",
-    units: imageCount,
+    units: () => undefined,
     select: [],
-    rates: { "": 0.05 },
+    rates: { "": 0 },
     warn: () => [
       "kie 'topaz/image-upscale': billed by OUTPUT resolution (2K $0.05, " +
         "4K $0.10, 8K $0.20) which the request schema cannot express — " +
-        "upscale_factor has no documented output mapping, so this estimate " +
-        "is the 2K floor",
+        "upscale_factor has no documented output mapping, so the estimate " +
+        "fails closed",
     ],
     source: pricePage("https://kie.ai/topaz-image-upscale"),
   },
@@ -1692,7 +1873,8 @@ export const kie: Record<string, ModelPricing> = {
   "elevenlabs/text-to-dialogue-v3": perCharacterPage(
     0.00007,
     "https://kie.ai/elevenlabs/text-to-dialogue-v3",
-    dialogueCharacters
+    dialogueCharacters,
+    "2026-08-11"
   ),
 
   // Suno: keyed by endpoint, NOT by audio model version. The kie payload's
@@ -1723,9 +1905,12 @@ export const kie: Record<string, ModelPricing> = {
     kind: "perUnit",
     unit: "generations",
     units: () => 1,
-    select: [{ name: "type", pick: (p) => asString(p.type) }],
+    select: [{ name: "type", pick: (p) => asString(p.type), required: true }],
     rates: { separate_vocal: 0.05, split_stem: 0.25 },
-    source: { ...src("suno/suno"), asOf: "2026-08-06" },
+    source: pricePage(
+      "https://kie.ai/suno-api?model=ai-music-api%2Fseparate-vocals",
+      "2026-08-11"
+    ),
   },
 
   // New Suno endpoints (5 missing from marketplace)

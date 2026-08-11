@@ -1047,6 +1047,75 @@ describe("computeEstimate", () => {
       }
     });
 
+    it("adds an optional exact extra charge to the primary unit total", () => {
+      const model = "__exact-extra-charge-test__";
+      const previous = PRICING.kie[model];
+      PRICING.kie[model] = {
+        kind: "perUnit",
+        unit: "images",
+        units: () => 2,
+        select: [],
+        rates: { "": 0.1 },
+        extra: () => 0.04,
+        source: { url: "https://example.com/exact-extra-charge-test" },
+      };
+
+      try {
+        const result = computeEstimate({
+          provider: "kie" as const,
+          payload: { model },
+        });
+
+        expect(result.usd).toBeCloseTo(0.24, 10);
+        expect(result.breakdown).toEqual({
+          units: 2,
+          unit: "images",
+          perUnitUsd: 0.1,
+          extraUsd: 0.04,
+        });
+        expect(result.warnings).toEqual([]);
+      } finally {
+        if (previous) {
+          PRICING.kie[model] = previous;
+        } else {
+          delete PRICING.kie[model];
+        }
+      }
+    });
+
+    it("fails closed when an optional extra charge is not exact", () => {
+      const model = "__undefined-extra-charge-test__";
+      const previous = PRICING.kie[model];
+      PRICING.kie[model] = {
+        kind: "perUnit",
+        unit: "images",
+        units: () => 1,
+        select: [],
+        rates: { "": 0.1 },
+        extra: () => undefined,
+        source: { url: "https://example.com/undefined-extra-charge-test" },
+      };
+
+      try {
+        const result = computeEstimate({
+          provider: "kie" as const,
+          payload: { model },
+        });
+
+        expect(result.usd).toBe(0);
+        expect(result.breakdown).toEqual({});
+        expect(result.warnings).toEqual([
+          `kie '${model}': could not derive exact additional charge from payload`,
+        ]);
+      } finally {
+        if (previous) {
+          PRICING.kie[model] = previous;
+        } else {
+          delete PRICING.kie[model];
+        }
+      }
+    });
+
     it("keeps omitted optional selectors working for non-Kie providers", () => {
       const fal = computeEstimate({
         provider: "fal" as const,

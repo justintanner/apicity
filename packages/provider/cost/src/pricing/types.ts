@@ -79,6 +79,13 @@ export interface PerUnitPricing {
   // unchanged; when present, evaluatePerUnit surfaces its return as the estimate
   // `warnings`. Never affects the price, the payload, or canonicalHash/mintOtp.
   warn?: (payload: Record<string, unknown>, hints?: CostHints) => string[];
+  // Optional exact additive charge for finite payload dimensions that are not
+  // representable as the primary unit/rate pair. Returning undefined fails
+  // the estimate closed rather than permitting a non-exact floor.
+  extra?: (
+    payload: Record<string, unknown>,
+    hints?: CostHints
+  ) => number | undefined;
   source: RateSource;
 }
 

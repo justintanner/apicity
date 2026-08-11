@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { createCost, PRICING_AS_OF } from "@apicity/cost";
+import { Seedance25RequestSchema } from "@apicity/kie/zod";
 
 describe("cost.estimate — pure-table (no network)", () => {
   it("free → $0", () => {
@@ -164,6 +165,62 @@ describe("cost.estimate — pure-table (no network)", () => {
     expect(r.breakdown.perUnitUsd).toBe(0.205);
     expect(r.usd).toBeCloseTo(0.205 * 8, 6);
   });
+
+  it.each([
+    {
+      label: "parsed defaults",
+      input: { prompt: "x" },
+      usd: 1.575,
+      units: 5,
+      perUnitUsd: 0.315,
+      warnings: [],
+      rateAsOf: "2026-08-10",
+    },
+    {
+      label: "automatic duration",
+      input: { prompt: "x", duration: -1 },
+      usd: 0,
+      units: undefined,
+      perUnitUsd: undefined,
+      warnings: ["could not derive units"],
+      rateAsOf: PRICING_AS_OF,
+    },
+  ])(
+    "kie seedance-2.5 $label reaches createCost().estimate()",
+    ({ input, usd, units, perUnitUsd, warnings, rateAsOf }) => {
+      const parsed = Seedance25RequestSchema.safeParse({
+        model: "bytedance/seedance-2-5",
+        input,
+      });
+
+      expect(parsed.success).toBe(true);
+      if (!parsed.success) return;
+
+      const r = createCost().estimate({
+        provider: "kie",
+        payload: parsed.data,
+      });
+
+      expect(r.usd).toBeCloseTo(usd, 6);
+      expect(r.source).toBe("per-unit-table");
+      expect(r.rateAsOf).toBe(rateAsOf);
+      if (warnings.length === 0) {
+        expect(r.warnings).toEqual([]);
+      } else {
+        expect(r.warnings).toHaveLength(warnings.length);
+        expect(r.warnings[0]).toContain(warnings[0]);
+      }
+      if (units === undefined || perUnitUsd === undefined) {
+        expect(r.breakdown).toEqual({});
+      } else {
+        expect(r.breakdown).toEqual({
+          units,
+          unit: "seconds",
+          perUnitUsd,
+        });
+      }
+    }
+  );
 
   it("kie kling-3.0/video coerces '5s' duration string", () => {
     const c = createCost();

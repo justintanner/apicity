@@ -36,6 +36,16 @@ const seconds = (
   return hintSeconds(hints) ?? coerceSeconds(p.duration);
 };
 
+// Seedance 2.5's `-1` duration means automatic duration. It is authoritative
+// when present, but it cannot produce a billable positive-duration estimate.
+const positiveSeconds = (
+  p: Record<string, unknown>,
+  hints?: CostHints
+): number | undefined => {
+  const value = seconds(p, hints);
+  return value !== undefined && value > 0 ? value : undefined;
+};
+
 // Rate-key form of a selector field upstream types as a number. `asString`
 // deliberately rejects non-strings, so a numeric wire value — runway's
 // `duration: 5` is a numeric literal union, not a string — would otherwise
@@ -1169,6 +1179,31 @@ export const kie: Record<string, ModelPricing> = {
       "720p|no-video": 0.1025,
     },
     source: { ...src("bytedance/seedance-2-mini"), asOf: "2026-06-24" },
+  },
+
+  // bytedance/seedance-2-5: 4 per-second rates, resolution x reference video
+  // input. KIE lists 17/28 credits per second at 480p and 38/63 credits per
+  // second at 720p; these USD cells use the published 1 credit = $0.005 basis.
+  // An explicit duration of -1 is automatic duration and therefore stays
+  // unpriceable rather than producing a negative estimate.
+  "bytedance/seedance-2-5": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: positiveSeconds,
+    select: [
+      { name: "resolution", pick: inputResolution },
+      {
+        name: "videoInput",
+        pick: (p) => (hasReferenceVideoInput(p) ? "video" : "no-video"),
+      },
+    ],
+    rates: {
+      "480p|video": 0.085,
+      "480p|no-video": 0.14,
+      "720p|video": 0.19,
+      "720p|no-video": 0.315,
+    },
+    source: { url: "https://kie.ai/pricing", asOf: "2026-08-10" },
   },
 
   // ---------------------------------------------------------------------

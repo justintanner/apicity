@@ -26,6 +26,7 @@ import type {
 import {
   Seedance2RequestSchema,
   Seedance2FastRequestSchema,
+  Seedance25RequestSchema,
   Wan22A14bTextToVideoTurboRequestSchema,
   Wan22A14bImageToVideoTurboRequestSchema,
   Wan22A14bSpeechToVideoTurboRequestSchema,
@@ -2727,6 +2728,173 @@ describe("kie stale-family refresh (REQ-004)", () => {
         warning.includes("not found in pricing table")
       )
     ).toBe(false);
+  });
+
+  describe("kie seedance-2.5 per-second pricing", () => {
+    it.each([
+      {
+        label: "480p with video input",
+        input: {
+          prompt: "x",
+          resolution: "480p",
+          reference_video_urls: ["https://example.com/ref.mp4"],
+        },
+        resolution: "480p",
+        perUnitUsd: 0.085,
+      },
+      {
+        label: "480p without video input",
+        input: { prompt: "x", resolution: "480p" },
+        resolution: "480p",
+        perUnitUsd: 0.14,
+      },
+      {
+        label: "720p with video input",
+        input: {
+          prompt: "x",
+          resolution: "720p",
+          reference_video_urls: ["https://example.com/ref.mp4"],
+        },
+        resolution: "720p",
+        perUnitUsd: 0.19,
+      },
+      {
+        label: "parsed defaults without video input",
+        input: { prompt: "x" },
+        resolution: "720p",
+        perUnitUsd: 0.315,
+      },
+    ])("prices $label", ({ input, resolution, perUnitUsd }) => {
+      const parsed = Seedance25RequestSchema.safeParse({
+        model: "bytedance/seedance-2-5",
+        input,
+      });
+
+      expect(parsed.success).toBe(true);
+      if (!parsed.success) return;
+
+      expect(parsed.data.input.resolution).toBe(resolution);
+      expect(parsed.data.input.duration).toBe(5);
+
+      const result = kieEstimate(parsed.data);
+
+      expect(result.usd).toBeCloseTo(perUnitUsd * 5, 10);
+      expect(result.breakdown).toEqual({
+        units: 5,
+        unit: "seconds",
+        perUnitUsd,
+      });
+      expect(result.warnings).toEqual([]);
+    });
+
+    it("scales a parsed positive duration", () => {
+      const parsed = Seedance25RequestSchema.safeParse({
+        model: "bytedance/seedance-2-5",
+        input: { prompt: "x", resolution: "720p", duration: 10 },
+      });
+
+      expect(parsed.success).toBe(true);
+      if (!parsed.success) return;
+
+      const result = kieEstimate(parsed.data);
+
+      expect(result.usd).toBeCloseTo(3.15, 10);
+      expect(result.breakdown).toEqual({
+        units: 10,
+        unit: "seconds",
+        perUnitUsd: 0.315,
+      });
+    });
+
+    it.each([
+      {
+        label: "absent reference video list",
+        input: { prompt: "x" },
+      },
+      {
+        label: "empty reference video list",
+        input: { prompt: "x", reference_video_urls: [] },
+      },
+      {
+        label: "first frame",
+        input: {
+          prompt: "x",
+          first_frame_url: "https://example.com/first.jpg",
+        },
+      },
+      {
+        label: "first and last frames",
+        input: {
+          prompt: "x",
+          first_frame_url: "https://example.com/first.jpg",
+          last_frame_url: "https://example.com/last.jpg",
+        },
+      },
+      {
+        label: "reference image list",
+        input: {
+          prompt: "x",
+          reference_image_urls: ["https://example.com/ref.jpg"],
+        },
+      },
+      {
+        label: "reference audio list",
+        input: {
+          prompt: "x",
+          reference_audio_urls: ["https://example.com/ref.mp3"],
+        },
+      },
+    ])("uses no-video pricing for $label", ({ input }) => {
+      const parsed = Seedance25RequestSchema.safeParse({
+        model: "bytedance/seedance-2-5",
+        input: { resolution: "720p", ...input },
+      });
+
+      expect(parsed.success).toBe(true);
+      if (!parsed.success) return;
+
+      const result = kieEstimate(parsed.data);
+      expect(result.breakdown.perUnitUsd).toBe(0.315);
+      expect(result.usd).toBeCloseTo(1.575, 10);
+      expect(result.warnings).toEqual([]);
+    });
+
+    it("fails safe for automatic duration", () => {
+      const parsed = Seedance25RequestSchema.safeParse({
+        model: "bytedance/seedance-2-5",
+        input: { prompt: "x", duration: -1 },
+      });
+
+      expect(parsed.success).toBe(true);
+      if (!parsed.success) return;
+      expect(parsed.data.input.duration).toBe(-1);
+
+      const result = kieEstimate(parsed.data);
+
+      expect(result.usd).toBe(0);
+      expect(result.breakdown).toEqual({});
+      expect(result.warnings).toHaveLength(1);
+      expect(result.warnings[0]).toContain("could not derive units");
+      expect(result.usd).not.toBeLessThan(0);
+    });
+
+    it("records the pricing page provenance and full rate matrix", () => {
+      const entry = PRICING.kie["bytedance/seedance-2-5"];
+
+      expect(entry.kind).toBe("perUnit");
+      if (entry.kind !== "perUnit") return;
+
+      expect(entry.source).toEqual({
+        url: "https://kie.ai/pricing",
+        asOf: "2026-08-10",
+      });
+      expect(entry.rates).toEqual({
+        "480p|video": 0.085,
+        "480p|no-video": 0.14,
+        "720p|video": 0.19,
+        "720p|no-video": 0.315,
+      });
+    });
   });
 
   // grok-imagine video: both existing tiers rose and 1080p is new. The 1080p

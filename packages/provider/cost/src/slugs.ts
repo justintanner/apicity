@@ -18,6 +18,7 @@ export const MODEL_SLUGS = {
     "bytedance/seedance-2": "sd2",
     "bytedance/seedance-2-fast": "sd2f",
     "bytedance/seedance-2-mini": "sd2m",
+    "bytedance/seedance-2-5": "sd2p5",
 
     // Video — Kling 3.0 (mode-tiered: synthetic suffixed keys)
     "kling-3.0/video": "kling3",
@@ -436,6 +437,7 @@ export const MODEL_DISPLAY = {
     "bytedance/seedance-2": "Seedance 2",
     "bytedance/seedance-2-fast": "Seedance 2 Fast",
     "bytedance/seedance-2-mini": "Seedance 2 Mini",
+    "bytedance/seedance-2-5": "Seedance 2.5",
 
     "kling-3.0/video": "Kling 3.0",
     "kling-3.0/video/std": "Kling 3.0",

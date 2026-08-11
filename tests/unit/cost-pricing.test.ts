@@ -2878,6 +2878,38 @@ describe("kie stale-family refresh (REQ-004)", () => {
       expect(result.usd).not.toBeLessThan(0);
     });
 
+    it.each([
+      {
+        label: "a positive cost hint",
+        topLevelPatch: {},
+        extra: { costHints: { durationSeconds: 10 } },
+      },
+      {
+        label: "a positive deprecated top-level duration",
+        topLevelPatch: { duration: 10 },
+        extra: {},
+      },
+    ])(
+      "keeps wire automatic duration authoritative over $label",
+      ({ topLevelPatch, extra }) => {
+        const parsed = Seedance25RequestSchema.safeParse({
+          model: "bytedance/seedance-2-5",
+          input: { prompt: "x", duration: -1 },
+        });
+
+        expect(parsed.success).toBe(true);
+        if (!parsed.success) return;
+        expect(parsed.data.input.duration).toBe(-1);
+
+        const result = kieEstimate({ ...parsed.data, ...topLevelPatch }, extra);
+
+        expect(result.usd).toBe(0);
+        expect(result.breakdown).toEqual({});
+        expect(result.warnings).toHaveLength(1);
+        expect(result.warnings[0]).toContain("could not derive units");
+      }
+    );
+
     it("records the pricing page provenance and full rate matrix", () => {
       const entry = PRICING.kie["bytedance/seedance-2-5"];
 

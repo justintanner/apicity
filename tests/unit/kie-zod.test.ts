@@ -1930,3 +1930,19 @@ describe("TRI-001 KieMediaModel stays the literal catalogue", () => {
     ).toBe(false);
   });
 });
+
+describe("WI-3 Kie createTask registry parity", () => {
+  it("keeps the public catalogue, descriptors, and runtime guards aligned", () => {
+    const expectedModels = [...KIE_MEDIA_MODELS].sort();
+
+    expect(Object.keys(modelInputSchemas).sort()).toEqual(expectedModels);
+    expect(Object.keys(CREATE_TASK_GUARDS).sort()).toEqual(expectedModels);
+  });
+
+  it("provides a guard and descriptor for every catalogued model", () => {
+    for (const model of KIE_MEDIA_MODELS) {
+      expect(CREATE_TASK_GUARDS[model]).toBeDefined();
+      expect(modelInputSchemas[model]).toBeDefined();
+    }
+  });
+});

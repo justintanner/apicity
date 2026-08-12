@@ -58,6 +58,8 @@ interface TestRow {
     runtimeVariant?: string;
   };
   canonicalKey?: string;
+  technicalBlocker?: string;
+  followUpBead?: string;
 }
 
 interface TestManifest {
@@ -632,6 +634,74 @@ describe("Kie pricing reconciliation", () => {
     ).toHaveLength(0);
     expect(rowsMatching(/runway.*extend/i)).toHaveLength(0);
     expect(rowsMatching(/sora.*watermark/i)).toHaveLength(0);
+  });
+
+  it("pins all Ideogram V3 Reframe rows to the unsupported handoff", async () => {
+    const manifest = await readManifest();
+    const reframeRows = manifest.rows.filter((row) =>
+      /^Ideogram V3 Reframe, image to image, /i.test(
+        String(row.official.modelDescription ?? "")
+      )
+    );
+    const expectedBlocker =
+      "Kie advertises and prices Ideogram V3 Reframe, but no current official API model slug or complete request/response contract is published for a callable ApiCity mapping.";
+    const expectedRows = [
+      ["Turbo", "0.0175"],
+      ["Balanced", "0.035"],
+      ["Quality", "0.05"],
+    ] as const;
+
+    expect(reframeRows).toHaveLength(3);
+    expect(
+      reframeRows
+        .map((row) => [
+          String(row.official.modelDescription).replace(
+            /^Ideogram V3 Reframe, image to image, /i,
+            ""
+          ),
+          String(row.official.usdPrice),
+        ])
+        .sort(([left], [right]) => left.localeCompare(right))
+    ).toEqual(
+      [...expectedRows].sort(([left], [right]) => left.localeCompare(right))
+    );
+    for (const row of reframeRows) {
+      expect(row).toMatchObject({
+        disposition: "unsupported-endpoint",
+        mappedApiCityKeys: [],
+        official: { anchor: "https://kie.ai/ideogram-reframe" },
+        evidence: {
+          url: "https://kie.ai/ideogram-reframe",
+          source: "frozen official Kie snapshot",
+        },
+        technicalBlocker: expectedBlocker,
+        followUpBead: "ac-flqhcu",
+      });
+    }
+
+    const missingBlocker = await readManifest();
+    const missingRow = missingBlocker.rows.find(
+      (row) =>
+        row.official.modelDescription ===
+        "Ideogram V3 Reframe, image to image, Turbo"
+    );
+    if (!missingRow) throw new Error("missing Reframe Turbo row");
+    delete missingRow.technicalBlocker;
+    await expect(
+      runCheck({ root, manifest: missingBlocker })
+    ).rejects.toMatchObject({ code: "unsupported-without-blocker" });
+
+    const weakenedBlocker = await readManifest();
+    const weakenedRow = weakenedBlocker.rows.find(
+      (row) =>
+        row.official.modelDescription ===
+        "Ideogram V3 Reframe, image to image, Turbo"
+    );
+    if (!weakenedRow) throw new Error("missing Reframe Turbo row");
+    weakenedRow.technicalBlocker = "No API mapping.";
+    await expect(
+      runCheck({ root, manifest: weakenedBlocker })
+    ).rejects.toMatchObject({ code: "classification-drift" });
   });
 
   it("keeps representativeCases distinct from their primary payload", async () => {

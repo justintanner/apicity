@@ -7,6 +7,7 @@ import {
   IdeogramCharacterEditRequestSchema,
   IdeogramCharacterRemixRequestSchema,
   KieMediaModelSchema,
+  KIE_MEDIA_MODELS,
   CreateTaskRequestSchema,
 } from "../../packages/provider/kie/src/zod";
 import { CREATE_TASK_GUARDS } from "../../packages/provider/kie/src/kie";
@@ -202,6 +203,9 @@ describe("Ideogram createTask models (ac-biksxr)", () => {
   });
 
   it("exposes modelInputSchemas for all six Ideogram models", () => {
+    expect(
+      KIE_MEDIA_MODELS.filter((model) => model.startsWith("ideogram/"))
+    ).toEqual(IDEOGRAM_MODELS);
     for (const model of IDEOGRAM_MODELS) {
       expect(modelInputSchemas[model].type).toBe("image");
       expect(modelInputSchemas[model].fields.prompt?.required).toBe(true);
@@ -223,5 +227,13 @@ describe("Ideogram createTask models (ac-biksxr)", () => {
       modelInputSchemas["ideogram/character-remix"].fields.negative_prompt
         ?.maxLength
     ).toBe(500);
+  });
+
+  it("rejects the plausible but undocumented Reframe slug", () => {
+    const reframeModel = "ideogram/v3-reframe";
+
+    expect(KieMediaModelSchema.safeParse(reframeModel).success).toBe(false);
+    expect(Object.hasOwn(CREATE_TASK_GUARDS, reframeModel)).toBe(false);
+    expect(Object.hasOwn(modelInputSchemas, reframeModel)).toBe(false);
   });
 });

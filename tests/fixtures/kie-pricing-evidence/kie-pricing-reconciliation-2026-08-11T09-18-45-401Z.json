@@ -14465,7 +14465,7 @@
         "source": "frozen official Kie snapshot"
       },
       "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for Ideogram V3 Reframe, image to image, Quality (image).",
+      "technicalBlocker": "Kie advertises and prices Ideogram V3 Reframe, but no current official API model slug or complete request/response contract is published for a callable ApiCity mapping.",
       "followUpBead": "ac-flqhcu"
     },
     {
@@ -14491,7 +14491,7 @@
         "source": "frozen official Kie snapshot"
       },
       "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for Ideogram V3 Reframe, image to image, Balanced (image).",
+      "technicalBlocker": "Kie advertises and prices Ideogram V3 Reframe, but no current official API model slug or complete request/response contract is published for a callable ApiCity mapping.",
       "followUpBead": "ac-flqhcu"
     },
     {
@@ -14517,7 +14517,7 @@
         "source": "frozen official Kie snapshot"
       },
       "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for Ideogram V3 Reframe, image to image, Turbo (image).",
+      "technicalBlocker": "Kie advertises and prices Ideogram V3 Reframe, but no current official API model slug or complete request/response contract is published for a callable ApiCity mapping.",
       "followUpBead": "ac-flqhcu"
     },
     {

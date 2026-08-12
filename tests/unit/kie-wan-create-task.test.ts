@@ -1,5 +1,12 @@
 import { afterEach, describe, it, expect, vi } from "vitest";
 
+import type {
+  TaskResponse,
+  Wan22A14bImageToVideoTurboRequest,
+  Wan22A14bSpeechToVideoTurboRequest,
+  Wan22AnimateMoveRequest,
+  Wan22AnimateReplaceRequest,
+} from "@apicity/kie";
 import { createKie } from "../../packages/provider/kie/src/kie";
 import { TEST_PAYGATE_SECRET, mintKieCreateTaskOtp } from "../harness";
 import {
@@ -42,7 +49,7 @@ describe("kie WAN createTask models", () => {
         enable_prompt_expansion: false,
         acceleration: "none",
       },
-    };
+    } satisfies Wan22A14bImageToVideoTurboRequest;
 
     it("accepts the documented request via CreateTask", () => {
       expect(
@@ -91,7 +98,7 @@ describe("kie WAN createTask models", () => {
         image_url: "https://example.com/face.png",
         audio_url: "https://example.com/speech.mp3",
       },
-    };
+    } satisfies Wan22A14bSpeechToVideoTurboRequest;
 
     it("accepts a minimal required payload and applies defaults", () => {
       const parsed = Wan22A14bSpeechToVideoTurboRequestSchema.parse(request);
@@ -156,25 +163,17 @@ describe("kie WAN createTask models", () => {
     );
   });
 
-  describe("wan/2-2-animate-move and animate-replace", () => {
-    it.each([
-      {
-        model: "wan/2-2-animate-move" as const,
-        schema: Wan22AnimateMoveRequestSchema,
+  describe("wan/2-2-animate-move", () => {
+    const request = {
+      model: "wan/2-2-animate-move",
+      input: {
+        video_url: "https://example.com/motion.mp4",
+        image_url: "https://example.com/subject.png",
       },
-      {
-        model: "wan/2-2-animate-replace" as const,
-        schema: Wan22AnimateReplaceRequestSchema,
-      },
-    ])("accepts $model with video_url + image_url", ({ model, schema }) => {
-      const request = {
-        model,
-        input: {
-          video_url: "https://example.com/motion.mp4",
-          image_url: "https://example.com/subject.png",
-        },
-      };
-      const parsed = schema.parse(request);
+    } satisfies Wan22AnimateMoveRequest;
+
+    it("accepts video_url + image_url", () => {
+      const parsed = Wan22AnimateMoveRequestSchema.parse(request);
       expect(parsed.input.resolution).toBe("480p");
       expect(CreateTaskRequestSchema.safeParse(request).success).toBe(true);
     });
@@ -184,6 +183,31 @@ describe("kie WAN createTask models", () => {
         Wan22AnimateMoveRequestSchema.safeParse({
           model: "wan/2-2-animate-move",
           input: { image_url: "https://example.com/subject.png" },
+        }).success
+      ).toBe(false);
+    });
+  });
+
+  describe("wan/2-2-animate-replace", () => {
+    const request = {
+      model: "wan/2-2-animate-replace",
+      input: {
+        video_url: "https://example.com/motion.mp4",
+        image_url: "https://example.com/subject.png",
+      },
+    } satisfies Wan22AnimateReplaceRequest;
+
+    it("accepts video_url + image_url", () => {
+      const parsed = Wan22AnimateReplaceRequestSchema.parse(request);
+      expect(parsed.input.resolution).toBe("480p");
+      expect(CreateTaskRequestSchema.safeParse(request).success).toBe(true);
+    });
+
+    it("rejects missing image_url", () => {
+      expect(
+        Wan22AnimateReplaceRequestSchema.safeParse({
+          model: "wan/2-2-animate-replace",
+          input: { video_url: "https://example.com/motion.mp4" },
         }).success
       ).toBe(false);
     });
@@ -543,7 +567,7 @@ describe("wan 2.6 createTask transport", () => {
           code: 200,
           msg: "success",
           data: { taskId: "wan-2-6-task-1" },
-        }),
+        } satisfies TaskResponse),
         { status: 200 }
       )
     );
@@ -564,6 +588,12 @@ describe("wan 2.6 createTask transport", () => {
     );
 
     expect(result.data?.taskId).toBe("wan-2-6-task-1");
+    const response: TaskResponse = {
+      code: 200,
+      msg: "success",
+      data: { taskId: result.data!.taskId },
+    };
+    expect(response.data?.taskId).toBe("wan-2-6-task-1");
     expect(mockFetch).toHaveBeenCalledTimes(1);
   });
 });

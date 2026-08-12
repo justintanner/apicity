@@ -1420,8 +1420,15 @@ const MEDIA_MODEL_FAMILIES = [
     family: "Qwen",
     // Versioned `qwenN/*` only — unversioned `qwen/*` is enum-only (ac-7hi3xx)
     // and lives outside this family's alias partition.
-    listed: ["qwen2/text-to-image", "qwen2/image-edit"],
-    aliases: ["qwen3/text-to-image", "qwen2.5/image-edit"],
+    listed: [
+      "qwen2/text-to-image",
+      "qwen2/image-edit",
+      "qwen3/text-to-image",
+      "qwen3/image-to-image",
+      "qwen3/pro-text-to-image",
+      "qwen3/pro-image-to-image",
+    ],
+    aliases: ["qwen4/text-to-image", "qwen2.5/image-edit"],
     // `qwen-image-2.0` / `qwen-image-edit` are Alibaba's first-party grammar
     // for a different product line, not kie media ids. Bare `qwen2` and
     // underscore typos stay rejected; unversioned catalogue ids are covered

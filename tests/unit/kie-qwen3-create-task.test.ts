@@ -167,6 +167,27 @@ describe("Kie Qwen Image 3 request contracts", () => {
     }
   });
 
+  it("accepts three image URLs and preserves their order", () => {
+    const imageUrls = [
+      "https://example.com/source-one.png",
+      "https://example.com/source-two.png",
+      "https://example.com/source-three.png",
+    ];
+
+    for (const contract of QWEN3_CONTRACTS.filter(
+      ({ imageToImage }) => imageToImage
+    )) {
+      const result = contract.schema.safeParse({
+        ...contract.request,
+        input: { ...contract.request.input, image_urls: imageUrls },
+      });
+
+      expect(result.success).toBe(true);
+      if (!result.success) continue;
+      expect(result.data.input).toMatchObject({ image_urls: imageUrls });
+    }
+  });
+
   it("rejects prompt, callback, enum, seed, URL, and cardinality violations", () => {
     for (const contract of QWEN3_CONTRACTS) {
       const baseInput = { ...contract.request.input } as Record<
@@ -187,6 +208,11 @@ describe("Kie Qwen Image 3 request contracts", () => {
           name: "overlong prompt",
           value: { ...baseInput, prompt: "x".repeat(5001) },
           path: ["input", "prompt"],
+        },
+        {
+          name: "overlong negative prompt",
+          value: { ...baseInput, negative_prompt: "x".repeat(5001) },
+          path: ["input", "negative_prompt"],
         },
         {
           name: "bad image size",
@@ -369,7 +395,9 @@ describe("Kie Qwen Image 3 registry and descriptors", () => {
     ];
 
     for (const model of QWEN3_MODELS) {
-      const fields = modelInputSchemas[model].fields;
+      const descriptor = modelInputSchemas[model];
+      expect(descriptor.type).toBe("image");
+      const fields = descriptor.fields;
       const imageToImage = IMAGE_TO_IMAGE_MODELS.includes(
         model as (typeof IMAGE_TO_IMAGE_MODELS)[number]
       );

@@ -409,7 +409,7 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:c0bdf208e9addab9aba95bd03e605e7fd89fa00e176ddcb506de5362cde66bc9",
+      "packages/provider/kie/src/zod.ts": "sha256:857a5f7c75c2f1a904947637d050947ed4bd71c8a8f1adf57176916f526db2e1",
       "packages/provider/kie/src/model-schemas.ts": "sha256:4f1ce52ef9d93c4f2ddfb94f20078e5053805f39a5b4d256ee04d190a5460e71",
       "packages/provider/kie/src/kie.ts": "sha256:3fed83dd8b23869359f153e0fb6034ca81c2324fa2d9f6cb8eec095701407ccd",
       "packages/provider/cost/src/pricing/kie.ts": "sha256:4647ba2d17b52ad99e1ba447510ae2c21928d4a8b5042af59a7feb44d686136b",
@@ -14465,7 +14465,7 @@
         "source": "frozen official Kie snapshot"
       },
       "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for Ideogram V3 Reframe, image to image, Quality (image).",
+      "technicalBlocker": "Kie advertises and prices Ideogram V3 Reframe, but no current official API model slug or complete request/response contract is published for a callable ApiCity mapping.",
       "followUpBead": "ac-flqhcu"
     },
     {
@@ -14491,7 +14491,7 @@
         "source": "frozen official Kie snapshot"
       },
       "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for Ideogram V3 Reframe, image to image, Balanced (image).",
+      "technicalBlocker": "Kie advertises and prices Ideogram V3 Reframe, but no current official API model slug or complete request/response contract is published for a callable ApiCity mapping.",
       "followUpBead": "ac-flqhcu"
     },
     {
@@ -14517,7 +14517,7 @@
         "source": "frozen official Kie snapshot"
       },
       "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for Ideogram V3 Reframe, image to image, Turbo (image).",
+      "technicalBlocker": "Kie advertises and prices Ideogram V3 Reframe, but no current official API model slug or complete request/response contract is published for a callable ApiCity mapping.",
       "followUpBead": "ac-flqhcu"
     },
     {

@@ -152,6 +152,30 @@ const guardedRejectionCases = [
     expectedPath: "input.audio_url",
   },
   {
+    name: "wan/2-2-a14b-image-to-video-turbo without image_url",
+    request: {
+      model: "wan/2-2-a14b-image-to-video-turbo",
+      input: { prompt: "Animate this scene." },
+    },
+    expectedPath: "input.image_url",
+  },
+  {
+    name: "wan/2-2-animate-move without image_url",
+    request: {
+      model: "wan/2-2-animate-move",
+      input: { video_url: "https://example.com/motion.mp4" },
+    },
+    expectedPath: "input.image_url",
+  },
+  {
+    name: "wan/2-2-animate-replace without video_url",
+    request: {
+      model: "wan/2-2-animate-replace",
+      input: { image_url: "https://example.com/subject.png" },
+    },
+    expectedPath: "input.video_url",
+  },
+  {
     name: "wan/2-6-text-to-video with an off-enum duration",
     request: {
       model: "wan/2-6-text-to-video",

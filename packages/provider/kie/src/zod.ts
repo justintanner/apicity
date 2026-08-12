@@ -235,6 +235,10 @@ export const KIE_MEDIA_MODELS = [
   "grok-imagine/upscale",
   "qwen2/text-to-image",
   "qwen2/image-edit",
+  "qwen3/text-to-image",
+  "qwen3/image-to-image",
+  "qwen3/pro-text-to-image",
+  "qwen3/pro-image-to-image",
   "qwen/text-to-image",
   "qwen/image-edit",
   "qwen/image-to-image",
@@ -1663,6 +1667,23 @@ export const Qwen2ImageSizeSchema = z.enum([
   "16:9",
 ]);
 
+// Qwen Image 3 supports two output resolutions, eight aspect-ratio presets,
+// and PNG or JPEG output across its standard and Pro models.
+export const Qwen3ResolutionSchema = z.enum(["1K", "2K"]);
+
+export const Qwen3ImageSizeSchema = z.enum([
+  "1:1",
+  "3:2",
+  "2:3",
+  "4:3",
+  "3:4",
+  "16:9",
+  "9:16",
+  "21:9",
+]);
+
+export const Qwen3OutputFormatSchema = z.enum(["png", "jpeg"]);
+
 // Unversioned Qwen (`qwen/*`) uses fal-style named size tokens, not aspect
 // ratios. Shared by text-to-image and image-edit.
 // Docs: https://docs.kie.ai/market/qwen/text-to-image
@@ -2109,6 +2130,59 @@ export const Qwen2ImageEditRequestSchema = z.object({
     seed: z.number().multipleOf(1).optional(),
     nsfw_checker: z.boolean().default(false),
   }),
+});
+
+const qwen3SharedInputShape = {
+  prompt: z.string().max(5000),
+  image_size: Qwen3ImageSizeSchema.default("16:9"),
+  output_format: Qwen3OutputFormatSchema.default("png"),
+  prompt_extend: z.boolean().default(true),
+  nsfw_checker: z.boolean().default(false),
+  negative_prompt: z.string().max(5000).optional(),
+  seed: z.number().int().min(0).max(2147483647).default(1),
+};
+
+const Qwen3TextToImageInputSchema = z
+  .object({
+    ...qwen3SharedInputShape,
+    resolution: Qwen3ResolutionSchema.optional(),
+  })
+  .strict();
+
+const Qwen3ImageToImageInputSchema = z
+  .object({
+    ...qwen3SharedInputShape,
+    image_urls: z.array(z.string().url()).min(1).max(3),
+    resolution: Qwen3ResolutionSchema.default("1K"),
+  })
+  .strict();
+
+// Docs: https://docs.kie.ai/market/qwen3/text-to-image
+export const Qwen3TextToImageRequestSchema = z.object({
+  model: z.literal("qwen3/text-to-image"),
+  callBackUrl: z.string().url().optional(),
+  input: Qwen3TextToImageInputSchema,
+});
+
+// Docs: https://docs.kie.ai/market/qwen3/image-to-image
+export const Qwen3ImageToImageRequestSchema = z.object({
+  model: z.literal("qwen3/image-to-image"),
+  callBackUrl: z.string().url().optional(),
+  input: Qwen3ImageToImageInputSchema,
+});
+
+// Docs: https://docs.kie.ai/market/qwen3-pro/text-to-image
+export const Qwen3ProTextToImageRequestSchema = z.object({
+  model: z.literal("qwen3/pro-text-to-image"),
+  callBackUrl: z.string().url().optional(),
+  input: Qwen3TextToImageInputSchema,
+});
+
+// Docs: https://docs.kie.ai/market/qwen3-pro/image-to-image
+export const Qwen3ProImageToImageRequestSchema = z.object({
+  model: z.literal("qwen3/pro-image-to-image"),
+  callBackUrl: z.string().url().optional(),
+  input: Qwen3ImageToImageInputSchema,
 });
 
 // Unversioned Qwen v1 createTask models (enum-only; alias stays digit-required).
@@ -5889,6 +5963,10 @@ export const MediaGenerationRequestSchema = z.union([
   Seedream45EditRequestSchema,
   Qwen2TextToImageRequestSchema,
   Qwen2ImageEditRequestSchema,
+  Qwen3TextToImageRequestSchema,
+  Qwen3ImageToImageRequestSchema,
+  Qwen3ProTextToImageRequestSchema,
+  Qwen3ProImageToImageRequestSchema,
   QwenTextToImageRequestSchema,
   QwenImageEditRequestSchema,
   QwenImageToImageRequestSchema,
@@ -6089,6 +6167,9 @@ export type NanoBananaOutputFormat = z.infer<
 >;
 export type GptImageQuality = z.infer<typeof GptImageQualitySchema>;
 export type Qwen2ImageSize = z.infer<typeof Qwen2ImageSizeSchema>;
+export type Qwen3Resolution = z.infer<typeof Qwen3ResolutionSchema>;
+export type Qwen3ImageSize = z.infer<typeof Qwen3ImageSizeSchema>;
+export type Qwen3OutputFormat = z.infer<typeof Qwen3OutputFormatSchema>;
 export type QwenImageSize = z.infer<typeof QwenImageSizeSchema>;
 export type QwenAcceleration = z.infer<typeof QwenAccelerationSchema>;
 export type QwenImageEditNumImages = z.infer<
@@ -6289,6 +6370,34 @@ export type Qwen2ImageEditRequest = z.input<typeof Qwen2ImageEditRequestSchema>;
 export type Qwen2ImageEditRequestInput = Qwen2ImageEditRequest;
 export type Qwen2ImageEditParsedRequest = z.output<
   typeof Qwen2ImageEditRequestSchema
+>;
+export type Qwen3TextToImageRequest = z.input<
+  typeof Qwen3TextToImageRequestSchema
+>;
+export type Qwen3TextToImageRequestInput = Qwen3TextToImageRequest;
+export type Qwen3TextToImageParsedRequest = z.output<
+  typeof Qwen3TextToImageRequestSchema
+>;
+export type Qwen3ImageToImageRequest = z.input<
+  typeof Qwen3ImageToImageRequestSchema
+>;
+export type Qwen3ImageToImageRequestInput = Qwen3ImageToImageRequest;
+export type Qwen3ImageToImageParsedRequest = z.output<
+  typeof Qwen3ImageToImageRequestSchema
+>;
+export type Qwen3ProTextToImageRequest = z.input<
+  typeof Qwen3ProTextToImageRequestSchema
+>;
+export type Qwen3ProTextToImageRequestInput = Qwen3ProTextToImageRequest;
+export type Qwen3ProTextToImageParsedRequest = z.output<
+  typeof Qwen3ProTextToImageRequestSchema
+>;
+export type Qwen3ProImageToImageRequest = z.input<
+  typeof Qwen3ProImageToImageRequestSchema
+>;
+export type Qwen3ProImageToImageRequestInput = Qwen3ProImageToImageRequest;
+export type Qwen3ProImageToImageParsedRequest = z.output<
+  typeof Qwen3ProImageToImageRequestSchema
 >;
 export type QwenTextToImageRequest = z.input<
   typeof QwenTextToImageRequestSchema

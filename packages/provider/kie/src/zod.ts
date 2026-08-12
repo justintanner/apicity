@@ -3612,6 +3612,27 @@ export const Wan26ResolutionSchema = z.enum(["720p", "1080p"]);
 // (documented-defaults trap).
 const wanSeedField = z.number().int().min(0).max(2147483647).optional();
 
+const wanSpeechNumFramesField = z
+  .number()
+  .int()
+  .min(40)
+  .max(120)
+  .refine((value) => value % 4 === 0, {
+    message: "must be a multiple of 4",
+  });
+
+// Check tenths by scaling to an integer instead of using a floating-point
+// remainder with 0.1, whose binary representation can reject valid values.
+const wanSpeechTenthsField = (defaultValue: number) =>
+  z
+    .number()
+    .min(1)
+    .max(10)
+    .refine((value) => Number.isInteger(value * 10), {
+      message: "must be in increments of 0.1",
+    })
+    .default(defaultValue);
+
 // Docs: https://docs.kie.ai/market/wan/2-2-a14b-image-to-video-turbo
 export const Wan22A14bImageToVideoTurboRequestSchema = z.object({
   model: z.literal("wan/2-2-a14b-image-to-video-turbo"),
@@ -3635,14 +3656,14 @@ export const Wan22A14bSpeechToVideoTurboRequestSchema = z.object({
     prompt: z.string().min(1).max(5000),
     image_url: z.string().min(1),
     audio_url: z.string().min(1),
-    num_frames: z.number().int().min(40).max(120).default(80),
+    num_frames: wanSpeechNumFramesField.default(80),
     frames_per_second: z.number().int().min(4).max(60).default(16),
     resolution: Wan22ExtendedResolutionSchema.default("480p"),
     negative_prompt: z.string().max(500).optional(),
     seed: z.number().int().optional(),
     num_inference_steps: z.number().int().min(2).max(40).default(27),
-    guidance_scale: z.number().min(1).max(10).default(3.5),
-    shift: z.number().min(1).max(10).default(5),
+    guidance_scale: wanSpeechTenthsField(3.5),
+    shift: wanSpeechTenthsField(5),
     nsfw_checker: z.boolean().default(false),
   }),
 });

@@ -74,17 +74,43 @@ describe("kie WAN createTask models", () => {
       expect(parsed.input.nsfw_checker).toBe(false);
     });
 
-    it("requires image_url and prompt", () => {
+    it.each([
+      {
+        name: "missing image_url",
+        input: { prompt: "missing image" },
+      },
+      {
+        name: "missing prompt",
+        input: { image_url: "https://example.com/frame.png" },
+      },
+      {
+        name: "prompt over 5000 characters",
+        input: {
+          image_url: "https://example.com/frame.png",
+          prompt: "x".repeat(5001),
+        },
+      },
+      {
+        name: "invalid resolution",
+        input: {
+          image_url: "https://example.com/frame.png",
+          prompt: "A scene",
+          resolution: "1080p",
+        },
+      },
+      {
+        name: "invalid acceleration",
+        input: {
+          image_url: "https://example.com/frame.png",
+          prompt: "A scene",
+          acceleration: "fast",
+        },
+      },
+    ])("rejects $name", ({ input }) => {
       expect(
         Wan22A14bImageToVideoTurboRequestSchema.safeParse({
           model: "wan/2-2-a14b-image-to-video-turbo",
-          input: { prompt: "missing image" },
-        }).success
-      ).toBe(false);
-      expect(
-        Wan22A14bImageToVideoTurboRequestSchema.safeParse({
-          model: "wan/2-2-a14b-image-to-video-turbo",
-          input: { image_url: "https://example.com/frame.png" },
+          input,
         }).success
       ).toBe(false);
     });
@@ -111,23 +137,94 @@ describe("kie WAN createTask models", () => {
       expect(CreateTaskRequestSchema.safeParse(request).success).toBe(true);
     });
 
-    it("requires prompt, image_url, and audio_url", () => {
+    it.each([
+      {
+        name: "missing prompt",
+        input: {
+          image_url: "https://example.com/face.png",
+          audio_url: "https://example.com/speech.mp3",
+        },
+      },
+      {
+        name: "missing image_url",
+        input: {
+          prompt: "talking",
+          audio_url: "https://example.com/speech.mp3",
+        },
+      },
+      {
+        name: "prompt over 5000 characters",
+        input: {
+          prompt: "x".repeat(5001),
+          image_url: "https://example.com/face.png",
+          audio_url: "https://example.com/speech.mp3",
+        },
+      },
+      {
+        name: "num_frames below the lower bound",
+        input: { ...request.input, num_frames: 39 },
+      },
+      {
+        name: "num_frames above the upper bound",
+        input: { ...request.input, num_frames: 121 },
+      },
+      {
+        name: "num_frames off the required step",
+        input: { ...request.input, num_frames: 41 },
+      },
+      {
+        name: "frames_per_second below the lower bound",
+        input: { ...request.input, frames_per_second: 3 },
+      },
+      {
+        name: "frames_per_second above the upper bound",
+        input: { ...request.input, frames_per_second: 61 },
+      },
+      {
+        name: "negative_prompt over 500 characters",
+        input: { ...request.input, negative_prompt: "x".repeat(501) },
+      },
+      {
+        name: "num_inference_steps below the lower bound",
+        input: { ...request.input, num_inference_steps: 1 },
+      },
+      {
+        name: "num_inference_steps above the upper bound",
+        input: { ...request.input, num_inference_steps: 41 },
+      },
+      {
+        name: "guidance_scale below the lower bound",
+        input: { ...request.input, guidance_scale: 0.9 },
+      },
+      {
+        name: "guidance_scale above the upper bound",
+        input: { ...request.input, guidance_scale: 10.1 },
+      },
+      {
+        name: "guidance_scale off the required step",
+        input: { ...request.input, guidance_scale: 1.05 },
+      },
+      {
+        name: "shift below the lower bound",
+        input: { ...request.input, shift: 0.9 },
+      },
+      {
+        name: "shift above the upper bound",
+        input: { ...request.input, shift: 10.1 },
+      },
+      {
+        name: "shift off the required step",
+        input: { ...request.input, shift: 1.05 },
+      },
+      {
+        name: "invalid resolution",
+        input: { ...request.input, resolution: "1080p" },
+      },
+    ])("rejects $name", ({ input }) => {
       expect(
         Wan22A14bSpeechToVideoTurboRequestSchema.safeParse({
           model: "wan/2-2-a14b-speech-to-video-turbo",
-          input: {
-            prompt: "talking",
-            image_url: "https://example.com/face.png",
-          },
-        }).success
-      ).toBe(false);
-    });
-
-    it("rejects num_frames outside 40–120", () => {
-      expect(
-        Wan22A14bSpeechToVideoTurboRequestSchema.safeParse({
-          ...request,
-          input: { ...request.input, num_frames: 39 },
+          input,
         }).success
       ).toBe(false);
     });
@@ -178,11 +275,28 @@ describe("kie WAN createTask models", () => {
       expect(CreateTaskRequestSchema.safeParse(request).success).toBe(true);
     });
 
-    it("rejects missing video_url on animate-move", () => {
+    it.each([
+      {
+        name: "missing video_url",
+        input: { image_url: "https://example.com/subject.png" },
+      },
+      {
+        name: "missing image_url",
+        input: { video_url: "https://example.com/motion.mp4" },
+      },
+      {
+        name: "invalid resolution",
+        input: {
+          video_url: "https://example.com/motion.mp4",
+          image_url: "https://example.com/subject.png",
+          resolution: "1080p",
+        },
+      },
+    ])("rejects $name", ({ input }) => {
       expect(
         Wan22AnimateMoveRequestSchema.safeParse({
           model: "wan/2-2-animate-move",
-          input: { image_url: "https://example.com/subject.png" },
+          input,
         }).success
       ).toBe(false);
     });
@@ -203,11 +317,28 @@ describe("kie WAN createTask models", () => {
       expect(CreateTaskRequestSchema.safeParse(request).success).toBe(true);
     });
 
-    it("rejects missing image_url", () => {
+    it.each([
+      {
+        name: "missing video_url",
+        input: { image_url: "https://example.com/subject.png" },
+      },
+      {
+        name: "missing image_url",
+        input: { video_url: "https://example.com/motion.mp4" },
+      },
+      {
+        name: "invalid resolution",
+        input: {
+          video_url: "https://example.com/motion.mp4",
+          image_url: "https://example.com/subject.png",
+          resolution: "1080p",
+        },
+      },
+    ])("rejects $name", ({ input }) => {
       expect(
         Wan22AnimateReplaceRequestSchema.safeParse({
           model: "wan/2-2-animate-replace",
-          input: { video_url: "https://example.com/motion.mp4" },
+          input,
         }).success
       ).toBe(false);
     });

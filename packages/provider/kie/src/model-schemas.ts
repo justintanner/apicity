@@ -2326,6 +2326,238 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  // https://docs.kie.ai/market/qwen3/text-to-image
+  "qwen3/text-to-image": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        maxLength: 5000,
+        description: "Image generation prompt (max 5000 chars)",
+      },
+      image_size: {
+        type: "string",
+        enum: ["1:1", "3:2", "2:3", "4:3", "3:4", "16:9", "9:16", "21:9"],
+        default: "16:9",
+        description: "Output image aspect ratio (default 16:9)",
+      },
+      output_format: {
+        type: "string",
+        enum: ["png", "jpeg"],
+        default: "png",
+        description: "Image format (default png)",
+      },
+      prompt_extend: {
+        type: "boolean",
+        default: true,
+        description: "Extend the prompt automatically (default true)",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description: "Content safety filter (default false)",
+      },
+      negative_prompt: {
+        type: "string",
+        maxLength: 5000,
+        description: "Negative prompt (max 5000 chars)",
+      },
+      seed: {
+        type: "integer",
+        minimum: 0,
+        maximum: 2147483647,
+        default: 1,
+        description: "Random seed (0-2147483647, default 1)",
+      },
+      resolution: {
+        type: "string",
+        enum: ["1K", "2K"],
+        description: "Output resolution; no documented default",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/qwen3/image-to-image
+  "qwen3/image-to-image": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        maxLength: 5000,
+        description: "Image generation prompt (max 5000 chars)",
+      },
+      image_size: {
+        type: "string",
+        enum: ["1:1", "3:2", "2:3", "4:3", "3:4", "16:9", "9:16", "21:9"],
+        default: "16:9",
+        description: "Output image aspect ratio (default 16:9)",
+      },
+      output_format: {
+        type: "string",
+        enum: ["png", "jpeg"],
+        default: "png",
+        description: "Image format (default png)",
+      },
+      prompt_extend: {
+        type: "boolean",
+        default: true,
+        description: "Extend the prompt automatically (default true)",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description: "Content safety filter (default false)",
+      },
+      negative_prompt: {
+        type: "string",
+        maxLength: 5000,
+        description: "Negative prompt (max 5000 chars)",
+      },
+      seed: {
+        type: "integer",
+        minimum: 0,
+        maximum: 2147483647,
+        default: 1,
+        description: "Random seed (0-2147483647, default 1)",
+      },
+      image_urls: {
+        type: "array",
+        required: true,
+        minItems: 1,
+        maxItems: 3,
+        description: "Reference image URLs (1-3 URLs)",
+        items: {
+          type: "string",
+          description: "HTTP or HTTPS source image URL",
+        },
+      },
+      resolution: {
+        type: "string",
+        enum: ["1K", "2K"],
+        default: "1K",
+        description: "Output resolution (default 1K)",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/qwen3-pro/text-to-image
+  "qwen3/pro-text-to-image": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        maxLength: 5000,
+        description: "Image generation prompt (max 5000 chars)",
+      },
+      image_size: {
+        type: "string",
+        enum: ["1:1", "3:2", "2:3", "4:3", "3:4", "16:9", "9:16", "21:9"],
+        default: "16:9",
+        description: "Output image aspect ratio (default 16:9)",
+      },
+      output_format: {
+        type: "string",
+        enum: ["png", "jpeg"],
+        default: "png",
+        description: "Image format (default png)",
+      },
+      prompt_extend: {
+        type: "boolean",
+        default: true,
+        description: "Extend the prompt automatically (default true)",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description: "Content safety filter (default false)",
+      },
+      negative_prompt: {
+        type: "string",
+        maxLength: 5000,
+        description: "Negative prompt (max 5000 chars)",
+      },
+      seed: {
+        type: "integer",
+        minimum: 0,
+        maximum: 2147483647,
+        default: 1,
+        description: "Random seed (0-2147483647, default 1)",
+      },
+      resolution: {
+        type: "string",
+        enum: ["1K", "2K"],
+        description: "Output resolution; no documented default",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/qwen3-pro/image-to-image
+  "qwen3/pro-image-to-image": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        maxLength: 5000,
+        description: "Image generation prompt (max 5000 chars)",
+      },
+      image_size: {
+        type: "string",
+        enum: ["1:1", "3:2", "2:3", "4:3", "3:4", "16:9", "9:16", "21:9"],
+        default: "16:9",
+        description: "Output image aspect ratio (default 16:9)",
+      },
+      output_format: {
+        type: "string",
+        enum: ["png", "jpeg"],
+        default: "png",
+        description: "Image format (default png)",
+      },
+      prompt_extend: {
+        type: "boolean",
+        default: true,
+        description: "Extend the prompt automatically (default true)",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description: "Content safety filter (default false)",
+      },
+      negative_prompt: {
+        type: "string",
+        maxLength: 5000,
+        description: "Negative prompt (max 5000 chars)",
+      },
+      seed: {
+        type: "integer",
+        minimum: 0,
+        maximum: 2147483647,
+        default: 1,
+        description: "Random seed (0-2147483647, default 1)",
+      },
+      image_urls: {
+        type: "array",
+        required: true,
+        minItems: 1,
+        maxItems: 3,
+        description: "Reference image URLs (1-3 URLs)",
+        items: {
+          type: "string",
+          description: "HTTP or HTTPS source image URL",
+        },
+      },
+      resolution: {
+        type: "string",
+        enum: ["1K", "2K"],
+        default: "1K",
+        description: "Output resolution (default 1K)",
+      },
+    },
+  },
+
   // Unversioned Qwen v1 (enum-only; digit-required qwenN/* alias unchanged).
   // Sources:
   // - https://docs.kie.ai/market/qwen/text-to-image

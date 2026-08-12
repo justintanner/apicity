@@ -621,6 +621,53 @@ provided instead of polling. See the
 [Wan 2.2 auxiliary-media evidence matrix](../../../docs/kie-wan-22-auxiliary-media.md)
 for the exact documented fields, defaults, response envelope, and evidence
 boundary.
+## Qwen Image 3 createTask flow
+
+Qwen Image 3 has four exact Kie model ids: `qwen3/text-to-image`,
+`qwen3/image-to-image`, `qwen3/pro-text-to-image`, and
+`qwen3/pro-image-to-image`. See the official model pages for
+[`qwen3/text-to-image`](https://docs.kie.ai/market/qwen3/text-to-image),
+[`qwen3/image-to-image`](https://docs.kie.ai/market/qwen3/image-to-image),
+[`qwen3/pro-text-to-image`](https://docs.kie.ai/market/qwen3-pro/text-to-image),
+and
+[`qwen3/pro-image-to-image`](https://docs.kie.ai/market/qwen3-pro/image-to-image).
+
+Text-to-image accepts an optional `resolution`; there is no documented
+default, so set it explicitly when constructing a request:
+
+```typescript
+const textTask = await kie.post.api.v1.jobs.createTask({
+  model: "qwen3/text-to-image",
+  input: {
+    prompt: "A quiet alpine lake beneath the Milky Way",
+    resolution: "2K",
+    image_size: "16:9",
+    output_format: "png",
+    prompt_extend: true,
+    nsfw_checker: false,
+    seed: 1,
+  },
+});
+```
+
+Image-to-image uses the same shared fields plus `image_urls`, an array
+of one to three public source-image URLs. Its `resolution` defaults to
+`1K` when omitted:
+
+```typescript
+const imageTask = await kie.post.api.v1.jobs.createTask({
+  model: "qwen3/pro-image-to-image",
+  input: {
+    prompt: "Turn this product photo into a watercolor illustration",
+    image_urls: ["https://example.com/product.png"],
+    image_size: "4:3",
+    output_format: "jpeg",
+    prompt_extend: true,
+    nsfw_checker: false,
+    seed: 1,
+  },
+});
+```
 
 ## API Reference
 

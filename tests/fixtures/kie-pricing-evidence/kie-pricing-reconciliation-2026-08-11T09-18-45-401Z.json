@@ -390,11 +390,11 @@
       "endpoints": 71
     },
     "final": {
-      "models": 127,
+      "models": 131,
       "pricingKeys": 137,
       "slugKeys": 139,
       "displayKeys": 139,
-      "schemaWithoutPricing": 21,
+      "schemaWithoutPricing": 25,
       "pricingOnly": 31,
       "endpoints": 71
     }
@@ -409,9 +409,9 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:a48d53ba1f857885a3c2ce7dcd81dba3a0e3b0895280ceadeb356f78e1a55203",
-      "packages/provider/kie/src/model-schemas.ts": "sha256:67160b79b06136d7f9c17b31cecf6408dcd1f046fe3d5529cd4674e174c993c2",
-      "packages/provider/kie/src/kie.ts": "sha256:58ec0b97f37f26bd3ab61b64f3d077e185b561650b8be63d2e9b00e8e3dfbffd",
+      "packages/provider/kie/src/zod.ts": "sha256:857a5f7c75c2f1a904947637d050947ed4bd71c8a8f1adf57176916f526db2e1",
+      "packages/provider/kie/src/model-schemas.ts": "sha256:4f1ce52ef9d93c4f2ddfb94f20078e5053805f39a5b4d256ee04d190a5460e71",
+      "packages/provider/kie/src/kie.ts": "sha256:3fed83dd8b23869359f153e0fb6034ca81c2324fa2d9f6cb8eec095701407ccd",
       "packages/provider/cost/src/pricing/kie.ts": "sha256:4647ba2d17b52ad99e1ba447510ae2c21928d4a8b5042af59a7feb44d686136b",
       "packages/provider/cost/src/slugs.ts": "sha256:939b15dac53c223bfab765bb42f1b1bb721db804dc5f265f582a8ef6cceca558",
       "scripts/endpoint-docs.tsv": "sha256:b5f337a81a5e4ea186e7ef53e9b93627b558deb59b1de39b4889934cd041b509"
@@ -10510,8 +10510,8 @@
       "representativePayload": {
         "model": "grok-imagine/image-to-image",
         "input": {
-          "image_urls": ["https://example.com/a.png"],
-          "prompt": "audit"
+          "prompt": "audit",
+          "image_urls": ["https://example.com/a.png"]
         }
       }
     },
@@ -14465,7 +14465,7 @@
         "source": "frozen official Kie snapshot"
       },
       "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for Ideogram V3 Reframe, image to image, Quality (image).",
+      "technicalBlocker": "Kie advertises and prices Ideogram V3 Reframe, but no current official API model slug or complete request/response contract is published for a callable ApiCity mapping.",
       "followUpBead": "ac-flqhcu"
     },
     {
@@ -14491,7 +14491,7 @@
         "source": "frozen official Kie snapshot"
       },
       "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for Ideogram V3 Reframe, image to image, Balanced (image).",
+      "technicalBlocker": "Kie advertises and prices Ideogram V3 Reframe, but no current official API model slug or complete request/response contract is published for a callable ApiCity mapping.",
       "followUpBead": "ac-flqhcu"
     },
     {
@@ -14517,7 +14517,7 @@
         "source": "frozen official Kie snapshot"
       },
       "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for Ideogram V3 Reframe, image to image, Turbo (image).",
+      "technicalBlocker": "Kie advertises and prices Ideogram V3 Reframe, but no current official API model slug or complete request/response contract is published for a callable ApiCity mapping.",
       "followUpBead": "ac-flqhcu"
     },
     {
@@ -18085,6 +18085,42 @@
         ],
         "disposition": "supported",
         "rationale": "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
+      },
+      {
+        "id": "qwen3/text-to-image",
+        "descriptor": true,
+        "guard": true,
+        "pricingKey": null,
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
+        "id": "qwen3/image-to-image",
+        "descriptor": true,
+        "guard": true,
+        "pricingKey": null,
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
+        "id": "qwen3/pro-text-to-image",
+        "descriptor": true,
+        "guard": true,
+        "pricingKey": null,
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
+        "id": "qwen3/pro-image-to-image",
+        "descriptor": true,
+        "guard": true,
+        "pricingKey": null,
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
       },
       {
         "id": "qwen/text-to-image",
@@ -22206,6 +22242,30 @@
     ],
     "schemaWithoutPricing": [
       {
+        "id": "qwen3/text-to-image",
+        "disposition": "upstream-unmappable",
+        "linkedRows": [],
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
+        "id": "qwen3/image-to-image",
+        "disposition": "upstream-unmappable",
+        "linkedRows": [],
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
+        "id": "qwen3/pro-text-to-image",
+        "disposition": "upstream-unmappable",
+        "linkedRows": [],
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
+        "id": "qwen3/pro-image-to-image",
+        "disposition": "upstream-unmappable",
+        "linkedRows": [],
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
         "id": "bytedance/seedream",
         "disposition": "upstream-unmappable",
         "linkedRows": [],
@@ -22638,16 +22698,16 @@
     },
     "apiCity": {
       "models": {
-        "count": 127,
-        "descriptors": 127,
-        "guards": 127,
-        "withoutPricing": 21,
+        "count": 131,
+        "descriptors": 131,
+        "guards": 131,
+        "withoutPricing": 25,
         "dispositionCounts": {
           "supported": 102,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 25
+          "upstream-unmappable": 29
         },
         "unclassified": 0
       },
@@ -22698,13 +22758,13 @@
         "unclassified": 0
       },
       "schemaWithoutPricing": {
-        "count": 21,
+        "count": 25,
         "dispositionCounts": {
           "supported": 0,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 21
+          "upstream-unmappable": 25
         },
         "unclassified": 0
       },

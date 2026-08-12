@@ -669,6 +669,9 @@ function architectureBlocker(official) {
   return `No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for ${description} (${interfaceType}).`;
 }
 
+const IDEOGRAM_V3_REFRAME_TECHNICAL_BLOCKER =
+  "Kie advertises and prices Ideogram V3 Reframe, but no current official API model slug or complete request/response contract is published for a callable ApiCity mapping.";
+
 function auditedUnitInfo(official, key) {
   const raw = unitInfo(official);
   if (raw) return raw;
@@ -813,6 +816,7 @@ function classifyRawRow(raw, inventories) {
       /Ideogram V3 Reframe/i.test(String(official.modelDescription ?? ""))
     ) {
       disposition = "unsupported-endpoint";
+      technicalBlocker = IDEOGRAM_V3_REFRAME_TECHNICAL_BLOCKER;
       followUpBead = "ac-flqhcu";
     } else if (
       /Wan 2\.2 A14B Turbo API/i.test(String(official.modelDescription ?? ""))
@@ -2048,6 +2052,11 @@ export function renderReconciliationMarkdown(manifest) {
   const unsupportedModels = manifest.apiCity.models.filter(
     (entry) => entry.disposition !== "supported"
   );
+  const reframeRows = manifest.rows.filter((row) =>
+    /^Ideogram V3 Reframe, image to image, /i.test(
+      String(row.official.modelDescription ?? "")
+    )
+  );
   const runtimeExceptions = manifest.runtimeCoverage?.exceptions ?? [];
   const baseline = manifest.inventory?.baseline ?? INVENTORY_BASELINE;
   const lines = [
@@ -2124,6 +2133,17 @@ export function renderReconciliationMarkdown(manifest) {
     ...unsupportedModels.map(
       (entry) =>
         `| \`${entry.id}\` | ${entry.disposition} | ${entry.technicalBlocker ?? entry.rationale} | ${entry.followUpBead ?? "none"} |`
+    ),
+    "",
+    "### Ideogram V3 Reframe pricing rows",
+    "",
+    "The official Reframe pricing rows remain explicit unsupported-endpoint dispositions until Kie publishes a callable contract:",
+    "",
+    "| Official row | USD | Disposition | Technical blocker | Follow-up | Evidence |",
+    "| --- | ---: | --- | --- | --- | --- |",
+    ...reframeRows.map(
+      (row) =>
+        `| ${row.official.modelDescription} | ${row.official.usdPrice} | ${row.disposition} | ${row.technicalBlocker ?? row.rationale} | ${row.followUpBead ?? "none"} | ${row.evidence.url ?? "none"} |`
     ),
     "",
     "## Runtime Variant Coverage",

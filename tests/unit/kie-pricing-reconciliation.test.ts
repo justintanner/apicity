@@ -58,6 +58,8 @@ interface TestRow {
     runtimeVariant?: string;
   };
   canonicalKey?: string;
+  technicalBlocker?: string;
+  followUpBead?: string;
 }
 
 interface TestManifest {
@@ -255,9 +257,9 @@ describe("Kie pricing reconciliation", () => {
   it("derives the authoritative source inventory counts", async () => {
     const inventory = (await collectApiCityInventories(root)) as TestInventory;
 
-    expect(inventory.models).toHaveLength(127);
-    expect(inventory.descriptors).toHaveLength(127);
-    expect(inventory.guards).toHaveLength(127);
+    expect(inventory.models).toHaveLength(131);
+    expect(inventory.descriptors).toHaveLength(131);
+    expect(inventory.guards).toHaveLength(131);
     expect(inventory.pricingKeys).toHaveLength(137);
     expect(inventory.slugKeys).toHaveLength(139);
     expect(inventory.displayKeys).toHaveLength(139);
@@ -276,7 +278,7 @@ describe("Kie pricing reconciliation", () => {
     expect(result).toMatchObject({
       status: "ok",
       rows: 408,
-      models: 127,
+      models: 131,
       endpoints: 71,
       pricingKeys: 137,
       slugs: 139,
@@ -294,7 +296,7 @@ describe("Kie pricing reconciliation", () => {
         row.disposition === "canonical-alias"
     );
 
-    expect(manifest.apiCity.schemaWithoutPricing).toHaveLength(21);
+    expect(manifest.apiCity.schemaWithoutPricing).toHaveLength(25);
     expect(manifest.apiCity.pricingOnly).toHaveLength(31);
     expect(manifest.inventory.baseline).toEqual({
       models: 127,
@@ -306,11 +308,11 @@ describe("Kie pricing reconciliation", () => {
       endpoints: 71,
     });
     expect(manifest.inventory.final).toEqual({
-      models: 127,
+      models: 131,
       pricingKeys: 137,
       slugKeys: 139,
       displayKeys: 139,
-      schemaWithoutPricing: 21,
+      schemaWithoutPricing: 25,
       pricingOnly: 31,
       endpoints: 71,
     });
@@ -634,6 +636,74 @@ describe("Kie pricing reconciliation", () => {
     expect(rowsMatching(/sora.*watermark/i)).toHaveLength(0);
   });
 
+  it("pins all Ideogram V3 Reframe rows to the unsupported handoff", async () => {
+    const manifest = await readManifest();
+    const reframeRows = manifest.rows.filter((row) =>
+      /^Ideogram V3 Reframe, image to image, /i.test(
+        String(row.official.modelDescription ?? "")
+      )
+    );
+    const expectedBlocker =
+      "Kie advertises and prices Ideogram V3 Reframe, but no current official API model slug or complete request/response contract is published for a callable ApiCity mapping.";
+    const expectedRows = [
+      ["Turbo", "0.0175"],
+      ["Balanced", "0.035"],
+      ["Quality", "0.05"],
+    ] as const;
+
+    expect(reframeRows).toHaveLength(3);
+    expect(
+      reframeRows
+        .map((row) => [
+          String(row.official.modelDescription).replace(
+            /^Ideogram V3 Reframe, image to image, /i,
+            ""
+          ),
+          String(row.official.usdPrice),
+        ])
+        .sort(([left], [right]) => left.localeCompare(right))
+    ).toEqual(
+      [...expectedRows].sort(([left], [right]) => left.localeCompare(right))
+    );
+    for (const row of reframeRows) {
+      expect(row).toMatchObject({
+        disposition: "unsupported-endpoint",
+        mappedApiCityKeys: [],
+        official: { anchor: "https://kie.ai/ideogram-reframe" },
+        evidence: {
+          url: "https://kie.ai/ideogram-reframe",
+          source: "frozen official Kie snapshot",
+        },
+        technicalBlocker: expectedBlocker,
+        followUpBead: "ac-flqhcu",
+      });
+    }
+
+    const missingBlocker = await readManifest();
+    const missingRow = missingBlocker.rows.find(
+      (row) =>
+        row.official.modelDescription ===
+        "Ideogram V3 Reframe, image to image, Turbo"
+    );
+    if (!missingRow) throw new Error("missing Reframe Turbo row");
+    delete missingRow.technicalBlocker;
+    await expect(
+      runCheck({ root, manifest: missingBlocker })
+    ).rejects.toMatchObject({ code: "unsupported-without-blocker" });
+
+    const weakenedBlocker = await readManifest();
+    const weakenedRow = weakenedBlocker.rows.find(
+      (row) =>
+        row.official.modelDescription ===
+        "Ideogram V3 Reframe, image to image, Turbo"
+    );
+    if (!weakenedRow) throw new Error("missing Reframe Turbo row");
+    weakenedRow.technicalBlocker = "No API mapping.";
+    await expect(
+      runCheck({ root, manifest: weakenedBlocker })
+    ).rejects.toMatchObject({ code: "classification-drift" });
+  });
+
   it("keeps representativeCases distinct from their primary payload", async () => {
     const manifest = generatedManifest;
     for (const row of executableRows(manifest)) {
@@ -839,11 +909,11 @@ describe("Kie pricing reconciliation", () => {
     expect(markdown).toContain("## Seedance 2.5");
     expect(markdown).toContain("## Explicit Audit Queue");
     expect(markdown).toContain("## Runtime Variant Coverage");
-    expect(markdown).toContain("| Schema model IDs | 127 | 127 |");
+    expect(markdown).toContain("| Schema model IDs | 127 | 131 |");
     expect(markdown).toContain("| Documented endpoints | 71 | 71 |");
     expect(markdown).toContain("| Runtime pricing keys | 135 | 137 |");
     expect(markdown).toContain(
-      "| Schema-without-pricing inventory | 23 | 21 |"
+      "| Schema-without-pricing inventory | 23 | 25 |"
     );
     expect(markdown).toContain("| Pricing-only inventory | 31 | 31 |");
     expect(markdown).toContain("| Slug keys | 137 | 139 |");

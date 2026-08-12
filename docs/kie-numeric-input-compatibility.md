@@ -600,6 +600,14 @@ byte-for-byte identical to the registered snapshots.
 means the current request example does not include that field. "Retain" means
 this evidence item makes no runtime contract change for the row.
 
+The Qwen Image 3 seed rows use the official model pages linked from the Kie
+provider documentation: `Q3-01` through `Q3-04`.
+
+- `Q3-01`: https://docs.kie.ai/market/qwen3/text-to-image
+- `Q3-02`: https://docs.kie.ai/market/qwen3/image-to-image
+- `Q3-03`: https://docs.kie.ai/market/qwen3-pro/text-to-image
+- `Q3-04`: https://docs.kie.ai/market/qwen3-pro/image-to-image
+
 <!-- numeric-inventory:start -->
 
 | Model                                     | Input path                    | Local contract                                                                                       | Official source     | Declared JSON type                          | Example JSON type   | Observation                                   | Classification      | Confidence | Decision                                         |
@@ -630,6 +638,10 @@ this evidence item makes no runtime contract change for the row.
 | grok-imagine/extend                       | input.extend_times            | required; numeric-string enum="6","10"                                                               | DOC-07 @ 2026-07-31 | number                                      | string ("6")        | matrix "6"/"10" -> 200; 6/10 -> 500           | numeric-string-only | high       | retain exact strings; reject numbers             |
 | qwen2/text-to-image                       | input.seed                    | optional; integer                                                                                    | DOC-08 @ 2026-07-31 | integer                                     | number (0)          | none beyond current OpenAPI                   | number-only         | high       | retain current behavior                          |
 | qwen2/image-edit                          | input.seed                    | optional; integer                                                                                    | DOC-09 @ 2026-07-31 | integer                                     | number (0)          | no fractional observation or clarification    | number-only         | high       | align with official integer contract             |
+| qwen3/text-to-image                       | input.seed                    | optional; integer min=0 max=2147483647 default=1                                                     | Q3-01 @ 2026-08-12  | integer min=0 max=2147483647                | number (1)          | integer seed; local default is 1              | number-only         | high       | enforce bounds; default matches local            |
+| qwen3/image-to-image                      | input.seed                    | optional; integer min=0 max=2147483647 default=1                                                     | Q3-02 @ 2026-08-12  | integer min=0 max=2147483647                | number (1)          | integer seed; local default is 1              | number-only         | high       | enforce bounds; default matches local            |
+| qwen3/pro-text-to-image                   | input.seed                    | optional; integer min=0 max=2147483647 default=1                                                     | Q3-03 @ 2026-08-12  | integer min=0 max=2147483647                | number (1)          | integer seed; local default is 1              | number-only         | high       | enforce bounds; default matches local            |
+| qwen3/pro-image-to-image                  | input.seed                    | optional; integer min=0 max=2147483647 default=1                                                     | Q3-04 @ 2026-08-12  | integer min=0 max=2147483647                | number (1)          | integer seed; local default is 1              | number-only         | high       | enforce bounds; default matches local            |
 | bytedance/seedance-2-fast                 | input.duration                | optional; integer min=4 max=15 default=5                                                             | DOC-10 @ 2026-07-31 | integer default=5                           | number (15)         | none beyond current OpenAPI                   | number-only         | high       | retain current behavior                          |
 | bytedance/seedance-2                      | input.duration                | optional; integer min=4 max=15 default=5                                                             | DOC-11 @ 2026-07-31 | integer default=5                           | number (15)         | none beyond current OpenAPI                   | number-only         | high       | retain current behavior                          |
 | bytedance/seedance-2-mini                 | input.duration                | optional; integer min=4 max=15 default=5                                                             | DOC-12 @ 2026-07-31 | integer default=5                           | number (15)         | default aligned with DOC-12 by ac-07mm6l      | number-only         | high       | retain aligned default 5                         |

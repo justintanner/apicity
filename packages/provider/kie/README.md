@@ -553,6 +553,75 @@ defaults to `16:9` and accepts `1:1`, `3:4`, `4:3`, `9:16`, and
 `png`; `seed` must be an integer when provided; `nsfw_checker`
 defaults to `false`.
 
+## Wan 2.2 auxiliary model operations
+
+Wan 2.2 speech-to-video, image-to-video, animate move, and animate replace
+are four model operations on the same
+`kie.post.api.v1.jobs.createTask` endpoint, not four endpoint methods. Type
+the request at the package boundary, submit it, then read `data.taskId` and
+poll the shared `kie.get.api.v1.jobs.recordInfo(taskId)` endpoint.
+
+```typescript
+import {
+  createKie,
+  type TaskResponse,
+  type Wan22A14bImageToVideoTurboRequest,
+  type Wan22A14bSpeechToVideoTurboRequest,
+  type Wan22AnimateMoveRequest,
+  type Wan22AnimateReplaceRequest,
+} from "@apicity/kie";
+
+const kie = createKie({ apiKey: process.env.KIE_API_KEY! });
+
+const imageToVideo = {
+  model: "wan/2-2-a14b-image-to-video-turbo",
+  input: {
+    image_url: "https://example.com/first-frame.png",
+    prompt: "A slow camera push toward the subject",
+  },
+} satisfies Wan22A14bImageToVideoTurboRequest;
+
+const speechToVideo = {
+  model: "wan/2-2-a14b-speech-to-video-turbo",
+  input: {
+    prompt: "The presenter explains the product",
+    image_url: "https://example.com/presenter.png",
+    audio_url: "https://example.com/presenter.mp3",
+  },
+} satisfies Wan22A14bSpeechToVideoTurboRequest;
+
+const animateMove = {
+  model: "wan/2-2-animate-move",
+  input: {
+    video_url: "https://example.com/source.mp4",
+    image_url: "https://example.com/subject.png",
+  },
+} satisfies Wan22AnimateMoveRequest;
+
+const animateReplace = {
+  model: "wan/2-2-animate-replace",
+  input: {
+    video_url: "https://example.com/source.mp4",
+    image_url: "https://example.com/replacement.png",
+  },
+} satisfies Wan22AnimateReplaceRequest;
+
+const task: TaskResponse = await kie.post.api.v1.jobs.createTask(imageToVideo);
+const taskId = task.data?.taskId;
+if (!taskId) throw new Error("KIE did not return a taskId");
+
+const details = await kie.get.api.v1.jobs.recordInfo(taskId);
+console.log(details.data?.state, details.data?.resultJson);
+```
+
+Use the same `createTask` call with `speechToVideo`, `animateMove`, or
+`animateReplace` for the other operations. The required media fields are
+public URLs; upload local assets before submission. A `callBackUrl` can be
+provided instead of polling. See the
+[Wan 2.2 auxiliary-media evidence matrix](../../../docs/kie-wan-22-auxiliary-media.md)
+for the exact documented fields, defaults, response envelope, and evidence
+boundary.
+
 ## API Reference
 
 57 endpoints across 29 groups. Each method mirrors an upstream URL path.

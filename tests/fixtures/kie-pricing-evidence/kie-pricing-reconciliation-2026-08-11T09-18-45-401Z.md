@@ -93,6 +93,16 @@ Schema models without a current usable pricing key: **21**; pricing-only runtime
 | `google/gemini-3-1-flash-tts`          | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
 | `topaz/image-upscale`                  | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
 
+### Ideogram V3 Reframe pricing rows
+
+The official Reframe pricing rows remain explicit unsupported-endpoint dispositions until Kie publishes a callable contract:
+
+| Official row                                  |    USD | Disposition          | Technical blocker                                                                                                                                                        | Follow-up | Evidence                        |
+| --------------------------------------------- | -----: | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------- | ------------------------------- |
+| Ideogram V3 Reframe, image to image, Quality  |   0.05 | unsupported-endpoint | Kie advertises and prices Ideogram V3 Reframe, but no current official API model slug or complete request/response contract is published for a callable ApiCity mapping. | ac-flqhcu | https://kie.ai/ideogram-reframe |
+| Ideogram V3 Reframe, image to image, Balanced |  0.035 | unsupported-endpoint | Kie advertises and prices Ideogram V3 Reframe, but no current official API model slug or complete request/response contract is published for a callable ApiCity mapping. | ac-flqhcu | https://kie.ai/ideogram-reframe |
+| Ideogram V3 Reframe, image to image, Turbo    | 0.0175 | unsupported-endpoint | Kie advertises and prices Ideogram V3 Reframe, but no current official API model slug or complete request/response contract is published for a callable ApiCity mapping. | ac-flqhcu | https://kie.ai/ideogram-reframe |
+
 ## Runtime Variant Coverage
 
 Every live Kie per-unit rate variant is covered by an executable official case or one of **11** explicit exceptions below. Zero-rate Grok and Topaz entries are unreachable sentinels, not free variants.

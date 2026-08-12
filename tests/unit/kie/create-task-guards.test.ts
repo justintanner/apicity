@@ -195,6 +195,41 @@ const guardedRejectionCases = [
     },
     expectedPath: "input.image_urls",
   },
+  {
+    name: "qwen3/text-to-image with an overlong prompt",
+    request: {
+      model: "qwen3/text-to-image",
+      input: { prompt: "x".repeat(5001) },
+    },
+    expectedPath: "input.prompt",
+  },
+  {
+    name: "qwen3/image-to-image without image_urls",
+    request: {
+      model: "qwen3/image-to-image",
+      input: { prompt: "Edit this image" },
+    },
+    expectedPath: "input.image_urls",
+  },
+  {
+    name: "qwen3/pro-text-to-image with a fractional seed",
+    request: {
+      model: "qwen3/pro-text-to-image",
+      input: { prompt: "A paper city", seed: 1.5 },
+    },
+    expectedPath: "input.seed",
+  },
+  {
+    name: "qwen3/pro-image-to-image with a malformed URL",
+    request: {
+      model: "qwen3/pro-image-to-image",
+      input: {
+        prompt: "Edit this image",
+        image_urls: ["not-a-url"],
+      },
+    },
+    expectedPath: "input.image_urls.0",
+  },
 ] satisfies ReadonlyArray<{
   name: string;
   request: Record<string, unknown>;
@@ -226,7 +261,7 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
   // Not a count for its own sake — it makes any change to the guarded set show
   // up as a deliberate edit to this list.
   //
-  // The list is the point, not the number. It now holds all 127 ids of
+  // The list is the point, not the number. It now holds all 131 ids of
   // KIE_MEDIA_MODELS, which is what makes it worth spelling out rather than
   // asserting `guarded.sort()` equals `[...KIE_MEDIA_MODELS].sort()`: that
   // form is self-referential — it passes whatever the catalogue says, so an
@@ -235,8 +270,8 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
   it("guards exactly the models pinned in this list", () => {
     expect(
       guarded,
-      "Update this deliberate 127-entry pin when the guarded model set changes"
-    ).toHaveLength(127);
+      "Update this deliberate 131-entry pin when the guarded model set changes"
+    ).toHaveLength(131);
     expect([...guarded].sort()).toEqual(
       [
         "kling-3.0/video",
@@ -277,6 +312,10 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
         "grok-imagine/upscale",
         "qwen2/text-to-image",
         "qwen2/image-edit",
+        "qwen3/text-to-image",
+        "qwen3/image-to-image",
+        "qwen3/pro-text-to-image",
+        "qwen3/pro-image-to-image",
         "qwen/text-to-image",
         "qwen/image-edit",
         "qwen/image-to-image",

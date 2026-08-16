@@ -133,6 +133,9 @@ import {
   GrokVideo15PreviewRequestSchema,
   GrokVideoExtendRequestSchema,
   GrokVideoUpscaleRequestSchema,
+  GrokImagineImage2TextToImageRequestSchema,
+  GrokImagineImage2SegmentMapRequestSchema,
+  GrokImagineImage2ImageEditRequestSchema,
   KlingVideoRequestSchema,
   KlingMotionControlRequestSchema,
   KlingV3TurboImageToVideoRequestSchema,
@@ -288,6 +291,11 @@ export const CREATE_TASK_GUARDS = {
   "seedream/4.5-edit": Seedream45EditRequestSchema,
   "grok-imagine/extend": GrokVideoExtendRequestSchema,
   "grok-imagine/upscale": GrokVideoUpscaleRequestSchema,
+  "grok-imagine-image-2-0/text-to-image":
+    GrokImagineImage2TextToImageRequestSchema,
+  "grok-imagine-image-2-0/segment-map":
+    GrokImagineImage2SegmentMapRequestSchema,
+  "grok-imagine-image-2-0/image-edit": GrokImagineImage2ImageEditRequestSchema,
   "qwen2/text-to-image": Qwen2TextToImageRequestSchema,
   "qwen2/image-edit": Qwen2ImageEditRequestSchema,
   "qwen3/text-to-image": Qwen3TextToImageRequestSchema,

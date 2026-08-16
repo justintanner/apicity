@@ -1010,6 +1010,65 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  // https://docs.kie.ai/market/grok-imagine-image-2-0/text-to-image
+  "grok-imagine-image-2-0/text-to-image": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        description: "Image generation prompt (minimum 1 character)",
+      },
+      aspect_ratio: {
+        type: "string",
+        required: true,
+        enum: ["1:1", "2:3", "3:2", "16:9", "9:16"],
+        description: "Required output aspect ratio; no upstream default",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/grok-imagine-image-2-0/segment-map
+  "grok-imagine-image-2-0/segment-map": {
+    type: "image",
+    fields: {
+      task_id: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        description:
+          "Existing task ID; results arrive as named mask layers in segments[] with maskUrl, name, and index",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/grok-imagine-image-2-0/image-edit
+  "grok-imagine-image-2-0/image-edit": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        description: "Image editing prompt (minimum 1 character)",
+      },
+      task_id: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        description: "Existing task ID to edit (minimum 1 character)",
+      },
+      mask_indexs: {
+        type: "array",
+        minItems: 1,
+        items: { type: "integer", minimum: 1 },
+        description:
+          "Optional mask selection with at least 1 item; each index must be an integer of 1 or greater (upstream spelling preserved)",
+      },
+    },
+  },
+
   "nano-banana-pro": {
     type: "image",
     fields: {

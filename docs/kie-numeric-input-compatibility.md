@@ -2,8 +2,9 @@
 
 The base sweep was retrieved and observed on 2026-07-31; the MiniMax H3 rows
 use the approved upstream snapshots retrieved on 2026-08-04; the Google Gemini
-TTS rows use the approved upstream snapshots retrieved on 2026-08-06. This
-audit covers numeric-valued input properties reachable from every current
+TTS rows use the approved upstream snapshots retrieved on 2026-08-06; the Grok
+Imagine Image 2.0 row uses official model pages retrieved on 2026-08-16.
+This audit covers numeric-valued input properties reachable from every current
 `KIE_MEDIA_MODELS` entry through its `CREATE_TASK_GUARDS` schema. It is an
 evidence and decision record, not a claim that fields with similar names share
 an upstream contract.
@@ -18,8 +19,8 @@ Rows are deduplicated by model and input path. Unsupported schema branches,
 duplicate rows, missing rows, extra rows, and stale local-contract cells all
 fail with the affected model and path.
 
-At this revision the derived inventory has 71 unique paths across 42 of the 57
-catalogue models: 49 integer branches, 15 general-number branches, one numeric
+At this revision the derived inventory has 72 unique paths across 43 of the 60
+catalogue models: 50 integer branches, 15 general-number branches, one numeric
 literal enum, five numeric-string enums, and one numeric-string pattern. These
 are measured facts, not permanent expected counts; the model/path set is
 derived on every test run.
@@ -608,6 +609,17 @@ provider documentation: `Q3-01` through `Q3-04`.
 - `Q3-03`: https://docs.kie.ai/market/qwen3-pro/text-to-image
 - `Q3-04`: https://docs.kie.ai/market/qwen3-pro/image-to-image
 
+The Grok Imagine Image 2.0 row uses the official model pages linked from the
+Kie provider documentation, all retrieved on 2026-08-16: `GI2-01` through
+`GI2-03`.
+
+- `GI2-01 @ 2026-08-16`:
+  https://docs.kie.ai/market/grok-imagine-image-2-0/text-to-image
+- `GI2-02 @ 2026-08-16`:
+  https://docs.kie.ai/market/grok-imagine-image-2-0/segment-map
+- `GI2-03 @ 2026-08-16`:
+  https://docs.kie.ai/market/grok-imagine-image-2-0/image-edit
+
 <!-- numeric-inventory:start -->
 
 | Model                                     | Input path                    | Local contract                                                                                       | Official source     | Declared JSON type                          | Example JSON type   | Observation                                   | Classification      | Confidence | Decision                                         |
@@ -636,6 +648,7 @@ provider documentation: `Q3-01` through `Q3-04`.
 | grok-imagine-video-1-5-preview            | input.duration                | optional; integer min=1 max=15 default=8                                                             | DOC-06 @ 2026-07-31 | integer multipleOf=1 min=1 max=15 default=8 | absent              | none beyond current OpenAPI                   | number-only         | medium     | retain current behavior                          |
 | grok-imagine/extend                       | input.extend_at               | required; number min=0                                                                               | DOC-07 @ 2026-07-31 | number min=2 default=2                      | number (2)          | matrix 0/1/2/2.5 -> 200; omit -> 500          | number-only         | high       | require general number min=0; no default         |
 | grok-imagine/extend                       | input.extend_times            | required; numeric-string enum="6","10"                                                               | DOC-07 @ 2026-07-31 | number                                      | string ("6")        | matrix "6"/"10" -> 200; 6/10 -> 500           | numeric-string-only | high       | retain exact strings; reject numbers             |
+| grok-imagine-image-2-0/image-edit         | input.mask_indexs[]           | optional; integer min=1                                                                              | GI2-03 @ 2026-08-16 | integer min=1                               | number (1)          | HAR number 1 -> HTTP 200 (2026-08-16)         | number-only         | high       | enforce integers >= 1; reject strings            |
 | qwen2/text-to-image                       | input.seed                    | optional; integer                                                                                    | DOC-08 @ 2026-07-31 | integer                                     | number (0)          | none beyond current OpenAPI                   | number-only         | high       | retain current behavior                          |
 | qwen2/image-edit                          | input.seed                    | optional; integer                                                                                    | DOC-09 @ 2026-07-31 | integer                                     | number (0)          | no fractional observation or clarification    | number-only         | high       | align with official integer contract             |
 | qwen3/text-to-image                       | input.seed                    | optional; integer min=0 max=2147483647 default=1                                                     | Q3-01 @ 2026-08-12  | integer min=0 max=2147483647                | number (1)          | integer seed; local default is 1              | number-only         | high       | enforce bounds; default matches local            |

@@ -105,6 +105,31 @@ export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
     rationale:
       "The live non-pro default bundle has no conflict-free official cell; the query-conflicted row remains upstream-unmappable and the quality bundle is audited separately.",
   },
+  ...[
+    [
+      "grok-imagine-image-2-0/text-to-image",
+      "4.0 credits and exactly one result URL",
+      "$0.02 per generation",
+    ],
+    [
+      "grok-imagine-image-2-0/segment-map",
+      "0.0 credits",
+      "$0.00 per generation",
+    ],
+    [
+      "grok-imagine-image-2-0/image-edit",
+      "4.0 credits",
+      "$0.02 per generation",
+    ],
+  ].map(([key, observation, rate]) => ({
+    key,
+    variant: "",
+    status: "pricing-only",
+    provenance:
+      "tests/recordings/kie_2079838932/grok-imagine-image-2-lifecycle_1692809741/recording.har terminal recordInfo reports " +
+      observation,
+    rationale: `The reachable ${rate} variant is supported by live billing evidence but postdates the frozen 2026-08-11 pricing snapshot.`,
+  })),
   {
     key: "hailuo/02-image-to-video-standard",
     variant: "6|768P",

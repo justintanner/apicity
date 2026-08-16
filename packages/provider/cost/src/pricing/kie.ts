@@ -982,6 +982,47 @@ export const kie: Record<string, ModelPricing> = {
     source: src("xai/grok-imagine"),
   },
 
+  // grok-imagine-image-2-0: the WI-4 lifecycle recording's terminal
+  // recordInfo responses report 4.0 credits for text-to-image and image-edit,
+  // matching the published 4 credits = $0.02/image rate. Text-to-image
+  // returned exactly one result URL, so both calls are flat per generation.
+  "grok-imagine-image-2-0/text-to-image": {
+    kind: "perUnit",
+    unit: "generations",
+    units: () => 1,
+    select: [],
+    rates: { "": 0.02 },
+    source: pricePage(
+      "https://docs.kie.ai/market/grok-imagine-image-2-0/text-to-image",
+      "2026-08-16"
+    ),
+  },
+  // tests/recordings/kie_2079838932/grok-imagine-image-2-lifecycle_1692809741/
+  // recording.har reports creditsConsumed: 0.0 for the successful segment-map
+  // task. This is an evidenced free operation, not a fail-closed sentinel.
+  "grok-imagine-image-2-0/segment-map": {
+    kind: "perUnit",
+    unit: "generations",
+    units: () => 1,
+    select: [],
+    rates: { "": 0 },
+    source: pricePage(
+      "https://docs.kie.ai/market/grok-imagine-image-2-0/segment-map",
+      "2026-08-16"
+    ),
+  },
+  "grok-imagine-image-2-0/image-edit": {
+    kind: "perUnit",
+    unit: "generations",
+    units: () => 1,
+    select: [],
+    rates: { "": 0.02 },
+    source: pricePage(
+      "https://docs.kie.ai/market/grok-imagine-image-2-0/image-edit",
+      "2026-08-16"
+    ),
+  },
+
   // grok-imagine/extend: flat per-generation, 4 rates indexed by
   // (extend_times, resolution). The evidenced request contract keeps
   // extend_times as the exact strings "6" and "10"; numeric values do not

@@ -1,7 +1,7 @@
 {
   "schema": "gc.kie-pricing-reconciliation.v1",
   "version": 1,
-  "generatedAt": "2026-08-11T09:18:45.401Z",
+  "generatedAt": "2026-08-16T13:37:41.030Z",
   "snapshot": {
     "path": "tests/fixtures/kie-pricing-evidence/kie-pricing-snapshot-2026-08-11T09-18-45-401Z.json",
     "metadataPath": "tests/fixtures/kie-pricing-evidence/kie-pricing-pull-2026-08-11T09-18-45-401Z.json",
@@ -390,10 +390,10 @@
       "endpoints": 71
     },
     "final": {
-      "models": 131,
-      "pricingKeys": 137,
-      "slugKeys": 139,
-      "displayKeys": 139,
+      "models": 134,
+      "pricingKeys": 140,
+      "slugKeys": 142,
+      "displayKeys": 142,
       "schemaWithoutPricing": 25,
       "pricingOnly": 31,
       "endpoints": 71
@@ -409,11 +409,11 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:857a5f7c75c2f1a904947637d050947ed4bd71c8a8f1adf57176916f526db2e1",
-      "packages/provider/kie/src/model-schemas.ts": "sha256:4f1ce52ef9d93c4f2ddfb94f20078e5053805f39a5b4d256ee04d190a5460e71",
-      "packages/provider/kie/src/kie.ts": "sha256:3fed83dd8b23869359f153e0fb6034ca81c2324fa2d9f6cb8eec095701407ccd",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:4647ba2d17b52ad99e1ba447510ae2c21928d4a8b5042af59a7feb44d686136b",
-      "packages/provider/cost/src/slugs.ts": "sha256:939b15dac53c223bfab765bb42f1b1bb721db804dc5f265f582a8ef6cceca558",
+      "packages/provider/kie/src/zod.ts": "sha256:0f06200f5912c81b5b4292029d0d633bde74ff566ce48db37f64f2ba24211103",
+      "packages/provider/kie/src/model-schemas.ts": "sha256:e073c74c986e01eca2fa803a06faa1bec87fe61c8424b5185b2871605f66dded",
+      "packages/provider/kie/src/kie.ts": "sha256:0b20cd62014114f0a19b9eb001309db1ba9c4077b7fbe62eff92b97345d57f01",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:55e138db2528298fea1518d215ddd7815b4f13ca70b740c157ce6b53bf5006c1",
+      "packages/provider/cost/src/slugs.ts": "sha256:e6b313f103bfb1be3cdb92ff3078e82a1d774234f346e195289c1a0f8922e8db",
       "scripts/endpoint-docs.tsv": "sha256:b5f337a81a5e4ea186e7ef53e9b93627b558deb59b1de39b4889934cd041b509"
     }
   },
@@ -10510,8 +10510,8 @@
       "representativePayload": {
         "model": "grok-imagine/image-to-image",
         "input": {
-          "image_urls": ["https://example.com/a.png"],
-          "prompt": "audit"
+          "prompt": "audit",
+          "image_urls": ["https://example.com/a.png"]
         }
       }
     },
@@ -18065,6 +18065,33 @@
         "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
       },
       {
+        "id": "grok-imagine-image-2-0/text-to-image",
+        "descriptor": true,
+        "guard": true,
+        "pricingKey": "grok-imagine-image-2-0/text-to-image",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
+        "id": "grok-imagine-image-2-0/segment-map",
+        "descriptor": true,
+        "guard": true,
+        "pricingKey": "grok-imagine-image-2-0/segment-map",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
+        "id": "grok-imagine-image-2-0/image-edit",
+        "descriptor": true,
+        "guard": true,
+        "pricingKey": "grok-imagine-image-2-0/image-edit",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
         "id": "qwen2/text-to-image",
         "descriptor": true,
         "guard": true,
@@ -20166,6 +20193,24 @@
         "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
       },
       {
+        "key": "grok-imagine-image-2-0/text-to-image",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "grok-imagine-image-2-0/segment-map",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "grok-imagine-image-2-0/image-edit",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
         "key": "grok-imagine/extend",
         "linkedRows": [
           "sha256:e5e200350627931563e104a30589fe7e745b780bdae512e3fb35a0762e2e2270#1",
@@ -21418,6 +21463,18 @@
         "disposition": "supported"
       },
       {
+        "key": "grok-imagine-image-2-0/text-to-image",
+        "disposition": "supported"
+      },
+      {
+        "key": "grok-imagine-image-2-0/segment-map",
+        "disposition": "supported"
+      },
+      {
+        "key": "grok-imagine-image-2-0/image-edit",
+        "disposition": "supported"
+      },
+      {
         "key": "nano-banana",
         "disposition": "supported"
       },
@@ -21973,6 +22030,18 @@
       },
       {
         "key": "grok-imagine/image-to-image",
+        "disposition": "supported"
+      },
+      {
+        "key": "grok-imagine-image-2-0/text-to-image",
+        "disposition": "supported"
+      },
+      {
+        "key": "grok-imagine-image-2-0/segment-map",
+        "disposition": "supported"
+      },
+      {
+        "key": "grok-imagine-image-2-0/image-edit",
         "disposition": "supported"
       },
       {
@@ -22698,16 +22767,16 @@
     },
     "apiCity": {
       "models": {
-        "count": 131,
-        "descriptors": 131,
-        "guards": 131,
+        "count": 134,
+        "descriptors": 134,
+        "guards": 134,
         "withoutPricing": 25,
         "dispositionCounts": {
           "supported": 102,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 29
+          "upstream-unmappable": 32
         },
         "unclassified": 0
       },
@@ -22725,20 +22794,20 @@
         "unclassified": 0
       },
       "pricingKeys": {
-        "count": 137,
+        "count": 140,
         "dispositionCounts": {
           "supported": 131,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 6
+          "upstream-unmappable": 9
         },
         "unclassified": 0
       },
       "slugs": {
-        "count": 139,
+        "count": 142,
         "dispositionCounts": {
-          "supported": 139,
+          "supported": 142,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -22747,9 +22816,9 @@
         "unclassified": 0
       },
       "displays": {
-        "count": 139,
+        "count": 142,
         "dispositionCounts": {
-          "supported": 139,
+          "supported": 142,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -22801,6 +22870,27 @@
         "status": "pricing-only",
         "provenance": "frozen snapshot contains a $0.02 default row whose URL query names text-to-video, plus a separate $0.025 quality bundle row",
         "rationale": "The live non-pro default bundle has no conflict-free official cell; the query-conflicted row remains upstream-unmappable and the quality bundle is audited separately."
+      },
+      {
+        "key": "grok-imagine-image-2-0/text-to-image",
+        "variant": "",
+        "status": "pricing-only",
+        "provenance": "tests/recordings/kie_2079838932/grok-imagine-image-2-lifecycle_1692809741/recording.har terminal recordInfo reports 4.0 credits and exactly one result URL",
+        "rationale": "The reachable $0.02 per generation variant is supported by live billing evidence but postdates the frozen 2026-08-11 pricing snapshot."
+      },
+      {
+        "key": "grok-imagine-image-2-0/segment-map",
+        "variant": "",
+        "status": "pricing-only",
+        "provenance": "tests/recordings/kie_2079838932/grok-imagine-image-2-lifecycle_1692809741/recording.har terminal recordInfo reports 0.0 credits",
+        "rationale": "The reachable $0.00 per generation variant is supported by live billing evidence but postdates the frozen 2026-08-11 pricing snapshot."
+      },
+      {
+        "key": "grok-imagine-image-2-0/image-edit",
+        "variant": "",
+        "status": "pricing-only",
+        "provenance": "tests/recordings/kie_2079838932/grok-imagine-image-2-lifecycle_1692809741/recording.har terminal recordInfo reports 4.0 credits",
+        "rationale": "The reachable $0.02 per generation variant is supported by live billing evidence but postdates the frozen 2026-08-11 pricing snapshot."
       },
       {
         "key": "hailuo/02-image-to-video-standard",

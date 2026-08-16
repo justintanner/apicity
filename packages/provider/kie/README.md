@@ -683,6 +683,17 @@ and
 Text-to-image requires both a prompt and an `aspect_ratio`:
 
 ```typescript
+async function waitForSuccess(taskId: string): Promise<string> {
+  for (let attempt = 0; attempt < 180; attempt++) {
+    const details = await kie.get.api.v1.jobs.recordInfo(taskId);
+    const state = details.data?.state ?? "waiting";
+    if (state === "success") return details.data?.resultJson ?? "{}";
+    if (state === "fail") throw new Error(`KIE task ${taskId} failed`);
+    await new Promise((resolve) => setTimeout(resolve, 5_000));
+  }
+  throw new Error(`KIE task ${taskId} timed out`);
+}
+
 const textTask = await kie.post.api.v1.jobs.createTask({
   model: "grok-imagine-image-2-0/text-to-image",
   input: {
@@ -692,6 +703,7 @@ const textTask = await kie.post.api.v1.jobs.createTask({
 });
 const sourceTaskId = textTask.data?.taskId;
 if (!sourceTaskId) throw new Error("KIE did not return a taskId");
+await waitForSuccess(sourceTaskId);
 ```
 
 Segment-map consumes that source task. After polling the segment task to
@@ -706,12 +718,8 @@ const segmentTask = await kie.post.api.v1.jobs.createTask({
 const segmentTaskId = segmentTask.data?.taskId;
 if (!segmentTaskId) throw new Error("KIE did not return a taskId");
 
-// Poll recordInfo until this task reaches `success` before parsing.
-const segmentDetails = await kie.get.api.v1.jobs.recordInfo(segmentTaskId);
-if (segmentDetails.data?.state !== "success") {
-  throw new Error("Segment map is not ready");
-}
-const segmentResult = JSON.parse(segmentDetails.data?.resultJson ?? "{}") as {
+const segmentResultJson = await waitForSuccess(segmentTaskId);
+const segmentResult = JSON.parse(segmentResultJson) as {
   resultObject?: { segments?: Array<{ index: number }> };
 };
 const maskIndex = segmentResult.resultObject?.segments?.find(

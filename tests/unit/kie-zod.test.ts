@@ -1682,6 +1682,22 @@ const HAILUO_REJECTED_MODELS = [
   "hailuo/02_text_to_video_pro",
 ] as const;
 
+// Grok Imagine Image 2.0 is enum-only: the existing Grok Imagine alias owns
+// one slash after `grok-imagine` or a fully dashed id, but not a dashed product
+// id followed by a second slash and discrete task slug.
+const GROK_IMAGINE_IMAGE_2_EXACT_ONLY_MODELS = [
+  "grok-imagine-image-2-0/text-to-image",
+  "grok-imagine-image-2-0/segment-map",
+  "grok-imagine-image-2-0/image-edit",
+] as const;
+
+const GROK_IMAGINE_IMAGE_2_REJECTED_MODELS = [
+  "grok-imagine-image-2.0/text-to-image",
+  "grok-imagine-image-2-0/segment_map",
+  "grok-imagine-image-2-0/",
+  "GROK-IMAGINE-IMAGE-2-0/TEXT-TO-IMAGE",
+] as const;
+
 // Unversioned Qwen v1 is enum-only: the Qwen family alias requires a digit
 // before `/` (`qwen2/*`), and operator ruling ac-ly4x9j forbids widening it.
 const QWEN_V1_EXACT_ONLY_MODELS = [
@@ -1841,6 +1857,27 @@ describe("TRI-001 KieMediaModelSchema", () => {
       expect(KieMediaModelSchema.safeParse(model).success).toBe(false);
     }
   );
+
+  it.each(GROK_IMAGINE_IMAGE_2_EXACT_ONLY_MODELS)(
+    "keeps Grok Imagine Image 2.0 model %s reachable only through the enum",
+    (model) => {
+      expect(KieMediaModelSchema.safeParse(model).success).toBe(true);
+      expect(mediaAliasPatterns.filter((re) => re.test(model))).toEqual([]);
+    }
+  );
+
+  it.each(GROK_IMAGINE_IMAGE_2_REJECTED_MODELS)(
+    "rejects the out-of-scope Grok Imagine Image 2.0 model %j",
+    (model) => {
+      expect(KieMediaModelSchema.safeParse(model).success).toBe(false);
+    }
+  );
+
+  it("keeps the bare Grok Imagine Image 2.0 id alias-accepted", () => {
+    const model = "grok-imagine-image-2-0";
+    expect(KieMediaModelSchema.safeParse(model).success).toBe(true);
+    expect(mediaAliasPatterns.filter((re) => re.test(model))).toHaveLength(1);
+  });
 
   it.each(QWEN_V1_EXACT_ONLY_MODELS)(
     "keeps unversioned Qwen model %s reachable only through the enum",

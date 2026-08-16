@@ -233,6 +233,9 @@ export const KIE_MEDIA_MODELS = [
   "seedream/4.5-edit",
   "grok-imagine/extend",
   "grok-imagine/upscale",
+  "grok-imagine-image-2-0/text-to-image",
+  "grok-imagine-image-2-0/segment-map",
+  "grok-imagine-image-2-0/image-edit",
   "qwen2/text-to-image",
   "qwen2/image-edit",
   "qwen3/text-to-image",
@@ -2363,6 +2366,45 @@ export const GrokVideoUpscaleRequestSchema = z.object({
   input: z.object({
     task_id: z.string().min(1).max(100),
   }),
+});
+
+// Creates an image from a required prompt and aspect ratio.
+// Docs: https://docs.kie.ai/market/grok-imagine-image-2-0/text-to-image
+export const GrokImagineImage2TextToImageRequestSchema = z.object({
+  model: z.literal("grok-imagine-image-2-0/text-to-image"),
+  callBackUrl: z.string().url().optional(),
+  input: z
+    .object({
+      prompt: z.string().min(1),
+      aspect_ratio: z.enum(["1:1", "2:3", "3:2", "16:9", "9:16"]),
+    })
+    .strict(),
+});
+
+// Results include `segments[]` entries shaped as `{ maskUrl, name, index }`.
+// Docs: https://docs.kie.ai/market/grok-imagine-image-2-0/segment-map
+export const GrokImagineImage2SegmentMapRequestSchema = z.object({
+  model: z.literal("grok-imagine-image-2-0/segment-map"),
+  callBackUrl: z.string().url().optional(),
+  input: z
+    .object({
+      task_id: z.string().min(1),
+    })
+    .strict(),
+});
+
+// Edits an existing task, optionally restricted to selected mask indices.
+// Docs: https://docs.kie.ai/market/grok-imagine-image-2-0/image-edit
+export const GrokImagineImage2ImageEditRequestSchema = z.object({
+  model: z.literal("grok-imagine-image-2-0/image-edit"),
+  callBackUrl: z.string().url().optional(),
+  input: z
+    .object({
+      prompt: z.string().min(1),
+      task_id: z.string().min(1),
+      mask_indexs: z.array(z.number().int().min(1)).min(1).optional(),
+    })
+    .strict(),
 });
 
 export const NanoBananaProRequestSchema = z.object({
@@ -5968,6 +6010,9 @@ export const MediaGenerationRequestSchema = z.union([
   GrokVideo15PreviewRequestSchema,
   GrokVideoExtendRequestSchema,
   GrokVideoUpscaleRequestSchema,
+  GrokImagineImage2TextToImageRequestSchema,
+  GrokImagineImage2SegmentMapRequestSchema,
+  GrokImagineImage2ImageEditRequestSchema,
   NanoBananaProRequestSchema,
   NanoBanana2RequestSchema,
   NanoBanana2LiteRequestSchema,
@@ -6480,6 +6525,30 @@ export type GrokVideoUpscaleRequest = z.input<
 export type GrokVideoUpscaleRequestInput = GrokVideoUpscaleRequest;
 export type GrokVideoUpscaleParsedRequest = z.output<
   typeof GrokVideoUpscaleRequestSchema
+>;
+export type GrokImagineImage2TextToImageRequest = z.input<
+  typeof GrokImagineImage2TextToImageRequestSchema
+>;
+export type GrokImagineImage2TextToImageRequestInput =
+  GrokImagineImage2TextToImageRequest;
+export type GrokImagineImage2TextToImageParsedRequest = z.output<
+  typeof GrokImagineImage2TextToImageRequestSchema
+>;
+export type GrokImagineImage2SegmentMapRequest = z.input<
+  typeof GrokImagineImage2SegmentMapRequestSchema
+>;
+export type GrokImagineImage2SegmentMapRequestInput =
+  GrokImagineImage2SegmentMapRequest;
+export type GrokImagineImage2SegmentMapParsedRequest = z.output<
+  typeof GrokImagineImage2SegmentMapRequestSchema
+>;
+export type GrokImagineImage2ImageEditRequest = z.input<
+  typeof GrokImagineImage2ImageEditRequestSchema
+>;
+export type GrokImagineImage2ImageEditRequestInput =
+  GrokImagineImage2ImageEditRequest;
+export type GrokImagineImage2ImageEditParsedRequest = z.output<
+  typeof GrokImagineImage2ImageEditRequestSchema
 >;
 export type NanoBananaProRequest = z.input<typeof NanoBananaProRequestSchema>;
 export type NanoBananaProRequestInput = NanoBananaProRequest;

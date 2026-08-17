@@ -37,7 +37,11 @@ export interface KieClaudeRequest {
   // id such as `claude-opus-5-0` validates. `string & {}` mirrors that hatch
   // here without collapsing the union, so editors still autocomplete the
   // listed ids.
-  model: "claude-sonnet-4-6" | "claude-haiku-4-5" | (string & {});
+  model:
+    | "claude-sonnet-4-6"
+    | "claude-haiku-4-5"
+    | "claude-opus-5"
+    | (string & {});
   messages: KieClaudeMessage[];
   tools?: KieClaudeTool[];
   thinkingFlag?: boolean;

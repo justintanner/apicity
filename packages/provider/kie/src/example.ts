@@ -554,9 +554,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "runByDefault": false
   },
   "POST claude.v1.messages": {
-    "source": "kie/claude-chat-hello",
+    "source": "kie/claude-opus-5-chat-hello",
     "payload": {
-      "model": "claude-sonnet-4-6",
+      "model": "claude-opus-5",
       "messages": [
         {
           "role": "user",

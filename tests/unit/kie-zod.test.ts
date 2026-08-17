@@ -1215,7 +1215,7 @@ const OPENED_MODEL_FIELDS = [
   {
     triage: "TRI-007",
     label: "KieClaudeRequestSchema.model",
-    listed: ["claude-sonnet-4-6", "claude-haiku-4-5"],
+    listed: ["claude-sonnet-4-6", "claude-haiku-4-5", "claude-opus-5"],
     aliases: ["claude-opus-5-0"],
     // BR-3 versionless and familyless near-misses of a listed id; BR-4 a GPT
     // id on a Claude-only field.

@@ -5961,7 +5961,7 @@ const KieClaudeModelAliasSchema = z
 
 export const KieClaudeRequestSchema = z.object({
   model: z
-    .enum(["claude-sonnet-4-6", "claude-haiku-4-5"])
+    .enum(["claude-sonnet-4-6", "claude-haiku-4-5", "claude-opus-5"])
     .or(KieClaudeModelAliasSchema),
   messages: z.array(KieClaudeMessageSchema),
   tools: z.array(KieClaudeToolSchema).optional(),

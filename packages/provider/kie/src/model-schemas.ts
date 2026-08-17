@@ -1062,9 +1062,9 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       mask_indexs: {
         type: "array",
         minItems: 1,
-        items: { type: "integer", minimum: 1 },
+        items: { type: "integer", minimum: 0 },
         description:
-          "Optional mask selection with at least 1 item; each index must be an integer of 1 or greater (upstream spelling preserved)",
+          "Optional mask selection with at least 1 item; each index must be a nonnegative integer (upstream spelling preserved)",
       },
     },
   },

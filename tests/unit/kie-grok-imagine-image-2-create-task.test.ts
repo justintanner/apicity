@@ -54,7 +54,7 @@ const GROK_IMAGINE_IMAGE_2_CONTRACTS = [
       input: {
         prompt: "Give the cat a red bow tie",
         task_id: "task-cat-source",
-        mask_indexs: [1],
+        mask_indexs: [0],
       },
     } satisfies GrokImagineImage2ImageEditRequest,
   },
@@ -86,6 +86,18 @@ describe("Kie Grok Imagine Image 2.0 request contracts", () => {
         MediaGenerationRequestSchema.safeParse(contract.request).success
       ).toBe(true);
     }
+  });
+
+  it("preserves returned zero-based segment indices", () => {
+    const parsed = GrokImagineImage2ImageEditRequestSchema.parse({
+      model: "grok-imagine-image-2-0/image-edit",
+      input: {
+        prompt: "Remove the selected person",
+        task_id: "task-source",
+        mask_indexs: [0, 2],
+      },
+    });
+    expect(parsed.input.mask_indexs).toEqual([0, 2]);
   });
 
   it("rejects invalid text-to-image prompts and aspect ratios", () => {
@@ -151,7 +163,7 @@ describe("Kie Grok Imagine Image 2.0 request contracts", () => {
         path: ["input", "mask_indexs"],
       },
       {
-        input: { ...base.input, mask_indexs: [0] },
+        input: { ...base.input, mask_indexs: [-1] },
         path: ["input", "mask_indexs", "0"],
       },
       {
@@ -254,7 +266,7 @@ describe("Kie Grok Imagine Image 2.0 registries and descriptors", () => {
     expect(imageEdit.fields.mask_indexs).toMatchObject({
       type: "array",
       minItems: 1,
-      items: { type: "integer", minimum: 1 },
+      items: { type: "integer", minimum: 0 },
     });
     expect(imageEdit.fields.mask_indexs.required).toBeUndefined();
   });

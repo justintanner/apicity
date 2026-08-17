@@ -2402,7 +2402,7 @@ export const GrokImagineImage2ImageEditRequestSchema = z.object({
     .object({
       prompt: z.string().min(1),
       task_id: z.string().min(1),
-      mask_indexs: z.array(z.number().int().min(1)).min(1).optional(),
+      mask_indexs: z.array(z.number().int().min(0)).min(1).optional(),
     })
     .strict(),
 });

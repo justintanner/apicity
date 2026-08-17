@@ -169,6 +169,7 @@ test-branch-protection.txt
 .dolt/
 *.db
 .beads-credential-key
+.beads.gate.lock
 
 # Gas City
 .gc/

@@ -2240,7 +2240,7 @@ function renderKieExample() {
     '    if (state === "fail") throw new Error(`KIE task ${taskId} failed`);',
     "    await new Promise((resolve) => setTimeout(resolve, 5_000));",
     "  }",
-    '  throw new Error(`KIE task ${taskId} timed out`);',
+    "  throw new Error(`KIE task ${taskId} timed out`);",
     "}",
     "",
     "const textTask = await kie.post.api.v1.jobs.createTask({",

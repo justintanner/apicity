@@ -1,6 +1,6 @@
 {
   "name": "@apicity/openligadb",
-  "version": "0.9.1",
+  "version": "0.10.0",
   "description": "OpenLigaDB API provider for public soccer match data, metadata, standings, and scorers.",
   "license": "MIT",
   "repository": {

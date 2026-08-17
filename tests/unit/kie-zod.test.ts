@@ -4,6 +4,7 @@ import {
   CreateTaskRequestSchema,
   FluxKontextGenerateRequestSchema,
   KIE_MEDIA_MODELS,
+  KieChatRequestSchema,
   KieClaudeRequestSchema,
   KieApiResponsesRequestSchema,
   KieGrokResponsesRequestSchema,
@@ -1120,9 +1121,25 @@ const OPENED_MODEL_FIELDS = [
       zodToJsonSchema(FluxKontextGenerateRequestSchema),
   },
   {
+    triage: "TRI-002b",
+    label: "KieChatRequestSchema.model",
+    listed: ["gpt-5.5", "gpt-5-2", "kimi-k3"],
+    aliases: ["gpt-6.1", "kimi-k4"],
+    // BR-3 truncated families; BR-4 response-only Grok and Claude ids.
+    rejected: ["gpt", "kimi-k", "grok-4-6", "claude-opus-5"],
+    parse: (model: unknown): ModelParseOutcome =>
+      modelOutcome(
+        KieChatRequestSchema.safeParse({
+          model,
+          messages: CLAUDE_MESSAGES,
+        })
+      ),
+    jsonSchema: (): JsonSchema => zodToJsonSchema(KieChatRequestSchema),
+  },
+  {
     triage: "TRI-003",
     label: "KieResponsesRequestSchema.model",
-    listed: ["gpt-5-5"],
+    listed: ["gpt-5-5", "gpt-5-6-luna", "gpt-5-6-terra", "gpt-5-6-sol"],
     aliases: ["gpt-6", "gpt-5-5-mini"],
     // BR-3 bare family and spelled-out/truncated versions; BR-4 a Grok id on
     // the OpenAI-only field.
@@ -1139,7 +1156,7 @@ const OPENED_MODEL_FIELDS = [
   {
     triage: "TRI-004",
     label: "KieGrokResponsesRequestSchema.model",
-    listed: ["grok-4-5"],
+    listed: ["grok-4-5", "grok-4-6"],
     aliases: ["grok-5", "grok-4-5-fast"],
     // BR-4 `gpt-5-5` is the sibling endpoint's listed id and must not cross.
     rejected: ["grok", "grok-four", "gpt-5-5"],
@@ -1215,8 +1232,8 @@ const OPENED_MODEL_FIELDS = [
   {
     triage: "TRI-007",
     label: "KieClaudeRequestSchema.model",
-    listed: ["claude-sonnet-4-6", "claude-haiku-4-5"],
-    aliases: ["claude-opus-5-0"],
+    listed: ["claude-sonnet-4-6", "claude-haiku-4-5", "claude-opus-5"],
+    aliases: ["claude-opus-5-1"],
     // BR-3 versionless and familyless near-misses of a listed id; BR-4 a GPT
     // id on a Claude-only field.
     rejected: ["claude-sonnet", "claude-4-6", "claude", "gpt-5-5"],

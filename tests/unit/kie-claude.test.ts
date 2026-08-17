@@ -119,8 +119,12 @@ describe("KIE Claude provider", () => {
       expect(result.error?.issues.length).toBeGreaterThan(0);
     });
 
-    it("should validate with both model options", () => {
-      const validModels = ["claude-sonnet-4-6", "claude-haiku-4-5"];
+    it("should validate all listed model options", () => {
+      const validModels = [
+        "claude-sonnet-4-6",
+        "claude-haiku-4-5",
+        "claude-opus-5",
+      ];
 
       for (const model of validModels) {
         const result = KieClaudeRequestSchema.safeParse({

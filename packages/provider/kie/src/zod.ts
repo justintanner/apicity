@@ -5645,8 +5645,28 @@ export type SunoModel =
   | "V5_5";
 
 // ---------------------------------------------------------------------------
-// Sub-provider schemas: Chat (GPT-5.5 / GPT-5.2 via Kie)
+// Sub-provider schemas: Chat (GPT-5.5 / GPT-5.2 / Kimi K3 via Kie)
 // ---------------------------------------------------------------------------
+
+// The legacy chat abstraction supports Kie's GPT path-prefixed endpoints and
+// the OpenAI-compatible Kimi endpoint. Keep the known ids enumerated for MCP
+// autocomplete while accepting future versioned ids from either family. The
+// bounded grammar rejects foreign response-surface ids such as grok-4-6 and
+// malformed family names instead of using an unrestricted string hatch.
+const KieChatModelAliasSchema = z
+  .string()
+  .regex(
+    /^(?:gpt-\d+(?:[-.]\d+)*(?:-[a-z0-9]+)*|kimi-k\d+(?:[-.]\d+)*(?:-[a-z0-9]+)*)$/,
+    "Expected a listed GPT or Kimi chat model (e.g. gpt-5.5 or kimi-k3)"
+  );
+
+const KIE_CHAT_MODELS = ["gpt-5.5", "gpt-5-2", "kimi-k3"] as const;
+
+export const KieChatModelSchema = z
+  .enum(KIE_CHAT_MODELS)
+  .or(KieChatModelAliasSchema);
+
+export const KieChatReasoningEffortSchema = z.enum(["standard", "high", "max"]);
 
 export const KieChatContentPartSchema = z.object({
   type: z.enum(["text", "image_url"]),
@@ -5660,11 +5680,12 @@ export const KieChatMessageSchema = z.object({
 });
 
 export const KieChatRequestSchema = z.object({
-  model: z.string(),
+  model: KieChatModelSchema,
   messages: z.array(KieChatMessageSchema),
   temperature: z.number().min(0).max(2).optional(),
   max_tokens: z.number().int().positive().optional(),
   stream: z.boolean().optional(),
+  reasoning_effort: KieChatReasoningEffortSchema.optional(),
   response_format: z
     .object({
       type: z.enum(["text", "json_object", "json_schema"]),
@@ -5675,6 +5696,10 @@ export const KieChatRequestSchema = z.object({
 
 export type KieChatContentPart = z.infer<typeof KieChatContentPartSchema>;
 export type KieChatMessage = z.infer<typeof KieChatMessageSchema>;
+export type KieChatModel = (typeof KIE_CHAT_MODELS)[number] | (string & {});
+export type KieChatReasoningEffort = z.infer<
+  typeof KieChatReasoningEffortSchema
+>;
 export type KieChatRequest = z.input<typeof KieChatRequestSchema>;
 export type KieChatRequestInput = KieChatRequest;
 export type KieChatParsedRequest = z.output<typeof KieChatRequestSchema>;
@@ -5698,7 +5723,12 @@ const KieOpenAiModelAliasSchema = z
     "Expected a listed model or a versioned GPT alias (e.g. gpt-5-5-mini)"
   );
 
-const KIE_RESPONSES_MODELS = ["gpt-5-5"] as const;
+const KIE_RESPONSES_MODELS = [
+  "gpt-5-5",
+  "gpt-5-6-luna",
+  "gpt-5-6-terra",
+  "gpt-5-6-sol",
+] as const;
 
 export const KieResponsesModelSchema = z
   .enum(KIE_RESPONSES_MODELS)
@@ -5825,7 +5855,8 @@ export type KieResponsesParsedRequest = z.output<
   typeof KieResponsesRequestSchema
 >;
 
-// Grok 4.5 shares the Kie Responses request contract, differing only by model.
+// Grok 4.5 and 4.6 share the Kie Responses request contract, differing only by
+// model.
 // Reuse the codex input/message/reasoning/tools sub-schemas so the mixed
 // web_search + function rejection (KieResponsesToolsSchema) behaves identically.
 //
@@ -5843,7 +5874,7 @@ const KieGrokModelAliasSchema = z
     "Expected a listed model or a versioned Grok alias (e.g. grok-4-5-fast)"
   );
 
-const KIE_GROK_RESPONSES_MODELS = ["grok-4-5"] as const;
+const KIE_GROK_RESPONSES_MODELS = ["grok-4-5", "grok-4-6"] as const;
 
 export const KieGrokResponsesModelSchema = z
   .enum(KIE_GROK_RESPONSES_MODELS)
@@ -5961,7 +5992,7 @@ const KieClaudeModelAliasSchema = z
 
 export const KieClaudeRequestSchema = z.object({
   model: z
-    .enum(["claude-sonnet-4-6", "claude-haiku-4-5"])
+    .enum(["claude-sonnet-4-6", "claude-haiku-4-5", "claude-opus-5"])
     .or(KieClaudeModelAliasSchema),
   messages: z.array(KieClaudeMessageSchema),
   tools: z.array(KieClaudeToolSchema).optional(),
@@ -6181,6 +6212,9 @@ type StaysAutocompletable<T> = [LiteralPart<T>] extends [never] ? false : true;
 
 export type FluxKontextModelKeepsLiterals = AssertTrue<
   StaysAutocompletable<FluxKontextModel>
+>;
+export type KieChatModelKeepsLiterals = AssertTrue<
+  StaysAutocompletable<KieChatModel>
 >;
 export type KieResponsesModelKeepsLiterals = AssertTrue<
   StaysAutocompletable<KieResponsesModel>

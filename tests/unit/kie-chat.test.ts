@@ -61,6 +61,26 @@ describe("KIE Chat provider", () => {
       expect(result.success).toBe(true);
     });
 
+    it("should validate Kimi K3 reasoning effort", () => {
+      const result = KieChatRequestSchema.safeParse({
+        model: "kimi-k3",
+        messages: [{ role: "user", content: "Review this change" }],
+        reasoning_effort: "max",
+      });
+
+      expect(result.success).toBe(true);
+    });
+
+    it("should reject an invalid Kimi reasoning effort", () => {
+      const result = KieChatRequestSchema.safeParse({
+        model: "kimi-k3",
+        messages: [{ role: "user", content: "Review this change" }],
+        reasoning_effort: "extreme",
+      });
+
+      expect(result.success).toBe(false);
+    });
+
     it("should reject payload without required model", () => {
       const payload = {
         messages: [{ role: "user", content: "Hello" }],
@@ -196,6 +216,60 @@ describe("KIE Chat provider", () => {
       expect(result.success).toBe(false);
       if (result.success) throw new Error("expected failure");
       expect(result.error.issues.length).toBeGreaterThan(0);
+    });
+
+    it("routes Kimi models directly to the top-level chat endpoint", async () => {
+      let capturedUrl: string | undefined;
+      let capturedBody: unknown;
+      const provider = createChatProvider(
+        "https://api.kie.ai",
+        "test-api-key",
+        async (input, init) => {
+          capturedUrl = String(input);
+          capturedBody = JSON.parse(String(init?.body)) as unknown;
+          return new Response(JSON.stringify({ choices: [] }), {
+            headers: { "content-type": "application/json" },
+          });
+        },
+        30000
+      );
+
+      await provider.completions({
+        model: "kimi-k3",
+        messages: [{ role: "user", content: "Hello" }],
+        reasoning_effort: "high",
+      });
+
+      expect(capturedUrl).toBe("https://api.kie.ai/v1/chat/completions");
+      expect(capturedBody).toEqual({
+        model: "kimi-k3",
+        messages: [{ role: "user", content: "Hello" }],
+        reasoning_effort: "high",
+      });
+    });
+
+    it("preserves the GPT 5.5 first-choice endpoint", async () => {
+      let capturedUrl: string | undefined;
+      const provider = createChatProvider(
+        "https://api.kie.ai",
+        "test-api-key",
+        async (input) => {
+          capturedUrl = String(input);
+          return new Response(JSON.stringify({ choices: [] }), {
+            headers: { "content-type": "application/json" },
+          });
+        },
+        30000
+      );
+
+      await provider.completions({
+        model: "gpt-5.5",
+        messages: [{ role: "user", content: "Hello" }],
+      });
+
+      expect(capturedUrl).toBe(
+        "https://api.kie.ai/gpt-5.5/v1/chat/completions"
+      );
     });
   });
 

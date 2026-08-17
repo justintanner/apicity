@@ -1,5 +1,6 @@
 import { KieError } from "./types";
 import { KieChatRequestSchema } from "./zod";
+import type { KieChatModel, KieChatReasoningEffort } from "./zod";
 import type { ApicitySchema } from "./types";
 import { withFallback } from "./middleware";
 import { createKieTransport } from "./request";
@@ -17,11 +18,12 @@ export interface KieChatMessage {
 }
 
 export interface KieChatRequest {
-  model: string;
+  model: KieChatModel;
   messages: KieChatMessage[];
   temperature?: number;
   max_tokens?: number;
   stream?: boolean;
+  reasoning_effort?: KieChatReasoningEffort;
   response_format?: {
     type: "text" | "json_object" | "json_schema";
     json_schema?: Record<string, unknown>;
@@ -64,22 +66,25 @@ export interface KieChatProvider {
   completions: KieChatCompletionsMethod;
 }
 
-const PATH_PREFIXES = ["gpt-5.5", "gpt-5-2"];
+const GPT_ENDPOINTS = [
+  "/gpt-5.5/v1/chat/completions",
+  "/gpt-5-2/v1/chat/completions",
+];
+
+function isKimiModel(model: string): boolean {
+  return /^kimi-k\d/.test(model);
+}
 
 function buildEndpoint(
   transport: Transport,
-  pathPrefix: string
+  path: string
 ): (req: KieChatRequest, signal?: AbortSignal) => Promise<KieChatResponse> {
   return async function completions(
     req: KieChatRequest,
     signal?: AbortSignal
   ): Promise<KieChatResponse> {
     try {
-      return await transport.postJson<KieChatResponse>(
-        `/${pathPrefix}/v1/chat/completions`,
-        req,
-        { signal }
-      );
+      return await transport.postJson<KieChatResponse>(path, req, { signal });
     } catch (error) {
       if (error instanceof KieError) throw error;
       if (error instanceof SyntaxError) {
@@ -104,14 +109,31 @@ export function createChatProvider(
     errorPrefix: "Kie Chat API error",
     requestFailedPrefix: "Chat request failed",
   });
-  const endpoints = PATH_PREFIXES.map((prefix) =>
-    buildEndpoint(transport, prefix)
+  const gptEndpoints = GPT_ENDPOINTS.map((path) =>
+    buildEndpoint(transport, path)
   );
 
-  const fallback = withFallback<KieChatRequest, KieChatResponse>(endpoints);
+  const gptFallback = withFallback<KieChatRequest, KieChatResponse>(
+    gptEndpoints
+  );
+
+  // POST https://api.kie.ai/v1/chat/completions
+  // Docs: https://kie.ai/kimi-k3
+  const kimiCompletions = buildEndpoint(transport, "/v1/chat/completions");
+
+  // POST https://api.kie.ai/gpt-5.5/v1/chat/completions
+  // Docs: https://docs.kie.ai/market/chat/gpt-5-5
+  async function completions(
+    req: KieChatRequest,
+    signal?: AbortSignal
+  ): Promise<KieChatResponse> {
+    return isKimiModel(req.model)
+      ? kimiCompletions(req, signal)
+      : gptFallback(req, signal);
+  }
 
   return {
-    completions: Object.assign(fallback, {
+    completions: Object.assign(completions, {
       schema: KieChatRequestSchema,
     }),
   };

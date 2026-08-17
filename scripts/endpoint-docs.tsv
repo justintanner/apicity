@@ -1051,6 +1051,7 @@ kie	api.v1.voice.validateInfo	GET	https://api.kie.ai/api/v1/voice/validate-info?
 kie	api.v1.wav.generate	POST	https://api.kie.ai/api/v1/wav/generate
 kie	api.v1.wav.recordInfo	GET	https://api.kie.ai/api/v1/wav/record-info?taskId={taskId}	https://docs.kie.ai/suno-api/get-wav-details
 kie	claude.v1.messages	POST	https://api.kie.ai/claude/v1/messages	https://docs.kie.ai/market/claude/claude-sonnet-4-6
+kie	chat.completions	POST	https://api.kie.ai/gpt-5.5/v1/chat/completions	https://docs.kie.ai/market/chat/gpt-5-5
 kie	codex.v1.responses	POST	https://api.kie.ai/codex/v1/responses	https://docs.kie.ai/market/chat/gpt-5-5
 kie	gemini31Pro.v1.chat.completions	POST	https://api.kie.ai/gemini-3.1-pro/v1/chat/completions	https://docs.kie.ai/market/gemini/gemini-3-1-pro
 kie	gemini25Flash.v1.chat.completions	POST	https://api.kie.ai/gemini-2.5-flash/v1/chat/completions	https://docs.kie.ai/market/gemini/gemini-2-5-flash

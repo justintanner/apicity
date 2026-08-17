@@ -8,7 +8,11 @@ import type { ApicitySchema } from "./types";
 import { sseDataToIterable } from "./sse";
 import { createTransport } from "./transport";
 
-export type KieResponsesModel = "gpt-5-5";
+export type KieResponsesModel =
+  | "gpt-5-5"
+  | "gpt-5-6-luna"
+  | "gpt-5-6-terra"
+  | "gpt-5-6-sol";
 export type KieResponsesReasoningEffort = "low" | "medium" | "high" | "xhigh";
 export type KieResponsesMessageRole =
   | "user"
@@ -80,10 +84,10 @@ export interface KieResponsesRequest {
   tool_choice?: KieResponsesToolChoice;
 }
 
-export type KieGrokResponsesModel = "grok-4-5";
+export type KieGrokResponsesModel = "grok-4-5" | "grok-4-6";
 
-// Identical to KieResponsesRequest apart from the model literal — Grok 4.5 is
-// served through the same Kie Responses machinery as codex/gpt-5-5.
+// Identical to KieResponsesRequest apart from the model literal — Grok 4.5 and
+// 4.6 are served through the same Kie Responses machinery as the GPT models.
 export interface KieGrokResponsesRequest {
   // Open enum: KieGrokResponsesRequestSchema unions the listed ids with
   // KieGrokModelAliasSchema (zod.ts), so a not-yet-listed versioned Grok id

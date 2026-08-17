@@ -86,7 +86,7 @@ describe("KIE provider switching", () => {
     });
 
     await provider.claude.post.v1.messages({
-      model: "claude-sonnet-4-6",
+      model: "claude-opus-5",
       messages: [{ role: "user", content: "Hello" }],
     });
 
@@ -94,7 +94,7 @@ describe("KIE provider switching", () => {
     expect(url).toBe("https://api.kie.ai/claude/v1/messages");
     expect(init.method).toBe("POST");
     expect(JSON.parse(init.body as string)).toEqual({
-      model: "claude-sonnet-4-6",
+      model: "claude-opus-5",
       messages: [{ role: "user", content: "Hello" }],
     });
   });

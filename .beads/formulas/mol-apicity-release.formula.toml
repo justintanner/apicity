@@ -181,7 +181,7 @@ git diff --quiet --cached .beads/issues.jsonl || git commit -m "chore(beads): re
 git status --porcelain   # MUST be empty
 ```
 
-If `git status --porcelain` is non-empty, STOP and mail Witness — do not
+If `git status --porcelain` is non-empty, STOP and mail the mayor — do not
 release on top of unstaged work.
 
 **4. Confirm intent:**
@@ -281,7 +281,7 @@ pnpm run ci:local
 
 **If `merge --ff-only` fails:** `stable` has diverged from `main`. STOP. This
 is a human decision — either rebase `stable` onto `main` or cherry-pick the
-missing commits. Mail Witness with the divergence summary; do not improvise.
+missing commits. Mail the mayor with the divergence summary; do not improvise.
 
 If `ci:local` fails:
   - Investigate the root cause; do NOT release with red tests or a build break.
@@ -419,7 +419,7 @@ pnpm -r --filter "@apicity/*" publish --dry-run --tag latest --no-git-checks 2>&
 If anything looks off, STOP. Investigate before publishing for real.
 
 **If dry_run = "true": STOP HERE.** Do not proceed to the publish step.
-Mail Witness with the dry-run log path and exit. The release ends on a
+Mail the mayor with the dry-run log path and exit. The release ends on a
 dry-run when {{dry_run}} = true.
 
 ```bash
@@ -578,7 +578,7 @@ git push origin main
 ```
 
 **If `merge --ff-only` fails:** `main` has moved since the release started.
-STOP and mail Witness with the divergence summary. Do not create a merge
+STOP and mail the mayor with the divergence summary. Do not create a merge
 commit or cherry-pick without an explicit decision.
 
 ```bash
@@ -592,7 +592,7 @@ rm -rf "$SMOKE"
 ```
 
 If the install fails or the dynamic import throws, the published tarball is
-broken. STOP and mail Witness — `npm deprecate` may be needed for this
+broken. STOP and mail the mayor — `npm deprecate` may be needed for this
 version before the next release.
 
 **Exit criteria:** `origin/main` and `origin/stable` point at the release

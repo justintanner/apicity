@@ -1,8 +1,8 @@
 {
   "GET api.v1.aleph.recordInfo": {
-    "source": "kie/aleph/record-info-not-found",
+    "source": "kie/aleph/generate-upstream-failure",
     "payload": {
-      "taskId": "apicity-test-nonexistent-task-id-do-not-record-real"
+      "taskId": "c0d088df35254cc3e7187fb7116b2efa"
     },
     "tier": "prohibitive",
     "runByDefault": false
@@ -148,11 +148,11 @@
     "runByDefault": false
   },
   "POST api.v1.aleph.generate": {
-    "source": "kie/aleph/generate-invalid-video",
+    "source": "kie/aleph/generate-upstream-failure",
     "payload": {
-      "prompt": "A slow cinematic pan across misty mountains at dawn.",
-      "videoUrl": "https://example.com/apicity-test-nonexistent-video-do-not-record-real.mp4",
-      "callBackUrl": "https://example.com/aleph-callback"
+      "prompt": "Transform the clip into a hand-painted watercolor animation.",
+      "videoUrl": "https://tempfile.redpandaai.co/kieai/136592/videos/test-uploads/1787093498568-wd60liaaio8.mp4",
+      "uploadCn": false
     },
     "tier": "prohibitive",
     "runByDefault": false

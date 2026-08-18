@@ -5547,8 +5547,9 @@ export const AlephRecordInfoDataSchema = z
     taskId: z.string(),
     paramJson: z.string().optional(),
     response: AlephRecordInfoResponseResultSchema.nullable().optional(),
-    completeTime: z.string().nullable().optional(),
-    createTime: z.string().optional(),
+    // Upstream examples send epoch millis; docs also mention date-time strings.
+    completeTime: z.union([z.string(), z.number().int()]).nullable().optional(),
+    createTime: z.union([z.string(), z.number().int()]).optional(),
     successFlag: z
       .union([z.literal(0), z.literal(1), z.number().int()])
       .optional(),

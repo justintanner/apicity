@@ -3,8 +3,11 @@ import { setupPolly, teardownPolly, type PollyContext } from "../harness";
 import { createKie, KieError, type AlephGenerateRequest } from "@apicity/kie";
 import { mintKieRunwayOtp, TEST_PAYGATE_SECRET } from "../harness";
 
-// Free/error path: deliberate unreachable videoUrl so upstream rejects without
-// a paid Aleph generation. Exercises the pay-gate + POST shape end to end.
+// Exercises the Aleph pay-gate + POST shape end to end. The videoUrl is a
+// deliberately unreachable placeholder, but the committed HAR shows upstream
+// ACCEPTED the job (200 + real taskId) rather than rejecting it, so this is not
+// a proven free path. Never re-record: a real Aleph video-to-video generation
+// is billable.
 const RECORDING_NAME = "kie/aleph/generate-invalid-video";
 
 describe("kie aleph generate (invalid video)", () => {

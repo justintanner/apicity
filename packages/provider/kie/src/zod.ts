@@ -2575,7 +2575,7 @@ export const Seedance25InputSchema = z.object({
     .optional(),
   return_last_frame: z.boolean().default(false),
   generate_audio: z.boolean().default(true),
-  resolution: z.enum(["480p", "720p"]).default("720p"),
+  resolution: z.enum(["480p", "720p", "1080p"]).default("720p"),
   aspect_ratio: z
     .enum(["1:1", "4:3", "3:4", "16:9", "9:16", "21:9", "adaptive"])
     .default("adaptive"),

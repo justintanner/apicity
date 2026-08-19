@@ -1298,7 +1298,7 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
       resolution: {
         type: "string",
-        enum: ["480p", "720p"],
+        enum: ["480p", "720p", "1080p"],
         default: "720p",
         description: "Output resolution (default 720p)",
       },

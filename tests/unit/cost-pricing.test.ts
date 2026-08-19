@@ -2840,6 +2840,8 @@ describe("kie stale-family refresh (REQ-004)", () => {
     { resolution: "480p", generate_audio: true, rate: 0.085 },
     { resolution: "720p", generate_audio: false, rate: 0.315 },
     { resolution: "720p", generate_audio: true, rate: 0.19 },
+    { resolution: "1080p", generate_audio: true, rate: 0.3425 },
+    { resolution: "1080p", generate_audio: false, rate: 0.57 },
   ])(
     "prices Seedance 2.5 $resolution $generate_audio at $rate/s",
     ({ resolution, generate_audio, rate }) => {
@@ -2867,6 +2869,19 @@ describe("kie stale-family refresh (REQ-004)", () => {
     }
   );
 
+  it("pins Seedance 2.5's six published pricing cells", () => {
+    expect(
+      Object.keys(PRICING.kie["bytedance/seedance-2-5"].rates).sort()
+    ).toEqual([
+      "1080p|audio",
+      "1080p|no-audio",
+      "480p|audio",
+      "480p|no-audio",
+      "720p|audio",
+      "720p|no-audio",
+    ]);
+  });
+
   it("uses Seedance 2.5 documented defaults and fresh provenance", () => {
     const parsed = Seedance25RequestSchema.safeParse({
       model: "bytedance/seedance-2-5",
@@ -2883,7 +2898,7 @@ describe("kie stale-family refresh (REQ-004)", () => {
     expect(result.usd).toBeCloseTo(5 * 0.19, 10);
     expect(PRICING.kie["bytedance/seedance-2-5"].source).toEqual({
       url: "https://kie.ai/seedance-2-5",
-      asOf: "2026-08-11",
+      asOf: "2026-08-19",
     });
   });
 

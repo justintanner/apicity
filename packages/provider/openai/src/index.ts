@@ -243,6 +243,8 @@ export type {
   OpenAiVectorStoreCreateParsedRequest,
   OpenAiVectorStoreFileCounts,
   OpenAiVectorStore,
+  OpenAiVectorStoreListRequest,
+  OpenAiVectorStoreListResponse,
   OpenAiFineTuningJobError,
   OpenAiFineTuningHyperparameters,
   OpenAiFineTuningSupervisedHyperparameters,

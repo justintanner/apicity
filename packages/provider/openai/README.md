@@ -28,7 +28,7 @@ const openai = createOpenAi({ apiKey: process.env.OPENAI_API_KEY! });
 
 ## API Reference
 
-58 endpoints across 19 groups. Each method mirrors an upstream URL path.
+59 endpoints across 19 groups. Each method mirrors an upstream URL path.
 
 ### audio
 
@@ -1036,6 +1036,23 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 </details>
 
 ### vectorStores
+
+<details>
+<summary><code>GET</code> <b><code>openai.v1.vectorStores</code></b></summary>
+
+<code>GET https://api.openai.com/v1/vector_stores/{idOrOpts}</code>
+
+Cost tier: <code>expensive</code>
+
+[Upstream docs ↗](https://platform.openai.com/docs/api-reference/vector-stores/list)
+
+```typescript
+const res = await openai.v1.vectorStores({ /* ... */ });
+```
+
+Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>openai.v1.vectorStores</code></b></summary>

@@ -947,6 +947,21 @@ export interface OpenAiVectorStore {
   expires_at?: number | null;
 }
 
+export interface OpenAiVectorStoreListRequest {
+  limit?: number;
+  order?: "asc" | "desc";
+  after?: string;
+  before?: string;
+}
+
+export interface OpenAiVectorStoreListResponse {
+  object: "list";
+  data: OpenAiVectorStore[];
+  first_id: string;
+  last_id: string;
+  has_more: boolean;
+}
+
 // --- Models API types ---
 
 export interface OpenAiModel {
@@ -1625,6 +1640,14 @@ export interface OpenAiGetV1BatchesNamespace {
   (id: string, signal?: AbortSignal): Promise<OpenAiBatch>;
 }
 
+export interface OpenAiGetV1VectorStoresNamespace {
+  (
+    opts?: OpenAiVectorStoreListRequest,
+    signal?: AbortSignal
+  ): Promise<OpenAiVectorStoreListResponse>;
+  (id: string, signal?: AbortSignal): Promise<OpenAiVectorStore>;
+}
+
 export interface OpenAiGetV1FineTuningNamespace {
   jobs: OpenAiGetV1FineTuningJobs & {
     events: OpenAiGetV1FineTuningJobsEvents;
@@ -1694,6 +1717,7 @@ export interface OpenAiGetV1Namespace {
   batches: OpenAiGetV1BatchesNamespace;
   fineTuning: OpenAiGetV1FineTuningNamespace;
   organization: OpenAiGetV1OrganizationNamespace;
+  vectorStores: OpenAiGetV1VectorStoresNamespace;
 }
 
 // --- DELETE v1 namespace types ---

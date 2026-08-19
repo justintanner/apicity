@@ -827,6 +827,7 @@ openai	v1.responses.compact	POST	expensive	Metered LLM/inference provider; per-c
 openai	v1.responses.inputItems	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
 openai	v1.responses.inputTokens	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
 openai	v1.uploads	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.vectorStores	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
 openai	v1.vectorStores	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
 openf1	token	POST	cheap	Free public Formula 1 data API; no per-call USD cost
 openf1	v1.carData	GET	cheap	Free public Formula 1 data API; no per-call USD cost

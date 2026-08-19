@@ -39,6 +39,15 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "expensive",
     "runByDefault": false
   },
+  "GET v1.vectorStores": {
+    "source": "openai/vector-stores-read",
+    "payload": {
+      "limit": 2,
+      "order": "desc"
+    },
+    "tier": "expensive",
+    "runByDefault": false
+  },
   "POST v1.audio.speech": {
     "source": "openai/speech-hello",
     "payload": {
@@ -228,10 +237,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "runByDefault": false
   },
   "POST v1.vectorStores": {
-    "source": "openai/vector-stores-create",
+    "source": "openai/vector-stores-read",
     "payload": {
-      "name": "Apicity vector store create test",
-      "description": "Created by the Apicity OpenAI integration test.",
+      "name": "Apicity vector store read test",
       "expires_after": {
         "anchor": "last_active_at",
         "days": 1

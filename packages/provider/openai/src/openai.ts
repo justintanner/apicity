@@ -51,6 +51,8 @@ import {
   OpenAiRealtimeClientSecretResponse,
   OpenAiVectorStoreCreateRequest,
   OpenAiVectorStore,
+  OpenAiVectorStoreListRequest,
+  OpenAiVectorStoreListResponse,
   OpenAiModerationRequest,
   OpenAiModerationResponse,
   OpenAiFineTuningJobCreateRequest,
@@ -1335,6 +1337,36 @@ export function createOpenAi(opts: OpenAiOptions): OpenAiProvider {
         },
       },
     },
+    // List: https://platform.openai.com/docs/api-reference/vector-stores/list
+    // GET https://api.openai.com/v1/vector_stores/{idOrOpts}
+    // Docs: https://platform.openai.com/docs/api-reference/vector-stores/retrieve
+    vectorStores: Object.assign(
+      async (
+        idOrOpts?: string | OpenAiVectorStoreListRequest,
+        signal?: AbortSignal
+      ): Promise<OpenAiVectorStore | OpenAiVectorStoreListResponse> => {
+        if (typeof idOrOpts === "string") {
+          // GET /vector_stores/{id}
+          return makeGetRequest<OpenAiVectorStore>(
+            `/vector_stores/${encodeURIComponent(idOrOpts)}`,
+            undefined,
+            signal
+          );
+        }
+        // GET /vector_stores (list)
+        const query: Record<string, string | undefined> = {};
+        if (idOrOpts?.limit !== undefined) query.limit = String(idOrOpts.limit);
+        if (idOrOpts?.order !== undefined) query.order = idOrOpts.order;
+        if (idOrOpts?.after !== undefined) query.after = idOrOpts.after;
+        if (idOrOpts?.before !== undefined) query.before = idOrOpts.before;
+        return makeGetRequest<OpenAiVectorStoreListResponse>(
+          "/vector_stores",
+          query,
+          signal
+        );
+      },
+      {}
+    ) as import("./types").OpenAiGetV1VectorStoresNamespace,
   };
 
   // DELETE v1 namespace

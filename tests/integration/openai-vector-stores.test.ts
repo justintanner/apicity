@@ -42,6 +42,57 @@ describe("openai vector stores integration", () => {
     });
   });
 
+  describe("read vector stores", () => {
+    afterEach(async () => {
+      await teardownPolly(ctx);
+    });
+
+    it("should list and retrieve vector stores", async () => {
+      ctx = setupPolly("openai/vector-stores-read");
+      const provider = createOpenAi({
+        apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
+      });
+
+      // Setup via the already-covered create: tiny, short-expiry, no files.
+      const created = await provider.post.v1.vectorStores({
+        name: "Apicity vector store read test",
+        expires_after: { anchor: "last_active_at", days: 1 },
+        metadata: { purpose: "integration-test" },
+      });
+      expect(created.id).toBeDefined();
+
+      // List with pagination options — HAR proves ?limit=2&order=desc.
+      const page = await provider.get.v1.vectorStores({
+        limit: 2,
+        order: "desc",
+      });
+      expect(page.object).toBe("list");
+      expect(Array.isArray(page.data)).toBe(true);
+      expect(page.data.length).toBeGreaterThan(0);
+      expect(page.data.length).toBeLessThanOrEqual(2);
+      expect(typeof page.first_id).toBe("string");
+      expect(typeof page.last_id).toBe("string");
+      expect(typeof page.has_more).toBe("boolean");
+
+      // Cursor pagination with a real id — HAR proves ?after=vs_... and the
+      // anchor store is excluded from the page.
+      const cursorPage = await provider.get.v1.vectorStores({
+        after: created.id,
+      });
+      expect(cursorPage.object).toBe("list");
+      expect(cursorPage.data.every((store) => store.id !== created.id)).toBe(
+        true
+      );
+
+      // Retrieve by id — round-trips the created store.
+      const fetched = await provider.get.v1.vectorStores(created.id);
+      expect(fetched.id).toBe(created.id);
+      expect(fetched.object).toBe("vector_store");
+      expect(typeof fetched.created_at).toBe("number");
+      expect(fetched.file_counts.total).toBe(0);
+    });
+  });
+
   describe("payload validation", () => {
     it("should expose schema on create method", () => {
       const provider = createOpenAi({ apiKey: "sk-test-key" });

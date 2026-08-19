@@ -1062,7 +1062,7 @@ kie	gemini25Pro.v1.chat.completions	POST	https://api.kie.ai/gemini-2.5-pro/v1/ch
 kie	gemini.v1.models.gemini35Flash.streamGenerateContent	POST	https://api.kie.ai/gemini/v1/models/gemini-3-5-flash:streamGenerateContent	https://docs.kie.ai/market/gemini/gemini-3-5-flash
 kie	gemini.v1.models.gemini36Flash.streamGenerateContent	POST	https://api.kie.ai/gemini/v1/models/gemini-3-6-flash:streamGenerateContent	https://docs.kie.ai/market/gemini/gemini-3-6-flash
 kie	gemini.v1.models.gemini3FlashV1betamodels.streamGenerateContent	POST	https://api.kie.ai/gemini/v1/models/gemini-3-flash-v1betamodels:streamGenerateContent	https://docs.kie.ai/market/gemini/gemini-3-flash-v1beta
-kie	grok.v1.responses	POST	https://api.kie.ai/grok/v1/responses	https://docs.kie.ai/market/chat/grok
+kie	grok.v1.responses	POST	https://api.kie.ai/grok/v1/responses	https://docs.kie.ai/market/grok/grok-4-6
 kimicoding	coding.v1.chat.completions	POST	https://api.kimi.com/coding/v1/chat/completions	https://www.kimi.com/code/docs/en/
 kimicoding	coding.v1.countTokens	POST	https://api.kimi.com/coding/v1/tokens/count	https://platform.moonshot.ai/docs
 kimicoding	coding.v1.embeddings	POST	https://api.kimi.com/coding/v1/embeddings	https://platform.moonshot.ai/docs

@@ -1249,7 +1249,7 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 
 Cost tier: <code>prohibitive</code>
 
-[Upstream docs ↗](https://docs.kie.ai/market/chat/grok)
+[Upstream docs ↗](https://docs.kie.ai/market/grok/grok-4-6)
 
 ```typescript
 const res = await kie.grok.v1.responses({ /* ... */ });

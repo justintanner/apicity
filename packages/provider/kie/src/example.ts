@@ -724,6 +724,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
     },
     "tier": "prohibitive",
     "runByDefault": false
+  },
+  "POST grok.v1.responses": {
+    "source": "kie/grok-4-6-responses",
+    "payload": {
+      "model": "grok-4-6",
+      "input": "ping",
+      "stream": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   }
 };
 

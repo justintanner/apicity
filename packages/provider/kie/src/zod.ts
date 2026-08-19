@@ -5844,7 +5844,7 @@ const KieGrokModelAliasSchema = z
     "Expected a listed model or a versioned Grok alias (e.g. grok-4-5-fast)"
   );
 
-const KIE_GROK_RESPONSES_MODELS = ["grok-4-5"] as const;
+const KIE_GROK_RESPONSES_MODELS = ["grok-4-5", "grok-4-6"] as const;
 
 export const KieGrokResponsesModelSchema = z
   .enum(KIE_GROK_RESPONSES_MODELS)

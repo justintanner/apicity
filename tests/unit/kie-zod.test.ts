@@ -1191,7 +1191,7 @@ const OPENED_MODEL_FIELDS = [
   {
     triage: "TRI-004",
     label: "KieGrokResponsesRequestSchema.model",
-    listed: ["grok-4-5"],
+    listed: ["grok-4-5", "grok-4-6"],
     aliases: ["grok-5", "grok-4-5-fast"],
     // BR-4 `gpt-5-5` is the sibling endpoint's listed id and must not cross.
     rejected: ["grok", "grok-four", "gpt-5-5"],

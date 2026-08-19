@@ -409,12 +409,12 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:4313e149c4666ce7fe3dbeb6f709ed065e3004a0518437fdc7d1da142da334d6",
+      "packages/provider/kie/src/zod.ts": "sha256:aa117ead4d70b1588412e57f8f7683d8e809efcef44bcc693dd0c2ffc09d6449",
       "packages/provider/kie/src/model-schemas.ts": "sha256:ddd3a87631c1df14735a93e14cbb9a82636a03fb351152780c6241ad8d838acf",
       "packages/provider/kie/src/kie.ts": "sha256:0b20cd62014114f0a19b9eb001309db1ba9c4077b7fbe62eff92b97345d57f01",
       "packages/provider/cost/src/pricing/kie.ts": "sha256:783b54e4644cb2713483d2dfeaac575dafbd1e2045f75fd7c5176938526f1728",
       "packages/provider/cost/src/slugs.ts": "sha256:e6b313f103bfb1be3cdb92ff3078e82a1d774234f346e195289c1a0f8922e8db",
-      "scripts/endpoint-docs.tsv": "sha256:ee74db976bab74b1ab1b6fc7635c1a414776cc61b662dd5e63edd9c0217f0d76"
+      "scripts/endpoint-docs.tsv": "sha256:ab118f9c3d155ec7c701647e178784dee431af3ea3a8bfdae95c016f7d628d97"
     }
   },
   "rows": [
@@ -19888,7 +19888,7 @@
         "dotPath": "grok.v1.responses",
         "method": "POST",
         "fullUrl": "https://api.kie.ai/grok/v1/responses",
-        "docsUrl": "https://docs.kie.ai/market/chat/grok",
+        "docsUrl": "https://docs.kie.ai/market/grok/grok-4-6",
         "linkedPricingKeys": [],
         "disposition": "supported",
         "rationale": "Documented callable endpoint is retained for architecture review even when its pricing is model-keyed."

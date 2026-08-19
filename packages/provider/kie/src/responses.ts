@@ -80,7 +80,7 @@ export interface KieResponsesRequest {
   tool_choice?: KieResponsesToolChoice;
 }
 
-export type KieGrokResponsesModel = "grok-4-5";
+export type KieGrokResponsesModel = "grok-4-5" | "grok-4-6";
 
 // Identical to KieResponsesRequest apart from the model literal — Grok 4.5 is
 // served through the same Kie Responses machinery as codex/gpt-5-5.
@@ -441,7 +441,7 @@ export function createResponsesProvider(
   ) as KieResponsesMethod;
 
   // POST https://api.kie.ai/grok/v1/responses
-  // Docs: https://docs.kie.ai/market/chat/grok
+  // Docs: https://docs.kie.ai/market/grok/grok-4-6
   const grokResponses = Object.assign(
     async function responses(
       req: KieGrokResponsesRequest,

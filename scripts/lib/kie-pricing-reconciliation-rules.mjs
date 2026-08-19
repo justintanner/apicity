@@ -149,6 +149,24 @@ export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
       "The official/runtime USD conflict is explicit in WI6 and is not rounded or treated as exact evidence.",
   },
   {
+    key: "bytedance/seedance-2-5",
+    variant: "1080p|audio",
+    status: "pricing-only",
+    provenance:
+      "plans/ac-ojfoj9/build/seedance-2-5-pricing-check-2026-08-19.json records the official 2026-08-19 pricing verification",
+    rationale:
+      "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-19.",
+  },
+  {
+    key: "bytedance/seedance-2-5",
+    variant: "1080p|no-audio",
+    status: "pricing-only",
+    provenance:
+      "plans/ac-ojfoj9/build/seedance-2-5-pricing-check-2026-08-19.json records the official 2026-08-19 pricing verification",
+    rationale:
+      "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-19.",
+  },
+  {
     key: "grok-imagine/upscale",
     variant: "",
     status: "unreachable",

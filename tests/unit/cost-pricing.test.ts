@@ -2870,9 +2870,11 @@ describe("kie stale-family refresh (REQ-004)", () => {
   );
 
   it("pins Seedance 2.5's six published pricing cells", () => {
-    expect(
-      Object.keys(PRICING.kie["bytedance/seedance-2-5"].rates).sort()
-    ).toEqual([
+    const entry = PRICING.kie["bytedance/seedance-2-5"];
+    expect(entry.kind).toBe("perUnit");
+    if (entry.kind !== "perUnit") return;
+
+    expect(Object.keys(entry.rates).sort()).toEqual([
       "1080p|audio",
       "1080p|no-audio",
       "480p|audio",

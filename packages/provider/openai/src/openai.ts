@@ -53,6 +53,10 @@ import {
   OpenAiVectorStore,
   OpenAiVectorStoreListRequest,
   OpenAiVectorStoreListResponse,
+  OpenAiVectorStoreFileCreateRequest,
+  OpenAiVectorStoreFile,
+  OpenAiVectorStoreFileListRequest,
+  OpenAiVectorStoreFileListResponse,
   OpenAiVectorStoreSearchRequest,
   OpenAiVectorStoreSearchResponse,
   OpenAiModerationRequest,
@@ -113,6 +117,7 @@ import {
   OpenAiConversationCreateRequestSchema,
   OpenAiRealtimeClientSecretRequestSchema,
   OpenAiVectorStoreCreateRequestSchema,
+  OpenAiVectorStoreFileCreateRequestSchema,
   OpenAiVectorStoreSearchRequestSchema,
   OpenAiFineTuningJobCreateRequestSchema,
   OpenAiCheckpointPermissionCreateRequestSchema,
@@ -739,6 +744,22 @@ export function createOpenAi(opts: OpenAiOptions): OpenAiProvider {
       },
       {
         schema: OpenAiVectorStoreCreateRequestSchema,
+        // POST https://api.openai.com/v1/vector_stores/{vectorStoreId}/files
+        // Docs: https://platform.openai.com/docs/api-reference/vector-stores-files/createFile
+        files: Object.assign(
+          async (
+            vectorStoreId: string,
+            req: OpenAiVectorStoreFileCreateRequest,
+            signal?: AbortSignal
+          ): Promise<OpenAiVectorStoreFile> => {
+            return makeRequest<OpenAiVectorStoreFile>(
+              `/vector_stores/${encodeURIComponent(vectorStoreId)}/files`,
+              jsonRequest(req),
+              signal
+            );
+          },
+          { schema: OpenAiVectorStoreFileCreateRequestSchema }
+        ),
         // POST https://api.openai.com/v1/vector_stores/{vectorStoreId}/search
         // Docs: https://platform.openai.com/docs/api-reference/vector-stores/search
         search: Object.assign(
@@ -1384,7 +1405,27 @@ export function createOpenAi(opts: OpenAiOptions): OpenAiProvider {
           signal
         );
       },
-      {}
+      {
+        // GET https://api.openai.com/v1/vector_stores/{vectorStoreId}/files
+        // Docs: https://platform.openai.com/docs/api-reference/vector-stores-files/listFiles
+        files: async (
+          vectorStoreId: string,
+          opts?: OpenAiVectorStoreFileListRequest,
+          signal?: AbortSignal
+        ): Promise<OpenAiVectorStoreFileListResponse> => {
+          const query: Record<string, string | undefined> = {};
+          if (opts?.limit !== undefined) query.limit = String(opts.limit);
+          if (opts?.order !== undefined) query.order = opts.order;
+          if (opts?.after !== undefined) query.after = opts.after;
+          if (opts?.before !== undefined) query.before = opts.before;
+          if (opts?.filter !== undefined) query.filter = opts.filter;
+          return makeGetRequest<OpenAiVectorStoreFileListResponse>(
+            `/vector_stores/${encodeURIComponent(vectorStoreId)}/files`,
+            query,
+            signal
+          );
+        },
+      }
     ) as import("./types").OpenAiGetV1VectorStoresNamespace,
   };
 

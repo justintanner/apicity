@@ -1001,6 +1001,17 @@ export const OpenAiVectorStoreSearchRequestSchema = z.object({
   rewrite_query: z.boolean().optional(),
 });
 
+export const OpenAiVectorStoreFileAttributesSchema = z.record(
+  z.string().max(256),
+  z.union([z.string().max(512), z.number(), z.boolean()])
+);
+
+export const OpenAiVectorStoreFileCreateRequestSchema = z.object({
+  attributes: OpenAiVectorStoreFileAttributesSchema.optional(),
+  chunking_strategy: OpenAiVectorStoreChunkingStrategySchema.optional(),
+  file_id: z.string(),
+});
+
 // ---------------------------------------------------------------------------
 // Fine-tuning
 // ---------------------------------------------------------------------------
@@ -1546,6 +1557,17 @@ export type OpenAiVectorStoreSearchRequestInput =
   OpenAiVectorStoreSearchRequest;
 export type OpenAiVectorStoreSearchParsedRequest = z.output<
   typeof OpenAiVectorStoreSearchRequestSchema
+>;
+export type OpenAiVectorStoreFileAttributes = z.infer<
+  typeof OpenAiVectorStoreFileAttributesSchema
+>;
+export type OpenAiVectorStoreFileCreateRequest = z.input<
+  typeof OpenAiVectorStoreFileCreateRequestSchema
+>;
+export type OpenAiVectorStoreFileCreateRequestInput =
+  OpenAiVectorStoreFileCreateRequest;
+export type OpenAiVectorStoreFileCreateParsedRequest = z.output<
+  typeof OpenAiVectorStoreFileCreateRequestSchema
 >;
 export type OpenAiFineTuningHyperparameters = z.infer<
   typeof OpenAiFineTuningHyperparametersSchema

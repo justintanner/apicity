@@ -1129,6 +1129,8 @@ openai	v1.responses.inputItems	GET	https://api.openai.com/v1/responses/{id}/inpu
 openai	v1.responses.inputTokens	POST	https://api.openai.com/v1/responses/input_tokens	https://platform.openai.com/docs/api-reference
 openai	v1.vectorStores	GET	https://api.openai.com/v1/vector_stores/{idOrOpts}	https://platform.openai.com/docs/api-reference/vector-stores/list
 openai	v1.vectorStores	POST	https://api.openai.com/v1/vector_stores	https://platform.openai.com/docs/api-reference/vector-stores/create
+openai	v1.vectorStores.files	GET	https://api.openai.com/v1/vector_stores/{vector_store_id}/files	https://platform.openai.com/docs/api-reference/vector-stores-files/listFiles
+openai	v1.vectorStores.files	POST	https://api.openai.com/v1/vector_stores/{vector_store_id}/files	https://platform.openai.com/docs/api-reference/vector-stores-files/createFile
 openai	v1.vectorStores.search	POST	https://api.openai.com/v1/vector_stores/{vector_store_id}/search	https://platform.openai.com/docs/api-reference/vector-stores/search
 openai	codex.usage	GET	https://chatgpt.com/backend-api/wham/usage	https://developers.openai.com/codex/pricing
 polymarket	clob.auth.apiKey	DELETE	https://clob.polymarket.com/auth/api-key	https://docs.polymarket.com/api-reference/authentication.md

@@ -28,7 +28,7 @@ const openai = createOpenAi({ apiKey: process.env.OPENAI_API_KEY! });
 
 ## API Reference
 
-60 endpoints across 19 groups. Each method mirrors an upstream URL path.
+62 endpoints across 19 groups. Each method mirrors an upstream URL path.
 
 ### audio
 
@@ -1055,6 +1055,23 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 </details>
 
 <details>
+<summary><code>GET</code> <b><code>openai.v1.vectorStores.files</code></b></summary>
+
+<code>GET https://api.openai.com/v1/vector_stores/{vectorStoreId}/files</code>
+
+Cost tier: <code>expensive</code>
+
+[Upstream docs ↗](https://platform.openai.com/docs/api-reference/vector-stores-files/listFiles)
+
+```typescript
+const res = await openai.v1.vectorStores.files({ /* ... */ });
+```
+
+Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
+
+</details>
+
+<details>
 <summary><code>POST</code> <b><code>openai.v1.vectorStores</code></b></summary>
 
 <code>POST https://api.openai.com/v1/vector_stores</code>
@@ -1065,6 +1082,23 @@ Cost tier: <code>expensive</code>
 
 ```typescript
 const res = await openai.v1.vectorStores({ /* ... */ });
+```
+
+Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>openai.v1.vectorStores.files</code></b></summary>
+
+<code>POST https://api.openai.com/v1/vector_stores/{vectorStoreId}/files</code>
+
+Cost tier: <code>expensive</code>
+
+[Upstream docs ↗](https://platform.openai.com/docs/api-reference/vector-stores-files/createFile)
+
+```typescript
+const res = await openai.v1.vectorStores.files({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)

@@ -162,6 +162,10 @@ export type {
   OpenAiVectorStoreSearchRequest,
   OpenAiVectorStoreSearchRequestInput,
   OpenAiVectorStoreSearchParsedRequest,
+  OpenAiVectorStoreFileAttributes,
+  OpenAiVectorStoreFileCreateRequest,
+  OpenAiVectorStoreFileCreateRequestInput,
+  OpenAiVectorStoreFileCreateParsedRequest,
   OpenAiFineTuningHyperparameters,
   OpenAiFineTuningSupervisedHyperparameters,
   OpenAiFineTuningSupervisedMethod,
@@ -990,6 +994,39 @@ export interface OpenAiVectorStoreSearchResponse {
   next_page: string | null;
 }
 
+export interface OpenAiVectorStoreFileLastError {
+  code: string;
+  message: string;
+}
+
+export interface OpenAiVectorStoreFile {
+  id: string;
+  object: "vector_store.file";
+  created_at: number;
+  usage_bytes: number;
+  vector_store_id: string;
+  status: "in_progress" | "completed" | "cancelled" | "failed";
+  last_error: OpenAiVectorStoreFileLastError | null;
+  chunking_strategy?: OpenAiVectorStoreChunkingStrategy;
+  attributes?: Record<string, string | number | boolean> | null;
+}
+
+export interface OpenAiVectorStoreFileListRequest {
+  limit?: number;
+  order?: "asc" | "desc";
+  after?: string;
+  before?: string;
+  filter?: "in_progress" | "completed" | "failed" | "cancelled";
+}
+
+export interface OpenAiVectorStoreFileListResponse {
+  object: "list";
+  data: OpenAiVectorStoreFile[];
+  first_id: string | null;
+  last_id: string | null;
+  has_more: boolean;
+}
+
 // --- Models API types ---
 
 export interface OpenAiModel {
@@ -1250,8 +1287,10 @@ import type {
   OpenAiConversationCreateRequest,
   OpenAiRealtimeClientSecretRequest,
   OpenAiVectorStoreExpirationPolicy,
+  OpenAiVectorStoreChunkingStrategy,
   OpenAiVectorStoreCreateRequest,
   OpenAiVectorStoreSearchRequest,
+  OpenAiVectorStoreFileCreateRequest,
   OpenAiFineTuningJobCreateRequest,
   OpenAiCheckpointPermissionCreateRequest,
   OpenAiOrganizationUsageQuery,
@@ -1416,12 +1455,22 @@ export interface OpenAiPostV1VectorStoresSearch {
   schema: z.ZodType<OpenAiVectorStoreSearchRequest>;
 }
 
+export interface OpenAiPostV1VectorStoresFiles {
+  (
+    vectorStoreId: string,
+    req: OpenAiVectorStoreFileCreateRequest,
+    signal?: AbortSignal
+  ): Promise<OpenAiVectorStoreFile>;
+  schema: z.ZodType<OpenAiVectorStoreFileCreateRequest>;
+}
+
 export interface OpenAiPostV1VectorStores {
   (
     req: OpenAiVectorStoreCreateRequest,
     signal?: AbortSignal
   ): Promise<OpenAiVectorStore>;
   schema: z.ZodType<OpenAiVectorStoreCreateRequest>;
+  files: OpenAiPostV1VectorStoresFiles;
   search: OpenAiPostV1VectorStoresSearch;
 }
 
@@ -1679,12 +1728,21 @@ export interface OpenAiGetV1BatchesNamespace {
   (id: string, signal?: AbortSignal): Promise<OpenAiBatch>;
 }
 
+export interface OpenAiGetV1VectorStoresFiles {
+  (
+    vectorStoreId: string,
+    opts?: OpenAiVectorStoreFileListRequest,
+    signal?: AbortSignal
+  ): Promise<OpenAiVectorStoreFileListResponse>;
+}
+
 export interface OpenAiGetV1VectorStoresNamespace {
   (
     opts?: OpenAiVectorStoreListRequest,
     signal?: AbortSignal
   ): Promise<OpenAiVectorStoreListResponse>;
   (id: string, signal?: AbortSignal): Promise<OpenAiVectorStore>;
+  files: OpenAiGetV1VectorStoresFiles;
 }
 
 export interface OpenAiGetV1FineTuningNamespace {

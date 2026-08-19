@@ -251,6 +251,14 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "expensive",
     "runByDefault": false
   },
+  "POST v1.vectorStores.files": {
+    "source": "openai/vector-stores-files",
+    "payload": {
+      "file_id": "file-61HV7TmsFhPrM3W1x8K1oS"
+    },
+    "tier": "expensive",
+    "runByDefault": false
+  },
   "POST v1.vectorStores.search": {
     "source": "openai/vector-stores-search",
     "payload": {

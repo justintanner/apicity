@@ -93,6 +93,14 @@ const guardedRejectionCases = [
     },
     expectedPath: "input.image_urls",
   },
+  {
+    name: "bytedance/seedance-2-5 with an out-of-vocabulary resolution",
+    request: {
+      model: "bytedance/seedance-2-5",
+      input: { prompt: "x", resolution: "2160p" },
+    },
+    expectedPath: "input.resolution",
+  },
   // Both seedream/4.5 rows exercise guards switched on by cataloguing these
   // ids: before promotion these exact payloads transmitted unvalidated.
   {

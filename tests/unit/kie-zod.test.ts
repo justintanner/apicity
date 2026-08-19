@@ -346,12 +346,64 @@ describe("KIE Zod schema validation", () => {
         enum: [-1, ...Array.from({ length: 27 }, (_, index) => index + 4)],
         default: 5,
       });
+      expect(fields.resolution).toMatchObject({
+        type: "string",
+        enum: ["480p", "720p", "1080p"],
+        default: "720p",
+      });
+      for (const resolution of fields.resolution.enum ?? []) {
+        expect(Seedance25InputSchema.safeParse({ resolution }).success).toBe(
+          true
+        );
+      }
       expect(fields.reference_image_urls.maxItems).toBe(30);
       expect(fields.reference_video_urls.maxItems).toBe(10);
       expect(fields.reference_audio_urls.maxItems).toBe(10);
       expect(CREATE_TASK_GUARDS[SEEDANCE25_MODEL]).toBe(
         Seedance25RequestSchema
       );
+    });
+  });
+
+  describe("bytedance/seedance-2-5 resolution vocabulary", () => {
+    const requestWith = (resolution?: string) => ({
+      model: SEEDANCE25_MODEL,
+      input: {
+        prompt: SEEDANCE25_PROMPT,
+        ...(resolution === undefined ? {} : { resolution }),
+      },
+    });
+
+    it.each(["480p", "720p", "1080p"])(
+      "accepts and round-trips %s",
+      (resolution) => {
+        const result = Seedance25RequestSchema.safeParse(
+          requestWith(resolution)
+        );
+        expect(result.success).toBe(true);
+        expect(result.data?.input.resolution).toBe(resolution);
+      }
+    );
+
+    it.each(["1080P", "4k", "2160p", "720"])(
+      "rejects %s as an out-of-vocabulary resolution",
+      (resolution) => {
+        const result = Seedance25RequestSchema.safeParse(
+          requestWith(resolution)
+        );
+        expect(result.success).toBe(false);
+        expect(
+          (result.error?.issues ?? []).some((issue) =>
+            issue.path.includes("resolution")
+          )
+        ).toBe(true);
+      }
+    );
+
+    it("defaults an omitted resolution to 720p", () => {
+      const result = Seedance25RequestSchema.safeParse(requestWith());
+      expect(result.success).toBe(true);
+      expect(result.data?.input.resolution).toBe("720p");
     });
   });
 

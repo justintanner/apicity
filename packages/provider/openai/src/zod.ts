@@ -962,6 +962,45 @@ export const OpenAiVectorStoreCreateRequestSchema = z.object({
   name: z.string().optional(),
 });
 
+export const OpenAiVectorStoreSearchComparisonFilterSchema = z.object({
+  key: z.string(),
+  type: z.enum(["eq", "ne", "gt", "gte", "lt", "lte", "in", "nin"]),
+  value: z.union([
+    z.string(),
+    z.number(),
+    z.boolean(),
+    z.array(z.union([z.string(), z.number()])),
+  ]),
+});
+
+export const OpenAiVectorStoreSearchCompoundFilterSchema: z.ZodType<OpenAiVectorStoreSearchCompoundFilter> =
+  z.object({
+    type: z.enum(["and", "or"]),
+    filters: z.array(z.lazy(() => OpenAiVectorStoreSearchFilterSchema)),
+  });
+
+export const OpenAiVectorStoreSearchFilterSchema: z.ZodType<OpenAiVectorStoreSearchFilter> =
+  z.union([
+    OpenAiVectorStoreSearchComparisonFilterSchema,
+    OpenAiVectorStoreSearchCompoundFilterSchema,
+  ]);
+
+export const OpenAiVectorStoreSearchRankingOptionsSchema = z.object({
+  ranker: z
+    .enum(["auto", "default-2024-11-15"])
+    .or(z.string().regex(/^[a-z0-9][a-z0-9._-]*$/))
+    .optional(),
+  score_threshold: z.number().min(0).max(1).optional(),
+});
+
+export const OpenAiVectorStoreSearchRequestSchema = z.object({
+  query: z.union([z.string(), z.array(z.string())]),
+  max_num_results: z.number().int().min(1).max(50).optional(),
+  filters: OpenAiVectorStoreSearchFilterSchema.optional(),
+  ranking_options: OpenAiVectorStoreSearchRankingOptionsSchema.optional(),
+  rewrite_query: z.boolean().optional(),
+});
+
 // ---------------------------------------------------------------------------
 // Fine-tuning
 // ---------------------------------------------------------------------------
@@ -1486,6 +1525,27 @@ export type OpenAiVectorStoreCreateRequestInput =
   OpenAiVectorStoreCreateRequest;
 export type OpenAiVectorStoreCreateParsedRequest = z.output<
   typeof OpenAiVectorStoreCreateRequestSchema
+>;
+export type OpenAiVectorStoreSearchComparisonFilter = z.infer<
+  typeof OpenAiVectorStoreSearchComparisonFilterSchema
+>;
+export interface OpenAiVectorStoreSearchCompoundFilter {
+  type: "and" | "or";
+  filters: OpenAiVectorStoreSearchFilter[];
+}
+export type OpenAiVectorStoreSearchFilter =
+  | OpenAiVectorStoreSearchComparisonFilter
+  | OpenAiVectorStoreSearchCompoundFilter;
+export type OpenAiVectorStoreSearchRankingOptions = z.infer<
+  typeof OpenAiVectorStoreSearchRankingOptionsSchema
+>;
+export type OpenAiVectorStoreSearchRequest = z.input<
+  typeof OpenAiVectorStoreSearchRequestSchema
+>;
+export type OpenAiVectorStoreSearchRequestInput =
+  OpenAiVectorStoreSearchRequest;
+export type OpenAiVectorStoreSearchParsedRequest = z.output<
+  typeof OpenAiVectorStoreSearchRequestSchema
 >;
 export type OpenAiFineTuningHyperparameters = z.infer<
   typeof OpenAiFineTuningHyperparametersSchema

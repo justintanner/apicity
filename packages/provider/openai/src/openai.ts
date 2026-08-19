@@ -53,6 +53,8 @@ import {
   OpenAiVectorStore,
   OpenAiVectorStoreListRequest,
   OpenAiVectorStoreListResponse,
+  OpenAiVectorStoreSearchRequest,
+  OpenAiVectorStoreSearchResponse,
   OpenAiModerationRequest,
   OpenAiModerationResponse,
   OpenAiFineTuningJobCreateRequest,
@@ -111,6 +113,7 @@ import {
   OpenAiConversationCreateRequestSchema,
   OpenAiRealtimeClientSecretRequestSchema,
   OpenAiVectorStoreCreateRequestSchema,
+  OpenAiVectorStoreSearchRequestSchema,
   OpenAiFineTuningJobCreateRequestSchema,
   OpenAiCheckpointPermissionCreateRequestSchema,
   OpenAiOrganizationUsageQuerySchema,
@@ -736,6 +739,22 @@ export function createOpenAi(opts: OpenAiOptions): OpenAiProvider {
       },
       {
         schema: OpenAiVectorStoreCreateRequestSchema,
+        // POST https://api.openai.com/v1/vector_stores/{vectorStoreId}/search
+        // Docs: https://platform.openai.com/docs/api-reference/vector-stores/search
+        search: Object.assign(
+          async (
+            vectorStoreId: string,
+            req: OpenAiVectorStoreSearchRequest,
+            signal?: AbortSignal
+          ): Promise<OpenAiVectorStoreSearchResponse> => {
+            return makeRequest<OpenAiVectorStoreSearchResponse>(
+              `/vector_stores/${encodeURIComponent(vectorStoreId)}/search`,
+              jsonRequest(req),
+              signal
+            );
+          },
+          { schema: OpenAiVectorStoreSearchRequestSchema }
+        ),
       }
     ),
     // POST https://api.openai.com/v1/batches

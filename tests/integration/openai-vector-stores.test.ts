@@ -1,7 +1,10 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
 import { createOpenAi } from "@apicity/openai";
-import { OpenAiVectorStoreCreateRequestSchema } from "@apicity/openai/zod";
+import {
+  OpenAiVectorStoreCreateRequestSchema,
+  OpenAiVectorStoreSearchRequestSchema,
+} from "@apicity/openai/zod";
 
 describe("openai vector stores integration", () => {
   let ctx: PollyContext;
@@ -93,6 +96,37 @@ describe("openai vector stores integration", () => {
     });
   });
 
+  describe("search vector store", () => {
+    afterEach(async () => {
+      await teardownPolly(ctx);
+    });
+
+    it("should search a vector store", async () => {
+      ctx = setupPolly("openai/vector-stores-search");
+      const provider = createOpenAi({
+        apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
+      });
+
+      const created = await provider.post.v1.vectorStores({
+        name: "Apicity vector store search test",
+        expires_after: { anchor: "last_active_at", days: 1 },
+        metadata: { purpose: "integration-test" },
+      });
+      expect(created.id).toBeDefined();
+
+      const page = await provider.post.v1.vectorStores.search(created.id, {
+        query: "return policy",
+        max_num_results: 5,
+      });
+
+      expect(page.object).toBe("vector_store.search_results.page");
+      expect(page.search_query).toEqual(["return policy"]);
+      expect(page.data).toEqual([]);
+      expect(page.has_more).toBe(false);
+      expect(page.next_page).toBeNull();
+    });
+  });
+
   describe("payload validation", () => {
     it("should expose schema on create method", () => {
       const provider = createOpenAi({ apiKey: "sk-test-key" });
@@ -105,6 +139,54 @@ describe("openai vector stores integration", () => {
       );
       expect(typeof provider.post.v1.vectorStores.schema.safeParse).toBe(
         "function"
+      );
+    });
+
+    it("should expose schema on search method", () => {
+      const provider = createOpenAi({ apiKey: "sk-test-key" });
+
+      expect(provider.post.v1.vectorStores.search.schema).toBe(
+        OpenAiVectorStoreSearchRequestSchema
+      );
+      expect(typeof provider.post.v1.vectorStores.search.schema.safeParse).toBe(
+        "function"
+      );
+    });
+
+    it("should validate search payloads", () => {
+      const validPayloads = [
+        { query: "return policy" },
+        { query: ["return policy", "refund window"] },
+        { query: "return policy", max_num_results: 5 },
+        {
+          query: "return policy",
+          filters: {
+            type: "and",
+            filters: [{ key: "author", type: "eq", value: "gc" }],
+          },
+        },
+        {
+          query: "return policy",
+          filters: { key: "year", type: "in", value: [2025, 2026] },
+        },
+        {
+          query: "return policy",
+          ranking_options: {
+            ranker: "default-2024-11-15",
+            score_threshold: 0.5,
+          },
+        },
+        { query: "return policy", rewrite_query: true },
+      ];
+
+      for (const payload of validPayloads) {
+        expect(
+          OpenAiVectorStoreSearchRequestSchema.safeParse(payload).success
+        ).toBe(true);
+      }
+
+      expect(OpenAiVectorStoreSearchRequestSchema.safeParse({}).success).toBe(
+        false
       );
     });
 

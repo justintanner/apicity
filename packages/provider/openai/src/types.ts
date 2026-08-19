@@ -155,6 +155,13 @@ export type {
   OpenAiVectorStoreCreateRequest,
   OpenAiVectorStoreCreateRequestInput,
   OpenAiVectorStoreCreateParsedRequest,
+  OpenAiVectorStoreSearchComparisonFilter,
+  OpenAiVectorStoreSearchCompoundFilter,
+  OpenAiVectorStoreSearchFilter,
+  OpenAiVectorStoreSearchRankingOptions,
+  OpenAiVectorStoreSearchRequest,
+  OpenAiVectorStoreSearchRequestInput,
+  OpenAiVectorStoreSearchParsedRequest,
   OpenAiFineTuningHyperparameters,
   OpenAiFineTuningSupervisedHyperparameters,
   OpenAiFineTuningSupervisedMethod,
@@ -962,6 +969,27 @@ export interface OpenAiVectorStoreListResponse {
   has_more: boolean;
 }
 
+export interface OpenAiVectorStoreSearchResultContentBlock {
+  type: "text";
+  text: string;
+}
+
+export interface OpenAiVectorStoreSearchResult {
+  file_id: string;
+  filename: string;
+  score: number;
+  attributes: Record<string, string | number | boolean> | null;
+  content: OpenAiVectorStoreSearchResultContentBlock[];
+}
+
+export interface OpenAiVectorStoreSearchResponse {
+  object: "vector_store.search_results.page";
+  search_query: string[];
+  data: OpenAiVectorStoreSearchResult[];
+  has_more: boolean;
+  next_page: string | null;
+}
+
 // --- Models API types ---
 
 export interface OpenAiModel {
@@ -1223,6 +1251,7 @@ import type {
   OpenAiRealtimeClientSecretRequest,
   OpenAiVectorStoreExpirationPolicy,
   OpenAiVectorStoreCreateRequest,
+  OpenAiVectorStoreSearchRequest,
   OpenAiFineTuningJobCreateRequest,
   OpenAiCheckpointPermissionCreateRequest,
   OpenAiOrganizationUsageQuery,
@@ -1378,12 +1407,22 @@ export interface OpenAiPostV1Conversations {
   schema: z.ZodType<OpenAiConversationCreateRequest>;
 }
 
+export interface OpenAiPostV1VectorStoresSearch {
+  (
+    vectorStoreId: string,
+    req: OpenAiVectorStoreSearchRequest,
+    signal?: AbortSignal
+  ): Promise<OpenAiVectorStoreSearchResponse>;
+  schema: z.ZodType<OpenAiVectorStoreSearchRequest>;
+}
+
 export interface OpenAiPostV1VectorStores {
   (
     req: OpenAiVectorStoreCreateRequest,
     signal?: AbortSignal
   ): Promise<OpenAiVectorStore>;
   schema: z.ZodType<OpenAiVectorStoreCreateRequest>;
+  search: OpenAiPostV1VectorStoresSearch;
 }
 
 export interface OpenAiPostV1RealtimeClientSecrets {

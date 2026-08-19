@@ -250,6 +250,15 @@ const EXAMPLES: Record<string, EndpointExample> = {
     },
     "tier": "expensive",
     "runByDefault": false
+  },
+  "POST v1.vectorStores.search": {
+    "source": "openai/vector-stores-search",
+    "payload": {
+      "query": "return policy",
+      "max_num_results": 5
+    },
+    "tier": "expensive",
+    "runByDefault": false
   }
 };
 

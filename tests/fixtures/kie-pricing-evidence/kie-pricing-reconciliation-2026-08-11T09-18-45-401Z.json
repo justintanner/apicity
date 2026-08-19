@@ -1,7 +1,7 @@
 {
   "schema": "gc.kie-pricing-reconciliation.v1",
   "version": 1,
-  "generatedAt": "2026-08-17T14:05:36.000Z",
+  "generatedAt": "2026-08-19T09:09:13.691Z",
   "snapshot": {
     "path": "tests/fixtures/kie-pricing-evidence/kie-pricing-snapshot-2026-08-11T09-18-45-401Z.json",
     "metadataPath": "tests/fixtures/kie-pricing-evidence/kie-pricing-pull-2026-08-11T09-18-45-401Z.json",
@@ -414,7 +414,7 @@
       "packages/provider/kie/src/kie.ts": "sha256:0b20cd62014114f0a19b9eb001309db1ba9c4077b7fbe62eff92b97345d57f01",
       "packages/provider/cost/src/pricing/kie.ts": "sha256:55e138db2528298fea1518d215ddd7815b4f13ca70b740c157ce6b53bf5006c1",
       "packages/provider/cost/src/slugs.ts": "sha256:e6b313f103bfb1be3cdb92ff3078e82a1d774234f346e195289c1a0f8922e8db",
-      "scripts/endpoint-docs.tsv": "sha256:b5f337a81a5e4ea186e7ef53e9b93627b558deb59b1de39b4889934cd041b509"
+      "scripts/endpoint-docs.tsv": "sha256:ca4122de74700bfc9553291103af4c385b4e4825418462c8c3e55f8a7dd84e4f"
     }
   },
   "rows": [

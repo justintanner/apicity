@@ -614,6 +614,97 @@ export const lineup = [
     },
     audio: "—",
   },
+  // Seedance 2.5 — per second, resolution × generate_audio.
+  {
+    ...createTaskEndpointAssociation,
+    label: "seedance-2-5 480p silent",
+    payload: {
+      model: "bytedance/seedance-2-5",
+      input: {
+        prompt: "xxx",
+        aspect_ratio: "16:9",
+        duration: 5,
+        resolution: "480p",
+        generate_audio: false,
+      },
+    },
+    audio: "opt",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "seedance-2-5 480p audio",
+    payload: {
+      model: "bytedance/seedance-2-5",
+      input: {
+        prompt: "xxx",
+        aspect_ratio: "16:9",
+        duration: 5,
+        resolution: "480p",
+        generate_audio: true,
+      },
+    },
+    audio: "opt",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "seedance-2-5 720p silent",
+    payload: {
+      model: "bytedance/seedance-2-5",
+      input: {
+        prompt: "xxx",
+        aspect_ratio: "16:9",
+        duration: 5,
+        resolution: "720p",
+        generate_audio: false,
+      },
+    },
+    audio: "opt",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "seedance-2-5 720p audio",
+    payload: {
+      model: "bytedance/seedance-2-5",
+      input: {
+        prompt: "xxx",
+        aspect_ratio: "16:9",
+        duration: 5,
+        resolution: "720p",
+        generate_audio: true,
+      },
+    },
+    audio: "opt",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "seedance-2-5 1080p silent",
+    payload: {
+      model: "bytedance/seedance-2-5",
+      input: {
+        prompt: "xxx",
+        aspect_ratio: "16:9",
+        duration: 5,
+        resolution: "1080p",
+        generate_audio: false,
+      },
+    },
+    audio: "opt",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "seedance-2-5 1080p audio",
+    payload: {
+      model: "bytedance/seedance-2-5",
+      input: {
+        prompt: "xxx",
+        aspect_ratio: "16:9",
+        duration: 5,
+        resolution: "1080p",
+        generate_audio: true,
+      },
+    },
+    audio: "opt",
+  },
   // Kling 2.6 — bills per VIDEO across a 4-cell sound × duration matrix, and
   // its `duration` is the "5"|"10" string enum, so each cell is its own row
   // and the duration columns are flat (see FIXED_DURATION_MODELS).

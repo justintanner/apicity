@@ -1324,7 +1324,7 @@ export const kie: Record<string, ModelPricing> = {
   // labels the audio axis "with video" / "no video"; the callable schema
   // exposes the same discriminator as generate_audio. Resolution defaults to
   // 720p and audio defaults on, so those defaults are applied only for omitted
-  // fields. All four published cells are retained verbatim.
+  // fields. All six published cells are retained verbatim.
   "bytedance/seedance-2-5": {
     kind: "perUnit",
     unit: "seconds",
@@ -1353,8 +1353,10 @@ export const kie: Record<string, ModelPricing> = {
       "480p|no-audio": 0.14,
       "720p|audio": 0.19,
       "720p|no-audio": 0.315,
+      "1080p|audio": 0.3425,
+      "1080p|no-audio": 0.57,
     },
-    source: pricePage("https://kie.ai/seedance-2-5", "2026-08-11"),
+    source: pricePage("https://kie.ai/seedance-2-5", "2026-08-19"),
   },
 
   // bytedance/seedance-2-mini: 4 rates, resolution x reference video input.

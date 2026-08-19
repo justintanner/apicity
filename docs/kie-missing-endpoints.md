@@ -35,16 +35,16 @@ Method note: the README's generated list is not complete on its own.
 `kie.chat.completions` (`chat.ts:67-91`) is absent from it because the
 generator keys off dot-path-shaped exports and that method is not one. The
 implemented set below is the union of the README list and the source, which is
-why it is 46 paths rather than 44.
+why it is 48 paths rather than 44.
 
 ## Summary
 
 | Measure                                         | Count |
 | ----------------------------------------------- | ----- |
 | Distinct documented endpoints (method + path)   | 70    |
-| Distinct implemented endpoints (method + path)  | 46    |
-| Documented **and** implemented                  | 43    |
-| **MISSING** — documented, not implemented       | 27    |
+| Distinct implemented endpoints (method + path)  | 48    |
+| Documented **and** implemented                  | 45    |
+| **MISSING** — documented, not implemented       | 25    |
 | Implemented but not currently documented        | 3     |
 | **PARTIAL** — implemented with a documented gap | 4     |
 

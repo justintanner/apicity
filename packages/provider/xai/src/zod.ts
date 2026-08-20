@@ -775,7 +775,7 @@ export const XaiResponseTextFormatSchema = z.object({
 });
 
 export const XaiResponseReasoningSchema = z.object({
-  effort: z.enum(["low", "medium", "high"]).optional(),
+  effort: z.enum(["low", "medium", "high", "xhigh"]).optional(),
   summary: z.enum(["auto", "concise", "detailed"]).optional(),
 });
 

@@ -390,10 +390,10 @@
       "endpoints": 71
     },
     "final": {
-      "models": 134,
-      "pricingKeys": 140,
-      "slugKeys": 142,
-      "displayKeys": 142,
+      "models": 138,
+      "pricingKeys": 144,
+      "slugKeys": 146,
+      "displayKeys": 146,
       "schemaWithoutPricing": 25,
       "pricingOnly": 31,
       "endpoints": 71
@@ -409,11 +409,11 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:aa117ead4d70b1588412e57f8f7683d8e809efcef44bcc693dd0c2ffc09d6449",
-      "packages/provider/kie/src/model-schemas.ts": "sha256:ddd3a87631c1df14735a93e14cbb9a82636a03fb351152780c6241ad8d838acf",
-      "packages/provider/kie/src/kie.ts": "sha256:0b20cd62014114f0a19b9eb001309db1ba9c4077b7fbe62eff92b97345d57f01",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:783b54e4644cb2713483d2dfeaac575dafbd1e2045f75fd7c5176938526f1728",
-      "packages/provider/cost/src/slugs.ts": "sha256:e6b313f103bfb1be3cdb92ff3078e82a1d774234f346e195289c1a0f8922e8db",
+      "packages/provider/kie/src/zod.ts": "sha256:421915022f99f0b49e000415931516d31147dbdf5de65fd14d3e5a6a03ebe902",
+      "packages/provider/kie/src/model-schemas.ts": "sha256:f6cff1ce9f49e971690fdc177d53419e3d32dd4fd698f32627bdaa2c60410ce0",
+      "packages/provider/kie/src/kie.ts": "sha256:879aa7a639885ba118a2797ab0d66d93d4180b72d647753876de392523d901bf",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:4a398c1f672d83c700d4679215c1f0c818a65b3f06ca29732e0a4297f1c61c63",
+      "packages/provider/cost/src/slugs.ts": "sha256:c42edc48df7d1d28117e31672ea789dbbf0fb71eafc67cc5b540a0736f52d787",
       "scripts/endpoint-docs.tsv": "sha256:ab118f9c3d155ec7c701647e178784dee431af3ea3a8bfdae95c016f7d628d97"
     }
   },
@@ -17815,6 +17815,42 @@
         "rationale": "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
       },
       {
+        "id": "kling-3.0-omni/text-to-video",
+        "descriptor": true,
+        "guard": true,
+        "pricingKey": "kling-3.0-omni/text-to-video",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
+        "id": "kling-3.0-omni/image-to-video",
+        "descriptor": true,
+        "guard": true,
+        "pricingKey": "kling-3.0-omni/image-to-video",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
+        "id": "kling-3.0-omni/reference-to-video",
+        "descriptor": true,
+        "guard": true,
+        "pricingKey": "kling-3.0-omni/reference-to-video",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
+        "id": "kling-3.0-omni/transformation",
+        "descriptor": true,
+        "guard": true,
+        "pricingKey": "kling-3.0-omni/transformation",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
         "id": "grok-imagine/text-to-image",
         "descriptor": true,
         "guard": true,
@@ -19988,6 +20024,30 @@
         "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
       },
       {
+        "key": "kling-3.0-omni/text-to-video",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "kling-3.0-omni/image-to-video",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "kling-3.0-omni/reference-to-video",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "kling-3.0-omni/transformation",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
         "key": "kling/v3-turbo-image-to-video",
         "linkedRows": [
           "sha256:c0d4098ee4117a21bd93695672dcdcbf7a75d87957c167d48690dd93a3f41b4a#1",
@@ -21211,6 +21271,22 @@
         "disposition": "supported"
       },
       {
+        "key": "kling-3.0-omni/text-to-video",
+        "disposition": "supported"
+      },
+      {
+        "key": "kling-3.0-omni/image-to-video",
+        "disposition": "supported"
+      },
+      {
+        "key": "kling-3.0-omni/reference-to-video",
+        "disposition": "supported"
+      },
+      {
+        "key": "kling-3.0-omni/transformation",
+        "disposition": "supported"
+      },
+      {
         "key": "wan/2-2-a14b-text-to-video-turbo",
         "disposition": "supported"
       },
@@ -21778,6 +21854,22 @@
       },
       {
         "key": "kling/v3-turbo-text-to-video",
+        "disposition": "supported"
+      },
+      {
+        "key": "kling-3.0-omni/text-to-video",
+        "disposition": "supported"
+      },
+      {
+        "key": "kling-3.0-omni/image-to-video",
+        "disposition": "supported"
+      },
+      {
+        "key": "kling-3.0-omni/reference-to-video",
+        "disposition": "supported"
+      },
+      {
+        "key": "kling-3.0-omni/transformation",
         "disposition": "supported"
       },
       {
@@ -22767,16 +22859,16 @@
     },
     "apiCity": {
       "models": {
-        "count": 134,
-        "descriptors": 134,
-        "guards": 134,
+        "count": 138,
+        "descriptors": 138,
+        "guards": 138,
         "withoutPricing": 25,
         "dispositionCounts": {
           "supported": 102,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 32
+          "upstream-unmappable": 36
         },
         "unclassified": 0
       },
@@ -22794,20 +22886,20 @@
         "unclassified": 0
       },
       "pricingKeys": {
-        "count": 140,
+        "count": 144,
         "dispositionCounts": {
           "supported": 131,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 9
+          "upstream-unmappable": 13
         },
         "unclassified": 0
       },
       "slugs": {
-        "count": 142,
+        "count": 146,
         "dispositionCounts": {
-          "supported": 142,
+          "supported": 146,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -22816,9 +22908,9 @@
         "unclassified": 0
       },
       "displays": {
-        "count": 142,
+        "count": 146,
         "dispositionCounts": {
-          "supported": 142,
+          "supported": 146,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -22919,6 +23011,174 @@
         "status": "pricing-only",
         "provenance": "plans/ac-ojfoj9/build/seedance-2-5-pricing-check-2026-08-19.json records the official 2026-08-19 pricing verification",
         "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-19."
+      },
+      {
+        "key": "kling-3.0-omni/image-to-video",
+        "variant": "720p",
+        "status": "pricing-only",
+        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
+        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+      },
+      {
+        "key": "kling-3.0-omni/image-to-video",
+        "variant": "720p|audio",
+        "status": "pricing-only",
+        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
+        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+      },
+      {
+        "key": "kling-3.0-omni/image-to-video",
+        "variant": "1080p",
+        "status": "pricing-only",
+        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
+        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+      },
+      {
+        "key": "kling-3.0-omni/image-to-video",
+        "variant": "1080p|audio",
+        "status": "pricing-only",
+        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
+        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+      },
+      {
+        "key": "kling-3.0-omni/image-to-video",
+        "variant": "4k",
+        "status": "pricing-only",
+        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
+        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+      },
+      {
+        "key": "kling-3.0-omni/image-to-video",
+        "variant": "4k|audio",
+        "status": "pricing-only",
+        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
+        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+      },
+      {
+        "key": "kling-3.0-omni/reference-to-video",
+        "variant": "720p",
+        "status": "pricing-only",
+        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
+        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+      },
+      {
+        "key": "kling-3.0-omni/reference-to-video",
+        "variant": "720p|audio",
+        "status": "pricing-only",
+        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
+        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+      },
+      {
+        "key": "kling-3.0-omni/reference-to-video",
+        "variant": "720p|video",
+        "status": "pricing-only",
+        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
+        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+      },
+      {
+        "key": "kling-3.0-omni/reference-to-video",
+        "variant": "1080p",
+        "status": "pricing-only",
+        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
+        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+      },
+      {
+        "key": "kling-3.0-omni/reference-to-video",
+        "variant": "1080p|audio",
+        "status": "pricing-only",
+        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
+        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+      },
+      {
+        "key": "kling-3.0-omni/reference-to-video",
+        "variant": "1080p|video",
+        "status": "pricing-only",
+        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
+        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+      },
+      {
+        "key": "kling-3.0-omni/reference-to-video",
+        "variant": "4k",
+        "status": "pricing-only",
+        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
+        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+      },
+      {
+        "key": "kling-3.0-omni/reference-to-video",
+        "variant": "4k|audio",
+        "status": "pricing-only",
+        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
+        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+      },
+      {
+        "key": "kling-3.0-omni/reference-to-video",
+        "variant": "4k|video",
+        "status": "pricing-only",
+        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
+        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+      },
+      {
+        "key": "kling-3.0-omni/text-to-video",
+        "variant": "720p",
+        "status": "pricing-only",
+        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
+        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+      },
+      {
+        "key": "kling-3.0-omni/text-to-video",
+        "variant": "720p|audio",
+        "status": "pricing-only",
+        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
+        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+      },
+      {
+        "key": "kling-3.0-omni/text-to-video",
+        "variant": "1080p",
+        "status": "pricing-only",
+        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
+        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+      },
+      {
+        "key": "kling-3.0-omni/text-to-video",
+        "variant": "1080p|audio",
+        "status": "pricing-only",
+        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
+        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+      },
+      {
+        "key": "kling-3.0-omni/text-to-video",
+        "variant": "4k",
+        "status": "pricing-only",
+        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
+        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+      },
+      {
+        "key": "kling-3.0-omni/text-to-video",
+        "variant": "4k|audio",
+        "status": "pricing-only",
+        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
+        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+      },
+      {
+        "key": "kling-3.0-omni/transformation",
+        "variant": "720p",
+        "status": "pricing-only",
+        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
+        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+      },
+      {
+        "key": "kling-3.0-omni/transformation",
+        "variant": "1080p",
+        "status": "pricing-only",
+        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
+        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+      },
+      {
+        "key": "kling-3.0-omni/transformation",
+        "variant": "4k",
+        "status": "pricing-only",
+        "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
+        "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
       },
       {
         "key": "grok-imagine/upscale",

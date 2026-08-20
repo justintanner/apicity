@@ -2429,15 +2429,13 @@ export const KlingOmniTransformationRequestSchema =
     const { input } = value;
     const hasImages = Boolean(input.image_urls?.length);
 
-    if (!hasImages && input.aspect_ratio !== undefined) {
-      if (input.aspect_ratio !== "auto") {
-        ctx.addIssue({
-          code: "custom",
-          message:
-            "Transformation requests with video only accept aspect_ratio=auto",
-          path: ["input", "aspect_ratio"],
-        });
-      }
+    if (!hasImages && input.aspect_ratio !== "auto") {
+      ctx.addIssue({
+        code: "custom",
+        message:
+          "Transformation requests with video only require aspect_ratio=auto",
+        path: ["input", "aspect_ratio"],
+      });
     }
 
     if (!hasImages && input.duration !== undefined) {

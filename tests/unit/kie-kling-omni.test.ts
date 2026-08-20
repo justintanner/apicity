@@ -234,6 +234,17 @@ describe("Kling 3.0 Omni request schemas", () => {
       KlingOmniTransformationRequestSchema,
       {
         model: "kling-3.0-omni/transformation",
+        input: {
+          prompt: PROMPT,
+          video_urls: [VIDEO],
+        },
+      },
+      "input.aspect_ratio"
+    );
+    expectRejectedAt(
+      KlingOmniTransformationRequestSchema,
+      {
+        model: "kling-3.0-omni/transformation",
         input: { prompt: PROMPT },
       },
       "input.video_urls"

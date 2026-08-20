@@ -129,6 +129,30 @@ const summarizedMultipartFixtures: HarFixture[] = [
     }),
   },
   {
+    path: "../recordings/kie_2079838932/kling-30-omni-image-to-video_1124253828/recording.har",
+    entryIndex: 0,
+    expected: multipart({
+      file: fileSummary("cat1.jpg", "image/jpeg", 83558),
+      uploadPath: "images/test-uploads",
+    }),
+  },
+  {
+    path: "../recordings/kie_2079838932/kling-30-omni-reference-to-video_4128185796/recording.har",
+    entryIndex: 0,
+    expected: multipart({
+      file: fileSummary("cat1.jpg", "image/jpeg", 83558),
+      uploadPath: "images/test-uploads",
+    }),
+  },
+  {
+    path: "../recordings/kie_2079838932/kling-30-omni-reference-to-video_4128185796/recording.har",
+    entryIndex: 1,
+    expected: multipart({
+      file: fileSummary("cat2.jpg", "image/jpeg", 227912),
+      uploadPath: "images/test-uploads",
+    }),
+  },
+  {
     path: "../recordings/openai_3991279299/files-content_2411795472/recording.har",
     entryIndex: 0,
     expected: multipart({

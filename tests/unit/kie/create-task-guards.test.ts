@@ -73,6 +73,38 @@ const guardedRejectionCases = [
     },
   },
   {
+    name: "kling omni text-to-video without a prompt",
+    request: {
+      model: "kling-3.0-omni/text-to-video",
+      input: { customize_multi_shots: false },
+    },
+    expectedPath: "input.prompt",
+  },
+  {
+    name: "kling omni image-to-video without image_urls",
+    request: {
+      model: "kling-3.0-omni/image-to-video",
+      input: { prompt: "Animate this still.", customize_multi_shots: false },
+    },
+    expectedPath: "input.image_urls",
+  },
+  {
+    name: "kling omni reference-to-video without a reference",
+    request: {
+      model: "kling-3.0-omni/reference-to-video",
+      input: { prompt: "Keep the subject consistent." },
+    },
+    expectedPath: "input.image_urls",
+  },
+  {
+    name: "kling omni transformation without video_urls",
+    request: {
+      model: "kling-3.0-omni/transformation",
+      input: { prompt: "Restyle this clip." },
+    },
+    expectedPath: "input.video_urls",
+  },
+  {
     name: "elevenlabs/audio-isolation without audio_url",
     request: {
       model: "elevenlabs/audio-isolation",
@@ -293,7 +325,7 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
   // Not a count for its own sake — it makes any change to the guarded set show
   // up as a deliberate edit to this list.
   //
-  // The list is the point, not the number. It now holds all 134 ids of
+  // The list is the point, not the number. It now holds all 138 ids of
   // KIE_MEDIA_MODELS, which is what makes it worth spelling out rather than
   // asserting `guarded.sort()` equals `[...KIE_MEDIA_MODELS].sort()`: that
   // form is self-referential — it passes whatever the catalogue says, so an
@@ -302,8 +334,8 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
   it("guards exactly the models pinned in this list", () => {
     expect(
       guarded,
-      "Update this deliberate 134-entry pin when the guarded model set changes"
-    ).toHaveLength(134);
+      "Update this deliberate 138-entry pin when the guarded model set changes"
+    ).toHaveLength(138);
     expect([...guarded].sort()).toEqual(
       [
         "kling-3.0/video",
@@ -321,6 +353,10 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
         "kling/v2-1-standard",
         "kling/v2-5-turbo-image-to-video-pro",
         "kling/v2-5-turbo-text-to-video-pro",
+        "kling-3.0-omni/text-to-video",
+        "kling-3.0-omni/image-to-video",
+        "kling-3.0-omni/reference-to-video",
+        "kling-3.0-omni/transformation",
         "grok-imagine/text-to-image",
         "grok-imagine/image-to-image",
         "grok-imagine/text-to-video",

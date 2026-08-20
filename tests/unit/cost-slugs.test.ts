@@ -190,6 +190,10 @@ describe("modelSlug", () => {
     expect(modelSlug("xai", "grok-4")).toBe("grok4");
   });
 
+  it("returns correct slug for xai grok-4.6", () => {
+    expect(modelSlug("xai", "grok-4.6")).toBe("grok4p6");
+  });
+
   it("returns shared slug for xai grok build aliases", () => {
     expect(modelSlug("xai", "grok-build-0.1")).toBe("grokbuild01");
     expect(modelSlug("xai", "grok-code-fast-1")).toBe("grokbuild01");
@@ -385,6 +389,10 @@ describe("modelDisplay", () => {
 
   it("returns correct display for xai grok-4-fast", () => {
     expect(modelDisplay("xai", "grok-4-fast")).toBe("Grok 4 Fast");
+  });
+
+  it("returns correct display for xai grok-4.6", () => {
+    expect(modelDisplay("xai", "grok-4.6")).toBe("Grok 4.6");
   });
 
   it("returns correct display for xai grok imagine media models", () => {

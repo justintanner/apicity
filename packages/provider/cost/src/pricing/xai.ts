@@ -68,6 +68,7 @@ export const xai: Record<string, ModelPricing> = {
     rate: { input: 0.2, output: 0.5 },
     source,
   },
+  "grok-4.6": { kind: "tokens", rate: { input: 2, output: 6 }, source },
 
   // Grok Imagine video — USD per second of output.
   "grok-imagine-video": perSecondVideo(0.05),

@@ -718,6 +718,103 @@ export const kie: Record<string, ModelPricing> = {
     source: src("kwaivgi/kling-3.0"),
   },
 
+  // Kling O3 / Kling 3.0 Omni: all four tasks bill per output second. Text
+  // and image input share the resolution × native-audio ladder. Reference
+  // input adds a distinct video-input tier, while transformation always uses
+  // that video-input ladder. The schemas document 720p as the unconditional
+  // resolution default, so raw cost payloads use the same fallback.
+  "kling-3.0-omni/text-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: seconds,
+    select: [
+      { name: "resolution", pick: (p) => inputResolution(p) ?? "720p" },
+      {
+        name: "audio",
+        pick: (p) => (asObject(p.input)?.audio === true ? "audio" : undefined),
+      },
+    ],
+    rates: {
+      "720p": 0.07,
+      "720p|audio": 0.09,
+      "1080p": 0.09,
+      "1080p|audio": 0.115,
+      "4k": 0.335,
+      "4k|audio": 0.335,
+    },
+    source: pricePage(
+      "https://kie.ai/kling-o3?model=kling-3.0-omni%2Ftext-to-video",
+      "2026-08-20"
+    ),
+  },
+  "kling-3.0-omni/image-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: seconds,
+    select: [
+      { name: "resolution", pick: (p) => inputResolution(p) ?? "720p" },
+      {
+        name: "audio",
+        pick: (p) => (asObject(p.input)?.audio === true ? "audio" : undefined),
+      },
+    ],
+    rates: {
+      "720p": 0.07,
+      "720p|audio": 0.09,
+      "1080p": 0.09,
+      "1080p|audio": 0.115,
+      "4k": 0.335,
+      "4k|audio": 0.335,
+    },
+    source: pricePage(
+      "https://kie.ai/kling-o3?model=kling-3.0-omni%2Fimage-to-video",
+      "2026-08-20"
+    ),
+  },
+  "kling-3.0-omni/reference-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: seconds,
+    select: [
+      { name: "resolution", pick: (p) => inputResolution(p) ?? "720p" },
+      {
+        name: "mode",
+        pick: (p) => {
+          const input = asObject(p.input);
+          const videoUrls = input?.video_urls;
+          if (Array.isArray(videoUrls) && videoUrls.length > 0) return "video";
+          return input?.audio === true ? "audio" : undefined;
+        },
+      },
+    ],
+    rates: {
+      "720p": 0.07,
+      "720p|audio": 0.09,
+      "720p|video": 0.1,
+      "1080p": 0.09,
+      "1080p|audio": 0.115,
+      "1080p|video": 0.135,
+      "4k": 0.335,
+      "4k|audio": 0.335,
+      "4k|video": 0.335,
+    },
+    source: pricePage(
+      "https://kie.ai/kling-o3?model=kling-3.0-omni%2Freference-to-video",
+      "2026-08-20"
+    ),
+  },
+  "kling-3.0-omni/transformation": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: seconds,
+    select: [{ name: "resolution", pick: (p) => inputResolution(p) ?? "720p" }],
+    rates: { "720p": 0.1, "1080p": 0.135, "4k": 0.335 },
+    source: pricePage(
+      "https://kie.ai/kling-o3?model=kling-3.0-omni%2Ftransformation",
+      "2026-08-20"
+    ),
+  },
+
   // Kling 3.0 Turbo: 2 tiers by resolution. Rates verified 2026-06-21 from
   // KIE's pricing page: 720p = 18 credits/s ($0.09), 1080p = 22.5 credits/s
   // ($0.1125).

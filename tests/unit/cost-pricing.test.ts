@@ -3744,3 +3744,225 @@ describe("kie wan 2.2 / 2.5 per-model pricing (REQ-004)", () => {
     expect(result.warnings[0]).toContain("no rate for variant '15|1080p'");
   });
 });
+
+describe("kie Kling 3.0 Omni pricing (REQ-010)", () => {
+  it.each([
+    {
+      model: "kling-3.0-omni/text-to-video",
+      resolution: "720p",
+      audio: false,
+      rate: 0.07,
+    },
+    {
+      model: "kling-3.0-omni/text-to-video",
+      resolution: "720p",
+      audio: true,
+      rate: 0.09,
+    },
+    {
+      model: "kling-3.0-omni/text-to-video",
+      resolution: "1080p",
+      audio: false,
+      rate: 0.09,
+    },
+    {
+      model: "kling-3.0-omni/text-to-video",
+      resolution: "1080p",
+      audio: true,
+      rate: 0.115,
+    },
+    {
+      model: "kling-3.0-omni/text-to-video",
+      resolution: "4k",
+      audio: false,
+      rate: 0.335,
+    },
+    {
+      model: "kling-3.0-omni/text-to-video",
+      resolution: "4k",
+      audio: true,
+      rate: 0.335,
+    },
+    {
+      model: "kling-3.0-omni/image-to-video",
+      resolution: "720p",
+      audio: false,
+      rate: 0.07,
+    },
+    {
+      model: "kling-3.0-omni/image-to-video",
+      resolution: "720p",
+      audio: true,
+      rate: 0.09,
+    },
+    {
+      model: "kling-3.0-omni/image-to-video",
+      resolution: "1080p",
+      audio: false,
+      rate: 0.09,
+    },
+    {
+      model: "kling-3.0-omni/image-to-video",
+      resolution: "1080p",
+      audio: true,
+      rate: 0.115,
+    },
+    {
+      model: "kling-3.0-omni/image-to-video",
+      resolution: "4k",
+      audio: false,
+      rate: 0.335,
+    },
+    {
+      model: "kling-3.0-omni/image-to-video",
+      resolution: "4k",
+      audio: true,
+      rate: 0.335,
+    },
+  ])(
+    "prices $model at $resolution with audio=$audio",
+    ({ model, resolution, audio, rate }) => {
+      const result = kieEstimate({
+        model,
+        input: { prompt: "x", duration: 5, resolution, audio },
+      });
+
+      expect(result.breakdown).toEqual({
+        units: 5,
+        unit: "seconds",
+        perUnitUsd: rate,
+      });
+      expect(result.usd).toBeCloseTo(rate * 5, 10);
+      expect(result.warnings).toEqual([]);
+    }
+  );
+
+  it.each([
+    { resolution: "720p", mode: "silent", rate: 0.07 },
+    { resolution: "720p", mode: "audio", rate: 0.09 },
+    { resolution: "720p", mode: "video", rate: 0.1 },
+    { resolution: "1080p", mode: "silent", rate: 0.09 },
+    { resolution: "1080p", mode: "audio", rate: 0.115 },
+    { resolution: "1080p", mode: "video", rate: 0.135 },
+    { resolution: "4k", mode: "silent", rate: 0.335 },
+    { resolution: "4k", mode: "audio", rate: 0.335 },
+    { resolution: "4k", mode: "video", rate: 0.335 },
+  ])(
+    "prices reference-to-video at $resolution in $mode mode",
+    ({ resolution, mode, rate }) => {
+      const result = kieEstimate({
+        model: "kling-3.0-omni/reference-to-video",
+        input: {
+          prompt: "x",
+          duration: 5,
+          resolution,
+          audio: mode === "audio",
+          ...(mode === "video"
+            ? { video_urls: ["https://example.com/reference.mp4"] }
+            : {}),
+        },
+      });
+
+      expect(result.breakdown.perUnitUsd).toBe(rate);
+      expect(result.usd).toBeCloseTo(rate * 5, 10);
+      expect(result.warnings).toEqual([]);
+    }
+  );
+
+  it.each([
+    { resolution: "720p", rate: 0.1 },
+    { resolution: "1080p", rate: 0.135 },
+    { resolution: "4k", rate: 0.335 },
+  ])("prices transformation at $resolution", ({ resolution, rate }) => {
+    const result = kieEstimate({
+      model: "kling-3.0-omni/transformation",
+      input: {
+        prompt: "x",
+        video_urls: ["https://example.com/source.mp4"],
+        duration: 5,
+        resolution,
+      },
+    });
+
+    expect(result.breakdown.perUnitUsd).toBe(rate);
+    expect(result.usd).toBeCloseTo(rate * 5, 10);
+    expect(result.warnings).toEqual([]);
+  });
+
+  it.each([
+    {
+      model: "kling-3.0-omni/text-to-video",
+      cells: ["1080p", "1080p|audio", "4k", "4k|audio", "720p", "720p|audio"],
+    },
+    {
+      model: "kling-3.0-omni/image-to-video",
+      cells: ["1080p", "1080p|audio", "4k", "4k|audio", "720p", "720p|audio"],
+    },
+    {
+      model: "kling-3.0-omni/reference-to-video",
+      cells: [
+        "1080p",
+        "1080p|audio",
+        "1080p|video",
+        "4k",
+        "4k|audio",
+        "4k|video",
+        "720p",
+        "720p|audio",
+        "720p|video",
+      ],
+    },
+    {
+      model: "kling-3.0-omni/transformation",
+      cells: ["1080p", "4k", "720p"],
+    },
+  ])("pins $model's published cells", ({ model, cells }) => {
+    const entry = PRICING.kie[model];
+    expect(entry.kind).toBe("perUnit");
+    if (entry.kind !== "perUnit") return;
+
+    expect(Object.keys(entry.rates).sort()).toEqual(cells);
+    expect(entry.source).toEqual({
+      url: `https://kie.ai/kling-o3?model=${encodeURIComponent(model)}`,
+      asOf: "2026-08-20",
+    });
+  });
+
+  it.each([
+    {
+      model: "kling-3.0-omni/text-to-video",
+      input: { prompt: "x", duration: 5, audio: false },
+      rate: 0.07,
+    },
+    {
+      model: "kling-3.0-omni/image-to-video",
+      input: { prompt: "x", duration: 5, audio: true },
+      rate: 0.09,
+    },
+    {
+      model: "kling-3.0-omni/reference-to-video",
+      input: {
+        prompt: "x",
+        duration: 5,
+        video_urls: ["https://example.com/reference.mp4"],
+        audio: false,
+      },
+      rate: 0.1,
+    },
+    {
+      model: "kling-3.0-omni/transformation",
+      input: {
+        prompt: "x",
+        duration: 5,
+        video_urls: ["https://example.com/source.mp4"],
+      },
+      rate: 0.1,
+    },
+  ])("uses $model's documented 720p fallback", ({ model, input, rate }) => {
+    const result = kieEstimate({ model, input });
+
+    expect(result.breakdown.perUnitUsd).toBe(rate);
+    expect(result.usd).toBeCloseTo(rate * 5, 10);
+    expect(result.warnings).toEqual([]);
+  });
+});

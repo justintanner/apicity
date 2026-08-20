@@ -28,6 +28,13 @@ export const MODEL_SLUGS = {
     "kling/v3-turbo-image-to-video": "kling3t",
     "kling/v3-turbo-text-to-video": "kling3t",
 
+    // Video — Kling O3 / Kling 3.0 Omni. Text and image input share one rate
+    // shape; reference input and transformation have distinct ladders.
+    "kling-3.0-omni/text-to-video": "klingo3",
+    "kling-3.0-omni/image-to-video": "klingo3",
+    "kling-3.0-omni/reference-to-video": "klingo3r",
+    "kling-3.0-omni/transformation": "klingo3x",
+
     // Video — Wan 2.2 (A14B Turbo trio + the Animate pair). All five share the
     // family slug: there is no separately-priced non-turbo wan 2.2 generation
     // surface for a tier letter to distinguish, and the animate ops differ by
@@ -449,6 +456,10 @@ export const MODEL_DISPLAY = {
     "kling-3.0/motion-control": "Kling 3.0 Motion",
     "kling/v3-turbo-image-to-video": "Kling 3.0 Turbo",
     "kling/v3-turbo-text-to-video": "Kling 3.0 Turbo",
+    "kling-3.0-omni/text-to-video": "Kling 3.0 Omni Text-to-Video",
+    "kling-3.0-omni/image-to-video": "Kling 3.0 Omni Image-to-Video",
+    "kling-3.0-omni/reference-to-video": "Kling 3.0 Omni Reference-to-Video",
+    "kling-3.0-omni/transformation": "Kling 3.0 Omni Transformation",
 
     "wan/2-2-a14b-text-to-video-turbo": "Wan 2.2",
     "wan/2-2-a14b-image-to-video-turbo": "Wan 2.2",

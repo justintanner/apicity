@@ -184,6 +184,57 @@ describe("cost.estimate — pure-table (no network)", () => {
     expect(r.usd).toBeCloseTo(0.07 * 5, 6);
   });
 
+  it.each([
+    {
+      model: "kling-3.0-omni/text-to-video",
+      input: { prompt: "x", duration: 5, resolution: "1080p", audio: true },
+      rate: 0.115,
+    },
+    {
+      model: "kling-3.0-omni/image-to-video",
+      input: {
+        prompt: "x",
+        image_urls: ["https://example.com/image.png"],
+        duration: 5,
+        resolution: "4k",
+        audio: false,
+      },
+      rate: 0.335,
+    },
+    {
+      model: "kling-3.0-omni/reference-to-video",
+      input: {
+        prompt: "x",
+        video_urls: ["https://example.com/reference.mp4"],
+        duration: 5,
+        resolution: "720p",
+        audio: false,
+      },
+      rate: 0.1,
+    },
+    {
+      model: "kling-3.0-omni/transformation",
+      input: {
+        prompt: "x",
+        video_urls: ["https://example.com/source.mp4"],
+        duration: 5,
+        resolution: "1080p",
+      },
+      rate: 0.135,
+    },
+  ])("kie $model resolves its published tier", ({ model, input, rate }) => {
+    const c = createCost();
+    const r = c.estimate({ provider: "kie", payload: { model, input } });
+
+    expect(r.source).toBe("per-unit-table");
+    expect(r.breakdown.unit).toBe("seconds");
+    expect(r.breakdown.units).toBe(5);
+    expect(r.breakdown.perUnitUsd).toBe(rate);
+    expect(r.usd).toBeCloseTo(rate * 5, 6);
+    expect(r.rateAsOf).toBe("2026-08-20");
+    expect(r.warnings).toEqual([]);
+  });
+
   it("kie kling/v3-turbo-image-to-video resolves 1080p pricing", () => {
     const c = createCost();
     const r = c.estimate({

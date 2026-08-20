@@ -77,6 +77,10 @@ describe("MODEL_SLUGS", () => {
       "kling-3.0/motion-control": "kling3mc",
       "kling/v3-turbo-image-to-video": "kling3t",
       "kling/v3-turbo-text-to-video": "kling3t",
+      "kling-3.0-omni/text-to-video": "klingo3",
+      "kling-3.0-omni/image-to-video": "klingo3",
+      "kling-3.0-omni/reference-to-video": "klingo3r",
+      "kling-3.0-omni/transformation": "klingo3x",
       "wan/2-2-a14b-text-to-video-turbo": "wan2p2",
       "wan/2-2-a14b-image-to-video-turbo": "wan2p2",
       "wan/2-2-a14b-speech-to-video-turbo": "wan2p2",
@@ -208,6 +212,32 @@ describe("modelSlug", () => {
     expect(modelSlug("kie", "kling/v3-turbo-text-to-video")).toBe("kling3t");
   });
 
+  it.each([
+    {
+      model: "kling-3.0-omni/text-to-video",
+      slug: "klingo3",
+      display: "Kling 3.0 Omni Text-to-Video",
+    },
+    {
+      model: "kling-3.0-omni/image-to-video",
+      slug: "klingo3",
+      display: "Kling 3.0 Omni Image-to-Video",
+    },
+    {
+      model: "kling-3.0-omni/reference-to-video",
+      slug: "klingo3r",
+      display: "Kling 3.0 Omni Reference-to-Video",
+    },
+    {
+      model: "kling-3.0-omni/transformation",
+      slug: "klingo3x",
+      display: "Kling 3.0 Omni Transformation",
+    },
+  ])("resolves $model slug and display", ({ model, slug, display }) => {
+    expect(modelSlug("kie", model as never)).toBe(slug);
+    expect(modelDisplay("kie", model as never)).toBe(display);
+  });
+
   it("resolves kie lip-sync models without throwing", () => {
     expect(() => modelSlug("kie", "omnihuman-1-5")).not.toThrow();
     expect(modelSlug("kie", "omnihuman-1-5")).toBe("oh1p5");
@@ -302,6 +332,10 @@ describe("MODEL_DISPLAY", () => {
       "kling-3.0/video/pro": "Kling 3.0 Pro",
       "kling/v3-turbo-image-to-video": "Kling 3.0 Turbo",
       "kling/v3-turbo-text-to-video": "Kling 3.0 Turbo",
+      "kling-3.0-omni/text-to-video": "Kling 3.0 Omni Text-to-Video",
+      "kling-3.0-omni/image-to-video": "Kling 3.0 Omni Image-to-Video",
+      "kling-3.0-omni/reference-to-video": "Kling 3.0 Omni Reference-to-Video",
+      "kling-3.0-omni/transformation": "Kling 3.0 Omni Transformation",
       // The turbo trio and the animate pair share the wan2p2 slug; display
       // carries the op the slug deliberately drops.
       "wan/2-2-a14b-text-to-video-turbo": "Wan 2.2",

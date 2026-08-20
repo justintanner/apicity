@@ -705,6 +705,363 @@ export const lineup = [
     },
     audio: "opt",
   },
+  // Kling 3.0 Omni — per second. Text-to-video and image-to-video select
+  // resolution × audio; reference-to-video adds a distinct video-input tier;
+  // transformation always has a video input and selects only by resolution.
+  {
+    ...createTaskEndpointAssociation,
+    label: "kling 3.0 omni t2v 720p silent",
+    payload: {
+      model: "kling-3.0-omni/text-to-video",
+      input: {
+        prompt: "x",
+        resolution: "720p",
+        duration: 5,
+        audio: false,
+      },
+    },
+    audio: "opt",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "kling 3.0 omni t2v 720p audio",
+    payload: {
+      model: "kling-3.0-omni/text-to-video",
+      input: {
+        prompt: "x",
+        resolution: "720p",
+        duration: 5,
+        audio: true,
+      },
+    },
+    audio: "opt",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "kling 3.0 omni t2v 1080p silent",
+    payload: {
+      model: "kling-3.0-omni/text-to-video",
+      input: {
+        prompt: "x",
+        resolution: "1080p",
+        duration: 5,
+        audio: false,
+      },
+    },
+    audio: "opt",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "kling 3.0 omni t2v 1080p audio",
+    payload: {
+      model: "kling-3.0-omni/text-to-video",
+      input: {
+        prompt: "x",
+        resolution: "1080p",
+        duration: 5,
+        audio: true,
+      },
+    },
+    audio: "opt",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "kling 3.0 omni t2v 4k silent",
+    payload: {
+      model: "kling-3.0-omni/text-to-video",
+      input: {
+        prompt: "x",
+        resolution: "4k",
+        duration: 5,
+        audio: false,
+      },
+    },
+    audio: "opt",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "kling 3.0 omni t2v 4k audio",
+    payload: {
+      model: "kling-3.0-omni/text-to-video",
+      input: {
+        prompt: "x",
+        resolution: "4k",
+        duration: 5,
+        audio: true,
+      },
+    },
+    audio: "opt",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "kling 3.0 omni i2v 720p silent",
+    payload: {
+      model: "kling-3.0-omni/image-to-video",
+      input: {
+        prompt: "x",
+        image_urls: ["https://example.com/x.jpg"],
+        resolution: "720p",
+        duration: 5,
+        audio: false,
+      },
+    },
+    audio: "opt",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "kling 3.0 omni i2v 720p audio",
+    payload: {
+      model: "kling-3.0-omni/image-to-video",
+      input: {
+        prompt: "x",
+        image_urls: ["https://example.com/x.jpg"],
+        resolution: "720p",
+        duration: 5,
+        audio: true,
+      },
+    },
+    audio: "opt",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "kling 3.0 omni i2v 1080p silent",
+    payload: {
+      model: "kling-3.0-omni/image-to-video",
+      input: {
+        prompt: "x",
+        image_urls: ["https://example.com/x.jpg"],
+        resolution: "1080p",
+        duration: 5,
+        audio: false,
+      },
+    },
+    audio: "opt",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "kling 3.0 omni i2v 1080p audio",
+    payload: {
+      model: "kling-3.0-omni/image-to-video",
+      input: {
+        prompt: "x",
+        image_urls: ["https://example.com/x.jpg"],
+        resolution: "1080p",
+        duration: 5,
+        audio: true,
+      },
+    },
+    audio: "opt",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "kling 3.0 omni i2v 4k silent",
+    payload: {
+      model: "kling-3.0-omni/image-to-video",
+      input: {
+        prompt: "x",
+        image_urls: ["https://example.com/x.jpg"],
+        resolution: "4k",
+        duration: 5,
+        audio: false,
+      },
+    },
+    audio: "opt",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "kling 3.0 omni i2v 4k audio",
+    payload: {
+      model: "kling-3.0-omni/image-to-video",
+      input: {
+        prompt: "x",
+        image_urls: ["https://example.com/x.jpg"],
+        resolution: "4k",
+        duration: 5,
+        audio: true,
+      },
+    },
+    audio: "opt",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "kling 3.0 omni r2v 720p no-video silent",
+    payload: {
+      model: "kling-3.0-omni/reference-to-video",
+      input: {
+        prompt: "x",
+        image_urls: ["https://example.com/x.jpg"],
+        resolution: "720p",
+        duration: 5,
+        audio: false,
+      },
+    },
+    audio: "opt",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "kling 3.0 omni r2v 720p no-video audio",
+    payload: {
+      model: "kling-3.0-omni/reference-to-video",
+      input: {
+        prompt: "x",
+        image_urls: ["https://example.com/x.jpg"],
+        resolution: "720p",
+        duration: 5,
+        audio: true,
+      },
+    },
+    audio: "opt",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "kling 3.0 omni r2v 720p video",
+    payload: {
+      model: "kling-3.0-omni/reference-to-video",
+      input: {
+        prompt: "x",
+        video_urls: ["https://example.com/x.mp4"],
+        resolution: "720p",
+        aspect_ratio: "auto",
+        duration: 5,
+        audio: false,
+      },
+    },
+    audio: "opt",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "kling 3.0 omni r2v 1080p no-video silent",
+    payload: {
+      model: "kling-3.0-omni/reference-to-video",
+      input: {
+        prompt: "x",
+        image_urls: ["https://example.com/x.jpg"],
+        resolution: "1080p",
+        duration: 5,
+        audio: false,
+      },
+    },
+    audio: "opt",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "kling 3.0 omni r2v 1080p no-video audio",
+    payload: {
+      model: "kling-3.0-omni/reference-to-video",
+      input: {
+        prompt: "x",
+        image_urls: ["https://example.com/x.jpg"],
+        resolution: "1080p",
+        duration: 5,
+        audio: true,
+      },
+    },
+    audio: "opt",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "kling 3.0 omni r2v 1080p video",
+    payload: {
+      model: "kling-3.0-omni/reference-to-video",
+      input: {
+        prompt: "x",
+        video_urls: ["https://example.com/x.mp4"],
+        resolution: "1080p",
+        aspect_ratio: "auto",
+        duration: 5,
+        audio: false,
+      },
+    },
+    audio: "opt",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "kling 3.0 omni r2v 4k no-video silent",
+    payload: {
+      model: "kling-3.0-omni/reference-to-video",
+      input: {
+        prompt: "x",
+        image_urls: ["https://example.com/x.jpg"],
+        resolution: "4k",
+        duration: 5,
+        audio: false,
+      },
+    },
+    audio: "opt",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "kling 3.0 omni r2v 4k no-video audio",
+    payload: {
+      model: "kling-3.0-omni/reference-to-video",
+      input: {
+        prompt: "x",
+        image_urls: ["https://example.com/x.jpg"],
+        resolution: "4k",
+        duration: 5,
+        audio: true,
+      },
+    },
+    audio: "opt",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "kling 3.0 omni r2v 4k video",
+    payload: {
+      model: "kling-3.0-omni/reference-to-video",
+      input: {
+        prompt: "x",
+        video_urls: ["https://example.com/x.mp4"],
+        resolution: "4k",
+        aspect_ratio: "auto",
+        duration: 5,
+        audio: false,
+      },
+    },
+    audio: "opt",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "kling 3.0 omni transformation 720p video",
+    payload: {
+      model: "kling-3.0-omni/transformation",
+      input: {
+        prompt: "x",
+        video_urls: ["https://example.com/x.mp4"],
+        resolution: "720p",
+        audio: false,
+      },
+    },
+    audio: "opt",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "kling 3.0 omni transformation 1080p video",
+    payload: {
+      model: "kling-3.0-omni/transformation",
+      input: {
+        prompt: "x",
+        video_urls: ["https://example.com/x.mp4"],
+        resolution: "1080p",
+        audio: false,
+      },
+    },
+    audio: "opt",
+  },
+  {
+    ...createTaskEndpointAssociation,
+    label: "kling 3.0 omni transformation 4k video",
+    payload: {
+      model: "kling-3.0-omni/transformation",
+      input: {
+        prompt: "x",
+        video_urls: ["https://example.com/x.mp4"],
+        resolution: "4k",
+        audio: false,
+      },
+    },
+    audio: "opt",
+  },
   // Kling 2.6 — bills per VIDEO across a 4-cell sound × duration matrix, and
   // its `duration` is the "5"|"10" string enum, so each cell is its own row
   // and the duration columns are flat (see FIXED_DURATION_MODELS).
@@ -1241,6 +1598,7 @@ export const lineup = [
 // would invent a field the shipped schema does not declare, so these rows
 // leave the payload alone and pass the hint (see durationHints below).
 const HINT_DURATION_MODELS = new Set([
+  "kling-3.0-omni/transformation",
   "kling-2.6/motion-control",
   "kling/ai-avatar-standard",
   "kling/ai-avatar-pro",

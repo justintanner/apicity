@@ -1409,6 +1409,22 @@ const MEDIA_MODEL_FAMILIES = [
     rejected: ["kling", "kling-3.0", "kling3.0/video", "Kling-3.0/video"],
   },
   {
+    family: "Kling Omni",
+    listed: [
+      "kling-3.0-omni/text-to-video",
+      "kling-3.0-omni/image-to-video",
+      "kling-3.0-omni/reference-to-video",
+      "kling-3.0-omni/transformation",
+    ],
+    aliases: ["kling-3.5-omni/text-to-video", "kling-3.0-omni/video-edit"],
+    rejected: [
+      "kling-3.0-omni",
+      "kling3.0-omni/text-to-video",
+      "kling-omni/text-to-video",
+      "Kling-3.0-Omni/text-to-video",
+    ],
+  },
+  {
     family: "Grok Imagine",
     listed: [
       "grok-imagine/text-to-image",

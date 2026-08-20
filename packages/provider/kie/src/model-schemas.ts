@@ -10,6 +10,8 @@ import {
   GoogleGeminiTtsVoiceNameSchema,
   HAPPYHORSE_DURATION_MAX_SECONDS,
   HAPPYHORSE_DURATION_MIN_SECONDS,
+  KlingOmniAspectRatioSchema,
+  KlingOmniResolutionSchema,
   MiniMaxH3FixedAspectRatioSchema,
   MiniMaxH3ReferenceAspectRatioSchema,
   MiniMaxH3ResolutionSchema,
@@ -147,6 +149,115 @@ const miniMaxH3ResolutionField = {
 const miniMaxH3MediaAddressItem = {
   type: "string",
   description: "HTTP, HTTPS, or OSS media URL",
+} as const;
+
+const klingOmniMediaReferenceItem = {
+  type: "string",
+  pattern: "^(https?|oss)://",
+  description: "HTTP, HTTPS, or OSS media URL",
+} as const;
+
+const klingOmniPromptField = {
+  type: "string",
+  required: true,
+  minLength: 1,
+  maxLength: 3072,
+  description: "Video prompt (1-3072 characters; whitespace-only is invalid)",
+} as const;
+
+const klingOmniDurationField = {
+  type: "integer",
+  minimum: 3,
+  maximum: 15,
+  default: 5,
+  description: "Duration in whole seconds, 3-15 (default 5)",
+} as const;
+
+const klingOmniResolutionField = {
+  type: "string",
+  enum: KlingOmniResolutionSchema.options,
+  default: "720p",
+  description: "Output resolution (default 720p)",
+} as const;
+
+const klingOmniMultiPromptField = {
+  type: "array",
+  maxItems: 6,
+  description:
+    "Custom shots; required and non-empty when customize_multi_shots=true, empty or omitted when false",
+  items: {
+    type: "object",
+    properties: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 512,
+        description: "Shot prompt (1-512 characters)",
+      },
+      duration: {
+        type: "integer",
+        required: true,
+        minimum: 1,
+        maximum: 15,
+        description: "Shot duration in whole seconds, 1-15",
+      },
+    },
+  },
+} as const;
+
+const klingOmniElementItem = {
+  type: "object",
+  properties: {
+    name: {
+      type: "string",
+      required: true,
+      minLength: 1,
+      description: "Unique subject name referenced from prompts as @name",
+    },
+    description: {
+      type: "string",
+      required: true,
+      minLength: 1,
+      description: "Subject description",
+    },
+    element_input_urls: {
+      type: "array",
+      required: true,
+      minItems: 1,
+      maxItems: 4,
+      description:
+        "One video character URL or 2-4 multi-image subject URLs; media types cannot be mixed",
+      items: klingOmniMediaReferenceItem,
+    },
+    element_input_audio_urls: {
+      type: "array",
+      description: "Optional subject audio URLs",
+      items: klingOmniMediaReferenceItem,
+    },
+    start_time: {
+      type: "integer",
+      description: "Optional video-subject trim start in milliseconds",
+    },
+    end_time: {
+      type: "integer",
+      description: "Optional video-subject trim end in milliseconds",
+    },
+  },
+} as const;
+
+const klingOmniMultiShotFields = {
+  customize_multi_shots: {
+    type: "boolean",
+    description:
+      "Enable custom shots; mutually exclusive with prefer_multi_shots",
+  },
+  prefer_multi_shots: {
+    type: "boolean",
+    description:
+      "Enable intelligent shot planning; mutually exclusive with customize_multi_shots",
+  },
+  multi_prompt: klingOmniMultiPromptField,
 } as const;
 
 const googleGeminiTtsTemperatureField = {
@@ -763,6 +874,167 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         minimum: 0,
         maximum: 1,
         description: "CFG scale 0-1 (default 0.5)",
+      },
+    },
+  },
+
+  // Sources:
+  // - https://docs.kie.ai/market/kling/v3-omni-text-to-video
+  // - https://docs.kie.ai/market/kling/v3-omni-image-to-video
+  // - https://docs.kie.ai/market/kling/v3-omni-reference-to-video
+  // - https://docs.kie.ai/market/kling/v3-omni-transformation
+  "kling-3.0-omni/text-to-video": {
+    type: "video",
+    fields: {
+      prompt: klingOmniPromptField,
+      ...klingOmniMultiShotFields,
+      customize_multi_shots: {
+        type: "boolean",
+        description:
+          "Enable custom shots; upstream defaults true, so a prompt-only request should explicitly pass false or supply non-empty multi_prompt. Mutually exclusive with prefer_multi_shots.",
+      },
+      elements: {
+        type: "array",
+        maxItems: 7,
+        description:
+          "One-time subjects: up to 7 multi-image subjects, up to 3 video subjects, or up to 3 video plus 4 multi-image subjects",
+        items: klingOmniElementItem,
+      },
+      audio: {
+        type: "boolean",
+        description: "Generate audio (upstream default false)",
+      },
+      resolution: klingOmniResolutionField,
+      aspect_ratio: {
+        type: "string",
+        enum: ["16:9", "9:16", "1:1"],
+        default: "16:9",
+        description: "Output aspect ratio (default 16:9)",
+      },
+      duration: klingOmniDurationField,
+    },
+  },
+
+  "kling-3.0-omni/image-to-video": {
+    type: "video",
+    fields: {
+      prompt: klingOmniPromptField,
+      image_urls: {
+        type: "array",
+        required: true,
+        minItems: 1,
+        maxItems: 2,
+        description:
+          "One first-frame URL or two first-and-last-frame URLs (JPG/JPEG/PNG)",
+        items: klingOmniMediaReferenceItem,
+      },
+      duration: klingOmniDurationField,
+      resolution: klingOmniResolutionField,
+      aspect_ratio: {
+        type: "string",
+        enum: KlingOmniAspectRatioSchema.options,
+        default: "auto",
+        description:
+          "Output aspect ratio; upstream default auto, with fixed ratios available for custom multi-shot mode. The SDK does not synthesize this context-dependent default.",
+      },
+      audio: {
+        type: "boolean",
+        description: "Generate audio; pass explicitly when needed",
+      },
+      ...klingOmniMultiShotFields,
+      elements: {
+        type: "array",
+        maxItems: 3,
+        description: "One-time subject assets, up to 3 subjects",
+        items: klingOmniElementItem,
+      },
+    },
+  },
+
+  "kling-3.0-omni/reference-to-video": {
+    type: "video",
+    fields: {
+      prompt: klingOmniPromptField,
+      image_urls: {
+        type: "array",
+        minItems: 1,
+        maxItems: 7,
+        description:
+          "Reference images: required without video (max 7), or max 4 with one video",
+        items: klingOmniMediaReferenceItem,
+      },
+      video_urls: {
+        type: "array",
+        minItems: 1,
+        maxItems: 1,
+        description:
+          "Exactly one MP4/MOV reference video when present; video-backed requests require audio=false",
+        items: klingOmniMediaReferenceItem,
+      },
+      duration: klingOmniDurationField,
+      resolution: klingOmniResolutionField,
+      aspect_ratio: {
+        type: "string",
+        enum: KlingOmniAspectRatioSchema.options,
+        description:
+          "Fixed ratio without video or with video plus images; video-only input requires explicit auto. Variant defaults are documented but not synthesized locally.",
+      },
+      audio: {
+        type: "boolean",
+        description:
+          "Generate audio without video; video-backed requests require explicit false",
+      },
+      ...klingOmniMultiShotFields,
+      elements: {
+        type: "array",
+        description:
+          "One-time subjects share the reference quota; video-backed requests impose the upstream composition limits",
+        items: klingOmniElementItem,
+      },
+    },
+  },
+
+  "kling-3.0-omni/transformation": {
+    type: "video",
+    fields: {
+      prompt: klingOmniPromptField,
+      image_urls: {
+        type: "array",
+        minItems: 1,
+        maxItems: 4,
+        description: "Optional reference image URLs, up to 4",
+        items: klingOmniMediaReferenceItem,
+      },
+      video_urls: {
+        type: "array",
+        required: true,
+        minItems: 1,
+        maxItems: 1,
+        description: "Exactly one MP4/MOV source video",
+        items: klingOmniMediaReferenceItem,
+      },
+      duration: {
+        type: "string",
+        description:
+          "String duration supported only by the video-with-images shape",
+      },
+      resolution: klingOmniResolutionField,
+      aspect_ratio: {
+        type: "string",
+        enum: KlingOmniAspectRatioSchema.options,
+        description:
+          "Video-only input uses auto; video with images uses 16:9, 9:16, or 1:1. Variant defaults are documented but not synthesized locally.",
+      },
+      audio: {
+        type: "boolean",
+        description: "Whether to enable audio",
+      },
+      elements: {
+        type: "array",
+        maxItems: 7,
+        description:
+          "One-time subjects: up to 7 multi-image subjects, up to 3 video subjects, or up to 3 video plus 4 multi-image subjects",
+        items: klingOmniElementItem,
       },
     },
   },

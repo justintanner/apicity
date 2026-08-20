@@ -29,6 +29,17 @@ const KieMediaKlingModelAliasSchema = z
     "Expected a listed model or a kie Kling alias (e.g. kling-3.5/video)"
   );
 
+// Kling Omni is versioned separately from the core Kling namespace:
+// `kling-3.0-omni/text-to-video`. Keeping the literal `-omni` family segment
+// separate avoids widening the existing Kling hatch to arbitrary suffixes on
+// every Kling version while still admitting future Omni versions and tasks.
+const KieMediaKlingOmniModelAliasSchema = z
+  .string()
+  .regex(
+    /^kling-\d+(?:\.\d+)*-omni\/[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/,
+    "Expected a listed model or a kie Kling Omni alias (e.g. kling-3.5-omni/text-to-video)"
+  );
+
 // Grok Imagine also ships two shapes: the slash-namespaced task form
 // (`grok-imagine/upscale`) and a dashed product id
 // (`grok-imagine-video-1-5-preview`). Both are spelled out. The `imagine`
@@ -212,6 +223,12 @@ export const KIE_MEDIA_MODELS = [
   "kling/v2-1-standard",
   "kling/v2-5-turbo-image-to-video-pro",
   "kling/v2-5-turbo-text-to-video-pro",
+  // Kling O3 / Kling 3.0 Omni. Docs under
+  // https://docs.kie.ai/market/kling/.
+  "kling-3.0-omni/text-to-video",
+  "kling-3.0-omni/image-to-video",
+  "kling-3.0-omni/reference-to-video",
+  "kling-3.0-omni/transformation",
   "grok-imagine/text-to-image",
   "grok-imagine/image-to-image",
   "grok-imagine/text-to-video",
@@ -351,6 +368,7 @@ export const KIE_MEDIA_MODELS = [
 export const KieMediaModelSchema = z
   .enum(KIE_MEDIA_MODELS)
   .or(KieMediaKlingModelAliasSchema)
+  .or(KieMediaKlingOmniModelAliasSchema)
   .or(KieMediaGrokImagineModelAliasSchema)
   .or(KieMediaNanoBananaModelAliasSchema)
   .or(KieMediaGptImageModelAliasSchema)
@@ -1866,6 +1884,98 @@ export const MultiShotPromptSchema = z.object({
   duration: z.number().int().min(1).max(12),
 });
 
+export const KlingOmniResolutionSchema = z.enum(["720p", "1080p", "4k"]);
+export const KlingOmniDurationSchema = z.number().int().min(3).max(15);
+export const KlingOmniAspectRatioSchema = z.enum([
+  "16:9",
+  "9:16",
+  "1:1",
+  "auto",
+]);
+
+export const KlingOmniMediaReferenceSchema = z
+  .string()
+  .refine((value) => /^(https?|oss):\/\//.test(value), {
+    message: "Expected an HTTP, HTTPS, or OSS media reference",
+  });
+
+export const KlingOmniMultiShotPromptSchema = z.object({
+  prompt: z.string().min(1).max(512),
+  duration: z.number().int().min(1).max(15),
+});
+
+export const KlingOmniMultiPromptSchema = z
+  .array(KlingOmniMultiShotPromptSchema)
+  .max(6);
+
+export const KlingOmniElementSchema = z.object({
+  name: z.string().min(1),
+  description: z.string().min(1),
+  element_input_urls: z.array(KlingOmniMediaReferenceSchema).min(1).max(4),
+  element_input_audio_urls: z.array(KlingOmniMediaReferenceSchema).optional(),
+  start_time: z.number().int().optional(),
+  end_time: z.number().int().optional(),
+});
+
+const KlingOmniPromptSchema = z
+  .string()
+  .min(1)
+  .max(3072)
+  .refine((value) => value.trim().length > 0, {
+    message: "Prompt must contain a non-whitespace character",
+  });
+
+const KlingOmniPreferMultiShotsSchema = z
+  .boolean()
+  .optional()
+  .describe(
+    "Enable intelligent shot planning; mutually exclusive with customize_multi_shots"
+  );
+
+interface KlingOmniMultiShotInput {
+  customize_multi_shots?: boolean;
+  prefer_multi_shots?: boolean;
+  multi_prompt?: Array<z.input<typeof KlingOmniMultiShotPromptSchema>>;
+}
+
+function refineKlingOmniMultiShots(
+  input: KlingOmniMultiShotInput,
+  ctx: z.RefinementCtx
+): void {
+  if (input.customize_multi_shots && input.prefer_multi_shots) {
+    ctx.addIssue({
+      code: "custom",
+      message:
+        "customize_multi_shots and prefer_multi_shots cannot both be true",
+      path: ["input", "prefer_multi_shots"],
+    });
+  }
+
+  if (
+    input.customize_multi_shots === true &&
+    (input.multi_prompt?.length ?? 0) === 0
+  ) {
+    ctx.addIssue({
+      code: "custom",
+      message:
+        "customize_multi_shots=true requires a non-empty multi_prompt array",
+      path: ["input", "multi_prompt"],
+    });
+  }
+
+  if (
+    input.customize_multi_shots === false &&
+    (input.multi_prompt?.length ?? 0) > 0
+  ) {
+    ctx.addIssue({
+      code: "custom",
+      message:
+        "customize_multi_shots=false requires multi_prompt to be empty or omitted",
+      path: ["input", "multi_prompt"],
+    });
+  }
+}
+
 export const Wan27ImageColorPaletteSchema = z.object({
   hex: z.string().min(1),
   ratio: z.string().min(1),
@@ -2096,6 +2206,258 @@ export const KlingMotionControlRequestSchema = z.object({
     background_source: z.enum(["input_video", "input_image"]).optional(),
   }),
 });
+
+// ---------------------------------------------------------------------------
+// Kling 3.0 Omni createTask models
+// Docs: https://docs.kie.ai/market/kling/v3-omni-text-to-video
+//       https://docs.kie.ai/market/kling/v3-omni-image-to-video
+//       https://docs.kie.ai/market/kling/v3-omni-reference-to-video
+//       https://docs.kie.ai/market/kling/v3-omni-transformation
+// ---------------------------------------------------------------------------
+
+// Input objects remain plain ZodObjects so metadata consumers can inspect
+// `.shape`; rules that depend on a complete scenario live on the requests.
+export const KlingOmniTextToVideoInputSchema = z.object({
+  prompt: KlingOmniPromptSchema,
+  customize_multi_shots: z
+    .boolean()
+    .optional()
+    .describe(
+      "Enable custom shots. Upstream defaults this to true for text-to-video, which requires a non-empty multi_prompt; explicitly pass false for a prompt-only request."
+    ),
+  prefer_multi_shots: KlingOmniPreferMultiShotsSchema,
+  multi_prompt: KlingOmniMultiPromptSchema.optional(),
+  elements: z
+    .array(KlingOmniElementSchema)
+    .max(7)
+    .optional()
+    .describe(
+      "One-time subjects: up to 7 multi-image subjects, up to 3 video subjects, or up to 3 video plus 4 multi-image subjects"
+    ),
+  audio: z
+    .boolean()
+    .optional()
+    .describe("Generate audio; upstream default false"),
+  resolution: KlingOmniResolutionSchema.default("720p"),
+  aspect_ratio: z.enum(["16:9", "9:16", "1:1"]).default("16:9"),
+  duration: KlingOmniDurationSchema.default(5),
+});
+
+const KlingOmniTextToVideoRequestObjectSchema = z.object({
+  model: z.literal("kling-3.0-omni/text-to-video"),
+  callBackUrl: z.string().url().optional(),
+  input: KlingOmniTextToVideoInputSchema,
+});
+
+export const KlingOmniTextToVideoRequestSchema =
+  KlingOmniTextToVideoRequestObjectSchema.superRefine((value, ctx) => {
+    refineKlingOmniMultiShots(value.input, ctx);
+  });
+
+export const KlingOmniImageToVideoInputSchema = z.object({
+  prompt: KlingOmniPromptSchema,
+  image_urls: z
+    .array(KlingOmniMediaReferenceSchema)
+    .min(1)
+    .max(2)
+    .describe(
+      "One URL supplies the first frame; two URLs supply first and last frames"
+    ),
+  duration: KlingOmniDurationSchema.default(5),
+  resolution: KlingOmniResolutionSchema.default("720p"),
+  aspect_ratio: KlingOmniAspectRatioSchema.optional().describe(
+    "Output aspect ratio; upstream default auto, with fixed ratios available for custom multi-shot mode"
+  ),
+  audio: z.boolean().optional(),
+  customize_multi_shots: z.boolean().optional(),
+  prefer_multi_shots: KlingOmniPreferMultiShotsSchema,
+  multi_prompt: KlingOmniMultiPromptSchema.optional(),
+  elements: z
+    .array(KlingOmniElementSchema)
+    .max(3)
+    .optional()
+    .describe("One-time subject assets, up to 3 subjects"),
+});
+
+const KlingOmniImageToVideoRequestObjectSchema = z.object({
+  model: z.literal("kling-3.0-omni/image-to-video"),
+  callBackUrl: z.string().url().optional(),
+  input: KlingOmniImageToVideoInputSchema,
+});
+
+export const KlingOmniImageToVideoRequestSchema =
+  KlingOmniImageToVideoRequestObjectSchema.superRefine((value, ctx) => {
+    refineKlingOmniMultiShots(value.input, ctx);
+
+    if (
+      value.input.aspect_ratio !== undefined &&
+      value.input.aspect_ratio !== "auto" &&
+      value.input.customize_multi_shots !== true
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        message:
+          "Image-to-video fixed aspect ratios require customize_multi_shots=true; otherwise use auto",
+        path: ["input", "aspect_ratio"],
+      });
+    }
+  });
+
+export const KlingOmniReferenceToVideoInputSchema = z.object({
+  prompt: KlingOmniPromptSchema,
+  image_urls: z.array(KlingOmniMediaReferenceSchema).min(1).max(7).optional(),
+  video_urls: z.array(KlingOmniMediaReferenceSchema).min(1).max(1).optional(),
+  duration: KlingOmniDurationSchema.default(5),
+  resolution: KlingOmniResolutionSchema.default("720p"),
+  aspect_ratio: KlingOmniAspectRatioSchema.optional().describe(
+    "Fixed ratios apply without video or with video plus images; video-only input requires explicit auto"
+  ),
+  audio: z
+    .boolean()
+    .optional()
+    .describe("Video-backed requests require explicit false"),
+  customize_multi_shots: z.boolean().optional(),
+  prefer_multi_shots: KlingOmniPreferMultiShotsSchema,
+  multi_prompt: KlingOmniMultiPromptSchema.optional(),
+  elements: z
+    .array(KlingOmniElementSchema)
+    .optional()
+    .describe(
+      "Subject assets share the reference quota; video-backed requests impose the upstream composition limits"
+    ),
+});
+
+const KlingOmniReferenceToVideoRequestObjectSchema = z.object({
+  model: z.literal("kling-3.0-omni/reference-to-video"),
+  callBackUrl: z.string().url().optional(),
+  input: KlingOmniReferenceToVideoInputSchema,
+});
+
+export const KlingOmniReferenceToVideoRequestSchema =
+  KlingOmniReferenceToVideoRequestObjectSchema.superRefine((value, ctx) => {
+    const { input } = value;
+    const hasImages = Boolean(input.image_urls?.length);
+    const hasVideo = Boolean(input.video_urls?.length);
+
+    refineKlingOmniMultiShots(input, ctx);
+
+    if (!hasImages && !hasVideo) {
+      ctx.addIssue({
+        code: "custom",
+        message:
+          "reference-to-video requires a non-empty image_urls or video_urls array",
+        path: ["input", "image_urls"],
+      });
+      return;
+    }
+
+    if (!hasVideo) {
+      if (input.aspect_ratio === "auto") {
+        ctx.addIssue({
+          code: "custom",
+          message: "Reference requests without video do not accept auto",
+          path: ["input", "aspect_ratio"],
+        });
+      }
+      return;
+    }
+
+    if (input.audio !== false) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Reference requests with video require audio=false",
+        path: ["input", "audio"],
+      });
+    }
+
+    if (!hasImages && input.aspect_ratio !== "auto") {
+      ctx.addIssue({
+        code: "custom",
+        message: "Reference requests with video only require aspect_ratio=auto",
+        path: ["input", "aspect_ratio"],
+      });
+    }
+
+    if (hasImages && input.aspect_ratio === "auto") {
+      ctx.addIssue({
+        code: "custom",
+        message:
+          "Reference requests with video and images require a fixed aspect ratio when provided",
+        path: ["input", "aspect_ratio"],
+      });
+    }
+
+    if ((input.image_urls?.length ?? 0) > 4) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Reference requests with video accept at most 4 image_urls",
+        path: ["input", "image_urls"],
+      });
+    }
+  });
+
+export const KlingOmniTransformationInputSchema = z.object({
+  prompt: KlingOmniPromptSchema,
+  image_urls: z.array(KlingOmniMediaReferenceSchema).min(1).max(4).optional(),
+  video_urls: z.array(KlingOmniMediaReferenceSchema).min(1).max(1),
+  duration: z
+    .string()
+    .optional()
+    .describe("String duration supported only by the video-with-images shape"),
+  resolution: KlingOmniResolutionSchema.default("720p"),
+  aspect_ratio: KlingOmniAspectRatioSchema.optional().describe(
+    "Video-only input uses auto; video with images uses 16:9, 9:16, or 1:1"
+  ),
+  audio: z.boolean().optional(),
+  elements: z
+    .array(KlingOmniElementSchema)
+    .max(7)
+    .optional()
+    .describe(
+      "One-time subjects: up to 7 multi-image subjects, up to 3 video subjects, or up to 3 video plus 4 multi-image subjects"
+    ),
+});
+
+const KlingOmniTransformationRequestObjectSchema = z.object({
+  model: z.literal("kling-3.0-omni/transformation"),
+  callBackUrl: z.string().url().optional(),
+  input: KlingOmniTransformationInputSchema,
+});
+
+export const KlingOmniTransformationRequestSchema =
+  KlingOmniTransformationRequestObjectSchema.superRefine((value, ctx) => {
+    const { input } = value;
+    const hasImages = Boolean(input.image_urls?.length);
+
+    if (!hasImages && input.aspect_ratio !== undefined) {
+      if (input.aspect_ratio !== "auto") {
+        ctx.addIssue({
+          code: "custom",
+          message:
+            "Transformation requests with video only accept aspect_ratio=auto",
+          path: ["input", "aspect_ratio"],
+        });
+      }
+    }
+
+    if (!hasImages && input.duration !== undefined) {
+      ctx.addIssue({
+        code: "custom",
+        message:
+          "Transformation duration is supported only when image_urls are present",
+        path: ["input", "duration"],
+      });
+    }
+
+    if (hasImages && input.aspect_ratio === "auto") {
+      ctx.addIssue({
+        code: "custom",
+        message:
+          "Transformation requests with images do not accept aspect_ratio=auto",
+        path: ["input", "aspect_ratio"],
+      });
+    }
+  });
 
 export const GrokTextToImageRequestSchema = z.object({
   model: z.literal("grok-imagine/text-to-image"),
@@ -6004,6 +6366,10 @@ export const MediaGenerationRequestSchema = z.union([
   KlingV21StandardRequestSchema,
   KlingV25TurboImageToVideoProRequestSchema,
   KlingV25TurboTextToVideoProRequestSchema,
+  KlingOmniTextToVideoRequestSchema,
+  KlingOmniImageToVideoRequestSchema,
+  KlingOmniReferenceToVideoRequestSchema,
+  KlingOmniTransformationRequestSchema,
   GrokTextToImageRequestSchema,
   GrokImageToImageRequestSchema,
   GrokTextToVideoRequestSchema,
@@ -6290,6 +6656,16 @@ export type MiniMaxH3ReferenceAspectRatio = z.infer<
   typeof MiniMaxH3ReferenceAspectRatioSchema
 >;
 export type MiniMaxH3MediaAddress = z.infer<typeof MiniMaxH3MediaAddressSchema>;
+export type KlingOmniResolution = z.infer<typeof KlingOmniResolutionSchema>;
+export type KlingOmniDuration = z.infer<typeof KlingOmniDurationSchema>;
+export type KlingOmniAspectRatio = z.infer<typeof KlingOmniAspectRatioSchema>;
+export type KlingOmniMediaReference = z.infer<
+  typeof KlingOmniMediaReferenceSchema
+>;
+export type KlingOmniMultiShotPrompt = z.input<
+  typeof KlingOmniMultiShotPromptSchema
+>;
+export type KlingOmniElement = z.input<typeof KlingOmniElementSchema>;
 export type GoogleGeminiTtsVoiceName = z.infer<
   typeof GoogleGeminiTtsVoiceNameSchema
 >;
@@ -6418,6 +6794,60 @@ export type KlingV25TurboTextToVideoProRequestInput =
   KlingV25TurboTextToVideoProRequest;
 export type KlingV25TurboTextToVideoProParsedRequest = z.output<
   typeof KlingV25TurboTextToVideoProRequestSchema
+>;
+export type KlingOmniTextToVideoInput = z.input<
+  typeof KlingOmniTextToVideoInputSchema
+>;
+export type KlingOmniTextToVideoParsedInput = z.output<
+  typeof KlingOmniTextToVideoInputSchema
+>;
+export type KlingOmniTextToVideoRequest = z.input<
+  typeof KlingOmniTextToVideoRequestSchema
+>;
+export type KlingOmniTextToVideoRequestInput = KlingOmniTextToVideoRequest;
+export type KlingOmniTextToVideoParsedRequest = z.output<
+  typeof KlingOmniTextToVideoRequestSchema
+>;
+export type KlingOmniImageToVideoInput = z.input<
+  typeof KlingOmniImageToVideoInputSchema
+>;
+export type KlingOmniImageToVideoParsedInput = z.output<
+  typeof KlingOmniImageToVideoInputSchema
+>;
+export type KlingOmniImageToVideoRequest = z.input<
+  typeof KlingOmniImageToVideoRequestSchema
+>;
+export type KlingOmniImageToVideoRequestInput = KlingOmniImageToVideoRequest;
+export type KlingOmniImageToVideoParsedRequest = z.output<
+  typeof KlingOmniImageToVideoRequestSchema
+>;
+export type KlingOmniReferenceToVideoInput = z.input<
+  typeof KlingOmniReferenceToVideoInputSchema
+>;
+export type KlingOmniReferenceToVideoParsedInput = z.output<
+  typeof KlingOmniReferenceToVideoInputSchema
+>;
+export type KlingOmniReferenceToVideoRequest = z.input<
+  typeof KlingOmniReferenceToVideoRequestSchema
+>;
+export type KlingOmniReferenceToVideoRequestInput =
+  KlingOmniReferenceToVideoRequest;
+export type KlingOmniReferenceToVideoParsedRequest = z.output<
+  typeof KlingOmniReferenceToVideoRequestSchema
+>;
+export type KlingOmniTransformationInput = z.input<
+  typeof KlingOmniTransformationInputSchema
+>;
+export type KlingOmniTransformationParsedInput = z.output<
+  typeof KlingOmniTransformationInputSchema
+>;
+export type KlingOmniTransformationRequest = z.input<
+  typeof KlingOmniTransformationRequestSchema
+>;
+export type KlingOmniTransformationRequestInput =
+  KlingOmniTransformationRequest;
+export type KlingOmniTransformationParsedRequest = z.output<
+  typeof KlingOmniTransformationRequestSchema
 >;
 export type GrokTextToImageRequest = z.input<
   typeof GrokTextToImageRequestSchema

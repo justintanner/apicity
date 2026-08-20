@@ -260,6 +260,20 @@ describe("Kling 3.0 Omni request schemas", () => {
       KlingOmniTransformationRequestSchema,
       {
         model: "kling-3.0-omni/transformation",
+        input: {
+          prompt: PROMPT,
+          image_urls: [IMAGE_1],
+          video_urls: [VIDEO],
+          aspect_ratio: "auto",
+          audio: false,
+        },
+      },
+      "input.aspect_ratio"
+    );
+    expectRejectedAt(
+      KlingOmniTransformationRequestSchema,
+      {
+        model: "kling-3.0-omni/transformation",
         input: { prompt: PROMPT },
       },
       "input.video_urls"
@@ -376,6 +390,10 @@ describe("Kling 3.0 Omni request schemas", () => {
       modelInputSchemas["kling-3.0-omni/text-to-video"].fields
         .customize_multi_shots.description
     ).toContain("upstream defaults true");
+    expect(
+      modelInputSchemas["kling-3.0-omni/text-to-video"].fields
+        .customize_multi_shots.default
+    ).toBe(true);
     expect(
       modelInputSchemas["kling-3.0-omni/transformation"].fields.duration.type
     ).toBe("string");

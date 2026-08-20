@@ -890,6 +890,7 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       ...klingOmniMultiShotFields,
       customize_multi_shots: {
         type: "boolean",
+        default: true,
         description:
           "Enable custom shots; upstream defaults true, so a prompt-only request should explicitly pass false or supply non-empty multi_prompt. Mutually exclusive with prefer_multi_shots.",
       },

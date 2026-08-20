@@ -286,6 +286,10 @@ describe("PRICING data", () => {
       kind: "tokens",
       rate: { input: 3, output: 15 },
     });
+    expect(PRICING.xai["grok-4.6"]).toMatchObject({
+      kind: "tokens",
+      rate: { input: 2, output: 6 },
+    });
     expect(PRICING.xai["grok-build-0.1"]).toMatchObject({
       kind: "tokens",
       rate: { input: 1, output: 2, cacheRead: 0.2 },

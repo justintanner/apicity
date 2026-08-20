@@ -220,6 +220,34 @@ const base = {
   input: "What is AI?",
 };
 
+describe("XaiResponseReasoningSchema effort vocabulary", () => {
+  it("accepts xhigh reasoning effort", () => {
+    const result = XaiResponseRequestSchema.safeParse({
+      model: "grok-4.6",
+      input: "ping",
+      reasoning: { effort: "xhigh" },
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects reasoning effort outside the closed vocabulary", () => {
+    const result = XaiResponseRequestSchema.safeParse({
+      model: "grok-4.6",
+      input: "ping",
+      reasoning: { effort: "ultra" },
+    });
+
+    expect(result.success).toBe(false);
+    expect(
+      result.error?.issues.some(
+        (issue) =>
+          issue.path.includes("reasoning") && issue.path.includes("effort")
+      )
+    ).toBe(true);
+  });
+});
+
 describe("XaiResponseRequestSchema search contract", () => {
   describe("search_parameters is retired", () => {
     it("accepts a request that omits search_parameters", () => {

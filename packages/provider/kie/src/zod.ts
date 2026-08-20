@@ -2221,7 +2221,7 @@ export const KlingOmniTextToVideoInputSchema = z.object({
   prompt: KlingOmniPromptSchema,
   customize_multi_shots: z
     .boolean()
-    .optional()
+    .default(true)
     .describe(
       "Enable custom shots. Upstream defaults this to true for text-to-video, which requires a non-empty multi_prompt; explicitly pass false for a prompt-only request."
     ),

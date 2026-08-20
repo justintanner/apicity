@@ -172,6 +172,15 @@ describe("Kling 3.0 Omni request schemas", () => {
         audio: false,
       },
     } satisfies KlingOmniTransformationRequest;
+    const videoWithImagesDefaultAspectRatio = {
+      model: "kling-3.0-omni/transformation",
+      input: {
+        prompt: PROMPT,
+        image_urls: [IMAGE_1],
+        video_urls: [VIDEO],
+        audio: false,
+      },
+    } satisfies KlingOmniTransformationRequest;
 
     expect(
       KlingOmniTransformationRequestSchema.safeParse(videoOnly).success
@@ -179,8 +188,14 @@ describe("Kling 3.0 Omni request schemas", () => {
     expect(
       KlingOmniTransformationRequestSchema.safeParse(videoWithImages).success
     ).toBe(true);
+    expect(
+      KlingOmniTransformationRequestSchema.safeParse(
+        videoWithImagesDefaultAspectRatio
+      ).success
+    ).toBe(true);
     expectAccepted(videoOnly);
     expectAccepted(videoWithImages);
+    expectAccepted(videoWithImagesDefaultAspectRatio);
   });
 
   it("rejects the acceptance-criteria payload failures", () => {
@@ -255,8 +270,17 @@ describe("Kling 3.0 Omni request schemas", () => {
     const base = {
       model: "kling-3.0-omni/text-to-video",
       input: { prompt: PROMPT },
-    };
+    } satisfies KlingOmniTextToVideoRequest;
 
+    expectRejectedAt(
+      KlingOmniTextToVideoRequestSchema,
+      base,
+      "input.multi_prompt"
+    );
+    expectAccepted({
+      ...base,
+      input: { ...base.input, customize_multi_shots: false },
+    });
     expectRejectedAt(
       KlingOmniTextToVideoRequestSchema,
       {

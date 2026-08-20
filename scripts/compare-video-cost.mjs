@@ -715,6 +715,7 @@ export const lineup = [
       model: "kling-3.0-omni/text-to-video",
       input: {
         prompt: "x",
+        customize_multi_shots: false,
         resolution: "720p",
         duration: 5,
         audio: false,
@@ -729,6 +730,7 @@ export const lineup = [
       model: "kling-3.0-omni/text-to-video",
       input: {
         prompt: "x",
+        customize_multi_shots: false,
         resolution: "720p",
         duration: 5,
         audio: true,
@@ -743,6 +745,7 @@ export const lineup = [
       model: "kling-3.0-omni/text-to-video",
       input: {
         prompt: "x",
+        customize_multi_shots: false,
         resolution: "1080p",
         duration: 5,
         audio: false,
@@ -757,6 +760,7 @@ export const lineup = [
       model: "kling-3.0-omni/text-to-video",
       input: {
         prompt: "x",
+        customize_multi_shots: false,
         resolution: "1080p",
         duration: 5,
         audio: true,
@@ -771,6 +775,7 @@ export const lineup = [
       model: "kling-3.0-omni/text-to-video",
       input: {
         prompt: "x",
+        customize_multi_shots: false,
         resolution: "4k",
         duration: 5,
         audio: false,
@@ -785,6 +790,7 @@ export const lineup = [
       model: "kling-3.0-omni/text-to-video",
       input: {
         prompt: "x",
+        customize_multi_shots: false,
         resolution: "4k",
         duration: 5,
         audio: true,

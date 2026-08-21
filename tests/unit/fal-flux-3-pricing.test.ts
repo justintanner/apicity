@@ -91,4 +91,24 @@ describe("fal FLUX 3 pricing", () => {
     expect(at1080p.usd).toBeCloseTo(2.9, 10);
     expect(at1080p.warnings).toEqual([]);
   });
+
+  it("prices extend-video at its higher published resolution tiers", () => {
+    const at720p = estimate("blackforestlabs/flux-3/extend-video", {
+      prompt: "p",
+      video_url: "https://example.com/video.mp4",
+      resolution: "720p",
+      duration: 5,
+    });
+    expect(at720p.usd).toBeCloseTo(2.05, 10);
+    expect(at720p.warnings).toEqual([]);
+
+    const at1080p = estimate("blackforestlabs/flux-3/extend-video", {
+      prompt: "p",
+      video_url: "https://example.com/video.mp4",
+      resolution: "1080p",
+      duration: 10,
+    });
+    expect(at1080p.usd).toBeCloseTo(5.3, 10);
+    expect(at1080p.warnings).toEqual([]);
+  });
 });

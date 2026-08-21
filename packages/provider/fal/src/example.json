@@ -49,6 +49,18 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST blackforestlabs.flux3.extendVideo": {
+    "source": "fal/flux-3-extend-video",
+    "payload": {
+      "prompt": "The jump continues into a smooth landing",
+      "video_url": "<inline video/mp4 data URL — replace with a real URL or upload>",
+      "resolution": "720p",
+      "duration": 5,
+      "generate_audio": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST blackforestlabs.flux3.firstLastFrameToVideo": {
     "source": "fal/flux-3-first-last-frame-to-video",
     "payload": {

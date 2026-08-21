@@ -2032,6 +2032,22 @@ export type FalFlux3KeyframesToVideoRequestInput =
 export type FalFlux3KeyframesToVideoParsedRequest = z.output<
   typeof FalFlux3KeyframesToVideoRequestSchema
 >;
+
+export const FalFlux3ExtendVideoRequestSchema =
+  FalFlux3TextToVideoRequestSchema.extend({
+    video_url: z.string(),
+  });
+
+export type FalFlux3ExtendVideoParams = z.infer<
+  typeof FalFlux3ExtendVideoRequestSchema
+>;
+export type FalFlux3ExtendVideoRequest = z.input<
+  typeof FalFlux3ExtendVideoRequestSchema
+>;
+export type FalFlux3ExtendVideoRequestInput = FalFlux3ExtendVideoRequest;
+export type FalFlux3ExtendVideoParsedRequest = z.output<
+  typeof FalFlux3ExtendVideoRequestSchema
+>;
 export type FalOptions = z.infer<typeof FalOptionsSchema>;
 
 // ---------------------------------------------------------------------------
@@ -2040,6 +2056,7 @@ export type FalOptions = z.infer<typeof FalOptionsSchema>;
 // ---------------------------------------------------------------------------
 
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "blackforestlabs/flux-3/extend-video": FalFlux3ExtendVideoRequestSchema,
   "blackforestlabs/flux-3/first-last-frame-to-video":
     FalFlux3FirstLastFrameToVideoRequestSchema,
   "blackforestlabs/flux-3/image-to-video": FalFlux3ImageToVideoRequestSchema,

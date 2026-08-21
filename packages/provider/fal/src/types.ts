@@ -57,6 +57,7 @@ export type {
   FalFlux3TextToVideoParams,
   FalFlux3ImageToVideoParams,
   FalFlux3FirstLastFrameToVideoParams,
+  FalFlux3KeyframesToVideoParams,
   FalXaiGrokImagineImageParams,
   FalXaiGrokImagineImageEditParams,
   FalQwenImageParams,
@@ -165,6 +166,9 @@ export type {
   FalFlux3FirstLastFrameToVideoRequest,
   FalFlux3FirstLastFrameToVideoRequestInput,
   FalFlux3FirstLastFrameToVideoParsedRequest,
+  FalFlux3KeyframesToVideoRequest,
+  FalFlux3KeyframesToVideoRequestInput,
+  FalFlux3KeyframesToVideoParsedRequest,
   FalXaiGrokImagineImageEditRequest,
   FalXaiGrokImagineImageEditRequestInput,
   FalXaiGrokImagineImageEditParsedRequest,
@@ -276,6 +280,7 @@ import type {
   FalFlux3TextToVideoRequest,
   FalFlux3ImageToVideoRequest,
   FalFlux3FirstLastFrameToVideoRequest,
+  FalFlux3KeyframesToVideoRequest,
   FalXaiGrokImagineImageEditRequest,
   FalSora2TextToVideoRequest,
   FalSora2ImageToVideoRequest,
@@ -650,6 +655,11 @@ export type FalFlux3AspectRatio =
 export type FalFlux3Resolution = "720p" | "1080p";
 
 export type FalFlux3Duration = "auto" | number;
+
+export interface FalFlux3Keyframe {
+  image_url: string;
+  frame_index: number;
+}
 
 export interface FalFlux3VideoResponse {
   video: FalVideoFile;
@@ -1956,9 +1966,17 @@ type FalFlux3FirstLastFrameToVideoFn = ((
   schema: ApicitySchema<FalFlux3FirstLastFrameToVideoRequest>;
 };
 
+type FalFlux3KeyframesToVideoFn = ((
+  params: FalFlux3KeyframesToVideoRequest,
+  signal?: AbortSignal
+) => Promise<FalFlux3VideoResponse>) & {
+  schema: ApicitySchema<FalFlux3KeyframesToVideoRequest>;
+};
+
 export interface FalRunFlux3Namespace {
   firstLastFrameToVideo: FalFlux3FirstLastFrameToVideoFn;
   imageToVideo: FalFlux3ImageToVideoFn;
+  keyframesToVideo: FalFlux3KeyframesToVideoFn;
   textToVideo: FalFlux3TextToVideoFn;
 }
 

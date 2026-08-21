@@ -90,6 +90,31 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST blackforestlabs.flux3.keyframesToVideo": {
+    "source": "fal/flux-3-keyframes-to-video",
+    "payload": {
+      "prompt": "A person transforms into a cat in one continuous shot",
+      "keyframes": [
+        {
+          "image_url": "<inline image/jpeg data URL — replace with a real URL or upload>",
+          "frame_index": 0
+        },
+        {
+          "image_url": "<inline image/jpeg data URL — replace with a real URL or upload>",
+          "frame_index": 48
+        },
+        {
+          "image_url": "<inline image/jpeg data URL — replace with a real URL or upload>",
+          "frame_index": 96
+        }
+      ],
+      "resolution": "720p",
+      "duration": 5,
+      "generate_audio": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST blackforestlabs.flux3.textToVideo": {
     "source": "fal/flux-3-text-to-video",
     "payload": {

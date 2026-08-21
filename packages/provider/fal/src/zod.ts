@@ -2007,6 +2007,31 @@ export type FalFlux3FirstLastFrameToVideoRequestInput =
 export type FalFlux3FirstLastFrameToVideoParsedRequest = z.output<
   typeof FalFlux3FirstLastFrameToVideoRequestSchema
 >;
+
+export const FalFlux3KeyframeSchema = z.object({
+  image_url: z.string(),
+  frame_index: z.number().int().min(0),
+});
+
+const Flux3KeyframesSchema = z.array(FalFlux3KeyframeSchema).min(1).max(10);
+
+export const FalFlux3KeyframesToVideoRequestSchema =
+  FalFlux3TextToVideoRequestSchema.extend({
+    duration: Flux3NumericDurationSchema.optional(),
+    keyframes: Flux3KeyframesSchema,
+  });
+
+export type FalFlux3KeyframesToVideoParams = z.infer<
+  typeof FalFlux3KeyframesToVideoRequestSchema
+>;
+export type FalFlux3KeyframesToVideoRequest = z.input<
+  typeof FalFlux3KeyframesToVideoRequestSchema
+>;
+export type FalFlux3KeyframesToVideoRequestInput =
+  FalFlux3KeyframesToVideoRequest;
+export type FalFlux3KeyframesToVideoParsedRequest = z.output<
+  typeof FalFlux3KeyframesToVideoRequestSchema
+>;
 export type FalOptions = z.infer<typeof FalOptionsSchema>;
 
 // ---------------------------------------------------------------------------
@@ -2018,6 +2043,8 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "blackforestlabs/flux-3/first-last-frame-to-video":
     FalFlux3FirstLastFrameToVideoRequestSchema,
   "blackforestlabs/flux-3/image-to-video": FalFlux3ImageToVideoRequestSchema,
+  "blackforestlabs/flux-3/keyframes-to-video":
+    FalFlux3KeyframesToVideoRequestSchema,
   "blackforestlabs/flux-3/text-to-video": FalFlux3TextToVideoRequestSchema,
   "bytedance/seedance-2.0/image-to-video":
     FalSeedance2p0ImageToVideoRequestSchema,

@@ -371,6 +371,7 @@ export const MODEL_SLUGS = {
     // Video — FLUX 3
     "blackforestlabs/flux-3/first-last-frame-to-video": "flux3",
     "blackforestlabs/flux-3/image-to-video": "flux3",
+    "blackforestlabs/flux-3/keyframes-to-video": "flux3",
     "blackforestlabs/flux-3/text-to-video": "flux3",
 
     // Video — Seedance 2.0
@@ -741,6 +742,7 @@ export const MODEL_DISPLAY = {
 
     "blackforestlabs/flux-3/first-last-frame-to-video": "FLUX 3",
     "blackforestlabs/flux-3/image-to-video": "FLUX 3",
+    "blackforestlabs/flux-3/keyframes-to-video": "FLUX 3",
     "blackforestlabs/flux-3/text-to-video": "FLUX 3",
 
     "bytedance/seedance-2.0/text-to-video": "Seedance 2",

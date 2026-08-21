@@ -83,6 +83,7 @@ import {
   FalWanV2p7EditVideoResponse,
   FalFlux3TextToVideoRequest,
   FalFlux3ImageToVideoRequest,
+  FalFlux3FirstLastFrameToVideoRequest,
   FalFlux3VideoResponse,
   FalXaiGrokImagineImageRequest,
   FalXaiGrokImagineImageResponse,
@@ -171,6 +172,7 @@ import {
   FalWanV2p7EditVideoRequestSchema,
   FalFlux3TextToVideoRequestSchema,
   FalFlux3ImageToVideoRequestSchema,
+  FalFlux3FirstLastFrameToVideoRequestSchema,
   FalXaiGrokImagineImageRequestSchema,
   FalXaiGrokImagineImageEditRequestSchema,
   FalQwenImageRequestSchema,
@@ -705,6 +707,19 @@ export function createFal(opts: FalOptions): FalProvider {
     "POST",
     "/blackforestlabs/flux-3/image-to-video",
     FalFlux3ImageToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://api.fal.ai/v1/blackforestlabs/flux-3/first-last-frame-to-video
+  // Docs: https://fal.ai/models/blackforestlabs/flux-3/first-last-frame-to-video/api
+  const blackforestlabsFlux3FirstLastFrameToVideo = jsonBody<
+    FalFlux3FirstLastFrameToVideoRequest,
+    FalFlux3VideoResponse
+  >(
+    "POST",
+    "/blackforestlabs/flux-3/first-last-frame-to-video",
+    FalFlux3FirstLastFrameToVideoRequestSchema,
     { base: runBaseURL }
   );
 
@@ -1407,6 +1422,10 @@ export function createFal(opts: FalOptions): FalProvider {
   const run: FalRunNamespace = {
     blackforestlabs: {
       flux3: {
+        // sig-ok: stylistic dotPath divergence from URL
+        // POST https://api.fal.ai/v1/blackforestlabs/flux-3/first-last-frame-to-video
+        // Docs: https://fal.ai/models/blackforestlabs/flux-3/first-last-frame-to-video/api
+        firstLastFrameToVideo: blackforestlabsFlux3FirstLastFrameToVideo,
         // sig-ok: stylistic dotPath divergence from URL
         // POST https://api.fal.ai/v1/blackforestlabs/flux-3/image-to-video
         // Docs: https://fal.ai/models/blackforestlabs/flux-3/image-to-video/api

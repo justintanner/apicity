@@ -519,6 +519,13 @@ export const fal: Record<string, ModelPricing> = {
     flux3Seconds,
     flux3AsOf
   ),
+  "blackforestlabs/flux-3/first-last-frame-to-video": perSecondTiered(
+    "blackforestlabs/flux-3/first-last-frame-to-video",
+    [resolutionTier("720p")],
+    FLUX_3_RATES,
+    numericSeconds(5),
+    flux3AsOf
+  ),
 
   // Video — Seedance 2.0 (token-metered; see seedanceRates)
   "bytedance/seedance-2.0/text-to-video": perSecondTiered(

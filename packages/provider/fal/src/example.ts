@@ -65,6 +65,19 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST blackforestlabs.flux3.firstLastFrameToVideo": {
+    "source": "fal/flux-3-first-last-frame-to-video",
+    "payload": {
+      "prompt": "A cat walks across the frame in one continuous shot",
+      "start_image_url": "<inline image/jpeg data URL — replace with a real URL or upload>",
+      "end_image_url": "<inline image/jpeg data URL — replace with a real URL or upload>",
+      "resolution": "720p",
+      "duration": 5,
+      "generate_audio": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST blackforestlabs.flux3.imageToVideo": {
     "source": "fal/flux-3-image-to-video",
     "payload": {

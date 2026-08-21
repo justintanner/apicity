@@ -1452,25 +1452,10 @@ export function createFal(opts: FalOptions): FalProvider {
   const run: FalRunNamespace = {
     blackforestlabs: {
       flux3: {
-        // sig-ok: stylistic dotPath divergence from URL
-        // POST https://api.fal.ai/v1/blackforestlabs/flux-3/extend-video
-        // Docs: https://fal.ai/models/blackforestlabs/flux-3/extend-video/api
         extendVideo: blackforestlabsFlux3ExtendVideo,
-        // sig-ok: stylistic dotPath divergence from URL
-        // POST https://api.fal.ai/v1/blackforestlabs/flux-3/first-last-frame-to-video
-        // Docs: https://fal.ai/models/blackforestlabs/flux-3/first-last-frame-to-video/api
         firstLastFrameToVideo: blackforestlabsFlux3FirstLastFrameToVideo,
-        // sig-ok: stylistic dotPath divergence from URL
-        // POST https://api.fal.ai/v1/blackforestlabs/flux-3/image-to-video
-        // Docs: https://fal.ai/models/blackforestlabs/flux-3/image-to-video/api
         imageToVideo: blackforestlabsFlux3ImageToVideo,
-        // sig-ok: stylistic dotPath divergence from URL
-        // POST https://api.fal.ai/v1/blackforestlabs/flux-3/keyframes-to-video
-        // Docs: https://fal.ai/models/blackforestlabs/flux-3/keyframes-to-video/api
         keyframesToVideo: blackforestlabsFlux3KeyframesToVideo,
-        // sig-ok: stylistic dotPath divergence from URL
-        // POST https://api.fal.ai/v1/blackforestlabs/flux-3/text-to-video
-        // Docs: https://fal.ai/models/blackforestlabs/flux-3/text-to-video/api
         textToVideo: blackforestlabsFlux3TextToVideo,
       },
     },

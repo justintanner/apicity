@@ -23,6 +23,10 @@ const SOURCE_PIN_TESTS = [
   "tests/unit/kie-pricing-reconciliation.test.ts",
 ] as const;
 
+function readRepoFile(relativePath: string): string {
+  return fs.readFileSync(path.join(repoRoot, relativePath), "utf8");
+}
+
 describe("cross-cutting repo-wide guard tests", () => {
   it("lists recording-enumeration, surface-inventory, and source-pin tests", () => {
     for (const path of RECORDING_ENUMERATION_TESTS) {
@@ -89,6 +93,31 @@ describe("cross-cutting repo-wide guard tests", () => {
     first.push("tests/integration/should-not-persist.test.ts");
     expect(listCrossCuttingTests()).not.toContain(
       "tests/integration/should-not-persist.test.ts"
+    );
+  });
+
+  it("keeps provider filters off both cross-cutting test runs", () => {
+    const preflightSource = readRepoFile("scripts/preflight-provider.mjs");
+    const preflightRun = preflightSource.match(
+      /run\("cross-cutting repo-wide guard tests", "pnpm", \[[\s\S]*?\n\]\);/
+    )?.[0];
+
+    expect(preflightRun).toBeDefined();
+    expect(preflightRun).toContain("...crossCuttingTests");
+    expect(preflightRun).not.toContain("...passthrough");
+    expect(preflightSource).toMatch(
+      /run\(`test:provider \$\{provider\}`[\s\S]*?\.\.\.passthrough/
+    );
+
+    const affectedSource = readRepoFile("scripts/test-affected.mjs");
+    const affectedRun = affectedSource.match(
+      /run\("pnpm", \["run", "test:run", \.\.\.crossCutting[^\n]*\]\);/
+    )?.[0];
+
+    expect(affectedRun).toBeDefined();
+    expect(affectedRun).not.toContain("...options.passthrough");
+    expect(affectedSource).toContain(
+      '["run", "test:provider", provider, ...options.passthrough]'
     );
   });
 });

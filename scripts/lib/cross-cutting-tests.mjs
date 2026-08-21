@@ -50,6 +50,9 @@ export const CROSS_CUTTING_TESTS = [
 /**
  * Return the cross-cutting test paths, failing loudly if any listed file is
  * missing so a rename/removal cannot silently reopen the gate gap.
+ *
+ * @param {{ alreadySelected?: string[] }} [options]
+ * @returns {string[]}
  */
 export function listCrossCuttingTests({ alreadySelected = [] } = {}) {
   for (const relativePath of CROSS_CUTTING_TESTS) {

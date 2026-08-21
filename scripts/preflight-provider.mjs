@@ -154,13 +154,13 @@ run(`test:provider ${provider}`, "pnpm", [
 
 // Step `cross-cutting`: repo-wide guards that provider scopes do not select
 // consistently. De-duplicate files already replayed by the provider unless
-// passthrough filters make that unsafe. Filesystem/source-parse only; no
-// network or replay.
+// passthrough filters make that unsafe. Provider filters are deliberately not
+// forwarded: the guard run must execute every selected test. These tests are
+// filesystem/source-parse only; no network or replay.
 run("cross-cutting repo-wide guard tests", "pnpm", [
   "run",
   "test:run",
   ...crossCuttingTests,
-  ...passthrough,
 ]);
 
 console.error(`\n✓ provider preflight green: ${provider}`);

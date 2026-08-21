@@ -57,7 +57,9 @@ if (decision.mode === "providers") {
   console.error(
     `Cross-cutting repo-wide guard tests: ${crossCutting.join(", ")}`
   );
-  run("pnpm", ["run", "test:run", ...crossCutting, ...options.passthrough]);
+  // Passthrough filters belong only to the provider runs above. Forwarding a
+  // no-match filter here would skip every guard while still exiting zero.
+  run("pnpm", ["run", "test:run", ...crossCutting]);
 
   process.exit(0);
 }

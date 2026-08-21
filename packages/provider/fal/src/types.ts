@@ -55,6 +55,7 @@ export type {
   FalWanV2p7ReferenceToVideoParams,
   FalWanV2p7EditVideoParams,
   FalFlux3TextToVideoParams,
+  FalFlux3ImageToVideoParams,
   FalXaiGrokImagineImageParams,
   FalXaiGrokImagineImageEditParams,
   FalQwenImageParams,
@@ -157,6 +158,9 @@ export type {
   FalFlux3TextToVideoRequest,
   FalFlux3TextToVideoRequestInput,
   FalFlux3TextToVideoParsedRequest,
+  FalFlux3ImageToVideoRequest,
+  FalFlux3ImageToVideoRequestInput,
+  FalFlux3ImageToVideoParsedRequest,
   FalXaiGrokImagineImageEditRequest,
   FalXaiGrokImagineImageEditRequestInput,
   FalXaiGrokImagineImageEditParsedRequest,
@@ -266,6 +270,7 @@ import type {
   FalWanV2p7ReferenceToVideoRequest,
   FalWanV2p7EditVideoRequest,
   FalFlux3TextToVideoRequest,
+  FalFlux3ImageToVideoRequest,
   FalXaiGrokImagineImageEditRequest,
   FalSora2TextToVideoRequest,
   FalSora2ImageToVideoRequest,
@@ -1932,7 +1937,15 @@ type FalFlux3TextToVideoFn = ((
   schema: ApicitySchema<FalFlux3TextToVideoRequest>;
 };
 
+type FalFlux3ImageToVideoFn = ((
+  params: FalFlux3ImageToVideoRequest,
+  signal?: AbortSignal
+) => Promise<FalFlux3VideoResponse>) & {
+  schema: ApicitySchema<FalFlux3ImageToVideoRequest>;
+};
+
 export interface FalRunFlux3Namespace {
+  imageToVideo: FalFlux3ImageToVideoFn;
   textToVideo: FalFlux3TextToVideoFn;
 }
 

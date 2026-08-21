@@ -1970,6 +1970,22 @@ export type FalFlux3TextToVideoRequestInput = FalFlux3TextToVideoRequest;
 export type FalFlux3TextToVideoParsedRequest = z.output<
   typeof FalFlux3TextToVideoRequestSchema
 >;
+
+export const FalFlux3ImageToVideoRequestSchema =
+  FalFlux3TextToVideoRequestSchema.extend({
+    image_url: z.string(),
+  });
+
+export type FalFlux3ImageToVideoParams = z.infer<
+  typeof FalFlux3ImageToVideoRequestSchema
+>;
+export type FalFlux3ImageToVideoRequest = z.input<
+  typeof FalFlux3ImageToVideoRequestSchema
+>;
+export type FalFlux3ImageToVideoRequestInput = FalFlux3ImageToVideoRequest;
+export type FalFlux3ImageToVideoParsedRequest = z.output<
+  typeof FalFlux3ImageToVideoRequestSchema
+>;
 export type FalOptions = z.infer<typeof FalOptionsSchema>;
 
 // ---------------------------------------------------------------------------
@@ -1978,6 +1994,7 @@ export type FalOptions = z.infer<typeof FalOptionsSchema>;
 // ---------------------------------------------------------------------------
 
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "blackforestlabs/flux-3/image-to-video": FalFlux3ImageToVideoRequestSchema,
   "blackforestlabs/flux-3/text-to-video": FalFlux3TextToVideoRequestSchema,
   "bytedance/seedance-2.0/image-to-video":
     FalSeedance2p0ImageToVideoRequestSchema,

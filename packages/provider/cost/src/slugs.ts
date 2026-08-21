@@ -369,6 +369,7 @@ export const MODEL_SLUGS = {
     "fal-ai/gpt-image-1.5/edit": "gi1p5",
 
     // Video — FLUX 3
+    "blackforestlabs/flux-3/image-to-video": "flux3",
     "blackforestlabs/flux-3/text-to-video": "flux3",
 
     // Video — Seedance 2.0
@@ -737,6 +738,7 @@ export const MODEL_DISPLAY = {
     "fal-ai/gpt-image-1.5": "GPT Image 1.5",
     "fal-ai/gpt-image-1.5/edit": "GPT Image 1.5 Edit",
 
+    "blackforestlabs/flux-3/image-to-video": "FLUX 3",
     "blackforestlabs/flux-3/text-to-video": "FLUX 3",
 
     "bytedance/seedance-2.0/text-to-video": "Seedance 2",

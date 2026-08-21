@@ -108,11 +108,11 @@ export const FAST_GATE_STEPS = Object.freeze([
   }),
   Object.freeze({
     id: "cross-cutting",
-    title: "cross-cutting recording-enumeration tests",
+    title: "cross-cutting repo-wide guard tests",
     prose: Object.freeze({
-      "CLAUDE.md": "cross-cutting recording-enumeration tests",
-      "README.md": "cross-cutting recording-enumeration tests",
-      "AGENTS.md": "cross-cutting recording-enumeration tests",
+      "CLAUDE.md": "cross-cutting repo-wide guard tests",
+      "README.md": "cross-cutting repo-wide guard tests",
+      "AGENTS.md": "cross-cutting repo-wide guard tests",
     }),
   }),
 ]);

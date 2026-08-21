@@ -70,6 +70,7 @@ interface TestManifest {
     pricingOnly: Array<{ key: string; disposition?: string }>;
   };
   snapshot: { sha256: string; metadataSha256: string };
+  source: { hashes: Record<string, string> };
   inventory: {
     baseline: {
       models: number;
@@ -885,6 +886,25 @@ describe("Kie pricing reconciliation", () => {
 
     await expect(runCheck({ root, manifest })).rejects.toMatchObject({
       code: "metadata-bytes-checksum-mismatch",
+    });
+  });
+
+  it("rejects a changed endpoint-docs source checksum", async () => {
+    const manifest = await readManifest();
+    manifest.source.hashes["scripts/endpoint-docs.tsv"] = "sha256:changed";
+
+    await expect(runCheck({ root, manifest })).rejects.toMatchObject({
+      code: "source-checksum-mismatch",
+    });
+  });
+
+  it("rejects a changed shared-slug source checksum", async () => {
+    const manifest = await readManifest();
+    manifest.source.hashes["packages/provider/cost/src/slugs.ts"] =
+      "sha256:changed";
+
+    await expect(runCheck({ root, manifest })).rejects.toMatchObject({
+      code: "source-checksum-mismatch",
     });
   });
 

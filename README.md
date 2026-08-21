@@ -247,7 +247,7 @@ MCP server's `--paygate-secret-file` wiring.
   typecheck (`typecheck:tests`, unscoped by
   design)<!-- fast-gate-step:typecheck-tests -->, `test:provider` for
   provider typecheck + replay<!-- fast-gate-step:test-provider -->, then the
-  cross-cutting recording-enumeration tests<!-- fast-gate-step:cross-cutting --><!-- fast-gate-steps:end -->.
+  cross-cutting repo-wide guard tests<!-- fast-gate-step:cross-cutting --><!-- fast-gate-steps:end -->.
   `<name-or-path>` can be `openai`,
   `packages/provider/openai/src/openai.ts`, or a matching
   `tests/integration/openai-*.test.ts` path. From a provider package,

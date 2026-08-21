@@ -3,9 +3,10 @@ import path from "node:path";
 import { repoRoot } from "./provider-scope.mjs";
 
 /**
- * Cross-cutting integration tests enumerate the ENTIRE tests/recordings corpus
- * and assert the discovered set matches a hardcoded allowlist. Because they are
- * not named after a single provider, the provider-scoped fast gates never run
+ * Cross-cutting repo-wide guards cover invariants that provider-scoped fast
+ * gates do not select consistently. Recording-enumeration guards walk the
+ * ENTIRE tests/recordings corpus and compare it with a hardcoded allowlist.
+ * Because they are not named after a single provider, provider-scoped runs skip
  * them:
  *
  *   - `test:provider <name>` resolves only `<name>*.test.ts`, in the top level
@@ -19,28 +20,38 @@ import { repoRoot } from "./provider-scope.mjs";
  * was missing from the allowlist reached main and went red in full CI, which in
  * turn suppressed the endpoint-telegram notification (ac-05hrc / ac-stb7o).
  *
- * The fast gates run these tests unconditionally so a broken recording allowlist
- * cannot pass the local merge gate. They are pure filesystem/JSON assertions (no
- * Polly, no network, ~1s), so the cost is negligible.
- *
- * Add any new test that walks the whole `tests/recordings` tree to this list.
- *
- * Also include inventory tests that compare committed TSV artifacts against the
- * live endpoint surface (e.g. endpoint-cost-tiers). Those are not provider-named
+ * Surface-inventory guards compare committed TSV artifacts against the live
+ * endpoint surface (e.g. endpoint-cost-tiers). Those are not provider-named
  * either, so without this list a bead that adds an endpoint can ship without its
  * cost-tier row and only go red in full CI on main (ac-t2gfln).
+ *
+ * Source-pin guards hash cross-provider files into a frozen manifest.
+ * `tests/unit/kie-pricing-reconciliation.test.ts` pins
+ * `packages/provider/cost/src/slugs.ts` and `scripts/endpoint-docs.tsv` among
+ * six source files. A diff confined to `packages/provider/cost/**` classifies as
+ * the `cost` scope, whose 13 tests do not include this guard, so the pin can go
+ * stale and fail only in full CI on main — exactly what `92323c18` repaired by
+ * hand (ac-bwk953).
+ *
+ * The fast gates run these guards so a broken repo-wide invariant cannot pass
+ * the local merge gate. They are filesystem- and source-parse-only (no Polly,
+ * no network) and cost about 5.7s on the reference machine.
+ *
+ * Add any whole-repo guard that provider scopes do not select consistently to
+ * this list.
  */
 export const CROSS_CUTTING_TESTS = [
   "tests/integration/upload-recordings.test.ts",
   "tests/integration/multipart-recordings.test.ts",
   "tests/unit/endpoint-cost-tiers.test.ts",
+  "tests/unit/kie-pricing-reconciliation.test.ts",
 ];
 
 /**
  * Return the cross-cutting test paths, failing loudly if any listed file is
  * missing so a rename/removal cannot silently reopen the gate gap.
  */
-export function listCrossCuttingTests() {
+export function listCrossCuttingTests({ alreadySelected = [] } = {}) {
   for (const relativePath of CROSS_CUTTING_TESTS) {
     if (!existsSync(path.join(repoRoot, relativePath))) {
       throw new Error(
@@ -51,5 +62,11 @@ export function listCrossCuttingTests() {
     }
   }
 
-  return [...CROSS_CUTTING_TESTS];
+  const selected = new Set(alreadySelected);
+  const remaining = CROSS_CUTTING_TESTS.filter((path) => !selected.has(path));
+
+  // `pnpm run test:run` with zero file arguments runs the entire suite. Fall
+  // back to the full list instead of turning a fully de-duplicated selection
+  // into the gate's most expensive step.
+  return remaining.length > 0 ? remaining : [...CROSS_CUTTING_TESTS];
 }

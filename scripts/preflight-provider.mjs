@@ -29,12 +29,14 @@
  * whichever provider it was invoked for. Why that step exists and what it
  * costs: scripts/lib/tests-project.mjs.
  *
- * Step `cross-cutting` runs the cross-cutting integration tests (see
- * scripts/lib/cross-cutting-tests.mjs) that enumerate ALL recordings and assert
- * against a hardcoded allowlist. They are not provider-scoped, so `test:provider`
- * alone skips them and a recording added under one provider can break the
- * allowlist without failing this gate — the gap that let a broken allowlist
- * reach main and go red in full CI (ac-05hrc). They are filesystem-only (~1s).
+ * Step `cross-cutting` runs the repo-wide guards in
+ * scripts/lib/cross-cutting-tests.mjs that provider scopes do not select
+ * consistently: recording-corpus allowlists, endpoint-surface inventory, and
+ * cross-provider source pins. Without this step, provider-scoped work can leave
+ * a whole-repo invariant stale until full CI — the gap behind ac-05hrc,
+ * ac-t2gfln, and the `92323c18` hand repair. They are filesystem- and
+ * source-parse-only (no Polly, no network) and cost about 5.7s on the reference
+ * machine.
  *
  * For typecheck-only loops, use `pnpm run typecheck:provider -- <provider>`.
  *
@@ -83,7 +85,9 @@ if (tests.length === 0) {
 // Only the provider package + its tests — NOT the whole root tree.
 const targets = [pkgDir, ...tests];
 
-const crossCuttingTests = listCrossCuttingTests();
+const crossCuttingTests = listCrossCuttingTests({
+  alreadySelected: passthrough.length === 0 ? tests : [],
+});
 
 console.error(`Fast provider preflight: ${provider}`);
 console.error("Steps:");
@@ -148,11 +152,11 @@ run(`test:provider ${provider}`, "pnpm", [
   ...passthrough,
 ]);
 
-// Step `cross-cutting`: recording-enumeration tests. Not provider-scoped, so
-// test:provider skips them — but a recording added under this provider can
-// break their whole-corpus allowlist. Run them here so the fast gate cannot
-// pass a broken allowlist (ac-05hrc). Filesystem-only, no network/replay.
-run("cross-cutting recording tests", "pnpm", [
+// Step `cross-cutting`: repo-wide guards that provider scopes do not select
+// consistently. De-duplicate files already replayed by the provider unless
+// passthrough filters make that unsafe. Filesystem/source-parse only; no
+// network or replay.
+run("cross-cutting repo-wide guard tests", "pnpm", [
   "run",
   "test:run",
   ...crossCuttingTests,

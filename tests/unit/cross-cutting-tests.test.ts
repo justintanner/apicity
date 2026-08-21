@@ -18,12 +18,20 @@ const SURFACE_INVENTORY_TESTS = [
   "tests/unit/endpoint-cost-tiers.test.ts",
 ] as const;
 
-describe("cross-cutting integration tests", () => {
-  it("lists recording-enumeration and surface-inventory tests", () => {
+// Source-pin suite (re-hashes cross-provider files against a frozen manifest).
+const SOURCE_PIN_TESTS = [
+  "tests/unit/kie-pricing-reconciliation.test.ts",
+] as const;
+
+describe("cross-cutting repo-wide guard tests", () => {
+  it("lists recording-enumeration, surface-inventory, and source-pin tests", () => {
     for (const path of RECORDING_ENUMERATION_TESTS) {
       expect(CROSS_CUTTING_TESTS).toContain(path);
     }
     for (const path of SURFACE_INVENTORY_TESTS) {
+      expect(CROSS_CUTTING_TESTS).toContain(path);
+    }
+    for (const path of SOURCE_PIN_TESTS) {
       expect(CROSS_CUTTING_TESTS).toContain(path);
     }
   });
@@ -54,6 +62,26 @@ describe("cross-cutting integration tests", () => {
       const source = fs.readFileSync(path.join(repoRoot, relativePath), "utf8");
       expect(source, relativePath).toContain("endpoint-cost-tiers.tsv");
     }
+  });
+
+  it("source-pin tests assert checksum-mismatch detection", () => {
+    for (const relativePath of SOURCE_PIN_TESTS) {
+      const source = fs.readFileSync(path.join(repoRoot, relativePath), "utf8");
+      expect(source, relativePath).toContain("source-checksum-mismatch");
+    }
+  });
+
+  it("filters tests already selected by a provider scope", () => {
+    const [alreadySelected, ...remaining] = CROSS_CUTTING_TESTS;
+    expect(
+      listCrossCuttingTests({ alreadySelected: [alreadySelected] })
+    ).toEqual(remaining);
+  });
+
+  it("never returns an empty selection when a scope covers every entry", () => {
+    expect(
+      listCrossCuttingTests({ alreadySelected: [...CROSS_CUTTING_TESTS] })
+    ).toEqual(CROSS_CUTTING_TESTS);
   });
 
   it("returns a fresh copy so callers cannot mutate the source list", () => {

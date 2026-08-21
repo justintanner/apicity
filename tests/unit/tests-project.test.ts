@@ -224,7 +224,7 @@ describe("tests-project helper", () => {
         ["lint", "lint:provider"],
         ["typecheck-tests", "TESTS_TYPECHECK_STEP.title"],
         ["test-provider", "test:provider"],
-        ["cross-cutting", "cross-cutting recording tests"],
+        ["cross-cutting", "cross-cutting repo-wide guard tests"],
       ];
 
       expect(callSiteLabels.map(([id]) => id)).toEqual(

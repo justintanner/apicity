@@ -1950,17 +1950,16 @@ const Flux3DurationSchema = z.union([
 
 const Flux3NumericDurationSchema = z.number().int().min(5).max(20);
 
-const Flux3VideoParamsSchema = z.object({
+const Flux3VideoRequestBaseSchema = z.object({
   prompt: z.string(),
   aspect_ratio: Flux3AspectRatioSchema.optional(),
   duration: Flux3DurationSchema.optional(),
   generate_audio: z.boolean().optional(),
+  resolution: Flux3ResolutionSchema.optional(),
   safety_tolerance: z.number().int().min(0).max(4).optional(),
 });
 
-export const FalFlux3TextToVideoRequestSchema = Flux3VideoParamsSchema.extend({
-  resolution: Flux3ResolutionSchema.optional(),
-});
+export const FalFlux3TextToVideoRequestSchema = Flux3VideoRequestBaseSchema;
 
 export type FalFlux3TextToVideoParams = z.infer<
   typeof FalFlux3TextToVideoRequestSchema
@@ -1974,7 +1973,7 @@ export type FalFlux3TextToVideoParsedRequest = z.output<
 >;
 
 export const FalFlux3ImageToVideoRequestSchema =
-  FalFlux3TextToVideoRequestSchema.extend({
+  Flux3VideoRequestBaseSchema.extend({
     image_url: z.string(),
   });
 
@@ -1990,7 +1989,7 @@ export type FalFlux3ImageToVideoParsedRequest = z.output<
 >;
 
 export const FalFlux3FirstLastFrameToVideoRequestSchema =
-  FalFlux3TextToVideoRequestSchema.extend({
+  Flux3VideoRequestBaseSchema.extend({
     duration: Flux3NumericDurationSchema.optional(),
     start_image_url: z.string(),
     end_image_url: z.string(),
@@ -2016,7 +2015,7 @@ export const FalFlux3KeyframeSchema = z.object({
 const Flux3KeyframesSchema = z.array(FalFlux3KeyframeSchema).min(1).max(10);
 
 export const FalFlux3KeyframesToVideoRequestSchema =
-  FalFlux3TextToVideoRequestSchema.extend({
+  Flux3VideoRequestBaseSchema.extend({
     duration: Flux3NumericDurationSchema.optional(),
     keyframes: Flux3KeyframesSchema,
   });
@@ -2034,7 +2033,7 @@ export type FalFlux3KeyframesToVideoParsedRequest = z.output<
 >;
 
 export const FalFlux3ExtendVideoRequestSchema =
-  FalFlux3TextToVideoRequestSchema.extend({
+  Flux3VideoRequestBaseSchema.extend({
     video_url: z.string(),
   });
 

@@ -54,6 +54,7 @@ export type {
   FalWanV2p7ImageToVideoParams,
   FalWanV2p7ReferenceToVideoParams,
   FalWanV2p7EditVideoParams,
+  FalFlux3TextToVideoParams,
   FalXaiGrokImagineImageParams,
   FalXaiGrokImagineImageEditParams,
   FalQwenImageParams,
@@ -153,6 +154,9 @@ export type {
   FalWanV2p7EditVideoRequest,
   FalWanV2p7EditVideoRequestInput,
   FalWanV2p7EditVideoParsedRequest,
+  FalFlux3TextToVideoRequest,
+  FalFlux3TextToVideoRequestInput,
+  FalFlux3TextToVideoParsedRequest,
   FalXaiGrokImagineImageEditRequest,
   FalXaiGrokImagineImageEditRequestInput,
   FalXaiGrokImagineImageEditParsedRequest,
@@ -261,6 +265,7 @@ import type {
   FalWanV2p7ImageToVideoRequest,
   FalWanV2p7ReferenceToVideoRequest,
   FalWanV2p7EditVideoRequest,
+  FalFlux3TextToVideoRequest,
   FalXaiGrokImagineImageEditRequest,
   FalSora2TextToVideoRequest,
   FalSora2ImageToVideoRequest,
@@ -618,6 +623,27 @@ export interface FalVideoFile extends FalFile {
   fps?: number;
   duration?: number;
   num_frames?: number;
+}
+
+// ==================== FLUX 3 (Black Forest Labs) ====================
+
+export type FalFlux3AspectRatio =
+  | "auto"
+  | "21:9"
+  | "2:1"
+  | "16:9"
+  | "4:3"
+  | "1:1"
+  | "3:4"
+  | "9:16";
+
+export type FalFlux3Resolution = "720p" | "1080p";
+
+export type FalFlux3Duration = "auto" | number;
+
+export interface FalFlux3VideoResponse {
+  video: FalVideoFile;
+  seed: number;
 }
 
 // ==================== ElevenLabs Speech to Text Scribe V2 ====================
@@ -1899,7 +1925,23 @@ export interface FalRunHunyuanNamespace {
   v3: FalRunHunyuanV3Namespace;
 }
 
+type FalFlux3TextToVideoFn = ((
+  params: FalFlux3TextToVideoRequest,
+  signal?: AbortSignal
+) => Promise<FalFlux3VideoResponse>) & {
+  schema: ApicitySchema<FalFlux3TextToVideoRequest>;
+};
+
+export interface FalRunFlux3Namespace {
+  textToVideo: FalFlux3TextToVideoFn;
+}
+
+export interface FalRunBlackforestlabsNamespace {
+  flux3: FalRunFlux3Namespace;
+}
+
 export interface FalRunNamespace {
+  blackforestlabs: FalRunBlackforestlabsNamespace;
   bytedance: FalRunBytedanceNamespace;
   hunyuan: FalRunHunyuanNamespace;
   klingVideo: FalRunKlingVideoNamespace;

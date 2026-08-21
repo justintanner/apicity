@@ -81,6 +81,8 @@ import {
   FalWanV2p7ReferenceToVideoResponse,
   FalWanV2p7EditVideoRequest,
   FalWanV2p7EditVideoResponse,
+  FalFlux3TextToVideoRequest,
+  FalFlux3VideoResponse,
   FalXaiGrokImagineImageRequest,
   FalXaiGrokImagineImageResponse,
   FalXaiGrokImagineImageEditRequest,
@@ -166,6 +168,7 @@ import {
   FalWanV2p7ImageToVideoRequestSchema,
   FalWanV2p7ReferenceToVideoRequestSchema,
   FalWanV2p7EditVideoRequestSchema,
+  FalFlux3TextToVideoRequestSchema,
   FalXaiGrokImagineImageRequestSchema,
   FalXaiGrokImagineImageEditRequestSchema,
   FalQwenImageRequestSchema,
@@ -676,6 +679,19 @@ export function createFal(opts: FalOptions): FalProvider {
   const queueBaseURL = opts.queueBaseURL ?? "https://queue.fal.run";
   const runBaseURL = opts.runBaseURL ?? "https://fal.run";
   const restBaseURL = opts.restBaseURL ?? "https://rest.fal.ai";
+
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://api.fal.ai/v1/blackforestlabs/flux-3/text-to-video
+  // Docs: https://fal.ai/models/blackforestlabs/flux-3/text-to-video/api
+  const blackforestlabsFlux3TextToVideo = jsonBody<
+    FalFlux3TextToVideoRequest,
+    FalFlux3VideoResponse
+  >(
+    "POST",
+    "/blackforestlabs/flux-3/text-to-video",
+    FalFlux3TextToVideoRequestSchema,
+    { base: runBaseURL }
+  );
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/bytedance/seedance-2.0/image-to-video
@@ -1374,6 +1390,14 @@ export function createFal(opts: FalOptions): FalProvider {
   };
 
   const run: FalRunNamespace = {
+    blackforestlabs: {
+      flux3: {
+        // sig-ok: stylistic dotPath divergence from URL
+        // POST https://api.fal.ai/v1/blackforestlabs/flux-3/text-to-video
+        // Docs: https://fal.ai/models/blackforestlabs/flux-3/text-to-video/api
+        textToVideo: blackforestlabsFlux3TextToVideo,
+      },
+    },
     bytedance: {
       seedance2p0: {
         imageToVideo: bytedanceSeedance2p0ImageToVideo,

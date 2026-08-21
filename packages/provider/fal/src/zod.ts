@@ -1925,6 +1925,51 @@ export type FalKlingVideoO3p4kTextToVideoRequestInput =
 export type FalKlingVideoO3p4kTextToVideoParsedRequest = z.output<
   typeof FalKlingVideoO3p4kTextToVideoRequestSchema
 >;
+
+// ---------------------------------------------------------------------------
+// FLUX 3 (Black Forest Labs)
+// ---------------------------------------------------------------------------
+
+const Flux3AspectRatioSchema = z.enum([
+  "auto",
+  "21:9",
+  "2:1",
+  "16:9",
+  "4:3",
+  "1:1",
+  "3:4",
+  "9:16",
+]);
+
+const Flux3ResolutionSchema = z.enum(["720p", "1080p"]);
+
+const Flux3DurationSchema = z.union([
+  z.literal("auto"),
+  z.number().int().min(5).max(20),
+]);
+
+const Flux3VideoParamsSchema = z.object({
+  prompt: z.string(),
+  aspect_ratio: Flux3AspectRatioSchema.optional(),
+  duration: Flux3DurationSchema.optional(),
+  generate_audio: z.boolean().optional(),
+  safety_tolerance: z.number().int().min(0).max(4).optional(),
+});
+
+export const FalFlux3TextToVideoRequestSchema = Flux3VideoParamsSchema.extend({
+  resolution: Flux3ResolutionSchema.optional(),
+});
+
+export type FalFlux3TextToVideoParams = z.infer<
+  typeof FalFlux3TextToVideoRequestSchema
+>;
+export type FalFlux3TextToVideoRequest = z.input<
+  typeof FalFlux3TextToVideoRequestSchema
+>;
+export type FalFlux3TextToVideoRequestInput = FalFlux3TextToVideoRequest;
+export type FalFlux3TextToVideoParsedRequest = z.output<
+  typeof FalFlux3TextToVideoRequestSchema
+>;
 export type FalOptions = z.infer<typeof FalOptionsSchema>;
 
 // ---------------------------------------------------------------------------
@@ -1933,6 +1978,7 @@ export type FalOptions = z.infer<typeof FalOptionsSchema>;
 // ---------------------------------------------------------------------------
 
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "blackforestlabs/flux-3/text-to-video": FalFlux3TextToVideoRequestSchema,
   "bytedance/seedance-2.0/image-to-video":
     FalSeedance2p0ImageToVideoRequestSchema,
   "bytedance/seedance-2.0/text-to-video":

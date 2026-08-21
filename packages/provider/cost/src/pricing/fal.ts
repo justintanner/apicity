@@ -25,6 +25,10 @@ const asOf = "2026-07-20";
 // endpointBilling JSON, corroborated by live GET /v1/models/pricing).
 const sweepAsOf = "2026-07-22";
 
+// FLUX 3 family, read from each model's fal.ai page pricingInfoOverride and
+// its OpenAPI input schema on this date.
+const flux3AsOf = "2026-08-21";
+
 const source = (endpointId: string, on: string = asOf) => ({
   url: `https://fal.ai/models/${endpointId}`,
   asOf: on,
@@ -188,6 +192,13 @@ const wanEditSeconds = (
   return n === undefined || n === 0 ? hintSeconds(hints) : n;
 };
 
+// FLUX 3 defaults duration to "auto" for text/image/extend variants. Use a
+// caller-provided duration hint when the payload has no numeric duration.
+const flux3Seconds = (
+  p: Record<string, unknown>,
+  hints?: CostHints
+): number | undefined => asNumber(p.duration) ?? hintSeconds(hints);
+
 const resolutionTier = (defaultTier: string) => ({
   name: "resolution",
   pick: (p: Record<string, unknown>) => asString(p.resolution) ?? defaultTier,
@@ -221,14 +232,18 @@ const perSecondTiered = (
     pick: (payload: Record<string, unknown>) => string | undefined;
   }>,
   rates: Record<string, number>,
-  seconds: (p: Record<string, unknown>, hints?: CostHints) => number | undefined
+  seconds: (
+    p: Record<string, unknown>,
+    hints?: CostHints
+  ) => number | undefined,
+  on: string = sweepAsOf
 ): ModelPricing => ({
   kind: "perUnit",
   unit: "seconds",
   units: seconds,
   select,
   rates,
-  source: source(endpointId, sweepAsOf),
+  source: source(endpointId, on),
 });
 
 // Seedance 2.0 bills tokens — height × width × 24 / 1024 per output second —
@@ -300,6 +315,11 @@ const VEO_3P1_RATES: Record<string, number> = {
   "1080p|true": 0.4,
   "4k|false": 0.4,
   "4k|true": 0.6,
+};
+
+const FLUX_3_RATES: Record<string, number> = {
+  "720p": 0.17,
+  "1080p": 0.29,
 };
 
 // GPT Image 1.5 prices per image on a quality × size grid. `quality`
@@ -482,6 +502,15 @@ export const fal: Record<string, ModelPricing> = {
   "fal-ai/gpt-image-1.5/edit": gptImagePerImage(
     "fal-ai/gpt-image-1.5/edit",
     "auto"
+  ),
+
+  // Video — FLUX 3 (Black Forest Labs), resolution-tiered per output second
+  "blackforestlabs/flux-3/text-to-video": perSecondTiered(
+    "blackforestlabs/flux-3/text-to-video",
+    [resolutionTier("720p")],
+    FLUX_3_RATES,
+    flux3Seconds,
+    flux3AsOf
   ),
 
   // Video — Seedance 2.0 (token-metered; see seedanceRates)

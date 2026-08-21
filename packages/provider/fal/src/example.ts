@@ -65,6 +65,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST blackforestlabs.flux3.textToVideo": {
+    "source": "fal/flux-3-text-to-video",
+    "payload": {
+      "prompt": "A paper boat glides through a quiet rain puddle",
+      "resolution": "720p",
+      "duration": 5,
+      "generate_audio": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST bytedance.seedSpeech.tts.v2": {
     "source": "fal/bytedance-seed-speech-tts-v2",
     "payload": {

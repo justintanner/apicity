@@ -65,6 +65,18 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST blackforestlabs.flux3.imageToVideo": {
+    "source": "fal/flux-3-image-to-video",
+    "payload": {
+      "prompt": "The person turns toward the camera and smiles",
+      "image_url": "<inline image/jpeg data URL — replace with a real URL or upload>",
+      "resolution": "720p",
+      "duration": 5,
+      "generate_audio": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST blackforestlabs.flux3.textToVideo": {
     "source": "fal/flux-3-text-to-video",
     "payload": {

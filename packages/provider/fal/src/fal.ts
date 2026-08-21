@@ -84,6 +84,7 @@ import {
   FalFlux3TextToVideoRequest,
   FalFlux3ImageToVideoRequest,
   FalFlux3FirstLastFrameToVideoRequest,
+  FalFlux3KeyframesToVideoRequest,
   FalFlux3VideoResponse,
   FalXaiGrokImagineImageRequest,
   FalXaiGrokImagineImageResponse,
@@ -173,6 +174,7 @@ import {
   FalFlux3TextToVideoRequestSchema,
   FalFlux3ImageToVideoRequestSchema,
   FalFlux3FirstLastFrameToVideoRequestSchema,
+  FalFlux3KeyframesToVideoRequestSchema,
   FalXaiGrokImagineImageRequestSchema,
   FalXaiGrokImagineImageEditRequestSchema,
   FalQwenImageRequestSchema,
@@ -720,6 +722,19 @@ export function createFal(opts: FalOptions): FalProvider {
     "POST",
     "/blackforestlabs/flux-3/first-last-frame-to-video",
     FalFlux3FirstLastFrameToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://api.fal.ai/v1/blackforestlabs/flux-3/keyframes-to-video
+  // Docs: https://fal.ai/models/blackforestlabs/flux-3/keyframes-to-video/api
+  const blackforestlabsFlux3KeyframesToVideo = jsonBody<
+    FalFlux3KeyframesToVideoRequest,
+    FalFlux3VideoResponse
+  >(
+    "POST",
+    "/blackforestlabs/flux-3/keyframes-to-video",
+    FalFlux3KeyframesToVideoRequestSchema,
     { base: runBaseURL }
   );
 
@@ -1430,6 +1445,10 @@ export function createFal(opts: FalOptions): FalProvider {
         // POST https://api.fal.ai/v1/blackforestlabs/flux-3/image-to-video
         // Docs: https://fal.ai/models/blackforestlabs/flux-3/image-to-video/api
         imageToVideo: blackforestlabsFlux3ImageToVideo,
+        // sig-ok: stylistic dotPath divergence from URL
+        // POST https://api.fal.ai/v1/blackforestlabs/flux-3/keyframes-to-video
+        // Docs: https://fal.ai/models/blackforestlabs/flux-3/keyframes-to-video/api
+        keyframesToVideo: blackforestlabsFlux3KeyframesToVideo,
         // sig-ok: stylistic dotPath divergence from URL
         // POST https://api.fal.ai/v1/blackforestlabs/flux-3/text-to-video
         // Docs: https://fal.ai/models/blackforestlabs/flux-3/text-to-video/api

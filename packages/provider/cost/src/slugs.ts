@@ -369,6 +369,7 @@ export const MODEL_SLUGS = {
     "fal-ai/gpt-image-1.5/edit": "gi1p5",
 
     // Video — FLUX 3
+    "blackforestlabs/flux-3/extend-video": "flux3",
     "blackforestlabs/flux-3/first-last-frame-to-video": "flux3",
     "blackforestlabs/flux-3/image-to-video": "flux3",
     "blackforestlabs/flux-3/keyframes-to-video": "flux3",
@@ -740,6 +741,7 @@ export const MODEL_DISPLAY = {
     "fal-ai/gpt-image-1.5": "GPT Image 1.5",
     "fal-ai/gpt-image-1.5/edit": "GPT Image 1.5 Edit",
 
+    "blackforestlabs/flux-3/extend-video": "FLUX 3",
     "blackforestlabs/flux-3/first-last-frame-to-video": "FLUX 3",
     "blackforestlabs/flux-3/image-to-video": "FLUX 3",
     "blackforestlabs/flux-3/keyframes-to-video": "FLUX 3",

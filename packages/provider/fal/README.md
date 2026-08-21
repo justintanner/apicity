@@ -121,9 +121,26 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-67 endpoints across 20 groups. Each method mirrors an upstream URL path.
+68 endpoints across 20 groups. Each method mirrors an upstream URL path.
 
 ### blackforestlabs
+
+<details>
+<summary><code>POST</code> <b><code>fal.blackforestlabs.flux3.extendVideo</code></b></summary>
+
+<code>POST https://api.fal.ai/v1/blackforestlabs/flux-3/extend-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/blackforestlabs/flux-3/extend-video/api)
+
+```typescript
+const res = await fal.blackforestlabs.flux3.extendVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>fal.blackforestlabs.flux3.firstLastFrameToVideo</code></b></summary>

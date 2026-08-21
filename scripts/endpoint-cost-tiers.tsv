@@ -489,6 +489,7 @@ elevenlabs	v1.workspace.webhooks.update	PATCH	expensive	Metered text-to-speech /
 elevenlabs	v1.workspaces.apiKeys.disable	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
 elevenlabs	v1.workspaces.apiKeys.thirdPartyDisabling	POST	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
 elevenlabs	v2.voices	GET	expensive	Metered text-to-speech / audio provider; per-character billing bills real money
+fal	blackforestlabs.flux3.extendVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	blackforestlabs.flux3.firstLastFrameToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	blackforestlabs.flux3.imageToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	blackforestlabs.flux3.keyframesToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1

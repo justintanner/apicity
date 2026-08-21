@@ -790,6 +790,7 @@ elevenlabs	v1.studio.projects.chapters.convert	POST	https://api.elevenlabs.io/v1
 elevenlabs	v1.studio.projects.chapters.snapshots.list	GET	https://api.elevenlabs.io/v1/studio/projects/{projectId}/chapters/{chapterId}/snapshots	https://elevenlabs.io/docs/api-reference/studio/get-chapter-snapshots
 elevenlabs	v1.studio.projects.chapters.snapshots.get	GET	https://api.elevenlabs.io/v1/studio/projects/{projectId}/chapters/{chapterId}/snapshots/{chapterSnapshotId}	https://elevenlabs.io/docs/api-reference/studio/get-chapter-snapshot
 elevenlabs	v1.studio.projects.chapters.snapshots.stream	POST	https://api.elevenlabs.io/v1/studio/projects/{projectId}/chapters/{chapterId}/snapshots/{chapterSnapshotId}/stream	https://elevenlabs.io/docs/api-reference/studio/stream-chapter-audio
+fal	blackforestlabs.flux3.extendVideo	POST	https://api.fal.ai/v1/blackforestlabs/flux-3/extend-video	https://fal.ai/models/blackforestlabs/flux-3/extend-video/api
 fal	blackforestlabs.flux3.firstLastFrameToVideo	POST	https://api.fal.ai/v1/blackforestlabs/flux-3/first-last-frame-to-video	https://fal.ai/models/blackforestlabs/flux-3/first-last-frame-to-video/api
 fal	blackforestlabs.flux3.imageToVideo	POST	https://api.fal.ai/v1/blackforestlabs/flux-3/image-to-video	https://fal.ai/models/blackforestlabs/flux-3/image-to-video/api
 fal	blackforestlabs.flux3.keyframesToVideo	POST	https://api.fal.ai/v1/blackforestlabs/flux-3/keyframes-to-video	https://fal.ai/models/blackforestlabs/flux-3/keyframes-to-video/api

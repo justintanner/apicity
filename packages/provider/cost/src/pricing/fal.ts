@@ -322,6 +322,11 @@ const FLUX_3_RATES: Record<string, number> = {
   "1080p": 0.29,
 };
 
+const FLUX_3_EXTEND_RATES: Record<string, number> = {
+  "720p": 0.41,
+  "1080p": 0.53,
+};
+
 // GPT Image 1.5 prices per image on a quality × size grid. `quality`
 // defaults to "high"; the generation endpoint defaults `image_size` to
 // 1024x1024 while the edit endpoint defaults it to "auto", which has no
@@ -505,6 +510,13 @@ export const fal: Record<string, ModelPricing> = {
   ),
 
   // Video — FLUX 3 (Black Forest Labs), resolution-tiered per output second
+  "blackforestlabs/flux-3/extend-video": perSecondTiered(
+    "blackforestlabs/flux-3/extend-video",
+    [resolutionTier("720p")],
+    FLUX_3_EXTEND_RATES,
+    flux3Seconds,
+    flux3AsOf
+  ),
   "blackforestlabs/flux-3/text-to-video": perSecondTiered(
     "blackforestlabs/flux-3/text-to-video",
     [resolutionTier("720p")],

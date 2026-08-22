@@ -87,6 +87,24 @@ export function validateFamilyRegistrations() {
 }
 
 export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
+  ...[
+    "360p|no-audio",
+    "360p|audio",
+    "540p|no-audio",
+    "540p|audio",
+    "720p|no-audio",
+    "720p|audio",
+    "1080p|no-audio",
+    "1080p|audio",
+  ].map((variant) => ({
+    key: "pixverse-v6/image-to-video",
+    variant,
+    status: "pricing-only",
+    provenance:
+      "the 2026-08-22 KIE catalog's official PixVerse V6 Text /Image to Video cell for this quality/audio variant",
+    rationale:
+      "One combined official occurrence must retain one canonical key; text-to-video owns the row while the identically priced image-to-video operation is an explicit sibling exception.",
+  })),
   {
     key: "grok-imagine/image-to-video",
     variant: "1080p",
@@ -219,6 +237,10 @@ export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
 ]);
 
 export const EXPLICIT_OPERATION_MAPPINGS = Object.freeze([
+  {
+    key: "pixverse-v6/text-to-video",
+    patterns: [/pixverse-v6,\s*Text \/Image to Video/i],
+  },
   {
     key: "qwen3/pro-image-to-image",
     patterns: [/qwen image 3\.0 pro,\s*(?:output|input),/i],
@@ -439,6 +461,26 @@ export function familyMappingCandidates({ description, anchor, pricing }) {
 
 const SELECTOR_RULES = Object.freeze([
   {
+    family: "pixverse-quality-audio",
+    matches: (key) => key.startsWith("pixverse-v6/"),
+    apply: (_key, text, candidates) => {
+      // PixVerse omits a separator before the opening parenthesis on Extend
+      // and Reference rows ("1080p(with audio)"), and 360p/540p are outside
+      // the legacy generic resolution vocabulary. Read this family's exact
+      // schema enum directly rather than weakening every family's parser.
+      const quality = text.match(/\b(360p|540p|720p|1080p)\b/i);
+      if (quality) {
+        candidates.quality = quality[1].toLowerCase();
+        delete candidates.resolution;
+      }
+      if (/with (?:audio|aiduo)/i.test(text)) {
+        candidates.generate_audio_switch = true;
+      } else if (/no (?:audio|aiduo)/i.test(text)) {
+        candidates.generate_audio_switch = false;
+      }
+    },
+  },
+  {
     family: "seedream-quality",
     matches: (key) =>
       key === "seedream/5-pro-text-to-image" ||
@@ -582,10 +624,24 @@ export function applySelectorRules({ key, text, candidates, context }) {
 
 const PAYLOAD_RULES = Object.freeze([
   {
+    family: "pixverse-inputs",
+    matches: (key) => key.startsWith("pixverse-v6/"),
+    apply: (input, _text, key) => {
+      if (key === "pixverse-v6/extend") input.taskId = "audit-task";
+      if (key === "pixverse-v6/reference-to-video") {
+        input.image_references = [
+          {
+            image_url: "https://example.com/a.png",
+            ref_name: "subject",
+          },
+        ];
+      }
+    },
+  },
+  {
     family: "qwen3-image-inputs",
     matches: (key) =>
-      key === "qwen3/image-to-image" ||
-      key === "qwen3/pro-image-to-image",
+      key === "qwen3/image-to-image" || key === "qwen3/pro-image-to-image",
     apply: (input) => {
       input.image_urls = ["https://example.com/a.png"];
     },

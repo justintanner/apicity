@@ -1,7 +1,7 @@
 {
   "schema": "gc.kie-pricing-reconciliation.v1",
   "version": 1,
-  "generatedAt": "2026-08-22T08:11:36.964Z",
+  "generatedAt": "2026-08-22T08:20:30.165Z",
   "snapshot": {
     "path": "tests/fixtures/kie-pricing-evidence/kie-pricing-snapshot-2026-08-22T08-03-40-316Z.json",
     "metadataPath": "tests/fixtures/kie-pricing-evidence/kie-pricing-pull-2026-08-22T08-03-40-316Z.json",
@@ -512,10 +512,10 @@
     },
     "final": {
       "models": 138,
-      "pricingKeys": 148,
-      "slugKeys": 150,
-      "displayKeys": 150,
-      "schemaWithoutPricing": 21,
+      "pricingKeys": 152,
+      "slugKeys": 154,
+      "displayKeys": 154,
+      "schemaWithoutPricing": 17,
       "pricingOnly": 31,
       "endpoints": 71
     }
@@ -533,8 +533,8 @@
       "packages/provider/kie/src/zod.ts": "sha256:45f2563825960715dd48e263b111e364f4685e14c0a14510da652dd77e586183",
       "packages/provider/kie/src/model-schemas.ts": "sha256:e528f2e500d3e0e63eeb03ec74567b85c6fe9700fe9290fe415768e574ccd81b",
       "packages/provider/kie/src/kie.ts": "sha256:879aa7a639885ba118a2797ab0d66d93d4180b72d647753876de392523d901bf",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:295e606c4762f7af7cdca6ae1eb230e19cbcd26a94ca8c971e5193fe46550be2",
-      "packages/provider/cost/src/slugs.ts": "sha256:6dbf2497cb2608476242386f124407d021e7b19309bf1b3d6eccb2be3842d9a0",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:7e5c8a61207e3d17aadb9cf86a627c7c9322fb59180de8875a9453341a27b3a7",
+      "packages/provider/cost/src/slugs.ts": "sha256:23901872468e28e9869d1bb5d3df369c5bedd72da2a86fda245c73c2c96a337f",
       "scripts/endpoint-docs.tsv": "sha256:463013918271e4989ea47cc185d91897b7174b8e8892e67d5a7d09c5338768eb"
     }
   },
@@ -555,14 +555,41 @@
         "anchor": "",
         "discountPrice": false
       },
-      "disposition": "upstream-unmappable",
-      "mappedApiCityKeys": [],
+      "disposition": "implemented",
+      "mappedApiCityKeys": ["pixverse-v6/extend"],
       "evidence": {
         "url": null,
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for pixverse-v6, Extend, 1080p(with aiduo) (video)."
+      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
+      "unit": "seconds",
+      "officialUnit": "seconds",
+      "officialUnitQuantity": 1,
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "18.4",
+        "creditUnit": "per second",
+        "usdPrice": "0.092",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "quality": "1080p",
+        "generate_audio_switch": true
+      },
+      "selectorSources": {
+        "quality": "modelInputSchemas:pixverse-v6/extend",
+        "generate_audio_switch": "modelInputSchemas:pixverse-v6/extend"
+      },
+      "representativePayload": {
+        "model": "pixverse-v6/extend",
+        "input": {
+          "quality": "1080p",
+          "generate_audio_switch": true,
+          "duration": 5,
+          "taskId": "audit-task",
+          "prompt": "audit"
+        }
+      }
     },
     {
       "occurrenceId": "sha256:d2056abf2364599f5294399e35bdd3542eb60ef0768cbace35393ff959da4c25#1",
@@ -580,14 +607,41 @@
         "anchor": "",
         "discountPrice": false
       },
-      "disposition": "upstream-unmappable",
-      "mappedApiCityKeys": [],
+      "disposition": "implemented",
+      "mappedApiCityKeys": ["pixverse-v6/extend"],
       "evidence": {
         "url": null,
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for pixverse-v6, Extend, 1080p(no aiduo) (video)."
+      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
+      "unit": "seconds",
+      "officialUnit": "seconds",
+      "officialUnitQuantity": 1,
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "14.4",
+        "creditUnit": "per second",
+        "usdPrice": "0.072",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "quality": "1080p",
+        "generate_audio_switch": false
+      },
+      "selectorSources": {
+        "quality": "modelInputSchemas:pixverse-v6/extend",
+        "generate_audio_switch": "modelInputSchemas:pixverse-v6/extend"
+      },
+      "representativePayload": {
+        "model": "pixverse-v6/extend",
+        "input": {
+          "quality": "1080p",
+          "generate_audio_switch": false,
+          "duration": 5,
+          "taskId": "audit-task",
+          "prompt": "audit"
+        }
+      }
     },
     {
       "occurrenceId": "sha256:82eaba51d463fc5d5b223c1c5af2fd6d8a34b82afaf79d3cdc82b50eec9526b1#1",
@@ -605,14 +659,41 @@
         "anchor": "",
         "discountPrice": false
       },
-      "disposition": "upstream-unmappable",
-      "mappedApiCityKeys": [],
+      "disposition": "implemented",
+      "mappedApiCityKeys": ["pixverse-v6/extend"],
       "evidence": {
         "url": null,
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for pixverse-v6, Extend, 720p(with aiduo) (video)."
+      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
+      "unit": "seconds",
+      "officialUnit": "seconds",
+      "officialUnitQuantity": 1,
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "9.6",
+        "creditUnit": "per second",
+        "usdPrice": "0.048",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "quality": "720p",
+        "generate_audio_switch": true
+      },
+      "selectorSources": {
+        "quality": "modelInputSchemas:pixverse-v6/extend",
+        "generate_audio_switch": "modelInputSchemas:pixverse-v6/extend"
+      },
+      "representativePayload": {
+        "model": "pixverse-v6/extend",
+        "input": {
+          "quality": "720p",
+          "generate_audio_switch": true,
+          "duration": 5,
+          "taskId": "audit-task",
+          "prompt": "audit"
+        }
+      }
     },
     {
       "occurrenceId": "sha256:30db769b2dc344a6d238619a3c8157999f301ae7c9be5f41b0f54873cebf7258#1",
@@ -630,14 +711,41 @@
         "anchor": "",
         "discountPrice": false
       },
-      "disposition": "upstream-unmappable",
-      "mappedApiCityKeys": [],
+      "disposition": "implemented",
+      "mappedApiCityKeys": ["pixverse-v6/extend"],
       "evidence": {
         "url": null,
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for pixverse-v6, Extend, 720p(no aiduo) (video)."
+      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
+      "unit": "seconds",
+      "officialUnit": "seconds",
+      "officialUnitQuantity": 1,
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "7.2",
+        "creditUnit": "per second",
+        "usdPrice": "0.036",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "quality": "720p",
+        "generate_audio_switch": false
+      },
+      "selectorSources": {
+        "quality": "modelInputSchemas:pixverse-v6/extend",
+        "generate_audio_switch": "modelInputSchemas:pixverse-v6/extend"
+      },
+      "representativePayload": {
+        "model": "pixverse-v6/extend",
+        "input": {
+          "quality": "720p",
+          "generate_audio_switch": false,
+          "duration": 5,
+          "taskId": "audit-task",
+          "prompt": "audit"
+        }
+      }
     },
     {
       "occurrenceId": "sha256:36b9ca02625dff2fcf1d88e85acbb861d8264afd4d7f8c3852ed768df2c7fed1#1",
@@ -655,14 +763,41 @@
         "anchor": "",
         "discountPrice": false
       },
-      "disposition": "upstream-unmappable",
-      "mappedApiCityKeys": [],
+      "disposition": "implemented",
+      "mappedApiCityKeys": ["pixverse-v6/extend"],
       "evidence": {
         "url": null,
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for pixverse-v6, Extend, 540p(with aiduo) (video)."
+      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
+      "unit": "seconds",
+      "officialUnit": "seconds",
+      "officialUnitQuantity": 1,
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "7.2",
+        "creditUnit": "per second",
+        "usdPrice": "0.028",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "quality": "540p",
+        "generate_audio_switch": true
+      },
+      "selectorSources": {
+        "quality": "modelInputSchemas:pixverse-v6/extend",
+        "generate_audio_switch": "modelInputSchemas:pixverse-v6/extend"
+      },
+      "representativePayload": {
+        "model": "pixverse-v6/extend",
+        "input": {
+          "quality": "540p",
+          "generate_audio_switch": true,
+          "duration": 5,
+          "taskId": "audit-task",
+          "prompt": "audit"
+        }
+      }
     },
     {
       "occurrenceId": "sha256:ed7faf03a93dc632ec06bd606817e8aadf632ff9175e6fdb9924b18b72bbfc9e#1",
@@ -680,14 +815,41 @@
         "anchor": "",
         "discountPrice": false
       },
-      "disposition": "upstream-unmappable",
-      "mappedApiCityKeys": [],
+      "disposition": "implemented",
+      "mappedApiCityKeys": ["pixverse-v6/extend"],
       "evidence": {
         "url": null,
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for pixverse-v6, Extend, 540p(no aiduo) (video)."
+      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
+      "unit": "seconds",
+      "officialUnit": "seconds",
+      "officialUnitQuantity": 1,
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "5.6",
+        "creditUnit": "per second",
+        "usdPrice": "0.028",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "quality": "540p",
+        "generate_audio_switch": false
+      },
+      "selectorSources": {
+        "quality": "modelInputSchemas:pixverse-v6/extend",
+        "generate_audio_switch": "modelInputSchemas:pixverse-v6/extend"
+      },
+      "representativePayload": {
+        "model": "pixverse-v6/extend",
+        "input": {
+          "quality": "540p",
+          "generate_audio_switch": false,
+          "duration": 5,
+          "taskId": "audit-task",
+          "prompt": "audit"
+        }
+      }
     },
     {
       "occurrenceId": "sha256:55d3820aa387b4518f20ec8af1095f08238bb1ab8e426d6184553b458ceee99b#1",
@@ -705,14 +867,41 @@
         "anchor": "",
         "discountPrice": false
       },
-      "disposition": "upstream-unmappable",
-      "mappedApiCityKeys": [],
+      "disposition": "implemented",
+      "mappedApiCityKeys": ["pixverse-v6/extend"],
       "evidence": {
         "url": null,
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for pixverse-v6, Extend, 360p(with aiduo) (video)."
+      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
+      "unit": "seconds",
+      "officialUnit": "seconds",
+      "officialUnitQuantity": 1,
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "5.6",
+        "creditUnit": "per second",
+        "usdPrice": "0.028",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "quality": "360p",
+        "generate_audio_switch": true
+      },
+      "selectorSources": {
+        "quality": "modelInputSchemas:pixverse-v6/extend",
+        "generate_audio_switch": "modelInputSchemas:pixverse-v6/extend"
+      },
+      "representativePayload": {
+        "model": "pixverse-v6/extend",
+        "input": {
+          "quality": "360p",
+          "generate_audio_switch": true,
+          "duration": 5,
+          "taskId": "audit-task",
+          "prompt": "audit"
+        }
+      }
     },
     {
       "occurrenceId": "sha256:f7f0b61851f0e768ea116a995fdfc9009e1c7832f9f2a618231a33995261b604#1",
@@ -730,14 +919,41 @@
         "anchor": "",
         "discountPrice": false
       },
-      "disposition": "upstream-unmappable",
-      "mappedApiCityKeys": [],
+      "disposition": "implemented",
+      "mappedApiCityKeys": ["pixverse-v6/extend"],
       "evidence": {
         "url": null,
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for pixverse-v6, Extend, 360p(no aiduo) (video)."
+      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
+      "unit": "seconds",
+      "officialUnit": "seconds",
+      "officialUnitQuantity": 1,
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "4",
+        "creditUnit": "per second",
+        "usdPrice": "0.020",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "quality": "360p",
+        "generate_audio_switch": false
+      },
+      "selectorSources": {
+        "quality": "modelInputSchemas:pixverse-v6/extend",
+        "generate_audio_switch": "modelInputSchemas:pixverse-v6/extend"
+      },
+      "representativePayload": {
+        "model": "pixverse-v6/extend",
+        "input": {
+          "quality": "360p",
+          "generate_audio_switch": false,
+          "duration": 5,
+          "taskId": "audit-task",
+          "prompt": "audit"
+        }
+      }
     },
     {
       "occurrenceId": "sha256:008404388e8d3bf3eaf53a4e1f9336f701c9c42bd211e41a25826b9496ea1479#1",
@@ -755,14 +971,47 @@
         "anchor": "",
         "discountPrice": false
       },
-      "disposition": "upstream-unmappable",
-      "mappedApiCityKeys": [],
+      "disposition": "implemented",
+      "mappedApiCityKeys": ["pixverse-v6/reference-to-video"],
       "evidence": {
         "url": null,
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for pixverse-v6, Reference To Video, 1080p(with audio) (video)."
+      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
+      "unit": "seconds",
+      "officialUnit": "seconds",
+      "officialUnitQuantity": 1,
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "20.7",
+        "creditUnit": "per second",
+        "usdPrice": "0.1035",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "quality": "1080p",
+        "generate_audio_switch": true
+      },
+      "selectorSources": {
+        "quality": "modelInputSchemas:pixverse-v6/reference-to-video",
+        "generate_audio_switch": "modelInputSchemas:pixverse-v6/reference-to-video"
+      },
+      "representativePayload": {
+        "model": "pixverse-v6/reference-to-video",
+        "input": {
+          "quality": "1080p",
+          "generate_audio_switch": true,
+          "duration": 5,
+          "image_references": [
+            {
+              "image_url": "https://example.com/a.png",
+              "ref_name": "subject"
+            }
+          ],
+          "prompt": "audit",
+          "aspect_ratio": "16:9"
+        }
+      }
     },
     {
       "occurrenceId": "sha256:bad92b24c7b833e4f428435a89b6a8aed86a38fefb26d03f97528d5a4cd727c0#1",
@@ -780,14 +1029,47 @@
         "anchor": "",
         "discountPrice": false
       },
-      "disposition": "upstream-unmappable",
-      "mappedApiCityKeys": [],
+      "disposition": "implemented",
+      "mappedApiCityKeys": ["pixverse-v6/reference-to-video"],
       "evidence": {
         "url": null,
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for pixverse-v6, Reference To Video, 1080p(no audio) (video)."
+      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
+      "unit": "seconds",
+      "officialUnit": "seconds",
+      "officialUnitQuantity": 1,
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "16.2",
+        "creditUnit": "per second",
+        "usdPrice": "0.081",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "quality": "1080p",
+        "generate_audio_switch": false
+      },
+      "selectorSources": {
+        "quality": "modelInputSchemas:pixverse-v6/reference-to-video",
+        "generate_audio_switch": "modelInputSchemas:pixverse-v6/reference-to-video"
+      },
+      "representativePayload": {
+        "model": "pixverse-v6/reference-to-video",
+        "input": {
+          "quality": "1080p",
+          "generate_audio_switch": false,
+          "duration": 5,
+          "image_references": [
+            {
+              "image_url": "https://example.com/a.png",
+              "ref_name": "subject"
+            }
+          ],
+          "prompt": "audit",
+          "aspect_ratio": "16:9"
+        }
+      }
     },
     {
       "occurrenceId": "sha256:6445fd30650ef2cdf05e4b1b76753b505b293f5cbc21083815c7df5e0695f817#1",
@@ -805,14 +1087,47 @@
         "anchor": "",
         "discountPrice": false
       },
-      "disposition": "upstream-unmappable",
-      "mappedApiCityKeys": [],
+      "disposition": "implemented",
+      "mappedApiCityKeys": ["pixverse-v6/reference-to-video"],
       "evidence": {
         "url": null,
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for pixverse-v6, Reference To Video, 720p(with audio) (video)."
+      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
+      "unit": "seconds",
+      "officialUnit": "seconds",
+      "officialUnitQuantity": 1,
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "10.8",
+        "creditUnit": "per second",
+        "usdPrice": "0.054",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "quality": "720p",
+        "generate_audio_switch": true
+      },
+      "selectorSources": {
+        "quality": "modelInputSchemas:pixverse-v6/reference-to-video",
+        "generate_audio_switch": "modelInputSchemas:pixverse-v6/reference-to-video"
+      },
+      "representativePayload": {
+        "model": "pixverse-v6/reference-to-video",
+        "input": {
+          "quality": "720p",
+          "generate_audio_switch": true,
+          "duration": 5,
+          "image_references": [
+            {
+              "image_url": "https://example.com/a.png",
+              "ref_name": "subject"
+            }
+          ],
+          "prompt": "audit",
+          "aspect_ratio": "16:9"
+        }
+      }
     },
     {
       "occurrenceId": "sha256:20a6a812db79238cf54a18635681e3048da9210c6aace0083d339ac877376c0a#1",
@@ -830,14 +1145,47 @@
         "anchor": "",
         "discountPrice": false
       },
-      "disposition": "upstream-unmappable",
-      "mappedApiCityKeys": [],
+      "disposition": "implemented",
+      "mappedApiCityKeys": ["pixverse-v6/reference-to-video"],
       "evidence": {
         "url": null,
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for pixverse-v6, Reference To Video, 720p(no audio) (video)."
+      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
+      "unit": "seconds",
+      "officialUnit": "seconds",
+      "officialUnitQuantity": 1,
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "8.1",
+        "creditUnit": "per second",
+        "usdPrice": "0.0405",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "quality": "720p",
+        "generate_audio_switch": false
+      },
+      "selectorSources": {
+        "quality": "modelInputSchemas:pixverse-v6/reference-to-video",
+        "generate_audio_switch": "modelInputSchemas:pixverse-v6/reference-to-video"
+      },
+      "representativePayload": {
+        "model": "pixverse-v6/reference-to-video",
+        "input": {
+          "quality": "720p",
+          "generate_audio_switch": false,
+          "duration": 5,
+          "image_references": [
+            {
+              "image_url": "https://example.com/a.png",
+              "ref_name": "subject"
+            }
+          ],
+          "prompt": "audit",
+          "aspect_ratio": "16:9"
+        }
+      }
     },
     {
       "occurrenceId": "sha256:a6e2cba9ca6b3ce496a2cecc93983d9ea6548c47804eb8ffdc073691220438e9#1",
@@ -855,14 +1203,47 @@
         "anchor": "",
         "discountPrice": false
       },
-      "disposition": "upstream-unmappable",
-      "mappedApiCityKeys": [],
+      "disposition": "implemented",
+      "mappedApiCityKeys": ["pixverse-v6/reference-to-video"],
       "evidence": {
         "url": null,
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for pixverse-v6, Reference To Video, 540p(with audio) (video)."
+      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
+      "unit": "seconds",
+      "officialUnit": "seconds",
+      "officialUnitQuantity": 1,
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "8.1",
+        "creditUnit": "per second",
+        "usdPrice": "0.0405",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "quality": "540p",
+        "generate_audio_switch": true
+      },
+      "selectorSources": {
+        "quality": "modelInputSchemas:pixverse-v6/reference-to-video",
+        "generate_audio_switch": "modelInputSchemas:pixverse-v6/reference-to-video"
+      },
+      "representativePayload": {
+        "model": "pixverse-v6/reference-to-video",
+        "input": {
+          "quality": "540p",
+          "generate_audio_switch": true,
+          "duration": 5,
+          "image_references": [
+            {
+              "image_url": "https://example.com/a.png",
+              "ref_name": "subject"
+            }
+          ],
+          "prompt": "audit",
+          "aspect_ratio": "16:9"
+        }
+      }
     },
     {
       "occurrenceId": "sha256:5345a4465f4eaf9ac67f7db0819b7b5b4c37d94ed278f886d990fe5e22b722ed#1",
@@ -880,14 +1261,47 @@
         "anchor": "",
         "discountPrice": false
       },
-      "disposition": "upstream-unmappable",
-      "mappedApiCityKeys": [],
+      "disposition": "implemented",
+      "mappedApiCityKeys": ["pixverse-v6/reference-to-video"],
       "evidence": {
         "url": null,
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for pixverse-v6, Reference To Video, 540p(no audio) (video)."
+      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
+      "unit": "seconds",
+      "officialUnit": "seconds",
+      "officialUnitQuantity": 1,
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "6.3",
+        "creditUnit": "per second",
+        "usdPrice": "0.0315",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "quality": "540p",
+        "generate_audio_switch": false
+      },
+      "selectorSources": {
+        "quality": "modelInputSchemas:pixverse-v6/reference-to-video",
+        "generate_audio_switch": "modelInputSchemas:pixverse-v6/reference-to-video"
+      },
+      "representativePayload": {
+        "model": "pixverse-v6/reference-to-video",
+        "input": {
+          "quality": "540p",
+          "generate_audio_switch": false,
+          "duration": 5,
+          "image_references": [
+            {
+              "image_url": "https://example.com/a.png",
+              "ref_name": "subject"
+            }
+          ],
+          "prompt": "audit",
+          "aspect_ratio": "16:9"
+        }
+      }
     },
     {
       "occurrenceId": "sha256:ff3711511829a1cc4c43ad91646b509bfdc3b536f2f0dd3911ae339bcb9ae0a9#1",
@@ -905,14 +1319,47 @@
         "anchor": "",
         "discountPrice": false
       },
-      "disposition": "upstream-unmappable",
-      "mappedApiCityKeys": [],
+      "disposition": "implemented",
+      "mappedApiCityKeys": ["pixverse-v6/reference-to-video"],
       "evidence": {
         "url": null,
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for pixverse-v6, Reference To Video, 360p(with audio) (video)."
+      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
+      "unit": "seconds",
+      "officialUnit": "seconds",
+      "officialUnitQuantity": 1,
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "6.3",
+        "creditUnit": "per second",
+        "usdPrice": "0.0315",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "quality": "360p",
+        "generate_audio_switch": true
+      },
+      "selectorSources": {
+        "quality": "modelInputSchemas:pixverse-v6/reference-to-video",
+        "generate_audio_switch": "modelInputSchemas:pixverse-v6/reference-to-video"
+      },
+      "representativePayload": {
+        "model": "pixverse-v6/reference-to-video",
+        "input": {
+          "quality": "360p",
+          "generate_audio_switch": true,
+          "duration": 5,
+          "image_references": [
+            {
+              "image_url": "https://example.com/a.png",
+              "ref_name": "subject"
+            }
+          ],
+          "prompt": "audit",
+          "aspect_ratio": "16:9"
+        }
+      }
     },
     {
       "occurrenceId": "sha256:66399894ceaeecc95d2e47a034f48fd59b0e187fbaa15a591d0f003d178b5327#1",
@@ -930,14 +1377,47 @@
         "anchor": "",
         "discountPrice": false
       },
-      "disposition": "upstream-unmappable",
-      "mappedApiCityKeys": [],
+      "disposition": "implemented",
+      "mappedApiCityKeys": ["pixverse-v6/reference-to-video"],
       "evidence": {
         "url": null,
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for pixverse-v6, Reference To Video, 360p(no audio) (video)."
+      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
+      "unit": "seconds",
+      "officialUnit": "seconds",
+      "officialUnitQuantity": 1,
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "4.5",
+        "creditUnit": "per second",
+        "usdPrice": "0.0225",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "quality": "360p",
+        "generate_audio_switch": false
+      },
+      "selectorSources": {
+        "quality": "modelInputSchemas:pixverse-v6/reference-to-video",
+        "generate_audio_switch": "modelInputSchemas:pixverse-v6/reference-to-video"
+      },
+      "representativePayload": {
+        "model": "pixverse-v6/reference-to-video",
+        "input": {
+          "quality": "360p",
+          "generate_audio_switch": false,
+          "duration": 5,
+          "image_references": [
+            {
+              "image_url": "https://example.com/a.png",
+              "ref_name": "subject"
+            }
+          ],
+          "prompt": "audit",
+          "aspect_ratio": "16:9"
+        }
+      }
     },
     {
       "occurrenceId": "sha256:7e66d97aadf7e7b084b88f8c9fd000ab2917185806d2a9a21d4e7844a5d4478a#1",
@@ -955,14 +1435,42 @@
         "anchor": "",
         "discountPrice": false
       },
-      "disposition": "upstream-unmappable",
-      "mappedApiCityKeys": [],
+      "disposition": "canonical-alias",
+      "mappedApiCityKeys": ["pixverse-v6/text-to-video"],
       "evidence": {
         "url": null,
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for pixverse-v6, Text /Image to Video, 1080p (with audio) (video)."
+      "rationale": "The official label is an upstream alias for one canonical ApiCity pricing key with a complete official cell.",
+      "canonicalKey": "pixverse-v6/text-to-video",
+      "unit": "seconds",
+      "officialUnit": "seconds",
+      "officialUnitQuantity": 1,
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "18.4",
+        "creditUnit": "per second",
+        "usdPrice": "0.092",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "quality": "1080p",
+        "generate_audio_switch": true
+      },
+      "selectorSources": {
+        "quality": "modelInputSchemas:pixverse-v6/text-to-video",
+        "generate_audio_switch": "modelInputSchemas:pixverse-v6/text-to-video"
+      },
+      "representativePayload": {
+        "model": "pixverse-v6/text-to-video",
+        "input": {
+          "quality": "1080p",
+          "generate_audio_switch": true,
+          "duration": 5,
+          "prompt": "audit",
+          "aspect_ratio": "16:9"
+        }
+      }
     },
     {
       "occurrenceId": "sha256:308a0f19202d22b86527ffd591dab7e1a9a98471e40bb84be55d1ce27343593e#1",
@@ -980,14 +1488,42 @@
         "anchor": "",
         "discountPrice": false
       },
-      "disposition": "upstream-unmappable",
-      "mappedApiCityKeys": [],
+      "disposition": "canonical-alias",
+      "mappedApiCityKeys": ["pixverse-v6/text-to-video"],
       "evidence": {
         "url": null,
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for pixverse-v6, Text /Image to Video, 1080p (no audio) (video)."
+      "rationale": "The official label is an upstream alias for one canonical ApiCity pricing key with a complete official cell.",
+      "canonicalKey": "pixverse-v6/text-to-video",
+      "unit": "seconds",
+      "officialUnit": "seconds",
+      "officialUnitQuantity": 1,
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "14.4",
+        "creditUnit": "per second",
+        "usdPrice": "0.072",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "quality": "1080p",
+        "generate_audio_switch": false
+      },
+      "selectorSources": {
+        "quality": "modelInputSchemas:pixverse-v6/text-to-video",
+        "generate_audio_switch": "modelInputSchemas:pixverse-v6/text-to-video"
+      },
+      "representativePayload": {
+        "model": "pixverse-v6/text-to-video",
+        "input": {
+          "quality": "1080p",
+          "generate_audio_switch": false,
+          "duration": 5,
+          "prompt": "audit",
+          "aspect_ratio": "16:9"
+        }
+      }
     },
     {
       "occurrenceId": "sha256:c671cde90ac9fd80b620d4e390a19a943190fe9a3da51ee3eb4c179b5b2c407a#1",
@@ -1005,14 +1541,42 @@
         "anchor": "",
         "discountPrice": false
       },
-      "disposition": "upstream-unmappable",
-      "mappedApiCityKeys": [],
+      "disposition": "canonical-alias",
+      "mappedApiCityKeys": ["pixverse-v6/text-to-video"],
       "evidence": {
         "url": null,
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for pixverse-v6, Text /Image to Video, 720p (with audio) (video)."
+      "rationale": "The official label is an upstream alias for one canonical ApiCity pricing key with a complete official cell.",
+      "canonicalKey": "pixverse-v6/text-to-video",
+      "unit": "seconds",
+      "officialUnit": "seconds",
+      "officialUnitQuantity": 1,
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "9.6",
+        "creditUnit": "per second",
+        "usdPrice": "0.048",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "quality": "720p",
+        "generate_audio_switch": true
+      },
+      "selectorSources": {
+        "quality": "modelInputSchemas:pixverse-v6/text-to-video",
+        "generate_audio_switch": "modelInputSchemas:pixverse-v6/text-to-video"
+      },
+      "representativePayload": {
+        "model": "pixverse-v6/text-to-video",
+        "input": {
+          "quality": "720p",
+          "generate_audio_switch": true,
+          "duration": 5,
+          "prompt": "audit",
+          "aspect_ratio": "16:9"
+        }
+      }
     },
     {
       "occurrenceId": "sha256:c4545c48265cf1b705196c1c6e091278a4cc3c4fe065750b6d80d07db1f795a1#1",
@@ -1030,14 +1594,42 @@
         "anchor": "",
         "discountPrice": false
       },
-      "disposition": "upstream-unmappable",
-      "mappedApiCityKeys": [],
+      "disposition": "canonical-alias",
+      "mappedApiCityKeys": ["pixverse-v6/text-to-video"],
       "evidence": {
         "url": null,
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for pixverse-v6, Text /Image to Video, 720p (no audio) (video)."
+      "rationale": "The official label is an upstream alias for one canonical ApiCity pricing key with a complete official cell.",
+      "canonicalKey": "pixverse-v6/text-to-video",
+      "unit": "seconds",
+      "officialUnit": "seconds",
+      "officialUnitQuantity": 1,
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "7.2",
+        "creditUnit": "per second",
+        "usdPrice": "0.036",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "quality": "720p",
+        "generate_audio_switch": false
+      },
+      "selectorSources": {
+        "quality": "modelInputSchemas:pixverse-v6/text-to-video",
+        "generate_audio_switch": "modelInputSchemas:pixverse-v6/text-to-video"
+      },
+      "representativePayload": {
+        "model": "pixverse-v6/text-to-video",
+        "input": {
+          "quality": "720p",
+          "generate_audio_switch": false,
+          "duration": 5,
+          "prompt": "audit",
+          "aspect_ratio": "16:9"
+        }
+      }
     },
     {
       "occurrenceId": "sha256:fe273ca10952dfe364375a3c125d96693d576101e40cd88174b1b5631ca87660#1",
@@ -1055,14 +1647,42 @@
         "anchor": "",
         "discountPrice": false
       },
-      "disposition": "upstream-unmappable",
-      "mappedApiCityKeys": [],
+      "disposition": "canonical-alias",
+      "mappedApiCityKeys": ["pixverse-v6/text-to-video"],
       "evidence": {
         "url": null,
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for pixverse-v6, Text /Image to Video, 540p (with audio) (video)."
+      "rationale": "The official label is an upstream alias for one canonical ApiCity pricing key with a complete official cell.",
+      "canonicalKey": "pixverse-v6/text-to-video",
+      "unit": "seconds",
+      "officialUnit": "seconds",
+      "officialUnitQuantity": 1,
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "7.2",
+        "creditUnit": "per second",
+        "usdPrice": "0.036",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "quality": "540p",
+        "generate_audio_switch": true
+      },
+      "selectorSources": {
+        "quality": "modelInputSchemas:pixverse-v6/text-to-video",
+        "generate_audio_switch": "modelInputSchemas:pixverse-v6/text-to-video"
+      },
+      "representativePayload": {
+        "model": "pixverse-v6/text-to-video",
+        "input": {
+          "quality": "540p",
+          "generate_audio_switch": true,
+          "duration": 5,
+          "prompt": "audit",
+          "aspect_ratio": "16:9"
+        }
+      }
     },
     {
       "occurrenceId": "sha256:f2f45887fb8f51bbedd3dda19f536879d588ef12512dd3252c4b199f02fa7865#1",
@@ -1080,14 +1700,42 @@
         "anchor": "",
         "discountPrice": false
       },
-      "disposition": "upstream-unmappable",
-      "mappedApiCityKeys": [],
+      "disposition": "canonical-alias",
+      "mappedApiCityKeys": ["pixverse-v6/text-to-video"],
       "evidence": {
         "url": null,
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for pixverse-v6, Text /Image to Video, 540p (no audio) (video)."
+      "rationale": "The official label is an upstream alias for one canonical ApiCity pricing key with a complete official cell.",
+      "canonicalKey": "pixverse-v6/text-to-video",
+      "unit": "seconds",
+      "officialUnit": "seconds",
+      "officialUnitQuantity": 1,
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "5.6",
+        "creditUnit": "per second",
+        "usdPrice": "0.028",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "quality": "540p",
+        "generate_audio_switch": false
+      },
+      "selectorSources": {
+        "quality": "modelInputSchemas:pixverse-v6/text-to-video",
+        "generate_audio_switch": "modelInputSchemas:pixverse-v6/text-to-video"
+      },
+      "representativePayload": {
+        "model": "pixverse-v6/text-to-video",
+        "input": {
+          "quality": "540p",
+          "generate_audio_switch": false,
+          "duration": 5,
+          "prompt": "audit",
+          "aspect_ratio": "16:9"
+        }
+      }
     },
     {
       "occurrenceId": "sha256:e8d2804917078d46fc93ce79ac45e780071cce25f5145c148a8a04f73f0b35eb#1",
@@ -1105,14 +1753,42 @@
         "anchor": "",
         "discountPrice": false
       },
-      "disposition": "upstream-unmappable",
-      "mappedApiCityKeys": [],
+      "disposition": "canonical-alias",
+      "mappedApiCityKeys": ["pixverse-v6/text-to-video"],
       "evidence": {
         "url": null,
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for pixverse-v6, Text /Image to Video, 360p (with audio) (video)."
+      "rationale": "The official label is an upstream alias for one canonical ApiCity pricing key with a complete official cell.",
+      "canonicalKey": "pixverse-v6/text-to-video",
+      "unit": "seconds",
+      "officialUnit": "seconds",
+      "officialUnitQuantity": 1,
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "5.6",
+        "creditUnit": "per second",
+        "usdPrice": "0.028",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "quality": "360p",
+        "generate_audio_switch": true
+      },
+      "selectorSources": {
+        "quality": "modelInputSchemas:pixverse-v6/text-to-video",
+        "generate_audio_switch": "modelInputSchemas:pixverse-v6/text-to-video"
+      },
+      "representativePayload": {
+        "model": "pixverse-v6/text-to-video",
+        "input": {
+          "quality": "360p",
+          "generate_audio_switch": true,
+          "duration": 5,
+          "prompt": "audit",
+          "aspect_ratio": "16:9"
+        }
+      }
     },
     {
       "occurrenceId": "sha256:68f43d00960593b06ef5ef1b98d7f2e4c90289709e8b2405c2ff368365d31808#1",
@@ -1130,14 +1806,42 @@
         "anchor": "",
         "discountPrice": false
       },
-      "disposition": "upstream-unmappable",
-      "mappedApiCityKeys": [],
+      "disposition": "canonical-alias",
+      "mappedApiCityKeys": ["pixverse-v6/text-to-video"],
       "evidence": {
         "url": null,
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for pixverse-v6, Text /Image to Video, 360p（no audio） (video)."
+      "rationale": "The official label is an upstream alias for one canonical ApiCity pricing key with a complete official cell.",
+      "canonicalKey": "pixverse-v6/text-to-video",
+      "unit": "seconds",
+      "officialUnit": "seconds",
+      "officialUnitQuantity": 1,
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "4",
+        "creditUnit": "per second",
+        "usdPrice": "0.02",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "quality": "360p",
+        "generate_audio_switch": false
+      },
+      "selectorSources": {
+        "quality": "modelInputSchemas:pixverse-v6/text-to-video",
+        "generate_audio_switch": "modelInputSchemas:pixverse-v6/text-to-video"
+      },
+      "representativePayload": {
+        "model": "pixverse-v6/text-to-video",
+        "input": {
+          "quality": "360p",
+          "generate_audio_switch": false,
+          "duration": 5,
+          "prompt": "audit",
+          "aspect_ratio": "16:9"
+        }
+      }
     },
     {
       "occurrenceId": "sha256:2f571edae90c3be0ee13fc8c83e43d3ceef18ddb614b83dd9cb7723806228973#1",
@@ -20153,16 +20857,25 @@
         "id": "pixverse-v6/text-to-video",
         "descriptor": true,
         "guard": true,
-        "pricingKey": null,
-        "linkedRows": [],
-        "disposition": "upstream-unmappable",
-        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+        "pricingKey": "pixverse-v6/text-to-video",
+        "linkedRows": [
+          "sha256:7e66d97aadf7e7b084b88f8c9fd000ab2917185806d2a9a21d4e7844a5d4478a#1",
+          "sha256:308a0f19202d22b86527ffd591dab7e1a9a98471e40bb84be55d1ce27343593e#1",
+          "sha256:c671cde90ac9fd80b620d4e390a19a943190fe9a3da51ee3eb4c179b5b2c407a#1",
+          "sha256:c4545c48265cf1b705196c1c6e091278a4cc3c4fe065750b6d80d07db1f795a1#1",
+          "sha256:fe273ca10952dfe364375a3c125d96693d576101e40cd88174b1b5631ca87660#1",
+          "sha256:f2f45887fb8f51bbedd3dda19f536879d588ef12512dd3252c4b199f02fa7865#1",
+          "sha256:e8d2804917078d46fc93ce79ac45e780071cce25f5145c148a8a04f73f0b35eb#1",
+          "sha256:68f43d00960593b06ef5ef1b98d7f2e4c90289709e8b2405c2ff368365d31808#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
       },
       {
         "id": "pixverse-v6/image-to-video",
         "descriptor": true,
         "guard": true,
-        "pricingKey": null,
+        "pricingKey": "pixverse-v6/image-to-video",
         "linkedRows": [],
         "disposition": "upstream-unmappable",
         "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
@@ -20180,19 +20893,37 @@
         "id": "pixverse-v6/extend",
         "descriptor": true,
         "guard": true,
-        "pricingKey": null,
-        "linkedRows": [],
-        "disposition": "upstream-unmappable",
-        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+        "pricingKey": "pixverse-v6/extend",
+        "linkedRows": [
+          "sha256:e08cac591475d2752b71caebc2237f506d19909e4e14065d80ed8899c22c0947#1",
+          "sha256:d2056abf2364599f5294399e35bdd3542eb60ef0768cbace35393ff959da4c25#1",
+          "sha256:82eaba51d463fc5d5b223c1c5af2fd6d8a34b82afaf79d3cdc82b50eec9526b1#1",
+          "sha256:30db769b2dc344a6d238619a3c8157999f301ae7c9be5f41b0f54873cebf7258#1",
+          "sha256:36b9ca02625dff2fcf1d88e85acbb861d8264afd4d7f8c3852ed768df2c7fed1#1",
+          "sha256:ed7faf03a93dc632ec06bd606817e8aadf632ff9175e6fdb9924b18b72bbfc9e#1",
+          "sha256:55d3820aa387b4518f20ec8af1095f08238bb1ab8e426d6184553b458ceee99b#1",
+          "sha256:f7f0b61851f0e768ea116a995fdfc9009e1c7832f9f2a618231a33995261b604#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
       },
       {
         "id": "pixverse-v6/reference-to-video",
         "descriptor": true,
         "guard": true,
-        "pricingKey": null,
-        "linkedRows": [],
-        "disposition": "upstream-unmappable",
-        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+        "pricingKey": "pixverse-v6/reference-to-video",
+        "linkedRows": [
+          "sha256:008404388e8d3bf3eaf53a4e1f9336f701c9c42bd211e41a25826b9496ea1479#1",
+          "sha256:bad92b24c7b833e4f428435a89b6a8aed86a38fefb26d03f97528d5a4cd727c0#1",
+          "sha256:6445fd30650ef2cdf05e4b1b76753b505b293f5cbc21083815c7df5e0695f817#1",
+          "sha256:20a6a812db79238cf54a18635681e3048da9210c6aace0083d339ac877376c0a#1",
+          "sha256:a6e2cba9ca6b3ce496a2cecc93983d9ea6548c47804eb8ffdc073691220438e9#1",
+          "sha256:5345a4465f4eaf9ac67f7db0819b7b5b4c37d94ed278f886d990fe5e22b722ed#1",
+          "sha256:ff3711511829a1cc4c43ad91646b509bfdc3b536f2f0dd3911ae339bcb9ae0a9#1",
+          "sha256:66399894ceaeecc95d2e47a034f48fd59b0e187fbaa15a591d0f003d178b5327#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
       },
       {
         "id": "minimax-h3/text-to-video",
@@ -21534,6 +22265,57 @@
         "linkedRows": [
           "sha256:f4d260e832d3ad1dae3762924ae65b9fe87d90c572f60bf8442cdbea4fd69353#1",
           "sha256:6c22cd3e7ec75f9f4c93afd79ff3e45abd0029cc9484fd370dd8933d27be73a3#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "pixverse-v6/text-to-video",
+        "linkedRows": [
+          "sha256:7e66d97aadf7e7b084b88f8c9fd000ab2917185806d2a9a21d4e7844a5d4478a#1",
+          "sha256:308a0f19202d22b86527ffd591dab7e1a9a98471e40bb84be55d1ce27343593e#1",
+          "sha256:c671cde90ac9fd80b620d4e390a19a943190fe9a3da51ee3eb4c179b5b2c407a#1",
+          "sha256:c4545c48265cf1b705196c1c6e091278a4cc3c4fe065750b6d80d07db1f795a1#1",
+          "sha256:fe273ca10952dfe364375a3c125d96693d576101e40cd88174b1b5631ca87660#1",
+          "sha256:f2f45887fb8f51bbedd3dda19f536879d588ef12512dd3252c4b199f02fa7865#1",
+          "sha256:e8d2804917078d46fc93ce79ac45e780071cce25f5145c148a8a04f73f0b35eb#1",
+          "sha256:68f43d00960593b06ef5ef1b98d7f2e4c90289709e8b2405c2ff368365d31808#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "pixverse-v6/image-to-video",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "pixverse-v6/extend",
+        "linkedRows": [
+          "sha256:e08cac591475d2752b71caebc2237f506d19909e4e14065d80ed8899c22c0947#1",
+          "sha256:d2056abf2364599f5294399e35bdd3542eb60ef0768cbace35393ff959da4c25#1",
+          "sha256:82eaba51d463fc5d5b223c1c5af2fd6d8a34b82afaf79d3cdc82b50eec9526b1#1",
+          "sha256:30db769b2dc344a6d238619a3c8157999f301ae7c9be5f41b0f54873cebf7258#1",
+          "sha256:36b9ca02625dff2fcf1d88e85acbb861d8264afd4d7f8c3852ed768df2c7fed1#1",
+          "sha256:ed7faf03a93dc632ec06bd606817e8aadf632ff9175e6fdb9924b18b72bbfc9e#1",
+          "sha256:55d3820aa387b4518f20ec8af1095f08238bb1ab8e426d6184553b458ceee99b#1",
+          "sha256:f7f0b61851f0e768ea116a995fdfc9009e1c7832f9f2a618231a33995261b604#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "pixverse-v6/reference-to-video",
+        "linkedRows": [
+          "sha256:008404388e8d3bf3eaf53a4e1f9336f701c9c42bd211e41a25826b9496ea1479#1",
+          "sha256:bad92b24c7b833e4f428435a89b6a8aed86a38fefb26d03f97528d5a4cd727c0#1",
+          "sha256:6445fd30650ef2cdf05e4b1b76753b505b293f5cbc21083815c7df5e0695f817#1",
+          "sha256:20a6a812db79238cf54a18635681e3048da9210c6aace0083d339ac877376c0a#1",
+          "sha256:a6e2cba9ca6b3ce496a2cecc93983d9ea6548c47804eb8ffdc073691220438e9#1",
+          "sha256:5345a4465f4eaf9ac67f7db0819b7b5b4c37d94ed278f886d990fe5e22b722ed#1",
+          "sha256:ff3711511829a1cc4c43ad91646b509bfdc3b536f2f0dd3911ae339bcb9ae0a9#1",
+          "sha256:66399894ceaeecc95d2e47a034f48fd59b0e187fbaa15a591d0f003d178b5327#1"
         ],
         "disposition": "supported",
         "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
@@ -22907,6 +23689,22 @@
         "disposition": "supported"
       },
       {
+        "key": "pixverse-v6/text-to-video",
+        "disposition": "supported"
+      },
+      {
+        "key": "pixverse-v6/image-to-video",
+        "disposition": "supported"
+      },
+      {
+        "key": "pixverse-v6/extend",
+        "disposition": "supported"
+      },
+      {
+        "key": "pixverse-v6/reference-to-video",
+        "disposition": "supported"
+      },
+      {
         "key": "grok-imagine/text-to-image",
         "disposition": "supported"
       },
@@ -23509,6 +24307,22 @@
         "disposition": "supported"
       },
       {
+        "key": "pixverse-v6/text-to-video",
+        "disposition": "supported"
+      },
+      {
+        "key": "pixverse-v6/image-to-video",
+        "disposition": "supported"
+      },
+      {
+        "key": "pixverse-v6/extend",
+        "disposition": "supported"
+      },
+      {
+        "key": "pixverse-v6/reference-to-video",
+        "disposition": "supported"
+      },
+      {
         "key": "grok-imagine/text-to-image",
         "disposition": "supported"
       },
@@ -23895,31 +24709,7 @@
         "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
       },
       {
-        "id": "pixverse-v6/text-to-video",
-        "disposition": "upstream-unmappable",
-        "linkedRows": [],
-        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
-      },
-      {
-        "id": "pixverse-v6/image-to-video",
-        "disposition": "upstream-unmappable",
-        "linkedRows": [],
-        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
-      },
-      {
         "id": "pixverse-v6/transition",
-        "disposition": "upstream-unmappable",
-        "linkedRows": [],
-        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
-      },
-      {
-        "id": "pixverse-v6/extend",
-        "disposition": "upstream-unmappable",
-        "linkedRows": [],
-        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
-      },
-      {
-        "id": "pixverse-v6/reference-to-video",
         "disposition": "upstream-unmappable",
         "linkedRows": [],
         "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
@@ -24219,13 +25009,13 @@
       "unique": 441,
       "duplicateOccurrences": 0,
       "dispositionCounts": {
-        "implemented": 198,
-        "canonical-alias": 116,
+        "implemented": 214,
+        "canonical-alias": 124,
         "duplicate": 0,
         "free-nonbillable": 3,
         "unsupported-endpoint": 3,
         "token-billed": 74,
-        "upstream-unmappable": 47
+        "upstream-unmappable": 23
       },
       "unclassified": 0,
       "evidenceConflicts": {
@@ -24246,13 +25036,13 @@
         "count": 138,
         "descriptors": 138,
         "guards": 138,
-        "withoutPricing": 21,
+        "withoutPricing": 17,
         "dispositionCounts": {
-          "supported": 108,
+          "supported": 111,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 30
+          "upstream-unmappable": 27
         },
         "unclassified": 0
       },
@@ -24270,20 +25060,20 @@
         "unclassified": 0
       },
       "pricingKeys": {
-        "count": 148,
+        "count": 152,
         "dispositionCounts": {
-          "supported": 137,
+          "supported": 140,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 11
+          "upstream-unmappable": 12
         },
         "unclassified": 0
       },
       "slugs": {
-        "count": 150,
+        "count": 154,
         "dispositionCounts": {
-          "supported": 150,
+          "supported": 154,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -24292,9 +25082,9 @@
         "unclassified": 0
       },
       "displays": {
-        "count": 150,
+        "count": 154,
         "dispositionCounts": {
-          "supported": 150,
+          "supported": 154,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -24303,13 +25093,13 @@
         "unclassified": 0
       },
       "schemaWithoutPricing": {
-        "count": 21,
+        "count": 17,
         "dispositionCounts": {
           "supported": 0,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 21
+          "upstream-unmappable": 17
         },
         "unclassified": 0
       },
@@ -24333,6 +25123,62 @@
   },
   "runtimeCoverage": {
     "exceptions": [
+      {
+        "key": "pixverse-v6/image-to-video",
+        "variant": "360p|no-audio",
+        "status": "pricing-only",
+        "provenance": "the 2026-08-22 KIE catalog's official PixVerse V6 Text /Image to Video cell for this quality/audio variant",
+        "rationale": "One combined official occurrence must retain one canonical key; text-to-video owns the row while the identically priced image-to-video operation is an explicit sibling exception."
+      },
+      {
+        "key": "pixverse-v6/image-to-video",
+        "variant": "360p|audio",
+        "status": "pricing-only",
+        "provenance": "the 2026-08-22 KIE catalog's official PixVerse V6 Text /Image to Video cell for this quality/audio variant",
+        "rationale": "One combined official occurrence must retain one canonical key; text-to-video owns the row while the identically priced image-to-video operation is an explicit sibling exception."
+      },
+      {
+        "key": "pixverse-v6/image-to-video",
+        "variant": "540p|no-audio",
+        "status": "pricing-only",
+        "provenance": "the 2026-08-22 KIE catalog's official PixVerse V6 Text /Image to Video cell for this quality/audio variant",
+        "rationale": "One combined official occurrence must retain one canonical key; text-to-video owns the row while the identically priced image-to-video operation is an explicit sibling exception."
+      },
+      {
+        "key": "pixverse-v6/image-to-video",
+        "variant": "540p|audio",
+        "status": "pricing-only",
+        "provenance": "the 2026-08-22 KIE catalog's official PixVerse V6 Text /Image to Video cell for this quality/audio variant",
+        "rationale": "One combined official occurrence must retain one canonical key; text-to-video owns the row while the identically priced image-to-video operation is an explicit sibling exception."
+      },
+      {
+        "key": "pixverse-v6/image-to-video",
+        "variant": "720p|no-audio",
+        "status": "pricing-only",
+        "provenance": "the 2026-08-22 KIE catalog's official PixVerse V6 Text /Image to Video cell for this quality/audio variant",
+        "rationale": "One combined official occurrence must retain one canonical key; text-to-video owns the row while the identically priced image-to-video operation is an explicit sibling exception."
+      },
+      {
+        "key": "pixverse-v6/image-to-video",
+        "variant": "720p|audio",
+        "status": "pricing-only",
+        "provenance": "the 2026-08-22 KIE catalog's official PixVerse V6 Text /Image to Video cell for this quality/audio variant",
+        "rationale": "One combined official occurrence must retain one canonical key; text-to-video owns the row while the identically priced image-to-video operation is an explicit sibling exception."
+      },
+      {
+        "key": "pixverse-v6/image-to-video",
+        "variant": "1080p|no-audio",
+        "status": "pricing-only",
+        "provenance": "the 2026-08-22 KIE catalog's official PixVerse V6 Text /Image to Video cell for this quality/audio variant",
+        "rationale": "One combined official occurrence must retain one canonical key; text-to-video owns the row while the identically priced image-to-video operation is an explicit sibling exception."
+      },
+      {
+        "key": "pixverse-v6/image-to-video",
+        "variant": "1080p|audio",
+        "status": "pricing-only",
+        "provenance": "the 2026-08-22 KIE catalog's official PixVerse V6 Text /Image to Video cell for this quality/audio variant",
+        "rationale": "One combined official occurrence must retain one canonical key; text-to-video owns the row while the identically priced image-to-video operation is an explicit sibling exception."
+      },
       {
         "key": "grok-imagine/image-to-video",
         "variant": "1080p",

@@ -161,6 +161,44 @@ const qwen3InputImageExtra = (
   return images.length * 0.0025;
 };
 
+// PixVerse V6 publishes every reachable video rate as a quality × audio cell.
+// Text/image/reference schemas default generate_audio_switch to false, while
+// extend deliberately leaves it optional with no upstream default. Preserve
+// that distinction here: the former three can select "no-audio" when omitted;
+// extend must receive an explicit boolean or fail closed.
+const pixverseV6 = (
+  rates: Record<string, number>,
+  defaultAudio: boolean
+): ModelPricing => ({
+  kind: "perUnit",
+  unit: "seconds",
+  units: seconds,
+  select: [
+    {
+      name: "quality",
+      pick: (p) => asString(asObject(p.input)?.quality),
+      required: true,
+    },
+    {
+      name: "audio",
+      pick: (p) => {
+        const value = asObject(p.input)?.generate_audio_switch;
+        if (value === true) return "audio";
+        if (value === false || (value === undefined && defaultAudio)) {
+          return "no-audio";
+        }
+        return undefined;
+      },
+      ...(defaultAudio ? {} : { required: true }),
+    },
+  ],
+  rates,
+  source: pricePage(
+    "https://api.kie.ai/client/v1/model-pricing/page",
+    "2026-08-22"
+  ),
+});
+
 // kie's `image_size` presets are the same named tokens fal uses for the same
 // upstream models. kie's market pages publish the token list without pixel
 // dimensions, so the dimensions come from fal's documented values for those
@@ -1033,6 +1071,67 @@ export const kie: Record<string, ModelPricing> = {
     { "720p": 0.08, "1080p": 0.12 },
     "https://kie.ai/wan-2-7-video?model=wan%2F2-7-videoedit",
     "1080p"
+  ),
+
+  // PixVerse V6 — per output second by the request's literal `quality` and
+  // `generate_audio_switch` fields. The 2026-08-22 KIE catalog publishes one
+  // shared ladder for text/image generation, a matching-but-distinct Extend
+  // ladder, and a higher Reference To Video ladder. Image-to-video requests
+  // that use template_id have no caller-visible duration, so `seconds` returns
+  // undefined and the estimator fails closed instead of guessing the
+  // template's fixed length. Transition remains deliberately absent: the same
+  // catalog contains no transition row or operation-level rate.
+  "pixverse-v6/text-to-video": pixverseV6(
+    {
+      "360p|no-audio": 0.02,
+      "360p|audio": 0.028,
+      "540p|no-audio": 0.028,
+      "540p|audio": 0.036,
+      "720p|no-audio": 0.036,
+      "720p|audio": 0.048,
+      "1080p|no-audio": 0.072,
+      "1080p|audio": 0.092,
+    },
+    true
+  ),
+  "pixverse-v6/image-to-video": pixverseV6(
+    {
+      "360p|no-audio": 0.02,
+      "360p|audio": 0.028,
+      "540p|no-audio": 0.028,
+      "540p|audio": 0.036,
+      "720p|no-audio": 0.036,
+      "720p|audio": 0.048,
+      "1080p|no-audio": 0.072,
+      "1080p|audio": 0.092,
+    },
+    true
+  ),
+  "pixverse-v6/extend": pixverseV6(
+    {
+      "360p|no-audio": 0.02,
+      "360p|audio": 0.028,
+      "540p|no-audio": 0.028,
+      "540p|audio": 0.028,
+      "720p|no-audio": 0.036,
+      "720p|audio": 0.048,
+      "1080p|no-audio": 0.072,
+      "1080p|audio": 0.092,
+    },
+    false
+  ),
+  "pixverse-v6/reference-to-video": pixverseV6(
+    {
+      "360p|no-audio": 0.0225,
+      "360p|audio": 0.0315,
+      "540p|no-audio": 0.0315,
+      "540p|audio": 0.0405,
+      "720p|no-audio": 0.0405,
+      "720p|audio": 0.054,
+      "1080p|no-audio": 0.081,
+      "1080p|audio": 0.1035,
+    },
+    true
   ),
 
   // grok-imagine: 3 tiers by resolution as of the 2026-08-06 pull (1080p is

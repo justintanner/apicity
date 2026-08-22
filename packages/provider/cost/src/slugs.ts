@@ -136,6 +136,13 @@ export const MODEL_SLUGS = {
     // Video — Gemini Omni
     "gemini-omni-video": "geminiomni",
 
+    // Video — PixVerse V6. Operations are modality metadata and share one
+    // family slug; transition has no evidenced rate and therefore no slug.
+    "pixverse-v6/text-to-video": "pixv6",
+    "pixverse-v6/image-to-video": "pixv6",
+    "pixverse-v6/extend": "pixv6",
+    "pixverse-v6/reference-to-video": "pixv6",
+
     // Image — Grok Imagine
     "grok-imagine/text-to-image": "grok",
     "grok-imagine/image-to-image": "grok",
@@ -550,6 +557,11 @@ export const MODEL_DISPLAY = {
     "aleph/generate": "Runway Aleph",
 
     "gemini-omni-video": "Gemini Omni",
+
+    "pixverse-v6/text-to-video": "PixVerse V6",
+    "pixverse-v6/image-to-video": "PixVerse V6",
+    "pixverse-v6/extend": "PixVerse V6 Extend",
+    "pixverse-v6/reference-to-video": "PixVerse V6 Reference",
 
     "grok-imagine/text-to-image": "Grok Imagine",
     "grok-imagine/image-to-image": "Grok Imagine",

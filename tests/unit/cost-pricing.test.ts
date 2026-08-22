@@ -10,6 +10,7 @@ import {
   PRICING_AS_OF,
 } from "../../packages/provider/cost/src/pricing/index";
 import {
+  MODEL_DISPLAY,
   MODEL_SLUGS,
   type SlugProviderId,
 } from "../../packages/provider/cost/src/slugs";
@@ -29,6 +30,10 @@ import {
   Seedance25RequestSchema,
   Qwen3ProTextToImageRequestSchema,
   Qwen3ProImageToImageRequestSchema,
+  PixverseV6TextToVideoRequestSchema,
+  PixverseV6ImageToVideoRequestSchema,
+  PixverseV6ExtendRequestSchema,
+  PixverseV6ReferenceToVideoRequestSchema,
   SeedreamProTextToImageRequestSchema,
   SeedreamProImageToImageRequestSchema,
   SeedreamProLayerDecompositionRequestSchema,
@@ -4070,5 +4075,185 @@ describe("kie Kling 3.0 Omni pricing (REQ-010)", () => {
     expect(result.breakdown.perUnitUsd).toBe(rate);
     expect(result.usd).toBeCloseTo(rate * 5, 10);
     expect(result.warnings).toEqual([]);
+  });
+});
+
+describe("kie PixVerse V6 pricing", () => {
+  const sharedRates = {
+    "360p|no-audio": 0.02,
+    "360p|audio": 0.028,
+    "540p|no-audio": 0.028,
+    "540p|audio": 0.036,
+    "720p|no-audio": 0.036,
+    "720p|audio": 0.048,
+    "1080p|no-audio": 0.072,
+    "1080p|audio": 0.092,
+  };
+
+  it.each([
+    {
+      schema: PixverseV6TextToVideoRequestSchema,
+      payload: {
+        model: "pixverse-v6/text-to-video" as const,
+        input: {
+          prompt: "a paper boat crosses a moonlit harbor",
+          aspect_ratio: "16:9" as const,
+          quality: "720p" as const,
+          duration: 5,
+          generate_audio_switch: true,
+        },
+      },
+      seconds: 5,
+      rate: 0.048,
+    },
+    {
+      schema: PixverseV6ImageToVideoRequestSchema,
+      payload: {
+        model: "pixverse-v6/image-to-video" as const,
+        input: {
+          prompt: "the camera follows the cyclist",
+          image_urls: ["https://example.com/still.png"],
+          quality: "1080p" as const,
+          duration: 4,
+          generate_audio_switch: false,
+        },
+      },
+      seconds: 4,
+      rate: 0.072,
+    },
+    {
+      schema: PixverseV6ExtendRequestSchema,
+      payload: {
+        model: "pixverse-v6/extend" as const,
+        input: {
+          prompt: "continue through the tunnel",
+          taskId: "parent-task",
+          quality: "540p" as const,
+          duration: 3,
+          generate_audio_switch: true,
+        },
+      },
+      seconds: 3,
+      rate: 0.028,
+    },
+    {
+      schema: PixverseV6ReferenceToVideoRequestSchema,
+      payload: {
+        model: "pixverse-v6/reference-to-video" as const,
+        input: {
+          prompt: "@hero walks through the garden",
+          image_references: [
+            {
+              image_url: "https://example.com/hero.png",
+              ref_name: "hero",
+            },
+          ],
+          aspect_ratio: "16:9" as const,
+          quality: "360p" as const,
+          duration: 6,
+          generate_audio_switch: true,
+        },
+      },
+      seconds: 6,
+      rate: 0.0315,
+    },
+  ])(
+    "prices $payload.model from its parsed quality/audio fields",
+    ({ schema, payload, seconds, rate }) => {
+      const parsed = schema.safeParse(payload);
+      expect(parsed.success).toBe(true);
+      if (!parsed.success) return;
+
+      const result = kieEstimate(parsed.data);
+      expect(result.breakdown).toEqual({
+        units: seconds,
+        unit: "seconds",
+        perUnitUsd: rate,
+      });
+      expect(result.usd).toBeCloseTo(seconds * rate, 10);
+      expect(result.warnings).toEqual([]);
+    }
+  );
+
+  it("pins every catalog cell and the four priced metadata registrations", () => {
+    const expected = {
+      "pixverse-v6/text-to-video": {
+        rates: sharedRates,
+        display: "PixVerse V6",
+      },
+      "pixverse-v6/image-to-video": {
+        rates: sharedRates,
+        display: "PixVerse V6",
+      },
+      "pixverse-v6/extend": {
+        rates: { ...sharedRates, "540p|audio": 0.028 },
+        display: "PixVerse V6 Extend",
+      },
+      "pixverse-v6/reference-to-video": {
+        rates: {
+          "360p|no-audio": 0.0225,
+          "360p|audio": 0.0315,
+          "540p|no-audio": 0.0315,
+          "540p|audio": 0.0405,
+          "720p|no-audio": 0.0405,
+          "720p|audio": 0.054,
+          "1080p|no-audio": 0.081,
+          "1080p|audio": 0.1035,
+        },
+        display: "PixVerse V6 Reference",
+      },
+    };
+
+    for (const [model, { rates, display }] of Object.entries(expected)) {
+      expect(PRICING.kie[model]).toMatchObject({
+        kind: "perUnit",
+        unit: "seconds",
+        rates,
+        source: {
+          url: "https://api.kie.ai/client/v1/model-pricing/page",
+          asOf: "2026-08-22",
+        },
+      });
+      expect((MODEL_SLUGS.kie as Record<string, string>)[model]).toBe("pixv6");
+      expect((MODEL_DISPLAY.kie as Record<string, string>)[model]).toBe(
+        display
+      );
+    }
+  });
+
+  it("fails closed without a billable duration or required audio selector", () => {
+    const template = kieEstimate({
+      model: "pixverse-v6/image-to-video",
+      input: {
+        prompt: "x",
+        image_urls: ["https://example.com/still.png"],
+        quality: "720p",
+        template_id: "effect-1",
+      },
+    });
+    expect(template.usd).toBe(0);
+    expect(template.warnings).toHaveLength(1);
+
+    const missingExtendAudio = kieEstimate({
+      model: "pixverse-v6/extend",
+      input: {
+        prompt: "x",
+        taskId: "parent-task",
+        quality: "720p",
+        duration: 5,
+      },
+    });
+    expect(missingExtendAudio.usd).toBe(0);
+    expect(missingExtendAudio.warnings).toHaveLength(1);
+  });
+
+  it("leaves transition unpriced without an official operation row", () => {
+    expect(PRICING.kie["pixverse-v6/transition"]).toBeUndefined();
+    expect(
+      (MODEL_SLUGS.kie as Record<string, string>)["pixverse-v6/transition"]
+    ).toBeUndefined();
+    expect(
+      (MODEL_DISPLAY.kie as Record<string, string>)["pixverse-v6/transition"]
+    ).toBeUndefined();
   });
 });

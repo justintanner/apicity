@@ -81,6 +81,30 @@ const summarizedMultipartFixtures: HarFixture[] = [
     }),
   },
   {
+    path: "../recordings/kie_2079838932/wan-27-i2v-man-upload_3178866746/recording.har",
+    entryIndex: 0,
+    expected: multipart({
+      file: fileSummary("man.jpg", "image/jpeg", 262255),
+      uploadPath: "images/test-uploads",
+    }),
+  },
+  {
+    path: "../recordings/kie_2079838932/wan-27-first-last-frame_100869299/recording.har",
+    entryIndex: 0,
+    expected: multipart({
+      file: fileSummary("cat1.jpg", "image/jpeg", 83558),
+      uploadPath: "images/test-uploads",
+    }),
+  },
+  {
+    path: "../recordings/kie_2079838932/wan-27-first-last-frame_100869299/recording.har",
+    entryIndex: 1,
+    expected: multipart({
+      file: fileSummary("cat2.jpg", "image/jpeg", 227912),
+      uploadPath: "images/test-uploads",
+    }),
+  },
+  {
     path: "../recordings/kie_2079838932/bytedance-seedance-2-multimodal_1291051021/recording.har",
     entryIndex: 0,
     expected: multipart({

@@ -263,6 +263,12 @@ export const MODEL_SLUGS = {
     "elevenlabs/text-to-speech-turbo-2-5": "elt2p5",
     "elevenlabs/text-to-dialogue-v3": "eldlg3",
 
+    // `elevenlabs/audio-isolation` and `elevenlabs/sound-effect-v2` have no
+    // slug or pricing key: on 2026-08-22 neither the KIE catalog nor their
+    // docs.kie.ai/market/elevenlabs pages published a rate or explicit zero.
+    // A duration hint cannot supply a missing rate, so both fail safe instead
+    // of borrowing one of the TTS entries above.
+
     // Audio — Suno
     "suno/generate": "suno",
     "suno/extend": "suno",

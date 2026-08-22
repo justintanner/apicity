@@ -2194,6 +2194,15 @@ export const kie: Record<string, ModelPricing> = {
     "2026-08-11"
   ),
 
+  // ElevenLabs audio-isolation and sound-effect-v2 remain deliberately
+  // unpriced. Rechecked 2026-08-22: neither has a row in the fresh 441-row KIE
+  // catalog, and their pages under https://docs.kie.ai/market/elevenlabs/
+  // publish request contracts but no operation rate or explicit zero. The
+  // cross-provider ruling is to use costHints.durationSeconds when a simple
+  // per-second rate exists but duration is absent from the payload; it cannot
+  // manufacture the missing rate here. Both ids therefore keep no pricing key
+  // and fail safe into the prohibitive tier rather than borrowing a TTS rate.
+
   // Suno: keyed by endpoint, NOT by audio model version. The kie payload's
   // `model` field is V3_5/.../V5_5 (audio version), but pricing is the
   // same across versions and varies per endpoint. Callers pass the

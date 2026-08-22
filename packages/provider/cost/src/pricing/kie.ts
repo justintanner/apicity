@@ -2344,4 +2344,14 @@ export const kie: Record<string, ModelPricing> = {
   // guessed rate would be worse than none, so both keep the fail-safe
   // `prohibitive` tier they already had and their estimates fail loudly rather
   // than quoting a number. Pinned negatively in tests/unit/cost-pricing.test.ts.
+
+  // Gemini TTS is also intentionally absent, but for a different reason. The
+  // 2026-08-22 catalog publishes exact rows for both
+  // `google/gemini-2-5-pro-tts` and `google/gemini-3-1-flash-tts`: $14 per one
+  // million audio-output tokens plus $0.70 per one million input tokens. KIE's
+  // cost path currently accepts per-unit media entries only and rejects token
+  // billing, while the request exposes neither billed token count. A
+  // characters-to-tokens conversion would be invented, so both ids stay
+  // unpriced and fail safe into the prohibitive tier. Follow-up ac-6lg2s0 owns
+  // the explicit input/output token-usage contract and estimator support.
 };

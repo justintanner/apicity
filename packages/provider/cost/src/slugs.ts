@@ -147,6 +147,12 @@ export const MODEL_SLUGS = {
     // Video — Gemini Omni
     "gemini-omni-video": "geminiomni",
 
+    // `google/gemini-2-5-pro-tts` and `google/gemini-3-1-flash-tts` have no
+    // slug or per-unit pricing key. Their 2026-08-22 catalog rows are token
+    // billed ($14/M output and $0.70/M input tokens), which this estimator
+    // cannot express without an explicit usage contract; follow-up ac-6lg2s0
+    // owns that work. Both fail safe rather than approximating tokens.
+
     // Video — PixVerse V6. Operations are modality metadata and share one
     // family slug; transition has no evidenced rate and therefore no slug.
     "pixverse-v6/text-to-video": "pixv6",

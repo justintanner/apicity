@@ -261,9 +261,9 @@ describe("Kie pricing reconciliation", () => {
     expect(inventory.models).toHaveLength(138);
     expect(inventory.descriptors).toHaveLength(138);
     expect(inventory.guards).toHaveLength(138);
-    expect(inventory.pricingKeys).toHaveLength(144);
-    expect(inventory.slugKeys).toHaveLength(146);
-    expect(inventory.displayKeys).toHaveLength(146);
+    expect(inventory.pricingKeys).toHaveLength(148);
+    expect(inventory.slugKeys).toHaveLength(150);
+    expect(inventory.displayKeys).toHaveLength(150);
     expect(inventory.endpoints).toHaveLength(71);
     expect(
       inventory.endpoints.filter((entry) => entry.method === "POST")
@@ -281,9 +281,9 @@ describe("Kie pricing reconciliation", () => {
       rows: 441,
       models: 138,
       endpoints: 71,
-      pricingKeys: 144,
-      slugs: 146,
-      displays: 146,
+      pricingKeys: 148,
+      slugs: 150,
+      displays: 150,
       zeroUnclassifiedRows: true,
       zeroUnclassifiedApiCityKeys: true,
     });
@@ -297,7 +297,7 @@ describe("Kie pricing reconciliation", () => {
         row.disposition === "canonical-alias"
     );
 
-    expect(manifest.apiCity.schemaWithoutPricing).toHaveLength(25);
+    expect(manifest.apiCity.schemaWithoutPricing).toHaveLength(21);
     expect(manifest.apiCity.pricingOnly).toHaveLength(31);
     expect(manifest.inventory.baseline).toEqual({
       models: 127,
@@ -310,10 +310,10 @@ describe("Kie pricing reconciliation", () => {
     });
     expect(manifest.inventory.final).toEqual({
       models: 138,
-      pricingKeys: 144,
-      slugKeys: 146,
-      displayKeys: 146,
-      schemaWithoutPricing: 25,
+      pricingKeys: 148,
+      slugKeys: 150,
+      displayKeys: 150,
+      schemaWithoutPricing: 21,
       pricingOnly: 31,
       endpoints: 71,
     });
@@ -366,6 +366,18 @@ describe("Kie pricing reconciliation", () => {
           continue;
         }
         if (row.billingComponent === "extra") {
+          if (runtime.key.startsWith("qwen3/")) {
+            if (
+              Math.abs(
+                (runtime.estimate.breakdown.extraUsd ?? 0) - officialUsd
+              ) > 1e-12
+            ) {
+              failures.push(
+                `${row.occurrenceId}: extraUsd ${runtime.estimate.breakdown.extraUsd} != official ${officialUsd}`
+              );
+            }
+            continue;
+          }
           const input = recordValue(runtime.payload.input);
           const baseInput = { ...input };
           if (runtime.key === "minimax-h3/image-to-video") {
@@ -396,9 +408,7 @@ describe("Kie pricing reconciliation", () => {
           }
           continue;
         }
-        const additiveUsd = runtime.key.startsWith("minimax-h3/")
-          ? (runtime.estimate.breakdown.extraUsd ?? 0)
-          : 0;
+        const additiveUsd = runtime.estimate.breakdown.extraUsd ?? 0;
         const primaryUsd = runtime.estimate.usd - additiveUsd;
         const quantity = row.officialUnitQuantity ?? 1;
         const expectedPerUnit =
@@ -933,13 +943,13 @@ describe("Kie pricing reconciliation", () => {
     expect(markdown).toContain("## Runtime Variant Coverage");
     expect(markdown).toContain("| Schema model IDs | 127 | 138 |");
     expect(markdown).toContain("| Documented endpoints | 71 | 71 |");
-    expect(markdown).toContain("| Runtime pricing keys | 135 | 144 |");
+    expect(markdown).toContain("| Runtime pricing keys | 135 | 148 |");
     expect(markdown).toContain(
-      "| Schema-without-pricing inventory | 23 | 25 |"
+      "| Schema-without-pricing inventory | 23 | 21 |"
     );
     expect(markdown).toContain("| Pricing-only inventory | 31 | 31 |");
-    expect(markdown).toContain("| Slug keys | 137 | 146 |");
-    expect(markdown).toContain("| Display keys | 137 | 146 |");
+    expect(markdown).toContain("| Slug keys | 137 | 150 |");
+    expect(markdown).toContain("| Display keys | 137 | 150 |");
     expect(markdown).toContain("Zero unclassified raw rows");
     expect(markdown).toContain("Zero unclassified ApiCity keys");
   });

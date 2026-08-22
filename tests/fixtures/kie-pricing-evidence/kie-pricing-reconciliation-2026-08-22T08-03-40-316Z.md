@@ -18,21 +18,21 @@ This WI6 executable reconciliation joins the frozen official Kie pricing pull to
 | -------------------------------- | -------: | ----: | -------------------------------- |
 | Schema model IDs                 |      127 |   138 | descriptors 138; guards 138      |
 | Documented endpoints             |       71 |    71 | 53 POST; 18 GET                  |
-| Runtime pricing keys             |      135 |   144 | current Kie table                |
-| Schema-without-pricing inventory |       23 |    25 | explicit model memberships       |
+| Runtime pricing keys             |      135 |   148 | current Kie table                |
+| Schema-without-pricing inventory |       23 |    21 | explicit model memberships       |
 | Pricing-only inventory           |       31 |    31 | explicit runtime-key memberships |
-| Slug keys                        |      137 |   146 | Kie model metadata               |
-| Display keys                     |      137 |   146 | Kie model metadata               |
+| Slug keys                        |      137 |   150 | Kie model metadata               |
+| Display keys                     |      137 |   150 | Kie model metadata               |
 
 ## Row Dispositions
 
 | Disposition          | Count |
 | -------------------- | ----: |
 | implemented          |   198 |
-| canonical-alias      |   104 |
+| canonical-alias      |   116 |
 | duplicate            |     0 |
 | free-nonbillable     |     3 |
-| unsupported-endpoint |    15 |
+| unsupported-endpoint |     3 |
 | token-billed         |    74 |
 | upstream-unmappable  |    47 |
 
@@ -65,7 +65,7 @@ The mandatory four official cells are executable against the integrated WI6 cost
 
 ## Explicit Audit Queue
 
-Schema models without a current usable pricing key: **25**; pricing-only runtime keys: **31**.
+Schema models without a current usable pricing key: **21**; pricing-only runtime keys: **31**.
 
 | Model                                  | Disposition         | Technical blocker                                                                                                | Follow-up |
 | -------------------------------------- | ------------------- | ---------------------------------------------------------------------------------------------------------------- | --------- |
@@ -75,10 +75,6 @@ Schema models without a current usable pricing key: **25**; pricing-only runtime
 | `kling-3.0-omni/transformation`        | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
 | `grok-imagine/upscale`                 | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
 | `grok-imagine-image-2-0/segment-map`   | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `qwen3/text-to-image`                  | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `qwen3/image-to-image`                 | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `qwen3/pro-text-to-image`              | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `qwen3/pro-image-to-image`             | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
 | `qwen/image-to-image`                  | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
 | `bytedance/seedream`                   | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
 | `bytedance/seedream-v4-edit`           | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |

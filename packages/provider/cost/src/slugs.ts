@@ -160,6 +160,12 @@ export const MODEL_SLUGS = {
     "qwen2/text-to-image": "qwen2",
     "qwen2/image-edit": "qwen2",
 
+    // Image — Qwen 3 (modality shares the family slug; Pro is a price tier)
+    "qwen3/text-to-image": "qwen3",
+    "qwen3/image-to-image": "qwen3",
+    "qwen3/pro-text-to-image": "qwen3p",
+    "qwen3/pro-image-to-image": "qwen3p",
+
     // Image — Seedream 5 lite / 5 pro / 4.5
     "seedream/5-lite-text-to-image": "sd5",
     "seedream/5-lite-image-to-image": "sd5",
@@ -563,6 +569,10 @@ export const MODEL_DISPLAY = {
 
     "qwen2/text-to-image": "Qwen 2 Image",
     "qwen2/image-edit": "Qwen 2 Edit",
+    "qwen3/text-to-image": "Qwen 3 Image",
+    "qwen3/image-to-image": "Qwen 3 Image Edit",
+    "qwen3/pro-text-to-image": "Qwen 3 Image Pro",
+    "qwen3/pro-image-to-image": "Qwen 3 Image Pro Edit",
 
     "seedream/5-lite-text-to-image": "Seedream 5",
     "seedream/5-lite-image-to-image": "Seedream 5 Edit",

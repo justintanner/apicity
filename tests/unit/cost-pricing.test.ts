@@ -27,6 +27,8 @@ import {
   Seedance2RequestSchema,
   Seedance2FastRequestSchema,
   Seedance25RequestSchema,
+  Qwen3ProTextToImageRequestSchema,
+  Qwen3ProImageToImageRequestSchema,
   SeedreamProTextToImageRequestSchema,
   SeedreamProImageToImageRequestSchema,
   SeedreamProLayerDecompositionRequestSchema,
@@ -1787,6 +1789,106 @@ describe("kie qwen per-megapixel pricing (OQ-4)", () => {
     });
     expect(result.usd).toBe(0);
     expect(result.warnings[0]).toContain("could not derive units");
+  });
+});
+
+describe("kie Qwen 3 image pricing (REQ-003)", () => {
+  it.each([
+    {
+      model: "qwen3/text-to-image",
+      input: { prompt: "a city" },
+      usd: 0.024,
+    },
+    {
+      model: "qwen3/image-to-image",
+      input: {
+        prompt: "a city",
+        image_urls: ["https://example.com/a.png", "https://example.com/b.png"],
+      },
+      usd: 0.029,
+    },
+    {
+      model: "qwen3/pro-text-to-image",
+      input: { prompt: "a city", resolution: "1K" },
+      usd: 0.032,
+    },
+    {
+      model: "qwen3/pro-text-to-image",
+      input: { prompt: "a city", resolution: "2K" },
+      usd: 0.06,
+    },
+    {
+      model: "qwen3/pro-image-to-image",
+      input: {
+        prompt: "a city",
+        image_urls: ["https://example.com/a.png"],
+        resolution: "1K",
+      },
+      usd: 0.0345,
+    },
+    {
+      model: "qwen3/pro-image-to-image",
+      input: {
+        prompt: "a city",
+        image_urls: ["https://example.com/a.png", "https://example.com/b.png"],
+        resolution: "2K",
+      },
+      usd: 0.065,
+    },
+  ])("prices $model at $usd", ({ model, input, usd }) => {
+    const result = kieEstimate({ model, input });
+
+    expect(result.usd).toBeCloseTo(usd, 10);
+    expect(result.warnings).toEqual([]);
+  });
+
+  it("charges every Qwen 3 input image and no invented free allowance", () => {
+    const result = kieEstimate({
+      model: "qwen3/image-to-image",
+      input: {
+        prompt: "a city",
+        image_urls: ["https://example.com/a.png", "https://example.com/b.png"],
+      },
+    });
+
+    expect(result.breakdown).toEqual({
+      units: 1,
+      unit: "images",
+      perUnitUsd: 0.024,
+      extraUsd: 0.005,
+    });
+  });
+
+  it("fails closed when Pro text-to-image omits resolution", () => {
+    const parsed = Qwen3ProTextToImageRequestSchema.safeParse({
+      model: "qwen3/pro-text-to-image",
+      input: { prompt: "a city" },
+    });
+
+    expect(parsed.success).toBe(true);
+    if (!parsed.success) return;
+    const result = kieEstimate(parsed.data);
+    expect(result.usd).toBe(0);
+    expect(result.warnings[0]).toContain(
+      "missing required selector(s): resolution"
+    );
+  });
+
+  it("uses Pro image-to-image's documented 1K resolution default", () => {
+    const parsed = Qwen3ProImageToImageRequestSchema.safeParse({
+      model: "qwen3/pro-image-to-image",
+      input: {
+        prompt: "a city",
+        image_urls: ["https://example.com/a.png"],
+      },
+    });
+
+    expect(parsed.success).toBe(true);
+    if (!parsed.success) return;
+    expect(parsed.data.input.resolution).toBe("1K");
+    const result = kieEstimate(parsed.data);
+    expect(result.usd).toBeCloseTo(0.0345, 10);
+    expect(result.warnings).toEqual([]);
   });
 });
 

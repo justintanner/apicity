@@ -146,6 +146,21 @@ const seedreamProEditExtra = (
   return Math.max(0, images.length - 1) * 0.0025;
 };
 
+// Qwen 3 image-to-image publishes a separate $0.0025 "input" row per image
+// with no "first image free" qualifier. Charge every reference image rather
+// than borrowing Seedream's after-the-first rule. The request schemas require
+// one to three image_urls, so only that finite, exact range is accepted.
+const qwen3InputImageExtra = (
+  p: Record<string, unknown>
+): number | undefined => {
+  const images = asObject(p.input)?.image_urls;
+  if (!Array.isArray(images) || images.length === 0 || images.length > 3) {
+    return undefined;
+  }
+  if (images.some((image) => typeof image !== "string")) return undefined;
+  return images.length * 0.0025;
+};
+
 // kie's `image_size` presets are the same named tokens fal uses for the same
 // upstream models. kie's market pages publish the token list without pixel
 // dimensions, so the dimensions come from fal's documented values for those
@@ -1709,6 +1724,48 @@ export const kie: Record<string, ModelPricing> = {
   "wan/2-7-image-pro": flatImage(0.06, "alibaba/wan-2.7"),
   "qwen2/text-to-image": flatImage(0.028, "alibaba/qwen-image-2"),
   "qwen2/image-edit": flatImage(0.028, "alibaba/qwen-image-2"),
+
+  // Qwen 3 — the 2026-08-22 catalog publishes identical 1K/2K base output
+  // rates, so resolution is not a billing axis for the base pair. Pro keeps
+  // the literal 1K/2K selector; only image-to-image documents a 1K default.
+  "qwen3/text-to-image": {
+    kind: "perUnit",
+    unit: "images",
+    units: imageCount,
+    select: [],
+    rates: { "": 0.024 },
+    source: pricePage(
+      "https://kie.ai/qwen-image-3?model=qwen3%2Ftext-to-image",
+      "2026-08-22"
+    ),
+  },
+  "qwen3/image-to-image": {
+    kind: "perUnit",
+    unit: "images",
+    units: imageCount,
+    select: [],
+    rates: { "": 0.024 },
+    extra: qwen3InputImageExtra,
+    source: pricePage(
+      "https://kie.ai/qwen-image-3?model=qwen3%2Fimage-to-image",
+      "2026-08-22"
+    ),
+  },
+  "qwen3/pro-text-to-image": tieredImagePage(
+    "resolution",
+    { "1K": 0.032, "2K": 0.06 },
+    "https://kie.ai/qwen-image-3?model=qwen3%2Fpro-text-to-image",
+    undefined,
+    "2026-08-22"
+  ),
+  "qwen3/pro-image-to-image": tieredImagePage(
+    "resolution",
+    { "1K": 0.032, "2K": 0.06 },
+    "https://kie.ai/qwen-image-3?model=qwen3%2Fpro-image-to-image",
+    "1K",
+    "2026-08-22",
+    qwen3InputImageExtra
+  ),
   "seedream/5-lite-text-to-image": flatImage(0.0275, "bytedance/seedream-5"),
   "seedream/5-lite-image-to-image": flatImage(0.0275, "bytedance/seedream-5"),
 

@@ -220,6 +220,14 @@ export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
 
 export const EXPLICIT_OPERATION_MAPPINGS = Object.freeze([
   {
+    key: "qwen3/pro-image-to-image",
+    patterns: [/qwen image 3\.0 pro,\s*(?:output|input),/i],
+  },
+  {
+    key: "qwen3/image-to-image",
+    patterns: [/qwen image 3\.0,\s*(?:output|input),/i],
+  },
+  {
     key: "seedream/5-pro-image-to-image",
     patterns: [/seedream 5 pro,\s*input image/i],
   },
@@ -573,6 +581,15 @@ export function applySelectorRules({ key, text, candidates, context }) {
 }
 
 const PAYLOAD_RULES = Object.freeze([
+  {
+    family: "qwen3-image-inputs",
+    matches: (key) =>
+      key === "qwen3/image-to-image" ||
+      key === "qwen3/pro-image-to-image",
+    apply: (input) => {
+      input.image_urls = ["https://example.com/a.png"];
+    },
+  },
   {
     family: "wan-speech-frames",
     matches: (key) => key === "wan/2-2-a14b-speech-to-video-turbo",

@@ -1,7 +1,7 @@
 {
   "schema": "gc.kie-pricing-reconciliation.v1",
   "version": 1,
-  "generatedAt": "2026-08-22T08:06:23.155Z",
+  "generatedAt": "2026-08-22T08:11:36.964Z",
   "snapshot": {
     "path": "tests/fixtures/kie-pricing-evidence/kie-pricing-snapshot-2026-08-22T08-03-40-316Z.json",
     "metadataPath": "tests/fixtures/kie-pricing-evidence/kie-pricing-pull-2026-08-22T08-03-40-316Z.json",
@@ -512,10 +512,10 @@
     },
     "final": {
       "models": 138,
-      "pricingKeys": 144,
-      "slugKeys": 146,
-      "displayKeys": 146,
-      "schemaWithoutPricing": 25,
+      "pricingKeys": 148,
+      "slugKeys": 150,
+      "displayKeys": 150,
+      "schemaWithoutPricing": 21,
       "pricingOnly": 31,
       "endpoints": 71
     }
@@ -533,8 +533,8 @@
       "packages/provider/kie/src/zod.ts": "sha256:45f2563825960715dd48e263b111e364f4685e14c0a14510da652dd77e586183",
       "packages/provider/kie/src/model-schemas.ts": "sha256:e528f2e500d3e0e63eeb03ec74567b85c6fe9700fe9290fe415768e574ccd81b",
       "packages/provider/kie/src/kie.ts": "sha256:879aa7a639885ba118a2797ab0d66d93d4180b72d647753876de392523d901bf",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:4a398c1f672d83c700d4679215c1f0c818a65b3f06ca29732e0a4297f1c61c63",
-      "packages/provider/cost/src/slugs.ts": "sha256:eacb4ab4ed38902a23e5171761c3f67b56df12d91162641e25b925ce1bb4274b",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:295e606c4762f7af7cdca6ae1eb230e19cbcd26a94ca8c971e5193fe46550be2",
+      "packages/provider/cost/src/slugs.ts": "sha256:6dbf2497cb2608476242386f124407d021e7b19309bf1b3d6eccb2be3842d9a0",
       "scripts/endpoint-docs.tsv": "sha256:463013918271e4989ea47cc185d91897b7174b8e8892e67d5a7d09c5338768eb"
     }
   },
@@ -1370,7 +1370,7 @@
         "url": "https://kie.ai/seedance-2-5",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "Mandatory Seedance 2.5 row; the final cost table contains the supported pricing key and all four official cells.",
+      "rationale": "Mandatory Seedance 2.5 row; the final cost table contains the supported pricing key and all six official cells.",
       "unit": "seconds",
       "officialUnit": "seconds",
       "officialUnitQuantity": 1,
@@ -1421,7 +1421,7 @@
         "url": "https://kie.ai/seedance-2-5",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "Mandatory Seedance 2.5 row; the final cost table contains the supported pricing key and all four official cells.",
+      "rationale": "Mandatory Seedance 2.5 row; the final cost table contains the supported pricing key and all six official cells.",
       "unit": "seconds",
       "officialUnit": "seconds",
       "officialUnitQuantity": 1,
@@ -1472,7 +1472,7 @@
         "url": "https://kie.ai/seedance-2-5",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "Mandatory Seedance 2.5 row; the final cost table contains the supported pricing key and all four official cells.",
+      "rationale": "Mandatory Seedance 2.5 row; the final cost table contains the supported pricing key and all six official cells.",
       "unit": "seconds",
       "officialUnit": "seconds",
       "officialUnitQuantity": 1,
@@ -1523,7 +1523,7 @@
         "url": "https://kie.ai/seedance-2-5",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "Mandatory Seedance 2.5 row; the final cost table contains the supported pricing key and all four official cells.",
+      "rationale": "Mandatory Seedance 2.5 row; the final cost table contains the supported pricing key and all six official cells.",
       "unit": "seconds",
       "officialUnit": "seconds",
       "officialUnitQuantity": 1,
@@ -1574,7 +1574,7 @@
         "url": "https://kie.ai/seedance-2-5",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "Mandatory Seedance 2.5 row; the final cost table contains the supported pricing key and all four official cells.",
+      "rationale": "Mandatory Seedance 2.5 row; the final cost table contains the supported pricing key and all six official cells.",
       "unit": "seconds",
       "officialUnit": "seconds",
       "officialUnitQuantity": 1,
@@ -1625,7 +1625,7 @@
         "url": "https://kie.ai/seedance-2-5",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "Mandatory Seedance 2.5 row; the final cost table contains the supported pricing key and all four official cells.",
+      "rationale": "Mandatory Seedance 2.5 row; the final cost table contains the supported pricing key and all six official cells.",
       "unit": "seconds",
       "officialUnit": "seconds",
       "officialUnitQuantity": 1,
@@ -1670,15 +1670,38 @@
         "anchor": "https://kie.ai/qwen-image-3?model=qwen3%2Fpro-image-to-image",
         "discountPrice": false
       },
-      "disposition": "unsupported-endpoint",
-      "mappedApiCityKeys": [],
+      "disposition": "canonical-alias",
+      "mappedApiCityKeys": ["qwen3/pro-image-to-image"],
       "evidence": {
         "url": "https://kie.ai/qwen-image-3?model=qwen3%2Fpro-image-to-image",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for Qwen image 3.0 Pro, output, 2K (image).",
-      "followUpBead": "ac-huxfmb"
+      "rationale": "The official label is an upstream alias for one canonical ApiCity pricing key with a complete official cell.",
+      "canonicalKey": "qwen3/pro-image-to-image",
+      "unit": "images",
+      "officialUnit": "images",
+      "officialUnitQuantity": 1,
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "12",
+        "creditUnit": "per image",
+        "usdPrice": "0.06",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "resolution": "2K"
+      },
+      "selectorSources": {
+        "resolution": "modelInputSchemas:qwen3/pro-image-to-image"
+      },
+      "representativePayload": {
+        "model": "qwen3/pro-image-to-image",
+        "input": {
+          "resolution": "2K",
+          "image_urls": ["https://example.com/a.png"],
+          "prompt": "audit"
+        }
+      }
     },
     {
       "occurrenceId": "sha256:b336630a3e47263df62151cdf0a396a4e16ce69a01ba72ea187e351e916d88e2#1",
@@ -1696,15 +1719,38 @@
         "anchor": "https://kie.ai/qwen-image-3?model=qwen3%2Fpro-image-to-image",
         "discountPrice": false
       },
-      "disposition": "unsupported-endpoint",
-      "mappedApiCityKeys": [],
+      "disposition": "canonical-alias",
+      "mappedApiCityKeys": ["qwen3/pro-image-to-image"],
       "evidence": {
         "url": "https://kie.ai/qwen-image-3?model=qwen3%2Fpro-image-to-image",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for Qwen image 3.0 Pro, output, 1K (image).",
-      "followUpBead": "ac-huxfmb"
+      "rationale": "The official label is an upstream alias for one canonical ApiCity pricing key with a complete official cell.",
+      "canonicalKey": "qwen3/pro-image-to-image",
+      "unit": "images",
+      "officialUnit": "images",
+      "officialUnitQuantity": 1,
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "6.4",
+        "creditUnit": "per image",
+        "usdPrice": "0.032",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "resolution": "1K"
+      },
+      "selectorSources": {
+        "resolution": "modelInputSchemas:qwen3/pro-image-to-image"
+      },
+      "representativePayload": {
+        "model": "qwen3/pro-image-to-image",
+        "input": {
+          "resolution": "1K",
+          "image_urls": ["https://example.com/a.png"],
+          "prompt": "audit"
+        }
+      }
     },
     {
       "occurrenceId": "sha256:e6d4deeb4bde6f9c716a6fa5c03fef704b12829e1de69d3c3d2155d11b361dc2#1",
@@ -1722,15 +1768,39 @@
         "anchor": "https://kie.ai/qwen-image-3?model=qwen3%2Fpro-image-to-image",
         "discountPrice": false
       },
-      "disposition": "unsupported-endpoint",
-      "mappedApiCityKeys": [],
+      "disposition": "canonical-alias",
+      "mappedApiCityKeys": ["qwen3/pro-image-to-image"],
       "evidence": {
         "url": "https://kie.ai/qwen-image-3?model=qwen3%2Fpro-image-to-image",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for Qwen image 3.0 Pro, input, 2K (image).",
-      "followUpBead": "ac-huxfmb"
+      "rationale": "The official label is an upstream alias for one canonical ApiCity pricing key with a complete official cell.",
+      "canonicalKey": "qwen3/pro-image-to-image",
+      "unit": "images",
+      "officialUnit": "images",
+      "officialUnitQuantity": 1,
+      "billingComponent": "extra",
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "0.5",
+        "creditUnit": "per image",
+        "usdPrice": "0.0025",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "resolution": "2K"
+      },
+      "selectorSources": {
+        "resolution": "modelInputSchemas:qwen3/pro-image-to-image"
+      },
+      "representativePayload": {
+        "model": "qwen3/pro-image-to-image",
+        "input": {
+          "resolution": "2K",
+          "image_urls": ["https://example.com/a.png"],
+          "prompt": "audit"
+        }
+      }
     },
     {
       "occurrenceId": "sha256:94ab853f8f25545c9c75a6ca6f249b185e233a439ea0e7aac8cac8b653444e33#1",
@@ -1748,15 +1818,39 @@
         "anchor": "https://kie.ai/qwen-image-3?model=qwen3%2Fpro-image-to-image",
         "discountPrice": false
       },
-      "disposition": "unsupported-endpoint",
-      "mappedApiCityKeys": [],
+      "disposition": "canonical-alias",
+      "mappedApiCityKeys": ["qwen3/pro-image-to-image"],
       "evidence": {
         "url": "https://kie.ai/qwen-image-3?model=qwen3%2Fpro-image-to-image",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for Qwen image 3.0 Pro, input, 1K (image).",
-      "followUpBead": "ac-huxfmb"
+      "rationale": "The official label is an upstream alias for one canonical ApiCity pricing key with a complete official cell.",
+      "canonicalKey": "qwen3/pro-image-to-image",
+      "unit": "images",
+      "officialUnit": "images",
+      "officialUnitQuantity": 1,
+      "billingComponent": "extra",
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "0.5",
+        "creditUnit": "per image",
+        "usdPrice": "0.0025",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "resolution": "1K"
+      },
+      "selectorSources": {
+        "resolution": "modelInputSchemas:qwen3/pro-image-to-image"
+      },
+      "representativePayload": {
+        "model": "qwen3/pro-image-to-image",
+        "input": {
+          "resolution": "1K",
+          "image_urls": ["https://example.com/a.png"],
+          "prompt": "audit"
+        }
+      }
     },
     {
       "occurrenceId": "sha256:c7dd1bf3877d7b66229765f039effa766bd7ca60e49fc2b74cf1db533087f953#1",
@@ -1774,15 +1868,37 @@
         "anchor": "https://kie.ai/qwen-image-3?model=qwen3%2Fpro-text-to-image",
         "discountPrice": false
       },
-      "disposition": "unsupported-endpoint",
-      "mappedApiCityKeys": [],
+      "disposition": "canonical-alias",
+      "mappedApiCityKeys": ["qwen3/pro-text-to-image"],
       "evidence": {
         "url": "https://kie.ai/qwen-image-3?model=qwen3%2Fpro-text-to-image",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for Qwen image 3.0 Pro, text to image, 2K (image).",
-      "followUpBead": "ac-huxfmb"
+      "rationale": "The official label is an upstream alias for one canonical ApiCity pricing key with a complete official cell.",
+      "canonicalKey": "qwen3/pro-text-to-image",
+      "unit": "images",
+      "officialUnit": "images",
+      "officialUnitQuantity": 1,
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "12",
+        "creditUnit": "per image",
+        "usdPrice": "0.06",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "resolution": "2K"
+      },
+      "selectorSources": {
+        "resolution": "modelInputSchemas:qwen3/pro-text-to-image"
+      },
+      "representativePayload": {
+        "model": "qwen3/pro-text-to-image",
+        "input": {
+          "resolution": "2K",
+          "prompt": "audit"
+        }
+      }
     },
     {
       "occurrenceId": "sha256:7e39648ff3aadacbcc80d8f1c61847b6488da646ecc015006026642c7458373f#1",
@@ -1800,15 +1916,37 @@
         "anchor": "https://kie.ai/qwen-image-3?model=qwen3%2Fpro-text-to-image",
         "discountPrice": false
       },
-      "disposition": "unsupported-endpoint",
-      "mappedApiCityKeys": [],
+      "disposition": "canonical-alias",
+      "mappedApiCityKeys": ["qwen3/pro-text-to-image"],
       "evidence": {
         "url": "https://kie.ai/qwen-image-3?model=qwen3%2Fpro-text-to-image",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for Qwen image 3.0 Pro, text to image, 1K (image).",
-      "followUpBead": "ac-huxfmb"
+      "rationale": "The official label is an upstream alias for one canonical ApiCity pricing key with a complete official cell.",
+      "canonicalKey": "qwen3/pro-text-to-image",
+      "unit": "images",
+      "officialUnit": "images",
+      "officialUnitQuantity": 1,
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "6.4",
+        "creditUnit": "per image",
+        "usdPrice": "0.032",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "resolution": "1K"
+      },
+      "selectorSources": {
+        "resolution": "modelInputSchemas:qwen3/pro-text-to-image"
+      },
+      "representativePayload": {
+        "model": "qwen3/pro-text-to-image",
+        "input": {
+          "resolution": "1K",
+          "prompt": "audit"
+        }
+      }
     },
     {
       "occurrenceId": "sha256:4f66e53ed4bf9b5f772a490aa71f0202c571c662c3c8862a041922fc7dd33345#1",
@@ -1826,15 +1964,38 @@
         "anchor": "https://kie.ai/qwen-image-3?model=qwen3%2Fimage-to-image",
         "discountPrice": false
       },
-      "disposition": "unsupported-endpoint",
-      "mappedApiCityKeys": [],
+      "disposition": "canonical-alias",
+      "mappedApiCityKeys": ["qwen3/image-to-image"],
       "evidence": {
         "url": "https://kie.ai/qwen-image-3?model=qwen3%2Fimage-to-image",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for Qwen image 3.0, output, 2K (image).",
-      "followUpBead": "ac-huxfmb"
+      "rationale": "The official label is an upstream alias for one canonical ApiCity pricing key with a complete official cell.",
+      "canonicalKey": "qwen3/image-to-image",
+      "unit": "images",
+      "officialUnit": "images",
+      "officialUnitQuantity": 1,
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "4.8",
+        "creditUnit": "per image",
+        "usdPrice": "0.024",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "resolution": "2K"
+      },
+      "selectorSources": {
+        "resolution": "modelInputSchemas:qwen3/image-to-image"
+      },
+      "representativePayload": {
+        "model": "qwen3/image-to-image",
+        "input": {
+          "resolution": "2K",
+          "image_urls": ["https://example.com/a.png"],
+          "prompt": "audit"
+        }
+      }
     },
     {
       "occurrenceId": "sha256:138f1f075ac4cf2fd3bb50bd8bf04632ea7d58779fd19b9a0cf6d6cfea2b6809#1",
@@ -1852,15 +2013,38 @@
         "anchor": "https://kie.ai/qwen-image-3?model=qwen3%2Fimage-to-image",
         "discountPrice": false
       },
-      "disposition": "unsupported-endpoint",
-      "mappedApiCityKeys": [],
+      "disposition": "canonical-alias",
+      "mappedApiCityKeys": ["qwen3/image-to-image"],
       "evidence": {
         "url": "https://kie.ai/qwen-image-3?model=qwen3%2Fimage-to-image",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for Qwen image 3.0, output, 1K (image).",
-      "followUpBead": "ac-huxfmb"
+      "rationale": "The official label is an upstream alias for one canonical ApiCity pricing key with a complete official cell.",
+      "canonicalKey": "qwen3/image-to-image",
+      "unit": "images",
+      "officialUnit": "images",
+      "officialUnitQuantity": 1,
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "4.8",
+        "creditUnit": "per image",
+        "usdPrice": "0.024",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "resolution": "1K"
+      },
+      "selectorSources": {
+        "resolution": "modelInputSchemas:qwen3/image-to-image"
+      },
+      "representativePayload": {
+        "model": "qwen3/image-to-image",
+        "input": {
+          "resolution": "1K",
+          "image_urls": ["https://example.com/a.png"],
+          "prompt": "audit"
+        }
+      }
     },
     {
       "occurrenceId": "sha256:c819c4f47126bb92ffef02a41c5893e28c27644764f71098c4077819239c2e4f#1",
@@ -1878,15 +2062,39 @@
         "anchor": "https://kie.ai/qwen-image-3?model=qwen3%2Fimage-to-image",
         "discountPrice": false
       },
-      "disposition": "unsupported-endpoint",
-      "mappedApiCityKeys": [],
+      "disposition": "canonical-alias",
+      "mappedApiCityKeys": ["qwen3/image-to-image"],
       "evidence": {
         "url": "https://kie.ai/qwen-image-3?model=qwen3%2Fimage-to-image",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for Qwen image 3.0, input, 2K (image).",
-      "followUpBead": "ac-huxfmb"
+      "rationale": "The official label is an upstream alias for one canonical ApiCity pricing key with a complete official cell.",
+      "canonicalKey": "qwen3/image-to-image",
+      "unit": "images",
+      "officialUnit": "images",
+      "officialUnitQuantity": 1,
+      "billingComponent": "extra",
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "0.5",
+        "creditUnit": "per image",
+        "usdPrice": "0.0025",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "resolution": "2K"
+      },
+      "selectorSources": {
+        "resolution": "modelInputSchemas:qwen3/image-to-image"
+      },
+      "representativePayload": {
+        "model": "qwen3/image-to-image",
+        "input": {
+          "resolution": "2K",
+          "image_urls": ["https://example.com/a.png"],
+          "prompt": "audit"
+        }
+      }
     },
     {
       "occurrenceId": "sha256:53bc3821904857465615b3fcbada0127ef0a3e1ecbb4fe3218cf026cd4cf5e60#1",
@@ -1904,15 +2112,39 @@
         "anchor": "https://kie.ai/qwen-image-3?model=qwen3%2Fimage-to-image",
         "discountPrice": false
       },
-      "disposition": "unsupported-endpoint",
-      "mappedApiCityKeys": [],
+      "disposition": "canonical-alias",
+      "mappedApiCityKeys": ["qwen3/image-to-image"],
       "evidence": {
         "url": "https://kie.ai/qwen-image-3?model=qwen3%2Fimage-to-image",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for Qwen image 3.0, input, 1K (image).",
-      "followUpBead": "ac-huxfmb"
+      "rationale": "The official label is an upstream alias for one canonical ApiCity pricing key with a complete official cell.",
+      "canonicalKey": "qwen3/image-to-image",
+      "unit": "images",
+      "officialUnit": "images",
+      "officialUnitQuantity": 1,
+      "billingComponent": "extra",
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "0.5",
+        "creditUnit": "per image",
+        "usdPrice": "0.0025",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "resolution": "1K"
+      },
+      "selectorSources": {
+        "resolution": "modelInputSchemas:qwen3/image-to-image"
+      },
+      "representativePayload": {
+        "model": "qwen3/image-to-image",
+        "input": {
+          "resolution": "1K",
+          "image_urls": ["https://example.com/a.png"],
+          "prompt": "audit"
+        }
+      }
     },
     {
       "occurrenceId": "sha256:cf04b81d5f6e8f559a3a5bae0b819e7f633daf43fe63855acc9f60649e345e37#1",
@@ -1930,15 +2162,37 @@
         "anchor": "https://kie.ai/qwen-image-3?model=qwen3%2Ftext-to-image",
         "discountPrice": false
       },
-      "disposition": "unsupported-endpoint",
-      "mappedApiCityKeys": [],
+      "disposition": "canonical-alias",
+      "mappedApiCityKeys": ["qwen3/text-to-image"],
       "evidence": {
         "url": "https://kie.ai/qwen-image-3?model=qwen3%2Ftext-to-image",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for Qwen image 3.0, text to image, 2K (image).",
-      "followUpBead": "ac-huxfmb"
+      "rationale": "The official label is an upstream alias for one canonical ApiCity pricing key with a complete official cell.",
+      "canonicalKey": "qwen3/text-to-image",
+      "unit": "images",
+      "officialUnit": "images",
+      "officialUnitQuantity": 1,
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "4.8",
+        "creditUnit": "per image",
+        "usdPrice": "0.024",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "resolution": "2K"
+      },
+      "selectorSources": {
+        "resolution": "modelInputSchemas:qwen3/text-to-image"
+      },
+      "representativePayload": {
+        "model": "qwen3/text-to-image",
+        "input": {
+          "resolution": "2K",
+          "prompt": "audit"
+        }
+      }
     },
     {
       "occurrenceId": "sha256:8255e85634a55d7a8b9180a5002ad6496d71e8cce1fe1652d78aaede32dd603b#1",
@@ -1956,15 +2210,37 @@
         "anchor": "https://kie.ai/qwen-image-3?model=qwen3%2Ftext-to-image",
         "discountPrice": false
       },
-      "disposition": "unsupported-endpoint",
-      "mappedApiCityKeys": [],
+      "disposition": "canonical-alias",
+      "mappedApiCityKeys": ["qwen3/text-to-image"],
       "evidence": {
         "url": "https://kie.ai/qwen-image-3?model=qwen3%2Ftext-to-image",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The fresh official row has no current ApiCity pricing key or callable model mapping; retain it as an explicit final audit disposition.",
-      "technicalBlocker": "No current ApiCity model schema, runtime guard, pricing key, or documented endpoint identifies a callable operation for Qwen image 3.0, text to image, 1K (image).",
-      "followUpBead": "ac-huxfmb"
+      "rationale": "The official label is an upstream alias for one canonical ApiCity pricing key with a complete official cell.",
+      "canonicalKey": "qwen3/text-to-image",
+      "unit": "images",
+      "officialUnit": "images",
+      "officialUnitQuantity": 1,
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "4.8",
+        "creditUnit": "per image",
+        "usdPrice": "0.024",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "resolution": "1K"
+      },
+      "selectorSources": {
+        "resolution": "modelInputSchemas:qwen3/text-to-image"
+      },
+      "representativePayload": {
+        "model": "qwen3/text-to-image",
+        "input": {
+          "resolution": "1K",
+          "prompt": "audit"
+        }
+      }
     },
     {
       "occurrenceId": "sha256:ee05ec7b60883222b7224264ae8f61a6557b1b85b386ea49dba769478d1e9593#1",
@@ -19189,37 +19465,53 @@
         "id": "qwen3/text-to-image",
         "descriptor": true,
         "guard": true,
-        "pricingKey": null,
-        "linkedRows": [],
-        "disposition": "upstream-unmappable",
-        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+        "pricingKey": "qwen3/text-to-image",
+        "linkedRows": [
+          "sha256:cf04b81d5f6e8f559a3a5bae0b819e7f633daf43fe63855acc9f60649e345e37#1",
+          "sha256:8255e85634a55d7a8b9180a5002ad6496d71e8cce1fe1652d78aaede32dd603b#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
       },
       {
         "id": "qwen3/image-to-image",
         "descriptor": true,
         "guard": true,
-        "pricingKey": null,
-        "linkedRows": [],
-        "disposition": "upstream-unmappable",
-        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+        "pricingKey": "qwen3/image-to-image",
+        "linkedRows": [
+          "sha256:4f66e53ed4bf9b5f772a490aa71f0202c571c662c3c8862a041922fc7dd33345#1",
+          "sha256:138f1f075ac4cf2fd3bb50bd8bf04632ea7d58779fd19b9a0cf6d6cfea2b6809#1",
+          "sha256:c819c4f47126bb92ffef02a41c5893e28c27644764f71098c4077819239c2e4f#1",
+          "sha256:53bc3821904857465615b3fcbada0127ef0a3e1ecbb4fe3218cf026cd4cf5e60#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
       },
       {
         "id": "qwen3/pro-text-to-image",
         "descriptor": true,
         "guard": true,
-        "pricingKey": null,
-        "linkedRows": [],
-        "disposition": "upstream-unmappable",
-        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+        "pricingKey": "qwen3/pro-text-to-image",
+        "linkedRows": [
+          "sha256:c7dd1bf3877d7b66229765f039effa766bd7ca60e49fc2b74cf1db533087f953#1",
+          "sha256:7e39648ff3aadacbcc80d8f1c61847b6488da646ecc015006026642c7458373f#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
       },
       {
         "id": "qwen3/pro-image-to-image",
         "descriptor": true,
         "guard": true,
-        "pricingKey": null,
-        "linkedRows": [],
-        "disposition": "upstream-unmappable",
-        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+        "pricingKey": "qwen3/pro-image-to-image",
+        "linkedRows": [
+          "sha256:459e3f578cebe275004d7686731f7477ebac27d88311e5acee8a26120008c3fc#1",
+          "sha256:b336630a3e47263df62151cdf0a396a4e16ce69a01ba72ea187e351e916d88e2#1",
+          "sha256:e6d4deeb4bde6f9c716a6fa5c03fef704b12829e1de69d3c3d2155d11b361dc2#1",
+          "sha256:94ab853f8f25545c9c75a6ca6f249b185e233a439ea0e7aac8cac8b653444e33#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
       },
       {
         "id": "qwen/text-to-image",
@@ -21777,6 +22069,46 @@
         "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
       },
       {
+        "key": "qwen3/text-to-image",
+        "linkedRows": [
+          "sha256:cf04b81d5f6e8f559a3a5bae0b819e7f633daf43fe63855acc9f60649e345e37#1",
+          "sha256:8255e85634a55d7a8b9180a5002ad6496d71e8cce1fe1652d78aaede32dd603b#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "qwen3/image-to-image",
+        "linkedRows": [
+          "sha256:4f66e53ed4bf9b5f772a490aa71f0202c571c662c3c8862a041922fc7dd33345#1",
+          "sha256:138f1f075ac4cf2fd3bb50bd8bf04632ea7d58779fd19b9a0cf6d6cfea2b6809#1",
+          "sha256:c819c4f47126bb92ffef02a41c5893e28c27644764f71098c4077819239c2e4f#1",
+          "sha256:53bc3821904857465615b3fcbada0127ef0a3e1ecbb4fe3218cf026cd4cf5e60#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "qwen3/pro-text-to-image",
+        "linkedRows": [
+          "sha256:c7dd1bf3877d7b66229765f039effa766bd7ca60e49fc2b74cf1db533087f953#1",
+          "sha256:7e39648ff3aadacbcc80d8f1c61847b6488da646ecc015006026642c7458373f#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "qwen3/pro-image-to-image",
+        "linkedRows": [
+          "sha256:459e3f578cebe275004d7686731f7477ebac27d88311e5acee8a26120008c3fc#1",
+          "sha256:b336630a3e47263df62151cdf0a396a4e16ce69a01ba72ea187e351e916d88e2#1",
+          "sha256:e6d4deeb4bde6f9c716a6fa5c03fef704b12829e1de69d3c3d2155d11b361dc2#1",
+          "sha256:94ab853f8f25545c9c75a6ca6f249b185e233a439ea0e7aac8cac8b653444e33#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
         "key": "seedream/5-lite-text-to-image",
         "linkedRows": [
           "sha256:06ee0108aefa6cd33171b886dbc755f6e02f9b26098a75f499d727001703ac00#1"
@@ -22631,6 +22963,22 @@
         "disposition": "supported"
       },
       {
+        "key": "qwen3/text-to-image",
+        "disposition": "supported"
+      },
+      {
+        "key": "qwen3/image-to-image",
+        "disposition": "supported"
+      },
+      {
+        "key": "qwen3/pro-text-to-image",
+        "disposition": "supported"
+      },
+      {
+        "key": "qwen3/pro-image-to-image",
+        "disposition": "supported"
+      },
+      {
         "key": "seedream/5-lite-text-to-image",
         "disposition": "supported"
       },
@@ -23217,6 +23565,22 @@
         "disposition": "supported"
       },
       {
+        "key": "qwen3/text-to-image",
+        "disposition": "supported"
+      },
+      {
+        "key": "qwen3/image-to-image",
+        "disposition": "supported"
+      },
+      {
+        "key": "qwen3/pro-text-to-image",
+        "disposition": "supported"
+      },
+      {
+        "key": "qwen3/pro-image-to-image",
+        "disposition": "supported"
+      },
+      {
         "key": "seedream/5-lite-text-to-image",
         "disposition": "supported"
       },
@@ -23446,30 +23810,6 @@
       }
     ],
     "schemaWithoutPricing": [
-      {
-        "id": "qwen3/text-to-image",
-        "disposition": "upstream-unmappable",
-        "linkedRows": [],
-        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
-      },
-      {
-        "id": "qwen3/image-to-image",
-        "disposition": "upstream-unmappable",
-        "linkedRows": [],
-        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
-      },
-      {
-        "id": "qwen3/pro-text-to-image",
-        "disposition": "upstream-unmappable",
-        "linkedRows": [],
-        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
-      },
-      {
-        "id": "qwen3/pro-image-to-image",
-        "disposition": "upstream-unmappable",
-        "linkedRows": [],
-        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
-      },
       {
         "id": "bytedance/seedream",
         "disposition": "upstream-unmappable",
@@ -23880,10 +24220,10 @@
       "duplicateOccurrences": 0,
       "dispositionCounts": {
         "implemented": 198,
-        "canonical-alias": 104,
+        "canonical-alias": 116,
         "duplicate": 0,
         "free-nonbillable": 3,
-        "unsupported-endpoint": 15,
+        "unsupported-endpoint": 3,
         "token-billed": 74,
         "upstream-unmappable": 47
       },
@@ -23906,13 +24246,13 @@
         "count": 138,
         "descriptors": 138,
         "guards": 138,
-        "withoutPricing": 25,
+        "withoutPricing": 21,
         "dispositionCounts": {
-          "supported": 104,
+          "supported": 108,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 34
+          "upstream-unmappable": 30
         },
         "unclassified": 0
       },
@@ -23930,9 +24270,9 @@
         "unclassified": 0
       },
       "pricingKeys": {
-        "count": 144,
+        "count": 148,
         "dispositionCounts": {
-          "supported": 133,
+          "supported": 137,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -23941,9 +24281,9 @@
         "unclassified": 0
       },
       "slugs": {
-        "count": 146,
+        "count": 150,
         "dispositionCounts": {
-          "supported": 146,
+          "supported": 150,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -23952,9 +24292,9 @@
         "unclassified": 0
       },
       "displays": {
-        "count": 146,
+        "count": 150,
         "dispositionCounts": {
-          "supported": 146,
+          "supported": 150,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -23963,13 +24303,13 @@
         "unclassified": 0
       },
       "schemaWithoutPricing": {
-        "count": 25,
+        "count": 21,
         "dispositionCounts": {
           "supported": 0,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 25
+          "upstream-unmappable": 21
         },
         "unclassified": 0
       },

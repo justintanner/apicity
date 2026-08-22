@@ -435,7 +435,10 @@ function queryDescriptionConflict(raw, inventories) {
       : operation === "get-4k-video"
         ? normalizedDescription.includes("get4k")
         : normalizedDescription.includes(operationNeedle);
-  if (matches) return undefined;
+  const qwen3ImageComponent =
+    operation === "image-to-image" &&
+    /qwen image 3\.0(?: pro)?,\s*(?:output|input),/i.test(description);
+  if (matches || qwen3ImageComponent) return undefined;
   return {
     kind: "query-description-operation-conflict",
     queryModel: query,
@@ -792,7 +795,7 @@ function classifyRawRow(raw, inventories) {
     }
     mappedKeys.push("bytedance/seedance-2-5");
     rationale =
-      "Mandatory Seedance 2.5 row; the final cost table contains the supported pricing key and all four official cells.";
+      "Mandatory Seedance 2.5 row; the final cost table contains the supported pricing key and all six official cells.";
   } else if (queryConflict) {
     disposition = "upstream-unmappable";
     rationale =
@@ -888,6 +891,13 @@ function classifyRawRow(raw, inventories) {
     if (
       key === "seedream/5-pro-image-to-image" &&
       /input image/i.test(String(official.modelDescription ?? ""))
+    ) {
+      result.billingComponent = "extra";
+    }
+    if (
+      (key === "qwen3/image-to-image" ||
+        key === "qwen3/pro-image-to-image") &&
+      /,\s*input,/i.test(String(official.modelDescription ?? ""))
     ) {
       result.billingComponent = "extra";
     }

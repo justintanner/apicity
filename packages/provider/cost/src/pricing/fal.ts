@@ -29,6 +29,10 @@ const sweepAsOf = "2026-07-22";
 // its OpenAPI input schema on this date.
 const flux3AsOf = "2026-08-21";
 
+// Audio endpoints and the dynamic-list recheck were read directly from each
+// model's fal.ai pricing card on this date.
+const audioAsOf = "2026-08-22";
+
 const source = (endpointId: string, on: string = asOf) => ({
   url: `https://fal.ai/models/${endpointId}`,
   asOf: on,
@@ -130,6 +134,19 @@ const perMegapixel = (
   source: source(endpointId, on),
 });
 
+const perCharacter = (
+  endpointId: string,
+  usd: number,
+  on: string
+): ModelPricing => ({
+  kind: "perUnit",
+  unit: "characters",
+  units: (p) => asString(p.text)?.length,
+  select: [],
+  rates: { "": usd },
+  source: source(endpointId, on),
+});
+
 // ---------------------------------------------------------------------------
 // Video
 // ---------------------------------------------------------------------------
@@ -198,6 +215,13 @@ const flux3Seconds = (
   p: Record<string, unknown>,
   hints?: CostHints
 ): number | undefined => asNumber(p.duration) ?? hintSeconds(hints);
+
+// Audio/video operations whose source duration is not part of the request use
+// the shared cost-only channel. A missing hint still fails closed.
+const hintedSeconds = (
+  _p: Record<string, unknown>,
+  hints?: CostHints
+): number | undefined => hintSeconds(hints);
 
 const resolutionTier = (defaultTier: string) => ({
   name: "resolution",
@@ -393,6 +417,35 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  // Audio — Seed Speech bills $0.03 per 1,000 input characters. Store the
+  // page rate once as $0.00003/character; the request's literal text length is
+  // an exact, payload-derivable unit count.
+  "fal-ai/bytedance/seed-speech/tts/v2": perCharacter(
+    "fal-ai/bytedance/seed-speech/tts/v2",
+    0.03 / 1_000,
+    audioAsOf
+  ),
+
+  // Audio — Scribe V2 bills input audio at $0.008/minute, with a 30% surcharge
+  // whenever keyterms are used. The URL payload contains no media duration, so
+  // this follows the cross-provider ruling: callers provide the known input
+  // length through costHints.durationSeconds and omission fails closed.
+  "fal-ai/elevenlabs/speech-to-text/scribe-v2": perSecondTiered(
+    "fal-ai/elevenlabs/speech-to-text/scribe-v2",
+    [
+      {
+        name: "keyterms",
+        pick: (p) =>
+          Array.isArray(p.keyterms) && p.keyterms.length > 0
+            ? "keyterms"
+            : "base",
+      },
+    ],
+    { base: 0.008 / 60, keyterms: (0.008 * 1.3) / 60 },
+    hintedSeconds,
+    audioAsOf
+  ),
+
   // Image — Flux (area-priced)
   "fal-ai/flux/dev": perMegapixel(
     "fal-ai/flux/dev",

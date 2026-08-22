@@ -390,6 +390,8 @@ export const MODEL_SLUGS = {
   // same underlying models kie also resells, so their slugs intentionally
   // match kie's.
   fal: {
+    "fal-ai/bytedance/seed-speech/tts/v2": "seedtts2",
+    "fal-ai/elevenlabs/speech-to-text/scribe-v2": "scribe2",
     "fal-ai/flux/dev": "fluxd",
     "fal-ai/flux/schnell": "fluxs",
     "fal-ai/qwen-image": "qwenimg",
@@ -772,6 +774,8 @@ export const MODEL_DISPLAY = {
   },
 
   fal: {
+    "fal-ai/bytedance/seed-speech/tts/v2": "Seed Speech TTS 2",
+    "fal-ai/elevenlabs/speech-to-text/scribe-v2": "ElevenLabs Scribe V2",
     "fal-ai/flux/dev": "FLUX.1 Dev",
     "fal-ai/flux/schnell": "FLUX.1 Schnell",
     "fal-ai/qwen-image": "Qwen Image",

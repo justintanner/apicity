@@ -33,6 +33,8 @@ describe("MODEL_SLUGS", () => {
       "fal-ai/nano-banana-2": "nb2",
       "fal-ai/nano-banana-pro": "nbp",
       "fal-ai/bytedance/seedream/v5/lite/text-to-image": "sd5",
+      "fal-ai/bytedance/seed-speech/tts/v2": "seedtts2",
+      "fal-ai/elevenlabs/speech-to-text/scribe-v2": "scribe2",
     });
   });
 
@@ -396,6 +398,8 @@ describe("MODEL_DISPLAY", () => {
       "fal-ai/nano-banana/edit": "Nano Banana Edit",
       "fal-ai/nano-banana-pro": "Nano Banana Pro",
       "fal-ai/bytedance/seedream/v5/lite/text-to-image": "Seedream 5",
+      "fal-ai/bytedance/seed-speech/tts/v2": "Seed Speech TTS 2",
+      "fal-ai/elevenlabs/speech-to-text/scribe-v2": "ElevenLabs Scribe V2",
     });
   });
 

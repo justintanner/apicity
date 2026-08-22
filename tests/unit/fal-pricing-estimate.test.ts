@@ -145,12 +145,57 @@ describe("fal video pricing estimates", () => {
     const unpriced = Object.keys(FAL_ENDPOINT_REQUEST_SCHEMAS).filter(
       (endpoint) => !(endpoint in falPricing) && !dynamic.includes(endpoint)
     );
-    // Audio is an explicit non-goal of ac-h7kvm.7 (follow-up bead); every
-    // other registered endpoint is priced or documented as dynamic.
-    expect(unpriced.sort()).toEqual([
-      "fal-ai/bytedance/seed-speech/tts/v2",
-      "fal-ai/elevenlabs/speech-to-text/scribe-v2",
-    ]);
+    expect(unpriced).toEqual([]);
+  });
+
+  it("prices Seed Speech from exact input characters", () => {
+    const result = est("fal-ai/bytedance/seed-speech/tts/v2", {
+      text: "a".repeat(1_000),
+    });
+
+    expect(result.usd).toBeCloseTo(0.03, 10);
+    expect(result.breakdown).toMatchObject({
+      units: 1_000,
+      unit: "characters",
+    });
+    expect(result.breakdown.perUnitUsd).toBeCloseTo(0.00003, 12);
+    expect(result.warnings).toEqual([]);
+  });
+
+  it.each([
+    { keyterms: undefined, usd: 0.008, rate: 0.008 / 60 },
+    { keyterms: ["ApiCity"], usd: 0.0104, rate: (0.008 * 1.3) / 60 },
+  ])(
+    "prices one minute of Scribe V2 with keyterms=$keyterms",
+    ({ keyterms, usd, rate }) => {
+      const result = computeEstimate({
+        provider: "fal",
+        endpoint: "fal-ai/elevenlabs/speech-to-text/scribe-v2",
+        payload: {
+          audio_url: "https://example.com/audio.mp3",
+          ...(keyterms ? { keyterms } : {}),
+        },
+        costHints: { durationSeconds: 60 },
+      });
+
+      expect(result.usd).toBeCloseTo(usd, 10);
+      expect(result.breakdown).toEqual({
+        units: 60,
+        unit: "seconds",
+        perUnitUsd: rate,
+      });
+      expect(result.warnings).toEqual([]);
+    }
+  );
+
+  it("fails Scribe V2 closed without an input-audio duration hint", () => {
+    const result = est("fal-ai/elevenlabs/speech-to-text/scribe-v2", {
+      audio_url: "https://example.com/audio.mp3",
+    });
+
+    expect(result.usd).toBe(0);
+    expect(result.warnings).toHaveLength(1);
+    expect(result.warnings[0]).toContain("costHints.durationSeconds");
   });
 
   it("prices flat per-second families (sora 2, kling o3 4k, wan r2v)", () => {

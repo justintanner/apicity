@@ -1717,6 +1717,15 @@ export const kie: Record<string, ModelPricing> = {
     source: pricePage("https://kie.ai/seedance-1-5-pro"),
   },
 
+  // Bytedance v1 video remains deliberately unpriced. The 2026-08-22
+  // 441-row KIE catalog has no row for any of the registered lite/pro ids, and
+  // the five matching pages under https://docs.kie.ai/market/bytedance/v1-
+  // (lite-image-to-video, lite-text-to-video, pro-fast-image-to-video,
+  // pro-image-to-video, pro-text-to-video) publish request contracts but no
+  // operation rate. In particular, the fast rate is not inferred by scaling a
+  // standard/pro cell. All five ids therefore fail safe into the prohibitive
+  // tier rather than quoting an invented cross-family rate.
+
   // Topaz Video Upscaler — per second by `input.upscale_factor`. Unlike the
   // image upscaler above, this page publishes the factors themselves (1x/2x
   // $0.04, 4x $0.07), so the schema's own knob keys the rates directly and no

@@ -109,6 +109,12 @@ export const MODEL_SLUGS = {
     // Video — Bytedance Seedance 1.5
     "bytedance/seedance-1.5-pro": "sd1p5p",
 
+    // The registered `bytedance/v1-lite-{text,image}-to-video`,
+    // `bytedance/v1-pro-{text,image}-to-video`, and
+    // `bytedance/v1-pro-fast-image-to-video` ids intentionally have no slug or
+    // pricing key. The 2026-08-22 catalog and their docs.kie.ai/market pages
+    // publish no rate, so they fail safe instead of inheriting another tier.
+
     // Video — Topaz
     "topaz/video-upscale": "topazvid",
 

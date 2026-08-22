@@ -980,12 +980,13 @@ export const kie: Record<string, ModelPricing> = {
   //    pricing a duration this model's own guard rejects would quote a video
   //    that cannot be ordered.
   //
-  // The two wan/2-6-flash-* ids are deliberately absent: kie publishes no flash
-  // rate on any surface, so they stay unpriced and fail safe into the
-  // prohibitive tier rather than borrowing the standard rate (mayor ruling R2,
-  // 2026-08-07; same discipline as pixverse-v6/*). R2 confirmed this table on
-  // 2026-08-07, one day after the shared pricePage stamp, so each entry carries
-  // its own asOf.
+  // The two wan/2-6-flash-* ids are deliberately absent. Rechecked 2026-08-22:
+  // neither the fresh 441-row KIE catalog nor the matching
+  // https://docs.kie.ai/market/wan/2-6-flash-* operation pages publishes a
+  // flash rate. They stay unpriced and fail safe into the prohibitive tier
+  // rather than borrowing the standard rate (mayor ruling R2). R2 confirmed
+  // the standard table on 2026-08-07, one day after the shared pricePage stamp,
+  // so each standard entry still carries its own evidence date below.
   "wan/2-6-text-to-video": {
     ...perVideoByDurationAndResolution(
       {

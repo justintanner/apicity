@@ -457,6 +457,7 @@ export const MODEL_SLUGS = {
     "xai/grok-imagine-video/image-to-video": "grok",
     "xai/grok-imagine-video/reference-to-video": "grok",
     "xai/grok-imagine-video/extend-video": "grok",
+    "xai/grok-imagine-video/edit-video": "grok",
   },
 
   googleflow: {
@@ -833,6 +834,7 @@ export const MODEL_DISPLAY = {
     "xai/grok-imagine-video/image-to-video": "Grok Imagine",
     "xai/grok-imagine-video/reference-to-video": "Grok Imagine",
     "xai/grok-imagine-video/extend-video": "Grok Extend",
+    "xai/grok-imagine-video/edit-video": "Grok Imagine Video Edit",
   },
 
   googleflow: {

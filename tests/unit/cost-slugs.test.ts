@@ -35,6 +35,7 @@ describe("MODEL_SLUGS", () => {
       "fal-ai/bytedance/seedream/v5/lite/text-to-image": "sd5",
       "fal-ai/bytedance/seed-speech/tts/v2": "seedtts2",
       "fal-ai/elevenlabs/speech-to-text/scribe-v2": "scribe2",
+      "xai/grok-imagine-video/edit-video": "grok",
     });
   });
 
@@ -400,6 +401,7 @@ describe("MODEL_DISPLAY", () => {
       "fal-ai/bytedance/seedream/v5/lite/text-to-image": "Seedream 5",
       "fal-ai/bytedance/seed-speech/tts/v2": "Seed Speech TTS 2",
       "fal-ai/elevenlabs/speech-to-text/scribe-v2": "ElevenLabs Scribe V2",
+      "xai/grok-imagine-video/edit-video": "Grok Imagine Video Edit",
     });
   });
 

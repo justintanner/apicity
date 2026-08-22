@@ -287,6 +287,60 @@ describe("fal video pricing estimates", () => {
     ).toBeCloseTo(0.2, 10);
   });
 
+  it.each([
+    { resolution: "480p", usd: 0.36, rate: 0.06 },
+    { resolution: "720p", usd: 0.48, rate: 0.08 },
+  ])(
+    "prices Grok video edit at the $resolution total input/output rate",
+    ({ resolution, usd, rate }) => {
+      const result = computeEstimate({
+        provider: "fal",
+        endpoint: "xai/grok-imagine-video/edit-video",
+        payload: {
+          prompt: "make it warmer",
+          video_url: "https://example.com/source.mp4",
+          resolution,
+        },
+        costHints: { durationSeconds: 6 },
+      });
+
+      expect(result.usd).toBeCloseTo(usd, 10);
+      expect(result.breakdown).toEqual({
+        units: 6,
+        unit: "seconds",
+        perUnitUsd: rate,
+      });
+      expect(result.rateAsOf).toBe("2026-08-22");
+      expect(result.warnings).toEqual([]);
+    }
+  );
+
+  it.each([
+    { resolution: "auto", hint: 6, warning: "no rate for variant 'auto'" },
+    {
+      resolution: "480p",
+      hint: undefined,
+      warning: "costHints.durationSeconds",
+    },
+  ])(
+    "fails Grok video edit closed for resolution=$resolution hint=$hint",
+    ({ resolution, hint, warning }) => {
+      const result = computeEstimate({
+        provider: "fal",
+        endpoint: "xai/grok-imagine-video/edit-video",
+        payload: {
+          prompt: "make it warmer",
+          video_url: "https://example.com/source.mp4",
+          resolution,
+        },
+        ...(hint === undefined ? {} : { costHints: { durationSeconds: hint } }),
+      });
+
+      expect(result.usd).toBe(0);
+      expect(result.warnings.join(" ")).toContain(warning);
+    }
+  );
+
   it("prices audio-tiered families (kling v3, veo 3.1)", () => {
     expect(
       est("fal-ai/kling-video/v3/pro/text-to-video", {
@@ -660,14 +714,12 @@ describe("fal edit/image pricing estimates", () => {
   it("keeps every dynamic-priced endpoint out of both registries", () => {
     // blackforestlabs/flux-video-upscale depends on delivered output metadata;
     // google/nano-banana-2-lite and google/nano-banana-lite/edit are
-    // token-metered without a published tokens-per-image constant; and
-    // xai/grok-imagine-video/edit-video bills source length, which is not a
-    // request field. All four therefore use fal's pricing-estimate API.
+    // token-metered without a published tokens-per-image constant. All three
+    // therefore use fal's pricing-estimate API.
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toEqual([
       "blackforestlabs/flux-video-upscale",
       "google/nano-banana-2-lite",
       "google/nano-banana-lite/edit",
-      "xai/grok-imagine-video/edit-video",
     ]);
     for (const endpoint of FAL_DYNAMIC_PRICING_ENDPOINTS) {
       expect(falPricing[endpoint], endpoint).toBeUndefined();

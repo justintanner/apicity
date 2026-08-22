@@ -29,9 +29,14 @@ const sweepAsOf = "2026-07-22";
 // its OpenAPI input schema on this date.
 const flux3AsOf = "2026-08-21";
 
-// Audio endpoints and the dynamic-list recheck were read directly from each
-// model's fal.ai pricing card on this date.
+// Audio endpoints were read directly from each model's fal.ai pricing card on
+// this date.
 const audioAsOf = "2026-08-22";
+
+// Grok Imagine video edit was rechecked against its fal.ai pricing card on
+// this date. Both the source-video input and edited output bill for the same
+// hinted clip length, so their per-second components can be summed exactly.
+const grokEditAsOf = "2026-08-22";
 
 const source = (endpointId: string, on: string = asOf) => ({
   url: `https://fal.ai/models/${endpointId}`,
@@ -399,13 +404,10 @@ const gptImagePerImage = (
 // POST /v1/models/pricing/estimate API.
 //
 //   - google/nano-banana-2-lite, google/nano-banana-lite/edit: billed purely
-//     per token (text in/out $0.3125/$1.875 per 1M, image output $37.50/1M at
-//     a fixed 1K size) and fal publishes no tokens-per-image constant, so any
+//     per token as rechecked 2026-08-22 (text input/output
+//     $0.3125/$1.875 per 1M, image input/output $0.3125/$37.50 per 1M at a
+//     fixed 1K size) and fal publishes no tokens-per-image constant, so any
 //     static per-image rate would be invented.
-//   - xai/grok-imagine-video/edit-video: billed per output second at
-//     $0.05/s (480p) / $0.07/s (720p) plus $0.01/s of source-video input,
-//     but the schema has no duration field — the output length equals the
-//     source video's length, which is not a request field.
 //   - blackforestlabs/flux-video-upscale: billed per output second by the
 //     delivered resolution and precise/creative mode; source duration and
 //     dimensions are not request fields, so a static estimate would guess.
@@ -413,7 +415,6 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "blackforestlabs/flux-video-upscale",
   "google/nano-banana-2-lite",
   "google/nano-banana-lite/edit",
-  "xai/grok-imagine-video/edit-video",
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
@@ -763,5 +764,17 @@ export const fal: Record<string, ModelPricing> = {
     "xai/grok-imagine-video/extend-video",
     0.05,
     numericSeconds(6)
+  ),
+  // Video edit — fal bills the source input at $0.01/s and the output at
+  // $0.05/s (480p) or $0.07/s (720p). Output duration matches the source, so
+  // the two components sum to $0.06/s and $0.08/s over the caller's known
+  // duration hint. `auto` has no published deterministic tier and fails
+  // closed, as does an omitted hint.
+  "xai/grok-imagine-video/edit-video": perSecondTiered(
+    "xai/grok-imagine-video/edit-video",
+    [resolutionTier("auto")],
+    { "480p": 0.06, "720p": 0.08 },
+    hintedSeconds,
+    grokEditAsOf
   ),
 };

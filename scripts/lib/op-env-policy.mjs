@@ -75,6 +75,7 @@ export const OP_ENV_POLICY = Object.freeze({
   KIMI_CODING_API_KEY: credential(),
   ZAI_CODING_PLAN_API_KEY: credential(),
   FAL_API_KEY: credential(),
+  FAL_ADMIN_API_KEY: credential(),
   FIREWORKS_API_KEY: credential(),
   FIREWORKS_ACCOUNT_ID: sensitiveMetadata(),
   GOOGLE_API_KEY: credential(),

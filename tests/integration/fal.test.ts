@@ -12,7 +12,7 @@ describe("fal integration", () => {
   it("should search models", async () => {
     ctx = setupPolly("fal/models-search");
     const provider = createFal({
-      apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
+      apiKey: process.env.FAL_ADMIN_API_KEY ?? "fal-admin-test-key",
     });
     const result = await provider.v1.models({ limit: 5 });
     expect(result.models).toBeDefined();
@@ -24,7 +24,7 @@ describe("fal integration", () => {
   it("should search models by query", async () => {
     ctx = setupPolly("fal/models-search-query");
     const provider = createFal({
-      apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
+      apiKey: process.env.FAL_ADMIN_API_KEY ?? "fal-admin-test-key",
     });
     const result = await provider.v1.models({ q: "flux", limit: 3 });
     expect(result.models).toBeDefined();
@@ -34,7 +34,7 @@ describe("fal integration", () => {
   it("should get pricing for an endpoint", async () => {
     ctx = setupPolly("fal/pricing");
     const provider = createFal({
-      apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
+      apiKey: process.env.FAL_ADMIN_API_KEY ?? "fal-admin-test-key",
     });
     const result = await provider.v1.models.pricing({
       endpoint_id: "fal-ai/flux/dev",
@@ -48,7 +48,7 @@ describe("fal integration", () => {
   it("should estimate cost with unit price", async () => {
     ctx = setupPolly("fal/estimate-cost");
     const provider = createFal({
-      apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
+      apiKey: process.env.FAL_ADMIN_API_KEY ?? "fal-admin-test-key",
     });
     const result = await provider.v1.models.pricing.estimate({
       estimate_type: "unit_price",
@@ -64,7 +64,7 @@ describe("fal integration", () => {
   it("should get usage for an endpoint", async () => {
     ctx = setupPolly("fal/usage");
     const provider = createFal({
-      apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
+      apiKey: process.env.FAL_ADMIN_API_KEY ?? "fal-admin-test-key",
     });
     const result = await provider.v1.models.usage({
       endpoint_id: "fal-ai/flux/dev",
@@ -77,7 +77,7 @@ describe("fal integration", () => {
   it("should get analytics for an endpoint", async () => {
     ctx = setupPolly("fal/analytics");
     const provider = createFal({
-      apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
+      apiKey: process.env.FAL_ADMIN_API_KEY ?? "fal-admin-test-key",
     });
     const result = await provider.v1.models.analytics({
       endpoint_id: "fal-ai/flux/dev",
@@ -89,7 +89,7 @@ describe("fal integration", () => {
   it("should get requests for an endpoint", async () => {
     ctx = setupPolly("fal/requests");
     const provider = createFal({
-      apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
+      apiKey: process.env.FAL_ADMIN_API_KEY ?? "fal-admin-test-key",
     });
     const result = await provider.v1.models.requests.byEndpoint({
       endpoint_id: "fal-ai/flux/dev",
@@ -103,7 +103,7 @@ describe("fal integration", () => {
   it("should list workflows", async () => {
     ctx = setupPolly("fal/workflows-list");
     const provider = createFal({
-      apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
+      apiKey: process.env.FAL_ADMIN_API_KEY ?? "fal-admin-test-key",
     });
     const result = await provider.v1.workflows({ limit: 3 });
     expect(result.workflows).toBeDefined();
@@ -114,7 +114,7 @@ describe("fal integration", () => {
   it("should list workflows with search", async () => {
     ctx = setupPolly("fal/workflows-list-search");
     const provider = createFal({
-      apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
+      apiKey: process.env.FAL_ADMIN_API_KEY ?? "fal-admin-test-key",
     });
     const result = await provider.v1.workflows({
       search: "flux",
@@ -127,7 +127,7 @@ describe("fal integration", () => {
   it("should throw validation_error for unknown workflow", async () => {
     ctx = setupPolly("fal/workflows-get");
     const provider = createFal({
-      apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
+      apiKey: process.env.FAL_ADMIN_API_KEY ?? "fal-admin-test-key",
     });
     try {
       await provider.v1.workflows.get({

@@ -12,7 +12,7 @@ describe("fal models pricing integration", () => {
   it("should get model pricing", async () => {
     ctx = setupPolly("fal/models-pricing");
     const provider = createFal({
-      apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
+      apiKey: process.env.FAL_ADMIN_API_KEY ?? "fal-admin-test-key",
     });
     const result = await provider.v1.models.pricing({
       endpoint_id: "fal-ai/flux/dev",
@@ -25,7 +25,7 @@ describe("fal models pricing integration", () => {
   it("should estimate pricing for a request", async () => {
     ctx = setupPolly("fal/models-pricing-estimate");
     const provider = createFal({
-      apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
+      apiKey: process.env.FAL_ADMIN_API_KEY ?? "fal-admin-test-key",
     });
     const result = await provider.v1.models.pricing.estimate({
       estimate_type: "unit_price",

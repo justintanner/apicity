@@ -12,7 +12,7 @@ describe("fal models usage integration", () => {
   it("should get model usage stats", async () => {
     ctx = setupPolly("fal/models-usage-stats");
     const provider = createFal({
-      apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
+      apiKey: process.env.FAL_ADMIN_API_KEY ?? "fal-admin-test-key",
     });
     const result = await provider.v1.models.usage({
       endpoint_id: "fal-ai/flux/dev",
@@ -25,7 +25,7 @@ describe("fal models usage integration", () => {
   it("should get model analytics", async () => {
     ctx = setupPolly("fal/models-usage-analytics");
     const provider = createFal({
-      apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
+      apiKey: process.env.FAL_ADMIN_API_KEY ?? "fal-admin-test-key",
     });
     const result = await provider.v1.models.analytics({
       endpoint_id: "fal-ai/flux/dev",

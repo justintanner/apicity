@@ -895,8 +895,7 @@ function classifyRawRow(raw, inventories) {
       result.billingComponent = "extra";
     }
     if (
-      (key === "qwen3/image-to-image" ||
-        key === "qwen3/pro-image-to-image") &&
+      (key === "qwen3/image-to-image" || key === "qwen3/pro-image-to-image") &&
       /,\s*input,/i.test(String(official.modelDescription ?? ""))
     ) {
       result.billingComponent = "extra";

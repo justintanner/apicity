@@ -409,8 +409,9 @@ const gptImagePerImage = (
 //     fixed 1K size) and fal publishes no tokens-per-image constant, so any
 //     static per-image rate would be invented.
 //   - blackforestlabs/flux-video-upscale: billed per output second by the
-//     delivered resolution and precise/creative mode; source duration and
-//     dimensions are not request fields, so a static estimate would guess.
+//     delivered resolution and precise/creative mode as rechecked
+//     2026-08-22; source duration and dimensions are not request fields, so
+//     a static estimate would guess.
 export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "blackforestlabs/flux-video-upscale",
   "google/nano-banana-2-lite",

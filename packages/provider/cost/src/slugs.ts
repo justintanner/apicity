@@ -120,6 +120,11 @@ export const MODEL_SLUGS = {
 
     // Video — lip sync / avatar
     "omnihuman-1-5": "oh1p5",
+    // `omnihuman-1-5/human-identification` and
+    // `omnihuman-1-5/subject-detection` intentionally have no slug or pricing
+    // key. On 2026-08-22 the catalog priced only lip sync and their docs pages
+    // published neither a rate nor an explicit free designation, so both fail
+    // safe instead of borrowing the lip-sync price.
     "volcengine/video-to-video-lip-sync": "vlipsync",
     "kling/ai-avatar-standard": "klingavs",
     "kling/ai-avatar-pro": "klingavp",

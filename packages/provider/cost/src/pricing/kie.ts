@@ -1427,6 +1427,16 @@ export const kie: Record<string, ModelPricing> = {
     source: { ...page("https://kie.ai/omnihuman-1-5"), asOf: "2026-07-20" },
   },
 
+  // OmniHuman 1.5's registered human-identification and subject-detection
+  // utilities are separate analysis operations, not aliases of the billed lip
+  // sync model above. Rechecked 2026-08-22: the 441-row KIE catalog contains
+  // only the lip-sync family row. The human-identification and
+  // subject-detection pages under
+  // https://docs.kie.ai/market/omnihuman-1-5/ publish request contracts but no
+  // rate or explicit zero-cost statement.
+  // With no billing evidence they keep no pricing key and fail safe into the
+  // prohibitive tier rather than being assumed free or borrowing lip-sync.
+
   // volcengine/video-to-video-lip-sync: flat 8 credits/s ($0.04). Both
   // input.mode tiers ("lite"/"basic") bill at the same published rate, so
   // there is no mode selector. Schema has no duration field (length follows

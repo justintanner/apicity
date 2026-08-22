@@ -182,6 +182,13 @@ export const MODEL_SLUGS = {
     "seedream/4.5-text-to-image": "sd4p5",
     "seedream/4.5-edit": "sd4p5",
 
+    // Registered `bytedance/seedream`, `bytedance/seedream-v4-edit`, and
+    // `bytedance/seedream-v4-text-to-image` intentionally have no slug or
+    // pricing key: the 2026-08-22 KIE catalog and their
+    // docs.kie.ai/market/bytedance operation pages publish no rate. They fail
+    // safe into the prohibitive tier instead of borrowing this separately
+    // priced 4.5 family's rate.
+
     // Image — Nano Banana 2 Lite + the namespaced google/* Nano Banana ids
     // (same model as the bare "nano-banana" key, so the same family slug)
     "nano-banana-2-lite": "nb2l",

@@ -1927,11 +1927,13 @@ export const kie: Record<string, ModelPricing> = {
   // KIE_MEDIA_MODELS ids, each with its own createTask schema), so
   // those are the keys — a pricing key must equal what the caller puts in
   // `payload.model`. The ByteDance ids are a DIFFERENT product
-  // generation and stay unpriced (fail-safe prohibitive): docs.kie.ai documents
-  // `bytedance/seedream` as "Seedream3.0" and both
-  // `bytedance/seedream-v4-{edit,text-to-image}` as "Seedream4.0", and none of
-  // the three pages publishes a price. Keying $0.0325 to them would quote the
-  // 4.5 rate for 3.0/4.0 traffic.
+  // generation and stay unpriced (fail-safe prohibitive). Rechecked
+  // 2026-08-22 against the fresh 441-row catalog plus the three operation
+  // pages under https://docs.kie.ai/market/bytedance/: `bytedance/seedream` is
+  // "Seedream3.0" and both `bytedance/seedream-v4-{edit,text-to-image}` are
+  // "Seedream4.0"; none publishes a price. They therefore keep no pricing key
+  // and fail safe into the prohibitive tier rather than borrowing the 4.5 rate
+  // for 3.0/4.0 traffic.
   "seedream/4.5-text-to-image": flatImagePricePage(
     0.0325,
     "https://kie.ai/seedream-4-5?model=seedream%2F4.5-text-to-image"

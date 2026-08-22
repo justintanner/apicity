@@ -59,6 +59,7 @@ export type {
   FalFlux3FirstLastFrameToVideoParams,
   FalFlux3KeyframesToVideoParams,
   FalFlux3ExtendVideoParams,
+  FalFluxVideoUpscaleParams,
   FalXaiGrokImagineImageParams,
   FalXaiGrokImagineImageEditParams,
   FalQwenImageParams,
@@ -173,6 +174,9 @@ export type {
   FalFlux3ExtendVideoRequest,
   FalFlux3ExtendVideoRequestInput,
   FalFlux3ExtendVideoParsedRequest,
+  FalFluxVideoUpscaleRequest,
+  FalFluxVideoUpscaleRequestInput,
+  FalFluxVideoUpscaleParsedRequest,
   FalXaiGrokImagineImageEditRequest,
   FalXaiGrokImagineImageEditRequestInput,
   FalXaiGrokImagineImageEditParsedRequest,
@@ -286,6 +290,7 @@ import type {
   FalFlux3FirstLastFrameToVideoRequest,
   FalFlux3KeyframesToVideoRequest,
   FalFlux3ExtendVideoRequest,
+  FalFluxVideoUpscaleRequest,
   FalXaiGrokImagineImageEditRequest,
   FalSora2TextToVideoRequest,
   FalSora2ImageToVideoRequest,
@@ -669,6 +674,10 @@ export interface FalFlux3Keyframe {
 export interface FalFlux3VideoResponse {
   video: FalVideoFile;
   seed: number;
+}
+
+export interface FalFluxVideoUpscaleResponse {
+  video: FalVideoFile;
 }
 
 // ==================== ElevenLabs Speech to Text Scribe V2 ====================
@@ -1985,6 +1994,13 @@ type FalFlux3ExtendVideoFn = ((
   schema: ApicitySchema<FalFlux3ExtendVideoRequest>;
 };
 
+type FalFluxVideoUpscaleFn = ((
+  params: FalFluxVideoUpscaleRequest,
+  signal?: AbortSignal
+) => Promise<FalFluxVideoUpscaleResponse>) & {
+  schema: ApicitySchema<FalFluxVideoUpscaleRequest>;
+};
+
 export interface FalRunFlux3Namespace {
   extendVideo: FalFlux3ExtendVideoFn;
   firstLastFrameToVideo: FalFlux3FirstLastFrameToVideoFn;
@@ -1995,6 +2011,7 @@ export interface FalRunFlux3Namespace {
 
 export interface FalRunBlackforestlabsNamespace {
   flux3: FalRunFlux3Namespace;
+  fluxVideoUpscale: FalFluxVideoUpscaleFn;
 }
 
 export interface FalRunNamespace {

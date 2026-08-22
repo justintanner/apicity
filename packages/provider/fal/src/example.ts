@@ -138,6 +138,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST blackforestlabs.fluxVideoUpscale": {
+    "source": "fal/flux-video-upscale",
+    "payload": {
+      "video_url": "<inline video/mp4 data URL — replace with a real URL or upload>",
+      "upscale_factor": 1.5,
+      "creativity": 0
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST bytedance.seedSpeech.tts.v2": {
     "source": "fal/bytedance-seed-speech-tts-v2",
     "payload": {

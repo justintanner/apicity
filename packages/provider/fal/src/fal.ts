@@ -87,6 +87,8 @@ import {
   FalFlux3KeyframesToVideoRequest,
   FalFlux3ExtendVideoRequest,
   FalFlux3VideoResponse,
+  FalFluxVideoUpscaleRequest,
+  FalFluxVideoUpscaleResponse,
   FalXaiGrokImagineImageRequest,
   FalXaiGrokImagineImageResponse,
   FalXaiGrokImagineImageEditRequest,
@@ -177,6 +179,7 @@ import {
   FalFlux3FirstLastFrameToVideoRequestSchema,
   FalFlux3KeyframesToVideoRequestSchema,
   FalFlux3ExtendVideoRequestSchema,
+  FalFluxVideoUpscaleRequestSchema,
   FalXaiGrokImagineImageRequestSchema,
   FalXaiGrokImagineImageEditRequestSchema,
   FalQwenImageRequestSchema,
@@ -750,6 +753,19 @@ export function createFal(opts: FalOptions): FalProvider {
     "POST",
     "/blackforestlabs/flux-3/extend-video",
     FalFlux3ExtendVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://api.fal.ai/v1/blackforestlabs/flux-video-upscale
+  // Docs: https://fal.ai/models/blackforestlabs/flux-video-upscale/api
+  const blackforestlabsFluxVideoUpscale = jsonBody<
+    FalFluxVideoUpscaleRequest,
+    FalFluxVideoUpscaleResponse
+  >(
+    "POST",
+    "/blackforestlabs/flux-video-upscale",
+    FalFluxVideoUpscaleRequestSchema,
     { base: runBaseURL }
   );
 
@@ -1458,6 +1474,7 @@ export function createFal(opts: FalOptions): FalProvider {
         keyframesToVideo: blackforestlabsFlux3KeyframesToVideo,
         textToVideo: blackforestlabsFlux3TextToVideo,
       },
+      fluxVideoUpscale: blackforestlabsFluxVideoUpscale,
     },
     bytedance: {
       seedance2p0: {

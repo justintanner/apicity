@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-68 endpoints across 20 groups. Each method mirrors an upstream URL path.
+69 endpoints across 20 groups. Each method mirrors an upstream URL path.
 
 ### blackforestlabs
 
@@ -204,6 +204,23 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.blackforestlabs.flux3.textToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.blackforestlabs.fluxVideoUpscale</code></b></summary>
+
+<code>POST https://api.fal.ai/v1/blackforestlabs/flux-video-upscale</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/blackforestlabs/flux-video-upscale/api)
+
+```typescript
+const res = await fal.blackforestlabs.fluxVideoUpscale({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

@@ -105,31 +105,16 @@ export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
     rationale:
       "The live non-pro default bundle has no conflict-free official cell; the query-conflicted row remains upstream-unmappable and the quality bundle is audited separately.",
   },
-  ...[
-    [
-      "grok-imagine-image-2-0/text-to-image",
-      "4.0 credits and exactly one result URL",
-      "$0.02 per generation",
-    ],
-    [
-      "grok-imagine-image-2-0/segment-map",
-      "0.0 credits",
-      "$0.00 per generation",
-    ],
-    [
-      "grok-imagine-image-2-0/image-edit",
-      "4.0 credits",
-      "$0.02 per generation",
-    ],
-  ].map(([key, observation, rate]) => ({
-    key,
+  {
+    key: "grok-imagine-image-2-0/segment-map",
     variant: "",
     status: "pricing-only",
     provenance:
       "tests/recordings/kie_2079838932/grok-imagine-image-2-lifecycle_1692809741/recording.har terminal recordInfo reports " +
-      observation,
-    rationale: `The reachable ${rate} variant is supported by live billing evidence but postdates the frozen 2026-08-11 pricing snapshot.`,
-  })),
+      "0.0 credits",
+    rationale:
+      "The reachable $0.00 per generation variant is supported by live billing evidence but remains absent from the 2026-08-22 pricing catalog.",
+  },
   {
     key: "hailuo/02-image-to-video-standard",
     variant: "6|768P",
@@ -147,24 +132,6 @@ export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
       "frozen Seedance 2 480p reference-video cell publishes $0.057; live runtime rate is $0.0575",
     rationale:
       "The official/runtime USD conflict is explicit in WI6 and is not rounded or treated as exact evidence.",
-  },
-  {
-    key: "bytedance/seedance-2-5",
-    variant: "1080p|audio",
-    status: "pricing-only",
-    provenance:
-      "plans/ac-ojfoj9/build/seedance-2-5-pricing-check-2026-08-19.json records the official 2026-08-19 pricing verification",
-    rationale:
-      "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-19.",
-  },
-  {
-    key: "bytedance/seedance-2-5",
-    variant: "1080p|no-audio",
-    status: "pricing-only",
-    provenance:
-      "plans/ac-ojfoj9/build/seedance-2-5-pricing-check-2026-08-19.json records the official 2026-08-19 pricing verification",
-    rationale:
-      "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-19.",
   },
   ...[
     ["kling-3.0-omni/image-to-video", "720p"],

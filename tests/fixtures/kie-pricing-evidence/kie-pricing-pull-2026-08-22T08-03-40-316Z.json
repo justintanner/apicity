@@ -1,0 +1,635 @@
+{
+  "schema": "gc.kie-pricing-pull.v1",
+  "endpoint": "https://api.kie.ai/client/v1/model-pricing/page",
+  "method": "POST",
+  "pulledAt": {
+    "startedAt": "2026-08-22T08:03:38.503Z",
+    "completedAt": "2026-08-22T08:03:40.316Z"
+  },
+  "request": {
+    "pageSize": 100
+  },
+  "snapshot": {
+    "path": "tests/fixtures/kie-pricing-evidence/kie-pricing-snapshot-2026-08-22T08-03-40-316Z.json",
+    "sha256": "sha256:2a5aea8d4840708c53ff11ae055e736650fab756b7e3491362b8dcb7c0fd3a55"
+  },
+  "sourceCaptures": {
+    "root": "tests/fixtures/kie-pricing-evidence/kie-pricing-source-captures-2026-08-22T08-03-40-316Z",
+    "sourcesPath": "tests/fixtures/kie-pricing-evidence/kie-pricing-sources-2026-08-22T08-03-40-316Z.json",
+    "files": [
+      {
+        "pageNum": 1,
+        "path": "kie-pricing-source-captures-2026-08-22T08-03-40-316Z/page-001.json",
+        "url": "https://api.kie.ai/client/v1/model-pricing/page",
+        "retrievedAt": "2026-08-22T08:03:40.316Z",
+        "mediaType": "application/json",
+        "bytes": 38116,
+        "sha256": "sha256:07a35b40ca59c5b4178722143ba599b93e89ecbff30d6f7d21a10cc116350793",
+        "redaction": {
+          "applied": true,
+          "rule": "sensitive response key names"
+        }
+      },
+      {
+        "pageNum": 2,
+        "path": "kie-pricing-source-captures-2026-08-22T08-03-40-316Z/page-002.json",
+        "url": "https://api.kie.ai/client/v1/model-pricing/page",
+        "retrievedAt": "2026-08-22T08:03:40.316Z",
+        "mediaType": "application/json",
+        "bytes": 39714,
+        "sha256": "sha256:4af17cf2c921b21c68d5a29ae6727c33c8a947bfe187f177f70ef894d59c741c",
+        "redaction": {
+          "applied": true,
+          "rule": "sensitive response key names"
+        }
+      },
+      {
+        "pageNum": 3,
+        "path": "kie-pricing-source-captures-2026-08-22T08-03-40-316Z/page-003.json",
+        "url": "https://api.kie.ai/client/v1/model-pricing/page",
+        "retrievedAt": "2026-08-22T08:03:40.316Z",
+        "mediaType": "application/json",
+        "bytes": 39898,
+        "sha256": "sha256:e790c643a290222a1114fb84fa20892b73b457f7240a1c7c0dbc2fcf619ee98a",
+        "redaction": {
+          "applied": true,
+          "rule": "sensitive response key names"
+        }
+      },
+      {
+        "pageNum": 4,
+        "path": "kie-pricing-source-captures-2026-08-22T08-03-40-316Z/page-004.json",
+        "url": "https://api.kie.ai/client/v1/model-pricing/page",
+        "retrievedAt": "2026-08-22T08:03:40.316Z",
+        "mediaType": "application/json",
+        "bytes": 39956,
+        "sha256": "sha256:a46ad8e7fe3750c4e49974972e04b54e8862d2a17d19848cacdefbac8026911d",
+        "redaction": {
+          "applied": true,
+          "rule": "sensitive response key names"
+        }
+      },
+      {
+        "pageNum": 5,
+        "path": "kie-pricing-source-captures-2026-08-22T08-03-40-316Z/page-005.json",
+        "url": "https://api.kie.ai/client/v1/model-pricing/page",
+        "retrievedAt": "2026-08-22T08:03:40.316Z",
+        "mediaType": "application/json",
+        "bytes": 16783,
+        "sha256": "sha256:6b327e694adfda9ae5372e0c4cdb0180539df41045b74082d1bbca56da135fb1",
+        "redaction": {
+          "applied": true,
+          "rule": "sensitive response key names"
+        }
+      }
+    ]
+  },
+  "pages": [
+    {
+      "total": 441,
+      "size": 100,
+      "current": 1,
+      "pages": 5,
+      "rowCount": 100,
+      "identity": "sha256:8839aeae651b9abbe05e4f3c06b1be2fa5c6e0f61b5101cb3ebec36603fabe29"
+    },
+    {
+      "total": 441,
+      "size": 100,
+      "current": 2,
+      "pages": 5,
+      "rowCount": 100,
+      "identity": "sha256:7e2fe43877547dd41daa6f9f9daa5ed959254420c09e1a0c6298b478456cc246"
+    },
+    {
+      "total": 441,
+      "size": 100,
+      "current": 3,
+      "pages": 5,
+      "rowCount": 100,
+      "identity": "sha256:492142c18cda43a52f860f79a7ef85a1bbac35e33ced6abf36e19239ae1ed45d"
+    },
+    {
+      "total": 441,
+      "size": 100,
+      "current": 4,
+      "pages": 5,
+      "rowCount": 100,
+      "identity": "sha256:25b4da30b940fdf877409c3d2aad6bea4d0db8f9a180a353cd74484811f46ef0"
+    },
+    {
+      "total": 441,
+      "size": 100,
+      "current": 5,
+      "pages": 5,
+      "rowCount": 41,
+      "identity": "sha256:4d64b7e7822e52d8e3d1618ba082453d78a095196c18e1ff0c0ec152fd4d67c4"
+    }
+  ],
+  "reportedTotal": 441,
+  "capturedTotal": 441,
+  "rawUniqueCount": 441,
+  "semanticUniqueCount": 441,
+  "duplicateAnalysis": {
+    "rawDuplicateOccurrences": 0,
+    "semanticDuplicateOccurrences": 0,
+    "rawDuplicateGroups": [],
+    "semanticDuplicateGroups": []
+  },
+  "responseCompleteness": {
+    "complete": true,
+    "totalsStable": true,
+    "pageIdentitiesStable": true,
+    "noEarlyEmptyPages": true,
+    "termination": "reported-pages"
+  },
+  "comparison": {
+    "baselinePath": "tests/fixtures/kie-pricing-evidence/kie-pricing-snapshot-2026-08-11T09-18-45-401Z.json",
+    "baselineAsOf": "2026-08-06",
+    "baselineRows": 408,
+    "currentRows": 441,
+    "added": 34,
+    "removed": 1,
+    "changed": 3,
+    "addedRows": [
+      {
+        "modelDescription": "pixverse-v6, Extend, 1080p(with aiduo)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "18.4",
+        "creditUnit": "per second",
+        "usdPrice": "0.092",
+        "falPrice": "0.115",
+        "discountRate": 20,
+        "anchor": "",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "pixverse-v6, Extend, 1080p(no aiduo)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "14.4",
+        "creditUnit": "per second",
+        "usdPrice": "0.072",
+        "falPrice": "0.090",
+        "discountRate": 20,
+        "anchor": "",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "pixverse-v6, Extend, 720p(with aiduo)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "9.6",
+        "creditUnit": "per second",
+        "usdPrice": "0.048",
+        "falPrice": "0.060",
+        "discountRate": 20,
+        "anchor": "",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "pixverse-v6, Extend, 720p(no aiduo)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "7.2",
+        "creditUnit": "per second",
+        "usdPrice": "0.036",
+        "falPrice": "0.045",
+        "discountRate": 20,
+        "anchor": "",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "pixverse-v6, Extend, 540p(with aiduo)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "7.2",
+        "creditUnit": "per second",
+        "usdPrice": "0.028",
+        "falPrice": "0.035",
+        "discountRate": 20,
+        "anchor": "",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "pixverse-v6, Extend, 540p(no aiduo)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "5.6",
+        "creditUnit": "per second",
+        "usdPrice": "0.028",
+        "falPrice": "0.035",
+        "discountRate": 20,
+        "anchor": "",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "pixverse-v6, Extend, 360p(with aiduo)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "5.6",
+        "creditUnit": "per second",
+        "usdPrice": "0.028",
+        "falPrice": "0.035",
+        "discountRate": 20,
+        "anchor": "",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "pixverse-v6, Extend, 360p(no aiduo)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "4",
+        "creditUnit": "per second",
+        "usdPrice": "0.020",
+        "falPrice": "0.025",
+        "discountRate": 20,
+        "anchor": "",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "pixverse-v6, Reference To Video, 1080p(with audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "20.7",
+        "creditUnit": "per second",
+        "usdPrice": "0.1035",
+        "falPrice": "",
+        "discountRate": 20,
+        "anchor": "",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "pixverse-v6, Reference To Video, 1080p(no audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "16.2",
+        "creditUnit": "per second",
+        "usdPrice": "0.081",
+        "falPrice": "",
+        "discountRate": 20,
+        "anchor": "",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "pixverse-v6, Reference To Video, 720p(with audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "10.8",
+        "creditUnit": "per second",
+        "usdPrice": "0.054",
+        "falPrice": "0.0675",
+        "discountRate": 20,
+        "anchor": "",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "pixverse-v6, Reference To Video, 720p(no audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "8.1",
+        "creditUnit": "per second",
+        "usdPrice": "0.0405",
+        "falPrice": "",
+        "discountRate": 20,
+        "anchor": "",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "pixverse-v6, Reference To Video, 540p(with audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "8.1",
+        "creditUnit": "per second",
+        "usdPrice": "0.0405",
+        "falPrice": "",
+        "discountRate": 20,
+        "anchor": "",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "pixverse-v6, Reference To Video, 540p(no audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "6.3",
+        "creditUnit": "per second",
+        "usdPrice": "0.0315",
+        "falPrice": "",
+        "discountRate": 20,
+        "anchor": "",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "pixverse-v6, Reference To Video, 360p(with audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "6.3",
+        "creditUnit": "per second",
+        "usdPrice": "0.0315",
+        "falPrice": "",
+        "discountRate": 20,
+        "anchor": "",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "pixverse-v6, Reference To Video, 360p(no audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "4.5",
+        "creditUnit": "per second",
+        "usdPrice": "0.0225",
+        "falPrice": "",
+        "discountRate": 20,
+        "anchor": "",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "pixverse-v6, Text /Image to Video, 1080p (with audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "18.4",
+        "creditUnit": "per second",
+        "usdPrice": "0.092",
+        "falPrice": "0.115",
+        "discountRate": 20,
+        "anchor": "",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "pixverse-v6, Text /Image to Video, 1080p (no audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "14.4",
+        "creditUnit": "per second",
+        "usdPrice": "0.072",
+        "falPrice": "0.090",
+        "discountRate": 20,
+        "anchor": "",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "pixverse-v6, Text /Image to Video, 720p (with audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "9.6",
+        "creditUnit": "per second",
+        "usdPrice": "0.048",
+        "falPrice": "0.060",
+        "discountRate": 20,
+        "anchor": "",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "pixverse-v6, Text /Image to Video, 720p (no audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "7.2",
+        "creditUnit": "per second",
+        "usdPrice": "0.036",
+        "falPrice": "0.045",
+        "discountRate": 20,
+        "anchor": "",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "pixverse-v6, Text /Image to Video, 540p (with audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "7.2",
+        "creditUnit": "per second",
+        "usdPrice": "0.036",
+        "falPrice": "0.045",
+        "discountRate": 20,
+        "anchor": "",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "pixverse-v6, Text /Image to Video, 540p (no audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "5.6",
+        "creditUnit": "per second",
+        "usdPrice": "0.028",
+        "falPrice": "0.035",
+        "discountRate": 20,
+        "anchor": "",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "pixverse-v6, Text /Image to Video, 360p (with audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "5.6",
+        "creditUnit": "per second",
+        "usdPrice": "0.028",
+        "falPrice": "0.035",
+        "discountRate": 20,
+        "anchor": "",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "pixverse-v6, Text /Image to Video, 360p（no audio）",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "4",
+        "creditUnit": "per second",
+        "usdPrice": "0.02",
+        "falPrice": "0.025",
+        "discountRate": 20,
+        "anchor": "",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "grok-imagine-image-2-0, Text to Image",
+        "interfaceType": "image",
+        "provider": "Grok",
+        "creditPrice": "4",
+        "creditUnit": "per image",
+        "usdPrice": "0.02",
+        "falPrice": "0.06",
+        "discountRate": 66.67,
+        "anchor": "",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "grok-imagine-image-2-0, Image Edit",
+        "interfaceType": "image",
+        "provider": "Grok",
+        "creditPrice": "4",
+        "creditUnit": "per image",
+        "usdPrice": "0.02",
+        "falPrice": "0.06",
+        "discountRate": 66.67,
+        "anchor": "",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "Gemini 3.7 Flash, chat, output",
+        "interfaceType": "chat",
+        "provider": "Google",
+        "creditPrice": "225",
+        "creditUnit": "per million",
+        "usdPrice": "1.125",
+        "falPrice": "3.75",
+        "discountRate": 70,
+        "anchor": "",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "Gemini 3.7 Flash, chat, input",
+        "interfaceType": "chat",
+        "provider": "Google",
+        "creditPrice": "45",
+        "creditUnit": "per million",
+        "usdPrice": "0.225",
+        "falPrice": "0.75",
+        "discountRate": 70,
+        "anchor": "",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "grok-4-6, Chat, Input",
+        "interfaceType": "chat",
+        "provider": "Grok",
+        "creditPrice": "160",
+        "creditUnit": "per 1M tokens",
+        "usdPrice": "0.80",
+        "falPrice": "2.00",
+        "discountRate": 60,
+        "anchor": "https://kie.ai/grok-4-6",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "grok-4-6, Chat, Output",
+        "interfaceType": "chat",
+        "provider": "Grok",
+        "creditPrice": "480",
+        "creditUnit": "per 1M tokens",
+        "usdPrice": "2.40",
+        "falPrice": "6.00",
+        "discountRate": 60,
+        "anchor": "https://kie.ai/grok-4-6",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "grok-4-6, Chat, Cached Input",
+        "interfaceType": "chat",
+        "provider": "Grok",
+        "creditPrice": "40",
+        "creditUnit": "per 1M tokens",
+        "usdPrice": "0.20",
+        "falPrice": "0.50",
+        "discountRate": 60,
+        "anchor": "https://kie.ai/grok-4-6",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "bytedance/seedance-2-5, 1080p with video",
+        "interfaceType": "video",
+        "provider": "ByteDance",
+        "creditPrice": "68.5",
+        "creditUnit": "per second",
+        "usdPrice": "0.3425",
+        "falPrice": "0.6823",
+        "discountRate": 49.8,
+        "anchor": "https://kie.ai/seedance-2-5",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "bytedance/seedance-2-5, 1080p no video",
+        "interfaceType": "video",
+        "provider": "ByteDance",
+        "creditPrice": "114",
+        "creditUnit": "per second",
+        "usdPrice": "0.570",
+        "falPrice": "1.1372",
+        "discountRate": 49.88,
+        "anchor": "https://kie.ai/seedance-2-5",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "grok-imagine, text-to-image",
+        "interfaceType": "image",
+        "provider": "Grok",
+        "creditPrice": "4.0",
+        "creditUnit": "per 2 images",
+        "usdPrice": "0.02",
+        "falPrice": "0.02",
+        "discountRate": 0,
+        "anchor": "https://kie.ai/grok-imagine?model=grok-imagine%2Ftext-to-video",
+        "discountPrice": false
+      }
+    ],
+    "removedRows": [
+      {
+        "modelDescription": "grok-imagine, text-to-image",
+        "interfaceType": "image",
+        "provider": "Grok",
+        "creditPrice": "4.0",
+        "creditUnit": "per 6 images",
+        "usdPrice": "0.02",
+        "falPrice": "0.02",
+        "discountRate": 0,
+        "anchor": "https://kie.ai/grok-imagine?model=grok-imagine%2Ftext-to-video",
+        "discountPrice": false
+      }
+    ],
+    "changedRows": [
+      {
+        "key": "[\"Gemini 3.6 Flash, chat, output\",\"chat\",\"Google\",\"per million\",\"https://kie.ai/gemini-3-6-flash\"]",
+        "modelDescription": "Gemini 3.6 Flash, chat, output",
+        "before": {
+          "creditPrice": "450",
+          "usdPrice": "2.25",
+          "falPrice": "7.5",
+          "discountRate": 70,
+          "discountPrice": false
+        },
+        "after": {
+          "creditPrice": "225",
+          "usdPrice": "1.125",
+          "falPrice": "3.75",
+          "discountRate": 70,
+          "discountPrice": false
+        }
+      },
+      {
+        "key": "[\"Gemini 3.6 Flash, chat, input\",\"chat\",\"Google\",\"per million\",\"https://kie.ai/gemini-3-6-flash\"]",
+        "modelDescription": "Gemini 3.6 Flash, chat, input",
+        "before": {
+          "creditPrice": "90",
+          "usdPrice": "0.45",
+          "falPrice": "1.5",
+          "discountRate": 70,
+          "discountPrice": false
+        },
+        "after": {
+          "creditPrice": "45",
+          "usdPrice": "0.225",
+          "falPrice": "0.75",
+          "discountRate": 70,
+          "discountPrice": false
+        }
+      },
+      {
+        "key": "[\"grok-4-5, Chat, Cached Input\",\"chat\",\"Grok\",\"\",\"https://kie.ai/grok-4-5\"]",
+        "modelDescription": "grok-4-5, Chat, Cached Input",
+        "before": {
+          "creditPrice": "40",
+          "usdPrice": "0.20",
+          "falPrice": "0.50",
+          "discountRate": 60,
+          "discountPrice": false
+        },
+        "after": {
+          "creditPrice": "24",
+          "usdPrice": "0.12",
+          "falPrice": "0.3",
+          "discountRate": 60,
+          "discountPrice": false
+        }
+      }
+    ]
+  }
+}

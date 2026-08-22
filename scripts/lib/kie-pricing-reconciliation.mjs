@@ -52,6 +52,8 @@ const REQUIRED_SEEDANCE_RATES = Object.freeze({
   "480p|audio": "0.085",
   "720p|no-audio": "0.315",
   "720p|audio": "0.190",
+  "1080p|no-audio": "0.570",
+  "1080p|audio": "0.3425",
 });
 
 const FINAL_FOLLOW_UP_BEADS = new Set(["ac-huxfmb", "ac-flqhcu", "ac-7r282y"]);
@@ -549,7 +551,11 @@ function selectorValues(raw, key, inventories) {
 
 function seedanceValues(raw) {
   const text = String(raw.modelDescription ?? "");
-  const resolution = /480p/i.test(text) ? "480p" : "720p";
+  const resolution = /1080p/i.test(text)
+    ? "1080p"
+    : /480p/i.test(text)
+      ? "480p"
+      : "720p";
   const generate_audio = /with video/i.test(text);
   return { resolution, generate_audio };
 }
@@ -1023,7 +1029,7 @@ function inventoryEntries(inventories, rows) {
       disposition,
       rationale:
         id === "bytedance/seedance-2-5"
-          ? "WI6 reconciles the required Seedance 2.5 matrix against all four official cells."
+          ? "WI6 reconciles the required Seedance 2.5 matrix against all six official cells."
           : linkedRows.length && pricingKey
             ? "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
             : "WI6 records this model as an explicit schema audit membership because no usable runtime pricing key is evidenced.",
@@ -1612,10 +1618,11 @@ function validateSeedance(rows) {
   const seedance = rows.filter((row) =>
     row.mappedApiCityKeys.includes("bytedance/seedance-2-5")
   );
-  if (seedance.length !== 4) {
+  const requiredCellCount = Object.keys(REQUIRED_SEEDANCE_RATES).length;
+  if (seedance.length !== requiredCellCount) {
     fail(
       "seedance-coverage-mismatch",
-      "the manifest must contain exactly four Seedance 2.5 rows",
+      `the manifest must contain exactly ${requiredCellCount} Seedance 2.5 rows`,
       {
         count: seedance.length,
       }

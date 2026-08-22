@@ -21,15 +21,15 @@ const root = process.cwd();
 const evidenceRoot = path.join(root, "tests/fixtures/kie-pricing-evidence");
 const snapshotPath = path.join(
   evidenceRoot,
-  "kie-pricing-snapshot-2026-08-11T09-18-45-401Z.json"
+  "kie-pricing-snapshot-2026-08-22T08-03-40-316Z.json"
 );
 const metadataPath = path.join(
   evidenceRoot,
-  "kie-pricing-pull-2026-08-11T09-18-45-401Z.json"
+  "kie-pricing-pull-2026-08-22T08-03-40-316Z.json"
 );
 const manifestPath = path.join(
   evidenceRoot,
-  "kie-pricing-reconciliation-2026-08-11T09-18-45-401Z.json"
+  "kie-pricing-reconciliation-2026-08-22T08-03-40-316Z.json"
 );
 
 interface TestRow {
@@ -145,7 +145,7 @@ async function buildManifest(): Promise<TestManifest> {
     root,
     snapshotPath,
     metadataPath,
-    generatedAt: "2026-08-11T09:18:45.401Z",
+    generatedAt: "2026-08-22T08:03:47.658Z",
   })) as unknown as TestManifest;
 }
 
@@ -278,7 +278,7 @@ describe("Kie pricing reconciliation", () => {
 
     expect(result).toMatchObject({
       status: "ok",
-      rows: 408,
+      rows: 441,
       models: 138,
       endpoints: 71,
       pricingKeys: 144,
@@ -333,10 +333,12 @@ describe("Kie pricing reconciliation", () => {
       row.mappedApiCityKeys.includes("bytedance/seedance-2-5")
     );
 
-    expect(seedance).toHaveLength(4);
+    expect(seedance).toHaveLength(6);
     expect(
       seedance.map((row) => [row.selectorValues, row.rateBasis?.usdPrice])
     ).toEqual([
+      [{ resolution: "1080p", generate_audio: true }, "0.3425"],
+      [{ resolution: "1080p", generate_audio: false }, "0.570"],
       [{ resolution: "720p", generate_audio: true }, "0.190"],
       [{ resolution: "720p", generate_audio: false }, "0.315"],
       [{ resolution: "480p", generate_audio: true }, "0.085"],

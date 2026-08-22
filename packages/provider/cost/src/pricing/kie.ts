@@ -1194,10 +1194,11 @@ export const kie: Record<string, ModelPricing> = {
     source: src("xai/grok-imagine"),
   },
 
-  // grok-imagine-image-2-0: the WI-4 lifecycle recording's terminal
-  // recordInfo responses report 4.0 credits for text-to-image and image-edit,
-  // matching the published 4 credits = $0.02/image rate. Text-to-image
-  // returned exactly one result URL, so both calls are flat per generation.
+  // grok-imagine-image-2-0: rechecked against the 2026-08-22 catalog, whose
+  // Text to Image and Image Edit rows still publish 4 credits = $0.02/image.
+  // The WI-4 lifecycle recording's terminal recordInfo responses independently
+  // report the same 4.0 credits, and text-to-image returned exactly one result
+  // URL, so both calls remain flat per generation.
   "grok-imagine-image-2-0/text-to-image": {
     kind: "perUnit",
     unit: "generations",
@@ -1206,7 +1207,7 @@ export const kie: Record<string, ModelPricing> = {
     rates: { "": 0.02 },
     source: pricePage(
       "https://docs.kie.ai/market/grok-imagine-image-2-0/text-to-image",
-      "2026-08-16"
+      "2026-08-22"
     ),
   },
   // tests/recordings/kie_2079838932/grok-imagine-image-2-lifecycle_1692809741/
@@ -1220,7 +1221,7 @@ export const kie: Record<string, ModelPricing> = {
     rates: { "": 0 },
     source: pricePage(
       "https://docs.kie.ai/market/grok-imagine-image-2-0/segment-map",
-      "2026-08-16"
+      "2026-08-22"
     ),
   },
   "grok-imagine-image-2-0/image-edit": {
@@ -1231,7 +1232,7 @@ export const kie: Record<string, ModelPricing> = {
     rates: { "": 0.02 },
     source: pricePage(
       "https://docs.kie.ai/market/grok-imagine-image-2-0/image-edit",
-      "2026-08-16"
+      "2026-08-22"
     ),
   },
 
@@ -1546,7 +1547,8 @@ export const kie: Record<string, ModelPricing> = {
   // labels the audio axis "with video" / "no video"; the callable schema
   // exposes the same discriminator as generate_audio. Resolution defaults to
   // 720p and audio defaults on, so those defaults are applied only for omitted
-  // fields. All six published cells are retained verbatim.
+  // fields. All six published cells are retained verbatim and were rechecked
+  // unchanged against the 2026-08-22 catalog pull.
   "bytedance/seedance-2-5": {
     kind: "perUnit",
     unit: "seconds",
@@ -1578,7 +1580,7 @@ export const kie: Record<string, ModelPricing> = {
       "1080p|audio": 0.3425,
       "1080p|no-audio": 0.57,
     },
-    source: pricePage("https://kie.ai/seedance-2-5", "2026-08-19"),
+    source: pricePage("https://kie.ai/seedance-2-5", "2026-08-22"),
   },
 
   // bytedance/seedance-2-mini: 4 rates, resolution x reference video input.

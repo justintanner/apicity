@@ -3011,8 +3011,23 @@ describe("kie stale-family refresh (REQ-004)", () => {
     expect(result.usd).toBeCloseTo(5 * 0.19, 10);
     expect(PRICING.kie["bytedance/seedance-2-5"].source).toEqual({
       url: "https://kie.ai/seedance-2-5",
-      asOf: "2026-08-19",
+      asOf: "2026-08-22",
     });
+  });
+
+  it("restamps the unchanged Grok Image 2.0 pricing evidence", () => {
+    for (const [model, rate] of [
+      ["grok-imagine-image-2-0/text-to-image", 0.02],
+      ["grok-imagine-image-2-0/image-edit", 0.02],
+      ["grok-imagine-image-2-0/segment-map", 0],
+    ] as const) {
+      expect(PRICING.kie[model]).toMatchObject({
+        kind: "perUnit",
+        unit: "generations",
+        rates: { "": rate },
+        source: { asOf: "2026-08-22" },
+      });
+    }
   });
 
   it("does not price Seedance 2.5's -1 duration sentinel without a hint", () => {

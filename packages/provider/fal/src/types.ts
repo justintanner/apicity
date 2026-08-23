@@ -643,7 +643,7 @@ export interface FalFile {
   url: string;
   content_type?: string;
   file_name?: string;
-  file_size?: number;
+  file_size?: number | null;
 }
 
 // Video file output — fal video models include media metadata alongside FalFile

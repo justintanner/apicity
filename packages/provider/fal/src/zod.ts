@@ -770,11 +770,10 @@ export const FalSeedSpeechTtsV2RequestSchema = z.object({
 // Alibaba Qwen Image 3 text-to-image
 // ---------------------------------------------------------------------------
 
-// Fal publishes exactly one bound on custom sizes: "Total number of pixels
-// must be between 512x512 and 2048x2048". Width and height are documented only
-// as integers (default 512) with no per-dimension min or max, so the bound is
-// on the product. A per-dimension [512, 2048] rule would reject the docs page's
-// own { width: 1280, height: 720 } example.
+// Fal publishes a total-pixel range of 512x512 through 2048x2048 and a
+// per-dimension maximum of 14142. It publishes no per-dimension minimum, so a
+// [512, 2048] rule would reject the docs page's own { width: 1280, height: 720 }
+// example.
 // Docs: https://fal.ai/models/alibaba/qwen-image-3/text-to-image/api
 const FalAlibabaQwenImage3ImageSizeSchema = z.union([
   z.enum([
@@ -787,8 +786,8 @@ const FalAlibabaQwenImage3ImageSizeSchema = z.union([
   ]),
   z
     .object({
-      width: z.number().int().positive(),
-      height: z.number().int().positive(),
+      width: z.number().int().positive().max(14142),
+      height: z.number().int().positive().max(14142),
     })
     .refine(
       (value) =>
@@ -816,8 +815,8 @@ export const FalAlibabaQwenImage3TextToImageRequestSchema = z.object({
   // unauthorized requests are checked anyway.
   enable_safety_checker: z.boolean().optional(),
   sync_mode: z.boolean().optional(),
-  // Upstream default 1. Fal publishes no ceiling, so none is invented.
-  num_images: z.number().int().positive().optional(),
+  // Upstream default 1; published range 1-6.
+  num_images: z.number().int().min(1).max(6).optional(),
   // Upstream default "png".
   output_format: z.enum(["jpeg", "png", "webp"]).optional(),
 });

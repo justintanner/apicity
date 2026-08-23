@@ -4,7 +4,10 @@ import {
   teardownPolly,
   type PollyContext,
 } from "../harness";
-import { createFal } from "@apicity/fal";
+import {
+  createFal,
+  type FalAlibabaQwenImage3TextToImageResponse,
+} from "@apicity/fal";
 import { FalAlibabaQwenImage3TextToImageRequestSchema } from "@apicity/fal/zod";
 
 describe("fal alibaba qwen image 3 text-to-image integration", () => {
@@ -44,6 +47,19 @@ describe("fal alibaba qwen image 3 text-to-image integration", () => {
     ).toBe(true);
   });
 
+  it("should enforce the published prompt boundaries", () => {
+    expect(
+      FalAlibabaQwenImage3TextToImageRequestSchema.safeParse({
+        prompt: "x".repeat(5000),
+      }).success
+    ).toBe(true);
+    expect(
+      FalAlibabaQwenImage3TextToImageRequestSchema.safeParse({
+        prompt: "",
+      }).success
+    ).toBe(false);
+  });
+
   it("should reject a payload missing prompt", () => {
     const result = FalAlibabaQwenImage3TextToImageRequestSchema.safeParse({});
     expect(result.success).toBe(false);
@@ -65,12 +81,33 @@ describe("fal alibaba qwen image 3 text-to-image integration", () => {
     expect(
       FalAlibabaQwenImage3TextToImageRequestSchema.safeParse({
         prompt: "a cat",
+        negative_prompt: "x".repeat(500),
+      }).success
+    ).toBe(true);
+    expect(
+      FalAlibabaQwenImage3TextToImageRequestSchema.safeParse({
+        prompt: "a cat",
         negative_prompt: "x".repeat(501),
       }).success
     ).toBe(false);
   });
 
   it("should reject an unknown image-size preset", () => {
+    for (const imageSize of [
+      "square_hd",
+      "square",
+      "portrait_4_3",
+      "portrait_16_9",
+      "landscape_4_3",
+      "landscape_16_9",
+    ] as const) {
+      expect(
+        FalAlibabaQwenImage3TextToImageRequestSchema.safeParse({
+          prompt: "a cat",
+          image_size: imageSize,
+        }).success
+      ).toBe(true);
+    }
     expect(
       FalAlibabaQwenImage3TextToImageRequestSchema.safeParse({
         prompt: "a cat",
@@ -106,7 +143,59 @@ describe("fal alibaba qwen image 3 text-to-image integration", () => {
     ).toBe(true);
   });
 
+  it("should enforce the published per-dimension maximum", () => {
+    for (const imageSize of [
+      { width: 14142, height: 200 },
+      { width: 200, height: 14142 },
+    ]) {
+      expect(
+        FalAlibabaQwenImage3TextToImageRequestSchema.safeParse({
+          prompt: "a cat",
+          image_size: imageSize,
+        }).success
+      ).toBe(true);
+    }
+    for (const imageSize of [
+      { width: 20000, height: 200 },
+      { width: 200, height: 20000 },
+    ]) {
+      expect(
+        FalAlibabaQwenImage3TextToImageRequestSchema.safeParse({
+          prompt: "a cat",
+          image_size: imageSize,
+        }).success
+      ).toBe(false);
+    }
+  });
+
+  it.each([
+    "enable_prompt_expansion",
+    "enable_safety_checker",
+    "sync_mode",
+  ] as const)("should enforce boolean values for %s", (field) => {
+    for (const value of [true, false]) {
+      expect(
+        FalAlibabaQwenImage3TextToImageRequestSchema.safeParse({
+          prompt: "a cat",
+          [field]: value,
+        }).success
+      ).toBe(true);
+    }
+    expect(
+      FalAlibabaQwenImage3TextToImageRequestSchema.safeParse({
+        prompt: "a cat",
+        [field]: "true",
+      }).success
+    ).toBe(false);
+  });
+
   it("should reject a seed below the published range", () => {
+    expect(
+      FalAlibabaQwenImage3TextToImageRequestSchema.safeParse({
+        prompt: "a cat",
+        seed: 0,
+      }).success
+    ).toBe(true);
     expect(
       FalAlibabaQwenImage3TextToImageRequestSchema.safeParse({
         prompt: "a cat",
@@ -119,18 +208,65 @@ describe("fal alibaba qwen image 3 text-to-image integration", () => {
     expect(
       FalAlibabaQwenImage3TextToImageRequestSchema.safeParse({
         prompt: "a cat",
+        seed: 2147483647,
+      }).success
+    ).toBe(true);
+    expect(
+      FalAlibabaQwenImage3TextToImageRequestSchema.safeParse({
+        prompt: "a cat",
         seed: 2147483648,
       }).success
     ).toBe(false);
   });
 
   it("should reject an unsupported output format", () => {
+    for (const outputFormat of ["jpeg", "png", "webp"] as const) {
+      expect(
+        FalAlibabaQwenImage3TextToImageRequestSchema.safeParse({
+          prompt: "a cat",
+          output_format: outputFormat,
+        }).success
+      ).toBe(true);
+    }
     expect(
       FalAlibabaQwenImage3TextToImageRequestSchema.safeParse({
         prompt: "a cat",
         output_format: "gif",
       }).success
     ).toBe(false);
+  });
+
+  it("should enforce the published image-count boundaries", () => {
+    for (const numImages of [1, 6]) {
+      expect(
+        FalAlibabaQwenImage3TextToImageRequestSchema.safeParse({
+          prompt: "a cat",
+          num_images: numImages,
+        }).success
+      ).toBe(true);
+    }
+    for (const numImages of [0, 7]) {
+      expect(
+        FalAlibabaQwenImage3TextToImageRequestSchema.safeParse({
+          prompt: "a cat",
+          num_images: numImages,
+        }).success
+      ).toBe(false);
+    }
+  });
+
+  it("should type nullable file sizes from the response", () => {
+    const response: FalAlibabaQwenImage3TextToImageResponse = {
+      images: [
+        {
+          url: "https://example.com/image.png",
+          file_size: null,
+        },
+      ],
+      seed: 1,
+    };
+
+    expect(response.images[0].file_size).toBeNull();
   });
 
   it("should expose the schema by identity", () => {

@@ -25,8 +25,9 @@ media APIs, and more.
 - **MCP server.** Every endpoint exposed 1:1 as an MCP tool.
 - **Composable middleware.** `withRetry` / `withFallback` / `withRateLimit` as
   plain function wrappers.
-- **Minimal provider dependencies.** Providers depend only on `zod` — plus
-  `viem` in `@apicity/polymarket` for order signing. Paid endpoint OTP
+- **Minimal provider dependencies.** Every provider depends on `zod` except
+  `@apicity/cost`, which is dependency-free; `@apicity/polymarket` additionally
+  depends on `viem` for order signing. Paid endpoint OTP
   verification and B2's S3-compatible transport are bundled inside their
   provider packages. ESM, strict TypeScript.
 
@@ -84,6 +85,8 @@ Upload, status, and helper endpoints are unlisted and remain free.
 
 ## Packages
 
+<!-- provider-inventory:start:readme-package-table -->
+
 | Package                                                           | Focus                                                              |
 | ----------------------------------------------------------------- | ------------------------------------------------------------------ |
 | [@apicity/openai](packages/provider/openai)                       | OpenAI chat, responses, images, audio, embeddings, files           |
@@ -91,17 +94,23 @@ Upload, status, and helper endpoints are unlisted and remain free.
 | [@apicity/xai](packages/provider/xai)                             | xAI chat, responses, Grok images/video, files, collections, search |
 | [@apicity/fal](packages/provider/fal)                             | fal model registry, generation, pricing, usage, analytics          |
 | [@apicity/google](packages/provider/google)                       | Google Gemini express-mode generateContent                         |
+| [@apicity/googleflow](packages/provider/googleflow)               | useapi.net Google Flow proxy                                       |
 | [@apicity/kie](packages/provider/kie)                             | KIE media generation for video, image, audio, Claude, Suno         |
 | [@apicity/alibaba](packages/provider/alibaba)                     | Alibaba DashScope/Qwen chat, image, and video workflows            |
 | [@apicity/binance](packages/provider/binance)                     | Binance Spot REST public/general endpoints                         |
+| [@apicity/openf1](packages/provider/openf1)                       | OpenF1 historical and authenticated live Formula 1 data            |
 | [@apicity/openligadb](packages/provider/openligadb)               | OpenLigaDB public soccer match data, standings, and scorers        |
 | [@apicity/fireworks](packages/provider/fireworks)                 | Fireworks chat, embeddings, audio, deployments, fine-tuning        |
 | [@apicity/kimicoding](packages/provider/kimicoding)               | Kimi Coding messages, streaming, models, embeddings                |
 | [@apicity/elevenlabs](packages/provider/elevenlabs)               | ElevenLabs text-to-speech, sound effects, audio APIs               |
 | [@apicity/s3](packages/provider/s3)                               | S3-compatible object storage                                       |
 | [@apicity/b2](packages/provider/b2)                               | Backblaze B2 S3-compatible object storage                          |
+| [@apicity/dolthub](packages/provider/dolthub)                     | DoltHub SQL execution and Dolt database management                 |
+| [@apicity/dropbox](packages/provider/dropbox)                     | Dropbox users, files, content transfer, and sharing                |
 | [@apicity/free-media-upload](packages/provider/free-media-upload) | Public file upload/hosting services                                |
 | [@apicity/x](packages/provider/x)                                 | X API posting and media upload                                     |
+| [@apicity/youtube](packages/provider/youtube)                     | YouTube Data API v3 content publishing                             |
+| [@apicity/zaicoding](packages/provider/zaicoding)                 | Z.ai GLM Coding Plan chat and usage monitoring                     |
 | [@apicity/meta](packages/provider/meta)                           | Instagram Graph API reel publishing                                |
 | [@apicity/polymarket](packages/provider/polymarket)               | Polymarket Gamma, Data, and CLOB public market data                |
 | [@apicity/simplefunctions](packages/provider/simplefunctions)     | SimpleFunctions public prediction-market and analytical APIs       |
@@ -110,6 +119,8 @@ Upload, status, and helper endpoints are unlisted and remain free.
 | [@apicity/thesportsdb](packages/provider/thesportsdb)             | TheSportsDB public sports player data                              |
 | [@apicity/cost](packages/provider/cost)                           | Pure local cost/token estimates across providers                   |
 | [@apicity/mcp-server](packages/mcp-server)                        | MCP server exposing provider endpoints as tools                    |
+
+<!-- provider-inventory:end:readme-package-table -->
 
 ## MCP server
 

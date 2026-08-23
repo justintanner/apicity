@@ -31,12 +31,12 @@
  *
  * Step `cross-cutting` runs the repo-wide guards in
  * scripts/lib/cross-cutting-tests.mjs that provider scopes do not select
- * consistently: recording-corpus allowlists, endpoint-surface inventory, and
- * cross-provider source pins. Without this step, provider-scoped work can leave
- * a whole-repo invariant stale until full CI — the gap behind ac-05hrc,
- * ac-t2gfln, and the `92323c18` hand repair. They are filesystem- and
- * source-parse-only (no Polly, no network) and cost about 5.7s on the reference
- * machine.
+ * consistently: recording-corpus allowlists, endpoint-surface inventory,
+ * cross-provider source pins, and provider documentation inventory. Without
+ * this step, provider-scoped work can leave a whole-repo invariant stale until
+ * full CI — the gap behind ac-05hrc, ac-t2gfln, and the `92323c18` hand repair.
+ * They are filesystem- and source-parse-only (no Polly, no network) and cost
+ * about 5.5s on the reference machine.
  *
  * For typecheck-only loops, use `pnpm run typecheck:provider -- <provider>`.
  *

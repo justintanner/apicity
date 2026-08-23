@@ -59,7 +59,11 @@ cp -rf source dest          # NOT: cp -r source dest
 
 ## Project Overview
 
-Apicity is a TypeScript monorepo of standalone AI provider packages (`@apicity/openai`, `@apicity/xai`, `@apicity/fal`, `@apicity/google`, `@apicity/kimicoding`, `@apicity/kie`, `@apicity/anthropic`, `@apicity/fireworks`, `@apicity/alibaba`, `@apicity/binance`, `@apicity/free-media-upload`). Each package has zero external dependencies.
+<!-- provider-inventory:start:agents-package-list -->
+
+Apicity is a TypeScript monorepo of standalone API provider packages (`@apicity/openai`, `@apicity/xai`, `@apicity/fal`, `@apicity/google`, `@apicity/googleflow`, `@apicity/kimicoding`, `@apicity/kie`, `@apicity/anthropic`, `@apicity/fireworks`, `@apicity/alibaba`, `@apicity/binance`, `@apicity/openf1`, `@apicity/openligadb`, `@apicity/elevenlabs`, `@apicity/s3`, `@apicity/b2`, `@apicity/dolthub`, `@apicity/dropbox`, `@apicity/polymarket`, `@apicity/simplefunctions`, `@apicity/meta`, `@apicity/telegram`, `@apicity/thesportsdb`, `@apicity/quo`, `@apicity/x`, `@apicity/youtube`, `@apicity/zaicoding`, `@apicity/free-media-upload`, `@apicity/cost`). Each package is self-contained with a minimal dependency footprint: every provider depends on `zod` except `@apicity/cost`, which is dependency-free; `@apicity/polymarket` additionally depends on `viem`.
+
+<!-- provider-inventory:end:agents-package-list -->
 
 Method paths mirror upstream API URL paths segment-by-segment; kebab-case becomes camelCase (e.g. `/v1/chat/completions` → `openai.v1.chat.completions()`).
 

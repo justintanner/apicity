@@ -23,12 +23,17 @@ const SOURCE_PIN_TESTS = [
   "tests/unit/kie-pricing-reconciliation.test.ts",
 ] as const;
 
+// Documentation-inventory suite (pins prose to live package directories).
+const DOC_INVENTORY_TESTS = [
+  "tests/unit/provider-inventory-docs.test.ts",
+] as const;
+
 function readRepoFile(relativePath: string): string {
   return fs.readFileSync(path.join(repoRoot, relativePath), "utf8");
 }
 
 describe("cross-cutting repo-wide guard tests", () => {
-  it("lists recording-enumeration, surface-inventory, and source-pin tests", () => {
+  it("lists every cross-cutting guard category", () => {
     for (const path of RECORDING_ENUMERATION_TESTS) {
       expect(CROSS_CUTTING_TESTS).toContain(path);
     }
@@ -36,6 +41,9 @@ describe("cross-cutting repo-wide guard tests", () => {
       expect(CROSS_CUTTING_TESTS).toContain(path);
     }
     for (const path of SOURCE_PIN_TESTS) {
+      expect(CROSS_CUTTING_TESTS).toContain(path);
+    }
+    for (const path of DOC_INVENTORY_TESTS) {
       expect(CROSS_CUTTING_TESTS).toContain(path);
     }
   });
@@ -72,6 +80,13 @@ describe("cross-cutting repo-wide guard tests", () => {
     for (const relativePath of SOURCE_PIN_TESTS) {
       const source = fs.readFileSync(path.join(repoRoot, relativePath), "utf8");
       expect(source, relativePath).toContain("source-checksum-mismatch");
+    }
+  });
+
+  it("documentation-inventory tests reference the provider package root", () => {
+    for (const relativePath of DOC_INVENTORY_TESTS) {
+      const source = fs.readFileSync(path.join(repoRoot, relativePath), "utf8");
+      expect(source, relativePath).toContain("packages/provider");
     }
   });
 

@@ -33,9 +33,14 @@ import { repoRoot } from "./provider-scope.mjs";
  * stale and fail only in full CI on main — exactly what `92323c18` repaired by
  * hand (ac-bwk953).
  *
+ * Documentation-inventory guards compare agent-facing prose with live package
+ * sources. Adding `packages/provider/<new>/` is a provider-only diff, but its
+ * name-prefix scope cannot select a guard named after no provider. Without this
+ * registry entry, provider docs can drift until full CI.
+ *
  * The fast gates run these guards so a broken repo-wide invariant cannot pass
  * the local merge gate. They are filesystem- and source-parse-only (no Polly,
- * no network) and cost about 5.7s on the reference machine.
+ * no network) and cost about 5.5s on the reference machine.
  *
  * Add any whole-repo guard that provider scopes do not select consistently to
  * this list.
@@ -45,6 +50,7 @@ export const CROSS_CUTTING_TESTS = [
   "tests/integration/multipart-recordings.test.ts",
   "tests/unit/endpoint-cost-tiers.test.ts",
   "tests/unit/kie-pricing-reconciliation.test.ts",
+  "tests/unit/provider-inventory-docs.test.ts",
 ];
 
 /**

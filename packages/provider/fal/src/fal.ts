@@ -69,6 +69,8 @@ import {
   FalSeedSpeechTtsV2Response,
   FalElevenlabsSpeechToTextScribeV2Request,
   FalElevenlabsSpeechToTextScribeV2Response,
+  FalAlibabaQwenImage3TextToImageRequest,
+  FalAlibabaQwenImage3TextToImageResponse,
   FalWanV2p7TextToImageRequest,
   FalWanV2p7TextToImageResponse,
   FalWanV2p7EditRequest,
@@ -168,6 +170,7 @@ import {
   FalSeedreamV5LiteTextToImageRequestSchema,
   FalSeedSpeechTtsV2RequestSchema,
   FalElevenlabsSpeechToTextScribeV2RequestSchema,
+  FalAlibabaQwenImage3TextToImageRequestSchema,
   FalWanV2p7TextToImageRequestSchema,
   FalWanV2p7EditRequestSchema,
   FalWanV2p7TextToVideoRequestSchema,
@@ -690,6 +693,19 @@ export function createFal(opts: FalOptions): FalProvider {
   const queueBaseURL = opts.queueBaseURL ?? "https://queue.fal.run";
   const runBaseURL = opts.runBaseURL ?? "https://fal.run";
   const restBaseURL = opts.restBaseURL ?? "https://rest.fal.ai";
+
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://api.fal.ai/v1/alibaba/qwen-image-3/text-to-image
+  // Docs: https://fal.ai/models/alibaba/qwen-image-3/text-to-image/api
+  const alibabaQwenImage3TextToImage = jsonBody<
+    FalAlibabaQwenImage3TextToImageRequest,
+    FalAlibabaQwenImage3TextToImageResponse
+  >(
+    "POST",
+    "/alibaba/qwen-image-3/text-to-image",
+    FalAlibabaQwenImage3TextToImageRequestSchema,
+    { base: runBaseURL }
+  );
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/blackforestlabs/flux-3/text-to-video
@@ -1466,6 +1482,11 @@ export function createFal(opts: FalOptions): FalProvider {
   };
 
   const run: FalRunNamespace = {
+    alibaba: {
+      qwenImage3: {
+        textToImage: alibabaQwenImage3TextToImage,
+      },
+    },
     blackforestlabs: {
       flux3: {
         extendVideo: blackforestlabsFlux3ExtendVideo,

@@ -767,6 +767,62 @@ export const FalSeedSpeechTtsV2RequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// Alibaba Qwen Image 3 text-to-image
+// ---------------------------------------------------------------------------
+
+// Fal publishes exactly one bound on custom sizes: "Total number of pixels
+// must be between 512x512 and 2048x2048". Width and height are documented only
+// as integers (default 512) with no per-dimension min or max, so the bound is
+// on the product. A per-dimension [512, 2048] rule would reject the docs page's
+// own { width: 1280, height: 720 } example.
+// Docs: https://fal.ai/models/alibaba/qwen-image-3/text-to-image/api
+const FalAlibabaQwenImage3ImageSizeSchema = z.union([
+  z.enum([
+    "square_hd",
+    "square",
+    "portrait_4_3",
+    "portrait_16_9",
+    "landscape_4_3",
+    "landscape_16_9",
+  ]),
+  z
+    .object({
+      width: z.number().int().positive(),
+      height: z.number().int().positive(),
+    })
+    .refine(
+      (value) =>
+        value.width * value.height >= 512 * 512 &&
+        value.width * value.height <= 2048 * 2048,
+      {
+        message:
+          "alibaba/qwen-image-3/text-to-image image_size total pixels must be between 512x512 and 2048x2048",
+        path: ["width"],
+      }
+    ),
+]);
+
+export const FalAlibabaQwenImage3TextToImageRequestSchema = z.object({
+  // Supports Chinese and English; max 5000 characters.
+  prompt: z.string().min(1).max(5000),
+  // Upstream default "".
+  negative_prompt: z.string().max(500).optional(),
+  // Upstream default square_hd.
+  image_size: FalAlibabaQwenImage3ImageSizeSchema.optional(),
+  // Upstream default true.
+  enable_prompt_expansion: z.boolean().optional(),
+  seed: z.number().int().min(0).max(2147483647).optional(),
+  // Upstream default true. Disabling requires account authorization;
+  // unauthorized requests are checked anyway.
+  enable_safety_checker: z.boolean().optional(),
+  sync_mode: z.boolean().optional(),
+  // Upstream default 1. Fal publishes no ceiling, so none is invented.
+  num_images: z.number().int().positive().optional(),
+  // Upstream default "png".
+  output_format: z.enum(["jpeg", "png", "webp"]).optional(),
+});
+
+// ---------------------------------------------------------------------------
 // Wan v2.7 text-to-image
 // ---------------------------------------------------------------------------
 
@@ -1488,6 +1544,17 @@ export type FalElevenlabsSpeechToTextScribeV2RequestInput =
 export type FalElevenlabsSpeechToTextScribeV2ParsedRequest = z.output<
   typeof FalElevenlabsSpeechToTextScribeV2RequestSchema
 >;
+export type FalAlibabaQwenImage3TextToImageParams = z.infer<
+  typeof FalAlibabaQwenImage3TextToImageRequestSchema
+>;
+export type FalAlibabaQwenImage3TextToImageRequest = z.input<
+  typeof FalAlibabaQwenImage3TextToImageRequestSchema
+>;
+export type FalAlibabaQwenImage3TextToImageRequestInput =
+  FalAlibabaQwenImage3TextToImageRequest;
+export type FalAlibabaQwenImage3TextToImageParsedRequest = z.output<
+  typeof FalAlibabaQwenImage3TextToImageRequestSchema
+>;
 export type FalWanV2p7TextToImageParams = z.infer<
   typeof FalWanV2p7TextToImageRequestSchema
 >;
@@ -2074,6 +2141,8 @@ export type FalOptions = z.infer<typeof FalOptionsSchema>;
 // ---------------------------------------------------------------------------
 
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "alibaba/qwen-image-3/text-to-image":
+    FalAlibabaQwenImage3TextToImageRequestSchema,
   "blackforestlabs/flux-3/extend-video": FalFlux3ExtendVideoRequestSchema,
   "blackforestlabs/flux-3/first-last-frame-to-video":
     FalFlux3FirstLastFrameToVideoRequestSchema,

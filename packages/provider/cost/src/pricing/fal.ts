@@ -403,6 +403,11 @@ const gptImagePerImage = (
 // instead of guessing; the true price comes from fal's
 // POST /v1/models/pricing/estimate API.
 //
+//   - alibaba/qwen-image-3/text-to-image: billed per COMPUTE SECOND
+//     (USD 0.00017) as rechecked 2026-08-23 against fal's own pricing API
+//     (GET /v1/models/pricing?endpoint_id=...). Compute seconds are not a
+//     request field and cannot be derived from image_size or num_images, so
+//     a static per-image rate would be invented.
 //   - google/nano-banana-2-lite, google/nano-banana-lite/edit: billed purely
 //     per token as rechecked 2026-08-22 (text input/output
 //     $0.3125/$1.875 per 1M, image input/output $0.3125/$37.50 per 1M at a
@@ -413,6 +418,7 @@ const gptImagePerImage = (
 //     2026-08-22; source duration and dimensions are not request fields, so
 //     a static estimate would guess.
 export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
+  "alibaba/qwen-image-3/text-to-image",
   "blackforestlabs/flux-video-upscale",
   "google/nano-banana-2-lite",
   "google/nano-banana-lite/edit",

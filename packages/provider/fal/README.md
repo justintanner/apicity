@@ -121,7 +121,26 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-69 endpoints across 20 groups. Each method mirrors an upstream URL path.
+70 endpoints across 21 groups. Each method mirrors an upstream URL path.
+
+### alibaba
+
+<details>
+<summary><code>POST</code> <b><code>fal.alibaba.qwenImage3.textToImage</code></b></summary>
+
+<code>POST https://api.fal.ai/v1/alibaba/qwen-image-3/text-to-image</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/alibaba/qwen-image-3/text-to-image/api)
+
+```typescript
+const res = await fal.alibaba.qwenImage3.textToImage({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
 
 ### blackforestlabs
 

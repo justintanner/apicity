@@ -48,6 +48,7 @@ export type {
   FalSeedreamV5LiteTextToImageParams,
   FalSeedSpeechTtsV2Params,
   FalElevenlabsSpeechToTextScribeV2Params,
+  FalAlibabaQwenImage3TextToImageParams,
   FalWanV2p7TextToImageParams,
   FalWanV2p7EditParams,
   FalWanV2p7TextToVideoParams,
@@ -141,6 +142,9 @@ export type {
   FalElevenlabsSpeechToTextScribeV2Request,
   FalElevenlabsSpeechToTextScribeV2RequestInput,
   FalElevenlabsSpeechToTextScribeV2ParsedRequest,
+  FalAlibabaQwenImage3TextToImageRequest,
+  FalAlibabaQwenImage3TextToImageRequestInput,
+  FalAlibabaQwenImage3TextToImageParsedRequest,
   FalWanV2p7TextToImageRequest,
   FalWanV2p7TextToImageRequestInput,
   FalWanV2p7TextToImageParsedRequest,
@@ -279,6 +283,7 @@ import type {
   FalSeedreamV5LiteTextToImageRequest,
   FalSeedSpeechTtsV2Request,
   FalElevenlabsSpeechToTextScribeV2Request,
+  FalAlibabaQwenImage3TextToImageRequest,
   FalWanV2p7TextToImageRequest,
   FalWanV2p7EditRequest,
   FalWanV2p7TextToVideoRequest,
@@ -1016,6 +1021,12 @@ export interface FalSeedSpeechTtsV2Response {
   audio: FalFile;
 }
 
+// Alibaba Qwen Image 3 text-to-image
+export interface FalAlibabaQwenImage3TextToImageResponse {
+  images: FalFile[];
+  seed: number;
+}
+
 // Wan v2.7 text-to-image
 export type FalWanImageSize =
   | "square_hd"
@@ -1666,6 +1677,21 @@ type FalSeedreamV5LiteTextToImageFn = ((
   schema: ApicitySchema<FalSeedreamV5LiteTextToImageRequest>;
 };
 
+type FalAlibabaQwenImage3TextToImageFn = ((
+  params: FalAlibabaQwenImage3TextToImageRequest,
+  signal?: AbortSignal
+) => Promise<FalAlibabaQwenImage3TextToImageResponse>) & {
+  schema: ApicitySchema<FalAlibabaQwenImage3TextToImageRequest>;
+};
+
+export interface FalRunAlibabaQwenImage3Namespace {
+  textToImage: FalAlibabaQwenImage3TextToImageFn;
+}
+
+export interface FalRunAlibabaNamespace {
+  qwenImage3: FalRunAlibabaQwenImage3Namespace;
+}
+
 type FalWanV2p7TextToImageFn = ((
   params: FalWanV2p7TextToImageRequest,
   signal?: AbortSignal
@@ -2015,6 +2041,7 @@ export interface FalRunBlackforestlabsNamespace {
 }
 
 export interface FalRunNamespace {
+  alibaba: FalRunAlibabaNamespace;
   blackforestlabs: FalRunBlackforestlabsNamespace;
   bytedance: FalRunBytedanceNamespace;
   hunyuan: FalRunHunyuanNamespace;

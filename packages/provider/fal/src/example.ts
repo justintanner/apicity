@@ -65,6 +65,14 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST alibaba.qwenImage3.textToImage": {
+    "source": "fal/alibaba-qwen-image-3-text-to-image",
+    "payload": {
+      "prompt": "A serene mountain landscape at sunrise."
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST blackforestlabs.flux3.extendVideo": {
     "source": "fal/flux-3-extend-video",
     "payload": {

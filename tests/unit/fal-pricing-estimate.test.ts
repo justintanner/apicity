@@ -712,11 +712,13 @@ describe("fal edit/image pricing estimates", () => {
   });
 
   it("keeps every dynamic-priced endpoint out of both registries", () => {
+    // alibaba/qwen-image-3/text-to-image is compute-second-metered;
     // blackforestlabs/flux-video-upscale depends on delivered output metadata;
     // google/nano-banana-2-lite and google/nano-banana-lite/edit are
-    // token-metered without a published tokens-per-image constant. All three
+    // token-metered without a published tokens-per-image constant. All four
     // therefore use fal's pricing-estimate API.
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toEqual([
+      "alibaba/qwen-image-3/text-to-image",
       "blackforestlabs/flux-video-upscale",
       "google/nano-banana-2-lite",
       "google/nano-banana-lite/edit",

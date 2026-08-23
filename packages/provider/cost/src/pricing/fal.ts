@@ -408,6 +408,11 @@ const gptImagePerImage = (
 //     (GET /v1/models/pricing?endpoint_id=...). Compute seconds are not a
 //     request field and cannot be derived from image_size or num_images, so
 //     a static per-image rate would be invented.
+//   - xai/grok-imagine-image/v2.0/text-to-image: billed per COMPUTE SECOND
+//     (USD 0.00017) as rechecked 2026-08-23 against fal's own pricing API
+//     (GET /v1/models/pricing?endpoint_id=...). Compute seconds are not a
+//     request field and cannot be derived from quality, resolution, or
+//     num_images, so a static per-image rate would be invented.
 //   - google/nano-banana-2-lite, google/nano-banana-lite/edit: billed purely
 //     per token as rechecked 2026-08-22 (text input/output
 //     $0.3125/$1.875 per 1M, image input/output $0.3125/$37.50 per 1M at a
@@ -422,6 +427,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "blackforestlabs/flux-video-upscale",
   "google/nano-banana-2-lite",
   "google/nano-banana-lite/edit",
+  "xai/grok-imagine-image/v2.0/text-to-image",
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {

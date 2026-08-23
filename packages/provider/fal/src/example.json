@@ -641,6 +641,14 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST xai.grokImagineImage.v2p0.textToImage": {
+    "source": "fal/xai-grok-imagine-image-v2p0-text-to-image",
+    "payload": {
+      "prompt": "A serene mountain landscape at sunrise."
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST xai.grokImagineVideo.editVideo": {
     "source": "fal/xai-grok-imagine-video-edit-video",
     "payload": {

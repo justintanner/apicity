@@ -1015,6 +1015,43 @@ export const FalXaiGrokImagineImageRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// xAI Grok Imagine Image v2.0 text-to-image
+// ---------------------------------------------------------------------------
+
+const FAL_XAI_GROK_IMAGINE_IMAGE_V2P0_ASPECT_RATIOS = [
+  "2:1",
+  "20:9",
+  "19.5:9",
+  "16:9",
+  "4:3",
+  "3:2",
+  "1:1",
+  "2:3",
+  "3:4",
+  "9:16",
+  "9:19.5",
+  "9:20",
+  "1:2",
+] as const;
+
+export const FalXaiGrokImagineImageV2p0TextToImageRequestSchema = z.object({
+  prompt: z.string().min(1),
+  // Upstream default 1. The page publishes no ceiling, so mirror v1's 1-4.
+  num_images: z.number().int().min(1).max(4).optional(),
+  // Upstream default "1:1".
+  aspect_ratio: z
+    .enum(FAL_XAI_GROK_IMAGINE_IMAGE_V2P0_ASPECT_RATIOS)
+    .optional(),
+  // Upstream default "1k".
+  resolution: z.enum(["1k", "2k"]).optional(),
+  // Upstream default "medium".
+  quality: z.enum(["low", "medium"]).optional(),
+  // Upstream default "jpeg".
+  output_format: z.enum(["jpeg", "png", "webp"]).optional(),
+  sync_mode: z.boolean().optional(),
+});
+
+// ---------------------------------------------------------------------------
 // xAI Grok Imagine Image edit
 // ---------------------------------------------------------------------------
 
@@ -1621,6 +1658,17 @@ export type FalXaiGrokImagineImageRequestInput = FalXaiGrokImagineImageRequest;
 export type FalXaiGrokImagineImageParsedRequest = z.output<
   typeof FalXaiGrokImagineImageRequestSchema
 >;
+export type FalXaiGrokImagineImageV2p0TextToImageParams = z.infer<
+  typeof FalXaiGrokImagineImageV2p0TextToImageRequestSchema
+>;
+export type FalXaiGrokImagineImageV2p0TextToImageRequest = z.input<
+  typeof FalXaiGrokImagineImageV2p0TextToImageRequestSchema
+>;
+export type FalXaiGrokImagineImageV2p0TextToImageRequestInput =
+  FalXaiGrokImagineImageV2p0TextToImageRequest;
+export type FalXaiGrokImagineImageV2p0TextToImageParsedRequest = z.output<
+  typeof FalXaiGrokImagineImageV2p0TextToImageRequestSchema
+>;
 export type FalXaiGrokImagineImageEditParams = z.infer<
   typeof FalXaiGrokImagineImageEditRequestSchema
 >;
@@ -2214,6 +2262,8 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "xai/grok-imagine-video/edit-video":
     FalXaiGrokImagineVideoEditVideoRequestSchema,
   "xai/grok-imagine-image": FalXaiGrokImagineImageRequestSchema,
+  "xai/grok-imagine-image/v2.0/text-to-image":
+    FalXaiGrokImagineImageV2p0TextToImageRequestSchema,
   "fal-ai/qwen-image-edit": FalQwenImageEditRequestSchema,
   "fal-ai/gpt-image-1.5/edit": FalGptImage1p5EditRequestSchema,
   "fal-ai/gpt-image-1.5": FalGptImage1p5RequestSchema,

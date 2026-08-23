@@ -857,6 +857,7 @@ fal	wan.v2p7.textToImage	POST	https://api.fal.ai/v1/fal-ai/wan/v2.7/text-to-imag
 fal	wan.v2p7.textToVideo	POST	https://api.fal.ai/v1/fal-ai/wan/v2.7/text-to-video	https://docs.fal.ai
 fal	xai.grokImagineImage	POST	https://api.fal.ai/v1/xai/grok-imagine-image	https://docs.fal.ai
 fal	xai.grokImagineImage.edit	POST	https://api.fal.ai/v1/xai/grok-imagine-image/edit	https://docs.fal.ai
+fal	xai.grokImagineImage.v2p0.textToImage	POST	https://api.fal.ai/v1/xai/grok-imagine-image/v2.0/text-to-image	https://fal.ai/models/xai/grok-imagine-image/v2.0/text-to-image/api
 fal	xai.grokImagineVideo.editVideo	POST	https://api.fal.ai/v1/xai/grok-imagine-video/edit-video	https://docs.fal.ai
 fal	xai.grokImagineVideo.extendVideo	POST	https://api.fal.ai/v1/xai/grok-imagine-video/extend-video	https://docs.fal.ai
 fal	xai.grokImagineVideo.imageToVideo	POST	https://api.fal.ai/v1/xai/grok-imagine-video/image-to-video	https://docs.fal.ai

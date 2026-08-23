@@ -62,6 +62,7 @@ export type {
   FalFlux3ExtendVideoParams,
   FalFluxVideoUpscaleParams,
   FalXaiGrokImagineImageParams,
+  FalXaiGrokImagineImageV2p0TextToImageParams,
   FalXaiGrokImagineImageEditParams,
   FalQwenImageParams,
   FalQwenImageEditParams,
@@ -235,6 +236,9 @@ export type {
   FalXaiGrokImagineImageRequest,
   FalXaiGrokImagineImageRequestInput,
   FalXaiGrokImagineImageParsedRequest,
+  FalXaiGrokImagineImageV2p0TextToImageRequest,
+  FalXaiGrokImagineImageV2p0TextToImageRequestInput,
+  FalXaiGrokImagineImageV2p0TextToImageParsedRequest,
   FalQwenImageEditRequest,
   FalQwenImageEditRequestInput,
   FalQwenImageEditParsedRequest,
@@ -314,6 +318,7 @@ import type {
   FalXaiGrokImagineVideoExtendVideoRequest,
   FalXaiGrokImagineVideoEditVideoRequest,
   FalXaiGrokImagineImageRequest,
+  FalXaiGrokImagineImageV2p0TextToImageRequest,
   FalQwenImageEditRequest,
   FalGptImage1p5EditRequest,
   FalGptImage1p5Request,
@@ -1113,6 +1118,11 @@ export interface FalXaiGrokImagineImageResponse {
   revised_prompt: string;
 }
 
+export interface FalXaiGrokImagineImageV2p0TextToImageResponse {
+  images: FalFile[];
+  revised_prompt?: string | null;
+}
+
 export interface FalXaiGrokImagineImageEditResponse {
   images: FalFile[];
   revised_prompt: string;
@@ -1760,12 +1770,24 @@ type FalXaiGrokImagineImageEditFn = ((
   schema: ApicitySchema<FalXaiGrokImagineImageEditRequest>;
 };
 
+type FalXaiGrokImagineImageV2p0TextToImageFn = ((
+  params: FalXaiGrokImagineImageV2p0TextToImageRequest,
+  signal?: AbortSignal
+) => Promise<FalXaiGrokImagineImageV2p0TextToImageResponse>) & {
+  schema: ApicitySchema<FalXaiGrokImagineImageV2p0TextToImageRequest>;
+};
+
+export interface FalRunXaiGrokImagineImageV2p0Namespace {
+  textToImage: FalXaiGrokImagineImageV2p0TextToImageFn;
+}
+
 type FalXaiGrokImagineImageFn = ((
   params: FalXaiGrokImagineImageRequest,
   signal?: AbortSignal
 ) => Promise<FalXaiGrokImagineImageResponse>) & {
   schema: ApicitySchema<FalXaiGrokImagineImageRequest>;
   edit: FalXaiGrokImagineImageEditFn;
+  v2p0: FalRunXaiGrokImagineImageV2p0Namespace;
 };
 
 type FalXaiGrokImagineVideoImageToVideoFn = ((

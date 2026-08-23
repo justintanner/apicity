@@ -641,6 +641,17 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST xai.grokImagineImage.v2p0.edit": {
+    "source": "fal/xai-grok-imagine-image-v2p0-edit",
+    "payload": {
+      "prompt": "Turn this cat into a watercolor painting.",
+      "image_urls": [
+        "<inline image/jpeg data URL — replace with a real URL or upload>"
+      ]
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST xai.grokImagineImage.v2p0.textToImage": {
     "source": "fal/xai-grok-imagine-image-v2p0-text-to-image",
     "payload": {

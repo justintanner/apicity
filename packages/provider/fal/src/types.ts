@@ -63,6 +63,7 @@ export type {
   FalFluxVideoUpscaleParams,
   FalXaiGrokImagineImageParams,
   FalXaiGrokImagineImageV2p0TextToImageParams,
+  FalXaiGrokImagineImageV2p0EditParams,
   FalXaiGrokImagineImageEditParams,
   FalQwenImageParams,
   FalQwenImageEditParams,
@@ -239,6 +240,9 @@ export type {
   FalXaiGrokImagineImageV2p0TextToImageRequest,
   FalXaiGrokImagineImageV2p0TextToImageRequestInput,
   FalXaiGrokImagineImageV2p0TextToImageParsedRequest,
+  FalXaiGrokImagineImageV2p0EditRequest,
+  FalXaiGrokImagineImageV2p0EditRequestInput,
+  FalXaiGrokImagineImageV2p0EditParsedRequest,
   FalQwenImageEditRequest,
   FalQwenImageEditRequestInput,
   FalQwenImageEditParsedRequest,
@@ -319,6 +323,7 @@ import type {
   FalXaiGrokImagineVideoEditVideoRequest,
   FalXaiGrokImagineImageRequest,
   FalXaiGrokImagineImageV2p0TextToImageRequest,
+  FalXaiGrokImagineImageV2p0EditRequest,
   FalQwenImageEditRequest,
   FalGptImage1p5EditRequest,
   FalGptImage1p5Request,
@@ -1123,6 +1128,11 @@ export interface FalXaiGrokImagineImageV2p0TextToImageResponse {
   revised_prompt?: string | null;
 }
 
+export interface FalXaiGrokImagineImageV2p0EditResponse {
+  images: FalFile[];
+  revised_prompt?: string | null;
+}
+
 export interface FalXaiGrokImagineImageEditResponse {
   images: FalFile[];
   revised_prompt: string;
@@ -1777,8 +1787,16 @@ type FalXaiGrokImagineImageV2p0TextToImageFn = ((
   schema: ApicitySchema<FalXaiGrokImagineImageV2p0TextToImageRequest>;
 };
 
+type FalXaiGrokImagineImageV2p0EditFn = ((
+  params: FalXaiGrokImagineImageV2p0EditRequest,
+  signal?: AbortSignal
+) => Promise<FalXaiGrokImagineImageV2p0EditResponse>) & {
+  schema: ApicitySchema<FalXaiGrokImagineImageV2p0EditRequest>;
+};
+
 export interface FalRunXaiGrokImagineImageV2p0Namespace {
   textToImage: FalXaiGrokImagineImageV2p0TextToImageFn;
+  edit: FalXaiGrokImagineImageV2p0EditFn;
 }
 
 type FalXaiGrokImagineImageFn = ((

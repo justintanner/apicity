@@ -95,6 +95,8 @@ import {
   FalXaiGrokImagineImageResponse,
   FalXaiGrokImagineImageV2p0TextToImageRequest,
   FalXaiGrokImagineImageV2p0TextToImageResponse,
+  FalXaiGrokImagineImageV2p0EditRequest,
+  FalXaiGrokImagineImageV2p0EditResponse,
   FalXaiGrokImagineImageEditRequest,
   FalXaiGrokImagineImageEditResponse,
   FalQwenImageRequest,
@@ -187,6 +189,7 @@ import {
   FalFluxVideoUpscaleRequestSchema,
   FalXaiGrokImagineImageRequestSchema,
   FalXaiGrokImagineImageV2p0TextToImageRequestSchema,
+  FalXaiGrokImagineImageV2p0EditRequestSchema,
   FalXaiGrokImagineImageEditRequestSchema,
   FalQwenImageRequestSchema,
   FalQwenImageEditRequestSchema,
@@ -1130,6 +1133,19 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
+  // POST https://api.fal.ai/v1/xai/grok-imagine-image/v2.0/edit
+  // Docs: https://fal.ai/models/xai/grok-imagine-image/v2.0/edit/api
+  const xaiGrokImagineImageV2p0Edit = jsonBody<
+    FalXaiGrokImagineImageV2p0EditRequest,
+    FalXaiGrokImagineImageV2p0EditResponse
+  >(
+    "POST",
+    "/xai/grok-imagine-image/v2.0/edit",
+    FalXaiGrokImagineImageV2p0EditRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/sora-2/text-to-video
   // Docs: https://docs.fal.ai
   const sora2TextToVideo = jsonBody<
@@ -1345,6 +1361,7 @@ export function createFal(opts: FalOptions): FalProvider {
       edit: xaiGrokImagineImageEdit,
       v2p0: {
         textToImage: xaiGrokImagineImageV2p0TextToImage,
+        edit: xaiGrokImagineImageV2p0Edit,
       },
     }
   );

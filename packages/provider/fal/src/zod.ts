@@ -1052,6 +1052,28 @@ export const FalXaiGrokImagineImageV2p0TextToImageRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// xAI Grok Imagine Image v2.0 edit
+// ---------------------------------------------------------------------------
+
+export const FalXaiGrokImagineImageV2p0EditRequestSchema = z.object({
+  prompt: z.string().min(1),
+  // Upstream default 1. The page publishes no ceiling, so mirror v1's 1-4.
+  num_images: z.number().int().min(1).max(4).optional(),
+  // Upstream default "auto".
+  aspect_ratio: z
+    .enum(["auto", ...FAL_XAI_GROK_IMAGINE_IMAGE_V2P0_ASPECT_RATIOS])
+    .optional(),
+  // Upstream default "1k".
+  resolution: z.enum(["1k", "2k"]).optional(),
+  // Upstream default "medium".
+  quality: z.enum(["low", "medium"]).optional(),
+  // Upstream default "jpeg".
+  output_format: z.enum(["jpeg", "png", "webp"]).optional(),
+  sync_mode: z.boolean().optional(),
+  image_urls: z.array(z.string()).min(1).max(3),
+});
+
+// ---------------------------------------------------------------------------
 // xAI Grok Imagine Image edit
 // ---------------------------------------------------------------------------
 
@@ -1669,6 +1691,17 @@ export type FalXaiGrokImagineImageV2p0TextToImageRequestInput =
 export type FalXaiGrokImagineImageV2p0TextToImageParsedRequest = z.output<
   typeof FalXaiGrokImagineImageV2p0TextToImageRequestSchema
 >;
+export type FalXaiGrokImagineImageV2p0EditParams = z.infer<
+  typeof FalXaiGrokImagineImageV2p0EditRequestSchema
+>;
+export type FalXaiGrokImagineImageV2p0EditRequest = z.input<
+  typeof FalXaiGrokImagineImageV2p0EditRequestSchema
+>;
+export type FalXaiGrokImagineImageV2p0EditRequestInput =
+  FalXaiGrokImagineImageV2p0EditRequest;
+export type FalXaiGrokImagineImageV2p0EditParsedRequest = z.output<
+  typeof FalXaiGrokImagineImageV2p0EditRequestSchema
+>;
 export type FalXaiGrokImagineImageEditParams = z.infer<
   typeof FalXaiGrokImagineImageEditRequestSchema
 >;
@@ -2262,6 +2295,8 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "xai/grok-imagine-video/edit-video":
     FalXaiGrokImagineVideoEditVideoRequestSchema,
   "xai/grok-imagine-image": FalXaiGrokImagineImageRequestSchema,
+  "xai/grok-imagine-image/v2.0/edit":
+    FalXaiGrokImagineImageV2p0EditRequestSchema,
   "xai/grok-imagine-image/v2.0/text-to-image":
     FalXaiGrokImagineImageV2p0TextToImageRequestSchema,
   "fal-ai/qwen-image-edit": FalQwenImageEditRequestSchema,

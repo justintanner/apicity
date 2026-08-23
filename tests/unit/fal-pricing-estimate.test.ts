@@ -551,12 +551,13 @@ describe("fal edit/image pricing estimates", () => {
     "fal-ai/qwen-image-edit",
     "fal-ai/gpt-image-1.5",
     "fal-ai/gpt-image-1.5/edit",
+    "xai/grok-imagine-image/v2.0/edit",
     "xai/grok-imagine-image/v2.0/text-to-image",
   ];
 
   it("covers every REQ-002 endpoint statically or on the dynamic list", () => {
     const dynamic: readonly string[] = FAL_DYNAMIC_PRICING_ENDPOINTS;
-    expect(REQ_002_ENDPOINTS).toHaveLength(16);
+    expect(REQ_002_ENDPOINTS).toHaveLength(17);
     for (const endpoint of REQ_002_ENDPOINTS) {
       const priced = endpoint in falPricing;
       const isDynamic = dynamic.includes(endpoint);
@@ -717,13 +718,15 @@ describe("fal edit/image pricing estimates", () => {
     // blackforestlabs/flux-video-upscale depends on delivered output metadata;
     // google/nano-banana-2-lite and google/nano-banana-lite/edit are
     // token-metered without a published tokens-per-image constant;
-    // xai/grok-imagine-image/v2.0/text-to-image is compute-second-metered.
-    // All five therefore use fal's pricing-estimate API.
+    // xai/grok-imagine-image/v2.0/edit and text-to-image are
+    // compute-second-metered. All six therefore use fal's pricing-estimate
+    // API.
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toEqual([
       "alibaba/qwen-image-3/text-to-image",
       "blackforestlabs/flux-video-upscale",
       "google/nano-banana-2-lite",
       "google/nano-banana-lite/edit",
+      "xai/grok-imagine-image/v2.0/edit",
       "xai/grok-imagine-image/v2.0/text-to-image",
     ]);
     for (const endpoint of FAL_DYNAMIC_PRICING_ENDPOINTS) {

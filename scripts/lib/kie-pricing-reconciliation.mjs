@@ -3,6 +3,7 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 import * as prettier from "prettier";
 import { Project, SyntaxKind } from "ts-morph";
+import { KIE_PRICING_REFRESH_COMMAND } from "./kie-pricing-evidence-paths.mjs";
 import { canonicalJson, readJson, sha256Bytes } from "./kie-pricing-pull.mjs";
 import {
   applyPayloadRules,
@@ -1970,7 +1971,7 @@ export async function checkReconciliation({
     if (manifest.source?.hashes?.[relativePath] !== hash) {
       fail(
         "source-checksum-mismatch",
-        `${relativePath} changed since manifest generation`,
+        `${relativePath} changed since manifest generation; if that change is intentional, re-pin with: ${KIE_PRICING_REFRESH_COMMAND}`,
         {
           relativePath,
           expected: manifest.source?.hashes?.[relativePath],
@@ -2265,6 +2266,7 @@ async function main() {
     return;
   }
   console.log(`Usage:
+  ${KIE_PRICING_REFRESH_COMMAND} (canonical zero-argument refresh)
   node scripts/lib/kie-pricing-reconciliation.mjs generate --snapshot PATH --metadata PATH --manifest PATH [--markdown PATH]
   node scripts/lib/kie-pricing-reconciliation.mjs check --manifest PATH [--snapshot PATH] [--metadata PATH]`);
 }

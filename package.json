@@ -48,6 +48,8 @@
     "gen:examples": "node scripts/extract-har-examples.mjs",
     "gen:examples:check": "node scripts/extract-har-examples.mjs --check",
     "gen:examples:report": "node scripts/extract-har-examples.mjs --report",
+    "gen:kie-pricing-manifest": "node scripts/refresh-kie-pricing-manifest.mjs",
+    "gen:kie-pricing-manifest:check": "node scripts/refresh-kie-pricing-manifest.mjs --check",
     "gen:shared": "node scripts/sync-shared-src.mjs",
     "gen:shared:check": "node scripts/sync-shared-src.mjs --check",
     "doc-gen": "node scripts/doc-gen.mjs",

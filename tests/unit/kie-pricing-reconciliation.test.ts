@@ -9,6 +9,11 @@ import type {
 } from "../../packages/provider/cost/src";
 import { CREATE_TASK_GUARDS } from "../../packages/provider/kie/src/kie";
 import {
+  KIE_PRICING_MANIFEST_PATH,
+  KIE_PRICING_METADATA_PATH,
+  KIE_PRICING_SNAPSHOT_PATH,
+} from "../../scripts/lib/kie-pricing-evidence-paths.mjs";
+import {
   buildReconciliationManifest,
   checkReconciliation,
   collectApiCityInventories,
@@ -18,19 +23,9 @@ import {
 import { MODEL_FAMILY_REGISTRATIONS } from "../../scripts/lib/kie-pricing-reconciliation-rules.mjs";
 
 const root = process.cwd();
-const evidenceRoot = path.join(root, "tests/fixtures/kie-pricing-evidence");
-const snapshotPath = path.join(
-  evidenceRoot,
-  "kie-pricing-snapshot-2026-08-22T08-03-40-316Z.json"
-);
-const metadataPath = path.join(
-  evidenceRoot,
-  "kie-pricing-pull-2026-08-22T08-03-40-316Z.json"
-);
-const manifestPath = path.join(
-  evidenceRoot,
-  "kie-pricing-reconciliation-2026-08-22T08-03-40-316Z.json"
-);
+const snapshotPath = path.resolve(root, KIE_PRICING_SNAPSHOT_PATH);
+const metadataPath = path.resolve(root, KIE_PRICING_METADATA_PATH);
+const manifestPath = path.resolve(root, KIE_PRICING_MANIFEST_PATH);
 
 interface TestRow {
   occurrenceId: string;

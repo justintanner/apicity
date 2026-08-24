@@ -18,6 +18,7 @@
     "build:dolthub": "pnpm --filter @apicity/dolthub run build",
     "build:dropbox": "pnpm --filter @apicity/dropbox run build",
     "build:google": "pnpm --filter @apicity/google run build",
+    "build:googleflow": "pnpm --filter @apicity/googleflow run build",
     "build:openai": "pnpm --filter @apicity/openai run build",
     "build:kimicoding": "pnpm --filter @apicity/kimicoding run build",
     "build:zaicoding": "pnpm --filter @apicity/zaicoding run build",

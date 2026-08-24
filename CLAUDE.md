@@ -36,7 +36,7 @@ over raw `vitest` / `op run` invocations.
 # Build / lint / format
 pnpm install                     # Install dependencies
 pnpm run build                   # Build all packages
-pnpm run build:kimicoding        # Build single package (also: build:google, build:kie, build:xai, build:openai, build:fal, build:anthropic, build:fireworks, build:alibaba, build:binance, build:openligadb, build:elevenlabs, build:s3, build:b2, build:dolthub, build:polymarket, build:meta, build:telegram, build:quo, build:x, build:youtube, build:free-media-upload, build:cost, build:mcp-server)
+pnpm run build:kimicoding        # Build single package (also: build:google, build:googleflow, build:kie, build:xai, build:openai, build:fal, build:anthropic, build:fireworks, build:alibaba, build:binance, build:openligadb, build:elevenlabs, build:s3, build:b2, build:dolthub, build:polymarket, build:meta, build:telegram, build:quo, build:x, build:youtube, build:free-media-upload, build:cost, build:mcp-server)
 pnpm run gen:shared              # Sync canonical shared/provider-src files into provider copies
 pnpm run gen:shared:check        # Check shared provider copies for drift
 pnpm run typecheck               # Type-check all packages (tsc --noEmit; no emit, no docs)

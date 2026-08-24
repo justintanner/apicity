@@ -17,6 +17,13 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { listProviderNames } from "./lib/provider-scope.mjs";
+import {
+  CONST_RE,
+  SETUP_RE,
+  dirToRecordingName,
+  normalizeName,
+  resolveArg,
+} from "./lib/recording-names.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const recordingsDir = path.join(root, "tests", "recordings");
@@ -120,6 +127,8 @@ function unresolvedMatchesProvider(entry, providers) {
   return provider ? providers.has(provider) : true;
 }
 
+// --- disk side: recording.har files -> canonical recording names ------------
+
 function diskRecordingEntries() {
   const harFiles = walkFiles(
     recordingsDir,
@@ -127,7 +136,9 @@ function diskRecordingEntries() {
   );
   const byName = new Map();
   for (const file of harFiles) {
-    const name = dirToRecordingName(path.dirname(file));
+    const name = dirToRecordingName(
+      path.relative(recordingsDir, path.dirname(file))
+    );
     const existing = byName.get(name);
     if (existing) {
       existing.add(path.dirname(file));
@@ -148,37 +159,9 @@ function walkFiles(dir, predicate) {
   return out;
 }
 
-// --- disk side: recording.har files -> canonical recording names ------------
-
-function dirToRecordingName(harDir) {
-  return path
-    .relative(recordingsDir, harDir)
-    .split(path.sep)
-    .map((segment) => segment.replace(/_\d+$/, ""))
-    .join("/");
-}
-
 // --- test side: setupPolly()/recordingExists() name arguments ---------------
 
-const SETUP_RE = /setupPolly\w*\(\s*([^),]+?)\s*[),]/g;
 const EXISTS_RE = /recordingExists\(\s*([^)]+?)\s*\)/g;
-const CONST_RE = /(?:const|let)\s+(\w+)\s*=\s*"([^"]+)"/g;
-
-function normalizeName(name) {
-  // recordingExists() normalizes dots to hyphens per path segment.
-  return name
-    .split("/")
-    .map((segment) => segment.replace(/\./g, "-"))
-    .join("/");
-}
-
-function resolveArg(arg, consts) {
-  const trimmed = arg.trim();
-  const literal = trimmed.match(/^"([^"]+)"$/) || trimmed.match(/^`([^`$]+)`$/);
-  if (literal) return literal[1];
-  if (consts.has(trimmed)) return consts.get(trimmed);
-  return null; // computed / template name -- cannot statically resolve
-}
 
 function referencesInFile(file) {
   const src = fs.readFileSync(file, "utf8");

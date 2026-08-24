@@ -1,7 +1,7 @@
 {
   "schema": "gc.kie-pricing-reconciliation.v1",
   "version": 1,
-  "generatedAt": "2026-08-22T08:41:15.655Z",
+  "generatedAt": "2026-08-24T00:37:25.202Z",
   "snapshot": {
     "path": "tests/fixtures/kie-pricing-evidence/kie-pricing-snapshot-2026-08-22T08-03-40-316Z.json",
     "metadataPath": "tests/fixtures/kie-pricing-evidence/kie-pricing-pull-2026-08-22T08-03-40-316Z.json",
@@ -534,8 +534,8 @@
       "packages/provider/kie/src/model-schemas.ts": "sha256:e528f2e500d3e0e63eeb03ec74567b85c6fe9700fe9290fe415768e574ccd81b",
       "packages/provider/kie/src/kie.ts": "sha256:879aa7a639885ba118a2797ab0d66d93d4180b72d647753876de392523d901bf",
       "packages/provider/cost/src/pricing/kie.ts": "sha256:32bea8a1205685db4260b2174c860e0e5f2ca2d5258870491e71d14e3346fb56",
-      "packages/provider/cost/src/slugs.ts": "sha256:22f678d049a1a8fefa348861dbbca70466a107e35ef2bb4b72cec28cfaa16da0",
-      "scripts/endpoint-docs.tsv": "sha256:ce70c4dbddc46d8af3af31ad98f2a292251ab89e6387422466336d0a47f1d292"
+      "packages/provider/cost/src/slugs.ts": "sha256:4d48c34b5d210504614fd8ce5dbb9f8f734215dc4377488908d10f2a996cefbd",
+      "scripts/endpoint-docs.tsv": "sha256:477469ca4ae3d3543c4cdef0d502698398ef179e549c22a868c7165180c80d04"
     }
   },
   "rows": [

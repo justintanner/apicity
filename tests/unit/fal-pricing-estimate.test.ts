@@ -108,6 +108,7 @@ describe("fal video pricing estimates", () => {
     "bytedance/seedance-2.0/fast/image-to-video",
     "bytedance/seedance-2.0/fast/reference-to-video",
     "bytedance/seedance-2.5/text-to-video",
+    "bytedance/seedance-2.5/image-to-video",
     "fal-ai/wan/v2.7/text-to-video",
     "fal-ai/wan/v2.7/image-to-video",
     "fal-ai/wan/v2.7/reference-to-video",
@@ -131,7 +132,7 @@ describe("fal video pricing estimates", () => {
 
   it("covers every REQ-001 endpoint statically or on the dynamic list", () => {
     const dynamic: readonly string[] = FAL_DYNAMIC_PRICING_ENDPOINTS;
-    expect(REQ_001_ENDPOINTS).toHaveLength(26);
+    expect(REQ_001_ENDPOINTS).toHaveLength(27);
     for (const endpoint of REQ_001_ENDPOINTS) {
       expect(endpoint in FAL_ENDPOINT_REQUEST_SCHEMAS, endpoint).toBe(true);
       const priced = endpoint in falPricing;

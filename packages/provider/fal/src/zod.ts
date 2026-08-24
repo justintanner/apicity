@@ -332,6 +332,16 @@ export const FalSeedance2p5TextToVideoRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// Bytedance Seedance 2.5 image-to-video
+// ---------------------------------------------------------------------------
+
+export const FalSeedance2p5ImageToVideoRequestSchema =
+  FalSeedance2p5TextToVideoRequestSchema.extend({
+    image_url: z.string(),
+    end_image_url: z.string().optional(),
+  });
+
+// ---------------------------------------------------------------------------
 // Nano Banana 2 text-to-image
 // ---------------------------------------------------------------------------
 
@@ -1572,6 +1582,17 @@ export type FalSeedance2p5TextToVideoRequestInput =
 export type FalSeedance2p5TextToVideoParsedRequest = z.output<
   typeof FalSeedance2p5TextToVideoRequestSchema
 >;
+export type FalSeedance2p5ImageToVideoParams = z.infer<
+  typeof FalSeedance2p5ImageToVideoRequestSchema
+>;
+export type FalSeedance2p5ImageToVideoRequest = z.input<
+  typeof FalSeedance2p5ImageToVideoRequestSchema
+>;
+export type FalSeedance2p5ImageToVideoRequestInput =
+  FalSeedance2p5ImageToVideoRequest;
+export type FalSeedance2p5ImageToVideoParsedRequest = z.output<
+  typeof FalSeedance2p5ImageToVideoRequestSchema
+>;
 export type FalNanoBananaProTextToImageParams = z.infer<
   typeof FalNanoBananaProTextToImageRequestSchema
 >;
@@ -2320,6 +2341,8 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
     FalSeedance2p0FastReferenceToVideoRequestSchema,
   "bytedance/seedance-2.5/text-to-video":
     FalSeedance2p5TextToVideoRequestSchema,
+  "bytedance/seedance-2.5/image-to-video":
+    FalSeedance2p5ImageToVideoRequestSchema,
   "fal-ai/nano-banana-pro/edit": FalNanoBananaProEditRequestSchema,
   "fal-ai/nano-banana-pro": FalNanoBananaProTextToImageRequestSchema,
   "fal-ai/nano-banana": FalNanoBananaTextToImageRequestSchema,

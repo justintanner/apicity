@@ -39,6 +39,7 @@ export type {
   FalSeedance2p0ReferenceToVideoParams,
   FalSeedance2p0FastReferenceToVideoParams,
   FalSeedance2p5TextToVideoParams,
+  FalSeedance2p5ImageToVideoParams,
   FalNanoBananaProTextToImageParams,
   FalNanoBananaProEditParams,
   FalNanoBanana2TextToImageParams,
@@ -112,6 +113,9 @@ export type {
   FalSeedance2p5TextToVideoRequest,
   FalSeedance2p5TextToVideoRequestInput,
   FalSeedance2p5TextToVideoParsedRequest,
+  FalSeedance2p5ImageToVideoRequest,
+  FalSeedance2p5ImageToVideoRequestInput,
+  FalSeedance2p5ImageToVideoParsedRequest,
   FalNanoBananaProEditRequest,
   FalNanoBananaProEditRequestInput,
   FalNanoBananaProEditParsedRequest,
@@ -284,6 +288,7 @@ import type {
   FalSeedance2p0ReferenceToVideoRequest,
   FalSeedance2p0FastReferenceToVideoRequest,
   FalSeedance2p5TextToVideoRequest,
+  FalSeedance2p5ImageToVideoRequest,
   FalNanoBananaProEditRequest,
   FalNanoBananaProTextToImageRequest,
   FalNanoBananaTextToImageRequest,
@@ -775,6 +780,11 @@ export interface FalSeedance2p0FastReferenceToVideoResponse {
 }
 
 export interface FalSeedance2p5TextToVideoResponse {
+  video: FalFile;
+  seed: number;
+}
+
+export interface FalSeedance2p5ImageToVideoResponse {
   video: FalFile;
   seed: number;
 }
@@ -1596,6 +1606,13 @@ type FalSeedance2p5TextToVideoFn = ((
   schema: ApicitySchema<FalSeedance2p5TextToVideoRequest>;
 };
 
+type FalSeedance2p5ImageToVideoFn = ((
+  params: FalSeedance2p5ImageToVideoRequest,
+  signal?: AbortSignal
+) => Promise<FalSeedance2p5ImageToVideoResponse>) & {
+  schema: ApicitySchema<FalSeedance2p5ImageToVideoRequest>;
+};
+
 export interface FalRunBytedanceSeedance2p0FastNamespace {
   imageToVideo: FalSeedance2p0FastImageToVideoFn;
   textToVideo: FalSeedance2p0FastTextToVideoFn;
@@ -1610,6 +1627,7 @@ export interface FalRunBytedanceSeedance2p0Namespace {
 }
 
 export interface FalRunBytedanceSeedance2p5Namespace {
+  imageToVideo: FalSeedance2p5ImageToVideoFn;
   textToVideo: FalSeedance2p5TextToVideoFn;
 }
 

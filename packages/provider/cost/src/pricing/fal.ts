@@ -684,6 +684,13 @@ export const fal: Record<string, ModelPricing> = {
     seedanceSeconds,
     seedance25AsOf
   ),
+  "bytedance/seedance-2.5/image-to-video": perSecondTiered(
+    "bytedance/seedance-2.5/image-to-video",
+    [resolutionTier("720p")],
+    seedance25Rates(0.0214),
+    seedanceSeconds,
+    seedance25AsOf
+  ),
 
   // Video — Wan 2.7: t2v/i2v tier on resolution (schema default 1080p);
   // reference-to-video and edit-video bill a flat $0.10/s (the page states

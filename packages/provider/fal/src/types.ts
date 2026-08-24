@@ -40,6 +40,7 @@ export type {
   FalSeedance2p0FastReferenceToVideoParams,
   FalSeedance2p5TextToVideoParams,
   FalSeedance2p5ImageToVideoParams,
+  FalSeedance2p5ReferenceToVideoParams,
   FalNanoBananaProTextToImageParams,
   FalNanoBananaProEditParams,
   FalNanoBanana2TextToImageParams,
@@ -116,6 +117,9 @@ export type {
   FalSeedance2p5ImageToVideoRequest,
   FalSeedance2p5ImageToVideoRequestInput,
   FalSeedance2p5ImageToVideoParsedRequest,
+  FalSeedance2p5ReferenceToVideoRequest,
+  FalSeedance2p5ReferenceToVideoRequestInput,
+  FalSeedance2p5ReferenceToVideoParsedRequest,
   FalNanoBananaProEditRequest,
   FalNanoBananaProEditRequestInput,
   FalNanoBananaProEditParsedRequest,
@@ -289,6 +293,7 @@ import type {
   FalSeedance2p0FastReferenceToVideoRequest,
   FalSeedance2p5TextToVideoRequest,
   FalSeedance2p5ImageToVideoRequest,
+  FalSeedance2p5ReferenceToVideoRequest,
   FalNanoBananaProEditRequest,
   FalNanoBananaProTextToImageRequest,
   FalNanoBananaTextToImageRequest,
@@ -785,6 +790,11 @@ export interface FalSeedance2p5TextToVideoResponse {
 }
 
 export interface FalSeedance2p5ImageToVideoResponse {
+  video: FalFile;
+  seed: number;
+}
+
+export interface FalSeedance2p5ReferenceToVideoResponse {
   video: FalFile;
   seed: number;
 }
@@ -1613,6 +1623,13 @@ type FalSeedance2p5ImageToVideoFn = ((
   schema: ApicitySchema<FalSeedance2p5ImageToVideoRequest>;
 };
 
+type FalSeedance2p5ReferenceToVideoFn = ((
+  params: FalSeedance2p5ReferenceToVideoRequest,
+  signal?: AbortSignal
+) => Promise<FalSeedance2p5ReferenceToVideoResponse>) & {
+  schema: ApicitySchema<FalSeedance2p5ReferenceToVideoRequest>;
+};
+
 export interface FalRunBytedanceSeedance2p0FastNamespace {
   imageToVideo: FalSeedance2p0FastImageToVideoFn;
   textToVideo: FalSeedance2p0FastTextToVideoFn;
@@ -1628,6 +1645,7 @@ export interface FalRunBytedanceSeedance2p0Namespace {
 
 export interface FalRunBytedanceSeedance2p5Namespace {
   imageToVideo: FalSeedance2p5ImageToVideoFn;
+  referenceToVideo: FalSeedance2p5ReferenceToVideoFn;
   textToVideo: FalSeedance2p5TextToVideoFn;
 }
 

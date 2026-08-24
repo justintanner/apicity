@@ -219,6 +219,24 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST bytedance.seedance2p5.referenceToVideo": {
+    "source": "fal/bytedance-seedance2p5-reference-to-video",
+    "payload": {
+      "prompt": "@Image1 follows the gentle head movement from @Video1, cinematic close-up.",
+      "image_urls": [
+        "<inline image/jpeg data URL — replace with a real URL or upload>"
+      ],
+      "video_urls": [
+        "<inline video/mp4 data URL — replace with a real URL or upload>"
+      ],
+      "resolution": "480p",
+      "duration": "4",
+      "aspect_ratio": "1:1",
+      "generate_audio": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST bytedance.seedance2p5.textToVideo": {
     "source": "fal/bytedance-seedance2p5-text-to-video",
     "payload": {

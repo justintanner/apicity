@@ -323,6 +323,16 @@ const seedanceReferenceRates = (usdPerThousandTokens: number) => {
   };
 };
 
+const seedance25ReferenceRates = (usdPerThousandTokens: number) => {
+  const base = seedance25Rates(usdPerThousandTokens);
+  return {
+    ...base,
+    "480p|video": base["480p"] * 0.6,
+    "720p|video": base["720p"] * 0.6,
+    "1080p|video": base["1080p"] * 0.6,
+  };
+};
+
 // Rate tables shared by the variants of one family — the generation/edit
 // twins and the text-to-video/image-to-video pairs bill identically, so each
 // grid is named once. Sharing by reference is safe (compute.ts only reads
@@ -688,6 +698,13 @@ export const fal: Record<string, ModelPricing> = {
     "bytedance/seedance-2.5/image-to-video",
     [resolutionTier("720p")],
     seedance25Rates(0.0214),
+    seedanceSeconds,
+    seedance25AsOf
+  ),
+  "bytedance/seedance-2.5/reference-to-video": perSecondTiered(
+    "bytedance/seedance-2.5/reference-to-video",
+    [resolutionTier("720p"), seedanceVideoInput],
+    seedance25ReferenceRates(0.0214),
     seedanceSeconds,
     seedance25AsOf
   ),

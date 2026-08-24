@@ -432,6 +432,7 @@ export const MODEL_SLUGS = {
     // Video — Seedance 2.5
     "bytedance/seedance-2.5/text-to-video": "sd2p5",
     "bytedance/seedance-2.5/image-to-video": "sd2p5",
+    "bytedance/seedance-2.5/reference-to-video": "sd2p5",
 
     // Video — Wan 2.7
     "fal-ai/wan/v2.7/text-to-video": "wan2p7",
@@ -818,6 +819,7 @@ export const MODEL_DISPLAY = {
 
     "bytedance/seedance-2.5/text-to-video": "Seedance 2.5",
     "bytedance/seedance-2.5/image-to-video": "Seedance 2.5",
+    "bytedance/seedance-2.5/reference-to-video": "Seedance 2.5",
 
     "fal-ai/wan/v2.7/text-to-video": "Wan 2.7",
     "fal-ai/wan/v2.7/image-to-video": "Wan 2.7",

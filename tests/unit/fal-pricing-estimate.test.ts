@@ -109,6 +109,7 @@ describe("fal video pricing estimates", () => {
     "bytedance/seedance-2.0/fast/reference-to-video",
     "bytedance/seedance-2.5/text-to-video",
     "bytedance/seedance-2.5/image-to-video",
+    "bytedance/seedance-2.5/reference-to-video",
     "fal-ai/wan/v2.7/text-to-video",
     "fal-ai/wan/v2.7/image-to-video",
     "fal-ai/wan/v2.7/reference-to-video",
@@ -132,7 +133,7 @@ describe("fal video pricing estimates", () => {
 
   it("covers every REQ-001 endpoint statically or on the dynamic list", () => {
     const dynamic: readonly string[] = FAL_DYNAMIC_PRICING_ENDPOINTS;
-    expect(REQ_001_ENDPOINTS).toHaveLength(27);
+    expect(REQ_001_ENDPOINTS).toHaveLength(28);
     for (const endpoint of REQ_001_ENDPOINTS) {
       expect(endpoint in FAL_ENDPOINT_REQUEST_SCHEMAS, endpoint).toBe(true);
       const priced = endpoint in falPricing;
@@ -503,6 +504,24 @@ describe("fal video pricing estimates", () => {
         resolution: "1080p",
       }).usd
     ).toBeCloseTo(4.16016, 10);
+
+    expect(
+      est("bytedance/seedance-2.5/reference-to-video", {
+        prompt: "p",
+        video_urls: ["u"],
+        duration: "5",
+        resolution: "720p",
+      }).usd
+    ).toBeCloseTo(1.38672, 10);
+
+    expect(
+      est("bytedance/seedance-2.5/reference-to-video", {
+        prompt: "p",
+        image_urls: ["u"],
+        duration: "5",
+        resolution: "720p",
+      }).usd
+    ).toBeCloseTo(2.3112, 10);
   });
 
   it("warns instead of guessing when seconds are not derivable", () => {
@@ -511,6 +530,8 @@ describe("fal video pricing estimates", () => {
     for (const endpoint of [
       "bytedance/seedance-2.0/text-to-video",
       "bytedance/seedance-2.5/text-to-video",
+      "bytedance/seedance-2.5/image-to-video",
+      "bytedance/seedance-2.5/reference-to-video",
     ]) {
       for (const payload of [
         { prompt: "p" },

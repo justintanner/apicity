@@ -486,6 +486,15 @@ describe("fal video pricing estimates", () => {
       }).usd
     ).toBeCloseTo(2.08008, 10);
 
+    // The committed HAR records x-fal-billable-units: 38.8 for 480p × 4s.
+    expect(
+      est("bytedance/seedance-2.5/text-to-video", {
+        prompt: "p",
+        duration: "4",
+        resolution: "480p",
+      }).usd
+    ).toBeCloseTo(0.832032, 10);
+
     expect(
       est("bytedance/seedance-2.5/text-to-video", {
         prompt: "p",

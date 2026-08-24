@@ -33,6 +33,9 @@ const flux3AsOf = "2026-08-21";
 // this date.
 const audioAsOf = "2026-08-22";
 
+// Seedance 2.5 pricing was re-pulled from fal's pricing API on this date.
+const seedance25AsOf = "2026-08-23";
+
 // Grok Imagine video edit was rechecked against its fal.ai pricing card on
 // this date. Both the source-video input and edited output bill for the same
 // hinted clip length, so their per-second components can be summed exactly.
@@ -282,6 +285,22 @@ const perSecondTiered = (
 const seedanceRates = (usdPerThousandTokens: number) => ({
   "480p": (9720 / 1000) * usdPerThousandTokens,
   "720p": (21600 / 1000) * usdPerThousandTokens,
+});
+
+// Seedance 2.5 bills output tokens at a flat $0.0214/1000 tokens according to
+// GET https://api.fal.ai/v1/models/pricing, freshly pulled 2026-08-23.
+// tokens/s = width × height × 24 / 1024 at 16:9: 480p (864×480) → 9720,
+// 720p (1280×720) → 21600, and 1080p (1920×1080) → 48600 tokens/s.
+// A 2026-08-22 observation of ≈$0.0234/1000 tokens at 1080p is superseded by
+// that authoritative flat-price pull. Reference-clip input tokens are metered
+// upstream but their duration is not a request field, so estimates cover only
+// the output component. The published token formula has no audio term; all
+// observed fal Seedance recordings are audio-off, so equal audio-on billing is
+// an explicit but unverified assumption rather than a separate invented axis.
+const seedance25Rates = (usdPerThousandTokens: number) => ({
+  "480p": (9720 / 1000) * usdPerThousandTokens,
+  "720p": (21600 / 1000) * usdPerThousandTokens,
+  "1080p": (48600 / 1000) * usdPerThousandTokens,
 });
 
 // Reference-to-video applies a ×0.6 price multiplier when video inputs are
@@ -655,6 +674,15 @@ export const fal: Record<string, ModelPricing> = {
     [resolutionTier("720p"), seedanceVideoInput],
     seedanceReferenceRates(0.0112),
     seedanceSeconds
+  ),
+
+  // Video — Seedance 2.5 (token-metered; see seedance25Rates)
+  "bytedance/seedance-2.5/text-to-video": perSecondTiered(
+    "bytedance/seedance-2.5/text-to-video",
+    [resolutionTier("720p")],
+    seedance25Rates(0.0214),
+    seedanceSeconds,
+    seedance25AsOf
   ),
 
   // Video — Wan 2.7: t2v/i2v tier on resolution (schema default 1080p);

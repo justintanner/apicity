@@ -222,6 +222,18 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST bytedance.seedance2p5.textToVideo": {
+    "source": "fal/bytedance-seedance2p5-text-to-video",
+    "payload": {
+      "prompt": "A white odd-eyed cat blinks slowly and tilts its head, soft breeze through fur, cinematic close-up.",
+      "resolution": "480p",
+      "duration": "4",
+      "aspect_ratio": "1:1",
+      "generate_audio": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST bytedance.seedream.v5.lite.edit": {
     "source": "fal/bytedance-seedream-v5-lite-edit",
     "payload": {

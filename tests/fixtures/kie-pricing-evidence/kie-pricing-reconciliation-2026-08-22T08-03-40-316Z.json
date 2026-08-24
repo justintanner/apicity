@@ -534,8 +534,8 @@
       "packages/provider/kie/src/model-schemas.ts": "sha256:e528f2e500d3e0e63eeb03ec74567b85c6fe9700fe9290fe415768e574ccd81b",
       "packages/provider/kie/src/kie.ts": "sha256:879aa7a639885ba118a2797ab0d66d93d4180b72d647753876de392523d901bf",
       "packages/provider/cost/src/pricing/kie.ts": "sha256:32bea8a1205685db4260b2174c860e0e5f2ca2d5258870491e71d14e3346fb56",
-      "packages/provider/cost/src/slugs.ts": "sha256:ff20430fe5d3dea53c57438203d9780f14a6d89f03b210911516bb592d0dd44c",
-      "scripts/endpoint-docs.tsv": "sha256:b4d1f8d9ad7a1d77f9eb53bf55f7a1a8be005ad5f93f69ced942c77ac72711f1"
+      "packages/provider/cost/src/slugs.ts": "sha256:22f678d049a1a8fefa348861dbbca70466a107e35ef2bb4b72cec28cfaa16da0",
+      "scripts/endpoint-docs.tsv": "sha256:ce70c4dbddc46d8af3af31ad98f2a292251ab89e6387422466336d0a47f1d292"
     }
   },
   "rows": [

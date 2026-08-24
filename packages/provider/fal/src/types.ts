@@ -38,6 +38,7 @@ export type {
   FalSeedance2p0FastTextToVideoParams,
   FalSeedance2p0ReferenceToVideoParams,
   FalSeedance2p0FastReferenceToVideoParams,
+  FalSeedance2p5TextToVideoParams,
   FalNanoBananaProTextToImageParams,
   FalNanoBananaProEditParams,
   FalNanoBanana2TextToImageParams,
@@ -108,6 +109,9 @@ export type {
   FalSeedance2p0FastReferenceToVideoRequest,
   FalSeedance2p0FastReferenceToVideoRequestInput,
   FalSeedance2p0FastReferenceToVideoParsedRequest,
+  FalSeedance2p5TextToVideoRequest,
+  FalSeedance2p5TextToVideoRequestInput,
+  FalSeedance2p5TextToVideoParsedRequest,
   FalNanoBananaProEditRequest,
   FalNanoBananaProEditRequestInput,
   FalNanoBananaProEditParsedRequest,
@@ -279,6 +283,7 @@ import type {
   FalSeedance2p0FastTextToVideoRequest,
   FalSeedance2p0ReferenceToVideoRequest,
   FalSeedance2p0FastReferenceToVideoRequest,
+  FalSeedance2p5TextToVideoRequest,
   FalNanoBananaProEditRequest,
   FalNanoBananaProTextToImageRequest,
   FalNanoBananaTextToImageRequest,
@@ -765,6 +770,11 @@ export interface FalSeedance2p0ReferenceToVideoResponse {
 }
 
 export interface FalSeedance2p0FastReferenceToVideoResponse {
+  video: FalFile;
+  seed: number;
+}
+
+export interface FalSeedance2p5TextToVideoResponse {
   video: FalFile;
   seed: number;
 }
@@ -1579,6 +1589,13 @@ type FalSeedance2p0FastReferenceToVideoFn = ((
   schema: ApicitySchema<FalSeedance2p0FastReferenceToVideoRequest>;
 };
 
+type FalSeedance2p5TextToVideoFn = ((
+  params: FalSeedance2p5TextToVideoRequest,
+  signal?: AbortSignal
+) => Promise<FalSeedance2p5TextToVideoResponse>) & {
+  schema: ApicitySchema<FalSeedance2p5TextToVideoRequest>;
+};
+
 export interface FalRunBytedanceSeedance2p0FastNamespace {
   imageToVideo: FalSeedance2p0FastImageToVideoFn;
   textToVideo: FalSeedance2p0FastTextToVideoFn;
@@ -1590,6 +1607,10 @@ export interface FalRunBytedanceSeedance2p0Namespace {
   textToVideo: FalSeedance2p0TextToVideoFn;
   referenceToVideo: FalSeedance2p0ReferenceToVideoFn;
   fast: FalRunBytedanceSeedance2p0FastNamespace;
+}
+
+export interface FalRunBytedanceSeedance2p5Namespace {
+  textToVideo: FalSeedance2p5TextToVideoFn;
 }
 
 export interface FalRunBytedanceSeedreamV5LiteNamespace {
@@ -1622,6 +1643,7 @@ export interface FalRunBytedanceSeedSpeechNamespace {
 
 export interface FalRunBytedanceNamespace {
   seedance2p0: FalRunBytedanceSeedance2p0Namespace;
+  seedance2p5: FalRunBytedanceSeedance2p5Namespace;
   seedSpeech: FalRunBytedanceSeedSpeechNamespace;
   seedream: FalRunBytedanceSeedreamNamespace;
 }

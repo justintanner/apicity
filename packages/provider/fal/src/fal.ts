@@ -49,6 +49,8 @@ import {
   FalSeedance2p0ReferenceToVideoResponse,
   FalSeedance2p0FastReferenceToVideoRequest,
   FalSeedance2p0FastReferenceToVideoResponse,
+  FalSeedance2p5TextToVideoRequest,
+  FalSeedance2p5TextToVideoResponse,
   FalNanoBananaProTextToImageRequest,
   FalNanoBananaProTextToImageResponse,
   FalNanoBananaProEditRequest,
@@ -164,6 +166,7 @@ import {
   FalSeedance2p0FastTextToVideoRequestSchema,
   FalSeedance2p0ReferenceToVideoRequestSchema,
   FalSeedance2p0FastReferenceToVideoRequestSchema,
+  FalSeedance2p5TextToVideoRequestSchema,
   FalNanoBananaProTextToImageRequestSchema,
   FalNanoBananaProEditRequestSchema,
   FalNanoBanana2TextToImageRequestSchema,
@@ -870,6 +873,19 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
+  // POST https://api.fal.ai/v1/bytedance/seedance-2.5/text-to-video
+  // Docs: https://fal.ai/models/bytedance/seedance-2.5/text-to-video/api
+  const bytedanceSeedance2p5TextToVideo = jsonBody<
+    FalSeedance2p5TextToVideoRequest,
+    FalSeedance2p5TextToVideoResponse
+  >(
+    "POST",
+    "/bytedance/seedance-2.5/text-to-video",
+    FalSeedance2p5TextToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/nano-banana-pro/edit
   // Docs: https://docs.fal.ai
   const nanoBananaProEdit = jsonBody<
@@ -1543,6 +1559,9 @@ export function createFal(opts: FalOptions): FalProvider {
           textToVideo: bytedanceSeedance2p0FastTextToVideo,
           referenceToVideo: bytedanceSeedance2p0FastReferenceToVideo,
         },
+      },
+      seedance2p5: {
+        textToVideo: bytedanceSeedance2p5TextToVideo,
       },
       seedSpeech: {
         tts: {

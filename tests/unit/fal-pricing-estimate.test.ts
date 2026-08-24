@@ -107,6 +107,7 @@ describe("fal video pricing estimates", () => {
     "bytedance/seedance-2.0/fast/text-to-video",
     "bytedance/seedance-2.0/fast/image-to-video",
     "bytedance/seedance-2.0/fast/reference-to-video",
+    "bytedance/seedance-2.5/text-to-video",
     "fal-ai/wan/v2.7/text-to-video",
     "fal-ai/wan/v2.7/image-to-video",
     "fal-ai/wan/v2.7/reference-to-video",
@@ -130,7 +131,7 @@ describe("fal video pricing estimates", () => {
 
   it("covers every REQ-001 endpoint statically or on the dynamic list", () => {
     const dynamic: readonly string[] = FAL_DYNAMIC_PRICING_ENDPOINTS;
-    expect(REQ_001_ENDPOINTS).toHaveLength(25);
+    expect(REQ_001_ENDPOINTS).toHaveLength(26);
     for (const endpoint of REQ_001_ENDPOINTS) {
       expect(endpoint in FAL_ENDPOINT_REQUEST_SCHEMAS, endpoint).toBe(true);
       const priced = endpoint in falPricing;
@@ -467,18 +468,48 @@ describe("fal video pricing estimates", () => {
         resolution: "720p",
       }).usd
     ).toBeCloseTo(1.512, 10);
+
+    // Seedance 2.5 uses the freshly rechecked flat $0.0214/1000-token rate.
+    expect(
+      est("bytedance/seedance-2.5/text-to-video", {
+        prompt: "p",
+        duration: "5",
+        resolution: "720p",
+      }).usd
+    ).toBeCloseTo(2.3112, 10);
+
+    expect(
+      est("bytedance/seedance-2.5/text-to-video", {
+        prompt: "p",
+        duration: "10",
+        resolution: "480p",
+      }).usd
+    ).toBeCloseTo(2.08008, 10);
+
+    expect(
+      est("bytedance/seedance-2.5/text-to-video", {
+        prompt: "p",
+        duration: "4",
+        resolution: "1080p",
+      }).usd
+    ).toBeCloseTo(4.16016, 10);
   });
 
   it("warns instead of guessing when seconds are not derivable", () => {
     // Seedance duration defaults to "auto" — model-chosen output length,
     // no billed default to assume, whether omitted or explicit.
-    for (const payload of [
-      { prompt: "p" },
-      { prompt: "p", duration: "auto" },
+    for (const endpoint of [
+      "bytedance/seedance-2.0/text-to-video",
+      "bytedance/seedance-2.5/text-to-video",
     ]) {
-      const res = est("bytedance/seedance-2.0/text-to-video", payload);
-      expect(res.usd).toBe(0);
-      expect(res.warnings.join(" ")).toMatch(/could not derive units/);
+      for (const payload of [
+        { prompt: "p" },
+        { prompt: "p", duration: "auto" },
+      ]) {
+        const res = est(endpoint, payload);
+        expect(res.usd).toBe(0);
+        expect(res.warnings.join(" ")).toMatch(/could not derive units/);
+      }
     }
 
     // Kling duration is a bare string upstream; non-digit strings warn.

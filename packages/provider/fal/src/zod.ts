@@ -268,6 +268,70 @@ export const FalSeedance2p0FastReferenceToVideoRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// Bytedance Seedance 2.5 shared vocabularies
+// ---------------------------------------------------------------------------
+
+const Seedance2p5ResolutionSchema = z.enum(["480p", "720p", "1080p"]);
+
+const Seedance2p5DurationSchema = z.enum([
+  "auto",
+  "4",
+  "5",
+  "6",
+  "7",
+  "8",
+  "9",
+  "10",
+  "11",
+  "12",
+  "13",
+  "14",
+  "15",
+  "16",
+  "17",
+  "18",
+  "19",
+  "20",
+  "21",
+  "22",
+  "23",
+  "24",
+  "25",
+  "26",
+  "27",
+  "28",
+  "29",
+  "30",
+]);
+
+const Seedance2p5AspectRatioSchema = z.enum([
+  "auto",
+  "21:9",
+  "16:9",
+  "4:3",
+  "1:1",
+  "3:4",
+  "9:16",
+]);
+
+const Seedance2p5BitrateModeSchema = z.enum(["standard", "high"]);
+
+// ---------------------------------------------------------------------------
+// Bytedance Seedance 2.5 text-to-video
+// ---------------------------------------------------------------------------
+
+export const FalSeedance2p5TextToVideoRequestSchema = z.object({
+  prompt: z.string(),
+  resolution: Seedance2p5ResolutionSchema.optional(),
+  duration: Seedance2p5DurationSchema.optional(),
+  aspect_ratio: Seedance2p5AspectRatioSchema.optional(),
+  generate_audio: z.boolean().optional(),
+  bitrate_mode: Seedance2p5BitrateModeSchema.optional(),
+  seed: z.number().int().optional(),
+  end_user_id: z.string().optional(),
+});
+
+// ---------------------------------------------------------------------------
 // Nano Banana 2 text-to-image
 // ---------------------------------------------------------------------------
 
@@ -1497,6 +1561,17 @@ export type FalSeedance2p0FastReferenceToVideoRequestInput =
 export type FalSeedance2p0FastReferenceToVideoParsedRequest = z.output<
   typeof FalSeedance2p0FastReferenceToVideoRequestSchema
 >;
+export type FalSeedance2p5TextToVideoParams = z.infer<
+  typeof FalSeedance2p5TextToVideoRequestSchema
+>;
+export type FalSeedance2p5TextToVideoRequest = z.input<
+  typeof FalSeedance2p5TextToVideoRequestSchema
+>;
+export type FalSeedance2p5TextToVideoRequestInput =
+  FalSeedance2p5TextToVideoRequest;
+export type FalSeedance2p5TextToVideoParsedRequest = z.output<
+  typeof FalSeedance2p5TextToVideoRequestSchema
+>;
 export type FalNanoBananaProTextToImageParams = z.infer<
   typeof FalNanoBananaProTextToImageRequestSchema
 >;
@@ -2243,6 +2318,8 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
     FalSeedance2p0ReferenceToVideoRequestSchema,
   "bytedance/seedance-2.0/fast/reference-to-video":
     FalSeedance2p0FastReferenceToVideoRequestSchema,
+  "bytedance/seedance-2.5/text-to-video":
+    FalSeedance2p5TextToVideoRequestSchema,
   "fal-ai/nano-banana-pro/edit": FalNanoBananaProEditRequestSchema,
   "fal-ai/nano-banana-pro": FalNanoBananaProTextToImageRequestSchema,
   "fal-ai/nano-banana": FalNanoBananaTextToImageRequestSchema,

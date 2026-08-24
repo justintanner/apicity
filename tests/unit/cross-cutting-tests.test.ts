@@ -26,11 +26,17 @@ const SOURCE_PIN_TESTS = [
 // Registry-parity suite (compares cross-provider registries for key parity).
 const REGISTRY_PARITY_TESTS = ["tests/unit/cost-slugs.test.ts"] as const;
 
+// Credential-wiring suite (recording host must match the test's credential).
+const CREDENTIAL_WIRING_TESTS = [
+  "tests/unit/recording-credential-hosts.test.ts",
+] as const;
+
 const CATEGORIZED_TESTS: readonly string[] = [
   ...RECORDING_ENUMERATION_TESTS,
   ...SURFACE_INVENTORY_TESTS,
   ...SOURCE_PIN_TESTS,
   ...REGISTRY_PARITY_TESTS,
+  ...CREDENTIAL_WIRING_TESTS,
 ];
 
 function readRepoFile(relativePath: string): string {
@@ -38,7 +44,7 @@ function readRepoFile(relativePath: string): string {
 }
 
 describe("cross-cutting repo-wide guard tests", () => {
-  it("lists recording-enumeration, surface-inventory, source-pin, and registry-parity tests", () => {
+  it("lists recording-enumeration, surface-inventory, source-pin, registry-parity, and credential-wiring tests", () => {
     for (const path of RECORDING_ENUMERATION_TESTS) {
       expect(CROSS_CUTTING_TESTS).toContain(path);
     }
@@ -49,6 +55,9 @@ describe("cross-cutting repo-wide guard tests", () => {
       expect(CROSS_CUTTING_TESTS).toContain(path);
     }
     for (const path of REGISTRY_PARITY_TESTS) {
+      expect(CROSS_CUTTING_TESTS).toContain(path);
+    }
+    for (const path of CREDENTIAL_WIRING_TESTS) {
       expect(CROSS_CUTTING_TESTS).toContain(path);
     }
   });
@@ -110,6 +119,14 @@ describe("cross-cutting repo-wide guard tests", () => {
       const source = fs.readFileSync(path.join(repoRoot, relativePath), "utf8");
       expect(source, relativePath).toContain("MODEL_SLUGS");
       expect(source, relativePath).toContain("PRICING");
+    }
+  });
+
+  it("credential-wiring tests pin a host-to-credential mapping", () => {
+    for (const relativePath of CREDENTIAL_WIRING_TESTS) {
+      const source = readRepoFile(relativePath);
+      expect(source, relativePath).toContain("FAL_ADMIN_API_KEY");
+      expect(source, relativePath).toContain("api.fal.ai");
     }
   });
 

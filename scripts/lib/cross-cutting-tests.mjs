@@ -43,6 +43,19 @@ import { repoRoot } from "./provider-scope.mjs";
  * model without slugging it passes `dev:preflight:fast -- fal` and goes red only
  * in full CI (ac-y39i64).
  *
+ * Credential-wiring guards assert that a recording's request host and the
+ * credential its replaying test is wired to agree.
+ * `tests/unit/recording-credential-hosts.test.ts` requires every `api.fal.ai`
+ * recording to be replayed by a call site using `process.env.FAL_ADMIN_API_KEY`
+ * and every `fal.run` / `rest.fal.ai` / `v3b.fal.media` recording to use
+ * `process.env.FAL_API_KEY`. Replay never contacts fal, so a miswired credential
+ * passes every gate and only fails the next `dev:record` against a paid account.
+ * Association is file-scoped, so a fal test file must use exactly one `FAL_*`
+ * credential; a file with zero or two distinct expressions fails loudly rather
+ * than being guessed at. The file is deliberately not named after a provider,
+ * so no provider scope selects it and this registry entry is what runs it
+ * (ac-wt8fzl).
+ *
  * The fast gates run these guards so a broken repo-wide invariant cannot pass
  * the local merge gate. They are filesystem- and source-parse-only (no Polly,
  * no network) and cost about 5.7s on the reference machine.
@@ -56,6 +69,7 @@ export const CROSS_CUTTING_TESTS = [
   "tests/unit/endpoint-cost-tiers.test.ts",
   "tests/unit/kie-pricing-reconciliation.test.ts",
   "tests/unit/cost-slugs.test.ts",
+  "tests/unit/recording-credential-hosts.test.ts",
 ];
 
 /**

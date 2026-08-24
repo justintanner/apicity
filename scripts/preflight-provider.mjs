@@ -31,12 +31,16 @@
  *
  * Step `cross-cutting` runs the repo-wide guards in
  * scripts/lib/cross-cutting-tests.mjs that provider scopes do not select
- * consistently: recording-corpus allowlists, endpoint-surface inventory, and
- * cross-provider source pins. Without this step, provider-scoped work can leave
- * a whole-repo invariant stale until full CI — the gap behind ac-05hrc,
- * ac-t2gfln, and the `92323c18` hand repair. They are filesystem- and
- * source-parse-only (no Polly, no network) and cost about 5.7s on the reference
- * machine.
+ * consistently: recording-corpus allowlists, endpoint-surface inventory,
+ * cross-provider source pins, and cross-provider registry parity. The
+ * registry-parity guard, `tests/unit/cost-slugs.test.ts`, enforces exact `fal`
+ * pricing/slug key sets, slug/display coverage for every provider, every `kie`
+ * pricing key resolving through both slug and display registries, and exact
+ * `googleflow` slug/display keys. Without this step, provider-scoped work can
+ * leave a whole-repo invariant stale until full CI — the gaps behind ac-05hrc,
+ * ac-t2gfln, the `92323c18` hand repair, and ac-y39i64. They are filesystem-
+ * and source-parse-only (no Polly, no network) and cost about 5.7s on the
+ * reference machine.
  *
  * For typecheck-only loops, use `pnpm run typecheck:provider -- <provider>`.
  *

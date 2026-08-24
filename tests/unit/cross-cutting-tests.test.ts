@@ -23,12 +23,22 @@ const SOURCE_PIN_TESTS = [
   "tests/unit/kie-pricing-reconciliation.test.ts",
 ] as const;
 
+// Registry-parity suite (compares cross-provider registries for key parity).
+const REGISTRY_PARITY_TESTS = ["tests/unit/cost-slugs.test.ts"] as const;
+
+const CATEGORIZED_TESTS: readonly string[] = [
+  ...RECORDING_ENUMERATION_TESTS,
+  ...SURFACE_INVENTORY_TESTS,
+  ...SOURCE_PIN_TESTS,
+  ...REGISTRY_PARITY_TESTS,
+];
+
 function readRepoFile(relativePath: string): string {
   return fs.readFileSync(path.join(repoRoot, relativePath), "utf8");
 }
 
 describe("cross-cutting repo-wide guard tests", () => {
-  it("lists recording-enumeration, surface-inventory, and source-pin tests", () => {
+  it("lists recording-enumeration, surface-inventory, source-pin, and registry-parity tests", () => {
     for (const path of RECORDING_ENUMERATION_TESTS) {
       expect(CROSS_CUTTING_TESTS).toContain(path);
     }
@@ -38,6 +48,26 @@ describe("cross-cutting repo-wide guard tests", () => {
     for (const path of SOURCE_PIN_TESTS) {
       expect(CROSS_CUTTING_TESTS).toContain(path);
     }
+    for (const path of REGISTRY_PARITY_TESTS) {
+      expect(CROSS_CUTTING_TESTS).toContain(path);
+    }
+  });
+
+  it("categorizes every listed cross-cutting test", () => {
+    const categorized = new Set<string>(CATEGORIZED_TESTS);
+    const listed = new Set<string>(CROSS_CUTTING_TESTS);
+    expect(
+      CATEGORIZED_TESTS.length,
+      "a path appears in two category lists"
+    ).toBe(categorized.size);
+    expect(
+      CROSS_CUTTING_TESTS.filter((entry) => !categorized.has(entry)),
+      "cross-cutting tests with no category list in this file"
+    ).toEqual([]);
+    expect(
+      CATEGORIZED_TESTS.filter((entry) => !listed.has(entry)),
+      "categorized paths absent from CROSS_CUTTING_TESTS"
+    ).toEqual([]);
   });
 
   it("every listed test exists on disk", () => {
@@ -72,6 +102,14 @@ describe("cross-cutting repo-wide guard tests", () => {
     for (const relativePath of SOURCE_PIN_TESTS) {
       const source = fs.readFileSync(path.join(repoRoot, relativePath), "utf8");
       expect(source, relativePath).toContain("source-checksum-mismatch");
+    }
+  });
+
+  it("registry-parity tests compare two cross-provider registries", () => {
+    for (const relativePath of REGISTRY_PARITY_TESTS) {
+      const source = fs.readFileSync(path.join(repoRoot, relativePath), "utf8");
+      expect(source, relativePath).toContain("MODEL_SLUGS");
+      expect(source, relativePath).toContain("PRICING");
     }
   });
 

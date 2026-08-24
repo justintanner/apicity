@@ -33,6 +33,16 @@ import { repoRoot } from "./provider-scope.mjs";
  * stale and fail only in full CI on main — exactly what `92323c18` repaired by
  * hand (ac-bwk953).
  *
+ * The registry-parity guards compare cross-provider registries for key parity.
+ * `tests/unit/cost-slugs.test.ts` requires `MODEL_SLUGS.fal` and `PRICING.fal`
+ * to have identical key sets, a `MODEL_DISPLAY` entry for every slug in every
+ * provider, every `PRICING.kie` key to resolve through both `modelSlug` and
+ * `modelDisplay`, and `MODEL_SLUGS.googleflow` to key exactly to
+ * `MODEL_DISPLAY.googleflow`. Those span providers, but the file is named after
+ * none of them, so only the `cost` scope selects it: a `fal` bead that prices a
+ * model without slugging it passes `dev:preflight:fast -- fal` and goes red only
+ * in full CI (ac-y39i64).
+ *
  * The fast gates run these guards so a broken repo-wide invariant cannot pass
  * the local merge gate. They are filesystem- and source-parse-only (no Polly,
  * no network) and cost about 5.7s on the reference machine.
@@ -45,6 +55,7 @@ export const CROSS_CUTTING_TESTS = [
   "tests/integration/multipart-recordings.test.ts",
   "tests/unit/endpoint-cost-tiers.test.ts",
   "tests/unit/kie-pricing-reconciliation.test.ts",
+  "tests/unit/cost-slugs.test.ts",
 ];
 
 /**

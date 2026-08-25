@@ -926,6 +926,63 @@ export const FalAlibabaQwenImage3TextToImageRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// Alibaba Qwen Image 3 edit
+// ---------------------------------------------------------------------------
+
+// Same image_size vocabulary and total-pixel rule as text-to-image; only the
+// error message names this endpoint.
+// Docs: https://fal.ai/models/alibaba/qwen-image-3/edit/api
+const FalAlibabaQwenImage3EditImageSizeSchema = z.union([
+  z.enum([
+    "square_hd",
+    "square",
+    "portrait_4_3",
+    "portrait_16_9",
+    "landscape_4_3",
+    "landscape_16_9",
+  ]),
+  z
+    .object({
+      width: z.number().int().positive().max(14142),
+      height: z.number().int().positive().max(14142),
+    })
+    .refine(
+      (value) =>
+        value.width * value.height >= 512 * 512 &&
+        value.width * value.height <= 2048 * 2048,
+      {
+        message:
+          "alibaba/qwen-image-3/edit image_size total pixels must be between 512x512 and 2048x2048",
+        path: ["width"],
+      }
+    ),
+]);
+
+export const FalAlibabaQwenImage3EditRequestSchema = z.object({
+  // Supports Chinese and English; max 5000 characters. Reference the inputs
+  // positionally as "image 1", "image 2", "image 3".
+  prompt: z.string().min(1).max(5000),
+  // 1-3 reference images, 384-2048px per dimension, 10MB each, JPEG/PNG
+  // (no alpha)/WEBP. Order is meaningful.
+  image_urls: z.array(z.string()).min(1).max(3),
+  // Upstream default "".
+  negative_prompt: z.string().max(500).nullable().optional(),
+  // Upstream default square_hd.
+  image_size: FalAlibabaQwenImage3EditImageSizeSchema.nullable().optional(),
+  // Upstream default true.
+  enable_prompt_expansion: z.boolean().optional(),
+  seed: z.number().int().nullable().optional(),
+  // Upstream default true. Disabling requires account authorization;
+  // unauthorized requests are checked anyway.
+  enable_safety_checker: z.boolean().optional(),
+  sync_mode: z.boolean().optional(),
+  // Upstream default 1; published range 1-6.
+  num_images: z.number().int().min(1).max(6).optional(),
+  // Upstream default "png".
+  output_format: z.enum(["jpeg", "png", "webp"]).optional(),
+});
+
+// ---------------------------------------------------------------------------
 // Alibaba Wan 3.0 shared vocabularies
 // ---------------------------------------------------------------------------
 
@@ -1863,6 +1920,17 @@ export type FalAlibabaQwenImage3TextToImageRequestInput =
 export type FalAlibabaQwenImage3TextToImageParsedRequest = z.output<
   typeof FalAlibabaQwenImage3TextToImageRequestSchema
 >;
+export type FalAlibabaQwenImage3EditParams = z.infer<
+  typeof FalAlibabaQwenImage3EditRequestSchema
+>;
+export type FalAlibabaQwenImage3EditRequest = z.input<
+  typeof FalAlibabaQwenImage3EditRequestSchema
+>;
+export type FalAlibabaQwenImage3EditRequestInput =
+  FalAlibabaQwenImage3EditRequest;
+export type FalAlibabaQwenImage3EditParsedRequest = z.output<
+  typeof FalAlibabaQwenImage3EditRequestSchema
+>;
 export type FalWan3p0TextToVideoParams = z.infer<
   typeof FalWan3p0TextToVideoRequestSchema
 >;
@@ -2544,6 +2612,7 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "fal-ai/bytedance/seed-speech/tts/v2": FalSeedSpeechTtsV2RequestSchema,
   "fal-ai/elevenlabs/speech-to-text/scribe-v2":
     FalElevenlabsSpeechToTextScribeV2RequestSchema,
+  "alibaba/qwen-image-3/edit": FalAlibabaQwenImage3EditRequestSchema,
   "alibaba/wan-3.0/text-to-video": FalWan3p0TextToVideoRequestSchema,
   "alibaba/wan-3.0/image-to-video": FalWan3p0ImageToVideoRequestSchema,
   "alibaba/wan-3.0/reference-to-video": FalWan3p0ReferenceToVideoRequestSchema,

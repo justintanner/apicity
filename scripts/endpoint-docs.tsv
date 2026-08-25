@@ -790,6 +790,7 @@ elevenlabs	v1.studio.projects.chapters.convert	POST	https://api.elevenlabs.io/v1
 elevenlabs	v1.studio.projects.chapters.snapshots.list	GET	https://api.elevenlabs.io/v1/studio/projects/{projectId}/chapters/{chapterId}/snapshots	https://elevenlabs.io/docs/api-reference/studio/get-chapter-snapshots
 elevenlabs	v1.studio.projects.chapters.snapshots.get	GET	https://api.elevenlabs.io/v1/studio/projects/{projectId}/chapters/{chapterId}/snapshots/{chapterSnapshotId}	https://elevenlabs.io/docs/api-reference/studio/get-chapter-snapshot
 elevenlabs	v1.studio.projects.chapters.snapshots.stream	POST	https://api.elevenlabs.io/v1/studio/projects/{projectId}/chapters/{chapterId}/snapshots/{chapterSnapshotId}/stream	https://elevenlabs.io/docs/api-reference/studio/stream-chapter-audio
+fal	alibaba.qwenImage3.edit	POST	https://api.fal.ai/v1/alibaba/qwen-image-3/edit	https://fal.ai/models/alibaba/qwen-image-3/edit/api
 fal	alibaba.qwenImage3.textToImage	POST	https://api.fal.ai/v1/alibaba/qwen-image-3/text-to-image	https://fal.ai/models/alibaba/qwen-image-3/text-to-image/api
 fal	alibaba.wan3p0.textToVideo	POST	https://api.fal.ai/v1/alibaba/wan-3.0/text-to-video	https://fal.ai/models/alibaba/wan-3.0/text-to-video/api
 fal	alibaba.wan3p0.imageToVideo	POST	https://api.fal.ai/v1/alibaba/wan-3.0/image-to-video	https://fal.ai/models/alibaba/wan-3.0/image-to-video/api

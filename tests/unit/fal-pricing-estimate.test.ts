@@ -838,7 +838,10 @@ describe("fal edit/image pricing estimates", () => {
   });
 
   it("keeps every dynamic-priced endpoint out of both registries", () => {
-    // alibaba/qwen-image-3/text-to-image is compute-second-metered;
+    // alibaba/qwen-image-3/text-to-image and its /edit sibling are
+    // compute-second-metered — the model page states 1K/2K tier rates but
+    // publishes no image_size-to-tier selector, and the pricing API reports
+    // one flat compute-second price with no tier at all (ac-kjdp0j);
     // the three alibaba/wan-3.0 video operations are compute-second-metered
     // too — their payload `duration` is OUTPUT seconds, a different unit from
     // the wall-clock GPU seconds they bill, so it cannot derive the price (the
@@ -847,9 +850,10 @@ describe("fal edit/image pricing estimates", () => {
     // google/nano-banana-2-lite and google/nano-banana-lite/edit are
     // token-metered without a published tokens-per-image constant;
     // xai/grok-imagine-image/v2.0/edit and text-to-image are
-    // compute-second-metered. All nine therefore use fal's pricing-estimate
+    // compute-second-metered. All ten therefore use fal's pricing-estimate
     // API.
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toEqual([
+      "alibaba/qwen-image-3/edit",
       "alibaba/qwen-image-3/text-to-image",
       "alibaba/wan-3.0/image-to-video",
       "alibaba/wan-3.0/reference-to-video",

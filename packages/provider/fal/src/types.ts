@@ -52,6 +52,7 @@ export type {
   FalSeedSpeechTtsV2Params,
   FalElevenlabsSpeechToTextScribeV2Params,
   FalAlibabaQwenImage3TextToImageParams,
+  FalAlibabaQwenImage3EditParams,
   FalWan3p0TextToVideoParams,
   FalWan3p0ImageToVideoParams,
   FalWan3p0ReferenceToVideoParams,
@@ -162,6 +163,9 @@ export type {
   FalAlibabaQwenImage3TextToImageRequest,
   FalAlibabaQwenImage3TextToImageRequestInput,
   FalAlibabaQwenImage3TextToImageParsedRequest,
+  FalAlibabaQwenImage3EditRequest,
+  FalAlibabaQwenImage3EditRequestInput,
+  FalAlibabaQwenImage3EditParsedRequest,
   FalWan3p0TextToVideoRequest,
   FalWan3p0TextToVideoRequestInput,
   FalWan3p0TextToVideoParsedRequest,
@@ -319,6 +323,7 @@ import type {
   FalSeedSpeechTtsV2Request,
   FalElevenlabsSpeechToTextScribeV2Request,
   FalAlibabaQwenImage3TextToImageRequest,
+  FalAlibabaQwenImage3EditRequest,
   FalWan3p0TextToVideoRequest,
   FalWan3p0ImageToVideoRequest,
   FalWan3p0ReferenceToVideoRequest,
@@ -1082,6 +1087,12 @@ export interface FalAlibabaQwenImage3TextToImageResponse {
   seed: number;
 }
 
+// Alibaba Qwen Image 3 edit
+export interface FalAlibabaQwenImage3EditResponse {
+  images: FalFile[];
+  seed: number;
+}
+
 // Wan v2.7 text-to-image
 export type FalWanImageSize =
   | "square_hd"
@@ -1801,8 +1812,16 @@ type FalAlibabaQwenImage3TextToImageFn = ((
   schema: ApicitySchema<FalAlibabaQwenImage3TextToImageRequest>;
 };
 
+type FalAlibabaQwenImage3EditFn = ((
+  params: FalAlibabaQwenImage3EditRequest,
+  signal?: AbortSignal
+) => Promise<FalAlibabaQwenImage3EditResponse>) & {
+  schema: ApicitySchema<FalAlibabaQwenImage3EditRequest>;
+};
+
 export interface FalRunAlibabaQwenImage3Namespace {
   textToImage: FalAlibabaQwenImage3TextToImageFn;
+  edit: FalAlibabaQwenImage3EditFn;
 }
 
 type FalWan3p0TextToVideoFn = ((

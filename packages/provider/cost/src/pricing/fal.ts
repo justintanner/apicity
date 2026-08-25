@@ -444,11 +444,15 @@ const gptImagePerImage = (
 // instead of guessing; the true price comes from fal's
 // POST /v1/models/pricing/estimate API.
 //
-//   - alibaba/qwen-image-3/text-to-image: billed per COMPUTE SECOND
-//     (USD 0.00017) as rechecked 2026-08-23 against fal's own pricing API
-//     (GET /v1/models/pricing?endpoint_id=...). Compute seconds are not a
-//     request field and cannot be derived from image_size or num_images, so
-//     a static per-image rate would be invented.
+//   - alibaba/qwen-image-3/text-to-image, alibaba/qwen-image-3/edit: billed
+//     per COMPUTE SECOND (USD 0.00017) as rechecked 2026-08-25 against fal's
+//     own pricing API (GET /v1/models/pricing?endpoint_id=...). Compute
+//     seconds are not a request field and cannot be derived from image_size,
+//     image_urls, or num_images, so a static per-image rate would be invented.
+//     The model page states 1K/2K tier rates but publishes no selector mapping
+//     from image_size to a tier; the pricing API reports one flat
+//     compute-second price for both operations and no tier at all, so the
+//     tiers are not actionable either.
 //   - xai/grok-imagine-image/v2.0/edit,
 //     xai/grok-imagine-image/v2.0/text-to-image: billed per COMPUTE SECOND
 //     (USD 0.00017) as rechecked 2026-08-23 against fal's own pricing API
@@ -473,6 +477,7 @@ const gptImagePerImage = (
 //     duration would invent one. The premium `alibaba/wan-3.0-prime/*`
 //     siblings bill per OUTPUT second instead and are priced statically below.
 export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
+  "alibaba/qwen-image-3/edit",
   "alibaba/qwen-image-3/text-to-image",
   "alibaba/wan-3.0/image-to-video",
   "alibaba/wan-3.0/reference-to-video",

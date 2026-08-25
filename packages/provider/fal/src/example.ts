@@ -65,6 +65,20 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST alibaba.qwenImage3.edit": {
+    "source": "fal/alibaba-qwen-image-3-edit",
+    "payload": {
+      "prompt": "Give the cat in image 1 a small red knitted scarf.",
+      "image_urls": [
+        "<inline image/jpeg data URL — replace with a real URL or upload>"
+      ],
+      "image_size": "square",
+      "num_images": 1,
+      "output_format": "png"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST alibaba.qwenImage3.textToImage": {
     "source": "fal/alibaba-qwen-image-3-text-to-image",
     "payload": {

@@ -76,6 +76,8 @@ import {
   FalElevenlabsSpeechToTextScribeV2Request,
   FalElevenlabsSpeechToTextScribeV2Response,
   FalAlibabaQwenImage3TextToImageRequest,
+  FalAlibabaQwenImage3EditRequest,
+  FalAlibabaQwenImage3EditResponse,
   FalWan3p0TextToVideoRequest,
   FalWan3p0TextToVideoResponse,
   FalWan3p0ImageToVideoRequest,
@@ -190,6 +192,7 @@ import {
   FalSeedSpeechTtsV2RequestSchema,
   FalElevenlabsSpeechToTextScribeV2RequestSchema,
   FalAlibabaQwenImage3TextToImageRequestSchema,
+  FalAlibabaQwenImage3EditRequestSchema,
   FalWan3p0TextToVideoRequestSchema,
   FalWan3p0ImageToVideoRequestSchema,
   FalWan3p0ReferenceToVideoRequestSchema,
@@ -729,6 +732,21 @@ export function createFal(opts: FalOptions): FalProvider {
     "/alibaba/qwen-image-3/text-to-image",
     FalAlibabaQwenImage3TextToImageRequestSchema,
     { base: runBaseURL }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://api.fal.ai/v1/alibaba/qwen-image-3/edit
+  // Docs: https://fal.ai/models/alibaba/qwen-image-3/edit/api
+  const alibabaQwenImage3Edit = jsonBody<
+    FalAlibabaQwenImage3EditRequest,
+    FalAlibabaQwenImage3EditResponse
+  >(
+    "POST",
+    "/alibaba/qwen-image-3/edit",
+    FalAlibabaQwenImage3EditRequestSchema,
+    {
+      base: runBaseURL,
+    }
   );
 
   // sig-ok: stylistic dotPath divergence from URL
@@ -1666,6 +1684,7 @@ export function createFal(opts: FalOptions): FalProvider {
       },
       qwenImage3: {
         textToImage: alibabaQwenImage3TextToImage,
+        edit: alibabaQwenImage3Edit,
       },
     },
     blackforestlabs: {

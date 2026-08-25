@@ -722,7 +722,7 @@ export function createFal(opts: FalOptions): FalProvider {
   const restBaseURL = opts.restBaseURL ?? "https://rest.fal.ai";
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/alibaba/qwen-image-3/text-to-image
+  // POST https://fal.run/alibaba/qwen-image-3/text-to-image
   // Docs: https://fal.ai/models/alibaba/qwen-image-3/text-to-image/api
   const alibabaQwenImage3TextToImage = jsonBody<
     FalAlibabaQwenImage3TextToImageRequest,
@@ -735,7 +735,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/alibaba/qwen-image-3/edit
+  // POST https://fal.run/alibaba/qwen-image-3/edit
   // Docs: https://fal.ai/models/alibaba/qwen-image-3/edit/api
   const alibabaQwenImage3Edit = jsonBody<
     FalAlibabaQwenImage3EditRequest,
@@ -750,7 +750,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/alibaba/wan-3.0/text-to-video
+  // POST https://fal.run/alibaba/wan-3.0/text-to-video
   // Docs: https://fal.ai/models/alibaba/wan-3.0/text-to-video/api
   const alibabaWan3p0TextToVideo = jsonBody<
     FalWan3p0TextToVideoRequest,
@@ -763,7 +763,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/alibaba/wan-3.0/image-to-video
+  // POST https://fal.run/alibaba/wan-3.0/image-to-video
   // Docs: https://fal.ai/models/alibaba/wan-3.0/image-to-video/api
   const alibabaWan3p0ImageToVideo = jsonBody<
     FalWan3p0ImageToVideoRequest,
@@ -776,7 +776,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/alibaba/wan-3.0/reference-to-video
+  // POST https://fal.run/alibaba/wan-3.0/reference-to-video
   // Docs: https://fal.ai/models/alibaba/wan-3.0/reference-to-video/api
   const alibabaWan3p0ReferenceToVideo = jsonBody<
     FalWan3p0ReferenceToVideoRequest,
@@ -789,7 +789,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/alibaba/wan-3.0-prime/text-to-video
+  // POST https://fal.run/alibaba/wan-3.0-prime/text-to-video
   // Docs: https://fal.ai/models/alibaba/wan-3.0-prime/text-to-video/api
   const alibabaWan3p0PrimeTextToVideo = jsonBody<
     FalWan3p0TextToVideoRequest,
@@ -802,7 +802,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/alibaba/wan-3.0-prime/image-to-video
+  // POST https://fal.run/alibaba/wan-3.0-prime/image-to-video
   // Docs: https://fal.ai/models/alibaba/wan-3.0-prime/image-to-video/api
   const alibabaWan3p0PrimeImageToVideo = jsonBody<
     FalWan3p0ImageToVideoRequest,
@@ -815,7 +815,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/alibaba/wan-3.0-prime/reference-to-video
+  // POST https://fal.run/alibaba/wan-3.0-prime/reference-to-video
   // Docs: https://fal.ai/models/alibaba/wan-3.0-prime/reference-to-video/api
   const alibabaWan3p0PrimeReferenceToVideo = jsonBody<
     FalWan3p0ReferenceToVideoRequest,
@@ -828,7 +828,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/blackforestlabs/flux-3/text-to-video
+  // POST https://fal.run/blackforestlabs/flux-3/text-to-video
   // Docs: https://fal.ai/models/blackforestlabs/flux-3/text-to-video/api
   const blackforestlabsFlux3TextToVideo = jsonBody<
     FalFlux3TextToVideoRequest,
@@ -841,7 +841,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/blackforestlabs/flux-3/image-to-video
+  // POST https://fal.run/blackforestlabs/flux-3/image-to-video
   // Docs: https://fal.ai/models/blackforestlabs/flux-3/image-to-video/api
   const blackforestlabsFlux3ImageToVideo = jsonBody<
     FalFlux3ImageToVideoRequest,
@@ -854,7 +854,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/blackforestlabs/flux-3/first-last-frame-to-video
+  // POST https://fal.run/blackforestlabs/flux-3/first-last-frame-to-video
   // Docs: https://fal.ai/models/blackforestlabs/flux-3/first-last-frame-to-video/api
   const blackforestlabsFlux3FirstLastFrameToVideo = jsonBody<
     FalFlux3FirstLastFrameToVideoRequest,
@@ -867,7 +867,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/blackforestlabs/flux-3/keyframes-to-video
+  // POST https://fal.run/blackforestlabs/flux-3/keyframes-to-video
   // Docs: https://fal.ai/models/blackforestlabs/flux-3/keyframes-to-video/api
   const blackforestlabsFlux3KeyframesToVideo = jsonBody<
     FalFlux3KeyframesToVideoRequest,
@@ -880,7 +880,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/blackforestlabs/flux-3/extend-video
+  // POST https://fal.run/blackforestlabs/flux-3/extend-video
   // Docs: https://fal.ai/models/blackforestlabs/flux-3/extend-video/api
   const blackforestlabsFlux3ExtendVideo = jsonBody<
     FalFlux3ExtendVideoRequest,
@@ -893,7 +893,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/blackforestlabs/flux-video-upscale
+  // POST https://fal.run/blackforestlabs/flux-video-upscale
   // Docs: https://fal.ai/models/blackforestlabs/flux-video-upscale/api
   const blackforestlabsFluxVideoUpscale = jsonBody<
     FalFluxVideoUpscaleRequest,
@@ -906,7 +906,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/bytedance/seedance-2.0/image-to-video
+  // POST https://fal.run/bytedance/seedance-2.0/image-to-video
   // Docs: https://docs.fal.ai
   const bytedanceSeedance2p0ImageToVideo = jsonBody<
     FalSeedance2p0ImageToVideoRequest,
@@ -919,7 +919,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/bytedance/seedance-2.0/text-to-video
+  // POST https://fal.run/bytedance/seedance-2.0/text-to-video
   // Docs: https://docs.fal.ai
   const bytedanceSeedance2p0TextToVideo = jsonBody<
     FalSeedance2p0TextToVideoRequest,
@@ -932,7 +932,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/bytedance/seedance-2.0/fast/image-to-video
+  // POST https://fal.run/bytedance/seedance-2.0/fast/image-to-video
   // Docs: https://docs.fal.ai
   const bytedanceSeedance2p0FastImageToVideo = jsonBody<
     FalSeedance2p0FastImageToVideoRequest,
@@ -945,7 +945,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/bytedance/seedance-2.0/fast/text-to-video
+  // POST https://fal.run/bytedance/seedance-2.0/fast/text-to-video
   // Docs: https://docs.fal.ai
   const bytedanceSeedance2p0FastTextToVideo = jsonBody<
     FalSeedance2p0FastTextToVideoRequest,
@@ -958,7 +958,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/bytedance/seedance-2.0/reference-to-video
+  // POST https://fal.run/bytedance/seedance-2.0/reference-to-video
   // Docs: https://docs.fal.ai
   const bytedanceSeedance2p0ReferenceToVideo = jsonBody<
     FalSeedance2p0ReferenceToVideoRequest,
@@ -971,7 +971,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/bytedance/seedance-2.0/fast/reference-to-video
+  // POST https://fal.run/bytedance/seedance-2.0/fast/reference-to-video
   // Docs: https://docs.fal.ai
   const bytedanceSeedance2p0FastReferenceToVideo = jsonBody<
     FalSeedance2p0FastReferenceToVideoRequest,
@@ -984,7 +984,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/bytedance/seedance-2.5/text-to-video
+  // POST https://fal.run/bytedance/seedance-2.5/text-to-video
   // Docs: https://fal.ai/models/bytedance/seedance-2.5/text-to-video/api
   const bytedanceSeedance2p5TextToVideo = jsonBody<
     FalSeedance2p5TextToVideoRequest,
@@ -997,7 +997,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/bytedance/seedance-2.5/image-to-video
+  // POST https://fal.run/bytedance/seedance-2.5/image-to-video
   // Docs: https://fal.ai/models/bytedance/seedance-2.5/image-to-video/api
   const bytedanceSeedance2p5ImageToVideo = jsonBody<
     FalSeedance2p5ImageToVideoRequest,
@@ -1010,7 +1010,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/bytedance/seedance-2.5/reference-to-video
+  // POST https://fal.run/bytedance/seedance-2.5/reference-to-video
   // Docs: https://fal.ai/models/bytedance/seedance-2.5/reference-to-video/api
   const bytedanceSeedance2p5ReferenceToVideo = jsonBody<
     FalSeedance2p5ReferenceToVideoRequest,
@@ -1023,7 +1023,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/fal-ai/nano-banana-pro/edit
+  // POST https://fal.run/fal-ai/nano-banana-pro/edit
   // Docs: https://docs.fal.ai
   const nanoBananaProEdit = jsonBody<
     FalNanoBananaProEditRequest,
@@ -1034,7 +1034,7 @@ export function createFal(opts: FalOptions): FalProvider {
   });
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/fal-ai/nano-banana-pro
+  // POST https://fal.run/fal-ai/nano-banana-pro
   // Docs: https://docs.fal.ai
   const nanoBananaProTextToImage = jsonBody<
     FalNanoBananaProTextToImageRequest,
@@ -1047,7 +1047,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/fal-ai/nano-banana
+  // POST https://fal.run/fal-ai/nano-banana
   // Docs: https://docs.fal.ai
   const nanoBananaTextToImage = jsonBody<
     FalNanoBananaTextToImageRequest,
@@ -1057,7 +1057,7 @@ export function createFal(opts: FalOptions): FalProvider {
   });
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/fal-ai/nano-banana/edit
+  // POST https://fal.run/fal-ai/nano-banana/edit
   // Docs: https://docs.fal.ai
   const nanoBananaEdit = jsonBody<
     FalNanoBananaEditRequest,
@@ -1067,7 +1067,7 @@ export function createFal(opts: FalOptions): FalProvider {
   });
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/fal-ai/nano-banana-2
+  // POST https://fal.run/fal-ai/nano-banana-2
   // Docs: https://docs.fal.ai
   const nanoBanana2TextToImage = jsonBody<
     FalNanoBanana2TextToImageRequest,
@@ -1077,7 +1077,7 @@ export function createFal(opts: FalOptions): FalProvider {
   });
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/fal-ai/nano-banana-2/edit
+  // POST https://fal.run/fal-ai/nano-banana-2/edit
   // Docs: https://docs.fal.ai
   const nanoBanana2Edit = jsonBody<
     FalNanoBanana2EditRequest,
@@ -1087,7 +1087,7 @@ export function createFal(opts: FalOptions): FalProvider {
   });
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/google/nano-banana-2-lite
+  // POST https://fal.run/google/nano-banana-2-lite
   // Docs: https://fal.ai/models/google/nano-banana-2-lite/api
   const nanoBanana2LiteTextToImage = jsonBody<
     FalNanoBanana2LiteTextToImageRequest,
@@ -1100,7 +1100,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/google/nano-banana-lite/edit
+  // POST https://fal.run/google/nano-banana-lite/edit
   // Docs: https://fal.ai/models/google/nano-banana-lite/edit/api
   const nanoBanana2LiteEdit = jsonBody<
     FalNanoBanana2LiteEditRequest,
@@ -1113,7 +1113,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/fal-ai/bytedance/seedream/v5/lite/edit
+  // POST https://fal.run/fal-ai/bytedance/seedream/v5/lite/edit
   // Docs: https://docs.fal.ai
   const seedreamV5LiteEdit = jsonBody<
     FalSeedreamV5LiteEditRequest,
@@ -1126,7 +1126,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/fal-ai/bytedance/seedream/v5/lite/text-to-image
+  // POST https://fal.run/fal-ai/bytedance/seedream/v5/lite/text-to-image
   // Docs: https://docs.fal.ai
   const seedreamV5LiteTextToImage = jsonBody<
     FalSeedreamV5LiteTextToImageRequest,
@@ -1139,7 +1139,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/fal-ai/bytedance/seed-speech/tts/v2
+  // POST https://fal.run/fal-ai/bytedance/seed-speech/tts/v2
   // Docs: https://fal.ai/models/fal-ai/bytedance/seed-speech/tts/v2/api
   const seedSpeechTtsV2 = jsonBody<
     FalSeedSpeechTtsV2Request,
@@ -1152,7 +1152,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/fal-ai/elevenlabs/speech-to-text/scribe-v2
+  // POST https://fal.run/fal-ai/elevenlabs/speech-to-text/scribe-v2
   // Docs: https://docs.fal.ai
   const elevenlabsSpeechToTextScribeV2 = jsonBody<
     FalElevenlabsSpeechToTextScribeV2Request,
@@ -1165,7 +1165,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/fal-ai/wan/v2.7/text-to-image
+  // POST https://fal.run/fal-ai/wan/v2.7/text-to-image
   // Docs: https://docs.fal.ai
   const wanV2p7TextToImage = jsonBody<
     FalWanV2p7TextToImageRequest,
@@ -1178,7 +1178,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/fal-ai/wan/v2.7/edit
+  // POST https://fal.run/fal-ai/wan/v2.7/edit
   // Docs: https://docs.fal.ai
   const wanV2p7Edit = jsonBody<FalWanV2p7EditRequest, FalWanV2p7EditResponse>(
     "POST",
@@ -1188,7 +1188,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/fal-ai/wan/v2.7/pro/text-to-image
+  // POST https://fal.run/fal-ai/wan/v2.7/pro/text-to-image
   // Docs: https://docs.fal.ai
   const wanV2p7ProTextToImage = jsonBody<
     FalWanV2p7TextToImageRequest,
@@ -1201,7 +1201,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/fal-ai/wan/v2.7/pro/edit
+  // POST https://fal.run/fal-ai/wan/v2.7/pro/edit
   // Docs: https://docs.fal.ai
   const wanV2p7ProEdit = jsonBody<
     FalWanV2p7EditRequest,
@@ -1211,7 +1211,7 @@ export function createFal(opts: FalOptions): FalProvider {
   });
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/fal-ai/wan/v2.7/text-to-video
+  // POST https://fal.run/fal-ai/wan/v2.7/text-to-video
   // Docs: https://docs.fal.ai
   const wanV2p7TextToVideo = jsonBody<
     FalWanV2p7TextToVideoRequest,
@@ -1224,7 +1224,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/fal-ai/wan/v2.7/image-to-video
+  // POST https://fal.run/fal-ai/wan/v2.7/image-to-video
   // Docs: https://docs.fal.ai
   const wanV2p7ImageToVideo = jsonBody<
     FalWanV2p7ImageToVideoRequest,
@@ -1237,7 +1237,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/fal-ai/wan/v2.7/reference-to-video
+  // POST https://fal.run/fal-ai/wan/v2.7/reference-to-video
   // Docs: https://docs.fal.ai
   const wanV2p7ReferenceToVideo = jsonBody<
     FalWanV2p7ReferenceToVideoRequest,
@@ -1250,7 +1250,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/fal-ai/wan/v2.7/edit-video
+  // POST https://fal.run/fal-ai/wan/v2.7/edit-video
   // Docs: https://docs.fal.ai
   const wanV2p7EditVideo = jsonBody<
     FalWanV2p7EditVideoRequest,
@@ -1260,7 +1260,7 @@ export function createFal(opts: FalOptions): FalProvider {
   });
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/xai/grok-imagine-image/edit
+  // POST https://fal.run/xai/grok-imagine-image/edit
   // Docs: https://docs.fal.ai
   const xaiGrokImagineImageEdit = jsonBody<
     FalXaiGrokImagineImageEditRequest,
@@ -1273,7 +1273,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/xai/grok-imagine-image/v2.0/text-to-image
+  // POST https://fal.run/xai/grok-imagine-image/v2.0/text-to-image
   // Docs: https://fal.ai/models/xai/grok-imagine-image/v2.0/text-to-image/api
   const xaiGrokImagineImageV2p0TextToImage = jsonBody<
     FalXaiGrokImagineImageV2p0TextToImageRequest,
@@ -1286,7 +1286,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/xai/grok-imagine-image/v2.0/edit
+  // POST https://fal.run/xai/grok-imagine-image/v2.0/edit
   // Docs: https://fal.ai/models/xai/grok-imagine-image/v2.0/edit/api
   const xaiGrokImagineImageV2p0Edit = jsonBody<
     FalXaiGrokImagineImageV2p0EditRequest,
@@ -1299,7 +1299,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/fal-ai/sora-2/text-to-video
+  // POST https://fal.run/fal-ai/sora-2/text-to-video
   // Docs: https://docs.fal.ai
   const sora2TextToVideo = jsonBody<
     FalSora2TextToVideoRequest,
@@ -1309,7 +1309,7 @@ export function createFal(opts: FalOptions): FalProvider {
   });
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/fal-ai/sora-2/image-to-video
+  // POST https://fal.run/fal-ai/sora-2/image-to-video
   // Docs: https://docs.fal.ai
   const sora2ImageToVideo = jsonBody<
     FalSora2ImageToVideoRequest,
@@ -1322,7 +1322,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/fal-ai/hunyuan-image/v3/instruct/edit
+  // POST https://fal.run/fal-ai/hunyuan-image/v3/instruct/edit
   // Docs: https://docs.fal.ai
   const hunyuanImageV3InstructEdit = jsonBody<
     FalHunyuanImageV3InstructEditRequest,
@@ -1335,7 +1335,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/fal-ai/kling-video/v3/pro/image-to-video
+  // POST https://fal.run/fal-ai/kling-video/v3/pro/image-to-video
   // Docs: https://docs.fal.ai
   const klingVideoV3ProImageToVideo = jsonBody<
     FalKlingVideoV3ProImageToVideoRequest,
@@ -1348,7 +1348,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/fal-ai/kling-video/v3/pro/text-to-video
+  // POST https://fal.run/fal-ai/kling-video/v3/pro/text-to-video
   // Docs: https://docs.fal.ai
   const klingVideoV3ProTextToVideo = jsonBody<
     FalKlingVideoV3ProTextToVideoRequest,
@@ -1361,7 +1361,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/fal-ai/kling-video/v3/standard/image-to-video
+  // POST https://fal.run/fal-ai/kling-video/v3/standard/image-to-video
   // Docs: https://docs.fal.ai
   const klingVideoV3StandardImageToVideo = jsonBody<
     FalKlingVideoV3StandardImageToVideoRequest,
@@ -1374,7 +1374,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/fal-ai/kling-video/v3/standard/text-to-video
+  // POST https://fal.run/fal-ai/kling-video/v3/standard/text-to-video
   // Docs: https://docs.fal.ai
   const klingVideoV3StandardTextToVideo = jsonBody<
     FalKlingVideoV3StandardTextToVideoRequest,
@@ -1387,7 +1387,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/fal-ai/kling-video/o3/4k/image-to-video
+  // POST https://fal.run/fal-ai/kling-video/o3/4k/image-to-video
   // Docs: https://docs.fal.ai
   const klingVideoO3p4kImageToVideo = jsonBody<
     FalKlingVideoO3p4kImageToVideoRequest,
@@ -1400,7 +1400,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/fal-ai/kling-video/o3/4k/reference-to-video
+  // POST https://fal.run/fal-ai/kling-video/o3/4k/reference-to-video
   // Docs: https://docs.fal.ai
   const klingVideoO3p4kReferenceToVideo = jsonBody<
     FalKlingVideoO3p4kReferenceToVideoRequest,
@@ -1413,7 +1413,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/fal-ai/kling-video/o3/4k/text-to-video
+  // POST https://fal.run/fal-ai/kling-video/o3/4k/text-to-video
   // Docs: https://docs.fal.ai
   const klingVideoO3p4kTextToVideo = jsonBody<
     FalKlingVideoO3p4kTextToVideoRequest,
@@ -1426,7 +1426,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/fal-ai/veo3.1
+  // POST https://fal.run/fal-ai/veo3.1
   // Docs: https://docs.fal.ai
   const veo3p1TextToVideo = jsonBody<
     FalVeo3p1TextToVideoRequest,
@@ -1436,7 +1436,7 @@ export function createFal(opts: FalOptions): FalProvider {
   });
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/fal-ai/veo3.1/image-to-video
+  // POST https://fal.run/fal-ai/veo3.1/image-to-video
   // Docs: https://docs.fal.ai
   const veo3p1ImageToVideo = jsonBody<
     FalVeo3p1ImageToVideoRequest,
@@ -1449,7 +1449,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/xai/grok-imagine-video/image-to-video
+  // POST https://fal.run/xai/grok-imagine-video/image-to-video
   // Docs: https://docs.fal.ai
   const xaiGrokImagineVideoImageToVideo = jsonBody<
     FalXaiGrokImagineVideoImageToVideoRequest,
@@ -1462,7 +1462,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/xai/grok-imagine-video/reference-to-video
+  // POST https://fal.run/xai/grok-imagine-video/reference-to-video
   // Docs: https://docs.fal.ai
   const xaiGrokImagineVideoReferenceToVideo = jsonBody<
     FalXaiGrokImagineVideoReferenceToVideoRequest,
@@ -1475,7 +1475,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/xai/grok-imagine-video/extend-video
+  // POST https://fal.run/xai/grok-imagine-video/extend-video
   // Docs: https://docs.fal.ai
   const xaiGrokImagineVideoExtendVideo = jsonBody<
     FalXaiGrokImagineVideoExtendVideoRequest,
@@ -1488,7 +1488,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/xai/grok-imagine-video/edit-video
+  // POST https://fal.run/xai/grok-imagine-video/edit-video
   // Docs: https://docs.fal.ai
   const xaiGrokImagineVideoEditVideo = jsonBody<
     FalXaiGrokImagineVideoEditVideoRequest,
@@ -1520,7 +1520,7 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/fal-ai/qwen-image-edit
+  // POST https://fal.run/fal-ai/qwen-image-edit
   // Docs: https://docs.fal.ai
   const qwenImageEdit = jsonBody<
     FalQwenImageEditRequest,
@@ -1530,7 +1530,7 @@ export function createFal(opts: FalOptions): FalProvider {
   });
 
   // sig-ok: stylistic dotPath divergence from URL
-  // POST https://api.fal.ai/v1/fal-ai/gpt-image-1.5/edit
+  // POST https://fal.run/fal-ai/gpt-image-1.5/edit
   // Docs: https://docs.fal.ai
   const gptImage1p5Edit = jsonBody<
     FalGptImage1p5EditRequest,

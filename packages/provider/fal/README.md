@@ -128,7 +128,7 @@ console.log(result.spritesheet?.url);
 <details>
 <summary><code>POST</code> <b><code>fal.alibaba.qwenImage3.edit</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/alibaba/qwen-image-3/edit</code>
+<code>POST https://fal.run/alibaba/qwen-image-3/edit</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -145,7 +145,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.alibaba.qwenImage3.textToImage</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/alibaba/qwen-image-3/text-to-image</code>
+<code>POST https://fal.run/alibaba/qwen-image-3/text-to-image</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -162,7 +162,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.alibaba.wan3p0.imageToVideo</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/alibaba/wan-3.0/image-to-video</code>
+<code>POST https://fal.run/alibaba/wan-3.0/image-to-video</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -179,7 +179,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.alibaba.wan3p0.referenceToVideo</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/alibaba/wan-3.0/reference-to-video</code>
+<code>POST https://fal.run/alibaba/wan-3.0/reference-to-video</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -196,7 +196,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.alibaba.wan3p0.textToVideo</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/alibaba/wan-3.0/text-to-video</code>
+<code>POST https://fal.run/alibaba/wan-3.0/text-to-video</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -213,7 +213,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.alibaba.wan3p0Prime.imageToVideo</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/alibaba/wan-3.0-prime/image-to-video</code>
+<code>POST https://fal.run/alibaba/wan-3.0-prime/image-to-video</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -230,7 +230,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.alibaba.wan3p0Prime.referenceToVideo</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/alibaba/wan-3.0-prime/reference-to-video</code>
+<code>POST https://fal.run/alibaba/wan-3.0-prime/reference-to-video</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -247,7 +247,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.alibaba.wan3p0Prime.textToVideo</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/alibaba/wan-3.0-prime/text-to-video</code>
+<code>POST https://fal.run/alibaba/wan-3.0-prime/text-to-video</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -266,7 +266,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.blackforestlabs.flux3.extendVideo</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/blackforestlabs/flux-3/extend-video</code>
+<code>POST https://fal.run/blackforestlabs/flux-3/extend-video</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -283,7 +283,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.blackforestlabs.flux3.firstLastFrameToVideo</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/blackforestlabs/flux-3/first-last-frame-to-video</code>
+<code>POST https://fal.run/blackforestlabs/flux-3/first-last-frame-to-video</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -300,7 +300,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.blackforestlabs.flux3.imageToVideo</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/blackforestlabs/flux-3/image-to-video</code>
+<code>POST https://fal.run/blackforestlabs/flux-3/image-to-video</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -317,7 +317,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.blackforestlabs.flux3.keyframesToVideo</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/blackforestlabs/flux-3/keyframes-to-video</code>
+<code>POST https://fal.run/blackforestlabs/flux-3/keyframes-to-video</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -334,7 +334,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.blackforestlabs.flux3.textToVideo</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/blackforestlabs/flux-3/text-to-video</code>
+<code>POST https://fal.run/blackforestlabs/flux-3/text-to-video</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -351,7 +351,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.blackforestlabs.fluxVideoUpscale</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/blackforestlabs/flux-video-upscale</code>
+<code>POST https://fal.run/blackforestlabs/flux-video-upscale</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -370,7 +370,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.bytedance.seedSpeech.tts.v2</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/fal-ai/bytedance/seed-speech/tts/v2</code>
+<code>POST https://fal.run/fal-ai/bytedance/seed-speech/tts/v2</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -387,7 +387,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.bytedance.seedance2p0.fast.imageToVideo</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/bytedance/seedance-2.0/fast/image-to-video</code>
+<code>POST https://fal.run/bytedance/seedance-2.0/fast/image-to-video</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -404,7 +404,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.bytedance.seedance2p0.fast.referenceToVideo</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/bytedance/seedance-2.0/fast/reference-to-video</code>
+<code>POST https://fal.run/bytedance/seedance-2.0/fast/reference-to-video</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -419,7 +419,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.bytedance.seedance2p0.fast.textToVideo</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/bytedance/seedance-2.0/fast/text-to-video</code>
+<code>POST https://fal.run/bytedance/seedance-2.0/fast/text-to-video</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -436,7 +436,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.bytedance.seedance2p0.imageToVideo</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/bytedance/seedance-2.0/image-to-video</code>
+<code>POST https://fal.run/bytedance/seedance-2.0/image-to-video</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -453,7 +453,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.bytedance.seedance2p0.referenceToVideo</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/bytedance/seedance-2.0/reference-to-video</code>
+<code>POST https://fal.run/bytedance/seedance-2.0/reference-to-video</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -468,7 +468,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.bytedance.seedance2p0.textToVideo</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/bytedance/seedance-2.0/text-to-video</code>
+<code>POST https://fal.run/bytedance/seedance-2.0/text-to-video</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -485,7 +485,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.bytedance.seedance2p5.imageToVideo</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/bytedance/seedance-2.5/image-to-video</code>
+<code>POST https://fal.run/bytedance/seedance-2.5/image-to-video</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -502,7 +502,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.bytedance.seedance2p5.referenceToVideo</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/bytedance/seedance-2.5/reference-to-video</code>
+<code>POST https://fal.run/bytedance/seedance-2.5/reference-to-video</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -519,7 +519,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.bytedance.seedance2p5.textToVideo</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/bytedance/seedance-2.5/text-to-video</code>
+<code>POST https://fal.run/bytedance/seedance-2.5/text-to-video</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -536,7 +536,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.bytedance.seedream.v5.lite.edit</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/fal-ai/bytedance/seedream/v5/lite/edit</code>
+<code>POST https://fal.run/fal-ai/bytedance/seedream/v5/lite/edit</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -553,7 +553,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.bytedance.seedream.v5.lite.textToImage</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/fal-ai/bytedance/seedream/v5/lite/text-to-image</code>
+<code>POST https://fal.run/fal-ai/bytedance/seedream/v5/lite/text-to-image</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -572,7 +572,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.falAi.elevenlabs.speechToText.scribeV2</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/fal-ai/elevenlabs/speech-to-text/scribe-v2</code>
+<code>POST https://fal.run/fal-ai/elevenlabs/speech-to-text/scribe-v2</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -608,7 +608,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.gptImage1p5.edit</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/fal-ai/gpt-image-1.5/edit</code>
+<code>POST https://fal.run/fal-ai/gpt-image-1.5/edit</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -627,7 +627,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.hunyuan.v3.instructEdit</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/fal-ai/hunyuan-image/v3/instruct/edit</code>
+<code>POST https://fal.run/fal-ai/hunyuan-image/v3/instruct/edit</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -646,7 +646,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.klingVideo.o3p4k.imageToVideo</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/fal-ai/kling-video/o3/4k/image-to-video</code>
+<code>POST https://fal.run/fal-ai/kling-video/o3/4k/image-to-video</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -663,7 +663,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.klingVideo.o3p4k.referenceToVideo</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/fal-ai/kling-video/o3/4k/reference-to-video</code>
+<code>POST https://fal.run/fal-ai/kling-video/o3/4k/reference-to-video</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -680,7 +680,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.klingVideo.o3p4k.textToVideo</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/fal-ai/kling-video/o3/4k/text-to-video</code>
+<code>POST https://fal.run/fal-ai/kling-video/o3/4k/text-to-video</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -697,7 +697,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.klingVideo.v3.pro.imageToVideo</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/fal-ai/kling-video/v3/pro/image-to-video</code>
+<code>POST https://fal.run/fal-ai/kling-video/v3/pro/image-to-video</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -714,7 +714,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.klingVideo.v3.pro.textToVideo</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/fal-ai/kling-video/v3/pro/text-to-video</code>
+<code>POST https://fal.run/fal-ai/kling-video/v3/pro/text-to-video</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -731,7 +731,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.klingVideo.v3.standard.imageToVideo</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/fal-ai/kling-video/v3/standard/image-to-video</code>
+<code>POST https://fal.run/fal-ai/kling-video/v3/standard/image-to-video</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -748,7 +748,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.klingVideo.v3.standard.textToVideo</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/fal-ai/kling-video/v3/standard/text-to-video</code>
+<code>POST https://fal.run/fal-ai/kling-video/v3/standard/text-to-video</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -871,7 +871,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.nanoBanana.edit</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/fal-ai/nano-banana/edit</code>
+<code>POST https://fal.run/fal-ai/nano-banana/edit</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -888,7 +888,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.nanoBanana.textToImage</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/fal-ai/nano-banana</code>
+<code>POST https://fal.run/fal-ai/nano-banana</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -907,7 +907,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.nanoBanana2.edit</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/fal-ai/nano-banana-2/edit</code>
+<code>POST https://fal.run/fal-ai/nano-banana-2/edit</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -924,7 +924,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.nanoBanana2.textToImage</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/fal-ai/nano-banana-2</code>
+<code>POST https://fal.run/fal-ai/nano-banana-2</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -943,7 +943,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.nanoBanana2Lite.edit</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/google/nano-banana-lite/edit</code>
+<code>POST https://fal.run/google/nano-banana-lite/edit</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -960,7 +960,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.nanoBanana2Lite.textToImage</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/google/nano-banana-2-lite</code>
+<code>POST https://fal.run/google/nano-banana-2-lite</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -979,7 +979,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.nanoBananaPro.edit</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/fal-ai/nano-banana-pro/edit</code>
+<code>POST https://fal.run/fal-ai/nano-banana-pro/edit</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -996,7 +996,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.nanoBananaPro.textToImage</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/fal-ai/nano-banana-pro</code>
+<code>POST https://fal.run/fal-ai/nano-banana-pro</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -1051,7 +1051,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.qwenImage.edit</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/fal-ai/qwen-image-edit</code>
+<code>POST https://fal.run/fal-ai/qwen-image-edit</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -1140,7 +1140,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.sora2.imageToVideo</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/fal-ai/sora-2/image-to-video</code>
+<code>POST https://fal.run/fal-ai/sora-2/image-to-video</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -1157,7 +1157,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.sora2.textToVideo</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/fal-ai/sora-2/text-to-video</code>
+<code>POST https://fal.run/fal-ai/sora-2/text-to-video</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -1229,7 +1229,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.veo3p1.imageToVideo</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/fal-ai/veo3.1/image-to-video</code>
+<code>POST https://fal.run/fal-ai/veo3.1/image-to-video</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -1246,7 +1246,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.veo3p1.textToVideo</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/fal-ai/veo3.1</code>
+<code>POST https://fal.run/fal-ai/veo3.1</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -1265,7 +1265,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.wan.v2p7.edit</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/fal-ai/wan/v2.7/edit</code>
+<code>POST https://fal.run/fal-ai/wan/v2.7/edit</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -1282,7 +1282,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.wan.v2p7.editVideo</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/fal-ai/wan/v2.7/edit-video</code>
+<code>POST https://fal.run/fal-ai/wan/v2.7/edit-video</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -1297,7 +1297,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.wan.v2p7.imageToVideo</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/fal-ai/wan/v2.7/image-to-video</code>
+<code>POST https://fal.run/fal-ai/wan/v2.7/image-to-video</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -1314,7 +1314,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.wan.v2p7.pro.edit</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/fal-ai/wan/v2.7/pro/edit</code>
+<code>POST https://fal.run/fal-ai/wan/v2.7/pro/edit</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -1331,7 +1331,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.wan.v2p7.pro.textToImage</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/fal-ai/wan/v2.7/pro/text-to-image</code>
+<code>POST https://fal.run/fal-ai/wan/v2.7/pro/text-to-image</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -1348,7 +1348,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.wan.v2p7.referenceToVideo</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/fal-ai/wan/v2.7/reference-to-video</code>
+<code>POST https://fal.run/fal-ai/wan/v2.7/reference-to-video</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -1363,7 +1363,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.wan.v2p7.textToImage</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/fal-ai/wan/v2.7/text-to-image</code>
+<code>POST https://fal.run/fal-ai/wan/v2.7/text-to-image</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -1380,7 +1380,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.wan.v2p7.textToVideo</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/fal-ai/wan/v2.7/text-to-video</code>
+<code>POST https://fal.run/fal-ai/wan/v2.7/text-to-video</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -1435,7 +1435,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.xai.grokImagineImage.edit</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/xai/grok-imagine-image/edit</code>
+<code>POST https://fal.run/xai/grok-imagine-image/edit</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -1452,7 +1452,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.xai.grokImagineImage.v2p0.edit</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/xai/grok-imagine-image/v2.0/edit</code>
+<code>POST https://fal.run/xai/grok-imagine-image/v2.0/edit</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -1469,7 +1469,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.xai.grokImagineImage.v2p0.textToImage</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/xai/grok-imagine-image/v2.0/text-to-image</code>
+<code>POST https://fal.run/xai/grok-imagine-image/v2.0/text-to-image</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -1486,7 +1486,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.xai.grokImagineVideo.editVideo</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/xai/grok-imagine-video/edit-video</code>
+<code>POST https://fal.run/xai/grok-imagine-video/edit-video</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -1503,7 +1503,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.xai.grokImagineVideo.extendVideo</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/xai/grok-imagine-video/extend-video</code>
+<code>POST https://fal.run/xai/grok-imagine-video/extend-video</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -1520,7 +1520,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.xai.grokImagineVideo.imageToVideo</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/xai/grok-imagine-video/image-to-video</code>
+<code>POST https://fal.run/xai/grok-imagine-video/image-to-video</code>
 
 Cost tier: <code>prohibitive</code>
 
@@ -1537,7 +1537,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><code>POST</code> <b><code>fal.xai.grokImagineVideo.referenceToVideo</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/xai/grok-imagine-video/reference-to-video</code>
+<code>POST https://fal.run/xai/grok-imagine-video/reference-to-video</code>
 
 Cost tier: <code>prohibitive</code>
 

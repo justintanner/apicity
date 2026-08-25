@@ -135,7 +135,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://fal.ai/models/alibaba/qwen-image-3/text-to-image/api)
 
 ```typescript
-const res = await fal.alibaba.qwenImage3.textToImage({ /* ... */ });
+const res = await fal.run.alibaba.qwenImage3.textToImage({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -152,7 +152,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://fal.ai/models/alibaba/wan-3.0/image-to-video/api)
 
 ```typescript
-const res = await fal.alibaba.wan3p0.imageToVideo({ /* ... */ });
+const res = await fal.run.alibaba.wan3p0.imageToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -169,7 +169,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://fal.ai/models/alibaba/wan-3.0/reference-to-video/api)
 
 ```typescript
-const res = await fal.alibaba.wan3p0.referenceToVideo({ /* ... */ });
+const res = await fal.run.alibaba.wan3p0.referenceToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -186,7 +186,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://fal.ai/models/alibaba/wan-3.0/text-to-video/api)
 
 ```typescript
-const res = await fal.alibaba.wan3p0.textToVideo({ /* ... */ });
+const res = await fal.run.alibaba.wan3p0.textToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -203,7 +203,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://fal.ai/models/alibaba/wan-3.0-prime/image-to-video/api)
 
 ```typescript
-const res = await fal.alibaba.wan3p0Prime.imageToVideo({ /* ... */ });
+const res = await fal.run.alibaba.wan3p0Prime.imageToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -220,7 +220,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://fal.ai/models/alibaba/wan-3.0-prime/reference-to-video/api)
 
 ```typescript
-const res = await fal.alibaba.wan3p0Prime.referenceToVideo({ /* ... */ });
+const res = await fal.run.alibaba.wan3p0Prime.referenceToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -237,7 +237,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://fal.ai/models/alibaba/wan-3.0-prime/text-to-video/api)
 
 ```typescript
-const res = await fal.alibaba.wan3p0Prime.textToVideo({ /* ... */ });
+const res = await fal.run.alibaba.wan3p0Prime.textToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -256,7 +256,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://fal.ai/models/blackforestlabs/flux-3/extend-video/api)
 
 ```typescript
-const res = await fal.blackforestlabs.flux3.extendVideo({ /* ... */ });
+const res = await fal.run.blackforestlabs.flux3.extendVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -273,7 +273,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://fal.ai/models/blackforestlabs/flux-3/first-last-frame-to-video/api)
 
 ```typescript
-const res = await fal.blackforestlabs.flux3.firstLastFrameToVideo({ /* ... */ });
+const res = await fal.run.blackforestlabs.flux3.firstLastFrameToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -290,7 +290,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://fal.ai/models/blackforestlabs/flux-3/image-to-video/api)
 
 ```typescript
-const res = await fal.blackforestlabs.flux3.imageToVideo({ /* ... */ });
+const res = await fal.run.blackforestlabs.flux3.imageToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -307,7 +307,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://fal.ai/models/blackforestlabs/flux-3/keyframes-to-video/api)
 
 ```typescript
-const res = await fal.blackforestlabs.flux3.keyframesToVideo({ /* ... */ });
+const res = await fal.run.blackforestlabs.flux3.keyframesToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -324,7 +324,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://fal.ai/models/blackforestlabs/flux-3/text-to-video/api)
 
 ```typescript
-const res = await fal.blackforestlabs.flux3.textToVideo({ /* ... */ });
+const res = await fal.run.blackforestlabs.flux3.textToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -341,7 +341,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://fal.ai/models/blackforestlabs/flux-video-upscale/api)
 
 ```typescript
-const res = await fal.blackforestlabs.fluxVideoUpscale({ /* ... */ });
+const res = await fal.run.blackforestlabs.fluxVideoUpscale({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -360,7 +360,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://fal.ai/models/fal-ai/bytedance/seed-speech/tts/v2/api)
 
 ```typescript
-const res = await fal.bytedance.seedSpeech.tts.v2({ /* ... */ });
+const res = await fal.run.bytedance.seedSpeech.tts.v2({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -377,7 +377,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.bytedance.seedance2p0.fast.imageToVideo({ /* ... */ });
+const res = await fal.run.bytedance.seedance2p0.fast.imageToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -392,7 +392,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 Cost tier: <code>prohibitive</code>
 
 ```typescript
-const res = await fal.bytedance.seedance2p0.fast.referenceToVideo({ /* ... */ });
+const res = await fal.run.bytedance.seedance2p0.fast.referenceToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -409,7 +409,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.bytedance.seedance2p0.fast.textToVideo({ /* ... */ });
+const res = await fal.run.bytedance.seedance2p0.fast.textToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -426,7 +426,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.bytedance.seedance2p0.imageToVideo({ /* ... */ });
+const res = await fal.run.bytedance.seedance2p0.imageToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -441,7 +441,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 Cost tier: <code>prohibitive</code>
 
 ```typescript
-const res = await fal.bytedance.seedance2p0.referenceToVideo({ /* ... */ });
+const res = await fal.run.bytedance.seedance2p0.referenceToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -458,7 +458,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.bytedance.seedance2p0.textToVideo({ /* ... */ });
+const res = await fal.run.bytedance.seedance2p0.textToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -475,7 +475,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://fal.ai/models/bytedance/seedance-2.5/image-to-video/api)
 
 ```typescript
-const res = await fal.bytedance.seedance2p5.imageToVideo({ /* ... */ });
+const res = await fal.run.bytedance.seedance2p5.imageToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -492,7 +492,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://fal.ai/models/bytedance/seedance-2.5/reference-to-video/api)
 
 ```typescript
-const res = await fal.bytedance.seedance2p5.referenceToVideo({ /* ... */ });
+const res = await fal.run.bytedance.seedance2p5.referenceToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -509,7 +509,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://fal.ai/models/bytedance/seedance-2.5/text-to-video/api)
 
 ```typescript
-const res = await fal.bytedance.seedance2p5.textToVideo({ /* ... */ });
+const res = await fal.run.bytedance.seedance2p5.textToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -526,7 +526,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.bytedance.seedream.v5.lite.edit({ /* ... */ });
+const res = await fal.run.bytedance.seedream.v5.lite.edit({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -543,7 +543,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.bytedance.seedream.v5.lite.textToImage({ /* ... */ });
+const res = await fal.run.bytedance.seedream.v5.lite.textToImage({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -562,7 +562,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.falAi.elevenlabs.speechToText.scribeV2({ /* ... */ });
+const res = await fal.run.falAi.elevenlabs.speechToText.scribeV2({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -581,7 +581,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.gptImage1p5({ /* ... */ });
+const res = await fal.run.gptImage1p5({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -598,7 +598,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.gptImage1p5.edit({ /* ... */ });
+const res = await fal.run.gptImage1p5.edit({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -617,7 +617,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.hunyuan.v3.instructEdit({ /* ... */ });
+const res = await fal.run.hunyuan.v3.instructEdit({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -636,7 +636,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.klingVideo.o3p4k.imageToVideo({ /* ... */ });
+const res = await fal.run.klingVideo.o3p4k.imageToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -653,7 +653,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.klingVideo.o3p4k.referenceToVideo({ /* ... */ });
+const res = await fal.run.klingVideo.o3p4k.referenceToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -670,7 +670,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.klingVideo.o3p4k.textToVideo({ /* ... */ });
+const res = await fal.run.klingVideo.o3p4k.textToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -687,7 +687,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.klingVideo.v3.pro.imageToVideo({ /* ... */ });
+const res = await fal.run.klingVideo.v3.pro.imageToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -704,7 +704,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.klingVideo.v3.pro.textToVideo({ /* ... */ });
+const res = await fal.run.klingVideo.v3.pro.textToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -721,7 +721,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.klingVideo.v3.standard.imageToVideo({ /* ... */ });
+const res = await fal.run.klingVideo.v3.standard.imageToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -738,7 +738,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.klingVideo.v3.standard.textToVideo({ /* ... */ });
+const res = await fal.run.klingVideo.v3.standard.textToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -861,7 +861,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.nanoBanana.edit({ /* ... */ });
+const res = await fal.run.nanoBanana.edit({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -878,7 +878,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.nanoBanana.textToImage({ /* ... */ });
+const res = await fal.run.nanoBanana.textToImage({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -897,7 +897,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.nanoBanana2.edit({ /* ... */ });
+const res = await fal.run.nanoBanana2.edit({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -914,7 +914,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.nanoBanana2.textToImage({ /* ... */ });
+const res = await fal.run.nanoBanana2.textToImage({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -933,7 +933,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://fal.ai/models/google/nano-banana-lite/edit/api)
 
 ```typescript
-const res = await fal.nanoBanana2Lite.edit({ /* ... */ });
+const res = await fal.run.nanoBanana2Lite.edit({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -950,7 +950,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://fal.ai/models/google/nano-banana-2-lite/api)
 
 ```typescript
-const res = await fal.nanoBanana2Lite.textToImage({ /* ... */ });
+const res = await fal.run.nanoBanana2Lite.textToImage({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -969,7 +969,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.nanoBananaPro.edit({ /* ... */ });
+const res = await fal.run.nanoBananaPro.edit({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -986,7 +986,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.nanoBananaPro.textToImage({ /* ... */ });
+const res = await fal.run.nanoBananaPro.textToImage({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -1024,7 +1024,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.qwenImage({ /* ... */ });
+const res = await fal.run.qwenImage({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -1041,7 +1041,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.qwenImage.edit({ /* ... */ });
+const res = await fal.run.qwenImage.edit({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -1130,7 +1130,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.sora2.imageToVideo({ /* ... */ });
+const res = await fal.run.sora2.imageToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -1147,7 +1147,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.sora2.textToVideo({ /* ... */ });
+const res = await fal.run.sora2.textToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -1219,7 +1219,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.veo3p1.imageToVideo({ /* ... */ });
+const res = await fal.run.veo3p1.imageToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -1236,7 +1236,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.veo3p1.textToVideo({ /* ... */ });
+const res = await fal.run.veo3p1.textToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -1255,7 +1255,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.wan.v2p7.edit({ /* ... */ });
+const res = await fal.run.wan.v2p7.edit({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -1270,7 +1270,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 Cost tier: <code>prohibitive</code>
 
 ```typescript
-const res = await fal.wan.v2p7.editVideo({ /* ... */ });
+const res = await fal.run.wan.v2p7.editVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -1287,7 +1287,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.wan.v2p7.imageToVideo({ /* ... */ });
+const res = await fal.run.wan.v2p7.imageToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -1304,7 +1304,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.wan.v2p7.pro.edit({ /* ... */ });
+const res = await fal.run.wan.v2p7.pro.edit({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -1321,7 +1321,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.wan.v2p7.pro.textToImage({ /* ... */ });
+const res = await fal.run.wan.v2p7.pro.textToImage({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -1336,7 +1336,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 Cost tier: <code>prohibitive</code>
 
 ```typescript
-const res = await fal.wan.v2p7.referenceToVideo({ /* ... */ });
+const res = await fal.run.wan.v2p7.referenceToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -1353,7 +1353,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.wan.v2p7.textToImage({ /* ... */ });
+const res = await fal.run.wan.v2p7.textToImage({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -1370,7 +1370,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.wan.v2p7.textToVideo({ /* ... */ });
+const res = await fal.run.wan.v2p7.textToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -1408,7 +1408,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.xai.grokImagineImage({ /* ... */ });
+const res = await fal.run.xai.grokImagineImage({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -1425,7 +1425,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.xai.grokImagineImage.edit({ /* ... */ });
+const res = await fal.run.xai.grokImagineImage.edit({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -1442,7 +1442,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://fal.ai/models/xai/grok-imagine-image/v2.0/edit/api)
 
 ```typescript
-const res = await fal.xai.grokImagineImage.v2p0.edit({ /* ... */ });
+const res = await fal.run.xai.grokImagineImage.v2p0.edit({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -1459,7 +1459,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://fal.ai/models/xai/grok-imagine-image/v2.0/text-to-image/api)
 
 ```typescript
-const res = await fal.xai.grokImagineImage.v2p0.textToImage({ /* ... */ });
+const res = await fal.run.xai.grokImagineImage.v2p0.textToImage({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -1476,7 +1476,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.xai.grokImagineVideo.editVideo({ /* ... */ });
+const res = await fal.run.xai.grokImagineVideo.editVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -1493,7 +1493,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.xai.grokImagineVideo.extendVideo({ /* ... */ });
+const res = await fal.run.xai.grokImagineVideo.extendVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -1510,7 +1510,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.xai.grokImagineVideo.imageToVideo({ /* ... */ });
+const res = await fal.run.xai.grokImagineVideo.imageToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -1527,7 +1527,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.xai.grokImagineVideo.referenceToVideo({ /* ... */ });
+const res = await fal.run.xai.grokImagineVideo.referenceToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

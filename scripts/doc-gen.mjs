@@ -17,6 +17,8 @@ import { fileURLToPath } from "node:url";
 import {
   loadProject,
   walkAllEndpoints,
+  METHOD_KEYS,
+  STREAM_KEYS,
   PROVIDERS,
   TSV_ONLY_PROVIDERS,
 } from "./lib/endpoint-walk.mjs";
@@ -734,6 +736,43 @@ function renderSimpleFunctionsAuthenticatedGuide() {
   ].join("\n");
 }
 
+/**
+ * The display label, with any namespace root the label dropped restored.
+ *
+ * `resolveEndpointLabels` collapses two different kinds of segment, and they
+ * are not equivalent:
+ *
+ *   - HTTP-verb segments (`post`, `get`, …) alias a path that is callable
+ *     without them, so dropping them leaves a snippet that still compiles.
+ *   - `run` / `stream` / `ws` are genuine namespaces. `FalProvider` exposes
+ *     only `run`, with no top-level `alibaba`, so dropping it rendered
+ *     `fal.alibaba.wan3p0.textToVideo(...)` — copy-pasteable source that does
+ *     not compile (ac-5xsd5z).
+ *
+ * Only the second kind is restored, and only as a leading root, because that
+ * is the whole defect. The label is otherwise returned untouched: it also
+ * carries disambiguating prefixes that `fullDotPath` does not (kie's `suno`
+ * sub-provider, for one), so rebuilding the path from `fullDotPath` wholesale
+ * would trade this bug for a worse one.
+ *
+ * @param {{fullDotPath?: string}} ep
+ * @param {string} dotPath - the collapsed display label
+ * @returns {string}
+ */
+function callableDotPath(ep, dotPath) {
+  if (!ep.fullDotPath) return dotPath;
+  const segments = ep.fullDotPath.split(".");
+  while (segments.length > 1 && METHOD_KEYS.has(segments[0])) segments.shift();
+  const root = segments[0];
+  if (!STREAM_KEYS.has(root)) return dotPath;
+  const label = dotPath.split(".");
+  // The label may already carry the namespace, and not always in first
+  // position: `resolveEndpointLabels` disambiguates streaming siblings as
+  // `post.stream.v1.messages`, where `stream` sits at index 1. Prepending
+  // there would produce `stream.post.stream.v1.messages`.
+  return label.includes(root) ? dotPath : [root, ...label].join(".");
+}
+
 function renderEndpointDetails(ep, providerName, docsUrl, tier, dotPath) {
   const method = ep.method ?? "";
   const headerCode = method ? `<code>${method}</code> ` : "";
@@ -748,7 +787,18 @@ function renderEndpointDetails(ep, providerName, docsUrl, tier, dotPath) {
   const noteLine =
     ENDPOINT_NOTES.get(`${providerName}\t${dotPath}\t${method}`) ?? "";
 
-  const usage = formatUsageSnippet(providerName, dotPath);
+  // The snippet is copy-pasteable source, so it must name a CALLABLE path.
+  // `dotPath` here is the display label, which drops both verb segments
+  // (`post`, `get`, …) and namespace segments (`run`, `stream`, `ws`). Those
+  // two are not equivalent: a verb alias mirrors a path that is callable
+  // without it (`openai.post.v1.audio.speech` and `openai.v1.audio.speech`
+  // both resolve), but `run` is a real namespace with no top-level mirror —
+  // `FalProvider` exposes only `run`, so the collapsed label rendered
+  // `fal.alibaba.wan3p0.textToVideo(...)`, which does not compile.
+  //
+  // So restore the namespace segments and keep dropping the verb (ac-5xsd5z).
+  // The <summary> heading keeps the fully collapsed label either way.
+  const usage = formatUsageSnippet(providerName, callableDotPath(ep, dotPath));
   const relSrc = ep.file.replace(
     new RegExp(`^packages/provider/${providerName}/`),
     ""

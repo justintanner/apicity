@@ -377,3 +377,69 @@ describe("doc-gen endpoint labels", () => {
     );
   });
 });
+
+describe("usage snippets name a callable path", () => {
+  let falReadme: string;
+
+  beforeAll(async () => {
+    const project = loadProject(["fal"]);
+    const endpoints: WalkedEndpoint[] = [];
+    for await (const ep of walkAllEndpoints(project)) {
+      endpoints.push(ep as WalkedEndpoint);
+    }
+    falReadme = renderApiReference("fal", endpoints).text;
+  }, 120_000);
+
+  const renderFalApiReference = (): string => falReadme;
+
+  // The rendered snippet is copy-pasteable source. `ep.dotPath` is the display
+  // label, which drops `run`/`stream`/`ws` segments, so every fal endpoint under
+  // the `run` namespace rendered a path that does not compile — `FalProvider`
+  // exposes only `run`, with no top-level `alibaba` (ac-5xsd5z).
+  it("restores the run namespace for fal endpoints", () => {
+    const readme = renderFalApiReference();
+    expect(readme).toContain(
+      "const res = await fal.run.alibaba.wan3p0.textToVideo({ /* ... */ });"
+    );
+    expect(readme).not.toContain(
+      "const res = await fal.alibaba.wan3p0.textToVideo({ /* ... */ });"
+    );
+  });
+
+  it("leaves the collapsed label in the summary heading", () => {
+    // Only the snippet is corrected; the heading stays collapsed.
+    expect(renderFalApiReference()).toContain(
+      "<b><code>fal.alibaba.wan3p0.textToVideo</code></b>"
+    );
+  });
+
+  it("never renders a bare fal.<vendor> snippet", () => {
+    const snippets = [
+      ...renderFalApiReference().matchAll(/const res = await (fal\.[\w.]+)\(/g),
+    ].map((match) => match[1]);
+    expect(snippets.length).toBeGreaterThan(0);
+    // Every fal call must enter through a real top-level `FalProvider` key.
+    // A vendor segment in first position is the ac-5xsd5z defect: those live
+    // under `run`, never on the provider root.
+    const VENDOR_SEGMENTS = new Set([
+      "alibaba",
+      "blackforestlabs",
+      "bytedance",
+      "falAi",
+      "google",
+      "minimax",
+      "wan",
+      "xai",
+    ]);
+    const offenders = snippets.filter((call) =>
+      VENDOR_SEGMENTS.has(call.split(".")[1])
+    );
+    expect(offenders).toEqual([]);
+  });
+
+  it("does not double a namespace the label already carries", () => {
+    // `post.stream.v1.serverless.logs.stream` already names `stream`; the
+    // restoration must not prepend a second one.
+    expect(renderFalApiReference()).not.toContain("fal.stream.post.stream.");
+  });
+});

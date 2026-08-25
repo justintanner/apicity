@@ -837,6 +837,37 @@ describe("fal edit/image pricing estimates", () => {
     );
   });
 
+  it("points dynamic-priced endpoints at fal's own estimate API", () => {
+    // "not found in pricing table" cannot distinguish a deliberately unpriced
+    // endpoint from an unknown one, so a caller had no way to learn that a
+    // real number is one call away (ac-nz65nc). @apicity/cost still makes no
+    // network call — it only names the one to make.
+    for (const endpoint of FAL_DYNAMIC_PRICING_ENDPOINTS) {
+      const result = est(endpoint, { prompt: "a cat" });
+      expect(result.usd, endpoint).toBe(0);
+      expect(result.warnings, endpoint).toHaveLength(1);
+      expect(result.warnings[0], endpoint).toContain(endpoint);
+      expect(result.warnings[0], endpoint).toContain(
+        "POST https://api.fal.ai/v1/models/pricing/estimate"
+      );
+      expect(result.warnings[0], endpoint).toContain(
+        "fal.v1.models.pricing.estimate"
+      );
+      expect(result.warnings[0], endpoint).toContain("FAL_ADMIN_API_KEY");
+      // The generic lookup-miss wording must NOT be what a caller sees here.
+      expect(result.warnings[0], endpoint).not.toContain(
+        "not found in pricing table"
+      );
+    }
+  });
+
+  it("still reports a genuinely unknown fal endpoint as a lookup miss", () => {
+    const result = est("fal-ai/not-a-real-endpoint", { prompt: "a cat" });
+    expect(result.usd).toBe(0);
+    expect(result.warnings[0]).toContain("not found in pricing table");
+    expect(result.warnings[0]).not.toContain("pricing/estimate");
+  });
+
   it("keeps every dynamic-priced endpoint out of both registries", () => {
     // alibaba/qwen-image-3/text-to-image and its /edit sibling are
     // compute-second-metered — the model page states 1K/2K tier rates but
@@ -872,9 +903,9 @@ describe("fal edit/image pricing estimates", () => {
       ).toBeUndefined();
       const result = estimate(endpoint, { prompt: "a cat" });
       expect(result.usd).toBe(0);
-      expect(result.warnings).toContain(
-        `model '${endpoint}' not found in pricing table for provider 'fal'`
-      );
+      // The warning names fal's estimate API rather than reporting a lookup
+      // miss; the wording itself is pinned by the case above (ac-nz65nc).
+      expect(result.warnings[0], endpoint).toContain("models/pricing/estimate");
     }
   });
 });

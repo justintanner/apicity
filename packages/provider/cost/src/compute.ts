@@ -1,4 +1,5 @@
 import { PRICING, PRICING_AS_OF, type PricedProviderId } from "./pricing/index";
+import { FAL_DYNAMIC_PRICING_ENDPOINTS } from "./pricing/fal";
 import { asString } from "./pricing/helpers";
 
 import type {
@@ -252,6 +253,17 @@ function evaluateDeclaredTokens(
   };
 }
 
+const FAL_DYNAMIC_ENDPOINT_SET: ReadonlySet<string> = new Set(
+  FAL_DYNAMIC_PRICING_ENDPOINTS
+);
+
+/**
+ * Whether a fal endpoint is deliberately unpriced rather than unknown.
+ */
+function isFalDynamicEndpoint(endpoint: string): boolean {
+  return FAL_DYNAMIC_ENDPOINT_SET.has(endpoint);
+}
+
 export function computeEstimate(req: EstimateRequest): CostEstimate {
   switch (req.provider) {
     // xAI bills the Grok Imagine video and image models per second / per
@@ -365,13 +377,38 @@ export function computeEstimate(req: EstimateRequest): CostEstimate {
         { keyedBy: "endpoint", endpoint: req.endpoint },
         req.costHints
       );
-    case "fal":
+    // A fal endpoint on the dynamic list is unpriced BY DESIGN, not unknown.
+    // The generic "not found in pricing table" warning cannot tell those two
+    // apart, so a caller had no way to know that a real number is one call
+    // away. `@apicity/cost` stays dependency-free and pure-local — it does not
+    // make the call — but it now names it (ac-nz65nc).
+    case "fal": {
+      if (req.endpoint && isFalDynamicEndpoint(req.endpoint)) {
+        return {
+          usd: 0,
+          currency: "USD",
+          source: "per-unit-table",
+          breakdown: {},
+          rateAsOf: PRICING_AS_OF,
+          warnings: [
+            `fal '${req.endpoint}' is billed on a unit this estimator cannot ` +
+              "derive from the request payload (compute seconds, delivered " +
+              "output metadata, or tokens with no published per-image " +
+              "constant), so no local rate exists for it. For a real number " +
+              "call fal's own pricing API: " +
+              "POST https://api.fal.ai/v1/models/pricing/estimate, exposed as " +
+              "fal.v1.models.pricing.estimate({ estimate_type, endpoints }) " +
+              "with FAL_ADMIN_API_KEY.",
+          ],
+        };
+      }
       return evaluatePerUnit(
         "fal",
         req.payload,
         { keyedBy: "endpoint", endpoint: req.endpoint },
         req.costHints
       );
+    }
     case "googleflow":
       return evaluatePerUnit(
         "googleflow",

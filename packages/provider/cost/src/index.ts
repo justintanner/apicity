@@ -1,6 +1,11 @@
 export { createCost } from "./cost";
 export { computeEstimate } from "./compute";
 export {
+  resolveFalDynamicEstimate,
+  isFalDynamicPricingEndpoint,
+} from "./fal-dynamic";
+export type { FalEstimator, FalEstimateLike } from "./fal-dynamic";
+export {
   COST_TIERS,
   CHEAP_MAX_USD,
   EXPENSIVE_MAX_USD,

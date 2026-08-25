@@ -2740,6 +2740,121 @@ describe("kie stale-family refresh (REQ-004)", () => {
     }
   );
 
+  // Gemini TTS is the one KIE family billed purely per token (ac-6lg2s0).
+  // Both ids carry the same published rates, taken verbatim from the
+  // 2026-08-22 catalog pull: $0.70 per million input tokens and $14 per
+  // million audio-output tokens.
+  //
+  //   tests/fixtures/kie-pricing-evidence/
+  //     kie-pricing-snapshot-2026-08-22T08-03-40-316Z.json
+  //   "Gemini 2.5 Pro TTS, Text to Speech, Audio Output"   usdPrice "14"
+  //   "Gemini 2.5 Pro TTS, Text to Speech, Input"          usdPrice "0.7"
+  //   "Gemini 3.1 Flash TTS, Text to Speech, Audio Output" usdPrice "14"
+  //   "Gemini 3.1 Flash TTS, Text to Speech, input"        usdPrice "0.7"
+  //   creditUnit "per million tokens" on all four.
+  const GEMINI_TTS_IDS = [
+    "google/gemini-2-5-pro-tts",
+    "google/gemini-3-1-flash-tts",
+  ] as const;
+
+  it.each(GEMINI_TTS_IDS)("prices %s from declared token counts", (model) => {
+    const entry = PRICING.kie[model];
+    expect(entry, model).toBeDefined();
+    expect(entry.kind).toBe("tokens");
+    if (entry.kind !== "tokens") throw new Error("expected a token entry");
+    expect(entry.rate.input).toBe(0.7);
+    expect(entry.rate.output).toBe(14);
+    expect(entry.source.asOf).toBe("2026-08-22");
+
+    // One million of each is exactly one input rate plus one output rate.
+    const round = kieEstimate(
+      { model, input: { text: "hello" } },
+      {
+        endpoint: model,
+        costHints: { inputTokens: 1_000_000, outputTokens: 1_000_000 },
+      }
+    );
+    expect(round.usd).toBeCloseTo(14.7, 10);
+    expect(round.source).toBe("declared-tokens+table");
+    expect(round.warnings).toEqual([]);
+    expect(round.breakdown?.unit).toBe("tokens");
+    expect(round.breakdown?.inputUsdPerMillion).toBe(0.7);
+    expect(round.breakdown?.outputUsdPerMillion).toBe(14);
+    expect(round.rateAsOf).toBe("2026-08-22");
+
+    // A realistic short clip: 120 input tokens, 4,000 audio-output tokens.
+    const clip = kieEstimate(
+      { model, input: { text: "hello" } },
+      {
+        endpoint: model,
+        costHints: { inputTokens: 120, outputTokens: 4_000 },
+      }
+    );
+    expect(clip.usd).toBeCloseTo((120 * 0.7 + 4_000 * 14) / 1_000_000, 12);
+  });
+
+  // The whole point of the contract: absent counts must fail closed. Output is
+  // twenty times the input rate, so treating a missing output count as zero
+  // would under-quote by that factor.
+  it.each(GEMINI_TTS_IDS)(
+    "fails closed on %s without token counts",
+    (model) => {
+      for (const costHints of [
+        undefined,
+        {},
+        { inputTokens: 100 },
+        { outputTokens: 4_000 },
+      ]) {
+        const result = kieEstimate(
+          { model, input: { text: "hello" } },
+          { endpoint: model, ...(costHints ? { costHints } : {}) }
+        );
+        expect(result.usd, `${model} ${JSON.stringify(costHints)}`).toBe(0);
+        expect(result.source).toBe("declared-tokens+table");
+        expect(result.warnings.join(" ")).toContain("billed per token");
+        expect(result.warnings.join(" ")).toContain("Characters are not");
+      }
+    }
+  );
+
+  it("names only the missing half of the token contract", () => {
+    const model = "google/gemini-2-5-pro-tts";
+    const noOutput = kieEstimate(
+      { model },
+      { endpoint: model, costHints: { inputTokens: 100 } }
+    );
+    expect(noOutput.warnings[0]).toContain("costHints.outputTokens");
+    expect(noOutput.warnings[0]).not.toContain("costHints.inputTokens and");
+
+    const neither = kieEstimate({ model }, { endpoint: model });
+    expect(neither.warnings[0]).toContain(
+      "costHints.inputTokens and costHints.outputTokens"
+    );
+  });
+
+  it("never derives Gemini TTS tokens from the request text", () => {
+    // A very long text must not change the estimate: the payload is not a
+    // token source for these models, by design.
+    const model = "google/gemini-3-1-flash-tts";
+    const long = kieEstimate(
+      { model, input: { text: "x".repeat(100_000) } },
+      { endpoint: model }
+    );
+    expect(long.usd).toBe(0);
+    expect(long.warnings.length).toBeGreaterThan(0);
+  });
+
+  it("leaves every other kie model on the per-unit path", () => {
+    // Routing on the entry's own `kind` must not disturb the media models.
+    const veo = kieEstimate({
+      model: "veo3",
+      prompt: "a sunset",
+      resolution: "1080p",
+    });
+    expect(veo.source).toBe("per-unit-table");
+    expect(veo.usd).toBeCloseTo(1.275, 10);
+  });
+
   // seedance-2 rate columns. Two links are pinned here at once, both through
   // the same parse-then-estimate route:
   //

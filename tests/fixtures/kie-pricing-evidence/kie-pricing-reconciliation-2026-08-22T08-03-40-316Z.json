@@ -512,10 +512,10 @@
     },
     "final": {
       "models": 138,
-      "pricingKeys": 152,
-      "slugKeys": 154,
-      "displayKeys": 154,
-      "schemaWithoutPricing": 17,
+      "pricingKeys": 154,
+      "slugKeys": 156,
+      "displayKeys": 156,
+      "schemaWithoutPricing": 15,
       "pricingOnly": 31,
       "endpoints": 71
     }
@@ -533,8 +533,8 @@
       "packages/provider/kie/src/zod.ts": "sha256:45f2563825960715dd48e263b111e364f4685e14c0a14510da652dd77e586183",
       "packages/provider/kie/src/model-schemas.ts": "sha256:e528f2e500d3e0e63eeb03ec74567b85c6fe9700fe9290fe415768e574ccd81b",
       "packages/provider/kie/src/kie.ts": "sha256:879aa7a639885ba118a2797ab0d66d93d4180b72d647753876de392523d901bf",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:32bea8a1205685db4260b2174c860e0e5f2ca2d5258870491e71d14e3346fb56",
-      "packages/provider/cost/src/slugs.ts": "sha256:98c5a955bc14fb60e90f5fe0d18d69fc666918665ee32a36813ed77ea101db01",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:392479e228f53d35d47e11318b0bbd6082ec9a77da1e570d9229ba2b501844b1",
+      "packages/provider/cost/src/slugs.ts": "sha256:1eaa73db515eab469c6d2c5a1a2168b8e5e2107bfda9640edee1e960716b2f00",
       "scripts/endpoint-docs.tsv": "sha256:c60da3b82bb7c3f29c6a20473d80172cc295e8e447d26ef3d58c327e2f61f933"
     }
   },
@@ -20966,7 +20966,7 @@
         "id": "google/gemini-2-5-pro-tts",
         "descriptor": true,
         "guard": true,
-        "pricingKey": null,
+        "pricingKey": "google/gemini-2-5-pro-tts",
         "linkedRows": [],
         "disposition": "upstream-unmappable",
         "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
@@ -20975,7 +20975,7 @@
         "id": "google/gemini-3-1-flash-tts",
         "descriptor": true,
         "guard": true,
-        "pricingKey": null,
+        "pricingKey": "google/gemini-3-1-flash-tts",
         "linkedRows": [],
         "disposition": "upstream-unmappable",
         "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
@@ -23385,6 +23385,18 @@
         ],
         "disposition": "supported",
         "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "google/gemini-2-5-pro-tts",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "google/gemini-3-1-flash-tts",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
       }
     ],
     "slugs": [
@@ -23686,6 +23698,14 @@
       },
       {
         "key": "gemini-omni-video",
+        "disposition": "supported"
+      },
+      {
+        "key": "google/gemini-2-5-pro-tts",
+        "disposition": "supported"
+      },
+      {
+        "key": "google/gemini-3-1-flash-tts",
         "disposition": "supported"
       },
       {
@@ -24307,6 +24327,14 @@
         "disposition": "supported"
       },
       {
+        "key": "google/gemini-2-5-pro-tts",
+        "disposition": "supported"
+      },
+      {
+        "key": "google/gemini-3-1-flash-tts",
+        "disposition": "supported"
+      },
+      {
         "key": "pixverse-v6/text-to-video",
         "disposition": "supported"
       },
@@ -24713,18 +24741,6 @@
         "disposition": "upstream-unmappable",
         "linkedRows": [],
         "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
-      },
-      {
-        "id": "google/gemini-2-5-pro-tts",
-        "disposition": "upstream-unmappable",
-        "linkedRows": [],
-        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
-      },
-      {
-        "id": "google/gemini-3-1-flash-tts",
-        "disposition": "upstream-unmappable",
-        "linkedRows": [],
-        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
       }
     ],
     "pricingOnly": [
@@ -25036,7 +25052,7 @@
         "count": 138,
         "descriptors": 138,
         "guards": 138,
-        "withoutPricing": 17,
+        "withoutPricing": 15,
         "dispositionCounts": {
           "supported": 111,
           "free-nonbillable": 0,
@@ -25060,20 +25076,20 @@
         "unclassified": 0
       },
       "pricingKeys": {
-        "count": 152,
+        "count": 154,
         "dispositionCounts": {
           "supported": 140,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 12
+          "upstream-unmappable": 14
         },
         "unclassified": 0
       },
       "slugs": {
-        "count": 154,
+        "count": 156,
         "dispositionCounts": {
-          "supported": 154,
+          "supported": 156,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -25082,9 +25098,9 @@
         "unclassified": 0
       },
       "displays": {
-        "count": 154,
+        "count": 156,
         "dispositionCounts": {
-          "supported": 154,
+          "supported": 156,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -25093,13 +25109,13 @@
         "unclassified": 0
       },
       "schemaWithoutPricing": {
-        "count": 17,
+        "count": 15,
         "dispositionCounts": {
           "supported": 0,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 17
+          "upstream-unmappable": 15
         },
         "unclassified": 0
       },

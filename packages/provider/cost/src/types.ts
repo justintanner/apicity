@@ -1,4 +1,16 @@
-export type CostSource = "tokens-heuristic+table" | "per-unit-table" | "free";
+// "tokens-heuristic+table" — token counts estimated from text (chars/4).
+// "declared-tokens+table" — token counts supplied by the caller through
+//   CostHints. Used where an upstream publishes a per-token rate but the
+//   request body carries no billable token count and no defensible conversion
+//   exists (KIE's Gemini TTS models), so the caller must declare them or the
+//   estimate fails closed.
+// "per-unit-table" — units derived from the payload (seconds, images, ...).
+// "free" — no charge.
+export type CostSource =
+  | "tokens-heuristic+table"
+  | "declared-tokens+table"
+  | "per-unit-table"
+  | "free";
 
 export type CostUnit =
   | "tokens"
@@ -52,6 +64,19 @@ export interface CostHints {
   // Gemini list-rate USD source (REQ-004) would land as a second additive field
   // (e.g. googleFlowRateSource) here, non-breaking.
   googleFlowPlan?: "pro" | "ultra" | (string & {});
+  // Billable token counts for models an upstream prices per token while the
+  // request body carries neither count. KIE's `google/gemini-2-5-pro-tts` and
+  // `google/gemini-3-1-flash-tts` publish exact rates ($0.70 per million input
+  // tokens, $14 per million audio-output tokens) but the payload holds only
+  // the text and the voice settings. Characters are not tokens and KIE
+  // publishes no conversion, so an estimate that guessed one would be
+  // invented; both fields are required together for those models and their
+  // absence fails closed with a warning rather than quoting a number.
+  //
+  // Cost-only, like the rest of CostHints: never merged into payload, never
+  // canonicalHash'd, never signed.
+  inputTokens?: number;
+  outputTokens?: number;
 }
 
 // All provider routes are pure-table lookups. Token-billed providers

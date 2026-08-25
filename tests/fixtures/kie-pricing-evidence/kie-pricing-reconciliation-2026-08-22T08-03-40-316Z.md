@@ -18,11 +18,11 @@ This WI6 executable reconciliation joins the frozen official Kie pricing pull to
 | -------------------------------- | -------: | ----: | -------------------------------- |
 | Schema model IDs                 |      127 |   138 | descriptors 138; guards 138      |
 | Documented endpoints             |       71 |    71 | 53 POST; 18 GET                  |
-| Runtime pricing keys             |      135 |   152 | current Kie table                |
-| Schema-without-pricing inventory |       23 |    17 | explicit model memberships       |
+| Runtime pricing keys             |      135 |   154 | current Kie table                |
+| Schema-without-pricing inventory |       23 |    15 | explicit model memberships       |
 | Pricing-only inventory           |       31 |    31 | explicit runtime-key memberships |
-| Slug keys                        |      137 |   154 | Kie model metadata               |
-| Display keys                     |      137 |   154 | Kie model metadata               |
+| Slug keys                        |      137 |   156 | Kie model metadata               |
+| Display keys                     |      137 |   156 | Kie model metadata               |
 
 ## Row Dispositions
 
@@ -65,7 +65,7 @@ The mandatory four official cells are executable against the integrated WI6 cost
 
 ## Explicit Audit Queue
 
-Schema models without a current usable pricing key: **17**; pricing-only runtime keys: **31**.
+Schema models without a current usable pricing key: **15**; pricing-only runtime keys: **31**.
 
 | Model                                  | Disposition         | Technical blocker                                                                                                | Follow-up |
 | -------------------------------------- | ------------------- | ---------------------------------------------------------------------------------------------------------------- | --------- |

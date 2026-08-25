@@ -2348,13 +2348,32 @@ export const kie: Record<string, ModelPricing> = {
   // `prohibitive` tier they already had and their estimates fail loudly rather
   // than quoting a number. Pinned negatively in tests/unit/cost-pricing.test.ts.
 
-  // Gemini TTS is also intentionally absent, but for a different reason. The
-  // 2026-08-22 catalog publishes exact rows for both
-  // `google/gemini-2-5-pro-tts` and `google/gemini-3-1-flash-tts`: $14 per one
-  // million audio-output tokens plus $0.70 per one million input tokens. KIE's
-  // cost path currently accepts per-unit media entries only and rejects token
-  // billing, while the request exposes neither billed token count. A
-  // characters-to-tokens conversion would be invented, so both ids stay
-  // unpriced and fail safe into the prohibitive tier. Follow-up ac-6lg2s0 owns
-  // the explicit input/output token-usage contract and estimator support.
+  // Gemini TTS is the one KIE family billed purely per token. The 2026-08-22
+  // catalog publishes exact rows for both ids — $14 per one million
+  // audio-output tokens and $0.70 per one million input tokens, identical for
+  // the 2.5 Pro and 3.1 Flash models — so the rates are evidence, not
+  // inference. What the request does NOT carry is either token count, and KIE
+  // publishes no characters-to-tokens conversion, so the counts come from the
+  // caller through `costHints.inputTokens` / `costHints.outputTokens`.
+  // `computeEstimate` routes these two on `kind` and fails closed with a
+  // warning when either count is absent, rather than approximating from the
+  // text length (ac-6lg2s0).
+  //
+  // Evidence rows, tests/fixtures/kie-pricing-evidence/
+  // kie-pricing-snapshot-2026-08-22T08-03-40-316Z.json:
+  //   "Gemini 2.5 Pro TTS, Text to Speech, Audio Output"  usdPrice 14
+  //   "Gemini 2.5 Pro TTS, Text to Speech, Input"         usdPrice 0.7
+  //   "Gemini 3.1 Flash TTS, Text to Speech, Audio Output" usdPrice 14
+  //   "Gemini 3.1 Flash TTS, Text to Speech, input"        usdPrice 0.7
+  // all with creditUnit "per million tokens".
+  "google/gemini-2-5-pro-tts": {
+    kind: "tokens",
+    rate: { input: 0.7, output: 14 },
+    source: pricePage("https://kie.ai/gemini-2-5-pro-tts", "2026-08-22"),
+  },
+  "google/gemini-3-1-flash-tts": {
+    kind: "tokens",
+    rate: { input: 0.7, output: 14 },
+    source: pricePage("https://kie.ai/gemini-3-1-flash-tts", "2026-08-22"),
+  },
 };

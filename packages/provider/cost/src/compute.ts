@@ -7,6 +7,7 @@ import type {
   CostSource,
   EstimateRequest,
 } from "./types";
+import type { TokenPricing } from "./pricing/types";
 
 import { extractAnthropic } from "./extract/anthropic";
 import { extractChat } from "./extract/chat";
@@ -204,6 +205,53 @@ function evaluatePerUnit(
   };
 }
 
+// Token-billed entry whose counts the caller declares rather than the payload
+// carrying them (KIE's Gemini TTS models). Distinct from `applyTokenRate` in
+// two ways that matter: nothing is inferred from text, and BOTH counts are
+// required — an absent output count fails closed instead of being treated as
+// zero, because output is the expensive side ($14 vs $0.70 per million) and a
+// silent zero would under-quote by twenty times.
+function evaluateDeclaredTokens(
+  provider: PricedProviderId,
+  pricingKey: string,
+  entry: TokenPricing,
+  hints?: CostHints
+): CostEstimate {
+  const { inputTokens, outputTokens } = hints ?? {};
+  const missing: string[] = [];
+  if (typeof inputTokens !== "number") missing.push("costHints.inputTokens");
+  if (typeof outputTokens !== "number") missing.push("costHints.outputTokens");
+  if (typeof inputTokens !== "number" || typeof outputTokens !== "number") {
+    return {
+      usd: 0,
+      currency: "USD",
+      source: "declared-tokens+table",
+      breakdown: { unit: "tokens" },
+      rateAsOf: entry.source.asOf ?? PRICING_AS_OF,
+      warnings: [
+        `${provider} '${pricingKey}' is billed per token and the request carries ` +
+          `no token count; pass ${missing.join(" and ")}. Characters are not ` +
+          "tokens and no published conversion exists, so no estimate is quoted.",
+      ],
+    };
+  }
+  const { rate } = entry;
+  return {
+    usd: (inputTokens * rate.input + outputTokens * rate.output) / 1_000_000,
+    currency: "USD",
+    source: "declared-tokens+table",
+    breakdown: {
+      inputTokens,
+      outputTokens,
+      unit: "tokens",
+      inputUsdPerMillion: rate.input,
+      outputUsdPerMillion: rate.output,
+    },
+    rateAsOf: entry.source.asOf ?? PRICING_AS_OF,
+    warnings: [],
+  };
+}
+
 export function computeEstimate(req: EstimateRequest): CostEstimate {
   switch (req.provider) {
     // xAI bills the Grok Imagine video and image models per second / per
@@ -285,13 +333,31 @@ export function computeEstimate(req: EstimateRequest): CostEstimate {
         ext.data.maxOutputTokens
       );
     }
-    case "kie":
+    // KIE is per-unit for every media model, but two Gemini TTS models are
+    // billed purely per token. Route on the pricing entry's own `kind`, the
+    // way xai and alibaba already do, so the table stays the single source of
+    // truth for which models bill which way (ac-6lg2s0).
+    case "kie": {
+      const pricingKey =
+        req.endpoint ??
+        asString(req.payload.model) ??
+        asString(req.payload.model_id);
+      const entry = pricingKey ? PRICING.kie[pricingKey] : undefined;
+      if (entry?.kind === "tokens") {
+        return evaluateDeclaredTokens(
+          "kie",
+          pricingKey as string,
+          entry,
+          req.costHints
+        );
+      }
       return evaluatePerUnit(
         "kie",
         req.payload,
         { keyedBy: "endpoint", endpoint: req.endpoint },
         req.costHints
       );
+    }
     case "elevenlabs":
       return evaluatePerUnit(
         "elevenlabs",

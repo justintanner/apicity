@@ -27,8 +27,6 @@ import {
   RunwayGenerateRequest,
   RunwayExtendRequest,
   RunwayRecordDetail,
-  AlephGenerateRequest,
-  AlephRecordInfo,
 } from "./types";
 import type { z } from "zod";
 import type { FluxKontextRecordInfoResponse, KieMediaModel } from "./zod";
@@ -51,8 +49,6 @@ import {
   RunwayGenerateRequestSchema,
   RunwayExtendRequestSchema,
   RunwayRecordDetailResponseSchema,
-  AlephGenerateRequestSchema,
-  AlephRecordInfoResponseSchema,
   FluxKontextRecordInfoRequestSchema,
   FluxKontextRecordInfoResponseSchema,
   GrokImageToVideoRequestSchema,
@@ -724,26 +720,6 @@ export function createKie(opts: KieOptions): KieProvider {
     );
   }
 
-  // POST https://api.kie.ai/api/v1/aleph/generate
-  // Docs: https://docs.kie.ai/runway-api/generate-aleph-video
-  async function alephGenerate(
-    req: AlephGenerateRequest
-  ): Promise<TaskResponse> {
-    return kieRequest<TaskResponse>(transport, {
-      method: "POST",
-      path: "/api/v1/aleph/generate",
-      body: req,
-    });
-  }
-
-  // GET https://api.kie.ai/api/v1/aleph/record-info?taskId={taskId}
-  // Docs: https://docs.kie.ai/runway-api/get-aleph-video-details
-  async function alephRecordInfo(taskId: string): Promise<AlephRecordInfo> {
-    return await transport.getJson<AlephRecordInfo>(
-      `/api/v1/aleph/record-info?taskId=${encodeURIComponent(taskId)}`
-    );
-  }
-
   // GET https://api.kie.ai/api/v1/flux/kontext/record-info?taskId={taskId}
   // Docs: https://docs.kie.ai/flux-kontext-api/get-image-details
   async function fluxKontextRecordInfo(
@@ -878,11 +854,6 @@ export function createKie(opts: KieOptions): KieProvider {
                     schema: RunwayExtendRequestSchema,
                   }),
                 },
-                aleph: {
-                  generate: Object.assign(alephGenerate, {
-                    schema: AlephGenerateRequestSchema,
-                  }),
-                },
               },
               fileStreamUpload: Object.assign(fileStreamUpload, {
                 schema: UploadMediaRequestSchema,
@@ -922,12 +893,6 @@ export function createKie(opts: KieOptions): KieProvider {
                 recordDetail: Object.assign(runwayRecordDetail, {
                   schema: RecordInfoRequestSchema,
                   responseSchema: RunwayRecordDetailResponseSchema,
-                }),
-              },
-              aleph: {
-                recordInfo: Object.assign(alephRecordInfo, {
-                  schema: RecordInfoRequestSchema,
-                  responseSchema: AlephRecordInfoResponseSchema,
                 }),
               },
               flux: {

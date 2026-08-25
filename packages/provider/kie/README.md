@@ -740,26 +740,7 @@ console.log(editTask.data?.taskId);
 
 ## API Reference
 
-57 endpoints across 29 groups. Each method mirrors an upstream URL path.
-
-### aleph
-
-<details>
-<summary><code>GET</code> <b><code>kie.get.api.v1.aleph.recordInfo</code></b></summary>
-
-<code>GET https://api.kie.ai/api/v1/aleph/record-info?taskId={taskId}</code>
-
-Cost tier: <code>prohibitive</code>
-
-[Upstream docs ↗](https://docs.kie.ai/runway-api/get-aleph-video-details)
-
-```typescript
-const res = await kie.get.api.v1.aleph.recordInfo({ /* ... */ });
-```
-
-Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
-
-</details>
+56 endpoints across 28 groups. Each method mirrors an upstream URL path.
 
 ### chat
 

@@ -1049,8 +1049,6 @@ kie	api.v1.responses	POST	https://api.kie.ai/api/v1/responses	https://docs.kie.a
 kie	api.v1.runway.extend	POST	https://api.kie.ai/api/v1/runway/extend	https://docs.kie.ai/runway-api/extend-ai-video
 kie	api.v1.runway.generate	POST	https://api.kie.ai/api/v1/runway/generate	https://docs.kie.ai/runway-api/generate-ai-video
 kie	api.v1.runway.recordDetail	GET	https://api.kie.ai/api/v1/runway/record-detail?taskId={taskId}	https://docs.kie.ai/runway-api/get-ai-video-details
-kie	api.v1.aleph.generate	POST	https://api.kie.ai/api/v1/aleph/generate	https://docs.kie.ai/runway-api/generate-aleph-video
-kie	api.v1.aleph.recordInfo	GET	https://api.kie.ai/api/v1/aleph/record-info?taskId={taskId}	https://docs.kie.ai/runway-api/get-aleph-video-details
 kie	api.v1.style.generate	POST	https://api.kie.ai/api/v1/style/generate
 kie	api.v1.suno.cover.generate	POST	https://api.kie.ai/api/v1/suno/cover/generate	https://docs.kie.ai/suno-api/cover-suno
 kie	api.v1.suno.cover.recordInfo	GET	https://api.kie.ai/api/v1/suno/cover/record-info?taskId={taskId}	https://docs.kie.ai/suno-api/get-cover-suno-details

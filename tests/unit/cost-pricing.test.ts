@@ -1190,7 +1190,7 @@ describe("kie veo auxiliary endpoints", () => {
   });
 });
 
-describe("kie runway / aleph / gpt4o-image / flux-kontext", () => {
+describe("kie runway / gpt4o-image / flux-kontext", () => {
   // `duration` is numeric on the wire (5 | 10), so this also pins the String
   // coercion at pick time — asString alone would miss every rate.
   it.each([
@@ -1239,20 +1239,6 @@ describe("kie runway / aleph / gpt4o-image / flux-kontext", () => {
 
     expect(result.usd).toBeCloseTo(usd, 10);
     expect(result.warnings).toEqual([]);
-  });
-
-  it("prices aleph/generate flat per video", () => {
-    const result = kieEstimate(
-      { prompt: "make it snow", videoUrl: "https://example.com/in.mp4" },
-      { endpoint: "aleph/generate" }
-    );
-
-    expect(result.usd).toBeCloseTo(0.55, 10);
-    expect(result.breakdown).toEqual({
-      units: 1,
-      unit: "generations",
-      perUnitUsd: 0.55,
-    });
   });
 
   it("prices gpt4o-image/generate flat per image", () => {
@@ -2298,7 +2284,6 @@ describe("kie 2026-08-06 pricing pull provenance", () => {
       "veo/get-4k-video",
       "runway/generate",
       "runway/extend",
-      "aleph/generate",
       "gpt4o-image/generate",
       "flux-kontext-pro",
       "flux-kontext-max",

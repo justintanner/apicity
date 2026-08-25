@@ -2,7 +2,6 @@ import { describe, it, expect } from "vitest";
 import {
   RunwayGenerateCallbackPayloadSchema,
   RunwayExtendCallbackPayloadSchema,
-  RunwayAlephCallbackPayloadSchema,
 } from "../../packages/provider/kie/src/callbacks-runway";
 
 describe("Runway callback payloads (ac-7plevp)", () => {
@@ -34,7 +33,7 @@ describe("Runway callback payloads (ac-7plevp)", () => {
     ).toBe(true);
   });
 
-  it("exports extend and aleph aliases that accept the same shape", () => {
+  it("exports an extend alias that accepts the same shape", () => {
     const body = {
       code: 200,
       msg: "ok",
@@ -43,6 +42,5 @@ describe("Runway callback payloads (ac-7plevp)", () => {
     expect(RunwayExtendCallbackPayloadSchema.safeParse(body).success).toBe(
       true
     );
-    expect(RunwayAlephCallbackPayloadSchema.safeParse(body).success).toBe(true);
   });
 });

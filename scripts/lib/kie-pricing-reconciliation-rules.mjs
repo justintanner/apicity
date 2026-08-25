@@ -375,7 +375,6 @@ const FAMILY_MAPPING_RULES = Object.freeze([
   [/google veo 3\.1.*fast/i, "veo3_fast"],
   [/google veo 3\.1.*quality/i, "veo3"],
   [/gemini-omni-video/i, "gemini-omni-video"],
-  [/runway aleph/i, "aleph/generate"],
   [/^runway,/i, "runway/generate"],
   [/4o image/i, "gpt4o-image/generate"],
   [/flux1-kontext.*pro/i, "flux-kontext-pro"],

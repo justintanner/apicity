@@ -3,7 +3,6 @@
  * Docs:
  * - https://docs.kie.ai/runway-api/generate-ai-video-callbacks
  * - https://docs.kie.ai/runway-api/extend-ai-video-callbacks
- * Aleph (video-to-video) uses the same generation callback family.
  */
 import { z } from "zod";
 
@@ -29,11 +28,6 @@ export const RunwayExtendCallbackDataSchema = RunwayGenerateCallbackDataSchema;
 export const RunwayExtendCallbackPayloadSchema =
   RunwayGenerateCallbackPayloadSchema;
 
-/** Aleph (video-to-video) uses the generation callback family. */
-export const RunwayAlephCallbackDataSchema = RunwayGenerateCallbackDataSchema;
-export const RunwayAlephCallbackPayloadSchema =
-  RunwayGenerateCallbackPayloadSchema;
-
 export type RunwayGenerateCallbackData = z.infer<
   typeof RunwayGenerateCallbackDataSchema
 >;
@@ -42,5 +36,3 @@ export type RunwayGenerateCallbackPayload = z.infer<
 >;
 export type RunwayExtendCallbackData = RunwayGenerateCallbackData;
 export type RunwayExtendCallbackPayload = RunwayGenerateCallbackPayload;
-export type RunwayAlephCallbackData = RunwayGenerateCallbackData;
-export type RunwayAlephCallbackPayload = RunwayGenerateCallbackPayload;

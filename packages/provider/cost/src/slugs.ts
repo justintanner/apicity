@@ -145,7 +145,6 @@ export const MODEL_SLUGS = {
     // Video — Runway
     "runway/generate": "runway",
     "runway/extend": "runway",
-    "aleph/generate": "aleph",
 
     // Video — Gemini Omni
     "gemini-omni-video": "geminiomni",
@@ -603,7 +602,6 @@ export const MODEL_DISPLAY = {
 
     "runway/generate": "Runway",
     "runway/extend": "Runway Extend",
-    "aleph/generate": "Runway Aleph",
 
     "gemini-omni-video": "Gemini Omni",
 

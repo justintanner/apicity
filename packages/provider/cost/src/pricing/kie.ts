@@ -1868,14 +1868,6 @@ export const kie: Record<string, ModelPricing> = {
     source: pricePage("https://kie.ai/runway-api"),
   },
 
-  // Runway Aleph (video-to-video) — endpoint-keyed "aleph/generate". One
-  // published rate, 110 credits ($0.55) per video, and AlephGenerateRequest
-  // exposes no tier field, so the entry is flat.
-  "aleph/generate": flatGenPage(
-    0.55,
-    "https://docs.kie.ai/runway-api/generate-aleph-video"
-  ),
-
   // Image models — per-image USD. Resolution-tiered families
   // (nano-banana-2, gpt-image-2) require input.resolution; flat-rate
   // families (qwen2, seedream/5-lite) only need the model string.

@@ -1,12 +1,4 @@
 {
-  "GET api.v1.aleph.recordInfo": {
-    "source": "kie/aleph/record-info-not-found",
-    "payload": {
-      "taskId": "apicity-test-nonexistent-task-id-do-not-record-real"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
   "GET api.v1.flux.kontext.recordInfo": {
     "source": "kie/flux-kontext-record-info-not-found",
     "payload": {
@@ -143,16 +135,6 @@
       "uploadPath": "images/test-uploads",
       "fileName": "test-base64.png",
       "mimeType": "image/png"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "POST api.v1.aleph.generate": {
-    "source": "kie/aleph/generate-invalid-video",
-    "payload": {
-      "prompt": "A slow cinematic pan across misty mountains at dawn.",
-      "videoUrl": "https://example.com/apicity-test-nonexistent-video-do-not-record-real.mp4",
-      "callBackUrl": "https://example.com/aleph-callback"
     },
     "tier": "prohibitive",
     "runByDefault": false

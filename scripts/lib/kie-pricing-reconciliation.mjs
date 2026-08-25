@@ -981,7 +981,6 @@ function endpointPricingKeys(dotPath, inventories) {
     "api.v1.veo.get4kVideo": ["veo/get-4k-video"],
     "api.v1.runway.generate": ["runway/generate"],
     "api.v1.runway.extend": ["runway/extend"],
-    "api.v1.aleph.generate": ["aleph/generate"],
     "api.v1.generate": ["suno/generate"],
     "api.v1.generate.extend": ["suno/extend"],
     "api.v1.generate.generatePersona": ["suno/persona-generate"],

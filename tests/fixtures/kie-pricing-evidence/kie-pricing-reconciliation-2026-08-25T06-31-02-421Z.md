@@ -17,24 +17,24 @@ This WI6 executable reconciliation joins the frozen official Kie pricing pull to
 | Surface                          | Baseline | Final | Detail                           |
 | -------------------------------- | -------: | ----: | -------------------------------- |
 | Schema model IDs                 |      127 |   140 | descriptors 140; guards 140      |
-| Documented endpoints             |       71 |    71 | 53 POST; 18 GET                  |
-| Runtime pricing keys             |      135 |   156 | current Kie table                |
+| Documented endpoints             |       71 |    69 | 52 POST; 17 GET                  |
+| Runtime pricing keys             |      135 |   155 | current Kie table                |
 | Schema-without-pricing inventory |       23 |    15 | explicit model memberships       |
-| Pricing-only inventory           |       31 |    31 | explicit runtime-key memberships |
-| Slug keys                        |      137 |   158 | Kie model metadata               |
-| Display keys                     |      137 |   158 | Kie model metadata               |
+| Pricing-only inventory           |       31 |    30 | explicit runtime-key memberships |
+| Slug keys                        |      137 |   157 | Kie model metadata               |
+| Display keys                     |      137 |   157 | Kie model metadata               |
 
 ## Row Dispositions
 
 | Disposition          | Count |
 | -------------------- | ----: |
 | implemented          |   220 |
-| canonical-alias      |   124 |
+| canonical-alias      |   123 |
 | duplicate            |     0 |
 | free-nonbillable     |     3 |
 | unsupported-endpoint |     3 |
 | token-billed         |    74 |
-| upstream-unmappable  |    23 |
+| upstream-unmappable  |    24 |
 
 Malformed or conflicting cells explicitly classified by WI6: **15**.
 Examples: sha256:ced34c57a62c8f45f09d4e4365083724674af8dc0682294e19c856fb3268390f#1 (credit-unit-format), sha256:adcf600f9d0b0fe0bcc7595c232df1d6dd059046c0685c8f7d76f02c9dcf358d#1 (credit-unit-format), sha256:d10e3c724e726150962a018770b8bc5680c826d10fe151ce317cfe76a0c9b22e#1 (credit-unit-format), sha256:c661563e2a79e52a935f4375e7c1549f54efce2ed051199573d07c3bce962847#1 (credit-unit-format), sha256:75676629885edb93635ce4f355e50a9584aab60bbceb153b7174df460f916507#1 (credit-unit-format), sha256:412c186f278699f823412f4ddeb6c58ad7dc21d756d986a13cd4a9d5782dd3ee#1 (credit-unit-format), sha256:6d02ded92b2ac43445e40b03c06639de472601391a1005a8dd6e776a89b80bff#1 (credit-unit-format), sha256:91d91736be572f35eb57d3ab4adb8b67292b14084240c6f286b0a6ab6cd14260#1 (credit-unit-format)
@@ -65,7 +65,7 @@ The mandatory four official cells are executable against the integrated WI6 cost
 
 ## Explicit Audit Queue
 
-Schema models without a current usable pricing key: **15**; pricing-only runtime keys: **31**.
+Schema models without a current usable pricing key: **15**; pricing-only runtime keys: **30**.
 
 | Model                                  | Disposition         | Technical blocker                                                                                                | Follow-up |
 | -------------------------------------- | ------------------- | ---------------------------------------------------------------------------------------------------------------- | --------- |

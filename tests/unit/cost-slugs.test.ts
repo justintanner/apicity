@@ -547,7 +547,6 @@ describe("kie pricing-refresh slugs (REQ-007)", () => {
     { model: "veo/get-4k-video", slug: "veo3", display: "Veo 3 4K Upgrade" },
     { model: "runway/generate", slug: "runway", display: "Runway" },
     { model: "runway/extend", slug: "runway", display: "Runway Extend" },
-    { model: "aleph/generate", slug: "aleph", display: "Runway Aleph" },
     { model: "gpt4o-image/generate", slug: "gi4o", display: "GPT-4o Image" },
     {
       model: "flux-kontext-pro",

@@ -49,22 +49,18 @@ export type {
   Gpt4oImageCallbackPayload,
 } from "./callbacks-gpt4o-image";
 
-// Runway callback payloads (generate, extend, aleph)
 export {
+  // Runway callback payloads (generate, extend)
   RunwayGenerateCallbackDataSchema,
   RunwayGenerateCallbackPayloadSchema,
   RunwayExtendCallbackDataSchema,
   RunwayExtendCallbackPayloadSchema,
-  RunwayAlephCallbackDataSchema,
-  RunwayAlephCallbackPayloadSchema,
 } from "./callbacks-runway";
 export type {
   RunwayGenerateCallbackData,
   RunwayGenerateCallbackPayload,
   RunwayExtendCallbackData,
   RunwayExtendCallbackPayload,
-  RunwayAlephCallbackData,
-  RunwayAlephCallbackPayload,
 } from "./callbacks-runway";
 
 // Suno callback payloads (15 dedicated docs pages under suno-api)
@@ -219,9 +215,6 @@ export {
   RunwayGenerateRequestSchema,
   RunwayExtendRequestSchema,
   RunwayRecordDetailResponseSchema,
-  AlephGenerateRequestSchema,
-  AlephAspectRatioSchema,
-  AlephRecordInfoResponseSchema,
   RunwayQualitySchema,
   RunwayAspectRatioSchema,
   RunwayDurationSchema,
@@ -859,9 +852,6 @@ export type {
   RunwayGenerateParam,
   RunwayRecordDetailData,
   RunwayRecordDetail,
-  AlephRecordInfoResponseResult,
-  AlephRecordInfoData,
-  AlephRecordInfo,
   KieCreditsResponse,
   DownloadUrlRequest,
   DownloadUrlRequestInput,
@@ -1033,10 +1023,6 @@ export type {
   RunwayQuality,
   RunwayAspectRatio,
   RunwayDuration,
-  AlephGenerateRequest,
-  AlephGenerateRequestInput,
-  AlephGenerateParsedRequest,
-  AlephAspectRatio,
   FluxKontextRecordInfoRequest,
   FluxKontextRecordInfoRequestInput,
   FluxKontextSuccessFlag,

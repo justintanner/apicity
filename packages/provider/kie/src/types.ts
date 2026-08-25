@@ -631,10 +631,6 @@ export type {
   RunwayQuality,
   RunwayAspectRatio,
   RunwayDuration,
-  AlephGenerateRequest,
-  AlephGenerateRequestInput,
-  AlephGenerateParsedRequest,
-  AlephAspectRatio,
   FluxKontextRecordInfoRequest,
   FluxKontextRecordInfoRequestInput,
   FluxKontextSuccessFlag,
@@ -797,31 +793,6 @@ export interface RunwayRecordDetail {
   data?: RunwayRecordDetailData | null;
 }
 
-export interface AlephRecordInfoResponseResult {
-  taskId?: string;
-  resultVideoUrl?: string;
-  resultImageUrl?: string;
-  [key: string]: unknown;
-}
-
-export interface AlephRecordInfoData {
-  taskId: string;
-  paramJson?: string;
-  response?: AlephRecordInfoResponseResult | null;
-  completeTime?: string | number | null;
-  createTime?: string | number;
-  successFlag?: 0 | 1 | number;
-  errorCode?: number | null;
-  errorMessage?: string | null;
-  [key: string]: unknown;
-}
-
-export interface AlephRecordInfo {
-  code: number;
-  msg: string;
-  data?: AlephRecordInfoData | null;
-}
-
 export interface GeminiOmniAudioCreateData {
   audioId: string;
   kieAudioId: string;
@@ -889,7 +860,6 @@ import type {
   MjRecordInfoResponse,
   RunwayGenerateRequest,
   RunwayExtendRequest,
-  AlephGenerateRequest,
   FluxKontextRecordInfoRequest,
   FluxKontextRecordInfoResponse,
   RecordInfoRequest,
@@ -1001,17 +971,6 @@ interface KieRunwayRecordDetailMethod {
   responseSchema: ApicitySchema<RunwayRecordDetail>;
 }
 
-interface KieAlephGenerateMethod {
-  (req: AlephGenerateRequest, approval?: KieApproval): Promise<TaskResponse>;
-  schema: ApicitySchema<AlephGenerateRequest>;
-}
-
-interface KieAlephRecordInfoMethod {
-  (taskId: string): Promise<AlephRecordInfo>;
-  schema: ApicitySchema<RecordInfoRequest>;
-  responseSchema: ApicitySchema<AlephRecordInfo>;
-}
-
 interface KieFluxKontextRecordInfoMethod {
   (taskId: string): Promise<FluxKontextRecordInfoResponse>;
   schema: ApicitySchema<FluxKontextRecordInfoRequest>;
@@ -1048,9 +1007,6 @@ interface KiePostApiNamespace {
       generate: KieRunwayGenerateMethod;
       extend: KieRunwayExtendMethod;
     };
-    aleph: {
-      generate: KieAlephGenerateMethod;
-    };
   };
   fileStreamUpload: KieFileStreamUploadMethod;
   fileUrlUpload: KieFileUrlUploadMethod;
@@ -1064,7 +1020,6 @@ interface KieGetApiNamespace {
     gpt4oImage: { recordInfo: KieGpt4oImageRecordInfoMethod };
     mj: { recordInfo: KieMjRecordInfoMethod };
     runway: { recordDetail: KieRunwayRecordDetailMethod };
-    aleph: { recordInfo: KieAlephRecordInfoMethod };
     flux: {
       kontext: {
         recordInfo: KieFluxKontextRecordInfoMethod;

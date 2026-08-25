@@ -41,21 +41,69 @@ import { repoRoot } from "./provider-scope.mjs";
  * `MODEL_DISPLAY.googleflow`. Those span providers, but the file is named after
  * none of them, so only the `cost` scope selects it: a `fal` bead that prices a
  * model without slugging it passes `dev:preflight:fast -- fal` and goes red only
- * in full CI (ac-y39i64).
+ * in full CI (ac-y39i64). `tests/unit/cost-pricing.test.ts` asserts the mirror
+ * direction — every registered `MODEL_SLUGS` entry has a `PRICING` entry, under
+ * an explicit unpriced allowlist — and has the identical selection gap, so a
+ * provider-scoped diff that registers a slug with no rate would otherwise still
+ * pass the fast gate (ac-kabm2y).
+ *
+ * The doc-inventory guards pin agent-facing prose to the repository itself.
+ * `tests/unit/provider-inventory-docs.test.ts` derives the provider list and
+ * the `build:*` / `doc-gen:*` alias sets from disk and fails `CLAUDE.md`,
+ * `AGENTS.md`, or `README.md` when any of them stops naming what ships. Adding
+ * a provider is a provider-scoped diff, so no provider scope selects this
+ * guard; without the entry the overview drifted to naming 23 of 29 providers
+ * and `googleflow` shipped with no `build:` alias at all (ac-gk1mlr,
+ * ac-qclky0, ac-e1h1yj).
  *
  * The fast gates run these guards so a broken repo-wide invariant cannot pass
  * the local merge gate. They are filesystem- and source-parse-only (no Polly,
- * no network) and cost about 5.7s on the reference machine.
+ * no network); `CROSS_CUTTING_COST_SECONDS` records their measured cost.
  *
  * Add any whole-repo guard that provider scopes do not select consistently to
  * this list.
  */
+
+/**
+ * Measured wall-clock cost of the cross-cutting block, in seconds.
+ *
+ * This number was restated by hand in three places — this module,
+ * `scripts/preflight-provider.mjs`, and the `CLAUDE.md` paragraph — with
+ * nothing keeping them in agreement (ac-vsx186). It now lives here only;
+ * the script prints `crossCuttingCostNote()` and the `CLAUDE.md` prose is
+ * pinned to this value by `tests/unit/cross-cutting-tests.test.ts`.
+ *
+ * The value is the reference-machine figure recorded when the block held five
+ * entries. Adding `cost-pricing` and `provider-inventory-docs` did not move it
+ * materially: on 2026-08-25 the seven-entry block measured 3.3s and 4.2s wall
+ * (612 tests, 7 files) on the machine that added them, comfortably under this
+ * number. It is deliberately left at the reference measurement rather than
+ * overwritten with a figure from a different machine.
+ *
+ * Re-measure and update it here when the block's membership changes
+ * materially; the guard test will name the prose that has to follow.
+ */
+export const CROSS_CUTTING_COST_SECONDS = 5.7;
+
+/**
+ * The one sentence describing the block's cost, built from the single source.
+ *
+ * @returns {string}
+ */
+export function crossCuttingCostNote() {
+  return (
+    "filesystem- and source-parse-only (no Polly, no network); about " +
+    `${CROSS_CUTTING_COST_SECONDS}s on the reference machine`
+  );
+}
 export const CROSS_CUTTING_TESTS = [
   "tests/integration/upload-recordings.test.ts",
   "tests/integration/multipart-recordings.test.ts",
   "tests/unit/endpoint-cost-tiers.test.ts",
   "tests/unit/kie-pricing-reconciliation.test.ts",
   "tests/unit/cost-slugs.test.ts",
+  "tests/unit/cost-pricing.test.ts",
+  "tests/unit/provider-inventory-docs.test.ts",
 ];
 
 /**

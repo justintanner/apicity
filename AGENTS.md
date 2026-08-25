@@ -59,7 +59,17 @@ cp -rf source dest          # NOT: cp -r source dest
 
 ## Project Overview
 
-Apicity is a TypeScript monorepo of standalone AI provider packages (`@apicity/openai`, `@apicity/xai`, `@apicity/fal`, `@apicity/google`, `@apicity/kimicoding`, `@apicity/kie`, `@apicity/anthropic`, `@apicity/fireworks`, `@apicity/alibaba`, `@apicity/binance`, `@apicity/free-media-upload`). Each package has zero external dependencies.
+Apicity is a TypeScript monorepo of standalone API provider packages
+(<!-- provider-inventory:providers:start -->`@apicity/openai`, `@apicity/anthropic`, `@apicity/xai`, `@apicity/fal`,
+`@apicity/google`, `@apicity/googleflow`, `@apicity/kie`, `@apicity/kimicoding`,
+`@apicity/alibaba`, `@apicity/fireworks`, `@apicity/zaicoding`, `@apicity/binance`,
+`@apicity/polymarket`, `@apicity/simplefunctions`, `@apicity/openligadb`,
+`@apicity/thesportsdb`, `@apicity/openf1`, `@apicity/elevenlabs`, `@apicity/s3`,
+`@apicity/b2`, `@apicity/dropbox`, `@apicity/dolthub`, `@apicity/meta`,
+`@apicity/telegram`, `@apicity/quo`, `@apicity/x`, `@apicity/youtube`,
+`@apicity/free-media-upload`, `@apicity/cost`<!-- provider-inventory:providers:end -->). Each package is self-contained with a minimal dependency
+footprint: every provider depends on `zod` for endpoint `.schema` definitions,
+and polymarket also depends on `viem` for EIP-712 order signing.
 
 Method paths mirror upstream API URL paths segment-by-segment; kebab-case becomes camelCase (e.g. `/v1/chat/completions` → `openai.v1.chat.completions()`).
 
@@ -85,7 +95,7 @@ pnpm run dev:preflight:fast -- <name-or-path> # Fast provider gate: scoped forma
 pnpm run dev:preflight:provider -- <name-or-path> # Explicit alias for the fast provider gate
 pnpm run dev:preflight:changed -- [paths...] # Changed-file format/lint plus full typecheck+test
 pnpm run dev:preflight           # Full local gate: format + typecheck + lint:after-format + test:run
-pnpm run ci:local                # Full CI-style gate: audit + gen:examples:check + build + lint + test:run
+pnpm run ci:local                # Full CI-style gate: audit + gen:examples:check + doc-gen:check + build + typecheck:tests + lint + test:run
 pnpm run harness:telegram -- --dry-run # Preview per-endpoint Telegram messages (changed recordings)
 pnpm run harness:telegram -- --all <pattern> --dry-run # Preview ANY recording by name/path substring
 

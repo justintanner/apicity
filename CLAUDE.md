@@ -4,7 +4,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Apicity is a TypeScript monorepo of standalone API provider packages (`@apicity/openai`, `@apicity/xai`, `@apicity/fal`, `@apicity/google`, `@apicity/kimicoding`, `@apicity/kie`, `@apicity/anthropic`, `@apicity/fireworks`, `@apicity/alibaba`, `@apicity/binance`, `@apicity/openligadb`, `@apicity/elevenlabs`, `@apicity/s3`, `@apicity/b2`, `@apicity/dolthub`, `@apicity/polymarket`, `@apicity/meta`, `@apicity/telegram`, `@apicity/quo`, `@apicity/x`, `@apicity/youtube`, `@apicity/free-media-upload`). Each package is self-contained with a minimal dependency footprint: every provider depends on `zod` (endpoint `.schema` definitions), and polymarket also depends on `viem` for EIP-712 order signing. Shared provider helpers are copied into packages as synced local source rather than consumed through workspace package dependencies. Based on [TetherAI](https://github.com/nbursa/TetherAI).
+Apicity is a TypeScript monorepo of standalone API provider packages
+(<!-- provider-inventory:providers:start -->`@apicity/openai`, `@apicity/anthropic`, `@apicity/xai`, `@apicity/fal`,
+`@apicity/google`, `@apicity/googleflow`, `@apicity/kie`, `@apicity/kimicoding`,
+`@apicity/alibaba`, `@apicity/fireworks`, `@apicity/zaicoding`, `@apicity/binance`,
+`@apicity/polymarket`, `@apicity/simplefunctions`, `@apicity/openligadb`,
+`@apicity/thesportsdb`, `@apicity/openf1`, `@apicity/elevenlabs`, `@apicity/s3`,
+`@apicity/b2`, `@apicity/dropbox`, `@apicity/dolthub`, `@apicity/meta`,
+`@apicity/telegram`, `@apicity/quo`, `@apicity/x`, `@apicity/youtube`,
+`@apicity/free-media-upload`, `@apicity/cost`<!-- provider-inventory:providers:end -->). Each package is self-contained with a minimal dependency footprint: every provider depends on `zod` (endpoint `.schema` definitions), and polymarket also depends on `viem` for EIP-712 order signing. Shared provider helpers are copied into packages as synced local source rather than consumed through workspace package dependencies. Based on [TetherAI](https://github.com/nbursa/TetherAI).
 
 `@apicity/cost` is a dependency-free cross-provider helper: pure local USD cost/token estimation (`createCost`, `computeEstimate`, bundled rate tables) plus the canonical OTP pay-gate (`withPaidGate`) source vendored into kie and xai.
 
@@ -36,7 +44,10 @@ over raw `vitest` / `op run` invocations.
 # Build / lint / format
 pnpm install                     # Install dependencies
 pnpm run build                   # Build all packages
-pnpm run build:kimicoding        # Build single package (also: build:google, build:googleflow, build:kie, build:xai, build:openai, build:fal, build:anthropic, build:fireworks, build:alibaba, build:binance, build:openligadb, build:elevenlabs, build:s3, build:b2, build:dolthub, build:polymarket, build:meta, build:telegram, build:quo, build:x, build:youtube, build:free-media-upload, build:cost, build:mcp-server)
+pnpm run build:kimicoding        # Build single package (one alias per package; see below)
+pnpm run doc-gen                 # Regenerate every provider README
+pnpm run doc-gen:check           # Check generated READMEs for drift (part of ci:local)
+pnpm run doc-gen:kie             # Regenerate one provider README (one alias per provider; see below)
 pnpm run gen:kie-pricing-manifest # Regenerate the committed KIE pricing manifest
 pnpm run gen:kie-pricing-manifest:check # Check the KIE pricing manifest for drift
 pnpm run gen:shared              # Sync canonical shared/provider-src files into provider copies
@@ -65,7 +76,7 @@ pnpm run dev:preflight:fast -- <name-or-path> # fast provider gate: scoped forma
 pnpm run dev:preflight:provider <name-or-path> # explicit alias for the fast provider gate
 pnpm run dev:preflight:changed   # changed-file format/lint plus full typecheck + replay suite
 pnpm run dev:preflight           # full local gate: format + typecheck + lint:after-format + test:run
-pnpm run ci:local                # full CI-style gate: audit + gen:examples:check + build + lint + test:run
+pnpm run ci:local                # full CI-style gate: audit + gen:examples:check + doc-gen:check + build + typecheck:tests + lint + test:run
 
 # Harness viewer + screenshots
 pnpm run harness                 # HAR viewer at localhost:3475 (all recordings)
@@ -84,6 +95,17 @@ npx tsx tests/harness-serve.ts tests/recordings/       # View a directory of rec
 npx tsx tests/harness-serve.ts --html out.html <paths> # Generate self-contained HTML
 npx tsx tests/harness-serve.ts --git-approve <paths>   # Enable approve button (git add)
 ```
+
+Every package has a single-package `build:<name>` alias, and every provider
+with a generated README has a `doc-gen:<name>` alias. Both lists are pinned to
+the repository by `tests/unit/provider-inventory-docs.test.ts`, so a new
+package that ships without its aliases — or an alias documented here that no
+longer exists — fails a gate rather than going stale.
+
+- `build:` — <!-- provider-inventory:claude-build-scripts:start -->`build:alibaba`, `build:anthropic`, `build:b2`, `build:binance`, `build:cost`, `build:dolthub`, `build:dropbox`, `build:elevenlabs`, `build:fal`, `build:fireworks`, `build:free-media-upload`, `build:google`, `build:googleflow`, `build:kie`, `build:kimicoding`, `build:mcp-server`, `build:meta`, `build:openai`, `build:openf1`, `build:openligadb`, `build:polymarket`, `build:quo`, `build:s3`, `build:simplefunctions`, `build:telegram`, `build:thesportsdb`, `build:x`, `build:xai`, `build:youtube`, `build:zaicoding`<!-- provider-inventory:claude-build-scripts:end -->
+- `doc-gen:` — <!-- provider-inventory:claude-doc-gen-scripts:start -->`doc-gen:alibaba`, `doc-gen:anthropic`, `doc-gen:b2`, `doc-gen:binance`, `doc-gen:dolthub`, `doc-gen:dropbox`, `doc-gen:elevenlabs`, `doc-gen:fal`, `doc-gen:fireworks`, `doc-gen:free-media-upload`, `doc-gen:google`, `doc-gen:googleflow`, `doc-gen:kie`, `doc-gen:kimicoding`, `doc-gen:meta`, `doc-gen:openai`, `doc-gen:openf1`, `doc-gen:openligadb`, `doc-gen:polymarket`, `doc-gen:quo`, `doc-gen:s3`, `doc-gen:simplefunctions`, `doc-gen:telegram`, `doc-gen:thesportsdb`, `doc-gen:x`, `doc-gen:xai`, `doc-gen:youtube`, `doc-gen:zaicoding`<!-- provider-inventory:claude-doc-gen-scripts:end -->
+  (`cost` is excluded: its README is hand-written and it exposes no endpoint
+  surface.)
 
 `pnpm run lint` intentionally rebuilds only `@apicity/kie` before the
 compare-cost payload schema repository check. This makes the guard reliable on
@@ -147,7 +169,7 @@ All tests use Polly.js HTTP record/replay (no mocks):
 
 **Scope the loop to one provider.** While working on a single provider, don't replay the whole suite — run only that provider's tests with `pnpm test:provider <name-or-path>` (resolves `<name>.test.ts` + `<name>-*.test.ts` across the top level of `tests/integration`, `tests/functional`, and `tests/unit`, plus every `*.test.ts` in a one-directory-deep subdirectory named after the provider, e.g. `tests/unit/kie/`). The argument can be a provider name, a path under `packages/provider/<name>`, or a matching integration test path. From inside a provider package, `pnpm -w run test:provider` and `pnpm -w run dev:preflight:fast` infer the provider from pnpm's `INIT_CWD`. For committed, staged, unstaged, or untracked provider-only diffs, `pnpm run test:affected` auto-selects the touched provider tests. It falls back to full `pnpm run test:run` for shared scripts/config, package metadata, unit or functional tests, docs, and other ambiguous changes. Run full `pnpm run test:run` directly when you need an explicit complete local replay. The **full suite is GitHub CI's responsibility**; locally you only need the provider you're touching. `pnpm run dev:preflight:fast -- <name-or-path>` prints and runs the fast provider checklist: <!-- fast-gate-steps:start -->scoped format<!-- fast-gate-step:format -->, scoped lint<!-- fast-gate-step:lint -->, the whole tests-project typecheck (`tsc --noEmit -p tests/tsconfig.json`)<!-- fast-gate-step:typecheck-tests -->, provider typecheck and replay<!-- fast-gate-step:test-provider -->, and the cross-cutting repo-wide guard tests<!-- fast-gate-step:cross-cutting --><!-- fast-gate-steps:end -->. Use `pnpm run dev:preflight` or `pnpm run ci:local` for shared tooling, package metadata, docs, test harness changes, release prep, or any ambiguous diff that needs the full repository gate.
 
-**Cross-cutting repo-wide guard tests always run in the fast gates.** `scripts/lib/cross-cutting-tests.mjs` lists whole-repo guards that provider scopes do not select consistently: the upload and multipart recording-corpus allowlists (`tests/integration/upload-recordings.test.ts`, `tests/integration/multipart-recordings.test.ts`), endpoint cost-tier inventory (`tests/unit/endpoint-cost-tiers.test.ts`), KIE pricing source-pin reconciliation (`tests/unit/kie-pricing-reconciliation.test.ts`), and cross-provider registry parity (`tests/unit/cost-slugs.test.ts`: exact `fal` pricing/slug key sets, slug/display coverage for every provider, every `PRICING.kie` key resolving through `MODEL_SLUGS` and `MODEL_DISPLAY`, and exact `googleflow` slug/display keys). Without the extra selection, provider-scoped work can leave a repo-wide invariant stale until full CI; `92323c18` was the hand repair for a cost-slug pin that followed exactly that path. When this guard fails with `source-checksum-mismatch` and the source change is intentional, re-pin with `pnpm run gen:kie-pricing-manifest` and commit the resulting diff; `pnpm run gen:kie-pricing-manifest:check` confirms it. Both `dev:preflight:fast` and `test:affected` (in its provider-scoped path) run entries their provider replay did not already select, or the full list when passthrough filters make de-duplication unsafe. They are filesystem- and source-parse-only (no Polly, no network) and cost about 5.7s on the reference machine. Add any such guard to that list.
+**Cross-cutting repo-wide guard tests always run in the fast gates.** `scripts/lib/cross-cutting-tests.mjs` lists whole-repo guards that provider scopes do not select consistently: <!-- cross-cutting-tests:start -->the upload and multipart recording-corpus allowlists (`tests/integration/upload-recordings.test.ts`, `tests/integration/multipart-recordings.test.ts`), endpoint cost-tier inventory (`tests/unit/endpoint-cost-tiers.test.ts`), KIE pricing source-pin reconciliation (`tests/unit/kie-pricing-reconciliation.test.ts`), cross-provider registry parity in both directions (`tests/unit/cost-slugs.test.ts`: exact `fal` pricing/slug key sets, slug/display coverage for every provider, every `PRICING.kie` key resolving through `MODEL_SLUGS` and `MODEL_DISPLAY`, and exact `googleflow` slug/display keys; `tests/unit/cost-pricing.test.ts`: a `PRICING` entry for every registered `MODEL_SLUGS` entry, under an explicit unpriced allowlist), and the documentation inventories (`tests/unit/provider-inventory-docs.test.ts`: the provider list and the `build:*` / `doc-gen:*` alias sets, derived from disk and pinned in `CLAUDE.md`, `AGENTS.md`, and `README.md`)<!-- cross-cutting-tests:end -->. Without the extra selection, provider-scoped work can leave a repo-wide invariant stale until full CI; `92323c18` was the hand repair for a cost-slug pin that followed exactly that path. When this guard fails with `source-checksum-mismatch` and the source change is intentional, re-pin with `pnpm run gen:kie-pricing-manifest` and commit the resulting diff; `pnpm run gen:kie-pricing-manifest:check` confirms it. Both `dev:preflight:fast` and `test:affected` (in its provider-scoped path) run entries their provider replay did not already select, or the full list when passthrough filters make de-duplication unsafe. They are filesystem- and source-parse-only (no Polly, no network) and cost about <!-- cross-cutting-cost:start -->5.7<!-- cross-cutting-cost:end -->s on the reference machine. That figure lives once in `CROSS_CUTTING_COST_SECONDS`; this sentence is pinned to it. Add any such guard to that list.
 
 **The tests-project typecheck always runs in the fast provider gate.** No provider package `tsconfig.json` includes `tests/**`, and Vitest compiles test files through esbuild, which strips types without checking them — so replaying a test proves nothing about its types. That gap went red on `main` twice with the scoped gate green (kimicoding's content union, xai's readonly spread; both fixed test-side in `73c8b0cc`). `dev:preflight:fast` therefore runs `pnpm run typecheck:tests` (`tsc --noEmit -p tests/tsconfig.json`) unconditionally and whole-tree: the step is not filtered by provider scope, so a type error in any file the tests project compiles fails the gate whichever provider you invoked it for. It costs one `tsc` run — measured at 22.5s, 25.5s, and 35s on three machines during this work — against the ~105s of the full `pnpm run typecheck`, which the fast gate still never invokes. `scripts/lib/tests-project.mjs` holds the invocation and the list of paths the project covers, shared with `typecheck:provider`. `test:affected` does **not** run this step: it is a test-selection helper, not the pre-push gate.
 
@@ -310,8 +332,10 @@ stay in sync. `pnpm run lint` includes `gen:shared:check` and fails on drift.
 
 - **test** (push + PR) — guards against cassette re-recording
   (`POLLY_MODE` must be `replay`), then audit + generated-example drift check +
-  build + verify artifacts + lint + integration tests via Polly.js replay.
-  Equivalent to `ci:local`.
+  generated-README drift check (`doc-gen:check`, which must precede the build
+  because `pnpm run build` ends in `doc-gen`) + build + verify artifacts +
+  the tests-project typecheck (`typecheck:tests`) + lint + integration tests
+  via Polly.js replay. Equivalent to `ci:local`.
 - **endpoint-telegram** (push only) — diffs recordings since the previous push
   and sends one Telegram message per changed recording (full headers, payloads,
   response, inline media). Skips cleanly when nothing changed.

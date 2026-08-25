@@ -36,11 +36,14 @@
  * registry-parity guard, `tests/unit/cost-slugs.test.ts`, enforces exact `fal`
  * pricing/slug key sets, slug/display coverage for every provider, every `kie`
  * pricing key resolving through both slug and display registries, and exact
- * `googleflow` slug/display keys. Without this step, provider-scoped work can
- * leave a whole-repo invariant stale until full CI — the gaps behind ac-05hrc,
- * ac-t2gfln, the `92323c18` hand repair, and ac-y39i64. They are filesystem-
- * and source-parse-only (no Polly, no network) and cost about 5.7s on the
- * reference machine.
+ * `googleflow` slug/display keys; `tests/unit/cost-pricing.test.ts` enforces
+ * the mirror direction, and `tests/unit/provider-inventory-docs.test.ts` pins
+ * the provider and script-alias inventories to the repository. Without this
+ * step, provider-scoped work can leave a whole-repo invariant stale until full
+ * CI — the gaps behind ac-05hrc, ac-t2gfln, the `92323c18` hand repair,
+ * ac-y39i64, ac-kabm2y, and ac-gk1mlr. Their measured cost lives in
+ * `CROSS_CUTTING_COST_SECONDS`; the banner prints it via
+ * `crossCuttingCostNote()` rather than restating the number here.
  *
  * For typecheck-only loops, use `pnpm run typecheck:provider -- <provider>`.
  *
@@ -50,7 +53,10 @@
  */
 
 import { spawnSync } from "node:child_process";
-import { listCrossCuttingTests } from "./lib/cross-cutting-tests.mjs";
+import {
+  crossCuttingCostNote,
+  listCrossCuttingTests,
+} from "./lib/cross-cutting-tests.mjs";
 import { FAST_GATE_STEPS } from "./lib/fast-gate-steps.mjs";
 import { repoRoot, resolveProviderScope } from "./lib/provider-scope.mjs";
 import { TESTS_TYPECHECK_STEP } from "./lib/tests-project.mjs";
@@ -161,6 +167,7 @@ run(`test:provider ${provider}`, "pnpm", [
 // passthrough filters make that unsafe. Provider filters are deliberately not
 // forwarded: the guard run must execute every selected test. These tests are
 // filesystem/source-parse only; no network or replay.
+console.error(`  (${crossCuttingCostNote()})`);
 run("cross-cutting repo-wide guard tests", "pnpm", [
   "run",
   "test:run",

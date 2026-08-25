@@ -2,7 +2,9 @@ import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import {
+  CROSS_CUTTING_COST_SECONDS,
   CROSS_CUTTING_TESTS,
+  crossCuttingCostNote,
   listCrossCuttingTests,
 } from "../../scripts/lib/cross-cutting-tests.mjs";
 import { repoRoot } from "../../scripts/lib/provider-scope.mjs";
@@ -24,13 +26,22 @@ const SOURCE_PIN_TESTS = [
 ] as const;
 
 // Registry-parity suite (compares cross-provider registries for key parity).
-const REGISTRY_PARITY_TESTS = ["tests/unit/cost-slugs.test.ts"] as const;
+const REGISTRY_PARITY_TESTS = [
+  "tests/unit/cost-slugs.test.ts",
+  "tests/unit/cost-pricing.test.ts",
+] as const;
+
+// Doc-inventory suite (pins agent-facing prose to the repository itself).
+const DOC_INVENTORY_TESTS = [
+  "tests/unit/provider-inventory-docs.test.ts",
+] as const;
 
 const CATEGORIZED_TESTS: readonly string[] = [
   ...RECORDING_ENUMERATION_TESTS,
   ...SURFACE_INVENTORY_TESTS,
   ...SOURCE_PIN_TESTS,
   ...REGISTRY_PARITY_TESTS,
+  ...DOC_INVENTORY_TESTS,
 ];
 
 function readRepoFile(relativePath: string): string {
@@ -38,7 +49,7 @@ function readRepoFile(relativePath: string): string {
 }
 
 describe("cross-cutting repo-wide guard tests", () => {
-  it("lists recording-enumeration, surface-inventory, source-pin, and registry-parity tests", () => {
+  it("lists recording-enumeration, surface-inventory, source-pin, registry-parity, and doc-inventory tests", () => {
     for (const path of RECORDING_ENUMERATION_TESTS) {
       expect(CROSS_CUTTING_TESTS).toContain(path);
     }
@@ -49,6 +60,9 @@ describe("cross-cutting repo-wide guard tests", () => {
       expect(CROSS_CUTTING_TESTS).toContain(path);
     }
     for (const path of REGISTRY_PARITY_TESTS) {
+      expect(CROSS_CUTTING_TESTS).toContain(path);
+    }
+    for (const path of DOC_INVENTORY_TESTS) {
       expect(CROSS_CUTTING_TESTS).toContain(path);
     }
   });
@@ -111,6 +125,54 @@ describe("cross-cutting repo-wide guard tests", () => {
       expect(source, relativePath).toContain("MODEL_SLUGS");
       expect(source, relativePath).toContain("PRICING");
     }
+  });
+
+  it("doc-inventory tests derive their inventory from the repository", () => {
+    // A doc-inventory guard must read the provider tree rather than restate it,
+    // which is the whole point of registering it here (ac-gk1mlr).
+    for (const relativePath of DOC_INVENTORY_TESTS) {
+      const source = readRepoFile(relativePath);
+      expect(source, relativePath).toContain("readProviderNames");
+      expect(source, relativePath).toContain("provider-inventory.mjs");
+    }
+  });
+
+  // The measured cost of the block was restated by hand in three files with
+  // nothing keeping them in agreement (ac-vsx186). It now lives in one export;
+  // these two cases are what keep the remaining prose copy honest.
+  it("builds its cost sentence from the single source", () => {
+    expect(crossCuttingCostNote()).toContain(`${CROSS_CUTTING_COST_SECONDS}s`);
+  });
+
+  it("pins the CLAUDE.md cost figure and member list to this module", () => {
+    const claude = readRepoFile("CLAUDE.md");
+
+    const cost = claude.match(
+      /<!-- cross-cutting-cost:start -->([\s\S]*?)<!-- cross-cutting-cost:end -->/
+    );
+    expect(cost, "CLAUDE.md has no cross-cutting-cost region").not.toBeNull();
+    expect(Number(cost?.[1])).toBe(CROSS_CUTTING_COST_SECONDS);
+
+    const region = claude.match(
+      /<!-- cross-cutting-tests:start -->([\s\S]*?)<!-- cross-cutting-tests:end -->/
+    );
+    expect(
+      region,
+      "CLAUDE.md has no cross-cutting-tests region"
+    ).not.toBeNull();
+    const prose = region?.[1] ?? "";
+    for (const relativePath of CROSS_CUTTING_TESTS) {
+      expect(prose, `CLAUDE.md does not name ${relativePath}`).toContain(
+        relativePath
+      );
+    }
+    // The other direction: prose naming a guard the registry no longer runs.
+    const named = [...prose.matchAll(/`(tests\/[^`]+\.test\.ts)`/g)].map(
+      (match) => match[1]
+    );
+    expect(
+      named.filter((entry) => !CROSS_CUTTING_TESTS.includes(entry))
+    ).toEqual([]);
   });
 
   it("filters tests already selected by a provider scope", () => {

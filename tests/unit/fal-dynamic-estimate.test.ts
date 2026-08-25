@@ -1,5 +1,7 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
+  createFalEstimateCache,
+  falEstimateCacheKey,
   isFalDynamicPricingEndpoint,
   resolveFalDynamicEstimate,
   type FalEstimateLike,
@@ -119,7 +121,7 @@ describe("resolveFalDynamicEstimate", () => {
       endpoint,
       { prompt: "x", video_url: "https://example.com/a.mp4", duration: 0 },
       estimator({ total_cost: 1, currency: "USD" }, calls),
-      { durationSeconds: 4 }
+      { hints: { durationSeconds: 4 } }
     );
     expect(calls).toEqual([]);
     expect(withHint.usd).toBeCloseTo(0.4, 12);
@@ -131,5 +133,178 @@ describe("resolveFalDynamicEstimate", () => {
     );
     expect(withoutHint.usd).toBe(0);
     expect(withoutHint.warnings.length).toBeGreaterThan(0);
+  });
+
+  describe("caching", () => {
+    it("collapses a repeat lookup to one request", async () => {
+      const calls: unknown[] = [];
+      const cache = createFalEstimateCache({ ttlMs: 60_000 });
+      const estimate = estimator({ total_cost: 0.02, currency: "USD" }, calls);
+      const payload = { prompt: "a red panda", duration: 5 };
+
+      const first = await resolveFalDynamicEstimate(
+        DYNAMIC,
+        payload,
+        estimate,
+        {
+          cache,
+        }
+      );
+      const second = await resolveFalDynamicEstimate(
+        DYNAMIC,
+        payload,
+        estimate,
+        { cache }
+      );
+
+      expect(first.usd).toBeCloseTo(0.02, 12);
+      expect(second.usd).toBeCloseTo(0.02, 12);
+      expect(calls).toHaveLength(1);
+    });
+
+    it("misses when any payload field differs", async () => {
+      const calls: unknown[] = [];
+      const cache = createFalEstimateCache({ ttlMs: 60_000 });
+      const estimate = estimator({ total_cost: 0.02, currency: "USD" }, calls);
+      await resolveFalDynamicEstimate(
+        DYNAMIC,
+        { prompt: "a", duration: 5 },
+        estimate,
+        { cache }
+      );
+      await resolveFalDynamicEstimate(
+        DYNAMIC,
+        { prompt: "a", duration: 6 },
+        estimate,
+        { cache }
+      );
+      // Conservative by design: an extra request is cheaper than a wrong price.
+      expect(calls).toHaveLength(2);
+    });
+
+    it("is insensitive to payload key order", () => {
+      expect(falEstimateCacheKey(DYNAMIC, { a: 1, b: 2 })).toBe(
+        falEstimateCacheKey(DYNAMIC, { b: 2, a: 1 })
+      );
+      expect(falEstimateCacheKey(DYNAMIC, { a: { x: 1, y: 2 } })).toBe(
+        falEstimateCacheKey(DYNAMIC, { a: { y: 2, x: 1 } })
+      );
+      expect(falEstimateCacheKey(DYNAMIC, { a: 1 })).not.toBe(
+        falEstimateCacheKey(DYNAMIC, { a: 2 })
+      );
+    });
+
+    it("never caches a degraded answer", async () => {
+      const calls: unknown[] = [];
+      const cache = createFalEstimateCache({ ttlMs: 60_000 });
+      const payload = { prompt: "a red panda" };
+
+      const failed = await resolveFalDynamicEstimate(
+        DYNAMIC,
+        payload,
+        estimator(new Error("ECONNRESET"), calls),
+        { cache }
+      );
+      expect(failed.usd).toBe(0);
+
+      // A blip must not pin usd 0 for the whole TTL.
+      const recovered = await resolveFalDynamicEstimate(
+        DYNAMIC,
+        payload,
+        estimator({ total_cost: 0.03, currency: "USD" }, calls),
+        { cache }
+      );
+      expect(recovered.usd).toBeCloseTo(0.03, 12);
+      expect(recovered.warnings).toEqual([]);
+    });
+
+    it("expires an entry once its TTL passes", async () => {
+      // Fake timers rather than a real sleep: the cache reads Date.now(), so
+      // moving the clock is exact and keeps the suite off real timers.
+      vi.useFakeTimers();
+      try {
+        const calls: unknown[] = [];
+        const cache = createFalEstimateCache({ ttlMs: 60_000 });
+        const estimate = estimator(
+          { total_cost: 0.02, currency: "USD" },
+          calls
+        );
+        const payload = { prompt: "a" };
+        await resolveFalDynamicEstimate(DYNAMIC, payload, estimate, { cache });
+        vi.advanceTimersByTime(59_000);
+        await resolveFalDynamicEstimate(DYNAMIC, payload, estimate, { cache });
+        expect(calls, "still fresh").toHaveLength(1);
+        vi.advanceTimersByTime(2_000);
+        await resolveFalDynamicEstimate(DYNAMIC, payload, estimate, { cache });
+        expect(calls, "expired").toHaveLength(2);
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
+    it("bounds retained entries", async () => {
+      const calls: unknown[] = [];
+      const cache = createFalEstimateCache({ ttlMs: 60_000, maxEntries: 2 });
+      const estimate = estimator({ total_cost: 0.02, currency: "USD" }, calls);
+      for (const n of [1, 2, 3]) {
+        await resolveFalDynamicEstimate(
+          DYNAMIC,
+          { prompt: String(n) },
+          estimate,
+          { cache }
+        );
+      }
+      // Re-requesting the oldest must miss: it was evicted at the cap.
+      await resolveFalDynamicEstimate(DYNAMIC, { prompt: "1" }, estimate, {
+        cache,
+      });
+      expect(calls).toHaveLength(4);
+    });
+
+    it("rejects a nonsensical cache policy", () => {
+      expect(() => createFalEstimateCache({ ttlMs: 0 })).toThrow(/ttlMs/);
+      expect(() => createFalEstimateCache({ ttlMs: -1 })).toThrow(/ttlMs/);
+      expect(() =>
+        createFalEstimateCache({ ttlMs: 1000, maxEntries: 0 })
+      ).toThrow(/maxEntries/);
+    });
+
+    it("honours a caller-supplied key function", async () => {
+      const calls: unknown[] = [];
+      const cache = createFalEstimateCache({ ttlMs: 60_000 });
+      const estimate = estimator({ total_cost: 0.02, currency: "USD" }, calls);
+      // A caller that knows `seed` cannot move its price narrows the key.
+      const keyFor = (endpoint: string, payload: Record<string, unknown>) => {
+        const rest = { ...payload };
+        delete rest.seed;
+        return falEstimateCacheKey(endpoint, rest);
+      };
+      await resolveFalDynamicEstimate(
+        DYNAMIC,
+        { prompt: "a", seed: 1 },
+        estimate,
+        { cache, keyFor }
+      );
+      await resolveFalDynamicEstimate(
+        DYNAMIC,
+        { prompt: "a", seed: 2 },
+        estimate,
+        { cache, keyFor }
+      );
+      expect(calls).toHaveLength(1);
+    });
+
+    it("never consults the cache for a statically-priced endpoint", async () => {
+      const calls: unknown[] = [];
+      const cache = createFalEstimateCache({ ttlMs: 60_000 });
+      const result = await resolveFalDynamicEstimate(
+        STATIC,
+        { prompt: "x", duration: 2 },
+        estimator({ total_cost: 999, currency: "USD" }, calls),
+        { cache }
+      );
+      expect(calls).toEqual([]);
+      expect(result.usd).toBeCloseTo(0.1, 12);
+    });
   });
 });

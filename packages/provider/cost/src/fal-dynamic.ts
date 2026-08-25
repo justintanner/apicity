@@ -68,6 +68,128 @@ export function isFalDynamicPricingEndpoint(endpoint: string): boolean {
 }
 
 /**
+ * A cache `resolveFalDynamicEstimate` can consult, supplied by the caller.
+ *
+ * Deliberately an argument rather than a module-level map. `@apicity/cost` is
+ * otherwise stateless, and a built-in cache would make two unrelated callers in
+ * one process share a store neither asked for, with a lifetime neither
+ * controls. The caller owns the policy; this package only reads and writes
+ * through the two methods (ac-ehulwa).
+ *
+ * `get` returns `undefined` for a miss. Implementations may be async.
+ */
+export interface FalEstimateCache {
+  get(
+    key: string
+  ): FalEstimateLike | undefined | Promise<FalEstimateLike | undefined>;
+  set(key: string, value: FalEstimateLike): void | Promise<void>;
+}
+
+export interface FalEstimateCacheOptions {
+  /**
+   * How long an entry stays fresh, in milliseconds.
+   *
+   * Required, with no default. fal moves these rates on fal's cadence, and how
+   * stale an advisory number may be is a decision about the caller's product,
+   * not one this package can make for it. A short TTL collapses a burst (a
+   * cost preview re-estimating per keystroke) while still picking up a rate
+   * change within minutes; a long one trades that for staleness.
+   */
+  ttlMs: number;
+  /**
+   * Hard cap on retained entries; the oldest insert is evicted at the cap.
+   *
+   * An unbounded map in a long-lived process is a leak — the key includes the
+   * payload, so a service estimating varied requests would grow without limit.
+   */
+  maxEntries?: number;
+}
+
+/**
+ * A bounded, TTL'd in-memory cache satisfying `FalEstimateCache`.
+ *
+ * Provided so callers do not have to hand-roll one, not because this policy is
+ * the right one for everybody — a caller with different needs passes its own
+ * object instead. Dependency-free and synchronous; eviction is
+ * oldest-insert-first, which is enough for a cache whose entries expire anyway.
+ */
+export function createFalEstimateCache(
+  options: FalEstimateCacheOptions
+): FalEstimateCache {
+  const { ttlMs, maxEntries = 256 } = options;
+  if (!Number.isFinite(ttlMs) || ttlMs <= 0) {
+    throw new Error("createFalEstimateCache: ttlMs must be a positive number");
+  }
+  if (!Number.isFinite(maxEntries) || maxEntries <= 0) {
+    throw new Error(
+      "createFalEstimateCache: maxEntries must be a positive number"
+    );
+  }
+  const entries = new Map<
+    string,
+    { value: FalEstimateLike; expires: number }
+  >();
+  return {
+    get(key) {
+      const hit = entries.get(key);
+      if (!hit) return undefined;
+      if (hit.expires <= Date.now()) {
+        entries.delete(key);
+        return undefined;
+      }
+      return hit.value;
+    },
+    set(key, value) {
+      if (entries.size >= maxEntries && !entries.has(key)) {
+        const oldest = entries.keys().next();
+        if (!oldest.done) entries.delete(oldest.value);
+      }
+      entries.set(key, { value, expires: Date.now() + ttlMs });
+    },
+  };
+}
+
+/**
+ * The default cache key: the endpoint plus a canonical form of the payload.
+ *
+ * Keys on the WHOLE payload rather than a guessed set of pricing-relevant
+ * fields. That is deliberately conservative — changing a `seed` misses the
+ * cache and costs one extra request — because the failure modes are not
+ * symmetric: an unnecessary request is cheap, and a payload field wrongly
+ * assumed price-irrelevant returns a wrong number for money. A caller that
+ * knows its own payloads can narrow this through `keyFor`.
+ *
+ * Object keys are sorted so key order in the payload does not fragment the
+ * cache.
+ */
+export function falEstimateCacheKey(
+  endpoint: string,
+  payload: Record<string, unknown>
+): string {
+  return `${endpoint}\u0000${canonical(payload)}`;
+}
+
+function canonical(value: unknown): string {
+  if (value === null || typeof value !== "object") return JSON.stringify(value);
+  if (Array.isArray(value)) return `[${value.map(canonical).join(",")}]`;
+  const record = value as Record<string, unknown>;
+  const keys = Object.keys(record).sort();
+  return `{${keys
+    .map((key) => `${JSON.stringify(key)}:${canonical(record[key])}`)
+    .join(",")}}`;
+}
+
+/** Options for `resolveFalDynamicEstimate`. */
+export interface ResolveFalDynamicEstimateOptions {
+  /** Cost-only hints, forwarded to the local path. */
+  hints?: CostHints;
+  /** Optional cache; omitted means every dynamic call reaches the estimator. */
+  cache?: FalEstimateCache;
+  /** Override the default whole-payload cache key. */
+  keyFor?: (endpoint: string, payload: Record<string, unknown>) => string;
+}
+
+/**
  * Resolve a fal estimate, using the remote pricing API only where the local
  * table deliberately has no rate.
  *
@@ -80,17 +202,22 @@ export function isFalDynamicPricingEndpoint(endpoint: string): boolean {
  * is advisory; making a caller's cost preview fail because a pricing lookup
  * timed out would be the wrong trade.
  *
+ * Pass `options.cache` to collapse repeat lookups. Only successful answers are
+ * cached: a transient outage must not pin a `usd: 0` for the whole TTL.
+ *
  * @param endpoint - fal endpoint id, e.g. `alibaba/wan-3.0/text-to-video`
  * @param payload - the request body the caller intends to send
  * @param estimate - fal's estimator, e.g. `fal.v1.models.pricing.estimate`
- * @param hints - cost-only hints, forwarded to the local path
+ * @param options - hints, cache, and cache-key overrides
  */
 export async function resolveFalDynamicEstimate(
   endpoint: string,
   payload: Record<string, unknown>,
   estimate: FalEstimator,
-  hints?: CostHints
+  options: ResolveFalDynamicEstimateOptions = {}
 ): Promise<CostEstimate> {
+  const { hints, cache, keyFor = falEstimateCacheKey } = options;
+
   if (!isFalDynamicPricingEndpoint(endpoint)) {
     return computeEstimate({
       provider: "fal",
@@ -107,6 +234,12 @@ export async function resolveFalDynamicEstimate(
     ...(hints ? { costHints: hints } : {}),
   });
 
+  const cacheKey = cache ? keyFor(endpoint, payload) : undefined;
+  if (cache && cacheKey !== undefined) {
+    const cached = await cache.get(cacheKey);
+    if (cached) return fromAnswer(cached, endpoint, local);
+  }
+
   let answer: FalEstimateLike;
   try {
     answer = await estimate({
@@ -122,6 +255,22 @@ export async function resolveFalDynamicEstimate(
     );
   }
 
+  const resolved = fromAnswer(answer, endpoint, local);
+  // Cache only a usable answer. A throw, a missing total, or a non-USD quote
+  // all degrade to the local warning, and pinning that for the TTL would turn
+  // a blip into minutes of silently unpriced estimates.
+  if (cache && cacheKey !== undefined && resolved.warnings.length === 0) {
+    await cache.set(cacheKey, answer);
+  }
+  return resolved;
+}
+
+/** Convert a remote answer into a `CostEstimate`, or degrade to the local one. */
+function fromAnswer(
+  answer: FalEstimateLike,
+  endpoint: string,
+  local: CostEstimate
+): CostEstimate {
   if (
     typeof answer?.total_cost !== "number" ||
     !Number.isFinite(answer.total_cost)

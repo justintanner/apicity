@@ -3,8 +3,16 @@ export { computeEstimate } from "./compute";
 export {
   resolveFalDynamicEstimate,
   isFalDynamicPricingEndpoint,
+  createFalEstimateCache,
+  falEstimateCacheKey,
 } from "./fal-dynamic";
-export type { FalEstimator, FalEstimateLike } from "./fal-dynamic";
+export type {
+  FalEstimator,
+  FalEstimateLike,
+  FalEstimateCache,
+  FalEstimateCacheOptions,
+  ResolveFalDynamicEstimateOptions,
+} from "./fal-dynamic";
 export {
   COST_TIERS,
   CHEAP_MAX_USD,

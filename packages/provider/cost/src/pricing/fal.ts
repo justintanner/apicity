@@ -36,6 +36,10 @@ const audioAsOf = "2026-08-22";
 // Seedance 2.5 pricing was re-pulled from fal's pricing API on this date.
 const seedance25AsOf = "2026-08-23";
 
+// Wan 3.0 pricing was pulled from fal's pricing API
+// (GET /v1/models/pricing?endpoint_id=...) on this date.
+const wan30AsOf = "2026-08-25";
+
 // Grok Imagine video edit was rechecked against its fal.ai pricing card on
 // this date. Both the source-video input and edited output bill for the same
 // hinted clip length, so their per-second components can be summed exactly.
@@ -247,14 +251,18 @@ const generateAudio = {
 const perSecond = (
   endpointId: string,
   usd: number,
-  seconds: (p: Record<string, unknown>, hints?: CostHints) => number | undefined
+  seconds: (
+    p: Record<string, unknown>,
+    hints?: CostHints
+  ) => number | undefined,
+  on: string = sweepAsOf
 ): ModelPricing => ({
   kind: "perUnit",
   unit: "seconds",
   units: seconds,
   select: [],
   rates: { "": usd },
-  source: source(endpointId, sweepAsOf),
+  source: source(endpointId, on),
 });
 
 const perSecondTiered = (
@@ -452,8 +460,19 @@ const gptImagePerImage = (
 //     delivered resolution and precise/creative mode as rechecked
 //     2026-08-22; source duration and dimensions are not request fields, so
 //     a static estimate would guess.
+//   - alibaba/wan-3.0/text-to-video, alibaba/wan-3.0/image-to-video,
+//     alibaba/wan-3.0/reference-to-video: billed per COMPUTE SECOND
+//     (USD 0.00017) as pulled 2026-08-25 from fal's own pricing API
+//     (GET /v1/models/pricing?endpoint_id=...). The request carries an output
+//     `duration`, but compute seconds are wall-clock GPU time — a different
+//     unit that no request field determines — so deriving a rate from
+//     duration would invent one. The premium `alibaba/wan-3.0-prime/*`
+//     siblings bill per OUTPUT second instead and are priced statically below.
 export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "alibaba/qwen-image-3/text-to-image",
+  "alibaba/wan-3.0/image-to-video",
+  "alibaba/wan-3.0/reference-to-video",
+  "alibaba/wan-3.0/text-to-video",
   "blackforestlabs/flux-video-upscale",
   "google/nano-banana-2-lite",
   "google/nano-banana-lite/edit",
@@ -707,6 +726,34 @@ export const fal: Record<string, ModelPricing> = {
     seedance25ReferenceRates(0.0214),
     seedanceSeconds,
     seedance25AsOf
+  ),
+
+  // Video — Wan 3.0 Prime bills a flat USD 0.05 per OUTPUT second with no
+  // resolution tier (fal's pricing API reports one unit_price for all three
+  // operations, pulled 2026-08-25). `duration` is an integer 2-30 defaulting
+  // to 5, so an omitted duration is exactly the documented default. An
+  // explicit `duration: null` selects smart duration — the model picks the
+  // length — which no request field determines, so numericSeconds returns
+  // undefined and the estimate fails closed rather than assuming 5.
+  "alibaba/wan-3.0-prime/text-to-video": perSecond(
+    "alibaba/wan-3.0-prime/text-to-video",
+    0.05,
+    numericSeconds(5),
+    wan30AsOf
+  ),
+  "alibaba/wan-3.0-prime/image-to-video": perSecond(
+    "alibaba/wan-3.0-prime/image-to-video",
+    0.05,
+    numericSeconds(5),
+    wan30AsOf
+  ),
+  // Reference media is metered upstream too, but its length is not in the
+  // payload — output component only, matching wan/v2.7/reference-to-video.
+  "alibaba/wan-3.0-prime/reference-to-video": perSecond(
+    "alibaba/wan-3.0-prime/reference-to-video",
+    0.05,
+    numericSeconds(5),
+    wan30AsOf
   ),
 
   // Video — Wan 2.7: t2v/i2v tier on resolution (schema default 1080p);

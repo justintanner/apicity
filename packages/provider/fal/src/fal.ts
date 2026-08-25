@@ -76,6 +76,12 @@ import {
   FalElevenlabsSpeechToTextScribeV2Request,
   FalElevenlabsSpeechToTextScribeV2Response,
   FalAlibabaQwenImage3TextToImageRequest,
+  FalWan3p0TextToVideoRequest,
+  FalWan3p0TextToVideoResponse,
+  FalWan3p0ImageToVideoRequest,
+  FalWan3p0ImageToVideoResponse,
+  FalWan3p0ReferenceToVideoRequest,
+  FalWan3p0ReferenceToVideoResponse,
   FalAlibabaQwenImage3TextToImageResponse,
   FalWanV2p7TextToImageRequest,
   FalWanV2p7TextToImageResponse,
@@ -184,6 +190,9 @@ import {
   FalSeedSpeechTtsV2RequestSchema,
   FalElevenlabsSpeechToTextScribeV2RequestSchema,
   FalAlibabaQwenImage3TextToImageRequestSchema,
+  FalWan3p0TextToVideoRequestSchema,
+  FalWan3p0ImageToVideoRequestSchema,
+  FalWan3p0ReferenceToVideoRequestSchema,
   FalWanV2p7TextToImageRequestSchema,
   FalWanV2p7EditRequestSchema,
   FalWanV2p7TextToVideoRequestSchema,
@@ -719,6 +728,84 @@ export function createFal(opts: FalOptions): FalProvider {
     "POST",
     "/alibaba/qwen-image-3/text-to-image",
     FalAlibabaQwenImage3TextToImageRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://api.fal.ai/v1/alibaba/wan-3.0/text-to-video
+  // Docs: https://fal.ai/models/alibaba/wan-3.0/text-to-video/api
+  const alibabaWan3p0TextToVideo = jsonBody<
+    FalWan3p0TextToVideoRequest,
+    FalWan3p0TextToVideoResponse
+  >(
+    "POST",
+    "/alibaba/wan-3.0/text-to-video",
+    FalWan3p0TextToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://api.fal.ai/v1/alibaba/wan-3.0/image-to-video
+  // Docs: https://fal.ai/models/alibaba/wan-3.0/image-to-video/api
+  const alibabaWan3p0ImageToVideo = jsonBody<
+    FalWan3p0ImageToVideoRequest,
+    FalWan3p0ImageToVideoResponse
+  >(
+    "POST",
+    "/alibaba/wan-3.0/image-to-video",
+    FalWan3p0ImageToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://api.fal.ai/v1/alibaba/wan-3.0/reference-to-video
+  // Docs: https://fal.ai/models/alibaba/wan-3.0/reference-to-video/api
+  const alibabaWan3p0ReferenceToVideo = jsonBody<
+    FalWan3p0ReferenceToVideoRequest,
+    FalWan3p0ReferenceToVideoResponse
+  >(
+    "POST",
+    "/alibaba/wan-3.0/reference-to-video",
+    FalWan3p0ReferenceToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://api.fal.ai/v1/alibaba/wan-3.0-prime/text-to-video
+  // Docs: https://fal.ai/models/alibaba/wan-3.0-prime/text-to-video/api
+  const alibabaWan3p0PrimeTextToVideo = jsonBody<
+    FalWan3p0TextToVideoRequest,
+    FalWan3p0TextToVideoResponse
+  >(
+    "POST",
+    "/alibaba/wan-3.0-prime/text-to-video",
+    FalWan3p0TextToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://api.fal.ai/v1/alibaba/wan-3.0-prime/image-to-video
+  // Docs: https://fal.ai/models/alibaba/wan-3.0-prime/image-to-video/api
+  const alibabaWan3p0PrimeImageToVideo = jsonBody<
+    FalWan3p0ImageToVideoRequest,
+    FalWan3p0ImageToVideoResponse
+  >(
+    "POST",
+    "/alibaba/wan-3.0-prime/image-to-video",
+    FalWan3p0ImageToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://api.fal.ai/v1/alibaba/wan-3.0-prime/reference-to-video
+  // Docs: https://fal.ai/models/alibaba/wan-3.0-prime/reference-to-video/api
+  const alibabaWan3p0PrimeReferenceToVideo = jsonBody<
+    FalWan3p0ReferenceToVideoRequest,
+    FalWan3p0ReferenceToVideoResponse
+  >(
+    "POST",
+    "/alibaba/wan-3.0-prime/reference-to-video",
+    FalWan3p0ReferenceToVideoRequestSchema,
     { base: runBaseURL }
   );
 
@@ -1567,6 +1654,16 @@ export function createFal(opts: FalOptions): FalProvider {
 
   const run: FalRunNamespace = {
     alibaba: {
+      wan3p0: {
+        textToVideo: alibabaWan3p0TextToVideo,
+        imageToVideo: alibabaWan3p0ImageToVideo,
+        referenceToVideo: alibabaWan3p0ReferenceToVideo,
+      },
+      wan3p0Prime: {
+        textToVideo: alibabaWan3p0PrimeTextToVideo,
+        imageToVideo: alibabaWan3p0PrimeImageToVideo,
+        referenceToVideo: alibabaWan3p0PrimeReferenceToVideo,
+      },
       qwenImage3: {
         textToImage: alibabaQwenImage3TextToImage,
       },

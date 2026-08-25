@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-75 endpoints across 21 groups. Each method mirrors an upstream URL path.
+81 endpoints across 21 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -136,6 +136,108 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.alibaba.qwenImage3.textToImage({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.alibaba.wan3p0.imageToVideo</code></b></summary>
+
+<code>POST https://api.fal.ai/v1/alibaba/wan-3.0/image-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/alibaba/wan-3.0/image-to-video/api)
+
+```typescript
+const res = await fal.alibaba.wan3p0.imageToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.alibaba.wan3p0.referenceToVideo</code></b></summary>
+
+<code>POST https://api.fal.ai/v1/alibaba/wan-3.0/reference-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/alibaba/wan-3.0/reference-to-video/api)
+
+```typescript
+const res = await fal.alibaba.wan3p0.referenceToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.alibaba.wan3p0.textToVideo</code></b></summary>
+
+<code>POST https://api.fal.ai/v1/alibaba/wan-3.0/text-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/alibaba/wan-3.0/text-to-video/api)
+
+```typescript
+const res = await fal.alibaba.wan3p0.textToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.alibaba.wan3p0Prime.imageToVideo</code></b></summary>
+
+<code>POST https://api.fal.ai/v1/alibaba/wan-3.0-prime/image-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/alibaba/wan-3.0-prime/image-to-video/api)
+
+```typescript
+const res = await fal.alibaba.wan3p0Prime.imageToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.alibaba.wan3p0Prime.referenceToVideo</code></b></summary>
+
+<code>POST https://api.fal.ai/v1/alibaba/wan-3.0-prime/reference-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/alibaba/wan-3.0-prime/reference-to-video/api)
+
+```typescript
+const res = await fal.alibaba.wan3p0Prime.referenceToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.alibaba.wan3p0Prime.textToVideo</code></b></summary>
+
+<code>POST https://api.fal.ai/v1/alibaba/wan-3.0-prime/text-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/alibaba/wan-3.0-prime/text-to-video/api)
+
+```typescript
+const res = await fal.alibaba.wan3p0Prime.textToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

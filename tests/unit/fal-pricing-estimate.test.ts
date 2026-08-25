@@ -110,6 +110,12 @@ describe("fal video pricing estimates", () => {
     "bytedance/seedance-2.5/text-to-video",
     "bytedance/seedance-2.5/image-to-video",
     "bytedance/seedance-2.5/reference-to-video",
+    "alibaba/wan-3.0/text-to-video",
+    "alibaba/wan-3.0/image-to-video",
+    "alibaba/wan-3.0/reference-to-video",
+    "alibaba/wan-3.0-prime/text-to-video",
+    "alibaba/wan-3.0-prime/image-to-video",
+    "alibaba/wan-3.0-prime/reference-to-video",
     "fal-ai/wan/v2.7/text-to-video",
     "fal-ai/wan/v2.7/image-to-video",
     "fal-ai/wan/v2.7/reference-to-video",
@@ -133,7 +139,7 @@ describe("fal video pricing estimates", () => {
 
   it("covers every REQ-001 endpoint statically or on the dynamic list", () => {
     const dynamic: readonly string[] = FAL_DYNAMIC_PRICING_ENDPOINTS;
-    expect(REQ_001_ENDPOINTS).toHaveLength(28);
+    expect(REQ_001_ENDPOINTS).toHaveLength(34);
     for (const endpoint of REQ_001_ENDPOINTS) {
       expect(endpoint in FAL_ENDPOINT_REQUEST_SCHEMAS, endpoint).toBe(true);
       const priced = endpoint in falPricing;
@@ -522,6 +528,56 @@ describe("fal video pricing estimates", () => {
         resolution: "720p",
       }).usd
     ).toBeCloseTo(2.3112, 10);
+
+    // Wan 3.0 Prime bills a flat $0.05 per OUTPUT second, with no resolution
+    // tier — fal's pricing API reports one unit_price for all three operations
+    // (pulled 2026-08-25). `duration` is an integer defaulting to 5.
+    expect(
+      est("alibaba/wan-3.0-prime/text-to-video", { prompt: "p", duration: 2 })
+        .usd
+    ).toBeCloseTo(0.1, 10);
+
+    expect(
+      est("alibaba/wan-3.0-prime/image-to-video", {
+        start_image_url: "https://example.com/cat.jpg",
+        duration: 30,
+      }).usd
+    ).toBeCloseTo(1.5, 10);
+
+    // Omitted duration takes the documented schema default of 5 seconds.
+    expect(
+      est("alibaba/wan-3.0-prime/reference-to-video", {
+        reference_image_urls: ["https://example.com/cat.jpg"],
+      }).usd
+    ).toBeCloseTo(0.25, 10);
+
+    // Resolution does not tier the rate.
+    expect(
+      est("alibaba/wan-3.0-prime/text-to-video", {
+        prompt: "p",
+        duration: 5,
+        resolution: "480p",
+      }).usd
+    ).toBeCloseTo(
+      est("alibaba/wan-3.0-prime/text-to-video", {
+        prompt: "p",
+        duration: 5,
+        resolution: "1080p",
+      }).usd,
+      10
+    );
+  });
+
+  it("fails closed on Wan 3.0 Prime smart duration", () => {
+    // `duration: null` asks the model to pick the length from the prompt and
+    // reference media. Nothing in the payload determines it, so the estimate
+    // must warn rather than fall back to the 5-second default.
+    const result = est("alibaba/wan-3.0-prime/text-to-video", {
+      prompt: "p",
+      duration: null,
+    });
+    expect(result.usd).toBe(0);
+    expect(result.warnings.length).toBeGreaterThan(0);
   });
 
   it("warns instead of guessing when seconds are not derivable", () => {
@@ -777,14 +833,21 @@ describe("fal edit/image pricing estimates", () => {
 
   it("keeps every dynamic-priced endpoint out of both registries", () => {
     // alibaba/qwen-image-3/text-to-image is compute-second-metered;
+    // the three alibaba/wan-3.0 video operations are compute-second-metered
+    // too — their payload `duration` is OUTPUT seconds, a different unit from
+    // the wall-clock GPU seconds they bill, so it cannot derive the price (the
+    // alibaba/wan-3.0-prime siblings bill per output second and ARE priced);
     // blackforestlabs/flux-video-upscale depends on delivered output metadata;
     // google/nano-banana-2-lite and google/nano-banana-lite/edit are
     // token-metered without a published tokens-per-image constant;
     // xai/grok-imagine-image/v2.0/edit and text-to-image are
-    // compute-second-metered. All six therefore use fal's pricing-estimate
+    // compute-second-metered. All nine therefore use fal's pricing-estimate
     // API.
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toEqual([
       "alibaba/qwen-image-3/text-to-image",
+      "alibaba/wan-3.0/image-to-video",
+      "alibaba/wan-3.0/reference-to-video",
+      "alibaba/wan-3.0/text-to-video",
       "blackforestlabs/flux-video-upscale",
       "google/nano-banana-2-lite",
       "google/nano-banana-lite/edit",

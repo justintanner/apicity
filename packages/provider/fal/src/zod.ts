@@ -926,6 +926,119 @@ export const FalAlibabaQwenImage3TextToImageRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// Alibaba Wan 3.0 shared vocabularies
+// ---------------------------------------------------------------------------
+
+// The base `alibaba/wan-3.0/*` and premium `alibaba/wan-3.0-prime/*` families
+// publish byte-identical request schemas per operation — only their billing
+// differs (compute-second metering vs a flat $0.05 per output second). Each
+// operation therefore defines one schema that both endpoint ids reuse, the
+// same way `fal-ai/wan/v2.7/pro/*` reuses its non-pro schemas.
+// Docs: https://fal.ai/models/alibaba/wan-3.0/text-to-video/api
+
+const FalWan3p0ResolutionSchema = z.enum(["480p", "720p", "1080p"]);
+
+const FalWan3p0AspectRatioSchema = z.enum([
+  "adaptive",
+  "16:9",
+  "4:3",
+  "1:1",
+  "3:4",
+  "9:16",
+]);
+
+// Upstream default 5, published range 2-30. An explicit null selects "smart
+// duration", where the model picks the length from the prompt and reference
+// media, so null is a meaningful value rather than an omission.
+const FalWan3p0DurationSchema = z
+  .number()
+  .int()
+  .min(2)
+  .max(30)
+  .nullable()
+  .optional();
+
+const FalWan3p0SeedSchema = z
+  .number()
+  .int()
+  .min(0)
+  .max(2147483647)
+  .nullable()
+  .optional();
+
+// Shared across all three Wan 3.0 operations. Upstream defaults: resolution
+// 1080p, aspect_ratio adaptive, audio true, enable_prompt_expansion true,
+// enable_thinking false, enable_safety_checker true.
+const falWan3p0CommonFields = {
+  resolution: FalWan3p0ResolutionSchema.optional(),
+  aspect_ratio: FalWan3p0AspectRatioSchema.optional(),
+  duration: FalWan3p0DurationSchema,
+  audio: z.boolean().optional(),
+  enable_prompt_expansion: z.boolean().optional(),
+  enable_thinking: z.boolean().optional(),
+  seed: FalWan3p0SeedSchema,
+  // Disabling requires account authorization; unauthorized requests are
+  // checked anyway.
+  enable_safety_checker: z.boolean().optional(),
+};
+
+// ---------------------------------------------------------------------------
+// Alibaba Wan 3.0 text-to-video
+// ---------------------------------------------------------------------------
+
+export const FalWan3p0TextToVideoRequestSchema = z.object({
+  prompt: z.string().min(1).max(5000),
+  ...falWan3p0CommonFields,
+});
+
+// ---------------------------------------------------------------------------
+// Alibaba Wan 3.0 image-to-video
+// ---------------------------------------------------------------------------
+
+export const FalWan3p0ImageToVideoRequestSchema = z.object({
+  // Optional here — the start frame alone is a complete request.
+  prompt: z.string().max(5000).nullable().optional(),
+  start_image_url: z.string().url(),
+  end_image_url: z.string().url().nullable().optional(),
+  ...falWan3p0CommonFields,
+});
+
+// ---------------------------------------------------------------------------
+// Alibaba Wan 3.0 reference-to-video
+// ---------------------------------------------------------------------------
+
+// Upstream marks every field optional, but a reference-to-video call with no
+// reference media and no prompt has nothing to work from. Requiring at least
+// one grounding input mirrors the `wan/v2.7/reference-to-video` refinement.
+export const FalWan3p0ReferenceToVideoRequestSchema = z
+  .object({
+    prompt: z.string().max(5000).nullable().optional(),
+    reference_image_urls: z.array(z.string().url()).max(10).optional(),
+    // Up to 5 clips totaling at most 15 seconds, each at least 16 fps.
+    reference_video_urls: z.array(z.string().url()).max(5).optional(),
+    // Up to 5 clips totaling at most 15 seconds.
+    reference_audio_urls: z.array(z.string().url()).max(5).optional(),
+    // Both require enable_thinking=true upstream; web_url must not need login.
+    file_url: z.string().url().nullable().optional(),
+    web_url: z.string().url().nullable().optional(),
+    ...falWan3p0CommonFields,
+  })
+  .refine(
+    (v) =>
+      (v.reference_image_urls && v.reference_image_urls.length > 0) ||
+      (v.reference_video_urls && v.reference_video_urls.length > 0) ||
+      (v.reference_audio_urls && v.reference_audio_urls.length > 0) ||
+      Boolean(v.file_url) ||
+      Boolean(v.web_url) ||
+      Boolean(v.prompt),
+    {
+      message:
+        "alibaba/wan-3.0/reference-to-video requires at least one of reference_image_urls, reference_video_urls, reference_audio_urls, file_url, web_url, or prompt",
+      path: ["reference_image_urls"],
+    }
+  );
+
+// ---------------------------------------------------------------------------
 // Wan v2.7 text-to-image
 // ---------------------------------------------------------------------------
 
@@ -1750,6 +1863,37 @@ export type FalAlibabaQwenImage3TextToImageRequestInput =
 export type FalAlibabaQwenImage3TextToImageParsedRequest = z.output<
   typeof FalAlibabaQwenImage3TextToImageRequestSchema
 >;
+export type FalWan3p0TextToVideoParams = z.infer<
+  typeof FalWan3p0TextToVideoRequestSchema
+>;
+export type FalWan3p0TextToVideoRequest = z.input<
+  typeof FalWan3p0TextToVideoRequestSchema
+>;
+export type FalWan3p0TextToVideoRequestInput = FalWan3p0TextToVideoRequest;
+export type FalWan3p0TextToVideoParsedRequest = z.output<
+  typeof FalWan3p0TextToVideoRequestSchema
+>;
+export type FalWan3p0ImageToVideoParams = z.infer<
+  typeof FalWan3p0ImageToVideoRequestSchema
+>;
+export type FalWan3p0ImageToVideoRequest = z.input<
+  typeof FalWan3p0ImageToVideoRequestSchema
+>;
+export type FalWan3p0ImageToVideoRequestInput = FalWan3p0ImageToVideoRequest;
+export type FalWan3p0ImageToVideoParsedRequest = z.output<
+  typeof FalWan3p0ImageToVideoRequestSchema
+>;
+export type FalWan3p0ReferenceToVideoParams = z.infer<
+  typeof FalWan3p0ReferenceToVideoRequestSchema
+>;
+export type FalWan3p0ReferenceToVideoRequest = z.input<
+  typeof FalWan3p0ReferenceToVideoRequestSchema
+>;
+export type FalWan3p0ReferenceToVideoRequestInput =
+  FalWan3p0ReferenceToVideoRequest;
+export type FalWan3p0ReferenceToVideoParsedRequest = z.output<
+  typeof FalWan3p0ReferenceToVideoRequestSchema
+>;
 export type FalWanV2p7TextToImageParams = z.infer<
   typeof FalWanV2p7TextToImageRequestSchema
 >;
@@ -2400,6 +2544,13 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "fal-ai/bytedance/seed-speech/tts/v2": FalSeedSpeechTtsV2RequestSchema,
   "fal-ai/elevenlabs/speech-to-text/scribe-v2":
     FalElevenlabsSpeechToTextScribeV2RequestSchema,
+  "alibaba/wan-3.0/text-to-video": FalWan3p0TextToVideoRequestSchema,
+  "alibaba/wan-3.0/image-to-video": FalWan3p0ImageToVideoRequestSchema,
+  "alibaba/wan-3.0/reference-to-video": FalWan3p0ReferenceToVideoRequestSchema,
+  "alibaba/wan-3.0-prime/text-to-video": FalWan3p0TextToVideoRequestSchema,
+  "alibaba/wan-3.0-prime/image-to-video": FalWan3p0ImageToVideoRequestSchema,
+  "alibaba/wan-3.0-prime/reference-to-video":
+    FalWan3p0ReferenceToVideoRequestSchema,
   "fal-ai/wan/v2.7/text-to-image": FalWanV2p7TextToImageRequestSchema,
   "fal-ai/wan/v2.7/edit": FalWanV2p7EditRequestSchema,
   "fal-ai/wan/v2.7/pro/text-to-image": FalWanV2p7TextToImageRequestSchema,

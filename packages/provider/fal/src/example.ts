@@ -73,6 +73,86 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST alibaba.wan3p0.imageToVideo": {
+    "source": "fal/wan3p0-image-to-video",
+    "payload": {
+      "prompt": "The cat blinks slowly and tilts its head, soft breeze through fur, cinematic close-up.",
+      "start_image_url": "<inline image/jpeg data URL — replace with a real URL or upload>",
+      "resolution": "480p",
+      "aspect_ratio": "1:1",
+      "duration": 2,
+      "audio": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST alibaba.wan3p0.referenceToVideo": {
+    "source": "fal/wan3p0-reference-to-video",
+    "payload": {
+      "prompt": "The cat in Image 1 blinks slowly and tilts its head, cinematic close-up.",
+      "reference_image_urls": [
+        "<inline image/jpeg data URL — replace with a real URL or upload>"
+      ],
+      "resolution": "480p",
+      "aspect_ratio": "1:1",
+      "duration": 2,
+      "audio": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST alibaba.wan3p0.textToVideo": {
+    "source": "fal/wan3p0-text-to-video",
+    "payload": {
+      "prompt": "A red panda walks slowly through a bamboo forest at sunrise, cinematic close-up.",
+      "resolution": "480p",
+      "aspect_ratio": "1:1",
+      "duration": 2,
+      "audio": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST alibaba.wan3p0Prime.imageToVideo": {
+    "source": "fal/wan3p0-prime-image-to-video",
+    "payload": {
+      "prompt": "The cat blinks slowly and tilts its head, soft breeze through fur, cinematic close-up.",
+      "start_image_url": "<inline image/jpeg data URL — replace with a real URL or upload>",
+      "resolution": "480p",
+      "aspect_ratio": "1:1",
+      "duration": 2,
+      "audio": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST alibaba.wan3p0Prime.referenceToVideo": {
+    "source": "fal/wan3p0-prime-reference-to-video",
+    "payload": {
+      "prompt": "The cat in Image 1 blinks slowly and tilts its head, cinematic close-up.",
+      "reference_image_urls": [
+        "<inline image/jpeg data URL — replace with a real URL or upload>"
+      ],
+      "resolution": "480p",
+      "aspect_ratio": "1:1",
+      "duration": 2,
+      "audio": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST alibaba.wan3p0Prime.textToVideo": {
+    "source": "fal/wan3p0-prime-text-to-video",
+    "payload": {
+      "prompt": "A red panda walks slowly through a bamboo forest at sunrise, cinematic close-up.",
+      "resolution": "480p",
+      "aspect_ratio": "1:1",
+      "duration": 2,
+      "audio": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST blackforestlabs.flux3.extendVideo": {
     "source": "fal/flux-3-extend-video",
     "payload": {

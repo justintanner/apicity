@@ -434,6 +434,12 @@ export const MODEL_SLUGS = {
     "bytedance/seedance-2.5/image-to-video": "sd2p5",
     "bytedance/seedance-2.5/reference-to-video": "sd2p5",
 
+    // Video — Wan 3.0 Prime (the base wan-3.0 family bills per compute
+    // second and is deliberately unpriced, so it carries no slug either).
+    "alibaba/wan-3.0-prime/text-to-video": "wan3p0p",
+    "alibaba/wan-3.0-prime/image-to-video": "wan3p0p",
+    "alibaba/wan-3.0-prime/reference-to-video": "wan3p0p",
+
     // Video — Wan 2.7
     "fal-ai/wan/v2.7/text-to-video": "wan2p7",
     "fal-ai/wan/v2.7/image-to-video": "wan2p7",
@@ -820,6 +826,10 @@ export const MODEL_DISPLAY = {
     "bytedance/seedance-2.5/text-to-video": "Seedance 2.5",
     "bytedance/seedance-2.5/image-to-video": "Seedance 2.5",
     "bytedance/seedance-2.5/reference-to-video": "Seedance 2.5",
+
+    "alibaba/wan-3.0-prime/text-to-video": "Wan 3.0 Prime",
+    "alibaba/wan-3.0-prime/image-to-video": "Wan 3.0 Prime",
+    "alibaba/wan-3.0-prime/reference-to-video": "Wan 3.0 Prime",
 
     "fal-ai/wan/v2.7/text-to-video": "Wan 2.7",
     "fal-ai/wan/v2.7/image-to-video": "Wan 2.7",

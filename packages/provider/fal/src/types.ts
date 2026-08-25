@@ -52,6 +52,9 @@ export type {
   FalSeedSpeechTtsV2Params,
   FalElevenlabsSpeechToTextScribeV2Params,
   FalAlibabaQwenImage3TextToImageParams,
+  FalWan3p0TextToVideoParams,
+  FalWan3p0ImageToVideoParams,
+  FalWan3p0ReferenceToVideoParams,
   FalWanV2p7TextToImageParams,
   FalWanV2p7EditParams,
   FalWanV2p7TextToVideoParams,
@@ -159,6 +162,15 @@ export type {
   FalAlibabaQwenImage3TextToImageRequest,
   FalAlibabaQwenImage3TextToImageRequestInput,
   FalAlibabaQwenImage3TextToImageParsedRequest,
+  FalWan3p0TextToVideoRequest,
+  FalWan3p0TextToVideoRequestInput,
+  FalWan3p0TextToVideoParsedRequest,
+  FalWan3p0ImageToVideoRequest,
+  FalWan3p0ImageToVideoRequestInput,
+  FalWan3p0ImageToVideoParsedRequest,
+  FalWan3p0ReferenceToVideoRequest,
+  FalWan3p0ReferenceToVideoRequestInput,
+  FalWan3p0ReferenceToVideoParsedRequest,
   FalWanV2p7TextToImageRequest,
   FalWanV2p7TextToImageRequestInput,
   FalWanV2p7TextToImageParsedRequest,
@@ -307,6 +319,9 @@ import type {
   FalSeedSpeechTtsV2Request,
   FalElevenlabsSpeechToTextScribeV2Request,
   FalAlibabaQwenImage3TextToImageRequest,
+  FalWan3p0TextToVideoRequest,
+  FalWan3p0ImageToVideoRequest,
+  FalWan3p0ReferenceToVideoRequest,
   FalWanV2p7TextToImageRequest,
   FalWanV2p7EditRequest,
   FalWanV2p7TextToVideoRequest,
@@ -1128,6 +1143,30 @@ export interface FalWanV2p7EditVideoResponse {
   actual_prompt?: string;
 }
 
+// Alibaba Wan 3.0 video generation. Unlike Wan 2.7, the response always
+// reports `duration` — the realized output length in seconds, which the
+// smart-duration mode (`duration: null`) lets the model choose.
+export interface FalWan3p0TextToVideoResponse {
+  video: FalVideoFile;
+  seed: number;
+  duration: number;
+  actual_prompt?: string | null;
+}
+
+export interface FalWan3p0ImageToVideoResponse {
+  video: FalVideoFile;
+  seed: number;
+  duration: number;
+  actual_prompt?: string | null;
+}
+
+export interface FalWan3p0ReferenceToVideoResponse {
+  video: FalVideoFile;
+  seed: number;
+  duration: number;
+  actual_prompt?: string | null;
+}
+
 // xAI Grok Imagine Image
 export type FalXaiGrokImagineImageAspectRatio =
   | "2:1"
@@ -1766,8 +1805,39 @@ export interface FalRunAlibabaQwenImage3Namespace {
   textToImage: FalAlibabaQwenImage3TextToImageFn;
 }
 
+type FalWan3p0TextToVideoFn = ((
+  params: FalWan3p0TextToVideoRequest,
+  signal?: AbortSignal
+) => Promise<FalWan3p0TextToVideoResponse>) & {
+  schema: ApicitySchema<FalWan3p0TextToVideoRequest>;
+};
+
+type FalWan3p0ImageToVideoFn = ((
+  params: FalWan3p0ImageToVideoRequest,
+  signal?: AbortSignal
+) => Promise<FalWan3p0ImageToVideoResponse>) & {
+  schema: ApicitySchema<FalWan3p0ImageToVideoRequest>;
+};
+
+type FalWan3p0ReferenceToVideoFn = ((
+  params: FalWan3p0ReferenceToVideoRequest,
+  signal?: AbortSignal
+) => Promise<FalWan3p0ReferenceToVideoResponse>) & {
+  schema: ApicitySchema<FalWan3p0ReferenceToVideoRequest>;
+};
+
+// The base and prime Wan 3.0 families expose the same three operations with
+// the same request and response shapes; only their upstream billing differs.
+export interface FalRunAlibabaWan3p0Namespace {
+  textToVideo: FalWan3p0TextToVideoFn;
+  imageToVideo: FalWan3p0ImageToVideoFn;
+  referenceToVideo: FalWan3p0ReferenceToVideoFn;
+}
+
 export interface FalRunAlibabaNamespace {
   qwenImage3: FalRunAlibabaQwenImage3Namespace;
+  wan3p0: FalRunAlibabaWan3p0Namespace;
+  wan3p0Prime: FalRunAlibabaWan3p0Namespace;
 }
 
 type FalWanV2p7TextToImageFn = ((

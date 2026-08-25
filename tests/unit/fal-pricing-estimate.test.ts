@@ -703,8 +703,14 @@ describe("fal edit/image pricing estimates", () => {
       0.15
     );
     expect(estimate("xai/grok-imagine-image").usd).toBe(0.02);
-    // Edit folds fal's stated $0.002 image-input component into the rate.
-    expect(estimate("xai/grok-imagine-image/edit").usd).toBe(0.022);
+    // Both v1 Grok Imagine operations bill one flat $0.02 per image. The edit
+    // rate used to fold in a $0.002 input component; a 2026-08-25 pull of
+    // fal's pricing API reports no such component and one flat unit_price for
+    // both endpoints (ac-i25ewx).
+    expect(estimate("xai/grok-imagine-image/edit").usd).toBe(0.02);
+    expect(estimate("xai/grok-imagine-image").usd).toBe(
+      estimate("xai/grok-imagine-image/edit").usd
+    );
   });
 
   it("counts wan text-to-image output from max_images", () => {

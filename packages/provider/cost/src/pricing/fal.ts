@@ -40,6 +40,10 @@ const seedance25AsOf = "2026-08-23";
 // (GET /v1/models/pricing?endpoint_id=...) on this date.
 const wan30AsOf = "2026-08-25";
 
+// Grok Imagine v1 image pricing was re-pulled from fal's pricing API on this
+// date, which is when the folded input component was found to be gone.
+const grokImagineV1AsOf = "2026-08-25";
+
 // Grok Imagine video edit was rechecked against its fal.ai pricing card on
 // this date. Both the source-video input and edited output bill for the same
 // hinted clip length, so their per-second components can be summed exactly.
@@ -595,14 +599,27 @@ export const fal: Record<string, ModelPricing> = {
     sweepAsOf
   ),
 
-  // Image — Grok Imagine (flat per image; the 1k|2k resolution field is not
-  // price-tiered on the page). Edit folds in fal's stated $0.002 image-input
-  // component: $0.02 output + $0.002 input = $0.022 per image.
-  "xai/grok-imagine-image": perImage("xai/grok-imagine-image", 0.02, sweepAsOf),
+  // Image — Grok Imagine v1 (flat per image; the 1k|2k resolution field is not
+  // price-tiered). Both operations bill the same flat rate.
+  //
+  // The edit rate used to carry a folded $0.002 image-input component
+  // ($0.02 output + $0.002 input = $0.022 per image), which was only exact for
+  // a one-input/one-output call and over-quoted every other shape. A pull of
+  // GET https://api.fal.ai/v1/models/pricing on 2026-08-25 reports one flat
+  // unit_price of $0.02 per image for BOTH `xai/grok-imagine-image` and
+  // `xai/grok-imagine-image/edit` — fal no longer publishes a separate input
+  // component, so there is nothing to derive from `image_urls.length` and the
+  // folded rate is simply stale. Corrected to the published rate rather than
+  // split into an `extra` hook (ac-i25ewx).
+  "xai/grok-imagine-image": perImage(
+    "xai/grok-imagine-image",
+    0.02,
+    grokImagineV1AsOf
+  ),
   "xai/grok-imagine-image/edit": perImage(
     "xai/grok-imagine-image/edit",
-    0.022,
-    sweepAsOf
+    0.02,
+    grokImagineV1AsOf
   ),
 
   // Image — Hunyuan Image 3 instruct edit (area-priced). image_size defaults

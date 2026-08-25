@@ -36,12 +36,18 @@ const DOC_INVENTORY_TESTS = [
   "tests/unit/provider-inventory-docs.test.ts",
 ] as const;
 
+// Credential-wiring suite (recording host must match the test's credential).
+const CREDENTIAL_WIRING_TESTS = [
+  "tests/unit/recording-credential-hosts.test.ts",
+] as const;
+
 const CATEGORIZED_TESTS: readonly string[] = [
   ...RECORDING_ENUMERATION_TESTS,
   ...SURFACE_INVENTORY_TESTS,
   ...SOURCE_PIN_TESTS,
   ...REGISTRY_PARITY_TESTS,
   ...DOC_INVENTORY_TESTS,
+  ...CREDENTIAL_WIRING_TESTS,
 ];
 
 function readRepoFile(relativePath: string): string {
@@ -49,7 +55,7 @@ function readRepoFile(relativePath: string): string {
 }
 
 describe("cross-cutting repo-wide guard tests", () => {
-  it("lists recording-enumeration, surface-inventory, source-pin, registry-parity, and doc-inventory tests", () => {
+  it("lists recording-enumeration, surface-inventory, source-pin, registry-parity, doc-inventory, and credential-wiring tests", () => {
     for (const path of RECORDING_ENUMERATION_TESTS) {
       expect(CROSS_CUTTING_TESTS).toContain(path);
     }
@@ -63,6 +69,9 @@ describe("cross-cutting repo-wide guard tests", () => {
       expect(CROSS_CUTTING_TESTS).toContain(path);
     }
     for (const path of DOC_INVENTORY_TESTS) {
+      expect(CROSS_CUTTING_TESTS).toContain(path);
+    }
+    for (const path of CREDENTIAL_WIRING_TESTS) {
       expect(CROSS_CUTTING_TESTS).toContain(path);
     }
   });
@@ -134,6 +143,14 @@ describe("cross-cutting repo-wide guard tests", () => {
       const source = readRepoFile(relativePath);
       expect(source, relativePath).toContain("readProviderNames");
       expect(source, relativePath).toContain("provider-inventory.mjs");
+    }
+  });
+
+  it("credential-wiring tests pin a host-to-credential mapping", () => {
+    for (const relativePath of CREDENTIAL_WIRING_TESTS) {
+      const source = readRepoFile(relativePath);
+      expect(source, relativePath).toContain("FAL_ADMIN_API_KEY");
+      expect(source, relativePath).toContain("api.fal.ai");
     }
   });
 

@@ -47,6 +47,19 @@ import { repoRoot } from "./provider-scope.mjs";
  * provider-scoped diff that registers a slug with no rate would otherwise still
  * pass the fast gate (ac-kabm2y).
  *
+ * Credential-wiring guards assert that a recording's request host and the
+ * credential its replaying test is wired to agree.
+ * `tests/unit/recording-credential-hosts.test.ts` requires every `api.fal.ai`
+ * recording to be replayed by a call site using `process.env.FAL_ADMIN_API_KEY`
+ * and every `fal.run` / `queue.fal.run` / `rest.fal.ai` / `v3b.fal.media`
+ * recording to use `process.env.FAL_API_KEY`. Replay never contacts fal, so a
+ * miswired credential passes every gate and only fails the next `dev:record`
+ * against a paid account. Association is file-scoped, so a fal test file must
+ * use exactly one `FAL_*` credential; a file with zero or two distinct
+ * expressions fails loudly rather than being guessed at. The file is
+ * deliberately not named after a provider, so no provider scope selects it and
+ * this registry entry is what runs it (ac-wt8fzl).
+ *
  * The doc-inventory guards pin agent-facing prose to the repository itself.
  * `tests/unit/provider-inventory-docs.test.ts` derives the provider list and
  * the `build:*` / `doc-gen:*` alias sets from disk and fails `CLAUDE.md`,
@@ -74,11 +87,13 @@ import { repoRoot } from "./provider-scope.mjs";
  * pinned to this value by `tests/unit/cross-cutting-tests.test.ts`.
  *
  * The value is the reference-machine figure recorded when the block held five
- * entries. Adding `cost-pricing` and `provider-inventory-docs` did not move it
- * materially: on 2026-08-25 the seven-entry block measured 3.3s and 4.2s wall
- * (612 tests, 7 files) on the machine that added them, comfortably under this
- * number. It is deliberately left at the reference measurement rather than
- * overwritten with a figure from a different machine.
+ * entries. The three entries added since have not moved it materially: on
+ * 2026-08-25 the eight-entry block measured 3.1s and 3.4s wall (645 tests, 8
+ * files) on the machine that added them, comfortably under this number. It is
+ * deliberately left at the reference measurement rather than overwritten with a
+ * figure from a different machine. Every entry stays filesystem- and
+ * source-parse-only; the credential guard's dominant cost is one JSON parse of
+ * the fal HAR corpus plus a single pass over `tests/**\/*.test.ts`.
  *
  * Re-measure and update it here when the block's membership changes
  * materially; the guard test will name the prose that has to follow.
@@ -104,6 +119,7 @@ export const CROSS_CUTTING_TESTS = [
   "tests/unit/cost-slugs.test.ts",
   "tests/unit/cost-pricing.test.ts",
   "tests/unit/provider-inventory-docs.test.ts",
+  "tests/unit/recording-credential-hosts.test.ts",
 ];
 
 /**

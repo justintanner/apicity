@@ -3172,6 +3172,184 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  // https://docs.kie.ai/market/wan/3-0-video
+  "wan/3-0-video": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        maxLength: 20000,
+        description:
+          "Text prompt (max 20000 chars, truncated upstream). Required for text-to-video; recommended alongside media otherwise. In reference mode address media as Image1/Video1/Audio1.",
+      },
+      first_frame_url: {
+        type: "string",
+        description:
+          "First frame image URL. Cannot be combined with any reference_* parameter.",
+      },
+      last_frame_url: {
+        type: "string",
+        description:
+          "Last frame image URL. Cannot be combined with any reference_* parameter.",
+      },
+      reference_image_urls: {
+        type: "array",
+        items: { type: "string" },
+        maxItems: 10,
+        description:
+          "Reference images (max 10), mapped to Image1, Image2, ... by array order.",
+      },
+      reference_video_urls: {
+        type: "array",
+        items: { type: "string" },
+        maxItems: 5,
+        description:
+          "Reference videos (max 5). Each clip 1-15s, total <= 15s; input duration + duration <= 30s.",
+      },
+      reference_audio_urls: {
+        type: "array",
+        items: { type: "string" },
+        maxItems: 5,
+        description:
+          "Reference audio (max 5). Each clip 1-15s, total <= 15s. Not recommended as the only media input.",
+      },
+      reference_file_urls: {
+        type: "array",
+        items: { type: "string" },
+        maxItems: 1,
+        description:
+          "File-to-video source (max 1). Mutually exclusive with reference_link_urls and the frame parameters.",
+      },
+      reference_link_urls: {
+        type: "array",
+        items: { type: "string" },
+        maxItems: 1,
+        description:
+          "Link-to-video source (max 1), a public page needing no login. Mutually exclusive with reference_file_urls and the frame parameters.",
+      },
+      resolution: {
+        type: "string",
+        enum: ["480P", "720P", "1080P"],
+        description: "Output resolution (default 1080P). Uppercase upstream.",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: ["adaptive", "16:9", "4:3", "1:1", "3:4", "9:16"],
+        description: "Output aspect ratio (default adaptive).",
+      },
+      duration: {
+        type: "number",
+        description:
+          "Output seconds (default 5, range 2-30). Pass -1 for a model-chosen intelligent duration.",
+      },
+      audio: {
+        type: "boolean",
+        description:
+          "Whether the output carries an audio track (default true).",
+      },
+      seed: {
+        type: "number",
+        minimum: 0,
+        maximum: 2147483647,
+        description: "Random seed for reproducible results.",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        description:
+          "Content filtering (default false). Standard Wan 3.0 model.",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/wan/3-0-video-prime
+  "wan/3-0-video-prime": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        maxLength: 20000,
+        description:
+          "Text prompt (max 20000 chars, truncated upstream). Required for text-to-video; recommended alongside media otherwise. In reference mode address media as Image1/Video1/Audio1.",
+      },
+      first_frame_url: {
+        type: "string",
+        description:
+          "First frame image URL. Cannot be combined with any reference_* parameter.",
+      },
+      last_frame_url: {
+        type: "string",
+        description:
+          "Last frame image URL. Cannot be combined with any reference_* parameter.",
+      },
+      reference_image_urls: {
+        type: "array",
+        items: { type: "string" },
+        maxItems: 10,
+        description:
+          "Reference images (max 10), mapped to Image1, Image2, ... by array order.",
+      },
+      reference_video_urls: {
+        type: "array",
+        items: { type: "string" },
+        maxItems: 5,
+        description:
+          "Reference videos (max 5). Each clip 1-15s, total <= 15s; input duration + duration <= 30s.",
+      },
+      reference_audio_urls: {
+        type: "array",
+        items: { type: "string" },
+        maxItems: 5,
+        description:
+          "Reference audio (max 5). Each clip 1-15s, total <= 15s. Not recommended as the only media input.",
+      },
+      reference_file_urls: {
+        type: "array",
+        items: { type: "string" },
+        maxItems: 1,
+        description:
+          "File-to-video source (max 1). Mutually exclusive with reference_link_urls and the frame parameters.",
+      },
+      reference_link_urls: {
+        type: "array",
+        items: { type: "string" },
+        maxItems: 1,
+        description:
+          "Link-to-video source (max 1), a public page needing no login. Mutually exclusive with reference_file_urls and the frame parameters.",
+      },
+      resolution: {
+        type: "string",
+        enum: ["480P", "720P", "1080P"],
+        description: "Output resolution (default 1080P). Uppercase upstream.",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: ["adaptive", "16:9", "4:3", "1:1", "3:4", "9:16"],
+        description: "Output aspect ratio (default adaptive).",
+      },
+      duration: {
+        type: "number",
+        description:
+          "Output seconds (default 5, range 2-30). Pass -1 for a model-chosen intelligent duration.",
+      },
+      audio: {
+        type: "boolean",
+        description:
+          "Whether the output carries an audio track (default true).",
+      },
+      seed: {
+        type: "number",
+        minimum: 0,
+        maximum: 2147483647,
+        description: "Random seed for reproducible results.",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        description:
+          "Content filtering (default false). High-speed Wan 3.0 Prime model.",
+      },
+    },
+  },
+
   "wan/2-7-text-to-video": {
     type: "video",
     fields: {

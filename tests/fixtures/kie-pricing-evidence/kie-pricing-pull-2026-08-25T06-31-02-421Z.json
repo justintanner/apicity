@@ -1,0 +1,231 @@
+{
+  "schema": "gc.kie-pricing-pull.v1",
+  "endpoint": "https://api.kie.ai/client/v1/model-pricing/page",
+  "method": "POST",
+  "pulledAt": {
+    "startedAt": "2026-08-25T06:31:00.498Z",
+    "completedAt": "2026-08-25T06:31:02.421Z"
+  },
+  "request": {
+    "pageSize": 100
+  },
+  "snapshot": {
+    "path": "tests/fixtures/kie-pricing-evidence/kie-pricing-snapshot-2026-08-25T06-31-02-421Z.json",
+    "sha256": "sha256:74aba4bdacd1f3b7cbf1291601b827c0572950c246a90c3765ebcc2da087969f"
+  },
+  "sourceCaptures": {
+    "root": "tests/fixtures/kie-pricing-evidence/kie-pricing-source-captures-2026-08-25T06-31-02-421Z",
+    "sourcesPath": "tests/fixtures/kie-pricing-evidence/kie-pricing-sources-2026-08-25T06-31-02-421Z.json",
+    "files": [
+      {
+        "pageNum": 1,
+        "path": "kie-pricing-source-captures-2026-08-25T06-31-02-421Z/page-001.json",
+        "url": "https://api.kie.ai/client/v1/model-pricing/page",
+        "retrievedAt": "2026-08-25T06:31:02.421Z",
+        "mediaType": "application/json",
+        "bytes": 37786,
+        "sha256": "sha256:7b1ee61b8609de3890ef7fad0ffd66ddf6cc758275b7165d5288773e246a5dc7",
+        "redaction": {
+          "applied": true,
+          "rule": "sensitive response key names"
+        }
+      },
+      {
+        "pageNum": 2,
+        "path": "kie-pricing-source-captures-2026-08-25T06-31-02-421Z/page-002.json",
+        "url": "https://api.kie.ai/client/v1/model-pricing/page",
+        "retrievedAt": "2026-08-25T06:31:02.421Z",
+        "mediaType": "application/json",
+        "bytes": 39751,
+        "sha256": "sha256:d0d7a11ca279f0dda6f7184663f0449bfaba7227c28f4ce3eb17a0caf5f5c11a",
+        "redaction": {
+          "applied": true,
+          "rule": "sensitive response key names"
+        }
+      },
+      {
+        "pageNum": 3,
+        "path": "kie-pricing-source-captures-2026-08-25T06-31-02-421Z/page-003.json",
+        "url": "https://api.kie.ai/client/v1/model-pricing/page",
+        "retrievedAt": "2026-08-25T06:31:02.421Z",
+        "mediaType": "application/json",
+        "bytes": 39946,
+        "sha256": "sha256:f9226f3e65ee5c91b3243901df24609ccad647e4c273e37b4cc431c907e89467",
+        "redaction": {
+          "applied": true,
+          "rule": "sensitive response key names"
+        }
+      },
+      {
+        "pageNum": 4,
+        "path": "kie-pricing-source-captures-2026-08-25T06-31-02-421Z/page-004.json",
+        "url": "https://api.kie.ai/client/v1/model-pricing/page",
+        "retrievedAt": "2026-08-25T06:31:02.421Z",
+        "mediaType": "application/json",
+        "bytes": 39886,
+        "sha256": "sha256:af29797faf70c913f2211f429f6d83178c40d80648b6b66ae27d2d7520971c4c",
+        "redaction": {
+          "applied": true,
+          "rule": "sensitive response key names"
+        }
+      },
+      {
+        "pageNum": 5,
+        "path": "kie-pricing-source-captures-2026-08-25T06-31-02-421Z/page-005.json",
+        "url": "https://api.kie.ai/client/v1/model-pricing/page",
+        "retrievedAt": "2026-08-25T06:31:02.421Z",
+        "mediaType": "application/json",
+        "bytes": 19153,
+        "sha256": "sha256:df4b96376724e48f4a60e0752b25392a9167b9930d5de7210d597f076dd66a05",
+        "redaction": {
+          "applied": true,
+          "rule": "sensitive response key names"
+        }
+      }
+    ]
+  },
+  "pages": [
+    {
+      "total": 447,
+      "size": 100,
+      "current": 1,
+      "pages": 5,
+      "rowCount": 100,
+      "identity": "sha256:5bf6fad3b6e96a8cfdf7ef5ac2107fa1b41d6436c3a7da9b4ab0833238723023"
+    },
+    {
+      "total": 447,
+      "size": 100,
+      "current": 2,
+      "pages": 5,
+      "rowCount": 100,
+      "identity": "sha256:dfd4cb8d0f01247dd3b11e2eb94dfbd0760bb294aa9bb8214b1c0496a8b58682"
+    },
+    {
+      "total": 447,
+      "size": 100,
+      "current": 3,
+      "pages": 5,
+      "rowCount": 100,
+      "identity": "sha256:10d9df12edd25d9bb049820dfb820467ae654b565c3f07785f01f5e4ecc80fd1"
+    },
+    {
+      "total": 447,
+      "size": 100,
+      "current": 4,
+      "pages": 5,
+      "rowCount": 100,
+      "identity": "sha256:95c78534a07ec666fa133967b7cd9a89b2f1ecf3bb442daac46252bd04377ccb"
+    },
+    {
+      "total": 447,
+      "size": 100,
+      "current": 5,
+      "pages": 5,
+      "rowCount": 47,
+      "identity": "sha256:83f950e50bb1fa53a7cb7b0021781bb705f54e808e694f2f0877d3a4f4e7d99f"
+    }
+  ],
+  "reportedTotal": 447,
+  "capturedTotal": 447,
+  "rawUniqueCount": 447,
+  "semanticUniqueCount": 447,
+  "duplicateAnalysis": {
+    "rawDuplicateOccurrences": 0,
+    "semanticDuplicateOccurrences": 0,
+    "rawDuplicateGroups": [],
+    "semanticDuplicateGroups": []
+  },
+  "responseCompleteness": {
+    "complete": true,
+    "totalsStable": true,
+    "pageIdentitiesStable": true,
+    "noEarlyEmptyPages": true,
+    "termination": "reported-pages"
+  },
+  "comparison": {
+    "baselinePath": "tests/fixtures/kie-pricing-evidence/kie-pricing-snapshot-2026-08-22T08-03-40-316Z.json",
+    "baselineAsOf": "2026-08-06",
+    "baselineRows": 441,
+    "currentRows": 447,
+    "added": 6,
+    "removed": 0,
+    "changed": 0,
+    "addedRows": [
+      {
+        "modelDescription": "wan3.0 video prime, 1080p, video",
+        "interfaceType": "video",
+        "provider": "Wan",
+        "creditPrice": "50.4",
+        "creditUnit": "per second",
+        "usdPrice": "0.252",
+        "falPrice": "0.28",
+        "discountRate": 10,
+        "anchor": "",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "wan3.0 video prime, 720p, video",
+        "interfaceType": "video",
+        "provider": "Wan",
+        "creditPrice": "25.2",
+        "creditUnit": "per second",
+        "usdPrice": "0.126",
+        "falPrice": "0.14",
+        "discountRate": 10,
+        "anchor": "",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "wan3.0 video prime, 480p, video",
+        "interfaceType": "video",
+        "provider": "Wan",
+        "creditPrice": "12.2",
+        "creditUnit": "per second",
+        "usdPrice": "0.0612",
+        "falPrice": "0.068",
+        "discountRate": 10,
+        "anchor": "",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "wan 3.0 video, 1080p, video",
+        "interfaceType": "video",
+        "provider": "Wan",
+        "creditPrice": "32",
+        "creditUnit": "per second",
+        "usdPrice": "0.16",
+        "falPrice": "0.20",
+        "discountRate": 20,
+        "anchor": "",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "wan 3.0 video, 720p, video",
+        "interfaceType": "video",
+        "provider": "Wan",
+        "creditPrice": "16",
+        "creditUnit": "per second",
+        "usdPrice": "0.16",
+        "falPrice": "0.20",
+        "discountRate": 20,
+        "anchor": "",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "wan 3.0 video, 480p, video",
+        "interfaceType": "video",
+        "provider": "Wan",
+        "creditPrice": "8",
+        "creditUnit": "per second",
+        "usdPrice": "0.04",
+        "falPrice": "0.05",
+        "discountRate": 20,
+        "anchor": "",
+        "discountPrice": false
+      }
+    ],
+    "removedRows": [],
+    "changedRows": []
+  }
+}

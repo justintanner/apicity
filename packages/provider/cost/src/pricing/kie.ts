@@ -41,6 +41,21 @@ const seconds = (
   return hintSeconds(hints) ?? coerceSeconds(p.duration);
 };
 
+// Wan 3.0 accepts `duration: -1`, a sentinel selecting a model-chosen
+// "intelligent duration" rather than a length. `coerceSeconds` would hand that
+// straight through as -1 and the per-second rate would quote a NEGATIVE cost
+// with no warning, which is worse than quoting nothing. Nothing in the request
+// determines the realized length, so the sentinel resolves through the hint
+// channel if the caller knows it and otherwise fails closed.
+const wan30Seconds = (
+  p: Record<string, unknown>,
+  hints?: CostHints
+): number | undefined => {
+  const resolved = seconds(p, hints);
+  if (resolved === undefined) return undefined;
+  return resolved < 0 ? hintSeconds(hints) : resolved;
+};
+
 // Wan 2.2 speech-to-video publishes frame-count defaults (80 frames at 16
 // frames/s) rather than a duration field. Derive the exact output length from
 // the two finite wire values, applying each documented default independently.
@@ -1042,6 +1057,57 @@ export const kie: Record<string, ModelPricing> = {
       asOf: "2026-08-07",
     },
   },
+
+  // wan/3.0 video — resolution-tiered per second, from the 2026-08-25 catalog
+  // pull. Both models bill on the request's `resolution`, which kie spells in
+  // UPPERCASE for this family, so the rate keys are the wire values verbatim.
+  //
+  // Rates are the catalog's published `usdPrice`, which is what the
+  // reconciliation guard executes every implemented cell against:
+  //   standard  480P $0.04    720P $0.16     1080P $0.16
+  //   prime     480P $0.0612  720P $0.126    1080P $0.252
+  //
+  // Two cells do not reduce cleanly from their `creditPrice` at the $0.005
+  // basis the rest of the catalog follows, and both are recorded as published
+  // rather than "corrected" by inference:
+  //
+  //   standard 720P — creditPrice 16 implies $0.08, but usdPrice is "0.16",
+  //     equal to the 1080P cell. A duplicated figure is the obvious reading
+  //     (wan/2-7 charges $0.08 at 720P, and paying the same for 720P as 1080P
+  //     when the credit cost differs 2x makes little sense), but this table
+  //     has no observed Wan 3.0 invoice to prove it. Quoting the published
+  //     number over-estimates if the credit math is right; inventing $0.08
+  //     under-charges if it is not, and this repository's rule is that a
+  //     guessed rate is worse than a conservative published one.
+  //   prime 480P — creditPrice 12.2 implies $0.061 against a published
+  //     $0.0612, a rounding artifact in the credit column (12.24 shown as
+  //     12.2). The published figure is the more precise of the two.
+  //
+  // Correct both from a real invoice when one exists; until then the guard
+  // keeps this table equal to the official evidence rather than to inference.
+  //
+  // A `-1` duration selects a model-chosen "intelligent duration". Left to the
+  // shared `seconds` resolver that would pass through as -1 and quote a
+  // negative cost, so these two entries use `wan30Seconds`, which fails closed
+  // on the sentinel unless the caller declares the realized length through
+  // costHints.durationSeconds. An omitted duration also fails closed, matching
+  // every other kie video entry.
+  "wan/3-0-video": tieredVideoPage(
+    "resolution",
+    { "480P": 0.04, "720P": 0.16, "1080P": 0.16 },
+    "https://kie.ai/wan-3-0-video?model=wan%2F3-0-video",
+    "1080P",
+    "2026-08-25",
+    wan30Seconds
+  ),
+  "wan/3-0-video-prime": tieredVideoPage(
+    "resolution",
+    { "480P": 0.0612, "720P": 0.126, "1080P": 0.252 },
+    "https://kie.ai/wan-3-0-video?model=wan%2F3-0-video-prime",
+    "1080P",
+    "2026-08-25",
+    wan30Seconds
+  ),
 
   // wan/2.7 video — resolution-tiered per second as of the 2026-08-06 pull
   // (was a flat $0.10/s across all four variants, which overcharged 720p by

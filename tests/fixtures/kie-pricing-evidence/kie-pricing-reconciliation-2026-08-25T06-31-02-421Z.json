@@ -1,504 +1,100 @@
 {
   "schema": "gc.kie-pricing-reconciliation.v1",
   "version": 1,
-  "generatedAt": "2026-08-24T00:44:43.331Z",
+  "generatedAt": "2026-08-25T06:31:44.189Z",
   "snapshot": {
-    "path": "tests/fixtures/kie-pricing-evidence/kie-pricing-snapshot-2026-08-22T08-03-40-316Z.json",
-    "metadataPath": "tests/fixtures/kie-pricing-evidence/kie-pricing-pull-2026-08-22T08-03-40-316Z.json",
-    "sha256": "sha256:2a5aea8d4840708c53ff11ae055e736650fab756b7e3491362b8dcb7c0fd3a55",
-    "reportedTotal": 441,
-    "capturedTotal": 441,
+    "path": "tests/fixtures/kie-pricing-evidence/kie-pricing-snapshot-2026-08-25T06-31-02-421Z.json",
+    "metadataPath": "tests/fixtures/kie-pricing-evidence/kie-pricing-pull-2026-08-25T06-31-02-421Z.json",
+    "sha256": "sha256:74aba4bdacd1f3b7cbf1291601b827c0572950c246a90c3765ebcc2da087969f",
+    "reportedTotal": 447,
+    "capturedTotal": 447,
     "pageCount": 5,
-    "metadataSha256": "sha256:a2d11e6ed1bb165cd8834c75b21c44ae42f8eb0ca41625f0410c8e1e49b7f5c4"
+    "metadataSha256": "sha256:5d139e26528be43a696818d4f6564898c07e3dad3274a683247a5bef319de49c"
   },
   "comparison": {
-    "baselinePath": "tests/fixtures/kie-pricing-evidence/kie-pricing-snapshot-2026-08-11T09-18-45-401Z.json",
+    "baselinePath": "tests/fixtures/kie-pricing-evidence/kie-pricing-snapshot-2026-08-22T08-03-40-316Z.json",
     "baselineAsOf": "2026-08-06",
-    "baselineRows": 408,
-    "currentRows": 441,
-    "added": 34,
-    "removed": 1,
-    "changed": 3,
+    "baselineRows": 441,
+    "currentRows": 447,
+    "added": 6,
+    "removed": 0,
+    "changed": 0,
     "addedRows": [
       {
-        "modelDescription": "pixverse-v6, Extend, 1080p(with aiduo)",
+        "modelDescription": "wan3.0 video prime, 1080p, video",
         "interfaceType": "video",
-        "provider": "Pixverse",
-        "creditPrice": "18.4",
+        "provider": "Wan",
+        "creditPrice": "50.4",
         "creditUnit": "per second",
-        "usdPrice": "0.092",
-        "falPrice": "0.115",
+        "usdPrice": "0.252",
+        "falPrice": "0.28",
+        "discountRate": 10,
+        "anchor": "",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "wan3.0 video prime, 720p, video",
+        "interfaceType": "video",
+        "provider": "Wan",
+        "creditPrice": "25.2",
+        "creditUnit": "per second",
+        "usdPrice": "0.126",
+        "falPrice": "0.14",
+        "discountRate": 10,
+        "anchor": "",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "wan3.0 video prime, 480p, video",
+        "interfaceType": "video",
+        "provider": "Wan",
+        "creditPrice": "12.2",
+        "creditUnit": "per second",
+        "usdPrice": "0.0612",
+        "falPrice": "0.068",
+        "discountRate": 10,
+        "anchor": "",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "wan 3.0 video, 1080p, video",
+        "interfaceType": "video",
+        "provider": "Wan",
+        "creditPrice": "32",
+        "creditUnit": "per second",
+        "usdPrice": "0.16",
+        "falPrice": "0.20",
         "discountRate": 20,
         "anchor": "",
         "discountPrice": false
       },
       {
-        "modelDescription": "pixverse-v6, Extend, 1080p(no aiduo)",
+        "modelDescription": "wan 3.0 video, 720p, video",
         "interfaceType": "video",
-        "provider": "Pixverse",
-        "creditPrice": "14.4",
+        "provider": "Wan",
+        "creditPrice": "16",
         "creditUnit": "per second",
-        "usdPrice": "0.072",
-        "falPrice": "0.090",
+        "usdPrice": "0.16",
+        "falPrice": "0.20",
         "discountRate": 20,
         "anchor": "",
         "discountPrice": false
       },
       {
-        "modelDescription": "pixverse-v6, Extend, 720p(with aiduo)",
+        "modelDescription": "wan 3.0 video, 480p, video",
         "interfaceType": "video",
-        "provider": "Pixverse",
-        "creditPrice": "9.6",
+        "provider": "Wan",
+        "creditPrice": "8",
         "creditUnit": "per second",
-        "usdPrice": "0.048",
-        "falPrice": "0.060",
+        "usdPrice": "0.04",
+        "falPrice": "0.05",
         "discountRate": 20,
         "anchor": "",
-        "discountPrice": false
-      },
-      {
-        "modelDescription": "pixverse-v6, Extend, 720p(no aiduo)",
-        "interfaceType": "video",
-        "provider": "Pixverse",
-        "creditPrice": "7.2",
-        "creditUnit": "per second",
-        "usdPrice": "0.036",
-        "falPrice": "0.045",
-        "discountRate": 20,
-        "anchor": "",
-        "discountPrice": false
-      },
-      {
-        "modelDescription": "pixverse-v6, Extend, 540p(with aiduo)",
-        "interfaceType": "video",
-        "provider": "Pixverse",
-        "creditPrice": "7.2",
-        "creditUnit": "per second",
-        "usdPrice": "0.028",
-        "falPrice": "0.035",
-        "discountRate": 20,
-        "anchor": "",
-        "discountPrice": false
-      },
-      {
-        "modelDescription": "pixverse-v6, Extend, 540p(no aiduo)",
-        "interfaceType": "video",
-        "provider": "Pixverse",
-        "creditPrice": "5.6",
-        "creditUnit": "per second",
-        "usdPrice": "0.028",
-        "falPrice": "0.035",
-        "discountRate": 20,
-        "anchor": "",
-        "discountPrice": false
-      },
-      {
-        "modelDescription": "pixverse-v6, Extend, 360p(with aiduo)",
-        "interfaceType": "video",
-        "provider": "Pixverse",
-        "creditPrice": "5.6",
-        "creditUnit": "per second",
-        "usdPrice": "0.028",
-        "falPrice": "0.035",
-        "discountRate": 20,
-        "anchor": "",
-        "discountPrice": false
-      },
-      {
-        "modelDescription": "pixverse-v6, Extend, 360p(no aiduo)",
-        "interfaceType": "video",
-        "provider": "Pixverse",
-        "creditPrice": "4",
-        "creditUnit": "per second",
-        "usdPrice": "0.020",
-        "falPrice": "0.025",
-        "discountRate": 20,
-        "anchor": "",
-        "discountPrice": false
-      },
-      {
-        "modelDescription": "pixverse-v6, Reference To Video, 1080p(with audio)",
-        "interfaceType": "video",
-        "provider": "Pixverse",
-        "creditPrice": "20.7",
-        "creditUnit": "per second",
-        "usdPrice": "0.1035",
-        "falPrice": "",
-        "discountRate": 20,
-        "anchor": "",
-        "discountPrice": false
-      },
-      {
-        "modelDescription": "pixverse-v6, Reference To Video, 1080p(no audio)",
-        "interfaceType": "video",
-        "provider": "Pixverse",
-        "creditPrice": "16.2",
-        "creditUnit": "per second",
-        "usdPrice": "0.081",
-        "falPrice": "",
-        "discountRate": 20,
-        "anchor": "",
-        "discountPrice": false
-      },
-      {
-        "modelDescription": "pixverse-v6, Reference To Video, 720p(with audio)",
-        "interfaceType": "video",
-        "provider": "Pixverse",
-        "creditPrice": "10.8",
-        "creditUnit": "per second",
-        "usdPrice": "0.054",
-        "falPrice": "0.0675",
-        "discountRate": 20,
-        "anchor": "",
-        "discountPrice": false
-      },
-      {
-        "modelDescription": "pixverse-v6, Reference To Video, 720p(no audio)",
-        "interfaceType": "video",
-        "provider": "Pixverse",
-        "creditPrice": "8.1",
-        "creditUnit": "per second",
-        "usdPrice": "0.0405",
-        "falPrice": "",
-        "discountRate": 20,
-        "anchor": "",
-        "discountPrice": false
-      },
-      {
-        "modelDescription": "pixverse-v6, Reference To Video, 540p(with audio)",
-        "interfaceType": "video",
-        "provider": "Pixverse",
-        "creditPrice": "8.1",
-        "creditUnit": "per second",
-        "usdPrice": "0.0405",
-        "falPrice": "",
-        "discountRate": 20,
-        "anchor": "",
-        "discountPrice": false
-      },
-      {
-        "modelDescription": "pixverse-v6, Reference To Video, 540p(no audio)",
-        "interfaceType": "video",
-        "provider": "Pixverse",
-        "creditPrice": "6.3",
-        "creditUnit": "per second",
-        "usdPrice": "0.0315",
-        "falPrice": "",
-        "discountRate": 20,
-        "anchor": "",
-        "discountPrice": false
-      },
-      {
-        "modelDescription": "pixverse-v6, Reference To Video, 360p(with audio)",
-        "interfaceType": "video",
-        "provider": "Pixverse",
-        "creditPrice": "6.3",
-        "creditUnit": "per second",
-        "usdPrice": "0.0315",
-        "falPrice": "",
-        "discountRate": 20,
-        "anchor": "",
-        "discountPrice": false
-      },
-      {
-        "modelDescription": "pixverse-v6, Reference To Video, 360p(no audio)",
-        "interfaceType": "video",
-        "provider": "Pixverse",
-        "creditPrice": "4.5",
-        "creditUnit": "per second",
-        "usdPrice": "0.0225",
-        "falPrice": "",
-        "discountRate": 20,
-        "anchor": "",
-        "discountPrice": false
-      },
-      {
-        "modelDescription": "pixverse-v6, Text /Image to Video, 1080p (with audio)",
-        "interfaceType": "video",
-        "provider": "Pixverse",
-        "creditPrice": "18.4",
-        "creditUnit": "per second",
-        "usdPrice": "0.092",
-        "falPrice": "0.115",
-        "discountRate": 20,
-        "anchor": "",
-        "discountPrice": false
-      },
-      {
-        "modelDescription": "pixverse-v6, Text /Image to Video, 1080p (no audio)",
-        "interfaceType": "video",
-        "provider": "Pixverse",
-        "creditPrice": "14.4",
-        "creditUnit": "per second",
-        "usdPrice": "0.072",
-        "falPrice": "0.090",
-        "discountRate": 20,
-        "anchor": "",
-        "discountPrice": false
-      },
-      {
-        "modelDescription": "pixverse-v6, Text /Image to Video, 720p (with audio)",
-        "interfaceType": "video",
-        "provider": "Pixverse",
-        "creditPrice": "9.6",
-        "creditUnit": "per second",
-        "usdPrice": "0.048",
-        "falPrice": "0.060",
-        "discountRate": 20,
-        "anchor": "",
-        "discountPrice": false
-      },
-      {
-        "modelDescription": "pixverse-v6, Text /Image to Video, 720p (no audio)",
-        "interfaceType": "video",
-        "provider": "Pixverse",
-        "creditPrice": "7.2",
-        "creditUnit": "per second",
-        "usdPrice": "0.036",
-        "falPrice": "0.045",
-        "discountRate": 20,
-        "anchor": "",
-        "discountPrice": false
-      },
-      {
-        "modelDescription": "pixverse-v6, Text /Image to Video, 540p (with audio)",
-        "interfaceType": "video",
-        "provider": "Pixverse",
-        "creditPrice": "7.2",
-        "creditUnit": "per second",
-        "usdPrice": "0.036",
-        "falPrice": "0.045",
-        "discountRate": 20,
-        "anchor": "",
-        "discountPrice": false
-      },
-      {
-        "modelDescription": "pixverse-v6, Text /Image to Video, 540p (no audio)",
-        "interfaceType": "video",
-        "provider": "Pixverse",
-        "creditPrice": "5.6",
-        "creditUnit": "per second",
-        "usdPrice": "0.028",
-        "falPrice": "0.035",
-        "discountRate": 20,
-        "anchor": "",
-        "discountPrice": false
-      },
-      {
-        "modelDescription": "pixverse-v6, Text /Image to Video, 360p (with audio)",
-        "interfaceType": "video",
-        "provider": "Pixverse",
-        "creditPrice": "5.6",
-        "creditUnit": "per second",
-        "usdPrice": "0.028",
-        "falPrice": "0.035",
-        "discountRate": 20,
-        "anchor": "",
-        "discountPrice": false
-      },
-      {
-        "modelDescription": "pixverse-v6, Text /Image to Video, 360p（no audio）",
-        "interfaceType": "video",
-        "provider": "Pixverse",
-        "creditPrice": "4",
-        "creditUnit": "per second",
-        "usdPrice": "0.02",
-        "falPrice": "0.025",
-        "discountRate": 20,
-        "anchor": "",
-        "discountPrice": false
-      },
-      {
-        "modelDescription": "grok-imagine-image-2-0, Text to Image",
-        "interfaceType": "image",
-        "provider": "Grok",
-        "creditPrice": "4",
-        "creditUnit": "per image",
-        "usdPrice": "0.02",
-        "falPrice": "0.06",
-        "discountRate": 66.67,
-        "anchor": "",
-        "discountPrice": false
-      },
-      {
-        "modelDescription": "grok-imagine-image-2-0, Image Edit",
-        "interfaceType": "image",
-        "provider": "Grok",
-        "creditPrice": "4",
-        "creditUnit": "per image",
-        "usdPrice": "0.02",
-        "falPrice": "0.06",
-        "discountRate": 66.67,
-        "anchor": "",
-        "discountPrice": false
-      },
-      {
-        "modelDescription": "Gemini 3.7 Flash, chat, output",
-        "interfaceType": "chat",
-        "provider": "Google",
-        "creditPrice": "225",
-        "creditUnit": "per million",
-        "usdPrice": "1.125",
-        "falPrice": "3.75",
-        "discountRate": 70,
-        "anchor": "",
-        "discountPrice": false
-      },
-      {
-        "modelDescription": "Gemini 3.7 Flash, chat, input",
-        "interfaceType": "chat",
-        "provider": "Google",
-        "creditPrice": "45",
-        "creditUnit": "per million",
-        "usdPrice": "0.225",
-        "falPrice": "0.75",
-        "discountRate": 70,
-        "anchor": "",
-        "discountPrice": false
-      },
-      {
-        "modelDescription": "grok-4-6, Chat, Input",
-        "interfaceType": "chat",
-        "provider": "Grok",
-        "creditPrice": "160",
-        "creditUnit": "per 1M tokens",
-        "usdPrice": "0.80",
-        "falPrice": "2.00",
-        "discountRate": 60,
-        "anchor": "https://kie.ai/grok-4-6",
-        "discountPrice": false
-      },
-      {
-        "modelDescription": "grok-4-6, Chat, Output",
-        "interfaceType": "chat",
-        "provider": "Grok",
-        "creditPrice": "480",
-        "creditUnit": "per 1M tokens",
-        "usdPrice": "2.40",
-        "falPrice": "6.00",
-        "discountRate": 60,
-        "anchor": "https://kie.ai/grok-4-6",
-        "discountPrice": false
-      },
-      {
-        "modelDescription": "grok-4-6, Chat, Cached Input",
-        "interfaceType": "chat",
-        "provider": "Grok",
-        "creditPrice": "40",
-        "creditUnit": "per 1M tokens",
-        "usdPrice": "0.20",
-        "falPrice": "0.50",
-        "discountRate": 60,
-        "anchor": "https://kie.ai/grok-4-6",
-        "discountPrice": false
-      },
-      {
-        "modelDescription": "bytedance/seedance-2-5, 1080p with video",
-        "interfaceType": "video",
-        "provider": "ByteDance",
-        "creditPrice": "68.5",
-        "creditUnit": "per second",
-        "usdPrice": "0.3425",
-        "falPrice": "0.6823",
-        "discountRate": 49.8,
-        "anchor": "https://kie.ai/seedance-2-5",
-        "discountPrice": false
-      },
-      {
-        "modelDescription": "bytedance/seedance-2-5, 1080p no video",
-        "interfaceType": "video",
-        "provider": "ByteDance",
-        "creditPrice": "114",
-        "creditUnit": "per second",
-        "usdPrice": "0.570",
-        "falPrice": "1.1372",
-        "discountRate": 49.88,
-        "anchor": "https://kie.ai/seedance-2-5",
-        "discountPrice": false
-      },
-      {
-        "modelDescription": "grok-imagine, text-to-image",
-        "interfaceType": "image",
-        "provider": "Grok",
-        "creditPrice": "4.0",
-        "creditUnit": "per 2 images",
-        "usdPrice": "0.02",
-        "falPrice": "0.02",
-        "discountRate": 0,
-        "anchor": "https://kie.ai/grok-imagine?model=grok-imagine%2Ftext-to-video",
         "discountPrice": false
       }
     ],
-    "removedRows": [
-      {
-        "modelDescription": "grok-imagine, text-to-image",
-        "interfaceType": "image",
-        "provider": "Grok",
-        "creditPrice": "4.0",
-        "creditUnit": "per 6 images",
-        "usdPrice": "0.02",
-        "falPrice": "0.02",
-        "discountRate": 0,
-        "anchor": "https://kie.ai/grok-imagine?model=grok-imagine%2Ftext-to-video",
-        "discountPrice": false
-      }
-    ],
-    "changedRows": [
-      {
-        "key": "[\"Gemini 3.6 Flash, chat, output\",\"chat\",\"Google\",\"per million\",\"https://kie.ai/gemini-3-6-flash\"]",
-        "modelDescription": "Gemini 3.6 Flash, chat, output",
-        "before": {
-          "creditPrice": "450",
-          "usdPrice": "2.25",
-          "falPrice": "7.5",
-          "discountRate": 70,
-          "discountPrice": false
-        },
-        "after": {
-          "creditPrice": "225",
-          "usdPrice": "1.125",
-          "falPrice": "3.75",
-          "discountRate": 70,
-          "discountPrice": false
-        }
-      },
-      {
-        "key": "[\"Gemini 3.6 Flash, chat, input\",\"chat\",\"Google\",\"per million\",\"https://kie.ai/gemini-3-6-flash\"]",
-        "modelDescription": "Gemini 3.6 Flash, chat, input",
-        "before": {
-          "creditPrice": "90",
-          "usdPrice": "0.45",
-          "falPrice": "1.5",
-          "discountRate": 70,
-          "discountPrice": false
-        },
-        "after": {
-          "creditPrice": "45",
-          "usdPrice": "0.225",
-          "falPrice": "0.75",
-          "discountRate": 70,
-          "discountPrice": false
-        }
-      },
-      {
-        "key": "[\"grok-4-5, Chat, Cached Input\",\"chat\",\"Grok\",\"\",\"https://kie.ai/grok-4-5\"]",
-        "modelDescription": "grok-4-5, Chat, Cached Input",
-        "before": {
-          "creditPrice": "40",
-          "usdPrice": "0.20",
-          "falPrice": "0.50",
-          "discountRate": 60,
-          "discountPrice": false
-        },
-        "after": {
-          "creditPrice": "24",
-          "usdPrice": "0.12",
-          "falPrice": "0.3",
-          "discountRate": 60,
-          "discountPrice": false
-        }
-      }
-    ]
+    "removedRows": [],
+    "changedRows": []
   },
   "inventory": {
     "baseline": {
@@ -533,12 +129,300 @@
       "packages/provider/kie/src/zod.ts": "sha256:321ca5a69c6b62be816ddca767297bd1e9b60af6dcdf985cabdf8b3fc26b4a75",
       "packages/provider/kie/src/model-schemas.ts": "sha256:8baf8268a4edfc8470de99c660ccedd501da4135794c1b0ec5d67d6098585a58",
       "packages/provider/kie/src/kie.ts": "sha256:ef7348b72dc16648deb92722602e3c33075d144e3341f1d28ea60cab66a031c8",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:e10bdc45959cd5386eece41afa3239b0e4f73b1462731a31ffd9bd097e1d8f82",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:5b85a66c2ee3987cf3d859d55056ba3e5874714eea20c9195b368e992bd905c5",
       "packages/provider/cost/src/slugs.ts": "sha256:e221b357fd3df7f49e5584b47e2204857e08fecf2d8fc4ffb4ec122fc1fa072f",
       "scripts/endpoint-docs.tsv": "sha256:8ba99641ba3d0f405fc7d8645b36e625c1ca27c4c582c9bf1879675c407bec9e"
     }
   },
   "rows": [
+    {
+      "occurrenceId": "sha256:c3a01c378ca3363f3f3756f1ee58e9d0cf6a00fae511e0d85545fbca2e164f72#1",
+      "rowHash": "sha256:c3a01c378ca3363f3f3756f1ee58e9d0cf6a00fae511e0d85545fbca2e164f72",
+      "semanticKey": "sha256:915beaf7f35ca3de01c3804141b9c99727bb8addff0eb672b44083cd6044ae1b",
+      "official": {
+        "modelDescription": "wan3.0 video prime, 1080p, video",
+        "interfaceType": "video",
+        "provider": "Wan",
+        "creditPrice": "50.4",
+        "creditUnit": "per second",
+        "usdPrice": "0.252",
+        "falPrice": "0.28",
+        "discountRate": 10,
+        "anchor": "",
+        "discountPrice": false
+      },
+      "disposition": "implemented",
+      "mappedApiCityKeys": ["wan/3-0-video-prime"],
+      "evidence": {
+        "url": null,
+        "source": "frozen official Kie snapshot"
+      },
+      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
+      "unit": "seconds",
+      "officialUnit": "seconds",
+      "officialUnitQuantity": 1,
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "50.4",
+        "creditUnit": "per second",
+        "usdPrice": "0.252",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "resolution": "1080P"
+      },
+      "selectorSources": {
+        "resolution": "modelInputSchemas:wan/3-0-video-prime"
+      },
+      "representativePayload": {
+        "model": "wan/3-0-video-prime",
+        "input": {
+          "resolution": "1080P",
+          "duration": 5,
+          "prompt": "audit"
+        }
+      }
+    },
+    {
+      "occurrenceId": "sha256:5267447b2afd9902fd0506a24a16fb37edd290de74a4a14b624fd3df13fbee93#1",
+      "rowHash": "sha256:5267447b2afd9902fd0506a24a16fb37edd290de74a4a14b624fd3df13fbee93",
+      "semanticKey": "sha256:f130357d1a462861c14c5c6ed8d2f453249145c4638384f08e7f66c80a7a3417",
+      "official": {
+        "modelDescription": "wan3.0 video prime, 720p, video",
+        "interfaceType": "video",
+        "provider": "Wan",
+        "creditPrice": "25.2",
+        "creditUnit": "per second",
+        "usdPrice": "0.126",
+        "falPrice": "0.14",
+        "discountRate": 10,
+        "anchor": "",
+        "discountPrice": false
+      },
+      "disposition": "implemented",
+      "mappedApiCityKeys": ["wan/3-0-video-prime"],
+      "evidence": {
+        "url": null,
+        "source": "frozen official Kie snapshot"
+      },
+      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
+      "unit": "seconds",
+      "officialUnit": "seconds",
+      "officialUnitQuantity": 1,
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "25.2",
+        "creditUnit": "per second",
+        "usdPrice": "0.126",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "resolution": "720P"
+      },
+      "selectorSources": {
+        "resolution": "modelInputSchemas:wan/3-0-video-prime"
+      },
+      "representativePayload": {
+        "model": "wan/3-0-video-prime",
+        "input": {
+          "resolution": "720P",
+          "duration": 5,
+          "prompt": "audit"
+        }
+      }
+    },
+    {
+      "occurrenceId": "sha256:eac41d32c8e0739d4adc13a30740ecc40c97346bf221e7d1203d1906ceb0d710#1",
+      "rowHash": "sha256:eac41d32c8e0739d4adc13a30740ecc40c97346bf221e7d1203d1906ceb0d710",
+      "semanticKey": "sha256:874ad7e8379dfdf1ec253a71b1a5ac5b2283f0fa999552ee42e68864e06d5295",
+      "official": {
+        "modelDescription": "wan3.0 video prime, 480p, video",
+        "interfaceType": "video",
+        "provider": "Wan",
+        "creditPrice": "12.2",
+        "creditUnit": "per second",
+        "usdPrice": "0.0612",
+        "falPrice": "0.068",
+        "discountRate": 10,
+        "anchor": "",
+        "discountPrice": false
+      },
+      "disposition": "implemented",
+      "mappedApiCityKeys": ["wan/3-0-video-prime"],
+      "evidence": {
+        "url": null,
+        "source": "frozen official Kie snapshot"
+      },
+      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
+      "unit": "seconds",
+      "officialUnit": "seconds",
+      "officialUnitQuantity": 1,
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "12.2",
+        "creditUnit": "per second",
+        "usdPrice": "0.0612",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "resolution": "480P"
+      },
+      "selectorSources": {
+        "resolution": "modelInputSchemas:wan/3-0-video-prime"
+      },
+      "representativePayload": {
+        "model": "wan/3-0-video-prime",
+        "input": {
+          "resolution": "480P",
+          "duration": 5,
+          "prompt": "audit"
+        }
+      }
+    },
+    {
+      "occurrenceId": "sha256:a2f2f89bc7306aecc65bb1ae74ef1d2b782878293c7ac3ad3f3b878ac617a58c#1",
+      "rowHash": "sha256:a2f2f89bc7306aecc65bb1ae74ef1d2b782878293c7ac3ad3f3b878ac617a58c",
+      "semanticKey": "sha256:62d311278044905b3a91d02671a632e5e5a46ba1c62062257f69a31e8966d69e",
+      "official": {
+        "modelDescription": "wan 3.0 video, 1080p, video",
+        "interfaceType": "video",
+        "provider": "Wan",
+        "creditPrice": "32",
+        "creditUnit": "per second",
+        "usdPrice": "0.16",
+        "falPrice": "0.20",
+        "discountRate": 20,
+        "anchor": "",
+        "discountPrice": false
+      },
+      "disposition": "implemented",
+      "mappedApiCityKeys": ["wan/3-0-video"],
+      "evidence": {
+        "url": null,
+        "source": "frozen official Kie snapshot"
+      },
+      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
+      "unit": "seconds",
+      "officialUnit": "seconds",
+      "officialUnitQuantity": 1,
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "32",
+        "creditUnit": "per second",
+        "usdPrice": "0.16",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "resolution": "1080P"
+      },
+      "selectorSources": {
+        "resolution": "modelInputSchemas:wan/3-0-video"
+      },
+      "representativePayload": {
+        "model": "wan/3-0-video",
+        "input": {
+          "resolution": "1080P",
+          "duration": 5,
+          "prompt": "audit"
+        }
+      }
+    },
+    {
+      "occurrenceId": "sha256:dcda528296676e4c3b73d71fd1ecbae1357fc721461f34ecb4bbba6ec26c6918#1",
+      "rowHash": "sha256:dcda528296676e4c3b73d71fd1ecbae1357fc721461f34ecb4bbba6ec26c6918",
+      "semanticKey": "sha256:f2f82aea4b269cca7c25bc027da1e9e99d52c33219b72f200fd5937505f36ccf",
+      "official": {
+        "modelDescription": "wan 3.0 video, 720p, video",
+        "interfaceType": "video",
+        "provider": "Wan",
+        "creditPrice": "16",
+        "creditUnit": "per second",
+        "usdPrice": "0.16",
+        "falPrice": "0.20",
+        "discountRate": 20,
+        "anchor": "",
+        "discountPrice": false
+      },
+      "disposition": "implemented",
+      "mappedApiCityKeys": ["wan/3-0-video"],
+      "evidence": {
+        "url": null,
+        "source": "frozen official Kie snapshot"
+      },
+      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
+      "unit": "seconds",
+      "officialUnit": "seconds",
+      "officialUnitQuantity": 1,
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "16",
+        "creditUnit": "per second",
+        "usdPrice": "0.16",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "resolution": "720P"
+      },
+      "selectorSources": {
+        "resolution": "modelInputSchemas:wan/3-0-video"
+      },
+      "representativePayload": {
+        "model": "wan/3-0-video",
+        "input": {
+          "resolution": "720P",
+          "duration": 5,
+          "prompt": "audit"
+        }
+      }
+    },
+    {
+      "occurrenceId": "sha256:ea0914589d090ebfad68a8755036a5d1c2a86c357e378d2d3796a13059c522c7#1",
+      "rowHash": "sha256:ea0914589d090ebfad68a8755036a5d1c2a86c357e378d2d3796a13059c522c7",
+      "semanticKey": "sha256:886d9de298072a247aee4e634bbb3a2ee2b437549868a92420cd9714a6a2b07d",
+      "official": {
+        "modelDescription": "wan 3.0 video, 480p, video",
+        "interfaceType": "video",
+        "provider": "Wan",
+        "creditPrice": "8",
+        "creditUnit": "per second",
+        "usdPrice": "0.04",
+        "falPrice": "0.05",
+        "discountRate": 20,
+        "anchor": "",
+        "discountPrice": false
+      },
+      "disposition": "implemented",
+      "mappedApiCityKeys": ["wan/3-0-video"],
+      "evidence": {
+        "url": null,
+        "source": "frozen official Kie snapshot"
+      },
+      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
+      "unit": "seconds",
+      "officialUnit": "seconds",
+      "officialUnitQuantity": 1,
+      "rateBasis": {
+        "kind": "official-usd-price",
+        "creditPrice": "8",
+        "creditUnit": "per second",
+        "usdPrice": "0.04",
+        "rounding": "official value retained as published"
+      },
+      "selectorValues": {
+        "resolution": "480P"
+      },
+      "selectorSources": {
+        "resolution": "modelInputSchemas:wan/3-0-video"
+      },
+      "representativePayload": {
+        "model": "wan/3-0-video",
+        "input": {
+          "resolution": "480P",
+          "duration": 5,
+          "prompt": "audit"
+        }
+      }
+    },
     {
       "occurrenceId": "sha256:e08cac591475d2752b71caebc2237f506d19909e4e14065d80ed8899c22c0947#1",
       "rowHash": "sha256:e08cac591475d2752b71caebc2237f506d19909e4e14065d80ed8899c22c0947",
@@ -20402,18 +20286,26 @@
         "descriptor": true,
         "guard": true,
         "pricingKey": "wan/3-0-video",
-        "linkedRows": [],
-        "disposition": "upstream-unmappable",
-        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+        "linkedRows": [
+          "sha256:a2f2f89bc7306aecc65bb1ae74ef1d2b782878293c7ac3ad3f3b878ac617a58c#1",
+          "sha256:dcda528296676e4c3b73d71fd1ecbae1357fc721461f34ecb4bbba6ec26c6918#1",
+          "sha256:ea0914589d090ebfad68a8755036a5d1c2a86c357e378d2d3796a13059c522c7#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
       },
       {
         "id": "wan/3-0-video-prime",
         "descriptor": true,
         "guard": true,
         "pricingKey": "wan/3-0-video-prime",
-        "linkedRows": [],
-        "disposition": "upstream-unmappable",
-        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+        "linkedRows": [
+          "sha256:c3a01c378ca3363f3f3756f1ee58e9d0cf6a00fae511e0d85545fbca2e164f72#1",
+          "sha256:5267447b2afd9902fd0506a24a16fb37edd290de74a4a14b624fd3df13fbee93#1",
+          "sha256:eac41d32c8e0739d4adc13a30740ecc40c97346bf221e7d1203d1906ceb0d710#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
       },
       {
         "id": "wan/2-7-image-to-video",
@@ -22253,15 +22145,23 @@
       },
       {
         "key": "wan/3-0-video",
-        "linkedRows": [],
-        "disposition": "upstream-unmappable",
-        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+        "linkedRows": [
+          "sha256:a2f2f89bc7306aecc65bb1ae74ef1d2b782878293c7ac3ad3f3b878ac617a58c#1",
+          "sha256:dcda528296676e4c3b73d71fd1ecbae1357fc721461f34ecb4bbba6ec26c6918#1",
+          "sha256:ea0914589d090ebfad68a8755036a5d1c2a86c357e378d2d3796a13059c522c7#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
       },
       {
         "key": "wan/3-0-video-prime",
-        "linkedRows": [],
-        "disposition": "upstream-unmappable",
-        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+        "linkedRows": [
+          "sha256:c3a01c378ca3363f3f3756f1ee58e9d0cf6a00fae511e0d85545fbca2e164f72#1",
+          "sha256:5267447b2afd9902fd0506a24a16fb37edd290de74a4a14b624fd3df13fbee93#1",
+          "sha256:eac41d32c8e0739d4adc13a30740ecc40c97346bf221e7d1203d1906ceb0d710#1"
+        ],
+        "disposition": "supported",
+        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
       },
       {
         "key": "wan/2-7-text-to-video",
@@ -25067,11 +24967,11 @@
   },
   "summary": {
     "rows": {
-      "captured": 441,
-      "unique": 441,
+      "captured": 447,
+      "unique": 447,
       "duplicateOccurrences": 0,
       "dispositionCounts": {
-        "implemented": 214,
+        "implemented": 220,
         "canonical-alias": 124,
         "duplicate": 0,
         "free-nonbillable": 3,
@@ -25100,11 +25000,11 @@
         "guards": 140,
         "withoutPricing": 15,
         "dispositionCounts": {
-          "supported": 111,
+          "supported": 113,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 29
+          "upstream-unmappable": 27
         },
         "unclassified": 0
       },
@@ -25124,11 +25024,11 @@
       "pricingKeys": {
         "count": 156,
         "dispositionCounts": {
-          "supported": 140,
+          "supported": 142,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 16
+          "upstream-unmappable": 14
         },
         "unclassified": 0
       },
@@ -25513,12 +25413,12 @@
     "workItem": "WI-6",
     "upstream": [
       {
-        "path": "tests/fixtures/kie-pricing-evidence/kie-pricing-snapshot-2026-08-22T08-03-40-316Z.json",
-        "hash": "sha256:2a5aea8d4840708c53ff11ae055e736650fab756b7e3491362b8dcb7c0fd3a55"
+        "path": "tests/fixtures/kie-pricing-evidence/kie-pricing-snapshot-2026-08-25T06-31-02-421Z.json",
+        "hash": "sha256:74aba4bdacd1f3b7cbf1291601b827c0572950c246a90c3765ebcc2da087969f"
       },
       {
-        "path": "tests/fixtures/kie-pricing-evidence/kie-pricing-pull-2026-08-22T08-03-40-316Z.json",
-        "hash": "sha256:a2d11e6ed1bb165cd8834c75b21c44ae42f8eb0ca41625f0410c8e1e49b7f5c4"
+        "path": "tests/fixtures/kie-pricing-evidence/kie-pricing-pull-2026-08-25T06-31-02-421Z.json",
+        "hash": "sha256:5d139e26528be43a696818d4f6564898c07e3dad3274a683247a5bef319de49c"
       }
     ]
   }

@@ -1527,6 +1527,8 @@ const MEDIA_MODEL_FAMILIES = [
   {
     family: "Wan",
     listed: [
+      "wan/3-0-video",
+      "wan/3-0-video-prime",
       "wan/2-7-image-to-video",
       "wan/2-7-text-to-video",
       "wan/2-7-r2v",

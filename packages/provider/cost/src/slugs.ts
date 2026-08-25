@@ -58,6 +58,8 @@ export const MODEL_SLUGS = {
     "wan/2-6-video-to-video": "wan2p6",
 
     // Video — Wan 2.7
+    "wan/3-0-video": "wan3p0",
+    "wan/3-0-video-prime": "wan3p0p",
     "wan/2-7-text-to-video": "wan2p7",
     "wan/2-7-image-to-video": "wan2p7",
     "wan/2-7-r2v": "wan2p7",
@@ -540,6 +542,8 @@ export const MODEL_DISPLAY = {
     "wan/2-6-image-to-video": "Wan 2.6",
     "wan/2-6-video-to-video": "Wan 2.6",
 
+    "wan/3-0-video": "Wan 3.0",
+    "wan/3-0-video-prime": "Wan 3.0 Prime",
     "wan/2-7-text-to-video": "Wan 2.7",
     "wan/2-7-image-to-video": "Wan 2.7",
     "wan/2-7-r2v": "Wan 2.7",

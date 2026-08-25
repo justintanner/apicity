@@ -277,6 +277,8 @@ export const KIE_MEDIA_MODELS = [
   "bytedance/v1-pro-fast-image-to-video",
   "bytedance/v1-pro-image-to-video",
   "bytedance/v1-pro-text-to-video",
+  "wan/3-0-video",
+  "wan/3-0-video-prime",
   "wan/2-7-image-to-video",
   "wan/2-7-text-to-video",
   "wan/2-7-r2v",
@@ -3873,6 +3875,168 @@ export const ElevenLabsSoundEffectV2RequestSchema = z.object({
   }),
 });
 
+// ---------------------------------------------------------------------------
+// Wan 3.0 video (standard + prime)
+// ---------------------------------------------------------------------------
+
+// Kie spells the Wan 3.0 tiers in UPPERCASE, unlike the lowercase "720p" the
+// 2.7 models use — the wire values are verbatim upstream, so the two families
+// legitimately differ here.
+// Docs: https://docs.kie.ai/market/wan/3-0-video
+export const Wan30ResolutionSchema = z.enum(["480P", "720P", "1080P"]);
+
+export const Wan30AspectRatioSchema = z.enum([
+  "adaptive",
+  "16:9",
+  "4:3",
+  "1:1",
+  "3:4",
+  "9:16",
+]);
+
+// Published range is [2, 30] seconds, with -1 selecting a model-chosen
+// "intelligent duration". -1 is a sentinel rather than a length, so it is
+// spelled as its own literal instead of widening the numeric range.
+export const Wan30DurationSchema = z.union([
+  z.literal(-1),
+  z.number().int().min(2).max(30),
+]);
+
+// The standard and prime models publish byte-identical inputs — only the model
+// id and the marketing description differ (standard vs high-speed) — so one
+// shape backs both request schemas.
+const Wan30InputShape = {
+  // Up to 20,000 characters; excess is truncated upstream. Required for
+  // text-to-video; recommended alongside media for every other mode. In
+  // reference mode, address the media as Image1/Video1/Audio1 in the prompt.
+  prompt: z.string().max(20000).optional(),
+  // First/last frame mode. Cannot be combined with any reference_* array.
+  first_frame_url: z.string().optional(),
+  last_frame_url: z.string().optional(),
+  // All-purpose reference mode. Array order maps to Image1, Video1, Audio1...
+  reference_image_urls: z.array(z.string()).max(10).optional(),
+  // Each clip 1-15s, total <= 15s; input duration + `duration` <= 30s.
+  reference_video_urls: z.array(z.string()).max(5).optional(),
+  // Each clip 1-15s, total <= 15s. Not recommended as the only media input.
+  reference_audio_urls: z.array(z.string()).max(5).optional(),
+  // File-to-video and link-to-video. Mutually exclusive with each other and
+  // with the first/last-frame parameters.
+  reference_file_urls: z.array(z.string()).max(1).optional(),
+  reference_link_urls: z.array(z.string()).max(1).optional(),
+  resolution: Wan30ResolutionSchema.optional(),
+  aspect_ratio: Wan30AspectRatioSchema.optional(),
+  duration: Wan30DurationSchema.optional(),
+  audio: z.boolean().optional(),
+  seed: z.number().int().min(0).max(2147483647).optional(),
+  nsfw_checker: z.boolean().default(false),
+};
+
+// The three documented exclusivity rules, applied on the outer object so the
+// `input.*` fields stay introspectable — the same placement rule the 2.7
+// schemas above follow. Written out per model rather than shared through a
+// helper: a generic wrapper erases the inferred input types, which is what
+// `modelRequestSchemas` in kie.ts indexes.
+export const Wan30VideoRequestSchema = z
+  .object({
+    model: z.literal("wan/3-0-video"),
+    callBackUrl: z.string().optional(),
+    input: z.object(Wan30InputShape),
+  })
+  .refine(
+    (v) =>
+      !(
+        (v.input.first_frame_url || v.input.last_frame_url) &&
+        (v.input.reference_image_urls?.length ||
+          v.input.reference_video_urls?.length ||
+          v.input.reference_audio_urls?.length ||
+          v.input.reference_file_urls?.length ||
+          v.input.reference_link_urls?.length)
+      ),
+    {
+      message:
+        "wan/3-0-video does not accept first_frame_url or last_frame_url combined with any reference_* parameter",
+      path: ["input", "first_frame_url"],
+    }
+  )
+  .refine(
+    (v) =>
+      !(
+        v.input.reference_file_urls?.length &&
+        v.input.reference_link_urls?.length
+      ),
+    {
+      message:
+        "wan/3-0-video does not accept reference_file_urls combined with reference_link_urls",
+      path: ["input", "reference_file_urls"],
+    }
+  )
+  .refine(
+    (v) =>
+      Boolean(v.input.prompt) ||
+      Boolean(v.input.first_frame_url) ||
+      Boolean(v.input.last_frame_url) ||
+      Boolean(v.input.reference_image_urls?.length) ||
+      Boolean(v.input.reference_video_urls?.length) ||
+      Boolean(v.input.reference_audio_urls?.length) ||
+      Boolean(v.input.reference_file_urls?.length) ||
+      Boolean(v.input.reference_link_urls?.length),
+    {
+      message: "wan/3-0-video requires a prompt or at least one media input",
+      path: ["input", "prompt"],
+    }
+  );
+
+export const Wan30VideoPrimeRequestSchema = z
+  .object({
+    model: z.literal("wan/3-0-video-prime"),
+    callBackUrl: z.string().optional(),
+    input: z.object(Wan30InputShape),
+  })
+  .refine(
+    (v) =>
+      !(
+        (v.input.first_frame_url || v.input.last_frame_url) &&
+        (v.input.reference_image_urls?.length ||
+          v.input.reference_video_urls?.length ||
+          v.input.reference_audio_urls?.length ||
+          v.input.reference_file_urls?.length ||
+          v.input.reference_link_urls?.length)
+      ),
+    {
+      message:
+        "wan/3-0-video-prime does not accept first_frame_url or last_frame_url combined with any reference_* parameter",
+      path: ["input", "first_frame_url"],
+    }
+  )
+  .refine(
+    (v) =>
+      !(
+        v.input.reference_file_urls?.length &&
+        v.input.reference_link_urls?.length
+      ),
+    {
+      message:
+        "wan/3-0-video-prime does not accept reference_file_urls combined with reference_link_urls",
+      path: ["input", "reference_file_urls"],
+    }
+  )
+  .refine(
+    (v) =>
+      Boolean(v.input.prompt) ||
+      Boolean(v.input.first_frame_url) ||
+      Boolean(v.input.last_frame_url) ||
+      Boolean(v.input.reference_image_urls?.length) ||
+      Boolean(v.input.reference_video_urls?.length) ||
+      Boolean(v.input.reference_audio_urls?.length) ||
+      Boolean(v.input.reference_file_urls?.length) ||
+      Boolean(v.input.reference_link_urls?.length),
+    {
+      message:
+        "wan/3-0-video-prime requires a prompt or at least one media input",
+      path: ["input", "prompt"],
+    }
+  );
+
 // Refines live on the outer request object (not the `input` sub-object) so
 // that `input.*` fields remain introspectable by downstream tools that walk
 // ZodArray/ZodObject defs (e.g. videocity's readSlotConstraints).
@@ -6414,6 +6578,8 @@ export const MediaGenerationRequestSchema = z.union([
   BytedanceV1ProFastImageToVideoRequestSchema,
   BytedanceV1ProImageToVideoRequestSchema,
   BytedanceV1ProTextToVideoRequestSchema,
+  Wan30VideoRequestSchema,
+  Wan30VideoPrimeRequestSchema,
   Wan27ImageToVideoRequestSchema,
   Wan27TextToVideoRequestSchema,
   Wan27RefToVideoRequestSchema,

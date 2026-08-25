@@ -1,4 +1,4 @@
-# Kie Pricing Reconciliation — tests/fixtures/kie-pricing-evidence/kie-pricing-snapshot-2026-08-22T08-03-40-316Z.json
+# Kie Pricing Reconciliation — tests/fixtures/kie-pricing-evidence/kie-pricing-snapshot-2026-08-25T06-31-02-421Z.json
 
 ## Scope
 
@@ -6,11 +6,11 @@ This WI6 executable reconciliation joins the frozen official Kie pricing pull to
 
 ## Frozen Evidence
 
-- Snapshot: `tests/fixtures/kie-pricing-evidence/kie-pricing-snapshot-2026-08-22T08-03-40-316Z.json`
-- Snapshot SHA-256: `sha256:2a5aea8d4840708c53ff11ae055e736650fab756b7e3491362b8dcb7c0fd3a55`
-- Reported/captured rows: **441/441**
-- Unique/duplicate occurrences: **441/0**
-- Comparison baseline: **408** rows; added **34**, removed **1**, changed **3**.
+- Snapshot: `tests/fixtures/kie-pricing-evidence/kie-pricing-snapshot-2026-08-25T06-31-02-421Z.json`
+- Snapshot SHA-256: `sha256:74aba4bdacd1f3b7cbf1291601b827c0572950c246a90c3765ebcc2da087969f`
+- Reported/captured rows: **447/447**
+- Unique/duplicate occurrences: **447/0**
+- Comparison baseline: **441** rows; added **6**, removed **0**, changed **0**.
 
 ## Inventory Counts
 
@@ -28,7 +28,7 @@ This WI6 executable reconciliation joins the frozen official Kie pricing pull to
 
 | Disposition          | Count |
 | -------------------- | ----: |
-| implemented          |   214 |
+| implemented          |   220 |
 | canonical-alias      |   124 |
 | duplicate            |     0 |
 | free-nonbillable     |     3 |
@@ -84,8 +84,6 @@ Schema models without a current usable pricing key: **15**; pricing-only runtime
 | `bytedance/v1-pro-fast-image-to-video` | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
 | `bytedance/v1-pro-image-to-video`      | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
 | `bytedance/v1-pro-text-to-video`       | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `wan/3-0-video`                        | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
-| `wan/3-0-video-prime`                  | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
 | `wan/2-6-flash-image-to-video`         | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
 | `wan/2-6-flash-video-to-video`         | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
 | `omnihuman-1-5/human-identification`   | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |

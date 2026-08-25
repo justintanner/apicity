@@ -1,6 +1,6 @@
 {
   "name": "@apicity/youtube",
-  "version": "0.10.3",
+  "version": "0.11.0",
   "description": "YouTube Data API v3 provider for posting content.",
   "license": "MIT",
   "repository": {

@@ -4,6 +4,7 @@ import {
   mkdirSync,
   mkdtempSync,
   readFileSync,
+  realpathSync,
   rmSync,
   writeFileSync,
 } from "node:fs";
@@ -86,7 +87,15 @@ function concatenationConstruction(
 }
 
 function makeRepository(prefix = "apicity-file-url-entry-guard-"): string {
-  const root = mkdtempSync(join(tmpdir(), prefix));
+  // Resolve the temp root through realpath. On macOS `os.tmpdir()` is
+  // `/var/folders/...`, and `/var` is a symlink to `/private/var`, so a script
+  // spawned with an unresolved path sees `process.argv[1]` under `/var` while
+  // `fileURLToPath(import.meta.url)` reports Node's resolved `/private/var`
+  // path. The guard's own direct-entry check compares those two for equality,
+  // so it silently never runs and the child exits 0 with no output — the
+  // spawning cases then assert against an empty stdout for a reason that has
+  // nothing to do with what they are testing.
+  const root = realpathSync(mkdtempSync(join(tmpdir(), prefix)));
   temporaryDirectories.push(root);
   execFileSync("git", ["init", "-q"], { cwd: root, stdio: "pipe" });
   return root;

@@ -38,4 +38,70 @@ describe("fal google virtual-try-on integration", () => {
     expect(typeof result.images[0].url).toBe("string");
     expect(result.images[0].url.startsWith("http")).toBe(true);
   }, 300000);
+
+  // AC-3: person_image_url and product_image_url are required, and num_images
+  // is bounded to 1-4 inclusive.
+  it("should reject a payload missing person_image_url", () => {
+    const provider = createFal({ apiKey: "fal-test-key" });
+    const v = provider.run.virtualTryOn.schema.safeParse({
+      product_image_url: "https://example.com/tshirt.jpg",
+    });
+    expect(v.success).toBe(false);
+    if (v.success) throw new Error("expected failure");
+    expect(
+      v.error.issues.some((i) => i.path.includes("person_image_url"))
+    ).toBe(true);
+  });
+
+  it("should reject a payload missing product_image_url", () => {
+    const provider = createFal({ apiKey: "fal-test-key" });
+    const v = provider.run.virtualTryOn.schema.safeParse({
+      person_image_url: "https://example.com/person.jpg",
+    });
+    expect(v.success).toBe(false);
+    if (v.success) throw new Error("expected failure");
+    expect(
+      v.error.issues.some((i) => i.path.includes("product_image_url"))
+    ).toBe(true);
+  });
+
+  it("should reject num_images below the documented minimum", () => {
+    const provider = createFal({ apiKey: "fal-test-key" });
+    const v = provider.run.virtualTryOn.schema.safeParse({
+      person_image_url: "https://example.com/person.jpg",
+      product_image_url: "https://example.com/tshirt.jpg",
+      num_images: 0,
+    });
+    expect(v.success).toBe(false);
+  });
+
+  it("should reject num_images above the documented maximum", () => {
+    const provider = createFal({ apiKey: "fal-test-key" });
+    const v = provider.run.virtualTryOn.schema.safeParse({
+      person_image_url: "https://example.com/person.jpg",
+      product_image_url: "https://example.com/tshirt.jpg",
+      num_images: 5,
+    });
+    expect(v.success).toBe(false);
+  });
+
+  it("should accept num_images at the documented minimum", () => {
+    const provider = createFal({ apiKey: "fal-test-key" });
+    const v = provider.run.virtualTryOn.schema.safeParse({
+      person_image_url: "https://example.com/person.jpg",
+      product_image_url: "https://example.com/tshirt.jpg",
+      num_images: 1,
+    });
+    expect(v.success).toBe(true);
+  });
+
+  it("should accept num_images at the documented maximum", () => {
+    const provider = createFal({ apiKey: "fal-test-key" });
+    const v = provider.run.virtualTryOn.schema.safeParse({
+      person_image_url: "https://example.com/person.jpg",
+      product_image_url: "https://example.com/tshirt.jpg",
+      num_images: 4,
+    });
+    expect(v.success).toBe(true);
+  });
 });

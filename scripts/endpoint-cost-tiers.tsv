@@ -770,6 +770,7 @@ kie	claude.v1.messages	POST	prohibitive	Media-generation provider (video/image/a
 kie	codex.v1.responses	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
 kie	gemini.v1.models.gemini35Flash.streamGenerateContent	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
 kie	gemini.v1.models.gemini36Flash.streamGenerateContent	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
+kie	gemini.v1.models.gemini37Flash.streamGenerateContent	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
 kie	gemini.v1.models.gemini3FlashV1betamodels.streamGenerateContent	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
 kie	gemini25Flash.v1.chat.completions	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
 kie	gemini25Pro.v1.chat.completions	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1

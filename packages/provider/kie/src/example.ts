@@ -568,6 +568,24 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST gemini.v1.models.gemini37Flash.streamGenerateContent": {
+    "source": "kie/gemini-37-flash-auth-error",
+    "payload": {
+      "stream": false,
+      "contents": [
+        {
+          "role": "user",
+          "parts": [
+            {
+              "text": "ping"
+            }
+          ]
+        }
+      ]
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST gemini.v1.models.gemini3FlashV1betamodels.streamGenerateContent": {
     "source": "kie/gemini-3-flash-v1beta-auth-error",
     "payload": {

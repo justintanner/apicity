@@ -113,7 +113,7 @@
       "displayKeys": 157,
       "schemaWithoutPricing": 15,
       "pricingOnly": 30,
-      "endpoints": 69
+      "endpoints": 70
     }
   },
   "source": {
@@ -126,12 +126,12 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:c5f840cb09c74719cd20e192ecaa99847521dceedbf5f2f815686f889002b478",
+      "packages/provider/kie/src/zod.ts": "sha256:8f3f44fccc3940cd61ab1e7f76c053fb6e89b237e4f7071bac9ada27a78facfb",
       "packages/provider/kie/src/model-schemas.ts": "sha256:8baf8268a4edfc8470de99c660ccedd501da4135794c1b0ec5d67d6098585a58",
       "packages/provider/kie/src/kie.ts": "sha256:46fb3092961eb2a9b4f74232aa5c8da5064d0b1d7c9d6eefa4e5de1c117b7031",
       "packages/provider/cost/src/pricing/kie.ts": "sha256:97a5e2cdb95c9caee7c46121fede6af30384100e1be96068bd48cce3be2c6df6",
       "packages/provider/cost/src/slugs.ts": "sha256:faa0840d956492e8d67e1e17d640004c3171a88e8aa281960bec19d7dd3860ea",
-      "scripts/endpoint-docs.tsv": "sha256:37689109f8cd98f8f0b48b8457609da533f50161594996c5f934cc87bd00a1a4"
+      "scripts/endpoint-docs.tsv": "sha256:b2e55904d2f5658a6a533348f3d968ea3bd2a73be736eedd192a138165358830"
     }
   },
   "rows": [
@@ -21847,6 +21847,16 @@
       },
       {
         "provider": "kie",
+        "dotPath": "gemini.v1.models.gemini37Flash.streamGenerateContent",
+        "method": "POST",
+        "fullUrl": "https://api.kie.ai/gemini/v1/models/gemini-3-7-flash:streamGenerateContent",
+        "docsUrl": "https://docs.kie.ai/market/gemini/gemini-3-7-flash",
+        "linkedPricingKeys": [],
+        "disposition": "supported",
+        "rationale": "Documented callable endpoint is retained for architecture review even when its pricing is model-keyed."
+      },
+      {
+        "provider": "kie",
         "dotPath": "gemini.v1.models.gemini3FlashV1betamodels.streamGenerateContent",
         "method": "POST",
         "fullUrl": "https://api.kie.ai/gemini/v1/models/gemini-3-flash-v1betamodels:streamGenerateContent",
@@ -24950,11 +24960,11 @@
         "unclassified": 0
       },
       "endpoints": {
-        "count": 69,
-        "POST": 52,
+        "count": 70,
+        "POST": 53,
         "GET": 17,
         "dispositionCounts": {
-          "supported": 46,
+          "supported": 47,
           "free-nonbillable": 23,
           "unsupported-endpoint": 0,
           "token-billed": 0,

@@ -148,6 +148,10 @@ export type {
   FalNanoBanana2LiteEditRequest,
   FalNanoBanana2LiteEditRequestInput,
   FalNanoBanana2LiteEditParsedRequest,
+  FalVirtualTryOnParams,
+  FalVirtualTryOnRequest,
+  FalVirtualTryOnRequestInput,
+  FalVirtualTryOnParsedRequest,
   FalSeedreamV5LiteEditRequest,
   FalSeedreamV5LiteEditRequestInput,
   FalSeedreamV5LiteEditParsedRequest,
@@ -318,6 +322,7 @@ import type {
   FalNanoBanana2EditRequest,
   FalNanoBanana2LiteTextToImageRequest,
   FalNanoBanana2LiteEditRequest,
+  FalVirtualTryOnRequest,
   FalSeedreamV5LiteEditRequest,
   FalSeedreamV5LiteTextToImageRequest,
   FalSeedSpeechTtsV2Request,
@@ -908,6 +913,22 @@ export interface FalNanoBanana2LiteTextToImageResponse {
 export interface FalNanoBanana2LiteEditResponse {
   images: FalFile[];
   description: string;
+}
+
+// Google Virtual Try-On
+// Upstream's `ImageFile` requires only `url`; every other field is optional
+// and explicitly nullable, so it is modelled here rather than reusing FalFile.
+export interface FalVirtualTryOnImage {
+  url: string;
+  content_type?: string | null;
+  file_name?: string | null;
+  file_size?: number | null;
+  width?: number | null;
+  height?: number | null;
+}
+
+export interface FalVirtualTryOnResponse {
+  images: FalVirtualTryOnImage[];
 }
 
 // Qwen Image (text-to-image and edit)
@@ -1791,6 +1812,13 @@ export interface FalRunNanoBanana2LiteNamespace {
   edit: FalNanoBanana2LiteEditFn;
 }
 
+type FalVirtualTryOnFn = ((
+  params: FalVirtualTryOnRequest,
+  signal?: AbortSignal
+) => Promise<FalVirtualTryOnResponse>) & {
+  schema: ApicitySchema<FalVirtualTryOnRequest>;
+};
+
 type FalSeedreamV5LiteEditFn = ((
   params: FalSeedreamV5LiteEditRequest,
   signal?: AbortSignal
@@ -2237,6 +2265,7 @@ export interface FalRunNamespace {
   nanoBananaPro: FalRunNanoBananaProNamespace;
   nanoBanana2: FalRunNanoBanana2Namespace;
   nanoBanana2Lite: FalRunNanoBanana2LiteNamespace;
+  virtualTryOn: FalVirtualTryOnFn;
   qwenImage: FalQwenImageFn;
   gptImage1p5: FalGptImage1p5Fn;
   sora2: FalRunSora2Namespace;

@@ -44,6 +44,10 @@ const wan30AsOf = "2026-08-25";
 // date, which is when the folded input component was found to be gone.
 const grokImagineV1AsOf = "2026-08-25";
 
+// Google Virtual Try-On pricing was pulled from fal's pricing API
+// (GET /v1/models/pricing?endpoint_id=google/virtual-try-on) on this date.
+const virtualTryOnAsOf = "2026-08-27";
+
 // Grok Imagine video edit was rechecked against its fal.ai pricing card on
 // this date. Both the source-video input and edited output bill for the same
 // hinted clip length, so their per-second components can be summed exactly.
@@ -625,6 +629,19 @@ export const fal: Record<string, ModelPricing> = {
     "xai/grok-imagine-image/edit",
     0.02,
     grokImagineV1AsOf
+  ),
+
+  // Image — Google Virtual Try-On. A pull of
+  // GET https://api.fal.ai/v1/models/pricing?endpoint_id=google/virtual-try-on
+  // on 2026-08-27 reports a flat unit_price of $0.075 with unit "images", so
+  // the rate is static and the count comes straight from the request's
+  // `num_images` (upstream default 1). Unlike its google/nano-banana-*-lite
+  // neighbours, which bill per token and are therefore in
+  // FAL_DYNAMIC_PRICING_ENDPOINTS, this one is payload-derivable.
+  "google/virtual-try-on": perImage(
+    "google/virtual-try-on",
+    0.075,
+    virtualTryOnAsOf
   ),
 
   // Image — Hunyuan Image 3 instruct edit (area-priced). image_size defaults

@@ -684,6 +684,16 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST virtualTryOn": {
+    "source": "fal/google-virtual-try-on",
+    "payload": {
+      "person_image_url": "https://storage.googleapis.com/falserverless/model_tests/leffa/person_image.jpg",
+      "product_image_url": "https://storage.googleapis.com/falserverless/model_tests/leffa/tshirt_image.jpg",
+      "num_images": 1
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST wan.v2p7.edit": {
     "source": "fal/wan-v2p7-edit",
     "payload": {

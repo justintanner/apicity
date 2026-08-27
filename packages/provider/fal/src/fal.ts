@@ -67,6 +67,8 @@ import {
   FalNanoBanana2LiteTextToImageResponse,
   FalNanoBanana2LiteEditRequest,
   FalNanoBanana2LiteEditResponse,
+  FalVirtualTryOnRequest,
+  FalVirtualTryOnResponse,
   FalSeedreamV5LiteEditRequest,
   FalSeedreamV5LiteEditResponse,
   FalSeedreamV5LiteTextToImageRequest,
@@ -187,6 +189,7 @@ import {
   FalNanoBanana2EditRequestSchema,
   FalNanoBanana2LiteTextToImageRequestSchema,
   FalNanoBanana2LiteEditRequestSchema,
+  FalVirtualTryOnRequestSchema,
   FalSeedreamV5LiteEditRequestSchema,
   FalSeedreamV5LiteTextToImageRequestSchema,
   FalSeedSpeechTtsV2RequestSchema,
@@ -1099,6 +1102,15 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/google/virtual-try-on
+  // Docs: https://fal.ai/models/google/virtual-try-on/api
+  const virtualTryOn = jsonBody<
+    FalVirtualTryOnRequest,
+    FalVirtualTryOnResponse
+  >("POST", "/google/virtual-try-on", FalVirtualTryOnRequestSchema, {
+    base: runBaseURL,
+  });
+
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://fal.run/google/nano-banana-lite/edit
   // Docs: https://fal.ai/models/google/nano-banana-lite/edit/api
@@ -1743,6 +1755,7 @@ export function createFal(opts: FalOptions): FalProvider {
       textToImage: nanoBanana2LiteTextToImage,
       edit: nanoBanana2LiteEdit,
     },
+    virtualTryOn,
     qwenImage,
     klingVideo: {
       v3: {

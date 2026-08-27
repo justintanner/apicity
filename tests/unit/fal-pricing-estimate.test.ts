@@ -713,6 +713,44 @@ describe("fal edit/image pricing estimates", () => {
     );
   });
 
+  it("estimates google/virtual-try-on per image from num_images", () => {
+    // A 2026-08-27 pull of GET /v1/models/pricing?endpoint_id=
+    // google/virtual-try-on reports unit_price 0.075 with unit "images", so
+    // the rate is static and `num_images` is the exact billable count. The
+    // model's google/nano-banana-*-lite neighbours bill per token instead and
+    // stay on FAL_DYNAMIC_PRICING_ENDPOINTS.
+    const single = estimate("google/virtual-try-on", {
+      person_image_url: "https://example.com/person.jpg",
+      product_image_url: "https://example.com/tshirt.jpg",
+      num_images: 1,
+    });
+    expect(single.usd).toBe(0.075);
+    expect(single.breakdown).toEqual({
+      units: 1,
+      unit: "images",
+      perUnitUsd: 0.075,
+    });
+    expect(single.rateAsOf).toBe("2026-08-27");
+    expect(single.warnings).toEqual([]);
+
+    // Upstream caps num_images at 4; the estimate scales linearly with it.
+    expect(
+      estimate("google/virtual-try-on", {
+        person_image_url: "https://example.com/person.jpg",
+        product_image_url: "https://example.com/tshirt.jpg",
+        num_images: 4,
+      }).usd
+    ).toBe(0.3);
+
+    // Omitting num_images falls back to upstream's documented default of 1.
+    expect(
+      estimate("google/virtual-try-on", {
+        person_image_url: "https://example.com/person.jpg",
+        product_image_url: "https://example.com/tshirt.jpg",
+      }).usd
+    ).toBe(0.075);
+  });
+
   it("counts wan text-to-image output from max_images", () => {
     // The Wan 2.7 t2i schemas define max_images, not num_images.
     const result = estimate("fal-ai/wan/v2.7/text-to-image", {

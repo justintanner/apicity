@@ -630,6 +630,16 @@ export const KieGemini36FlashStreamGenerateContentRequestSchema = z
   })
   .passthrough();
 
+// Docs: https://docs.kie.ai/market/gemini/gemini-3-7-flash
+export const KieGemini37FlashStreamGenerateContentRequestSchema = z
+  .object({
+    stream: z.boolean().default(true),
+    contents: z.array(KieGeminiContentSchema).min(1),
+    tools: z.array(KieGeminiToolSchema).optional(),
+    generationConfig: KieGeminiGenerationConfigSchema.optional(),
+  })
+  .passthrough();
+
 // Docs: https://docs.kie.ai/market/gemini/gemini-3-flash-v1beta
 // Unusual model segment `gemini-3-flash-v1betamodels` is intentional (upstream path).
 export const KieGemini3FlashV1betamodelsStreamGenerateContentRequestSchema = z
@@ -8026,6 +8036,12 @@ export type KieGemini36FlashStreamGenerateContentRequest = z.input<
 >;
 export type KieGemini36FlashStreamGenerateContentParsedRequest = z.output<
   typeof KieGemini36FlashStreamGenerateContentRequestSchema
+>;
+export type KieGemini37FlashStreamGenerateContentRequest = z.input<
+  typeof KieGemini37FlashStreamGenerateContentRequestSchema
+>;
+export type KieGemini37FlashStreamGenerateContentParsedRequest = z.output<
+  typeof KieGemini37FlashStreamGenerateContentRequestSchema
 >;
 export type KieGemini3FlashV1betamodelsStreamGenerateContentRequest = z.input<
   typeof KieGemini3FlashV1betamodelsStreamGenerateContentRequestSchema

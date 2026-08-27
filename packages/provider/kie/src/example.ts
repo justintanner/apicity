@@ -685,6 +685,26 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST gemini37FlashOpenai.v1.chat.completions": {
+    "source": "kie/gemini-37-flash-openai-chat-auth-error",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "ping"
+            }
+          ]
+        }
+      ],
+      "stream": false,
+      "include_thoughts": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST gemini3Flash.v1.chat.completions": {
     "source": "kie/gemini-3-flash-chat-auth-error",
     "payload": {

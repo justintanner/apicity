@@ -740,7 +740,7 @@ console.log(editTask.data?.taskId);
 
 ## API Reference
 
-57 endpoints across 28 groups. Each method mirrors an upstream URL path.
+58 endpoints across 29 groups. Each method mirrors an upstream URL path.
 
 ### chat
 
@@ -980,6 +980,25 @@ const res = await kie.gemini36FlashOpenai.post.v1.chat.completions({ /* ... */ }
 ```
 
 Source: [`packages/provider/kie/src/gemini-36-flash-openai.ts`](src/gemini-36-flash-openai.ts)
+
+</details>
+
+### gemini37FlashOpenai
+
+<details>
+<summary><code>POST</code> <b><code>kie.gemini37FlashOpenai.post.v1.chat.completions</code></b></summary>
+
+<code>POST https://api.kie.ai/gemini-3-7-flash-openai/v1/chat/completions</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/market/gemini/gemini-3-7-flash-openai)
+
+```typescript
+const res = await kie.gemini37FlashOpenai.post.v1.chat.completions({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/gemini-37-flash-openai.ts`](src/gemini-37-flash-openai.ts)
 
 </details>
 

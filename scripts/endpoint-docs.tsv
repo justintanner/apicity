@@ -857,6 +857,7 @@ fal	v1.serverless.logs	POST	https://api.fal.ai/v1/serverless/logs/stream	https:/
 fal	v1.workflows	GET	https://api.fal.ai/v1/workflows	https://docs.fal.ai
 fal	veo3p1.imageToVideo	POST	https://fal.run/fal-ai/veo3.1/image-to-video	https://docs.fal.ai
 fal	veo3p1.textToVideo	POST	https://fal.run/fal-ai/veo3.1	https://docs.fal.ai
+fal	virtualTryOn	POST	https://fal.run/google/virtual-try-on	https://fal.ai/models/google/virtual-try-on/api
 fal	wan.v2p7.edit	POST	https://fal.run/fal-ai/wan/v2.7/edit	https://docs.fal.ai
 fal	wan.v2p7.editVideo	POST	https://fal.run/fal-ai/wan/v2.7/edit-video
 fal	wan.v2p7.imageToVideo	POST	https://fal.run/fal-ai/wan/v2.7/image-to-video	https://docs.fal.ai

@@ -414,6 +414,7 @@ export const MODEL_SLUGS = {
     "fal-ai/hunyuan-image/v3/instruct/edit": "hunyuan3",
     "fal-ai/gpt-image-1.5": "gi1p5",
     "fal-ai/gpt-image-1.5/edit": "gi1p5",
+    "google/virtual-try-on": "vton",
 
     // Video — FLUX 3
     "blackforestlabs/flux-3/extend-video": "flux3",
@@ -814,6 +815,7 @@ export const MODEL_DISPLAY = {
     "fal-ai/hunyuan-image/v3/instruct/edit": "Hunyuan Image 3 Edit",
     "fal-ai/gpt-image-1.5": "GPT Image 1.5",
     "fal-ai/gpt-image-1.5/edit": "GPT Image 1.5 Edit",
+    "google/virtual-try-on": "Google Virtual Try-On",
 
     "blackforestlabs/flux-3/extend-video": "FLUX 3",
     "blackforestlabs/flux-3/first-last-frame-to-video": "FLUX 3",

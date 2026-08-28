@@ -480,6 +480,17 @@ const gptImagePerImage = (
 //     unit that no request field determines — so deriving a rate from
 //     duration would invent one. The premium `alibaba/wan-3.0-prime/*`
 //     siblings bill per OUTPUT second instead and are priced statically below.
+//   - topaz/upscale/video/precision: billed on the DELIVERED video — "$0.10
+//     per 10 seconds of output at 720p, $0.20 at 1080p, and $0.60 at 4K",
+//     pulled 2026-08-28 from the model page, which closes with "the final cost
+//     depends on output resolution, duration, and frame rate"; the pricing API
+//     reports the same rate as an opaque USD 0.01 per "units". None of those
+//     three is a request field: output resolution is the source's own
+//     dimensions scaled by `upscale_factor`, duration is the source clip's,
+//     and the frame rate is the source's unless `target_fps` overrides it.
+//     Per-model multipliers (Proteus Natural, Gaia 2 at half price) ride on
+//     top of a base the request cannot supply. Same shape as
+//     blackforestlabs/flux-video-upscale above.
 export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "alibaba/qwen-image-3/edit",
   "alibaba/qwen-image-3/text-to-image",
@@ -489,6 +500,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "blackforestlabs/flux-video-upscale",
   "google/nano-banana-2-lite",
   "google/nano-banana-lite/edit",
+  "topaz/upscale/video/precision",
   "xai/grok-imagine-image/v2.0/edit",
   "xai/grok-imagine-image/v2.0/text-to-image",
 ] as const;

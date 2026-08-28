@@ -69,6 +69,8 @@ import {
   FalNanoBanana2LiteEditResponse,
   FalVirtualTryOnRequest,
   FalVirtualTryOnResponse,
+  FalTopazUpscaleVideoPrecisionRequest,
+  FalTopazUpscaleVideoPrecisionResponse,
   FalSeedreamV5LiteEditRequest,
   FalSeedreamV5LiteEditResponse,
   FalSeedreamV5LiteTextToImageRequest,
@@ -190,6 +192,7 @@ import {
   FalNanoBanana2LiteTextToImageRequestSchema,
   FalNanoBanana2LiteEditRequestSchema,
   FalVirtualTryOnRequestSchema,
+  FalTopazUpscaleVideoPrecisionRequestSchema,
   FalSeedreamV5LiteEditRequestSchema,
   FalSeedreamV5LiteTextToImageRequestSchema,
   FalSeedSpeechTtsV2RequestSchema,
@@ -1125,6 +1128,18 @@ export function createFal(opts: FalOptions): FalProvider {
     base: runBaseURL,
   });
 
+  // POST https://fal.run/topaz/upscale/video/precision
+  // Docs: https://fal.ai/models/topaz/upscale/video/precision/api
+  const topazUpscaleVideoPrecision = jsonBody<
+    FalTopazUpscaleVideoPrecisionRequest,
+    FalTopazUpscaleVideoPrecisionResponse
+  >(
+    "POST",
+    "/topaz/upscale/video/precision",
+    FalTopazUpscaleVideoPrecisionRequestSchema,
+    { base: runBaseURL }
+  );
+
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://fal.run/fal-ai/bytedance/seedream/v5/lite/edit
   // Docs: https://docs.fal.ai
@@ -1757,6 +1772,13 @@ export function createFal(opts: FalOptions): FalProvider {
       edit: nanoBanana2LiteEdit,
     },
     virtualTryOn,
+    topaz: {
+      upscale: {
+        video: {
+          precision: topazUpscaleVideoPrecision,
+        },
+      },
+    },
     qwenImage,
     klingVideo: {
       v3: {

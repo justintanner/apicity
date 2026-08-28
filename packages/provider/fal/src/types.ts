@@ -48,6 +48,7 @@ export type {
   FalNanoBanana2LiteTextToImageParams,
   FalNanoBanana2LiteEditParams,
   FalVirtualTryOnParams,
+  FalTopazUpscaleVideoPrecisionParams,
   FalSeedreamV5LiteEditParams,
   FalSeedreamV5LiteTextToImageParams,
   FalSeedSpeechTtsV2Params,
@@ -152,6 +153,9 @@ export type {
   FalVirtualTryOnRequest,
   FalVirtualTryOnRequestInput,
   FalVirtualTryOnParsedRequest,
+  FalTopazUpscaleVideoPrecisionRequest,
+  FalTopazUpscaleVideoPrecisionRequestInput,
+  FalTopazUpscaleVideoPrecisionParsedRequest,
   FalSeedreamV5LiteEditRequest,
   FalSeedreamV5LiteEditRequestInput,
   FalSeedreamV5LiteEditParsedRequest,
@@ -323,6 +327,7 @@ import type {
   FalNanoBanana2LiteTextToImageRequest,
   FalNanoBanana2LiteEditRequest,
   FalVirtualTryOnRequest,
+  FalTopazUpscaleVideoPrecisionRequest,
   FalSeedreamV5LiteEditRequest,
   FalSeedreamV5LiteTextToImageRequest,
   FalSeedSpeechTtsV2Request,
@@ -929,6 +934,12 @@ export interface FalVirtualTryOnImage {
 
 export interface FalVirtualTryOnResponse {
   images: FalVirtualTryOnImage[];
+}
+
+// Topaz Precision Video Upscale. Upstream returns a single File whose only
+// required member is `url`, which is exactly FalFile's shape.
+export interface FalTopazUpscaleVideoPrecisionResponse {
+  video: FalFile;
 }
 
 // Qwen Image (text-to-image and edit)
@@ -1819,6 +1830,25 @@ type FalVirtualTryOnFn = ((
   schema: ApicitySchema<FalVirtualTryOnRequest>;
 };
 
+type FalTopazUpscaleVideoPrecisionFn = ((
+  params: FalTopazUpscaleVideoPrecisionRequest,
+  signal?: AbortSignal
+) => Promise<FalTopazUpscaleVideoPrecisionResponse>) & {
+  schema: ApicitySchema<FalTopazUpscaleVideoPrecisionRequest>;
+};
+
+export interface FalRunTopazUpscaleVideoNamespace {
+  precision: FalTopazUpscaleVideoPrecisionFn;
+}
+
+export interface FalRunTopazUpscaleNamespace {
+  video: FalRunTopazUpscaleVideoNamespace;
+}
+
+export interface FalRunTopazNamespace {
+  upscale: FalRunTopazUpscaleNamespace;
+}
+
 type FalSeedreamV5LiteEditFn = ((
   params: FalSeedreamV5LiteEditRequest,
   signal?: AbortSignal
@@ -2266,6 +2296,7 @@ export interface FalRunNamespace {
   nanoBanana2: FalRunNanoBanana2Namespace;
   nanoBanana2Lite: FalRunNanoBanana2LiteNamespace;
   virtualTryOn: FalVirtualTryOnFn;
+  topaz: FalRunTopazNamespace;
   qwenImage: FalQwenImageFn;
   gptImage1p5: FalGptImage1p5Fn;
   sora2: FalRunSora2Namespace;

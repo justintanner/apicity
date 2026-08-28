@@ -662,6 +662,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST topaz.upscale.video.precision": {
+    "source": "fal/topaz-upscale-video-precision",
+    "payload": {
+      "video_url": "https://v3b.fal.media/files/b/0aa81cc4/YSFz_9f2qby6PzwOC6CMz_topaz-precision-source.mp4",
+      "model": "Proteus",
+      "upscale_factor": 1.25
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST v1.models.pricing.estimate": {
     "source": "fal/estimate-cost",
     "payload": {

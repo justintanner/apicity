@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-83 endpoints across 22 groups. Each method mirrors an upstream URL path.
+84 endpoints across 23 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -1218,6 +1218,25 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.storage.upload.initiateMultipart({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+### topaz
+
+<details>
+<summary><code>POST</code> <b><code>fal.topaz.upscale.video.precision</code></b></summary>
+
+<code>POST https://fal.run/topaz/upscale/video/precision</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/topaz/upscale/video/precision/api)
+
+```typescript
+const res = await fal.run.topaz.upscale.video.precision({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

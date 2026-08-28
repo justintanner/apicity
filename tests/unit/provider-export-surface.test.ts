@@ -55,10 +55,6 @@ const ELEVENLABS_LAYER =
   "sub-namespace reachable from the exported ElevenLabsProvider interface; " +
   "export decision deferred to the burn-down bead";
 
-const DOLTHUB_LAYER =
-  "sub-namespace reachable from the exported DoltHubProvider interface; " +
-  "export decision deferred to the burn-down bead";
-
 const YOUTUBE_LAYER =
   "sub-namespace reachable from the exported YouTubeProvider interface; " +
   "export decision deferred to the burn-down bead";
@@ -87,10 +83,6 @@ const EXPORT_SURFACE_BASELINE: Record<string, Record<string, string>> = {
     AnthropicPostV1Namespace: ANTHROPIC_VERB_LAYER,
     AnthropicGetV1Namespace: ANTHROPIC_VERB_LAYER,
     AnthropicDeleteV1Namespace: ANTHROPIC_VERB_LAYER,
-  },
-  dolthub: {
-    DoltHubBranchesNamespace: DOLTHUB_LAYER,
-    DoltHubPullsNamespace: DOLTHUB_LAYER,
   },
   elevenlabs: {
     ElevenLabsUsageNamespace: ELEVENLABS_LAYER,
@@ -152,10 +144,9 @@ const EXPECTED_BASELINE_DISTRIBUTION: Record<string, number> = {
   simplefunctions: 13,
   anthropic: 4,
   elevenlabs: 4,
-  dolthub: 2,
   youtube: 1,
 };
-const EXPECTED_BASELINE_TOTAL = 64;
+const EXPECTED_BASELINE_TOTAL = 62;
 
 type Surface = ReturnType<typeof readProviderExportSurfaces>[number];
 

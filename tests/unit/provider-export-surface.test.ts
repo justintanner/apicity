@@ -51,10 +51,6 @@ const SIMPLE_FUNCTIONS_LAYER =
   "SimpleFunctionsProvider interface; export decision deferred to the " +
   "burn-down bead";
 
-const ELEVENLABS_LAYER =
-  "sub-namespace reachable from the exported ElevenLabsProvider interface; " +
-  "export decision deferred to the burn-down bead";
-
 const DOLTHUB_LAYER =
   "sub-namespace reachable from the exported DoltHubProvider interface; " +
   "export decision deferred to the burn-down bead";
@@ -91,12 +87,6 @@ const EXPORT_SURFACE_BASELINE: Record<string, Record<string, string>> = {
   dolthub: {
     DoltHubBranchesNamespace: DOLTHUB_LAYER,
     DoltHubPullsNamespace: DOLTHUB_LAYER,
-  },
-  elevenlabs: {
-    ElevenLabsUsageNamespace: ELEVENLABS_LAYER,
-    ElevenLabsPostConvaiAgentNamespace: ELEVENLABS_LAYER,
-    ElevenLabsGetConvaiAgentNamespace: ELEVENLABS_LAYER,
-    ElevenLabsGetConvaiAnalyticsNamespace: ELEVENLABS_LAYER,
   },
   openai: {
     OpenAiPostV1AudioNamespace: VERB_LAYER,
@@ -151,11 +141,10 @@ const EXPECTED_BASELINE_DISTRIBUTION: Record<string, number> = {
   alibaba: 16,
   simplefunctions: 13,
   anthropic: 4,
-  elevenlabs: 4,
   dolthub: 2,
   youtube: 1,
 };
-const EXPECTED_BASELINE_TOTAL = 64;
+const EXPECTED_BASELINE_TOTAL = 60;
 
 type Surface = ReturnType<typeof readProviderExportSurfaces>[number];
 

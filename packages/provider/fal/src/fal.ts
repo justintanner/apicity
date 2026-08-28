@@ -91,6 +91,8 @@ import {
   FalMinimaxH3ImageToVideoResponse,
   FalSeedreamV5ProTextToImageRequest,
   FalSeedreamV5ProTextToImageResponse,
+  FalSeedreamV5ProEditRequest,
+  FalSeedreamV5ProEditResponse,
   FalSeedSpeechTtsV2Request,
   FalSeedSpeechTtsV2Response,
   FalMinimaxMusic3Request,
@@ -225,6 +227,7 @@ import {
   FalMinimaxH3TextToVideoRequestSchema,
   FalMinimaxH3ImageToVideoRequestSchema,
   FalSeedreamV5ProTextToImageRequestSchema,
+  FalSeedreamV5ProEditRequestSchema,
   FalSeedSpeechTtsV2RequestSchema,
   FalMinimaxMusic3RequestSchema,
   FalElevenlabsSpeechToTextScribeV2RequestSchema,
@@ -1282,6 +1285,17 @@ export function createFal(opts: FalOptions): FalProvider {
     FalSeedreamV5ProTextToImageRequestSchema,
     { base: runBaseURL }
   );
+  // POST https://fal.run/bytedance/seedream/v5/pro/edit
+  // Docs: https://fal.ai/models/bytedance/seedream/v5/pro/edit/api
+  const seedreamV5ProEdit = jsonBody<
+    FalSeedreamV5ProEditRequest,
+    FalSeedreamV5ProEditResponse
+  >(
+    "POST",
+    "/bytedance/seedream/v5/pro/edit",
+    FalSeedreamV5ProEditRequestSchema,
+    { base: runBaseURL }
+  );
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://fal.run/fal-ai/bytedance/seed-speech/tts/v2
@@ -1906,6 +1920,7 @@ export function createFal(opts: FalOptions): FalProvider {
           pro: {
             layerize: seedreamV5ProLayerize,
             textToImage: seedreamV5ProTextToImage,
+            edit: seedreamV5ProEdit,
           },
         },
       },

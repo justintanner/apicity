@@ -59,6 +59,7 @@ export type {
   FalMinimaxH3TextToVideoParams,
   FalMinimaxH3ImageToVideoParams,
   FalSeedreamV5ProTextToImageParams,
+  FalSeedreamV5ProEditParams,
   FalSeedSpeechTtsV2Params,
   FalMinimaxMusic3Params,
   FalElevenlabsSpeechToTextScribeV2Params,
@@ -197,6 +198,9 @@ export type {
   FalSeedreamV5ProTextToImageRequest,
   FalSeedreamV5ProTextToImageRequestInput,
   FalSeedreamV5ProTextToImageParsedRequest,
+  FalSeedreamV5ProEditRequest,
+  FalSeedreamV5ProEditRequestInput,
+  FalSeedreamV5ProEditParsedRequest,
   FalSeedSpeechTtsV2Request,
   FalSeedSpeechTtsV2RequestInput,
   FalSeedSpeechTtsV2ParsedRequest,
@@ -382,6 +386,7 @@ import type {
   FalMinimaxH3TextToVideoRequest,
   FalMinimaxH3ImageToVideoRequest,
   FalSeedreamV5ProTextToImageRequest,
+  FalSeedreamV5ProEditRequest,
   FalSeedSpeechTtsV2Request,
   FalMinimaxMusic3Request,
   FalElevenlabsSpeechToTextScribeV2Request,
@@ -1182,6 +1187,18 @@ export interface FalSeedreamV5ProTextToImageImage {
   width?: number | null;
   height?: number | null;
 }
+// Bytedance Seedream v5 Pro image editing. fal's `Image` schema requires only
+// `url` and makes every other field nullable, including the `width`/`height`
+// that plain FalFile does not carry, so the item shape is modelled directly.
+// Unlike the Lite surface the Pro response carries no `seed`.
+export interface FalSeedreamV5ProEditImage {
+  url: string;
+  content_type?: string | null;
+  file_name?: string | null;
+  file_size?: number | null;
+  width?: number | null;
+  height?: number | null;
+}
 
 // Layer bounds in the output base image's coordinate system. `normalized`
 // uses the integer range [0, 1000]; `absolute` uses pixels.
@@ -1206,6 +1223,9 @@ export interface FalSeedreamV5ProLayerizeResponse {
 }
 export interface FalSeedreamV5ProTextToImageResponse {
   images: FalSeedreamV5ProTextToImageImage[];
+}
+export interface FalSeedreamV5ProEditResponse {
+  images: FalSeedreamV5ProEditImage[];
 }
 
 // Bytedance Seed Speech TTS v2
@@ -1945,6 +1965,7 @@ export interface FalRunBytedanceSeedreamV5LiteNamespace {
 export interface FalRunBytedanceSeedreamV5ProNamespace {
   layerize: FalSeedreamV5ProLayerizeFn;
   textToImage: FalSeedreamV5ProTextToImageFn;
+  edit: FalSeedreamV5ProEditFn;
 }
 
 export interface FalRunBytedanceSeedreamV5Namespace {
@@ -2149,6 +2170,12 @@ type FalSeedreamV5ProTextToImageFn = ((
   signal?: AbortSignal
 ) => Promise<FalSeedreamV5ProTextToImageResponse>) & {
   schema: ApicitySchema<FalSeedreamV5ProTextToImageRequest>;
+};
+type FalSeedreamV5ProEditFn = ((
+  params: FalSeedreamV5ProEditRequest,
+  signal?: AbortSignal
+) => Promise<FalSeedreamV5ProEditResponse>) & {
+  schema: ApicitySchema<FalSeedreamV5ProEditRequest>;
 };
 
 type FalAlibabaQwenImage3TextToImageFn = ((

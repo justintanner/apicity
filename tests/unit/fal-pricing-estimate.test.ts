@@ -147,6 +147,7 @@ describe("fal video pricing estimates", () => {
     "minimax/h3/image-to-video",
     "minimax/h3/reference-to-video",
     "bytedance/seedream/v5/pro/text-to-image",
+    "bytedance/seedream/v5/pro/edit",
   ];
 
   it("covers every REQ-001 endpoint statically or on the dynamic list", () => {
@@ -762,6 +763,17 @@ describe("fal edit/image pricing estimates", () => {
     // endpoint is unpriced here rather than carrying a per-image table that
     // the observed charge contradicts.
     const endpoint = "bytedance/seedream/v5/pro/text-to-image";
+  it("routes seedream 5 pro edit to the dynamic path", () => {
+    // The model page's card is explicitly "tentative": $0.0675 per output
+    // image at or below 1536x1536 and $0.135 above it, plus $0.0045 for each
+    // input image after the first. The recorded 1024x1024 (`square_hd`) call
+    // with num_images 1 and a single (free) input image sits well inside the
+    // low tier, yet GET /v1/models/usage reports quantity 2, unit_price
+    // 0.0675, cost_total 0.135 for it, matching the response's own
+    // `x-fal-billable-units: 2.0`. No request field yields that 2, so the
+    // endpoint is unpriced here rather than carrying a per-image table that
+    // the observed charge contradicts.
+    const endpoint = "bytedance/seedream/v5/pro/edit";
     const dynamic: readonly string[] = FAL_DYNAMIC_PRICING_ENDPOINTS;
 
     expect(dynamic).toContain(endpoint);
@@ -769,6 +781,7 @@ describe("fal edit/image pricing estimates", () => {
 
     const result = estimate(endpoint, {
       prompt: "a red fox in the snow",
+      image_urls: ["https://example.com/a.png"],
       image_size: "square_hd",
       num_images: 1,
     });
@@ -990,6 +1003,12 @@ describe("fal edit/image pricing estimates", () => {
     // recorded 1024x1024 `square_hd` call with num_images 1 was billed 2 units
     // (USD 0.135), not the 1 unit every statically priced per-image fal
     // endpoint bills. All eleven therefore use fal's pricing-estimate API.
+    // compute-second-metered; bytedance/seedream/v5/pro/edit bills a bare
+    // "units" unit whose quantity no request field determines — a recorded
+    // 1024x1024 `square_hd` call with num_images 1 and one (free) input image
+    // was billed 2 units (USD 0.135), not the 1 unit every statically priced
+    // per-image fal endpoint bills. All eleven therefore use fal's
+    // pricing-estimate API.
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toEqual([
       "alibaba/qwen-image-3/edit",
       "alibaba/qwen-image-3/text-to-image",
@@ -999,6 +1018,7 @@ describe("fal edit/image pricing estimates", () => {
       "blackforestlabs/flux-video-upscale",
       "bytedance/seedream/v5/pro/layerize",
       "bytedance/seedream/v5/pro/text-to-image",
+      "bytedance/seedream/v5/pro/edit",
       "google/nano-banana-2-lite",
       "google/nano-banana-lite/edit",
       "minimax/music-3",

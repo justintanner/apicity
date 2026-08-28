@@ -1056,6 +1056,46 @@ export const FalSeedreamV5ProLayerizeRequestSchema = z.object({
   // authorization; unauthorized requests are checked regardless.
   enable_safety_checker: z.boolean().optional(),
 });
+// Bytedance Seedream v5 Pro text-to-image
+// ---------------------------------------------------------------------------
+
+// The Pro surface offers `auto_1K`/`auto_2K` where the Lite surface offers
+// `auto_2K`/`auto_3K`/`auto_4K`, so it carries its own union rather than
+// reusing FalSeedreamV5LiteImageSizeSchema.
+// Docs: https://fal.ai/models/bytedance/seedream/v5/pro/text-to-image/api
+const FalSeedreamV5ProImageSizeSchema = z.union([
+  z.enum([
+    "square_hd",
+    "square",
+    "portrait_4_3",
+    "portrait_16_9",
+    "landscape_4_3",
+    "landscape_16_9",
+    "auto_1K",
+    "auto_2K",
+  ]),
+  z.object({ width: z.number(), height: z.number() }),
+]);
+
+export const FalSeedreamV5ProTextToImageRequestSchema = z.object({
+  prompt: z.string(),
+  // Upstream constrains the generated image to a total area between
+  // 1024x1024 and 2048x2048 pixels and an aspect ratio within [1/16, 16].
+  // Those are upstream capacity rules over the produced image, not request
+  // shape, so they are not encoded here. Defaults to `auto_2K`.
+  image_size: FalSeedreamV5ProImageSizeSchema.optional(),
+  // Fal documents `num_images` as an integer in [1, 6] — separate model
+  // generations run with the prompt. Unlike the Lite surface, Pro has no
+  // `max_images` companion field.
+  num_images: z.number().int().min(1).max(6).optional(),
+  // File format of the generated image. A fixed vocabulary rather than a
+  // model registry, so it stays a closed enum.
+  output_format: z.enum(["jpeg", "png"]).optional(),
+  sync_mode: z.boolean().optional(),
+  // Upstream notes that disabling the safety checker requires account
+  // authorization; unauthorized requests are checked regardless.
+  enable_safety_checker: z.boolean().optional(),
+});
 
 // ---------------------------------------------------------------------------
 // Bytedance Seed Speech TTS v2
@@ -2437,6 +2477,17 @@ export type FalSeedreamV5ProLayerizeRequestInput =
 export type FalSeedreamV5ProLayerizeParsedRequest = z.output<
   typeof FalSeedreamV5ProLayerizeRequestSchema
 >;
+export type FalSeedreamV5ProTextToImageParams = z.infer<
+  typeof FalSeedreamV5ProTextToImageRequestSchema
+>;
+export type FalSeedreamV5ProTextToImageRequest = z.input<
+  typeof FalSeedreamV5ProTextToImageRequestSchema
+>;
+export type FalSeedreamV5ProTextToImageRequestInput =
+  FalSeedreamV5ProTextToImageRequest;
+export type FalSeedreamV5ProTextToImageParsedRequest = z.output<
+  typeof FalSeedreamV5ProTextToImageRequestSchema
+>;
 export type FalSeedSpeechTtsV2Params = z.infer<
   typeof FalSeedSpeechTtsV2RequestSchema
 >;
@@ -3221,6 +3272,8 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "fal-ai/bytedance/seedream/v5/lite/text-to-image":
     FalSeedreamV5LiteTextToImageRequestSchema,
   "bytedance/seedream/v5/pro/layerize": FalSeedreamV5ProLayerizeRequestSchema,
+  "bytedance/seedream/v5/pro/text-to-image":
+    FalSeedreamV5ProTextToImageRequestSchema,
   "fal-ai/bytedance/seed-speech/tts/v2": FalSeedSpeechTtsV2RequestSchema,
   "minimax/music-3": FalMinimaxMusic3RequestSchema,
   "fal-ai/elevenlabs/speech-to-text/scribe-v2":

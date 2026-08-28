@@ -58,6 +58,7 @@ export type {
   FalSeedreamV5ProLayerizeParams,
   FalMinimaxH3TextToVideoParams,
   FalMinimaxH3ImageToVideoParams,
+  FalSeedreamV5ProTextToImageParams,
   FalSeedSpeechTtsV2Params,
   FalMinimaxMusic3Params,
   FalElevenlabsSpeechToTextScribeV2Params,
@@ -193,6 +194,9 @@ export type {
   FalMinimaxH3ImageToVideoRequest,
   FalMinimaxH3ImageToVideoRequestInput,
   FalMinimaxH3ImageToVideoParsedRequest,
+  FalSeedreamV5ProTextToImageRequest,
+  FalSeedreamV5ProTextToImageRequestInput,
+  FalSeedreamV5ProTextToImageParsedRequest,
   FalSeedSpeechTtsV2Request,
   FalSeedSpeechTtsV2RequestInput,
   FalSeedSpeechTtsV2ParsedRequest,
@@ -377,6 +381,7 @@ import type {
   FalSeedreamV5ProLayerizeRequest,
   FalMinimaxH3TextToVideoRequest,
   FalMinimaxH3ImageToVideoRequest,
+  FalSeedreamV5ProTextToImageRequest,
   FalSeedSpeechTtsV2Request,
   FalMinimaxMusic3Request,
   FalElevenlabsSpeechToTextScribeV2Request,
@@ -1164,6 +1169,19 @@ export interface FalSeedreamV5ProLayerizeImage {
   width?: number | null;
   height?: number | null;
 }
+// Bytedance Seedream v5 Pro text-to-image output. fal's `Image` schema
+// requires only `url` and makes every other field nullable, including the
+// `width`/`height` that plain FalFile does not carry, so the item shape is
+// modelled directly. Unlike the Lite surface the Pro response carries no
+// `seed`.
+export interface FalSeedreamV5ProTextToImageImage {
+  url: string;
+  content_type?: string | null;
+  file_name?: string | null;
+  file_size?: number | null;
+  width?: number | null;
+  height?: number | null;
+}
 
 // Layer bounds in the output base image's coordinate system. `normalized`
 // uses the integer range [0, 1000]; `absolute` uses pixels.
@@ -1185,6 +1203,9 @@ export interface FalSeedreamV5ProLayer {
 export interface FalSeedreamV5ProLayerizeResponse {
   images: FalSeedreamV5ProLayerizeImage[];
   layers: FalSeedreamV5ProLayer[];
+}
+export interface FalSeedreamV5ProTextToImageResponse {
+  images: FalSeedreamV5ProTextToImageImage[];
 }
 
 // Bytedance Seed Speech TTS v2
@@ -1923,6 +1944,7 @@ export interface FalRunBytedanceSeedreamV5LiteNamespace {
 
 export interface FalRunBytedanceSeedreamV5ProNamespace {
   layerize: FalSeedreamV5ProLayerizeFn;
+  textToImage: FalSeedreamV5ProTextToImageFn;
 }
 
 export interface FalRunBytedanceSeedreamV5Namespace {
@@ -2121,6 +2143,12 @@ type FalSeedreamV5ProLayerizeFn = ((
   signal?: AbortSignal
 ) => Promise<FalSeedreamV5ProLayerizeResponse>) & {
   schema: ApicitySchema<FalSeedreamV5ProLayerizeRequest>;
+};
+type FalSeedreamV5ProTextToImageFn = ((
+  params: FalSeedreamV5ProTextToImageRequest,
+  signal?: AbortSignal
+) => Promise<FalSeedreamV5ProTextToImageResponse>) & {
+  schema: ApicitySchema<FalSeedreamV5ProTextToImageRequest>;
 };
 
 type FalAlibabaQwenImage3TextToImageFn = ((

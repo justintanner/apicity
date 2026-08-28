@@ -366,6 +366,16 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST bytedance.seedream.v5.pro.layerize": {
+    "source": "fal/bytedance-seedream-v5-pro-layerize",
+    "payload": {
+      "image_url": "https://storage.googleapis.com/falserverless/example_inputs/kontext_example_input.webp",
+      "image_size": "auto_1K",
+      "enhance_prompt_mode": "fast"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST falAi.elevenlabs.speechToText.scribeV2": {
     "source": "fal/elevenlabs-speech-to-text-scribe-v2",
     "payload": {

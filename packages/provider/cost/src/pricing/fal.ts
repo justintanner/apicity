@@ -480,6 +480,13 @@ const gptImagePerImage = (
 //     unit that no request field determines — so deriving a rate from
 //     duration would invent one. The premium `alibaba/wan-3.0-prime/*`
 //     siblings bill per OUTPUT second instead and are priced statically below.
+//   - bytedance/seedream/v5/pro/layerize: billed per COMPUTE SECOND
+//     (USD 0.00017) as pulled 2026-08-28 from fal's own pricing API
+//     (GET /v1/models/pricing?endpoint_id=bytedance/seedream/v5/pro/layerize).
+//     No request field determines wall-clock GPU time, and the layer count the
+//     model returns is chosen by the model, not the payload — the statically
+//     priced Seedream siblings bill per IMAGE instead, a unit their
+//     `num_images` fixes exactly.
 export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "alibaba/qwen-image-3/edit",
   "alibaba/qwen-image-3/text-to-image",
@@ -487,6 +494,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "alibaba/wan-3.0/reference-to-video",
   "alibaba/wan-3.0/text-to-video",
   "blackforestlabs/flux-video-upscale",
+  "bytedance/seedream/v5/pro/layerize",
   "google/nano-banana-2-lite",
   "google/nano-banana-lite/edit",
   "xai/grok-imagine-image/v2.0/edit",

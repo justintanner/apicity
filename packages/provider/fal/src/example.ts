@@ -868,6 +868,20 @@ const EXAMPLES: Record<string, EndpointExample> = {
     },
     "tier": "prohibitive",
     "runByDefault": false
+  },
+  "POST xai.grokImagineVideo.v1p5.referenceToVideo": {
+    "source": "fal/xai-grok-imagine-video-v1-5-reference-to-video",
+    "payload": {
+      "prompt": "The person from <IMAGE_0> walks through a rainy neon-lit street",
+      "reference_image_urls": [
+        "<inline image/jpeg data URL — replace with a real URL or upload>"
+      ],
+      "duration": 4,
+      "resolution": "480p",
+      "aspect_ratio": "16:9"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   }
 };
 

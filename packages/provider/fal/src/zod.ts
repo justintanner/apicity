@@ -1629,6 +1629,39 @@ export const FalXaiGrokImagineVideoReferenceToVideoRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// xAI Grok Imagine Video 1.5 reference-to-video
+// ---------------------------------------------------------------------------
+
+// A distinct endpoint from the unversioned sibling above, not a re-skin. The
+// v1.5 contract read 2026-08-28 raises the `duration` ceiling to 15s (the
+// unversioned path stops at 10), requires at least one reference image, bounds
+// `prompt` at 4096 characters, and tags references as `<IMAGE_0>`/`<IMAGE_1>`
+// where the unversioned sibling's examples use `@Image1`. Field order mirrors
+// upstream `x-fal-order-properties`.
+export const FalXaiGrokImagineVideoV1p5ReferenceToVideoRequestSchema = z.object(
+  {
+    prompt: z
+      .string()
+      .max(4096)
+      .describe(
+        "Text prompt describing the video. Tag references as <IMAGE_0>, <IMAGE_1>, etc."
+      ),
+    reference_image_urls: z
+      .array(z.string())
+      .min(1)
+      .max(7)
+      .describe(
+        "One to seven reference image URLs guiding the video as style and content references."
+      ),
+    duration: z.number().int().min(1).max(15).optional(),
+    resolution: z.enum(["480p", "720p"]).optional(),
+    aspect_ratio: z
+      .enum(["16:9", "4:3", "3:2", "1:1", "2:3", "3:4", "9:16"])
+      .optional(),
+  }
+);
+
+// ---------------------------------------------------------------------------
 // xAI Grok Imagine Video extend-video
 // ---------------------------------------------------------------------------
 
@@ -2156,6 +2189,17 @@ export type FalXaiGrokImagineVideoReferenceToVideoRequest = z.input<
 >;
 export type FalXaiGrokImagineVideoReferenceToVideoRequestInput =
   FalXaiGrokImagineVideoReferenceToVideoRequest;
+export type FalXaiGrokImagineVideoV1p5ReferenceToVideoParams = z.infer<
+  typeof FalXaiGrokImagineVideoV1p5ReferenceToVideoRequestSchema
+>;
+export type FalXaiGrokImagineVideoV1p5ReferenceToVideoRequest = z.input<
+  typeof FalXaiGrokImagineVideoV1p5ReferenceToVideoRequestSchema
+>;
+export type FalXaiGrokImagineVideoV1p5ReferenceToVideoRequestInput =
+  FalXaiGrokImagineVideoV1p5ReferenceToVideoRequest;
+export type FalXaiGrokImagineVideoV1p5ReferenceToVideoParsedRequest = z.output<
+  typeof FalXaiGrokImagineVideoV1p5ReferenceToVideoRequestSchema
+>;
 export type FalXaiGrokImagineVideoReferenceToVideoParsedRequest = z.output<
   typeof FalXaiGrokImagineVideoReferenceToVideoRequestSchema
 >;
@@ -2676,6 +2720,8 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
     FalXaiGrokImagineVideoImageToVideoRequestSchema,
   "xai/grok-imagine-video/reference-to-video":
     FalXaiGrokImagineVideoReferenceToVideoRequestSchema,
+  "xai/grok-imagine-video/v1.5/reference-to-video":
+    FalXaiGrokImagineVideoV1p5ReferenceToVideoRequestSchema,
   "xai/grok-imagine-video/extend-video":
     FalXaiGrokImagineVideoExtendVideoRequestSchema,
   "xai/grok-imagine-video/edit-video":

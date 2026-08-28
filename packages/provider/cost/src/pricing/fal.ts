@@ -480,6 +480,12 @@ const gptImagePerImage = (
 //     unit that no request field determines — so deriving a rate from
 //     duration would invent one. The premium `alibaba/wan-3.0-prime/*`
 //     siblings bill per OUTPUT second instead and are priced statically below.
+//   - xai/grok-imagine-video/v1.5/reference-to-video: billed per COMPUTE
+//     SECOND (USD 0.00017) as pulled 2026-08-28 from the same pricing API.
+//     Its UNVERSIONED sibling xai/grok-imagine-video/reference-to-video bills
+//     per OUTPUT second (USD 0.05) and stays priced statically below — the
+//     v1.5 path changed billing unit, not just rate, so the payload
+//     `duration` cannot derive its price.
 export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "alibaba/qwen-image-3/edit",
   "alibaba/qwen-image-3/text-to-image",
@@ -491,6 +497,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "google/nano-banana-lite/edit",
   "xai/grok-imagine-image/v2.0/edit",
   "xai/grok-imagine-image/v2.0/text-to-image",
+  "xai/grok-imagine-video/v1.5/reference-to-video",
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {

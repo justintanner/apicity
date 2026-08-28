@@ -81,6 +81,7 @@ export type {
   FalNanoBananaEditParams,
   FalXaiGrokImagineVideoImageToVideoParams,
   FalXaiGrokImagineVideoReferenceToVideoParams,
+  FalXaiGrokImagineVideoV1p5ReferenceToVideoParams,
   FalXaiGrokImagineVideoExtendVideoParams,
   FalXaiGrokImagineVideoEditVideoParams,
   FalVeo3p1TextToVideoParams,
@@ -260,6 +261,9 @@ export type {
   FalXaiGrokImagineVideoReferenceToVideoRequest,
   FalXaiGrokImagineVideoReferenceToVideoRequestInput,
   FalXaiGrokImagineVideoReferenceToVideoParsedRequest,
+  FalXaiGrokImagineVideoV1p5ReferenceToVideoRequest,
+  FalXaiGrokImagineVideoV1p5ReferenceToVideoRequestInput,
+  FalXaiGrokImagineVideoV1p5ReferenceToVideoParsedRequest,
   FalXaiGrokImagineVideoExtendVideoRequest,
   FalXaiGrokImagineVideoExtendVideoRequestInput,
   FalXaiGrokImagineVideoExtendVideoParsedRequest,
@@ -359,6 +363,7 @@ import type {
   FalVeo3p1ImageToVideoRequest,
   FalXaiGrokImagineVideoImageToVideoRequest,
   FalXaiGrokImagineVideoReferenceToVideoRequest,
+  FalXaiGrokImagineVideoV1p5ReferenceToVideoRequest,
   FalXaiGrokImagineVideoExtendVideoRequest,
   FalXaiGrokImagineVideoEditVideoRequest,
   FalXaiGrokImagineImageRequest,
@@ -1269,6 +1274,12 @@ export interface FalXaiGrokImagineVideoReferenceToVideoResponse {
   video: FalFile;
 }
 
+// v1.5 returns upstream's full `VideoFile` (dimensions, fps, num_frames)
+// rather than the bare file the unversioned sibling is typed against.
+export interface FalXaiGrokImagineVideoV1p5ReferenceToVideoResponse {
+  video: FalVideoFile;
+}
+
 export interface FalXaiGrokImagineVideoExtendVideoResponse {
   video: FalFile;
 }
@@ -1997,6 +2008,13 @@ type FalXaiGrokImagineVideoReferenceToVideoFn = ((
   schema: ApicitySchema<FalXaiGrokImagineVideoReferenceToVideoRequest>;
 };
 
+type FalXaiGrokImagineVideoV1p5ReferenceToVideoFn = ((
+  params: FalXaiGrokImagineVideoV1p5ReferenceToVideoRequest,
+  signal?: AbortSignal
+) => Promise<FalXaiGrokImagineVideoV1p5ReferenceToVideoResponse>) & {
+  schema: ApicitySchema<FalXaiGrokImagineVideoV1p5ReferenceToVideoRequest>;
+};
+
 type FalXaiGrokImagineVideoExtendVideoFn = ((
   params: FalXaiGrokImagineVideoExtendVideoRequest,
   signal?: AbortSignal
@@ -2011,11 +2029,16 @@ type FalXaiGrokImagineVideoEditVideoFn = ((
   schema: ApicitySchema<FalXaiGrokImagineVideoEditVideoRequest>;
 };
 
+export interface FalRunXaiGrokImagineVideoV1p5Namespace {
+  referenceToVideo: FalXaiGrokImagineVideoV1p5ReferenceToVideoFn;
+}
+
 export interface FalRunXaiGrokImagineVideoNamespace {
   imageToVideo: FalXaiGrokImagineVideoImageToVideoFn;
   referenceToVideo: FalXaiGrokImagineVideoReferenceToVideoFn;
   extendVideo: FalXaiGrokImagineVideoExtendVideoFn;
   editVideo: FalXaiGrokImagineVideoEditVideoFn;
+  v1p5: FalRunXaiGrokImagineVideoV1p5Namespace;
 }
 
 export interface FalRunXaiNamespace {

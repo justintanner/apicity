@@ -54,6 +54,7 @@ export type {
   FalTopazUpscaleVideoPrecisionParams,
   FalMeshyV7ImageTo3dParams,
   FalGeminiOmniFlashParams,
+  FalGeminiOmniFlashEditParams,
   FalSeedreamV5LiteEditParams,
   FalSeedreamV5LiteTextToImageParams,
   FalSeedreamV5ProLayerizeParams,
@@ -184,6 +185,9 @@ export type {
   FalGeminiOmniFlashRequest,
   FalGeminiOmniFlashRequestInput,
   FalGeminiOmniFlashParsedRequest,
+  FalGeminiOmniFlashEditRequest,
+  FalGeminiOmniFlashEditRequestInput,
+  FalGeminiOmniFlashEditParsedRequest,
   FalSeedreamV5LiteEditRequest,
   FalSeedreamV5LiteEditRequestInput,
   FalSeedreamV5LiteEditParsedRequest,
@@ -385,6 +389,7 @@ import type {
   FalTopazUpscaleVideoPrecisionRequest,
   FalMeshyV7ImageTo3dRequest,
   FalGeminiOmniFlashRequest,
+  FalGeminiOmniFlashEditRequest,
   FalSeedreamV5LiteEditRequest,
   FalSeedreamV5LiteTextToImageRequest,
   FalSeedreamV5ProLayerizeRequest,
@@ -1071,6 +1076,12 @@ export interface FalMeshyV7ImageTo3dResponse {
 // single plain File — url plus the nullable content_type/file_name/file_size —
 // and no width/height/fps/duration, so FalFile is the exact shape.
 export interface FalGeminiOmniFlashResponse {
+  video: FalFile;
+}
+// Google Gemini Omni Flash video edit. Upstream's output schema carries a
+// single plain File — url plus the nullable content_type/file_name/file_size —
+// and no width/height/fps/duration, so FalFile is the exact shape.
+export interface FalGeminiOmniFlashEditResponse {
   video: FalFile;
 }
 
@@ -2161,6 +2172,14 @@ type FalGeminiOmniFlashFn = ((
   signal?: AbortSignal
 ) => Promise<FalGeminiOmniFlashResponse>) & {
   schema: ApicitySchema<FalGeminiOmniFlashRequest>;
+  edit: FalGeminiOmniFlashEditFn;
+};
+
+type FalGeminiOmniFlashEditFn = ((
+  params: FalGeminiOmniFlashEditRequest,
+  signal?: AbortSignal
+) => Promise<FalGeminiOmniFlashEditResponse>) & {
+  schema: ApicitySchema<FalGeminiOmniFlashEditRequest>;
 };
 
 type FalSeedreamV5LiteEditFn = ((

@@ -755,6 +755,16 @@ export const FalGeminiOmniFlashRequestSchema = z.object({
   // Upstream documents 3..10 inclusive seconds, defaulting to 8 when omitted.
   duration: z.number().int().min(3).max(10).optional(),
 });
+// Google Gemini Omni Flash edit (video-to-video)
+// ---------------------------------------------------------------------------
+
+export const FalGeminiOmniFlashEditRequestSchema = z.object({
+  // Upstream caps the prompt at 20,000 characters. Simple instructions work
+  // best; voice editing is not supported.
+  prompt: z.string().max(20_000),
+  // URL of the source video to edit. Required alongside the prompt.
+  video_url: z.string(),
+});
 
 // ---------------------------------------------------------------------------
 // Nano Banana text-to-image
@@ -2496,6 +2506,16 @@ export type FalGeminiOmniFlashRequestInput = FalGeminiOmniFlashRequest;
 export type FalGeminiOmniFlashParsedRequest = z.output<
   typeof FalGeminiOmniFlashRequestSchema
 >;
+export type FalGeminiOmniFlashEditParams = z.infer<
+  typeof FalGeminiOmniFlashEditRequestSchema
+>;
+export type FalGeminiOmniFlashEditRequest = z.input<
+  typeof FalGeminiOmniFlashEditRequestSchema
+>;
+export type FalGeminiOmniFlashEditRequestInput = FalGeminiOmniFlashEditRequest;
+export type FalGeminiOmniFlashEditParsedRequest = z.output<
+  typeof FalGeminiOmniFlashEditRequestSchema
+>;
 export type FalSeedreamV5LiteEditParams = z.infer<
   typeof FalSeedreamV5LiteEditRequestSchema
 >;
@@ -3330,6 +3350,7 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "topaz/upscale/video/precision": FalTopazUpscaleVideoPrecisionRequestSchema,
   "meshy/v7/image-to-3d": FalMeshyV7ImageTo3dRequestSchema,
   "google/gemini-omni-flash": FalGeminiOmniFlashRequestSchema,
+  "google/gemini-omni-flash/edit": FalGeminiOmniFlashEditRequestSchema,
   "fal-ai/bytedance/seedream/v5/lite/edit": FalSeedreamV5LiteEditRequestSchema,
   "fal-ai/bytedance/seedream/v5/lite/text-to-image":
     FalSeedreamV5LiteTextToImageRequestSchema,

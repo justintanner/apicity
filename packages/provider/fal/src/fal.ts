@@ -81,6 +81,8 @@ import {
   FalMeshyV7ImageTo3dResponse,
   FalGeminiOmniFlashRequest,
   FalGeminiOmniFlashResponse,
+  FalGeminiOmniFlashEditRequest,
+  FalGeminiOmniFlashEditResponse,
   FalSeedreamV5LiteEditRequest,
   FalSeedreamV5LiteEditResponse,
   FalSeedreamV5LiteTextToImageRequest,
@@ -224,6 +226,7 @@ import {
   FalTopazUpscaleVideoPrecisionRequestSchema,
   FalMeshyV7ImageTo3dRequestSchema,
   FalGeminiOmniFlashRequestSchema,
+  FalGeminiOmniFlashEditRequestSchema,
   FalSeedreamV5LiteEditRequestSchema,
   FalSeedreamV5LiteTextToImageRequestSchema,
   FalSeedreamV5ProLayerizeRequestSchema,
@@ -1239,14 +1242,32 @@ export function createFal(opts: FalOptions): FalProvider {
   >("POST", "/meshy/v7/image-to-3d", FalMeshyV7ImageTo3dRequestSchema, {
     base: runBaseURL,
   });
+  // POST https://fal.run/google/gemini-omni-flash/edit
+  // Docs: https://fal.ai/models/google/gemini-omni-flash/edit/api
+  const geminiOmniFlashEdit = jsonBody<
+    FalGeminiOmniFlashEditRequest,
+    FalGeminiOmniFlashEditResponse
+  >(
+    "POST",
+    "/google/gemini-omni-flash/edit",
+    FalGeminiOmniFlashEditRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
   // POST https://fal.run/google/gemini-omni-flash
   // Docs: https://fal.ai/models/google/gemini-omni-flash/api
-  const geminiOmniFlash = jsonBody<
-    FalGeminiOmniFlashRequest,
-    FalGeminiOmniFlashResponse
-  >("POST", "/google/gemini-omni-flash", FalGeminiOmniFlashRequestSchema, {
-    base: runBaseURL,
-  });
+  const geminiOmniFlash = Object.assign(
+    jsonBody<FalGeminiOmniFlashRequest, FalGeminiOmniFlashResponse>(
+      "POST",
+      "/google/gemini-omni-flash",
+      FalGeminiOmniFlashRequestSchema,
+      { base: runBaseURL }
+    ),
+    {
+      edit: geminiOmniFlashEdit,
+    }
+  );
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://fal.run/fal-ai/bytedance/seedream/v5/lite/edit

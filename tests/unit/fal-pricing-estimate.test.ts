@@ -135,11 +135,12 @@ describe("fal video pricing estimates", () => {
     "xai/grok-imagine-video/reference-to-video",
     "xai/grok-imagine-video/extend-video",
     "xai/grok-imagine-video/edit-video",
+    "google/gemini-omni-flash",
   ];
 
   it("covers every REQ-001 endpoint statically or on the dynamic list", () => {
     const dynamic: readonly string[] = FAL_DYNAMIC_PRICING_ENDPOINTS;
-    expect(REQ_001_ENDPOINTS).toHaveLength(34);
+    expect(REQ_001_ENDPOINTS).toHaveLength(35);
     for (const endpoint of REQ_001_ENDPOINTS) {
       expect(endpoint in FAL_ENDPOINT_REQUEST_SCHEMAS, endpoint).toBe(true);
       const priced = endpoint in falPricing;
@@ -908,8 +909,10 @@ describe("fal edit/image pricing estimates", () => {
     // google/nano-banana-2-lite and google/nano-banana-lite/edit are
     // token-metered without a published tokens-per-image constant;
     // xai/grok-imagine-image/v2.0/edit and text-to-image are
-    // compute-second-metered. All ten therefore use fal's pricing-estimate
-    // API.
+    // compute-second-metered; google/gemini-omni-flash is token-metered, and
+    // its page's "approximately $0.125 per second" 720p figure predicts USD
+    // 0.375 for the recorded duration-3 call that actually billed USD
+    // 0.382914. All eleven therefore use fal's pricing-estimate API.
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toEqual([
       "alibaba/qwen-image-3/edit",
       "alibaba/qwen-image-3/text-to-image",
@@ -917,6 +920,7 @@ describe("fal edit/image pricing estimates", () => {
       "alibaba/wan-3.0/reference-to-video",
       "alibaba/wan-3.0/text-to-video",
       "blackforestlabs/flux-video-upscale",
+      "google/gemini-omni-flash",
       "google/nano-banana-2-lite",
       "google/nano-banana-lite/edit",
       "xai/grok-imagine-image/v2.0/edit",

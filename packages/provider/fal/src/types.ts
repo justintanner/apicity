@@ -48,6 +48,7 @@ export type {
   FalNanoBanana2LiteTextToImageParams,
   FalNanoBanana2LiteEditParams,
   FalVirtualTryOnParams,
+  FalGeminiOmniFlashParams,
   FalSeedreamV5LiteEditParams,
   FalSeedreamV5LiteTextToImageParams,
   FalSeedSpeechTtsV2Params,
@@ -152,6 +153,9 @@ export type {
   FalVirtualTryOnRequest,
   FalVirtualTryOnRequestInput,
   FalVirtualTryOnParsedRequest,
+  FalGeminiOmniFlashRequest,
+  FalGeminiOmniFlashRequestInput,
+  FalGeminiOmniFlashParsedRequest,
   FalSeedreamV5LiteEditRequest,
   FalSeedreamV5LiteEditRequestInput,
   FalSeedreamV5LiteEditParsedRequest,
@@ -323,6 +327,7 @@ import type {
   FalNanoBanana2LiteTextToImageRequest,
   FalNanoBanana2LiteEditRequest,
   FalVirtualTryOnRequest,
+  FalGeminiOmniFlashRequest,
   FalSeedreamV5LiteEditRequest,
   FalSeedreamV5LiteTextToImageRequest,
   FalSeedSpeechTtsV2Request,
@@ -929,6 +934,13 @@ export interface FalVirtualTryOnImage {
 
 export interface FalVirtualTryOnResponse {
   images: FalVirtualTryOnImage[];
+}
+
+// Google Gemini Omni Flash text-to-video. Upstream's output schema carries a
+// single plain File — url plus the nullable content_type/file_name/file_size —
+// and no width/height/fps/duration, so FalFile is the exact shape.
+export interface FalGeminiOmniFlashResponse {
+  video: FalFile;
 }
 
 // Qwen Image (text-to-image and edit)
@@ -1819,6 +1831,13 @@ type FalVirtualTryOnFn = ((
   schema: ApicitySchema<FalVirtualTryOnRequest>;
 };
 
+type FalGeminiOmniFlashFn = ((
+  params: FalGeminiOmniFlashRequest,
+  signal?: AbortSignal
+) => Promise<FalGeminiOmniFlashResponse>) & {
+  schema: ApicitySchema<FalGeminiOmniFlashRequest>;
+};
+
 type FalSeedreamV5LiteEditFn = ((
   params: FalSeedreamV5LiteEditRequest,
   signal?: AbortSignal
@@ -2266,6 +2285,7 @@ export interface FalRunNamespace {
   nanoBanana2: FalRunNanoBanana2Namespace;
   nanoBanana2Lite: FalRunNanoBanana2LiteNamespace;
   virtualTryOn: FalVirtualTryOnFn;
+  geminiOmniFlash: FalGeminiOmniFlashFn;
   qwenImage: FalQwenImageFn;
   gptImage1p5: FalGptImage1p5Fn;
   sora2: FalRunSora2Namespace;

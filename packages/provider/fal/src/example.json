@@ -377,6 +377,15 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST geminiOmniFlash": {
+    "source": "fal/google-gemini-omni-flash",
+    "payload": {
+      "prompt": "A calico cat naps on a sunlit windowsill, purring softly.",
+      "duration": 3
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST gptImage1p5": {
     "source": "fal/gpt-image-1.5",
     "payload": {

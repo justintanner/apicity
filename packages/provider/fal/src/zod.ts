@@ -516,6 +516,19 @@ export const FalVirtualTryOnRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// Google Gemini Omni Flash (text-to-video with synchronized audio)
+// ---------------------------------------------------------------------------
+
+export const FalGeminiOmniFlashRequestSchema = z.object({
+  // Upstream caps the prompt at 20,000 characters.
+  prompt: z.string().max(20_000),
+  // Upstream documents "16:9" and "9:16", defaulting to "16:9" when omitted.
+  aspect_ratio: z.enum(["16:9", "9:16"]).optional(),
+  // Upstream documents 3..10 inclusive seconds, defaulting to 8 when omitted.
+  duration: z.number().int().min(3).max(10).optional(),
+});
+
+// ---------------------------------------------------------------------------
 // Nano Banana text-to-image
 // ---------------------------------------------------------------------------
 
@@ -1889,6 +1902,17 @@ export type FalVirtualTryOnRequestInput = FalVirtualTryOnRequest;
 export type FalVirtualTryOnParsedRequest = z.output<
   typeof FalVirtualTryOnRequestSchema
 >;
+
+export type FalGeminiOmniFlashParams = z.infer<
+  typeof FalGeminiOmniFlashRequestSchema
+>;
+export type FalGeminiOmniFlashRequest = z.input<
+  typeof FalGeminiOmniFlashRequestSchema
+>;
+export type FalGeminiOmniFlashRequestInput = FalGeminiOmniFlashRequest;
+export type FalGeminiOmniFlashParsedRequest = z.output<
+  typeof FalGeminiOmniFlashRequestSchema
+>;
 export type FalSeedreamV5LiteEditParams = z.infer<
   typeof FalSeedreamV5LiteEditRequestSchema
 >;
@@ -2629,6 +2653,7 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "google/nano-banana-2-lite": FalNanoBanana2LiteTextToImageRequestSchema,
   "google/nano-banana-lite/edit": FalNanoBanana2LiteEditRequestSchema,
   "google/virtual-try-on": FalVirtualTryOnRequestSchema,
+  "google/gemini-omni-flash": FalGeminiOmniFlashRequestSchema,
   "fal-ai/bytedance/seedream/v5/lite/edit": FalSeedreamV5LiteEditRequestSchema,
   "fal-ai/bytedance/seedream/v5/lite/text-to-image":
     FalSeedreamV5LiteTextToImageRequestSchema,

@@ -480,6 +480,16 @@ const gptImagePerImage = (
 //     unit that no request field determines — so deriving a rate from
 //     duration would invent one. The premium `alibaba/wan-3.0-prime/*`
 //     siblings bill per OUTPUT second instead and are priced statically below.
+//   - google/gemini-omni-flash: billed purely per token as read 2026-08-28
+//     (the model page states "Billing is based on total token consumption.
+//     Tokens cost $21.875 per 1 million tokens"), and its "approximately
+//     $0.125 per second of video" figure is both explicitly approximate and
+//     conditioned on 720p — a resolution the request cannot select, since the
+//     payload carries only prompt, aspect_ratio, and duration. The one
+//     recorded call (duration 3) billed 0.382914 units at USD 1.00/unit =
+//     USD 0.382914, where the page rate predicts USD 0.375; the delivered
+//     video reports no token count, resolution, or duration, so the billed
+//     quantity is observable from neither the request nor the response.
 export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "alibaba/qwen-image-3/edit",
   "alibaba/qwen-image-3/text-to-image",
@@ -487,6 +497,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "alibaba/wan-3.0/reference-to-video",
   "alibaba/wan-3.0/text-to-video",
   "blackforestlabs/flux-video-upscale",
+  "google/gemini-omni-flash",
   "google/nano-banana-2-lite",
   "google/nano-banana-lite/edit",
   "xai/grok-imagine-image/v2.0/edit",

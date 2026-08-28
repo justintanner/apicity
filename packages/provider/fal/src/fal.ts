@@ -69,6 +69,8 @@ import {
   FalNanoBanana2LiteEditResponse,
   FalVirtualTryOnRequest,
   FalVirtualTryOnResponse,
+  FalGeminiOmniFlashImageToVideoRequest,
+  FalGeminiOmniFlashImageToVideoResponse,
   FalSeedreamV5LiteEditRequest,
   FalSeedreamV5LiteEditResponse,
   FalSeedreamV5LiteTextToImageRequest,
@@ -190,6 +192,7 @@ import {
   FalNanoBanana2LiteTextToImageRequestSchema,
   FalNanoBanana2LiteEditRequestSchema,
   FalVirtualTryOnRequestSchema,
+  FalGeminiOmniFlashImageToVideoRequestSchema,
   FalSeedreamV5LiteEditRequestSchema,
   FalSeedreamV5LiteTextToImageRequestSchema,
   FalSeedSpeechTtsV2RequestSchema,
@@ -1125,6 +1128,18 @@ export function createFal(opts: FalOptions): FalProvider {
     base: runBaseURL,
   });
 
+  // POST https://fal.run/google/gemini-omni-flash/image-to-video
+  // Docs: https://fal.ai/models/google/gemini-omni-flash/image-to-video/api
+  const geminiOmniFlashImageToVideo = jsonBody<
+    FalGeminiOmniFlashImageToVideoRequest,
+    FalGeminiOmniFlashImageToVideoResponse
+  >(
+    "POST",
+    "/google/gemini-omni-flash/image-to-video",
+    FalGeminiOmniFlashImageToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://fal.run/fal-ai/bytedance/seedream/v5/lite/edit
   // Docs: https://docs.fal.ai
@@ -1757,6 +1772,9 @@ export function createFal(opts: FalOptions): FalProvider {
       edit: nanoBanana2LiteEdit,
     },
     virtualTryOn,
+    geminiOmniFlash: {
+      imageToVideo: geminiOmniFlashImageToVideo,
+    },
     qwenImage,
     klingVideo: {
       v3: {

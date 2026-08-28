@@ -516,6 +516,22 @@ export const FalVirtualTryOnRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// Google Gemini Omni Flash image-to-video
+// ---------------------------------------------------------------------------
+
+export const FalGeminiOmniFlashImageToVideoRequestSchema = z.object({
+  // Upstream caps the prompt at 20,000 characters. Describes how the still
+  // image should be animated.
+  prompt: z.string().max(20_000),
+  // URL of the input image to animate. Required alongside the prompt.
+  image_url: z.string(),
+  // Upstream default "16:9"; the vocabulary is fixed, so this stays closed.
+  aspect_ratio: z.enum(["16:9", "9:16"]).optional(),
+  // Seconds of generated video. Upstream default 8, bounded 3..10.
+  duration: z.number().int().min(3).max(10).optional(),
+});
+
+// ---------------------------------------------------------------------------
 // Nano Banana text-to-image
 // ---------------------------------------------------------------------------
 
@@ -1889,6 +1905,17 @@ export type FalVirtualTryOnRequestInput = FalVirtualTryOnRequest;
 export type FalVirtualTryOnParsedRequest = z.output<
   typeof FalVirtualTryOnRequestSchema
 >;
+export type FalGeminiOmniFlashImageToVideoParams = z.infer<
+  typeof FalGeminiOmniFlashImageToVideoRequestSchema
+>;
+export type FalGeminiOmniFlashImageToVideoRequest = z.input<
+  typeof FalGeminiOmniFlashImageToVideoRequestSchema
+>;
+export type FalGeminiOmniFlashImageToVideoRequestInput =
+  FalGeminiOmniFlashImageToVideoRequest;
+export type FalGeminiOmniFlashImageToVideoParsedRequest = z.output<
+  typeof FalGeminiOmniFlashImageToVideoRequestSchema
+>;
 export type FalSeedreamV5LiteEditParams = z.infer<
   typeof FalSeedreamV5LiteEditRequestSchema
 >;
@@ -2629,6 +2656,8 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "google/nano-banana-2-lite": FalNanoBanana2LiteTextToImageRequestSchema,
   "google/nano-banana-lite/edit": FalNanoBanana2LiteEditRequestSchema,
   "google/virtual-try-on": FalVirtualTryOnRequestSchema,
+  "google/gemini-omni-flash/image-to-video":
+    FalGeminiOmniFlashImageToVideoRequestSchema,
   "fal-ai/bytedance/seedream/v5/lite/edit": FalSeedreamV5LiteEditRequestSchema,
   "fal-ai/bytedance/seedream/v5/lite/text-to-image":
     FalSeedreamV5LiteTextToImageRequestSchema,

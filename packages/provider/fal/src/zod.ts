@@ -624,6 +624,40 @@ export const FalTopazUpscaleVideoPrecisionRequestSchema = z.object({
   // upstream's own casing.
   H264_output: z.boolean().optional(),
 });
+// Meshy-7 image-to-3D
+// ---------------------------------------------------------------------------
+
+export const FalMeshyV7ImageTo3dRequestSchema = z.object({
+  image_url: z.string(),
+  // Mesh generation mode, not a model registry. Upstream's OpenAPI document
+  // advertises a third value, "lowpoly", but the endpoint rejects it live:
+  // POST /meshy/v7/image-to-3d returns 422 `model_type: lowpoly is not
+  // supported for meshy-7` (2026-08-28), so the published enum is wider than
+  // the endpoint and only these two are accepted. "smart-topology" routes to
+  // Meshy-T2, which caps target_polycount at 15,000 and cannot be combined
+  // with ultra_mode.
+  model_type: z.enum(["standard", "smart-topology"]).optional(),
+  topology: z.enum(["quad", "triangle"]).optional(),
+  target_polycount: z.number().int().min(100).max(300000).optional(),
+  symmetry_mode: z.enum(["off", "auto", "on"]).optional(),
+  should_remesh: z.boolean().optional(),
+  should_texture: z.boolean().optional(),
+  enable_pbr: z.boolean().optional(),
+  // Upstream deprecates is_a_t_pose in favour of pose_mode; the empty string
+  // is upstream's own "no specific pose" default.
+  is_a_t_pose: z.boolean().optional(),
+  pose_mode: z.enum(["a-pose", "t-pose", ""]).optional(),
+  texture_prompt: z.string().max(600).optional(),
+  texture_image_url: z.string().optional(),
+  enable_rigging: z.boolean().optional(),
+  rigging_height_meters: z.number().positive().optional(),
+  enable_animation: z.boolean().optional(),
+  // Meshy animation preset id. Upstream documents 0..696 inclusive (0 is
+  // "Idle") and rejects anything outside that window with a 422.
+  animation_action_id: z.number().int().min(0).max(696).optional(),
+  enable_safety_checker: z.boolean().optional(),
+  ultra_mode: z.boolean().optional(),
+});
 
 // ---------------------------------------------------------------------------
 // Nano Banana text-to-image
@@ -2042,6 +2076,16 @@ export type FalTopazUpscaleVideoPrecisionRequestInput =
 export type FalTopazUpscaleVideoPrecisionParsedRequest = z.output<
   typeof FalTopazUpscaleVideoPrecisionRequestSchema
 >;
+export type FalMeshyV7ImageTo3dParams = z.infer<
+  typeof FalMeshyV7ImageTo3dRequestSchema
+>;
+export type FalMeshyV7ImageTo3dRequest = z.input<
+  typeof FalMeshyV7ImageTo3dRequestSchema
+>;
+export type FalMeshyV7ImageTo3dRequestInput = FalMeshyV7ImageTo3dRequest;
+export type FalMeshyV7ImageTo3dParsedRequest = z.output<
+  typeof FalMeshyV7ImageTo3dRequestSchema
+>;
 export type FalSeedreamV5LiteEditParams = z.infer<
   typeof FalSeedreamV5LiteEditRequestSchema
 >;
@@ -2794,6 +2838,7 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "google/virtual-try-on": FalVirtualTryOnRequestSchema,
   "topaz/upscale/image/precision": FalTopazUpscaleImagePrecisionRequestSchema,
   "topaz/upscale/video/precision": FalTopazUpscaleVideoPrecisionRequestSchema,
+  "meshy/v7/image-to-3d": FalMeshyV7ImageTo3dRequestSchema,
   "fal-ai/bytedance/seedream/v5/lite/edit": FalSeedreamV5LiteEditRequestSchema,
   "fal-ai/bytedance/seedream/v5/lite/text-to-image":
     FalSeedreamV5LiteTextToImageRequestSchema,

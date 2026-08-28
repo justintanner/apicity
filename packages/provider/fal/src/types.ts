@@ -50,6 +50,7 @@ export type {
   FalVirtualTryOnParams,
   FalTopazUpscaleImagePrecisionParams,
   FalTopazUpscaleVideoPrecisionParams,
+  FalMeshyV7ImageTo3dParams,
   FalSeedreamV5LiteEditParams,
   FalSeedreamV5LiteTextToImageParams,
   FalSeedSpeechTtsV2Params,
@@ -161,6 +162,9 @@ export type {
   FalTopazUpscaleVideoPrecisionRequest,
   FalTopazUpscaleVideoPrecisionRequestInput,
   FalTopazUpscaleVideoPrecisionParsedRequest,
+  FalMeshyV7ImageTo3dRequest,
+  FalMeshyV7ImageTo3dRequestInput,
+  FalMeshyV7ImageTo3dParsedRequest,
   FalSeedreamV5LiteEditRequest,
   FalSeedreamV5LiteEditRequestInput,
   FalSeedreamV5LiteEditParsedRequest,
@@ -337,6 +341,7 @@ import type {
   FalVirtualTryOnRequest,
   FalTopazUpscaleImagePrecisionRequest,
   FalTopazUpscaleVideoPrecisionRequest,
+  FalMeshyV7ImageTo3dRequest,
   FalSeedreamV5LiteEditRequest,
   FalSeedreamV5LiteTextToImageRequest,
   FalSeedSpeechTtsV2Request,
@@ -955,6 +960,52 @@ export interface FalTopazUpscaleImagePrecisionResponse {
 // required member is `url`, which is exactly FalFile's shape.
 export interface FalTopazUpscaleVideoPrecisionResponse {
   video: FalFile;
+}
+// Meshy-7 image-to-3D. Every asset upstream returns is fal's standard File
+// object, so these reuse FalFile and only describe how the assets are grouped.
+export interface FalMeshyV7ModelUrls {
+  glb?: FalFile | null;
+  fbx?: FalFile | null;
+  obj?: FalFile | null;
+  usdz?: FalFile | null;
+  blend?: FalFile | null;
+  stl?: FalFile | null;
+}
+
+// One texture set per material. Only `base_color` is always present; the PBR
+// maps arrive only when enable_pbr is true.
+export interface FalMeshyV7TextureFiles {
+  base_color: FalFile;
+  metallic?: FalFile | null;
+  normal?: FalFile | null;
+  roughness?: FalFile | null;
+}
+
+// Bundled with the rigging result, so present only when enable_rigging is true.
+export interface FalMeshyV7BasicAnimations {
+  walking_glb?: FalFile | null;
+  walking_fbx?: FalFile | null;
+  walking_armature_glb?: FalFile | null;
+  running_glb?: FalFile | null;
+  running_fbx?: FalFile | null;
+  running_armature_glb?: FalFile | null;
+}
+
+// Upstream requires only `model_glb` and `model_urls`. The rigging and
+// animation assets appear only when the matching request flag is set, and
+// `texture_urls` is empty when should_texture is false.
+export interface FalMeshyV7ImageTo3dResponse {
+  model_glb: FalFile;
+  model_urls: FalMeshyV7ModelUrls;
+  thumbnail?: FalFile | null;
+  texture_urls?: FalMeshyV7TextureFiles[];
+  seed?: number | null;
+  animation_glb?: FalFile | null;
+  animation_fbx?: FalFile | null;
+  rigged_character_glb?: FalFile | null;
+  rigged_character_fbx?: FalFile | null;
+  basic_animations?: FalMeshyV7BasicAnimations | null;
+  rig_task_id?: string | null;
 }
 
 // Qwen Image (text-to-image and edit)
@@ -1895,6 +1946,20 @@ export interface FalRunTopazUpscaleNamespace {
 export interface FalRunTopazNamespace {
   upscale: FalRunTopazUpscaleNamespace;
 }
+type FalMeshyV7ImageTo3dFn = ((
+  params: FalMeshyV7ImageTo3dRequest,
+  signal?: AbortSignal
+) => Promise<FalMeshyV7ImageTo3dResponse>) & {
+  schema: ApicitySchema<FalMeshyV7ImageTo3dRequest>;
+};
+
+export interface FalRunMeshyV7Namespace {
+  imageTo3d: FalMeshyV7ImageTo3dFn;
+}
+
+export interface FalRunMeshyNamespace {
+  v7: FalRunMeshyV7Namespace;
+}
 
 type FalSeedreamV5LiteEditFn = ((
   params: FalSeedreamV5LiteEditRequest,
@@ -2339,6 +2404,7 @@ export interface FalRunNamespace {
   hunyuan: FalRunHunyuanNamespace;
   klingVideo: FalRunKlingVideoNamespace;
   minimax: FalRunMinimaxNamespace;
+  meshy: FalRunMeshyNamespace;
   nanoBanana: FalRunNanoBananaNamespace;
   nanoBananaPro: FalRunNanoBananaProNamespace;
   nanoBanana2: FalRunNanoBanana2Namespace;

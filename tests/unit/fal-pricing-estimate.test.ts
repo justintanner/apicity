@@ -138,6 +138,7 @@ describe("fal video pricing estimates", () => {
     "minimax/music-3",
     "topaz/upscale/image/precision",
     "topaz/upscale/video/precision",
+    "meshy/v7/image-to-3d",
   ];
 
   it("covers every REQ-001 endpoint statically or on the dynamic list", () => {
@@ -924,6 +925,10 @@ describe("fal edit/image pricing estimates", () => {
     // and 4K), and output resolution, duration and frame rate are all
     // properties of the source clip rather than request fields. All eleven
     // therefore use fal's pricing-estimate API.
+    // compute-second-metered; meshy/v7/image-to-3d is compute-second-metered
+    // too — its request only sizes the mesh and toggles generation stages, and
+    // upstream publishes no seconds-per-unit constant for any of them
+    // (ac-yhn0aq). All eleven therefore use fal's pricing-estimate API.
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toEqual([
       "alibaba/qwen-image-3/edit",
       "alibaba/qwen-image-3/text-to-image",
@@ -936,6 +941,7 @@ describe("fal edit/image pricing estimates", () => {
       "minimax/music-3",
       "topaz/upscale/image/precision",
       "topaz/upscale/video/precision",
+      "meshy/v7/image-to-3d",
       "xai/grok-imagine-image/v2.0/edit",
       "xai/grok-imagine-image/v2.0/text-to-image",
     ]);

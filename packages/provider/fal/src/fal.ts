@@ -73,6 +73,8 @@ import {
   FalTopazUpscaleImagePrecisionResponse,
   FalTopazUpscaleVideoPrecisionRequest,
   FalTopazUpscaleVideoPrecisionResponse,
+  FalMeshyV7ImageTo3dRequest,
+  FalMeshyV7ImageTo3dResponse,
   FalSeedreamV5LiteEditRequest,
   FalSeedreamV5LiteEditResponse,
   FalSeedreamV5LiteTextToImageRequest,
@@ -198,6 +200,7 @@ import {
   FalVirtualTryOnRequestSchema,
   FalTopazUpscaleImagePrecisionRequestSchema,
   FalTopazUpscaleVideoPrecisionRequestSchema,
+  FalMeshyV7ImageTo3dRequestSchema,
   FalSeedreamV5LiteEditRequestSchema,
   FalSeedreamV5LiteTextToImageRequestSchema,
   FalSeedSpeechTtsV2RequestSchema,
@@ -1156,6 +1159,14 @@ export function createFal(opts: FalOptions): FalProvider {
     FalTopazUpscaleVideoPrecisionRequestSchema,
     { base: runBaseURL }
   );
+  // POST https://fal.run/meshy/v7/image-to-3d
+  // Docs: https://fal.ai/models/meshy/v7/image-to-3d/api
+  const meshyV7ImageTo3d = jsonBody<
+    FalMeshyV7ImageTo3dRequest,
+    FalMeshyV7ImageTo3dResponse
+  >("POST", "/meshy/v7/image-to-3d", FalMeshyV7ImageTo3dRequestSchema, {
+    base: runBaseURL,
+  });
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://fal.run/fal-ai/bytedance/seedream/v5/lite/edit
@@ -1828,6 +1839,11 @@ export function createFal(opts: FalOptions): FalProvider {
     },
     minimax: {
       music3: minimaxMusic3,
+    },
+    meshy: {
+      v7: {
+        imageTo3d: meshyV7ImageTo3d,
+      },
     },
     gptImage1p5,
     sora2: {

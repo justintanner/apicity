@@ -828,6 +828,7 @@ fal	klingVideo.v3.pro.textToVideo	POST	https://fal.run/fal-ai/kling-video/v3/pro
 fal	klingVideo.v3.standard.imageToVideo	POST	https://fal.run/fal-ai/kling-video/v3/standard/image-to-video	https://docs.fal.ai
 fal	klingVideo.v3.standard.textToVideo	POST	https://fal.run/fal-ai/kling-video/v3/standard/text-to-video	https://docs.fal.ai
 fal	minimax.music3	POST	https://fal.run/minimax/music-3	https://fal.ai/models/minimax/music-3/api
+fal	meshy.v7.imageTo3d	POST	https://fal.run/meshy/v7/image-to-3d	https://fal.ai/models/meshy/v7/image-to-3d/api
 fal	nanoBanana.edit	POST	https://fal.run/fal-ai/nano-banana/edit	https://docs.fal.ai
 fal	nanoBanana.textToImage	POST	https://fal.run/fal-ai/nano-banana	https://docs.fal.ai
 fal	nanoBanana2.edit	POST	https://fal.run/fal-ai/nano-banana-2/edit	https://docs.fal.ai

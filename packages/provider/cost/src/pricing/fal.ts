@@ -480,6 +480,13 @@ const gptImagePerImage = (
 //     unit that no request field determines — so deriving a rate from
 //     duration would invent one. The premium `alibaba/wan-3.0-prime/*`
 //     siblings bill per OUTPUT second instead and are priced statically below.
+//   - minimax/music-3: billed per COMPUTE SECOND (USD 0.00125) as pulled
+//     2026-08-28 from fal's own pricing API
+//     (GET /v1/models/pricing?endpoint_id=minimax/music-3). Same shape as the
+//     alibaba/wan-3.0 rows: the request carries a `duration`, but that is an
+//     upper bound on OUTPUT seconds — the model may stop earlier and reports
+//     the length it actually produced — while billing counts wall-clock GPU
+//     seconds, so no request field determines the price.
 export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "alibaba/qwen-image-3/edit",
   "alibaba/qwen-image-3/text-to-image",
@@ -489,6 +496,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "blackforestlabs/flux-video-upscale",
   "google/nano-banana-2-lite",
   "google/nano-banana-lite/edit",
+  "minimax/music-3",
   "xai/grok-imagine-image/v2.0/edit",
   "xai/grok-imagine-image/v2.0/text-to-image",
 ] as const;

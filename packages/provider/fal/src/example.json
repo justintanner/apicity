@@ -494,6 +494,18 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST minimax.music3": {
+    "source": "fal/minimax-music-3",
+    "payload": {
+      "prompt": "Genre: acoustic pop. BPM: 96. Key: C major. Warm and intimate. Vocals: soft female lead. Arrangement: fingerpicked guitar and soft piano.",
+      "lyrics": "[verse]\nMorning light filtering through the pine\n",
+      "duration": 8,
+      "num_inference_steps": 8,
+      "seed": 42
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST nanoBanana.edit": {
     "source": "fal/nano-banana-edit",
     "payload": {

@@ -882,6 +882,26 @@ export const FalSeedSpeechTtsV2RequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// MiniMax Music 3
+// ---------------------------------------------------------------------------
+
+// Bounds are upstream's own, read on 2026-08-28 from
+// https://fal.ai/api/openapi/queue/openapi.json?endpoint_id=minimax/music-3.
+// `prompt` and `lyrics` are the only required fields; the rest are closed
+// numeric ranges. No field names a model, so the open-enum rule does not apply.
+export const FalMinimaxMusic3RequestSchema = z.object({
+  prompt: z.string(),
+  lyrics: z.string(),
+  // Upper bound on the generated audio length in seconds. The model may stop
+  // earlier and reports the length it actually produced in the response.
+  duration: z.number().min(1).max(300).optional(),
+  seed: z.number().int().nullable().optional(),
+  // Flow-matching Euler steps per 8-second denoising chunk.
+  num_inference_steps: z.number().int().min(1).max(100).optional(),
+  guidance_scale: z.number().min(0).max(20).optional(),
+});
+
+// ---------------------------------------------------------------------------
 // Alibaba Qwen Image 3 text-to-image
 // ---------------------------------------------------------------------------
 
@@ -1920,6 +1940,16 @@ export type FalSeedSpeechTtsV2RequestInput = FalSeedSpeechTtsV2Request;
 export type FalSeedSpeechTtsV2ParsedRequest = z.output<
   typeof FalSeedSpeechTtsV2RequestSchema
 >;
+export type FalMinimaxMusic3Params = z.infer<
+  typeof FalMinimaxMusic3RequestSchema
+>;
+export type FalMinimaxMusic3Request = z.input<
+  typeof FalMinimaxMusic3RequestSchema
+>;
+export type FalMinimaxMusic3RequestInput = FalMinimaxMusic3Request;
+export type FalMinimaxMusic3ParsedRequest = z.output<
+  typeof FalMinimaxMusic3RequestSchema
+>;
 export type FalElevenlabsSpeechToTextScribeV2Params = z.infer<
   typeof FalElevenlabsSpeechToTextScribeV2RequestSchema
 >;
@@ -2633,6 +2663,7 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "fal-ai/bytedance/seedream/v5/lite/text-to-image":
     FalSeedreamV5LiteTextToImageRequestSchema,
   "fal-ai/bytedance/seed-speech/tts/v2": FalSeedSpeechTtsV2RequestSchema,
+  "minimax/music-3": FalMinimaxMusic3RequestSchema,
   "fal-ai/elevenlabs/speech-to-text/scribe-v2":
     FalElevenlabsSpeechToTextScribeV2RequestSchema,
   "alibaba/qwen-image-3/edit": FalAlibabaQwenImage3EditRequestSchema,

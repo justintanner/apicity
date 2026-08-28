@@ -1759,6 +1759,7 @@ const GROK_IMAGINE_IMAGE_2_EXACT_ONLY_MODELS = [
   "grok-imagine-image-2-0/text-to-image",
   "grok-imagine-image-2-0/segment-map",
   "grok-imagine-image-2-0/image-edit",
+  "grok-imagine-image-2-0/segment-edit",
 ] as const;
 
 const GROK_IMAGINE_IMAGE_2_REJECTED_MODELS = [

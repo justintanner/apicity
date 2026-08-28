@@ -56,6 +56,7 @@ export type {
   FalSeedreamV5LiteEditParams,
   FalSeedreamV5LiteTextToImageParams,
   FalSeedreamV5ProLayerizeParams,
+  FalMinimaxH3TextToVideoParams,
   FalSeedSpeechTtsV2Params,
   FalMinimaxMusic3Params,
   FalElevenlabsSpeechToTextScribeV2Params,
@@ -183,6 +184,9 @@ export type {
   FalSeedreamV5ProLayerizeRequest,
   FalSeedreamV5ProLayerizeRequestInput,
   FalSeedreamV5ProLayerizeParsedRequest,
+  FalMinimaxH3TextToVideoRequest,
+  FalMinimaxH3TextToVideoRequestInput,
+  FalMinimaxH3TextToVideoParsedRequest,
   FalSeedSpeechTtsV2Request,
   FalSeedSpeechTtsV2RequestInput,
   FalSeedSpeechTtsV2ParsedRequest,
@@ -359,6 +363,7 @@ import type {
   FalSeedreamV5LiteEditRequest,
   FalSeedreamV5LiteTextToImageRequest,
   FalSeedreamV5ProLayerizeRequest,
+  FalMinimaxH3TextToVideoRequest,
   FalSeedSpeechTtsV2Request,
   FalMinimaxMusic3Request,
   FalElevenlabsSpeechToTextScribeV2Request,
@@ -1344,6 +1349,15 @@ export interface FalWan3p0ReferenceToVideoResponse {
   actual_prompt?: string | null;
 }
 
+// MiniMax Hailuo 03 (H3) text-to-video. Upstream returns the shared fal `File`
+// schema with no media metadata beyond it, so the plain FalFile shape applies.
+// `expanded_prompt` is null whenever expansion was disabled, left the prompt
+// unchanged, or happened inside MiniMax's own hosted API.
+export interface FalMinimaxH3TextToVideoResponse {
+  video: FalFile;
+  expanded_prompt?: string | null;
+}
+
 // xAI Grok Imagine Image
 export type FalXaiGrokImagineImageAspectRatio =
   | "2:1"
@@ -1903,6 +1917,7 @@ type FalMinimaxMusic3Fn = ((
 
 export interface FalRunMinimaxNamespace {
   music3: FalMinimaxMusic3Fn;
+  h3: FalRunMinimaxH3Namespace;
 }
 
 export interface FalRunBytedanceSeedSpeechNamespace {
@@ -1914,6 +1929,17 @@ export interface FalRunBytedanceNamespace {
   seedance2p5: FalRunBytedanceSeedance2p5Namespace;
   seedSpeech: FalRunBytedanceSeedSpeechNamespace;
   seedream: FalRunBytedanceSeedreamNamespace;
+}
+
+type FalMinimaxH3TextToVideoFn = ((
+  params: FalMinimaxH3TextToVideoRequest,
+  signal?: AbortSignal
+) => Promise<FalMinimaxH3TextToVideoResponse>) & {
+  schema: ApicitySchema<FalMinimaxH3TextToVideoRequest>;
+};
+
+export interface FalRunMinimaxH3Namespace {
+  textToVideo: FalMinimaxH3TextToVideoFn;
 }
 
 type FalNanoBananaProEditFn = ((

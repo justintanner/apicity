@@ -1386,6 +1386,40 @@ export const FalWan3p0ReferenceToVideoRequestSchema = z
   );
 
 // ---------------------------------------------------------------------------
+// MiniMax Hailuo 03 (H3) text-to-video
+// ---------------------------------------------------------------------------
+
+// `prompt` is the only required field; every other field carries an upstream
+// default (duration 5, resolution 2K, aspect_ratio 16:9,
+// prompt_expansion_mode balanced, enable_safety_checker true, sync_mode
+// false). No field names a model, so there is no open model-alias union here:
+// the three vocabularies below are fixed upstream enums and stay closed.
+// Docs: https://fal.ai/models/minimax/h3/text-to-video/api
+export const FalMinimaxH3TextToVideoRequestSchema = z.object({
+  prompt: z.string().min(1).max(50000),
+  // Output length in seconds; upstream publishes the range 5-15.
+  duration: z.number().int().min(5).max(15).optional(),
+  // 480P and 768P are native generation modes; 2K and 4K upscale a 768P base
+  // result. A fixed tier vocabulary, not a model registry.
+  resolution: z.enum(["480P", "768P", "2K", "4K"]).optional(),
+  aspect_ratio: z
+    .enum(["21:9", "16:9", "4:3", "1:1", "3:4", "9:16"])
+    .optional(),
+  // How much effort to spend rewriting the prompt before generation:
+  // `disabled` skips expansion, `fast` returns in about a second, `quality`
+  // spends up to ~30s, `balanced` picks per request. Upstream types it as
+  // nullable, so an explicit null is accepted alongside omission.
+  prompt_expansion_mode: z
+    .enum(["disabled", "fast", "balanced", "quality"])
+    .nullable()
+    .optional(),
+  seed: z.number().int().nullable().optional(),
+  enable_safety_checker: z.boolean().optional(),
+  // Returns the video as base64 instead of a CDN URL.
+  sync_mode: z.boolean().optional(),
+});
+
+// ---------------------------------------------------------------------------
 // Wan v2.7 text-to-image
 // ---------------------------------------------------------------------------
 
@@ -2339,6 +2373,17 @@ export type FalWan3p0ReferenceToVideoRequestInput =
 export type FalWan3p0ReferenceToVideoParsedRequest = z.output<
   typeof FalWan3p0ReferenceToVideoRequestSchema
 >;
+export type FalMinimaxH3TextToVideoParams = z.infer<
+  typeof FalMinimaxH3TextToVideoRequestSchema
+>;
+export type FalMinimaxH3TextToVideoRequest = z.input<
+  typeof FalMinimaxH3TextToVideoRequestSchema
+>;
+export type FalMinimaxH3TextToVideoRequestInput =
+  FalMinimaxH3TextToVideoRequest;
+export type FalMinimaxH3TextToVideoParsedRequest = z.output<
+  typeof FalMinimaxH3TextToVideoRequestSchema
+>;
 export type FalWanV2p7TextToImageParams = z.infer<
   typeof FalWanV2p7TextToImageRequestSchema
 >;
@@ -3007,6 +3052,7 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "alibaba/wan-3.0-prime/image-to-video": FalWan3p0ImageToVideoRequestSchema,
   "alibaba/wan-3.0-prime/reference-to-video":
     FalWan3p0ReferenceToVideoRequestSchema,
+  "minimax/h3/text-to-video": FalMinimaxH3TextToVideoRequestSchema,
   "fal-ai/wan/v2.7/text-to-image": FalWanV2p7TextToImageRequestSchema,
   "fal-ai/wan/v2.7/edit": FalWanV2p7EditRequestSchema,
   "fal-ai/wan/v2.7/pro/text-to-image": FalWanV2p7TextToImageRequestSchema,

@@ -104,9 +104,11 @@ import { repoRoot } from "./provider-scope.mjs";
  * pinned to this value by `tests/unit/cross-cutting-tests.test.ts`.
  *
  * The value is the reference-machine figure recorded when the block held five
- * entries. The three entries added since have not moved it materially: on
- * 2026-08-25 the eight-entry block measured 3.1s and 3.4s wall (645 tests, 8
- * files) on the machine that added them, comfortably under this number. It is
+ * entries. The four entries added since have not been re-measured on that
+ * machine: the nine-entry block measures 9.878s on the machine that added the
+ * ninth (8.533s at eight), which confirms this is a reference-machine constant
+ * rather than a live figure — re-measure the whole block on the reference
+ * machine at the next addition rather than appending again. It is
  * deliberately left at the reference measurement rather than overwritten with a
  * figure from a different machine. Every entry stays filesystem- and
  * source-parse-only; the credential guard's dominant cost is one JSON parse of

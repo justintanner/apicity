@@ -50,6 +50,7 @@ export type {
   FalVirtualTryOnParams,
   FalSeedreamV5LiteEditParams,
   FalSeedreamV5LiteTextToImageParams,
+  FalSeedreamV5ProEditParams,
   FalSeedSpeechTtsV2Params,
   FalElevenlabsSpeechToTextScribeV2Params,
   FalAlibabaQwenImage3TextToImageParams,
@@ -158,6 +159,9 @@ export type {
   FalSeedreamV5LiteTextToImageRequest,
   FalSeedreamV5LiteTextToImageRequestInput,
   FalSeedreamV5LiteTextToImageParsedRequest,
+  FalSeedreamV5ProEditRequest,
+  FalSeedreamV5ProEditRequestInput,
+  FalSeedreamV5ProEditParsedRequest,
   FalSeedSpeechTtsV2Request,
   FalSeedSpeechTtsV2RequestInput,
   FalSeedSpeechTtsV2ParsedRequest,
@@ -325,6 +329,7 @@ import type {
   FalVirtualTryOnRequest,
   FalSeedreamV5LiteEditRequest,
   FalSeedreamV5LiteTextToImageRequest,
+  FalSeedreamV5ProEditRequest,
   FalSeedSpeechTtsV2Request,
   FalElevenlabsSpeechToTextScribeV2Request,
   FalAlibabaQwenImage3TextToImageRequest,
@@ -1031,6 +1036,23 @@ export interface FalSeedreamV5LiteTextToImageResponse {
   seed: number;
 }
 
+// Bytedance Seedream v5 Pro image editing. fal's `Image` schema requires only
+// `url` and makes every other field nullable, including the `width`/`height`
+// that plain FalFile does not carry, so the item shape is modelled directly.
+// Unlike the Lite surface the Pro response carries no `seed`.
+export interface FalSeedreamV5ProEditImage {
+  url: string;
+  content_type?: string | null;
+  file_name?: string | null;
+  file_size?: number | null;
+  width?: number | null;
+  height?: number | null;
+}
+
+export interface FalSeedreamV5ProEditResponse {
+  images: FalSeedreamV5ProEditImage[];
+}
+
 // Bytedance Seed Speech TTS v2
 export type FalSeedSpeechTtsV2Voice =
   | "vivi_mixed_en_zh_ja_es_id"
@@ -1725,8 +1747,13 @@ export interface FalRunBytedanceSeedreamV5LiteNamespace {
   textToImage: FalSeedreamV5LiteTextToImageFn;
 }
 
+export interface FalRunBytedanceSeedreamV5ProNamespace {
+  edit: FalSeedreamV5ProEditFn;
+}
+
 export interface FalRunBytedanceSeedreamV5Namespace {
   lite: FalRunBytedanceSeedreamV5LiteNamespace;
+  pro: FalRunBytedanceSeedreamV5ProNamespace;
 }
 
 export interface FalRunBytedanceSeedreamNamespace {
@@ -1831,6 +1858,13 @@ type FalSeedreamV5LiteTextToImageFn = ((
   signal?: AbortSignal
 ) => Promise<FalSeedreamV5LiteTextToImageResponse>) & {
   schema: ApicitySchema<FalSeedreamV5LiteTextToImageRequest>;
+};
+
+type FalSeedreamV5ProEditFn = ((
+  params: FalSeedreamV5ProEditRequest,
+  signal?: AbortSignal
+) => Promise<FalSeedreamV5ProEditResponse>) & {
+  schema: ApicitySchema<FalSeedreamV5ProEditRequest>;
 };
 
 type FalAlibabaQwenImage3TextToImageFn = ((

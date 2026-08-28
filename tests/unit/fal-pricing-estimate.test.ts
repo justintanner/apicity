@@ -135,11 +135,12 @@ describe("fal video pricing estimates", () => {
     "xai/grok-imagine-video/reference-to-video",
     "xai/grok-imagine-video/extend-video",
     "xai/grok-imagine-video/edit-video",
+    "bytedance/seedream/v5/pro/edit",
   ];
 
   it("covers every REQ-001 endpoint statically or on the dynamic list", () => {
     const dynamic: readonly string[] = FAL_DYNAMIC_PRICING_ENDPOINTS;
-    expect(REQ_001_ENDPOINTS).toHaveLength(34);
+    expect(REQ_001_ENDPOINTS).toHaveLength(35);
     for (const endpoint of REQ_001_ENDPOINTS) {
       expect(endpoint in FAL_ENDPOINT_REQUEST_SCHEMAS, endpoint).toBe(true);
       const priced = endpoint in falPricing;
@@ -740,6 +741,35 @@ describe("fal edit/image pricing estimates", () => {
     ).toBeCloseTo(0.3, 10);
   });
 
+  it("routes seedream 5 pro edit to the dynamic path", () => {
+    // The model page's card is explicitly "tentative": $0.0675 per output
+    // image at or below 1536x1536 and $0.135 above it, plus $0.0045 for each
+    // input image after the first. The recorded 1024x1024 (`square_hd`) call
+    // with num_images 1 and a single (free) input image sits well inside the
+    // low tier, yet GET /v1/models/usage reports quantity 2, unit_price
+    // 0.0675, cost_total 0.135 for it, matching the response's own
+    // `x-fal-billable-units: 2.0`. No request field yields that 2, so the
+    // endpoint is unpriced here rather than carrying a per-image table that
+    // the observed charge contradicts.
+    const endpoint = "bytedance/seedream/v5/pro/edit";
+    const dynamic: readonly string[] = FAL_DYNAMIC_PRICING_ENDPOINTS;
+
+    expect(dynamic).toContain(endpoint);
+    expect(endpoint in falPricing).toBe(false);
+
+    const result = estimate(endpoint, {
+      prompt: "a red fox in the snow",
+      image_urls: ["https://example.com/a.png"],
+      image_size: "square_hd",
+      num_images: 1,
+    });
+    expect(result.usd).toBe(0);
+    expect(result.warnings.length).toBeGreaterThan(0);
+    expect(
+      result.warnings.some((w) => w.includes("models/pricing/estimate"))
+    ).toBe(true);
+  });
+
   it("counts wan text-to-image output from max_images", () => {
     // The Wan 2.7 t2i schemas define max_images, not num_images.
     const result = estimate("fal-ai/wan/v2.7/text-to-image", {
@@ -908,8 +938,12 @@ describe("fal edit/image pricing estimates", () => {
     // google/nano-banana-2-lite and google/nano-banana-lite/edit are
     // token-metered without a published tokens-per-image constant;
     // xai/grok-imagine-image/v2.0/edit and text-to-image are
-    // compute-second-metered. All ten therefore use fal's pricing-estimate
-    // API.
+    // compute-second-metered; bytedance/seedream/v5/pro/edit bills a bare
+    // "units" unit whose quantity no request field determines — a recorded
+    // 1024x1024 `square_hd` call with num_images 1 and one (free) input image
+    // was billed 2 units (USD 0.135), not the 1 unit every statically priced
+    // per-image fal endpoint bills. All eleven therefore use fal's
+    // pricing-estimate API.
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toEqual([
       "alibaba/qwen-image-3/edit",
       "alibaba/qwen-image-3/text-to-image",
@@ -917,6 +951,7 @@ describe("fal edit/image pricing estimates", () => {
       "alibaba/wan-3.0/reference-to-video",
       "alibaba/wan-3.0/text-to-video",
       "blackforestlabs/flux-video-upscale",
+      "bytedance/seedream/v5/pro/edit",
       "google/nano-banana-2-lite",
       "google/nano-banana-lite/edit",
       "xai/grok-imagine-image/v2.0/edit",

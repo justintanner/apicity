@@ -382,6 +382,20 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST bytedance.seedream.v5.pro.edit": {
+    "source": "fal/bytedance-seedream-v5-pro-edit",
+    "payload": {
+      "prompt": "Change the background to a snowy forest clearing at golden hour",
+      "image_urls": [
+        "https://storage.googleapis.com/falserverless/example_inputs/seedreamv45/seedream_v45_edit_input_1.png"
+      ],
+      "image_size": "square_hd",
+      "num_images": 1,
+      "output_format": "jpeg"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST falAi.elevenlabs.speechToText.scribeV2": {
     "source": "fal/elevenlabs-speech-to-text-scribe-v2",
     "payload": {

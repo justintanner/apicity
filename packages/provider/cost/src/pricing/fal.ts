@@ -480,6 +480,19 @@ const gptImagePerImage = (
 //     unit that no request field determines — so deriving a rate from
 //     duration would invent one. The premium `alibaba/wan-3.0-prime/*`
 //     siblings bill per OUTPUT second instead and are priced statically below.
+//   - bytedance/seedream/v5/pro/edit: fal's pricing API reports a bare
+//     "units" unit at USD 0.0675 (pulled 2026-08-28), where every statically
+//     priced per-image fal endpoint reports "images". The model page's card
+//     calls its own numbers "tentative": $0.0675 + $(0.0045 x number of
+//     additional input images) per output image at or below 1536x1536, and
+//     $0.135 + the same input surcharge above it, with the first input image
+//     free. A recorded 1024x1024 (`square_hd`) call with `num_images: 1` and a
+//     single (free) input image was billed 2 units / USD 0.135 — the card's
+//     high-tier price for an output well inside its low tier, confirmed by
+//     GET /v1/models/usage (quantity 2, unit_price 0.0675, cost_total 0.135)
+//     and by the response's own `x-fal-billable-units: 2.0`. No request field
+//     yields that 2, so a per-image table would contradict the observed
+//     charge.
 export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "alibaba/qwen-image-3/edit",
   "alibaba/qwen-image-3/text-to-image",
@@ -487,6 +500,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "alibaba/wan-3.0/reference-to-video",
   "alibaba/wan-3.0/text-to-video",
   "blackforestlabs/flux-video-upscale",
+  "bytedance/seedream/v5/pro/edit",
   "google/nano-banana-2-lite",
   "google/nano-banana-lite/edit",
   "xai/grok-imagine-image/v2.0/edit",

@@ -583,6 +583,7 @@ fal	xai.grokImagineVideo.editVideo	POST	prohibitive	Media-generation marketplace
 fal	xai.grokImagineVideo.extendVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	xai.grokImagineVideo.imageToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	xai.grokImagineVideo.referenceToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	xai.grokImagineVideo.v1p5.referenceToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fireworks	inference.v1.accounts	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
 fireworks	inference.v1.accounts.apiKeys	DELETE	expensive	Metered LLM/inference provider; per-call token cost bills real money
 fireworks	inference.v1.accounts.apiKeys.create	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money

@@ -843,6 +843,7 @@ fal	sora2.textToVideo	POST	https://fal.run/fal-ai/sora-2/text-to-video	https://d
 fal	storage.upload.completeMultipart	POST	https://rest.fal.ai/storage/upload/complete-multipart	https://docs.fal.ai
 fal	storage.upload.initiate	POST	https://rest.fal.ai/storage/upload/initiate	https://docs.fal.ai
 fal	storage.upload.initiateMultipart	POST	https://rest.fal.ai/storage/upload/initiate-multipart	https://docs.fal.ai
+fal	topaz.upscale.image.precision	POST	https://fal.run/topaz/upscale/image/precision	https://fal.ai/models/topaz/upscale/image/precision/api
 fal	v1.models	GET	https://api.fal.ai/v1/models	https://docs.fal.ai
 fal	v1.models.analytics	GET	https://api.fal.ai/v1/models/analytics	https://docs.fal.ai
 fal	v1.models.pricing	GET	https://api.fal.ai/v1/models/pricing	https://docs.fal.ai

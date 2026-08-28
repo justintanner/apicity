@@ -487,6 +487,13 @@ const gptImagePerImage = (
 //     upper bound on OUTPUT seconds — the model may stop earlier and reports
 //     the length it actually produced — while billing counts wall-clock GPU
 //     seconds, so no request field determines the price.
+//   - topaz/upscale/image/precision: billed on OUTPUT area — "$0.08 per 24
+//     megapixels of output, with any precision model", pulled 2026-08-28 from
+//     the model page, and the pricing API reports the same rate as an opaque
+//     USD 0.01 per "units". Output area is the source image's own dimensions
+//     scaled by `upscale_factor`, and the request carries only `image_url`,
+//     so no request field determines the price. This is the same shape as
+//     blackforestlabs/flux-video-upscale above.
 export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "alibaba/qwen-image-3/edit",
   "alibaba/qwen-image-3/text-to-image",
@@ -497,6 +504,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "google/nano-banana-2-lite",
   "google/nano-banana-lite/edit",
   "minimax/music-3",
+  "topaz/upscale/image/precision",
   "xai/grok-imagine-image/v2.0/edit",
   "xai/grok-imagine-image/v2.0/text-to-image",
 ] as const;

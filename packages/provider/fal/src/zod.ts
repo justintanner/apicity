@@ -1461,6 +1461,78 @@ export const FalMinimaxH3ImageToVideoRequestSchema = z.object({
   // Returns the video as base64 instead of a CDN URL.
   sync_mode: z.boolean().optional(),
 });
+// MiniMax Hailuo 03 (H3) reference-to-video
+// ---------------------------------------------------------------------------
+
+// `prompt` is the only required field, and here it also binds the reference
+// assets together: upstream documents citing them positionally from the
+// prompt text as "Image 1", "Video 1", "Audio 1", and so on. Every other
+// field carries an upstream default (duration 5, aspect_ratio adaptive,
+// resolution 2K, prompt_expansion_mode balanced, enable_safety_checker true,
+// sync_mode false). No field names a model, so no open model-alias union
+// applies - the three vocabularies below are fixed upstream enums and stay
+// closed.
+//
+// Upstream marks the reference lists optional, so a prompt-only request is
+// valid and is mirrored rather than refined away. Two published rules are
+// encoded below: audio may not be the only reference modality, and the three
+// lists together may not exceed 12 files. The per-list caps (9/3/3) sum to
+// 15, so that combined cap is a real constraint rather than a restatement.
+// Docs: https://fal.ai/models/minimax/h3/reference-to-video/api
+export const FalMinimaxH3ReferenceToVideoRequestSchema = z
+  .object({
+    prompt: z.string().min(1).max(50000),
+    // Subject/style references, cited in the prompt as "Image 1", "Image 2".
+    reference_image_urls: z.array(z.string().url()).max(9).optional(),
+    // Motion references: 2-15s each, at most 15s combined.
+    reference_video_urls: z.array(z.string().url()).max(3).optional(),
+    // Audio references: 2-15s each, at most 15s combined.
+    reference_audio_urls: z.array(z.string().url()).max(3).optional(),
+    // Output length in seconds; upstream publishes the range 5-15.
+    duration: z.number().int().min(5).max(15).optional(),
+    // `adaptive` derives the output ratio from the reference assets.
+    aspect_ratio: z
+      .enum(["adaptive", "21:9", "16:9", "4:3", "1:1", "3:4", "9:16"])
+      .optional(),
+    // 480P and 768P are native generation modes; 2K and 4K upscale a 768P
+    // base result. A fixed tier vocabulary, not a model registry.
+    resolution: z.enum(["480P", "768P", "2K", "4K"]).optional(),
+    // How much effort to spend rewriting the prompt before generation:
+    // `disabled` skips expansion, `fast` returns in about a second, `quality`
+    // spends up to ~30s, `balanced` picks per request. Upstream types it as
+    // nullable, so an explicit null is accepted alongside omission.
+    prompt_expansion_mode: z
+      .enum(["disabled", "fast", "balanced", "quality"])
+      .nullable()
+      .optional(),
+    seed: z.number().int().nullable().optional(),
+    enable_safety_checker: z.boolean().optional(),
+    // Returns the video as base64 instead of a CDN URL.
+    sync_mode: z.boolean().optional(),
+  })
+  .refine(
+    (v) =>
+      !v.reference_audio_urls?.length ||
+      Boolean(v.reference_image_urls?.length) ||
+      Boolean(v.reference_video_urls?.length),
+    {
+      message:
+        "minimax/h3/reference-to-video cannot take reference_audio_urls as its only reference modality; pass at least one reference image or video with it",
+      path: ["reference_audio_urls"],
+    }
+  )
+  .refine(
+    (v) =>
+      (v.reference_image_urls?.length ?? 0) +
+        (v.reference_video_urls?.length ?? 0) +
+        (v.reference_audio_urls?.length ?? 0) <=
+      12,
+    {
+      message:
+        "minimax/h3/reference-to-video accepts at most 12 reference files across reference_image_urls, reference_video_urls, and reference_audio_urls",
+      path: ["reference_image_urls"],
+    }
+  );
 
 // ---------------------------------------------------------------------------
 // Wan v2.7 text-to-image
@@ -2438,6 +2510,17 @@ export type FalMinimaxH3ImageToVideoRequestInput =
 export type FalMinimaxH3ImageToVideoParsedRequest = z.output<
   typeof FalMinimaxH3ImageToVideoRequestSchema
 >;
+export type FalMinimaxH3ReferenceToVideoParams = z.infer<
+  typeof FalMinimaxH3ReferenceToVideoRequestSchema
+>;
+export type FalMinimaxH3ReferenceToVideoRequest = z.input<
+  typeof FalMinimaxH3ReferenceToVideoRequestSchema
+>;
+export type FalMinimaxH3ReferenceToVideoRequestInput =
+  FalMinimaxH3ReferenceToVideoRequest;
+export type FalMinimaxH3ReferenceToVideoParsedRequest = z.output<
+  typeof FalMinimaxH3ReferenceToVideoRequestSchema
+>;
 export type FalWanV2p7TextToImageParams = z.infer<
   typeof FalWanV2p7TextToImageRequestSchema
 >;
@@ -3108,6 +3191,7 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
     FalWan3p0ReferenceToVideoRequestSchema,
   "minimax/h3/text-to-video": FalMinimaxH3TextToVideoRequestSchema,
   "minimax/h3/image-to-video": FalMinimaxH3ImageToVideoRequestSchema,
+  "minimax/h3/reference-to-video": FalMinimaxH3ReferenceToVideoRequestSchema,
   "fal-ai/wan/v2.7/text-to-image": FalWanV2p7TextToImageRequestSchema,
   "fal-ai/wan/v2.7/edit": FalWanV2p7EditRequestSchema,
   "fal-ai/wan/v2.7/pro/text-to-image": FalWanV2p7TextToImageRequestSchema,

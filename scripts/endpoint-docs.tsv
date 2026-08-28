@@ -834,6 +834,7 @@ fal	lightricks.ltx2p5.imageToVideo.pro	POST	https://fal.run/lightricks/ltx-2.5/i
 fal	lightricks.ltx2p5.imageToVideo.fast	POST	https://fal.run/lightricks/ltx-2.5/image-to-video/fast	https://fal.ai/models/lightricks/ltx-2.5/image-to-video/fast/api
 fal	minimax.h3.textToVideo	POST	https://fal.run/minimax/h3/text-to-video	https://fal.ai/models/minimax/h3/text-to-video/api
 fal	minimax.h3.imageToVideo	POST	https://fal.run/minimax/h3/image-to-video	https://fal.ai/models/minimax/h3/image-to-video/api
+fal	minimax.h3.referenceToVideo	POST	https://fal.run/minimax/h3/reference-to-video	https://fal.ai/models/minimax/h3/reference-to-video/api
 fal	nanoBanana.edit	POST	https://fal.run/fal-ai/nano-banana/edit	https://docs.fal.ai
 fal	nanoBanana.textToImage	POST	https://fal.run/fal-ai/nano-banana	https://docs.fal.ai
 fal	nanoBanana2.edit	POST	https://fal.run/fal-ai/nano-banana-2/edit	https://docs.fal.ai

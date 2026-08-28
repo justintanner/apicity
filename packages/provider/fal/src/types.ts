@@ -66,6 +66,7 @@ export type {
   FalWan3p0TextToVideoParams,
   FalWan3p0ImageToVideoParams,
   FalWan3p0ReferenceToVideoParams,
+  FalMinimaxH3ReferenceToVideoParams,
   FalWanV2p7TextToImageParams,
   FalWanV2p7EditParams,
   FalWanV2p7TextToVideoParams,
@@ -215,6 +216,9 @@ export type {
   FalWan3p0ReferenceToVideoRequest,
   FalWan3p0ReferenceToVideoRequestInput,
   FalWan3p0ReferenceToVideoParsedRequest,
+  FalMinimaxH3ReferenceToVideoRequest,
+  FalMinimaxH3ReferenceToVideoRequestInput,
+  FalMinimaxH3ReferenceToVideoParsedRequest,
   FalWanV2p7TextToImageRequest,
   FalWanV2p7TextToImageRequestInput,
   FalWanV2p7TextToImageParsedRequest,
@@ -377,6 +381,7 @@ import type {
   FalWan3p0TextToVideoRequest,
   FalWan3p0ImageToVideoRequest,
   FalWan3p0ReferenceToVideoRequest,
+  FalMinimaxH3ReferenceToVideoRequest,
   FalWanV2p7TextToImageRequest,
   FalWanV2p7EditRequest,
   FalWanV2p7TextToVideoRequest,
@@ -1367,6 +1372,14 @@ export interface FalMinimaxH3TextToVideoResponse {
 // applies. `expanded_prompt` is null whenever expansion was disabled, left the
 // prompt unchanged, or happened inside MiniMax's own hosted API.
 export interface FalMinimaxH3ImageToVideoResponse {
+  video: FalFile;
+  expanded_prompt?: string | null;
+}
+// MiniMax Hailuo 03 (H3) reference-to-video. Upstream returns the shared fal
+// `File` schema with no media metadata beyond it, so the plain FalFile shape
+// applies. `expanded_prompt` is null whenever expansion was disabled, left the
+// prompt unchanged, or happened inside MiniMax's own hosted API.
+export interface FalMinimaxH3ReferenceToVideoResponse {
   video: FalFile;
   expanded_prompt?: string | null;
 }
@@ -2430,6 +2443,21 @@ export interface FalRunKlingVideoO3p4kNamespace {
 export interface FalRunKlingVideoNamespace {
   v3: FalRunKlingVideoV3Namespace;
   o3p4k: FalRunKlingVideoO3p4kNamespace;
+}
+
+type FalMinimaxH3ReferenceToVideoFn = ((
+  params: FalMinimaxH3ReferenceToVideoRequest,
+  signal?: AbortSignal
+) => Promise<FalMinimaxH3ReferenceToVideoResponse>) & {
+  schema: ApicitySchema<FalMinimaxH3ReferenceToVideoRequest>;
+};
+
+export interface FalRunMinimaxH3Namespace {
+  referenceToVideo: FalMinimaxH3ReferenceToVideoFn;
+}
+
+export interface FalRunMinimaxNamespace {
+  h3: FalRunMinimaxH3Namespace;
 }
 
 type FalSora2TextToVideoFn = ((

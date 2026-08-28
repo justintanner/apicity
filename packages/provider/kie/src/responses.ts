@@ -8,7 +8,12 @@ import type { ApicitySchema } from "./types";
 import { sseDataToIterable } from "./sse";
 import { createTransport } from "./transport";
 
-export type KieResponsesModel = "gpt-5-5";
+export type KieResponsesModel =
+  | "gpt-5-4"
+  | "gpt-5-5"
+  | "gpt-5-6-luna"
+  | "gpt-5-6-sol"
+  | "gpt-5-6-terra";
 export type KieResponsesReasoningEffort = "low" | "medium" | "high" | "xhigh";
 export type KieResponsesMessageRole =
   | "user"

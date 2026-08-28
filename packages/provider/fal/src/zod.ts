@@ -505,6 +505,17 @@ export const FalNanoBanana2LiteEditRequestSchema =
   });
 
 // ---------------------------------------------------------------------------
+// Google Virtual Try-On
+// ---------------------------------------------------------------------------
+
+export const FalVirtualTryOnRequestSchema = z.object({
+  person_image_url: z.string(),
+  product_image_url: z.string(),
+  // Upstream documents 1..4 inclusive, defaulting to 1 when omitted.
+  num_images: z.number().int().min(1).max(4).optional(),
+});
+
+// ---------------------------------------------------------------------------
 // Nano Banana text-to-image
 // ---------------------------------------------------------------------------
 
@@ -1867,6 +1878,17 @@ export type FalNanoBanana2LiteEditRequestInput = FalNanoBanana2LiteEditRequest;
 export type FalNanoBanana2LiteEditParsedRequest = z.output<
   typeof FalNanoBanana2LiteEditRequestSchema
 >;
+
+export type FalVirtualTryOnParams = z.infer<
+  typeof FalVirtualTryOnRequestSchema
+>;
+export type FalVirtualTryOnRequest = z.input<
+  typeof FalVirtualTryOnRequestSchema
+>;
+export type FalVirtualTryOnRequestInput = FalVirtualTryOnRequest;
+export type FalVirtualTryOnParsedRequest = z.output<
+  typeof FalVirtualTryOnRequestSchema
+>;
 export type FalSeedreamV5LiteEditParams = z.infer<
   typeof FalSeedreamV5LiteEditRequestSchema
 >;
@@ -2606,6 +2628,7 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "fal-ai/nano-banana-2/edit": FalNanoBanana2EditRequestSchema,
   "google/nano-banana-2-lite": FalNanoBanana2LiteTextToImageRequestSchema,
   "google/nano-banana-lite/edit": FalNanoBanana2LiteEditRequestSchema,
+  "google/virtual-try-on": FalVirtualTryOnRequestSchema,
   "fal-ai/bytedance/seedream/v5/lite/edit": FalSeedreamV5LiteEditRequestSchema,
   "fal-ai/bytedance/seedream/v5/lite/text-to-image":
     FalSeedreamV5LiteTextToImageRequestSchema,

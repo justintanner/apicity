@@ -713,6 +713,33 @@ describe("fal edit/image pricing estimates", () => {
     );
   });
 
+  it("prices google virtual try-on per generated image", () => {
+    // fal's pricing API reports one flat unit_price of USD 0.075 per image
+    // with no tier and no selector
+    // (GET /v1/models/pricing?endpoint_id=google/virtual-try-on, 2026-08-27).
+    const one = estimate("google/virtual-try-on", {
+      person_image_url: "https://example.com/person.jpg",
+      product_image_url: "https://example.com/tshirt.jpg",
+    });
+    expect(one.usd).toBe(0.075); // num_images defaults to 1
+    expect(one.breakdown).toEqual({
+      units: 1,
+      unit: "images",
+      perUnitUsd: 0.075,
+    });
+    expect(one.rateAsOf).toBe("2026-08-27");
+    expect(one.warnings).toEqual([]);
+
+    // num_images is the exact billed image count, bounded 1-4 upstream.
+    expect(
+      estimate("google/virtual-try-on", {
+        person_image_url: "https://example.com/person.jpg",
+        product_image_url: "https://example.com/tshirt.jpg",
+        num_images: 4,
+      }).usd
+    ).toBeCloseTo(0.3, 10);
+  });
+
   it("counts wan text-to-image output from max_images", () => {
     // The Wan 2.7 t2i schemas define max_images, not num_images.
     const result = estimate("fal-ai/wan/v2.7/text-to-image", {

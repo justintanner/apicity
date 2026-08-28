@@ -50,6 +50,7 @@ export type {
   FalVirtualTryOnParams,
   FalSeedreamV5LiteEditParams,
   FalSeedreamV5LiteTextToImageParams,
+  FalMinimaxH3ImageToVideoParams,
   FalSeedSpeechTtsV2Params,
   FalElevenlabsSpeechToTextScribeV2Params,
   FalAlibabaQwenImage3TextToImageParams,
@@ -158,6 +159,9 @@ export type {
   FalSeedreamV5LiteTextToImageRequest,
   FalSeedreamV5LiteTextToImageRequestInput,
   FalSeedreamV5LiteTextToImageParsedRequest,
+  FalMinimaxH3ImageToVideoRequest,
+  FalMinimaxH3ImageToVideoRequestInput,
+  FalMinimaxH3ImageToVideoParsedRequest,
   FalSeedSpeechTtsV2Request,
   FalSeedSpeechTtsV2RequestInput,
   FalSeedSpeechTtsV2ParsedRequest,
@@ -325,6 +329,7 @@ import type {
   FalVirtualTryOnRequest,
   FalSeedreamV5LiteEditRequest,
   FalSeedreamV5LiteTextToImageRequest,
+  FalMinimaxH3ImageToVideoRequest,
   FalSeedSpeechTtsV2Request,
   FalElevenlabsSpeechToTextScribeV2Request,
   FalAlibabaQwenImage3TextToImageRequest,
@@ -1199,6 +1204,15 @@ export interface FalWan3p0ReferenceToVideoResponse {
   actual_prompt?: string | null;
 }
 
+// MiniMax Hailuo 03 (H3) image-to-video. Upstream returns the shared fal
+// `File` schema with no media metadata beyond it, so the plain FalFile shape
+// applies. `expanded_prompt` is null whenever expansion was disabled, left the
+// prompt unchanged, or happened inside MiniMax's own hosted API.
+export interface FalMinimaxH3ImageToVideoResponse {
+  video: FalFile;
+  expanded_prompt?: string | null;
+}
+
 // xAI Grok Imagine Image
 export type FalXaiGrokImagineImageAspectRatio =
   | "2:1"
@@ -1755,6 +1769,21 @@ export interface FalRunBytedanceNamespace {
   seedream: FalRunBytedanceSeedreamNamespace;
 }
 
+type FalMinimaxH3ImageToVideoFn = ((
+  params: FalMinimaxH3ImageToVideoRequest,
+  signal?: AbortSignal
+) => Promise<FalMinimaxH3ImageToVideoResponse>) & {
+  schema: ApicitySchema<FalMinimaxH3ImageToVideoRequest>;
+};
+
+export interface FalRunMinimaxH3Namespace {
+  imageToVideo: FalMinimaxH3ImageToVideoFn;
+}
+
+export interface FalRunMinimaxNamespace {
+  h3: FalRunMinimaxH3Namespace;
+}
+
 type FalNanoBananaProEditFn = ((
   params: FalNanoBananaProEditRequest,
   signal?: AbortSignal
@@ -2261,6 +2290,7 @@ export interface FalRunNamespace {
   bytedance: FalRunBytedanceNamespace;
   hunyuan: FalRunHunyuanNamespace;
   klingVideo: FalRunKlingVideoNamespace;
+  minimax: FalRunMinimaxNamespace;
   nanoBanana: FalRunNanoBananaNamespace;
   nanoBananaPro: FalRunNanoBananaProNamespace;
   nanoBanana2: FalRunNanoBanana2Namespace;

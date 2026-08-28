@@ -510,6 +510,18 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST minimax.h3.imageToVideo": {
+    "source": "fal/minimax-h3-image-to-video",
+    "payload": {
+      "prompt": "The camera drifts slowly forward as soft afternoon light moves across the scene.",
+      "image_url": "https://storage.googleapis.com/falserverless/example_inputs/hailuo23/pro_i2v_in.jpg",
+      "duration": 5,
+      "resolution": "480P",
+      "prompt_expansion_mode": "disabled"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST nanoBanana.edit": {
     "source": "fal/nano-banana-edit",
     "payload": {

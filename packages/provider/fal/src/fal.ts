@@ -73,6 +73,8 @@ import {
   FalSeedreamV5LiteEditResponse,
   FalSeedreamV5LiteTextToImageRequest,
   FalSeedreamV5LiteTextToImageResponse,
+  FalMinimaxH3ImageToVideoRequest,
+  FalMinimaxH3ImageToVideoResponse,
   FalSeedSpeechTtsV2Request,
   FalSeedSpeechTtsV2Response,
   FalElevenlabsSpeechToTextScribeV2Request,
@@ -192,6 +194,7 @@ import {
   FalVirtualTryOnRequestSchema,
   FalSeedreamV5LiteEditRequestSchema,
   FalSeedreamV5LiteTextToImageRequestSchema,
+  FalMinimaxH3ImageToVideoRequestSchema,
   FalSeedSpeechTtsV2RequestSchema,
   FalElevenlabsSpeechToTextScribeV2RequestSchema,
   FalAlibabaQwenImage3TextToImageRequestSchema,
@@ -1025,6 +1028,18 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/minimax/h3/image-to-video
+  // Docs: https://fal.ai/models/minimax/h3/image-to-video/api
+  const minimaxH3ImageToVideo = jsonBody<
+    FalMinimaxH3ImageToVideoRequest,
+    FalMinimaxH3ImageToVideoResponse
+  >(
+    "POST",
+    "/minimax/h3/image-to-video",
+    FalMinimaxH3ImageToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://fal.run/fal-ai/nano-banana-pro/edit
   // Docs: https://docs.fal.ai
@@ -1738,6 +1753,11 @@ export function createFal(opts: FalOptions): FalProvider {
             textToImage: seedreamV5LiteTextToImage,
           },
         },
+      },
+    },
+    minimax: {
+      h3: {
+        imageToVideo: minimaxH3ImageToVideo,
       },
     },
     nanoBananaPro: {

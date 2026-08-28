@@ -1107,6 +1107,49 @@ export const FalWan3p0ReferenceToVideoRequestSchema = z
   );
 
 // ---------------------------------------------------------------------------
+// MiniMax Hailuo 03 (H3) image-to-video
+// ---------------------------------------------------------------------------
+
+// `prompt` is the only required field; every other field carries an upstream
+// default (duration 5, resolution 2K, prompt_expansion_mode balanced,
+// enable_safety_checker true, sync_mode false). Unlike the text-to-video
+// sibling there is no `aspect_ratio` — upstream derives the output ratio from
+// `image_url` instead. No field names a model, so there is no open
+// model-alias union here: the two vocabularies below are fixed upstream enums
+// and stay closed.
+//
+// `image_url` is genuinely OPTIONAL upstream, not merely nullable: the
+// published contract states that omitting it makes the request behave as
+// text-to-video at 16:9. That is documented upstream behaviour rather than a
+// nonsense request, so it is mirrored faithfully instead of being refined
+// away.
+// Docs: https://fal.ai/models/minimax/h3/image-to-video/api
+export const FalMinimaxH3ImageToVideoRequestSchema = z.object({
+  prompt: z.string().min(1).max(50000),
+  // First frame of the generated video; the output aspect ratio follows it.
+  image_url: z.string().url().nullable().optional(),
+  // Last frame, for first-to-last keyframe generation.
+  end_image_url: z.string().url().nullable().optional(),
+  // Output length in seconds; upstream publishes the range 5-15.
+  duration: z.number().int().min(5).max(15).optional(),
+  // 480P and 768P are native generation modes; 2K and 4K upscale a 768P base
+  // result. A fixed tier vocabulary, not a model registry.
+  resolution: z.enum(["480P", "768P", "2K", "4K"]).optional(),
+  // How much effort to spend rewriting the prompt before generation:
+  // `disabled` skips expansion, `fast` returns in about a second, `quality`
+  // spends up to ~30s, `balanced` picks per request. Upstream types it as
+  // nullable, so an explicit null is accepted alongside omission.
+  prompt_expansion_mode: z
+    .enum(["disabled", "fast", "balanced", "quality"])
+    .nullable()
+    .optional(),
+  seed: z.number().int().nullable().optional(),
+  enable_safety_checker: z.boolean().optional(),
+  // Returns the video as base64 instead of a CDN URL.
+  sync_mode: z.boolean().optional(),
+});
+
+// ---------------------------------------------------------------------------
 // Wan v2.7 text-to-image
 // ---------------------------------------------------------------------------
 
@@ -1984,6 +2027,17 @@ export type FalWan3p0ReferenceToVideoRequestInput =
 export type FalWan3p0ReferenceToVideoParsedRequest = z.output<
   typeof FalWan3p0ReferenceToVideoRequestSchema
 >;
+export type FalMinimaxH3ImageToVideoParams = z.infer<
+  typeof FalMinimaxH3ImageToVideoRequestSchema
+>;
+export type FalMinimaxH3ImageToVideoRequest = z.input<
+  typeof FalMinimaxH3ImageToVideoRequestSchema
+>;
+export type FalMinimaxH3ImageToVideoRequestInput =
+  FalMinimaxH3ImageToVideoRequest;
+export type FalMinimaxH3ImageToVideoParsedRequest = z.output<
+  typeof FalMinimaxH3ImageToVideoRequestSchema
+>;
 export type FalWanV2p7TextToImageParams = z.infer<
   typeof FalWanV2p7TextToImageRequestSchema
 >;
@@ -2643,6 +2697,7 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "alibaba/wan-3.0-prime/image-to-video": FalWan3p0ImageToVideoRequestSchema,
   "alibaba/wan-3.0-prime/reference-to-video":
     FalWan3p0ReferenceToVideoRequestSchema,
+  "minimax/h3/image-to-video": FalMinimaxH3ImageToVideoRequestSchema,
   "fal-ai/wan/v2.7/text-to-image": FalWanV2p7TextToImageRequestSchema,
   "fal-ai/wan/v2.7/edit": FalWanV2p7EditRequestSchema,
   "fal-ai/wan/v2.7/pro/text-to-image": FalWanV2p7TextToImageRequestSchema,

@@ -366,6 +366,17 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST bytedance.seedream.v5.pro.textToImage": {
+    "source": "fal/bytedance-seedream-v5-pro-text-to-image",
+    "payload": {
+      "prompt": "A photorealistic red fox sitting in a snowy forest clearing at golden hour",
+      "image_size": "square_hd",
+      "num_images": 1,
+      "output_format": "jpeg"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST falAi.elevenlabs.speechToText.scribeV2": {
     "source": "fal/elevenlabs-speech-to-text-scribe-v2",
     "payload": {

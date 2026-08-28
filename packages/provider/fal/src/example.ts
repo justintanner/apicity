@@ -510,6 +510,19 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST lightricks.ltx2p5.imageToVideo.pro": {
+    "source": "fal/lightricks-ltx2p5-image-to-video-pro",
+    "payload": {
+      "image_url": "<inline image/jpeg data URL — replace with a real URL or upload>",
+      "prompt": "the man smiles and turns his head slowly toward the camera",
+      "duration": 6,
+      "resolution": "720p",
+      "fps": 24,
+      "generate_audio": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST nanoBanana.edit": {
     "source": "fal/nano-banana-edit",
     "payload": {

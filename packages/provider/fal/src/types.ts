@@ -41,6 +41,7 @@ export type {
   FalSeedance2p5TextToVideoParams,
   FalSeedance2p5ImageToVideoParams,
   FalSeedance2p5ReferenceToVideoParams,
+  FalLtx2p5ImageToVideoProParams,
   FalNanoBananaProTextToImageParams,
   FalNanoBananaProEditParams,
   FalNanoBanana2TextToImageParams,
@@ -125,6 +126,9 @@ export type {
   FalSeedance2p5ReferenceToVideoRequest,
   FalSeedance2p5ReferenceToVideoRequestInput,
   FalSeedance2p5ReferenceToVideoParsedRequest,
+  FalLtx2p5ImageToVideoProRequest,
+  FalLtx2p5ImageToVideoProRequestInput,
+  FalLtx2p5ImageToVideoProParsedRequest,
   FalNanoBananaProEditRequest,
   FalNanoBananaProEditRequestInput,
   FalNanoBananaProEditParsedRequest,
@@ -314,6 +318,7 @@ import type {
   FalSeedance2p5TextToVideoRequest,
   FalSeedance2p5ImageToVideoRequest,
   FalSeedance2p5ReferenceToVideoRequest,
+  FalLtx2p5ImageToVideoProRequest,
   FalNanoBananaProEditRequest,
   FalNanoBananaProTextToImageRequest,
   FalNanoBananaTextToImageRequest,
@@ -822,6 +827,13 @@ export interface FalSeedance2p5ImageToVideoResponse {
 export interface FalSeedance2p5ReferenceToVideoResponse {
   video: FalFile;
   seed: number;
+}
+
+// LTX-2.5 image-to-video (Lightricks). Upstream returns the generated clip and
+// nothing else — no seed, no echoed prompt — and the file carries the standard
+// fal video metadata.
+export interface FalLtx2p5ImageToVideoProResponse {
+  video: FalVideoFile;
 }
 
 // Nano Banana Pro image generation and editing (Google state-of-the-art image model)
@@ -2255,12 +2267,34 @@ export interface FalRunBlackforestlabsNamespace {
   fluxVideoUpscale: FalFluxVideoUpscaleFn;
 }
 
+type FalLtx2p5ImageToVideoProFn = ((
+  params: FalLtx2p5ImageToVideoProRequest,
+  signal?: AbortSignal
+) => Promise<FalLtx2p5ImageToVideoProResponse>) & {
+  schema: ApicitySchema<FalLtx2p5ImageToVideoProRequest>;
+};
+
+// `pro` is a URL segment, not a variant flag: upstream splits the LTX-2.5
+// image-to-video model into `/pro` and `/fast` endpoints.
+export interface FalRunLightricksLtx2p5ImageToVideoNamespace {
+  pro: FalLtx2p5ImageToVideoProFn;
+}
+
+export interface FalRunLightricksLtx2p5Namespace {
+  imageToVideo: FalRunLightricksLtx2p5ImageToVideoNamespace;
+}
+
+export interface FalRunLightricksNamespace {
+  ltx2p5: FalRunLightricksLtx2p5Namespace;
+}
+
 export interface FalRunNamespace {
   alibaba: FalRunAlibabaNamespace;
   blackforestlabs: FalRunBlackforestlabsNamespace;
   bytedance: FalRunBytedanceNamespace;
   hunyuan: FalRunHunyuanNamespace;
   klingVideo: FalRunKlingVideoNamespace;
+  lightricks: FalRunLightricksNamespace;
   nanoBanana: FalRunNanoBananaNamespace;
   nanoBananaPro: FalRunNanoBananaProNamespace;
   nanoBanana2: FalRunNanoBanana2Namespace;

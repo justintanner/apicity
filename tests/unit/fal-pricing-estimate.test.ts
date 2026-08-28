@@ -156,7 +156,7 @@ describe("fal video pricing estimates", () => {
 
   it("covers every REQ-001 endpoint statically or on the dynamic list", () => {
     const dynamic: readonly string[] = FAL_DYNAMIC_PRICING_ENDPOINTS;
-    expect(REQ_001_ENDPOINTS).toHaveLength(35);
+    expect(REQ_001_ENDPOINTS).toHaveLength(51);
     for (const endpoint of REQ_001_ENDPOINTS) {
       expect(endpoint in FAL_ENDPOINT_REQUEST_SCHEMAS, endpoint).toBe(true);
       const priced = endpoint in falPricing;
@@ -767,6 +767,23 @@ describe("fal edit/image pricing estimates", () => {
     // endpoint is unpriced here rather than carrying a per-image table that
     // the observed charge contradicts.
     const endpoint = "bytedance/seedream/v5/pro/text-to-image";
+    const dynamic: readonly string[] = FAL_DYNAMIC_PRICING_ENDPOINTS;
+
+    expect(dynamic).toContain(endpoint);
+    expect(endpoint in falPricing).toBe(false);
+
+    const result = estimate(endpoint, {
+      prompt: "a red fox in the snow",
+      image_size: "square_hd",
+      num_images: 1,
+    });
+    expect(result.usd).toBe(0);
+    expect(result.warnings.length).toBeGreaterThan(0);
+    expect(
+      result.warnings.some((w) => w.includes("models/pricing/estimate"))
+    ).toBe(true);
+  });
+
   it("routes seedream 5 pro edit to the dynamic path", () => {
     // The model page's card is explicitly "tentative": $0.0675 per output
     // image at or below 1536x1536 and $0.135 above it, plus $0.0045 for each
@@ -954,78 +971,63 @@ describe("fal edit/image pricing estimates", () => {
   it("keeps every dynamic-priced endpoint out of both registries", () => {
     // alibaba/qwen-image-3/text-to-image and its /edit sibling are
     // compute-second-metered — the model page states 1K/2K tier rates but
-    // publishes no image_size-to-tier selector, and the pricing API reports
-    // one flat compute-second price with no tier at all (ac-kjdp0j);
-    // the three alibaba/wan-3.0 video operations are compute-second-metered
-    // too — their payload `duration` is OUTPUT seconds, a different unit from
-    // the wall-clock GPU seconds they bill, so it cannot derive the price (the
+    // publishes no image_size-to-tier selector, and the pricing API reports one
+    // flat compute-second price with no tier at all (ac-kjdp0j); the three
+    // alibaba/wan-3.0 video operations are compute-second-metered too — their
+    // payload `duration` is OUTPUT seconds, a different unit from the
+    // wall-clock GPU seconds they bill, so it cannot derive the price (the
     // alibaba/wan-3.0-prime siblings bill per output second and ARE priced);
     // blackforestlabs/flux-video-upscale depends on delivered output metadata;
     // google/nano-banana-2-lite and google/nano-banana-lite/edit are
     // token-metered without a published tokens-per-image constant;
     // xai/grok-imagine-image/v2.0/edit and text-to-image are
-    // compute-second-metered; minimax/music-3 is compute-second-metered too —
-    // its `duration` is an upper bound on OUTPUT seconds the model may
-    // undershoot, not the wall-clock GPU seconds fal bills. All eleven
-    // therefore use fal's pricing-estimate API.
-    // compute-second-metered; topaz/upscale/image/precision bills on OUTPUT
-    // area ($0.08 per 24 megapixels of output) and the request carries only
-    // `image_url`, so the source dimensions the area depends on are not a
-    // request field. All eleven therefore use fal's pricing-estimate API.
-    // compute-second-metered; topaz/upscale/video/precision bills on the
-    // DELIVERED video ($0.10 per 10 seconds of output at 720p, more at 1080p
-    // and 4K), and output resolution, duration and frame rate are all
-    // properties of the source clip rather than request fields. All eleven
-    // therefore use fal's pricing-estimate API.
-    // compute-second-metered; meshy/v7/image-to-3d is compute-second-metered
-    // too — its request only sizes the mesh and toggles generation stages, and
-    // upstream publishes no seconds-per-unit constant for any of them
-    // (ac-yhn0aq). All eleven therefore use fal's pricing-estimate API.
-    // compute-second-metered; lightricks/ltx-2.5/image-to-video/pro is
-    // compute-second-metered; lightricks/ltx-2.5/image-to-video/fast is
-    // compute-second-metered too, and its payload `duration` may be "auto",
-    // so it does not even fix the OUTPUT length at request time. All eleven
-    // therefore use fal's pricing-estimate API.
-    // compute-second-metered; bytedance/seedream/v5/pro/layerize is
-    // compute-second-metered too, and the layer count it returns is the
-    // model's choice rather than a request field. All eleven therefore use
-    // compute-second-metered; minimax/h3/text-to-video is compute-second-
-    // compute-second-metered; minimax/h3/image-to-video is compute-second-
-    // metered too, and neither its output `duration` nor its `resolution`
-    // tier fixes the wall-clock GPU time it bills. All eleven therefore use
-    // fal's pricing-estimate API.
-    // compute-second-metered; minimax/h3/reference-to-video is compute-second-
-    // metered too, and neither its output `duration` nor its `resolution` tier
-    // fixes the wall-clock GPU time it bills. All eleven therefore use fal's
-    // pricing-estimate API.
-    // compute-second-metered; xai/grok-imagine-video/v1.5/reference-to-video
-    // is compute-second-metered too, unlike its unversioned sibling, which
-    // bills per output second and stays statically priced. All eleven
-    // therefore use fal's pricing-estimate API.
-    // compute-second-metered; bytedance/seedream/v5/pro/text-to-image bills a
-    // bare "units" unit whose quantity no request field determines — a
-    // recorded 1024x1024 `square_hd` call with num_images 1 was billed 2 units
-    // (USD 0.135), not the 1 unit every statically priced per-image fal
-    // endpoint bills. All eleven therefore use fal's pricing-estimate API.
     // compute-second-metered; bytedance/seedream/v5/pro/edit bills a bare
     // "units" unit whose quantity no request field determines — a recorded
     // 1024x1024 `square_hd` call with num_images 1 and one (free) input image
     // was billed 2 units (USD 0.135), not the 1 unit every statically priced
-    // per-image fal endpoint bills. All eleven therefore use fal's
-    // pricing-estimate API.
-    // compute-second-metered; google/gemini-omni-flash is token-metered, and
-    // its page's "approximately $0.125 per second" 720p figure predicts USD
-    // 0.375 for the recorded duration-3 call that actually billed USD
-    // 0.382914. All eleven therefore use fal's pricing-estimate API.
-    // compute-second-metered; google/gemini-omni-flash/edit is token-metered
-    // on a source video whose length no request field carries. All eleven
-    // therefore use fal's pricing-estimate API.
-    // compute-second-metered; google/gemini-omni-flash/image-to-video is
-    // token-metered over an input image and prompt whose token counts no
-    // compute-second-metered; google/gemini-omni-flash/reference-to-video is
+    // per-image fal endpoint bills; bytedance/seedream/v5/pro/layerize is
+    // compute-second-metered too, and the layer count it returns is the model's
+    // choice rather than a request field;
+    // bytedance/seedream/v5/pro/text-to-image bills a bare "units" unit whose
+    // quantity no request field determines — a recorded 1024x1024 `square_hd`
+    // call with num_images 1 was billed 2 units (USD 0.135), not the 1 unit
+    // every statically priced per-image fal endpoint bills;
+    // google/gemini-omni-flash is token-metered, and its page's "approximately
+    // $0.125 per second" 720p figure predicts USD 0.375 for the recorded
+    // duration-3 call that actually billed USD 0.382914;
+    // google/gemini-omni-flash/edit is token-metered on a source video whose
+    // length no request field carries; google/gemini-omni-flash/image-to-video
+    // is token-metered over an input image and prompt whose token counts no
+    // request field carries; google/gemini-omni-flash/reference-to-video is
     // token-metered over reference images and a prompt whose token counts no
-    // request field carries. All eleven therefore use fal's pricing-estimate
-    // API.
+    // request field carries; lightricks/ltx-2.5/image-to-video/fast is
+    // compute-second-metered too, and its payload `duration` may be "auto", so
+    // it does not even fix the OUTPUT length at request time;
+    // lightricks/ltx-2.5/image-to-video/pro is compute-second-metered too, and
+    // its payload `duration` may be "auto", so it does not even fix the OUTPUT
+    // length at request time; meshy/v7/image-to-3d is compute-second-metered
+    // too — its request only sizes the mesh and toggles generation stages, and
+    // upstream publishes no seconds-per-unit constant for any of them
+    // (ac-yhn0aq); minimax/h3/image-to-video is compute-second-metered too, and
+    // neither its output `duration` nor its `resolution` tier fixes the
+    // wall-clock GPU time it bills; minimax/h3/reference-to-video is
+    // compute-second-metered too, and neither its output `duration` nor its
+    // `resolution` tier fixes the wall-clock GPU time it bills;
+    // minimax/h3/text-to-video is compute-second-metered too, and neither its
+    // output `duration` nor its `resolution` tier fixes the wall-clock GPU time
+    // it bills; minimax/music-3 is compute-second-metered too — its `duration`
+    // is an upper bound on OUTPUT seconds the model may undershoot, not the
+    // wall-clock GPU seconds fal bills; topaz/upscale/image/precision bills on
+    // OUTPUT area ($0.08 per 24 megapixels of output) and the request carries
+    // only `image_url`, so the source dimensions the area depends on are not a
+    // request field; topaz/upscale/video/precision bills on the DELIVERED video
+    // ($0.10 per 10 seconds of output at 720p, more at 1080p and 4K), and
+    // output resolution, duration and frame rate are all properties of the
+    // source clip rather than request fields;
+    // xai/grok-imagine-video/v1.5/reference-to-video is compute-second-metered
+    // too, unlike its unversioned sibling, which bills per output second and
+    // stays statically priced. All twenty-seven therefore use fal's
+    // pricing-estimate API.
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toEqual([
       "alibaba/qwen-image-3/edit",
       "alibaba/qwen-image-3/text-to-image",
@@ -1033,24 +1035,24 @@ describe("fal edit/image pricing estimates", () => {
       "alibaba/wan-3.0/reference-to-video",
       "alibaba/wan-3.0/text-to-video",
       "blackforestlabs/flux-video-upscale",
+      "bytedance/seedream/v5/pro/edit",
       "bytedance/seedream/v5/pro/layerize",
       "bytedance/seedream/v5/pro/text-to-image",
-      "bytedance/seedream/v5/pro/edit",
       "google/gemini-omni-flash",
       "google/gemini-omni-flash/edit",
       "google/gemini-omni-flash/image-to-video",
       "google/gemini-omni-flash/reference-to-video",
       "google/nano-banana-2-lite",
       "google/nano-banana-lite/edit",
+      "lightricks/ltx-2.5/image-to-video/fast",
+      "lightricks/ltx-2.5/image-to-video/pro",
+      "meshy/v7/image-to-3d",
+      "minimax/h3/image-to-video",
+      "minimax/h3/reference-to-video",
+      "minimax/h3/text-to-video",
       "minimax/music-3",
       "topaz/upscale/image/precision",
       "topaz/upscale/video/precision",
-      "meshy/v7/image-to-3d",
-      "lightricks/ltx-2.5/image-to-video/pro",
-      "lightricks/ltx-2.5/image-to-video/fast",
-      "minimax/h3/text-to-video",
-      "minimax/h3/image-to-video",
-      "minimax/h3/reference-to-video",
       "xai/grok-imagine-image/v2.0/edit",
       "xai/grok-imagine-image/v2.0/text-to-image",
       "xai/grok-imagine-video/v1.5/reference-to-video",

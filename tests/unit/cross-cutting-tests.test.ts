@@ -41,6 +41,11 @@ const CREDENTIAL_WIRING_TESTS = [
   "tests/unit/recording-credential-hosts.test.ts",
 ] as const;
 
+// Export-surface suite (declared public types must be re-exported).
+const EXPORT_SURFACE_TESTS = [
+  "tests/unit/provider-export-surface.test.ts",
+] as const;
+
 const CATEGORIZED_TESTS: readonly string[] = [
   ...RECORDING_ENUMERATION_TESTS,
   ...SURFACE_INVENTORY_TESTS,
@@ -48,6 +53,7 @@ const CATEGORIZED_TESTS: readonly string[] = [
   ...REGISTRY_PARITY_TESTS,
   ...DOC_INVENTORY_TESTS,
   ...CREDENTIAL_WIRING_TESTS,
+  ...EXPORT_SURFACE_TESTS,
 ];
 
 function readRepoFile(relativePath: string): string {
@@ -55,7 +61,7 @@ function readRepoFile(relativePath: string): string {
 }
 
 describe("cross-cutting repo-wide guard tests", () => {
-  it("lists recording-enumeration, surface-inventory, source-pin, registry-parity, doc-inventory, and credential-wiring tests", () => {
+  it("lists recording-enumeration, surface-inventory, source-pin, registry-parity, doc-inventory, credential-wiring, and export-surface tests", () => {
     for (const path of RECORDING_ENUMERATION_TESTS) {
       expect(CROSS_CUTTING_TESTS).toContain(path);
     }
@@ -72,6 +78,9 @@ describe("cross-cutting repo-wide guard tests", () => {
       expect(CROSS_CUTTING_TESTS).toContain(path);
     }
     for (const path of CREDENTIAL_WIRING_TESTS) {
+      expect(CROSS_CUTTING_TESTS).toContain(path);
+    }
+    for (const path of EXPORT_SURFACE_TESTS) {
       expect(CROSS_CUTTING_TESTS).toContain(path);
     }
   });
@@ -151,6 +160,16 @@ describe("cross-cutting repo-wide guard tests", () => {
       const source = readRepoFile(relativePath);
       expect(source, relativePath).toContain("FAL_ADMIN_API_KEY");
       expect(source, relativePath).toContain("api.fal.ai");
+    }
+  });
+
+  it("export-surface tests check declared namespaces against re-exports", () => {
+    // The guard must drive the shared checker rather than restate the rule, so
+    // the `*Namespace` contract has exactly one definition (ac-gvqa18).
+    for (const relativePath of EXPORT_SURFACE_TESTS) {
+      const source = readRepoFile(relativePath);
+      expect(source, relativePath).toContain("export-surface.mjs");
+      expect(source, relativePath).toContain("Namespace");
     }
   });
 

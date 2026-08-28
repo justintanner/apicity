@@ -56,6 +56,7 @@ export type {
   FalGeminiOmniFlashParams,
   FalGeminiOmniFlashEditParams,
   FalGeminiOmniFlashImageToVideoParams,
+  FalGeminiOmniFlashReferenceToVideoParams,
   FalSeedreamV5LiteEditParams,
   FalSeedreamV5LiteTextToImageParams,
   FalSeedreamV5ProLayerizeParams,
@@ -192,6 +193,9 @@ export type {
   FalGeminiOmniFlashImageToVideoRequest,
   FalGeminiOmniFlashImageToVideoRequestInput,
   FalGeminiOmniFlashImageToVideoParsedRequest,
+  FalGeminiOmniFlashReferenceToVideoRequest,
+  FalGeminiOmniFlashReferenceToVideoRequestInput,
+  FalGeminiOmniFlashReferenceToVideoParsedRequest,
   FalSeedreamV5LiteEditRequest,
   FalSeedreamV5LiteEditRequestInput,
   FalSeedreamV5LiteEditParsedRequest,
@@ -395,6 +399,7 @@ import type {
   FalGeminiOmniFlashRequest,
   FalGeminiOmniFlashEditRequest,
   FalGeminiOmniFlashImageToVideoRequest,
+  FalGeminiOmniFlashReferenceToVideoRequest,
   FalSeedreamV5LiteEditRequest,
   FalSeedreamV5LiteTextToImageRequest,
   FalSeedreamV5ProLayerizeRequest,
@@ -1093,6 +1098,13 @@ export interface FalGeminiOmniFlashEditResponse {
 // single plain File — url plus the nullable content_type/file_name/file_size —
 // and no width/height/fps/duration, so FalFile is the exact shape.
 export interface FalGeminiOmniFlashImageToVideoResponse {
+  video: FalFile;
+}
+// Google Gemini Omni Flash reference-to-video. Upstream's output schema
+// carries a single plain File — url plus the nullable
+// content_type/file_name/file_size — and no width/height/fps/duration, so
+// FalFile is the exact shape.
+export interface FalGeminiOmniFlashReferenceToVideoResponse {
   video: FalFile;
 }
 
@@ -2185,6 +2197,7 @@ type FalGeminiOmniFlashFn = ((
   schema: ApicitySchema<FalGeminiOmniFlashRequest>;
   edit: FalGeminiOmniFlashEditFn;
   imageToVideo: FalGeminiOmniFlashImageToVideoFn;
+  referenceToVideo: FalGeminiOmniFlashReferenceToVideoFn;
 };
 
 type FalGeminiOmniFlashEditFn = ((
@@ -2199,6 +2212,13 @@ type FalGeminiOmniFlashImageToVideoFn = ((
   signal?: AbortSignal
 ) => Promise<FalGeminiOmniFlashImageToVideoResponse>) & {
   schema: ApicitySchema<FalGeminiOmniFlashImageToVideoRequest>;
+};
+
+type FalGeminiOmniFlashReferenceToVideoFn = ((
+  params: FalGeminiOmniFlashReferenceToVideoRequest,
+  signal?: AbortSignal
+) => Promise<FalGeminiOmniFlashReferenceToVideoResponse>) & {
+  schema: ApicitySchema<FalGeminiOmniFlashReferenceToVideoRequest>;
 };
 
 type FalSeedreamV5LiteEditFn = ((

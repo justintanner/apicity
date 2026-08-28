@@ -823,6 +823,7 @@ fal	falAi.elevenlabs.speechToText.scribeV2	POST	https://fal.run/fal-ai/elevenlab
 fal	geminiOmniFlash	POST	https://fal.run/google/gemini-omni-flash	https://fal.ai/models/google/gemini-omni-flash/api
 fal	geminiOmniFlash.edit	POST	https://fal.run/google/gemini-omni-flash/edit	https://fal.ai/models/google/gemini-omni-flash/edit/api
 fal	geminiOmniFlash.imageToVideo	POST	https://fal.run/google/gemini-omni-flash/image-to-video	https://fal.ai/models/google/gemini-omni-flash/image-to-video/api
+fal	geminiOmniFlash.referenceToVideo	POST	https://fal.run/google/gemini-omni-flash/reference-to-video	https://fal.ai/models/google/gemini-omni-flash/reference-to-video/api
 fal	gptImage1p5	POST	https://api.fal.ai/v1/fal-ai/gpt-image-1.5	https://docs.fal.ai
 fal	gptImage1p5.edit	POST	https://fal.run/fal-ai/gpt-image-1.5/edit	https://docs.fal.ai
 fal	hunyuan.v3.instructEdit	POST	https://fal.run/fal-ai/hunyuan-image/v3/instruct/edit	https://docs.fal.ai

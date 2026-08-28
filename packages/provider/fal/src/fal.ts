@@ -85,6 +85,8 @@ import {
   FalGeminiOmniFlashEditResponse,
   FalGeminiOmniFlashImageToVideoRequest,
   FalGeminiOmniFlashImageToVideoResponse,
+  FalGeminiOmniFlashReferenceToVideoRequest,
+  FalGeminiOmniFlashReferenceToVideoResponse,
   FalSeedreamV5LiteEditRequest,
   FalSeedreamV5LiteEditResponse,
   FalSeedreamV5LiteTextToImageRequest,
@@ -230,6 +232,7 @@ import {
   FalGeminiOmniFlashRequestSchema,
   FalGeminiOmniFlashEditRequestSchema,
   FalGeminiOmniFlashImageToVideoRequestSchema,
+  FalGeminiOmniFlashReferenceToVideoRequestSchema,
   FalSeedreamV5LiteEditRequestSchema,
   FalSeedreamV5LiteTextToImageRequestSchema,
   FalSeedreamV5ProLayerizeRequestSchema,
@@ -1269,6 +1272,18 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/google/gemini-omni-flash/reference-to-video
+  // Docs: https://fal.ai/models/google/gemini-omni-flash/reference-to-video/api
+  const geminiOmniFlashReferenceToVideo = jsonBody<
+    FalGeminiOmniFlashReferenceToVideoRequest,
+    FalGeminiOmniFlashReferenceToVideoResponse
+  >(
+    "POST",
+    "/google/gemini-omni-flash/reference-to-video",
+    FalGeminiOmniFlashReferenceToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://fal.run/google/gemini-omni-flash
   // Docs: https://fal.ai/models/google/gemini-omni-flash/api
@@ -1282,6 +1297,7 @@ export function createFal(opts: FalOptions): FalProvider {
     {
       edit: geminiOmniFlashEdit,
       imageToVideo: geminiOmniFlashImageToVideo,
+      referenceToVideo: geminiOmniFlashReferenceToVideo,
     }
   );
 

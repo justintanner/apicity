@@ -522,6 +522,16 @@ const gptImagePerImage = (
 //     no request field can derive the price. The pricing API reports the same
 //     unit for the endpoint's `/fast` sibling, so the tier does not change the
 //     metering either. Contrast `fal-ai/kling-video/v3/pro/image-to-video` and
+//   - lightricks/ltx-2.5/image-to-video/fast: billed per COMPUTE SECOND
+//     (USD 0.00017) as pulled 2026-08-28 from fal's own pricing API
+//     (GET /v1/models/pricing?endpoint_id=...). Same shape as the
+//     `alibaba/wan-3.0/*` video models: the request carries an output
+//     `duration` (6 | 8 | 10 | 12 | 14 | 16 | 18 | 20 | "auto"), but the
+//     billed unit is wall-clock GPU time, and "auto" does not even fix the
+//     output length at request time, so no request field can derive the
+//     price. The same pull reports the same unit and rate for the endpoint's
+//     `/pro` sibling, so the tier changes neither the metering nor the rate.
+//     Contrast `fal-ai/kling-video/v3/pro/image-to-video` and
 //     `alibaba/wan-3.0-prime/*`, whose pull reports `"seconds"` — OUTPUT
 //     seconds, payload-derivable — and which are priced statically below.
 export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
@@ -538,6 +548,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "topaz/upscale/video/precision",
   "meshy/v7/image-to-3d",
   "lightricks/ltx-2.5/image-to-video/pro",
+  "lightricks/ltx-2.5/image-to-video/fast",
   "xai/grok-imagine-image/v2.0/edit",
   "xai/grok-imagine-image/v2.0/text-to-image",
 ] as const;

@@ -57,6 +57,8 @@ import {
   FalSeedance2p5ReferenceToVideoResponse,
   FalLtx2p5ImageToVideoProRequest,
   FalLtx2p5ImageToVideoProResponse,
+  FalLtx2p5ImageToVideoFastRequest,
+  FalLtx2p5ImageToVideoFastResponse,
   FalNanoBananaProTextToImageRequest,
   FalNanoBananaProTextToImageResponse,
   FalNanoBananaProEditRequest,
@@ -194,6 +196,7 @@ import {
   FalSeedance2p5ImageToVideoRequestSchema,
   FalSeedance2p5ReferenceToVideoRequestSchema,
   FalLtx2p5ImageToVideoProRequestSchema,
+  FalLtx2p5ImageToVideoFastRequestSchema,
   FalNanoBananaProTextToImageRequestSchema,
   FalNanoBananaProEditRequestSchema,
   FalNanoBanana2TextToImageRequestSchema,
@@ -1051,6 +1054,17 @@ export function createFal(opts: FalOptions): FalProvider {
     FalLtx2p5ImageToVideoProRequestSchema,
     { base: runBaseURL }
   );
+  // POST https://fal.run/lightricks/ltx-2.5/image-to-video/fast
+  // Docs: https://fal.ai/models/lightricks/ltx-2.5/image-to-video/fast/api
+  const lightricksLtx2p5ImageToVideoFast = jsonBody<
+    FalLtx2p5ImageToVideoFastRequest,
+    FalLtx2p5ImageToVideoFastResponse
+  >(
+    "POST",
+    "/lightricks/ltx-2.5/image-to-video/fast",
+    FalLtx2p5ImageToVideoFastRequestSchema,
+    { base: runBaseURL }
+  );
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://fal.run/fal-ai/nano-banana-pro/edit
@@ -1864,6 +1878,7 @@ export function createFal(opts: FalOptions): FalProvider {
       ltx2p5: {
         imageToVideo: {
           pro: lightricksLtx2p5ImageToVideoPro,
+          fast: lightricksLtx2p5ImageToVideoFast,
         },
       },
     },

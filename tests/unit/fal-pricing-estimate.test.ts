@@ -132,6 +132,7 @@ describe("fal video pricing estimates", () => {
     "fal-ai/sora-2/text-to-video",
     "fal-ai/sora-2/image-to-video",
     "lightricks/ltx-2.5/image-to-video/pro",
+    "lightricks/ltx-2.5/image-to-video/fast",
     "xai/grok-imagine-video/image-to-video",
     "xai/grok-imagine-video/reference-to-video",
     "xai/grok-imagine-video/extend-video",
@@ -931,6 +932,7 @@ describe("fal edit/image pricing estimates", () => {
     // upstream publishes no seconds-per-unit constant for any of them
     // (ac-yhn0aq). All eleven therefore use fal's pricing-estimate API.
     // compute-second-metered; lightricks/ltx-2.5/image-to-video/pro is
+    // compute-second-metered; lightricks/ltx-2.5/image-to-video/fast is
     // compute-second-metered too, and its payload `duration` may be "auto",
     // so it does not even fix the OUTPUT length at request time. All eleven
     // therefore use fal's pricing-estimate API.
@@ -948,6 +950,7 @@ describe("fal edit/image pricing estimates", () => {
       "topaz/upscale/video/precision",
       "meshy/v7/image-to-3d",
       "lightricks/ltx-2.5/image-to-video/pro",
+      "lightricks/ltx-2.5/image-to-video/fast",
       "xai/grok-imagine-image/v2.0/edit",
       "xai/grok-imagine-image/v2.0/text-to-image",
     ]);

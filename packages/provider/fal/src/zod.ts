@@ -407,6 +407,57 @@ export const FalLtx2p5ImageToVideoProRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// Lightricks LTX-2.5 image-to-video (fast tier)
+// ---------------------------------------------------------------------------
+
+export const FalLtx2p5ImageToVideoFastRequestSchema = z.object({
+  image_url: z.string(),
+  // When set, upstream generates a transition between the start and end
+  // frames instead of animating the start frame alone.
+  end_image_url: z.string().nullable().optional(),
+  prompt: z.string().min(1).max(5000),
+  // Output length in seconds, or "auto" to let the model choose. The fast
+  // tier reaches 20s, twice the pro tier's ceiling. A fixed vocabulary, not a
+  // model registry, so it stays a closed union.
+  duration: z
+    .union([
+      z.literal(6),
+      z.literal(8),
+      z.literal(10),
+      z.literal(12),
+      z.literal(14),
+      z.literal(16),
+      z.literal(18),
+      z.literal(20),
+      z.literal("auto"),
+    ])
+    .optional(),
+  // Upstream couples length to resolution and frame rate: 24/25 fps reaches
+  // 20s at 720p/1080p, 48/50 fps and the 1440p/2160p tiers cap at 10s. That
+  // is a cross-field rule upstream enforces, not a shape this schema encodes.
+  resolution: z.enum(["720p", "1080p", "1440p", "2160p"]).optional(),
+  // "auto" derives the ratio from the start image.
+  aspect_ratio: z.enum(["auto", "16:9", "9:16"]).optional(),
+  fps: z
+    .union([z.literal(24), z.literal(25), z.literal(48), z.literal(50)])
+    .optional(),
+  generate_audio: z.boolean().optional(),
+  camera_motion: z
+    .enum([
+      "dolly_in",
+      "dolly_out",
+      "dolly_left",
+      "dolly_right",
+      "jib_up",
+      "jib_down",
+      "static",
+      "focus_shift",
+    ])
+    .nullable()
+    .optional(),
+});
+
+// ---------------------------------------------------------------------------
 // Nano Banana 2 text-to-image
 // ---------------------------------------------------------------------------
 
@@ -2025,6 +2076,17 @@ export type FalLtx2p5ImageToVideoProRequestInput =
 export type FalLtx2p5ImageToVideoProParsedRequest = z.output<
   typeof FalLtx2p5ImageToVideoProRequestSchema
 >;
+export type FalLtx2p5ImageToVideoFastParams = z.infer<
+  typeof FalLtx2p5ImageToVideoFastRequestSchema
+>;
+export type FalLtx2p5ImageToVideoFastRequest = z.input<
+  typeof FalLtx2p5ImageToVideoFastRequestSchema
+>;
+export type FalLtx2p5ImageToVideoFastRequestInput =
+  FalLtx2p5ImageToVideoFastRequest;
+export type FalLtx2p5ImageToVideoFastParsedRequest = z.output<
+  typeof FalLtx2p5ImageToVideoFastRequestSchema
+>;
 export type FalNanoBananaProTextToImageParams = z.infer<
   typeof FalNanoBananaProTextToImageRequestSchema
 >;
@@ -2875,6 +2937,8 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
     FalSeedance2p5ReferenceToVideoRequestSchema,
   "lightricks/ltx-2.5/image-to-video/pro":
     FalLtx2p5ImageToVideoProRequestSchema,
+  "lightricks/ltx-2.5/image-to-video/fast":
+    FalLtx2p5ImageToVideoFastRequestSchema,
   "fal-ai/nano-banana-pro/edit": FalNanoBananaProEditRequestSchema,
   "fal-ai/nano-banana-pro": FalNanoBananaProTextToImageRequestSchema,
   "fal-ai/nano-banana": FalNanoBananaTextToImageRequestSchema,

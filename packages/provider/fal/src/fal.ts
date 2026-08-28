@@ -69,6 +69,8 @@ import {
   FalNanoBanana2LiteEditResponse,
   FalVirtualTryOnRequest,
   FalVirtualTryOnResponse,
+  FalMeshyV7ImageTo3dRequest,
+  FalMeshyV7ImageTo3dResponse,
   FalSeedreamV5LiteEditRequest,
   FalSeedreamV5LiteEditResponse,
   FalSeedreamV5LiteTextToImageRequest,
@@ -190,6 +192,7 @@ import {
   FalNanoBanana2LiteTextToImageRequestSchema,
   FalNanoBanana2LiteEditRequestSchema,
   FalVirtualTryOnRequestSchema,
+  FalMeshyV7ImageTo3dRequestSchema,
   FalSeedreamV5LiteEditRequestSchema,
   FalSeedreamV5LiteTextToImageRequestSchema,
   FalSeedSpeechTtsV2RequestSchema,
@@ -1125,6 +1128,15 @@ export function createFal(opts: FalOptions): FalProvider {
     base: runBaseURL,
   });
 
+  // POST https://fal.run/meshy/v7/image-to-3d
+  // Docs: https://fal.ai/models/meshy/v7/image-to-3d/api
+  const meshyV7ImageTo3d = jsonBody<
+    FalMeshyV7ImageTo3dRequest,
+    FalMeshyV7ImageTo3dResponse
+  >("POST", "/meshy/v7/image-to-3d", FalMeshyV7ImageTo3dRequestSchema, {
+    base: runBaseURL,
+  });
+
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://fal.run/fal-ai/bytedance/seedream/v5/lite/edit
   // Docs: https://docs.fal.ai
@@ -1773,6 +1785,11 @@ export function createFal(opts: FalOptions): FalProvider {
         imageToVideo: klingVideoO3p4kImageToVideo,
         referenceToVideo: klingVideoO3p4kReferenceToVideo,
         textToVideo: klingVideoO3p4kTextToVideo,
+      },
+    },
+    meshy: {
+      v7: {
+        imageTo3d: meshyV7ImageTo3d,
       },
     },
     gptImage1p5,

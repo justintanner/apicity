@@ -510,6 +510,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST meshy.v7.imageTo3d": {
+    "source": "fal/meshy-v7-image-to-3d",
+    "payload": {
+      "image_url": "https://v3b.fal.media/files/b/zebra/3osHJDI8IZ2wl6sGtEUeB_image.png",
+      "model_type": "standard",
+      "should_texture": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST nanoBanana.edit": {
     "source": "fal/nano-banana-edit",
     "payload": {

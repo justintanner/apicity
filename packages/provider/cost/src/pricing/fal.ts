@@ -480,6 +480,15 @@ const gptImagePerImage = (
 //     unit that no request field determines — so deriving a rate from
 //     duration would invent one. The premium `alibaba/wan-3.0-prime/*`
 //     siblings bill per OUTPUT second instead and are priced statically below.
+//   - meshy/v7/image-to-3d: billed per COMPUTE SECOND (USD 0.00007) as pulled
+//     2026-08-28 from fal's own pricing API
+//     (GET /v1/models/pricing?endpoint_id=...), which reports that one flat
+//     rate with no tier and no selector. Compute seconds are wall-clock GPU
+//     time; nothing in the request determines them — `target_polycount` sizes
+//     the output mesh, and `model_type`, `should_texture`, `enable_pbr`,
+//     `enable_rigging`, `enable_animation`, and `ultra_mode` only switch
+//     generation stages on and off, none of which upstream publishes a
+//     seconds-per-unit constant for. A static per-model rate would be invented.
 export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "alibaba/qwen-image-3/edit",
   "alibaba/qwen-image-3/text-to-image",
@@ -489,6 +498,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "blackforestlabs/flux-video-upscale",
   "google/nano-banana-2-lite",
   "google/nano-banana-lite/edit",
+  "meshy/v7/image-to-3d",
   "xai/grok-imagine-image/v2.0/edit",
   "xai/grok-imagine-image/v2.0/text-to-image",
 ] as const;

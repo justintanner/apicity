@@ -131,6 +131,7 @@ describe("fal video pricing estimates", () => {
     "fal-ai/veo3.1/image-to-video",
     "fal-ai/sora-2/text-to-video",
     "fal-ai/sora-2/image-to-video",
+    "lightricks/ltx-2.5/image-to-video/fast",
     "xai/grok-imagine-video/image-to-video",
     "xai/grok-imagine-video/reference-to-video",
     "xai/grok-imagine-video/extend-video",
@@ -139,7 +140,7 @@ describe("fal video pricing estimates", () => {
 
   it("covers every REQ-001 endpoint statically or on the dynamic list", () => {
     const dynamic: readonly string[] = FAL_DYNAMIC_PRICING_ENDPOINTS;
-    expect(REQ_001_ENDPOINTS).toHaveLength(34);
+    expect(REQ_001_ENDPOINTS).toHaveLength(35);
     for (const endpoint of REQ_001_ENDPOINTS) {
       expect(endpoint in FAL_ENDPOINT_REQUEST_SCHEMAS, endpoint).toBe(true);
       const priced = endpoint in falPricing;
@@ -908,8 +909,10 @@ describe("fal edit/image pricing estimates", () => {
     // google/nano-banana-2-lite and google/nano-banana-lite/edit are
     // token-metered without a published tokens-per-image constant;
     // xai/grok-imagine-image/v2.0/edit and text-to-image are
-    // compute-second-metered. All ten therefore use fal's pricing-estimate
-    // API.
+    // compute-second-metered; lightricks/ltx-2.5/image-to-video/fast is
+    // compute-second-metered too, and its payload `duration` may be "auto",
+    // so it does not even fix the OUTPUT length at request time. All eleven
+    // therefore use fal's pricing-estimate API.
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toEqual([
       "alibaba/qwen-image-3/edit",
       "alibaba/qwen-image-3/text-to-image",
@@ -919,6 +922,7 @@ describe("fal edit/image pricing estimates", () => {
       "blackforestlabs/flux-video-upscale",
       "google/nano-banana-2-lite",
       "google/nano-banana-lite/edit",
+      "lightricks/ltx-2.5/image-to-video/fast",
       "xai/grok-imagine-image/v2.0/edit",
       "xai/grok-imagine-image/v2.0/text-to-image",
     ]);

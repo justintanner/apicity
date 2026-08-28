@@ -55,6 +55,7 @@ export type {
   FalMeshyV7ImageTo3dParams,
   FalGeminiOmniFlashParams,
   FalGeminiOmniFlashEditParams,
+  FalGeminiOmniFlashImageToVideoParams,
   FalSeedreamV5LiteEditParams,
   FalSeedreamV5LiteTextToImageParams,
   FalSeedreamV5ProLayerizeParams,
@@ -188,6 +189,9 @@ export type {
   FalGeminiOmniFlashEditRequest,
   FalGeminiOmniFlashEditRequestInput,
   FalGeminiOmniFlashEditParsedRequest,
+  FalGeminiOmniFlashImageToVideoRequest,
+  FalGeminiOmniFlashImageToVideoRequestInput,
+  FalGeminiOmniFlashImageToVideoParsedRequest,
   FalSeedreamV5LiteEditRequest,
   FalSeedreamV5LiteEditRequestInput,
   FalSeedreamV5LiteEditParsedRequest,
@@ -390,6 +394,7 @@ import type {
   FalMeshyV7ImageTo3dRequest,
   FalGeminiOmniFlashRequest,
   FalGeminiOmniFlashEditRequest,
+  FalGeminiOmniFlashImageToVideoRequest,
   FalSeedreamV5LiteEditRequest,
   FalSeedreamV5LiteTextToImageRequest,
   FalSeedreamV5ProLayerizeRequest,
@@ -1082,6 +1087,12 @@ export interface FalGeminiOmniFlashResponse {
 // single plain File — url plus the nullable content_type/file_name/file_size —
 // and no width/height/fps/duration, so FalFile is the exact shape.
 export interface FalGeminiOmniFlashEditResponse {
+  video: FalFile;
+}
+// Google Gemini Omni Flash image-to-video. Upstream's output schema carries a
+// single plain File — url plus the nullable content_type/file_name/file_size —
+// and no width/height/fps/duration, so FalFile is the exact shape.
+export interface FalGeminiOmniFlashImageToVideoResponse {
   video: FalFile;
 }
 
@@ -2173,6 +2184,7 @@ type FalGeminiOmniFlashFn = ((
 ) => Promise<FalGeminiOmniFlashResponse>) & {
   schema: ApicitySchema<FalGeminiOmniFlashRequest>;
   edit: FalGeminiOmniFlashEditFn;
+  imageToVideo: FalGeminiOmniFlashImageToVideoFn;
 };
 
 type FalGeminiOmniFlashEditFn = ((
@@ -2180,6 +2192,13 @@ type FalGeminiOmniFlashEditFn = ((
   signal?: AbortSignal
 ) => Promise<FalGeminiOmniFlashEditResponse>) & {
   schema: ApicitySchema<FalGeminiOmniFlashEditRequest>;
+};
+
+type FalGeminiOmniFlashImageToVideoFn = ((
+  params: FalGeminiOmniFlashImageToVideoRequest,
+  signal?: AbortSignal
+) => Promise<FalGeminiOmniFlashImageToVideoResponse>) & {
+  schema: ApicitySchema<FalGeminiOmniFlashImageToVideoRequest>;
 };
 
 type FalSeedreamV5LiteEditFn = ((

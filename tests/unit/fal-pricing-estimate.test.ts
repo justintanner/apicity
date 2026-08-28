@@ -150,6 +150,7 @@ describe("fal video pricing estimates", () => {
     "bytedance/seedream/v5/pro/edit",
     "google/gemini-omni-flash",
     "google/gemini-omni-flash/edit",
+    "google/gemini-omni-flash/image-to-video",
   ];
 
   it("covers every REQ-001 endpoint statically or on the dynamic list", () => {
@@ -1018,6 +1019,10 @@ describe("fal edit/image pricing estimates", () => {
     // compute-second-metered; google/gemini-omni-flash/edit is token-metered
     // on a source video whose length no request field carries. All eleven
     // therefore use fal's pricing-estimate API.
+    // compute-second-metered; google/gemini-omni-flash/image-to-video is
+    // token-metered over an input image and prompt whose token counts no
+    // request field carries. All eleven therefore use fal's pricing-estimate
+    // API.
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toEqual([
       "alibaba/qwen-image-3/edit",
       "alibaba/qwen-image-3/text-to-image",
@@ -1030,6 +1035,7 @@ describe("fal edit/image pricing estimates", () => {
       "bytedance/seedream/v5/pro/edit",
       "google/gemini-omni-flash",
       "google/gemini-omni-flash/edit",
+      "google/gemini-omni-flash/image-to-video",
       "google/nano-banana-2-lite",
       "google/nano-banana-lite/edit",
       "minimax/music-3",

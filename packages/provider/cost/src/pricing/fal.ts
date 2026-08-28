@@ -618,6 +618,20 @@ const gptImagePerImage = (
 //     recorded call billed 0.689422 units = USD 0.689422 (confirmed by
 //     GET /v1/models/usage for the same bucket) — a fractional quantity the
 //     payload cannot reproduce.
+//   - google/gemini-omni-flash/image-to-video: billed purely per token as read
+//     2026-08-28 ("Billing is based on total token consumption. Input tokens
+//     (text/audio/video) cost $1.875 per 1 million tokens. Output tokens cost
+//     $21.875 per 1 million tokens"), and its "approximately $0.13 per second
+//     of video" figure is both explicitly approximate and conditioned on 720p
+//     — a resolution the request cannot select, since it carries only
+//     `aspect_ratio` (16:9 or 9:16). The payload does carry a `duration`, but
+//     the billed quantity also depends on the input image and prompt tokens,
+//     which no request field measures. fal's own pricing API returns the bare
+//     `{"unit":"units","unit_price":1}` shape for this endpoint, and the one
+//     recorded duration-3 call billed 0.386914 units = USD 0.386914
+//     (confirmed by GET /v1/models/usage for the same bucket) where that page
+//     rate predicts USD 0.39 (0.79% off) — a fractional quantity no request
+//     field reproduces.
 export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "alibaba/qwen-image-3/edit",
   "alibaba/qwen-image-3/text-to-image",
@@ -630,6 +644,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "bytedance/seedream/v5/pro/edit",
   "google/gemini-omni-flash",
   "google/gemini-omni-flash/edit",
+  "google/gemini-omni-flash/image-to-video",
   "google/nano-banana-2-lite",
   "google/nano-banana-lite/edit",
   "minimax/music-3",

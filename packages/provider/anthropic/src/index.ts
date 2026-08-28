@@ -142,5 +142,12 @@ export type {
   AnthropicSkillVersionsNamespace,
   AnthropicSkillsNamespace,
   AnthropicV1Namespace,
+  // Promoted out of EXPORT_SURFACE_BASELINE (ac-9at9f2.4): a consumer that
+  // holds `anthropic.post.stream.v1`, `.post.v1`, `.get.v1`, or `.delete.v1`
+  // must be able to name its type.
+  AnthropicPostStreamV1Namespace,
+  AnthropicPostV1Namespace,
+  AnthropicGetV1Namespace,
+  AnthropicDeleteV1Namespace,
   AnthropicProvider,
 } from "./types";

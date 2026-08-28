@@ -42,10 +42,6 @@ const VERB_LAYER =
   "verb-layer namespace, reachable from the exported provider interface; " +
   "export decision deferred to the burn-down bead";
 
-const ANTHROPIC_VERB_LAYER =
-  "verb-layer namespace under /v1, reachable from the exported " +
-  "AnthropicProvider interface; export decision deferred to the burn-down bead";
-
 const SIMPLE_FUNCTIONS_LAYER =
   "path- or verb-layer namespace, reachable from the exported " +
   "SimpleFunctionsProvider interface; export decision deferred to the " +
@@ -81,12 +77,6 @@ const EXPORT_SURFACE_BASELINE: Record<string, Record<string, string>> = {
     AlibabaGetApiV1Namespace: VERB_LAYER,
     AlibabaGetApiNamespace: VERB_LAYER,
     AlibabaGetNamespace: VERB_LAYER,
-  },
-  anthropic: {
-    AnthropicPostStreamV1Namespace: ANTHROPIC_VERB_LAYER,
-    AnthropicPostV1Namespace: ANTHROPIC_VERB_LAYER,
-    AnthropicGetV1Namespace: ANTHROPIC_VERB_LAYER,
-    AnthropicDeleteV1Namespace: ANTHROPIC_VERB_LAYER,
   },
   dolthub: {
     DoltHubBranchesNamespace: DOLTHUB_LAYER,
@@ -150,12 +140,11 @@ const EXPECTED_BASELINE_DISTRIBUTION: Record<string, number> = {
   openai: 24,
   alibaba: 16,
   simplefunctions: 13,
-  anthropic: 4,
   elevenlabs: 4,
   dolthub: 2,
   youtube: 1,
 };
-const EXPECTED_BASELINE_TOTAL = 64;
+const EXPECTED_BASELINE_TOTAL = 60;
 
 type Surface = ReturnType<typeof readProviderExportSurfaces>[number];
 

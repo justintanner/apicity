@@ -1,11 +1,18 @@
 import type {
   FalEndpointInputMap,
   FalNanoBanana2EditRequest,
+  FalNanoBanana2LiteAspectRatio,
+  FalNanoBanana2LiteEditResponse,
+  FalNanoBanana2LiteOutputFormat,
+  FalNanoBanana2LiteSafetyTolerance,
+  FalNanoBanana2LiteTextToImageResponse,
+  FalNanoBanana2LiteThinkingLevel,
   FalNanoBanana2TextToImageParsedRequest,
   FalNanoBanana2TextToImageRequest,
   FalNanoBananaProEditParsedRequest,
   FalNanoBananaProEditRequest,
   FalProvider,
+  FalRunNanoBanana2LiteNamespace,
 } from "@apicity/fal";
 
 declare const fal: FalProvider;
@@ -84,6 +91,29 @@ const nanoBanana2EditMapIdentity: AssertEqual<
   FalNanoBanana2EditRequest
 > = true;
 
+// (e) The nano-banana-2-lite family is reachable from the package entry point.
+// All seven names were `export`ed in types.ts and named nowhere in index.ts
+// until ac-gvqa18, so before that fix each import below is a hard TS2724
+// ('"@apicity/fal"' has no exported member named ...) — text in index.ts is
+// not the same claim as importable from "@apicity/fal".
+const liteAspectRatio: FalNanoBanana2LiteAspectRatio = "1:1";
+const liteOutputFormat: FalNanoBanana2LiteOutputFormat = "png";
+const liteSafetyTolerance: FalNanoBanana2LiteSafetyTolerance = "2";
+const liteThinkingLevel: FalNanoBanana2LiteThinkingLevel = "minimal";
+
+declare const liteTextToImageResponse: FalNanoBanana2LiteTextToImageResponse;
+declare const liteEditResponse: FalNanoBanana2LiteEditResponse;
+declare const liteNamespace: FalRunNanoBanana2LiteNamespace;
+
+// The namespace's two methods return exactly those two response types, which
+// is why exporting the namespace alone would leave a consumer able to name it
+// but not its results.
+const liteTextToImageDescription: string = liteTextToImageResponse.description;
+const liteEditDescription: string = liteEditResponse.description;
+const liteTextToImage: FalRunNanoBanana2LiteNamespace["textToImage"] =
+  liteNamespace.textToImage;
+const liteEdit: FalRunNanoBanana2LiteNamespace["edit"] = liteNamespace.edit;
+
 void [
   nanoBananaProEditInput,
   nanoBanana2TextToImageInput,
@@ -92,4 +122,12 @@ void [
   nanoBananaProEditRoundTrip,
   nanoBananaProEditParsedRoundTrip,
   nanoBanana2EditMapIdentity,
+  liteAspectRatio,
+  liteOutputFormat,
+  liteSafetyTolerance,
+  liteThinkingLevel,
+  liteTextToImageDescription,
+  liteEditDescription,
+  liteTextToImage,
+  liteEdit,
 ];

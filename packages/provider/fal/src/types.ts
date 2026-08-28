@@ -51,6 +51,7 @@ export type {
   FalSeedreamV5LiteEditParams,
   FalSeedreamV5LiteTextToImageParams,
   FalSeedSpeechTtsV2Params,
+  FalMinimaxMusic3Params,
   FalElevenlabsSpeechToTextScribeV2Params,
   FalAlibabaQwenImage3TextToImageParams,
   FalAlibabaQwenImage3EditParams,
@@ -161,6 +162,9 @@ export type {
   FalSeedSpeechTtsV2Request,
   FalSeedSpeechTtsV2RequestInput,
   FalSeedSpeechTtsV2ParsedRequest,
+  FalMinimaxMusic3Request,
+  FalMinimaxMusic3RequestInput,
+  FalMinimaxMusic3ParsedRequest,
   FalElevenlabsSpeechToTextScribeV2Request,
   FalElevenlabsSpeechToTextScribeV2RequestInput,
   FalElevenlabsSpeechToTextScribeV2ParsedRequest,
@@ -326,6 +330,7 @@ import type {
   FalSeedreamV5LiteEditRequest,
   FalSeedreamV5LiteTextToImageRequest,
   FalSeedSpeechTtsV2Request,
+  FalMinimaxMusic3Request,
   FalElevenlabsSpeechToTextScribeV2Request,
   FalAlibabaQwenImage3TextToImageRequest,
   FalAlibabaQwenImage3EditRequest,
@@ -1102,6 +1107,15 @@ export interface FalSeedSpeechTtsV2Response {
   audio: FalFile;
 }
 
+// MiniMax Music 3 — one generated song. `duration` is the length the model
+// actually produced, which upstream documents as possibly shorter than the
+// requested upper bound, and `seed` echoes the seed used.
+export interface FalMinimaxMusic3Response {
+  audio: FalFile;
+  seed: number;
+  duration: number;
+}
+
 // Alibaba Qwen Image 3 text-to-image
 export interface FalAlibabaQwenImage3TextToImageResponse {
   images: FalFile[];
@@ -1744,6 +1758,17 @@ export interface FalRunBytedanceSeedSpeechTtsNamespace {
   v2: FalSeedSpeechTtsV2Fn;
 }
 
+type FalMinimaxMusic3Fn = ((
+  params: FalMinimaxMusic3Request,
+  signal?: AbortSignal
+) => Promise<FalMinimaxMusic3Response>) & {
+  schema: ApicitySchema<FalMinimaxMusic3Request>;
+};
+
+export interface FalRunMinimaxNamespace {
+  music3: FalMinimaxMusic3Fn;
+}
+
 export interface FalRunBytedanceSeedSpeechNamespace {
   tts: FalRunBytedanceSeedSpeechTtsNamespace;
 }
@@ -2261,6 +2286,7 @@ export interface FalRunNamespace {
   bytedance: FalRunBytedanceNamespace;
   hunyuan: FalRunHunyuanNamespace;
   klingVideo: FalRunKlingVideoNamespace;
+  minimax: FalRunMinimaxNamespace;
   nanoBanana: FalRunNanoBananaNamespace;
   nanoBananaPro: FalRunNanoBananaProNamespace;
   nanoBanana2: FalRunNanoBanana2Namespace;

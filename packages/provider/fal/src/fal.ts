@@ -75,6 +75,8 @@ import {
   FalSeedreamV5LiteTextToImageResponse,
   FalSeedSpeechTtsV2Request,
   FalSeedSpeechTtsV2Response,
+  FalMinimaxMusic3Request,
+  FalMinimaxMusic3Response,
   FalElevenlabsSpeechToTextScribeV2Request,
   FalElevenlabsSpeechToTextScribeV2Response,
   FalAlibabaQwenImage3TextToImageRequest,
@@ -193,6 +195,7 @@ import {
   FalSeedreamV5LiteEditRequestSchema,
   FalSeedreamV5LiteTextToImageRequestSchema,
   FalSeedSpeechTtsV2RequestSchema,
+  FalMinimaxMusic3RequestSchema,
   FalElevenlabsSpeechToTextScribeV2RequestSchema,
   FalAlibabaQwenImage3TextToImageRequestSchema,
   FalAlibabaQwenImage3EditRequestSchema,
@@ -1164,6 +1167,15 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/minimax/music-3
+  // Docs: https://fal.ai/models/minimax/music-3/api
+  const minimaxMusic3 = jsonBody<
+    FalMinimaxMusic3Request,
+    FalMinimaxMusic3Response
+  >("POST", "/minimax/music-3", FalMinimaxMusic3RequestSchema, {
+    base: runBaseURL,
+  });
+
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://fal.run/fal-ai/elevenlabs/speech-to-text/scribe-v2
   // Docs: https://docs.fal.ai
@@ -1774,6 +1786,9 @@ export function createFal(opts: FalOptions): FalProvider {
         referenceToVideo: klingVideoO3p4kReferenceToVideo,
         textToVideo: klingVideoO3p4kTextToVideo,
       },
+    },
+    minimax: {
+      music3: minimaxMusic3,
     },
     gptImage1p5,
     sora2: {

@@ -372,6 +372,41 @@ export const FalSeedance2p5ReferenceToVideoRequestSchema =
   });
 
 // ---------------------------------------------------------------------------
+// Lightricks LTX-2.5 image-to-video (pro tier)
+// ---------------------------------------------------------------------------
+
+export const FalLtx2p5ImageToVideoProRequestSchema = z.object({
+  image_url: z.string(),
+  // When set, upstream generates a transition between the start and end
+  // frames instead of animating the start frame alone.
+  end_image_url: z.string().nullable().optional(),
+  prompt: z.string().min(1).max(5000),
+  // Output length in seconds, or "auto" to let the model choose. A fixed
+  // vocabulary, not a model registry, so it stays a closed union.
+  duration: z
+    .union([z.literal(6), z.literal(8), z.literal(10), z.literal("auto")])
+    .optional(),
+  resolution: z.enum(["720p", "1080p"]).optional(),
+  // "auto" derives the ratio from the start image.
+  aspect_ratio: z.enum(["auto", "16:9", "9:16"]).optional(),
+  fps: z.union([z.literal(24), z.literal(25), z.literal(50)]).optional(),
+  generate_audio: z.boolean().optional(),
+  camera_motion: z
+    .enum([
+      "dolly_in",
+      "dolly_out",
+      "dolly_left",
+      "dolly_right",
+      "jib_up",
+      "jib_down",
+      "static",
+      "focus_shift",
+    ])
+    .nullable()
+    .optional(),
+});
+
+// ---------------------------------------------------------------------------
 // Nano Banana 2 text-to-image
 // ---------------------------------------------------------------------------
 
@@ -1979,6 +2014,17 @@ export type FalSeedance2p5ReferenceToVideoRequestInput =
 export type FalSeedance2p5ReferenceToVideoParsedRequest = z.output<
   typeof FalSeedance2p5ReferenceToVideoRequestSchema
 >;
+export type FalLtx2p5ImageToVideoProParams = z.infer<
+  typeof FalLtx2p5ImageToVideoProRequestSchema
+>;
+export type FalLtx2p5ImageToVideoProRequest = z.input<
+  typeof FalLtx2p5ImageToVideoProRequestSchema
+>;
+export type FalLtx2p5ImageToVideoProRequestInput =
+  FalLtx2p5ImageToVideoProRequest;
+export type FalLtx2p5ImageToVideoProParsedRequest = z.output<
+  typeof FalLtx2p5ImageToVideoProRequestSchema
+>;
 export type FalNanoBananaProTextToImageParams = z.infer<
   typeof FalNanoBananaProTextToImageRequestSchema
 >;
@@ -2827,6 +2873,8 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
     FalSeedance2p5ImageToVideoRequestSchema,
   "bytedance/seedance-2.5/reference-to-video":
     FalSeedance2p5ReferenceToVideoRequestSchema,
+  "lightricks/ltx-2.5/image-to-video/pro":
+    FalLtx2p5ImageToVideoProRequestSchema,
   "fal-ai/nano-banana-pro/edit": FalNanoBananaProEditRequestSchema,
   "fal-ai/nano-banana-pro": FalNanoBananaProTextToImageRequestSchema,
   "fal-ai/nano-banana": FalNanoBananaTextToImageRequestSchema,

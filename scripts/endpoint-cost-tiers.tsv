@@ -528,6 +528,7 @@ fal	klingVideo.v3.standard.imageToVideo	POST	prohibitive	Media-generation market
 fal	klingVideo.v3.standard.textToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	minimax.music3	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	meshy.v7.imageTo3d	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	lightricks.ltx2p5.imageToVideo.pro	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	nanoBanana.edit	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	nanoBanana.textToImage	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	nanoBanana2.edit	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1

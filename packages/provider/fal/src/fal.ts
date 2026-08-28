@@ -1248,6 +1248,7 @@ export function createFal(opts: FalOptions): FalProvider {
   >("POST", "/meshy/v7/image-to-3d", FalMeshyV7ImageTo3dRequestSchema, {
     base: runBaseURL,
   });
+  // sig-ok: stylistic dotPath divergence from URL
   // POST https://fal.run/google/gemini-omni-flash/edit
   // Docs: https://fal.ai/models/google/gemini-omni-flash/edit/api
   const geminiOmniFlashEdit = jsonBody<
@@ -1260,6 +1261,7 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // sig-ok: stylistic dotPath divergence from URL
   // POST https://fal.run/google/gemini-omni-flash/image-to-video
   // Docs: https://fal.ai/models/google/gemini-omni-flash/image-to-video/api
   const geminiOmniFlashImageToVideo = jsonBody<
@@ -1272,6 +1274,7 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // sig-ok: stylistic dotPath divergence from URL
   // POST https://fal.run/google/gemini-omni-flash/reference-to-video
   // Docs: https://fal.ai/models/google/gemini-omni-flash/reference-to-video/api
   const geminiOmniFlashReferenceToVideo = jsonBody<

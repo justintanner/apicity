@@ -382,6 +382,41 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST bytedance.seedream.v5.pro.edit": {
+    "source": "fal/bytedance-seedream-v5-pro-edit",
+    "payload": {
+      "prompt": "Change the background to a snowy forest clearing at golden hour",
+      "image_urls": [
+        "https://storage.googleapis.com/falserverless/example_inputs/seedreamv45/seedream_v45_edit_input_1.png"
+      ],
+      "image_size": "square_hd",
+      "num_images": 1,
+      "output_format": "jpeg"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST bytedance.seedream.v5.pro.layerize": {
+    "source": "fal/bytedance-seedream-v5-pro-layerize",
+    "payload": {
+      "image_url": "https://storage.googleapis.com/falserverless/example_inputs/kontext_example_input.webp",
+      "image_size": "auto_1K",
+      "enhance_prompt_mode": "fast"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST bytedance.seedream.v5.pro.textToImage": {
+    "source": "fal/bytedance-seedream-v5-pro-text-to-image",
+    "payload": {
+      "prompt": "A photorealistic red fox sitting in a snowy forest clearing at golden hour",
+      "image_size": "square_hd",
+      "num_images": 1,
+      "output_format": "jpeg"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST falAi.elevenlabs.speechToText.scribeV2": {
     "source": "fal/elevenlabs-speech-to-text-scribe-v2",
     "payload": {
@@ -389,6 +424,48 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "language_code": "eng",
       "tag_audio_events": true,
       "diarize": true
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST geminiOmniFlash": {
+    "source": "fal/google-gemini-omni-flash",
+    "payload": {
+      "prompt": "A calico cat naps on a sunlit windowsill, purring softly.",
+      "duration": 3
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST geminiOmniFlash.edit": {
+    "source": "fal/google-gemini-omni-flash-edit",
+    "payload": {
+      "prompt": "Make this video anime. Keep everything else the same.",
+      "video_url": "https://storage.googleapis.com/falserverless/model_tests/video_models/mmaudio_input.mp4"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST geminiOmniFlash.imageToVideo": {
+    "source": "fal/google-gemini-omni-flash-image-to-video",
+    "payload": {
+      "prompt": "The dog turns its head and wags its tail in warm sunlight.",
+      "image_url": "https://storage.googleapis.com/falserverless/example_inputs/dog.png",
+      "aspect_ratio": "16:9",
+      "duration": 3
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST geminiOmniFlash.referenceToVideo": {
+    "source": "fal/google-gemini-omni-flash-reference-to-video",
+    "payload": {
+      "prompt": "<IMAGE_REF_0> walks slowly through a sunlit meadow, camera holding still.",
+      "image_urls": [
+        "https://storage.googleapis.com/falserverless/example_inputs/veo31-r2v-input-1.png"
+      ],
+      "aspect_ratio": "16:9",
+      "duration": 3
     },
     "tier": "prohibitive",
     "runByDefault": false
@@ -506,6 +583,79 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "aspect_ratio": "1:1",
       "duration": "5",
       "generate_audio": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST lightricks.ltx2p5.imageToVideo.fast": {
+    "source": "fal/lightricks-ltx2p5-image-to-video-fast",
+    "payload": {
+      "image_url": "<inline image/jpeg data URL — replace with a real URL or upload>",
+      "prompt": "the man smiles and turns his head slowly toward the camera",
+      "duration": 6,
+      "resolution": "720p",
+      "fps": 24,
+      "generate_audio": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST lightricks.ltx2p5.imageToVideo.pro": {
+    "source": "fal/lightricks-ltx2p5-image-to-video-pro",
+    "payload": {
+      "image_url": "<inline image/jpeg data URL — replace with a real URL or upload>",
+      "prompt": "the man smiles and turns his head slowly toward the camera",
+      "duration": 6,
+      "resolution": "720p",
+      "fps": 24,
+      "generate_audio": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST meshy.v7.imageTo3d": {
+    "source": "fal/meshy-v7-image-to-3d",
+    "payload": {
+      "image_url": "https://v3b.fal.media/files/b/zebra/3osHJDI8IZ2wl6sGtEUeB_image.png",
+      "model_type": "standard",
+      "should_texture": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST minimax.h3.imageToVideo": {
+    "source": "fal/minimax-h3-image-to-video",
+    "payload": {
+      "prompt": "The camera drifts slowly forward as soft afternoon light moves across the scene.",
+      "image_url": "https://storage.googleapis.com/falserverless/example_inputs/hailuo23/pro_i2v_in.jpg",
+      "duration": 5,
+      "resolution": "480P",
+      "prompt_expansion_mode": "disabled"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST minimax.h3.referenceToVideo": {
+    "source": "fal/minimax-h3-reference-to-video",
+    "payload": {
+      "prompt": "Image 1 is the subject. Keep it consistent while the camera drifts slowly forward through soft afternoon light.",
+      "reference_image_urls": [
+        "https://storage.googleapis.com/falserverless/example_inputs/hailuo23/pro_i2v_in.jpg"
+      ],
+      "duration": 5,
+      "resolution": "480P",
+      "prompt_expansion_mode": "disabled"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST minimax.h3.textToVideo": {
+    "source": "fal/minimax-h3-text-to-video",
+    "payload": {
+      "prompt": "A white kitten chases a butterfly across a sunlit garden. Gentle camera tracking, natural movement, soft afternoon light.",
+      "duration": 5,
+      "resolution": "480P",
+      "prompt_expansion_mode": "disabled"
     },
     "tier": "prohibitive",
     "runByDefault": false
@@ -681,6 +831,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "model": "Standard V2",
       "upscale_factor": 2,
       "output_format": "jpeg"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST topaz.upscale.video.precision": {
+    "source": "fal/topaz-upscale-video-precision",
+    "payload": {
+      "video_url": "https://v3b.fal.media/files/b/0aa81cc4/YSFz_9f2qby6PzwOC6CMz_topaz-precision-source.mp4",
+      "model": "Proteus",
+      "upscale_factor": 1.25
     },
     "tier": "prohibitive",
     "runByDefault": false
@@ -888,6 +1048,20 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "duration": 6,
       "aspect_ratio": "16:9",
       "resolution": "480p"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST xai.grokImagineVideo.v1p5.referenceToVideo": {
+    "source": "fal/xai-grok-imagine-video-v1-5-reference-to-video",
+    "payload": {
+      "prompt": "The person from <IMAGE_0> walks through a rainy neon-lit street",
+      "reference_image_urls": [
+        "<inline image/jpeg data URL — replace with a real URL or upload>"
+      ],
+      "duration": 4,
+      "resolution": "480p",
+      "aspect_ratio": "16:9"
     },
     "tier": "prohibitive",
     "runByDefault": false

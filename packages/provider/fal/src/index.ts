@@ -233,6 +233,7 @@ export type {
   FalXaiGrokImagineVideoEditResolution,
   FalXaiGrokImagineVideoEditVideoParams,
   FalXaiGrokImagineVideoEditVideoResponse,
+  FalRunXaiGrokImagineVideoV1p5Namespace,
   FalRunXaiGrokImagineVideoNamespace,
   FalRunXaiNamespace,
   FalVeo3p1AspectRatio,

@@ -171,6 +171,46 @@ All tests use Polly.js HTTP record/replay (no mocks):
 
 **Cross-cutting repo-wide guard tests always run in the fast gates.** `scripts/lib/cross-cutting-tests.mjs` lists whole-repo guards that provider scopes do not select consistently: <!-- cross-cutting-tests:start -->the upload and multipart recording-corpus allowlists (`tests/integration/upload-recordings.test.ts`, `tests/integration/multipart-recordings.test.ts`), endpoint cost-tier inventory (`tests/unit/endpoint-cost-tiers.test.ts`), KIE pricing source-pin reconciliation (`tests/unit/kie-pricing-reconciliation.test.ts`), cross-provider registry parity in both directions (`tests/unit/cost-slugs.test.ts`: exact `fal` pricing/slug key sets, slug/display coverage for every provider, every `PRICING.kie` key resolving through `MODEL_SLUGS` and `MODEL_DISPLAY`, and exact `googleflow` slug/display keys; `tests/unit/cost-pricing.test.ts`: a `PRICING` entry for every registered `MODEL_SLUGS` entry, under an explicit unpriced allowlist), the documentation inventories (`tests/unit/provider-inventory-docs.test.ts`: the provider list and the `build:*` / `doc-gen:*` alias sets, derived from disk and pinned in `CLAUDE.md`, `AGENTS.md`, and `README.md`), and fal credential wiring (`tests/unit/recording-credential-hosts.test.ts`: every `api.fal.ai` recording must be replayed by a call site using `process.env.FAL_ADMIN_API_KEY` and every `fal.run` / `queue.fal.run` / `rest.fal.ai` / `v3b.fal.media` recording by one using `process.env.FAL_API_KEY` — unenforceable under replay, which never contacts fal, so a miswiring surfaces only at the next paid `dev:record`), and cross-ref namespace shape (`tests/unit/provider-namespace-shape.test.ts`: every provider factory's return tree parsed to dot paths with a shape — callable, object, callable-with-children, or unresolved — pinned against a baseline of what the detector cannot resolve, so a namespace two sibling slices declare incompatibly is reported instead of merging into a duplicate key)<!-- cross-cutting-tests:end -->. Without the extra selection, provider-scoped work can leave a repo-wide invariant stale until full CI; `92323c18` was the hand repair for a cost-slug pin that followed exactly that path. When this guard fails with `source-checksum-mismatch` and the source change is intentional, re-pin with `pnpm run gen:kie-pricing-manifest` and commit the resulting diff; `pnpm run gen:kie-pricing-manifest:check` confirms it. Both `dev:preflight:fast` and `test:affected` (in its provider-scoped path) run entries their provider replay did not already select, or the full list when passthrough filters make de-duplication unsafe. They are filesystem- and source-parse-only (no Polly, no network) and cost about <!-- cross-cutting-cost:start -->5.8<!-- cross-cutting-cost:end -->s, last measured as the median of three whole-block runs on an Intel i7-8700 (12 threads). That figure lives once in `CROSS_CUTTING_COST_SECONDS`; this sentence is pinned to it. Add any such guard to that list.
 
+**Shared-namespace ownership across sibling slices.** When one upstream family
+splits across two or more slices — a model family, a sub-provider, any nested
+namespace more than one slice touches — the decomposition names exactly **one**
+slice as the **owner** of the shared namespace scaffold. The owner declares the
+namespace itself (the `Object.assign` callable, or the object literal that
+carries the children) together with its own leaf; every sibling adds a **leaf
+only** and declares no scaffold. Without a named owner each sibling declares the
+namespace independently, and the incompatibility then exists only _between_ the
+branches, where no single-tree gate can see it. That is `ac-c2cc4j` `RF-1`
+(review finding `RR-5`): four `fal` slices each declared `geminiOmniFlash` — one
+bound it to a callable, three declared it as an object with a single leaf —
+which merges to `TS2717` plus four duplicate keys in one object literal. Only
+the callable slice declared the base endpoint, so neither direction of the
+repair was expressible on any branch that existed and the fix had to be
+assembled on a new integration branch after every slice had closed.
+`pnpm run namespace-shapes` reports that collision from the sibling refs while
+the run can still act on it, and
+`tests/unit/provider-namespace-shape.test.ts` is its in-tree half.
+
+**The reconciliation contract is pinned counts _and_ namespace shape.** A
+reconciliation slice re-derives the run's pinned counts **and** runs the
+cross-ref namespace comparison over every sibling ref in its run, attaching the
+output to its close:
+
+```bash
+pnpm run namespace-shapes -- --base <base> --ref <ref> --ref <ref> …
+```
+
+Copying that invocation into a bead description is sufficient to widen a future
+reconciliation slice's scope. `--base` is load-bearing: every slice ref carries
+the whole tree, so an unbased comparison reports every pre-existing path as
+shared by every ref and every pre-existing callable leaf as a collision (default:
+`git merge-base` of the supplied refs, falling back to `main`). Add
+`--provider <name>` to scope the run, `--dir <path>` for a checkout rather than a
+ref, and `--json` for the machine-readable report; the exit code is `1` when any
+collision is reported, so a slice can gate on it. `SR` (`ac-kanu4b`) is why this
+clause exists: it ran a counts-only contract, found the counts clean, and
+correctly closed `no-op` while a `TS2717` collision sat in four of its siblings —
+the right verdict on the wrong scope.
+
 **The tests-project typecheck always runs in the fast provider gate.** No provider package `tsconfig.json` includes `tests/**`, and Vitest compiles test files through esbuild, which strips types without checking them — so replaying a test proves nothing about its types. That gap went red on `main` twice with the scoped gate green (kimicoding's content union, xai's readonly spread; both fixed test-side in `73c8b0cc`). `dev:preflight:fast` therefore runs `pnpm run typecheck:tests` (`tsc --noEmit -p tests/tsconfig.json`) unconditionally and whole-tree: the step is not filtered by provider scope, so a type error in any file the tests project compiles fails the gate whichever provider you invoked it for. It costs one `tsc` run — measured at 22.5s, 25.5s, and 35s on three machines during this work — against the ~105s of the full `pnpm run typecheck`, which the fast gate still never invokes. `scripts/lib/tests-project.mjs` holds the invocation and the list of paths the project covers, shared with `typecheck:provider`. `test:affected` does **not** run this step: it is a test-selection helper, not the pre-push gate.
 
 For typecheck-only local iteration, use

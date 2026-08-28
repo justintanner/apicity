@@ -124,6 +124,45 @@ local iteration; it falls back to the full typecheck when the diff, including
 staged and unstaged files, touches another package or shared package/TypeScript
 config.
 
+## Shared Namespaces Across Sibling Slices
+
+**Ownership.** When one upstream family splits across two or more slices — a
+model family, a sub-provider, any nested namespace more than one slice touches —
+the decomposition names exactly **one** slice as the **owner** of the shared
+namespace scaffold. The owner declares the namespace itself (the `Object.assign`
+callable, or the object literal carrying the children) together with its own
+leaf; every sibling adds a **leaf only** and declares no scaffold. Without a
+named owner each sibling declares the namespace independently and the
+incompatibility exists only _between_ the branches, where no single-tree gate
+can see it. That is `ac-c2cc4j` `RF-1` (review finding `RR-5`): four `fal`
+slices each declared `geminiOmniFlash` — one as a callable, three as an object
+with a single leaf — which merges to `TS2717` plus four duplicate keys in one
+object literal, and only the callable slice declared the base endpoint, so
+neither direction of the repair was expressible on any branch that existed.
+
+**Reconciliation covers counts _and_ namespace shape.** A reconciliation slice
+re-derives the run's pinned counts **and** runs the cross-ref namespace
+comparison over every sibling ref in its run, attaching the output to its close:
+
+```bash
+pnpm run namespace-shapes -- --base <base> --ref <ref> --ref <ref> …
+```
+
+Copying that invocation into a bead description is sufficient to widen a future
+reconciliation slice's scope. `--base` is load-bearing: every slice ref carries
+the whole tree, so an unbased comparison reports every pre-existing path as
+shared and every pre-existing callable leaf as a collision (default:
+`git merge-base` of the supplied refs, falling back to `main`). `--provider`
+scopes the run, `--dir` reads a checkout instead of a ref, `--json` prints the
+machine-readable report, and the exit code is `1` when any collision is
+reported, so a slice can gate on it. Reading is `git show` only — nothing is
+checked out or merged. `SR` (`ac-kanu4b`) is why this clause exists: it ran a
+counts-only contract, found the counts clean, and correctly closed `no-op` while
+a `TS2717` collision sat in four of its siblings — the right verdict on the
+wrong scope. The in-tree half is
+`tests/unit/provider-namespace-shape.test.ts`, which runs in every fast gate's
+cross-cutting block.
+
 ## Adding a New Endpoint
 
 Work through the standard endpoint flow: research the upstream docs → add

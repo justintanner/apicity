@@ -103,6 +103,7 @@
     "lint:file-url-entry-guards": "node scripts/check-file-url-entry-guards.mjs",
     "lint:ignores": "node scripts/check-ignore-shadow.mjs",
     "endpoint-map": "node scripts/endpoint-map.mjs",
+    "namespace-shapes": "node scripts/compare-namespace-shapes.mjs",
     "endpoint-comments:apply": "node scripts/apply-endpoint-comments.mjs",
     "format": "prettier --write .",
     "format:changed": "node scripts/format-changed.mjs",

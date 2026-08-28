@@ -646,6 +646,17 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST topaz.upscale.image.precision": {
+    "source": "fal/topaz-upscale-image-precision",
+    "payload": {
+      "image_url": "https://storage.googleapis.com/falserverless/model_tests/codeformer/codeformer_poor_1.jpeg",
+      "model": "Standard V2",
+      "upscale_factor": 2,
+      "output_format": "jpeg"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST v1.models.pricing.estimate": {
     "source": "fal/estimate-cost",
     "payload": {

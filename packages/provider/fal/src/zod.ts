@@ -516,6 +516,53 @@ export const FalVirtualTryOnRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// Topaz Precision Image Upscale (Gigapixel)
+// ---------------------------------------------------------------------------
+
+// Topaz versions its Gigapixel precision models on its own cadence — the
+// endpoint's own prose still lists five while the schema enum already carries
+// six ("High Fidelity V3" landed without the prose catching up) — so the enum
+// is unioned with a family alias rather than closed or opened to bare
+// `z.string()`. The alias matches Topaz's actual id grammar: title-cased words
+// with an optional trailing `V<n>` revision, e.g. "High Fidelity V4".
+const FalTopazPrecisionModelAliasSchema = z
+  .string()
+  .regex(
+    /^[A-Z][A-Za-z]*(?: [A-Z][A-Za-z]*)*(?: V\d+)?$/,
+    'Expected a listed model or a Topaz precision alias (e.g. "High Fidelity V4")'
+  );
+
+export const FalTopazUpscaleImagePrecisionRequestSchema = z.object({
+  image_url: z.string().min(1),
+  model: z
+    .enum([
+      "Standard V2",
+      "High Fidelity V3",
+      "High Fidelity V2",
+      "Low Resolution V2",
+      "CGI",
+      "Text Refine",
+    ])
+    .or(FalTopazPrecisionModelAliasSchema)
+    .optional(),
+  // Upstream documents 1..4 inclusive, defaulting to 2 when omitted.
+  upscale_factor: z.number().min(1).max(4).optional(),
+  crop_to_fill: z.boolean().optional(),
+  output_format: z.enum(["jpeg", "png"]).optional(),
+  subject_detection: z.enum(["All", "Foreground", "Background"]).optional(),
+  face_enhancement: z.boolean().optional(),
+  face_enhancement_creativity: z.number().min(0).max(1).optional(),
+  face_enhancement_strength: z.number().min(0).max(1).optional(),
+  // Upstream types these four as `number | null` with a model-dependent
+  // default, so null is an accepted way to ask for the model's own default.
+  sharpen: z.number().min(0).max(1).nullable().optional(),
+  denoise: z.number().min(0).max(1).nullable().optional(),
+  fix_compression: z.number().min(0).max(1).nullable().optional(),
+  // Text Refine only; upstream's floor is 0.01, not 0.
+  strength: z.number().min(0.01).max(1).nullable().optional(),
+});
+
+// ---------------------------------------------------------------------------
 // Nano Banana text-to-image
 // ---------------------------------------------------------------------------
 
@@ -1889,6 +1936,18 @@ export type FalVirtualTryOnRequestInput = FalVirtualTryOnRequest;
 export type FalVirtualTryOnParsedRequest = z.output<
   typeof FalVirtualTryOnRequestSchema
 >;
+
+export type FalTopazUpscaleImagePrecisionParams = z.infer<
+  typeof FalTopazUpscaleImagePrecisionRequestSchema
+>;
+export type FalTopazUpscaleImagePrecisionRequest = z.input<
+  typeof FalTopazUpscaleImagePrecisionRequestSchema
+>;
+export type FalTopazUpscaleImagePrecisionRequestInput =
+  FalTopazUpscaleImagePrecisionRequest;
+export type FalTopazUpscaleImagePrecisionParsedRequest = z.output<
+  typeof FalTopazUpscaleImagePrecisionRequestSchema
+>;
 export type FalSeedreamV5LiteEditParams = z.infer<
   typeof FalSeedreamV5LiteEditRequestSchema
 >;
@@ -2629,6 +2688,7 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "google/nano-banana-2-lite": FalNanoBanana2LiteTextToImageRequestSchema,
   "google/nano-banana-lite/edit": FalNanoBanana2LiteEditRequestSchema,
   "google/virtual-try-on": FalVirtualTryOnRequestSchema,
+  "topaz/upscale/image/precision": FalTopazUpscaleImagePrecisionRequestSchema,
   "fal-ai/bytedance/seedream/v5/lite/edit": FalSeedreamV5LiteEditRequestSchema,
   "fal-ai/bytedance/seedream/v5/lite/text-to-image":
     FalSeedreamV5LiteTextToImageRequestSchema,

@@ -148,6 +148,7 @@ describe("fal video pricing estimates", () => {
     "minimax/h3/reference-to-video",
     "bytedance/seedream/v5/pro/text-to-image",
     "bytedance/seedream/v5/pro/edit",
+    "google/gemini-omni-flash",
   ];
 
   it("covers every REQ-001 endpoint statically or on the dynamic list", () => {
@@ -1009,6 +1010,10 @@ describe("fal edit/image pricing estimates", () => {
     // was billed 2 units (USD 0.135), not the 1 unit every statically priced
     // per-image fal endpoint bills. All eleven therefore use fal's
     // pricing-estimate API.
+    // compute-second-metered; google/gemini-omni-flash is token-metered, and
+    // its page's "approximately $0.125 per second" 720p figure predicts USD
+    // 0.375 for the recorded duration-3 call that actually billed USD
+    // 0.382914. All eleven therefore use fal's pricing-estimate API.
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toEqual([
       "alibaba/qwen-image-3/edit",
       "alibaba/qwen-image-3/text-to-image",
@@ -1019,6 +1024,7 @@ describe("fal edit/image pricing estimates", () => {
       "bytedance/seedream/v5/pro/layerize",
       "bytedance/seedream/v5/pro/text-to-image",
       "bytedance/seedream/v5/pro/edit",
+      "google/gemini-omni-flash",
       "google/nano-banana-2-lite",
       "google/nano-banana-lite/edit",
       "minimax/music-3",

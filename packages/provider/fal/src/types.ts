@@ -53,6 +53,7 @@ export type {
   FalTopazUpscaleImagePrecisionParams,
   FalTopazUpscaleVideoPrecisionParams,
   FalMeshyV7ImageTo3dParams,
+  FalGeminiOmniFlashParams,
   FalSeedreamV5LiteEditParams,
   FalSeedreamV5LiteTextToImageParams,
   FalSeedreamV5ProLayerizeParams,
@@ -180,6 +181,9 @@ export type {
   FalMeshyV7ImageTo3dRequest,
   FalMeshyV7ImageTo3dRequestInput,
   FalMeshyV7ImageTo3dParsedRequest,
+  FalGeminiOmniFlashRequest,
+  FalGeminiOmniFlashRequestInput,
+  FalGeminiOmniFlashParsedRequest,
   FalSeedreamV5LiteEditRequest,
   FalSeedreamV5LiteEditRequestInput,
   FalSeedreamV5LiteEditParsedRequest,
@@ -380,6 +384,7 @@ import type {
   FalTopazUpscaleImagePrecisionRequest,
   FalTopazUpscaleVideoPrecisionRequest,
   FalMeshyV7ImageTo3dRequest,
+  FalGeminiOmniFlashRequest,
   FalSeedreamV5LiteEditRequest,
   FalSeedreamV5LiteTextToImageRequest,
   FalSeedreamV5ProLayerizeRequest,
@@ -1061,6 +1066,12 @@ export interface FalMeshyV7ImageTo3dResponse {
   rigged_character_fbx?: FalFile | null;
   basic_animations?: FalMeshyV7BasicAnimations | null;
   rig_task_id?: string | null;
+}
+// Google Gemini Omni Flash text-to-video. Upstream's output schema carries a
+// single plain File — url plus the nullable content_type/file_name/file_size —
+// and no width/height/fps/duration, so FalFile is the exact shape.
+export interface FalGeminiOmniFlashResponse {
+  video: FalFile;
 }
 
 // Qwen Image (text-to-image and edit)
@@ -2145,6 +2156,13 @@ export interface FalRunMeshyNamespace {
   v7: FalRunMeshyV7Namespace;
 }
 
+type FalGeminiOmniFlashFn = ((
+  params: FalGeminiOmniFlashRequest,
+  signal?: AbortSignal
+) => Promise<FalGeminiOmniFlashResponse>) & {
+  schema: ApicitySchema<FalGeminiOmniFlashRequest>;
+};
+
 type FalSeedreamV5LiteEditFn = ((
   params: FalSeedreamV5LiteEditRequest,
   signal?: AbortSignal
@@ -2674,6 +2692,7 @@ export interface FalRunNamespace {
   nanoBanana2Lite: FalRunNanoBanana2LiteNamespace;
   virtualTryOn: FalVirtualTryOnFn;
   topaz: FalRunTopazNamespace;
+  geminiOmniFlash: FalGeminiOmniFlashFn;
   qwenImage: FalQwenImageFn;
   gptImage1p5: FalGptImage1p5Fn;
   sora2: FalRunSora2Namespace;

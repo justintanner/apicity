@@ -744,6 +744,17 @@ export const FalMeshyV7ImageTo3dRequestSchema = z.object({
   enable_safety_checker: z.boolean().optional(),
   ultra_mode: z.boolean().optional(),
 });
+// Google Gemini Omni Flash (text-to-video with synchronized audio)
+// ---------------------------------------------------------------------------
+
+export const FalGeminiOmniFlashRequestSchema = z.object({
+  // Upstream caps the prompt at 20,000 characters.
+  prompt: z.string().max(20_000),
+  // Upstream documents "16:9" and "9:16", defaulting to "16:9" when omitted.
+  aspect_ratio: z.enum(["16:9", "9:16"]).optional(),
+  // Upstream documents 3..10 inclusive seconds, defaulting to 8 when omitted.
+  duration: z.number().int().min(3).max(10).optional(),
+});
 
 // ---------------------------------------------------------------------------
 // Nano Banana text-to-image
@@ -2475,6 +2486,16 @@ export type FalMeshyV7ImageTo3dRequestInput = FalMeshyV7ImageTo3dRequest;
 export type FalMeshyV7ImageTo3dParsedRequest = z.output<
   typeof FalMeshyV7ImageTo3dRequestSchema
 >;
+export type FalGeminiOmniFlashParams = z.infer<
+  typeof FalGeminiOmniFlashRequestSchema
+>;
+export type FalGeminiOmniFlashRequest = z.input<
+  typeof FalGeminiOmniFlashRequestSchema
+>;
+export type FalGeminiOmniFlashRequestInput = FalGeminiOmniFlashRequest;
+export type FalGeminiOmniFlashParsedRequest = z.output<
+  typeof FalGeminiOmniFlashRequestSchema
+>;
 export type FalSeedreamV5LiteEditParams = z.infer<
   typeof FalSeedreamV5LiteEditRequestSchema
 >;
@@ -3308,6 +3329,7 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "topaz/upscale/image/precision": FalTopazUpscaleImagePrecisionRequestSchema,
   "topaz/upscale/video/precision": FalTopazUpscaleVideoPrecisionRequestSchema,
   "meshy/v7/image-to-3d": FalMeshyV7ImageTo3dRequestSchema,
+  "google/gemini-omni-flash": FalGeminiOmniFlashRequestSchema,
   "fal-ai/bytedance/seedream/v5/lite/edit": FalSeedreamV5LiteEditRequestSchema,
   "fal-ai/bytedance/seedream/v5/lite/text-to-image":
     FalSeedreamV5LiteTextToImageRequestSchema,

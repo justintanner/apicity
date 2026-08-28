@@ -595,6 +595,16 @@ const gptImagePerImage = (
 //     and by the response's own `x-fal-billable-units: 2.0`. No request field
 //     yields that 2, so a per-image table would contradict the observed
 //     charge.
+//   - google/gemini-omni-flash: billed purely per token as read 2026-08-28
+//     (the model page states "Billing is based on total token consumption.
+//     Tokens cost $21.875 per 1 million tokens"), and its "approximately
+//     $0.125 per second of video" figure is both explicitly approximate and
+//     conditioned on 720p — a resolution the request cannot select, since the
+//     payload carries only prompt, aspect_ratio, and duration. The one
+//     recorded call (duration 3) billed 0.382914 units at USD 1.00/unit =
+//     USD 0.382914, where the page rate predicts USD 0.375; the delivered
+//     video reports no token count, resolution, or duration, so the billed
+//     quantity is observable from neither the request nor the response.
 export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "alibaba/qwen-image-3/edit",
   "alibaba/qwen-image-3/text-to-image",
@@ -605,6 +615,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "bytedance/seedream/v5/pro/layerize",
   "bytedance/seedream/v5/pro/text-to-image",
   "bytedance/seedream/v5/pro/edit",
+  "google/gemini-omni-flash",
   "google/nano-banana-2-lite",
   "google/nano-banana-lite/edit",
   "minimax/music-3",

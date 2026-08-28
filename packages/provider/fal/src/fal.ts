@@ -79,6 +79,8 @@ import {
   FalTopazUpscaleVideoPrecisionResponse,
   FalMeshyV7ImageTo3dRequest,
   FalMeshyV7ImageTo3dResponse,
+  FalGeminiOmniFlashRequest,
+  FalGeminiOmniFlashResponse,
   FalSeedreamV5LiteEditRequest,
   FalSeedreamV5LiteEditResponse,
   FalSeedreamV5LiteTextToImageRequest,
@@ -221,6 +223,7 @@ import {
   FalTopazUpscaleImagePrecisionRequestSchema,
   FalTopazUpscaleVideoPrecisionRequestSchema,
   FalMeshyV7ImageTo3dRequestSchema,
+  FalGeminiOmniFlashRequestSchema,
   FalSeedreamV5LiteEditRequestSchema,
   FalSeedreamV5LiteTextToImageRequestSchema,
   FalSeedreamV5ProLayerizeRequestSchema,
@@ -1236,6 +1239,14 @@ export function createFal(opts: FalOptions): FalProvider {
   >("POST", "/meshy/v7/image-to-3d", FalMeshyV7ImageTo3dRequestSchema, {
     base: runBaseURL,
   });
+  // POST https://fal.run/google/gemini-omni-flash
+  // Docs: https://fal.ai/models/google/gemini-omni-flash/api
+  const geminiOmniFlash = jsonBody<
+    FalGeminiOmniFlashRequest,
+    FalGeminiOmniFlashResponse
+  >("POST", "/google/gemini-omni-flash", FalGeminiOmniFlashRequestSchema, {
+    base: runBaseURL,
+  });
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://fal.run/fal-ai/bytedance/seedream/v5/lite/edit
@@ -1960,6 +1971,7 @@ export function createFal(opts: FalOptions): FalProvider {
         },
       },
     },
+    geminiOmniFlash,
     qwenImage,
     klingVideo: {
       v3: {

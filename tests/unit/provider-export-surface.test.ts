@@ -98,32 +98,6 @@ const EXPORT_SURFACE_BASELINE: Record<string, Record<string, string>> = {
     ElevenLabsGetConvaiAgentNamespace: ELEVENLABS_LAYER,
     ElevenLabsGetConvaiAnalyticsNamespace: ELEVENLABS_LAYER,
   },
-  openai: {
-    OpenAiPostV1AudioNamespace: VERB_LAYER,
-    OpenAiPostV1ChatNamespace: VERB_LAYER,
-    OpenAiPostV1ImagesNamespace: VERB_LAYER,
-    OpenAiPostV1ResponsesNamespace: VERB_LAYER,
-    OpenAiPostV1FineTuningNamespace: VERB_LAYER,
-    OpenAiPostV1RealtimeNamespace: VERB_LAYER,
-    OpenAiPostV1Namespace: VERB_LAYER,
-    OpenAiGetV1ChatNamespace: VERB_LAYER,
-    OpenAiGetV1FilesNamespace: VERB_LAYER,
-    OpenAiGetV1ModelsNamespace: VERB_LAYER,
-    OpenAiGetV1ResponsesNamespace: VERB_LAYER,
-    OpenAiGetV1ConversationsNamespace: VERB_LAYER,
-    OpenAiGetV1BatchesNamespace: VERB_LAYER,
-    OpenAiGetV1VectorStoresNamespace: VERB_LAYER,
-    OpenAiGetV1FineTuningNamespace: VERB_LAYER,
-    OpenAiGetV1OrganizationNamespace: VERB_LAYER,
-    OpenAiGetV1Namespace: VERB_LAYER,
-    OpenAiDeleteV1ChatNamespace: VERB_LAYER,
-    OpenAiDeleteV1FilesNamespace: VERB_LAYER,
-    OpenAiDeleteV1ModelsNamespace: VERB_LAYER,
-    OpenAiDeleteV1ResponsesNamespace: VERB_LAYER,
-    OpenAiDeleteV1FineTuningNamespace: VERB_LAYER,
-    OpenAiDeleteV1Namespace: VERB_LAYER,
-    OpenAiGetCodexNamespace: VERB_LAYER,
-  },
   simplefunctions: {
     SimpleFunctionsThesisPositionsNamespace: SIMPLE_FUNCTIONS_LAYER,
     SimpleFunctionsThesisStrategiesNamespace: SIMPLE_FUNCTIONS_LAYER,
@@ -147,7 +121,6 @@ const EXPORT_SURFACE_BASELINE: Record<string, Record<string, string>> = {
 // Pinned so a silent baseline expansion is a visible diff rather than a quiet
 // widening of what the guard tolerates.
 const EXPECTED_BASELINE_DISTRIBUTION: Record<string, number> = {
-  openai: 24,
   alibaba: 16,
   simplefunctions: 13,
   anthropic: 4,
@@ -155,7 +128,7 @@ const EXPECTED_BASELINE_DISTRIBUTION: Record<string, number> = {
   dolthub: 2,
   youtube: 1,
 };
-const EXPECTED_BASELINE_TOTAL = 64;
+const EXPECTED_BASELINE_TOTAL = 40;
 
 type Surface = ReturnType<typeof readProviderExportSurfaces>[number];
 

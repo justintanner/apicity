@@ -86,6 +86,8 @@ import {
   FalWan3p0ImageToVideoResponse,
   FalWan3p0ReferenceToVideoRequest,
   FalWan3p0ReferenceToVideoResponse,
+  FalMinimaxH3ReferenceToVideoRequest,
+  FalMinimaxH3ReferenceToVideoResponse,
   FalAlibabaQwenImage3TextToImageResponse,
   FalWanV2p7TextToImageRequest,
   FalWanV2p7TextToImageResponse,
@@ -199,6 +201,7 @@ import {
   FalWan3p0TextToVideoRequestSchema,
   FalWan3p0ImageToVideoRequestSchema,
   FalWan3p0ReferenceToVideoRequestSchema,
+  FalMinimaxH3ReferenceToVideoRequestSchema,
   FalWanV2p7TextToImageRequestSchema,
   FalWanV2p7EditRequestSchema,
   FalWanV2p7TextToVideoRequestSchema,
@@ -1262,6 +1265,18 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/minimax/h3/reference-to-video
+  // Docs: https://fal.ai/models/minimax/h3/reference-to-video/api
+  const minimaxH3ReferenceToVideo = jsonBody<
+    FalMinimaxH3ReferenceToVideoRequest,
+    FalMinimaxH3ReferenceToVideoResponse
+  >(
+    "POST",
+    "/minimax/h3/reference-to-video",
+    FalMinimaxH3ReferenceToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://fal.run/fal-ai/wan/v2.7/edit-video
   // Docs: https://docs.fal.ai
@@ -1738,6 +1753,11 @@ export function createFal(opts: FalOptions): FalProvider {
             textToImage: seedreamV5LiteTextToImage,
           },
         },
+      },
+    },
+    minimax: {
+      h3: {
+        referenceToVideo: minimaxH3ReferenceToVideo,
       },
     },
     nanoBananaPro: {

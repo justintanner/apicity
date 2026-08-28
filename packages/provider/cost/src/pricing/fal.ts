@@ -480,6 +480,15 @@ const gptImagePerImage = (
 //     unit that no request field determines — so deriving a rate from
 //     duration would invent one. The premium `alibaba/wan-3.0-prime/*`
 //     siblings bill per OUTPUT second instead and are priced statically below.
+//   - minimax/h3/reference-to-video: billed per COMPUTE SECOND (USD 0.00017)
+//     as pulled 2026-08-28 from fal's own pricing API
+//     (GET /v1/models/pricing?endpoint_id=minimax/h3/reference-to-video). The
+//     request carries an output `duration` in the 5-15s range and a
+//     `resolution` tier, but neither fixes wall-clock GPU time, and the
+//     variable count of reference assets moves it further - the same reasoning
+//     as the `alibaba/wan-3.0/*` video family, and the same rate. The
+//     statically priced `fal-ai/wan/v2.7/reference-to-video` sibling reports
+//     unit "seconds" (output seconds) at USD 0.1 from the same API instead.
 export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "alibaba/qwen-image-3/edit",
   "alibaba/qwen-image-3/text-to-image",
@@ -489,6 +498,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "blackforestlabs/flux-video-upscale",
   "google/nano-banana-2-lite",
   "google/nano-banana-lite/edit",
+  "minimax/h3/reference-to-video",
   "xai/grok-imagine-image/v2.0/edit",
   "xai/grok-imagine-image/v2.0/text-to-image",
 ] as const;

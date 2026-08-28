@@ -135,11 +135,12 @@ describe("fal video pricing estimates", () => {
     "xai/grok-imagine-video/reference-to-video",
     "xai/grok-imagine-video/extend-video",
     "xai/grok-imagine-video/edit-video",
+    "minimax/h3/reference-to-video",
   ];
 
   it("covers every REQ-001 endpoint statically or on the dynamic list", () => {
     const dynamic: readonly string[] = FAL_DYNAMIC_PRICING_ENDPOINTS;
-    expect(REQ_001_ENDPOINTS).toHaveLength(34);
+    expect(REQ_001_ENDPOINTS).toHaveLength(35);
     for (const endpoint of REQ_001_ENDPOINTS) {
       expect(endpoint in FAL_ENDPOINT_REQUEST_SCHEMAS, endpoint).toBe(true);
       const priced = endpoint in falPricing;
@@ -908,8 +909,10 @@ describe("fal edit/image pricing estimates", () => {
     // google/nano-banana-2-lite and google/nano-banana-lite/edit are
     // token-metered without a published tokens-per-image constant;
     // xai/grok-imagine-image/v2.0/edit and text-to-image are
-    // compute-second-metered. All ten therefore use fal's pricing-estimate
-    // API.
+    // compute-second-metered; minimax/h3/reference-to-video is compute-second-
+    // metered too, and neither its output `duration` nor its `resolution` tier
+    // fixes the wall-clock GPU time it bills. All eleven therefore use fal's
+    // pricing-estimate API.
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toEqual([
       "alibaba/qwen-image-3/edit",
       "alibaba/qwen-image-3/text-to-image",
@@ -919,6 +922,7 @@ describe("fal edit/image pricing estimates", () => {
       "blackforestlabs/flux-video-upscale",
       "google/nano-banana-2-lite",
       "google/nano-banana-lite/edit",
+      "minimax/h3/reference-to-video",
       "xai/grok-imagine-image/v2.0/edit",
       "xai/grok-imagine-image/v2.0/text-to-image",
     ]);

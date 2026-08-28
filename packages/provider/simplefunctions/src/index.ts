@@ -166,6 +166,21 @@ export type {
   SimpleFunctionsWorldParsedRequest,
   SimpleFunctionsWorldResponse,
   SimpleFunctionsWorldSnapshotResponse,
+  // Promoted out of EXPORT_SURFACE_BASELINE (ac-9at9f2.3): a consumer that
+  // holds one of these values must be able to name its type (D-1).
+  SimpleFunctionsDashboard2Namespace,
+  SimpleFunctionsDeleteNamespace,
+  SimpleFunctionsPatchNamespace,
+  SimpleFunctionsPortfolioLedgerImportNamespace,
+  SimpleFunctionsPortfolioNamespace,
+  SimpleFunctionsPostNamespace,
+  SimpleFunctionsProxyNamespace,
+  SimpleFunctionsPutNamespace,
+  SimpleFunctionsThesisHeartbeatNamespace,
+  SimpleFunctionsThesisPositionsNamespace,
+  SimpleFunctionsThesisStrategiesNamespace,
+  SimpleFunctionsThesisVideosNamespace,
+  SimpleFunctionsXNamespace,
 } from "./types";
 
 export {

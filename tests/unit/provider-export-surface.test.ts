@@ -46,11 +46,6 @@ const ANTHROPIC_VERB_LAYER =
   "verb-layer namespace under /v1, reachable from the exported " +
   "AnthropicProvider interface; export decision deferred to the burn-down bead";
 
-const SIMPLE_FUNCTIONS_LAYER =
-  "path- or verb-layer namespace, reachable from the exported " +
-  "SimpleFunctionsProvider interface; export decision deferred to the " +
-  "burn-down bead";
-
 const ELEVENLABS_LAYER =
   "sub-namespace reachable from the exported ElevenLabsProvider interface; " +
   "export decision deferred to the burn-down bead";
@@ -124,21 +119,6 @@ const EXPORT_SURFACE_BASELINE: Record<string, Record<string, string>> = {
     OpenAiDeleteV1Namespace: VERB_LAYER,
     OpenAiGetCodexNamespace: VERB_LAYER,
   },
-  simplefunctions: {
-    SimpleFunctionsThesisPositionsNamespace: SIMPLE_FUNCTIONS_LAYER,
-    SimpleFunctionsThesisStrategiesNamespace: SIMPLE_FUNCTIONS_LAYER,
-    SimpleFunctionsThesisHeartbeatNamespace: SIMPLE_FUNCTIONS_LAYER,
-    SimpleFunctionsThesisVideosNamespace: SIMPLE_FUNCTIONS_LAYER,
-    SimpleFunctionsPortfolioLedgerImportNamespace: SIMPLE_FUNCTIONS_LAYER,
-    SimpleFunctionsPortfolioNamespace: SIMPLE_FUNCTIONS_LAYER,
-    SimpleFunctionsProxyNamespace: SIMPLE_FUNCTIONS_LAYER,
-    SimpleFunctionsXNamespace: SIMPLE_FUNCTIONS_LAYER,
-    SimpleFunctionsDashboard2Namespace: SIMPLE_FUNCTIONS_LAYER,
-    SimpleFunctionsPostNamespace: SIMPLE_FUNCTIONS_LAYER,
-    SimpleFunctionsPutNamespace: SIMPLE_FUNCTIONS_LAYER,
-    SimpleFunctionsPatchNamespace: SIMPLE_FUNCTIONS_LAYER,
-    SimpleFunctionsDeleteNamespace: SIMPLE_FUNCTIONS_LAYER,
-  },
   youtube: {
     YouTubeChannelsNamespace: YOUTUBE_LAYER,
   },
@@ -149,13 +129,12 @@ const EXPORT_SURFACE_BASELINE: Record<string, Record<string, string>> = {
 const EXPECTED_BASELINE_DISTRIBUTION: Record<string, number> = {
   openai: 24,
   alibaba: 16,
-  simplefunctions: 13,
   anthropic: 4,
   elevenlabs: 4,
   dolthub: 2,
   youtube: 1,
 };
-const EXPECTED_BASELINE_TOTAL = 64;
+const EXPECTED_BASELINE_TOTAL = 51;
 
 type Surface = ReturnType<typeof readProviderExportSurfaces>[number];
 

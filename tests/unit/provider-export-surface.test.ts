@@ -59,10 +59,6 @@ const DOLTHUB_LAYER =
   "sub-namespace reachable from the exported DoltHubProvider interface; " +
   "export decision deferred to the burn-down bead";
 
-const YOUTUBE_LAYER =
-  "sub-namespace reachable from the exported YouTubeProvider interface; " +
-  "export decision deferred to the burn-down bead";
-
 const EXPORT_SURFACE_BASELINE: Record<string, Record<string, string>> = {
   alibaba: {
     AlibabaPostV1ChatNamespace: VERB_LAYER,
@@ -139,9 +135,6 @@ const EXPORT_SURFACE_BASELINE: Record<string, Record<string, string>> = {
     SimpleFunctionsPatchNamespace: SIMPLE_FUNCTIONS_LAYER,
     SimpleFunctionsDeleteNamespace: SIMPLE_FUNCTIONS_LAYER,
   },
-  youtube: {
-    YouTubeChannelsNamespace: YOUTUBE_LAYER,
-  },
 };
 
 // Pinned so a silent baseline expansion is a visible diff rather than a quiet
@@ -153,9 +146,8 @@ const EXPECTED_BASELINE_DISTRIBUTION: Record<string, number> = {
   anthropic: 4,
   elevenlabs: 4,
   dolthub: 2,
-  youtube: 1,
 };
-const EXPECTED_BASELINE_TOTAL = 64;
+const EXPECTED_BASELINE_TOTAL = 63;
 
 type Surface = ReturnType<typeof readProviderExportSurfaces>[number];
 

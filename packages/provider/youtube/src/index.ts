@@ -27,6 +27,9 @@ export type {
   YouTubeTranscriptsNamespace,
   YouTubeGetVideoMetadataResponse,
   YouTubeGetVideoMetadataMethod,
+  // Promoted out of EXPORT_SURFACE_BASELINE (ac-9at9f2.7): a consumer that
+  // holds `youtube.channels` must be able to name its type.
+  YouTubeChannelsNamespace,
 } from "./types";
 
 export type {

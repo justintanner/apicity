@@ -671,14 +671,19 @@ const imageTask = await kie.post.api.v1.jobs.createTask({
 
 ## Grok Imagine Image 2.0 createTask flow
 
-Grok Imagine Image 2.0 has three exact Kie model ids:
+Grok Imagine Image 2.0 has four exact Kie model ids:
 `grok-imagine-image-2-0/text-to-image`,
-`grok-imagine-image-2-0/segment-map`, and
-`grok-imagine-image-2-0/image-edit`. See the official model pages for
+`grok-imagine-image-2-0/segment-map`,
+`grok-imagine-image-2-0/image-edit`, and
+`grok-imagine-image-2-0/segment-edit`. See the official model pages for
 [`grok-imagine-image-2-0/text-to-image`](https://docs.kie.ai/market/grok-imagine-image-2-0/text-to-image),
 [`grok-imagine-image-2-0/segment-map`](https://docs.kie.ai/market/grok-imagine-image-2-0/segment-map),
 and
 [`grok-imagine-image-2-0/image-edit`](https://docs.kie.ai/market/grok-imagine-image-2-0/image-edit).
+That last page is titled "Grok Imagine Image 2.0 Segment Edit" and is also
+the only documentation for `grok-imagine-image-2-0/segment-edit`; Kie serves
+no `.../segment-edit` page. The id was confirmed by live `createTask` rather
+than by its doc slug.
 
 Text-to-image requires both a prompt and an `aspect_ratio`:
 
@@ -736,6 +741,21 @@ const editTask = await kie.post.api.v1.jobs.createTask({
   },
 });
 console.log(editTask.data?.taskId);
+```
+
+`grok-imagine-image-2-0/segment-edit` takes the same source task and, unlike
+image-edit, documents its `mask_indexs` entries as one-based:
+
+```typescript
+const segmentEditTask = await kie.post.api.v1.jobs.createTask({
+  model: "grok-imagine-image-2-0/segment-edit",
+  input: {
+    prompt: "Give the cat a red bow tie",
+    task_id: sourceTaskId,
+    mask_indexs: [maskIndex],
+  },
+});
+console.log(segmentEditTask.data?.taskId);
 ```
 
 ## API Reference

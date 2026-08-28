@@ -1301,6 +1301,23 @@ export const kie: Record<string, ModelPricing> = {
       "2026-08-22"
     ),
   },
+  // segment-edit's only documentation is the image-edit slug — Kie serves no
+  // .../segment-edit page — and the 2026-08-22 pricing catalog lists neither.
+  // The rate is live billing evidence: the terminal recordInfo in
+  // tests/recordings/kie_2079838932/grok-imagine-image-2-segment-edit_1829777927/
+  // recording.har reports creditsConsumed 4.0 for the successful segment-edit
+  // task, the same 4 credits = $0.02/image the family's other paid rows charge.
+  "grok-imagine-image-2-0/segment-edit": {
+    kind: "perUnit",
+    unit: "generations",
+    units: () => 1,
+    select: [],
+    rates: { "": 0.02 },
+    source: pricePage(
+      "https://docs.kie.ai/market/grok-imagine-image-2-0/image-edit",
+      "2026-08-28"
+    ),
+  },
 
   // grok-imagine/extend: flat per-generation, 4 rates indexed by
   // (extend_times, resolution). The evidenced request contract keeps

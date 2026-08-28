@@ -168,6 +168,7 @@ export const MODEL_SLUGS = {
     "grok-imagine-image-2-0/text-to-image": "grok",
     "grok-imagine-image-2-0/segment-map": "grok",
     "grok-imagine-image-2-0/image-edit": "grok",
+    "grok-imagine-image-2-0/segment-edit": "grok",
 
     // Image — Nano Banana
     "nano-banana": "nb",
@@ -619,6 +620,8 @@ export const MODEL_DISPLAY = {
     "grok-imagine-image-2-0/text-to-image": "Grok Imagine Image 2.0",
     "grok-imagine-image-2-0/segment-map": "Grok Imagine Image 2.0 Segment Map",
     "grok-imagine-image-2-0/image-edit": "Grok Imagine Image 2.0 Edit",
+    "grok-imagine-image-2-0/segment-edit":
+      "Grok Imagine Image 2.0 Segment Edit",
 
     "nano-banana": "Nano Banana",
     "nano-banana-2": "Nano Banana 2",

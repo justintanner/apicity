@@ -253,12 +253,12 @@ describe("Kie pricing reconciliation", () => {
   it("derives the authoritative source inventory counts", async () => {
     const inventory = (await collectApiCityInventories(root)) as TestInventory;
 
-    expect(inventory.models).toHaveLength(140);
-    expect(inventory.descriptors).toHaveLength(140);
-    expect(inventory.guards).toHaveLength(140);
-    expect(inventory.pricingKeys).toHaveLength(155);
-    expect(inventory.slugKeys).toHaveLength(157);
-    expect(inventory.displayKeys).toHaveLength(157);
+    expect(inventory.models).toHaveLength(141);
+    expect(inventory.descriptors).toHaveLength(141);
+    expect(inventory.guards).toHaveLength(141);
+    expect(inventory.pricingKeys).toHaveLength(156);
+    expect(inventory.slugKeys).toHaveLength(158);
+    expect(inventory.displayKeys).toHaveLength(158);
     expect(inventory.endpoints).toHaveLength(71);
     expect(
       inventory.endpoints.filter((entry) => entry.method === "POST")
@@ -274,11 +274,11 @@ describe("Kie pricing reconciliation", () => {
     expect(result).toMatchObject({
       status: "ok",
       rows: 447,
-      models: 140,
+      models: 141,
       endpoints: 71,
-      pricingKeys: 155,
-      slugs: 157,
-      displays: 157,
+      pricingKeys: 156,
+      slugs: 158,
+      displays: 158,
       zeroUnclassifiedRows: true,
       zeroUnclassifiedApiCityKeys: true,
     });
@@ -304,10 +304,10 @@ describe("Kie pricing reconciliation", () => {
       endpoints: 71,
     });
     expect(manifest.inventory.final).toEqual({
-      models: 140,
-      pricingKeys: 155,
-      slugKeys: 157,
-      displayKeys: 157,
+      models: 141,
+      pricingKeys: 156,
+      slugKeys: 158,
+      displayKeys: 158,
       schemaWithoutPricing: 15,
       pricingOnly: 30,
       endpoints: 71,
@@ -936,15 +936,15 @@ describe("Kie pricing reconciliation", () => {
     expect(markdown).toContain("## Seedance 2.5");
     expect(markdown).toContain("## Explicit Audit Queue");
     expect(markdown).toContain("## Runtime Variant Coverage");
-    expect(markdown).toContain("| Schema model IDs | 127 | 140 |");
+    expect(markdown).toContain("| Schema model IDs | 127 | 141 |");
     expect(markdown).toContain("| Documented endpoints | 71 | 71 |");
-    expect(markdown).toContain("| Runtime pricing keys | 135 | 155 |");
+    expect(markdown).toContain("| Runtime pricing keys | 135 | 156 |");
     expect(markdown).toContain(
       "| Schema-without-pricing inventory | 23 | 15 |"
     );
     expect(markdown).toContain("| Pricing-only inventory | 31 | 30 |");
-    expect(markdown).toContain("| Slug keys | 137 | 157 |");
-    expect(markdown).toContain("| Display keys | 137 | 157 |");
+    expect(markdown).toContain("| Slug keys | 137 | 158 |");
+    expect(markdown).toContain("| Display keys | 137 | 158 |");
     expect(markdown).toContain("Zero unclassified raw rows");
     expect(markdown).toContain("Zero unclassified ApiCity keys");
   });

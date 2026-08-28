@@ -3130,6 +3130,22 @@ describe("kie stale-family refresh (REQ-004)", () => {
     }
   });
 
+  it("prices Grok Image 2.0 segment-edit from its recorded credit charge", () => {
+    // Live billing evidence, not a catalog row: the 2026-08-22 KIE pricing
+    // catalog lists no segment-edit, and Kie serves no .../segment-edit doc
+    // page, so the rate comes from the recording's terminal recordInfo
+    // (creditsConsumed 4.0 = the family's 4 credits = $0.02/image).
+    expect(PRICING.kie["grok-imagine-image-2-0/segment-edit"]).toMatchObject({
+      kind: "perUnit",
+      unit: "generations",
+      rates: { "": 0.02 },
+      source: {
+        url: "https://docs.kie.ai/market/grok-imagine-image-2-0/image-edit",
+        asOf: "2026-08-28",
+      },
+    });
+  });
+
   it("does not price Seedance 2.5's -1 duration sentinel without a hint", () => {
     const request = {
       model: "bytedance/seedance-2-5",

@@ -1342,6 +1342,35 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  // Kie's slug and id disagree here: the page below is titled "Grok Imagine
+  // Image 2.0 Segment Edit" and documents this id; .../segment-edit is a 404.
+  // https://docs.kie.ai/market/grok-imagine-image-2-0/image-edit
+  "grok-imagine-image-2-0/segment-edit": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        description: "Segment editing prompt (minimum 1 character)",
+      },
+      task_id: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        description:
+          "Source task ID from grok-imagine-image-2-0/text-to-image, or from grok-imagine-image-2-0/segment-map given an image_url (minimum 1 character)",
+      },
+      mask_indexs: {
+        type: "array",
+        minItems: 1,
+        items: { type: "integer", minimum: 1 },
+        description:
+          "Optional segment selection with at least 1 item; each index must be a positive integer, one-based unlike image-edit (upstream spelling preserved)",
+      },
+    },
+  },
+
   "nano-banana-pro": {
     type: "image",
     fields: {

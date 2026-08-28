@@ -6324,7 +6324,22 @@ const KieOpenAiModelAliasSchema = z
     "Expected a listed model or a versioned GPT alias (e.g. gpt-5-5-mini)"
   );
 
-const KIE_RESPONSES_MODELS = ["gpt-5-5"] as const;
+// Live probe 2026-08-28: `POST /codex/v1/responses` serves gpt-5-4,
+// gpt-5-6-luna, gpt-5-6-sol and gpt-5-6-terra, while `/api/v1/responses`
+// answers `422 "The model is not supported"` for every one of them — the two
+// Responses surfaces carry disjoint model vocabularies, and the `-codex` ids
+// belong to the sibling below, not to the path spelled `codex`. All four
+// already match the alias grammar above, so enumerating them buys MCP client
+// autocomplete, not acceptance. Exported because that distinction is
+// unobservable through safeParse: a success cannot say which branch matched,
+// so only membership in this array pins the enum entries.
+export const KIE_RESPONSES_MODELS = [
+  "gpt-5-4",
+  "gpt-5-5",
+  "gpt-5-6-luna",
+  "gpt-5-6-sol",
+  "gpt-5-6-terra",
+] as const;
 
 export const KieResponsesModelSchema = z
   .enum(KIE_RESPONSES_MODELS)

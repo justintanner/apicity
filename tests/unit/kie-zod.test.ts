@@ -1174,7 +1174,13 @@ const OPENED_MODEL_FIELDS = [
   {
     triage: "TRI-003",
     label: "KieResponsesRequestSchema.model",
-    listed: ["gpt-5-5"],
+    listed: [
+      "gpt-5-4",
+      "gpt-5-5",
+      "gpt-5-6-luna",
+      "gpt-5-6-sol",
+      "gpt-5-6-terra",
+    ],
     aliases: ["gpt-6", "gpt-5-5-mini"],
     // BR-3 bare family and spelled-out/truncated versions; BR-4 a Grok id on
     // the OpenAI-only field.

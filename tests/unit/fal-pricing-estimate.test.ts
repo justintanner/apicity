@@ -137,6 +137,7 @@ describe("fal video pricing estimates", () => {
     "xai/grok-imagine-video/edit-video",
     "minimax/music-3",
     "topaz/upscale/image/precision",
+    "topaz/upscale/video/precision",
   ];
 
   it("covers every REQ-001 endpoint statically or on the dynamic list", () => {
@@ -918,6 +919,11 @@ describe("fal edit/image pricing estimates", () => {
     // area ($0.08 per 24 megapixels of output) and the request carries only
     // `image_url`, so the source dimensions the area depends on are not a
     // request field. All eleven therefore use fal's pricing-estimate API.
+    // compute-second-metered; topaz/upscale/video/precision bills on the
+    // DELIVERED video ($0.10 per 10 seconds of output at 720p, more at 1080p
+    // and 4K), and output resolution, duration and frame rate are all
+    // properties of the source clip rather than request fields. All eleven
+    // therefore use fal's pricing-estimate API.
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toEqual([
       "alibaba/qwen-image-3/edit",
       "alibaba/qwen-image-3/text-to-image",
@@ -929,6 +935,7 @@ describe("fal edit/image pricing estimates", () => {
       "google/nano-banana-lite/edit",
       "minimax/music-3",
       "topaz/upscale/image/precision",
+      "topaz/upscale/video/precision",
       "xai/grok-imagine-image/v2.0/edit",
       "xai/grok-imagine-image/v2.0/text-to-image",
     ]);

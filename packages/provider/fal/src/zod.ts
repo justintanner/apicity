@@ -561,6 +561,69 @@ export const FalTopazUpscaleImagePrecisionRequestSchema = z.object({
   // Text Refine only; upstream's floor is 0.01, not 0.
   strength: z.number().min(0.01).max(1).nullable().optional(),
 });
+// Topaz Precision Video Upscale
+// ---------------------------------------------------------------------------
+
+// Topaz ships new precision engines and new revisions of existing ones on its
+// own cadence — the endpoint's own prose names seven families while the schema
+// enum already carries twenty-one concrete ids, and "Proteus Natural" appears
+// in neither the prose list nor the older Gigapixel image family — so the enum
+// is unioned with a family alias rather than closed or opened to a bare
+// `z.string()`. The alias matches Topaz's actual id grammar: title-cased words,
+// a literal `&`, and an optional trailing revision number ("Gaia 2",
+// "Proteus V3").
+const FalTopazPrecisionVideoModelAliasSchema = z
+  .string()
+  .regex(
+    /^[A-Z][A-Za-z]*(?: (?:[A-Z][A-Za-z]*|&))*(?: (?:V\d+|\d+))?$/,
+    'Expected a listed model or a Topaz precision alias (e.g. "Proteus V3")'
+  );
+
+export const FalTopazUpscaleVideoPrecisionRequestSchema = z.object({
+  video_url: z.string(),
+  model: z
+    .enum([
+      "Proteus",
+      "Proteus Natural",
+      "Iris",
+      "Iris Low Quality",
+      "Dione DV",
+      "Dione TV",
+      "Dione Robust",
+      "Dione Dehalo",
+      "Dione Robust Dehalo",
+      "Artemis High Quality",
+      "Artemis Medium Quality",
+      "Artemis Low Quality",
+      "Artemis Strong Halo",
+      "Artemis Medium Halo",
+      "Artemis Aliasing & Moire",
+      "Gaia HQ",
+      "Gaia CG",
+      "Gaia 2",
+      "Rhea",
+      "Theia Fine Tune Detail",
+      "Theia Fine Tune Fidelity",
+    ])
+    .or(FalTopazPrecisionVideoModelAliasSchema)
+    .optional(),
+  // Upstream documents 1..4 inclusive, defaulting to 2 when omitted.
+  upscale_factor: z.number().min(1).max(4).optional(),
+  // Apollo frame interpolation runs only when this differs from the source FPS.
+  target_fps: z.number().int().min(16).max(60).nullable().optional(),
+  // Upstream types these enhancement levels as `number | null` with a
+  // model-dependent default, so null is an accepted way to ask for the model's
+  // own default.
+  compression: z.number().min(0).max(1).nullable().optional(),
+  noise: z.number().min(0).max(1).nullable().optional(),
+  halo: z.number().min(0).max(1).nullable().optional(),
+  // Film grain is a 0..0.1 band in 0.01 steps, not the 0..1 of the levels above.
+  grain: z.number().min(0).max(0.1).multipleOf(0.01).nullable().optional(),
+  recover_detail: z.number().min(0).max(1).nullable().optional(),
+  // Output codec toggle; upstream defaults to H265. The field name is
+  // upstream's own casing.
+  H264_output: z.boolean().optional(),
+});
 
 // ---------------------------------------------------------------------------
 // Nano Banana text-to-image
@@ -1968,6 +2031,17 @@ export type FalTopazUpscaleImagePrecisionRequestInput =
 export type FalTopazUpscaleImagePrecisionParsedRequest = z.output<
   typeof FalTopazUpscaleImagePrecisionRequestSchema
 >;
+export type FalTopazUpscaleVideoPrecisionParams = z.infer<
+  typeof FalTopazUpscaleVideoPrecisionRequestSchema
+>;
+export type FalTopazUpscaleVideoPrecisionRequest = z.input<
+  typeof FalTopazUpscaleVideoPrecisionRequestSchema
+>;
+export type FalTopazUpscaleVideoPrecisionRequestInput =
+  FalTopazUpscaleVideoPrecisionRequest;
+export type FalTopazUpscaleVideoPrecisionParsedRequest = z.output<
+  typeof FalTopazUpscaleVideoPrecisionRequestSchema
+>;
 export type FalSeedreamV5LiteEditParams = z.infer<
   typeof FalSeedreamV5LiteEditRequestSchema
 >;
@@ -2719,6 +2793,7 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "google/nano-banana-lite/edit": FalNanoBanana2LiteEditRequestSchema,
   "google/virtual-try-on": FalVirtualTryOnRequestSchema,
   "topaz/upscale/image/precision": FalTopazUpscaleImagePrecisionRequestSchema,
+  "topaz/upscale/video/precision": FalTopazUpscaleVideoPrecisionRequestSchema,
   "fal-ai/bytedance/seedream/v5/lite/edit": FalSeedreamV5LiteEditRequestSchema,
   "fal-ai/bytedance/seedream/v5/lite/text-to-image":
     FalSeedreamV5LiteTextToImageRequestSchema,

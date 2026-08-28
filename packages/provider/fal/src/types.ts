@@ -49,6 +49,7 @@ export type {
   FalNanoBanana2LiteEditParams,
   FalVirtualTryOnParams,
   FalTopazUpscaleImagePrecisionParams,
+  FalTopazUpscaleVideoPrecisionParams,
   FalSeedreamV5LiteEditParams,
   FalSeedreamV5LiteTextToImageParams,
   FalSeedSpeechTtsV2Params,
@@ -157,6 +158,9 @@ export type {
   FalTopazUpscaleImagePrecisionRequest,
   FalTopazUpscaleImagePrecisionRequestInput,
   FalTopazUpscaleImagePrecisionParsedRequest,
+  FalTopazUpscaleVideoPrecisionRequest,
+  FalTopazUpscaleVideoPrecisionRequestInput,
+  FalTopazUpscaleVideoPrecisionParsedRequest,
   FalSeedreamV5LiteEditRequest,
   FalSeedreamV5LiteEditRequestInput,
   FalSeedreamV5LiteEditParsedRequest,
@@ -332,6 +336,7 @@ import type {
   FalNanoBanana2LiteEditRequest,
   FalVirtualTryOnRequest,
   FalTopazUpscaleImagePrecisionRequest,
+  FalTopazUpscaleVideoPrecisionRequest,
   FalSeedreamV5LiteEditRequest,
   FalSeedreamV5LiteTextToImageRequest,
   FalSeedSpeechTtsV2Request,
@@ -945,6 +950,11 @@ export interface FalVirtualTryOnResponse {
 // whose only required member is `url`, which is exactly FalFile's shape.
 export interface FalTopazUpscaleImagePrecisionResponse {
   image: FalFile;
+}
+// Topaz Precision Video Upscale. Upstream returns a single File whose only
+// required member is `url`, which is exactly FalFile's shape.
+export interface FalTopazUpscaleVideoPrecisionResponse {
+  video: FalFile;
 }
 
 // Qwen Image (text-to-image and edit)
@@ -1866,8 +1876,20 @@ export interface FalRunTopazUpscaleImageNamespace {
   precision: FalTopazUpscaleImagePrecisionFn;
 }
 
+type FalTopazUpscaleVideoPrecisionFn = ((
+  params: FalTopazUpscaleVideoPrecisionRequest,
+  signal?: AbortSignal
+) => Promise<FalTopazUpscaleVideoPrecisionResponse>) & {
+  schema: ApicitySchema<FalTopazUpscaleVideoPrecisionRequest>;
+};
+
+export interface FalRunTopazUpscaleVideoNamespace {
+  precision: FalTopazUpscaleVideoPrecisionFn;
+}
+
 export interface FalRunTopazUpscaleNamespace {
   image: FalRunTopazUpscaleImageNamespace;
+  video: FalRunTopazUpscaleVideoNamespace;
 }
 
 export interface FalRunTopazNamespace {

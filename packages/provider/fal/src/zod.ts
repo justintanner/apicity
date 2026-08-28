@@ -1029,6 +1029,35 @@ export const FalSeedreamV5LiteTextToImageRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// Bytedance Seedream v5 Pro layerize
+// ---------------------------------------------------------------------------
+
+// Decomposes one image into a base image plus independently editable layers.
+// `image_url` is the only required field; everything else is optional with an
+// upstream default. Docs:
+// https://fal.ai/models/bytedance/seedream/v5/pro/layerize/api
+export const FalSeedreamV5ProLayerizeRequestSchema = z.object({
+  // Upstream constrains the source image to 512x512..6000x6000 total pixels,
+  // an aspect ratio within [1/16, 16], and 30 MB. Those are upstream capacity
+  // rules over the fetched bytes, not request shape, so they are not encoded.
+  image_url: z.string(),
+  // Optional instructions naming which elements to separate; the default empty
+  // string lets the model pick the major elements. Normalized
+  // `<bbox>left top right bottom</bbox>` tags target precise coordinates.
+  prompt: z.string().optional(),
+  // Resolution tier for the base image and every layer. A fixed vocabulary
+  // rather than a model registry, so it stays a closed enum.
+  image_size: z.enum(["auto", "auto_1K", "auto_1.5K", "auto_2K"]).optional(),
+  // Prompt optimization mode: `standard` favours image quality, `fast` cuts
+  // generation time. Also a closed vocabulary.
+  enhance_prompt_mode: z.enum(["standard", "fast"]).optional(),
+  sync_mode: z.boolean().optional(),
+  // Upstream notes that disabling the safety checker requires account
+  // authorization; unauthorized requests are checked regardless.
+  enable_safety_checker: z.boolean().optional(),
+});
+
+// ---------------------------------------------------------------------------
 // Bytedance Seed Speech TTS v2
 // ---------------------------------------------------------------------------
 
@@ -2215,6 +2244,17 @@ export type FalSeedreamV5LiteTextToImageRequestInput =
 export type FalSeedreamV5LiteTextToImageParsedRequest = z.output<
   typeof FalSeedreamV5LiteTextToImageRequestSchema
 >;
+export type FalSeedreamV5ProLayerizeParams = z.infer<
+  typeof FalSeedreamV5ProLayerizeRequestSchema
+>;
+export type FalSeedreamV5ProLayerizeRequest = z.input<
+  typeof FalSeedreamV5ProLayerizeRequestSchema
+>;
+export type FalSeedreamV5ProLayerizeRequestInput =
+  FalSeedreamV5ProLayerizeRequest;
+export type FalSeedreamV5ProLayerizeParsedRequest = z.output<
+  typeof FalSeedreamV5ProLayerizeRequestSchema
+>;
 export type FalSeedSpeechTtsV2Params = z.infer<
   typeof FalSeedSpeechTtsV2RequestSchema
 >;
@@ -2954,6 +2994,7 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "fal-ai/bytedance/seedream/v5/lite/edit": FalSeedreamV5LiteEditRequestSchema,
   "fal-ai/bytedance/seedream/v5/lite/text-to-image":
     FalSeedreamV5LiteTextToImageRequestSchema,
+  "bytedance/seedream/v5/pro/layerize": FalSeedreamV5ProLayerizeRequestSchema,
   "fal-ai/bytedance/seed-speech/tts/v2": FalSeedSpeechTtsV2RequestSchema,
   "minimax/music-3": FalMinimaxMusic3RequestSchema,
   "fal-ai/elevenlabs/speech-to-text/scribe-v2":

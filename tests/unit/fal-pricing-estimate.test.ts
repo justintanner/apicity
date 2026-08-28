@@ -141,6 +141,7 @@ describe("fal video pricing estimates", () => {
     "topaz/upscale/image/precision",
     "topaz/upscale/video/precision",
     "meshy/v7/image-to-3d",
+    "bytedance/seedream/v5/pro/layerize",
   ];
 
   it("covers every REQ-001 endpoint statically or on the dynamic list", () => {
@@ -936,6 +937,10 @@ describe("fal edit/image pricing estimates", () => {
     // compute-second-metered too, and its payload `duration` may be "auto",
     // so it does not even fix the OUTPUT length at request time. All eleven
     // therefore use fal's pricing-estimate API.
+    // compute-second-metered; bytedance/seedream/v5/pro/layerize is
+    // compute-second-metered too, and the layer count it returns is the
+    // model's choice rather than a request field. All eleven therefore use
+    // fal's pricing-estimate API.
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toEqual([
       "alibaba/qwen-image-3/edit",
       "alibaba/qwen-image-3/text-to-image",
@@ -943,6 +948,7 @@ describe("fal edit/image pricing estimates", () => {
       "alibaba/wan-3.0/reference-to-video",
       "alibaba/wan-3.0/text-to-video",
       "blackforestlabs/flux-video-upscale",
+      "bytedance/seedream/v5/pro/layerize",
       "google/nano-banana-2-lite",
       "google/nano-banana-lite/edit",
       "minimax/music-3",

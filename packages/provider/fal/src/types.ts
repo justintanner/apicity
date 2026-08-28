@@ -55,6 +55,7 @@ export type {
   FalMeshyV7ImageTo3dParams,
   FalSeedreamV5LiteEditParams,
   FalSeedreamV5LiteTextToImageParams,
+  FalSeedreamV5ProLayerizeParams,
   FalSeedSpeechTtsV2Params,
   FalMinimaxMusic3Params,
   FalElevenlabsSpeechToTextScribeV2Params,
@@ -179,6 +180,9 @@ export type {
   FalSeedreamV5LiteTextToImageRequest,
   FalSeedreamV5LiteTextToImageRequestInput,
   FalSeedreamV5LiteTextToImageParsedRequest,
+  FalSeedreamV5ProLayerizeRequest,
+  FalSeedreamV5ProLayerizeRequestInput,
+  FalSeedreamV5ProLayerizeParsedRequest,
   FalSeedSpeechTtsV2Request,
   FalSeedSpeechTtsV2RequestInput,
   FalSeedSpeechTtsV2ParsedRequest,
@@ -354,6 +358,7 @@ import type {
   FalMeshyV7ImageTo3dRequest,
   FalSeedreamV5LiteEditRequest,
   FalSeedreamV5LiteTextToImageRequest,
+  FalSeedreamV5ProLayerizeRequest,
   FalSeedSpeechTtsV2Request,
   FalMinimaxMusic3Request,
   FalElevenlabsSpeechToTextScribeV2Request,
@@ -1128,6 +1133,40 @@ export interface FalSeedreamV5LiteTextToImageResponse {
   seed: number;
 }
 
+// Bytedance Seedream v5 Pro layerize. fal's `Image` schema requires only
+// `url` and makes every other field nullable, including the `width`/`height`
+// that plain FalFile does not carry, so the item shape is modelled directly.
+export interface FalSeedreamV5ProLayerizeImage {
+  url: string;
+  content_type?: string | null;
+  file_name?: string | null;
+  file_size?: number | null;
+  width?: number | null;
+  height?: number | null;
+}
+
+// Layer bounds in the output base image's coordinate system. `normalized`
+// uses the integer range [0, 1000]; `absolute` uses pixels.
+export interface FalSeedreamV5ProLayerBoundingBox {
+  absolute: number[];
+  normalized: number[];
+}
+
+// The base image (z_index 0) carries no name, description or bounding box;
+// every separated layer does.
+export interface FalSeedreamV5ProLayer {
+  image: FalSeedreamV5ProLayerizeImage;
+  z_index: number;
+  bounding_box?: FalSeedreamV5ProLayerBoundingBox | null;
+  name?: string | null;
+  description?: string | null;
+}
+
+export interface FalSeedreamV5ProLayerizeResponse {
+  images: FalSeedreamV5ProLayerizeImage[];
+  layers: FalSeedreamV5ProLayer[];
+}
+
 // Bytedance Seed Speech TTS v2
 export type FalSeedSpeechTtsV2Voice =
   | "vivi_mixed_en_zh_ja_es_id"
@@ -1831,8 +1870,13 @@ export interface FalRunBytedanceSeedreamV5LiteNamespace {
   textToImage: FalSeedreamV5LiteTextToImageFn;
 }
 
+export interface FalRunBytedanceSeedreamV5ProNamespace {
+  layerize: FalSeedreamV5ProLayerizeFn;
+}
+
 export interface FalRunBytedanceSeedreamV5Namespace {
   lite: FalRunBytedanceSeedreamV5LiteNamespace;
+  pro: FalRunBytedanceSeedreamV5ProNamespace;
 }
 
 export interface FalRunBytedanceSeedreamNamespace {
@@ -1993,6 +2037,13 @@ type FalSeedreamV5LiteTextToImageFn = ((
   signal?: AbortSignal
 ) => Promise<FalSeedreamV5LiteTextToImageResponse>) & {
   schema: ApicitySchema<FalSeedreamV5LiteTextToImageRequest>;
+};
+
+type FalSeedreamV5ProLayerizeFn = ((
+  params: FalSeedreamV5ProLayerizeRequest,
+  signal?: AbortSignal
+) => Promise<FalSeedreamV5ProLayerizeResponse>) & {
+  schema: ApicitySchema<FalSeedreamV5ProLayerizeRequest>;
 };
 
 type FalAlibabaQwenImage3TextToImageFn = ((

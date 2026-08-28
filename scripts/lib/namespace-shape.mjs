@@ -18,11 +18,12 @@ import { REPO_ROOT, readProviderNames } from "./provider-inventory.mjs";
  * module compares several without merging them.
  *
  * Reading and checking are kept apart, following
- * `scripts/lib/provider-inventory.mjs` and `scripts/lib/export-surface.mjs`:
- * `read*` touch the filesystem or shell `git show`, `parse*` and `check*` are
- * pure source-in / report-out. That split is what lets the guard drive every
- * rule from synthetic committed fixtures instead of from four worktrees and a
- * pair of unmerged branches.
+ * `scripts/lib/provider-inventory.mjs` — and `scripts/lib/export-surface.mjs`,
+ * which is on no merged ref: it lands with
+ * `gc/ac-fxwes2-provider-export-surface`. `read*` touch the filesystem or
+ * shell `git show`, `parse*` and `check*` are pure source-in / report-out.
+ * That split is what lets the guard drive every rule from synthetic committed
+ * fixtures instead of from four worktrees and a pair of unmerged branches.
  *
  * Three things this module deliberately does NOT do:
  *
@@ -941,10 +942,10 @@ function patternsFor(baseline, provider) {
  * Ratchet one tree's inventories against a committed baseline.
  *
  * Pure, so the guard can drive it with synthetic inventories. A baseline entry
- * is a claim about the tree, so it ratchets in both directions, as
- * `checkExportSurface` does: a pattern that no longer matches anything
- * unresolved is itself a failure. Without that, the baseline would quietly
- * absorb coverage loss — the failure mode this whole module is a response to.
+ * is a claim about the tree, so it ratchets in both directions: a pattern that
+ * no longer matches anything unresolved is itself a failure. Without that, the
+ * baseline would quietly absorb coverage loss — the failure mode this whole
+ * module is a response to.
  *
  * A duplicate dot path is never baselined. One tree declaring the same path
  * twice is the in-tree half of `RF-1`: the merged shape of a fan-out that

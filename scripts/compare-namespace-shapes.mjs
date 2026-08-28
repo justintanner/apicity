@@ -398,7 +398,40 @@ export function main(argv = process.argv.slice(2), io = {}) {
     }
   }
 
+  // A --ref that does not resolve reads as an empty tree, and an empty tree
+  // never participates in a comparison - so without this a mistyped ref
+  // reports "0 collisions" and exits 0, which is the false green this command
+  // exists to prevent (review `RF-1`). A ref that resolves but carries no such
+  // provider is a different case and keeps the non-fatal stderr note below, so
+  // naming a provider that lives only on a sibling branch still works.
+  for (const participant of options.participants) {
+    if (participant.kind !== "ref") continue;
+    const resolved = git(REPO_ROOT, [
+      "rev-parse",
+      "--verify",
+      "--quiet",
+      `${participant.value}^{commit}`,
+    ]);
+    if (resolved) continue;
+    write(
+      stderr,
+      `namespace-shapes: --ref ${participant.value} does not resolve.`
+    );
+    return 2;
+  }
+
   const report = buildReport(options, REPO_ROOT);
+
+  // `resolveBase` already detects an unresolvable --base and records it in
+  // `baseSource`, and nothing acted on it: the run degraded into the unbased
+  // mode, where every pre-existing path is a false collision, and still exited
+  // 1 as though it were a report (review `RF-2`). Only an explicit --base is an
+  // error here - the unbased fallback, where no --base was given and `main`
+  // itself is missing, keeps its behaviour.
+  if (options.base !== null && report.base === null) {
+    write(stderr, `namespace-shapes: ${report.baseSource}.`);
+    return 2;
+  }
 
   // A provider no participant carries contributes nothing, so the run reports
   // "0 collisions" for it - which is the false green this whole command exists

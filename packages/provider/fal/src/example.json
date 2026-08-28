@@ -377,6 +377,15 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST geminiOmniFlash.edit": {
+    "source": "fal/google-gemini-omni-flash-edit",
+    "payload": {
+      "prompt": "Make this video anime. Keep everything else the same.",
+      "video_url": "https://storage.googleapis.com/falserverless/model_tests/video_models/mmaudio_input.mp4"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST gptImage1p5": {
     "source": "fal/gpt-image-1.5",
     "payload": {

@@ -817,6 +817,7 @@ fal	bytedance.seedream.v5.lite.edit	POST	https://fal.run/fal-ai/bytedance/seedre
 fal	bytedance.seedream.v5.lite.textToImage	POST	https://fal.run/fal-ai/bytedance/seedream/v5/lite/text-to-image	https://docs.fal.ai
 fal	bytedance.seedSpeech.tts.v2	POST	https://fal.run/fal-ai/bytedance/seed-speech/tts/v2	https://fal.ai/models/fal-ai/bytedance/seed-speech/tts/v2/api
 fal	falAi.elevenlabs.speechToText.scribeV2	POST	https://fal.run/fal-ai/elevenlabs/speech-to-text/scribe-v2	https://docs.fal.ai
+fal	geminiOmniFlash.edit	POST	https://fal.run/google/gemini-omni-flash/edit	https://fal.ai/models/google/gemini-omni-flash/edit/api
 fal	gptImage1p5	POST	https://api.fal.ai/v1/fal-ai/gpt-image-1.5	https://docs.fal.ai
 fal	gptImage1p5.edit	POST	https://fal.run/fal-ai/gpt-image-1.5/edit	https://docs.fal.ai
 fal	hunyuan.v3.instructEdit	POST	https://fal.run/fal-ai/hunyuan-image/v3/instruct/edit	https://docs.fal.ai

@@ -516,6 +516,18 @@ export const FalVirtualTryOnRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// Google Gemini Omni Flash edit (video-to-video)
+// ---------------------------------------------------------------------------
+
+export const FalGeminiOmniFlashEditRequestSchema = z.object({
+  // Upstream caps the prompt at 20,000 characters. Simple instructions work
+  // best; voice editing is not supported.
+  prompt: z.string().max(20_000),
+  // URL of the source video to edit. Required alongside the prompt.
+  video_url: z.string(),
+});
+
+// ---------------------------------------------------------------------------
 // Nano Banana text-to-image
 // ---------------------------------------------------------------------------
 
@@ -1889,6 +1901,17 @@ export type FalVirtualTryOnRequestInput = FalVirtualTryOnRequest;
 export type FalVirtualTryOnParsedRequest = z.output<
   typeof FalVirtualTryOnRequestSchema
 >;
+
+export type FalGeminiOmniFlashEditParams = z.infer<
+  typeof FalGeminiOmniFlashEditRequestSchema
+>;
+export type FalGeminiOmniFlashEditRequest = z.input<
+  typeof FalGeminiOmniFlashEditRequestSchema
+>;
+export type FalGeminiOmniFlashEditRequestInput = FalGeminiOmniFlashEditRequest;
+export type FalGeminiOmniFlashEditParsedRequest = z.output<
+  typeof FalGeminiOmniFlashEditRequestSchema
+>;
 export type FalSeedreamV5LiteEditParams = z.infer<
   typeof FalSeedreamV5LiteEditRequestSchema
 >;
@@ -2629,6 +2652,7 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "google/nano-banana-2-lite": FalNanoBanana2LiteTextToImageRequestSchema,
   "google/nano-banana-lite/edit": FalNanoBanana2LiteEditRequestSchema,
   "google/virtual-try-on": FalVirtualTryOnRequestSchema,
+  "google/gemini-omni-flash/edit": FalGeminiOmniFlashEditRequestSchema,
   "fal-ai/bytedance/seedream/v5/lite/edit": FalSeedreamV5LiteEditRequestSchema,
   "fal-ai/bytedance/seedream/v5/lite/text-to-image":
     FalSeedreamV5LiteTextToImageRequestSchema,

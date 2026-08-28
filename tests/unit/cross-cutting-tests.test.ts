@@ -41,6 +41,11 @@ const CREDENTIAL_WIRING_TESTS = [
   "tests/unit/recording-credential-hosts.test.ts",
 ] as const;
 
+// Namespace-shape suite (compares namespace shapes across sibling refs).
+const NAMESPACE_SHAPE_TESTS = [
+  "tests/unit/provider-namespace-shape.test.ts",
+] as const;
+
 const CATEGORIZED_TESTS: readonly string[] = [
   ...RECORDING_ENUMERATION_TESTS,
   ...SURFACE_INVENTORY_TESTS,
@@ -48,6 +53,7 @@ const CATEGORIZED_TESTS: readonly string[] = [
   ...REGISTRY_PARITY_TESTS,
   ...DOC_INVENTORY_TESTS,
   ...CREDENTIAL_WIRING_TESTS,
+  ...NAMESPACE_SHAPE_TESTS,
 ];
 
 function readRepoFile(relativePath: string): string {
@@ -55,7 +61,7 @@ function readRepoFile(relativePath: string): string {
 }
 
 describe("cross-cutting repo-wide guard tests", () => {
-  it("lists recording-enumeration, surface-inventory, source-pin, registry-parity, doc-inventory, and credential-wiring tests", () => {
+  it("lists recording-enumeration, surface-inventory, source-pin, registry-parity, doc-inventory, credential-wiring, and namespace-shape tests", () => {
     for (const path of RECORDING_ENUMERATION_TESTS) {
       expect(CROSS_CUTTING_TESTS).toContain(path);
     }
@@ -72,6 +78,9 @@ describe("cross-cutting repo-wide guard tests", () => {
       expect(CROSS_CUTTING_TESTS).toContain(path);
     }
     for (const path of CREDENTIAL_WIRING_TESTS) {
+      expect(CROSS_CUTTING_TESTS).toContain(path);
+    }
+    for (const path of NAMESPACE_SHAPE_TESTS) {
       expect(CROSS_CUTTING_TESTS).toContain(path);
     }
   });
@@ -151,6 +160,17 @@ describe("cross-cutting repo-wide guard tests", () => {
       const source = readRepoFile(relativePath);
       expect(source, relativePath).toContain("FAL_ADMIN_API_KEY");
       expect(source, relativePath).toContain("api.fal.ai");
+    }
+  });
+
+  it("namespace-shape tests compare shapes across refs", () => {
+    // A single-tree reading of this invariant restates `tsc`: the shapes only
+    // disagree between sibling refs, which is why this guard is registered
+    // here rather than under a provider scope (ac-j4z1t1).
+    for (const relativePath of NAMESPACE_SHAPE_TESTS) {
+      const source = readRepoFile(relativePath);
+      expect(source, relativePath).toContain("checkNamespaceCollisions");
+      expect(source, relativePath).toContain("callable-with-children");
     }
   });
 

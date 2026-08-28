@@ -224,6 +224,7 @@ export {
   FluxKontextSuccessFlagSchema,
   KieGemini35FlashStreamGenerateContentRequestSchema,
   KieGemini36FlashStreamGenerateContentRequestSchema,
+  KieGemini37FlashStreamGenerateContentRequestSchema,
   KieGemini3FlashV1betamodelsStreamGenerateContentRequestSchema,
   KieGeminiContentSchema,
   KieGeminiFileDataSchema,
@@ -297,6 +298,19 @@ export {
   KieGemini36FlashOpenaiToolFunctionSchema,
   KieGemini36FlashOpenaiToolSchema,
   KieGemini36FlashOpenaiToolTypeSchema,
+  KieGemini37FlashOpenaiChatCompletionsRequestSchema,
+  KieGemini37FlashOpenaiContentItemSchema,
+  KieGemini37FlashOpenaiContentItemTypeSchema,
+  KieGemini37FlashOpenaiMediaContentItemSchema,
+  KieGemini37FlashOpenaiMessageRoleSchema,
+  KieGemini37FlashOpenaiMessageSchema,
+  KieGemini37FlashOpenaiReasoningEffortSchema,
+  KieGemini37FlashOpenaiResponseFormatSchema,
+  KieGemini37FlashOpenaiTextContentItemSchema,
+  KieGemini37FlashOpenaiToolFunctionParametersSchema,
+  KieGemini37FlashOpenaiToolFunctionSchema,
+  KieGemini37FlashOpenaiToolSchema,
+  KieGemini37FlashOpenaiToolTypeSchema,
   KieGemini3ProChatCompletionsRequestSchema,
   KieGemini3ProContentItemSchema,
   KieGemini3ProContentItemTypeSchema,
@@ -399,6 +413,7 @@ export { createGemini25FlashProvider } from "./gemini-25-flash";
 export { createGemini3FlashProvider } from "./gemini-3-flash";
 export { createGemini35FlashOpenaiProvider } from "./gemini-35-flash-openai";
 export { createGemini36FlashOpenaiProvider } from "./gemini-36-flash-openai";
+export { createGemini37FlashOpenaiProvider } from "./gemini-37-flash-openai";
 export { createGemini3ProProvider } from "./gemini-3-pro";
 export { createGemini25ProProvider } from "./gemini-25-pro";
 
@@ -1046,6 +1061,8 @@ export type {
   KieGemini35FlashStreamGenerateContentParsedRequest,
   KieGemini36FlashStreamGenerateContentRequest,
   KieGemini36FlashStreamGenerateContentParsedRequest,
+  KieGemini37FlashStreamGenerateContentRequest,
+  KieGemini37FlashStreamGenerateContentParsedRequest,
   KieGemini3FlashV1betamodelsStreamGenerateContentRequest,
   KieGemini3FlashV1betamodelsStreamGenerateContentParsedRequest,
   GeminiOmniAudioCreateData,
@@ -1305,6 +1322,21 @@ export type {
   KieGemini36FlashOpenaiToolFunction,
   KieGemini36FlashOpenaiToolFunctionParameters,
   KieGemini36FlashOpenaiToolType,
+  KieGemini37FlashOpenaiChatCompletionsRequest,
+  KieGemini37FlashOpenaiChatCompletionsRequestInput,
+  KieGemini37FlashOpenaiChatCompletionsParsedRequest,
+  KieGemini37FlashOpenaiContentItem,
+  KieGemini37FlashOpenaiContentItemType,
+  KieGemini37FlashOpenaiMediaContentItem,
+  KieGemini37FlashOpenaiMessage,
+  KieGemini37FlashOpenaiMessageRole,
+  KieGemini37FlashOpenaiReasoningEffort,
+  KieGemini37FlashOpenaiResponseFormat,
+  KieGemini37FlashOpenaiTextContentItem,
+  KieGemini37FlashOpenaiTool,
+  KieGemini37FlashOpenaiToolFunction,
+  KieGemini37FlashOpenaiToolFunctionParameters,
+  KieGemini37FlashOpenaiToolType,
   KieGemini3ProChatCompletionsRequest,
   KieGemini3ProChatCompletionsRequestInput,
   KieGemini3ProChatCompletionsParsedRequest,
@@ -1349,6 +1381,9 @@ export type {
   KieGemini36FlashGenerateContentResponse,
   KieGemini36FlashStreamGenerateContentChunk,
   KieGemini36FlashStreamGenerateContentResult,
+  KieGemini37FlashGenerateContentResponse,
+  KieGemini37FlashStreamGenerateContentChunk,
+  KieGemini37FlashStreamGenerateContentResult,
   KieGemini3FlashV1betamodelsGenerateContentResponse,
   KieGemini3FlashV1betamodelsStreamGenerateContentChunk,
   KieGemini3FlashV1betamodelsStreamGenerateContentResult,
@@ -1414,6 +1449,18 @@ export type {
   KieGemini36FlashOpenaiCompletionTokensDetails,
   KieGemini36FlashOpenaiProvider,
 } from "./gemini-36-flash-openai";
+
+export type {
+  KieGemini37FlashOpenaiChatChoice,
+  KieGemini37FlashOpenaiChatCompletionChunk,
+  KieGemini37FlashOpenaiChatCompletionResponse,
+  KieGemini37FlashOpenaiChatCompletionsResult,
+  KieGemini37FlashOpenaiChatDelta,
+  KieGemini37FlashOpenaiChatMessage,
+  KieGemini37FlashOpenaiChatUsage,
+  KieGemini37FlashOpenaiCompletionTokensDetails,
+  KieGemini37FlashOpenaiProvider,
+} from "./gemini-37-flash-openai";
 
 export type {
   KieGemini3ProChatChoice,

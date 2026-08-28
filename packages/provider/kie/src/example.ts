@@ -568,6 +568,24 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST gemini.v1.models.gemini37Flash.streamGenerateContent": {
+    "source": "kie/gemini-37-flash-auth-error",
+    "payload": {
+      "stream": false,
+      "contents": [
+        {
+          "role": "user",
+          "parts": [
+            {
+              "text": "ping"
+            }
+          ]
+        }
+      ]
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST gemini.v1.models.gemini3FlashV1betamodels.streamGenerateContent": {
     "source": "kie/gemini-3-flash-v1beta-auth-error",
     "payload": {
@@ -649,6 +667,26 @@ const EXAMPLES: Record<string, EndpointExample> = {
   },
   "POST gemini36FlashOpenai.v1.chat.completions": {
     "source": "kie/gemini-36-flash-openai-chat-auth-error",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "ping"
+            }
+          ]
+        }
+      ],
+      "stream": false,
+      "include_thoughts": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST gemini37FlashOpenai.v1.chat.completions": {
+    "source": "kie/gemini-37-flash-openai-chat-auth-error",
     "payload": {
       "messages": [
         {

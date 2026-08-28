@@ -113,7 +113,7 @@
       "displayKeys": 157,
       "schemaWithoutPricing": 15,
       "pricingOnly": 30,
-      "endpoints": 69
+      "endpoints": 71
     }
   },
   "source": {
@@ -126,12 +126,12 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:c5f840cb09c74719cd20e192ecaa99847521dceedbf5f2f815686f889002b478",
+      "packages/provider/kie/src/zod.ts": "sha256:8aa871fb1b7ef03a0722e6fa4e98223a64fc802a7175fb0a16b69f1f242687a8",
       "packages/provider/kie/src/model-schemas.ts": "sha256:8baf8268a4edfc8470de99c660ccedd501da4135794c1b0ec5d67d6098585a58",
-      "packages/provider/kie/src/kie.ts": "sha256:46fb3092961eb2a9b4f74232aa5c8da5064d0b1d7c9d6eefa4e5de1c117b7031",
+      "packages/provider/kie/src/kie.ts": "sha256:4be9c031dfbd8fd5d354d7e680d7db38a9eae60209ebbd51abd61d90f26d873c",
       "packages/provider/cost/src/pricing/kie.ts": "sha256:97a5e2cdb95c9caee7c46121fede6af30384100e1be96068bd48cce3be2c6df6",
-      "packages/provider/cost/src/slugs.ts": "sha256:b9574c70406029dbd2ba97b0f8f4ab009f16f9140658854e22a3c4c7d68ba5d3",
-      "scripts/endpoint-docs.tsv": "sha256:199acad8130f3c810c8d0c852ce44cd0960494c8364cc6a35f47146b69a729fc"
+      "packages/provider/cost/src/slugs.ts": "sha256:faa0840d956492e8d67e1e17d640004c3171a88e8aa281960bec19d7dd3860ea",
+      "scripts/endpoint-docs.tsv": "sha256:4a497a09aad9236891b2aa5b1e043583ecbdf790a8c1de62d5876b6876054a34"
     }
   },
   "rows": [
@@ -21807,6 +21807,16 @@
       },
       {
         "provider": "kie",
+        "dotPath": "gemini37FlashOpenai.v1.chat.completions",
+        "method": "POST",
+        "fullUrl": "https://api.kie.ai/gemini-3-7-flash-openai/v1/chat/completions",
+        "docsUrl": "https://docs.kie.ai/market/gemini/gemini-3-7-flash-openai",
+        "linkedPricingKeys": [],
+        "disposition": "supported",
+        "rationale": "Documented callable endpoint is retained for architecture review even when its pricing is model-keyed."
+      },
+      {
+        "provider": "kie",
         "dotPath": "gemini3Pro.v1.chat.completions",
         "method": "POST",
         "fullUrl": "https://api.kie.ai/gemini-3-pro/v1/chat/completions",
@@ -21841,6 +21851,16 @@
         "method": "POST",
         "fullUrl": "https://api.kie.ai/gemini/v1/models/gemini-3-6-flash:streamGenerateContent",
         "docsUrl": "https://docs.kie.ai/market/gemini/gemini-3-6-flash",
+        "linkedPricingKeys": [],
+        "disposition": "supported",
+        "rationale": "Documented callable endpoint is retained for architecture review even when its pricing is model-keyed."
+      },
+      {
+        "provider": "kie",
+        "dotPath": "gemini.v1.models.gemini37Flash.streamGenerateContent",
+        "method": "POST",
+        "fullUrl": "https://api.kie.ai/gemini/v1/models/gemini-3-7-flash:streamGenerateContent",
+        "docsUrl": "https://docs.kie.ai/market/gemini/gemini-3-7-flash",
         "linkedPricingKeys": [],
         "disposition": "supported",
         "rationale": "Documented callable endpoint is retained for architecture review even when its pricing is model-keyed."
@@ -24950,11 +24970,11 @@
         "unclassified": 0
       },
       "endpoints": {
-        "count": 69,
-        "POST": 52,
+        "count": 71,
+        "POST": 54,
         "GET": 17,
         "dispositionCounts": {
-          "supported": 46,
+          "supported": 48,
           "free-nonbillable": 23,
           "unsupported-endpoint": 0,
           "token-billed": 0,

@@ -64,24 +64,6 @@ const YOUTUBE_LAYER =
   "export decision deferred to the burn-down bead";
 
 const EXPORT_SURFACE_BASELINE: Record<string, Record<string, string>> = {
-  alibaba: {
-    AlibabaPostV1ChatNamespace: VERB_LAYER,
-    AlibabaPostV1Namespace: VERB_LAYER,
-    AlibabaPostStreamV1ChatNamespace: VERB_LAYER,
-    AlibabaPostStreamV1Namespace: VERB_LAYER,
-    AlibabaPostApiV1VideoGenerationNamespace: VERB_LAYER,
-    AlibabaPostApiV1ImageGenerationNamespace: VERB_LAYER,
-    AlibabaPostApiV1MultimodalGenerationNamespace: VERB_LAYER,
-    AlibabaPostApiV1AigcNamespace: VERB_LAYER,
-    AlibabaPostApiV1ServicesNamespace: VERB_LAYER,
-    AlibabaPostApiV1Namespace: VERB_LAYER,
-    AlibabaPostApiNamespace: VERB_LAYER,
-    AlibabaPostNamespace: VERB_LAYER,
-    AlibabaGetV1Namespace: VERB_LAYER,
-    AlibabaGetApiV1Namespace: VERB_LAYER,
-    AlibabaGetApiNamespace: VERB_LAYER,
-    AlibabaGetNamespace: VERB_LAYER,
-  },
   anthropic: {
     AnthropicPostStreamV1Namespace: ANTHROPIC_VERB_LAYER,
     AnthropicPostV1Namespace: ANTHROPIC_VERB_LAYER,
@@ -148,14 +130,13 @@ const EXPORT_SURFACE_BASELINE: Record<string, Record<string, string>> = {
 // widening of what the guard tolerates.
 const EXPECTED_BASELINE_DISTRIBUTION: Record<string, number> = {
   openai: 24,
-  alibaba: 16,
   simplefunctions: 13,
   anthropic: 4,
   elevenlabs: 4,
   dolthub: 2,
   youtube: 1,
 };
-const EXPECTED_BASELINE_TOTAL = 64;
+const EXPECTED_BASELINE_TOTAL = 48;
 
 type Surface = ReturnType<typeof readProviderExportSurfaces>[number];
 

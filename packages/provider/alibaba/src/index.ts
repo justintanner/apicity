@@ -107,6 +107,24 @@ export type {
   AlibabaUploadPolicyData,
   AlibabaUploadPolicyResponse,
   AlibabaUploadPolicyParams,
+  // Promoted out of EXPORT_SURFACE_BASELINE (ac-9at9f2.2): a consumer that
+  // holds one of these values must be able to name its type (D-1).
+  AlibabaPostV1ChatNamespace,
+  AlibabaPostV1Namespace,
+  AlibabaPostStreamV1ChatNamespace,
+  AlibabaPostStreamV1Namespace,
+  AlibabaPostApiV1VideoGenerationNamespace,
+  AlibabaPostApiV1ImageGenerationNamespace,
+  AlibabaPostApiV1MultimodalGenerationNamespace,
+  AlibabaPostApiV1AigcNamespace,
+  AlibabaPostApiV1ServicesNamespace,
+  AlibabaPostApiV1Namespace,
+  AlibabaPostApiNamespace,
+  AlibabaPostNamespace,
+  AlibabaGetV1Namespace,
+  AlibabaGetApiV1Namespace,
+  AlibabaGetApiNamespace,
+  AlibabaGetNamespace,
   AlibabaProvider,
 } from "./types";
 export type { AlibabaMultimodalGenerationRequestInput } from "./zod";

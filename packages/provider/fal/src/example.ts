@@ -510,6 +510,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST minimax.h3.textToVideo": {
+    "source": "fal/minimax-h3-text-to-video",
+    "payload": {
+      "prompt": "A white kitten chases a butterfly across a sunlit garden. Gentle camera tracking, natural movement, soft afternoon light.",
+      "duration": 5,
+      "resolution": "480P",
+      "prompt_expansion_mode": "disabled"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST nanoBanana.edit": {
     "source": "fal/nano-banana-edit",
     "payload": {

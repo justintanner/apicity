@@ -393,6 +393,19 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST geminiOmniFlash.referenceToVideo": {
+    "source": "fal/google-gemini-omni-flash-reference-to-video",
+    "payload": {
+      "prompt": "<IMAGE_REF_0> walks slowly through a sunlit meadow, camera holding still.",
+      "image_urls": [
+        "https://storage.googleapis.com/falserverless/example_inputs/veo31-r2v-input-1.png"
+      ],
+      "aspect_ratio": "16:9",
+      "duration": 3
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST gptImage1p5": {
     "source": "fal/gpt-image-1.5",
     "payload": {

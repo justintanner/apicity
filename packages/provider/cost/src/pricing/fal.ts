@@ -480,6 +480,23 @@ const gptImagePerImage = (
 //     unit that no request field determines — so deriving a rate from
 //     duration would invent one. The premium `alibaba/wan-3.0-prime/*`
 //     siblings bill per OUTPUT second instead and are priced statically below.
+//   - google/gemini-omni-flash/reference-to-video: billed purely per token as
+//     read 2026-08-28 ("Billing is based on total token consumption. Input
+//     tokens (text/audio/video) cost $1.875 per 1 million tokens. Output
+//     tokens cost $21.875 per 1 million tokens"), and its "approximately
+//     $0.13 per second of video" figure is both explicitly approximate and
+//     conditioned on 720p — a resolution the request cannot select, since it
+//     carries only `aspect_ratio` (16:9 or 9:16). The payload does carry a
+//     `duration`, but the billed quantity also covers the prompt and the one
+//     to ten reference images fal fetches from `image_urls`, whose token
+//     counts no request field measures. fal's own pricing API returns the
+//     bare `{"unit":"units","unit_price":1}` shape for this endpoint. Two
+//     live duration-3 calls with the SAME single reference image billed
+//     DIFFERENT quantities — 0.386938 units (the recorded one) and 0.387174
+//     units — summing to USD 0.774112 on GET /v1/models/usage for the same
+//     bucket, against a page rate that predicts USD 0.39 per call. An
+//     identical payload that bills a different amount twice running is not
+//     payload-derivable at all.
 export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "alibaba/qwen-image-3/edit",
   "alibaba/qwen-image-3/text-to-image",
@@ -487,6 +504,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "alibaba/wan-3.0/reference-to-video",
   "alibaba/wan-3.0/text-to-video",
   "blackforestlabs/flux-video-upscale",
+  "google/gemini-omni-flash/reference-to-video",
   "google/nano-banana-2-lite",
   "google/nano-banana-lite/edit",
   "xai/grok-imagine-image/v2.0/edit",

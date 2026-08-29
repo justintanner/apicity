@@ -115,22 +115,35 @@ import { repoRoot } from "./provider-scope.mjs";
  * pinned to this value by `tests/unit/cross-cutting-tests.test.ts`.
  *
  * The value is the median of three runs of the WHOLE block at its current
- * nine-entry membership — 684 tests — on an Intel i7-8700 (12 threads, Linux
- * 6.8.0-124, Node 22.23.2): 5.39s, 5.78s and 5.94s wall. It supersedes the
- * 5.7 reference-machine figure, which was recorded at five entries and which
- * three subsequent additions never revisited; the previous note asked the next
- * addition to re-measure the block whole rather than append to that history,
- * and this is that measurement (ac-j4z1t1). Because the machine changed with
- * it, the prose pinned to this number names the machine rather than calling it
- * the reference one. Every entry stays filesystem- and source-parse-only; the
- * credential guard's dominant cost is one JSON parse of the fal HAR corpus plus
- * a single pass over the test tree, and the namespace-shape guard parses all 29
- * provider factories in about 0.3s.
+ * ten-entry membership — 700 tests across 10 files — on the machine this
+ * constant now designates as the reference one: an Intel Core i7-8700 @
+ * 3.20GHz, 12 threads, Linux 6.8.0-124, Node v22.23.2. After one warm-up run,
+ * excluded, the three timed runs were 8.643s, 8.577s and 8.353s wall; the
+ * median is 8.577s, recorded here to one decimal place. The host was carrying
+ * its normal concurrent-agent load throughout — 1-minute load averages of
+ * 9.67, 11.52 and 12.28 on 12 threads — and the three times still agree to
+ * within 3.5%, so this describes the block as it is actually run here rather
+ * than on an idle machine.
  *
- * Re-measure the whole block and update it here when the block's membership
- * changes; the guard test will name the prose that has to follow.
+ * Naming the machine is as much the point as the number is. No file recorded
+ * which host produced the earlier figures, so three successive additions each
+ * declined to overwrite a number they could not reproduce and the constant
+ * drifted five entries behind the block (ac-wojr6j). This measurement
+ * supersedes both figures it replaces: the 5.7 recorded at five entries, and
+ * the 5.8 median recorded at nine entries on this same host (ac-j4z1t1). The
+ * 9.878s / 8.533s pair that arrived with the export-surface guard describes a
+ * different, unnamed machine and was never this block's cost on this one.
+ *
+ * Every entry stays filesystem- and source-parse-only; the credential guard's
+ * dominant cost is one JSON parse of the fal HAR corpus plus a single pass
+ * over the test tree, and the namespace-shape guard parses all 29 provider
+ * factories in about 0.3s.
+ *
+ * Re-measure the whole block on this machine and update it here when the
+ * block's membership changes; the guard test will name the prose that has to
+ * follow.
  */
-export const CROSS_CUTTING_COST_SECONDS = 5.8;
+export const CROSS_CUTTING_COST_SECONDS = 8.6;
 
 /**
  * The one sentence describing the block's cost, built from the single source.

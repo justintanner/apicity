@@ -42,7 +42,8 @@ import { REPO_ROOT, readProviderNames } from "./provider-inventory.mjs";
  *     timeout, and this checker runs in the cross-cutting block of every
  *     provider's fast gate. Parse-only `ts.createSourceFile` stays cheap enough
  *     that widening the file set from 29 files to 216 costs 0.40s (measured
- *     below), which keeps `CROSS_CUTTING_COST_SECONDS` unmoved. The
+ *     in `scripts/lib/cross-cutting-tests.mjs`), which keeps
+ *     `CROSS_CUTTING_COST_SECONDS` unmoved. The
  *     importability proof that genuinely needs a program lives in the
  *     fal-scoped `tests/fixtures/fal-request-input-types.ts` fixture instead.
  *   - It parses each module exactly once. Declarations, named re-exports and

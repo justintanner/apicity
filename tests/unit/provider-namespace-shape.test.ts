@@ -924,7 +924,8 @@ const isSchemaPath = (dotPath: string) =>
  * those schemas locally instead of importing them from the provider's
  * `src/zod.ts`, so the resolver reached them the way it reaches any other
  * local declaration. They now live in `src/zod.ts` and are imported back, so
- * no provider source file declares a schema of its own any more.
+ * every schema path the walk reaches now reads as `unresolved`: the name each
+ * one attaches is imported, not declared in the file that attaches it.
  *
  * A path appearing here again therefore means a NEWLY locally declared schema
  * — a reviewable event, and one whose fix belongs to that provider's

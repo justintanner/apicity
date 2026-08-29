@@ -81,6 +81,15 @@ import { repoRoot } from "./provider-scope.mjs";
  * literal — and, like the rest of this list, is named after no provider, so no
  * provider scope selects it.
  *
+ * `scripts/compare-namespace-shapes.mjs` is the cross-ref half of that same
+ * invariant, and nothing in the repository imports it, so
+ * `tests/unit/compare-namespace-shapes-cli.test.ts` is the only thing holding
+ * its argument handling, base resolution and 0/1/2 exit contract. Both of the
+ * command's input guards — an unresolvable `--ref` that read as an empty tree,
+ * an explicit `--base` that degraded into the unbased mode — were false greens
+ * caught by review rather than by a gate, which is why the CLI's own regression
+ * cover is registered here rather than left to full CI.
+ *
  * The fast gates run these guards so a broken repo-wide invariant cannot pass
  * the local merge gate. They are filesystem- and source-parse-only (no Polly,
  * no network); `CROSS_CUTTING_COST_SECONDS` records their measured cost.
@@ -99,22 +108,31 @@ import { repoRoot } from "./provider-scope.mjs";
  * pinned to this value by `tests/unit/cross-cutting-tests.test.ts`.
  *
  * The value is the median of three runs of the WHOLE block at its current
- * nine-entry membership — 684 tests — on an Intel i7-8700 (12 threads, Linux
- * 6.8.0-124, Node 22.23.2): 5.39s, 5.78s and 5.94s wall. It supersedes the
- * 5.7 reference-machine figure, which was recorded at five entries and which
- * three subsequent additions never revisited; the previous note asked the next
- * addition to re-measure the block whole rather than append to that history,
- * and this is that measurement (ac-j4z1t1). Because the machine changed with
- * it, the prose pinned to this number names the machine rather than calling it
- * the reference one. Every entry stays filesystem- and source-parse-only; the
+ * ten-entry membership — 715 tests — on an Intel i7-8700 (12 threads, Linux
+ * 6.8.0-124, Node 22.23.2): 6.91s, 6.60s and 6.36s wall, taken at 1-minute
+ * load averages of 10.61, 10.32 and 11.90 after one discarded warm-up run. It
+ * supersedes the 5.8 figure, the same host's median at the previous nine-entry
+ * membership — 684 tests — at an unrecorded load (ac-j4z1t1, ac-nvlymt).
+ *
+ * The load averages are recorded because on this host they are the dominant
+ * term. `ac-wojr6j` re-measured a fixed ten-entry list of its own, on this same
+ * i7-8700 from a different branch, and found whole-block runs spanning roughly
+ * 4.8s to 9.5s purely tracking concurrent agent load; its 8.6s median was taken
+ * at 1-minute load averages of 9.67, 11.52 and 12.28. A figure without its load
+ * average is comparable to neither predecessor, and the two ten-entry figures
+ * are each correct for their own branch. The delta from 5.8 is therefore NOT
+ * attributed to the added entry: at n=3 that entry's cost is not separable from
+ * load noise here. Every entry stays filesystem- and source-parse-only; the
  * credential guard's dominant cost is one JSON parse of the fal HAR corpus plus
- * a single pass over the test tree, and the namespace-shape guard parses all 29
- * provider factories in about 0.3s.
+ * a single pass over the test tree, the namespace-shape guard parses all 29
+ * provider factories in about 0.3s, and the namespace-shape CLI guard writes
+ * and removes three temporary directories and makes a handful of read-only
+ * `git rev-parse` and `git show` calls.
  *
  * Re-measure the whole block and update it here when the block's membership
  * changes; the guard test will name the prose that has to follow.
  */
-export const CROSS_CUTTING_COST_SECONDS = 5.8;
+export const CROSS_CUTTING_COST_SECONDS = 6.6;
 
 /**
  * The one sentence describing the block's cost, built from the single source.
@@ -137,6 +155,7 @@ export const CROSS_CUTTING_TESTS = [
   "tests/unit/provider-inventory-docs.test.ts",
   "tests/unit/recording-credential-hosts.test.ts",
   "tests/unit/provider-namespace-shape.test.ts",
+  "tests/unit/compare-namespace-shapes-cli.test.ts",
 ];
 
 /**

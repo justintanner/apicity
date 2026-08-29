@@ -46,6 +46,11 @@ const NAMESPACE_SHAPE_TESTS = [
   "tests/unit/provider-namespace-shape.test.ts",
 ] as const;
 
+// Namespace-shape CLI suite (drives the cross-ref command's own surface).
+const NAMESPACE_SHAPE_CLI_TESTS = [
+  "tests/unit/compare-namespace-shapes-cli.test.ts",
+] as const;
+
 const CATEGORIZED_TESTS: readonly string[] = [
   ...RECORDING_ENUMERATION_TESTS,
   ...SURFACE_INVENTORY_TESTS,
@@ -54,6 +59,7 @@ const CATEGORIZED_TESTS: readonly string[] = [
   ...DOC_INVENTORY_TESTS,
   ...CREDENTIAL_WIRING_TESTS,
   ...NAMESPACE_SHAPE_TESTS,
+  ...NAMESPACE_SHAPE_CLI_TESTS,
 ];
 
 function readRepoFile(relativePath: string): string {
@@ -61,7 +67,7 @@ function readRepoFile(relativePath: string): string {
 }
 
 describe("cross-cutting repo-wide guard tests", () => {
-  it("lists recording-enumeration, surface-inventory, source-pin, registry-parity, doc-inventory, credential-wiring, and namespace-shape tests", () => {
+  it("lists recording-enumeration, surface-inventory, source-pin, registry-parity, doc-inventory, credential-wiring, namespace-shape, and namespace-shape CLI tests", () => {
     for (const path of RECORDING_ENUMERATION_TESTS) {
       expect(CROSS_CUTTING_TESTS).toContain(path);
     }
@@ -81,6 +87,9 @@ describe("cross-cutting repo-wide guard tests", () => {
       expect(CROSS_CUTTING_TESTS).toContain(path);
     }
     for (const path of NAMESPACE_SHAPE_TESTS) {
+      expect(CROSS_CUTTING_TESTS).toContain(path);
+    }
+    for (const path of NAMESPACE_SHAPE_CLI_TESTS) {
       expect(CROSS_CUTTING_TESTS).toContain(path);
     }
   });
@@ -171,6 +180,19 @@ describe("cross-cutting repo-wide guard tests", () => {
       const source = readRepoFile(relativePath);
       expect(source, relativePath).toContain("checkNamespaceCollisions");
       expect(source, relativePath).toContain("callable-with-children");
+    }
+  });
+
+  it("namespace-shape CLI tests drive the command and pin its guards", () => {
+    // A category of its own rather than a second slot in NAMESPACE_SHAPE_TESTS:
+    // this entry drives the CLI (`main`, `parseArgs`, `resolveBase`), not the
+    // detector, so it need not name the detector's collision vocabulary. What
+    // it must hold are the two input guards that were false greens found by
+    // review rather than by a gate (RF-1, RF-2).
+    for (const relativePath of NAMESPACE_SHAPE_CLI_TESTS) {
+      const source = readRepoFile(relativePath);
+      expect(source, relativePath).toContain("compare-namespace-shapes.mjs");
+      expect(source, relativePath).toContain("does not resolve");
     }
   });
 

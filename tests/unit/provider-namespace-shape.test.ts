@@ -859,12 +859,14 @@ describe("provider namespace shape: cross-ref comparison", () => {
  */
 const ZOD_SCHEMA =
   "the zod request schema every POST endpoint carries as `.schema`, imported " +
-  "from the provider's src/zod.ts and attached by Object.assign; metadata " +
-  "rather than a namespace, and cross-file resolution is out of scope";
+  "from the provider's src/zod.ts and attached by Object.assign; an imported " +
+  "identifier in plain value position is metadata rather than a namespace, so " +
+  "the resolver is deliberately never called on one";
 
 const KIE_RESPONSE_SCHEMA =
   "a zod response schema imported from src/zod.ts, the same metadata class as " +
-  "`.schema` under a different key";
+  "`.schema` under a different key, and deliberately not followed for the " +
+  "same reason";
 
 const NAMESPACE_SHAPE_BASELINE: Record<string, Record<string, string>> = {
   [ANY_PROVIDER]: {
@@ -890,10 +892,22 @@ const NAMESPACE_SHAPE_BASELINE: Record<string, Record<string, string>> = {
  */
 const EXPECTED_BASELINE_PROVIDERS = [ANY_PROVIDER, "kie", "simplefunctions"];
 
+/**
+ * One derivation, shared by every live-tree assertion that does not need its
+ * own.
+ *
+ * Reading the whole tree costs real time — it parses all 29 factory files plus
+ * the sibling modules they compose from — and this file runs in the
+ * cross-cutting block of every provider's fast gate. The assertions below read
+ * a derivation; only `it("derives the same inventory twice, byte for byte")`
+ * is about the act of deriving, so it is the one that still calls twice.
+ */
+const LIVE_TREE = readTreeNamespaceShapes(repoRoot);
+
 describe("provider namespace shape: the live tree", () => {
   it("resolves every namespace it does not baseline", () => {
     const problems = checkNamespaceShapeRatchet(
-      readTreeNamespaceShapes(repoRoot),
+      LIVE_TREE,
       NAMESPACE_SHAPE_BASELINE
     );
     expect(problems, problems.join("\n\n")).toEqual([]);
@@ -906,7 +920,7 @@ describe("provider namespace shape: the live tree", () => {
   });
 
   it("gives every dot path a shape from the closed vocabulary", () => {
-    for (const inventory of readTreeNamespaceShapes(repoRoot)) {
+    for (const inventory of LIVE_TREE) {
       for (const [dotPath, shape] of Object.entries(inventory.paths)) {
         expect(SHAPES, `${inventory.provider}: ${dotPath}`).toContain(shape);
       }
@@ -914,7 +928,7 @@ describe("provider namespace shape: the live tree", () => {
   });
 
   it("discovers every provider and its factory from disk", () => {
-    const inventories = readTreeNamespaceShapes(repoRoot);
+    const inventories = LIVE_TREE;
     expect(inventories.length).toBeGreaterThanOrEqual(29);
     expect(inventories.map((entry) => entry.provider)).toContain("fal");
 
@@ -926,7 +940,7 @@ describe("provider namespace shape: the live tree", () => {
   });
 
   it("resolves the provider root of every provider", () => {
-    const tree = readTreeNamespaceShapes(repoRoot);
+    const tree = LIVE_TREE;
     const opaque = tree
       .filter((inventory) => Object.hasOwn(inventory.paths, ROOT_PATH))
       .map((inventory) => inventory.provider);
@@ -948,9 +962,7 @@ describe("provider namespace shape: the live tree", () => {
     // its arguments for the first object literal would return `{ config }` and
     // fabricate `veo.config`; both readings produce `callable -> object` in a
     // flip table, so the children are what tell them apart.
-    const kie = readTreeNamespaceShapes(repoRoot).find(
-      (inventory) => inventory.provider === "kie"
-    );
+    const kie = LIVE_TREE.find((inventory) => inventory.provider === "kie");
     const paths = Object.keys(kie?.paths ?? {});
 
     expect(paths.filter((dotPath) => dotPath.startsWith("veo."))).not.toEqual(
@@ -966,7 +978,7 @@ describe("provider namespace shape: the live tree", () => {
   it("gives b2's delegated leaves the shape s3 declares", () => {
     // AC-03. b2 vendors s3 and re-exports its tree, so the two inventories are
     // derived independently from one checkout and have to agree.
-    const tree = readTreeNamespaceShapes(repoRoot);
+    const tree = LIVE_TREE;
     const b2 = tree.find((inventory) => inventory.provider === "b2");
     const s3 = tree.find((inventory) => inventory.provider === "s3");
 

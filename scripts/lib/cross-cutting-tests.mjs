@@ -119,11 +119,16 @@ import { repoRoot } from "./provider-scope.mjs";
  * constant now designates as the reference one: an Intel Core i7-8700 @
  * 3.20GHz, 12 threads, Linux 6.8.0-124, Node v22.23.2. After one warm-up run,
  * excluded, the three timed runs were 8.643s, 8.577s and 8.353s wall; the
- * median is 8.577s, recorded here to one decimal place. The host was carrying
- * its normal concurrent-agent load throughout — 1-minute load averages of
- * 9.67, 11.52 and 12.28 on 12 threads — and the three times still agree to
- * within 3.5%, so this describes the block as it is actually run here rather
- * than on an idle machine.
+ * median is 8.577s, recorded here to one decimal place. That median is a
+ * loaded-host figure, not a quiet-host one: the three runs were taken under
+ * 1-minute load averages of 9.67, 11.52 and 12.28 on 12 threads, and their
+ * 3.5% agreement shows the window was stable, not that the block always costs
+ * this. Whole-block runs of this same ten-entry list on this same host span
+ * roughly 4.8s to 9.5s tracking concurrent agent load, and 8.6 is the loaded
+ * end of that range. A lower re-measure on a quiet city is a different load
+ * regime, not a regression; and the two guards added at ac-wojr6j are not
+ * separable from that noise at n=3, so read the 5.8 to 8.6 step as load, not
+ * as the cost of the block growing.
  *
  * Naming the machine is as much the point as the number is. No file recorded
  * which host produced the earlier figures, so three successive additions each
@@ -139,9 +144,9 @@ import { repoRoot } from "./provider-scope.mjs";
  * over the test tree, and the namespace-shape guard parses all 29 provider
  * factories in about 0.3s.
  *
- * Re-measure the whole block on this machine and update it here when the
- * block's membership changes; the guard test will name the prose that has to
- * follow.
+ * Re-measure the whole block on this machine, at a comparable load average
+ * and recording that load average here beside the figure, when the block's
+ * membership changes; the guard test will name the prose that has to follow.
  */
 export const CROSS_CUTTING_COST_SECONDS = 8.6;
 

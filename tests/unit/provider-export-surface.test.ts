@@ -1,4 +1,13 @@
-import { describe, expect, it } from "vitest";
+import {
+  mkdirSync,
+  mkdtempSync,
+  realpathSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import { afterEach, describe, expect, it } from "vitest";
 import {
   checkExportSurface,
   parseExportedNames,
@@ -9,7 +18,7 @@ import {
 
 /**
  * Every `*Namespace` type a provider declares as public in any of its
- * `src/*.ts` modules must be reachable from `@apicity/<provider>`.
+ * `src/**\/*.ts` modules must be reachable from `@apicity/<provider>`.
  *
  * `FalRunNanoBanana2LiteNamespace` was not: declared `export interface` at
  * `packages/provider/fal/src/types.ts:1810`, hung off `FalRunNamespace` as
@@ -158,6 +167,25 @@ const EXPECTED_BASELINE_DISTRIBUTION: Record<string, number> = {
 };
 const EXPECTED_BASELINE_TOTAL = 64;
 
+/**
+ * The surfaces the walk gains below `src/`, pinned exactly (`ac-bsl9tx`, D-6).
+ *
+ * The nested set rather than a global surface total: a total would red on
+ * every unrelated new provider module, while this reds precisely when a module
+ * appears under `src/<dir>/` — the event the recursion exists for.
+ * `cost/src/pricing` holds one module per priced provider and gains files
+ * every few months, so both assertions name the constant to update.
+ */
+const EXPECTED_NESTED_SURFACES: Record<string, number> = {
+  "packages/provider/cost/src/extract": 6,
+  "packages/provider/cost/src/pricing": 13,
+};
+const EXPECTED_NESTED_SURFACE_TOTAL = 19;
+
+const UPDATE_NESTED_PIN =
+  "update EXPECTED_NESTED_SURFACES and EXPECTED_NESTED_SURFACE_TOTAL in " +
+  "tests/unit/provider-export-surface.test.ts";
+
 type Surface = ReturnType<typeof readProviderExportSurfaces>[number];
 
 /**
@@ -216,6 +244,63 @@ const GHOST_ZOD_TYPES = `export interface GhostZodNamespace {
   go: () => void;
 }
 `;
+const GHOST_PRICING_TYPES = `export interface GhostPricingFalNamespace {
+  go: () => void;
+}
+`;
+const GHOST_PRICING_BARREL_TYPES = `export interface GhostPricingNamespace {
+  go: () => void;
+}
+`;
+const GHOST_NESTED_INDEX = `export type { GhostPricingFalNamespace } from "./pricing/fal";\n`;
+
+/** The closure of `export * from "./pricing"` over a barrel that stars ./fal. */
+function nestedStarClosure(): string[] {
+  return resolveStarExportedModules(
+    ["packages/provider/ghost/src/pricing"],
+    new Map([
+      [
+        "packages/provider/ghost/src/pricing/index",
+        ["packages/provider/ghost/src/pricing/fal"],
+      ],
+      ["packages/provider/ghost/src/pricing/fal", []],
+    ])
+  );
+}
+
+const temporaryRoots: string[] = [];
+
+/**
+ * A throwaway provider tree, so the recursive walk is asserted against real
+ * directories rather than only against hand-built surfaces. `readProviderNames`
+ * takes a repo root and keys off `package.json`, so a fixture root is all the
+ * reader needs.
+ */
+function writeFixtureProvider(files: Record<string, string>): string {
+  const root = realpathSync(
+    mkdtempSync(path.join(tmpdir(), "export-surface-"))
+  );
+  temporaryRoots.push(root);
+  const providerRoot = path.join(root, "packages", "provider", "ghost");
+  mkdirSync(providerRoot, { recursive: true });
+  writeFileSync(
+    path.join(providerRoot, "package.json"),
+    JSON.stringify({ name: "@apicity/ghost" }),
+    "utf8"
+  );
+  for (const [relativePath, source] of Object.entries(files)) {
+    const absolutePath = path.join(providerRoot, "src", relativePath);
+    mkdirSync(path.dirname(absolutePath), { recursive: true });
+    writeFileSync(absolutePath, source, "utf8");
+  }
+  return root;
+}
+
+afterEach(() => {
+  for (const root of temporaryRoots.splice(0)) {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
 
 describe("provider export surface", () => {
   it("re-exports every declared *Namespace type, or baselines it", () => {
@@ -274,6 +359,8 @@ describe("provider export surface", () => {
     expect(problems[0]).toContain(
       "no exported interface by that name is declared in"
     );
+    // The walk is recursive, so the message names it as such (ac-bsl9tx, D-5).
+    expect(problems[0]).toContain("packages/provider/ghost/src/**/*.ts");
   });
 
   it("reports a baseline entry for a type that is now re-exported", () => {
@@ -397,6 +484,180 @@ describe("provider export surface", () => {
     expect(problems[0]).toContain('from "./responses"');
   });
 
+  it("reports a namespace declared below src/", () => {
+    // The `src/<dir>/` blind spot (F-5 of ac-9at9f2.8): a namespace declared
+    // one directory down and omitted from index.ts is RR-2 again, in a file the
+    // flat walk never opened.
+    const problems = checkExportSurface(
+      [
+        syntheticSurface(
+          "ghost",
+          GHOST_PRICING_TYPES,
+          "export {};\n",
+          "pricing/fal.ts"
+        ),
+      ],
+      {}
+    );
+
+    expect(problems).toHaveLength(1);
+    expect(problems[0]).toContain(
+      "ghost: GhostPricingFalNamespace is declared at"
+    );
+    expect(problems[0]).toContain(
+      "packages/provider/ghost/src/pricing/fal.ts:1 but never re-exported from"
+    );
+  });
+
+  it("accepts a namespace declared below src/ that index.ts names", () => {
+    expect(
+      checkExportSurface(
+        [
+          syntheticSurface(
+            "ghost",
+            GHOST_PRICING_TYPES,
+            GHOST_NESTED_INDEX,
+            "pricing/fal.ts"
+          ),
+        ],
+        {}
+      )
+    ).toEqual([]);
+  });
+
+  it("names a nested module by its src-relative specifier, not its basename", () => {
+    const problems = checkExportSurface(
+      [
+        syntheticSurface(
+          "ghost",
+          GHOST_PRICING_TYPES,
+          "export {};\n",
+          "pricing/fal.ts"
+        ),
+      ],
+      {}
+    );
+
+    // `./fal` would name a file that does not exist; the fix has to compile.
+    expect(problems[0]).toContain('from "./pricing/fal"');
+    expect(problems[0]).not.toContain('from "./fal"');
+  });
+
+  it("checks a namespace declared in a nested index.ts", () => {
+    // D-2: only the depth-0 `src/index.ts` is public by construction. A barrel
+    // one directory down carries no such guarantee, so it is a declaring
+    // surface like any other module.
+    const problems = checkExportSurface(
+      [
+        syntheticSurface(
+          "ghost",
+          GHOST_PRICING_BARREL_TYPES,
+          "export {};\n",
+          "pricing/index.ts"
+        ),
+      ],
+      {}
+    );
+
+    expect(problems).toHaveLength(1);
+    expect(problems[0]).toContain(
+      "packages/provider/ghost/src/pricing/index.ts:1 but never re-exported from"
+    );
+    expect(problems[0]).toContain('from "./pricing/index"');
+  });
+
+  it("resolves a directory-style star specifier to that directory's barrel", () => {
+    // `export * from "./pricing"` is `src/pricing/index.ts` on disk, so the
+    // barrel and everything it stars are public. Without the alias the
+    // declarations under it read as unexported — a false positive that reds a
+    // correct change.
+    const closed = nestedStarClosure();
+
+    expect(closed).toEqual([
+      "packages/provider/ghost/src/pricing",
+      "packages/provider/ghost/src/pricing/fal",
+      "packages/provider/ghost/src/pricing/index",
+    ]);
+    expect(
+      checkExportSurface(
+        [
+          syntheticSurface(
+            "ghost",
+            GHOST_PRICING_TYPES,
+            'export type * from "./pricing";\n',
+            "pricing/fal.ts",
+            closed
+          ),
+        ],
+        {}
+      )
+    ).toEqual([]);
+  });
+
+  it("ratchets a stale baseline entry in both directions past a nested surface", () => {
+    const gone = checkExportSurface(
+      [
+        syntheticSurface(
+          "ghost",
+          GHOST_PRICING_TYPES,
+          GHOST_NESTED_INDEX,
+          "pricing/fal.ts"
+        ),
+      ],
+      { ghost: { GhostGoneNamespace: "deferred" } }
+    );
+
+    expect(gone).toHaveLength(1);
+    expect(gone[0]).toContain("stale baseline entry GhostGoneNamespace");
+    expect(gone[0]).toContain("packages/provider/ghost/src/**/*.ts");
+
+    const starred = checkExportSurface(
+      [
+        syntheticSurface(
+          "ghost",
+          GHOST_PRICING_TYPES,
+          'export type * from "./pricing";\n',
+          "pricing/fal.ts",
+          nestedStarClosure()
+        ),
+      ],
+      { ghost: { GhostPricingFalNamespace: "deferred" } }
+    );
+
+    expect(starred).toHaveLength(1);
+    expect(starred[0]).toContain(
+      "stale baseline entry GhostPricingFalNamespace"
+    );
+    expect(starred[0]).toContain("star-exports ./pricing/fal");
+  });
+
+  it("reads modules two directories below src/", () => {
+    // Depth is uncapped, and one level would be the same blind spot moved down
+    // rather than closed. A fixture tree, because the real one nests once.
+    const root = writeFixtureProvider({
+      "index.ts": "export {};\n",
+      "types.ts": "export {};\n",
+      "a/mod.ts": GHOST_TYPES,
+      "a/b/mod.ts": GHOST_RESPONSES_TYPES,
+      "a/b/generated.d.ts": GHOST_S3_TYPES,
+    });
+    const surfaces = readProviderExportSurfaces(root);
+
+    // The provider's own index.ts is excluded, the `.d.ts` is not a declaring
+    // surface, and both nested levels are read.
+    expect(surfaces.map((surface) => surface.sourcePath)).toEqual([
+      "packages/provider/ghost/src/a/b/mod.ts",
+      "packages/provider/ghost/src/a/mod.ts",
+      "packages/provider/ghost/src/types.ts",
+    ]);
+    expect(
+      checkExportSurface(surfaces, {}).map((problem) => problem.split("\n")[0])
+    ).toEqual([
+      "ghost: GhostResponsesV1Namespace is declared at",
+      "ghost: GhostRunNamespace is declared at",
+    ]);
+  });
+
   it("skips a star-exported module while still checking its provider's types.ts", () => {
     // b2's shape (DC-7): the star is at ./s3-types, so s3-types.ts is public in
     // full while types.ts stays under the rule. Skipping per provider would
@@ -517,8 +778,8 @@ describe("provider export surface", () => {
 
     expect(providers.length).toBeGreaterThanOrEqual(29);
     expect(providers).toContain("fal");
-    // More surfaces than providers is the widening itself: index.ts is not a
-    // surface, and every other src/*.ts module is one.
+    // More surfaces than providers is the widening itself: the provider's own
+    // index.ts is not a surface, and every other module under src/ is one.
     expect(surfaces.length).toBeGreaterThan(providers.length);
     for (const surface of surfaces) {
       expect(surface.declarations, surface.sourcePath).not.toBeNull();
@@ -541,6 +802,25 @@ describe("provider export surface", () => {
     // The file the gap was reachable in is now read (ac-9at9f2.8).
     expect(surfaces.map((surface) => surface.sourcePath)).toContain(
       "packages/provider/kie/src/responses.ts"
+    );
+
+    // And the directories below src/ are now read too (ac-bsl9tx). Pinned as
+    // the nested set: the widening is a deliberate number in the diff, and a
+    // module added under src/<dir>/ reds here rather than nowhere.
+    const nested = surfaces.filter(
+      (surface) =>
+        path.posix.dirname(surface.sourcePath) !==
+        `packages/provider/${surface.provider}/src`
+    );
+    const nestedCounts: Record<string, number> = {};
+    for (const surface of nested) {
+      const directory = path.posix.dirname(surface.sourcePath);
+      nestedCounts[directory] = (nestedCounts[directory] ?? 0) + 1;
+    }
+
+    expect(nestedCounts, UPDATE_NESTED_PIN).toEqual(EXPECTED_NESTED_SURFACES);
+    expect(nested.length, UPDATE_NESTED_PIN).toBe(
+      EXPECTED_NESTED_SURFACE_TOTAL
     );
   });
 });

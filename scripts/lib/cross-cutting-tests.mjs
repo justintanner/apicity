@@ -70,11 +70,12 @@ import { repoRoot } from "./provider-scope.mjs";
  * ac-qclky0, ac-e1h1yj).
  *
  * The export-surface guard pins what each provider actually publishes.
- * `tests/unit/provider-export-surface.test.ts` walks every `src/*.ts` module of
- * every provider and fails an exported `*Namespace` interface that the same
- * provider's `src/index.ts` never re-exports, under an explicit per-type
- * baseline that goes stale in both directions. `RR-2` was exactly
- * that: `FalRunNanoBanana2LiteNamespace` was declared public and unreachable
+ * `tests/unit/provider-export-surface.test.ts` walks every `src/**\/*.ts`
+ * module of every provider, at any depth below `src/`, and fails an exported
+ * `*Namespace` interface that the same provider's `src/index.ts` never
+ * re-exports, under an explicit per-type baseline that goes stale in both
+ * directions. `RR-2` was exactly that: `FalRunNanoBanana2LiteNamespace` was
+ * declared public and unreachable
  * from `@apicity/fal`, and passed lint, `tsc --noEmit` and the whole replay
  * suite — no gate in this repository observed a declared-but-unexported public
  * type, so review caught it by eye (`ac-c2cc4j` finding `G2`, filed as
@@ -93,6 +94,19 @@ import { repoRoot } from "./provider-scope.mjs";
  * `CROSS_CUTTING_COST_SECONDS` stays put — as does the divergence between it
  * and the 8.533s/9.878s recorded below, which predates this work and is not
  * reconciled by it.
+ *
+ * Recursing that walk below `src/` (`ac-bsl9tx`) added 19 files / 0.154 MiB to
+ * the 245 files / 4.97 MiB it parses — the paragraph above sizes the same walk
+ * by its 216 non-index modules / 4.72 MiB, so the two counts are of different
+ * populations — and cost, on one machine with base and head interleaved,
+ * +0.107s per walk parse-only (1.156s to 1.263s, medians of nine timed runs
+ * after a warm-up) and +0.121s on the guard file run alone (2.613s to 2.734s
+ * wall). That machine was loaded and its own base walk measures 1.156s against
+ * the 470.9ms above, so these are same-machine deltas rather than levels
+ * comparable with the paragraph above. The block did not move again: 7.840s
+ * before and 7.921s after (medians of six interleaved runs, +0.082s, inside
+ * that machine's run-to-run spread), so `CROSS_CUTTING_COST_SECONDS` stays put
+ * a second time and the divergence noted above is still not reconciled here.
  *
  * The fast gates run these guards so a broken repo-wide invariant cannot pass
  * the local merge gate. They are filesystem- and source-parse-only (no Polly,

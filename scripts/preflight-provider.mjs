@@ -33,7 +33,7 @@
  * scripts/lib/cross-cutting-tests.mjs that provider scopes do not select
  * consistently: recording-corpus allowlists, endpoint-surface inventory,
  * cross-provider source pins, cross-provider registry parity, documentation
- * inventories, and fal credential wiring. Those are the six categories
+ * inventories, and fal credential wiring. Those are the categories
  * tests/unit/cross-cutting-tests.test.ts sorts the block into, and it fails
  * when this paragraph stops naming one of them. The registry-parity guard,
  * `tests/unit/cost-slugs.test.ts`, enforces exact `fal` pricing/slug key

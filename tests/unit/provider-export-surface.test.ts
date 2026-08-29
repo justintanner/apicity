@@ -31,18 +31,11 @@ import {
  * no per-provider blanket skip — mirroring `UNPRICED_SLUG_ALLOWLIST` in
  * `tests/unit/cost-pricing.test.ts`.
  *
- * Re-derived at implementation HEAD rather than copied from the plan: 407
- * exported namespace declarations across 29 providers, 65 unexported, 64 of
- * them non-fal. `fal` contributes zero entries — its one gap is the defect this
- * bead fixes. `telegram` contributes zero as well: `telegram/src/index.ts:3` is
- * `export type * from "./types"`, so `TelegramPostNamespace` is already public
- * and baselining it would write a permanently false statement into the guard.
+ * The baseline is empty: every namespace the guard once tolerated is now
+ * re-exported by its provider's `src/index.ts`. An empty object keeps the
+ * ratchet armed — the next unexported declaration fails the guard instead of
+ * landing silently.
  */
-const VERB_LAYER =
-  "verb-layer namespace, reachable from the exported provider interface; " +
-  "export decision deferred to the burn-down bead";
-
-
 const EXPORT_SURFACE_BASELINE: Record<string, Record<string, string>> = {};
 
 // Pinned so a silent baseline expansion is a visible diff rather than a quiet

@@ -594,6 +594,29 @@ describe("provider export surface", () => {
     ).toEqual([]);
   });
 
+  it("prefers a real sibling module over a same-named directory", () => {
+    // The alias step fires only when no `<key>.ts` exists. With both a real
+    // `src/pricing.ts` and a `src/pricing/` directory in the walk, TypeScript
+    // resolves `export * from "./pricing"` to the sibling module, so the
+    // barrel and everything it stars stay private. Dropping the
+    // `!starsByModule.has(key)` half of the guard reaches the barrel anyway —
+    // a false negative: nested declarations read as public, so the guard
+    // stops checking them.
+    const closed = resolveStarExportedModules(
+      ["packages/provider/ghost/src/pricing"],
+      new Map([
+        ["packages/provider/ghost/src/pricing", []],
+        [
+          "packages/provider/ghost/src/pricing/index",
+          ["packages/provider/ghost/src/pricing/fal"],
+        ],
+        ["packages/provider/ghost/src/pricing/fal", []],
+      ])
+    );
+
+    expect(closed).toEqual(["packages/provider/ghost/src/pricing"]);
+  });
+
   it("ratchets a stale baseline entry in both directions past a nested surface", () => {
     const gone = checkExportSurface(
       [

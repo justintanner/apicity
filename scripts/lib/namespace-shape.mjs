@@ -706,10 +706,67 @@ function resolveToLiteral(node, ctx, seen, depth) {
 }
 
 /**
+ * Classify a call that is not `Object.assign`, from what its callee returns.
+ *
+ * The shape is taken from the RESOLVED RETURN, not asserted. Classifying every
+ * resolvable call as `object` would be wrong twice over: `resolveRootLiteral`
+ * flattens `Object.assign(fn, { schema })` to `{ schema }`, so a sibling
+ * factory returning a callable-with-children would be recorded as a plain
+ * object while the identical construct written inline is recorded correctly;
+ * and `COMPATIBLE_PAIRS` pairs `object` with `object` only, so `object` against
+ * `callable-with-children` is a REPORTED collision — widening this rule
+ * carelessly would manufacture the noise the guard exists to remove. A shape
+ * flip diff cannot catch that: the mistake and the correct result both read
+ * `callable -> object`.
+ *
+ * Only three return forms are read for their shape — an object literal, a
+ * function, and `Object.assign` — because those are the three that carry one.
+ * Anything else, `withPaidGate`'s `return out as T` above all, falls through to
+ * the pass-through in {@link resolveToLiteral}, which reaches the tree the
+ * wrapper was handed without ever accepting an inline options bag.
+ *
+ * When nothing resolves the call stays `callable`, exactly as before this
+ * module could see across files (D-7). Degrading a resolved path to
+ * `unresolved` because resolution got further and then stopped would add an
+ * uncovered path and fail the ratchet — the widening breaking the guard it
+ * widens.
+ *
+ * @param {ts.CallExpression} call
+ * @param {ResolutionContext} ctx
+ * @param {Set<string>} seen
+ * @returns {{ shape: Shape, children: ts.ObjectLiteralExpression[] }}
+ */
+function classifyResolvedCall(call, ctx, seen) {
+  const callee = calleeFunction(call, ctx, seen, 0);
+  if (callee) {
+    const returned = returnExpressionOf(callee.fn);
+    const expr = returned ? unwrap(returned) : null;
+    if (
+      expr &&
+      (ts.isObjectLiteralExpression(expr) ||
+        isCallableNode(expr) ||
+        (ts.isCallExpression(expr) && isObjectAssign(expr)))
+    ) {
+      return classify(expr, ctx, callee.seen);
+    }
+  }
+
+  const literal = resolveToLiteral(call, ctx, seen, 0);
+  if (literal) return { shape: "object", children: [literal] };
+  return { shape: "callable", children: [] };
+}
+
+/**
  * Classify one property value, and say which literals to descend into.
  *
- *   - an arrow or function expression, or a call that is not `Object.assign`
- *     (the `jsonBody<...>(...)` endpoint-builder idiom) is `callable`;
+ *   - an arrow or function expression is `callable`, and so is a call this
+ *     module cannot follow — the `jsonBody<...>(...)` endpoint-builder idiom,
+ *     or an import from another package;
+ *   - a call that is not `Object.assign` and whose callee IS reachable takes
+ *     the shape of what that callee returns, so `kie`'s `chat` sub-provider and
+ *     its `post` IIFE resolve and `b2`'s `s3.buckets.create` keeps the
+ *     `callable-with-children` that `s3` declares (see
+ *     {@link classifyResolvedCall});
  *   - an object literal is `object`;
  *   - `Object.assign(<callable>, { ... })` is `callable-with-children`, and its
  *     trailing object-literal arguments are the children. When the first
@@ -747,7 +804,7 @@ function classify(node, ctx, seen) {
     return { shape: "callable", children: [] };
   }
   if (ts.isCallExpression(expr)) {
-    if (!isObjectAssign(expr)) return { shape: "callable", children: [] };
+    if (!isObjectAssign(expr)) return classifyResolvedCall(expr, ctx, seen);
 
     const [target, ...rest] = expr.arguments;
     if (!target) return UNRESOLVED;

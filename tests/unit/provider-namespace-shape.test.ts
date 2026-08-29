@@ -470,6 +470,121 @@ describe("provider namespace shape: parsing", () => {
     ).toEqual({ "<spread:0>": "unresolved" });
   });
 
+  it("resolves a member chain into a sibling factory's return", () => {
+    // R3, the b2 shape: `s3` is a call, so the base of `s3.buckets.create` is
+    // not a literal this file holds until the callee's return is reachable.
+    const body = [
+      "  const s3 = createS3(opts);",
+      "  return attachExamples({ buckets: { create: s3.buckets.create } });",
+    ].join("\n");
+    const inventory = parsed("member-chain", body, {
+      head: 'import { createS3 } from "./s3";\n',
+      modules: {
+        "s3.ts": [
+          "export function createS3(opts: S3Options) {",
+          '  const put = jsonBody("PUT", "/{bucket}");',
+          "  return { buckets: { create: Object.assign(put, { schema: CreateBucketSchema }) } };",
+          "}",
+        ].join("\n"),
+      },
+    });
+
+    expect(inventory.paths).toEqual({
+      buckets: "object",
+      // The shape s3 declares, inherited rather than re-derived.
+      "buckets.create": "callable-with-children",
+      "buckets.create.schema": "unresolved",
+    });
+  });
+
+  it("keeps a sibling factory's callable-with-children rather than flattening it", () => {
+    // R3's shape-preserving half. Reporting `object` here would be invisible in
+    // a before/after flip table — both readings are `callable -> object` — and
+    // `object` against `callable-with-children` is a REPORTED collision, so the
+    // widening would manufacture the noise the guard exists to remove.
+    const inventory = parsed(
+      "shape-preserved",
+      "  return attachExamples({ chat: createChat(opts) });",
+      {
+        head: 'import { createChat } from "./chat";\n',
+        modules: {
+          "chat.ts": [
+            "export function createChat(opts: ChatOptions) {",
+            '  const send = jsonBody("POST", "/chat");',
+            "  return Object.assign(send, { schema: ChatRequestSchema });",
+            "}",
+          ].join("\n"),
+        },
+      }
+    );
+
+    expect(inventory.paths).toEqual({
+      chat: "callable-with-children",
+      "chat.schema": "unresolved",
+    });
+  });
+
+  it("resolves an immediately-invoked arrow that returns a literal", () => {
+    // D-2. `responses` is bound inside the arrow, so the binding lookup has to
+    // read the scope chain of the node that names it, not one map per file.
+    const body = [
+      "  return attachExamples({",
+      "    post: (() => {",
+      "      const responses = { codex: () => undefined };",
+      "      return { codex: responses.codex };",
+      "    })(),",
+      "  });",
+    ].join("\n");
+
+    expect(parsed("iife", body).paths).toEqual({
+      post: "object",
+      "post.codex": "callable",
+    });
+  });
+
+  it("passes a wrapper through to its tree without following its options bag", () => {
+    // D-8. `withPaidGate` returns a variable it filled in a loop, so its own
+    // return names no literal and the tree it was handed is argument two.
+    const body =
+      '  return attachExamples({ veo: withPaidGate("ghost", createVeo(opts), { config: paygate }) });';
+    const inventory = parsed("paid-gate-value", body, {
+      head: 'import { withPaidGate } from "./with-paid-gate";\nimport { createVeo } from "./veo";\n',
+      modules: {
+        "with-paid-gate.ts": [
+          "export function withPaidGate<T extends object>(name: string, tree: T, opts?: Opts): T {",
+          "  const out: Record<string, unknown> = {};",
+          "  for (const [key, value] of Object.entries(tree)) out[key] = value;",
+          "  return out as T;",
+          "}",
+        ].join("\n"),
+        "veo.ts":
+          "export function createVeo(opts: O) {\n  return { generate: () => undefined };\n}",
+      },
+    });
+
+    expect(inventory.paths).toEqual({
+      veo: "object",
+      "veo.generate": "callable",
+    });
+    // An inline object literal argument is never followed, so the options bag
+    // is not reported as a namespace. Nothing else can see this: a fabricated
+    // RESOLVED path is neither unresolved nor a stale baseline entry.
+    expect(Object.keys(inventory.paths)).not.toContain("veo.config");
+  });
+
+  it("keeps a call callable when its callee cannot be reached", () => {
+    // D-7. Degrading to `unresolved` here would add an uncovered path and fail
+    // the ratchet — the widening breaking the guard it widens.
+    const body =
+      '  return attachExamples({ veo: withPaidGate("ghost", buildTree(), {}) });';
+    const inventory = parsed("unreachable", body, {
+      head: 'import { withPaidGate } from "@apicity/cost";\n',
+      modules: {},
+    });
+
+    expect(inventory.paths).toEqual({ veo: "callable" });
+  });
+
   it("emits paths in sorted order, so two derivations are byte-identical", () => {
     const first = parsed("determinism", OBJECT_BODY);
     const second = parsed("determinism", OBJECT_BODY);
@@ -704,11 +819,6 @@ const KIE_RESPONSE_SCHEMA =
   "a zod response schema imported from src/zod.ts, the same metadata class as " +
   "`.schema` under a different key";
 
-const S3_DELEGATE =
-  "b2 delegates to the vendored s3 provider, so its leaves are member " +
-  "accesses into another factory's return value (`s3.buckets.create`); the " +
-  "base is a call, not a literal this file holds";
-
 const LOOP_MERGED_ROOT =
   "the factory composes its root by merging parts into a variable in a loop, " +
   "so no object literal is syntactically reachable from the return";
@@ -716,11 +826,6 @@ const LOOP_MERGED_ROOT =
 const NAMESPACE_SHAPE_BASELINE: Record<string, Record<string, string>> = {
   [ANY_PROVIDER]: {
     "*.schema": ZOD_SCHEMA,
-  },
-  b2: {
-    "buckets.*": S3_DELEGATE,
-    "objects.*": S3_DELEGATE,
-    "presign.*": S3_DELEGATE,
   },
   elevenlabs: {
     [ROOT_PATH]: LOOP_MERGED_ROOT,
@@ -745,7 +850,6 @@ const NAMESPACE_SHAPE_BASELINE: Record<string, Record<string, string>> = {
  */
 const EXPECTED_BASELINE_PROVIDERS = [
   ANY_PROVIDER,
-  "b2",
   "elevenlabs",
   "kie",
   "simplefunctions",
@@ -791,6 +895,49 @@ describe("provider namespace shape: the live tree", () => {
       .filter((inventory) => Object.hasOwn(inventory.paths, ROOT_PATH))
       .map((inventory) => inventory.provider);
     expect(opaque).toEqual(["elevenlabs"]);
+  });
+
+  it("exposes a paid-gated sub-provider's leaves and no options bag", () => {
+    // The distinguishing evidence for D-8. Resolving the wrapper by scanning
+    // its arguments for the first object literal would return `{ config }` and
+    // fabricate `veo.config`; both readings produce `callable -> object` in a
+    // flip table, so the children are what tell them apart.
+    const kie = readTreeNamespaceShapes(repoRoot).find(
+      (inventory) => inventory.provider === "kie"
+    );
+    const paths = Object.keys(kie?.paths ?? {});
+
+    expect(paths.filter((dotPath) => dotPath.startsWith("veo."))).not.toEqual(
+      []
+    );
+    expect(paths.filter((dotPath) => dotPath.startsWith("suno."))).not.toEqual(
+      []
+    );
+    expect(paths).not.toContain("veo.config");
+    expect(paths).not.toContain("suno.config");
+  });
+
+  it("gives b2's delegated leaves the shape s3 declares", () => {
+    // AC-03. b2 vendors s3 and re-exports its tree, so the two inventories are
+    // derived independently from one checkout and have to agree.
+    const tree = readTreeNamespaceShapes(repoRoot);
+    const b2 = tree.find((inventory) => inventory.provider === "b2");
+    const s3 = tree.find((inventory) => inventory.provider === "s3");
+
+    expect(b2?.paths["buckets.create"]).toBe(s3?.paths["buckets.create"]);
+    expect(b2?.paths["buckets.create"]).not.toBe("unresolved");
+
+    // A floor rather than a pin: an s3 endpoint landing adds a leaf here, and a
+    // count would fail on unrelated work and be re-pinned without being read.
+    const delegated = Object.keys(b2?.paths ?? {}).filter(
+      (dotPath) =>
+        /^(buckets|objects|presign)\./.test(dotPath) &&
+        !dotPath.endsWith(".schema")
+    );
+    expect(delegated.length).toBeGreaterThanOrEqual(43);
+    for (const dotPath of delegated) {
+      expect(b2?.paths[dotPath], dotPath).not.toBe("unresolved");
+    }
   });
 
   it("gives every baseline entry a non-empty rationale and no bare wildcard", () => {

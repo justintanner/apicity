@@ -125,6 +125,10 @@ export type {
   DoltHubBranch,
   DoltHubSchemaColumn,
   DoltHubSqlRow,
+  // Promoted out of EXPORT_SURFACE_BASELINE (ac-9at9f2.6): a consumer that
+  // holds `dolthub.v1alpha1.branches` or `.pulls` must be able to name its type.
+  DoltHubBranchesNamespace,
+  DoltHubPullsNamespace,
 } from "./types";
 
 export {

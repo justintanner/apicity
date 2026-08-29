@@ -43,19 +43,11 @@ const VERB_LAYER =
   "export decision deferred to the burn-down bead";
 
 
-const DOLTHUB_LAYER =
-  "sub-namespace reachable from the exported DoltHubProvider interface; " +
-  "export decision deferred to the burn-down bead";
-
 const YOUTUBE_LAYER =
   "sub-namespace reachable from the exported YouTubeProvider interface; " +
   "export decision deferred to the burn-down bead";
 
 const EXPORT_SURFACE_BASELINE: Record<string, Record<string, string>> = {
-  dolthub: {
-    DoltHubBranchesNamespace: DOLTHUB_LAYER,
-    DoltHubPullsNamespace: DOLTHUB_LAYER,
-  },
   youtube: {
     YouTubeChannelsNamespace: YOUTUBE_LAYER,
   },
@@ -64,10 +56,9 @@ const EXPORT_SURFACE_BASELINE: Record<string, Record<string, string>> = {
 // Pinned so a silent baseline expansion is a visible diff rather than a quiet
 // widening of what the guard tolerates.
 const EXPECTED_BASELINE_DISTRIBUTION: Record<string, number> = {
-  dolthub: 2,
   youtube: 1,
 };
-const EXPECTED_BASELINE_TOTAL = 3;
+const EXPECTED_BASELINE_TOTAL = 1;
 
 type Surface = ReturnType<typeof readProviderExportSurfaces>[number];
 

@@ -985,6 +985,162 @@ function walkLiteral(literal, prefix, state) {
 }
 
 /**
+ * The array literal an expression names, or `null`.
+ *
+ * @param {ts.Node} node
+ * @param {ResolutionContext} ctx
+ * @returns {ts.ArrayLiteralExpression | null}
+ */
+function resolveToArrayLiteral(node, ctx) {
+  const expr = unwrap(node);
+  if (ts.isArrayLiteralExpression(expr)) return expr;
+  if (!ts.isIdentifier(expr)) return null;
+  const binding = bindingsFor(expr, ctx).get(expr.text);
+  if (!binding) return null;
+  const bound = unwrap(binding);
+  return ts.isArrayLiteralExpression(bound) ? bound : null;
+}
+
+/**
+ * The identifier a factory hands back, through the wrappers around it.
+ *
+ * `return attachExamples(provider as unknown as ElevenLabsProvider)` — unwrap
+ * the assertion, then look through the call for the bare identifier it was
+ * given. A wrong guess here costs nothing: the caller still has to find that
+ * identifier bound to an object literal and merged into, and records `<root>`
+ * exactly as before if it does not.
+ *
+ * @param {ts.Node} node
+ * @returns {ts.Identifier | null}
+ */
+function returnedIdentifier(node) {
+  const expr = unwrap(node);
+  if (ts.isIdentifier(expr)) return expr;
+  if (!ts.isCallExpression(expr)) return null;
+  for (const argument of expr.arguments) {
+    const identifier = returnedIdentifier(argument);
+    if (identifier) return identifier;
+  }
+  return null;
+}
+
+/**
+ * The top-level calls of one factory statement, with the loop they sit in.
+ *
+ * A bare `Object.assign(provider, part)` and a `mergeInto(provider, part)`
+ * inside a `for…of` both count, because the rule models the ASSIGNMENT TARGET
+ * rather than any particular merge helper's semantics.
+ *
+ * @param {ts.Statement} statement
+ * @param {ResolutionContext} ctx
+ * @returns {{ call: ts.CallExpression, loop: { name: string, elements: ts.NodeArray<ts.Expression> } | null }[]}
+ */
+function mergeCallsIn(statement, ctx) {
+  const callOf = (node) => {
+    if (!ts.isExpressionStatement(node)) return null;
+    const expr = unwrap(node.expression);
+    return ts.isCallExpression(expr) ? expr : null;
+  };
+
+  if (!ts.isForOfStatement(statement)) {
+    const call = callOf(statement);
+    return call ? [{ call, loop: null }] : [];
+  }
+
+  /** @type {{ name: string, elements: ts.NodeArray<ts.Expression> } | null} */
+  let loop = null;
+  const initializer = statement.initializer;
+  const source = resolveToArrayLiteral(statement.expression, ctx);
+  if (source && ts.isVariableDeclarationList(initializer)) {
+    const [declaration] = initializer.declarations;
+    if (declaration && ts.isIdentifier(declaration.name)) {
+      loop = { name: declaration.name.text, elements: source.elements };
+    }
+  }
+
+  const inner = statement.statement;
+  const statements = ts.isBlock(inner) ? [...inner.statements] : [inner];
+  return statements
+    .map(callOf)
+    .filter(Boolean)
+    .map((call) => ({ call, loop }));
+}
+
+/**
+ * The literals a root composed by merging into a variable is built from.
+ *
+ * `elevenlabs` returns `attachExamples(provider as unknown as
+ * ElevenLabsProvider)`, where `provider` starts as `{}` and is filled by
+ * `for (const part of parts) mergeInto(provider, part)`. Following the binding
+ * naively would report an EMPTY inventory, which reads as "this provider
+ * declares nothing" rather than "this provider was not analysed" — so the rule
+ * finds the contributors instead:
+ *
+ *   1. the returned expression names a bare identifier;
+ *   2. that identifier is bound, in the factory body, to an object literal;
+ *   3. some top-level statement calls a function with it as the FIRST argument,
+ *      and that call's second argument is a contributor;
+ *   4. a contributor that is the loop variable of a `for…of` over an array
+ *      literal expands to that array's elements;
+ *   5. each contributor resolves to a literal.
+ *
+ * `mergeInto` is a DEEP merge and this models none of it, because it does not
+ * have to: `walkLiteral` records into one map keyed by dot path, so walking
+ * every part under the same prefix reproduces the deep merge exactly. The
+ * seventeen `elevenlabs` parts do share `get.v1`, `post.v1` and `delete.v1` —
+ * a literal-level shallow merge would lose paths — but a shared intermediate is
+ * simply re-recorded with the same `object` shape while each part's distinct
+ * leaves all survive.
+ *
+ * Any step failing returns `null` and the caller records `<root>` exactly as
+ * today. That outcome is permitted; silence about it is not, which is why the
+ * baseline entry it would keep carries a rationale naming the failing step.
+ *
+ * @param {ts.Node | null} returned The factory's return expression.
+ * @param {{ fn: ts.SignatureDeclaration } | null} factory
+ * @param {ResolutionContext} ctx
+ * @returns {ts.ObjectLiteralExpression[] | null}
+ */
+function composedRootContributors(returned, factory, ctx) {
+  const body = factory && factory.fn.body;
+  if (!returned || !body || !ts.isBlock(body)) return null;
+
+  const target = returnedIdentifier(returned);
+  if (!target) return null;
+  const bound = bindingsFor(target, ctx).get(target.text);
+  const seed = bound ? unwrap(bound) : null;
+  if (!seed || !ts.isObjectLiteralExpression(seed)) return null;
+
+  /** @type {ts.ObjectLiteralExpression[]} */
+  const contributors = [seed];
+  let merged = false;
+
+  for (const statement of body.statements) {
+    for (const { call, loop } of mergeCallsIn(statement, ctx)) {
+      const [first, second] = call.arguments;
+      if (!first || !second) continue;
+      const into = unwrap(first);
+      if (!ts.isIdentifier(into) || into.text !== target.text) continue;
+      merged = true;
+
+      const source = unwrap(second);
+      const sources =
+        loop && ts.isIdentifier(source) && source.text === loop.name
+          ? [...loop.elements]
+          : [source];
+      for (const contributor of sources) {
+        const literal = resolveToLiteral(contributor, ctx, new Set(), 0);
+        if (literal) contributors.push(literal);
+      }
+    }
+  }
+
+  // Nothing merged into it, or nothing that merged resolved: the root is as
+  // opaque as it was, and saying so beats reporting an empty provider.
+  return merged && contributors.length > 1 ? contributors : null;
+}
+
+/**
  * Derive the namespace shape inventory of one provider factory, from source.
  *
  * Pure: no filesystem, no subprocess, no repository root. Every path is
@@ -1039,7 +1195,20 @@ export function parseNamespaceShapes(
   if (literal) {
     walkLiteral(literal, "", state);
   } else {
-    record(state, ROOT_PATH, "unresolved", returned ?? sourceFile);
+    const contributors = composedRootContributors(
+      returned ? (returned.expression ?? null) : null,
+      factory,
+      state.ctx
+    );
+    if (contributors) {
+      // Source order, seed first: later contributors win at a shared dot path,
+      // the way the runtime merge does.
+      for (const contributor of contributors) {
+        walkLiteral(contributor, "", state);
+      }
+    } else {
+      record(state, ROOT_PATH, "unresolved", returned ?? sourceFile);
+    }
   }
 
   const sorted = [...state.paths.keys()].sort();

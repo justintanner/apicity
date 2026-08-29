@@ -585,6 +585,53 @@ describe("provider namespace shape: parsing", () => {
     expect(inventory.paths).toEqual({ veo: "callable" });
   });
 
+  it("resolves a root composed by merging sibling parts in a loop", () => {
+    // R4. The rule models the assignment target, not the merge helper: the
+    // parts share `v1`, and walking each under the same prefix into one
+    // dot-path map reproduces the deep merge without modelling one.
+    const body = [
+      "  const parts: Array<Record<string, unknown>> = [",
+      "    createModels(ctx),",
+      "    createVoices(ctx),",
+      "  ];",
+      "  const provider: Record<string, unknown> = {};",
+      "  for (const part of parts) mergeInto(provider, part);",
+      "  return attachExamples(provider as unknown as GhostProvider);",
+    ].join("\n");
+    const inventory = parsed("loop-root", body, {
+      head: 'import { createModels } from "./models";\nimport { createVoices } from "./voices";\n',
+      modules: {
+        "models.ts":
+          "export function createModels(ctx: C) {\n  return { v1: { models: { list: () => undefined } } };\n}",
+        "voices.ts":
+          "export function createVoices(ctx: C) {\n  return { v1: { voices: { list: () => undefined } } };\n}",
+      },
+    });
+
+    expect(inventory.paths).toEqual({
+      v1: "object",
+      "v1.models": "object",
+      "v1.models.list": "callable",
+      "v1.voices": "object",
+      "v1.voices.list": "callable",
+    });
+    expect(inventory.duplicates).toEqual([]);
+    expect(Object.hasOwn(inventory.paths, ROOT_PATH)).toBe(false);
+  });
+
+  it("reports an unreachable root when nothing merges into the returned name", () => {
+    // The failure contract: R4 permits the `<root>` outcome, so a seed with no
+    // merge call is still recorded exactly as it was before the rule existed.
+    const body = [
+      "  const provider: Record<string, unknown> = {};",
+      "  return attachExamples(provider as unknown as GhostProvider);",
+    ].join("\n");
+
+    expect(parsed("no-merge", body).paths).toEqual({
+      [ROOT_PATH]: "unresolved",
+    });
+  });
+
   it("emits paths in sorted order, so two derivations are byte-identical", () => {
     const first = parsed("determinism", OBJECT_BODY);
     const second = parsed("determinism", OBJECT_BODY);
@@ -819,16 +866,9 @@ const KIE_RESPONSE_SCHEMA =
   "a zod response schema imported from src/zod.ts, the same metadata class as " +
   "`.schema` under a different key";
 
-const LOOP_MERGED_ROOT =
-  "the factory composes its root by merging parts into a variable in a loop, " +
-  "so no object literal is syntactically reachable from the return";
-
 const NAMESPACE_SHAPE_BASELINE: Record<string, Record<string, string>> = {
   [ANY_PROVIDER]: {
     "*.schema": ZOD_SCHEMA,
-  },
-  elevenlabs: {
-    [ROOT_PATH]: LOOP_MERGED_ROOT,
   },
   kie: {
     "*.responseSchema": KIE_RESPONSE_SCHEMA,
@@ -848,12 +888,7 @@ const NAMESPACE_SHAPE_BASELINE: Record<string, Record<string, string>> = {
  * `*.schema` path, so a total would fail on unrelated provider work and be
  * re-pinned without being read.
  */
-const EXPECTED_BASELINE_PROVIDERS = [
-  ANY_PROVIDER,
-  "elevenlabs",
-  "kie",
-  "simplefunctions",
-];
+const EXPECTED_BASELINE_PROVIDERS = [ANY_PROVIDER, "kie", "simplefunctions"];
 
 describe("provider namespace shape: the live tree", () => {
   it("resolves every namespace it does not baseline", () => {
@@ -890,11 +925,22 @@ describe("provider namespace shape: the live tree", () => {
     }
   });
 
-  it("resolves the provider root of every provider but the baselined one", () => {
-    const opaque = readTreeNamespaceShapes(repoRoot)
+  it("resolves the provider root of every provider", () => {
+    const tree = readTreeNamespaceShapes(repoRoot);
+    const opaque = tree
       .filter((inventory) => Object.hasOwn(inventory.paths, ROOT_PATH))
       .map((inventory) => inventory.provider);
-    expect(opaque).toEqual(["elevenlabs"]);
+    expect(opaque).toEqual([]);
+
+    // The loop-composed root that used to be the only entry in that list. A
+    // floor rather than a pin — every endpoint landing adds paths here — and
+    // enough to prove R4 fired rather than the factory becoming trivial.
+    const elevenlabs = tree.find(
+      (inventory) => inventory.provider === "elevenlabs"
+    );
+    expect(Object.keys(elevenlabs?.paths ?? {}).length).toBeGreaterThanOrEqual(
+      291
+    );
   });
 
   it("exposes a paid-gated sub-provider's leaves and no options bag", () => {

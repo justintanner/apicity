@@ -83,8 +83,19 @@ import { repoRoot } from "./provider-scope.mjs";
  * which the two `*request-input-types.test.ts` files need and pay 120s of
  * timeout for — and measures 0.9-1.0s wall over all 29 providers including
  * node startup (0.899s and 0.927s on the planning and review machines, 1.0s on
- * the implementing one), which is why `CROSS_CUTTING_COST_SECONDS` does not
- * move.
+ * the implementing one).
+ *
+ * The namespace-shape guard reads every provider factory's return tree and
+ * pins the shape each namespace dot path resolves to. A shape disagreement
+ * between sibling slices is invisible to every single-tree gate: four slices of
+ * `ac-c2cc4j` each declared `fal`'s `geminiOmniFlash` namespace, one as a
+ * callable and three as plain objects, and the incompatibility existed only
+ * BETWEEN the branches, so each slice passed its own gate and the run reached
+ * publish unflagged (`RF-1`, review finding `RR-5`, follow-up `ac-j4z1t1`).
+ * `tests/unit/provider-namespace-shape.test.ts` runs the in-tree half — a dot
+ * path the detector can no longer resolve, or one declared twice in a single
+ * literal — and, like the rest of this list, is named after no provider, so no
+ * provider scope selects it.
  *
  * The fast gates run these guards so a broken repo-wide invariant cannot pass
  * the local merge gate. They are filesystem- and source-parse-only (no Polly,
@@ -103,21 +114,23 @@ import { repoRoot } from "./provider-scope.mjs";
  * the script prints `crossCuttingCostNote()` and the `CLAUDE.md` prose is
  * pinned to this value by `tests/unit/cross-cutting-tests.test.ts`.
  *
- * The value is the reference-machine figure recorded when the block held five
- * entries. The four entries added since have not been re-measured on that
- * machine: the nine-entry block measures 9.878s on the machine that added the
- * ninth (8.533s at eight), which confirms this is a reference-machine constant
- * rather than a live figure — re-measure the whole block on the reference
- * machine at the next addition rather than appending again. It is
- * deliberately left at the reference measurement rather than overwritten with a
- * figure from a different machine. Every entry stays filesystem- and
- * source-parse-only; the credential guard's dominant cost is one JSON parse of
- * the fal HAR corpus plus a single pass over `tests/**\/*.test.ts`.
+ * The value is the median of three runs of the WHOLE block at its current
+ * nine-entry membership — 684 tests — on an Intel i7-8700 (12 threads, Linux
+ * 6.8.0-124, Node 22.23.2): 5.39s, 5.78s and 5.94s wall. It supersedes the
+ * 5.7 reference-machine figure, which was recorded at five entries and which
+ * three subsequent additions never revisited; the previous note asked the next
+ * addition to re-measure the block whole rather than append to that history,
+ * and this is that measurement (ac-j4z1t1). Because the machine changed with
+ * it, the prose pinned to this number names the machine rather than calling it
+ * the reference one. Every entry stays filesystem- and source-parse-only; the
+ * credential guard's dominant cost is one JSON parse of the fal HAR corpus plus
+ * a single pass over the test tree, and the namespace-shape guard parses all 29
+ * provider factories in about 0.3s.
  *
- * Re-measure and update it here when the block's membership changes
- * materially; the guard test will name the prose that has to follow.
+ * Re-measure the whole block and update it here when the block's membership
+ * changes; the guard test will name the prose that has to follow.
  */
-export const CROSS_CUTTING_COST_SECONDS = 5.7;
+export const CROSS_CUTTING_COST_SECONDS = 5.8;
 
 /**
  * The one sentence describing the block's cost, built from the single source.
@@ -127,7 +140,7 @@ export const CROSS_CUTTING_COST_SECONDS = 5.7;
 export function crossCuttingCostNote() {
   return (
     "filesystem- and source-parse-only (no Polly, no network); about " +
-    `${CROSS_CUTTING_COST_SECONDS}s on the reference machine`
+    `${CROSS_CUTTING_COST_SECONDS}s, last measured on an Intel i7-8700`
   );
 }
 export const CROSS_CUTTING_TESTS = [
@@ -140,6 +153,7 @@ export const CROSS_CUTTING_TESTS = [
   "tests/unit/provider-inventory-docs.test.ts",
   "tests/unit/recording-credential-hosts.test.ts",
   "tests/unit/provider-export-surface.test.ts",
+  "tests/unit/provider-namespace-shape.test.ts",
 ];
 
 /**

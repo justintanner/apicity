@@ -70,8 +70,8 @@ import { repoRoot } from "./provider-scope.mjs";
  * ac-qclky0, ac-e1h1yj).
  *
  * The export-surface guard pins what each provider actually publishes.
- * `tests/unit/provider-export-surface.test.ts` walks every provider's
- * `src/types.ts` and fails an exported `*Namespace` interface that the same
+ * `tests/unit/provider-export-surface.test.ts` walks every `src/*.ts` module of
+ * every provider and fails an exported `*Namespace` interface that the same
  * provider's `src/index.ts` never re-exports, under an explicit per-type
  * baseline that goes stale in both directions. `RR-2` was exactly
  * that: `FalRunNanoBanana2LiteNamespace` was declared public and unreachable
@@ -81,10 +81,18 @@ import { repoRoot } from "./provider-scope.mjs";
  * `ac-gvqa18`). The file is named after no provider, so no provider scope
  * selects it. It is parse-only — `ts.createSourceFile`, never a `ts.Program`,
  * which the two `*request-input-types.test.ts` files need and pay 120s of
- * timeout for — and measures 0.9-1.0s wall over all 29 providers including
- * node startup (0.899s and 0.927s on the planning and review machines, 1.0s on
- * the implementing one), which is why `CROSS_CUTTING_COST_SECONDS` does not
- * move.
+ * timeout for.
+ *
+ * Widening it from `types.ts` alone to every `src/*.ts` module (`ac-9at9f2.8`)
+ * grew the walk from 29 files / 0.96 MB to 216 / 4.72 MB and cost, on one
+ * machine, +0.40s per walk parse-only (74.8ms to 470.9ms, medians of three
+ * timed runs after a warm-up) and +1.5s on the guard file run alone (1.86s to
+ * 3.37s wall, which pays for two walks). The block itself did not move: nine
+ * files over parallel workers measured 5.720s before and 5.480s after (medians
+ * of three), because this guard is not the block's critical path. So
+ * `CROSS_CUTTING_COST_SECONDS` stays put — as does the divergence between it
+ * and the 8.533s/9.878s recorded below, which predates this work and is not
+ * reconciled by it.
  *
  * The fast gates run these guards so a broken repo-wide invariant cannot pass
  * the local merge gate. They are filesystem- and source-parse-only (no Polly,

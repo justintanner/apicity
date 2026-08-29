@@ -4,11 +4,12 @@ import {
   parseExportedNames,
   parseNamespaceDeclarations,
   readProviderExportSurfaces,
+  resolveStarExportedModules,
 } from "../../scripts/lib/export-surface.mjs";
 
 /**
- * Every `*Namespace` type a provider declares as public in `src/types.ts` must
- * be reachable from `@apicity/<provider>`.
+ * Every `*Namespace` type a provider declares as public in any of its
+ * `src/*.ts` modules must be reachable from `@apicity/<provider>`.
  *
  * `FalRunNanoBanana2LiteNamespace` was not: declared `export interface` at
  * `packages/provider/fal/src/types.ts:1810`, hung off `FalRunNamespace` as
@@ -164,30 +165,37 @@ type Surface = ReturnType<typeof readProviderExportSurfaces>[number];
  * source text through the real parser into the real checker instead of
  * depending on whichever defect happens to be live in the tree.
  *
- * A `null` source means the file is absent.
+ * A surface is one declaring file, so `fileName` names it: the default keeps
+ * every case written against `types.ts` unchanged, and a case that needs b2's
+ * or kie's shape passes `s3-types.ts` or `responses.ts`. Two surfaces built
+ * with the same `indexSource` model one provider with two modules.
+ *
+ * A `null` source means the file is absent. `starExportedModules` defaults to
+ * what the index star-exports directly; the reader closes that set
+ * transitively, and the one case that needs the closed set passes it.
  */
 function syntheticSurface(
   provider: string,
-  typesSource: string | null,
-  indexSource: string | null
+  source: string | null,
+  indexSource: string | null,
+  fileName = "types.ts",
+  starExportedModules?: string[]
 ): Surface {
-  const typesPath = `packages/provider/${provider}/src/types.ts`;
+  const sourcePath = `packages/provider/${provider}/src/${fileName}`;
   const indexPath = `packages/provider/${provider}/src/index.ts`;
   const exports =
     indexSource === null
-      ? { names: null, starExportsTypes: false }
+      ? { names: null, starExportedModules: [] }
       : parseExportedNames(indexPath, indexSource);
 
   return {
     provider,
-    typesPath,
+    sourcePath,
     indexPath,
     declarations:
-      typesSource === null
-        ? null
-        : parseNamespaceDeclarations(typesPath, typesSource),
+      source === null ? null : parseNamespaceDeclarations(sourcePath, source),
     exportedNames: exports.names,
-    starExportsTypes: exports.starExportsTypes,
+    starExportedModules: starExportedModules ?? exports.starExportedModules,
   };
 }
 
@@ -196,6 +204,18 @@ const GHOST_TYPES = `export interface GhostRunNamespace {
 }
 `;
 const GHOST_INDEX = `export type { GhostRunNamespace } from "./types";\n`;
+const GHOST_RESPONSES_TYPES = `export interface GhostResponsesV1Namespace {
+  go: () => void;
+}
+`;
+const GHOST_S3_TYPES = `export interface GhostS3Namespace {
+  go: () => void;
+}
+`;
+const GHOST_ZOD_TYPES = `export interface GhostZodNamespace {
+  go: () => void;
+}
+`;
 
 describe("provider export surface", () => {
   it("re-exports every declared *Namespace type, or baselines it", () => {
@@ -350,6 +370,102 @@ describe("provider export surface", () => {
     expect(problems[0]).toContain("ghost: GhostRunNamespace is declared at");
   });
 
+  it("reports a namespace declared outside types.ts", () => {
+    // kie's shape: `KieResponsesV1Namespace` lives in responses.ts, which the
+    // types.ts-only walk never opened. A new one omitted from index.ts is the
+    // RR-2 defect exactly, reachable in a file the guard did not read.
+    const problems = checkExportSurface(
+      [
+        syntheticSurface(
+          "ghost",
+          GHOST_RESPONSES_TYPES,
+          "export {};\n",
+          "responses.ts"
+        ),
+      ],
+      {}
+    );
+
+    expect(problems).toHaveLength(1);
+    expect(problems[0]).toContain(
+      "ghost: GhostResponsesV1Namespace is declared at"
+    );
+    expect(problems[0]).toContain(
+      "packages/provider/ghost/src/responses.ts:1 but never re-exported from"
+    );
+    // The fix names the declaring module, not a hardcoded "./types".
+    expect(problems[0]).toContain('from "./responses"');
+  });
+
+  it("skips a star-exported module while still checking its provider's types.ts", () => {
+    // b2's shape (DC-7): the star is at ./s3-types, so s3-types.ts is public in
+    // full while types.ts stays under the rule. Skipping per provider would
+    // drop types.ts; checking per provider would report four public names.
+    const index = 'export type * from "./s3-types";\n';
+    const problems = checkExportSurface(
+      [
+        syntheticSurface("ghost", GHOST_TYPES, index),
+        syntheticSurface("ghost", GHOST_S3_TYPES, index, "s3-types.ts"),
+      ],
+      {}
+    );
+
+    expect(problems).toHaveLength(1);
+    expect(problems[0]).toContain("ghost: GhostRunNamespace is declared at");
+    expect(problems[0]).toContain("packages/provider/ghost/src/types.ts:1");
+    expect(problems.join("\n")).not.toContain("GhostS3Namespace");
+  });
+
+  it("skips a module reached through a chain of star re-exports", () => {
+    // telegram's shape (F-1): index.ts stars ./types and types.ts stars ./zod,
+    // so zod.ts is public two hops out. One hop would report it as unexported
+    // while it is fully reachable — a false positive that reds a correct change.
+    const closed = resolveStarExportedModules(
+      ["packages/provider/ghost/src/types"],
+      new Map([
+        [
+          "packages/provider/ghost/src/types",
+          ["packages/provider/ghost/src/zod"],
+        ],
+        ["packages/provider/ghost/src/zod", []],
+      ])
+    );
+
+    expect(closed).toEqual([
+      "packages/provider/ghost/src/types",
+      "packages/provider/ghost/src/zod",
+    ]);
+    expect(
+      checkExportSurface(
+        [
+          syntheticSurface(
+            "ghost",
+            GHOST_ZOD_TYPES,
+            'export type * from "./types";\n',
+            "zod.ts",
+            closed
+          ),
+        ],
+        {}
+      )
+    ).toEqual([]);
+  });
+
+  it("terminates on a cycle of star re-exports", () => {
+    expect(
+      resolveStarExportedModules(
+        ["packages/provider/ghost/src/a"],
+        new Map([
+          ["packages/provider/ghost/src/a", ["packages/provider/ghost/src/b"]],
+          ["packages/provider/ghost/src/b", ["packages/provider/ghost/src/a"]],
+        ])
+      )
+    ).toEqual([
+      "packages/provider/ghost/src/a",
+      "packages/provider/ghost/src/b",
+    ]);
+  });
+
   it("counts a renamed re-export under both of its names", () => {
     // Deliberately over-permissive, per the module comment: collecting both
     // sides keeps a renamed re-export from being reported as a missing one.
@@ -395,13 +511,36 @@ describe("provider export surface", () => {
     expect(EXPORT_SURFACE_BASELINE.telegram).toBeUndefined();
   });
 
-  it("discovers every provider from disk", () => {
+  it("discovers every provider from disk, one surface per declaring file", () => {
     const surfaces = readProviderExportSurfaces();
-    expect(surfaces.length).toBeGreaterThanOrEqual(29);
-    expect(surfaces.map((surface) => surface.provider)).toContain("fal");
+    const providers = [...new Set(surfaces.map((surface) => surface.provider))];
+
+    expect(providers.length).toBeGreaterThanOrEqual(29);
+    expect(providers).toContain("fal");
+    // More surfaces than providers is the widening itself: index.ts is not a
+    // surface, and every other src/*.ts module is one.
+    expect(surfaces.length).toBeGreaterThan(providers.length);
     for (const surface of surfaces) {
-      expect(surface.declarations, surface.provider).not.toBeNull();
-      expect(surface.exportedNames, surface.provider).not.toBeNull();
+      expect(surface.declarations, surface.sourcePath).not.toBeNull();
+      expect(surface.exportedNames, surface.sourcePath).not.toBeNull();
+      expect(
+        surface.sourcePath.endsWith("/src/index.ts"),
+        surface.sourcePath
+      ).toBe(false);
     }
+    for (const provider of providers) {
+      const own = surfaces.filter((surface) => surface.provider === provider);
+      expect(
+        own.some(
+          (surface) =>
+            surface.sourcePath === `packages/provider/${provider}/src/types.ts`
+        ),
+        provider
+      ).toBe(true);
+    }
+    // The file the gap was reachable in is now read (ac-9at9f2.8).
+    expect(surfaces.map((surface) => surface.sourcePath)).toContain(
+      "packages/provider/kie/src/responses.ts"
+    );
   });
 });

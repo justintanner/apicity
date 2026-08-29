@@ -43,14 +43,45 @@ const GHOST_FILE = `packages/provider/${GHOST}/src/${GHOST}.ts`;
  * Run a synthetic factory body through the real parser into an inventory, so
  * the comparison cases assert against parsed source rather than against a hand
  * transcription of what the parser is assumed to produce.
+ *
+ * `modules` is a virtual `src/` directory keyed by file name. Supplying it is
+ * what opens the cross-file seam, the same way `inventoryFrom` opens it from a
+ * real listing; omitting it leaves the three-argument, one-file contract every
+ * case below it was written against. `head` carries the entry file's own
+ * imports, which have to sit above the factory.
  */
-function parsed(ref: string, body: string): Inventory {
-  const source = `export function createGhost(opts: GhostOptions): GhostProvider {\n${body}\n}\n`;
+function parsed(
+  ref: string,
+  body: string,
+  options: {
+    modules?: Record<string, string>;
+    head?: string;
+    maxDepth?: number;
+  } = {}
+): Inventory {
+  const source = `${options.head ?? ""}export function createGhost(opts: GhostOptions): GhostProvider {\n${body}\n}\n`;
+  const files = options.modules;
   return {
     provider: GHOST,
     ref,
     filePath: GHOST_FILE,
-    ...parseNamespaceShapes(GHOST_FILE, source, factoryNameFor(GHOST)),
+    ...parseNamespaceShapes(GHOST_FILE, source, factoryNameFor(GHOST), {
+      maxDepth: options.maxDepth,
+      modules: files
+        ? (specifier: string) => {
+            // A plain lookup, so an unresolvable specifier and a missing file
+            // reach the parser as the one thing it contracts to handle: null.
+            const file = `${specifier.replace(/^\.\//, "")}.ts`;
+            const moduleSource = files[file];
+            return moduleSource === undefined
+              ? null
+              : {
+                  fileName: `packages/provider/${GHOST}/src/${file}`,
+                  source: moduleSource,
+                };
+          }
+        : undefined,
+    }),
   };
 }
 
@@ -263,6 +294,180 @@ describe("provider namespace shape: parsing", () => {
     ].join("\n");
 
     expect(parsed("override", body).duplicates).toEqual([]);
+  });
+
+  it("resolves a spread of a sibling module's factory call", () => {
+    // R1: kie spreads ten sub-provider factory calls into its root literal, so
+    // their members belong to the ENCLOSING namespace and add no segment.
+    const inventory = parsed(
+      "spread-call",
+      "  return attachExamples({ ...createClaude(ctx) });",
+      {
+        head: 'import { createClaude } from "./claude";\n',
+        modules: {
+          "claude.ts": [
+            "export function createClaude(ctx: GhostContext) {",
+            '  const send = jsonBody("POST", "/claude");',
+            "  return { claude: Object.assign(send, { schema: ClaudeRequestSchema }) };",
+            "}",
+          ].join("\n"),
+        },
+      }
+    );
+
+    expect(inventory.paths).toEqual({
+      claude: "callable-with-children",
+      "claude.schema": "unresolved",
+    });
+    // The sibling's `.schema` is metadata wherever it is written, so the
+    // repository-wide baseline entry covers it exactly as it does in-file.
+    expect(inventory.unresolved).toEqual(["claude.schema"]);
+  });
+
+  it("resolves a spread of a same-file binding without reporting duplicates", () => {
+    // R2: telegram's root is `{ ...post, post }`. Both sets survive — the
+    // duplicate check is the per-literal `declared` set of ONE walk, and the
+    // spread's members are recorded by a nested walk with a set of its own.
+    const body = [
+      "  const post = { sendMessage: () => undefined };",
+      "  return attachExamples({ ...post, post });",
+    ].join("\n");
+    const inventory = parsed("spread-binding", body);
+
+    expect(inventory.paths).toEqual({
+      sendMessage: "callable",
+      post: "object",
+      "post.sendMessage": "callable",
+    });
+    expect(inventory.duplicates).toEqual([]);
+  });
+
+  it("merges two resolved spreads that share an intermediate namespace", () => {
+    // R5: the shared `v1` is recorded twice with the same shape into one
+    // dot-path map, so the merge is deep without anything modelling a merge.
+    const inventory = parsed(
+      "spread-merge",
+      "  return attachExamples({ ...createOne(ctx), ...createTwo(ctx) });",
+      {
+        head: 'import { createOne } from "./one";\nimport { createTwo } from "./two";\n',
+        modules: {
+          "one.ts":
+            "export function createOne(ctx: GhostContext) {\n  return { v1: { alpha: () => undefined } };\n}",
+          "two.ts":
+            "export function createTwo(ctx: GhostContext) {\n  return { v1: { beta: () => undefined } };\n}",
+        },
+      }
+    );
+
+    expect(inventory.paths).toEqual({
+      v1: "object",
+      "v1.alpha": "callable",
+      "v1.beta": "callable",
+    });
+    expect(inventory.duplicates).toEqual([]);
+  });
+
+  it("takes the last contributor when two spreads declare one path differently", () => {
+    // The one in-provider case this module does not report: `record` is
+    // last-write-wins with no shape comparison, which IS Object.assign
+    // semantics, and two contributors are not a duplicate of each other.
+    const inventory = parsed(
+      "spread-collide",
+      "  return attachExamples({ ...createOne(ctx), ...createTwo(ctx) });",
+      {
+        head: 'import { createOne } from "./one";\nimport { createTwo } from "./two";\n',
+        modules: {
+          "one.ts":
+            "export function createOne(ctx: GhostContext) {\n  return { v1: { shared: () => undefined } };\n}",
+          "two.ts":
+            "export function createTwo(ctx: GhostContext) {\n  return { v1: { shared: { leaf: () => undefined } } };\n}",
+        },
+      }
+    );
+
+    expect(inventory.paths).toEqual({
+      v1: "object",
+      "v1.shared": "object",
+      "v1.shared.leaf": "callable",
+    });
+    expect(inventory.duplicates).toEqual([]);
+  });
+
+  it("degrades to a spread sentinel when the sibling file is missing", () => {
+    // AC-12, both halves: a file the listing does not hold, and a specifier
+    // that leaves the provider's own src. Neither throws; both fall back to
+    // exactly what this file recorded before it could see across files.
+    const missing = parsed(
+      "missing",
+      "  return attachExamples({ ...createGone(ctx) });",
+      {
+        head: 'import { createGone } from "./gone";\n',
+        modules: { "other.ts": "export const unrelated = 1;\n" },
+      }
+    );
+    expect(missing.paths).toEqual({ "<spread:0>": "unresolved" });
+
+    const foreign = parsed(
+      "foreign",
+      "  return attachExamples({ ...createGone(ctx) });",
+      {
+        head: 'import { createGone } from "../elsewhere/gone";\n',
+        modules: {
+          "gone.ts":
+            "export function createGone() {\n  return { leaf: () => undefined };\n}",
+        },
+      }
+    );
+    expect(foreign.paths).toEqual({ "<spread:0>": "unresolved" });
+  });
+
+  it("terminates on an import cycle and keeps both contributors", () => {
+    // AC-13. The walk guard is keyed by (literal, prefix), so re-entering a
+    // literal at a prefix it already carries stops rather than recursing.
+    const inventory = parsed(
+      "cycle",
+      "  return attachExamples({ ...createA(ctx) });",
+      {
+        head: 'import { createA } from "./a";\n',
+        modules: {
+          "a.ts": [
+            'import { createB } from "./b";',
+            "export function createA(ctx: GhostContext) {",
+            "  return { alpha: () => undefined, ...createB(ctx) };",
+            "}",
+          ].join("\n"),
+          "b.ts": [
+            'import { createA } from "./a";',
+            "export function createB(ctx: GhostContext) {",
+            "  return { beta: () => undefined, ...createA(ctx) };",
+            "}",
+          ].join("\n"),
+        },
+      }
+    );
+
+    expect(inventory.paths).toEqual({ alpha: "callable", beta: "callable" });
+  });
+
+  it("stops at the module hop bound rather than following a deeper chain", () => {
+    const chain = {
+      "one.ts":
+        'import { createTwo } from "./two";\nexport function createOne(c: C) {\n  return { ...createTwo(c) };\n}',
+      "two.ts":
+        "export function createTwo(c: C) {\n  return { leaf: () => undefined };\n}",
+    };
+    const head = 'import { createOne } from "./one";\n';
+    const body = "  return attachExamples({ ...createOne(ctx) });";
+
+    expect(parsed("deep", body, { head, modules: chain }).paths).toEqual({
+      leaf: "callable",
+    });
+    expect(
+      parsed("bounded", body, { head, modules: chain, maxDepth: 1 }).paths
+    ).toEqual({ leaf: "callable" });
+    expect(
+      parsed("stopped", body, { head, modules: chain, maxDepth: 0 }).paths
+    ).toEqual({ "<spread:0>": "unresolved" });
   });
 
   it("emits paths in sorted order, so two derivations are byte-identical", () => {
@@ -508,10 +713,6 @@ const LOOP_MERGED_ROOT =
   "the factory composes its root by merging parts into a variable in a loop, " +
   "so no object literal is syntactically reachable from the return";
 
-const COMPOSED_SPREAD =
-  "the root literal spreads a composed sub-provider, whose children are built " +
-  "in another function and often another file";
-
 const NAMESPACE_SHAPE_BASELINE: Record<string, Record<string, string>> = {
   [ANY_PROVIDER]: {
     "*.schema": ZOD_SCHEMA,
@@ -525,19 +726,12 @@ const NAMESPACE_SHAPE_BASELINE: Record<string, Record<string, string>> = {
     [ROOT_PATH]: LOOP_MERGED_ROOT,
   },
   kie: {
-    "<spread:*>": COMPOSED_SPREAD,
     "*.responseSchema": KIE_RESPONSE_SCHEMA,
     "*.seedance2MiniResponseSchema": KIE_RESPONSE_SCHEMA,
     modelInputSchemas: KIE_RESPONSE_SCHEMA,
   },
-  polymarket: {
-    "*.<spread:*>": COMPOSED_SPREAD,
-  },
   simplefunctions: {
     "*.responseSchema": KIE_RESPONSE_SCHEMA,
-  },
-  telegram: {
-    "<spread:*>": COMPOSED_SPREAD,
   },
 };
 
@@ -554,9 +748,7 @@ const EXPECTED_BASELINE_PROVIDERS = [
   "b2",
   "elevenlabs",
   "kie",
-  "polymarket",
   "simplefunctions",
-  "telegram",
 ];
 
 describe("provider namespace shape: the live tree", () => {

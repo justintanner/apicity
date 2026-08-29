@@ -42,9 +42,6 @@ const VERB_LAYER =
   "verb-layer namespace, reachable from the exported provider interface; " +
   "export decision deferred to the burn-down bead";
 
-const ANTHROPIC_VERB_LAYER =
-  "verb-layer namespace under /v1, reachable from the exported " +
-  "AnthropicProvider interface; export decision deferred to the burn-down bead";
 
 const ELEVENLABS_LAYER =
   "sub-namespace reachable from the exported ElevenLabsProvider interface; " +
@@ -59,12 +56,6 @@ const YOUTUBE_LAYER =
   "export decision deferred to the burn-down bead";
 
 const EXPORT_SURFACE_BASELINE: Record<string, Record<string, string>> = {
-  anthropic: {
-    AnthropicPostStreamV1Namespace: ANTHROPIC_VERB_LAYER,
-    AnthropicPostV1Namespace: ANTHROPIC_VERB_LAYER,
-    AnthropicGetV1Namespace: ANTHROPIC_VERB_LAYER,
-    AnthropicDeleteV1Namespace: ANTHROPIC_VERB_LAYER,
-  },
   dolthub: {
     DoltHubBranchesNamespace: DOLTHUB_LAYER,
     DoltHubPullsNamespace: DOLTHUB_LAYER,
@@ -83,12 +74,11 @@ const EXPORT_SURFACE_BASELINE: Record<string, Record<string, string>> = {
 // Pinned so a silent baseline expansion is a visible diff rather than a quiet
 // widening of what the guard tolerates.
 const EXPECTED_BASELINE_DISTRIBUTION: Record<string, number> = {
-  anthropic: 4,
   elevenlabs: 4,
   dolthub: 2,
   youtube: 1,
 };
-const EXPECTED_BASELINE_TOTAL = 11;
+const EXPECTED_BASELINE_TOTAL = 7;
 
 type Surface = ReturnType<typeof readProviderExportSurfaces>[number];
 

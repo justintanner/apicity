@@ -355,7 +355,10 @@ describe("input guards", () => {
     expect(stdoutText()).toBe("");
   });
 
-  it("does not fire the --base guard on the unbased fallback", () => {
+  // The RF-2 guard's other half — no `--base`, and `main` itself missing — is
+  // not reachable from `main()`, which calls the module-private `git` with no
+  // seam; `resolveBase` covers that return at :312.
+  it("exits 0 on a fallback-main run, where the --base guard has nothing to fire on", () => {
     const { io } = collector();
     expect(main(["--dir", callableRoot, "--provider", "ghost"], io)).toBe(0);
   });

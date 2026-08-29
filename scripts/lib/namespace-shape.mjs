@@ -65,12 +65,20 @@ import { REPO_ROOT, readProviderNames } from "./provider-inventory.mjs";
  */
 
 /**
- * How many module hops one resolution may take.
+ * How many module hops one uninterrupted resolution chain may take.
  *
  * The deepest real chain in this repository is three — `b2.ts` → `s3.ts`, and
  * `kie.ts` → `with-paid-gate.ts` → `veo.ts` — so six is headroom rather than a
- * constraint anything is written against. It exists so a cycle or a pathology
- * terminates by arithmetic and not by luck.
+ * constraint anything is written against.
+ *
+ * It bounds a chain, not a derivation. `classifyResolvedCall` and the spread
+ * arm of `walkLiteral` each begin their resolution at depth zero, so a
+ * derivation that descends through classification steps takes more hops in
+ * total than this number and is meant to: `elevenlabs`, `kie` and `b2` all
+ * resolve through chains that restart. Termination is therefore not this
+ * constant's job — the visited set ends an identifier cycle, the
+ * `(literal, prefix)` walk guard ends a spread cycle across files, and
+ * `RESOLUTION_LIMIT` bounds a wide fan-out.
  */
 const MODULE_DEPTH_LIMIT = 6;
 

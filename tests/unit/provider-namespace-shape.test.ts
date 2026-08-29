@@ -397,6 +397,11 @@ describe("provider namespace shape: parsing", () => {
     // AC-12, both halves: a file the listing does not hold, and a specifier
     // that leaves the provider's own src. Neither throws; both fall back to
     // exactly what this file recorded before it could see across files.
+    //
+    // The `foreign` half reaches that fallback through the virtual loader's
+    // map miss, so `resolveSpecifier`'s escape rules — reject `..`, reject a
+    // bare specifier — are covered here only as the readers apply them, not
+    // asserted directly.
     const missing = parsed(
       "missing",
       "  return attachExamples({ ...createGone(ctx) });",
@@ -449,7 +454,11 @@ describe("provider namespace shape: parsing", () => {
     expect(inventory.paths).toEqual({ alpha: "callable", beta: "callable" });
   });
 
-  it("stops at the module hop bound rather than following a deeper chain", () => {
+  it("refuses the first module hop at a zero bound", () => {
+    // The counter restarts at every entry into resolution — a nested walk or
+    // classification begins a fresh chain — so `maxDepth: 1` still crosses
+    // both files below. The bound stops the first hop of one chain, not a
+    // derivation's total depth; see `MODULE_DEPTH_LIMIT`.
     const chain = {
       "one.ts":
         'import { createTwo } from "./two";\nexport function createOne(c: C) {\n  return { ...createTwo(c) };\n}',
@@ -893,6 +902,81 @@ const NAMESPACE_SHAPE_BASELINE: Record<string, Record<string, string>> = {
 const EXPECTED_BASELINE_PROVIDERS = [ANY_PROVIDER, "kie", "simplefunctions"];
 
 /**
+ * The property keys REQ-006 keeps out of the namespace: a zod schema a
+ * provider imports from its `src/zod.ts` and attaches as metadata, not a
+ * namespace to descend into.
+ */
+const SCHEMA_KEYS = [
+  "schema",
+  "responseSchema",
+  "seedance2MiniResponseSchema",
+  "modelInputSchemas",
+];
+
+const isSchemaPath = (dotPath: string) =>
+  SCHEMA_KEYS.some((key) => dotPath === key || dotPath.endsWith(`.${key}`));
+
+/**
+ * Every schema path that does NOT read as `unresolved` today, as a set.
+ *
+ * All 42 are declared locally in `packages/provider/kie/src/suno.ts` instead
+ * of being imported from that provider's `src/zod.ts`, so the resolver reaches
+ * them the way it reaches any other local declaration. They are harmless — all
+ * `callable`, none with children, no zod internals in any inventory — and the
+ * fix belongs to `suno.ts`'s declaration convention, not to the detector.
+ *
+ * A set rather than a count, because a count is what let this go 13 paths
+ * under-reported: every POST endpoint landing adds a `.schema` path, so a
+ * total fails on unrelated provider work and gets re-pinned without being
+ * read. Growth here means a NEW locally declared schema, which is a reviewable
+ * event.
+ */
+const RESOLVED_SCHEMA_PATHS = [
+  "kie:suno.get.api.v1.lyrics.recordInfo.responseSchema",
+  "kie:suno.get.api.v1.lyrics.recordInfo.schema",
+  "kie:suno.get.api.v1.midi.recordInfo.responseSchema",
+  "kie:suno.get.api.v1.midi.recordInfo.schema",
+  "kie:suno.get.api.v1.mp4.recordInfo.responseSchema",
+  "kie:suno.get.api.v1.mp4.recordInfo.schema",
+  "kie:suno.get.api.v1.suno.cover.recordInfo.responseSchema",
+  "kie:suno.get.api.v1.suno.cover.recordInfo.schema",
+  "kie:suno.get.api.v1.vocalRemoval.recordInfo.responseSchema",
+  "kie:suno.get.api.v1.vocalRemoval.recordInfo.schema",
+  "kie:suno.get.api.v1.voice.recordInfo.responseSchema",
+  "kie:suno.get.api.v1.voice.recordInfo.schema",
+  "kie:suno.get.api.v1.voice.validateInfo.responseSchema",
+  "kie:suno.get.api.v1.voice.validateInfo.schema",
+  "kie:suno.get.api.v1.wav.recordInfo.responseSchema",
+  "kie:suno.get.api.v1.wav.recordInfo.schema",
+  "kie:suno.post.api.v1.generate.addInstrumental.schema",
+  "kie:suno.post.api.v1.generate.addVocals.schema",
+  "kie:suno.post.api.v1.generate.extend.schema",
+  "kie:suno.post.api.v1.generate.generatePersona.responseSchema",
+  "kie:suno.post.api.v1.generate.generatePersona.schema",
+  "kie:suno.post.api.v1.generate.getTimestampedLyrics.responseSchema",
+  "kie:suno.post.api.v1.generate.getTimestampedLyrics.schema",
+  "kie:suno.post.api.v1.generate.mashup.schema",
+  "kie:suno.post.api.v1.generate.replaceSection.schema",
+  "kie:suno.post.api.v1.generate.sounds.schema",
+  "kie:suno.post.api.v1.generate.uploadCover.schema",
+  "kie:suno.post.api.v1.generate.uploadExtend.schema",
+  "kie:suno.post.api.v1.lyrics.schema",
+  "kie:suno.post.api.v1.midi.generate.schema",
+  "kie:suno.post.api.v1.mp4.generate.schema",
+  "kie:suno.post.api.v1.style.generate.schema",
+  "kie:suno.post.api.v1.suno.cover.generate.schema",
+  "kie:suno.post.api.v1.vocalRemoval.generate.schema",
+  "kie:suno.post.api.v1.voice.checkVoice.responseSchema",
+  "kie:suno.post.api.v1.voice.checkVoice.schema",
+  "kie:suno.post.api.v1.voice.generate.schema",
+  "kie:suno.post.api.v1.voice.regenerate.responseSchema",
+  "kie:suno.post.api.v1.voice.regenerate.schema",
+  "kie:suno.post.api.v1.voice.validate.responseSchema",
+  "kie:suno.post.api.v1.voice.validate.schema",
+  "kie:suno.post.api.v1.wav.generate.schema",
+];
+
+/**
  * One derivation, shared by every live-tree assertion that does not need its
  * own.
  *
@@ -911,6 +995,37 @@ describe("provider namespace shape: the live tree", () => {
       NAMESPACE_SHAPE_BASELINE
     );
     expect(problems, problems.join("\n\n")).toEqual([]);
+  });
+
+  it("keeps every declared zod schema key out of the namespace", () => {
+    // REQ-006 against the live tree rather than a fixture. The ratchet cannot
+    // see this: it reports an uncovered `unresolved` path and a stale baseline
+    // entry, so a path that should stay opaque BECOMING transparent passes it
+    // silently. AC-06 was checked by a one-off count instead, which is how the
+    // `kie.suno.*` exceptions went 13 paths under-reported.
+    const resolved: string[] = [];
+
+    for (const inventory of LIVE_TREE) {
+      const all = Object.keys(inventory.paths);
+
+      for (const dotPath of all.filter(isSchemaPath)) {
+        const where = `${inventory.provider}:${dotPath}`;
+
+        // Opaque, or a bare callable — never an object, never a parent. Any
+        // other shape means zod's internals reached a provider inventory.
+        expect(["unresolved", "callable"], where).toContain(
+          inventory.paths[dotPath]
+        );
+        expect(
+          all.filter((other) => other.startsWith(`${dotPath}.`)),
+          where
+        ).toEqual([]);
+
+        if (inventory.paths[dotPath] !== "unresolved") resolved.push(where);
+      }
+    }
+
+    expect(resolved.sort()).toEqual([...RESOLVED_SCHEMA_PATHS].sort());
   });
 
   it("derives the same inventory twice, byte for byte", () => {

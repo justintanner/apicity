@@ -919,62 +919,24 @@ const isSchemaPath = (dotPath: string) =>
 /**
  * Every schema path that does NOT read as `unresolved` today, as a set.
  *
- * All 42 are declared locally in `packages/provider/kie/src/suno.ts` instead
- * of being imported from that provider's `src/zod.ts`, so the resolver reaches
- * them the way it reaches any other local declaration. They are harmless — all
- * `callable`, none with children, no zod internals in any inventory — and the
- * fix belongs to `suno.ts`'s declaration convention, not to the detector.
+ * Empty, and that is the point. The 42 `kie:suno.*` paths that used to sit
+ * here were the whole exception: `packages/provider/kie/src/suno.ts` declared
+ * those schemas locally instead of importing them from the provider's
+ * `src/zod.ts`, so the resolver reached them the way it reaches any other
+ * local declaration. They now live in `src/zod.ts` and are imported back, so
+ * no provider source file declares a schema of its own any more.
  *
- * A set rather than a count, because a count is what let this go 13 paths
- * under-reported: every POST endpoint landing adds a `.schema` path, so a
- * total fails on unrelated provider work and gets re-pinned without being
- * read. Growth here means a NEW locally declared schema, which is a reviewable
- * event.
+ * A path appearing here again therefore means a NEWLY locally declared schema
+ * — a reviewable event, and one whose fix belongs to that provider's
+ * declaration convention (move it into `src/zod.ts` and import it), never to
+ * the detector.
+ *
+ * A set rather than a count, because a count is what let the old exception go
+ * 13 paths under-reported: every POST endpoint landing adds a `.schema` path,
+ * so a total fails on unrelated provider work and gets re-pinned without being
+ * read.
  */
-const RESOLVED_SCHEMA_PATHS = [
-  "kie:suno.get.api.v1.lyrics.recordInfo.responseSchema",
-  "kie:suno.get.api.v1.lyrics.recordInfo.schema",
-  "kie:suno.get.api.v1.midi.recordInfo.responseSchema",
-  "kie:suno.get.api.v1.midi.recordInfo.schema",
-  "kie:suno.get.api.v1.mp4.recordInfo.responseSchema",
-  "kie:suno.get.api.v1.mp4.recordInfo.schema",
-  "kie:suno.get.api.v1.suno.cover.recordInfo.responseSchema",
-  "kie:suno.get.api.v1.suno.cover.recordInfo.schema",
-  "kie:suno.get.api.v1.vocalRemoval.recordInfo.responseSchema",
-  "kie:suno.get.api.v1.vocalRemoval.recordInfo.schema",
-  "kie:suno.get.api.v1.voice.recordInfo.responseSchema",
-  "kie:suno.get.api.v1.voice.recordInfo.schema",
-  "kie:suno.get.api.v1.voice.validateInfo.responseSchema",
-  "kie:suno.get.api.v1.voice.validateInfo.schema",
-  "kie:suno.get.api.v1.wav.recordInfo.responseSchema",
-  "kie:suno.get.api.v1.wav.recordInfo.schema",
-  "kie:suno.post.api.v1.generate.addInstrumental.schema",
-  "kie:suno.post.api.v1.generate.addVocals.schema",
-  "kie:suno.post.api.v1.generate.extend.schema",
-  "kie:suno.post.api.v1.generate.generatePersona.responseSchema",
-  "kie:suno.post.api.v1.generate.generatePersona.schema",
-  "kie:suno.post.api.v1.generate.getTimestampedLyrics.responseSchema",
-  "kie:suno.post.api.v1.generate.getTimestampedLyrics.schema",
-  "kie:suno.post.api.v1.generate.mashup.schema",
-  "kie:suno.post.api.v1.generate.replaceSection.schema",
-  "kie:suno.post.api.v1.generate.sounds.schema",
-  "kie:suno.post.api.v1.generate.uploadCover.schema",
-  "kie:suno.post.api.v1.generate.uploadExtend.schema",
-  "kie:suno.post.api.v1.lyrics.schema",
-  "kie:suno.post.api.v1.midi.generate.schema",
-  "kie:suno.post.api.v1.mp4.generate.schema",
-  "kie:suno.post.api.v1.style.generate.schema",
-  "kie:suno.post.api.v1.suno.cover.generate.schema",
-  "kie:suno.post.api.v1.vocalRemoval.generate.schema",
-  "kie:suno.post.api.v1.voice.checkVoice.responseSchema",
-  "kie:suno.post.api.v1.voice.checkVoice.schema",
-  "kie:suno.post.api.v1.voice.generate.schema",
-  "kie:suno.post.api.v1.voice.regenerate.responseSchema",
-  "kie:suno.post.api.v1.voice.regenerate.schema",
-  "kie:suno.post.api.v1.voice.validate.responseSchema",
-  "kie:suno.post.api.v1.voice.validate.schema",
-  "kie:suno.post.api.v1.wav.generate.schema",
-];
+const RESOLVED_SCHEMA_PATHS: string[] = [];
 
 /**
  * One derivation, shared by every live-tree assertion that does not need its

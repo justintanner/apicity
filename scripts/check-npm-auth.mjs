@@ -4,11 +4,12 @@
  * Diagnose the npm publish credential.
  *
  * All of the I/O lives here and none of the classification does: this file
- * collects facts and hands them to `scripts/lib/check-npm-auth.mjs`, which
- * decides the verdict. The token is read into memory, fingerprinted, and
- * written to one 0600 file inside a private temp directory that is removed on
- * every exit path. It is never echoed, logged, or passed to the library except
- * through `fingerprintToken`.
+ * collects facts — the 1Password read, the host npmrc read, the digest, the
+ * two npm child processes — and hands them to
+ * `scripts/lib/check-npm-auth.mjs`, which decides every verdict. The token is
+ * read into memory, fingerprinted, and written to one 0600 file inside a
+ * private temp directory that is removed on every exit path. It is never
+ * echoed or logged, and it reaches the library only through `fingerprintToken`.
  */
 
 import { execFile } from "node:child_process";
@@ -19,27 +20,19 @@ import { join } from "node:path";
 import { promisify } from "node:util";
 
 import {
+  SECRET_REFERENCE,
+  classifyHostNpmrc,
   classifyNpmAuth,
   fingerprintToken,
+  npmErrorKind,
+  parseAuthTokenLine,
   renderNpmAuthMessage,
 } from "./lib/check-npm-auth.mjs";
 
 const execFileAsync = promisify(execFile);
 
-const SECRET_REFERENCE = "op://apicity/NPM_TOKEN/password";
 const REGISTRY = "https://registry.npmjs.org/";
 const COMMAND_TIMEOUT_MS = 30_000;
-
-const AUTH_CODES = new Set(["E401", "E403", "ENEEDAUTH"]);
-const NETWORK_CODES = new Set([
-  "ENOTFOUND",
-  "ETIMEDOUT",
-  "ECONNREFUSED",
-  "EAI_AGAIN",
-]);
-
-const AUTH_TOKEN_ASSIGNMENT = /(?:^|:)_authToken\s*=\s*(.*)$/;
-const VARIABLE_REFERENCE = /^\$\{([A-Za-z_][A-Za-z0-9_]*)\}$/;
 
 const sha256 = (value) => createHash("sha256").update(value).digest("hex");
 
@@ -95,49 +88,7 @@ function readHostAuthToken(path) {
     return null;
   }
 
-  let value = null;
-
-  for (const line of contents.split(/\r?\n/)) {
-    const trimmed = line.trim();
-
-    if (trimmed.startsWith(";") || trimmed.startsWith("#")) {
-      continue;
-    }
-
-    const match = trimmed.match(AUTH_TOKEN_ASSIGNMENT);
-
-    if (match) {
-      value = match[1].trim().replace(/^["']|["']$/g, "");
-    }
-  }
-
-  return value;
-}
-
-/**
- * Tag what the host config holds rather than fingerprinting its bytes. A file
- * whose `_authToken` is a variable reference is a template that npm expands at
- * read time, so hashing the raw bytes would report a divergence on every run
- * of a correctly configured host.
- */
-function classifyHostNpmrc(rawValue) {
-  if (!rawValue) {
-    return { kind: "absent" };
-  }
-
-  const deferred = rawValue.match(VARIABLE_REFERENCE);
-
-  if (deferred) {
-    const variable = deferred[1];
-
-    return {
-      kind: "deferred",
-      variable,
-      resolved: fingerprintToken(process.env[variable], sha256),
-    };
-  }
-
-  return { kind: "literal", fingerprint: fingerprintToken(rawValue, sha256) };
+  return parseAuthTokenLine(contents);
 }
 
 function writeTempNpmrc(token) {
@@ -161,38 +112,6 @@ function writeTempNpmrc(token) {
  */
 function npmChildEnv(userconfig) {
   return { ...process.env, NPM_CONFIG_USERCONFIG: userconfig };
-}
-
-/**
- * Lift npm's machine-readable code out of a failure and nothing else. npm's
- * raw stderr never reaches the rendered message.
- */
-function npmErrorCode(error) {
-  if (error.killed) {
-    return "ETIMEDOUT";
-  }
-
-  if (typeof error.code === "string") {
-    return error.code;
-  }
-
-  const match = /\bcode\s+([A-Z][A-Z0-9_]+)\b/.exec(String(error.stderr ?? ""));
-
-  return match ? match[1] : null;
-}
-
-function npmErrorKind(error) {
-  const code = npmErrorCode(error);
-
-  if (code !== null && AUTH_CODES.has(code)) {
-    return "auth";
-  }
-
-  if (code !== null && NETWORK_CODES.has(code)) {
-    return "network";
-  }
-
-  return "other";
 }
 
 async function runWhoami(userconfig) {
@@ -224,7 +143,11 @@ async function runPing(userconfig) {
 async function main() {
   // Read the host config before the temp npmrc exists, so no ordering mistake
   // can make this compare the temp file against itself.
-  const cached = classifyHostNpmrc(readHostAuthToken(hostNpmrcPath()));
+  const cached = classifyHostNpmrc(
+    readHostAuthToken(hostNpmrcPath()),
+    (name) => process.env[name],
+    sha256
+  );
 
   const token = await readSecret();
   const tokenFingerprint = fingerprintToken(token, sha256);

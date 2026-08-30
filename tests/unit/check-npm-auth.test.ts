@@ -1,9 +1,15 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  AUTH_CODES,
+  NETWORK_CODES,
   NPM_AUTH_VERDICT,
+  classifyHostNpmrc,
   classifyNpmAuth,
   fingerprintToken,
+  npmErrorCode,
+  npmErrorKind,
+  parseAuthTokenLine,
   renderNpmAuthMessage,
 } from "../../scripts/lib/check-npm-auth.mjs";
 
@@ -110,6 +116,140 @@ describe("fingerprintToken", () => {
 
   it("gives different credentials different digest prefixes", () => {
     expect(authoritative.sha256Prefix).not.toBe(divergent.sha256Prefix);
+  });
+});
+
+describe("npmErrorCode", () => {
+  it("prefers npm's own string code", () => {
+    expect(npmErrorCode({ code: "E401" })).toBe("E401");
+  });
+
+  it("reports a killed child as a timeout", () => {
+    expect(npmErrorCode({ killed: true, code: 143 })).toBe("ETIMEDOUT");
+  });
+
+  it("lifts the code out of stderr when error.code is numeric", () => {
+    expect(
+      npmErrorCode({ code: 1, stderr: "npm error code E401\nnpm error 401" })
+    ).toBe("E401");
+  });
+
+  it("returns null when nothing names a code", () => {
+    expect(
+      npmErrorCode({ code: 1, stderr: "npm error 500 Internal Server Error" })
+    ).toBeNull();
+    expect(npmErrorCode({})).toBeNull();
+  });
+});
+
+// BR-3's other half. The verdict ladder can only reach `credential-rejected`
+// through `kind: "auth"`, so which npm failures become "auth" is the decision
+// that decides whether an outage can be reported as a dead token. Anything
+// unrecognised must land on "other", which the ladder reports as unproven.
+describe("npmErrorKind", () => {
+  const CASES: Array<[string, Record<string, unknown>, string]> = [
+    ["E401", { code: "E401" }, "auth"],
+    ["E403", { code: "E403" }, "auth"],
+    ["ENEEDAUTH", { code: "ENEEDAUTH" }, "auth"],
+    [
+      "E401 named only in stderr",
+      { code: 1, stderr: "npm error code E401" },
+      "auth",
+    ],
+    ["ENOTFOUND", { code: "ENOTFOUND" }, "network"],
+    ["ETIMEDOUT", { code: "ETIMEDOUT" }, "network"],
+    ["ECONNREFUSED", { code: "ECONNREFUSED" }, "network"],
+    ["EAI_AGAIN", { code: "EAI_AGAIN" }, "network"],
+    ["a killed child", { killed: true }, "network"],
+    ["E500", { code: "E500" }, "other"],
+    ["an uncoded failure", { code: 1, stderr: "npm error 500" }, "other"],
+    ["an empty error", {}, "other"],
+  ];
+
+  for (const [label, error, kind] of CASES) {
+    it(`classifies ${label} as ${kind}`, () => {
+      expect(npmErrorKind(error)).toBe(kind);
+    });
+  }
+
+  it("covers every code in both exported sets, and they do not overlap", () => {
+    for (const code of AUTH_CODES) {
+      expect(npmErrorKind({ code })).toBe("auth");
+    }
+
+    for (const code of NETWORK_CODES) {
+      expect(npmErrorKind({ code })).toBe("network");
+    }
+
+    expect([...AUTH_CODES].some((code) => NETWORK_CODES.has(code))).toBe(false);
+  });
+});
+
+describe("parseAuthTokenLine", () => {
+  it("returns null when no line assigns a token", () => {
+    expect(
+      parseAuthTokenLine("registry=https://registry.npmjs.org/\n")
+    ).toBeNull();
+    expect(parseAuthTokenLine("")).toBeNull();
+  });
+
+  it("reads a registry-scoped assignment and strips the quotes npm tolerates", () => {
+    expect(
+      parseAuthTokenLine(
+        `//registry.npmjs.org/:_authToken="${AUTHORITATIVE_TOKEN}"\n`
+      )
+    ).toBe(AUTHORITATIVE_TOKEN);
+  });
+
+  it("skips commented-out assignments", () => {
+    expect(
+      parseAuthTokenLine(
+        `; //registry.npmjs.org/:_authToken=${DIVERGENT_TOKEN}\n` +
+          `# _authToken=${LEGACY_TOKEN}\n`
+      )
+    ).toBeNull();
+  });
+
+  it("is last-wins across registries", () => {
+    // RR-1, pinned as the behaviour that ships today rather than endorsed: a
+    // later unrelated registry's token becomes the reported host state.
+    expect(
+      parseAuthTokenLine(
+        `//registry.npmjs.org/:_authToken=${AUTHORITATIVE_TOKEN}\n` +
+          `//npm.pkg.github.com/:_authToken=${DIVERGENT_TOKEN}\n`
+      )
+    ).toBe(DIVERGENT_TOKEN);
+  });
+});
+
+describe("classifyHostNpmrc", () => {
+  const lookupEnv = (name: string): string | undefined =>
+    name === "NPM_TOKEN" ? AUTHORITATIVE_TOKEN : undefined;
+
+  it("tags a missing or empty value as absent", () => {
+    expect(classifyHostNpmrc(null, lookupEnv, syntheticHash)).toEqual(ABSENT);
+    expect(classifyHostNpmrc("", lookupEnv, syntheticHash)).toEqual(ABSENT);
+  });
+
+  it("tags a variable reference as deferred and fingerprints what it resolves to", () => {
+    expect(classifyHostNpmrc("${NPM_TOKEN}", lookupEnv, syntheticHash)).toEqual(
+      DEFERRED_MATCHING
+    );
+  });
+
+  it("leaves a deferred reference unresolved when the variable is unset", () => {
+    expect(
+      classifyHostNpmrc("${UNSET_TOKEN}", lookupEnv, syntheticHash)
+    ).toEqual({ kind: "deferred", variable: "UNSET_TOKEN", resolved: null });
+  });
+
+  it("tags a raw value as literal and keeps only its fingerprint", () => {
+    const result = classifyHostNpmrc(DIVERGENT_TOKEN, lookupEnv, syntheticHash);
+
+    expect(result).toEqual(LITERAL_DIFFERING);
+    // The host npmrc is the one path a second raw token travels. It must not
+    // survive into the tagged state the renderer reads.
+    expectNoTokenLeak(JSON.stringify(result));
   });
 });
 

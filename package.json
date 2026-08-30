@@ -133,6 +133,7 @@
     "audit": "node scripts/audit.mjs --audit-level=moderate",
     "audit:op-env": "node scripts/audit-op-env.mjs",
     "check:op": "op run --env-file=.env -- node scripts/check-op.mjs",
+    "check:npm-auth": "node scripts/check-npm-auth.mjs",
     "compare:video": "pnpm run build:cost --silent && node scripts/compare-video-cost.mjs",
     "compare:image": "pnpm run build:cost --silent && node scripts/compare-image-cost.mjs"
   },

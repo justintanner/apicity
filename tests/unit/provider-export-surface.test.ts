@@ -31,131 +31,17 @@ import {
  * no per-provider blanket skip — mirroring `UNPRICED_SLUG_ALLOWLIST` in
  * `tests/unit/cost-pricing.test.ts`.
  *
- * Re-derived at implementation HEAD rather than copied from the plan: 407
- * exported namespace declarations across 29 providers, 65 unexported, 64 of
- * them non-fal. `fal` contributes zero entries — its one gap is the defect this
- * bead fixes. `telegram` contributes zero as well: `telegram/src/index.ts:3` is
- * `export type * from "./types"`, so `TelegramPostNamespace` is already public
- * and baselining it would write a permanently false statement into the guard.
+ * The baseline is empty: every namespace the guard once tolerated is now
+ * re-exported by its provider's `src/index.ts`. An empty object keeps the
+ * ratchet armed — the next unexported declaration fails the guard instead of
+ * landing silently.
  */
-const VERB_LAYER =
-  "verb-layer namespace, reachable from the exported provider interface; " +
-  "export decision deferred to the burn-down bead";
-
-const ANTHROPIC_VERB_LAYER =
-  "verb-layer namespace under /v1, reachable from the exported " +
-  "AnthropicProvider interface; export decision deferred to the burn-down bead";
-
-const SIMPLE_FUNCTIONS_LAYER =
-  "path- or verb-layer namespace, reachable from the exported " +
-  "SimpleFunctionsProvider interface; export decision deferred to the " +
-  "burn-down bead";
-
-const ELEVENLABS_LAYER =
-  "sub-namespace reachable from the exported ElevenLabsProvider interface; " +
-  "export decision deferred to the burn-down bead";
-
-const DOLTHUB_LAYER =
-  "sub-namespace reachable from the exported DoltHubProvider interface; " +
-  "export decision deferred to the burn-down bead";
-
-const YOUTUBE_LAYER =
-  "sub-namespace reachable from the exported YouTubeProvider interface; " +
-  "export decision deferred to the burn-down bead";
-
-const EXPORT_SURFACE_BASELINE: Record<string, Record<string, string>> = {
-  alibaba: {
-    AlibabaPostV1ChatNamespace: VERB_LAYER,
-    AlibabaPostV1Namespace: VERB_LAYER,
-    AlibabaPostStreamV1ChatNamespace: VERB_LAYER,
-    AlibabaPostStreamV1Namespace: VERB_LAYER,
-    AlibabaPostApiV1VideoGenerationNamespace: VERB_LAYER,
-    AlibabaPostApiV1ImageGenerationNamespace: VERB_LAYER,
-    AlibabaPostApiV1MultimodalGenerationNamespace: VERB_LAYER,
-    AlibabaPostApiV1AigcNamespace: VERB_LAYER,
-    AlibabaPostApiV1ServicesNamespace: VERB_LAYER,
-    AlibabaPostApiV1Namespace: VERB_LAYER,
-    AlibabaPostApiNamespace: VERB_LAYER,
-    AlibabaPostNamespace: VERB_LAYER,
-    AlibabaGetV1Namespace: VERB_LAYER,
-    AlibabaGetApiV1Namespace: VERB_LAYER,
-    AlibabaGetApiNamespace: VERB_LAYER,
-    AlibabaGetNamespace: VERB_LAYER,
-  },
-  anthropic: {
-    AnthropicPostStreamV1Namespace: ANTHROPIC_VERB_LAYER,
-    AnthropicPostV1Namespace: ANTHROPIC_VERB_LAYER,
-    AnthropicGetV1Namespace: ANTHROPIC_VERB_LAYER,
-    AnthropicDeleteV1Namespace: ANTHROPIC_VERB_LAYER,
-  },
-  dolthub: {
-    DoltHubBranchesNamespace: DOLTHUB_LAYER,
-    DoltHubPullsNamespace: DOLTHUB_LAYER,
-  },
-  elevenlabs: {
-    ElevenLabsUsageNamespace: ELEVENLABS_LAYER,
-    ElevenLabsPostConvaiAgentNamespace: ELEVENLABS_LAYER,
-    ElevenLabsGetConvaiAgentNamespace: ELEVENLABS_LAYER,
-    ElevenLabsGetConvaiAnalyticsNamespace: ELEVENLABS_LAYER,
-  },
-  openai: {
-    OpenAiPostV1AudioNamespace: VERB_LAYER,
-    OpenAiPostV1ChatNamespace: VERB_LAYER,
-    OpenAiPostV1ImagesNamespace: VERB_LAYER,
-    OpenAiPostV1ResponsesNamespace: VERB_LAYER,
-    OpenAiPostV1FineTuningNamespace: VERB_LAYER,
-    OpenAiPostV1RealtimeNamespace: VERB_LAYER,
-    OpenAiPostV1Namespace: VERB_LAYER,
-    OpenAiGetV1ChatNamespace: VERB_LAYER,
-    OpenAiGetV1FilesNamespace: VERB_LAYER,
-    OpenAiGetV1ModelsNamespace: VERB_LAYER,
-    OpenAiGetV1ResponsesNamespace: VERB_LAYER,
-    OpenAiGetV1ConversationsNamespace: VERB_LAYER,
-    OpenAiGetV1BatchesNamespace: VERB_LAYER,
-    OpenAiGetV1VectorStoresNamespace: VERB_LAYER,
-    OpenAiGetV1FineTuningNamespace: VERB_LAYER,
-    OpenAiGetV1OrganizationNamespace: VERB_LAYER,
-    OpenAiGetV1Namespace: VERB_LAYER,
-    OpenAiDeleteV1ChatNamespace: VERB_LAYER,
-    OpenAiDeleteV1FilesNamespace: VERB_LAYER,
-    OpenAiDeleteV1ModelsNamespace: VERB_LAYER,
-    OpenAiDeleteV1ResponsesNamespace: VERB_LAYER,
-    OpenAiDeleteV1FineTuningNamespace: VERB_LAYER,
-    OpenAiDeleteV1Namespace: VERB_LAYER,
-    OpenAiGetCodexNamespace: VERB_LAYER,
-  },
-  simplefunctions: {
-    SimpleFunctionsThesisPositionsNamespace: SIMPLE_FUNCTIONS_LAYER,
-    SimpleFunctionsThesisStrategiesNamespace: SIMPLE_FUNCTIONS_LAYER,
-    SimpleFunctionsThesisHeartbeatNamespace: SIMPLE_FUNCTIONS_LAYER,
-    SimpleFunctionsThesisVideosNamespace: SIMPLE_FUNCTIONS_LAYER,
-    SimpleFunctionsPortfolioLedgerImportNamespace: SIMPLE_FUNCTIONS_LAYER,
-    SimpleFunctionsPortfolioNamespace: SIMPLE_FUNCTIONS_LAYER,
-    SimpleFunctionsProxyNamespace: SIMPLE_FUNCTIONS_LAYER,
-    SimpleFunctionsXNamespace: SIMPLE_FUNCTIONS_LAYER,
-    SimpleFunctionsDashboard2Namespace: SIMPLE_FUNCTIONS_LAYER,
-    SimpleFunctionsPostNamespace: SIMPLE_FUNCTIONS_LAYER,
-    SimpleFunctionsPutNamespace: SIMPLE_FUNCTIONS_LAYER,
-    SimpleFunctionsPatchNamespace: SIMPLE_FUNCTIONS_LAYER,
-    SimpleFunctionsDeleteNamespace: SIMPLE_FUNCTIONS_LAYER,
-  },
-  youtube: {
-    YouTubeChannelsNamespace: YOUTUBE_LAYER,
-  },
-};
+const EXPORT_SURFACE_BASELINE: Record<string, Record<string, string>> = {};
 
 // Pinned so a silent baseline expansion is a visible diff rather than a quiet
 // widening of what the guard tolerates.
-const EXPECTED_BASELINE_DISTRIBUTION: Record<string, number> = {
-  openai: 24,
-  alibaba: 16,
-  simplefunctions: 13,
-  anthropic: 4,
-  elevenlabs: 4,
-  dolthub: 2,
-  youtube: 1,
-};
-const EXPECTED_BASELINE_TOTAL = 64;
+const EXPECTED_BASELINE_DISTRIBUTION: Record<string, number> = {};
+const EXPECTED_BASELINE_TOTAL = 0;
 
 type Surface = ReturnType<typeof readProviderExportSurfaces>[number];
 

@@ -103,24 +103,11 @@ function backtickedTestPaths(prose: string): string[] {
 }
 
 describe("cross-cutting repo-wide guard tests", () => {
-  it("lists recording-enumeration, surface-inventory, source-pin, registry-parity, doc-inventory, and credential-wiring tests", () => {
-    for (const path of RECORDING_ENUMERATION_TESTS) {
-      expect(CROSS_CUTTING_TESTS).toContain(path);
-    }
-    for (const path of SURFACE_INVENTORY_TESTS) {
-      expect(CROSS_CUTTING_TESTS).toContain(path);
-    }
-    for (const path of SOURCE_PIN_TESTS) {
-      expect(CROSS_CUTTING_TESTS).toContain(path);
-    }
-    for (const path of REGISTRY_PARITY_TESTS) {
-      expect(CROSS_CUTTING_TESTS).toContain(path);
-    }
-    for (const path of DOC_INVENTORY_TESTS) {
-      expect(CROSS_CUTTING_TESTS).toContain(path);
-    }
-    for (const path of CREDENTIAL_WIRING_TESTS) {
-      expect(CROSS_CUTTING_TESTS).toContain(path);
+  it("lists every categorized test, per category", () => {
+    for (const { name, tests } of CATEGORY_DOC_KEYWORDS) {
+      for (const relativePath of tests) {
+        expect(CROSS_CUTTING_TESTS, name).toContain(relativePath);
+      }
     }
   });
 

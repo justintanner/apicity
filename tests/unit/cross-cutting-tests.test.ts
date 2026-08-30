@@ -115,7 +115,7 @@ describe("cross-cutting repo-wide guard tests", () => {
     // Each recording-enumeration entry recursively walks the entire
     // tests/recordings corpus rather than a fixed provider subset.
     for (const relativePath of RECORDING_ENUMERATION_TESTS) {
-      const source = fs.readFileSync(path.join(repoRoot, relativePath), "utf8");
+      const source = readRepoFile(relativePath);
       expect(source, relativePath).toContain("../recordings");
       expect(source, relativePath).toContain("readdirSync");
     }
@@ -125,21 +125,21 @@ describe("cross-cutting repo-wide guard tests", () => {
     // Inventory tests must reference the cost-tiers TSV so a missing row after
     // an endpoint landing fails the fast gate (ac-t2gfln).
     for (const relativePath of SURFACE_INVENTORY_TESTS) {
-      const source = fs.readFileSync(path.join(repoRoot, relativePath), "utf8");
+      const source = readRepoFile(relativePath);
       expect(source, relativePath).toContain("endpoint-cost-tiers.tsv");
     }
   });
 
   it("source-pin tests assert checksum-mismatch detection", () => {
     for (const relativePath of SOURCE_PIN_TESTS) {
-      const source = fs.readFileSync(path.join(repoRoot, relativePath), "utf8");
+      const source = readRepoFile(relativePath);
       expect(source, relativePath).toContain("source-checksum-mismatch");
     }
   });
 
   it("registry-parity tests compare two cross-provider registries", () => {
     for (const relativePath of REGISTRY_PARITY_TESTS) {
-      const source = fs.readFileSync(path.join(repoRoot, relativePath), "utf8");
+      const source = readRepoFile(relativePath);
       expect(source, relativePath).toContain("MODEL_SLUGS");
       expect(source, relativePath).toContain("PRICING");
     }

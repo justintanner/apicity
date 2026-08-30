@@ -78,14 +78,9 @@ const CATEGORY_DOC_KEYWORDS = [
   },
 ] as const;
 
-const CATEGORIZED_TESTS: readonly string[] = [
-  ...RECORDING_ENUMERATION_TESTS,
-  ...SURFACE_INVENTORY_TESTS,
-  ...SOURCE_PIN_TESTS,
-  ...REGISTRY_PARITY_TESTS,
-  ...DOC_INVENTORY_TESTS,
-  ...CREDENTIAL_WIRING_TESTS,
-];
+const CATEGORIZED_TESTS: readonly string[] = CATEGORY_DOC_KEYWORDS.flatMap(
+  (category) => [...category.tests]
+);
 
 function readRepoFile(relativePath: string): string {
   return fs.readFileSync(path.join(repoRoot, relativePath), "utf8");
@@ -99,6 +94,12 @@ function readCrossCuttingEnumeration(): string {
   // Strip the ` * ` prefix and collapse the hand-wrapping so a keyword split
   // across two comment lines still matches.
   return paragraph.replace(/^\s*\*\s?/gm, "").replace(/\s+/g, " ");
+}
+
+function backtickedTestPaths(prose: string): string[] {
+  return [...prose.matchAll(/`(tests\/[^`]+\.test\.ts)`/g)].map(
+    (match) => match[1]
+  );
 }
 
 describe("cross-cutting repo-wide guard tests", () => {
@@ -138,16 +139,6 @@ describe("cross-cutting repo-wide guard tests", () => {
       CATEGORIZED_TESTS.filter((entry) => !listed.has(entry)),
       "categorized paths absent from CROSS_CUTTING_TESTS"
     ).toEqual([]);
-  });
-
-  it("gives every category constant a CATEGORY_DOC_KEYWORDS row", () => {
-    // Closes the loop the other way round: a seventh category added to
-    // CATEGORIZED_TESTS with no keyword row fails here, before anyone reads
-    // the prose the docblock guard below parses.
-    expect(
-      CATEGORY_DOC_KEYWORDS.flatMap((category) => [...category.tests]).sort(),
-      "a category constant has no CATEGORY_DOC_KEYWORDS row"
-    ).toEqual([...CATEGORIZED_TESTS].sort());
   });
 
   it("every listed test exists on disk", () => {
@@ -241,9 +232,7 @@ describe("cross-cutting repo-wide guard tests", () => {
       );
     }
     // The other direction: prose naming a guard the registry no longer runs.
-    const named = [...prose.matchAll(/`(tests\/[^`]+\.test\.ts)`/g)].map(
-      (match) => match[1]
-    );
+    const named = backtickedTestPaths(prose);
     expect(
       named.filter((entry) => !CROSS_CUTTING_TESTS.includes(entry))
     ).toEqual([]);
@@ -277,9 +266,7 @@ describe("cross-cutting repo-wide guard tests", () => {
     // runs. A backtick marks block MEMBERSHIP, so a pointer to a module that
     // is not itself a cross-cutting test — the guard file this case lives in,
     // for one — is named without backticks.
-    const members = [...prose.matchAll(/`(tests\/[^`]+\.test\.ts)`/g)].map(
-      (match) => match[1]
-    );
+    const members = backtickedTestPaths(prose);
     expect(
       members.filter((entry) => !CROSS_CUTTING_TESTS.includes(entry)),
       "backticked test paths in the docblock must be CROSS_CUTTING_TESTS " +

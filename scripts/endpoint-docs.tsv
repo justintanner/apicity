@@ -815,8 +815,15 @@ fal	bytedance.seedance2p5.referenceToVideo	POST	https://fal.run/bytedance/seedan
 fal	bytedance.seedance2p5.textToVideo	POST	https://fal.run/bytedance/seedance-2.5/text-to-video	https://fal.ai/models/bytedance/seedance-2.5/text-to-video/api
 fal	bytedance.seedream.v5.lite.edit	POST	https://fal.run/fal-ai/bytedance/seedream/v5/lite/edit	https://docs.fal.ai
 fal	bytedance.seedream.v5.lite.textToImage	POST	https://fal.run/fal-ai/bytedance/seedream/v5/lite/text-to-image	https://docs.fal.ai
+fal	bytedance.seedream.v5.pro.layerize	POST	https://fal.run/bytedance/seedream/v5/pro/layerize	https://fal.ai/models/bytedance/seedream/v5/pro/layerize/api
+fal	bytedance.seedream.v5.pro.textToImage	POST	https://fal.run/bytedance/seedream/v5/pro/text-to-image	https://fal.ai/models/bytedance/seedream/v5/pro/text-to-image/api
+fal	bytedance.seedream.v5.pro.edit	POST	https://fal.run/bytedance/seedream/v5/pro/edit	https://fal.ai/models/bytedance/seedream/v5/pro/edit/api
 fal	bytedance.seedSpeech.tts.v2	POST	https://fal.run/fal-ai/bytedance/seed-speech/tts/v2	https://fal.ai/models/fal-ai/bytedance/seed-speech/tts/v2/api
 fal	falAi.elevenlabs.speechToText.scribeV2	POST	https://fal.run/fal-ai/elevenlabs/speech-to-text/scribe-v2	https://docs.fal.ai
+fal	geminiOmniFlash	POST	https://fal.run/google/gemini-omni-flash	https://fal.ai/models/google/gemini-omni-flash/api
+fal	geminiOmniFlash.edit	POST	https://fal.run/google/gemini-omni-flash/edit	https://fal.ai/models/google/gemini-omni-flash/edit/api
+fal	geminiOmniFlash.imageToVideo	POST	https://fal.run/google/gemini-omni-flash/image-to-video	https://fal.ai/models/google/gemini-omni-flash/image-to-video/api
+fal	geminiOmniFlash.referenceToVideo	POST	https://fal.run/google/gemini-omni-flash/reference-to-video	https://fal.ai/models/google/gemini-omni-flash/reference-to-video/api
 fal	gptImage1p5	POST	https://api.fal.ai/v1/fal-ai/gpt-image-1.5	https://docs.fal.ai
 fal	gptImage1p5.edit	POST	https://fal.run/fal-ai/gpt-image-1.5/edit	https://docs.fal.ai
 fal	hunyuan.v3.instructEdit	POST	https://fal.run/fal-ai/hunyuan-image/v3/instruct/edit	https://docs.fal.ai
@@ -827,6 +834,13 @@ fal	klingVideo.v3.pro.imageToVideo	POST	https://fal.run/fal-ai/kling-video/v3/pr
 fal	klingVideo.v3.pro.textToVideo	POST	https://fal.run/fal-ai/kling-video/v3/pro/text-to-video	https://docs.fal.ai
 fal	klingVideo.v3.standard.imageToVideo	POST	https://fal.run/fal-ai/kling-video/v3/standard/image-to-video	https://docs.fal.ai
 fal	klingVideo.v3.standard.textToVideo	POST	https://fal.run/fal-ai/kling-video/v3/standard/text-to-video	https://docs.fal.ai
+fal	minimax.music3	POST	https://fal.run/minimax/music-3	https://fal.ai/models/minimax/music-3/api
+fal	meshy.v7.imageTo3d	POST	https://fal.run/meshy/v7/image-to-3d	https://fal.ai/models/meshy/v7/image-to-3d/api
+fal	lightricks.ltx2p5.imageToVideo.pro	POST	https://fal.run/lightricks/ltx-2.5/image-to-video/pro	https://fal.ai/models/lightricks/ltx-2.5/image-to-video/pro/api
+fal	lightricks.ltx2p5.imageToVideo.fast	POST	https://fal.run/lightricks/ltx-2.5/image-to-video/fast	https://fal.ai/models/lightricks/ltx-2.5/image-to-video/fast/api
+fal	minimax.h3.textToVideo	POST	https://fal.run/minimax/h3/text-to-video	https://fal.ai/models/minimax/h3/text-to-video/api
+fal	minimax.h3.imageToVideo	POST	https://fal.run/minimax/h3/image-to-video	https://fal.ai/models/minimax/h3/image-to-video/api
+fal	minimax.h3.referenceToVideo	POST	https://fal.run/minimax/h3/reference-to-video	https://fal.ai/models/minimax/h3/reference-to-video/api
 fal	nanoBanana.edit	POST	https://fal.run/fal-ai/nano-banana/edit	https://docs.fal.ai
 fal	nanoBanana.textToImage	POST	https://fal.run/fal-ai/nano-banana	https://docs.fal.ai
 fal	nanoBanana2.edit	POST	https://fal.run/fal-ai/nano-banana-2/edit	https://docs.fal.ai
@@ -842,6 +856,8 @@ fal	sora2.textToVideo	POST	https://fal.run/fal-ai/sora-2/text-to-video	https://d
 fal	storage.upload.completeMultipart	POST	https://rest.fal.ai/storage/upload/complete-multipart	https://docs.fal.ai
 fal	storage.upload.initiate	POST	https://rest.fal.ai/storage/upload/initiate	https://docs.fal.ai
 fal	storage.upload.initiateMultipart	POST	https://rest.fal.ai/storage/upload/initiate-multipart	https://docs.fal.ai
+fal	topaz.upscale.image.precision	POST	https://fal.run/topaz/upscale/image/precision	https://fal.ai/models/topaz/upscale/image/precision/api
+fal	topaz.upscale.video.precision	POST	https://fal.run/topaz/upscale/video/precision	https://fal.ai/models/topaz/upscale/video/precision/api
 fal	v1.models	GET	https://api.fal.ai/v1/models	https://docs.fal.ai
 fal	v1.models.analytics	GET	https://api.fal.ai/v1/models/analytics	https://docs.fal.ai
 fal	v1.models.pricing	GET	https://api.fal.ai/v1/models/pricing	https://docs.fal.ai
@@ -874,6 +890,7 @@ fal	xai.grokImagineVideo.editVideo	POST	https://fal.run/xai/grok-imagine-video/e
 fal	xai.grokImagineVideo.extendVideo	POST	https://fal.run/xai/grok-imagine-video/extend-video	https://docs.fal.ai
 fal	xai.grokImagineVideo.imageToVideo	POST	https://fal.run/xai/grok-imagine-video/image-to-video	https://docs.fal.ai
 fal	xai.grokImagineVideo.referenceToVideo	POST	https://fal.run/xai/grok-imagine-video/reference-to-video	https://docs.fal.ai
+fal	xai.grokImagineVideo.v1p5.referenceToVideo	POST	https://fal.run/xai/grok-imagine-video/v1.5/reference-to-video	https://fal.ai/models/xai/grok-imagine-video/v1.5/reference-to-video/api
 fireworks	inference.v1.accounts	GET	https://api.fireworks.ai/v1/accounts/{accountId}	https://docs.fireworks.ai/api-reference
 fireworks	inference.v1.accounts.apiKeys	DELETE	https://api.fireworks.ai/v1/accounts/{accountId}/users/{userId}/apiKeys:delete	https://docs.fireworks.ai/api-reference
 fireworks	inference.v1.accounts.apiKeys.create	POST	https://api.fireworks.ai/v1/accounts/{accountId}/users/{userId}/apiKeys	https://docs.fireworks.ai/api-reference

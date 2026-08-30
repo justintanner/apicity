@@ -107,10 +107,10 @@
       "endpoints": 71
     },
     "final": {
-      "models": 140,
-      "pricingKeys": 155,
-      "slugKeys": 157,
-      "displayKeys": 157,
+      "models": 141,
+      "pricingKeys": 156,
+      "slugKeys": 158,
+      "displayKeys": 158,
       "schemaWithoutPricing": 15,
       "pricingOnly": 30,
       "endpoints": 71
@@ -126,12 +126,12 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:8aa871fb1b7ef03a0722e6fa4e98223a64fc802a7175fb0a16b69f1f242687a8",
-      "packages/provider/kie/src/model-schemas.ts": "sha256:8baf8268a4edfc8470de99c660ccedd501da4135794c1b0ec5d67d6098585a58",
-      "packages/provider/kie/src/kie.ts": "sha256:4be9c031dfbd8fd5d354d7e680d7db38a9eae60209ebbd51abd61d90f26d873c",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:97a5e2cdb95c9caee7c46121fede6af30384100e1be96068bd48cce3be2c6df6",
-      "packages/provider/cost/src/slugs.ts": "sha256:b9574c70406029dbd2ba97b0f8f4ab009f16f9140658854e22a3c4c7d68ba5d3",
-      "scripts/endpoint-docs.tsv": "sha256:4bbb0fc6ec1e0ac6a55054359146adb392611210b218fdaafc78d3a46b59021f"
+      "packages/provider/kie/src/zod.ts": "sha256:11d84197b4c5c940684b7b1900de62404d9e4039eca1f1ec481253fb1491530c",
+      "packages/provider/kie/src/model-schemas.ts": "sha256:ac479c27021319e47ffae4a2b927d85714ef77f8b05bf57d9a34c07668b91dd5",
+      "packages/provider/kie/src/kie.ts": "sha256:bfd7811db0c5c1fb4b3ab5af35557ab70b772e20ec0decc272bdf1840137ed92",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:0a73cf79595e141ef853ad967dcfd4fccf4b284513192be262f068794582dfb7",
+      "packages/provider/cost/src/slugs.ts": "sha256:24c69ceaefb02d97c0b279ecf185947373f2f5b67c4507ca87dc7235496b0349",
+      "scripts/endpoint-docs.tsv": "sha256:24514de314116d78701b7a3d07b4689e1bb3d370c720bbcd6e0adae5b410866d"
     }
   },
   "rows": [
@@ -20013,6 +20013,15 @@
         "rationale": "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
       },
       {
+        "id": "grok-imagine-image-2-0/segment-edit",
+        "descriptor": true,
+        "guard": true,
+        "pricingKey": "grok-imagine-image-2-0/segment-edit",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
         "id": "qwen2/text-to-image",
         "descriptor": true,
         "guard": true,
@@ -22302,6 +22311,12 @@
         "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
       },
       {
+        "key": "grok-imagine-image-2-0/segment-edit",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
         "key": "grok-imagine/extend",
         "linkedRows": [
           "sha256:e5e200350627931563e104a30589fe7e745b780bdae512e3fb35a0762e2e2270#1",
@@ -23656,6 +23671,10 @@
         "disposition": "supported"
       },
       {
+        "key": "grok-imagine-image-2-0/segment-edit",
+        "disposition": "supported"
+      },
+      {
         "key": "nano-banana",
         "disposition": "supported"
       },
@@ -24283,6 +24302,10 @@
       },
       {
         "key": "grok-imagine-image-2-0/image-edit",
+        "disposition": "supported"
+      },
+      {
+        "key": "grok-imagine-image-2-0/segment-edit",
         "disposition": "supported"
       },
       {
@@ -24956,16 +24979,16 @@
     },
     "apiCity": {
       "models": {
-        "count": 140,
-        "descriptors": 140,
-        "guards": 140,
+        "count": 141,
+        "descriptors": 141,
+        "guards": 141,
         "withoutPricing": 15,
         "dispositionCounts": {
           "supported": 113,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 27
+          "upstream-unmappable": 28
         },
         "unclassified": 0
       },
@@ -24983,20 +25006,20 @@
         "unclassified": 0
       },
       "pricingKeys": {
-        "count": 155,
+        "count": 156,
         "dispositionCounts": {
           "supported": 141,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 14
+          "upstream-unmappable": 15
         },
         "unclassified": 0
       },
       "slugs": {
-        "count": 157,
+        "count": 158,
         "dispositionCounts": {
-          "supported": 157,
+          "supported": 158,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -25005,9 +25028,9 @@
         "unclassified": 0
       },
       "displays": {
-        "count": 157,
+        "count": 158,
         "dispositionCounts": {
-          "supported": 157,
+          "supported": 158,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -25122,6 +25145,13 @@
         "status": "pricing-only",
         "provenance": "tests/recordings/kie_2079838932/grok-imagine-image-2-lifecycle_1692809741/recording.har terminal recordInfo reports 0.0 credits",
         "rationale": "The reachable $0.00 per generation variant is supported by live billing evidence but remains absent from the 2026-08-22 pricing catalog."
+      },
+      {
+        "key": "grok-imagine-image-2-0/segment-edit",
+        "variant": "",
+        "status": "pricing-only",
+        "provenance": "tests/recordings/kie_2079838932/grok-imagine-image-2-segment-edit_1829777927/recording.har terminal recordInfo reports 4.0 credits",
+        "rationale": "The reachable $0.02 per generation variant is supported by live billing evidence but remains absent from the 2026-08-22 pricing catalog, which lists no segment-edit row at all."
       },
       {
         "key": "hailuo/02-image-to-video-standard",

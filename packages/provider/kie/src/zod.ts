@@ -253,6 +253,7 @@ export const KIE_MEDIA_MODELS = [
   "grok-imagine-image-2-0/text-to-image",
   "grok-imagine-image-2-0/segment-map",
   "grok-imagine-image-2-0/image-edit",
+  "grok-imagine-image-2-0/segment-edit",
   "qwen2/text-to-image",
   "qwen2/image-edit",
   "qwen3/text-to-image",
@@ -2917,6 +2918,30 @@ export const GrokImagineImage2ImageEditRequestSchema = z.object({
       prompt: z.string().min(1),
       task_id: z.string().min(1),
       mask_indexs: z.array(z.number().int().min(0)).min(1).optional(),
+    })
+    .strict(),
+});
+
+// Segment-aware edit of an existing task. Kie's doc slug and its model id
+// disagree for this one: the page at .../grok-imagine-image-2-0/image-edit is
+// titled "Grok Imagine Image 2.0 Segment Edit" and documents this id, while
+// .../grok-imagine-image-2-0/segment-edit is a 404. Confirmed live rather than
+// from the slug: `createTask` with `input: {}` answers 500 "This field is
+// required" for this id and 422 "The model name you specified is not
+// supported" for an unknown sibling.
+//
+// `mask_indexs` entries start at 1 here, unlike image-edit's zero-based
+// `.min(0)` — that is the vendor's own documented bound for this id
+// (`items.minimum: 1`), kept rather than widened to match its sibling.
+// Docs: https://docs.kie.ai/market/grok-imagine-image-2-0/image-edit
+export const GrokImagineImage2SegmentEditRequestSchema = z.object({
+  model: z.literal("grok-imagine-image-2-0/segment-edit"),
+  callBackUrl: z.string().url().optional(),
+  input: z
+    .object({
+      prompt: z.string().min(1),
+      task_id: z.string().min(1),
+      mask_indexs: z.array(z.number().int().min(1)).min(1).optional(),
     })
     .strict(),
 });
@@ -6299,7 +6324,22 @@ const KieOpenAiModelAliasSchema = z
     "Expected a listed model or a versioned GPT alias (e.g. gpt-5-5-mini)"
   );
 
-const KIE_RESPONSES_MODELS = ["gpt-5-5"] as const;
+// Live probe 2026-08-28: `POST /codex/v1/responses` serves gpt-5-4,
+// gpt-5-6-luna, gpt-5-6-sol and gpt-5-6-terra, while `/api/v1/responses`
+// answers `422 "The model is not supported"` for every one of them — the two
+// Responses surfaces carry disjoint model vocabularies, and the `-codex` ids
+// belong to the sibling below, not to the path spelled `codex`. All four
+// already match the alias grammar above, so enumerating them buys MCP client
+// autocomplete, not acceptance. Exported because that distinction is
+// unobservable through safeParse: a success cannot say which branch matched,
+// so only membership in this array pins the enum entries.
+export const KIE_RESPONSES_MODELS = [
+  "gpt-5-4",
+  "gpt-5-5",
+  "gpt-5-6-luna",
+  "gpt-5-6-sol",
+  "gpt-5-6-terra",
+] as const;
 
 export const KieResponsesModelSchema = z
   .enum(KIE_RESPONSES_MODELS)
@@ -6618,6 +6658,7 @@ export const MediaGenerationRequestSchema = z.union([
   GrokImagineImage2TextToImageRequestSchema,
   GrokImagineImage2SegmentMapRequestSchema,
   GrokImagineImage2ImageEditRequestSchema,
+  GrokImagineImage2SegmentEditRequestSchema,
   NanoBananaProRequestSchema,
   NanoBanana2RequestSchema,
   NanoBanana2LiteRequestSchema,
@@ -7220,6 +7261,14 @@ export type GrokImagineImage2ImageEditRequestInput =
   GrokImagineImage2ImageEditRequest;
 export type GrokImagineImage2ImageEditParsedRequest = z.output<
   typeof GrokImagineImage2ImageEditRequestSchema
+>;
+export type GrokImagineImage2SegmentEditRequest = z.input<
+  typeof GrokImagineImage2SegmentEditRequestSchema
+>;
+export type GrokImagineImage2SegmentEditRequestInput =
+  GrokImagineImage2SegmentEditRequest;
+export type GrokImagineImage2SegmentEditParsedRequest = z.output<
+  typeof GrokImagineImage2SegmentEditRequestSchema
 >;
 export type NanoBananaProRequest = z.input<typeof NanoBananaProRequestSchema>;
 export type NanoBananaProRequestInput = NanoBananaProRequest;

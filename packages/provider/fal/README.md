@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-83 endpoints across 22 groups. Each method mirrors an upstream URL path.
+100 endpoints across 27 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -567,6 +567,57 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 </details>
 
+<details>
+<summary><code>POST</code> <b><code>fal.bytedance.seedream.v5.pro.edit</code></b></summary>
+
+<code>POST https://fal.run/bytedance/seedream/v5/pro/edit</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/bytedance/seedream/v5/pro/edit/api)
+
+```typescript
+const res = await fal.run.bytedance.seedream.v5.pro.edit({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.bytedance.seedream.v5.pro.layerize</code></b></summary>
+
+<code>POST https://fal.run/bytedance/seedream/v5/pro/layerize</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/bytedance/seedream/v5/pro/layerize/api)
+
+```typescript
+const res = await fal.run.bytedance.seedream.v5.pro.layerize({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.bytedance.seedream.v5.pro.textToImage</code></b></summary>
+
+<code>POST https://fal.run/bytedance/seedream/v5/pro/text-to-image</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/bytedance/seedream/v5/pro/text-to-image/api)
+
+```typescript
+const res = await fal.run.bytedance.seedream.v5.pro.textToImage({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
 ### falAi
 
 <details>
@@ -580,6 +631,76 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.falAi.elevenlabs.speechToText.scribeV2({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+### geminiOmniFlash
+
+<details>
+<summary><code>POST</code> <b><code>fal.geminiOmniFlash</code></b></summary>
+
+<code>POST https://fal.run/google/gemini-omni-flash</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/google/gemini-omni-flash/api)
+
+```typescript
+const res = await fal.run.geminiOmniFlash({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.geminiOmniFlash.edit</code></b></summary>
+
+<code>POST https://fal.run/google/gemini-omni-flash/edit</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/google/gemini-omni-flash/edit/api)
+
+```typescript
+const res = await fal.run.geminiOmniFlash.edit({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.geminiOmniFlash.imageToVideo</code></b></summary>
+
+<code>POST https://fal.run/google/gemini-omni-flash/image-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/google/gemini-omni-flash/image-to-video/api)
+
+```typescript
+const res = await fal.run.geminiOmniFlash.imageToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.geminiOmniFlash.referenceToVideo</code></b></summary>
+
+<code>POST https://fal.run/google/gemini-omni-flash/reference-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/google/gemini-omni-flash/reference-to-video/api)
+
+```typescript
+const res = await fal.run.geminiOmniFlash.referenceToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -756,6 +877,131 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.klingVideo.v3.standard.textToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+### lightricks
+
+<details>
+<summary><code>POST</code> <b><code>fal.lightricks.ltx2p5.imageToVideo.fast</code></b></summary>
+
+<code>POST https://fal.run/lightricks/ltx-2.5/image-to-video/fast</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/lightricks/ltx-2.5/image-to-video/fast/api)
+
+```typescript
+const res = await fal.run.lightricks.ltx2p5.imageToVideo.fast({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.lightricks.ltx2p5.imageToVideo.pro</code></b></summary>
+
+<code>POST https://fal.run/lightricks/ltx-2.5/image-to-video/pro</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/lightricks/ltx-2.5/image-to-video/pro/api)
+
+```typescript
+const res = await fal.run.lightricks.ltx2p5.imageToVideo.pro({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+### meshy
+
+<details>
+<summary><code>POST</code> <b><code>fal.meshy.v7.imageTo3d</code></b></summary>
+
+<code>POST https://fal.run/meshy/v7/image-to-3d</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/meshy/v7/image-to-3d/api)
+
+```typescript
+const res = await fal.run.meshy.v7.imageTo3d({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+### minimax
+
+<details>
+<summary><code>POST</code> <b><code>fal.minimax.h3.imageToVideo</code></b></summary>
+
+<code>POST https://fal.run/minimax/h3/image-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/minimax/h3/image-to-video/api)
+
+```typescript
+const res = await fal.run.minimax.h3.imageToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.minimax.h3.referenceToVideo</code></b></summary>
+
+<code>POST https://fal.run/minimax/h3/reference-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/minimax/h3/reference-to-video/api)
+
+```typescript
+const res = await fal.run.minimax.h3.referenceToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.minimax.h3.textToVideo</code></b></summary>
+
+<code>POST https://fal.run/minimax/h3/text-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/minimax/h3/text-to-video/api)
+
+```typescript
+const res = await fal.run.minimax.h3.textToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.minimax.music3</code></b></summary>
+
+<code>POST https://fal.run/minimax/music-3</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/minimax/music-3/api)
+
+```typescript
+const res = await fal.run.minimax.music3({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -1224,6 +1470,42 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 </details>
 
+### topaz
+
+<details>
+<summary><code>POST</code> <b><code>fal.topaz.upscale.image.precision</code></b></summary>
+
+<code>POST https://fal.run/topaz/upscale/image/precision</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/topaz/upscale/image/precision/api)
+
+```typescript
+const res = await fal.run.topaz.upscale.image.precision({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.topaz.upscale.video.precision</code></b></summary>
+
+<code>POST https://fal.run/topaz/upscale/video/precision</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/topaz/upscale/video/precision/api)
+
+```typescript
+const res = await fal.run.topaz.upscale.video.precision({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
 ### veo3p1
 
 <details>
@@ -1564,6 +1846,23 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.xai.grokImagineVideo.referenceToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.xai.grokImagineVideo.v1p5.referenceToVideo</code></b></summary>
+
+<code>POST https://fal.run/xai/grok-imagine-video/v1.5/reference-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/xai/grok-imagine-video/v1.5/reference-to-video/api)
+
+```typescript
+const res = await fal.run.xai.grokImagineVideo.v1p5.referenceToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

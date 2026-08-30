@@ -372,6 +372,92 @@ export const FalSeedance2p5ReferenceToVideoRequestSchema =
   });
 
 // ---------------------------------------------------------------------------
+// Lightricks LTX-2.5 image-to-video (pro tier)
+// ---------------------------------------------------------------------------
+
+export const FalLtx2p5ImageToVideoProRequestSchema = z.object({
+  image_url: z.string(),
+  // When set, upstream generates a transition between the start and end
+  // frames instead of animating the start frame alone.
+  end_image_url: z.string().nullable().optional(),
+  prompt: z.string().min(1).max(5000),
+  // Output length in seconds, or "auto" to let the model choose. A fixed
+  // vocabulary, not a model registry, so it stays a closed union.
+  duration: z
+    .union([z.literal(6), z.literal(8), z.literal(10), z.literal("auto")])
+    .optional(),
+  resolution: z.enum(["720p", "1080p"]).optional(),
+  // "auto" derives the ratio from the start image.
+  aspect_ratio: z.enum(["auto", "16:9", "9:16"]).optional(),
+  fps: z.union([z.literal(24), z.literal(25), z.literal(50)]).optional(),
+  generate_audio: z.boolean().optional(),
+  camera_motion: z
+    .enum([
+      "dolly_in",
+      "dolly_out",
+      "dolly_left",
+      "dolly_right",
+      "jib_up",
+      "jib_down",
+      "static",
+      "focus_shift",
+    ])
+    .nullable()
+    .optional(),
+});
+
+// ---------------------------------------------------------------------------
+// Lightricks LTX-2.5 image-to-video (fast tier)
+// ---------------------------------------------------------------------------
+
+export const FalLtx2p5ImageToVideoFastRequestSchema = z.object({
+  image_url: z.string(),
+  // When set, upstream generates a transition between the start and end
+  // frames instead of animating the start frame alone.
+  end_image_url: z.string().nullable().optional(),
+  prompt: z.string().min(1).max(5000),
+  // Output length in seconds, or "auto" to let the model choose. The fast
+  // tier reaches 20s, twice the pro tier's ceiling. A fixed vocabulary, not a
+  // model registry, so it stays a closed union.
+  duration: z
+    .union([
+      z.literal(6),
+      z.literal(8),
+      z.literal(10),
+      z.literal(12),
+      z.literal(14),
+      z.literal(16),
+      z.literal(18),
+      z.literal(20),
+      z.literal("auto"),
+    ])
+    .optional(),
+  // Upstream couples length to resolution and frame rate: 24/25 fps reaches
+  // 20s at 720p/1080p, 48/50 fps and the 1440p/2160p tiers cap at 10s. That
+  // is a cross-field rule upstream enforces, not a shape this schema encodes.
+  resolution: z.enum(["720p", "1080p", "1440p", "2160p"]).optional(),
+  // "auto" derives the ratio from the start image.
+  aspect_ratio: z.enum(["auto", "16:9", "9:16"]).optional(),
+  fps: z
+    .union([z.literal(24), z.literal(25), z.literal(48), z.literal(50)])
+    .optional(),
+  generate_audio: z.boolean().optional(),
+  camera_motion: z
+    .enum([
+      "dolly_in",
+      "dolly_out",
+      "dolly_left",
+      "dolly_right",
+      "jib_up",
+      "jib_down",
+      "static",
+      "focus_shift",
+    ])
+    .nullable()
+    .optional(),
+});
+
+// ---------------------------------------------------------------------------
 // Nano Banana 2 text-to-image
 // ---------------------------------------------------------------------------
 
@@ -513,6 +599,200 @@ export const FalVirtualTryOnRequestSchema = z.object({
   product_image_url: z.string(),
   // Upstream documents 1..4 inclusive, defaulting to 1 when omitted.
   num_images: z.number().int().min(1).max(4).optional(),
+});
+
+// ---------------------------------------------------------------------------
+// Topaz Precision Image Upscale (Gigapixel)
+// ---------------------------------------------------------------------------
+
+// Topaz versions its Gigapixel precision models on its own cadence — the
+// endpoint's own prose still lists five while the schema enum already carries
+// six ("High Fidelity V3" landed without the prose catching up) — so the enum
+// is unioned with a family alias rather than closed or opened to bare
+// `z.string()`. The alias matches Topaz's actual id grammar: title-cased words
+// with an optional trailing `V<n>` revision, e.g. "High Fidelity V4".
+const FalTopazPrecisionModelAliasSchema = z
+  .string()
+  .regex(
+    /^[A-Z][A-Za-z]*(?: [A-Z][A-Za-z]*)*(?: V\d+)?$/,
+    'Expected a listed model or a Topaz precision alias (e.g. "High Fidelity V4")'
+  );
+
+export const FalTopazUpscaleImagePrecisionRequestSchema = z.object({
+  image_url: z.string().min(1),
+  model: z
+    .enum([
+      "Standard V2",
+      "High Fidelity V3",
+      "High Fidelity V2",
+      "Low Resolution V2",
+      "CGI",
+      "Text Refine",
+    ])
+    .or(FalTopazPrecisionModelAliasSchema)
+    .optional(),
+  // Upstream documents 1..4 inclusive, defaulting to 2 when omitted.
+  upscale_factor: z.number().min(1).max(4).optional(),
+  crop_to_fill: z.boolean().optional(),
+  output_format: z.enum(["jpeg", "png"]).optional(),
+  subject_detection: z.enum(["All", "Foreground", "Background"]).optional(),
+  face_enhancement: z.boolean().optional(),
+  face_enhancement_creativity: z.number().min(0).max(1).optional(),
+  face_enhancement_strength: z.number().min(0).max(1).optional(),
+  // Upstream types these four as `number | null` with a model-dependent
+  // default, so null is an accepted way to ask for the model's own default.
+  sharpen: z.number().min(0).max(1).nullable().optional(),
+  denoise: z.number().min(0).max(1).nullable().optional(),
+  fix_compression: z.number().min(0).max(1).nullable().optional(),
+  // Text Refine only; upstream's floor is 0.01, not 0.
+  strength: z.number().min(0.01).max(1).nullable().optional(),
+});
+// Topaz Precision Video Upscale
+// ---------------------------------------------------------------------------
+
+// Topaz ships new precision engines and new revisions of existing ones on its
+// own cadence — the endpoint's own prose names seven families while the schema
+// enum already carries twenty-one concrete ids, and "Proteus Natural" appears
+// in neither the prose list nor the older Gigapixel image family — so the enum
+// is unioned with a family alias rather than closed or opened to a bare
+// `z.string()`. The alias matches Topaz's actual id grammar: title-cased words,
+// a literal `&`, and an optional trailing revision number ("Gaia 2",
+// "Proteus V3").
+const FalTopazPrecisionVideoModelAliasSchema = z
+  .string()
+  .regex(
+    /^[A-Z][A-Za-z]*(?: (?:[A-Z][A-Za-z]*|&))*(?: (?:V\d+|\d+))?$/,
+    'Expected a listed model or a Topaz precision alias (e.g. "Proteus V3")'
+  );
+
+export const FalTopazUpscaleVideoPrecisionRequestSchema = z.object({
+  video_url: z.string(),
+  model: z
+    .enum([
+      "Proteus",
+      "Proteus Natural",
+      "Iris",
+      "Iris Low Quality",
+      "Dione DV",
+      "Dione TV",
+      "Dione Robust",
+      "Dione Dehalo",
+      "Dione Robust Dehalo",
+      "Artemis High Quality",
+      "Artemis Medium Quality",
+      "Artemis Low Quality",
+      "Artemis Strong Halo",
+      "Artemis Medium Halo",
+      "Artemis Aliasing & Moire",
+      "Gaia HQ",
+      "Gaia CG",
+      "Gaia 2",
+      "Rhea",
+      "Theia Fine Tune Detail",
+      "Theia Fine Tune Fidelity",
+    ])
+    .or(FalTopazPrecisionVideoModelAliasSchema)
+    .optional(),
+  // Upstream documents 1..4 inclusive, defaulting to 2 when omitted.
+  upscale_factor: z.number().min(1).max(4).optional(),
+  // Apollo frame interpolation runs only when this differs from the source FPS.
+  target_fps: z.number().int().min(16).max(60).nullable().optional(),
+  // Upstream types these enhancement levels as `number | null` with a
+  // model-dependent default, so null is an accepted way to ask for the model's
+  // own default.
+  compression: z.number().min(0).max(1).nullable().optional(),
+  noise: z.number().min(0).max(1).nullable().optional(),
+  halo: z.number().min(0).max(1).nullable().optional(),
+  // Film grain is a 0..0.1 band in 0.01 steps, not the 0..1 of the levels above.
+  grain: z.number().min(0).max(0.1).multipleOf(0.01).nullable().optional(),
+  recover_detail: z.number().min(0).max(1).nullable().optional(),
+  // Output codec toggle; upstream defaults to H265. The field name is
+  // upstream's own casing.
+  H264_output: z.boolean().optional(),
+});
+// Meshy-7 image-to-3D
+// ---------------------------------------------------------------------------
+
+export const FalMeshyV7ImageTo3dRequestSchema = z.object({
+  image_url: z.string(),
+  // Mesh generation mode, not a model registry. Upstream's OpenAPI document
+  // advertises a third value, "lowpoly", but the endpoint rejects it live:
+  // POST /meshy/v7/image-to-3d returns 422 `model_type: lowpoly is not
+  // supported for meshy-7` (2026-08-28), so the published enum is wider than
+  // the endpoint and only these two are accepted. "smart-topology" routes to
+  // Meshy-T2, which caps target_polycount at 15,000 and cannot be combined
+  // with ultra_mode.
+  model_type: z.enum(["standard", "smart-topology"]).optional(),
+  topology: z.enum(["quad", "triangle"]).optional(),
+  target_polycount: z.number().int().min(100).max(300000).optional(),
+  symmetry_mode: z.enum(["off", "auto", "on"]).optional(),
+  should_remesh: z.boolean().optional(),
+  should_texture: z.boolean().optional(),
+  enable_pbr: z.boolean().optional(),
+  // Upstream deprecates is_a_t_pose in favour of pose_mode; the empty string
+  // is upstream's own "no specific pose" default.
+  is_a_t_pose: z.boolean().optional(),
+  pose_mode: z.enum(["a-pose", "t-pose", ""]).optional(),
+  texture_prompt: z.string().max(600).optional(),
+  texture_image_url: z.string().optional(),
+  enable_rigging: z.boolean().optional(),
+  rigging_height_meters: z.number().positive().optional(),
+  enable_animation: z.boolean().optional(),
+  // Meshy animation preset id. Upstream documents 0..696 inclusive (0 is
+  // "Idle") and rejects anything outside that window with a 422.
+  animation_action_id: z.number().int().min(0).max(696).optional(),
+  enable_safety_checker: z.boolean().optional(),
+  ultra_mode: z.boolean().optional(),
+});
+// Google Gemini Omni Flash (text-to-video with synchronized audio)
+// ---------------------------------------------------------------------------
+
+export const FalGeminiOmniFlashRequestSchema = z.object({
+  // Upstream caps the prompt at 20,000 characters.
+  prompt: z.string().max(20_000),
+  // Upstream documents "16:9" and "9:16", defaulting to "16:9" when omitted.
+  aspect_ratio: z.enum(["16:9", "9:16"]).optional(),
+  // Upstream documents 3..10 inclusive seconds, defaulting to 8 when omitted.
+  duration: z.number().int().min(3).max(10).optional(),
+});
+// Google Gemini Omni Flash edit (video-to-video)
+// ---------------------------------------------------------------------------
+
+export const FalGeminiOmniFlashEditRequestSchema = z.object({
+  // Upstream caps the prompt at 20,000 characters. Simple instructions work
+  // best; voice editing is not supported.
+  prompt: z.string().max(20_000),
+  // URL of the source video to edit. Required alongside the prompt.
+  video_url: z.string(),
+});
+// Google Gemini Omni Flash image-to-video
+// ---------------------------------------------------------------------------
+
+export const FalGeminiOmniFlashImageToVideoRequestSchema = z.object({
+  // Upstream caps the prompt at 20,000 characters. Describes how the still
+  // image should be animated.
+  prompt: z.string().max(20_000),
+  // URL of the input image to animate. Required alongside the prompt.
+  image_url: z.string(),
+  // Upstream default "16:9"; the vocabulary is fixed, so this stays closed.
+  aspect_ratio: z.enum(["16:9", "9:16"]).optional(),
+  // Seconds of generated video. Upstream default 8, bounded 3..10.
+  duration: z.number().int().min(3).max(10).optional(),
+});
+// Google Gemini Omni Flash reference-to-video
+// ---------------------------------------------------------------------------
+
+export const FalGeminiOmniFlashReferenceToVideoRequestSchema = z.object({
+  // Upstream caps the prompt at 20,000 characters. Reference images can be
+  // bound to roles inline with `<IMAGE_REF_0>`-style tags, 0-based.
+  prompt: z.string().max(20_000),
+  // Reference images to incorporate into the video. Upstream requires at
+  // least one and accepts at most ten.
+  image_urls: z.array(z.string()).min(1).max(10),
+  // Upstream default "16:9"; the vocabulary is fixed, so this stays closed.
+  aspect_ratio: z.enum(["16:9", "9:16"]).optional(),
+  // Seconds of generated video. Upstream default 8, bounded 3..10.
+  duration: z.number().int().min(3).max(10).optional(),
 });
 
 // ---------------------------------------------------------------------------
@@ -799,6 +1079,105 @@ export const FalSeedreamV5LiteTextToImageRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// Bytedance Seedream v5 Pro layerize
+// ---------------------------------------------------------------------------
+
+// Decomposes one image into a base image plus independently editable layers.
+// `image_url` is the only required field; everything else is optional with an
+// upstream default. Docs:
+// https://fal.ai/models/bytedance/seedream/v5/pro/layerize/api
+export const FalSeedreamV5ProLayerizeRequestSchema = z.object({
+  // Upstream constrains the source image to 512x512..6000x6000 total pixels,
+  // an aspect ratio within [1/16, 16], and 30 MB. Those are upstream capacity
+  // rules over the fetched bytes, not request shape, so they are not encoded.
+  image_url: z.string(),
+  // Optional instructions naming which elements to separate; the default empty
+  // string lets the model pick the major elements. Normalized
+  // `<bbox>left top right bottom</bbox>` tags target precise coordinates.
+  prompt: z.string().optional(),
+  // Resolution tier for the base image and every layer. A fixed vocabulary
+  // rather than a model registry, so it stays a closed enum.
+  image_size: z.enum(["auto", "auto_1K", "auto_1.5K", "auto_2K"]).optional(),
+  // Prompt optimization mode: `standard` favours image quality, `fast` cuts
+  // generation time. Also a closed vocabulary.
+  enhance_prompt_mode: z.enum(["standard", "fast"]).optional(),
+  sync_mode: z.boolean().optional(),
+  // Upstream notes that disabling the safety checker requires account
+  // authorization; unauthorized requests are checked regardless.
+  enable_safety_checker: z.boolean().optional(),
+});
+// Bytedance Seedream v5 Pro text-to-image
+// Bytedance Seedream v5 Pro (shared image_size)
+// ---------------------------------------------------------------------------
+
+// The Pro surface offers `auto_1K`/`auto_2K` where the Lite surface offers
+// `auto_2K`/`auto_3K`/`auto_4K`, so it carries its own union rather than
+// reusing FalSeedreamV5LiteImageSizeSchema.
+// Docs: https://fal.ai/models/bytedance/seedream/v5/pro/text-to-image/api
+// Docs: https://fal.ai/models/bytedance/seedream/v5/pro/edit/api
+const FalSeedreamV5ProImageSizeSchema = z.union([
+  z.enum([
+    "square_hd",
+    "square",
+    "portrait_4_3",
+    "portrait_16_9",
+    "landscape_4_3",
+    "landscape_16_9",
+    "auto_1K",
+    "auto_2K",
+  ]),
+  z.object({ width: z.number(), height: z.number() }),
+]);
+
+export const FalSeedreamV5ProTextToImageRequestSchema = z.object({
+  prompt: z.string(),
+  // Upstream constrains the generated image to a total area between
+  // 1024x1024 and 2048x2048 pixels and an aspect ratio within [1/16, 16].
+  // Those are upstream capacity rules over the produced image, not request
+  // shape, so they are not encoded here. Defaults to `auto_2K`.
+  image_size: FalSeedreamV5ProImageSizeSchema.optional(),
+  // Fal documents `num_images` as an integer in [1, 6] — separate model
+  // generations run with the prompt. Unlike the Lite surface, Pro has no
+  // `max_images` companion field.
+  num_images: z.number().int().min(1).max(6).optional(),
+  // File format of the generated image. A fixed vocabulary rather than a
+  // model registry, so it stays a closed enum.
+  output_format: z.enum(["jpeg", "png"]).optional(),
+  sync_mode: z.boolean().optional(),
+  // Upstream notes that disabling the safety checker requires account
+  // authorization; unauthorized requests are checked regardless.
+  enable_safety_checker: z.boolean().optional(),
+});
+// ---------------------------------------------------------------------------
+// Bytedance Seedream v5 Pro edit
+// ---------------------------------------------------------------------------
+
+export const FalSeedreamV5ProEditRequestSchema = z.object({
+  prompt: z.string(),
+  // Fal documents the reference-image list as "up to 10 images ... if more are
+  // sent, only the last 10 are used". Upstream truncates rather than rejecting,
+  // so the cap is not encoded; the list is required and must be non-empty.
+  // Docs: https://fal.ai/models/bytedance/seedream/v5/pro/edit/api
+  image_urls: z.array(z.string()).min(1),
+  // Upstream constrains the generated image to a total area between
+  // 1024x1024 and 2048x2048 pixels and an aspect ratio within [1/16, 16].
+  // Those are upstream capacity rules over the produced image, not request
+  // shape, so they are not encoded here. Defaults to `auto_2K`.
+  image_size: FalSeedreamV5ProImageSizeSchema.optional(),
+  // Fal documents `num_images` as an integer in [1, 6] — separate model
+  // generations run with the prompt. Unlike the Lite surface, Pro has no
+  // `max_images` companion field.
+  num_images: z.number().int().min(1).max(6).optional(),
+  // File format of the generated image. A fixed vocabulary rather than a
+  // model registry, so it stays a closed enum.
+  output_format: z.enum(["jpeg", "png"]).optional(),
+  sync_mode: z.boolean().optional(),
+  // Upstream notes that disabling the safety checker requires account
+  // authorization; unauthorized requests are checked regardless.
+  enable_safety_checker: z.boolean().optional(),
+});
+
+// ---------------------------------------------------------------------------
 // Bytedance Seed Speech TTS v2
 // ---------------------------------------------------------------------------
 
@@ -879,6 +1258,26 @@ export const FalSeedSpeechTtsV2RequestSchema = z.object({
   pitch: z.number().int().min(-12).max(12).optional(),
   language: FalSeedSpeechTtsV2LanguageSchema.nullable().optional(),
   voice_instruction: z.string().nullable().optional(),
+});
+
+// ---------------------------------------------------------------------------
+// MiniMax Music 3
+// ---------------------------------------------------------------------------
+
+// Bounds are upstream's own, read on 2026-08-28 from
+// https://fal.ai/api/openapi/queue/openapi.json?endpoint_id=minimax/music-3.
+// `prompt` and `lyrics` are the only required fields; the rest are closed
+// numeric ranges. No field names a model, so the open-enum rule does not apply.
+export const FalMinimaxMusic3RequestSchema = z.object({
+  prompt: z.string(),
+  lyrics: z.string(),
+  // Upper bound on the generated audio length in seconds. The model may stop
+  // earlier and reports the length it actually produced in the response.
+  duration: z.number().min(1).max(300).optional(),
+  seed: z.number().int().nullable().optional(),
+  // Flow-matching Euler steps per 8-second denoising chunk.
+  num_inference_steps: z.number().int().min(1).max(100).optional(),
+  guidance_scale: z.number().min(0).max(20).optional(),
 });
 
 // ---------------------------------------------------------------------------
@@ -1102,6 +1501,155 @@ export const FalWan3p0ReferenceToVideoRequestSchema = z
     {
       message:
         "alibaba/wan-3.0/reference-to-video requires at least one of reference_image_urls, reference_video_urls, reference_audio_urls, file_url, web_url, or prompt",
+      path: ["reference_image_urls"],
+    }
+  );
+
+// ---------------------------------------------------------------------------
+// MiniMax Hailuo 03 (H3) text-to-video
+// ---------------------------------------------------------------------------
+
+// `prompt` is the only required field; every other field carries an upstream
+// default (duration 5, resolution 2K, aspect_ratio 16:9,
+// prompt_expansion_mode balanced, enable_safety_checker true, sync_mode
+// false). No field names a model, so there is no open model-alias union here:
+// the three vocabularies below are fixed upstream enums and stay closed.
+// Docs: https://fal.ai/models/minimax/h3/text-to-video/api
+export const FalMinimaxH3TextToVideoRequestSchema = z.object({
+  prompt: z.string().min(1).max(50000),
+  // Output length in seconds; upstream publishes the range 5-15.
+  duration: z.number().int().min(5).max(15).optional(),
+  // 480P and 768P are native generation modes; 2K and 4K upscale a 768P base
+  // result. A fixed tier vocabulary, not a model registry.
+  resolution: z.enum(["480P", "768P", "2K", "4K"]).optional(),
+  aspect_ratio: z
+    .enum(["21:9", "16:9", "4:3", "1:1", "3:4", "9:16"])
+    .optional(),
+  // How much effort to spend rewriting the prompt before generation:
+  // `disabled` skips expansion, `fast` returns in about a second, `quality`
+  // spends up to ~30s, `balanced` picks per request. Upstream types it as
+  // nullable, so an explicit null is accepted alongside omission.
+  prompt_expansion_mode: z
+    .enum(["disabled", "fast", "balanced", "quality"])
+    .nullable()
+    .optional(),
+  seed: z.number().int().nullable().optional(),
+  enable_safety_checker: z.boolean().optional(),
+  // Returns the video as base64 instead of a CDN URL.
+  sync_mode: z.boolean().optional(),
+});
+
+// ---------------------------------------------------------------------------
+// MiniMax Hailuo 03 (H3) image-to-video
+// ---------------------------------------------------------------------------
+
+// `prompt` is the only required field; every other field carries an upstream
+// default (duration 5, resolution 2K, prompt_expansion_mode balanced,
+// enable_safety_checker true, sync_mode false). Unlike the text-to-video
+// sibling there is no `aspect_ratio` — upstream derives the output ratio from
+// `image_url` instead. No field names a model, so there is no open
+// model-alias union here: the two vocabularies below are fixed upstream enums
+// and stay closed.
+//
+// `image_url` is genuinely OPTIONAL upstream, not merely nullable: the
+// published contract states that omitting it makes the request behave as
+// text-to-video at 16:9. That is documented upstream behaviour rather than a
+// nonsense request, so it is mirrored faithfully instead of being refined
+// away.
+// Docs: https://fal.ai/models/minimax/h3/image-to-video/api
+export const FalMinimaxH3ImageToVideoRequestSchema = z.object({
+  prompt: z.string().min(1).max(50000),
+  // First frame of the generated video; the output aspect ratio follows it.
+  image_url: z.string().url().nullable().optional(),
+  // Last frame, for first-to-last keyframe generation.
+  end_image_url: z.string().url().nullable().optional(),
+  // Output length in seconds; upstream publishes the range 5-15.
+  duration: z.number().int().min(5).max(15).optional(),
+  // 480P and 768P are native generation modes; 2K and 4K upscale a 768P base
+  // result. A fixed tier vocabulary, not a model registry.
+  resolution: z.enum(["480P", "768P", "2K", "4K"]).optional(),
+  // How much effort to spend rewriting the prompt before generation:
+  // `disabled` skips expansion, `fast` returns in about a second, `quality`
+  // spends up to ~30s, `balanced` picks per request. Upstream types it as
+  // nullable, so an explicit null is accepted alongside omission.
+  prompt_expansion_mode: z
+    .enum(["disabled", "fast", "balanced", "quality"])
+    .nullable()
+    .optional(),
+  seed: z.number().int().nullable().optional(),
+  enable_safety_checker: z.boolean().optional(),
+  // Returns the video as base64 instead of a CDN URL.
+  sync_mode: z.boolean().optional(),
+});
+// MiniMax Hailuo 03 (H3) reference-to-video
+// ---------------------------------------------------------------------------
+
+// `prompt` is the only required field, and here it also binds the reference
+// assets together: upstream documents citing them positionally from the
+// prompt text as "Image 1", "Video 1", "Audio 1", and so on. Every other
+// field carries an upstream default (duration 5, aspect_ratio adaptive,
+// resolution 2K, prompt_expansion_mode balanced, enable_safety_checker true,
+// sync_mode false). No field names a model, so no open model-alias union
+// applies - the three vocabularies below are fixed upstream enums and stay
+// closed.
+//
+// Upstream marks the reference lists optional, so a prompt-only request is
+// valid and is mirrored rather than refined away. Two published rules are
+// encoded below: audio may not be the only reference modality, and the three
+// lists together may not exceed 12 files. The per-list caps (9/3/3) sum to
+// 15, so that combined cap is a real constraint rather than a restatement.
+// Docs: https://fal.ai/models/minimax/h3/reference-to-video/api
+export const FalMinimaxH3ReferenceToVideoRequestSchema = z
+  .object({
+    prompt: z.string().min(1).max(50000),
+    // Subject/style references, cited in the prompt as "Image 1", "Image 2".
+    reference_image_urls: z.array(z.string().url()).max(9).optional(),
+    // Motion references: 2-15s each, at most 15s combined.
+    reference_video_urls: z.array(z.string().url()).max(3).optional(),
+    // Audio references: 2-15s each, at most 15s combined.
+    reference_audio_urls: z.array(z.string().url()).max(3).optional(),
+    // Output length in seconds; upstream publishes the range 5-15.
+    duration: z.number().int().min(5).max(15).optional(),
+    // `adaptive` derives the output ratio from the reference assets.
+    aspect_ratio: z
+      .enum(["adaptive", "21:9", "16:9", "4:3", "1:1", "3:4", "9:16"])
+      .optional(),
+    // 480P and 768P are native generation modes; 2K and 4K upscale a 768P
+    // base result. A fixed tier vocabulary, not a model registry.
+    resolution: z.enum(["480P", "768P", "2K", "4K"]).optional(),
+    // How much effort to spend rewriting the prompt before generation:
+    // `disabled` skips expansion, `fast` returns in about a second, `quality`
+    // spends up to ~30s, `balanced` picks per request. Upstream types it as
+    // nullable, so an explicit null is accepted alongside omission.
+    prompt_expansion_mode: z
+      .enum(["disabled", "fast", "balanced", "quality"])
+      .nullable()
+      .optional(),
+    seed: z.number().int().nullable().optional(),
+    enable_safety_checker: z.boolean().optional(),
+    // Returns the video as base64 instead of a CDN URL.
+    sync_mode: z.boolean().optional(),
+  })
+  .refine(
+    (v) =>
+      !v.reference_audio_urls?.length ||
+      Boolean(v.reference_image_urls?.length) ||
+      Boolean(v.reference_video_urls?.length),
+    {
+      message:
+        "minimax/h3/reference-to-video cannot take reference_audio_urls as its only reference modality; pass at least one reference image or video with it",
+      path: ["reference_audio_urls"],
+    }
+  )
+  .refine(
+    (v) =>
+      (v.reference_image_urls?.length ?? 0) +
+        (v.reference_video_urls?.length ?? 0) +
+        (v.reference_audio_urls?.length ?? 0) <=
+      12,
+    {
+      message:
+        "minimax/h3/reference-to-video accepts at most 12 reference files across reference_image_urls, reference_video_urls, and reference_audio_urls",
       path: ["reference_image_urls"],
     }
   );
@@ -1629,6 +2177,39 @@ export const FalXaiGrokImagineVideoReferenceToVideoRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// xAI Grok Imagine Video 1.5 reference-to-video
+// ---------------------------------------------------------------------------
+
+// A distinct endpoint from the unversioned sibling above, not a re-skin. The
+// v1.5 contract read 2026-08-28 raises the `duration` ceiling to 15s (the
+// unversioned path stops at 10), requires at least one reference image, bounds
+// `prompt` at 4096 characters, and tags references as `<IMAGE_0>`/`<IMAGE_1>`
+// where the unversioned sibling's examples use `@Image1`. Field order mirrors
+// upstream `x-fal-order-properties`.
+export const FalXaiGrokImagineVideoV1p5ReferenceToVideoRequestSchema = z.object(
+  {
+    prompt: z
+      .string()
+      .max(4096)
+      .describe(
+        "Text prompt describing the video. Tag references as <IMAGE_0>, <IMAGE_1>, etc."
+      ),
+    reference_image_urls: z
+      .array(z.string())
+      .min(1)
+      .max(7)
+      .describe(
+        "One to seven reference image URLs guiding the video as style and content references."
+      ),
+    duration: z.number().int().min(1).max(15).optional(),
+    resolution: z.enum(["480p", "720p"]).optional(),
+    aspect_ratio: z
+      .enum(["16:9", "4:3", "3:2", "1:1", "2:3", "3:4", "9:16"])
+      .optional(),
+  }
+);
+
+// ---------------------------------------------------------------------------
 // xAI Grok Imagine Video extend-video
 // ---------------------------------------------------------------------------
 
@@ -1815,6 +2396,28 @@ export type FalSeedance2p5ReferenceToVideoRequestInput =
 export type FalSeedance2p5ReferenceToVideoParsedRequest = z.output<
   typeof FalSeedance2p5ReferenceToVideoRequestSchema
 >;
+export type FalLtx2p5ImageToVideoProParams = z.infer<
+  typeof FalLtx2p5ImageToVideoProRequestSchema
+>;
+export type FalLtx2p5ImageToVideoProRequest = z.input<
+  typeof FalLtx2p5ImageToVideoProRequestSchema
+>;
+export type FalLtx2p5ImageToVideoProRequestInput =
+  FalLtx2p5ImageToVideoProRequest;
+export type FalLtx2p5ImageToVideoProParsedRequest = z.output<
+  typeof FalLtx2p5ImageToVideoProRequestSchema
+>;
+export type FalLtx2p5ImageToVideoFastParams = z.infer<
+  typeof FalLtx2p5ImageToVideoFastRequestSchema
+>;
+export type FalLtx2p5ImageToVideoFastRequest = z.input<
+  typeof FalLtx2p5ImageToVideoFastRequestSchema
+>;
+export type FalLtx2p5ImageToVideoFastRequestInput =
+  FalLtx2p5ImageToVideoFastRequest;
+export type FalLtx2p5ImageToVideoFastParsedRequest = z.output<
+  typeof FalLtx2p5ImageToVideoFastRequestSchema
+>;
 export type FalNanoBananaProTextToImageParams = z.infer<
   typeof FalNanoBananaProTextToImageRequestSchema
 >;
@@ -1889,6 +2492,81 @@ export type FalVirtualTryOnRequestInput = FalVirtualTryOnRequest;
 export type FalVirtualTryOnParsedRequest = z.output<
   typeof FalVirtualTryOnRequestSchema
 >;
+
+export type FalTopazUpscaleImagePrecisionParams = z.infer<
+  typeof FalTopazUpscaleImagePrecisionRequestSchema
+>;
+export type FalTopazUpscaleImagePrecisionRequest = z.input<
+  typeof FalTopazUpscaleImagePrecisionRequestSchema
+>;
+export type FalTopazUpscaleImagePrecisionRequestInput =
+  FalTopazUpscaleImagePrecisionRequest;
+export type FalTopazUpscaleImagePrecisionParsedRequest = z.output<
+  typeof FalTopazUpscaleImagePrecisionRequestSchema
+>;
+export type FalTopazUpscaleVideoPrecisionParams = z.infer<
+  typeof FalTopazUpscaleVideoPrecisionRequestSchema
+>;
+export type FalTopazUpscaleVideoPrecisionRequest = z.input<
+  typeof FalTopazUpscaleVideoPrecisionRequestSchema
+>;
+export type FalTopazUpscaleVideoPrecisionRequestInput =
+  FalTopazUpscaleVideoPrecisionRequest;
+export type FalTopazUpscaleVideoPrecisionParsedRequest = z.output<
+  typeof FalTopazUpscaleVideoPrecisionRequestSchema
+>;
+export type FalMeshyV7ImageTo3dParams = z.infer<
+  typeof FalMeshyV7ImageTo3dRequestSchema
+>;
+export type FalMeshyV7ImageTo3dRequest = z.input<
+  typeof FalMeshyV7ImageTo3dRequestSchema
+>;
+export type FalMeshyV7ImageTo3dRequestInput = FalMeshyV7ImageTo3dRequest;
+export type FalMeshyV7ImageTo3dParsedRequest = z.output<
+  typeof FalMeshyV7ImageTo3dRequestSchema
+>;
+export type FalGeminiOmniFlashParams = z.infer<
+  typeof FalGeminiOmniFlashRequestSchema
+>;
+export type FalGeminiOmniFlashRequest = z.input<
+  typeof FalGeminiOmniFlashRequestSchema
+>;
+export type FalGeminiOmniFlashRequestInput = FalGeminiOmniFlashRequest;
+export type FalGeminiOmniFlashParsedRequest = z.output<
+  typeof FalGeminiOmniFlashRequestSchema
+>;
+export type FalGeminiOmniFlashEditParams = z.infer<
+  typeof FalGeminiOmniFlashEditRequestSchema
+>;
+export type FalGeminiOmniFlashEditRequest = z.input<
+  typeof FalGeminiOmniFlashEditRequestSchema
+>;
+export type FalGeminiOmniFlashEditRequestInput = FalGeminiOmniFlashEditRequest;
+export type FalGeminiOmniFlashEditParsedRequest = z.output<
+  typeof FalGeminiOmniFlashEditRequestSchema
+>;
+export type FalGeminiOmniFlashImageToVideoParams = z.infer<
+  typeof FalGeminiOmniFlashImageToVideoRequestSchema
+>;
+export type FalGeminiOmniFlashImageToVideoRequest = z.input<
+  typeof FalGeminiOmniFlashImageToVideoRequestSchema
+>;
+export type FalGeminiOmniFlashImageToVideoRequestInput =
+  FalGeminiOmniFlashImageToVideoRequest;
+export type FalGeminiOmniFlashImageToVideoParsedRequest = z.output<
+  typeof FalGeminiOmniFlashImageToVideoRequestSchema
+>;
+export type FalGeminiOmniFlashReferenceToVideoParams = z.infer<
+  typeof FalGeminiOmniFlashReferenceToVideoRequestSchema
+>;
+export type FalGeminiOmniFlashReferenceToVideoRequest = z.input<
+  typeof FalGeminiOmniFlashReferenceToVideoRequestSchema
+>;
+export type FalGeminiOmniFlashReferenceToVideoRequestInput =
+  FalGeminiOmniFlashReferenceToVideoRequest;
+export type FalGeminiOmniFlashReferenceToVideoParsedRequest = z.output<
+  typeof FalGeminiOmniFlashReferenceToVideoRequestSchema
+>;
 export type FalSeedreamV5LiteEditParams = z.infer<
   typeof FalSeedreamV5LiteEditRequestSchema
 >;
@@ -1910,6 +2588,38 @@ export type FalSeedreamV5LiteTextToImageRequestInput =
 export type FalSeedreamV5LiteTextToImageParsedRequest = z.output<
   typeof FalSeedreamV5LiteTextToImageRequestSchema
 >;
+export type FalSeedreamV5ProLayerizeParams = z.infer<
+  typeof FalSeedreamV5ProLayerizeRequestSchema
+>;
+export type FalSeedreamV5ProLayerizeRequest = z.input<
+  typeof FalSeedreamV5ProLayerizeRequestSchema
+>;
+export type FalSeedreamV5ProLayerizeRequestInput =
+  FalSeedreamV5ProLayerizeRequest;
+export type FalSeedreamV5ProLayerizeParsedRequest = z.output<
+  typeof FalSeedreamV5ProLayerizeRequestSchema
+>;
+export type FalSeedreamV5ProTextToImageParams = z.infer<
+  typeof FalSeedreamV5ProTextToImageRequestSchema
+>;
+export type FalSeedreamV5ProTextToImageRequest = z.input<
+  typeof FalSeedreamV5ProTextToImageRequestSchema
+>;
+export type FalSeedreamV5ProTextToImageRequestInput =
+  FalSeedreamV5ProTextToImageRequest;
+export type FalSeedreamV5ProTextToImageParsedRequest = z.output<
+  typeof FalSeedreamV5ProTextToImageRequestSchema
+>;
+export type FalSeedreamV5ProEditParams = z.infer<
+  typeof FalSeedreamV5ProEditRequestSchema
+>;
+export type FalSeedreamV5ProEditRequest = z.input<
+  typeof FalSeedreamV5ProEditRequestSchema
+>;
+export type FalSeedreamV5ProEditRequestInput = FalSeedreamV5ProEditRequest;
+export type FalSeedreamV5ProEditParsedRequest = z.output<
+  typeof FalSeedreamV5ProEditRequestSchema
+>;
 export type FalSeedSpeechTtsV2Params = z.infer<
   typeof FalSeedSpeechTtsV2RequestSchema
 >;
@@ -1919,6 +2629,16 @@ export type FalSeedSpeechTtsV2Request = z.input<
 export type FalSeedSpeechTtsV2RequestInput = FalSeedSpeechTtsV2Request;
 export type FalSeedSpeechTtsV2ParsedRequest = z.output<
   typeof FalSeedSpeechTtsV2RequestSchema
+>;
+export type FalMinimaxMusic3Params = z.infer<
+  typeof FalMinimaxMusic3RequestSchema
+>;
+export type FalMinimaxMusic3Request = z.input<
+  typeof FalMinimaxMusic3RequestSchema
+>;
+export type FalMinimaxMusic3RequestInput = FalMinimaxMusic3Request;
+export type FalMinimaxMusic3ParsedRequest = z.output<
+  typeof FalMinimaxMusic3RequestSchema
 >;
 export type FalElevenlabsSpeechToTextScribeV2Params = z.infer<
   typeof FalElevenlabsSpeechToTextScribeV2RequestSchema
@@ -1983,6 +2703,39 @@ export type FalWan3p0ReferenceToVideoRequestInput =
   FalWan3p0ReferenceToVideoRequest;
 export type FalWan3p0ReferenceToVideoParsedRequest = z.output<
   typeof FalWan3p0ReferenceToVideoRequestSchema
+>;
+export type FalMinimaxH3TextToVideoParams = z.infer<
+  typeof FalMinimaxH3TextToVideoRequestSchema
+>;
+export type FalMinimaxH3TextToVideoRequest = z.input<
+  typeof FalMinimaxH3TextToVideoRequestSchema
+>;
+export type FalMinimaxH3TextToVideoRequestInput =
+  FalMinimaxH3TextToVideoRequest;
+export type FalMinimaxH3TextToVideoParsedRequest = z.output<
+  typeof FalMinimaxH3TextToVideoRequestSchema
+>;
+export type FalMinimaxH3ImageToVideoParams = z.infer<
+  typeof FalMinimaxH3ImageToVideoRequestSchema
+>;
+export type FalMinimaxH3ImageToVideoRequest = z.input<
+  typeof FalMinimaxH3ImageToVideoRequestSchema
+>;
+export type FalMinimaxH3ImageToVideoRequestInput =
+  FalMinimaxH3ImageToVideoRequest;
+export type FalMinimaxH3ImageToVideoParsedRequest = z.output<
+  typeof FalMinimaxH3ImageToVideoRequestSchema
+>;
+export type FalMinimaxH3ReferenceToVideoParams = z.infer<
+  typeof FalMinimaxH3ReferenceToVideoRequestSchema
+>;
+export type FalMinimaxH3ReferenceToVideoRequest = z.input<
+  typeof FalMinimaxH3ReferenceToVideoRequestSchema
+>;
+export type FalMinimaxH3ReferenceToVideoRequestInput =
+  FalMinimaxH3ReferenceToVideoRequest;
+export type FalMinimaxH3ReferenceToVideoParsedRequest = z.output<
+  typeof FalMinimaxH3ReferenceToVideoRequestSchema
 >;
 export type FalWanV2p7TextToImageParams = z.infer<
   typeof FalWanV2p7TextToImageRequestSchema
@@ -2156,6 +2909,17 @@ export type FalXaiGrokImagineVideoReferenceToVideoRequest = z.input<
 >;
 export type FalXaiGrokImagineVideoReferenceToVideoRequestInput =
   FalXaiGrokImagineVideoReferenceToVideoRequest;
+export type FalXaiGrokImagineVideoV1p5ReferenceToVideoParams = z.infer<
+  typeof FalXaiGrokImagineVideoV1p5ReferenceToVideoRequestSchema
+>;
+export type FalXaiGrokImagineVideoV1p5ReferenceToVideoRequest = z.input<
+  typeof FalXaiGrokImagineVideoV1p5ReferenceToVideoRequestSchema
+>;
+export type FalXaiGrokImagineVideoV1p5ReferenceToVideoRequestInput =
+  FalXaiGrokImagineVideoV1p5ReferenceToVideoRequest;
+export type FalXaiGrokImagineVideoV1p5ReferenceToVideoParsedRequest = z.output<
+  typeof FalXaiGrokImagineVideoV1p5ReferenceToVideoRequestSchema
+>;
 export type FalXaiGrokImagineVideoReferenceToVideoParsedRequest = z.output<
   typeof FalXaiGrokImagineVideoReferenceToVideoRequestSchema
 >;
@@ -2620,6 +3384,10 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
     FalSeedance2p5ImageToVideoRequestSchema,
   "bytedance/seedance-2.5/reference-to-video":
     FalSeedance2p5ReferenceToVideoRequestSchema,
+  "lightricks/ltx-2.5/image-to-video/pro":
+    FalLtx2p5ImageToVideoProRequestSchema,
+  "lightricks/ltx-2.5/image-to-video/fast":
+    FalLtx2p5ImageToVideoFastRequestSchema,
   "fal-ai/nano-banana-pro/edit": FalNanoBananaProEditRequestSchema,
   "fal-ai/nano-banana-pro": FalNanoBananaProTextToImageRequestSchema,
   "fal-ai/nano-banana": FalNanoBananaTextToImageRequestSchema,
@@ -2629,10 +3397,24 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "google/nano-banana-2-lite": FalNanoBanana2LiteTextToImageRequestSchema,
   "google/nano-banana-lite/edit": FalNanoBanana2LiteEditRequestSchema,
   "google/virtual-try-on": FalVirtualTryOnRequestSchema,
+  "topaz/upscale/image/precision": FalTopazUpscaleImagePrecisionRequestSchema,
+  "topaz/upscale/video/precision": FalTopazUpscaleVideoPrecisionRequestSchema,
+  "meshy/v7/image-to-3d": FalMeshyV7ImageTo3dRequestSchema,
+  "google/gemini-omni-flash": FalGeminiOmniFlashRequestSchema,
+  "google/gemini-omni-flash/edit": FalGeminiOmniFlashEditRequestSchema,
+  "google/gemini-omni-flash/image-to-video":
+    FalGeminiOmniFlashImageToVideoRequestSchema,
+  "google/gemini-omni-flash/reference-to-video":
+    FalGeminiOmniFlashReferenceToVideoRequestSchema,
   "fal-ai/bytedance/seedream/v5/lite/edit": FalSeedreamV5LiteEditRequestSchema,
   "fal-ai/bytedance/seedream/v5/lite/text-to-image":
     FalSeedreamV5LiteTextToImageRequestSchema,
+  "bytedance/seedream/v5/pro/layerize": FalSeedreamV5ProLayerizeRequestSchema,
+  "bytedance/seedream/v5/pro/text-to-image":
+    FalSeedreamV5ProTextToImageRequestSchema,
+  "bytedance/seedream/v5/pro/edit": FalSeedreamV5ProEditRequestSchema,
   "fal-ai/bytedance/seed-speech/tts/v2": FalSeedSpeechTtsV2RequestSchema,
+  "minimax/music-3": FalMinimaxMusic3RequestSchema,
   "fal-ai/elevenlabs/speech-to-text/scribe-v2":
     FalElevenlabsSpeechToTextScribeV2RequestSchema,
   "alibaba/qwen-image-3/edit": FalAlibabaQwenImage3EditRequestSchema,
@@ -2643,6 +3425,9 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "alibaba/wan-3.0-prime/image-to-video": FalWan3p0ImageToVideoRequestSchema,
   "alibaba/wan-3.0-prime/reference-to-video":
     FalWan3p0ReferenceToVideoRequestSchema,
+  "minimax/h3/text-to-video": FalMinimaxH3TextToVideoRequestSchema,
+  "minimax/h3/image-to-video": FalMinimaxH3ImageToVideoRequestSchema,
+  "minimax/h3/reference-to-video": FalMinimaxH3ReferenceToVideoRequestSchema,
   "fal-ai/wan/v2.7/text-to-image": FalWanV2p7TextToImageRequestSchema,
   "fal-ai/wan/v2.7/edit": FalWanV2p7EditRequestSchema,
   "fal-ai/wan/v2.7/pro/text-to-image": FalWanV2p7TextToImageRequestSchema,
@@ -2676,6 +3461,8 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
     FalXaiGrokImagineVideoImageToVideoRequestSchema,
   "xai/grok-imagine-video/reference-to-video":
     FalXaiGrokImagineVideoReferenceToVideoRequestSchema,
+  "xai/grok-imagine-video/v1.5/reference-to-video":
+    FalXaiGrokImagineVideoV1p5ReferenceToVideoRequestSchema,
   "xai/grok-imagine-video/extend-video":
     FalXaiGrokImagineVideoExtendVideoRequestSchema,
   "xai/grok-imagine-video/edit-video":

@@ -55,6 +55,10 @@ import {
   FalSeedance2p5ImageToVideoResponse,
   FalSeedance2p5ReferenceToVideoRequest,
   FalSeedance2p5ReferenceToVideoResponse,
+  FalLtx2p5ImageToVideoProRequest,
+  FalLtx2p5ImageToVideoProResponse,
+  FalLtx2p5ImageToVideoFastRequest,
+  FalLtx2p5ImageToVideoFastResponse,
   FalNanoBananaProTextToImageRequest,
   FalNanoBananaProTextToImageResponse,
   FalNanoBananaProEditRequest,
@@ -69,12 +73,38 @@ import {
   FalNanoBanana2LiteEditResponse,
   FalVirtualTryOnRequest,
   FalVirtualTryOnResponse,
+  FalTopazUpscaleImagePrecisionRequest,
+  FalTopazUpscaleImagePrecisionResponse,
+  FalTopazUpscaleVideoPrecisionRequest,
+  FalTopazUpscaleVideoPrecisionResponse,
+  FalMeshyV7ImageTo3dRequest,
+  FalMeshyV7ImageTo3dResponse,
+  FalGeminiOmniFlashRequest,
+  FalGeminiOmniFlashResponse,
+  FalGeminiOmniFlashEditRequest,
+  FalGeminiOmniFlashEditResponse,
+  FalGeminiOmniFlashImageToVideoRequest,
+  FalGeminiOmniFlashImageToVideoResponse,
+  FalGeminiOmniFlashReferenceToVideoRequest,
+  FalGeminiOmniFlashReferenceToVideoResponse,
   FalSeedreamV5LiteEditRequest,
   FalSeedreamV5LiteEditResponse,
   FalSeedreamV5LiteTextToImageRequest,
   FalSeedreamV5LiteTextToImageResponse,
+  FalSeedreamV5ProLayerizeRequest,
+  FalSeedreamV5ProLayerizeResponse,
+  FalMinimaxH3TextToVideoRequest,
+  FalMinimaxH3TextToVideoResponse,
+  FalMinimaxH3ImageToVideoRequest,
+  FalMinimaxH3ImageToVideoResponse,
+  FalSeedreamV5ProTextToImageRequest,
+  FalSeedreamV5ProTextToImageResponse,
+  FalSeedreamV5ProEditRequest,
+  FalSeedreamV5ProEditResponse,
   FalSeedSpeechTtsV2Request,
   FalSeedSpeechTtsV2Response,
+  FalMinimaxMusic3Request,
+  FalMinimaxMusic3Response,
   FalElevenlabsSpeechToTextScribeV2Request,
   FalElevenlabsSpeechToTextScribeV2Response,
   FalAlibabaQwenImage3TextToImageRequest,
@@ -86,6 +116,8 @@ import {
   FalWan3p0ImageToVideoResponse,
   FalWan3p0ReferenceToVideoRequest,
   FalWan3p0ReferenceToVideoResponse,
+  FalMinimaxH3ReferenceToVideoRequest,
+  FalMinimaxH3ReferenceToVideoResponse,
   FalAlibabaQwenImage3TextToImageResponse,
   FalWanV2p7TextToImageRequest,
   FalWanV2p7TextToImageResponse,
@@ -131,6 +163,8 @@ import {
   FalXaiGrokImagineVideoImageToVideoResponse,
   FalXaiGrokImagineVideoReferenceToVideoRequest,
   FalXaiGrokImagineVideoReferenceToVideoResponse,
+  FalXaiGrokImagineVideoV1p5ReferenceToVideoRequest,
+  FalXaiGrokImagineVideoV1p5ReferenceToVideoResponse,
   FalXaiGrokImagineVideoExtendVideoRequest,
   FalXaiGrokImagineVideoExtendVideoResponse,
   FalXaiGrokImagineVideoEditVideoRequest,
@@ -183,6 +217,8 @@ import {
   FalSeedance2p5TextToVideoRequestSchema,
   FalSeedance2p5ImageToVideoRequestSchema,
   FalSeedance2p5ReferenceToVideoRequestSchema,
+  FalLtx2p5ImageToVideoProRequestSchema,
+  FalLtx2p5ImageToVideoFastRequestSchema,
   FalNanoBananaProTextToImageRequestSchema,
   FalNanoBananaProEditRequestSchema,
   FalNanoBanana2TextToImageRequestSchema,
@@ -190,15 +226,29 @@ import {
   FalNanoBanana2LiteTextToImageRequestSchema,
   FalNanoBanana2LiteEditRequestSchema,
   FalVirtualTryOnRequestSchema,
+  FalTopazUpscaleImagePrecisionRequestSchema,
+  FalTopazUpscaleVideoPrecisionRequestSchema,
+  FalMeshyV7ImageTo3dRequestSchema,
+  FalGeminiOmniFlashRequestSchema,
+  FalGeminiOmniFlashEditRequestSchema,
+  FalGeminiOmniFlashImageToVideoRequestSchema,
+  FalGeminiOmniFlashReferenceToVideoRequestSchema,
   FalSeedreamV5LiteEditRequestSchema,
   FalSeedreamV5LiteTextToImageRequestSchema,
+  FalSeedreamV5ProLayerizeRequestSchema,
+  FalMinimaxH3TextToVideoRequestSchema,
+  FalMinimaxH3ImageToVideoRequestSchema,
+  FalSeedreamV5ProTextToImageRequestSchema,
+  FalSeedreamV5ProEditRequestSchema,
   FalSeedSpeechTtsV2RequestSchema,
+  FalMinimaxMusic3RequestSchema,
   FalElevenlabsSpeechToTextScribeV2RequestSchema,
   FalAlibabaQwenImage3TextToImageRequestSchema,
   FalAlibabaQwenImage3EditRequestSchema,
   FalWan3p0TextToVideoRequestSchema,
   FalWan3p0ImageToVideoRequestSchema,
   FalWan3p0ReferenceToVideoRequestSchema,
+  FalMinimaxH3ReferenceToVideoRequestSchema,
   FalWanV2p7TextToImageRequestSchema,
   FalWanV2p7EditRequestSchema,
   FalWanV2p7TextToVideoRequestSchema,
@@ -223,6 +273,7 @@ import {
   FalNanoBananaEditRequestSchema,
   FalXaiGrokImagineVideoImageToVideoRequestSchema,
   FalXaiGrokImagineVideoReferenceToVideoRequestSchema,
+  FalXaiGrokImagineVideoV1p5ReferenceToVideoRequestSchema,
   FalXaiGrokImagineVideoExtendVideoRequestSchema,
   FalXaiGrokImagineVideoEditVideoRequestSchema,
   FalVeo3p1TextToVideoRequestSchema,
@@ -1025,6 +1076,48 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/lightricks/ltx-2.5/image-to-video/pro
+  // Docs: https://fal.ai/models/lightricks/ltx-2.5/image-to-video/pro/api
+  const lightricksLtx2p5ImageToVideoPro = jsonBody<
+    FalLtx2p5ImageToVideoProRequest,
+    FalLtx2p5ImageToVideoProResponse
+  >(
+    "POST",
+    "/lightricks/ltx-2.5/image-to-video/pro",
+    FalLtx2p5ImageToVideoProRequestSchema,
+    { base: runBaseURL }
+  );
+  // POST https://fal.run/lightricks/ltx-2.5/image-to-video/fast
+  // Docs: https://fal.ai/models/lightricks/ltx-2.5/image-to-video/fast/api
+  const lightricksLtx2p5ImageToVideoFast = jsonBody<
+    FalLtx2p5ImageToVideoFastRequest,
+    FalLtx2p5ImageToVideoFastResponse
+  >(
+    "POST",
+    "/lightricks/ltx-2.5/image-to-video/fast",
+    FalLtx2p5ImageToVideoFastRequestSchema,
+    { base: runBaseURL }
+  );
+  // POST https://fal.run/minimax/h3/text-to-video
+  // Docs: https://fal.ai/models/minimax/h3/text-to-video/api
+  const minimaxH3TextToVideo = jsonBody<
+    FalMinimaxH3TextToVideoRequest,
+    FalMinimaxH3TextToVideoResponse
+  >("POST", "/minimax/h3/text-to-video", FalMinimaxH3TextToVideoRequestSchema, {
+    base: runBaseURL,
+  });
+  // POST https://fal.run/minimax/h3/image-to-video
+  // Docs: https://fal.ai/models/minimax/h3/image-to-video/api
+  const minimaxH3ImageToVideo = jsonBody<
+    FalMinimaxH3ImageToVideoRequest,
+    FalMinimaxH3ImageToVideoResponse
+  >(
+    "POST",
+    "/minimax/h3/image-to-video",
+    FalMinimaxH3ImageToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://fal.run/fal-ai/nano-banana-pro/edit
   // Docs: https://docs.fal.ai
@@ -1125,6 +1218,92 @@ export function createFal(opts: FalOptions): FalProvider {
     base: runBaseURL,
   });
 
+  // POST https://fal.run/topaz/upscale/image/precision
+  // Docs: https://fal.ai/models/topaz/upscale/image/precision/api
+  const topazUpscaleImagePrecision = jsonBody<
+    FalTopazUpscaleImagePrecisionRequest,
+    FalTopazUpscaleImagePrecisionResponse
+  >(
+    "POST",
+    "/topaz/upscale/image/precision",
+    FalTopazUpscaleImagePrecisionRequestSchema,
+    { base: runBaseURL }
+  );
+  // POST https://fal.run/topaz/upscale/video/precision
+  // Docs: https://fal.ai/models/topaz/upscale/video/precision/api
+  const topazUpscaleVideoPrecision = jsonBody<
+    FalTopazUpscaleVideoPrecisionRequest,
+    FalTopazUpscaleVideoPrecisionResponse
+  >(
+    "POST",
+    "/topaz/upscale/video/precision",
+    FalTopazUpscaleVideoPrecisionRequestSchema,
+    { base: runBaseURL }
+  );
+  // POST https://fal.run/meshy/v7/image-to-3d
+  // Docs: https://fal.ai/models/meshy/v7/image-to-3d/api
+  const meshyV7ImageTo3d = jsonBody<
+    FalMeshyV7ImageTo3dRequest,
+    FalMeshyV7ImageTo3dResponse
+  >("POST", "/meshy/v7/image-to-3d", FalMeshyV7ImageTo3dRequestSchema, {
+    base: runBaseURL,
+  });
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/google/gemini-omni-flash/edit
+  // Docs: https://fal.ai/models/google/gemini-omni-flash/edit/api
+  const geminiOmniFlashEdit = jsonBody<
+    FalGeminiOmniFlashEditRequest,
+    FalGeminiOmniFlashEditResponse
+  >(
+    "POST",
+    "/google/gemini-omni-flash/edit",
+    FalGeminiOmniFlashEditRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/google/gemini-omni-flash/image-to-video
+  // Docs: https://fal.ai/models/google/gemini-omni-flash/image-to-video/api
+  const geminiOmniFlashImageToVideo = jsonBody<
+    FalGeminiOmniFlashImageToVideoRequest,
+    FalGeminiOmniFlashImageToVideoResponse
+  >(
+    "POST",
+    "/google/gemini-omni-flash/image-to-video",
+    FalGeminiOmniFlashImageToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/google/gemini-omni-flash/reference-to-video
+  // Docs: https://fal.ai/models/google/gemini-omni-flash/reference-to-video/api
+  const geminiOmniFlashReferenceToVideo = jsonBody<
+    FalGeminiOmniFlashReferenceToVideoRequest,
+    FalGeminiOmniFlashReferenceToVideoResponse
+  >(
+    "POST",
+    "/google/gemini-omni-flash/reference-to-video",
+    FalGeminiOmniFlashReferenceToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/google/gemini-omni-flash
+  // Docs: https://fal.ai/models/google/gemini-omni-flash/api
+  const geminiOmniFlash = Object.assign(
+    jsonBody<FalGeminiOmniFlashRequest, FalGeminiOmniFlashResponse>(
+      "POST",
+      "/google/gemini-omni-flash",
+      FalGeminiOmniFlashRequestSchema,
+      { base: runBaseURL }
+    ),
+    {
+      edit: geminiOmniFlashEdit,
+      imageToVideo: geminiOmniFlashImageToVideo,
+      referenceToVideo: geminiOmniFlashReferenceToVideo,
+    }
+  );
+
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://fal.run/fal-ai/bytedance/seedream/v5/lite/edit
   // Docs: https://docs.fal.ai
@@ -1151,6 +1330,40 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL, defaults: { enable_safety_checker: false } }
   );
 
+  // POST https://fal.run/bytedance/seedream/v5/pro/layerize
+  // Docs: https://fal.ai/models/bytedance/seedream/v5/pro/layerize/api
+  const seedreamV5ProLayerize = jsonBody<
+    FalSeedreamV5ProLayerizeRequest,
+    FalSeedreamV5ProLayerizeResponse
+  >(
+    "POST",
+    "/bytedance/seedream/v5/pro/layerize",
+    FalSeedreamV5ProLayerizeRequestSchema,
+    { base: runBaseURL }
+  );
+  // POST https://fal.run/bytedance/seedream/v5/pro/text-to-image
+  // Docs: https://fal.ai/models/bytedance/seedream/v5/pro/text-to-image/api
+  const seedreamV5ProTextToImage = jsonBody<
+    FalSeedreamV5ProTextToImageRequest,
+    FalSeedreamV5ProTextToImageResponse
+  >(
+    "POST",
+    "/bytedance/seedream/v5/pro/text-to-image",
+    FalSeedreamV5ProTextToImageRequestSchema,
+    { base: runBaseURL }
+  );
+  // POST https://fal.run/bytedance/seedream/v5/pro/edit
+  // Docs: https://fal.ai/models/bytedance/seedream/v5/pro/edit/api
+  const seedreamV5ProEdit = jsonBody<
+    FalSeedreamV5ProEditRequest,
+    FalSeedreamV5ProEditResponse
+  >(
+    "POST",
+    "/bytedance/seedream/v5/pro/edit",
+    FalSeedreamV5ProEditRequestSchema,
+    { base: runBaseURL }
+  );
+
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://fal.run/fal-ai/bytedance/seed-speech/tts/v2
   // Docs: https://fal.ai/models/fal-ai/bytedance/seed-speech/tts/v2/api
@@ -1163,6 +1376,15 @@ export function createFal(opts: FalOptions): FalProvider {
     FalSeedSpeechTtsV2RequestSchema,
     { base: runBaseURL }
   );
+
+  // POST https://fal.run/minimax/music-3
+  // Docs: https://fal.ai/models/minimax/music-3/api
+  const minimaxMusic3 = jsonBody<
+    FalMinimaxMusic3Request,
+    FalMinimaxMusic3Response
+  >("POST", "/minimax/music-3", FalMinimaxMusic3RequestSchema, {
+    base: runBaseURL,
+  });
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://fal.run/fal-ai/elevenlabs/speech-to-text/scribe-v2
@@ -1259,6 +1481,18 @@ export function createFal(opts: FalOptions): FalProvider {
     "POST",
     "/fal-ai/wan/v2.7/reference-to-video",
     FalWanV2p7ReferenceToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // POST https://fal.run/minimax/h3/reference-to-video
+  // Docs: https://fal.ai/models/minimax/h3/reference-to-video/api
+  const minimaxH3ReferenceToVideo = jsonBody<
+    FalMinimaxH3ReferenceToVideoRequest,
+    FalMinimaxH3ReferenceToVideoResponse
+  >(
+    "POST",
+    "/minimax/h3/reference-to-video",
+    FalMinimaxH3ReferenceToVideoRequestSchema,
     { base: runBaseURL }
   );
 
@@ -1484,6 +1718,19 @@ export function createFal(opts: FalOptions): FalProvider {
     "POST",
     "/xai/grok-imagine-video/reference-to-video",
     FalXaiGrokImagineVideoReferenceToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/xai/grok-imagine-video/v1.5/reference-to-video
+  // Docs: https://fal.ai/models/xai/grok-imagine-video/v1.5/reference-to-video/api
+  const xaiGrokImagineVideoV1p5ReferenceToVideo = jsonBody<
+    FalXaiGrokImagineVideoV1p5ReferenceToVideoRequest,
+    FalXaiGrokImagineVideoV1p5ReferenceToVideoResponse
+  >(
+    "POST",
+    "/xai/grok-imagine-video/v1.5/reference-to-video",
+    FalXaiGrokImagineVideoV1p5ReferenceToVideoRequestSchema,
     { base: runBaseURL }
   );
 
@@ -1737,8 +1984,21 @@ export function createFal(opts: FalOptions): FalProvider {
             edit: seedreamV5LiteEdit,
             textToImage: seedreamV5LiteTextToImage,
           },
+          pro: {
+            layerize: seedreamV5ProLayerize,
+            textToImage: seedreamV5ProTextToImage,
+            edit: seedreamV5ProEdit,
+          },
         },
       },
+    },
+    minimax: {
+      h3: {
+        textToVideo: minimaxH3TextToVideo,
+        imageToVideo: minimaxH3ImageToVideo,
+        referenceToVideo: minimaxH3ReferenceToVideo,
+      },
+      music3: minimaxMusic3,
     },
     nanoBananaPro: {
       textToImage: nanoBananaProTextToImage,
@@ -1757,6 +2017,17 @@ export function createFal(opts: FalOptions): FalProvider {
       edit: nanoBanana2LiteEdit,
     },
     virtualTryOn,
+    topaz: {
+      upscale: {
+        image: {
+          precision: topazUpscaleImagePrecision,
+        },
+        video: {
+          precision: topazUpscaleVideoPrecision,
+        },
+      },
+    },
+    geminiOmniFlash,
     qwenImage,
     klingVideo: {
       v3: {
@@ -1773,6 +2044,19 @@ export function createFal(opts: FalOptions): FalProvider {
         imageToVideo: klingVideoO3p4kImageToVideo,
         referenceToVideo: klingVideoO3p4kReferenceToVideo,
         textToVideo: klingVideoO3p4kTextToVideo,
+      },
+    },
+    meshy: {
+      v7: {
+        imageTo3d: meshyV7ImageTo3d,
+      },
+    },
+    lightricks: {
+      ltx2p5: {
+        imageToVideo: {
+          pro: lightricksLtx2p5ImageToVideoPro,
+          fast: lightricksLtx2p5ImageToVideoFast,
+        },
       },
     },
     gptImage1p5,
@@ -1817,6 +2101,9 @@ export function createFal(opts: FalOptions): FalProvider {
         referenceToVideo: xaiGrokImagineVideoReferenceToVideo,
         extendVideo: xaiGrokImagineVideoExtendVideo,
         editVideo: xaiGrokImagineVideoEditVideo,
+        v1p5: {
+          referenceToVideo: xaiGrokImagineVideoV1p5ReferenceToVideo,
+        },
       },
     },
   };

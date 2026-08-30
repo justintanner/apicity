@@ -134,6 +134,7 @@ import {
   GrokImagineImage2TextToImageRequestSchema,
   GrokImagineImage2SegmentMapRequestSchema,
   GrokImagineImage2ImageEditRequestSchema,
+  GrokImagineImage2SegmentEditRequestSchema,
   KlingVideoRequestSchema,
   KlingMotionControlRequestSchema,
   KlingV3TurboImageToVideoRequestSchema,
@@ -303,6 +304,8 @@ export const CREATE_TASK_GUARDS = {
   "grok-imagine-image-2-0/segment-map":
     GrokImagineImage2SegmentMapRequestSchema,
   "grok-imagine-image-2-0/image-edit": GrokImagineImage2ImageEditRequestSchema,
+  "grok-imagine-image-2-0/segment-edit":
+    GrokImagineImage2SegmentEditRequestSchema,
   "qwen2/text-to-image": Qwen2TextToImageRequestSchema,
   "qwen2/image-edit": Qwen2ImageEditRequestSchema,
   "qwen3/text-to-image": Qwen3TextToImageRequestSchema,

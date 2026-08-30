@@ -2,11 +2,15 @@ import { describe, expect, expectTypeOf, it } from "vitest";
 
 import {
   GrokImagineImage2ImageEditRequestSchema as RootGrokImagineImage2ImageEditRequestSchema,
+  GrokImagineImage2SegmentEditRequestSchema as RootGrokImagineImage2SegmentEditRequestSchema,
   GrokImagineImage2SegmentMapRequestSchema as RootGrokImagineImage2SegmentMapRequestSchema,
   GrokImagineImage2TextToImageRequestSchema as RootGrokImagineImage2TextToImageRequestSchema,
   type GrokImagineImage2ImageEditParsedRequest,
   type GrokImagineImage2ImageEditRequest,
   type GrokImagineImage2ImageEditRequestInput,
+  type GrokImagineImage2SegmentEditParsedRequest,
+  type GrokImagineImage2SegmentEditRequest,
+  type GrokImagineImage2SegmentEditRequestInput,
   type GrokImagineImage2SegmentMapParsedRequest,
   type GrokImagineImage2SegmentMapRequest,
   type GrokImagineImage2SegmentMapRequestInput,
@@ -16,6 +20,7 @@ import {
 } from "@apicity/kie";
 import {
   GrokImagineImage2ImageEditRequestSchema,
+  GrokImagineImage2SegmentEditRequestSchema,
   GrokImagineImage2SegmentMapRequestSchema,
   GrokImagineImage2TextToImageRequestSchema,
   KIE_MEDIA_MODELS,
@@ -57,6 +62,18 @@ const GROK_IMAGINE_IMAGE_2_CONTRACTS = [
         mask_indexs: [0],
       },
     } satisfies GrokImagineImage2ImageEditRequest,
+  },
+  {
+    model: "grok-imagine-image-2-0/segment-edit",
+    schema: GrokImagineImage2SegmentEditRequestSchema,
+    request: {
+      model: "grok-imagine-image-2-0/segment-edit",
+      input: {
+        prompt: "Give the cat a red bow tie",
+        task_id: "task-cat-source",
+        mask_indexs: [1],
+      },
+    } satisfies GrokImagineImage2SegmentEditRequest,
   },
 ] as const;
 
@@ -182,6 +199,43 @@ describe("Kie Grok Imagine Image 2.0 request contracts", () => {
     }
   });
 
+  it("rejects segment-edit inputs and its one-based mask indices", () => {
+    const base = GROK_IMAGINE_IMAGE_2_CONTRACTS[3].request;
+    const cases = [
+      { input: { task_id: base.input.task_id }, path: ["input", "prompt"] },
+      {
+        input: { prompt: base.input.prompt },
+        path: ["input", "task_id"],
+      },
+      {
+        input: { prompt: base.input.prompt, task_id: "" },
+        path: ["input", "task_id"],
+      },
+      {
+        input: { ...base.input, mask_indexs: [] },
+        path: ["input", "mask_indexs"],
+      },
+      // image-edit accepts index 0; segment-edit documents `minimum: 1`.
+      {
+        input: { ...base.input, mask_indexs: [0] },
+        path: ["input", "mask_indexs", "0"],
+      },
+      {
+        input: { ...base.input, mask_indexs: [1.5] },
+        path: ["input", "mask_indexs", "0"],
+      },
+    ] as const;
+
+    for (const invalid of cases) {
+      const result = GrokImagineImage2SegmentEditRequestSchema.safeParse({
+        model: base.model,
+        input: invalid.input,
+      });
+      expect(result.success).toBe(false);
+      expect(issueAt(result, [...invalid.path])).toBe(true);
+    }
+  });
+
   it("keeps every input object strict", () => {
     for (const contract of GROK_IMAGINE_IMAGE_2_CONTRACTS) {
       const result = contract.schema.safeParse({
@@ -194,7 +248,7 @@ describe("Kie Grok Imagine Image 2.0 request contracts", () => {
 });
 
 describe("Kie Grok Imagine Image 2.0 registries and descriptors", () => {
-  it("has exactly the same three ids in the roster, guards, and descriptors", () => {
+  it("has exactly the same four ids in the roster, guards, and descriptors", () => {
     const prefix = "grok-imagine-image-2-0/";
     expect(
       KIE_MEDIA_MODELS.filter((model) => model.startsWith(prefix))
@@ -269,6 +323,31 @@ describe("Kie Grok Imagine Image 2.0 registries and descriptors", () => {
       items: { type: "integer", minimum: 0 },
     });
     expect(imageEdit.fields.mask_indexs.required).toBeUndefined();
+
+    const segmentEdit =
+      modelInputSchemas["grok-imagine-image-2-0/segment-edit"];
+    expect(segmentEdit.type).toBe("image");
+    expect(Object.keys(segmentEdit.fields).sort()).toEqual([
+      "mask_indexs",
+      "prompt",
+      "task_id",
+    ]);
+    expect(segmentEdit.fields.prompt).toMatchObject({
+      type: "string",
+      required: true,
+      minLength: 1,
+    });
+    expect(segmentEdit.fields.task_id).toMatchObject({
+      type: "string",
+      required: true,
+      minLength: 1,
+    });
+    expect(segmentEdit.fields.mask_indexs).toMatchObject({
+      type: "array",
+      minItems: 1,
+      items: { type: "integer", minimum: 1 },
+    });
+    expect(segmentEdit.fields.mask_indexs.required).toBeUndefined();
   });
 });
 
@@ -283,12 +362,16 @@ describe("Kie Grok Imagine Image 2.0 public exports", () => {
     expect(RootGrokImagineImage2ImageEditRequestSchema).toBe(
       GrokImagineImage2ImageEditRequestSchema
     );
+    expect(RootGrokImagineImage2SegmentEditRequestSchema).toBe(
+      GrokImagineImage2SegmentEditRequestSchema
+    );
   });
 
   it("preserves request aliases, parsed outputs, and model literals", () => {
     expectTypeOf<GrokImagineImage2TextToImageRequestInput>().toEqualTypeOf<GrokImagineImage2TextToImageRequest>();
     expectTypeOf<GrokImagineImage2SegmentMapRequestInput>().toEqualTypeOf<GrokImagineImage2SegmentMapRequest>();
     expectTypeOf<GrokImagineImage2ImageEditRequestInput>().toEqualTypeOf<GrokImagineImage2ImageEditRequest>();
+    expectTypeOf<GrokImagineImage2SegmentEditRequestInput>().toEqualTypeOf<GrokImagineImage2SegmentEditRequest>();
     expectTypeOf(
       GrokImagineImage2TextToImageRequestSchema.parse(
         GROK_IMAGINE_IMAGE_2_CONTRACTS[0].request
@@ -304,6 +387,11 @@ describe("Kie Grok Imagine Image 2.0 public exports", () => {
         GROK_IMAGINE_IMAGE_2_CONTRACTS[2].request
       )
     ).toEqualTypeOf<GrokImagineImage2ImageEditParsedRequest>();
+    expectTypeOf(
+      GrokImagineImage2SegmentEditRequestSchema.parse(
+        GROK_IMAGINE_IMAGE_2_CONTRACTS[3].request
+      )
+    ).toEqualTypeOf<GrokImagineImage2SegmentEditParsedRequest>();
     expectTypeOf<
       GrokImagineImage2TextToImageRequest["model"]
     >().toEqualTypeOf<"grok-imagine-image-2-0/text-to-image">();
@@ -313,5 +401,8 @@ describe("Kie Grok Imagine Image 2.0 public exports", () => {
     expectTypeOf<
       GrokImagineImage2ImageEditRequest["model"]
     >().toEqualTypeOf<"grok-imagine-image-2-0/image-edit">();
+    expectTypeOf<
+      GrokImagineImage2SegmentEditRequest["model"]
+    >().toEqualTypeOf<"grok-imagine-image-2-0/segment-edit">();
   });
 });

@@ -480,6 +480,175 @@ const gptImagePerImage = (
 //     unit that no request field determines — so deriving a rate from
 //     duration would invent one. The premium `alibaba/wan-3.0-prime/*`
 //     siblings bill per OUTPUT second instead and are priced statically below.
+//   - minimax/music-3: billed per COMPUTE SECOND (USD 0.00125) as pulled
+//     2026-08-28 from fal's own pricing API
+//     (GET /v1/models/pricing?endpoint_id=minimax/music-3). Same shape as the
+//     alibaba/wan-3.0 rows: the request carries a `duration`, but that is an
+//     upper bound on OUTPUT seconds — the model may stop earlier and reports
+//     the length it actually produced — while billing counts wall-clock GPU
+//     seconds, so no request field determines the price.
+//   - topaz/upscale/image/precision: billed on OUTPUT area — "$0.08 per 24
+//     megapixels of output, with any precision model", pulled 2026-08-28 from
+//     the model page, and the pricing API reports the same rate as an opaque
+//     USD 0.01 per "units". Output area is the source image's own dimensions
+//     scaled by `upscale_factor`, and the request carries only `image_url`,
+//     so no request field determines the price. This is the same shape as
+//   - topaz/upscale/video/precision: billed on the DELIVERED video — "$0.10
+//     per 10 seconds of output at 720p, $0.20 at 1080p, and $0.60 at 4K",
+//     pulled 2026-08-28 from the model page, which closes with "the final cost
+//     depends on output resolution, duration, and frame rate"; the pricing API
+//     reports the same rate as an opaque USD 0.01 per "units". None of those
+//     three is a request field: output resolution is the source's own
+//     dimensions scaled by `upscale_factor`, duration is the source clip's,
+//     and the frame rate is the source's unless `target_fps` overrides it.
+//     Per-model multipliers (Proteus Natural, Gaia 2 at half price) ride on
+//     top of a base the request cannot supply. Same shape as
+//     blackforestlabs/flux-video-upscale above.
+//   - meshy/v7/image-to-3d: billed per COMPUTE SECOND (USD 0.00007) as pulled
+//     2026-08-28 from fal's own pricing API
+//     (GET /v1/models/pricing?endpoint_id=...), which reports that one flat
+//     rate with no tier and no selector. Compute seconds are wall-clock GPU
+//     time; nothing in the request determines them — `target_polycount` sizes
+//     the output mesh, and `model_type`, `should_texture`, `enable_pbr`,
+//     `enable_rigging`, `enable_animation`, and `ultra_mode` only switch
+//     generation stages on and off, none of which upstream publishes a
+//     seconds-per-unit constant for. A static per-model rate would be invented.
+//   - lightricks/ltx-2.5/image-to-video/pro: billed per COMPUTE SECOND
+//     (USD 0.00017) as pulled 2026-08-28 from fal's own pricing API
+//     (GET /v1/models/pricing?endpoint_id=...). Same shape as the
+//     `alibaba/wan-3.0/*` video models: the request carries an output
+//     `duration` (6 | 8 | 10 | "auto"), but the billed unit is wall-clock GPU
+//     time, and "auto" does not even fix the output length at request time, so
+//     no request field can derive the price. The pricing API reports the same
+//     unit for the endpoint's `/fast` sibling, so the tier does not change the
+//     metering either. Contrast `fal-ai/kling-video/v3/pro/image-to-video` and
+//   - lightricks/ltx-2.5/image-to-video/fast: billed per COMPUTE SECOND
+//     (USD 0.00017) as pulled 2026-08-28 from fal's own pricing API
+//     (GET /v1/models/pricing?endpoint_id=...). Same shape as the
+//     `alibaba/wan-3.0/*` video models: the request carries an output
+//     `duration` (6 | 8 | 10 | 12 | 14 | 16 | 18 | 20 | "auto"), but the
+//     billed unit is wall-clock GPU time, and "auto" does not even fix the
+//     output length at request time, so no request field can derive the
+//     price. The same pull reports the same unit and rate for the endpoint's
+//     `/pro` sibling, so the tier changes neither the metering nor the rate.
+//     Contrast `fal-ai/kling-video/v3/pro/image-to-video` and
+//     `alibaba/wan-3.0-prime/*`, whose pull reports `"seconds"` — OUTPUT
+//     seconds, payload-derivable — and which are priced statically below.
+//   - bytedance/seedream/v5/pro/layerize: billed per COMPUTE SECOND
+//     (USD 0.00017) as pulled 2026-08-28 from fal's own pricing API
+//     (GET /v1/models/pricing?endpoint_id=bytedance/seedream/v5/pro/layerize).
+//     No request field determines wall-clock GPU time, and the layer count the
+//     model returns is chosen by the model, not the payload — the statically
+//     priced Seedream siblings bill per IMAGE instead, a unit their
+//     `num_images` fixes exactly.
+//   - minimax/h3/text-to-video: billed per COMPUTE SECOND (USD 0.00017) as
+//     pulled 2026-08-28 from fal's own pricing API
+//     (GET /v1/models/pricing?endpoint_id=minimax/h3/text-to-video). The
+//     request carries an output `duration` in the 5-15s range and a
+//     `resolution` tier, but neither fixes wall-clock GPU time — the same
+//     reasoning as the `alibaba/wan-3.0/*` video family, and the same rate.
+//     Statically priced video siblings such as `fal-ai/wan/v2.7/text-to-video`
+//   - minimax/h3/image-to-video: billed per COMPUTE SECOND (USD 0.00017) as
+//     pulled 2026-08-28 from fal's own pricing API
+//     (GET /v1/models/pricing?endpoint_id=minimax/h3/image-to-video). The
+//     request carries an output `duration` in the 5-15s range and a
+//     `resolution` tier, but neither fixes wall-clock GPU time — the same
+//     reasoning as the `alibaba/wan-3.0/*` video family, and the same rate.
+//     Statically priced video siblings such as `fal-ai/wan/v2.7/image-to-video`
+//     report unit "seconds" (output seconds) from the same API instead.
+//   - minimax/h3/reference-to-video: billed per COMPUTE SECOND (USD 0.00017)
+//     as pulled 2026-08-28 from fal's own pricing API
+//     (GET /v1/models/pricing?endpoint_id=minimax/h3/reference-to-video). The
+//     request carries an output `duration` in the 5-15s range and a
+//     `resolution` tier, but neither fixes wall-clock GPU time, and the
+//     variable count of reference assets moves it further - the same reasoning
+//     as the `alibaba/wan-3.0/*` video family, and the same rate. The
+//     statically priced `fal-ai/wan/v2.7/reference-to-video` sibling reports
+//     unit "seconds" (output seconds) at USD 0.1 from the same API instead.
+//   - xai/grok-imagine-video/v1.5/reference-to-video: billed per COMPUTE
+//     SECOND (USD 0.00017) as pulled 2026-08-28 from the same pricing API.
+//     Its UNVERSIONED sibling xai/grok-imagine-video/reference-to-video bills
+//     per OUTPUT second (USD 0.05) and stays priced statically below — the
+//     v1.5 path changed billing unit, not just rate, so the payload
+//     `duration` cannot derive its price.
+//   - bytedance/seedream/v5/pro/text-to-image: fal's pricing API reports a
+//     bare "units" unit at USD 0.0675 (pulled 2026-08-28), and the model
+//     page's card calls its own numbers "tentative": $0.0675 per image at or
+//     below 1536x1536 and $0.135 above it. A recorded 1024x1024 (`square_hd`)
+//     call with `num_images: 1` was billed 2 units / USD 0.135 — the card's
+//     high-tier price for an image well inside its low tier, confirmed by
+//     GET /v1/models/usage (quantity 2, unit_price 0.0675, cost_total 0.135)
+//     and by the response's own `x-fal-billable-units: 2.0`. Every statically
+//     priced per-image fal endpoint bills exactly 1 unit per image; this one
+//     does not, so no request field determines the billed quantity and a
+//     per-image table would contradict the observed charge.
+//   - bytedance/seedream/v5/pro/edit: fal's pricing API reports a bare
+//     "units" unit at USD 0.0675 (pulled 2026-08-28), where every statically
+//     priced per-image fal endpoint reports "images". The model page's card
+//     calls its own numbers "tentative": $0.0675 + $(0.0045 x number of
+//     additional input images) per output image at or below 1536x1536, and
+//     $0.135 + the same input surcharge above it, with the first input image
+//     free. A recorded 1024x1024 (`square_hd`) call with `num_images: 1` and a
+//     single (free) input image was billed 2 units / USD 0.135 — the card's
+//     high-tier price for an output well inside its low tier, confirmed by
+//     GET /v1/models/usage (quantity 2, unit_price 0.0675, cost_total 0.135)
+//     and by the response's own `x-fal-billable-units: 2.0`. No request field
+//     yields that 2, so a per-image table would contradict the observed
+//     charge.
+//   - google/gemini-omni-flash: billed purely per token as read 2026-08-28
+//     (the model page states "Billing is based on total token consumption.
+//     Tokens cost $21.875 per 1 million tokens"), and its "approximately
+//     $0.125 per second of video" figure is both explicitly approximate and
+//     conditioned on 720p — a resolution the request cannot select, since the
+//     payload carries only prompt, aspect_ratio, and duration. The one
+//     recorded call (duration 3) billed 0.382914 units at USD 1.00/unit =
+//     USD 0.382914, where the page rate predicts USD 0.375; the delivered
+//     video reports no token count, resolution, or duration, so the billed
+//     quantity is observable from neither the request nor the response.
+//   - google/gemini-omni-flash/edit: billed purely per token as read
+//     2026-08-28 ("Billing is based on total token consumption. Input tokens
+//     (text/audio/video) cost $1.875 per 1 million tokens. Output tokens cost
+//     $21.875 per 1 million tokens"), and its "approximately $0.13 per second
+//     of video" figure is both explicitly approximate and conditioned on 720p.
+//     The request carries only `prompt` and `video_url` — no duration, no
+//     resolution — so the billed quantity depends on the source video fal
+//     fetches, which no request field measures, and the delivered video
+//     reports no token count either. fal's own pricing API returns the bare
+//     `{"unit":"units","unit_price":1}` shape for this endpoint, and the one
+//     recorded call billed 0.689422 units = USD 0.689422 (confirmed by
+//     GET /v1/models/usage for the same bucket) — a fractional quantity the
+//     payload cannot reproduce.
+//   - google/gemini-omni-flash/image-to-video: billed purely per token as read
+//     2026-08-28 ("Billing is based on total token consumption. Input tokens
+//     (text/audio/video) cost $1.875 per 1 million tokens. Output tokens cost
+//     $21.875 per 1 million tokens"), and its "approximately $0.13 per second
+//     of video" figure is both explicitly approximate and conditioned on 720p
+//     — a resolution the request cannot select, since it carries only
+//     `aspect_ratio` (16:9 or 9:16). The payload does carry a `duration`, but
+//     the billed quantity also depends on the input image and prompt tokens,
+//     which no request field measures. fal's own pricing API returns the bare
+//     `{"unit":"units","unit_price":1}` shape for this endpoint, and the one
+//     recorded duration-3 call billed 0.386914 units = USD 0.386914
+//     (confirmed by GET /v1/models/usage for the same bucket) where that page
+//     rate predicts USD 0.39 (0.79% off) — a fractional quantity no request
+//     field reproduces.
+//   - google/gemini-omni-flash/reference-to-video: billed purely per token as
+//     read 2026-08-28 ("Billing is based on total token consumption. Input
+//     tokens (text/audio/video) cost $1.875 per 1 million tokens. Output
+//     tokens cost $21.875 per 1 million tokens"), and its "approximately
+//     $0.13 per second of video" figure is both explicitly approximate and
+//     conditioned on 720p — a resolution the request cannot select, since it
+//     carries only `aspect_ratio` (16:9 or 9:16). The payload does carry a
+//     `duration`, but the billed quantity also covers the prompt and the one
+//     to ten reference images fal fetches from `image_urls`, whose token
+//     counts no request field measures. fal's own pricing API returns the
+//     bare `{"unit":"units","unit_price":1}` shape for this endpoint. Two
+//     live duration-3 calls with the SAME single reference image billed
+//     DIFFERENT quantities — 0.386938 units (the recorded one) and 0.387174
+//     units — summing to USD 0.774112 on GET /v1/models/usage for the same
+//     bucket, against a page rate that predicts USD 0.39 per call. An
+//     identical payload that bills a different amount twice running is not
+//     payload-derivable at all.
 export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "alibaba/qwen-image-3/edit",
   "alibaba/qwen-image-3/text-to-image",
@@ -487,10 +656,27 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "alibaba/wan-3.0/reference-to-video",
   "alibaba/wan-3.0/text-to-video",
   "blackforestlabs/flux-video-upscale",
+  "bytedance/seedream/v5/pro/edit",
+  "bytedance/seedream/v5/pro/layerize",
+  "bytedance/seedream/v5/pro/text-to-image",
+  "google/gemini-omni-flash",
+  "google/gemini-omni-flash/edit",
+  "google/gemini-omni-flash/image-to-video",
+  "google/gemini-omni-flash/reference-to-video",
   "google/nano-banana-2-lite",
   "google/nano-banana-lite/edit",
+  "lightricks/ltx-2.5/image-to-video/fast",
+  "lightricks/ltx-2.5/image-to-video/pro",
+  "meshy/v7/image-to-3d",
+  "minimax/h3/image-to-video",
+  "minimax/h3/reference-to-video",
+  "minimax/h3/text-to-video",
+  "minimax/music-3",
+  "topaz/upscale/image/precision",
+  "topaz/upscale/video/precision",
   "xai/grok-imagine-image/v2.0/edit",
   "xai/grok-imagine-image/v2.0/text-to-image",
+  "xai/grok-imagine-video/v1.5/reference-to-video",
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {

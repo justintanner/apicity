@@ -41,6 +41,8 @@ export type {
   FalSeedance2p5TextToVideoParams,
   FalSeedance2p5ImageToVideoParams,
   FalSeedance2p5ReferenceToVideoParams,
+  FalLtx2p5ImageToVideoProParams,
+  FalLtx2p5ImageToVideoFastParams,
   FalNanoBananaProTextToImageParams,
   FalNanoBananaProEditParams,
   FalNanoBanana2TextToImageParams,
@@ -48,15 +50,29 @@ export type {
   FalNanoBanana2LiteTextToImageParams,
   FalNanoBanana2LiteEditParams,
   FalVirtualTryOnParams,
+  FalTopazUpscaleImagePrecisionParams,
+  FalTopazUpscaleVideoPrecisionParams,
+  FalMeshyV7ImageTo3dParams,
+  FalGeminiOmniFlashParams,
+  FalGeminiOmniFlashEditParams,
+  FalGeminiOmniFlashImageToVideoParams,
+  FalGeminiOmniFlashReferenceToVideoParams,
   FalSeedreamV5LiteEditParams,
   FalSeedreamV5LiteTextToImageParams,
+  FalSeedreamV5ProLayerizeParams,
+  FalMinimaxH3TextToVideoParams,
+  FalMinimaxH3ImageToVideoParams,
+  FalSeedreamV5ProTextToImageParams,
+  FalSeedreamV5ProEditParams,
   FalSeedSpeechTtsV2Params,
+  FalMinimaxMusic3Params,
   FalElevenlabsSpeechToTextScribeV2Params,
   FalAlibabaQwenImage3TextToImageParams,
   FalAlibabaQwenImage3EditParams,
   FalWan3p0TextToVideoParams,
   FalWan3p0ImageToVideoParams,
   FalWan3p0ReferenceToVideoParams,
+  FalMinimaxH3ReferenceToVideoParams,
   FalWanV2p7TextToImageParams,
   FalWanV2p7EditParams,
   FalWanV2p7TextToVideoParams,
@@ -81,6 +97,7 @@ export type {
   FalNanoBananaEditParams,
   FalXaiGrokImagineVideoImageToVideoParams,
   FalXaiGrokImagineVideoReferenceToVideoParams,
+  FalXaiGrokImagineVideoV1p5ReferenceToVideoParams,
   FalXaiGrokImagineVideoExtendVideoParams,
   FalXaiGrokImagineVideoEditVideoParams,
   FalVeo3p1TextToVideoParams,
@@ -125,6 +142,12 @@ export type {
   FalSeedance2p5ReferenceToVideoRequest,
   FalSeedance2p5ReferenceToVideoRequestInput,
   FalSeedance2p5ReferenceToVideoParsedRequest,
+  FalLtx2p5ImageToVideoProRequest,
+  FalLtx2p5ImageToVideoProRequestInput,
+  FalLtx2p5ImageToVideoProParsedRequest,
+  FalLtx2p5ImageToVideoFastRequest,
+  FalLtx2p5ImageToVideoFastRequestInput,
+  FalLtx2p5ImageToVideoFastParsedRequest,
   FalNanoBananaProEditRequest,
   FalNanoBananaProEditRequestInput,
   FalNanoBananaProEditParsedRequest,
@@ -152,15 +175,54 @@ export type {
   FalVirtualTryOnRequest,
   FalVirtualTryOnRequestInput,
   FalVirtualTryOnParsedRequest,
+  FalTopazUpscaleImagePrecisionRequest,
+  FalTopazUpscaleImagePrecisionRequestInput,
+  FalTopazUpscaleImagePrecisionParsedRequest,
+  FalTopazUpscaleVideoPrecisionRequest,
+  FalTopazUpscaleVideoPrecisionRequestInput,
+  FalTopazUpscaleVideoPrecisionParsedRequest,
+  FalMeshyV7ImageTo3dRequest,
+  FalMeshyV7ImageTo3dRequestInput,
+  FalMeshyV7ImageTo3dParsedRequest,
+  FalGeminiOmniFlashRequest,
+  FalGeminiOmniFlashRequestInput,
+  FalGeminiOmniFlashParsedRequest,
+  FalGeminiOmniFlashEditRequest,
+  FalGeminiOmniFlashEditRequestInput,
+  FalGeminiOmniFlashEditParsedRequest,
+  FalGeminiOmniFlashImageToVideoRequest,
+  FalGeminiOmniFlashImageToVideoRequestInput,
+  FalGeminiOmniFlashImageToVideoParsedRequest,
+  FalGeminiOmniFlashReferenceToVideoRequest,
+  FalGeminiOmniFlashReferenceToVideoRequestInput,
+  FalGeminiOmniFlashReferenceToVideoParsedRequest,
   FalSeedreamV5LiteEditRequest,
   FalSeedreamV5LiteEditRequestInput,
   FalSeedreamV5LiteEditParsedRequest,
   FalSeedreamV5LiteTextToImageRequest,
   FalSeedreamV5LiteTextToImageRequestInput,
   FalSeedreamV5LiteTextToImageParsedRequest,
+  FalSeedreamV5ProLayerizeRequest,
+  FalSeedreamV5ProLayerizeRequestInput,
+  FalSeedreamV5ProLayerizeParsedRequest,
+  FalMinimaxH3TextToVideoRequest,
+  FalMinimaxH3TextToVideoRequestInput,
+  FalMinimaxH3TextToVideoParsedRequest,
+  FalMinimaxH3ImageToVideoRequest,
+  FalMinimaxH3ImageToVideoRequestInput,
+  FalMinimaxH3ImageToVideoParsedRequest,
+  FalSeedreamV5ProTextToImageRequest,
+  FalSeedreamV5ProTextToImageRequestInput,
+  FalSeedreamV5ProTextToImageParsedRequest,
+  FalSeedreamV5ProEditRequest,
+  FalSeedreamV5ProEditRequestInput,
+  FalSeedreamV5ProEditParsedRequest,
   FalSeedSpeechTtsV2Request,
   FalSeedSpeechTtsV2RequestInput,
   FalSeedSpeechTtsV2ParsedRequest,
+  FalMinimaxMusic3Request,
+  FalMinimaxMusic3RequestInput,
+  FalMinimaxMusic3ParsedRequest,
   FalElevenlabsSpeechToTextScribeV2Request,
   FalElevenlabsSpeechToTextScribeV2RequestInput,
   FalElevenlabsSpeechToTextScribeV2ParsedRequest,
@@ -179,6 +241,9 @@ export type {
   FalWan3p0ReferenceToVideoRequest,
   FalWan3p0ReferenceToVideoRequestInput,
   FalWan3p0ReferenceToVideoParsedRequest,
+  FalMinimaxH3ReferenceToVideoRequest,
+  FalMinimaxH3ReferenceToVideoRequestInput,
+  FalMinimaxH3ReferenceToVideoParsedRequest,
   FalWanV2p7TextToImageRequest,
   FalWanV2p7TextToImageRequestInput,
   FalWanV2p7TextToImageParsedRequest,
@@ -260,6 +325,9 @@ export type {
   FalXaiGrokImagineVideoReferenceToVideoRequest,
   FalXaiGrokImagineVideoReferenceToVideoRequestInput,
   FalXaiGrokImagineVideoReferenceToVideoParsedRequest,
+  FalXaiGrokImagineVideoV1p5ReferenceToVideoRequest,
+  FalXaiGrokImagineVideoV1p5ReferenceToVideoRequestInput,
+  FalXaiGrokImagineVideoV1p5ReferenceToVideoParsedRequest,
   FalXaiGrokImagineVideoExtendVideoRequest,
   FalXaiGrokImagineVideoExtendVideoRequestInput,
   FalXaiGrokImagineVideoExtendVideoParsedRequest,
@@ -314,6 +382,8 @@ import type {
   FalSeedance2p5TextToVideoRequest,
   FalSeedance2p5ImageToVideoRequest,
   FalSeedance2p5ReferenceToVideoRequest,
+  FalLtx2p5ImageToVideoProRequest,
+  FalLtx2p5ImageToVideoFastRequest,
   FalNanoBananaProEditRequest,
   FalNanoBananaProTextToImageRequest,
   FalNanoBananaTextToImageRequest,
@@ -323,15 +393,29 @@ import type {
   FalNanoBanana2LiteTextToImageRequest,
   FalNanoBanana2LiteEditRequest,
   FalVirtualTryOnRequest,
+  FalTopazUpscaleImagePrecisionRequest,
+  FalTopazUpscaleVideoPrecisionRequest,
+  FalMeshyV7ImageTo3dRequest,
+  FalGeminiOmniFlashRequest,
+  FalGeminiOmniFlashEditRequest,
+  FalGeminiOmniFlashImageToVideoRequest,
+  FalGeminiOmniFlashReferenceToVideoRequest,
   FalSeedreamV5LiteEditRequest,
   FalSeedreamV5LiteTextToImageRequest,
+  FalSeedreamV5ProLayerizeRequest,
+  FalMinimaxH3TextToVideoRequest,
+  FalMinimaxH3ImageToVideoRequest,
+  FalSeedreamV5ProTextToImageRequest,
+  FalSeedreamV5ProEditRequest,
   FalSeedSpeechTtsV2Request,
+  FalMinimaxMusic3Request,
   FalElevenlabsSpeechToTextScribeV2Request,
   FalAlibabaQwenImage3TextToImageRequest,
   FalAlibabaQwenImage3EditRequest,
   FalWan3p0TextToVideoRequest,
   FalWan3p0ImageToVideoRequest,
   FalWan3p0ReferenceToVideoRequest,
+  FalMinimaxH3ReferenceToVideoRequest,
   FalWanV2p7TextToImageRequest,
   FalWanV2p7EditRequest,
   FalWanV2p7TextToVideoRequest,
@@ -359,6 +443,7 @@ import type {
   FalVeo3p1ImageToVideoRequest,
   FalXaiGrokImagineVideoImageToVideoRequest,
   FalXaiGrokImagineVideoReferenceToVideoRequest,
+  FalXaiGrokImagineVideoV1p5ReferenceToVideoRequest,
   FalXaiGrokImagineVideoExtendVideoRequest,
   FalXaiGrokImagineVideoEditVideoRequest,
   FalXaiGrokImagineImageRequest,
@@ -824,6 +909,16 @@ export interface FalSeedance2p5ReferenceToVideoResponse {
   seed: number;
 }
 
+// LTX-2.5 image-to-video (Lightricks). Upstream returns the generated clip and
+// nothing else — no seed, no echoed prompt — and the file carries the standard
+// fal video metadata.
+export interface FalLtx2p5ImageToVideoProResponse {
+  video: FalVideoFile;
+}
+export interface FalLtx2p5ImageToVideoFastResponse {
+  video: FalVideoFile;
+}
+
 // Nano Banana Pro image generation and editing (Google state-of-the-art image model)
 export type FalNanoBananaProAspectRatio =
   | "auto"
@@ -931,6 +1026,88 @@ export interface FalVirtualTryOnResponse {
   images: FalVirtualTryOnImage[];
 }
 
+// Topaz Precision Image Upscale (Gigapixel). Upstream returns a single File
+// whose only required member is `url`, which is exactly FalFile's shape.
+export interface FalTopazUpscaleImagePrecisionResponse {
+  image: FalFile;
+}
+// Topaz Precision Video Upscale. Upstream returns a single File whose only
+// required member is `url`, which is exactly FalFile's shape.
+export interface FalTopazUpscaleVideoPrecisionResponse {
+  video: FalFile;
+}
+// Meshy-7 image-to-3D. Every asset upstream returns is fal's standard File
+// object, so these reuse FalFile and only describe how the assets are grouped.
+export interface FalMeshyV7ModelUrls {
+  glb?: FalFile | null;
+  fbx?: FalFile | null;
+  obj?: FalFile | null;
+  usdz?: FalFile | null;
+  blend?: FalFile | null;
+  stl?: FalFile | null;
+}
+
+// One texture set per material. Only `base_color` is always present; the PBR
+// maps arrive only when enable_pbr is true.
+export interface FalMeshyV7TextureFiles {
+  base_color: FalFile;
+  metallic?: FalFile | null;
+  normal?: FalFile | null;
+  roughness?: FalFile | null;
+}
+
+// Bundled with the rigging result, so present only when enable_rigging is true.
+export interface FalMeshyV7BasicAnimations {
+  walking_glb?: FalFile | null;
+  walking_fbx?: FalFile | null;
+  walking_armature_glb?: FalFile | null;
+  running_glb?: FalFile | null;
+  running_fbx?: FalFile | null;
+  running_armature_glb?: FalFile | null;
+}
+
+// Upstream requires only `model_glb` and `model_urls`. The rigging and
+// animation assets appear only when the matching request flag is set, and
+// `texture_urls` is empty when should_texture is false.
+export interface FalMeshyV7ImageTo3dResponse {
+  model_glb: FalFile;
+  model_urls: FalMeshyV7ModelUrls;
+  thumbnail?: FalFile | null;
+  texture_urls?: FalMeshyV7TextureFiles[];
+  seed?: number | null;
+  animation_glb?: FalFile | null;
+  animation_fbx?: FalFile | null;
+  rigged_character_glb?: FalFile | null;
+  rigged_character_fbx?: FalFile | null;
+  basic_animations?: FalMeshyV7BasicAnimations | null;
+  rig_task_id?: string | null;
+}
+// Google Gemini Omni Flash text-to-video. Upstream's output schema carries a
+// single plain File — url plus the nullable content_type/file_name/file_size —
+// and no width/height/fps/duration, so FalFile is the exact shape.
+export interface FalGeminiOmniFlashResponse {
+  video: FalFile;
+}
+// Google Gemini Omni Flash video edit. Upstream's output schema carries a
+// single plain File — url plus the nullable content_type/file_name/file_size —
+// and no width/height/fps/duration, so FalFile is the exact shape.
+export interface FalGeminiOmniFlashEditResponse {
+  video: FalFile;
+}
+// Google Gemini Omni Flash image-to-video. Upstream's output schema carries a
+// single plain File — url plus the nullable content_type/file_name/file_size —
+// and no width/height/fps/duration, so FalFile is the exact shape.
+export interface FalGeminiOmniFlashImageToVideoResponse {
+  video: FalFile;
+}
+// Google Gemini Omni Flash reference-to-video. Upstream's output schema
+// carries a single plain File — url plus the nullable
+// content_type/file_name/file_size — and no width/height/fps/duration, so
+// FalFile is the exact shape.
+export interface FalGeminiOmniFlashReferenceToVideoResponse {
+  video: FalFile;
+}
+
 // Qwen Image (text-to-image and edit)
 export type FalQwenImageSize =
   | "square_hd"
@@ -1031,6 +1208,71 @@ export interface FalSeedreamV5LiteTextToImageResponse {
   seed: number;
 }
 
+// Bytedance Seedream v5 Pro layerize. fal's `Image` schema requires only
+// `url` and makes every other field nullable, including the `width`/`height`
+// that plain FalFile does not carry, so the item shape is modelled directly.
+export interface FalSeedreamV5ProLayerizeImage {
+  url: string;
+  content_type?: string | null;
+  file_name?: string | null;
+  file_size?: number | null;
+  width?: number | null;
+  height?: number | null;
+}
+// Bytedance Seedream v5 Pro text-to-image output. fal's `Image` schema
+// requires only `url` and makes every other field nullable, including the
+// `width`/`height` that plain FalFile does not carry, so the item shape is
+// modelled directly. Unlike the Lite surface the Pro response carries no
+// `seed`.
+export interface FalSeedreamV5ProTextToImageImage {
+  url: string;
+  content_type?: string | null;
+  file_name?: string | null;
+  file_size?: number | null;
+  width?: number | null;
+  height?: number | null;
+}
+// Bytedance Seedream v5 Pro image editing. fal's `Image` schema requires only
+// `url` and makes every other field nullable, including the `width`/`height`
+// that plain FalFile does not carry, so the item shape is modelled directly.
+// Unlike the Lite surface the Pro response carries no `seed`.
+export interface FalSeedreamV5ProEditImage {
+  url: string;
+  content_type?: string | null;
+  file_name?: string | null;
+  file_size?: number | null;
+  width?: number | null;
+  height?: number | null;
+}
+
+// Layer bounds in the output base image's coordinate system. `normalized`
+// uses the integer range [0, 1000]; `absolute` uses pixels.
+export interface FalSeedreamV5ProLayerBoundingBox {
+  absolute: number[];
+  normalized: number[];
+}
+
+// The base image (z_index 0) carries no name, description or bounding box;
+// every separated layer does.
+export interface FalSeedreamV5ProLayer {
+  image: FalSeedreamV5ProLayerizeImage;
+  z_index: number;
+  bounding_box?: FalSeedreamV5ProLayerBoundingBox | null;
+  name?: string | null;
+  description?: string | null;
+}
+
+export interface FalSeedreamV5ProLayerizeResponse {
+  images: FalSeedreamV5ProLayerizeImage[];
+  layers: FalSeedreamV5ProLayer[];
+}
+export interface FalSeedreamV5ProTextToImageResponse {
+  images: FalSeedreamV5ProTextToImageImage[];
+}
+export interface FalSeedreamV5ProEditResponse {
+  images: FalSeedreamV5ProEditImage[];
+}
+
 // Bytedance Seed Speech TTS v2
 export type FalSeedSpeechTtsV2Voice =
   | "vivi_mixed_en_zh_ja_es_id"
@@ -1100,6 +1342,15 @@ export type FalSeedSpeechTtsV2Language =
 
 export interface FalSeedSpeechTtsV2Response {
   audio: FalFile;
+}
+
+// MiniMax Music 3 — one generated song. `duration` is the length the model
+// actually produced, which upstream documents as possibly shorter than the
+// requested upper bound, and `seed` echoes the seed used.
+export interface FalMinimaxMusic3Response {
+  audio: FalFile;
+  seed: number;
+  duration: number;
 }
 
 // Alibaba Qwen Image 3 text-to-image
@@ -1199,6 +1450,31 @@ export interface FalWan3p0ReferenceToVideoResponse {
   actual_prompt?: string | null;
 }
 
+// MiniMax Hailuo 03 (H3) text-to-video. Upstream returns the shared fal `File`
+// schema with no media metadata beyond it, so the plain FalFile shape applies.
+// `expanded_prompt` is null whenever expansion was disabled, left the prompt
+// unchanged, or happened inside MiniMax's own hosted API.
+export interface FalMinimaxH3TextToVideoResponse {
+  video: FalFile;
+  expanded_prompt?: string | null;
+}
+// MiniMax Hailuo 03 (H3) image-to-video. Upstream returns the shared fal
+// `File` schema with no media metadata beyond it, so the plain FalFile shape
+// applies. `expanded_prompt` is null whenever expansion was disabled, left the
+// prompt unchanged, or happened inside MiniMax's own hosted API.
+export interface FalMinimaxH3ImageToVideoResponse {
+  video: FalFile;
+  expanded_prompt?: string | null;
+}
+// MiniMax Hailuo 03 (H3) reference-to-video. Upstream returns the shared fal
+// `File` schema with no media metadata beyond it, so the plain FalFile shape
+// applies. `expanded_prompt` is null whenever expansion was disabled, left the
+// prompt unchanged, or happened inside MiniMax's own hosted API.
+export interface FalMinimaxH3ReferenceToVideoResponse {
+  video: FalFile;
+  expanded_prompt?: string | null;
+}
+
 // xAI Grok Imagine Image
 export type FalXaiGrokImagineImageAspectRatio =
   | "2:1"
@@ -1267,6 +1543,12 @@ export interface FalXaiGrokImagineVideoImageToVideoResponse {
 
 export interface FalXaiGrokImagineVideoReferenceToVideoResponse {
   video: FalFile;
+}
+
+// v1.5 returns upstream's full `VideoFile` (dimensions, fps, num_frames)
+// rather than the bare file the unversioned sibling is typed against.
+export interface FalXaiGrokImagineVideoV1p5ReferenceToVideoResponse {
+  video: FalVideoFile;
 }
 
 export interface FalXaiGrokImagineVideoExtendVideoResponse {
@@ -1725,8 +2007,15 @@ export interface FalRunBytedanceSeedreamV5LiteNamespace {
   textToImage: FalSeedreamV5LiteTextToImageFn;
 }
 
+export interface FalRunBytedanceSeedreamV5ProNamespace {
+  layerize: FalSeedreamV5ProLayerizeFn;
+  textToImage: FalSeedreamV5ProTextToImageFn;
+  edit: FalSeedreamV5ProEditFn;
+}
+
 export interface FalRunBytedanceSeedreamV5Namespace {
   lite: FalRunBytedanceSeedreamV5LiteNamespace;
+  pro: FalRunBytedanceSeedreamV5ProNamespace;
 }
 
 export interface FalRunBytedanceSeedreamNamespace {
@@ -1744,6 +2033,18 @@ export interface FalRunBytedanceSeedSpeechTtsNamespace {
   v2: FalSeedSpeechTtsV2Fn;
 }
 
+type FalMinimaxMusic3Fn = ((
+  params: FalMinimaxMusic3Request,
+  signal?: AbortSignal
+) => Promise<FalMinimaxMusic3Response>) & {
+  schema: ApicitySchema<FalMinimaxMusic3Request>;
+};
+
+export interface FalRunMinimaxNamespace {
+  music3: FalMinimaxMusic3Fn;
+  h3: FalRunMinimaxH3Namespace;
+}
+
 export interface FalRunBytedanceSeedSpeechNamespace {
   tts: FalRunBytedanceSeedSpeechTtsNamespace;
 }
@@ -1753,6 +2054,31 @@ export interface FalRunBytedanceNamespace {
   seedance2p5: FalRunBytedanceSeedance2p5Namespace;
   seedSpeech: FalRunBytedanceSeedSpeechNamespace;
   seedream: FalRunBytedanceSeedreamNamespace;
+}
+
+type FalMinimaxH3TextToVideoFn = ((
+  params: FalMinimaxH3TextToVideoRequest,
+  signal?: AbortSignal
+) => Promise<FalMinimaxH3TextToVideoResponse>) & {
+  schema: ApicitySchema<FalMinimaxH3TextToVideoRequest>;
+};
+
+export interface FalRunMinimaxH3Namespace {
+  textToVideo: FalMinimaxH3TextToVideoFn;
+}
+type FalMinimaxH3ImageToVideoFn = ((
+  params: FalMinimaxH3ImageToVideoRequest,
+  signal?: AbortSignal
+) => Promise<FalMinimaxH3ImageToVideoResponse>) & {
+  schema: ApicitySchema<FalMinimaxH3ImageToVideoRequest>;
+};
+
+export interface FalRunMinimaxH3Namespace {
+  imageToVideo: FalMinimaxH3ImageToVideoFn;
+}
+
+export interface FalRunMinimaxNamespace {
+  h3: FalRunMinimaxH3Namespace;
 }
 
 type FalNanoBananaProEditFn = ((
@@ -1819,6 +2145,82 @@ type FalVirtualTryOnFn = ((
   schema: ApicitySchema<FalVirtualTryOnRequest>;
 };
 
+type FalTopazUpscaleImagePrecisionFn = ((
+  params: FalTopazUpscaleImagePrecisionRequest,
+  signal?: AbortSignal
+) => Promise<FalTopazUpscaleImagePrecisionResponse>) & {
+  schema: ApicitySchema<FalTopazUpscaleImagePrecisionRequest>;
+};
+
+export interface FalRunTopazUpscaleImageNamespace {
+  precision: FalTopazUpscaleImagePrecisionFn;
+}
+
+type FalTopazUpscaleVideoPrecisionFn = ((
+  params: FalTopazUpscaleVideoPrecisionRequest,
+  signal?: AbortSignal
+) => Promise<FalTopazUpscaleVideoPrecisionResponse>) & {
+  schema: ApicitySchema<FalTopazUpscaleVideoPrecisionRequest>;
+};
+
+export interface FalRunTopazUpscaleVideoNamespace {
+  precision: FalTopazUpscaleVideoPrecisionFn;
+}
+
+export interface FalRunTopazUpscaleNamespace {
+  image: FalRunTopazUpscaleImageNamespace;
+  video: FalRunTopazUpscaleVideoNamespace;
+}
+
+export interface FalRunTopazNamespace {
+  upscale: FalRunTopazUpscaleNamespace;
+}
+type FalMeshyV7ImageTo3dFn = ((
+  params: FalMeshyV7ImageTo3dRequest,
+  signal?: AbortSignal
+) => Promise<FalMeshyV7ImageTo3dResponse>) & {
+  schema: ApicitySchema<FalMeshyV7ImageTo3dRequest>;
+};
+
+export interface FalRunMeshyV7Namespace {
+  imageTo3d: FalMeshyV7ImageTo3dFn;
+}
+
+export interface FalRunMeshyNamespace {
+  v7: FalRunMeshyV7Namespace;
+}
+
+type FalGeminiOmniFlashFn = ((
+  params: FalGeminiOmniFlashRequest,
+  signal?: AbortSignal
+) => Promise<FalGeminiOmniFlashResponse>) & {
+  schema: ApicitySchema<FalGeminiOmniFlashRequest>;
+  edit: FalGeminiOmniFlashEditFn;
+  imageToVideo: FalGeminiOmniFlashImageToVideoFn;
+  referenceToVideo: FalGeminiOmniFlashReferenceToVideoFn;
+};
+
+type FalGeminiOmniFlashEditFn = ((
+  params: FalGeminiOmniFlashEditRequest,
+  signal?: AbortSignal
+) => Promise<FalGeminiOmniFlashEditResponse>) & {
+  schema: ApicitySchema<FalGeminiOmniFlashEditRequest>;
+};
+
+type FalGeminiOmniFlashImageToVideoFn = ((
+  params: FalGeminiOmniFlashImageToVideoRequest,
+  signal?: AbortSignal
+) => Promise<FalGeminiOmniFlashImageToVideoResponse>) & {
+  schema: ApicitySchema<FalGeminiOmniFlashImageToVideoRequest>;
+};
+
+type FalGeminiOmniFlashReferenceToVideoFn = ((
+  params: FalGeminiOmniFlashReferenceToVideoRequest,
+  signal?: AbortSignal
+) => Promise<FalGeminiOmniFlashReferenceToVideoResponse>) & {
+  schema: ApicitySchema<FalGeminiOmniFlashReferenceToVideoRequest>;
+};
+
 type FalSeedreamV5LiteEditFn = ((
   params: FalSeedreamV5LiteEditRequest,
   signal?: AbortSignal
@@ -1831,6 +2233,25 @@ type FalSeedreamV5LiteTextToImageFn = ((
   signal?: AbortSignal
 ) => Promise<FalSeedreamV5LiteTextToImageResponse>) & {
   schema: ApicitySchema<FalSeedreamV5LiteTextToImageRequest>;
+};
+
+type FalSeedreamV5ProLayerizeFn = ((
+  params: FalSeedreamV5ProLayerizeRequest,
+  signal?: AbortSignal
+) => Promise<FalSeedreamV5ProLayerizeResponse>) & {
+  schema: ApicitySchema<FalSeedreamV5ProLayerizeRequest>;
+};
+type FalSeedreamV5ProTextToImageFn = ((
+  params: FalSeedreamV5ProTextToImageRequest,
+  signal?: AbortSignal
+) => Promise<FalSeedreamV5ProTextToImageResponse>) & {
+  schema: ApicitySchema<FalSeedreamV5ProTextToImageRequest>;
+};
+type FalSeedreamV5ProEditFn = ((
+  params: FalSeedreamV5ProEditRequest,
+  signal?: AbortSignal
+) => Promise<FalSeedreamV5ProEditResponse>) & {
+  schema: ApicitySchema<FalSeedreamV5ProEditRequest>;
 };
 
 type FalAlibabaQwenImage3TextToImageFn = ((
@@ -1997,6 +2418,13 @@ type FalXaiGrokImagineVideoReferenceToVideoFn = ((
   schema: ApicitySchema<FalXaiGrokImagineVideoReferenceToVideoRequest>;
 };
 
+type FalXaiGrokImagineVideoV1p5ReferenceToVideoFn = ((
+  params: FalXaiGrokImagineVideoV1p5ReferenceToVideoRequest,
+  signal?: AbortSignal
+) => Promise<FalXaiGrokImagineVideoV1p5ReferenceToVideoResponse>) & {
+  schema: ApicitySchema<FalXaiGrokImagineVideoV1p5ReferenceToVideoRequest>;
+};
+
 type FalXaiGrokImagineVideoExtendVideoFn = ((
   params: FalXaiGrokImagineVideoExtendVideoRequest,
   signal?: AbortSignal
@@ -2011,11 +2439,16 @@ type FalXaiGrokImagineVideoEditVideoFn = ((
   schema: ApicitySchema<FalXaiGrokImagineVideoEditVideoRequest>;
 };
 
+export interface FalRunXaiGrokImagineVideoV1p5Namespace {
+  referenceToVideo: FalXaiGrokImagineVideoV1p5ReferenceToVideoFn;
+}
+
 export interface FalRunXaiGrokImagineVideoNamespace {
   imageToVideo: FalXaiGrokImagineVideoImageToVideoFn;
   referenceToVideo: FalXaiGrokImagineVideoReferenceToVideoFn;
   extendVideo: FalXaiGrokImagineVideoExtendVideoFn;
   editVideo: FalXaiGrokImagineVideoEditVideoFn;
+  v1p5: FalRunXaiGrokImagineVideoV1p5Namespace;
 }
 
 export interface FalRunXaiNamespace {
@@ -2166,6 +2599,21 @@ export interface FalRunKlingVideoNamespace {
   o3p4k: FalRunKlingVideoO3p4kNamespace;
 }
 
+type FalMinimaxH3ReferenceToVideoFn = ((
+  params: FalMinimaxH3ReferenceToVideoRequest,
+  signal?: AbortSignal
+) => Promise<FalMinimaxH3ReferenceToVideoResponse>) & {
+  schema: ApicitySchema<FalMinimaxH3ReferenceToVideoRequest>;
+};
+
+export interface FalRunMinimaxH3Namespace {
+  referenceToVideo: FalMinimaxH3ReferenceToVideoFn;
+}
+
+export interface FalRunMinimaxNamespace {
+  h3: FalRunMinimaxH3Namespace;
+}
+
 type FalSora2TextToVideoFn = ((
   params: FalSora2TextToVideoRequest,
   signal?: AbortSignal
@@ -2255,17 +2703,54 @@ export interface FalRunBlackforestlabsNamespace {
   fluxVideoUpscale: FalFluxVideoUpscaleFn;
 }
 
+type FalLtx2p5ImageToVideoProFn = ((
+  params: FalLtx2p5ImageToVideoProRequest,
+  signal?: AbortSignal
+) => Promise<FalLtx2p5ImageToVideoProResponse>) & {
+  schema: ApicitySchema<FalLtx2p5ImageToVideoProRequest>;
+};
+
+// `pro` is a URL segment, not a variant flag: upstream splits the LTX-2.5
+// image-to-video model into `/pro` and `/fast` endpoints.
+type FalLtx2p5ImageToVideoFastFn = ((
+  params: FalLtx2p5ImageToVideoFastRequest,
+  signal?: AbortSignal
+) => Promise<FalLtx2p5ImageToVideoFastResponse>) & {
+  schema: ApicitySchema<FalLtx2p5ImageToVideoFastRequest>;
+};
+
+// `fast` is a URL segment, not a variant flag: upstream splits the LTX-2.5
+// image-to-video model into `/pro` and `/fast` endpoints, and the two do not
+// share a request contract — the fast tier reaches 20s, 48 fps and 2160p.
+export interface FalRunLightricksLtx2p5ImageToVideoNamespace {
+  pro: FalLtx2p5ImageToVideoProFn;
+  fast: FalLtx2p5ImageToVideoFastFn;
+}
+
+export interface FalRunLightricksLtx2p5Namespace {
+  imageToVideo: FalRunLightricksLtx2p5ImageToVideoNamespace;
+}
+
+export interface FalRunLightricksNamespace {
+  ltx2p5: FalRunLightricksLtx2p5Namespace;
+}
+
 export interface FalRunNamespace {
   alibaba: FalRunAlibabaNamespace;
   blackforestlabs: FalRunBlackforestlabsNamespace;
   bytedance: FalRunBytedanceNamespace;
   hunyuan: FalRunHunyuanNamespace;
   klingVideo: FalRunKlingVideoNamespace;
+  minimax: FalRunMinimaxNamespace;
+  meshy: FalRunMeshyNamespace;
+  lightricks: FalRunLightricksNamespace;
   nanoBanana: FalRunNanoBananaNamespace;
   nanoBananaPro: FalRunNanoBananaProNamespace;
   nanoBanana2: FalRunNanoBanana2Namespace;
   nanoBanana2Lite: FalRunNanoBanana2LiteNamespace;
   virtualTryOn: FalVirtualTryOnFn;
+  topaz: FalRunTopazNamespace;
+  geminiOmniFlash: FalGeminiOmniFlashFn;
   qwenImage: FalQwenImageFn;
   gptImage1p5: FalGptImage1p5Fn;
   sora2: FalRunSora2Namespace;

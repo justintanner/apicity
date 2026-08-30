@@ -134,6 +134,16 @@ export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
       "The reachable $0.00 per generation variant is supported by live billing evidence but remains absent from the 2026-08-22 pricing catalog.",
   },
   {
+    key: "grok-imagine-image-2-0/segment-edit",
+    variant: "",
+    status: "pricing-only",
+    provenance:
+      "tests/recordings/kie_2079838932/grok-imagine-image-2-segment-edit_1829777927/recording.har terminal recordInfo reports " +
+      "4.0 credits",
+    rationale:
+      "The reachable $0.02 per generation variant is supported by live billing evidence but remains absent from the 2026-08-22 pricing catalog, which lists no segment-edit row at all.",
+  },
+  {
     key: "hailuo/02-image-to-video-standard",
     variant: "6|768P",
     status: "pricing-only",

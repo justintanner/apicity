@@ -1405,14 +1405,6 @@ export interface OpenAiPostV1Moderations {
   schema: z.ZodType<OpenAiModerationRequest>;
 }
 
-export interface OpenAiPostV1Responses {
-  (
-    req: OpenAiResponseRequest,
-    signal?: AbortSignal
-  ): Promise<OpenAiResponseResponse>;
-  schema: z.ZodType<OpenAiResponseRequest>;
-}
-
 export interface OpenAiPostV1ResponsesCompact {
   (
     req: OpenAiResponseCompactRequest,
@@ -1609,29 +1601,8 @@ export interface OpenAiGetV1ChatCompletionsMessages {
   ): Promise<OpenAiStoredCompletionMessageListResponse>;
 }
 
-export interface OpenAiGetV1Files {
-  (
-    opts?: OpenAiFileListRequest,
-    signal?: AbortSignal
-  ): Promise<OpenAiFileListResponse>;
-  (id: string, signal?: AbortSignal): Promise<OpenAiFile>;
-}
-
 export interface OpenAiGetV1FilesContent {
   (id: string, signal?: AbortSignal): Promise<string>;
-}
-
-export interface OpenAiGetV1Models {
-  (signal?: AbortSignal): Promise<OpenAiModelListResponse>;
-  (id: string, signal?: AbortSignal): Promise<OpenAiModel>;
-}
-
-export interface OpenAiGetV1Responses {
-  (
-    id: string,
-    opts?: OpenAiResponseGetOptions,
-    signal?: AbortSignal
-  ): Promise<OpenAiResponseResponse>;
 }
 
 export interface OpenAiGetV1ResponsesInputItems {
@@ -1640,14 +1611,6 @@ export interface OpenAiGetV1ResponsesInputItems {
     opts?: OpenAiResponseInputItemsOptions,
     signal?: AbortSignal
   ): Promise<OpenAiResponseInputItemsResponse>;
-}
-
-export interface OpenAiGetV1Batches {
-  (
-    opts?: OpenAiBatchListParams,
-    signal?: AbortSignal
-  ): Promise<OpenAiBatchListResponse>;
-  (id: string, signal?: AbortSignal): Promise<OpenAiBatch>;
 }
 
 export interface OpenAiGetV1FineTuningJobs {
@@ -1824,18 +1787,6 @@ export interface OpenAiDeleteV1ChatCompletions {
     id: string,
     signal?: AbortSignal
   ): Promise<OpenAiStoredCompletionDeleteResponse>;
-}
-
-export interface OpenAiDeleteV1Files {
-  (id: string, signal?: AbortSignal): Promise<OpenAiFileDeleteResponse>;
-}
-
-export interface OpenAiDeleteV1Models {
-  (id: string, signal?: AbortSignal): Promise<OpenAiModelDeleteResponse>;
-}
-
-export interface OpenAiDeleteV1Responses {
-  (id: string, signal?: AbortSignal): Promise<OpenAiResponseDeleteResponse>;
 }
 
 export interface OpenAiDeleteV1FineTuningCheckpointsPermissions {

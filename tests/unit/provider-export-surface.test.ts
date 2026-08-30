@@ -1,0 +1,293 @@
+import { describe, expect, it } from "vitest";
+import {
+  checkExportSurface,
+  parseExportedNames,
+  parseNamespaceDeclarations,
+  readProviderExportSurfaces,
+} from "../../scripts/lib/export-surface.mjs";
+
+/**
+ * Every `*Namespace` type a provider declares as public in `src/types.ts` must
+ * be reachable from `@apicity/<provider>`.
+ *
+ * `FalRunNanoBanana2LiteNamespace` was not: declared `export interface` at
+ * `packages/provider/fal/src/types.ts:1810`, hung off `FalRunNamespace` as
+ * `nanoBanana2Lite`, and never named in `index.ts`. Lint passed, `tsc --noEmit`
+ * passed (the declaration is used inside `types.ts`), the whole replay suite
+ * passed; review caught it by eye (`ac-c2cc4j` finding `G2` / `RR-2`, follow-up
+ * `FU-1`, filed as `ac-gvqa18`). This guard is the gate that was missing.
+ *
+ * It is registered in `scripts/lib/cross-cutting-tests.mjs` because its file
+ * name matches no provider, so `test:provider` and `test:affected` select it
+ * for nobody; without that registration it would run only in full CI.
+ */
+
+/**
+ * Namespaces that are declared public but deliberately not re-exported yet.
+ *
+ * A baseline entry is a claim about the tree, so `checkExportSurface` ratchets
+ * in both directions: an entry whose type stopped being declared, or that is
+ * now re-exported, fails as stale. Entries are per type name — no wildcard and
+ * no per-provider blanket skip — mirroring `UNPRICED_SLUG_ALLOWLIST` in
+ * `tests/unit/cost-pricing.test.ts`.
+ *
+ * The baseline is empty: every namespace the guard once tolerated is now
+ * re-exported by its provider's `src/index.ts`. An empty object keeps the
+ * ratchet armed — the next unexported declaration fails the guard instead of
+ * landing silently.
+ */
+const EXPORT_SURFACE_BASELINE: Record<string, Record<string, string>> = {};
+
+// Pinned so a silent baseline expansion is a visible diff rather than a quiet
+// widening of what the guard tolerates.
+const EXPECTED_BASELINE_DISTRIBUTION: Record<string, number> = {};
+const EXPECTED_BASELINE_TOTAL = 0;
+
+type Surface = ReturnType<typeof readProviderExportSurfaces>[number];
+
+/**
+ * Build one surface from synthetic source, so the ratchet cases run real
+ * source text through the real parser into the real checker instead of
+ * depending on whichever defect happens to be live in the tree.
+ *
+ * A `null` source means the file is absent.
+ */
+function syntheticSurface(
+  provider: string,
+  typesSource: string | null,
+  indexSource: string | null
+): Surface {
+  const typesPath = `packages/provider/${provider}/src/types.ts`;
+  const indexPath = `packages/provider/${provider}/src/index.ts`;
+  const exports =
+    indexSource === null
+      ? { names: null, starExportsTypes: false }
+      : parseExportedNames(indexPath, indexSource);
+
+  return {
+    provider,
+    typesPath,
+    indexPath,
+    declarations:
+      typesSource === null
+        ? null
+        : parseNamespaceDeclarations(typesPath, typesSource),
+    exportedNames: exports.names,
+    starExportsTypes: exports.starExportsTypes,
+  };
+}
+
+const GHOST_TYPES = `export interface GhostRunNamespace {
+  go: () => void;
+}
+`;
+const GHOST_INDEX = `export type { GhostRunNamespace } from "./types";\n`;
+
+describe("provider export surface", () => {
+  it("re-exports every declared *Namespace type, or baselines it", () => {
+    const problems = checkExportSurface(
+      readProviderExportSurfaces(),
+      EXPORT_SURFACE_BASELINE
+    );
+    expect(problems, problems.join("\n\n")).toEqual([]);
+  });
+
+  it("reports a declared namespace that is neither exported nor baselined", () => {
+    const problems = checkExportSurface(
+      [syntheticSurface("ghost", GHOST_TYPES, "export {};\n")],
+      {}
+    );
+
+    expect(problems).toHaveLength(1);
+    expect(problems[0]).toContain("ghost: GhostRunNamespace is declared at");
+    expect(problems[0]).toContain(
+      "packages/provider/ghost/src/types.ts:1 but never re-exported from"
+    );
+    expect(problems[0]).toContain("packages/provider/ghost/src/index.ts.");
+    expect(problems[0]).toContain(
+      "or add a baseline entry in tests/unit/provider-export-surface.test.ts"
+    );
+  });
+
+  it("accepts a declared namespace that is re-exported", () => {
+    expect(
+      checkExportSurface(
+        [syntheticSurface("ghost", GHOST_TYPES, GHOST_INDEX)],
+        {}
+      )
+    ).toEqual([]);
+  });
+
+  it("accepts a baselined namespace that is not re-exported", () => {
+    expect(
+      checkExportSurface(
+        [syntheticSurface("ghost", GHOST_TYPES, "export {};\n")],
+        {
+          ghost: { GhostRunNamespace: "deferred" },
+        }
+      )
+    ).toEqual([]);
+  });
+
+  it("reports a baseline entry whose type is no longer declared", () => {
+    const problems = checkExportSurface(
+      [syntheticSurface("ghost", GHOST_TYPES, GHOST_INDEX)],
+      { ghost: { GhostGoneNamespace: "deferred" } }
+    );
+
+    expect(problems).toHaveLength(1);
+    expect(problems[0]).toContain("stale baseline entry GhostGoneNamespace");
+    expect(problems[0]).toContain(
+      "no exported interface by that name is declared in"
+    );
+  });
+
+  it("reports a baseline entry for a type that is now re-exported", () => {
+    const problems = checkExportSurface(
+      [syntheticSurface("ghost", GHOST_TYPES, GHOST_INDEX)],
+      { ghost: { GhostRunNamespace: "deferred" } }
+    );
+
+    expect(problems).toHaveLength(1);
+    expect(problems[0]).toContain("stale baseline entry GhostRunNamespace");
+    expect(problems[0]).toContain("it is now re-exported from");
+  });
+
+  it("ignores an interface that types.ts does not export", () => {
+    const source = `interface GhostPrivateNamespace {\n  go: () => void;\n}\n`;
+    expect(
+      checkExportSurface(
+        [syntheticSurface("ghost", source, "export {};\n")],
+        {}
+      )
+    ).toEqual([]);
+  });
+
+  it("ignores a Namespace name that only appears in a comment or a string", () => {
+    const source = [
+      "// export interface GhostCommentNamespace { go: () => void }",
+      'const doc = "export interface GhostStringNamespace {}";',
+      "export const used = doc;",
+      "",
+    ].join("\n");
+
+    expect(
+      checkExportSurface(
+        [syntheticSurface("ghost", source, "export {};\n")],
+        {}
+      )
+    ).toEqual([]);
+  });
+
+  it("skips a provider that has an index.ts but no types.ts", () => {
+    expect(
+      checkExportSurface([syntheticSurface("ghost", null, GHOST_INDEX)], {})
+    ).toEqual([]);
+  });
+
+  it("treats a star export of ./types as publishing every declaration", () => {
+    // telegram's shape: `export type * from "./types"` publishes the whole
+    // file, so a name set would be the wrong answer, not a partial one.
+    expect(
+      checkExportSurface(
+        [
+          syntheticSurface(
+            "ghost",
+            GHOST_TYPES,
+            'export type * from "./types";\n'
+          ),
+        ],
+        {}
+      )
+    ).toEqual([]);
+  });
+
+  it("reports a baseline entry for a provider that star-exports its types", () => {
+    const problems = checkExportSurface(
+      [
+        syntheticSurface(
+          "ghost",
+          GHOST_TYPES,
+          'export type * from "./types";\n'
+        ),
+      ],
+      { ghost: { GhostRunNamespace: "deferred" } }
+    );
+
+    expect(problems).toHaveLength(1);
+    expect(problems[0]).toContain("star-exports ./types");
+  });
+
+  it("ignores a star export of a module other than ./types", () => {
+    // b2's shape: `export type * from "./s3-types"` says nothing about the
+    // declarations in its own types.ts.
+    const problems = checkExportSurface(
+      [
+        syntheticSurface(
+          "ghost",
+          GHOST_TYPES,
+          'export type * from "./s3-types";\n'
+        ),
+      ],
+      {}
+    );
+
+    expect(problems).toHaveLength(1);
+    expect(problems[0]).toContain("ghost: GhostRunNamespace is declared at");
+  });
+
+  it("counts a renamed re-export under both of its names", () => {
+    // Deliberately over-permissive, per the module comment: collecting both
+    // sides keeps a renamed re-export from being reported as a missing one.
+    expect(
+      checkExportSurface(
+        [
+          syntheticSurface(
+            "ghost",
+            GHOST_TYPES,
+            'export type { GhostRunNamespace as GhostNamespace } from "./types";\n'
+          ),
+        ],
+        {}
+      )
+    ).toEqual([]);
+  });
+
+  it("gives every baseline entry a non-empty rationale", () => {
+    for (const [provider, types] of Object.entries(EXPORT_SURFACE_BASELINE)) {
+      for (const [name, rationale] of Object.entries(types)) {
+        expect(typeof rationale, `${provider}/${name}`).toBe("string");
+        expect(rationale.trim(), `${provider}/${name}`).not.toBe("");
+      }
+    }
+  });
+
+  it("pins the baseline total and its per-provider distribution", () => {
+    const distribution = Object.fromEntries(
+      Object.entries(EXPORT_SURFACE_BASELINE).map(([provider, types]) => [
+        provider,
+        Object.keys(types).length,
+      ])
+    );
+    const total = Object.values(distribution).reduce(
+      (sum, count) => sum + count,
+      0
+    );
+
+    expect(distribution).toEqual(EXPECTED_BASELINE_DISTRIBUTION);
+    expect(total).toBe(EXPECTED_BASELINE_TOTAL);
+    // The bead's own gap and the star-export miscount, pinned as zero.
+    expect(EXPORT_SURFACE_BASELINE.fal).toBeUndefined();
+    expect(EXPORT_SURFACE_BASELINE.telegram).toBeUndefined();
+  });
+
+  it("discovers every provider from disk", () => {
+    const surfaces = readProviderExportSurfaces();
+    expect(surfaces.length).toBeGreaterThanOrEqual(29);
+    expect(surfaces.map((surface) => surface.provider)).toContain("fal");
+    for (const surface of surfaces) {
+      expect(surface.declarations, surface.provider).not.toBeNull();
+      expect(surface.exportedNames, surface.provider).not.toBeNull();
+    }
+  });
+});

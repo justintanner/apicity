@@ -1484,6 +1484,14 @@ export type {
   ElevenLabsGetNamespace,
   ElevenLabsDeleteV1Namespace,
   ElevenLabsDeleteNamespace,
+  // Promoted out of EXPORT_SURFACE_BASELINE (ac-9at9f2.5): a consumer that
+  // holds `elevenlabs.v1.usage`, `.post.v1.convai.agent`,
+  // `.get.v1.convai.agent`, or `.get.v1.convai.analytics` must be able to
+  // name its type.
+  ElevenLabsUsageNamespace,
+  ElevenLabsPostConvaiAgentNamespace,
+  ElevenLabsGetConvaiAgentNamespace,
+  ElevenLabsGetConvaiAnalyticsNamespace,
   ElevenLabsCreateVoiceFromPreviewRequest,
   ElevenLabsCreateVoiceFromPreviewRequestInput,
   ElevenLabsCreateVoiceFromPreviewParsedRequest,

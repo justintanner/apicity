@@ -69,6 +69,23 @@ import { repoRoot } from "./provider-scope.mjs";
  * and `googleflow` shipped with no `build:` alias at all (ac-gk1mlr,
  * ac-qclky0, ac-e1h1yj).
  *
+ * The export-surface guard pins what each provider actually publishes.
+ * `tests/unit/provider-export-surface.test.ts` walks every provider's
+ * `src/types.ts` and fails an exported `*Namespace` interface that the same
+ * provider's `src/index.ts` never re-exports, under an explicit per-type
+ * baseline that goes stale in both directions. `RR-2` was exactly
+ * that: `FalRunNanoBanana2LiteNamespace` was declared public and unreachable
+ * from `@apicity/fal`, and passed lint, `tsc --noEmit` and the whole replay
+ * suite — no gate in this repository observed a declared-but-unexported public
+ * type, so review caught it by eye (`ac-c2cc4j` finding `G2`, filed as
+ * `ac-gvqa18`). The file is named after no provider, so no provider scope
+ * selects it. It is parse-only — `ts.createSourceFile`, never a `ts.Program`,
+ * which the two `*request-input-types.test.ts` files need and pay 120s of
+ * timeout for — and measures 0.9-1.0s wall over all 29 providers including
+ * node startup (0.899s and 0.927s on the planning and review machines, 1.0s on
+ * the implementing one), which is why `CROSS_CUTTING_COST_SECONDS` does not
+ * move.
+ *
  * The fast gates run these guards so a broken repo-wide invariant cannot pass
  * the local merge gate. They are filesystem- and source-parse-only (no Polly,
  * no network); `CROSS_CUTTING_COST_SECONDS` records their measured cost.
@@ -87,9 +104,11 @@ import { repoRoot } from "./provider-scope.mjs";
  * pinned to this value by `tests/unit/cross-cutting-tests.test.ts`.
  *
  * The value is the reference-machine figure recorded when the block held five
- * entries. The three entries added since have not moved it materially: on
- * 2026-08-25 the eight-entry block measured 3.1s and 3.4s wall (645 tests, 8
- * files) on the machine that added them, comfortably under this number. It is
+ * entries. The four entries added since have not been re-measured on that
+ * machine: the nine-entry block measures 9.878s on the machine that added the
+ * ninth (8.533s at eight), which confirms this is a reference-machine constant
+ * rather than a live figure — re-measure the whole block on the reference
+ * machine at the next addition rather than appending again. It is
  * deliberately left at the reference measurement rather than overwritten with a
  * figure from a different machine. Every entry stays filesystem- and
  * source-parse-only; the credential guard's dominant cost is one JSON parse of
@@ -120,6 +139,7 @@ export const CROSS_CUTTING_TESTS = [
   "tests/unit/cost-pricing.test.ts",
   "tests/unit/provider-inventory-docs.test.ts",
   "tests/unit/recording-credential-hosts.test.ts",
+  "tests/unit/provider-export-surface.test.ts",
 ];
 
 /**

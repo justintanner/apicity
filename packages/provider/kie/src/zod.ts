@@ -6245,6 +6245,705 @@ export type SunoModel =
   | "V5"
   | "V5_5";
 
+// Suno request and response schemas, relocated here from `suno.ts` so the
+// factory declares no schema of its own. The 42 the endpoints attach are
+// exported; the helpers they are composed from stay module-private.
+export const SunoExtendRequestSchema = z.object({
+  defaultParamFlag: z.boolean(),
+  audioId: z.string().min(1),
+  prompt: z.string().min(1),
+  model: z
+    .enum(["V3_5", "V4", "V4_5", "V4_5PLUS", "V4_5ALL", "V5", "V5_5"])
+    .or(SunoModelAliasSchema),
+  callBackUrl: z.string().min(1),
+  style: z.string().optional(),
+  title: z.string().optional(),
+  continueAt: z.number().optional(),
+  negativeTags: z.string().optional(),
+  vocalGender: z.enum(["m", "f"]).optional(),
+  styleWeight: z.number().min(0).max(1).optional(),
+  weirdnessConstraint: z.number().min(0).max(1).optional(),
+  audioWeight: z.number().min(0).max(1).optional(),
+  personaId: z.string().optional(),
+});
+
+export const SunoWavRequestSchema = z.object({
+  taskId: z.string().min(1),
+  audioId: z.string().min(1),
+  callBackUrl: z.string().min(1),
+});
+
+export const SunoWavRecordInfoRequestSchema = z
+  .object({
+    taskId: z.string().min(1),
+  })
+  .passthrough();
+
+const SunoWavTaskStatusSchema = z.enum([
+  "PENDING",
+  "SUCCESS",
+  "CREATE_TASK_FAILED",
+  "GENERATE_WAV_FAILED",
+  "CALLBACK_EXCEPTION",
+]);
+
+const SunoWavRecordInfoDataSchema = z
+  .object({
+    taskId: z.string(),
+    musicId: z.string(),
+    callbackUrl: z.string(),
+    musicIndex: z.number().int(),
+    completeTime: z.string().nullable().optional(),
+    response: z
+      .object({
+        audioWavUrl: z.string(),
+      })
+      .passthrough()
+      .nullable()
+      .optional(),
+    successFlag: SunoWavTaskStatusSchema,
+    createTime: z.string(),
+    errorCode: z.number().int().nullable(),
+    errorMessage: z.string().nullable(),
+  })
+  .passthrough();
+
+export const SunoWavRecordInfoResponseSchema = z
+  .object({
+    code: z.number().int(),
+    msg: z.string().optional(),
+    data: SunoWavRecordInfoDataSchema.nullable().optional(),
+  })
+  .passthrough();
+
+export const SunoVocalRemovalRequestSchema = z.object({
+  taskId: z.string().min(1),
+  audioId: z.string().min(1),
+  callBackUrl: z.string().min(1),
+  type: z.enum(["separate_vocal", "split_stem"]).optional(),
+});
+
+export const SunoVocalRemovalRecordInfoRequestSchema = z
+  .object({
+    taskId: z.string().min(1),
+  })
+  .passthrough();
+
+const SunoVocalRemovalTaskStatusSchema = z.enum([
+  "PENDING",
+  "SUCCESS",
+  "CREATE_TASK_FAILED",
+  "GENERATE_AUDIO_FAILED",
+  "CALLBACK_EXCEPTION",
+]);
+
+const SunoVocalRemovalOriginDataItemSchema = z
+  .object({
+    duration: z.number().optional(),
+    audio_url: z.string().optional(),
+    stem_type_group_name: z.string().optional(),
+    id: z.string().optional(),
+  })
+  .passthrough();
+
+const SunoVocalRemovalRecordInfoResultSchema = z
+  .object({
+    id: z.string().nullable().optional(),
+    originUrl: z.string().nullable().optional(),
+    originData: z.array(SunoVocalRemovalOriginDataItemSchema).optional(),
+    instrumentalUrl: z.string().nullable().optional(),
+    vocalUrl: z.string().nullable().optional(),
+    backingVocalsUrl: z.string().nullable().optional(),
+    drumsUrl: z.string().nullable().optional(),
+    bassUrl: z.string().nullable().optional(),
+    guitarUrl: z.string().nullable().optional(),
+    pianoUrl: z.string().nullable().optional(),
+    keyboardUrl: z.string().nullable().optional(),
+    percussionUrl: z.string().nullable().optional(),
+    stringsUrl: z.string().nullable().optional(),
+    synthUrl: z.string().nullable().optional(),
+    fxUrl: z.string().nullable().optional(),
+    brassUrl: z.string().nullable().optional(),
+    woodwindsUrl: z.string().nullable().optional(),
+  })
+  .passthrough();
+
+const SunoVocalRemovalRecordInfoDataSchema = z
+  .object({
+    taskId: z.string(),
+    musicId: z.string().optional(),
+    callbackUrl: z.string().optional(),
+    musicIndex: z.number().int().optional(),
+    // Upstream examples send epoch millis; docs also mention date-time strings.
+    completeTime: z.union([z.string(), z.number()]).nullable().optional(),
+    response: SunoVocalRemovalRecordInfoResultSchema.nullable().optional(),
+    successFlag: SunoVocalRemovalTaskStatusSchema.optional(),
+    createTime: z.union([z.string(), z.number()]).optional(),
+    errorCode: z.number().nullable().optional(),
+    errorMessage: z.string().nullable().optional(),
+  })
+  .passthrough();
+
+export const SunoVocalRemovalRecordInfoResponseSchema = z
+  .object({
+    code: z.number().int(),
+    msg: z.string().optional(),
+    data: SunoVocalRemovalRecordInfoDataSchema.nullable().optional(),
+  })
+  .passthrough();
+
+export const SunoVoiceRecordInfoRequestSchema = z
+  .object({
+    taskId: z.string().min(1),
+  })
+  .passthrough();
+
+const SunoVoiceTaskStatusSchema = z.enum([
+  "wait_processing",
+  "processing_validate",
+  "processing_validate_fail",
+  "wait_validating",
+  "success",
+  "fail",
+]);
+
+const SunoVoiceRecordInfoDataSchema = z
+  .object({
+    taskId: z.string(),
+    voiceId: z.string(),
+    status: SunoVoiceTaskStatusSchema,
+    errorCode: z.number().int().nullable(),
+    errorMessage: z.string().nullable(),
+  })
+  .passthrough();
+
+export const SunoVoiceRecordInfoResponseSchema = z
+  .object({
+    code: z.number().int(),
+    msg: z.string().optional(),
+    data: SunoVoiceRecordInfoDataSchema.nullable().optional(),
+  })
+  .passthrough();
+
+export const SunoVoiceValidateInfoRequestSchema = z
+  .object({
+    taskId: z.string().min(1),
+  })
+  .passthrough();
+
+const SunoVoiceValidateInfoDataSchema = z
+  .object({
+    taskId: z.string(),
+    validateInfo: z.string(),
+    status: SunoVoiceTaskStatusSchema,
+    errorCode: z.number().int().nullable(),
+    errorMessage: z.string().nullable(),
+  })
+  .passthrough();
+
+export const SunoVoiceValidateInfoResponseSchema = z
+  .object({
+    code: z.number().int(),
+    msg: z.string().optional(),
+    data: SunoVoiceValidateInfoDataSchema.nullable().optional(),
+  })
+  .passthrough();
+
+const SunoVoiceSingerSkillLevelSchema = z.enum([
+  "beginner",
+  "intermediate",
+  "advanced",
+  "professional",
+]);
+
+export const SunoVoiceGenerateRequestSchema = z
+  .object({
+    taskId: z.string().min(1),
+    verifyUrl: z.string().min(1),
+    voiceName: z.string().optional(),
+    description: z.string().optional(),
+    style: z.string().optional(),
+    callBackUrl: z.string().optional(),
+    singerSkillLevel: SunoVoiceSingerSkillLevelSchema.optional(),
+  })
+  .passthrough();
+
+export const SunoVoiceValidateRequestSchema = z
+  .object({
+    voiceUrl: z.string().min(1),
+    vocalStartS: z.number().int(),
+    vocalEndS: z.number().int(),
+    language: z.string().optional(),
+    callBackUrl: z.string().optional(),
+  })
+  .passthrough();
+
+const SunoVoiceValidateDataSchema = z
+  .object({
+    taskId: z.string(),
+  })
+  .passthrough();
+
+export const SunoVoiceValidateResponseSchema = z
+  .object({
+    code: z.number().int(),
+    msg: z.string().optional(),
+    data: SunoVoiceValidateDataSchema.nullable().optional(),
+  })
+  .passthrough();
+
+// `calBackUrl` is upstream-documented with ONE l (not callBackUrl).
+// Intentional — see SunoVoiceRegenerateRequest and operator ruling ac-7eu6oi.
+export const SunoVoiceRegenerateRequestSchema = z
+  .object({
+    taskId: z.string().min(1),
+    calBackUrl: z.string().min(1),
+  })
+  .passthrough();
+
+const SunoVoiceRegenerateDataSchema = z
+  .object({
+    taskId: z.string(),
+  })
+  .passthrough();
+
+export const SunoVoiceRegenerateResponseSchema = z
+  .object({
+    code: z.number().int(),
+    msg: z.string().optional(),
+    data: SunoVoiceRegenerateDataSchema.nullable().optional(),
+  })
+  .passthrough();
+
+// `task_id` is upstream-documented snake_case (not taskId). Intentional —
+// see SunoVoiceCheckVoiceRequest and operator ruling ac-7eu6oi.
+export const SunoVoiceCheckVoiceRequestSchema = z
+  .object({
+    task_id: z.string().min(1),
+  })
+  .passthrough();
+
+const SunoVoiceCheckVoiceDataSchema = z
+  .object({
+    isAvailable: z.boolean(),
+  })
+  .passthrough();
+
+export const SunoVoiceCheckVoiceResponseSchema = z
+  .object({
+    code: z.number().int(),
+    msg: z.string().optional(),
+    data: SunoVoiceCheckVoiceDataSchema.nullable().optional(),
+  })
+  .passthrough();
+
+export const SunoGeneratePersonaRequestSchema = z
+  .object({
+    taskId: z.string().min(1),
+    audioId: z.string().min(1),
+    name: z.string().min(1),
+    description: z.string().min(1),
+    vocalStart: z.number().min(0).optional(),
+    vocalEnd: z.number().min(0).optional(),
+    style: z.string().optional(),
+  })
+  .passthrough();
+
+const SunoGeneratePersonaDataSchema = z
+  .object({
+    personaId: z.string().optional(),
+    name: z.string().optional(),
+    description: z.string().optional(),
+  })
+  .passthrough();
+
+export const SunoGeneratePersonaResponseSchema = z
+  .object({
+    code: z.number().int(),
+    msg: z.string().optional(),
+    data: SunoGeneratePersonaDataSchema.nullable().optional(),
+  })
+  .passthrough();
+
+export const SunoGetTimestampedLyricsRequestSchema = z
+  .object({
+    taskId: z.string().min(1),
+    audioId: z.string().min(1),
+  })
+  .passthrough();
+
+const SunoAlignedWordSchema = z
+  .object({
+    word: z.string().optional(),
+    success: z.boolean().optional(),
+    startS: z.number().optional(),
+    endS: z.number().optional(),
+    palign: z.number().int().optional(),
+  })
+  .passthrough();
+
+const SunoGetTimestampedLyricsDataSchema = z
+  .object({
+    alignedWords: z.array(SunoAlignedWordSchema).optional(),
+    waveformData: z.array(z.number()).optional(),
+    hootCer: z.number().optional(),
+    isStreamed: z.boolean().optional(),
+  })
+  .passthrough();
+
+export const SunoGetTimestampedLyricsResponseSchema = z
+  .object({
+    code: z.number().int(),
+    msg: z.string().optional(),
+    data: SunoGetTimestampedLyricsDataSchema.nullable().optional(),
+  })
+  .passthrough();
+
+export const SunoCoverGenerateRequestSchema = z
+  .object({
+    taskId: z.string().min(1),
+    callBackUrl: z.string().min(1),
+  })
+  .passthrough();
+
+export const SunoCoverRecordInfoRequestSchema = z
+  .object({
+    taskId: z.string().min(1),
+  })
+  .passthrough();
+
+const SunoCoverRecordInfoResultSchema = z
+  .object({
+    images: z.array(z.string()).optional(),
+  })
+  .passthrough();
+
+const SunoCoverRecordInfoDataSchema = z
+  .object({
+    taskId: z.string(),
+    parentTaskId: z.string().optional(),
+    callbackUrl: z.string().optional(),
+    completeTime: z.string().nullable().optional(),
+    response: SunoCoverRecordInfoResultSchema.nullable().optional(),
+    successFlag: z.number().int().optional(),
+    createTime: z.string().optional(),
+    errorCode: z.number().int().nullable().optional(),
+    errorMessage: z.string().nullable().optional(),
+  })
+  .passthrough();
+
+export const SunoCoverRecordInfoResponseSchema = z
+  .object({
+    code: z.number().int(),
+    msg: z.string().optional(),
+    data: SunoCoverRecordInfoDataSchema.nullable().optional(),
+  })
+  .passthrough();
+
+export const SunoMp4RequestSchema = z.object({
+  taskId: z.string().min(1),
+  audioId: z.string().min(1),
+  callBackUrl: z.string().min(1),
+  author: z.string().max(50).optional(),
+  domainName: z.string().max(50).optional(),
+});
+
+export const SunoMp4RecordInfoRequestSchema = z.object({
+  taskId: z.string().min(1),
+});
+
+const SunoMp4TaskStatusSchema = z.enum([
+  "PENDING",
+  "SUCCESS",
+  "CREATE_TASK_FAILED",
+  "GENERATE_MP4_FAILED",
+]);
+
+const SunoMp4RecordInfoResultSchema = z
+  .object({
+    videoUrl: z.string().optional(),
+  })
+  .passthrough();
+
+const SunoMp4RecordInfoDataSchema = z
+  .object({
+    taskId: z.string(),
+    musicId: z.string(),
+    callbackUrl: z.string(),
+    musicIndex: z.number().int(),
+    completeTime: z.string().nullable().optional(),
+    response: SunoMp4RecordInfoResultSchema.nullable().optional(),
+    successFlag: SunoMp4TaskStatusSchema,
+    createTime: z.string(),
+    errorCode: z.number().int().nullable().optional(),
+    errorMessage: z.string().nullable().optional(),
+  })
+  .passthrough();
+
+export const SunoMp4RecordInfoResponseSchema = z.object({
+  code: z.number().int(),
+  msg: z.string().optional(),
+  data: SunoMp4RecordInfoDataSchema.nullable().optional(),
+});
+
+export const SunoLyricsRequestSchema = z.object({
+  prompt: z.string().min(1).max(200),
+  callBackUrl: z.string().min(1),
+});
+
+export const SunoLyricsRecordInfoRequestSchema = z.object({
+  taskId: z.string().min(1),
+});
+
+const SunoLyricsTaskStatusSchema = z.enum([
+  "PENDING",
+  "SUCCESS",
+  "CREATE_TASK_FAILED",
+  "GENERATE_LYRICS_FAILED",
+  "CALLBACK_EXCEPTION",
+  "SENSITIVE_WORD_ERROR",
+]);
+
+const SunoLyricsVariationSchema = z
+  .object({
+    text: z.string(),
+    title: z.string(),
+    status: z.string().optional(),
+    errorMessage: z.string().optional(),
+  })
+  .passthrough();
+
+export const SunoLyricsRecordInfoResponseSchema = z.object({
+  code: z.number().int(),
+  msg: z.string().optional(),
+  data: z
+    .object({
+      taskId: z.string(),
+      param: z.string().optional(),
+      response: z
+        .object({
+          taskId: z.string().optional(),
+          data: z.array(SunoLyricsVariationSchema).optional(),
+        })
+        .passthrough()
+        .nullable()
+        .optional(),
+      status: SunoLyricsTaskStatusSchema.optional(),
+      errorCode: z.number().int().nullable().optional(),
+      errorMessage: z.string().nullable().optional(),
+    })
+    .passthrough()
+    .nullable()
+    .optional(),
+});
+
+export const SunoBoostStyleRequestSchema = z.object({
+  content: z.string().min(1),
+});
+
+export const SunoUploadCoverRequestSchema = z.object({
+  uploadUrl: z.string().min(1),
+  prompt: z.string().min(1),
+  customMode: z.boolean(),
+  instrumental: z.boolean(),
+  model: z
+    .enum(["V3_5", "V4", "V4_5", "V4_5PLUS", "V4_5ALL", "V5", "V5_5"])
+    .or(SunoModelAliasSchema),
+  callBackUrl: z.string().min(1),
+  style: z.string().optional(),
+  title: z.string().optional(),
+  negativeTags: z.string().optional(),
+  vocalGender: z.enum(["m", "f"]).optional(),
+  styleWeight: z.number().min(0).max(1).optional(),
+  weirdnessConstraint: z.number().min(0).max(1).optional(),
+  audioWeight: z.number().min(0).max(1).optional(),
+  personaId: z.string().optional(),
+});
+
+export const SunoUploadExtendRequestSchema = z.object({
+  uploadUrl: z.string().min(1),
+  defaultParamFlag: z.boolean(),
+  instrumental: z.boolean(),
+  continueAt: z.number(),
+  model: z
+    .enum(["V3_5", "V4", "V4_5", "V4_5PLUS", "V4_5ALL", "V5", "V5_5"])
+    .or(SunoModelAliasSchema),
+  callBackUrl: z.string().min(1),
+  prompt: z.string().optional(),
+  style: z.string().optional(),
+  title: z.string().optional(),
+  negativeTags: z.string().optional(),
+  vocalGender: z.enum(["m", "f"]).optional(),
+  styleWeight: z.number().min(0).max(1).optional(),
+  weirdnessConstraint: z.number().min(0).max(1).optional(),
+  audioWeight: z.number().min(0).max(1).optional(),
+  personaId: z.string().optional(),
+});
+
+export const SunoMidiRequestSchema = z.object({
+  taskId: z.string().min(1),
+  callBackUrl: z.string().min(1),
+  audioId: z.string().optional(),
+});
+
+export const SunoMidiRecordInfoRequestSchema = z.object({
+  taskId: z.string().min(1),
+});
+
+const SunoMidiSuccessFlagSchema = z.union([
+  z.literal(0),
+  z.literal(1),
+  z.literal(2),
+  z.literal(3),
+]);
+
+const SunoMidiNoteSchema = z
+  .object({
+    pitch: z.number(),
+    start: z.number(),
+    end: z.number(),
+    velocity: z.number(),
+  })
+  .passthrough();
+
+const SunoMidiInstrumentSchema = z
+  .object({
+    name: z.string(),
+    notes: z.array(SunoMidiNoteSchema),
+  })
+  .passthrough();
+
+const SunoMidiDataSchema = z
+  .object({
+    state: z.string().optional(),
+    instruments: z.array(SunoMidiInstrumentSchema).optional(),
+  })
+  .passthrough();
+
+export const SunoMidiRecordInfoResponseSchema = z
+  .object({
+    code: z.number().int(),
+    msg: z.string().optional(),
+    data: z
+      .object({
+        taskId: z.string(),
+        successFlag: SunoMidiSuccessFlagSchema,
+        recordTaskId: z.number().int().optional(),
+        audioId: z.string().optional(),
+        callbackUrl: z.string().optional(),
+        createTime: z.number().int().optional(),
+        completeTime: z.number().int().nullable().optional(),
+        errorCode: z
+          .union([z.string(), z.number().int()])
+          .nullable()
+          .optional(),
+        errorMessage: z.string().nullable().optional(),
+        midiData: SunoMidiDataSchema.nullable().optional(),
+      })
+      .passthrough()
+      .nullable()
+      .optional(),
+  })
+  .passthrough();
+
+export const SunoMashupRequestSchema = z.object({
+  uploadUrlList: z.tuple([z.string().min(1), z.string().min(1)]),
+  customMode: z.boolean(),
+  model: z
+    .enum(["V4", "V4_5", "V4_5PLUS", "V4_5ALL", "V5", "V5_5"])
+    .or(SunoModelAliasSchema),
+  callBackUrl: z.string().min(1),
+  prompt: z.string().optional(),
+  style: z.string().optional(),
+  title: z.string().optional(),
+  instrumental: z.boolean().optional(),
+  vocalGender: z.enum(["m", "f"]).optional(),
+  styleWeight: z.number().min(0).max(1).optional(),
+  weirdnessConstraint: z.number().min(0).max(1).optional(),
+  audioWeight: z.number().min(0).max(1).optional(),
+});
+
+export const SunoReplaceSectionRequestSchema = z.object({
+  taskId: z.string().min(1),
+  audioId: z.string().min(1),
+  prompt: z.string().min(1),
+  tags: z.string().min(1),
+  title: z.string().min(1),
+  infillStartS: z.number().min(0),
+  infillEndS: z.number().min(0),
+  negativeTags: z.string().optional(),
+  fullLyrics: z.string().optional(),
+  callBackUrl: z.string().optional(),
+});
+
+export const SunoSoundsRequestSchema = z.object({
+  prompt: z.string().min(1),
+  model: z.enum(["V5", "V5_5"]).or(SunoModelAliasSchema),
+  soundLoop: z.boolean().optional(),
+  soundTempo: z.number().min(1).max(300).optional(),
+  soundKey: z
+    .enum([
+      "Cm",
+      "C#m",
+      "Dm",
+      "D#m",
+      "Em",
+      "Fm",
+      "F#m",
+      "Gm",
+      "G#m",
+      "Am",
+      "A#m",
+      "Bm",
+      "C",
+      "C#",
+      "D",
+      "D#",
+      "E",
+      "F",
+      "F#",
+      "G",
+      "G#",
+      "A",
+      "A#",
+      "B",
+    ])
+    .optional(),
+  grabLyrics: z.boolean().optional(),
+  callBackUrl: z.string().optional(),
+});
+
+export const SunoAddInstrumentalRequestSchema = z.object({
+  uploadUrl: z.string().min(1),
+  title: z.string().min(1),
+  tags: z.string().min(1),
+  callBackUrl: z.string().min(1),
+  model: z
+    .enum(["V3_5", "V4", "V4_5", "V4_5PLUS", "V4_5ALL", "V5", "V5_5"])
+    .or(SunoModelAliasSchema),
+  negativeTags: z.string().optional(),
+  vocalGender: z.enum(["m", "f"]).optional(),
+  styleWeight: z.number().min(0).max(1).optional(),
+  weirdnessConstraint: z.number().min(0).max(1).optional(),
+  audioWeight: z.number().min(0).max(1).optional(),
+});
+
+export const SunoAddVocalsRequestSchema = z.object({
+  uploadUrl: z.string().min(1),
+  prompt: z.string().min(1),
+  title: z.string().min(1),
+  style: z.string().min(1),
+  negativeTags: z.string().min(1),
+  callBackUrl: z.string().min(1),
+  model: z
+    .enum(["V3_5", "V4", "V4_5", "V4_5PLUS", "V4_5ALL", "V5", "V5_5"])
+    .or(SunoModelAliasSchema),
+  vocalGender: z.enum(["m", "f"]).optional(),
+  styleWeight: z.number().min(0).max(1).optional(),
+  weirdnessConstraint: z.number().min(0).max(1).optional(),
+  audioWeight: z.number().min(0).max(1).optional(),
+});
+
 // ---------------------------------------------------------------------------
 // Sub-provider schemas: Chat (GPT-5.5 / GPT-5.2 via Kie)
 // ---------------------------------------------------------------------------

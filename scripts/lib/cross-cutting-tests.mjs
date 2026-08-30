@@ -69,6 +69,22 @@ import { repoRoot } from "./provider-scope.mjs";
  * and `googleflow` shipped with no `build:` alias at all (ac-gk1mlr,
  * ac-qclky0, ac-e1h1yj).
  *
+ * The export-surface guard pins what each provider actually publishes.
+ * `tests/unit/provider-export-surface.test.ts` walks every provider's
+ * `src/types.ts` and fails an exported `*Namespace` interface that the same
+ * provider's `src/index.ts` never re-exports, under an explicit per-type
+ * baseline that goes stale in both directions. `RR-2` was exactly
+ * that: `FalRunNanoBanana2LiteNamespace` was declared public and unreachable
+ * from `@apicity/fal`, and passed lint, `tsc --noEmit` and the whole replay
+ * suite — no gate in this repository observed a declared-but-unexported public
+ * type, so review caught it by eye (`ac-c2cc4j` finding `G2`, filed as
+ * `ac-gvqa18`). The file is named after no provider, so no provider scope
+ * selects it. It is parse-only — `ts.createSourceFile`, never a `ts.Program`,
+ * which the two `*request-input-types.test.ts` files need and pay 120s of
+ * timeout for — and measures 0.9-1.0s wall over all 29 providers including
+ * node startup (0.899s and 0.927s on the planning and review machines, 1.0s on
+ * the implementing one).
+ *
  * The namespace-shape guard reads every provider factory's return tree and
  * pins the shape each namespace dot path resolves to. A shape disagreement
  * between sibling slices is invisible to every single-tree gate: four slices of
@@ -99,22 +115,40 @@ import { repoRoot } from "./provider-scope.mjs";
  * pinned to this value by `tests/unit/cross-cutting-tests.test.ts`.
  *
  * The value is the median of three runs of the WHOLE block at its current
- * nine-entry membership — 684 tests — on an Intel i7-8700 (12 threads, Linux
- * 6.8.0-124, Node 22.23.2): 5.39s, 5.78s and 5.94s wall. It supersedes the
- * 5.7 reference-machine figure, which was recorded at five entries and which
- * three subsequent additions never revisited; the previous note asked the next
- * addition to re-measure the block whole rather than append to that history,
- * and this is that measurement (ac-j4z1t1). Because the machine changed with
- * it, the prose pinned to this number names the machine rather than calling it
- * the reference one. Every entry stays filesystem- and source-parse-only; the
- * credential guard's dominant cost is one JSON parse of the fal HAR corpus plus
- * a single pass over the test tree, and the namespace-shape guard parses all 29
- * provider factories in about 0.3s.
+ * ten-entry membership — 700 tests across 10 files — on the machine this
+ * constant now designates as the reference one: an Intel Core i7-8700 @
+ * 3.20GHz, 12 threads, Linux 6.8.0-124, Node v22.23.2. After one warm-up run,
+ * excluded, the three timed runs were 8.643s, 8.577s and 8.353s wall; the
+ * median is 8.577s, recorded here to one decimal place. That median is a
+ * loaded-host figure, not a quiet-host one: the three runs were taken under
+ * 1-minute load averages of 9.67, 11.52 and 12.28 on 12 threads, and their
+ * 3.5% agreement shows the window was stable, not that the block always costs
+ * this. Whole-block runs of this same ten-entry list on this same host span
+ * roughly 4.8s to 9.5s tracking concurrent agent load, and 8.6 is the loaded
+ * end of that range. A lower re-measure on a quiet city is a different load
+ * regime, not a regression; and the two guards added at ac-wojr6j are not
+ * separable from that noise at n=3, so read the 5.8 to 8.6 step as load, not
+ * as the cost of the block growing.
  *
- * Re-measure the whole block and update it here when the block's membership
- * changes; the guard test will name the prose that has to follow.
+ * Naming the machine is as much the point as the number is. No file recorded
+ * which host produced the earlier figures, so three successive additions each
+ * declined to overwrite a number they could not reproduce and the constant
+ * drifted five entries behind the block (ac-wojr6j). This measurement
+ * supersedes both figures it replaces: the 5.7 recorded at five entries, and
+ * the 5.8 median recorded at nine entries on this same host (ac-j4z1t1). The
+ * 9.878s / 8.533s pair that arrived with the export-surface guard describes a
+ * different, unnamed machine and was never this block's cost on this one.
+ *
+ * Every entry stays filesystem- and source-parse-only; the credential guard's
+ * dominant cost is one JSON parse of the fal HAR corpus plus a single pass
+ * over the test tree, and the namespace-shape guard parses all 29 provider
+ * factories in about 0.3s.
+ *
+ * Re-measure the whole block on this machine, at a comparable load average
+ * and recording that load average here beside the figure, when the block's
+ * membership changes; the guard test will name the prose that has to follow.
  */
-export const CROSS_CUTTING_COST_SECONDS = 5.8;
+export const CROSS_CUTTING_COST_SECONDS = 8.6;
 
 /**
  * The one sentence describing the block's cost, built from the single source.
@@ -136,6 +170,7 @@ export const CROSS_CUTTING_TESTS = [
   "tests/unit/cost-pricing.test.ts",
   "tests/unit/provider-inventory-docs.test.ts",
   "tests/unit/recording-credential-hosts.test.ts",
+  "tests/unit/provider-export-surface.test.ts",
   "tests/unit/provider-namespace-shape.test.ts",
 ];
 

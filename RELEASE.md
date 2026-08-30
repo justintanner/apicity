@@ -69,8 +69,15 @@ Do not manually sling child steps.
 
 The single executable formula step runs these release sub-steps in order:
 
+This list is numbered from 1; the formula's own `# Sub-step N` headers are
+numbered from 0. They are offset by one — the formula's "Sub-step 6" is item 7
+here. Identify a step by name, never by number.
+
 1. Singleton guard — refuse duplicate concurrent releases.
-2. `load-context` — verify clean working tree, read the release bead.
+2. `load-context` — verify clean working tree, read the release bead, and run
+   `pnpm run check:npm-auth`. A non-zero exit stops the release here, before
+   any gate spends time — see [Rotating the npm publish
+   token](#rotating-the-npm-publish-token)
 3. `verify-main-gates` — on `main`, run `pnpm run test:run`,
    `pnpm run ci:local`, and verify GitHub CI is green for `origin/main`
 4. `sync-stable-and-preflight` — fast-forward `stable` from `origin/main`,
@@ -81,7 +88,9 @@ The single executable formula step runs these release sub-steps in order:
 6. `publish-dry-run` — `pnpm publish --dry-run` and inspect tarballs; when
    `dry_run=true`, stop here without publishing
 7. **`publish`** — `pnpm publish --tag latest` with `NPM_TOKEN` from the
-   `apicity` 1Password vault
+   `apicity` 1Password vault. Re-runs `pnpm run check:npm-auth`, then keeps its
+   own `npm whoami` against the temp npmrc that `pnpm publish` actually uses —
+   the two checks cover different things and both still run
 8. `tag-push-and-github-release` — `git tag v<version>`, push `stable` + tag,
    and create or update the GitHub release page for
    `v<version>` with New and Updated sections from closed bead work since the
@@ -93,16 +102,89 @@ The single executable formula step runs these release sub-steps in order:
 
 ## What the formula does NOT do automatically
 
-- **Create or repair npm credentials.** The `publish` step reads
-  `op://apicity/NPM_TOKEN/password` and verifies it with `npm whoami`. If
-  1Password access is unavailable or the token lacks publish rights, fix that
-  before continuing.
+- **Create or repair npm credentials.** The formula now _detects_ a bad
+  publish credential early: `load-context` runs `pnpm run check:npm-auth` and
+  stops the release before any gate is spent. It does not repair anything —
+  minting and storing a new token is manual. See [Rotating the npm publish
+  token](#rotating-the-npm-publish-token).
 - **Create or repair GitHub credentials.** The `tag-push-and-github-release`
   step uses `gh auth status` and `gh release`. Authenticate the GitHub CLI
   before continuing if that check fails.
 - **Decide divergence resolution.** If `stable` has diverged from `main` before
   release, or if `main` has moved before the post-release fast-forward, the
   formula stops and you decide whether to rebase, cherry-pick, or abort.
+
+## Rotating the npm publish token
+
+The publishing account is the sole maintainer of `@apicity/openai`, so a dead
+token blocks every release.
+
+**Mint a granular access token.** It needs read and write on the `@apicity`
+scope. Do _not_ use a legacy classic token — the release flow assumes the
+granular `npm_`-prefixed form, and `pnpm run check:npm-auth` reports anything
+without that prefix as `secret-malformed`.
+
+**Store it in exactly two places.** There is one publish credential on this rig,
+reachable two ways:
+
+- `op://apicity/NPM_TOKEN/password` — authoritative. The formula and
+  `check:npm-auth` both read it directly with `op read`.
+- the `NPM_TOKEN` environment variable — what manual `npm` calls on the rig
+  use, because `/root/.npmrc` holds `_authToken=${NPM_TOKEN}` and npm
+  interpolates it at read time.
+
+Rotation therefore updates the 1Password item and the `NPM_TOKEN` environment
+source, and **leaves `/root/.npmrc` alone**. That file is a template, not a
+cached credential; rewriting it with a literal token would put a secret at rest
+in plaintext for no gain. Confirm the result with:
+
+```bash
+pnpm run check:npm-auth
+```
+
+Exit 0 names the authenticated account. Exit 1 (`credential-rejected`) means the
+registry is healthy and refused the token. Exit 2 (`registry-unreachable`) means
+the check could not reach the registry and proves nothing about the token —
+retry rather than rotating. Exit 3/4 mean the secret is missing or malformed.
+
+**Record the expiry date at rotation time**, in the 1Password item. Granular
+tokens expire silently: the registry simply starts returning `401`, which is
+indistinguishable from a revoked token. The observed history of the token this
+check was built for:
+
+| Date       | Observation                                                   |
+| ---------- | ------------------------------------------------------------- |
+| 2026-05-31 | 1Password item last updated (token minted)                    |
+| 2026-08-25 | still publishing successfully                                 |
+| 2026-08-30 | `npm whoami` → `E401`, `npm ping` → `PONG` (registry healthy) |
+
+That is consistent with a ~90-day granular-token lifetime and no notification.
+
+**Then re-pour the release:**
+
+```bash
+gc sling apicity/core.control-dispatcher mol-apicity-release --formula \
+  --var release_bead=ac-vfz4u4 --var version=0.11.1
+```
+
+### `check:op` does not cover this token
+
+`pnpm run check:op` validates `.env`, and `NPM_TOKEN` has no `.env` assignment,
+so `scripts/check-op.mjs` never inspects it. A green `check:op` says nothing
+about publish rights. `pnpm run check:npm-auth` is the publish-credential gate.
+
+Keeping `NPM_TOKEN` out of `.env` is **deliberate**: `.env` is what recording
+sessions load through `op run`, and a recording session must never hold publish
+rights. Do not add it.
+
+### A note on refreshing `/root/.npmrc`
+
+The requirement that drove this work asked for `/root/.npmrc` to be "refreshed
+from that same value" on rotation. It is deliberately not done, because the file
+already resolves to the authoritative token through `${NPM_TOKEN}` — writing a
+literal secret into it would store a credential in plaintext on the host and
+gain nothing. The intent (no stale credential reachable from the host) is met;
+the literal wording is not.
 
 ## Dry-run
 

@@ -170,7 +170,7 @@ if [ -z "$release_bead" ]; then
   fi
 fi
 bd show "$release_bead"
-cat /Users/jwt/apicity/RELEASE.md   # release process doc (if present)
+cat RELEASE.md   # release process doc (if present)
 ```
 
 **3. Verify clean working tree:**
@@ -184,7 +184,26 @@ git status --porcelain   # MUST be empty
 If `git status --porcelain` is non-empty, STOP and mail the mayor — do not
 release on top of unstaged work.
 
-**4. Confirm intent:**
+**4. Verify the npm publish credential:**
+```bash
+pnpm run check:npm-auth
+```
+
+If `check:npm-auth` exits non-zero, STOP. It names the failing store
+(`op://apicity/NPM_TOKEN/password`) and the verdict — `credential-rejected`,
+`registry-unreachable`, `secret-missing`, or `secret-malformed`. For a rejected
+credential, rotate the token by following
+`RELEASE.md#rotating-the-npm-publish-token`, then re-pour this formula.
+
+Do not continue past this point on a failure: everything after it — the full
+`pnpm run test:run`, both `pnpm run ci:local` passes, and the GitHub CI status
+wait — is wasted work if the publish cannot authenticate. This runs before the
+`dry_run` short-circuit too, so a dry run also proves the credential.
+
+A `registry-unreachable` verdict is explicitly *not* a dead credential; it means
+the registry could not be reached to test it. Retry when the network is healthy.
+
+**5. Confirm intent:**
 
 You are about to publish every public `@apicity/*` workspace package to the
 public npm registry. Once `latest`-tagged versions are out, they cannot be
@@ -206,7 +225,8 @@ if (!/^[0-9]+\.[0-9]+\.[0-9]+$/.test(version)) {
 ' "{{version}}"
 ```
 
-**Exit criteria:** Working tree clean, vars confirmed, release bead read.
+**Exit criteria:** Working tree clean, publish credential verified, vars
+confirmed, release bead read.
 
 # Sub-step 2: Verify tests and CI are green on main
 
@@ -433,7 +453,21 @@ dry-run when {{dry_run}} = true.
 Publish with the npm token stored in 1Password. Do not write the token to the
 repo, shell history, or logs.
 
-**1. Verify token access and auth:**
+**1. Re-verify the publish credential:**
+```bash
+pnpm run check:npm-auth
+```
+
+Same gate `load-context` ran, repeated here because a token can expire between
+the two. A non-zero exit means STOP; see
+`RELEASE.md#rotating-the-npm-publish-token`.
+
+This does not replace step 2. `check:npm-auth` resolves its own secret and
+builds its own temp npmrc, so it proves the 1Password credential is good and
+proves nothing about `$tmp_npmrc` — the file `pnpm publish` actually uses.
+Keeping both is strictly stronger than either alone.
+
+**2. Verify token access and auth:**
 ```bash
 op read 'op://apicity/NPM_TOKEN/password' >/dev/null
 
@@ -451,7 +485,7 @@ NPM_CONFIG_USERCONFIG="$tmp_npmrc" npm config get registry
 If `op read` or `npm whoami` errors, STOP. Fix 1Password access or the
 `NPM_TOKEN` item before publishing.
 
-**2. Publish all public `@apicity/*` packages:**
+**3. Publish all public `@apicity/*` packages:**
 ```bash
 NPM_CONFIG_USERCONFIG="$tmp_npmrc" pnpm -r --filter "@apicity/*" publish --tag latest --no-git-checks
 ```
@@ -459,7 +493,7 @@ NPM_CONFIG_USERCONFIG="$tmp_npmrc" pnpm -r --filter "@apicity/*" publish --tag l
 `--no-git-checks` is required because we're publishing from a release commit
 that may not yet have an upstream tag (the next step handles that).
 
-**3. Verify on the registry:**
+**4. Verify on the registry:**
 ```bash
 npm view @apicity/openai dist-tags    # expect latest: {{version}}
 npm view @apicity/mcp-server dist-tags

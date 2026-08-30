@@ -5,7 +5,7 @@ import { REPO_ROOT, readProviderNames } from "./provider-inventory.mjs";
 
 /**
  * The provider export surface: which `*Namespace` types a provider declares as
- * public in its `src/*.ts` modules, and which of them its `src/index.ts`
+ * public in its `src/**\/*.ts` modules, and which of them its `src/index.ts`
  * actually re-exports.
  *
  * `FalRunNanoBanana2LiteNamespace` was declared `export interface` in
@@ -35,27 +35,38 @@ import { REPO_ROOT, readProviderNames } from "./provider-inventory.mjs";
  * `types.ts` from the guard, and checking the whole provider would report four
  * public names as missing.
  *
- * Three things this module deliberately does NOT do:
+ * Two things this module deliberately does NOT do:
  *
  *   - It never builds a `ts.Program`. Both `tests/unit/request-input-types.test.ts`
  *     and `tests/unit/fal-request-input-types.test.ts` do, under a 120s
  *     timeout, and this checker runs in the cross-cutting block of every
- *     provider's fast gate. Parse-only `ts.createSourceFile` stays cheap enough
- *     that widening the file set from 29 files to 216 costs 0.40s (measured
- *     in `scripts/lib/cross-cutting-tests.mjs`), which keeps
- *     `CROSS_CUTTING_COST_SECONDS` unmoved. The
- *     importability proof that genuinely needs a program lives in the
- *     fal-scoped `tests/fixtures/fal-request-input-types.ts` fixture instead.
+ *     provider's fast gate. Parse-only `ts.createSourceFile` stays cheap
+ *     enough that widening the file set from the 29 `types.ts` files to the
+ *     216 flat `src/*.ts` modules cost +0.40s per walk, and recursing below
+ *     `src/` afterwards cost +0.107s more (both measured in
+ *     `scripts/lib/cross-cutting-tests.mjs`, each on its own machine); neither
+ *     moved `CROSS_CUTTING_COST_SECONDS`. The importability proof that
+ *     genuinely needs a program lives in the fal-scoped
+ *     `tests/fixtures/fal-request-input-types.ts` fixture instead.
  *   - It parses each module exactly once. Declarations, named re-exports and
- *     star re-exports come out of a single `walkModule` pass, because with 216
+ *     star re-exports come out of a single `walkModule` pass, because with 235
  *     modules in the walk a second parse would cost as much again as the
  *     widening itself.
- *   - It does not recurse into `src/` subdirectories. At `ad829cc0` the only
- *     provider that has any is `cost` (`src/extract`, `src/pricing`), and it
- *     declares no `*Namespace` at all, so recursion would widen the walk
- *     without widening coverage. A provider that later declares one under
- *     `src/<dir>/` reopens this gap one directory down: a follow-up bead to
- *     file, not silent scope.
+ *
+ * The walk is `src/**\/*.ts` at any depth (`ac-bsl9tx`). A provider that
+ * declares an exported `*Namespace` under `src/<dir>/` and leaves it out of
+ * `index.ts` reproduces `RR-2` one directory down, in a file a flat walk never
+ * opens; no provider declares one below `src/` today, so what recursion buys is
+ * coverage of the next one that does. Three rules keep it precise:
+ *
+ *   - Only the provider's own depth-0 `index.ts` is excluded. A namespace
+ *     declared there is exported by construction; `src/<dir>/index.ts` carries
+ *     no such guarantee and is a declaring surface like any other module.
+ *   - A `.d.ts` is skipped. `moduleKey` strips only the final extension, so a
+ *     nested one would otherwise be advised as `from "./<dir>/foo.d"`.
+ *   - A directory-style star specifier resolves to that directory's barrel,
+ *     in {@link resolveStarExportedModules} rather than at parse time, which
+ *     keeps `walkModule` filesystem-free.
  */
 
 /**
@@ -110,14 +121,21 @@ function moduleKey(filePath) {
 }
 
 /**
- * How a module would be written as a sibling specifier, for problem messages:
- * `packages/provider/kie/src/responses.ts` reads back as `./responses`.
+ * How a module would be written as a specifier in the provider's `index.ts`,
+ * for problem messages: `packages/provider/kie/src/responses.ts` reads back as
+ * `./responses`, and `packages/provider/cost/src/pricing/fal.ts` as
+ * `./pricing/fal`. The specifier is relative to the provider's `src/` rather
+ * than a bare basename, which would print `./fal` for the nested module —
+ * advice that names a file that does not exist.
  *
  * @param {string} filePath
+ * @param {string} indexPath The provider's `src/index.ts`; what the specifier
+ *   is written relative to. Every surface of a provider carries the same one.
  * @returns {string}
  */
-function moduleSpecifier(filePath) {
-  return `./${path.posix.basename(moduleKey(filePath))}`;
+function moduleSpecifier(filePath, indexPath) {
+  const from = path.posix.dirname(indexPath);
+  return `./${path.posix.relative(from, moduleKey(filePath))}`;
 }
 
 /**
@@ -276,29 +294,95 @@ function readModule(absolutePath, label) {
  * @returns {string[]} The fixed point, sorted.
  */
 export function resolveStarExportedModules(seed, starsByModule) {
-  const reached = new Set(seed);
-  const queue = [...reached];
+  /** @type {Set<string>} */
+  const reached = new Set();
+  /** @type {string[]} */
+  const queue = [];
+
+  const visit = (key) => {
+    if (reached.has(key)) return;
+    reached.add(key);
+    queue.push(key);
+    // A directory specifier names that directory's barrel: `export * from
+    // "./pricing"` in index.ts is `src/pricing/index.ts` on disk. The map is
+    // keyed by every module in the walk, stars or none, so `has(key)` reads as
+    // "a `<key>.ts` exists" — a real sibling module therefore wins over a
+    // same-named directory, matching TypeScript's own resolution order.
+    if (!starsByModule.has(key) && starsByModule.has(`${key}/index`)) {
+      visit(`${key}/index`);
+    }
+  };
+
+  for (const key of seed) visit(key);
 
   while (queue.length > 0) {
     const current = queue.pop();
-    for (const next of starsByModule.get(current) ?? []) {
-      if (reached.has(next)) continue;
-      reached.add(next);
-      queue.push(next);
-    }
+    for (const next of starsByModule.get(current) ?? []) visit(next);
   }
 
   return [...reached].sort();
 }
 
 /**
+ * Every `.ts` module under one provider's `src/`, `src`-relative and in a
+ * deterministic pre-order: entries sorted by name at each level — by code
+ * unit, matching both the flat `.sort()` this replaces and `listHarFiles` in
+ * `scripts/lib/fal-credential-hosts.mjs`, neither of which uses the
+ * locale-sensitive `localeCompare` — with directories descended in place.
+ *
+ * The recursion is written out rather than delegated to `readdirSync`'s
+ * `{ recursive: true }` so the file filter and the ordering stay visible at the
+ * one place that decides what the guard reads.
+ *
+ * @param {string} directory Absolute path to walk.
+ * @param {string} [prefix] The `src`-relative path of `directory`.
+ * @returns {string[]} `src`-relative module paths, POSIX-shaped.
+ */
+function listSourceModules(directory, prefix = "") {
+  /** @type {string[]} */
+  const modules = [];
+  const entries = fs
+    .readdirSync(directory, { withFileTypes: true })
+    .sort((left, right) =>
+      left.name < right.name ? -1 : left.name > right.name ? 1 : 0
+    );
+
+  for (const entry of entries) {
+    const relativePath = prefix
+      ? path.posix.join(prefix, entry.name)
+      : entry.name;
+    if (entry.isDirectory()) {
+      modules.push(
+        ...listSourceModules(path.join(directory, entry.name), relativePath)
+      );
+      continue;
+    }
+    if (!entry.isFile() || !entry.name.endsWith(".ts")) continue;
+    // A generated `.d.ts` is not a declaring surface. `moduleKey` strips only
+    // the final extension, so a nested one would produce the fix message
+    // `from "./<dir>/foo.d"` — the REQ-006 defect one directory down. None
+    // exists in the tree today, and recursion is what would first reach one.
+    if (entry.name.endsWith(".d.ts")) continue;
+    modules.push(relativePath);
+  }
+
+  return modules;
+}
+
+/**
  * Read one export surface per declaring file on disk.
  *
  * Provider discovery is `readProviderNames` and module discovery is the
- * directory listing, so both a new package and a new file inside an existing
- * one are covered the day they land rather than when someone remembers a list.
- * `index.ts` is not itself a surface: a namespace declared there is exported by
- * construction.
+ * recursive walk, so a new package, a new file inside an existing one, and a
+ * new file in a new subdirectory are all covered the day they land rather than
+ * when someone remembers a list.
+ *
+ * The provider's own `src/index.ts` is not a surface: a namespace declared
+ * there is exported by construction. That exclusion is depth-0-specific, and
+ * deliberately so — `src/<dir>/index.ts` carries no such guarantee, so a
+ * namespace declared in a nested barrel is checked like any other declaration
+ * and is what puts the barrel's own module key into the star map that
+ * {@link resolveStarExportedModules} aliases a directory specifier onto.
  *
  * A provider whose `src/index.ts` is missing yields surfaces with a `null`
  * `exportedNames`; `checkExportSurface` skips those rather than treating them
@@ -334,19 +418,14 @@ export function readProviderExportSurfaces(repoRoot = REPO_ROOT) {
       ? readModule(indexFile, indexPath)
       : null;
 
-    const modules = fs
-      .readdirSync(sourceDirectory, { withFileTypes: true })
-      .filter(
-        (entry) =>
-          entry.isFile() &&
-          entry.name.endsWith(".ts") &&
-          entry.name !== "index.ts"
-      )
-      .map((entry) => entry.name)
-      .sort()
-      .map((name) => ({
-        sourcePath: relative(name),
-        parsed: readModule(path.join(sourceDirectory, name), relative(name)),
+    const modules = listSourceModules(sourceDirectory)
+      .filter((relativePath) => relativePath !== "index.ts")
+      .map((relativePath) => ({
+        sourcePath: relative(relativePath),
+        parsed: readModule(
+          path.join(sourceDirectory, relativePath),
+          relative(relativePath)
+        ),
       }));
 
     const starExportedModules = index
@@ -452,7 +531,7 @@ export function checkExportSurface(surfaces, baseline) {
           `  ${surface.sourcePath}:${declaration.line} but never re-exported from\n` +
           `  ${surface.indexPath}.\n` +
           "  Fix: add it to the `export type { ... } from " +
-          `"${moduleSpecifier(surface.sourcePath)}"\` list in index.ts,\n` +
+          `"${moduleSpecifier(surface.sourcePath, surface.indexPath)}"\` list in index.ts,\n` +
           `  or add a baseline entry in ${BASELINE_FILE}\n` +
           "  with a rationale."
       );
@@ -472,7 +551,7 @@ export function checkExportSurface(surfaces, baseline) {
           stale(
             provider,
             name,
-            `${provider} has no src/*.ts + src/index.ts pair under\n  packages/provider/.`
+            `${provider} has no src/**/*.ts + src/index.ts pair under\n  packages/provider/.`
           )
         );
         continue;
@@ -487,7 +566,7 @@ export function checkExportSurface(surfaces, baseline) {
             provider,
             name,
             "no exported interface by that name is declared in\n" +
-              `  ${path.posix.dirname(checkable[0].sourcePath)}/*.ts.`
+              `  ${path.posix.dirname(checkable[0].indexPath)}/**/*.ts.`
           )
         );
         continue;
@@ -508,7 +587,7 @@ export function checkExportSurface(surfaces, baseline) {
             provider,
             name,
             `${starred.indexPath} star-exports ` +
-              `${moduleSpecifier(starred.sourcePath)} (directly or\n` +
+              `${moduleSpecifier(starred.sourcePath, starred.indexPath)} (directly or\n` +
               `  transitively), so every declaration in ${starred.sourcePath}\n` +
               "  is already public."
           )

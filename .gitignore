@@ -52,7 +52,11 @@ bower_components
 build/Release
 
 # Dependency directories
-node_modules/
+# No trailing slash: `node_modules/` matches directories only, so a SYMLINK
+# named node_modules is not ignored and `git add -A` will commit it. That put a
+# 120000 blob on main and failed CI at `pnpm install` with
+# `ENOTDIR: not a directory, mkdir .../node_modules`.
+node_modules
 jspm_packages/
 
 # Snowpack dependency directory (https://snowpack.dev/)

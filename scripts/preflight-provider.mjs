@@ -32,16 +32,25 @@
  * Step `cross-cutting` runs the repo-wide guards in
  * scripts/lib/cross-cutting-tests.mjs that provider scopes do not select
  * consistently: recording-corpus allowlists, endpoint-surface inventory,
- * cross-provider source pins, and cross-provider registry parity. The
- * registry-parity guard, `tests/unit/cost-slugs.test.ts`, enforces exact `fal`
- * pricing/slug key sets, slug/display coverage for every provider, every `kie`
- * pricing key resolving through both slug and display registries, and exact
- * `googleflow` slug/display keys; `tests/unit/cost-pricing.test.ts` enforces
- * the mirror direction, and `tests/unit/provider-inventory-docs.test.ts` pins
- * the provider and script-alias inventories to the repository. Without this
- * step, provider-scoped work can leave a whole-repo invariant stale until full
- * CI — the gaps behind ac-05hrc, ac-t2gfln, the `92323c18` hand repair,
- * ac-y39i64, ac-kabm2y, and ac-gk1mlr. Their measured cost lives in
+ * cross-provider source pins, cross-provider registry parity, documentation
+ * inventories, fal credential wiring, provider export surface, and
+ * cross-ref namespace shape. Those are the categories
+ * tests/unit/cross-cutting-tests.test.ts sorts the block into, and it fails
+ * when this paragraph stops naming one of them. The registry-parity guard,
+ * `tests/unit/cost-slugs.test.ts`, enforces exact `fal` pricing/slug key
+ * sets, slug/display coverage for every provider, every `kie` pricing key
+ * resolving through both slug and display registries, and exact `googleflow`
+ * slug/display keys; `tests/unit/cost-pricing.test.ts` enforces the mirror
+ * direction. The documentation inventories,
+ * `tests/unit/provider-inventory-docs.test.ts`, pin the provider and
+ * script-alias lists to the repository. The credential-wiring guard,
+ * `tests/unit/recording-credential-hosts.test.ts`, requires every fal
+ * recording to be replayed by a call site wired to the credential its host
+ * needs; replay never contacts fal, so a miswiring is invisible until the
+ * next paid `dev:record` (ac-wt8fzl). Without this step, provider-scoped
+ * work can leave a whole-repo invariant stale until full CI — among them the
+ * gaps behind ac-05hrc, ac-t2gfln, the `92323c18` hand repair, ac-y39i64,
+ * ac-kabm2y, ac-gk1mlr, and ac-wt8fzl. Their measured cost lives in
  * `CROSS_CUTTING_COST_SECONDS`; the banner prints it via
  * `crossCuttingCostNote()` rather than restating the number here.
  *

@@ -66,6 +66,11 @@ const DEFERRED_UNSET = {
   variable: "NPM_TOKEN",
   resolved: null,
 };
+const DEFERRED_DIVERGENT = {
+  kind: "deferred",
+  variable: "NPM_TOKEN",
+  resolved: divergent,
+};
 const LITERAL_MATCHING = { kind: "literal", fingerprint: authoritative };
 const LITERAL_DIFFERING = { kind: "literal", fingerprint: divergent };
 
@@ -355,6 +360,36 @@ describe("classifyNpmAuth host npm user config reporting", () => {
     expect(message).toContain("WARNING");
     expect(message).toContain("$NPM_TOKEN");
     expect(message).toContain("401");
+    expectNoTokenLeak(message);
+  });
+
+  it("tells the operator how to fix a deferred reference that diverges", () => {
+    const result = classify({ cached: DEFERRED_DIVERGENT });
+    const message = renderNpmAuthMessage(result);
+
+    expect(message).toContain("WARNING");
+    expect(message).toContain("different credential");
+    expect(message).toContain('export NPM_TOKEN="$(op read');
+    expect(message).toContain("redeploy");
+    expectNoTokenLeak(message);
+  });
+
+  it("keeps a divergent deferred reference a warning, not a failure", () => {
+    const result = classify({
+      cached: DEFERRED_DIVERGENT,
+      whoami: { ok: true, account: "apicity-publisher" },
+      ping: null,
+    });
+    const message = renderNpmAuthMessage(result);
+
+    expect(result.exitCode).toBe(0);
+    expect(result.ok).toBe(true);
+    expect(message).toContain("export NPM_TOKEN=");
+    // Asserted here, not in the block above: that one runs the default
+    // `credential-rejected` verdict, whose own line already emits
+    // ROTATION_ANCHOR, so the same assertion there would pass with the remedy
+    // deleted. On this passing verdict the anchor can only come from the remedy.
+    expect(message).toContain("RELEASE.md#rotating-the-npm-publish-token");
     expectNoTokenLeak(message);
   });
 

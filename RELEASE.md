@@ -124,8 +124,8 @@ scope. Do _not_ use a legacy classic token — the release flow assumes the
 granular `npm_`-prefixed form, and `pnpm run check:npm-auth` reports anything
 without that prefix as `secret-malformed`.
 
-**Store it in exactly two places.** There is one publish credential on this rig,
-reachable two ways:
+**Store it in 1Password, then redeploy so the host picks it up.** There is one
+publish credential on this rig, reachable two ways:
 
 - `op://apicity/NPM_TOKEN/password` — authoritative. The formula and
   `check:npm-auth` both read it directly with `op read`.
@@ -133,10 +133,24 @@ reachable two ways:
   use, because `/root/.npmrc` holds `_authToken=${NPM_TOKEN}` and npm
   interpolates it at read time.
 
+That environment source is Kamal. `NPM_TOKEN` is an `env.secret: NPM_TOKEN`
+entry in the deploy configuration on the deploy host (`config/deploy.yml`),
+resolved from the same 1Password item and injected into the container when it
+starts. This repository tracks none of that configuration.
+
+**A process environment is fixed at start**, so writing the new token into
+1Password does not reach the container that is already running. The tmux server
+and every shell and agent session already running under it keep the old value
+until the container is **redeployed or restarted**. Do that after storing the
+token: a rotation that stops at the 1Password item leaves the host on the dead
+credential, and `check:npm-auth` will keep reporting the divergence.
+
 Rotation therefore updates the 1Password item and the `NPM_TOKEN` environment
 source, and **leaves `/root/.npmrc` alone**. That file is a template, not a
 cached credential; rewriting it with a literal token would put a secret at rest
-in plaintext for no gain. Confirm the result with:
+in plaintext for no gain.
+
+Once the container is back, confirm the result with:
 
 ```bash
 pnpm run check:npm-auth
@@ -147,16 +161,32 @@ registry is healthy and refused the token. Exit 2 (`registry-unreachable`) means
 the check could not reach the registry and proves nothing about the token —
 retry rather than rotating. Exit 3/4 mean the secret is missing or malformed.
 
+**If you need a working `npm` before the redeploy lands**, re-read the token
+into the shell you are sitting in:
+
+```bash
+export NPM_TOKEN="$(op read 'op://apicity/NPM_TOKEN/password')"
+```
+
+That affects the current shell only. A new shell, the tmux server, and every
+already-running agent session still carry the stale value, so it is a stopgap
+for one manual `npm` call and **not a substitute for the redeploy**. Run it
+after the confirmation above, not before — exporting first makes
+`check:npm-auth` read the fresh value and report no divergence, hiding the very
+thing you are checking for.
+
 **Record the expiry date at rotation time**, in the 1Password item. Granular
 tokens expire silently: the registry simply starts returning `401`, which is
 indistinguishable from a revoked token. The observed history of the token this
 check was built for:
 
-| Date       | Observation                                                   |
-| ---------- | ------------------------------------------------------------- |
-| 2026-05-31 | 1Password item last updated (token minted)                    |
-| 2026-08-25 | still publishing successfully                                 |
-| 2026-08-30 | `npm whoami` → `E401`, `npm ping` → `PONG` (registry healthy) |
+| Date       | Observation                                                           |
+| ---------- | --------------------------------------------------------------------- |
+| 2026-05-31 | 1Password item last updated (token minted)                            |
+| 2026-08-25 | still publishing successfully                                         |
+| 2026-08-30 | `npm whoami` → `E401`, `npm ping` → `PONG` (registry healthy)         |
+| 2026-08-30 | rotated in 1Password; container predates it, so `$NPM_TOKEN` is stale |
+| 2026-08-31 | `check:npm-auth` exits 0, warns `$NPM_TOKEN` differs from 1Password   |
 
 That is consistent with a ~90-day granular-token lifetime and no notification.
 

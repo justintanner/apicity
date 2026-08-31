@@ -108,6 +108,15 @@ import { repoRoot } from "./provider-scope.mjs";
  * that machine's run-to-run spread), so `CROSS_CUTTING_COST_SECONDS` stays put
  * a second time and the divergence noted above is still not reconciled here.
  *
+ * `scripts/compare-namespace-shapes.mjs` is the cross-ref half of that same
+ * invariant, and nothing in the repository imports it, so
+ * `tests/unit/compare-namespace-shapes-cli.test.ts` is the only thing holding
+ * its argument handling, base resolution and 0/1/2 exit contract. Both of the
+ * command's input guards — an unresolvable `--ref` that read as an empty tree,
+ * an explicit `--base` that degraded into the unbased mode — were false greens
+ * caught by review rather than by a gate, which is why the CLI's own regression
+ * cover is registered here rather than left to full CI (ac-nvlymt).
+ *
  * The namespace-shape guard reads every provider factory's return tree and
  * pins the shape each namespace dot path resolves to. A shape disagreement
  * between sibling slices is invisible to every single-tree gate: four slices of
@@ -170,6 +179,14 @@ import { repoRoot } from "./provider-scope.mjs";
  * Re-measure the whole block on this machine, at a comparable load average
  * and recording that load average here beside the figure, when the block's
  * membership changes; the guard test will name the prose that has to follow.
+ *
+ * Eleven-entry membership (this integration adds
+ * `tests/unit/compare-namespace-shapes-cli.test.ts`) re-measured on the same
+ * i7-8700 at 5.351s, 6.274s and 6.194s wall — median 6.2s — at 1-minute load
+ * averages of 3.60, 4.99 and 5.87 after a discarded warm-up. That is below the
+ * 8.6 pinned here, and consistent with the load-dominance recorded above rather
+ * than with the extra entry being free; 8.6 is kept as the reviewed figure
+ * because it was taken at the loaded end of the same host's range.
  */
 export const CROSS_CUTTING_COST_SECONDS = 8.6;
 
@@ -195,6 +212,7 @@ export const CROSS_CUTTING_TESTS = [
   "tests/unit/recording-credential-hosts.test.ts",
   "tests/unit/provider-export-surface.test.ts",
   "tests/unit/provider-namespace-shape.test.ts",
+  "tests/unit/compare-namespace-shapes-cli.test.ts",
 ];
 
 /**

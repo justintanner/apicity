@@ -51,6 +51,11 @@ const NAMESPACE_SHAPE_TESTS = [
   "tests/unit/provider-namespace-shape.test.ts",
 ] as const;
 
+// Namespace-shape CLI suite (drives the cross-ref command's own surface).
+const NAMESPACE_SHAPE_CLI_TESTS = [
+  "tests/unit/compare-namespace-shapes-cli.test.ts",
+] as const;
+
 // One canonical phrase per category, matched against the `cross-cutting`
 // enumeration in scripts/preflight-provider.mjs. This table is the single
 // place a category rename has to touch: the docblock is prose, so nothing
@@ -95,6 +100,11 @@ const CATEGORY_DOC_KEYWORDS = [
     name: "NAMESPACE_SHAPE_TESTS",
     tests: NAMESPACE_SHAPE_TESTS,
     keyword: "cross-ref namespace shape",
+  },
+  {
+    name: "NAMESPACE_SHAPE_CLI_TESTS",
+    tests: NAMESPACE_SHAPE_CLI_TESTS,
+    keyword: "namespace-shape cli",
   },
 ] as const;
 
@@ -227,6 +237,19 @@ describe("cross-cutting repo-wide guard tests", () => {
       const source = readRepoFile(relativePath);
       expect(source, relativePath).toContain("checkNamespaceCollisions");
       expect(source, relativePath).toContain("callable-with-children");
+    }
+  });
+
+  it("namespace-shape CLI tests drive the command and pin its guards", () => {
+    // A category of its own rather than a second slot in NAMESPACE_SHAPE_TESTS:
+    // this entry drives the CLI (`main`, `parseArgs`, `resolveBase`), not the
+    // detector, so it need not name the detector's collision vocabulary. What
+    // it must hold are the two input guards that were false greens found by
+    // review rather than by a gate (RF-1, RF-2).
+    for (const relativePath of NAMESPACE_SHAPE_CLI_TESTS) {
+      const source = readRepoFile(relativePath);
+      expect(source, relativePath).toContain("compare-namespace-shapes.mjs");
+      expect(source, relativePath).toContain("does not resolve");
     }
   });
 

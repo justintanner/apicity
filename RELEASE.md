@@ -145,10 +145,10 @@ until the container is **redeployed or restarted**. Do that after storing the
 token: a rotation that stops at the 1Password item leaves the host on the dead
 credential, and `check:npm-auth` will keep reporting the divergence.
 
-Rotation therefore updates the 1Password item and the `NPM_TOKEN` environment
-source, and **leaves `/root/.npmrc` alone**. That file is a template, not a
-cached credential; rewriting it with a literal token would put a secret at rest
-in plaintext for no gain.
+Rotation therefore updates the 1Password item, then redeploys so the
+`NPM_TOKEN` environment source re-resolves, and **leaves `/root/.npmrc`
+alone**. That file is a template, not a cached credential; rewriting it with a
+literal token would put a secret at rest in plaintext for no gain.
 
 Once the container is back, confirm the result with:
 
@@ -211,10 +211,13 @@ rights. Do not add it.
 
 The requirement that drove this work asked for `/root/.npmrc` to be "refreshed
 from that same value" on rotation. It is deliberately not done, because the file
-already resolves to the authoritative token through `${NPM_TOKEN}` — writing a
-literal secret into it would store a credential in plaintext on the host and
-gain nothing. The intent (no stale credential reachable from the host) is met;
-the literal wording is not.
+already resolves to whatever `NPM_TOKEN` holds, which is the authoritative
+token once the container has been redeployed (above) — writing a literal secret
+into it would store a credential in plaintext on the host and gain nothing. The
+intent (one credential store to rotate, nothing at rest in plaintext) is met;
+the literal wording is not. Until the redeploy lands, the running container
+still carries the old value, and the per-shell `export` above is the stopgap for
+that window — not a literal token in the file.
 
 ## Dry-run
 

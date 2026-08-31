@@ -367,6 +367,7 @@ describe("classifyNpmAuth host npm user config reporting", () => {
     const result = classify({ cached: DEFERRED_DIVERGENT });
     const message = renderNpmAuthMessage(result);
 
+    expect(result.exitCode).toBe(1);
     expect(message).toContain("WARNING");
     expect(message).toContain("different credential");
     expect(message).toContain('export NPM_TOKEN="$(op read');

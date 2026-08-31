@@ -53,6 +53,7 @@ export const PACK_FRESHNESS_VERDICT = Object.freeze({
   STALE_CONTENT: "stale-content",
   STALE_PIN: "stale-pin",
   PIN_UNREACHABLE: "pin-unreachable",
+  HEAD_UNKNOWN: "head-unknown",
   IMPORT_MISSING: "import-missing",
   SKIPPED: "skipped",
 });
@@ -173,6 +174,11 @@ export function installedComparisonPath(installedPath) {
  * repository cannot resolve makes every downstream comparison meaningless, and
  * reporting `fresh` from a comparison that could not be performed is the single
  * most expensive way this check could be wrong.
+ *
+ * `head-unknown` is checked before both of them for the same reason and one
+ * more: an unresolvable `main` is equally unperformable, and it is the one
+ * input every later branch interpolates into the repair line it prints. Decided
+ * here, no other branch can ever render a commit it does not have.
  */
 export function classifyPackFreshness({
   gcAvailable,
@@ -215,6 +221,23 @@ export function classifyPackFreshness({
     };
   }
 
+  if (head === null) {
+    return {
+      ...facts,
+      verdict: PACK_FRESHNESS_VERDICT.HEAD_UNKNOWN,
+      exitCode: 1,
+      lines: [
+        `head-unknown: ${PACK_IMPORT_NAME} is pinned at ${pinnedCommit}, but main`,
+        "  could not be resolved in this checkout, so freshness could not be",
+        "  decided. A --single-branch clone, a release worktree cut from stable or",
+        "  a shallow CI checkout can carry the pinned history with no local main.",
+        "  Fetch main here, or re-run this check where it resolves.",
+        "  No repair line follows on purpose: re-pinning onto a commit this",
+        "  checkout cannot name would be a guess, not a fix.",
+      ],
+    };
+  }
+
   if (pinReachable === false) {
     return {
       ...facts,
@@ -224,7 +247,7 @@ export function classifyPackFreshness({
         `pin-unreachable: ${PACK_IMPORT_NAME} is pinned at ${pinnedCommit}, which is`,
         "  not in this repository's local history, so freshness cannot be decided.",
         "  Fetch the missing history, or re-pin onto a commit that exists.",
-        ...refreshLines(head ?? "<current main>"),
+        ...refreshLines(head),
       ],
     };
   }

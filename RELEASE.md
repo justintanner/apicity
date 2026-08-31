@@ -130,15 +130,16 @@ pnpm run check:pack-freshness  # the formula the city will actually run
 
 `check:pack-freshness` exit codes:
 
-| Exit | Verdict           | Meaning                                                                                                                          |
-| ---- | ----------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| 0    | `fresh`           | the pin equals `main`. Verifies the _pin_, not the installed bytes — pair it with `gc import check`, which covers the other half |
-| 0    | `skipped`         | `gc` is not on `PATH`, so freshness was **not verified**. This is not a pass                                                     |
-| 1    | `stale-content`   | the pin is behind `main` and watched pack content differs: the city is serving behavior this repository has replaced             |
-| 1    | `stale-pin`       | the pin is behind `main` but served content is identical. Re-pin anyway, so the next content change is not withheld              |
-| 1    | `pin-unreachable` | the pinned commit is not in this checkout's history, so freshness could not be decided                                           |
-| 1    | `import-missing`  | no `pack:apicity-release` import exists — register it                                                                            |
-| 2    | —                 | the check itself failed unexpectedly. Also not a pass                                                                            |
+| Exit | Verdict           | Meaning                                                                                                                                            |
+| ---- | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0    | `fresh`           | the pin equals `main`. Verifies the _pin_, not the installed bytes — pair it with `gc import check`, which covers the other half                   |
+| 0    | `skipped`         | `gc` is not on `PATH`, so freshness was **not verified**. This is not a pass                                                                       |
+| 1    | `stale-content`   | the pin is behind `main` and watched pack content differs: the city is serving behavior this repository has replaced                               |
+| 1    | `stale-pin`       | the pin is behind `main` but served content is identical. Re-pin anyway, so the next content change is not withheld                                |
+| 1    | `pin-unreachable` | the pinned commit is not in this checkout's history, so freshness could not be decided                                                             |
+| 1    | `head-unknown`    | `main` could not be resolved in this checkout, so freshness could not be decided. Prints no `sha:` repair line — there is no commit to re-pin onto |
+| 1    | `import-missing`  | no `pack:apicity-release` import exists — register it                                                                                              |
+| 2    | —                 | the check itself failed unexpectedly. Also not a pass                                                                                              |
 
 Two of those exit 0 and only one is a pass; a `skipped` run says `NOT verified`
 in full. **Do not wire this check into `lint`, `lint:repo`, or `ci:local`** —

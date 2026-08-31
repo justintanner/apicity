@@ -147,6 +147,20 @@ describe("classifyPackFreshness", () => {
       PACK_FRESHNESS_VERDICT.PIN_UNREACHABLE,
       1,
     ],
+    // Both fall-through stale branches used to be reachable with no head, and
+    // both interpolated the missing commit straight into their repair line.
+    [
+      "an unresolvable main with watched content changed",
+      { headCommit: null },
+      PACK_FRESHNESS_VERDICT.HEAD_UNKNOWN,
+      1,
+    ],
+    [
+      "an unresolvable main with no watched path changed",
+      { headCommit: null, changedPaths: [] },
+      PACK_FRESHNESS_VERDICT.HEAD_UNKNOWN,
+      1,
+    ],
     [
       "gc absent from PATH",
       { gcAvailable: false },
@@ -239,6 +253,30 @@ describe("renderPackFreshnessMessage", () => {
     expect(message).toContain(STALE_PIN_COMMIT);
     expect(message).toContain("local history");
   });
+
+  // The whole point of this check is to hand the operator one line to paste
+  // into `/gc/pack.toml`. With `main` unresolvable it used to render
+  // `version = "sha:null"`, and following that instruction breaks the import.
+  // Reachable wherever `RELEASE.md` sends the operator: a release worktree cut
+  // from `stable`, a `--single-branch` clone or a shallow checkout can hold the
+  // pinned history with no local `main` ref.
+  for (const [label, changedPaths] of [
+    ["watched content changed", [CHANGED_PACK_PATH]],
+    ["no watched path changed", []],
+  ] as Array<[string, string[]]>) {
+    it(`prints no repair line for an unresolvable main, with ${label}`, () => {
+      const message = messageOf({ headCommit: null, changedPaths });
+
+      expect(message).toContain(PACK_FRESHNESS_VERDICT.HEAD_UNKNOWN);
+      expect(message).toContain(STALE_PIN_COMMIT);
+      expect(message).not.toContain(`version = "sha:null"`);
+      // Not just the `sha:null` spelling: no placeholder the operator cannot
+      // paste either, and no bare `null` standing in for a commit anywhere.
+      expect(message).not.toContain("sha:");
+      expect(message).not.toContain("null");
+      expect(message).not.toContain(REFRESH_COMMAND);
+    });
+  }
 });
 
 describe("installedComparisonPath", () => {

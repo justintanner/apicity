@@ -239,14 +239,24 @@ publish credential on this rig, reachable two ways:
 That environment source is Kamal. `NPM_TOKEN` is an `env.secret: NPM_TOKEN`
 entry in the deploy configuration on the deploy host (`config/deploy.yml`),
 resolved from the same 1Password item and injected into the container when it
-starts. This repository tracks none of that configuration.
+is **created**. This repository tracks none of that configuration.
 
-**A process environment is fixed at start**, so writing the new token into
-1Password does not reach the container that is already running. The tmux server
-and every shell and agent session already running under it keep the old value
-until the container is **redeployed or restarted**. Do that after storing the
+**A container's environment block is fixed when the container is created**, so
+writing the new token into 1Password does not reach the container that is
+already running — and neither does stopping and starting that same container.
+The tmux server and every shell and agent session already running under it keep
+the old value until the container is **redeployed**. Do that after storing the
 token: a rotation that stops at the 1Password item leaves the host on the dead
 credential, and `check:npm-auth` will keep reporting the divergence.
+
+Only a redeploy re-creates the container, and only a re-create re-resolves the
+secret. In Kamal 2.12.0 the `env.secret` values are passed as `--env-file`
+arguments on `docker run` (`lib/kamal/configuration/role.rb:98-100`,
+`lib/kamal/commands/app.rb:16-34`), while `kamal app start` is a bare
+`docker start <container>` (`lib/kamal/commands/app.rb:37-39`) and
+`docker start` takes no environment options. There is no `kamal app restart`;
+the lifecycle subcommands are `boot`, `start`, and `stop`, so `kamal deploy` or
+`kamal app boot` is the path that picks up a rotated secret.
 
 Rotation therefore updates the 1Password item, then redeploys so the
 `NPM_TOKEN` environment source re-resolves, and **leaves `/root/.npmrc`

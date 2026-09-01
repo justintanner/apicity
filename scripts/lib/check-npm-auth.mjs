@@ -202,6 +202,8 @@ function cachedLines(cached, tokenFingerprint) {
       `  different credential (${describeFingerprint(cached.resolved)}) than`,
       `  ${SECRET_REFERENCE} (${describeFingerprint(tokenFingerprint)}).`,
       `  A manual npm call on this host would use that one; ${SECRET_REFERENCE} is authoritative.`,
+      `  To fix this shell: export ${cached.variable}="$(op read '${SECRET_REFERENCE}')"`,
+      `  That fixes this shell only; a container redeploy clears the divergence for every shell. ${ROTATION_ANCHOR}`,
     ];
   }
 

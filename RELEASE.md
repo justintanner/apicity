@@ -43,16 +43,113 @@ The workflow has one executable step that carries
 `gc.run_target=apicity/gc.run-operator` by default. The whole release stays in
 one run-operator turn so it cannot strand itself between release phases.
 
-Register the Apicity release pack with the city once per checkout/update:
+### Register or refresh the release pack
+
+The city runs the release formula from a **pack import pinned to one commit of
+this repository**, not from the working tree. That pin never moves on its own,
+so a city registered once keeps serving the formula as it stood that day. This
+went wrong in `ac-1yyttm`: the installed copy was ten days and one merged PR
+behind `main` — missing the `check:npm-auth` gate entirely — while
+`gc import check` reported `Import state OK` throughout, because it validates
+the install against its own lock and never against upstream.
+
+**First registration**, once per city:
 
 ```bash
 gc import add /gc/apicity --name apicity-release
 gc import install
 gc reload
-gc formula show mol-apicity-release
 ```
 
-Start a release from a fresh tracking bead:
+**Refreshing an existing pin is a different operation**, and neither verb an
+operator reaches for first performs it. Both were run against the live stale
+city on 2026-08-31:
+
+| Command                                            | What it actually does                                                                                                                                                                    |
+| -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `gc import upgrade apicity-release`                | prints `Upgraded import` and exits **0** while moving only `pin.fetched`. A `sha:` constraint pins exactly, so there is nothing to upgrade within it. The reassuring output is the trap. |
+| `gc import add /gc/apicity --name apicity-release` | exits **1** with `import already exists`, with or without `--version`.                                                                                                                   |
+
+What moves the pin is editing the declared version and reinstalling:
+
+```bash
+git -C /gc/apicity rev-parse main    # the commit you want the city to serve
+
+# In /gc/pack.toml, under [imports.apicity-release], set:
+#   version = "sha:<that commit>"
+
+gc import install
+gc reload
+```
+
+Then **verify by content, not by exit code**. `gc formula show` proves the
+formula loads; it does not prove it is the current one, and `gc import check`
+exits 0 against a pin years out of date:
+
+```bash
+gc formula show mol-apicity-release   # loads, 2 steps: release, workflow-finalize
+pnpm run check:pack-freshness         # exit 0 = the pin equals main
+
+# Byte-level proof. The installed copy is content-addressed, so its directory
+# changes every time the pin moves and stale copies linger beside it; the
+# digest the city serves must equal the checkout's.
+sha256sum .beads/formulas/mol-apicity-release.formula.toml
+find /root/.gc/cache/repos -path '*/.beads/formulas/mol-apicity-release.formula.toml' -exec sha256sum {} +
+```
+
+**Rollback** if a refresh goes wrong: restore the previous `version` string in
+`/gc/pack.toml`, then `gc import install && gc reload`.
+
+### Why the refresh is manual
+
+Refreshing stays a manual step with a loud check, rather than an automatic
+one. What was rejected, and why:
+
+- **A post-merge CI job that re-pins and reloads.** GitHub-hosted runners have
+  neither the `gc` binary nor access to `/gc`, and giving CI authority to mutate
+  city state needs an authorization story this change does not have.
+- **A git `post-merge` hook.** `.beads/hooks/post-merge` is beads-managed ("Do
+  not remove these markers") and is not installed into `.git/hooks`, which is
+  empty — there is no live hook to extend.
+- **A hard gate inside `mol-apicity-release` itself.** The stale copy is the one
+  that would carry the gate, so it cannot detect its own staleness. This is the
+  same reason the defect survived a release.
+- **Kept: manual refresh plus a repo-owned check at release preflight.** The
+  smallest change consistent with the requirement, granting no new authority,
+  and the check lives somewhere it can actually be edited.
+
+### Release preflight
+
+Run both checks before slinging a release. Each is cheap here and expensive
+later:
+
+```bash
+pnpm run check:npm-auth        # the publish credential
+pnpm run check:pack-freshness  # the formula the city will actually run
+```
+
+`check:pack-freshness` exit codes:
+
+| Exit | Verdict           | Meaning                                                                                                                                            |
+| ---- | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0    | `fresh`           | the pin equals `main`. Verifies the _pin_, not the installed bytes — pair it with `gc import check`, which covers the other half                   |
+| 0    | `skipped`         | `gc` is not on `PATH`, so freshness was **not verified**. This is not a pass                                                                       |
+| 1    | `stale-content`   | the pin is behind `main` and watched pack content differs: the city is serving behavior this repository has replaced                               |
+| 1    | `stale-pin`       | the pin is behind `main` but served content is identical. Re-pin anyway, so the next content change is not withheld                                |
+| 1    | `pin-unreachable` | the pinned commit is not in this checkout's history, so freshness could not be decided                                                             |
+| 1    | `head-unknown`    | `main` could not be resolved in this checkout, so freshness could not be decided. Prints no `sha:` repair line — there is no commit to re-pin onto |
+| 1    | `import-missing`  | no `pack:apicity-release` import exists — register it                                                                                              |
+| 2    | —                 | the check itself failed unexpectedly. Also not a pass                                                                                              |
+
+Two of those exit 0 and only one is a pass; a `skipped` run says `NOT verified`
+in full. **Do not wire this check into `lint`, `lint:repo`, or `ci:local`** —
+GitHub-hosted runners have neither `gc` nor `/gc`, so it would report `skipped`
+there forever and buy nothing.
+
+`check:npm-auth`'s exit codes are documented under [Rotating the npm publish
+token](#rotating-the-npm-publish-token).
+
+Once preflight is green, start a release from a fresh tracking bead:
 
 ```bash
 # 1. File a release tracking bead
@@ -113,6 +210,12 @@ here. Identify a step by name, never by number.
 - **Decide divergence resolution.** If `stable` has diverged from `main` before
   release, or if `main` has moved before the post-release fast-forward, the
   formula stops and you decide whether to rebase, cherry-pick, or abort.
+- **Refresh its own pack pin.** The formula the city runs is the copy installed
+  at the pinned commit, so a formula that has fallen behind cannot notice it has
+  — that is exactly how a release ran without the `check:npm-auth` gate that
+  `main` already carried. `pnpm run check:pack-freshness` is the outside
+  observer; run it at preflight. See [Register or refresh the release
+  pack](#register-or-refresh-the-release-pack).
 
 ## Rotating the npm publish token
 

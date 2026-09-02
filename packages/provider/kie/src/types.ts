@@ -782,8 +782,8 @@ export interface AlephRecordInfoData {
   taskId: string;
   paramJson?: string;
   response?: AlephRecordInfoResponseResult | null;
-  completeTime?: string | null;
-  createTime?: string;
+  completeTime?: string | number | null;
+  createTime?: string | number;
   successFlag?: 0 | 1 | number;
   errorCode?: number | null;
   errorMessage?: string | null;

@@ -795,6 +795,7 @@ fal	blackforestlabs.flux3.firstLastFrameToVideo	POST	https://api.fal.ai/v1/black
 fal	blackforestlabs.flux3.imageToVideo	POST	https://api.fal.ai/v1/blackforestlabs/flux-3/image-to-video	https://fal.ai/models/blackforestlabs/flux-3/image-to-video/api
 fal	blackforestlabs.flux3.keyframesToVideo	POST	https://api.fal.ai/v1/blackforestlabs/flux-3/keyframes-to-video	https://fal.ai/models/blackforestlabs/flux-3/keyframes-to-video/api
 fal	blackforestlabs.flux3.textToVideo	POST	https://api.fal.ai/v1/blackforestlabs/flux-3/text-to-video	https://fal.ai/models/blackforestlabs/flux-3/text-to-video/api
+fal	blackforestlabs.fluxVideoUpscale	POST	https://api.fal.ai/v1/blackforestlabs/flux-video-upscale	https://fal.ai/models/blackforestlabs/flux-video-upscale/api
 fal	bytedance.seedance2p0.fast.imageToVideo	POST	https://api.fal.ai/v1/bytedance/seedance-2.0/fast/image-to-video	https://docs.fal.ai
 fal	bytedance.seedance2p0.fast.referenceToVideo	POST	https://api.fal.ai/v1/bytedance/seedance-2.0/fast/reference-to-video
 fal	bytedance.seedance2p0.fast.textToVideo	POST	https://api.fal.ai/v1/bytedance/seedance-2.0/fast/text-to-video	https://docs.fal.ai

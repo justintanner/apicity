@@ -382,7 +382,11 @@ const gptImagePerImage = (
 //     $0.05/s (480p) / $0.07/s (720p) plus $0.01/s of source-video input,
 //     but the schema has no duration field — the output length equals the
 //     source video's length, which is not a request field.
+//   - blackforestlabs/flux-video-upscale: billed per output second by the
+//     delivered resolution and precise/creative mode; source duration and
+//     dimensions are not request fields, so a static estimate would guess.
 export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
+  "blackforestlabs/flux-video-upscale",
   "google/nano-banana-2-lite",
   "google/nano-banana-lite/edit",
   "xai/grok-imagine-video/edit-video",

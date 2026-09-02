@@ -613,12 +613,13 @@ describe("fal edit/image pricing estimates", () => {
   });
 
   it("keeps every dynamic-priced endpoint out of both registries", () => {
-    // The nano-banana lite pair is token-metered with no published
-    // tokens-per-image constant, and grok's edit-video bills the source
-    // video's length, which is not a request field — so all three are
-    // deliberately absent from PRICING.fal and MODEL_SLUGS.fal; the true
-    // price comes from fal's POST /v1/models/pricing/estimate API.
+    // blackforestlabs/flux-video-upscale depends on delivered output metadata;
+    // google/nano-banana-2-lite and google/nano-banana-lite/edit are
+    // token-metered without a published tokens-per-image constant; and
+    // xai/grok-imagine-video/edit-video bills source length, which is not a
+    // request field. All four therefore use fal's pricing-estimate API.
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toEqual([
+      "blackforestlabs/flux-video-upscale",
       "google/nano-banana-2-lite",
       "google/nano-banana-lite/edit",
       "xai/grok-imagine-video/edit-video",

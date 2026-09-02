@@ -2047,6 +2047,25 @@ export type FalFlux3ExtendVideoRequestInput = FalFlux3ExtendVideoRequest;
 export type FalFlux3ExtendVideoParsedRequest = z.output<
   typeof FalFlux3ExtendVideoRequestSchema
 >;
+
+export const FalFluxVideoUpscaleRequestSchema = z.object({
+  video_url: z.string(),
+  upscale_factor: z.number().min(1.5).max(3).optional(),
+  creativity: z.union([z.literal(0), z.literal(1)]).optional(),
+  prompt: z.string().nullable().optional(),
+  safety_tolerance: z.number().int().min(0).max(4).optional(),
+});
+
+export type FalFluxVideoUpscaleParams = z.infer<
+  typeof FalFluxVideoUpscaleRequestSchema
+>;
+export type FalFluxVideoUpscaleRequest = z.input<
+  typeof FalFluxVideoUpscaleRequestSchema
+>;
+export type FalFluxVideoUpscaleRequestInput = FalFluxVideoUpscaleRequest;
+export type FalFluxVideoUpscaleParsedRequest = z.output<
+  typeof FalFluxVideoUpscaleRequestSchema
+>;
 export type FalOptions = z.infer<typeof FalOptionsSchema>;
 
 // ---------------------------------------------------------------------------
@@ -2062,6 +2081,7 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "blackforestlabs/flux-3/keyframes-to-video":
     FalFlux3KeyframesToVideoRequestSchema,
   "blackforestlabs/flux-3/text-to-video": FalFlux3TextToVideoRequestSchema,
+  "blackforestlabs/flux-video-upscale": FalFluxVideoUpscaleRequestSchema,
   "bytedance/seedance-2.0/image-to-video":
     FalSeedance2p0ImageToVideoRequestSchema,
   "bytedance/seedance-2.0/text-to-video":

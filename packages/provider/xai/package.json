@@ -1,6 +1,6 @@
 {
   "name": "@apicity/xai",
-  "version": "0.11.1",
+  "version": "0.11.2",
   "description": "X.AI / Grok provider for chat and search.",
   "license": "MIT",
   "repository": {

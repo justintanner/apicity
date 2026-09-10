@@ -24,6 +24,7 @@ import {
   SunoMp4RequestSchema,
   SunoRecoveryRecordInfoRequestSchema,
   SunoRecoveryRecordInfoResponseSchema,
+  SunoRecoveryRequestSchema,
   SunoReplaceSectionRequestSchema,
   SunoSoundsRequestSchema,
   SunoUploadCoverRequestSchema,
@@ -469,6 +470,29 @@ export interface SunoRecoveryRecordInfoResponse {
   code: number;
   msg?: string;
   data?: SunoRecoveryRecordInfoEntry[] | null;
+  [key: string]: unknown;
+}
+
+/**
+ * Recover playable audio links for a completed music generation task. Poll
+ * with SunoRecoveryRecordInfoRequest via the dedicated record-info route
+ * (not the generic Get Task Details endpoint).
+ *
+ * Docs: https://docs.kie.ai/suno-api/recovery-audio
+ */
+export interface SunoRecoveryRequest {
+  task_id: string;
+  call_back_url?: string;
+}
+
+/**
+ * A distinct envelope from SunoSubmitResponse: this route documents
+ * `data.task_id`, not `data.taskId`.
+ */
+export interface SunoRecoveryResponse {
+  code: number;
+  msg?: string;
+  data?: { task_id: string } | null;
   [key: string]: unknown;
 }
 
@@ -934,6 +958,11 @@ interface SunoRecoveryRecordInfoMethod {
   responseSchema: ApicitySchema<SunoRecoveryRecordInfoResponse>;
 }
 
+interface SunoRecoveryMethod {
+  (req: SunoRecoveryRequest): Promise<SunoRecoveryResponse>;
+  schema: ApicitySchema<SunoRecoveryRequest>;
+}
+
 interface SunoMp4Method {
   (
     req: SunoMp4Request,
@@ -1068,6 +1097,7 @@ interface SunoRecoveryGetNamespace {
 
 interface SunoSunoPostNamespace {
   cover: SunoCoverPostNamespace;
+  recovery: SunoRecoveryMethod;
 }
 
 interface SunoSunoGetNamespace {
@@ -1314,6 +1344,18 @@ export function createSunoProvider(
     return kieRequest<SunoCoverRecordInfoResponse>(transport, {
       method: "GET",
       path: `/api/v1/suno/cover/record-info?taskId=${encodeURIComponent(taskId)}`,
+    });
+  }
+
+  // POST https://api.kie.ai/api/v1/suno/recovery
+  // Docs: https://docs.kie.ai/suno-api/recovery-audio
+  async function recovery(
+    req: SunoRecoveryRequest
+  ): Promise<SunoRecoveryResponse> {
+    return kieRequest<SunoRecoveryResponse>(transport, {
+      method: "POST",
+      path: "/api/v1/suno/recovery",
+      body: req,
     });
   }
 
@@ -1597,6 +1639,9 @@ export function createSunoProvider(
                 schema: SunoCoverGenerateRequestSchema,
               }),
             },
+            recovery: Object.assign(recovery, {
+              schema: SunoRecoveryRequestSchema,
+            }),
           },
           mp4: {
             generate: Object.assign(mp4Generate, {

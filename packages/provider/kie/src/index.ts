@@ -1188,6 +1188,8 @@ export type {
   SunoRecoveryRecordInfoRequest,
   SunoRecoveryRecordInfoEntry,
   SunoRecoveryRecordInfoResponse,
+  SunoRecoveryRequest,
+  SunoRecoveryResponse,
   SunoMp4Request,
   SunoMp4RecordInfoRequest,
   SunoMp4TaskStatus,

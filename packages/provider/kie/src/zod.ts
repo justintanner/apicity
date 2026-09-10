@@ -6829,6 +6829,11 @@ export const SunoRecoveryRecordInfoResponseSchema = z
   })
   .passthrough();
 
+export const SunoRecoveryRequestSchema = z.object({
+  task_id: z.string().min(1),
+  call_back_url: z.string().optional(),
+});
+
 export const SunoMp4RequestSchema = z.object({
   taskId: z.string().min(1),
   audioId: z.string().min(1),

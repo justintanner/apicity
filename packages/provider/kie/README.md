@@ -760,7 +760,7 @@ console.log(segmentEditTask.data?.taskId);
 
 ## API Reference
 
-61 endpoints across 30 groups. Each method mirrors an upstream URL path.
+62 endpoints across 30 groups. Each method mirrors an upstream URL path.
 
 ### chat
 
@@ -1574,6 +1574,23 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await kie.suno.post.api.v1.suno.cover.generate({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>kie.suno.post.api.v1.suno.recovery</code></b></summary>
+
+<code>POST https://api.kie.ai/api/v1/suno/recovery</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/suno-api/recovery-audio)
+
+```typescript
+const res = await kie.suno.post.api.v1.suno.recovery({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)

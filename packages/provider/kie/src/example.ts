@@ -457,6 +457,14 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v1.suno.recovery": {
+    "source": "kie/suno/recovery-invalid-task",
+    "payload": {
+      "task_id": "apicity-test-nonexistent-task-id-do-not-record-real"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v1.veo.generate": {
     "source": "kie/veo/aspect-ratio-probe",
     "payload": {

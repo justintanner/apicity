@@ -659,6 +659,8 @@ export type {
   KieGemini36FlashStreamGenerateContentParsedRequest,
   KieGemini37FlashStreamGenerateContentRequest,
   KieGemini37FlashStreamGenerateContentParsedRequest,
+  KieGemini38FlashStreamGenerateContentRequest,
+  KieGemini38FlashStreamGenerateContentParsedRequest,
   KieGemini3FlashV1betamodelsStreamGenerateContentRequest,
   KieGemini3FlashV1betamodelsStreamGenerateContentParsedRequest,
   KieResponsesModel,

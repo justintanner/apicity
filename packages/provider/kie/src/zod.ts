@@ -1464,6 +1464,148 @@ export type KieGemini37FlashOpenaiChatCompletionsParsedRequest = z.output<
   typeof KieGemini37FlashOpenaiChatCompletionsRequestSchema
 >;
 
+// Gemini 3.8 Flash OpenAI-compatible chat completions
+// Docs: https://docs.kie.ai/market/gemini/gemini-3-8-flash-openai
+export const KieGemini38FlashOpenaiMessageRoleSchema = z.enum([
+  "developer",
+  "system",
+  "user",
+  "assistant",
+  "tool",
+]);
+
+export const KieGemini38FlashOpenaiContentItemTypeSchema = z.enum([
+  "text",
+  "image_url",
+]);
+
+export const KieGemini38FlashOpenaiReasoningEffortSchema = z.enum([
+  "low",
+  "high",
+]);
+
+export const KieGemini38FlashOpenaiToolTypeSchema = z.enum(["function"]);
+
+export const KieGemini38FlashOpenaiTextContentItemSchema = z
+  .object({
+    type: z.literal("text"),
+    text: z.string(),
+  })
+  .strict();
+
+// Images, video, audio, and PDFs all travel as `image_url`; only `url` changes.
+export const KieGemini38FlashOpenaiMediaContentItemSchema = z
+  .object({
+    type: z.literal("image_url"),
+    image_url: z.object({ url: z.string().url() }).strict(),
+  })
+  .strict();
+
+export const KieGemini38FlashOpenaiContentItemSchema = z.discriminatedUnion(
+  "type",
+  [
+    KieGemini38FlashOpenaiTextContentItemSchema,
+    KieGemini38FlashOpenaiMediaContentItemSchema,
+  ]
+);
+
+export const KieGemini38FlashOpenaiMessageSchema = z
+  .object({
+    role: KieGemini38FlashOpenaiMessageRoleSchema,
+    content: z.array(KieGemini38FlashOpenaiContentItemSchema).min(1),
+  })
+  .passthrough();
+
+export const KieGemini38FlashOpenaiToolFunctionParametersSchema = z
+  .object({
+    type: z.literal("object"),
+    properties: z.record(z.string(), z.unknown()).optional(),
+    required: z.array(z.string()).optional(),
+  })
+  .passthrough();
+
+// googleSearch or custom function declarations (mutually exclusive upstream).
+export const KieGemini38FlashOpenaiToolFunctionSchema = z
+  .object({
+    name: z.string().min(1),
+    description: z.string().optional(),
+    parameters: KieGemini38FlashOpenaiToolFunctionParametersSchema.optional(),
+  })
+  .passthrough();
+
+export const KieGemini38FlashOpenaiToolSchema = z
+  .object({
+    type: KieGemini38FlashOpenaiToolTypeSchema,
+    function: KieGemini38FlashOpenaiToolFunctionSchema,
+  })
+  .strict();
+
+export const KieGemini38FlashOpenaiResponseFormatSchema = z
+  .object({
+    type: z.string().optional(),
+    json_schema: z.record(z.string(), z.unknown()).optional(),
+    properties: z.record(z.string(), z.unknown()).optional(),
+  })
+  .passthrough();
+
+export const KieGemini38FlashOpenaiChatCompletionsRequestSchema = z
+  .object({
+    model: z.literal("gemini-3-8-flash").optional(),
+    messages: z.array(KieGemini38FlashOpenaiMessageSchema).min(1),
+    stream: z.boolean().default(true),
+    tools: z.array(KieGemini38FlashOpenaiToolSchema).min(0).optional(),
+    include_thoughts: z.boolean().default(true),
+    reasoning_effort:
+      KieGemini38FlashOpenaiReasoningEffortSchema.default("high"),
+    response_format: KieGemini38FlashOpenaiResponseFormatSchema.optional(),
+  })
+  .passthrough();
+
+export type KieGemini38FlashOpenaiMessageRole = z.infer<
+  typeof KieGemini38FlashOpenaiMessageRoleSchema
+>;
+export type KieGemini38FlashOpenaiContentItemType = z.infer<
+  typeof KieGemini38FlashOpenaiContentItemTypeSchema
+>;
+export type KieGemini38FlashOpenaiReasoningEffort = z.infer<
+  typeof KieGemini38FlashOpenaiReasoningEffortSchema
+>;
+export type KieGemini38FlashOpenaiToolType = z.infer<
+  typeof KieGemini38FlashOpenaiToolTypeSchema
+>;
+export type KieGemini38FlashOpenaiTextContentItem = z.infer<
+  typeof KieGemini38FlashOpenaiTextContentItemSchema
+>;
+export type KieGemini38FlashOpenaiMediaContentItem = z.infer<
+  typeof KieGemini38FlashOpenaiMediaContentItemSchema
+>;
+export type KieGemini38FlashOpenaiContentItem = z.infer<
+  typeof KieGemini38FlashOpenaiContentItemSchema
+>;
+export type KieGemini38FlashOpenaiMessage = z.infer<
+  typeof KieGemini38FlashOpenaiMessageSchema
+>;
+export type KieGemini38FlashOpenaiToolFunctionParameters = z.infer<
+  typeof KieGemini38FlashOpenaiToolFunctionParametersSchema
+>;
+export type KieGemini38FlashOpenaiToolFunction = z.infer<
+  typeof KieGemini38FlashOpenaiToolFunctionSchema
+>;
+export type KieGemini38FlashOpenaiTool = z.infer<
+  typeof KieGemini38FlashOpenaiToolSchema
+>;
+export type KieGemini38FlashOpenaiResponseFormat = z.infer<
+  typeof KieGemini38FlashOpenaiResponseFormatSchema
+>;
+export type KieGemini38FlashOpenaiChatCompletionsRequest = z.input<
+  typeof KieGemini38FlashOpenaiChatCompletionsRequestSchema
+>;
+export type KieGemini38FlashOpenaiChatCompletionsRequestInput =
+  KieGemini38FlashOpenaiChatCompletionsRequest;
+export type KieGemini38FlashOpenaiChatCompletionsParsedRequest = z.output<
+  typeof KieGemini38FlashOpenaiChatCompletionsRequestSchema
+>;
+
 // Gemini 3 Pro OpenAI-compatible chat completions
 // Docs: https://docs.kie.ai/market/gemini/gemini-3-pro
 export const KieGemini3ProMessageRoleSchema = z.enum([

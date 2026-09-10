@@ -113,7 +113,7 @@
       "displayKeys": 158,
       "schemaWithoutPricing": 15,
       "pricingOnly": 30,
-      "endpoints": 73
+      "endpoints": 74
     }
   },
   "source": {
@@ -126,12 +126,12 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:aef45df677013a36a6dc0114ad44a844d6697c2f498b945865df58e4d78e2fd2",
+      "packages/provider/kie/src/zod.ts": "sha256:1e02db1dab4b3864a9966c1fc33d98f26c3636607ff5dc19feed8c6828b39970",
       "packages/provider/kie/src/model-schemas.ts": "sha256:ac479c27021319e47ffae4a2b927d85714ef77f8b05bf57d9a34c07668b91dd5",
-      "packages/provider/kie/src/kie.ts": "sha256:bfd7811db0c5c1fb4b3ab5af35557ab70b772e20ec0decc272bdf1840137ed92",
+      "packages/provider/kie/src/kie.ts": "sha256:94d41a4e2df1463c1f2af33d956374f15fee713ce65b9dbc5ff3f346467b6ab4",
       "packages/provider/cost/src/pricing/kie.ts": "sha256:0a73cf79595e141ef853ad967dcfd4fccf4b284513192be262f068794582dfb7",
       "packages/provider/cost/src/slugs.ts": "sha256:24c69ceaefb02d97c0b279ecf185947373f2f5b67c4507ca87dc7235496b0349",
-      "scripts/endpoint-docs.tsv": "sha256:ed09197fbc1e70b6f3f3597cc84d6067312a72e333412875359593dba5bab87d"
+      "scripts/endpoint-docs.tsv": "sha256:cf6155bbc21da73eb3fb2484543ac0a350db8256753da47128bdf70aebe770ee"
     }
   },
   "rows": [
@@ -21836,6 +21836,16 @@
       },
       {
         "provider": "kie",
+        "dotPath": "gemini38FlashOpenai.v1.chat.completions",
+        "method": "POST",
+        "fullUrl": "https://api.kie.ai/gemini-3-8-flash-openai/v1/chat/completions",
+        "docsUrl": "https://docs.kie.ai/market/gemini/gemini-3-8-flash-openai",
+        "linkedPricingKeys": [],
+        "disposition": "supported",
+        "rationale": "Documented callable endpoint is retained for architecture review even when its pricing is model-keyed."
+      },
+      {
+        "provider": "kie",
         "dotPath": "gemini3Pro.v1.chat.completions",
         "method": "POST",
         "fullUrl": "https://api.kie.ai/gemini-3-pro/v1/chat/completions",
@@ -25013,11 +25023,11 @@
         "unclassified": 0
       },
       "endpoints": {
-        "count": 73,
-        "POST": 55,
+        "count": 74,
+        "POST": 56,
         "GET": 18,
         "dispositionCounts": {
-          "supported": 49,
+          "supported": 50,
           "free-nonbillable": 24,
           "unsupported-endpoint": 0,
           "token-billed": 0,

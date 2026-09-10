@@ -113,7 +113,7 @@
       "displayKeys": 158,
       "schemaWithoutPricing": 15,
       "pricingOnly": 30,
-      "endpoints": 71
+      "endpoints": 72
     }
   },
   "source": {
@@ -126,12 +126,12 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:bcc1e8a89892ea0d99a0ead6729e9eac609d5555e3506d34e2a64f72fe0b1100",
+      "packages/provider/kie/src/zod.ts": "sha256:b3d86eb925b00baf1fd15809ba56689785edb60f40c0623deae68dace4259c64",
       "packages/provider/kie/src/model-schemas.ts": "sha256:ac479c27021319e47ffae4a2b927d85714ef77f8b05bf57d9a34c07668b91dd5",
       "packages/provider/kie/src/kie.ts": "sha256:bfd7811db0c5c1fb4b3ab5af35557ab70b772e20ec0decc272bdf1840137ed92",
       "packages/provider/cost/src/pricing/kie.ts": "sha256:0a73cf79595e141ef853ad967dcfd4fccf4b284513192be262f068794582dfb7",
       "packages/provider/cost/src/slugs.ts": "sha256:24c69ceaefb02d97c0b279ecf185947373f2f5b67c4507ca87dc7235496b0349",
-      "scripts/endpoint-docs.tsv": "sha256:24514de314116d78701b7a3d07b4689e1bb3d370c720bbcd6e0adae5b410866d"
+      "scripts/endpoint-docs.tsv": "sha256:9bbf4c4ca7d0df3e48d36e6120f92bbf4f96fb37a4fb2fbc73d79b890e45c178"
     }
   },
   "rows": [
@@ -21596,6 +21596,16 @@
       },
       {
         "provider": "kie",
+        "dotPath": "api.v1.suno.recovery.recordInfo",
+        "method": "GET",
+        "fullUrl": "https://api.kie.ai/api/v1/suno/recovery/record-info?task_id={task_id}",
+        "docsUrl": "https://docs.kie.ai/suno-api/recovery-audio",
+        "linkedPricingKeys": [],
+        "disposition": "free-nonbillable",
+        "rationale": "Documented transport or account operation has no Kie model-pricing estimator key."
+      },
+      {
+        "provider": "kie",
         "dotPath": "api.v1.veo.extend",
         "method": "POST",
         "fullUrl": "https://api.kie.ai/api/v1/veo/extend",
@@ -24993,12 +25003,12 @@
         "unclassified": 0
       },
       "endpoints": {
-        "count": 71,
+        "count": 72,
         "POST": 54,
-        "GET": 17,
+        "GET": 18,
         "dispositionCounts": {
           "supported": 48,
-          "free-nonbillable": 23,
+          "free-nonbillable": 24,
           "unsupported-endpoint": 0,
           "token-billed": 0,
           "upstream-unmappable": 0

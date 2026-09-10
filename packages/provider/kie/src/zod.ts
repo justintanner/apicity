@@ -6665,6 +6665,18 @@ export const SunoCoverRecordInfoResponseSchema = z
   })
   .passthrough();
 
+export const SunoRecoveryRecordInfoRequestSchema = z
+  .object({ task_id: z.string().min(1) })
+  .passthrough();
+
+export const SunoRecoveryRecordInfoResponseSchema = z
+  .object({
+    code: z.number().int(),
+    msg: z.string().optional(),
+    data: z.array(z.object({}).passthrough()).nullable().optional(),
+  })
+  .passthrough();
+
 export const SunoMp4RequestSchema = z.object({
   taskId: z.string().min(1),
   audioId: z.string().min(1),

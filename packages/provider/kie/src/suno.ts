@@ -22,6 +22,8 @@ import {
   SunoMp4RecordInfoRequestSchema,
   SunoMp4RecordInfoResponseSchema,
   SunoMp4RequestSchema,
+  SunoRecoveryRecordInfoRequestSchema,
+  SunoRecoveryRecordInfoResponseSchema,
   SunoReplaceSectionRequestSchema,
   SunoSoundsRequestSchema,
   SunoUploadCoverRequestSchema,
@@ -445,6 +447,28 @@ export interface SunoCoverRecordInfoResponse {
   code: number;
   msg?: string;
   data?: SunoCoverRecordInfoData | null;
+  [key: string]: unknown;
+}
+
+export interface SunoRecoveryRecordInfoRequest {
+  task_id: string;
+}
+
+/**
+ * One recovered track entry. The docs say "one entry per track" but publish
+ * no field list, so this stays open on purpose.
+ */
+export interface SunoRecoveryRecordInfoEntry {
+  [key: string]: unknown;
+}
+
+/**
+ * `code`: 201 running (`data` null), 200 finished, 500 all tracks failed.
+ */
+export interface SunoRecoveryRecordInfoResponse {
+  code: number;
+  msg?: string;
+  data?: SunoRecoveryRecordInfoEntry[] | null;
   [key: string]: unknown;
 }
 
@@ -904,6 +928,12 @@ interface SunoCoverRecordInfoMethod {
   responseSchema: ApicitySchema<SunoCoverRecordInfoResponse>;
 }
 
+interface SunoRecoveryRecordInfoMethod {
+  (taskId: string): Promise<SunoRecoveryRecordInfoResponse>;
+  schema: ApicitySchema<SunoRecoveryRecordInfoRequest>;
+  responseSchema: ApicitySchema<SunoRecoveryRecordInfoResponse>;
+}
+
 interface SunoMp4Method {
   (
     req: SunoMp4Request,
@@ -1032,12 +1062,17 @@ interface SunoCoverGetNamespace {
   recordInfo: SunoCoverRecordInfoMethod;
 }
 
+interface SunoRecoveryGetNamespace {
+  recordInfo: SunoRecoveryRecordInfoMethod;
+}
+
 interface SunoSunoPostNamespace {
   cover: SunoCoverPostNamespace;
 }
 
 interface SunoSunoGetNamespace {
   cover: SunoCoverGetNamespace;
+  recovery: SunoRecoveryGetNamespace;
 }
 
 interface SunoMp4Namespace {
@@ -1279,6 +1314,17 @@ export function createSunoProvider(
     return kieRequest<SunoCoverRecordInfoResponse>(transport, {
       method: "GET",
       path: `/api/v1/suno/cover/record-info?taskId=${encodeURIComponent(taskId)}`,
+    });
+  }
+
+  // GET https://api.kie.ai/api/v1/suno/recovery/record-info?task_id={task_id}
+  // Docs: https://docs.kie.ai/suno-api/recovery-audio
+  async function recoveryRecordInfo(
+    taskId: string
+  ): Promise<SunoRecoveryRecordInfoResponse> {
+    return kieRequest<SunoRecoveryRecordInfoResponse>(transport, {
+      method: "GET",
+      path: `/api/v1/suno/recovery/record-info?task_id=${encodeURIComponent(taskId)}`,
     });
   }
 
@@ -1624,6 +1670,12 @@ export function createSunoProvider(
               recordInfo: Object.assign(coverRecordInfo, {
                 schema: SunoCoverRecordInfoRequestSchema,
                 responseSchema: SunoCoverRecordInfoResponseSchema,
+              }),
+            },
+            recovery: {
+              recordInfo: Object.assign(recoveryRecordInfo, {
+                schema: SunoRecoveryRecordInfoRequestSchema,
+                responseSchema: SunoRecoveryRecordInfoResponseSchema,
               }),
             },
           },

@@ -4,6 +4,7 @@ import {
   KieGemini35FlashStreamGenerateContentRequestSchema,
   KieGemini36FlashStreamGenerateContentRequestSchema,
   KieGemini37FlashStreamGenerateContentRequestSchema,
+  KieGemini38FlashStreamGenerateContentRequestSchema,
   KieGemini3FlashV1betamodelsStreamGenerateContentRequestSchema,
 } from "./zod";
 import type { ApicitySchema } from "./types";
@@ -11,6 +12,7 @@ import type {
   KieGemini35FlashStreamGenerateContentRequest,
   KieGemini36FlashStreamGenerateContentRequest,
   KieGemini37FlashStreamGenerateContentRequest,
+  KieGemini38FlashStreamGenerateContentRequest,
   KieGemini3FlashV1betamodelsStreamGenerateContentRequest,
 } from "./zod";
 import { createTransport } from "./transport";
@@ -99,6 +101,22 @@ export type KieGemini37FlashStreamGenerateContentResult =
   | KieGemini37FlashGenerateContentResponse
   | AsyncIterable<KieGemini37FlashStreamGenerateContentChunk>;
 
+export interface KieGemini38FlashGenerateContentResponse {
+  candidates?: KieGeminiCandidate[];
+  modelVersion?: string;
+  usageMetadata?: KieGeminiUsageMetadata;
+  credits_consumed?: number;
+  responseId?: string;
+  [key: string]: unknown;
+}
+
+export type KieGemini38FlashStreamGenerateContentChunk =
+  KieGemini38FlashGenerateContentResponse;
+
+export type KieGemini38FlashStreamGenerateContentResult =
+  | KieGemini38FlashGenerateContentResponse
+  | AsyncIterable<KieGemini38FlashStreamGenerateContentChunk>;
+
 export interface KieGemini3FlashV1betamodelsGenerateContentResponse {
   candidates?: KieGeminiCandidate[];
   modelVersion?: string;
@@ -139,6 +157,14 @@ interface KieGemini37FlashStreamGenerateContentMethod {
   schema: ApicitySchema<KieGemini37FlashStreamGenerateContentRequest>;
 }
 
+interface KieGemini38FlashStreamGenerateContentMethod {
+  (
+    req: KieGemini38FlashStreamGenerateContentRequest,
+    signal?: AbortSignal
+  ): Promise<KieGemini38FlashStreamGenerateContentResult>;
+  schema: ApicitySchema<KieGemini38FlashStreamGenerateContentRequest>;
+}
+
 interface KieGemini3FlashV1betamodelsStreamGenerateContentMethod {
   (
     req: KieGemini3FlashV1betamodelsStreamGenerateContentRequest,
@@ -156,6 +182,9 @@ interface KieGeminiModelsNamespace {
   };
   gemini37Flash: {
     streamGenerateContent: KieGemini37FlashStreamGenerateContentMethod;
+  };
+  gemini38Flash: {
+    streamGenerateContent: KieGemini38FlashStreamGenerateContentMethod;
   };
   gemini3FlashV1betamodels: {
     streamGenerateContent: KieGemini3FlashV1betamodelsStreamGenerateContentMethod;
@@ -427,6 +456,49 @@ export function createGeminiProvider(
                 },
                 {
                   schema: KieGemini37FlashStreamGenerateContentRequestSchema,
+                }
+              ),
+            },
+            gemini38Flash: {
+              // POST https://api.kie.ai/gemini/v1/models/gemini-3-8-flash:streamGenerateContent
+              // Docs: https://docs.kie.ai/market/gemini/gemini-3-8-flash
+              streamGenerateContent: Object.assign(
+                async function streamGenerateContent(
+                  req: KieGemini38FlashStreamGenerateContentRequest,
+                  signal?: AbortSignal
+                ): Promise<KieGemini38FlashStreamGenerateContentResult> {
+                  try {
+                    const res = await transport.raw(
+                      "/gemini/v1/models/gemini-3-8-flash:streamGenerateContent",
+                      {
+                        method: "POST",
+                        body: JSON.stringify(req),
+                        signal,
+                      }
+                    );
+
+                    if (isEventStream(res)) {
+                      return parseGeminiStream<KieGemini38FlashStreamGenerateContentChunk>(
+                        res
+                      );
+                    }
+
+                    const data = (await res.json()) as unknown;
+                    throwIfKieErrorEnvelope(data);
+                    return data as KieGemini38FlashGenerateContentResponse;
+                  } catch (error) {
+                    if (error instanceof KieError) throw error;
+                    if (error instanceof SyntaxError) {
+                      throw new KieError(
+                        "Failed to parse Gemini response",
+                        500
+                      );
+                    }
+                    throw new KieError(`Gemini request failed: ${error}`, 500);
+                  }
+                },
+                {
+                  schema: KieGemini38FlashStreamGenerateContentRequestSchema,
                 }
               ),
             },

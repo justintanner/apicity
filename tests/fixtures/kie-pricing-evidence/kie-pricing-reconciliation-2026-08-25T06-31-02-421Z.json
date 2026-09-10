@@ -113,7 +113,7 @@
       "displayKeys": 158,
       "schemaWithoutPricing": 15,
       "pricingOnly": 30,
-      "endpoints": 71
+      "endpoints": 75
     }
   },
   "source": {
@@ -126,12 +126,12 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:bcc1e8a89892ea0d99a0ead6729e9eac609d5555e3506d34e2a64f72fe0b1100",
+      "packages/provider/kie/src/zod.ts": "sha256:7c33f963f176765fb9ca1e206aed1f8e25f69f54c95b2da806800ee6c8158a53",
       "packages/provider/kie/src/model-schemas.ts": "sha256:ac479c27021319e47ffae4a2b927d85714ef77f8b05bf57d9a34c07668b91dd5",
-      "packages/provider/kie/src/kie.ts": "sha256:bfd7811db0c5c1fb4b3ab5af35557ab70b772e20ec0decc272bdf1840137ed92",
+      "packages/provider/kie/src/kie.ts": "sha256:94d41a4e2df1463c1f2af33d956374f15fee713ce65b9dbc5ff3f346467b6ab4",
       "packages/provider/cost/src/pricing/kie.ts": "sha256:0a73cf79595e141ef853ad967dcfd4fccf4b284513192be262f068794582dfb7",
       "packages/provider/cost/src/slugs.ts": "sha256:24c69ceaefb02d97c0b279ecf185947373f2f5b67c4507ca87dc7235496b0349",
-      "scripts/endpoint-docs.tsv": "sha256:24514de314116d78701b7a3d07b4689e1bb3d370c720bbcd6e0adae5b410866d"
+      "scripts/endpoint-docs.tsv": "sha256:e9b413ea209d12a1fa643f6bee94e93c7d88cf3f73a74f798e1c0e95ed338dff"
     }
   },
   "rows": [
@@ -21596,6 +21596,26 @@
       },
       {
         "provider": "kie",
+        "dotPath": "api.v1.suno.recovery",
+        "method": "POST",
+        "fullUrl": "https://api.kie.ai/api/v1/suno/recovery",
+        "docsUrl": "https://docs.kie.ai/suno-api/recovery-audio",
+        "linkedPricingKeys": [],
+        "disposition": "supported",
+        "rationale": "Documented callable endpoint is retained for architecture review even when its pricing is model-keyed."
+      },
+      {
+        "provider": "kie",
+        "dotPath": "api.v1.suno.recovery.recordInfo",
+        "method": "GET",
+        "fullUrl": "https://api.kie.ai/api/v1/suno/recovery/record-info?task_id={task_id}",
+        "docsUrl": "https://docs.kie.ai/suno-api/recovery-audio",
+        "linkedPricingKeys": [],
+        "disposition": "free-nonbillable",
+        "rationale": "Documented transport or account operation has no Kie model-pricing estimator key."
+      },
+      {
+        "provider": "kie",
         "dotPath": "api.v1.veo.extend",
         "method": "POST",
         "fullUrl": "https://api.kie.ai/api/v1/veo/extend",
@@ -21826,6 +21846,16 @@
       },
       {
         "provider": "kie",
+        "dotPath": "gemini38FlashOpenai.v1.chat.completions",
+        "method": "POST",
+        "fullUrl": "https://api.kie.ai/gemini-3-8-flash-openai/v1/chat/completions",
+        "docsUrl": "https://docs.kie.ai/market/gemini/gemini-3-8-flash-openai",
+        "linkedPricingKeys": [],
+        "disposition": "supported",
+        "rationale": "Documented callable endpoint is retained for architecture review even when its pricing is model-keyed."
+      },
+      {
+        "provider": "kie",
         "dotPath": "gemini3Pro.v1.chat.completions",
         "method": "POST",
         "fullUrl": "https://api.kie.ai/gemini-3-pro/v1/chat/completions",
@@ -21870,6 +21900,16 @@
         "method": "POST",
         "fullUrl": "https://api.kie.ai/gemini/v1/models/gemini-3-7-flash:streamGenerateContent",
         "docsUrl": "https://docs.kie.ai/market/gemini/gemini-3-7-flash",
+        "linkedPricingKeys": [],
+        "disposition": "supported",
+        "rationale": "Documented callable endpoint is retained for architecture review even when its pricing is model-keyed."
+      },
+      {
+        "provider": "kie",
+        "dotPath": "gemini.v1.models.gemini38Flash.streamGenerateContent",
+        "method": "POST",
+        "fullUrl": "https://api.kie.ai/gemini/v1/models/gemini-3-8-flash:streamGenerateContent",
+        "docsUrl": "https://docs.kie.ai/market/gemini/gemini-3-8-flash",
         "linkedPricingKeys": [],
         "disposition": "supported",
         "rationale": "Documented callable endpoint is retained for architecture review even when its pricing is model-keyed."
@@ -24993,12 +25033,12 @@
         "unclassified": 0
       },
       "endpoints": {
-        "count": 71,
-        "POST": 54,
-        "GET": 17,
+        "count": 75,
+        "POST": 57,
+        "GET": 18,
         "dispositionCounts": {
-          "supported": 48,
-          "free-nonbillable": 23,
+          "supported": 51,
+          "free-nonbillable": 24,
           "unsupported-endpoint": 0,
           "token-billed": 0,
           "upstream-unmappable": 0

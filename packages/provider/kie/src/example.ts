@@ -95,6 +95,14 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "GET api.v1.suno.recovery.recordInfo": {
+    "source": "kie/suno/recovery-record-info-not-found",
+    "payload": {
+      "task_id": "apicity-test-nonexistent-task-id-do-not-record-real"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "GET api.v1.veo.get1080pVideo": {
     "source": "kie/veo/get-1080p-video",
     "payload": {
@@ -449,6 +457,14 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v1.suno.recovery": {
+    "source": "kie/suno/recovery-invalid-task",
+    "payload": {
+      "task_id": "apicity-test-nonexistent-task-id-do-not-record-real"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v1.veo.generate": {
     "source": "kie/veo/aspect-ratio-probe",
     "payload": {
@@ -586,6 +602,24 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST gemini.v1.models.gemini38Flash.streamGenerateContent": {
+    "source": "kie/gemini-38-flash-auth-error",
+    "payload": {
+      "stream": false,
+      "contents": [
+        {
+          "role": "user",
+          "parts": [
+            {
+              "text": "ping"
+            }
+          ]
+        }
+      ]
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST gemini.v1.models.gemini3FlashV1betamodels.streamGenerateContent": {
     "source": "kie/gemini-3-flash-v1beta-auth-error",
     "payload": {
@@ -687,6 +721,26 @@ const EXAMPLES: Record<string, EndpointExample> = {
   },
   "POST gemini37FlashOpenai.v1.chat.completions": {
     "source": "kie/gemini-37-flash-openai-chat-auth-error",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "ping"
+            }
+          ]
+        }
+      ],
+      "stream": false,
+      "include_thoughts": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST gemini38FlashOpenai.v1.chat.completions": {
+    "source": "kie/gemini-38-flash-openai-chat-auth-error",
     "payload": {
       "messages": [
         {

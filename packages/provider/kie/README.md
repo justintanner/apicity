@@ -760,7 +760,7 @@ console.log(segmentEditTask.data?.taskId);
 
 ## API Reference
 
-58 endpoints across 29 groups. Each method mirrors an upstream URL path.
+62 endpoints across 30 groups. Each method mirrors an upstream URL path.
 
 ### chat
 
@@ -885,6 +885,23 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await kie.gemini.post.v1.models.gemini37Flash.streamGenerateContent({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/gemini.ts`](src/gemini.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>kie.gemini.post.v1.models.gemini38Flash.streamGenerateContent</code></b></summary>
+
+<code>POST https://api.kie.ai/gemini/v1/models/gemini-3-8-flash:streamGenerateContent</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/market/gemini/gemini-3-8-flash)
+
+```typescript
+const res = await kie.gemini.post.v1.models.gemini38Flash.streamGenerateContent({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/gemini.ts`](src/gemini.ts)
@@ -1019,6 +1036,25 @@ const res = await kie.gemini37FlashOpenai.post.v1.chat.completions({ /* ... */ }
 ```
 
 Source: [`packages/provider/kie/src/gemini-37-flash-openai.ts`](src/gemini-37-flash-openai.ts)
+
+</details>
+
+### gemini38FlashOpenai
+
+<details>
+<summary><code>POST</code> <b><code>kie.gemini38FlashOpenai.post.v1.chat.completions</code></b></summary>
+
+<code>POST https://api.kie.ai/gemini-3-8-flash-openai/v1/chat/completions</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/market/gemini/gemini-3-8-flash-openai)
+
+```typescript
+const res = await kie.gemini38FlashOpenai.post.v1.chat.completions({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/gemini-38-flash-openai.ts`](src/gemini-38-flash-openai.ts)
 
 </details>
 
@@ -1511,6 +1547,23 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 </details>
 
 <details>
+<summary><code>GET</code> <b><code>kie.suno.get.api.v1.suno.recovery.recordInfo</code></b></summary>
+
+<code>GET https://api.kie.ai/api/v1/suno/recovery/record-info?task_id={task_id}</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/suno-api/recovery-audio)
+
+```typescript
+const res = await kie.suno.get.api.v1.suno.recovery.recordInfo({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
+
+</details>
+
+<details>
 <summary><code>POST</code> <b><code>kie.suno.post.api.v1.suno.cover.generate</code></b></summary>
 
 <code>POST https://api.kie.ai/api/v1/suno/cover/generate</code>
@@ -1521,6 +1574,23 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await kie.suno.post.api.v1.suno.cover.generate({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>kie.suno.post.api.v1.suno.recovery</code></b></summary>
+
+<code>POST https://api.kie.ai/api/v1/suno/recovery</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/suno-api/recovery-audio)
+
+```typescript
+const res = await kie.suno.post.api.v1.suno.recovery({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)

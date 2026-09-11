@@ -127,6 +127,30 @@ describe("Kie GPT Image 2.5 request contracts", () => {
     }
   });
 
+  it("injects the 1K resolution default when resolution is omitted", () => {
+    for (const contract of GPT_IMAGE_25_CONTRACTS) {
+      const { resolution: _omit, ...inputWithoutResolution } = contract.request
+        .input as Record<string, unknown>;
+      void _omit;
+      const request = { model: contract.model, input: inputWithoutResolution };
+
+      const viaContract = contract.schema.parse(request);
+      expect(viaContract.input.resolution, contract.model).toBe("1K");
+
+      const viaGuard = CREATE_TASK_GUARDS[contract.model].parse(request);
+      expect(
+        (viaGuard as { input: { resolution?: string } }).input.resolution,
+        contract.model
+      ).toBe("1K");
+
+      const viaAggregate = CreateTaskRequestSchema.parse(request);
+      expect(
+        (viaAggregate as { input: { resolution?: string } }).input.resolution,
+        contract.model
+      ).toBe("1K");
+    }
+  });
+
   it.each(GPT_IMAGE_25_ALIAS_REJECTS)(
     "rejects the truncated alias %j",
     (model) => {
@@ -267,15 +291,12 @@ describe("Kie GPT Image 2.5 registries and descriptors", () => {
     }
   });
 
-  it("exposes exact descriptor fields with prompt and input_urls required and no resolution default", () => {
+  it("exposes exact descriptor fields with prompt and input_urls required and resolution defaulting to 1K", () => {
     for (const contract of GPT_IMAGE_25_CONTRACTS) {
       const descriptor = modelInputSchemas[contract.model];
       expect(descriptor.type, contract.model).toBe("image");
       expect(descriptor.fields.prompt.required, contract.model).toBe(true);
-      expect(
-        descriptor.fields.resolution.default,
-        contract.model
-      ).toBeUndefined();
+      expect(descriptor.fields.resolution.default, contract.model).toBe("1K");
       if (contract.model.endsWith("image-to-image")) {
         expect(descriptor.fields.input_urls.required, contract.model).toBe(
           true

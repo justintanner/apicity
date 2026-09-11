@@ -1929,36 +1929,39 @@ export const kie: Record<string, ModelPricing> = {
     "openai/gpt-image-2",
     "2K"
   ),
-  // GPT Image 2.5 (flare / sunburst): per image by input.resolution, no
-  // documented default. Rates from the official feed on 2026-09-11
-  // (6 / 10 / 16 credits); the flare rows anchor https://kie.ai/gpt-image-2-5
-  // and the sunburst rows the ?model= deep link of the same page.
+  // GPT Image 2.5 (flare / sunburst): per image by input.resolution,
+  // default 1K, observed on 2026-09-11 (probe task
+  // 366e2065ed94e590a9e1201e1f1e1704 rendered at the explicit-1K control's
+  // size and was billed 6 credits). Rates from the official feed on
+  // 2026-09-11 (6 / 10 / 16 credits); the flare rows anchor
+  // https://kie.ai/gpt-image-2-5 and the sunburst rows the ?model= deep link
+  // of the same page.
   "gpt-image-2-5-flare-text-to-image": tieredImagePage(
     "resolution",
     { "1K": 0.03, "2K": 0.05, "4K": 0.08 },
     "https://kie.ai/gpt-image-2-5?model=gpt-image-2-5-flare-text-to-image",
-    undefined,
+    "1K",
     "2026-09-11"
   ),
   "gpt-image-2-5-flare-image-to-image": tieredImagePage(
     "resolution",
     { "1K": 0.03, "2K": 0.05, "4K": 0.08 },
     "https://kie.ai/gpt-image-2-5?model=gpt-image-2-5-flare-image-to-image",
-    undefined,
+    "1K",
     "2026-09-11"
   ),
   "gpt-image-2-5-sunburst-text-to-image": tieredImagePage(
     "resolution",
     { "1K": 0.03, "2K": 0.05, "4K": 0.08 },
     "https://kie.ai/gpt-image-2-5?model=gpt-image-2-5-sunburst-text-to-image",
-    undefined,
+    "1K",
     "2026-09-11"
   ),
   "gpt-image-2-5-sunburst-image-to-image": tieredImagePage(
     "resolution",
     { "1K": 0.03, "2K": 0.05, "4K": 0.08 },
     "https://kie.ai/gpt-image-2-5?model=gpt-image-2-5-sunburst-image-to-image",
-    undefined,
+    "1K",
     "2026-09-11"
   ),
   "wan/2-7-image": flatImage(0.024, "alibaba/wan-2.7"),

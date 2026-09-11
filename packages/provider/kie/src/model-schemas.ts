@@ -2437,8 +2437,9 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       resolution: {
         type: "string",
         enum: ["1K", "2K", "4K"],
+        default: "1K",
         description:
-          "Output resolution 1K/2K/4K; no documented default. 2K and 4K are unavailable for 27:16, 16:27, 9:8 and 8:9.",
+          "Output resolution 1K/2K/4K; default 1K (observed 2026-09-11). 2K and 4K are unavailable for 27:16, 16:27, 9:8 and 8:9.",
       },
       background: {
         type: "string",
@@ -2483,8 +2484,9 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       resolution: {
         type: "string",
         enum: ["1K", "2K", "4K"],
+        default: "1K",
         description:
-          "Output resolution 1K/2K/4K; no documented default. 2K and 4K are unavailable for 27:16, 16:27, 9:8 and 8:9.",
+          "Output resolution 1K/2K/4K; default 1K (observed 2026-09-11). 2K and 4K are unavailable for 27:16, 16:27, 9:8 and 8:9.",
       },
       background: {
         type: "string",
@@ -2537,8 +2539,9 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       resolution: {
         type: "string",
         enum: ["1K", "2K", "4K"],
+        default: "1K",
         description:
-          "Output resolution 1K/2K/4K; no documented default. 2K and 4K are unavailable for 27:16, 16:27, 9:8 and 8:9.",
+          "Output resolution 1K/2K/4K; default 1K (observed 2026-09-11). 2K and 4K are unavailable for 27:16, 16:27, 9:8 and 8:9.",
       },
       background: {
         type: "string",
@@ -2583,8 +2586,9 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       resolution: {
         type: "string",
         enum: ["1K", "2K", "4K"],
+        default: "1K",
         description:
-          "Output resolution 1K/2K/4K; no documented default. 2K and 4K are unavailable for 27:16, 16:27, 9:8 and 8:9.",
+          "Output resolution 1K/2K/4K; default 1K (observed 2026-09-11). 2K and 4K are unavailable for 27:16, 16:27, 9:8 and 8:9.",
       },
       background: {
         type: "string",

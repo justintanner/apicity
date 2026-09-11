@@ -245,6 +245,37 @@ describe("modelSlug", () => {
     expect(modelDisplay("kie", model as never)).toBe(display);
   });
 
+  it.each([
+    {
+      model: "gpt-image-2-5-flare-text-to-image",
+      slug: "gi2p5fl",
+      display: "GPT Image 2.5 Flare",
+    },
+    {
+      model: "gpt-image-2-5-flare-image-to-image",
+      slug: "gi2p5fl",
+      display: "GPT Image 2.5 Flare Edit",
+    },
+    {
+      model: "gpt-image-2-5-sunburst-text-to-image",
+      slug: "gi2p5sb",
+      display: "GPT Image 2.5 Sunburst",
+    },
+    {
+      model: "gpt-image-2-5-sunburst-image-to-image",
+      slug: "gi2p5sb",
+      display: "GPT Image 2.5 Sunburst Edit",
+    },
+    {
+      model: "google/gemini-omni-flash-1-1",
+      slug: "geminiomni1p1f",
+      display: "Gemini Omni 1.1 Flash",
+    },
+  ])("resolves $model slug and display", ({ model, slug, display }) => {
+    expect(modelSlug("kie", model as never)).toBe(slug);
+    expect(modelDisplay("kie", model as never)).toBe(display);
+  });
+
   it("resolves kie lip-sync models without throwing", () => {
     expect(() => modelSlug("kie", "omnihuman-1-5")).not.toThrow();
     expect(modelSlug("kie", "omnihuman-1-5")).toBe("oh1p5");

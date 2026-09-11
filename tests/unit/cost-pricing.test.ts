@@ -2706,6 +2706,123 @@ describe("kie stale-family refresh (REQ-004)", () => {
     expect(result.warnings).toEqual([]);
   });
 
+  // GPT Image 2.5 (flare / sunburst): per image by input.resolution, no
+  // documented default — an omitted resolution fails closed (OQ-001).
+  it.each([
+    "gpt-image-2-5-flare-text-to-image",
+    "gpt-image-2-5-flare-image-to-image",
+    "gpt-image-2-5-sunburst-text-to-image",
+    "gpt-image-2-5-sunburst-image-to-image",
+  ])("prices %s at $0.03/$0.05/$0.08 by resolution", (model) => {
+    for (const [resolution, usd] of [
+      ["1K", 0.03],
+      ["2K", 0.05],
+      ["4K", 0.08],
+    ] as const) {
+      const result = kieEstimate({ model, input: { prompt: "x", resolution } });
+
+      expect(result.usd, `${model} @ ${resolution}`).toBeCloseTo(usd, 10);
+      expect(result.breakdown.units).toBe(1);
+      expect(result.breakdown.unit).toBe("images");
+      expect(result.warnings).toEqual([]);
+    }
+  });
+
+  it.each([
+    "gpt-image-2-5-flare-text-to-image",
+    "gpt-image-2-5-flare-image-to-image",
+    "gpt-image-2-5-sunburst-text-to-image",
+    "gpt-image-2-5-sunburst-image-to-image",
+  ])("fails closed when %s omits resolution", (model) => {
+    const result = kieEstimate({ model, input: { prompt: "x" } });
+
+    expect(result.usd).toBe(0);
+    expect(result.warnings[0]).toContain(
+      "missing required selector(s): resolution"
+    );
+  });
+
+  // google/gemini-omni-flash-1-1: a clone of gemini-omni-video's t2v/v2v
+  // tables with a 360p column added to both modes.
+  it.each([
+    { resolution: "360p", duration: 4, usd: 0.315 },
+    { resolution: "360p", duration: 6, usd: 0.42 },
+    { resolution: "360p", duration: 8, usd: 0.525 },
+    { resolution: "360p", duration: 10, usd: 0.63 },
+    { resolution: "720p", duration: 4, usd: 0.315 },
+    { resolution: "720p", duration: 10, usd: 0.63 },
+    { resolution: "1080p", duration: 4, usd: 0.315 },
+    { resolution: "1080p", duration: 10, usd: 0.63 },
+    { resolution: "4k", duration: 4, usd: 0.735 },
+    { resolution: "4k", duration: 6, usd: 0.84 },
+    { resolution: "4k", duration: 8, usd: 0.945 },
+    { resolution: "4k", duration: 10, usd: 1.05 },
+  ])(
+    "prices google/gemini-omni-flash-1-1 t2v $duration s at $resolution as $usd",
+    ({ resolution, duration, usd }) => {
+      const result = kieEstimate({
+        model: "google/gemini-omni-flash-1-1",
+        input: { prompt: "x", duration: String(duration), resolution },
+      });
+
+      expect(result.usd).toBeCloseTo(usd, 10);
+      expect(result.breakdown.units).toBe(1);
+    }
+  );
+
+  it.each([
+    { resolution: "360p", usd: 0.84 },
+    { resolution: "720p", usd: 0.84 },
+    { resolution: "1080p", usd: 0.84 },
+    { resolution: "4k", usd: 1.26 },
+  ])(
+    "prices google/gemini-omni-flash-1-1 v2v at $resolution as a flat $usd per video",
+    ({ resolution, usd }) => {
+      const result = kieEstimate({
+        model: "google/gemini-omni-flash-1-1",
+        input: {
+          prompt: "x",
+          duration: "8",
+          resolution,
+          video_list: [
+            { url: "https://example.com/in.mp4", start: 0, ends: 5 },
+          ],
+        },
+      });
+
+      expect(result.usd).toBeCloseTo(usd, 10);
+      expect(result.breakdown).toEqual({
+        units: 1,
+        unit: "generations",
+        perUnitUsd: usd,
+      });
+    }
+  );
+
+  it("prices google/gemini-omni-flash-1-1 off its documented 720p default", () => {
+    const result = kieEstimate({
+      model: "google/gemini-omni-flash-1-1",
+      input: { prompt: "x", duration: "4" },
+    });
+
+    expect(result.usd).toBeCloseTo(0.315, 10);
+    expect(result.warnings).toEqual([]);
+  });
+
+  // W1 evidence stamp: the five new pricing keys were all pulled fresh on
+  // 2026-09-11 against kie.ai pages.
+  it.each([
+    "gpt-image-2-5-flare-text-to-image",
+    "gpt-image-2-5-flare-image-to-image",
+    "gpt-image-2-5-sunburst-text-to-image",
+    "gpt-image-2-5-sunburst-image-to-image",
+    "google/gemini-omni-flash-1-1",
+  ])("stamps %s with the 2026-09-11 kie.ai evidence pull", (model) => {
+    const entry = PRICING.kie[model];
+    expect(entry.source.asOf, model).toBe("2026-09-11");
+    expect(entry.source.url, model).toMatch(/^https:\/\/kie\.ai\//);
+  });
+
   // AC-4 paper trail: the two OTP pay-gated Gemini Omni routes that are NOT
   // the video generator publish no rate in the 2026-08-06 pull (0 of 404
   // rows), so they are intentionally unpriced rather than silently skipped.

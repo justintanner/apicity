@@ -107,10 +107,10 @@
       "endpoints": 71
     },
     "final": {
-      "models": 141,
-      "pricingKeys": 156,
-      "slugKeys": 158,
-      "displayKeys": 158,
+      "models": 146,
+      "pricingKeys": 161,
+      "slugKeys": 163,
+      "displayKeys": 163,
       "schemaWithoutPricing": 15,
       "pricingOnly": 30,
       "endpoints": 75
@@ -126,11 +126,11 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:7c33f963f176765fb9ca1e206aed1f8e25f69f54c95b2da806800ee6c8158a53",
-      "packages/provider/kie/src/model-schemas.ts": "sha256:ac479c27021319e47ffae4a2b927d85714ef77f8b05bf57d9a34c07668b91dd5",
-      "packages/provider/kie/src/kie.ts": "sha256:94d41a4e2df1463c1f2af33d956374f15fee713ce65b9dbc5ff3f346467b6ab4",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:0a73cf79595e141ef853ad967dcfd4fccf4b284513192be262f068794582dfb7",
-      "packages/provider/cost/src/slugs.ts": "sha256:24c69ceaefb02d97c0b279ecf185947373f2f5b67c4507ca87dc7235496b0349",
+      "packages/provider/kie/src/zod.ts": "sha256:e270b9b82dadb3234896206d7bcfe490593b756f300017eb840adc9849711c9a",
+      "packages/provider/kie/src/model-schemas.ts": "sha256:32975bf75d8b9ab11929e5ae45c5e158aa20b9794f3517484c7fe80466ea5220",
+      "packages/provider/kie/src/kie.ts": "sha256:ffd0feb6bfb9b329bdd5900c5164bb4f0702c8a3c91cffd774b9e21cb3088ded",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:08b1b3b20f4e449900821ed0c648a05888631ba1859a7e05e76261fdfb7e0f07",
+      "packages/provider/cost/src/slugs.ts": "sha256:25d699780a875783a1de78270d452c5d941207a7bce6f8c198610d143a867e41",
       "scripts/endpoint-docs.tsv": "sha256:e9b413ea209d12a1fa643f6bee94e93c7d88cf3f73a74f798e1c0e95ed338dff"
     }
   },
@@ -19877,6 +19877,42 @@
         "rationale": "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
       },
       {
+        "id": "gpt-image-2-5-flare-image-to-image",
+        "descriptor": true,
+        "guard": true,
+        "pricingKey": "gpt-image-2-5-flare-image-to-image",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
+        "id": "gpt-image-2-5-flare-text-to-image",
+        "descriptor": true,
+        "guard": true,
+        "pricingKey": "gpt-image-2-5-flare-text-to-image",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
+        "id": "gpt-image-2-5-sunburst-image-to-image",
+        "descriptor": true,
+        "guard": true,
+        "pricingKey": "gpt-image-2-5-sunburst-image-to-image",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
+        "id": "gpt-image-2-5-sunburst-text-to-image",
+        "descriptor": true,
+        "guard": true,
+        "pricingKey": "gpt-image-2-5-sunburst-text-to-image",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
         "id": "seedream/5-lite-image-to-image",
         "descriptor": true,
         "guard": true,
@@ -20880,6 +20916,15 @@
         "descriptor": true,
         "guard": true,
         "pricingKey": "google/gemini-3-1-flash-tts",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
+        "id": "google/gemini-omni-flash-1-1",
+        "descriptor": true,
+        "guard": true,
+        "pricingKey": "google/gemini-omni-flash-1-1",
         "linkedRows": [],
         "disposition": "upstream-unmappable",
         "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
@@ -22781,6 +22826,30 @@
         "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
       },
       {
+        "key": "gpt-image-2-5-flare-text-to-image",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "gpt-image-2-5-flare-image-to-image",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "gpt-image-2-5-sunburst-text-to-image",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "gpt-image-2-5-sunburst-image-to-image",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
         "key": "wan/2-7-image",
         "linkedRows": [
           "sha256:8ad52c3321102b56e4592ce13c896f578e59855ff8c05c43ad63229ad2b85a24#1"
@@ -23349,6 +23418,12 @@
         "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
       },
       {
+        "key": "google/gemini-omni-flash-1-1",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
         "key": "google/gemini-2-5-pro-tts",
         "linkedRows": [],
         "disposition": "upstream-unmappable",
@@ -23667,6 +23742,10 @@
         "disposition": "supported"
       },
       {
+        "key": "google/gemini-omni-flash-1-1",
+        "disposition": "supported"
+      },
+      {
         "key": "google/gemini-2-5-pro-tts",
         "disposition": "supported"
       },
@@ -23732,6 +23811,22 @@
       },
       {
         "key": "gpt-image-2-image-to-image",
+        "disposition": "supported"
+      },
+      {
+        "key": "gpt-image-2-5-flare-text-to-image",
+        "disposition": "supported"
+      },
+      {
+        "key": "gpt-image-2-5-flare-image-to-image",
+        "disposition": "supported"
+      },
+      {
+        "key": "gpt-image-2-5-sunburst-text-to-image",
+        "disposition": "supported"
+      },
+      {
+        "key": "gpt-image-2-5-sunburst-image-to-image",
         "disposition": "supported"
       },
       {
@@ -24301,6 +24396,10 @@
         "disposition": "supported"
       },
       {
+        "key": "google/gemini-omni-flash-1-1",
+        "disposition": "supported"
+      },
+      {
         "key": "google/gemini-2-5-pro-tts",
         "disposition": "supported"
       },
@@ -24366,6 +24465,22 @@
       },
       {
         "key": "gpt-image-2-image-to-image",
+        "disposition": "supported"
+      },
+      {
+        "key": "gpt-image-2-5-flare-text-to-image",
+        "disposition": "supported"
+      },
+      {
+        "key": "gpt-image-2-5-flare-image-to-image",
+        "disposition": "supported"
+      },
+      {
+        "key": "gpt-image-2-5-sunburst-text-to-image",
+        "disposition": "supported"
+      },
+      {
+        "key": "gpt-image-2-5-sunburst-image-to-image",
         "disposition": "supported"
       },
       {
@@ -25019,16 +25134,16 @@
     },
     "apiCity": {
       "models": {
-        "count": 141,
-        "descriptors": 141,
-        "guards": 141,
+        "count": 146,
+        "descriptors": 146,
+        "guards": 146,
         "withoutPricing": 15,
         "dispositionCounts": {
           "supported": 113,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 28
+          "upstream-unmappable": 33
         },
         "unclassified": 0
       },
@@ -25046,20 +25161,20 @@
         "unclassified": 0
       },
       "pricingKeys": {
-        "count": 156,
+        "count": 161,
         "dispositionCounts": {
           "supported": 141,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 15
+          "upstream-unmappable": 20
         },
         "unclassified": 0
       },
       "slugs": {
-        "count": 158,
+        "count": 163,
         "dispositionCounts": {
-          "supported": 158,
+          "supported": 163,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -25068,9 +25183,9 @@
         "unclassified": 0
       },
       "displays": {
-        "count": 158,
+        "count": 163,
         "dispositionCounts": {
-          "supported": 158,
+          "supported": 163,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -25423,6 +25538,230 @@
         "status": "unreachable",
         "provenance": "frozen Qwen Image image-to-image cell is nonzero, but no output-area or megapixel selector exists in the callable schema",
         "rationale": "The live rate is units-unreachable; it must fail closed rather than injecting undeclared image_size or claiming a free/default area."
+      },
+      {
+        "key": "gpt-image-2-5-flare-text-to-image",
+        "variant": "1K",
+        "status": "pricing-only",
+        "provenance": "no matching official occurrence in the frozen 2026-08-25 Kie pricing snapshot; the model postdates it (2026-09-10 survey, ac-fvl4yb)",
+        "rationale": "The rate is sourced from the 2026-09-11 out-of-band feed pull, not the frozen snapshot; it remains pricing-only until the OQ-005 evidence-refresh bead reconciles it."
+      },
+      {
+        "key": "gpt-image-2-5-flare-text-to-image",
+        "variant": "2K",
+        "status": "pricing-only",
+        "provenance": "no matching official occurrence in the frozen 2026-08-25 Kie pricing snapshot; the model postdates it (2026-09-10 survey, ac-fvl4yb)",
+        "rationale": "The rate is sourced from the 2026-09-11 out-of-band feed pull, not the frozen snapshot; it remains pricing-only until the OQ-005 evidence-refresh bead reconciles it."
+      },
+      {
+        "key": "gpt-image-2-5-flare-text-to-image",
+        "variant": "4K",
+        "status": "pricing-only",
+        "provenance": "no matching official occurrence in the frozen 2026-08-25 Kie pricing snapshot; the model postdates it (2026-09-10 survey, ac-fvl4yb)",
+        "rationale": "The rate is sourced from the 2026-09-11 out-of-band feed pull, not the frozen snapshot; it remains pricing-only until the OQ-005 evidence-refresh bead reconciles it."
+      },
+      {
+        "key": "gpt-image-2-5-flare-image-to-image",
+        "variant": "1K",
+        "status": "pricing-only",
+        "provenance": "no matching official occurrence in the frozen 2026-08-25 Kie pricing snapshot; the model postdates it (2026-09-10 survey, ac-fvl4yb)",
+        "rationale": "The rate is sourced from the 2026-09-11 out-of-band feed pull, not the frozen snapshot; it remains pricing-only until the OQ-005 evidence-refresh bead reconciles it."
+      },
+      {
+        "key": "gpt-image-2-5-flare-image-to-image",
+        "variant": "2K",
+        "status": "pricing-only",
+        "provenance": "no matching official occurrence in the frozen 2026-08-25 Kie pricing snapshot; the model postdates it (2026-09-10 survey, ac-fvl4yb)",
+        "rationale": "The rate is sourced from the 2026-09-11 out-of-band feed pull, not the frozen snapshot; it remains pricing-only until the OQ-005 evidence-refresh bead reconciles it."
+      },
+      {
+        "key": "gpt-image-2-5-flare-image-to-image",
+        "variant": "4K",
+        "status": "pricing-only",
+        "provenance": "no matching official occurrence in the frozen 2026-08-25 Kie pricing snapshot; the model postdates it (2026-09-10 survey, ac-fvl4yb)",
+        "rationale": "The rate is sourced from the 2026-09-11 out-of-band feed pull, not the frozen snapshot; it remains pricing-only until the OQ-005 evidence-refresh bead reconciles it."
+      },
+      {
+        "key": "gpt-image-2-5-sunburst-text-to-image",
+        "variant": "1K",
+        "status": "pricing-only",
+        "provenance": "no matching official occurrence in the frozen 2026-08-25 Kie pricing snapshot; the model postdates it (2026-09-10 survey, ac-fvl4yb)",
+        "rationale": "The rate is sourced from the 2026-09-11 out-of-band feed pull, not the frozen snapshot; it remains pricing-only until the OQ-005 evidence-refresh bead reconciles it."
+      },
+      {
+        "key": "gpt-image-2-5-sunburst-text-to-image",
+        "variant": "2K",
+        "status": "pricing-only",
+        "provenance": "no matching official occurrence in the frozen 2026-08-25 Kie pricing snapshot; the model postdates it (2026-09-10 survey, ac-fvl4yb)",
+        "rationale": "The rate is sourced from the 2026-09-11 out-of-band feed pull, not the frozen snapshot; it remains pricing-only until the OQ-005 evidence-refresh bead reconciles it."
+      },
+      {
+        "key": "gpt-image-2-5-sunburst-text-to-image",
+        "variant": "4K",
+        "status": "pricing-only",
+        "provenance": "no matching official occurrence in the frozen 2026-08-25 Kie pricing snapshot; the model postdates it (2026-09-10 survey, ac-fvl4yb)",
+        "rationale": "The rate is sourced from the 2026-09-11 out-of-band feed pull, not the frozen snapshot; it remains pricing-only until the OQ-005 evidence-refresh bead reconciles it."
+      },
+      {
+        "key": "gpt-image-2-5-sunburst-image-to-image",
+        "variant": "1K",
+        "status": "pricing-only",
+        "provenance": "no matching official occurrence in the frozen 2026-08-25 Kie pricing snapshot; the model postdates it (2026-09-10 survey, ac-fvl4yb)",
+        "rationale": "The rate is sourced from the 2026-09-11 out-of-band feed pull, not the frozen snapshot; it remains pricing-only until the OQ-005 evidence-refresh bead reconciles it."
+      },
+      {
+        "key": "gpt-image-2-5-sunburst-image-to-image",
+        "variant": "2K",
+        "status": "pricing-only",
+        "provenance": "no matching official occurrence in the frozen 2026-08-25 Kie pricing snapshot; the model postdates it (2026-09-10 survey, ac-fvl4yb)",
+        "rationale": "The rate is sourced from the 2026-09-11 out-of-band feed pull, not the frozen snapshot; it remains pricing-only until the OQ-005 evidence-refresh bead reconciles it."
+      },
+      {
+        "key": "gpt-image-2-5-sunburst-image-to-image",
+        "variant": "4K",
+        "status": "pricing-only",
+        "provenance": "no matching official occurrence in the frozen 2026-08-25 Kie pricing snapshot; the model postdates it (2026-09-10 survey, ac-fvl4yb)",
+        "rationale": "The rate is sourced from the 2026-09-11 out-of-band feed pull, not the frozen snapshot; it remains pricing-only until the OQ-005 evidence-refresh bead reconciles it."
+      },
+      {
+        "key": "google/gemini-omni-flash-1-1",
+        "variant": "t2v|4|360p",
+        "status": "pricing-only",
+        "provenance": "no matching official occurrence in the frozen 2026-08-25 Kie pricing snapshot; the model postdates it (2026-09-10 survey, ac-fvl4yb)",
+        "rationale": "The rate is sourced from the 2026-09-11 out-of-band feed pull, not the frozen snapshot; it remains pricing-only until the OQ-005 evidence-refresh bead reconciles it."
+      },
+      {
+        "key": "google/gemini-omni-flash-1-1",
+        "variant": "t2v|6|360p",
+        "status": "pricing-only",
+        "provenance": "no matching official occurrence in the frozen 2026-08-25 Kie pricing snapshot; the model postdates it (2026-09-10 survey, ac-fvl4yb)",
+        "rationale": "The rate is sourced from the 2026-09-11 out-of-band feed pull, not the frozen snapshot; it remains pricing-only until the OQ-005 evidence-refresh bead reconciles it."
+      },
+      {
+        "key": "google/gemini-omni-flash-1-1",
+        "variant": "t2v|8|360p",
+        "status": "pricing-only",
+        "provenance": "no matching official occurrence in the frozen 2026-08-25 Kie pricing snapshot; the model postdates it (2026-09-10 survey, ac-fvl4yb)",
+        "rationale": "The rate is sourced from the 2026-09-11 out-of-band feed pull, not the frozen snapshot; it remains pricing-only until the OQ-005 evidence-refresh bead reconciles it."
+      },
+      {
+        "key": "google/gemini-omni-flash-1-1",
+        "variant": "t2v|10|360p",
+        "status": "pricing-only",
+        "provenance": "no matching official occurrence in the frozen 2026-08-25 Kie pricing snapshot; the model postdates it (2026-09-10 survey, ac-fvl4yb)",
+        "rationale": "The rate is sourced from the 2026-09-11 out-of-band feed pull, not the frozen snapshot; it remains pricing-only until the OQ-005 evidence-refresh bead reconciles it."
+      },
+      {
+        "key": "google/gemini-omni-flash-1-1",
+        "variant": "v2v|360p",
+        "status": "pricing-only",
+        "provenance": "no matching official occurrence in the frozen 2026-08-25 Kie pricing snapshot; the model postdates it (2026-09-10 survey, ac-fvl4yb)",
+        "rationale": "The rate is sourced from the 2026-09-11 out-of-band feed pull, not the frozen snapshot; it remains pricing-only until the OQ-005 evidence-refresh bead reconciles it."
+      },
+      {
+        "key": "google/gemini-omni-flash-1-1",
+        "variant": "t2v|4|720p",
+        "status": "pricing-only",
+        "provenance": "no matching official occurrence in the frozen 2026-08-25 Kie pricing snapshot; the model postdates it (2026-09-10 survey, ac-fvl4yb)",
+        "rationale": "The rate is sourced from the 2026-09-11 out-of-band feed pull, not the frozen snapshot; it remains pricing-only until the OQ-005 evidence-refresh bead reconciles it."
+      },
+      {
+        "key": "google/gemini-omni-flash-1-1",
+        "variant": "t2v|6|720p",
+        "status": "pricing-only",
+        "provenance": "no matching official occurrence in the frozen 2026-08-25 Kie pricing snapshot; the model postdates it (2026-09-10 survey, ac-fvl4yb)",
+        "rationale": "The rate is sourced from the 2026-09-11 out-of-band feed pull, not the frozen snapshot; it remains pricing-only until the OQ-005 evidence-refresh bead reconciles it."
+      },
+      {
+        "key": "google/gemini-omni-flash-1-1",
+        "variant": "t2v|8|720p",
+        "status": "pricing-only",
+        "provenance": "no matching official occurrence in the frozen 2026-08-25 Kie pricing snapshot; the model postdates it (2026-09-10 survey, ac-fvl4yb)",
+        "rationale": "The rate is sourced from the 2026-09-11 out-of-band feed pull, not the frozen snapshot; it remains pricing-only until the OQ-005 evidence-refresh bead reconciles it."
+      },
+      {
+        "key": "google/gemini-omni-flash-1-1",
+        "variant": "t2v|10|720p",
+        "status": "pricing-only",
+        "provenance": "no matching official occurrence in the frozen 2026-08-25 Kie pricing snapshot; the model postdates it (2026-09-10 survey, ac-fvl4yb)",
+        "rationale": "The rate is sourced from the 2026-09-11 out-of-band feed pull, not the frozen snapshot; it remains pricing-only until the OQ-005 evidence-refresh bead reconciles it."
+      },
+      {
+        "key": "google/gemini-omni-flash-1-1",
+        "variant": "v2v|720p",
+        "status": "pricing-only",
+        "provenance": "no matching official occurrence in the frozen 2026-08-25 Kie pricing snapshot; the model postdates it (2026-09-10 survey, ac-fvl4yb)",
+        "rationale": "The rate is sourced from the 2026-09-11 out-of-band feed pull, not the frozen snapshot; it remains pricing-only until the OQ-005 evidence-refresh bead reconciles it."
+      },
+      {
+        "key": "google/gemini-omni-flash-1-1",
+        "variant": "t2v|4|1080p",
+        "status": "pricing-only",
+        "provenance": "no matching official occurrence in the frozen 2026-08-25 Kie pricing snapshot; the model postdates it (2026-09-10 survey, ac-fvl4yb)",
+        "rationale": "The rate is sourced from the 2026-09-11 out-of-band feed pull, not the frozen snapshot; it remains pricing-only until the OQ-005 evidence-refresh bead reconciles it."
+      },
+      {
+        "key": "google/gemini-omni-flash-1-1",
+        "variant": "t2v|6|1080p",
+        "status": "pricing-only",
+        "provenance": "no matching official occurrence in the frozen 2026-08-25 Kie pricing snapshot; the model postdates it (2026-09-10 survey, ac-fvl4yb)",
+        "rationale": "The rate is sourced from the 2026-09-11 out-of-band feed pull, not the frozen snapshot; it remains pricing-only until the OQ-005 evidence-refresh bead reconciles it."
+      },
+      {
+        "key": "google/gemini-omni-flash-1-1",
+        "variant": "t2v|8|1080p",
+        "status": "pricing-only",
+        "provenance": "no matching official occurrence in the frozen 2026-08-25 Kie pricing snapshot; the model postdates it (2026-09-10 survey, ac-fvl4yb)",
+        "rationale": "The rate is sourced from the 2026-09-11 out-of-band feed pull, not the frozen snapshot; it remains pricing-only until the OQ-005 evidence-refresh bead reconciles it."
+      },
+      {
+        "key": "google/gemini-omni-flash-1-1",
+        "variant": "t2v|10|1080p",
+        "status": "pricing-only",
+        "provenance": "no matching official occurrence in the frozen 2026-08-25 Kie pricing snapshot; the model postdates it (2026-09-10 survey, ac-fvl4yb)",
+        "rationale": "The rate is sourced from the 2026-09-11 out-of-band feed pull, not the frozen snapshot; it remains pricing-only until the OQ-005 evidence-refresh bead reconciles it."
+      },
+      {
+        "key": "google/gemini-omni-flash-1-1",
+        "variant": "v2v|1080p",
+        "status": "pricing-only",
+        "provenance": "no matching official occurrence in the frozen 2026-08-25 Kie pricing snapshot; the model postdates it (2026-09-10 survey, ac-fvl4yb)",
+        "rationale": "The rate is sourced from the 2026-09-11 out-of-band feed pull, not the frozen snapshot; it remains pricing-only until the OQ-005 evidence-refresh bead reconciles it."
+      },
+      {
+        "key": "google/gemini-omni-flash-1-1",
+        "variant": "t2v|4|4k",
+        "status": "pricing-only",
+        "provenance": "no matching official occurrence in the frozen 2026-08-25 Kie pricing snapshot; the model postdates it (2026-09-10 survey, ac-fvl4yb)",
+        "rationale": "The rate is sourced from the 2026-09-11 out-of-band feed pull, not the frozen snapshot; it remains pricing-only until the OQ-005 evidence-refresh bead reconciles it."
+      },
+      {
+        "key": "google/gemini-omni-flash-1-1",
+        "variant": "t2v|6|4k",
+        "status": "pricing-only",
+        "provenance": "no matching official occurrence in the frozen 2026-08-25 Kie pricing snapshot; the model postdates it (2026-09-10 survey, ac-fvl4yb)",
+        "rationale": "The rate is sourced from the 2026-09-11 out-of-band feed pull, not the frozen snapshot; it remains pricing-only until the OQ-005 evidence-refresh bead reconciles it."
+      },
+      {
+        "key": "google/gemini-omni-flash-1-1",
+        "variant": "t2v|8|4k",
+        "status": "pricing-only",
+        "provenance": "no matching official occurrence in the frozen 2026-08-25 Kie pricing snapshot; the model postdates it (2026-09-10 survey, ac-fvl4yb)",
+        "rationale": "The rate is sourced from the 2026-09-11 out-of-band feed pull, not the frozen snapshot; it remains pricing-only until the OQ-005 evidence-refresh bead reconciles it."
+      },
+      {
+        "key": "google/gemini-omni-flash-1-1",
+        "variant": "t2v|10|4k",
+        "status": "pricing-only",
+        "provenance": "no matching official occurrence in the frozen 2026-08-25 Kie pricing snapshot; the model postdates it (2026-09-10 survey, ac-fvl4yb)",
+        "rationale": "The rate is sourced from the 2026-09-11 out-of-band feed pull, not the frozen snapshot; it remains pricing-only until the OQ-005 evidence-refresh bead reconciles it."
+      },
+      {
+        "key": "google/gemini-omni-flash-1-1",
+        "variant": "v2v|4k",
+        "status": "pricing-only",
+        "provenance": "no matching official occurrence in the frozen 2026-08-25 Kie pricing snapshot; the model postdates it (2026-09-10 survey, ac-fvl4yb)",
+        "rationale": "The rate is sourced from the 2026-09-11 out-of-band feed pull, not the frozen snapshot; it remains pricing-only until the OQ-005 evidence-refresh bead reconciles it."
       }
     ]
   },

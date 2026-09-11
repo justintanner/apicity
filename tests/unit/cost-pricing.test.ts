@@ -3303,8 +3303,8 @@ describe("kie stale-family refresh (REQ-004)", () => {
   );
 
   it.each([
-    { imageCount: 1, resolution: "768P", duration: 5, usd: 0.44 },
-    { imageCount: 3, resolution: "2K", duration: 4, usd: 0.64 },
+    { imageCount: 1, resolution: "768P", duration: 5, usd: 0.22 },
+    { imageCount: 3, resolution: "2K", duration: 4, usd: 0.32 },
   ])(
     "prices MiniMax H3 reference images with exact per-image input charges",
     ({ imageCount, resolution, duration, usd }) => {
@@ -3326,7 +3326,7 @@ describe("kie stale-family refresh (REQ-004)", () => {
       const result = kieEstimate(parsed.data);
 
       expect(result.usd).toBeCloseTo(usd, 10);
-      expect(result.breakdown.extraUsd).toBeCloseTo(imageCount * 0.04, 10);
+      expect(result.breakdown.extraUsd).toBeCloseTo(imageCount * 0.02, 10);
       expect(result.warnings).toEqual([]);
     }
   );
@@ -3335,8 +3335,8 @@ describe("kie stale-family refresh (REQ-004)", () => {
     {
       label: "first_frame_url",
       input: { first_frame_url: "https://example.com/first.png" },
-      extraUsd: 0.04,
-      usd: 0.44,
+      extraUsd: 0.02,
+      usd: 0.22,
     },
     {
       label: "first_frame_url and last_frame_url",
@@ -3344,8 +3344,8 @@ describe("kie stale-family refresh (REQ-004)", () => {
         first_frame_url: "https://example.com/first.png",
         last_frame_url: "https://example.com/last.png",
       },
-      extraUsd: 0.08,
-      usd: 0.48,
+      extraUsd: 0.04,
+      usd: 0.24,
     },
   ])(
     "prices MiniMax H3 image-to-video $label input surcharge exactly",

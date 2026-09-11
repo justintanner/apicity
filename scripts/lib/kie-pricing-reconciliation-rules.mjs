@@ -161,6 +161,15 @@ export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
     rationale:
       "The official/runtime USD conflict is explicit in WI6 and is not rounded or treated as exact evidence.",
   },
+  {
+    key: "wan/3-0-video",
+    variant: "720P",
+    status: "pricing-only",
+    provenance:
+      "frozen 2026-09-11 Wan 3.0 standard 720P cell publishes $0.09/s at 16 credits; https://kie.ai/wan3.0-video prints 16 credits/s ($0.08/s) on 2026-09-11, which is the callable runtime rate",
+    rationale:
+      "The official/runtime USD conflict is explicit (feed 0.09 vs page and credit basis 0.08) and is not rounded or treated as exact evidence; revisit with a real invoice.",
+  },
   ...[
     ["kling-3.0-omni/image-to-video", "720p"],
     ["kling-3.0-omni/image-to-video", "720p|audio"],
@@ -244,51 +253,6 @@ export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
     rationale:
       "The live rate is units-unreachable; it must fail closed rather than injecting undeclared image_size or claiming a free/default area.",
   },
-  // The 2026-09-10 survey's five createTask additions (ac-fvl4yb / W1) are
-  // absent from the frozen 2026-08-25 Kie pricing snapshot entirely — they
-  // are new catalogue ids the snapshot predates, not a mapping gap inside an
-  // existing family. Their rates come from a separate, out-of-band feed pull
-  // (plans/ac-fvl4yb/build/evidence/kie-pricing-feed-rows-2026-09-11.json)
-  // that is deliberately not wired into FAMILY_MAPPING_RULES or the
-  // reconciliation snapshot (NG-005); every reachable runtime variant is
-  // therefore an explicit exception until a later evidence-refresh pass
-  // reconciles them (see the OQ-005 follow-up bead filed by W1.12).
-  ...[
-    "gpt-image-2-5-flare-text-to-image",
-    "gpt-image-2-5-flare-image-to-image",
-    "gpt-image-2-5-sunburst-text-to-image",
-    "gpt-image-2-5-sunburst-image-to-image",
-  ].flatMap((key) =>
-    ["1K", "2K", "4K"].map((variant) => ({
-      key,
-      variant,
-      status: "pricing-only",
-      provenance:
-        "no matching official occurrence in the frozen 2026-08-25 Kie pricing snapshot; the model postdates it (2026-09-10 survey, ac-fvl4yb)",
-      rationale:
-        "The rate is sourced from the 2026-09-11 out-of-band feed pull, not the frozen snapshot; it remains pricing-only until the OQ-005 evidence-refresh bead reconciles it.",
-    }))
-  ),
-  ...["360p", "720p", "1080p", "4k"].flatMap((resolution) => [
-    ...["4", "6", "8", "10"].map((duration) => ({
-      key: "google/gemini-omni-flash-1-1",
-      variant: `t2v|${duration}|${resolution}`,
-      status: "pricing-only",
-      provenance:
-        "no matching official occurrence in the frozen 2026-08-25 Kie pricing snapshot; the model postdates it (2026-09-10 survey, ac-fvl4yb)",
-      rationale:
-        "The rate is sourced from the 2026-09-11 out-of-band feed pull, not the frozen snapshot; it remains pricing-only until the OQ-005 evidence-refresh bead reconciles it.",
-    })),
-    {
-      key: "google/gemini-omni-flash-1-1",
-      variant: `v2v|${resolution}`,
-      status: "pricing-only",
-      provenance:
-        "no matching official occurrence in the frozen 2026-08-25 Kie pricing snapshot; the model postdates it (2026-09-10 survey, ac-fvl4yb)",
-      rationale:
-        "The rate is sourced from the 2026-09-11 out-of-band feed pull, not the frozen snapshot; it remains pricing-only until the OQ-005 evidence-refresh bead reconciles it.",
-    },
-  ]),
 ]);
 
 export const EXPLICIT_OPERATION_MAPPINGS = Object.freeze([
@@ -735,7 +699,8 @@ const PAYLOAD_RULES = Object.freeze([
   {
     family: "gemini-video-input",
     matches: (key, text) =>
-      key === "gemini-omni-video" && /with video input/i.test(text),
+      (key === "gemini-omni-video" || key === "google/gemini-omni-flash-1-1") &&
+      /with video input/i.test(text),
     apply: (input) => {
       input.video_list = [
         { url: "https://example.com/a.mp4", start: 0, ends: 5 },
@@ -888,7 +853,8 @@ const PAYLOAD_RULES = Object.freeze([
   },
   {
     family: "gemini-default-duration",
-    matches: (key) => key === "gemini-omni-video",
+    matches: (key) =>
+      key === "gemini-omni-video" || key === "google/gemini-omni-flash-1-1",
     apply: (input) => {
       if (!Object.hasOwn(input, "duration")) input.duration = "4";
     },
@@ -1119,6 +1085,14 @@ const KNOWN_FALSE_MAPPING_RULES = Object.freeze([
       String(official.usdPrice) === "0.004",
     message:
       "The official Grok image-to-video cell publishes $0.004/s while the callable 1080p runtime tier is $0.04/s; retain the upstream rate conflict explicitly.",
+  },
+  {
+    family: "wan-3-0-720p-rate-conflict",
+    matches: (description, _key, official) =>
+      /^wan 3\.0 video,\s*720p,\s*video$/i.test(description) &&
+      String(official.usdPrice) === "0.09",
+    message:
+      "The official Wan 3.0 standard 720P cell publishes $0.09/s (16 credits) while https://kie.ai/wan3.0-video and the $0.005 credit basis print $0.08/s, the callable runtime rate; retain the upstream rate conflict explicitly rather than quoting either figure as exact evidence.",
   },
   {
     family: "qwen-image-area",

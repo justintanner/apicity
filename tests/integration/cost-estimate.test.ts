@@ -677,9 +677,9 @@ describe("cost.estimate — pure-table (no network)", () => {
       expect(r.source).toBe("per-unit-table");
       expect(r.breakdown.unit).toBe("seconds");
       expect(r.breakdown.units).toBe(8);
-      expect(r.breakdown.perUnitUsd).toBe(0.08);
-      expect(r.usd).toBeCloseTo(0.08 * 8, 6);
-      expect(r.rateAsOf).toBe("2026-08-11");
+      expect(r.breakdown.perUnitUsd).toBe(0.04);
+      expect(r.usd).toBeCloseTo(0.04 * 8, 6);
+      expect(r.rateAsOf).toBe("2026-09-11");
     }
   });
 
@@ -712,12 +712,12 @@ describe("cost.estimate — pure-table (no network)", () => {
         },
       });
 
-      expect(explicit.breakdown.perUnitUsd).toBe(0.13);
-      expect(explicit.usd).toBeCloseTo(0.13 * 6, 6);
-      expect(explicit.rateAsOf).toBe("2026-08-11");
+      expect(explicit.breakdown.perUnitUsd).toBe(0.065);
+      expect(explicit.usd).toBeCloseTo(0.065 * 6, 6);
+      expect(explicit.rateAsOf).toBe("2026-09-11");
       // Documented upstream default is 2K when resolution is omitted.
-      expect(omitted.breakdown.perUnitUsd).toBe(0.13);
-      expect(omitted.usd).toBeCloseTo(0.13 * 6, 6);
+      expect(omitted.breakdown.perUnitUsd).toBe(0.065);
+      expect(omitted.usd).toBeCloseTo(0.065 * 6, 6);
     }
   });
 

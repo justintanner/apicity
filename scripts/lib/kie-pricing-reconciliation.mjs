@@ -488,6 +488,7 @@ function unitInfo(raw) {
     ["per image", { unit: "images", quantity: 1 }],
     ["per video", { unit: "generations", quantity: 1 }],
     ["per request", { unit: "generations", quantity: 1 }],
+    ["per generation", { unit: "generations", quantity: 1 }],
     ["per million tokens", { unit: "tokens", quantity: 1_000_000 }],
     ["per million", { unit: "tokens", quantity: 1_000_000 }],
     ["per 1000 characters", { unit: "characters", quantity: 1_000 }],
@@ -517,7 +518,7 @@ function selectorValues(raw, key, inventories) {
   const text = String(raw.modelDescription ?? "");
   const candidates = {};
   const resolution = text.match(
-    /(?:^|[-,\s])(1k|1\.5k|480p|512p|580p|720p|768p|1080p|2k|4k|8k)(?:$|[-,\s])/i
+    /(?:^|[-,\s])(1k|1\.5k|360p|480p|512p|580p|720p|768p|1080p|2k|4k|8k)(?:$|[-,\s])/i
   );
   if (resolution) candidates.resolution = resolution[1].toLowerCase();
   const duration = text.match(/(?:^|[-,\s])(\d+(?:\.\d+)?)s(?:$|[-,\s])/i);
@@ -743,6 +744,25 @@ function runtimeRateConflict(official, key) {
       runtimeUnit: "per second",
       message:
         "The official Grok image-to-video 1080p cell and live runtime rate disagree.",
+    };
+  }
+  if (
+    key === "wan/3-0-video" &&
+    /^wan 3\.0 video,\s*720p,\s*video$/i.test(
+      String(official.modelDescription ?? "")
+    ) &&
+    String(official.usdPrice) === "0.09"
+  ) {
+    return {
+      kind: "rate-conflict",
+      runtimeKey: key,
+      runtimeVariant: "720P",
+      officialUsd: official.usdPrice,
+      runtimeUsd: "0.08",
+      officialUnit: official.creditUnit,
+      runtimeUnit: "per second",
+      message:
+        "The official Wan 3.0 standard 720P cell publishes $0.09/s while the product page and the 16-credit basis print $0.08/s, the callable runtime rate.",
     };
   }
   return undefined;

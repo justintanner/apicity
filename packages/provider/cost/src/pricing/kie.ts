@@ -632,15 +632,21 @@ const perCharacterPage = (
   source: pricePage(url, asOf),
 });
 
-// MiniMax H3 (Hailuo 03): 2 tiers by resolution. The fresh 2026-08-11 pull
-// lists 16 credits/s ($0.08) at 768P and 26 credits/s ($0.13) at 2K.
-// Documented upstream default is 2K when input.resolution is omitted. Duration
-// is a required wire field (int 4–15), so no costHints channel is needed.
+// MiniMax H3 (Hailuo 03): 2 tiers by resolution. The 2026-09-11 pull lists
+// 8 credits/s ($0.04) at 768P and 13 credits/s ($0.065) at 2K, halved from
+// the 2026-08-11 figures (16 / 26 credits, $0.08 / $0.13); confirmed by
+// https://kie.ai/minimax-h3 on 2026-09-11. Documented upstream default is 2K
+// when input.resolution is omitted. Duration is a required wire field
+// (int 4–15), so no costHints channel is needed.
 //
-// The page separately charges $0.04 per input image. The callable image and
-// reference-image fields expose finite counts, so that additive charge is
-// exact. Reference-video input carries no clip duration in the request, so
-// those payloads fail closed rather than quoting a generation-only rate.
+// The page separately charges 4 credits ($0.02) per input image, halved
+// from $0.04. The callable image and reference-image fields expose finite
+// counts, so that additive charge is exact. The page also states the first
+// five input images are free; the feed's cell is per image with no
+// threshold, so the estimator charges every image and over-quotes by at
+// most five images' worth (follow-up bead, W1.10 (b)). Reference-video
+// input carries no clip duration in the request, so those payloads fail
+// closed rather than quoting a generation-only rate.
 const miniMaxH3Extra = (p: Record<string, unknown>): number | undefined => {
   const input = asObject(p.input);
   const videos = input?.reference_video_urls;
@@ -666,7 +672,7 @@ const miniMaxH3Extra = (p: Record<string, unknown>): number | undefined => {
     imageCount += 1;
   }
 
-  return imageCount * 0.04;
+  return imageCount * 0.02;
 };
 
 const miniMaxH3Warning = (p: Record<string, unknown>): string[] => {
@@ -691,10 +697,10 @@ const miniMaxH3Video = (url: string): ModelPricing => ({
       pick: (p) => asString(asObject(p.input)?.resolution) ?? "2K",
     },
   ],
-  rates: { "768P": 0.08, "2K": 0.13 },
+  rates: { "768P": 0.04, "2K": 0.065 },
   extra: miniMaxH3Extra,
   warn: miniMaxH3Warning,
-  source: pricePage(url, "2026-08-11"),
+  source: pricePage(url, "2026-09-11"),
 });
 
 export const kie: Record<string, ModelPricing> = {
@@ -1058,33 +1064,33 @@ export const kie: Record<string, ModelPricing> = {
     },
   },
 
-  // wan/3.0 video — resolution-tiered per second, from the 2026-08-25 catalog
+  // wan/3.0 video — resolution-tiered per second, from the 2026-09-11 catalog
   // pull. Both models bill on the request's `resolution`, which kie spells in
   // UPPERCASE for this family, so the rate keys are the wire values verbatim.
   //
-  // Rates are the catalog's published `usdPrice`, which is what the
-  // reconciliation guard executes every implemented cell against:
-  //   standard  480P $0.04    720P $0.16     1080P $0.16
+  // 480P and 1080P are the catalog's published `usdPrice`, reducing exactly
+  // from their `creditPrice` at the $0.005 basis the rest of the catalog
+  // follows:
+  //   standard  480P $0.04    1080P $0.16
   //   prime     480P $0.0612  720P $0.126    1080P $0.252
   //
-  // Two cells do not reduce cleanly from their `creditPrice` at the $0.005
-  // basis the rest of the catalog follows, and both are recorded as published
-  // rather than "corrected" by inference:
+  // The standard 720P cell is a documented three-way conflict on the pull
+  // date: the feed publishes $0.09 at 16 credits, while
+  // https://kie.ai/wan3.0-video prints "16 credits/s for 720P ($0.08/s)" and
+  // the $0.005 credit basis both give $0.08 — and the 2026-08-25 feed had
+  // instead published the duplicated 1080P figure $0.16. Resolved to the
+  // page-and-credit figure $0.08, following the seedance-2 / grok-image-video
+  // rate-conflict precedents (keep the credit-basis figure in the runtime,
+  // record the feed's USD as the conflict); the feed's $0.09 is recorded as
+  // an explicit `rate-conflict` (`wan-3-0-720p-rate-conflict`, exception
+  // `wan/3-0-video|720P`) so the guard neither executes nor hides it.
   //
-  //   standard 720P — creditPrice 16 implies $0.08, but usdPrice is "0.16",
-  //     equal to the 1080P cell. A duplicated figure is the obvious reading
-  //     (wan/2-7 charges $0.08 at 720P, and paying the same for 720P as 1080P
-  //     when the credit cost differs 2x makes little sense), but this table
-  //     has no observed Wan 3.0 invoice to prove it. Quoting the published
-  //     number over-estimates if the credit math is right; inventing $0.08
-  //     under-charges if it is not, and this repository's rule is that a
-  //     guessed rate is worse than a conservative published one.
-  //   prime 480P — creditPrice 12.2 implies $0.061 against a published
-  //     $0.0612, a rounding artifact in the credit column (12.24 shown as
-  //     12.2). The published figure is the more precise of the two.
+  // prime 480P — creditPrice 12.2 implies $0.061 against a published
+  //   $0.0612, a rounding artifact in the credit column (12.24 shown as
+  //   12.2). The published figure is the more precise of the two.
   //
-  // Correct both from a real invoice when one exists; until then the guard
-  // keeps this table equal to the official evidence rather than to inference.
+  // Correct from a real invoice when one exists; until then the guard keeps
+  // this table equal to the official evidence rather than to inference.
   //
   // A `-1` duration selects a model-chosen "intelligent duration". Left to the
   // shared `seconds` resolver that would pass through as -1 and quote a
@@ -1092,12 +1098,18 @@ export const kie: Record<string, ModelPricing> = {
   // on the sentinel unless the caller declares the realized length through
   // costHints.durationSeconds. An omitted duration also fails closed, matching
   // every other kie video entry.
+  //
+  // The old `?model=wan%2F3-0-video` source URL now answers HTTP 404; the
+  // live feed rows for the family carry the anchor
+  // https://kie.ai/wan3.0-video (HTTP 200), used below. The prime entry's
+  // `?model=wan%2F3-0-video-prime` URL has the same 404 shape and is left
+  // unchanged (NG-007; follow-up bead W1.10 (d)).
   "wan/3-0-video": tieredVideoPage(
     "resolution",
-    { "480P": 0.04, "720P": 0.16, "1080P": 0.16 },
-    "https://kie.ai/wan-3-0-video?model=wan%2F3-0-video",
+    { "480P": 0.04, "720P": 0.08, "1080P": 0.16 },
+    "https://kie.ai/wan3.0-video",
     "1080P",
-    "2026-08-25",
+    "2026-09-11",
     wan30Seconds
   ),
   "wan/3-0-video-prime": tieredVideoPage(
@@ -1414,8 +1426,9 @@ export const kie: Record<string, ModelPricing> = {
   "happyhorse-1-1/image-to-video": happyHorse11Video("image-to-video"),
   "happyhorse-1-1/reference-to-video": happyHorse11Video("reference-to-video"),
 
-  // minimax-h3: 2 tiers by resolution. The fresh 2026-08-11 pull lists
-  // 16 credits/s ($0.08) at 768P and 26 credits/s ($0.13) at 2K.
+  // minimax-h3: 2 tiers by resolution. The 2026-09-11 pull lists
+  // 8 credits/s ($0.04) at 768P and 13 credits/s ($0.065) at 2K, halved from
+  // the 2026-08-11 figures (16 / 26 credits, $0.08 / $0.13).
   // Documented upstream default remains 2K.
   "minimax-h3/text-to-video": miniMaxH3Video(
     "https://kie.ai/minimax-h3?model=minimax-h3%2Ftext-to-video"

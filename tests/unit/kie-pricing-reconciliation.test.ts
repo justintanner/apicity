@@ -273,7 +273,7 @@ describe("Kie pricing reconciliation", () => {
 
     expect(result).toMatchObject({
       status: "ok",
-      rows: 447,
+      rows: 483,
       models: 146,
       endpoints: 75,
       pricingKeys: 161,
@@ -605,6 +605,13 @@ describe("Kie pricing reconciliation", () => {
       official: { usdPrice: "0.057" },
     });
 
+    const wan720 = rowMatching(/^wan 3\.0 video, 720p, video$/i);
+    expect(wan720).toMatchObject({
+      disposition: "upstream-unmappable",
+      mappedApiCityKeys: [],
+      official: { usdPrice: "0.09", creditPrice: "16" },
+    });
+
     expect(
       rowsMatching(/^(?:grok-imagine, )?upscale/i)
         .filter((row) => description(row).startsWith("grok-imagine, upscale"))
@@ -763,10 +770,11 @@ describe("Kie pricing reconciliation", () => {
     const rateConflicts = manifest.rows.filter(
       (row) => row.evidenceConflict?.kind === "rate-conflict"
     );
-    expect(rateConflicts).toHaveLength(2);
+    expect(rateConflicts).toHaveLength(3);
     for (const identity of [
       "bytedance/seedance-2|480p|video",
       "grok-imagine/image-to-video|1080p",
+      "wan/3-0-video|720P",
     ]) {
       expect(
         RUNTIME_VARIANT_EXCEPTIONS.find(
@@ -798,12 +806,23 @@ describe("Kie pricing reconciliation", () => {
             runtimeVariant: "1080p",
           }),
         }),
+        expect.objectContaining({
+          official: expect.objectContaining({
+            modelDescription: "wan 3.0 video, 720p, video",
+          }),
+          evidenceConflict: expect.objectContaining({
+            officialUsd: "0.09",
+            runtimeUsd: "0.08",
+            runtimeKey: "wan/3-0-video",
+            runtimeVariant: "720P",
+          }),
+        }),
       ])
     );
-    expect(manifest.summary.rows.evidenceConflicts.count).toBe(3);
+    expect(manifest.summary.rows.evidenceConflicts.count).toBe(4);
     expect(manifest.summary.rows.evidenceConflicts.byKind).toEqual({
       "query-description-operation-conflict": 1,
-      "rate-conflict": 2,
+      "rate-conflict": 3,
     });
     expect(manifest.summary.rows.evidenceConflicts.occurrenceIds).toEqual(
       expect.arrayContaining([

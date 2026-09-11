@@ -1099,11 +1099,14 @@ export const kie: Record<string, ModelPricing> = {
   // costHints.durationSeconds. An omitted duration also fails closed, matching
   // every other kie video entry.
   //
-  // The old `?model=wan%2F3-0-video` source URL now answers HTTP 404; the
-  // live feed rows for the family carry the anchor
-  // https://kie.ai/wan3.0-video (HTTP 200), used below. The prime entry's
-  // `?model=wan%2F3-0-video-prime` URL has the same 404 shape and is left
-  // unchanged (NG-007; follow-up bead W1.10 (d)).
+  // Both entries cite the family's live feed anchors,
+  // https://kie.ai/wan3.0-video and https://kie.ai/wan3.0-video-prime (HTTP
+  // 200 on 2026-09-11); the original `?model=wan%2F3-0-video` and
+  // `?model=wan%2F3-0-video-prime` page URLs both answered HTTP 404 that day.
+  // The prime URL was hand-authored in 029c451a because the 2026-08-25 feed
+  // rows for the model carried an empty anchor; the 2026-09-11 feed is the
+  // first to publish one, and on 2026-09-11 the live prime page printed the
+  // same three cells (12.2 / 25.2 / 50.4 credits/s) as this table (ac-8zpa7l).
   "wan/3-0-video": tieredVideoPage(
     "resolution",
     { "480P": 0.04, "720P": 0.08, "1080P": 0.16 },
@@ -1115,7 +1118,7 @@ export const kie: Record<string, ModelPricing> = {
   "wan/3-0-video-prime": tieredVideoPage(
     "resolution",
     { "480P": 0.0612, "720P": 0.126, "1080P": 0.252 },
-    "https://kie.ai/wan-3-0-video?model=wan%2F3-0-video-prime",
+    "https://kie.ai/wan3.0-video-prime",
     "1080P",
     "2026-08-25",
     wan30Seconds

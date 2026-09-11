@@ -3687,6 +3687,21 @@ describe("kie wan 2.2 / 2.5 per-model pricing (REQ-004)", () => {
     }
   );
 
+  // Both Wan 3.0 entries cite the family's live feed anchors; the `?model=`
+  // page URLs they used to cite answered HTTP 404 on 2026-09-11. Pinning the
+  // whole `source` object makes a `?model=` regression and an unintended
+  // `asOf` drift both fail here (ac-8zpa7l).
+  it("cites the live wan 3.0 feed anchors on both entries", () => {
+    expect(PRICING.kie["wan/3-0-video"].source).toEqual({
+      url: "https://kie.ai/wan3.0-video",
+      asOf: "2026-09-11",
+    });
+    expect(PRICING.kie["wan/3-0-video-prime"].source).toEqual({
+      url: "https://kie.ai/wan3.0-video-prime",
+      asOf: "2026-08-25",
+    });
+  });
+
   // One representative payload per priced model, each routed through the
   // shipped schema first so the USD figure is evidence about the SDK's own
   // output rather than about a literal written to match the table.

@@ -65,16 +65,18 @@ const KieMediaNanoBananaModelAliasSchema = z
     "Expected a listed model or a kie Nano Banana alias (e.g. nano-banana-3)"
   );
 
-// kie's GPT Image ids are `gpt-image`, a `/` or `-` separator, a numeric
-// version, then one or more task segments — both `gpt-image/1.5-image-to-image`
-// and `gpt-image-2-text-to-image` ship today, so both separators are written
-// out. The task suffix is required: `gpt-image-2` alone is the family, not a
-// model, and the version anchor keeps kie's unrelated `gpt-5-5` responses id
-// off this field.
+// kie's GPT Image ids are `gpt-image`, a `/` or `-` separator, a version
+// whose parts are joined by `.` or `-` (`1.5`, `2`, `2-5`), then optional
+// lowercase variant segments (`flare`, `sunburst`), then a required
+// `-text-to-image` or `-image-to-image` task suffix. The suffix is anchored
+// because the family now ships variant segments: without the anchor,
+// `gpt-image-2-5-flare` (version plus one segment) would read as a model.
+// The anchor also keeps truncations and kie's unrelated `gpt-5-5` responses
+// id off this field.
 const KieMediaGptImageModelAliasSchema = z
   .string()
   .regex(
-    /^gpt-image(?:\/|-)\d+(?:\.\d+)*(?:-[a-z][a-z0-9]*)+$/,
+    /^gpt-image(?:\/|-)\d+(?:[.-]\d+)*(?:-[a-z][a-z0-9]*)*-(?:text|image)-to-image$/,
     "Expected a listed model or a kie GPT Image alias (e.g. gpt-image-3-text-to-image)"
   );
 
@@ -184,10 +186,13 @@ const KieMediaPixverseModelAliasSchema = z
 // version grammar or authorize arbitrary future task slugs.
 //
 // Google market ids (`google/gemini-*-tts`, `google/imagen4*`,
-// `google/nano-banana*`) stay enum-only. The five imagen/nano-banana ids plus
-// two TTS models do not establish a safe open `google/…` alias grammar — the
+// `google/nano-banana*`, `google/gemini-omni-flash-1-1`) stay enum-only. The
+// five imagen/nano-banana ids, the two TTS models and the Gemini Omni 1.1
+// Flash model do not establish a safe open `google/…` alias grammar — the
 // product segments (imagen4, nano-banana, gemini-*-tts) are not a versioned
-// family that would justify an open hatch.
+// family that would justify an open hatch, and one Gemini Omni id is not a
+// grammar either: a `google/gemini-omni-*` hatch would be exactly the
+// wildcard this file avoids.
 // Topaz likewise stays enum-only: `topaz/image-upscale` and
 // `topaz/video-upscale` are the only two ids kie documents for the vendor, and
 // the task segment (`image-upscale` / `video-upscale`) is not a versioned
@@ -241,6 +246,10 @@ export const KIE_MEDIA_MODELS = [
   "gpt-image/1.5-text-to-image",
   "gpt-image-2-image-to-image",
   "gpt-image-2-text-to-image",
+  "gpt-image-2-5-flare-image-to-image",
+  "gpt-image-2-5-flare-text-to-image",
+  "gpt-image-2-5-sunburst-image-to-image",
+  "gpt-image-2-5-sunburst-text-to-image",
   "seedream/5-lite-image-to-image",
   "seedream/5-lite-text-to-image",
   "seedream/5-pro-image-to-image",
@@ -334,6 +343,8 @@ export const KIE_MEDIA_MODELS = [
   "minimax-h3/reference-to-video",
   "google/gemini-2-5-pro-tts",
   "google/gemini-3-1-flash-tts",
+  // Gemini Omni 1.1 Flash — google/ namespaced, enum-only (no alias).
+  "google/gemini-omni-flash-1-1",
   // Google Imagen 4 + namespaced Nano Banana — enum-only (no google/ alias).
   "google/imagen4",
   "google/imagen4-fast",
@@ -2124,6 +2135,13 @@ export const GeminiOmniVideoAspectRatioSchema = z.enum(["16:9", "9:16"]);
 
 export const GeminiOmniVideoResolutionSchema = z.enum(["720p", "1080p", "4k"]);
 
+export const GoogleGeminiOmniFlash11ResolutionSchema = z.enum([
+  "360p",
+  "720p",
+  "1080p",
+  "4k",
+]);
+
 export const Seedance2MiniResolutionSchema = z.enum(["480p", "720p"]);
 
 export const Seedance2MiniAspectRatioSchema = z.enum([
@@ -3721,6 +3739,112 @@ export const GptImage2TextToImageRequestSchema = z.object({
   }),
 });
 
+export const GptImage25AspectRatioSchema = z.enum([
+  "auto",
+  "1:1",
+  "3:2",
+  "2:3",
+  "4:3",
+  "3:4",
+  "16:9",
+  "9:16",
+  "21:9",
+  "27:16",
+  "16:27",
+  "9:8",
+  "8:9",
+]);
+export const GptImage25ResolutionSchema = z.enum(["1K", "2K", "4K"]);
+export const GptImage25BackgroundSchema = z.enum([
+  "transparent",
+  "opaque",
+  "auto",
+]);
+
+// The pages: "The 27:16, 16:27, 9:8 and 8:9 aspect ratios support 1K only.
+// 2K and 4K are available for other aspect ratios."
+const GPT_IMAGE_25_ONE_K_ONLY_RATIOS = new Set([
+  "27:16",
+  "16:27",
+  "9:8",
+  "8:9",
+]);
+const refineGptImage25Resolution = (
+  value: { input: { aspect_ratio: string; resolution?: string } },
+  ctx: z.RefinementCtx
+) => {
+  if (
+    GPT_IMAGE_25_ONE_K_ONLY_RATIOS.has(value.input.aspect_ratio) &&
+    value.input.resolution !== undefined &&
+    value.input.resolution !== "1K"
+  ) {
+    ctx.addIssue({
+      code: "custom",
+      message:
+        "27:16, 16:27, 9:8 and 8:9 support 1K only; 2K and 4K need another aspect_ratio",
+      path: ["input", "resolution"],
+    });
+  }
+};
+
+// Docs: https://docs.kie.ai/market/gpt/gpt-image-2-5-flare-text-to-image
+export const GptImage25FlareTextToImageRequestSchema = z
+  .object({
+    model: z.literal("gpt-image-2-5-flare-text-to-image"),
+    callBackUrl: z.string().optional(),
+    input: z.object({
+      prompt: z.string().min(1).max(20000),
+      aspect_ratio: GptImage25AspectRatioSchema.default("auto"),
+      resolution: GptImage25ResolutionSchema.optional(),
+      background: GptImage25BackgroundSchema.optional(),
+    }),
+  })
+  .superRefine(refineGptImage25Resolution);
+
+// Docs: https://docs.kie.ai/market/gpt/gpt-image-2-5-flare-image-to-image
+export const GptImage25FlareImageToImageRequestSchema = z
+  .object({
+    model: z.literal("gpt-image-2-5-flare-image-to-image"),
+    callBackUrl: z.string().optional(),
+    input: z.object({
+      prompt: z.string().min(1).max(20000),
+      input_urls: z.array(z.string()).min(1).max(16),
+      aspect_ratio: GptImage25AspectRatioSchema.default("auto"),
+      resolution: GptImage25ResolutionSchema.optional(),
+      background: GptImage25BackgroundSchema.optional(),
+    }),
+  })
+  .superRefine(refineGptImage25Resolution);
+
+// Docs: https://docs.kie.ai/market/gpt/gpt-image-2-5-sunburst-text-to-image
+export const GptImage25SunburstTextToImageRequestSchema = z
+  .object({
+    model: z.literal("gpt-image-2-5-sunburst-text-to-image"),
+    callBackUrl: z.string().optional(),
+    input: z.object({
+      prompt: z.string().min(1).max(20000),
+      aspect_ratio: GptImage25AspectRatioSchema.default("auto"),
+      resolution: GptImage25ResolutionSchema.optional(),
+      background: GptImage25BackgroundSchema.optional(),
+    }),
+  })
+  .superRefine(refineGptImage25Resolution);
+
+// Docs: https://docs.kie.ai/market/gpt/gpt-image-2-5-sunburst-image-to-image
+export const GptImage25SunburstImageToImageRequestSchema = z
+  .object({
+    model: z.literal("gpt-image-2-5-sunburst-image-to-image"),
+    callBackUrl: z.string().optional(),
+    input: z.object({
+      prompt: z.string().min(1).max(20000),
+      input_urls: z.array(z.string()).min(1).max(16),
+      aspect_ratio: GptImage25AspectRatioSchema.default("auto"),
+      resolution: GptImage25ResolutionSchema.optional(),
+      background: GptImage25BackgroundSchema.optional(),
+    }),
+  })
+  .superRefine(refineGptImage25Resolution);
+
 // `quality` is required here despite carrying an upstream default. Kie's docs
 // list it as optional defaulting to `basic`, but POST /api/v1/jobs/createTask
 // answers 422 with `{"code":422,"msg":"This field is required"}` when the key
@@ -4105,6 +4229,124 @@ export const GeminiOmniVideoRequestSchema = z
         code: "custom",
         message:
           "gemini-omni-video quota exceeded: image_urls + video_list * 2 + character_ids must be <= 7",
+        path: ["input", "image_urls"],
+      });
+    }
+  });
+
+// Docs: https://docs.kie.ai/market/google/gemini-omni-flash-1-1
+const GoogleGeminiOmniFlash11VideoListItemSchema = z
+  .object({
+    url: z.string().url(),
+    start: z.number().min(0),
+    ends: z.number().min(0),
+  })
+  .superRefine((value, ctx) => {
+    if (value.ends <= value.start) {
+      ctx.addIssue({
+        code: "custom",
+        message: "ends must be greater than start",
+        path: ["ends"],
+      });
+    }
+
+    if (value.ends - value.start > 10) {
+      ctx.addIssue({
+        code: "custom",
+        message: "video clip duration must not exceed 10 seconds",
+        path: ["ends"],
+      });
+    }
+  });
+
+export const GoogleGeminiOmniFlash11RequestSchema = z
+  .object({
+    model: z.literal("google/gemini-omni-flash-1-1"),
+    callBackUrl: z.string().url().optional(),
+    input: z.object({
+      prompt: z.string().min(1).max(20000),
+      image_urls: z.array(z.string().url()).max(7).optional(),
+      first_frame_url: z.string().url().optional(),
+      last_frame_url: z.string().url().optional(),
+      audio_ids: z.array(z.string().min(1)).max(3).optional(),
+      video_list: z
+        .array(GoogleGeminiOmniFlash11VideoListItemSchema)
+        .max(1)
+        .optional(),
+      character_ids: z.array(z.string().min(1)).max(7).optional(),
+      duration: GeminiOmniVideoDurationSchema,
+      aspect_ratio: GeminiOmniVideoAspectRatioSchema.optional(),
+      seed: z.number().int().min(0).max(2147483647).optional(),
+      resolution: GoogleGeminiOmniFlash11ResolutionSchema.default("720p"),
+    }),
+  })
+  .superRefine((value, ctx) => {
+    const hasElements = (values: readonly unknown[] | undefined) =>
+      values !== undefined && values.length > 0;
+
+    if (
+      value.input.last_frame_url !== undefined &&
+      value.input.first_frame_url === undefined
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        message: "last_frame_url requires first_frame_url",
+        path: ["input", "last_frame_url"],
+      });
+    }
+
+    if (value.input.first_frame_url !== undefined) {
+      if (hasElements(value.input.image_urls)) {
+        ctx.addIssue({
+          code: "custom",
+          message: "first_frame_url cannot be combined with image_urls",
+          path: ["input", "image_urls"],
+        });
+      }
+      if (hasElements(value.input.audio_ids)) {
+        ctx.addIssue({
+          code: "custom",
+          message: "first_frame_url cannot be combined with audio_ids",
+          path: ["input", "audio_ids"],
+        });
+      }
+      if (hasElements(value.input.video_list)) {
+        ctx.addIssue({
+          code: "custom",
+          message: "first_frame_url cannot be combined with video_list",
+          path: ["input", "video_list"],
+        });
+      }
+      if (hasElements(value.input.character_ids)) {
+        ctx.addIssue({
+          code: "custom",
+          message: "first_frame_url cannot be combined with character_ids",
+          path: ["input", "character_ids"],
+        });
+      }
+    }
+
+    if (
+      (value.input.character_ids?.length ?? 0) > 3 &&
+      (value.input.video_list?.length ?? 0) > 0
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        message: "character_ids must be <= 3 when video_list is provided",
+        path: ["input", "character_ids"],
+      });
+    }
+
+    const imageUnits = value.input.image_urls?.length ?? 0;
+    const videoUnits = (value.input.video_list?.length ?? 0) * 2;
+    const characterUnits = value.input.character_ids?.length ?? 0;
+    const quotaUnits = imageUnits + videoUnits + characterUnits;
+
+    if (quotaUnits > 7) {
+      ctx.addIssue({
+        code: "custom",
+        message:
+          "google/gemini-omni-flash-1-1 quota exceeded: image_urls + video_list * 2 + character_ids must be <= 7",
         path: ["input", "image_urls"],
       });
     }
@@ -7534,6 +7776,10 @@ export const MediaGenerationRequestSchema = z.union([
   GptImage15TextToImageRequestSchema,
   GptImage2ImageToImageRequestSchema,
   GptImage2TextToImageRequestSchema,
+  GptImage25FlareImageToImageRequestSchema,
+  GptImage25FlareTextToImageRequestSchema,
+  GptImage25SunburstImageToImageRequestSchema,
+  GptImage25SunburstTextToImageRequestSchema,
   SeedreamImageToImageRequestSchema,
   SeedreamTextToImageRequestSchema,
   SeedreamProImageToImageRequestSchema,
@@ -7595,6 +7841,7 @@ export const MediaGenerationRequestSchema = z.union([
   Omnihuman15SubjectDetectionRequestSchema,
   VolcengineVideoToVideoLipSyncRequestSchema,
   GeminiOmniVideoRequestSchema,
+  GoogleGeminiOmniFlash11RequestSchema,
   ElevenLabsAudioIsolationRequestSchema,
   ElevenLabsTextToDialogueV3RequestSchema,
   ElevenLabsTextToSpeechMultilingualV2RequestSchema,
@@ -7785,6 +8032,9 @@ export type GeminiOmniVideoAspectRatio = z.infer<
 >;
 export type GeminiOmniVideoResolution = z.infer<
   typeof GeminiOmniVideoResolutionSchema
+>;
+export type GoogleGeminiOmniFlash11Resolution = z.infer<
+  typeof GoogleGeminiOmniFlash11ResolutionSchema
 >;
 export type Seedance2MiniResolution = z.infer<
   typeof Seedance2MiniResolutionSchema
@@ -8343,6 +8593,41 @@ export type GptImage2TextToImageRequest = z.input<
 export type GptImage2TextToImageRequestInput = GptImage2TextToImageRequest;
 export type GptImage2TextToImageParsedRequest = z.output<
   typeof GptImage2TextToImageRequestSchema
+>;
+export type GptImage25AspectRatio = z.infer<typeof GptImage25AspectRatioSchema>;
+export type GptImage25Resolution = z.infer<typeof GptImage25ResolutionSchema>;
+export type GptImage25Background = z.infer<typeof GptImage25BackgroundSchema>;
+export type GptImage25FlareTextToImageRequest = z.input<
+  typeof GptImage25FlareTextToImageRequestSchema
+>;
+export type GptImage25FlareTextToImageRequestInput =
+  GptImage25FlareTextToImageRequest;
+export type GptImage25FlareTextToImageParsedRequest = z.output<
+  typeof GptImage25FlareTextToImageRequestSchema
+>;
+export type GptImage25FlareImageToImageRequest = z.input<
+  typeof GptImage25FlareImageToImageRequestSchema
+>;
+export type GptImage25FlareImageToImageRequestInput =
+  GptImage25FlareImageToImageRequest;
+export type GptImage25FlareImageToImageParsedRequest = z.output<
+  typeof GptImage25FlareImageToImageRequestSchema
+>;
+export type GptImage25SunburstTextToImageRequest = z.input<
+  typeof GptImage25SunburstTextToImageRequestSchema
+>;
+export type GptImage25SunburstTextToImageRequestInput =
+  GptImage25SunburstTextToImageRequest;
+export type GptImage25SunburstTextToImageParsedRequest = z.output<
+  typeof GptImage25SunburstTextToImageRequestSchema
+>;
+export type GptImage25SunburstImageToImageRequest = z.input<
+  typeof GptImage25SunburstImageToImageRequestSchema
+>;
+export type GptImage25SunburstImageToImageRequestInput =
+  GptImage25SunburstImageToImageRequest;
+export type GptImage25SunburstImageToImageParsedRequest = z.output<
+  typeof GptImage25SunburstImageToImageRequestSchema
 >;
 export type SeedreamImageToImageRequest = z.input<
   typeof SeedreamImageToImageRequestSchema
@@ -8943,6 +9228,14 @@ export type GeminiOmniVideoRequest = z.input<
 export type GeminiOmniVideoRequestInput = GeminiOmniVideoRequest;
 export type GeminiOmniVideoParsedRequest = z.output<
   typeof GeminiOmniVideoRequestSchema
+>;
+export type GoogleGeminiOmniFlash11Request = z.input<
+  typeof GoogleGeminiOmniFlash11RequestSchema
+>;
+export type GoogleGeminiOmniFlash11RequestInput =
+  GoogleGeminiOmniFlash11Request;
+export type GoogleGeminiOmniFlash11ParsedRequest = z.output<
+  typeof GoogleGeminiOmniFlash11RequestSchema
 >;
 export type ElevenLabsAudioIsolationRequest = z.input<
   typeof ElevenLabsAudioIsolationRequestSchema

@@ -8,6 +8,10 @@ import {
   GoogleGeminiTtsStyleSchema,
   GoogleGeminiTtsTemperatureContract,
   GoogleGeminiTtsVoiceNameSchema,
+  GoogleGeminiOmniFlash11ResolutionSchema,
+  GptImage25AspectRatioSchema,
+  GptImage25BackgroundSchema,
+  GptImage25ResolutionSchema,
   HAPPYHORSE_DURATION_MAX_SECONDS,
   HAPPYHORSE_DURATION_MIN_SECONDS,
   KlingOmniAspectRatioSchema,
@@ -2390,6 +2394,150 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         type: "boolean",
         description:
           "Enable content filtering (default false; false returns raw model output)",
+      },
+    },
+  },
+
+  "gpt-image-2-5-flare-image-to-image": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 20000,
+        description: "Text prompt (max 20000 chars)",
+      },
+      input_urls: {
+        type: "array",
+        required: true,
+        minItems: 1,
+        maxItems: 16,
+        items: { type: "string" },
+        description: "Input image URLs (1-16)",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: GptImage25AspectRatioSchema.options,
+        default: "auto",
+        description:
+          "Output aspect ratio (default auto). 27:16, 16:27, 9:8 and 8:9 support 1K only.",
+      },
+      resolution: {
+        type: "string",
+        enum: GptImage25ResolutionSchema.options,
+        description:
+          "Output resolution 1K/2K/4K; no documented default. 2K and 4K are unavailable for 27:16, 16:27, 9:8 and 8:9.",
+      },
+      background: {
+        type: "string",
+        enum: GptImage25BackgroundSchema.options,
+        description:
+          "Image background (transparent, opaque, auto); no documented default",
+      },
+    },
+  },
+
+  "gpt-image-2-5-flare-text-to-image": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 20000,
+        description: "Text prompt (max 20000 chars)",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: GptImage25AspectRatioSchema.options,
+        default: "auto",
+        description:
+          "Output aspect ratio (default auto). 27:16, 16:27, 9:8 and 8:9 support 1K only.",
+      },
+      resolution: {
+        type: "string",
+        enum: GptImage25ResolutionSchema.options,
+        description:
+          "Output resolution 1K/2K/4K; no documented default. 2K and 4K are unavailable for 27:16, 16:27, 9:8 and 8:9.",
+      },
+      background: {
+        type: "string",
+        enum: GptImage25BackgroundSchema.options,
+        description:
+          "Image background (transparent, opaque, auto); no documented default",
+      },
+    },
+  },
+
+  "gpt-image-2-5-sunburst-image-to-image": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 20000,
+        description: "Text prompt (max 20000 chars)",
+      },
+      input_urls: {
+        type: "array",
+        required: true,
+        minItems: 1,
+        maxItems: 16,
+        items: { type: "string" },
+        description: "Input image URLs (1-16)",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: GptImage25AspectRatioSchema.options,
+        default: "auto",
+        description:
+          "Output aspect ratio (default auto). 27:16, 16:27, 9:8 and 8:9 support 1K only.",
+      },
+      resolution: {
+        type: "string",
+        enum: GptImage25ResolutionSchema.options,
+        description:
+          "Output resolution 1K/2K/4K; no documented default. 2K and 4K are unavailable for 27:16, 16:27, 9:8 and 8:9.",
+      },
+      background: {
+        type: "string",
+        enum: GptImage25BackgroundSchema.options,
+        description:
+          "Image background (transparent, opaque, auto); no documented default",
+      },
+    },
+  },
+
+  "gpt-image-2-5-sunburst-text-to-image": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 20000,
+        description: "Text prompt (max 20000 chars)",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: GptImage25AspectRatioSchema.options,
+        default: "auto",
+        description:
+          "Output aspect ratio (default auto). 27:16, 16:27, 9:8 and 8:9 support 1K only.",
+      },
+      resolution: {
+        type: "string",
+        enum: GptImage25ResolutionSchema.options,
+        description:
+          "Output resolution 1K/2K/4K; no documented default. 2K and 4K are unavailable for 27:16, 16:27, 9:8 and 8:9.",
+      },
+      background: {
+        type: "string",
+        enum: GptImage25BackgroundSchema.options,
+        description:
+          "Image background (transparent, opaque, auto); no documented default",
       },
     },
   },
@@ -5146,6 +5294,104 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       resolution: {
         type: "string",
         enum: ["720p", "1080p", "4k"],
+        default: "720p",
+        description: "Output resolution (default 720p)",
+      },
+    },
+  },
+
+  // Docs: https://docs.kie.ai/market/google/gemini-omni-flash-1-1
+  "google/gemini-omni-flash-1-1": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 20000,
+        description: "Multimodal video generation prompt (max 20000 chars)",
+      },
+      image_urls: {
+        type: "array",
+        maxItems: 7,
+        description:
+          "Reference image URLs (max 7, each image up to 20MB; each counts as 1 quota unit); mutually exclusive with first_frame_url",
+        items: { type: "string" },
+      },
+      first_frame_url: {
+        type: "string",
+        description:
+          "First-frame image URL; mutually exclusive with image_urls, audio_ids, video_list and character_ids",
+      },
+      last_frame_url: {
+        type: "string",
+        description:
+          "Last-frame image URL; requires first_frame_url to also be set",
+      },
+      audio_ids: {
+        type: "array",
+        maxItems: 3,
+        description:
+          "Audio IDs created by gemini-omni-audio (max 3; does not count toward visual quota); mutually exclusive with first_frame_url",
+        items: { type: "string" },
+      },
+      video_list: {
+        type: "array",
+        maxItems: 1,
+        description:
+          "Reference video clip list (max 1; source video under 100MB; each clip counts as 2 quota units); mutually exclusive with first_frame_url",
+        items: {
+          type: "object",
+          properties: {
+            url: {
+              type: "string",
+              required: true,
+              description: "Reference video URL",
+            },
+            start: {
+              type: "number",
+              required: true,
+              minimum: 0,
+              description: "Clip start time in seconds",
+            },
+            ends: {
+              type: "number",
+              required: true,
+              minimum: 0,
+              description:
+                "Clip end time in seconds; must be greater than start and must not exceed 10 seconds after start",
+            },
+          },
+        },
+      },
+      character_ids: {
+        type: "array",
+        maxItems: 7,
+        description:
+          "Character IDs created by gemini-omni-character (max 7; max 3 when video_list is present; each counts as 1 quota unit); mutually exclusive with first_frame_url",
+        items: { type: "string" },
+      },
+      duration: {
+        type: "string",
+        required: true,
+        enum: ["4", "6", "8", "10"],
+        description:
+          "Output duration in seconds; ignored by Kie when video input is provided",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: ["16:9", "9:16"],
+        description: "Output aspect ratio",
+      },
+      seed: {
+        type: "integer",
+        minimum: 0,
+        maximum: 2147483647,
+        description: "Random seed",
+      },
+      resolution: {
+        type: "string",
+        enum: GoogleGeminiOmniFlash11ResolutionSchema.options,
         default: "720p",
         description: "Output resolution (default 720p)",
       },

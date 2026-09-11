@@ -148,6 +148,7 @@ export const MODEL_SLUGS = {
 
     // Video — Gemini Omni
     "gemini-omni-video": "geminiomni",
+    "google/gemini-omni-flash-1-1": "geminiomni1p1f",
 
     // Audio — Gemini TTS. Token billed ($14/M audio output, $0.70/M input);
     // the counts arrive through costHints, never from a character heuristic
@@ -178,6 +179,13 @@ export const MODEL_SLUGS = {
     // Image — GPT Image 2
     "gpt-image-2-text-to-image": "gi2",
     "gpt-image-2-image-to-image": "gi2",
+
+    // Image — GPT Image 2.5 (flare and sunburst are separately listed
+    // variants at the same rate; the two modalities share a slug).
+    "gpt-image-2-5-flare-text-to-image": "gi2p5fl",
+    "gpt-image-2-5-flare-image-to-image": "gi2p5fl",
+    "gpt-image-2-5-sunburst-text-to-image": "gi2p5sb",
+    "gpt-image-2-5-sunburst-image-to-image": "gi2p5sb",
 
     // Image — Wan 2.7
     "wan/2-7-image": "wan2p7",
@@ -606,6 +614,7 @@ export const MODEL_DISPLAY = {
     "runway/extend": "Runway Extend",
 
     "gemini-omni-video": "Gemini Omni",
+    "google/gemini-omni-flash-1-1": "Gemini Omni 1.1 Flash",
 
     "google/gemini-2-5-pro-tts": "Gemini 2.5 Pro TTS",
     "google/gemini-3-1-flash-tts": "Gemini 3.1 Flash TTS",
@@ -629,6 +638,11 @@ export const MODEL_DISPLAY = {
 
     "gpt-image-2-text-to-image": "GPT Image 2.0",
     "gpt-image-2-image-to-image": "GPT Image 2.0 Edit",
+
+    "gpt-image-2-5-flare-text-to-image": "GPT Image 2.5 Flare",
+    "gpt-image-2-5-flare-image-to-image": "GPT Image 2.5 Flare Edit",
+    "gpt-image-2-5-sunburst-text-to-image": "GPT Image 2.5 Sunburst",
+    "gpt-image-2-5-sunburst-image-to-image": "GPT Image 2.5 Sunburst Edit",
 
     "wan/2-7-image": "Wan 2.7",
     "wan/2-7-image-pro": "Wan 2.7 Pro",

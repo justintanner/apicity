@@ -1916,6 +1916,38 @@ export const kie: Record<string, ModelPricing> = {
     "openai/gpt-image-2",
     "2K"
   ),
+  // GPT Image 2.5 (flare / sunburst): per image by input.resolution, no
+  // documented default. Rates from the official feed on 2026-09-11
+  // (6 / 10 / 16 credits); the flare rows anchor https://kie.ai/gpt-image-2-5
+  // and the sunburst rows the ?model= deep link of the same page.
+  "gpt-image-2-5-flare-text-to-image": tieredImagePage(
+    "resolution",
+    { "1K": 0.03, "2K": 0.05, "4K": 0.08 },
+    "https://kie.ai/gpt-image-2-5?model=gpt-image-2-5-flare-text-to-image",
+    undefined,
+    "2026-09-11"
+  ),
+  "gpt-image-2-5-flare-image-to-image": tieredImagePage(
+    "resolution",
+    { "1K": 0.03, "2K": 0.05, "4K": 0.08 },
+    "https://kie.ai/gpt-image-2-5?model=gpt-image-2-5-flare-image-to-image",
+    undefined,
+    "2026-09-11"
+  ),
+  "gpt-image-2-5-sunburst-text-to-image": tieredImagePage(
+    "resolution",
+    { "1K": 0.03, "2K": 0.05, "4K": 0.08 },
+    "https://kie.ai/gpt-image-2-5?model=gpt-image-2-5-sunburst-text-to-image",
+    undefined,
+    "2026-09-11"
+  ),
+  "gpt-image-2-5-sunburst-image-to-image": tieredImagePage(
+    "resolution",
+    { "1K": 0.03, "2K": 0.05, "4K": 0.08 },
+    "https://kie.ai/gpt-image-2-5?model=gpt-image-2-5-sunburst-image-to-image",
+    undefined,
+    "2026-09-11"
+  ),
   "wan/2-7-image": flatImage(0.024, "alibaba/wan-2.7"),
   "wan/2-7-image-pro": flatImage(0.06, "alibaba/wan-2.7"),
   "qwen2/text-to-image": flatImage(0.028, "alibaba/qwen-image-2"),
@@ -2413,6 +2445,56 @@ export const kie: Record<string, ModelPricing> = {
       "v2v|4k": 1.26,
     },
     source: pricePage("https://kie.ai/gemini-omni"),
+  },
+
+  // google/gemini-omni-flash-1-1: a clone of gemini-omni-video's selectors
+  // and helpers with a 360p column added to both modes, pulled from the
+  // official feed on 2026-09-11 (63/84/105/126 and 147/168/189/210 credits
+  // t2v, 168 and 252 credits v2v, at $0.005/credit). V2V ignores duration
+  // upstream the same way gemini-omni-video does, so its rate keys carry no
+  // empty duration segment either (see the comment above).
+  "google/gemini-omni-flash-1-1": {
+    kind: "perUnit",
+    unit: "generations",
+    units: () => 1,
+    select: [
+      {
+        name: "mode",
+        pick: (p) => (hasVideoListInput(p) ? "v2v" : "t2v"),
+      },
+      {
+        name: "duration",
+        pick: (p, hints) =>
+          hasVideoListInput(p) ? "" : durationKey(p, hints, 4),
+      },
+      {
+        name: "resolution",
+        pick: (p) => inputResolution(p) ?? "720p",
+      },
+    ],
+    rates: {
+      "t2v|4|360p": 0.315,
+      "t2v|6|360p": 0.42,
+      "t2v|8|360p": 0.525,
+      "t2v|10|360p": 0.63,
+      "t2v|4|720p": 0.315,
+      "t2v|6|720p": 0.42,
+      "t2v|8|720p": 0.525,
+      "t2v|10|720p": 0.63,
+      "t2v|4|1080p": 0.315,
+      "t2v|6|1080p": 0.42,
+      "t2v|8|1080p": 0.525,
+      "t2v|10|1080p": 0.63,
+      "t2v|4|4k": 0.735,
+      "t2v|6|4k": 0.84,
+      "t2v|8|4k": 0.945,
+      "t2v|10|4k": 1.05,
+      "v2v|360p": 0.84,
+      "v2v|720p": 0.84,
+      "v2v|1080p": 0.84,
+      "v2v|4k": 1.26,
+    },
+    source: pricePage("https://kie.ai/gemini-omni-1-1-flash", "2026-09-11"),
   },
 
   // The two other OTP pay-gated Gemini Omni routes — `api.v1.omni.audio.create`

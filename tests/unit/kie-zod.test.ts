@@ -1459,6 +1459,10 @@ const MEDIA_MODEL_FAMILIES = [
       "gpt-image/1.5-text-to-image",
       "gpt-image-2-image-to-image",
       "gpt-image-2-text-to-image",
+      "gpt-image-2-5-flare-image-to-image",
+      "gpt-image-2-5-flare-text-to-image",
+      "gpt-image-2-5-sunburst-image-to-image",
+      "gpt-image-2-5-sunburst-text-to-image",
     ],
     aliases: ["gpt-image-3-text-to-image", "gpt-image/2.5-image-to-image"],
     rejected: [
@@ -1466,6 +1470,10 @@ const MEDIA_MODEL_FAMILIES = [
       "gpt-image-2",
       "gptimage-2-text-to-image",
       "gpt-5-5",
+      "gpt-image-2-5",
+      "gpt-image-2-5-flare",
+      "gpt-image-x-flare-text-to-image",
+      "gpt-image-2-flare",
     ],
   },
   {
@@ -1663,6 +1671,21 @@ const GOOGLE_GEMINI_TTS_REJECTED_MODELS = [
   "GOOGLE/GEMINI-2-5-PRO-TTS",
 ] as const;
 
+// Gemini Omni 1.1 Flash: one exact market id, no open alias hatch (one id is
+// not a version grammar). A dedicated pair rather than MEDIA_SINGLETON_MODELS,
+// whose comment says each of its entries is its vendor's only model — this is
+// a `google/` sibling of a versioned family (gemini-omni-video), not that.
+const GOOGLE_GEMINI_OMNI_EXACT_ONLY_MODELS = [
+  "google/gemini-omni-flash-1-1",
+] as const;
+
+const GOOGLE_GEMINI_OMNI_REJECTED_MODELS = [
+  "google/gemini-omni-flash-1-2",
+  "gemini-omni-flash-1-1",
+  "google/gemini-omni-flash",
+  "GOOGLE/GEMINI-OMNI-FLASH-1-1",
+] as const;
+
 // Google Imagen 4 + namespaced Nano Banana: five exact market ids, no open
 // google/ alias hatch (product segments are not a version grammar).
 const GOOGLE_IMAGEN_NANO_BANANA_EXACT_ONLY_MODELS = [
@@ -1855,6 +1878,21 @@ describe("TRI-001 KieMediaModelSchema", () => {
 
   it.each(GOOGLE_GEMINI_TTS_REJECTED_MODELS)(
     "rejects the out-of-scope Google Gemini TTS model %j",
+    (model) => {
+      expect(KieMediaModelSchema.safeParse(model).success).toBe(false);
+    }
+  );
+
+  it.each(GOOGLE_GEMINI_OMNI_EXACT_ONLY_MODELS)(
+    "keeps Gemini Omni Flash model %s reachable only through the enum",
+    (model) => {
+      expect(KieMediaModelSchema.safeParse(model).success).toBe(true);
+      expect(mediaAliasPatterns.filter((re) => re.test(model))).toEqual([]);
+    }
+  );
+
+  it.each(GOOGLE_GEMINI_OMNI_REJECTED_MODELS)(
+    "rejects the out-of-scope Gemini Omni Flash model %j",
     (model) => {
       expect(KieMediaModelSchema.safeParse(model).success).toBe(false);
     }

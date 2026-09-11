@@ -244,6 +244,51 @@ export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
     rationale:
       "The live rate is units-unreachable; it must fail closed rather than injecting undeclared image_size or claiming a free/default area.",
   },
+  // The 2026-09-10 survey's five createTask additions (ac-fvl4yb / W1) are
+  // absent from the frozen 2026-08-25 Kie pricing snapshot entirely — they
+  // are new catalogue ids the snapshot predates, not a mapping gap inside an
+  // existing family. Their rates come from a separate, out-of-band feed pull
+  // (plans/ac-fvl4yb/build/evidence/kie-pricing-feed-rows-2026-09-11.json)
+  // that is deliberately not wired into FAMILY_MAPPING_RULES or the
+  // reconciliation snapshot (NG-005); every reachable runtime variant is
+  // therefore an explicit exception until a later evidence-refresh pass
+  // reconciles them (see the OQ-005 follow-up bead filed by W1.12).
+  ...[
+    "gpt-image-2-5-flare-text-to-image",
+    "gpt-image-2-5-flare-image-to-image",
+    "gpt-image-2-5-sunburst-text-to-image",
+    "gpt-image-2-5-sunburst-image-to-image",
+  ].flatMap((key) =>
+    ["1K", "2K", "4K"].map((variant) => ({
+      key,
+      variant,
+      status: "pricing-only",
+      provenance:
+        "no matching official occurrence in the frozen 2026-08-25 Kie pricing snapshot; the model postdates it (2026-09-10 survey, ac-fvl4yb)",
+      rationale:
+        "The rate is sourced from the 2026-09-11 out-of-band feed pull, not the frozen snapshot; it remains pricing-only until the OQ-005 evidence-refresh bead reconciles it.",
+    }))
+  ),
+  ...["360p", "720p", "1080p", "4k"].flatMap((resolution) => [
+    ...["4", "6", "8", "10"].map((duration) => ({
+      key: "google/gemini-omni-flash-1-1",
+      variant: `t2v|${duration}|${resolution}`,
+      status: "pricing-only",
+      provenance:
+        "no matching official occurrence in the frozen 2026-08-25 Kie pricing snapshot; the model postdates it (2026-09-10 survey, ac-fvl4yb)",
+      rationale:
+        "The rate is sourced from the 2026-09-11 out-of-band feed pull, not the frozen snapshot; it remains pricing-only until the OQ-005 evidence-refresh bead reconciles it.",
+    })),
+    {
+      key: "google/gemini-omni-flash-1-1",
+      variant: `v2v|${resolution}`,
+      status: "pricing-only",
+      provenance:
+        "no matching official occurrence in the frozen 2026-08-25 Kie pricing snapshot; the model postdates it (2026-09-10 survey, ac-fvl4yb)",
+      rationale:
+        "The rate is sourced from the 2026-09-11 out-of-band feed pull, not the frozen snapshot; it remains pricing-only until the OQ-005 evidence-refresh bead reconciles it.",
+    },
+  ]),
 ]);
 
 export const EXPLICIT_OPERATION_MAPPINGS = Object.freeze([

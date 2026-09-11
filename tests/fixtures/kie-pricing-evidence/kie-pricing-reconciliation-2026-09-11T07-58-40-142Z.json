@@ -1820,10 +1820,10 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:e270b9b82dadb3234896206d7bcfe490593b756f300017eb840adc9849711c9a",
-      "packages/provider/kie/src/model-schemas.ts": "sha256:33690495396482dcd0c14743624a663e1a9d3afa27c30d52b9877e6ed70cd5fd",
+      "packages/provider/kie/src/zod.ts": "sha256:32283143e82fab8c76cec96c906a00be3698fb16686bb5827677c4652a149668",
+      "packages/provider/kie/src/model-schemas.ts": "sha256:7659fd3adea605dc6db77e615630c1539b594854c44b5c6f05817640c1a970ea",
       "packages/provider/kie/src/kie.ts": "sha256:ffd0feb6bfb9b329bdd5900c5164bb4f0702c8a3c91cffd774b9e21cb3088ded",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:d1837cb0f8ca99457fc521fffe08d6c99acb5f613ea51541509abe5694c9228f",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:dd87e9e1fbfe82ab274ca2d90c40ec3b4d3ead33151e1f25d068ec38ba8d39fe",
       "packages/provider/cost/src/slugs.ts": "sha256:25d699780a875783a1de78270d452c5d941207a7bce6f8c198610d143a867e41",
       "scripts/endpoint-docs.tsv": "sha256:e9b413ea209d12a1fa643f6bee94e93c7d88cf3f73a74f798e1c0e95ed338dff"
     }

@@ -3754,6 +3754,13 @@ export const GptImage25AspectRatioSchema = z.enum([
   "9:8",
   "8:9",
 ]);
+// Default observed 2026-09-11: an omitted `resolution` (probe task
+// 366e2065ed94e590a9e1201e1f1e1704, prompt "A lighthouse on a rocky
+// headland...") rendered at 1672x941 and was billed 6 credits, matching the
+// explicit-1K control (task d3ae2f2a30160c174c3b02886486f85b, same 1672x941,
+// same 6 credits) exactly (plans/ac-1m1js4 REQ-009). The requests still post
+// exactly what the caller sends (kie.ts createTask), so the recorded probe
+// body carries no resolution.
 export const GptImage25ResolutionSchema = z.enum(["1K", "2K", "4K"]);
 export const GptImage25BackgroundSchema = z.enum([
   "transparent",
@@ -3795,7 +3802,7 @@ export const GptImage25FlareTextToImageRequestSchema = z
     input: z.object({
       prompt: z.string().min(1).max(20000),
       aspect_ratio: GptImage25AspectRatioSchema.default("auto"),
-      resolution: GptImage25ResolutionSchema.optional(),
+      resolution: GptImage25ResolutionSchema.default("1K"),
       background: GptImage25BackgroundSchema.optional(),
     }),
   })
@@ -3810,7 +3817,7 @@ export const GptImage25FlareImageToImageRequestSchema = z
       prompt: z.string().min(1).max(20000),
       input_urls: z.array(z.string()).min(1).max(16),
       aspect_ratio: GptImage25AspectRatioSchema.default("auto"),
-      resolution: GptImage25ResolutionSchema.optional(),
+      resolution: GptImage25ResolutionSchema.default("1K"),
       background: GptImage25BackgroundSchema.optional(),
     }),
   })
@@ -3824,7 +3831,7 @@ export const GptImage25SunburstTextToImageRequestSchema = z
     input: z.object({
       prompt: z.string().min(1).max(20000),
       aspect_ratio: GptImage25AspectRatioSchema.default("auto"),
-      resolution: GptImage25ResolutionSchema.optional(),
+      resolution: GptImage25ResolutionSchema.default("1K"),
       background: GptImage25BackgroundSchema.optional(),
     }),
   })
@@ -3839,7 +3846,7 @@ export const GptImage25SunburstImageToImageRequestSchema = z
       prompt: z.string().min(1).max(20000),
       input_urls: z.array(z.string()).min(1).max(16),
       aspect_ratio: GptImage25AspectRatioSchema.default("auto"),
-      resolution: GptImage25ResolutionSchema.optional(),
+      resolution: GptImage25ResolutionSchema.default("1K"),
       background: GptImage25BackgroundSchema.optional(),
     }),
   })

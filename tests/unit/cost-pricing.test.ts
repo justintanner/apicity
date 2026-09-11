@@ -2706,8 +2706,10 @@ describe("kie stale-family refresh (REQ-004)", () => {
     expect(result.warnings).toEqual([]);
   });
 
-  // GPT Image 2.5 (flare / sunburst): per image by input.resolution, no
-  // documented default — an omitted resolution fails closed (OQ-001).
+  // GPT Image 2.5 (flare / sunburst): per image by input.resolution,
+  // default 1K, observed 2026-09-11 (plans/ac-1m1js4 REQ-009: the probe
+  // rendered at the explicit-1K control's size and billed the same 6
+  // credits).
   it.each([
     "gpt-image-2-5-flare-text-to-image",
     "gpt-image-2-5-flare-image-to-image",
@@ -2733,14 +2735,16 @@ describe("kie stale-family refresh (REQ-004)", () => {
     "gpt-image-2-5-flare-image-to-image",
     "gpt-image-2-5-sunburst-text-to-image",
     "gpt-image-2-5-sunburst-image-to-image",
-  ])("fails closed when %s omits resolution", (model) => {
-    const result = kieEstimate({ model, input: { prompt: "x" } });
+  ])(
+    "prices %s at $0.03 when resolution is omitted (observed 1K default)",
+    (model) => {
+      const result = kieEstimate({ model, input: { prompt: "x" } });
 
-    expect(result.usd).toBe(0);
-    expect(result.warnings[0]).toContain(
-      "missing required selector(s): resolution"
-    );
-  });
+      expect(result.usd).toBeCloseTo(0.03, 10);
+      expect(result.breakdown.units).toBe(1);
+      expect(result.warnings).toEqual([]);
+    }
+  );
 
   // google/gemini-omni-flash-1-1: a clone of gemini-omni-video's t2v/v2v
   // tables with a 360p column added to both modes.

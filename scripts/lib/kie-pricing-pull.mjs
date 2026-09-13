@@ -557,6 +557,70 @@ export function comparePricingRows(currentRows, baselineRows) {
   };
 }
 
+const CALENDAR_DATE = /^\d{4}-\d{2}-\d{2}$/;
+
+/**
+ * True only for a `YYYY-MM-DD` that names a real UTC calendar date. V8
+ * turns an impossible month into an Invalid Date (whose toISOString()
+ * throws) and rolls an impossible day over into the next month, so the
+ * check guards getTime() and then requires the round trip to reproduce
+ * the input exactly.
+ */
+function isCalendarDate(value) {
+  if (typeof value !== "string" || !CALENDAR_DATE.test(value)) return false;
+  const date = new Date(`${value}T00:00:00Z`);
+  return (
+    !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value
+  );
+}
+
+/**
+ * Resolve the comparison baseline's "as of" date and record where it came
+ * from. An explicit --baseline-as-of wins; then the baseline's own
+ * pulledAt.completedAt reduced to its UTC calendar date; then the first
+ * YYYY-MM-DD in the baseline filename (the original frozen baseline file
+ * carries no pulledAt, only a date in its name). Nothing is guessed: with
+ * no source the caller has to pass the flag.
+ */
+export function resolveBaselineAsOf({
+  explicit = undefined,
+  baseline = undefined,
+  baselinePath = undefined,
+} = {}) {
+  if (explicit !== undefined) {
+    if (!isCalendarDate(explicit)) {
+      throw new KiePricingPullError(
+        "invalid-argument",
+        "--baseline-as-of must be YYYY-MM-DD",
+        { value: explicit }
+      );
+    }
+    return { asOf: explicit, source: "flag" };
+  }
+  const completedAt = baseline?.pulledAt?.completedAt;
+  if (
+    typeof completedAt === "string" &&
+    !Number.isNaN(Date.parse(completedAt))
+  ) {
+    return {
+      asOf: new Date(Date.parse(completedAt)).toISOString().slice(0, 10),
+      source: "baseline-pulled-at",
+    };
+  }
+  const fromFilename =
+    typeof baselinePath === "string"
+      ? path.basename(baselinePath).match(/\d{4}-\d{2}-\d{2}/)?.[0]
+      : undefined;
+  if (fromFilename !== undefined && isCalendarDate(fromFilename)) {
+    return { asOf: fromFilename, source: "baseline-filename" };
+  }
+  throw new KiePricingPullError(
+    "baseline-as-of-unresolvable",
+    "the baseline carries no parseable pulledAt.completedAt and no YYYY-MM-DD in its filename; pass --baseline-as-of YYYY-MM-DD",
+    { baselinePath: baselinePath ?? null }
+  );
+}
+
 function sourceFacts(collection, captureEntries, completedAt) {
   let offset = 0;
   return collection.pages.flatMap((page, pageIndex) =>
@@ -581,6 +645,31 @@ function sourceFacts(collection, captureEntries, completedAt) {
   );
 }
 
+/**
+ * The page range the walk actually made, derived from `collection.pages`
+ * and never from `reportedPages` or a constant, so a walk that stopped
+ * early would be recorded as it happened. One object is written into both
+ * the snapshot and the metadata, which is what keeps the two blocks
+ * identical.
+ */
+export function requestSummary(collection) {
+  const pages = Array.isArray(collection?.pages) ? collection.pages : [];
+  if (pages.length === 0) {
+    throw new KiePricingPullError(
+      "invalid-artifact-input",
+      "collection.pages must hold at least one page"
+    );
+  }
+  return {
+    pageSize: collection.requestedPageSize,
+    pageNum: {
+      first: pages[0].pageNum,
+      last: pages[pages.length - 1].pageNum,
+    },
+    pageCount: pages.length,
+  };
+}
+
 export async function writePullArtifacts({
   collection,
   artifactRoot,
@@ -596,6 +685,7 @@ export async function writePullArtifacts({
   }
 
   collection = preparePersistedCollection(collection);
+  const request = requestSummary(collection);
   if (baseline) {
     const safeBaselineRows = baseline.rows.map((row) => sanitizeCapture(row));
     if (
@@ -642,7 +732,7 @@ export async function writePullArtifacts({
     endpoint: collection.endpoint,
     method: collection.method,
     pulledAt: { startedAt, completedAt },
-    request: { pageSize: collection.requestedPageSize },
+    request,
     reported: {
       total: collection.reportedTotal,
       pages: collection.reportedPages,
@@ -697,7 +787,7 @@ export async function writePullArtifacts({
     endpoint: collection.endpoint,
     method: collection.method,
     pulledAt: { startedAt, completedAt },
-    request: { pageSize: collection.requestedPageSize },
+    request,
     snapshot: {
       path: path.relative(process.cwd(), snapshotPath),
       sha256: snapshotSha256,
@@ -718,6 +808,7 @@ export async function writePullArtifacts({
       ? {
           baselinePath: baseline.path,
           baselineAsOf: baseline.asOf,
+          baselineAsOfSource: baseline.asOfSource,
           baselineRows: baseline.rows.length,
           currentRows: collection.rows.length,
           added: baseline.comparison.added.length,
@@ -793,11 +884,76 @@ export function validateSnapshotMetadata(snapshot, metadata, snapshotBytes) {
       "snapshot occurrence IDs are not unique"
     );
   }
+  validateRequestSummary(snapshot, metadata);
   return {
     actualHash,
     capturedTotal: snapshot.records.length,
     pageCount: snapshot.pages.length,
   };
+}
+
+/**
+ * `check`'s half of the page-range record: the summary block must agree
+ * with the page walk in `metadata.pages` and be byte-identical between the
+ * two files. Evidence written before the block existed carries no
+ * `pageNum` in either file and is accepted unchanged; a `pageNum` on
+ * exactly one side is a mismatch, never a legacy file.
+ */
+export function validateRequestSummary(snapshot, metadata) {
+  const snapshotRange = snapshot?.request?.pageNum;
+  const metadataRange = metadata?.request?.pageNum;
+  if (snapshotRange === undefined && metadataRange === undefined) {
+    return null;
+  }
+  const mismatch = (message, details = {}) =>
+    new KiePricingPullError("page-range-mismatch", message, details);
+  if (canonicalJson(snapshot.request) !== canonicalJson(metadata.request)) {
+    throw mismatch("snapshot and metadata request blocks differ", {
+      snapshot: snapshot.request ?? null,
+      metadata: metadata.request ?? null,
+    });
+  }
+  const { first, last } = metadataRange ?? {};
+  const { pageCount } = metadata.request;
+  const walk = Array.isArray(metadata.pages) ? metadata.pages : [];
+  const snapshotPages = Array.isArray(snapshot.pages) ? snapshot.pages : [];
+  if (![first, last, pageCount].every(Number.isInteger)) {
+    throw mismatch(
+      "request.pageNum.first, request.pageNum.last and request.pageCount must be integers",
+      { first, last, pageCount }
+    );
+  }
+  if (walk.length === 0 || first !== walk[0].current) {
+    throw mismatch(
+      `request.pageNum.first ${first} does not match the first page walked`,
+      { first, walked: walk[0]?.current ?? null }
+    );
+  }
+  if (last !== walk[walk.length - 1].current) {
+    throw mismatch(
+      `request.pageNum.last ${last} does not match the last page walked`,
+      { last, walked: walk[walk.length - 1].current }
+    );
+  }
+  if (pageCount !== walk.length) {
+    throw mismatch(
+      `request.pageCount ${pageCount} does not match ${walk.length} pages walked`,
+      { pageCount, walked: walk.length }
+    );
+  }
+  if (pageCount !== last - first + 1) {
+    throw mismatch(
+      `request.pageCount ${pageCount} does not span pageNum ${first}..${last}`,
+      { pageCount, first, last }
+    );
+  }
+  if (pageCount !== snapshotPages.length) {
+    throw mismatch(
+      `request.pageCount ${pageCount} does not match ${snapshotPages.length} snapshot pages`,
+      { pageCount, snapshotPages: snapshotPages.length }
+    );
+  }
+  return { first, last, pageCount };
 }
 
 /**

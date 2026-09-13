@@ -2,14 +2,15 @@
 
 import path from "node:path";
 import { readFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
 import {
   KIE_PRICING_ENDPOINT,
   KIE_PRICING_PAGE_SIZE,
   KiePricingPullError,
   collectPricingPages,
-  comparePricingRows,
   fetchPricingPage,
   readJson,
+  resolveBaselineAsOf,
   sha256Bytes,
   sha256Json,
   validateSnapshotMetadata,
@@ -21,7 +22,7 @@ import {
 
 const DEFAULT_ARTIFACT_ROOT = "tests/fixtures/kie-pricing-evidence";
 
-function parseArgs(argv) {
+export function parseArgs(argv) {
   const [command = "help", ...tokens] = argv;
   const options = {};
   for (let index = 0; index < tokens.length; index += 1) {
@@ -75,12 +76,17 @@ function rawRowsFromSnapshot(value) {
   return value.records.map((record) => record.raw ?? record);
 }
 
-async function pull(options) {
+export async function pull(options) {
   const artifactRoot = path.resolve(
     options["artifact-root"] ?? DEFAULT_ARTIFACT_ROOT
   );
   const endpoint = options.endpoint ?? KIE_PRICING_ENDPOINT;
   const pageSize = integerOption(options, "page-size", KIE_PRICING_PAGE_SIZE);
+  // The baseline is read and its date resolved before any page is
+  // fetched, so a malformed --baseline-as-of or an unreadable baseline
+  // fails before the network is touched. writePullArtifacts recomputes
+  // the comparison from the sanitized rows itself.
+  const baseline = await loadBaseline(options);
   const startedAt = new Date().toISOString();
   const collection = await collectPricingPages({
     endpoint,
@@ -94,22 +100,6 @@ async function pull(options) {
       }),
   });
   const completedAt = new Date().toISOString();
-
-  let baseline;
-  if (options.baseline) {
-    const baselinePath = path.resolve(options.baseline);
-    const baselineValue = await readJson(baselinePath);
-    const baselineRows = rawRowsFromSnapshot(baselineValue);
-    baseline = {
-      path: path.relative(process.cwd(), baselinePath),
-      asOf: options["baseline-as-of"] ?? "2026-08-06",
-      rows: baselineRows,
-      comparison: comparePricingRows(
-        collection.rows.map((row) => row.raw),
-        baselineRows
-      ),
-    };
-  }
 
   const artifacts = await writePullArtifacts({
     collection,
@@ -132,6 +122,26 @@ async function pull(options) {
     snapshotSha256: artifacts.snapshotSha256,
   };
   console.log(JSON.stringify(result, null, 2));
+}
+
+async function loadBaseline(options) {
+  // Without --baseline there is no comparison (it stays null) and
+  // --baseline-as-of is not consulted, exactly as before.
+  if (!options.baseline) return undefined;
+  const baselinePath = path.resolve(options.baseline);
+  const baselineValue = await readJson(baselinePath);
+  const rows = rawRowsFromSnapshot(baselineValue);
+  const { asOf, source } = resolveBaselineAsOf({
+    explicit: options["baseline-as-of"],
+    baseline: baselineValue,
+    baselinePath,
+  });
+  return {
+    path: path.relative(process.cwd(), baselinePath),
+    asOf,
+    asOfSource: source,
+    rows,
+  };
 }
 
 async function checkSourceCaptures(metadata, snapshotPath) {
@@ -196,7 +206,7 @@ function checkSnapshotRows(snapshot) {
   }
 }
 
-async function check(options) {
+export async function check(options) {
   const snapshotPath = path.resolve(requiredOption(options, "snapshot"));
   const metadataPath = path.resolve(requiredOption(options, "metadata"));
   const snapshotBytes = await readFile(snapshotPath);
@@ -241,11 +251,18 @@ async function check(options) {
 
 function printHelp() {
   console.log(`Usage:
-  node scripts/kie-pricing-audit.mjs pull [--artifact-root PATH] [--baseline PATH]
-  node scripts/kie-pricing-audit.mjs check --snapshot PATH --metadata PATH
+  node scripts/kie-pricing-audit.mjs pull  [--artifact-root PATH] [--baseline PATH] [--baseline-as-of YYYY-MM-DD]
+                                           [--page-size N] [--endpoint URL]
+  node scripts/kie-pricing-audit.mjs check --snapshot PATH --metadata PATH [--manifest PATH]
 
 pull writes committed evidence under ${DEFAULT_ARTIFACT_ROOT} by default and uses
-POST ${KIE_PRICING_ENDPOINT} with pageSize ${KIE_PRICING_PAGE_SIZE}.
+POST ${KIE_PRICING_ENDPOINT} with pageSize ${KIE_PRICING_PAGE_SIZE};
+--endpoint and --page-size override those two defaults. With --baseline, the
+written comparison.baselineAsOf defaults to the UTC date of the baseline's own
+pulledAt.completedAt, then to the first YYYY-MM-DD in the baseline filename,
+and is otherwise required as --baseline-as-of; an explicit --baseline-as-of
+always wins and the source used is written as comparison.baselineAsOfSource.
+check also compares the manifest's snapshot checksum when --manifest is given.
 The optional KIE_API_KEY is sent only as a Bearer request header and is never
 written to evidence.`);
 }
@@ -257,15 +274,17 @@ async function main() {
   printHelp();
 }
 
-try {
-  await main();
-} catch (error) {
-  const result = {
-    status: "error",
-    code: error.code ?? "unexpected-error",
-    message: error.message,
-    ...(error.details ? { details: error.details } : {}),
-  };
-  console.error(JSON.stringify(result, null, 2));
-  process.exitCode = 1;
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  try {
+    await main();
+  } catch (error) {
+    const result = {
+      status: "error",
+      code: error.code ?? "unexpected-error",
+      message: error.message,
+      ...(error.details ? { details: error.details } : {}),
+    };
+    console.error(JSON.stringify(result, null, 2));
+    process.exitCode = 1;
+  }
 }

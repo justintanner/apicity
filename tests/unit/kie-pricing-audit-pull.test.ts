@@ -1,8 +1,8 @@
 import { mkdtempSync } from "node:fs";
-import { readFile, rm } from "node:fs/promises";
+import { readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import fixtures from "../fixtures/kie-pricing-page-sequences.json";
 import {
   atomicWriteFile,
@@ -10,13 +10,22 @@ import {
   collectPricingPages,
   fetchPricingPage,
   parsePageResponse,
+  requestSummary,
+  resolveBaselineAsOf,
   sanitizeCapture,
   sha256Json,
+  validateRequestSummary,
+  validateSnapshotMetadata,
   validateSnapshotRecordAlignment,
   validateCaptureContent,
   validateSourceIndex,
   writePullArtifacts,
 } from "../../scripts/lib/kie-pricing-pull.mjs";
+import { check, parseArgs, pull } from "../../scripts/kie-pricing-audit.mjs";
+import {
+  KIE_PRICING_METADATA_PATH,
+  KIE_PRICING_SNAPSHOT_PATH,
+} from "../../scripts/lib/kie-pricing-evidence-paths.mjs";
 
 type FixturePage = Record<string, unknown>;
 type FixtureSet = Record<string, FixturePage[]>;
@@ -453,5 +462,262 @@ describe("Kie pricing HTTP and evidence safety", () => {
     ).toThrowError(
       expect.objectContaining({ code: "source-fact-position-mismatch" })
     );
+  });
+});
+
+interface RequestSummary {
+  pageSize: number;
+  pageNum: { first: number; last: number };
+  pageCount: number;
+}
+
+const EXPECTED_RANGE: RequestSummary = {
+  pageSize: 2,
+  pageNum: { first: 1, last: 2 },
+  pageCount: 2,
+};
+
+interface ResolveBaselineAsOfInput {
+  explicit?: string;
+  baseline?: Record<string, unknown>;
+  baselinePath?: string;
+}
+
+interface ResolveBaselineAsOfResult {
+  asOf: string;
+  source: string;
+}
+
+const resolveDate = resolveBaselineAsOf as unknown as (
+  input: ResolveBaselineAsOfInput
+) => ResolveBaselineAsOfResult;
+
+async function writeValidPair() {
+  const root = mkdtempSync(path.join(tmpdir(), "kie-pricing-range-"));
+  const collection = await collectPricingPages({
+    fetchPage: sequenceFetcher(pageFixtures.valid),
+    pageSize: 2,
+  });
+  const artifacts = await writePullArtifacts({
+    collection,
+    artifactRoot: root,
+    startedAt: "2026-09-12T00:00:00.000Z",
+    completedAt: "2026-09-12T00:00:01.000Z",
+  });
+  const snapshotBytes = await readFile(artifacts.snapshotPath);
+  const snapshot = JSON.parse(snapshotBytes.toString("utf8"));
+  const metadata = JSON.parse(await readFile(artifacts.metadataPath, "utf8"));
+  return { root, artifacts, snapshotBytes, snapshot, metadata };
+}
+
+describe("Kie pricing pull page range and baseline date", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+  });
+
+  // T-1
+  it("records the captured page range identically in the snapshot and the metadata", async () => {
+    const { root, snapshotBytes, snapshot, metadata } = await writeValidPair();
+    expect(snapshot.request).toEqual(EXPECTED_RANGE);
+    expect(metadata.request).toEqual(EXPECTED_RANGE);
+    expect(JSON.stringify(snapshot.request)).toBe(
+      JSON.stringify(metadata.request)
+    );
+    expect(metadata.pages).toHaveLength(2);
+    expect(
+      validateSnapshotMetadata(snapshot, metadata, snapshotBytes)
+    ).toMatchObject({ pageCount: 2, capturedTotal: 3 });
+    expect(validateRequestSummary(snapshot, metadata)).toEqual({
+      first: 1,
+      last: 2,
+      pageCount: 2,
+    });
+    expect(
+      requestSummary({
+        requestedPageSize: 7,
+        pages: [{ pageNum: 3 }, { pageNum: 4 }, { pageNum: 5 }],
+      })
+    ).toEqual({ pageSize: 7, pageNum: { first: 3, last: 5 }, pageCount: 3 });
+    await rm(root, { recursive: true, force: true });
+  });
+
+  // T-2
+  it("lets an explicit --baseline-as-of win and records the flag as its source", () => {
+    expect(
+      resolveDate({
+        explicit: "2026-01-02",
+        baseline: { pulledAt: { completedAt: "2026-08-25T06:31:02.421Z" } },
+        baselinePath: "kie-pricing-snapshot-2026-08-25T06-31-02-421Z.json",
+      })
+    ).toEqual({ asOf: "2026-01-02", source: "flag" });
+  });
+
+  // T-3
+  it("derives the date from the baseline's pulledAt.completedAt in UTC", () => {
+    const baselinePath = "kie-pricing-snapshot-2026-08-25T06-31-02-421Z.json";
+    expect(
+      resolveDate({
+        baseline: { pulledAt: { completedAt: "2026-08-25T06:31:02.421Z" } },
+        baselinePath,
+      })
+    ).toEqual({ asOf: "2026-08-25", source: "baseline-pulled-at" });
+    expect(
+      resolveDate({
+        baseline: { pulledAt: { completedAt: "2026-08-25T23:59:59.999Z" } },
+        baselinePath,
+      })
+    ).toEqual({ asOf: "2026-08-25", source: "baseline-pulled-at" });
+    // An offset timestamp resolves to its UTC date whatever the host TZ.
+    expect(
+      resolveDate({
+        baseline: {
+          pulledAt: { completedAt: "2026-08-26T02:00:00.000+07:00" },
+        },
+        baselinePath: "baseline.json",
+      })
+    ).toEqual({ asOf: "2026-08-25", source: "baseline-pulled-at" });
+  });
+
+  // T-4
+  it("falls back to the first date in the baseline filename", () => {
+    expect(
+      resolveDate({
+        baseline: { count: 404, records: [] },
+        baselinePath: "/tmp/x/kie-pricing-baseline-2026-08-06.json",
+      })
+    ).toEqual({ asOf: "2026-08-06", source: "baseline-filename" });
+  });
+
+  // T-5
+  it("fails closed on an unresolvable or malformed baseline date", () => {
+    expect(() =>
+      resolveDate({
+        baseline: { records: [] },
+        baselinePath: "/tmp/x/baseline.json",
+      })
+    ).toThrowError(
+      expect.objectContaining({ code: "baseline-as-of-unresolvable" })
+    );
+    for (const explicit of [
+      "2026-8-25",
+      "2026-13-01",
+      "2026-02-30",
+      "yesterday",
+    ]) {
+      expect(() => resolveDate({ explicit })).toThrowError(
+        expect.objectContaining({ code: "invalid-argument" })
+      );
+    }
+    expect(() => resolveDate({ explicit: "2026-13-01" })).toThrow(
+      "--baseline-as-of must be YYYY-MM-DD"
+    );
+  });
+
+  // T-6
+  it("rejects a recorded range that disagrees with the walk and accepts legacy evidence", async () => {
+    const { root, snapshotBytes, snapshot, metadata } = await writeValidPair();
+    const bumpedLast = structuredClone(metadata);
+    bumpedLast.request.pageNum.last += 1;
+    expect(() =>
+      validateSnapshotMetadata(snapshot, bumpedLast, snapshotBytes)
+    ).toThrowError(expect.objectContaining({ code: "page-range-mismatch" }));
+    const offByOne = {
+      snapshot: structuredClone(snapshot),
+      metadata: structuredClone(metadata),
+    };
+    offByOne.snapshot.request.pageCount = 3;
+    offByOne.metadata.request.pageCount = 3;
+    expect(() =>
+      validateRequestSummary(offByOne.snapshot, offByOne.metadata)
+    ).toThrowError(expect.objectContaining({ code: "page-range-mismatch" }));
+    const oneSided = structuredClone(snapshot);
+    delete oneSided.request.pageNum;
+    expect(() => validateRequestSummary(oneSided, metadata)).toThrowError(
+      expect.objectContaining({ code: "page-range-mismatch" })
+    );
+    // Legacy: the pinned committed pair predates the block.
+    const legacySnapshotBytes = await readFile(KIE_PRICING_SNAPSHOT_PATH);
+    const legacySnapshot = JSON.parse(legacySnapshotBytes.toString("utf8"));
+    const legacyMetadata = JSON.parse(
+      await readFile(KIE_PRICING_METADATA_PATH, "utf8")
+    );
+    expect(legacyMetadata.request).toEqual({ pageSize: 100 });
+    expect(validateRequestSummary(legacySnapshot, legacyMetadata)).toBeNull();
+    expect(() =>
+      validateSnapshotMetadata(
+        legacySnapshot,
+        legacyMetadata,
+        legacySnapshotBytes
+      )
+    ).not.toThrow();
+    vi.spyOn(console, "log").mockImplementation(() => undefined);
+    await expect(
+      check({
+        snapshot: KIE_PRICING_SNAPSHOT_PATH,
+        metadata: KIE_PRICING_METADATA_PATH,
+      })
+    ).resolves.toBeUndefined();
+    await rm(root, { recursive: true, force: true });
+  });
+
+  // T-7
+  it("runs the CLI pull in-process with a stubbed fetch and a derived baseline date", async () => {
+    const root = mkdtempSync(path.join(tmpdir(), "kie-pricing-cli-"));
+    const baselinePath = path.join(root, "baseline.json");
+    await writeFile(
+      baselinePath,
+      JSON.stringify({
+        schema: "gc.kie-pricing-snapshot.v1",
+        pulledAt: {
+          startedAt: "2026-08-25T06:31:00.498Z",
+          completedAt: "2026-08-25T06:31:02.421Z",
+        },
+        records: [],
+      })
+    );
+    const fetchStub: typeof fetch = async (_input, init) => {
+      const { pageNum } = JSON.parse(String(init?.body)) as { pageNum: number };
+      const body = pageFixtures.valid[pageNum - 1];
+      return new Response(JSON.stringify(body ?? {}), {
+        status: body ? 200 : 404,
+      });
+    };
+    vi.stubGlobal("fetch", fetchStub);
+    const log = vi.spyOn(console, "log").mockImplementation(() => undefined);
+    await pull({
+      "artifact-root": root,
+      baseline: baselinePath,
+      endpoint: "https://example.test/pricing",
+      "page-size": "2",
+    });
+    const printed = JSON.parse(String(log.mock.calls[0]?.[0])) as {
+      comparison: { baselineAsOf: string; baselineAsOfSource: string };
+      metadataPath: string;
+      snapshotPath: string;
+    };
+    expect(printed.comparison).toMatchObject({
+      baselineAsOf: "2026-08-25",
+      baselineAsOfSource: "baseline-pulled-at",
+    });
+    const metadata = JSON.parse(await readFile(printed.metadataPath, "utf8"));
+    expect(metadata.request).toEqual(EXPECTED_RANGE);
+    expect(Object.keys(metadata.comparison).slice(0, 3)).toEqual([
+      "baselinePath",
+      "baselineAsOf",
+      "baselineAsOfSource",
+    ]);
+    expect(metadata.comparison).toMatchObject({
+      baselineAsOf: "2026-08-25",
+      baselineAsOfSource: "baseline-pulled-at",
+    });
+    await expect(
+      check({ snapshot: printed.snapshotPath, metadata: printed.metadataPath })
+    ).resolves.toBeUndefined();
+    expect(parseArgs(["pull", "--baseline", "x"])).toEqual({
+      command: "pull",
+      options: { baseline: "x" },
+    });
+    await rm(root, { recursive: true, force: true });
   });
 });

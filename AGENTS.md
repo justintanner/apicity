@@ -70,7 +70,7 @@ Apicity is a TypeScript monorepo of standalone API provider packages
 `@apicity/free-media-upload`, `@apicity/cost`<!-- provider-inventory:providers:end -->). Each package is self-contained with a minimal dependency
 footprint: every provider depends on `zod` for endpoint `.schema` definitions,
 polymarket also depends on `viem` for EIP-712 order signing, and the OpenAI
-Realtime server transport uses `ws`.
+and xAI Realtime server transports use `ws`.
 
 Method paths mirror upstream API URL paths segment-by-segment; kebab-case becomes camelCase (e.g. `/v1/chat/completions` → `openai.v1.chat.completions()`).
 

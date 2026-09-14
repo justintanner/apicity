@@ -12,7 +12,7 @@ Apicity is a TypeScript monorepo of standalone API provider packages
 `@apicity/thesportsdb`, `@apicity/openf1`, `@apicity/elevenlabs`, `@apicity/s3`,
 `@apicity/b2`, `@apicity/dropbox`, `@apicity/dolthub`, `@apicity/meta`,
 `@apicity/telegram`, `@apicity/quo`, `@apicity/x`, `@apicity/youtube`,
-`@apicity/free-media-upload`, `@apicity/cost`<!-- provider-inventory:providers:end -->). Each package is self-contained with a minimal dependency footprint: every provider depends on `zod` (endpoint `.schema` definitions), polymarket also depends on `viem` for EIP-712 order signing, and the OpenAI Realtime server transport uses `ws`. Shared provider helpers are copied into packages as synced local source rather than consumed through workspace package dependencies. Based on [TetherAI](https://github.com/nbursa/TetherAI).
+`@apicity/free-media-upload`, `@apicity/cost`<!-- provider-inventory:providers:end -->). Each package is self-contained with a minimal dependency footprint: every provider depends on `zod` (endpoint `.schema` definitions), polymarket also depends on `viem` for EIP-712 order signing, and the OpenAI and xAI Realtime server transports use `ws`. Shared provider helpers are copied into packages as synced local source rather than consumed through workspace package dependencies. Based on [TetherAI](https://github.com/nbursa/TetherAI).
 
 `@apicity/cost` is a dependency-free cross-provider helper: pure local USD cost/token estimation (`createCost`, `computeEstimate`, bundled rate tables) plus the canonical OTP pay-gate (`withPaidGate`) source vendored into kie and xai.
 

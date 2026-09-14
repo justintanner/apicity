@@ -727,6 +727,7 @@ export type XaiRealtimeTool =
   | XaiRealtimeMcpTool;
 
 export interface XaiRealtimeSession {
+  reasoning?: { effort: "high" | "none" };
   instructions?: string;
   voice?: string;
   turn_detection?: XaiRealtimeTurnDetection;

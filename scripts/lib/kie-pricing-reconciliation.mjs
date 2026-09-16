@@ -1054,7 +1054,7 @@ function classifyRawRow(raw, inventories) {
       result.billingBasis = "fixed-bundle";
     }
     if (
-      key === "minimax-h3/image-to-video" &&
+      key === "minimax-h3/reference-to-video" &&
       /image input/i.test(String(official.modelDescription ?? ""))
     ) {
       result.billingComponent = "extra";

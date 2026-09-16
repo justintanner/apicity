@@ -1821,7 +1821,7 @@
     },
     "hashes": {
       "packages/provider/kie/src/zod.ts": "sha256:32283143e82fab8c76cec96c906a00be3698fb16686bb5827677c4652a149668",
-      "packages/provider/kie/src/model-schemas.ts": "sha256:7659fd3adea605dc6db77e615630c1539b594854c44b5c6f05817640c1a970ea",
+      "packages/provider/kie/src/model-schemas.ts": "sha256:8484bb394f85fb31ae0637a5c35263b0707a045cbfb05b60a65fbc19c97a8a66",
       "packages/provider/kie/src/kie.ts": "sha256:ffd0feb6bfb9b329bdd5900c5164bb4f0702c8a3c91cffd774b9e21cb3088ded",
       "packages/provider/cost/src/pricing/kie.ts": "sha256:df267e4aa23b33a128ac1d21407bac019008d063226636b17754ab1d1d4a5e28",
       "packages/provider/cost/src/slugs.ts": "sha256:25d699780a875783a1de78270d452c5d941207a7bce6f8c198610d143a867e41",
@@ -17777,7 +17777,7 @@
       },
       "selectorValues": {
         "resolution": "720p",
-        "duration": 10
+        "duration": "10"
       },
       "selectorSources": {
         "resolution": "modelInputSchemas:wan/2-5-text-to-video",
@@ -17827,7 +17827,7 @@
       },
       "selectorValues": {
         "resolution": "1080p",
-        "duration": 5
+        "duration": "5"
       },
       "selectorSources": {
         "resolution": "modelInputSchemas:wan/2-5-text-to-video",
@@ -17877,7 +17877,7 @@
       },
       "selectorValues": {
         "resolution": "1080p",
-        "duration": 10
+        "duration": "10"
       },
       "selectorSources": {
         "resolution": "modelInputSchemas:wan/2-5-text-to-video",
@@ -17927,7 +17927,7 @@
       },
       "selectorValues": {
         "resolution": "1080p",
-        "duration": 10
+        "duration": "10"
       },
       "selectorSources": {
         "resolution": "modelInputSchemas:wan/2-5-image-to-video",
@@ -17978,7 +17978,7 @@
       },
       "selectorValues": {
         "resolution": "720p",
-        "duration": 5
+        "duration": "5"
       },
       "selectorSources": {
         "resolution": "modelInputSchemas:wan/2-5-text-to-video",
@@ -18028,7 +18028,7 @@
       },
       "selectorValues": {
         "resolution": "720p",
-        "duration": 10
+        "duration": "10"
       },
       "selectorSources": {
         "resolution": "modelInputSchemas:wan/2-5-image-to-video",
@@ -18079,7 +18079,7 @@
       },
       "selectorValues": {
         "resolution": "1080p",
-        "duration": 5
+        "duration": "5"
       },
       "selectorSources": {
         "resolution": "modelInputSchemas:wan/2-5-image-to-video",
@@ -18130,7 +18130,7 @@
       },
       "selectorValues": {
         "resolution": "720p",
-        "duration": 5
+        "duration": "5"
       },
       "selectorSources": {
         "resolution": "modelInputSchemas:wan/2-5-image-to-video",

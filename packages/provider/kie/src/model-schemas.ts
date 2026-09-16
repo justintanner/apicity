@@ -9,6 +9,9 @@ import {
   GoogleGeminiTtsTemperatureContract,
   GoogleGeminiTtsVoiceNameSchema,
   GoogleGeminiOmniFlash11ResolutionSchema,
+  GptImage25AspectRatioSchema,
+  GptImage25BackgroundSchema,
+  GptImage25ResolutionSchema,
   HAPPYHORSE_DURATION_MAX_SECONDS,
   HAPPYHORSE_DURATION_MIN_SECONDS,
   KlingOmniAspectRatioSchema,
@@ -2415,35 +2418,21 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
       aspect_ratio: {
         type: "string",
-        enum: [
-          "auto",
-          "1:1",
-          "3:2",
-          "2:3",
-          "4:3",
-          "3:4",
-          "16:9",
-          "9:16",
-          "21:9",
-          "27:16",
-          "16:27",
-          "9:8",
-          "8:9",
-        ],
+        enum: GptImage25AspectRatioSchema.options,
         default: "auto",
         description:
           "Output aspect ratio (default auto). 27:16, 16:27, 9:8 and 8:9 support 1K only.",
       },
       resolution: {
         type: "string",
-        enum: ["1K", "2K", "4K"],
+        enum: GptImage25ResolutionSchema.options,
         default: "1K",
         description:
           "Output resolution 1K/2K/4K; default 1K (observed 2026-09-11). 2K and 4K are unavailable for 27:16, 16:27, 9:8 and 8:9.",
       },
       background: {
         type: "string",
-        enum: ["transparent", "opaque", "auto"],
+        enum: GptImage25BackgroundSchema.options,
         description:
           "Image background (transparent, opaque, auto); no documented default",
       },
@@ -2462,35 +2451,21 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
       aspect_ratio: {
         type: "string",
-        enum: [
-          "auto",
-          "1:1",
-          "3:2",
-          "2:3",
-          "4:3",
-          "3:4",
-          "16:9",
-          "9:16",
-          "21:9",
-          "27:16",
-          "16:27",
-          "9:8",
-          "8:9",
-        ],
+        enum: GptImage25AspectRatioSchema.options,
         default: "auto",
         description:
           "Output aspect ratio (default auto). 27:16, 16:27, 9:8 and 8:9 support 1K only.",
       },
       resolution: {
         type: "string",
-        enum: ["1K", "2K", "4K"],
+        enum: GptImage25ResolutionSchema.options,
         default: "1K",
         description:
           "Output resolution 1K/2K/4K; default 1K (observed 2026-09-11). 2K and 4K are unavailable for 27:16, 16:27, 9:8 and 8:9.",
       },
       background: {
         type: "string",
-        enum: ["transparent", "opaque", "auto"],
+        enum: GptImage25BackgroundSchema.options,
         description:
           "Image background (transparent, opaque, auto); no documented default",
       },
@@ -2517,35 +2492,21 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
       aspect_ratio: {
         type: "string",
-        enum: [
-          "auto",
-          "1:1",
-          "3:2",
-          "2:3",
-          "4:3",
-          "3:4",
-          "16:9",
-          "9:16",
-          "21:9",
-          "27:16",
-          "16:27",
-          "9:8",
-          "8:9",
-        ],
+        enum: GptImage25AspectRatioSchema.options,
         default: "auto",
         description:
           "Output aspect ratio (default auto). 27:16, 16:27, 9:8 and 8:9 support 1K only.",
       },
       resolution: {
         type: "string",
-        enum: ["1K", "2K", "4K"],
+        enum: GptImage25ResolutionSchema.options,
         default: "1K",
         description:
           "Output resolution 1K/2K/4K; default 1K (observed 2026-09-11). 2K and 4K are unavailable for 27:16, 16:27, 9:8 and 8:9.",
       },
       background: {
         type: "string",
-        enum: ["transparent", "opaque", "auto"],
+        enum: GptImage25BackgroundSchema.options,
         description:
           "Image background (transparent, opaque, auto); no documented default",
       },
@@ -2564,35 +2525,21 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
       aspect_ratio: {
         type: "string",
-        enum: [
-          "auto",
-          "1:1",
-          "3:2",
-          "2:3",
-          "4:3",
-          "3:4",
-          "16:9",
-          "9:16",
-          "21:9",
-          "27:16",
-          "16:27",
-          "9:8",
-          "8:9",
-        ],
+        enum: GptImage25AspectRatioSchema.options,
         default: "auto",
         description:
           "Output aspect ratio (default auto). 27:16, 16:27, 9:8 and 8:9 support 1K only.",
       },
       resolution: {
         type: "string",
-        enum: ["1K", "2K", "4K"],
+        enum: GptImage25ResolutionSchema.options,
         default: "1K",
         description:
           "Output resolution 1K/2K/4K; default 1K (observed 2026-09-11). 2K and 4K are unavailable for 27:16, 16:27, 9:8 and 8:9.",
       },
       background: {
         type: "string",
-        enum: ["transparent", "opaque", "auto"],
+        enum: GptImage25BackgroundSchema.options,
         description:
           "Image background (transparent, opaque, auto); no documented default",
       },

@@ -1,5 +1,7 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+import { Project } from "ts-morph";
+import type { SourceFile } from "ts-morph";
 import { beforeAll, describe, expect, it } from "vitest";
 import { computeEstimate, PRICING } from "../../packages/provider/cost/src";
 import type {
@@ -8,6 +10,8 @@ import type {
   ModelPricing,
 } from "../../packages/provider/cost/src";
 import { CREATE_TASK_GUARDS } from "../../packages/provider/kie/src/kie";
+import { modelInputSchemas } from "../../packages/provider/kie/src/model-schemas";
+import type { PayloadFieldSchema } from "../../packages/provider/kie/src/types";
 import {
   KIE_PRICING_MANIFEST_PATH,
   KIE_PRICING_METADATA_PATH,
@@ -105,6 +109,27 @@ interface TestInventory {
   slugKeys: string[];
   displayKeys: string[];
   endpoints: Array<{ method: string }>;
+  descriptorFields: Record<string, Record<string, DescriptorField>>;
+}
+
+interface DescriptorField {
+  type: string | null;
+  enum: Array<string | number | boolean> | null;
+  required: boolean;
+}
+
+type DescriptorInventory = Record<string, Record<string, DescriptorField>>;
+
+function fieldProjection(field: PayloadFieldSchema): DescriptorField {
+  return {
+    type: field.type,
+    enum: field.enum ? [...field.enum] : null,
+    required: field.required === true,
+  };
+}
+
+function fieldKey(field: DescriptorField): string {
+  return JSON.stringify([field.type, field.enum, field.required]);
 }
 
 interface RuntimeCase {
@@ -251,7 +276,9 @@ describe("Kie pricing reconciliation", () => {
   });
 
   it("derives the authoritative source inventory counts", async () => {
-    const inventory = (await collectApiCityInventories(root)) as TestInventory;
+    const inventory = (await collectApiCityInventories(
+      root
+    )) as unknown as TestInventory;
 
     expect(inventory.models).toHaveLength(146);
     expect(inventory.descriptors).toHaveLength(146);
@@ -266,6 +293,102 @@ describe("Kie pricing reconciliation", () => {
     expect(
       inventory.endpoints.filter((entry) => entry.method === "GET")
     ).toHaveLength(18);
+  });
+
+  it("reads every descriptor field the runtime object exposes", async () => {
+    const inventory = (await collectApiCityInventories(
+      root
+    )) as unknown as TestInventory;
+    const mismatches: string[] = [];
+    for (const model of Object.keys(modelInputSchemas)) {
+      if (!Object.hasOwn(inventory.descriptorFields, model)) {
+        mismatches.push(`${model}: missing from the static inventory`);
+      }
+    }
+    for (const model of Object.keys(inventory.descriptorFields)) {
+      if (!Object.hasOwn(modelInputSchemas, model)) {
+        mismatches.push(`${model}: not a runtime model`);
+      }
+    }
+    for (const [model, schema] of Object.entries(modelInputSchemas)) {
+      const staticFields = inventory.descriptorFields[model];
+      if (!staticFields) continue;
+      for (const [name, field] of Object.entries(schema.fields)) {
+        const expected = fieldProjection(field);
+        const actual = staticFields[name];
+        if (!actual) {
+          mismatches.push(
+            `${model}.${name}: missing from the static inventory`
+          );
+        } else if (fieldKey(actual) !== fieldKey(expected)) {
+          mismatches.push(
+            `${model}.${name}: static ${fieldKey(actual)} != runtime ${fieldKey(expected)}`
+          );
+        }
+      }
+      for (const name of Object.keys(staticFields)) {
+        if (!Object.hasOwn(schema.fields, name)) {
+          mismatches.push(`${model}.${name}: not a runtime field`);
+        }
+      }
+    }
+    expect(mismatches).toEqual([]);
+    expect(Object.keys(inventory.descriptorFields)).toHaveLength(146);
+
+    const fields = inventory.descriptorFields;
+    expect(fields["minimax-h3/text-to-video"].resolution).toEqual({
+      type: "string",
+      enum: ["768P", "2K"],
+      required: false,
+    });
+    expect(fields["google/gemini-omni-flash-1-1"].resolution.enum).toEqual([
+      "360p",
+      "720p",
+      "1080p",
+      "4k",
+    ]);
+    expect(fields["gpt-image-2-5-flare-text-to-image"].resolution.enum).toEqual(
+      ["1K", "2K", "4K"]
+    );
+    expect(
+      fields["gpt-image-2-5-flare-text-to-image"].aspect_ratio.enum
+    ).toHaveLength(13);
+    expect(fields["gpt-image-2-5-flare-text-to-image"].background.enum).toEqual(
+      ["transparent", "opaque", "auto"]
+    );
+    expect(fields["minimax-h3/reference-to-video"].aspect_ratio.enum).toEqual([
+      "adaptive",
+      "21:9",
+      "16:9",
+      "4:3",
+      "1:1",
+      "3:4",
+      "9:16",
+    ]);
+    expect(fields["kling-3.0-omni/image-to-video"].resolution.enum).toEqual([
+      "720p",
+      "1080p",
+      "4k",
+    ]);
+    expect(fields["kling-3.0-omni/image-to-video"].aspect_ratio.enum).toEqual([
+      "16:9",
+      "9:16",
+      "1:1",
+      "auto",
+    ]);
+    expect(fields["google/gemini-2-5-pro-tts"].speakers).toEqual({
+      type: "array",
+      enum: null,
+      required: true,
+    });
+    expect(fields["bytedance/seedance-2-5"].duration.enum?.slice(0, 2)).toEqual(
+      [-1, 4]
+    );
+    expect(
+      Object.values(fields)
+        .flatMap((model) => Object.values(model))
+        .filter((field) => field.type === null)
+    ).toEqual([]);
   });
 
   it("passes the committed zero-unclassified manifest", async () => {
@@ -320,6 +443,23 @@ describe("Kie pricing reconciliation", () => {
       manifest.rows.some((row) => row.disposition === "canonical-alias")
     ).toBe(true);
     expect(manifest.snapshot.metadataSha256).not.toBe(manifest.snapshot.sha256);
+  });
+
+  it("types the wan 2.5 duration selectors as the descriptor's string enum", async () => {
+    const manifest = await readManifest();
+    const rows = manifest.rows.filter((row) =>
+      (row.mappedApiCityKeys[0] ?? "").startsWith("wan/2-5-")
+    );
+
+    expect(rows).toHaveLength(8);
+    for (const row of rows) {
+      const duration = row.selectorValues?.duration;
+      expect(["5", "10"], row.occurrenceId).toContain(duration);
+      expect(
+        recordValue(row.representativePayload?.input).duration,
+        row.occurrenceId
+      ).toBe(duration);
+    }
   });
 
   it("builds the mandatory Seedance 2.5 matrix from official cells", async () => {
@@ -966,5 +1106,78 @@ describe("Kie pricing reconciliation", () => {
     expect(markdown).toContain("| Display keys | 137 | 163 |");
     expect(markdown).toContain("Zero unclassified raw rows");
     expect(markdown).toContain("Zero unclassified ApiCity keys");
+  });
+
+  it("resolves every descriptor enum form and keeps unresolvable forms null", async () => {
+    const reconciliation =
+      (await import("../../scripts/lib/kie-pricing-reconciliation.mjs")) as {
+        descriptorFieldInventory?: (source: SourceFile) => unknown;
+      };
+    const inventoryOf = reconciliation.descriptorFieldInventory;
+    if (!inventoryOf) {
+      throw new Error("descriptorFieldInventory is not exported");
+    }
+
+    const project = new Project({ useInMemoryFileSystem: true });
+    project.createSourceFile(
+      "/src/zod.ts",
+      `import { z } from "zod";
+export const Names = ["a", "b"] as const;
+export const NameSchema = z.enum(Names);
+export const BaseSchema = z.enum(["x", "y"]);
+export const WideSchema = z.enum(["w", ...BaseSchema.options]);
+export const Numbers = [0, 2, 3] as const;
+export const Contract = { values: [0, 0.5, 1], default: 0.5 } as const;
+export const NotAnEnum = z.string();
+`
+    );
+    const source = project.createSourceFile(
+      "/src/model-schemas.ts",
+      `import { BaseSchema, Contract, NameSchema, Numbers, NotAnEnum, WideSchema } from "./zod";
+const localRatios = ["16:9", "9:16"] as const;
+const sharedField = { type: "string", enum: BaseSchema.options, default: "x" } as const;
+const sharedFields = { flag: { type: "boolean" }, nested: sharedField } as const;
+const cycleA = cycleB;
+const cycleB = cycleA;
+export const modelInputSchemas = {
+  "m/options": { type: "video", fields: { a: { type: "string", enum: NameSchema.options }, b: { type: "string", enum: WideSchema.options, required: true } } },
+  "m/arrays": { type: "video", fields: { c: { type: "integer", enum: Numbers }, d: { type: "string", enum: localRatios }, e: { type: "number", enum: Contract.values }, f: { type: "integer", enum: [-1, 4] } } },
+  "m/identifiers": { type: "video", fields: { prompt: { type: "string", required: true }, ...sharedFields, g: sharedField } },
+  "m/fields-ident": { type: "audio", fields: sharedFields },
+  "m/unresolvable": { type: "image", fields: { h: { type: "string", enum: NotAnEnum.options }, i: missingConst, j: { type: "string", enum: missingArray }, k: cycleA, ...missingSpread } },
+  "m/fields-missing": { type: "image", fields: missingFields },
+} as const;
+`
+    );
+
+    const nullField = { type: null, enum: null, required: false };
+    expect(inventoryOf(source) as DescriptorInventory).toEqual({
+      "m/options": {
+        a: { type: "string", enum: ["a", "b"], required: false },
+        b: { type: "string", enum: ["w", "x", "y"], required: true },
+      },
+      "m/arrays": {
+        c: { type: "integer", enum: [0, 2, 3], required: false },
+        d: { type: "string", enum: ["16:9", "9:16"], required: false },
+        e: { type: "number", enum: [0, 0.5, 1], required: false },
+        f: { type: "integer", enum: [-1, 4], required: false },
+      },
+      "m/identifiers": {
+        prompt: { type: "string", enum: null, required: true },
+        flag: { type: "boolean", enum: null, required: false },
+        nested: { type: "string", enum: ["x", "y"], required: false },
+        g: { type: "string", enum: ["x", "y"], required: false },
+      },
+      "m/fields-ident": {
+        flag: { type: "boolean", enum: null, required: false },
+        nested: { type: "string", enum: ["x", "y"], required: false },
+      },
+      "m/unresolvable": {
+        h: { type: "string", enum: null, required: false },
+        i: nullField,
+        j: { type: "string", enum: null, required: false },
+        k: nullField,
+      },
+    });
   });
 });

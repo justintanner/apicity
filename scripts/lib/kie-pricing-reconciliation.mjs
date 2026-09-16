@@ -176,6 +176,13 @@ function literalValue(expression) {
       return value.getLiteralValue();
     case SyntaxKind.NumericLiteral:
       return Number(value.getLiteralValue());
+    case SyntaxKind.PrefixUnaryExpression: {
+      const operand = unwrap(value.getOperand());
+      return value.getOperatorToken() === SyntaxKind.MinusToken &&
+        operand.getKind() === SyntaxKind.NumericLiteral
+        ? -Number(operand.getLiteralValue())
+        : undefined;
+    }
     case SyntaxKind.TrueKeyword:
       return true;
     case SyntaxKind.FalseKeyword:
@@ -185,7 +192,165 @@ function literalValue(expression) {
   }
 }
 
-function descriptorFieldInventory(source) {
+// model-schemas.ts spells fields, `fields` maps and enums through file-local
+// `as const` constants and named imports from ./zod (`<Schema>.options`,
+// `as const` arrays, a `.values` property). A literal-only reader sees none of
+// them, which is how the GPT Image 2.5 enums came to be duplicated and the
+// `minimax-h3/` selector rewrite came to exist. Resolution here is syntactic
+// and deterministic: a name is looked up in the file's own variable
+// declarations first, then in the declaration its `./zod` import binds it to;
+// `z.enum(<arg>)` yields the values of `<arg>`; spreads flatten in source
+// order (JS spread semantics). Anything unresolvable keeps the literal-only
+// shape (`enum: null`, `type: null`); the static-versus-runtime parity test in
+// tests/unit/kie-pricing-reconciliation.test.ts is the loud failure for a new
+// form, so nothing throws here.
+const RESOLVE_DEPTH_LIMIT = 8;
+
+function createDescriptorResolver(source) {
+  const project = source.getProject();
+  const imported = new Map();
+  for (const declaration of source.getImportDeclarations()) {
+    const specifier = declaration.getModuleSpecifierValue();
+    if (!specifier.startsWith(".")) continue;
+    let target = declaration.getModuleSpecifierSourceFile();
+    if (!target) {
+      const base = path.resolve(path.dirname(source.getFilePath()), specifier);
+      for (const candidate of [`${base}.ts`, path.join(base, "index.ts")]) {
+        target =
+          project.getSourceFile(candidate) ??
+          project.addSourceFileAtPathIfExists(candidate);
+        if (target) break;
+      }
+    }
+    if (!target) continue;
+    for (const named of declaration.getNamedImports()) {
+      imported.set((named.getAliasNode() ?? named.getNameNode()).getText(), {
+        file: target,
+        name: named.getNameNode().getText(),
+      });
+    }
+  }
+
+  function declaredInitializer(file, name) {
+    const initializer = file.getVariableDeclaration(name)?.getInitializer();
+    return initializer ? { node: unwrap(initializer), file } : undefined;
+  }
+
+  function resolveIdentifier(identifier, file) {
+    const name = identifier.getText();
+    const local = declaredInitializer(file, name);
+    if (local) return local;
+    const binding = file === source ? imported.get(name) : undefined;
+    return binding
+      ? declaredInitializer(binding.file, binding.name)
+      : undefined;
+  }
+
+  function resolveObject(node, file, depth = 0) {
+    const value = unwrap(node);
+    if (value.getKind() === SyntaxKind.ObjectLiteralExpression) {
+      return { node: value, file };
+    }
+    if (
+      value.getKind() !== SyntaxKind.Identifier ||
+      depth >= RESOLVE_DEPTH_LIMIT
+    ) {
+      return undefined;
+    }
+    const resolved = resolveIdentifier(value, file);
+    return resolved
+      ? resolveObject(resolved.node, resolved.file, depth + 1)
+      : undefined;
+  }
+
+  function resolveValues(node, file, depth = 0) {
+    if (depth >= RESOLVE_DEPTH_LIMIT) return undefined;
+    const value = unwrap(node);
+    switch (value.getKind()) {
+      case SyntaxKind.ArrayLiteralExpression: {
+        const values = [];
+        for (const element of value.getElements()) {
+          if (element.getKind() === SyntaxKind.SpreadElement) {
+            const spread = resolveValues(
+              element.getExpression(),
+              file,
+              depth + 1
+            );
+            if (!spread) return undefined;
+            values.push(...spread);
+            continue;
+          }
+          const literal = literalValue(element);
+          if (literal === undefined) return undefined;
+          values.push(literal);
+        }
+        return values;
+      }
+      case SyntaxKind.Identifier: {
+        const resolved = resolveIdentifier(value, file);
+        return resolved
+          ? resolveValues(resolved.node, resolved.file, depth + 1)
+          : undefined;
+      }
+      case SyntaxKind.PropertyAccessExpression: {
+        const target = unwrap(value.getExpression());
+        if (target.getKind() !== SyntaxKind.Identifier) return undefined;
+        const resolved = resolveIdentifier(target, file);
+        if (!resolved) return undefined;
+        const member = value.getName();
+        if (
+          member === "options" &&
+          resolved.node.getKind() === SyntaxKind.CallExpression
+        ) {
+          if (!/\.enum$/.test(resolved.node.getExpression().getText())) {
+            return undefined;
+          }
+          const [argument] = resolved.node.getArguments();
+          return argument
+            ? resolveValues(argument, resolved.file, depth + 1)
+            : undefined;
+        }
+        if (resolved.node.getKind() === SyntaxKind.ObjectLiteralExpression) {
+          const initializer = resolved.node
+            .getProperty(member)
+            ?.getInitializer?.();
+          return initializer
+            ? resolveValues(initializer, resolved.file, depth + 1)
+            : undefined;
+        }
+        return undefined;
+      }
+      default:
+        return undefined;
+    }
+  }
+
+  function objectEntries(object, file, depth = 0) {
+    const entries = [];
+    for (const property of object.getProperties()) {
+      if (property.getKind() === SyntaxKind.SpreadAssignment) {
+        const spread =
+          depth < RESOLVE_DEPTH_LIMIT
+            ? resolveObject(property.getExpression(), file, depth + 1)
+            : undefined;
+        if (spread) {
+          entries.push(...objectEntries(spread.node, spread.file, depth + 1));
+        }
+        continue;
+      }
+      const name = propertyName(property);
+      const initializer = property.getInitializer?.();
+      if (!name || !initializer) continue;
+      entries.push({ name, initializer, file });
+    }
+    return entries;
+  }
+
+  return { resolveObject, resolveValues, objectEntries };
+}
+
+export function descriptorFieldInventory(source) {
+  const resolver = createDescriptorResolver(source);
   const schemas = objectInitializer(source, "modelInputSchemas");
   const fieldsByModel = {};
   for (const modelProperty of schemas.getProperties()) {
@@ -196,41 +361,29 @@ function descriptorFieldInventory(source) {
       continue;
     const fieldsProperty = modelInitializer.getProperty("fields");
     if (!fieldsProperty?.getInitializer) continue;
-    const fieldsInitializer = unwrap(fieldsProperty.getInitializer());
-    if (fieldsInitializer.getKind() !== SyntaxKind.ObjectLiteralExpression)
-      continue;
+    const fieldsObject = resolver.resolveObject(
+      fieldsProperty.getInitializer(),
+      source
+    );
+    if (!fieldsObject) continue;
     const fields = {};
-    for (const fieldProperty of fieldsInitializer.getProperties()) {
-      const fieldName = propertyName(fieldProperty);
-      if (!fieldName || !fieldProperty.getInitializer) continue;
-      const fieldInitializer = unwrap(fieldProperty.getInitializer());
-      const typeProperty =
-        fieldInitializer.getKind() === SyntaxKind.ObjectLiteralExpression
-          ? fieldInitializer.getProperty("type")
-          : undefined;
-      const requiredProperty =
-        fieldInitializer.getKind() === SyntaxKind.ObjectLiteralExpression
-          ? fieldInitializer.getProperty("required")
-          : undefined;
-      const enumProperty =
-        fieldInitializer.getKind() === SyntaxKind.ObjectLiteralExpression
-          ? fieldInitializer.getProperty("enum")
-          : undefined;
-      let enumValues = null;
-      if (enumProperty?.getInitializer) {
-        const enumInitializer = unwrap(enumProperty.getInitializer());
-        if (enumInitializer.getKind() === SyntaxKind.ArrayLiteralExpression) {
-          const values = enumInitializer.getElements().map(literalValue);
-          if (values.every((value) => value !== undefined)) enumValues = values;
-        }
-      }
-      fields[fieldName] = {
-        enum: enumValues,
+    for (const entry of resolver.objectEntries(
+      fieldsObject.node,
+      fieldsObject.file
+    )) {
+      const field = resolver.resolveObject(entry.initializer, entry.file);
+      const typeProperty = field?.node.getProperty("type");
+      const requiredProperty = field?.node.getProperty("required");
+      const enumInitializer = field?.node.getProperty("enum")?.getInitializer();
+      fields[entry.name] = {
+        enum: enumInitializer
+          ? (resolver.resolveValues(enumInitializer, field.file) ?? null)
+          : null,
         type: typeProperty?.getInitializer
-          ? literalValue(unwrap(typeProperty.getInitializer()))
+          ? literalValue(typeProperty.getInitializer())
           : null,
         required: requiredProperty?.getInitializer
-          ? literalValue(unwrap(requiredProperty.getInitializer())) === true
+          ? literalValue(requiredProperty.getInitializer()) === true
           : false,
       };
     }
@@ -547,9 +700,6 @@ function selectorValues(raw, key, inventories) {
     );
     if (fieldSpec?.enum && enumValue === undefined) continue;
     values[field] = enumValue ?? value;
-    if (key.startsWith("minimax-h3/") && field === "resolution") {
-      values[field] = String(value).toLowerCase() === "768p" ? "768P" : "2K";
-    }
   }
   return values;
 }

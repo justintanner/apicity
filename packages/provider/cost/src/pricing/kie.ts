@@ -2545,6 +2545,14 @@ export const kie: Record<string, ModelPricing> = {
   // warning when either count is absent, rather than approximating from the
   // text length (ac-6lg2s0).
   //
+  // Both entries cite the 2026-09-11 feed anchors,
+  // https://kie.ai/gemini-2.5-pro-preview-tts and
+  // https://kie.ai/gemini-3.1-flash-tts (HTTP 200 on 2026-09-16; each page
+  // prints the $0.70 / $14.00 per-million-token cells above). The previous
+  // kie.ai/gemini-2-5-pro-tts and kie.ai/gemini-3-1-flash-tts slugs were
+  // hand-authored in 00c59d6d because the 2026-08-22 rows carried an empty
+  // anchor; both answered HTTP 404 on 2026-09-16 (ac-c2n4pa).
+  //
   // Evidence rows, tests/fixtures/kie-pricing-evidence/
   // kie-pricing-snapshot-2026-08-22T08-03-40-316Z.json:
   //   "Gemini 2.5 Pro TTS, Text to Speech, Audio Output"  usdPrice 14
@@ -2555,11 +2563,14 @@ export const kie: Record<string, ModelPricing> = {
   "google/gemini-2-5-pro-tts": {
     kind: "tokens",
     rate: { input: 0.7, output: 14 },
-    source: pricePage("https://kie.ai/gemini-2-5-pro-tts", "2026-08-22"),
+    source: pricePage(
+      "https://kie.ai/gemini-2.5-pro-preview-tts",
+      "2026-08-22"
+    ),
   },
   "google/gemini-3-1-flash-tts": {
     kind: "tokens",
     rate: { input: 0.7, output: 14 },
-    source: pricePage("https://kie.ai/gemini-3-1-flash-tts", "2026-08-22"),
+    source: pricePage("https://kie.ai/gemini-3.1-flash-tts", "2026-08-22"),
   },
 };

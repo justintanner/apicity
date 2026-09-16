@@ -30,6 +30,8 @@ import { isHelpTopic, printHelpTopic } from "./help.js";
 import { bindArguments, callEndpoint, mergeRequestFields } from "./invoke.js";
 import { parseMcpArgs, runMcp } from "./mcp/cli.js";
 import { runSkillCommand } from "./skill.js";
+import { runSetupCommand } from "./setup.js";
+import { runDoctor } from "./doctor.js";
 import {
   downloadUrlsInResult,
   guessExtension,
@@ -51,7 +53,8 @@ import { readPackageVersion } from "./version.js";
  *
  * W1 knew `mcp`, `help` and `version`; W2 adds the three discovery commands,
  * the help topics and the `apicity <provider>` shorthand; W4 adds `skill` and
- * `skill install`. Every later slice adds its command here and in
+ * `skill install`; W5 adds `setup` and `doctor`. Every later slice adds its
+ * command here and in
  * `BUILTIN_COMMANDS` rather than introducing a second entrypoint.
  *
  * Failures surface as the error envelope with the code's exit status: the
@@ -113,6 +116,23 @@ async function dispatch(
     return runSkillCommand(rest, writer, {
       env: options.env,
       stdoutIsTTY: options.stdoutIsTTY,
+    });
+  }
+
+  // `setup` and `doctor` read their own argv for the same reason: `--remove`
+  // and a stray word are theirs to interpret, not the shared table's.
+  if (first === "setup") {
+    return runSetupCommand(rest, writer, {
+      env: options.env,
+      stdoutIsTTY: options.stdoutIsTTY,
+    });
+  }
+
+  if (first === "doctor") {
+    return runDoctor(rest, writer, {
+      env: options.env,
+      stdoutIsTTY: options.stdoutIsTTY,
+      cwd: options.cwd,
     });
   }
 

@@ -1,0 +1,15 @@
+{
+  "name": "apicity",
+  "description": "apicity plugins for Claude Code: drive every supported provider API through the apicity CLI.",
+  "owner": {
+    "name": "Justin Tanner"
+  },
+  "plugins": [
+    {
+      "name": "apicity",
+      "description": "apicity integration for Claude Code: call any supported provider API endpoint through the apicity CLI.",
+      "source": "./",
+      "category": "development"
+    }
+  ]
+}

@@ -25,6 +25,20 @@ export const BUILTIN_COMMANDS: readonly BuiltinCommand[] = [
     name: "skill install",
     summary: "Install that skill into ~/.agents/skills/apicity.",
   },
+  {
+    name: "setup",
+    summary: "Install the skill and connect the agents on this host.",
+  },
+  {
+    name: "setup claude",
+    summary: "Install the skill and the Claude Code plugin.",
+  },
+  { name: "setup codex", summary: "Install the skill Codex reads." },
+  {
+    name: "setup agents",
+    summary: "Install the skill; connect an agent when one is unambiguous.",
+  },
+  { name: "doctor", summary: "Check this host's apicity install, row by row." },
   { name: "mcp", summary: "Serve every provider endpoint over MCP on stdio." },
   { name: "help", summary: "Print this message." },
   { name: "version", summary: "Print the @apicity/cli version." },

@@ -140,9 +140,16 @@ type SecondsResolver = PerUnitPricing["units"];
 // billable seconds are the output seconds, unchanged; with reference clips
 // the caller's declared clip length (costHints.inputDurationSeconds) is added,
 // and a reference-video request with no valid declaration fails closed rather
-// than quoting output-only. Named for the rule, not for Wan: the same rule is
-// printed for happyhorse/video-edit, the seedance-2 family and MiniMax H3
-// (follow-up ac-ge9l10 REQ-009), which can wrap their own resolvers.
+// than quoting output-only. Named for the rule, not for Wan: the seedance-2
+// family and MiniMax H3 state the same rule on the same
+// input.reference_video_urls field, so they can wrap their own output-seconds
+// resolver here. happyhorse/video-edit states it on video_url, and
+// kling-3.0-omni prices a "with video input" tier on video_urls while its
+// pages state no input-duration rule at all — referenceVideoInput above
+// returns false for every payload of theirs, so wrapping the resolver alone
+// would leave them silently priced output-only with no warning. Both need
+// their own input detector, and kling needs the rule verified first
+// (follow-up ac-u8y5xg).
 const inputPlusOutputSeconds =
   (outputSeconds: SecondsResolver): SecondsResolver =>
   (p, hints) => {

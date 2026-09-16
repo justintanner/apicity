@@ -1,10 +1,11 @@
 import type { CostHints } from "../types";
-import type { ModelPricing } from "./types";
+import type { ModelPricing, PerUnitPricing } from "./types";
 import {
   asNumber,
   asObject,
   asString,
   coerceSeconds,
+  hintInputSeconds,
   hintSeconds,
 } from "./helpers";
 
@@ -116,6 +117,103 @@ const hasReferenceVideoInput = (p: Record<string, unknown>): boolean => {
   const referenceVideoUrls = asObject(p.input)?.reference_video_urls;
   return Array.isArray(referenceVideoUrls) && referenceVideoUrls.length > 0;
 };
+
+// Tri-state read of `input.reference_video_urls`, the field the Wan 3.0 pages
+// bill as input video duration: `false` when absent, null or an empty array
+// (no video input), `true` when a non-empty array, `undefined` when present
+// but not an array — a malformed wire value must never price as a text-only
+// request. hasReferenceVideoInput above stays boolean for the seedance column
+// selector, which maps a malformed field to "no-video".
+const referenceVideoInput = (
+  p: Record<string, unknown>
+): boolean | undefined => {
+  const urls = asObject(p.input)?.reference_video_urls;
+  if (urls === undefined || urls === null) return false;
+  if (!Array.isArray(urls)) return undefined;
+  return urls.length > 0;
+};
+
+type SecondsResolver = PerUnitPricing["units"];
+
+// kie's "(input video duration + output video duration) x unit price" rule,
+// wrapped around an entry's output-seconds resolver. With no video input the
+// billable seconds are the output seconds, unchanged; with reference clips
+// the caller's declared clip length (costHints.inputDurationSeconds) is added,
+// and a reference-video request with no valid declaration fails closed rather
+// than quoting output-only. Named for the rule, not for Wan: the seedance-2
+// family and MiniMax H3 state the same rule on the same
+// input.reference_video_urls field, so they can wrap their own output-seconds
+// resolver here. happyhorse/video-edit states it on video_url, and
+// kling-3.0-omni prices a "with video input" tier on video_urls while its
+// pages state no input-duration rule at all — referenceVideoInput above
+// returns false for every payload of theirs, so wrapping the resolver alone
+// would leave them silently priced output-only with no warning. Both need
+// their own input detector, and kling needs the rule verified first
+// (follow-up ac-u8y5xg).
+const inputPlusOutputSeconds =
+  (outputSeconds: SecondsResolver): SecondsResolver =>
+  (p, hints) => {
+    const output = outputSeconds(p, hints);
+    if (output === undefined) return undefined;
+    const video = referenceVideoInput(p);
+    if (video === undefined) return undefined;
+    if (!video) return output;
+    const input = hintInputSeconds(hints);
+    return input === undefined ? undefined : output + input;
+  };
+
+// Names the missing declaration when, and only when, the input side is what
+// fails the estimate closed: output seconds resolve, reference clips are
+// present (or the field is malformed) and no valid inputDurationSeconds is
+// declared. Every other shortfall — an omitted duration, the -1 sentinel
+// without costHints.durationSeconds — returns [] so evaluatePerUnit keeps its
+// generic could-not-derive-units warning and its durationSeconds advice,
+// whether or not clips are present.
+const inputDurationWarning =
+  (key: string, outputSeconds: SecondsResolver) =>
+  (p: Record<string, unknown>, hints?: CostHints): string[] => {
+    if (outputSeconds(p, hints) === undefined) return [];
+    const video = referenceVideoInput(p);
+    if (video === undefined) {
+      return [
+        `kie '${key}': reference_video_urls is not an array, so the input ` +
+          "video duration cannot be counted; the page bills (input video " +
+          "duration + output video duration) x rate. Pass the clip URLs as " +
+          "an array and declare their total length as " +
+          "costHints.inputDurationSeconds",
+      ];
+    }
+    if (video && hintInputSeconds(hints) === undefined) {
+      return [
+        `kie '${key}': reference_video_urls carry no clip duration in the ` +
+          "request and the page bills (input video duration + output video " +
+          "duration) x rate; declare the clips' total length as " +
+          "costHints.inputDurationSeconds",
+      ];
+    }
+    return [];
+  };
+
+// Both Wan 3.0 entries: resolution-tiered per second on the (input + output)
+// rule. Mirrors tieredVideoPage's `resolution` picker and `1080P` default byte
+// for byte; only the units resolver and the warn hook differ. Spreading
+// tieredVideoPage(...) and adding `warn` does not compile (its return type is
+// the ModelPricing union and `warn` is unknown to TokenPricing), and a warn
+// parameter on the shared helper would widen a builder twenty entries use.
+const wan30Video = (
+  key: string,
+  rates: Record<string, number>,
+  url: string,
+  asOf: string
+): ModelPricing => ({
+  kind: "perUnit",
+  unit: "seconds",
+  units: inputPlusOutputSeconds(wan30Seconds),
+  select: [{ name: "resolution", pick: (p) => inputResolution(p) ?? "1080P" }],
+  rates,
+  warn: inputDurationWarning(key, wan30Seconds),
+  source: pricePage(url, asOf),
+});
 
 const hasVideoListInput = (p: Record<string, unknown>): boolean => {
   const videoList = asObject(p.input)?.video_list;
@@ -1109,6 +1207,22 @@ export const kie: Record<string, ModelPricing> = {
   // costHints.durationSeconds. An omitted duration also fails closed, matching
   // every other kie video entry.
   //
+  // Both pages also print the billing rule: "(input video duration + output
+  // video duration) x unit price" (byte-identical on 2026-09-11 and
+  // 2026-09-16; probe product-page-pricing-probe-2026-09-16T113759Z.json
+  // under plans/ac-ge9l10/build/evidence/). The input side is the summed
+  // length of the `reference_video_urls` clips — the docs bound each clip to
+  // 1-15 s, the total to 15 s and input + output to 30 s — and the clips are
+  // URLs with no duration in the request, so it is caller-declared through
+  // costHints.inputDurationSeconds (wan30Video above). With no video input
+  // the estimate is the output-only figure it always was; a reference-video
+  // request with no valid declaration fails closed with a warning naming the
+  // hint, as the sentinel fails closed without costHints.durationSeconds. No
+  // other Wan 3.0 input (images, audio, a document, a link) carries a
+  // duration charge on either page. No committed recording holds a
+  // creditsConsumed value for a Wan 3.0 job, so the rule rests on the page
+  // text these entries already cite (ac-ge9l10).
+  //
   // Both entries cite the family's live feed anchors,
   // https://kie.ai/wan3.0-video and https://kie.ai/wan3.0-video-prime (HTTP
   // 200 on 2026-09-11); the original `?model=wan%2F3-0-video` and
@@ -1117,21 +1231,17 @@ export const kie: Record<string, ModelPricing> = {
   // rows for the model carried an empty anchor; the 2026-09-11 feed is the
   // first to publish one, and on 2026-09-11 the live prime page printed the
   // same three cells (12.2 / 25.2 / 50.4 credits/s) as this table (ac-8zpa7l).
-  "wan/3-0-video": tieredVideoPage(
-    "resolution",
+  "wan/3-0-video": wan30Video(
+    "wan/3-0-video",
     { "480P": 0.04, "720P": 0.08, "1080P": 0.16 },
     "https://kie.ai/wan3.0-video",
-    "1080P",
-    "2026-09-11",
-    wan30Seconds
+    "2026-09-11"
   ),
-  "wan/3-0-video-prime": tieredVideoPage(
-    "resolution",
+  "wan/3-0-video-prime": wan30Video(
+    "wan/3-0-video-prime",
     { "480P": 0.0612, "720P": 0.126, "1080P": 0.252 },
     "https://kie.ai/wan3.0-video-prime",
-    "1080P",
-    "2026-08-25",
-    wan30Seconds
+    "2026-08-25"
   ),
 
   // wan/2.7 video — resolution-tiered per second as of the 2026-08-06 pull

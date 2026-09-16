@@ -1,13 +1,22 @@
-export { startServer, type StartServerOptions } from "./server.js";
+export { startServer, type StartServerOptions } from "./mcp/server.js";
 export {
-  parseArgs,
+  parseMcpArgs,
+  printMcpHelp,
+  runMcp,
   resolveOpServiceToken,
   resolveOpVault,
   resolveOutputDir,
   resolveOnePasswordOptions,
   type ParsedArgs,
   type ResolvedOnePasswordOptions,
-} from "./cli.js";
+} from "./mcp/cli.js";
+/**
+ * Pre-rename aliases for the two `apicity-mcp` entrypoints, kept so external
+ * callers that imported `@apicity/mcp-server` survive the move to
+ * `@apicity/cli`. In-repo callers use the `Mcp` names.
+ */
+export { parseMcpArgs as parseArgs, runMcp as runCli } from "./mcp/cli.js";
+export { readPackageVersion } from "./version.js";
 export { loadEnvFile, parseEnvFile } from "./env-file.js";
 export {
   fillOnePasswordEnv,

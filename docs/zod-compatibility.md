@@ -18,6 +18,6 @@ that use Zod 4 expose endpoint schemas through a small structural
 still expose the concrete Zod types for callers who import that package's schema
 module directly.
 
-The MCP server must not import a shared Zod runtime for schema discovery. It
+The CLI package must not import a shared Zod runtime for schema discovery. It
 duck-types provider schemas and converts both Zod 3 and Zod 4 internals into
 JSON Schema, degrading unknown shapes to `{}` rather than failing discovery.

@@ -102,7 +102,7 @@ importers:
         specifier: file:../../packages/provider/kimicoding
         version: link:../../packages/provider/kimicoding
 
-  packages/mcp-server:
+  packages/cli:
     dependencies:
       '@apicity/alibaba':
         specifier: workspace:*

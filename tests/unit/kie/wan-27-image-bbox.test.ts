@@ -23,7 +23,7 @@ import { modelInputSchemas } from "../../../packages/provider/kie/src/model-sche
 import {
   type JsonSchema,
   zodToJsonSchema,
-} from "../../../packages/mcp-server/src/schema";
+} from "../../../packages/cli/src/schema";
 import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../../harness";
 
 const PROMPT = "Place a small lantern beside the cabin door.";

@@ -6,7 +6,7 @@ const libDir = path.dirname(fileURLToPath(import.meta.url));
 
 export const repoRoot = path.resolve(libDir, "..", "..");
 export const providerRoot = path.join(repoRoot, "packages", "provider");
-export const mcpServerDir = path.join("packages", "mcp-server");
+export const cliDir = path.join("packages", "cli");
 export const integrationDir = path.join("tests", "integration");
 
 // The top level of every directory `tests/vitest.integration.ts` includes. The
@@ -30,15 +30,17 @@ export function listProviderNames() {
     .filter((entry) => entry.isDirectory())
     .map((entry) => entry.name);
 
-  if (existsSync(path.join(repoRoot, mcpServerDir))) {
-    providers.push("mcp-server");
+  if (existsSync(path.join(repoRoot, cliDir))) {
+    providers.push("cli");
   }
 
   return providers.sort();
 }
 
 export function listProviderTests(provider) {
-  const prefixes = provider === "mcp-server" ? ["mcp"] : [provider];
+  // `cli` owns two test-file families: the dispatcher's own `cli-*` files and
+  // the `mcp-*` files that moved with the package, whose names stayed put.
+  const prefixes = provider === "cli" ? ["cli", "mcp"] : [provider];
 
   const matchesPrefix = (name) =>
     prefixes.some(
@@ -94,8 +96,8 @@ export function resolveProviderScope(rawValue) {
       return {
         provider,
         packageDir:
-          provider === "mcp-server"
-            ? mcpServerDir
+          provider === "cli"
+            ? cliDir
             : path.posix.join("packages", "provider", provider),
         tests: listProviderTests(provider),
         source: candidate.source,
@@ -169,10 +171,10 @@ function resolveProviderPath(value, providers) {
 
 function resolveNormalizedProviderPath(normalized, providers) {
   if (
-    providers.includes("mcp-server") &&
-    /(?:^|\/)packages\/mcp-server(?:\/|$)/.test(normalized)
+    providers.includes("cli") &&
+    /(?:^|\/)packages\/cli(?:\/|$)/.test(normalized)
   ) {
-    return "mcp-server";
+    return "cli";
   }
 
   const packageMatch = normalized.match(/(?:^|\/)packages\/provider\/([^/]+)/);

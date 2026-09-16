@@ -26,7 +26,7 @@ import { modelInputSchemas } from "../../packages/provider/kie/src/model-schemas
 import {
   zodToJsonSchema,
   type JsonSchema,
-} from "../../packages/mcp-server/src/schema";
+} from "../../packages/cli/src/schema";
 
 const HTTPS_URL = "https://example.com/image.png";
 const LOCAL_PATH = "@asset/photo.png";

@@ -1,4 +1,8 @@
-# @apicity/mcp-server
+# @apicity/cli
+
+Renamed from `@apicity/mcp-server`: the package now ships the `apicity` CLI,
+and the MCP server it used to be is the `apicity mcp` subcommand (the
+`apicity-mcp` bin still works and prints a deprecation line).
 
 Optional MCP (Model Context Protocol) server that exposes every endpoint from
 the `@apicity/*` provider packages as a tool — one MCP tool per upstream
@@ -33,9 +37,9 @@ legacy adapter, and no pre-2026-07-28 code path in the package.
 ## Install
 
 ```bash
-npm install @apicity/mcp-server
+npm install @apicity/cli
 # or
-pnpm add @apicity/mcp-server
+pnpm add @apicity/cli
 ```
 
 ## Run
@@ -44,19 +48,19 @@ pnpm add @apicity/mcp-server
 # Stdio server. Logs to stderr; stdout is reserved for MCP framing.
 
 # 1Password mode
-npx -y @apicity/mcp-server@latest \
+npx -y @apicity/cli@latest mcp \
   --op-vault apicity --op-token "$OP_SERVICE_ACCOUNT_TOKEN"
 
 # .env file mode (no 1Password)
-npx -y @apicity/mcp-server@latest --env-file ~/.config/apicity/.env
+npx -y @apicity/cli@latest mcp --env-file ~/.config/apicity/.env
 
 # Combined mode: file settings first, then missing secrets from 1Password
-npx -y <mcp-package-spec> \
+npx -y <cli-package-spec> mcp \
   --env-file <public-env-path> \
   --op-vault <vault> --op-token "$OP_SERVICE_ACCOUNT_TOKEN"
 ```
 
-Use `@latest` with `npx`; bare `npx -y @apicity/mcp-server` can reuse an older
+Use `@latest` with `npx`; bare `npx -y @apicity/cli` can reuse an older
 cached package that does not understand newer flags.
 
 Provider credentials and settings can come from either source or both:
@@ -76,7 +80,7 @@ Provider credentials and settings can come from either source or both:
 
 ```bash
 claude mcp add apicity -- \
-  npx -y @apicity/mcp-server@latest \
+  npx -y @apicity/cli@latest mcp \
   --op-vault apicity --op-token "$OP_SERVICE_ACCOUNT_TOKEN"
 ```
 
@@ -84,7 +88,7 @@ Or with a .env file instead of 1Password:
 
 ```bash
 claude mcp add apicity -- \
-  npx -y @apicity/mcp-server@latest --env-file ~/.config/apicity/.env
+  npx -y @apicity/cli@latest mcp --env-file ~/.config/apicity/.env
 ```
 
 The shell expands `"$OP_SERVICE_ACCOUNT_TOKEN"` when the `add` command runs,
@@ -95,7 +99,7 @@ plumbing needed.
 
 ```bash
 codex mcp add apicity -- \
-  npx -y @apicity/mcp-server@latest \
+  npx -y @apicity/cli@latest mcp \
   --op-vault apicity --op-token "$OP_SERVICE_ACCOUNT_TOKEN"
 ```
 
@@ -106,7 +110,8 @@ Or add it to `~/.codex/config.toml` directly:
 command = "npx"
 args = [
   "-y",
-  "@apicity/mcp-server@latest",
+  "@apicity/cli@latest",
+  "mcp",
   "--op-vault",
   "apicity",
   "--op-token",
@@ -123,7 +128,8 @@ args = [
       "command": "npx",
       "args": [
         "-y",
-        "@apicity/mcp-server@latest",
+        "@apicity/cli@latest",
+        "mcp",
         "--op-vault",
         "apicity",
         "--op-token",
@@ -269,7 +275,7 @@ no `otp` (or no secret configured) the paid call fails closed. See
 ## Programmatic use
 
 ```ts
-import { startServer } from "@apicity/mcp-server";
+import { startServer } from "@apicity/cli";
 
 await startServer({
   outputDir: "./out",

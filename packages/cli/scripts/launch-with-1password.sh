@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 # Launcher for use as an MCP server `command`. Resolves @apicity provider keys
-# from 1Password (one `op run` call, ~2s), exports them, then exec's the MCP
-# server. Direct stdio inheritance — no `op run` wrapping the long-lived node
-# process (op redacts/buffers output and breaks MCP framing).
+# from 1Password (one `op run` call, ~2s), exports them, then exec's
+# `apicity mcp`. Direct stdio inheritance — no `op run` wrapping the long-lived
+# node process (op redacts/buffers output and breaks MCP framing).
+#
+# BIN stays on the `apicity` dispatcher rather than the deprecated `apicity-mcp`
+# bin: that bin prints a deprecation line to stderr, which is the MCP server's
+# own log stream.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -53,4 +57,4 @@ IG_ACCESS_TOKEN=*|YOUTUBE_ACCESS_TOKEN=*|TELEGRAM_BOT_KEY=*)
   done < <(op run --no-masking --env-file="$ENV_FILE" -- env)
 fi
 
-exec node "$BIN" "$@"
+exec node "$BIN" mcp "$@"

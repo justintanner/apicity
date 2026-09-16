@@ -1,14 +1,14 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-import mcpPackage from "../../packages/mcp-server/package.json";
+import mcpPackage from "../../packages/cli/package.json";
 import {
   buildRegistry,
   type Endpoint,
   extractPathParams,
-} from "../../packages/mcp-server/src/registry";
-import { type JsonSchema } from "../../packages/mcp-server/src/schema";
-import { PROVIDERS } from "../../packages/mcp-server/src/providers";
+} from "../../packages/cli/src/registry";
+import { type JsonSchema } from "../../packages/cli/src/schema";
+import { PROVIDERS } from "../../packages/cli/src/providers";
 
 function endpointProviders(): string[] {
   const tsv = readFileSync("scripts/endpoint-docs.tsv", "utf8");

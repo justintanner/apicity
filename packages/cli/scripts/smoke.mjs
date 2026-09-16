@@ -1,4 +1,4 @@
-// Smoke-test: spawn apicity-mcp over stdio, list tools, summarize.
+// Smoke-test: spawn `apicity mcp` over stdio, list tools, summarize.
 import { fileURLToPath } from "node:url";
 import { Client } from "@modelcontextprotocol/client";
 import { StdioClientTransport } from "@modelcontextprotocol/client/stdio";
@@ -7,7 +7,7 @@ const serverBin = fileURLToPath(new URL("../dist/src/bin.js", import.meta.url));
 
 const transport = new StdioClientTransport({
   command: "node",
-  args: [serverBin],
+  args: [serverBin, "mcp"],
   env: {
     ...process.env,
     OPENAI_API_KEY: "smoke-fake",

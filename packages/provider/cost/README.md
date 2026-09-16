@@ -399,7 +399,7 @@ was constructed with the secret **and** the caller presents a valid,
 request-bound OTP. The autonomous caller never holds the secret, so it cannot
 self-approve; only the human or code client that holds the secret can mint.
 There are **no environment variables and no key files** — the secret is passed
-in via factory options (or the MCP server's `--paygate-secret-file`).
+in via factory options (or the CLI's `--paygate-secret-file`).
 
 ### Registry model
 
@@ -618,9 +618,9 @@ must mint a fresh OTP to retry. This is intentional — otherwise a hostile
 caller could replay a single OTP on every transient failure. Each OTP is
 single-use authority for one network attempt.
 
-### MCP server
+### apicity CLI and `apicity mcp`
 
-`@apicity/mcp-server` is the code client: started with
+`@apicity/cli` is the code client: started with
 `--paygate-secret-file <path>`, it holds the secret to **verify** OTPs (it
 never mints). A human mints an OTP out-of-band with the same secret and the
 caller passes it as the paid tool's `otp` argument — an AI driving the tool

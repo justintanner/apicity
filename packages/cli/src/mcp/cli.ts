@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { startServer } from "./server.js";
-import { fillOnePasswordEnv } from "./one-password.js";
-import { loadEnvFile } from "./env-file.js";
+import { fillOnePasswordEnv } from "../one-password.js";
+import { loadEnvFile } from "../env-file.js";
 
 export interface ParsedArgs {
   outputDir?: string;
@@ -18,7 +18,7 @@ export interface ResolvedOnePasswordOptions {
   serviceAccountToken: string;
 }
 
-export function parseArgs(argv: string[]): ParsedArgs {
+export function parseMcpArgs(argv: string[]): ParsedArgs {
   const out: ParsedArgs = { help: false };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
@@ -109,7 +109,7 @@ export function resolveOnePasswordOptions(
   return { vault, serviceAccountToken };
 }
 
-export function printHelp(): void {
+export function printMcpHelp(): void {
   console.error(
     [
       "apicity-mcp — MCP server exposing every @apicity provider endpoint as a tool.",
@@ -150,10 +150,10 @@ export function printHelp(): void {
   );
 }
 
-export async function runCli(argv = process.argv.slice(2)): Promise<void> {
-  const args = parseArgs(argv);
+export async function runMcp(argv = process.argv.slice(2)): Promise<void> {
+  const args = parseMcpArgs(argv);
   if (args.help) {
-    printHelp();
+    printMcpHelp();
     return;
   }
 

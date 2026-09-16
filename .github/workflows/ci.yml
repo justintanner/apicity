@@ -92,6 +92,9 @@ jobs:
           test -f packages/provider/kie/dist/src/index.d.ts
           test -f packages/provider/alibaba/dist/src/index.js
           test -f packages/provider/alibaba/dist/src/index.d.ts
+          test -f packages/cli/dist/src/bin.js
+          test -f packages/cli/dist/src/mcp-bin.js
+          test -f packages/cli/dist/endpoint-docs.tsv
 
       # Type-check the whole tests/ tree (tests/tsconfig.json). The build step
       # above only tsc's packages/**, and test:run executes rather than

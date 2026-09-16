@@ -16,7 +16,7 @@ Apicity is a TypeScript monorepo of standalone API provider packages
 
 `@apicity/cost` is a dependency-free cross-provider helper: pure local USD cost/token estimation (`createCost`, `computeEstimate`, bundled rate tables) plus the canonical OTP pay-gate (`withPaidGate`) source vendored into kie and xai.
 
-`@apicity/mcp-server` (under `packages/mcp-server`, not `packages/provider/`) is an optional MCP server that exposes every provider endpoint as an MCP tool.
+`@apicity/cli` (under `packages/cli`, not `packages/provider/`) is the `apicity` CLI and agent skill; its `apicity mcp` subcommand exposes every provider endpoint as an MCP tool.
 
 ## Package Naming
 
@@ -102,7 +102,7 @@ the repository by `tests/unit/provider-inventory-docs.test.ts`, so a new
 package that ships without its aliases — or an alias documented here that no
 longer exists — fails a gate rather than going stale.
 
-- `build:` — <!-- provider-inventory:claude-build-scripts:start -->`build:alibaba`, `build:anthropic`, `build:b2`, `build:binance`, `build:cost`, `build:dolthub`, `build:dropbox`, `build:elevenlabs`, `build:fal`, `build:fireworks`, `build:free-media-upload`, `build:google`, `build:googleflow`, `build:kie`, `build:kimicoding`, `build:mcp-server`, `build:meta`, `build:openai`, `build:openf1`, `build:openligadb`, `build:polymarket`, `build:quo`, `build:s3`, `build:simplefunctions`, `build:telegram`, `build:thesportsdb`, `build:x`, `build:xai`, `build:youtube`, `build:zaicoding`<!-- provider-inventory:claude-build-scripts:end -->
+- `build:` — <!-- provider-inventory:claude-build-scripts:start -->`build:alibaba`, `build:anthropic`, `build:b2`, `build:binance`, `build:cli`, `build:cost`, `build:dolthub`, `build:dropbox`, `build:elevenlabs`, `build:fal`, `build:fireworks`, `build:free-media-upload`, `build:google`, `build:googleflow`, `build:kie`, `build:kimicoding`, `build:meta`, `build:openai`, `build:openf1`, `build:openligadb`, `build:polymarket`, `build:quo`, `build:s3`, `build:simplefunctions`, `build:telegram`, `build:thesportsdb`, `build:x`, `build:xai`, `build:youtube`, `build:zaicoding`<!-- provider-inventory:claude-build-scripts:end -->
 - `doc-gen:` — <!-- provider-inventory:claude-doc-gen-scripts:start -->`doc-gen:alibaba`, `doc-gen:anthropic`, `doc-gen:b2`, `doc-gen:binance`, `doc-gen:dolthub`, `doc-gen:dropbox`, `doc-gen:elevenlabs`, `doc-gen:fal`, `doc-gen:fireworks`, `doc-gen:free-media-upload`, `doc-gen:google`, `doc-gen:googleflow`, `doc-gen:kie`, `doc-gen:kimicoding`, `doc-gen:meta`, `doc-gen:openai`, `doc-gen:openf1`, `doc-gen:openligadb`, `doc-gen:polymarket`, `doc-gen:quo`, `doc-gen:s3`, `doc-gen:simplefunctions`, `doc-gen:telegram`, `doc-gen:thesportsdb`, `doc-gen:x`, `doc-gen:xai`, `doc-gen:youtube`, `doc-gen:zaicoding`<!-- provider-inventory:claude-doc-gen-scripts:end -->
   (`cost` is excluded: its README is hand-written and it exposes no endpoint
   surface.)
@@ -158,7 +158,7 @@ packages/provider/<name>/
 **youtube** — YouTube Data API v3 for posting content
 **free** — Free file hosting (tmpfiles.org, uguu.se, catbox.moe, litterbox, gofile.io, filebin.net, temp.sh, tmpfile.link)
 **cost** — Dependency-free cross-provider USD cost/token estimation and canonical pay-gate source
-**mcp-server** — MCP server exposing every provider endpoint as an MCP tool (`packages/mcp-server`)
+**cli** — `apicity` CLI, agent skill and the `apicity mcp` server (`packages/cli`)
 
 ### Testing
 

@@ -118,7 +118,7 @@ Upload, status, and helper endpoints are unlisted and remain free.
 | [@apicity/dolthub](packages/provider/dolthub) | DoltHub SQL execution and Dolt database management |
 | [@apicity/youtube](packages/provider/youtube) | YouTube Data API v3 video publishing |
 | [@apicity/cost](packages/provider/cost) | Pure local cost/token estimates across providers |
-| [@apicity/mcp-server](packages/mcp-server) | MCP server exposing provider endpoints as tools |
+| [@apicity/cli](packages/cli) | CLI, agent skill and MCP server for every provider endpoint |
 
 <!-- provider-inventory:providers:end -->
 

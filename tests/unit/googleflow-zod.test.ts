@@ -3,7 +3,7 @@ import { describe, it, expect } from "vitest";
 import {
   zodToJsonSchema,
   type JsonSchema,
-} from "../../packages/mcp-server/src/schema";
+} from "../../packages/cli/src/schema";
 import {
   GoogleFlowAssetUploadRequestSchema,
   GoogleFlowCharactersListRequestSchema,

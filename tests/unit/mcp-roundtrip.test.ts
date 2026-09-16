@@ -19,8 +19,8 @@ import {
 } from "@modelcontextprotocol/client";
 import { serveStdio } from "@modelcontextprotocol/server/stdio";
 
-import mcpPackage from "../../packages/mcp-server/package.json";
-import { createServer } from "../../packages/mcp-server/src/server";
+import mcpPackage from "../../packages/cli/package.json";
+import { createServer } from "../../packages/cli/src/mcp/server";
 
 /** The single revision this server serves. Pre-2026-07-28 openings are rejected. */
 const PROTOCOL_REVISION = "2026-07-28";

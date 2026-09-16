@@ -12,6 +12,11 @@ tests/fixtures/harness-generated/*.html
 # Cached media from harness workflows
 harness_media/
 
+# Build-staged copy of the agent skill. `packages/cli/scripts/dist.mjs` copies
+# skills/apicity/SKILL.md here so npm publishes it with the package; the
+# tracked source stays at the repository root.
+/packages/cli/skills/
+
 # Logs
 logs
 *.log

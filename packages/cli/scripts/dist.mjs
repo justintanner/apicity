@@ -77,13 +77,33 @@ async function copyEndpointTsv() {
   await fs.copyFile(src, dst);
 }
 
-async function chmodBin() {
-  const bin = path.join(SRC_OUT, "bin.js");
-  try {
-    await fs.chmod(bin, 0o755);
-  } catch {
-    /* no bin yet — fine */
+async function chmodBins() {
+  for (const name of ["bin.js", "mcp-bin.js"]) {
+    try {
+      await fs.chmod(path.join(SRC_OUT, name), 0o755);
+    } catch {
+      /* no bin yet — fine */
+    }
   }
+}
+
+/**
+ * Stage the agent skill next to `dist` so npm publishes it (the `skills` entry
+ * in package.json `files`). The source lives at the repository root because
+ * `apicity skill` and the Claude Code plugin read the same copy. It does not
+ * exist yet — the slice that authors it lands later — so a missing source is a
+ * silent no-op rather than a build failure.
+ */
+async function copySkill() {
+  const src = path.join(PKG_DIR, "../../skills/apicity/SKILL.md");
+  const dst = path.join(PKG_DIR, "skills/apicity/SKILL.md");
+  try {
+    await fs.access(src);
+  } catch {
+    return;
+  }
+  await mkdirp(path.dirname(dst));
+  await fs.copyFile(src, dst);
 }
 
 (async function main() {
@@ -92,7 +112,8 @@ async function chmodBin() {
   await addJsExtensions(SRC_OUT);
   await fixSourcemaps(SRC_OUT);
   await copyEndpointTsv();
-  await chmodBin();
+  await copySkill();
+  await chmodBins();
   await rmrf(BUILD);
   console.log("✅ Build completed successfully!");
 })().catch((e) => {

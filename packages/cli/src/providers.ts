@@ -265,10 +265,44 @@ export const PROVIDERS: Record<string, ProviderSpec> = {
 
 export type InstantiatedProvider = Record<string, unknown>;
 
+/**
+ * Factory options the caller passes through from `--base-url` / `--timeout`.
+ *
+ * They are merged only when given: factory support is not uniform (plan F-5 —
+ * four factories read a base URL, six read a timeout), and a factory that
+ * reads neither rejects or ignores the option on its own terms, which is the
+ * message the caller should see rather than one this layer invents.
+ */
+export interface ProviderOverrides {
+  baseURL?: string;
+  timeout?: number;
+}
+
+/**
+ * Merge the overrides into one factory's options object.
+ *
+ * `baseURL` is the spelling every factory that reads one uses, except
+ * zaicoding's `baseUrl` (F-5). Passing the name the addressed factory declares
+ * is what makes `--base-url` reach it instead of being dropped in silence.
+ */
+function withOverrides(
+  name: string,
+  opts: Record<string, unknown>,
+  overrides?: ProviderOverrides
+): Record<string, unknown> {
+  if (!overrides) return opts;
+  if (overrides.baseURL !== undefined) {
+    opts[name === "zaicoding" ? "baseUrl" : "baseURL"] = overrides.baseURL;
+  }
+  if (overrides.timeout !== undefined) opts.timeout = overrides.timeout;
+  return opts;
+}
+
 export async function instantiateProvider(
   name: string,
   spec: ProviderSpec,
-  paygateSecret?: string
+  paygateSecret?: string,
+  overrides?: ProviderOverrides
 ): Promise<InstantiatedProvider | null> {
   const polymarketOptions =
     name === "polymarket" ? polymarketOptionsFromEnv() : undefined;
@@ -280,13 +314,22 @@ export async function instantiateProvider(
     );
   }
   if (name === "free-media-upload") {
-    return (factory as () => InstantiatedProvider)();
+    // The only factory that takes no credential at all; it still reads
+    // `timeout`, so it is called bare unless an override was given.
+    if (!overrides) return (factory as () => InstantiatedProvider)();
+    return (factory as (opts: Record<string, unknown>) => InstantiatedProvider)(
+      withOverrides(name, {}, overrides)
+    );
   }
   if (name === "polymarket") {
     // Always instantiate: read-only market data works with no creds, and the
     // trading endpoints pick up the wallet/credential bundle when present.
     return (factory as (opts: Record<string, unknown>) => InstantiatedProvider)(
-      polymarketOptions as Record<string, unknown>
+      withOverrides(
+        name,
+        { ...(polymarketOptions as Record<string, unknown>) },
+        overrides
+      )
     );
   }
   if (name === "s3") {
@@ -294,12 +337,16 @@ export async function instantiateProvider(
     const secretAccessKey = process.env.S3_SECRET_ACCESS_KEY;
     if (!accessKeyId || !secretAccessKey) return null;
     return (factory as (opts: Record<string, unknown>) => InstantiatedProvider)(
-      {
-        accessKeyId,
-        secretAccessKey,
-        region: process.env.S3_REGION ?? "us-east-1",
-        endpoint: process.env.S3_ENDPOINT,
-      }
+      withOverrides(
+        name,
+        {
+          accessKeyId,
+          secretAccessKey,
+          region: process.env.S3_REGION ?? "us-east-1",
+          endpoint: process.env.S3_ENDPOINT,
+        },
+        overrides
+      )
     );
   }
   if (name === "b2") {
@@ -308,12 +355,16 @@ export async function instantiateProvider(
     const region = process.env.B2_REGION;
     if (!accessKeyId || !secretAccessKey || !region) return null;
     return (factory as (opts: Record<string, unknown>) => InstantiatedProvider)(
-      {
-        accessKeyId,
-        secretAccessKey,
-        region,
-        endpoint: process.env.B2_ENDPOINT,
-      }
+      withOverrides(
+        name,
+        {
+          accessKeyId,
+          secretAccessKey,
+          region,
+          endpoint: process.env.B2_ENDPOINT,
+        },
+        overrides
+      )
     );
   }
   const credential = spec.envVar ? process.env[spec.envVar] : undefined;
@@ -335,6 +386,6 @@ export async function instantiateProvider(
     opts.paygate = { secret: paygateSecret };
   }
   return (factory as (opts: Record<string, unknown>) => InstantiatedProvider)(
-    opts
+    withOverrides(name, opts, overrides)
   );
 }

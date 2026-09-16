@@ -39,7 +39,13 @@ export {
   type EndpointTsvRow,
   type BuildRegistryOptions,
 } from "./registry.js";
-export { PROVIDERS, type ProviderSpec } from "./providers.js";
+export {
+  PROVIDERS,
+  instantiateProvider,
+  type InstantiatedProvider,
+  type ProviderOverrides,
+  type ProviderSpec,
+} from "./providers.js";
 export {
   getZodDefaultValue,
   getZodEnumValues,
@@ -98,7 +104,61 @@ export {
   HELP_TOPICS,
   type HelpTopic,
 } from "./help.js";
-export { EXIT_CODES, CliError, type CliErrorCode } from "./errors.js";
+export {
+  EXIT_CODES,
+  CliError,
+  classifyError,
+  isPayGateErrorLike,
+  type CliErrorCode,
+  type ClassifyContext,
+  type PayGateErrorLike,
+} from "./errors.js";
 export { BUILTIN_COMMANDS, type BuiltinCommand } from "./commands.js";
-export { runMain } from "./main.js";
-export { usageText, type CliWriter } from "./envelope.js";
+export {
+  runEndpoint,
+  runMain,
+  type EndpointOptions,
+  type ProviderInstantiator,
+} from "./main.js";
+export {
+  createWriter,
+  resolveOutputDirectory,
+  usageText,
+  type CliWriter,
+  type OutputWriter,
+  type SuccessEnvelope,
+  type SuccessExtras,
+  type WriterOptions,
+} from "./envelope.js";
+export {
+  GLOBAL_FLAGS,
+  parseEndpointFlags,
+  parseGlobalFlags,
+  requireRequestFields,
+  resolveRequestBody,
+  type BodySources,
+  type EndpointFlagValues,
+  type GlobalFlags,
+  type ParsedGlobalFlags,
+  type StdinReader,
+} from "./args.js";
+export {
+  bindArguments,
+  callEndpoint,
+  maybeBuffer,
+  mergeRequestFields,
+  type BindArgumentsOptions,
+} from "./invoke.js";
+export {
+  defaultEnvFilePath,
+  describeEnvVars,
+  resolveCredentials,
+  resolveServiceToken,
+  type CredentialFlags,
+  type ResolveCredentialsOptions,
+} from "./credentials.js";
+export {
+  installVerboseFetch,
+  type FetchHost,
+  type VerboseLog,
+} from "./verbose.js";

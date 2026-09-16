@@ -1,3 +1,10 @@
+import { existsSync } from "node:fs";
+import { homedir } from "node:os";
+import { join } from "node:path";
+
+import { loadEnvFile } from "./env-file.js";
+import { CliError } from "./errors.js";
+import { fillOnePasswordEnv, type OpRead } from "./one-password.js";
 import { PROVIDERS, type ProviderSpec } from "./providers.js";
 
 /**
@@ -59,4 +66,149 @@ export function isProviderConfigured(
 /** Every provider name the CLI knows, in `PROVIDERS` order. */
 export function providerNames(): string[] {
   return Object.keys(PROVIDERS);
+}
+
+/**
+ * The credential flags, as `parseGlobalFlags` reads them off the line.
+ */
+export interface CredentialFlags {
+  envFile?: string;
+  opVault?: string;
+  opToken?: string;
+}
+
+export interface ResolveCredentialsOptions {
+  /** The provider this invocation addresses; only its variables are read. */
+  provider: string;
+  flags?: CredentialFlags;
+  env?: NodeJS.ProcessEnv;
+  /** Seam: the 1Password read, so a test never spawns `op`. */
+  readSecret?: OpRead;
+}
+
+/** The env file a call falls back to when no flag or variable names one. */
+export function defaultEnvFilePath(
+  env: NodeJS.ProcessEnv = process.env
+): string {
+  return join(env.HOME ?? homedir(), ".config", "apicity", ".env");
+}
+
+/**
+ * Fill the environment with whatever the addressed provider needs, in the
+ * precedence REQ-006 fixes: variables already set in the process win, an env
+ * file fills the rest, and 1Password fills what is still missing — but only
+ * when a vault and a token were configured.
+ *
+ * This is deliberately *not* `resolveOnePasswordOptions`, which throws when
+ * neither an env file nor op values are given. That is right for `apicity
+ * mcp`, which serves every provider and needs to say so at startup, and wrong
+ * for a call: `apicity binance api.v3.time` must work with nothing configured
+ * at all (D-6, EX-06). Nothing is returned — the environment is the result.
+ */
+export async function resolveCredentials(
+  options: ResolveCredentialsOptions
+): Promise<void> {
+  const env = options.env ?? process.env;
+  const flags = options.flags ?? {};
+
+  const named = flags.envFile ?? env.APICITY_ENV_FILE;
+  if (named !== undefined && named !== "") {
+    try {
+      loadEnvFile(named, env);
+    } catch (cause) {
+      throw new CliError("usage", messageOf(cause), {
+        hint: "check the --env-file path, or unset APICITY_ENV_FILE",
+        cause,
+      });
+    }
+  } else {
+    const fallback = defaultEnvFilePath(env);
+    if (existsSync(fallback)) loadEnvFile(fallback, env);
+  }
+
+  const vault = flags.opVault ?? env.APICITY_OP_VAULT;
+  const token = resolveServiceToken(
+    flags.opToken ?? env.APICITY_OP_SERVICE_TOKEN,
+    env
+  );
+  if (!vault && !token) return;
+  if (!vault) {
+    throw new CliError(
+      "usage",
+      "--op-vault is required when --op-token is set."
+    );
+  }
+  if (!token) {
+    throw new CliError(
+      "usage",
+      "--op-token is required when --op-vault is set."
+    );
+  }
+
+  try {
+    await fillOnePasswordEnv({
+      vault,
+      serviceAccountToken: token,
+      // A call reads one provider's variables. Reading all 28 would cost a
+      // subprocess per variable for endpoints that need none of them.
+      enabledProviders: [options.provider],
+      env,
+      readSecret: options.readSecret,
+    });
+  } catch (cause) {
+    throw new CliError("auth", messageOf(cause), {
+      hint: `check op://${vault}/<VAR>/password for ${options.provider}`,
+      cause,
+    });
+  }
+}
+
+/**
+ * Accept a service-account token in the four forms `apicity mcp` accepts: a
+ * literal token, `env:VAR`, `$VAR`, and a bare variable name.
+ *
+ * Restated here rather than imported from `mcp/cli.ts`, which reaches the MCP
+ * server module graph that a call has no business loading.
+ * `cli-credentials.test.ts` pins the two against each other on every form, so
+ * the restatement cannot drift.
+ */
+export function resolveServiceToken(
+  tokenOrRef: string | undefined,
+  env: NodeJS.ProcessEnv = process.env
+): string | undefined {
+  if (!tokenOrRef) return undefined;
+  if (tokenOrRef.startsWith("env:")) {
+    return requiredEnv(tokenOrRef.slice(4), env);
+  }
+  if (tokenOrRef.startsWith("$")) {
+    return requiredEnv(tokenOrRef.slice(1), env);
+  }
+  return env[tokenOrRef] ?? tokenOrRef;
+}
+
+/**
+ * The variable names to name in an `auth` hint: "S3_ACCESS_KEY_ID and
+ * S3_SECRET_ACCESS_KEY" reads as an instruction, "S3_ACCESS_KEY_ID,
+ * S3_SECRET_ACCESS_KEY" reads as a list the caller has to interpret.
+ */
+export function describeEnvVars(name: string): string {
+  const vars = providerEnvVars(name);
+  if (vars.length === 0) return "no credential";
+  if (vars.length === 1) return vars[0];
+  return `${vars.slice(0, -1).join(", ")} and ${vars[vars.length - 1]}`;
+}
+
+function requiredEnv(name: string, env: NodeJS.ProcessEnv): string {
+  if (!name) {
+    throw new CliError("usage", "--op-token env reference is empty.");
+  }
+  const value = env[name];
+  if (!value) {
+    throw new CliError("usage", `--op-token env reference ${name} is not set.`);
+  }
+  return value;
+}
+
+function messageOf(err: unknown): string {
+  return err instanceof Error ? err.message : String(err);
 }

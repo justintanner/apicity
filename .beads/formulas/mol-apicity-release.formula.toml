@@ -407,14 +407,35 @@ console.log(`✓ all ${packageJsonPaths.length} at {{version}}`);
 NODE
 ```
 
+Bump the Claude Code plugin manifest to the same version. It is not a
+`package.json`, so the loop above does not reach it, and
+`tests/unit/cli-plugin.test.ts` fails CI when it lags the CLI package:
+
+```bash
+node <<'NODE'
+const fs = require("fs");
+const path = ".claude-plugin/plugin.json";
+const manifest = JSON.parse(fs.readFileSync(path, "utf8"));
+manifest.version = "{{version}}";
+fs.writeFileSync(path, JSON.stringify(manifest, null, 2) + "\n");
+const cli = JSON.parse(fs.readFileSync("packages/cli/package.json", "utf8"));
+if (manifest.version !== cli.version) {
+  console.log("WRONG: plugin", manifest.version, "!= cli", cli.version);
+  process.exit(1);
+}
+console.log(`✓ .claude-plugin/plugin.json at ${manifest.version}`);
+NODE
+```
+
 **Commit the bump:**
 ```bash
-git add packages/cli/package.json packages/provider/*/package.json
+git add packages/cli/package.json packages/provider/*/package.json .claude-plugin/plugin.json
 git commit -m "chore(release): @apicity/* → {{version}}"
 ```
 
 **Exit criteria:** Every public `@apicity/*` package passes publish-ready
-checks, every manifest is at `{{version}}`, and the release bump is committed.
+checks, every manifest is at `{{version}}`, `.claude-plugin/plugin.json` is at
+`{{version}}` too, and the release bump is committed.
 
 # Sub-step 5: Inspect tarballs with --dry-run (dry_run stops here)
 

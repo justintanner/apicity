@@ -1,6 +1,16 @@
-# Apicity MCP Server Setup
+# `apicity mcp` — MCP server reference
 
-The Apicity MCP server exposes the provider packages as Model Context Protocol
+**The CLI and its agent skill are the recommended integration.** Install
+`@apicity/cli`, run `apicity setup claude` or `apicity setup codex`, and an
+agent calls every endpoint directly — see
+[packages/cli/README.md](packages/cli/README.md), and "Switching from the MCP
+server" there or in the [root README](README.md#switching-from-the-mcp-server)
+if you are moving off the server. This file is the reference for the optional
+`apicity mcp` subcommand, for clients that speak MCP and nothing else. It was
+`@apicity/mcp-server` before the rename; that package's `apicity-mcp` bin still
+works and prints one deprecation line.
+
+`apicity mcp` exposes the provider packages as Model Context Protocol
 tools. Each tool maps to one upstream endpoint from the monorepo's
 `scripts/endpoint-docs.tsv`; tool names use this shape:
 
@@ -40,7 +50,7 @@ ANTHROPIC_API_KEY=sk-ant-...
 FAL_API_KEY=...
 EOF
 
-npx -y @apicity/mcp-server@latest \
+npx -y @apicity/cli@latest mcp \
   --env-file ~/.config/apicity/.env \
   --providers openai,anthropic,fal
 ```
@@ -50,13 +60,13 @@ For 1Password native mode:
 ```bash
 export OP_SERVICE_ACCOUNT_TOKEN=ops_...
 
-npx -y @apicity/mcp-server@latest \
+npx -y @apicity/cli@latest mcp \
   --op-vault Apicity \
   --op-token env:OP_SERVICE_ACCOUNT_TOKEN \
   --providers openai,anthropic,fal
 ```
 
-Use `@latest` with `npx`; bare `npx -y @apicity/mcp-server` can reuse an older
+Use `@latest` with `npx`; bare `npx -y @apicity/cli` can reuse an older
 cached package that does not know newer flags.
 
 ## Install And Run Options
@@ -66,13 +76,13 @@ cached package that does not know newer flags.
 Use this for MCP client configs and one-off testing:
 
 ```bash
-npx -y @apicity/mcp-server@latest --env-file ~/.config/apicity/.env
+npx -y @apicity/cli@latest mcp --env-file ~/.config/apicity/.env
 ```
 
 With 1Password:
 
 ```bash
-npx -y @apicity/mcp-server@latest \
+npx -y @apicity/cli@latest mcp \
   --op-vault Apicity \
   --op-token env:OP_SERVICE_ACCOUNT_TOKEN
 ```
@@ -82,13 +92,13 @@ npx -y @apicity/mcp-server@latest \
 This is the pnpm/pnpx-style equivalent of `npx`:
 
 ```bash
-pnpm dlx @apicity/mcp-server@latest --env-file ~/.config/apicity/.env
+pnpm dlx @apicity/cli@latest mcp --env-file ~/.config/apicity/.env
 ```
 
 With 1Password:
 
 ```bash
-pnpm dlx @apicity/mcp-server@latest \
+pnpm dlx @apicity/cli@latest mcp \
   --op-vault Apicity \
   --op-token env:OP_SERVICE_ACCOUNT_TOKEN
 ```
@@ -96,15 +106,15 @@ pnpm dlx @apicity/mcp-server@latest \
 ### Global Install
 
 ```bash
-npm install -g @apicity/mcp-server
-apicity-mcp --env-file ~/.config/apicity/.env
+npm install -g @apicity/cli
+apicity mcp --env-file ~/.config/apicity/.env
 ```
 
 Or:
 
 ```bash
-pnpm add -g @apicity/mcp-server
-apicity-mcp --op-vault Apicity --op-token env:OP_SERVICE_ACCOUNT_TOKEN
+pnpm add -g @apicity/cli
+apicity mcp --op-vault Apicity --op-token env:OP_SERVICE_ACCOUNT_TOKEN
 ```
 
 ### Local Project Install
@@ -112,15 +122,15 @@ apicity-mcp --op-vault Apicity --op-token env:OP_SERVICE_ACCOUNT_TOKEN
 Install the server into another Node project and run its local bin:
 
 ```bash
-npm install @apicity/mcp-server
-npm exec -- apicity-mcp --env-file ~/.config/apicity/.env
+npm install @apicity/cli
+npm exec -- apicity mcp --env-file ~/.config/apicity/.env
 ```
 
 With pnpm:
 
 ```bash
-pnpm add @apicity/mcp-server
-pnpm exec apicity-mcp --env-file ~/.config/apicity/.env
+pnpm add @apicity/cli
+pnpm exec apicity mcp --env-file ~/.config/apicity/.env
 ```
 
 ### Direct Repo Development
@@ -131,15 +141,15 @@ Use this when working from a checkout of this repository:
 git clone https://github.com/justintanner/apicity.git
 cd apicity
 pnpm install
-pnpm run build:mcp-server
+pnpm run build:cli
 
-node packages/mcp-server/dist/src/bin.js --env-file ~/.config/apicity/.env
+node packages/cli/dist/src/bin.js mcp --env-file ~/.config/apicity/.env
 ```
 
 With native 1Password mode:
 
 ```bash
-node packages/mcp-server/dist/src/bin.js \
+node packages/cli/dist/src/bin.js mcp \
   --op-vault Apicity \
   --op-token env:OP_SERVICE_ACCOUNT_TOKEN
 ```
@@ -149,13 +159,28 @@ The repository also has a development launcher that resolves the repo's
 then execs the built server:
 
 ```bash
-pnpm run build:mcp-server
+pnpm run build:cli
 APICITY_ENV_FILE="$PWD/.env" \
-  packages/mcp-server/scripts/launch-with-1password.sh --providers openai,xai
+  packages/cli/scripts/launch-with-1password.sh --providers openai,xai
 ```
 
 This launcher is for direct repo use. It is not part of the published npm
-package, whose published entry point is the `apicity-mcp` bin.
+package, whose entry point is the `apicity` bin.
+
+### A launcher for a host that already exports the credential
+
+When the credential reaches the process from somewhere else — a deployment
+secret, a parent shell — env-file mode with `/dev/null` selects "use what is
+already set" without ever writing a secret to disk, and `--providers` keeps
+the registry to what that host is meant to serve:
+
+```sh
+#!/bin/sh
+set -eu
+exec apicity mcp --env-file /dev/null --providers openai
+```
+
+Add `"$@"` after `mcp` if the client passes its own flags through the wrapper.
 
 ## Credential Modes
 
@@ -203,7 +228,7 @@ Important behavior:
 Use `--providers` to keep the server focused on the providers you expect:
 
 ```bash
-npx -y @apicity/mcp-server@latest \
+npx -y @apicity/cli@latest mcp \
   --env-file ~/.config/apicity/.env \
   --providers openai,anthropic
 ```
@@ -253,15 +278,15 @@ pass it one of these ways:
 
 ```bash
 # Literal token. Useful for one-off local testing.
-apicity-mcp --op-vault Apicity --op-token ops_...
+apicity mcp --op-vault Apicity --op-token ops_...
 
 # Read token from an environment variable.
 export OP_SERVICE_ACCOUNT_TOKEN=ops_...
-apicity-mcp --op-vault Apicity --op-token env:OP_SERVICE_ACCOUNT_TOKEN
+apicity mcp --op-vault Apicity --op-token env:OP_SERVICE_ACCOUNT_TOKEN
 
 # Equivalent shorthand forms accepted by the CLI.
-apicity-mcp --op-vault Apicity --op-token '$OP_SERVICE_ACCOUNT_TOKEN'
-apicity-mcp --op-vault Apicity --op-token OP_SERVICE_ACCOUNT_TOKEN
+apicity mcp --op-vault Apicity --op-token '$OP_SERVICE_ACCOUNT_TOKEN'
+apicity mcp --op-vault Apicity --op-token OP_SERVICE_ACCOUNT_TOKEN
 ```
 
 You can also set both options through environment variables:
@@ -269,7 +294,7 @@ You can also set both options through environment variables:
 ```bash
 export APICITY_OP_VAULT=Apicity
 export APICITY_OP_SERVICE_TOKEN=ops_...
-apicity-mcp
+apicity mcp
 ```
 
 In native 1Password mode:
@@ -301,14 +326,14 @@ pnpm run check:op
 For ad hoc repo commands, wrap the command yourself:
 
 ```bash
-op run --env-file=.env -- node packages/mcp-server/scripts/demo.mjs
+op run --env-file=.env -- node packages/cli/scripts/demo.mjs
 ```
 
-Do not expect `apicity-mcp --env-file .env` alone to resolve those `op://`
+Do not expect `apicity mcp --env-file .env` alone to resolve those `op://`
 references. MCP `--env-file` loading intentionally skips values that start
 with `op://` because they are references, not usable provider credentials. For
 an MCP client, use native `--op-vault` mode, a plain dotenv file with real
-values, or the direct-repo launcher after `pnpm run build:mcp-server`.
+values, or the direct-repo launcher after `pnpm run build:cli`.
 
 ## Provider Environment Variables
 
@@ -348,7 +373,7 @@ Plain `.env` file:
 
 ```bash
 claude mcp add apicity -- \
-  npx -y @apicity/mcp-server@latest \
+  npx -y @apicity/cli@latest mcp \
   --env-file ~/.config/apicity/.env \
   --providers openai,anthropic
 ```
@@ -357,7 +382,7 @@ Native 1Password:
 
 ```bash
 claude mcp add apicity -- \
-  npx -y @apicity/mcp-server@latest \
+  npx -y @apicity/cli@latest mcp \
   --op-vault Apicity \
   --op-token "$OP_SERVICE_ACCOUNT_TOKEN" \
   --providers openai,anthropic
@@ -372,7 +397,7 @@ Plain `.env` file:
 
 ```bash
 codex mcp add apicity -- \
-  npx -y @apicity/mcp-server@latest \
+  npx -y @apicity/cli@latest mcp \
   --env-file ~/.config/apicity/.env \
   --providers openai,anthropic
 ```
@@ -384,7 +409,8 @@ Or edit `~/.codex/config.toml` directly:
 command = "npx"
 args = [
   "-y",
-  "@apicity/mcp-server@latest",
+  "@apicity/cli@latest",
+  "mcp",
   "--env-file",
   "/Users/YOU/.config/apicity/.env",
   "--providers",
@@ -399,7 +425,8 @@ Native 1Password:
 command = "npx"
 args = [
   "-y",
-  "@apicity/mcp-server@latest",
+  "@apicity/cli@latest",
+  "mcp",
   "--op-vault",
   "Apicity",
   "--op-token",
@@ -423,7 +450,8 @@ Plain `.env` file:
       "command": "npx",
       "args": [
         "-y",
-        "@apicity/mcp-server@latest",
+        "@apicity/cli@latest",
+        "mcp",
         "--env-file",
         "/Users/YOU/.config/apicity/.env",
         "--providers",
@@ -443,7 +471,8 @@ Native 1Password:
       "command": "npx",
       "args": [
         "-y",
-        "@apicity/mcp-server@latest",
+        "@apicity/cli@latest",
+        "mcp",
         "--op-vault",
         "Apicity",
         "--op-token",
@@ -461,19 +490,19 @@ Native 1Password:
 After building the repo:
 
 ```bash
-pnpm run build:mcp-server
+pnpm run build:cli
 ```
 
 Configure the MCP client to run:
 
 ```text
-node /absolute/path/to/apicity/packages/mcp-server/dist/src/bin.js --env-file /absolute/path/to/.env
+node /absolute/path/to/apicity/packages/cli/dist/src/bin.js mcp --env-file /absolute/path/to/.env
 ```
 
 For the direct-repo launcher:
 
 ```text
-/absolute/path/to/apicity/packages/mcp-server/scripts/launch-with-1password.sh --providers openai,anthropic
+/absolute/path/to/apicity/packages/cli/scripts/launch-with-1password.sh --providers openai,anthropic
 ```
 
 Set `APICITY_ENV_FILE=/absolute/path/to/apicity/.env` in the environment if the
@@ -482,10 +511,10 @@ launcher should use a non-default `.env` path.
 ## CLI Flags
 
 ```text
-apicity-mcp --op-vault <vault> --op-token <token|env:VAR>
+apicity mcp --op-vault <vault> --op-token <token|env:VAR>
             [--output-dir <path>] [--providers <csv>]
 
-apicity-mcp --env-file <path>
+apicity mcp --env-file <path>
             [--output-dir <path>] [--providers <csv>]
 ```
 
@@ -506,7 +535,7 @@ Binary responses and downloaded media URLs are saved only when an output
 directory is configured:
 
 ```bash
-npx -y @apicity/mcp-server@latest \
+npx -y @apicity/cli@latest mcp \
   --env-file ~/.config/apicity/.env \
   --output-dir ~/apicity-outputs
 ```
@@ -522,7 +551,7 @@ single-use OTP. To enable paid endpoint verification, pass a shared HMAC secret
 file:
 
 ```bash
-npx -y @apicity/mcp-server@latest \
+npx -y @apicity/cli@latest mcp \
   --env-file ~/.config/apicity/.env \
   --paygate-secret-file ~/.config/apicity/paygate.secret
 ```
@@ -536,7 +565,7 @@ argument.
 The package also exports the server and registry helpers:
 
 ```ts
-import { startServer } from "@apicity/mcp-server";
+import { startServer } from "@apicity/cli";
 
 await startServer({
   outputDir: "./out",

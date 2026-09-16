@@ -19,10 +19,13 @@ media APIs, and more.
   elevenlabs) — no keys, no network.
 - **Schemas for agents.** Every POST endpoint ships a zod request schema
   (`endpoint.schema`) — hosts and agents catch a hallucinated call locally
-  instead of at the API; the MCP server uses it as the tool's input schema.
+  instead of at the API; the CLI and `apicity mcp` use it as the request
+  schema agents can inspect with `apicity describe`.
   Provider packages may carry Zod 3 or Zod 4 at runtime; the compatibility
   policy is documented in [docs/zod-compatibility.md](docs/zod-compatibility.md).
-- **MCP server.** Every endpoint exposed 1:1 as an MCP tool.
+- **CLI and agent skills.** Every endpoint is one `apicity` command; an
+  embedded skill teaches agents to discover and call them, with
+  `apicity mcp` still available for MCP clients.
 - **Composable middleware.** `withRetry` / `withFallback` / `withRateLimit` as
   plain function wrappers.
 - **Minimal provider dependencies.** Providers depend only on `zod` — plus
@@ -122,26 +125,115 @@ Upload, status, and helper endpoints are unlisted and remain free.
 
 <!-- provider-inventory:providers:end -->
 
-## MCP server
+## CLI and coding agents
 
-Every endpoint as an MCP tool. Install with a 1Password vault holding the
-provider keys, or a plain `.env` file:
+Every endpoint is one `apicity` command, and the CLI ships the agent skill
+that teaches a coding agent to find and call them.
 
 ```bash
-claude mcp add apicity -- \
-  npx -y @apicity/mcp-server@latest \
-  --op-vault apicity --op-token "$OP_SERVICE_ACCOUNT_TOKEN"
-
-# or
-claude mcp add apicity -- \
-  npx -y @apicity/mcp-server@latest --env-file ~/.config/apicity/.env
+npm install -g @apicity/cli
+# or, without installing:
+npx -y @apicity/cli@latest commands --provider xai
 ```
 
-Codex: same command after `codex mcp add apicity --`. Details in
-[@apicity/mcp-server](packages/mcp-server).
+A first call — discovery is offline, so only the last line needs a key:
 
-The server speaks MCP specification revision 2026-07-28 and needs Node.js 20
-or newer; clients on older MCP revisions are not supported.
+```bash
+apicity providers                 # who exists, which env var, which are set
+apicity commands --provider xai   # that provider's endpoints
+apicity describe xai v1.tokenizeText
+apicity xai v1.tokenizeText --data '{"model":"grok-3","text":"Hello, world!"}'
+```
+
+Connect the agents on this host:
+
+```bash
+apicity setup claude   # the skill plus the Claude Code plugin
+apicity setup codex    # the skill Codex reads
+apicity doctor         # what is installed, configured and stale
+```
+
+For an agent that cannot install a plugin, put this in the project's
+`AGENTS.md` instead:
+
+> apicity is driven through the `apicity` CLI on PATH, never an MCP server. Run
+> `apicity --help` for the command set and `apicity skill` for the agent guide
+> (`apicity commands`, `apicity describe`, then the call). Credentials are
+> configured by the operator; never request, copy, or read them.
+
+The MCP server is still there for MCP clients, as a subcommand:
+
+```bash
+claude mcp add apicity -- apicity mcp \
+  --op-vault apicity --op-token "$OP_SERVICE_ACCOUNT_TOKEN"
+
+# or with a .env file instead of 1Password
+claude mcp add apicity -- apicity mcp --env-file ~/.config/apicity/.env
+```
+
+Codex: same command after `codex mcp add apicity --`. It speaks MCP
+specification revision 2026-07-28 and needs Node.js 20 or newer; clients on
+older MCP revisions are not supported. Full reference:
+[packages/cli/README.md](packages/cli/README.md) for the CLI and the skill,
+[MCP.md](MCP.md) for the server.
+
+### Switching from the MCP server
+
+`@apicity/mcp-server` is now `@apicity/cli`, and the server it used to be is
+the `apicity mcp` subcommand. Nothing breaks the moment you upgrade — the
+package still ships an `apicity-mcp` bin that serves MCP exactly as before and
+prints one deprecation line to stderr — so the steps below can be taken in
+order, at your own pace:
+
+1. **Install the CLI.** `npm install -g @apicity/cli` (or run it through
+   `npx -y @apicity/cli@latest`).
+2. **Check the host.** `apicity doctor` reports the CLI and Node versions, the
+   env file, 1Password, the pay-gate secret, the output directory, how many
+   providers are configured, and the skill and plugin install — one row each,
+   `--json` for a machine.
+3. **Connect the agents.** `apicity setup claude` installs the skill and the
+   Claude Code plugin; `apicity setup codex` installs the skill Codex reads.
+   `apicity setup agents` does whichever is unambiguous on this host.
+4. **Remove the old MCP registration.** `claude mcp remove apicity`,
+   `codex mcp remove apicity`, or delete the `mcpServers.apicity` entry from
+   the client's config file. Agents reach the endpoints through the CLI and the
+   skill from here on; keep the registration only if you deliberately want the
+   MCP path as well, and point it at `apicity mcp`.
+5. **Repoint a launcher script.** For a launcher that execs
+   `node_modules/.bin/apicity-mcp`, replace the `@apicity/mcp-server`
+   dependency with `@apicity/cli`: the compatibility bin keeps the launcher
+   working untouched. Then switch the exec target to `apicity mcp`, or drop the
+   launcher altogether. This repository's own city launcher is the worked
+   example — its last line
+
+   ```sh
+   exec "$APICITY_MCP_BIN" "$@" --env-file /dev/null --providers openai
+   ```
+
+   becomes
+
+   ```sh
+   exec apicity mcp "$@" --env-file /dev/null --providers openai
+   ```
+
+   and the `APICITY_MCP_BIN` resolution above it can go with it. The launcher's
+   whole job is then `apicity mcp --env-file /dev/null --providers openai`,
+   with `"$@"` passing the client's own flags through.
+
+6. **Tell the agents that cannot install plugins.** Add a short section to the
+   project's `AGENTS.md` (and `CLAUDE.md`, for Claude Code):
+
+   > apicity is driven through the `apicity` CLI on PATH, never an MCP server.
+   > Run `apicity --help` for the command set and `apicity skill` for the agent
+   > guide (`apicity commands`, `apicity describe`, then the call). Credentials
+   > are configured by the operator; never request, copy, or read them.
+
+7. **After the release, the operator deprecates the old package** — a manual,
+   post-publish step no part of the build performs:
+
+   ```bash
+   npm deprecate @apicity/mcp-server "Replaced by @apicity/cli (apicity mcp)"
+   ```
 
 ## Middleware
 
@@ -242,7 +334,8 @@ A blocked call throws `PayGateError` whose `.code` is one of
 
 The gate is generic — `xai` and others opt in by adding a `PAID_ENDPOINTS`
 entry. See [@apicity/cost](packages/provider/cost) for the full spec and the
-MCP server's `--paygate-secret-file` wiring.
+CLI's `--paygate-secret-file` wiring (`apicity … --otp <token>`, or the `otp`
+argument under `apicity mcp`).
 
 ## Development
 

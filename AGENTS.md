@@ -75,6 +75,16 @@ Method paths mirror upstream API URL paths segment-by-segment; kebab-case become
 
 `CLAUDE.md` is the canonical source for project conventions. This file is the self-sufficient summary for non-Claude harnesses (opencode, other agents). If they disagree, prefer `CLAUDE.md`.
 
+## apicity CLI
+
+apicity is driven through the `apicity` CLI on PATH, never an MCP server. Run
+`apicity --help` for the command set and `apicity skill` for the agent guide
+(`apicity commands`, `apicity describe`, then the call). Credentials are
+configured by the operator; never request, copy, or read them.
+
+The full reference is [`packages/cli/README.md`](packages/cli/README.md);
+[`MCP.md`](MCP.md) documents the optional `apicity mcp` subcommand.
+
 ## Commands
 
 ```bash
@@ -175,6 +185,7 @@ Two invariants worth knowing:
 
 - **URL comment (lint-enforced)** — a 2-line comment immediately above each endpoint property in the factory (`// {METHOD} {full upstream URL}` then `// Docs: {docs URL}`). Checked by `pnpm run lint:endpoints`; the docs hostname must be on the provider's allow-list in `scripts/check-endpoint-comments.mjs`. For overloaded endpoints, comment the default path.
 - **endpoint-docs.tsv row (docs inventory, not lint-enforced)** — also add a matching `(provider, dotPath, method, fullUrl, docsUrl)` row in `scripts/endpoint-docs.tsv` (via `pnpm run endpoint-map`). Missing rows do not fail lint/CI; they degrade the generated README API Reference.
+- **Call shape (generated)** — a new tsv row also needs `pnpm run gen:call-shapes`, which re-derives `packages/cli/src/call-shapes.ts` (how the CLI binds each flag). When the generator cannot classify a placeholder it names the row and refuses: read the leaf and add an `OVERRIDES` entry — with a `why` — in `scripts/lib/call-shapes.mjs`, then regenerate. `pnpm run gen:call-shapes:check` runs inside `ci:local`.
 - **One endpoint per PR.**
 
 ## Integration Test Recording
@@ -198,7 +209,9 @@ pnpm run test:run tests/integration/<file>.test.ts
 
 For provider-only changes, `pnpm run test:affected` reads the current git diff
 (committed, staged, unstaged, and untracked files) and runs the matching
-`test:provider` subset. It falls back to full `pnpm run test:run` for shared
+`test:provider` subset. `cli` is scoped like a provider and owns two prefixes:
+it selects `cli-*` **and** `mcp-*` test files, because `@apicity/cli` carries
+the `apicity mcp` server. It falls back to full `pnpm run test:run` for shared
 scripts/config, package metadata, unit or functional tests, docs, and ambiguous
 paths. Run `pnpm run test:run` directly when you need an explicit full local
 replay.

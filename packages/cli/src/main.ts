@@ -29,6 +29,7 @@ import { runCommands, runDescribe, runProviders } from "./discovery.js";
 import { isHelpTopic, printHelpTopic } from "./help.js";
 import { bindArguments, callEndpoint, mergeRequestFields } from "./invoke.js";
 import { parseMcpArgs, runMcp } from "./mcp/cli.js";
+import { runSkillCommand } from "./skill.js";
 import {
   downloadUrlsInResult,
   guessExtension,
@@ -49,9 +50,9 @@ import { readPackageVersion } from "./version.js";
  * Dispatch one `apicity` invocation and answer its exit status.
  *
  * W1 knew `mcp`, `help` and `version`; W2 adds the three discovery commands,
- * the help topics and the `apicity <provider>` shorthand. Every later slice
- * adds its command here and in `BUILTIN_COMMANDS` rather than introducing a
- * second entrypoint.
+ * the help topics and the `apicity <provider>` shorthand; W4 adds `skill` and
+ * `skill install`. Every later slice adds its command here and in
+ * `BUILTIN_COMMANDS` rather than introducing a second entrypoint.
  *
  * Failures surface as the error envelope with the code's exit status: the
  * commands below raise `CliError` and never print a stack.
@@ -103,6 +104,16 @@ async function dispatch(
   if (first === "version" || first === "--version") {
     writer.out(readPackageVersion());
     return 0;
+  }
+
+  // Before the built-in flag parser, like the endpoint form: `apicity skill`
+  // prints the file raw and `--json` does not wrap it, so its argv is read by
+  // the command rather than by the shared table.
+  if (first === "skill") {
+    return runSkillCommand(rest, writer, {
+      env: options.env,
+      stdoutIsTTY: options.stdoutIsTTY,
+    });
   }
 
   // The endpoint form is checked before the built-in flag parser runs: its

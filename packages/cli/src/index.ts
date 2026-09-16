@@ -115,6 +115,33 @@ export {
 } from "./errors.js";
 export { BUILTIN_COMMANDS, type BuiltinCommand } from "./commands.js";
 export {
+  installSkill,
+  readSkill,
+  removeSkill,
+  runSkill,
+  runSkillCommand,
+  runSkillInstall,
+  CLAUDE_SKILL_LINK_TARGET,
+  INSTALLED_VERSION_FILE,
+  OWNERSHIP_MARKER_FILE,
+  OWNERSHIP_MARKER_TEXT,
+  SKILL_FILENAME,
+  SKILL_NAME,
+  baselineSkillDir,
+  claudeSkillLink,
+  type InstallSkillOptions,
+  type InstallSkillResult,
+  type RemoveSkillResult,
+  type SkillCommandOptions,
+  type SymlinkFn,
+} from "./skill.js";
+export {
+  detectClaude,
+  findClaudeBinary,
+  resolveHome,
+  type AgentDetectionOptions,
+} from "./plugin.js";
+export {
   runEndpoint,
   runMain,
   type EndpointOptions,

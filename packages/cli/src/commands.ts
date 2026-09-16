@@ -20,6 +20,11 @@ export const BUILTIN_COMMANDS: readonly BuiltinCommand[] = [
     summary: "Show one endpoint's schema, example and call shape.",
   },
   { name: "providers", summary: "List providers, their env vars and status." },
+  { name: "skill", summary: "Print the agent skill this CLI ships." },
+  {
+    name: "skill install",
+    summary: "Install that skill into ~/.agents/skills/apicity.",
+  },
   { name: "mcp", summary: "Serve every provider endpoint over MCP on stdio." },
   { name: "help", summary: "Print this message." },
   { name: "version", summary: "Print the @apicity/cli version." },

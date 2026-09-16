@@ -9,11 +9,20 @@ import { helpTopicsLine } from "./help.js";
 export interface CliWriter {
   out(text: string): void;
   err(text: string): void;
+  /**
+   * Bytes to stdout exactly as given, with no trailing newline of its own.
+   *
+   * Only the raw-output commands use it — `apicity skill` has to print the
+   * file byte-for-byte — and it is optional so a test writer can capture the
+   * line-oriented channels alone.
+   */
+  raw?(text: string): void;
 }
 
 export const defaultWriter: CliWriter = {
   out: (text) => process.stdout.write(`${text}\n`),
   err: (text) => process.stderr.write(`${text}\n`),
+  raw: (text) => process.stdout.write(text),
 };
 
 /** The failure envelope, exactly one JSON document on stderr. */

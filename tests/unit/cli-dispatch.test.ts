@@ -41,6 +41,8 @@ describe("apicity dispatcher", () => {
       "commands",
       "describe",
       "providers",
+      "skill",
+      "skill install",
       "mcp",
       "help",
       "version",

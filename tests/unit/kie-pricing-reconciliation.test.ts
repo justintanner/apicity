@@ -515,9 +515,19 @@ describe("Kie pricing reconciliation", () => {
           }
           const input = recordValue(runtime.payload.input);
           const baseInput = { ...input };
-          if (runtime.key === "minimax-h3/image-to-video") {
-            delete baseInput.first_frame_url;
-            delete baseInput.last_frame_url;
+          const freeControl = runtime.key === "minimax-h3/reference-to-video";
+          if (freeControl) {
+            // The page's first five input images are free, so the free
+            // control keeps exactly five of the six representative images
+            // and the additive delta is the sixth image's official charge.
+            const images = input.reference_image_urls;
+            if (!Array.isArray(images) || images.length !== 6) {
+              failures.push(
+                `${row.occurrenceId}: expected six reference images, got ${JSON.stringify(images)}`
+              );
+              continue;
+            }
+            baseInput.reference_image_urls = images.slice(0, 5);
           } else {
             baseInput.image_urls = ["https://example.com/a.png"];
           }
@@ -528,6 +538,19 @@ describe("Kie pricing reconciliation", () => {
             ...(runtime.endpoint ? { endpoint: runtime.endpoint } : {}),
             ...(runtime.hints ? { costHints: runtime.hints } : {}),
           });
+          if (freeControl) {
+            if (base.warnings.length) {
+              failures.push(
+                `${row.occurrenceId}: free control warnings ${base.warnings.join("; ")}`
+              );
+              continue;
+            }
+            if (base.breakdown.extraUsd !== undefined) {
+              failures.push(
+                `${row.occurrenceId}: free control extraUsd ${base.breakdown.extraUsd} != none`
+              );
+            }
+          }
           if (Math.abs(runtime.estimate.usd - base.usd - officialUsd) > 1e-12) {
             failures.push(
               `${row.occurrenceId}: additive delta ${runtime.estimate.usd - base.usd} != official ${officialUsd}`
@@ -618,6 +641,45 @@ describe("Kie pricing reconciliation", () => {
       }
     }
     expect(failures).toEqual([]);
+  });
+
+  it("executes the MiniMax H3 image-input cell across the five-image free threshold", () => {
+    const manifest = generatedManifest;
+    const row = manifest.rows.find(
+      (candidate) =>
+        candidate.official.modelDescription ===
+        "MiniMax H3, image input, 768p, 2k"
+    );
+    expect(row).toBeDefined();
+    if (!row) return;
+    expect(row.occurrenceId).toBe(
+      "sha256:fa6f16320c423cb0d3c63f8b4ab22be7ad19669a7307872efdb33a74deaed174#1"
+    );
+    expect(row.disposition).toBe("canonical-alias");
+    expect(row.mappedApiCityKeys).toEqual(["minimax-h3/reference-to-video"]);
+    expect(row.canonicalKey).toBe("minimax-h3/reference-to-video");
+    expect(row.billingComponent).toBe("extra");
+    expect(row.unit).toBe("images");
+    expect(row.rateBasis?.usdPrice).toBe("0.02");
+    const runtime = runtimeCase(row);
+    const input = recordValue(runtime.payload.input);
+    const images = input.reference_image_urls;
+    expect(Array.isArray(images) ? images.length : images).toBe(6);
+    if (!Array.isArray(images)) return;
+    const control = computeEstimate({
+      provider: "kie",
+      payload: {
+        ...runtime.payload,
+        input: { ...input, reference_image_urls: images.slice(0, 5) },
+      },
+    });
+    expect(control.warnings).toEqual([]);
+    expect(control.breakdown.extraUsd).toBeUndefined();
+    expect(control.usd).toBeCloseTo(0.2, 12);
+    expect(runtime.estimate.warnings).toEqual([]);
+    expect(runtime.estimate.breakdown.extraUsd).toBeCloseTo(0.02, 12);
+    expect(runtime.estimate.usd).toBeCloseTo(0.22, 12);
+    expect(runtime.estimate.usd - control.usd).toBeCloseTo(0.02, 12);
   });
 
   it("executes mapped free rows as evidenced zero-cost estimates", async () => {

@@ -640,13 +640,23 @@ const perCharacterPage = (
 // (int 4–15), so no costHints channel is needed.
 //
 // The page separately charges 4 credits ($0.02) per input image, halved
-// from $0.04. The callable image and reference-image fields expose finite
-// counts, so that additive charge is exact. The page also states the first
-// five input images are free; the feed's cell is per image with no
-// threshold, so the estimator charges every image and over-quotes by at
-// most five images' worth (follow-up bead, W1.10 (b)). Reference-video
-// input carries no clip duration in the request, so those payloads fail
-// closed rather than quoting a generation-only rate.
+// from $0.04, and states "the first 5 images are free; additional images
+// are charged separately" (https://kie.ai/minimax-h3, identical on the
+// three ?model= pages; confirmed 2026-09-16, probe
+// product-page-pricing-probe-2026-09-16T05-40-37Z.json under
+// plans/ac-qbb8gt/build/evidence/). The callable image and reference-image
+// fields expose finite counts, so the additive charge is exact: images
+// across reference_image_urls, first_frame_url and last_frame_url are
+// counted per request and only those beyond the fifth are charged. No
+// committed recording holds a creditsConsumed value for an image-bearing
+// job, so the threshold rests on the page text this entry already cites.
+// Reference-video input carries no clip duration in the request, so those
+// payloads fail closed rather than quoting a generation-only rate.
+
+// Per-request free allowance from the page: the sixth image onward is
+// charged.
+const MINIMAX_H3_FREE_INPUT_IMAGES = 5;
+
 const miniMaxH3Extra = (p: Record<string, unknown>): number | undefined => {
   const input = asObject(p.input);
   const videos = input?.reference_video_urls;
@@ -672,7 +682,7 @@ const miniMaxH3Extra = (p: Record<string, unknown>): number | undefined => {
     imageCount += 1;
   }
 
-  return imageCount * 0.02;
+  return Math.max(0, imageCount - MINIMAX_H3_FREE_INPUT_IMAGES) * 0.02;
 };
 
 const miniMaxH3Warning = (p: Record<string, unknown>): string[] => {

@@ -379,7 +379,7 @@ const FAMILY_MAPPING_RULES = Object.freeze([
   [/mini.?max h3.*reference to video/i, "minimax-h3/reference-to-video"],
   [/mini.?max h3.*text to video/i, "minimax-h3/text-to-video"],
   [/mini.?max h3.*video input/i, "minimax-h3/text-to-video"],
-  [/mini.?max h3.*image input/i, "minimax-h3/image-to-video"],
+  [/mini.?max h3.*image input/i, "minimax-h3/reference-to-video"],
   [/happyhorse-1\.1.*image-to-video/i, "happyhorse-1-1/image-to-video"],
   [/happyhorse-1\.1.*reference-to-video/i, "happyhorse-1-1/reference-to-video"],
   [/happyhorse-1\.1.*text-to-video/i, "happyhorse-1-1/text-to-video"],
@@ -737,11 +737,21 @@ const PAYLOAD_RULES = Object.freeze([
     apply: (input, text, key) => {
       if (!key.endsWith("image-to-video")) input.aspect_ratio = "16:9";
       if (key.endsWith("reference-to-video")) {
-        input.reference_image_urls = ["https://example.com/a.png"];
+        // The official image-input cell is per image beyond the first five
+        // free ones; the guard truncates this payload to five for its free
+        // control.
+        if (/image input/i.test(text)) {
+          input.reference_image_urls = Array.from(
+            { length: 6 },
+            (_, index) => `https://example.com/${"abcdef"[index]}.png`
+          );
+          input.duration = 5;
+        } else {
+          input.reference_image_urls = ["https://example.com/a.png"];
+        }
       }
       if (key.endsWith("image-to-video")) {
         input.first_frame_url = "https://example.com/a.png";
-        if (/image input/i.test(text)) input.duration = 5;
       }
     },
   },

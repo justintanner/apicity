@@ -1,4 +1,4 @@
-import { execFile } from "node:child_process";
+import { execFile, spawn } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -14,6 +14,7 @@ import { runMain } from "../../packages/cli/src/main";
 const here = dirname(fileURLToPath(import.meta.url));
 const packageJsonPath = join(here, "../../packages/cli/package.json");
 const mcpBinPath = join(here, "../../packages/cli/dist/src/mcp-bin.js");
+const binPath = join(here, "../../packages/cli/dist/src/bin.js");
 
 const packageVersion = (
   JSON.parse(readFileSync(packageJsonPath, "utf8")) as { version: string }
@@ -141,6 +142,57 @@ describe("apicity-mcp compatibility bin", () => {
       expect(deprecation).toBeGreaterThanOrEqual(0);
       expect(usage).toBeGreaterThanOrEqual(0);
       expect(deprecation).toBeLessThan(usage);
+    }
+  );
+});
+
+// The `apicity` bin itself. Everything above drives `runMain` in-process,
+// which never reaches the exit path — so this is the only place the shipped
+// entrypoint runs as a process, and the defect it pins (a piped document cut
+// off *with status 0*) was invisible to every other test in the suite.
+const FLUSH_TITLE = "writes the whole document to a pipe drained slowly";
+const hasBin = existsSync(binPath);
+
+describe("apicity bin", () => {
+  it.skipIf(!hasBin)(
+    hasBin ? FLUSH_TITLE : `${FLUSH_TITLE} [skipped: ${NO_DIST}]`,
+    async () => {
+      const { stdout, code } = await new Promise<{
+        stdout: string;
+        code: number | null;
+      }>((resolve, reject) => {
+        const child = spawn(process.execPath, [binPath, "commands", "--json"], {
+          stdio: ["ignore", "pipe", "ignore"],
+        });
+        const chunks: Buffer[] = [];
+
+        // The slow reader: nothing is consumed until the child has had time to
+        // fill the pipe and finish, which is exactly when `process.exit` used
+        // to discard the remainder.
+        child.stdout.pause();
+        setTimeout(() => {
+          child.stdout.on("data", (chunk: Buffer) => chunks.push(chunk));
+          child.stdout.resume();
+        }, 250);
+
+        child.on("error", reject);
+        child.on("close", (status) =>
+          resolve({
+            stdout: Buffer.concat(chunks).toString("utf8"),
+            code: status,
+          })
+        );
+      });
+
+      expect(code).toBe(0);
+      // The truncation landed at 64 KB and at 128 KB across runs of the same
+      // command, so the byte floor is the assertion that catches it: the whole
+      // catalog is an order of magnitude larger, and a short document would
+      // parse cleanly either way.
+      expect(Buffer.byteLength(stdout, "utf8")).toBeGreaterThan(200_000);
+      const rows: unknown = JSON.parse(stdout);
+      expect(Array.isArray(rows)).toBe(true);
+      expect((rows as unknown[]).length).toBeGreaterThan(1_000);
     }
   );
 });

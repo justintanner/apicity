@@ -101,6 +101,11 @@ jobs:
           test -f packages/cli/dist/src/bin.js
           test -f packages/cli/dist/src/mcp-bin.js
           test -f packages/cli/dist/endpoint-docs.tsv
+          # Staged by scripts/dist.mjs and published through the `skills`
+          # entry in package.json `files`. It is gitignored and no test reads
+          # it — every skill assertion reads the repository copy — so this is
+          # the only step that sees a tarball built without the skill.
+          test -f packages/cli/skills/apicity/SKILL.md
 
       # Type-check the whole tests/ tree (tests/tsconfig.json). The build step
       # above only tsc's packages/**, and test:run executes rather than

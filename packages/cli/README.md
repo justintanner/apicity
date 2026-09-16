@@ -260,8 +260,9 @@ discovery commands — `commands`, `describe` and `providers` — print their
 result at the **top level** with `--json`, not wrapped in the success envelope:
 `apicity commands --json | jq length`, not `jq '.data | length'`. Every other
 command (`skill install`, `setup`, `doctor`, and any endpoint call) answers the
-envelope, and a **failure** is the error envelope everywhere, discovery
-included.
+envelope. A **failure** follows the one rule above on every path, discovery
+included: the error envelope whenever stdout is a pipe or `--json` is passed,
+and `Error:` plus `hint:` lines at a terminal without it.
 
 Success goes to stdout and failure to stderr, never both for one invocation.
 `--quiet` prints the data alone — compactly with `--json`, so

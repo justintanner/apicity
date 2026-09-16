@@ -21,7 +21,6 @@ import {
   defaultWriter,
   printUsage,
   resolveOutputDirectory,
-  writeError,
   type CliWriter,
 } from "./envelope.js";
 import { CliError, classifyError, type ClassifyContext } from "./errors.js";
@@ -57,8 +56,9 @@ import { readPackageVersion } from "./version.js";
  * command here and in
  * `BUILTIN_COMMANDS` rather than introducing a second entrypoint.
  *
- * Failures surface as the error envelope with the code's exit status: the
- * commands below raise `CliError` and never print a stack.
+ * Failures surface through the same writer the endpoint form uses, with the
+ * code's exit status: the commands below raise `CliError` and never print a
+ * stack.
  */
 export async function runMain(
   argv: string[],
@@ -69,11 +69,40 @@ export async function runMain(
 
   if (first === "mcp") return serveMcp(rest);
 
+  // A built-in failure follows the same output rule as an endpoint failure
+  // (D-5): the envelope for `--json` and for a stdout that is not a terminal,
+  // `Error:`/`hint:` for a human at one. `setup` and `doctor` report success
+  // through this rule and failure through here, so the two paths diverging
+  // read as one command contradicting itself.
+  const out = createWriter({
+    json: requestsJson(rest),
+    stdoutIsTTY: options.stdoutIsTTY,
+    stdout: writer.out,
+    stderr: writer.err,
+  });
+
   try {
     return await dispatch(first, rest, writer, options);
   } catch (err) {
-    if (err instanceof CliError) return writeError(writer, err);
+    if (err instanceof CliError) return out.failure(err);
     throw err;
+  }
+}
+
+/**
+ * Whether `--json` was asked for, read before anything can fail.
+ *
+ * `parseGlobalFlags` owns the flag table and stays the one reader of it, but
+ * it raises on a value flag with no value — and that failure is `dispatch`'s
+ * to report, with its own message and against its own command's grammar.
+ * Here a throw means only that no `--json` was parsed, which leaves the TTY
+ * rule to select the form on its own.
+ */
+function requestsJson(argv: string[]): boolean {
+  try {
+    return parseGlobalFlags(argv).flags.json;
+  } catch {
+    return false;
   }
 }
 

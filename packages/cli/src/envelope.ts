@@ -45,15 +45,6 @@ export function errorEnvelope(err: CliError): ErrorEnvelope {
   return envelope;
 }
 
-/**
- * Report a failure and answer the exit status for it. W3 adds the success
- * envelope, `--json`/`--quiet` and the TTY rule on top of this one path.
- */
-export function writeError(writer: CliWriter, err: CliError): number {
-  writer.err(JSON.stringify(errorEnvelope(err)));
-  return err.exit;
-}
-
 export function usageText(): string {
   const width = Math.max(...BUILTIN_COMMANDS.map((c) => c.name.length));
   return [
@@ -143,8 +134,8 @@ export function createWriter(options: WriterOptions = {}): OutputWriter {
     },
     failure(error) {
       if (machine) {
-        // One line, as `writeError` prints it for the built-ins: an error
-        // envelope is read by a log pipeline far more often than by a person.
+        // One line: an error envelope is read by a log pipeline far more often
+        // than by a person.
         err(compact(errorEnvelope(error)));
         return error.exit;
       }

@@ -90,18 +90,17 @@ async function chmodBins() {
 /**
  * Stage the agent skill next to `dist` so npm publishes it (the `skills` entry
  * in package.json `files`). The source lives at the repository root because
- * `apicity skill` and the Claude Code plugin read the same copy. It does not
- * exist yet — the slice that authors it lands later — so a missing source is a
- * silent no-op rather than a build failure.
+ * `apicity skill` and the Claude Code plugin read the same copy.
+ *
+ * A missing source is a build failure, deliberately. The staged directory is
+ * gitignored and the repository copy is what every test reads, so a build that
+ * skipped this step would pass CI and the whole replay suite and still publish
+ * a tarball where `apicity skill`, `skill install` and `setup` all fail. The
+ * copy throwing is the only place that catches it.
  */
 async function copySkill() {
   const src = path.join(PKG_DIR, "../../skills/apicity/SKILL.md");
   const dst = path.join(PKG_DIR, "skills/apicity/SKILL.md");
-  try {
-    await fs.access(src);
-  } catch {
-    return;
-  }
   await mkdirp(path.dirname(dst));
   await fs.copyFile(src, dst);
 }

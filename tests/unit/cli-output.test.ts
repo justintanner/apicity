@@ -9,6 +9,7 @@ import { CliError, EXIT_CODES } from "../../packages/cli/src/errors";
 import { exitCodeTable } from "../../packages/cli/src/help";
 import {
   runEndpoint,
+  runMain,
   type EndpointOptions,
   type ProviderInstantiator,
 } from "../../packages/cli/src/main";
@@ -302,6 +303,40 @@ describe("the one output rule (D-5)", () => {
     expect(cap.err[1]).toBe(
       "hint: --taskId is required (path parameter {taskId})"
     );
+  });
+
+  it("prints a built-in failure at a terminal the same way", async () => {
+    const cap = capture();
+
+    // The built-in path used to print the envelope here while the endpoint
+    // path above printed `Error:`/`hint:` — `setup` and `doctor` report
+    // success through one and failure through the other, so the split showed
+    // up inside a single command.
+    const exit = await runMain(["help", "nosuch"], cap.writer, {
+      stdoutIsTTY: true,
+    });
+
+    expect(exit).toBe(2);
+    expect(cap.out).toEqual([]);
+    expect(cap.err).toEqual([
+      "Error: unknown help topic: nosuch",
+      "hint: run: apicity help",
+    ]);
+  });
+
+  it("keeps the envelope for a built-in failure asked for --json", async () => {
+    const cap = capture();
+
+    const exit = await runMain(["help", "nosuch", "--json"], cap.writer, {
+      stdoutIsTTY: true,
+    });
+
+    expect(exit).toBe(2);
+    expect(JSON.parse(cap.err[0])).toMatchObject({
+      ok: false,
+      code: "not_found",
+      error: "unknown help topic: nosuch",
+    });
   });
 
   it("prints the data alone for --quiet, compactly with --json", async () => {

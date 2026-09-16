@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 import { loadCatalog } from "../../packages/cli/src/catalog";
@@ -289,4 +289,40 @@ describe("skills/apicity/SKILL.md invocations", () => {
 
     expect(ambiguous).toEqual([]);
   });
+});
+
+// ---------------------------------------------------------------------------
+// packaging (AC-09's second half)
+// ---------------------------------------------------------------------------
+
+/** Staged by `packages/cli/scripts/dist.mjs`; gitignored, and published. */
+const STAGED_SKILL = "packages/cli/skills/apicity/SKILL.md";
+const CLI_BIN = "packages/cli/dist/src/bin.js";
+const built = existsSync(CLI_BIN);
+
+const STAGED_TITLE = "stages the repository's skill for the tarball";
+const NOT_BUILT = "run `pnpm run build:cli` first";
+
+describe("@apicity/cli packaging", () => {
+  it("publishes the staged skill through the package's files list", () => {
+    const pkg = JSON.parse(
+      readFileSync("packages/cli/package.json", "utf8")
+    ) as { files?: string[] };
+
+    // Without this entry the staging step cannot reach the tarball at all,
+    // and the failure is silent: `npm pack` simply omits the directory.
+    expect(pkg.files ?? []).toContain("skills");
+  });
+
+  it.skipIf(!built)(
+    built ? STAGED_TITLE : `${STAGED_TITLE} [skipped: ${NOT_BUILT}]`,
+    () => {
+      // Gated on the build having run, not on the staged file existing: a
+      // build that produced `dist` without the skill is exactly the hole this
+      // closes. Every other skill assertion reads the repository copy, which
+      // a published tarball cannot reach.
+      expect(existsSync(STAGED_SKILL)).toBe(true);
+      expect(readFileSync(STAGED_SKILL, "utf8")).toBe(skill);
+    }
+  );
 });

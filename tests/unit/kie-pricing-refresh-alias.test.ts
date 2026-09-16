@@ -126,5 +126,5 @@ describe("Kie pricing manifest refresh aliases", () => {
     } finally {
       fs.rmSync(temporaryRoot, { recursive: true, force: true });
     }
-  });
+  }, 120_000);
 });

@@ -200,8 +200,10 @@ function literalValue(expression) {
 // and deterministic: a name is looked up in the file's own variable
 // declarations first, then in the declaration its `./zod` import binds it to;
 // `z.enum(<arg>)` yields the values of `<arg>`; spreads flatten in source
-// order (JS spread semantics). Anything unresolvable keeps the literal-only
-// shape (`enum: null`, `type: null`); the static-versus-runtime parity test in
+// order (JS spread semantics). The cross-file reach is one hop: a constant
+// that `./zod` itself re-exports from a third module is not followed. Anything
+// unresolvable keeps the literal-only shape (`enum: null`, `type: null`); the
+// static-versus-runtime parity test in
 // tests/unit/kie-pricing-reconciliation.test.ts is the loud failure for a new
 // form, so nothing throws here.
 const RESOLVE_DEPTH_LIMIT = 8;
@@ -212,15 +214,13 @@ function createDescriptorResolver(source) {
   for (const declaration of source.getImportDeclarations()) {
     const specifier = declaration.getModuleSpecifierValue();
     if (!specifier.startsWith(".")) continue;
-    let target = declaration.getModuleSpecifierSourceFile();
-    if (!target) {
-      const base = path.resolve(path.dirname(source.getFilePath()), specifier);
-      for (const candidate of [`${base}.ts`, path.join(base, "index.ts")]) {
-        target =
-          project.getSourceFile(candidate) ??
-          project.addSourceFileAtPathIfExists(candidate);
-        if (target) break;
-      }
+    let target;
+    const base = path.resolve(path.dirname(source.getFilePath()), specifier);
+    for (const candidate of [`${base}.ts`, path.join(base, "index.ts")]) {
+      target =
+        project.getSourceFile(candidate) ??
+        project.addSourceFileAtPathIfExists(candidate);
+      if (target) break;
     }
     if (!target) continue;
     for (const named of declaration.getNamedImports()) {

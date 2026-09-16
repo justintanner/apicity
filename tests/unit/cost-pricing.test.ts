@@ -4887,16 +4887,42 @@ describe("kie PixVerse V6 pricing", () => {
         kind: "perUnit",
         unit: "seconds",
         rates,
-        source: {
-          url: "https://api.kie.ai/client/v1/model-pricing/page",
-          asOf: "2026-08-22",
-        },
       });
       expect((MODEL_SLUGS.kie as Record<string, string>)[model]).toBe("pixv6");
       expect((MODEL_DISPLAY.kie as Record<string, string>)[model]).toBe(
         display
       );
     }
+  });
+
+  // The four entries cite the 2026-09-11 feed anchors on the PixVerse V6
+  // product page (ac-8a8b42); text-to-video shares image-to-video's deep link
+  // because the feed prices both directions on one "Text /Image to Video" row
+  // set. Pinning the whole `source` object makes a regression to the POST-only
+  // feed endpoint, a wrong tab and an `asOf` drift all fail here.
+  it.each([
+    {
+      model: "pixverse-v6/text-to-video",
+      url: "https://kie.ai/pixverse-v6?model=pixverse-v6%2Fimage-to-video",
+      asOf: "2026-08-22",
+    },
+    {
+      model: "pixverse-v6/image-to-video",
+      url: "https://kie.ai/pixverse-v6?model=pixverse-v6%2Fimage-to-video",
+      asOf: "2026-08-22",
+    },
+    {
+      model: "pixverse-v6/extend",
+      url: "https://kie.ai/pixverse-v6?model=pixverse-v6%2Fextend",
+      asOf: "2026-08-22",
+    },
+    {
+      model: "pixverse-v6/reference-to-video",
+      url: "https://kie.ai/pixverse-v6?model=pixverse-v6%2Freference-to-video",
+      asOf: "2026-08-22",
+    },
+  ])("pins the feed-anchor citation of $model", ({ model, url, asOf }) => {
+    expect(PRICING.kie[model].source).toEqual({ url, asOf });
   });
 
   it("fails closed without a billable duration or required audio selector", () => {

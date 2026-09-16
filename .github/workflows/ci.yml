@@ -74,6 +74,12 @@ jobs:
       - name: Verify generated examples are current
         run: pnpm run gen:examples:check
 
+      # Same ordering reason as doc-gen below: `pnpm run build` regenerates
+      # packages/cli/src/call-shapes.ts, so the drift check has to read the
+      # committed file first.
+      - name: Verify generated call shapes are current
+        run: pnpm run gen:call-shapes:check
+
       # Must run BEFORE the build: `pnpm run build` ends in `doc-gen`, which
       # rewrites the very files this step inspects, so a check placed after it
       # would compare regenerated output against itself and pass on a stale

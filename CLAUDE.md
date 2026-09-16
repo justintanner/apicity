@@ -48,6 +48,8 @@ pnpm run build:kimicoding        # Build single package (one alias per package; 
 pnpm run doc-gen                 # Regenerate every provider README
 pnpm run doc-gen:check           # Check generated READMEs for drift (part of ci:local)
 pnpm run doc-gen:kie             # Regenerate one provider README (one alias per provider; see below)
+pnpm run gen:call-shapes         # Regenerate packages/cli/src/call-shapes.ts from the endpoint sources
+pnpm run gen:call-shapes:check   # Check the generated call-shape table for drift (part of ci:local)
 pnpm run gen:kie-pricing-manifest # Regenerate the committed KIE pricing manifest
 pnpm run gen:kie-pricing-manifest:check # Check the KIE pricing manifest for drift
 pnpm run gen:shared              # Sync canonical shared/provider-src files into provider copies
@@ -76,7 +78,7 @@ pnpm run dev:preflight:fast -- <name-or-path> # fast provider gate: scoped forma
 pnpm run dev:preflight:provider <name-or-path> # explicit alias for the fast provider gate
 pnpm run dev:preflight:changed   # changed-file format/lint plus full typecheck + replay suite
 pnpm run dev:preflight           # full local gate: format + typecheck + lint:after-format + test:run
-pnpm run ci:local                # full CI-style gate: audit + gen:examples:check + doc-gen:check + build + typecheck:tests + lint + test:run
+pnpm run ci:local                # full CI-style gate: audit + gen:examples:check + gen:call-shapes:check + doc-gen:check + build + typecheck:tests + lint + test:run
 
 # Harness viewer + screenshots
 pnpm run harness                 # HAR viewer at localhost:3475 (all recordings)

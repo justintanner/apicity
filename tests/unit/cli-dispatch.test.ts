@@ -38,6 +38,9 @@ function capture(): Capture {
 describe("apicity dispatcher", () => {
   it("pins the built-in command list", () => {
     expect(BUILTIN_COMMANDS.map((command) => command.name)).toEqual([
+      "commands",
+      "describe",
+      "providers",
       "mcp",
       "help",
       "version",

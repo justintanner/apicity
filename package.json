@@ -14,7 +14,7 @@
     "examples/*"
   ],
   "scripts": {
-    "build": "pnpm run gen:examples && pnpm -r --filter './packages/**' run build && pnpm run doc-gen",
+    "build": "pnpm run gen:examples && pnpm run gen:call-shapes && pnpm -r --filter './packages/**' run build && pnpm run doc-gen",
     "build:dolthub": "pnpm --filter @apicity/dolthub run build",
     "build:dropbox": "pnpm --filter @apicity/dropbox run build",
     "build:google": "pnpm --filter @apicity/google run build",
@@ -48,6 +48,8 @@
     "gen:examples": "node scripts/extract-har-examples.mjs",
     "gen:examples:check": "node scripts/extract-har-examples.mjs --check",
     "gen:examples:report": "node scripts/extract-har-examples.mjs --report",
+    "gen:call-shapes": "node scripts/gen-call-shapes.mjs",
+    "gen:call-shapes:check": "node scripts/gen-call-shapes.mjs --check",
     "gen:kie-pricing-manifest": "node scripts/refresh-kie-pricing-manifest.mjs",
     "gen:kie-pricing-manifest:check": "node scripts/refresh-kie-pricing-manifest.mjs --check",
     "gen:shared": "node scripts/sync-shared-src.mjs",
@@ -130,7 +132,7 @@
     "dev:preflight:fast": "node scripts/preflight-provider.mjs",
     "dev:preflight:changed": "node scripts/preflight-changed.mjs",
     "dev:preflight:provider": "node scripts/preflight-provider.mjs",
-    "ci:local": "pnpm run audit && pnpm run gen:examples:check && pnpm run doc-gen:check && pnpm run build && pnpm run typecheck:tests && pnpm run lint && pnpm run test:run",
+    "ci:local": "pnpm run audit && pnpm run gen:examples:check && pnpm run gen:call-shapes:check && pnpm run doc-gen:check && pnpm run build && pnpm run typecheck:tests && pnpm run lint && pnpm run test:run",
     "audit": "node scripts/audit.mjs --audit-level=moderate",
     "audit:op-env": "node scripts/audit-op-env.mjs",
     "check:op": "op run --env-file=.env -- node scripts/check-op.mjs",

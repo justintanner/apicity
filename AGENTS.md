@@ -80,6 +80,8 @@ Method paths mirror upstream API URL paths segment-by-segment; kebab-case become
 ```bash
 pnpm install                     # Install dependencies
 pnpm run build                   # Build all packages
+pnpm run gen:call-shapes         # Regenerate packages/cli/src/call-shapes.ts from the endpoint sources
+pnpm run gen:call-shapes:check   # Check the generated call-shape table for drift (part of ci:local)
 pnpm run lint                    # Full lint: format check + ESLint + repo checks
 pnpm run lint:after-format       # Full lint minus format check; safe after pnpm run format
 pnpm run lint:provider -- <name-or-path> # Scoped ESLint + provider-relevant checks
@@ -95,7 +97,7 @@ pnpm run dev:preflight:fast -- <name-or-path> # Fast provider gate: scoped forma
 pnpm run dev:preflight:provider -- <name-or-path> # Explicit alias for the fast provider gate
 pnpm run dev:preflight:changed -- [paths...] # Changed-file format/lint plus full typecheck+test
 pnpm run dev:preflight           # Full local gate: format + typecheck + lint:after-format + test:run
-pnpm run ci:local                # Full CI-style gate: audit + gen:examples:check + doc-gen:check + build + typecheck:tests + lint + test:run
+pnpm run ci:local                # Full CI-style gate: audit + gen:examples:check + gen:call-shapes:check + doc-gen:check + build + typecheck:tests + lint + test:run
 pnpm run harness:telegram -- --dry-run # Preview per-endpoint Telegram messages (changed recordings)
 pnpm run harness:telegram -- --all <pattern> --dry-run # Preview ANY recording by name/path substring
 

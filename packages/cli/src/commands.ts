@@ -11,6 +11,15 @@ export interface BuiltinCommand {
  * here rather than declaring a second list.
  */
 export const BUILTIN_COMMANDS: readonly BuiltinCommand[] = [
+  {
+    name: "commands",
+    summary: "List every endpoint, or one provider's with --provider.",
+  },
+  {
+    name: "describe",
+    summary: "Show one endpoint's schema, example and call shape.",
+  },
+  { name: "providers", summary: "List providers, their env vars and status." },
   { name: "mcp", summary: "Serve every provider endpoint over MCP on stdio." },
   { name: "help", summary: "Print this message." },
   { name: "version", summary: "Print the @apicity/cli version." },

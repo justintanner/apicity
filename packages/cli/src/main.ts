@@ -5,14 +5,22 @@ import {
   type CliWriter,
 } from "./envelope.js";
 import { CliError } from "./errors.js";
+import { runCommands, runDescribe, runProviders } from "./discovery.js";
+import { isHelpTopic, printHelpTopic } from "./help.js";
 import { parseMcpArgs, runMcp } from "./mcp/cli.js";
+import { PROVIDERS } from "./providers.js";
 import { readPackageVersion } from "./version.js";
 
 /**
  * Dispatch one `apicity` invocation and answer its exit status.
  *
- * W1 knows `mcp`, `help` and `version`; every later slice adds its command
- * here and in `BUILTIN_COMMANDS` rather than introducing a second entrypoint.
+ * W1 knew `mcp`, `help` and `version`; W2 adds the three discovery commands,
+ * the help topics and the `apicity <provider>` shorthand. Every later slice
+ * adds its command here and in `BUILTIN_COMMANDS` rather than introducing a
+ * second entrypoint.
+ *
+ * Failures surface as the error envelope with the code's exit status: the
+ * commands below raise `CliError` and never print a stack.
  */
 export async function runMain(
   argv: string[],
@@ -20,14 +28,40 @@ export async function runMain(
 ): Promise<number> {
   const [first, ...rest] = argv;
 
+  if (first === "mcp") return serveMcp(rest);
+
+  try {
+    return await dispatch(first, rest, writer);
+  } catch (err) {
+    if (err instanceof CliError) return writeError(writer, err);
+    throw err;
+  }
+}
+
+async function dispatch(
+  first: string | undefined,
+  rest: string[],
+  writer: CliWriter
+): Promise<number> {
   if (
     first === undefined ||
-    first === "help" ||
     first === "--help" ||
-    first === "-h"
+    first === "-h" ||
+    (first === "help" && rest.length === 0)
   ) {
     printUsage(writer);
     return 0;
+  }
+
+  if (first === "help") {
+    const [topic] = rest;
+    if (topic !== undefined && isHelpTopic(topic)) {
+      printHelpTopic(writer, topic);
+      return 0;
+    }
+    throw new CliError("not_found", `unknown help topic: ${topic}`, {
+      hint: "run: apicity help",
+    });
   }
 
   if (first === "version" || first === "--version") {
@@ -35,14 +69,86 @@ export async function runMain(
     return 0;
   }
 
-  if (first === "mcp") return serveMcp(rest);
+  const flags = parseFlags(rest);
 
-  return writeError(
-    writer,
-    new CliError("not_found", `unknown command: ${first}`, {
-      hint: "run: apicity providers",
-    })
-  );
+  if (first === "commands") {
+    return runCommands(writer, {
+      json: flags.json,
+      provider: flags.options.provider,
+    });
+  }
+
+  if (first === "providers") {
+    return runProviders(writer, { json: flags.json });
+  }
+
+  if (first === "describe") {
+    const [provider, dotPath] = flags.positional;
+    if (provider === undefined || dotPath === undefined) {
+      throw new CliError("usage", "describe needs a provider and a dotPath", {
+        hint: "run: apicity describe <provider> <dotPath> [--method GET]",
+      });
+    }
+    return runDescribe(writer, provider, dotPath, {
+      json: flags.json,
+      method: flags.options.method,
+    });
+  }
+
+  // `apicity openai` is `apicity commands --provider openai`: the first thing
+  // anyone types after learning a provider exists.
+  if (Object.prototype.hasOwnProperty.call(PROVIDERS, first)) {
+    return runCommands(writer, { json: flags.json, provider: first });
+  }
+
+  throw new CliError("not_found", `unknown command: ${first}`, {
+    hint: "run: apicity providers",
+  });
+}
+
+interface ParsedFlags {
+  positional: string[];
+  options: Record<string, string>;
+  json: boolean;
+}
+
+/**
+ * Split `--flag value`, `--flag=value` and bare `--json` out of the argv tail.
+ *
+ * Deliberately small: W2's commands take a handful of string options and no
+ * repeated or negated flags. W3 replaces this with the full parser the call
+ * path needs.
+ */
+function parseFlags(argv: string[]): ParsedFlags {
+  const positional: string[] = [];
+  const options: Record<string, string> = {};
+  let json = false;
+
+  for (let i = 0; i < argv.length; i++) {
+    const arg = argv[i];
+    if (!arg.startsWith("--")) {
+      positional.push(arg);
+      continue;
+    }
+    const body = arg.slice(2);
+    if (body === "json") {
+      json = true;
+      continue;
+    }
+    const eq = body.indexOf("=");
+    if (eq !== -1) {
+      options[body.slice(0, eq)] = body.slice(eq + 1);
+      continue;
+    }
+    const next = argv[i + 1];
+    if (next === undefined || next.startsWith("--")) {
+      throw new CliError("usage", `${arg} needs a value`);
+    }
+    options[body] = next;
+    i++;
+  }
+
+  return { positional, options, json };
 }
 
 /**

@@ -143,7 +143,7 @@ function walkPath(root: unknown, segments: string[]): EndpointFn | null {
 // namespace at the root, but `fal` nests POSTs under `.run.*` as well, `free`
 // has no method namespace at all, and `kie` re-exports endpoints under
 // per-sub-provider roots (`claude`, `veo`, `suno`, `chat`).
-function resolveEndpointFn(
+export function resolveEndpointFn(
   provider: InstantiatedProvider,
   method: string,
   dotPath: string

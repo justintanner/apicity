@@ -1,5 +1,6 @@
 import { BUILTIN_COMMANDS } from "./commands.js";
 import type { CliError } from "./errors.js";
+import { helpTopicsLine } from "./help.js";
 
 /**
  * The two output streams, injected so tests can read what an invocation
@@ -55,6 +56,9 @@ export function usageText(): string {
     "Commands:",
     ...BUILTIN_COMMANDS.map((c) => `  ${c.name.padEnd(width)}  ${c.summary}`),
     "",
+    "  apicity <provider>            shorthand for: commands --provider <provider>",
+    "",
+    helpTopicsLine(),
     'Run "apicity mcp --help" for the MCP server flags.',
   ].join("\n");
 }

@@ -55,3 +55,50 @@ export {
   guessExtension,
   isBinary,
 } from "./output.js";
+export {
+  CALL_SHAPES,
+  callShapeKey,
+  type CallShape,
+  type CallShapeField,
+  type CallShapePositional,
+} from "./call-shapes.js";
+export {
+  callShapeFor,
+  findEntries,
+  loadCatalog,
+  selectEntry,
+  type CatalogEntry,
+  type LoadCatalogOptions,
+} from "./catalog.js";
+export {
+  isProviderConfigured,
+  providerEnvVars,
+  providerNames,
+} from "./credentials.js";
+export {
+  describeEndpoint,
+  instantiateForIntrospection,
+  listProviders,
+  runCommands,
+  runDescribe,
+  runProviders,
+  type CommandsOptions,
+  type DescribeOptions,
+  type DiscoveryOptions,
+  type EndpointDescription,
+  type ProviderLoader,
+  type ProviderSummary,
+} from "./discovery.js";
+export {
+  exitCodeTable,
+  helpTopicText,
+  helpTopicsLine,
+  isHelpTopic,
+  printHelpTopic,
+  HELP_TOPICS,
+  type HelpTopic,
+} from "./help.js";
+export { EXIT_CODES, CliError, type CliErrorCode } from "./errors.js";
+export { BUILTIN_COMMANDS, type BuiltinCommand } from "./commands.js";
+export { runMain } from "./main.js";
+export { usageText, type CliWriter } from "./envelope.js";

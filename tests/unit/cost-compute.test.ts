@@ -1463,5 +1463,36 @@ describe("computeEstimate", () => {
       expect("costHints" in payload).toBe(false);
       expect("durationSeconds" in payload).toBe(false);
     });
+    it("keeps inputDurationSeconds off the wire for a wan 3.0 reference-video payload", () => {
+      const payload = {
+        model: "wan/3-0-video",
+        input: {
+          prompt: "x",
+          resolution: "720P",
+          duration: 5,
+          reference_video_urls: ["https://example.com/clip.mp4"],
+        },
+      };
+      const snapshot = structuredClone(payload);
+      const before = canonicalHash(payload);
+
+      const unhinted = computeEstimate({ provider: "kie" as const, payload });
+      const hinted = computeEstimate({
+        provider: "kie" as const,
+        payload,
+        costHints: { inputDurationSeconds: 10 },
+      });
+      const after = canonicalHash(payload);
+
+      // The hint did change the figure — otherwise this test would pass on a
+      // path that never reads costHints.inputDurationSeconds at all.
+      expect(unhinted.usd).toBe(0);
+      expect(hinted.usd).toBeCloseTo(1.2, 10); // (5 + 10) * 0.08
+
+      expect(after).toBe(before);
+      expect(payload).toEqual(snapshot);
+      expect("costHints" in payload).toBe(false);
+      expect("inputDurationSeconds" in payload.input).toBe(false);
+    });
   });
 });

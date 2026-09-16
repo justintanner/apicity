@@ -3823,6 +3823,296 @@ describe("kie wan 2.2 / 2.5 per-model pricing (REQ-004)", () => {
     expect(PRICING.kie[model].source).toEqual({ url, asOf });
   });
 
+  // Wan 3.0 bills (input video duration + output video duration) × the
+  // per-second rate (https://kie.ai/wan3.0-video and
+  // https://kie.ai/wan3.0-video-prime, confirmed 2026-09-16, ac-ge9l10). The
+  // reference clips are URLs with no duration in the request, so the caller
+  // declares their total length as costHints.inputDurationSeconds; a
+  // reference-video request without it fails closed instead of quoting the
+  // output-only figure the page says is wrong.
+  describe("kie wan 3.0 input-plus-output duration billing", () => {
+    const clip = ["https://example.com/clip.mp4"];
+    const expectInputRuleFailure = (
+      result: ReturnType<typeof kieEstimate>,
+      model: string
+    ) => {
+      expect(result.usd).toBe(0);
+      expect(result.breakdown).toEqual({});
+      expect(result.source).toBe("per-unit-table");
+      expect(result.rateAsOf).toBe(PRICING_AS_OF);
+      expect(result.warnings).toHaveLength(1);
+      for (const needle of [
+        model,
+        "reference_video_urls",
+        "input video duration",
+        "inputDurationSeconds",
+      ]) {
+        expect(result.warnings[0]).toContain(needle);
+      }
+    };
+
+    it("fails a reference-video request closed without the input hint (EX-2)", () => {
+      const result = kieEstimate({
+        model: "wan/3-0-video",
+        input: {
+          prompt: "x",
+          resolution: "720P",
+          duration: 5,
+          reference_video_urls: clip,
+        },
+      });
+      expectInputRuleFailure(result, "wan/3-0-video");
+    });
+
+    it.each([
+      {
+        label: "EX-3 standard 720P, 5 s output + 10 s of clips",
+        model: "wan/3-0-video",
+        input: { resolution: "720P", duration: 5, reference_video_urls: clip },
+        costHints: { inputDurationSeconds: 10 },
+        units: 15,
+        perUnitUsd: 0.08,
+        rateAsOf: "2026-09-11",
+      },
+      {
+        label: "EX-4 prime 1080P, 10 s output + 15 s of clips",
+        model: "wan/3-0-video-prime",
+        input: {
+          resolution: "1080P",
+          duration: 10,
+          reference_video_urls: [...clip, ...clip],
+        },
+        costHints: { inputDurationSeconds: 15 },
+        units: 25,
+        perUnitUsd: 0.252,
+        rateAsOf: "2026-08-25",
+      },
+      {
+        label: "EX-8 the -1 sentinel with both hints",
+        model: "wan/3-0-video",
+        input: { resolution: "720P", duration: -1, reference_video_urls: clip },
+        costHints: { durationSeconds: 8, inputDurationSeconds: 4 },
+        units: 12,
+        perUnitUsd: 0.08,
+        rateAsOf: "2026-09-11",
+      },
+      {
+        label: "EX-14 the 1080P default, 5 s output + 3 s of clips",
+        model: "wan/3-0-video",
+        input: { duration: 5, reference_video_urls: clip },
+        costHints: { inputDurationSeconds: 3 },
+        units: 8,
+        perUnitUsd: 0.16,
+        rateAsOf: "2026-09-11",
+      },
+    ])(
+      "prices $label as (output + input) seconds × rate",
+      ({ model, input, costHints, units, perUnitUsd, rateAsOf }) => {
+        const result = kieEstimate(
+          { model, input: { prompt: "x", ...input } },
+          { costHints }
+        );
+        expect(result.usd).toBeCloseTo(units * perUnitUsd, 10);
+        expect(result.breakdown).toEqual({
+          units,
+          unit: "seconds",
+          perUnitUsd,
+        });
+        expect(result.rateAsOf).toBe(rateAsOf);
+        expect(result.warnings).toEqual([]);
+      }
+    );
+
+    it.each([
+      {
+        label: "EX-7 the -1 sentinel with only the output hint",
+        input: { resolution: "720P", duration: -1, reference_video_urls: clip },
+        costHints: { durationSeconds: 8 } as CostHints | undefined,
+      },
+      {
+        label: "EX-12 a reference_video_urls that is not an array",
+        input: {
+          resolution: "720P",
+          duration: 5,
+          reference_video_urls: "https://example.com/clip.mp4",
+        },
+        costHints: undefined,
+      },
+      {
+        label: "EX-13 a zero input hint",
+        input: { resolution: "720P", duration: 5, reference_video_urls: clip },
+        costHints: { inputDurationSeconds: 0 },
+      },
+      {
+        label: "EX-13 a negative input hint",
+        input: { resolution: "720P", duration: 5, reference_video_urls: clip },
+        costHints: { inputDurationSeconds: -3 },
+      },
+      {
+        label: "EX-13 a non-numeric input hint",
+        input: { resolution: "720P", duration: 5, reference_video_urls: clip },
+        costHints: { inputDurationSeconds: "4" } as unknown as CostHints,
+      },
+    ])(
+      "fails $label closed with the input-duration warning",
+      ({ input, costHints }) => {
+        const result = kieEstimate(
+          { model: "wan/3-0-video", input: { prompt: "x", ...input } },
+          costHints ? { costHints } : {}
+        );
+        expectInputRuleFailure(result, "wan/3-0-video");
+      }
+    );
+
+    it.each([
+      {
+        label: "EX-1 a text-only request",
+        input: { resolution: "720P", duration: 5 },
+        costHints: undefined as CostHints | undefined,
+        units: 5,
+        perUnitUsd: 0.08,
+      },
+      {
+        label: "EX-6 the -1 sentinel with durationSeconds and no clips",
+        input: { resolution: "720P", duration: -1 },
+        costHints: { durationSeconds: 8 },
+        units: 8,
+        perUnitUsd: 0.08,
+      },
+      {
+        label: "EX-9 a document input (reference_file_urls is not video)",
+        input: {
+          resolution: "480P",
+          duration: 2,
+          reference_file_urls: ["https://example.com/brief.pdf"],
+        },
+        costHints: undefined,
+        units: 2,
+        perUnitUsd: 0.04,
+      },
+      {
+        label: "EX-10 an input hint with no video input",
+        input: { resolution: "720P", duration: 5 },
+        costHints: { inputDurationSeconds: 10 },
+        units: 5,
+        perUnitUsd: 0.08,
+      },
+      {
+        label: "EX-11 an empty reference_video_urls",
+        input: { resolution: "720P", duration: 5, reference_video_urls: [] },
+        costHints: undefined,
+        units: 5,
+        perUnitUsd: 0.08,
+      },
+      {
+        label: "a null reference_video_urls",
+        input: { resolution: "720P", duration: 5, reference_video_urls: null },
+        costHints: undefined,
+        units: 5,
+        perUnitUsd: 0.08,
+      },
+    ])(
+      "leaves $label at the output-only figure with no warning",
+      ({ input, costHints, units, perUnitUsd }) => {
+        const result = kieEstimate(
+          { model: "wan/3-0-video", input: { prompt: "x", ...input } },
+          costHints ? { costHints } : {}
+        );
+        expect(result.usd).toBeCloseTo(units * perUnitUsd, 10);
+        expect(result.breakdown).toEqual({
+          units,
+          unit: "seconds",
+          perUnitUsd,
+        });
+        expect(result.rateAsOf).toBe("2026-09-11");
+        expect(result.warnings).toEqual([]);
+      }
+    );
+
+    it.each([
+      {
+        label: "EX-5 the -1 sentinel with no hint and no clips",
+        input: { resolution: "720P", duration: -1 },
+        costHints: undefined as CostHints | undefined,
+      },
+      {
+        label: "the -1 sentinel with clips and only the input hint",
+        input: { resolution: "720P", duration: -1, reference_video_urls: clip },
+        costHints: { inputDurationSeconds: 4 },
+      },
+      {
+        label: "an omitted duration with clips and the input hint",
+        input: { resolution: "720P", reference_video_urls: clip },
+        costHints: { inputDurationSeconds: 4 },
+      },
+    ])(
+      "keeps the generic could-not-derive-units warning for $label",
+      ({ input, costHints }) => {
+        const result = kieEstimate(
+          { model: "wan/3-0-video", input: { prompt: "x", ...input } },
+          costHints ? { costHints } : {}
+        );
+        expect(result.usd).toBe(0);
+        expect(result.breakdown).toEqual({});
+        expect(result.warnings).toHaveLength(1);
+        expect(result.warnings[0]).toContain("could not derive units");
+        expect(result.warnings[0]).toContain("costHints.durationSeconds");
+        expect(result.warnings[0]).not.toContain("inputDurationSeconds");
+      }
+    );
+
+    // EX-15: the five representative payloads the committed pricing manifest
+    // reconciles carry no clips, so the guard's figures cannot move.
+    it.each([
+      {
+        model: "wan/3-0-video",
+        resolution: "480P",
+        perUnitUsd: 0.04,
+        rateAsOf: "2026-09-11",
+      },
+      {
+        model: "wan/3-0-video",
+        resolution: "1080P",
+        perUnitUsd: 0.16,
+        rateAsOf: "2026-09-11",
+      },
+      {
+        model: "wan/3-0-video-prime",
+        resolution: "480P",
+        perUnitUsd: 0.0612,
+        rateAsOf: "2026-08-25",
+      },
+      {
+        model: "wan/3-0-video-prime",
+        resolution: "720P",
+        perUnitUsd: 0.126,
+        rateAsOf: "2026-08-25",
+      },
+      {
+        model: "wan/3-0-video-prime",
+        resolution: "1080P",
+        perUnitUsd: 0.252,
+        rateAsOf: "2026-08-25",
+      },
+    ])(
+      "prices the manifest's $model $resolution audit payload as before",
+      ({ model, resolution, perUnitUsd, rateAsOf }) => {
+        const result = kieEstimate({
+          model,
+          input: { resolution, duration: 5, prompt: "audit" },
+        });
+        expect(result.usd).toBeCloseTo(5 * perUnitUsd, 10);
+        expect(result.breakdown).toEqual({
+          units: 5,
+          unit: "seconds",
+          perUnitUsd,
+        });
+        expect(result.rateAsOf).toBe(rateAsOf);
+        expect(result.warnings).toEqual([]);
+      }
+    );
+  });
+
   // One representative payload per priced model, each routed through the
   // shipped schema first so the USD figure is evidence about the SDK's own
   // output rather than about a literal written to match the table.

@@ -153,6 +153,7 @@ infers it; the caller usually knows it; the payload has nowhere to put it.
 ```ts
 interface CostHints {
   durationSeconds?: number;
+  inputDurationSeconds?: number;
   googleFlowPlan?: "pro" | "ultra" | (string & {});
 }
 ```
@@ -221,6 +222,55 @@ both reach the hint exactly like an omitted field would.
 
 Every other per-second entry reads a real wire duration; passing `costHints`
 alongside one is harmless — the wire field wins.
+
+### Input video duration (kie Wan 3.0)
+
+Two kie entries bill on **both** sides of the request: the product pages for
+`wan/3-0-video` and `wan/3-0-video-prime` print the rule "(input video
+duration + output video duration) × unit price" (confirmed 2026-09-16), and the
+input side is the summed length of the `reference_video_urls` clips (each
+1–15 s, at most 15 s in total, input + output at most 30 s). The clips are
+URLs, so the request carries no input duration; `costHints.inputDurationSeconds`
+is how the caller declares it:
+
+```ts
+const payload = {
+  model: "wan/3-0-video",
+  input: {
+    prompt: "...",
+    resolution: "720P",
+    duration: 5,
+    reference_video_urls: ["https://.../clip.mp4"], // a 10 s clip
+  },
+};
+
+c.estimate({ provider: "kie", payload });
+// → usd: 0, warnings: ["kie 'wan/3-0-video': reference_video_urls carry no clip duration in the request and the page bills (input video duration + output video duration) x rate; declare the clips' total length as costHints.inputDurationSeconds"]
+
+c.estimate({
+  provider: "kie",
+  payload,
+  costHints: { inputDurationSeconds: 10 },
+});
+// → usd: 1.2, breakdown: { units: 15, unit: "seconds", perUnitUsd: 0.08 } — (5 + 10) s × $0.08
+```
+
+Without the hint a reference-video request **fails closed** (`usd: 0` and one
+warning naming the field) rather than quoting the output-only figure the page
+says is wrong. With no video input — text, images, audio, a document or a
+link — the hint is ignored and the estimate is unchanged, exactly as
+`costHints.durationSeconds` is ignored beside a wire `duration`. Output seconds
+still resolve as above (the wire `duration` first, `costHints.durationSeconds`
+for the `-1` sentinel), so a sentinel request with clips needs both hints. A
+zero, negative or non-numeric value counts as absent. Like every `costHints`
+field it is cost-only: never merged into `payload`, never sent upstream, never
+canonicalized or signed — see [Hash and OTP guarantee](#hash-and-otp-guarantee)
+below.
+
+| Provider | Pricing key           | Input side follows                 |
+| -------- | --------------------- | ---------------------------------- |
+| `kie`    | `wan/3-0-video`       | `reference_video_urls` clip length |
+| `kie`    | `wan/3-0-video-prime` | `reference_video_urls` clip length |
 
 ### Plan tier (googleflow)
 

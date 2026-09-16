@@ -49,3 +49,14 @@ export function hintSeconds(hints?: CostHints): number | undefined {
   const n = asNumber(hints?.durationSeconds);
   return n !== undefined && n > 0 ? n : undefined;
 }
+
+// Reads the caller-declared total length of the request's VIDEO INPUTS out of
+// the cost-only hint channel, for the kie entries that bill
+// (input video duration + output video duration) x unit price. Same
+// acceptance rule as hintSeconds: a zero, negative or non-numeric value is
+// treated as ABSENT, so the entry fails closed rather than pricing a negative
+// or NaN input length.
+export function hintInputSeconds(hints?: CostHints): number | undefined {
+  const n = asNumber(hints?.inputDurationSeconds);
+  return n !== undefined && n > 0 ? n : undefined;
+}

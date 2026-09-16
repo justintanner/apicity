@@ -54,6 +54,16 @@ export interface CostEstimate {
 // breaking change.
 export interface CostHints {
   durationSeconds?: number;
+  // Declared total length, in seconds, of the request's video INPUTS, for the
+  // kie entries that bill (input video duration + output video duration) x
+  // unit price — today the two Wan 3.0 models, whose `reference_video_urls`
+  // clips are URLs and carry no duration in the request. Ignored when the
+  // payload has no video input; a zero, negative, non-finite or non-numeric
+  // value counts as absent, and a reference-video request with no valid value
+  // fails closed with a warning that names this field. Cost-only, like the
+  // rest of CostHints: never merged into payload, never canonicalHash'd, never
+  // signed.
+  inputDurationSeconds?: number;
   // Google Flow plan tier that sets the googleflow credit->USD basis. Omitted
   // => "pro" (the safe over-estimate default, byte-for-byte the pre-selector
   // output); "ultra" prices on the Google AI Ultra 20x basis. The (string & {})

@@ -3746,6 +3746,83 @@ describe("kie wan 2.2 / 2.5 per-model pricing (REQ-004)", () => {
     });
   });
 
+  // Liveness sweep of every PRICING.kie source.url on 2026-09-16 (ac-c2n4pa):
+  // all 83 `?model=` source URLs answered HTTP 200 with a pricingDesc on the
+  // page, so the wan 2.2 / 2.5 / 2.6 / 2.7 deep links below are pinned as they
+  // are; the two Gemini TTS slugs answered HTTP 404 and now cite the
+  // 2026-09-11 feed anchors. Pinning the whole `source` object makes a
+  // dead-slug regression, a `?model=` regression and an unintended `asOf`
+  // drift all fail here, as the Wan 3.0 pin above does (ac-8zpa7l).
+  it.each([
+    {
+      model: "wan/2-2-a14b-text-to-video-turbo",
+      url: "https://kie.ai/wan/v2-2?model=wan%2F2-2-a14b-text-to-video-turbo",
+      asOf: "2026-08-06",
+    },
+    {
+      model: "wan/2-2-a14b-image-to-video-turbo",
+      url: "https://kie.ai/wan/v2-2?model=wan%2F2-2-a14b-image-to-video-turbo",
+      asOf: "2026-08-06",
+    },
+    {
+      model: "wan/2-5-text-to-video",
+      url: "https://kie.ai/wan-2-5?model=wan%2F2-5-text-to-video",
+      asOf: "2026-08-06",
+    },
+    {
+      model: "wan/2-5-image-to-video",
+      url: "https://kie.ai/wan-2-5?model=wan%2F2-5-image-to-video",
+      asOf: "2026-08-06",
+    },
+    {
+      model: "wan/2-6-text-to-video",
+      url: "https://kie.ai/wan-2-6?model=wan%2F2-6-text-to-video",
+      asOf: "2026-08-07",
+    },
+    {
+      model: "wan/2-6-image-to-video",
+      url: "https://kie.ai/wan-2-6?model=wan%2F2-6-image-to-video",
+      asOf: "2026-08-07",
+    },
+    {
+      model: "wan/2-6-video-to-video",
+      url: "https://kie.ai/wan-2-6?model=wan%2F2-6-video-to-video",
+      asOf: "2026-08-07",
+    },
+    {
+      model: "wan/2-7-text-to-video",
+      url: "https://kie.ai/wan-2-7-video?model=wan%2F2-7-text-to-video",
+      asOf: "2026-08-06",
+    },
+    {
+      model: "wan/2-7-image-to-video",
+      url: "https://kie.ai/wan-2-7-video?model=wan%2F2-7-image-to-video",
+      asOf: "2026-08-06",
+    },
+    {
+      model: "wan/2-7-r2v",
+      url: "https://kie.ai/wan-2-7-video?model=wan%2F2-7-r2v",
+      asOf: "2026-08-06",
+    },
+    {
+      model: "wan/2-7-videoedit",
+      url: "https://kie.ai/wan-2-7-video?model=wan%2F2-7-videoedit",
+      asOf: "2026-08-06",
+    },
+    {
+      model: "google/gemini-2-5-pro-tts",
+      url: "https://kie.ai/gemini-2.5-pro-preview-tts",
+      asOf: "2026-08-22",
+    },
+    {
+      model: "google/gemini-3-1-flash-tts",
+      url: "https://kie.ai/gemini-3.1-flash-tts",
+      asOf: "2026-08-22",
+    },
+  ])("pins the swept source citation of $model", ({ model, url, asOf }) => {
+    expect(PRICING.kie[model].source).toEqual({ url, asOf });
+  });
+
   // One representative payload per priced model, each routed through the
   // shipped schema first so the USD figure is evidence about the SDK's own
   // output rather than about a literal written to match the table.

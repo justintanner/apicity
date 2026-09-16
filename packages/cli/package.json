@@ -1,12 +1,12 @@
 {
-  "name": "@apicity/mcp-server",
+  "name": "@apicity/cli",
   "version": "0.11.2",
-  "description": "Optional MCP (Model Context Protocol) server that exposes every @apicity provider endpoint as a tool.",
+  "description": "Command-line interface and agent skill for every @apicity provider endpoint; `apicity mcp` serves the same endpoints as MCP tools.",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/justintanner/apicity.git",
-    "directory": "mcp-server"
+    "directory": "cli"
   },
   "publishConfig": {
     "access": "public"
@@ -15,7 +15,8 @@
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "bin": {
-    "apicity-mcp": "dist/src/bin.js"
+    "apicity": "dist/src/bin.js",
+    "apicity-mcp": "dist/src/mcp-bin.js"
   },
   "exports": {
     ".": {
@@ -25,12 +26,17 @@
   },
   "files": [
     "dist",
+    "skills",
     "README.md",
     "LICENSE"
   ],
   "sideEffects": false,
   "keywords": [
     "ai",
+    "cli",
+    "agent-skills",
+    "claude-code",
+    "codex",
     "mcp",
     "model-context-protocol",
     "apicity",

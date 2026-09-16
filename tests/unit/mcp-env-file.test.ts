@@ -3,17 +3,14 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
 
-import {
-  loadEnvFile,
-  parseEnvFile,
-} from "../../packages/mcp-server/src/env-file";
-import { fillOnePasswordEnv } from "../../packages/mcp-server/src/one-password";
+import { loadEnvFile, parseEnvFile } from "../../packages/cli/src/env-file";
+import { fillOnePasswordEnv } from "../../packages/cli/src/one-password";
 import {
   instantiateProvider,
   polymarketOptionsFromEnv,
   POLYMARKET_ENV_VARS,
   PROVIDERS,
-} from "../../packages/mcp-server/src/providers";
+} from "../../packages/cli/src/providers";
 
 const dir = mkdtempSync(join(tmpdir(), "apicity-env-file-"));
 

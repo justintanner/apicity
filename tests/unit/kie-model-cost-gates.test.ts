@@ -8,7 +8,7 @@ import {
   PAID_ENDPOINTS,
   PRICING,
 } from "@apicity/cost";
-import { loadCostHelpers } from "../../packages/mcp-server/src/cost";
+import { loadCostHelpers } from "../../packages/cli/src/cost";
 
 /**
  * Stage 3 (REQ-005 / AC-5) — KIE/MCP per-model cost gates + registry drift.
@@ -33,7 +33,7 @@ import { loadCostHelpers } from "../../packages/mcp-server/src/cost";
  * `packages/provider/cost/src/paid-endpoints.ts` is kept in lockstep with its
  * generated copies (`packages/provider/{kie,xai}/src/paid-endpoints.ts`) by
  * `pnpm run gen:shared` and verified by `gen:shared:check` (part of
- * `pnpm run lint`). `@apicity/mcp-server` holds NO static cost registry — it
+ * `pnpm run lint`). `@apicity/cli` holds NO static cost registry — it
  * imports `@apicity/cost` at runtime via `loadCostHelpers()`, so it cannot
  * drift by construction. The final block below asserts that runtime view agrees
  * with `@apicity/cost` for these endpoints (the MCP-registry drift check).
@@ -180,10 +180,10 @@ describe("KIE per-model cost gates (REQ-005 / AC-5)", () => {
   });
 
   describe("MCP-registry drift check", () => {
-    it("mcp-server's runtime paid-endpoint view matches @apicity/cost", async () => {
+    it("the CLI's runtime paid-endpoint view matches @apicity/cost", async () => {
       const helpers = await loadCostHelpers();
 
-      // Same registry object surface (no static mcp-server copy to drift).
+      // Same registry object surface (no static CLI-side copy to drift).
       expect(helpers.PAID_ENDPOINTS.length).toBe(PAID_ENDPOINTS.length);
 
       // The umbrella createTask is paid in both views.
@@ -194,7 +194,7 @@ describe("KIE per-model cost gates (REQ-005 / AC-5)", () => {
         true
       );
 
-      // Family endpoints agree between cost package and mcp-server view.
+      // Family endpoints agree between cost package and the CLI's view.
       for (const dotPath of ALL_FAMILY_ENDPOINTS) {
         expect(helpers.isPaidEndpoint("kie", "POST", dotPath)).toBe(
           isPaidEndpoint("kie", "POST", dotPath)

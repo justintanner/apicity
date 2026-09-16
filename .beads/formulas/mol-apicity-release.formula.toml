@@ -10,7 +10,7 @@ Before touching `stable` or publishing, the formula first verifies that the
 current `origin/main` passes local tests, the local CI mirror, and GitHub CI.
 
 The formula publishes every public @apicity/* workspace package in one go:
-providers under packages/provider/* plus packages/mcp-server. The package set
+providers under packages/provider/* plus packages/cli. The package set
 is discovered from package manifests so newly added packages ship with the
 rest. All ship under one three-part version and the npm `latest` tag.
 
@@ -325,7 +325,7 @@ const fs = require("fs");
 
 function readPublishablePackages() {
   const dirs = [
-    "packages/mcp-server",
+    "packages/cli",
     ...fs
       .readdirSync("packages/provider", { withFileTypes: true })
       .filter((entry) => entry.isDirectory())
@@ -372,7 +372,7 @@ const fs = require("fs");
 
 function readPublishablePackageJsonPaths() {
   const dirs = [
-    "packages/mcp-server",
+    "packages/cli",
     ...fs
       .readdirSync("packages/provider", { withFileTypes: true })
       .filter((entry) => entry.isDirectory())
@@ -407,14 +407,35 @@ console.log(`✓ all ${packageJsonPaths.length} at {{version}}`);
 NODE
 ```
 
+Bump the Claude Code plugin manifest to the same version. It is not a
+`package.json`, so the loop above does not reach it, and
+`tests/unit/cli-plugin.test.ts` fails CI when it lags the CLI package:
+
+```bash
+node <<'NODE'
+const fs = require("fs");
+const path = ".claude-plugin/plugin.json";
+const manifest = JSON.parse(fs.readFileSync(path, "utf8"));
+manifest.version = "{{version}}";
+fs.writeFileSync(path, JSON.stringify(manifest, null, 2) + "\n");
+const cli = JSON.parse(fs.readFileSync("packages/cli/package.json", "utf8"));
+if (manifest.version !== cli.version) {
+  console.log("WRONG: plugin", manifest.version, "!= cli", cli.version);
+  process.exit(1);
+}
+console.log(`✓ .claude-plugin/plugin.json at ${manifest.version}`);
+NODE
+```
+
 **Commit the bump:**
 ```bash
-git add packages/mcp-server/package.json packages/provider/*/package.json
+git add packages/cli/package.json packages/provider/*/package.json .claude-plugin/plugin.json
 git commit -m "chore(release): @apicity/* → {{version}}"
 ```
 
 **Exit criteria:** Every public `@apicity/*` package passes publish-ready
-checks, every manifest is at `{{version}}`, and the release bump is committed.
+checks, every manifest is at `{{version}}`, `.claude-plugin/plugin.json` is at
+`{{version}}` too, and the release bump is committed.
 
 # Sub-step 5: Inspect tarballs with --dry-run (dry_run stops here)
 
@@ -422,7 +443,7 @@ Preview every tarball before sending real bytes. This catches:
   - tarballs that ship `tests/recordings/` (they shouldn't — `files` is dist-only)
   - missing `dist/`, `README.md`, or `LICENSE`
   - secrets accidentally left in source
-  - mcp-server's `bin.js` not present or missing shebang
+  - cli's `dist/src/bin.js` and `dist/src/mcp-bin.js` not present or missing shebang
 
 ```bash
 pnpm -r --filter "@apicity/*" publish --dry-run --tag latest --no-git-checks 2>&1 | tee /tmp/apicity-dry-run.log
@@ -434,7 +455,7 @@ pnpm -r --filter "@apicity/*" publish --dry-run --tag latest --no-git-checks 2>&
     `LICENSE`, and `package.json` — and nothing else. No `tests/`, no
     `.env*`, no `*.har` recordings.
   - File counts and total size look reasonable (anything >10MB is suspicious).
-  - For `@apicity/mcp-server`, the `dist/src/bin.js` entry is present.
+  - For `@apicity/cli`, the `dist/src/bin.js` entry is present.
 
 If anything looks off, STOP. Investigate before publishing for real.
 
@@ -496,7 +517,7 @@ that may not yet have an upstream tag (the next step handles that).
 **4. Verify on the registry:**
 ```bash
 npm view @apicity/openai dist-tags    # expect latest: {{version}}
-npm view @apicity/mcp-server dist-tags
+npm view @apicity/cli dist-tags
 ```
 
 If publish fails partway through (network, auth lapse), some packages may

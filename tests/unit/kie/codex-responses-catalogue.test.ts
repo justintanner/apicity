@@ -8,7 +8,7 @@ import {
 import {
   zodToJsonSchema,
   type JsonSchema,
-} from "../../../packages/mcp-server/src/schema";
+} from "../../../packages/cli/src/schema";
 
 // The four kie Responses catalogue ids confirmed live on 2026-08-28: each was
 // posted to both Responses surfaces, `POST /codex/v1/responses` streamed

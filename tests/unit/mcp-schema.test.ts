@@ -8,7 +8,7 @@ import {
   isOptionalZodSchema,
   zodToJsonSchema,
   type JsonSchema,
-} from "../../packages/mcp-server/src/schema";
+} from "../../packages/cli/src/schema";
 import {
   AlibabaMultimodalGenerationRequestSchema,
   AlibabaQwenImageEditSlotsSchema,

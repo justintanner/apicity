@@ -169,7 +169,7 @@ function bd(args) {
 
 export function readPackages() {
   const dirs = [
-    "packages/mcp-server",
+    "packages/cli",
     ...readdirSync("packages/provider", { withFileTypes: true })
       .filter((entry) => entry.isDirectory())
       .map((entry) => `packages/provider/${entry.name}`),

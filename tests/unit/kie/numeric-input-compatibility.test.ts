@@ -8,7 +8,7 @@ import { CREATE_TASK_GUARDS } from "../../../packages/provider/kie/src/kie";
 import {
   type JsonSchema,
   zodToJsonSchema,
-} from "../../../packages/mcp-server/src/schema";
+} from "../../../packages/cli/src/schema";
 
 const AUDIT_PATH = resolve(
   import.meta.dirname,

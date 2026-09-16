@@ -46,11 +46,11 @@ export const PROVIDER_DOC_SURFACES = Object.freeze([
 /**
  * Packages that live outside `packages/provider/` but ship as `@apicity/*`.
  *
- * `mcp-server` is a real published package with its own build alias, so the
- * alias checks must expect it; it is not a provider, so the provider-list
- * checks must not.
+ * `cli` is a real published package with its own build alias, so the alias
+ * checks must expect it; it is not a provider, so the provider-list checks must
+ * not.
  */
-export const NON_PROVIDER_PACKAGES = Object.freeze(["mcp-server"]);
+export const NON_PROVIDER_PACKAGES = Object.freeze(["cli"]);
 
 /**
  * Providers with no generated README, and why.
@@ -105,7 +105,7 @@ export const RESERVED_ALIAS_SUFFIXES = Object.freeze(["check"]);
 /**
  * Names carried by `<prefix>:<name>` scripts, sorted.
  *
- * `build:mcp-server` is a legitimate alias for a package outside
+ * `build:cli` is a legitimate alias for a package outside
  * `packages/provider/`, so the returned set is compared against providers plus
  * `NON_PROVIDER_PACKAGES` rather than providers alone.
  *

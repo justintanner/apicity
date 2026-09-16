@@ -1,4 +1,3 @@
-import { readFileSync } from "node:fs";
 import {
   Server,
   type CacheHint,
@@ -6,15 +5,16 @@ import {
   type McpServerFactory,
 } from "@modelcontextprotocol/server";
 import { serveStdio } from "@modelcontextprotocol/server/stdio";
-import { loadCostHelpers, type CostHelpers } from "./cost.js";
-import { buildRegistry, type Endpoint } from "./registry.js";
-import { type JsonSchema } from "./schema.js";
+import { loadCostHelpers, type CostHelpers } from "../cost.js";
+import { buildRegistry, type Endpoint } from "../registry.js";
+import { type JsonSchema } from "../schema.js";
 import {
   downloadUrlsInResult,
   guessExtension,
   isBinary,
   writeBinary,
-} from "./output.js";
+} from "../output.js";
+import { readPackageVersion } from "../version.js";
 
 export interface StartServerOptions {
   outputDir?: string;
@@ -358,22 +358,4 @@ function safeStringify(value: unknown): string {
   } catch {
     return String(value);
   }
-}
-
-function readPackageVersion(): string {
-  for (const path of [
-    new URL("../package.json", import.meta.url),
-    new URL("../../package.json", import.meta.url),
-  ]) {
-    try {
-      const pkg = JSON.parse(readFileSync(path, "utf8")) as unknown;
-      if (typeof pkg === "object" && pkg !== null) {
-        const version = (pkg as Record<string, unknown>).version;
-        if (typeof version === "string") return version;
-      }
-    } catch {
-      /* try source/dist fallback */
-    }
-  }
-  return "0.0.0";
 }

@@ -2,14 +2,11 @@ import { execFileSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
-import {
-  buildRegistry,
-  type Endpoint,
-} from "../../packages/mcp-server/src/registry";
+import { buildRegistry, type Endpoint } from "../../packages/cli/src/registry";
 import {
   zodToJsonSchema,
   type JsonSchema,
-} from "../../packages/mcp-server/src/schema";
+} from "../../packages/cli/src/schema";
 
 interface ChildProcessError {
   message?: string;

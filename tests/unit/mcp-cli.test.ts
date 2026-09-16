@@ -1,23 +1,23 @@
 import { describe, expect, it, vi } from "vitest";
 
 import {
-  parseArgs,
+  parseMcpArgs,
   resolveOnePasswordOptions,
   resolveOpServiceToken,
   resolveOpVault,
   resolveOutputDir,
-} from "../../packages/mcp-server/src/cli";
+} from "../../packages/cli/src/mcp/cli";
 import {
   fillOnePasswordEnv,
   getProviderEnvVars,
   onePasswordRef,
   type OpRead,
-} from "../../packages/mcp-server/src/one-password";
+} from "../../packages/cli/src/one-password";
 
 describe("apicity-mcp CLI parsing", () => {
   it("parses 1Password, provider, output, and paygate flags", () => {
     expect(
-      parseArgs([
+      parseMcpArgs([
         "--op-vault",
         "Apicity",
         "--op-service-token",
@@ -41,7 +41,7 @@ describe("apicity-mcp CLI parsing", () => {
 
   it("parses equals-style flags", () => {
     expect(
-      parseArgs([
+      parseMcpArgs([
         "--op-vault=Apicity",
         "--op-service-token=op-token",
         "--providers=openai, anthropic",
@@ -59,29 +59,29 @@ describe("apicity-mcp CLI parsing", () => {
   });
 
   it("parses --op-token as an alias for --op-service-token", () => {
-    expect(parseArgs(["--op-token", "ops_abc"])).toEqual({
+    expect(parseMcpArgs(["--op-token", "ops_abc"])).toEqual({
       help: false,
       opServiceToken: "ops_abc",
     });
-    expect(parseArgs(["--op-token=ops_abc"])).toEqual({
+    expect(parseMcpArgs(["--op-token=ops_abc"])).toEqual({
       help: false,
       opServiceToken: "ops_abc",
     });
   });
 
   it("parses --env-file", () => {
-    expect(parseArgs(["--env-file", "/tmp/apicity.env"])).toEqual({
+    expect(parseMcpArgs(["--env-file", "/tmp/apicity.env"])).toEqual({
       help: false,
       envFile: "/tmp/apicity.env",
     });
-    expect(parseArgs(["--env-file=/tmp/apicity.env"])).toEqual({
+    expect(parseMcpArgs(["--env-file=/tmp/apicity.env"])).toEqual({
       help: false,
       envFile: "/tmp/apicity.env",
     });
   });
 
   it("rejects unknown flags", () => {
-    expect(() => parseArgs(["--op-vualt", "Apicity"])).toThrow(
+    expect(() => parseMcpArgs(["--op-vualt", "Apicity"])).toThrow(
       "unknown arg: --op-vualt"
     );
   });

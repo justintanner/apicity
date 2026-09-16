@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
   integrationDir,
   hasEndpointDocsRows,
-  mcpServerDir,
+  cliDir,
   providerRoot,
   repoRoot,
   resolveProviderScope,
@@ -70,17 +70,20 @@ describe("resolveProviderScope", () => {
     expectOpenAiTests(scoped.tests);
   });
 
-  it("resolves the endpoint-less MCP workspace package", () => {
-    const byName = resolveProviderScope("mcp-server");
-    const byPath = resolveProviderScope("packages/mcp-server/src/server.ts");
+  it("resolves the endpoint-less CLI workspace package", () => {
+    const byName = resolveProviderScope("cli");
+    const byPath = resolveProviderScope("packages/cli/src/mcp/server.ts");
 
     for (const scope of [byName, byPath]) {
       expect(scope).toMatchObject({
-        provider: "mcp-server",
-        packageDir: mcpServerDir,
+        provider: "cli",
+        packageDir: cliDir,
       });
+      // `cli` selects both test families the package owns: the `mcp-*` files
+      // that moved with it and the dispatcher's own `cli-*` files.
       expect(scope.tests).toContain(`${unitDir}/mcp-schema.test.ts`);
       expect(scope.tests).toContain(`${unitDir}/mcp-provider-registry.test.ts`);
+      expect(scope.tests).toContain(`${unitDir}/cli-dispatch.test.ts`);
     }
   });
 
@@ -88,7 +91,7 @@ describe("resolveProviderScope", () => {
     expect(hasEndpointDocsRows("openai")).toBe(true);
     expect(hasEndpointDocsRows("b2")).toBe(true);
     expect(hasEndpointDocsRows("cost")).toBe(false);
-    expect(hasEndpointDocsRows("mcp-server")).toBe(false);
+    expect(hasEndpointDocsRows("cli")).toBe(false);
   });
 
   it("resolves relative and absolute provider package paths", () => {

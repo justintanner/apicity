@@ -77,13 +77,32 @@ async function copyEndpointTsv() {
   await fs.copyFile(src, dst);
 }
 
-async function chmodBin() {
-  const bin = path.join(SRC_OUT, "bin.js");
-  try {
-    await fs.chmod(bin, 0o755);
-  } catch {
-    /* no bin yet — fine */
+async function chmodBins() {
+  for (const name of ["bin.js", "mcp-bin.js"]) {
+    try {
+      await fs.chmod(path.join(SRC_OUT, name), 0o755);
+    } catch {
+      /* no bin yet — fine */
+    }
   }
+}
+
+/**
+ * Stage the agent skill next to `dist` so npm publishes it (the `skills` entry
+ * in package.json `files`). The source lives at the repository root because
+ * `apicity skill` and the Claude Code plugin read the same copy.
+ *
+ * A missing source is a build failure, deliberately. The staged directory is
+ * gitignored and the repository copy is what every test reads, so a build that
+ * skipped this step would pass CI and the whole replay suite and still publish
+ * a tarball where `apicity skill`, `skill install` and `setup` all fail. The
+ * copy throwing is the only place that catches it.
+ */
+async function copySkill() {
+  const src = path.join(PKG_DIR, "../../skills/apicity/SKILL.md");
+  const dst = path.join(PKG_DIR, "skills/apicity/SKILL.md");
+  await mkdirp(path.dirname(dst));
+  await fs.copyFile(src, dst);
 }
 
 (async function main() {
@@ -92,7 +111,8 @@ async function chmodBin() {
   await addJsExtensions(SRC_OUT);
   await fixSourcemaps(SRC_OUT);
   await copyEndpointTsv();
-  await chmodBin();
+  await copySkill();
+  await chmodBins();
   await rmrf(BUILD);
   console.log("✅ Build completed successfully!");
 })().catch((e) => {

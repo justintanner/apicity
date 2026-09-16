@@ -1,7 +1,7 @@
 # Releasing `@apicity/*`
 
 Apicity ships public `@apicity/*` workspace packages in lockstep — providers
-under `packages/provider/*` plus `packages/mcp-server`. The release workflow
+under `packages/provider/*` plus `packages/cli`. The release workflow
 discovers the package set from package manifests so newly added packages ship
 with the rest. All releases use one three-part `X.Y.Z` version and publish to
 the npm `latest` tag.

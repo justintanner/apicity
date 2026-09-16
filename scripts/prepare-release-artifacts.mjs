@@ -2,13 +2,13 @@ import fs from "fs";
 import path from "path";
 
 const packagesDir = "packages/provider";
-const mcpDir = "packages/mcp-server";
+const cliDir = "packages/cli";
 
 const packages = fs
   .readdirSync(packagesDir)
   .sort()
   .map((p) => [p, path.join(packagesDir, p)]);
-const allPkgs = [...packages, ["mcp-server", mcpDir]];
+const allPkgs = [...packages, ["cli", cliDir]];
 
 const MONOREPO_URL = "https://github.com/justintanner/apicity";
 const BUGS_URL = "https://github.com/justintanner/apicity/issues";
@@ -167,7 +167,7 @@ if (!fs.existsSync(rootChangelogPath)) {
     "- Zod schema validation on every POST endpoint.",
     "- Middleware composition (retry, fallback, rate-limit).",
     "- `@apicity/cost` for local token/image/video spend estimation.",
-    "- `@apicity/mcp-server` exposing all endpoints as MCP tools.",
+    "- `@apicity/cli`: the `apicity` CLI and agent skill (with `apicity mcp`).",
     "- Integration-test harness with Polly.js record/replay.",
     "- Endpoint documentation with upstream docs links.",
     "",

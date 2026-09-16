@@ -74,6 +74,12 @@ jobs:
       - name: Verify generated examples are current
         run: pnpm run gen:examples:check
 
+      # Same ordering reason as doc-gen below: `pnpm run build` regenerates
+      # packages/cli/src/call-shapes.ts, so the drift check has to read the
+      # committed file first.
+      - name: Verify generated call shapes are current
+        run: pnpm run gen:call-shapes:check
+
       # Must run BEFORE the build: `pnpm run build` ends in `doc-gen`, which
       # rewrites the very files this step inspects, so a check placed after it
       # would compare regenerated output against itself and pass on a stale
@@ -92,6 +98,14 @@ jobs:
           test -f packages/provider/kie/dist/src/index.d.ts
           test -f packages/provider/alibaba/dist/src/index.js
           test -f packages/provider/alibaba/dist/src/index.d.ts
+          test -f packages/cli/dist/src/bin.js
+          test -f packages/cli/dist/src/mcp-bin.js
+          test -f packages/cli/dist/endpoint-docs.tsv
+          # Staged by scripts/dist.mjs and published through the `skills`
+          # entry in package.json `files`. It is gitignored and no test reads
+          # it — every skill assertion reads the repository copy — so this is
+          # the only step that sees a tarball built without the skill.
+          test -f packages/cli/skills/apicity/SKILL.md
 
       # Type-check the whole tests/ tree (tests/tsconfig.json). The build step
       # above only tsc's packages/**, and test:run executes rather than

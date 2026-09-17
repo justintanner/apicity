@@ -279,8 +279,13 @@ const qwen3InputImageExtra = (
 // extend deliberately leaves it optional with no upstream default. Preserve
 // that distinction here: the former three can select "no-audio" when omitted;
 // extend must receive an explicit boolean or fail closed.
+// `path` is a tab the page's groupData declares; the 2026-09-11 feed anchors
+// every PixVerse row at https://kie.ai/pixverse-v6?model=pixverse-v6%2F<path>.
+// Each entry below passes the path of the anchor its own feed rows carry, so
+// text-to-video passes image-to-video rather than a tab of its own name.
 const pixverseV6 = (
   rates: Record<string, number>,
+  path: string,
   defaultAudio: boolean
 ): ModelPricing => ({
   kind: "perUnit",
@@ -307,7 +312,7 @@ const pixverseV6 = (
   ],
   rates,
   source: pricePage(
-    "https://api.kie.ai/client/v1/model-pricing/page",
+    `https://kie.ai/pixverse-v6?model=pixverse-v6%2F${path}`,
     "2026-08-22"
   ),
 });
@@ -1283,6 +1288,20 @@ export const kie: Record<string, ModelPricing> = {
   // undefined and the estimator fails closed instead of guessing the
   // template's fixed length. Transition remains deliberately absent: the same
   // catalog contains no transition row or operation-level rate.
+  //
+  // Citations (ac-8a8b42): the four entries cite the 2026-09-11 feed anchors,
+  // three distinct deep links on https://kie.ai/pixverse-v6 with ?model=
+  // pixverse-v6%2Fextend, %2Freference-to-video and %2Fimage-to-video.
+  // text-to-video shares image-to-video's link because the feed prices both
+  // directions on one "Text /Image to Video" row set anchored there. They
+  // previously cited the POST-only pricing feed endpoint on api.kie.ai,
+  // written in 5dafa5ab because the 2026-08-22 and 2026-08-25 rows carried
+  // an empty anchor; a GET of that endpoint answers a JSON error body ("GET
+  // request not supported"), not a page. Pages read on 2026-09-16: every
+  // tab prints the runtime's cells except extend's 540P-with-audio cell
+  // (page 0.036 USD/s = 7.2 credits/s; feed usdPrice 0.028 with creditPrice
+  // 7.2), filed as ac-pfaypl; the transition tab prints the shared ladder
+  // although the feed still has no row (ac-4v9ck1). Neither moves a rate here.
   "pixverse-v6/text-to-video": pixverseV6(
     {
       "360p|no-audio": 0.02,
@@ -1294,6 +1313,7 @@ export const kie: Record<string, ModelPricing> = {
       "1080p|no-audio": 0.072,
       "1080p|audio": 0.092,
     },
+    "image-to-video",
     true
   ),
   "pixverse-v6/image-to-video": pixverseV6(
@@ -1307,6 +1327,7 @@ export const kie: Record<string, ModelPricing> = {
       "1080p|no-audio": 0.072,
       "1080p|audio": 0.092,
     },
+    "image-to-video",
     true
   ),
   "pixverse-v6/extend": pixverseV6(
@@ -1320,6 +1341,7 @@ export const kie: Record<string, ModelPricing> = {
       "1080p|no-audio": 0.072,
       "1080p|audio": 0.092,
     },
+    "extend",
     false
   ),
   "pixverse-v6/reference-to-video": pixverseV6(
@@ -1333,6 +1355,7 @@ export const kie: Record<string, ModelPricing> = {
       "1080p|no-audio": 0.081,
       "1080p|audio": 0.1035,
     },
+    "reference-to-video",
     true
   ),
 

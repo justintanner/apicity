@@ -13,5 +13,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Tool descriptions include root request-schema guidance, including the
-  ElevenLabs text-to-speech limit that applies when `model_id` is omitted.
+- Endpoint descriptions shown by `apicity describe` include root
+  request-schema guidance, including the ElevenLabs text-to-speech limit that
+  applies when `model_id` is omitted.

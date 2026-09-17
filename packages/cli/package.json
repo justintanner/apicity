@@ -1,7 +1,7 @@
 {
   "name": "@apicity/cli",
   "version": "0.11.2",
-  "description": "Command-line interface and agent skill for every @apicity provider endpoint; `apicity mcp` serves the same endpoints as MCP tools.",
+  "description": "Command-line interface and agent skill for every @apicity provider endpoint.",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -15,8 +15,7 @@
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "bin": {
-    "apicity": "dist/src/bin.js",
-    "apicity-mcp": "dist/src/mcp-bin.js"
+    "apicity": "dist/src/bin.js"
   },
   "exports": {
     ".": {
@@ -37,8 +36,6 @@
     "agent-skills",
     "claude-code",
     "codex",
-    "mcp",
-    "model-context-protocol",
     "apicity",
     "openai",
     "anthropic",
@@ -84,8 +81,7 @@
     "@apicity/x": "workspace:*",
     "@apicity/xai": "workspace:*",
     "@apicity/youtube": "workspace:*",
-    "@apicity/zaicoding": "workspace:*",
-    "@modelcontextprotocol/server": "^2.0.0"
+    "@apicity/zaicoding": "workspace:*"
   },
   "homepage": "https://github.com/justintanner/apicity#readme",
   "bugs": {

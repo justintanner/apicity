@@ -59,7 +59,6 @@ export function usageText(): string {
     "  apicity <provider>            shorthand for: commands --provider <provider>",
     "",
     helpTopicsLine(),
-    'Run "apicity mcp --help" for the MCP server flags.',
   ].join("\n");
 }
 

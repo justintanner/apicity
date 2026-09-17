@@ -82,8 +82,9 @@ apicity is driven through the `apicity` CLI on PATH, never an MCP server. Run
 (`apicity commands`, `apicity describe`, then the call). Credentials are
 configured by the operator; never request, copy, or read them.
 
-The full reference is [`packages/cli/README.md`](packages/cli/README.md);
-[`MCP.md`](MCP.md) documents the optional `apicity mcp` subcommand.
+The full reference is [`packages/cli/README.md`](packages/cli/README.md).
+MCP support was removed in September 2026; [`MCP.md`](MCP.md) is the migration
+note.
 
 ## Commands
 
@@ -209,9 +210,8 @@ pnpm run test:run tests/integration/<file>.test.ts
 
 For provider-only changes, `pnpm run test:affected` reads the current git diff
 (committed, staged, unstaged, and untracked files) and runs the matching
-`test:provider` subset. `cli` is scoped like a provider and owns two prefixes:
-it selects `cli-*` **and** `mcp-*` test files, because `@apicity/cli` carries
-the `apicity mcp` server. It falls back to full `pnpm run test:run` for shared
+`test:provider` subset. `cli` is scoped like a provider and selects the
+`cli-*` test files. It falls back to full `pnpm run test:run` for shared
 scripts/config, package metadata, unit or functional tests, docs, and ambiguous
 paths. Run `pnpm run test:run` directly when you need an explicit full local
 replay.

@@ -36,9 +36,10 @@ The workspace has several schema/type issues that cut across providers:
   with `.default()`, callers see defaulted fields as required even when runtime
   input accepts omission.
 - Numeric, string, integer, and length constraints are not consistently exposed
-  in public metadata. The MCP Zod-to-JSON-schema bridge already reads some Zod
-  checks, but manual registries such as KIE `modelInputSchemas` still rely on
-  prose for many constraints.
+  in public metadata. The CLI's Zod-to-JSON-schema bridge
+  (`packages/cli/src/schema.ts`, behind `apicity describe`) already reads some
+  Zod checks, but manual registries such as KIE `modelInputSchemas` still rely
+  on prose for many constraints.
 - Downstream introspection is fragile when schemas mix bare fields,
   `.optional()`, `.default()`, nullable wrappers, and outer
   `.refine()`/effects. Callers should not need to depend on raw
@@ -85,7 +86,7 @@ slot schemas and export coverage.
 ### `@apicity/fal`
 
 WAN 2.7 reference-to-video now rejects `duration: 0` and exposes a generated
-duration range of 2-10 seconds through its Zod/MCP schemas. Source-clip
+duration range of 2-10 seconds through its Zod and JSON schemas. Source-clip
 `duration: 0` semantics remain valid on edit-video.
 
 ### `@apicity/x`

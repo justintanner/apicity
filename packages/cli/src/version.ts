@@ -1,8 +1,7 @@
 import { readFileSync } from "node:fs";
 
 /**
- * Read this package's version for the MCP server handshake and `apicity
- * version`.
+ * Read this package's version for `apicity version` and `--version`.
  *
  * Two candidates because the module runs from two depths: `src/version.ts`
  * during tests and `dist/src/version.js` once built. The first URL resolves

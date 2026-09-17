@@ -99,11 +99,10 @@ export function defaultEnvFilePath(
  * file fills the rest, and 1Password fills what is still missing — but only
  * when a vault and a token were configured.
  *
- * This is deliberately *not* `resolveOnePasswordOptions`, which throws when
- * neither an env file nor op values are given. That is right for `apicity
- * mcp`, which serves every provider and needs to say so at startup, and wrong
- * for a call: `apicity binance api.v3.time` must work with nothing configured
- * at all (D-6, EX-06). Nothing is returned — the environment is the result.
+ * This is deliberately not a startup-time check that throws when neither an
+ * env file nor op values are given: a call must work with nothing configured
+ * at all (`apicity binance api.v3.time`, D-6, EX-06). Nothing is returned —
+ * the environment is the result.
  */
 export async function resolveCredentials(
   options: ResolveCredentialsOptions
@@ -164,13 +163,11 @@ export async function resolveCredentials(
 }
 
 /**
- * Accept a service-account token in the four forms `apicity mcp` accepts: a
- * literal token, `env:VAR`, `$VAR`, and a bare variable name.
+ * Accept a service-account token in four forms: a literal token, `env:VAR`,
+ * `$VAR`, and a bare variable name.
  *
- * Restated here rather than imported from `mcp/cli.ts`, which reaches the MCP
- * server module graph that a call has no business loading.
- * `cli-credentials.test.ts` pins the two against each other on every form, so
- * the restatement cannot drift.
+ * This is the only implementation; `cli-credentials.test.ts` pins each form to
+ * its resolved value.
  */
 export function resolveServiceToken(
   tokenOrRef: string | undefined,

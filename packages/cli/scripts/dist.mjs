@@ -78,7 +78,7 @@ async function copyEndpointTsv() {
 }
 
 async function chmodBins() {
-  for (const name of ["bin.js", "mcp-bin.js"]) {
+  for (const name of ["bin.js"]) {
     try {
       await fs.chmod(path.join(SRC_OUT, name), 0o755);
     } catch {

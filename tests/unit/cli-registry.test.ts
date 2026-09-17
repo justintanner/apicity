@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-import mcpPackage from "../../packages/cli/package.json";
+import cliPackage from "../../packages/cli/package.json";
 import {
   buildRegistry,
   type Endpoint,
@@ -23,13 +23,13 @@ function endpointProviders(): string[] {
   ].sort();
 }
 
-describe("apicity-mcp provider registry", () => {
+describe("apicity CLI provider registry", () => {
   it("registers every endpoint-doc provider", () => {
     expect(Object.keys(PROVIDERS).sort()).toEqual(endpointProviders());
   });
 
   it("declares each registered provider package as a dependency", () => {
-    const deps = mcpPackage.dependencies as Record<string, string>;
+    const deps = cliPackage.dependencies as Record<string, string>;
     const missing = endpointProviders().filter(
       (provider) => !deps[`@apicity/${provider}`]
     );
@@ -112,8 +112,8 @@ describe("apicity-mcp provider registry", () => {
   });
 
   // Regression: `{query}` is a query-string placeholder, not a path segment.
-  // Treating it as a path param made the MCP call `fn(queryString, body)` instead
-  // of `fn(req, signal)`, dropping every filter and crashing on a body
+  // Treating it as a path param used to make the call `fn(queryString, body)`
+  // instead of `fn(req, signal)`, dropping every filter and crashing on a body
   // (`signal.addEventListener is not a function`). It must never be a path param.
   it("excludes the reserved {query} placeholder from path params", () => {
     expect(

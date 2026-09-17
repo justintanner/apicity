@@ -99,7 +99,7 @@ export async function buildRegistry(
       if (inst) instances.set(name, inst);
     } catch (err) {
       console.error(
-        `[apicity-mcp] failed to load provider "${name}":`,
+        `[apicity] failed to load provider "${name}":`,
         (err as Error).message
       );
     }
@@ -213,7 +213,7 @@ function walkPathOrMethodLeaf(
 // `{query}` is not a path segment: across every provider it is the placeholder
 // for the query string that the endpoint function builds internally from its
 // request object (`const query = buildQuery({...}); `...${query}``). Treating it
-// as a path param made the MCP call `fn(queryString, body)` instead of
+// as a path param used to make the call `fn(queryString, body)` instead of
 // `fn(req, signal)`, which dropped all filters and routed the body into the
 // AbortSignal slot (`signal.addEventListener is not a function`). Skip it so the
 // request fields are exposed at the top level and passed straight through as the
@@ -240,7 +240,8 @@ export function makeToolName(
 
 // Inverse of `urlToDotPath`'s camelCase conversion (scripts/lib/url-to-dotpath.mjs):
 // the dotPath stores `apiKeys`, `imageToVideo`, `compatibleMode`, etc., but tool
-// names are flat snake_case for ergonomics in MCP clients.
+// names are flat snake_case, a convention inherited from the MCP server this
+// CLI replaced (`toolName` stays exported; OQ-7).
 //   apiKeys           → api_keys
 //   imageToVideo      → image_to_video
 //   compatibleMode    → compatible_mode

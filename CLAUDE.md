@@ -16,7 +16,7 @@ Apicity is a TypeScript monorepo of standalone API provider packages
 
 `@apicity/cost` is a dependency-free cross-provider helper: pure local USD cost/token estimation (`createCost`, `computeEstimate`, bundled rate tables) plus the canonical OTP pay-gate (`withPaidGate`) source vendored into kie and xai.
 
-`@apicity/cli` (under `packages/cli`, not `packages/provider/`) is the `apicity` CLI and agent skill; its `apicity mcp` subcommand exposes every provider endpoint as an MCP tool.
+`@apicity/cli` (under `packages/cli`, not `packages/provider/`) is the `apicity` CLI and agent skill.
 
 ## apicity CLI
 
@@ -25,8 +25,9 @@ apicity is driven through the `apicity` CLI on PATH, never an MCP server. Run
 (`apicity commands`, `apicity describe`, then the call). Credentials are
 configured by the operator; never request, copy, or read them.
 
-The full reference is [`packages/cli/README.md`](packages/cli/README.md);
-[`MCP.md`](MCP.md) documents the optional `apicity mcp` subcommand.
+The full reference is [`packages/cli/README.md`](packages/cli/README.md).
+MCP support was removed in September 2026; [`MCP.md`](MCP.md) is the migration
+note.
 
 ## Package Naming
 
@@ -43,7 +44,7 @@ URL path:     /api/v1/common/download-url →  kie.api.v1.common.downloadUrl()
 URL path:     /v1/tokenize-text          →  xai.v1.tokenizeText()
 ```
 
-POST endpoints expose a zod request schema as `.schema` (defined in the provider's `src/zod.ts`, attached via `Object.assign`). Providers do not validate payloads at runtime; the schema is metadata for consumers — the MCP server converts it to tool input JSON Schema, and callers can `.schema.safeParse(data)` themselves.
+POST endpoints expose a zod request schema as `.schema` (defined in the provider's `src/zod.ts`, attached via `Object.assign`). Providers do not validate payloads at runtime; the schema is metadata for consumers — `apicity describe` converts it to JSON Schema for agents, and callers can `.schema.safeParse(data)` themselves.
 
 ## Commands
 
@@ -170,7 +171,7 @@ packages/provider/<name>/
 **youtube** — YouTube Data API v3 for posting content
 **free** — Free file hosting (tmpfiles.org, uguu.se, catbox.moe, litterbox, gofile.io, filebin.net, temp.sh, tmpfile.link)
 **cost** — Dependency-free cross-provider USD cost/token estimation and canonical pay-gate source
-**cli** — `apicity` CLI, agent skill and the `apicity mcp` server (`packages/cli`)
+**cli** — `apicity` CLI and agent skill (`packages/cli`)
 
 ### Testing
 
@@ -179,7 +180,7 @@ All tests use Polly.js HTTP record/replay (no mocks):
 - **Config**: `tests/vitest.integration.ts` — includes `tests/integration/**/*.test.{ts,tsx}`, `tests/functional/**/*.test.{ts,tsx}`, and `tests/unit/**/*.test.{ts,tsx}`; 30s timeout
 - **Setup**: `tests/integration-setup.ts` — aliases `@apicity/*` to source directories so tests run against source (not dist)
 
-**Scope the loop to one provider.** While working on a single provider, don't replay the whole suite — run only that provider's tests with `pnpm test:provider <name-or-path>` (resolves `<name>.test.ts` + `<name>-*.test.ts` across the top level of `tests/integration`, `tests/functional`, and `tests/unit`, plus every `*.test.ts` in a one-directory-deep subdirectory named after the provider, e.g. `tests/unit/kie/`). `cli` is scoped like a provider and owns two prefixes: it selects `cli-*` **and** `mcp-*` test files, because `@apicity/cli` carries the `apicity mcp` server. The argument can be a provider name, a path under `packages/provider/<name>`, or a matching integration test path. From inside a provider package, `pnpm -w run test:provider` and `pnpm -w run dev:preflight:fast` infer the provider from pnpm's `INIT_CWD`. For committed, staged, unstaged, or untracked provider-only diffs, `pnpm run test:affected` auto-selects the touched provider tests. It falls back to full `pnpm run test:run` for shared scripts/config, package metadata, unit or functional tests, docs, and other ambiguous changes. Run full `pnpm run test:run` directly when you need an explicit complete local replay. The **full suite is GitHub CI's responsibility**; locally you only need the provider you're touching. `pnpm run dev:preflight:fast -- <name-or-path>` prints and runs the fast provider checklist: <!-- fast-gate-steps:start -->scoped format<!-- fast-gate-step:format -->, scoped lint<!-- fast-gate-step:lint -->, the whole tests-project typecheck (`tsc --noEmit -p tests/tsconfig.json`)<!-- fast-gate-step:typecheck-tests -->, provider typecheck and replay<!-- fast-gate-step:test-provider -->, and the cross-cutting repo-wide guard tests<!-- fast-gate-step:cross-cutting --><!-- fast-gate-steps:end -->. Use `pnpm run dev:preflight` or `pnpm run ci:local` for shared tooling, package metadata, docs, test harness changes, release prep, or any ambiguous diff that needs the full repository gate.
+**Scope the loop to one provider.** While working on a single provider, don't replay the whole suite — run only that provider's tests with `pnpm test:provider <name-or-path>` (resolves `<name>.test.ts` + `<name>-*.test.ts` across the top level of `tests/integration`, `tests/functional`, and `tests/unit`, plus every `*.test.ts` in a one-directory-deep subdirectory named after the provider, e.g. `tests/unit/kie/`). `cli` is scoped like a provider and selects the `cli-*` test files. The argument can be a provider name, a path under `packages/provider/<name>`, or a matching integration test path. From inside a provider package, `pnpm -w run test:provider` and `pnpm -w run dev:preflight:fast` infer the provider from pnpm's `INIT_CWD`. For committed, staged, unstaged, or untracked provider-only diffs, `pnpm run test:affected` auto-selects the touched provider tests. It falls back to full `pnpm run test:run` for shared scripts/config, package metadata, unit or functional tests, docs, and other ambiguous changes. Run full `pnpm run test:run` directly when you need an explicit complete local replay. The **full suite is GitHub CI's responsibility**; locally you only need the provider you're touching. `pnpm run dev:preflight:fast -- <name-or-path>` prints and runs the fast provider checklist: <!-- fast-gate-steps:start -->scoped format<!-- fast-gate-step:format -->, scoped lint<!-- fast-gate-step:lint -->, the whole tests-project typecheck (`tsc --noEmit -p tests/tsconfig.json`)<!-- fast-gate-step:typecheck-tests -->, provider typecheck and replay<!-- fast-gate-step:test-provider -->, and the cross-cutting repo-wide guard tests<!-- fast-gate-step:cross-cutting --><!-- fast-gate-steps:end -->. Use `pnpm run dev:preflight` or `pnpm run ci:local` for shared tooling, package metadata, docs, test harness changes, release prep, or any ambiguous diff that needs the full repository gate.
 
 **Cross-cutting repo-wide guard tests always run in the fast gates.** `scripts/lib/cross-cutting-tests.mjs` lists whole-repo guards that provider scopes do not select consistently: <!-- cross-cutting-tests:start -->the upload and multipart recording-corpus allowlists (`tests/integration/upload-recordings.test.ts`, `tests/integration/multipart-recordings.test.ts`), endpoint cost-tier inventory (`tests/unit/endpoint-cost-tiers.test.ts`), KIE pricing source-pin reconciliation (`tests/unit/kie-pricing-reconciliation.test.ts`), cross-provider registry parity in both directions (`tests/unit/cost-slugs.test.ts`: exact `fal` pricing/slug key sets, slug/display coverage for every provider, every `PRICING.kie` key resolving through `MODEL_SLUGS` and `MODEL_DISPLAY`, and exact `googleflow` slug/display keys; `tests/unit/cost-pricing.test.ts`: a `PRICING` entry for every registered `MODEL_SLUGS` entry, under an explicit unpriced allowlist), the documentation inventories (`tests/unit/provider-inventory-docs.test.ts`: the provider list and the `build:*` / `doc-gen:*` alias sets, derived from disk and pinned in `CLAUDE.md`, `AGENTS.md`, and `README.md`), and fal credential wiring (`tests/unit/recording-credential-hosts.test.ts`: every `api.fal.ai` recording must be replayed by a call site using `process.env.FAL_ADMIN_API_KEY` and every `fal.run` / `queue.fal.run` / `rest.fal.ai` / `v3b.fal.media` recording by one using `process.env.FAL_API_KEY` — unenforceable under replay, which never contacts fal, so a miswiring surfaces only at the next paid `dev:record`), the provider export surface (`tests/unit/provider-export-surface.test.ts`: every exported `*Namespace` interface declared in `packages/provider/*/src/**/*.ts` — at any depth below `src/`, the provider's own `index.ts` aside — must be re-exported from that provider's `index.ts`, under an explicit per-type baseline that fails stale entries in both directions — a declared-but-unexported public type passes lint, `tsc --noEmit` and the whole replay suite, so nothing else observes it), and cross-ref namespace shape (`tests/unit/provider-namespace-shape.test.ts`: every provider factory's return tree parsed to dot paths with a shape — callable, object, callable-with-children, or unresolved — pinned against a baseline of what the detector cannot resolve, so a namespace two sibling slices declare incompatibly is reported instead of merging into a duplicate key), and the namespace-shape CLI (`tests/unit/compare-namespace-shapes-cli.test.ts`: `scripts/compare-namespace-shapes.mjs` is imported by nothing, so this is the only cover for its argument handling, base resolution and 0/1/2 exit contract; both of its input guards were false greens caught by review rather than by a gate)<!-- cross-cutting-tests:end -->. Without the extra selection, provider-scoped work can leave a repo-wide invariant stale until full CI; `92323c18` was the hand repair for a cost-slug pin that followed exactly that path. When this guard fails with `source-checksum-mismatch` and the source change is intentional, re-pin with `pnpm run gen:kie-pricing-manifest` and commit the resulting diff; `pnpm run gen:kie-pricing-manifest:check` confirms it. Both `dev:preflight:fast` and `test:affected` (in its provider-scoped path) run entries their provider replay did not already select, or the full list when passthrough filters make de-duplication unsafe. They are filesystem- and source-parse-only (no Polly, no network) and cost about <!-- cross-cutting-cost:start -->8.6<!-- cross-cutting-cost:end -->s, last measured as the median of three whole-block runs at ten-entry membership on an Intel Core i7-8700 @ 3.20GHz (12 threads, Linux 6.8.0-124, Node v22.23.2). That figure lives once in `CROSS_CUTTING_COST_SECONDS`; this sentence is pinned to it. Add any such guard to that list.
 
@@ -312,7 +313,7 @@ GitHub Actions (`ci.yml`): two jobs — **test** (guard against cassette re-reco
   cadence, write `z.enum([...known]).or(<FamilyAliasSchema>)`, where the alias
   is a `z.string().regex(...)` matching that provider's actual id grammar —
   never a bare `.or(z.string())`, which accepts typos. The known ids stay
-  enumerated so MCP clients keep autocomplete. See
+  enumerated so `apicity describe` output and agents keep autocomplete. See
   `GoogleFlowVeoModelAliasSchema` in `packages/provider/googleflow/src/zod.ts`.
   Fixed vocabularies that are _not_ model registries — `quality`, `vad_model`,
   `apply_text_normalization`, tier enums like `SimpleFunctionsModelSchema` —

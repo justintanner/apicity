@@ -14,14 +14,13 @@ import {
   runEndpoint,
   type ProviderInstantiator,
 } from "../../packages/cli/src/main";
-import { resolveOpServiceToken } from "../../packages/cli/src/mcp/cli";
 import type { InstantiatedProvider } from "../../packages/cli/src/providers";
 import { installVerboseFetch } from "../../packages/cli/src/verbose";
 
 // AC-05: credential precedence, the single-provider rule for a call, and the
 // invariant that matters most — a credential value never reaches stdout, an
 // envelope, or a log line. Nothing here spawns `op`: the 1Password read is
-// injected through the same seam the MCP server exposes.
+// injected through the same seam `resolveCredentials` exposes.
 
 const SECRET = "sk-test-SECRET";
 
@@ -278,23 +277,21 @@ describe("the single-provider rule for a call", () => {
 });
 
 describe("the service-account token forms", () => {
-  // The call path restates this resolution rather than importing the MCP
-  // module graph. These are the same four forms, asserted against the
-  // function `apicity mcp` uses, so the restatement cannot drift.
+  // `credentials.ts` is the only implementation of the four forms since the
+  // server this CLI replaced was removed, so each form is pinned to the value
+  // that implementation resolves rather than compared with a second one.
   const env: NodeJS.ProcessEnv = {
     APICITY_TOKEN_VAR: "resolved-token",
   };
 
-  for (const form of [
-    "literal-token",
-    "env:APICITY_TOKEN_VAR",
-    "$APICITY_TOKEN_VAR",
-    "APICITY_TOKEN_VAR",
-  ]) {
-    it(`resolves ${form} exactly as apicity mcp does`, () => {
-      expect(resolveServiceToken(form, env)).toBe(
-        resolveOpServiceToken(form, env)
-      );
+  for (const [form, expected] of [
+    ["literal-token", "literal-token"],
+    ["env:APICITY_TOKEN_VAR", "resolved-token"],
+    ["$APICITY_TOKEN_VAR", "resolved-token"],
+    ["APICITY_TOKEN_VAR", "resolved-token"],
+  ] as const) {
+    it(`resolves ${form}`, () => {
+      expect(resolveServiceToken(form, env)).toBe(expected);
     });
   }
 

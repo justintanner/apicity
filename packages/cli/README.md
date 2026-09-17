@@ -1,15 +1,14 @@
 # @apicity/cli
 
 One command per upstream endpoint, for every `@apicity/*` provider package —
-plus the agent skill that teaches a coding agent to find and call them, and the
-MCP server as an optional subcommand.
+plus the agent skill that teaches a coding agent to find and call them.
 
 The endpoint list is the monorepo's `scripts/endpoint-docs.tsv` (bundled as
 `dist/endpoint-docs.tsv` for installed users), so the command surface stays in
 lockstep with the providers: no curated subset, no new abstractions.
 
-Renamed from `@apicity/mcp-server`. The server it used to be is `apicity mcp`,
-and the `apicity-mcp` bin still works, printing one deprecation line to stderr.
+Renamed from `@apicity/mcp-server`. MCP support was removed in September 2026;
+[MCP.md](../../MCP.md) is the migration note.
 
 ## Install
 
@@ -143,7 +142,6 @@ each call actually requested, which is how to check rather than guess.
 | `apicity setup agents`           | Install the skill; connect an agent when exactly one is unambiguous.                                                  |
 | `apicity setup`                  | `setup agents`. `--remove` removes the plugin and everything this CLI wrote.                                          |
 | `apicity doctor`                 | Twelve rows about this host's install, always exit 0.                                                                 |
-| `apicity mcp`                    | Serve every endpoint over MCP on stdio.                                                                               |
 | `apicity help [topic]`           | Usage, or one of the topics `output`, `exit-codes`, `environment`, `agents`.                                          |
 | `apicity version`                | The package version.                                                                                                  |
 
@@ -348,24 +346,6 @@ indices everywhere. It always exits 0: it is a report, not a gate. A skill
 older than the installed CLI is a warning that names `apicity skill install`;
 nothing re-syncs itself behind your back.
 
-## `apicity mcp`
-
-The MCP server this package used to be, as a subcommand, for clients that speak
-MCP and nothing else:
-
-```bash
-claude mcp add apicity -- apicity mcp --env-file ~/.config/apicity/.env
-codex mcp add apicity -- apicity mcp --op-vault apicity --op-token "$OP_SERVICE_ACCOUNT_TOKEN"
-```
-
-It registers one tool per endpoint, named
-`<provider>_<dotPath_with_underscores>`, speaks MCP revision **2026-07-28** over
-stdio, and needs Node.js 20 or newer; clients on older revisions are not
-supported. Its flags are `--op-vault`, `--op-token`, `--env-file`,
-`--output-dir`, `--providers` and `--paygate-secret-file`, and one of the
-1Password pair or `--env-file` is required. Paid tools take the OTP as an `otp`
-argument. Full reference: [MCP.md](../../MCP.md).
-
 ## What we took from hey-cli
 
 This CLI is modelled on [basecamp/hey-cli](https://github.com/basecamp/hey-cli),
@@ -382,8 +362,8 @@ ownership marker and a version stamp, spelled `.managed-by-apicity`;
 `setup claude`, `setup codex` and `setup agents` with `--remove` and an
 `APICITY_SETUP_AGENT` override where hey reads `HEY_SETUP_AGENT`; the
 `.claude-plugin/` layout — `plugin.json`, the skills link and the SessionStart
-liveness hook — plus a marketplace manifest so the repository installs; the
-optional `mcp` subcommand; and the README-and-`AGENTS.md` guidance for agents,
+liveness hook — plus a marketplace manifest so the repository installs;
+and the README-and-`AGENTS.md` guidance for agents,
 here as the root README's "CLI and coding agents", this file, and the `apicity
 CLI` sections in `CLAUDE.md` and `AGENTS.md`. **Adapted:** hey's styled
 terminal output and JSON-when-piped rule, which here prints pretty data at a
@@ -406,15 +386,13 @@ family: environment variables, a `.env` file and 1Password are the credential
 story. The TUI, `watch`, `upgrade`, the installer scripts and the packaging
 matrix (Homebrew, mise, Nix, deb, Scoop, Omarchy), the `.size-budget` and the
 separate skills-sync repository: npm distributes this package, and the skill
-ships inside it.
+ships inside it. hey's `mcp` subcommand: the operator removed MCP support
+entirely on 2026-09-17, so there is no server to expose.
 
-### Switching from the MCP server
+### Switching from `@apicity/mcp-server`
 
-`@apicity/mcp-server` is now `@apicity/cli`, and the server it used to be is
-the `apicity mcp` subcommand. Nothing breaks the moment you upgrade — the
-package still ships an `apicity-mcp` bin that serves MCP exactly as before and
-prints one deprecation line to stderr — so the steps below can be taken in
-order, at your own pace:
+`@apicity/mcp-server` was renamed `@apicity/cli`, and MCP support ended with
+`@apicity/mcp-server` 0.11.2: the CLI has no server to register.
 
 1. **Install the CLI.** `npm install -g @apicity/cli` (or run it through
    `npx -y @apicity/cli@latest`).
@@ -428,29 +406,11 @@ order, at your own pace:
 4. **Remove the old MCP registration.** `claude mcp remove apicity`,
    `codex mcp remove apicity`, or delete the `mcpServers.apicity` entry from
    the client's config file. Agents reach the endpoints through the CLI and the
-   skill from here on; keep the registration only if you deliberately want the
-   MCP path as well, and point it at `apicity mcp`.
-5. **Repoint a launcher script.** For a launcher that execs
-   `node_modules/.bin/apicity-mcp`, replace the `@apicity/mcp-server`
-   dependency with `@apicity/cli`: the compatibility bin keeps the launcher
-   working untouched. Then switch the exec target to `apicity mcp`, or drop the
-   launcher altogether. This repository's own city launcher is the worked
-   example — its last line
-
-   ```sh
-   exec "$APICITY_MCP_BIN" "$@" --env-file /dev/null --providers openai
-   ```
-
-   becomes
-
-   ```sh
-   exec apicity mcp "$@" --env-file /dev/null --providers openai
-   ```
-
-   and the `APICITY_MCP_BIN` resolution above it can go with it. The launcher's
-   whole job is then `apicity mcp --env-file /dev/null --providers openai`,
-   with `"$@"` passing the client's own flags through.
-
+   skill from here on.
+5. **Retire a launcher script.** A launcher that execs the old server bin from
+   `node_modules/.bin` has nothing left to launch: remove it together with its
+   `@apicity/mcp-server` dependency rather than repointing it. This
+   repository's own city launcher is one such script.
 6. **Tell the agents that cannot install plugins.** Add a short section to the
    project's `AGENTS.md` (and `CLAUDE.md`, for Claude Code):
 
@@ -463,23 +423,20 @@ order, at your own pace:
    post-publish step no part of the build performs:
 
    ```bash
-   npm deprecate @apicity/mcp-server "Replaced by @apicity/cli (apicity mcp)"
+   npm deprecate @apicity/mcp-server "Replaced by @apicity/cli; MCP support was removed, use the apicity CLI and agent skill"
    ```
 
 ## Programmatic use
 
 ```ts
-import { startServer } from "@apicity/cli";
+import { loadCatalog } from "@apicity/cli";
 
-await startServer({
-  outputDir: "./out",
-  enabledProviders: ["openai", "anthropic"],
-});
+const endpoints = await loadCatalog();
+console.log(endpoints.filter((e) => e.provider === "openai").length);
 ```
 
-`buildRegistry()` and `zodToJsonSchema()` are exported too, if you want the
-registry inside your own MCP server, along with `loadEnvFile()` and the
-1Password helpers.
+`runMain()`, `buildRegistry()`, `zodToJsonSchema()`, `loadEnvFile()` and the
+1Password helpers are exported too.
 
 Part of the [apicity](https://github.com/justintanner/apicity) monorepo.
 

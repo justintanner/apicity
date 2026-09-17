@@ -33,7 +33,7 @@ import {
 import { XaiVideoGenerateRequestSchema } from "../../packages/provider/xai/src/zod";
 import type { XaiVideoReferenceAudio } from "../../packages/provider/xai/src";
 
-describe("MCP Zod schema introspection helpers", () => {
+describe("Zod schema introspection helpers", () => {
   it("extracts enum values without direct unwrap/options access", () => {
     const wrapped = z
       .enum(["square", "wide"])
@@ -95,7 +95,7 @@ describe("MCP Zod schema introspection helpers", () => {
 
     // The Wan video model enum is open — `z.enum([...]).or(<alias>)` — so it is
     // a union, and getZodEnumValues only reads plain enums. The listed ids stay
-    // reachable through the JSON Schema the MCP server actually ships, which is
+    // reachable through the JSON Schema `apicity describe` actually ships, which is
     // what a client's completion list is built from.
     expect(getZodEnumValues(AlibabaVideoSynthesisModelSchema)).toEqual([]);
     expect(enumBranchOf(AlibabaVideoSynthesisModelSchema)).toEqual([
@@ -134,7 +134,7 @@ describe("MCP Zod schema introspection helpers", () => {
   });
 });
 
-describe("MCP Zod schema conversion", () => {
+describe("Zod schema conversion", () => {
   it("preserves Zod 4 string, integer, array, regex, and default metadata", () => {
     const schema = zodToJsonSchema(
       z.object({
@@ -217,7 +217,7 @@ describe("MCP Zod schema conversion", () => {
 
     // Both Qwen enums are open, so each branch's `model` is itself an anyOf of
     // the listed ids plus the family alias. The listed ids stay first and
-    // complete so MCP clients keep their suggestion list.
+    // complete so agents keep their suggestion list.
     expect(openEnumBranch(propertiesOf(branches[0]).model)).toEqual([
       "qwen-image-2.0-pro",
       "qwen-image-2.0-pro-2026-03-03",
@@ -262,7 +262,7 @@ describe("MCP Zod schema conversion", () => {
     });
   });
 
-  it("lists KIE Zod 4 media enum defaults in MCP JSON Schema output", () => {
+  it("lists KIE Zod 4 media enum defaults in JSON Schema output", () => {
     const json = zodToJsonSchema(GrokImageToVideoRequestSchema);
     const requestProperties = propertiesOf(json);
     const inputProperties = propertiesOf(requestProperties.input);
@@ -319,7 +319,7 @@ describe("MCP Zod schema conversion", () => {
     });
   });
 
-  it("exposes fal WAN 2.7 reference duration bounds in MCP JSON Schema", () => {
+  it("exposes fal WAN 2.7 reference duration bounds in JSON Schema", () => {
     const referenceJson = zodToJsonSchema(
       FalWanV2p7ReferenceToVideoRequestSchema
     );
@@ -340,7 +340,7 @@ describe("MCP Zod schema conversion", () => {
     });
   });
 
-  it("exposes xAI reference images and preset voices in MCP JSON Schema", () => {
+  it("exposes xAI reference images and preset voices in JSON Schema", () => {
     const voice: XaiVideoReferenceAudio = { voice_id: "Eve" };
     expect(voice.voice_id).toBe("Eve");
 
@@ -361,7 +361,7 @@ describe("MCP Zod schema conversion", () => {
     expect(audioItems.required).toEqual(["voice_id"]);
   });
 
-  it("keeps KIE createTask pipeline output visible to MCP consumers", () => {
+  it("keeps KIE createTask pipeline output visible to agent consumers", () => {
     const schema = zodToJsonSchema(CreateTaskRequestSchema);
     const variants = schema.anyOf as JsonSchema[];
 

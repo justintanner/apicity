@@ -150,7 +150,7 @@ describe("apicity describe", () => {
     expect(description.callShape).toBeUndefined(); // no URL placeholder
     // createTask is a discriminated union: one variant per model, each pinning
     // its `model` to a const or an open enum branch, exactly as
-    // `mcp-schema.test.ts` pins for the MCP tool schema.
+    // `cli-schema.test.ts` pins for the JSON Schema `apicity describe` prints.
     const variants = (description.schema as JsonSchema).anyOf as JsonSchema[];
     expect(variants.length).toBeGreaterThan(0);
     expect(modelIds(variants)).toContain("grok-imagine/text-to-video");

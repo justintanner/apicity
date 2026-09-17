@@ -45,7 +45,7 @@ const VALUE_FLAGS: Record<string, ValueFlag> = {
   "--env-file": "envFile",
   "--op-vault": "opVault",
   "--op-token": "opToken",
-  // The MCP server accepts both spellings; so does the CLI, on every command.
+  // Both spellings are accepted, on every command.
   "--op-service-token": "opToken",
   "--paygate-secret-file": "paygateSecretFile",
   "--base-url": "baseUrl",

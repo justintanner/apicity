@@ -379,9 +379,9 @@ export async function instantiateProvider(
   }
   const opts: Record<string, unknown> = {};
   if (credential) opts[spec.optionKey] = credential;
-  // The MCP server is the code client: it holds the shared secret to *verify*
-  // OTPs, but never mints them. A human mints an OTP out-of-band and the caller
-  // passes it as the tool's `otp` argument, so the AI cannot self-approve.
+  // The CLI is the code client: it holds the shared secret to *verify* OTPs,
+  // but never mints them. A human mints an OTP out-of-band and the caller
+  // passes it as `--otp <token>`, so the AI cannot self-approve.
   if (paygateSecret && (await providerHasPaidEndpoint(name))) {
     opts.paygate = { secret: paygateSecret };
   }

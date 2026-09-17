@@ -27,7 +27,6 @@ import { CliError, classifyError, type ClassifyContext } from "./errors.js";
 import { runCommands, runDescribe, runProviders } from "./discovery.js";
 import { isHelpTopic, printHelpTopic } from "./help.js";
 import { bindArguments, callEndpoint, mergeRequestFields } from "./invoke.js";
-import { parseMcpArgs, runMcp } from "./mcp/cli.js";
 import { runSkillCommand } from "./skill.js";
 import { runSetupCommand } from "./setup.js";
 import { runDoctor } from "./doctor.js";
@@ -50,7 +49,7 @@ import { readPackageVersion } from "./version.js";
 /**
  * Dispatch one `apicity` invocation and answer its exit status.
  *
- * W1 knew `mcp`, `help` and `version`; W2 adds the three discovery commands,
+ * W1 knew `help` and `version`; W2 adds the three discovery commands,
  * the help topics and the `apicity <provider>` shorthand; W4 adds `skill` and
  * `skill install`; W5 adds `setup` and `doctor`. Every later slice adds its
  * command here and in
@@ -66,8 +65,6 @@ export async function runMain(
   options: EndpointOptions = {}
 ): Promise<number> {
   const [first, ...rest] = argv;
-
-  if (first === "mcp") return serveMcp(rest);
 
   // A built-in failure follows the same output rule as an endpoint failure
   // (D-5): the envelope for `--json` and for a stdout that is not a terminal,
@@ -246,26 +243,6 @@ function parseFlags(argv: string[]): ParsedFlags {
   }
 
   return { positional, options, json };
-}
-
-/**
- * Hand the remaining argv to the MCP server untouched, so `apicity mcp <flags>`
- * is the `apicity-mcp` of previous releases.
- *
- * `runMcp` resolves as soon as the stdio transport is listening: the server
- * then lives on the event loop until the host closes stdin. `bin.ts` calls
- * `process.exit` on whatever this resolves to, so returning a status while the
- * server is healthy would kill it mid-session. Only the `--help` path is meant
- * to return; a serving invocation waits here and node exits on its own once
- * the transport ends, exactly as the standalone bin did before the move.
- * `parseMcpArgs` decides which of the two this is, and raises the same error
- * `runMcp` would on a bad flag.
- */
-async function serveMcp(argv: string[]): Promise<number> {
-  const serves = !parseMcpArgs(argv).help;
-  await runMcp(argv);
-  if (serves) await new Promise<never>(() => {});
-  return 0;
 }
 
 // ---------------------------------------------------------------------------
@@ -507,10 +484,11 @@ function readPaygateSecret(path: string | undefined): string | undefined {
 }
 
 /**
- * Persist whatever the endpoint returned, at MCP parity (OQ-17): binary
- * becomes a file plus `{savedTo, bytes}`, and a JSON result carrying media
- * URLs gets sibling `_savedTo` fields. An output directory always resolves,
- * so this runs for every call rather than only when one was asked for.
+ * Persist whatever the endpoint returned, at parity with the server this CLI
+ * replaced (OQ-17): binary becomes a file plus `{savedTo, bytes}`, and a JSON
+ * result carrying media URLs gets sibling `_savedTo` fields. An output
+ * directory always resolves, so this runs for every call rather than only
+ * when one was asked for.
  */
 async function persistResult(
   entry: CatalogEntry,

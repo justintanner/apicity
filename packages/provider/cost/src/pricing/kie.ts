@@ -9,14 +9,21 @@ import {
   hintSeconds,
 } from "./helpers";
 
-// Source URL is the kie marketplace or product page for the relevant model.
-// Rates verified 2026-04-30 unless an entry notes a newer date. Rate keys mirror
-// the upstream payload values verbatim
+// Source URL is the kie.ai product page for the model (the anchor the kie
+// pricing feed carries for its rows) or, where an entry says so, a docs.kie.ai
+// page; it prints or documents the cited rate. Entries refreshed from a dated
+// pull cite it through pricePage with an asOf; a citation-only repair adds no
+// asOf, because the stamp records the pull a rate was priced from, not the
+// page a URL points at, so rateAsOf keeps falling back to PRICING_AS_OF for
+// entries never re-priced (ac-48rps2). sora-watermark-remover is the one
+// entry still citing the kie.ai/market gallery, a soft 404 that answers
+// HTTP 200 for any path, because no product page, docs page or feed row
+// exists for it. Rates verified 2026-04-30 unless an entry notes a newer
+// date. Rate keys mirror the upstream payload values verbatim
 // (kling: payload.input.mode is "std"|"pro"|"4K"; seedance: payload.input.
 // resolution is "480p"|"720p"|"1080p"|"4k"; etc.) — there is no internal
 // translation layer between the caller's payload and the rate selector.
 
-const src = (slug: string) => ({ url: `https://kie.ai/market/${slug}` });
 const page = (url: string) => ({ url });
 
 // Source stamp for entries refreshed from the dated KIE pricing pulls. REQ-008
@@ -350,29 +357,29 @@ const megapixels = (
   return Math.ceil((dims[0] * dims[1]) / 1_000_000) * imageCount(p);
 };
 
-const flatImage = (perUnit: number, slug: string): ModelPricing => ({
+const flatImage = (perUnit: number, url: string): ModelPricing => ({
   kind: "perUnit",
   unit: "images",
   units: imageCount,
   select: [],
   rates: { "": perUnit },
-  source: src(slug),
+  source: page(url),
 });
 
 // Flat per-call rate for endpoints that bill once per request regardless
 // of input shape (Suno endpoints, sora-watermark-remover, etc.).
-const flatGen = (perUnit: number, slug: string): ModelPricing => ({
+const flatGen = (perUnit: number, url: string): ModelPricing => ({
   kind: "perUnit",
   unit: "generations",
   units: () => 1,
   select: [],
   rates: { "": perUnit },
-  source: src(slug),
+  source: page(url),
 });
 
-// flatGen / flatImage for the non-createTask endpoints, whose evidence is a
-// product page rather than a /market/ slug. The image variant fixes units at 1
-// because these flat payloads carry no batch field (no `input.n` to read).
+// flatGen / flatImage variants for the non-createTask endpoints; they stamp
+// asOf through pricePage. The image variant fixes units at 1 because these
+// flat payloads carry no batch field (no `input.n` to read).
 const flatGenPage = (perUnit: number, url: string): ModelPricing => ({
   kind: "perUnit",
   unit: "generations",
@@ -391,10 +398,10 @@ const flatImagePage = (perUnit: number, url: string): ModelPricing => ({
   source: pricePage(url),
 });
 
-// flatImage for the createTask families whose evidence is a kie.ai pricing
-// page URL rather than a bare /market/<slug> path. Unlike flatImagePage above,
-// units run through imageCount, so the families that do declare a batch field
-// (ideogram remix / character*) scale with it.
+// flatImage with a pricePage asOf stamp, for the createTask families refreshed
+// from a dated pull. Unlike flatImagePage above, units run through imageCount,
+// so the families that do declare a batch field (ideogram remix / character*)
+// scale with it.
 const flatImagePricePage = (perUnit: number, url: string): ModelPricing => ({
   kind: "perUnit",
   unit: "images",
@@ -457,7 +464,7 @@ const perMegapixel = (
 // input.resolution (matches the upstream schema default).
 const tieredImage = (
   rates: Record<string, number>,
-  slug: string,
+  url: string,
   defaultResolution?: string
 ): ModelPricing => ({
   kind: "perUnit",
@@ -471,7 +478,7 @@ const tieredImage = (
     },
   ],
   rates,
-  source: src(slug),
+  source: page(url),
 });
 
 const happyHorse11Video = (variant: string): ModelPricing => ({
@@ -865,7 +872,8 @@ export const kie: Record<string, ModelPricing> = {
   ),
 
   // Kling 3.0 video: 6 rates, mode × sound. mode ∈ {"std","pro","4K"}.
-  // 4K rate is the same with or without sound.
+  // 4K rate is the same with or without sound. Cites the 2026-09-11 feed
+  // anchor https://kie.ai/kling-3-0, a single-tab page (ac-48rps2).
   "kling-3.0/video": {
     kind: "perUnit",
     unit: "seconds",
@@ -891,18 +899,19 @@ export const kie: Record<string, ModelPricing> = {
       "4K": 0.335,
       "4K|sound": 0.335,
     },
-    source: src("kwaivgi/kling-3.0"),
+    source: page("https://kie.ai/kling-3-0"),
   },
 
   // Kling 3.0 motion-control: 2 tiers by mode ("720p"|"1080p"). Audio is
-  // not separately priced for motion-control.
+  // not separately priced for motion-control. Cites the 2026-09-11 feed
+  // anchor https://kie.ai/kling-3-motion-control, a single-tab page.
   "kling-3.0/motion-control": {
     kind: "perUnit",
     unit: "seconds",
     units: seconds,
     select: [{ name: "mode", pick: inputMode, required: true }],
     rates: { "720p": 0.1, "1080p": 0.135 },
-    source: src("kwaivgi/kling-3.0"),
+    source: page("https://kie.ai/kling-3-motion-control"),
   },
 
   // Kling O3 / Kling 3.0 Omni: all four tasks bill per output second. Text
@@ -1394,7 +1403,9 @@ export const kie: Record<string, ModelPricing> = {
 
   // grok-imagine images — kie returns a fixed bundle per call (6 default,
   // 4 with input.enable_pro=true for t2i; 2 for i2i). The caller can't
-  // request n=1, so price is flat per generation.
+  // request n=1, so price is flat per generation. Both cite their 2026-09-11
+  // feed anchors, page-declared ?model= tabs of https://kie.ai/grok-imagine
+  // (ac-48rps2).
   "grok-imagine/text-to-image": {
     kind: "perUnit",
     unit: "generations",
@@ -1407,7 +1418,9 @@ export const kie: Record<string, ModelPricing> = {
       },
     ],
     rates: { "": 0.02, pro: 0.025 },
-    source: src("xai/grok-imagine"),
+    source: page(
+      "https://kie.ai/grok-imagine?model=grok-imagine%2Ftext-to-image"
+    ),
   },
   "grok-imagine/image-to-image": {
     kind: "perUnit",
@@ -1415,7 +1428,9 @@ export const kie: Record<string, ModelPricing> = {
     units: () => 1,
     select: [],
     rates: { "": 0.02 },
-    source: src("xai/grok-imagine"),
+    source: page(
+      "https://kie.ai/grok-imagine?model=grok-imagine%2Fimage-to-image"
+    ),
   },
 
   // grok-imagine-image-2-0: rechecked against the 2026-08-22 catalog, whose
@@ -2048,31 +2063,40 @@ export const kie: Record<string, ModelPricing> = {
   // (nano-banana-2, gpt-image-2) require input.resolution; flat-rate
   // families (qwen2, seedream/5-lite) only need the model string.
   // wan/2-7-image accepts an `n` field for batch generation.
+  // Citations (ac-48rps2): nano-banana-2, nano-banana-pro, gpt-image-2-*,
+  // wan/2-7-image*, qwen2/* and seedream/5-lite-* cite the 2026-09-11 feed
+  // anchors verbatim: the bare page where the feed anchors a bare page
+  // (qwen2/image-edit, wan/2-7-image, and the single-tab nano-banana-2 and
+  // nano-banana-pro pages), the page-declared ?model= tab elsewhere. They
+  // previously cited kie.ai/market/<slug> gallery URLs, which answer HTTP 200
+  // for any path and render no model content (soft 404, ac-c2n4pa
+  // 2026-09-16). Pages read on 2026-09-17: each prints the runtime's cells;
+  // the Qwen Image 2.0 page rounds its 5.6-credit / $0.028 rate to "~ $0.03".
   // KIE's dedicated Nano Banana page lists 4 credits (~$0.02) per image.
   "nano-banana": {
-    ...flatImage(0.02, "google/nano-banana"),
+    ...flatImage(0.02, "https://kie.ai/nano-banana"),
     source: { ...page("https://kie.ai/nano-banana"), asOf: "2026-07-22" },
   },
   "nano-banana-2": tieredImage(
     { "1K": 0.04, "2K": 0.06, "4K": 0.09 },
-    "google/nano-banana-2",
+    "https://kie.ai/nano-banana-2",
     "2K"
   ),
   // nano-banana-pro: 1K and 2K share the $0.09 rate per the marketplace
   // ("1/2K"), 4K is $0.12.
   "nano-banana-pro": tieredImage(
     { "1K": 0.09, "2K": 0.09, "4K": 0.12 },
-    "google/nano-banana-pro",
+    "https://kie.ai/nano-banana-pro",
     "2K"
   ),
   "gpt-image-2-text-to-image": tieredImage(
     { "1K": 0.03, "2K": 0.05, "4K": 0.08 },
-    "openai/gpt-image-2",
+    "https://kie.ai/gpt-image-2?model=gpt-image-2-text-to-image",
     "2K"
   ),
   "gpt-image-2-image-to-image": tieredImage(
     { "1K": 0.03, "2K": 0.05, "4K": 0.08 },
-    "openai/gpt-image-2",
+    "https://kie.ai/gpt-image-2?model=gpt-image-2-image-to-image",
     "2K"
   ),
   // GPT Image 2.5 (flare / sunburst): per image by input.resolution,
@@ -2110,10 +2134,16 @@ export const kie: Record<string, ModelPricing> = {
     "1K",
     "2026-09-11"
   ),
-  "wan/2-7-image": flatImage(0.024, "alibaba/wan-2.7"),
-  "wan/2-7-image-pro": flatImage(0.06, "alibaba/wan-2.7"),
-  "qwen2/text-to-image": flatImage(0.028, "alibaba/qwen-image-2"),
-  "qwen2/image-edit": flatImage(0.028, "alibaba/qwen-image-2"),
+  "wan/2-7-image": flatImage(0.024, "https://kie.ai/wan-2-7-image"),
+  "wan/2-7-image-pro": flatImage(
+    0.06,
+    "https://kie.ai/wan-2-7-image?model=wan%2F2-7-image-pro"
+  ),
+  "qwen2/text-to-image": flatImage(
+    0.028,
+    "https://kie.ai/qwen-image-2?model=qwen2%2Ftext-to-image"
+  ),
+  "qwen2/image-edit": flatImage(0.028, "https://kie.ai/qwen-image-2"),
 
   // Qwen 3 — the 2026-08-22 catalog publishes identical 1K/2K base output
   // rates, so resolution is not a billing axis for the base pair. Pro keeps
@@ -2156,8 +2186,14 @@ export const kie: Record<string, ModelPricing> = {
     "2026-08-22",
     qwen3InputImageExtra
   ),
-  "seedream/5-lite-text-to-image": flatImage(0.0275, "bytedance/seedream-5"),
-  "seedream/5-lite-image-to-image": flatImage(0.0275, "bytedance/seedream-5"),
+  "seedream/5-lite-text-to-image": flatImage(
+    0.0275,
+    "https://kie.ai/seedream5-0-lite?model=seedream%2F5-lite-text-to-image"
+  ),
+  "seedream/5-lite-image-to-image": flatImage(
+    0.0275,
+    "https://kie.ai/seedream5-0-lite?model=seedream%2F5-lite-image-to-image"
+  ),
 
   // ---------------------------------------------------------------------
   // createTask image families from the 2026-08-06 pricing pull. All are
@@ -2438,9 +2474,18 @@ export const kie: Record<string, ModelPricing> = {
   "flux-kontext-pro": flatImagePage(0.025, "https://kie.ai/flux-kontext-api"),
   "flux-kontext-max": flatImagePage(0.05, "https://kie.ai/flux-kontext-api"),
 
-  // sora-watermark-remover: flat $0.05 per removal (only published rate
-  // on the marketplace). Schema has no tier selector.
-  "sora-watermark-remover": flatGen(0.05, "openai/sora-2"),
+  // sora-watermark-remover: flat $0.05 per removal, the only rate ever
+  // published for it. Schema has no tier selector. Citation: still the
+  // kie.ai/market gallery URL, kept under ac-c2n4pa REQ-004 rule (4): no
+  // feed row in any snapshot or in the 2026-09-16 live pull (the manifest
+  // lists the key upstream-unmappable), no page in the docs.kie.ai sitemap,
+  // and seven candidate kie.ai / docs.kie.ai URLs answered 404 on 2026-09-17.
+  // The gallery answers 200 with no model content (soft 404).
+  // Residue: ac-bn67fm.
+  "sora-watermark-remover": flatGen(
+    0.05,
+    "https://kie.ai/market/openai/sora-2"
+  ),
 
   // ElevenLabs TTS resold through createTask (2026-08-06 pull). kie publishes
   // these per 1000 characters; each entry stores page USD / 1000 as its
@@ -2480,14 +2525,45 @@ export const kie: Record<string, ModelPricing> = {
   // same across versions and varies per endpoint. Callers pass the
   // synthetic key via EstimateRequest.endpoint (e.g. "suno/generate"), and
   // the upstream payload stays untouched. Flat rates unless noted.
-  "suno/generate": flatGen(0.06, "suno/suno"),
-  "suno/extend": flatGen(0.06, "suno/suno"),
-  "suno/upload-cover": flatGen(0.06, "suno/suno"),
-  "suno/upload-extend": flatGen(0.06, "suno/suno"),
-  "suno/wav-generate": flatGen(0.002, "suno/suno"),
-  "suno/mp4-generate": flatGen(0.01, "suno/suno"),
-  "suno/lyrics": flatGen(0.002, "suno/suno"),
-  "suno/style-generate": flatGen(0.002, "suno/suno"),
+  // Citations (ac-48rps2): the thirteen flatGen entries cite the 2026-09-11
+  // feed anchors, https://kie.ai/suno-api?model=ai-music-api%2F<tab> deep
+  // links the page declares; the bare page for suno/extend and
+  // suno/add-vocals-generate, whose feed rows anchor the bare page; and the
+  // extend tab for suno/upload-extend, where its feed row points. suno/lyrics
+  // and suno/replace-music-section-generate cite the page's generate-lyrics
+  // and replace-section tabs instead of their feed anchors, which are
+  // docs.kie.ai pages that print no price. All thirteen previously cited the
+  // kie.ai/market/suno/suno gallery (soft 404). Page read on 2026-09-17:
+  // every tab prints the runtime's rate.
+  "suno/generate": flatGen(
+    0.06,
+    "https://kie.ai/suno-api?model=ai-music-api%2Fgenerate"
+  ),
+  "suno/extend": flatGen(0.06, "https://kie.ai/suno-api"),
+  "suno/upload-cover": flatGen(
+    0.06,
+    "https://kie.ai/suno-api?model=ai-music-api%2Fupload-and-cover-audio"
+  ),
+  "suno/upload-extend": flatGen(
+    0.06,
+    "https://kie.ai/suno-api?model=ai-music-api%2Fextend"
+  ),
+  "suno/wav-generate": flatGen(
+    0.002,
+    "https://kie.ai/suno-api?model=ai-music-api%2Fconvert-to-wav-format"
+  ),
+  "suno/mp4-generate": flatGen(
+    0.01,
+    "https://kie.ai/suno-api?model=ai-music-api%2Fcreate-music-video"
+  ),
+  "suno/lyrics": flatGen(
+    0.002,
+    "https://kie.ai/suno-api?model=ai-music-api%2Fgenerate-lyrics"
+  ),
+  "suno/style-generate": flatGen(
+    0.002,
+    "https://kie.ai/suno-api?model=ai-music-api%2Fboost-music-style"
+  ),
 
   // suno/vocal-removal-generate: 2 rates by `payload.type`.
   // "separate_vocal" → $0.05 (Vocal Separation)
@@ -2511,12 +2587,25 @@ export const kie: Record<string, ModelPricing> = {
     ),
   },
 
-  // New Suno endpoints (5 missing from marketplace)
-  "suno/mashup-generate": flatGen(0.06, "suno/suno"),
-  "suno/replace-music-section-generate": flatGen(0.025, "suno/suno"),
-  "suno/sounds-generate": flatGen(0.0125, "suno/suno"),
-  "suno/add-instrumental-generate": flatGen(0.06, "suno/suno"),
-  "suno/add-vocals-generate": flatGen(0.06, "suno/suno"),
+  // Suno endpoints added after the first pull; all five are priced by
+  // 2026-09-11 feed rows and cite the page tabs described above.
+  "suno/mashup-generate": flatGen(
+    0.06,
+    "https://kie.ai/suno-api?model=ai-music-api%2Fmashup"
+  ),
+  "suno/replace-music-section-generate": flatGen(
+    0.025,
+    "https://kie.ai/suno-api?model=ai-music-api%2Freplace-section"
+  ),
+  "suno/sounds-generate": flatGen(
+    0.0125,
+    "https://kie.ai/suno-api?model=ai-music-api%2Fsounds"
+  ),
+  "suno/add-instrumental-generate": flatGen(
+    0.06,
+    "https://kie.ai/suno-api?model=ai-music-api%2Fadd-instrumental"
+  ),
+  "suno/add-vocals-generate": flatGen(0.06, "https://kie.ai/suno-api"),
 
   // suno/timestamped-lyrics — 0.5 credits ($0.0025) per request, for
   // POST /api/v1/generate/get-timestamped-lyrics. Key follows the existing

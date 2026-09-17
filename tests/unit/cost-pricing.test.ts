@@ -3823,6 +3823,112 @@ describe("kie wan 2.2 / 2.5 per-model pricing (REQ-004)", () => {
     expect(PRICING.kie[model].source).toEqual({ url, asOf });
   });
 
+  // The 28 entries that cited kie.ai/market/<slug> gallery URLs (HTTP 200 for
+  // any path, no model content: the soft 404 the 2026-09-16 sweep counted,
+  // ac-c2n4pa) now cite the 2026-09-11 feed anchors, or the page's own tab
+  // where the feed anchor is a docs.kie.ai page that prints no price
+  // (suno/lyrics, suno/replace-music-section-generate);
+  // sora-watermark-remover keeps its gallery URL because no page exists
+  // (ac-48rps2). A citation-only repair adds no asOf, so rateAsOf stays
+  // PRICING_AS_OF on all 28. Pinning the whole `source` object makes a
+  // gallery regression and an asOf drift both fail here.
+  it.each([
+    {
+      model: "qwen2/text-to-image",
+      url: "https://kie.ai/qwen-image-2?model=qwen2%2Ftext-to-image",
+    },
+    { model: "qwen2/image-edit", url: "https://kie.ai/qwen-image-2" },
+    { model: "wan/2-7-image", url: "https://kie.ai/wan-2-7-image" },
+    {
+      model: "wan/2-7-image-pro",
+      url: "https://kie.ai/wan-2-7-image?model=wan%2F2-7-image-pro",
+    },
+    {
+      model: "seedream/5-lite-text-to-image",
+      url: "https://kie.ai/seedream5-0-lite?model=seedream%2F5-lite-text-to-image",
+    },
+    {
+      model: "seedream/5-lite-image-to-image",
+      url: "https://kie.ai/seedream5-0-lite?model=seedream%2F5-lite-image-to-image",
+    },
+    { model: "nano-banana-2", url: "https://kie.ai/nano-banana-2" },
+    { model: "nano-banana-pro", url: "https://kie.ai/nano-banana-pro" },
+    { model: "kling-3.0/video", url: "https://kie.ai/kling-3-0" },
+    {
+      model: "kling-3.0/motion-control",
+      url: "https://kie.ai/kling-3-motion-control",
+    },
+    {
+      model: "gpt-image-2-text-to-image",
+      url: "https://kie.ai/gpt-image-2?model=gpt-image-2-text-to-image",
+    },
+    {
+      model: "gpt-image-2-image-to-image",
+      url: "https://kie.ai/gpt-image-2?model=gpt-image-2-image-to-image",
+    },
+    {
+      model: "suno/generate",
+      url: "https://kie.ai/suno-api?model=ai-music-api%2Fgenerate",
+    },
+    { model: "suno/extend", url: "https://kie.ai/suno-api" },
+    {
+      model: "suno/upload-cover",
+      url: "https://kie.ai/suno-api?model=ai-music-api%2Fupload-and-cover-audio",
+    },
+    {
+      model: "suno/upload-extend",
+      url: "https://kie.ai/suno-api?model=ai-music-api%2Fextend",
+    },
+    {
+      model: "suno/wav-generate",
+      url: "https://kie.ai/suno-api?model=ai-music-api%2Fconvert-to-wav-format",
+    },
+    {
+      model: "suno/mp4-generate",
+      url: "https://kie.ai/suno-api?model=ai-music-api%2Fcreate-music-video",
+    },
+    {
+      model: "suno/lyrics",
+      url: "https://kie.ai/suno-api?model=ai-music-api%2Fgenerate-lyrics",
+    },
+    {
+      model: "suno/style-generate",
+      url: "https://kie.ai/suno-api?model=ai-music-api%2Fboost-music-style",
+    },
+    {
+      model: "suno/mashup-generate",
+      url: "https://kie.ai/suno-api?model=ai-music-api%2Fmashup",
+    },
+    {
+      model: "suno/replace-music-section-generate",
+      url: "https://kie.ai/suno-api?model=ai-music-api%2Freplace-section",
+    },
+    {
+      model: "suno/sounds-generate",
+      url: "https://kie.ai/suno-api?model=ai-music-api%2Fsounds",
+    },
+    {
+      model: "suno/add-instrumental-generate",
+      url: "https://kie.ai/suno-api?model=ai-music-api%2Fadd-instrumental",
+    },
+    { model: "suno/add-vocals-generate", url: "https://kie.ai/suno-api" },
+    {
+      model: "grok-imagine/text-to-image",
+      url: "https://kie.ai/grok-imagine?model=grok-imagine%2Ftext-to-image",
+    },
+    {
+      model: "grok-imagine/image-to-image",
+      url: "https://kie.ai/grok-imagine?model=grok-imagine%2Fimage-to-image",
+    },
+    {
+      model: "sora-watermark-remover",
+      url: "https://kie.ai/market/openai/sora-2",
+    },
+  ])("pins the product-page citation of $model", ({ model, url }) => {
+    expect(PRICING.kie[model].source).toEqual({ url });
+    expect(PRICING.kie[model].source.asOf).toBeUndefined();
+  });
+
   // Wan 3.0 bills (input video duration + output video duration) × the
   // per-second rate (https://kie.ai/wan3.0-video and
   // https://kie.ai/wan3.0-video-prime, confirmed 2026-09-16, ac-ge9l10). The

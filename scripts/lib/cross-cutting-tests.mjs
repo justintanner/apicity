@@ -147,48 +147,58 @@ import { repoRoot } from "./provider-scope.mjs";
  * pinned to this value by `tests/unit/cross-cutting-tests.test.ts`.
  *
  * The value is the median of three runs of the WHOLE block at its current
- * ten-entry membership — 700 tests across 10 files — on the machine this
- * constant now designates as the reference one: an Intel Core i7-8700 @
- * 3.20GHz, 12 threads, Linux 6.8.0-124, Node v22.23.2. After one warm-up run,
- * excluded, the three timed runs were 8.643s, 8.577s and 8.353s wall; the
- * median is 8.577s, recorded here to one decimal place. That median is a
- * loaded-host figure, not a quiet-host one: the three runs were taken under
- * 1-minute load averages of 9.67, 11.52 and 12.28 on 12 threads, and their
- * 3.5% agreement shows the window was stable, not that the block always costs
- * this. Whole-block runs of this same ten-entry list on this same host span
- * roughly 4.8s to 9.5s tracking concurrent agent load, and 8.6 is the loaded
- * end of that range. A lower re-measure on a quiet city is a different load
- * regime, not a regression; and the two guards added at ac-wojr6j are not
- * separable from that noise at n=3, so read the 5.8 to 8.6 step as load, not
- * as the cost of the block growing.
+ * eleven-entry membership - 918 tests across 11 files - measured on 2026-09-17
+ * at commit f5226e3f on the reference host: an Intel Core i7-8700 @ 3.20GHz, 12
+ * threads, Linux 6.8.0-124, Node v22.23.2. After one warm-up run, discarded
+ * (12.236s at a 1-minute load average of 15.95), the three timed runs were
+ * 13.744s, 14.885s and 15.277s wall at 1-minute load averages of 17.36, 19.10
+ * and 22.08; the median is 14.885s, recorded here as 14.9 to one decimal place.
+ * It replaces 8.6 by the rule below: the min-max spread 13.744-15.277s does not
+ * contain 8.6 and the median does not round to it (ac-iag7fk).
  *
- * Naming the machine is as much the point as the number is. No file recorded
- * which host produced the earlier figures, so three successive additions each
+ * That session's 1-minute load regime, 17.36-22.08, sits above the 9.67-12.28
+ * regime that produced 8.6. The two other regimes recorded for this host are
+ * 3.60-5.87, at which the eleven-entry block measured 6.2 (5.351s, 6.274s and
+ * 6.194s wall at 1-minute loads of 3.60, 4.99 and 5.87, the 2026-08-31
+ * integration that added `tests/unit/compare-namespace-shapes-cli.test.ts`) and
+ * 8.6 was kept as the loaded-end figure, and 16.7-21.3, at which it measured
+ * 10.8 (13.402s, 9.812s and 10.812s, the ac-8kth4v review at 861f308f). A
+ * figure is comparable only with its load beside it: whole-block runs of the
+ * ten-entry list on this host spanned roughly 4.8s to 9.5s tracking concurrent
+ * agent load, so a lower or higher re-measure in a different regime is load,
+ * not the block changing.
+ *
+ * Naming the host is as much the point as the number is. No file recorded which
+ * host produced the earlier figures, so three successive additions each
  * declined to overwrite a number they could not reproduce and the constant
- * drifted five entries behind the block (ac-wojr6j). This measurement
- * supersedes both figures it replaces: the 5.7 recorded at five entries, and
- * the 5.8 median recorded at nine entries on this same host (ac-j4z1t1). The
- * 9.878s / 8.533s pair that arrived with the export-surface guard describes a
- * different, unnamed machine and was never this block's cost on this one.
+ * drifted five entries behind the block (ac-wojr6j). The 8.6 it replaces was
+ * the ten-entry measurement of ac-wojr6j - 700 tests across 10 files on this
+ * same host - at 8.643s, 8.577s and 8.353s wall under 1-minute load averages of
+ * 9.67, 11.52 and 12.28, median 8.577s. That measurement superseded both
+ * figures before it: the 5.7 recorded at five entries, and the 5.8 median
+ * recorded at nine entries on this same host (ac-j4z1t1). The 9.878s / 8.533s
+ * pair that arrived with the export-surface guard describes a different,
+ * unnamed machine and was never this block's cost on this one.
  *
  * Every entry stays filesystem- and source-parse-only; the credential guard's
  * dominant cost is one JSON parse of the fal HAR corpus plus a single pass
  * over the test tree, and the namespace-shape guard parses all 29 provider
  * factories in about 0.3s.
  *
- * Re-measure the whole block on this machine, at a comparable load average
- * and recording that load average here beside the figure, when the block's
- * membership changes; the guard test will name the prose that has to follow.
- *
- * Eleven-entry membership (this integration adds
- * `tests/unit/compare-namespace-shapes-cli.test.ts`) re-measured on the same
- * i7-8700 at 5.351s, 6.274s and 6.194s wall — median 6.2s — at 1-minute load
- * averages of 3.60, 4.99 and 5.87 after a discarded warm-up. That is below the
- * 8.6 pinned here, and consistent with the load-dominance recorded above rather
- * than with the extra entry being free; 8.6 is kept as the reviewed figure
- * because it was taken at the loaded end of the same host's range.
+ * Re-measure when the membership changes, and record the result here. The
+ * protocol is the one this figure was taken by (ac-iag7fk): on this host -
+ * `/proc/cpuinfo` model name, `nproc`, `uname -r` and `node -v` must match the
+ * four facts above, otherwise record the mismatch and do not re-pin - run one
+ * discarded warm-up, then three timed runs back-to-back of `pnpm run test:run`
+ * over every `CROSS_CUTTING_TESTS` entry, taking wall time from `date +%s%N`
+ * before and after each run and `/proc/loadavg` immediately before it. M is the
+ * median of the three wall figures to one decimal (ties up). Keep the pinned
+ * value if the three runs' min-max contains it or M equals it; otherwise re-pin
+ * to M. Record the commit, membership, test and file counts, the three wall
+ * figures, the three 1-minute loads and the verdict here; the guard test names
+ * the `CLAUDE.md` prose that has to move with it.
  */
-export const CROSS_CUTTING_COST_SECONDS = 8.6;
+export const CROSS_CUTTING_COST_SECONDS = 14.9;
 
 /**
  * The one sentence describing the block's cost, built from the single source.

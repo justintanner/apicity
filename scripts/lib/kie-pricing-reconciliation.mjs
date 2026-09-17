@@ -48,14 +48,24 @@ const SOURCE_FILES = Object.freeze({
   endpoints: "scripts/endpoint-docs.tsv",
 });
 
+// Seedance 2.5's six official cells, keyed resolution|videoInput: the page's
+// "with video" column is the cheaper one because it bills (input + output)
+// seconds, and generate_audio selects no rate (ac-u8y5xg).
 const REQUIRED_SEEDANCE_RATES = Object.freeze({
-  "480p|no-audio": "0.140",
-  "480p|audio": "0.085",
-  "720p|no-audio": "0.315",
-  "720p|audio": "0.190",
-  "1080p|no-audio": "0.570",
-  "1080p|audio": "0.3425",
+  "480p|no-video": "0.140",
+  "480p|video": "0.085",
+  "720p|no-video": "0.315",
+  "720p|video": "0.190",
+  "1080p|no-video": "0.570",
+  "1080p|video": "0.3425",
 });
+
+// Seedance 2.5's videoInput selector is derived from the schema field
+// input.reference_video_urls (a non-empty array selects the "with video"
+// column) rather than read from a field verbatim, so its selector source
+// names that derivation instead of a modelInputSchemas field.
+const SEEDANCE_25_VIDEO_INPUT_SOURCE =
+  "derived:bytedance/seedance-2-5#reference_video_urls";
 
 const FINAL_FOLLOW_UP_BEADS = new Set(["ac-huxfmb", "ac-flqhcu", "ac-7r282y"]);
 
@@ -711,8 +721,8 @@ function seedanceValues(raw) {
     : /480p/i.test(text)
       ? "480p"
       : "720p";
-  const generate_audio = /with video/i.test(text);
-  return { resolution, generate_audio };
+  const videoInput = /with video/i.test(text) ? "video" : "no-video";
+  return { resolution, videoInput };
 }
 
 function selectorSources(key, selectors, inventories) {
@@ -722,9 +732,11 @@ function selectorSources(key, selectors, inventories) {
       field,
       key === "grok-imagine/extend" && field === "resolution"
         ? "cost-only-metadata:grok-imagine/extend"
-        : modelFields && Object.hasOwn(modelFields, field)
-          ? `modelInputSchemas:${key}`
-          : `direct-endpoint:${key}`,
+        : key === "bytedance/seedance-2-5" && field === "videoInput"
+          ? SEEDANCE_25_VIDEO_INPUT_SOURCE
+          : modelFields && Object.hasOwn(modelFields, field)
+            ? `modelInputSchemas:${key}`
+            : `direct-endpoint:${key}`,
     ])
   );
 }
@@ -764,17 +776,6 @@ function representativePayload(
   const fields = inventories.descriptorFields[key] ?? {};
   const registeredOverride = representativePayloadOverride(key, selectors);
   if (registeredOverride) return registeredOverride;
-  if (key === "bytedance/seedance-2-5") {
-    return {
-      model: key,
-      input: {
-        prompt: "audit",
-        resolution: selectors.resolution,
-        generate_audio: selectors.generate_audio,
-        duration: 5,
-      },
-    };
-  }
   if (key === "wan/2-2-a14b-speech-to-video-turbo") {
     input.num_frames = 80;
     input.frames_per_second = 16;
@@ -805,11 +806,24 @@ function representativePayload(
   return { endpoint: key, ...payload };
 }
 
-function representativeCostHints(key, inventories, auditedUnit) {
+// Cost-only hints the guard passes beside a representative payload. A seconds
+// row whose descriptor declares no duration field gets durationSeconds; a row
+// whose payload carries reference clips gets inputDurationSeconds, because
+// the entries on the "(input video duration + output video duration) x rate"
+// rule fail a reference-video request closed unless the clips' length is
+// declared (ac-ge9l10 for Wan 3.0, ac-u8y5xg for the Seedance families and
+// MiniMax H3), and representativePricingMetadata.costHints is the only
+// channel the guard's runtimeCase reads.
+function representativeCostHints(key, inventories, auditedUnit, payload) {
   if (auditedUnit.unit !== "seconds") return undefined;
-  if (key === "wan/2-2-a14b-speech-to-video-turbo") return undefined;
-  const fields = inventories.descriptorFields[key] ?? {};
-  return Object.hasOwn(fields, "duration") ? undefined : { durationSeconds: 5 };
+  const hints = {};
+  if (key !== "wan/2-2-a14b-speech-to-video-turbo") {
+    const fields = inventories.descriptorFields[key] ?? {};
+    if (!Object.hasOwn(fields, "duration")) hints.durationSeconds = 5;
+  }
+  const clips = payload?.input?.reference_video_urls;
+  if (Array.isArray(clips) && clips.length > 0) hints.inputDurationSeconds = 5;
+  return Object.keys(hints).length ? hints : undefined;
 }
 
 function representativePricingMetadata(official, key) {
@@ -1088,14 +1102,7 @@ function classifyRawRow(raw, inventories) {
       inventories
     );
     const pricingMetadata = representativePricingMetadata(official, key);
-    const costHints = representativeCostHints(key, inventories, auditedUnit);
-    if (pricingMetadata || costHints) {
-      result.representativePricingMetadata = {
-        ...(pricingMetadata ?? {}),
-        ...(costHints ? { costHints } : {}),
-      };
-    }
-    result.representativePayload = representativePayload(
+    const representative = representativePayload(
       key,
       result.selectorValues,
       inventories.models.includes(key),
@@ -1103,6 +1110,21 @@ function classifyRawRow(raw, inventories) {
       inventories,
       auditedUnit
     );
+    const costHints = representativeCostHints(
+      key,
+      inventories,
+      auditedUnit,
+      representative
+    );
+    if (pricingMetadata || costHints) {
+      result.representativePricingMetadata = {
+        ...(pricingMetadata ?? {}),
+        ...(costHints ? { costHints } : {}),
+      };
+    }
+    // Assigned after representativePricingMetadata so the manifest's key
+    // order — and every unchanged row's bytes — stay exactly as committed.
+    result.representativePayload = representative;
     if (
       key === "nano-banana-pro" &&
       /1\/2k/i.test(String(official.modelDescription ?? ""))
@@ -1592,13 +1614,17 @@ function validateSelectorValues(row, inventories) {
     const fieldSpec = modelFields?.[field];
     const grokExtendMetadata =
       key === "grok-imagine/extend" && field === "resolution";
+    const seedance25VideoInput =
+      key === "bytedance/seedance-2-5" && field === "videoInput";
     const expectedSource = fieldSpec
       ? `modelInputSchemas:${key}`
       : grokExtendMetadata
         ? "cost-only-metadata:grok-imagine/extend"
-        : !isCreateTask && DIRECT_ENDPOINT_FIELDS.has(field)
-          ? `direct-endpoint:${key}`
-          : null;
+        : seedance25VideoInput
+          ? SEEDANCE_25_VIDEO_INPUT_SOURCE
+          : !isCreateTask && DIRECT_ENDPOINT_FIELDS.has(field)
+            ? `direct-endpoint:${key}`
+            : null;
     if (!expectedSource) {
       fail(
         "selector-field-unmapped",
@@ -1815,7 +1841,7 @@ function validateSeedance(rows) {
         `${row.occurrenceId} is not implemented`
       );
     }
-    const key = `${row.selectorValues?.resolution}|${row.selectorValues?.generate_audio ? "audio" : "no-audio"}`;
+    const key = `${row.selectorValues?.resolution}|${row.selectorValues?.videoInput}`;
     const expectedRate = REQUIRED_SEEDANCE_RATES[key];
     if (!expectedRate || String(row.rateBasis?.usdPrice) !== expectedRate) {
       fail(
@@ -2303,11 +2329,11 @@ export function renderReconciliationMarkdown(manifest) {
     "",
     "The mandatory four official cells are executable against the integrated WI6 cost table:",
     "",
-    "| Resolution | Generate audio | USD/sec | Occurrence |",
+    "| Resolution | Video input | USD/sec | Occurrence |",
     "| --- | --- | ---: | --- |",
     ...seedance.map(
       (row) =>
-        `| ${row.selectorValues.resolution} | ${row.selectorValues.generate_audio ? "audio" : "no-audio"} | ${row.rateBasis.usdPrice} | ${row.occurrenceId} |`
+        `| ${row.selectorValues.resolution} | ${row.selectorValues.videoInput} | ${row.rateBasis.usdPrice} | ${row.occurrenceId} |`
     ),
     "",
     "## Explicit Audit Queue",

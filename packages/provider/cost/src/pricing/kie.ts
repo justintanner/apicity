@@ -125,12 +125,13 @@ const hasReferenceVideoInput = (p: Record<string, unknown>): boolean => {
   return Array.isArray(referenceVideoUrls) && referenceVideoUrls.length > 0;
 };
 
-// Tri-state read of `input.reference_video_urls`, the field the Wan 3.0 pages
-// bill as input video duration: `false` when absent, null or an empty array
-// (no video input), `true` when a non-empty array, `undefined` when present
-// but not an array — a malformed wire value must never price as a text-only
-// request. hasReferenceVideoInput above stays boolean for the seedance column
-// selector, which maps a malformed field to "no-video".
+// Tri-state read of `input.reference_video_urls`, the field the Wan 3.0,
+// Seedance and MiniMax H3 pages bill as input video duration: `false` when
+// absent, null or an empty array (no video input), `true` when a non-empty
+// array, `undefined` when present but not an array — a malformed wire value
+// must never price as a text-only request. hasReferenceVideoInput above stays
+// boolean for the seedance column selectors, which map a malformed field to
+// "no-video" (the wrapped units resolver fails such a payload closed first).
 const referenceVideoInput = (
   p: Record<string, unknown>
 ): boolean | undefined => {
@@ -147,16 +148,15 @@ type SecondsResolver = PerUnitPricing["units"];
 // billable seconds are the output seconds, unchanged; with reference clips
 // the caller's declared clip length (costHints.inputDurationSeconds) is added,
 // and a reference-video request with no valid declaration fails closed rather
-// than quoting output-only. Named for the rule, not for Wan: the seedance-2
-// family and MiniMax H3 state the same rule on the same
-// input.reference_video_urls field, so they can wrap their own output-seconds
-// resolver here. happyhorse/video-edit states it on video_url, and
-// kling-3.0-omni prices a "with video input" tier on video_urls while its
-// pages state no input-duration rule at all — referenceVideoInput above
-// returns false for every payload of theirs, so wrapping the resolver alone
-// would leave them silently priced output-only with no warning. Both need
-// their own input detector, and kling needs the rule verified first
-// (follow-up ac-u8y5xg).
+// than quoting output-only. Named for the rule, not for Wan: every entry
+// whose page states it on input.reference_video_urls wraps its own
+// output-seconds resolver here — both Wan 3.0 entries, the seedance-2 /
+// seedance-2-fast / seedance-2-mini trio, seedance-2-5 and
+// minimax-h3/reference-to-video (ac-u8y5xg; pages re-read 2026-09-17).
+// happyhorse/video-edit states the same rule on its required video_url and
+// resolves it through happyHorseEditSeconds below, since referenceVideoInput
+// returns false for every payload of its shape. kling-3.0-omni is
+// deliberately NOT wrapped; its entry comment carries the evidence.
 const inputPlusOutputSeconds =
   (outputSeconds: SecondsResolver): SecondsResolver =>
   (p, hints) => {
@@ -200,6 +200,19 @@ const inputDurationWarning =
     }
     return [];
   };
+
+// happyhorse/video-edit's billable seconds. Its page bills (input video
+// duration + output video duration) x rate on the required source video_url,
+// whose length the request never carries; the output matches the source, so
+// the declared costHints.durationSeconds stands in for both sides unless the
+// caller overrides the input side with costHints.inputDurationSeconds. An
+// underivable output length returns undefined either way, which keeps the
+// generic could-not-derive-units warning byte-identical.
+const happyHorseEditSeconds: SecondsResolver = (p, hints) => {
+  const output = seconds(p, hints);
+  if (output === undefined) return undefined;
+  return output + (hintInputSeconds(hints) ?? output);
+};
 
 // Both Wan 3.0 entries: resolution-tiered per second on the (input + output)
 // rule. Mirrors tieredVideoPage's `resolution` picker and `1080P` default byte
@@ -746,8 +759,8 @@ const perCharacterPage = (
 // 8 credits/s ($0.04) at 768P and 13 credits/s ($0.065) at 2K, halved from
 // the 2026-08-11 figures (16 / 26 credits, $0.08 / $0.13); confirmed by
 // https://kie.ai/minimax-h3 on 2026-09-11. Documented upstream default is 2K
-// when input.resolution is omitted. Duration is a required wire field
-// (int 4–15), so no costHints channel is needed.
+// when input.resolution is omitted. Output duration is a required wire
+// field (int 4–15), so the output side needs no costHints channel.
 //
 // The page separately charges 4 credits ($0.02) per input image, halved
 // from $0.04, and states "the first 5 images are free; additional images
@@ -760,8 +773,19 @@ const perCharacterPage = (
 // counted per request and only those beyond the fifth are charged. No
 // committed recording holds a creditsConsumed value for an image-bearing
 // job, so the threshold rests on the page text this entry already cites.
-// Reference-video input carries no clip duration in the request, so those
-// payloads fail closed rather than quoting a generation-only rate.
+//
+// Reference-video input is billed on both sides: the page states "Total Cost
+// = Unit Price x (Generated Video Duration + Input Video Duration) +
+// Additional Image Cost" (re-read 2026-09-17, ac-u8y5xg), and the docs bound
+// reference_video_urls at three clips of 2–15 s, 15 s in total, with no
+// duration in the request. miniMaxH3Video therefore wraps its resolver in
+// inputPlusOutputSeconds: a reference-video request prices only with
+// costHints.inputDurationSeconds — (input video duration + output seconds) x
+// the resolution rate, plus the image surcharge — and fails closed with a
+// warning naming that hint otherwise. No committed recording bills a
+// reference-video job for this family either. The builder is shared by the
+// three keys; the text- and image-to-video schemas carry no
+// reference_video_urls, so their parsed payloads never reach the rule.
 
 // Per-request free allowance from the page: the sixth image onward is
 // charged.
@@ -769,11 +793,12 @@ const MINIMAX_H3_FREE_INPUT_IMAGES = 5;
 
 const miniMaxH3Extra = (p: Record<string, unknown>): number | undefined => {
   const input = asObject(p.input);
+  // A malformed reference_video_urls already fails the units resolver closed
+  // (referenceVideoInput); the guard stays so the surcharge never prices a
+  // payload the resolver rejected. Clips themselves are billed as seconds
+  // through inputPlusOutputSeconds, never as an extra charge.
   const videos = input?.reference_video_urls;
-  if (videos !== undefined) {
-    if (!Array.isArray(videos)) return undefined;
-    if (videos.length > 0) return undefined;
-  }
+  if (videos !== undefined && !Array.isArray(videos)) return undefined;
 
   let imageCount = 0;
   const referenceImages = input?.reference_image_urls;
@@ -795,22 +820,10 @@ const miniMaxH3Extra = (p: Record<string, unknown>): number | undefined => {
   return Math.max(0, imageCount - MINIMAX_H3_FREE_INPUT_IMAGES) * 0.02;
 };
 
-const miniMaxH3Warning = (p: Record<string, unknown>): string[] => {
-  const videos = asObject(p.input)?.reference_video_urls;
-  if (Array.isArray(videos) && videos.length > 0) {
-    return [
-      "kie MiniMax H3: reference_video_urls carry no clip duration in the " +
-        "request, so the estimate fails closed instead of quoting a " +
-        "generation-only rate",
-    ];
-  }
-  return [];
-};
-
-const miniMaxH3Video = (url: string): ModelPricing => ({
+const miniMaxH3Video = (key: string, url: string): ModelPricing => ({
   kind: "perUnit",
   unit: "seconds",
-  units: seconds,
+  units: inputPlusOutputSeconds(seconds),
   select: [
     {
       name: "resolution",
@@ -819,7 +832,7 @@ const miniMaxH3Video = (url: string): ModelPricing => ({
   ],
   rates: { "768P": 0.04, "2K": 0.065 },
   extra: miniMaxH3Extra,
-  warn: miniMaxH3Warning,
+  warn: inputDurationWarning(key, seconds),
   source: pricePage(url, "2026-09-11"),
 });
 
@@ -919,6 +932,19 @@ export const kie: Record<string, ModelPricing> = {
   // input adds a distinct video-input tier, while transformation always uses
   // that video-input ladder. The schemas document 720p as the unconditional
   // resolution default, so raw cost payloads use the same fallback.
+  //
+  // Output seconds only, on purpose (ac-u8y5xg): the family's four page tabs
+  // print the "with video input" tier and no "(input video duration + output
+  // video duration)" rule (kie.ai/kling-o3, re-read 2026-09-16 and
+  // 2026-09-17), and the committed recordings agree. The text-to-video
+  // fixture (kling-30-omni-text-to-video_899269928: 720p, duration 5, audio
+  // off) billed 70 credits = 5 s x 14, and its 5-second result clip is the
+  // single video_urls entry of the transformation fixture
+  // (kling-30-omni-transformation_2355785254: 720p, duration omitted), which
+  // billed 100 credits = 5 s x 20 — the video-input cell for the output
+  // seconds alone, where the rule would bill (5 + 5) x 20 = 200. So
+  // costHints.inputDurationSeconds is ignored by both video-input entries,
+  // and tests/unit/cost-pricing.test.ts pins that.
   "kling-3.0-omni/text-to-video": {
     kind: "perUnit",
     unit: "seconds",
@@ -1569,13 +1595,22 @@ export const kie: Record<string, ModelPricing> = {
     "https://kie.ai/happyhorse-1-0?model=happyhorse%2Freference-to-video"
   ),
   // happyhorse/video-edit: same tiered rates as the other happyhorse video
-  // entries. Schema has no duration field — output duration matches the
-  // source video_url, so callers must declare that length as
-  // costHints.durationSeconds.
+  // entries, billed on both sides — its page tab prints "Total Cost = Unit
+  // Price x (Input Video Duration + Output Video Duration)" (re-read
+  // 2026-09-17, ac-u8y5xg). The schema has no duration field: the docs bound
+  // only the required source video_url (3–60 s) and the output matches it,
+  // so callers declare that length as costHints.durationSeconds and
+  // happyHorseEditSeconds counts it as input video duration + output;
+  // costHints.inputDurationSeconds overrides the input side when the clip
+  // and the edit differ in length. No committed recording bills this entry
+  // with a creditsConsumed value.
   "happyhorse/video-edit": tieredVideoPage(
     "resolution",
     { "720p": 0.14, "1080p": 0.24 },
-    "https://kie.ai/happyhorse-1-0?model=happyhorse%2Fvideo-edit"
+    "https://kie.ai/happyhorse-1-0?model=happyhorse%2Fvideo-edit",
+    undefined,
+    "2026-08-06",
+    happyHorseEditSeconds
   ),
 
   // happyhorse-1-1: 2 tiers by resolution. The 2026-08-06 pull lists
@@ -1590,14 +1625,21 @@ export const kie: Record<string, ModelPricing> = {
   // minimax-h3: 2 tiers by resolution. The 2026-09-11 pull lists
   // 8 credits/s ($0.04) at 768P and 13 credits/s ($0.065) at 2K, halved from
   // the 2026-08-11 figures (16 / 26 credits, $0.08 / $0.13).
-  // Documented upstream default remains 2K.
+  // Documented upstream default remains 2K. reference-to-video bills
+  // (input video duration + output video duration) x rate on its
+  // reference_video_urls through costHints.inputDurationSeconds; see
+  // miniMaxH3Video above for the page sentence, the docs bound and the
+  // fail-closed contract.
   "minimax-h3/text-to-video": miniMaxH3Video(
+    "minimax-h3/text-to-video",
     "https://kie.ai/minimax-h3?model=minimax-h3%2Ftext-to-video"
   ),
   "minimax-h3/image-to-video": miniMaxH3Video(
+    "minimax-h3/image-to-video",
     "https://kie.ai/minimax-h3?model=minimax-h3%2Fimage-to-video"
   ),
   "minimax-h3/reference-to-video": miniMaxH3Video(
+    "minimax-h3/reference-to-video",
     "https://kie.ai/minimax-h3?model=minimax-h3%2Freference-to-video"
   ),
 
@@ -1721,6 +1763,18 @@ export const kie: Record<string, ModelPricing> = {
   // 2026-08-06 pull supplies the cells, including a 4K tier: 128 credits/s
   // ($0.64) with video input, 208 credits/s ($1.04) without.
   //
+  // The cheaper column is cheaper because it bills both sides: the tab's Note
+  // reads "'With video input' has a lower unit price due to a different
+  // calculation method: No video = Price x Output; With video = Price x
+  // (Input + Output)" (re-read 2026-09-17, ac-u8y5xg; the -fast and -mini
+  // tabs print the same sentence). The docs bound reference_video_urls at
+  // three clips, 15 s in total, with no duration in the request, so the
+  // input video duration is costHints.inputDurationSeconds and a
+  // reference-video request without it fails closed (inputPlusOutputSeconds
+  // and inputDurationWarning). No committed recording bills a reference-video
+  // job with creditsConsumed for any of the three entries; the multimodal
+  // fixture predates that field.
+  //
   // Billing evidence, which corrected an earlier reading of that discriminator:
   // tests/recordings/kie_2079838932/bytedance-seedance-2-4k_1424029474/recording.har
   // sends first_frame_url and NO reference_video_urls at resolution "4k",
@@ -1751,7 +1805,7 @@ export const kie: Record<string, ModelPricing> = {
   "bytedance/seedance-2": {
     kind: "perUnit",
     unit: "seconds",
-    units: seconds,
+    units: inputPlusOutputSeconds(seconds),
     select: [
       { name: "resolution", pick: inputResolution, required: true },
       {
@@ -1769,18 +1823,22 @@ export const kie: Record<string, ModelPricing> = {
       "4k|video": 0.64,
       "4k|no-video": 1.04,
     },
+    warn: inputDurationWarning("bytedance/seedance-2", seconds),
     source: pricePage(
       "https://kie.ai/seedance-2-0?model=bytedance%2Fseedance-2"
     ),
   },
 
   // bytedance/seedance-2-fast: 4 rates (no 1080p tier). Same page, same column
-  // semantics as seedance-2 above, so the same reference-video discriminator —
-  // by analogy, since no creditsConsumed observation exists for this model.
+  // semantics as seedance-2 above, so the same reference-video discriminator
+  // and the same (input video duration + output video duration) x rate wrap
+  // (its tab prints the same Note; the docs bound reference_video_urls at
+  // three clips, 15 s in total) — by analogy, since no creditsConsumed
+  // observation exists for this model.
   "bytedance/seedance-2-fast": {
     kind: "perUnit",
     unit: "seconds",
-    units: seconds,
+    units: inputPlusOutputSeconds(seconds),
     select: [
       { name: "resolution", pick: (p) => inputResolution(p) ?? "720p" },
       {
@@ -1794,49 +1852,57 @@ export const kie: Record<string, ModelPricing> = {
       "720p|video": 0.075,
       "720p|no-video": 0.124,
     },
+    warn: inputDurationWarning("bytedance/seedance-2-fast", seconds),
     source: pricePage(
       "https://kie.ai/seedance-2-0?model=bytedance%2Fseedance-2-fast",
       "2026-08-11"
     ),
   },
 
-  // bytedance/seedance-2-5: per second by resolution × audio. KIE's page
-  // labels the audio axis "with video" / "no video"; the callable schema
-  // exposes the same discriminator as generate_audio. Resolution defaults to
-  // 720p and audio defaults on, so those defaults are applied only for omitted
-  // fields. All six published cells are retained verbatim and were rechecked
-  // unchanged against the 2026-08-22 catalog pull.
+  // bytedance/seedance-2-5: per second by resolution x video input, on the
+  // (input video duration + output video duration) x rate rule. The page's
+  // "with video" / "no video" columns were keyed on generate_audio from
+  // b40fe154 (2026-08-11) until ac-u8y5xg (2026-09-17) with no billing
+  // observation behind it; four readings put the axis on video input:
+  // (1) the tab's own Note explains the cheaper column by "With video =
+  // Price x (Input + Output)", the sentence the seedance-2 / -fast / -mini
+  // tabs print; (2) the docs say generate_audio: true is "Generate with
+  // audio (higher cost)", the opposite direction of the cheaper cell;
+  // (3) the frozen feed labels the rows "480p with video" / "480p no video";
+  // (4) both committed recordings (bytedance-seedance-2-5_3348277354 and
+  // bytedance-seedance-2-5-cat-reference_2250709771: 480p, 4 s,
+  // generate_audio false, no reference video) billed 112 credits = 4 s x 28,
+  // the 480P "no video" cell. The docs bound reference_video_urls at ten
+  // clips of 2–30 s, 30 s in total, with no duration in the request, so the
+  // input side is costHints.inputDurationSeconds as for seedance-2. The
+  // audio surcharge the docs mention is unpublished and unmodelled:
+  // generate_audio selects no rate. Resolution defaults to 720p; output
+  // seconds resolve through seedance25Seconds (documented 5 s default, the
+  // -1 sentinel via costHints.durationSeconds). All six published cells are
+  // retained verbatim under the video-input keys.
   "bytedance/seedance-2-5": {
     kind: "perUnit",
     unit: "seconds",
-    units: seedance25Seconds,
+    units: inputPlusOutputSeconds(seedance25Seconds),
     select: [
       {
         name: "resolution",
         pick: (p) => inputResolution(p) ?? "720p",
       },
       {
-        name: "audio",
-        pick: (p) => {
-          const audio = asObject(p.input)?.generate_audio;
-          return audio === undefined
-            ? "audio"
-            : audio === false
-              ? "no-audio"
-              : audio === true
-                ? "audio"
-                : undefined;
-        },
+        name: "videoInput",
+        pick: (p) => (hasReferenceVideoInput(p) ? "video" : "no-video"),
       },
     ],
     rates: {
-      "480p|audio": 0.085,
-      "480p|no-audio": 0.14,
-      "720p|audio": 0.19,
-      "720p|no-audio": 0.315,
-      "1080p|audio": 0.3425,
-      "1080p|no-audio": 0.57,
+      "480p|video": 0.085,
+      "480p|no-video": 0.14,
+      "720p|video": 0.19,
+      "720p|no-video": 0.315,
+      "1080p|video": 0.3425,
+      "1080p|no-video": 0.57,
     },
+    warn: inputDurationWarning("bytedance/seedance-2-5", seedance25Seconds),
     source: pricePage("https://kie.ai/seedance-2-5", "2026-08-22"),
   },
 
@@ -1844,11 +1910,14 @@ export const kie: Record<string, ModelPricing> = {
   // Rates refreshed from the 2026-08-11 pull: 480p video input = 2.4
   // credits/s ($0.012), 480p no video input = 3.8 credits/s ($0.019),
   // 720p video input = 5 credits/s ($0.025), 720p no video input =
-  // 8.2 credits/s ($0.041).
+  // 8.2 credits/s ($0.041). Its tab prints the seedance-2 Note, so the video
+  // column bills (input video duration + output video duration) x rate on
+  // the same reference_video_urls (three clips, 15 s in total) through
+  // costHints.inputDurationSeconds, failing closed without it.
   "bytedance/seedance-2-mini": {
     kind: "perUnit",
     unit: "seconds",
-    units: seconds,
+    units: inputPlusOutputSeconds(seconds),
     select: [
       { name: "resolution", pick: (p) => inputResolution(p) ?? "720p" },
       {
@@ -1862,6 +1931,7 @@ export const kie: Record<string, ModelPricing> = {
       "720p|video": 0.025,
       "720p|no-video": 0.041,
     },
+    warn: inputDurationWarning("bytedance/seedance-2-mini", seconds),
     source: pricePage("https://kie.ai/seedance-2-0-mini", "2026-08-11"),
   },
 

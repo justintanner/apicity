@@ -55,14 +55,14 @@ Structured evidence conflicts: **4** (1 query/operation; 3 official/runtime rate
 
 The mandatory four official cells are executable against the integrated WI6 cost table:
 
-| Resolution | Generate audio | USD/sec | Occurrence                                                                |
-| ---------- | -------------- | ------: | ------------------------------------------------------------------------- |
-| 1080p      | audio          |  0.3425 | sha256:ac7978e4c0bc04ee1606c3bf4dda45fe53532f9ec6098942be3c2a3ed5a16a6d#1 |
-| 1080p      | no-audio       |   0.570 | sha256:f47489cf45f834fd2b48a4dc6b8c77f1c4541e5e72043c20465ed7954054682e#1 |
-| 720p       | audio          |   0.190 | sha256:f343208348f54abf2d1c4e40751bd996115e248bf6c395382f52ea838228efe2#1 |
-| 720p       | no-audio       |   0.315 | sha256:985b30aa8f4221a3230a72a03d84feab5302ae165424ceef9113aca9e5558522#1 |
-| 480p       | audio          |   0.085 | sha256:307d3eedee19303eb54a9c3a4eb647c5e1d5912123e08bb72d21c6f7c1c7005a#1 |
-| 480p       | no-audio       |   0.140 | sha256:40f9dba288fd7eaee8235c7749b7c1171e9f9e2804e8689355f5e05a96059453#1 |
+| Resolution | Video input | USD/sec | Occurrence                                                                |
+| ---------- | ----------- | ------: | ------------------------------------------------------------------------- |
+| 1080p      | video       |  0.3425 | sha256:ac7978e4c0bc04ee1606c3bf4dda45fe53532f9ec6098942be3c2a3ed5a16a6d#1 |
+| 1080p      | no-video    |   0.570 | sha256:f47489cf45f834fd2b48a4dc6b8c77f1c4541e5e72043c20465ed7954054682e#1 |
+| 720p       | video       |   0.190 | sha256:f343208348f54abf2d1c4e40751bd996115e248bf6c395382f52ea838228efe2#1 |
+| 720p       | no-video    |   0.315 | sha256:985b30aa8f4221a3230a72a03d84feab5302ae165424ceef9113aca9e5558522#1 |
+| 480p       | video       |   0.085 | sha256:307d3eedee19303eb54a9c3a4eb647c5e1d5912123e08bb72d21c6f7c1c7005a#1 |
+| 480p       | no-video    |   0.140 | sha256:40f9dba288fd7eaee8235c7749b7c1171e9f9e2804e8689355f5e05a96059453#1 |
 
 ## Explicit Audit Queue
 

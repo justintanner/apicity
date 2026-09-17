@@ -1494,5 +1494,97 @@ describe("computeEstimate", () => {
       expect("costHints" in payload).toBe(false);
       expect("inputDurationSeconds" in payload.input).toBe(false);
     });
+
+    // The same guarantee for each family that adopted the input-duration rule
+    // after Wan 3.0 (ac-u8y5xg). Each case proves the hint changed the figure
+    // first, so a path that never read costHints could not pass it.
+    const expectInputHintOffTheWire = (
+      payload: { model: string; input: Record<string, unknown> },
+      costHints: { durationSeconds?: number; inputDurationSeconds: number },
+      hintedUsd: number
+    ) => {
+      const snapshot = structuredClone(payload);
+      const before = canonicalHash(payload);
+
+      const unhinted = computeEstimate({ provider: "kie" as const, payload });
+      const hinted = computeEstimate({
+        provider: "kie" as const,
+        payload,
+        costHints,
+      });
+      const after = canonicalHash(payload);
+
+      expect(unhinted.usd).not.toBeCloseTo(hintedUsd, 10);
+      expect(hinted.usd).toBeCloseTo(hintedUsd, 10);
+
+      expect(after).toBe(before);
+      expect(payload).toEqual(snapshot);
+      expect("costHints" in payload).toBe(false);
+      expect("inputDurationSeconds" in payload.input).toBe(false);
+      expect("durationSeconds" in payload.input).toBe(false);
+    };
+
+    it("keeps inputDurationSeconds off the wire for a seedance-2 reference-video payload", () => {
+      expectInputHintOffTheWire(
+        {
+          model: "bytedance/seedance-2",
+          input: {
+            prompt: "x",
+            resolution: "720p",
+            duration: 5,
+            reference_video_urls: ["https://example.com/clip.mp4"],
+          },
+        },
+        { inputDurationSeconds: 10 },
+        1.875 // (5 + 10) * 0.125
+      );
+    });
+
+    it("keeps inputDurationSeconds off the wire for a seedance-2-5 reference-video payload", () => {
+      expectInputHintOffTheWire(
+        {
+          model: "bytedance/seedance-2-5",
+          input: {
+            prompt: "x",
+            resolution: "720p",
+            duration: 6,
+            reference_video_urls: ["https://example.com/clip.mp4"],
+          },
+        },
+        { inputDurationSeconds: 6 },
+        2.28 // (6 + 6) * 0.19
+      );
+    });
+
+    it("keeps inputDurationSeconds off the wire for a minimax-h3 reference-video payload", () => {
+      expectInputHintOffTheWire(
+        {
+          model: "minimax-h3/reference-to-video",
+          input: {
+            prompt: "x",
+            resolution: "2K",
+            duration: 6,
+            reference_video_urls: ["https://example.com/clip.mp4"],
+          },
+        },
+        { inputDurationSeconds: 4 },
+        0.65 // (6 + 4) * 0.065
+      );
+    });
+
+    it("keeps both hints off the wire for a happyhorse/video-edit payload", () => {
+      expectInputHintOffTheWire(
+        {
+          model: "happyhorse/video-edit",
+          input: {
+            prompt: "x",
+            resolution: "720p",
+            video_url: "https://example.com/in.mp4",
+          },
+        },
+        { durationSeconds: 6, inputDurationSeconds: 10 },
+        2.24 // (6 + 10) * 0.14
+      );
+    });
   });
 });

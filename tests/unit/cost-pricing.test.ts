@@ -37,6 +37,7 @@ import {
   SeedreamProTextToImageRequestSchema,
   SeedreamProImageToImageRequestSchema,
   SeedreamProLayerDecompositionRequestSchema,
+  MiniMaxH3TextToVideoRequestSchema,
   MiniMaxH3ImageToVideoRequestSchema,
   MiniMaxH3ReferenceToVideoRequestSchema,
   Wan22A14bTextToVideoTurboRequestSchema,
@@ -704,6 +705,10 @@ describe("PRICING data", () => {
 // variant" rather than on units, which would make `warnings: []` unreachable
 // for reasons that have nothing to do with the hint.
 const HINT_ONLY_KIE = [
+  // happyhorse/video-edit bills (input video duration + output video
+  // duration) x rate and the source clip is as long as the declared output
+  // (ac-u8y5xg), so one durationSeconds counts twice: `units` is the billed
+  // seconds where it differs from the hint.
   {
     label: "happyhorse/video-edit @720p",
     model: "happyhorse/video-edit",
@@ -712,6 +717,7 @@ const HINT_ONLY_KIE = [
       resolution: "720p",
     } as Record<string, unknown>,
     seconds: 6,
+    units: 12,
     perUnitUsd: 0.14,
   },
   {
@@ -722,6 +728,7 @@ const HINT_ONLY_KIE = [
       resolution: "1080p",
     } as Record<string, unknown>,
     seconds: 6,
+    units: 12,
     perUnitUsd: 0.24,
   },
   {
@@ -775,6 +782,7 @@ const HINT_ONLY_KIE = [
       resolution: "720p",
     } as Record<string, unknown>,
     seconds: 8,
+    units: 16,
     perUnitUsd: 0.14,
   },
   // 2026-08-06 pull: four more per-second families whose schema carries no
@@ -853,7 +861,7 @@ const HINT_ONLY_KIE = [
 describe("kie costHints.durationSeconds", () => {
   it.each(HINT_ONLY_KIE)(
     "bounds $label from the hint alone",
-    ({ model, input, seconds, perUnitUsd }) => {
+    ({ model, input, seconds, perUnitUsd, units = seconds }) => {
       const costHints: CostHints = { durationSeconds: seconds };
       const req: EstimateRequest = {
         provider: "kie",
@@ -862,10 +870,10 @@ describe("kie costHints.durationSeconds", () => {
       };
       const result = computeEstimate(req);
 
-      expect(result.usd).toBeCloseTo(seconds * perUnitUsd, 10);
+      expect(result.usd).toBeCloseTo(units * perUnitUsd, 10);
       expect(result.source).toBe("per-unit-table");
       expect(result.breakdown).toEqual({
-        units: seconds,
+        units,
         unit: "seconds",
         perUnitUsd,
       });
@@ -1057,6 +1065,30 @@ const kieEstimate = (
   payload: Record<string, unknown>,
   extra: Partial<EstimateRequest> = {}
 ) => computeEstimate({ provider: "kie", payload, ...extra } as EstimateRequest);
+
+// The fail-closed shape shared by every kie entry on the "(input video
+// duration + output video duration) x rate" rule — Wan 3.0 first (ac-ge9l10),
+// the Seedance families and MiniMax H3 reference-to-video since ac-u8y5xg: no
+// figure, an empty breakdown, the table source, the global stamp, and exactly
+// one warning naming the pricing key, the field, the rule and the hint.
+const expectInputRuleFailure = (
+  result: ReturnType<typeof kieEstimate>,
+  model: string
+) => {
+  expect(result.usd).toBe(0);
+  expect(result.breakdown).toEqual({});
+  expect(result.source).toBe("per-unit-table");
+  expect(result.rateAsOf).toBe(PRICING_AS_OF);
+  expect(result.warnings).toHaveLength(1);
+  for (const needle of [
+    model,
+    "reference_video_urls",
+    "input video duration",
+    "inputDurationSeconds",
+  ]) {
+    expect(result.warnings[0]).toContain(needle);
+  }
+};
 
 describe("kie veo per-video pricing", () => {
   // The behavior-change pin: veo used to bill per second, so a duration hint
@@ -2994,6 +3026,8 @@ describe("kie stale-family refresh (REQ-004)", () => {
       perUnitUsd: 1.04,
     },
     {
+      // EX-9 (ac-u8y5xg): the video column bills (input video duration +
+      // output video duration) x rate, so 4 s of output + 3 s of clips.
       label: "4k reference-video -> 4k|video",
       input: {
         prompt: "xxx",
@@ -3001,7 +3035,9 @@ describe("kie stale-family refresh (REQ-004)", () => {
         resolution: "4k",
         reference_video_urls: ["https://example.com/ref.mp4"],
       },
+      costHints: { inputDurationSeconds: 3 },
       seconds: 4,
+      units: 7,
       perUnitUsd: 0.64,
     },
     {
@@ -3016,6 +3052,7 @@ describe("kie stale-family refresh (REQ-004)", () => {
       perUnitUsd: 0.205,
     },
     {
+      // EX-7: 5 s of output + 10 s of clips.
       label: "720p reference-video -> 720p|video",
       input: {
         prompt: "xxx",
@@ -3023,7 +3060,9 @@ describe("kie stale-family refresh (REQ-004)", () => {
         resolution: "720p",
         reference_video_urls: ["https://example.com/ref.mp4"],
       },
+      costHints: { inputDurationSeconds: 10 },
       seconds: 5,
+      units: 15,
       perUnitUsd: 0.125,
     },
     {
@@ -3050,44 +3089,48 @@ describe("kie stale-family refresh (REQ-004)", () => {
       seconds: 5,
       perUnitUsd: 1.04,
     },
-  ])("prices seedance-2 $label", ({ input, seconds, perUnitUsd }) => {
-    // Parse first, then estimate the PARSED payload. Feeding the raw literal
-    // would only prove the rate table has a matching row; routing it through
-    // the shipped schema proves a payload the SDK actually accepts reaches
-    // that row.
-    const parsed = Seedance2RequestSchema.safeParse({
-      model: "bytedance/seedance-2",
-      input,
-    });
+  ])(
+    "prices seedance-2 $label",
+    ({ input, costHints, seconds, perUnitUsd, units = seconds }) => {
+      // Parse first, then estimate the PARSED payload. Feeding the raw literal
+      // would only prove the rate table has a matching row; routing it through
+      // the shipped schema proves a payload the SDK actually accepts reaches
+      // that row.
+      const parsed = Seedance2RequestSchema.safeParse({
+        model: "bytedance/seedance-2",
+        input,
+      });
 
-    expect(parsed.success).toBe(true);
-    if (!parsed.success) return;
+      expect(parsed.success).toBe(true);
+      if (!parsed.success) return;
 
-    // Defaults the schema applied — evidence this is the parsed output and
-    // not the literal above. The estimator ignores fields it does not select.
-    expect(parsed.data.input.nsfw_checker).toBe(false);
+      // Defaults the schema applied — evidence this is the parsed output and
+      // not the literal above. The estimator ignores fields it does not select.
+      expect(parsed.data.input.nsfw_checker).toBe(false);
 
-    const result = kieEstimate(parsed.data);
+      const result = kieEstimate(parsed.data, costHints ? { costHints } : {});
 
-    expect(result.usd).toBeCloseTo(seconds * perUnitUsd, 10);
-    expect(result.breakdown).toEqual({
-      units: seconds,
-      unit: "seconds",
-      perUnitUsd,
-    });
-    expect(
-      result.warnings.some((warning) =>
-        warning.includes("not found in pricing table")
-      )
-    ).toBe(false);
-  });
+      expect(result.usd).toBeCloseTo(units * perUnitUsd, 10);
+      expect(result.breakdown).toEqual({
+        units,
+        unit: "seconds",
+        perUnitUsd,
+      });
+      expect(
+        result.warnings.some((warning) =>
+          warning.includes("not found in pricing table")
+        )
+      ).toBe(false);
+    }
+  );
 
   // seedance-2-fast shares the page and the column semantics, so it shares the
-  // reference-video discriminator. No creditsConsumed observation exists for
-  // this model — these pins hold the mapping and the unchanged prompt-only
-  // values rather than an observed bill.
+  // reference-video discriminator and the (input + output) rule. No
+  // creditsConsumed observation exists for this model — these pins hold the
+  // mapping and the unchanged prompt-only values rather than an observed bill.
   it.each([
     {
+      // EX-10: 5 s of output + 5 s of clips.
       label: "720p reference-video -> 720p|video",
       input: {
         prompt: "xxx",
@@ -3095,7 +3138,9 @@ describe("kie stale-family refresh (REQ-004)", () => {
         resolution: "720p",
         reference_video_urls: ["https://example.com/ref.mp4"],
       },
+      costHints: { inputDurationSeconds: 5 },
       seconds: 5,
+      units: 10,
       perUnitUsd: 0.075,
     },
     {
@@ -3121,31 +3166,34 @@ describe("kie stale-family refresh (REQ-004)", () => {
       seconds: 5,
       perUnitUsd: 0.124,
     },
-  ])("prices seedance-2-fast $label", ({ input, seconds, perUnitUsd }) => {
-    const parsed = Seedance2FastRequestSchema.safeParse({
-      model: "bytedance/seedance-2-fast",
-      input,
-    });
+  ])(
+    "prices seedance-2-fast $label",
+    ({ input, costHints, seconds, perUnitUsd, units = seconds }) => {
+      const parsed = Seedance2FastRequestSchema.safeParse({
+        model: "bytedance/seedance-2-fast",
+        input,
+      });
 
-    expect(parsed.success).toBe(true);
-    if (!parsed.success) return;
+      expect(parsed.success).toBe(true);
+      if (!parsed.success) return;
 
-    expect(parsed.data.input.nsfw_checker).toBe(false);
+      expect(parsed.data.input.nsfw_checker).toBe(false);
 
-    const result = kieEstimate(parsed.data);
+      const result = kieEstimate(parsed.data, costHints ? { costHints } : {});
 
-    expect(result.usd).toBeCloseTo(seconds * perUnitUsd, 10);
-    expect(result.breakdown).toEqual({
-      units: seconds,
-      unit: "seconds",
-      perUnitUsd,
-    });
-    expect(
-      result.warnings.some((warning) =>
-        warning.includes("not found in pricing table")
-      )
-    ).toBe(false);
-  });
+      expect(result.usd).toBeCloseTo(units * perUnitUsd, 10);
+      expect(result.breakdown).toEqual({
+        units,
+        unit: "seconds",
+        perUnitUsd,
+      });
+      expect(
+        result.warnings.some((warning) =>
+          warning.includes("not found in pricing table")
+        )
+      ).toBe(false);
+    }
+  );
 
   it("uses Seedance 2 Fast's documented 720p fallback when omitted", () => {
     const parsed = Seedance2FastRequestSchema.safeParse({
@@ -3167,15 +3215,21 @@ describe("kie stale-family refresh (REQ-004)", () => {
     expect(result.warnings).toEqual([]);
   });
 
+  // Seedance 2.5's columns are keyed on video input, not on generate_audio
+  // (ac-u8y5xg; the entry comment lists the four readings): a no-video
+  // request prices in the "no video" cell whatever the audio flag says, and
+  // a reference-video request prices in the "with video" cell on (input
+  // video duration + output video duration) once the clips' length is
+  // declared as costHints.inputDurationSeconds.
   it.each([
     { resolution: "480p", generate_audio: false, rate: 0.14 },
-    { resolution: "480p", generate_audio: true, rate: 0.085 },
+    { resolution: "480p", generate_audio: true, rate: 0.14 },
     { resolution: "720p", generate_audio: false, rate: 0.315 },
-    { resolution: "720p", generate_audio: true, rate: 0.19 },
-    { resolution: "1080p", generate_audio: true, rate: 0.3425 },
+    { resolution: "720p", generate_audio: true, rate: 0.315 },
+    { resolution: "1080p", generate_audio: true, rate: 0.57 },
     { resolution: "1080p", generate_audio: false, rate: 0.57 },
   ])(
-    "prices Seedance 2.5 $resolution $generate_audio at $rate/s",
+    "prices Seedance 2.5 $resolution generate_audio=$generate_audio (no video) at $rate/s",
     ({ resolution, generate_audio, rate }) => {
       const parsed = Seedance25RequestSchema.safeParse({
         model: "bytedance/seedance-2-5",
@@ -3201,18 +3255,58 @@ describe("kie stale-family refresh (REQ-004)", () => {
     }
   );
 
+  it.each([
+    { resolution: "480p", rate: 0.085 },
+    { resolution: "720p", rate: 0.19 },
+    { resolution: "1080p", rate: 0.3425 },
+  ])(
+    "prices Seedance 2.5 $resolution with video at $rate/s on input + output seconds",
+    ({ resolution, rate }) => {
+      const parsed = Seedance25RequestSchema.safeParse({
+        model: "bytedance/seedance-2-5",
+        input: {
+          prompt: "a city skyline",
+          duration: 6,
+          resolution,
+          reference_video_urls: ["https://example.com/clip.mp4"],
+        },
+      });
+
+      expect(parsed.success).toBe(true);
+      if (!parsed.success) return;
+      // The schema default (audio on) rides along and selects nothing.
+      expect(parsed.data.input.generate_audio).toBe(true);
+
+      expectInputRuleFailure(
+        kieEstimate(parsed.data),
+        "bytedance/seedance-2-5"
+      );
+
+      const result = kieEstimate(parsed.data, {
+        costHints: { inputDurationSeconds: 6 },
+      });
+      expect(result.usd).toBeCloseTo(12 * rate, 10);
+      expect(result.breakdown).toEqual({
+        units: 12,
+        unit: "seconds",
+        perUnitUsd: rate,
+      });
+      expect(result.warnings).toEqual([]);
+    }
+  );
+
   it("pins Seedance 2.5's six published pricing cells", () => {
     const entry = PRICING.kie["bytedance/seedance-2-5"];
     expect(entry.kind).toBe("perUnit");
     if (entry.kind !== "perUnit") return;
 
     expect(Object.keys(entry.rates).sort()).toEqual([
-      "1080p|audio",
-      "1080p|no-audio",
-      "480p|audio",
-      "480p|no-audio",
-      "720p|audio",
-      "720p|no-audio",
+      "1080p|no-video",
+      "1080p|video",
+      "480p|no-video",
+      "480p|video",
+      "720p|no-video",
+      "720p|video",
     ]);
   });
 
@@ -3228,8 +3322,16 @@ describe("kie stale-family refresh (REQ-004)", () => {
     expect(parsed.data.input.resolution).toBe("720p");
     expect(parsed.data.input.generate_audio).toBe(true);
 
+    // EX-19: the parsed defaults (720p, 5 s, audio on, no video) are the
+    // page's "no video" cell — $0.315/s, not the cheaper video column the
+    // audio-keyed selector used to pick.
     const result = kieEstimate(parsed.data);
-    expect(result.usd).toBeCloseTo(5 * 0.19, 10);
+    expect(result.usd).toBeCloseTo(1.575, 10);
+    expect(result.breakdown).toEqual({
+      units: 5,
+      unit: "seconds",
+      perUnitUsd: 0.315,
+    });
     expect(PRICING.kie["bytedance/seedance-2-5"].source).toEqual({
       url: "https://kie.ai/seedance-2-5",
       asOf: "2026-08-22",
@@ -3277,9 +3379,11 @@ describe("kie stale-family refresh (REQ-004)", () => {
     expect(failed.usd).toBe(0);
     expect(failed.warnings[0]).toContain("could not derive units");
 
+    // EX-20: no video input, so the "no video" cell whatever generate_audio
+    // says.
     const hinted = kieEstimate(request, { costHints: { durationSeconds: 6 } });
-    expect(hinted.usd).toBeCloseTo(6 * 0.19, 10);
-    expect(hinted.breakdown.perUnitUsd).toBe(0.19);
+    expect(hinted.usd).toBeCloseTo(1.89, 10);
+    expect(hinted.breakdown.perUnitUsd).toBe(0.315);
   });
 
   it.each([
@@ -3418,7 +3522,10 @@ describe("kie stale-family refresh (REQ-004)", () => {
     }
   );
 
-  it("fails closed for MiniMax H3 reference video input", () => {
+  // EX-21 / EX-22 (ac-u8y5xg): the page bills (input video duration + output
+  // video duration) x rate on reference clips, so a reference-video request
+  // fails closed until the clips' length is declared, then prices both sides.
+  it("fails a MiniMax H3 reference-video request closed without the input hint", () => {
     const parsed = MiniMaxH3ReferenceToVideoRequestSchema.safeParse({
       model: "minimax-h3/reference-to-video",
       input: {
@@ -3431,13 +3538,21 @@ describe("kie stale-family refresh (REQ-004)", () => {
 
     expect(parsed.success).toBe(true);
     if (!parsed.success) return;
-    const result = kieEstimate(parsed.data);
+    expectInputRuleFailure(
+      kieEstimate(parsed.data),
+      "minimax-h3/reference-to-video"
+    );
 
-    expect(result.usd).toBe(0);
-    expect(result.breakdown).toEqual({});
-    expect(result.warnings).toHaveLength(1);
-    expect(result.warnings[0]).toContain("reference_video_urls");
-    expect(result.warnings[0]).toContain("fails closed");
+    const hinted = kieEstimate(parsed.data, {
+      costHints: { inputDurationSeconds: 4 },
+    });
+    expect(hinted.usd).toBeCloseTo(9 * 0.04, 10);
+    expect(hinted.breakdown).toEqual({
+      units: 9,
+      unit: "seconds",
+      perUnitUsd: 0.04,
+    });
+    expect(hinted.warnings).toEqual([]);
   });
 
   // grok-imagine video: both existing tiers rose and 1080p is new. The 1080p
@@ -3540,8 +3655,20 @@ describe("kie stale-family refresh (REQ-004)", () => {
       resolution: "1080p",
       rate: 0.24,
     },
-    { model: "happyhorse/video-edit", resolution: "720p", rate: 0.14 },
-    { model: "happyhorse/video-edit", resolution: "1080p", rate: 0.24 },
+    // video-edit bills (input video duration + output video duration) x
+    // rate (ac-u8y5xg): its 5 s clip counts twice, so `units` is 10.
+    {
+      model: "happyhorse/video-edit",
+      resolution: "720p",
+      rate: 0.14,
+      units: 10,
+    },
+    {
+      model: "happyhorse/video-edit",
+      resolution: "1080p",
+      rate: 0.24,
+      units: 10,
+    },
     {
       model: "happyhorse-1-1/text-to-video",
       resolution: "720p",
@@ -3574,14 +3701,14 @@ describe("kie stale-family refresh (REQ-004)", () => {
     },
   ])(
     "prices $model at $resolution as $rate/s",
-    ({ model, resolution, rate }) => {
+    ({ model, resolution, rate, units = 5 }) => {
       const result = kieEstimate({
         model,
         input: { prompt: "x", duration: 5, resolution },
       });
 
       expect(result.breakdown.perUnitUsd).toBe(rate);
-      expect(result.usd).toBeCloseTo(5 * rate, 10);
+      expect(result.usd).toBeCloseTo(units * rate, 10);
     }
   );
 });
@@ -3938,24 +4065,6 @@ describe("kie wan 2.2 / 2.5 per-model pricing (REQ-004)", () => {
   // output-only figure the page says is wrong.
   describe("kie wan 3.0 input-plus-output duration billing", () => {
     const clip = ["https://example.com/clip.mp4"];
-    const expectInputRuleFailure = (
-      result: ReturnType<typeof kieEstimate>,
-      model: string
-    ) => {
-      expect(result.usd).toBe(0);
-      expect(result.breakdown).toEqual({});
-      expect(result.source).toBe("per-unit-table");
-      expect(result.rateAsOf).toBe(PRICING_AS_OF);
-      expect(result.warnings).toHaveLength(1);
-      for (const needle of [
-        model,
-        "reference_video_urls",
-        "input video duration",
-        "inputDurationSeconds",
-      ]) {
-        expect(result.warnings[0]).toContain(needle);
-      }
-    };
 
     it("fails a reference-video request closed without the input hint (EX-2)", () => {
       const result = kieEstimate({
@@ -4215,6 +4324,598 @@ describe("kie wan 2.2 / 2.5 per-model pricing (REQ-004)", () => {
         });
         expect(result.rateAsOf).toBe(rateAsOf);
         expect(result.warnings).toEqual([]);
+      }
+    );
+  });
+
+  // The same rule for the families whose page tabs print it beside the Wan
+  // 3.0 pair (ac-u8y5xg; pages re-read 2026-09-17): the Seedance 2 trio and
+  // Seedance 2.5 on reference_video_urls, MiniMax H3 reference-to-video on
+  // reference_video_urls plus its image surcharge, happyhorse/video-edit on
+  // its required source clip. Kling 3.0 Omni is pinned as NOT modelled. The
+  // EX ids are the requirements' Example Mapping.
+  describe("kie input-plus-output duration billing for the other video families", () => {
+    const clip = ["https://example.com/clip.mp4"];
+    const sevenImages = Array.from(
+      { length: 7 },
+      (_, index) => `https://example.com/r${index}.png`
+    );
+
+    it.each([
+      {
+        label: "EX-6 seedance-2 720p",
+        model: "bytedance/seedance-2",
+        input: { resolution: "720p", duration: 5, reference_video_urls: clip },
+      },
+      {
+        label: "EX-10 seedance-2-fast 720p",
+        model: "bytedance/seedance-2-fast",
+        input: { resolution: "720p", duration: 5, reference_video_urls: clip },
+      },
+      {
+        label: "EX-11 seedance-2-mini 480p",
+        model: "bytedance/seedance-2-mini",
+        input: { resolution: "480p", duration: 4, reference_video_urls: clip },
+      },
+      {
+        label: "EX-16 seedance-2-5 720p, audio on",
+        model: "bytedance/seedance-2-5",
+        input: {
+          resolution: "720p",
+          duration: 6,
+          generate_audio: true,
+          reference_video_urls: clip,
+        },
+      },
+      {
+        label: "EX-21 minimax-h3/reference-to-video 768P",
+        model: "minimax-h3/reference-to-video",
+        input: { resolution: "768P", duration: 5, reference_video_urls: clip },
+      },
+    ])("fails $label closed without the input hint", ({ model, input }) => {
+      const result = kieEstimate({ model, input: { prompt: "x", ...input } });
+      expectInputRuleFailure(result, model);
+    });
+
+    it.each([
+      {
+        label: "EX-7 seedance-2 720p, 5 s output + 10 s of clips",
+        model: "bytedance/seedance-2",
+        input: { resolution: "720p", duration: 5, reference_video_urls: clip },
+        costHints: { inputDurationSeconds: 10 },
+        usd: 1.875,
+        units: 15,
+        perUnitUsd: 0.125,
+        rateAsOf: "2026-08-06",
+      },
+      {
+        label: "EX-9 seedance-2 4k, 4 s output + 3 s of clips",
+        model: "bytedance/seedance-2",
+        input: { resolution: "4k", duration: 4, reference_video_urls: clip },
+        costHints: { inputDurationSeconds: 3 },
+        usd: 4.48,
+        units: 7,
+        perUnitUsd: 0.64,
+        rateAsOf: "2026-08-06",
+      },
+      {
+        label: "EX-10 seedance-2-fast 720p, 5 s output + 5 s of clips",
+        model: "bytedance/seedance-2-fast",
+        input: { resolution: "720p", duration: 5, reference_video_urls: clip },
+        costHints: { inputDurationSeconds: 5 },
+        usd: 0.75,
+        units: 10,
+        perUnitUsd: 0.075,
+        rateAsOf: "2026-08-11",
+      },
+      {
+        label: "EX-11 seedance-2-mini 480p, 4 s output + 4 s of clips",
+        model: "bytedance/seedance-2-mini",
+        input: { resolution: "480p", duration: 4, reference_video_urls: clip },
+        costHints: { inputDurationSeconds: 4 },
+        usd: 0.096,
+        units: 8,
+        perUnitUsd: 0.012,
+        rateAsOf: "2026-08-11",
+      },
+      {
+        label: "EX-17 seedance-2-5 720p, 6 s output + 6 s of clips, audio on",
+        model: "bytedance/seedance-2-5",
+        input: {
+          resolution: "720p",
+          duration: 6,
+          generate_audio: true,
+          reference_video_urls: clip,
+        },
+        costHints: { inputDurationSeconds: 6 },
+        usd: 2.28,
+        units: 12,
+        perUnitUsd: 0.19,
+        rateAsOf: "2026-08-22",
+      },
+      {
+        label:
+          "EX-22 minimax-h3/reference-to-video 2K, 6 s output + 4 s of clips",
+        model: "minimax-h3/reference-to-video",
+        input: { resolution: "2K", duration: 6, reference_video_urls: clip },
+        costHints: { inputDurationSeconds: 4 },
+        usd: 0.65,
+        units: 10,
+        perUnitUsd: 0.065,
+        rateAsOf: "2026-09-11",
+      },
+    ])(
+      "prices $label",
+      ({ model, input, costHints, usd, units, perUnitUsd, rateAsOf }) => {
+        const result = kieEstimate(
+          { model, input: { prompt: "x", ...input } },
+          { costHints }
+        );
+        expect(result.usd).toBeCloseTo(usd, 10);
+        expect(result.breakdown).toEqual({
+          units,
+          unit: "seconds",
+          perUnitUsd,
+        });
+        expect(result.rateAsOf).toBe(rateAsOf);
+        expect(result.warnings).toEqual([]);
+      }
+    );
+
+    // EX-23: the MiniMax image surcharge still applies beside a hinted clip.
+    it("adds the MiniMax H3 image surcharge beside a hinted reference clip (EX-23)", () => {
+      const result = kieEstimate(
+        {
+          model: "minimax-h3/reference-to-video",
+          input: {
+            prompt: "x",
+            resolution: "2K",
+            duration: 6,
+            reference_video_urls: clip,
+            reference_image_urls: sevenImages,
+          },
+        },
+        { costHints: { inputDurationSeconds: 4 } }
+      );
+      expect(result.usd).toBeCloseTo(0.69, 10);
+      expect(result.breakdown).toEqual({
+        units: 10,
+        unit: "seconds",
+        perUnitUsd: 0.065,
+        extraUsd: 0.04,
+      });
+      expect(result.warnings).toEqual([]);
+    });
+
+    // EX-12 / EX-25: a reference_video_urls that is not an array fails closed
+    // naming the field and the hint instead of pricing the no-video column
+    // (seedance-2) or the generic extra-charge warning (MiniMax H3).
+    it.each([
+      {
+        model: "bytedance/seedance-2",
+        input: {
+          resolution: "720p",
+          duration: 5,
+          reference_video_urls: "https://example.com/clip.mp4",
+        },
+      },
+      {
+        model: "minimax-h3/reference-to-video",
+        input: { resolution: "768P", duration: 5, reference_video_urls: "x" },
+      },
+    ])(
+      "fails a $model request closed when reference_video_urls is not an array",
+      ({ model, input }) => {
+        const result = kieEstimate({ model, input: { prompt: "x", ...input } });
+        expectInputRuleFailure(result, model);
+        expect(result.warnings[0]).toContain("is not an array");
+      }
+    );
+
+    // EX-8, EX-13, EX-14, EX-15, EX-18, EX-24: no video input, so the estimate
+    // is byte-identical with and without the hint — including Seedance 2.5's
+    // audio flag, which selects no rate on the video-input axis, and its
+    // recorded 480p shape (112 credits = 4 s x $0.14).
+    it.each([
+      {
+        label: "EX-8 seedance-2 720p first-frame",
+        model: "bytedance/seedance-2",
+        input: {
+          resolution: "720p",
+          duration: 5,
+          first_frame_url: "https://example.com/x.jpg",
+        },
+        usd: 1.025,
+        units: 5,
+        perUnitUsd: 0.205,
+      },
+      {
+        label: "EX-13 seedance-2 720p, empty reference_video_urls",
+        model: "bytedance/seedance-2",
+        input: { resolution: "720p", duration: 5, reference_video_urls: [] },
+        usd: 1.025,
+        units: 5,
+        perUnitUsd: 0.205,
+      },
+      {
+        label: "EX-14 seedance-2-5 720p, generate_audio omitted",
+        model: "bytedance/seedance-2-5",
+        input: { resolution: "720p", duration: 6 },
+        usd: 1.89,
+        units: 6,
+        perUnitUsd: 0.315,
+      },
+      {
+        label: "EX-15 seedance-2-5 720p, generate_audio false",
+        model: "bytedance/seedance-2-5",
+        input: { resolution: "720p", duration: 6, generate_audio: false },
+        usd: 1.89,
+        units: 6,
+        perUnitUsd: 0.315,
+      },
+      {
+        label: "EX-18 seedance-2-5 480p, 4 s, audio off (the recorded shape)",
+        model: "bytedance/seedance-2-5",
+        input: { resolution: "480p", duration: 4, generate_audio: false },
+        usd: 0.56,
+        units: 4,
+        perUnitUsd: 0.14,
+      },
+      {
+        label: "EX-24 minimax-h3/reference-to-video 2K, seven images, no video",
+        model: "minimax-h3/reference-to-video",
+        input: {
+          resolution: "2K",
+          duration: 6,
+          reference_image_urls: sevenImages,
+        },
+        usd: 0.43,
+        units: 6,
+        perUnitUsd: 0.065,
+        extraUsd: 0.04,
+      },
+    ])(
+      "keeps $label unchanged with and without the hint",
+      ({ model, input, usd, units, perUnitUsd, extraUsd }) => {
+        for (const extra of [{}, { costHints: { inputDurationSeconds: 10 } }]) {
+          const result = kieEstimate(
+            { model, input: { prompt: "x", ...input } },
+            extra
+          );
+          expect(result.usd).toBeCloseTo(usd, 10);
+          expect(result.breakdown).toEqual({
+            units,
+            unit: "seconds",
+            perUnitUsd,
+            ...(extraUsd === undefined ? {} : { extraUsd }),
+          });
+          expect(result.warnings).toEqual([]);
+        }
+      }
+    );
+
+    // Seedance 2.5's -1 sentinel with clips needs both hints, like Wan's EX-8.
+    it("prices Seedance 2.5's -1 sentinel with clips only from both hints", () => {
+      const request = {
+        model: "bytedance/seedance-2-5",
+        input: {
+          prompt: "x",
+          resolution: "720p",
+          duration: -1,
+          reference_video_urls: clip,
+        },
+      };
+
+      const noOutput = kieEstimate(request, {
+        costHints: { inputDurationSeconds: 4 },
+      });
+      expect(noOutput.usd).toBe(0);
+      expect(noOutput.warnings).toHaveLength(1);
+      expect(noOutput.warnings[0]).toContain("could not derive units");
+      expect(noOutput.warnings[0]).not.toContain("inputDurationSeconds");
+
+      expectInputRuleFailure(
+        kieEstimate(request, { costHints: { durationSeconds: 6 } }),
+        "bytedance/seedance-2-5"
+      );
+
+      const both = kieEstimate(request, {
+        costHints: { durationSeconds: 6, inputDurationSeconds: 4 },
+      });
+      expect(both.usd).toBeCloseTo(10 * 0.19, 10);
+      expect(both.breakdown).toEqual({
+        units: 10,
+        unit: "seconds",
+        perUnitUsd: 0.19,
+      });
+      expect(both.warnings).toEqual([]);
+    });
+
+    // Hint validity, pinned on one array-field family: zero, negative and
+    // non-numeric values count as absent, so the request fails closed.
+    it.each([{ hint: 0 }, { hint: -3 }, { hint: "10" }])(
+      "treats an inputDurationSeconds of $hint as absent for seedance-2",
+      ({ hint }) => {
+        const result = kieEstimate(
+          {
+            model: "bytedance/seedance-2",
+            input: {
+              prompt: "x",
+              resolution: "720p",
+              duration: 5,
+              reference_video_urls: clip,
+            },
+          },
+          { costHints: { inputDurationSeconds: hint } as unknown as CostHints }
+        );
+        expectInputRuleFailure(result, "bytedance/seedance-2");
+      }
+    );
+
+    // EX-1 to EX-3: happyhorse/video-edit counts the source clip beside the
+    // edit. The declared output length stands in for the input side unless
+    // inputDurationSeconds overrides it; no warning in the default case.
+    it.each([
+      {
+        label: "EX-1 720p, durationSeconds 6",
+        input: { resolution: "720p" },
+        costHints: { durationSeconds: 6 },
+        usd: 1.68,
+        units: 12,
+        perUnitUsd: 0.14,
+      },
+      {
+        label: "EX-2 1080p, deprecated top-level duration 8",
+        input: { resolution: "1080p" },
+        topLevel: { duration: 8 },
+        usd: 3.84,
+        units: 16,
+        perUnitUsd: 0.24,
+      },
+      {
+        label: "EX-3 720p, durationSeconds 6 + inputDurationSeconds 10",
+        input: { resolution: "720p" },
+        costHints: { durationSeconds: 6, inputDurationSeconds: 10 },
+        usd: 2.24,
+        units: 16,
+        perUnitUsd: 0.14,
+      },
+    ])(
+      "prices happyhorse/video-edit $label on input + output seconds",
+      ({ input, costHints, topLevel, usd, units, perUnitUsd }) => {
+        const result = kieEstimate(
+          {
+            model: "happyhorse/video-edit",
+            input: {
+              prompt: "x",
+              video_url: "https://example.com/in.mp4",
+              ...input,
+            },
+            ...(topLevel ?? {}),
+          },
+          costHints ? { costHints } : {}
+        );
+        expect(result.usd).toBeCloseTo(usd, 10);
+        expect(result.breakdown).toEqual({
+          units,
+          unit: "seconds",
+          perUnitUsd,
+        });
+        expect(result.rateAsOf).toBe("2026-08-06");
+        expect(result.warnings).toEqual([]);
+      }
+    );
+
+    // EX-4 / EX-5: with no output length the generic warning stays, whether
+    // or not an input hint is present.
+    it.each([
+      { label: "EX-4 no hint", costHints: undefined },
+      {
+        label: "EX-5 inputDurationSeconds only",
+        costHints: { inputDurationSeconds: 6 },
+      },
+    ])(
+      "keeps happyhorse/video-edit's generic warning for $label",
+      ({ costHints }) => {
+        const result = kieEstimate(
+          {
+            model: "happyhorse/video-edit",
+            input: {
+              prompt: "x",
+              video_url: "https://example.com/in.mp4",
+              resolution: "720p",
+            },
+          },
+          costHints ? { costHints } : {}
+        );
+        expect(result.usd).toBe(0);
+        expect(result.breakdown).toEqual({});
+        expect(result.warnings).toHaveLength(1);
+        expect(result.warnings[0]).toContain("could not derive units");
+        expect(result.warnings[0]).toContain("costHints.durationSeconds");
+        expect(result.warnings[0]).not.toContain("inputDurationSeconds");
+      }
+    );
+
+    // REQ-005: the sibling MiniMax keys share the builder but their schemas
+    // carry no reference_video_urls, so every parsed payload is unchanged.
+    it.each([
+      {
+        model: "minimax-h3/text-to-video",
+        schema: MiniMaxH3TextToVideoRequestSchema,
+        input: {
+          prompt: "x",
+          aspect_ratio: "16:9",
+          duration: 5,
+          resolution: "768P",
+        },
+        perUnitUsd: 0.04,
+      },
+      {
+        model: "minimax-h3/image-to-video",
+        schema: MiniMaxH3ImageToVideoRequestSchema,
+        input: {
+          prompt: "x",
+          first_frame_url: "https://example.com/a.png",
+          duration: 5,
+          resolution: "2K",
+        },
+        perUnitUsd: 0.065,
+      },
+    ])(
+      "leaves $model on output seconds with or without the hint",
+      ({ model, schema, input, perUnitUsd }) => {
+        const parsed = schema.safeParse({ model, input });
+        expect(parsed.success).toBe(true);
+        if (!parsed.success) return;
+        for (const extra of [{}, { costHints: { inputDurationSeconds: 5 } }]) {
+          const result = kieEstimate(parsed.data, extra);
+          expect(result.usd).toBeCloseTo(5 * perUnitUsd, 10);
+          expect(result.breakdown).toEqual({
+            units: 5,
+            unit: "seconds",
+            perUnitUsd,
+          });
+          expect(result.warnings).toEqual([]);
+        }
+      }
+    );
+
+    // REQ-006 / EX-26 / EX-27: Kling 3.0 Omni is not modelled. Its page tabs
+    // print no input-duration rule, and the committed transformation
+    // recording (kling-30-omni-transformation_2355785254) billed 100 credits
+    // = 5 s x 20 credits/s for a 5-second source clip, where the rule would
+    // bill 200; the text-to-video fixture that produced that clip billed 70 =
+    // 5 s x 14. A later change here is a deliberate one.
+    it.each([
+      {
+        model: "kling-3.0-omni/reference-to-video",
+        input: {
+          resolution: "720p",
+          duration: 5,
+          video_urls: clip,
+          audio: false,
+        },
+      },
+      {
+        model: "kling-3.0-omni/transformation",
+        input: { resolution: "720p", duration: 5, video_urls: clip },
+      },
+    ])(
+      "leaves kling-3.0-omni unmodelled: $model bills output seconds at the video-input tier and ignores inputDurationSeconds",
+      ({ model, input }) => {
+        for (const extra of [{}, { costHints: { inputDurationSeconds: 5 } }]) {
+          const result = kieEstimate(
+            { model, input: { prompt: "x", ...input } },
+            extra
+          );
+          expect(result.usd).toBeCloseTo(0.5, 10);
+          expect(result.breakdown).toEqual({
+            units: 5,
+            unit: "seconds",
+            perUnitUsd: 0.1,
+          });
+          expect(result.rateAsOf).toBe("2026-08-20");
+          expect(result.warnings).toEqual([]);
+        }
+      }
+    );
+
+    // EX-28: the recorded transformation shape (duration omitted) keeps the
+    // generic warning; the input hint neither prices it nor renames it.
+    it("keeps kling-3.0-omni/transformation's omitted duration on the generic warning (EX-28)", () => {
+      const result = kieEstimate(
+        {
+          model: "kling-3.0-omni/transformation",
+          input: { prompt: "x", resolution: "720p", video_urls: clip },
+        },
+        { costHints: { inputDurationSeconds: 5 } }
+      );
+      expect(result.usd).toBe(0);
+      expect(result.breakdown).toEqual({});
+      expect(result.warnings).toHaveLength(1);
+      expect(result.warnings[0]).toContain("could not derive units");
+      expect(result.warnings[0]).not.toContain("inputDurationSeconds");
+    });
+
+    // REQ-007: no rate, asOf or source URL moved on the six modelled keys.
+    it.each([
+      {
+        model: "bytedance/seedance-2",
+        rates: {
+          "480p|video": 0.0575,
+          "480p|no-video": 0.095,
+          "720p|video": 0.125,
+          "720p|no-video": 0.205,
+          "1080p|video": 0.31,
+          "1080p|no-video": 0.51,
+          "4k|video": 0.64,
+          "4k|no-video": 1.04,
+        },
+        source: {
+          url: "https://kie.ai/seedance-2-0?model=bytedance%2Fseedance-2",
+          asOf: "2026-08-06",
+        },
+      },
+      {
+        model: "bytedance/seedance-2-fast",
+        rates: {
+          "480p|video": 0.034,
+          "480p|no-video": 0.059,
+          "720p|video": 0.075,
+          "720p|no-video": 0.124,
+        },
+        source: {
+          url: "https://kie.ai/seedance-2-0?model=bytedance%2Fseedance-2-fast",
+          asOf: "2026-08-11",
+        },
+      },
+      {
+        model: "bytedance/seedance-2-mini",
+        rates: {
+          "480p|video": 0.012,
+          "480p|no-video": 0.019,
+          "720p|video": 0.025,
+          "720p|no-video": 0.041,
+        },
+        source: { url: "https://kie.ai/seedance-2-0-mini", asOf: "2026-08-11" },
+      },
+      {
+        model: "bytedance/seedance-2-5",
+        rates: {
+          "480p|video": 0.085,
+          "480p|no-video": 0.14,
+          "720p|video": 0.19,
+          "720p|no-video": 0.315,
+          "1080p|video": 0.3425,
+          "1080p|no-video": 0.57,
+        },
+        source: { url: "https://kie.ai/seedance-2-5", asOf: "2026-08-22" },
+      },
+      {
+        model: "minimax-h3/reference-to-video",
+        rates: { "768P": 0.04, "2K": 0.065 },
+        source: {
+          url: "https://kie.ai/minimax-h3?model=minimax-h3%2Freference-to-video",
+          asOf: "2026-09-11",
+        },
+      },
+      {
+        model: "happyhorse/video-edit",
+        rates: { "720p": 0.14, "1080p": 0.24 },
+        source: {
+          url: "https://kie.ai/happyhorse-1-0?model=happyhorse%2Fvideo-edit",
+          asOf: "2026-08-06",
+        },
+      },
+    ])(
+      "keeps $model's rates and source unchanged",
+      ({ model, rates, source }) => {
+        const entry = PRICING.kie[model];
+        expect(entry.kind).toBe("perUnit");
+        if (entry.kind !== "perUnit") return;
+        expect(entry.rates).toEqual(rates);
+        expect(entry.source).toEqual(source);
       }
     );
   });

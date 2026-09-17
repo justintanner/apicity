@@ -155,6 +155,8 @@ interface CostHints {
   durationSeconds?: number;
   inputDurationSeconds?: number;
   googleFlowPlan?: "pro" | "ultra" | (string & {});
+  inputTokens?: number;
+  outputTokens?: number;
 }
 ```
 
@@ -200,21 +202,21 @@ then `costHints.durationSeconds`; only `v1/videos/edits`, which has no
 
 ### Endpoints that need it
 
-| Provider | Pricing key                                      | Length follows     |
-| -------- | ------------------------------------------------ | ------------------ |
-| `kie`    | `veo3` / `veo3_fast`                             | model-fixed clip   |
-| `kie`    | `happyhorse/video-edit`                          | source `video_url` |
-| `kie`    | `kling-3.0/motion-control`                       | motion video       |
-| `kie`    | `omnihuman-1-5`                                  | driving audio      |
-| `kie`    | `volcengine/video-to-video-lip-sync`             | source video       |
-| `xai`    | `v1/videos/edits`                                | source video       |
-| `fal`    | `bytedance/seedance-2.0/text-to-video`           | model picks length |
-| `fal`    | `bytedance/seedance-2.0/image-to-video`          | model picks length |
-| `fal`    | `bytedance/seedance-2.0/reference-to-video`      | model picks length |
-| `fal`    | `bytedance/seedance-2.0/fast/text-to-video`      | model picks length |
-| `fal`    | `bytedance/seedance-2.0/fast/image-to-video`     | model picks length |
-| `fal`    | `bytedance/seedance-2.0/fast/reference-to-video` | model picks length |
-| `fal`    | `fal-ai/wan/v2.7/edit-video`                     | source video       |
+| Provider | Pricing key                                      | Length follows                           |
+| -------- | ------------------------------------------------ | ---------------------------------------- |
+| `kie`    | `veo3` / `veo3_fast`                             | model-fixed clip                         |
+| `kie`    | `happyhorse/video-edit`                          | source `video_url`, billed on both sides |
+| `kie`    | `kling-3.0/motion-control`                       | motion video                             |
+| `kie`    | `omnihuman-1-5`                                  | driving audio                            |
+| `kie`    | `volcengine/video-to-video-lip-sync`             | source video                             |
+| `xai`    | `v1/videos/edits`                                | source video                             |
+| `fal`    | `bytedance/seedance-2.0/text-to-video`           | model picks length                       |
+| `fal`    | `bytedance/seedance-2.0/image-to-video`          | model picks length                       |
+| `fal`    | `bytedance/seedance-2.0/reference-to-video`      | model picks length                       |
+| `fal`    | `bytedance/seedance-2.0/fast/text-to-video`      | model picks length                       |
+| `fal`    | `bytedance/seedance-2.0/fast/image-to-video`     | model picks length                       |
+| `fal`    | `bytedance/seedance-2.0/fast/reference-to-video` | model picks length                       |
+| `fal`    | `fal-ai/wan/v2.7/edit-video`                     | source video                             |
 
 The six seedance rows default `duration` to `"auto"` and wan edit-video
 defaults it to `0` ("match the source clip"). Neither spelling is a length, so
@@ -223,15 +225,17 @@ both reach the hint exactly like an omitted field would.
 Every other per-second entry reads a real wire duration; passing `costHints`
 alongside one is harmless — the wire field wins.
 
-### Input video duration (kie Wan 3.0)
+### Input video duration (kie)
 
-Two kie entries bill on **both** sides of the request: the product pages for
-`wan/3-0-video` and `wan/3-0-video-prime` print the rule "(input video
-duration + output video duration) × unit price" (confirmed 2026-09-16), and the
-input side is the summed length of the `reference_video_urls` clips (each
-1–15 s, at most 15 s in total, input + output at most 30 s). The clips are
-URLs, so the request carries no input duration; `costHints.inputDurationSeconds`
-is how the caller declares it:
+Eight kie entries bill on **both** sides of the request: their product pages
+print the rule "(input video duration + output video duration) × unit price"
+(Wan 3.0 confirmed 2026-09-16; the Seedance 2 family, Seedance 2.5, HappyHorse
+video-edit and MiniMax H3 re-read 2026-09-17), and the input side is a clip
+whose length the request never carries — for most of them the summed length of
+the `reference_video_urls` clips (Wan 3.0: each 1–15 s, at most 15 s in total;
+Seedance 2 / 2 Fast / 2 Mini and MiniMax H3: at most 15 s in total; Seedance
+2.5: at most 30 s). `costHints.inputDurationSeconds` is how the caller declares
+it:
 
 ```ts
 const payload = {
@@ -256,21 +260,45 @@ c.estimate({
 ```
 
 Without the hint a reference-video request **fails closed** (`usd: 0` and one
-warning naming the field) rather than quoting the output-only figure the page
-says is wrong. With no video input — text, images, audio, a document or a
-link — the hint is ignored and the estimate is unchanged, exactly as
-`costHints.durationSeconds` is ignored beside a wire `duration`. Output seconds
-still resolve as above (the wire `duration` first, `costHints.durationSeconds`
-for the `-1` sentinel), so a sentinel request with clips needs both hints. A
-zero, negative or non-numeric value counts as absent. Like every `costHints`
-field it is cost-only: never merged into `payload`, never sent upstream, never
-canonicalized or signed — see [Hash and OTP guarantee](#hash-and-otp-guarantee)
-below.
+warning naming the field and the hint) rather than quoting the output-only
+figure the page says is wrong, and a `reference_video_urls` that is not an
+array fails closed the same way. With no video input — text, images, audio, a
+document or a link — the hint is ignored and the estimate is unchanged, exactly
+as `costHints.durationSeconds` is ignored beside a wire `duration`. Output
+seconds still resolve as above (the wire `duration` first,
+`costHints.durationSeconds` for the `-1` sentinel), so a sentinel request with
+clips needs both hints. A zero, negative or non-numeric value counts as absent.
+Like every `costHints` field it is cost-only: never merged into `payload`, never
+sent upstream, never canonicalized or signed — see [Hash and OTP
+guarantee](#hash-and-otp-guarantee) below.
 
-| Provider | Pricing key           | Input side follows                 |
-| -------- | --------------------- | ---------------------------------- |
-| `kie`    | `wan/3-0-video`       | `reference_video_urls` clip length |
-| `kie`    | `wan/3-0-video-prime` | `reference_video_urls` clip length |
+| Provider | Pricing key                     | Input side follows                                                                            |
+| -------- | ------------------------------- | --------------------------------------------------------------------------------------------- |
+| `kie`    | `wan/3-0-video`                 | `reference_video_urls` clip length                                                            |
+| `kie`    | `wan/3-0-video-prime`           | `reference_video_urls` clip length                                                            |
+| `kie`    | `bytedance/seedance-2`          | `reference_video_urls` clip length                                                            |
+| `kie`    | `bytedance/seedance-2-fast`     | `reference_video_urls` clip length                                                            |
+| `kie`    | `bytedance/seedance-2-mini`     | `reference_video_urls` clip length                                                            |
+| `kie`    | `bytedance/seedance-2-5`        | `reference_video_urls` clip length (the "with video" column; audio selects no rate)           |
+| `kie`    | `minimax-h3/reference-to-video` | `reference_video_urls` clip length, plus the image surcharge                                  |
+| `kie`    | `happyhorse/video-edit`         | source `video_url`: the declared `durationSeconds` unless `inputDurationSeconds` overrides it |
+
+`happyhorse/video-edit` needs no second hint in the common case: the output
+matches the source clip, so `{ durationSeconds: 6 }` alone prices 12 s
+(`(6 + 6) × $0.14 = $1.68` at 720p); pass `inputDurationSeconds` when the two
+lengths differ. `bytedance/seedance-2-5`'s "with video" / "no video" columns
+follow the same field, so its schema defaults (audio on, no video) price in
+the "no video" cell at `5 × $0.315`; the docs' audio surcharge is unpublished
+and not modelled.
+
+**Not modelled: `kling-3.0-omni/reference-to-video` and
+`kling-3.0-omni/transformation`.** Their page tabs print a "with video input"
+per-second tier and no input-duration rule (re-read 2026-09-16 and
+2026-09-17), and the committed transformation recording
+(`kling-30-omni-transformation_2355785254`: a 5-second source clip, 720p)
+billed 100 credits = 5 s × 20 credits/s — the output seconds alone, where the
+rule would bill 200. Both entries keep billing output seconds at the
+video-input tier, and `inputDurationSeconds` is ignored for them.
 
 ### Plan tier (googleflow)
 

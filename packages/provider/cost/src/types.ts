@@ -56,13 +56,16 @@ export interface CostHints {
   durationSeconds?: number;
   // Declared total length, in seconds, of the request's video INPUTS, for the
   // kie entries that bill (input video duration + output video duration) x
-  // unit price — today the two Wan 3.0 models, whose `reference_video_urls`
-  // clips are URLs and carry no duration in the request. Ignored when the
-  // payload has no video input; a zero, negative, non-finite or non-numeric
-  // value counts as absent, and a reference-video request with no valid value
-  // fails closed with a warning that names this field. Cost-only, like the
-  // rest of CostHints: never merged into payload, never canonicalHash'd, never
-  // signed.
+  // unit price: the Wan 3.0, Seedance 2 / 2 Fast / 2 Mini / 2.5 and MiniMax
+  // H3 reference-to-video entries, whose `reference_video_urls` clips are
+  // URLs and carry no duration in the request, and happyhorse/video-edit,
+  // whose required source `video_url` is billed beside the output and
+  // defaults to the declared `durationSeconds` when this field is absent.
+  // Ignored when the payload has no video input; a zero, negative, non-finite
+  // or non-numeric value counts as absent, and a reference-video request with
+  // no valid value fails closed with a warning that names this field.
+  // Cost-only, like the rest of CostHints: never merged into payload, never
+  // canonicalHash'd, never signed.
   inputDurationSeconds?: number;
   // Google Flow plan tier that sets the googleflow credit->USD basis. Omitted
   // => "pro" (the safe over-estimate default, byte-for-byte the pre-selector

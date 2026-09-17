@@ -614,10 +614,14 @@ export const lineup = [
     },
     audio: "—",
   },
-  // Seedance 2.5 — per second, resolution × generate_audio.
+  // Seedance 2.5 — per second, resolution × video input, exactly like the
+  // seedance-2 rows above (ac-u8y5xg): a prompt-only row prices in the page's
+  // "no video" cell whatever generate_audio says, and a reference-video row
+  // prices in the "with video" cell on (input + output) seconds, its clip
+  // length supplied by durationHints below.
   {
     ...createTaskEndpointAssociation,
-    label: "seedance-2-5 480p silent",
+    label: "seedance-2-5 480p prompt-only (no-video)",
     payload: {
       model: "bytedance/seedance-2-5",
       input: {
@@ -625,14 +629,13 @@ export const lineup = [
         aspect_ratio: "16:9",
         duration: 5,
         resolution: "480p",
-        generate_audio: false,
       },
     },
     audio: "opt",
   },
   {
     ...createTaskEndpointAssociation,
-    label: "seedance-2-5 480p audio",
+    label: "seedance-2-5 480p reference-video (video)",
     payload: {
       model: "bytedance/seedance-2-5",
       input: {
@@ -640,14 +643,14 @@ export const lineup = [
         aspect_ratio: "16:9",
         duration: 5,
         resolution: "480p",
-        generate_audio: true,
+        reference_video_urls: ["https://example.com/ref.mp4"],
       },
     },
     audio: "opt",
   },
   {
     ...createTaskEndpointAssociation,
-    label: "seedance-2-5 720p silent",
+    label: "seedance-2-5 720p prompt-only (no-video)",
     payload: {
       model: "bytedance/seedance-2-5",
       input: {
@@ -655,14 +658,13 @@ export const lineup = [
         aspect_ratio: "16:9",
         duration: 5,
         resolution: "720p",
-        generate_audio: false,
       },
     },
     audio: "opt",
   },
   {
     ...createTaskEndpointAssociation,
-    label: "seedance-2-5 720p audio",
+    label: "seedance-2-5 720p reference-video (video)",
     payload: {
       model: "bytedance/seedance-2-5",
       input: {
@@ -670,14 +672,14 @@ export const lineup = [
         aspect_ratio: "16:9",
         duration: 5,
         resolution: "720p",
-        generate_audio: true,
+        reference_video_urls: ["https://example.com/ref.mp4"],
       },
     },
     audio: "opt",
   },
   {
     ...createTaskEndpointAssociation,
-    label: "seedance-2-5 1080p silent",
+    label: "seedance-2-5 1080p prompt-only (no-video)",
     payload: {
       model: "bytedance/seedance-2-5",
       input: {
@@ -685,14 +687,13 @@ export const lineup = [
         aspect_ratio: "16:9",
         duration: 5,
         resolution: "1080p",
-        generate_audio: false,
       },
     },
     audio: "opt",
   },
   {
     ...createTaskEndpointAssociation,
-    label: "seedance-2-5 1080p audio",
+    label: "seedance-2-5 1080p reference-video (video)",
     payload: {
       model: "bytedance/seedance-2-5",
       input: {
@@ -700,7 +701,7 @@ export const lineup = [
         aspect_ratio: "16:9",
         duration: 5,
         resolution: "1080p",
-        generate_audio: true,
+        reference_video_urls: ["https://example.com/ref.mp4"],
       },
     },
     audio: "opt",
@@ -1673,13 +1674,23 @@ export function withDuration(payload, sec) {
   return { ...payload, duration: sec };
 }
 
-// Cost-only side channel for the no-duration-field models: their per-second
-// rate needs a length, and the hint is the declared way to supply one. Returns
-// undefined for every other row, which `estimate` treats as absent.
+// Cost-only side channel. The no-duration-field models need a length, and the
+// hint is the declared way to supply one; the reference-video rows need the
+// clips' length too, because their entries bill (input video duration + output
+// video duration) x rate and fail closed without it — each such row declares
+// a clip as long as the column's output, so its cell reads (sec + sec) x rate.
+// Returns undefined for every other row, which `estimate` treats as absent.
 export function durationHints(payload, sec) {
-  return HINT_DURATION_MODELS.has(payload.model)
-    ? { durationSeconds: sec }
-    : undefined;
+  const clips = payload.input?.reference_video_urls;
+  const hints = {
+    ...(HINT_DURATION_MODELS.has(payload.model)
+      ? { durationSeconds: sec }
+      : {}),
+    ...(Array.isArray(clips) && clips.length > 0
+      ? { inputDurationSeconds: sec }
+      : {}),
+  };
+  return Object.keys(hints).length ? hints : undefined;
 }
 
 export function schemaValidationCases(entry) {

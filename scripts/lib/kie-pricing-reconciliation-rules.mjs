@@ -1004,6 +1004,12 @@ export function applyPayloadRules({ key, text, input }) {
   return input;
 }
 
+// Seedance 2.5's official cells are keyed resolution x video input: the page's
+// "with video" column bills (input + output) seconds and generate_audio
+// selects no rate (ac-u8y5xg), so a "with video" row carries one reference
+// clip and no row carries an audio flag. The clip's length reaches the
+// estimator as costHints.inputDurationSeconds on the row's
+// representativePricingMetadata.
 export function representativePayloadOverride(key, selectors) {
   if (key !== "bytedance/seedance-2-5") return undefined;
   return {
@@ -1011,7 +1017,9 @@ export function representativePayloadOverride(key, selectors) {
     input: {
       prompt: "audit",
       resolution: selectors.resolution,
-      generate_audio: selectors.generate_audio,
+      ...(selectors.videoInput === "video"
+        ? { reference_video_urls: ["https://example.com/a.mp4"] }
+        : {}),
       duration: 5,
     },
   };

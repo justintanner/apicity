@@ -469,16 +469,57 @@ describe("Kie pricing reconciliation", () => {
     );
 
     expect(seedance).toHaveLength(6);
+    // The page's columns are keyed on video input (ac-u8y5xg): the cheaper
+    // "with video" cell bills (input + output) seconds.
     expect(
       seedance.map((row) => [row.selectorValues, row.rateBasis?.usdPrice])
     ).toEqual([
-      [{ resolution: "1080p", generate_audio: true }, "0.3425"],
-      [{ resolution: "1080p", generate_audio: false }, "0.570"],
-      [{ resolution: "720p", generate_audio: true }, "0.190"],
-      [{ resolution: "720p", generate_audio: false }, "0.315"],
-      [{ resolution: "480p", generate_audio: true }, "0.085"],
-      [{ resolution: "480p", generate_audio: false }, "0.140"],
+      [{ resolution: "1080p", videoInput: "video" }, "0.3425"],
+      [{ resolution: "1080p", videoInput: "no-video" }, "0.570"],
+      [{ resolution: "720p", videoInput: "video" }, "0.190"],
+      [{ resolution: "720p", videoInput: "no-video" }, "0.315"],
+      [{ resolution: "480p", videoInput: "video" }, "0.085"],
+      [{ resolution: "480p", videoInput: "no-video" }, "0.140"],
     ]);
+  });
+
+  // The entries on the "(input video duration + output video duration) x
+  // rate" rule fail a reference-video request closed unless the clips'
+  // length is declared, so every executed row whose representative payload
+  // carries clips must carry costHints.inputDurationSeconds — the only
+  // channel runtimeCase reads (ac-u8y5xg). Ten rows: seedance-2
+  // 720p/1080p/4K, seedance-2-fast 480p/720p, seedance-2-mini 480P/720P and
+  // the three Seedance 2.5 "with video" cells; each bills 5 + 5 seconds.
+  it("declares the input video duration for every executed reference-video row", async () => {
+    const manifest = generatedManifest;
+    const rows = implementedRows(manifest).filter((row) => {
+      const input = row.representativePayload?.input;
+      if (!input || typeof input !== "object" || Array.isArray(input)) {
+        return false;
+      }
+      const clips = (input as Record<string, unknown>).reference_video_urls;
+      return Array.isArray(clips) && clips.length > 0;
+    });
+    expect(rows.map((row) => row.official.modelDescription).sort()).toEqual([
+      "bytedance/seedance-2 fast, 480p with video input",
+      "bytedance/seedance-2 fast, 720p with video input",
+      "bytedance/seedance-2, 1080p with video input",
+      "bytedance/seedance-2, 4K with video input",
+      "bytedance/seedance-2, 720p with video input",
+      "bytedance/seedance-2-5, 1080p with video",
+      "bytedance/seedance-2-5, 480p with video",
+      "bytedance/seedance-2-5, 720p with video",
+      "bytedance/seedance-2-mini, 480P with video",
+      "bytedance/seedance-2-mini, 720P with video",
+    ]);
+    for (const row of rows) {
+      const runtime = runtimeCase(row);
+      expect(runtime.hints, row.occurrenceId).toEqual({
+        inputDurationSeconds: 5,
+      });
+      expect(runtime.units, row.occurrenceId).toBe(10);
+      expect(runtime.estimate.warnings, row.occurrenceId).toEqual([]);
+    }
   });
 
   it("executes every implemented official cell against its live Kie rate", async () => {

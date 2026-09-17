@@ -44,6 +44,9 @@ describe("cost.estimate — pure-table (no network)", () => {
 
   it("kie seedance-2-mini resolves resolution and video-input rates", () => {
     const c = createCost();
+    // The video column bills (input video duration + output video duration)
+    // x rate (ac-u8y5xg), so the two reference-video rows declare the clips'
+    // length as a cost hint: 4 s of output + 4 s of clips.
     const cases = [
       {
         label: "480p with video input",
@@ -51,6 +54,8 @@ describe("cost.estimate — pure-table (no network)", () => {
         extraInput: {
           reference_video_urls: ["https://example.com/ref.mp4"],
         },
+        costHints: { inputDurationSeconds: 4 },
+        expectedUnits: 8,
         expectedPerSecond: 0.012,
       },
       {
@@ -59,6 +64,7 @@ describe("cost.estimate — pure-table (no network)", () => {
         extraInput: {
           reference_image_urls: ["https://example.com/ref.jpg"],
         },
+        expectedUnits: 4,
         expectedPerSecond: 0.019,
       },
       {
@@ -67,12 +73,15 @@ describe("cost.estimate — pure-table (no network)", () => {
         extraInput: {
           reference_video_urls: ["https://example.com/ref.mp4"],
         },
+        costHints: { inputDurationSeconds: 4 },
+        expectedUnits: 8,
         expectedPerSecond: 0.025,
       },
       {
         label: "720p without video input",
         resolution: "720p",
         extraInput: {},
+        expectedUnits: 4,
         expectedPerSecond: 0.041,
       },
     ] as const;
@@ -92,12 +101,13 @@ describe("cost.estimate — pure-table (no network)", () => {
             ...item.extraInput,
           },
         },
+        ...("costHints" in item ? { costHints: item.costHints } : {}),
       });
       expect(r.source).toBe("per-unit-table");
       expect(r.breakdown.unit).toBe("seconds");
-      expect(r.breakdown.units).toBe(4);
+      expect(r.breakdown.units).toBe(item.expectedUnits);
       expect(r.breakdown.perUnitUsd).toBe(item.expectedPerSecond);
-      expect(r.usd).toBeCloseTo(item.expectedPerSecond * 4, 6);
+      expect(r.usd).toBeCloseTo(item.expectedPerSecond * item.expectedUnits, 6);
       expect(r.warnings).toEqual([]);
     }
   });
@@ -126,7 +136,7 @@ describe("cost.estimate — pure-table (no network)", () => {
     expect(r.usd).toBeCloseTo(0.205 * 8, 6);
   });
 
-  it("kie seedance-2 reference_video 720p resolves to seedance-2-720p-video rate", () => {
+  it("kie seedance-2 reference_video 720p resolves to seedance-2-720p-video rate on input + output seconds", () => {
     const c = createCost();
     const r = c.estimate({
       provider: "kie",
@@ -140,11 +150,15 @@ describe("cost.estimate — pure-table (no network)", () => {
           web_search: false,
         },
       },
+      // 8 s of output + 10 s of clips: the video column bills both sides
+      // (ac-u8y5xg), and the clips' length only exists as a cost hint.
+      costHints: { inputDurationSeconds: 10 },
     });
     expect(r.source).toBe("per-unit-table");
-    expect(r.breakdown.units).toBe(8);
+    expect(r.breakdown.units).toBe(18);
     expect(r.breakdown.perUnitUsd).toBe(0.125);
-    expect(r.usd).toBeCloseTo(0.125 * 8, 6);
+    expect(r.usd).toBeCloseTo(0.125 * 18, 6);
+    expect(r.warnings).toEqual([]);
   });
 
   it("kie seedance-2 prompt-only resolves to seedance-2-720p-no-video rate", () => {
@@ -564,7 +578,10 @@ describe("cost.estimate — pure-table (no network)", () => {
     ).toBe(true);
   });
 
-  it("kie happyhorse/video-edit 1080p → $0.24/s with top-level duration hint", () => {
+  // happyhorse/video-edit bills (input video duration + output video
+  // duration) x rate, and the declared length is the source clip's, which
+  // the edit matches (ac-u8y5xg) — so the declared seconds count twice.
+  it("kie happyhorse/video-edit 1080p → $0.24/s on twice the top-level duration hint", () => {
     const c = createCost();
     const r = c.estimate({
       provider: "kie",
@@ -579,12 +596,13 @@ describe("cost.estimate — pure-table (no network)", () => {
       },
     });
     expect(r.breakdown.unit).toBe("seconds");
-    expect(r.breakdown.units).toBe(8);
+    expect(r.breakdown.units).toBe(16);
     expect(r.breakdown.perUnitUsd).toBe(0.24);
-    expect(r.usd).toBeCloseTo(0.24 * 8, 6);
+    expect(r.usd).toBeCloseTo(3.84, 6);
+    expect(r.warnings).toEqual([]);
   });
 
-  it("kie happyhorse/video-edit 720p → $0.14/s", () => {
+  it("kie happyhorse/video-edit 720p → $0.14/s on twice the declared seconds", () => {
     const c = createCost();
     const r = c.estimate({
       provider: "kie",
@@ -598,8 +616,9 @@ describe("cost.estimate — pure-table (no network)", () => {
         duration: 5,
       },
     });
+    expect(r.breakdown.units).toBe(10);
     expect(r.breakdown.perUnitUsd).toBe(0.14);
-    expect(r.usd).toBeCloseTo(0.14 * 5, 6);
+    expect(r.usd).toBeCloseTo(0.14 * 10, 6);
   });
 
   it("kie happyhorse-1-1 video modes resolve 720p pricing", () => {

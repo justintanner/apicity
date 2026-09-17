@@ -5,9 +5,9 @@
  * `scripts/endpoint-docs.tsv` says which URL each endpoint calls, but not how
  * that URL's `{placeholder}` segments reach the function: a leading positional
  * argument, a property of the request object, or a credential the factory
- * substitutes. The MCP server binds every placeholder positionally, which is
- * right for well under half of them. Rather than repeat that guess, the CLI
- * reads a table generated here from the endpoint sources themselves.
+ * substitutes. The MCP server this CLI replaced bound every placeholder
+ * positionally, which was right for well under half of them; that is why the
+ * CLI reads a table generated here from the endpoint sources instead.
  *
  * The walk is the same ts-morph walker `pnpm run lint:endpoints` uses, loaded
  * once. Request-object properties are read syntactically — interfaces, type

@@ -72,18 +72,20 @@ describe("resolveProviderScope", () => {
 
   it("resolves the endpoint-less CLI workspace package", () => {
     const byName = resolveProviderScope("cli");
-    const byPath = resolveProviderScope("packages/cli/src/mcp/server.ts");
+    const byPath = resolveProviderScope("packages/cli/src/main.ts");
 
     for (const scope of [byName, byPath]) {
       expect(scope).toMatchObject({
         provider: "cli",
         packageDir: cliDir,
       });
-      // `cli` selects both test families the package owns: the `mcp-*` files
-      // that moved with it and the dispatcher's own `cli-*` files.
-      expect(scope.tests).toContain(`${unitDir}/mcp-schema.test.ts`);
-      expect(scope.tests).toContain(`${unitDir}/mcp-provider-registry.test.ts`);
+      // `cli` selects its own `cli-*` family and nothing else.
+      expect(scope.tests).toContain(`${unitDir}/cli-schema.test.ts`);
+      expect(scope.tests).toContain(`${unitDir}/cli-registry.test.ts`);
       expect(scope.tests).toContain(`${unitDir}/cli-dispatch.test.ts`);
+      expect(
+        scope.tests.filter((p) => path.basename(p).startsWith("mcp-"))
+      ).toEqual([]);
     }
   });
 

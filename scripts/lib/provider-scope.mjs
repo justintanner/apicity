@@ -38,9 +38,7 @@ export function listProviderNames() {
 }
 
 export function listProviderTests(provider) {
-  // `cli` owns two test-file families: the dispatcher's own `cli-*` files and
-  // the `mcp-*` files that moved with the package, whose names stayed put.
-  const prefixes = provider === "cli" ? ["cli", "mcp"] : [provider];
+  const prefixes = [provider];
 
   const matchesPrefix = (name) =>
     prefixes.some(

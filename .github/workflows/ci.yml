@@ -99,7 +99,6 @@ jobs:
           test -f packages/provider/alibaba/dist/src/index.js
           test -f packages/provider/alibaba/dist/src/index.d.ts
           test -f packages/cli/dist/src/bin.js
-          test -f packages/cli/dist/src/mcp-bin.js
           test -f packages/cli/dist/endpoint-docs.tsv
           # Staged by scripts/dist.mjs and published through the `skills`
           # entry in package.json `files`. It is gitignored and no test reads

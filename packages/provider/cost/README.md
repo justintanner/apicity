@@ -618,12 +618,12 @@ must mint a fresh OTP to retry. This is intentional — otherwise a hostile
 caller could replay a single OTP on every transient failure. Each OTP is
 single-use authority for one network attempt.
 
-### apicity CLI and `apicity mcp`
+### apicity CLI
 
 `@apicity/cli` is the code client: started with
 `--paygate-secret-file <path>`, it holds the secret to **verify** OTPs (it
 never mints). A human mints an OTP out-of-band with the same secret and the
-caller passes it as the paid tool's `otp` argument — an AI driving the tool
+caller passes it as `--otp <token>` on the call — an AI driving the CLI
 cannot self-approve.
 
 ### Minimal operator workflow

@@ -15,14 +15,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   2.7 Image, and KIE Nano Banana.
 - Fal request input/output aliases and an endpoint-to-input type map.
 
+### Removed
+
+- The MCP server: the CLI's `mcp` subcommand and its compatibility bin. MCP support ended with `@apicity/mcp-server` 0.11.2; use the `apicity` CLI and agent skill (see MCP.md).
+
 ### Fixed
 
 - Fal area-billed models now use only documented fixed defaults and warn when
   an omitted image size cannot be priced safely.
 - Kling 3.0 pricing applies the sound tier when `multi_shots` promotes an
   omitted sound setting.
-- ElevenLabs text-to-speech MCP tools now disclose the 10000-character limit
-  that applies when `model_id` is omitted.
+- ElevenLabs text-to-speech descriptions shown by `apicity describe` now
+  disclose the 10000-character limit that applies when `model_id` is omitted.
 - Provider-scoped lint and preflight support endpoint-less packages such as
   `@apicity/cost` and `@apicity/mcp-server` without accepting misspelled names.
 - The local dependency audit can inventory the full workspace without

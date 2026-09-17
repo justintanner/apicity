@@ -72,8 +72,8 @@ export async function callEndpoint(
 }
 
 /**
- * Collect an async-iterable result into an array, as the MCP server does
- * (REQ-004). This is parity, not a streaming mode: the CLI prints one
+ * Collect an async-iterable result into an array (REQ-004). This is parity
+ * with the server this CLI replaced, not a streaming mode: the CLI prints one
  * document, so a streamed response is buffered and then printed whole.
  */
 export async function maybeBuffer(value: unknown): Promise<unknown> {

@@ -167,7 +167,7 @@ if (!fs.existsSync(rootChangelogPath)) {
     "- Zod schema validation on every POST endpoint.",
     "- Middleware composition (retry, fallback, rate-limit).",
     "- `@apicity/cost` for local token/image/video spend estimation.",
-    "- `@apicity/cli`: the `apicity` CLI and agent skill (with `apicity mcp`).",
+    "- `@apicity/cli`: the `apicity` CLI and agent skill.",
     "- Integration-test harness with Polly.js record/replay.",
     "- Endpoint documentation with upstream docs links.",
     "",

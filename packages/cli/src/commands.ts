@@ -39,7 +39,6 @@ export const BUILTIN_COMMANDS: readonly BuiltinCommand[] = [
     summary: "Install the skill; connect an agent when one is unambiguous.",
   },
   { name: "doctor", summary: "Check this host's apicity install, row by row." },
-  { name: "mcp", summary: "Serve every provider endpoint over MCP on stdio." },
   { name: "help", summary: "Print this message." },
   { name: "version", summary: "Print the @apicity/cli version." },
 ];

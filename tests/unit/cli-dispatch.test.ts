@@ -1,8 +1,8 @@
-import { execFile, spawn } from "node:child_process";
+import { spawn } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { BUILTIN_COMMANDS } from "../../packages/cli/src/commands";
 import type { CliWriter } from "../../packages/cli/src/envelope";
 import { runMain } from "../../packages/cli/src/main";
@@ -13,7 +13,6 @@ import { runMain } from "../../packages/cli/src/main";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const packageJsonPath = join(here, "../../packages/cli/package.json");
-const mcpBinPath = join(here, "../../packages/cli/dist/src/mcp-bin.js");
 const binPath = join(here, "../../packages/cli/dist/src/bin.js");
 
 const packageVersion = (
@@ -49,7 +48,6 @@ describe("apicity dispatcher", () => {
       "setup codex",
       "setup agents",
       "doctor",
-      "mcp",
       "help",
       "version",
     ]);
@@ -87,64 +85,12 @@ describe("apicity dispatcher", () => {
     expect(envelope.error).toContain("nosuch");
     expect(envelope.hint).toContain("apicity providers");
   });
-
-  it("hands --help through to the MCP server's own help", async () => {
-    const { writer } = capture();
-    const stderr = vi.spyOn(console, "error").mockImplementation(() => {});
-
-    try {
-      await expect(runMain(["mcp", "--help"], writer)).resolves.toBe(0);
-      const help = stderr.mock.calls.map((call) => String(call[0])).join("\n");
-      // The six flags `apicity mcp` accepts, unchanged by the move.
-      for (const flag of [
-        "--op-vault",
-        "--op-token",
-        "--env-file",
-        "--output-dir",
-        "--providers",
-        "--paygate-secret-file",
-      ]) {
-        expect(help).toContain(flag);
-      }
-    } finally {
-      stderr.mockRestore();
-    }
-  });
 });
 
 // `dist/` is built by `pnpm run build:cli`, which CI runs before the suite. A
 // fresh worktree replaying tests has no `dist/`, so the title carries the
 // reason rather than the run silently proving nothing.
-const DEPRECATION_TITLE =
-  "apicity-mcp prints its deprecation line before the usage text";
 const NO_DIST = "run `pnpm run build:cli` first";
-const hasDist = existsSync(mcpBinPath);
-
-describe("apicity-mcp compatibility bin", () => {
-  it.skipIf(!hasDist)(
-    hasDist ? DEPRECATION_TITLE : `${DEPRECATION_TITLE} [skipped: ${NO_DIST}]`,
-    async () => {
-      const stderr = await new Promise<string>((resolve, reject) => {
-        execFile(
-          process.execPath,
-          [mcpBinPath, "--help"],
-          (error, _stdout, errOut) => {
-            if (error) reject(error);
-            else resolve(errOut);
-          }
-        );
-      });
-
-      const deprecation = stderr.indexOf(
-        'apicity-mcp is deprecated; use "apicity mcp"'
-      );
-      const usage = stderr.indexOf("Usage:");
-      expect(deprecation).toBeGreaterThanOrEqual(0);
-      expect(usage).toBeGreaterThanOrEqual(0);
-      expect(deprecation).toBeLessThan(usage);
-    }
-  );
-});
 
 // The `apicity` bin itself. Everything above drives `runMain` in-process,
 // which never reaches the exit path — so this is the only place the shipped

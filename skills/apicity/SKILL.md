@@ -173,7 +173,6 @@ each one. The directory is `--output-dir`, else `$APICITY_OUTPUT_DIR`, else
 | Guidance for agents                   | `apicity help agents`                                                                         |
 | Print this skill                      | `apicity skill`                                                                               |
 | Install this skill for your agents    | `apicity skill install`                                                                       |
-| Serve the same endpoints over MCP     | `apicity mcp`                                                                                 |
 | Print the version                     | `apicity version`                                                                             |
 
 ## Decision Tree

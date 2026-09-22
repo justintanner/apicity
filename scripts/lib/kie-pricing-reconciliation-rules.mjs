@@ -223,6 +223,24 @@ export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
       "The zero entry is an unreachable sentinel, never a free estimate, because output-resolution billing cannot be derived from the request schema.",
   },
   ...[
+    "360p|no-audio",
+    "360p|audio",
+    "540p|no-audio",
+    "540p|audio",
+    "720p|no-audio",
+    "720p|audio",
+    "1080p|no-audio",
+    "1080p|audio",
+  ].map((variant) => ({
+    key: "pixverse-v6/transition",
+    variant,
+    status: "pricing-only",
+    provenance:
+      "https://kie.ai/pixverse-v6 groupData declares the transition tab and prints this cell (ac-4v9ck1 re-fetch evidence); no official occurrence in the frozen 2026-09-11 pull",
+    rationale:
+      "Page-sourced under the pricing/kie.ts page-evidence rule: printed credits x 0.005 equal the cell and match the feed-evidenced text/image ladder; no feed row names transition.",
+  })),
+  ...[
     ["runway/extend", "720p"],
     ["runway/extend", "1080p"],
     ["sora-watermark-remover", ""],

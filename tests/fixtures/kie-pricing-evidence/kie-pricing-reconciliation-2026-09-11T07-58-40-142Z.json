@@ -1823,7 +1823,7 @@
       "packages/provider/kie/src/zod.ts": "sha256:32283143e82fab8c76cec96c906a00be3698fb16686bb5827677c4652a149668",
       "packages/provider/kie/src/model-schemas.ts": "sha256:8484bb394f85fb31ae0637a5c35263b0707a045cbfb05b60a65fbc19c97a8a66",
       "packages/provider/kie/src/kie.ts": "sha256:ffd0feb6bfb9b329bdd5900c5164bb4f0702c8a3c91cffd774b9e21cb3088ded",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:748a8ac3021594e08878a45a94e059bc0af39df75df41488753841576f079c3c",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:587d0b442ff44e2532db07693a98b4f3979ce23364101348ab1f661563a027d6",
       "packages/provider/cost/src/slugs.ts": "sha256:25d699780a875783a1de78270d452c5d941207a7bce6f8c198610d143a867e41",
       "scripts/endpoint-docs.tsv": "sha256:e9b413ea209d12a1fa643f6bee94e93c7d88cf3f73a74f798e1c0e95ed338dff"
     }
@@ -4062,41 +4062,24 @@
         "anchor": "https://kie.ai/pixverse-v6?model=pixverse-v6%2Fextend",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["pixverse-v6/extend"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/pixverse-v6?model=pixverse-v6%2Fextend",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
-      "unit": "seconds",
-      "officialUnit": "seconds",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "7.2",
-        "creditUnit": "per second",
-        "usdPrice": "0.028",
-        "rounding": "official value retained as published"
+      "rationale": "The official PixVerse V6 Extend 540p-with-audio cell publishes $0.028/s beside a 7.2-credit price, the falPrice/usdPrice pair of the adjacent 5.6-credit rows; the $0.005 credit basis, https://kie.ai/pixverse-v6?model=pixverse-v6%2Fextend (540P: 7.2 credits/s, $0.036/s, with audio) and the feed's own 7.2-credit 720P extend cell all print $0.036/s, the callable runtime rate; retain the upstream rate conflict explicitly rather than quoting either figure as exact evidence.",
+      "evidenceConflict": {
+        "kind": "rate-conflict",
+        "runtimeKey": "pixverse-v6/extend",
+        "runtimeVariant": "540p|audio",
+        "officialUsd": "0.028",
+        "runtimeUsd": "0.036",
+        "officialUnit": "per second",
+        "runtimeUnit": "per second",
+        "message": "The official PixVerse V6 Extend 540p-with-audio cell publishes $0.028/s beside a 7.2-credit price, while the $0.005 credit basis, https://kie.ai/pixverse-v6?model=pixverse-v6%2Fextend (540P: 7.2 credits/s, $0.036/s, with audio) and the feed's own 7.2-credit 720P extend cell print $0.036/s, the callable runtime rate."
       },
-      "selectorValues": {
-        "quality": "540p",
-        "generate_audio_switch": true
-      },
-      "selectorSources": {
-        "quality": "modelInputSchemas:pixverse-v6/extend",
-        "generate_audio_switch": "modelInputSchemas:pixverse-v6/extend"
-      },
-      "representativePayload": {
-        "model": "pixverse-v6/extend",
-        "input": {
-          "quality": "540p",
-          "generate_audio_switch": true,
-          "duration": 5,
-          "taskId": "audit-task",
-          "prompt": "audit"
-        }
-      }
+      "technicalBlocker": "The official PixVerse V6 Extend 540p-with-audio cell publishes $0.028/s beside a 7.2-credit price, the falPrice/usdPrice pair of the adjacent 5.6-credit rows; the $0.005 credit basis, https://kie.ai/pixverse-v6?model=pixverse-v6%2Fextend (540P: 7.2 credits/s, $0.036/s, with audio) and the feed's own 7.2-credit 720P extend cell all print $0.036/s, the callable runtime rate; retain the upstream rate conflict explicitly rather than quoting either figure as exact evidence."
     },
     {
       "occurrenceId": "sha256:1c9326f0b8b40c057ba020314e5f91424d3b9da74c4d4f37a6ea0b0137d1d1be#1",
@@ -24273,7 +24256,6 @@
           "sha256:e824b3f15b868095bc79aae10383ed16ac1fd82e9ad9fe3e7c7855b79fc225a0#1",
           "sha256:e9a98937fccd4a4fefd067d39003c273e76d46593327c1e275c44a997487e43f#1",
           "sha256:14027e9bbcdcb4a96af86aaf531537f6ab29fdabad4d6318bd14ff31a73ee83b#1",
-          "sha256:c48f785249dc8f413a3dd1cf445f6cc238867667fd12f21354ed7b7ed4b40b66#1",
           "sha256:1c9326f0b8b40c057ba020314e5f91424d3b9da74c4d4f37a6ea0b0137d1d1be#1",
           "sha256:5e1313fd44dff8646fbaf2cb81cda43cb84ce0140e4eccc5e314a7d9be4b579f#1",
           "sha256:f064ea0e2a7d05f15235c011dc1e420a0bcf8bc88cb45f819eaf9d94431faf9c#1"
@@ -25760,7 +25742,6 @@
           "sha256:e824b3f15b868095bc79aae10383ed16ac1fd82e9ad9fe3e7c7855b79fc225a0#1",
           "sha256:e9a98937fccd4a4fefd067d39003c273e76d46593327c1e275c44a997487e43f#1",
           "sha256:14027e9bbcdcb4a96af86aaf531537f6ab29fdabad4d6318bd14ff31a73ee83b#1",
-          "sha256:c48f785249dc8f413a3dd1cf445f6cc238867667fd12f21354ed7b7ed4b40b66#1",
           "sha256:1c9326f0b8b40c057ba020314e5f91424d3b9da74c4d4f37a6ea0b0137d1d1be#1",
           "sha256:5e1313fd44dff8646fbaf2cb81cda43cb84ce0140e4eccc5e314a7d9be4b579f#1",
           "sha256:f064ea0e2a7d05f15235c011dc1e420a0bcf8bc88cb45f819eaf9d94431faf9c#1"
@@ -28601,23 +28582,24 @@
       "unique": 483,
       "duplicateOccurrences": 0,
       "dispositionCounts": {
-        "implemented": 251,
+        "implemented": 250,
         "canonical-alias": 123,
         "duplicate": 0,
         "free-nonbillable": 3,
         "unsupported-endpoint": 3,
         "token-billed": 80,
-        "upstream-unmappable": 23
+        "upstream-unmappable": 24
       },
       "unclassified": 0,
       "evidenceConflicts": {
-        "count": 4,
+        "count": 5,
         "byKind": {
           "query-description-operation-conflict": 1,
-          "rate-conflict": 3
+          "rate-conflict": 4
         },
         "occurrenceIds": [
           "sha256:8c45fd28951462fd7f4606cd8dc3e4fe0272d5518d896694b322b72e14571a0e#1",
+          "sha256:c48f785249dc8f413a3dd1cf445f6cc238867667fd12f21354ed7b7ed4b40b66#1",
           "sha256:56f4176ffba8ebda78d26c318dd3750e7b8e07bef30043f7fa331f63576cf8cb#1",
           "sha256:767e5a741a9773d682a2c95caa3525630a22ea43ef5a982c06d22061f2a278cd#1",
           "sha256:58972ed847af54857dd5a43c205d831f640dc405f654a1925db6dc74749d5be7#1"
@@ -28820,6 +28802,13 @@
         "status": "pricing-only",
         "provenance": "frozen 2026-09-11 Wan 3.0 standard 720P cell publishes $0.09/s at 16 credits; https://kie.ai/wan3.0-video prints 16 credits/s ($0.08/s) on 2026-09-11, which is the callable runtime rate",
         "rationale": "The official/runtime USD conflict is explicit (feed 0.09 vs page and credit basis 0.08) and is not rounded or treated as exact evidence; revisit with a real invoice."
+      },
+      {
+        "key": "pixverse-v6/extend",
+        "variant": "540p|audio",
+        "status": "pricing-only",
+        "provenance": "frozen 2026-09-11 PixVerse V6 Extend 540p(with aiduo) cell publishes usdPrice 0.028 at 7.2 credits, the falPrice/usdPrice pair of the adjacent 5.6-credit rows; https://kie.ai/pixverse-v6?model=pixverse-v6%2Fextend prints 540P 7.2 credits/s ($0.036/s, with audio) on 2026-09-16, the 7.2 x $0.005 credit basis and the feed's own 720P(no aiduo) extend cell price 7.2 credits at $0.036/s",
+        "rationale": "The official/runtime USD conflict is explicit (feed 0.028 vs page, credit basis and sibling ladders 0.036) and is not rounded or treated as exact evidence; revisit with a real 540p audio-on extend invoice."
       },
       {
         "key": "kling-3.0-omni/image-to-video",

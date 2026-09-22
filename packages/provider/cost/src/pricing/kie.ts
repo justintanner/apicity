@@ -1317,12 +1317,12 @@ export const kie: Record<string, ModelPricing> = {
 
   // PixVerse V6 — per output second by the request's literal `quality` and
   // `generate_audio_switch` fields. The 2026-08-22 KIE catalog publishes one
-  // shared ladder for text/image generation, a matching-but-distinct Extend
-  // ladder, and a higher Reference To Video ladder. Image-to-video requests
-  // that use template_id have no caller-visible duration, so `seconds` returns
-  // undefined and the estimator fails closed instead of guessing the
-  // template's fixed length. Transition remains deliberately absent: the same
-  // catalog contains no transition row or operation-level rate.
+  // ladder shared by text/image generation and Extend, and a higher Reference
+  // To Video ladder. Image-to-video requests that use template_id have no
+  // caller-visible duration, so `seconds` returns undefined and the estimator
+  // fails closed instead of guessing the template's fixed length. Transition
+  // remains deliberately absent: the same catalog contains no transition row
+  // or operation-level rate.
   //
   // Citations (ac-8a8b42): the four entries cite the 2026-09-11 feed anchors,
   // three distinct deep links on https://kie.ai/pixverse-v6 with ?model=
@@ -1332,11 +1332,24 @@ export const kie: Record<string, ModelPricing> = {
   // previously cited the POST-only pricing feed endpoint on api.kie.ai,
   // written in 5dafa5ab because the 2026-08-22 and 2026-08-25 rows carried
   // an empty anchor; a GET of that endpoint answers a JSON error body ("GET
-  // request not supported"), not a page. Pages read on 2026-09-16: every
-  // tab prints the runtime's cells except extend's 540P-with-audio cell
-  // (page 0.036 USD/s = 7.2 credits/s; feed usdPrice 0.028 with creditPrice
-  // 7.2), filed as ac-pfaypl; the transition tab prints the shared ladder
-  // although the feed still has no row (ac-4v9ck1). Neither moves a rate here.
+  // request not supported"), not a page.
+  //
+  // Extend 540p-with-audio (ac-pfaypl): the feed row "pixverse-v6, Extend,
+  // 540p(with aiduo)" prices 7.2 credits/s yet prints usdPrice 0.028 and
+  // falPrice 0.035, the pair of the adjacent 5.6-credit rows (usdPrice is
+  // falPrice x 0.8, so a copied falPrice copies the USD). The cell has read
+  // that way in every pull since the first (2026-08-22, 08-25, 09-11 and the
+  // 2026-09-16 scratch pull), so no refresh corrects it. The runtime holds
+  // 0.036 on four agreeing sources: 7.2 credits x 0.005 USD; the product
+  // page's extend tab ("540P: ... 7.2 credits/s ($0.036/s, with audio)",
+  // read 2026-09-16); the text/image ladder's identical 540p|audio cell; and
+  // the committed HARs, which bill PixVerse at the published credit price
+  // (extend 360p 1 s: 4.0 credits; text-to-video 720p 5 s: 36.0 credits =
+  // 7.2/s). The feed's 0.028 is kept as an explicit rate-conflict in
+  // scripts/lib/kie-pricing-reconciliation.mjs (rule
+  // pixverse-v6-extend-540p-rate-conflict plus its pricing-only exception),
+  // never quoted. The transition tab prints the shared ladder although the
+  // feed still has no row (ac-4v9ck1), the only open PixVerse residue.
   "pixverse-v6/text-to-video": pixverseV6(
     {
       "360p|no-audio": 0.02,
@@ -1370,7 +1383,7 @@ export const kie: Record<string, ModelPricing> = {
       "360p|no-audio": 0.02,
       "360p|audio": 0.028,
       "540p|no-audio": 0.028,
-      "540p|audio": 0.028,
+      "540p|audio": 0.036,
       "720p|no-audio": 0.036,
       "720p|audio": 0.048,
       "1080p|no-audio": 0.072,

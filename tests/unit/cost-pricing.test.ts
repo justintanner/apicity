@@ -5581,6 +5581,25 @@ describe("kie PixVerse V6 pricing", () => {
     "1080p|audio": 0.092,
   };
 
+  // `sharedRates` above is the feed-anchored 2026-08-22 ladder that
+  // text-to-video, image-to-video and extend legitimately share, because one
+  // feed row set prices all three. Transition has no feed row in any snapshot:
+  // its whole authority is the archived 2026-09-22 product-page read
+  // (ac-4v9ck1), so its eight cells are written out here rather than aliased to
+  // `sharedRates`. The two ladders are equal today by evidence, not by
+  // construction, and a feed refresh that moves the shared ladder must fail
+  // these pins instead of silently repricing a page that was never re-read.
+  const transitionPageRates = {
+    "360p|no-audio": 0.02,
+    "360p|audio": 0.028,
+    "540p|no-audio": 0.028,
+    "540p|audio": 0.036,
+    "720p|no-audio": 0.036,
+    "720p|audio": 0.048,
+    "1080p|no-audio": 0.072,
+    "1080p|audio": 0.092,
+  };
+
   it.each([
     {
       schema: PixverseV6TextToVideoRequestSchema,
@@ -5710,7 +5729,7 @@ describe("kie PixVerse V6 pricing", () => {
         display: "PixVerse V6 Reference",
       },
       "pixverse-v6/transition": {
-        rates: sharedRates,
+        rates: transitionPageRates,
         display: "PixVerse V6 Transition",
       },
     };
@@ -5790,12 +5809,14 @@ describe("kie PixVerse V6 pricing", () => {
   // the transition tab itself and `asOf` is the day the implementation stage
   // read the page. `toEqual` over the eight cells and the whole `source`
   // object makes a borrowed extend cell, a wrong tab and an `asOf` drift all
-  // fail here.
+  // fail here. The cells come from `transitionPageRates`, the independent page
+  // read, and not from the feed-anchored `sharedRates` they happen to equal, so
+  // a feed refresh that moves the shared ladder fails here as well.
   it("prices transition from its page tab under the page-evidence rule", () => {
     const entry = PRICING.kie["pixverse-v6/transition"];
     if (entry.kind !== "perUnit") throw new Error("expected a perUnit entry");
     expect(entry.unit).toBe("seconds");
-    expect(entry.rates).toEqual(sharedRates);
+    expect(entry.rates).toEqual(transitionPageRates);
     expect(entry.source).toEqual({
       url: "https://kie.ai/pixverse-v6?model=pixverse-v6%2Ftransition",
       asOf: "2026-09-22",

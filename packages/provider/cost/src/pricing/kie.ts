@@ -1317,12 +1317,13 @@ export const kie: Record<string, ModelPricing> = {
 
   // PixVerse V6 — per output second by the request's literal `quality` and
   // `generate_audio_switch` fields. The 2026-08-22 KIE catalog publishes one
-  // ladder shared by text/image generation and Extend, and a higher Reference
-  // To Video ladder. Image-to-video requests that use template_id have no
-  // caller-visible duration, so `seconds` returns undefined and the estimator
-  // fails closed instead of guessing the template's fixed length. Transition
-  // remains deliberately absent: the same catalog contains no transition row
-  // or operation-level rate.
+  // shared ladder for text/image generation, a matching Extend ladder whose
+  // only disagreeing cell is the 540p-with-audio defect recorded below, and a
+  // higher Reference To Video ladder. Image-to-video requests that use
+  // template_id have no caller-visible duration, so `seconds` returns
+  // undefined and the estimator fails closed instead of guessing the
+  // template's fixed length. Transition remains deliberately absent: the same
+  // catalog contains no transition row or operation-level rate.
   //
   // Citations (ac-8a8b42): the four entries cite the 2026-09-11 feed anchors,
   // three distinct deep links on https://kie.ai/pixverse-v6 with ?model=
@@ -1345,11 +1346,12 @@ export const kie: Record<string, ModelPricing> = {
   // read 2026-09-16); the text/image ladder's identical 540p|audio cell; and
   // the committed HARs, which bill PixVerse at the published credit price
   // (extend 360p 1 s: 4.0 credits; text-to-video 720p 5 s: 36.0 credits =
-  // 7.2/s). The feed's 0.028 is kept as an explicit rate-conflict in
-  // scripts/lib/kie-pricing-reconciliation.mjs (rule
-  // pixverse-v6-extend-540p-rate-conflict plus its pricing-only exception),
-  // never quoted. The transition tab prints the shared ladder although the
-  // feed still has no row (ac-4v9ck1), the only open PixVerse residue.
+  // 7.2/s). The feed's 0.028 is recorded as an explicit `rate-conflict`
+  // (`pixverse-v6-extend-540p-rate-conflict`, exception
+  // `pixverse-v6/extend|540p|audio`, both in
+  // scripts/lib/kie-pricing-reconciliation-rules.mjs), never quoted. The
+  // transition tab prints the shared ladder although the feed still has no
+  // row (ac-4v9ck1), the only open PixVerse residue.
   "pixverse-v6/text-to-video": pixverseV6(
     {
       "360p|no-audio": 0.02,

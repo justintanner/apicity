@@ -209,9 +209,12 @@ interface ParsedFlags {
 /**
  * Split `--flag value`, `--flag=value` and bare `--json` out of the argv tail.
  *
- * Deliberately small: W2's commands take a handful of string options and no
- * repeated or negated flags. W3 replaces this with the full parser the call
- * path needs.
+ * Deliberately small, and deliberately separate from `parseGlobalFlags` in
+ * `args.ts`. This parser serves the discovery commands — `commands`,
+ * `providers` and `describe` — which take a handful of string options and no
+ * repeated or negated flags. The endpoint form uses `args.ts`, because its
+ * grammar is the addressed row's own call shape, which only that module knows
+ * how to read. The two parsers answer different grammars and both stay.
  */
 function parseFlags(argv: string[]): ParsedFlags {
   const positional: string[] = [];

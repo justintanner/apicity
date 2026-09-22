@@ -4,6 +4,7 @@ import { join } from "node:path";
 
 import { loadEnvFile } from "./env-file.js";
 import { CliError } from "./errors.js";
+import { errorMessage } from "./internal.js";
 import { fillOnePasswordEnv, type OpRead } from "./one-password.js";
 import { PROVIDERS, type ProviderSpec } from "./providers.js";
 
@@ -115,7 +116,7 @@ export async function resolveCredentials(
     try {
       loadEnvFile(named, env);
     } catch (cause) {
-      throw new CliError("usage", messageOf(cause), {
+      throw new CliError("usage", errorMessage(cause), {
         hint: "check the --env-file path, or unset APICITY_ENV_FILE",
         cause,
       });
@@ -155,7 +156,7 @@ export async function resolveCredentials(
       readSecret: options.readSecret,
     });
   } catch (cause) {
-    throw new CliError("auth", messageOf(cause), {
+    throw new CliError("auth", errorMessage(cause), {
       hint: `check op://${vault}/<VAR>/password for ${options.provider}`,
       cause,
     });
@@ -204,8 +205,4 @@ function requiredEnv(name: string, env: NodeJS.ProcessEnv): string {
     throw new CliError("usage", `--op-token env reference ${name} is not set.`);
   }
   return value;
-}
-
-function messageOf(err: unknown): string {
-  return err instanceof Error ? err.message : String(err);
 }

@@ -1,6 +1,7 @@
 import type { CallShape } from "./call-shapes.js";
 import type { CatalogEntry } from "./catalog.js";
 import { CliError } from "./errors.js";
+import { isRecord } from "./internal.js";
 import type { InstantiatedProvider } from "./providers.js";
 import { resolveEndpointFn } from "./registry.js";
 
@@ -101,7 +102,7 @@ export function mergeRequestFields(
 ): unknown {
   if (Object.keys(fields).length === 0) return body;
   if (body === undefined) return { ...fields };
-  if (!isPlainObject(body)) {
+  if (!isRecord(body)) {
     throw new CliError("usage", "request-field flags need a JSON object body", {
       hint: "pass the fields inside --data, or drop the object body",
     });
@@ -111,9 +112,5 @@ export function mergeRequestFields(
 
 function isEmptyBody(body: unknown): boolean {
   if (body === undefined) return true;
-  return isPlainObject(body) && Object.keys(body).length === 0;
-}
-
-function isPlainObject(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
+  return isRecord(body) && Object.keys(body).length === 0;
 }

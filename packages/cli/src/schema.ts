@@ -3,6 +3,8 @@
 // duck-typing. Anything unrecognized degrades to `{}` (any JSON value), which
 // is still useful documentation.
 
+import { isRecord } from "./internal.js";
+
 export type JsonSchema = Record<string, unknown>;
 
 interface ZodDef {
@@ -105,10 +107,6 @@ const TRANSPARENT_WRAPPER_KINDS = new Set([
   "optional",
   "readonly",
 ]);
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
 
 function isZodLike(value: unknown): value is ZodSchemaLike {
   return isRecord(value) && ("_def" in value || "def" in value);

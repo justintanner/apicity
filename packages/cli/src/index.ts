@@ -136,7 +136,6 @@ export {
 export {
   removeSetup,
   runSetupCommand,
-  runSubprocess,
   setupAgents,
   setupClaude,
   setupCodex,
@@ -148,7 +147,6 @@ export {
   SETUP_AGENT_SELECTORS,
   SETUP_AGENT_VAR,
   SETUP_FORMS,
-  SUBPROCESS_STDIO,
   type AgentId,
   type AgentStatus,
   type SetupAgentSelector,
@@ -156,11 +154,15 @@ export {
   type SetupForm,
   type SetupOptions,
   type SetupResult,
+} from "./setup.js";
+export {
+  runSubprocess,
+  SUBPROCESS_STDIO,
   type SubprocessOptions,
   type SubprocessResult,
   type SubprocessRunner,
   type SubprocessStdio,
-} from "./setup.js";
+} from "./subprocess.js";
 export {
   collectDoctorRows,
   humanReport,

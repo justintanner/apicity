@@ -509,7 +509,13 @@ export interface CallShapePositional {
   param: string;
   /** True when the endpoint may be called without it. */
   optional: boolean;
-  /** Set when the URL spells the placeholder differently from the parameter. */
+  /**
+   * Present when the endpoint declares the parameter under a different name
+   * from the URL's placeholder, and then equal to \`placeholder\`. It is
+   * informational, for human and agent readers of \`apicity describe --json\`:
+   * the CLI binds \`--<placeholder>\` and \`--<param>\` directly (\`args.ts\`),
+   * so nothing reads this field at runtime.
+   */
   alias?: string;
 }
 

@@ -34,9 +34,9 @@ describe("anthropic v1.messages.countTokens integration", () => {
 
   it("should expose a request schema", () => {
     const provider = createAnthropic({ apiKey: "sk-test" });
-    // Bind the identity, not just presence: the MCP server derives this
-    // endpoint's tool input JSON Schema from `.schema`, so attaching a
-    // sibling's schema here would ship a wrong tool contract silently.
+    // Bind the identity, not just presence: `apicity describe`
+    // derives this endpoint's request JSON Schema from `.schema`, so
+    // attaching a sibling's schema here would ship a wrong contract silently.
     expect(provider.v1.messages.countTokens.schema).toBe(
       AnthropicCountTokensRequestSchema
     );

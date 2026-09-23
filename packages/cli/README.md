@@ -435,8 +435,10 @@ const endpoints = await loadCatalog();
 console.log(endpoints.filter((e) => e.provider === "openai").length);
 ```
 
-`runMain()`, `buildRegistry()`, `zodToJsonSchema()`, `loadEnvFile()` and the
-1Password helpers are exported too.
+`runMain()`, `zodToJsonSchema()`, `loadEnvFile()` and the 1Password helpers
+are exported too. `buildRegistry()` resolves every endpoint in the tsv against
+the installed providers in one pass; it exists for diagnostics and bulk
+checks, and `loadCatalog()` above is the cheap path for listing endpoints.
 
 Part of the [apicity](https://github.com/justintanner/apicity) monorepo.
 

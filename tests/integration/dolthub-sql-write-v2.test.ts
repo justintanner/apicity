@@ -21,9 +21,9 @@ describe("dolthub v2 sql write", () => {
     expect(provider.api.v2.databases.sql.write).toBeInstanceOf(Function);
     // The write sits beside the existing read in the shared `sql` namespace.
     expect(provider.api.v2.databases.sql.read).toBeInstanceOf(Function);
-    // Bind the identity, not just presence: the MCP server derives this
-    // endpoint's tool input JSON Schema from `.schema`, so attaching a
-    // sibling's schema here would ship a wrong tool contract silently.
+    // Bind the identity, not just presence: `apicity describe`
+    // derives this endpoint's request JSON Schema from `.schema`, so
+    // attaching a sibling's schema here would ship a wrong contract silently.
     const write = provider.api.v2.databases.sql.write;
     expect(write.schema).toBe(DoltHubV2SqlWriteRequestSchema);
   });

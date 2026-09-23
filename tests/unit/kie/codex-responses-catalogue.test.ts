@@ -51,7 +51,8 @@ function apiParse(model: string) {
 // and a success still cannot say which branch matched. A positive assertion
 // written through safeParse alone would therefore have been green against an
 // unchanged tree. Enum membership is asserted directly instead, against the
-// exported backing array and against the enum branch MCP clients read.
+// exported backing array and against the enum branch `apicity describe`
+// shows to agents.
 describe("kie codex Responses catalogue ids", () => {
   it.each(CODEX_CATALOGUE_IDS)(
     "enumerates %s in KIE_RESPONSES_MODELS",
@@ -60,7 +61,7 @@ describe("kie codex Responses catalogue ids", () => {
     }
   );
 
-  it("keeps the four ids in the MCP autocomplete enum branch", () => {
+  it("keeps the four ids in the `apicity describe` autocomplete enum branch", () => {
     const branches = modelBranches(zodToJsonSchema(KieResponsesRequestSchema));
 
     expect(branches).toHaveLength(2);

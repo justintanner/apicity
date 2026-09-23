@@ -18,9 +18,9 @@ describe("fal serverless files validation", () => {
   it("should expose uploadUrl schema", () => {
     const provider = createFal({ apiKey: "fal-test-key" });
     const schema = provider.v1.serverless.files.uploadUrl.schema;
-    // Bind the identity, not just presence: the MCP server derives this
-    // endpoint's tool input JSON Schema from `.schema`, so attaching a
-    // sibling's schema here would ship a wrong tool contract silently.
+    // Bind the identity, not just presence: `apicity describe`
+    // derives this endpoint's request JSON Schema from `.schema`, so
+    // attaching a sibling's schema here would ship a wrong contract silently.
     expect(schema).toBe(FalFilesUploadUrlRequestSchema);
     expect(typeof schema.safeParse).toBe("function");
   });
@@ -55,9 +55,9 @@ describe("fal serverless files validation", () => {
   it("should expose uploadLocal schema", () => {
     const provider = createFal({ apiKey: "fal-test-key" });
     const schema = provider.v1.serverless.files.uploadLocal.schema;
-    // Bind the identity, not just presence: the MCP server derives this
-    // endpoint's tool input JSON Schema from `.schema`, so attaching a
-    // sibling's schema here would ship a wrong tool contract silently.
+    // Bind the identity, not just presence: `apicity describe`
+    // derives this endpoint's request JSON Schema from `.schema`, so
+    // attaching a sibling's schema here would ship a wrong contract silently.
     expect(schema).toBe(FalFilesUploadLocalRequestSchema);
     expect(typeof schema.safeParse).toBe("function");
   });

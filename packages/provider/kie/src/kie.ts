@@ -259,8 +259,8 @@ const MIME_TYPES: Record<string, string> = {
 //
 // `as const` keeps readonly, per-key concrete schema types; `satisfies` checks
 // the total mapping without erasing those value types to `z.ZodType`.
-// validateCreateTaskRequest uses an own-property lookup so an untyped or MCP
-// caller's non-catalogue id still falls through unvalidated.
+// validateCreateTaskRequest uses an own-property lookup so an untyped or
+// generated caller's non-catalogue id still falls through unvalidated.
 export const CREATE_TASK_GUARDS = {
   "kling-3.0/video": KlingVideoRequestSchema,
   "kling-3.0/motion-control": KlingMotionControlRequestSchema,
@@ -434,10 +434,11 @@ function validateCreateTaskRequest(req: MediaGenerationRequest): void {
   // KIE_MEDIA_MODELS entry today, so a well-typed request always finds its
   // guard. This stays a lookup rather than a direct index because the model
   // aliases (KieMediaWanModelAliasSchema and its siblings) deliberately accept
-  // future family members ahead of the catalogue — an untyped or MCP caller can
-  // send such an id, and it falls through unvalidated until that model is
-  // catalogued. Index after the own-property check via KieMediaModel so the
-  // wider MediaGenerationRequest model union does not fail tsc on the lookup.
+  // future family members ahead of the catalogue — an untyped or generated
+  // caller can send such an id, and it falls through unvalidated until that
+  // model is catalogued. Index after the own-property check via KieMediaModel
+  // so the wider MediaGenerationRequest model union does not fail tsc on the
+  // lookup.
   const model = req.model;
   const guard: z.ZodType | undefined = Object.prototype.hasOwnProperty.call(
     CREATE_TASK_GUARDS,

@@ -275,9 +275,10 @@ describe("GoogleFlowVideosRequestSchema per-model union (GF-S3)", () => {
   );
 
   // REQ-013 / OQ-3: the union renders as JSON-Schema `anyOf` with a per-model
-  // `const` model on each enumerated branch (so MCP autocomplete keeps every
-  // listed id), plus the alias-fallback pattern branch.
-  it("renders as anyOf with per-model const model values (MCP)", () => {
+  // `const` model on each enumerated branch (so agent autocomplete in
+  // `apicity describe` keeps every listed id), plus the alias-fallback pattern
+  // branch.
+  it("renders as anyOf with per-model const model values (apicity describe)", () => {
     const json = zodToJsonSchema(GoogleFlowVideosRequestSchema);
     const branches = json.anyOf as JsonSchema[] | undefined;
     expect(Array.isArray(branches)).toBe(true);

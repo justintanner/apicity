@@ -86,8 +86,9 @@ const wan27ImageBboxListField = {
 // wan 2.5 fragments declare a bare integer — see `wanSeedMetadataField` below.
 // No model records a default: the turbo fragments publish a nominal
 // `default: 0` next to "if None, a random seed is chosen", and recording it
-// here would have MCP clients prefill a fixed seed, so it is described rather
-// than applied — the same documented-defaults treatment zod.ts gives it.
+// here would have agents reading `apicity describe` prefill a fixed seed, so
+// it is described rather than applied — the same documented-defaults
+// treatment zod.ts gives it.
 const wanTurboSeedField = {
   type: "integer",
   minimum: 0,

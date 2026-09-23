@@ -5,9 +5,9 @@ import { FalLogsStreamRequestSchema } from "@apicity/fal/zod";
 describe("fal serverless logs validation", () => {
   it("should expose schema on stream", () => {
     const provider = createFal({ apiKey: "fal-test-key" });
-    // Bind the identity, not just presence: the MCP server derives this
-    // endpoint's tool input JSON Schema from `.schema`, so attaching a
-    // sibling's schema here would ship a wrong tool contract silently.
+    // Bind the identity, not just presence: `apicity describe`
+    // derives this endpoint's request JSON Schema from `.schema`, so
+    // attaching a sibling's schema here would ship a wrong contract silently.
     expect(provider.post.stream.v1.serverless.logs.stream.schema).toBe(
       FalLogsStreamRequestSchema
     );

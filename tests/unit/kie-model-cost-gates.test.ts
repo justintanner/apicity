@@ -11,7 +11,7 @@ import {
 import { loadCostHelpers } from "../../packages/cli/src/cost";
 
 /**
- * Stage 3 (REQ-005 / AC-5) — KIE/MCP per-model cost gates + registry drift.
+ * Stage 3 (REQ-005 / AC-5) — KIE per-model cost gates + cost-registry drift.
  *
  * DECISION RECORDED (do-work source anchor ac-f1ral):
  *
@@ -36,7 +36,7 @@ import { loadCostHelpers } from "../../packages/cli/src/cost";
  * `pnpm run lint`). `@apicity/cli` holds NO static cost registry — it
  * imports `@apicity/cost` at runtime via `loadCostHelpers()`, so it cannot
  * drift by construction. The final block below asserts that runtime view agrees
- * with `@apicity/cost` for these endpoints (the MCP-registry drift check).
+ * with `@apicity/cost` for these endpoints (the cost-registry drift check).
  *
  * SCOPE DECISION (option b, accurately reframed): the six dedicated LLM/music
  * endpoints stay cost-gated (`prohibitive`) but are intentionally NOT added to
@@ -179,7 +179,7 @@ describe("KIE per-model cost gates (REQ-005 / AC-5)", () => {
     });
   });
 
-  describe("MCP-registry drift check", () => {
+  describe("cost-registry drift check", () => {
     it("the CLI's runtime paid-endpoint view matches @apicity/cost", async () => {
       const helpers = await loadCostHelpers();
 

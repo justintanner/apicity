@@ -7,7 +7,10 @@ import {
   type Endpoint,
   extractPathParams,
 } from "../../packages/cli/src/registry";
-import { type JsonSchema } from "../../packages/cli/src/schema";
+import {
+  type JsonSchema,
+  zodToJsonSchema,
+} from "../../packages/cli/src/schema";
 import { PROVIDERS } from "../../packages/cli/src/providers";
 
 function endpointProviders(): string[] {
@@ -55,7 +58,7 @@ describe("apicity CLI provider registry", () => {
         "POST",
         "api.v1.jobs.createTask"
       );
-      const variants = endpoint.jsonSchema.anyOf as JsonSchema[];
+      const variants = zodToJsonSchema(endpoint.schema).anyOf as JsonSchema[];
       const grokText = variants.find((variant) =>
         schemaValues(propertiesOf(variant).model).includes(
           "grok-imagine/text-to-video"
@@ -98,11 +101,13 @@ describe("apicity CLI provider registry", () => {
 
       for (const dotPath of paths) {
         const endpoint = findEndpoint(endpoints, "elevenlabs", "POST", dotPath);
-        const description = endpoint.jsonSchema.description;
+        const description = zodToJsonSchema(endpoint.schema).description;
 
         expect(description, dotPath).toContain("10000");
         expect(description, dotPath).toContain("model_id is omitted");
-        expect(propertiesOf(endpoint.jsonSchema).text).toMatchObject({
+        expect(
+          propertiesOf(zodToJsonSchema(endpoint.schema)).text
+        ).toMatchObject({
           maxLength: 40000,
         });
       }

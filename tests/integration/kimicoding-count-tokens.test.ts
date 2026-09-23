@@ -7,9 +7,9 @@ describe("kimicoding count tokens integration", () => {
     const provider = createKimiCoding({
       apiKey: process.env.KIMI_CODING_API_KEY ?? "sk-test-key",
     });
-    // Bind the identity, not just presence: the MCP server derives this
-    // endpoint's tool input JSON Schema from `.schema`, so attaching a
-    // sibling's schema here would ship a wrong tool contract silently.
+    // Bind the identity, not just presence: `apicity describe`
+    // derives this endpoint's request JSON Schema from `.schema`, so
+    // attaching a sibling's schema here would ship a wrong contract silently.
     expect(provider.post.coding.v1.countTokens.schema).toBe(
       CountTokensRequestSchema
     );

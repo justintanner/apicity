@@ -217,9 +217,10 @@ export const GoogleFlowImagesRequestSchema = z
     // pins the account the references were uploaded to.
     email: z.string().optional(),
     // Docs enumerate nano-banana-2-lite | nano-banana-2 | nano-banana-pro. Two
-    // deprecated aliases are still accepted and stay enumerated for MCP
-    // autocomplete: `nano-banana` (maps to nano-banana-2) and `imagen-4` (maps
-    // to nano-banana-2-lite; Google removed Imagen from Flow in July 2026).
+    // deprecated aliases are still accepted and stay enumerated for agent
+    // autocomplete in `apicity describe`: `nano-banana` (maps to
+    // nano-banana-2) and `imagen-4` (maps to nano-banana-2-lite; Google
+    // removed Imagen from Flow in July 2026).
     // `imagen-4` does not match the nano-banana grammar, so it must be listed
     // explicitly.
     // [images] https://useapi.net/docs/api-googleflow-v1/post-google-flow-images
@@ -307,7 +308,7 @@ export const GoogleFlowImagesUpscaleRequestSchema = z
 // required literal discriminator on every branch, which is incompatible with
 // the optional-`model` default branch and the regex-predicate alias fallback.
 // Every branch stays `.passthrough()`, so unmodeled/forward-compatible fields
-// keep flowing — the schema is consumer/MCP metadata only and the provider is
+// keep flowing — the schema is consumer metadata only and the provider is
 // non-validating on the wire.
 // [videos] https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos
 
@@ -959,7 +960,7 @@ export const GoogleFlowMediaVisibilitySchema = z
 // model ids and volatile status/aspect enums are plain `z.string()` with known
 // values in comments only. These DESCRIBE received data and never guard the
 // wire — the provider stays non-validating and endpoint return types remain
-// Promise<GoogleFlowResponse>; the schemas are consumer/MCP metadata only.
+// Promise<GoogleFlowResponse>; the schemas are consumer metadata only.
 // Shapes confirmed against the useapi.net Model blocks (fetched 2026-07-22,
 // curl + Chrome UA):
 //   [videos]      https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos
@@ -1101,7 +1102,7 @@ export const GoogleFlowVideosExtendResponseSchema =
 // visibility/aspect enums are plain `z.string()` with known values in comments
 // only. These DESCRIBE received data and never guard the wire — the provider
 // stays non-validating and endpoint return types remain
-// Promise<GoogleFlowResponse>; the schemas are consumer/MCP metadata only.
+// Promise<GoogleFlowResponse>; the schemas are consumer metadata only.
 // Shape confirmed against the useapi.net Model block (fetched 2026-07-22,
 // curl + Chrome UA):
 //   [images] https://useapi.net/docs/api-google-flow-v1/post-google-flow-images
@@ -1173,7 +1174,7 @@ export const GoogleFlowImagesResponseSchema = z
 // `.passthrough()`; a field is required only where the useapi.net Model block
 // marks it always-present. These DESCRIBE received data and never guard the
 // wire — the provider stays non-validating and endpoint return types remain
-// Promise<GoogleFlowResponse>; the schemas are consumer/MCP metadata only.
+// Promise<GoogleFlowResponse>; the schemas are consumer metadata only.
 // Shapes confirmed against the useapi.net Model blocks (fetched 2026-07-22,
 // curl + Chrome UA):
 //   [images/upscale]     https://useapi.net/docs/api-google-flow-v1/post-google-flow-images-upscale
@@ -1237,7 +1238,7 @@ export const GoogleFlowVideosConcatenateResponseSchema = z
 // fields, not request model registries. These DESCRIBE received data and never
 // guard the wire — the jobs endpoints stay non-validating (`get.v1.jobs` /
 // `get.v1.jobs.retrieve` keep returning Promise<GoogleFlowResponse>); the
-// schemas are consumer/MCP metadata only. Shapes confirmed against the
+// schemas are consumer metadata only. Shapes confirmed against the
 // useapi.net Model blocks (fetched 2026-07-22, curl + Chrome UA):
 //   [jobs]        https://useapi.net/docs/api-google-flow-v1/get-google-flow-jobs
 //   [jobs-id]     https://useapi.net/docs/api-google-flow-v1/get-google-flow-jobs-jobid
@@ -1435,7 +1436,7 @@ export const GoogleFlowJobsStatsResponseSchema = z
 // the useapi.net Model block marks it always-present. These DESCRIBE received
 // data and never guard the wire — the assets endpoints stay non-validating
 // (`post.v1.assets` / `get.v1.assets.retrieve` keep returning
-// Promise<GoogleFlowResponse>); the schemas are consumer/MCP metadata only.
+// Promise<GoogleFlowResponse>); the schemas are consumer metadata only.
 // Shapes confirmed against the useapi.net Model blocks (fetched 2026-07-22,
 // curl + Chrome UA):
 //   [assets]    https://useapi.net/docs/api-google-flow-v1/post-google-flow-assets-email
@@ -1521,7 +1522,7 @@ export const GoogleFlowAssetsRetrieveResponseSchema = z
 // received data and never guard the wire — the characters endpoints stay
 // non-validating (`post.v1.characters`, `get.v1.characters` /
 // `get.v1.characters.retrieve` keep returning Promise<GoogleFlowResponse>); the
-// schemas are consumer/MCP metadata only. Shapes confirmed against the
+// schemas are consumer metadata only. Shapes confirmed against the
 // useapi.net Model blocks (fetched 2026-07-22, curl + Chrome UA):
 //   [characters]     https://useapi.net/docs/api-google-flow-v1/post-google-flow-characters
 //   [characters-ls]  https://useapi.net/docs/api-google-flow-v1/get-google-flow-characters
@@ -1670,7 +1671,7 @@ export const GoogleFlowCharactersRetrieveResponseSchema = z
 // is required only where the useapi.net Model block marks it always-present (a
 // `?` in the Model becomes `.optional()` here). These DESCRIBE received data and
 // never guard the wire — the endpoints stay non-validating (they keep returning
-// Promise<GoogleFlowResponse>); the schemas are consumer/MCP metadata only.
+// Promise<GoogleFlowResponse>); the schemas are consumer metadata only.
 // Shapes confirmed against the useapi.net Model blocks (fetched 2026-07-24,
 // curl + Chrome UA):
 //   [voices]        https://useapi.net/docs/api-google-flow-v1/post-google-flow-voices

@@ -464,11 +464,12 @@ export const ElevenLabsTextToSpeechModelIdSchema = z
   .or(ElevenLabsModelAliasSchema);
 
 // The most permissive documented cap. It is applied statically to `text` so
-// that it survives conversion to MCP tool input JSON Schema; the per-model cap
-// is layered on as a .superRefine below. Cross-field refinements are dropped by
-// that conversion (the converter unwraps ZodEffects to its inner type), so an
-// MCP client sees this permissive bound rather than the per-model one. Callers
-// using .safeParse directly get the exact per-model cap.
+// that it survives conversion to the `apicity describe` JSON Schema; the
+// per-model cap is layered on as a .superRefine below. Cross-field refinements
+// are dropped by that conversion (the converter unwraps ZodEffects to its
+// inner type), so an agent reading `apicity describe` sees this permissive
+// bound rather than the per-model one. Callers using .safeParse directly get
+// the exact per-model cap.
 const ELEVENLABS_TEXT_TO_SPEECH_MAX_TEXT_LENGTH = 40000;
 
 // ElevenLabs serves POST /v1/text-to-speech with this model when the request
@@ -3969,8 +3970,8 @@ export const ElevenLabsPhoneNumberProvider = z.enum([
 // Importing a phone number is a discriminated union upstream (twilio / exotel /
 // sip_trunk), each provider carrying its own credential fields. We model the
 // shared keys as required and every provider-specific field as optional so the
-// request object stays a single flat shape the MCP server can expose; callers
-// supply the fields their chosen `provider` needs.
+// request object stays a single flat shape `apicity describe` can expose;
+// callers supply the fields their chosen `provider` needs.
 export const ElevenLabsCreatePhoneNumberRequestSchema = z.object({
   phone_number: z.string(),
   label: z.string(),

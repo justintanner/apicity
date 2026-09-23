@@ -7446,10 +7446,10 @@ const KieOpenAiModelAliasSchema = z
 // answers `422 "The model is not supported"` for every one of them — the two
 // Responses surfaces carry disjoint model vocabularies, and the `-codex` ids
 // belong to the sibling below, not to the path spelled `codex`. All four
-// already match the alias grammar above, so enumerating them buys MCP client
-// autocomplete, not acceptance. Exported because that distinction is
-// unobservable through safeParse: a success cannot say which branch matched,
-// so only membership in this array pins the enum entries.
+// already match the alias grammar above, so enumerating them buys agent
+// autocomplete in `apicity describe`, not acceptance. Exported because that
+// distinction is unobservable through safeParse: a success cannot say which
+// branch matched, so only membership in this array pins the enum entries.
 export const KIE_RESPONSES_MODELS = [
   "gpt-5-4",
   "gpt-5-5",

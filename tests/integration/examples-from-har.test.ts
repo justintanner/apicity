@@ -80,9 +80,9 @@ describe("HAR-derived examples on endpoints", () => {
     const example = exampleOf(fn);
     const schema = fn.schema;
     expect(example).toBeDefined();
-    // Bind the identity, not just presence: the MCP server derives this
-    // endpoint's tool input JSON Schema from `.schema`, so attaching a
-    // sibling's schema here would ship a wrong tool contract silently.
+    // Bind the identity, not just presence: `apicity describe`
+    // derives this endpoint's request JSON Schema from `.schema`, so
+    // attaching a sibling's schema here would ship a wrong contract silently.
     expect(schema).toBe(OpenAiChatRequestSchema);
     const result = (
       schema as { safeParse: (v: unknown) => { success: boolean } }

@@ -1,4 +1,5 @@
-// Diagnose which endpoints fail to resolve. Compare TSV vs registry.
+// Hand-run diagnostic (no package.json script): which endpoint-docs.tsv rows
+// fail to resolve, per provider. Needs `pnpm --filter @apicity/cli run build`.
 import { buildRegistry, loadTsv } from "../dist/src/index.js";
 
 process.env.OPENAI_API_KEY ||= "fake";
@@ -15,20 +16,8 @@ process.env.IG_ACCESS_TOKEN ||= "fake";
 
 const rows = await loadTsv();
 const eps = await buildRegistry();
-const toolByName = new Map();
-for (const e of eps) {
-  if (!toolByName.has(e.toolName)) toolByName.set(e.toolName, []);
-  toolByName.get(e.toolName).push(`${e.method} ${e.dotPath}`);
-}
 
 console.log(`TSV rows: ${rows.length}, registered: ${eps.length}`);
-console.log(`Unique tool names: ${toolByName.size}`);
-
-const collisions = [...toolByName.entries()].filter(([, v]) => v.length > 1);
-console.log(`\nCollisions (${collisions.length}):`);
-for (const [name, sigs] of collisions.slice(0, 15)) {
-  console.log(`  ${name}: ${sigs.join(" | ")}`);
-}
 
 const haveByKey = new Set(
   eps.map((e) => `${e.provider}|${e.method}|${e.dotPath}`)

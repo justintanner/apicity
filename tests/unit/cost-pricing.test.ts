@@ -5644,7 +5644,7 @@ describe("kie PixVerse V6 pricing", () => {
         },
       },
       seconds: 3,
-      rate: 0.028,
+      rate: 0.036,
     },
     {
       schema: PixverseV6ReferenceToVideoRequestSchema,
@@ -5712,7 +5712,7 @@ describe("kie PixVerse V6 pricing", () => {
         display: "PixVerse V6",
       },
       "pixverse-v6/extend": {
-        rates: { ...sharedRates, "540p|audio": 0.028 },
+        rates: sharedRates,
         display: "PixVerse V6 Extend",
       },
       "pixverse-v6/reference-to-video": {

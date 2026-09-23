@@ -206,6 +206,30 @@ describe("endpoint selection", () => {
     }
   });
 
+  // RR-3 (ac-yrwwpi): a `--method` the dotPath does not answer is `not_found`
+  // (exit 2), and the README's "Raised when" table says so. `v1.models`
+  // answers no POST, so it is the absent-method case; `v1.chat.completions`
+  // answers DELETE, GET and POST and must not be used as one.
+  it("reports a method the dotPath does not answer as not_found", async () => {
+    const catalog = await loadCatalog({ env: EMPTY_ENV });
+    const entries = findEntries(catalog, "openai", "v1.models");
+    expect(entries.length).toBeGreaterThan(0);
+    expect(entries.map((entry) => entry.method)).not.toContain("POST");
+
+    try {
+      selectEntry(entries, "POST");
+      expect.unreachable("expected a not_found error");
+    } catch (err) {
+      expect(err).toBeInstanceOf(CliError);
+      expect((err as CliError).code).toBe("not_found");
+      expect((err as CliError).exit).toBe(2);
+      expect((err as CliError).message).toBe(
+        "no POST endpoint at openai v1.models"
+      );
+      expect((err as CliError).hint).toContain("available: ");
+    }
+  });
+
   it("no (provider, dotPath, method) triple repeats, so --method always resolves", () => {
     const seen = new Set<string>();
     const duplicates: string[] = [];

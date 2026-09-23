@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import type { CallShape } from "./call-shapes.js";
 import { CliError } from "./errors.js";
+import { errorMessage } from "./internal.js";
 
 /**
  * Every flag the CLI itself owns, on any command.
@@ -350,8 +351,4 @@ async function readProcessStdin(): Promise<string> {
   const chunks: Buffer[] = [];
   for await (const chunk of process.stdin) chunks.push(Buffer.from(chunk));
   return Buffer.concat(chunks).toString("utf8");
-}
-
-function errorMessage(err: unknown): string {
-  return err instanceof Error ? err.message : String(err);
 }

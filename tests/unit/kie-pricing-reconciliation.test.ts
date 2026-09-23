@@ -855,6 +855,17 @@ describe("Kie pricing reconciliation", () => {
       official: { usdPrice: "0.09", creditPrice: "16" },
     });
 
+    const pixverseExtend540pAudio = rowMatching(
+      /^pixverse-v6, Extend, 540p\(with aiduo\)$/i
+    );
+    expect(pixverseExtend540pAudio).toMatchObject({
+      disposition: "upstream-unmappable",
+      mappedApiCityKeys: [],
+      official: { usdPrice: "0.028", creditPrice: "7.2" },
+      technicalBlocker: expect.stringContaining("$0.036/s"),
+    });
+    expect(pixverseExtend540pAudio.representativePayload).toBeUndefined();
+
     expect(
       rowsMatching(/^(?:grok-imagine, )?upscale/i)
         .filter((row) => description(row).startsWith("grok-imagine, upscale"))
@@ -1013,11 +1024,12 @@ describe("Kie pricing reconciliation", () => {
     const rateConflicts = manifest.rows.filter(
       (row) => row.evidenceConflict?.kind === "rate-conflict"
     );
-    expect(rateConflicts).toHaveLength(3);
+    expect(rateConflicts).toHaveLength(4);
     for (const identity of [
       "bytedance/seedance-2|480p|video",
       "grok-imagine/image-to-video|1080p",
       "wan/3-0-video|720P",
+      "pixverse-v6/extend|540p|audio",
     ]) {
       expect(
         RUNTIME_VARIANT_EXCEPTIONS.find(
@@ -1060,12 +1072,23 @@ describe("Kie pricing reconciliation", () => {
             runtimeVariant: "720P",
           }),
         }),
+        expect.objectContaining({
+          official: expect.objectContaining({
+            modelDescription: "pixverse-v6, Extend, 540p(with aiduo)",
+          }),
+          evidenceConflict: expect.objectContaining({
+            officialUsd: "0.028",
+            runtimeUsd: "0.036",
+            runtimeKey: "pixverse-v6/extend",
+            runtimeVariant: "540p|audio",
+          }),
+        }),
       ])
     );
-    expect(manifest.summary.rows.evidenceConflicts.count).toBe(4);
+    expect(manifest.summary.rows.evidenceConflicts.count).toBe(5);
     expect(manifest.summary.rows.evidenceConflicts.byKind).toEqual({
       "query-description-operation-conflict": 1,
-      "rate-conflict": 3,
+      "rate-conflict": 4,
     });
     expect(manifest.summary.rows.evidenceConflicts.occurrenceIds).toEqual(
       expect.arrayContaining([

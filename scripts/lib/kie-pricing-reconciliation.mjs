@@ -929,6 +929,25 @@ function runtimeRateConflict(official, key) {
         "The official Wan 3.0 standard 720P cell publishes $0.09/s while the product page and the 16-credit basis print $0.08/s, the callable runtime rate.",
     };
   }
+  if (
+    key === "pixverse-v6/extend" &&
+    /^pixverse-v6,\s*Extend,\s*540p\(with aiduo\)$/i.test(
+      String(official.modelDescription ?? "")
+    ) &&
+    String(official.usdPrice) === "0.028"
+  ) {
+    return {
+      kind: "rate-conflict",
+      runtimeKey: key,
+      runtimeVariant: "540p|audio",
+      officialUsd: official.usdPrice,
+      runtimeUsd: "0.036",
+      officialUnit: official.creditUnit,
+      runtimeUnit: "per second",
+      message:
+        "The official PixVerse V6 Extend 540p-with-audio cell publishes $0.028/s beside a 7.2-credit price, while the $0.005 credit basis, https://kie.ai/pixverse-v6?model=pixverse-v6%2Fextend (540P: 7.2 credits/s, $0.036/s, with audio) and the feed's own 7.2-credit 720P extend cell print $0.036/s, the callable runtime rate.",
+    };
+  }
   return undefined;
 }
 

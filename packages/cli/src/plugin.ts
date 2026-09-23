@@ -2,6 +2,8 @@ import { accessSync, constants, readFileSync, statSync } from "node:fs";
 import { homedir } from "node:os";
 import { delimiter, join } from "node:path";
 
+import { isRecord } from "./internal.js";
+
 /**
  * Which coding agents are installed on this host.
  *
@@ -223,8 +225,4 @@ function parseJsonFile(path: string): unknown {
   } catch {
     return undefined;
   }
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
 }

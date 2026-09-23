@@ -16,14 +16,14 @@ import type { CliWriter } from "../../packages/cli/src/envelope";
 import { runMain } from "../../packages/cli/src/main";
 import { PLUGIN_KEY } from "../../packages/cli/src/plugin";
 import {
-  SUBPROCESS_STDIO,
-  type SubprocessOptions,
-  type SubprocessRunner,
-} from "../../packages/cli/src/setup";
-import {
   installSkill,
   INSTALLED_VERSION_FILE,
 } from "../../packages/cli/src/skill";
+import {
+  SUBPROCESS_STDIO,
+  type SubprocessOptions,
+  type SubprocessRunner,
+} from "../../packages/cli/src/subprocess";
 
 // AC-12 / REQ-013: `apicity doctor`. Every scenario is a sandboxed home, and
 // the row set never changes shape — a check that does not apply to the host
@@ -174,6 +174,22 @@ describe("apicity doctor", () => {
     expect(skill.status).toBe("error");
     expect(skill.message).toContain("was not written by the apicity CLI");
     expect(skill.hint).toBe("Move it aside, then run: apicity skill install");
+  });
+
+  // A-3 (ac-yrwwpi): a row must not throw on a path it can report as absent.
+  // `~/.agents` here is a regular file, so every stat under it fails with
+  // ENOTDIR — the one failure injection that works when the suite runs as
+  // root, where chmod-based EACCES never fires. Before the shared `lstat`,
+  // the doctor's own copy passed `throwIfNoEntry: false`, which suppresses
+  // ENOENT alone, and this call escaped as `[apicity] fatal:`.
+  it("reports a skill path whose parent is a file as not installed", async () => {
+    writeFileSync(join(home, ".agents"), "not a directory\n");
+
+    expect(row(await rows(), "Agent Skill")).toMatchObject({
+      status: "warning",
+      message: "Not installed",
+      hint: "apicity skill install",
+    });
   });
 
   it("reports a plugin whose version differs from the CLI's", async () => {

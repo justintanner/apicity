@@ -1,10 +1,4 @@
-import {
-  accessSync,
-  constants,
-  lstatSync,
-  readFileSync,
-  statSync,
-} from "node:fs";
+import { accessSync, constants, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 import { parseGlobalFlags } from "./args.js";
@@ -18,18 +12,20 @@ import {
   resolveOutputDirectory,
   type CliWriter,
 } from "./envelope.js";
+import { lstat } from "./internal.js";
 import {
   detectClaude,
   detectCodex,
   readInstalledPlugin,
   resolveHome,
   type AgentDetectionOptions,
+  type InstalledPlugin,
 } from "./plugin.js";
 import {
   runSubprocess,
   SUBPROCESS_STDIO,
   type SubprocessRunner,
-} from "./setup.js";
+} from "./subprocess.js";
 import {
   baselineSkillDir,
   claudeSkillLink,
@@ -107,6 +103,12 @@ interface DoctorContext {
   version: string;
   claude: boolean;
   codex: boolean;
+  /**
+   * Claude Code's install record for this plugin, read once here for the
+   * two plugin rows (A-7); `undefined` when the file or the record is
+   * absent.
+   */
+  plugin: InstalledPlugin | undefined;
   options: DoctorOptions;
 }
 
@@ -120,13 +122,15 @@ interface DoctorContext {
 export async function collectDoctorRows(
   options: DoctorOptions = {}
 ): Promise<DoctorRow[]> {
+  const home = resolveHome(options);
   const context: DoctorContext = {
     env: options.env ?? process.env,
     flags: options.flags ?? {},
-    home: resolveHome(options),
+    home,
     version: options.version ?? readPackageVersion(),
     claude: detectClaude(options),
     codex: detectCodex(options),
+    plugin: readInstalledPlugin(home),
     options,
   };
 
@@ -363,7 +367,7 @@ function agentSkillRow(context: DoctorContext): DoctorRow {
 
 function claudePluginRow(context: DoctorContext): DoctorRow {
   if (!context.claude) return notDetected("Claude Code Plugin", "Claude Code");
-  const record = readInstalledPlugin(context.home);
+  const record = context.plugin;
   if (record === undefined) {
     return {
       name: "Claude Code Plugin",
@@ -383,7 +387,7 @@ function claudePluginVersionRow(context: DoctorContext): DoctorRow {
   const name = "Claude Code Plugin Version";
   if (!context.claude) return notDetected(name, "Claude Code");
 
-  const record = readInstalledPlugin(context.home);
+  const record = context.plugin;
   if (record === undefined) {
     return { name, status: "ok", message: "Plugin not installed" };
   }
@@ -471,10 +475,6 @@ function isRegularFile(path: string): boolean {
   } catch {
     return false;
   }
-}
-
-function lstat(path: string): ReturnType<typeof lstatSync> | undefined {
-  return lstatSync(path, { throwIfNoEntry: false });
 }
 
 function readTrimmed(path: string): string | undefined {

@@ -16,7 +16,6 @@ import { runMain } from "../../packages/cli/src/main";
 import { PLUGIN_KEY } from "../../packages/cli/src/plugin";
 import {
   removeSetup,
-  runSubprocess,
   setupAgents,
   setupClaude,
   setupCodex,
@@ -25,13 +24,16 @@ import {
   MARKETPLACE_UPDATE_TIMEOUT_MS,
   PLUGIN_INSTALL_TIMEOUT_MS,
   SETUP_AGENT_VAR,
-  SUBPROCESS_STDIO,
   type SetupResult,
+} from "../../packages/cli/src/setup";
+import { OWNERSHIP_MARKER_FILE } from "../../packages/cli/src/skill";
+import {
+  runSubprocess,
+  SUBPROCESS_STDIO,
   type SubprocessOptions,
   type SubprocessResult,
   type SubprocessRunner,
-} from "../../packages/cli/src/setup";
-import { OWNERSHIP_MARKER_FILE } from "../../packages/cli/src/skill";
+} from "../../packages/cli/src/subprocess";
 
 // AC-10 / REQ-011 / EX-12: `apicity setup claude|codex|agents`, driven through
 // the subprocess seam so no test ever runs `claude`. Every case works in a

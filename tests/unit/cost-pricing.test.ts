@@ -3960,9 +3960,10 @@ describe("kie wan 2.2 / 2.5 per-model pricing (REQ-004)", () => {
   // any path, no model content: the soft 404 the 2026-09-16 sweep counted,
   // ac-c2n4pa) now cite the 2026-09-11 feed anchors, or the page's own tab
   // where the feed anchor is a docs.kie.ai page that prints no price
-  // (suno/lyrics, suno/replace-music-section-generate);
-  // sora-watermark-remover keeps its gallery URL because no page exists
-  // (ac-48rps2). A citation-only repair adds no asOf, so rateAsOf stays
+  // (suno/lyrics, suno/replace-music-section-generate), ac-48rps2;
+  // sora-watermark-remover, which has no live page or feed row, cites the
+  // web.archive.org capture of its removed product page (ac-bn67fm). A
+  // citation-only repair adds no asOf, so rateAsOf stays
   // PRICING_AS_OF on all 28. Pinning the whole `source` object makes a
   // gallery regression and an asOf drift both fail here.
   it.each([
@@ -4055,7 +4056,7 @@ describe("kie wan 2.2 / 2.5 per-model pricing (REQ-004)", () => {
     },
     {
       model: "sora-watermark-remover",
-      url: "https://kie.ai/market/openai/sora-2",
+      url: "https://web.archive.org/web/20260413194704/https://kie.ai/sora-2-watermark-remover",
     },
   ])("pins the product-page citation of $model", ({ model, url }) => {
     expect(PRICING.kie[model].source).toEqual({ url });

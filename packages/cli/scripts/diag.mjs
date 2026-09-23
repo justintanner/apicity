@@ -1,5 +1,5 @@
-// Hand-run diagnostic (no package.json script): which endpoint-docs.tsv rows
-// fail to resolve, per provider. Needs `pnpm --filter @apicity/cli run build`.
+// Hand-run, no package.json script; needs `pnpm run build`. Lists tsv rows
+// buildRegistry() misses; it skips every provider whose required key is unset.
 import { buildRegistry, loadTsv } from "../dist/src/index.js";
 
 process.env.OPENAI_API_KEY ||= "fake";

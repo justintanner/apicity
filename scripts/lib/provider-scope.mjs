@@ -38,12 +38,8 @@ export function listProviderNames() {
 }
 
 export function listProviderTests(provider) {
-  const prefixes = [provider];
-
   const matchesPrefix = (name) =>
-    prefixes.some(
-      (prefix) => name === `${prefix}.test.ts` || name.startsWith(`${prefix}-`)
-    );
+    name === `${provider}.test.ts` || name.startsWith(`${provider}-`);
 
   return providerTestDirs.flatMap((dir) => {
     const testDir = path.join(repoRoot, dir);
@@ -64,7 +60,7 @@ export function listProviderTests(provider) {
       .map((name) => path.posix.join(dir, name));
 
     // Nested scan: descend exactly one level into an immediate subdirectory
-    // named after the provider (one of `prefixes`) and take EVERY `*.test.ts`
+    // named after the provider and take EVERY `*.test.ts`
     // inside it. The filename-prefix filter is deliberately NOT re-applied
     // here — nested suites are attributed by their directory name, not their
     // filename — so `tests/unit/kie/validate.test.ts` and
@@ -72,7 +68,7 @@ export function listProviderTests(provider) {
     // prefix, are still selected. Recursion stops at depth one: no directory
     // below the matched subdirectory is walked.
     const nested = entries
-      .filter((entry) => entry.isDirectory() && prefixes.includes(entry.name))
+      .filter((entry) => entry.isDirectory() && entry.name === provider)
       .flatMap((entry) =>
         readdirSync(path.join(testDir, entry.name))
           .filter((name) => name.endsWith(".test.ts"))

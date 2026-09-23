@@ -362,10 +362,10 @@ ownership marker and a version stamp, spelled `.managed-by-apicity`;
 `setup claude`, `setup codex` and `setup agents` with `--remove` and an
 `APICITY_SETUP_AGENT` override where hey reads `HEY_SETUP_AGENT`; the
 `.claude-plugin/` layout — `plugin.json`, the skills link and the SessionStart
-liveness hook — plus a marketplace manifest so the repository installs;
-and the README-and-`AGENTS.md` guidance for agents,
-here as the root README's "CLI and coding agents", this file, and the `apicity
-CLI` sections in `CLAUDE.md` and `AGENTS.md`. **Adapted:** hey's styled
+liveness hook — plus a marketplace manifest so the repository installs; and
+the README-and-`AGENTS.md` guidance for agents, here as the root README's
+"CLI and coding agents", this file, and the `apicity CLI` sections in
+`CLAUDE.md` and `AGENTS.md`. **Adapted:** hey's styled
 terminal output and JSON-when-piped rule, which here prints pretty data at a
 terminal and the envelope everywhere else, with `--json` forcing it; hey's
 `.surface` snapshot and `check-surface-compat`, replaced by a catalog-parity

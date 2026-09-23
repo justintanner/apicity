@@ -182,19 +182,19 @@ api, setup_incomplete   7
 ambiguous               8
 ```
 
-| `code`             | Raised when                                                                                                                                   |
-| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `usage`            | An unknown flag, a missing required `--<param>`, invalid `--data`, an unreadable `--data-file`, or a refused flag combination.                |
-| `skill_unmanaged`  | A skill directory exists that this CLI did not write, so it will not be overwritten.                                                          |
-| `not_found`        | An unknown provider, command or dotPath — or upstream answered HTTP 404.                                                                      |
-| `auth`             | The addressed provider has no credential configured, a 1Password read failed, or upstream answered HTTP 401.                                  |
-| `forbidden`        | Upstream answered HTTP 403.                                                                                                                   |
-| `paygate`          | The pay gate refused: no secret configured, or a missing, malformed, expired, mismatched or replayed OTP. Its own code is repeated in `hint`. |
-| `rate_limit`       | Upstream answered HTTP 429.                                                                                                                   |
-| `network`          | The request never landed: DNS failure, refused connection, abort or timeout.                                                                  |
-| `api`              | Any other upstream non-2xx status or provider exception, and local operational failures such as an unwritable output directory.               |
-| `setup_incomplete` | An agent that was asked for explicitly is not installed, or the packaged skill is missing.                                                    |
-| `ambiguous`        | The dotPath answers several methods and `--method` was not given.                                                                             |
+| `code`             | Raised when                                                                                                                                                                  |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `usage`            | An unknown flag, a missing required `--<param>`, invalid `--data`, an unreadable `--data-file`, or a refused flag combination.                                               |
+| `skill_unmanaged`  | A skill directory exists that this CLI did not write, so it will not be overwritten.                                                                                         |
+| `not_found`        | An unknown provider, command or dotPath; a `--method` naming a method the dotPath does not answer (exit 2; `hint` lists the methods it does); or upstream answered HTTP 404. |
+| `auth`             | The addressed provider has no credential configured, a 1Password read failed, or upstream answered HTTP 401.                                                                 |
+| `forbidden`        | Upstream answered HTTP 403.                                                                                                                                                  |
+| `paygate`          | The pay gate refused: no secret configured, or a missing, malformed, expired, mismatched or replayed OTP. Its own code is repeated in `hint`.                                |
+| `rate_limit`       | Upstream answered HTTP 429.                                                                                                                                                  |
+| `network`          | The request never landed: DNS failure, refused connection, abort or timeout.                                                                                                 |
+| `api`              | Any other upstream non-2xx status or provider exception, and local operational failures such as an unwritable output directory.                                              |
+| `setup_incomplete` | An agent that was asked for explicitly is not installed, or the packaged skill is missing.                                                                                   |
+| `ambiguous`        | The dotPath answers several methods and `--method` was not given.                                                                                                            |
 
 ## Credentials
 

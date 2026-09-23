@@ -1,5 +1,7 @@
 import { readFileSync } from "node:fs";
 
+import { errorMessage } from "./internal.js";
+
 export function loadEnvFile(
   path: string,
   env: NodeJS.ProcessEnv = process.env
@@ -49,8 +51,4 @@ function stripQuotes(value: string): string {
 
 function hasResolvedEnvValue(value: string | undefined): boolean {
   return value !== undefined && value !== "" && !value.startsWith("op://");
-}
-
-function errorMessage(err: unknown): string {
-  return err instanceof Error ? err.message : String(err);
 }

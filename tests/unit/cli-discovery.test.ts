@@ -1,7 +1,11 @@
-import { readFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { pathToFileURL } from "node:url";
 import { describe, expect, it } from "vitest";
 
 import type { CliWriter } from "../../packages/cli/src/envelope";
+import { CliError } from "../../packages/cli/src/errors";
 import { HELP_TOPICS } from "../../packages/cli/src/help";
 import { runMain } from "../../packages/cli/src/main";
 import {
@@ -192,6 +196,37 @@ describe("apicity describe", () => {
         factoryName: "createNothing",
       })
     ).rejects.toMatchObject({ code: "setup_incomplete" });
+  });
+
+  // RR-5 (ac-yrwwpi): a factory that throws while building — validating a
+  // credential bundle it was handed a placeholder for, say — is a describe
+  // failure, not a crash. `runMain` converts only `CliError`, so anything
+  // else would reach `bin.ts` as `[apicity] fatal:`. The stub spec points at
+  // a one-function module written into a temporary directory.
+  it("reports a factory that throws at construction as a CliError", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "apicity-describe-"));
+    writeFileSync(
+      join(dir, "throwing-provider.mjs"),
+      'export function createThrowing() {\n  throw new Error("no tree for you");\n}\n'
+    );
+    try {
+      const caught: unknown = await instantiateForIntrospection("openai", {
+        envVar: "OPENAI_API_KEY",
+        optionKey: "apiKey",
+        importPath: pathToFileURL(join(dir, "throwing-provider.mjs")).href,
+        factoryName: "createThrowing",
+      }).then(
+        () => undefined,
+        (err: unknown) => err
+      );
+
+      expect(caught).toBeInstanceOf(CliError);
+      expect(caught).toMatchObject({ code: "api", exit: 7 });
+      expect((caught as CliError).message).toContain("no tree for you");
+      expect((caught as CliError).cause).toBeInstanceOf(Error);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
   });
 
   it("is ambiguous without --method on a multi-method dotPath", async () => {

@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest";
 import { BUILTIN_COMMANDS } from "../../packages/cli/src/commands";
 import type { CliWriter } from "../../packages/cli/src/envelope";
 import { runMain } from "../../packages/cli/src/main";
+import { PROVIDERS } from "../../packages/cli/src/providers";
 
 // The `apicity` dispatcher, W1's half of the move off `@apicity/mcp-server`.
 // Everything here is local: no provider is addressed and no network is
@@ -51,6 +52,20 @@ describe("apicity dispatcher", () => {
       "help",
       "version",
     ]);
+  });
+
+  // ME-4 (ac-yrwwpi): `dispatch` tries the endpoint form before the built-in
+  // parser and keys on the first word, so a provider named like a built-in
+  // would be silently unreachable. Nothing collides today; this keeps it so.
+  it("shares no first word between a provider and a built-in", () => {
+    const builtinWords = new Set(
+      BUILTIN_COMMANDS.map((command) => command.name.split(" ")[0])
+    );
+    const collisions = Object.keys(PROVIDERS).filter((name) =>
+      builtinWords.has(name)
+    );
+
+    expect(collisions).toEqual([]);
   });
 
   it("prints the package version for --version", async () => {

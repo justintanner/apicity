@@ -1,5 +1,4 @@
 import {
-  lstatSync,
   mkdirSync,
   readdirSync,
   readFileSync,
@@ -14,6 +13,7 @@ import { join } from "node:path";
 import { parseGlobalFlags } from "./args.js";
 import { createWriter, type CliWriter } from "./envelope.js";
 import { CliError } from "./errors.js";
+import { errorMessage, lstat } from "./internal.js";
 import {
   detectClaude,
   resolveHome,
@@ -292,7 +292,7 @@ function linkIntoClaude(home: string, symlink: SymlinkFn): ClaudeLink {
     copySkillFiles(skillDir, linkPath);
     return {
       path: linkPath,
-      notice: `symlink failed (${messageOf(cause)}), copied files instead`,
+      notice: `symlink failed (${errorMessage(cause)}), copied files instead`,
     };
   }
   return { path: linkPath };
@@ -410,22 +410,10 @@ function unmanaged(path: string): CliError {
   );
 }
 
-function lstat(path: string): ReturnType<typeof lstatSync> | undefined {
-  try {
-    return lstatSync(path);
-  } catch {
-    return undefined;
-  }
-}
-
 function readLink(path: string): string | undefined {
   try {
     return readlinkSync(path);
   } catch {
     return undefined;
   }
-}
-
-function messageOf(err: unknown): string {
-  return err instanceof Error ? err.message : String(err);
 }

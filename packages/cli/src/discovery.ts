@@ -8,6 +8,7 @@ import { CALL_SHAPES, callShapeKey, type CallShape } from "./call-shapes.js";
 import type { CliWriter } from "./envelope.js";
 import { isProviderConfigured, providerEnvVars } from "./credentials.js";
 import { CliError } from "./errors.js";
+import { errorMessage } from "./internal.js";
 import {
   PROVIDERS,
   type InstantiatedProvider,
@@ -77,19 +78,40 @@ export async function instantiateForIntrospection(
     opts?: Record<string, unknown>
   ) => InstantiatedProvider;
 
-  if (name === "free-media-upload") return build();
-  // Polymarket validates its credential bundle on construction and needs none
-  // of it to expose the tree, so it is built bare.
-  if (name === "polymarket") return build({});
-  if (name === "s3" || name === "b2") {
-    return build({
-      accessKeyId: PLACEHOLDER_CREDENTIAL,
-      secretAccessKey: PLACEHOLDER_CREDENTIAL,
-      region: "us-east-1",
-    });
+  // A factory that throws while building — validating a credential bundle it
+  // was handed a placeholder for, say — is a describe failure to report, not
+  // a crash: `runMain` converts only `CliError`, so anything else would reach
+  // `bin.ts` as `[apicity] fatal:` with a stack. Every build call sits inside
+  // this one `try`, so the robustness comes from the wrapper rather than from
+  // the special-case list below staying complete as providers are added.
+  try {
+    if (name === "free-media-upload") return build();
+    // Polymarket validates its credential bundle on construction and needs
+    // none of it to expose the tree, so it is built bare.
+    if (name === "polymarket") return build({});
+    if (name === "s3" || name === "b2") {
+      return build({
+        accessKeyId: PLACEHOLDER_CREDENTIAL,
+        secretAccessKey: PLACEHOLDER_CREDENTIAL,
+        region: "us-east-1",
+      });
+    }
+    if (spec.envVar === "") return build({});
+    return build({ [spec.optionKey]: PLACEHOLDER_CREDENTIAL });
+  } catch (cause) {
+    if (cause instanceof CliError) throw cause;
+    throw new CliError(
+      "api",
+      `${spec.factoryName} from ${spec.importPath} threw while building ` +
+        `${name} for introspection: ${errorMessage(cause)}`,
+      {
+        hint:
+          "the factory rejected describe's placeholder credential; " +
+          "report this against @apicity/cli",
+        cause,
+      }
+    );
   }
-  if (spec.envVar === "") return build({});
-  return build({ [spec.optionKey]: PLACEHOLDER_CREDENTIAL });
 }
 
 const defaultLoader: ProviderLoader = (name) =>

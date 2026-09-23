@@ -23,6 +23,32 @@ import {
 // (kling: payload.input.mode is "std"|"pro"|"4K"; seedance: payload.input.
 // resolution is "480p"|"720p"|"1080p"|"4k"; etc.) — there is no internal
 // translation layer between the caller's payload and the rate selector.
+//
+// Page-evidence admissibility (ac-4v9ck1 REQ-001). A product-page
+// pricingDesc may originate an entry with NO feed row only when all four
+// conditions hold:
+//   1. Page-declared: the model id equals <userPath>/<path> of an object in
+//      the family page's "groupData":[...] array. A ?model= deep link that
+//      answers HTTP 200 is not evidence: kie.ai ignores the query string and
+//      serves the family SPA for any value, including
+//      ?model=pixverse-v6%2Fdoes-not-exist (ac-8a8b42 probe, 2026-09-16).
+//   2. Non-empty and complete: that object's pricingDesc is non-empty and
+//      states a rate for every cell the entry's selectors can reach. A
+//      declared tab with an EMPTY pricingDesc is positive evidence that
+//      upstream publishes no rate for it; such an id stays unpriced.
+//   3. Credit-reconciled: every USD figure in the pricingDesc equals its own
+//      credit figure x $0.005. Where they disagree the credit basis is what
+//      is billed and the row is a rate conflict (ac-1fwbfh D-1, ac-pfaypl),
+//      not a clean page adoption.
+//   4. Archived: the page URL, the page body sha256, the verbatim pricingDesc
+//      and the fetch timestamp are archived as run evidence, and the entry's
+//      source.asOf is the page-read date.
+// Fail-safe: an id failing any condition keeps no pricing key, so
+// computeEstimate warns and costTier returns prohibitive. Precedents the
+// rule reconciles: sora-watermark-remover (priced with no feed row, ac-c2n4pa
+// REQ-004 rule (4)) and the omnihuman-1-5 human-identification /
+// subject-detection pair (declared on https://kie.ai/omnihuman-1-5 with an
+// empty pricingDesc, unpriced). The rule is comment text; nothing enforces it.
 
 const page = (url: string) => ({ url });
 
@@ -303,10 +329,14 @@ const qwen3InputImageExtra = (
 // every PixVerse row at https://kie.ai/pixverse-v6?model=pixverse-v6%2F<path>.
 // Each entry below passes the path of the anchor its own feed rows carry, so
 // text-to-video passes image-to-video rather than a tab of its own name.
+// `asOf` defaults to the 2026-08-22 catalog date the four feed-anchored
+// entries were priced from; a page-sourced entry (transition) passes the
+// date its own page was read.
 const pixverseV6 = (
   rates: Record<string, number>,
   path: string,
-  defaultAudio: boolean
+  defaultAudio: boolean,
+  asOf = "2026-08-22"
 ): ModelPricing => ({
   kind: "perUnit",
   unit: "seconds",
@@ -333,7 +363,7 @@ const pixverseV6 = (
   rates,
   source: pricePage(
     `https://kie.ai/pixverse-v6?model=pixverse-v6%2F${path}`,
-    "2026-08-22"
+    asOf
   ),
 });
 
@@ -1317,12 +1347,14 @@ export const kie: Record<string, ModelPricing> = {
 
   // PixVerse V6 — per output second by the request's literal `quality` and
   // `generate_audio_switch` fields. The 2026-08-22 KIE catalog publishes one
-  // shared ladder for text/image generation, a matching-but-distinct Extend
-  // ladder, and a higher Reference To Video ladder. Image-to-video requests
-  // that use template_id have no caller-visible duration, so `seconds` returns
+  // shared ladder for text/image generation, a matching Extend ladder whose
+  // only disagreeing cell is the 540p-with-audio defect recorded below, and a
+  // higher Reference To Video ladder. Image-to-video requests that use
+  // template_id have no caller-visible duration, so `seconds` returns
   // undefined and the estimator fails closed instead of guessing the
-  // template's fixed length. Transition remains deliberately absent: the same
-  // catalog contains no transition row or operation-level rate.
+  // template's fixed length. Transition is priced from its own page tab under
+  // the page-evidence rule in the header (ac-4v9ck1): the feed still has no
+  // transition row in any snapshot or in the 2026-09-16 live pull.
   //
   // Citations (ac-8a8b42): the four entries cite the 2026-09-11 feed anchors,
   // three distinct deep links on https://kie.ai/pixverse-v6 with ?model=
@@ -1332,11 +1364,26 @@ export const kie: Record<string, ModelPricing> = {
   // previously cited the POST-only pricing feed endpoint on api.kie.ai,
   // written in 5dafa5ab because the 2026-08-22 and 2026-08-25 rows carried
   // an empty anchor; a GET of that endpoint answers a JSON error body ("GET
-  // request not supported"), not a page. Pages read on 2026-09-16: every
-  // tab prints the runtime's cells except extend's 540P-with-audio cell
-  // (page 0.036 USD/s = 7.2 credits/s; feed usdPrice 0.028 with creditPrice
-  // 7.2), filed as ac-pfaypl; the transition tab prints the shared ladder
-  // although the feed still has no row (ac-4v9ck1). Neither moves a rate here.
+  // request not supported"), not a page.
+  //
+  // Extend 540p-with-audio (ac-pfaypl): the feed row "pixverse-v6, Extend,
+  // 540p(with aiduo)" prices 7.2 credits/s yet prints usdPrice 0.028 and
+  // falPrice 0.035, the pair of the adjacent 5.6-credit rows (usdPrice is
+  // falPrice x 0.8, so a copied falPrice copies the USD). The cell has read
+  // that way in every pull since the first (2026-08-22, 08-25, 09-11 and the
+  // 2026-09-16 scratch pull), so no refresh corrects it. The runtime holds
+  // 0.036 on four agreeing sources: 7.2 credits x 0.005 USD; the product
+  // page's extend tab ("540P: ... 7.2 credits/s ($0.036/s, with audio)",
+  // read 2026-09-16); the text/image ladder's identical 540p|audio cell; and
+  // the committed HARs, which bill PixVerse at the published credit price
+  // (extend 360p 1 s: 4.0 credits; text-to-video 720p 5 s: 36.0 credits =
+  // 7.2/s). The feed's 0.028 is recorded as an explicit `rate-conflict`
+  // (`pixverse-v6-extend-540p-rate-conflict`, exception
+  // `pixverse-v6/extend|540p|audio`, both in
+  // scripts/lib/kie-pricing-reconciliation-rules.mjs), never quoted. The
+  // transition tab prints the shared ladder although the feed still has no
+  // row; transition is priced below from that tab under the header's
+  // page-evidence rule (ac-4v9ck1).
   "pixverse-v6/text-to-video": pixverseV6(
     {
       "360p|no-audio": 0.02,
@@ -1370,7 +1417,7 @@ export const kie: Record<string, ModelPricing> = {
       "360p|no-audio": 0.02,
       "360p|audio": 0.028,
       "540p|no-audio": 0.028,
-      "540p|audio": 0.028,
+      "540p|audio": 0.036,
       "720p|no-audio": 0.036,
       "720p|audio": 0.048,
       "1080p|no-audio": 0.072,
@@ -1392,6 +1439,31 @@ export const kie: Record<string, ModelPricing> = {
     },
     "reference-to-video",
     true
+  ),
+  // transition: page-sourced (ac-4v9ck1). No feed row in any snapshot; the
+  // page's groupData declares the transition tab and its pricingDesc prints
+  // the shared text/image ladder byte-for-byte (every USD cell = credits x
+  // $0.005; 4.0/5.6/5.6/7.2/7.2/9.6/14.4/18.4 credits/s). Unlike its four
+  // siblings, `path` is the tab's own name because there is no feed anchor
+  // to inherit. generate_audio_switch defaults to false in
+  // PixverseV6TransitionInputSchema, so an omitted switch selects no-audio
+  // (extend's explicit-boolean rule does not apply). The manifest classifies
+  // the key upstream-unmappable with linkedRows [] on purpose; its eight
+  // runtime variants are pricing-only exceptions citing the page read.
+  "pixverse-v6/transition": pixverseV6(
+    {
+      "360p|no-audio": 0.02,
+      "360p|audio": 0.028,
+      "540p|no-audio": 0.028,
+      "540p|audio": 0.036,
+      "720p|no-audio": 0.036,
+      "720p|audio": 0.048,
+      "1080p|no-audio": 0.072,
+      "1080p|audio": 0.092,
+    },
+    "transition",
+    true,
+    "2026-09-22"
   ),
 
   // grok-imagine: 3 tiers by resolution as of the 2026-08-06 pull (1080p is
@@ -1734,7 +1806,10 @@ export const kie: Record<string, ModelPricing> = {
   // only the lip-sync family row. The human-identification and
   // subject-detection pages under
   // https://docs.kie.ai/market/omnihuman-1-5/ publish request contracts but no
-  // rate or explicit zero-cost statement.
+  // rate or explicit zero-cost statement, and both ids are declared in the
+  // groupData of https://kie.ai/omnihuman-1-5 with an EMPTY pricingDesc
+  // (sweep of 2026-09-20, ac-4v9ck1) — the page-evidence rule's positive
+  // "no published rate" case, beside the billed lip-sync tab's own ladder.
   // With no billing evidence they keep no pricing key and fail safe into the
   // prohibitive tier rather than being assumed free or borrowing lip-sync.
 
@@ -2057,14 +2132,23 @@ export const kie: Record<string, ModelPricing> = {
     source: pricePage("https://kie.ai/seedance-1-5-pro"),
   },
 
-  // Bytedance v1 video remains deliberately unpriced. The 2026-08-22
-  // 441-row KIE catalog has no row for any of the registered lite/pro ids, and
-  // the five matching pages under https://docs.kie.ai/market/bytedance/v1-
-  // (lite-image-to-video, lite-text-to-video, pro-fast-image-to-video,
-  // pro-image-to-video, pro-text-to-video) publish request contracts but no
-  // operation rate. In particular, the fast rate is not inferred by scaling a
-  // standard/pro cell. All five ids therefore fail safe into the prohibitive
-  // tier rather than quoting an invented cross-family rate.
+  // Bytedance v1 video stays unpriced in this tree by decision, not for lack
+  // of evidence. The 2026-08-22 441-row KIE catalog and the 2026-09-11 feed
+  // have no row for any of the registered lite/pro ids, and the five matching
+  // pages under https://docs.kie.ai/market/bytedance/v1- (lite-image-to-video,
+  // lite-text-to-video, pro-fast-image-to-video, pro-image-to-video,
+  // pro-text-to-video) publish request contracts but no operation rate. The
+  // kie.ai product pages do print one: https://kie.ai/bytedance/seedance-v1
+  // declares all five ids in its groupData with a Lite ladder (2 / 4.5 / 10
+  // credits at 480p / 720p / 1080p), a Pro ladder (2.8 / 6 / 14 credits) and,
+  // with https://kie.ai/seedance-1-0-pro-fast, a per-clip Pro Fast table
+  // (sweep of 2026-09-20, ac-4v9ck1), so all five are admissible under the
+  // page-evidence rule in the header. Adopting them is deferred to
+  // ac-egs1ww: the pro-fast tab prices per clip (5 s / 10 s at two
+  // resolutions), which no existing helper's selector shape expresses, and
+  // none of the five has an in-repo sibling to corroborate the cells. The
+  // fast rate is still not inferred by scaling a standard/pro cell. Until
+  // then all five fail safe into the prohibitive tier.
 
   // Topaz Video Upscaler — per second by `input.upscale_factor`. Unlike the
   // image upscaler above, this page publishes the factors themselves (1x/2x
@@ -2328,9 +2412,13 @@ export const kie: Record<string, ModelPricing> = {
   // 2026-08-22 against the fresh 441-row catalog plus the three operation
   // pages under https://docs.kie.ai/market/bytedance/: `bytedance/seedream` is
   // "Seedream3.0" and both `bytedance/seedream-v4-{edit,text-to-image}` are
-  // "Seedream4.0"; none publishes a price. They therefore keep no pricing key
-  // and fail safe into the prohibitive tier rather than borrowing the 4.5 rate
-  // for 3.0/4.0 traffic.
+  // "Seedream4.0"; none of those docs pages publishes a price. The kie.ai
+  // product pages do (https://kie.ai/seedream: 3.5 credits per image for
+  // Seedream V3; https://kie.ai/seedream-api: 5 credits per image for both
+  // V4 ids; sweep of 2026-09-20, ac-4v9ck1), so the three are admissible under
+  // the page-evidence rule in the header and are deferred to ac-egs1ww.
+  // Until then they keep no pricing key and fail safe into the prohibitive
+  // tier rather than borrowing the 4.5 rate for 3.0/4.0 traffic.
   "seedream/4.5-text-to-image": flatImagePricePage(
     0.0325,
     "https://kie.ai/seedream-4-5?model=seedream%2F4.5-text-to-image"

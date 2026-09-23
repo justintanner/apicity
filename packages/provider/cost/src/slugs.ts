@@ -157,11 +157,12 @@ export const MODEL_SLUGS = {
     "google/gemini-3-1-flash-tts": "gem31tts",
 
     // Video — PixVerse V6. Operations are modality metadata and share one
-    // family slug; transition has no evidenced rate and therefore no slug.
+    // family slug; transition is page-sourced (ac-4v9ck1).
     "pixverse-v6/text-to-video": "pixv6",
     "pixverse-v6/image-to-video": "pixv6",
     "pixverse-v6/extend": "pixv6",
     "pixverse-v6/reference-to-video": "pixv6",
+    "pixverse-v6/transition": "pixv6",
 
     // Image — Grok Imagine
     "grok-imagine/text-to-image": "grok",
@@ -623,6 +624,7 @@ export const MODEL_DISPLAY = {
     "pixverse-v6/image-to-video": "PixVerse V6",
     "pixverse-v6/extend": "PixVerse V6 Extend",
     "pixverse-v6/reference-to-video": "PixVerse V6 Reference",
+    "pixverse-v6/transition": "PixVerse V6 Transition",
 
     "grok-imagine/text-to-image": "Grok Imagine",
     "grok-imagine/image-to-image": "Grok Imagine",

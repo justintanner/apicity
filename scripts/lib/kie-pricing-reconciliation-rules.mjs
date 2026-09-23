@@ -170,6 +170,15 @@ export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
     rationale:
       "The official/runtime USD conflict is explicit (feed 0.09 vs page and credit basis 0.08) and is not rounded or treated as exact evidence; revisit with a real invoice.",
   },
+  {
+    key: "pixverse-v6/extend",
+    variant: "540p|audio",
+    status: "pricing-only",
+    provenance:
+      "frozen 2026-09-11 PixVerse V6 Extend 540p(with aiduo) cell publishes usdPrice 0.028 at 7.2 credits, the falPrice/usdPrice pair of the adjacent 5.6-credit rows; https://kie.ai/pixverse-v6?model=pixverse-v6%2Fextend prints 540P 7.2 credits/s ($0.036/s, with audio) on 2026-09-16, the 7.2 x $0.005 credit basis and the feed's own 720P(no aiduo) extend cell price 7.2 credits at $0.036/s",
+    rationale:
+      "The official/runtime USD conflict is explicit (feed 0.028 vs page, credit basis and sibling ladders 0.036) and is not rounded or treated as exact evidence; revisit with a real 540p audio-on extend invoice.",
+  },
   ...[
     ["kling-3.0-omni/image-to-video", "720p"],
     ["kling-3.0-omni/image-to-video", "720p|audio"],
@@ -222,6 +231,24 @@ export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
     rationale:
       "The zero entry is an unreachable sentinel, never a free estimate, because output-resolution billing cannot be derived from the request schema.",
   },
+  ...[
+    "360p|no-audio",
+    "360p|audio",
+    "540p|no-audio",
+    "540p|audio",
+    "720p|no-audio",
+    "720p|audio",
+    "1080p|no-audio",
+    "1080p|audio",
+  ].map((variant) => ({
+    key: "pixverse-v6/transition",
+    variant,
+    status: "pricing-only",
+    provenance:
+      "https://kie.ai/pixverse-v6 groupData declares the transition tab and prints this cell (ac-4v9ck1 re-fetch evidence); no official occurrence in the frozen 2026-09-11 pull",
+    rationale:
+      "Page-sourced under the pricing/kie.ts page-evidence rule: printed credits x 0.005 equal the cell and match the feed-evidenced text/image ladder; no feed row names transition.",
+  })),
   ...[
     ["runway/extend", "720p"],
     ["runway/extend", "1080p"],
@@ -1111,6 +1138,15 @@ const KNOWN_FALSE_MAPPING_RULES = Object.freeze([
       String(official.usdPrice) === "0.09",
     message:
       "The official Wan 3.0 standard 720P cell publishes $0.09/s (16 credits) while https://kie.ai/wan3.0-video and the $0.005 credit basis print $0.08/s, the callable runtime rate; retain the upstream rate conflict explicitly rather than quoting either figure as exact evidence.",
+  },
+  {
+    family: "pixverse-v6-extend-540p-rate-conflict",
+    matches: (description, key, official) =>
+      key === "pixverse-v6/extend" &&
+      /^pixverse-v6,\s*Extend,\s*540p\(with aiduo\)$/i.test(description) &&
+      String(official.usdPrice) === "0.028",
+    message:
+      "The official PixVerse V6 Extend 540p-with-audio cell publishes $0.028/s beside a 7.2-credit price, the falPrice/usdPrice pair of the adjacent 5.6-credit rows; the $0.005 credit basis, https://kie.ai/pixverse-v6?model=pixverse-v6%2Fextend (540P: 7.2 credits/s, $0.036/s, with audio) and the feed's own 7.2-credit 720P extend cell all print $0.036/s, the callable runtime rate; retain the upstream rate conflict explicitly rather than quoting either figure as exact evidence.",
   },
   {
     family: "qwen-image-area",

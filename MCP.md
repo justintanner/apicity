@@ -2,8 +2,8 @@
 
 apicity no longer ships an MCP server. The `apicity mcp` subcommand, the
 `apicity-mcp` compatibility bin and the stdio server that `@apicity/mcp-server`
-used to be were removed on 2026-09-17 by the operator's decision
-(remove-mcp-entirely). No published `@apicity/cli` ever carried them:
+used to be were removed on 2026-09-17 by the operator's decision.
+No published `@apicity/cli` ever carried them:
 `npm view @apicity/cli` answered `E404` on 2026-09-17. The last release with an
 MCP server is `@apicity/mcp-server` 0.11.2 (2026-09-02); that package receives
 no further releases.

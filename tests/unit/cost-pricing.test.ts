@@ -34,6 +34,7 @@ import {
   PixverseV6ImageToVideoRequestSchema,
   PixverseV6ExtendRequestSchema,
   PixverseV6ReferenceToVideoRequestSchema,
+  PixverseV6TransitionRequestSchema,
   SeedreamProTextToImageRequestSchema,
   SeedreamProImageToImageRequestSchema,
   SeedreamProLayerDecompositionRequestSchema,
@@ -1648,8 +1649,13 @@ describe("kie createTask image families (REQ-005)", () => {
   );
 
   // OQ-3: the "seedream 4.5" page rate keys the two 4.5 model ids only. The
-  // enum-listed ByteDance ids are Seedream 3.0 / 4.0 per docs.kie.ai and
-  // publish no price row, so they stay unpriced (fail-safe prohibitive).
+  // enum-listed ByteDance ids are Seedream 3.0 / 4.0 per docs.kie.ai, whose
+  // pages print no rate; the kie.ai product pages do (https://kie.ai/seedream:
+  // 3.5 credits per image; https://kie.ai/seedream-api: 5 credits per image
+  // for both V4 ids; sweep of 2026-09-20), so all three are admissible under
+  // the pricing/kie.ts page-evidence rule and are deferred to ac-egs1ww.
+  // Until that lands they stay unpriced (fail-safe prohibitive) by decision,
+  // not for lack of evidence.
   it.each([
     "bytedance/seedream",
     "bytedance/seedream-v4-edit",
@@ -5575,6 +5581,25 @@ describe("kie PixVerse V6 pricing", () => {
     "1080p|audio": 0.092,
   };
 
+  // `sharedRates` above is the feed-anchored 2026-08-22 ladder that
+  // text-to-video, image-to-video and extend legitimately share, because one
+  // feed row set prices all three. Transition has no feed row in any snapshot:
+  // its whole authority is the archived 2026-09-22 product-page read
+  // (ac-4v9ck1), so its eight cells are written out here rather than aliased to
+  // `sharedRates`. The two ladders are equal today by evidence, not by
+  // construction, and a feed refresh that moves the shared ladder must fail
+  // these pins instead of silently repricing a page that was never re-read.
+  const transitionPageRates = {
+    "360p|no-audio": 0.02,
+    "360p|audio": 0.028,
+    "540p|no-audio": 0.028,
+    "540p|audio": 0.036,
+    "720p|no-audio": 0.036,
+    "720p|audio": 0.048,
+    "1080p|no-audio": 0.072,
+    "1080p|audio": 0.092,
+  };
+
   it.each([
     {
       schema: PixverseV6TextToVideoRequestSchema,
@@ -5642,6 +5667,22 @@ describe("kie PixVerse V6 pricing", () => {
       seconds: 6,
       rate: 0.0315,
     },
+    {
+      schema: PixverseV6TransitionRequestSchema,
+      payload: {
+        model: "pixverse-v6/transition" as const,
+        input: {
+          prompt: "the lantern dissolves into the moon",
+          first_frame_image_url: "https://example.com/first.png",
+          last_frame_image_url: "https://example.com/last.png",
+          quality: "1080p" as const,
+          duration: 15,
+          generate_audio_switch: true,
+        },
+      },
+      seconds: 15,
+      rate: 0.092,
+    },
   ])(
     "prices $payload.model from its parsed quality/audio fields",
     ({ schema, payload, seconds, rate }) => {
@@ -5660,7 +5701,7 @@ describe("kie PixVerse V6 pricing", () => {
     }
   );
 
-  it("pins every catalog cell and the four priced metadata registrations", () => {
+  it("pins every catalog cell and the five priced metadata registrations", () => {
     const expected = {
       "pixverse-v6/text-to-video": {
         rates: sharedRates,
@@ -5687,6 +5728,10 @@ describe("kie PixVerse V6 pricing", () => {
         },
         display: "PixVerse V6 Reference",
       },
+      "pixverse-v6/transition": {
+        rates: transitionPageRates,
+        display: "PixVerse V6 Transition",
+      },
     };
 
     for (const [model, { rates, display }] of Object.entries(expected)) {
@@ -5706,7 +5751,9 @@ describe("kie PixVerse V6 pricing", () => {
   // product page (ac-8a8b42); text-to-video shares image-to-video's deep link
   // because the feed prices both directions on one "Text /Image to Video" row
   // set. Pinning the whole `source` object makes a regression to the POST-only
-  // feed endpoint, a wrong tab and an `asOf` drift all fail here.
+  // feed endpoint, a wrong tab and an `asOf` drift all fail here. Transition
+  // is absent from this block on purpose: it has no feed anchor; its
+  // page-sourced citation is pinned separately below (ac-4v9ck1).
   it.each([
     {
       model: "pixverse-v6/text-to-video",
@@ -5758,13 +5805,38 @@ describe("kie PixVerse V6 pricing", () => {
     expect(missingExtendAudio.warnings).toHaveLength(1);
   });
 
-  it("leaves transition unpriced without an official operation row", () => {
-    expect(PRICING.kie["pixverse-v6/transition"]).toBeUndefined();
-    expect(
-      (MODEL_SLUGS.kie as Record<string, string>)["pixverse-v6/transition"]
-    ).toBeUndefined();
-    expect(
-      (MODEL_DISPLAY.kie as Record<string, string>)["pixverse-v6/transition"]
-    ).toBeUndefined();
+  // Page-sourced (ac-4v9ck1): no feed row in any snapshot, so the citation is
+  // the transition tab itself and `asOf` is the day the implementation stage
+  // read the page. `toEqual` over the eight cells and the whole `source`
+  // object makes a borrowed extend cell, a wrong tab and an `asOf` drift all
+  // fail here. The cells come from `transitionPageRates`, the independent page
+  // read, and not from the feed-anchored `sharedRates` they happen to equal, so
+  // a feed refresh that moves the shared ladder fails here as well.
+  it("prices transition from its page tab under the page-evidence rule", () => {
+    const entry = PRICING.kie["pixverse-v6/transition"];
+    if (entry.kind !== "perUnit") throw new Error("expected a perUnit entry");
+    expect(entry.unit).toBe("seconds");
+    expect(entry.rates).toEqual(transitionPageRates);
+    expect(entry.source).toEqual({
+      url: "https://kie.ai/pixverse-v6?model=pixverse-v6%2Ftransition",
+      asOf: "2026-09-22",
+    });
+  });
+
+  it("fails closed for transition without a quality", () => {
+    const result = kieEstimate({
+      model: "pixverse-v6/transition",
+      input: {
+        prompt: "x",
+        first_frame_image_url: "https://example.com/first.png",
+        last_frame_image_url: "https://example.com/last.png",
+        duration: 5,
+      },
+    });
+    expect(result.usd).toBe(0);
+    expect(result.breakdown).toEqual({});
+    expect(result.warnings).toHaveLength(1);
+    expect(result.warnings[0]).toContain("missing required selector(s)");
+    expect(result.warnings[0]).toContain("quality");
   });
 });

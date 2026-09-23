@@ -171,9 +171,9 @@ describe("fal xai/grok-imagine-video v1.5 reference-to-video integration", () =>
     const provider = createFal({ apiKey: "fal-test-key" });
     const schema =
       provider.run.xai.grokImagineVideo.v1p5.referenceToVideo.schema;
-    // Bind the identity, not just presence: the MCP server derives this
-    // endpoint's tool input JSON Schema from `.schema`, and the unversioned
-    // sibling is one property away on the same namespace.
+    // Bind the identity, not just presence: `apicity describe`
+    // derives this endpoint's request JSON Schema from `.schema`, and the
+    // unversioned sibling is one property away on the same namespace.
     expect(schema).toBe(
       FalXaiGrokImagineVideoV1p5ReferenceToVideoRequestSchema
     );

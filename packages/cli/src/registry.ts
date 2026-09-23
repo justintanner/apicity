@@ -6,8 +6,30 @@ import {
   instantiateProvider,
   type InstantiatedProvider,
 } from "./providers.js";
-import { zodToJsonSchema, type JsonSchema } from "./schema.js";
 
+// Endpoint registry: the tsv-backed bulk resolver behind the CLI's tests and
+// its hand-run diagnostic. Read this before adding to the exported surface.
+//
+// What the CLI itself uses. `apicity describe` and `apicity <provider>
+// <dotPath>` go through `loadCatalog()` (catalog.ts: the tsv plus the
+// generated call-shape table, importing no provider module) and then
+// `resolveEndpointFn()` (discovery.ts, invoke.ts) on exactly one row.
+//
+// What `buildRegistry()` is now. The bulk resolver: it instantiates every
+// wanted provider and resolves every tsv row at once. Its only readers are
+// tests/unit/cli-registry.test.ts, tests/unit/zod-compatibility.test.ts and
+// packages/cli/scripts/diag.mjs. It is not on the CLI's own path and must not
+// be put back on it.
+//
+// Retention rule (the "reader rule"). A member of this module's exported
+// surface is kept only while at least one file outside this module reads it;
+// a member with no reader is deleted rather than documented. @apicity/cli has
+// never been published to npm, so there is no external consumer to break and
+// no semver promise on this surface.
+//
+// History. Until September 2026 this module was the entry point of the MCP
+// server; its tool names and eager per-row JSON Schema conversion were retired
+// with it.
 export interface EndpointTsvRow {
   provider: string;
   dotPath: string;
@@ -28,12 +50,7 @@ export interface EndpointFn {
 }
 
 export interface Endpoint extends EndpointTsvRow {
-  toolName: string;
-  fn: EndpointFn;
   schema: unknown;
-  jsonSchema: JsonSchema;
-  example?: EndpointExample;
-  pathParams: string[];
 }
 
 const PATH_PARAM_RE = /\{(\w+)\}/g;
@@ -111,15 +128,9 @@ export async function buildRegistry(
     if (!inst) continue;
     const resolved = resolveEndpointFn(inst, row.method, row.dotPath);
     if (!resolved) continue;
-    const pathParams = extractPathParams(row.fullUrl);
     endpoints.push({
       ...row,
-      toolName: makeToolName(row.provider, row.method, row.dotPath),
-      fn: resolved,
       schema: (resolved as EndpointFn).schema,
-      jsonSchema: zodToJsonSchema((resolved as EndpointFn).schema),
-      example: (resolved as EndpointFn).example,
-      pathParams,
     });
   }
   return endpoints;
@@ -227,28 +238,4 @@ export function extractPathParams(url: string): string[] {
     out.push(match[1]);
   }
   return out;
-}
-
-export function makeToolName(
-  provider: string,
-  method: string,
-  dotPath: string
-): string {
-  const segments = dotPath.split(".").map(toSnakeCase);
-  return `${provider}_${method.toLowerCase()}_${segments.join("_")}`;
-}
-
-// Inverse of `urlToDotPath`'s camelCase conversion (scripts/lib/url-to-dotpath.mjs):
-// the dotPath stores `apiKeys`, `imageToVideo`, `compatibleMode`, etc., but tool
-// names are flat snake_case, a convention inherited from the MCP server this
-// CLI replaced (`toolName` stays exported; OQ-7).
-//   apiKeys           → api_keys
-//   imageToVideo      → image_to_video
-//   compatibleMode    → compatible_mode
-//   getHTTPRequest    → get_http_request    (consecutive caps held together)
-export function toSnakeCase(segment: string): string {
-  return segment
-    .replace(/([A-Z]+)([A-Z][a-z])/g, "$1_$2")
-    .replace(/([a-z0-9])([A-Z])/g, "$1_$2")
-    .toLowerCase();
 }

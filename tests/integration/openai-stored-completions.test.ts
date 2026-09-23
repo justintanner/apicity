@@ -89,9 +89,9 @@ describe("openai stored completions integration", () => {
 describe("openai stored completions payload validation", () => {
   it("should expose schema on post method", () => {
     const provider = createOpenAi({ apiKey: "sk-test-key" });
-    // Bind the identity, not just presence: the MCP server derives this
-    // endpoint's tool input JSON Schema from `.schema`, so attaching a
-    // sibling's schema here would ship a wrong tool contract silently.
+    // Bind the identity, not just presence: `apicity describe`
+    // derives this endpoint's request JSON Schema from `.schema`, so
+    // attaching a sibling's schema here would ship a wrong contract silently.
     expect(provider.post.v1.chat.completions.schema).toBe(
       OpenAiChatRequestSchema
     );

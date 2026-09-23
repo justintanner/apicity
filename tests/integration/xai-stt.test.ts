@@ -58,9 +58,9 @@ describe("xAI speech-to-text integration", () => {
 
   it("should expose stt schema", () => {
     const provider = createXai({ apiKey: "xai-test-key" });
-    // Bind the identity, not just presence: the MCP server derives this
-    // endpoint's tool input JSON Schema from `.schema`, so attaching a
-    // sibling's schema here would ship a wrong tool contract silently.
+    // Bind the identity, not just presence: `apicity describe`
+    // derives this endpoint's request JSON Schema from `.schema`, so
+    // attaching a sibling's schema here would ship a wrong contract silently.
     expect(provider.post.v1.stt.schema).toBe(XaiSttRequestSchema);
     expect(typeof provider.post.v1.stt.schema.safeParse).toBe("function");
   });

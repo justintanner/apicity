@@ -150,9 +150,9 @@ describe("fireworks kontext endpoint integration", () => {
 
     it("should expose payload schemas on workflow methods", () => {
       const provider = createFireworks({ apiKey: "test" });
-      // Bind the identity, not just presence: the MCP server derives each
-      // endpoint's tool input JSON Schema from `.schema`, so attaching a
-      // sibling's schema here would ship a wrong tool contract silently.
+      // Bind the identity, not just presence: `apicity describe`
+      // derives each endpoint's request JSON Schema from `.schema`, so
+      // attaching a sibling's schema here would ship a wrong contract silently.
       expect(provider.inference.v1.workflows.kontext.schema).toBe(
         FireworksKontextRequestSchema
       );

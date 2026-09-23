@@ -13,7 +13,7 @@ export const GoogleOptionsSchema = z.object({
 
 // Request body for v1internal:retrieveUserQuota. The endpoint requires an
 // empty JSON object — sending `metadata`/`clientMetadata` 400s — so the schema
-// is a strict empty object kept only as MCP/consumer metadata.
+// is a strict empty object kept only as consumer metadata.
 export const GoogleRetrieveUserQuotaRequestSchema = z.object({}).strict();
 
 // Request body for v1internal:retrieveUserQuotaSummary. The endpoint also

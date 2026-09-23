@@ -1115,12 +1115,13 @@ describe("KIE Zod schema validation", () => {
 // naming an upstream *model registry* is `z.enum([...known]).or(<alias>)`,
 // where the alias is a named `z.string().regex(...)` matching that vendor's
 // real id grammar — never a bare `.or(z.string())`, which accepts typos. The
-// known ids stay enumerated so MCP clients keep autocomplete.
+// known ids stay enumerated so `apicity describe` output and agents keep
+// autocomplete.
 //
 // Each opened field is asserted along four axes: BR-1 every listed id still
 // parses, BR-2 a plausible not-yet-listed id that matches the family grammar
 // parses, BR-3/BR-4 near-miss typos and foreign-family ids are rejected, and
-// BR-6 the enum branch survives conversion to MCP tool input JSON Schema.
+// BR-6 the enum branch survives the `apicity describe` JSON Schema conversion.
 
 interface ModelParseOutcome {
   success: boolean;
@@ -1312,10 +1313,10 @@ describe.each(OPENED_MODEL_FIELDS)(
 
     // BR-6. Every listed id also matches the alias regex — checked here rather
     // than by eye — so the enum branch carries zero validation weight and
-    // exists only for MCP client autocomplete. Nothing else pins it, so a
-    // "dead code" cleanup could delete it while the suite stayed green. This
-    // is that pin.
-    it("keeps every listed id in the enum branch of the MCP JSON Schema", () => {
+    // exists only for agent autocomplete in `apicity describe`. Nothing else
+    // pins it, so a "dead code" cleanup could delete it while the suite stayed
+    // green. This is that pin.
+    it("keeps every listed id in the enum branch of the `apicity describe` JSON Schema", () => {
       const branches = modelBranches(jsonSchema());
 
       expect(branches).toHaveLength(2);
@@ -1354,7 +1355,7 @@ describe("TRI-008 VeoExtendRequestSchema.model stays a closed set", () => {
     }
   );
 
-  it("emits a bare enum, not an anyOf hatch, in the MCP JSON Schema", () => {
+  it("emits a bare enum, not an anyOf hatch, in the `apicity describe` JSON Schema", () => {
     const properties = zodToJsonSchema(VeoExtendRequestSchema)
       .properties as Record<string, JsonSchema>;
 
@@ -1832,7 +1833,7 @@ const mediaAliasPatterns = mediaLeaves
 describe("TRI-001 KieMediaModelSchema", () => {
   // BR-6, and AC-05's no-id-removed-renamed-or-reordered check in executable
   // form: the enum branch must still be the catalogue, in order.
-  it("keeps the whole catalogue in the enum branch of the MCP JSON Schema", () => {
+  it("keeps the whole catalogue in the enum branch of the `apicity describe` JSON Schema", () => {
     expect(mediaEnumLeaves).toHaveLength(1);
     expect(mediaEnumLeaves[0]).toMatchObject({
       type: "string",

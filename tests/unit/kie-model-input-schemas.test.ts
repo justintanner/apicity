@@ -1123,7 +1123,8 @@ describe("KIE wan 2.2/2.5 modelInputSchemas metadata (REQ-001)", () => {
       // speech-to-video and both 2.5 fragments type it as a bare integer, so
       // no bounds are published for those. Every seeded fragment publishes
       // default 0 beside "if None, a random seed is chosen" — recording that
-      // default would make MCP clients prefill a fixed seed, so it is not.
+      // default would make agents reading `apicity describe` prefill a fixed
+      // seed, so it is not.
       const bounded =
         model === "wan/2-2-a14b-text-to-video-turbo" ||
         model === "wan/2-2-a14b-image-to-video-turbo";

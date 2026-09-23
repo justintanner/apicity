@@ -110,9 +110,9 @@ describe("fireworks models download endpoint and validate upload", () => {
       const provider = createFireworks({ apiKey: "test" });
       const models = provider.inference.v1.accounts.models;
 
-      // Bind the identity, not just presence: the MCP server derives each
-      // endpoint's tool input JSON Schema from `.schema`, so attaching a
-      // sibling's schema here would ship a wrong tool contract silently.
+      // Bind the identity, not just presence: `apicity describe`
+      // derives each endpoint's request JSON Schema from `.schema`, so
+      // attaching a sibling's schema here would ship a wrong contract silently.
       // getDownloadEndpoint takes no payload, so it intentionally shares the
       // provider-wide FireworksEmptySchema with the other body-less GETs.
       expect(models.getDownloadEndpoint.schema).toBe(FireworksEmptySchema);

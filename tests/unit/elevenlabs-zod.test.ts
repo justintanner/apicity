@@ -486,11 +486,12 @@ describe("ElevenLabs Zod schema validation", () => {
         ).toBe(true);
       });
 
-      // Every enumerated id also matches the alias regex, so the enum branch is
-      // redundant for *validation* — its job is MCP client autocomplete.
-      // Nothing else pins it, so deleting it would leave the suite green while
-      // silently dropping every completion. This is that pin.
-      it("keeps both ids in the enum branch of the MCP JSON Schema", () => {
+      // Every enumerated id also matches the alias regex, so the enum branch
+      // is redundant for *validation* — its job is agent autocomplete in
+      // `apicity describe`. Nothing else pins it, so deleting it would leave
+      // the suite green while silently dropping every completion. This is
+      // that pin.
+      it("keeps both ids in the enum branch of the `apicity describe` JSON Schema", () => {
         const props = zodToJsonSchema(ElevenLabsSpeechToTextRequestSchema)
           .properties as Record<string, JsonSchema>;
         const branches = props.model_id.anyOf as JsonSchema[];
@@ -655,7 +656,7 @@ describe("ElevenLabs Zod schema validation", () => {
         ).toBe(true);
       });
 
-      it("documents the conditional cap in the MCP JSON Schema", () => {
+      it("documents the conditional cap in the `apicity describe` JSON Schema", () => {
         const json = zodToJsonSchema(ElevenLabsTextToSpeechRequestSchema);
         const props = json.properties as Record<string, JsonSchema>;
 
@@ -769,10 +770,11 @@ describe("ElevenLabs Zod schema validation", () => {
       });
 
       // Every enumerated id also matches the alias regex, so the enum branch
-      // is redundant for *validation* — its job is MCP client autocomplete.
-      // Nothing else pins it, so deleting it would leave the suite green while
-      // silently dropping every completion. This is that pin.
-      it("keeps all eight ids in the enum branch of the MCP JSON Schema", () => {
+      // is redundant for *validation* — its job is agent autocomplete in
+      // `apicity describe`. Nothing else pins it, so deleting it would leave
+      // the suite green while silently dropping every completion. This is
+      // that pin.
+      it("keeps all eight ids in the enum branch of the `apicity describe` JSON Schema", () => {
         const json = zodToJsonSchema(ElevenLabsTextToSpeechModelIdSchema);
         const branches = json.anyOf as JsonSchema[];
 
@@ -958,11 +960,12 @@ describe("ElevenLabs Zod schema validation", () => {
       ).toBe(true);
     });
 
-    // Every enumerated id also matches the alias regex, so the enum branch is
-    // redundant for *validation* — its job is MCP client autocomplete. Nothing
-    // else pins it, so deleting it would leave the suite green while silently
-    // dropping every completion. This is that pin.
-    it("keeps both ids in the enum branch of the MCP JSON Schema", () => {
+    // Every enumerated id also matches the alias regex, so the enum branch
+    // is redundant for *validation* — its job is agent autocomplete in
+    // `apicity describe`. Nothing else pins it, so deleting it would leave
+    // the suite green while silently dropping every completion. This is
+    // that pin.
+    it("keeps both ids in the enum branch of the `apicity describe` JSON Schema", () => {
       const props = zodToJsonSchema(ElevenLabsComposeMusicRequestSchema)
         .properties as Record<string, JsonSchema>;
       const branches = props.model_id.anyOf as JsonSchema[];
@@ -1046,11 +1049,12 @@ describe("ElevenLabs Zod schema validation", () => {
       expect(result.success).toBe(true);
     });
 
-    // Every enumerated id also matches the alias regex, so the enum branch is
-    // redundant for *validation* — its job is MCP client autocomplete. Nothing
-    // else pins it, so deleting it would leave the suite green while silently
-    // dropping every completion. This is that pin.
-    it("keeps both ids in the enum branch of the MCP JSON Schema", () => {
+    // Every enumerated id also matches the alias regex, so the enum branch
+    // is redundant for *validation* — its job is agent autocomplete in
+    // `apicity describe`. Nothing else pins it, so deleting it would leave
+    // the suite green while silently dropping every completion. This is
+    // that pin.
+    it("keeps both ids in the enum branch of the `apicity describe` JSON Schema", () => {
       const props = zodToJsonSchema(ElevenLabsVoiceDesignRequestSchema)
         .properties as Record<string, JsonSchema>;
       const branches = props.model_id.anyOf as JsonSchema[];

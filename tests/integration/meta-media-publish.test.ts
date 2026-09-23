@@ -46,9 +46,9 @@ describe("meta post.v25.mediaPublish", () => {
   it("exposes a Zod schema with safeParse", () => {
     const provider = createMeta({ accessToken: "ig-test-token" });
     const endpoint = provider.post.v25.mediaPublish;
-    // Bind the identity, not just presence: the MCP server derives this
-    // endpoint's tool input JSON Schema from `.schema`, so attaching a
-    // sibling's schema here would ship a wrong tool contract silently.
+    // Bind the identity, not just presence: `apicity describe`
+    // derives this endpoint's request JSON Schema from `.schema`, so
+    // attaching a sibling's schema here would ship a wrong contract silently.
     expect(endpoint.schema).toBe(MetaMediaPublishRequestSchema);
     expect(typeof endpoint.schema.safeParse).toBe("function");
 

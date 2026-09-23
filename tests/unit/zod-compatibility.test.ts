@@ -123,7 +123,7 @@ describe("Zod runtime compatibility", () => {
     );
   }, 90000);
 
-  it("discovers and converts MCP schemas from unified Zod providers", async () => {
+  it("discovers and converts unified Zod provider schemas to JSON Schema", async () => {
     const endpoints = await withEnv(
       {
         OPENAI_API_KEY: "sk-test",
@@ -154,7 +154,7 @@ describe("Zod runtime compatibility", () => {
     // alias per vendor family (TRI-001), so `model` converts to a nested
     // `anyOf` rather than a bare enum. BR-6 is unchanged and is what this
     // asserts: the id list must still be reachable in the emitted tool input
-    // schema, or MCP clients lose the suggestion list.
+    // schema, or agents reading `apicity describe` lose the suggestion list.
     expect(enumValues(objectProperties(kie).model)).toEqual(
       expect.arrayContaining(["gpt-image-2-text-to-image"])
     );

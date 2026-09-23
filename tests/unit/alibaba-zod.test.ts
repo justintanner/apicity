@@ -28,8 +28,8 @@ import {
 
 // The Wan and Qwen model enums are open: each is `z.enum([...]).or(<alias>)`,
 // so `.options` yields branch *schemas* rather than id strings. The enumerated
-// ids are read back out of the JSON Schema the MCP server emits instead, the
-// same way tests/unit/elevenlabs-zod.test.ts pins its opened enum.
+// ids are read back out of the JSON Schema `apicity describe` emits instead,
+// the same way tests/unit/elevenlabs-zod.test.ts pins its opened enum.
 function enumBranchOf(schema: unknown): unknown[] {
   const branches = zodToJsonSchema(schema).anyOf as JsonSchema[];
   expect(branches).toHaveLength(2);
@@ -1456,10 +1456,10 @@ describe("Alibaba Zod schema validation", () => {
     });
 
     // Every listed id also matches its family's alias regex, so the enum branch
-    // carries no validation weight — its only job is MCP client autocomplete.
-    // Nothing else pins that, so a future "dead code" cleanup could delete the
-    // enum branch and leave the suite green while silently dropping every
-    // completion. These are that pin.
+    // carries no validation weight — its only job is agent autocomplete in
+    // `apicity describe`. Nothing else pins that, so a future "dead code"
+    // cleanup could delete the enum branch and leave the suite green while
+    // silently dropping every completion. These are that pin.
     describe("enum branches are autocomplete-only", () => {
       it.each([
         ["AlibabaVideoSynthesisModelSchema", AlibabaVideoSynthesisModelSchema],

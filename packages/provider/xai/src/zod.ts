@@ -263,8 +263,8 @@ const XaiVideoAspectRatioSchema = z.enum([
 
 const XaiVideoResolutionSchema = z.enum(["480p", "720p"]);
 
-// Keep finite literal unions so exported request types and MCP schemas show
-// the supported second values, not an unbounded number.
+// Keep finite literal unions so exported request types and request schemas
+// show the supported second values, not an unbounded number.
 const XaiVideoGenerateDurationSchema = z.union([
   z.literal(1),
   z.literal(2),

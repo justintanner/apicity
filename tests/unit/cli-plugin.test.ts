@@ -215,6 +215,8 @@ describe(".claude-plugin manifests", () => {
       ".claude/skills/.gc-skill-ownership.json",
       ".claude/skills/core.gc-work",
       "packages/cli/.claude/settings.json",
+      // The negation is anchored to the root: a nested copy stays runtime.
+      "packages/cli/.claude/CLAUDE.md",
     ];
     const ignored = await checkIgnore(runtime);
     expect(ignored.stdout.split("\n").filter(Boolean)).toEqual(runtime);

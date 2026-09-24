@@ -25,8 +25,8 @@ apicity is driven through the `apicity` CLI on PATH, never an MCP server. Run
 (`apicity commands`, `apicity describe`, then the call). Credentials are
 configured by the operator; never request, copy, or read them.
 
-The full reference is [`packages/cli/README.md`](packages/cli/README.md).
-MCP support was removed in September 2026; [`MCP.md`](MCP.md) is the migration
+The full reference is [`packages/cli/README.md`](../packages/cli/README.md).
+MCP support was removed in September 2026; [`MCP.md`](../MCP.md) is the migration
 note.
 
 ## Package Naming

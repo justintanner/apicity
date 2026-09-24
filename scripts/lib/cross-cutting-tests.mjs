@@ -62,12 +62,12 @@ import { repoRoot } from "./provider-scope.mjs";
  *
  * The doc-inventory guards pin agent-facing prose to the repository itself.
  * `tests/unit/provider-inventory-docs.test.ts` derives the provider list and
- * the `build:*` / `doc-gen:*` alias sets from disk and fails `CLAUDE.md`,
- * `AGENTS.md`, or `README.md` when any of them stops naming what ships. Adding
- * a provider is a provider-scoped diff, so no provider scope selects this
- * guard; without the entry the overview drifted to naming 23 of 29 providers
- * and `googleflow` shipped with no `build:` alias at all (ac-gk1mlr,
- * ac-qclky0, ac-e1h1yj).
+ * the `build:*` / `doc-gen:*` alias sets from disk and fails
+ * `.claude/CLAUDE.md`, `AGENTS.md`, or `README.md` when any of them stops
+ * naming what ships. Adding a provider is a provider-scoped diff, so no
+ * provider scope selects this guard; without the entry the overview drifted to
+ * naming 23 of 29 providers and `googleflow` shipped with no `build:` alias at
+ * all (ac-gk1mlr, ac-qclky0, ac-e1h1yj).
  *
  * The export-surface guard pins what each provider actually publishes.
  * `tests/unit/provider-export-surface.test.ts` walks every `src/**\/*.ts`
@@ -141,10 +141,10 @@ import { repoRoot } from "./provider-scope.mjs";
  * Measured wall-clock cost of the cross-cutting block, in seconds.
  *
  * This number was restated by hand in three places — this module,
- * `scripts/preflight-provider.mjs`, and the `CLAUDE.md` paragraph — with
- * nothing keeping them in agreement (ac-vsx186). It now lives here only;
- * the script prints `crossCuttingCostNote()` and the `CLAUDE.md` prose is
- * pinned to this value by `tests/unit/cross-cutting-tests.test.ts`.
+ * `scripts/preflight-provider.mjs`, and the `.claude/CLAUDE.md` paragraph —
+ * with nothing keeping them in agreement (ac-vsx186). It now lives here only;
+ * the script prints `crossCuttingCostNote()` and the `.claude/CLAUDE.md` prose
+ * is pinned to this value by `tests/unit/cross-cutting-tests.test.ts`.
  *
  * The value is the median of three runs of the WHOLE block at its current
  * eleven-entry membership - 918 tests across 11 files - measured on 2026-09-17
@@ -196,7 +196,7 @@ import { repoRoot } from "./provider-scope.mjs";
  * value if the three runs' min-max contains it or M equals it; otherwise re-pin
  * to M. Record the commit, membership, test and file counts, the three wall
  * figures, the three 1-minute loads and the verdict here; the guard test names
- * the `CLAUDE.md` prose that has to move with it.
+ * the `.claude/CLAUDE.md` prose that has to move with it.
  */
 export const CROSS_CUTTING_COST_SECONDS = 14.9;
 

@@ -373,7 +373,7 @@ ownership marker and a version stamp, spelled `.managed-by-apicity`;
 liveness hook — plus a marketplace manifest so the repository installs; and
 the README-and-`AGENTS.md` guidance for agents, here as the root README's
 "CLI and coding agents", this file, and the `apicity CLI` sections in
-`CLAUDE.md` and `AGENTS.md`. **Adapted:** hey's styled
+`.claude/CLAUDE.md` and `AGENTS.md`. **Adapted:** hey's styled
 terminal output and JSON-when-piped rule, which here prints pretty data at a
 terminal and the envelope everywhere else, with `--json` forcing it; hey's
 `.surface` snapshot and `check-surface-compat`, replaced by a catalog-parity
@@ -381,7 +381,7 @@ test against `endpoint-docs.tsv` plus a pinned list of built-in commands; and
 hey's automatic once-per-release skill re-sync, replaced by `doctor` reporting
 a stale install for `apicity skill install` to refresh. hey's `API-COVERAGE.md`
 and `STYLE.md` needed no equivalent: `scripts/endpoint-docs.tsv` already is the
-inventory, and this repository's conventions live in `CLAUDE.md`.
+inventory, and this repository's conventions live in `.claude/CLAUDE.md`.
 
 **Not adopted, and why.** `--jq`: `--quiet` piped into real `jq` does the job,
 so the built-in filter can wait. `--ids-only`, `--count`, `--markdown`,
@@ -420,7 +420,7 @@ entirely on 2026-09-17, so there is no server to expose.
    `@apicity/mcp-server` dependency rather than repointing it. This
    repository's own city launcher is one such script.
 6. **Tell the agents that cannot install plugins.** Add a short section to the
-   project's `AGENTS.md` (and `CLAUDE.md`, for Claude Code):
+   project's `AGENTS.md` (and `CLAUDE.md` or `.claude/CLAUDE.md`, for Claude Code):
 
    > apicity is driven through the `apicity` CLI on PATH, never an MCP server.
    > Run `apicity --help` for the command set and `apicity skill` for the agent

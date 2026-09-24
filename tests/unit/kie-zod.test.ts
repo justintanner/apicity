@@ -1111,12 +1111,12 @@ describe("KIE Zod schema validation", () => {
 // Model-enum escape hatches (TRI-002…TRI-008)
 // ---------------------------------------------------------------------------
 //
-// CLAUDE.md -> Code Conventions -> "Model-identifier enums stay open": a field
-// naming an upstream *model registry* is `z.enum([...known]).or(<alias>)`,
-// where the alias is a named `z.string().regex(...)` matching that vendor's
-// real id grammar — never a bare `.or(z.string())`, which accepts typos. The
-// known ids stay enumerated so `apicity describe` output and agents keep
-// autocomplete.
+// .claude/CLAUDE.md -> Code Conventions -> "Model-identifier enums stay open":
+// a field naming an upstream *model registry* is
+// `z.enum([...known]).or(<alias>)`, where the alias is a named
+// `z.string().regex(...)` matching that vendor's real id grammar — never a bare
+// `.or(z.string())`, which accepts typos. The known ids stay enumerated so
+// `apicity describe` output and agents keep autocomplete.
 //
 // Each opened field is asserted along four axes: BR-1 every listed id still
 // parses, BR-2 a plausible not-yet-listed id that matches the family grammar
@@ -1333,9 +1333,9 @@ describe.each(OPENED_MODEL_FIELDS)(
 );
 
 // TRI-008. `fast | quality` is a rendering-tier vocabulary, not a model
-// registry — the counterexample class CLAUDE.md names alongside `quality` and
-// SimpleFunctionsModelSchema. BR-5: opening the sibling Veo generate field
-// must not loosen this one, directly or through a shared alias.
+// registry — the counterexample class .claude/CLAUDE.md names alongside
+// `quality` and SimpleFunctionsModelSchema. BR-5: opening the sibling Veo
+// generate field must not loosen this one, directly or through a shared alias.
 describe("TRI-008 VeoExtendRequestSchema.model stays a closed set", () => {
   const extendBase = { taskId: "task-123", prompt: "extend the video" };
 

@@ -260,13 +260,16 @@ describe("cross-cutting repo-wide guard tests", () => {
     expect(crossCuttingCostNote()).toContain(`${CROSS_CUTTING_COST_SECONDS}s`);
   });
 
-  it("pins the CLAUDE.md cost figure and member list to this module", () => {
-    const claude = readRepoFile("CLAUDE.md");
+  it("pins the .claude/CLAUDE.md cost figure and member list to this module", () => {
+    const claude = readRepoFile(".claude/CLAUDE.md");
 
     const cost = claude.match(
       /<!-- cross-cutting-cost:start -->([\s\S]*?)<!-- cross-cutting-cost:end -->/
     );
-    expect(cost, "CLAUDE.md has no cross-cutting-cost region").not.toBeNull();
+    expect(
+      cost,
+      ".claude/CLAUDE.md has no cross-cutting-cost region"
+    ).not.toBeNull();
     expect(Number(cost?.[1])).toBe(CROSS_CUTTING_COST_SECONDS);
 
     const region = claude.match(
@@ -274,13 +277,14 @@ describe("cross-cutting repo-wide guard tests", () => {
     );
     expect(
       region,
-      "CLAUDE.md has no cross-cutting-tests region"
+      ".claude/CLAUDE.md has no cross-cutting-tests region"
     ).not.toBeNull();
     const prose = region?.[1] ?? "";
     for (const relativePath of CROSS_CUTTING_TESTS) {
-      expect(prose, `CLAUDE.md does not name ${relativePath}`).toContain(
-        relativePath
-      );
+      expect(
+        prose,
+        `.claude/CLAUDE.md does not name ${relativePath}`
+      ).toContain(relativePath);
     }
     // The other direction: prose naming a guard the registry no longer runs.
     const named = backtickedTestPaths(prose);

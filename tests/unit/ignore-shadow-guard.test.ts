@@ -45,7 +45,7 @@ describe("parseCheckIgnoreRecords", () => {
   it("parses the four NUL-separated fields per record", () => {
     const stdout = checkIgnoreStream([
       [".prettierignore", "8", "packages/provider/*/README.md", "a/README.md"],
-      [".gitignore", "159", "CLAUDE.md", "CLAUDE.md"],
+      [".gitignore", "177", "**/.claude/*", ".claude/CLAUDE.md"],
     ]);
     expect(parseCheckIgnoreRecords(stdout)).toEqual([
       {
@@ -55,10 +55,10 @@ describe("parseCheckIgnoreRecords", () => {
         pattern: "packages/provider/*/README.md",
       },
       {
-        path: "CLAUDE.md",
+        path: ".claude/CLAUDE.md",
         source: ".gitignore",
-        line: 159,
-        pattern: "CLAUDE.md",
+        line: 177,
+        pattern: "**/.claude/*",
       },
     ]);
   });
@@ -179,7 +179,7 @@ describe("evaluateShadowSets", () => {
     {
       id: "gitignored-yet-tracked",
       axis: "prettier",
-      globs: ["CLAUDE.md", "test-branch-protection.txt"],
+      globs: [".claude/CLAUDE.md", "test-branch-protection.txt"],
       why: "fixture",
     },
   ];
@@ -231,14 +231,14 @@ describe("evaluateShadowSets", () => {
 
   it("reports only the retired sibling glob in a partially live class", () => {
     const result = evaluateShadowSets(
-      { prettier: [prettierRecord("CLAUDE.md")], eslint: [] },
+      { prettier: [prettierRecord(".claude/CLAUDE.md")], eslint: [] },
       MULTI_GLOB_CLASS,
       []
     );
     expect(result.unexplained).toEqual([]);
     expect(result.baselined).toHaveLength(1);
     expect(result.baselined[0]).toMatchObject({
-      path: "CLAUDE.md",
+      path: ".claude/CLAUDE.md",
       classId: "gitignored-yet-tracked",
     });
     expect(result.stale).toEqual([
@@ -254,7 +254,7 @@ describe("evaluateShadowSets", () => {
     const result = evaluateShadowSets(
       {
         prettier: [
-          prettierRecord("CLAUDE.md"),
+          prettierRecord(".claude/CLAUDE.md"),
           prettierRecord("test-branch-protection.txt"),
         ],
         eslint: [],
@@ -276,7 +276,7 @@ describe("evaluateShadowSets", () => {
     expect(result.stale).toEqual([
       {
         id: "gitignored-yet-tracked",
-        glob: "CLAUDE.md",
+        glob: ".claude/CLAUDE.md",
         axis: "prettier",
       },
       {

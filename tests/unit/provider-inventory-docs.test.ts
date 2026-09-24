@@ -100,8 +100,8 @@ describe("provider inventory documentation", () => {
 
   it("fails a surface that gains a provider it does not name", () => {
     const problems = checkProviderInventoryDocs(
-      "CLAUDE.md",
-      readSurface("CLAUDE.md"),
+      ".claude/CLAUDE.md",
+      readSurface(".claude/CLAUDE.md"),
       {
         ...inventories,
         providers: [...providers, "notarealprovider"],
@@ -113,8 +113,8 @@ describe("provider inventory documentation", () => {
 
   it("fails a surface that gains a build alias it does not name", () => {
     const problems = checkProviderInventoryDocs(
-      "CLAUDE.md",
-      readSurface("CLAUDE.md"),
+      ".claude/CLAUDE.md",
+      readSurface(".claude/CLAUDE.md"),
       {
         ...inventories,
         buildAliases: [...inventories.buildAliases, "notarealpackage"],
@@ -125,8 +125,8 @@ describe("provider inventory documentation", () => {
 
   it("fails a surface that gains a doc-gen alias it does not name", () => {
     const problems = checkProviderInventoryDocs(
-      "CLAUDE.md",
-      readSurface("CLAUDE.md"),
+      ".claude/CLAUDE.md",
+      readSurface(".claude/CLAUDE.md"),
       {
         ...inventories,
         docGenAliases: [...inventories.docGenAliases, "notarealpackage"],

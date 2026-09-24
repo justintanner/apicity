@@ -3,7 +3,7 @@
  * Enforce the provider endpoint-method conventions across every factory:
  *
  *   1. camelCase segment paths — endpoint keys are camelCase identifiers,
- *      never bracket-notation kebab-case (CLAUDE.md endpoint naming).
+ *      never bracket-notation kebab-case (.claude/CLAUDE.md endpoint naming).
  *   2. dotPath mirrors the URL — where an endpoint lives in the factory tree
  *      matches its upstream URL path, segment-by-segment. Intentional
  *      divergences are acknowledged with a `// sig-ok: <reason>` comment.

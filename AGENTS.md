@@ -73,7 +73,7 @@ and polymarket also depends on `viem` for EIP-712 order signing.
 
 Method paths mirror upstream API URL paths segment-by-segment; kebab-case becomes camelCase (e.g. `/v1/chat/completions` → `openai.v1.chat.completions()`).
 
-`CLAUDE.md` is the canonical source for project conventions. This file is the self-sufficient summary for non-Claude harnesses (opencode, other agents). If they disagree, prefer `CLAUDE.md`.
+`.claude/CLAUDE.md` is the canonical source for project conventions. This file is the self-sufficient summary for non-Claude harnesses (opencode, other agents). If they disagree, prefer `.claude/CLAUDE.md`.
 
 ## apicity CLI
 

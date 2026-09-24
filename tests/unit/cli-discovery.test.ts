@@ -433,11 +433,14 @@ for (const { command, argv, data, direct, human } of DISCOVERY) {
       expect(out).toBe(JSON.stringify(await data()));
     });
 
-    it("prints the data alone, pretty-printed, for --quiet in a pipe", async () => {
-      const { exit, out } = await runCli([...argv, "--quiet"], false);
+    it("prints the data alone, pretty-printed, for --quiet in a pipe or at a terminal", async () => {
+      // OQ-002: at a terminal `--quiet` still wins over the human form.
+      for (const stdoutIsTTY of [false, true]) {
+        const { exit, out } = await runCli([...argv, "--quiet"], stdoutIsTTY);
 
-      expect(exit).toBe(0);
-      expect(out).toBe(JSON.stringify(await data(), null, 2));
+        expect(exit).toBe(0);
+        expect(out).toBe(JSON.stringify(await data(), null, 2));
+      }
     });
 
     it("keeps the human form at a terminal", async () => {
@@ -479,7 +482,7 @@ describe("the discovery aliases under the one output rule", () => {
     });
   }
 
-  for (const [mode, flags] of ALIAS_MODES.slice(0, 2)) {
+  for (const [mode, flags] of ALIAS_MODES) {
     it(`prints for --help what describe --method POST prints, under ${mode}`, async () => {
       const alias = await runCli(
         ["openai", "v1.chat.completions", "--help", ...flags],

@@ -94,10 +94,11 @@ tomorrow cannot collide with this table.
 
 The built-ins read their own smaller sets, because each has argv the shared
 table has no business interpreting: `commands`, `describe` and `providers` take
-`--json` plus `--provider` and `--method`; `skill`, `setup` and `doctor` take
-`--json` and `--remove`. Passing one of the flags below to a built-in that does
-not know it is a usage error (`--quiet needs a value`, exit 1) rather than a
-silent no-op, and `doctor` names an argument it ignored on stderr.
+`--json` and `--quiet` plus `--provider` and `--method`; `skill`, `setup` and
+`doctor` take `--json` and `--remove`. Passing one of the flags below to a
+built-in that does not know it is a usage error (`--verbose needs a value`,
+exit 1) rather than a silent no-op, and `doctor` names an argument it ignored
+on stderr.
 
 | Flag                           | Description                                                                                                                                           |
 | ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -253,14 +254,21 @@ selects the pretty form. Both carry the same data.
 { "ok": false, "error": "…", "code": "…", "hint": "…", "meta": { … } }
 ```
 
-**One exception, worth knowing before you write a `jq` filter.** The three
-discovery commands — `commands`, `describe` and `providers` — print their
-result at the **top level** with `--json`, not wrapped in the success envelope:
-`apicity commands --json | jq length`, not `jq '.data | length'`. Every other
-command (`skill install`, `setup`, `doctor`, and any endpoint call) answers the
-envelope. A **failure** follows the one rule above on every path, discovery
-included: the error envelope whenever stdout is a pipe or `--json` is passed,
-and `Error:` plus `hint:` lines at a terminal without it.
+**The discovery commands answer the same envelope.** `commands`, `describe`
+and `providers` — and the `apicity <provider>` and `--help` forms that reuse
+them — put their result under `data` like every other command (`skill install`,
+`setup`, `doctor`, and any endpoint call), so a `jq` filter reads it there:
+
+```bash
+apicity commands --provider openligadb --json | jq '.data | length'
+apicity describe kie api.v1.jobs.createTask --json | jq '.data.paid'
+```
+
+At a terminal without `--json`, `commands` and `providers` print an aligned
+table and `describe` a text block instead. A **failure** follows the one rule
+above on every path, discovery included: the error envelope whenever stdout is
+a pipe or `--json` is passed, and `Error:` plus `hint:` lines at a terminal
+without it.
 
 Success goes to stdout and failure to stderr, never both for one invocation.
 `--quiet` prints the data alone — compactly with `--json`, so

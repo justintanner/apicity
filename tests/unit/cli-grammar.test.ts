@@ -476,11 +476,12 @@ describe("--help on the endpoint form", () => {
   it("prints the POST row's URL, docs URL and schema", async () => {
     const cap = capture();
 
+    // At a terminal; piped, the same description is the success envelope.
     const exit = await runEndpoint(
       "openai",
       ["v1.chat.completions", "--help"],
       cap.writer,
-      { env: { HOME }, stdoutIsTTY: false }
+      { env: { HOME }, stdoutIsTTY: true }
     );
 
     expect(exit).toBe(0);
@@ -504,10 +505,7 @@ describe("--help on the endpoint form", () => {
     );
 
     expect(calls).toEqual([]);
-    const description = JSON.parse(cap.out.join("\n")) as Record<
-      string,
-      unknown
-    >;
+    const description = envelopeOf(cap).data as Record<string, unknown>;
     expect(description.method).toBe("GET");
     expect(description.paid).toBe(false);
   });
@@ -523,7 +521,7 @@ describe("the provider form without a dotPath", () => {
     });
 
     expect(exit).toBe(0);
-    const entries = JSON.parse(cap.out.join("\n")) as unknown[];
+    const entries = envelopeOf(cap).data as unknown[];
     expect(entries.length).toBeGreaterThan(0);
   });
 

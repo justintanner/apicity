@@ -4,14 +4,16 @@ import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { describe, expect, it } from "vitest";
 
+import { loadCatalog } from "../../packages/cli/src/catalog";
 import type { CliWriter } from "../../packages/cli/src/envelope";
 import { CliError } from "../../packages/cli/src/errors";
-import { HELP_TOPICS } from "../../packages/cli/src/help";
+import { HELP_TOPICS, helpTopicText } from "../../packages/cli/src/help";
 import { runMain } from "../../packages/cli/src/main";
 import {
   describeEndpoint,
   listProviders,
   runCommands,
+  runDescribe,
   runProviders,
   type ProviderLoader,
 } from "../../packages/cli/src/discovery";
@@ -88,14 +90,18 @@ describe("apicity commands", () => {
       })
     ).resolves.toBe(0);
 
-    const entries = JSON.parse(out.join("\n")) as unknown[];
-    expect(entries).toHaveLength(tsvRowCount("openligadb"));
+    const { data } = JSON.parse(out.join("\n")) as { data: unknown[] };
+    expect(data).toHaveLength(tsvRowCount("openligadb"));
   });
 
   it("prints a table with both parameter kinds in human mode", async () => {
     const { writer, out } = capture();
 
-    await runCommands(writer, { provider: "kie", env: EMPTY_ENV });
+    await runCommands(writer, {
+      provider: "kie",
+      env: EMPTY_ENV,
+      stdoutIsTTY: true,
+    });
     const table = out.join("\n");
 
     expect(table.split("\n")[0]).toContain("provider");
@@ -134,7 +140,10 @@ describe("apicity providers", () => {
   it("prints no credential value in human mode either", async () => {
     const { writer, out } = capture();
 
-    await runProviders(writer, { env: { OPENAI_API_KEY: "sk-secret-value" } });
+    await runProviders(writer, {
+      env: { OPENAI_API_KEY: "sk-secret-value" },
+      stdoutIsTTY: true,
+    });
 
     expect(out.join("\n")).not.toContain("sk-secret-value");
     expect(out.join("\n")).toContain("OPENAI_API_KEY");
@@ -323,15 +332,16 @@ describe("dispatcher routing", () => {
     ).resolves.toBe(0);
 
     expect(direct.out).toEqual(viaFlag.out);
-    expect(JSON.parse(direct.out.join("\n"))).toHaveLength(
-      tsvRowCount("openligadb")
-    );
+    const { data } = JSON.parse(direct.out.join("\n")) as { data: unknown[] };
+    expect(data).toHaveLength(tsvRowCount("openligadb"));
   });
 
   it("reports a describe call with no arguments as usage", async () => {
     const { writer, err } = capture();
 
-    await expect(runMain(["describe"], writer)).resolves.toBe(1);
+    await expect(
+      runMain(["describe"], writer, { stdoutIsTTY: false })
+    ).resolves.toBe(1);
     expect(JSON.parse(err[0])).toMatchObject({ ok: false, code: "usage" });
   });
 
@@ -339,9 +349,218 @@ describe("dispatcher routing", () => {
     const { writer, out, err } = capture();
 
     await expect(
-      runMain(["commands", "--provider", "nosuchprovider"], writer)
+      runMain(["commands", "--provider", "nosuchprovider"], writer, {
+        stdoutIsTTY: false,
+      })
     ).resolves.toBe(2);
     expect(out).toEqual([]);
     expect(JSON.parse(err[0])).toMatchObject({ ok: false, code: "not_found" });
+  });
+});
+
+// ac-3oip95: discovery answers under the one output rule (D-5) like every
+// other command, rather than printing its result at the top level. Every case
+// passes `stdoutIsTTY`, so the terminal the suite runs in decides nothing.
+interface CliRun {
+  exit: number;
+  out: string;
+  err: string[];
+}
+
+async function runCli(argv: string[], stdoutIsTTY: boolean): Promise<CliRun> {
+  const { writer, out, err } = capture();
+  const exit = await runMain(argv, writer, { stdoutIsTTY });
+  return { exit, out: out.join("\n"), err };
+}
+
+const DISCOVERY = [
+  {
+    command: "commands",
+    argv: ["commands", "--provider", "openligadb"],
+    data: async (): Promise<unknown> =>
+      (await loadCatalog()).filter((entry) => entry.provider === "openligadb"),
+    direct: (writer: CliWriter) =>
+      runCommands(writer, { provider: "openligadb", stdoutIsTTY: false }),
+    human: /^provider\s+method\s+dotPath\s+params\s+paid\s+configured$/,
+  },
+  {
+    command: "providers",
+    argv: ["providers"],
+    data: (): Promise<unknown> => listProviders(),
+    direct: (writer: CliWriter) => runProviders(writer, { stdoutIsTTY: false }),
+    human: /^provider\s+endpoints\s+configured\s+env$/,
+  },
+  {
+    command: "describe",
+    argv: ["describe", "kie", "api.v1.jobs.createTask"],
+    data: (): Promise<unknown> =>
+      describeEndpoint("kie", "api.v1.jobs.createTask"),
+    direct: (writer: CliWriter) =>
+      runDescribe(writer, "kie", "api.v1.jobs.createTask", {
+        stdoutIsTTY: false,
+      }),
+    human: /^kie api\.v1\.jobs\.createTask$/,
+  },
+];
+
+for (const { command, argv, data, direct, human } of DISCOVERY) {
+  describe(`apicity ${command} under the one output rule`, () => {
+    it("answers the success envelope around the same data with --json", async () => {
+      // At a terminal: `--json` alone selects the envelope.
+      const { exit, out, err } = await runCli([...argv, "--json"], true);
+
+      expect(exit).toBe(0);
+      expect(err).toEqual([]);
+      const envelope = JSON.parse(out) as Record<string, unknown>;
+      expect(Object.keys(envelope).sort()).toEqual(["data", "ok"]);
+      expect(envelope.ok).toBe(true);
+      expect(envelope.data).toEqual(JSON.parse(JSON.stringify(await data())));
+    });
+
+    it("answers a pipe with the same bytes as --json", async () => {
+      const piped = await runCli(argv, false);
+      const forced = await runCli([...argv, "--json"], false);
+
+      expect(piped.exit).toBe(0);
+      expect(piped.out).toBe(forced.out);
+      expect(JSON.parse(piped.out)).toMatchObject({ ok: true });
+    });
+
+    it("prints the data alone on one line for --json --quiet", async () => {
+      const { exit, out } = await runCli([...argv, "--json", "--quiet"], false);
+
+      expect(exit).toBe(0);
+      expect(out).toBe(JSON.stringify(await data()));
+    });
+
+    it("prints the data alone, pretty-printed, for --quiet in a pipe or at a terminal", async () => {
+      // OQ-002: at a terminal `--quiet` still wins over the human form.
+      for (const stdoutIsTTY of [false, true]) {
+        const { exit, out } = await runCli([...argv, "--quiet"], stdoutIsTTY);
+
+        expect(exit).toBe(0);
+        expect(out).toBe(JSON.stringify(await data(), null, 2));
+      }
+    });
+
+    it("keeps the human form at a terminal", async () => {
+      const { exit, out } = await runCli(argv, true);
+
+      expect(exit).toBe(0);
+      expect(out.split("\n")[0]).toMatch(human);
+    });
+
+    it("prints from the exported function what the CLI prints", async () => {
+      const cap = capture();
+
+      await expect(direct(cap.writer)).resolves.toBe(0);
+      expect(cap.out.join("\n")).toBe((await runCli(argv, false)).out);
+    });
+  });
+}
+
+// The two aliases reuse the built-ins' rendering, so they print the same bytes
+// in every mode.
+const ALIAS_MODES: [string, string[]][] = [
+  ["--json", ["--json"]],
+  ["a pipe", []],
+  ["--json --quiet", ["--json", "--quiet"]],
+];
+
+describe("the discovery aliases under the one output rule", () => {
+  for (const [mode, flags] of ALIAS_MODES) {
+    it(`prints for apicity <provider> what commands --provider prints, under ${mode}`, async () => {
+      const alias = await runCli(["openligadb", ...flags], false);
+      const builtin = await runCli(
+        ["commands", "--provider", "openligadb", ...flags],
+        false
+      );
+
+      expect(builtin.exit).toBe(0);
+      expect(alias.exit).toBe(0);
+      expect(alias.out).toBe(builtin.out);
+    });
+  }
+
+  for (const [mode, flags] of ALIAS_MODES) {
+    it(`prints for --help what describe --method POST prints, under ${mode}`, async () => {
+      const alias = await runCli(
+        ["openai", "v1.chat.completions", "--help", ...flags],
+        false
+      );
+      const builtin = await runCli(
+        [
+          "describe",
+          "openai",
+          "v1.chat.completions",
+          "--method",
+          "POST",
+          ...flags,
+        ],
+        false
+      );
+
+      expect(builtin.exit).toBe(0);
+      expect(alias.exit).toBe(0);
+      expect(alias.out).toBe(builtin.out);
+      // The other methods are named on stderr, so stdout stays one document.
+      expect(alias.err).toEqual([
+        "[apicity] openai v1.chat.completions also answers DELETE, GET — " +
+          "pass --method to describe one of those",
+      ]);
+    });
+  }
+});
+
+describe("discovery failures and flags under the one output rule", () => {
+  it("keeps the error envelope for an unknown provider", async () => {
+    const { exit, out, err } = await runCli(
+      ["commands", "--provider", "nope", "--json"],
+      false
+    );
+
+    expect(exit).toBe(2);
+    expect(out).toBe("");
+    expect(err).toEqual([
+      '{"ok":false,"error":"no endpoints for provider: nope","code":"not_found","hint":"run: apicity providers"}',
+    ]);
+  });
+
+  it("keeps the error envelope for an ambiguous describe", async () => {
+    const { exit, out, err } = await runCli(
+      ["describe", "openai", "v1.chat.completions", "--json"],
+      false
+    );
+
+    expect(exit).toBe(8);
+    expect(out).toBe("");
+    expect(JSON.parse(err[0])).toMatchObject({ ok: false, code: "ambiguous" });
+  });
+
+  it("still refuses a flag the discovery parser does not know", async () => {
+    const { exit, out, err } = await runCli(["commands", "--verbose"], false);
+
+    expect(exit).toBe(1);
+    expect(out).toBe("");
+    expect(err).toEqual([
+      '{"ok":false,"error":"--verbose needs a value","code":"usage"}',
+    ]);
+  });
+
+  it("reads --quiet as a flag wherever it sits after the command", async () => {
+    const { exit, out } = await runCli(
+      ["describe", "kie", "--quiet", "api.v1.jobs.createTask", "--json"],
+      false
+    );
+
+    expect(exit).toBe(0);
+    expect(JSON.parse(out)).toMatchObject({ method: "POST", paid: true });
+  });
+
+  it("shows the success envelope in the output help topic", () => {
+    const text = helpTopicText("output");
+
+    expect(text).toContain('{"ok": true, "data": ...');
+    expect(text).toContain("the result under `data`");
   });
 });

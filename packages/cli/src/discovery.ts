@@ -5,7 +5,7 @@ import {
   type CatalogEntry,
 } from "./catalog.js";
 import { CALL_SHAPES, callShapeKey, type CallShape } from "./call-shapes.js";
-import type { CliWriter } from "./envelope.js";
+import { createWriter, type CliWriter } from "./envelope.js";
 import { isProviderConfigured, providerEnvVars } from "./credentials.js";
 import { CliError } from "./errors.js";
 import { errorMessage } from "./internal.js";
@@ -122,13 +122,51 @@ export interface DiscoveryOptions {
   loadProvider?: ProviderLoader;
 }
 
+/**
+ * The three inputs of the one output rule (D-5), which a discovery command
+ * reads exactly as every other command does: `--json` or a stdout that is not
+ * a terminal selects the success envelope, `--quiet` the data alone, and a
+ * terminal without either the human rendering.
+ */
+interface OutputOptions {
+  json?: boolean;
+  quiet?: boolean;
+  /** Injected so a test can drive both halves of the output rule (D-5). */
+  stdoutIsTTY?: boolean;
+}
+
+/**
+ * Print one discovery result through the writer every command shares.
+ *
+ * The machine forms come from `createWriter`, so the envelope, `--quiet` and
+ * `--json --quiet` are byte-for-byte what a call prints for the same data.
+ * Only the terminal form is discovery's own: the table or text block that
+ * `human` renders, built only when it is printed.
+ */
+function respond(
+  writer: CliWriter,
+  options: OutputOptions,
+  data: unknown,
+  human: () => string
+): number {
+  const out = createWriter({
+    json: options.json,
+    quiet: options.quiet,
+    stdoutIsTTY: options.stdoutIsTTY,
+    stdout: (text) => writer.out(text),
+    stderr: (text) => writer.err(text),
+  });
+  if (out.machine || options.quiet) return out.success(data);
+  out.text(human());
+  return 0;
+}
+
 // ---------------------------------------------------------------------------
 // commands
 // ---------------------------------------------------------------------------
 
-export interface CommandsOptions extends DiscoveryOptions {
+export interface CommandsOptions extends DiscoveryOptions, OutputOptions {
   provider?: string;
-  json?: boolean;
 }
 
 export async function runCommands(
@@ -149,10 +187,7 @@ export async function runCommands(
     );
   }
 
-  writer.out(
-    options.json ? JSON.stringify(entries, null, 2) : commandsTable(entries)
-  );
-  return 0;
+  return respond(writer, options, entries, () => commandsTable(entries));
 }
 
 function commandsTable(entries: CatalogEntry[]): string {
@@ -206,9 +241,8 @@ function renderTable(rows: string[][]): string {
 // describe
 // ---------------------------------------------------------------------------
 
-export interface DescribeOptions extends DiscoveryOptions {
+export interface DescribeOptions extends DiscoveryOptions, OutputOptions {
   method?: string;
-  json?: boolean;
 }
 
 export interface EndpointDescription extends CatalogEntry {
@@ -253,12 +287,7 @@ export async function runDescribe(
   options: DescribeOptions = {}
 ): Promise<number> {
   const description = await describeEndpoint(provider, dotPath, options);
-  writer.out(
-    options.json
-      ? JSON.stringify(description, null, 2)
-      : describeText(description)
-  );
-  return 0;
+  return respond(writer, options, description, () => describeText(description));
 }
 
 function describeText(description: EndpointDescription): string {
@@ -313,21 +342,18 @@ export async function listProviders(
 
 export async function runProviders(
   writer: CliWriter,
-  options: DiscoveryOptions & { json?: boolean } = {}
+  options: DiscoveryOptions & OutputOptions = {}
 ): Promise<number> {
   const summaries = await listProviders(options);
-  if (options.json) {
-    writer.out(JSON.stringify(summaries, null, 2));
-    return 0;
-  }
+  return respond(writer, options, summaries, () => providersTable(summaries));
+}
+
+function providersTable(summaries: ProviderSummary[]): string {
   const rows = summaries.map((summary) => [
     summary.provider,
     String(summary.endpoints),
     summary.configured ? "yes" : "no",
     summary.envVars.join(" ") || "(none)",
   ]);
-  writer.out(
-    renderTable([["provider", "endpoints", "configured", "env"], ...rows])
-  );
-  return 0;
+  return renderTable([["provider", "endpoints", "configured", "env"], ...rows]);
 }

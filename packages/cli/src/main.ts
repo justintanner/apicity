@@ -170,16 +170,23 @@ async function dispatch(
   }
 
   const flags = parseFlags(rest);
+  // The discovery commands answer under the same output rule as every other
+  // command (D-5), so they take the same three inputs.
+  const output = {
+    json: flags.json,
+    quiet: flags.quiet,
+    stdoutIsTTY: options.stdoutIsTTY,
+  };
 
   if (first === "commands") {
     return runCommands(writer, {
-      json: flags.json,
+      ...output,
       provider: flags.options.provider,
     });
   }
 
   if (first === "providers") {
-    return runProviders(writer, { json: flags.json });
+    return runProviders(writer, output);
   }
 
   if (first === "describe") {
@@ -190,7 +197,7 @@ async function dispatch(
       });
     }
     return runDescribe(writer, provider, dotPath, {
-      json: flags.json,
+      ...output,
       method: flags.options.method,
     });
   }
@@ -204,10 +211,12 @@ interface ParsedFlags {
   positional: string[];
   options: Record<string, string>;
   json: boolean;
+  quiet: boolean;
 }
 
 /**
- * Split `--flag value`, `--flag=value` and bare `--json` out of the argv tail.
+ * Split `--flag value`, `--flag=value` and the bare `--json` and `--quiet` out
+ * of the argv tail.
  *
  * Deliberately small, and deliberately separate from `parseGlobalFlags` in
  * `args.ts`. This parser serves the discovery commands — `commands`,
@@ -220,6 +229,7 @@ function parseFlags(argv: string[]): ParsedFlags {
   const positional: string[] = [];
   const options: Record<string, string> = {};
   let json = false;
+  let quiet = false;
 
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
@@ -230,6 +240,10 @@ function parseFlags(argv: string[]): ParsedFlags {
     const body = arg.slice(2);
     if (body === "json") {
       json = true;
+      continue;
+    }
+    if (body === "quiet") {
+      quiet = true;
       continue;
     }
     const eq = body.indexOf("=");
@@ -245,7 +259,7 @@ function parseFlags(argv: string[]): ParsedFlags {
     i++;
   }
 
-  return { positional, options, json };
+  return { positional, options, json, quiet };
 }
 
 // ---------------------------------------------------------------------------
@@ -309,7 +323,13 @@ export async function runEndpoint(
     // `apicity openai` is `apicity commands --provider openai`: the first
     // thing anyone types after learning a provider exists.
     if (first === undefined) {
-      return await runCommands(writer, { json: flags.json, provider, env });
+      return await runCommands(writer, {
+        json: flags.json,
+        quiet: flags.quiet,
+        stdoutIsTTY: options.stdoutIsTTY,
+        provider,
+        env,
+      });
     }
     if (first.startsWith("-")) {
       throw new CliError("usage", `unknown flag: ${first}`, {
@@ -330,14 +350,10 @@ export async function runEndpoint(
     }
 
     if (flags.help) {
-      return await describeForHelp(
-        writer,
-        provider,
-        dotPath,
-        entries,
-        flags,
-        env
-      );
+      return await describeForHelp(writer, provider, dotPath, entries, flags, {
+        env,
+        stdoutIsTTY: options.stdoutIsTTY,
+      });
     }
 
     const entry = selectEntry(entries, flags.method);
@@ -422,7 +438,7 @@ async function describeForHelp(
   dotPath: string,
   entries: CatalogEntry[],
   flags: GlobalFlags,
-  env: NodeJS.ProcessEnv
+  options: Pick<EndpointOptions, "env" | "stdoutIsTTY">
 ): Promise<number> {
   const method = flags.method ?? preferredHelpMethod(entries);
   if (method !== undefined && entries.length > 1) {
@@ -436,8 +452,10 @@ async function describeForHelp(
   }
   return runDescribe(writer, provider, dotPath, {
     json: flags.json,
+    quiet: flags.quiet,
+    stdoutIsTTY: options.stdoutIsTTY,
     method,
-    env,
+    env: options.env,
   });
 }
 

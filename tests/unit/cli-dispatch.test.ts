@@ -151,9 +151,10 @@ describe("apicity bin", () => {
       // catalog is an order of magnitude larger, and a short document would
       // parse cleanly either way.
       expect(Buffer.byteLength(stdout, "utf8")).toBeGreaterThan(200_000);
-      const rows: unknown = JSON.parse(stdout);
-      expect(Array.isArray(rows)).toBe(true);
-      expect((rows as unknown[]).length).toBeGreaterThan(1_000);
+      const { ok, data } = JSON.parse(stdout) as { ok: unknown; data: unknown };
+      expect(ok).toBe(true);
+      expect(Array.isArray(data)).toBe(true);
+      expect((data as unknown[]).length).toBeGreaterThan(1_000);
     }
   );
 });

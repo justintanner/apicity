@@ -15,6 +15,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   2.7 Image, and KIE Nano Banana.
 - Fal request input/output aliases and an endpoint-to-input type map.
 
+### Changed
+
+- `apicity commands`, `apicity providers` and `apicity describe`, and the
+  `apicity <provider>` and endpoint `--help` forms that reuse them, now answer
+  the success envelope `{"ok": true, "data": …}` with `--json` or a
+  non-terminal stdout, like every other command, instead of printing their
+  result at the top level. Read the result under `.data`: `jq length` on that
+  output now counts the envelope's keys. They also accept `--quiet` for the
+  data alone.
+
 ### Removed
 
 - The MCP server: the CLI's `mcp` subcommand and its compatibility bin. MCP support ended with `@apicity/mcp-server` 0.11.2; use the `apicity` CLI and agent skill (see MCP.md).

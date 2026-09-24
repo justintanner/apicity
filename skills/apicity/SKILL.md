@@ -82,7 +82,8 @@ The shape never changes: **`apicity <provider> <dotPath> [flags]`**, where
 Every invocation prints **exactly one JSON document**, and success and failure
 never share a stream: success goes to stdout, failure to stderr.
 
-A **call** answers the success envelope, and so does `skill install`:
+A **call** answers the success envelope, and so do `skill install` and the
+discovery commands, `providers`, `commands` and `describe`:
 
 ```jsonc
 // stdout
@@ -90,17 +91,12 @@ A **call** answers the success envelope, and so does `skill install`:
 ```
 
 `summary` appears only where a command has a one-liner. Read the result under
-`data`.
-
-The **discovery commands are the exception**: `commands`, `providers` and
-`describe` print their document directly with `--json` — an array of rows, or
-one endpoint object — with no envelope around it. Read those at the top level,
-not under `data`.
+`data` — for discovery, an array of rows or one endpoint object:
 
 ```bash
-apicity providers --json | jq '.[] | select(.configured) | .provider'
-apicity commands --provider kie --json | jq '.[] | select(.paid) | .dotPath'
-apicity describe kie api.v1.jobs.createTask --json | jq '.paid'
+apicity providers --json | jq '.data[] | select(.configured) | .provider'
+apicity commands --provider kie --json | jq '.data[] | select(.paid) | .dotPath'
+apicity describe kie api.v1.jobs.createTask --json | jq '.data.paid'
 ```
 
 **Failure is always the error envelope**, on stderr, from every command:
@@ -120,9 +116,9 @@ apicity describe kie api.v1.jobs.createTask --json | jq '.paid'
 
 **The envelope is automatic when you are not a terminal.** A piped or captured
 stdout selects the machine form on its own, so an agent gets JSON without
-asking. `--json` forces it anyway (do pass it: it is explicit, and it also
-switches discovery output from a rendered table to JSON). `--quiet` prints the
-`data` alone — with `--json` it is one compact line.
+asking. `--json` forces it anyway (do pass it: it is explicit, and it holds at
+a terminal too, where discovery would otherwise print a table). `--quiet`
+prints the `data` alone — with `--json` it is one compact line.
 
 **`code` is the contract, not the number.** Branch on `code`; the exit status
 is for shells, and several codes share one.
@@ -190,10 +186,10 @@ each one. The directory is `--output-dir`, else `$APICITY_OUTPUT_DIR`, else
 4. **Call it.** `apicity <provider> <dotPath> [--<param> <value>] --data '{…}'`.
    If the dotPath answers more than one method you get `ambiguous` (8) until
    you add `--method`.
-5. **Read the result.** On a call, `data` holds the provider's response (the
-   discovery commands print theirs unwrapped). Media is already on disk — use
-   the `savedTo` path or the `<key>_savedTo` sibling rather than fetching the
-   URL again.
+5. **Read the result.** `data` holds it on every command above: the
+   provider's response on a call, the rows or the endpoint on discovery. Media
+   is already on disk — use the `savedTo` path or the `<key>_savedTo` sibling
+   rather than fetching the URL again.
 
 If a step fails, the `code` tells you which step to go back to: `not_found`
 sends you to step 2, `ambiguous` to `--method`, `usage` to step 3, and `auth`

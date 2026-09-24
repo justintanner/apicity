@@ -59,8 +59,16 @@ const TOPIC_TEXT: Record<HelpTopic, () => string> = {
       "without `--json` the same failure prints as `Error:` and `hint:` lines,",
       "on stderr, with the same exit status.",
       "",
-      "`--json` prints machine-readable output on success too. Without it,",
-      "discovery commands print an aligned table meant for a human reader.",
+      "Success follows the same rule. Piped or with `--json`, a call,",
+      "`doctor`, `setup`, `skill install` and the discovery commands",
+      "(`commands`, `describe`, `providers`) print one JSON document, with",
+      "the result under `data`:",
+      "",
+      '  {"ok": true, "data": ..., "summary": "..."}',
+      "",
+      "`--quiet` prints `data` alone, compactly with `--json`. At a terminal",
+      "without `--json`, `commands` and `providers` print an aligned table",
+      "and `describe` a text block, meant for a human reader.",
     ].join("\n"),
 
   "exit-codes": () =>

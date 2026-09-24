@@ -116,8 +116,9 @@ const CAMEL_SEGMENT_RE = /^[a-z$_][A-Za-z0-9$_]*$/;
 
 /**
  * Endpoint property keys must be camelCase identifiers, never bracket-notation
- * kebab-case (CLAUDE.md endpoint-naming convention). Returns the list of
- * offending segments in the endpoint's user-facing dotPath (empty when clean).
+ * kebab-case (.claude/CLAUDE.md endpoint-naming convention). Returns the list
+ * of offending segments in the endpoint's user-facing dotPath (empty when
+ * clean).
  */
 export function camelCaseIssues(ep) {
   if (!ep.dotPath) return [];

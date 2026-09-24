@@ -2,19 +2,20 @@
  * The single definition of "which providers this monorepo ships", plus the
  * pure checking logic the documentation guard consumes.
  *
- * The provider list was restated by hand in three prose surfaces — `CLAUDE.md`,
- * `AGENTS.md`, and `README.md` — with nothing tying any of them to the
- * directories on disk. It drifted: at `469efc28` the repository held 29
- * provider directories while `CLAUDE.md` named 23, and `googleflow` was absent
- * from the overview even though `CLAUDE.md`'s own Code Conventions section
- * cited `packages/provider/googleflow/src/zod.ts` as the canonical example for
- * open model-identifier enums. These files are the first thing an agent reads,
- * so a missing provider is invisible to planning and review, and an endpoint
- * can be filed against a provider the docs claim does not exist (ac-gk1mlr).
+ * The provider list was restated by hand in three prose surfaces —
+ * `.claude/CLAUDE.md`, `AGENTS.md`, and `README.md` — with nothing tying any of
+ * them to the directories on disk. It drifted: at `469efc28` the repository
+ * held 29 provider directories while `.claude/CLAUDE.md` named 23, and
+ * `googleflow` was absent from the overview even though `.claude/CLAUDE.md`'s
+ * own Code Conventions section cited `packages/provider/googleflow/src/zod.ts`
+ * as the canonical example for open model-identifier enums. These files are the
+ * first thing an agent reads, so a missing provider is invisible to planning
+ * and review, and an endpoint can be filed against a provider the docs claim
+ * does not exist (ac-gk1mlr).
  *
  * The same gap applies to the root `package.json` build aliases: `googleflow`
  * had no `build:*` script while every other provider directory did (ac-qclky0),
- * and `CLAUDE.md`'s `build:<name>` list named 25 of 30 (ac-e1h1yj).
+ * and `.claude/CLAUDE.md`'s `build:<name>` list named 25 of 30 (ac-e1h1yj).
  *
  * This module derives all three inventories — provider directories, `build:*`
  * aliases, and `doc-gen:*` aliases — from the repository itself, and
@@ -38,7 +39,7 @@ export const REPO_ROOT = path.resolve(HERE, "..", "..");
 
 /** Documentation surfaces that must name every provider. */
 export const PROVIDER_DOC_SURFACES = Object.freeze([
-  "CLAUDE.md",
+  ".claude/CLAUDE.md",
   "AGENTS.md",
   "README.md",
 ]);
@@ -196,7 +197,7 @@ export function readRegion(surface, text, id) {
  * updating the prose is as red as adding one.
  *
  * `mention` builds the exact substring a name must appear as. Surfaces
- * legitimately format the same inventory differently — CLAUDE.md writes
+ * legitimately format the same inventory differently — .claude/CLAUDE.md writes
  * `` `@apicity/kie` ``, the README links `[@apicity/kie](...)`, the build list
  * writes `build:kie` — so the caller supplies the shape rather than the guard
  * guessing at it.
@@ -244,8 +245,8 @@ export function checkProviderInventoryDocs(surface, text, inventories) {
     (name) => `@apicity/${name}`
   );
 
-  // Only CLAUDE.md documents the script aliases; the other surfaces carry no
-  // such region, and a missing region there is not drift.
+  // Only .claude/CLAUDE.md documents the script aliases; the other surfaces
+  // carry no such region, and a missing region there is not drift.
   for (const [id, names, mention] of [
     ["claude-build-scripts", inventories.buildAliases, (n) => `build:${n}`],
     [

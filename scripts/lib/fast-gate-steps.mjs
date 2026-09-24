@@ -27,7 +27,7 @@ import { TESTS_TYPECHECK_STEP } from "./tests-project.mjs";
  * naming every step in `FAST_GATE_STEPS`.
  */
 export const FAST_GATE_DOC_SURFACES = Object.freeze([
-  "CLAUDE.md",
+  ".claude/CLAUDE.md",
   "README.md",
   "AGENTS.md",
 ]);
@@ -52,7 +52,7 @@ export const FAST_GATE_DOC_SURFACES = Object.freeze([
  *   rewired; `typecheck-tests` takes `TESTS_TYPECHECK_STEP.title`, so the
  *   printed checklist stays byte-identical.
  * - `prose` — one required substring per surface. The surfaces legitimately
- *   paraphrase (`scoped format` in `CLAUDE.md` against `Prettier on the
+ *   paraphrase (`scoped format` in `.claude/CLAUDE.md` against `Prettier on the
  *   provider package/tests` in `README.md`), so printed titles cannot be
  *   matched against prose directly. Every step declares an entry for every
  *   surface in `FAST_GATE_DOC_SURFACES`; the guard asserts that completeness,
@@ -61,12 +61,12 @@ export const FAST_GATE_DOC_SURFACES = Object.freeze([
  * The named collection-level contract is load-bearing, not decoration.
  * `tests/tsconfig.json` sets `allowJs: true, checkJs: false`, so this module is
  * never type-checked itself but its *inferred* types are enforced at every TS
- * call site. Without the contract, `Object.freeze({"CLAUDE.md": "...", ...})`
- * infers a literal-keyed `Readonly<{...}>`, and the guard's natural
- * completeness assertion — iterate `FAST_GATE_DOC_SURFACES`, read
- * `step.prose[surface]` — fails `typecheck:tests` with TS7053. Typing the
- * collection fixes every call site at once and states the contract where new
- * steps enter the list.
+ * call site. Without the contract,
+ * `Object.freeze({".claude/CLAUDE.md": "...", ...})` infers a literal-keyed
+ * `Readonly<{...}>`, and the guard's natural completeness assertion — iterate
+ * `FAST_GATE_DOC_SURFACES`, read `step.prose[surface]` — fails
+ * `typecheck:tests` with TS7053. Typing the collection fixes every call site at
+ * once and states the contract where new steps enter the list.
  */
 /** @type {ReadonlyArray<FastGateStep>} */
 export const FAST_GATE_STEPS = Object.freeze([
@@ -74,7 +74,7 @@ export const FAST_GATE_STEPS = Object.freeze([
     id: "format",
     title: "prettier --write (provider package + tests)",
     prose: Object.freeze({
-      "CLAUDE.md": "scoped format",
+      ".claude/CLAUDE.md": "scoped format",
       "README.md": "Prettier on the provider package/tests",
       "AGENTS.md": "scoped format",
     }),
@@ -83,7 +83,7 @@ export const FAST_GATE_STEPS = Object.freeze([
     id: "lint",
     title: "lint:provider",
     prose: Object.freeze({
-      "CLAUDE.md": "scoped lint",
+      ".claude/CLAUDE.md": "scoped lint",
       "README.md": "`lint:provider`",
       "AGENTS.md": "scoped lint",
     }),
@@ -92,7 +92,7 @@ export const FAST_GATE_STEPS = Object.freeze([
     id: "typecheck-tests",
     title: TESTS_TYPECHECK_STEP.title,
     prose: Object.freeze({
-      "CLAUDE.md": "whole tests-project typecheck",
+      ".claude/CLAUDE.md": "whole tests-project typecheck",
       "README.md": "whole tests-project typecheck",
       "AGENTS.md": "whole tests-project typecheck",
     }),
@@ -101,7 +101,7 @@ export const FAST_GATE_STEPS = Object.freeze([
     id: "test-provider",
     title: "test:provider (provider typecheck + replay)",
     prose: Object.freeze({
-      "CLAUDE.md": "provider typecheck and replay",
+      ".claude/CLAUDE.md": "provider typecheck and replay",
       "README.md": "`test:provider` for provider typecheck + replay",
       "AGENTS.md": "provider typecheck and replay",
     }),
@@ -110,7 +110,7 @@ export const FAST_GATE_STEPS = Object.freeze([
     id: "cross-cutting",
     title: "cross-cutting repo-wide guard tests",
     prose: Object.freeze({
-      "CLAUDE.md": "cross-cutting repo-wide guard tests",
+      ".claude/CLAUDE.md": "cross-cutting repo-wide guard tests",
       "README.md": "cross-cutting repo-wide guard tests",
       "AGENTS.md": "cross-cutting repo-wide guard tests",
     }),
@@ -138,7 +138,7 @@ function collapseWhitespace(text) {
  * `steps` is injectable on purpose. It is what turns "adding a step fails the
  * docs" and "removing a step fails the docs" from manual procedures into
  * assertions: a test passes a synthetic six- or four-step list against the real
- * `CLAUDE.md` and asserts the reported problem.
+ * `.claude/CLAUDE.md` and asserts the reported problem.
  *
  * Every problem names the surface, the step id where there is one, and the
  * direction of the drift.

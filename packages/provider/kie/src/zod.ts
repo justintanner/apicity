@@ -7,8 +7,8 @@ import type { PayGateConfig } from "./paygate";
 
 // kie's media catalogue is an *aggregator*: one `createTask` endpoint fronting
 // ~50 ids drawn from a dozen unrelated vendors, each of which ships new ids on
-// its own cadence. CLAUDE.md -> Code Conventions -> "Model-identifier enums
-// stay open" therefore applies — but a single regex wide enough to span
+// its own cadence. .claude/CLAUDE.md -> Code Conventions -> "Model-identifier
+// enums stay open" therefore applies — but a single regex wide enough to span
 // `kling-3.0/video`, `nano-banana-2`, `wan/2-7-r2v` and
 // `elevenlabs/sound-effect-v2` at once degenerates toward `.*`, which is the
 // precise failure that rule exists to prevent. So the hatch is one alias *per
@@ -6109,10 +6109,10 @@ export const VeoExtendRequestSchema = z.object({
   taskId: z.string().min(1),
   prompt: z.string().min(1),
   // Deliberately closed: `fast | quality` is a rendering-tier vocabulary, not
-  // a model registry — the same counterexample class CLAUDE.md names alongside
-  // `quality` and SimpleFunctionsModelSchema. Upstream does not ship new tiers
-  // on its own cadence, so no alias hatch belongs here; a new tier is an
-  // explicit enum addition.
+  // a model registry — the same counterexample class .claude/CLAUDE.md names
+  // alongside `quality` and SimpleFunctionsModelSchema. Upstream does not ship
+  // new tiers on its own cadence, so no alias hatch belongs here; a new tier is
+  // an explicit enum addition.
   model: z.enum(["fast", "quality"]).optional(),
   seeds: z.number().optional(),
   watermark: z.string().optional(),

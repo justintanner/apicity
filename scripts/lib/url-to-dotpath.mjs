@@ -1,9 +1,9 @@
 /**
  * Convert an upstream URL path into apicity's dotted namespace segments.
  *
- * Rule (from CLAUDE.md): method paths mirror upstream URL paths segment-by-
- * segment; kebab- or snake-case segments become camelCase; path parameters
- * like `{id}` are dropped (they're arguments, not namespaces).
+ * Rule (from .claude/CLAUDE.md): method paths mirror upstream URL paths
+ * segment-by-segment; kebab- or snake-case segments become camelCase; path
+ * parameters like `{id}` are dropped (they're arguments, not namespaces).
  *
  * Hostnames contribute their *subdomain* labels (the part before the
  * registrable two-label domain), minus conventional `api`/`www`. This lets

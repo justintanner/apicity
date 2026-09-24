@@ -164,7 +164,7 @@ const BASELINE = [
   {
     id: "gitignored-yet-tracked",
     axis: PRETTIER,
-    globs: ["CLAUDE.md", "test-branch-protection.txt"],
+    globs: ["test-branch-protection.txt"],
     why:
       "Named in `.gitignore` yet tracked, so Prettier 3 — which reads " +
       "`.gitignore` by default since 3.0 — skips them. Recorded here because " +

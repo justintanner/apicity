@@ -170,7 +170,12 @@ CLAUDE.local.md
 settings.local.json
 
 # Claude Code local harness files
-.claude/
+# Every .claude/ directory holds harness runtime, except the tracked project
+# memory /.claude/CLAUDE.md. git cannot re-include a file inside an excluded
+# directory, so ignore the contents rather than the directory, and keep the
+# negation after every other pattern that matches that path.
+**/.claude/*
+!/.claude/CLAUDE.md
 .runtime/
 test-branch-protection.txt
 

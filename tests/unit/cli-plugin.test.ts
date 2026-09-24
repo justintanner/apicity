@@ -157,9 +157,10 @@ describe(".claude-plugin manifests", () => {
   });
 
   it("commits every plugin path — none of them is gitignored", async () => {
-    // `.gitignore` ignores `.claude/`, not `.claude-plugin/`. check-ignore
-    // exits 1 when it matched nothing, which is the state this repository
-    // needs: an ignored manifest would ship a plugin nobody can install.
+    // `.gitignore` ignores the contents of `.claude/` directories, not
+    // `.claude-plugin/`. check-ignore exits 1 when it matched nothing, which
+    // is the state this repository needs: an ignored manifest would ship a
+    // plugin nobody can install.
     const checked = await run("git", [
       "check-ignore",
       "-v",
@@ -172,6 +173,54 @@ describe(".claude-plugin manifests", () => {
     ]);
     expect(checked.stdout).toBe("");
     expect(checked.code).toBe(1);
+  });
+
+  it("tracks .claude/CLAUDE.md and ignores .claude/ runtime files", async () => {
+    // The guidance lives at `.claude/CLAUDE.md`, not at the root, because
+    // `source: "./"` makes the repository root the plugin root, where the
+    // validator flags a `./CLAUDE.md` (see the `claude plugin validate` test
+    // below). Every other path in a `.claude/` directory, at any depth, is
+    // harness runtime — gc-materialized skills, settings — so `.gitignore`
+    // excludes those directories' contents and re-includes this one file.
+    // `--no-index` is load-bearing: without it check-ignore never reports a
+    // tracked path, so the memory check could not fail. A developer's global
+    // excludes file is set aside so the verdict is this repository's alone.
+    const checkIgnore = (paths: string[]) =>
+      run("git", [
+        "-c",
+        "core.excludesFile=/dev/null",
+        "check-ignore",
+        "--no-index",
+        ...paths,
+      ]);
+
+    const tracked = await run("git", [
+      "ls-files",
+      "--",
+      "./CLAUDE.md",
+      ".claude/CLAUDE.md",
+    ]);
+    expect(tracked.stdout).toBe(".claude/CLAUDE.md\n");
+
+    const memory = await checkIgnore([".claude/CLAUDE.md"]);
+    expect(memory.stdout).toBe("");
+    expect(memory.code).toBe(1);
+
+    // Entry names, never a path through one: in a rig checkout each
+    // `.claude/skills/<pack>.<skill>` is a symlink, and git refuses a path
+    // beyond a symbolic link.
+    const runtime = [
+      ".claude/settings.json",
+      ".claude/settings.local.json",
+      ".claude/skills/.gc-skill-ownership.json",
+      ".claude/skills/core.gc-work",
+      "packages/cli/.claude/settings.json",
+      // The negation is anchored to the root: a nested copy stays runtime.
+      "packages/cli/.claude/CLAUDE.md",
+    ];
+    const ignored = await checkIgnore(runtime);
+    expect(ignored.stdout.split("\n").filter(Boolean)).toEqual(runtime);
+    expect(ignored.code).toBe(0);
   });
 });
 
@@ -291,19 +340,20 @@ describe("claude plugin validate", () => {
       expect(marketplace.code).toBe(0);
 
       const plugin = await report("plugin.json");
-      // The manifest itself is strict-clean. The command still exits 1
-      // because `source: "./"` makes the repository root the plugin root,
-      // and the validator warns about the CLAUDE.md that lives there — a
-      // file this repository needs and W5 has no authority to move. That
-      // one warning is pinned here, so any *new* content problem fails.
+      // `source: "./"` makes the repository root the plugin root, and the
+      // validator warns about a `./CLAUDE.md`, which `--strict` turns into
+      // exit 1. The guidance therefore lives at `.claude/CLAUDE.md`, and the
+      // plugin must validate clean: no manifest problem, no content problem.
+      // A stray `./CLAUDE.md` (one `/init` writes, say, which `.gitignore`
+      // hides from `git status`) fails here.
       expect(plugin.json.manifest.errors).toEqual([]);
       expect(plugin.json.manifest.warnings).toEqual([]);
       for (const entry of plugin.json.contents ?? []) {
-        for (const warning of entry.warnings) {
-          expect(warning.message).toContain("CLAUDE.md at the plugin root");
-        }
+        expect(entry.warnings).toEqual([]);
         expect(entry.errors).toEqual([]);
       }
+      expect(plugin.json.success).toBe(true);
+      expect(plugin.code).toBe(0);
     },
     30_000
   );

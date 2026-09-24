@@ -186,7 +186,7 @@ note for anyone still running `@apicity/mcp-server`.
    `@apicity/mcp-server` dependency rather than repointing it. This
    repository's own city launcher is one such script.
 6. **Tell the agents that cannot install plugins.** Add a short section to the
-   project's `AGENTS.md` (and `CLAUDE.md`, for Claude Code):
+   project's `AGENTS.md` (and `CLAUDE.md` or `.claude/CLAUDE.md`, for Claude Code):
 
    > apicity is driven through the `apicity` CLI on PATH, never an MCP server.
    > Run `apicity --help` for the command set and `apicity skill` for the agent

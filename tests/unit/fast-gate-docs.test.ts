@@ -58,10 +58,10 @@ describe.each([...FAST_GATE_DOC_SURFACES])("%s", (surface) => {
 // assertions. They perturb the *step list* or a *copy of the text*, never the
 // files on disk, and run against the real documentation.
 //
-// Parameterized over every surface, not just CLAUDE.md: AC-5 clause 1 says
-// deleting the region from *any one* of them fails the guard naming that file,
-// and `checkFastGateDocs` is surface-agnostic by construction — so the cheap way
-// to keep it that way is to run the negative cases against all three.
+// Parameterized over every surface, not just .claude/CLAUDE.md: AC-5 clause 1
+// says deleting the region from *any one* of them fails the guard naming that
+// file, and `checkFastGateDocs` is surface-agnostic by construction — so the
+// cheap way to keep it that way is to run the negative cases against all three.
 describe.each([...FAST_GATE_DOC_SURFACES])(
   "fast-gate documentation guard — %s",
   (surface) => {
@@ -185,18 +185,18 @@ describe.each([...FAST_GATE_DOC_SURFACES])(
   }
 );
 
-// Stays CLAUDE.md-only: it depends on that file's exact in-region wording and on
-// the same phrase appearing outside the region, which the other two surfaces do
-// not reproduce.
+// Stays .claude/CLAUDE.md-only: it depends on that file's exact in-region
+// wording and on the same phrase appearing outside the region, which the other
+// two surfaces do not reproduce.
 describe("fast-gate documentation guard — region scoping", () => {
-  const surface = "CLAUDE.md";
+  const surface = ".claude/CLAUDE.md";
 
   it("is region-scoped, not whole-file", () => {
-    // `whole tests-project typecheck` appears three times in CLAUDE.md: once
-    // inside the guarded region and twice in surrounding prose. Remove only the
-    // occurrence inside the region and the guard must still fail — a whole-file
-    // substring search would stay green, which is the false pass REQ-004 exists
-    // to prevent (AC-6).
+    // `whole tests-project typecheck` appears three times in .claude/CLAUDE.md:
+    // once inside the guarded region and twice in surrounding prose. Remove
+    // only the occurrence inside the region and the guard must still fail — a
+    // whole-file substring search would stay green, which is the false pass
+    // REQ-004 exists to prevent (AC-6).
     const text = readSurface(surface);
     const inRegion =
       "the whole tests-project typecheck (`tsc --noEmit -p tests/tsconfig.json`)<!-- fast-gate-step:typecheck-tests -->";

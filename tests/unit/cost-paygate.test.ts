@@ -238,8 +238,12 @@ describe("dispatchWithPaidGate", () => {
     expect(result).toBe("ok");
   });
 
-  it("throws paygate-not-configured when no config is supplied", async () => {
-    const dispatch = async () => "ok";
+  it("refuses an OTP presented to an unarmed gate (paygate-not-configured)", async () => {
+    let calls = 0;
+    const dispatch = async () => {
+      calls++;
+      return "ok";
+    };
     try {
       await dispatchWithPaidGate(
         "kie",
@@ -253,7 +257,9 @@ describe("dispatchWithPaidGate", () => {
     } catch (e) {
       expect(e).toBeInstanceOf(PayGateError);
       expect((e as PayGateError).code).toBe("paygate-not-configured");
+      expect((e as PayGateError).dotPath).toBe("api.v1.jobs.createTask");
     }
+    expect(calls).toBe(0);
   });
 
   it("throws paygate-not-configured when the secret is empty", async () => {
@@ -273,6 +279,94 @@ describe("dispatchWithPaidGate", () => {
       expect(e).toBeInstanceOf(PayGateError);
       expect((e as PayGateError).code).toBe("paygate-not-configured");
     }
+  });
+
+  it("dispatches a paid kie row once when no config is supplied and no OTP is presented", async () => {
+    let calls = 0;
+    const result = await dispatchWithPaidGate(
+      "kie",
+      "POST",
+      "api.v1.jobs.createTask",
+      {},
+      undefined,
+      async () => {
+        calls++;
+        return "dispatched";
+      }
+    );
+    expect(result).toBe("dispatched");
+    expect(calls).toBe(1);
+  });
+
+  it("dispatches a paid xai row once when no config is supplied and no OTP is presented", async () => {
+    let calls = 0;
+    const result = await dispatchWithPaidGate(
+      "xai",
+      "POST",
+      "v1.images.generations",
+      { prompt: "a lighthouse" },
+      undefined,
+      async () => {
+        calls++;
+        return "dispatched";
+      }
+    );
+    expect(result).toBe("dispatched");
+    expect(calls).toBe(1);
+  });
+
+  it("treats an empty OTP as not presented on an unarmed gate", async () => {
+    let calls = 0;
+    await dispatchWithPaidGate(
+      "kie",
+      "POST",
+      "api.v1.jobs.createTask",
+      {},
+      { otp: "" },
+      async () => {
+        calls++;
+        return "dispatched";
+      }
+    );
+    expect(calls).toBe(1);
+  });
+
+  it("settles with the dispatch rejection on an unarmed gate", async () => {
+    await expect(
+      dispatchWithPaidGate(
+        "kie",
+        "POST",
+        "api.v1.jobs.createTask",
+        {},
+        undefined,
+        async () => {
+          throw new Error("network failure");
+        }
+      )
+    ).rejects.toThrow("network failure");
+  });
+
+  it("fails closed on an empty secret without an OTP", async () => {
+    let calls = 0;
+    try {
+      await dispatchWithPaidGate(
+        "kie",
+        "POST",
+        "api.v1.jobs.createTask",
+        {},
+        undefined,
+        async () => {
+          calls++;
+          return "ok";
+        },
+        makeConfig({ secret: "" })
+      );
+      throw new Error("expected PayGateError");
+    } catch (e) {
+      expect(e).toBeInstanceOf(PayGateError);
+      expect((e as PayGateError).code).toBe("paygate-not-configured");
+    }
+    expect(calls).toBe(0);
   });
 
   it("throws otp-missing when approval is omitted", async () => {

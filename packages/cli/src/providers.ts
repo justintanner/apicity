@@ -380,8 +380,10 @@ export async function instantiateProvider(
   const opts: Record<string, unknown> = {};
   if (credential) opts[spec.optionKey] = credential;
   // The CLI is the code client: it holds the shared secret to *verify* OTPs,
-  // but never mints them. A human mints an OTP out-of-band and the caller
-  // passes it as `--otp <token>`, so the AI cannot self-approve.
+  // but never mints them. The secret arms the gate; without one, paid
+  // endpoints dispatch like free ones. Once armed, a human mints an OTP
+  // out-of-band and the caller passes it as `--otp <token>`, so the AI cannot
+  // self-approve.
   if (paygateSecret && (await providerHasPaidEndpoint(name))) {
     opts.paygate = { secret: paygateSecret };
   }

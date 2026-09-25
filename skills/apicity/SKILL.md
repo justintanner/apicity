@@ -48,10 +48,12 @@ The shape never changes: **`apicity <provider> <dotPath> [flags]`**, where
    message. `apicity` reads its own credentials from the environment; your job
    is to call the endpoint, not to handle the secret. Naming a variable is
    fine, printing its value never is.
-2. **Never mint an OTP and never ask for the pay-gate secret.** Paid endpoints
-   are gated by a one-time token a human operator mints out of band. If a call
-   answers `paygate`, report that it needs an operator-minted `--otp` and stop.
-   Do not read the secret file, do not run the minting command, do not retry.
+2. **Never mint an OTP and never ask for the pay-gate secret.** An operator can
+   arm a pay gate on paid endpoints; a paid call then answers `paygate` until
+   it carries a one-time token the operator minted out of band. If a call
+   answers `paygate`, report what the `hint` says the operator must do and
+   stop. Do not read the secret file, do not run the minting command, do not
+   retry.
 3. **Prefer `--json`.** It selects the machine envelope on every command, so
    you parse one predictable document instead of a rendered table. Add
    `--quiet` when you want the data with no envelope around it.
@@ -61,13 +63,16 @@ The shape never changes: **`apicity <provider> <dotPath> [flags]`**, where
    read a generated catalog, need no credential, and cost nothing. Never guess
    a dotPath — if `describe` says `not_found`, list the provider's commands.
 5. **Treat exit 3 and exit 4 as blocked.** `auth` (3) means the credential is
-   missing or rejected; `forbidden` and `paygate` (4) mean it is valid but not
-   allowed to make this call. Report the block, name what the operator must
-   set or mint, and move on. Do not retry, do not hunt for another key, do not
-   switch providers to work around a credential you were not given.
-6. **Paid endpoints need an operator-minted `--otp`.** `apicity describe` shows
-   `paid: true` for exactly these. Say so before spending: state the endpoint
-   and that it bills, and pass the `--otp` value the operator gives you.
+   missing or rejected; `forbidden` (4) means it is valid but not allowed to
+   make this call; `paygate` (4) means the operator's pay gate refused it.
+   Report the block, name what the operator must set or mint, and move on. Do
+   not retry, do not hunt for another key, do not switch providers to work
+   around a credential you were not given.
+6. **Paid endpoints bill: say so before spending.** `apicity describe` shows
+   `paid: true` for exactly these, whether or not this host armed a pay gate.
+   State the endpoint and that it bills, then call it without `--otp`. Pass
+   `--otp` only with a token the operator gave you after a call answered
+   `paygate` with `otp-missing` (see [Paid endpoints](#paid-endpoints)).
 7. **Never pass `--token`, `--apiKey`, or any credential-shaped flag.** Some
    endpoints carry a credential inside the URL (`bot{token}`, `json/{apiKey}`).
    The provider substitutes those from the configured environment; they are not
@@ -131,7 +136,7 @@ is for shells, and several codes share one.
 | 2    | `not_found`        | unknown provider or dotPath, or the upstream answered HTTP 404                                  |
 | 3    | `auth`             | no credential configured, a 1Password read failed, or the upstream answered HTTP 401            |
 | 4    | `forbidden`        | upstream HTTP 403                                                                               |
-| 4    | `paygate`          | a paid endpoint was called without a valid `--otp`                                              |
+| 4    | `paygate`          | the operator's pay gate refused a missing or bad `--otp`, or an `--otp` reached an unarmed host |
 | 5    | `rate_limit`       | upstream HTTP 429                                                                               |
 | 6    | `network`          | fetch failure, DNS failure, timeout                                                             |
 | 7    | `api`              | any other upstream failure, or a local operational failure such as an unwritable output dir     |
@@ -161,7 +166,7 @@ each one. The directory is `--output-dir`, else `$APICITY_OUTPUT_DIR`, else
 | Pass a path or field parameter        | `apicity elevenlabs v1.textToSpeech --voiceId 21m00Tcm4TlvDq8ikWAM --data '{"text":"hello"}'` |
 | Choose a method                       | `apicity openai v1.chat.completions --method GET`                                             |
 | Save media somewhere                  | `apicity openai v1.audio.speech --data-file ./speech.json --output-dir ./out`                 |
-| Call a paid endpoint                  | `apicity kie api.v1.jobs.createTask --otp <token> --data-file ./job.json`                     |
+| Call a paid endpoint (it bills)       | `apicity kie api.v1.jobs.createTask --data-file ./job.json`                                   |
 | See the raw HTTP exchange             | `apicity anthropic v1.models.list --verbose`                                                  |
 | Explain the envelope                  | `apicity help output`                                                                         |
 | Explain the exit codes                | `apicity help exit-codes`                                                                     |
@@ -221,12 +226,12 @@ apicity anthropic v1.messages.countTokens --data '{"model":"claude-sonnet-4-5","
 
 ### xai — Grok chat, images, video, collections, batches
 
-Image and video generation here are **paid**: they need `--otp`.
+Image and video generation here are **paid**: say so before calling.
 
 ```bash
 apicity xai v1.chat.completions --data '{"model":"grok-4","messages":[{"role":"user","content":"What changed today?"}]}'
 apicity xai v1.languageModels --json
-apicity xai v1.images.generations --otp <token> --data '{"model":"grok-2-image","prompt":"a lighthouse at dusk"}'
+apicity xai v1.images.generations --data '{"model":"grok-2-image","prompt":"a lighthouse at dusk"}'
 ```
 
 ### fal — hosted model endpoints, queue, pricing and usage
@@ -239,10 +244,11 @@ apicity fal v1.models.usage --json
 
 ### kie — video, image, audio and music generation
 
-Most generation rows here are **paid**: create a task, then poll it.
+Most generation rows here are **paid**: say so before calling, then create a
+task and poll it.
 
 ```bash
-apicity kie api.v1.jobs.createTask --otp <token> --data-file ./job.json
+apicity kie api.v1.jobs.createTask --data-file ./job.json
 apicity kie api.v1.jobs.recordInfo --taskId <taskId> --json
 apicity kie api.v1.chat.credit --json
 ```
@@ -496,15 +502,35 @@ apicity describe kie api.v1.jobs.createTask --json   # "paid": true
 apicity commands --provider xai --json               # each row carries "paid"
 ```
 
-Calling one without a valid one-time token fails closed with `code: "paygate"`
-and exit 4. **The operator mints the token; you never do.** They run, once, out
-of band:
+`paid: true` means the call bills, whether or not this host gates it. Say so
+first — name the endpoint and that it bills — then call it without a token:
+
+```bash
+apicity kie api.v1.jobs.createTask --data-file ./job.json
+```
+
+The pay gate is off unless the operator armed it by giving the CLI a secret
+file (`--paygate-secret-file` or `$APICITY_PAYGATE_SECRET_FILE`), so that call
+usually just runs. Two answers mean something else:
+
+- **`paygate`, with `otp-missing` in `hint`.** The operator armed the gate:
+  every paid call now needs a one-time token, single-use and bound to the exact
+  payload, and a missing or bad one fails closed. Report that the call is
+  blocked on an operator-minted OTP, and wait for one.
+- **`paygate`, with `paygate-not-configured` in `hint`, on a call where you
+  passed an operator-supplied `--otp`.** This host has no gate armed, so the
+  token cannot be checked. Report the unarmed host and stop. Never retry
+  without the `--otp`: the operator meant that call to be gated.
+
+**The operator mints the token; you never do.** On a host whose operator armed
+the gate, they run, once, out of band:
 
 ```bash
 apicity-paygate otp mint --secret-file <path> --dot-path <api.path> --payload-file <path>
 ```
 
-and hand you the token, which you pass unchanged:
+and hand you the token, which you pass unchanged. This is the one form that
+carries `--otp`, and only for a host whose operator armed the gate:
 
 ```bash
 apicity kie api.v1.jobs.createTask --otp <token> --data-file ./job.json
@@ -524,7 +550,7 @@ do not read the secret file, and do not run the minting command yourself.
 | `ambiguous`        | 8    | The dotPath answers several methods; add `--method GET` (the `hint` and `meta.methods` list them).                               |
 | `auth`             | 3    | Blocked. Report which variable the operator must set; never look for the key yourself.                                           |
 | `forbidden`        | 4    | The credential is valid but not allowed this call. Report it; do not retry.                                                      |
-| `paygate`          | 4    | Paid endpoint without a valid `--otp`. Ask the operator to mint one.                                                             |
+| `paygate`          | 4    | `otp-*` in `hint`: gate armed; await the operator's OTP. `paygate-not-configured`: unarmed host; stop, never retry without it.   |
 | `rate_limit`       | 5    | Wait out the provider's window, then retry once. Do not loop.                                                                    |
 | `network`          | 6    | The request never landed. Retry once; if it persists, report it with the `error` text.                                           |
 | `api`              | 7    | The upstream failed, or a local step did. `meta.status` carries the HTTP status when there was one.                              |

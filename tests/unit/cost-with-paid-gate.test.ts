@@ -184,3 +184,44 @@ function deepKeys(node: unknown, prefix: string[] = []): string[] {
   );
   return [...here, ...children].sort();
 }
+
+describe("withPaidGate — unarmed (no config)", () => {
+  function countingTree(calls: unknown[][]) {
+    return {
+      post: {
+        api: {
+          v1: {
+            jobs: {
+              createTask: async (...args: unknown[]) => {
+                calls.push(args);
+                return { data: { taskId: "stub" } };
+              },
+            },
+          },
+        },
+      },
+    };
+  }
+
+  it("dispatches a paid leaf once, with the request alone", async () => {
+    for (const opts of [undefined, { config: undefined }]) {
+      const calls: unknown[][] = [];
+      const wrapped = withPaidGate("kie", countingTree(calls), opts);
+      const out = await wrapped.post.api.v1.jobs.createTask({ model: "x" });
+      expect(out).toEqual({ data: { taskId: "stub" } });
+      expect(calls).toEqual([[{ model: "x" }]]);
+    }
+  });
+
+  it("refuses an OTP and never reaches the leaf", async () => {
+    const calls: unknown[][] = [];
+    const wrapped = withPaidGate("kie", countingTree(calls));
+    await expect(
+      wrapped.post.api.v1.jobs.createTask({ model: "x" }, { otp: "anything" })
+    ).rejects.toMatchObject({
+      name: "PayGateError",
+      code: "paygate-not-configured",
+    });
+    expect(calls).toEqual([]);
+  });
+});

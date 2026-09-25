@@ -118,9 +118,11 @@ describe("apicity doctor", () => {
       message: "not configured",
     });
     expect(row(all, "Paygate Secret File")).toMatchObject({
-      status: "warning",
-      message: "not set; paid endpoints will fail closed",
+      status: "ok",
+      message:
+        "not set; the pay gate is off and paid endpoints call upstream directly",
     });
+    expect(row(all, "Paygate Secret File").hint).toBeUndefined();
     expect(row(all, "Agent Skill")).toMatchObject({
       status: "warning",
       message: "Not installed",
@@ -338,6 +340,20 @@ describe("apicity doctor", () => {
 
     expect(row(all, "Env File").status).toBe("error");
     expect(row(all, "Paygate Secret File").status).toBe("error");
+  });
+
+  it("errors on an empty paygate secret file, never printing it", async () => {
+    const secret = join(home, "empty.secret");
+    writeFileSync(secret, "  \n");
+
+    const all = await rows({
+      env: bareEnv({ APICITY_PAYGATE_SECRET_FILE: secret }),
+    });
+
+    expect(row(all, "Paygate Secret File")).toMatchObject({
+      status: "error",
+      message: `${secret} is empty`,
+    });
   });
 
   it("errors on an output directory it cannot write to", async () => {

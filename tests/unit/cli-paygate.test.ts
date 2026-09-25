@@ -107,7 +107,7 @@ function errorOf(cap: Capture): Record<string, unknown> {
 }
 
 describe("a paid endpoint with no pay gate configured", () => {
-  it("exits 4 with paygate-not-configured in the hint", async () => {
+  it("reaches the leaf without --otp and answers the success envelope", async () => {
     const calls: unknown[][] = [];
     const cap = capture();
 
@@ -118,11 +118,62 @@ describe("a paid endpoint with no pay gate configured", () => {
       options(calls)
     );
 
+    expect(exit).toBe(0);
+    // The gate dispatches the request alone, armed or not: the approval slot
+    // `bindArguments` appends stops at the gate.
+    expect(calls).toEqual([[REQUEST]]);
+    expect(JSON.parse(cap.out[0])).toEqual({
+      ok: true,
+      data: { taskId: "task_1" },
+    });
+  });
+
+  it("refuses an --otp with exit 4 and a hint that names the secret file", async () => {
+    const calls: unknown[][] = [];
+    const cap = capture();
+
+    const exit = await runEndpoint(
+      "kie",
+      [DOT_PATH, "--data-file", requestFile(), "--otp", "not-a-token"],
+      cap.writer,
+      options(calls)
+    );
+
     expect(exit).toBe(4);
     expect(calls).toEqual([]);
     const envelope = errorOf(cap);
     expect(envelope.code).toBe("paygate");
-    expect(String(envelope.hint)).toContain("paygate-not-configured");
+    const hint = String(envelope.hint);
+    expect(hint).toContain("paygate-not-configured");
+    expect(hint).toContain("--paygate-secret-file");
+    expect(hint).toContain("APICITY_PAYGATE_SECRET_FILE");
+    expect(hint).not.toContain("otp mint");
+    expect(hint).not.toContain("without --otp");
+  });
+
+  it("refuses an empty secret file as usage, before any provider exists", async () => {
+    const empty = join(sandbox(), "empty.secret");
+    writeFileSync(empty, "\n");
+    let instantiated = 0;
+    const cap = capture();
+
+    const exit = await runEndpoint(
+      "kie",
+      [DOT_PATH, "--data-file", requestFile(), "--paygate-secret-file", empty],
+      cap.writer,
+      options([], {
+        instantiate: () => {
+          instantiated++;
+          return Promise.resolve(null);
+        },
+      })
+    );
+
+    expect(exit).toBe(1);
+    expect(instantiated).toBe(0);
+    const envelope = errorOf(cap);
+    expect(envelope.code).toBe("usage");
+    expect(String(envelope.error)).toContain(`${empty} is empty`);
   });
 });
 

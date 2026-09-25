@@ -493,8 +493,9 @@ function factoryOverrides(flags: GlobalFlags): ProviderOverrides {
  */
 function readPaygateSecret(path: string | undefined): string | undefined {
   if (path === undefined || path === "") return undefined;
+  let secret: string;
   try {
-    return readFileSync(path, "utf8").trim();
+    secret = readFileSync(path, "utf8").trim();
   } catch (cause) {
     throw new CliError(
       "usage",
@@ -502,6 +503,14 @@ function readPaygateSecret(path: string | undefined): string | undefined {
       { hint: cause instanceof Error ? cause.message : String(cause), cause }
     );
   }
+  // Naming a secret file is arming the gate (OQ-001): an empty one is refused
+  // rather than read as "no secret", which would let paid calls through.
+  if (secret === "") {
+    throw new CliError("usage", `--paygate-secret-file ${path} is empty`, {
+      hint: "write the shared pay-gate secret to that file",
+    });
+  }
+  return secret;
 }
 
 /**

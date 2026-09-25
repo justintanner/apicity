@@ -108,12 +108,12 @@ on stderr.
 | `--method <M>`                 | Pick one method when a dotPath answers several.                                                                                                       |
 | `--data <json>`                | The request body; `-` reads stdin.                                                                                                                    |
 | `--data-file <path>`           | The request body, read from a file; `-` reads stdin.                                                                                                  |
-| `--otp <token>`                | The single-use approval for a paid endpoint (see [Paid endpoints](#paid-endpoints)).                                                                  |
+| `--otp <token>`                | A paid endpoint's single-use approval, needed only when the operator armed the gate; refused with no secret ([Paid endpoints](#paid-endpoints)).      |
 | `--output-dir <path>`          | Where binary results and downloaded media land. Also `APICITY_OUTPUT_DIR`.                                                                            |
 | `--env-file <path>`            | Load provider settings from a dotenv file. Set env vars win; `op://` values are skipped.                                                              |
 | `--op-vault <vault>`           | Resolve missing credentials from `op://<vault>/<ENV_VAR>/password`. Also `APICITY_OP_VAULT`.                                                          |
 | `--op-token <token>`           | 1Password service-account token: a literal, `env:VAR`, `$VAR`, or a variable name. `--op-service-token` is an alias. Also `APICITY_OP_SERVICE_TOKEN`. |
-| `--paygate-secret-file <path>` | The shared HMAC secret used to verify paid-endpoint OTPs. Also `APICITY_PAYGATE_SECRET_FILE`.                                                         |
+| `--paygate-secret-file <path>` | Arms the pay gate: the shared HMAC secret that verifies paid-endpoint OTPs. Unset, the gate is off. Also `APICITY_PAYGATE_SECRET_FILE`.               |
 | `--base-url <url>`             | Override the provider's base URL (see the note below).                                                                                                |
 | `--timeout <ms>`               | Override the provider's request timeout, in milliseconds.                                                                                             |
 | `--help`, `-h`                 | On the endpoint form, describe the endpoint; otherwise print usage.                                                                                   |
@@ -153,7 +153,7 @@ each call actually requested, which is how to check rather than guess.
 | `APICITY_ENV_FILE`            | The dotenv file to load when `--env-file` is absent.                       |
 | `APICITY_OP_VAULT`            | The 1Password vault, as `--op-vault`.                                      |
 | `APICITY_OP_SERVICE_TOKEN`    | The 1Password service-account token, as `--op-token`.                      |
-| `APICITY_PAYGATE_SECRET_FILE` | The pay-gate secret file, as `--paygate-secret-file`.                      |
+| `APICITY_PAYGATE_SECRET_FILE` | The pay-gate secret file that arms the gate, as `--paygate-secret-file`.   |
 | `APICITY_OUTPUT_DIR`          | Where results land, as `--output-dir`.                                     |
 | `APICITY_SETUP_AGENT`         | `claude`, `codex`, `all` or `none` — what `apicity setup agents` connects. |
 | `CLAUDE_PROJECT_DIR`          | Read by Claude Code sessions; the output directory when nothing else says. |
@@ -190,7 +190,7 @@ ambiguous               8
 | `not_found`        | An unknown provider, command or dotPath; a `--method` naming a method the dotPath does not answer (exit 2; `hint` lists the methods it does); or upstream answered HTTP 404. |
 | `auth`             | The addressed provider has no credential configured, a 1Password read failed, or upstream answered HTTP 401.                                                                 |
 | `forbidden`        | Upstream answered HTTP 403.                                                                                                                                                  |
-| `paygate`          | The pay gate refused: no secret configured, or a missing, malformed, expired, mismatched or replayed OTP. Its own code is repeated in `hint`.                                |
+| `paygate`          | The operator's armed gate refused a missing, malformed, expired, mismatched or replayed OTP, or an `--otp` reached a host with no secret. Its code is in `hint`.             |
 | `rate_limit`       | Upstream answered HTTP 429.                                                                                                                                                  |
 | `network`          | The request never landed: DNS failure, refused connection, abort or timeout.                                                                                                 |
 | `api`              | Any other upstream non-2xx status or provider exception, and local operational failures such as an unwritable output directory.                                              |
@@ -289,16 +289,27 @@ prints one document.
 
 ## Paid endpoints
 
-A few endpoints cost money on the provider's side — kie's
-`api.v1.jobs.createTask` and the direct VEO rows `api.v1.veo.generate` and
-`api.v1.veo.extend` — and are gated behind a single-use OTP bound to the exact
-request. `apicity describe` reports `paid: yes` for them, and
-`apicity commands` has a `paid` column.
+A few endpoints cost money on the provider's side: the rows `apicity describe`
+marks paid (`paid: yes`, or `"paid": true` with `--json`), which is also the
+`paid` column of `apicity commands`. Whether or not this host gates them, that
+flag is the cue to say a call bills before making it.
 
-The CLI is the **code client**: given `--paygate-secret-file` (or
-`APICITY_PAYGATE_SECRET_FILE`) it holds the shared HMAC secret to _verify_ an
-OTP. It never mints one, and `grep -rn mintOtp packages/cli/src` finds nothing.
-A human mints the OTP out-of-band from the same secret:
+The pay gate in front of them is **opt-in**. With no `--paygate-secret-file`
+and no `APICITY_PAYGATE_SECRET_FILE`, the gate is off and a paid call goes
+upstream directly, with no `--otp`. An `--otp` given on such a host exits 4
+`paygate`, with `paygate-not-configured` repeated in `hint`: it is refused
+rather than silently dropped, because whoever passes one believes a gate
+exists. A secret file that reads as empty is exit 1 `usage`
+(`<path> is empty`), raised before any provider is built, never a disarmed
+gate.
+
+Naming a secret file arms the gate, and its guarantees are unchanged. The CLI
+is then the **code client**: it holds the shared HMAC secret to _verify_ an
+OTP, every paid call needs one, and each OTP is single-use and bound to the
+exact request. The CLI never mints one, and
+`grep -rn mintOtp packages/cli/src` finds nothing. On a host whose operator
+armed the gate, a human mints the OTP out-of-band from the same secret, and
+the caller passes it unchanged:
 
 ```bash
 apicity-paygate otp mint \
@@ -310,10 +321,10 @@ apicity-paygate otp mint \
 apicity kie api.v1.jobs.createTask --data-file request.json --otp <token>
 ```
 
-With no `--otp`, or no secret configured, the call fails closed with exit 4 and
-the gate's own code (`otp-missing`, `paygate-not-configured`, `otp-expired`, …)
-repeated in `hint`. The agent driving the CLI never sees the secret, so it
-cannot self-approve. See [@apicity/cost](../provider/cost) for the full spec.
+On an armed host a missing or bad OTP fails closed with exit 4 and the gate's
+own code (`otp-missing`, `otp-expired`, `otp-replayed`, …) repeated in `hint`.
+The agent driving the CLI never sees the secret, so it cannot self-approve.
+See [@apicity/cost](../provider/cost) for the full spec.
 
 ## The skill and the Claude Code plugin
 
@@ -352,7 +363,9 @@ configured, skill install, skill freshness, Claude plugin and Codex — each
 host says so at `ok` rather than disappearing, so `.data` has the same twelve
 indices everywhere. It always exits 0: it is a report, not a gate. A skill
 older than the installed CLI is a warning that names `apicity skill install`;
-nothing re-syncs itself behind your back.
+nothing re-syncs itself behind your back. The pay-gate secret row is `ok` when
+no secret file is named, because the gate is then off; it is `error` for a
+file that is unreadable or empty, and it never prints the file's contents.
 
 ## What we took from hey-cli
 

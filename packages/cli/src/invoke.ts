@@ -24,9 +24,10 @@ export interface BindArgumentsOptions {
  * `files(idOrOpts?, signal?)`, so `apicity openai v1.files --method GET
  * --data '{"purpose":"…"}'` must call `files(body)` (plan F-7).
  *
- * A paid row always ends with the approval argument, present or not: the gate
- * answers `otp-missing` for an absent one, which is the error the caller needs
- * to see rather than a silent unapproved call.
+ * A paid row always ends with the approval argument, present or not. The gate
+ * checks it only when the operator armed it with a secret: an armed gate
+ * answers `otp-missing` for an absent one, and an unarmed gate refuses a
+ * present one with `paygate-not-configured` rather than dropping it.
  */
 export function bindArguments(options: BindArgumentsOptions): unknown[] {
   const args: unknown[] = [];

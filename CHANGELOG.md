@@ -24,6 +24,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   result at the top level. Read the result under `.data`: `jq length` on that
   output now counts the envelope's keys. They also accept `--quiet` for the
   data alone.
+- **Breaking:** the OTP pay gate is opt-in in `@apicity/cost`, `@apicity/kie`,
+  `@apicity/xai` and `@apicity/cli`. A paid endpoint now dispatches when no
+  pay-gate secret is configured. Configuring one (`paygate: { secret }`, or
+  the CLI's `--paygate-secret-file` / `APICITY_PAYGATE_SECRET_FILE`) arms the
+  OTP gate, whose behavior is unchanged. An OTP passed to an unarmed provider
+  or CLI is an error (`paygate-not-configured`), and a supplied but empty
+  secret still fails closed. What counts as paid does not change. The CLI's
+  doctor reports an unset secret file as the gate being off, at `ok`, and an
+  empty secret file is a `usage` error. Migration: if you relied on paid
+  endpoints failing closed by default, configure the secret.
 
 ### Removed
 

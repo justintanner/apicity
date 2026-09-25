@@ -298,20 +298,37 @@ function paygateRow(context: DoctorContext): DoctorRow {
   if (path === undefined || path === "") {
     return {
       name: "Paygate Secret File",
-      status: "warning",
-      message: "not set; paid endpoints will fail closed",
-      hint: "set APICITY_PAYGATE_SECRET_FILE, or pass --paygate-secret-file",
+      status: "ok",
+      message:
+        "not set; the pay gate is off and paid endpoints call upstream directly",
     };
   }
-  // Readability, never contents: the value in that file is the shared secret.
-  return isReadable(path)
-    ? { name: "Paygate Secret File", status: "ok", message: path }
-    : {
+  // Readability and emptiness, never contents: the value in that file is the
+  // shared secret, so it is read only to be compared with "".
+  if (!isReadable(path)) {
+    return {
+      name: "Paygate Secret File",
+      status: "error",
+      message: `${path} could not be read`,
+      hint: "check the path and its permissions",
+    };
+  }
+  return isBlankFile(path)
+    ? {
         name: "Paygate Secret File",
         status: "error",
-        message: `${path} could not be read`,
-        hint: "check the path and its permissions",
-      };
+        message: `${path} is empty`,
+        hint: "write the shared pay-gate secret to that file",
+      }
+    : { name: "Paygate Secret File", status: "ok", message: path };
+}
+
+function isBlankFile(path: string): boolean {
+  try {
+    return readFileSync(path, "utf8").trim() === "";
+  } catch {
+    return false;
+  }
 }
 
 function outputDirRow(context: DoctorContext): DoctorRow {

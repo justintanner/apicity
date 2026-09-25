@@ -15,6 +15,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   through the versioned GPT alias, so no request that parsed before is
   rejected now. Nothing needs migrating.
 
+### Changed
+
+- **Breaking:** paid endpoints (`post.api.v1.jobs.createTask`, the direct VEO
+  and Suno rows, and the other `PAID_ENDPOINTS` rows) now dispatch when
+  `createKie` is built without `paygate`. `paygate: { secret }` arms the OTP
+  gate, whose behavior is unchanged. An OTP passed to a provider built without
+  `paygate` throws `PayGateError` `paygate-not-configured`, and
+  `paygate: { secret: "" }` still fails closed. Migration: if you relied on
+  paid calls failing closed by default, pass `paygate: { secret }`.
+
 ### Fixed
 
 - Qwen2 image-edit seed validation and discovery metadata now follow KIE's

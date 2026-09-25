@@ -17,6 +17,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   endpoints.
 - Alibaba `wan2.7-image` and KIE `nano-banana` per-image pricing.
 
+### Changed
+
+- **Breaking:** `dispatchWithPaidGate` and `withPaidGate` make the pay gate
+  opt-in. With no config (a provider built without `paygate`), a paid endpoint
+  now dispatches. A config with a non-empty `secret` arms the OTP gate, whose
+  behavior is unchanged. An OTP presented to an unarmed gate throws
+  `PayGateError` `paygate-not-configured` without dispatching, and a config
+  whose `secret` is empty still fails closed with that code. `PayGateError`
+  keeps its seven codes, and `PAID_ENDPOINTS` does not change. Migration: if
+  you relied on paid endpoints failing closed when no config was passed, pass
+  `{ secret }`.
+
 ### Fixed
 
 - Fal per-megapixel estimates now resolve documented endpoint defaults

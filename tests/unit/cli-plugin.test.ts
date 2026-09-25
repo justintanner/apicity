@@ -260,18 +260,42 @@ describe("session-start.sh (EX-13)", () => {
   });
 
   it("reports the configured provider count when the CLI is present", async () => {
+    // ac-w7vzap REQ-019: the hook reads `apicity providers --json`, which never
+    // runs `op`, rather than `doctor --json`, which lists the 1Password vault.
+    // The fake records its argv, so the test sees which command was asked.
     const fake = join(binDir, "apicity");
+    const argvFile = join(sandbox, "argv");
     writeFileSync(
       fake,
       "#!/usr/bin/env bash\n" +
+        `printf '%s' "$*" > '${argvFile}'\n` +
         "printf '%s\\n' '" +
         JSON.stringify({
           ok: true,
           data: [
             {
-              name: "Providers",
-              status: "warning",
-              message: "3 of 28 configured (binance, openligadb, openai)",
+              provider: "binance",
+              envVars: [],
+              configured: true,
+              endpoints: 12,
+            },
+            {
+              provider: "openligadb",
+              envVars: [],
+              configured: true,
+              endpoints: 20,
+            },
+            {
+              provider: "openai",
+              envVars: ["OPENAI_API_KEY"],
+              configured: true,
+              endpoints: 80,
+            },
+            {
+              provider: "xai",
+              envVars: ["XAI_API_KEY"],
+              configured: false,
+              endpoints: 60,
             },
           ],
         }) +
@@ -288,8 +312,9 @@ describe("session-start.sh (EX-13)", () => {
         "(binance, openligadb, openai)\n" +
         "</hook-output>\n"
     );
-    // No credential can reach the transcript: the hook reads one message out
-    // of `doctor --json` and prints nothing else.
+    expect(readFileSync(argvFile, "utf8")).toBe("providers --json");
+    // No credential can reach the transcript: the hook reads provider names
+    // and configured flags out of `providers --json` and prints nothing else.
     expect(result.stdout).not.toContain("API_KEY");
     expect(result.ms).toBeLessThan(5000);
   });

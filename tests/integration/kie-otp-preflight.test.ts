@@ -56,18 +56,43 @@ function craftOtp(
 }
 
 describe("kie OTP preflight", () => {
-  // -- No-bypass guarantee: a paid endpoint cannot fire without a configured
-  //    pay gate. ---------------------------------------------------------------
-  it("blocks paid endpoint when paygate is not configured", async () => {
-    const provider = createKie({ apiKey: "test-key" });
+  // -- Opt-in gate: with no pay gate configured a paid endpoint dispatches,
+  //    and an OTP handed to it is refused rather than dropped. A stub
+  //    transport keeps both cases off the network. --------------------------
+  it("dispatches a paid endpoint when paygate is not configured", async () => {
+    let calls = 0;
+    const provider = createKie({
+      apiKey: "test-key",
+      fetch: async () => {
+        calls++;
+        return new Response(
+          JSON.stringify({ code: 200, data: { taskId: "task-1" } }),
+          { status: 200 }
+        );
+      },
+    });
+    await provider.post.api.v1.jobs.createTask(REQUEST);
+    expect(calls).toBe(1);
+  });
+
+  it("refuses an OTP when paygate is not configured", async () => {
+    let calls = 0;
+    const provider = createKie({
+      apiKey: "test-key",
+      fetch: async () => {
+        calls++;
+        return new Response("{}", { status: 200 });
+      },
+    });
     let caught: PayGateError | undefined;
     try {
-      await provider.post.api.v1.jobs.createTask(REQUEST);
+      await provider.post.api.v1.jobs.createTask(REQUEST, { otp: "anything" });
     } catch (error) {
       caught = error as PayGateError;
     }
     expect(caught).toBeInstanceOf(PayGateError);
     expect(caught!.code).toBe("paygate-not-configured");
+    expect(calls).toBe(0);
   });
 
   // -- With paygate but no approval -> otp-missing. ---------------------------

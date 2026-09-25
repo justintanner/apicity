@@ -1,24 +1,31 @@
+import { createHash } from "node:crypto";
 import {
+  chmodSync,
   existsSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
   rmSync,
+  statSync,
   writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import type { CliWriter } from "../../packages/cli/src/envelope";
 import { CliError } from "../../packages/cli/src/errors";
 import { runMain } from "../../packages/cli/src/main";
+import { OP_ITEM_LIST_TIMEOUT_MS } from "../../packages/cli/src/one-password";
 import { PLUGIN_KEY } from "../../packages/cli/src/plugin";
 import {
+  removeOnePasswordSetup,
   removeSetup,
+  runSetupCommand,
   setupAgents,
   setupClaude,
   setupCodex,
+  setupOnePassword,
   MANUAL_CLAUDE_COMMANDS,
   MARKETPLACE_ADD_TIMEOUT_MS,
   MARKETPLACE_UPDATE_TIMEOUT_MS,
@@ -472,6 +479,378 @@ describe("apicity setup --remove", () => {
   });
 });
 
+// ac-w7vzap REQ-012 to REQ-015: `apicity setup 1password`. Every case works in
+// the sandbox home, and the probe runs through the seam: no test spawns `op`.
+describe("apicity setup 1password", () => {
+  const VARIABLES = ["APICITY_OP_VAULT", "APICITY_OP_SERVICE_TOKEN"];
+  const FLAGS = {
+    opVault: "Apicity",
+    opToken: "env:OP_SERVICE_ACCOUNT_TOKEN",
+  };
+  const PAIR =
+    "APICITY_OP_VAULT=Apicity\n" +
+    "APICITY_OP_SERVICE_TOKEN=env:OP_SERVICE_ACCOUNT_TOKEN\n";
+
+  function envFilePath(): string {
+    return join(home, ".config", "apicity", ".env");
+  }
+
+  function writeEnv(content: string): void {
+    mkdirSync(dirname(envFilePath()), { recursive: true });
+    writeFileSync(envFilePath(), content);
+  }
+
+  function sha256(path: string): string {
+    return createHash("sha256").update(readFileSync(path)).digest("hex");
+  }
+
+  /** The process environment `setup` reads: a sandbox home, nothing else. */
+  function hostEnv(extra: NodeJS.ProcessEnv = {}): NodeJS.ProcessEnv {
+    return { HOME: home, PATH: "", ...extra };
+  }
+
+  it("writes a private file holding exactly the two lines, and verifies nothing, with --no-verify", async () => {
+    const { run, calls } = seam();
+
+    const result = await setupOnePassword({
+      env: hostEnv(),
+      flags: FLAGS,
+      verify: false,
+      run,
+    });
+
+    expect(result).toEqual({
+      env_file: envFilePath(),
+      variables: VARIABLES,
+      vault: "Apicity",
+      verified: false,
+    });
+    expect(statSync(dirname(envFilePath())).mode & 0o777).toBe(0o700);
+    expect(statSync(envFilePath()).mode & 0o777).toBe(0o600);
+    expect(readFileSync(envFilePath(), "utf8")).toBe(PAIR);
+    expect(calls).toEqual([]);
+  });
+
+  it("merges into an existing file in place, keeping its mode", async () => {
+    writeEnv("# mine\nKIE_API_KEY=abc\nAPICITY_OP_VAULT=Old\n");
+    chmodSync(envFilePath(), 0o640);
+
+    await setupOnePassword({ env: hostEnv(), flags: FLAGS, verify: false });
+
+    expect(readFileSync(envFilePath(), "utf8")).toBe(
+      "# mine\nKIE_API_KEY=abc\nAPICITY_OP_VAULT=Apicity\n" +
+        "APICITY_OP_SERVICE_TOKEN=env:OP_SERVICE_ACCOUNT_TOKEN\n"
+    );
+    expect(statSync(envFilePath()).mode & 0o777).toBe(0o640);
+  });
+
+  it("removes a duplicate key, and keeps a CRLF line's carriage return", async () => {
+    writeEnv(
+      "APICITY_OP_VAULT=Old\r\nKIE_API_KEY=abc\r\nAPICITY_OP_VAULT=Older\r\n"
+    );
+
+    await setupOnePassword({ env: hostEnv(), flags: FLAGS, verify: false });
+
+    expect(readFileSync(envFilePath(), "utf8")).toBe(
+      "APICITY_OP_VAULT=Apicity\r\nKIE_API_KEY=abc\r\n" +
+        "APICITY_OP_SERVICE_TOKEN=env:OP_SERVICE_ACCOUNT_TOKEN\n"
+    );
+  });
+
+  it("leaves the file byte-identical on a second identical run", async () => {
+    writeEnv("# mine\nKIE_API_KEY=abc\nAPICITY_OP_VAULT=Old");
+    await setupOnePassword({ env: hostEnv(), flags: FLAGS, verify: false });
+    const first = sha256(envFilePath());
+
+    await setupOnePassword({ env: hostEnv(), flags: FLAGS, verify: false });
+
+    expect(sha256(envFilePath())).toBe(first);
+  });
+
+  it("writes the file --env-file names", async () => {
+    const named = join(home, "elsewhere", "apicity.env");
+
+    const result = await setupOnePassword({
+      env: hostEnv(),
+      flags: { ...FLAGS, envFile: named },
+      verify: false,
+    });
+
+    expect(result.env_file).toBe(named);
+    expect(readFileSync(named, "utf8")).toBe(PAIR);
+    expect(existsSync(envFilePath())).toBe(false);
+  });
+
+  it("reads the vault and token from the process environment, never from the file", async () => {
+    writeEnv(PAIR);
+
+    // ac-w7vzap OQ-008: the file already holds both, and still they are not
+    // inputs.
+    const err = await raised(
+      setupOnePassword({ env: hostEnv(), verify: false })
+    );
+    expect(err.code).toBe("usage");
+    expect(err.message).toBe(
+      "apicity setup 1password needs --op-vault (or APICITY_OP_VAULT)"
+    );
+
+    const result = await setupOnePassword({
+      env: hostEnv({
+        APICITY_OP_VAULT: "FromEnv",
+        APICITY_OP_SERVICE_TOKEN: "env:OP_SERVICE_ACCOUNT_TOKEN",
+      }),
+      verify: false,
+    });
+    expect(result.vault).toBe("FromEnv");
+  });
+
+  it("refuses a missing vault or token as usage, writing nothing", async () => {
+    const noVault = await raised(
+      setupOnePassword({
+        env: hostEnv(),
+        flags: { opToken: "env:OP_SERVICE_ACCOUNT_TOKEN" },
+      })
+    );
+    const noToken = await raised(
+      setupOnePassword({ env: hostEnv(), flags: { opVault: "Apicity" } })
+    );
+
+    expect(noVault).toMatchObject({ code: "usage", exit: 1 });
+    expect(noVault.message).toContain("--op-vault");
+    expect(noToken).toMatchObject({ code: "usage", exit: 1 });
+    expect(noToken.message).toBe(
+      "apicity setup 1password needs --op-token (or APICITY_OP_SERVICE_TOKEN)"
+    );
+    expect(noToken.hint).toBe(
+      "run: apicity setup 1password --op-vault <vault> " +
+        "--op-token env:OP_SERVICE_ACCOUNT_TOKEN"
+    );
+    expect(existsSync(envFilePath())).toBe(false);
+  });
+
+  it("refuses a line break in either value, leaving the file untouched", async () => {
+    writeEnv("# mine\nKIE_API_KEY=abc\n");
+    const before = sha256(envFilePath());
+
+    const vault = await raised(
+      setupOnePassword({
+        env: hostEnv(),
+        flags: { ...FLAGS, opVault: "A\nKIE_API_KEY=x" },
+        verify: false,
+      })
+    );
+    const token = await raised(
+      setupOnePassword({
+        env: hostEnv(),
+        flags: { ...FLAGS, opToken: "ops_token\r" },
+        verify: false,
+      })
+    );
+
+    expect(vault).toMatchObject({ code: "usage" });
+    expect(vault.message).toBe("--op-vault must be a single line");
+    expect(token.message).toBe("--op-token must be a single line");
+    expect(sha256(envFilePath())).toBe(before);
+  });
+
+  it("probes the vault once, with the token in op's environment alone", async () => {
+    const { run, calls } = seam();
+
+    const result = await setupOnePassword({
+      env: hostEnv({ OP_SERVICE_ACCOUNT_TOKEN: "ops_resolved_value" }),
+      flags: FLAGS,
+      run,
+    });
+
+    expect(result.verified).toBe(true);
+    expect(calls).toHaveLength(1);
+    expect(calls[0].command).toBe("op");
+    expect(calls[0].args).toEqual([
+      "item",
+      "list",
+      "--vault",
+      "Apicity",
+      "--format",
+      "json",
+    ]);
+    expect(calls[0].options.env?.OP_SERVICE_ACCOUNT_TOKEN).toBe(
+      "ops_resolved_value"
+    );
+    expect(calls[0].options.timeoutMs).toBe(OP_ITEM_LIST_TIMEOUT_MS);
+    expect(calls[0].options.stdio).toEqual(SUBPROCESS_STDIO);
+  });
+
+  for (const [outcome, reply, code, exit, text] of [
+    [
+      "op is not installed",
+      { code: 1, notFound: true, stderr: "spawn op ENOENT" },
+      "setup_incomplete",
+      7,
+      "install the 1Password CLI",
+    ],
+    [
+      "1Password rejects the pair",
+      { code: 1, stderr: "[ERROR] 401 Unauthorized\n" },
+      "auth",
+      3,
+      "Apicity",
+    ],
+    [
+      "the probe times out",
+      { code: 1, timedOut: true },
+      "network",
+      6,
+      "timed out",
+    ],
+  ] as const) {
+    it(`answers ${code} (exit ${exit}) when ${outcome}, keeping the lines`, async () => {
+      const { run } = seam(() => reply);
+
+      const err = await raised(
+        setupOnePassword({
+          env: hostEnv({ OP_SERVICE_ACCOUNT_TOKEN: "ops_resolved_value" }),
+          flags: FLAGS,
+          run,
+        })
+      );
+
+      expect(err).toMatchObject({ code, exit });
+      expect(`${err.message} ${err.hint ?? ""}`).toContain(text);
+      expect(err.meta).toEqual({
+        env_file: envFilePath(),
+        variables: VARIABLES,
+      });
+      expect(readFileSync(envFilePath(), "utf8")).toBe(PAIR);
+    });
+  }
+
+  it("names the timeout and suggests --no-verify when the probe times out", async () => {
+    const { run } = seam(() => ({ code: 1, timedOut: true }));
+
+    const err = await raised(
+      setupOnePassword({
+        env: hostEnv({ OP_SERVICE_ACCOUNT_TOKEN: "ops_resolved_value" }),
+        flags: FLAGS,
+        run,
+      })
+    );
+
+    expect(err.message).toBe(
+      "op item list --vault Apicity timed out after 10000 ms"
+    );
+    expect(err.hint).toBe(
+      "re-run apicity setup 1password, or pass --no-verify"
+    );
+  });
+
+  it("answers usage for an unset env: token, after writing the lines", async () => {
+    const { run, calls } = seam();
+
+    const err = await raised(
+      setupOnePassword({ env: hostEnv(), flags: FLAGS, run })
+    );
+
+    expect(err).toMatchObject({ code: "usage", exit: 1 });
+    expect(err.message).toBe(
+      "--op-token env reference OP_SERVICE_ACCOUNT_TOKEN is not set."
+    );
+    expect(calls).toEqual([]);
+    expect(readFileSync(envFilePath(), "utf8")).toBe(PAIR);
+  });
+
+  it("removes exactly its two lines with --remove, and nothing else", async () => {
+    writeEnv(`# mine\nKIE_API_KEY=abc\n${PAIR}`);
+    const { writer, out } = capture();
+
+    await expect(
+      runSetupCommand(["1password", "--remove", "--json"], writer, {
+        env: hostEnv(),
+        stdoutIsTTY: false,
+      })
+    ).resolves.toBe(0);
+
+    expect(readFileSync(envFilePath(), "utf8")).toBe(
+      "# mine\nKIE_API_KEY=abc\n"
+    );
+    expect(JSON.parse(out.join("\n"))).toEqual({
+      ok: true,
+      data: { env_file: envFilePath(), removed: VARIABLES },
+      summary: "apicity setup 1password removed",
+    });
+  });
+
+  it("removes nothing, and creates nothing, when the file is absent", () => {
+    expect(removeOnePasswordSetup({ env: hostEnv() })).toEqual({
+      env_file: envFilePath(),
+      removed: [],
+    });
+    expect(existsSync(envFilePath())).toBe(false);
+  });
+
+  it("never opens the env file for the other forms' --remove", async () => {
+    writeEnv(`# sentinel\n${PAIR}`);
+    const before = sha256(envFilePath());
+
+    for (const argv of [
+      ["setup", "--remove", "--json"],
+      ["setup", "claude", "--remove", "--json"],
+    ]) {
+      await expect(
+        runMain(argv, capture().writer, {
+          env: { HOME: home, PATH: "" },
+          stdoutIsTTY: false,
+        })
+      ).resolves.toBe(0);
+      expect(sha256(envFilePath()), argv.join(" ")).toBe(before);
+    }
+  });
+
+  it("refuses --no-verify on any other form", async () => {
+    const err = await raised(
+      runSetupCommand(["codex", "--no-verify"], capture().writer, {
+        env: hostEnv(),
+        stdoutIsTTY: false,
+      })
+    );
+
+    expect(err).toMatchObject({ code: "usage", exit: 1 });
+    expect(err.message).toBe("unknown flag: --no-verify");
+    expect(err.hint).toBe("only apicity setup 1password takes --no-verify");
+  });
+
+  it("answers its summary through the dispatcher", async () => {
+    const { writer, out } = capture();
+
+    await expect(
+      runMain(
+        [
+          "setup",
+          "1password",
+          "--op-vault",
+          "Apicity",
+          "--op-token",
+          "env:OP_SERVICE_ACCOUNT_TOKEN",
+          "--no-verify",
+          "--json",
+        ],
+        writer,
+        { env: { HOME: home, PATH: "" }, stdoutIsTTY: false }
+      )
+    ).resolves.toBe(0);
+
+    expect(JSON.parse(out.join("\n"))).toEqual({
+      ok: true,
+      data: {
+        env_file: envFilePath(),
+        variables: VARIABLES,
+        vault: "Apicity",
+        verified: false,
+      },
+      summary: "apicity setup 1password complete",
+    });
+  });
+});
+
 describe("runSubprocess", () => {
   it("gives the child no stdin at all", async () => {
     // The seam's whole point. Run a child that reads fd 0 to completion: with
@@ -498,5 +877,40 @@ describe("runSubprocess", () => {
 
     expect(result.code).toBe(1);
     expect(result.stderr).toContain("ENOENT");
+  });
+
+  it("marks a missing binary notFound, and only a missing one", async () => {
+    const missing = await runSubprocess(
+      join(binDir, "definitely-not-here"),
+      [],
+      { timeoutMs: 1000, stdio: SUBPROCESS_STDIO }
+    );
+    const failing = await runSubprocess(
+      process.execPath,
+      ["-e", "process.exit(1)"],
+      { timeoutMs: 4000, stdio: SUBPROCESS_STDIO }
+    );
+
+    expect(missing.notFound).toBe(true);
+    expect(failing.code).toBe(1);
+    expect(failing.notFound).toBeUndefined();
+  });
+
+  it("hands the child the variables in env, the channel a token takes", async () => {
+    const result = await runSubprocess(
+      process.execPath,
+      [
+        "-e",
+        'process.stdout.write(process.env.APICITY_TEST_CHANNEL ?? "unset")',
+      ],
+      {
+        timeoutMs: 4000,
+        stdio: SUBPROCESS_STDIO,
+        env: { APICITY_TEST_CHANNEL: "through-env" },
+      }
+    );
+
+    expect(result.code).toBe(0);
+    expect(result.stdout).toBe("through-env");
   });
 });

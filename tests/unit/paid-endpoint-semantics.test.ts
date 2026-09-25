@@ -5,6 +5,7 @@ import {
   PayGateError,
 } from "@apicity/cost";
 import { createKie } from "@apicity/kie";
+import { createXai } from "@apicity/xai";
 import {
   TEST_PAYGATE_SECRET,
   mintKieCreateTaskOtp,
@@ -16,7 +17,8 @@ import {
  *
  * These lock down the contract:
  * - Unlisted endpoints are free (no OTP, no pay gate required).
- * - Listed paid endpoints fail closed when no pay gate is configured.
+ * - Listed paid endpoints dispatch when no pay gate is configured (the gate is
+ *   opt-in), and refuse an OTP handed to such a provider.
  * - Listed paid endpoints block when the OTP is missing.
  * - Listed paid endpoints allow when a valid, request-bound OTP is provided.
  * - The OTP is bound to the exact request (tampering invalidates it).
@@ -96,20 +98,139 @@ describe("paid endpoint semantics — regression", () => {
     });
   });
 
-  describe("no bypass: paid endpoints fail closed without a pay gate", () => {
-    it("createTask throws paygate-not-configured when constructed without paygate", async () => {
-      const provider = createKie({
-        apiKey: "test-key",
-        baseURL: "http://localhost:99999",
-      });
+  describe("opt-in gate: paid endpoints dispatch without a pay gate", () => {
+    const SUNO_GENERATE_REQUEST = {
+      prompt: "Write a synthwave track",
+      model: "V4",
+      instrumental: true,
+      customMode: false,
+      callBackUrl: "https://example.com/cb",
+    } as const;
+
+    // A stub transport: no request can reach api.kie.ai or any socket.
+    function stubFetch() {
+      return vi.fn().mockImplementation(() =>
+        Promise.resolve(
+          new Response(JSON.stringify({ code: 200, data: { taskId: "t-1" } }), {
+            status: 200,
+          })
+        )
+      );
+    }
+
+    it("createTask dispatches once when constructed without paygate", async () => {
+      const mockFetch = stubFetch();
+      const provider = createKie({ apiKey: "test-key", fetch: mockFetch });
+
+      await provider.post.api.v1.jobs.createTask(REQUEST);
+
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      const [url, init] = mockFetch.mock.calls[0];
+      expect(url).toBe("https://api.kie.ai/api/v1/jobs/createTask");
+      expect(init.method).toBe("POST");
+      expect(JSON.parse(init.body as string)).toEqual(REQUEST);
+    });
+
+    it("the nested veo gate dispatches veo.generate once", async () => {
+      const mockFetch = stubFetch();
+      const provider = createKie({ apiKey: "test-key", fetch: mockFetch });
+
+      await provider.veo.post.api.v1.veo.generate(VEO_GENERATE_REQUEST);
+
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      expect(mockFetch.mock.calls[0][0]).toBe(
+        "https://api.kie.ai/api/v1/veo/generate"
+      );
+    });
+
+    it("the nested suno gate dispatches suno generate once", async () => {
+      const mockFetch = stubFetch();
+      const provider = createKie({ apiKey: "test-key", fetch: mockFetch });
+
+      await provider.suno.post.api.v1.generate(SUNO_GENERATE_REQUEST);
+
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      expect(mockFetch.mock.calls[0][0]).toBe(
+        "https://api.kie.ai/api/v1/generate"
+      );
+    });
+
+    it("refuses an OTP handed to a provider built without paygate", async () => {
+      const mockFetch = stubFetch();
+      const provider = createKie({ apiKey: "test-key", fetch: mockFetch });
       let caught: PayGateError | undefined;
       try {
-        await provider.post.api.v1.jobs.createTask(REQUEST);
+        await provider.post.api.v1.jobs.createTask(REQUEST, {
+          otp: "anything",
+        });
       } catch (error) {
         caught = error as PayGateError;
       }
       expect(caught).toBeInstanceOf(PayGateError);
       expect(caught!.code).toBe("paygate-not-configured");
+      expect(mockFetch).not.toHaveBeenCalled();
+    });
+
+    it("fails closed on an empty secret, with or without an OTP", async () => {
+      const mockFetch = stubFetch();
+      const provider = createKie({
+        apiKey: "test-key",
+        fetch: mockFetch,
+        paygate: { secret: "" },
+      });
+      for (const approval of [undefined, { otp: "anything" }]) {
+        let caught: PayGateError | undefined;
+        try {
+          await provider.post.api.v1.jobs.createTask(REQUEST, approval);
+        } catch (error) {
+          caught = error as PayGateError;
+        }
+        expect(caught).toBeInstanceOf(PayGateError);
+        expect(caught!.code).toBe("paygate-not-configured");
+      }
+      expect(mockFetch).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("opt-in gate: xai paid endpoints dispatch without a pay gate", () => {
+    function stubFetch() {
+      return vi.fn().mockImplementation(() =>
+        Promise.resolve(
+          new Response(JSON.stringify({ data: [], request_id: "r-1" }), {
+            status: 200,
+          })
+        )
+      );
+    }
+
+    it("images.generations and videos.generations dispatch once each", async () => {
+      const mockFetch = stubFetch();
+      const provider = createXai({ apiKey: "test-key", fetch: mockFetch });
+
+      await provider.post.v1.images.generations({ prompt: "a lighthouse" });
+      await provider.post.v1.videos.generations({ prompt: "a paper plane" });
+
+      expect(mockFetch.mock.calls.map((call) => call[0])).toEqual([
+        "https://api.x.ai/v1/images/generations",
+        "https://api.x.ai/v1/videos/generations",
+      ]);
+    });
+
+    it("refuses an OTP handed to a provider built without paygate", async () => {
+      const mockFetch = stubFetch();
+      const provider = createXai({ apiKey: "test-key", fetch: mockFetch });
+      let caught: PayGateError | undefined;
+      try {
+        await provider.post.v1.images.generations(
+          { prompt: "a lighthouse" },
+          { otp: "anything" }
+        );
+      } catch (error) {
+        caught = error as PayGateError;
+      }
+      expect(caught).toBeInstanceOf(PayGateError);
+      expect(caught!.code).toBe("paygate-not-configured");
+      expect(mockFetch).not.toHaveBeenCalled();
     });
   });
 

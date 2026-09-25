@@ -5,9 +5,10 @@ import { spawn } from "node:child_process";
 // ---------------------------------------------------------------------------
 //
 // Moved here from `setup.ts` unchanged (review advisory A-4, landed by
-// ac-yrwwpi): the seam is generic — `doctor` runs `op --version` through it
-// and `setup` runs `claude plugin …` — so it lives at its own address rather
-// than inside the module that installs plugins.
+// ac-yrwwpi): the seam is generic — `doctor` runs `op --version` and
+// `op item list` through it, and `setup` runs `claude plugin …` and the
+// `setup 1password` probe — so it lives at its own address rather than inside
+// the module that installs plugins.
 
 /**
  * The stdio every subprocess this CLI starts gets: no stdin at all, and pipes
@@ -25,6 +26,15 @@ export interface SubprocessOptions {
   timeoutMs: number;
   /** Always `SUBPROCESS_STDIO` — carried here so a fake seam records it. */
   stdio: SubprocessStdio;
+  /**
+   * Variables layered over the inherited environment, for this child alone.
+   *
+   * The only channel a secret may take into a child: argv is visible to every
+   * `ps` on the host, so `setup 1password` and `doctor` hand `op` its
+   * service-account token here, as `OP_SERVICE_ACCOUNT_TOKEN`, and a fake
+   * seam can assert it arrived nowhere else.
+   */
+  env?: Record<string, string>;
 }
 
 export interface SubprocessResult {
@@ -34,6 +44,8 @@ export interface SubprocessResult {
   stderr: string;
   /** True when the child was killed at `timeoutMs`. */
   timedOut: boolean;
+  /** True when the binary itself was not found (the spawn failed `ENOENT`). */
+  notFound?: boolean;
 }
 
 /** How `setup` and `doctor` reach a binary; a test passes a fake. */
@@ -67,6 +79,10 @@ export function runSubprocess(
     const child = spawn(command, args, {
       stdio: [...options.stdio],
       timeout: options.timeoutMs,
+      // Only when asked: a child given no `env` inherits exactly as before.
+      ...(options.env === undefined
+        ? {}
+        : { env: { ...process.env, ...options.env } }),
     });
 
     let stdout = "";
@@ -75,11 +91,13 @@ export function runSubprocess(
     child.stderr?.on("data", (chunk: Buffer) => (stderr += chunk.toString()));
 
     child.on("error", (err) => {
+      const missing = (err as NodeJS.ErrnoException).code === "ENOENT";
       resolve({
         code: 1,
         stdout,
         stderr: stderr || err.message,
         timedOut: false,
+        ...(missing ? { notFound: true } : {}),
       });
     });
     child.on("close", (code, signal) => {

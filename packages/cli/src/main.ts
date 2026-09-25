@@ -15,6 +15,7 @@ import {
   isProviderConfigured,
   describeEnvVars,
   resolveCredentials,
+  type CredentialFlags,
 } from "./credentials.js";
 import {
   createWriter,
@@ -27,6 +28,7 @@ import { CliError, classifyError, type ClassifyContext } from "./errors.js";
 import { runCommands, runDescribe, runProviders } from "./discovery.js";
 import { isHelpTopic, printHelpTopic } from "./help.js";
 import { bindArguments, callEndpoint, mergeRequestFields } from "./invoke.js";
+import type { OpInject, OpListItemTitles } from "./one-password.js";
 import { runSkillCommand } from "./skill.js";
 import { runSetupCommand } from "./setup.js";
 import { runDoctor } from "./doctor.js";
@@ -171,11 +173,19 @@ async function dispatch(
 
   const flags = parseFlags(rest);
   // The discovery commands answer under the same output rule as every other
-  // command (D-5), so they take the same three inputs.
+  // command (D-5), so they take the same three inputs — plus the environment
+  // and the credential flags, because "configured" counts the env file and
+  // the 1Password settings those flags point at, exactly as a call reads them.
   const output = {
     json: flags.json,
     quiet: flags.quiet,
     stdoutIsTTY: options.stdoutIsTTY,
+    env: options.env,
+    flags: {
+      envFile: flags.options["env-file"],
+      opVault: flags.options["op-vault"],
+      opToken: flags.options["op-token"] ?? flags.options["op-service-token"],
+    },
   };
 
   if (first === "commands") {
@@ -282,6 +292,10 @@ export interface EndpointOptions {
   instantiate?: ProviderInstantiator;
   /** Seam: the 1Password read, so a test never spawns `op`. */
   readSecret?: (ref: string) => Promise<string>;
+  /** Seam: the vault listing of the 1Password convention batch. */
+  listItemTitles?: OpListItemTitles;
+  /** Seam: the one `op inject` that resolves `op://` references. */
+  injectSecrets?: OpInject;
   installVerbose?: (log: (line: string) => void) => void;
   cwd?: string;
 }
@@ -329,6 +343,7 @@ export async function runEndpoint(
         stdoutIsTTY: options.stdoutIsTTY,
         provider,
         env,
+        flags: credentialFlags(flags),
       });
     }
     if (first.startsWith("-")) {
@@ -368,6 +383,8 @@ export async function runEndpoint(
       flags,
       env,
       readSecret: options.readSecret,
+      listItemTitles: options.listItemTitles,
+      injectSecrets: options.injectSecrets,
     });
     if (!isProviderConfigured(provider, env)) {
       throw new CliError("auth", `no credential configured for ${provider}`, {
@@ -456,7 +473,17 @@ async function describeForHelp(
     stdoutIsTTY: options.stdoutIsTTY,
     method,
     env: options.env,
+    flags: credentialFlags(flags),
   });
+}
+
+/** The three flags that locate credentials, for discovery's `configured`. */
+function credentialFlags(flags: GlobalFlags): CredentialFlags {
+  return {
+    envFile: flags.envFile,
+    opVault: flags.opVault,
+    opToken: flags.opToken,
+  };
 }
 
 function preferredHelpMethod(entries: CatalogEntry[]): string | undefined {
@@ -493,8 +520,9 @@ function factoryOverrides(flags: GlobalFlags): ProviderOverrides {
  */
 function readPaygateSecret(path: string | undefined): string | undefined {
   if (path === undefined || path === "") return undefined;
+  let secret: string;
   try {
-    return readFileSync(path, "utf8").trim();
+    secret = readFileSync(path, "utf8").trim();
   } catch (cause) {
     throw new CliError(
       "usage",
@@ -502,6 +530,14 @@ function readPaygateSecret(path: string | undefined): string | undefined {
       { hint: cause instanceof Error ? cause.message : String(cause), cause }
     );
   }
+  // Naming a secret file is arming the gate (OQ-001): an empty one is refused
+  // rather than read as "no secret", which would let paid calls through.
+  if (secret === "") {
+    throw new CliError("usage", `--paygate-secret-file ${path} is empty`, {
+      hint: "write the shared pay-gate secret to that file",
+    });
+  }
+  return secret;
 }
 
 /**

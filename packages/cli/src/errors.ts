@@ -94,6 +94,17 @@ export function classifyError(
   if (err instanceof CliError) return err;
 
   if (isPayGateErrorLike(err)) {
+    // An OTP reached a gate the operator never armed (D-2). The repair is the
+    // secret, not a fresh OTP, so this hint names no minting command.
+    if (err.code === "paygate-not-configured") {
+      return new CliError("paygate", err.message, {
+        hint:
+          "paygate-not-configured; an OTP was passed but no pay-gate secret " +
+          "is configured: set --paygate-secret-file or " +
+          "APICITY_PAYGATE_SECRET_FILE",
+        cause: err,
+      });
+    }
     const dotPath = err.dotPath || context.dotPath || "<dotPath>";
     const secretFile = context.paygateSecretFile ?? "<path>";
     const payloadFile = context.dataFile ?? "<file>";

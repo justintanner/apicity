@@ -1,4 +1,6 @@
-import { readFileSync } from "node:fs";
+import { mkdtempSync, readFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 
 import {
@@ -55,7 +57,12 @@ function allProviderEnvVars(): string[] {
   return [...names];
 }
 
-const EMPTY_ENV: NodeJS.ProcessEnv = {};
+// A sandbox home (ac-w7vzap F-10): with none, `loadCatalog` would read the real
+// `~/.config/apicity/.env`, and a host whose file holds a vault and a token
+// would report every provider configured.
+const EMPTY_ENV: NodeJS.ProcessEnv = {
+  HOME: mkdtempSync(join(tmpdir(), "apicity-catalog-home-")),
+};
 
 function fullEnv(): NodeJS.ProcessEnv {
   const env: NodeJS.ProcessEnv = {};

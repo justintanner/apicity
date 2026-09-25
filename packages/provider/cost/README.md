@@ -420,21 +420,30 @@ OTP minting and documentation. Provider packages bundle the matching runtime
 registry for their own paid endpoints. Endpoints **not** in the registry are
 assumed free and need no caller changes.
 
-Paid endpoints require a **single-use OTP** (one-time password) minted from a
-shared **HMAC secret**. The gate is fail-closed and does **no** cost
-estimation — pure authorization: a paid call cannot fire unless the provider
-was constructed with the secret **and** the caller presents a valid,
+The gate is **opt-in**. A provider constructed without a pay-gate secret
+dispatches its paid endpoints like any other endpoint. Constructing it with a
+shared **HMAC secret** arms the gate, and from then on every paid call needs a
+**single-use OTP** (one-time password) minted from that secret and bound to the
+exact request. An armed gate is fail-closed and does **no** cost estimation —
+pure authorization: a paid call cannot fire unless the caller presents a valid,
 request-bound OTP. The autonomous caller never holds the secret, so it cannot
 self-approve; only the human or code client that holds the secret can mint.
 There are **no environment variables and no key files** — the secret is passed
-in via factory options (or the CLI's `--paygate-secret-file`).
+in via factory options (or the CLI's `--paygate-secret-file` /
+`APICITY_PAYGATE_SECRET_FILE`).
+
+An OTP presented to a provider built without a secret is refused with
+`paygate-not-configured`, never silently dropped: whoever passes one believes a
+gate exists. Armed or not, a registry row is the cue to say that a call bills
+before making it — it is what `apicity describe` reports as `paid: true`.
 
 ### Registry model
 
 - `PAID_ENDPOINTS` is the canonical list: exact `(provider, method, dotPath)`
   triples — no regex, prefix, wildcard, or inferred matching.
 - Unlisted endpoints pass through free, with no OTP or configuration.
-- Listed endpoints block unless a valid OTP is supplied.
+- Listed endpoints dispatch when the provider was built without a secret, and
+  need a valid OTP once a secret arms the gate.
 
 ### Token format
 
@@ -462,7 +471,14 @@ interface PayGateOtpPayload {
 
 ### Configuration
 
-The code client supplies a `PayGateConfig` via factory options:
+The code client arms the gate by supplying a `PayGateConfig` via factory
+options. Omitting `paygate` leaves the gate off: paid endpoints dispatch with no
+OTP, and an OTP passed to one is refused with `paygate-not-configured`. A
+config that is supplied but carries an empty `secret` (say
+`{ secret: process.env.PAYGATE_SECRET ?? "" }` with the variable unset) does
+**not** turn the gate off: every paid call fails closed with
+`paygate-not-configured`, with or without an OTP, because whoever supplied the
+config meant to arm it.
 
 ```ts
 interface PayGateConfig {
@@ -480,6 +496,10 @@ interface ReplayStore {
 ```ts
 import { createKie } from "@apicity/kie";
 
+// Gate off: paid endpoints dispatch.
+const open = createKie({ apiKey: process.env.KIE_API_KEY! });
+
+// Gate armed: paid endpoints need an OTP minted from this secret.
 const provider = createKie({
   apiKey: process.env.KIE_API_KEY!,
   paygate: { secret: loadSecret() }, // from your secret manager / config
@@ -547,8 +567,11 @@ const task = await provider.post.api.v1.jobs.createTask(
 Each failed check throws `PayGateError` with the code shown:
 
 1. **Preflight** — endpoints not in `PAID_ENDPOINTS` dispatch immediately.
-2. **Configuration** — paid endpoint with no `paygate.secret` →
-   `paygate-not-configured`.
+2. **Configuration** — a provider built without `paygate` has no gate: an OTP
+   in `approval` → `paygate-not-configured`; with no OTP the call dispatches
+   and no later step runs. A provider built with `paygate` whose `secret` is
+   empty → `paygate-not-configured`, with or without an OTP. Every later step
+   applies only to an armed gate.
 3. **OTP presence** — missing `approval.otp` → `otp-missing`.
 4. **Signature** — constant-time HMAC check of the payload segment →
    `otp-invalid-signature` on mismatch.
@@ -569,22 +592,26 @@ try {
     // e.code: paygate-not-configured | otp-missing | otp-malformed
     //         | otp-invalid-signature | otp-expired
     //         | otp-mismatched-request | otp-replayed
+    // paygate-not-configured: an OTP reached a provider built without a
+    // secret, or the supplied secret is empty. The rest come from an armed
+    // gate.
   } else throw e;
 }
 ```
 
 ### Failure modes
 
-| Condition                          | `PayGateError.code`      |
-| ---------------------------------- | ------------------------ |
-| Provider built without a secret    | `paygate-not-configured` |
-| Paid endpoint without OTP          | `otp-missing`            |
-| Malformed envelope                 | `otp-malformed`          |
-| Invalid HMAC signature             | `otp-invalid-signature`  |
-| Expired OTP (`exp` < now)          | `otp-expired`            |
-| Mismatched provider/method/dotPath | `otp-mismatched-request` |
-| Mismatched request hash            | `otp-mismatched-request` |
-| Replayed OTP (`jti` seen)          | `otp-replayed`           |
+| Condition                                       | `PayGateError.code`      |
+| ----------------------------------------------- | ------------------------ |
+| OTP passed to a provider built without a secret | `paygate-not-configured` |
+| Provider built with an empty secret             | `paygate-not-configured` |
+| Paid endpoint without OTP (armed)               | `otp-missing`            |
+| Malformed envelope                              | `otp-malformed`          |
+| Invalid HMAC signature                          | `otp-invalid-signature`  |
+| Expired OTP (`exp` < now)                       | `otp-expired`            |
+| Mismatched provider/method/dotPath              | `otp-mismatched-request` |
+| Mismatched request hash                         | `otp-mismatched-request` |
+| Replayed OTP (`jti` seen)                       | `otp-replayed`           |
 
 ### CLI: minting OTPs
 
@@ -648,15 +675,21 @@ single-use authority for one network attempt.
 
 ### apicity CLI
 
-`@apicity/cli` is the code client: started with
-`--paygate-secret-file <path>`, it holds the secret to **verify** OTPs (it
-never mints). A human mints an OTP out-of-band with the same secret and the
-caller passes it as `--otp <token>` on the call — an AI driving the CLI
-cannot self-approve.
+`@apicity/cli` is the code client. With no `--paygate-secret-file` and no
+`APICITY_PAYGATE_SECRET_FILE`, the gate is off and a paid call goes upstream
+directly; an `--otp` on such a host exits 4 `paygate` with
+`paygate-not-configured`. Naming a secret file arms the gate: the CLI holds
+the secret to **verify** OTPs (it never mints), a human mints an OTP
+out-of-band with the same secret, and the caller passes it as `--otp <token>`
+on the call — an AI driving the CLI cannot self-approve. A secret file that is
+empty is a `usage` error, never a disarmed gate.
 
 ### Minimal operator workflow
 
-1. **Generate a secret** (one-time) and store it (secret manager / file).
+1. **Arm the gate** (one-time): generate a secret, store it (secret manager /
+   file), and pass it as `paygate: { secret }` (or point the CLI's
+   `--paygate-secret-file` at it). Skip this step and paid calls dispatch
+   without an OTP.
 2. **Prepare a request** JSON file.
 3. **Mint an OTP** with the [CLI above](#cli-minting-otps).
 4. **Pass the OTP to the caller** (copy-paste, secrets manager, etc.).

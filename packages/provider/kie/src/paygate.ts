@@ -477,10 +477,17 @@ export function verifyOtp(input: VerifyOtpInput): VerifyResult {
  * Free/unlisted endpoints return `dispatch()` immediately without OTP or
  * pay-gate configuration.
  *
- * Paid endpoints fail closed: if the pay gate is not configured, or the OTP
- * is missing, invalid, expired, replayed, or mismatched, the call throws
- * before dispatch runs. This is the "no bypass" guarantee — a paid call cannot
- * fire without a configured secret and a valid, human/code-client-minted OTP.
+ * The gate is opt-in. With no `config` (the factory got no `paygate`), a paid
+ * endpoint dispatches like a free one, unless the caller presents an OTP:
+ * whoever passes one believes a gate exists, so it is refused with
+ * `paygate-not-configured` rather than silently dropped. A `config` whose
+ * `secret` is empty is a misconfiguration by someone who meant to arm the
+ * gate, and it also fails closed with `paygate-not-configured`, OTP or not.
+ *
+ * Armed with a non-empty secret, paid endpoints fail closed: if the OTP is
+ * missing, invalid, expired, replayed, or mismatched, the call throws before
+ * dispatch runs. This is the "no bypass" guarantee — an armed gate never lets
+ * a paid call fire without a valid, human/code-client-minted OTP.
  *
  * The OTP jti is consumed BEFORE dispatch. If dispatch later fails for any
  * reason, the jti remains consumed and the caller must mint a fresh OTP to
@@ -500,14 +507,30 @@ export async function dispatchWithPaidGate<T>(
     return dispatch();
   }
 
-  if (!config || !config.secret) {
+  if (!config) {
+    if (approval?.otp) {
+      throw new PayGateError(
+        provider,
+        method,
+        dotPath,
+        "paygate-not-configured",
+        `Paid endpoint ${provider} ${method} ${dotPath} was given an OTP, ` +
+          `but the provider was built without a pay gate. Construct it with ` +
+          `{ paygate: { secret } } to verify OTPs.`
+      );
+    }
+    return dispatch();
+  }
+
+  if (!config.secret) {
     throw new PayGateError(
       provider,
       method,
       dotPath,
       "paygate-not-configured",
-      `Paid endpoint ${provider} ${method} ${dotPath} requires a pay gate. ` +
-        `Construct the provider with { paygate: { secret } }.`
+      `Paid endpoint ${provider} ${method} ${dotPath}: the pay gate was ` +
+        `configured with an empty secret. Pass a non-empty ` +
+        `{ paygate: { secret } }.`
     );
   }
 

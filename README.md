@@ -10,10 +10,11 @@ media APIs, and more.
 
 ## Features
 
-- **OTP pay gate — no bypass.** Paid endpoints (media generation, etc.) fire
-  only with a human- or code-client-minted, single-use OTP bound to the exact
-  request. An autonomous agent can't self-approve or run up your bill.
-  [Details ↓](#paid-endpoints-otp-pay-gate)
+- **OTP pay gate — opt-in, no bypass once armed.** Paid endpoints (media
+  generation, etc.) work out of the box. Give the provider a pay-gate secret
+  and every paid call then needs a human- or code-client-minted, single-use OTP
+  bound to the exact request, so an autonomous agent can't self-approve or run
+  up your bill. [Details ↓](#paid-endpoints-otp-pay-gate)
 - **Pre-flight cost estimates.** Pure local USD estimates for the billed
   providers (openai, anthropic, xai, kimicoding, fireworks, alibaba, kie,
   elevenlabs) — no keys, no network.
@@ -34,20 +35,14 @@ media APIs, and more.
 
 ## Example
 
-The headline behavior: a **paid endpoint is gated**. Without an approved,
-single-use OTP the call fails closed — an autonomous caller cannot bypass it.
+The headline behavior: a **paid endpoint works out of the box, and an operator
+can gate it**. Built without a pay-gate secret, a provider dispatches paid
+calls like any other. Built with one, every paid call needs an approved,
+single-use OTP, and an autonomous caller cannot bypass it.
 
 ```ts
 import { createKie } from "@apicity/kie";
 import { mintOtp, createCost } from "@apicity/cost";
-
-// The code client holds the pay-gate secret (from your secret manager /
-// config). The autonomous caller never sees it, so it can't self-approve.
-const secret = loadSecret();
-const kie = createKie({
-  apiKey: process.env.KIE_API_KEY!,
-  paygate: { secret },
-});
 
 // Same JSON body you'd POST to /api/v1/jobs/createTask.
 const payload = {
@@ -63,8 +58,21 @@ const payload = {
 const estimate = createCost().estimate({ provider: "kie", payload });
 // estimate.usd === 0.08
 
-// No OTP → fails closed. No bypass.
+// No pay-gate secret → the gate is off. The paid call dispatches (and bills).
+const kie = createKie({ apiKey: process.env.KIE_API_KEY! });
 await kie.post.api.v1.jobs.createTask(payload);
+// ✅ { code: 200, msg: "success", data: { taskId: "…" } }
+
+// Arm the gate: the code client holds the secret (from your secret manager /
+// config). The autonomous caller never sees it, so it can't self-approve.
+const secret = loadSecret();
+const gated = createKie({
+  apiKey: process.env.KIE_API_KEY!,
+  paygate: { secret },
+});
+
+// Armed, no OTP → fails closed. No bypass.
+await gated.post.api.v1.jobs.createTask(payload);
 // ❌ throws PayGateError { code: "otp-missing" }
 
 // A human (or the code client) mints a single-use OTP bound to THIS request.
@@ -76,7 +84,7 @@ const otp = mintOtp(secret, {
 
 // Approved — runs once. Replaying the OTP, or changing any byte of the
 // payload, fails verification.
-const task = await kie.post.api.v1.jobs.createTask(payload, { otp });
+const task = await gated.post.api.v1.jobs.createTask(payload, { otp });
 ```
 
 Direct KIE VEO calls are gated separately from `createTask`: for
@@ -266,13 +274,28 @@ const chat = withRateLimit(openai.v1.chat.completions, limiter);
 
 ## Paid endpoints (OTP pay gate)
 
-Endpoints with direct marginal cost (e.g. `kie.post.api.v1.jobs.createTask`
-and direct VEO calls under `kie.veo.post.api.v1.veo.*`) are listed in
-`PAID_ENDPOINTS` and gated behind a single-use OTP — the flow is the
-[example above](#example). The gate is **fail-closed**: a paid call needs both
-a pay-gate secret at provider construction **and** a valid OTP minted from
-that same secret. The autonomous caller never sees the secret, so it cannot
-self-approve. Unlisted endpoints are free.
+Endpoints with direct marginal cost (e.g. `kie.post.api.v1.jobs.createTask`,
+direct VEO calls under `kie.veo.post.api.v1.veo.*`, and xai's image and video
+generation) are listed in `PAID_ENDPOINTS`. The pay gate in front of them is
+**opt-in**:
+
+- **Off by default.** A provider built without `paygate` dispatches a paid
+  call like any other call: it goes upstream, and it bills.
+- **Armed by a secret.** `paygate: { secret }` at provider construction arms
+  it; in the CLI, `--paygate-secret-file` or `APICITY_PAYGATE_SECRET_FILE`
+  does. Once armed, the gate is **fail-closed**, exactly as before: every paid
+  call needs a valid OTP minted from that same secret, single-use and bound to
+  the exact request, and a missing or bad one throws before anything is sent.
+  The flow is the [example above](#example). The autonomous caller never sees
+  the secret, so it cannot self-approve. A supplied but empty secret fails
+  closed too, with `paygate-not-configured`.
+- **An OTP needs an armed gate.** An OTP passed to a provider built without
+  `paygate` is refused with `paygate-not-configured`, never silently dropped:
+  whoever passes one believes a gate exists.
+
+Armed or not, `paid: true` in `apicity describe` (and the `paid` column of
+`apicity commands`) is the cue to say that a call bills before making it.
+Unlisted endpoints are free.
 
 The OTP is signed with a single shared **HMAC secret** — no key files, no
 environment variables, no cost coupling — and commits to the exact
@@ -297,9 +320,10 @@ A blocked call throws `PayGateError` whose `.code` is one of
 `otp-invalid-signature`, `otp-expired`, `otp-mismatched-request`, or
 `otp-replayed`.
 
-The gate is generic — `xai` and others opt in by adding a `PAID_ENDPOINTS`
-entry. See [@apicity/cost](packages/provider/cost) for the full spec and the
-CLI's `--paygate-secret-file` wiring (`apicity … --otp <token>`).
+The gate is generic: a provider joins it by adding `PAID_ENDPOINTS` entries,
+as `kie` and `xai` do. See [@apicity/cost](packages/provider/cost) for the full
+spec and the CLI's `--paygate-secret-file` wiring (`apicity … --otp <token>`,
+on a host whose operator armed the gate).
 
 ## Development
 

@@ -6,7 +6,12 @@ import {
 } from "./catalog.js";
 import { CALL_SHAPES, callShapeKey, type CallShape } from "./call-shapes.js";
 import { createWriter, type CliWriter } from "./envelope.js";
-import { isProviderConfigured, providerEnvVars } from "./credentials.js";
+import {
+  isProviderConfigured,
+  providerEnvVars,
+  readCredentialSources,
+  type CredentialFlags,
+} from "./credentials.js";
 import { CliError } from "./errors.js";
 import { errorMessage } from "./internal.js";
 import {
@@ -120,6 +125,11 @@ const defaultLoader: ProviderLoader = (name) =>
 export interface DiscoveryOptions {
   env?: NodeJS.ProcessEnv;
   loadProvider?: ProviderLoader;
+  /**
+   * `--env-file`, `--op-vault` and `--op-token`, as the command line gave
+   * them: `configured` counts what they point at, exactly as a call would.
+   */
+  flags?: CredentialFlags;
 }
 
 /**
@@ -173,7 +183,10 @@ export async function runCommands(
   writer: CliWriter,
   options: CommandsOptions = {}
 ): Promise<number> {
-  const catalog = await loadCatalog({ env: options.env });
+  const catalog = await loadCatalog({
+    env: options.env,
+    flags: options.flags,
+  });
   const entries =
     options.provider === undefined
       ? catalog
@@ -256,7 +269,10 @@ export async function describeEndpoint(
   dotPath: string,
   options: DescribeOptions = {}
 ): Promise<EndpointDescription> {
-  const catalog = await loadCatalog({ env: options.env });
+  const catalog = await loadCatalog({
+    env: options.env,
+    flags: options.flags,
+  });
   const entry = selectEntry(
     findEntries(catalog, provider, dotPath),
     options.method
@@ -326,7 +342,9 @@ export async function listProviders(
   options: DiscoveryOptions = {}
 ): Promise<ProviderSummary[]> {
   const env = options.env ?? process.env;
-  const catalog = await loadCatalog({ env });
+  // Read once for the whole command; offline, like the rest of discovery.
+  const sources = readCredentialSources(env, options.flags);
+  const catalog = await loadCatalog({ env, sources });
   const counts = new Map<string, number>();
   for (const entry of catalog) {
     counts.set(entry.provider, (counts.get(entry.provider) ?? 0) + 1);
@@ -335,7 +353,7 @@ export async function listProviders(
   return Object.keys(PROVIDERS).map((provider) => ({
     provider,
     envVars: providerEnvVars(provider),
-    configured: isProviderConfigured(provider, env),
+    configured: isProviderConfigured(provider, env, sources),
     endpoints: counts.get(provider) ?? 0,
   }));
 }

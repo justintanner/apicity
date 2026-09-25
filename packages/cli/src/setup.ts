@@ -1,6 +1,23 @@
+import {
+  chmodSync,
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  writeFileSync,
+} from "node:fs";
+import { dirname } from "node:path";
+
 import { parseGlobalFlags } from "./args.js";
+import {
+  locateEnvFile,
+  resolveServiceToken,
+  type CredentialFlags,
+} from "./credentials.js";
+import { removeEnvFileAssignments, setEnvFileAssignments } from "./env-file.js";
 import { createWriter, type CliWriter } from "./envelope.js";
 import { CliError } from "./errors.js";
+import { errorMessage } from "./internal.js";
+import { describeOpFailure, OP_ITEM_LIST_TIMEOUT_MS } from "./one-password.js";
 import {
   detectClaude,
   detectCodex,
@@ -57,9 +74,15 @@ export const SETUP_AGENT_SELECTORS = [
 ] as const;
 export type SetupAgentSelector = (typeof SETUP_AGENT_SELECTORS)[number];
 
-/** The three things `apicity setup` can be pointed at. */
-export const SETUP_FORMS = ["claude", "codex", "agents"] as const;
+/** The four things `apicity setup` can be pointed at. */
+export const SETUP_FORMS = ["claude", "codex", "agents", "1password"] as const;
 export type SetupForm = (typeof SETUP_FORMS)[number];
+
+/** The two lines `apicity setup 1password` owns in the env file. */
+const ONE_PASSWORD_VARIABLES = [
+  "APICITY_OP_VAULT",
+  "APICITY_OP_SERVICE_TOKEN",
+] as const;
 
 export type AgentId = "claude" | "codex";
 
@@ -98,6 +121,32 @@ export interface SetupOptions extends InstallSkillOptions {
 export interface SetupCommandOptions extends SetupOptions {
   /** Injected so a test can drive both halves of the output rule (D-5). */
   stdoutIsTTY?: boolean;
+}
+
+export interface OnePasswordSetupOptions {
+  env?: NodeJS.ProcessEnv;
+  /** `--env-file`, `--op-vault` and `--op-token`, as the line gave them. */
+  flags?: CredentialFlags;
+  /** False for `--no-verify`: write the two lines and never run `op`. */
+  verify?: boolean;
+  /** Seam: the subprocess runner, so a test never spawns `op`. */
+  run?: SubprocessRunner;
+}
+
+/** What `apicity setup 1password` answers as `data`: names, never values. */
+export interface OnePasswordSetupResult {
+  env_file: string;
+  variables: string[];
+  vault: string;
+  /** Whether `op item list` accepted the pair; false with `--no-verify`. */
+  verified: boolean;
+}
+
+/** What `apicity setup 1password --remove` answers as its `data`. */
+export interface OnePasswordRemoveResult {
+  env_file: string;
+  /** The variables whose lines were deleted, in file order. */
+  removed: string[];
 }
 
 // ---------------------------------------------------------------------------
@@ -204,6 +253,189 @@ export async function removeSetup(
 
   const skill = removeSkill(options);
   return { removed: [...removed, ...skill.removed], kept: skill.kept };
+}
+
+// ---------------------------------------------------------------------------
+// apicity setup 1password
+// ---------------------------------------------------------------------------
+
+/**
+ * `apicity setup 1password` — persist the 1Password vault and service-account
+ * token in the env file every call loads, then check the pair once.
+ *
+ * The inputs are exactly what the global flags already carry (ac-w7vzap D-3):
+ * the vault from `--op-vault`, else the process's `APICITY_OP_VAULT`, and the
+ * token from `--op-token`, else `APICITY_OP_SERVICE_TOKEN` — never the file
+ * being written (ac-w7vzap OQ-008), and it asks nothing. The token is written
+ * as given, so the `env:VAR` form keeps the secret itself off disk.
+ *
+ * The probe runs after the write, so a failure leaves the lines in place: the
+ * repair is to fix the input and run this again, or `apicity doctor`.
+ */
+export async function setupOnePassword(
+  options: OnePasswordSetupOptions = {}
+): Promise<OnePasswordSetupResult> {
+  const env = options.env ?? process.env;
+  const flags = options.flags ?? {};
+  const vault = flags.opVault ?? env.APICITY_OP_VAULT;
+  const token = flags.opToken ?? env.APICITY_OP_SERVICE_TOKEN;
+  if (!vault) throw missingOnePasswordInput("--op-vault", "APICITY_OP_VAULT");
+  if (!token) {
+    throw missingOnePasswordInput("--op-token", "APICITY_OP_SERVICE_TOKEN");
+  }
+  // A CR or LF would write a second line, and so a variable of its own.
+  if (/[\r\n]/.test(vault)) throw notOneLine("--op-vault");
+  if (/[\r\n]/.test(token)) throw notOneLine("--op-token");
+
+  const envFile = locateEnvFile(env, flags).path;
+  editEnvFile(envFile, (content) =>
+    setEnvFileAssignments(content, [
+      ["APICITY_OP_VAULT", vault],
+      ["APICITY_OP_SERVICE_TOKEN", token],
+    ])
+  );
+  const result: OnePasswordSetupResult = {
+    env_file: envFile,
+    variables: [...ONE_PASSWORD_VARIABLES],
+    vault,
+    verified: false,
+  };
+  if (options.verify === false) return result;
+
+  const meta = { env_file: envFile, variables: [...ONE_PASSWORD_VARIABLES] };
+  let resolved: string;
+  try {
+    resolved = resolveServiceToken(token, env) ?? "";
+  } catch (err) {
+    if (!(err instanceof CliError)) throw err;
+    throw new CliError(err.code, err.message, {
+      hint:
+        `the vault and token were saved to ${envFile}; set that variable, ` +
+        "or re-run with --no-verify",
+      meta,
+      cause: err,
+    });
+  }
+
+  const probe = await (options.run ?? runSubprocess)(
+    "op",
+    ["item", "list", "--vault", vault, "--format", "json"],
+    {
+      timeoutMs: OP_ITEM_LIST_TIMEOUT_MS,
+      stdio: SUBPROCESS_STDIO,
+      // The token reaches `op` as its environment, never on argv.
+      env: { OP_SERVICE_ACCOUNT_TOKEN: resolved },
+    }
+  );
+  if (probe.notFound) {
+    throw new CliError(
+      "setup_incomplete",
+      "the 1Password CLI `op` was not found; the vault and token were saved " +
+        `to ${envFile}`,
+      {
+        hint:
+          "install the 1Password CLI " +
+          "(https://developer.1password.com/docs/cli/), then run: " +
+          "apicity doctor",
+        meta,
+      }
+    );
+  }
+  if (probe.timedOut) {
+    throw new CliError(
+      "network",
+      `op item list --vault ${vault} timed out after ` +
+        `${OP_ITEM_LIST_TIMEOUT_MS} ms`,
+      { hint: "re-run apicity setup 1password, or pass --no-verify", meta }
+    );
+  }
+  if (probe.code !== 0) {
+    throw new CliError(
+      "auth",
+      `1Password rejected vault ${vault} or the service-account token: ` +
+        describeOpFailure(probe, resolved),
+      {
+        hint:
+          "fix the vault or the token, then re-run apicity setup 1password " +
+          "or run: apicity doctor",
+        meta,
+      }
+    );
+  }
+  return { ...result, verified: true };
+}
+
+/**
+ * `apicity setup 1password --remove` — delete the lines that assign the two
+ * variables, and nothing else. An absent file is a success with nothing
+ * removed; the file itself is never deleted, and nothing is verified.
+ */
+export function removeOnePasswordSetup(
+  options: OnePasswordSetupOptions = {}
+): OnePasswordRemoveResult {
+  const envFile = locateEnvFile(options.env ?? process.env, options.flags).path;
+  if (!existsSync(envFile)) return { env_file: envFile, removed: [] };
+
+  let removed: string[] = [];
+  editEnvFile(envFile, (content) => {
+    const edit = removeEnvFileAssignments(content, ONE_PASSWORD_VARIABLES);
+    removed = edit.removed;
+    return edit.content;
+  });
+  return { env_file: envFile, removed };
+}
+
+/**
+ * Apply `edit` to the env file, creating it if need be.
+ *
+ * A directory this creates is made private (0700), and so is a file (0600);
+ * both are `chmod`ed after creation, so a narrow umask cannot leave them any
+ * wider. An existing file keeps its mode (ac-w7vzap OQ-011), and one whose
+ * content the edit leaves alone is not rewritten at all.
+ */
+function editEnvFile(path: string, edit: (content: string) => string): void {
+  try {
+    const dir = dirname(path);
+    if (!existsSync(dir)) {
+      mkdirSync(dir, { recursive: true, mode: 0o700 });
+      chmodSync(dir, 0o700);
+    }
+    if (!existsSync(path)) {
+      writeFileSync(path, edit(""), { mode: 0o600 });
+      chmodSync(path, 0o600);
+      return;
+    }
+    const before = readFileSync(path, "utf8");
+    const after = edit(before);
+    if (after !== before) writeFileSync(path, after);
+  } catch (cause) {
+    throw new CliError(
+      "api",
+      `${path} could not be written: ${errorMessage(cause)}`,
+      {
+        hint: "check --env-file, or unset APICITY_ENV_FILE",
+        cause,
+      }
+    );
+  }
+}
+
+function missingOnePasswordInput(flag: string, variable: string): CliError {
+  return new CliError(
+    "usage",
+    `apicity setup 1password needs ${flag} (or ${variable})`,
+    {
+      hint:
+        "run: apicity setup 1password --op-vault <vault> " +
+        "--op-token env:OP_SERVICE_ACCOUNT_TOKEN",
+    }
+  );
+}
+
+function notOneLine(flag: string): CliError {
+  return new CliError("usage", `${flag} must be a single line`, {
+    hint: "pass a value with no line break in it",
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -341,7 +573,10 @@ function withWarnings(result: SetupResult, warnings: string[]): SetupResult {
 // the command
 // ---------------------------------------------------------------------------
 
-/** `apicity setup [claude|codex|agents] [--remove] [--json]`. */
+/**
+ * `apicity setup [claude|codex|agents|1password] [--remove] [--json]`, and
+ * `--no-verify` for `1password` alone.
+ */
 export async function runSetupCommand(
   argv: string[],
   writer: CliWriter,
@@ -349,17 +584,22 @@ export async function runSetupCommand(
 ): Promise<number> {
   const { flags, rest } = parseGlobalFlags(argv);
   const remove = rest.includes("--remove");
-  const positional = rest.filter((arg) => arg !== "--remove");
+  // Taken out of `rest` like `--remove`: it is this command's own flag, not a
+  // global one, so the shared table in `args.ts` never learns it.
+  const noVerify = rest.includes("--no-verify");
+  const positional = rest.filter(
+    (arg) => arg !== "--remove" && arg !== "--no-verify"
+  );
 
   const unknownFlag = positional.find((arg) => arg.startsWith("-"));
   if (unknownFlag !== undefined) {
     throw new CliError("usage", `unknown flag: ${unknownFlag}`, {
-      hint: "run: apicity setup [claude|codex|agents] [--remove]",
+      hint: "run: apicity setup [claude|codex|agents|1password] [--remove]",
     });
   }
   if (positional.length > 1) {
     throw new CliError("usage", `unexpected argument: ${positional[1]}`, {
-      hint: "run: apicity setup [claude|codex|agents] [--remove]",
+      hint: "run: apicity setup [claude|codex|agents|1password] [--remove]",
     });
   }
 
@@ -368,7 +608,12 @@ export async function runSetupCommand(
   const form = positional[0] ?? "agents";
   if (!isSetupForm(form)) {
     throw new CliError("not_found", `unknown setup target: ${form}`, {
-      hint: "run: apicity setup claude, codex, or agents",
+      hint: "run: apicity setup claude, codex, agents, or 1password",
+    });
+  }
+  if (noVerify && form !== "1password") {
+    throw new CliError("usage", "unknown flag: --no-verify", {
+      hint: "only apicity setup 1password takes --no-verify",
     });
   }
 
@@ -379,6 +624,25 @@ export async function runSetupCommand(
     stdout: (text) => writer.out(text),
     stderr: (text) => writer.err(text),
   });
+
+  // The 1Password form edits the env file and nothing else; every other form,
+  // `--remove` included, never opens it.
+  if (form === "1password") {
+    const onePassword = {
+      env: options.env,
+      flags,
+      verify: !noVerify,
+      run: options.run,
+    };
+    if (remove) {
+      return out.success(removeOnePasswordSetup(onePassword), {
+        summary: "apicity setup 1password removed",
+      });
+    }
+    return out.success(await setupOnePassword(onePassword), {
+      summary: "apicity setup 1password complete",
+    });
+  }
 
   if (remove) {
     return out.success(await removeSetup(options), {
@@ -395,7 +659,7 @@ function isSetupForm(value: string): value is SetupForm {
 }
 
 async function runSetupForm(
-  form: SetupForm,
+  form: Exclude<SetupForm, "1password">,
   options: SetupOptions
 ): Promise<SetupResult> {
   if (form === "claude") return setupClaude(options);

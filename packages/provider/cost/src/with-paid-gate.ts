@@ -21,7 +21,8 @@ export interface WithPaidGateOptions {
   roots?: readonly string[];
   /**
    * Pay-gate configuration (shared HMAC secret + optional replay store/clock)
-   * forwarded to every gated dispatch. When omitted, paid endpoints fail closed
+   * forwarded to every gated dispatch. It arms the gate: when omitted, paid
+   * endpoints dispatch like free ones, and an OTP passed to one is refused
    * with `paygate-not-configured`.
    */
   config?: PayGateConfig;

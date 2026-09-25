@@ -1,6 +1,11 @@
 import { CALL_SHAPES, callShapeKey, type CallShape } from "./call-shapes.js";
 import { loadCostHelpers } from "./cost.js";
-import { isProviderConfigured } from "./credentials.js";
+import {
+  isProviderConfigured,
+  readCredentialSources,
+  type CredentialFlags,
+  type CredentialSources,
+} from "./credentials.js";
 import { CliError } from "./errors.js";
 import { loadTsv, type EndpointTsvRow } from "./registry.js";
 
@@ -30,20 +35,29 @@ export interface CatalogEntry {
 
 export interface LoadCatalogOptions {
   env?: NodeJS.ProcessEnv;
+  /**
+   * The credential flags on the command line. With `env` they locate the env
+   * file whose literals and references count as configured.
+   */
+  flags?: CredentialFlags;
+  /** Already-read sources, so a caller that needs them too reads them once. */
+  sources?: CredentialSources;
 }
 
 /**
  * Every endpoint in `scripts/endpoint-docs.tsv`, in tsv order.
  *
- * This function imports no provider module. It reads the tsv, the generated
- * call-shape table and the cost package, which is what keeps `commands` and
- * `providers` inside their timing budget: loading 28 provider factories to
- * list endpoint names would dominate the command.
+ * This function imports no provider module and spawns nothing. It reads the
+ * tsv, the generated call-shape table, the cost package and the env file,
+ * which is what keeps `commands` and `providers` inside their timing budget:
+ * loading 28 provider factories to list endpoint names would dominate the
+ * command.
  */
 export async function loadCatalog(
   options: LoadCatalogOptions = {}
 ): Promise<CatalogEntry[]> {
   const env = options.env ?? process.env;
+  const sources = options.sources ?? readCredentialSources(env, options.flags);
   const rows = await loadTsv();
   const { isPaidEndpoint } = await loadCostHelpers();
   const configuredByProvider = new Map<string, boolean>();
@@ -51,7 +65,7 @@ export async function loadCatalog(
   return rows.map((row) => {
     let configured = configuredByProvider.get(row.provider);
     if (configured === undefined) {
-      configured = isProviderConfigured(row.provider, env);
+      configured = isProviderConfigured(row.provider, env, sources);
       configuredByProvider.set(row.provider, configured);
     }
     const shape = callShapeFor(row);

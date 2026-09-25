@@ -14,6 +14,10 @@ import {
 } from "../../packages/cli/src/doctor";
 import type { CliWriter } from "../../packages/cli/src/envelope";
 import { runMain } from "../../packages/cli/src/main";
+import {
+  getProviderEnvVars,
+  OP_ITEM_LIST_TIMEOUT_MS,
+} from "../../packages/cli/src/one-password";
 import { PLUGIN_KEY } from "../../packages/cli/src/plugin";
 import {
   installSkill,
@@ -22,6 +26,7 @@ import {
 import {
   SUBPROCESS_STDIO,
   type SubprocessOptions,
+  type SubprocessResult,
   type SubprocessRunner,
 } from "../../packages/cli/src/subprocess";
 
@@ -86,6 +91,52 @@ function capture(): { writer: CliWriter; out: string[]; err: string[] } {
   };
 }
 
+/** The default env file of the sandbox home. */
+function writeEnvFile(content: string): void {
+  mkdirSync(join(home, ".config", "apicity"), { recursive: true });
+  writeFileSync(join(home, ".config", "apicity", ".env"), content);
+}
+
+interface OpCall {
+  command: string;
+  args: string[];
+  options: SubprocessOptions;
+}
+
+/**
+ * A fake `op`: `--version` answers 2.39.0 and `item list` the given titles
+ * (or the given failure). Nothing here ever spawns the real one.
+ */
+function opSeam(
+  reply: {
+    titles?: string[];
+    listing?: Partial<SubprocessResult>;
+  } = {}
+): { run: SubprocessRunner; calls: OpCall[] } {
+  const calls: OpCall[] = [];
+  const run: SubprocessRunner = (command, args, options) => {
+    calls.push({ command, args, options });
+    if (args[0] === "--version") {
+      return Promise.resolve({
+        code: 0,
+        stdout: "2.39.0\n",
+        stderr: "",
+        timedOut: false,
+      });
+    }
+    return Promise.resolve({
+      code: 0,
+      stdout: JSON.stringify(
+        (reply.titles ?? []).map((title) => ({ id: title, title }))
+      ),
+      stderr: "",
+      timedOut: false,
+      ...reply.listing,
+    });
+  };
+  return { run, calls };
+}
+
 describe("apicity doctor", () => {
   it("answers the twelve rows in order, whatever the host", async () => {
     const bare = await rows();
@@ -118,9 +169,11 @@ describe("apicity doctor", () => {
       message: "not configured",
     });
     expect(row(all, "Paygate Secret File")).toMatchObject({
-      status: "warning",
-      message: "not set; paid endpoints will fail closed",
+      status: "ok",
+      message:
+        "not set; the pay gate is off and paid endpoints call upstream directly",
     });
+    expect(row(all, "Paygate Secret File").hint).toBeUndefined();
     expect(row(all, "Agent Skill")).toMatchObject({
       status: "warning",
       message: "Not installed",
@@ -136,10 +189,12 @@ describe("apicity doctor", () => {
     expect(row(all, "Codex Skill").message).toBe("Codex not detected");
   });
 
-  it("counts providers in the shape the session hook parses", async () => {
+  it("counts providers in the N of M configured shape", async () => {
     const providers = row(await rows(), "Providers");
 
-    // EX-13's hook reads exactly this with /^(\d+) of \d+ configured(.*)$/.
+    // ac-w7vzap REQ-017 keeps this shape. The SessionStart hook no longer
+    // parses it — it reads `apicity providers --json`, which answers offline —
+    // but a caller reading the row still gets exactly this.
     const match = /^(\d+) of (\d+) configured(.*)$/.exec(providers.message);
     expect(match).not.toBeNull();
     expect(Number(match?.[2])).toBe(providerNames().length);
@@ -261,32 +316,232 @@ describe("apicity doctor", () => {
   });
 
   it("checks op only when 1Password is configured, through the seam", async () => {
-    const calls: Array<{ command: string; options: SubprocessOptions }> = [];
-    const run: SubprocessRunner = (command, _args, options) => {
-      calls.push({ command, options });
-      return Promise.resolve({
-        code: 0,
-        stdout: "2.30.0\n",
-        stderr: "",
-        timedOut: false,
-      });
-    };
+    const { run, calls } = opSeam();
 
-    expect((await rows({ run })).length).toBe(DOCTOR_ROW_NAMES.length);
+    const bare = await rows({ run });
+
+    expect(bare.length).toBe(DOCTOR_ROW_NAMES.length);
     expect(calls).toEqual([]);
+    expect(row(bare, "1Password CLI")).toMatchObject({
+      status: "ok",
+      message: "not configured",
+    });
+  });
 
-    const configured = await rows({
-      env: bareEnv({ APICITY_OP_VAULT: "Apicity" }),
+  it("reports a token alone as ok: references resolve with it", async () => {
+    const { run, calls } = opSeam();
+
+    const all = await rows({
+      env: bareEnv({
+        APICITY_OP_SERVICE_TOKEN: "env:OP_TEST_TOKEN",
+        OP_TEST_TOKEN: "ops_test_value",
+      }),
       run,
     });
-    expect(calls).toHaveLength(1);
+
+    expect(calls.map((call) => call.args)).toEqual([["--version"]]);
     expect(calls[0].command).toBe("op");
     expect(calls[0].options.timeoutMs).toBe(OP_VERSION_TIMEOUT_MS);
     expect(calls[0].options.stdio).toEqual(SUBPROCESS_STDIO);
-    expect(row(configured, "1Password CLI")).toMatchObject({
+    expect(calls[0].options.env).toBeUndefined();
+    expect(row(all, "1Password CLI")).toMatchObject({
       status: "ok",
-      message: "op 2.30.0",
+      message:
+        "op 2.39.0; token from environment (env:OP_TEST_TOKEN); op:// " +
+        "references resolve with it; no vault, so no vault convention",
     });
+  });
+
+  it("reports a vault alone as an error, because calls exit usage", async () => {
+    const { run, calls } = opSeam();
+
+    const all = await rows({
+      env: bareEnv({ APICITY_OP_VAULT: "Apicity" }),
+      run,
+    });
+
+    expect(calls.map((call) => call.args)).toEqual([["--version"]]);
+    expect(row(all, "1Password CLI")).toEqual({
+      name: "1Password CLI",
+      status: "error",
+      message: "op 2.39.0; vault Apicity has no token, so calls exit usage",
+      hint:
+        "set --op-token or APICITY_OP_SERVICE_TOKEN, or run: " +
+        "apicity setup 1password",
+    });
+
+    // A bare-name token whose variable is set but empty resolves to "", which
+    // a call treats as no token at all, so the row says the same thing.
+    const empty = opSeam();
+    const bare = await rows({
+      env: bareEnv({
+        APICITY_OP_VAULT: "Apicity",
+        APICITY_OP_SERVICE_TOKEN: "OP_TEST_TOKEN",
+        OP_TEST_TOKEN: "",
+      }),
+      run: empty.run,
+    });
+    expect(empty.calls.map((call) => call.args)).toEqual([["--version"]]);
+    expect(row(bare, "1Password CLI")).toEqual(row(all, "1Password CLI"));
+  });
+
+  it("reports a token reference to an unset variable without spawning", async () => {
+    const { run, calls } = opSeam();
+
+    const all = await rows({
+      env: bareEnv({
+        APICITY_OP_VAULT: "Apicity",
+        APICITY_OP_SERVICE_TOKEN: "env:OP_TEST_TOKEN",
+      }),
+      run,
+    });
+
+    expect(calls).toEqual([]);
+    expect(row(all, "1Password CLI")).toMatchObject({
+      status: "error",
+      message: "--op-token env reference OP_TEST_TOKEN is not set.",
+    });
+  });
+
+  it("lists the vault once, with the token only in op's environment", async () => {
+    const { run, calls } = opSeam({ titles: getProviderEnvVars() });
+    writeEnvFile(
+      "APICITY_OP_VAULT=Apicity\nAPICITY_OP_SERVICE_TOKEN=env:OP_TEST_TOKEN\n"
+    );
+
+    const all = await rows({
+      env: bareEnv({ OP_TEST_TOKEN: "ops_test_value" }),
+      run,
+    });
+
+    expect(calls.map((call) => call.args)).toEqual([
+      ["--version"],
+      ["item", "list", "--vault", "Apicity", "--format", "json"],
+    ]);
+    expect(calls[1].options.timeoutMs).toBe(OP_ITEM_LIST_TIMEOUT_MS);
+    expect(calls[1].options.stdio).toEqual(SUBPROCESS_STDIO);
+    expect(calls[1].options.env).toEqual({
+      OP_SERVICE_ACCOUNT_TOKEN: "ops_test_value",
+    });
+    // Every needed variable has an item: the row is ok, and names where the
+    // vault and the token came from without printing the token.
+    expect(row(all, "1Password CLI")).toEqual({
+      name: "1Password CLI",
+      status: "ok",
+      message:
+        "op 2.39.0; vault Apicity; token from env file (env:OP_TEST_TOKEN)",
+    });
+    expect(JSON.stringify(all)).not.toContain("ops_test_value");
+  });
+
+  it("warns, naming the variables the vault lacks", async () => {
+    const { run } = opSeam({ titles: ["KIE_API_KEY"] });
+    writeEnvFile(
+      "APICITY_OP_VAULT=Apicity\nAPICITY_OP_SERVICE_TOKEN=env:OP_TEST_TOKEN\n"
+    );
+
+    const doctor = row(
+      await rows({ env: bareEnv({ OP_TEST_TOKEN: "ops_test_value" }), run }),
+      "1Password CLI"
+    );
+
+    expect(doctor.status).toBe("warning");
+    expect(doctor.message).toContain("Apicity");
+    expect(doctor.message).toContain("env file");
+    expect(doctor.message).toContain("op 2.39.0");
+    const lacking = /; no vault item for (.+)$/.exec(doctor.message)?.[1];
+    expect(lacking?.split(", ")).toEqual(
+      getProviderEnvVars().filter((name) => name !== "KIE_API_KEY")
+    );
+    expect(lacking).toContain("OPENAI_API_KEY");
+    expect(doctor.hint).toBe(
+      "add those items, or supply the variables another way; see " +
+        "apicity providers"
+    );
+  });
+
+  it("never asks the vault for a variable a literal or reference supplies", async () => {
+    const { run } = opSeam({ titles: [] });
+    writeEnvFile(
+      [
+        "APICITY_OP_VAULT=Apicity",
+        "APICITY_OP_SERVICE_TOKEN=env:OP_TEST_TOKEN",
+        "FIREWORKS_API_KEY=op://Apicity/FIREWORKS_AI_API_KEY/password",
+        "XAI_API_KEY=xai-literal-sentinel",
+        "",
+      ].join("\n")
+    );
+
+    const doctor = row(
+      await rows({
+        env: bareEnv({
+          OP_TEST_TOKEN: "ops_test_value",
+          OPENAI_API_KEY: "sk-process-sentinel",
+        }),
+        run,
+      }),
+      "1Password CLI"
+    );
+
+    expect(doctor.status).toBe("warning");
+    for (const supplied of [
+      "FIREWORKS_API_KEY",
+      "XAI_API_KEY",
+      "OPENAI_API_KEY",
+    ]) {
+      expect(doctor.message).not.toContain(supplied);
+    }
+    expect(doctor.message).toContain("ANTHROPIC_API_KEY");
+    expect(doctor.message).not.toContain("sentinel");
+  });
+
+  it("errors when the listing fails, and never prints a literal token", async () => {
+    const token = "ops_SENTINEL_doctor";
+    const { run, calls } = opSeam({
+      listing: {
+        code: 1,
+        stderr: `[ERROR] 401: token ${token} is not authorized\n`,
+      },
+    });
+
+    const all = await rows({
+      flags: { opVault: "Apicity", opToken: token },
+      run,
+    });
+
+    expect(calls[1].options.env).toEqual({ OP_SERVICE_ACCOUNT_TOKEN: token });
+    expect(calls[1].args).not.toContain(token);
+    expect(row(all, "1Password CLI")).toEqual({
+      name: "1Password CLI",
+      status: "error",
+      message:
+        "op 2.39.0; vault Apicity; token from flag (literal); op item list " +
+        "failed: [ERROR] 401: token *** is not authorized",
+      hint:
+        "check the token and the vault name, then re-run " +
+        "apicity setup 1password",
+    });
+    expect(JSON.stringify(all)).not.toContain(token);
+    expect(humanReport(all).join("\n")).not.toContain(token);
+  });
+
+  it("counts the env file toward the Providers row, offline", async () => {
+    writeEnvFile(
+      [
+        "OPENAI_API_KEY=sk-file-sentinel",
+        "FIREWORKS_API_KEY=op://Apicity/FIREWORKS_AI_API_KEY/password",
+        "",
+      ].join("\n")
+    );
+    const { run, calls } = opSeam();
+
+    const providers = row(await rows({ run }), "Providers");
+
+    expect(calls).toEqual([]);
+    expect(providers.message).toMatch(/^\d+ of \d+ configured \(.*\)$/);
+    expect(providers.message).toContain("openai");
+    expect(providers.message).toContain("fireworks");
+    expect(providers.message).not.toContain("sentinel");
   });
 
   it("reports an unusable op as an error", async () => {
@@ -338,6 +593,50 @@ describe("apicity doctor", () => {
 
     expect(row(all, "Env File").status).toBe("error");
     expect(row(all, "Paygate Secret File").status).toBe("error");
+  });
+
+  it("errors on an empty paygate secret file, never printing it", async () => {
+    const secret = join(home, "empty.secret");
+    writeFileSync(secret, "  \n");
+
+    const all = await rows({
+      env: bareEnv({ APICITY_PAYGATE_SECRET_FILE: secret }),
+    });
+
+    expect(row(all, "Paygate Secret File")).toMatchObject({
+      status: "error",
+      message: `${secret} is empty`,
+    });
+  });
+
+  it("reads a paygate secret file the env file names, as a call does", async () => {
+    const secret = join(home, "paygate.secret");
+    const empty = join(home, "empty.secret");
+    writeFileSync(secret, "shared-secret\n");
+    writeFileSync(empty, "  \n");
+
+    writeEnvFile(`APICITY_PAYGATE_SECRET_FILE=${secret}\n`);
+    expect(row(await rows(), "Paygate Secret File")).toMatchObject({
+      status: "ok",
+      message: secret,
+    });
+
+    // An env file naming an empty file arms a gate that fails closed.
+    writeEnvFile(`APICITY_PAYGATE_SECRET_FILE=${empty}\n`);
+    expect(row(await rows(), "Paygate Secret File")).toMatchObject({
+      status: "error",
+      message: `${empty} is empty`,
+    });
+
+    // The process value still beats the env file's.
+    const all = await rows({
+      env: bareEnv({ APICITY_PAYGATE_SECRET_FILE: secret }),
+    });
+    expect(row(all, "Paygate Secret File")).toMatchObject({
+      status: "ok",
+      message: secret,
+    });
+    expect(JSON.stringify(all)).not.toContain("shared-secret");
   });
 
   it("errors on an output directory it cannot write to", async () => {

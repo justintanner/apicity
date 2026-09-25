@@ -22,6 +22,11 @@ const CODEX_CATALOGUE_IDS = [
   "gpt-5-6-terra",
 ] as const;
 
+// The three GPT-6 ids kie documented on the codex path as of 2026-09-25
+// (https://docs.kie.ai/market/chat/gpt-6-astra, /gpt-6-luna, /gpt-6-sol).
+// All three are enumerated from their docs pages alone; none was called live.
+const GPT_6_CATALOGUE_IDS = ["gpt-6-astra", "gpt-6-luna", "gpt-6-sol"] as const;
+
 // In the enum on the *other* surface, and served there — the control that keeps
 // the cross-surface rejection below from being vacuous.
 const API_SURFACE_CONTROL = "gpt-5.4-codex";
@@ -110,4 +115,50 @@ describe("kie codex Responses catalogue ids", () => {
     expect(apiParse(API_SURFACE_CONTROL).success).toBe(true);
     expect(KIE_RESPONSES_MODELS).not.toContain(API_SURFACE_CONTROL);
   });
+});
+
+// The same five pins for the GPT-6 ids. Like the four above, all three already
+// parsed through the alias hatch before they were enumerated, so membership and
+// the enum branch are the assertions that fail on a tree without them.
+describe("kie codex Responses GPT-6 ids", () => {
+  it.each(GPT_6_CATALOGUE_IDS)(
+    "enumerates %s in KIE_RESPONSES_MODELS",
+    (model) => {
+      expect(KIE_RESPONSES_MODELS).toContain(model);
+    }
+  );
+
+  it("keeps the GPT-6 ids in the `apicity describe` autocomplete enum branch", () => {
+    const branches = modelBranches(zodToJsonSchema(KieResponsesRequestSchema));
+
+    expect(branches).toHaveLength(2);
+    for (const model of GPT_6_CATALOGUE_IDS) {
+      expect(branches[0].enum as string[]).toContain(model);
+    }
+  });
+
+  it("would accept all three through the alias hatch alone", () => {
+    const branches = modelBranches(zodToJsonSchema(KieResponsesRequestSchema));
+    const alias = new RegExp(String(branches[1].pattern));
+
+    expect(GPT_6_CATALOGUE_IDS.filter((id) => !alias.test(id))).toEqual([]);
+  });
+
+  it.each(GPT_6_CATALOGUE_IDS)("still parses %s on the codex path", (model) => {
+    expect(codexParse(model).success).toBe(true);
+  });
+
+  it.each(GPT_6_CATALOGUE_IDS)(
+    "rejects %s on the /api/v1/responses schema",
+    (model) => {
+      const result = apiParse(model);
+
+      expect(result.success).toBe(false);
+      expect(
+        (result.error?.issues ?? []).some((issue) =>
+          issue.path.includes("model")
+        )
+      ).toBe(true);
+    }
+  );
 });

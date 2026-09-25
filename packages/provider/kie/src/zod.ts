@@ -6039,8 +6039,10 @@ export const KieOptionsSchema = z.object({
       (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>
     >()
     .optional(),
-  // Pay-gate configuration (shared HMAC secret). Required to call paid
-  // endpoints such as createTask; omitting it makes those calls fail closed.
+  // Pay-gate configuration (shared HMAC secret). Optional: without it, paid
+  // endpoints such as createTask dispatch directly, and an OTP passed to one
+  // is refused with paygate-not-configured. A non-empty secret arms the OTP
+  // gate; an empty one fails closed with paygate-not-configured.
   paygate: z.custom<PayGateConfig>().optional(),
 });
 

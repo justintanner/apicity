@@ -1,12 +1,28 @@
 import { execFile, spawn } from "node:child_process";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { promisify } from "node:util";
 import { PROVIDERS } from "./providers.js";
+import type { SubprocessResult } from "./subprocess.js";
 
 const execFileAsync = promisify(execFile);
 
 export type OpRead = (ref: string) => Promise<string>;
 export type OpListItemTitles = (vault: string) => Promise<string[]>;
-export type OpInject = (template: string) => Promise<string>;
+/**
+ * Run one `op inject` over a template.
+ *
+ * `serviceAccountToken` is what the child receives as
+ * `OP_SERVICE_ACCOUNT_TOKEN`, and never on argv; `undefined` leaves `op` to
+ * its own ambient sign-in (ac-w7vzap D-4). It is a parameter rather than
+ * something the seam closes over, so a test can see exactly which token a
+ * batch carried.
+ */
+export type OpInject = (
+  template: string,
+  serviceAccountToken?: string
+) => Promise<string>;
 
 export interface OnePasswordEnvOptions {
   vault: string;
@@ -22,6 +38,12 @@ export interface OnePasswordEnvOptions {
 
 const DEFAULT_OP_READ_CONCURRENCY = 6;
 const DEFAULT_OP_TIMEOUT_MS = 10_000;
+
+/**
+ * The `op item list` budget for the `setup 1password` probe and doctor's
+ * vault listing: the same ten seconds every other `op` call here gets.
+ */
+export const OP_ITEM_LIST_TIMEOUT_MS = DEFAULT_OP_TIMEOUT_MS;
 
 export async function fillOnePasswordEnv(
   opts: OnePasswordEnvOptions
@@ -128,19 +150,7 @@ export async function listOnePasswordItemTitles(
         env: opEnv(serviceAccountToken),
       }
     );
-    const parsed = JSON.parse(stdout) as unknown;
-    if (!Array.isArray(parsed)) {
-      throw new Error(
-        "Expected `op item list --format json` to return an array."
-      );
-    }
-    return parsed
-      .map((item) => {
-        if (typeof item !== "object" || item === null) return undefined;
-        const title = (item as Record<string, unknown>).title;
-        return typeof title === "string" ? title : undefined;
-      })
-      .filter((title): title is string => title !== undefined);
+    return parseItemTitles(stdout);
   } catch (err) {
     if ((err as NodeJS.ErrnoException).code === "ENOENT") {
       throw new Error("1Password CLI `op` was not found in PATH.");
@@ -149,17 +159,153 @@ export async function listOnePasswordItemTitles(
   }
 }
 
+/** The item titles in `op item list --format json` output. */
+export function parseItemTitles(stdout: string): string[] {
+  const parsed = JSON.parse(stdout) as unknown;
+  if (!Array.isArray(parsed)) {
+    throw new Error(
+      "Expected `op item list --format json` to return an array."
+    );
+  }
+  return parsed
+    .map((item) => {
+      if (typeof item !== "object" || item === null) return undefined;
+      const title = (item as Record<string, unknown>).title;
+      return typeof title === "string" ? title : undefined;
+    })
+    .filter((title): title is string => title !== undefined);
+}
+
+/**
+ * One line saying why an `op` run failed, for a doctor row or a setup error:
+ * "timed out", else `op`'s first stderr line, else its exit status.
+ *
+ * Every occurrence of the service-account token is replaced by `***` first.
+ * `op` has no reason to echo it, and this keeps that true of anything it
+ * prints.
+ */
+export function describeOpFailure(
+  result: SubprocessResult,
+  serviceAccountToken?: string
+): string {
+  if (result.timedOut) return "timed out";
+  const line = result.stderr.trim().split("\n")[0].trim();
+  if (line === "") return `exit ${result.code}`;
+  return redact(line, serviceAccountToken);
+}
+
+export interface OnePasswordReferenceOptions {
+  /** Variable name → its `op://vault/item/field` reference. */
+  references: Record<string, string>;
+  /** Where each resolved value is set; defaults to `process.env`. */
+  env?: NodeJS.ProcessEnv;
+  /**
+   * The token the `op` child receives as `OP_SERVICE_ACCOUNT_TOKEN`.
+   * `undefined` leaves `op` to its ambient sign-in (ac-w7vzap D-4); a
+   * reference carries its own vault, so none is needed.
+   */
+  serviceAccountToken?: string;
+  /** Seam: the one `op inject`, so a test never spawns `op`. */
+  injectSecrets?: OpInject;
+  timeoutMs?: number;
+}
+
+/**
+ * Resolve `op://` references in exactly one `op inject` run, however many
+ * there are, and set each variable.
+ *
+ * A reference holding CR, LF, `{{` or `}}` could not sit in the inject
+ * template, so it is refused before anything is spawned. A failure names the
+ * variables and their references — the lookup the operator has to fix — and
+ * never a value.
+ */
+export async function resolveOnePasswordReferences(
+  options: OnePasswordReferenceOptions
+): Promise<void> {
+  const env = options.env ?? process.env;
+  const entries = Object.entries(options.references);
+  if (entries.length === 0) return;
+
+  for (const [envVar, reference] of entries) {
+    if (/[\r\n]|\{\{|\}\}/.test(reference)) {
+      throw new Error(
+        `${envVar} holds a malformed op:// reference: ` +
+          JSON.stringify(reference)
+      );
+    }
+  }
+
+  const timeoutMs = options.timeoutMs ?? DEFAULT_OP_TIMEOUT_MS;
+  const injectSecrets =
+    options.injectSecrets ??
+    ((template: string, token?: string) =>
+      injectOnePasswordSecrets(template, timeoutMs, token));
+  const template = entries
+    .map(([envVar, reference]) => `${envVar}={{ ${reference} }}`)
+    .join("\n");
+
+  let injected: string;
+  try {
+    injected = await injectSecrets(template, options.serviceAccountToken);
+  } catch (err) {
+    throw new Error(
+      `1Password could not resolve ${describeReferences(entries)}: ` +
+        redact(errorMessage(err), options.serviceAccountToken)
+    );
+  }
+
+  const values = parseInjectedEnv(injected);
+  const unresolved = entries.filter(
+    ([envVar]) => !hasResolvedEnvValue(values[envVar])
+  );
+  if (unresolved.length > 0) {
+    throw new Error(
+      `1Password could not resolve ${describeReferences(unresolved)}: ` +
+        "op inject returned no value"
+    );
+  }
+  for (const [envVar] of entries) env[envVar] = values[envVar];
+}
+
+/** "A from op://…" or "A from op://…, B from op://…", names only. */
+function describeReferences(entries: Array<[string, string]>): string {
+  return entries
+    .map(([envVar, reference]) => `${envVar} from ${reference}`)
+    .join(", ");
+}
+
+function redact(text: string, secret: string | undefined): string {
+  return secret ? text.split(secret).join("***") : text;
+}
+
+/**
+ * Run `op inject` over a template, handed to it as a private temporary file.
+ *
+ * Not stdin: the child's stdin is the socket Node spawns it with, and `op`
+ * accepts neither route for a socket on Linux — `--in-file /dev/stdin` fails
+ * with "no such device or address", and plain stdin with "expected data on
+ * stdin but none found". The file holds `op://` references only, never a
+ * value: the resolved values come back on stdout. It lives in a fresh 0700
+ * directory, is written 0600, and is removed as soon as `op` exits.
+ */
 export async function injectOnePasswordSecrets(
   template: string,
   timeoutMs = DEFAULT_OP_TIMEOUT_MS,
   serviceAccountToken?: string
 ): Promise<string> {
-  return await runOpWithInput(
-    ["inject", "--in-file", "/dev/stdin"],
-    template,
-    timeoutMs,
-    serviceAccountToken
-  );
+  const dir = mkdtempSync(join(tmpdir(), "apicity-op-inject-"));
+  try {
+    const file = join(dir, "template");
+    writeFileSync(file, template, { mode: 0o600 });
+    return await runOpWithInput(
+      ["inject", "--in-file", file],
+      "",
+      timeoutMs,
+      serviceAccountToken
+    );
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
 }
 
 async function fillOnePasswordEnvBatch(
@@ -175,8 +321,8 @@ async function fillOnePasswordEnvBatch(
       listOnePasswordItemTitles(vault, timeoutMs, opts.serviceAccountToken));
   const injectSecrets =
     opts.injectSecrets ??
-    ((template: string) =>
-      injectOnePasswordSecrets(template, timeoutMs, opts.serviceAccountToken));
+    ((template: string, token?: string) =>
+      injectOnePasswordSecrets(template, timeoutMs, token));
   const itemTitles = new Set(await listItemTitles(opts.vault));
   const availableEnvVars = missingEnvVars.filter((envVar) =>
     itemTitles.has(envVar)
@@ -196,7 +342,8 @@ async function fillOnePasswordEnvBatch(
   const injected = await injectSecrets(
     availableEnvVars
       .map((envVar) => `${envVar}={{ ${onePasswordRef(opts.vault, envVar)} }}`)
-      .join("\n")
+      .join("\n"),
+    opts.serviceAccountToken
   );
   const values = parseInjectedEnv(injected);
   for (const envVar of availableEnvVars) {

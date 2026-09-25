@@ -6,13 +6,23 @@ import {
   defaultEnvFilePath,
   isProviderConfigured,
   providerNames,
+  readCredentialSources,
+  resolveServiceToken,
+  type CredentialSetting,
+  type CredentialSources,
 } from "./credentials.js";
 import {
   createWriter,
   resolveOutputDirectory,
   type CliWriter,
 } from "./envelope.js";
-import { lstat } from "./internal.js";
+import { errorMessage, lstat } from "./internal.js";
+import {
+  describeOpFailure,
+  getProviderEnvVars,
+  parseItemTitles,
+  OP_ITEM_LIST_TIMEOUT_MS,
+} from "./one-password.js";
 import {
   detectClaude,
   detectCodex,
@@ -99,6 +109,11 @@ export interface DoctorCommandOptions extends DoctorOptions {
 interface DoctorContext {
   env: NodeJS.ProcessEnv;
   flags: DoctorFlags;
+  /**
+   * The env file and 1Password settings a call would read, read once and
+   * never exported: the Providers and 1Password rows both answer from it.
+   */
+  sources: CredentialSources;
   home: string;
   version: string;
   claude: boolean;
@@ -117,15 +132,23 @@ interface DoctorContext {
  *
  * No row ever carries a credential: the Env File and Paygate rows print the
  * path a variable named and never its contents, the Providers row prints
- * names, and the 1Password row prints `op`'s own version string.
+ * names, and the 1Password row prints `op`'s version, the vault's name,
+ * variable names and where the token came from — never the token.
  */
 export async function collectDoctorRows(
   options: DoctorOptions = {}
 ): Promise<DoctorRow[]> {
   const home = resolveHome(options);
+  const env = options.env ?? process.env;
+  const flags = options.flags ?? {};
   const context: DoctorContext = {
-    env: options.env ?? process.env,
-    flags: options.flags ?? {},
+    env,
+    flags,
+    sources: readCredentialSources(env, {
+      envFile: flags.envFile,
+      opVault: flags.opVault,
+      opToken: flags.opToken,
+    }),
     home,
     version: options.version ?? readPackageVersion(),
     claude: detectClaude(options),
@@ -241,12 +264,37 @@ function envFileRow(context: DoctorContext): DoctorRow {
 /**
  * Only a host that configured 1Password is checked: spawning `op` on a host
  * that never asked for it would make a check out of a non-feature.
+ *
+ * The vault and the token are found the way a call finds them — flag, then
+ * environment, then env file — and the row says which state that leaves
+ * (ac-w7vzap OQ-005): a token alone resolves `op://` references (`ok`); a vault
+ * alone makes every call exit `usage` (`error`); both are checked by listing
+ * the vault once, with the token only in `op`'s environment, and the row warns
+ * about any provider variable nothing else supplies and the vault lacks.
  */
 async function onePasswordRow(context: DoctorContext): Promise<DoctorRow> {
-  const vault = context.flags.opVault ?? context.env.APICITY_OP_VAULT;
-  const token = context.flags.opToken ?? context.env.APICITY_OP_SERVICE_TOKEN;
-  if (!vault && !token) {
-    return { name: "1Password CLI", status: "ok", message: "not configured" };
+  const name = "1Password CLI";
+  const { vault, token } = context.sources;
+  if (vault === undefined && token === undefined) {
+    return { name, status: "ok", message: "not configured" };
+  }
+
+  // An `env:VAR` or `$VAR` token whose variable is unset fails every call
+  // before `op` could run, so nothing is spawned to report it.
+  let resolvedToken: string | undefined;
+  if (token !== undefined) {
+    try {
+      resolvedToken = resolveServiceToken(token.value, context.sources.env);
+    } catch (err) {
+      return {
+        name,
+        status: "error",
+        message: errorMessage(err),
+        hint:
+          "set that variable, or run: apicity setup 1password with another " +
+          "--op-token",
+      };
+    }
   }
 
   const run = context.options.run ?? runSubprocess;
@@ -254,30 +302,130 @@ async function onePasswordRow(context: DoctorContext): Promise<DoctorRow> {
     timeoutMs: OP_VERSION_TIMEOUT_MS,
     stdio: SUBPROCESS_STDIO,
   });
-  if (result.code === 0) {
-    const version = result.stdout.trim().split("\n")[0];
+  if (result.code !== 0) {
     return {
-      name: "1Password CLI",
-      status: "ok",
-      message: version === "" ? "installed" : `op ${version}`,
+      name,
+      status: "error",
+      message: result.timedOut
+        ? "op --version timed out"
+        : "op --version failed; the CLI is configured but not usable",
+      hint: "install the 1Password CLI, or unset APICITY_OP_VAULT",
     };
   }
+  const version = result.stdout.trim().split("\n")[0];
+  const op = version === "" ? "op installed" : `op ${version}`;
+
+  if (vault === undefined) {
+    return {
+      name,
+      status: "ok",
+      message:
+        `${op}; token from ${describeTokenSource(token, context)}; ` +
+        "op:// references resolve with it; no vault, so no vault convention",
+    };
+  }
+  // A bare-name token whose variable is set but empty resolves to "", which
+  // a call treats as no token at all.
+  if (token === undefined || !resolvedToken) {
+    return {
+      name,
+      status: "error",
+      message: `${op}; vault ${vault.value} has no token, so calls exit usage`,
+      hint:
+        "set --op-token or APICITY_OP_SERVICE_TOKEN, or run: " +
+        "apicity setup 1password",
+    };
+  }
+
+  const configured =
+    `${op}; vault ${vault.value}; ` +
+    `token from ${describeTokenSource(token, context)}`;
+  const listing = await run(
+    "op",
+    ["item", "list", "--vault", vault.value, "--format", "json"],
+    {
+      timeoutMs: OP_ITEM_LIST_TIMEOUT_MS,
+      stdio: SUBPROCESS_STDIO,
+      env: { OP_SERVICE_ACCOUNT_TOKEN: resolvedToken },
+    }
+  );
+  let titles: Set<string> | undefined;
+  if (listing.code === 0 && !listing.timedOut) {
+    try {
+      titles = new Set(parseItemTitles(listing.stdout));
+    } catch {
+      titles = undefined;
+    }
+  }
+  if (titles === undefined) {
+    const detail =
+      listing.code === 0 && !listing.timedOut
+        ? "unreadable output"
+        : describeOpFailure(listing, resolvedToken);
+    return {
+      name,
+      status: "error",
+      message: `${configured}; op item list failed: ${detail}`,
+      hint:
+        "check the token and the vault name, then re-run " +
+        "apicity setup 1password",
+    };
+  }
+
+  // Only a variable nothing else supplies is read from the vault, so only
+  // those can be missing from it.
+  const missing = getProviderEnvVars().filter(
+    (envVar) => !isSupplied(context.sources, envVar) && !titles.has(envVar)
+  );
+  if (missing.length === 0) {
+    return { name, status: "ok", message: configured };
+  }
   return {
-    name: "1Password CLI",
-    status: "error",
-    message: result.timedOut
-      ? "op --version timed out"
-      : "op --version failed; the CLI is configured but not usable",
-    hint: "install the 1Password CLI, or unset APICITY_OP_VAULT",
+    name,
+    status: "warning",
+    message: `${configured}; no vault item for ${missing.join(", ")}`,
+    hint:
+      "add those items, or supply the variables another way; see " +
+      "apicity providers",
   };
+}
+
+/** Supplied by a process value, an env-file literal or a reference. */
+function isSupplied(sources: CredentialSources, envVar: string): boolean {
+  const value = sources.env[envVar];
+  return (
+    (value !== undefined && value !== "") ||
+    Object.prototype.hasOwnProperty.call(sources.references, envVar)
+  );
+}
+
+/**
+ * Where the token came from, and how it was written — never the token: a
+ * reference form (`env:VAR`, `$VAR`, a bare name that is set) is named, and
+ * anything else is a literal that is only ever called one.
+ */
+function describeTokenSource(
+  token: CredentialSetting | undefined,
+  context: DoctorContext
+): string {
+  if (token === undefined) return "nowhere";
+  const { value } = token;
+  const named =
+    value.startsWith("env:") ||
+    value.startsWith("$") ||
+    (context.sources.env[value] ?? "") !== "";
+  return `${token.source} (${named ? value : "literal"})`;
 }
 
 function providersRow(context: DoctorContext): DoctorRow {
   const names = providerNames();
   const configured = names.filter((name) =>
-    isProviderConfigured(name, context.env)
+    isProviderConfigured(name, context.env, context.sources)
   );
-  // `N of M configured (names)` is parsed by the plugin's SessionStart hook.
+  // The same count `apicity providers` reports, offline: the env file and the
+  // vault convention count, and nothing asks 1Password. The SessionStart hook
+  // reads `apicity providers --json` now, but this message keeps its
+  // `N of M configured (names)` shape.
   const message =
     `${configured.length} of ${names.length} configured` +
     (configured.length === 0 ? "" : ` (${configured.join(", ")})`);

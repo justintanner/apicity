@@ -48,6 +48,7 @@ describe("apicity dispatcher", () => {
       "setup claude",
       "setup codex",
       "setup agents",
+      "setup 1password",
       "doctor",
       "help",
       "version",

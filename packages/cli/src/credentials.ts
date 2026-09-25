@@ -1,11 +1,22 @@
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 
-import { loadEnvFile } from "./env-file.js";
+import {
+  applyEnvFileEntries,
+  envFileReferences,
+  isOpReference,
+  parseEnvFile,
+} from "./env-file.js";
 import { CliError } from "./errors.js";
 import { errorMessage } from "./internal.js";
-import { fillOnePasswordEnv, type OpRead } from "./one-password.js";
+import {
+  fillOnePasswordEnv,
+  resolveOnePasswordReferences,
+  type OpInject,
+  type OpListItemTitles,
+  type OpRead,
+} from "./one-password.js";
 import { PROVIDERS, type ProviderSpec } from "./providers.js";
 
 /**
@@ -40,12 +51,20 @@ export function providerEnvVars(
 }
 
 /**
- * Would `instantiateProvider` answer a provider object for this name?
+ * Is this provider configured?
  *
- * This mirrors that function's null conditions exactly, without importing a
- * provider package: `apicity commands` and `apicity providers` report which
- * providers are usable, and loading 28 factories to find out would cost more
- * than the whole command is allowed to take.
+ * Without `sources`, the question is the one `instantiateProvider` answers:
+ * would it build a provider object from this environment? This mirrors that
+ * function's null conditions exactly, without importing a provider package,
+ * and it is what the call path checks once credentials have resolved.
+ *
+ * With `sources`, the question is the one discovery and doctor answer:
+ * does the CLI know where each credential comes from? A process value, an
+ * env-file literal, an `op://` reference in either, or the vault convention
+ * when a vault and a token are both configured, all count. Answering it reads
+ * `sources` alone — no `op` is spawned and no provider is imported — so
+ * `providers`, `commands` and `describe` stay offline, and whether the vault
+ * really holds an item surfaces at call time and in `apicity doctor`.
  *
  * `envVar: ""` means the provider needs no credential at all — binance,
  * openligadb, openf1, free-media-upload, and polymarket, whose public market
@@ -53,7 +72,8 @@ export function providerEnvVars(
  */
 export function isProviderConfigured(
   name: string,
-  env: NodeJS.ProcessEnv = process.env
+  env: NodeJS.ProcessEnv = process.env,
+  sources?: CredentialSources
 ): boolean {
   const spec = PROVIDERS[name];
   if (!spec) return false;
@@ -61,7 +81,16 @@ export function isProviderConfigured(
   if (CREDENTIAL_OPTIONAL.has(name)) return true;
   // s3 and b2 are the multi-var cases: the factory returns null unless every
   // one of their vars is set, which is exactly this list.
-  return providerEnvVars(name, spec).every((envVar) => isSet(env, envVar));
+  const envVars = providerEnvVars(name, spec);
+  if (sources === undefined) {
+    return envVars.every((envVar) => isSet(env, envVar));
+  }
+  if (sources.vault !== undefined && sources.token !== undefined) return true;
+  return envVars.every(
+    (envVar) =>
+      isSet(sources.env, envVar) ||
+      Object.prototype.hasOwnProperty.call(sources.references, envVar)
+  );
 }
 
 /** Every provider name the CLI knows, in `PROVIDERS` order. */
@@ -83,8 +112,12 @@ export interface ResolveCredentialsOptions {
   provider: string;
   flags?: CredentialFlags;
   env?: NodeJS.ProcessEnv;
-  /** Seam: the 1Password read, so a test never spawns `op`. */
+  /** Seam: the per-variable 1Password read, so a test never spawns `op`. */
   readSecret?: OpRead;
+  /** Seam: the vault listing of the convention batch. */
+  listItemTitles?: OpListItemTitles;
+  /** Seam: the one `op inject` of a reference or convention batch. */
+  injectSecrets?: OpInject;
 }
 
 /** The env file a call falls back to when no flag or variable names one. */
@@ -94,11 +127,123 @@ export function defaultEnvFilePath(
   return join(env.HOME ?? homedir(), ".config", "apicity", ".env");
 }
 
+/** Where a command finds its env file. */
+export interface EnvFileLocation {
+  path: string;
+  /**
+   * True when `--env-file` or `APICITY_ENV_FILE` named it, so a call that
+   * cannot read it fails; false for the default path, read only if present.
+   */
+  named: boolean;
+}
+
 /**
- * Fill the environment with whatever the addressed provider needs, in the
- * precedence REQ-006 fixes: variables already set in the process win, an env
- * file fills the rest, and 1Password fills what is still missing — but only
- * when a vault and a token were configured.
+ * The env file a call loads, `setup 1password` writes and discovery reads:
+ * `--env-file`, else a non-empty `APICITY_ENV_FILE`, else
+ * `~/.config/apicity/.env`.
+ */
+export function locateEnvFile(
+  env: NodeJS.ProcessEnv = process.env,
+  flags: CredentialFlags = {}
+): EnvFileLocation {
+  const named = flags.envFile ?? env.APICITY_ENV_FILE;
+  if (named !== undefined && named !== "") return { path: named, named: true };
+  return { path: defaultEnvFilePath(env), named: false };
+}
+
+/** One 1Password setting, and where it was found. */
+export interface CredentialSetting {
+  /** As written: a token is never resolved when it is read here. */
+  value: string;
+  source: "flag" | "environment" | "env file";
+}
+
+/** Everything the CLI knows, offline, about where credentials come from. */
+export interface CredentialSources {
+  /** The env file a call would load, whether or not it could be read. */
+  envFile: EnvFileLocation;
+  /**
+   * A copy of the environment with the env file's literals applied exactly
+   * as a call applies them. The process environment is never touched.
+   */
+  env: NodeJS.ProcessEnv;
+  /** The env file's `op://` references, first occurrence per variable. */
+  references: Record<string, string>;
+  vault?: CredentialSetting;
+  token?: CredentialSetting;
+}
+
+/**
+ * Read what a call would read, without doing anything a call does.
+ *
+ * It never throws, never exports into the environment, never spawns `op` and
+ * imports no provider: an env file that is absent or unreadable contributes
+ * nothing, and doctor's Env File row is where an unreadable one is reported.
+ * `providers`, `commands`, `describe` and doctor all answer "configured" from
+ * this, so the persisted setup counts everywhere it counts for a call.
+ */
+export function readCredentialSources(
+  env: NodeJS.ProcessEnv = process.env,
+  flags: CredentialFlags = {}
+): CredentialSources {
+  const envFile = locateEnvFile(env, flags);
+  const entries = readEnvFileEntries(envFile.path);
+  const merged: NodeJS.ProcessEnv = { ...env };
+  applyEnvFileEntries(entries, merged);
+
+  return {
+    envFile,
+    env: merged,
+    references: envFileReferences(entries),
+    vault: credentialSetting(flags.opVault, "APICITY_OP_VAULT", env, merged),
+    token: credentialSetting(
+      flags.opToken,
+      "APICITY_OP_SERVICE_TOKEN",
+      env,
+      merged
+    ),
+  };
+}
+
+function readEnvFileEntries(path: string): Array<[string, string]> {
+  try {
+    return parseEnvFile(readFileSync(path, "utf8"));
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * A setting the way a call picks it — the flag when one was given, else the
+ * environment with the env file applied — labelled with where it came from.
+ */
+function credentialSetting(
+  flag: string | undefined,
+  name: string,
+  env: NodeJS.ProcessEnv,
+  merged: NodeJS.ProcessEnv
+): CredentialSetting | undefined {
+  const value = flag ?? merged[name];
+  if (!value) return undefined;
+  if (flag !== undefined) return { value, source: "flag" };
+  return { value, source: env[name] === value ? "environment" : "env file" };
+}
+
+/**
+ * Fill the environment with whatever the addressed provider needs. For each
+ * of its variables the first source that has one wins:
+ *
+ * 1. a literal already set in the process;
+ * 2. a literal in the env file;
+ * 3. an `op://` reference, the process environment's before the env file's,
+ *    all of them resolved in one `op inject` — with the configured token, or
+ *    with `op`'s own sign-in when there is none;
+ * 4. the vault convention `op://<vault>/<VAR>/password`, only when a vault
+ *    and a token are both configured.
+ *
+ * References outside the addressed provider's variables are neither resolved
+ * nor exported (ac-w7vzap OQ-003): no variable ever ends up holding a raw
+ * reference the CLI read from a file.
  *
  * This is deliberately not a startup-time check that throws when neither an
  * env file nor op values are given: a call must work with nothing configured
@@ -111,40 +256,66 @@ export async function resolveCredentials(
   const env = options.env ?? process.env;
   const flags = options.flags ?? {};
 
-  const named = flags.envFile ?? env.APICITY_ENV_FILE;
-  if (named !== undefined && named !== "") {
+  const envFile = locateEnvFile(env, flags);
+  let entries: Array<[string, string]> = [];
+  if (envFile.named) {
     try {
-      loadEnvFile(named, env);
+      entries = parseEnvFile(readFileSync(envFile.path, "utf8"));
     } catch (cause) {
-      throw new CliError("usage", errorMessage(cause), {
-        hint: "check the --env-file path, or unset APICITY_ENV_FILE",
-        cause,
-      });
+      throw new CliError(
+        "usage",
+        `--env-file ${envFile.path} could not be read: ${errorMessage(cause)}`,
+        {
+          hint: "check the --env-file path, or unset APICITY_ENV_FILE",
+          cause,
+        }
+      );
     }
-  } else {
-    const fallback = defaultEnvFilePath(env);
-    if (existsSync(fallback)) loadEnvFile(fallback, env);
+  } else if (existsSync(envFile.path)) {
+    entries = parseEnvFile(readFileSync(envFile.path, "utf8"));
   }
+  applyEnvFileEntries(entries, env);
 
   const vault = flags.opVault ?? env.APICITY_OP_VAULT;
   const token = resolveServiceToken(
     flags.opToken ?? env.APICITY_OP_SERVICE_TOKEN,
     env
   );
-  if (!vault && !token) return;
-  if (!vault) {
-    throw new CliError(
-      "usage",
-      "--op-vault is required when --op-token is set."
-    );
-  }
-  if (!token) {
+  // The vault convention needs both halves. A token alone is valid: it
+  // authenticates `op://` references, which name their own vault.
+  if (vault && !token) {
     throw new CliError(
       "usage",
       "--op-token is required when --op-vault is set."
     );
   }
 
+  const fileReferences = envFileReferences(entries);
+  const references: Record<string, string> = {};
+  for (const envVar of providerEnvVars(options.provider)) {
+    const value = env[envVar];
+    if (value !== undefined && value !== "" && !isOpReference(value)) continue;
+    const reference = isOpReference(value) ? value : fileReferences[envVar];
+    if (reference !== undefined) references[envVar] = reference;
+  }
+
+  if (Object.keys(references).length > 0) {
+    try {
+      await resolveOnePasswordReferences({
+        references,
+        env,
+        serviceAccountToken: token,
+        injectSecrets: options.injectSecrets,
+      });
+    } catch (cause) {
+      throw new CliError("auth", errorMessage(cause), {
+        hint: "check the op:// reference and op's sign-in; see apicity doctor",
+        cause,
+      });
+    }
+  }
+
+  if (!vault || !token) return;
   try {
     await fillOnePasswordEnv({
       vault,
@@ -154,6 +325,8 @@ export async function resolveCredentials(
       enabledProviders: [options.provider],
       env,
       readSecret: options.readSecret,
+      listItemTitles: options.listItemTitles,
+      injectSecrets: options.injectSecrets,
     });
   } catch (cause) {
     throw new CliError("auth", errorMessage(cause), {

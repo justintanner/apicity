@@ -1,8 +1,15 @@
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { delimiter, join } from "node:path";
 import { pathToFileURL } from "node:url";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { loadCatalog } from "../../packages/cli/src/catalog";
 import type { CliWriter } from "../../packages/cli/src/envelope";
@@ -18,13 +25,23 @@ import {
   type ProviderLoader,
 } from "../../packages/cli/src/discovery";
 import { instantiateForIntrospection } from "../../packages/cli/src/discovery";
+import { providerEnvVars } from "../../packages/cli/src/credentials";
 import type { JsonSchema } from "../../packages/cli/src/schema";
+import {
+  runSubprocess,
+  SUBPROCESS_STDIO,
+} from "../../packages/cli/src/subprocess";
 
 // AC-07: the three discovery commands. None of them needs a credential, and
 // only `describe` may touch a provider package — the import seam below is the
 // half of the timing budget that a stopwatch cannot protect.
 
-const EMPTY_ENV: NodeJS.ProcessEnv = {};
+/** A home with nothing in it (ac-w7vzap F-10): `configured` reads it. */
+function sandboxHome(): string {
+  return mkdtempSync(join(tmpdir(), "apicity-discovery-home-"));
+}
+
+const EMPTY_ENV: NodeJS.ProcessEnv = { HOME: sandboxHome() };
 
 interface Capture {
   writer: CliWriter;
@@ -283,6 +300,228 @@ describe("provider-import seam", () => {
     });
 
     expect(calls).toEqual(["openligadb"]);
+  });
+});
+
+// D-5 (ac-w7vzap): "configured" means the CLI knows where each credential
+// comes from — a process value, an env-file literal or `op://` reference, or
+// the vault convention — and answering it never runs `op`.
+describe("configured counts the env file and the vault convention", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  /** A sandbox home whose default env file holds `content`. */
+  function homeWithEnvFile(content: string): NodeJS.ProcessEnv {
+    const home = sandboxHome();
+    mkdirSync(join(home, ".config", "apicity"), { recursive: true });
+    writeFileSync(join(home, ".config", "apicity", ".env"), content);
+    return { HOME: home };
+  }
+
+  async function configured(
+    env: NodeJS.ProcessEnv
+  ): Promise<Record<string, boolean>> {
+    const summaries = await listProviders({ env });
+    return Object.fromEntries(
+      summaries.map((summary) => [summary.provider, summary.configured])
+    );
+  }
+
+  it("counts an env-file literal", async () => {
+    const found = await configured(
+      homeWithEnvFile("OPENAI_API_KEY=sk-file-literal\n")
+    );
+
+    expect(found.openai).toBe(true);
+    expect(found.xai).toBe(false);
+  });
+
+  it("counts an env-file op:// reference, unresolved", async () => {
+    const found = await configured(
+      homeWithEnvFile(
+        "FIREWORKS_API_KEY=op://Apicity/FIREWORKS_AI_API_KEY/password\n"
+      )
+    );
+
+    expect(found.fireworks).toBe(true);
+    expect(found.openai).toBe(false);
+  });
+
+  it("counts every credentialed provider for a vault and token in the env file", async () => {
+    const found = await configured(
+      homeWithEnvFile(
+        "APICITY_OP_VAULT=Apicity\n" +
+          "APICITY_OP_SERVICE_TOKEN=env:OP_SERVICE_ACCOUNT_TOKEN\n"
+      )
+    );
+
+    expect(Object.values(found).every(Boolean)).toBe(true);
+  });
+
+  it("does not count a vault without a token", async () => {
+    const found = await configured(
+      homeWithEnvFile("APICITY_OP_VAULT=Apicity\n")
+    );
+
+    expect(found.openai).toBe(false);
+    expect(found.binance).toBe(true);
+  });
+
+  it("reads the env file and 1Password flags a command line gives", async () => {
+    const home = sandboxHome();
+    const file = join(home, "named.env");
+    writeFileSync(file, "XAI_API_KEY=xai-file-literal\n");
+
+    const commands = capture();
+    await expect(
+      runMain(
+        ["commands", "--provider", "xai", "--env-file", file, "--json"],
+        commands.writer,
+        { env: { HOME: home }, stdoutIsTTY: false }
+      )
+    ).resolves.toBe(0);
+    const rows = (
+      JSON.parse(commands.out.join("\n")) as {
+        data: Array<{ configured: boolean }>;
+      }
+    ).data;
+    expect(rows.length).toBeGreaterThan(0);
+    expect(rows.every((row) => row.configured)).toBe(true);
+
+    const providers = capture();
+    await runMain(
+      ["providers", "--op-vault", "Apicity", "--op-token", "env:T", "--json"],
+      providers.writer,
+      { env: { HOME: home }, stdoutIsTTY: false }
+    );
+    const summaries = (
+      JSON.parse(providers.out.join("\n")) as {
+        data: Array<{ provider: string; configured: boolean }>;
+      }
+    ).data;
+    expect(summaries.every((summary) => summary.configured)).toBe(true);
+
+    const described = capture();
+    await runMain(
+      [
+        "describe",
+        "kie",
+        "api.v1.jobs.createTask",
+        "--op-vault",
+        "Apicity",
+        "--op-service-token",
+        "env:T",
+        "--json",
+      ],
+      described.writer,
+      { env: { HOME: home }, stdoutIsTTY: false }
+    );
+    expect(
+      (
+        JSON.parse(described.out.join("\n")) as {
+          data: { configured: boolean };
+        }
+      ).data.configured
+    ).toBe(true);
+  });
+
+  // ac-w7vzap A-2: the two alias paths forward the same flags.
+  it("forwards the flags on the apicity <provider> and --help paths", async () => {
+    const env = { HOME: sandboxHome() };
+    const flags = ["--op-vault", "Apicity", "--op-token", "env:T", "--json"];
+
+    const alias = capture();
+    await expect(
+      runMain(["kie", ...flags], alias.writer, { env, stdoutIsTTY: false })
+    ).resolves.toBe(0);
+    const rows = (
+      JSON.parse(alias.out.join("\n")) as {
+        data: Array<{ configured: boolean }>;
+      }
+    ).data;
+    expect(rows.length).toBeGreaterThan(0);
+    expect(rows.every((row) => row.configured)).toBe(true);
+
+    const help = capture();
+    await expect(
+      runMain(
+        ["kie", "api.v1.jobs.createTask", "--help", ...flags],
+        help.writer,
+        {
+          env,
+          stdoutIsTTY: false,
+        }
+      )
+    ).resolves.toBe(0);
+    expect(
+      (JSON.parse(help.out.join("\n")) as { data: { configured: boolean } })
+        .data.configured
+    ).toBe(true);
+  });
+
+  // ac-w7vzap A3 (REQ-017): discovery stays offline under a vault and a token.
+  // A fake `op` first on PATH leaves a marker when anything runs it; the three
+  // discovery calls must leave none, and the positive control proves the fake
+  // would have been found.
+  it("never runs op under a vault and a token", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "apicity-fake-op-"));
+    const marker = join(dir, "op-ran");
+    writeFileSync(
+      join(dir, "op"),
+      `#!/bin/sh\necho ran >> '${marker}'\necho 2.39.0\n`,
+      { mode: 0o755 }
+    );
+    vi.stubEnv("PATH", `${dir}${delimiter}${process.env.PATH ?? ""}`);
+    const env: NodeJS.ProcessEnv = {
+      HOME: sandboxHome(),
+      APICITY_OP_VAULT: "Apicity",
+      APICITY_OP_SERVICE_TOKEN: "env:NOT_A_TOKEN",
+    };
+    const { loader, calls } = countingLoader();
+
+    try {
+      const summaries = await listProviders({ env, loadProvider: loader });
+      await runCommands(capture().writer, {
+        json: true,
+        env,
+        loadProvider: loader,
+      });
+      const description = await describeEndpoint(
+        "openligadb",
+        "getcurrentgroup",
+        {
+          env,
+          loadProvider: loader,
+        }
+      );
+
+      expect(summaries.every((summary) => summary.configured)).toBe(true);
+      expect(description.configured).toBe(true);
+      expect(calls).toEqual(["openligadb"]);
+      expect(existsSync(marker)).toBe(false);
+
+      // Positive control: the same PATH does reach the fake.
+      const control = await runSubprocess("op", ["--version"], {
+        timeoutMs: 4000,
+        stdio: SUBPROCESS_STDIO,
+      });
+      expect(control.code).toBe(0);
+      expect(existsSync(marker)).toBe(true);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it("names every variable a provider reads, with no value", async () => {
+    const summaries = await listProviders({
+      env: homeWithEnvFile("S3_ACCESS_KEY_ID=AKIA-file-sentinel\n"),
+    });
+    const s3 = summaries.find((summary) => summary.provider === "s3");
+
+    expect(s3?.envVars).toEqual(providerEnvVars("s3"));
+    expect(s3?.configured).toBe(false);
+    expect(JSON.stringify(summaries)).not.toContain("sentinel");
   });
 });
 

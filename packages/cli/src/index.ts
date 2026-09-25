@@ -7,7 +7,10 @@ export {
   listOnePasswordItemTitles,
   onePasswordRef,
   readOnePasswordSecret,
+  resolveOnePasswordReferences,
+  OP_ITEM_LIST_TIMEOUT_MS,
   type OnePasswordEnvOptions,
+  type OnePasswordReferenceOptions,
   type OpInject,
   type OpListItemTitles,
   type OpRead,
@@ -58,8 +61,13 @@ export {
 } from "./catalog.js";
 export {
   isProviderConfigured,
+  locateEnvFile,
   providerEnvVars,
   providerNames,
+  readCredentialSources,
+  type CredentialSetting,
+  type CredentialSources,
+  type EnvFileLocation,
 } from "./credentials.js";
 export {
   describeEndpoint,
@@ -132,11 +140,13 @@ export {
   type InstalledPlugin,
 } from "./plugin.js";
 export {
+  removeOnePasswordSetup,
   removeSetup,
   runSetupCommand,
   setupAgents,
   setupClaude,
   setupCodex,
+  setupOnePassword,
   MANUAL_CLAUDE_COMMANDS,
   MARKETPLACE_ADD_TIMEOUT_MS,
   MARKETPLACE_UPDATE_TIMEOUT_MS,
@@ -147,6 +157,9 @@ export {
   SETUP_FORMS,
   type AgentId,
   type AgentStatus,
+  type OnePasswordRemoveResult,
+  type OnePasswordSetupOptions,
+  type OnePasswordSetupResult,
   type SetupAgentSelector,
   type SetupCommandOptions,
   type SetupForm,

@@ -443,18 +443,29 @@ apicity thesportsdb v1.eventsnext --data '{"id":"133604"}'
 
 ## Credentials and configuration
 
-Credentials are the operator's, not yours. `apicity` resolves them itself, in
-this order, for the addressed provider only:
+Credentials are the operator's, not yours. `apicity` resolves them itself, for
+the addressed provider only; for each variable the first source that has one
+wins:
 
-1. variables already set in the environment;
-2. an env file — `--env-file <path>`, else `$APICITY_ENV_FILE`, else
-   `~/.config/apicity/.env` when it exists;
-3. 1Password, when both `--op-vault <vault>` and `--op-token <token>` (or
-   `$APICITY_OP_VAULT` and `$APICITY_OP_SERVICE_TOKEN`) are configured.
+1. a value already set in the environment;
+2. a literal in the env file — `--env-file <path>`, else `$APICITY_ENV_FILE`,
+   else `~/.config/apicity/.env` when it exists;
+3. an `op://<vault>/<item>/<field>` reference in the environment or the env
+   file, resolved through 1Password's `op`;
+4. the 1Password vault convention, when both `--op-vault <vault>` and
+   `--op-token <token>` (or `$APICITY_OP_VAULT` and
+   `$APICITY_OP_SERVICE_TOKEN`) are configured.
+
+The vault and token usually live in that env file already: the operator saves
+them once with `apicity setup 1password`, and every call uses them with no
+flags. That is the operator's one-time command. Never run it yourself with a
+literal token, and never pass `--op-token` on a call.
 
 `apicity providers --json` reports which providers are configured, by variable
 **name**, and `apicity doctor` checks the whole setup. Neither prints a value,
-and neither should you.
+and neither should you. `configured: true` means the CLI knows where each
+credential comes from. Whether the vault really holds it shows up only when
+you call (an `auth` failure, exit 3) and in `apicity doctor`.
 
 Other variables the CLI reads: `$APICITY_OUTPUT_DIR` and `$CLAUDE_PROJECT_DIR`
 (where media lands), `$APICITY_PAYGATE_SECRET_FILE` (the operator's pay-gate

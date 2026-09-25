@@ -3,7 +3,14 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
 
-import { loadEnvFile, parseEnvFile } from "../../packages/cli/src/env-file";
+import {
+  envFileKey,
+  envFileReferences,
+  loadEnvFile,
+  parseEnvFile,
+  removeEnvFileAssignments,
+  setEnvFileAssignments,
+} from "../../packages/cli/src/env-file";
 import { fillOnePasswordEnv } from "../../packages/cli/src/one-password";
 import {
   instantiateProvider,
@@ -83,7 +90,10 @@ describe("loadEnvFile", () => {
     expect(env.OPENAI_API_KEY).toBe("existing");
   });
 
-  it("skips op:// reference values", () => {
+  // ac-w7vzap OQ-004: `loadEnvFile` stays synchronous and never exports a
+  // reference raw; `resolveCredentials` resolves the addressed provider's
+  // references itself.
+  it("leaves op:// references to the resolver", () => {
     const path = writeEnvFile(
       "op-refs.env",
       [
@@ -111,6 +121,123 @@ describe("loadEnvFile", () => {
     expect(() => loadEnvFile(missing, {})).toThrow(
       `--env-file ${missing} could not be read:`
     );
+  });
+});
+
+describe("envFileReferences", () => {
+  it("collects op:// values only, first occurrence per variable", () => {
+    expect(
+      envFileReferences(
+        parseEnvFile(
+          [
+            "OPENAI_API_KEY=op://Apicity/OPENAI/password",
+            "XAI_API_KEY=xai-literal",
+            "OPENAI_API_KEY=op://Other/OPENAI/password",
+            "# FIREWORKS_API_KEY=op://Apicity/commented/password",
+            'FIREWORKS_API_KEY="op://Apicity/FIREWORKS_AI_API_KEY/password"',
+          ].join("\n")
+        )
+      )
+    ).toEqual({
+      OPENAI_API_KEY: "op://Apicity/OPENAI/password",
+      FIREWORKS_API_KEY: "op://Apicity/FIREWORKS_AI_API_KEY/password",
+    });
+  });
+});
+
+// The line-preserving editor behind `apicity setup 1password` (ac-w7vzap
+// REQ-013): it owns two keys and must leave every other byte of the file as
+// it found it.
+describe("the env-file editor", () => {
+  const PAIR: Array<[string, string]> = [
+    ["APICITY_OP_VAULT", "Apicity"],
+    ["APICITY_OP_SERVICE_TOKEN", "env:OP_SERVICE_ACCOUNT_TOKEN"],
+  ];
+
+  it("keys a line exactly as parseEnvFile does", () => {
+    expect(envFileKey("  KIE_API_KEY = abc ")).toBe("KIE_API_KEY");
+    expect(envFileKey("# APICITY_OP_VAULT=Old")).toBeUndefined();
+    expect(envFileKey("")).toBeUndefined();
+    expect(envFileKey("=no-key")).toBeUndefined();
+    expect(envFileKey("not-an-assignment")).toBeUndefined();
+  });
+
+  it("writes both lines into an empty file", () => {
+    expect(setEnvFileAssignments("", PAIR)).toBe(
+      "APICITY_OP_VAULT=Apicity\n" +
+        "APICITY_OP_SERVICE_TOKEN=env:OP_SERVICE_ACCOUNT_TOKEN\n"
+    );
+  });
+
+  it("replaces in place, appends what is missing, and keeps the rest", () => {
+    expect(
+      setEnvFileAssignments(
+        "# mine\nKIE_API_KEY=abc\nAPICITY_OP_VAULT=Old\n\n# tail\n",
+        PAIR
+      )
+    ).toBe(
+      "# mine\nKIE_API_KEY=abc\nAPICITY_OP_VAULT=Apicity\n\n# tail\n" +
+        "APICITY_OP_SERVICE_TOKEN=env:OP_SERVICE_ACCOUNT_TOKEN\n"
+    );
+  });
+
+  it("removes a later duplicate of a key it sets", () => {
+    expect(
+      setEnvFileAssignments(
+        "APICITY_OP_VAULT=Old\nKIE_API_KEY=abc\nAPICITY_OP_VAULT=Older\n",
+        PAIR
+      )
+    ).toBe(
+      "APICITY_OP_VAULT=Apicity\nKIE_API_KEY=abc\n" +
+        "APICITY_OP_SERVICE_TOKEN=env:OP_SERVICE_ACCOUNT_TOKEN\n"
+    );
+  });
+
+  it("never treats a comment as an assignment", () => {
+    expect(setEnvFileAssignments("# APICITY_OP_VAULT=commented\n", PAIR)).toBe(
+      "# APICITY_OP_VAULT=commented\nAPICITY_OP_VAULT=Apicity\n" +
+        "APICITY_OP_SERVICE_TOKEN=env:OP_SERVICE_ACCOUNT_TOKEN\n"
+    );
+  });
+
+  it("keeps a CRLF line's carriage return, and adds a missing final newline", () => {
+    expect(
+      setEnvFileAssignments(
+        "KIE_API_KEY=abc\r\nAPICITY_OP_VAULT=Old\r\nX=1",
+        PAIR
+      )
+    ).toBe(
+      "KIE_API_KEY=abc\r\nAPICITY_OP_VAULT=Apicity\r\nX=1\n" +
+        "APICITY_OP_SERVICE_TOKEN=env:OP_SERVICE_ACCOUNT_TOKEN\n"
+    );
+  });
+
+  it("returns its own output unchanged on a second run", () => {
+    const once = setEnvFileAssignments(
+      "# mine\r\nKIE_API_KEY=abc\nAPICITY_OP_VAULT=Old",
+      PAIR
+    );
+    expect(setEnvFileAssignments(once, PAIR)).toBe(once);
+  });
+
+  it("removes only the lines assigning the given keys", () => {
+    expect(
+      removeEnvFileAssignments(
+        "# mine\nAPICITY_OP_SERVICE_TOKEN=t\nKIE_API_KEY=abc\n" +
+          "APICITY_OP_VAULT=Apicity\nAPICITY_OP_SERVICE_TOKEN=again\n" +
+          "# APICITY_OP_VAULT=kept\n",
+        ["APICITY_OP_VAULT", "APICITY_OP_SERVICE_TOKEN"]
+      )
+    ).toEqual({
+      content: "# mine\nKIE_API_KEY=abc\n# APICITY_OP_VAULT=kept\n",
+      removed: ["APICITY_OP_SERVICE_TOKEN", "APICITY_OP_VAULT"],
+    });
+  });
+
+  it("removes nothing from a file without the keys", () => {
+    expect(
+      removeEnvFileAssignments("KIE_API_KEY=abc", ["APICITY_OP_VAULT"])
+    ).toEqual({ content: "KIE_API_KEY=abc", removed: [] });
   });
 });
 

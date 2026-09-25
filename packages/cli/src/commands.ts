@@ -38,6 +38,10 @@ export const BUILTIN_COMMANDS: readonly BuiltinCommand[] = [
     name: "setup agents",
     summary: "Install the skill; connect an agent when one is unambiguous.",
   },
+  {
+    name: "setup 1password",
+    summary: "Save a 1Password vault and token to the CLI's env file.",
+  },
   { name: "doctor", summary: "Check this host's apicity install, row by row." },
   { name: "help", summary: "Print this message." },
   { name: "version", summary: "Print the @apicity/cli version." },

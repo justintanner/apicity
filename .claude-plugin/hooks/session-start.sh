@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # session-start.sh — apicity plugin liveness check (SessionStart, 5 s budget).
 # Prints one line: whether the CLI is on PATH and how many providers are
-# configured. Never a credential: `apicity doctor --json` reports variable
-# names and configured-or-not states only.
+# configured. Offline and never a credential: `apicity providers --json`
+# reports variable names and configured-or-not states only, and spawns no
+# `op` (D-5), so this hook never reaches 1Password.
 set -euo pipefail
 
 if ! command -v apicity >/dev/null 2>&1; then
@@ -15,15 +16,21 @@ MSG
   exit 0
 fi
 
-summary=$(apicity doctor --json 2>/dev/null | node -e '
+summary=$(apicity providers --json 2>/dev/null | node -e '
 let input = "";
 process.stdin.on("data", (chunk) => (input += chunk));
 process.stdin.on("end", () => {
   let out = "";
   try {
-    const row = JSON.parse(input).data.find((r) => r.name === "Providers");
-    const m = row && /^(\d+) of \d+ configured(.*)$/.exec(row.message);
-    out = m ? `${m[1]} providers configured${m[2]}` : "";
+    const rows = JSON.parse(input).data;
+    if (Array.isArray(rows)) {
+      const names = rows
+        .filter((r) => r && r.configured === true)
+        .map((r) => r.provider);
+      out =
+        `${names.length} providers configured` +
+        (names.length === 0 ? "" : ` (${names.join(", ")})`);
+    }
   } catch {}
   process.stdout.write(out);
 });

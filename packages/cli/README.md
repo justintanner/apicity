@@ -94,30 +94,32 @@ tomorrow cannot collide with this table.
 
 The built-ins read their own smaller sets, because each has argv the shared
 table has no business interpreting: `commands`, `describe` and `providers` take
-`--json` and `--quiet` plus `--provider` and `--method`; `skill`, `setup` and
-`doctor` take `--json` and `--remove`. Passing one of the flags below to a
+`--json` and `--quiet` plus `--provider` and `--method`, and `--env-file`,
+`--op-vault` and `--op-token`, which decide what they count as configured;
+`skill`, `setup` and `doctor` take `--json` and `--remove`, and
+`setup 1password` also `--no-verify`. Passing one of the flags below to a
 built-in that does not know it is a usage error (`--verbose needs a value`,
 exit 1) rather than a silent no-op, and `doctor` names an argument it ignored
 on stderr.
 
-| Flag                           | Description                                                                                                                                           |
-| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--json`                       | Force the machine envelope, even at a terminal. With `--quiet`, force compact JSON.                                                                   |
-| `--quiet`                      | Print the data alone, without the envelope.                                                                                                           |
-| `--verbose`                    | One line per HTTP call on stderr: method, URL, status, elapsed. Never a header or a body.                                                             |
-| `--method <M>`                 | Pick one method when a dotPath answers several.                                                                                                       |
-| `--data <json>`                | The request body; `-` reads stdin.                                                                                                                    |
-| `--data-file <path>`           | The request body, read from a file; `-` reads stdin.                                                                                                  |
-| `--otp <token>`                | A paid endpoint's single-use approval, needed only when the operator armed the gate; refused with no secret ([Paid endpoints](#paid-endpoints)).      |
-| `--output-dir <path>`          | Where binary results and downloaded media land. Also `APICITY_OUTPUT_DIR`.                                                                            |
-| `--env-file <path>`            | Load provider settings from a dotenv file. Set env vars win; `op://` values are skipped.                                                              |
-| `--op-vault <vault>`           | Resolve missing credentials from `op://<vault>/<ENV_VAR>/password`. Also `APICITY_OP_VAULT`.                                                          |
-| `--op-token <token>`           | 1Password service-account token: a literal, `env:VAR`, `$VAR`, or a variable name. `--op-service-token` is an alias. Also `APICITY_OP_SERVICE_TOKEN`. |
-| `--paygate-secret-file <path>` | Arms the pay gate: the shared HMAC secret that verifies paid-endpoint OTPs. Unset, the gate is off. Also `APICITY_PAYGATE_SECRET_FILE`.               |
-| `--base-url <url>`             | Override the provider's base URL (see the note below).                                                                                                |
-| `--timeout <ms>`               | Override the provider's request timeout, in milliseconds.                                                                                             |
-| `--help`, `-h`                 | On the endpoint form, describe the endpoint; otherwise print usage.                                                                                   |
-| `--version`                    | Print the package version.                                                                                                                            |
+| Flag                           | Description                                                                                                                                                                                     |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--json`                       | Force the machine envelope, even at a terminal. With `--quiet`, force compact JSON.                                                                                                             |
+| `--quiet`                      | Print the data alone, without the envelope.                                                                                                                                                     |
+| `--verbose`                    | One line per HTTP call on stderr: method, URL, status, elapsed. Never a header or a body.                                                                                                       |
+| `--method <M>`                 | Pick one method when a dotPath answers several.                                                                                                                                                 |
+| `--data <json>`                | The request body; `-` reads stdin.                                                                                                                                                              |
+| `--data-file <path>`           | The request body, read from a file; `-` reads stdin.                                                                                                                                            |
+| `--otp <token>`                | A paid endpoint's single-use approval, needed only when the operator armed the gate; refused with no secret ([Paid endpoints](#paid-endpoints)).                                                |
+| `--output-dir <path>`          | Where binary results and downloaded media land. Also `APICITY_OUTPUT_DIR`.                                                                                                                      |
+| `--env-file <path>`            | Load provider settings from a dotenv file. Set env vars win; `op://` references resolve (see [1Password](#1password)).                                                                          |
+| `--op-vault <vault>`           | The vault convention: fill missing credentials from `op://<vault>/<ENV_VAR>/password`. Also `APICITY_OP_VAULT`.                                                                                 |
+| `--op-token <token>`           | 1Password service-account token: a literal, `env:VAR`, `$VAR`, or a variable name. It also authenticates `op://` references. `--op-service-token` is an alias. Also `APICITY_OP_SERVICE_TOKEN`. |
+| `--paygate-secret-file <path>` | Arms the pay gate: the shared HMAC secret that verifies paid-endpoint OTPs. Unset, the gate is off. Also `APICITY_PAYGATE_SECRET_FILE`.                                                         |
+| `--base-url <url>`             | Override the provider's base URL (see the note below).                                                                                                                                          |
+| `--timeout <ms>`               | Override the provider's request timeout, in milliseconds.                                                                                                                                       |
+| `--help`, `-h`                 | On the endpoint form, describe the endpoint; otherwise print usage.                                                                                                                             |
+| `--version`                    | Print the package version.                                                                                                                                                                      |
 
 **`--base-url` and `--timeout` reach the addressed factory, and support is not
 uniform.** They are merged into the factory's options as `baseURL` (`baseUrl`
@@ -141,6 +143,7 @@ each call actually requested, which is how to check rather than guess.
 | `apicity setup claude`           | Install the skill and the Claude Code plugin.                                                                         |
 | `apicity setup codex`            | Install the skill Codex reads.                                                                                        |
 | `apicity setup agents`           | Install the skill; connect an agent when exactly one is unambiguous.                                                  |
+| `apicity setup 1password`        | Save `--op-vault` and `--op-token` to the env file and check them once; `--no-verify`, `--remove`.                    |
 | `apicity setup`                  | `setup agents`. `--remove` removes the plugin and everything this CLI wrote.                                          |
 | `apicity doctor`                 | Twelve rows about this host's install, always exit 0.                                                                 |
 | `apicity help [topic]`           | Usage, or one of the topics `output`, `exit-codes`, `environment`, `agents`.                                          |
@@ -151,8 +154,8 @@ each call actually requested, which is how to check rather than guess.
 | Variable                      | Effect                                                                     |
 | ----------------------------- | -------------------------------------------------------------------------- |
 | `APICITY_ENV_FILE`            | The dotenv file to load when `--env-file` is absent.                       |
-| `APICITY_OP_VAULT`            | The 1Password vault, as `--op-vault`.                                      |
-| `APICITY_OP_SERVICE_TOKEN`    | The 1Password service-account token, as `--op-token`.                      |
+| `APICITY_OP_VAULT`            | The 1Password vault, as `--op-vault`; `apicity setup 1password` saves it.  |
+| `APICITY_OP_SERVICE_TOKEN`    | The 1Password token, as `--op-token`; `apicity setup 1password` saves it.  |
 | `APICITY_PAYGATE_SECRET_FILE` | The pay-gate secret file that arms the gate, as `--paygate-secret-file`.   |
 | `APICITY_OUTPUT_DIR`          | Where results land, as `--output-dir`.                                     |
 | `APICITY_SETUP_AGENT`         | `claude`, `codex`, `all` or `none` — what `apicity setup agents` connects. |
@@ -160,9 +163,16 @@ each call actually requested, which is how to check rather than guess.
 | Provider variables            | One or more per provider; see [Credentials](#credentials).                 |
 
 With no `--env-file` and no `APICITY_ENV_FILE`, a call loads
-`~/.config/apicity/.env` when that file exists. Variables already set in the
-environment always win, an env file fills what is missing, and 1Password fills
-what is still missing — for the addressed provider alone, never all 28.
+`~/.config/apicity/.env` when that file exists. For each variable of the
+addressed provider — that provider alone, never all 28 — the first source that
+has one wins:
+
+1. a value already set in the environment;
+2. a literal in the env file;
+3. an `op://` reference, the environment's before the env file's, resolved
+   through `op` (see [1Password](#1password));
+4. the vault convention, `op://<vault>/<VAR>/password`, when a vault and a
+   token are both configured.
 
 ## Exit codes
 
@@ -239,6 +249,56 @@ any mode.
 than a secret: set it to the account's verified value (`0`, `1`, `2` or `3`)
 alongside the credential bundle — 1Password mode deliberately does not resolve
 it, and polymarket refuses to load a credential bundle without it.
+
+### 1Password
+
+An env file can hold `op://<vault>/<item>/<field>` references instead of
+literals. That is the format `op run --env-file` reads, and the one this
+repository's own `.env` uses, where an item's title need not match its
+variable:
+
+```bash
+FIREWORKS_API_KEY=op://Apicity/FIREWORKS_AI_API_KEY/password
+```
+
+A call resolves the references of the provider it addresses, and only those,
+in one `op inject` however many there are. `op` authenticates with the
+configured service-account token when there is one (`--op-token`,
+`APICITY_OP_SERVICE_TOKEN` or the env file), and otherwise with its own
+sign-in: `OP_SERVICE_ACCOUNT_TOKEN`, the desktop app, or `op signin`. A
+reference names its own vault, so it needs no `--op-vault`. One that cannot be
+resolved is exit 3 `auth`, naming the variable and the reference, never a
+value. Settings a factory reads outside its credential variables, such as
+`S3_REGION`, `S3_ENDPOINT` or `B2_ENDPOINT`, are never resolved: keep those
+literal.
+
+The vault convention fills what is still missing from
+`op://<vault>/<VAR>/password`, once a vault and a token are both configured.
+Save the pair once, and every later call on this host uses it:
+
+```bash
+apicity setup 1password --op-vault Apicity --op-token env:OP_SERVICE_ACCOUNT_TOKEN
+```
+
+That writes `APICITY_OP_VAULT` and `APICITY_OP_SERVICE_TOKEN` to the env file
+a call loads, replacing those two lines in place and leaving every other line
+as it was. The token is saved exactly as given, so the `env:VAR` form keeps
+the secret itself off disk: prefer it to a literal. A directory the command
+creates is `0700` and a file `0600`; an existing file keeps its mode. It asks
+nothing: the vault and token come from the flags, else from those two
+variables in the environment, never from the file. It then checks the pair
+once with `op item list`, with the token in `op`'s environment rather than on
+its command line, and answers exit 7 when `op` is missing, 3 when 1Password
+refuses the pair and 6 on a timeout; the lines stay written either way.
+`--no-verify` skips that check, and `apicity setup 1password --remove` deletes
+the two lines and nothing else.
+
+In `apicity providers`, `commands` and `describe`, `configured` means the CLI
+knows where each credential comes from: a variable in the environment, a
+literal or `op://` reference in the env file, or the vault convention when a
+vault and a token are both configured. Those commands never run `op`, so
+whether the vault really holds an item shows at call time and in
+`apicity doctor`.
 
 ## Output
 
@@ -347,6 +407,11 @@ apicity setup agents   # skill, plus whichever agent is unambiguous here
 apicity setup --remove # uninstall the plugin, remove only what this CLI wrote
 ```
 
+`apicity setup 1password` is the fourth form, and it touches only the env
+file: see [1Password](#1password). Its `--remove` deletes the two lines it
+wrote, `--no-verify` skips its `op item list` check, and no other form's
+`--remove` ever opens the env file.
+
 `setup claude` installs the skill first and unconditionally — the half that
 works on every host — then runs `claude plugin marketplace add`,
 `marketplace update` and `plugin install`, and decides the outcome by re-reading
@@ -366,6 +431,15 @@ older than the installed CLI is a warning that names `apicity skill install`;
 nothing re-syncs itself behind your back. The pay-gate secret row is `ok` when
 no secret file is named, because the gate is then off; it is `error` for a
 file that is unreadable or empty, and it never prints the file's contents.
+
+The 1Password row finds the vault and the token as a call does, flag first,
+then the environment, then the env file, and names where the token came from:
+`env:VAR`, `$VAR` or a set variable name is shown, and a literal is only ever
+called one. A token alone is `ok`, since `op://` references resolve with it. A
+vault alone is an `error`, because every call then exits `usage`. With both,
+doctor runs `op item list` on the vault once and warns, by name, about each
+provider variable that nothing else supplies and the vault has no item for.
+The Providers row counts providers the way `apicity providers` does, offline.
 
 ## What we took from hey-cli
 

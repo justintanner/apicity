@@ -429,8 +429,9 @@ host says so at `ok` rather than disappearing, so `.data` has the same twelve
 indices everywhere. It always exits 0: it is a report, not a gate. A skill
 older than the installed CLI is a warning that names `apicity skill install`;
 nothing re-syncs itself behind your back. The pay-gate secret row is `ok` when
-no secret file is named, because the gate is then off; it is `error` for a
-file that is unreadable or empty, and it never prints the file's contents.
+no secret file is named by flag, the environment or the env file, because the
+gate is then off; it is `error` for a file that is unreadable or empty, and it
+never prints the file's contents.
 
 The 1Password row finds the vault and the token as a call does, flag first,
 then the environment, then the env file, and names where the token came from:

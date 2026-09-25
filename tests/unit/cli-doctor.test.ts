@@ -369,6 +369,20 @@ describe("apicity doctor", () => {
         "set --op-token or APICITY_OP_SERVICE_TOKEN, or run: " +
         "apicity setup 1password",
     });
+
+    // A bare-name token whose variable is set but empty resolves to "", which
+    // a call treats as no token at all, so the row says the same thing.
+    const empty = opSeam();
+    const bare = await rows({
+      env: bareEnv({
+        APICITY_OP_VAULT: "Apicity",
+        APICITY_OP_SERVICE_TOKEN: "OP_TEST_TOKEN",
+        OP_TEST_TOKEN: "",
+      }),
+      run: empty.run,
+    });
+    expect(empty.calls.map((call) => call.args)).toEqual([["--version"]]);
+    expect(row(bare, "1Password CLI")).toEqual(row(all, "1Password CLI"));
   });
 
   it("reports a token reference to an unset variable without spawning", async () => {
@@ -593,6 +607,36 @@ describe("apicity doctor", () => {
       status: "error",
       message: `${secret} is empty`,
     });
+  });
+
+  it("reads a paygate secret file the env file names, as a call does", async () => {
+    const secret = join(home, "paygate.secret");
+    const empty = join(home, "empty.secret");
+    writeFileSync(secret, "shared-secret\n");
+    writeFileSync(empty, "  \n");
+
+    writeEnvFile(`APICITY_PAYGATE_SECRET_FILE=${secret}\n`);
+    expect(row(await rows(), "Paygate Secret File")).toMatchObject({
+      status: "ok",
+      message: secret,
+    });
+
+    // An env file naming an empty file arms a gate that fails closed.
+    writeEnvFile(`APICITY_PAYGATE_SECRET_FILE=${empty}\n`);
+    expect(row(await rows(), "Paygate Secret File")).toMatchObject({
+      status: "error",
+      message: `${empty} is empty`,
+    });
+
+    // The process value still beats the env file's.
+    const all = await rows({
+      env: bareEnv({ APICITY_PAYGATE_SECRET_FILE: secret }),
+    });
+    expect(row(all, "Paygate Secret File")).toMatchObject({
+      status: "ok",
+      message: secret,
+    });
+    expect(JSON.stringify(all)).not.toContain("shared-secret");
   });
 
   it("errors on an output directory it cannot write to", async () => {

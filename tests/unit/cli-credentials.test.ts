@@ -218,6 +218,30 @@ describe("precedence", () => {
     expect(reads).toEqual([]);
     expect(listings).toEqual([]);
     expect(env.FIREWORKS_API_KEY).toBe("from-reference");
+
+    // With no reference the convention answers, through the batch a real
+    // call takes (no readSecret): one listing, then one inject that carries
+    // the token, since the seam no longer closes over it (F-8).
+    const conventionEnv: NodeJS.ProcessEnv = { HOME: sandbox() };
+    const convention = injectSeam("OPENAI_API_KEY=from-convention\n");
+    await resolveCredentials({
+      provider: "openai",
+      flags: { opVault: "Apicity", opToken: "ops_token" },
+      env: conventionEnv,
+      listItemTitles: (vault) => {
+        listings.push(vault);
+        return Promise.resolve(["OPENAI_API_KEY"]);
+      },
+      injectSecrets: convention.injectSecrets,
+    });
+    expect(listings).toEqual(["Apicity"]);
+    expect(convention.calls).toEqual([
+      {
+        template: "OPENAI_API_KEY={{ op://Apicity/OPENAI_API_KEY/password }}",
+        token: "ops_token",
+      },
+    ]);
+    expect(conventionEnv.OPENAI_API_KEY).toBe("from-convention");
   });
 
   it("never reads 1Password for a value the process already has", async () => {
@@ -303,6 +327,11 @@ describe("op:// references", () => {
     const env: NodeJS.ProcessEnv = {
       HOME: sandbox(),
       OPENAI_API_KEY: "op://Apicity/openai/credential",
+      // REQ-016 step 3: the process's reference goes ahead of the env file's,
+      // so the batch below never carries this one.
+      APICITY_ENV_FILE: envFile(
+        "OPENAI_API_KEY=op://Apicity/openai/file-credential\n"
+      ),
     };
     const { injectSecrets, calls } = injectSeam(
       "OPENAI_API_KEY=from-reference\n"
@@ -485,6 +514,36 @@ describe("op:// references", () => {
       "check the op:// reference and op's sign-in; see apicity doctor"
     );
     expect([...cap.out, ...cap.err].join("\n")).not.toContain(token);
+
+    // `op inject` can also exit 0 and leave the variable empty: the same auth
+    // error, naming the variable and the reference, before any provider.
+    const empty = capture();
+    const emptyExit = await runEndpoint(
+      "fireworks",
+      ["inference.v1.accounts.list"],
+      empty.writer,
+      {
+        env: {
+          HOME: sandbox(),
+          APICITY_ENV_FILE: envFile(
+            "FIREWORKS_API_KEY=op://Apicity/FIREWORKS_AI_API_KEY/password\n"
+          ),
+        },
+        stdoutIsTTY: false,
+        injectSecrets: injectSeam("FIREWORKS_API_KEY=\n").injectSecrets,
+        instantiate: (name) => {
+          instantiated.push(name);
+          return Promise.resolve(null);
+        },
+      }
+    );
+    expect(emptyExit).toBe(3);
+    expect(instantiated).toEqual([]);
+    const emptyEnvelope = JSON.parse(empty.err[0]) as Record<string, unknown>;
+    expect(emptyEnvelope.code).toBe("auth");
+    expect(String(emptyEnvelope.error)).toContain(
+      "FIREWORKS_API_KEY from op://Apicity/FIREWORKS_AI_API_KEY/password"
+    );
   });
 
   // The seam above stands in for this function. It spawns `op`, so a fake

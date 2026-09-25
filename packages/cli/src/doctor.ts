@@ -3,7 +3,6 @@ import { join } from "node:path";
 
 import { parseGlobalFlags } from "./args.js";
 import {
-  defaultEnvFilePath,
   isProviderConfigured,
   providerNames,
   readCredentialSources,
@@ -239,21 +238,20 @@ function doctorSummary(rows: DoctorRow[]): string {
 // ---------------------------------------------------------------------------
 
 function envFileRow(context: DoctorContext): DoctorRow {
-  const named = context.flags.envFile ?? context.env.APICITY_ENV_FILE;
-  if (named !== undefined && named !== "") {
-    return isReadable(named)
-      ? { name: "Env File", status: "ok", message: named }
+  const { path, named } = context.sources.envFile;
+  if (named) {
+    return isReadable(path)
+      ? { name: "Env File", status: "ok", message: path }
       : {
           name: "Env File",
           status: "error",
-          message: `${named} could not be read`,
+          message: `${path} could not be read`,
           hint: `check --env-file, or unset APICITY_ENV_FILE`,
         };
   }
 
-  const fallback = defaultEnvFilePath(context.env);
-  return isReadable(fallback)
-    ? { name: "Env File", status: "ok", message: fallback }
+  return isReadable(path)
+    ? { name: "Env File", status: "ok", message: path }
     : {
         name: "Env File",
         status: "ok",
@@ -441,8 +439,11 @@ function providersRow(context: DoctorContext): DoctorRow {
 }
 
 function paygateRow(context: DoctorContext): DoctorRow {
+  // The merged view, as a call reads it: an env-file line arms every call, so
+  // it arms this row too, and a process value still wins.
   const path =
-    context.flags.paygateSecretFile ?? context.env.APICITY_PAYGATE_SECRET_FILE;
+    context.flags.paygateSecretFile ??
+    context.sources.env.APICITY_PAYGATE_SECRET_FILE;
   if (path === undefined || path === "") {
     return {
       name: "Paygate Secret File",

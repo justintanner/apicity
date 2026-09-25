@@ -7450,12 +7450,24 @@ const KieOpenAiModelAliasSchema = z
 // autocomplete in `apicity describe`, not acceptance. Exported because that
 // distinction is unobservable through safeParse: a success cannot say which
 // branch matched, so only membership in this array pins the enum entries.
+//
+// The GPT-6 ids come from kie's docs as read on 2026-09-25, each page
+// documenting this same path with a one-id `model` enum:
+// https://docs.kie.ai/market/chat/gpt-6-astra,
+// https://docs.kie.ai/market/chat/gpt-6-luna and
+// https://docs.kie.ai/market/chat/gpt-6-sol, plus the kie.ai/gpt-6-astra and
+// kie.ai/gpt-6-sol-and-luna product pages. None of the three was called
+// live. All three match the alias grammar too, so listing them adds
+// autocomplete only.
 export const KIE_RESPONSES_MODELS = [
   "gpt-5-4",
   "gpt-5-5",
   "gpt-5-6-luna",
   "gpt-5-6-sol",
   "gpt-5-6-terra",
+  "gpt-6-astra",
+  "gpt-6-luna",
+  "gpt-6-sol",
 ] as const;
 
 export const KieResponsesModelSchema = z

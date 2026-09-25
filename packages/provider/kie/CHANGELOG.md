@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `codex.v1.responses` now enumerates `gpt-6-astra`, `gpt-6-luna` and
+  `gpt-6-sol` in its `model` enum, so `apicity describe` and the
+  `KieResponsesModel` type autocomplete them. All three already validated
+  through the versioned GPT alias, so no request that parsed before is
+  rejected now. Nothing needs migrating.
+
 ### Fixed
 
 - Qwen2 image-edit seed validation and discovery metadata now follow KIE's

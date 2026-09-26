@@ -250,6 +250,35 @@ export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
       "Page-sourced under the pricing/kie.ts page-evidence rule: printed credits x 0.005 equal the cell and match the feed-evidenced text/image ladder; no feed row names transition.",
   })),
   ...[
+    ["bytedance/seedream", "https://kie.ai/seedream", ""],
+    ["bytedance/seedream-v4-edit", "https://kie.ai/seedream-api", ""],
+    ["bytedance/seedream-v4-text-to-image", "https://kie.ai/seedream-api", ""],
+    ...[
+      "bytedance/v1-lite-image-to-video",
+      "bytedance/v1-lite-text-to-video",
+      "bytedance/v1-pro-image-to-video",
+      "bytedance/v1-pro-text-to-video",
+    ].flatMap((key) =>
+      ["480p", "720p", "1080p"].map((variant) => [
+        key,
+        "https://kie.ai/bytedance/seedance-v1",
+        variant,
+      ])
+    ),
+    ...["5|720p", "10|720p", "5|1080p", "10|1080p"].map((variant) => [
+      "bytedance/v1-pro-fast-image-to-video",
+      "https://kie.ai/bytedance/seedance-v1",
+      variant,
+    ]),
+  ].map(([key, page, variant]) => ({
+    key,
+    variant,
+    status: "pricing-only",
+    provenance: `${page} groupData declares this id and prints this cell (ac-egs1ww re-fetch evidence); no official occurrence in the frozen 2026-09-11 pull`,
+    rationale:
+      "Page-sourced under the pricing/kie.ts page-evidence rule: printed credits x 0.005 equal the cell; no feed row names this id.",
+  })),
+  ...[
     ["runway/extend", "720p"],
     ["runway/extend", "1080p"],
     ["sora-watermark-remover", ""],

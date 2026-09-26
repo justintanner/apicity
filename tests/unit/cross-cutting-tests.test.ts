@@ -132,6 +132,47 @@ function backtickedTestPaths(prose: string): string[] {
   );
 }
 
+// The cost sentence names the membership its figure was measured at. Nothing
+// pinned that word, so "ten-entry" outlived the eleventh entry added on
+// 2026-08-31 (b6713144) until ac-iag7fk re-measured (ac-azt1ev).
+const MEMBERSHIP_WORDS = [
+  "eight",
+  "nine",
+  "ten",
+  "eleven",
+  "twelve",
+  "thirteen",
+  "fourteen",
+  "fifteen",
+  "sixteen",
+  "seventeen",
+  "eighteen",
+  "nineteen",
+  "twenty",
+];
+
+function membershipPhrase(count: number): string {
+  const word = MEMBERSHIP_WORDS[count - 8];
+  if (word === undefined) {
+    throw new Error(`no membership word for ${count}; extend MEMBERSHIP_WORDS`);
+  }
+  return `${word}-entry membership`;
+}
+
+function expectMembershipPhrase(claude: string): void {
+  const line =
+    claude
+      .split("\n")
+      .find((entry) => entry.includes("<!-- cross-cutting-cost:start -->")) ??
+    "";
+  const expected = membershipPhrase(CROSS_CUTTING_TESTS.length);
+  expect(
+    line.match(/\w+-entry membership/g),
+    `the cost sentence must say "${expected}" exactly once; re-measure ` +
+      "the block per the CROSS_CUTTING_COST_SECONDS docblock first"
+  ).toEqual([expected]);
+}
+
 describe("cross-cutting repo-wide guard tests", () => {
   it("lists every categorized test, per category", () => {
     for (const { name, tests } of CATEGORY_DOC_KEYWORDS) {
@@ -257,7 +298,13 @@ describe("cross-cutting repo-wide guard tests", () => {
   // nothing keeping them in agreement (ac-vsx186). It now lives in one export;
   // these two cases are what keep the remaining prose copy honest.
   it("builds its cost sentence from the single source", () => {
-    expect(crossCuttingCostNote()).toContain(`${CROSS_CUTTING_COST_SECONDS}s`);
+    // One decimal, losslessly: toFixed(1) would round a two-decimal figure.
+    expect(Number(CROSS_CUTTING_COST_SECONDS.toFixed(1))).toBe(
+      CROSS_CUTTING_COST_SECONDS
+    );
+    expect(crossCuttingCostNote()).toContain(
+      `${CROSS_CUTTING_COST_SECONDS.toFixed(1)}s`
+    );
   });
 
   it("pins the .claude/CLAUDE.md cost figure and member list to this module", () => {
@@ -291,6 +338,23 @@ describe("cross-cutting repo-wide guard tests", () => {
     expect(
       named.filter((entry) => !CROSS_CUTTING_TESTS.includes(entry))
     ).toEqual([]);
+  });
+
+  it("pins the cost sentence's membership word to CROSS_CUTTING_TESTS.length", () => {
+    expectMembershipPhrase(readRepoFile(".claude/CLAUDE.md"));
+  });
+
+  it("rejects a copy of the cost sentence with a perturbed membership word", () => {
+    const claude = readRepoFile(".claude/CLAUDE.md");
+    const count = CROSS_CUTTING_TESTS.length;
+    const perturbed = claude.replace(
+      membershipPhrase(count),
+      membershipPhrase(count - 1)
+    );
+    expect(perturbed, "no membership phrase to perturb").not.toBe(claude);
+    expect(() => expectMembershipPhrase(perturbed)).toThrow(
+      membershipPhrase(count)
+    );
   });
 
   it("names every cross-cutting category in the preflight docblock", () => {

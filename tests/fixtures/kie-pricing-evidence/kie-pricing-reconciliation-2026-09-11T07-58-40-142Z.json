@@ -1802,10 +1802,10 @@
     },
     "final": {
       "models": 146,
-      "pricingKeys": 162,
-      "slugKeys": 164,
-      "displayKeys": 164,
-      "schemaWithoutPricing": 14,
+      "pricingKeys": 170,
+      "slugKeys": 172,
+      "displayKeys": 172,
+      "schemaWithoutPricing": 6,
       "pricingOnly": 30,
       "endpoints": 75
     }
@@ -1823,8 +1823,8 @@
       "packages/provider/kie/src/zod.ts": "sha256:3412fac3a1f52ef532be57e8f0366f3d8b542c5bd7e36ce98dc901aa42acc349",
       "packages/provider/kie/src/model-schemas.ts": "sha256:95445c2877cbea4aad9eab9dcb74db8bc9c03b938fa08f8e2402f2f937d66bc6",
       "packages/provider/kie/src/kie.ts": "sha256:7531e65034dbfddcce8e9454784cf03f9478f1ea51102519c8bf4b6bf6878452",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:36413a1c6d42b94b07ea2a7ec3cbf4aab93ac6bae8ded5ba97d0d437b95390c9",
-      "packages/provider/cost/src/slugs.ts": "sha256:233c61253630b9a900be532a9f1ed53ac4cd9056922ba90bcde32e2592b4afb5",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:44cd04fc3acdea47b2d20b9673656a6eca3a9590f23a6af8238a49203bfba3e4",
+      "packages/provider/cost/src/slugs.ts": "sha256:db1f505d5cc63da6aaf85113083991a653f9d8fe0cb451440a04e3da6a6de8ef",
       "scripts/endpoint-docs.tsv": "sha256:e9b413ea209d12a1fa643f6bee94e93c7d88cf3f73a74f798e1c0e95ed338dff"
     }
   },
@@ -23661,7 +23661,7 @@
         "id": "bytedance/seedream",
         "descriptor": true,
         "guard": true,
-        "pricingKey": null,
+        "pricingKey": "bytedance/seedream",
         "linkedRows": [],
         "disposition": "upstream-unmappable",
         "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
@@ -23670,7 +23670,7 @@
         "id": "bytedance/seedream-v4-edit",
         "descriptor": true,
         "guard": true,
-        "pricingKey": null,
+        "pricingKey": "bytedance/seedream-v4-edit",
         "linkedRows": [],
         "disposition": "upstream-unmappable",
         "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
@@ -23679,7 +23679,7 @@
         "id": "bytedance/seedream-v4-text-to-image",
         "descriptor": true,
         "guard": true,
-        "pricingKey": null,
+        "pricingKey": "bytedance/seedream-v4-text-to-image",
         "linkedRows": [],
         "disposition": "upstream-unmappable",
         "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
@@ -23688,7 +23688,7 @@
         "id": "bytedance/v1-lite-image-to-video",
         "descriptor": true,
         "guard": true,
-        "pricingKey": null,
+        "pricingKey": "bytedance/v1-lite-image-to-video",
         "linkedRows": [],
         "disposition": "upstream-unmappable",
         "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
@@ -23697,7 +23697,7 @@
         "id": "bytedance/v1-lite-text-to-video",
         "descriptor": true,
         "guard": true,
-        "pricingKey": null,
+        "pricingKey": "bytedance/v1-lite-text-to-video",
         "linkedRows": [],
         "disposition": "upstream-unmappable",
         "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
@@ -23706,7 +23706,7 @@
         "id": "bytedance/v1-pro-fast-image-to-video",
         "descriptor": true,
         "guard": true,
-        "pricingKey": null,
+        "pricingKey": "bytedance/v1-pro-fast-image-to-video",
         "linkedRows": [],
         "disposition": "upstream-unmappable",
         "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
@@ -23715,7 +23715,7 @@
         "id": "bytedance/v1-pro-image-to-video",
         "descriptor": true,
         "guard": true,
-        "pricingKey": null,
+        "pricingKey": "bytedance/v1-pro-image-to-video",
         "linkedRows": [],
         "disposition": "upstream-unmappable",
         "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
@@ -23724,7 +23724,7 @@
         "id": "bytedance/v1-pro-text-to-video",
         "descriptor": true,
         "guard": true,
-        "pricingKey": null,
+        "pricingKey": "bytedance/v1-pro-text-to-video",
         "linkedRows": [],
         "disposition": "upstream-unmappable",
         "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
@@ -26185,6 +26185,36 @@
         "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
       },
       {
+        "key": "bytedance/v1-lite-image-to-video",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "bytedance/v1-lite-text-to-video",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "bytedance/v1-pro-image-to-video",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "bytedance/v1-pro-text-to-video",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "bytedance/v1-pro-fast-image-to-video",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
         "key": "topaz/video-upscale",
         "linkedRows": [
           "sha256:92d8a1ed6d1c6b339bd62895a922836236a86bf87f2de41fa20f733d1be878d6#1",
@@ -26438,6 +26468,24 @@
         ],
         "disposition": "supported",
         "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "bytedance/seedream",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "bytedance/seedream-v4-edit",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "bytedance/seedream-v4-text-to-image",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
       },
       {
         "key": "nano-banana-2-lite",
@@ -27160,6 +27208,26 @@
         "disposition": "supported"
       },
       {
+        "key": "bytedance/v1-lite-image-to-video",
+        "disposition": "supported"
+      },
+      {
+        "key": "bytedance/v1-lite-text-to-video",
+        "disposition": "supported"
+      },
+      {
+        "key": "bytedance/v1-pro-image-to-video",
+        "disposition": "supported"
+      },
+      {
+        "key": "bytedance/v1-pro-text-to-video",
+        "disposition": "supported"
+      },
+      {
+        "key": "bytedance/v1-pro-fast-image-to-video",
+        "disposition": "supported"
+      },
+      {
         "key": "topaz/video-upscale",
         "disposition": "supported"
       },
@@ -27369,6 +27437,18 @@
       },
       {
         "key": "seedream/4.5-edit",
+        "disposition": "supported"
+      },
+      {
+        "key": "bytedance/seedream",
+        "disposition": "supported"
+      },
+      {
+        "key": "bytedance/seedream-v4-edit",
+        "disposition": "supported"
+      },
+      {
+        "key": "bytedance/seedream-v4-text-to-image",
         "disposition": "supported"
       },
       {
@@ -27818,6 +27898,26 @@
         "disposition": "supported"
       },
       {
+        "key": "bytedance/v1-lite-image-to-video",
+        "disposition": "supported"
+      },
+      {
+        "key": "bytedance/v1-lite-text-to-video",
+        "disposition": "supported"
+      },
+      {
+        "key": "bytedance/v1-pro-image-to-video",
+        "disposition": "supported"
+      },
+      {
+        "key": "bytedance/v1-pro-text-to-video",
+        "disposition": "supported"
+      },
+      {
+        "key": "bytedance/v1-pro-fast-image-to-video",
+        "disposition": "supported"
+      },
+      {
         "key": "topaz/video-upscale",
         "disposition": "supported"
       },
@@ -28030,6 +28130,18 @@
         "disposition": "supported"
       },
       {
+        "key": "bytedance/seedream",
+        "disposition": "supported"
+      },
+      {
+        "key": "bytedance/seedream-v4-edit",
+        "disposition": "supported"
+      },
+      {
+        "key": "bytedance/seedream-v4-text-to-image",
+        "disposition": "supported"
+      },
+      {
         "key": "nano-banana-2-lite",
         "disposition": "supported"
       },
@@ -28231,54 +28343,6 @@
       }
     ],
     "schemaWithoutPricing": [
-      {
-        "id": "bytedance/seedream",
-        "disposition": "upstream-unmappable",
-        "linkedRows": [],
-        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
-      },
-      {
-        "id": "bytedance/seedream-v4-edit",
-        "disposition": "upstream-unmappable",
-        "linkedRows": [],
-        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
-      },
-      {
-        "id": "bytedance/seedream-v4-text-to-image",
-        "disposition": "upstream-unmappable",
-        "linkedRows": [],
-        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
-      },
-      {
-        "id": "bytedance/v1-lite-image-to-video",
-        "disposition": "upstream-unmappable",
-        "linkedRows": [],
-        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
-      },
-      {
-        "id": "bytedance/v1-lite-text-to-video",
-        "disposition": "upstream-unmappable",
-        "linkedRows": [],
-        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
-      },
-      {
-        "id": "bytedance/v1-pro-fast-image-to-video",
-        "disposition": "upstream-unmappable",
-        "linkedRows": [],
-        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
-      },
-      {
-        "id": "bytedance/v1-pro-image-to-video",
-        "disposition": "upstream-unmappable",
-        "linkedRows": [],
-        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
-      },
-      {
-        "id": "bytedance/v1-pro-text-to-video",
-        "disposition": "upstream-unmappable",
-        "linkedRows": [],
-        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
-      },
       {
         "id": "wan/2-6-flash-image-to-video",
         "disposition": "upstream-unmappable",
@@ -28619,7 +28683,7 @@
         "count": 146,
         "descriptors": 146,
         "guards": 146,
-        "withoutPricing": 14,
+        "withoutPricing": 6,
         "dispositionCounts": {
           "supported": 118,
           "free-nonbillable": 0,
@@ -28643,20 +28707,20 @@
         "unclassified": 0
       },
       "pricingKeys": {
-        "count": 162,
+        "count": 170,
         "dispositionCounts": {
           "supported": 146,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 16
+          "upstream-unmappable": 24
         },
         "unclassified": 0
       },
       "slugs": {
-        "count": 164,
+        "count": 172,
         "dispositionCounts": {
-          "supported": 164,
+          "supported": 172,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -28665,9 +28729,9 @@
         "unclassified": 0
       },
       "displays": {
-        "count": 164,
+        "count": 172,
         "dispositionCounts": {
-          "supported": 164,
+          "supported": 172,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -28676,13 +28740,13 @@
         "unclassified": 0
       },
       "schemaWithoutPricing": {
-        "count": 14,
+        "count": 6,
         "dispositionCounts": {
           "supported": 0,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 14
+          "upstream-unmappable": 6
         },
         "unclassified": 0
       },
@@ -29055,6 +29119,139 @@
         "status": "pricing-only",
         "provenance": "https://kie.ai/pixverse-v6 groupData declares the transition tab and prints this cell (ac-4v9ck1 re-fetch evidence); no official occurrence in the frozen 2026-09-11 pull",
         "rationale": "Page-sourced under the pricing/kie.ts page-evidence rule: printed credits x 0.005 equal the cell and match the feed-evidenced text/image ladder; no feed row names transition."
+      },
+      {
+        "key": "bytedance/seedream",
+        "variant": "",
+        "status": "pricing-only",
+        "provenance": "https://kie.ai/seedream groupData declares this id and prints this cell (ac-egs1ww re-fetch evidence); no official occurrence in the frozen 2026-09-11 pull",
+        "rationale": "Page-sourced under the pricing/kie.ts page-evidence rule: printed credits x 0.005 equal the cell; no feed row names this id."
+      },
+      {
+        "key": "bytedance/seedream-v4-edit",
+        "variant": "",
+        "status": "pricing-only",
+        "provenance": "https://kie.ai/seedream-api groupData declares this id and prints this cell (ac-egs1ww re-fetch evidence); no official occurrence in the frozen 2026-09-11 pull",
+        "rationale": "Page-sourced under the pricing/kie.ts page-evidence rule: printed credits x 0.005 equal the cell; no feed row names this id."
+      },
+      {
+        "key": "bytedance/seedream-v4-text-to-image",
+        "variant": "",
+        "status": "pricing-only",
+        "provenance": "https://kie.ai/seedream-api groupData declares this id and prints this cell (ac-egs1ww re-fetch evidence); no official occurrence in the frozen 2026-09-11 pull",
+        "rationale": "Page-sourced under the pricing/kie.ts page-evidence rule: printed credits x 0.005 equal the cell; no feed row names this id."
+      },
+      {
+        "key": "bytedance/v1-lite-image-to-video",
+        "variant": "480p",
+        "status": "pricing-only",
+        "provenance": "https://kie.ai/bytedance/seedance-v1 groupData declares this id and prints this cell (ac-egs1ww re-fetch evidence); no official occurrence in the frozen 2026-09-11 pull",
+        "rationale": "Page-sourced under the pricing/kie.ts page-evidence rule: printed credits x 0.005 equal the cell; no feed row names this id."
+      },
+      {
+        "key": "bytedance/v1-lite-image-to-video",
+        "variant": "720p",
+        "status": "pricing-only",
+        "provenance": "https://kie.ai/bytedance/seedance-v1 groupData declares this id and prints this cell (ac-egs1ww re-fetch evidence); no official occurrence in the frozen 2026-09-11 pull",
+        "rationale": "Page-sourced under the pricing/kie.ts page-evidence rule: printed credits x 0.005 equal the cell; no feed row names this id."
+      },
+      {
+        "key": "bytedance/v1-lite-image-to-video",
+        "variant": "1080p",
+        "status": "pricing-only",
+        "provenance": "https://kie.ai/bytedance/seedance-v1 groupData declares this id and prints this cell (ac-egs1ww re-fetch evidence); no official occurrence in the frozen 2026-09-11 pull",
+        "rationale": "Page-sourced under the pricing/kie.ts page-evidence rule: printed credits x 0.005 equal the cell; no feed row names this id."
+      },
+      {
+        "key": "bytedance/v1-lite-text-to-video",
+        "variant": "480p",
+        "status": "pricing-only",
+        "provenance": "https://kie.ai/bytedance/seedance-v1 groupData declares this id and prints this cell (ac-egs1ww re-fetch evidence); no official occurrence in the frozen 2026-09-11 pull",
+        "rationale": "Page-sourced under the pricing/kie.ts page-evidence rule: printed credits x 0.005 equal the cell; no feed row names this id."
+      },
+      {
+        "key": "bytedance/v1-lite-text-to-video",
+        "variant": "720p",
+        "status": "pricing-only",
+        "provenance": "https://kie.ai/bytedance/seedance-v1 groupData declares this id and prints this cell (ac-egs1ww re-fetch evidence); no official occurrence in the frozen 2026-09-11 pull",
+        "rationale": "Page-sourced under the pricing/kie.ts page-evidence rule: printed credits x 0.005 equal the cell; no feed row names this id."
+      },
+      {
+        "key": "bytedance/v1-lite-text-to-video",
+        "variant": "1080p",
+        "status": "pricing-only",
+        "provenance": "https://kie.ai/bytedance/seedance-v1 groupData declares this id and prints this cell (ac-egs1ww re-fetch evidence); no official occurrence in the frozen 2026-09-11 pull",
+        "rationale": "Page-sourced under the pricing/kie.ts page-evidence rule: printed credits x 0.005 equal the cell; no feed row names this id."
+      },
+      {
+        "key": "bytedance/v1-pro-image-to-video",
+        "variant": "480p",
+        "status": "pricing-only",
+        "provenance": "https://kie.ai/bytedance/seedance-v1 groupData declares this id and prints this cell (ac-egs1ww re-fetch evidence); no official occurrence in the frozen 2026-09-11 pull",
+        "rationale": "Page-sourced under the pricing/kie.ts page-evidence rule: printed credits x 0.005 equal the cell; no feed row names this id."
+      },
+      {
+        "key": "bytedance/v1-pro-image-to-video",
+        "variant": "720p",
+        "status": "pricing-only",
+        "provenance": "https://kie.ai/bytedance/seedance-v1 groupData declares this id and prints this cell (ac-egs1ww re-fetch evidence); no official occurrence in the frozen 2026-09-11 pull",
+        "rationale": "Page-sourced under the pricing/kie.ts page-evidence rule: printed credits x 0.005 equal the cell; no feed row names this id."
+      },
+      {
+        "key": "bytedance/v1-pro-image-to-video",
+        "variant": "1080p",
+        "status": "pricing-only",
+        "provenance": "https://kie.ai/bytedance/seedance-v1 groupData declares this id and prints this cell (ac-egs1ww re-fetch evidence); no official occurrence in the frozen 2026-09-11 pull",
+        "rationale": "Page-sourced under the pricing/kie.ts page-evidence rule: printed credits x 0.005 equal the cell; no feed row names this id."
+      },
+      {
+        "key": "bytedance/v1-pro-text-to-video",
+        "variant": "480p",
+        "status": "pricing-only",
+        "provenance": "https://kie.ai/bytedance/seedance-v1 groupData declares this id and prints this cell (ac-egs1ww re-fetch evidence); no official occurrence in the frozen 2026-09-11 pull",
+        "rationale": "Page-sourced under the pricing/kie.ts page-evidence rule: printed credits x 0.005 equal the cell; no feed row names this id."
+      },
+      {
+        "key": "bytedance/v1-pro-text-to-video",
+        "variant": "720p",
+        "status": "pricing-only",
+        "provenance": "https://kie.ai/bytedance/seedance-v1 groupData declares this id and prints this cell (ac-egs1ww re-fetch evidence); no official occurrence in the frozen 2026-09-11 pull",
+        "rationale": "Page-sourced under the pricing/kie.ts page-evidence rule: printed credits x 0.005 equal the cell; no feed row names this id."
+      },
+      {
+        "key": "bytedance/v1-pro-text-to-video",
+        "variant": "1080p",
+        "status": "pricing-only",
+        "provenance": "https://kie.ai/bytedance/seedance-v1 groupData declares this id and prints this cell (ac-egs1ww re-fetch evidence); no official occurrence in the frozen 2026-09-11 pull",
+        "rationale": "Page-sourced under the pricing/kie.ts page-evidence rule: printed credits x 0.005 equal the cell; no feed row names this id."
+      },
+      {
+        "key": "bytedance/v1-pro-fast-image-to-video",
+        "variant": "5|720p",
+        "status": "pricing-only",
+        "provenance": "https://kie.ai/bytedance/seedance-v1 groupData declares this id and prints this cell (ac-egs1ww re-fetch evidence); no official occurrence in the frozen 2026-09-11 pull",
+        "rationale": "Page-sourced under the pricing/kie.ts page-evidence rule: printed credits x 0.005 equal the cell; no feed row names this id."
+      },
+      {
+        "key": "bytedance/v1-pro-fast-image-to-video",
+        "variant": "10|720p",
+        "status": "pricing-only",
+        "provenance": "https://kie.ai/bytedance/seedance-v1 groupData declares this id and prints this cell (ac-egs1ww re-fetch evidence); no official occurrence in the frozen 2026-09-11 pull",
+        "rationale": "Page-sourced under the pricing/kie.ts page-evidence rule: printed credits x 0.005 equal the cell; no feed row names this id."
+      },
+      {
+        "key": "bytedance/v1-pro-fast-image-to-video",
+        "variant": "5|1080p",
+        "status": "pricing-only",
+        "provenance": "https://kie.ai/bytedance/seedance-v1 groupData declares this id and prints this cell (ac-egs1ww re-fetch evidence); no official occurrence in the frozen 2026-09-11 pull",
+        "rationale": "Page-sourced under the pricing/kie.ts page-evidence rule: printed credits x 0.005 equal the cell; no feed row names this id."
+      },
+      {
+        "key": "bytedance/v1-pro-fast-image-to-video",
+        "variant": "10|1080p",
+        "status": "pricing-only",
+        "provenance": "https://kie.ai/bytedance/seedance-v1 groupData declares this id and prints this cell (ac-egs1ww re-fetch evidence); no official occurrence in the frozen 2026-09-11 pull",
+        "rationale": "Page-sourced under the pricing/kie.ts page-evidence rule: printed credits x 0.005 equal the cell; no feed row names this id."
       },
       {
         "key": "runway/extend",

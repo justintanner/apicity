@@ -60,6 +60,12 @@ const page = (url: string) => ({ url });
 // place rather than being retyped per entry.
 const pricePage = (url: string, asOf = "2026-08-06") => ({ url, asOf });
 
+// The page read behind the eight ByteDance entries priced from their kie.ai
+// product pages under the rule above (Seedream 3.0 / 4.0, Seedance 1.0;
+// ac-egs1ww): the UTC date of the archived read those entries cite. One
+// constant, so the eight asOf stamps cannot drift apart.
+const BYTEDANCE_PAGE_AS_OF = "2026-09-26";
+
 // Seconds of output, resolved in a fixed precedence:
 //   1. payload.input.duration — the upstream wire field, what kie actually
 //      bills. Present-but-uncoercible stops here rather than falling through,
@@ -133,6 +139,23 @@ const seedance25Seconds = (
 
   return 5;
 };
+
+// Seedance 1.0 (the five bytedance/v1-* ids) declares duration "5" | "10"
+// with a schema default of "5", and the createTask guard forwards an omitted
+// duration as omitted, so kie bills its default clip. Like the schema's own
+// default, this one applies only to an absent field, and only when no usable
+// cost hint or legacy top-level duration names a length instead. Anything
+// present, a null included, goes through `seconds` unchanged: a malformed
+// value fails closed, and a null never takes the default.
+const seedanceV1Seconds = (
+  p: Record<string, unknown>,
+  hints?: CostHints
+): number | undefined =>
+  asObject(p.input)?.duration === undefined &&
+  hintSeconds(hints) === undefined &&
+  p.duration === undefined
+    ? 5
+    : seconds(p, hints);
 
 // Rate-key form of a selector field upstream types as a number. `asString`
 // deliberately rejects non-strings, so a numeric wire value — runway's
@@ -296,6 +319,23 @@ const imageCount = (p: Record<string, unknown>): number => {
   return Number.isFinite(count) && count > 0 ? count : 1;
 };
 
+// Seedream 4.0 (bytedance/seedream-v4-edit and -text-to-image) bills the
+// images a job returns. The prompt and max_images (integer 1-6, schema
+// default 1) decide that count together and max_images caps it, so the cap is
+// the estimate: an upper bound, never an under-quote. imageCount would read
+// num_images / n, which the V4 schemas do not declare, and quote one image
+// for six. An absent max_images takes the schema default; any other value
+// that is not a positive integer (0, 2.5, "3", null) fails closed.
+const seedreamV4Images = (p: Record<string, unknown>): number | undefined => {
+  const declared = asObject(p.input)?.max_images;
+  if (declared === undefined) return 1;
+  return typeof declared === "number" &&
+    Number.isInteger(declared) &&
+    declared > 0
+    ? declared
+    : undefined;
+};
+
 // Seedream 5 Pro edit charges $0.0025 for each input image after the first.
 // The schema caps image_urls at ten, so the surcharge is a finite exact count
 // rather than a media-size guess.
@@ -448,13 +488,23 @@ const flatImagePage = (perUnit: number, url: string): ModelPricing => ({
 // from a dated pull. Unlike flatImagePage above, units run through imageCount,
 // so the families that do declare a batch field (ideogram remix / character*)
 // scale with it.
-const flatImagePricePage = (perUnit: number, url: string): ModelPricing => ({
+//
+// `asOf` and `units` default to the 2026-08-06 pull and to imageCount. A
+// page-sourced entry passes the date its page was read, and a family that
+// counts its images from another field passes its own counter (Seedream 4.0's
+// max_images).
+const flatImagePricePage = (
+  perUnit: number,
+  url: string,
+  asOf = "2026-08-06",
+  units: (p: Record<string, unknown>) => number | undefined = imageCount
+): ModelPricing => ({
   kind: "perUnit",
   unit: "images",
-  units: imageCount,
+  units,
   select: [],
   rates: { "": perUnit },
-  source: pricePage(url),
+  source: pricePage(url, asOf),
 });
 
 // Per-image entry tiered by ONE nested `input` field — the createTask image
@@ -627,11 +677,15 @@ const perVideoByDuration = (
 // `perVideoByDuration`. The Hailuo entries pass both, so an omitted field
 // prices the documented row; the wan 2.5 pair passes neither, so an omitted
 // field selects no rate and the estimate fails instead of guessing a cell.
+//
+// `asOf` defaults to the 2026-08-06 pull; a page-sourced entry (Seedance 1.0
+// Pro Fast) passes the date its page was read.
 const perVideoByDurationAndResolution = (
   rates: Record<string, number>,
   url: string,
   defaultDuration?: string,
-  defaultResolution?: string
+  defaultResolution?: string,
+  asOf = "2026-08-06"
 ): ModelPricing => ({
   kind: "perUnit",
   unit: "generations",
@@ -649,7 +703,7 @@ const perVideoByDurationAndResolution = (
     },
   ],
   rates,
-  source: pricePage(url),
+  source: pricePage(url, asOf),
 });
 
 // Per-video entry keyed by resolution alone (the wan 2.2 A14B turbo pair). Same
@@ -2135,23 +2189,67 @@ export const kie: Record<string, ModelPricing> = {
     source: pricePage("https://kie.ai/seedance-1-5-pro"),
   },
 
-  // Bytedance v1 video stays unpriced in this tree by decision, not for lack
-  // of evidence. The 2026-08-22 441-row KIE catalog and the 2026-09-11 feed
-  // have no row for any of the registered lite/pro ids, and the five matching
-  // pages under https://docs.kie.ai/market/bytedance/v1- (lite-image-to-video,
+  // Seedance 1.0 — the five bytedance/v1-* ids, priced from the product page
+  // https://kie.ai/bytedance/seedance-v1 as read on 2026-09-26 (ac-egs1ww).
+  // Neither the 2026-08-22 441-row KIE catalog nor the 2026-09-11 feed has a
+  // row for any of them, and the five matching pages under
+  // https://docs.kie.ai/market/bytedance/v1- (lite-image-to-video,
   // lite-text-to-video, pro-fast-image-to-video, pro-image-to-video,
   // pro-text-to-video) publish request contracts but no operation rate. The
-  // kie.ai product pages do print one: https://kie.ai/bytedance/seedance-v1
-  // declares all five ids in its groupData with a Lite ladder (2 / 4.5 / 10
-  // credits at 480p / 720p / 1080p), a Pro ladder (2.8 / 6 / 14 credits) and,
-  // with https://kie.ai/seedance-1-0-pro-fast, a per-clip Pro Fast table
-  // (sweep of 2026-09-20, ac-4v9ck1), so all five are admissible under the
-  // page-evidence rule in the header. Adopting them is deferred to
-  // ac-egs1ww: the pro-fast tab prices per clip (5 s / 10 s at two
-  // resolutions), which no existing helper's selector shape expresses, and
-  // none of the five has an in-repo sibling to corroborate the cells. The
-  // fast rate is still not inferred by scaling a standard/pro cell. Until
-  // then all five fail safe into the prohibitive tier.
+  // product page declares all five in its groupData and prints every cell
+  // below as credits beside a USD figure equal to credits x $0.005, so each
+  // id meets the page-evidence rule in the header. Lite and Pro bill per
+  // second by resolution: Lite 2 / 4.5 / 10 credits and Pro 2.8 / 6 / 14 at
+  // 480p / 720p / 1080p. The page says a second "costs about" its credits;
+  // the credit and USD figures reconcile exactly, so the qualifier reads as
+  // presentation, not as a different rate. All four apply the schemas'
+  // documented 720p and 5 s defaults (seedanceV1Seconds).
+  "bytedance/v1-lite-image-to-video": tieredVideoPage(
+    "resolution",
+    { "480p": 0.01, "720p": 0.0225, "1080p": 0.05 },
+    "https://kie.ai/bytedance/seedance-v1?model=bytedance%2Fv1-lite-image-to-video",
+    "720p",
+    BYTEDANCE_PAGE_AS_OF,
+    seedanceV1Seconds
+  ),
+  "bytedance/v1-lite-text-to-video": tieredVideoPage(
+    "resolution",
+    { "480p": 0.01, "720p": 0.0225, "1080p": 0.05 },
+    "https://kie.ai/bytedance/seedance-v1?model=bytedance%2Fv1-lite-text-to-video",
+    "720p",
+    BYTEDANCE_PAGE_AS_OF,
+    seedanceV1Seconds
+  ),
+  "bytedance/v1-pro-image-to-video": tieredVideoPage(
+    "resolution",
+    { "480p": 0.014, "720p": 0.03, "1080p": 0.07 },
+    "https://kie.ai/bytedance/seedance-v1?model=bytedance%2Fv1-pro-image-to-video",
+    "720p",
+    BYTEDANCE_PAGE_AS_OF,
+    seedanceV1Seconds
+  ),
+  "bytedance/v1-pro-text-to-video": tieredVideoPage(
+    "resolution",
+    { "480p": 0.014, "720p": 0.03, "1080p": 0.07 },
+    "https://kie.ai/bytedance/seedance-v1?model=bytedance%2Fv1-pro-text-to-video",
+    "720p",
+    BYTEDANCE_PAGE_AS_OF,
+    seedanceV1Seconds
+  ),
+  // Pro Fast bills per clip, not per second: 16 / 36 credits for a 5 s / 10 s
+  // clip at 720p and 36 / 72 at 1080p, printed byte for byte on the family
+  // page and on https://kie.ai/seedance-1-0-pro-fast. A 10 s clip is not two
+  // 5 s clips (36 credits, not 32), so each cell is a per-video rate keyed by
+  // duration x resolution, with the schema defaults 5 s and 720p; the schema
+  // offers no 480p. The fast rate is still not inferred by scaling a
+  // standard/pro cell.
+  "bytedance/v1-pro-fast-image-to-video": perVideoByDurationAndResolution(
+    { "5|720p": 0.08, "10|720p": 0.18, "5|1080p": 0.18, "10|1080p": 0.36 },
+    "https://kie.ai/bytedance/seedance-v1?model=bytedance%2Fv1-pro-fast-image-to-video",
+    "5",
+    "720p",
+    BYTEDANCE_PAGE_AS_OF
+  ),
 
   // Topaz Video Upscaler — per second by `input.upscale_factor`. Unlike the
   // image upscaler above, this page publishes the factors themselves (1x/2x
@@ -2411,17 +2509,13 @@ export const kie: Record<string, ModelPricing> = {
   // KIE_MEDIA_MODELS ids, each with its own createTask schema), so
   // those are the keys — a pricing key must equal what the caller puts in
   // `payload.model`. The ByteDance ids are a DIFFERENT product
-  // generation and stay unpriced (fail-safe prohibitive). Rechecked
+  // generation, priced separately below. Rechecked
   // 2026-08-22 against the fresh 441-row catalog plus the three operation
   // pages under https://docs.kie.ai/market/bytedance/: `bytedance/seedream` is
   // "Seedream3.0" and both `bytedance/seedream-v4-{edit,text-to-image}` are
   // "Seedream4.0"; none of those docs pages publishes a price. The kie.ai
-  // product pages do (https://kie.ai/seedream: 3.5 credits per image for
-  // Seedream V3; https://kie.ai/seedream-api: 5 credits per image for both
-  // V4 ids; sweep of 2026-09-20, ac-4v9ck1), so the three are admissible under
-  // the page-evidence rule in the header and are deferred to ac-egs1ww.
-  // Until then they keep no pricing key and fail safe into the prohibitive
-  // tier rather than borrowing the 4.5 rate for 3.0/4.0 traffic.
+  // product pages do, and the three entries below cite them (ac-egs1ww)
+  // rather than borrowing the 4.5 rate for 3.0/4.0 traffic.
   "seedream/4.5-text-to-image": flatImagePricePage(
     0.0325,
     "https://kie.ai/seedream-4-5?model=seedream%2F4.5-text-to-image"
@@ -2429,6 +2523,38 @@ export const kie: Record<string, ModelPricing> = {
   "seedream/4.5-edit": flatImagePricePage(
     0.0325,
     "https://kie.ai/seedream-4-5?model=seedream%2F4.5-edit"
+  ),
+
+  // Seedream 3.0 / 4.0 — the three bytedance/seedream* ids, priced from their
+  // own kie.ai product pages as read on 2026-09-26 (ac-egs1ww). Neither the
+  // 2026-08-22 catalog nor the 2026-09-11 feed has a row for them; each page
+  // declares its ids in its groupData and prints a credit figure whose USD
+  // figure is credits x $0.005, so each id meets the page-evidence rule in the
+  // header. https://kie.ai/seedream declares one tab and prints "3.5 credits
+  // per image ($0.0175)" for Seedream V3; the V3 schema has no count field, so
+  // a request is one image and image_size does not move the price.
+  "bytedance/seedream": flatImagePricePage(
+    0.0175,
+    "https://kie.ai/seedream",
+    BYTEDANCE_PAGE_AS_OF
+  ),
+  // https://kie.ai/seedream-api declares both 4.0 tabs and prints "5 credits
+  // per image (~$0.025)" for each, "independent of image resolution" and
+  // "solely determined by the final number of images returned"; the tilde is
+  // presentation (5 x $0.005 is exactly $0.025). The edit model's 1-10 input
+  // images add nothing. seedreamV4Images counts the returned images by their
+  // cap, max_images, so the estimate is the job's upper bound.
+  "bytedance/seedream-v4-edit": flatImagePricePage(
+    0.025,
+    "https://kie.ai/seedream-api?model=bytedance%2Fseedream-v4-edit",
+    BYTEDANCE_PAGE_AS_OF,
+    seedreamV4Images
+  ),
+  "bytedance/seedream-v4-text-to-image": flatImagePricePage(
+    0.025,
+    "https://kie.ai/seedream-api?model=bytedance%2Fseedream-v4-text-to-image",
+    BYTEDANCE_PAGE_AS_OF,
+    seedreamV4Images
   ),
 
   // Nano Banana 2 Lite — flat $0.02/image (the page lists one "1k" row, and

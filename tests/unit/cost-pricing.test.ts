@@ -15,6 +15,7 @@ import {
   type SlugProviderId,
 } from "../../packages/provider/cost/src/slugs";
 import { computeEstimate } from "../../packages/provider/cost/src/compute";
+import { classifyEstimate } from "../../packages/provider/cost/src/cost-tier";
 import { lookupPaidEndpoint } from "../../packages/provider/cost/src/paid-endpoints";
 import type {
   CostHints,
@@ -51,6 +52,14 @@ import {
   Wan26TextToVideoRequestSchema,
   Wan26ImageToVideoRequestSchema,
   Wan26VideoToVideoRequestSchema,
+  BytedanceSeedreamRequestSchema,
+  BytedanceSeedreamV4EditRequestSchema,
+  BytedanceSeedreamV4TextToImageRequestSchema,
+  BytedanceV1LiteImageToVideoRequestSchema,
+  BytedanceV1LiteTextToVideoRequestSchema,
+  BytedanceV1ProImageToVideoRequestSchema,
+  BytedanceV1ProTextToVideoRequestSchema,
+  BytedanceV1ProFastImageToVideoRequestSchema,
 } from "../../packages/provider/kie/src/zod";
 
 describe("pricing helpers", () => {
@@ -1648,26 +1657,6 @@ describe("kie createTask image families (REQ-005)", () => {
     }
   );
 
-  // OQ-3: the "seedream 4.5" page rate keys the two 4.5 model ids only. The
-  // enum-listed ByteDance ids are Seedream 3.0 / 4.0 per docs.kie.ai, whose
-  // pages print no rate; the kie.ai product pages do (https://kie.ai/seedream:
-  // 3.5 credits per image; https://kie.ai/seedream-api: 5 credits per image
-  // for both V4 ids; sweep of 2026-09-20), so all three are admissible under
-  // the pricing/kie.ts page-evidence rule and are deferred to ac-egs1ww.
-  // Until that lands they stay unpriced (fail-safe prohibitive) by decision,
-  // not for lack of evidence.
-  it.each([
-    "bytedance/seedream",
-    "bytedance/seedream-v4-edit",
-    "bytedance/seedream-v4-text-to-image",
-  ])("leaves %s unpriced — no published page row", (model) => {
-    expect(PRICING.kie[model]).toBeUndefined();
-
-    const result = kieEstimate({ model, input: { prompt: "x" } });
-    expect(result.usd).toBe(0);
-    expect(result.warnings[0]).toContain("not found in pricing table");
-  });
-
   // Plan-review finding 3: ideogram and qwen/image-edit declare `num_images`
   // as a STRING enum, and asNumber rejects strings — reading it through the
   // old imageCount would have priced three images as one.
@@ -2868,7 +2857,7 @@ describe("kie stale-family refresh (REQ-004)", () => {
   // AC-4 paper trail: the two OTP pay-gated Gemini Omni routes that are NOT
   // the video generator publish no rate in the 2026-08-06 pull (0 of 404
   // rows), so they are intentionally unpriced rather than silently skipped.
-  // Same treatment as the unpriced bytedance/seedream* ids above — no entry,
+  // Same treatment as the unpriced wan/2-6-flash-* pair below — no entry,
   // fail-safe `prohibitive`, and an estimate that fails loudly instead of
   // quoting a guessed rate. Delete this pin only when a page row appears.
   it.each(["api.v1.omni.audio.create", "api.v1.omni.character.create"])(
@@ -5839,5 +5828,490 @@ describe("kie PixVerse V6 pricing", () => {
     expect(result.warnings).toHaveLength(1);
     expect(result.warnings[0]).toContain("missing required selector(s)");
     expect(result.warnings[0]).toContain("quality");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// ByteDance Seedream 3.0 / 4.0 and Seedance 1.0, priced from their kie.ai
+// product pages (ac-egs1ww). None of the eight ids has a row in any feed
+// snapshot; each entry comes from the pricingDesc its page declares, under the
+// page-evidence rule in the pricing/kie.ts header, as read on 2026-09-26. OQ-3
+// still holds: the "seedream 4.5" page rate keys only the two seedream/4.5-*
+// ids, and these ByteDance ids (Seedream 3.0 / 4.0 per docs.kie.ai) never
+// borrow it. Every cell is written out here from that page read rather than
+// aliased to a feed-anchored ladder (compare `transitionPageRates`), so a
+// change on either side fails these pins.
+// ---------------------------------------------------------------------------
+
+describe("kie ByteDance page-sourced pricing (ac-egs1ww)", () => {
+  const pageRead = "2026-09-26";
+  const seedreamV3Rates = { "": 0.0175 };
+  const seedreamV4Rates = { "": 0.025 };
+  const seedanceLiteRates = { "480p": 0.01, "720p": 0.0225, "1080p": 0.05 };
+  const seedanceProRates = { "480p": 0.014, "720p": 0.03, "1080p": 0.07 };
+  const seedanceProFastRates = {
+    "5|720p": 0.08,
+    "10|720p": 0.18,
+    "5|1080p": 0.18,
+    "10|1080p": 0.36,
+  };
+  const still = "https://example.com/still.png";
+
+  it.each([
+    {
+      model: "bytedance/seedream",
+      unit: "images",
+      selectors: [],
+      rates: seedreamV3Rates,
+      url: "https://kie.ai/seedream",
+      slug: "sd3",
+      display: "Seedream 3",
+    },
+    {
+      model: "bytedance/seedream-v4-edit",
+      unit: "images",
+      selectors: [],
+      rates: seedreamV4Rates,
+      url: "https://kie.ai/seedream-api?model=bytedance%2Fseedream-v4-edit",
+      slug: "sd4",
+      display: "Seedream 4 Edit",
+    },
+    {
+      model: "bytedance/seedream-v4-text-to-image",
+      unit: "images",
+      selectors: [],
+      rates: seedreamV4Rates,
+      url: "https://kie.ai/seedream-api?model=bytedance%2Fseedream-v4-text-to-image",
+      slug: "sd4",
+      display: "Seedream 4",
+    },
+    {
+      model: "bytedance/v1-lite-image-to-video",
+      unit: "seconds",
+      selectors: ["resolution"],
+      rates: seedanceLiteRates,
+      url: "https://kie.ai/bytedance/seedance-v1?model=bytedance%2Fv1-lite-image-to-video",
+      slug: "sd1l",
+      display: "Seedance 1 Lite",
+    },
+    {
+      model: "bytedance/v1-lite-text-to-video",
+      unit: "seconds",
+      selectors: ["resolution"],
+      rates: seedanceLiteRates,
+      url: "https://kie.ai/bytedance/seedance-v1?model=bytedance%2Fv1-lite-text-to-video",
+      slug: "sd1l",
+      display: "Seedance 1 Lite",
+    },
+    {
+      model: "bytedance/v1-pro-image-to-video",
+      unit: "seconds",
+      selectors: ["resolution"],
+      rates: seedanceProRates,
+      url: "https://kie.ai/bytedance/seedance-v1?model=bytedance%2Fv1-pro-image-to-video",
+      slug: "sd1p",
+      display: "Seedance 1 Pro",
+    },
+    {
+      model: "bytedance/v1-pro-text-to-video",
+      unit: "seconds",
+      selectors: ["resolution"],
+      rates: seedanceProRates,
+      url: "https://kie.ai/bytedance/seedance-v1?model=bytedance%2Fv1-pro-text-to-video",
+      slug: "sd1p",
+      display: "Seedance 1 Pro",
+    },
+    {
+      model: "bytedance/v1-pro-fast-image-to-video",
+      unit: "generations",
+      selectors: ["duration", "resolution"],
+      rates: seedanceProFastRates,
+      url: "https://kie.ai/bytedance/seedance-v1?model=bytedance%2Fv1-pro-fast-image-to-video",
+      slug: "sd1pf",
+      display: "Seedance 1 Pro Fast",
+    },
+  ])(
+    "pins every $model cell, its page citation and its registrations",
+    ({ model, unit, selectors, rates, url, slug, display }) => {
+      const entry = PRICING.kie[model];
+      if (entry?.kind !== "perUnit") {
+        throw new Error(`expected a perUnit entry for ${model}`);
+      }
+      expect(entry.unit).toBe(unit);
+      expect(entry.select.map((selector) => selector.name)).toEqual(selectors);
+      expect(entry.rates).toEqual(rates);
+      expect(entry.source).toEqual({ url, asOf: pageRead });
+      expect((MODEL_SLUGS.kie as Record<string, string>)[model]).toBe(slug);
+      expect((MODEL_DISPLAY.kie as Record<string, string>)[model]).toBe(
+        display
+      );
+    }
+  );
+
+  it.each([
+    {
+      label: "Seedream 3.0",
+      schema: BytedanceSeedreamRequestSchema,
+      payload: {
+        model: "bytedance/seedream" as const,
+        input: { prompt: "a lighthouse at dawn", image_size: "landscape_16_9" },
+      },
+      breakdown: { units: 1, unit: "images", perUnitUsd: 0.0175 },
+      usd: 0.0175,
+    },
+    {
+      label: "Seedream 4.0 text-to-image capped at six images",
+      schema: BytedanceSeedreamV4TextToImageRequestSchema,
+      payload: {
+        model: "bytedance/seedream-v4-text-to-image" as const,
+        input: { prompt: "a lighthouse at dawn", max_images: 6 },
+      },
+      breakdown: { units: 6, unit: "images", perUnitUsd: 0.025 },
+      usd: 0.15,
+    },
+    {
+      label: "Seedream 4.0 edit with ten 4K inputs",
+      schema: BytedanceSeedreamV4EditRequestSchema,
+      payload: {
+        model: "bytedance/seedream-v4-edit" as const,
+        input: {
+          prompt: "turn the lighthouse red",
+          image_urls: Array.from({ length: 10 }, () => still),
+          image_resolution: "4K",
+        },
+      },
+      breakdown: { units: 1, unit: "images", perUnitUsd: 0.025 },
+      usd: 0.025,
+    },
+    {
+      label: "Seedance 1.0 Lite image-to-video at 480p for 5 s",
+      schema: BytedanceV1LiteImageToVideoRequestSchema,
+      payload: {
+        model: "bytedance/v1-lite-image-to-video" as const,
+        input: {
+          prompt: "waves roll in",
+          image_url: still,
+          resolution: "480p",
+          duration: "5",
+        },
+      },
+      breakdown: { units: 5, unit: "seconds", perUnitUsd: 0.01 },
+      usd: 0.05,
+    },
+    {
+      label: "Seedance 1.0 Lite text-to-video at 1080p for 10 s",
+      schema: BytedanceV1LiteTextToVideoRequestSchema,
+      payload: {
+        model: "bytedance/v1-lite-text-to-video" as const,
+        input: { prompt: "waves roll in", resolution: "1080p", duration: "10" },
+      },
+      breakdown: { units: 10, unit: "seconds", perUnitUsd: 0.05 },
+      usd: 0.5,
+    },
+    {
+      label: "Seedance 1.0 Pro image-to-video at 1080p for 10 s",
+      schema: BytedanceV1ProImageToVideoRequestSchema,
+      payload: {
+        model: "bytedance/v1-pro-image-to-video" as const,
+        input: {
+          prompt: "waves roll in",
+          image_url: still,
+          resolution: "1080p",
+          duration: "10",
+        },
+      },
+      breakdown: { units: 10, unit: "seconds", perUnitUsd: 0.07 },
+      usd: 0.7,
+    },
+    {
+      label: "Seedance 1.0 Pro text-to-video at 480p for 10 s",
+      schema: BytedanceV1ProTextToVideoRequestSchema,
+      payload: {
+        model: "bytedance/v1-pro-text-to-video" as const,
+        input: { prompt: "waves roll in", resolution: "480p", duration: "10" },
+      },
+      breakdown: { units: 10, unit: "seconds", perUnitUsd: 0.014 },
+      usd: 0.14,
+    },
+    {
+      label: "Seedance 1.0 Pro Fast at 1080p for a 10 s clip",
+      schema: BytedanceV1ProFastImageToVideoRequestSchema,
+      payload: {
+        model: "bytedance/v1-pro-fast-image-to-video" as const,
+        input: {
+          prompt: "waves roll in",
+          image_url: still,
+          resolution: "1080p",
+          duration: "10",
+        },
+      },
+      breakdown: { units: 1, unit: "generations", perUnitUsd: 0.36 },
+      usd: 0.36,
+    },
+  ])(
+    "prices $label from its parsed payload",
+    ({ schema, payload, breakdown, usd }) => {
+      const parsed = schema.safeParse(payload);
+      expect(parsed.success).toBe(true);
+      if (!parsed.success) return;
+
+      const result = kieEstimate(parsed.data);
+      expect(result.breakdown).toEqual(breakdown);
+      expect(result.usd).toBeCloseTo(usd, 10);
+      expect(result.rateAsOf).toBe(pageRead);
+      expect(result.warnings).toEqual([]);
+    }
+  );
+
+  // kie bills the documented default when a request omits the field, and the
+  // createTask guard forwards the raw request, so an estimate of the raw
+  // payload must equal an estimate of the parsed one, into which zod has
+  // injected those defaults. The usd and warnings pins keep this from passing
+  // on two equal failures.
+  it.each([
+    {
+      schema: BytedanceSeedreamV4TextToImageRequestSchema,
+      payload: {
+        model: "bytedance/seedream-v4-text-to-image" as const,
+        input: { prompt: "a lighthouse at dawn" },
+      },
+      defaults: { max_images: 1 },
+      usd: 0.025,
+    },
+    {
+      schema: BytedanceSeedreamV4EditRequestSchema,
+      payload: {
+        model: "bytedance/seedream-v4-edit" as const,
+        input: { prompt: "turn the lighthouse red", image_urls: [still] },
+      },
+      defaults: { max_images: 1 },
+      usd: 0.025,
+    },
+    {
+      schema: BytedanceV1LiteImageToVideoRequestSchema,
+      payload: {
+        model: "bytedance/v1-lite-image-to-video" as const,
+        input: { prompt: "waves roll in", image_url: still },
+      },
+      defaults: { resolution: "720p", duration: "5" },
+      usd: 0.1125,
+    },
+    {
+      schema: BytedanceV1LiteTextToVideoRequestSchema,
+      payload: {
+        model: "bytedance/v1-lite-text-to-video" as const,
+        input: { prompt: "waves roll in" },
+      },
+      defaults: { resolution: "720p", duration: "5" },
+      usd: 0.1125,
+    },
+    {
+      schema: BytedanceV1ProImageToVideoRequestSchema,
+      payload: {
+        model: "bytedance/v1-pro-image-to-video" as const,
+        input: { prompt: "waves roll in", image_url: still },
+      },
+      defaults: { resolution: "720p", duration: "5" },
+      usd: 0.15,
+    },
+    {
+      schema: BytedanceV1ProTextToVideoRequestSchema,
+      payload: {
+        model: "bytedance/v1-pro-text-to-video" as const,
+        input: { prompt: "waves roll in" },
+      },
+      defaults: { resolution: "720p", duration: "5" },
+      usd: 0.15,
+    },
+    {
+      schema: BytedanceV1ProFastImageToVideoRequestSchema,
+      payload: {
+        model: "bytedance/v1-pro-fast-image-to-video" as const,
+        input: { prompt: "waves roll in", image_url: still },
+      },
+      defaults: { resolution: "720p", duration: "5" },
+      usd: 0.08,
+    },
+  ])(
+    "prices $payload.model with omitted defaults exactly as parsed",
+    ({ schema, payload, defaults, usd }) => {
+      for (const field of Object.keys(defaults)) {
+        expect(payload.input).not.toHaveProperty(field);
+      }
+      const parsed = schema.parse(payload);
+      expect(parsed.input).toMatchObject(defaults);
+
+      const raw = kieEstimate(payload);
+      expect(raw).toEqual(kieEstimate(parsed));
+      expect(raw.usd).toBeCloseTo(usd, 10);
+      expect(raw.warnings).toEqual([]);
+    }
+  );
+
+  it.each([
+    {
+      label: "Seedream 4.0 max_images 0",
+      payload: {
+        model: "bytedance/seedream-v4-text-to-image",
+        input: { prompt: "x", max_images: 0 },
+      },
+      fragment: "could not derive units",
+    },
+    {
+      label: "Seedream 4.0 max_images 2.5",
+      payload: {
+        model: "bytedance/seedream-v4-text-to-image",
+        input: { prompt: "x", max_images: 2.5 },
+      },
+      fragment: "could not derive units",
+    },
+    {
+      label: "Seedream 4.0 max_images null",
+      payload: {
+        model: "bytedance/seedream-v4-text-to-image",
+        input: { prompt: "x", max_images: null },
+      },
+      fragment: "could not derive units",
+    },
+    {
+      label: 'Seedream 4.0 edit max_images "3"',
+      payload: {
+        model: "bytedance/seedream-v4-edit",
+        input: { prompt: "x", image_urls: [still], max_images: "3" },
+      },
+      fragment: "could not derive units",
+    },
+    {
+      label: 'Seedance 1.0 duration "abc"',
+      payload: {
+        model: "bytedance/v1-lite-text-to-video",
+        input: { prompt: "x", duration: "abc" },
+      },
+      fragment: "could not derive units",
+    },
+    {
+      label: 'Seedance 1.0 resolution "4k"',
+      payload: {
+        model: "bytedance/v1-pro-image-to-video",
+        input: { prompt: "x", image_url: still, resolution: "4k" },
+      },
+      fragment: "no rate for variant '4k'",
+    },
+    {
+      label: 'Pro Fast resolution "480p"',
+      payload: {
+        model: "bytedance/v1-pro-fast-image-to-video",
+        input: { prompt: "x", image_url: still, resolution: "480p" },
+      },
+      fragment: "no rate for variant '5|480p'",
+    },
+    {
+      label: 'Pro Fast duration "7"',
+      payload: {
+        model: "bytedance/v1-pro-fast-image-to-video",
+        input: { prompt: "x", image_url: still, duration: "7" },
+      },
+      fragment: "no rate for variant '7|720p'",
+    },
+  ])("fails closed on $label", ({ payload, fragment }) => {
+    const result = kieEstimate(payload);
+    expect(result.usd).toBe(0);
+    expect(result.breakdown).toEqual({});
+    expect(result.warnings).toHaveLength(1);
+    expect(result.warnings[0]).toContain(fragment);
+  });
+
+  // Every schema-valid enum combination of the eight ids lands in one tier:
+  // 24 Lite / Pro cells (3 resolutions x 2 durations x 4 ids), 4 Pro Fast
+  // clips, max_images 1-6 on both 4.0 tabs and Seedream 3.0, from $0.0175 to
+  // $0.70. Without an entry the table miss classifies `prohibitive`.
+  it("classifies every schema-valid request for the eight ids expensive", () => {
+    const perSecond = [
+      [
+        BytedanceV1LiteImageToVideoRequestSchema,
+        "bytedance/v1-lite-image-to-video",
+      ],
+      [
+        BytedanceV1LiteTextToVideoRequestSchema,
+        "bytedance/v1-lite-text-to-video",
+      ],
+      [
+        BytedanceV1ProImageToVideoRequestSchema,
+        "bytedance/v1-pro-image-to-video",
+      ],
+      [
+        BytedanceV1ProTextToVideoRequestSchema,
+        "bytedance/v1-pro-text-to-video",
+      ],
+    ] as const;
+    const usds: number[] = [];
+    const check = (payload: Record<string, unknown>) => {
+      const estimate = kieEstimate(payload);
+      expect(classifyEstimate(estimate), JSON.stringify(payload)).toBe(
+        "expensive"
+      );
+      usds.push(estimate.usd);
+    };
+
+    for (const [schema, model] of perSecond) {
+      for (const resolution of ["480p", "720p", "1080p"] as const) {
+        for (const duration of ["5", "10"] as const) {
+          check(
+            schema.parse({
+              model,
+              input: {
+                prompt: "waves roll in",
+                image_url: still,
+                resolution,
+                duration,
+              },
+            })
+          );
+        }
+      }
+    }
+    for (const resolution of ["720p", "1080p"] as const) {
+      for (const duration of ["5", "10"] as const) {
+        check(
+          BytedanceV1ProFastImageToVideoRequestSchema.parse({
+            model: "bytedance/v1-pro-fast-image-to-video",
+            input: {
+              prompt: "waves roll in",
+              image_url: still,
+              resolution,
+              duration,
+            },
+          })
+        );
+      }
+    }
+    for (let count = 1; count <= 6; count += 1) {
+      check(
+        BytedanceSeedreamV4TextToImageRequestSchema.parse({
+          model: "bytedance/seedream-v4-text-to-image",
+          input: { prompt: "a lighthouse at dawn", max_images: count },
+        })
+      );
+      check(
+        BytedanceSeedreamV4EditRequestSchema.parse({
+          model: "bytedance/seedream-v4-edit",
+          input: {
+            prompt: "turn the lighthouse red",
+            image_urls: [still],
+            max_images: count,
+          },
+        })
+      );
+    }
+    check(
+      BytedanceSeedreamRequestSchema.parse({
+        model: "bytedance/seedream",
+        input: { prompt: "a lighthouse at dawn" },
+      })
+    );
+
+    expect(usds).toHaveLength(41);
+    expect(Math.min(...usds)).toBeCloseTo(0.0175, 10);
+    expect(Math.max(...usds)).toBeCloseTo(0.7, 10);
   });
 });

@@ -112,11 +112,14 @@ export const MODEL_SLUGS = {
     // Video — Bytedance Seedance 1.5
     "bytedance/seedance-1.5-pro": "sd1p5p",
 
-    // The registered `bytedance/v1-lite-{text,image}-to-video`,
-    // `bytedance/v1-pro-{text,image}-to-video`, and
-    // `bytedance/v1-pro-fast-image-to-video` ids intentionally have no slug or
-    // pricing key. The 2026-08-22 catalog and their docs.kie.ai/market pages
-    // publish no rate, so they fail safe instead of inheriting another tier.
+    // Video — Bytedance Seedance 1.0 (priced from its kie.ai product page,
+    // ac-egs1ww). Lite, Pro and Pro Fast are three price ladders, so three
+    // slugs; text- and image-to-video are modalities and share one.
+    "bytedance/v1-lite-image-to-video": "sd1l",
+    "bytedance/v1-lite-text-to-video": "sd1l",
+    "bytedance/v1-pro-image-to-video": "sd1p",
+    "bytedance/v1-pro-text-to-video": "sd1p",
+    "bytedance/v1-pro-fast-image-to-video": "sd1pf",
 
     // Video — Topaz
     "topaz/video-upscale": "topazvid",
@@ -211,12 +214,12 @@ export const MODEL_SLUGS = {
     "seedream/4.5-text-to-image": "sd4p5",
     "seedream/4.5-edit": "sd4p5",
 
-    // Registered `bytedance/seedream`, `bytedance/seedream-v4-edit`, and
-    // `bytedance/seedream-v4-text-to-image` intentionally have no slug or
-    // pricing key: the 2026-08-22 KIE catalog and their
-    // docs.kie.ai/market/bytedance operation pages publish no rate. They fail
-    // safe into the prohibitive tier instead of borrowing this separately
-    // priced 4.5 family's rate.
+    // Image — Seedream 3.0 / 4.0, the ByteDance ids (priced from their own
+    // kie.ai product pages, ac-egs1ww; each generation is its own ladder,
+    // apart from the separately priced 4.5 family above)
+    "bytedance/seedream": "sd3",
+    "bytedance/seedream-v4-edit": "sd4",
+    "bytedance/seedream-v4-text-to-image": "sd4",
 
     // Image — Nano Banana 2 Lite + the namespaced google/* Nano Banana ids
     // (same model as the bare "nano-banana" key, so the same family slug)
@@ -595,6 +598,11 @@ export const MODEL_DISPLAY = {
     "kling/v2-1-master-image-to-video": "Kling 2.1 Master",
 
     "bytedance/seedance-1.5-pro": "Seedance 1.5 Pro",
+    "bytedance/v1-lite-image-to-video": "Seedance 1 Lite",
+    "bytedance/v1-lite-text-to-video": "Seedance 1 Lite",
+    "bytedance/v1-pro-image-to-video": "Seedance 1 Pro",
+    "bytedance/v1-pro-text-to-video": "Seedance 1 Pro",
+    "bytedance/v1-pro-fast-image-to-video": "Seedance 1 Pro Fast",
 
     "topaz/video-upscale": "Topaz Video Upscale",
 
@@ -663,6 +671,9 @@ export const MODEL_DISPLAY = {
     "seedream/5-pro-layer-decomposition": "Seedream 5 Pro Layer Decomposition",
     "seedream/4.5-text-to-image": "Seedream 4.5",
     "seedream/4.5-edit": "Seedream 4.5 Edit",
+    "bytedance/seedream": "Seedream 3",
+    "bytedance/seedream-v4-edit": "Seedream 4 Edit",
+    "bytedance/seedream-v4-text-to-image": "Seedream 4",
 
     "nano-banana-2-lite": "Nano Banana 2 Lite",
     "google/nano-banana": "Nano Banana",

@@ -206,9 +206,11 @@ export const CROSS_CUTTING_COST_SECONDS = 14.9;
  * @returns {string}
  */
 export function crossCuttingCostNote() {
+  // One decimal, as pinned: JavaScript would print 11.0 as "11".
+  const seconds = CROSS_CUTTING_COST_SECONDS.toFixed(1);
   return (
     "filesystem- and source-parse-only (no Polly, no network); about " +
-    `${CROSS_CUTTING_COST_SECONDS}s, last measured on an Intel i7-8700`
+    `${seconds}s, last measured on an Intel i7-8700`
   );
 }
 export const CROSS_CUTTING_TESTS = [

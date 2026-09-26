@@ -812,6 +812,52 @@ describe("Kie pricing reconciliation", () => {
     ).toBe(true);
   });
 
+  it("ties every rate-conflict runtimeUsd to its live Kie rate", () => {
+    const failures: string[] = [];
+    const checked: string[] = [];
+    for (const row of generatedManifest.rows) {
+      const conflict = row.evidenceConflict;
+      if (conflict?.kind !== "rate-conflict") continue;
+      const { runtimeKey, runtimeVariant, runtimeUsd } = conflict;
+      const identity = `${runtimeKey}|${runtimeVariant}`;
+      checked.push(identity);
+      const entry =
+        runtimeKey === undefined ? undefined : PRICING.kie[runtimeKey];
+      if (!entry || entry.kind !== "perUnit") {
+        failures.push(
+          `${row.occurrenceId}: ${identity} has no per-unit PRICING.kie entry`
+        );
+        continue;
+      }
+      const live =
+        runtimeVariant !== undefined &&
+        Object.hasOwn(entry.rates, runtimeVariant)
+          ? entry.rates[runtimeVariant]
+          : undefined;
+      if (live === undefined || !Number.isFinite(live)) {
+        failures.push(
+          `${row.occurrenceId}: ${identity} has no live PRICING.kie rate`
+        );
+        continue;
+      }
+      if (Number(runtimeUsd) !== live) {
+        failures.push(
+          `${row.occurrenceId}: ${identity} runtimeUsd ${runtimeUsd} != live PRICING.kie rate ${live}`
+        );
+      }
+    }
+    expect(
+      failures,
+      "update the branch in runtimeRateConflict (scripts/lib/kie-pricing-reconciliation.mjs), then run pnpm run gen:kie-pricing-manifest"
+    ).toEqual([]);
+    expect(checked.sort()).toEqual([
+      "bytedance/seedance-2|480p|video",
+      "grok-imagine/image-to-video|1080p",
+      "pixverse-v6/extend|540p|audio",
+      "wan/3-0-video|720P",
+    ]);
+  });
+
   it("audits each runtime exception against the frozen official rows", async () => {
     const manifest = generatedManifest;
     const description = (row: TestRow) =>

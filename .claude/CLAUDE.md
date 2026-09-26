@@ -224,6 +224,17 @@ clause exists: it ran a counts-only contract, found the counts clean, and
 correctly closed `no-op` while a `TS2717` collision sat in four of its siblings —
 the right verdict on the wrong scope.
 
+**Grep a diff's paths with `--name-only`, never bare `--stat`.** An acceptance
+criterion or verification command that greps a path or file name out of a diff,
+wherever it is written (requirements, plans, bead descriptions, review
+evidence), must list the paths with `git diff --name-only` (or `--stat=200`),
+never bare `git diff --stat`. `--stat` elides long paths to fit `COLUMNS` if
+exported, else the terminal's width, else 80. A pipe into grep is not a
+terminal, so the grep prints `0` for a criterion that passes, even in a wide
+terminal, and a bare-`--stat` figure is not portable. `--name-only` is the
+robust spelling: `--stat=200` still elides a longer path, and `--stat` prints a
+rename as `{old => new}`. `ac-pfaypl`'s AC-08 was the case (`ac-tjei1o`).
+
 **The tests-project typecheck always runs in the fast provider gate.** No provider package `tsconfig.json` includes `tests/**`, and Vitest compiles test files through esbuild, which strips types without checking them — so replaying a test proves nothing about its types. That gap went red on `main` twice with the scoped gate green (kimicoding's content union, xai's readonly spread; both fixed test-side in `73c8b0cc`). `dev:preflight:fast` therefore runs `pnpm run typecheck:tests` (`tsc --noEmit -p tests/tsconfig.json`) unconditionally and whole-tree: the step is not filtered by provider scope, so a type error in any file the tests project compiles fails the gate whichever provider you invoked it for. It costs one `tsc` run — measured at 22.5s, 25.5s, and 35s on three machines during this work — against the ~105s of the full `pnpm run typecheck`, which the fast gate still never invokes. `scripts/lib/tests-project.mjs` holds the invocation and the list of paths the project covers, shared with `typecheck:provider`. `test:affected` does **not** run this step: it is a test-selection helper, not the pre-push gate.
 
 For typecheck-only local iteration, use

@@ -149,6 +149,16 @@ const MEMBERSHIP_WORDS = [
   "eighteen",
   "nineteen",
   "twenty",
+  "twenty-one",
+  "twenty-two",
+  "twenty-three",
+  "twenty-four",
+  "twenty-five",
+  "twenty-six",
+  "twenty-seven",
+  "twenty-eight",
+  "twenty-nine",
+  "thirty",
 ];
 
 function membershipPhrase(count: number): string {
@@ -159,15 +169,18 @@ function membershipPhrase(count: number): string {
   return `${word}-entry membership`;
 }
 
-function expectMembershipPhrase(claude: string): void {
-  const line =
+function expectMembershipPhrase(
+  claude: string,
+  count = CROSS_CUTTING_TESTS.length
+): void {
+  const paragraph =
     claude
-      .split("\n")
-      .find((entry) => entry.includes("<!-- cross-cutting-cost:start -->")) ??
-    "";
-  const expected = membershipPhrase(CROSS_CUTTING_TESTS.length);
+      .split(/\n\s*\n/)
+      .find((entry) => entry.includes("<!-- cross-cutting-cost:start -->"))
+      ?.replace(/\s+/g, " ") ?? "";
+  const expected = membershipPhrase(count);
   expect(
-    line.match(/\w+-entry membership/g),
+    paragraph.match(/[\w-]+-entry membership/g),
     `the cost sentence must say "${expected}" exactly once; re-measure ` +
       "the block per the CROSS_CUTTING_COST_SECONDS docblock first"
   ).toEqual([expected]);
@@ -343,6 +356,29 @@ describe("cross-cutting repo-wide guard tests", () => {
   it("pins the cost sentence's membership word to CROSS_CUTTING_TESTS.length", () => {
     expectMembershipPhrase(readRepoFile(".claude/CLAUDE.md"));
   });
+
+  it("tolerates wrapping the cost paragraph while rejecting changed membership", () => {
+    const claude = readRepoFile(".claude/CLAUDE.md");
+    const wrapped = claude.replace(/-entry membership/, "-entry\n  membership");
+    expectMembershipPhrase(wrapped);
+    const count = CROSS_CUTTING_TESTS.length;
+    const wrong = wrapped.replace(
+      membershipPhrase(count).split(" ")[0],
+      membershipPhrase(count - 1).split(" ")[0]
+    );
+    expect(() => expectMembershipPhrase(wrong)).toThrow(
+      membershipPhrase(count)
+    );
+  });
+
+  it.each([21, 22, 29, 30])(
+    "reads compound membership at %i entries",
+    (count) => {
+      const paragraph = `cost <!-- cross-cutting-cost:start -->1<!-- cross-cutting-cost:end -->s at ${membershipPhrase(count)}`;
+      expectMembershipPhrase(paragraph, count);
+      expect(() => expectMembershipPhrase(paragraph, count - 1)).toThrow();
+    }
+  );
 
   it("rejects a copy of the cost sentence with a perturbed membership word", () => {
     const claude = readRepoFile(".claude/CLAUDE.md");

@@ -2,6 +2,7 @@ import { accessSync, constants, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 import { parseGlobalFlags } from "./args.js";
+import { isCredentialOptional } from "./providers.js";
 import {
   isProviderConfigured,
   isVariableSupplied,
@@ -380,10 +381,18 @@ async function onePasswordRow(context: DoctorContext): Promise<DoctorRow> {
   if (missing.length === 0) {
     return { name, status: "ok", message: configured };
   }
+  const required = new Set(
+    getProviderEnvVars(
+      providerNames().filter((provider) => !isCredentialOptional(provider))
+    )
+  );
+  const labels = missing.map((variable) =>
+    required.has(variable) ? variable : `${variable} (optional)`
+  );
   return {
     name,
     status: "warning",
-    message: `${configured}; no vault item for ${missing.join(", ")}`,
+    message: `${configured}; no vault item for ${labels.join(", ")}`,
     hint:
       "add those items, or supply the variables another way; see " +
       "apicity providers",

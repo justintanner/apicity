@@ -535,9 +535,9 @@ function isMissingOnePasswordItem(err: unknown): boolean {
   return (
     msg.includes("isn't an item") ||
     msg.includes("is not an item") ||
-    msg.includes("could not be found") ||
-    msg.includes("not found") ||
-    msg.includes("does not exist")
+    /\b(?:item|field)\b[^\n]*(?:could not be found|not found|does not exist)/.test(
+      msg
+    )
   );
 }
 

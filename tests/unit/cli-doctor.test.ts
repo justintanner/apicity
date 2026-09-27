@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { providerNames } from "../../packages/cli/src/credentials";
+import { isCredentialOptional } from "../../packages/cli/src/providers";
 import {
   collectDoctorRows,
   humanReport,
@@ -451,9 +452,20 @@ describe("apicity doctor", () => {
     expect(doctor.message).toContain("op 2.39.0");
     const lacking = /; no vault item for (.+)$/.exec(doctor.message)?.[1];
     expect(lacking?.split(", ")).toEqual(
-      getProviderEnvVars().filter((name) => name !== "KIE_API_KEY")
+      getProviderEnvVars()
+        .filter((name) => name !== "KIE_API_KEY")
+        .map((name) =>
+          getProviderEnvVars(
+            providerNames().filter(
+              (provider) => !isCredentialOptional(provider)
+            )
+          ).includes(name)
+            ? name
+            : `${name} (optional)`
+        )
     );
     expect(lacking).toContain("OPENAI_API_KEY");
+    expect(lacking).toContain("THESPORTSDB_API_KEY (optional)");
     expect(doctor.hint).toBe(
       "add those items, or supply the variables another way; see " +
         "apicity providers"

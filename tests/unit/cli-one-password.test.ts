@@ -222,8 +222,8 @@ describe("1Password credential resolution", () => {
     const env: NodeJS.ProcessEnv = {};
     const readSecret: OpRead = vi.fn(async (ref) => {
       if (ref.includes("OPENAI_API_KEY")) return "openai-secret";
-      throw Object.assign(new Error("could not be found"), {
-        stderr: "could not be found",
+      throw Object.assign(new Error("item could not be found"), {
+        stderr: "item could not be found",
       });
     });
 
@@ -241,8 +241,8 @@ describe("1Password credential resolution", () => {
   it("fails when a requested provider secret is missing", async () => {
     const env: NodeJS.ProcessEnv = {};
     const readSecret: OpRead = vi.fn(async () => {
-      throw Object.assign(new Error("could not be found"), {
-        stderr: "could not be found",
+      throw Object.assign(new Error("item could not be found"), {
+        stderr: "item could not be found",
       });
     });
 
@@ -329,6 +329,46 @@ describe("the vault convention by provider class", () => {
       expect(env, name).toEqual({});
       expect(vault.injectSecrets, name).not.toHaveBeenCalled();
     }
+  });
+
+  it.each([
+    "1Password CLI `op` was not found in PATH.",
+    "vault not found",
+    "network endpoint does not exist",
+  ])(
+    "does not treat infrastructure failure as an optional missing item: %s",
+    async (message) => {
+      await expect(
+        fillOnePasswordEnv({
+          vault: "Apicity",
+          serviceAccountToken: "op-token",
+          enabledProviders: ["thesportsdb"],
+          env: {},
+          readSecret: async () => {
+            throw new Error(message);
+          },
+        })
+      ).rejects.toThrow(message);
+    }
+  );
+
+  it.each([
+    "item could not be found",
+    "item not found",
+    "field does not exist",
+    '"KEY" isn\'t an item in the vault',
+  ])("allows an optional missing item: %s", async (message) => {
+    const env = {};
+    await fillOnePasswordEnv({
+      vault: "Apicity",
+      serviceAccountToken: "op-token",
+      enabledProviders: ["thesportsdb"],
+      env,
+      readSecret: async () => {
+        throw new Error(message);
+      },
+    });
+    expect(env).toEqual({});
   });
 
   it("resolves the optional items the vault has, and only those", async () => {
@@ -475,8 +515,8 @@ describe("the vault convention by provider class", () => {
 
   it("applies the same classes to per-variable reads", async () => {
     const notFound = async (): Promise<string> => {
-      throw Object.assign(new Error("could not be found"), {
-        stderr: "could not be found",
+      throw Object.assign(new Error("item could not be found"), {
+        stderr: "item could not be found",
       });
     };
     const env: NodeJS.ProcessEnv = {};

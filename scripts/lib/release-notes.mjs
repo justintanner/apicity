@@ -21,8 +21,7 @@
  * lives in `scripts/release-notes.mjs`.
  */
 
-/** Trailing bead-id suffix, e.g. " (ac-8j6lex)" or " (ac-h7kvm.23.3)". */
-const BEAD_SUFFIX = /\s*\(ac-[0-9a-z.]+\)\s*$/;
+const INTERNAL_ID = String.raw`\b(?:ac-[0-9a-z]+(?:\.[0-9a-z]+)*|(?:RR|ME|FIX|AD|OB)-\d+)\b`;
 
 /** Bead metadata keys that mark a bead as Gas City workflow machinery. */
 const GAS_CITY_METADATA_KEYS = ["gc.step_ref", "gc.kind", "gc.root_bead_id"];
@@ -49,12 +48,25 @@ export function conventionalType(text) {
 }
 
 /**
- * Remove a trailing bead-id suffix (REQ-003). The `ac-` grammar is this rig's
- * own, dotted ids included; a generic `[a-z]+-[0-9a-z.]+` would eat legitimate
- * parenthesised text.
+ * Remove internal references wherever they occur, while retaining unrelated
+ * parenthesized prose and public identifiers such as RFC-9110.
  */
 export function stripBeadSuffix(text) {
-  return normalize(String(text || "").replace(BEAD_SUFFIX, ""));
+  return normalize(
+    String(text || "")
+      .replace(/\([^()]*\)/g, (group) =>
+        new RegExp(INTERNAL_ID).test(group) ? "" : group
+      )
+      .replace(
+        new RegExp(
+          `${INTERNAL_ID}(?:\\s*(?:,\\s*(?:and\\s+)?|and\\s+|&\\s*)${INTERNAL_ID})*`,
+          "g"
+        ),
+        ""
+      )
+      .replace(/\s+([,;:.])/g, "$1")
+      .replace(/[,;:]\s*$/, "")
+  );
 }
 
 /**
@@ -62,7 +74,9 @@ export function stripBeadSuffix(text) {
  * hold by construction no matter which source produced the text.
  */
 export function renderLine(subject) {
-  return stripBeadSuffix(humanize(subject));
+  return stripBeadSuffix(humanize(subject)).replace(/`[^`]*`|[<>]/g, (token) =>
+    token.startsWith("`") ? token : token === "<" ? "&lt;" : "&gt;"
+  );
 }
 
 /**
@@ -180,7 +194,9 @@ export function renderNotes({
   const updatedItems = [];
   const seen = new Set();
 
-  for (const commit of commits.filter((commit) => !isReleaseCommit(commit))) {
+  for (const commit of commits.filter(
+    (commit) => !isReleaseCommit(commit) && !/^Merge\b/i.test(commit.subject)
+  )) {
     const line = renderLine(commit.subject);
     if (!line) continue;
     seen.add(line);

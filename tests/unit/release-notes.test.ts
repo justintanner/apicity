@@ -94,6 +94,44 @@ const FORBIDDEN_OUTPUT = [
 ];
 
 describe("release-notes rendering (pinned v0.8.4 window)", () => {
+  it.each([
+    "(ac-ipacj4 W5)",
+    "(W3 of ac-0bprbh)",
+    "(slice U2 of ac-j4z1t1)",
+    "(review FIX-1)",
+  ])("removes internal group %s", (group) => {
+    expect(renderLine(`fix(cli): preserve output ${group}`)).toBe(
+      "cli: preserve output"
+    );
+  });
+  it("strips bare review lists without stripping public identifiers", () => {
+    expect(
+      renderLine("fix(cli): address RR-3, RR-5, RR-6 and ME-4 for RFC-9110")
+    ).toBe("cli: address for RFC-9110");
+  });
+  it("preserves angle placeholders and already formatted code", () => {
+    expect(
+      renderLine(
+        "fix: resolve <Schema>.options and apicity <provider> <dotPath>"
+      )
+    ).toBe(
+      "resolve &lt;Schema&gt;.options and apicity &lt;provider&gt; &lt;dotPath&gt;"
+    );
+    expect(renderLine("docs: use `<Schema>`")).toBe("use `<Schema>`");
+  });
+  it("omits merge machinery even for direct renderer callers", () => {
+    const notes = renderNotes({
+      version: "0.13.0",
+      commits: [
+        {
+          subject: "Merge pull request #256 from justintanner/gc/ac-rkxknt-fix",
+        },
+        { subject: "Merge main (PRs #251-#253) into the ac-l12hor branch" },
+        { subject: "fix: preserve output" },
+      ],
+    });
+    expect(notes.updatedItems).toEqual(["preserve output"]);
+  });
   it("AC-1/REQ-010 — reproduces the published 4-line body from the fixture", () => {
     const notes = renderFixture("off");
 
@@ -114,13 +152,8 @@ describe("release-notes rendering (pinned v0.8.4 window)", () => {
   });
 
   it("AC-2/REQ-009 — enrichment output is not publishable unreviewed", () => {
-    // `humanize()` strips only a leading conventional-commit prefix and
-    // `stripBeadSuffix()` only a trailing bead id, so a mid-title `Slice N:` or
-    // `(ac-…)` reaches the page verbatim. That is why REQ-009 is scoped to the
-    // default path and why the formula tells the operator to review
-    // `--beads=enrich` output by hand. Pinned so the gap lives in the suite
-    // rather than only in prose — and so a future claim that enrichment is
-    // safe by construction has to delete an assertion to make it.
+    // Internal IDs are removed on every path, but enrichment can still carry
+    // workflow vocabulary such as "Slice N:". It still needs human review.
     const { markdown } = renderNotes({
       version: fixture.version,
       commits: fixture.commits,
@@ -137,7 +170,7 @@ describe("release-notes rendering (pinned v0.8.4 window)", () => {
     });
 
     expect(markdown).toContain("Slice 2:");
-    expect(markdown).toContain("(ac-icktfl)");
+    expect(markdown).not.toContain("ac-icktfl");
     // The same bead cannot reach the default path at all.
     expect(renderFixture("off").markdown).not.toContain("Slice 2:");
   });

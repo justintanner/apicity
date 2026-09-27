@@ -220,7 +220,7 @@ export function tagDate(tag) {
 }
 
 export function readCommits(range) {
-  return runChecked("git", ["log", "--format=%h%x09%s", range])
+  return runChecked("git", ["log", "--no-merges", "--format=%h%x09%s", range])
     .split("\n")
     .filter(Boolean)
     .map((line) => {

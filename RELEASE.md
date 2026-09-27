@@ -128,6 +128,10 @@ pnpm run check:npm-auth        # the publish credential
 pnpm run check:pack-freshness  # the formula the city will actually run
 ```
 
+The freshness check finds the enclosing `city.toml` from the repository, so
+a rig's own `pack.toml` does not hide city imports. For a checkout outside the
+city, pass `pnpm run check:pack-freshness -- --city /path/to/city`.
+
 `check:pack-freshness` exit codes:
 
 | Exit | Verdict           | Meaning                                                                                                                                            |

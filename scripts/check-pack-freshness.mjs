@@ -20,6 +20,8 @@ import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
+import { resolve } from "node:path";
+import { findPackCity } from "./lib/pack-city.mjs";
 
 import {
   PACK_CONTENT_PATHS,
@@ -52,11 +54,16 @@ async function git(args) {
  * than "broken": CI runners have no Gas City install and no `/gc` at all. Every
  * other failure keeps `available: true` so it is reported rather than excused.
  */
-async function readImportStatus() {
+async function readImportStatus(city) {
   try {
     const { stdout } = await execFileAsync(
       "gc",
-      ["import", "status", "--json"],
+      [
+        ...(city === null ? [] : ["--city", city]),
+        "import",
+        "status",
+        "--json",
+      ],
       { timeout: COMMAND_TIMEOUT_MS }
     );
 
@@ -170,16 +177,25 @@ function installedComparisonLines(installedPath) {
 
 function parseArgs(argv) {
   const installedIndex = argv.indexOf("--installed");
+  const cityIndex = argv.indexOf("--city");
+  if (
+    cityIndex !== -1 &&
+    (!argv[cityIndex + 1] || argv[cityIndex + 1].startsWith("--"))
+  ) {
+    throw new Error("--city requires a directory");
+  }
 
   return {
     installed:
       installedIndex === -1 ? null : (argv[installedIndex + 1] ?? null),
+    city:
+      cityIndex === -1 ? findPackCity(REPO_ROOT) : resolve(argv[cityIndex + 1]),
   };
 }
 
 async function main() {
-  const { installed } = parseArgs(process.argv.slice(2));
-  const status = await readImportStatus();
+  const { installed, city } = parseArgs(process.argv.slice(2));
+  const status = await readImportStatus(city);
 
   if (status.failure !== null && status.failure !== undefined) {
     console.log(`gc import status failed (${status.failure}).`);

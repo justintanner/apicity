@@ -22,6 +22,9 @@ export interface ProviderSpec {
   // Used by providers like polymarket whose factory takes a credential bundle
   // rather than a single `optionKey` value.
   extraEnvVars?: string[];
+  // Existing factory settings resolved only when explicitly given as op://
+  // references. Not required credentials or vault-convention item names.
+  settingsEnvVars?: string[];
 }
 
 // Polymarket's CLOB trading factory takes a secret-backed credential bundle,
@@ -200,6 +203,7 @@ export const PROVIDERS: Record<string, ProviderSpec> = {
     importPath: "@apicity/s3",
     factoryName: "createS3",
     extraEnvVars: S3_ENV_VARS,
+    settingsEnvVars: ["S3_REGION", "S3_ENDPOINT"],
   },
   b2: {
     envVar: "B2_ACCESS_KEY_ID",
@@ -207,6 +211,7 @@ export const PROVIDERS: Record<string, ProviderSpec> = {
     importPath: "@apicity/b2",
     factoryName: "createB2",
     extraEnvVars: B2_ENV_VARS,
+    settingsEnvVars: ["B2_ENDPOINT"],
   },
   x: {
     envVar: "X_ACCESS_TOKEN",
@@ -229,6 +234,7 @@ export const PROVIDERS: Record<string, ProviderSpec> = {
     importPath: "@apicity/polymarket",
     factoryName: "createPolymarket",
     extraEnvVars: POLYMARKET_ENV_VARS,
+    settingsEnvVars: ["POLYMARKET_SIGNATURE_TYPE"],
   },
   // free needs no credential — handled specially in registry.ts
   "free-media-upload": {

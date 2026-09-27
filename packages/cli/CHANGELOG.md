@@ -34,8 +34,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   file as an `error`. Migration: if you relied on paid calls failing closed by
   default, set `--paygate-secret-file` or `APICITY_PAYGATE_SECRET_FILE`.
 - Env-file `op://` lines now resolve, for the addressed provider's variables,
-  instead of being skipped. References outside a provider's credential
-  variables (`S3_REGION`, `B2_ENDPOINT`, …) are still neither resolved nor
+  instead of being skipped. Explicit setting references also resolve for
+  `S3_REGION`, `S3_ENDPOINT`, `B2_ENDPOINT` and `POLYMARKET_SIGNATURE_TYPE`,
+  in the same batch as credentials, without adding required credentials or
+  automatic vault lookups. Other references are neither resolved nor
   exported, and a reference that cannot be resolved is exit 3 `auth`, naming
   the variable and the reference.
 - A 1Password token without a vault is accepted: it authenticates `op://`

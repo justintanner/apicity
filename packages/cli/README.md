@@ -247,8 +247,8 @@ any mode.
 `apicity providers` prints this table for the machine you are on, with a
 `configured` column. `POLYMARKET_SIGNATURE_TYPE` is public configuration rather
 than a secret: set it to the account's verified value (`0`, `1`, `2` or `3`)
-alongside the credential bundle — 1Password mode deliberately does not resolve
-it, and polymarket refuses to load a credential bundle without it.
+alongside the credential bundle, as a literal or an explicit `op://` reference.
+Polymarket refuses to load a credential bundle without it.
 
 ### 1Password
 
@@ -268,9 +268,23 @@ configured service-account token when there is one (`--op-token`,
 sign-in: `OP_SERVICE_ACCOUNT_TOKEN`, the desktop app, or `op signin`. A
 reference names its own vault, so it needs no `--op-vault`. One that cannot be
 resolved is exit 3 `auth`, naming the variable and the reference, never a
-value. Settings a factory reads outside its credential variables, such as
-`S3_REGION`, `S3_ENDPOINT` or `B2_ENDPOINT`, are never resolved: keep those
-literal.
+value. In addition to the credential variables listed above, explicit
+references resolve for these existing factory settings:
+
+| Provider     | Additional reference variables |
+| ------------ | ------------------------------ |
+| `s3`         | `S3_REGION`, `S3_ENDPOINT`     |
+| `b2`         | `B2_ENDPOINT`                  |
+| `polymarket` | `POLYMARKET_SIGNATURE_TYPE`    |
+| All others   | None                           |
+
+Settings and credentials share the same reference batch and precedence rules.
+These settings are not added to the credential requirements, the offline
+`configured` check, or automatic vault-convention lookup. Omitted settings
+retain their existing defaults and factory validation. `B2_REGION` remains
+part of B2's required credential-variable set. `FIREWORKS_ACCOUNT_ID` and
+`XAI_MANAGEMENT_API_KEY` are not CLI factory inputs and are not resolved;
+this does not introduce account-ID defaults or management-key wiring.
 
 The vault convention fills what is still missing from
 `op://<vault>/<VAR>/password`, once a vault and a token are both configured.

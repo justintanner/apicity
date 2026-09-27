@@ -322,9 +322,8 @@ export async function injectOnePasswordSecrets(
   try {
     const file = join(dir, "template");
     writeFileSync(file, template, { mode: 0o600 });
-    return await runOpWithInput(
+    return await runOp(
       ["inject", "--in-file", file],
-      "",
       timeoutMs,
       serviceAccountToken
     );
@@ -438,9 +437,8 @@ function parseInjectedEnv(
   return values;
 }
 
-async function runOpWithInput(
+async function runOp(
   args: string[],
-  input: string,
   timeoutMs: number,
   serviceAccountToken?: string
 ): Promise<string> {
@@ -496,7 +494,7 @@ async function runOpWithInput(
       }
       resolve(stdout);
     });
-    child.stdin.end(input);
+    child.stdin.end();
   });
 }
 

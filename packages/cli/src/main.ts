@@ -181,11 +181,7 @@ async function dispatch(
     quiet: flags.quiet,
     stdoutIsTTY: options.stdoutIsTTY,
     env: options.env,
-    flags: {
-      envFile: flags.options["env-file"],
-      opVault: flags.options["op-vault"],
-      opToken: flags.options["op-token"] ?? flags.options["op-service-token"],
-    },
+    flags: credentialFlags(parseGlobalFlags(rest).flags),
   };
 
   if (first === "commands") {

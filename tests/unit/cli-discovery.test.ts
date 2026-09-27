@@ -426,6 +426,35 @@ describe("configured counts the env file and the vault convention", () => {
     ).toBe(true);
   });
 
+  it.each([
+    ["--op-token=", "--op-service-token=env:T", true],
+    ["--op-service-token=env:T", "--op-token=", false],
+    ["--op-service-token=", "--op-token=env:T", true],
+    ["--op-token=env:T", "--op-service-token=", false],
+  ])("uses the last token alias: %s %s", async (first, last, expected) => {
+    const env = { HOME: sandboxHome() };
+    const flags = ["--op-vault", "Apicity", first, last, "--json"];
+    const providers = capture();
+    const endpoint = capture();
+
+    expect(
+      await runMain(["providers", ...flags], providers.writer, { env })
+    ).toBe(0);
+    expect(await runMain(["kie", ...flags], endpoint.writer, { env })).toBe(0);
+    const summaries = JSON.parse(providers.out.join("\n")).data as Array<{
+      provider: string;
+      configured: boolean;
+    }>;
+    const rows = JSON.parse(endpoint.out.join("\n")).data as Array<{
+      configured: boolean;
+    }>;
+    expect(summaries.find((row) => row.provider === "kie")?.configured).toBe(
+      expected
+    );
+    expect(rows.length).toBeGreaterThan(0);
+    expect(rows.every((row) => row.configured === expected)).toBe(true);
+  });
+
   // ac-w7vzap A-2: the two alias paths forward the same flags.
   it("forwards the flags on the apicity <provider> and --help paths", async () => {
     const env = { HOME: sandboxHome() };

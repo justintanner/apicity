@@ -7,6 +7,7 @@ import {
   envFileReferences,
   isOpReference,
   parseEnvFile,
+  readEnvFile,
 } from "./env-file.js";
 import { CliError } from "./errors.js";
 import { errorMessage } from "./internal.js";
@@ -77,10 +78,17 @@ export function isProviderConfigured(
     return envVars.every((envVar) => isSet(env, envVar));
   }
   if (sources.vault !== undefined && sources.token !== undefined) return true;
-  return envVars.every(
-    (envVar) =>
-      isSet(sources.env, envVar) ||
-      Object.prototype.hasOwnProperty.call(sources.references, envVar)
+  return envVars.every((envVar) => isVariableSupplied(sources, envVar));
+}
+
+/** Supplied by a process value, an env-file literal or an unresolved reference. */
+export function isVariableSupplied(
+  sources: CredentialSources,
+  envVar: string
+): boolean {
+  return (
+    isSet(sources.env, envVar) ||
+    Object.prototype.hasOwnProperty.call(sources.references, envVar)
   );
 }
 
@@ -253,19 +261,15 @@ export async function resolveCredentials(
   let entries: Array<[string, string]> = [];
   if (envFile.named) {
     try {
-      entries = parseEnvFile(readFileSync(envFile.path, "utf8"));
+      entries = parseEnvFile(readEnvFile(envFile.path));
     } catch (cause) {
-      throw new CliError(
-        "usage",
-        `--env-file ${envFile.path} could not be read: ${errorMessage(cause)}`,
-        {
-          hint: "check the --env-file path, or unset APICITY_ENV_FILE",
-          cause,
-        }
-      );
+      throw new CliError("usage", errorMessage(cause), {
+        hint: "check the --env-file path, or unset APICITY_ENV_FILE",
+        cause,
+      });
     }
   } else if (existsSync(envFile.path)) {
-    entries = parseEnvFile(readFileSync(envFile.path, "utf8"));
+    entries = parseEnvFile(readEnvFile(envFile.path));
   }
   applyEnvFileEntries(entries, env);
 

@@ -1076,6 +1076,37 @@ const kieEstimate = (
   extra: Partial<EstimateRequest> = {}
 ) => computeEstimate({ provider: "kie", payload, ...extra } as EstimateRequest);
 
+describe("Seedance 1.0 billed-duration precedence", () => {
+  it.each([
+    ["bytedance/v1-lite-text-to-video", 0.0225],
+    ["bytedance/v1-lite-image-to-video", 0.0225],
+    ["bytedance/v1-pro-text-to-video", 0.03],
+    ["bytedance/v1-pro-image-to-video", 0.03],
+  ] as const)(
+    "prices %s from wire/default, never a cost-only hint",
+    (model, rate) => {
+      for (const durationSeconds of [3, 10]) {
+        const extra = { costHints: { durationSeconds } };
+        expect(kieEstimate({ model, input: {} }, extra).usd).toBeCloseTo(
+          5 * rate,
+          10
+        );
+        expect(
+          kieEstimate({ model, duration: 3, input: {} }, extra).usd
+        ).toBeCloseTo(5 * rate, 10);
+        expect(
+          kieEstimate({ model, input: { duration: "10" } }, extra).usd
+        ).toBeCloseTo(10 * rate, 10);
+        for (const duration of [null, "abc"]) {
+          const invalid = kieEstimate({ model, input: { duration } }, extra);
+          expect(invalid.usd).toBe(0);
+          expect(invalid.warnings.length).toBeGreaterThan(0);
+        }
+      }
+    }
+  );
+});
+
 // The fail-closed shape shared by every kie entry on the "(input video
 // duration + output video duration) x rate" rule — Wan 3.0 first (ac-ge9l10),
 // the Seedance families and MiniMax H3 reference-to-video since ac-u8y5xg: no

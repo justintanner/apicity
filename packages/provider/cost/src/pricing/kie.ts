@@ -140,22 +140,13 @@ const seedance25Seconds = (
   return 5;
 };
 
-// Seedance 1.0 (the five bytedance/v1-* ids) declares duration "5" | "10"
-// with a schema default of "5", and the createTask guard forwards an omitted
-// duration as omitted, so kie bills its default clip. Like the schema's own
-// default, this one applies only to an absent field, and only when no usable
-// cost hint or legacy top-level duration names a length instead. Anything
-// present, a null included, goes through `seconds` unchanged: a malformed
-// value fails closed, and a null never takes the default.
-const seedanceV1Seconds = (
-  p: Record<string, unknown>,
-  hints?: CostHints
-): number | undefined =>
-  asObject(p.input)?.duration === undefined &&
-  hintSeconds(hints) === undefined &&
-  p.duration === undefined
-    ? 5
-    : seconds(p, hints);
+// Seedance 1.0 Lite/Pro bill the wire duration, defaulting to five seconds.
+// Neither a cost-only hint nor the legacy top-level estimate field changes
+// that request. Explicit malformed values (including null) fail closed.
+const seedanceV1Seconds = (p: Record<string, unknown>): number | undefined => {
+  const wire = asObject(p.input)?.duration;
+  return wire === undefined ? 5 : coerceSeconds(wire);
+};
 
 // Rate-key form of a selector field upstream types as a number. `asString`
 // deliberately rejects non-strings, so a numeric wire value — runway's

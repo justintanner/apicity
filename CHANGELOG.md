@@ -84,6 +84,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Seedance 1.0 Lite/Pro estimates now use the wire duration or its billed
+  five-second default; cost-only hints and legacy top-level durations cannot
+  underquote an omitted duration.
+
 - Fal area-billed models now use only documented fixed defaults and warn when
   an omitted image size cannot be priced safely.
 - Kling 3.0 pricing applies the sound tier when `multi_shots` promotes an

@@ -179,8 +179,7 @@ cat RELEASE.md   # release process doc (if present)
 **3. Verify clean working tree:**
 ```bash
 git fetch --all --prune
-# bd commands auto-stage .beads/issues.jsonl — commit any pending bead delta first:
-git diff --quiet --cached .beads/issues.jsonl || git commit -m "chore(beads): release sync" -- .beads/issues.jsonl
+# Beads changes live in Dolt; do not manufacture a Git commit for a JSONL export.
 git status --porcelain   # MUST be empty
 ```
 

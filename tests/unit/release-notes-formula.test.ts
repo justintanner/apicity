@@ -18,6 +18,15 @@ function readStepIds(): string[] {
 }
 
 describe("mol-apicity-release workflow", () => {
+  it("checks the whole working tree without committing a passive Beads export", () => {
+    const cleanTree = readReleaseFormula()
+      .split("**3. Verify clean working tree:**")[1]
+      .split("**4. Verify the npm publish credential:**")[0];
+    expect(cleanTree).toContain("git status --porcelain");
+    expect(cleanTree).toContain("STOP");
+    expect(cleanTree).not.toContain("issues.jsonl");
+    expect(cleanTree).not.toContain("git commit");
+  });
   it("keeps the release graph consolidated into one executable step", () => {
     const formula = readReleaseFormula();
 

@@ -47,6 +47,21 @@ import { injectionRequests, renderInjection } from "./cli-one-password-helpers";
 
 const SECRET = "sk-test-SECRET";
 
+it("explains an unreadable default env file before resolving credentials", async () => {
+  const env = { HOME: sandbox() };
+  const path = defaultEnvFilePath(env);
+  mkdirSync(path, { recursive: true });
+  const inject = injectSeam(new Error("must not resolve secrets"));
+  try {
+    await expect(
+      resolveCredentials({ provider: "openai", env, ...inject })
+    ).rejects.toThrow(`--env-file ${path} could not be read:`);
+    expect(inject.calls).toEqual([]);
+  } finally {
+    rmSync(env.HOME, { recursive: true, force: true });
+  }
+});
+
 interface Capture {
   writer: CliWriter;
   out: string[];

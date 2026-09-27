@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { parseGlobalFlags } from "./args.js";
 import {
   isProviderConfigured,
+  isVariableSupplied,
   providerNames,
   readCredentialSources,
   resolveServiceToken,
@@ -373,7 +374,8 @@ async function onePasswordRow(context: DoctorContext): Promise<DoctorRow> {
   // Only a variable nothing else supplies is read from the vault, so only
   // those can be missing from it.
   const missing = getProviderEnvVars().filter(
-    (envVar) => !isSupplied(context.sources, envVar) && !titles.has(envVar)
+    (envVar) =>
+      !isVariableSupplied(context.sources, envVar) && !titles.has(envVar)
   );
   if (missing.length === 0) {
     return { name, status: "ok", message: configured };
@@ -386,15 +388,6 @@ async function onePasswordRow(context: DoctorContext): Promise<DoctorRow> {
       "add those items, or supply the variables another way; see " +
       "apicity providers",
   };
-}
-
-/** Supplied by a process value, an env-file literal or a reference. */
-function isSupplied(sources: CredentialSources, envVar: string): boolean {
-  const value = sources.env[envVar];
-  return (
-    (value !== undefined && value !== "") ||
-    Object.prototype.hasOwnProperty.call(sources.references, envVar)
-  );
 }
 
 /**

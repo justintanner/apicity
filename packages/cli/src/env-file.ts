@@ -164,7 +164,7 @@ function joinLines(lines: EnvFileLine[]): string {
   return lines.map((line) => line.text + line.eol).join("");
 }
 
-function readEnvFile(path: string): string {
+export function readEnvFile(path: string): string {
   try {
     return readFileSync(path, "utf8");
   } catch (err) {

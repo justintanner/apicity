@@ -73,6 +73,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Discovery and endpoint commands now apply the same last-flag-wins rule
+  when both `--op-token` and `--op-service-token` are supplied, including
+  empty values. Unreadable default env files again report their path.
+
 - Preserve multiline 1Password values, including CRLF and trailing newlines,
   in both vault-convention and `op://` reference batches. Resolution still
   uses one `op inject` call; malformed output is rejected without exposing

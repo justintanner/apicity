@@ -93,17 +93,26 @@ STOP without touching npm or the remote.
 ```bash
 # Identify our OWN workflow root. The running release step bead is assigned to
 # this session and carries gc.root_bead_id (the workflow root) + a step_ref.
-self_root=$(bd list --status in_progress --assignee "$GC_SESSION_NAME" --limit 0 --json 2>/dev/null \
-  | jq -r '[.[] | select(.metadata."gc.step_ref" == "mol-apicity-release.release")][0].metadata."gc.root_bead_id" // empty')
+self_root=""
+# Claims record the session ID. The name is a compatibility fallback only.
+for session_owner in "${GC_SESSION_ID:-}" "${GC_SESSION_NAME:-}"; do
+  [ -n "$session_owner" ] || continue
+  self_root=$(bd list --status in_progress --assignee "$session_owner" --limit 0 --json 2>/dev/null \
+    | jq -r '[.[] | select(.metadata."gc.step_ref" == "mol-apicity-release.release")][0].metadata."gc.root_bead_id" // empty')
+  [ -z "$self_root" ] || break
+done
 
 # All in-progress release WORKFLOW roots for this rig. The workflow root's title
 # is exactly "mol-apicity-release"; filter to gc.kind=workflow so fix/feature
 # beads that merely mention the formula in their title are excluded.
-runs_json=$(bd list --status in_progress --title-contains "mol-apicity-release" --limit 0 --json 2>/dev/null \
-  | jq -c '[.[]
+if ! runs_json=$(set -o pipefail; bd list --status in_progress --title-contains "mol-apicity-release" --limit 0 --json 2>/dev/null \
+  | jq -ce '[.[]
       | select(.metadata."gc.kind" == "workflow")
       | select((.metadata."gc.root_store_ref" // "") == "rig:apicity")
-      | {id, created_at, version: (.metadata."gc.var.version" // "")}]')
+      | {id, created_at, version: (.metadata."gc.var.version" // "")}]'); then
+  echo "STOP: could not verify concurrent release workflows." >&2
+  exit 1
+fi
 
 conflict=""
 if [ -n "$self_root" ]; then
@@ -111,18 +120,17 @@ if [ -n "$self_root" ]; then
   # one run (the globally oldest) survives, even if two start near-simultaneously.
   conflict=$(printf '%s' "$runs_json" | jq -r --arg self "$self_root" --arg ver "{{version}}" '
     ([.[] | select(.id == $self) | .created_at][0]) as $selfTs
-    | if $selfTs == null then empty else
-        [ .[] | select(.id != $self) | select(.created_at < $selfTs) ]
+    | if $selfTs == null then "own workflow root missing from active runs" else
+        [ .[] | select(.id != $self) | select(.created_at < $selfTs or (.created_at == $selfTs and .id < $self)) ]
         | (map(select(.version == $ver)) + map(select(.version != $ver)))
         | (.[0] // empty)
         | if . == "" or . == null then empty else "\(.id) (version \(.version))" end
       end')
 else
-  # Fallback: own workflow root not resolvable. Only treat as a conflict when
-  # there is clearly more than one in-progress run for THIS version (a lone run
-  # must still proceed). Ambiguity → halt rather than risk a double publish.
-  dup=$(printf '%s' "$runs_json" | jq -r --arg ver "{{version}}" '[.[] | select(.version == $ver)] | length')
-  [ "${dup:-0}" -gt 1 ] && conflict="$dup concurrent runs for v{{version}} (self-id unavailable)"
+  # Without our identity, any active release may belong to somebody else,
+  # including a different version. A direct manual release has no active root.
+  dup=$(printf '%s' "$runs_json" | jq -r 'length')
+  [ "${dup:-0}" -gt 0 ] && conflict="$dup active release runs (self-id unavailable)"
 fi
 
 if [ -n "$conflict" ]; then

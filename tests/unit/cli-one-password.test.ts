@@ -1,11 +1,14 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi, type Mock } from "vitest";
 
 import {
   fillOnePasswordEnv,
   getProviderEnvVars,
   onePasswordRef,
+  type OpInject,
+  type OpListItemTitles,
   type OpRead,
 } from "../../packages/cli/src/one-password";
+import { PROVIDERS } from "../../packages/cli/src/providers";
 
 // Moved from `mcp-cli.test.ts` when the MCP server was removed; what stays
 // here covers `packages/cli/src/one-password.ts`. The flag-parser cases went
@@ -250,5 +253,240 @@ describe("1Password credential resolution", () => {
     ).rejects.toThrow(
       "Missing 1Password secret for OPENAI_API_KEY. Expected op://Apicity/OPENAI_API_KEY/password."
     );
+  });
+});
+
+// ac-rdvquu: the vault convention fails a call on an item the vault lacks
+// only when the addressed provider's credential is required. Every provider
+// is in exactly one class, so a provider added to one list and not the other
+// fails the census below instead of reaching a user as exit 3.
+const OPTIONAL = ["polymarket", "simplefunctions", "thesportsdb", "youtube"];
+const KEYLESS = ["binance", "free-media-upload", "openf1", "openligadb"];
+const REQUIRED = Object.keys(PROVIDERS)
+  .filter((name) => !OPTIONAL.includes(name) && !KEYLESS.includes(name))
+  .sort();
+
+function emptyVault(): {
+  listItemTitles: Mock<OpListItemTitles>;
+  injectSecrets: Mock<OpInject>;
+} {
+  return {
+    listItemTitles: vi.fn<OpListItemTitles>(async () => []),
+    injectSecrets: vi.fn<OpInject>(async () => ""),
+  };
+}
+
+describe("the vault convention by provider class", () => {
+  it("puts every provider in exactly one class", () => {
+    expect(REQUIRED).toHaveLength(20);
+    expect(Object.keys(PROVIDERS)).toHaveLength(
+      REQUIRED.length + OPTIONAL.length + KEYLESS.length
+    );
+    for (const name of [...REQUIRED, ...OPTIONAL]) {
+      expect(getProviderEnvVars([name]), name).not.toEqual([]);
+    }
+    for (const name of KEYLESS) {
+      expect(getProviderEnvVars([name]), name).toEqual([]);
+    }
+  });
+
+  it("fails a credential-required provider on its first absent item", async () => {
+    for (const name of REQUIRED) {
+      const [first] = getProviderEnvVars([name]);
+      const vault = emptyVault();
+      await expect(
+        fillOnePasswordEnv({
+          vault: "Apicity",
+          serviceAccountToken: "op-token",
+          enabledProviders: [name],
+          env: {},
+          ...vault,
+        }),
+        name
+      ).rejects.toThrow(
+        `Missing 1Password secret for ${first}. Expected ` +
+          `op://Apicity/${first}/password.`
+      );
+      expect(vault.injectSecrets, name).not.toHaveBeenCalled();
+    }
+  });
+
+  it("skips a credential-optional provider's absent items", async () => {
+    for (const name of [...OPTIONAL, ...KEYLESS]) {
+      const env: NodeJS.ProcessEnv = {};
+      const vault = emptyVault();
+      await fillOnePasswordEnv({
+        vault: "Apicity",
+        serviceAccountToken: "op-token",
+        enabledProviders: [name],
+        env,
+        ...vault,
+      });
+      expect(env, name).toEqual({});
+      expect(vault.injectSecrets, name).not.toHaveBeenCalled();
+    }
+  });
+
+  it("resolves the optional items the vault has, and only those", async () => {
+    const env: NodeJS.ProcessEnv = {};
+    const listItemTitles = vi.fn(async () => [
+      "POLYMARKET_CLOB_API_KEY",
+      "POLYMARKET_CLOB_API_SECRET",
+    ]);
+    const injectSecrets = vi.fn(async (template: string) => {
+      expect(template.split("\n")).toEqual([
+        "POLYMARKET_CLOB_API_KEY={{ op://Apicity/POLYMARKET_CLOB_API_KEY/password }}",
+        "POLYMARKET_CLOB_API_SECRET={{ op://Apicity/POLYMARKET_CLOB_API_SECRET/password }}",
+      ]);
+      return "POLYMARKET_CLOB_API_KEY=key\nPOLYMARKET_CLOB_API_SECRET=secret";
+    });
+
+    await fillOnePasswordEnv({
+      vault: "Apicity",
+      serviceAccountToken: "op-token",
+      enabledProviders: ["polymarket"],
+      env,
+      listItemTitles,
+      injectSecrets,
+    });
+
+    expect(env).toEqual({
+      POLYMARKET_CLOB_API_KEY: "key",
+      POLYMARKET_CLOB_API_SECRET: "secret",
+    });
+    expect(injectSecrets).toHaveBeenCalledOnce();
+  });
+
+  it("skips an optional item that resolves to no value", async () => {
+    const env: NodeJS.ProcessEnv = {};
+    const injectSecrets = vi.fn<OpInject>(async () => "YOUTUBE_ACCESS_TOKEN=");
+
+    await fillOnePasswordEnv({
+      vault: "Apicity",
+      serviceAccountToken: "op-token",
+      enabledProviders: ["youtube"],
+      env,
+      listItemTitles: async () => ["YOUTUBE_ACCESS_TOKEN"],
+      injectSecrets,
+    });
+
+    expect(env).toEqual({});
+    expect(injectSecrets).toHaveBeenCalledOnce();
+  });
+
+  it("fails a required item that resolves to no value", async () => {
+    await expect(
+      fillOnePasswordEnv({
+        vault: "Apicity",
+        serviceAccountToken: "op-token",
+        enabledProviders: ["openai"],
+        env: {},
+        listItemTitles: async () => ["OPENAI_API_KEY"],
+        injectSecrets: async () => "OPENAI_API_KEY=",
+      })
+    ).rejects.toThrow(
+      "Missing 1Password secret for OPENAI_API_KEY. Expected " +
+        "op://Apicity/OPENAI_API_KEY/password."
+    );
+  });
+
+  it("keeps a multi-variable required provider whole", async () => {
+    const injectSecrets = vi.fn(async () => "");
+
+    await expect(
+      fillOnePasswordEnv({
+        vault: "Apicity",
+        serviceAccountToken: "op-token",
+        enabledProviders: ["s3"],
+        env: {},
+        listItemTitles: async () => ["S3_ACCESS_KEY_ID"],
+        injectSecrets,
+      })
+    ).rejects.toThrow(
+      "Missing 1Password secret for S3_SECRET_ACCESS_KEY. Expected " +
+        "op://Apicity/S3_SECRET_ACCESS_KEY/password."
+    );
+    expect(injectSecrets).not.toHaveBeenCalled();
+  });
+
+  it("decides per provider when one fill names several", async () => {
+    const env: NodeJS.ProcessEnv = {};
+
+    await fillOnePasswordEnv({
+      vault: "Apicity",
+      serviceAccountToken: "op-token",
+      enabledProviders: ["openai", "youtube"],
+      env,
+      listItemTitles: async () => ["OPENAI_API_KEY"],
+      injectSecrets: async () => "OPENAI_API_KEY=openai-secret",
+    });
+    expect(env).toEqual({ OPENAI_API_KEY: "openai-secret" });
+
+    await expect(
+      fillOnePasswordEnv({
+        vault: "Apicity",
+        serviceAccountToken: "op-token",
+        enabledProviders: ["openai", "youtube"],
+        env: {},
+        listItemTitles: async () => ["YOUTUBE_ACCESS_TOKEN"],
+        injectSecrets: async () => "YOUTUBE_ACCESS_TOKEN=token",
+      })
+    ).rejects.toThrow("Missing 1Password secret for OPENAI_API_KEY.");
+  });
+
+  it("still fails an optional provider when op itself fails", async () => {
+    await expect(
+      fillOnePasswordEnv({
+        vault: "Apicity",
+        serviceAccountToken: "op-token",
+        enabledProviders: ["thesportsdb"],
+        env: {},
+        listItemTitles: async () => {
+          throw new Error("You are not currently signed in.");
+        },
+        injectSecrets: async () => "",
+      })
+    ).rejects.toThrow("You are not currently signed in.");
+
+    await expect(
+      fillOnePasswordEnv({
+        vault: "Apicity",
+        serviceAccountToken: "op-token",
+        enabledProviders: ["youtube"],
+        env: {},
+        listItemTitles: async () => ["YOUTUBE_ACCESS_TOKEN"],
+        injectSecrets: async () => {
+          throw new Error("op inject: vault access denied");
+        },
+      })
+    ).rejects.toThrow("op inject: vault access denied");
+  });
+
+  it("applies the same classes to per-variable reads", async () => {
+    const notFound = async (): Promise<string> => {
+      throw Object.assign(new Error("could not be found"), {
+        stderr: "could not be found",
+      });
+    };
+    const env: NodeJS.ProcessEnv = {};
+
+    await fillOnePasswordEnv({
+      vault: "Apicity",
+      serviceAccountToken: "op-token",
+      enabledProviders: ["simplefunctions"],
+      env,
+      readSecret: notFound,
+    });
+    expect(env).toEqual({});
+
+    await expect(
+      fillOnePasswordEnv({
+        vault: "Apicity",
+        serviceAccountToken: "op-token",
+        enabledProviders: ["xai"],
+        env: {},
+        readSecret: notFound,
+      })
+    ).rejects.toThrow("Missing 1Password secret for XAI_API_KEY.");
   });
 });

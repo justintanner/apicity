@@ -24,10 +24,14 @@ import {
   type ProviderInstantiator,
 } from "../../packages/cli/src/main";
 import {
+  getProviderEnvVars,
   injectOnePasswordSecrets,
   type OpInject,
 } from "../../packages/cli/src/one-password";
-import type { InstantiatedProvider } from "../../packages/cli/src/providers";
+import {
+  polymarketOptionsFromEnv,
+  type InstantiatedProvider,
+} from "../../packages/cli/src/providers";
 import { runSetupCommand } from "../../packages/cli/src/setup";
 import type {
   SubprocessResult,
@@ -1076,6 +1080,135 @@ describe("no credential value is ever printed, 1Password edition", () => {
 
     expect(exit).toBe(7);
     expect([...cap.out, ...cap.err].join("\n")).not.toContain(VALUE);
+  });
+});
+
+// ac-rdvquu: with the persisted vault and token, and a vault that holds none
+// of a credential-optional provider's items, a keyless call still runs; a
+// partial polymarket bundle meets polymarket's own rule, and a required
+// provider still exits 3. Each fake instance holds one function at the
+// called dotPath.
+describe("the vault convention for credential-optional providers", () => {
+  const VAULT_ENV = {
+    APICITY_OP_VAULT: "Apicity",
+    APICITY_OP_SERVICE_TOKEN: "ops_token",
+  };
+
+  function at(
+    dotPath: string,
+    fn: () => Promise<unknown>
+  ): InstantiatedProvider {
+    const tree: Record<string, unknown> = {};
+    const segments = dotPath.split(".");
+    let node = tree;
+    for (const segment of segments.slice(0, -1)) {
+      node = node[segment] = {} as Record<string, unknown>;
+    }
+    node[segments[segments.length - 1]] = fn;
+    return { get: tree } as InstantiatedProvider;
+  }
+
+  for (const [provider, argv] of [
+    ["polymarket", ["gamma.status"]],
+    ["thesportsdb", ["v1.allSports"]],
+    ["youtube", ["transcripts", "--videoId", "abc"]],
+    ["simplefunctions", ["api.agent.world"]],
+  ] as const) {
+    it(`runs a ${provider} call when the vault lacks its items`, async () => {
+      const cap = capture();
+      const env: NodeJS.ProcessEnv = { HOME: sandbox(), ...VAULT_ENV };
+      const listings: string[] = [];
+      const { injectSecrets, calls } = injectSeam("");
+
+      const exit = await runEndpoint(provider, [...argv], cap.writer, {
+        env,
+        stdoutIsTTY: false,
+        listItemTitles: (vault) => {
+          listings.push(vault);
+          return Promise.resolve(["OPENAI_API_KEY"]);
+        },
+        injectSecrets,
+        instantiate: () =>
+          Promise.resolve(at(argv[0], () => Promise.resolve({ ok: 1 }))),
+      });
+
+      expect(exit, cap.err.join("\n")).toBe(0);
+      expect(listings).toEqual(["Apicity"]);
+      expect(calls).toEqual([]);
+      for (const envVar of getProviderEnvVars([provider])) {
+        expect(env[envVar], envVar).toBeUndefined();
+      }
+      expect(JSON.parse(cap.out.join(""))).toMatchObject({
+        ok: true,
+        data: { ok: 1 },
+      });
+    });
+  }
+
+  // OQ-2: a vault holding part of polymarket's bundle resolves that part,
+  // and polymarket's own rule then refuses a bundle without
+  // POLYMARKET_SIGNATURE_TYPE. The fake runs instantiateProvider's first
+  // step for polymarket against this call's environment, which a real call
+  // reads from process.env.
+  it("leaves a partial polymarket bundle to polymarket's own rule", async () => {
+    const cap = capture();
+    const env: NodeJS.ProcessEnv = { HOME: sandbox(), ...VAULT_ENV };
+    const { injectSecrets, calls } = injectSeam(
+      "POLYMARKET_CLOB_API_KEY=key\nPOLYMARKET_CLOB_API_SECRET=secret"
+    );
+
+    const exit = await runEndpoint("polymarket", ["gamma.status"], cap.writer, {
+      env,
+      stdoutIsTTY: false,
+      listItemTitles: () =>
+        Promise.resolve([
+          "POLYMARKET_CLOB_API_KEY",
+          "POLYMARKET_CLOB_API_SECRET",
+        ]),
+      injectSecrets,
+      instantiate: async () => {
+        polymarketOptionsFromEnv(env);
+        return at("gamma.status", () => Promise.resolve({ ok: 1 }));
+      },
+    });
+
+    expect(exit).toBe(7);
+    expect(calls).toHaveLength(1);
+    expect(env.POLYMARKET_CLOB_API_SECRET).toBe("secret");
+    const envelope = JSON.parse(cap.err[0]) as Record<string, unknown>;
+    expect(envelope.code).toBe("api");
+    expect(envelope.error).toBe(
+      "POLYMARKET_SIGNATURE_TYPE is required when Polymarket credentials " +
+        "are configured."
+    );
+  });
+
+  it("still exits 3 for a credential-required provider", async () => {
+    const cap = capture();
+    const { injectSecrets, calls } = injectSeam("");
+
+    const exit = await runEndpoint(
+      "openai",
+      ["v1.embeddings", "--data", '{"model":"m","input":"hi"}'],
+      cap.writer,
+      {
+        env: { HOME: sandbox(), ...VAULT_ENV },
+        stdoutIsTTY: false,
+        listItemTitles: () => Promise.resolve(["YOUTUBE_ACCESS_TOKEN"]),
+        injectSecrets,
+        instantiate: () => Promise.resolve(null),
+      }
+    );
+
+    expect(exit).toBe(3);
+    expect(calls).toEqual([]);
+    const envelope = JSON.parse(cap.err[0]) as Record<string, unknown>;
+    expect(envelope.code).toBe("auth");
+    expect(String(envelope.error)).toBe(
+      "Missing 1Password secret for OPENAI_API_KEY. Expected " +
+        "op://Apicity/OPENAI_API_KEY/password."
+    );
+    expect(envelope.hint).toBe("check op://Apicity/<VAR>/password for openai");
   });
 });
 

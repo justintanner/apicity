@@ -3,7 +3,7 @@ import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { promisify } from "node:util";
-import { PROVIDERS } from "./providers.js";
+import { isCredentialOptional, PROVIDERS } from "./providers.js";
 import type { SubprocessResult } from "./subprocess.js";
 
 const execFileAsync = promisify(execFile);
@@ -27,6 +27,14 @@ export type OpInject = (
 export interface OnePasswordEnvOptions {
   vault: string;
   serviceAccountToken: string;
+  /**
+   * The providers to fill. A named provider's variables are required: an
+   * item the vault lacks, or one that resolves to no value, fails the fill.
+   * A provider whose credential is optional (`isCredentialOptional`) is the
+   * exception: its variables resolve when the vault has them and are
+   * skipped when it does not. Omitted, every provider is filled and nothing
+   * is required.
+   */
   enabledProviders?: string[];
   env?: NodeJS.ProcessEnv;
   readSecret?: OpRead;
@@ -50,7 +58,7 @@ export async function fillOnePasswordEnv(
 ): Promise<void> {
   const env = opts.env ?? process.env;
   const providerEnvVars = getProviderEnvVars(opts.enabledProviders);
-  const required = opts.enabledProviders !== undefined;
+  const required = requiredEnvVars(opts.enabledProviders);
   const missingEnvVars = providerEnvVars.filter(
     (envVar) => !hasResolvedEnvValue(env[envVar])
   );
@@ -76,7 +84,12 @@ export async function fillOnePasswordEnv(
       try {
         env[envVar] = await readSecret(onePasswordRef(opts.vault, envVar));
       } catch (err) {
-        const wrapped = wrapReadError(err, opts.vault, envVar, required);
+        const wrapped = wrapReadError(
+          err,
+          opts.vault,
+          envVar,
+          required.has(envVar)
+        );
         if (wrapped && !firstError) firstError = wrapped;
       }
     }
@@ -109,6 +122,19 @@ export function getProviderEnvVars(enabledProviders?: string[]): string[] {
   }
 
   return envVars;
+}
+
+/**
+ * The variables whose missing item fails a fill: every variable of a named
+ * provider, except those of a provider whose credential is optional.
+ */
+function requiredEnvVars(enabledProviders?: string[]): Set<string> {
+  if (enabledProviders === undefined) return new Set();
+  return new Set(
+    getProviderEnvVars(
+      enabledProviders.filter((provider) => !isCredentialOptional(provider))
+    )
+  );
 }
 
 export function onePasswordRef(vault: string, envVar: string): string {
@@ -312,7 +338,7 @@ async function fillOnePasswordEnvBatch(
   opts: OnePasswordEnvOptions,
   env: NodeJS.ProcessEnv,
   missingEnvVars: string[],
-  required: boolean
+  required: ReadonlySet<string>
 ): Promise<void> {
   const timeoutMs = opts.timeoutMs ?? DEFAULT_OP_TIMEOUT_MS;
   const listItemTitles =
@@ -327,14 +353,14 @@ async function fillOnePasswordEnvBatch(
   const availableEnvVars = missingEnvVars.filter((envVar) =>
     itemTitles.has(envVar)
   );
-  const missingItems = missingEnvVars.filter(
-    (envVar) => !itemTitles.has(envVar)
+  const missingRequired = missingEnvVars.find(
+    (envVar) => required.has(envVar) && !itemTitles.has(envVar)
   );
 
-  if (required && missingItems.length > 0) {
+  if (missingRequired !== undefined) {
     throw new Error(
-      `Missing 1Password secret for ${missingItems[0]}. Expected ` +
-        `${onePasswordRef(opts.vault, missingItems[0])}.`
+      `Missing 1Password secret for ${missingRequired}. Expected ` +
+        `${onePasswordRef(opts.vault, missingRequired)}.`
     );
   }
   if (availableEnvVars.length === 0) return;
@@ -349,7 +375,7 @@ async function fillOnePasswordEnvBatch(
   for (const envVar of availableEnvVars) {
     const value = values[envVar];
     if (hasResolvedEnvValue(value)) env[envVar] = value;
-    else if (required) {
+    else if (required.has(envVar)) {
       throw new Error(
         `Missing 1Password secret for ${envVar}. Expected ` +
           `${onePasswordRef(opts.vault, envVar)}.`

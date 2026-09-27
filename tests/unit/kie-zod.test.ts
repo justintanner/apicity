@@ -70,6 +70,20 @@ const VARIANTS = [
 ] as const;
 
 describe("KIE Zod schema validation", () => {
+  it("rejects the retired Sora watermark remover across request registries", () => {
+    const retired = "sora-watermark-remover";
+    expect(KIE_MEDIA_MODELS).not.toContain(retired);
+    expect(KieMediaModelSchema.safeParse(retired).success).toBe(false);
+    expect(
+      CreateTaskRequestSchema.safeParse({
+        model: retired,
+        input: { video_url: "https://example.com/video.mp4" },
+      }).success
+    ).toBe(false);
+    expect(CREATE_TASK_GUARDS).not.toHaveProperty(retired);
+    expect(modelInputSchemas).not.toHaveProperty(retired);
+  });
+
   describe.each(VARIANTS)(
     "$name reference_image_urls cap",
     ({ schema, base }) => {
@@ -1378,7 +1392,7 @@ describe("TRI-008 VeoExtendRequestSchema.model stays a closed set", () => {
 // unrelated vendors behind one `createTask` endpoint. REQ-006 forbids opening
 // it with a single catch-all regex, so it carries one alias per vendor family
 // while singletons and fixed-product sets (omnihuman + sub-tasks, volcengine,
-// gemini-omni, sora-watermark, recraft, topaz, infinitalk, z-image), Flux-2
+// gemini-omni, recraft, topaz, infinitalk, z-image), Flux-2
 // (four exact modes), Ideogram (six exact modes), Hailuo (six exact modes),
 // the three exact MiniMax H3 modes, the Google market enum set (two TTS + five
 // Imagen/Nano Banana), and unversioned Qwen v1 stay enumerated with no alias
@@ -1642,7 +1656,6 @@ const MEDIA_SINGLETON_MODELS = [
   "omnihuman-1-5",
   "volcengine/video-to-video-lip-sync",
   "gemini-omni-video",
-  "sora-watermark-remover",
   "recraft/crisp-upscale",
   "recraft/remove-background",
   "infinitalk/from-audio",

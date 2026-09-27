@@ -281,7 +281,6 @@ export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
   ...[
     ["runway/extend", "720p"],
     ["runway/extend", "1080p"],
-    ["sora-watermark-remover", ""],
   ].map(([key, variant]) => ({
     key,
     variant,

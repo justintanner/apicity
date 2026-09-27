@@ -18,9 +18,7 @@ import {
 // page a URL points at, so rateAsOf keeps falling back to PRICING_AS_OF for
 // entries never re-priced (ac-48rps2). No entry cites the kie.ai/market
 // gallery, which answers HTTP 200 with no model content for any path (a
-// soft 404). sora-watermark-remover is the one archived citation: kie
-// removed its product and docs pages, and no feed row exists for it
-// (ac-bn67fm). Rates verified 2026-04-30 unless an entry notes a newer
+// soft 404). Rates verified 2026-04-30 unless an entry notes a newer
 // date. Rate keys mirror the upstream payload values verbatim
 // (kling: payload.input.mode is "std"|"pro"|"4K"; seedance: payload.input.
 // resolution is "480p"|"720p"|"1080p"|"4k"; etc.) — there is no internal
@@ -47,9 +45,7 @@ import {
 //      source.asOf is the page-read date.
 // Fail-safe: an id failing any condition keeps no pricing key, so
 // computeEstimate warns and costTier returns prohibitive. Precedents the
-// rule reconciles: sora-watermark-remover (priced with no feed row; its
-// archived product page declares it and prints 10 credits ($0.05),
-// ac-bn67fm) and the omnihuman-1-5 human-identification /
+// rule reconciles: the omnihuman-1-5 human-identification /
 // subject-detection pair (declared on https://kie.ai/omnihuman-1-5 with an
 // empty pricingDesc, unpriced). The rule is comment text; nothing enforces it.
 
@@ -444,7 +440,7 @@ const flatImage = (perUnit: number, url: string): ModelPricing => ({
 });
 
 // Flat per-call rate for endpoints that bill once per request regardless
-// of input shape (Suno endpoints, sora-watermark-remover, etc.).
+// of input shape (Suno endpoints, etc.).
 const flatGen = (perUnit: number, url: string): ModelPricing => ({
   kind: "perUnit",
   unit: "generations",
@@ -2751,24 +2747,6 @@ export const kie: Record<string, ModelPricing> = {
   // engine rule (same as the veo entries above). Recorded, never applied.
   "flux-kontext-pro": flatImagePage(0.025, "https://kie.ai/flux-kontext-api"),
   "flux-kontext-max": flatImagePage(0.05, "https://kie.ai/flux-kontext-api"),
-
-  // sora-watermark-remover: flat $0.05 per removal, the only rate ever
-  // published for it. Schema has no tier selector. Citation: the Wayback
-  // Machine capture (2026-04-13) of its kie.ai product page,
-  // https://kie.ai/sora-2-watermark-remover. The capture's groupData declares
-  // userPath "sora-watermark-remover" with the pricingDesc "Sora 2 Watermark
-  // Remove API costs 10 credits ($0.05) per use" (10 x $0.005); the price
-  // renders client-side, so it is in the page source, not on screen. The
-  // kie.ai/sora-2 family page printed the same line on 2026-05-08 and is 404
-  // in every capture from 2026-06-30. On 2026-09-23 the product page, its
-  // docs.kie.ai page and the six other URLs probed on 2026-09-17 answer 404,
-  // and no official feed pull (2026-08-11 to the 2026-09-23 live pull) has a
-  // row for it: kie appears to have delisted the model. Drop this key once
-  // kie retires it (ac-gloobe). ac-bn67fm.
-  "sora-watermark-remover": flatGen(
-    0.05,
-    "https://web.archive.org/web/20260413194704/https://kie.ai/sora-2-watermark-remover"
-  ),
 
   // ElevenLabs TTS resold through createTask (2026-08-06 pull). kie publishes
   // these per 1000 characters; each entry stores page USD / 1000 as its

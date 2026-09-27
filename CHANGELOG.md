@@ -79,6 +79,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+- **Breaking:** retired KIE `sora-watermark-remover`, its
+  `SoraWatermarkRequestSchema`, and the `SoraWatermarkRequest`,
+  `SoraWatermarkRequestInput`, and `SoraWatermarkParsedRequest` exports.
+  Its cost pricing, slug, and display entries are removed as well.
+
 - The MCP server: the CLI's `mcp` subcommand and its compatibility bin. MCP support ended with `@apicity/mcp-server` 0.11.2; use the `apicity` CLI and agent skill (see MCP.md).
 - The MCP-era eager registry surface of `@apicity/cli`: the `makeToolName` and `toSnakeCase` exports and the `Endpoint` fields `toolName`, `fn`, `jsonSchema`, `example` and `pathParams`. `buildRegistry()` stays as the bulk resolver behind the registry tests and `scripts/diag.mjs`.
 

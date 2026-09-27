@@ -4517,22 +4517,6 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
-  "sora-watermark-remover": {
-    type: "video",
-    fields: {
-      video_url: {
-        type: "string",
-        required: true,
-        description: "URL to video for watermark removal",
-      },
-      upload_method: {
-        type: "string",
-        enum: ["s3", "oss"],
-        description: "Storage destination (default s3, oss for China)",
-      },
-    },
-  },
-
   "recraft/crisp-upscale": {
     type: "image",
     fields: {

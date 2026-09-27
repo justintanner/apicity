@@ -816,19 +816,6 @@ describe("cost.estimate — pure-table (no network)", () => {
     expect(r.usd).toBeCloseTo(0.002, 6);
   });
 
-  it("kie sora-watermark-remover → $0.05/generation", () => {
-    const c = createCost();
-    const r = c.estimate({
-      provider: "kie",
-      payload: {
-        model: "sora-watermark-remover",
-        input: { video_url: "https://example.com/in.mp4" },
-      },
-    });
-    expect(r.breakdown.unit).toBe("generations");
-    expect(r.usd).toBeCloseTo(0.05, 6);
-  });
-
   it("kie endpoint hint takes precedence over payload.model", () => {
     const c = createCost();
     // payload.model would resolve to veo3_fast ($0.30 per video at the

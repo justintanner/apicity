@@ -275,7 +275,6 @@ export const MODEL_SLUGS = {
     "flux-kontext-max": "fluxkm",
 
     // Image — Sora watermark removal
-    "sora-watermark-remover": "soraw",
 
     // Audio — ElevenLabs TTS resold by kie. Same underlying models as the
     // elevenlabs provider's own entries, so the same slugs (the cross-provider
@@ -713,8 +712,6 @@ export const MODEL_DISPLAY = {
 
     "flux-kontext-pro": "Flux Kontext Pro",
     "flux-kontext-max": "Flux Kontext Max",
-
-    "sora-watermark-remover": "Sora Watermark Remover",
 
     "elevenlabs/text-to-speech-multilingual-v2": "Eleven Multilingual 2",
     "elevenlabs/text-to-speech-turbo-2-5": "Eleven Turbo 2.5",

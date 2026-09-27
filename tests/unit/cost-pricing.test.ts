@@ -3976,15 +3976,13 @@ describe("kie wan 2.2 / 2.5 per-model pricing (REQ-004)", () => {
     expect(PRICING.kie[model].source).toEqual({ url, asOf });
   });
 
-  // The 28 entries that cited kie.ai/market/<slug> gallery URLs (HTTP 200 for
+  // The remaining entries that cited kie.ai/market/<slug> gallery URLs (HTTP 200 for
   // any path, no model content: the soft 404 the 2026-09-16 sweep counted,
   // ac-c2n4pa) now cite the 2026-09-11 feed anchors, or the page's own tab
   // where the feed anchor is a docs.kie.ai page that prints no price
-  // (suno/lyrics, suno/replace-music-section-generate), ac-48rps2;
-  // sora-watermark-remover, which has no live page or feed row, cites the
-  // web.archive.org capture of its removed product page (ac-bn67fm). A
-  // citation-only repair adds no asOf, so rateAsOf stays
-  // PRICING_AS_OF on all 28. Pinning the whole `source` object makes a
+  // (suno/lyrics, suno/replace-music-section-generate), ac-48rps2. A
+  // citation-only repair adds no asOf, so rateAsOf stays PRICING_AS_OF.
+  // Pinning the whole `source` object makes a
   // gallery regression and an asOf drift both fail here.
   it.each([
     {
@@ -4073,10 +4071,6 @@ describe("kie wan 2.2 / 2.5 per-model pricing (REQ-004)", () => {
     {
       model: "grok-imagine/image-to-image",
       url: "https://kie.ai/grok-imagine?model=grok-imagine%2Fimage-to-image",
-    },
-    {
-      model: "sora-watermark-remover",
-      url: "https://web.archive.org/web/20260413194704/https://kie.ai/sora-2-watermark-remover",
     },
   ])("pins the product-page citation of $model", ({ model, url }) => {
     expect(PRICING.kie[model].source).toEqual({ url });

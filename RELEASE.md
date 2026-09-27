@@ -179,8 +179,8 @@ here. Identify a step by name, never by number.
    `pnpm run check:npm-auth`. A non-zero exit stops the release here, before
    any gate spends time — see [Rotating the npm publish
    token](#rotating-the-npm-publish-token)
-3. `verify-main-gates` — on `main`, run `pnpm run test:run`,
-   `pnpm run ci:local`, and verify GitHub CI is green for `origin/main`
+3. `verify-main-gates` — on `main`, run `pnpm run ci:local` (builds before
+   tests), then `pnpm run test:run`, and verify GitHub CI is green for `origin/main`
 4. `sync-stable-and-preflight` — fast-forward `stable` from `origin/main`,
    then run `pnpm run ci:local` (build + lint + tests)
 5. `prepare-release-commit` — verify every package has

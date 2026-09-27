@@ -18,6 +18,15 @@ function readStepIds(): string[] {
 }
 
 describe("mol-apicity-release workflow", () => {
+  it("builds current artifacts before the explicit main replay gate", () => {
+    const mainGate = readReleaseFormula()
+      .split("# Sub-step 2:")[1]
+      .split("# Sub-step 3:")[0];
+    const ci = mainGate.indexOf("pnpm run ci:local");
+    const replay = mainGate.indexOf("pnpm run test:run");
+    expect(ci).toBeGreaterThan(-1);
+    expect(replay).toBeGreaterThan(ci);
+  });
   it("checks the whole working tree without committing a passive Beads export", () => {
     const cleanTree = readReleaseFormula()
       .split("**3. Verify clean working tree:**")[1]

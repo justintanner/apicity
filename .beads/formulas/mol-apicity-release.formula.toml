@@ -249,13 +249,13 @@ work; do not release until `main` is clean and matches `origin/main`.
 **2. Run tests and the local CI mirror on `main`:**
 ```bash
 pnpm install --frozen-lockfile
-pnpm run test:run
 pnpm run ci:local
+pnpm run test:run
 ```
 
-`ci:local` already includes the replay test suite, but `test:run` is kept here
-as an explicit release gate so test failures are visible before the broader CI
-mirror runs.
+`ci:local` builds before replaying the suite, so tests never read stale CLI
+artifacts from the previous release. `test:run` is retained afterward as an
+explicit release replay gate against the freshly built artifacts.
 
 **3. Verify GitHub CI is green for the same `origin/main` SHA:**
 ```bash

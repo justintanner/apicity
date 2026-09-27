@@ -17,19 +17,11 @@ import {
   type OpListItemTitles,
   type OpRead,
 } from "./one-password.js";
-import { PROVIDERS, type ProviderSpec } from "./providers.js";
-
-/**
- * Providers whose factory answers without a credential even though
- * `ProviderSpec.envVar` names one: their keyless endpoints keep working and
- * the rest fail at call time with the provider's own error.
- * `instantiateProvider` exempts exactly these three.
- */
-const CREDENTIAL_OPTIONAL = new Set([
-  "youtube",
-  "simplefunctions",
-  "thesportsdb",
-]);
+import {
+  isCredentialOptional,
+  PROVIDERS,
+  type ProviderSpec,
+} from "./providers.js";
 
 function isSet(env: NodeJS.ProcessEnv, name: string): boolean {
   const value = env[name];
@@ -77,8 +69,7 @@ export function isProviderConfigured(
 ): boolean {
   const spec = PROVIDERS[name];
   if (!spec) return false;
-  if (spec.envVar === "") return true;
-  if (CREDENTIAL_OPTIONAL.has(name)) return true;
+  if (isCredentialOptional(name)) return true;
   // s3 and b2 are the multi-var cases: the factory returns null unless every
   // one of their vars is set, which is exactly this list.
   const envVars = providerEnvVars(name, spec);
@@ -239,7 +230,9 @@ function credentialSetting(
  *    all of them resolved in one `op inject` — with the configured token, or
  *    with `op`'s own sign-in when there is none;
  * 4. the vault convention `op://<vault>/<VAR>/password`, only when a vault
- *    and a token are both configured.
+ *    and a token are both configured. A missing item fails the call unless
+ *    the provider's credential is optional (`isCredentialOptional`): then
+ *    the vault's items resolve and the ones it lacks are skipped.
  *
  * References outside the addressed provider's variables are neither resolved
  * nor exported (ac-w7vzap OQ-003): no variable ever ends up holding a raw

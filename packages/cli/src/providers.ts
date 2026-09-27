@@ -263,6 +263,31 @@ export const PROVIDERS: Record<string, ProviderSpec> = {
   },
 };
 
+/**
+ * Providers whose factory answers without a credential even though
+ * `ProviderSpec.envVar` names one: their keyless endpoints keep working and
+ * the rest fail at call time with the provider's own error.
+ * `instantiateProvider` exempts exactly these three.
+ */
+const CREDENTIAL_OPTIONAL = new Set([
+  "youtube",
+  "simplefunctions",
+  "thesportsdb",
+]);
+
+/**
+ * Does this provider build without any of its variables? True for the three
+ * above and for every provider whose `envVar` is empty: polymarket, whose
+ * public market data needs none of its trading bundle, and the four that
+ * read no credential at all. `isProviderConfigured` and the vault convention
+ * both ask this, so discovery and the call path agree (ac-rdvquu).
+ */
+export function isCredentialOptional(name: string): boolean {
+  const spec = PROVIDERS[name];
+  if (!spec) return false;
+  return spec.envVar === "" || CREDENTIAL_OPTIONAL.has(name);
+}
+
 export type InstantiatedProvider = Record<string, unknown>;
 
 /**
@@ -368,13 +393,7 @@ export async function instantiateProvider(
     );
   }
   const credential = spec.envVar ? process.env[spec.envVar] : undefined;
-  if (
-    !credential &&
-    spec.envVar &&
-    name !== "youtube" &&
-    name !== "simplefunctions" &&
-    name !== "thesportsdb"
-  ) {
+  if (!credential && spec.envVar && !CREDENTIAL_OPTIONAL.has(name)) {
     return null;
   }
   const opts: Record<string, unknown> = {};

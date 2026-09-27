@@ -274,6 +274,13 @@ literal.
 
 The vault convention fills what is still missing from
 `op://<vault>/<VAR>/password`, once a vault and a token are both configured.
+An item the vault lacks is exit 3 `auth`, naming the variable and the
+reference it expected, except for the four providers whose credential is
+optional: `polymarket`, `simplefunctions`, `thesportsdb` and `youtube` take
+the items the vault has and skip the rest, so their keyless endpoints work
+with a vault that holds none of them. A vault that holds part of polymarket's
+bundle resolves that part, and polymarket then applies its own rule: without
+`POLYMARKET_SIGNATURE_TYPE` it refuses the bundle with exit 7 `api`.
 Save the pair once, and every later call on this host uses it:
 
 ```bash

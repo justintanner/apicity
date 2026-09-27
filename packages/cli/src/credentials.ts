@@ -30,7 +30,7 @@ function isSet(env: NodeJS.ProcessEnv, name: string): boolean {
 }
 
 /**
- * Every env var this provider reads, credential first. Names only — a caller
+ * This provider's credential variables, primary first. Names only — a caller
  * that prints these must never print their values.
  */
 export function providerEnvVars(
@@ -237,14 +237,14 @@ function credentialSetting(
  * 3. an `op://` reference, the process environment's before the env file's,
  *    all of them resolved in one `op inject` — with the configured token, or
  *    with `op`'s own sign-in when there is none;
- * 4. the vault convention `op://<vault>/<VAR>/password`, only when a vault
- *    and a token are both configured. A missing item fails the call unless
+ * 4. for credentials only, the vault convention `op://<vault>/<VAR>/password`,
+ *    when a vault and a token are both configured. A missing item fails unless
  *    the provider's credential is optional (`isCredentialOptional`): then
  *    the vault's items resolve and the ones it lacks are skipped.
  *
- * References outside the addressed provider's variables are neither resolved
- * nor exported (ac-w7vzap OQ-003): no variable ever ends up holding a raw
- * reference the CLI read from a file.
+ * Explicit references include the addressed provider's credential variables
+ * and factory settings. Other references are neither resolved nor exported:
+ * no variable ever ends up holding a raw reference the CLI read from a file.
  *
  * This is deliberately not a startup-time check that throws when neither an
  * env file nor op values are given: a call must work with nothing configured
@@ -289,7 +289,11 @@ export async function resolveCredentials(
 
   const fileReferences = envFileReferences(entries);
   const references: Record<string, string> = {};
-  for (const envVar of providerEnvVars(options.provider)) {
+  const referenceEnvVars = [
+    ...providerEnvVars(options.provider),
+    ...(PROVIDERS[options.provider]?.settingsEnvVars ?? []),
+  ];
+  for (const envVar of referenceEnvVars) {
     const value = env[envVar];
     if (value !== undefined && value !== "" && !isOpReference(value)) continue;
     const reference = isOpReference(value) ? value : fileReferences[envVar];

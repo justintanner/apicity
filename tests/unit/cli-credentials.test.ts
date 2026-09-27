@@ -428,10 +428,10 @@ describe("op:// references", () => {
     expect(env.S3_SECRET_ACCESS_KEY).toBe("secret-from-reference");
   });
 
-  it("neither batch nor export another provider's references, or S3_REGION", async () => {
+  it("resolves S3_REGION without exporting another provider's references", async () => {
     const env: NodeJS.ProcessEnv = { HOME: sandbox() };
     const { injectSecrets, calls } = injectSeam(
-      "S3_ACCESS_KEY_ID=id-from-reference\n"
+      "S3_ACCESS_KEY_ID=id-from-reference\nS3_REGION=eu-west-1\n"
     );
 
     await resolveCredentials({
@@ -451,11 +451,10 @@ describe("op:// references", () => {
     });
 
     expect(calls.map((call) => call.template)).toEqual([
-      "S3_ACCESS_KEY_ID={{ op://Apicity/s3/id }}",
+      "S3_ACCESS_KEY_ID={{ op://Apicity/s3/id }}\n" +
+        "S3_REGION={{ op://Apicity/s3/region }}",
     ]);
-    // ac-w7vzap OQ-003: a setting outside the provider's variables stays unset,
-    // so the s3 factory falls back to its default region rather than "op://…".
-    expect(env.S3_REGION).toBeUndefined();
+    expect(env.S3_REGION).toBe("eu-west-1");
     expect(env.OPENAI_API_KEY).toBeUndefined();
   });
 

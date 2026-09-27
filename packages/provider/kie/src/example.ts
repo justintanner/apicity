@@ -566,6 +566,19 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST codex.v1.responses": {
+    "source": "kie/gpt-6-astra-responses",
+    "payload": {
+      "model": "gpt-6-astra",
+      "input": "ping",
+      "stream": false,
+      "reasoning": {
+        "effort": "low"
+      }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST gemini.v1.models.gemini36Flash.streamGenerateContent": {
     "source": "kie/gemini-36-flash-auth-error",
     "payload": {

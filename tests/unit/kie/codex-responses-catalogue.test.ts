@@ -24,7 +24,9 @@ const CODEX_CATALOGUE_IDS = [
 
 // The three GPT-6 ids kie documented on the codex path as of 2026-09-25
 // (https://docs.kie.ai/market/chat/gpt-6-astra, /gpt-6-luna, /gpt-6-sol).
-// All three are enumerated from their docs pages alone; none was called live.
+// Only gpt-6-astra was called live, and its completed response is the
+// recording kie/gpt-6-astra-responses (recorded 2026-09-27). gpt-6-luna and
+// gpt-6-sol are enumerated from their docs pages alone and were never called.
 const GPT_6_CATALOGUE_IDS = ["gpt-6-astra", "gpt-6-luna", "gpt-6-sol"] as const;
 
 // In the enum on the *other* surface, and served there — the control that keeps

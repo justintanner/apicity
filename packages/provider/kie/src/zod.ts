@@ -173,7 +173,7 @@ const KieMediaPixverseModelAliasSchema = z
 // Singleton / fixed-product ids that stay enum-only with no alias hatch:
 // `omnihuman-1-5` plus its two sub-tasks (`omnihuman-1-5/human-identification`,
 // `omnihuman-1-5/subject-detection`), `volcengine/video-to-video-lip-sync`,
-// `gemini-omni-video`, and `sora-watermark-remover`. Omnihuman's sub-tasks are
+// and `gemini-omni-video`. Omnihuman's sub-tasks are
 // path-suffixed siblings of a fixed product slug, not a versioned family
 // grammar — nothing here distinguishes `omnihuman-<major>-<minor>` from a
 // product name, so any regex would be a guess that either rejects the real
@@ -329,7 +329,6 @@ export const KIE_MEDIA_MODELS = [
   "elevenlabs/text-to-speech-multilingual-v2",
   "elevenlabs/text-to-speech-turbo-2-5",
   "elevenlabs/sound-effect-v2",
-  "sora-watermark-remover",
   // Recraft image utilities — singleton vendor ids (no alias hatch yet).
   "recraft/crisp-upscale",
   "recraft/remove-background",
@@ -3980,15 +3979,6 @@ export const Seedream45EditRequestSchema = z.object({
       .default("1:1"),
     quality: z.enum(["basic", "high"]),
     nsfw_checker: z.boolean().default(false),
-  }),
-});
-
-export const SoraWatermarkRequestSchema = z.object({
-  model: z.literal("sora-watermark-remover"),
-  callBackUrl: z.string().optional(),
-  input: z.object({
-    video_url: z.string().min(1),
-    upload_method: z.enum(["s3", "oss"]).optional(),
   }),
 });
 
@@ -7870,7 +7860,6 @@ export const MediaGenerationRequestSchema = z.union([
   ElevenLabsTextToSpeechMultilingualV2RequestSchema,
   ElevenLabsTextToSpeechTurbo25RequestSchema,
   ElevenLabsSoundEffectV2RequestSchema,
-  SoraWatermarkRequestSchema,
   RecraftCrispUpscaleRequestSchema,
   RecraftRemoveBackgroundRequestSchema,
   PixverseV6TextToVideoRequestSchema,
@@ -8700,11 +8689,6 @@ export type Seedream45EditRequest = z.input<typeof Seedream45EditRequestSchema>;
 export type Seedream45EditRequestInput = Seedream45EditRequest;
 export type Seedream45EditParsedRequest = z.output<
   typeof Seedream45EditRequestSchema
->;
-export type SoraWatermarkRequest = z.input<typeof SoraWatermarkRequestSchema>;
-export type SoraWatermarkRequestInput = SoraWatermarkRequest;
-export type SoraWatermarkParsedRequest = z.output<
-  typeof SoraWatermarkRequestSchema
 >;
 export type PixverseV6TextToVideoInput = z.infer<
   typeof PixverseV6TextToVideoInputSchema

@@ -1801,10 +1801,10 @@
       "endpoints": 71
     },
     "final": {
-      "models": 146,
-      "pricingKeys": 170,
-      "slugKeys": 172,
-      "displayKeys": 172,
+      "models": 145,
+      "pricingKeys": 169,
+      "slugKeys": 171,
+      "displayKeys": 171,
       "schemaWithoutPricing": 6,
       "pricingOnly": 30,
       "endpoints": 75
@@ -1820,11 +1820,11 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:301cf5d9f4a6b3fbd616ae566471beaf66ebd296e47cc748723425999692d095",
-      "packages/provider/kie/src/model-schemas.ts": "sha256:95445c2877cbea4aad9eab9dcb74db8bc9c03b938fa08f8e2402f2f937d66bc6",
-      "packages/provider/kie/src/kie.ts": "sha256:7531e65034dbfddcce8e9454784cf03f9478f1ea51102519c8bf4b6bf6878452",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:46b9c2903ec9651952aaee162e27430127c1ab3a8bd3bf4ec5984a1160a63a0b",
-      "packages/provider/cost/src/slugs.ts": "sha256:db1f505d5cc63da6aaf85113083991a653f9d8fe0cb451440a04e3da6a6de8ef",
+      "packages/provider/kie/src/zod.ts": "sha256:a83f3ed4053c40e3edec64b6b500a22aafe2589bb6d3e037bf8240e65b4fc673",
+      "packages/provider/kie/src/model-schemas.ts": "sha256:882e80f127059e4c4b89875d235e9064d21f0a69ac4840e1032756a52a04993a",
+      "packages/provider/kie/src/kie.ts": "sha256:61ad47ffb14ebe295cdc44531322c24b95b868e80f5a1f9fad9d4f1f43bb75d5",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:1987cd893066b4d3084704f579c92ce0e9316e8a90b24906e0513054aecda170",
+      "packages/provider/cost/src/slugs.ts": "sha256:6cfd79bab0f7a879943baefdfe16b6d44a9dc8a004d8d9ff0810e68ca2a09042",
       "scripts/endpoint-docs.tsv": "sha256:e9b413ea209d12a1fa643f6bee94e93c7d88cf3f73a74f798e1c0e95ed338dff"
     }
   },
@@ -24180,15 +24180,6 @@
         "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
       },
       {
-        "id": "sora-watermark-remover",
-        "descriptor": true,
-        "guard": true,
-        "pricingKey": "sora-watermark-remover",
-        "linkedRows": [],
-        "disposition": "upstream-unmappable",
-        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
-      },
-      {
         "id": "recraft/crisp-upscale",
         "descriptor": true,
         "guard": true,
@@ -26726,12 +26717,6 @@
         "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
       },
       {
-        "key": "sora-watermark-remover",
-        "linkedRows": [],
-        "disposition": "upstream-unmappable",
-        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
-      },
-      {
         "key": "elevenlabs/text-to-speech-multilingual-v2",
         "linkedRows": [
           "sha256:40b26f6df1f47d68b846cbc2376b07c4337f608bc13a81361fbf515b0d0aa7fa#1"
@@ -27564,10 +27549,6 @@
         "disposition": "supported"
       },
       {
-        "key": "sora-watermark-remover",
-        "disposition": "supported"
-      },
-      {
         "key": "elevenlabs/text-to-speech-multilingual-v2",
         "disposition": "supported"
       },
@@ -28254,10 +28235,6 @@
         "disposition": "supported"
       },
       {
-        "key": "sora-watermark-remover",
-        "disposition": "supported"
-      },
-      {
         "key": "elevenlabs/text-to-speech-multilingual-v2",
         "disposition": "supported"
       },
@@ -28680,16 +28657,16 @@
     },
     "apiCity": {
       "models": {
-        "count": 146,
-        "descriptors": 146,
-        "guards": 146,
+        "count": 145,
+        "descriptors": 145,
+        "guards": 145,
         "withoutPricing": 6,
         "dispositionCounts": {
           "supported": 118,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 28
+          "upstream-unmappable": 27
         },
         "unclassified": 0
       },
@@ -28707,20 +28684,20 @@
         "unclassified": 0
       },
       "pricingKeys": {
-        "count": 170,
+        "count": 169,
         "dispositionCounts": {
           "supported": 146,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 24
+          "upstream-unmappable": 23
         },
         "unclassified": 0
       },
       "slugs": {
-        "count": 172,
+        "count": 171,
         "dispositionCounts": {
-          "supported": 172,
+          "supported": 171,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -28729,9 +28706,9 @@
         "unclassified": 0
       },
       "displays": {
-        "count": 172,
+        "count": 171,
         "dispositionCounts": {
-          "supported": 172,
+          "supported": 171,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -29263,13 +29240,6 @@
       {
         "key": "runway/extend",
         "variant": "1080p",
-        "status": "pricing-only",
-        "provenance": "no matching official occurrence in the frozen 408-row Kie snapshot",
-        "rationale": "WI6 records the live runtime option as pricing-only because no exact official cell identifies this variant."
-      },
-      {
-        "key": "sora-watermark-remover",
-        "variant": "",
         "status": "pricing-only",
         "provenance": "no matching official occurrence in the frozen 408-row Kie snapshot",
         "rationale": "WI6 records the live runtime option as pricing-only because no exact official cell identifies this variant."

@@ -196,7 +196,6 @@ import {
   ElevenLabsSoundEffectV2RequestSchema,
   Omnihuman15RequestSchema,
   VolcengineVideoToVideoLipSyncRequestSchema,
-  SoraWatermarkRequestSchema,
   RecraftCrispUpscaleRequestSchema,
   RecraftRemoveBackgroundRequestSchema,
 } from "./zod";
@@ -386,7 +385,6 @@ export const CREATE_TASK_GUARDS = {
   "elevenlabs/text-to-speech-turbo-2-5":
     ElevenLabsTextToSpeechTurbo25RequestSchema,
   "elevenlabs/sound-effect-v2": ElevenLabsSoundEffectV2RequestSchema,
-  "sora-watermark-remover": SoraWatermarkRequestSchema,
   "recraft/crisp-upscale": RecraftCrispUpscaleRequestSchema,
   "recraft/remove-background": RecraftRemoveBackgroundRequestSchema,
   "pixverse-v6/text-to-video": PixverseV6TextToVideoRequestSchema,

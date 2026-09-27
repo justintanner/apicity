@@ -7457,10 +7457,12 @@ const KieOpenAiModelAliasSchema = z
 // documenting this same path with a one-id `model` enum:
 // https://docs.kie.ai/market/chat/gpt-6-astra,
 // https://docs.kie.ai/market/chat/gpt-6-luna and
-// https://docs.kie.ai/market/chat/gpt-6-sol, plus the kie.ai/gpt-6-astra and
-// kie.ai/gpt-6-sol-and-luna product pages. None of the three was called
-// live. All three match the alias grammar too, so listing them adds
-// autocomplete only.
+// https://docs.kie.ai/market/chat/gpt-6-sol. gpt-6-astra is also backed by a
+// recorded completed response (kie/gpt-6-astra-responses, recorded
+// 2026-09-27). gpt-6-luna and gpt-6-sol rest on those docs pages and the
+// kie.ai/gpt-6-sol-and-luna product page alone; neither was called live.
+// All three match the alias grammar too, so listing them adds autocomplete
+// only.
 export const KIE_RESPONSES_MODELS = [
   "gpt-5-4",
   "gpt-5-5",

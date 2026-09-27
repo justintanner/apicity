@@ -13,7 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `gpt-6-sol` in its `model` enum, so `apicity describe` and the
   `KieResponsesModel` type autocomplete them. All three already validated
   through the versioned GPT alias, so no request that parsed before is
-  rejected now. Nothing needs migrating.
+  rejected now. The endpoint's `apicity describe` output also carries a
+  recorded `gpt-6-astra` example. Nothing needs migrating.
 
 ### Changed
 

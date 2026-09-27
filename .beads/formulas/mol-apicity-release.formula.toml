@@ -163,7 +163,10 @@ if [ -z "$release_bead" ]; then
   # sessions, and a re-pour reuses the bead instead of duplicating it.
   release_bead=$(bd list --status open --title-contains "Release Apicity v{{version}}" --limit 0 --json 2>/dev/null | jq -r '.[0].id // empty')
   if [ -z "$release_bead" ]; then
-    release_bead=$(bd create "Release Apicity v{{version}}" --type task --priority 1 --description "Tracking bead for the @apicity/* v{{version}} npm release (auto-created by mol-apicity-release)." --json | jq -r '.[0].id // .id')
+    if ! release_bead=$(set -o pipefail; bd create "Release Apicity v{{version}}" --type task --priority 1 --description "Tracking bead for the @apicity/* v{{version}} npm release (auto-created by mol-apicity-release)." --json | jq -er '(if type == "array" then .[0].id else .id end) | select(type == "string" and length > 0)'); then
+      echo "STOP: could not create or resolve the release tracking bead." >&2
+      exit 1
+    fi
     echo "Auto-created release tracking bead $release_bead"
   else
     echo "Reusing open release tracking bead $release_bead"

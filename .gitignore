@@ -184,6 +184,8 @@ test-branch-protection.txt
 *.db
 .beads-credential-key
 .beads.gate.lock
+*.gate.lock*
+.beads/proxieddb/
 
 # Gas City
 .gc/

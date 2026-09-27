@@ -20,6 +20,11 @@ push-state.json
 
 # Lock files (various runtime locks)
 *.lock
+*.gate.lock*
+last_pull
+proxieddb/
+dolt-server-config.yaml
+proxied_server_client_info.json
 
 # Credential key (encryption key for federation peer auth — never commit)
 .beads-credential-key

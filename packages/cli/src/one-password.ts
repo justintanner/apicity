@@ -1,4 +1,5 @@
 import { execFile, spawn } from "node:child_process";
+import { randomUUID } from "node:crypto";
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -266,13 +267,11 @@ export async function resolveOnePasswordReferences(
     options.injectSecrets ??
     ((template: string, token?: string) =>
       injectOnePasswordSecrets(template, timeoutMs, token));
-  const template = entries
-    .map(([envVar, reference]) => `${envVar}={{ ${reference} }}`)
-    .join("\n");
+  const batch = createInjectionBatch(entries);
 
   let injected: string;
   try {
-    injected = await injectSecrets(template, options.serviceAccountToken);
+    injected = await injectSecrets(batch.template, options.serviceAccountToken);
   } catch (err) {
     throw new Error(
       `1Password could not resolve ${describeReferences(entries)}: ` +
@@ -280,7 +279,7 @@ export async function resolveOnePasswordReferences(
     );
   }
 
-  const values = parseInjectedEnv(injected);
+  const values = parseInjectedEnv(injected, batch);
   const unresolved = entries.filter(
     ([envVar]) => !hasResolvedEnvValue(values[envVar])
   );
@@ -365,13 +364,17 @@ async function fillOnePasswordEnvBatch(
   }
   if (availableEnvVars.length === 0) return;
 
+  const batch = createInjectionBatch(
+    availableEnvVars.map((envVar) => [
+      envVar,
+      onePasswordRef(opts.vault, envVar),
+    ])
+  );
   const injected = await injectSecrets(
-    availableEnvVars
-      .map((envVar) => `${envVar}={{ ${onePasswordRef(opts.vault, envVar)} }}`)
-      .join("\n"),
+    batch.template,
     opts.serviceAccountToken
   );
-  const values = parseInjectedEnv(injected);
+  const values = parseInjectedEnv(injected, batch);
   for (const envVar of availableEnvVars) {
     const value = values[envVar];
     if (hasResolvedEnvValue(value)) env[envVar] = value;
@@ -384,13 +387,54 @@ async function fillOnePasswordEnvBatch(
   }
 }
 
-function parseInjectedEnv(injected: string): Record<string, string> {
+interface InjectionBatch {
+  template: string;
+  delimiter: string;
+  envVars: string[];
+}
+
+function createInjectionBatch(
+  entries: Array<[string, string]>
+): InjectionBatch {
+  // Newlines and KEY= text are valid value bytes. Frame each substitution
+  // with a fresh marker instead; reject a collision rather than truncating.
+  const delimiter = `\n__APICITY_OP_${randomUUID()}__\n`;
+  return {
+    delimiter,
+    envVars: entries.map(([envVar]) => envVar),
+    template:
+      delimiter +
+      entries
+        .map(([envVar, reference]) => `${envVar}={{ ${reference} }}`)
+        .join(delimiter) +
+      delimiter,
+  };
+}
+
+function parseInjectedEnv(
+  injected: string,
+  batch: InjectionBatch
+): Record<string, string> {
   const values: Record<string, string> = {};
-  for (const line of injected.split(/\r?\n/)) {
-    const eq = line.indexOf("=");
-    if (eq <= 0) continue;
-    values[line.slice(0, eq)] = line.slice(eq + 1);
+  if (injected === "") return values;
+  const parts = injected.split(batch.delimiter);
+  if (
+    parts.length !== batch.envVars.length + 2 ||
+    parts[0] !== "" ||
+    parts.at(-1) !== ""
+  ) {
+    throw new Error("1Password op inject returned malformed batch output.");
   }
+  batch.envVars.forEach((envVar, index) => {
+    const prefix = `${envVar}=`;
+    const part = parts[index + 1];
+    if (!part.startsWith(prefix) || part.includes("\0")) {
+      // Never include output here: it contains resolved credentials. NUL
+      // cannot be represented in a process environment without truncation.
+      throw new Error("1Password op inject returned malformed batch output.");
+    }
+    values[envVar] = part.slice(prefix.length);
+  });
   return values;
 }
 

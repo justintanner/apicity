@@ -9,6 +9,7 @@ import {
   type OpRead,
 } from "../../packages/cli/src/one-password";
 import { PROVIDERS } from "../../packages/cli/src/providers";
+import { injectionRequests, renderInjection } from "./cli-one-password-helpers";
 
 // Moved from `mcp-cli.test.ts` when the MCP server was removed; what stays
 // here covers `packages/cli/src/one-password.ts`. The flag-parser cases went
@@ -84,8 +85,9 @@ describe("1Password credential resolution", () => {
       expect(template).toContain(
         "XAI_API_KEY={{ op://Apicity/XAI_API_KEY/password }}"
       );
-      return ["OPENAI_API_KEY=openai-secret", "XAI_API_KEY=xai-secret"].join(
-        "\n"
+      return renderInjection(
+        template,
+        "OPENAI_API_KEY=openai-secret\nXAI_API_KEY=xai-secret"
       );
     });
 
@@ -107,7 +109,9 @@ describe("1Password credential resolution", () => {
   it("skips absent vault items when providers are not explicit", async () => {
     const env: NodeJS.ProcessEnv = {};
     const listItemTitles = vi.fn(async () => ["OPENAI_API_KEY"]);
-    const injectSecrets = vi.fn(async () => "OPENAI_API_KEY=openai-secret");
+    const injectSecrets = vi.fn(async (template: string) =>
+      renderInjection(template, "OPENAI_API_KEY=openai-secret")
+    );
 
     await fillOnePasswordEnv({
       vault: "Apicity",
@@ -334,11 +338,14 @@ describe("the vault convention by provider class", () => {
       "POLYMARKET_CLOB_API_SECRET",
     ]);
     const injectSecrets = vi.fn(async (template: string) => {
-      expect(template.split("\n")).toEqual([
+      expect(injectionRequests(template).split("\n")).toEqual([
         "POLYMARKET_CLOB_API_KEY={{ op://Apicity/POLYMARKET_CLOB_API_KEY/password }}",
         "POLYMARKET_CLOB_API_SECRET={{ op://Apicity/POLYMARKET_CLOB_API_SECRET/password }}",
       ]);
-      return "POLYMARKET_CLOB_API_KEY=key\nPOLYMARKET_CLOB_API_SECRET=secret";
+      return renderInjection(
+        template,
+        "POLYMARKET_CLOB_API_KEY=key\nPOLYMARKET_CLOB_API_SECRET=secret"
+      );
     });
 
     await fillOnePasswordEnv({
@@ -359,7 +366,9 @@ describe("the vault convention by provider class", () => {
 
   it("skips an optional item that resolves to no value", async () => {
     const env: NodeJS.ProcessEnv = {};
-    const injectSecrets = vi.fn<OpInject>(async () => "YOUTUBE_ACCESS_TOKEN=");
+    const injectSecrets = vi.fn<OpInject>(async (template) =>
+      renderInjection(template, "YOUTUBE_ACCESS_TOKEN=")
+    );
 
     await fillOnePasswordEnv({
       vault: "Apicity",
@@ -382,7 +391,8 @@ describe("the vault convention by provider class", () => {
         enabledProviders: ["openai"],
         env: {},
         listItemTitles: async () => ["OPENAI_API_KEY"],
-        injectSecrets: async () => "OPENAI_API_KEY=",
+        injectSecrets: async (template) =>
+          renderInjection(template, "OPENAI_API_KEY="),
       })
     ).rejects.toThrow(
       "Missing 1Password secret for OPENAI_API_KEY. Expected " +
@@ -418,7 +428,8 @@ describe("the vault convention by provider class", () => {
       enabledProviders: ["openai", "youtube"],
       env,
       listItemTitles: async () => ["OPENAI_API_KEY"],
-      injectSecrets: async () => "OPENAI_API_KEY=openai-secret",
+      injectSecrets: async (template) =>
+        renderInjection(template, "OPENAI_API_KEY=openai-secret"),
     });
     expect(env).toEqual({ OPENAI_API_KEY: "openai-secret" });
 

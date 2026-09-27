@@ -38,6 +38,7 @@ import type {
   SubprocessRunner,
 } from "../../packages/cli/src/subprocess";
 import { installVerboseFetch } from "../../packages/cli/src/verbose";
+import { injectionRequests, renderInjection } from "./cli-one-password-helpers";
 
 // AC-05: credential precedence, the single-provider rule for a call, and the
 // invariant that matters most — a credential value never reaches stdout, an
@@ -88,10 +89,12 @@ function injectSeam(answer: string | Error): {
 } {
   const calls: Injection[] = [];
   const injectSecrets: OpInject = (template, token) => {
-    calls.push({ template, token });
+    // These assertions pin requested references and token routing; the
+    // multiline suite pins the framing and byte-preservation contract.
+    calls.push({ template: injectionRequests(template), token });
     return answer instanceof Error
       ? Promise.reject(answer)
-      : Promise.resolve(answer);
+      : Promise.resolve(renderInjection(template, answer));
   };
   return { injectSecrets, calls };
 }

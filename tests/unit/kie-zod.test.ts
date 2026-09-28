@@ -1523,18 +1523,25 @@ const MEDIA_MODEL_FAMILIES = [
     listed: [
       "qwen2/text-to-image",
       "qwen2/image-edit",
+      "qwen2-1/text-to-image",
+      "qwen2-1/image-to-image",
       "qwen3/text-to-image",
       "qwen3/image-to-image",
       "qwen3/pro-text-to-image",
       "qwen3/pro-image-to-image",
     ],
-    aliases: ["qwen4/text-to-image", "qwen2.5/image-edit"],
+    aliases: [
+      "qwen4/text-to-image",
+      "qwen2.5/image-edit",
+      "qwen2-1/image-to-image",
+    ],
     // `qwen-image-2.0` / `qwen-image-edit` are Alibaba's first-party grammar
-    // for a different product line, not kie media ids. Bare `qwen2` and
-    // underscore typos stay rejected; unversioned catalogue ids are covered
-    // by QWEN_V1_EXACT_ONLY_MODELS below.
+    // for a different product line, not kie media ids. Bare `qwen2` (and the
+    // bare dashed `qwen2-1`) and underscore typos stay rejected; unversioned
+    // catalogue ids are covered by QWEN_V1_EXACT_ONLY_MODELS below.
     rejected: [
       "qwen2",
+      "qwen2-1",
       "qwen/text_to_image",
       "qwen-image-2.0",
       "qwen-image-edit",

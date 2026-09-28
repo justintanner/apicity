@@ -92,17 +92,20 @@ const KieMediaSeedreamModelAliasSchema = z
   );
 
 // kie's versioned Qwen media ids put the major version in the namespace itself
-// (`qwen2/image-edit`), so the version is required before the `/`. That is a
-// different grammar from Alibaba's first-party `qwen-image-2.0` /
-// `qwen-image-edit` ids, which name a different product line and must not
-// cross over. Unversioned `qwen/*` ids (text-to-image, image-edit,
-// image-to-image) are deliberate enum-only catalogue entries — the alias is
-// not widened to accept them (operator ruling ac-ly4x9j / ac-7hi3xx).
+// (`qwen2/image-edit`), so the version is required before the `/`. Version
+// segments are dot- or dash-joined (`qwen2.5/image-edit`,
+// `qwen2-1/text-to-image`), matching kie's dashed version spelling on wan and
+// kling. That is a different grammar from Alibaba's first-party
+// `qwen-image-2.0` / `qwen-image-edit` ids, which name a different product
+// line and must not cross over. Unversioned `qwen/*` ids (text-to-image,
+// image-edit, image-to-image) are deliberate enum-only catalogue entries —
+// the alias is not widened to accept them (operator ruling ac-ly4x9j /
+// ac-7hi3xx).
 const KieMediaQwenModelAliasSchema = z
   .string()
   .regex(
-    /^qwen\d+(?:\.\d+)*\/[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/,
-    "Expected a listed model or a kie Qwen alias (e.g. qwen3/image-edit)"
+    /^qwen\d+(?:[.-]\d+)*\/[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/,
+    "Expected a listed model or a kie Qwen alias (e.g. qwen2-1/image-to-image)"
   );
 
 // Seedance is versioned with optional size/speed variants under ByteDance's
@@ -265,6 +268,10 @@ export const KIE_MEDIA_MODELS = [
   "grok-imagine-image-2-0/segment-edit",
   "qwen2/text-to-image",
   "qwen2/image-edit",
+  // Qwen Image 2.1 — dashed-version namespace sibling of qwen2. Docs under
+  // https://docs.kie.ai/market/qwen2-1/.
+  "qwen2-1/text-to-image",
+  "qwen2-1/image-to-image",
   "qwen3/text-to-image",
   "qwen3/image-to-image",
   "qwen3/pro-text-to-image",
@@ -2818,6 +2825,100 @@ export const Qwen2ImageEditRequestSchema = z.object({
     nsfw_checker: z.boolean().default(false),
   }),
 });
+
+// Qwen Image 2.1 shares one input vocabulary across both tasks (aspect_ratio
+// with resolution tiers 1K/2K, native transparency, prompt enhancement), so
+// the enums are declared once. Docs under
+// https://docs.kie.ai/market/qwen2-1/.
+export const Qwen21AspectRatioSchema = z.enum([
+  "1:1",
+  "4:3",
+  "3:4",
+  "3:2",
+  "2:3",
+  "16:9",
+  "9:16",
+  "21:9",
+  "9:21",
+]);
+
+export const Qwen21ResolutionSchema = z.enum(["1K", "2K"]);
+
+export const Qwen21BackgroundSchema = z.enum(["opaque", "transparent"]);
+
+export const Qwen21OutputFormatSchema = z.enum(["png", "webp", "jpeg"]);
+
+const qwen21SharedInputShape = {
+  resolution: Qwen21ResolutionSchema.default("1K"),
+  background: Qwen21BackgroundSchema.default("opaque"),
+  output_format: Qwen21OutputFormatSchema.default("png"),
+  enhance_prompt: z.boolean().default(true),
+  seed: z.number().int().optional(),
+  nsfw_checker: z.boolean().default(false),
+};
+
+// Docs: https://docs.kie.ai/market/qwen2-1/text-to-image
+export const Qwen21TextToImageRequestSchema = z.object({
+  model: z.literal("qwen2-1/text-to-image"),
+  callBackUrl: z.string().url().optional(),
+  input: z
+    .object({
+      prompt: z.string().min(1).max(5000),
+      aspect_ratio: Qwen21AspectRatioSchema.default("1:1"),
+      ...qwen21SharedInputShape,
+    })
+    .strict(),
+});
+
+// In local-edit mode the mask must pair with exactly one reference image and
+// cannot combine with a transparent background — kie answers 422 to either
+// violation, so both are guarded here rather than left to the transport.
+const refineQwen21Mask = (
+  value: {
+    input: {
+      image_urls: string[];
+      mask_url?: string;
+      background?: string;
+    };
+  },
+  ctx: z.RefinementCtx
+) => {
+  if (value.input.mask_url === undefined) return;
+  if (value.input.image_urls.length !== 1) {
+    ctx.addIssue({
+      code: "custom",
+      message:
+        "mask_url requires exactly one image_urls entry (local-edit mode)",
+      path: ["input", "mask_url"],
+    });
+  }
+  if (value.input.background === "transparent") {
+    ctx.addIssue({
+      code: "custom",
+      message: "mask_url cannot be combined with background transparent",
+      path: ["input", "background"],
+    });
+  }
+};
+
+// Docs: https://docs.kie.ai/market/qwen2-1/image-to-image
+export const Qwen21ImageToImageRequestSchema = z
+  .object({
+    model: z.literal("qwen2-1/image-to-image"),
+    callBackUrl: z.string().url().optional(),
+    input: z
+      .object({
+        image_urls: z.array(z.string().url()).min(1).max(10),
+        prompt: z.string().min(1).max(5000),
+        mask_url: z.string().url().optional(),
+        aspect_ratio: z
+          .union([z.literal("auto"), Qwen21AspectRatioSchema])
+          .default("auto"),
+        ...qwen21SharedInputShape,
+      })
+      .strict(),
+  })
+  .superRefine(refineQwen21Mask);
 
 const qwen3SharedInputShape = {
   prompt: z.string().max(5000),
@@ -7802,6 +7903,8 @@ export const MediaGenerationRequestSchema = z.union([
   Seedream45EditRequestSchema,
   Qwen2TextToImageRequestSchema,
   Qwen2ImageEditRequestSchema,
+  Qwen21TextToImageRequestSchema,
+  Qwen21ImageToImageRequestSchema,
   Qwen3TextToImageRequestSchema,
   Qwen3ImageToImageRequestSchema,
   Qwen3ProTextToImageRequestSchema,
@@ -8278,6 +8381,24 @@ export type Qwen2ImageEditRequest = z.input<typeof Qwen2ImageEditRequestSchema>;
 export type Qwen2ImageEditRequestInput = Qwen2ImageEditRequest;
 export type Qwen2ImageEditParsedRequest = z.output<
   typeof Qwen2ImageEditRequestSchema
+>;
+export type Qwen21AspectRatio = z.infer<typeof Qwen21AspectRatioSchema>;
+export type Qwen21Resolution = z.infer<typeof Qwen21ResolutionSchema>;
+export type Qwen21Background = z.infer<typeof Qwen21BackgroundSchema>;
+export type Qwen21OutputFormat = z.infer<typeof Qwen21OutputFormatSchema>;
+export type Qwen21TextToImageRequest = z.input<
+  typeof Qwen21TextToImageRequestSchema
+>;
+export type Qwen21TextToImageRequestInput = Qwen21TextToImageRequest;
+export type Qwen21TextToImageParsedRequest = z.output<
+  typeof Qwen21TextToImageRequestSchema
+>;
+export type Qwen21ImageToImageRequest = z.input<
+  typeof Qwen21ImageToImageRequestSchema
+>;
+export type Qwen21ImageToImageRequestInput = Qwen21ImageToImageRequest;
+export type Qwen21ImageToImageParsedRequest = z.output<
+  typeof Qwen21ImageToImageRequestSchema
 >;
 export type Qwen3TextToImageRequest = z.input<
   typeof Qwen3TextToImageRequestSchema

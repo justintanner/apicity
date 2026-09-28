@@ -260,6 +260,29 @@ const guardedRejectionCases = [
     expectedPath: "input.image_urls",
   },
   {
+    name: "qwen2-1/text-to-image with an off-enum resolution",
+    request: {
+      model: "qwen2-1/text-to-image",
+      input: { prompt: "A quiet harbour", resolution: "4K" },
+    },
+    expectedPath: "input.resolution",
+  },
+  {
+    name: "qwen2-1/image-to-image with a mask over two references",
+    request: {
+      model: "qwen2-1/image-to-image",
+      input: {
+        image_urls: [
+          "https://example.com/first.png",
+          "https://example.com/second.png",
+        ],
+        prompt: "Replace the backpack",
+        mask_url: "https://example.com/mask.png",
+      },
+    },
+    expectedPath: "input.mask_url",
+  },
+  {
     name: "qwen3/text-to-image with an overlong prompt",
     request: {
       model: "qwen3/text-to-image",
@@ -325,7 +348,7 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
   // Not a count for its own sake — it makes any change to the guarded set show
   // up as a deliberate edit to this list.
   //
-  // The list is the point, not the number. It now holds all 145 ids of
+  // The list is the point, not the number. It now holds all 147 ids of
   // KIE_MEDIA_MODELS, which is what makes it worth spelling out rather than
   // asserting `guarded.sort()` equals `[...KIE_MEDIA_MODELS].sort()`: that
   // form is self-referential — it passes whatever the catalogue says, so an
@@ -334,8 +357,8 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
   it("guards exactly the models pinned in this list", () => {
     expect(
       guarded,
-      "Update this deliberate 145-entry pin when the guarded model set changes"
-    ).toHaveLength(145);
+      "Update this deliberate 147-entry pin when the guarded model set changes"
+    ).toHaveLength(147);
     expect([...guarded].sort()).toEqual(
       [
         "kling-3.0/video",
@@ -386,6 +409,8 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
         "grok-imagine-image-2-0/segment-map",
         "grok-imagine-image-2-0/image-edit",
         "grok-imagine-image-2-0/segment-edit",
+        "qwen2-1/image-to-image",
+        "qwen2-1/text-to-image",
         "qwen2/text-to-image",
         "qwen2/image-edit",
         "qwen3/text-to-image",

@@ -280,9 +280,9 @@ describe("Kie pricing reconciliation", () => {
       root
     )) as unknown as TestInventory;
 
-    expect(inventory.models).toHaveLength(145);
-    expect(inventory.descriptors).toHaveLength(145);
-    expect(inventory.guards).toHaveLength(145);
+    expect(inventory.models).toHaveLength(147);
+    expect(inventory.descriptors).toHaveLength(147);
+    expect(inventory.guards).toHaveLength(147);
     expect(inventory.pricingKeys).toHaveLength(169);
     expect(inventory.slugKeys).toHaveLength(171);
     expect(inventory.displayKeys).toHaveLength(171);
@@ -333,7 +333,7 @@ describe("Kie pricing reconciliation", () => {
       }
     }
     expect(mismatches).toEqual([]);
-    expect(Object.keys(inventory.descriptorFields)).toHaveLength(145);
+    expect(Object.keys(inventory.descriptorFields)).toHaveLength(147);
 
     const fields = inventory.descriptorFields;
     expect(fields["minimax-h3/text-to-video"].resolution).toEqual({
@@ -397,7 +397,7 @@ describe("Kie pricing reconciliation", () => {
     expect(result).toMatchObject({
       status: "ok",
       rows: 483,
-      models: 145,
+      models: 147,
       endpoints: 75,
       pricingKeys: 169,
       slugs: 171,
@@ -415,7 +415,7 @@ describe("Kie pricing reconciliation", () => {
         row.disposition === "canonical-alias"
     );
 
-    expect(manifest.apiCity.schemaWithoutPricing).toHaveLength(6);
+    expect(manifest.apiCity.schemaWithoutPricing).toHaveLength(8);
     expect(manifest.apiCity.pricingOnly).toHaveLength(30);
     expect(manifest.inventory.baseline).toEqual({
       models: 127,
@@ -427,11 +427,11 @@ describe("Kie pricing reconciliation", () => {
       endpoints: 71,
     });
     expect(manifest.inventory.final).toEqual({
-      models: 145,
+      models: 147,
       pricingKeys: 169,
       slugKeys: 171,
       displayKeys: 171,
-      schemaWithoutPricing: 6,
+      schemaWithoutPricing: 8,
       pricingOnly: 30,
       endpoints: 75,
     });
@@ -1267,10 +1267,10 @@ describe("Kie pricing reconciliation", () => {
     expect(markdown).toContain("## Seedance 2.5");
     expect(markdown).toContain("## Explicit Audit Queue");
     expect(markdown).toContain("## Runtime Variant Coverage");
-    expect(markdown).toContain("| Schema model IDs | 127 | 145 |");
+    expect(markdown).toContain("| Schema model IDs | 127 | 147 |");
     expect(markdown).toContain("| Documented endpoints | 71 | 75 |");
     expect(markdown).toContain("| Runtime pricing keys | 135 | 169 |");
-    expect(markdown).toContain("| Schema-without-pricing inventory | 23 | 6 |");
+    expect(markdown).toContain("| Schema-without-pricing inventory | 23 | 8 |");
     expect(markdown).toContain("| Pricing-only inventory | 31 | 30 |");
     expect(markdown).toContain("| Slug keys | 137 | 171 |");
     expect(markdown).toContain("| Display keys | 137 | 171 |");

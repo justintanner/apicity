@@ -19,6 +19,10 @@ import {
   MiniMaxH3FixedAspectRatioSchema,
   MiniMaxH3ReferenceAspectRatioSchema,
   MiniMaxH3ResolutionSchema,
+  Qwen21AspectRatioSchema,
+  Qwen21BackgroundSchema,
+  Qwen21OutputFormatSchema,
+  Qwen21ResolutionSchema,
   Wan27VideoEditDurationValues,
 } from "./zod";
 
@@ -2831,6 +2835,138 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         type: "integer",
         description:
           "Optional integer random seed (no documented bounds or default)",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description: "Content safety filter (default false)",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/qwen2-1/text-to-image
+  "qwen2-1/text-to-image": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 5000,
+        description:
+          "Image description in any language (1-5000 chars; longer input returns 422)",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: Qwen21AspectRatioSchema.options,
+        default: "1:1",
+        description:
+          "Output aspect ratio (default 1:1). Pixel size also depends on resolution.",
+      },
+      resolution: {
+        type: "string",
+        enum: Qwen21ResolutionSchema.options,
+        default: "1K",
+        description:
+          "Output resolution tier (default 1K). 1K is faster; 2K has four times the pixels. Only 1K and 2K are accepted.",
+      },
+      background: {
+        type: "string",
+        enum: Qwen21BackgroundSchema.options,
+        default: "opaque",
+        description:
+          "Background type (default opaque). transparent outputs a real alpha channel and requires png or webp.",
+      },
+      output_format: {
+        type: "string",
+        enum: Qwen21OutputFormatSchema.options,
+        default: "png",
+        description:
+          "Output image format (default png). png and webp carry an alpha channel; jpeg cannot be transparent.",
+      },
+      enhance_prompt: {
+        type: "boolean",
+        default: true,
+        description:
+          "Rewrite the prompt into a fuller scene description before generating (default true)",
+      },
+      seed: {
+        type: "integer",
+        description:
+          "Random seed; the seed actually used is returned with the result",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description: "Content safety filter (default false)",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/qwen2-1/image-to-image
+  "qwen2-1/image-to-image": {
+    type: "image",
+    fields: {
+      image_urls: {
+        type: "array",
+        required: true,
+        minItems: 1,
+        maxItems: 10,
+        items: { type: "string" },
+        description:
+          "Reference image URLs (1-10; JPEG/PNG/WebP up to 30MB and 25MP each, directly GET-retrievable)",
+      },
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 5000,
+        description:
+          "Result description in any language (1-5000 chars). With mask_url, describe what belongs inside the white area.",
+      },
+      mask_url: {
+        type: "string",
+        description:
+          "Optional inpainting mask switching to local-edit mode (white = change, black = keep). Requires exactly one image_urls entry; cannot combine with background transparent.",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: ["auto", ...Qwen21AspectRatioSchema.options],
+        default: "auto",
+        description:
+          "Output aspect ratio (default auto: taken from the first reference image). Ignored in local-edit mode.",
+      },
+      resolution: {
+        type: "string",
+        enum: Qwen21ResolutionSchema.options,
+        default: "1K",
+        description:
+          "Output resolution tier (default 1K). Only 1K and 2K are accepted; 2K can take up to ~3 minutes with references.",
+      },
+      background: {
+        type: "string",
+        enum: Qwen21BackgroundSchema.options,
+        default: "opaque",
+        description:
+          "Background type (default opaque). transparent requires png or webp and cannot combine with mask_url.",
+      },
+      output_format: {
+        type: "string",
+        enum: Qwen21OutputFormatSchema.options,
+        default: "png",
+        description:
+          "Output image format (default png). jpeg cannot be combined with a transparent background.",
+      },
+      enhance_prompt: {
+        type: "boolean",
+        default: true,
+        description:
+          "Rewrite the prompt before generating (default true). Ignored in local-edit mode.",
+      },
+      seed: {
+        type: "integer",
+        description:
+          "Random seed; the seed actually used is returned with the result",
       },
       nsfw_checker: {
         type: "boolean",

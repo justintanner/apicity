@@ -625,6 +625,12 @@ provider documentation: `Q3-01` through `Q3-04`.
 - `Q3-03`: https://docs.kie.ai/market/qwen3-pro/text-to-image
 - `Q3-04`: https://docs.kie.ai/market/qwen3-pro/image-to-image
 
+The Qwen Image 2.1 seed rows use the official model pages linked from the Kie
+provider documentation, retrieved on 2026-09-28 (`Q21-01` through `Q21-02`).
+
+- `Q21-01`: https://docs.kie.ai/market/qwen2-1/text-to-image
+- `Q21-02`: https://docs.kie.ai/market/qwen2-1/image-to-image
+
 The Grok Imagine Image 2.0 row uses the official model pages linked from the
 Kie provider documentation, retrieved on 2026-08-16 (`GI2-01` through
 `GI2-03`) and 2026-08-28 (`GI2-04`).
@@ -687,6 +693,8 @@ Kie provider documentation, retrieved on 2026-08-16 (`GI2-01` through
 | grok-imagine-image-2-0/segment-edit       | input.mask_indexs[]           | optional; integer min=1                                                                              | GI2-04 @ 2026-08-28 | integer min=1                               | number (1)          | doc example sends [1, 2]; the recorded accepted request sent [1]                    | number-only         | high       | align with the official one-based minimum        |
 | qwen2/text-to-image                       | input.seed                    | optional; integer                                                                                    | DOC-08 @ 2026-07-31 | integer                                     | number (0)          | none beyond current OpenAPI                                                         | number-only         | high       | retain current behavior                          |
 | qwen2/image-edit                          | input.seed                    | optional; integer                                                                                    | DOC-09 @ 2026-07-31 | integer                                     | number (0)          | no fractional observation or clarification                                          | number-only         | high       | align with official integer contract             |
+| qwen2-1/text-to-image                     | input.seed                    | optional; integer                                                                                    | Q21-01 @ 2026-09-28 | integer                                     | number (20260921)   | none beyond current OpenAPI                                                         | number-only         | high       | retain current behavior                          |
+| qwen2-1/image-to-image                    | input.seed                    | optional; integer                                                                                    | Q21-02 @ 2026-09-28 | integer                                     | number (20260921)   | none beyond current OpenAPI                                                         | number-only         | high       | retain current behavior                          |
 | qwen3/text-to-image                       | input.seed                    | optional; integer min=0 max=2147483647 default=1                                                     | Q3-01 @ 2026-08-12  | integer min=0 max=2147483647                | number (1)          | integer seed; local default is 1                                                    | number-only         | high       | enforce bounds; default matches local            |
 | qwen3/image-to-image                      | input.seed                    | optional; integer min=0 max=2147483647 default=1                                                     | Q3-02 @ 2026-08-12  | integer min=0 max=2147483647                | number (1)          | integer seed; local default is 1                                                    | number-only         | high       | enforce bounds; default matches local            |
 | qwen3/pro-text-to-image                   | input.seed                    | optional; integer min=0 max=2147483647 default=1                                                     | Q3-03 @ 2026-08-12  | integer min=0 max=2147483647                | number (1)          | integer seed; local default is 1                                                    | number-only         | high       | enforce bounds; default matches local            |

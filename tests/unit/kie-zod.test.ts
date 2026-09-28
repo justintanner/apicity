@@ -7,6 +7,7 @@ import {
   KieClaudeRequestSchema,
   KieApiResponsesRequestSchema,
   KieGrokResponsesRequestSchema,
+  KieOpenAiResponsesRequestSchema,
   KieMediaModelSchema,
   KieResponsesRequestSchema,
   MiniMaxH3ImageToVideoRequestSchema,
@@ -1215,7 +1216,7 @@ const OPENED_MODEL_FIELDS = [
   {
     triage: "TRI-004",
     label: "KieGrokResponsesRequestSchema.model",
-    listed: ["grok-4-5", "grok-4-6"],
+    listed: ["grok-4-5", "grok-4-6", "grok-4-7"],
     aliases: ["grok-5", "grok-4-5-fast"],
     // BR-4 `gpt-5-5` is the sibling endpoint's listed id and must not cross.
     rejected: ["grok", "grok-four", "gpt-5-5"],
@@ -1250,6 +1251,32 @@ const OPENED_MODEL_FIELDS = [
         })
       ),
     jsonSchema: (): JsonSchema => zodToJsonSchema(KieApiResponsesRequestSchema),
+  },
+  {
+    triage: "TRI-004c",
+    label: "KieOpenAiResponsesRequestSchema.model",
+    listed: ["kimi-k3", "deepseek-v4-1-flash"],
+    aliases: ["kimi-k4", "deepseek-v4-1", "deepseek-v5-pro"],
+    // BR-3 bare families and a dash-less spelling; BR-4 sibling ids — the
+    // codex/grok/openai surfaces carry disjoint model vocabularies.
+    rejected: [
+      "kimi",
+      "kimi-k",
+      "kimik3",
+      "deepseek",
+      "deepseekv4-1-flash",
+      "gpt-5-5",
+      "grok-4-5",
+    ],
+    parse: (model: unknown): ModelParseOutcome =>
+      modelOutcome(
+        KieOpenAiResponsesRequestSchema.safeParse({
+          model,
+          input: "summarize this thread",
+        })
+      ),
+    jsonSchema: (): JsonSchema =>
+      zodToJsonSchema(KieOpenAiResponsesRequestSchema),
   },
   {
     triage: "TRI-005",

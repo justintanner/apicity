@@ -7708,7 +7708,10 @@ const KieGrokModelAliasSchema = z
     "Expected a listed model or a versioned Grok alias (e.g. grok-4-5-fast)"
   );
 
-const KIE_GROK_RESPONSES_MODELS = ["grok-4-5", "grok-4-6"] as const;
+// grok-4-7 comes from https://docs.kie.ai/market/grok/grok-4-7 as read on
+// 2026-09-28: same `/grok/v1/responses` path, one-id model enum, and a
+// reasoning.effort ladder that already fits KieResponsesReasoningSchema.
+const KIE_GROK_RESPONSES_MODELS = ["grok-4-5", "grok-4-6", "grok-4-7"] as const;
 
 export const KieGrokResponsesModelSchema = z
   .enum(KIE_GROK_RESPONSES_MODELS)
@@ -7779,6 +7782,108 @@ export type KieApiResponsesModel =
   | (string & {});
 export type KieApiResponsesRequest = z.input<
   typeof KieApiResponsesRequestSchema
+>;
+
+// Unified OpenAI-compatible Responses (`POST /openai/v1/responses`). Kie
+// fronts two unrelated chat families on this one path — Kimi K3
+// (https://docs.kie.ai/market/kimi/kimi-k3) and DeepSeek V4.1 Flash
+// (https://docs.kie.ai/market/deepseek-v4-1-flash) — each documented with a
+// one-id `model` enum as read on 2026-09-28. Distinct from the sibling
+// `/codex/v1/responses` and `/api/v1/responses` GPT surfaces, so the alias
+// grammar below is Kimi- and DeepSeek-only on purpose: sharing
+// KieOpenAiModelAliasSchema would accept `gpt-5-5` here, where it is not a
+// listed id. One grammar covers both families — the id bodies are
+// `kimi-k<digits>` and `deepseek-v<digits>`, joined at the alternation so the
+// describe JSON Schema stays the flat enum + pattern pair the triage harness
+// pins. Anything outside these two grammars must be added to the enum.
+const KieOpenAiResponsesModelAliasSchema = z
+  .string()
+  .regex(
+    /^(?:kimi-k\d+|deepseek-v\d+)(?:[-.]\d+)*(?:-[a-z0-9]+)*$/,
+    "Expected a listed model or a versioned Kimi/DeepSeek alias (e.g. kimi-k4 or deepseek-v4-1)"
+  );
+
+const KIE_OPENAI_RESPONSES_MODELS = ["kimi-k3", "deepseek-v4-1-flash"] as const;
+
+export const KieOpenAiResponsesModelSchema = z
+  .enum(KIE_OPENAI_RESPONSES_MODELS)
+  .or(KieOpenAiResponsesModelAliasSchema);
+
+// Kimi documents low/medium/high; DeepSeek widens the ladder with
+// none/minimal (reasoning off) and xhigh/max. The endpoint serves both
+// families, so the schema carries the union; a family-specific level is
+// upstream's 422 to reject, not ours.
+export const KieOpenAiResponsesReasoningEffortSchema = z.enum([
+  "none",
+  "minimal",
+  "low",
+  "medium",
+  "high",
+  "xhigh",
+  "max",
+]);
+
+// DeepSeek-only alternative to `reasoning.effort`: configure either one,
+// not both (docs: "configure either one, not both").
+export const KieResponsesThinkingSchema = z.object({
+  type: z.enum(["enabled", "disabled", "auto"]).optional(),
+});
+
+export const KieResponsesTextFormatSchema = z.object({
+  type: z.enum(["text", "json_object", "json_schema"]),
+  name: z.string().optional(),
+  description: z.string().optional(),
+  schema: z.record(z.string(), z.unknown()).optional(),
+  strict: z.boolean().optional(),
+});
+
+export const KieResponsesTextSchema = z.object({
+  format: KieResponsesTextFormatSchema,
+});
+
+// Both families document function tools only: Kimi ignores built-ins such as
+// web_search, DeepSeek accepts only `function`. Keep this endpoint's tools
+// function-only rather than reusing KieResponsesToolsSchema, whose
+// web_search arm would bless a tool this path never acts on.
+export const KieOpenAiResponsesToolChoiceSchema = z.union([
+  z.string(),
+  z.object({
+    type: z.literal("function"),
+    name: z.string().min(1),
+  }),
+]);
+
+export const KieOpenAiResponsesRequestSchema = z.object({
+  model: KieOpenAiResponsesModelSchema,
+  stream: z.boolean().default(false).optional(),
+  input: z.union([
+    z.string().min(1),
+    z.array(KieResponsesInputMessageSchema).min(1),
+  ]),
+  instructions: z.string().optional(),
+  reasoning: z
+    .object({ effort: KieOpenAiResponsesReasoningEffortSchema.optional() })
+    .optional(),
+  thinking: KieResponsesThinkingSchema.optional(),
+  tools: z.array(KieResponsesFunctionToolSchema).optional(),
+  tool_choice: KieOpenAiResponsesToolChoiceSchema.optional(),
+  text: KieResponsesTextSchema.optional(),
+});
+
+// Literal ids + hatch rather than `z.infer` — see FluxKontextModel above.
+export type KieOpenAiResponsesModel =
+  | (typeof KIE_OPENAI_RESPONSES_MODELS)[number]
+  | (string & {});
+export type KieResponsesThinking = z.infer<typeof KieResponsesThinkingSchema>;
+export type KieResponsesTextFormat = z.infer<
+  typeof KieResponsesTextFormatSchema
+>;
+export type KieResponsesText = z.infer<typeof KieResponsesTextSchema>;
+export type KieOpenAiResponsesRequest = z.input<
+  typeof KieOpenAiResponsesRequestSchema
+>;
+export type KieOpenAiResponsesParsedRequest = z.output<
+  typeof KieOpenAiResponsesRequestSchema
 >;
 
 // ---------------------------------------------------------------------------

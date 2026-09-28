@@ -1807,7 +1807,7 @@
       "displayKeys": 171,
       "schemaWithoutPricing": 8,
       "pricingOnly": 30,
-      "endpoints": 75
+      "endpoints": 76
     }
   },
   "source": {
@@ -1820,12 +1820,12 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:411d222ff0e2678a9c8d6e2a00147debebf7631b9829ee231c21edaa132556f9",
+      "packages/provider/kie/src/zod.ts": "sha256:b7e6394c0df71b97ed25f2c2d8a3324533ccd60a4ac0a883bdff0e362a0ed69b",
       "packages/provider/kie/src/model-schemas.ts": "sha256:3d9709a66228976e0c50be2eecf9e0c047bbbfecccc1033e1f778bc7ef8917e8",
-      "packages/provider/kie/src/kie.ts": "sha256:df11b8127e671db93b9bdc1d83f1bb4ad3e18a4212433d82d102dcc25e8fe1d5",
+      "packages/provider/kie/src/kie.ts": "sha256:622e8c4258b8bb54879cfa2ab3be22bc04cd317cffcb0ccdc08209c6629500cb",
       "packages/provider/cost/src/pricing/kie.ts": "sha256:1987cd893066b4d3084704f579c92ce0e9316e8a90b24906e0513054aecda170",
       "packages/provider/cost/src/slugs.ts": "sha256:6cfd79bab0f7a879943baefdfe16b6d44a9dc8a004d8d9ff0810e68ca2a09042",
-      "scripts/endpoint-docs.tsv": "sha256:e9b413ea209d12a1fa643f6bee94e93c7d88cf3f73a74f798e1c0e95ed338dff"
+      "scripts/endpoint-docs.tsv": "sha256:a406fe87ac24873577c1fec467970c8ab1d9887d37961d976a0f4cc7b0e9ad20"
     }
   },
   "rows": [
@@ -25420,7 +25420,17 @@
         "dotPath": "grok.v1.responses",
         "method": "POST",
         "fullUrl": "https://api.kie.ai/grok/v1/responses",
-        "docsUrl": "https://docs.kie.ai/market/grok/grok-4-6",
+        "docsUrl": "https://docs.kie.ai/market/grok/grok-4-7",
+        "linkedPricingKeys": [],
+        "disposition": "supported",
+        "rationale": "Documented callable endpoint is retained for architecture review even when its pricing is model-keyed."
+      },
+      {
+        "provider": "kie",
+        "dotPath": "openai.v1.responses",
+        "method": "POST",
+        "fullUrl": "https://api.kie.ai/openai/v1/responses",
+        "docsUrl": "https://docs.kie.ai/market/kimi/kimi-k3",
         "linkedPricingKeys": [],
         "disposition": "supported",
         "rationale": "Documented callable endpoint is retained for architecture review even when its pricing is model-keyed."
@@ -28701,11 +28711,11 @@
         "unclassified": 0
       },
       "endpoints": {
-        "count": 75,
-        "POST": 57,
+        "count": 76,
+        "POST": 58,
         "GET": 18,
         "dispositionCounts": {
-          "supported": 51,
+          "supported": 52,
           "free-nonbillable": 24,
           "unsupported-endpoint": 0,
           "token-billed": 0,

@@ -707,6 +707,12 @@ export type {
   KieGrokResponsesRequest,
   KieApiResponsesModel,
   KieApiResponsesRequest,
+  KieOpenAiResponsesModel,
+  KieOpenAiResponsesRequest,
+  KieOpenAiResponsesParsedRequest,
+  KieResponsesThinking,
+  KieResponsesTextFormat,
+  KieResponsesText,
 } from "./zod";
 
 // ---------------------------------------------------------------------------
@@ -1068,6 +1074,7 @@ export interface KieProvider {
     api: KiePostApiNamespace;
     codex: import("./responses").KieResponsesProvider["codex"];
     grok: import("./responses").KieResponsesProvider["grok"];
+    openai: import("./responses").KieResponsesProvider["openai"];
   };
   get: { api: KieGetApiNamespace };
   modelInputSchemas: Record<KieMediaModel, ModelInputSchema>;

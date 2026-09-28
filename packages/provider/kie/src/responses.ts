@@ -3,6 +3,7 @@ import {
   KieResponsesRequestSchema,
   KieGrokResponsesRequestSchema,
   KieApiResponsesRequestSchema,
+  KieOpenAiResponsesRequestSchema,
 } from "./zod";
 import type { KieResponsesModel } from "./zod";
 import type { ApicitySchema } from "./types";
@@ -126,6 +127,29 @@ export interface KieApiResponsesRequest {
   tool_choice?: KieResponsesToolChoice;
 }
 
+export type KieOpenAiResponsesModel = "kimi-k3" | "deepseek-v4-1-flash";
+
+// Kimi K3 and DeepSeek V4.1-Flash share Kie's unified
+// `POST /openai/v1/responses` surface. Same Responses machinery as the
+// siblings, plus the fields those two families document on top: instructions,
+// thinking, and text.format.
+export interface KieOpenAiResponsesRequest {
+  // Open enum: KieOpenAiResponsesRequestSchema unions the listed ids with
+  // KieOpenAiResponsesModelAliasSchema (zod.ts), so a not-yet-listed
+  // versioned id such as `kimi-k4` or `deepseek-v4-1` validates. `string & {}`
+  // mirrors that hatch here without collapsing the union, so editors still
+  // autocomplete the listed ids.
+  model: KieOpenAiResponsesModel | (string & {});
+  input: string | KieResponsesInputMessage[];
+  stream?: boolean;
+  instructions?: string;
+  reasoning?: KieResponsesReasoning;
+  thinking?: import("./zod").KieResponsesThinking;
+  tools?: KieResponsesFunctionTool[];
+  tool_choice?: string | { type: "function"; name: string };
+  text?: import("./zod").KieResponsesText;
+}
+
 type AssertTrue<T extends true> = T;
 
 // Compile-level pin for the `| (string & {})` hatches above. Request schemas
@@ -144,6 +168,14 @@ export type KieGrokResponsesRequestTakesUnlistedModel = AssertTrue<
 >;
 export type KieApiResponsesRequestTakesUnlistedModel = AssertTrue<
   { model: "gpt-5.5-codex"; input: string } extends KieApiResponsesRequest
+    ? true
+    : false
+>;
+export type KieOpenAiResponsesRequestTakesUnlistedModel = AssertTrue<
+  {
+    model: "kimi-k4" | "deepseek-v4-1";
+    input: string;
+  } extends KieOpenAiResponsesRequest
     ? true
     : false
 >;
@@ -282,12 +314,35 @@ export interface KieApiResponsesV1Namespace {
   responses: KieApiResponsesMethod;
 }
 
+export interface KieOpenAiResponsesMethod {
+  (
+    req: KieOpenAiResponsesRequest & { stream: true },
+    signal?: AbortSignal
+  ): Promise<AsyncIterable<KieResponsesStreamEvent>>;
+  (
+    req: KieOpenAiResponsesRequest & { stream?: false },
+    signal?: AbortSignal
+  ): Promise<KieResponsesResponse>;
+  (
+    req: KieOpenAiResponsesRequest,
+    signal?: AbortSignal
+  ): Promise<KieResponsesResponse | AsyncIterable<KieResponsesStreamEvent>>;
+  schema: ApicitySchema<KieOpenAiResponsesRequest>;
+}
+
+export interface KieOpenAiResponsesV1Namespace {
+  responses: KieOpenAiResponsesMethod;
+}
+
 export interface KieResponsesProvider {
   codex: {
     v1: KieResponsesV1Namespace;
   };
   grok: {
     v1: KieGrokResponsesV1Namespace;
+  };
+  openai: {
+    v1: KieOpenAiResponsesV1Namespace;
   };
   api: {
     v1: KieApiResponsesV1Namespace;
@@ -398,12 +453,17 @@ export function createResponsesProvider(
   });
 
   // Shared transport-bound request body for every Kie Responses model. The
-  // codex (gpt-5-5), grok (grok-4-5), and unified api (gpt-*-codex) endpoints
-  // differ only in their upstream path and model family, so keep the
-  // fetch/stream/error handling in one place.
+  // codex (gpt-5-5), grok (grok-4-5), unified api (gpt-*-codex), and openai
+  // (kimi-k3 / deepseek-v4-1-flash) endpoints differ only in their upstream
+  // path and model family, so keep the fetch/stream/error handling in one
+  // place.
   async function sendResponsesRequest(
     path: string,
-    req: KieResponsesRequest | KieGrokResponsesRequest | KieApiResponsesRequest,
+    req:
+      | KieResponsesRequest
+      | KieGrokResponsesRequest
+      | KieApiResponsesRequest
+      | KieOpenAiResponsesRequest,
     signal?: AbortSignal
   ): Promise<KieResponsesResponse | AsyncIterable<KieResponsesStreamEvent>> {
     try {
@@ -446,7 +506,7 @@ export function createResponsesProvider(
   ) as KieResponsesMethod;
 
   // POST https://api.kie.ai/grok/v1/responses
-  // Docs: https://docs.kie.ai/market/grok/grok-4-6
+  // Docs: https://docs.kie.ai/market/grok/grok-4-7
   const grokResponses = Object.assign(
     async function responses(
       req: KieGrokResponsesRequest,
@@ -473,6 +533,20 @@ export function createResponsesProvider(
     }
   ) as KieApiResponsesMethod;
 
+  // POST https://api.kie.ai/openai/v1/responses
+  // Docs: https://docs.kie.ai/market/kimi/kimi-k3
+  const openaiResponses = Object.assign(
+    async function responses(
+      req: KieOpenAiResponsesRequest,
+      signal?: AbortSignal
+    ): Promise<KieResponsesResponse | AsyncIterable<KieResponsesStreamEvent>> {
+      return sendResponsesRequest("/openai/v1/responses", req, signal);
+    },
+    {
+      schema: KieOpenAiResponsesRequestSchema,
+    }
+  ) as KieOpenAiResponsesMethod;
+
   return {
     codex: {
       v1: {
@@ -482,6 +556,11 @@ export function createResponsesProvider(
     grok: {
       v1: {
         responses: grokResponses,
+      },
+    },
+    openai: {
+      v1: {
+        responses: openaiResponses,
       },
     },
     api: {

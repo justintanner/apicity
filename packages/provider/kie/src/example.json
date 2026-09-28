@@ -805,5 +805,32 @@
     },
     "tier": "prohibitive",
     "runByDefault": false
+  },
+  "POST openai.v1.responses": {
+    "source": "kie/deepseek-v4-1-flash-responses",
+    "payload": {
+      "model": "deepseek-v4-1-flash",
+      "stream": false,
+      "thinking": {
+        "type": "disabled"
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "input_text",
+              "text": "What color dominates this image?"
+            },
+            {
+              "type": "input_image",
+              "image_url": "<inline image/png data URL — replace with a real URL or upload>"
+            }
+          ]
+        }
+      ]
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   }
 }

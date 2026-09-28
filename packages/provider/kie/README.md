@@ -760,7 +760,7 @@ console.log(segmentEditTask.data?.taskId);
 
 ## API Reference
 
-62 endpoints across 30 groups. Each method mirrors an upstream URL path.
+63 endpoints across 31 groups. Each method mirrors an upstream URL path.
 
 ### chat
 
@@ -1322,7 +1322,7 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 
 Cost tier: <code>prohibitive</code>
 
-[Upstream docs ↗](https://docs.kie.ai/market/grok/grok-4-6)
+[Upstream docs ↗](https://docs.kie.ai/market/grok/grok-4-7)
 
 ```typescript
 const res = await kie.grok.v1.responses({ /* ... */ });
@@ -1469,6 +1469,25 @@ const res = await kie.suno.post.api.v1.mp4.generate({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
+
+</details>
+
+### openai
+
+<details>
+<summary><code>POST</code> <b><code>kie.openai.v1.responses</code></b></summary>
+
+<code>POST https://api.kie.ai/openai/v1/responses</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/market/kimi/kimi-k3)
+
+```typescript
+const res = await kie.openai.v1.responses({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/responses.ts`](src/responses.ts)
 
 </details>
 

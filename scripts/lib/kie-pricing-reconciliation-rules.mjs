@@ -213,6 +213,20 @@ export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
     rationale:
       "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20.",
   })),
+  ...[
+    ["qwen2-1/text-to-image", "1K"],
+    ["qwen2-1/text-to-image", "2K"],
+    ["qwen2-1/image-to-image", "1K"],
+    ["qwen2-1/image-to-image", "2K"],
+  ].map(([key, variant]) => ({
+    key,
+    variant,
+    status: "pricing-only",
+    provenance:
+      "the https://kie.ai/qwen-image-2.1 pricingDesc observed 2026-09-28 prices 4 credits per 1K image and 8 credits per 2K image at the $0.005 credit basis; the recorded qwen21-* create-task HARs report 4.0 creditsConsumed at the 1K default",
+    rationale:
+      "This runtime variant is a post-snapshot addition priced from the live product page and recording billing evidence; the frozen 2026-09-11 snapshot predates the model.",
+  })),
   {
     key: "grok-imagine/upscale",
     variant: "",

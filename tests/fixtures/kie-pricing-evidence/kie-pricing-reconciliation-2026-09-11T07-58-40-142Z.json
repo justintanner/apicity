@@ -1802,10 +1802,10 @@
     },
     "final": {
       "models": 147,
-      "pricingKeys": 169,
-      "slugKeys": 171,
-      "displayKeys": 171,
-      "schemaWithoutPricing": 8,
+      "pricingKeys": 171,
+      "slugKeys": 173,
+      "displayKeys": 173,
+      "schemaWithoutPricing": 6,
       "pricingOnly": 30,
       "endpoints": 76
     }
@@ -1823,8 +1823,8 @@
       "packages/provider/kie/src/zod.ts": "sha256:b7e6394c0df71b97ed25f2c2d8a3324533ccd60a4ac0a883bdff0e362a0ed69b",
       "packages/provider/kie/src/model-schemas.ts": "sha256:3d9709a66228976e0c50be2eecf9e0c047bbbfecccc1033e1f778bc7ef8917e8",
       "packages/provider/kie/src/kie.ts": "sha256:622e8c4258b8bb54879cfa2ab3be22bc04cd317cffcb0ccdc08209c6629500cb",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:1987cd893066b4d3084704f579c92ce0e9316e8a90b24906e0513054aecda170",
-      "packages/provider/cost/src/slugs.ts": "sha256:6cfd79bab0f7a879943baefdfe16b6d44a9dc8a004d8d9ff0810e68ca2a09042",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:74db62a6e2c42904b341aa6d3aba73be6e2e2613af748803fcc3f48df0bfa5ad",
+      "packages/provider/cost/src/slugs.ts": "sha256:c93318d6568e57df131f49994b3f36aa99787d45169c6747009cebcdd3c29bec",
       "scripts/endpoint-docs.tsv": "sha256:a406fe87ac24873577c1fec467970c8ab1d9887d37961d976a0f4cc7b0e9ad20"
     }
   },
@@ -23501,7 +23501,7 @@
         "id": "qwen2-1/text-to-image",
         "descriptor": true,
         "guard": true,
-        "pricingKey": null,
+        "pricingKey": "qwen2-1/text-to-image",
         "linkedRows": [],
         "disposition": "upstream-unmappable",
         "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
@@ -23510,7 +23510,7 @@
         "id": "qwen2-1/image-to-image",
         "descriptor": true,
         "guard": true,
-        "pricingKey": null,
+        "pricingKey": "qwen2-1/image-to-image",
         "linkedRows": [],
         "disposition": "upstream-unmappable",
         "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
@@ -26388,6 +26388,18 @@
         "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
       },
       {
+        "key": "qwen2-1/text-to-image",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "qwen2-1/image-to-image",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
         "key": "qwen3/text-to-image",
         "linkedRows": [
           "sha256:cf04b81d5f6e8f559a3a5bae0b819e7f633daf43fe63855acc9f60649e345e37#1",
@@ -27409,6 +27421,14 @@
         "disposition": "supported"
       },
       {
+        "key": "qwen2-1/text-to-image",
+        "disposition": "supported"
+      },
+      {
+        "key": "qwen2-1/image-to-image",
+        "disposition": "supported"
+      },
+      {
         "key": "qwen3/text-to-image",
         "disposition": "supported"
       },
@@ -28095,6 +28115,14 @@
         "disposition": "supported"
       },
       {
+        "key": "qwen2-1/text-to-image",
+        "disposition": "supported"
+      },
+      {
+        "key": "qwen2-1/image-to-image",
+        "disposition": "supported"
+      },
+      {
         "key": "qwen3/text-to-image",
         "disposition": "supported"
       },
@@ -28348,18 +28376,6 @@
       }
     ],
     "schemaWithoutPricing": [
-      {
-        "id": "qwen2-1/text-to-image",
-        "disposition": "upstream-unmappable",
-        "linkedRows": [],
-        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
-      },
-      {
-        "id": "qwen2-1/image-to-image",
-        "disposition": "upstream-unmappable",
-        "linkedRows": [],
-        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
-      },
       {
         "id": "wan/2-6-flash-image-to-video",
         "disposition": "upstream-unmappable",
@@ -28700,7 +28716,7 @@
         "count": 147,
         "descriptors": 147,
         "guards": 147,
-        "withoutPricing": 8,
+        "withoutPricing": 6,
         "dispositionCounts": {
           "supported": 118,
           "free-nonbillable": 0,
@@ -28724,20 +28740,20 @@
         "unclassified": 0
       },
       "pricingKeys": {
-        "count": 169,
+        "count": 171,
         "dispositionCounts": {
           "supported": 146,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 23
+          "upstream-unmappable": 25
         },
         "unclassified": 0
       },
       "slugs": {
-        "count": 171,
+        "count": 173,
         "dispositionCounts": {
-          "supported": 171,
+          "supported": 173,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -28746,9 +28762,9 @@
         "unclassified": 0
       },
       "displays": {
-        "count": 171,
+        "count": 173,
         "dispositionCounts": {
-          "supported": 171,
+          "supported": 173,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -28757,13 +28773,13 @@
         "unclassified": 0
       },
       "schemaWithoutPricing": {
-        "count": 8,
+        "count": 6,
         "dispositionCounts": {
           "supported": 0,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 8
+          "upstream-unmappable": 6
         },
         "unclassified": 0
       },
@@ -29066,6 +29082,34 @@
         "status": "pricing-only",
         "provenance": "plans/ac-qq2ykq/build/kling-omni-pricing-capture-2026-08-20.json records the official 2026-08-20 pricing verification",
         "rationale": "This runtime variant is a post-snapshot addition verified against official pricing on 2026-08-20."
+      },
+      {
+        "key": "qwen2-1/text-to-image",
+        "variant": "1K",
+        "status": "pricing-only",
+        "provenance": "the https://kie.ai/qwen-image-2.1 pricingDesc observed 2026-09-28 prices 4 credits per 1K image and 8 credits per 2K image at the $0.005 credit basis; the recorded qwen21-* create-task HARs report 4.0 creditsConsumed at the 1K default",
+        "rationale": "This runtime variant is a post-snapshot addition priced from the live product page and recording billing evidence; the frozen 2026-09-11 snapshot predates the model."
+      },
+      {
+        "key": "qwen2-1/text-to-image",
+        "variant": "2K",
+        "status": "pricing-only",
+        "provenance": "the https://kie.ai/qwen-image-2.1 pricingDesc observed 2026-09-28 prices 4 credits per 1K image and 8 credits per 2K image at the $0.005 credit basis; the recorded qwen21-* create-task HARs report 4.0 creditsConsumed at the 1K default",
+        "rationale": "This runtime variant is a post-snapshot addition priced from the live product page and recording billing evidence; the frozen 2026-09-11 snapshot predates the model."
+      },
+      {
+        "key": "qwen2-1/image-to-image",
+        "variant": "1K",
+        "status": "pricing-only",
+        "provenance": "the https://kie.ai/qwen-image-2.1 pricingDesc observed 2026-09-28 prices 4 credits per 1K image and 8 credits per 2K image at the $0.005 credit basis; the recorded qwen21-* create-task HARs report 4.0 creditsConsumed at the 1K default",
+        "rationale": "This runtime variant is a post-snapshot addition priced from the live product page and recording billing evidence; the frozen 2026-09-11 snapshot predates the model."
+      },
+      {
+        "key": "qwen2-1/image-to-image",
+        "variant": "2K",
+        "status": "pricing-only",
+        "provenance": "the https://kie.ai/qwen-image-2.1 pricingDesc observed 2026-09-28 prices 4 credits per 1K image and 8 credits per 2K image at the $0.005 credit basis; the recorded qwen21-* create-task HARs report 4.0 creditsConsumed at the 1K default",
+        "rationale": "This runtime variant is a post-snapshot addition priced from the live product page and recording billing evidence; the frozen 2026-09-11 snapshot predates the model."
       },
       {
         "key": "grok-imagine/upscale",

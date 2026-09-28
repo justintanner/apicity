@@ -199,6 +199,10 @@ export const MODEL_SLUGS = {
     "qwen2/text-to-image": "qwen2",
     "qwen2/image-edit": "qwen2",
 
+    // Image — Qwen 2.1
+    "qwen2-1/text-to-image": "qwen21",
+    "qwen2-1/image-to-image": "qwen21",
+
     // Image — Qwen 3 (modality shares the family slug; Pro is a price tier)
     "qwen3/text-to-image": "qwen3",
     "qwen3/image-to-image": "qwen3",
@@ -658,6 +662,8 @@ export const MODEL_DISPLAY = {
 
     "qwen2/text-to-image": "Qwen 2 Image",
     "qwen2/image-edit": "Qwen 2 Edit",
+    "qwen2-1/text-to-image": "Qwen 2.1 Image",
+    "qwen2-1/image-to-image": "Qwen 2.1 Image Edit",
     "qwen3/text-to-image": "Qwen 3 Image",
     "qwen3/image-to-image": "Qwen 3 Image Edit",
     "qwen3/pro-text-to-image": "Qwen 3 Image Pro",

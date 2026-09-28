@@ -2387,6 +2387,28 @@ export const kie: Record<string, ModelPricing> = {
   ),
   "qwen2/image-edit": flatImage(0.028, "https://kie.ai/qwen-image-2"),
 
+  // Qwen 2.1 — per image by input.resolution (default 1K), from the
+  // product-page pricingDesc observed 2026-09-28: 4 credits per 1K image
+  // and 8 credits per 2K image at the 1 credit = $0.005 basis ($0.02 /
+  // $0.04). The page's high-tier top-up rows are payment discounts, not
+  // model rates. Both modalities share the page, and the recorded
+  // create-task billing is 4.0 credits per generation at the 1K default
+  // for each (tests/recordings/kie_2079838932/qwen21-*).
+  "qwen2-1/text-to-image": tieredImagePage(
+    "resolution",
+    { "1K": 0.02, "2K": 0.04 },
+    "https://kie.ai/qwen-image-2.1?model=qwen2-1%2Ftext-to-image",
+    "1K",
+    "2026-09-28"
+  ),
+  "qwen2-1/image-to-image": tieredImagePage(
+    "resolution",
+    { "1K": 0.02, "2K": 0.04 },
+    "https://kie.ai/qwen-image-2.1?model=qwen2-1%2Fimage-to-image",
+    "1K",
+    "2026-09-28"
+  ),
+
   // Qwen 3 — the 2026-08-22 catalog publishes identical 1K/2K base output
   // rates, so resolution is not a billing axis for the base pair. Pro keeps
   // the literal 1K/2K selector; only image-to-image documents a 1K default.

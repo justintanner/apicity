@@ -23,7 +23,7 @@ overrides:
   js-yaml@<4.3.2: 4.3.2
   qs@<6.16.0: 6.16.0
   ws@>=8.0.0 <8.21.0: 8.21.0
-  morgan@<1.12.0: 1.12.0
+  morgan@<1.12.1: 1.12.1
   fflate@<0.8.3: 0.8.3
   body-parser@<1.20.6: 1.20.6
   body-parser@>=2.0.0 <2.3.0: 2.3.0
@@ -1462,8 +1462,8 @@ packages:
     resolution: {integrity: sha512-Rwi3pnapEqirPSbWbrZaa6N3nmqq4Xer/2XooiOKyV3q12ML06f7MOuc5DVH8ONZIFhwIYQ3yzPH4nt7iWHaTg==}
     engines: {node: 18 || 20 || >=22}
 
-  morgan@1.12.0:
-    resolution: {integrity: sha512-OHpTRQwn2ezasILW8iKe+Yww1XsfWsZIpUOLF7RDb2g5GwO3trPaRwi7+8BDiJ7HFx2Kg2mfUdCBcVhwYlOz2g==}
+  morgan@1.12.1:
+    resolution: {integrity: sha512-tljKC0ex20AjO58Ob/eZ53JloycbVswbVNCHx6V6VLGzqt/w8dIynVGL0G8qVjNKwiA7sYSogCrN6QtJ82IV+g==}
     engines: {node: '>= 0.8.0'}
 
   mrmime@2.0.1:
@@ -2136,7 +2136,7 @@ snapshots:
       express: 4.22.1
       fs-extra: 10.1.0
       http-graceful-shutdown: 3.1.15
-      morgan: 1.12.0
+      morgan: 1.12.1
       nocache: 3.0.4
     transitivePeerDependencies:
       - supports-color
@@ -2984,7 +2984,7 @@ snapshots:
     dependencies:
       brace-expansion: 5.0.9
 
-  morgan@1.12.0:
+  morgan@1.12.1:
     dependencies:
       basic-auth: 2.0.1
       debug: 2.6.9

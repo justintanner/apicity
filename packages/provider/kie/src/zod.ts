@@ -7950,6 +7950,19 @@ export type KieClaudeRequestInput = KieClaudeRequest;
 export type KieClaudeParsedRequest = z.output<typeof KieClaudeRequestSchema>;
 
 // ---------------------------------------------------------------------------
+// Coding-agent proxy: Claude Code (`https://api.kie.ai/anthropic`)
+// ---------------------------------------------------------------------------
+
+// `GET /anthropic/v1/models` pages the Anthropic way: while `has_more` is true,
+// ask again with `after_id` set to the page's `last_id`
+// (https://docs.kie.ai/ai-agent/claude-code). KIE documents no other query
+// parameter, so Anthropic's `before_id` and `limit` stay out until a recording
+// shows KIE honours them.
+export const KieAnthropicModelsRequestSchema = z.object({
+  after_id: z.string().min(1).optional(),
+});
+
+// ---------------------------------------------------------------------------
 // Media generation request (discriminated union on model)
 // ---------------------------------------------------------------------------
 

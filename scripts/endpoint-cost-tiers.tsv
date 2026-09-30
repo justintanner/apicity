@@ -728,6 +728,7 @@ googleflow	v1.voices	DELETE	prohibitive	Third-party proxy for Google Flow (Veo) 
 googleflow	v1.voices	GET	prohibitive	Third-party proxy for Google Flow (Veo) video generation; per-call media-generation cost is high and request-dependent
 googleflow	v1.voices	POST	prohibitive	Third-party proxy for Google Flow (Veo) video generation; per-call media-generation cost is high and request-dependent
 googleflow	v1.voices.retrieve	GET	prohibitive	Third-party proxy for Google Flow (Veo) video generation; per-call media-generation cost is high and request-dependent
+kie	anthropic.v1.models	GET	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
 kie	api.fileBase64Upload	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
 kie	api.fileStreamUpload	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1
 kie	api.fileUrlUpload	POST	prohibitive	Media-generation provider (video/image/audio); per-unit cost is request-dependent and routinely exceeds $1

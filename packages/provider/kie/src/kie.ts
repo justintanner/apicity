@@ -5,6 +5,8 @@ import {
   KieProvider,
   KieError,
   KieCreditsResponse,
+  KieAnthropicModelsRequest,
+  KieAnthropicModelsResponse,
   KieApiEnvelope,
   DownloadUrlRequest,
   DownloadUrlResponse,
@@ -54,6 +56,7 @@ import {
   FluxKontextRecordInfoResponseSchema,
   GrokImageToVideoRequestSchema,
   RecordInfoRequestSchema,
+  KieAnthropicModelsRequestSchema,
   Gpt4oImageRecordInfoResponseSchema,
   Seedance2MiniRecordInfoResponseSchema,
   Seedance2MiniRequestSchema,
@@ -769,6 +772,25 @@ export function createKie(opts: KieOptions): KieProvider {
     }
   }
 
+  // GET https://api.kie.ai/anthropic/v1/models
+  // Docs: https://docs.kie.ai/ai-agent/claude-code
+  async function anthropicModels(
+    req: KieAnthropicModelsRequest = {},
+    signal?: AbortSignal
+  ): Promise<KieAnthropicModelsResponse> {
+    // Anthropic paging: `after_id` is the previous page's `last_id`. Without
+    // it the URL carries no query string at all.
+    const query = req.after_id
+      ? `?after_id=${encodeURIComponent(req.after_id)}`
+      : "";
+    return kieRequest<KieAnthropicModelsResponse>(transport, {
+      method: "GET",
+      path: `/anthropic/v1/models${query}`,
+      signal,
+      hasPayload: (body) => Array.isArray(body.data),
+    });
+  }
+
   return attachExamples(
     withPaidGate(
       "kie",
@@ -903,6 +925,13 @@ export function createKie(opts: KieOptions): KieProvider {
           };
         })(),
         get: {
+          anthropic: {
+            v1: {
+              models: Object.assign(anthropicModels, {
+                schema: KieAnthropicModelsRequestSchema,
+              }),
+            },
+          },
           api: {
             v1: {
               jobs: {

@@ -390,6 +390,7 @@ export {
   GptImage25FlareImageToImageRequestSchema,
   GptImage25SunburstTextToImageRequestSchema,
   GptImage25SunburstImageToImageRequestSchema,
+  KieAnthropicModelsRequestSchema,
   KieResponsesFunctionToolSchema,
   KieResponsesInputContentSchema,
   KieResponsesInputFileSchema,
@@ -1319,6 +1320,15 @@ export type {
   KieClaudeResponse,
   KieClaudeProvider,
 } from "./claude";
+
+// Coding-agent proxy: Claude Code (`https://api.kie.ai/anthropic`)
+export type {
+  KieAnthropicModel,
+  KieAnthropicModelsMethod,
+  KieAnthropicModelsRequest,
+  KieAnthropicModelsResponse,
+  KieAnthropicModelsV1Namespace,
+} from "./types";
 export type {
   VeoGenerateRequestInput,
   VeoExtendRequestInput,

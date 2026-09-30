@@ -760,7 +760,26 @@ console.log(segmentEditTask.data?.taskId);
 
 ## API Reference
 
-63 endpoints across 31 groups. Each method mirrors an upstream URL path.
+64 endpoints across 32 groups. Each method mirrors an upstream URL path.
+
+### anthropic
+
+<details>
+<summary><code>GET</code> <b><code>kie.get.anthropic.v1.models</code></b></summary>
+
+<code>GET https://api.kie.ai/anthropic/v1/models</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/ai-agent/claude-code)
+
+```typescript
+const res = await kie.get.anthropic.v1.models({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
+
+</details>
 
 ### chat
 

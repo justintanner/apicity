@@ -1016,6 +1016,50 @@ interface KieFluxKontextRecordInfoMethod {
   responseSchema: ApicitySchema<FluxKontextRecordInfoResponse>;
 }
 
+// ---------------------------------------------------------------------------
+// Coding-agent proxy: Claude Code (`https://api.kie.ai/anthropic`)
+// ---------------------------------------------------------------------------
+
+/**
+ * One model from `GET /anthropic/v1/models`, Anthropic-shaped. `id` is the
+ * value Claude Code sends as `model`. Open to extra keys, so a new upstream
+ * field never breaks a caller.
+ */
+export interface KieAnthropicModel {
+  id: string;
+  type?: string;
+  display_name?: string;
+  created_at?: string;
+  max_input_tokens?: number | null;
+  max_tokens?: number | null;
+  [key: string]: unknown;
+}
+
+/** One listing page. While `has_more`, ask again with `after_id: last_id`. */
+export interface KieAnthropicModelsResponse {
+  data: KieAnthropicModel[];
+  has_more?: boolean;
+  first_id?: string | null;
+  last_id?: string | null;
+  [key: string]: unknown;
+}
+
+export interface KieAnthropicModelsRequest {
+  after_id?: string;
+}
+
+export interface KieAnthropicModelsMethod {
+  (
+    req?: KieAnthropicModelsRequest,
+    signal?: AbortSignal
+  ): Promise<KieAnthropicModelsResponse>;
+  schema: ApicitySchema<KieAnthropicModelsRequest>;
+}
+
+export interface KieAnthropicModelsV1Namespace {
+  models: KieAnthropicModelsMethod;
+}
+
 // POST namespace
 interface KiePostApiNamespace {
   v1: {
@@ -1076,7 +1120,10 @@ export interface KieProvider {
     grok: import("./responses").KieResponsesProvider["grok"];
     openai: import("./responses").KieResponsesProvider["openai"];
   };
-  get: { api: KieGetApiNamespace };
+  get: {
+    anthropic: { v1: KieAnthropicModelsV1Namespace };
+    api: KieGetApiNamespace;
+  };
   modelInputSchemas: Record<KieMediaModel, ModelInputSchema>;
   veo: import("./veo").VeoProvider;
   suno: import("./suno").SunoProvider;

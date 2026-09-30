@@ -109,6 +109,7 @@ const PROVIDERS = [
       "packages/provider/kie/src/gemini-25-pro.ts",
       "packages/provider/kie/src/suno.ts",
       "packages/provider/kie/src/veo.ts",
+      "packages/provider/kie/src/anthropic.ts",
     ],
     factoryNames: [
       "createKie",
@@ -127,6 +128,7 @@ const PROVIDERS = [
       "createGemini25ProProvider",
       "createSunoProvider",
       "createVeoProvider",
+      "createAnthropicProvider",
     ],
   },
   {

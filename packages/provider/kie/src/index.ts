@@ -391,6 +391,8 @@ export {
   GptImage25SunburstTextToImageRequestSchema,
   GptImage25SunburstImageToImageRequestSchema,
   KieAnthropicModelsRequestSchema,
+  KieAnthropicMessagesModelSchema,
+  KieAnthropicMessagesRequestSchema,
   KieResponsesFunctionToolSchema,
   KieResponsesInputContentSchema,
   KieResponsesInputFileSchema,
@@ -444,6 +446,7 @@ export { createVeoProvider } from "./veo";
 export { createSunoProvider } from "./suno";
 export { createChatProvider } from "./chat";
 export { createClaudeProvider } from "./claude";
+export { createAnthropicProvider } from "./anthropic";
 export { createGeminiProvider } from "./gemini";
 export { createResponsesProvider } from "./responses";
 export { createGemini31ProProvider } from "./gemini-31-pro";
@@ -1323,12 +1326,29 @@ export type {
 
 // Coding-agent proxy: Claude Code (`https://api.kie.ai/anthropic`)
 export type {
+  KieAnthropicMessagesModel,
   KieAnthropicModel,
   KieAnthropicModelsMethod,
   KieAnthropicModelsRequest,
   KieAnthropicModelsResponse,
   KieAnthropicModelsV1Namespace,
 } from "./types";
+export type {
+  KieAnthropicContentBlock,
+  KieAnthropicContentBlockParam,
+  KieAnthropicMessageParam,
+  KieAnthropicMessagesMethod,
+  KieAnthropicMessagesRequest,
+  KieAnthropicMessagesResponse,
+  KieAnthropicMessagesV1Namespace,
+  KieAnthropicProvider,
+  KieAnthropicTextBlockParam,
+  KieAnthropicTextContent,
+  KieAnthropicToolParam,
+  KieAnthropicToolUseContent,
+  KieAnthropicTypedObject,
+  KieAnthropicUsage,
+} from "./anthropic";
 export type {
   VeoGenerateRequestInput,
   VeoExtendRequestInput,

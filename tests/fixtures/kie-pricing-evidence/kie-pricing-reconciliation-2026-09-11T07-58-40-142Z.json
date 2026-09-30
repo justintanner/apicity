@@ -1807,7 +1807,7 @@
       "displayKeys": 173,
       "schemaWithoutPricing": 6,
       "pricingOnly": 30,
-      "endpoints": 77
+      "endpoints": 78
     }
   },
   "source": {
@@ -1820,12 +1820,12 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:e5e5def678952bd81b4702304b8f85ec787f403e3e69829734595e2e86f73d71",
+      "packages/provider/kie/src/zod.ts": "sha256:d709090688137f6c3689024dab7e1a51601ed5cee80a830defdaa34ae287f641",
       "packages/provider/kie/src/model-schemas.ts": "sha256:3d9709a66228976e0c50be2eecf9e0c047bbbfecccc1033e1f778bc7ef8917e8",
-      "packages/provider/kie/src/kie.ts": "sha256:c6b28907d9493095403b2899b38ef498f68c9e6b0864a3e6db84ffc6c3f1bc5d",
+      "packages/provider/kie/src/kie.ts": "sha256:a2d7bf98c8edd03ab6b37d57aefde60d8fa1ce9397da6f4272467ce9f59362eb",
       "packages/provider/cost/src/pricing/kie.ts": "sha256:74db62a6e2c42904b341aa6d3aba73be6e2e2613af748803fcc3f48df0bfa5ad",
       "packages/provider/cost/src/slugs.ts": "sha256:c93318d6568e57df131f49994b3f36aa99787d45169c6747009cebcdd3c29bec",
-      "scripts/endpoint-docs.tsv": "sha256:2dc10b4304c1c1375a98ce31a9c55234979c795bdda0a924e3cbd0b8df95807a"
+      "scripts/endpoint-docs.tsv": "sha256:51101bceafaa74ecfb02d1b645a2236b988026eda8db3e557329accaf0ebd574"
     }
   },
   "rows": [
@@ -24677,6 +24677,16 @@
     "endpoints": [
       {
         "provider": "kie",
+        "dotPath": "anthropic.v1.messages",
+        "method": "POST",
+        "fullUrl": "https://api.kie.ai/anthropic/v1/messages",
+        "docsUrl": "https://docs.kie.ai/ai-agent/claude-code",
+        "linkedPricingKeys": [],
+        "disposition": "supported",
+        "rationale": "Documented callable endpoint is retained for architecture review even when its pricing is model-keyed."
+      },
+      {
+        "provider": "kie",
         "dotPath": "anthropic.v1.models",
         "method": "GET",
         "fullUrl": "https://api.kie.ai/anthropic/v1/models",
@@ -28737,11 +28747,11 @@
         "unclassified": 0
       },
       "endpoints": {
-        "count": 77,
-        "POST": 58,
+        "count": 78,
+        "POST": 59,
         "GET": 19,
         "dispositionCounts": {
-          "supported": 53,
+          "supported": 54,
           "free-nonbillable": 24,
           "unsupported-endpoint": 0,
           "token-billed": 0,

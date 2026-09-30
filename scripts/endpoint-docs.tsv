@@ -1029,6 +1029,7 @@ free-media-upload	tempsh.upload	POST	https://temp.sh/upload	https://temp.sh/
 free-media-upload	tflink.upload	POST	https://tmpfile.link/api/upload	https://tmpfile.link/
 free-media-upload	tmpfiles.api.v1.upload	POST	https://tmpfiles.org/api/v1/upload	https://tmpfiles.org/
 free-media-upload	uguu.upload	POST	https://uguu.se/upload	https://uguu.se/
+kie	anthropic.v1.messages	POST	https://api.kie.ai/anthropic/v1/messages	https://docs.kie.ai/ai-agent/claude-code
 kie	anthropic.v1.models	GET	https://api.kie.ai/anthropic/v1/models	https://docs.kie.ai/ai-agent/claude-code
 kie	api.fileBase64Upload	POST	https://kieai.redpandaai.co/api/file-base64-upload	https://docs.kie.ai/file-upload-api/upload-file-base-64
 kie	api.fileStreamUpload	POST	https://kieai.redpandaai.co/api/file-stream-upload	https://docs.kie.ai/file-upload-api/upload-file-stream

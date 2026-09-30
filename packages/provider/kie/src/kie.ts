@@ -209,6 +209,7 @@ import { createVeoProvider } from "./veo";
 import { createSunoProvider } from "./suno";
 import { createChatProvider } from "./chat";
 import { createClaudeProvider } from "./claude";
+import { createAnthropicProvider } from "./anthropic";
 import { createGeminiProvider } from "./gemini";
 import { createResponsesProvider } from "./responses";
 import { createGemini31ProProvider } from "./gemini-31-pro";
@@ -853,7 +854,14 @@ export function createKie(opts: KieOptions): KieProvider {
             doFetch,
             timeout
           );
+          const anthropic = createAnthropicProvider(
+            baseURL,
+            opts.apiKey,
+            doFetch,
+            timeout
+          );
           return {
+            anthropic: anthropic.post.anthropic,
             codex: responses.codex,
             grok: responses.grok,
             openai: responses.openai,

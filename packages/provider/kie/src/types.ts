@@ -1115,6 +1115,7 @@ interface KieGetApiNamespace {
 // Provider interface (sub-provider types imported in index.ts)
 export interface KieProvider {
   post: {
+    anthropic: import("./anthropic").KieAnthropicProvider["post"]["anthropic"];
     api: KiePostApiNamespace;
     codex: import("./responses").KieResponsesProvider["codex"];
     grok: import("./responses").KieResponsesProvider["grok"];
@@ -1166,4 +1167,5 @@ export type {
   SunoGenerateRequestInput,
   KieChatRequestInput,
   KieClaudeRequestInput,
+  KieAnthropicMessagesModel,
 } from "./zod";

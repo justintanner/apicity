@@ -152,6 +152,22 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST anthropic.v1.messages": {
+    "source": "kie/anthropic-messages",
+    "payload": {
+      "model": "claude-haiku-4-5",
+      "max_tokens": 16,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Reply with the single word: pong"
+        }
+      ],
+      "stream": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.fileBase64Upload": {
     "source": "kie/file-uploads/base64",
     "payload": {

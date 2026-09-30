@@ -7962,6 +7962,79 @@ export const KieAnthropicModelsRequestSchema = z.object({
   after_id: z.string().min(1).optional(),
 });
 
+// `POST /anthropic/v1/messages` serves the Anthropic Messages protocol as is
+// (https://docs.kie.ai/ai-agent/claude-code). The enum is exactly the ids
+// `GET /anthropic/v1/models` returned in the recording kie/anthropic-models
+// (recorded 2026-09-30), in listing order: never ids from memory or from the
+// general taskType=Chat catalog. KieClaudeModelAliasSchema admits a later
+// versioned id without a schema bump. A listed id outside that grammar (for
+// example a dated id) parses through the enum only; the alias is not loosened
+// to admit it.
+export const KIE_ANTHROPIC_MESSAGES_MODELS = [
+  "claude-fable-5",
+  "claude-opus-5-5",
+  "claude-opus-5",
+  "claude-sonnet-5-5",
+  "claude-sonnet-5",
+  "claude-opus-4-8",
+  "claude-opus-4-7",
+  "claude-opus-4-6",
+  "claude-sonnet-4-6",
+  "claude-opus-4-5",
+  "claude-sonnet-4-5",
+  "claude-haiku-4-5",
+] as const;
+
+export const KieAnthropicMessagesModelSchema = z
+  .enum(KIE_ANTHROPIC_MESSAGES_MODELS)
+  .or(KieClaudeModelAliasSchema);
+
+export const KieAnthropicTextBlockSchema = z
+  .object({ type: z.literal("text"), text: z.string() })
+  .passthrough();
+
+export const KieAnthropicToolSchema = z
+  .object({
+    name: z.string().min(1),
+    description: z.string().optional(),
+    input_schema: z.object({ type: z.string() }).passthrough(),
+  })
+  .passthrough();
+
+// Anthropic adds `tool_choice` and `thinking` variants on its own cadence, so
+// both stay open objects keyed by a string `type`.
+export const KieAnthropicTypedObjectSchema = z
+  .object({ type: z.string() })
+  .passthrough();
+
+export const KieAnthropicMessagesRequestSchema = z.object({
+  model: KieAnthropicMessagesModelSchema,
+  max_tokens: z.number().int().min(1),
+  messages: z.array(KieClaudeMessageSchema).min(1),
+  system: z
+    .union([z.string(), z.array(KieAnthropicTextBlockSchema)])
+    .optional(),
+  temperature: z.number().min(0).max(1).optional(),
+  top_p: z.number().min(0).max(1).optional(),
+  top_k: z.number().int().min(0).optional(),
+  stop_sequences: z.array(z.string()).optional(),
+  tools: z.array(KieAnthropicToolSchema).optional(),
+  tool_choice: KieAnthropicTypedObjectSchema.optional(),
+  thinking: KieAnthropicTypedObjectSchema.optional(),
+  metadata: z
+    .object({ user_id: z.string().optional() })
+    .passthrough()
+    .optional(),
+  // This leaf parses one JSON Message and does not stream (ac-wma4p9 OQ-3),
+  // so the schema never advertises `stream: true`.
+  stream: z.literal(false).optional(),
+});
+
+// Literal ids + hatch rather than `z.infer` — see FluxKontextModel above.
+export type KieAnthropicMessagesModel =
+  | (typeof KIE_ANTHROPIC_MESSAGES_MODELS)[number]
+  | (string & {});
+
 // ---------------------------------------------------------------------------
 // Media generation request (discriminated union on model)
 // ---------------------------------------------------------------------------

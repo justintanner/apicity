@@ -705,6 +705,8 @@ export type {
   KieResponsesParsedRequest,
   KieGrokResponsesModel,
   KieGrokResponsesRequest,
+  KieXaiResponsesModel,
+  KieXaiResponsesRequest,
   KieApiResponsesModel,
   KieApiResponsesRequest,
   KieOpenAiResponsesModel,
@@ -1156,6 +1158,33 @@ interface KieGetApiNamespace {
   };
 }
 
+// ---------------------------------------------------------------------------
+// Coding-agent proxy: Grok Build (`https://api.kie.ai/xai/v1`)
+// ---------------------------------------------------------------------------
+
+/**
+ * One entry of `GET /xai/v1/models`, OpenAI-shaped. `id` is the value Grok
+ * Build sends as `model`; its bundled spelling (for example `grok-4.6`) is not.
+ */
+export interface KieXaiModel {
+  id: string;
+  object?: string;
+  owned_by?: string;
+  created?: number;
+  aliases?: string[];
+  [key: string]: unknown;
+}
+
+export interface KieXaiModelsResponse {
+  object?: string;
+  data: KieXaiModel[];
+  [key: string]: unknown;
+}
+
+export interface KieXaiModelsV1Namespace {
+  models(): Promise<KieXaiModelsResponse>;
+}
+
 // Provider interface (sub-provider types imported in index.ts)
 export interface KieProvider {
   post: {
@@ -1164,11 +1193,13 @@ export interface KieProvider {
     codex: import("./responses").KieResponsesProvider["codex"];
     grok: import("./responses").KieResponsesProvider["grok"];
     openai: import("./responses").KieResponsesProvider["openai"];
+    xai: import("./responses").KieResponsesProvider["xai"];
   };
   get: {
     anthropic: { v1: KieAnthropicModelsV1Namespace };
     api: KieGetApiNamespace;
     openai: { v1: KieOpenAiModelsV1Namespace };
+    xai: { v1: KieXaiModelsV1Namespace };
   };
   modelInputSchemas: Record<KieMediaModel, ModelInputSchema>;
   veo: import("./veo").VeoProvider;

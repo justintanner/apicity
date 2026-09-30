@@ -409,6 +409,8 @@ export {
   KieResponsesWebSearchToolSchema,
   KieGrokResponsesModelSchema,
   KieGrokResponsesRequestSchema,
+  KieXaiResponsesModelSchema,
+  KieXaiResponsesRequestSchema,
   KieApiResponsesModelSchema,
   KieApiResponsesRequestSchema,
   KieOpenAiResponsesModelSchema,
@@ -1158,6 +1160,8 @@ export type {
   KieResponsesParsedRequest,
   KieGrokResponsesModel,
   KieGrokResponsesRequest,
+  KieXaiResponsesModel,
+  KieXaiResponsesRequest,
   KieApiResponsesModel,
   KieApiResponsesRequest,
   KieOpenAiResponsesModel,
@@ -1277,6 +1281,13 @@ export type {
   SunoProvider,
 } from "./suno";
 
+// Coding-agent proxy: Grok Build (`https://api.kie.ai/xai/v1`)
+export type {
+  KieXaiModel,
+  KieXaiModelsResponse,
+  KieXaiModelsV1Namespace,
+} from "./types";
+
 export type {
   KieChatContentPart,
   KieChatMessage,
@@ -1317,6 +1328,8 @@ export type {
   KieApiResponsesV1Namespace,
   KieOpenAiResponsesMethod,
   KieOpenAiResponsesV1Namespace,
+  KieXaiResponsesMethod,
+  KieXaiResponsesV1Namespace,
 } from "./responses";
 
 export type {

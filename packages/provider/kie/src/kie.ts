@@ -18,6 +18,7 @@ import {
   FileUrlUploadRequest,
   FileBase64UploadRequest,
   KieTaskInfo,
+  KieXaiModelsResponse,
   Gpt4oImageRecordInfo,
   MjRecordInfoResponse,
   GeminiOmniAudioCreateRequest,
@@ -746,6 +747,16 @@ export function createKie(opts: KieOptions): KieProvider {
     );
   }
 
+  // GET https://api.kie.ai/xai/v1/models
+  // Docs: https://docs.kie.ai/ai-agent/grok-build
+  async function xaiModels(): Promise<KieXaiModelsResponse> {
+    return kieRequest<KieXaiModelsResponse>(transport, {
+      method: "GET",
+      path: "/xai/v1/models",
+      hasPayload: (body) => Array.isArray(body.data),
+    });
+  }
+
   // GET https://api.kie.ai/api/v1/flux/kontext/record-info?taskId={taskId}
   // Docs: https://docs.kie.ai/flux-kontext-api/get-image-details
   async function fluxKontextRecordInfo(
@@ -855,7 +866,7 @@ export function createKie(opts: KieOptions): KieProvider {
         ...createGemini25ProProvider(baseURL, opts.apiKey, doFetch, timeout),
         modelInputSchemas,
         post: (() => {
-          // codex / grok / openai / api.v1.responses share
+          // codex / grok / openai / xai / api.v1.responses share
           // createResponsesProvider. Merge api.v1.responses into the existing
           // api.v1 namespace so the explicit `api: { v1: { … } }` object does
           // not overwrite it.
@@ -876,6 +887,7 @@ export function createKie(opts: KieOptions): KieProvider {
             codex: responses.codex,
             grok: responses.grok,
             openai: responses.openai,
+            xai: responses.xai,
             api: {
               v1: {
                 responses: responses.api.v1.responses,
@@ -990,6 +1002,7 @@ export function createKie(opts: KieOptions): KieProvider {
             },
           },
           openai: { v1: { models: openaiModels } },
+          xai: { v1: { models: xaiModels } },
         },
       },
       { config: paygate }

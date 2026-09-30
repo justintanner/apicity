@@ -1255,18 +1255,35 @@ const OPENED_MODEL_FIELDS = [
   {
     triage: "TRI-004c",
     label: "KieOpenAiResponsesRequestSchema.model",
-    listed: ["kimi-k3", "deepseek-v4-1-flash"],
-    aliases: ["kimi-k4", "deepseek-v4-1", "deepseek-v5-pro"],
-    // BR-3 bare families and a dash-less spelling; BR-4 sibling ids — the
-    // codex/grok/openai surfaces carry disjoint model vocabularies.
+    // The two documented ids, then the Codex listing (kie/openai-models),
+    // exactly as KIE_OPENAI_RESPONSES_MODELS holds them (REQ-008 of
+    // ac-wma4p9).
+    listed: [
+      "kimi-k3",
+      "deepseek-v4-1-flash",
+      "gpt-6.1-sol",
+      "gpt-6-astra",
+      "gpt-6-sol",
+      "gpt-6-luna",
+      "gpt-5.6-sol",
+      "gpt-5.6-terra",
+      "gpt-5.6-luna",
+      "gpt-5.5",
+      "gpt-5.4",
+    ],
+    aliases: ["kimi-k4", "deepseek-v4-1", "deepseek-v5-pro", "gpt-99-1"],
+    // BR-3 bare families, a dash-less spelling, and the spelled-out and
+    // truncated GPT forms; BR-4 Grok ids, which never belong on this path.
     rejected: [
       "kimi",
       "kimi-k",
       "kimik3",
       "deepseek",
       "deepseekv4-1-flash",
-      "gpt-5-5",
+      "gpt-five",
+      "gpt-",
       "grok-4-5",
+      "grok-4-6",
     ],
     parse: (model: unknown): ModelParseOutcome =>
       modelOutcome(

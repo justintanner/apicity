@@ -579,6 +579,47 @@ describe("dispatcher routing", () => {
     for (const { provider, configured } of summaries) {
       expect(named(provider), provider).toBe(configured);
     }
+
+    // Each row's label is true of every provider on it, by the variables
+    // discovery reports, and the closing sentence keeps both its claims.
+    const rowOf = (label: string): string[] => {
+      const match = new RegExp(`^  ${label} +(\\S.*)$`, "m").exec(text);
+      return match ? match[1].split(", ").sort() : [];
+    };
+    const always = summaries.filter((row) => row.configured);
+    const names = (rows: typeof always): string[] =>
+      rows.map((row) => row.provider).sort();
+    expect(rowOf("no credential")).toEqual(
+      names(always.filter((row) => row.envVars.length === 0))
+    );
+    expect(rowOf("optional credential")).toEqual(
+      names(always.filter((row) => row.envVars.length > 0))
+    );
+    expect(text).not.toContain("no credential at all");
+    expect(text).toContain("Any other provider is reported as configured");
+    expect(text).toContain("That check never runs `op`.");
+  });
+
+  // ac-8cvcs0: SKILL.md says this topic lists the other variables the CLI
+  // reads, so every variable that sentence names has to appear here.
+  it("lists every variable SKILL.md says the environment topic lists", () => {
+    const skill = readFileSync("skills/apicity/SKILL.md", "utf8");
+    const sentence =
+      /Other variables the CLI reads:[\s\S]*?`apicity help environment` lists them\./.exec(
+        skill
+      )?.[0] ?? "";
+    const variables = [...sentence.matchAll(/`\$([A-Z][A-Z0-9_]*)`/g)].map(
+      ([, name]) => name
+    );
+    const text = helpTopicText("environment");
+
+    expect(variables).not.toEqual([]);
+    for (const variable of variables) {
+      expect(
+        new RegExp(`(^|[^A-Z0-9_])${variable}([^A-Z0-9_]|$)`, "m").test(text),
+        variable
+      ).toBe(true);
+    }
   });
 
   it("names every exit code in the exit-codes topic", async () => {

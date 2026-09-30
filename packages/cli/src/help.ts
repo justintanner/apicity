@@ -138,6 +138,12 @@ const TOPIC_TEXT: Record<HelpTopic, () => string> = {
       "",
       "`apicity commands` and `apicity describe` need no credential: they read",
       "a generated catalog rather than calling upstream.",
+      "",
+      "Other variables the CLI reads:",
+      "",
+      "  APICITY_OUTPUT_DIR            where media lands, as --output-dir",
+      "  CLAUDE_PROJECT_DIR            where media lands when neither is set",
+      "  APICITY_PAYGATE_SECRET_FILE   arms the pay gate, as --paygate-secret-file",
     ].join("\n"),
 
   agents: () =>

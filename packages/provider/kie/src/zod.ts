@@ -7785,25 +7785,38 @@ export type KieApiResponsesRequest = z.input<
 >;
 
 // Unified OpenAI-compatible Responses (`POST /openai/v1/responses`). Kie
-// fronts two unrelated chat families on this one path — Kimi K3
+// fronts several chat families on this one path: Kimi K3
 // (https://docs.kie.ai/market/kimi/kimi-k3) and DeepSeek V4.1 Flash
-// (https://docs.kie.ai/market/deepseek-v4-1-flash) — each documented with a
-// one-id `model` enum as read on 2026-09-28. Distinct from the sibling
-// `/codex/v1/responses` and `/api/v1/responses` GPT surfaces, so the alias
-// grammar below is Kimi- and DeepSeek-only on purpose: sharing
-// KieOpenAiModelAliasSchema would accept `gpt-5-5` here, where it is not a
-// listed id. One grammar covers both families — the id bodies are
-// `kimi-k<digits>` and `deepseek-v<digits>`, joined at the alternation so the
-// describe JSON Schema stays the flat enum + pattern pair the triage harness
-// pins. Anything outside these two grammars must be added to the enum.
+// (https://docs.kie.ai/market/deepseek-v4-1-flash), each documented with a
+// one-id `model` enum as read on 2026-09-28, and the models Codex CLI runs on
+// (https://docs.kie.ai/ai-agent/codex-cli), whose only authoritative list is
+// `GET /openai/v1/models`. The enum is the two documented ids followed by
+// every other id that listing returned in the recording kie/openai-models
+// (recorded 2026-09-30), in listing order. The alias joins the Kimi, DeepSeek
+// and GPT id bodies at one alternation, so the describe JSON Schema stays the
+// flat enum + pattern pair the triage harness pins; it still rejects the
+// spelled-out `gpt-five`, the truncated `gpt-` and any Grok id. Anything
+// outside these three grammars must be added to the enum.
 const KieOpenAiResponsesModelAliasSchema = z
   .string()
   .regex(
-    /^(?:kimi-k\d+|deepseek-v\d+)(?:[-.]\d+)*(?:-[a-z0-9]+)*$/,
-    "Expected a listed model or a versioned Kimi/DeepSeek alias (e.g. kimi-k4 or deepseek-v4-1)"
+    /^(?:kimi-k\d+|deepseek-v\d+|gpt-\d+)(?:[-.]\d+)*(?:-[a-z0-9]+)*$/,
+    "Expected a listed model or a versioned Kimi/DeepSeek/GPT alias (e.g. kimi-k4, deepseek-v4-1 or gpt-6)"
   );
 
-const KIE_OPENAI_RESPONSES_MODELS = ["kimi-k3", "deepseek-v4-1-flash"] as const;
+const KIE_OPENAI_RESPONSES_MODELS = [
+  "kimi-k3",
+  "deepseek-v4-1-flash",
+  "gpt-6.1-sol",
+  "gpt-6-astra",
+  "gpt-6-sol",
+  "gpt-6-luna",
+  "gpt-5.6-sol",
+  "gpt-5.6-terra",
+  "gpt-5.6-luna",
+  "gpt-5.5",
+  "gpt-5.4",
+] as const;
 
 export const KieOpenAiResponsesModelSchema = z
   .enum(KIE_OPENAI_RESPONSES_MODELS)

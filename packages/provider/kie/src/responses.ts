@@ -127,7 +127,9 @@ export interface KieApiResponsesRequest {
   tool_choice?: KieResponsesToolChoice;
 }
 
-export type KieOpenAiResponsesModel = "kimi-k3" | "deepseek-v4-1-flash";
+// Derived from zod.ts so it follows KIE_OPENAI_RESPONSES_MODELS; a hand-kept
+// copy here would go stale silently behind the `string & {}` hatch.
+export type KieOpenAiResponsesModel = import("./zod").KieOpenAiResponsesModel;
 
 // Kimi K3 and DeepSeek V4.1-Flash share Kie's unified
 // `POST /openai/v1/responses` surface. Same Responses machinery as the

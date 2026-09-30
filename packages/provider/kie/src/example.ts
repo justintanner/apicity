@@ -152,6 +152,22 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST anthropic.v1.messages": {
+    "source": "kie/anthropic-messages",
+    "payload": {
+      "model": "claude-haiku-4-5",
+      "max_tokens": 16,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Reply with the single word: pong"
+        }
+      ],
+      "stream": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.fileBase64Upload": {
     "source": "kie/file-uploads/base64",
     "payload": {
@@ -823,28 +839,21 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "runByDefault": false
   },
   "POST openai.v1.responses": {
-    "source": "kie/deepseek-v4-1-flash-responses",
+    "source": "kie/openai-responses-codex",
     "payload": {
-      "model": "deepseek-v4-1-flash",
-      "stream": false,
-      "thinking": {
-        "type": "disabled"
-      },
-      "input": [
-        {
-          "role": "user",
-          "content": [
-            {
-              "type": "input_text",
-              "text": "What color dominates this image?"
-            },
-            {
-              "type": "input_image",
-              "image_url": "<inline image/png data URL — replace with a real URL or upload>"
-            }
-          ]
-        }
-      ]
+      "model": "gpt-5.5",
+      "input": "Reply with the single word: pong",
+      "stream": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST xai.v1.responses": {
+    "source": "kie/xai-responses",
+    "payload": {
+      "model": "grok-4-6",
+      "input": "Reply with the single word: pong",
+      "stream": false
     },
     "tier": "prohibitive",
     "runByDefault": false

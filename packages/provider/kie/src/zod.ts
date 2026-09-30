@@ -7737,6 +7737,56 @@ export type KieGrokResponsesRequest = z.input<
   typeof KieGrokResponsesRequestSchema
 >;
 
+// Grok Build's `POST /xai/v1/responses` (https://docs.kie.ai/ai-agent/grok-build)
+// is a different URL from `/grok/v1/responses`, so it has its own model set:
+// exactly the ids `GET /xai/v1/models` returned in the recording
+// kie/xai-models (recorded 2026-09-30), in listing order. The docs say the id KIE
+// reads is the listing id (`grok-4-6`) and that Grok Build's bundled dotted
+// spelling (`grok-4.6`) is rejected, so this alias is hyphen-only, unlike
+// KieGrokModelAliasSchema, which admits `grok-4.6` on the `/grok` path. A
+// listed id outside the grammar (for example a `grok-code-*` id) parses
+// through the enum only; the alias is not loosened to admit it.
+const KieXaiModelAliasSchema = z
+  .string()
+  .regex(
+    /^grok-\d+(?:-\d+)*(?:-[a-z0-9]+)*$/,
+    "Expected a listed model or a versioned Grok alias (e.g. grok-4-6)"
+  );
+
+export const KIE_XAI_RESPONSES_MODELS = [
+  "grok-4-7",
+  "grok-4-6",
+  "grok-4-5",
+  "grok-4-3",
+] as const;
+
+export const KieXaiResponsesModelSchema = z
+  .enum(KIE_XAI_RESPONSES_MODELS)
+  .or(KieXaiModelAliasSchema);
+
+// Same request contract as the Grok and Codex Responses siblings, reusing
+// their sub-schemas so the mixed web_search + function rejection
+// (KieResponsesToolsSchema) behaves identically.
+export const KieXaiResponsesRequestSchema = z.object({
+  model: KieXaiResponsesModelSchema,
+  stream: z.boolean().default(false).optional(),
+  input: z.union([
+    z.string().min(1),
+    z.array(KieResponsesInputMessageSchema).min(1),
+  ]),
+  reasoning: KieResponsesReasoningSchema.optional(),
+  tools: KieResponsesToolsSchema.optional(),
+  tool_choice: z.string().optional(),
+});
+
+// Literal ids + hatch rather than `z.infer` — see FluxKontextModel above.
+export type KieXaiResponsesModel =
+  | (typeof KIE_XAI_RESPONSES_MODELS)[number]
+  | (string & {});
+export type KieXaiResponsesRequest = z.input<
+  typeof KieXaiResponsesRequestSchema
+>;
+
 // Unified GPT Codex Responses (`POST /api/v1/responses`). Distinct from the
 // codex-path sibling at `/codex/v1/responses` (gpt-5-5 family) — same request
 // contract, different model family. Docs list five `*-codex` ids; the alias
@@ -7785,25 +7835,38 @@ export type KieApiResponsesRequest = z.input<
 >;
 
 // Unified OpenAI-compatible Responses (`POST /openai/v1/responses`). Kie
-// fronts two unrelated chat families on this one path — Kimi K3
+// fronts several chat families on this one path: Kimi K3
 // (https://docs.kie.ai/market/kimi/kimi-k3) and DeepSeek V4.1 Flash
-// (https://docs.kie.ai/market/deepseek-v4-1-flash) — each documented with a
-// one-id `model` enum as read on 2026-09-28. Distinct from the sibling
-// `/codex/v1/responses` and `/api/v1/responses` GPT surfaces, so the alias
-// grammar below is Kimi- and DeepSeek-only on purpose: sharing
-// KieOpenAiModelAliasSchema would accept `gpt-5-5` here, where it is not a
-// listed id. One grammar covers both families — the id bodies are
-// `kimi-k<digits>` and `deepseek-v<digits>`, joined at the alternation so the
-// describe JSON Schema stays the flat enum + pattern pair the triage harness
-// pins. Anything outside these two grammars must be added to the enum.
+// (https://docs.kie.ai/market/deepseek-v4-1-flash), each documented with a
+// one-id `model` enum as read on 2026-09-28, and the models Codex CLI runs on
+// (https://docs.kie.ai/ai-agent/codex-cli), whose only authoritative list is
+// `GET /openai/v1/models`. The enum is the two documented ids followed by
+// every other id that listing returned in the recording kie/openai-models
+// (recorded 2026-09-30), in listing order. The alias joins the Kimi, DeepSeek
+// and GPT id bodies at one alternation, so the describe JSON Schema stays the
+// flat enum + pattern pair the triage harness pins; it still rejects the
+// spelled-out `gpt-five`, the truncated `gpt-` and any Grok id. Anything
+// outside these three grammars must be added to the enum.
 const KieOpenAiResponsesModelAliasSchema = z
   .string()
   .regex(
-    /^(?:kimi-k\d+|deepseek-v\d+)(?:[-.]\d+)*(?:-[a-z0-9]+)*$/,
-    "Expected a listed model or a versioned Kimi/DeepSeek alias (e.g. kimi-k4 or deepseek-v4-1)"
+    /^(?:kimi-k\d+|deepseek-v\d+|gpt-\d+)(?:[-.]\d+)*(?:-[a-z0-9]+)*$/,
+    "Expected a listed model or a versioned Kimi/DeepSeek/GPT alias (e.g. kimi-k4, deepseek-v4-1 or gpt-6)"
   );
 
-const KIE_OPENAI_RESPONSES_MODELS = ["kimi-k3", "deepseek-v4-1-flash"] as const;
+const KIE_OPENAI_RESPONSES_MODELS = [
+  "kimi-k3",
+  "deepseek-v4-1-flash",
+  "gpt-6.1-sol",
+  "gpt-6-astra",
+  "gpt-6-sol",
+  "gpt-6-luna",
+  "gpt-5.6-sol",
+  "gpt-5.6-terra",
+  "gpt-5.6-luna",
+  "gpt-5.5",
+  "gpt-5.4",
+] as const;
 
 export const KieOpenAiResponsesModelSchema = z
   .enum(KIE_OPENAI_RESPONSES_MODELS)
@@ -7948,6 +8011,92 @@ export type KieClaudeMessage = z.infer<typeof KieClaudeMessageSchema>;
 export type KieClaudeRequest = z.input<typeof KieClaudeRequestSchema>;
 export type KieClaudeRequestInput = KieClaudeRequest;
 export type KieClaudeParsedRequest = z.output<typeof KieClaudeRequestSchema>;
+
+// ---------------------------------------------------------------------------
+// Coding-agent proxy: Claude Code (`https://api.kie.ai/anthropic`)
+// ---------------------------------------------------------------------------
+
+// `GET /anthropic/v1/models` pages the Anthropic way: while `has_more` is true,
+// ask again with `after_id` set to the page's `last_id`
+// (https://docs.kie.ai/ai-agent/claude-code). KIE documents no other query
+// parameter, so Anthropic's `before_id` and `limit` stay out until a recording
+// shows KIE honours them.
+export const KieAnthropicModelsRequestSchema = z.object({
+  after_id: z.string().min(1).optional(),
+});
+
+// `POST /anthropic/v1/messages` serves the Anthropic Messages protocol as is
+// (https://docs.kie.ai/ai-agent/claude-code). The enum is exactly the ids
+// `GET /anthropic/v1/models` returned in the recording kie/anthropic-models
+// (recorded 2026-09-30), in listing order: never ids from memory or from the
+// general taskType=Chat catalog. KieClaudeModelAliasSchema admits a later
+// versioned id without a schema bump. A listed id outside that grammar (for
+// example a dated id) parses through the enum only; the alias is not loosened
+// to admit it.
+export const KIE_ANTHROPIC_MESSAGES_MODELS = [
+  "claude-fable-5",
+  "claude-opus-5-5",
+  "claude-opus-5",
+  "claude-sonnet-5-5",
+  "claude-sonnet-5",
+  "claude-opus-4-8",
+  "claude-opus-4-7",
+  "claude-opus-4-6",
+  "claude-sonnet-4-6",
+  "claude-opus-4-5",
+  "claude-sonnet-4-5",
+  "claude-haiku-4-5",
+] as const;
+
+export const KieAnthropicMessagesModelSchema = z
+  .enum(KIE_ANTHROPIC_MESSAGES_MODELS)
+  .or(KieClaudeModelAliasSchema);
+
+export const KieAnthropicTextBlockSchema = z
+  .object({ type: z.literal("text"), text: z.string() })
+  .passthrough();
+
+export const KieAnthropicToolSchema = z
+  .object({
+    name: z.string().min(1),
+    description: z.string().optional(),
+    input_schema: z.object({ type: z.string() }).passthrough(),
+  })
+  .passthrough();
+
+// Anthropic adds `tool_choice` and `thinking` variants on its own cadence, so
+// both stay open objects keyed by a string `type`.
+export const KieAnthropicTypedObjectSchema = z
+  .object({ type: z.string() })
+  .passthrough();
+
+export const KieAnthropicMessagesRequestSchema = z.object({
+  model: KieAnthropicMessagesModelSchema,
+  max_tokens: z.number().int().min(1),
+  messages: z.array(KieClaudeMessageSchema).min(1),
+  system: z
+    .union([z.string(), z.array(KieAnthropicTextBlockSchema)])
+    .optional(),
+  temperature: z.number().min(0).max(1).optional(),
+  top_p: z.number().min(0).max(1).optional(),
+  top_k: z.number().int().min(0).optional(),
+  stop_sequences: z.array(z.string()).optional(),
+  tools: z.array(KieAnthropicToolSchema).optional(),
+  tool_choice: KieAnthropicTypedObjectSchema.optional(),
+  thinking: KieAnthropicTypedObjectSchema.optional(),
+  metadata: z
+    .object({ user_id: z.string().optional() })
+    .passthrough()
+    .optional(),
+  // This leaf parses one JSON Message and does not stream (ac-wma4p9 OQ-3),
+  // so the schema never advertises `stream: true`.
+  stream: z.literal(false).optional(),
+});
+
+// Literal ids + hatch rather than `z.infer` — see FluxKontextModel above.
+export type KieAnthropicMessagesModel =
+  | (typeof KIE_ANTHROPIC_MESSAGES_MODELS)[number]
+  | (string & {});
 
 // ---------------------------------------------------------------------------
 // Media generation request (discriminated union on model)

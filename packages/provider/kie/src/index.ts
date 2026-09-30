@@ -390,6 +390,9 @@ export {
   GptImage25FlareImageToImageRequestSchema,
   GptImage25SunburstTextToImageRequestSchema,
   GptImage25SunburstImageToImageRequestSchema,
+  KieAnthropicModelsRequestSchema,
+  KieAnthropicMessagesModelSchema,
+  KieAnthropicMessagesRequestSchema,
   KieResponsesFunctionToolSchema,
   KieResponsesInputContentSchema,
   KieResponsesInputFileSchema,
@@ -406,6 +409,8 @@ export {
   KieResponsesWebSearchToolSchema,
   KieGrokResponsesModelSchema,
   KieGrokResponsesRequestSchema,
+  KieXaiResponsesModelSchema,
+  KieXaiResponsesRequestSchema,
   KieApiResponsesModelSchema,
   KieApiResponsesRequestSchema,
   KieOpenAiResponsesModelSchema,
@@ -443,6 +448,7 @@ export { createVeoProvider } from "./veo";
 export { createSunoProvider } from "./suno";
 export { createChatProvider } from "./chat";
 export { createClaudeProvider } from "./claude";
+export { createAnthropicProvider } from "./anthropic";
 export { createGeminiProvider } from "./gemini";
 export { createResponsesProvider } from "./responses";
 export { createGemini31ProProvider } from "./gemini-31-pro";
@@ -1154,6 +1160,8 @@ export type {
   KieResponsesParsedRequest,
   KieGrokResponsesModel,
   KieGrokResponsesRequest,
+  KieXaiResponsesModel,
+  KieXaiResponsesRequest,
   KieApiResponsesModel,
   KieApiResponsesRequest,
   KieOpenAiResponsesModel,
@@ -1273,6 +1281,13 @@ export type {
   SunoProvider,
 } from "./suno";
 
+// Coding-agent proxy: Grok Build (`https://api.kie.ai/xai/v1`)
+export type {
+  KieXaiModel,
+  KieXaiModelsResponse,
+  KieXaiModelsV1Namespace,
+} from "./types";
+
 export type {
   KieChatContentPart,
   KieChatMessage,
@@ -1282,6 +1297,15 @@ export type {
   KieChatResponse,
   KieChatProvider,
 } from "./chat";
+
+// Coding-agent proxy: Codex CLI (`https://api.kie.ai/openai/v1`)
+export type {
+  KieOpenAiCodexModel,
+  KieOpenAiCodexReasoningLevel,
+  KieOpenAiModel,
+  KieOpenAiModelsResponse,
+  KieOpenAiModelsV1Namespace,
+} from "./types";
 
 export type {
   KieResponsesInputContentType,
@@ -1304,6 +1328,8 @@ export type {
   KieApiResponsesV1Namespace,
   KieOpenAiResponsesMethod,
   KieOpenAiResponsesV1Namespace,
+  KieXaiResponsesMethod,
+  KieXaiResponsesV1Namespace,
 } from "./responses";
 
 export type {
@@ -1319,6 +1345,32 @@ export type {
   KieClaudeResponse,
   KieClaudeProvider,
 } from "./claude";
+
+// Coding-agent proxy: Claude Code (`https://api.kie.ai/anthropic`)
+export type {
+  KieAnthropicMessagesModel,
+  KieAnthropicModel,
+  KieAnthropicModelsMethod,
+  KieAnthropicModelsRequest,
+  KieAnthropicModelsResponse,
+  KieAnthropicModelsV1Namespace,
+} from "./types";
+export type {
+  KieAnthropicContentBlock,
+  KieAnthropicContentBlockParam,
+  KieAnthropicMessageParam,
+  KieAnthropicMessagesMethod,
+  KieAnthropicMessagesRequest,
+  KieAnthropicMessagesResponse,
+  KieAnthropicMessagesV1Namespace,
+  KieAnthropicProvider,
+  KieAnthropicTextBlockParam,
+  KieAnthropicTextContent,
+  KieAnthropicToolParam,
+  KieAnthropicToolUseContent,
+  KieAnthropicTypedObject,
+  KieAnthropicUsage,
+} from "./anthropic";
 export type {
   VeoGenerateRequestInput,
   VeoExtendRequestInput,

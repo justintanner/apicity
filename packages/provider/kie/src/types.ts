@@ -705,6 +705,8 @@ export type {
   KieResponsesParsedRequest,
   KieGrokResponsesModel,
   KieGrokResponsesRequest,
+  KieXaiResponsesModel,
+  KieXaiResponsesRequest,
   KieApiResponsesModel,
   KieApiResponsesRequest,
   KieOpenAiResponsesModel,
@@ -1016,6 +1018,50 @@ interface KieFluxKontextRecordInfoMethod {
   responseSchema: ApicitySchema<FluxKontextRecordInfoResponse>;
 }
 
+// ---------------------------------------------------------------------------
+// Coding-agent proxy: Claude Code (`https://api.kie.ai/anthropic`)
+// ---------------------------------------------------------------------------
+
+/**
+ * One model from `GET /anthropic/v1/models`, Anthropic-shaped. `id` is the
+ * value Claude Code sends as `model`. Open to extra keys, so a new upstream
+ * field never breaks a caller.
+ */
+export interface KieAnthropicModel {
+  id: string;
+  type?: string;
+  display_name?: string;
+  created_at?: string;
+  max_input_tokens?: number | null;
+  max_tokens?: number | null;
+  [key: string]: unknown;
+}
+
+/** One listing page. While `has_more`, ask again with `after_id: last_id`. */
+export interface KieAnthropicModelsResponse {
+  data: KieAnthropicModel[];
+  has_more?: boolean;
+  first_id?: string | null;
+  last_id?: string | null;
+  [key: string]: unknown;
+}
+
+export interface KieAnthropicModelsRequest {
+  after_id?: string;
+}
+
+export interface KieAnthropicModelsMethod {
+  (
+    req?: KieAnthropicModelsRequest,
+    signal?: AbortSignal
+  ): Promise<KieAnthropicModelsResponse>;
+  schema: ApicitySchema<KieAnthropicModelsRequest>;
+}
+
+export interface KieAnthropicModelsV1Namespace {
+  models: KieAnthropicModelsMethod;
+}
+
 // POST namespace
 interface KiePostApiNamespace {
   v1: {
@@ -1052,6 +1098,50 @@ interface KiePostApiNamespace {
   fileBase64Upload: KieFileBase64UploadMethod;
 }
 
+// ---------------------------------------------------------------------------
+// Coding-agent proxy: Codex CLI (`https://api.kie.ai/openai/v1`)
+// ---------------------------------------------------------------------------
+
+/** One OpenAI-compatible entry of `GET /openai/v1/models`. */
+export interface KieOpenAiModel {
+  id: string;
+  object?: string;
+  created?: number;
+  owned_by?: string;
+  [key: string]: unknown;
+}
+
+/** One reasoning level a Codex model accepts, e.g. `{ effort: "high" }`. */
+export interface KieOpenAiCodexReasoningLevel {
+  effort: string;
+  [key: string]: unknown;
+}
+
+/**
+ * One entry of the richer Codex listing. `slug` is the value Codex sends as
+ * `model` to `post.openai.v1.responses`.
+ */
+export interface KieOpenAiCodexModel {
+  slug: string;
+  display_name?: string;
+  context_window?: number;
+  default_reasoning_level?: string;
+  supported_reasoning_levels?: KieOpenAiCodexReasoningLevel[];
+  [key: string]: unknown;
+}
+
+/** The same models twice: OpenAI-style `data` and Codex-style `models`. */
+export interface KieOpenAiModelsResponse {
+  object?: string;
+  data: KieOpenAiModel[];
+  models?: KieOpenAiCodexModel[];
+  [key: string]: unknown;
+}
+
+export interface KieOpenAiModelsV1Namespace {
+  models(): Promise<KieOpenAiModelsResponse>;
+}
+
 // GET namespace
 interface KieGetApiNamespace {
   v1: {
@@ -1068,15 +1158,49 @@ interface KieGetApiNamespace {
   };
 }
 
+// ---------------------------------------------------------------------------
+// Coding-agent proxy: Grok Build (`https://api.kie.ai/xai/v1`)
+// ---------------------------------------------------------------------------
+
+/**
+ * One entry of `GET /xai/v1/models`, OpenAI-shaped. `id` is the value Grok
+ * Build sends as `model`; its bundled spelling (for example `grok-4.6`) is not.
+ */
+export interface KieXaiModel {
+  id: string;
+  object?: string;
+  owned_by?: string;
+  created?: number;
+  aliases?: string[];
+  [key: string]: unknown;
+}
+
+export interface KieXaiModelsResponse {
+  object?: string;
+  data: KieXaiModel[];
+  [key: string]: unknown;
+}
+
+export interface KieXaiModelsV1Namespace {
+  models(): Promise<KieXaiModelsResponse>;
+}
+
 // Provider interface (sub-provider types imported in index.ts)
 export interface KieProvider {
   post: {
+    anthropic: import("./anthropic").KieAnthropicProvider["post"]["anthropic"];
     api: KiePostApiNamespace;
     codex: import("./responses").KieResponsesProvider["codex"];
     grok: import("./responses").KieResponsesProvider["grok"];
     openai: import("./responses").KieResponsesProvider["openai"];
+    xai: import("./responses").KieResponsesProvider["xai"];
   };
-  get: { api: KieGetApiNamespace };
+  get: {
+    anthropic: { v1: KieAnthropicModelsV1Namespace };
+    api: KieGetApiNamespace;
+    openai: { v1: KieOpenAiModelsV1Namespace };
+    xai: { v1: KieXaiModelsV1Namespace };
+  };
   modelInputSchemas: Record<KieMediaModel, ModelInputSchema>;
   veo: import("./veo").VeoProvider;
   suno: import("./suno").SunoProvider;
@@ -1119,4 +1243,5 @@ export type {
   SunoGenerateRequestInput,
   KieChatRequestInput,
   KieClaudeRequestInput,
+  KieAnthropicMessagesModel,
 } from "./zod";

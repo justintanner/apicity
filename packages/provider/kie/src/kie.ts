@@ -5,9 +5,12 @@ import {
   KieProvider,
   KieError,
   KieCreditsResponse,
+  KieAnthropicModelsRequest,
+  KieAnthropicModelsResponse,
   KieApiEnvelope,
   DownloadUrlRequest,
   DownloadUrlResponse,
+  KieOpenAiModelsResponse,
   Gpt4oImageDownloadUrlRequest,
   Gpt4oImageDownloadUrlResponse,
   UploadMediaRequest,
@@ -15,6 +18,7 @@ import {
   FileUrlUploadRequest,
   FileBase64UploadRequest,
   KieTaskInfo,
+  KieXaiModelsResponse,
   Gpt4oImageRecordInfo,
   MjRecordInfoResponse,
   GeminiOmniAudioCreateRequest,
@@ -54,6 +58,7 @@ import {
   FluxKontextRecordInfoResponseSchema,
   GrokImageToVideoRequestSchema,
   RecordInfoRequestSchema,
+  KieAnthropicModelsRequestSchema,
   Gpt4oImageRecordInfoResponseSchema,
   Seedance2MiniRecordInfoResponseSchema,
   Seedance2MiniRequestSchema,
@@ -206,6 +211,7 @@ import { createVeoProvider } from "./veo";
 import { createSunoProvider } from "./suno";
 import { createChatProvider } from "./chat";
 import { createClaudeProvider } from "./claude";
+import { createAnthropicProvider } from "./anthropic";
 import { createGeminiProvider } from "./gemini";
 import { createResponsesProvider } from "./responses";
 import { createGemini31ProProvider } from "./gemini-31-pro";
@@ -741,6 +747,16 @@ export function createKie(opts: KieOptions): KieProvider {
     );
   }
 
+  // GET https://api.kie.ai/xai/v1/models
+  // Docs: https://docs.kie.ai/ai-agent/grok-build
+  async function xaiModels(): Promise<KieXaiModelsResponse> {
+    return kieRequest<KieXaiModelsResponse>(transport, {
+      method: "GET",
+      path: "/xai/v1/models",
+      hasPayload: (body) => Array.isArray(body.data),
+    });
+  }
+
   // GET https://api.kie.ai/api/v1/flux/kontext/record-info?taskId={taskId}
   // Docs: https://docs.kie.ai/flux-kontext-api/get-image-details
   async function fluxKontextRecordInfo(
@@ -749,6 +765,16 @@ export function createKie(opts: KieOptions): KieProvider {
     return await transport.getJson<FluxKontextRecordInfoResponse>(
       `/api/v1/flux/kontext/record-info?taskId=${encodeURIComponent(taskId)}`
     );
+  }
+
+  // GET https://api.kie.ai/openai/v1/models
+  // Docs: https://docs.kie.ai/ai-agent/codex-cli
+  async function openaiModels(): Promise<KieOpenAiModelsResponse> {
+    return kieRequest<KieOpenAiModelsResponse>(transport, {
+      method: "GET",
+      path: "/openai/v1/models",
+      hasPayload: (body) => Array.isArray(body.data),
+    });
   }
 
   // GET https://api.kie.ai/api/v1/chat/credit
@@ -767,6 +793,25 @@ export function createKie(opts: KieOptions): KieProvider {
       }
       throw error;
     }
+  }
+
+  // GET https://api.kie.ai/anthropic/v1/models
+  // Docs: https://docs.kie.ai/ai-agent/claude-code
+  async function anthropicModels(
+    req: KieAnthropicModelsRequest = {},
+    signal?: AbortSignal
+  ): Promise<KieAnthropicModelsResponse> {
+    // Anthropic paging: `after_id` is the previous page's `last_id`. Without
+    // it the URL carries no query string at all.
+    const query = req.after_id
+      ? `?after_id=${encodeURIComponent(req.after_id)}`
+      : "";
+    return kieRequest<KieAnthropicModelsResponse>(transport, {
+      method: "GET",
+      path: `/anthropic/v1/models${query}`,
+      signal,
+      hasPayload: (body) => Array.isArray(body.data),
+    });
   }
 
   return attachExamples(
@@ -821,7 +866,7 @@ export function createKie(opts: KieOptions): KieProvider {
         ...createGemini25ProProvider(baseURL, opts.apiKey, doFetch, timeout),
         modelInputSchemas,
         post: (() => {
-          // codex / grok / openai / api.v1.responses share
+          // codex / grok / openai / xai / api.v1.responses share
           // createResponsesProvider. Merge api.v1.responses into the existing
           // api.v1 namespace so the explicit `api: { v1: { … } }` object does
           // not overwrite it.
@@ -831,10 +876,18 @@ export function createKie(opts: KieOptions): KieProvider {
             doFetch,
             timeout
           );
+          const anthropic = createAnthropicProvider(
+            baseURL,
+            opts.apiKey,
+            doFetch,
+            timeout
+          );
           return {
+            anthropic: anthropic.post.anthropic,
             codex: responses.codex,
             grok: responses.grok,
             openai: responses.openai,
+            xai: responses.xai,
             api: {
               v1: {
                 responses: responses.api.v1.responses,
@@ -903,6 +956,13 @@ export function createKie(opts: KieOptions): KieProvider {
           };
         })(),
         get: {
+          anthropic: {
+            v1: {
+              models: Object.assign(anthropicModels, {
+                schema: KieAnthropicModelsRequestSchema,
+              }),
+            },
+          },
           api: {
             v1: {
               jobs: {
@@ -941,6 +1001,8 @@ export function createKie(opts: KieOptions): KieProvider {
               chat: { credit },
             },
           },
+          openai: { v1: { models: openaiModels } },
+          xai: { v1: { models: xaiModels } },
         },
       },
       { config: paygate }

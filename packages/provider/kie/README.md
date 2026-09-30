@@ -760,7 +760,43 @@ console.log(segmentEditTask.data?.taskId);
 
 ## API Reference
 
-63 endpoints across 31 groups. Each method mirrors an upstream URL path.
+68 endpoints across 33 groups. Each method mirrors an upstream URL path.
+
+### anthropic
+
+<details>
+<summary><code>GET</code> <b><code>kie.get.anthropic.v1.models</code></b></summary>
+
+<code>GET https://api.kie.ai/anthropic/v1/models</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/ai-agent/claude-code)
+
+```typescript
+const res = await kie.get.anthropic.v1.models({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>kie.post.anthropic.v1.messages</code></b></summary>
+
+<code>POST https://api.kie.ai/anthropic/v1/messages</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/ai-agent/claude-code)
+
+```typescript
+const res = await kie.post.anthropic.v1.messages({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/anthropic.ts`](src/anthropic.ts)
+
+</details>
 
 ### chat
 
@@ -1475,6 +1511,23 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 ### openai
 
 <details>
+<summary><code>GET</code> <b><code>kie.get.openai.v1.models</code></b></summary>
+
+<code>GET https://api.kie.ai/openai/v1/models</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/ai-agent/codex-cli)
+
+```typescript
+const res = await kie.get.openai.v1.models({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
+
+</details>
+
+<details>
 <summary><code>POST</code> <b><code>kie.openai.v1.responses</code></b></summary>
 
 <code>POST https://api.kie.ai/openai/v1/responses</code>
@@ -1872,6 +1925,42 @@ const res = await kie.suno.post.api.v1.wav.generate({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
+
+</details>
+
+### xai
+
+<details>
+<summary><code>GET</code> <b><code>kie.get.xai.v1.models</code></b></summary>
+
+<code>GET https://api.kie.ai/xai/v1/models</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/ai-agent/grok-build)
+
+```typescript
+const res = await kie.get.xai.v1.models({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>kie.xai.v1.responses</code></b></summary>
+
+<code>POST https://api.kie.ai/xai/v1/responses</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/ai-agent/grok-build)
+
+```typescript
+const res = await kie.xai.v1.responses({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/responses.ts`](src/responses.ts)
 
 </details>
 

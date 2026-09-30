@@ -1273,6 +1273,13 @@ export type {
   SunoProvider,
 } from "./suno";
 
+// Coding-agent proxy: Grok Build (`https://api.kie.ai/xai/v1`)
+export type {
+  KieXaiModel,
+  KieXaiModelsResponse,
+  KieXaiModelsV1Namespace,
+} from "./types";
+
 export type {
   KieChatContentPart,
   KieChatMessage,

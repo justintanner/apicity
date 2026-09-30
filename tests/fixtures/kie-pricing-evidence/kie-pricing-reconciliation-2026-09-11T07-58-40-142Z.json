@@ -1807,7 +1807,7 @@
       "displayKeys": 173,
       "schemaWithoutPricing": 6,
       "pricingOnly": 30,
-      "endpoints": 76
+      "endpoints": 77
     }
   },
   "source": {
@@ -1822,10 +1822,10 @@
     "hashes": {
       "packages/provider/kie/src/zod.ts": "sha256:b7e6394c0df71b97ed25f2c2d8a3324533ccd60a4ac0a883bdff0e362a0ed69b",
       "packages/provider/kie/src/model-schemas.ts": "sha256:3d9709a66228976e0c50be2eecf9e0c047bbbfecccc1033e1f778bc7ef8917e8",
-      "packages/provider/kie/src/kie.ts": "sha256:622e8c4258b8bb54879cfa2ab3be22bc04cd317cffcb0ccdc08209c6629500cb",
+      "packages/provider/kie/src/kie.ts": "sha256:e7a556472d977752241694ba6bb4273043c14724ec0745f6374ba319340d81b7",
       "packages/provider/cost/src/pricing/kie.ts": "sha256:74db62a6e2c42904b341aa6d3aba73be6e2e2613af748803fcc3f48df0bfa5ad",
       "packages/provider/cost/src/slugs.ts": "sha256:c93318d6568e57df131f49994b3f36aa99787d45169c6747009cebcdd3c29bec",
-      "scripts/endpoint-docs.tsv": "sha256:a406fe87ac24873577c1fec467970c8ab1d9887d37961d976a0f4cc7b0e9ad20"
+      "scripts/endpoint-docs.tsv": "sha256:8d96cb7dbe430b156214bb82c274d520a1dda5017e38117d2bee5bf0f6ccf9f2"
     }
   },
   "rows": [
@@ -25434,6 +25434,16 @@
         "linkedPricingKeys": [],
         "disposition": "supported",
         "rationale": "Documented callable endpoint is retained for architecture review even when its pricing is model-keyed."
+      },
+      {
+        "provider": "kie",
+        "dotPath": "xai.v1.models",
+        "method": "GET",
+        "fullUrl": "https://api.kie.ai/xai/v1/models",
+        "docsUrl": "https://docs.kie.ai/ai-agent/grok-build",
+        "linkedPricingKeys": [],
+        "disposition": "supported",
+        "rationale": "Documented callable endpoint is retained for architecture review even when its pricing is model-keyed."
       }
     ],
     "pricingKeys": [
@@ -28727,11 +28737,11 @@
         "unclassified": 0
       },
       "endpoints": {
-        "count": 76,
+        "count": 77,
         "POST": 58,
-        "GET": 18,
+        "GET": 19,
         "dispositionCounts": {
-          "supported": 52,
+          "supported": 53,
           "free-nonbillable": 24,
           "unsupported-endpoint": 0,
           "token-billed": 0,

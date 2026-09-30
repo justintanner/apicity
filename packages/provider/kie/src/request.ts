@@ -19,6 +19,15 @@ interface KieRequestOptions {
   path: string;
   body?: unknown;
   signal?: AbortSignal;
+  /**
+   * Set for an endpoint that speaks an upstream vendor's protocol through KIE
+   * (the `/anthropic`, `/openai` and `/xai` agent proxies). KIE can still
+   * answer such a call with its own business envelope as HTTP 200,
+   * `{ "code": 401, "msg": "…" }`. When `code` is a number other than 200,
+   * `msg` is a string and this predicate finds none of the endpoint's success
+   * payload, the call rejects with a `KieError` whose status is that `code`.
+   */
+  hasPayload?: (body: Record<string, unknown>) => boolean;
 }
 
 interface LegacyKieRequestOptions {
@@ -127,17 +136,35 @@ export function createKieTransport(opts: KieTransportOptions): Transport {
   });
 }
 
+function throwIfKieEnvelope(
+  body: unknown,
+  hasPayload: (body: Record<string, unknown>) => boolean
+): void {
+  if (typeof body !== "object" || body === null || Array.isArray(body)) return;
+  const record = body as Record<string, unknown>;
+  if (typeof record.code !== "number" || record.code === 200) return;
+  if (typeof record.msg !== "string") return;
+  if (hasPayload(record)) return;
+  throw new KieError(
+    `Kie API error ${record.code}: ${record.msg}`,
+    record.code,
+    body,
+    codeToString(record.code)
+  );
+}
+
 async function requestWithTransport<T>(
   transport: Transport,
   opts: KieRequestOptions
 ): Promise<T> {
-  if (opts.method === "GET") {
-    return await transport.getJson<T>(opts.path, { signal: opts.signal });
-  }
-
-  return await transport.postJson<T>(opts.path, opts.body, {
-    signal: opts.signal,
-  });
+  const body =
+    opts.method === "GET"
+      ? await transport.getJson<T>(opts.path, { signal: opts.signal })
+      : await transport.postJson<T>(opts.path, opts.body, {
+          signal: opts.signal,
+        });
+  if (opts.hasPayload) throwIfKieEnvelope(body, opts.hasPayload);
+  return body;
 }
 
 export function kieRequest<T>(

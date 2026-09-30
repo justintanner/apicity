@@ -7737,6 +7737,56 @@ export type KieGrokResponsesRequest = z.input<
   typeof KieGrokResponsesRequestSchema
 >;
 
+// Grok Build's `POST /xai/v1/responses` (https://docs.kie.ai/ai-agent/grok-build)
+// is a different URL from `/grok/v1/responses`, so it has its own model set:
+// exactly the ids `GET /xai/v1/models` returned in the recording
+// kie/xai-models (recorded 2026-09-30), in listing order. The docs say the id KIE
+// reads is the listing id (`grok-4-6`) and that Grok Build's bundled dotted
+// spelling (`grok-4.6`) is rejected, so this alias is hyphen-only, unlike
+// KieGrokModelAliasSchema, which admits `grok-4.6` on the `/grok` path. A
+// listed id outside the grammar (for example a `grok-code-*` id) parses
+// through the enum only; the alias is not loosened to admit it.
+const KieXaiModelAliasSchema = z
+  .string()
+  .regex(
+    /^grok-\d+(?:-\d+)*(?:-[a-z0-9]+)*$/,
+    "Expected a listed model or a versioned Grok alias (e.g. grok-4-6)"
+  );
+
+export const KIE_XAI_RESPONSES_MODELS = [
+  "grok-4-7",
+  "grok-4-6",
+  "grok-4-5",
+  "grok-4-3",
+] as const;
+
+export const KieXaiResponsesModelSchema = z
+  .enum(KIE_XAI_RESPONSES_MODELS)
+  .or(KieXaiModelAliasSchema);
+
+// Same request contract as the Grok and Codex Responses siblings, reusing
+// their sub-schemas so the mixed web_search + function rejection
+// (KieResponsesToolsSchema) behaves identically.
+export const KieXaiResponsesRequestSchema = z.object({
+  model: KieXaiResponsesModelSchema,
+  stream: z.boolean().default(false).optional(),
+  input: z.union([
+    z.string().min(1),
+    z.array(KieResponsesInputMessageSchema).min(1),
+  ]),
+  reasoning: KieResponsesReasoningSchema.optional(),
+  tools: KieResponsesToolsSchema.optional(),
+  tool_choice: z.string().optional(),
+});
+
+// Literal ids + hatch rather than `z.infer` — see FluxKontextModel above.
+export type KieXaiResponsesModel =
+  | (typeof KIE_XAI_RESPONSES_MODELS)[number]
+  | (string & {});
+export type KieXaiResponsesRequest = z.input<
+  typeof KieXaiResponsesRequestSchema
+>;
+
 // Unified GPT Codex Responses (`POST /api/v1/responses`). Distinct from the
 // codex-path sibling at `/codex/v1/responses` (gpt-5-5 family) — same request
 // contract, different model family. Docs list five `*-codex` ids; the alias

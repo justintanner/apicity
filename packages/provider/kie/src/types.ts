@@ -705,6 +705,8 @@ export type {
   KieResponsesParsedRequest,
   KieGrokResponsesModel,
   KieGrokResponsesRequest,
+  KieXaiResponsesModel,
+  KieXaiResponsesRequest,
   KieApiResponsesModel,
   KieApiResponsesRequest,
   KieOpenAiResponsesModel,
@@ -1102,6 +1104,7 @@ export interface KieProvider {
     codex: import("./responses").KieResponsesProvider["codex"];
     grok: import("./responses").KieResponsesProvider["grok"];
     openai: import("./responses").KieResponsesProvider["openai"];
+    xai: import("./responses").KieResponsesProvider["xai"];
   };
   get: {
     api: KieGetApiNamespace;

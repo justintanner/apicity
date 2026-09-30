@@ -406,6 +406,8 @@ export {
   KieResponsesWebSearchToolSchema,
   KieGrokResponsesModelSchema,
   KieGrokResponsesRequestSchema,
+  KieXaiResponsesModelSchema,
+  KieXaiResponsesRequestSchema,
   KieApiResponsesModelSchema,
   KieApiResponsesRequestSchema,
   KieOpenAiResponsesModelSchema,
@@ -1154,6 +1156,8 @@ export type {
   KieResponsesParsedRequest,
   KieGrokResponsesModel,
   KieGrokResponsesRequest,
+  KieXaiResponsesModel,
+  KieXaiResponsesRequest,
   KieApiResponsesModel,
   KieApiResponsesRequest,
   KieOpenAiResponsesModel,
@@ -1311,6 +1315,8 @@ export type {
   KieApiResponsesV1Namespace,
   KieOpenAiResponsesMethod,
   KieOpenAiResponsesV1Namespace,
+  KieXaiResponsesMethod,
+  KieXaiResponsesV1Namespace,
 } from "./responses";
 
 export type {

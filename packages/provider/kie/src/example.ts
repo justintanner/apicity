@@ -848,6 +848,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
     },
     "tier": "prohibitive",
     "runByDefault": false
+  },
+  "POST xai.v1.responses": {
+    "source": "kie/xai-responses",
+    "payload": {
+      "model": "grok-4-6",
+      "input": "Reply with the single word: pong",
+      "stream": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   }
 };
 

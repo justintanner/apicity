@@ -832,7 +832,7 @@ export function createKie(opts: KieOptions): KieProvider {
         ...createGemini25ProProvider(baseURL, opts.apiKey, doFetch, timeout),
         modelInputSchemas,
         post: (() => {
-          // codex / grok / openai / api.v1.responses share
+          // codex / grok / openai / xai / api.v1.responses share
           // createResponsesProvider. Merge api.v1.responses into the existing
           // api.v1 namespace so the explicit `api: { v1: { … } }` object does
           // not overwrite it.
@@ -846,6 +846,7 @@ export function createKie(opts: KieOptions): KieProvider {
             codex: responses.codex,
             grok: responses.grok,
             openai: responses.openai,
+            xai: responses.xai,
             api: {
               v1: {
                 responses: responses.api.v1.responses,

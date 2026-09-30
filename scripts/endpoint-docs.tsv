@@ -1106,6 +1106,7 @@ kie	gemini.v1.models.gemini3FlashV1betamodels.streamGenerateContent	POST	https:/
 kie	grok.v1.responses	POST	https://api.kie.ai/grok/v1/responses	https://docs.kie.ai/market/grok/grok-4-7
 kie	openai.v1.responses	POST	https://api.kie.ai/openai/v1/responses	https://docs.kie.ai/market/kimi/kimi-k3
 kie	xai.v1.models	GET	https://api.kie.ai/xai/v1/models	https://docs.kie.ai/ai-agent/grok-build
+kie	xai.v1.responses	POST	https://api.kie.ai/xai/v1/responses	https://docs.kie.ai/ai-agent/grok-build
 kimicoding	coding.v1.chat.completions	POST	https://api.kimi.com/coding/v1/chat/completions	https://www.kimi.com/code/docs/en/
 kimicoding	coding.v1.countTokens	POST	https://api.kimi.com/coding/v1/tokens/count	https://platform.moonshot.ai/docs
 kimicoding	coding.v1.embeddings	POST	https://api.kimi.com/coding/v1/embeddings	https://platform.moonshot.ai/docs

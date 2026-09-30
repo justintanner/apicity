@@ -567,6 +567,20 @@ describe("dispatcher routing", () => {
     }
   });
 
+  // ac-98i46v: the environment topic names exactly the providers that
+  // `apicity providers` reports configured when nothing is set anywhere.
+  it("names the always-configured providers in the environment topic", async () => {
+    const summaries = await listProviders({ env: { HOME: sandboxHome() } });
+    const text = helpTopicText("environment");
+    const named = (provider: string): boolean =>
+      new RegExp(`(^|[^a-z0-9-])${provider}([^a-z0-9-]|$)`, "m").test(text);
+
+    expect(summaries.filter((row) => row.configured)).not.toEqual([]);
+    for (const { provider, configured } of summaries) {
+      expect(named(provider), provider).toBe(configured);
+    }
+  });
+
   it("names every exit code in the exit-codes topic", async () => {
     const { writer, out } = capture();
 

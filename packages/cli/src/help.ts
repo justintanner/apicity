@@ -1,5 +1,7 @@
+import { providerEnvVars, providerNames } from "./credentials.js";
 import type { CliWriter } from "./envelope.js";
 import { EXIT_CODES, type CliErrorCode } from "./errors.js";
+import { isCredentialOptional } from "./providers.js";
 
 export const HELP_TOPICS = [
   "output",
@@ -41,6 +43,22 @@ export function exitCodeTable(): string {
       ([exit, codes]) => `${codes.join(", ").padEnd(width)}  ${exit}`
     ),
   ].join("\n");
+}
+
+/**
+ * The providers discovery reports as configured whatever the sources
+ * hold: every one `isCredentialOptional` names, split by whether it reads
+ * a variable at all. Derived, so the environment topic cannot fall behind
+ * the code (ac-98i46v).
+ */
+function alwaysConfiguredRows(): string[] {
+  const always = providerNames().filter(isCredentialOptional).sort();
+  const keyless = always.filter((name) => providerEnvVars(name).length === 0);
+  const optional = always.filter((name) => providerEnvVars(name).length > 0);
+  return [
+    `  no credential         ${keyless.join(", ")}`,
+    `  optional credential   ${optional.join(", ")}`,
+  ];
 }
 
 const TOPIC_TEXT: Record<HelpTopic, () => string> = {
@@ -110,10 +128,13 @@ const TOPIC_TEXT: Record<HelpTopic, () => string> = {
       "`env:<VAR>` stores the name of the variable that holds the token, so",
       "the token itself never touches the file. `apicity doctor` checks it.",
       "",
-      "Providers with no credential at all (binance, openligadb, openf1,",
-      "free-media-upload, and polymarket's public market data) are always",
-      "reported as configured, and so is any provider whose variables have a",
-      "source above. That check never runs `op`.",
+      "These providers are always reported as configured, whatever the",
+      "sources above hold:",
+      "",
+      ...alwaysConfiguredRows(),
+      "",
+      "Any other provider is reported as configured when each of its variables",
+      "has a source above. That check never runs `op`.",
       "",
       "`apicity commands` and `apicity describe` need no credential: they read",
       "a generated catalog rather than calling upstream.",

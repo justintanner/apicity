@@ -1052,6 +1052,50 @@ interface KiePostApiNamespace {
   fileBase64Upload: KieFileBase64UploadMethod;
 }
 
+// ---------------------------------------------------------------------------
+// Coding-agent proxy: Codex CLI (`https://api.kie.ai/openai/v1`)
+// ---------------------------------------------------------------------------
+
+/** One OpenAI-compatible entry of `GET /openai/v1/models`. */
+export interface KieOpenAiModel {
+  id: string;
+  object?: string;
+  created?: number;
+  owned_by?: string;
+  [key: string]: unknown;
+}
+
+/** One reasoning level a Codex model accepts, e.g. `{ effort: "high" }`. */
+export interface KieOpenAiCodexReasoningLevel {
+  effort: string;
+  [key: string]: unknown;
+}
+
+/**
+ * One entry of the richer Codex listing. `slug` is the value Codex sends as
+ * `model` to `post.openai.v1.responses`.
+ */
+export interface KieOpenAiCodexModel {
+  slug: string;
+  display_name?: string;
+  context_window?: number;
+  default_reasoning_level?: string;
+  supported_reasoning_levels?: KieOpenAiCodexReasoningLevel[];
+  [key: string]: unknown;
+}
+
+/** The same models twice: OpenAI-style `data` and Codex-style `models`. */
+export interface KieOpenAiModelsResponse {
+  object?: string;
+  data: KieOpenAiModel[];
+  models?: KieOpenAiCodexModel[];
+  [key: string]: unknown;
+}
+
+export interface KieOpenAiModelsV1Namespace {
+  models(): Promise<KieOpenAiModelsResponse>;
+}
+
 // GET namespace
 interface KieGetApiNamespace {
   v1: {
@@ -1076,7 +1120,10 @@ export interface KieProvider {
     grok: import("./responses").KieResponsesProvider["grok"];
     openai: import("./responses").KieResponsesProvider["openai"];
   };
-  get: { api: KieGetApiNamespace };
+  get: {
+    api: KieGetApiNamespace;
+    openai: { v1: KieOpenAiModelsV1Namespace };
+  };
   modelInputSchemas: Record<KieMediaModel, ModelInputSchema>;
   veo: import("./veo").VeoProvider;
   suno: import("./suno").SunoProvider;

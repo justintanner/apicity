@@ -8,6 +8,7 @@ import {
   KieApiEnvelope,
   DownloadUrlRequest,
   DownloadUrlResponse,
+  KieOpenAiModelsResponse,
   Gpt4oImageDownloadUrlRequest,
   Gpt4oImageDownloadUrlResponse,
   UploadMediaRequest,
@@ -751,6 +752,16 @@ export function createKie(opts: KieOptions): KieProvider {
     );
   }
 
+  // GET https://api.kie.ai/openai/v1/models
+  // Docs: https://docs.kie.ai/ai-agent/codex-cli
+  async function openaiModels(): Promise<KieOpenAiModelsResponse> {
+    return kieRequest<KieOpenAiModelsResponse>(transport, {
+      method: "GET",
+      path: "/openai/v1/models",
+      hasPayload: (body) => Array.isArray(body.data),
+    });
+  }
+
   // GET https://api.kie.ai/api/v1/chat/credit
   // Docs: https://docs.kie.ai/common-api/get-account-credits
   async function credit(): Promise<KieCreditsResponse> {
@@ -941,6 +952,7 @@ export function createKie(opts: KieOptions): KieProvider {
               chat: { credit },
             },
           },
+          openai: { v1: { models: openaiModels } },
         },
       },
       { config: paygate }

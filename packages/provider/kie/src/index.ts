@@ -1283,6 +1283,15 @@ export type {
   KieChatProvider,
 } from "./chat";
 
+// Coding-agent proxy: Codex CLI (`https://api.kie.ai/openai/v1`)
+export type {
+  KieOpenAiCodexModel,
+  KieOpenAiCodexReasoningLevel,
+  KieOpenAiModel,
+  KieOpenAiModelsResponse,
+  KieOpenAiModelsV1Namespace,
+} from "./types";
+
 export type {
   KieResponsesInputContentType,
   KieResponsesToolType,

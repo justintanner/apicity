@@ -760,7 +760,7 @@ console.log(segmentEditTask.data?.taskId);
 
 ## API Reference
 
-63 endpoints across 31 groups. Each method mirrors an upstream URL path.
+64 endpoints across 31 groups. Each method mirrors an upstream URL path.
 
 ### chat
 
@@ -1473,6 +1473,23 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 </details>
 
 ### openai
+
+<details>
+<summary><code>GET</code> <b><code>kie.get.openai.v1.models</code></b></summary>
+
+<code>GET https://api.kie.ai/openai/v1/models</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/ai-agent/codex-cli)
+
+```typescript
+const res = await kie.get.openai.v1.models({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>kie.openai.v1.responses</code></b></summary>

@@ -465,7 +465,14 @@ literal token, and never pass `--op-token` on a call.
 **name**, and `apicity doctor` checks the whole setup. Neither prints a value,
 and neither should you. `configured: true` means the CLI knows where each
 credential comes from. Whether the vault really holds it shows up only when
-you call (an `auth` failure, exit 3) and in `apicity doctor`.
+you call and in `apicity doctor`. Under the vault convention, an item the
+vault lacks fails the call with `auth` (exit 3), naming the variable and the
+`op://` reference it expected. For the four providers whose credential is
+optional — `polymarket`, `simplefunctions`, `thesportsdb` and `youtube` —
+the CLI skips that item instead. With none of their items in the vault,
+their keyless endpoints still work and a keyed endpoint fails with the
+provider's own error, as it would with no credential set. `apicity doctor`
+names each item the vault lacks and labels the optional ones `(optional)`.
 
 Other variables the CLI reads: `$APICITY_OUTPUT_DIR` and `$CLAUDE_PROJECT_DIR`
 (where media lands), `$APICITY_PAYGATE_SECRET_FILE` (the operator's pay-gate

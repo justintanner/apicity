@@ -264,6 +264,9 @@ describe("1Password credential resolution", () => {
 // only when the addressed provider's credential is required. Every provider
 // is in exactly one class, so a provider added to one list and not the other
 // fails the census below instead of reaching a user as exit 3.
+// The skill and the cli README name the OPTIONAL providers and their count
+// (git grep 'providers whose credential is'), and the skill's credential
+// table marks them. Update all three when OPTIONAL changes.
 const OPTIONAL = ["polymarket", "simplefunctions", "thesportsdb", "youtube"];
 const KEYLESS = ["binance", "free-media-upload", "openf1", "openligadb"];
 const REQUIRED = Object.keys(PROVIDERS)

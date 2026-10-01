@@ -95,7 +95,7 @@ describe("kie gemini 3.5 flash", () => {
     ).toBe(false);
   });
 
-  it("posts non-streaming requests with X-Goog-Api-Key auth", async () => {
+  it("posts non-streaming requests with Bearer auth", async () => {
     let capturedUrl = "";
     let capturedInit: RequestInit | undefined;
     const provider = createKie({
@@ -156,8 +156,8 @@ describe("kie gemini 3.5 flash", () => {
       "https://api.kie.ai/gemini/v1/models/gemini-3-5-flash:streamGenerateContent"
     );
     expect(capturedInit?.method).toBe("POST");
-    expect(headers.get("X-Goog-Api-Key")).toBe("kie-gemini-test-key");
-    expect(headers.get("Authorization")).toBeNull();
+    expect(headers.get("Authorization")).toBe("Bearer kie-gemini-test-key");
+    expect(headers.get("X-Goog-Api-Key")).toBeNull();
     expect(body.stream).toBe(false);
     expect(body.contents).toHaveLength(1);
     expect("candidates" in result).toBe(true);

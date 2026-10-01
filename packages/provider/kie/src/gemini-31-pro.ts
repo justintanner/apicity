@@ -142,6 +142,32 @@ function formatGemini31ProError(
   return { message: `Kie Gemini 3.1 Pro API error: ${status}` };
 }
 
+/**
+ * Upstream sometimes returns HTTP 200 with a Kie envelope:
+ * `{ code: 401, msg: "..." }` (no choices). Surface those as KieError.
+ */
+function throwIfKieErrorEnvelope(body: unknown): void {
+  if (!isGemini31ProErrorBody(body)) return;
+  if (typeof body.code !== "number") return;
+  if (body.code === 200) return;
+  if (
+    typeof body === "object" &&
+    body !== null &&
+    "choices" in body &&
+    Array.isArray((body as { choices?: unknown }).choices)
+  ) {
+    return;
+  }
+
+  const formatted = formatGemini31ProError(body.code, body);
+  throw new KieError(
+    formatted.message,
+    body.code,
+    body,
+    formatted.code ?? codeToString(body.code)
+  );
+}
+
 async function* parseChatCompletionsStream(
   res: Response
 ): AsyncIterable<KieGemini31ProChatCompletionChunk> {
@@ -213,7 +239,9 @@ export function createGemini31ProProvider(
                     return parseChatCompletionsStream(res);
                   }
 
-                  return (await res.json()) as KieGemini31ProChatCompletionResponse;
+                  const data = (await res.json()) as unknown;
+                  throwIfKieErrorEnvelope(data);
+                  return data as KieGemini31ProChatCompletionResponse;
                 } catch (error) {
                   if (error instanceof KieError) throw error;
                   if (error instanceof SyntaxError) {

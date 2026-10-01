@@ -711,6 +711,22 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST gemini31Pro.v1.chat.completions": {
+    "source": "kie/gemini-31-pro-chat",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Reply with the single word: pong"
+        }
+      ],
+      "stream": false,
+      "include_thoughts": false,
+      "reasoning_effort": "low"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST gemini35FlashOpenai.v1.chat.completions": {
     "source": "kie/gemini-35-flash-openai-chat-auth-error",
     "payload": {

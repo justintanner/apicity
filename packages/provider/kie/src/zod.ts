@@ -717,10 +717,16 @@ export const KieGemini31ProContentItemSchema = z.discriminatedUnion("type", [
   KieGemini31ProMediaContentItemSchema,
 ]);
 
+// A message's content is a non-empty string or the documented parts array.
+// KIE's gpt-5-2 proxy (same OpenAI-compatible family) answered the parts
+// array with an empty completion on 2026-10-01; the live test sends a string.
 export const KieGemini31ProMessageSchema = z
   .object({
     role: KieGemini31ProMessageRoleSchema,
-    content: z.array(KieGemini31ProContentItemSchema).min(1),
+    content: z.union([
+      z.string().min(1),
+      z.array(KieGemini31ProContentItemSchema).min(1),
+    ]),
   })
   .passthrough();
 

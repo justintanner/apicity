@@ -188,6 +188,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.fileUrlUpload": {
+    "source": "kie/file-uploads/url",
+    "payload": {
+      "fileUrl": "https://static.aiquickdraw.com/tools/example/1767694885407_pObJoMcy.png",
+      "uploadPath": "images/test-uploads",
+      "fileName": "apicity-url-upload.png"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v1.common.downloadUrl": {
     "source": "kie/download-url/convert",
     "payload": {

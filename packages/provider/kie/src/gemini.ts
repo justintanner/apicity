@@ -317,8 +317,8 @@ export function createGeminiProvider(
     timeoutMs: timeout,
     fetchImpl: doFetch,
     defaultHeaders: () => ({
+      Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/json",
-      "X-Goog-Api-Key": apiKey,
     }),
     parseErrorBody: formatGeminiError,
     errorClass: KieError,
@@ -331,6 +331,7 @@ export function createGeminiProvider(
         v1: {
           models: {
             gemini35Flash: {
+              // Measured 2026-10-01: KIE ignores X-Goog-Api-Key (docs prose); Bearer authenticates.
               // POST https://api.kie.ai/gemini/v1/models/gemini-3-5-flash:streamGenerateContent
               // Docs: https://docs.kie.ai/market/gemini/gemini-3-5-flash
               streamGenerateContent: Object.assign(

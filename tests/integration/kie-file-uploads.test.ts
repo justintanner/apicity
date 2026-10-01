@@ -60,6 +60,26 @@ describe("kie upload endpoints", () => {
     expect(result.data?.downloadUrl).toBeTruthy();
   });
 
+  it("uploads a remote file through post.api.fileUrlUpload", async () => {
+    ctx = setupPollyForFileUploads("kie/file-uploads/url");
+    const provider = createKie({
+      apiKey: process.env.KIE_API_KEY ?? "test-key",
+    });
+
+    // KIE's own sample PNG (188,328 bytes), already used by kie tests.
+    const result = await provider.post.api.fileUrlUpload({
+      fileUrl:
+        "https://static.aiquickdraw.com/tools/example/1767694885407_pObJoMcy.png",
+      uploadPath: "images/test-uploads",
+      fileName: "apicity-url-upload.png",
+    });
+
+    expect(result.code).toBe(200);
+    expect(result.success).toBe(true);
+    expect(result.data?.downloadUrl).toMatch(/^https:\/\//);
+    expect(result.data?.fileSize).toBeGreaterThan(0);
+  });
+
   it("validates upload endpoint schemas", async () => {
     const provider = createKie({
       apiKey: "test-key",

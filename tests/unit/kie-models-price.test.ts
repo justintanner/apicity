@@ -1,5 +1,11 @@
-import { describe, expect, it } from "vitest";
-import { createKie, KieError } from "@apicity/kie";
+import { describe, expect, expectTypeOf, it } from "vitest";
+import {
+  createKie,
+  KieError,
+  type KieModelPriceData,
+  type KieModelPriceMethod,
+  type KieModelPriceResponse,
+} from "@apicity/kie";
 import { KieModelIdRequestSchema } from "@apicity/kie/zod";
 
 /**
@@ -114,6 +120,15 @@ describe("kie get.api.v1.models.price (injected fetch)", () => {
     const res = await provider.get.api.v1.models.price("ideogram/v3-remix");
 
     expect(res.data.pricingDesc).toBeNull();
+    expectTypeOf<
+      KieModelPriceResponse["data"]
+    >().toEqualTypeOf<KieModelPriceData>();
+    expectTypeOf<KieModelPriceData["pricingDesc"]>().toEqualTypeOf<
+      string | null
+    >();
+    expectTypeOf<Parameters<KieModelPriceMethod>>().toEqualTypeOf<
+      [model: string, signal?: AbortSignal]
+    >();
   });
 
   it("rejects an unknown model's 404 envelope", async () => {

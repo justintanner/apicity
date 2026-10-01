@@ -172,10 +172,12 @@ type AssertTrue<T extends true> = T;
 
 // Compile-level pin for the `| (string & {})` hatches above. Request schemas
 // accept an unlisted versioned id, so these interfaces must too. Drop a hatch
-// and the matching line below stops extending its interface, `AssertTrue` sees
-// `false` and errors here. No test can catch that on its own: these are erased
-// before any test runs, and the listed ids keep working either way. Mirrors
-// KieMediaModelStaysLiteral in zod.ts.
+// (for the Responses, OpenAI and xai requests, drop the hatch here and in
+// zod.ts's KieResponsesModel, KieOpenAiResponsesModel or KieXaiResponsesModel,
+// which carry their own) and the matching line below stops extending its
+// interface, `AssertTrue` sees `false` and errors here. No test can catch
+// that on its own: these are erased before any test runs, and the listed ids
+// keep working either way. Mirrors KieMediaModelStaysLiteral in zod.ts.
 export type KieResponsesRequestTakesUnlistedModel = AssertTrue<
   { model: "gpt-6"; input: string } extends KieResponsesRequest ? true : false
 >;

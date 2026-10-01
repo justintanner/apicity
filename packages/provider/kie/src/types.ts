@@ -905,6 +905,9 @@ import type {
   FluxKontextRecordInfoResponse,
   RecordInfoRequest,
   Seedance2MiniRecordInfoResponse,
+  KieAnthropicModelsRequest,
+  KieModelsRequest,
+  KieModelIdRequest,
 } from "./zod";
 
 export type { PayGateApproval as KieApproval } from "./paygate";
@@ -1046,10 +1049,6 @@ export interface KieAnthropicModelsResponse {
   [key: string]: unknown;
 }
 
-export interface KieAnthropicModelsRequest {
-  after_id?: string;
-}
-
 export interface KieAnthropicModelsMethod {
   (
     req?: KieAnthropicModelsRequest,
@@ -1155,19 +1154,6 @@ export interface KieDataEnvelope<T> extends KieApiEnvelope<T> {
 }
 
 /**
- * The filters of `GET /api/v1/models`. Values within `taskType` are OR-ed and
- * the three filters are AND-ed; an empty value is not sent.
- */
-export interface KieModelsRequest {
-  /** One task type, or several, sent as one comma-joined parameter. */
-  taskType?: string | string[];
-  /** A provider name, for example `Kling`. */
-  provider?: string;
-  /** A free-text keyword. */
-  q?: string;
-}
-
-/**
  * One catalog entry. `model` (equal to `slug`) is the id every other call
  * takes. Open to extra keys, so a new upstream field never breaks a caller.
  */
@@ -1210,12 +1196,6 @@ export interface KieModelsMethod {
   modelSchema: KieModelSchemaMethod;
   price: KieModelPriceMethod;
   successRate: KieModelSuccessRateMethod;
-}
-
-/** The path input of the per-model leaves, as their `.schema` names it. */
-export interface KieModelIdRequest {
-  /** A catalog id: one segment, or two joined by one `/`. Case-sensitive. */
-  model: string;
 }
 
 /**
@@ -1393,4 +1373,7 @@ export type {
   KieChatRequestInput,
   KieClaudeRequestInput,
   KieAnthropicMessagesModel,
+  KieAnthropicModelsRequest,
+  KieModelsRequest,
+  KieModelIdRequest,
 } from "./zod";

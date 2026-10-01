@@ -1,7 +1,25 @@
 import { readFileSync } from "node:fs";
-import { describe, expect, it } from "vitest";
-import { createKie, KieError, withRetry } from "@apicity/kie";
-import { KIE_MODEL_TASK_TYPES, KieModelsRequestSchema } from "@apicity/kie/zod";
+import { describe, expect, expectTypeOf, it } from "vitest";
+import {
+  createKie,
+  KieError,
+  KieModelTaskTypeAliasSchema as IndexTaskTypeAliasSchema,
+  KieModelTaskTypeSchema as IndexTaskTypeSchema,
+  KieModelsRequestSchema as IndexModelsRequestSchema,
+  withRetry,
+  type KieCatalogModel,
+  type KieDataEnvelope,
+  type KieModelsCatalog,
+  type KieModelsMethod,
+  type KieModelsRequest,
+  type KieModelsResponse,
+} from "@apicity/kie";
+import {
+  KIE_MODEL_TASK_TYPES,
+  KieModelTaskTypeAliasSchema,
+  KieModelTaskTypeSchema,
+  KieModelsRequestSchema,
+} from "@apicity/kie/zod";
 
 /**
  * `get.api.v1.models` with an injected fetch: no network, no recording. Pins
@@ -84,8 +102,12 @@ describe("kie get.api.v1.models (injected fetch)", () => {
     await provider.get.api.v1.models();
     await provider.get.api.v1.models({});
     await provider.get.api.v1.models({ taskType: [], provider: "", q: "" });
+    await provider.get.api.v1.models({ taskType: "" });
+    await provider.get.api.v1.models({ taskType: ["", ""] });
 
     expect(seen.map((call) => [call.method, call.url])).toEqual([
+      ["GET", "https://api.kie.ai/api/v1/models"],
+      ["GET", "https://api.kie.ai/api/v1/models"],
       ["GET", "https://api.kie.ai/api/v1/models"],
       ["GET", "https://api.kie.ai/api/v1/models"],
       ["GET", "https://api.kie.ai/api/v1/models"],
@@ -100,10 +122,12 @@ describe("kie get.api.v1.models (injected fetch)", () => {
       provider: "Black Forest Labs",
       taskType: ["Text to Video", "Image to Video"],
     });
+    await provider.get.api.v1.models({ taskType: ["", "Chat"] });
 
     expect(seen.map((call) => call.url)).toEqual([
       "https://api.kie.ai/api/v1/models?taskType=Text%20to%20Video",
       "https://api.kie.ai/api/v1/models?taskType=Text%20to%20Video,Image%20to%20Video&provider=Black%20Forest%20Labs&q=master%20%26%20more",
+      "https://api.kie.ai/api/v1/models?taskType=Chat",
     ]);
     for (const call of seen) expect(call.url).not.toContain(" ");
   });
@@ -128,6 +152,18 @@ describe("kie get.api.v1.models (injected fetch)", () => {
     expect(schema.safeParse({ taskType: "text to video" }).success).toBe(false);
     expect(schema.safeParse({ taskType: "" }).success).toBe(false);
     expect(schema.safeParse({ provider: 5 }).success).toBe(false);
+    expect(schema.safeParse({ q: 5 }).success).toBe(false);
+    expect(Object.keys(KieModelsRequestSchema.shape)).toEqual([
+      "taskType",
+      "provider",
+      "q",
+    ]);
+    expect(IndexModelsRequestSchema).toBe(KieModelsRequestSchema);
+    expect(IndexTaskTypeSchema).toBe(KieModelTaskTypeSchema);
+    expect(IndexTaskTypeAliasSchema).toBe(KieModelTaskTypeAliasSchema);
+    expectTypeOf<Parameters<KieModelsMethod>>().toEqualTypeOf<
+      [req?: KieModelsRequest, signal?: AbortSignal]
+    >();
   });
 
   it("enumerates the recorded catalog's task types in first-appearance order", () => {
@@ -144,6 +180,9 @@ describe("kie get.api.v1.models (injected fetch)", () => {
       }
     }
 
+    // Same members first, so a reorder-only change fails only the ordered
+    // pin below (REQ-001 item 5 is an ordered clause; ac-cygxx7 A-1).
+    expect(new Set(KIE_MODEL_TASK_TYPES)).toEqual(new Set(recorded));
     expect([...KIE_MODEL_TASK_TYPES]).toEqual(recorded);
   });
 
@@ -159,6 +198,17 @@ describe("kie get.api.v1.models (injected fetch)", () => {
   it("resolves the catalog envelope unchanged", async () => {
     const { provider } = stub(json(CATALOG));
     await expect(provider.get.api.v1.models()).resolves.toEqual(CATALOG);
+    expectTypeOf<KieModelsResponse>().toEqualTypeOf<
+      KieDataEnvelope<KieModelsCatalog>
+    >();
+    expectTypeOf<KieModelsResponse["data"]>().toEqualTypeOf<KieModelsCatalog>();
+    expectTypeOf<KieCatalogModel["description"]>().toEqualTypeOf<
+      string | null
+    >();
+    expectTypeOf<KieCatalogModel["pricingDesc"]>().toEqualTypeOf<
+      string | null
+    >();
+    expectTypeOf<KieCatalogModel[string]>().toEqualTypeOf<unknown>();
   });
 
   it("resolves a filter that matches nothing", async () => {
@@ -202,6 +252,12 @@ describe("kie get.api.v1.models (injected fetch)", () => {
       name: "KieError",
       status: 503,
     } satisfies Partial<KieError>);
+
+    const created = stub(json({ ...CATALOG, code: 201, msg: "created" }));
+    await expect(created.provider.get.api.v1.models()).rejects.toMatchObject({
+      name: "KieError",
+      status: 201,
+    } satisfies Partial<KieError>);
   });
 
   it("rejects a success envelope that is missing its payload", async () => {
@@ -210,15 +266,24 @@ describe("kie get.api.v1.models (injected fetch)", () => {
 
     expect(error).toBeInstanceOf(KieError);
     expect((error as KieError).message).toContain("missing its payload");
+    expect((error as KieError).status).toBe(500);
 
     const codeless = stub(json({ msg: "success", data: CATALOG.data }));
-    await expect(codeless.provider.get.api.v1.models()).rejects.toBeInstanceOf(
-      KieError
-    );
+    await expect(codeless.provider.get.api.v1.models()).rejects.toMatchObject({
+      name: "KieError",
+      status: 500,
+    } satisfies Partial<KieError>);
+
+    for (const data of [{ total: 0 }, { total: 0, models: null }]) {
+      const partial = stub(json({ code: 200, msg: "success", data }));
+      await expect(partial.provider.get.api.v1.models()).rejects.toThrow(
+        "missing its payload"
+      );
+    }
   });
 
   it("rejects an HTTP 500 with its status", async () => {
-    const { provider } = stub(json({ code: 500, msg: "Server error" }, 500));
+    const { provider } = stub(json({ code: 503, msg: "Server error" }, 500));
     await expect(provider.get.api.v1.models()).rejects.toMatchObject({
       name: "KieError",
       status: 500,

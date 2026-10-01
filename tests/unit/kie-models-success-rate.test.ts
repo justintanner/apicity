@@ -1,5 +1,12 @@
-import { describe, expect, it } from "vitest";
-import { createKie, KieError } from "@apicity/kie";
+import { describe, expect, expectTypeOf, it } from "vitest";
+import {
+  createKie,
+  KieError,
+  type KieModelSuccessRateData,
+  type KieModelSuccessRateMethod,
+  type KieModelSuccessRatePoint,
+  type KieModelSuccessRateResponse,
+} from "@apicity/kie";
 import { KieModelIdRequestSchema } from "@apicity/kie/zod";
 
 /**
@@ -114,6 +121,18 @@ describe("kie get.api.v1.models.successRate (injected fetch)", () => {
     expect(res).toEqual(RATES);
     expect(res.data.points[1].successRate).toBeNull();
     expect(res.data.points[1].errorRate).toBeNull();
+    expectTypeOf<
+      KieModelSuccessRateResponse["data"]
+    >().toEqualTypeOf<KieModelSuccessRateData>();
+    expectTypeOf<KieModelSuccessRatePoint["successRate"]>().toEqualTypeOf<
+      number | null
+    >();
+    expectTypeOf<KieModelSuccessRatePoint["errorRate"]>().toEqualTypeOf<
+      number | null
+    >();
+    expectTypeOf<Parameters<KieModelSuccessRateMethod>>().toEqualTypeOf<
+      [model: string, signal?: AbortSignal]
+    >();
   });
 
   it("resolves an empty points list: no monitoring data", async () => {
@@ -143,5 +162,12 @@ describe("kie get.api.v1.models.successRate (injected fetch)", () => {
 
     expect(error).toBeInstanceOf(KieError);
     expect((error as KieError).message).toContain("missing its payload");
+
+    const pointless = stub(
+      json({ code: 200, msg: "success", data: { model: MODEL, points: null } })
+    );
+    await expect(
+      pointless.provider.get.api.v1.models.successRate(MODEL)
+    ).rejects.toThrow("missing its payload");
   });
 });

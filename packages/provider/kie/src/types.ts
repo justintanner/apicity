@@ -1209,6 +1209,7 @@ export interface KieModelsMethod {
   schema: ApicitySchema<KieModelsRequest>;
   modelSchema: KieModelSchemaMethod;
   price: KieModelPriceMethod;
+  successRate: KieModelSuccessRateMethod;
 }
 
 /** The path input of the per-model leaves, as their `.schema` names it. */
@@ -1256,6 +1257,35 @@ export type KieModelPriceResponse = KieDataEnvelope<KieModelPriceData>;
 /** `GET /api/v1/models/{model}/price`: the model's pricing text. */
 export interface KieModelPriceMethod {
   (model: string, signal?: AbortSignal): Promise<KieModelPriceResponse>;
+  schema: ApicitySchema<KieModelIdRequest>;
+}
+
+/**
+ * One ten-minute bucket. `successRate` and `errorRate` are percentages, or
+ * `null` when the bucket had no traffic.
+ */
+export interface KieModelSuccessRatePoint {
+  start: string;
+  end: string;
+  successRate: number | null;
+  errorRate: number | null;
+  isNormal: boolean;
+  [key: string]: unknown;
+}
+
+/** The last 24 hours, at most 144 points; `[]` means no monitoring data. */
+export interface KieModelSuccessRateData {
+  model: string;
+  points: KieModelSuccessRatePoint[];
+  [key: string]: unknown;
+}
+
+export type KieModelSuccessRateResponse =
+  KieDataEnvelope<KieModelSuccessRateData>;
+
+/** `GET /api/v1/models/{model}/success-rate`: 24 hours of success rate. */
+export interface KieModelSuccessRateMethod {
+  (model: string, signal?: AbortSignal): Promise<KieModelSuccessRateResponse>;
   schema: ApicitySchema<KieModelIdRequest>;
 }
 

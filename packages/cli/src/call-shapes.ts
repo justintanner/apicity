@@ -5909,6 +5909,15 @@ export const CALL_SHAPES: Record<string, CallShape> = {
     injected: [],
     derived: [],
   },
+  "kie\tGET\tapi.v1.models.successRate": {
+    provider: "kie",
+    method: "GET",
+    dotPath: "api.v1.models.successRate",
+    positional: [{ placeholder: "model", param: "model", optional: false }],
+    fields: [],
+    injected: [],
+    derived: [],
+  },
   "kie\tGET\tapi.v1.mp4.recordInfo": {
     provider: "kie",
     method: "GET",

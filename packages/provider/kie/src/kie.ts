@@ -11,6 +11,7 @@ import {
   KieModelsResponse,
   KieModelSchemaResponse,
   KieModelPriceResponse,
+  KieModelSuccessRateResponse,
   KieApiEnvelope,
   DownloadUrlRequest,
   DownloadUrlResponse,
@@ -903,6 +904,20 @@ export function createKie(opts: KieOptions): KieProvider {
     });
   }
 
+  // GET https://api.kie.ai/api/v1/models/{model}/success-rate
+  // Docs: https://docs.kie.ai/ai-agent/install-kie-models
+  async function modelSuccessRate(
+    model: string,
+    signal?: AbortSignal
+  ): Promise<KieModelSuccessRateResponse> {
+    return kieRequest<KieModelSuccessRateResponse>(transport, {
+      method: "GET",
+      path: modelPath(model, "success-rate"),
+      signal,
+      envelopeData: (data) => Array.isArray(data.points),
+    });
+  }
+
   return attachExamples(
     withPaidGate(
       "kie",
@@ -1094,6 +1109,9 @@ export function createKie(opts: KieOptions): KieProvider {
                   schema: KieModelIdRequestSchema,
                 }),
                 price: Object.assign(modelPrice, {
+                  schema: KieModelIdRequestSchema,
+                }),
+                successRate: Object.assign(modelSuccessRate, {
                   schema: KieModelIdRequestSchema,
                 }),
               }),

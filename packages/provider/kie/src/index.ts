@@ -391,6 +391,11 @@ export {
   GptImage25SunburstTextToImageRequestSchema,
   GptImage25SunburstImageToImageRequestSchema,
   KieAnthropicModelsRequestSchema,
+  KieModelsRequestSchema,
+  KieModelTaskTypeAliasSchema,
+  KieModelTaskTypeSchema,
+  KieCatalogModelIdSchema,
+  KieModelIdRequestSchema,
   KieAnthropicMessagesModelSchema,
   KieAnthropicMessagesRequestSchema,
   KieResponsesFunctionToolSchema,
@@ -1280,6 +1285,28 @@ export type {
   SunoAddVocalsRequest,
   SunoProvider,
 } from "./suno";
+
+// Model discovery (`https://api.kie.ai/api/v1/models`, the kie-models skill)
+export type {
+  KieCatalogModel,
+  KieDataEnvelope,
+  KieModelIdRequest,
+  KieModelOpenApiDocument,
+  KieModelPriceData,
+  KieModelPriceMethod,
+  KieModelPriceResponse,
+  KieModelSchemaData,
+  KieModelSchemaMethod,
+  KieModelSchemaResponse,
+  KieModelSuccessRateData,
+  KieModelSuccessRateMethod,
+  KieModelSuccessRatePoint,
+  KieModelSuccessRateResponse,
+  KieModelsCatalog,
+  KieModelsMethod,
+  KieModelsRequest,
+  KieModelsResponse,
+} from "./types";
 
 // Coding-agent proxy: Grok Build (`https://api.kie.ai/xai/v1`)
 export type {

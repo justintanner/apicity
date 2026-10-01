@@ -760,7 +760,7 @@ console.log(segmentEditTask.data?.taskId);
 
 ## API Reference
 
-68 endpoints across 33 groups. Each method mirrors an upstream URL path.
+72 endpoints across 34 groups. Each method mirrors an upstream URL path.
 
 ### anthropic
 
@@ -1468,6 +1468,76 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await kie.get.api.v1.mj.recordInfo({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
+
+</details>
+
+### models
+
+<details>
+<summary><code>GET</code> <b><code>kie.get.api.v1.models</code></b></summary>
+
+<code>GET https://api.kie.ai/api/v1/models</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/ai-agent/install-kie-models)
+
+```typescript
+const res = await kie.get.api.v1.models({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>kie.get.api.v1.models.modelSchema</code></b></summary>
+
+<code>GET https://api.kie.ai/api/v1/models/{model}/schema</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/ai-agent/install-kie-models)
+
+```typescript
+const res = await kie.get.api.v1.models.modelSchema({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>kie.get.api.v1.models.price</code></b></summary>
+
+<code>GET https://api.kie.ai/api/v1/models/{model}/price</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/ai-agent/install-kie-models)
+
+```typescript
+const res = await kie.get.api.v1.models.price({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>kie.get.api.v1.models.successRate</code></b></summary>
+
+<code>GET https://api.kie.ai/api/v1/models/{model}/success-rate</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/ai-agent/install-kie-models)
+
+```typescript
+const res = await kie.get.api.v1.models.successRate({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)

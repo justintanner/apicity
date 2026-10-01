@@ -71,6 +71,15 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "GET api.v1.models": {
+    "source": "kie/models-catalog-filtered",
+    "payload": {
+      "taskType": "Text to Video,Image to Video",
+      "provider": "Kling"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "GET api.v1.mp4.recordInfo": {
     "source": "kie/mp4/record-info-not-found",
     "payload": {

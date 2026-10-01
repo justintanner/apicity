@@ -1807,7 +1807,7 @@
       "displayKeys": 173,
       "schemaWithoutPricing": 6,
       "pricingOnly": 30,
-      "endpoints": 81
+      "endpoints": 85
     }
   },
   "source": {
@@ -1820,12 +1820,12 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:ae8ef8f92b4d316b44bcc7170d03ac20c1d9b66447e67ed61378a5b77574d5e9",
+      "packages/provider/kie/src/zod.ts": "sha256:10349dd8cc44460f134b7d659ab7832d6fd754881aebbf6df7c5ad12aaa6442c",
       "packages/provider/kie/src/model-schemas.ts": "sha256:3d9709a66228976e0c50be2eecf9e0c047bbbfecccc1033e1f778bc7ef8917e8",
-      "packages/provider/kie/src/kie.ts": "sha256:62f14aaf6fd6639ce70728dbe02b587cd14bc58f0300dcc5180683ef4718809b",
+      "packages/provider/kie/src/kie.ts": "sha256:9417b4fa14a0cfdb6170edc820acbe268e8cdb4ff66b199a240b592e5a7fde77",
       "packages/provider/cost/src/pricing/kie.ts": "sha256:74db62a6e2c42904b341aa6d3aba73be6e2e2613af748803fcc3f48df0bfa5ad",
       "packages/provider/cost/src/slugs.ts": "sha256:c93318d6568e57df131f49994b3f36aa99787d45169c6747009cebcdd3c29bec",
-      "scripts/endpoint-docs.tsv": "sha256:290a0f6f539804b8097f558c7f99488f66d7f7b4fe0f00f1d0238ae0411975cc"
+      "scripts/endpoint-docs.tsv": "sha256:bf4d510901c6b940d1ee76dae66ea9d9ffb8caa446b1504b99011d2613ef9e4e"
     }
   },
   "rows": [
@@ -24997,6 +24997,46 @@
       },
       {
         "provider": "kie",
+        "dotPath": "api.v1.models",
+        "method": "GET",
+        "fullUrl": "https://api.kie.ai/api/v1/models",
+        "docsUrl": "https://docs.kie.ai/ai-agent/install-kie-models",
+        "linkedPricingKeys": [],
+        "disposition": "supported",
+        "rationale": "Documented callable endpoint is retained for architecture review even when its pricing is model-keyed."
+      },
+      {
+        "provider": "kie",
+        "dotPath": "api.v1.models.modelSchema",
+        "method": "GET",
+        "fullUrl": "https://api.kie.ai/api/v1/models/{model}/schema",
+        "docsUrl": "https://docs.kie.ai/ai-agent/install-kie-models",
+        "linkedPricingKeys": [],
+        "disposition": "supported",
+        "rationale": "Documented callable endpoint is retained for architecture review even when its pricing is model-keyed."
+      },
+      {
+        "provider": "kie",
+        "dotPath": "api.v1.models.price",
+        "method": "GET",
+        "fullUrl": "https://api.kie.ai/api/v1/models/{model}/price",
+        "docsUrl": "https://docs.kie.ai/ai-agent/install-kie-models",
+        "linkedPricingKeys": [],
+        "disposition": "supported",
+        "rationale": "Documented callable endpoint is retained for architecture review even when its pricing is model-keyed."
+      },
+      {
+        "provider": "kie",
+        "dotPath": "api.v1.models.successRate",
+        "method": "GET",
+        "fullUrl": "https://api.kie.ai/api/v1/models/{model}/success-rate",
+        "docsUrl": "https://docs.kie.ai/ai-agent/install-kie-models",
+        "linkedPricingKeys": [],
+        "disposition": "supported",
+        "rationale": "Documented callable endpoint is retained for architecture review even when its pricing is model-keyed."
+      },
+      {
+        "provider": "kie",
         "dotPath": "api.v1.mp4.generate",
         "method": "POST",
         "fullUrl": "https://api.kie.ai/api/v1/mp4/generate",
@@ -28777,11 +28817,11 @@
         "unclassified": 0
       },
       "endpoints": {
-        "count": 81,
+        "count": 85,
         "POST": 60,
-        "GET": 21,
+        "GET": 25,
         "dispositionCounts": {
-          "supported": 57,
+          "supported": 61,
           "free-nonbillable": 24,
           "unsupported-endpoint": 0,
           "token-billed": 0,

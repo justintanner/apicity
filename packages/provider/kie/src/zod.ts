@@ -8099,6 +8099,61 @@ export type KieAnthropicMessagesModel =
   | (string & {});
 
 // ---------------------------------------------------------------------------
+// Model discovery (`https://api.kie.ai/api/v1/models`, the kie-models skill)
+// ---------------------------------------------------------------------------
+
+// The task types of the recording kie/models-catalog, in first-appearance
+// order, so `apicity describe` lists the vocabulary. KIE adds categories on
+// its own cadence, and an unknown one only matches nothing (`total: 0`), so a
+// new title-case category parses through the alias instead of failing.
+export const KIE_MODEL_TASK_TYPES = [
+  "Text to Video",
+  "Image to Video",
+  "Image Editing",
+  "Text to Image",
+  "Image to Image",
+  "Speech to Video",
+  "Text to Speech",
+  "Lip Sync",
+  "Video to Video",
+  "Text to Music",
+  "Audio to Audio",
+  "Chat",
+  "Video Editing",
+] as const;
+
+export const KieModelTaskTypeAliasSchema = z
+  .string()
+  .regex(/^[A-Z][A-Za-z0-9]*(?: [A-Za-z0-9]+)*$/);
+
+export const KieModelTaskTypeSchema = z
+  .enum(KIE_MODEL_TASK_TYPES)
+  .or(KieModelTaskTypeAliasSchema);
+
+// `GET /api/v1/models` takes three combinable filters and no paging. A
+// `taskType` array is sent as one comma-joined parameter, so the schema
+// describes one category per string.
+export const KieModelsRequestSchema = z.object({
+  taskType: z
+    .union([KieModelTaskTypeSchema, z.array(KieModelTaskTypeSchema)])
+    .optional(),
+  provider: z.string().optional(),
+  q: z.string().optional(),
+});
+
+// `GET /api/v1/models/{model}/…` takes a catalog id: one segment, or two
+// joined by one `/`, each starting with a letter or digit. Ids are
+// case-sensitive. Not an enum (ac-cygxx7 OQ-3): the legal ids are exactly what
+// the catalog returns, and the kie-models skill says to read them from it.
+export const KieCatalogModelIdSchema = z
+  .string()
+  .regex(/^[A-Za-z0-9][A-Za-z0-9._-]*(?:\/[A-Za-z0-9][A-Za-z0-9._-]*)?$/);
+
+export const KieModelIdRequestSchema = z.object({
+  model: KieCatalogModelIdSchema,
+});
+
+// ---------------------------------------------------------------------------
 // Media generation request (discriminated union on model)
 // ---------------------------------------------------------------------------
 

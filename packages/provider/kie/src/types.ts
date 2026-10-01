@@ -1142,6 +1142,153 @@ export interface KieOpenAiModelsV1Namespace {
   models(): Promise<KieOpenAiModelsResponse>;
 }
 
+// ---------------------------------------------------------------------------
+// Model discovery (`https://api.kie.ai/api/v1/models`, the kie-models skill)
+// ---------------------------------------------------------------------------
+
+/**
+ * A `KieApiEnvelope` whose `data` is always there: what a discovery leaf
+ * resolves with, because it rejects every other answer.
+ */
+export interface KieDataEnvelope<T> extends KieApiEnvelope<T> {
+  data: T;
+}
+
+/**
+ * The filters of `GET /api/v1/models`. Values within `taskType` are OR-ed and
+ * the three filters are AND-ed; an empty value is not sent.
+ */
+export interface KieModelsRequest {
+  /** One task type, or several, sent as one comma-joined parameter. */
+  taskType?: string | string[];
+  /** A provider name, for example `Kling`. */
+  provider?: string;
+  /** A free-text keyword. */
+  q?: string;
+}
+
+/**
+ * One catalog entry. `model` (equal to `slug`) is the id every other call
+ * takes. Open to extra keys, so a new upstream field never breaks a caller.
+ */
+export interface KieCatalogModel {
+  model: string;
+  slug: string;
+  title: string;
+  provider: string;
+  taskType: string[];
+  description: string | null;
+  /** Pricing prose, not a number; `null` for a few models. */
+  pricingDesc: string | null;
+  [key: string]: unknown;
+}
+
+/** The catalog in one page: `total` is the length of `models`. */
+export interface KieModelsCatalog {
+  total: number;
+  models: KieCatalogModel[];
+  [key: string]: unknown;
+}
+
+export type KieModelsResponse = KieDataEnvelope<KieModelsCatalog>;
+
+/**
+ * `GET /api/v1/models`, the kie-models skill's first call: pick a model from
+ * the live catalog, never from memory. Its children are the per-model
+ * discovery leaves.
+ */
+export interface KieModelsMethod {
+  /**
+   * The whole catalog, or the models every given filter matches; a filter
+   * that matches nothing resolves with `total: 0`. The four `/api/v1/models`
+   * endpoints share one budget of one request per second per account, and a
+   * faster call rejects as a `KieError` with status 429: compose
+   * `withRateLimit` to pace calls, or `withRetry` to retry them.
+   */
+  (req?: KieModelsRequest, signal?: AbortSignal): Promise<KieModelsResponse>;
+  schema: ApicitySchema<KieModelsRequest>;
+  modelSchema: KieModelSchemaMethod;
+  price: KieModelPriceMethod;
+  successRate: KieModelSuccessRateMethod;
+}
+
+/** The path input of the per-model leaves, as their `.schema` names it. */
+export interface KieModelIdRequest {
+  /** A catalog id: one segment, or two joined by one `/`. Case-sensitive. */
+  model: string;
+}
+
+/**
+ * A model's OpenAPI 3.1 document, inlined: `paths` names the endpoint and
+ * method to call, and `components` holds the schemas its `$ref`s point at.
+ * Not resolved or validated here; open to every other OpenAPI key.
+ */
+export interface KieModelOpenApiDocument {
+  openapi: string;
+  paths: Record<string, Record<string, unknown>>;
+  components?: Record<string, unknown>;
+  [key: string]: unknown;
+}
+
+/** `openapi` is `null` while KIE has not synced the model's document. */
+export interface KieModelSchemaData {
+  model: string;
+  openapi: KieModelOpenApiDocument | null;
+  [key: string]: unknown;
+}
+
+export type KieModelSchemaResponse = KieDataEnvelope<KieModelSchemaData>;
+
+/** `GET /api/v1/models/{model}/schema`: the model's OpenAPI document. */
+export interface KieModelSchemaMethod {
+  (model: string, signal?: AbortSignal): Promise<KieModelSchemaResponse>;
+  schema: ApicitySchema<KieModelIdRequest>;
+}
+
+/** `pricingDesc` is KIE's pricing prose, or `null` when it has none. */
+export interface KieModelPriceData {
+  model: string;
+  pricingDesc: string | null;
+  [key: string]: unknown;
+}
+
+export type KieModelPriceResponse = KieDataEnvelope<KieModelPriceData>;
+
+/** `GET /api/v1/models/{model}/price`: the model's pricing text. */
+export interface KieModelPriceMethod {
+  (model: string, signal?: AbortSignal): Promise<KieModelPriceResponse>;
+  schema: ApicitySchema<KieModelIdRequest>;
+}
+
+/**
+ * One ten-minute bucket. `successRate` and `errorRate` are percentages, or
+ * `null` when the bucket had no traffic.
+ */
+export interface KieModelSuccessRatePoint {
+  start: string;
+  end: string;
+  successRate: number | null;
+  errorRate: number | null;
+  isNormal: boolean;
+  [key: string]: unknown;
+}
+
+/** The last 24 hours, at most 144 points; `[]` means no monitoring data. */
+export interface KieModelSuccessRateData {
+  model: string;
+  points: KieModelSuccessRatePoint[];
+  [key: string]: unknown;
+}
+
+export type KieModelSuccessRateResponse =
+  KieDataEnvelope<KieModelSuccessRateData>;
+
+/** `GET /api/v1/models/{model}/success-rate`: 24 hours of success rate. */
+export interface KieModelSuccessRateMethod {
+  (model: string, signal?: AbortSignal): Promise<KieModelSuccessRateResponse>;
+  schema: ApicitySchema<KieModelIdRequest>;
+}
+
 // GET namespace
 interface KieGetApiNamespace {
   v1: {
@@ -1155,6 +1302,7 @@ interface KieGetApiNamespace {
       };
     };
     chat: { credit(): Promise<KieCreditsResponse> };
+    models: KieModelsMethod;
   };
 }
 

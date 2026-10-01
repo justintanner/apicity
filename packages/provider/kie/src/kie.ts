@@ -7,6 +7,11 @@ import {
   KieCreditsResponse,
   KieAnthropicModelsRequest,
   KieAnthropicModelsResponse,
+  KieModelsRequest,
+  KieModelsResponse,
+  KieModelSchemaResponse,
+  KieModelPriceResponse,
+  KieModelSuccessRateResponse,
   KieApiEnvelope,
   DownloadUrlRequest,
   DownloadUrlResponse,
@@ -59,6 +64,8 @@ import {
   GrokImageToVideoRequestSchema,
   RecordInfoRequestSchema,
   KieAnthropicModelsRequestSchema,
+  KieModelsRequestSchema,
+  KieModelIdRequestSchema,
   Gpt4oImageRecordInfoResponseSchema,
   Seedance2MiniRecordInfoResponseSchema,
   Seedance2MiniRequestSchema,
@@ -480,6 +487,45 @@ function inferMimeType(filename: string): string | undefined {
   return ext ? MIME_TYPES[ext] : undefined;
 }
 
+/**
+ * The query string of `GET /api/v1/models`, `?` included, or `""` with no
+ * filter. Filters go in the order `taskType`, `provider`, `q`, and an empty
+ * one is not sent. A `taskType` array becomes one parameter whose values are
+ * joined with a comma. Every value is percent-encoded, so no raw space is
+ * ever sent.
+ */
+function modelCatalogQuery(req: KieModelsRequest): string {
+  const taskTypes = (
+    Array.isArray(req.taskType) ? req.taskType : [req.taskType]
+  ).filter((value): value is string => Boolean(value));
+  const params: string[] = [];
+  if (taskTypes.length > 0) {
+    const joined = taskTypes.map((value) => encodeURIComponent(value));
+    params.push(`taskType=${joined.join(",")}`);
+  }
+  if (req.provider) params.push(`provider=${encodeURIComponent(req.provider)}`);
+  if (req.q) params.push(`q=${encodeURIComponent(req.q)}`);
+  return params.length > 0 ? `?${params.join("&")}` : "";
+}
+
+/**
+ * `/api/v1/models/<model>/<suffix>` for the per-model discovery GETs. The
+ * slash of a two-segment id stays literal, as the kie-models skill requires;
+ * each segment is percent-encoded on its own, so `?`, `#` or a space cannot
+ * leave the path. The id is never lowercased or trimmed: ids are
+ * case-sensitive. Nor is it validated before the call (no provider leaf
+ * validates at runtime), so one residual stays: a segment of exactly `..`
+ * survives the encoding and the URL parser resolves it, so `price("..")`
+ * reaches another GET path on the same host, with the caller's own key.
+ */
+function modelPath(
+  model: string,
+  suffix: "schema" | "price" | "success-rate"
+): string {
+  const segments = model.split("/").map((part) => encodeURIComponent(part));
+  return `/api/v1/models/${segments.join("/")}/${suffix}`;
+}
+
 export function createKie(opts: KieOptions): KieProvider {
   const baseURL = opts.baseURL ?? "https://api.kie.ai";
   const uploadBaseURL = opts.uploadBaseURL ?? "https://kieai.redpandaai.co";
@@ -814,6 +860,64 @@ export function createKie(opts: KieOptions): KieProvider {
     });
   }
 
+  // GET https://api.kie.ai/api/v1/models
+  // Docs: https://docs.kie.ai/ai-agent/install-kie-models
+  async function modelCatalog(
+    req: KieModelsRequest = {},
+    signal?: AbortSignal
+  ): Promise<KieModelsResponse> {
+    return kieRequest<KieModelsResponse>(transport, {
+      method: "GET",
+      path: `/api/v1/models${modelCatalogQuery(req)}`,
+      signal,
+      envelopeData: (data) => Array.isArray(data.models),
+    });
+  }
+
+  // sig-ok: `schema` would shadow the reserved `.schema` zod key (OQ-1).
+  // GET https://api.kie.ai/api/v1/models/{model}/schema
+  // Docs: https://docs.kie.ai/ai-agent/install-kie-models
+  async function modelSchema(
+    model: string,
+    signal?: AbortSignal
+  ): Promise<KieModelSchemaResponse> {
+    return kieRequest<KieModelSchemaResponse>(transport, {
+      method: "GET",
+      path: modelPath(model, "schema"),
+      signal,
+      envelopeData: (data) =>
+        typeof data.model === "string" && "openapi" in data,
+    });
+  }
+
+  // GET https://api.kie.ai/api/v1/models/{model}/price
+  // Docs: https://docs.kie.ai/ai-agent/install-kie-models
+  async function modelPrice(
+    model: string,
+    signal?: AbortSignal
+  ): Promise<KieModelPriceResponse> {
+    return kieRequest<KieModelPriceResponse>(transport, {
+      method: "GET",
+      path: modelPath(model, "price"),
+      signal,
+      envelopeData: (data) => "pricingDesc" in data,
+    });
+  }
+
+  // GET https://api.kie.ai/api/v1/models/{model}/success-rate
+  // Docs: https://docs.kie.ai/ai-agent/install-kie-models
+  async function modelSuccessRate(
+    model: string,
+    signal?: AbortSignal
+  ): Promise<KieModelSuccessRateResponse> {
+    return kieRequest<KieModelSuccessRateResponse>(transport, {
+      method: "GET",
+      path: modelPath(model, "success-rate"),
+      signal,
+      envelopeData: (data) => Array.isArray(data.points),
+    });
+  }
+
   return attachExamples(
     withPaidGate(
       "kie",
@@ -999,6 +1103,18 @@ export function createKie(opts: KieOptions): KieProvider {
                 },
               },
               chat: { credit },
+              models: Object.assign(modelCatalog, {
+                schema: KieModelsRequestSchema,
+                modelSchema: Object.assign(modelSchema, {
+                  schema: KieModelIdRequestSchema,
+                }),
+                price: Object.assign(modelPrice, {
+                  schema: KieModelIdRequestSchema,
+                }),
+                successRate: Object.assign(modelSuccessRate, {
+                  schema: KieModelIdRequestSchema,
+                }),
+              }),
             },
           },
           openai: { v1: { models: openaiModels } },

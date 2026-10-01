@@ -1807,7 +1807,7 @@
       "displayKeys": 173,
       "schemaWithoutPricing": 6,
       "pricingOnly": 30,
-      "endpoints": 85
+      "endpoints": 86
     }
   },
   "source": {
@@ -1820,12 +1820,12 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:10349dd8cc44460f134b7d659ab7832d6fd754881aebbf6df7c5ad12aaa6442c",
+      "packages/provider/kie/src/zod.ts": "sha256:b9d5e0e45480f862f7bf169c9ffb1a37da4e8e17f4d7610f750496a5d27b27a4",
       "packages/provider/kie/src/model-schemas.ts": "sha256:3d9709a66228976e0c50be2eecf9e0c047bbbfecccc1033e1f778bc7ef8917e8",
-      "packages/provider/kie/src/kie.ts": "sha256:9417b4fa14a0cfdb6170edc820acbe268e8cdb4ff66b199a240b592e5a7fde77",
+      "packages/provider/kie/src/kie.ts": "sha256:7e9fc23f446eff32095b190055013cdc887b3a70fa82f73b2eabf74650f9421f",
       "packages/provider/cost/src/pricing/kie.ts": "sha256:74db62a6e2c42904b341aa6d3aba73be6e2e2613af748803fcc3f48df0bfa5ad",
       "packages/provider/cost/src/slugs.ts": "sha256:c93318d6568e57df131f49994b3f36aa99787d45169c6747009cebcdd3c29bec",
-      "scripts/endpoint-docs.tsv": "sha256:bf4d510901c6b940d1ee76dae66ea9d9ffb8caa446b1504b99011d2613ef9e4e"
+      "scripts/endpoint-docs.tsv": "sha256:f836792b46c8e7d0c185caee9328e4b61f92c6c3b50ca875354eeea9e9803bab"
     }
   },
   "rows": [
@@ -25477,6 +25477,16 @@
       },
       {
         "provider": "kie",
+        "dotPath": "gpt52.v1.chat.completions",
+        "method": "POST",
+        "fullUrl": "https://api.kie.ai/gpt-5-2/v1/chat/completions",
+        "docsUrl": "https://docs.kie.ai/market/chat/gpt-5-2",
+        "linkedPricingKeys": [],
+        "disposition": "supported",
+        "rationale": "Documented callable endpoint is retained for architecture review even when its pricing is model-keyed."
+      },
+      {
+        "provider": "kie",
         "dotPath": "grok.v1.responses",
         "method": "POST",
         "fullUrl": "https://api.kie.ai/grok/v1/responses",
@@ -28817,11 +28827,11 @@
         "unclassified": 0
       },
       "endpoints": {
-        "count": 85,
-        "POST": 60,
+        "count": 86,
+        "POST": 61,
         "GET": 25,
         "dispositionCounts": {
-          "supported": 61,
+          "supported": 62,
           "free-nonbillable": 24,
           "unsupported-endpoint": 0,
           "token-billed": 0,

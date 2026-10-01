@@ -1,6 +1,15 @@
 import { readdirSync, readFileSync } from "node:fs";
-import { describe, expect, it } from "vitest";
-import { createKie, KieError } from "@apicity/kie";
+import { describe, expect, expectTypeOf, it } from "vitest";
+import {
+  createKie,
+  KieCatalogModelIdSchema as IndexCatalogModelIdSchema,
+  KieError,
+  KieModelIdRequestSchema as IndexModelIdRequestSchema,
+  type KieModelIdRequest,
+  type KieModelOpenApiDocument,
+  type KieModelSchemaData,
+  type KieModelSchemaMethod,
+} from "@apicity/kie";
 import {
   KieCatalogModelIdSchema,
   KieModelIdRequestSchema,
@@ -111,6 +120,7 @@ describe("kie get.api.v1.models.modelSchema (injected fetch)", () => {
     await leaf("ai-music-api/timeStamped-lyrics");
     await leaf("a?b");
     await leaf(" a b ");
+    await leaf("x/");
 
     expect(seen.map((call) => [call.method, call.url])).toEqual([
       [
@@ -127,6 +137,7 @@ describe("kie get.api.v1.models.modelSchema (injected fetch)", () => {
       ],
       ["GET", "https://api.kie.ai/api/v1/models/a%3Fb/schema"],
       ["GET", "https://api.kie.ai/api/v1/models/%20a%20b%20/schema"],
+      ["GET", "https://api.kie.ai/api/v1/models/x//schema"],
     ]);
   });
 
@@ -142,9 +153,25 @@ describe("kie get.api.v1.models.modelSchema (injected fetch)", () => {
     ]) {
       expect(schema.safeParse({ model }).success, model).toBe(true);
     }
-    for (const model of ["", "a/b/c", "/x", "x/", "a?b", "a b", "-x"]) {
+    for (const model of [
+      "",
+      "a/b/c",
+      "/x",
+      "x/",
+      "a?b",
+      "a b",
+      "-x",
+      "a/-b",
+      "a/.b",
+    ]) {
       expect(schema.safeParse({ model }).success, model).toBe(false);
     }
+    expect(IndexModelIdRequestSchema).toBe(KieModelIdRequestSchema);
+    expect(IndexCatalogModelIdSchema).toBe(KieCatalogModelIdSchema);
+    expectTypeOf<KieModelIdRequest>().toEqualTypeOf<{ model: string }>();
+    expectTypeOf<Parameters<KieModelSchemaMethod>>().toEqualTypeOf<
+      [model: string, signal?: AbortSignal]
+    >();
   });
 
   it("accepts every id of the committed catalog recording", () => {
@@ -197,6 +224,12 @@ describe("kie get.api.v1.models.modelSchema (injected fetch)", () => {
     );
 
     expect(res.data.openapi).toBeNull();
+    expectTypeOf<
+      KieModelSchemaData["openapi"]
+    >().toEqualTypeOf<KieModelOpenApiDocument | null>();
+    expectTypeOf<KieModelOpenApiDocument["paths"]>().toEqualTypeOf<
+      Record<string, Record<string, unknown>>
+    >();
   });
 
   it("rejects an unknown model's 404 envelope", async () => {
@@ -219,10 +252,17 @@ describe("kie get.api.v1.models.modelSchema (injected fetch)", () => {
 
     expect(error).toBeInstanceOf(KieError);
     expect((error as KieError).message).toContain("missing its payload");
+
+    const modelless = stub(
+      json({ code: 200, msg: "success", data: { openapi: null } })
+    );
+    await expect(
+      modelless.provider.get.api.v1.models.modelSchema(MODEL)
+    ).rejects.toThrow("missing its payload");
   });
 
   it("rejects an HTTP 500 and a body that is not JSON", async () => {
-    const failed = stub(json({ code: 500, msg: "Server error" }, 500));
+    const failed = stub(json({ code: 503, msg: "Server error" }, 500));
     await expect(
       failed.provider.get.api.v1.models.modelSchema(MODEL)
     ).rejects.toMatchObject({

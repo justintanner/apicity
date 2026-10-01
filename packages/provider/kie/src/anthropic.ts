@@ -68,8 +68,9 @@ export interface KieAnthropicMessagesRequest {
 type AssertTrue<T extends true> = T;
 
 // Compile-level pin for the `| (string & {})` hatch above, as the Responses
-// siblings pin theirs in responses.ts: drop the hatch and this stops
-// compiling, which no test could notice on its own.
+// siblings pin theirs in responses.ts: drop the hatch here and in zod.ts's
+// KieAnthropicMessagesModel and this stops compiling, which no test could
+// notice on its own.
 export type KieAnthropicMessagesRequestTakesUnlistedModel = AssertTrue<
   {
     model: "claude-opus-9-9";

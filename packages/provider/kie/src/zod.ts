@@ -8146,6 +8146,10 @@ export const KieAnthropicModelsRequestSchema = z.object({
   after_id: z.string().min(1).optional(),
 });
 
+export type KieAnthropicModelsRequest = z.input<
+  typeof KieAnthropicModelsRequestSchema
+>;
+
 // `POST /anthropic/v1/messages` serves the Anthropic Messages protocol as is
 // (https://docs.kie.ai/ai-agent/claude-code). The enum is exactly the ids
 // `GET /anthropic/v1/models` returned in the recording kie/anthropic-models
@@ -8255,12 +8259,21 @@ export const KieModelTaskTypeSchema = z
 // `taskType` array is sent as one comma-joined parameter, so the schema
 // describes one category per string.
 export const KieModelsRequestSchema = z.object({
+  /** One task type, or several, sent as one comma-joined parameter. */
   taskType: z
     .union([KieModelTaskTypeSchema, z.array(KieModelTaskTypeSchema)])
     .optional(),
+  /** A provider name, for example `Kling`. */
   provider: z.string().optional(),
+  /** A free-text keyword. */
   q: z.string().optional(),
 });
+
+/**
+ * The filters of `GET /api/v1/models`. Values within `taskType` are OR-ed and
+ * the three filters are AND-ed; an empty value is not sent.
+ */
+export type KieModelsRequest = z.input<typeof KieModelsRequestSchema>;
 
 // `GET /api/v1/models/{model}/…` takes a catalog id: one segment, or two
 // joined by one `/`, each starting with a letter or digit. Ids are
@@ -8271,8 +8284,12 @@ export const KieCatalogModelIdSchema = z
   .regex(/^[A-Za-z0-9][A-Za-z0-9._-]*(?:\/[A-Za-z0-9][A-Za-z0-9._-]*)?$/);
 
 export const KieModelIdRequestSchema = z.object({
+  /** A catalog id: one segment, or two joined by one `/`. Case-sensitive. */
   model: KieCatalogModelIdSchema,
 });
+
+/** The path input of the per-model leaves, as their `.schema` names it. */
+export type KieModelIdRequest = z.input<typeof KieModelIdRequestSchema>;
 
 // ---------------------------------------------------------------------------
 // Media generation request (discriminated union on model)
@@ -8479,7 +8496,7 @@ export type KieMediaModelStaysLiteral = AssertTrue<
 // `| (string & {})` hatch. `string extends T` is `true` for those by
 // construction, so the check above cannot be reused; this one asks the question
 // that still discriminates them — are there literal members left to
-// autocomplete? Re-point any of the three types below at
+// autocomplete? Re-point any of the types below at
 // `z.infer<typeof …Schema>` and its literals vanish, `LiteralPart` resolves to
 // `never`, and `AssertTrue` errors here. Without this, nothing in the repo
 // notices: types are erased before any test runs, and every one of these ids is
@@ -8498,6 +8515,15 @@ export type KieGrokResponsesModelKeepsLiterals = AssertTrue<
 >;
 export type KieApiResponsesModelKeepsLiterals = AssertTrue<
   StaysAutocompletable<KieApiResponsesModel>
+>;
+export type KieAnthropicMessagesModelKeepsLiterals = AssertTrue<
+  StaysAutocompletable<KieAnthropicMessagesModel>
+>;
+export type KieXaiResponsesModelKeepsLiterals = AssertTrue<
+  StaysAutocompletable<KieXaiResponsesModel>
+>;
+export type KieOpenAiResponsesModelKeepsLiterals = AssertTrue<
+  StaysAutocompletable<KieOpenAiResponsesModel>
 >;
 
 export type MediaType = z.infer<typeof MediaTypeSchema>;

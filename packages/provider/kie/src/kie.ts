@@ -10,6 +10,7 @@ import {
   KieModelsRequest,
   KieModelsResponse,
   KieModelSchemaResponse,
+  KieModelPriceResponse,
   KieApiEnvelope,
   DownloadUrlRequest,
   DownloadUrlResponse,
@@ -888,6 +889,20 @@ export function createKie(opts: KieOptions): KieProvider {
     });
   }
 
+  // GET https://api.kie.ai/api/v1/models/{model}/price
+  // Docs: https://docs.kie.ai/ai-agent/install-kie-models
+  async function modelPrice(
+    model: string,
+    signal?: AbortSignal
+  ): Promise<KieModelPriceResponse> {
+    return kieRequest<KieModelPriceResponse>(transport, {
+      method: "GET",
+      path: modelPath(model, "price"),
+      signal,
+      envelopeData: (data) => "pricingDesc" in data,
+    });
+  }
+
   return attachExamples(
     withPaidGate(
       "kie",
@@ -1076,6 +1091,9 @@ export function createKie(opts: KieOptions): KieProvider {
               models: Object.assign(modelCatalog, {
                 schema: KieModelsRequestSchema,
                 modelSchema: Object.assign(modelSchema, {
+                  schema: KieModelIdRequestSchema,
+                }),
+                price: Object.assign(modelPrice, {
                   schema: KieModelIdRequestSchema,
                 }),
               }),

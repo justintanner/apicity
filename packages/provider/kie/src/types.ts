@@ -1208,6 +1208,7 @@ export interface KieModelsMethod {
   (req?: KieModelsRequest, signal?: AbortSignal): Promise<KieModelsResponse>;
   schema: ApicitySchema<KieModelsRequest>;
   modelSchema: KieModelSchemaMethod;
+  price: KieModelPriceMethod;
 }
 
 /** The path input of the per-model leaves, as their `.schema` names it. */
@@ -1240,6 +1241,21 @@ export type KieModelSchemaResponse = KieDataEnvelope<KieModelSchemaData>;
 /** `GET /api/v1/models/{model}/schema`: the model's OpenAPI document. */
 export interface KieModelSchemaMethod {
   (model: string, signal?: AbortSignal): Promise<KieModelSchemaResponse>;
+  schema: ApicitySchema<KieModelIdRequest>;
+}
+
+/** `pricingDesc` is KIE's pricing prose, or `null` when it has none. */
+export interface KieModelPriceData {
+  model: string;
+  pricingDesc: string | null;
+  [key: string]: unknown;
+}
+
+export type KieModelPriceResponse = KieDataEnvelope<KieModelPriceData>;
+
+/** `GET /api/v1/models/{model}/price`: the model's pricing text. */
+export interface KieModelPriceMethod {
+  (model: string, signal?: AbortSignal): Promise<KieModelPriceResponse>;
   schema: ApicitySchema<KieModelIdRequest>;
 }
 

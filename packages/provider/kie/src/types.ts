@@ -1207,6 +1207,40 @@ export interface KieModelsMethod {
    */
   (req?: KieModelsRequest, signal?: AbortSignal): Promise<KieModelsResponse>;
   schema: ApicitySchema<KieModelsRequest>;
+  modelSchema: KieModelSchemaMethod;
+}
+
+/** The path input of the per-model leaves, as their `.schema` names it. */
+export interface KieModelIdRequest {
+  /** A catalog id: one segment, or two joined by one `/`. Case-sensitive. */
+  model: string;
+}
+
+/**
+ * A model's OpenAPI 3.1 document, inlined: `paths` names the endpoint and
+ * method to call, and `components` holds the schemas its `$ref`s point at.
+ * Not resolved or validated here; open to every other OpenAPI key.
+ */
+export interface KieModelOpenApiDocument {
+  openapi: string;
+  paths: Record<string, Record<string, unknown>>;
+  components?: Record<string, unknown>;
+  [key: string]: unknown;
+}
+
+/** `openapi` is `null` while KIE has not synced the model's document. */
+export interface KieModelSchemaData {
+  model: string;
+  openapi: KieModelOpenApiDocument | null;
+  [key: string]: unknown;
+}
+
+export type KieModelSchemaResponse = KieDataEnvelope<KieModelSchemaData>;
+
+/** `GET /api/v1/models/{model}/schema`: the model's OpenAPI document. */
+export interface KieModelSchemaMethod {
+  (model: string, signal?: AbortSignal): Promise<KieModelSchemaResponse>;
+  schema: ApicitySchema<KieModelIdRequest>;
 }
 
 // GET namespace

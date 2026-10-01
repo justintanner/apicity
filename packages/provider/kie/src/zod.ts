@@ -8141,6 +8141,18 @@ export const KieModelsRequestSchema = z.object({
   q: z.string().optional(),
 });
 
+// `GET /api/v1/models/{model}/…` takes a catalog id: one segment, or two
+// joined by one `/`, each starting with a letter or digit. Ids are
+// case-sensitive. Not an enum (ac-cygxx7 OQ-3): the legal ids are exactly what
+// the catalog returns, and the kie-models skill says to read them from it.
+export const KieCatalogModelIdSchema = z
+  .string()
+  .regex(/^[A-Za-z0-9][A-Za-z0-9._-]*(?:\/[A-Za-z0-9][A-Za-z0-9._-]*)?$/);
+
+export const KieModelIdRequestSchema = z.object({
+  model: KieCatalogModelIdSchema,
+});
+
 // ---------------------------------------------------------------------------
 // Media generation request (discriminated union on model)
 // ---------------------------------------------------------------------------

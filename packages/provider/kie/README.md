@@ -760,7 +760,7 @@ console.log(segmentEditTask.data?.taskId);
 
 ## API Reference
 
-69 endpoints across 34 groups. Each method mirrors an upstream URL path.
+70 endpoints across 34 groups. Each method mirrors an upstream URL path.
 
 ### anthropic
 
@@ -1487,6 +1487,23 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await kie.get.api.v1.models({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>kie.get.api.v1.models.modelSchema</code></b></summary>
+
+<code>GET https://api.kie.ai/api/v1/models/{model}/schema</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/ai-agent/install-kie-models)
+
+```typescript
+const res = await kie.get.api.v1.models.modelSchema({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)

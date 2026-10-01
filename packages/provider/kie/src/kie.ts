@@ -9,6 +9,7 @@ import {
   KieAnthropicModelsResponse,
   KieModelsRequest,
   KieModelsResponse,
+  KieModelSchemaResponse,
   KieApiEnvelope,
   DownloadUrlRequest,
   DownloadUrlResponse,
@@ -62,6 +63,7 @@ import {
   RecordInfoRequestSchema,
   KieAnthropicModelsRequestSchema,
   KieModelsRequestSchema,
+  KieModelIdRequestSchema,
   Gpt4oImageRecordInfoResponseSchema,
   Seedance2MiniRecordInfoResponseSchema,
   Seedance2MiniRequestSchema,
@@ -504,6 +506,24 @@ function modelCatalogQuery(req: KieModelsRequest): string {
   return params.length > 0 ? `?${params.join("&")}` : "";
 }
 
+/**
+ * `/api/v1/models/<model>/<suffix>` for the per-model discovery GETs. The
+ * slash of a two-segment id stays literal, as the kie-models skill requires;
+ * each segment is percent-encoded on its own, so `?`, `#` or a space cannot
+ * leave the path. The id is never lowercased or trimmed: ids are
+ * case-sensitive. Nor is it validated before the call (no provider leaf
+ * validates at runtime), so one residual stays: a segment of exactly `..`
+ * survives the encoding and the URL parser resolves it, so `price("..")`
+ * reaches another GET path on the same host, with the caller's own key.
+ */
+function modelPath(
+  model: string,
+  suffix: "schema" | "price" | "success-rate"
+): string {
+  const segments = model.split("/").map((part) => encodeURIComponent(part));
+  return `/api/v1/models/${segments.join("/")}/${suffix}`;
+}
+
 export function createKie(opts: KieOptions): KieProvider {
   const baseURL = opts.baseURL ?? "https://api.kie.ai";
   const uploadBaseURL = opts.uploadBaseURL ?? "https://kieai.redpandaai.co";
@@ -852,6 +872,22 @@ export function createKie(opts: KieOptions): KieProvider {
     });
   }
 
+  // sig-ok: `schema` would shadow the reserved `.schema` zod key (OQ-1).
+  // GET https://api.kie.ai/api/v1/models/{model}/schema
+  // Docs: https://docs.kie.ai/ai-agent/install-kie-models
+  async function modelSchema(
+    model: string,
+    signal?: AbortSignal
+  ): Promise<KieModelSchemaResponse> {
+    return kieRequest<KieModelSchemaResponse>(transport, {
+      method: "GET",
+      path: modelPath(model, "schema"),
+      signal,
+      envelopeData: (data) =>
+        typeof data.model === "string" && "openapi" in data,
+    });
+  }
+
   return attachExamples(
     withPaidGate(
       "kie",
@@ -1039,6 +1075,9 @@ export function createKie(opts: KieOptions): KieProvider {
               chat: { credit },
               models: Object.assign(modelCatalog, {
                 schema: KieModelsRequestSchema,
+                modelSchema: Object.assign(modelSchema, {
+                  schema: KieModelIdRequestSchema,
+                }),
               }),
             },
           },

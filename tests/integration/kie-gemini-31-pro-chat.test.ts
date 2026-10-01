@@ -4,6 +4,7 @@ import {
   KieError,
   KieGemini31ProChatCompletionsRequestSchema,
   type KieGemini31ProChatCompletionChunk,
+  type KieGemini31ProChatCompletionsRequest,
   type KieGemini31ProChatCompletionsResult,
 } from "@apicity/kie";
 
@@ -265,5 +266,71 @@ describe("kie gemini 3.1 pro openai chat completions", () => {
       status: 500,
       code: "455",
     } satisfies Partial<KieError>);
+  });
+
+  it("rejects an HTTP 200 kie error envelope with the envelope's code", async () => {
+    const provider = createKie({
+      apiKey: "kie-gemini-31-pro-test-key",
+      fetch: async () =>
+        jsonResponse({ code: 455, msg: "No available channels", data: null }),
+    });
+
+    await expect(
+      provider.gemini31Pro.post.v1.chat.completions({
+        messages: [
+          { role: "user", content: [{ type: "text", text: "Hello" }] },
+        ],
+      })
+    ).rejects.toMatchObject({
+      name: "KieError",
+      status: 455,
+      code: "455",
+      message: expect.stringContaining("No available channels"),
+    } satisfies Partial<KieError>);
+  });
+
+  it("accepts plain string message content and posts it unchanged", async () => {
+    const request: KieGemini31ProChatCompletionsRequest = {
+      messages: [{ role: "user", content: "Reply with the single word: pong" }],
+      stream: false,
+      include_thoughts: false,
+      reasoning_effort: "low",
+    };
+    expect(
+      KieGemini31ProChatCompletionsRequestSchema.safeParse(request).success
+    ).toBe(true);
+    expect(
+      KieGemini31ProChatCompletionsRequestSchema.safeParse({
+        messages: [{ role: "user", content: "" }],
+      }).success
+    ).toBe(false);
+
+    let capturedBody = "";
+    const provider = createKie({
+      apiKey: "kie-gemini-31-pro-test-key",
+      fetch: async (_input, init) => {
+        capturedBody = String(init?.body);
+        return jsonResponse({
+          id: "chatcmpl-test",
+          object: "chat.completion",
+          created: 1768283309,
+          model: "gemini-3.1-pro",
+          choices: [
+            {
+              index: 0,
+              message: { role: "assistant", content: "pong" },
+              finish_reason: "stop",
+            },
+          ],
+          usage: { prompt_tokens: 8, completion_tokens: 1, total_tokens: 9 },
+        });
+      },
+    });
+
+    const result = await provider.gemini31Pro.post.v1.chat.completions(request);
+
+    expect(JSON.parse(capturedBody)).toEqual(request);
+    if (!("choices" in result)) throw new Error("expected non-stream result");
+    expect(result.choices?.[0]?.message?.content).toBe("pong");
   });
 });

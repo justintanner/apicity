@@ -28,6 +28,16 @@ interface KieRequestOptions {
    * payload, the call rejects with a `KieError` whose status is that `code`.
    */
   hasPayload?: (body: Record<string, unknown>) => boolean;
+  /**
+   * Set for a native KIE endpoint that answers success and failure alike as
+   * HTTP 200 with the envelope `{ code, msg, data }` (the `/api/v1/models`
+   * discovery GETs of the kie-models skill). The call resolves only when
+   * `code` is 200 and this predicate accepts the object in `data`. Any other
+   * numeric `code` rejects with a `KieError` whose status is that `code`,
+   * whatever `data` holds, and a success envelope without its payload
+   * rejects with status 500.
+   */
+  envelopeData?: (data: Record<string, unknown>) => boolean;
 }
 
 interface LegacyKieRequestOptions {
@@ -153,6 +163,36 @@ function throwIfKieEnvelope(
   );
 }
 
+function asRecord(value: unknown): Record<string, unknown> | undefined {
+  return typeof value === "object" && value !== null && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : undefined;
+}
+
+function requireKieEnvelopeData(
+  body: unknown,
+  hasData: (data: Record<string, unknown>) => boolean
+): void {
+  const envelope = asRecord(body);
+  const code = envelope?.code;
+  if (typeof code === "number" && code !== 200) {
+    const msg = typeof envelope?.msg === "string" ? `: ${envelope.msg}` : "";
+    throw new KieError(
+      `Kie API error ${code}${msg}`,
+      code,
+      body,
+      codeToString(code)
+    );
+  }
+  const data = asRecord(envelope?.data);
+  if (code === 200 && data && hasData(data)) return;
+  throw new KieError(
+    "Kie API error: the response is missing its payload",
+    500,
+    body
+  );
+}
+
 async function requestWithTransport<T>(
   transport: Transport,
   opts: KieRequestOptions
@@ -164,6 +204,7 @@ async function requestWithTransport<T>(
           signal: opts.signal,
         });
   if (opts.hasPayload) throwIfKieEnvelope(body, opts.hasPayload);
+  if (opts.envelopeData) requireKieEnvelopeData(body, opts.envelopeData);
   return body;
 }
 

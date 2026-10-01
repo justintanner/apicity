@@ -1061,6 +1061,7 @@ kie	api.v1.midi.generate	POST	https://api.kie.ai/api/v1/midi/generate
 kie	api.v1.midi.recordInfo	GET	https://api.kie.ai/api/v1/midi/record-info?taskId={taskId}	https://docs.kie.ai/suno-api/get-midi-details
 kie	api.v1.mj.generate	POST	https://api.kie.ai/api/v1/mj/generate	https://docs.kie.ai/mj-api/generate-mj-image
 kie	api.v1.mj.recordInfo	GET	https://api.kie.ai/api/v1/mj/record-info?taskId={taskId}	https://docs.kie.ai/mj-api/get-mj-task-details
+kie	api.v1.models	GET	https://api.kie.ai/api/v1/models	https://docs.kie.ai/ai-agent/install-kie-models
 kie	api.v1.mp4.generate	POST	https://api.kie.ai/api/v1/mp4/generate
 kie	api.v1.mp4.recordInfo	GET	https://api.kie.ai/api/v1/mp4/record-info?taskId={taskId}	https://docs.kie.ai/suno-api/get-music-video-details
 kie	api.v1.omni.audio.create	POST	https://api.kie.ai/api/v1/omni/audio/create	https://docs.kie.ai/market/gemini-omni-audio

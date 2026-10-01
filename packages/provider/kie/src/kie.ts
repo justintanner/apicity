@@ -7,6 +7,8 @@ import {
   KieCreditsResponse,
   KieAnthropicModelsRequest,
   KieAnthropicModelsResponse,
+  KieModelsRequest,
+  KieModelsResponse,
   KieApiEnvelope,
   DownloadUrlRequest,
   DownloadUrlResponse,
@@ -59,6 +61,7 @@ import {
   GrokImageToVideoRequestSchema,
   RecordInfoRequestSchema,
   KieAnthropicModelsRequestSchema,
+  KieModelsRequestSchema,
   Gpt4oImageRecordInfoResponseSchema,
   Seedance2MiniRecordInfoResponseSchema,
   Seedance2MiniRequestSchema,
@@ -480,6 +483,27 @@ function inferMimeType(filename: string): string | undefined {
   return ext ? MIME_TYPES[ext] : undefined;
 }
 
+/**
+ * The query string of `GET /api/v1/models`, `?` included, or `""` with no
+ * filter. Filters go in the order `taskType`, `provider`, `q`, and an empty
+ * one is not sent. A `taskType` array becomes one parameter whose values are
+ * joined with a comma. Every value is percent-encoded, so no raw space is
+ * ever sent.
+ */
+function modelCatalogQuery(req: KieModelsRequest): string {
+  const taskTypes = (
+    Array.isArray(req.taskType) ? req.taskType : [req.taskType]
+  ).filter((value): value is string => Boolean(value));
+  const params: string[] = [];
+  if (taskTypes.length > 0) {
+    const joined = taskTypes.map((value) => encodeURIComponent(value));
+    params.push(`taskType=${joined.join(",")}`);
+  }
+  if (req.provider) params.push(`provider=${encodeURIComponent(req.provider)}`);
+  if (req.q) params.push(`q=${encodeURIComponent(req.q)}`);
+  return params.length > 0 ? `?${params.join("&")}` : "";
+}
+
 export function createKie(opts: KieOptions): KieProvider {
   const baseURL = opts.baseURL ?? "https://api.kie.ai";
   const uploadBaseURL = opts.uploadBaseURL ?? "https://kieai.redpandaai.co";
@@ -814,6 +838,20 @@ export function createKie(opts: KieOptions): KieProvider {
     });
   }
 
+  // GET https://api.kie.ai/api/v1/models
+  // Docs: https://docs.kie.ai/ai-agent/install-kie-models
+  async function modelCatalog(
+    req: KieModelsRequest = {},
+    signal?: AbortSignal
+  ): Promise<KieModelsResponse> {
+    return kieRequest<KieModelsResponse>(transport, {
+      method: "GET",
+      path: `/api/v1/models${modelCatalogQuery(req)}`,
+      signal,
+      envelopeData: (data) => Array.isArray(data.models),
+    });
+  }
+
   return attachExamples(
     withPaidGate(
       "kie",
@@ -999,6 +1037,9 @@ export function createKie(opts: KieOptions): KieProvider {
                 },
               },
               chat: { credit },
+              models: Object.assign(modelCatalog, {
+                schema: KieModelsRequestSchema,
+              }),
             },
           },
           openai: { v1: { models: openaiModels } },

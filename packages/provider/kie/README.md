@@ -760,7 +760,7 @@ console.log(segmentEditTask.data?.taskId);
 
 ## API Reference
 
-72 endpoints across 34 groups. Each method mirrors an upstream URL path.
+73 endpoints across 35 groups. Each method mirrors an upstream URL path.
 
 ### anthropic
 
@@ -1346,6 +1346,25 @@ const res = await kie.get.api.v1.gpt4oImage.recordInfo({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
+
+</details>
+
+### gpt52
+
+<details>
+<summary><code>POST</code> <b><code>kie.gpt52.post.v1.chat.completions</code></b></summary>
+
+<code>POST https://api.kie.ai/gpt-5-2/v1/chat/completions</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/market/chat/gpt-5-2)
+
+```typescript
+const res = await kie.gpt52.post.v1.chat.completions({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/gpt-52.ts`](src/gpt-52.ts)
 
 </details>
 

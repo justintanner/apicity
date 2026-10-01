@@ -799,6 +799,121 @@ export type KieGemini31ProChatCompletionsParsedRequest = z.output<
   typeof KieGemini31ProChatCompletionsRequestSchema
 >;
 
+// GPT 5.2 OpenAI-compatible chat completions
+// Docs: https://docs.kie.ai/market/chat/gpt-5-2
+// The swept catalog document declares exactly messages, tools and
+// reasoning_effort: no model, stream or max-token field. A message's content
+// is a non-empty string or the documented parts array: the proxy answered the
+// parts array with an empty completion when measured on 2026-10-01.
+export const KieGpt52MessageRoleSchema = z.enum([
+  "developer",
+  "system",
+  "user",
+  "assistant",
+  "tool",
+]);
+
+export const KieGpt52ContentItemTypeSchema = z.enum(["text", "image_url"]);
+
+export const KieGpt52ReasoningEffortSchema = z.enum(["low", "high"]);
+
+export const KieGpt52ToolTypeSchema = z.enum(["function"]);
+
+export const KieGpt52ToolFunctionNameSchema = z.enum(["web_search"]);
+
+export const KieGpt52TextContentItemSchema = z
+  .object({
+    type: z.literal("text"),
+    text: z.string(),
+  })
+  .strict();
+
+export const KieGpt52MediaContentItemSchema = z
+  .object({
+    type: z.literal("image_url"),
+    image_url: z.object({ url: z.string().url() }).strict(),
+  })
+  .strict();
+
+export const KieGpt52ContentItemSchema = z.discriminatedUnion("type", [
+  KieGpt52TextContentItemSchema,
+  KieGpt52MediaContentItemSchema,
+]);
+
+export const KieGpt52MessageSchema = z
+  .object({
+    role: KieGpt52MessageRoleSchema,
+    content: z.union([
+      z.string().min(1),
+      z.array(KieGpt52ContentItemSchema).min(1),
+    ]),
+  })
+  .passthrough();
+
+export const KieGpt52ToolFunctionParametersSchema = z
+  .object({
+    type: z.literal("object"),
+    properties: z.record(z.string(), z.unknown()).optional(),
+    required: z.array(z.string()).optional(),
+  })
+  .passthrough();
+
+export const KieGpt52ToolFunctionSchema = z
+  .object({
+    name: KieGpt52ToolFunctionNameSchema,
+    description: z.string().optional(),
+    parameters: KieGpt52ToolFunctionParametersSchema.optional(),
+  })
+  .passthrough();
+
+export const KieGpt52ToolSchema = z
+  .object({
+    type: KieGpt52ToolTypeSchema,
+    function: KieGpt52ToolFunctionSchema,
+  })
+  .strict();
+
+export const KieGpt52ChatCompletionsRequestSchema = z
+  .object({
+    messages: z.array(KieGpt52MessageSchema).min(1),
+    tools: z.array(KieGpt52ToolSchema).min(0).optional(),
+    reasoning_effort: KieGpt52ReasoningEffortSchema.default("high"),
+  })
+  .passthrough();
+
+export type KieGpt52MessageRole = z.infer<typeof KieGpt52MessageRoleSchema>;
+export type KieGpt52ContentItemType = z.infer<
+  typeof KieGpt52ContentItemTypeSchema
+>;
+export type KieGpt52ReasoningEffort = z.infer<
+  typeof KieGpt52ReasoningEffortSchema
+>;
+export type KieGpt52ToolType = z.infer<typeof KieGpt52ToolTypeSchema>;
+export type KieGpt52ToolFunctionName = z.infer<
+  typeof KieGpt52ToolFunctionNameSchema
+>;
+export type KieGpt52TextContentItem = z.infer<
+  typeof KieGpt52TextContentItemSchema
+>;
+export type KieGpt52MediaContentItem = z.infer<
+  typeof KieGpt52MediaContentItemSchema
+>;
+export type KieGpt52ContentItem = z.infer<typeof KieGpt52ContentItemSchema>;
+export type KieGpt52Message = z.infer<typeof KieGpt52MessageSchema>;
+export type KieGpt52ToolFunctionParameters = z.infer<
+  typeof KieGpt52ToolFunctionParametersSchema
+>;
+export type KieGpt52ToolFunction = z.infer<typeof KieGpt52ToolFunctionSchema>;
+export type KieGpt52Tool = z.infer<typeof KieGpt52ToolSchema>;
+export type KieGpt52ChatCompletionsRequest = z.input<
+  typeof KieGpt52ChatCompletionsRequestSchema
+>;
+export type KieGpt52ChatCompletionsRequestInput =
+  KieGpt52ChatCompletionsRequest;
+export type KieGpt52ChatCompletionsParsedRequest = z.output<
+  typeof KieGpt52ChatCompletionsRequestSchema
+>;
+
 // Gemini 2.5 Flash OpenAI-compatible chat completions
 // Docs: https://docs.kie.ai/market/gemini/gemini-2-5-flash
 export const KieGemini25FlashMessageRoleSchema = z.enum([

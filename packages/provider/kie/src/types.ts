@@ -1356,6 +1356,7 @@ export interface KieProvider {
   claude: import("./claude").KieClaudeProvider["claude"];
   gemini: import("./gemini").KieGeminiProvider["gemini"];
   gemini31Pro: import("./gemini-31-pro").KieGemini31ProProvider["gemini31Pro"];
+  gpt52: import("./gpt-52").KieGpt52Provider["gpt52"];
   gemini25Flash: import("./gemini-25-flash").KieGemini25FlashProvider["gemini25Flash"];
   gemini3Flash: import("./gemini-3-flash").KieGemini3FlashProvider["gemini3Flash"];
   gemini35FlashOpenai: import("./gemini-35-flash-openai").KieGemini35FlashOpenaiProvider["gemini35FlashOpenai"];

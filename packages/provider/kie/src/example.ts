@@ -847,6 +847,19 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST gpt52.v1.chat.completions": {
+    "source": "kie/gpt-5-2-chat",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Reply with the single word: pong"
+        }
+      ]
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST grok.v1.responses": {
     "source": "kie/grok-4-6-responses",
     "payload": {

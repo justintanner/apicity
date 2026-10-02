@@ -615,7 +615,7 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "runByDefault": false
   },
   "POST gemini.v1.models.gemini35Flash.streamGenerateContent": {
-    "source": "kie/gemini-35-flash-auth-error",
+    "source": "kie/gemini-35-flash",
     "payload": {
       "stream": false,
       "contents": [

@@ -885,6 +885,8 @@ Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.kie.ai/market/gemini/gemini-3-5-flash)
 
+> **HTTP 200 error bodies:** this method rejects with `KieError` when an HTTP 200 JSON body has no `candidates` array and carries either KIE's numeric `code` envelope (`{ code, msg }`, any `code` other than 200) or a top-level `error` object (such as KIE docs' `{ error: { message, type } }` or Google's `{ error: { code, message, status } }`).
+
 ```typescript
 const res = await kie.gemini.post.v1.models.gemini35Flash.streamGenerateContent({ /* ... */ });
 ```
@@ -901,6 +903,8 @@ Source: [`packages/provider/kie/src/gemini.ts`](src/gemini.ts)
 Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.kie.ai/market/gemini/gemini-3-6-flash)
+
+> **HTTP 200 error bodies:** this method rejects with `KieError` when an HTTP 200 JSON body has no `candidates` array and carries either KIE's numeric `code` envelope (`{ code, msg }`, any `code` other than 200) or a top-level `error` object (such as KIE docs' `{ error: { message, type } }` or Google's `{ error: { code, message, status } }`).
 
 ```typescript
 const res = await kie.gemini.post.v1.models.gemini36Flash.streamGenerateContent({ /* ... */ });
@@ -919,6 +923,8 @@ Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.kie.ai/market/gemini/gemini-3-7-flash)
 
+> **HTTP 200 error bodies:** this method rejects with `KieError` when an HTTP 200 JSON body has no `candidates` array and carries either KIE's numeric `code` envelope (`{ code, msg }`, any `code` other than 200) or a top-level `error` object (such as KIE docs' `{ error: { message, type } }` or Google's `{ error: { code, message, status } }`).
+
 ```typescript
 const res = await kie.gemini.post.v1.models.gemini37Flash.streamGenerateContent({ /* ... */ });
 ```
@@ -936,6 +942,8 @@ Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.kie.ai/market/gemini/gemini-3-8-flash)
 
+> **HTTP 200 error bodies:** this method rejects with `KieError` when an HTTP 200 JSON body has no `candidates` array and carries either KIE's numeric `code` envelope (`{ code, msg }`, any `code` other than 200) or a top-level `error` object (such as KIE docs' `{ error: { message, type } }` or Google's `{ error: { code, message, status } }`).
+
 ```typescript
 const res = await kie.gemini.post.v1.models.gemini38Flash.streamGenerateContent({ /* ... */ });
 ```
@@ -952,6 +960,8 @@ Source: [`packages/provider/kie/src/gemini.ts`](src/gemini.ts)
 Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.kie.ai/market/gemini/gemini-3-flash-v1beta)
+
+> **HTTP 200 error bodies:** this method rejects with `KieError` when an HTTP 200 JSON body has no `candidates` array and carries either KIE's numeric `code` envelope (`{ code, msg }`, any `code` other than 200) or a top-level `error` object (such as KIE docs' `{ error: { message, type } }` or Google's `{ error: { code, message, status } }`).
 
 ```typescript
 const res = await kie.gemini.post.v1.models.gemini3FlashV1betamodels.streamGenerateContent({ /* ... */ });

@@ -472,6 +472,14 @@ function formatUsageSnippet(providerName, dotPath) {
   return `const res = await ${call}({ /* ... */ });`;
 }
 
+const KIE_GEMINI_HTTP_200_ERROR_NOTE = [
+  "> **HTTP 200 error bodies:** this method rejects with `KieError` when an",
+  "HTTP 200 JSON body has no `candidates` array and carries either KIE's",
+  "numeric `code` envelope (`{ code, msg }`, any `code` other than 200) or a",
+  "top-level `error` object (such as KIE docs' `{ error: { message, type } }`",
+  "or Google's `{ error: { code, message, status } }`).",
+].join(" ");
+
 const ENDPOINT_NOTES = new Map([
   [
     "polymarket\tclob.markets\tGET",
@@ -492,6 +500,26 @@ const ENDPOINT_NOTES = new Map([
       "remains for existing bare-array `/events` callers; prefer",
       "`polymarket.gamma.events.keyset()` for new paginated event lists.",
     ].join(" "),
+  ],
+  [
+    "kie\tgemini.post.v1.models.gemini35Flash.streamGenerateContent\tPOST",
+    KIE_GEMINI_HTTP_200_ERROR_NOTE,
+  ],
+  [
+    "kie\tgemini.post.v1.models.gemini36Flash.streamGenerateContent\tPOST",
+    KIE_GEMINI_HTTP_200_ERROR_NOTE,
+  ],
+  [
+    "kie\tgemini.post.v1.models.gemini37Flash.streamGenerateContent\tPOST",
+    KIE_GEMINI_HTTP_200_ERROR_NOTE,
+  ],
+  [
+    "kie\tgemini.post.v1.models.gemini38Flash.streamGenerateContent\tPOST",
+    KIE_GEMINI_HTTP_200_ERROR_NOTE,
+  ],
+  [
+    "kie\tgemini.post.v1.models.gemini3FlashV1betamodels.streamGenerateContent\tPOST",
+    KIE_GEMINI_HTTP_200_ERROR_NOTE,
   ],
 ]);
 

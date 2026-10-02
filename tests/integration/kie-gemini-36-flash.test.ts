@@ -258,4 +258,56 @@ describe("kie gemini 3.6 flash", () => {
       code: "401",
     } satisfies Partial<KieError>);
   });
+
+  it("rejects an HTTP 200 body with a Google-style error object", async () => {
+    const provider = createKie({
+      apiKey: "kie-gemini-test-key",
+      fetch: async () =>
+        jsonResponse({
+          error: {
+            code: 400,
+            message: "Request contains an invalid argument.",
+            status: "INVALID_ARGUMENT",
+          },
+        }),
+    });
+
+    await expect(
+      provider.gemini.post.v1.models.gemini36Flash.streamGenerateContent({
+        stream: false,
+        contents: [{ role: "user", parts: [{ text: "ping" }] }],
+      })
+    ).rejects.toMatchObject({
+      name: "KieError",
+      status: 400,
+      code: "400",
+      message:
+        "Kie Gemini API error 400: Request contains an invalid argument.",
+    } satisfies Partial<KieError>);
+  });
+
+  it("rejects an HTTP 200 body with a KIE-docs error object", async () => {
+    const provider = createKie({
+      apiKey: "kie-gemini-test-key",
+      fetch: async () =>
+        jsonResponse({
+          error: {
+            message: "Invalid request parameters",
+            type: "invalid_request_error",
+          },
+        }),
+    });
+
+    await expect(
+      provider.gemini.post.v1.models.gemini36Flash.streamGenerateContent({
+        stream: false,
+        contents: [{ role: "user", parts: [{ text: "ping" }] }],
+      })
+    ).rejects.toMatchObject({
+      name: "KieError",
+      status: 200,
+      code: "invalid_request_error",
+      message: "Kie Gemini API error 200: Invalid request parameters",
+    } satisfies Partial<KieError>);
+  });
 });

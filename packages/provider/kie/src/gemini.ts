@@ -207,7 +207,9 @@ export interface KieGeminiProvider {
 
 interface KieGeminiErrorBody {
   error?: {
+    code?: string | number;
     message?: string;
+    status?: string;
     type?: string;
   };
   message?: string;
@@ -224,6 +226,10 @@ function codeToString(code: string | number | undefined): string | undefined {
   if (typeof code === "string") return code;
   if (typeof code === "number") return String(code);
   return undefined;
+}
+
+function nonEmptyString(value: unknown): string | undefined {
+  return typeof value === "string" && value.length > 0 ? value : undefined;
 }
 
 function formatGeminiError(
@@ -255,28 +261,39 @@ function formatGeminiError(
 }
 
 /**
- * Upstream sometimes returns HTTP 200 with a Kie envelope:
- * `{ code: 401, msg: "..." }` (no candidates). Surface those as KieError.
+ * Upstream sometimes returns HTTP 200 with an error body and no candidates:
+ * the Kie envelope `{ code: 401, msg: "..." }`, or a top-level `error` object
+ * (KIE docs' `{ error: { message, type } }`, Google's
+ * `{ error: { code, message, status } }`). Surface those as KieError.
  */
 function throwIfKieErrorEnvelope(body: unknown): void {
   if (!isGeminiErrorBody(body)) return;
-  if (typeof body.code !== "number") return;
-  if (body.code === 200) return;
-  if (
-    typeof body === "object" &&
-    body !== null &&
-    "candidates" in body &&
-    Array.isArray((body as { candidates?: unknown }).candidates)
-  ) {
-    return;
+  if (Array.isArray((body as { candidates?: unknown }).candidates)) return;
+
+  if (typeof body.code === "number" && body.code !== 200) {
+    const formatted = formatGeminiError(body.code, body);
+    throw new KieError(
+      formatted.message,
+      body.code,
+      body,
+      formatted.code ?? codeToString(body.code)
+    );
   }
 
-  const formatted = formatGeminiError(body.code, body);
+  const { error } = body;
+  if (typeof error !== "object" || error === null || Array.isArray(error)) {
+    return;
+  }
+  const status = typeof error.code === "number" ? error.code : 200;
+  const code =
+    nonEmptyString(codeToString(error.code)) ??
+    nonEmptyString(error.status) ??
+    nonEmptyString(error.type);
   throw new KieError(
-    formatted.message,
-    body.code,
+    formatGeminiError(status, body).message,
+    status,
     body,
-    formatted.code ?? codeToString(body.code)
+    code
   );
 }
 

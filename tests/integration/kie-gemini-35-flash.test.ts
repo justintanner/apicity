@@ -236,4 +236,246 @@ describe("kie gemini 3.5 flash", () => {
       code: "authentication_error",
     } satisfies Partial<KieError>);
   });
+
+  it("surfaces HTTP 200 Kie error envelopes as KieError", async () => {
+    const provider = createKie({
+      apiKey: "kie-gemini-test-key",
+      fetch: async () =>
+        jsonResponse({
+          code: 500,
+          msg: "Server exception, please try again later",
+        }),
+    });
+
+    await expect(
+      provider.gemini.post.v1.models.gemini35Flash.streamGenerateContent({
+        stream: false,
+        contents: [{ role: "user", parts: [{ text: "ping" }] }],
+      })
+    ).rejects.toMatchObject({
+      name: "KieError",
+      status: 500,
+      code: "500",
+      message:
+        "Kie Gemini API error 500: Server exception, please try again later",
+    } satisfies Partial<KieError>);
+  });
+
+  it("rejects an HTTP 200 body with a Google-style error object", async () => {
+    const provider = createKie({
+      apiKey: "kie-gemini-test-key",
+      fetch: async () =>
+        jsonResponse({
+          error: {
+            code: 400,
+            message: "Request contains an invalid argument.",
+            status: "INVALID_ARGUMENT",
+          },
+        }),
+    });
+
+    await expect(
+      provider.gemini.post.v1.models.gemini35Flash.streamGenerateContent({
+        stream: false,
+        contents: [{ role: "user", parts: [{ text: "ping" }] }],
+      })
+    ).rejects.toMatchObject({
+      name: "KieError",
+      status: 400,
+      code: "400",
+      message:
+        "Kie Gemini API error 400: Request contains an invalid argument.",
+    } satisfies Partial<KieError>);
+  });
+
+  it("rejects an HTTP 200 body with a KIE-docs error object", async () => {
+    const provider = createKie({
+      apiKey: "kie-gemini-test-key",
+      fetch: async () =>
+        jsonResponse({
+          error: {
+            message: "Invalid request parameters",
+            type: "invalid_request_error",
+          },
+        }),
+    });
+
+    await expect(
+      provider.gemini.post.v1.models.gemini35Flash.streamGenerateContent({
+        stream: false,
+        contents: [{ role: "user", parts: [{ text: "ping" }] }],
+      })
+    ).rejects.toMatchObject({
+      name: "KieError",
+      status: 200,
+      code: "invalid_request_error",
+      message: "Kie Gemini API error 200: Invalid request parameters",
+    } satisfies Partial<KieError>);
+  });
+
+  it("resolves an HTTP 200 body that has candidates and an error object", async () => {
+    const body = {
+      candidates: [
+        {
+          finishReason: "STOP",
+          index: 0,
+          content: { role: "model", parts: [{ text: "pong" }] },
+        },
+      ],
+      usageMetadata: {
+        candidatesTokenCount: 1,
+        totalTokenCount: 137,
+        promptTokenCount: 88,
+      },
+      credits_consumed: 0.01,
+      error: { message: "ignored", type: "x" },
+    };
+    const provider = createKie({
+      apiKey: "kie-gemini-test-key",
+      fetch: async () => jsonResponse(body),
+    });
+
+    await expect(
+      provider.gemini.post.v1.models.gemini35Flash.streamGenerateContent({
+        stream: false,
+        contents: [{ role: "user", parts: [{ text: "ping" }] }],
+      })
+    ).resolves.toEqual(body);
+  });
+
+  it("rejects an error object inside a code 200 wrapper", async () => {
+    const provider = createKie({
+      apiKey: "kie-gemini-test-key",
+      fetch: async () =>
+        jsonResponse({
+          code: 200,
+          error: {
+            code: 429,
+            message: "Resource exhausted",
+            status: "RESOURCE_EXHAUSTED",
+          },
+        }),
+    });
+
+    await expect(
+      provider.gemini.post.v1.models.gemini35Flash.streamGenerateContent({
+        stream: false,
+        contents: [{ role: "user", parts: [{ text: "ping" }] }],
+      })
+    ).rejects.toMatchObject({
+      name: "KieError",
+      status: 429,
+      code: "429",
+      message: "Kie Gemini API error 429: Resource exhausted",
+    } satisfies Partial<KieError>);
+  });
+
+  it("resolves an HTTP 200 body whose error is null", async () => {
+    const body = { error: null };
+    const provider = createKie({
+      apiKey: "kie-gemini-test-key",
+      fetch: async () => jsonResponse(body),
+    });
+
+    await expect(
+      provider.gemini.post.v1.models.gemini35Flash.streamGenerateContent({
+        stream: false,
+        contents: [{ role: "user", parts: [{ text: "ping" }] }],
+      })
+    ).resolves.toEqual(body);
+  });
+
+  it("uses a string error.code as the code and 200 as the status", async () => {
+    const provider = createKie({
+      apiKey: "kie-gemini-test-key",
+      fetch: async () =>
+        jsonResponse({
+          error: { code: "RESOURCE_EXHAUSTED", message: "Quota exceeded" },
+        }),
+    });
+
+    await expect(
+      provider.gemini.post.v1.models.gemini35Flash.streamGenerateContent({
+        stream: false,
+        contents: [{ role: "user", parts: [{ text: "ping" }] }],
+      })
+    ).rejects.toMatchObject({
+      name: "KieError",
+      status: 200,
+      code: "RESOURCE_EXHAUSTED",
+      message: "Kie Gemini API error 200: Quota exceeded",
+    } satisfies Partial<KieError>);
+  });
+
+  it("rejects an empty error object with the generic message", async () => {
+    const provider = createKie({
+      apiKey: "kie-gemini-test-key",
+      fetch: async () => jsonResponse({ error: {} }),
+    });
+
+    await expect(
+      provider.gemini.post.v1.models.gemini35Flash.streamGenerateContent({
+        stream: false,
+        contents: [{ role: "user", parts: [{ text: "ping" }] }],
+      })
+    ).rejects.toMatchObject({
+      name: "KieError",
+      status: 200,
+      code: undefined,
+      message: "Kie Gemini API error: 200",
+    } satisfies Partial<KieError>);
+  });
+
+  it("keeps the numeric code branch first when both forms are present", async () => {
+    const provider = createKie({
+      apiKey: "kie-gemini-test-key",
+      fetch: async () =>
+        jsonResponse({
+          code: 401,
+          msg: "Unauthorized",
+          error: {
+            message: "Invalid or missing API key",
+            type: "authentication_error",
+          },
+        }),
+    });
+
+    await expect(
+      provider.gemini.post.v1.models.gemini35Flash.streamGenerateContent({
+        stream: false,
+        contents: [{ role: "user", parts: [{ text: "ping" }] }],
+      })
+    ).rejects.toMatchObject({
+      name: "KieError",
+      status: 401,
+      code: "authentication_error",
+      message: "Kie Gemini API error 401: Invalid or missing API key",
+    } satisfies Partial<KieError>);
+  });
+
+  it("falls back to error.status, then error.type, for the code", async () => {
+    const provider = createKie({
+      apiKey: "kie-gemini-test-key",
+      fetch: async () =>
+        jsonResponse({
+          error: {
+            status: "PERMISSION_DENIED",
+            message: "Permission denied",
+            type: "permission_error",
+          },
+        }),
+    });
+
+    await expect(
+      provider.gemini.post.v1.models.gemini35Flash.streamGenerateContent({
+        stream: false,
+        contents: [{ role: "user", parts: [{ text: "ping" }] }],
+      })
+    ).rejects.toMatchObject({
+      name: "KieError",
+      status: 200,
+      code: "PERMISSION_DENIED",
+      message: "Kie Gemini API error 200: Permission denied",
+    } satisfies Partial<KieError>);
+  });
 });

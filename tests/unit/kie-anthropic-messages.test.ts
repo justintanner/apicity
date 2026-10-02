@@ -232,4 +232,27 @@ describe("post.anthropic.v1.messages (injected fetch)", () => {
       .catch((e) => e);
     expect(error).toBeInstanceOf(KieError);
   });
+
+  it("carries KIE's envelope msg on an HTTP 401 answer", async () => {
+    // KIE's 401 envelope, verbatim from the anthropic-messages-auth-error HAR.
+    const body = {
+      code: 401,
+      msg: "Unauthorized – Authentication failed. Please check that your Authorization and Content-Type headers are correctly set.",
+    };
+    const { provider } = stub(json(body, 401));
+    await expect(
+      provider.post.anthropic.v1.messages({
+        model: KIE_ANTHROPIC_MESSAGES_MODELS[0],
+        max_tokens: 1,
+        messages: [{ role: "user", content: "hi" }],
+      })
+    ).rejects.toMatchObject({
+      name: "KieError",
+      status: 401,
+      code: "401",
+      message:
+        "Kie Anthropic API error 401: Unauthorized – Authentication failed. Please check that your Authorization and Content-Type headers are correctly set.",
+      body,
+    } satisfies Partial<KieError>);
+  });
 });

@@ -8195,28 +8195,38 @@ export const KieAnthropicTypedObjectSchema = z
   .object({ type: z.string() })
   .passthrough();
 
-export const KieAnthropicMessagesRequestSchema = z.object({
-  model: KieAnthropicMessagesModelSchema,
-  max_tokens: z.number().int().min(1),
-  messages: z.array(KieClaudeMessageSchema).min(1),
-  system: z
-    .union([z.string(), z.array(KieAnthropicTextBlockSchema)])
-    .optional(),
-  temperature: z.number().min(0).max(1).optional(),
-  top_p: z.number().min(0).max(1).optional(),
-  top_k: z.number().int().min(0).optional(),
-  stop_sequences: z.array(z.string()).optional(),
-  tools: z.array(KieAnthropicToolSchema).optional(),
-  tool_choice: KieAnthropicTypedObjectSchema.optional(),
-  thinking: KieAnthropicTypedObjectSchema.optional(),
-  metadata: z
-    .object({ user_id: z.string().optional() })
-    .passthrough()
-    .optional(),
-  // This leaf parses one JSON Message and does not stream (ac-wma4p9 OQ-3),
-  // so the schema never advertises `stream: true`.
-  stream: z.literal(false).optional(),
-});
+export const KieAnthropicMessagesRequestSchema = z
+  .object({
+    model: KieAnthropicMessagesModelSchema,
+    max_tokens: z.number().int().min(1),
+    messages: z.array(KieClaudeMessageSchema).min(1),
+    system: z
+      .union([z.string(), z.array(KieAnthropicTextBlockSchema)])
+      .optional(),
+    temperature: z.number().min(0).max(1).optional(),
+    top_p: z.number().min(0).max(1).optional(),
+    top_k: z.number().int().min(0).optional(),
+    stop_sequences: z.array(z.string()).optional(),
+    tools: z.array(KieAnthropicToolSchema).optional(),
+    tool_choice: KieAnthropicTypedObjectSchema.optional(),
+    thinking: KieAnthropicTypedObjectSchema.optional(),
+    metadata: z
+      .object({ user_id: z.string().optional() })
+      .passthrough()
+      .optional(),
+    // This leaf parses one JSON Message and does not stream (ac-wma4p9 OQ-3),
+    // so the schema never advertises `stream: true`.
+    stream: z.literal(false).optional(),
+  })
+  .describe(
+    "Anthropic Messages request for KIE's Claude Code proxy. Latency: " +
+      "this method uses the client timeout, which defaults to 30 s " +
+      "(30000 ms), and KIE's agent proxy has answered it more slowly: " +
+      "the slowest successful call observed took 108 s (2026-09-30). " +
+      "Pass --timeout <ms>, for example --timeout 300000. It sets " +
+      "createKie's timeout, which applies to every method of that " +
+      "client."
+  );
 
 // Literal ids + hatch rather than `z.infer` — see FluxKontextModel above.
 export type KieAnthropicMessagesModel =

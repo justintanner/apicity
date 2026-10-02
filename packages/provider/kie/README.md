@@ -790,6 +790,8 @@ Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.kie.ai/ai-agent/claude-code)
 
+> **Latency:** this method uses the `createKie` `timeout`, which defaults to 30 s (30000 ms). KIE's agent proxy has answered it more slowly than that: the slowest successful call observed took 108 s (2026-09-30). Pass a larger `timeout` in milliseconds to `createKie`, for example `createKie({ apiKey, timeout: 300_000 })`. The option applies to every method of that client.
+
 ```typescript
 const res = await kie.post.anthropic.v1.messages({ /* ... */ });
 ```

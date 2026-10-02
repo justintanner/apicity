@@ -122,7 +122,8 @@ export function parseKieAnthropicErrorBody(
       }
     }
 
-    return { message: `${errorPrefix}: ${status}` };
+    // Not Anthropic-shaped: fall back to KIE's own `{ code, msg }` envelope.
+    return parseKieErrorBody(errorPrefix)(status, body);
   };
 }
 

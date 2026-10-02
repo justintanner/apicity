@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 
 import { createClaudeProvider } from "../../packages/provider/kie/src/claude";
+import { KieError } from "../../packages/provider/kie/src/types";
 import { KieClaudeRequestSchema } from "../../packages/provider/kie/src/zod";
 
 describe("KIE Claude provider", () => {
@@ -323,6 +324,43 @@ describe("KIE Claude provider", () => {
         messages: [{ role: "user", content: "Hello" }],
       });
       expect(result.success).toBe(true);
+    });
+  });
+
+  describe("error bodies", () => {
+    it("carries KIE's envelope msg on an HTTP 401 answer", async () => {
+      // KIE's 401 envelope. No /claude auth-error HAR exists; every recorded
+      // KIE agent-proxy auth failure carries this body verbatim.
+      const body = {
+        code: 401,
+        msg: "Unauthorized – Authentication failed. Please check that your Authorization and Content-Type headers are correctly set.",
+      };
+      const provider = createClaudeProvider(
+        "https://api.kie.ai",
+        "test-api-key",
+        () =>
+          Promise.resolve(
+            new Response(JSON.stringify(body), {
+              status: 401,
+              headers: { "Content-Type": "application/json" },
+            })
+          ),
+        30000
+      );
+
+      await expect(
+        provider.claude.post.v1.messages({
+          model: "claude-sonnet-4-6",
+          messages: [{ role: "user", content: "Hello" }],
+        })
+      ).rejects.toMatchObject({
+        name: "KieError",
+        status: 401,
+        code: "401",
+        message:
+          "Kie Claude API error 401: Unauthorized – Authentication failed. Please check that your Authorization and Content-Type headers are correctly set.",
+        body,
+      } satisfies Partial<KieError>);
     });
   });
 });

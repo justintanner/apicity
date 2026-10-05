@@ -1,4 +1,6 @@
 import {
+  FalMinimaxH3MaxInsertVideoResponse,
+  FalMinimaxH3MaxInsertVideoRequest,
   FalIdeogramV4p5Response,
   FalIdeogramV4p5Request,
   FalIdeogramV4p5EditRequest,
@@ -218,6 +220,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalMinimaxH3MaxInsertVideoRequestSchema,
   FalIdeogramV4p5RequestSchema,
   FalPricingEstimateRequestSchema,
   FalDeletePayloadsRequestSchema,
@@ -2041,6 +2044,18 @@ export function createFal(opts: FalOptions): FalProvider {
     base: runBaseURL,
   });
 
+  // POST https://fal.run/minimax/h3-max/insert-video
+  // Docs: https://fal.ai/models/minimax/h3-max/insert-video/api
+  const minimaxH3MaxInsertVideo = jsonBody<
+    FalMinimaxH3MaxInsertVideoRequest,
+    FalMinimaxH3MaxInsertVideoResponse
+  >(
+    "POST",
+    "/minimax/h3-max/insert-video",
+    FalMinimaxH3MaxInsertVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
     ideogram: {
       v4p5: Object.assign(ideogramV4p5, {
@@ -2118,6 +2133,9 @@ export function createFal(opts: FalOptions): FalProvider {
     },
     minimax: {
       h3Max: {
+        // POST https://fal.run/minimax/h3-max/insert-video
+        // Docs: https://fal.ai/models/minimax/h3-max/insert-video/api
+        insertVideo: minimaxH3MaxInsertVideo,
         // POST https://fal.run/minimax/h3-max/recast
         // Docs: https://fal.ai/models/minimax/h3-max/recast/api
         recast: minimaxH3MaxRecast,

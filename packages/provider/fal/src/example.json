@@ -688,6 +688,19 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST minimax.h3Max.insertVideo": {
+    "source": "fal/minimax-h3-max-insert-video",
+    "payload": {
+      "video_url": "https://v3b.fal.media/files/b/0aac0919/5NYtHn5-5dxFlbH_U9oQW_video.mp4",
+      "prompt": "A red panda waves once, then holds still.",
+      "duration": 5,
+      "resume_time": 2.125,
+      "resolution": "480p",
+      "start_time": 1.625
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST minimax.h3Max.recast": {
     "source": "fal/minimax-h3-max-recast",
     "payload": {

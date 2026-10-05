@@ -3717,7 +3717,33 @@ export type FalIdeogramV4p5ParsedRequest = z.output<
   typeof FalIdeogramV4p5RequestSchema
 >;
 
+// Docs: https://fal.ai/models/minimax/h3-max/insert-video/api
+export const FalMinimaxH3MaxInsertVideoRequestSchema = z
+  .object({
+    video_url: z.string().min(1),
+    prompt: z.string().min(1).max(50000).nullable().optional(),
+    reference_image_urls: z.array(z.string()).max(9).optional(),
+    reference_video_urls: z.array(z.string()).max(3).optional(),
+    start_time: z.number().min(1.625).max(60),
+    resume_time: z.number().gt(1.625).max(60),
+    duration: z.number().min(5).max(13).default(5),
+    resolution: z.enum(["480p", "768p"]).default("768p"),
+    seed: z.number().int().min(0).max(2147483647).nullable().optional(),
+    enable_prompt_expansion: z.boolean().default(true),
+    color_match: z.boolean().default(true),
+  })
+  .strict();
+export type FalMinimaxH3MaxInsertVideoRequest = z.input<
+  typeof FalMinimaxH3MaxInsertVideoRequestSchema
+>;
+export type FalMinimaxH3MaxInsertVideoRequestInput =
+  FalMinimaxH3MaxInsertVideoRequest;
+export type FalMinimaxH3MaxInsertVideoParsedRequest = z.output<
+  typeof FalMinimaxH3MaxInsertVideoRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "minimax/h3-max/insert-video": FalMinimaxH3MaxInsertVideoRequestSchema,
   "ideogram/v4.5": FalIdeogramV4p5RequestSchema,
   "ideogram/v4.5/edit": FalIdeogramV4p5EditRequestSchema,
   "xai/grok-imagine-video/v1.5/lite/image-to-video":

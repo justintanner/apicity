@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Minimax H3 Max Insert Video (ac-od99em).
+
 - Added Ideogram 4.5 (ac-c93rsx).
 
 - Added Ideogram 4.5 editing with masks, reference images, precision and size

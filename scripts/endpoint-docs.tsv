@@ -1676,3 +1676,4 @@ fal	blackforestlabs.flux3.textToImage	POST	https://fal.run/blackforestlabs/flux-
 fal	xai.grokImagineVideo.v1p5.lite.imageToVideo	POST	https://fal.run/xai/grok-imagine-video/v1.5/lite/image-to-video	https://fal.ai/models/xai/grok-imagine-video/v1.5/lite/image-to-video/api
 fal	ideogram.v4p5.edit	POST	https://fal.run/ideogram/v4.5/edit	https://fal.ai/models/ideogram/v4.5/edit/api
 fal	ideogram.v4p5	POST	https://fal.run/ideogram/v4.5	https://fal.ai/models/ideogram/v4.5/api
+fal	minimax.h3Max.insertVideo	POST	https://fal.run/minimax/h3-max/insert-video	https://fal.ai/models/minimax/h3-max/insert-video/api

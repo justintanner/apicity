@@ -1049,6 +1049,7 @@ describe("fal edit/image pricing estimates", () => {
       "lightricks/ltx-2.5/image-to-video/fast",
       "lightricks/ltx-2.5/image-to-video/pro",
       "meshy/v7/image-to-3d",
+      "minimax/h3-max/insert-video",
       "minimax/h3/image-to-video",
       "minimax/h3/reference-to-video",
       "minimax/h3/text-to-video",

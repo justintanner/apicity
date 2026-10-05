@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalMinimaxH3MaxInsertVideoParsedRequest,
+  FalMinimaxH3MaxInsertVideoRequestInput,
+  FalMinimaxH3MaxInsertVideoRequest,
   FalIdeogramV4p5ParsedRequest,
   FalIdeogramV4p5RequestInput,
   FalIdeogramV4p5Request,
@@ -386,6 +389,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalMinimaxH3MaxInsertVideoRequest,
   FalIdeogramV4p5Request,
   FalIdeogramV4p5EditRequest,
   FalXaiGrokImagineVideoV1p5LiteImageToVideoRequest,
@@ -3080,6 +3084,13 @@ export interface FalMinimaxH3MaxRecastResponse {
   seed: number;
 }
 export interface FalRunMinimaxH3MaxNamespace {
+  insertVideo: ((
+    params: FalMinimaxH3MaxInsertVideoRequest,
+    signal?: AbortSignal
+  ) => Promise<FalMinimaxH3MaxInsertVideoResponse>) & {
+    schema: ApicitySchema<FalMinimaxH3MaxInsertVideoRequest>;
+  };
+
   recast: ((
     params: FalMinimaxH3MaxRecastRequest,
     signal?: AbortSignal
@@ -3178,4 +3189,29 @@ export interface FalIdeogramV4p5Response {
     file_size?: number | null;
     url: string;
   }[];
+}
+
+export interface FalMinimaxH3MaxInsertVideoResponse {
+  frame_count: number;
+  resume_time: number;
+  start_time: number;
+  video: {
+    url: string;
+    num_frames?: number | null;
+    file_size?: number | null;
+    content_type?: string | null;
+    height?: number | null;
+    width?: number | null;
+    file_name?: string | null;
+    duration?: number | null;
+    fps?: number | null;
+  };
+  expanded_prompt?: string | null;
+  injected_duration: number;
+  height: number;
+  seed: number;
+  width: number;
+  source: {};
+  duration: number;
+  timings: Record<string, number>;
 }

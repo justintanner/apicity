@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalMinimaxH3MaxRecastRequest,
+  FalMinimaxH3MaxRecastRequestInput,
+  FalMinimaxH3MaxRecastParsedRequest,
   FalXaiGrokImagineVideoV1p5LiteTextToVideoRequest,
   FalXaiGrokImagineVideoV1p5LiteTextToVideoRequestInput,
   FalXaiGrokImagineVideoV1p5LiteTextToVideoParsedRequest,
@@ -368,6 +371,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalMinimaxH3MaxRecastRequest,
   FalXaiGrokImagineVideoV1p5LiteTextToVideoRequest,
   FalMinimaxH3MaxTurboExtendVideoRequest,
   FalEstimateRequest,
@@ -3037,4 +3041,25 @@ export interface FalRunXaiGrokImagineVideoV1p5LiteNamespace {
 }
 export interface FalRunXaiGrokImagineVideoV1p5Namespace {
   lite: FalRunXaiGrokImagineVideoV1p5LiteNamespace;
+}
+
+export interface FalMinimaxH3MaxRecastResponse {
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+  seed: number;
+}
+export interface FalRunMinimaxH3MaxNamespace {
+  recast: ((
+    params: FalMinimaxH3MaxRecastRequest,
+    signal?: AbortSignal
+  ) => Promise<FalMinimaxH3MaxRecastResponse>) & {
+    schema: ApicitySchema<FalMinimaxH3MaxRecastRequest>;
+  };
+}
+export interface FalRunMinimaxNamespace {
+  h3Max: FalRunMinimaxH3MaxNamespace;
 }

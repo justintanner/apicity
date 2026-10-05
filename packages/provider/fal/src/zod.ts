@@ -3415,7 +3415,36 @@ export type FalXaiGrokImagineVideoV1p5LiteTextToVideoParsedRequest = z.output<
   typeof FalXaiGrokImagineVideoV1p5LiteTextToVideoRequestSchema
 >;
 
+// Docs: https://fal.ai/models/minimax/h3-max/recast/api
+export const FalMinimaxH3MaxRecastRequestSchema = z
+  .object({
+    video_url: z
+      .string()
+      .describe(
+        "Source video: 5–30 seconds, no individual shot longer than 15 seconds"
+      ),
+    reference_image_urls: z
+      .array(z.string())
+      .min(1)
+      .max(4)
+      .describe(
+        "One reference photo per new person, replacing main people left to right by default"
+      ),
+    resolution: z.enum(["768P", "1080P"]).default("1080P"),
+    prompt: z.string().max(2000).nullable().optional(),
+    seed: z.number().int().min(0).nullable().optional(),
+  })
+  .strict();
+export type FalMinimaxH3MaxRecastRequest = z.input<
+  typeof FalMinimaxH3MaxRecastRequestSchema
+>;
+export type FalMinimaxH3MaxRecastRequestInput = FalMinimaxH3MaxRecastRequest;
+export type FalMinimaxH3MaxRecastParsedRequest = z.output<
+  typeof FalMinimaxH3MaxRecastRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "minimax/h3-max/recast": FalMinimaxH3MaxRecastRequestSchema,
   "xai/grok-imagine-video/v1.5/lite/text-to-video":
     FalXaiGrokImagineVideoV1p5LiteTextToVideoRequestSchema,
   "minimax/h3-max-turbo/extend-video":

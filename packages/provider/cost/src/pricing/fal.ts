@@ -869,6 +869,15 @@ export const fal: Record<string, ModelPricing> = {
     (p) => (p.duration === undefined ? 6 : asNumber(p.duration)),
     "2026-10-05"
   ),
+  // Output duration is not in the request; require costHints.durationSeconds.
+  // Reference images are included without an additional charge.
+  "minimax/h3-max/recast": perSecondTiered(
+    "minimax/h3-max/recast",
+    [resolutionTier("1080P")],
+    { "768P": 0.3, "1080P": 0.45 },
+    hintedSeconds,
+    "2026-10-05"
+  ),
   "blackforestlabs/flux-3/extend-video": perSecondTiered(
     "blackforestlabs/flux-3/extend-video",
     [resolutionTier("720p")],

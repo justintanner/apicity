@@ -660,6 +660,18 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST minimax.h3Max.recast": {
+    "source": "fal/minimax-h3-max-recast",
+    "payload": {
+      "video_url": "https://v3b.fal.media/files/b/0aac0919/5NYtHn5-5dxFlbH_U9oQW_video.mp4",
+      "reference_image_urls": [
+        "https://v3b.fal.media/files/b/0aac0904/DYyrpDKza8aflsP6mMm0i_76qcS0F8.png"
+      ],
+      "resolution": "768P"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST minimax.h3MaxTurbo.extendVideo": {
     "source": "fal/minimax-h3-max-turbo-extend-video",
     "payload": {

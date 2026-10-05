@@ -1,4 +1,6 @@
 import {
+  FalMinimaxH3MaxRecastRequest,
+  FalMinimaxH3MaxRecastResponse,
   FalXaiGrokImagineVideoV1p5LiteTextToVideoRequest,
   FalXaiGrokImagineVideoV1p5LiteTextToVideoResponse,
   FalMinimaxH3MaxTurboExtendVideoRequest,
@@ -265,6 +267,7 @@ import {
   FalFlux3KeyframesToVideoRequestSchema,
   FalMinimaxH3MaxTurboExtendVideoRequestSchema,
   FalXaiGrokImagineVideoV1p5LiteTextToVideoRequestSchema,
+  FalMinimaxH3MaxRecastRequestSchema,
   FalFlux3ExtendVideoRequestSchema,
   FalFluxVideoUpscaleRequestSchema,
   FalXaiGrokImagineImageRequestSchema,
@@ -950,6 +953,15 @@ export function createFal(opts: FalOptions): FalProvider {
     FalXaiGrokImagineVideoV1p5LiteTextToVideoRequestSchema,
     { base: runBaseURL }
   );
+
+  // POST https://fal.run/minimax/h3-max/recast
+  // Docs: https://fal.ai/models/minimax/h3-max/recast/api
+  const minimaxH3MaxRecast = jsonBody<
+    FalMinimaxH3MaxRecastRequest,
+    FalMinimaxH3MaxRecastResponse
+  >("POST", "/minimax/h3-max/recast", FalMinimaxH3MaxRecastRequestSchema, {
+    base: runBaseURL,
+  });
 
   // POST https://fal.run/minimax/h3-max-turbo/extend-video
   // Docs: https://fal.ai/models/minimax/h3-max-turbo/extend-video/api
@@ -2023,6 +2035,11 @@ export function createFal(opts: FalOptions): FalProvider {
       },
     },
     minimax: {
+      h3Max: {
+        // POST https://fal.run/minimax/h3-max/recast
+        // Docs: https://fal.ai/models/minimax/h3-max/recast/api
+        recast: minimaxH3MaxRecast,
+      },
       h3MaxTurbo: {
         // POST https://fal.run/minimax/h3-max-turbo/extend-video
         // Docs: https://fal.ai/models/minimax/h3-max-turbo/extend-video/api

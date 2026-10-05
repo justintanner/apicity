@@ -440,6 +440,14 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST elevenlabs.tts.elevenV4": {
+    "source": "fal/elevenlabs-tts-eleven-v4",
+    "payload": {
+      "text": "A red panda waves once, then holds still."
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST elevenlabs.tts.elevenV4Turbo": {
     "source": "fal/elevenlabs-tts-eleven-v4-turbo",
     "payload": {

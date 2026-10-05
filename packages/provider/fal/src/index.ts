@@ -21,6 +21,10 @@ export type {
 
 // Export all types
 export type {
+  FalElevenlabsTtsElevenV4Response,
+  FalElevenlabsTtsElevenV4ParsedRequest,
+  FalElevenlabsTtsElevenV4RequestInput,
+  FalElevenlabsTtsElevenV4Request,
   FalRunElevenlabsFrontierNamespace,
   FalRunElevenlabsTtsNamespace,
   FalElevenlabsTtsElevenV4TurboResponse,

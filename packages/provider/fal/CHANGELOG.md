@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Elevenlabs TTS Eleven V4 (ac-5zfk2j).
+
 - Added Elevenlabs TTS Eleven V4 Turbo (ac-y9s1h4).
 
 - Added Minimax H3 Max Insert Video (ac-od99em).

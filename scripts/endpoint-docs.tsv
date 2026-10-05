@@ -1678,3 +1678,4 @@ fal	ideogram.v4p5.edit	POST	https://fal.run/ideogram/v4.5/edit	https://fal.ai/mo
 fal	ideogram.v4p5	POST	https://fal.run/ideogram/v4.5	https://fal.ai/models/ideogram/v4.5/api
 fal	minimax.h3Max.insertVideo	POST	https://fal.run/minimax/h3-max/insert-video	https://fal.ai/models/minimax/h3-max/insert-video/api
 fal	elevenlabs.tts.elevenV4Turbo	POST	https://fal.run/elevenlabs/tts/eleven-v4-turbo	https://fal.ai/models/elevenlabs/tts/eleven-v4-turbo/api
+fal	elevenlabs.tts.elevenV4	POST	https://fal.run/elevenlabs/tts/eleven-v4	https://fal.ai/models/elevenlabs/tts/eleven-v4/api

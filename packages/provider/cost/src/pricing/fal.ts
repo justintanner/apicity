@@ -689,6 +689,12 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  "elevenlabs/tts/eleven-v4": perCharacter(
+    "elevenlabs/tts/eleven-v4",
+    8e-5,
+    "2026-10-05"
+  ),
+
   "elevenlabs/tts/eleven-v4-turbo": perCharacter(
     "elevenlabs/tts/eleven-v4-turbo",
     4e-5,

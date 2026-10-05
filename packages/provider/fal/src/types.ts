@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalElevenlabsTtsElevenV4ParsedRequest,
+  FalElevenlabsTtsElevenV4RequestInput,
+  FalElevenlabsTtsElevenV4Request,
   FalElevenlabsTtsElevenV4TurboParsedRequest,
   FalElevenlabsTtsElevenV4TurboRequestInput,
   FalElevenlabsTtsElevenV4TurboRequest,
@@ -392,6 +395,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalElevenlabsTtsElevenV4Request,
   FalElevenlabsTtsElevenV4TurboRequest,
   FalMinimaxH3MaxInsertVideoRequest,
   FalIdeogramV4p5Request,
@@ -3233,6 +3237,13 @@ export interface FalElevenlabsTtsElevenV4TurboResponse {
 }
 
 export interface FalRunElevenlabsTtsNamespace {
+  elevenV4: ((
+    params: FalElevenlabsTtsElevenV4Request,
+    signal?: AbortSignal
+  ) => Promise<FalElevenlabsTtsElevenV4Response>) & {
+    schema: ApicitySchema<FalElevenlabsTtsElevenV4Request>;
+  };
+
   elevenV4Turbo: ((
     params: FalElevenlabsTtsElevenV4TurboRequest,
     signal?: AbortSignal
@@ -3243,4 +3254,14 @@ export interface FalRunElevenlabsTtsNamespace {
 
 export interface FalRunElevenlabsFrontierNamespace {
   tts: FalRunElevenlabsTtsNamespace;
+}
+
+export interface FalElevenlabsTtsElevenV4Response {
+  timestamps?: unknown[] | null;
+  audio: {
+    content_type?: string | null;
+    url: string;
+    file_size?: number | null;
+    file_name?: string | null;
+  };
 }

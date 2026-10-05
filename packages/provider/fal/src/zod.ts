@@ -3836,7 +3836,102 @@ export type FalElevenlabsTtsElevenV4TurboParsedRequest = z.output<
   typeof FalElevenlabsTtsElevenV4TurboRequestSchema
 >;
 
+// Docs: https://fal.ai/models/elevenlabs/tts/eleven-v4/api
+export const FalElevenlabsTtsElevenV4RequestSchema = z.object({
+  text: z
+    .string()
+    .min(1)
+    .max(5000)
+    .describe(
+      "The text to convert to speech. Supports audio tags such as [whispering] and IPA pronunciation enclosed in forward slashes."
+    ),
+  voice: z
+    .string()
+    .default("Rachel")
+    .describe("The voice to use for speech generation"),
+  stability: z
+    .number()
+    .min(0)
+    .max(1)
+    .default(0.5)
+    .describe(
+      "Voice stability. Lower values allow more expressive delivery; higher values make delivery more consistent."
+    ),
+  similarity_boost: z
+    .number()
+    .min(0)
+    .max(1)
+    .default(0.75)
+    .describe(
+      "How closely the output follows the reference voice. Higher values increase similarity but may reduce naturalness."
+    ),
+  seed: z
+    .number()
+    .int()
+    .min(0)
+    .max(4294967295)
+    .nullable()
+    .optional()
+    .describe(
+      "Seed for best-effort reproducibility. Identical output is not guaranteed."
+    ),
+  language_code: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "Language code (ISO 639-1) for speech generation and text normalization."
+    ),
+  output_format: z
+    .enum([
+      "mp3_22050_32",
+      "mp3_44100_32",
+      "mp3_44100_64",
+      "mp3_44100_96",
+      "mp3_44100_128",
+      "mp3_44100_192",
+      "pcm_8000",
+      "pcm_16000",
+      "pcm_22050",
+      "pcm_24000",
+      "pcm_44100",
+      "pcm_48000",
+      "ulaw_8000",
+      "alaw_8000",
+      "opus_48000_32",
+      "opus_48000_64",
+      "opus_48000_96",
+      "opus_48000_128",
+      "opus_48000_192",
+    ])
+    .default("mp3_44100_128")
+    .describe(
+      "Output format of the generated audio. Formatted as codec_sample_rate_bitrate."
+    ),
+  apply_text_normalization: z
+    .enum(["auto", "on", "off"])
+    .default("auto")
+    .describe(
+      "Whether to normalize text such as numbers and dates before generation."
+    ),
+  timestamps: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Whether to return character-level timing information with the generated audio."
+    ),
+});
+export type FalElevenlabsTtsElevenV4Request = z.input<
+  typeof FalElevenlabsTtsElevenV4RequestSchema
+>;
+export type FalElevenlabsTtsElevenV4RequestInput =
+  FalElevenlabsTtsElevenV4Request;
+export type FalElevenlabsTtsElevenV4ParsedRequest = z.output<
+  typeof FalElevenlabsTtsElevenV4RequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "elevenlabs/tts/eleven-v4": FalElevenlabsTtsElevenV4RequestSchema,
   "elevenlabs/tts/eleven-v4-turbo": FalElevenlabsTtsElevenV4TurboRequestSchema,
   "minimax/h3-max/insert-video": FalMinimaxH3MaxInsertVideoRequestSchema,
   "ideogram/v4.5": FalIdeogramV4p5RequestSchema,

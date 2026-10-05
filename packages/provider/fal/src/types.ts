@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalGoogleGemini3p8FlashTtsParsedRequest,
+  FalGoogleGemini3p8FlashTtsRequestInput,
+  FalGoogleGemini3p8FlashTtsRequest,
   FalElevenlabsTtsElevenV4ParsedRequest,
   FalElevenlabsTtsElevenV4RequestInput,
   FalElevenlabsTtsElevenV4Request,
@@ -395,6 +398,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalGoogleGemini3p8FlashTtsRequest,
   FalElevenlabsTtsElevenV4Request,
   FalElevenlabsTtsElevenV4TurboRequest,
   FalMinimaxH3MaxInsertVideoRequest,
@@ -2780,6 +2784,8 @@ export interface FalRunLightricksNamespace {
 }
 
 export interface FalRunNamespace {
+  google: FalRunGoogleNamespace;
+
   elevenlabs: FalRunElevenlabsFrontierNamespace;
 
   ideogram: FalRunIdeogramNamespace;
@@ -3263,5 +3269,23 @@ export interface FalElevenlabsTtsElevenV4Response {
     url: string;
     file_size?: number | null;
     file_name?: string | null;
+  };
+}
+
+export interface FalGoogleGemini3p8FlashTtsResponse {
+  audio: {
+    file_size?: number | null;
+    content_type?: string | null;
+    url: string;
+    file_name?: string | null;
+  };
+}
+
+export interface FalRunGoogleNamespace {
+  gemini3p8FlashTts: ((
+    params: FalGoogleGemini3p8FlashTtsRequest,
+    signal?: AbortSignal
+  ) => Promise<FalGoogleGemini3p8FlashTtsResponse>) & {
+    schema: ApicitySchema<FalGoogleGemini3p8FlashTtsRequest>;
   };
 }

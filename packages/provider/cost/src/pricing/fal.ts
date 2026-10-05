@@ -655,6 +655,35 @@ const gptImagePerImage = (
 // grid or billable-dimension mapping. Use fal's pricing API; do not invent it.
 // https://fal.ai/models/blackforestlabs/flux-3/edit-image
 // https://fal.ai/models/blackforestlabs/flux-3/text-to-image
+
+// Gemini TTS bills spoken text only: single-speaker `prompt`, or each
+// dialogue turn's `text`. Style instructions and speaker aliases are
+// excluded. Missing spoken text returns undefined so the estimate warns.
+function spokenCharacters(p: Record<string, unknown>): number | undefined {
+  const prompt = asString(p.prompt);
+  const turns = Array.isArray(p.turns) ? p.turns : undefined;
+  if (prompt === undefined && turns === undefined) return undefined;
+  let count = prompt?.length ?? 0;
+  for (const turn of turns ?? []) {
+    const text = asString(asObject(turn)?.text);
+    if (text !== undefined) count += text.length;
+  }
+  return count;
+}
+
+const perSpokenCharacter = (
+  endpointId: string,
+  usd: number,
+  on: string
+): ModelPricing => ({
+  kind: "perUnit",
+  unit: "characters",
+  units: spokenCharacters,
+  select: [],
+  rates: { "": usd },
+  source: source(endpointId, on),
+});
+
 export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "alibaba/qwen-image-3/edit",
   "alibaba/qwen-image-3/text-to-image",
@@ -689,6 +718,12 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  "google/gemini-3.8-flash-tts": perSpokenCharacter(
+    "google/gemini-3.8-flash-tts",
+    4.5e-5,
+    "2026-10-05"
+  ),
+
   "elevenlabs/tts/eleven-v4": perCharacter(
     "elevenlabs/tts/eleven-v4",
     8e-5,

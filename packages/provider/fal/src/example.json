@@ -493,6 +493,14 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST google.gemini3p8FlashTts": {
+    "source": "fal/google-gemini-3-8-flash-tts",
+    "payload": {
+      "prompt": "A red panda waves once, then holds still."
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST gptImage1p5": {
     "source": "fal/gpt-image-1.5",
     "payload": {

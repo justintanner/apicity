@@ -21,6 +21,11 @@ export type {
 
 // Export all types
 export type {
+  FalRunGoogleNamespace,
+  FalGoogleGemini3p8FlashTtsResponse,
+  FalGoogleGemini3p8FlashTtsParsedRequest,
+  FalGoogleGemini3p8FlashTtsRequestInput,
+  FalGoogleGemini3p8FlashTtsRequest,
   FalElevenlabsTtsElevenV4Response,
   FalElevenlabsTtsElevenV4ParsedRequest,
   FalElevenlabsTtsElevenV4RequestInput,

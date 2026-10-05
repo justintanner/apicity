@@ -1679,3 +1679,4 @@ fal	ideogram.v4p5	POST	https://fal.run/ideogram/v4.5	https://fal.ai/models/ideog
 fal	minimax.h3Max.insertVideo	POST	https://fal.run/minimax/h3-max/insert-video	https://fal.ai/models/minimax/h3-max/insert-video/api
 fal	elevenlabs.tts.elevenV4Turbo	POST	https://fal.run/elevenlabs/tts/eleven-v4-turbo	https://fal.ai/models/elevenlabs/tts/eleven-v4-turbo/api
 fal	elevenlabs.tts.elevenV4	POST	https://fal.run/elevenlabs/tts/eleven-v4	https://fal.ai/models/elevenlabs/tts/eleven-v4/api
+fal	google.gemini3p8FlashTts	POST	https://fal.run/google/gemini-3.8-flash-tts	https://fal.ai/models/google/gemini-3.8-flash-tts/api

@@ -800,6 +800,11 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  "meshy/v7.1/multi-image-to-3d": meshyV71(
+    "meshy/v7.1/multi-image-to-3d",
+    "2026-10-05"
+  ),
+
   "meshy/v7.1/image-to-3d": meshyV71("meshy/v7.1/image-to-3d", "2026-10-05"),
 
   "meshy/v7.1/text-to-3d": meshyV71("meshy/v7.1/text-to-3d", "2026-10-05"),

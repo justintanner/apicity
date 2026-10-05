@@ -4843,7 +4843,126 @@ export type FalMeshyV7p1ImageTo3dParsedRequest = z.output<
   typeof FalMeshyV7p1ImageTo3dRequestSchema
 >;
 
+// Docs: https://fal.ai/models/meshy/v7.1/multi-image-to-3d/api
+export const FalMeshyV7p1MultiImageTo3dRequestSchema = z
+  .object({
+    image_urls: z
+      .array(z.string())
+      .describe(
+        "1 to 4 images for 3D model creation. All images should depict the same object from different angles. Supports .jpg, .jpeg, .png formats, and AVIF/HEIF which will be automatically converted. If more than 4 images are provided, only the first 4 will be used."
+      ),
+    topology: z
+      .enum(["quad", "triangle"])
+      .default("triangle")
+      .describe(
+        "Specify the topology of the generated model. Quad for smooth surfaces, Triangle for detailed geometry."
+      ),
+    target_polycount: z
+      .number()
+      .int()
+      .min(100)
+      .max(300000)
+      .default(30000)
+      .describe("Target number of polygons in the generated model"),
+    symmetry_mode: z
+      .enum(["off", "auto", "on"])
+      .default("auto")
+      .describe("Controls symmetry behavior during model generation."),
+    should_remesh: z
+      .boolean()
+      .default(true)
+      .describe(
+        "Whether to enable the remesh phase. When false, returns triangular mesh ignoring topology and target_polycount."
+      ),
+    should_texture: z
+      .boolean()
+      .default(true)
+      .describe("Whether to generate textures."),
+    enable_pbr: z
+      .boolean()
+      .default(false)
+      .describe(
+        "Generate PBR Maps (metallic, roughness, normal) in addition to base color. Requires should_texture to be true."
+      ),
+    is_a_t_pose: z
+      .boolean()
+      .default(false)
+      .describe(
+        "Deprecated: use pose_mode instead. When true, generates a T-pose model."
+      ),
+    pose_mode: z
+      .enum(["a-pose", "t-pose", ""])
+      .default("")
+      .describe(
+        "Pose mode for the generated model. 'a-pose' generates an A-pose, 't-pose' generates a T-pose, empty string for no specific pose."
+      ),
+    texture_prompt: z
+      .string()
+      .max(600)
+      .nullable()
+      .optional()
+      .describe(
+        "Text prompt to guide the texturing process. Requires should_texture to be true."
+      ),
+    texture_image_url: z
+      .string()
+      .nullable()
+      .optional()
+      .describe(
+        "2D image to guide the texturing process. Requires should_texture to be true."
+      ),
+    enable_rigging: z
+      .boolean()
+      .default(false)
+      .describe(
+        "Automatically rig the generated model as a humanoid character. Includes basic walking and running animations. Best results with humanoid characters that have clearly defined limbs."
+      ),
+    rigging_height_meters: z
+      .number()
+      .gt(0)
+      .default(1.7)
+      .describe(
+        "Approximate height of the character in meters. Only used when enable_rigging is true."
+      ),
+    enable_animation: z
+      .boolean()
+      .default(false)
+      .describe(
+        "Apply an animation preset to the rigged model. Requires enable_rigging to be true."
+      ),
+    animation_action_id: z
+      .number()
+      .int()
+      .default(92)
+      .describe(
+        'Animation preset ID from Meshy\'s library. Only used when enable_animation is true; in that case it must be in [0, 696] (``0`` is the "Idle" preset) and is otherwise rejected with a 422. See https://docs.meshy.ai/en/api/animation-library for available action IDs.'
+      ),
+    enable_safety_checker: z
+      .boolean()
+      .default(true)
+      .describe(
+        "If set to true, input data will be checked for safety before processing."
+      ),
+    geometry_resolution: z
+      .enum(["standard", "2k"])
+      .nullable()
+      .optional()
+      .describe(
+        "Geometry resolution. Multi-image generation does not support 4k."
+      ),
+  })
+  .describe("Input for Meshy-7 and 7.1 Multi-Image to 3D conversion.");
+export type FalMeshyV7p1MultiImageTo3dRequest = z.input<
+  typeof FalMeshyV7p1MultiImageTo3dRequestSchema
+>;
+export type FalMeshyV7p1MultiImageTo3dRequestInput =
+  FalMeshyV7p1MultiImageTo3dRequest;
+export type FalMeshyV7p1MultiImageTo3dParsedRequest = z.output<
+  typeof FalMeshyV7p1MultiImageTo3dRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "meshy/v7.1/multi-image-to-3d": FalMeshyV7p1MultiImageTo3dRequestSchema,
   "meshy/v7.1/image-to-3d": FalMeshyV7p1ImageTo3dRequestSchema,
   "meshy/v7.1/text-to-3d": FalMeshyV7p1TextTo3dRequestSchema,
   "recraft/v4.1/flash/text-to-image":

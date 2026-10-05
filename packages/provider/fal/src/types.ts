@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalMeshyV7p1MultiImageTo3dParsedRequest,
+  FalMeshyV7p1MultiImageTo3dRequestInput,
+  FalMeshyV7p1MultiImageTo3dRequest,
   FalMeshyV7p1ImageTo3dParsedRequest,
   FalMeshyV7p1ImageTo3dRequestInput,
   FalMeshyV7p1ImageTo3dRequest,
@@ -425,6 +428,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalMeshyV7p1MultiImageTo3dRequest,
   FalMeshyV7p1ImageTo3dRequest,
   FalMeshyV7p1TextTo3dRequest,
   FalRecraftV4p1FlashTextToImageRequest,
@@ -3539,6 +3543,13 @@ export interface FalMeshyV7p1TextTo3dResponse {
 }
 
 export interface FalRunMeshyV7p1Namespace {
+  multiImageTo3d: ((
+    params: FalMeshyV7p1MultiImageTo3dRequest,
+    signal?: AbortSignal
+  ) => Promise<FalMeshyV7p1MultiImageTo3dResponse>) & {
+    schema: ApicitySchema<FalMeshyV7p1MultiImageTo3dRequest>;
+  };
+
   imageTo3d: ((
     params: FalMeshyV7p1ImageTo3dRequest,
     signal?: AbortSignal
@@ -3555,6 +3566,42 @@ export interface FalRunMeshyV7p1Namespace {
 }
 
 export interface FalMeshyV7p1ImageTo3dResponse {
+  thumbnail?: unknown | null;
+  basic_animations?: unknown | null;
+  rigged_character_fbx?: unknown | null;
+  animation_glb?: unknown | null;
+  rig_task_id?: string | null;
+  animation_fbx?: unknown | null;
+  seed?: number | null;
+  rigged_character_glb?: unknown | null;
+  texture_urls?: {
+    normal?: unknown | null;
+    metallic?: unknown | null;
+    roughness?: unknown | null;
+    base_color: {
+      content_type?: string | null;
+      file_name?: string | null;
+      file_size?: number | null;
+      url: string;
+    };
+  }[];
+  model_glb: {
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    url: string;
+  };
+  model_urls: {
+    fbx?: unknown | null;
+    obj?: unknown | null;
+    usdz?: unknown | null;
+    glb?: unknown | null;
+    blend?: unknown | null;
+    stl?: unknown | null;
+  };
+}
+
+export interface FalMeshyV7p1MultiImageTo3dResponse {
   thumbnail?: unknown | null;
   basic_animations?: unknown | null;
   rigged_character_fbx?: unknown | null;

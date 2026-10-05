@@ -737,6 +737,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST meshy.v7p1.multiImageTo3d": {
+    "source": "fal/meshy-v7-1-multi-image-to-3d",
+    "payload": {
+      "image_urls": [
+        "https://v3b.fal.media/files/b/0a8b90e0/BFLE9VDlZqsryU-UA3BoD_image_004.png"
+      ]
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST meshy.v7p1.textTo3d": {
     "source": "fal/meshy-v7-1-text-to-3d",
     "payload": {

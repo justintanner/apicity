@@ -3355,7 +3355,1718 @@ export type FalOptions = z.infer<typeof FalOptionsSchema>;
 // as endpoint_id, i.e. without the leading slash) mapped to its request schema
 // ---------------------------------------------------------------------------
 
+// Docs: https://fal.ai/models/minimax/h3-max-turbo/extend-video/api
+export const FalMinimaxH3MaxTurboExtendVideoRequestSchema = z.object({
+  video_url: z
+    .string()
+    .min(1)
+    .describe(
+      "Source video URL: 1.625–60 seconds, up to 50 MB, aspect ratio 0.4–2.5"
+    ),
+  prompt: z.string().min(1).max(50000),
+  aspect_ratio: z
+    .enum(["auto", "21:9", "16:9", "4:3", "1:1", "3:4", "9:16"])
+    .default("auto"),
+  enable_prompt_expansion: z.boolean().default(true),
+  resolution: z.enum(["480P", "768P", "1080P", "2K"]).default("768P"),
+  enable_safety_checker: z.boolean().default(true),
+  duration: z
+    .number()
+    .min(0.71)
+    .max(15)
+    .default(5)
+    .describe(
+      "Seconds of new footage; billed independently of source duration"
+    ),
+  seed: z.number().int().nullable().optional(),
+  output: z.enum(["extended", "continuation"]).default("extended"),
+  reference_audio_urls: z
+    .array(z.string())
+    .max(3)
+    .optional()
+    .describe(
+      "Audio references: each 2–15 seconds, at most 15 seconds combined"
+    ),
+});
+export type FalMinimaxH3MaxTurboExtendVideoRequest = z.input<
+  typeof FalMinimaxH3MaxTurboExtendVideoRequestSchema
+>;
+export type FalMinimaxH3MaxTurboExtendVideoRequestInput =
+  FalMinimaxH3MaxTurboExtendVideoRequest;
+export type FalMinimaxH3MaxTurboExtendVideoParsedRequest = z.output<
+  typeof FalMinimaxH3MaxTurboExtendVideoRequestSchema
+>;
+
+// Docs: https://fal.ai/models/xai/grok-imagine-video/v1.5/lite/text-to-video/api
+export const FalXaiGrokImagineVideoV1p5LiteTextToVideoRequestSchema = z.object({
+  prompt: z.string().max(4096),
+  duration: z.number().int().min(1).max(15).default(6),
+  resolution: z.enum(["480p", "720p", "1080p"]).default("720p"),
+  aspect_ratio: z
+    .enum(["16:9", "4:3", "3:2", "1:1", "2:3", "3:4", "9:16"])
+    .default("16:9"),
+});
+export type FalXaiGrokImagineVideoV1p5LiteTextToVideoRequest = z.input<
+  typeof FalXaiGrokImagineVideoV1p5LiteTextToVideoRequestSchema
+>;
+export type FalXaiGrokImagineVideoV1p5LiteTextToVideoRequestInput =
+  FalXaiGrokImagineVideoV1p5LiteTextToVideoRequest;
+export type FalXaiGrokImagineVideoV1p5LiteTextToVideoParsedRequest = z.output<
+  typeof FalXaiGrokImagineVideoV1p5LiteTextToVideoRequestSchema
+>;
+
+// Docs: https://fal.ai/models/minimax/h3-max/recast/api
+export const FalMinimaxH3MaxRecastRequestSchema = z
+  .object({
+    video_url: z
+      .string()
+      .describe(
+        "Source video: 5–30 seconds, no individual shot longer than 15 seconds"
+      ),
+    reference_image_urls: z
+      .array(z.string())
+      .min(1)
+      .max(4)
+      .describe(
+        "One reference photo per new person, replacing main people left to right by default"
+      ),
+    resolution: z.enum(["768P", "1080P"]).default("1080P"),
+    prompt: z.string().max(2000).nullable().optional(),
+    seed: z.number().int().min(0).nullable().optional(),
+  })
+  .strict();
+export type FalMinimaxH3MaxRecastRequest = z.input<
+  typeof FalMinimaxH3MaxRecastRequestSchema
+>;
+export type FalMinimaxH3MaxRecastRequestInput = FalMinimaxH3MaxRecastRequest;
+export type FalMinimaxH3MaxRecastParsedRequest = z.output<
+  typeof FalMinimaxH3MaxRecastRequestSchema
+>;
+
+// Docs: https://fal.ai/models/blackforestlabs/flux-3/edit-image/api
+export const FalFlux3EditImageRequestSchema = z.object({
+  prompt: z.string(),
+  image_urls: z
+    .array(z.string())
+    .min(1)
+    .max(10)
+    .describe(
+      "Reference URLs or data URIs: at least 256 pixels per dimension and at most 4 MP; first image controls auto aspect ratio"
+    ),
+  aspect_ratio: z
+    .enum([
+      "auto",
+      "21:9",
+      "2:1",
+      "16:9",
+      "3:2",
+      "7:5",
+      "4:3",
+      "5:4",
+      "1:1",
+      "4:5",
+      "3:4",
+      "5:7",
+      "2:3",
+      "9:16",
+      "1:2",
+    ])
+    .default("auto"),
+  resolution: z.enum(["512sq", "768sq", "1k", "2k", "4k"]).default("1k"),
+  enable_prompt_expansion: z.boolean().default(false),
+  safety_tolerance: z.number().int().min(0).max(4).default(2),
+  output_format: z.enum(["jpeg", "png"]).default("jpeg"),
+  sync_mode: z.boolean().default(false),
+  version: z.literal("latest").default("latest"),
+});
+export type FalFlux3EditImageRequest = z.input<
+  typeof FalFlux3EditImageRequestSchema
+>;
+export type FalFlux3EditImageRequestInput = FalFlux3EditImageRequest;
+export type FalFlux3EditImageParsedRequest = z.output<
+  typeof FalFlux3EditImageRequestSchema
+>;
+
+// Docs: https://fal.ai/models/blackforestlabs/flux-3/text-to-image/api
+export const FalFlux3TextToImageRequestSchema =
+  FalFlux3EditImageRequestSchema.omit({ image_urls: true });
+export type FalFlux3TextToImageRequest = z.input<
+  typeof FalFlux3TextToImageRequestSchema
+>;
+export type FalFlux3TextToImageRequestInput = FalFlux3TextToImageRequest;
+export type FalFlux3TextToImageParsedRequest = z.output<
+  typeof FalFlux3TextToImageRequestSchema
+>;
+
+// Docs: https://fal.ai/models/xai/grok-imagine-video/v1.5/lite/image-to-video/api
+export const FalXaiGrokImagineVideoV1p5LiteImageToVideoRequestSchema =
+  FalXaiGrokImagineVideoV1p5LiteTextToVideoRequestSchema.omit({
+    aspect_ratio: true,
+  }).extend({ image_url: z.string() });
+export type FalXaiGrokImagineVideoV1p5LiteImageToVideoRequest = z.input<
+  typeof FalXaiGrokImagineVideoV1p5LiteImageToVideoRequestSchema
+>;
+export type FalXaiGrokImagineVideoV1p5LiteImageToVideoRequestInput =
+  FalXaiGrokImagineVideoV1p5LiteImageToVideoRequest;
+export type FalXaiGrokImagineVideoV1p5LiteImageToVideoParsedRequest = z.output<
+  typeof FalXaiGrokImagineVideoV1p5LiteImageToVideoRequestSchema
+>;
+
+// Docs: https://fal.ai/models/ideogram/v4.5/edit/api
+export const FalIdeogramV4p5EditRequestSchema = z
+  .object({
+    prompt: z.string().min(1).max(10000),
+    image_url: z.string(),
+    reference_image_urls: z
+      .array(z.string())
+      .max(4)
+      .optional()
+      .describe("Up to four references, or three when a mask is provided."),
+    mask_url: z
+      .string()
+      .nullable()
+      .optional()
+      .describe(
+        "Mask matching source dimensions: black edits, white preserves. Both regions must be present."
+      ),
+    edit_precision: z.enum(["regular", "high"]).default("regular"),
+    quality: z.enum(["very_low", "low", "medium", "high"]).default("medium"),
+    image_size: z
+      .union([
+        z.enum([
+          "auto",
+          "square",
+          "square_hd",
+          "portrait_4_3",
+          "landscape_4_3",
+          "portrait_16_9",
+          "landscape_16_9",
+        ]),
+        z
+          .object({
+            width: z
+              .number()
+              .int()
+              .min(256)
+              .max(14142)
+              .multipleOf(32)
+              .default(512),
+            height: z
+              .number()
+              .int()
+              .min(256)
+              .max(14142)
+              .multipleOf(32)
+              .default(512),
+          })
+          .refine(
+            (size) =>
+              size.width * size.height <= 4194304 &&
+              Math.max(size.width, size.height) /
+                Math.min(size.width, size.height) <=
+                6,
+            {
+              message:
+                "Custom sizes must have area <=4194304 and aspect ratio <=6:1",
+            }
+          ),
+      ])
+      .default("auto")
+      .describe(
+        "Only unmasked regular edits accept non-auto sizes. Custom dimensions must be multiples of 32, at least 256, with area <=4194304 and aspect ratio <=6:1."
+      ),
+    num_images: z.number().int().min(1).max(8).default(1),
+    seed: z.number().int().nullable().optional(),
+    sync_mode: z.boolean().default(false),
+  })
+  .strict()
+  .superRefine((p, ctx) => {
+    if (p.mask_url != null && (p.reference_image_urls?.length ?? 0) > 3) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["reference_image_urls"],
+        message: "Masked edits allow at most three reference images",
+      });
+    }
+    if (
+      (p.mask_url != null || p.edit_precision === "high") &&
+      p.image_size !== "auto"
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["image_size"],
+        message: "Masked and high-precision edits require image_size auto",
+      });
+    }
+  });
+export type FalIdeogramV4p5EditRequest = z.input<
+  typeof FalIdeogramV4p5EditRequestSchema
+>;
+export type FalIdeogramV4p5EditRequestInput = FalIdeogramV4p5EditRequest;
+export type FalIdeogramV4p5EditParsedRequest = z.output<
+  typeof FalIdeogramV4p5EditRequestSchema
+>;
+
+// Docs: https://fal.ai/models/ideogram/v4.5/api
+export const FalIdeogramV4p5RequestSchema = z
+  .object({
+    prompt: z
+      .string()
+      .min(1)
+      .max(10000)
+      .describe("The generation or editing prompt."),
+    image_size: z
+      .union([
+        z.object({
+          width: z.number().int().gt(0).max(14142).default(512),
+          height: z.number().int().gt(0).max(14142).default(512),
+        }),
+        z.enum([
+          "square_hd",
+          "square",
+          "portrait_4_3",
+          "portrait_16_9",
+          "landscape_4_3",
+          "landscape_16_9",
+        ]),
+      ])
+      .refine(
+        (size) =>
+          typeof size === "string" ||
+          new Set([
+            "1024x1024",
+            "1152x864",
+            "864x1152",
+            "1280x720",
+            "720x1280",
+            "1024x1024",
+            "1024x3072",
+            "1120x896",
+            "1152x2944",
+            "1152x864",
+            "1248x3328",
+            "1248x832",
+            "1280x3072",
+            "1280x720",
+            "1280x800",
+            "1296x3168",
+            "1440x2560",
+            "1440x2880",
+            "1440x720",
+            "1600x2560",
+            "1664x2496",
+            "1728x2304",
+            "1792x2240",
+            "2048x2048",
+            "2240x1792",
+            "2304x1728",
+            "2496x1664",
+            "2560x1440",
+            "2560x1600",
+            "2880x1440",
+            "2944x1152",
+            "3072x1024",
+            "3072x1280",
+            "3168x1296",
+            "3328x1248",
+            "720x1280",
+            "720x1440",
+            "800x1280",
+            "832x1248",
+            "864x1152",
+            "896x1120",
+          ]).has(`${size.width}x${size.height}`),
+        { message: "Explicit dimensions must be one of the documented sizes" }
+      )
+      .default("square_hd")
+      .describe(
+        "Output size. square is promoted to square_hd (1024x1024). 4:3 presets use 1152x864 or 864x1152; 16:9 presets use 1280x720 or 720x1280. Explicit dimensions must match a supported size: 1024x1024, 1024x3072, 1120x896, 1152x2944, 1152x864, 1248x3328, 1248x832, 1280x3072, 1280x720, 1280x800, 1296x3168, 1440x2560, 1440x2880, 1440x720, 1600x2560, 1664x2496, 1728x2304, 1792x2240, 2048x2048, 2240x1792, 2304x1728, 2496x1664, 2560x1440, 2560x1600, 2880x1440, 2944x1152, 3072x1024, 3072x1280, 3168x1296, 3328x1248, 720x1280, 720x1440, 800x1280, 832x1248, 864x1152, 896x1120"
+      ),
+    quality: z
+      .enum(["low", "medium", "high"])
+      .default("medium")
+      .describe("Text-to-image quality."),
+    enable_prompt_expansion: z
+      .boolean()
+      .default(true)
+      .describe("Enable partner prompt expansion."),
+    num_images: z
+      .number()
+      .int()
+      .min(1)
+      .max(8)
+      .default(1)
+      .describe("Number of images to generate."),
+    seed: z
+      .number()
+      .int()
+      .nullable()
+      .optional()
+      .describe("Random seed. Omit to choose automatically."),
+    sync_mode: z
+      .boolean()
+      .default(false)
+      .describe("Return image data directly in the response."),
+  })
+  .strict();
+export type FalIdeogramV4p5Request = z.input<
+  typeof FalIdeogramV4p5RequestSchema
+>;
+export type FalIdeogramV4p5RequestInput = FalIdeogramV4p5Request;
+export type FalIdeogramV4p5ParsedRequest = z.output<
+  typeof FalIdeogramV4p5RequestSchema
+>;
+
+// Docs: https://fal.ai/models/minimax/h3-max/insert-video/api
+export const FalMinimaxH3MaxInsertVideoRequestSchema = z
+  .object({
+    video_url: z.string().min(1),
+    prompt: z.string().min(1).max(50000).nullable().optional(),
+    reference_image_urls: z.array(z.string()).max(9).optional(),
+    reference_video_urls: z.array(z.string()).max(3).optional(),
+    start_time: z.number().min(1.625).max(60),
+    resume_time: z.number().gt(1.625).max(60),
+    duration: z.number().min(5).max(13).default(5),
+    resolution: z.enum(["480p", "768p"]).default("768p"),
+    seed: z.number().int().min(0).max(2147483647).nullable().optional(),
+    enable_prompt_expansion: z.boolean().default(true),
+    color_match: z.boolean().default(true),
+  })
+  .strict();
+export type FalMinimaxH3MaxInsertVideoRequest = z.input<
+  typeof FalMinimaxH3MaxInsertVideoRequestSchema
+>;
+export type FalMinimaxH3MaxInsertVideoRequestInput =
+  FalMinimaxH3MaxInsertVideoRequest;
+export type FalMinimaxH3MaxInsertVideoParsedRequest = z.output<
+  typeof FalMinimaxH3MaxInsertVideoRequestSchema
+>;
+
+// Docs: https://fal.ai/models/elevenlabs/tts/eleven-v4-turbo/api
+export const FalElevenlabsTtsElevenV4TurboRequestSchema = z.object({
+  text: z
+    .string()
+    .min(1)
+    .max(5000)
+    .describe(
+      "The text to convert to speech. Supports audio tags such as [whispering] and IPA pronunciation enclosed in forward slashes."
+    ),
+  voice: z
+    .string()
+    .default("Rachel")
+    .describe("The voice to use for speech generation"),
+  stability: z
+    .number()
+    .min(0)
+    .max(1)
+    .default(0.5)
+    .describe(
+      "Voice stability. Lower values allow more expressive delivery; higher values make delivery more consistent."
+    ),
+  similarity_boost: z
+    .number()
+    .min(0)
+    .max(1)
+    .default(0.75)
+    .describe(
+      "How closely the output follows the reference voice. Higher values increase similarity but may reduce naturalness."
+    ),
+  seed: z
+    .number()
+    .int()
+    .min(0)
+    .max(4294967295)
+    .nullable()
+    .optional()
+    .describe(
+      "Seed for best-effort reproducibility. Identical output is not guaranteed."
+    ),
+  language_code: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "Language code (ISO 639-1) for speech generation and text normalization."
+    ),
+  output_format: z
+    .enum([
+      "mp3_22050_32",
+      "mp3_44100_32",
+      "mp3_44100_64",
+      "mp3_44100_96",
+      "mp3_44100_128",
+      "mp3_44100_192",
+      "pcm_8000",
+      "pcm_16000",
+      "pcm_22050",
+      "pcm_24000",
+      "pcm_44100",
+      "pcm_48000",
+      "ulaw_8000",
+      "alaw_8000",
+      "opus_48000_32",
+      "opus_48000_64",
+      "opus_48000_96",
+      "opus_48000_128",
+      "opus_48000_192",
+    ])
+    .default("mp3_44100_128")
+    .describe(
+      "Output format of the generated audio. Formatted as codec_sample_rate_bitrate."
+    ),
+  apply_text_normalization: z
+    .enum(["auto", "on", "off"])
+    .default("auto")
+    .describe(
+      "Whether to normalize text such as numbers and dates before generation."
+    ),
+  timestamps: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Whether to return character-level timing information with the generated audio."
+    ),
+});
+export type FalElevenlabsTtsElevenV4TurboRequest = z.input<
+  typeof FalElevenlabsTtsElevenV4TurboRequestSchema
+>;
+export type FalElevenlabsTtsElevenV4TurboRequestInput =
+  FalElevenlabsTtsElevenV4TurboRequest;
+export type FalElevenlabsTtsElevenV4TurboParsedRequest = z.output<
+  typeof FalElevenlabsTtsElevenV4TurboRequestSchema
+>;
+
+// Docs: https://fal.ai/models/elevenlabs/tts/eleven-v4/api
+export const FalElevenlabsTtsElevenV4RequestSchema = z.object({
+  text: z
+    .string()
+    .min(1)
+    .max(5000)
+    .describe(
+      "The text to convert to speech. Supports audio tags such as [whispering] and IPA pronunciation enclosed in forward slashes."
+    ),
+  voice: z
+    .string()
+    .default("Rachel")
+    .describe("The voice to use for speech generation"),
+  stability: z
+    .number()
+    .min(0)
+    .max(1)
+    .default(0.5)
+    .describe(
+      "Voice stability. Lower values allow more expressive delivery; higher values make delivery more consistent."
+    ),
+  similarity_boost: z
+    .number()
+    .min(0)
+    .max(1)
+    .default(0.75)
+    .describe(
+      "How closely the output follows the reference voice. Higher values increase similarity but may reduce naturalness."
+    ),
+  seed: z
+    .number()
+    .int()
+    .min(0)
+    .max(4294967295)
+    .nullable()
+    .optional()
+    .describe(
+      "Seed for best-effort reproducibility. Identical output is not guaranteed."
+    ),
+  language_code: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "Language code (ISO 639-1) for speech generation and text normalization."
+    ),
+  output_format: z
+    .enum([
+      "mp3_22050_32",
+      "mp3_44100_32",
+      "mp3_44100_64",
+      "mp3_44100_96",
+      "mp3_44100_128",
+      "mp3_44100_192",
+      "pcm_8000",
+      "pcm_16000",
+      "pcm_22050",
+      "pcm_24000",
+      "pcm_44100",
+      "pcm_48000",
+      "ulaw_8000",
+      "alaw_8000",
+      "opus_48000_32",
+      "opus_48000_64",
+      "opus_48000_96",
+      "opus_48000_128",
+      "opus_48000_192",
+    ])
+    .default("mp3_44100_128")
+    .describe(
+      "Output format of the generated audio. Formatted as codec_sample_rate_bitrate."
+    ),
+  apply_text_normalization: z
+    .enum(["auto", "on", "off"])
+    .default("auto")
+    .describe(
+      "Whether to normalize text such as numbers and dates before generation."
+    ),
+  timestamps: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Whether to return character-level timing information with the generated audio."
+    ),
+});
+export type FalElevenlabsTtsElevenV4Request = z.input<
+  typeof FalElevenlabsTtsElevenV4RequestSchema
+>;
+export type FalElevenlabsTtsElevenV4RequestInput =
+  FalElevenlabsTtsElevenV4Request;
+export type FalElevenlabsTtsElevenV4ParsedRequest = z.output<
+  typeof FalElevenlabsTtsElevenV4RequestSchema
+>;
+
+// Docs: https://fal.ai/models/google/gemini-3.8-flash-tts/api
+export const FalGoogleGemini3p8FlashTtsRequestSchema = z
+  .object({
+    prompt: z
+      .string()
+      .nullable()
+      .optional()
+      .describe(
+        "Verbatim text for single-speaker speech. Put delivery directions in style_instructions; inline vocal events may use <laugh> or <sigh>. For dialogue, omit prompt and provide speakers and turns instead. The provider limits the complete input to 8,192 tokens."
+      ),
+    style_instructions: z
+      .string()
+      .nullable()
+      .optional()
+      .describe(
+        "Delivery style, separate from the spoken transcript. Applies to all turns unless overridden."
+      ),
+    voice: z
+      .enum([
+        "Achernar",
+        "Achird",
+        "Algenib",
+        "Algieba",
+        "Alnilam",
+        "Aoede",
+        "Autonoe",
+        "Callirrhoe",
+        "Charon",
+        "Despina",
+        "Enceladus",
+        "Erinome",
+        "Fenrir",
+        "Gacrux",
+        "Iapetus",
+        "Kore",
+        "Laomedeia",
+        "Leda",
+        "Orus",
+        "Pulcherrima",
+        "Puck",
+        "Rasalgethi",
+        "Sadachbia",
+        "Sadaltager",
+        "Schedar",
+        "Sulafat",
+        "Umbriel",
+        "Vindemiatrix",
+        "Zephyr",
+        "Zubenelgenubi",
+      ])
+      .default("Kore")
+      .describe("Prebuilt voice for single-speaker speech."),
+    speakers: z
+      .array(
+        z
+          .object({
+            speaker_id: z.string().min(1),
+            voice: z.enum([
+              "Achernar",
+              "Achird",
+              "Algenib",
+              "Algieba",
+              "Alnilam",
+              "Aoede",
+              "Autonoe",
+              "Callirrhoe",
+              "Charon",
+              "Despina",
+              "Enceladus",
+              "Erinome",
+              "Fenrir",
+              "Gacrux",
+              "Iapetus",
+              "Kore",
+              "Laomedeia",
+              "Leda",
+              "Orus",
+              "Pulcherrima",
+              "Puck",
+              "Rasalgethi",
+              "Sadachbia",
+              "Sadaltager",
+              "Schedar",
+              "Sulafat",
+              "Umbriel",
+              "Vindemiatrix",
+              "Zephyr",
+              "Zubenelgenubi",
+            ]),
+          })
+          .strict()
+      )
+      .min(2)
+      .max(2)
+      .nullable()
+      .optional()
+      .describe(
+        "Exactly two distinct speaker aliases and their prebuilt voices for dialogue."
+      ),
+    turns: z
+      .array(
+        z
+          .object({
+            speaker_id: z.string().min(1),
+            text: z.string().min(1),
+            style_instructions: z.string().nullable().optional(),
+          })
+          .strict()
+      )
+      .min(1)
+      .nullable()
+      .optional()
+      .describe(
+        "Ordered dialogue turns, each identifying a configured speaker."
+      ),
+  })
+  .strict();
+export type FalGoogleGemini3p8FlashTtsRequest = z.input<
+  typeof FalGoogleGemini3p8FlashTtsRequestSchema
+>;
+export type FalGoogleGemini3p8FlashTtsRequestInput =
+  FalGoogleGemini3p8FlashTtsRequest;
+export type FalGoogleGemini3p8FlashTtsParsedRequest = z.output<
+  typeof FalGoogleGemini3p8FlashTtsRequestSchema
+>;
+
+// Docs: https://fal.ai/models/google/gemini-3.8-flash-lite-tts/api
+export const FalGoogleGemini3p8FlashLiteTtsRequestSchema = z
+  .object({
+    prompt: z
+      .string()
+      .nullable()
+      .optional()
+      .describe(
+        "Verbatim text for single-speaker speech. Put delivery directions in style_instructions; inline vocal events may use <laugh> or <sigh>. For dialogue, omit prompt and provide speakers and turns instead. The provider limits the complete input to 8,192 tokens."
+      ),
+    style_instructions: z
+      .string()
+      .nullable()
+      .optional()
+      .describe(
+        "Delivery style, separate from the spoken transcript. Applies to all turns unless overridden."
+      ),
+    voice: z
+      .enum([
+        "Achernar",
+        "Achird",
+        "Algenib",
+        "Algieba",
+        "Alnilam",
+        "Aoede",
+        "Autonoe",
+        "Callirrhoe",
+        "Charon",
+        "Despina",
+        "Enceladus",
+        "Erinome",
+        "Fenrir",
+        "Gacrux",
+        "Iapetus",
+        "Kore",
+        "Laomedeia",
+        "Leda",
+        "Orus",
+        "Pulcherrima",
+        "Puck",
+        "Rasalgethi",
+        "Sadachbia",
+        "Sadaltager",
+        "Schedar",
+        "Sulafat",
+        "Umbriel",
+        "Vindemiatrix",
+        "Zephyr",
+        "Zubenelgenubi",
+      ])
+      .default("Kore")
+      .describe("Prebuilt voice for single-speaker speech."),
+    speakers: z
+      .array(
+        z
+          .object({
+            speaker_id: z.string().min(1),
+            voice: z.enum([
+              "Achernar",
+              "Achird",
+              "Algenib",
+              "Algieba",
+              "Alnilam",
+              "Aoede",
+              "Autonoe",
+              "Callirrhoe",
+              "Charon",
+              "Despina",
+              "Enceladus",
+              "Erinome",
+              "Fenrir",
+              "Gacrux",
+              "Iapetus",
+              "Kore",
+              "Laomedeia",
+              "Leda",
+              "Orus",
+              "Pulcherrima",
+              "Puck",
+              "Rasalgethi",
+              "Sadachbia",
+              "Sadaltager",
+              "Schedar",
+              "Sulafat",
+              "Umbriel",
+              "Vindemiatrix",
+              "Zephyr",
+              "Zubenelgenubi",
+            ]),
+          })
+          .strict()
+      )
+      .min(2)
+      .max(2)
+      .nullable()
+      .optional()
+      .describe(
+        "Exactly two distinct speaker aliases and their prebuilt voices for dialogue."
+      ),
+    turns: z
+      .array(
+        z
+          .object({
+            speaker_id: z.string().min(1),
+            text: z.string().min(1),
+            style_instructions: z.string().nullable().optional(),
+          })
+          .strict()
+      )
+      .min(1)
+      .nullable()
+      .optional()
+      .describe(
+        "Ordered dialogue turns, each identifying a configured speaker."
+      ),
+  })
+  .strict();
+export type FalGoogleGemini3p8FlashLiteTtsRequest = z.input<
+  typeof FalGoogleGemini3p8FlashLiteTtsRequestSchema
+>;
+export type FalGoogleGemini3p8FlashLiteTtsRequestInput =
+  FalGoogleGemini3p8FlashLiteTtsRequest;
+export type FalGoogleGemini3p8FlashLiteTtsParsedRequest = z.output<
+  typeof FalGoogleGemini3p8FlashLiteTtsRequestSchema
+>;
+
+// Docs: https://fal.ai/models/bytedance/seedream/v5/flash/layerize/api
+export const FalBytedanceSeedreamV5FlashLayerizeRequestSchema = z.object({
+  prompt: z
+    .string()
+    .default("")
+    .describe(
+      "Optional instructions describing which elements to separate. When empty, the model automatically separates the major elements. Normalized `<bbox>left top right bottom</bbox>` tags may be used for precise coordinate targeting."
+    ),
+  image_url: z
+    .string()
+    .describe(
+      "URL of the image to decompose into a base image and independently editable layers. The image must contain between 512x512 and 6000x6000 total pixels, have an aspect ratio between 1/16 and 16, and be no larger than 30 MB."
+    ),
+  image_size: z
+    .enum(["auto", "auto_1K", "auto_1.5K", "auto_2K"])
+    .default("auto")
+    .describe(
+      "Resolution tier for the output base image and layers. `auto` adapts to the input image while preserving each element's aspect ratio."
+    ),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If `True`, the media will be returned as a data URI and the output data won't be available in the request history."
+    ),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe(
+      "If set to true, the safety checker will be enabled. Disabling it requires account authorization; unauthorized requests are always checked."
+    ),
+});
+export type FalBytedanceSeedreamV5FlashLayerizeRequest = z.input<
+  typeof FalBytedanceSeedreamV5FlashLayerizeRequestSchema
+>;
+export type FalBytedanceSeedreamV5FlashLayerizeRequestInput =
+  FalBytedanceSeedreamV5FlashLayerizeRequest;
+export type FalBytedanceSeedreamV5FlashLayerizeParsedRequest = z.output<
+  typeof FalBytedanceSeedreamV5FlashLayerizeRequestSchema
+>;
+
+// Docs: https://fal.ai/models/bytedance/seedream/v5/flash/edit/api
+export const FalBytedanceSeedreamV5FlashEditRequestSchema = z.object({
+  prompt: z.string().describe("The text prompt used to edit the image."),
+  image_size: z
+    .union([
+      z.object({
+        width: z.number().int().gt(0).max(14142).default(512),
+        height: z.number().int().gt(0).max(14142).default(512),
+      }),
+      z.enum([
+        "square_hd",
+        "square",
+        "portrait_4_3",
+        "portrait_16_9",
+        "landscape_4_3",
+        "landscape_16_9",
+        "auto_1K",
+        "auto_2K",
+      ]),
+    ])
+    .default("auto_2K")
+    .describe(
+      "The size of the generated image. Total pixels must be between 1024x1024 and 2048x2048, with aspect ratio between 1/16 and 16."
+    ),
+  num_images: z
+    .number()
+    .int()
+    .min(1)
+    .max(6)
+    .default(1)
+    .describe("Number of separate model generations to run with the prompt."),
+  output_format: z
+    .enum(["jpeg", "png"])
+    .default("jpeg")
+    .describe("The file format of the generated image."),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If `True`, the media will be returned as a data URI and the output data won't be available in the request history."
+    ),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe(
+      "If set to true, the safety checker will be enabled. Disabling it requires account authorization; unauthorized requests are always checked."
+    ),
+  image_urls: z
+    .array(z.string())
+    .describe(
+      "List of URLs of input reference images. Up to 10 images are supported; if more are sent, only the last 10 are used."
+    ),
+});
+export type FalBytedanceSeedreamV5FlashEditRequest = z.input<
+  typeof FalBytedanceSeedreamV5FlashEditRequestSchema
+>;
+export type FalBytedanceSeedreamV5FlashEditRequestInput =
+  FalBytedanceSeedreamV5FlashEditRequest;
+export type FalBytedanceSeedreamV5FlashEditParsedRequest = z.output<
+  typeof FalBytedanceSeedreamV5FlashEditRequestSchema
+>;
+
+// Docs: https://fal.ai/models/bytedance/seedream/v5/flash/text-to-image/api
+export const FalBytedanceSeedreamV5FlashTextToImageRequestSchema = z.object({
+  prompt: z.string().describe("The text prompt used to generate the image."),
+  image_size: z
+    .union([
+      z.object({
+        width: z.number().int().gt(0).max(14142).default(512),
+        height: z.number().int().gt(0).max(14142).default(512),
+      }),
+      z.enum([
+        "square_hd",
+        "square",
+        "portrait_4_3",
+        "portrait_16_9",
+        "landscape_4_3",
+        "landscape_16_9",
+        "auto_1K",
+        "auto_2K",
+      ]),
+    ])
+    .default("auto_2K")
+    .describe(
+      "The size of the generated image. Total pixels must be between 1024x1024 and 2048x2048, with aspect ratio between 1/16 and 16."
+    ),
+  num_images: z
+    .number()
+    .int()
+    .min(1)
+    .max(6)
+    .default(1)
+    .describe("Number of separate model generations to run with the prompt."),
+  output_format: z
+    .enum(["jpeg", "png"])
+    .default("jpeg")
+    .describe("The file format of the generated image."),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If `True`, the media will be returned as a data URI and the output data won't be available in the request history."
+    ),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe(
+      "If set to true, the safety checker will be enabled. Disabling it requires account authorization; unauthorized requests are always checked."
+    ),
+});
+export type FalBytedanceSeedreamV5FlashTextToImageRequest = z.input<
+  typeof FalBytedanceSeedreamV5FlashTextToImageRequestSchema
+>;
+export type FalBytedanceSeedreamV5FlashTextToImageRequestInput =
+  FalBytedanceSeedreamV5FlashTextToImageRequest;
+export type FalBytedanceSeedreamV5FlashTextToImageParsedRequest = z.output<
+  typeof FalBytedanceSeedreamV5FlashTextToImageRequestSchema
+>;
+
+// Docs: https://fal.ai/models/tripo3d/p2/text-to-3d/api
+export const FalTripo3dP2TextTo3dRequestSchema = z
+  .object({
+    prompt: z
+      .string()
+      .min(1)
+      .max(1024)
+      .describe(
+        "Text description of the 3D object to generate. Maximum 1024 characters."
+      ),
+    negative_prompt: z
+      .string()
+      .max(255)
+      .nullable()
+      .optional()
+      .describe("Text describing features to avoid in the generated model."),
+    image_seed: z
+      .number()
+      .int()
+      .nullable()
+      .optional()
+      .describe("Seed for the internal text-to-image step."),
+    model_seed: z
+      .number()
+      .int()
+      .nullable()
+      .optional()
+      .describe("Seed for geometry generation reproducibility."),
+    face_limit: z
+      .number()
+      .int()
+      .min(48)
+      .max(50000)
+      .nullable()
+      .optional()
+      .describe(
+        "Maximum number of faces for the generated mesh. Quad meshes support up to 25,000 faces."
+      ),
+    texture: z
+      .boolean()
+      .default(true)
+      .describe("Whether to generate textures for the model."),
+    pbr: z
+      .boolean()
+      .default(true)
+      .describe(
+        "Whether to generate PBR material maps. Enabling PBR also enables textures."
+      ),
+    texture_seed: z
+      .number()
+      .int()
+      .nullable()
+      .optional()
+      .describe("Seed for texture generation reproducibility."),
+    texture_quality: z
+      .enum(["fast", "standard", "detailed", "extreme"])
+      .default("standard")
+      .describe("Texture quality level."),
+    texture_version: z
+      .enum(["v3.5-20260815", "v3.0-20250812", "v2.5-20250123"])
+      .nullable()
+      .optional()
+      .describe(
+        "Texture model version. The fast quality requires v3.5-20260815."
+      ),
+    delight: z
+      .boolean()
+      .default(true)
+      .describe(
+        "Remove baked-in lighting before texturing with v3.5-20260815."
+      ),
+    auto_size: z
+      .boolean()
+      .default(false)
+      .describe("Auto-scale the model to real-world dimensions in meters."),
+    export_uv: z
+      .boolean()
+      .default(true)
+      .describe("Whether to generate UV coordinates for the model."),
+    export_orientation: z
+      .enum(["+x", "-x", "-y", "+y"])
+      .nullable()
+      .optional()
+      .describe("Optional forward axis for the exported model."),
+    quad: z
+      .boolean()
+      .default(false)
+      .describe("Generate quad mesh topology instead of triangles."),
+  })
+  .describe("Input for Text to 3D generation using the P2 model.");
+export type FalTripo3dP2TextTo3dRequest = z.input<
+  typeof FalTripo3dP2TextTo3dRequestSchema
+>;
+export type FalTripo3dP2TextTo3dRequestInput = FalTripo3dP2TextTo3dRequest;
+export type FalTripo3dP2TextTo3dParsedRequest = z.output<
+  typeof FalTripo3dP2TextTo3dRequestSchema
+>;
+
+// Docs: https://fal.ai/models/tripo3d/p2/image-to-3d/api
+export const FalTripo3dP2ImageTo3dRequestSchema = z
+  .object({
+    image_url: z
+      .string()
+      .describe("URL of the input image for 3D model creation."),
+    face_limit: z
+      .number()
+      .int()
+      .min(48)
+      .max(50000)
+      .nullable()
+      .optional()
+      .describe(
+        "Maximum number of faces for the generated mesh. Quad meshes support up to 25,000 faces."
+      ),
+    texture: z
+      .boolean()
+      .default(true)
+      .describe("Whether to generate textures for the model."),
+    pbr: z
+      .boolean()
+      .default(true)
+      .describe(
+        "Whether to generate PBR material maps. Enabling PBR also enables textures."
+      ),
+    model_seed: z
+      .number()
+      .int()
+      .nullable()
+      .optional()
+      .describe("Seed for geometry generation reproducibility."),
+    texture_seed: z
+      .number()
+      .int()
+      .nullable()
+      .optional()
+      .describe("Seed for texture generation reproducibility."),
+    texture_quality: z
+      .enum(["fast", "standard", "detailed", "extreme"])
+      .default("standard")
+      .describe("Texture quality level."),
+    texture_version: z
+      .enum(["v3.5-20260815", "v3.0-20250812", "v2.5-20250123"])
+      .nullable()
+      .optional()
+      .describe(
+        "Texture model version. The fast quality requires v3.5-20260815."
+      ),
+    delight: z
+      .boolean()
+      .default(true)
+      .describe(
+        "Remove baked-in lighting before texturing with v3.5-20260815."
+      ),
+    auto_size: z
+      .boolean()
+      .default(false)
+      .describe("Auto-scale the model to real-world dimensions in meters."),
+    export_uv: z
+      .boolean()
+      .default(true)
+      .describe("Whether to generate UV coordinates for the model."),
+    export_orientation: z
+      .enum(["+x", "-x", "-y", "+y"])
+      .nullable()
+      .optional()
+      .describe("Optional forward axis for the exported model."),
+    quad: z
+      .boolean()
+      .default(false)
+      .describe("Generate quad mesh topology instead of triangles."),
+  })
+  .describe("Input for Image to 3D generation using the P2 model.");
+export type FalTripo3dP2ImageTo3dRequest = z.input<
+  typeof FalTripo3dP2ImageTo3dRequestSchema
+>;
+export type FalTripo3dP2ImageTo3dRequestInput = FalTripo3dP2ImageTo3dRequest;
+export type FalTripo3dP2ImageTo3dParsedRequest = z.output<
+  typeof FalTripo3dP2ImageTo3dRequestSchema
+>;
+
+// Docs: https://fal.ai/models/recraft/v4.1/flash/text-to-image/api
+export const FalRecraftV4p1FlashTextToImageRequestSchema = z.object({
+  prompt: z.string().min(1).max(10000),
+  image_size: z
+    .union([
+      z.object({
+        width: z.number().int().gt(0).max(14142).default(512),
+        height: z.number().int().gt(0).max(14142).default(512),
+      }),
+      z.enum([
+        "square_hd",
+        "square",
+        "portrait_4_3",
+        "portrait_16_9",
+        "landscape_4_3",
+        "landscape_16_9",
+      ]),
+    ])
+    .default("square_hd"),
+  colors: z
+    .array(
+      z.object({
+        r: z.number().int().min(0).max(255).default(0),
+        g: z.number().int().min(0).max(255).default(0),
+        b: z.number().int().min(0).max(255).default(0),
+      })
+    )
+    .default([])
+    .describe("An array of preferable colors"),
+  background_color: z
+    .unknown()
+    .nullable()
+    .optional()
+    .describe("The preferable background color of the generated images."),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe(
+      "If set to true, the safety checker will be enabled. Disabling it requires account authorization; unauthorized requests are always checked."
+    ),
+});
+export type FalRecraftV4p1FlashTextToImageRequest = z.input<
+  typeof FalRecraftV4p1FlashTextToImageRequestSchema
+>;
+export type FalRecraftV4p1FlashTextToImageRequestInput =
+  FalRecraftV4p1FlashTextToImageRequest;
+export type FalRecraftV4p1FlashTextToImageParsedRequest = z.output<
+  typeof FalRecraftV4p1FlashTextToImageRequestSchema
+>;
+
+// Docs: https://fal.ai/models/meshy/v7.1/text-to-3d/api
+export const FalMeshyV7p1TextTo3dRequestSchema = z
+  .object({
+    prompt: z
+      .string()
+      .max(600)
+      .describe(
+        "Describe what kind of object the 3D model is. Maximum 600 characters."
+      ),
+    mode: z
+      .enum(["preview", "full"])
+      .default("full")
+      .describe(
+        "Generation mode. 'preview' returns untextured geometry only, 'full' returns textured model (preview + refine)."
+      ),
+    seed: z
+      .number()
+      .int()
+      .nullable()
+      .optional()
+      .describe(
+        "Seed for reproducible results. Same prompt and seed usually generate the same result."
+      ),
+    model_type: z
+      .enum(["standard", "lowpoly", "smart-topology"])
+      .default("standard")
+      .describe(
+        "Type of 3D mesh generation. 'standard' produces a regular high-detail mesh; 'lowpoly' produces a low-poly mesh optimized for cleaner polygons; 'smart-topology' uses Meshy-T2 for clean, natively separated parts on the geometry (preview) step. When set to 'lowpoly', the remesh controls (topology, target_polycount, should_remesh) are ignored by Meshy."
+      ),
+    topology: z
+      .enum(["quad", "triangle"])
+      .default("triangle")
+      .describe(
+        "Specify the topology of the generated model. Quad for smooth surfaces, Triangle for detailed geometry."
+      ),
+    target_polycount: z
+      .number()
+      .int()
+      .min(100)
+      .max(300000)
+      .default(30000)
+      .describe(
+        "Target number of polygons in the generated model. When model_type is 'smart-topology' and this is left unset, Meshy's lower smart-topology default (4,000) is used instead; smart topology accepts at most 15,000."
+      ),
+    should_remesh: z
+      .boolean()
+      .default(true)
+      .describe(
+        "Whether to enable the remesh phase. When false, returns unprocessed triangular mesh."
+      ),
+    symmetry_mode: z
+      .enum(["off", "auto", "on"])
+      .default("auto")
+      .describe("Controls symmetry behavior during model generation."),
+    enable_pbr: z
+      .boolean()
+      .default(false)
+      .describe(
+        "Generate PBR Maps (metallic, roughness, normal) in addition to base color."
+      ),
+    is_a_t_pose: z
+      .boolean()
+      .default(false)
+      .describe(
+        "Deprecated: use pose_mode instead. When true, generates a T-pose model."
+      ),
+    pose_mode: z
+      .enum(["a-pose", "t-pose", ""])
+      .default("")
+      .describe(
+        "Pose mode for the generated model. 'a-pose' generates an A-pose, 't-pose' generates a T-pose, empty string for no specific pose."
+      ),
+    enable_prompt_expansion: z
+      .boolean()
+      .default(false)
+      .describe(
+        "Whether to enable prompt expansion. This will use a large language model to expand the prompt with additional details while maintaining the original meaning."
+      ),
+    texture_prompt: z
+      .string()
+      .max(600)
+      .nullable()
+      .optional()
+      .describe(
+        "Additional text prompt to guide the texturing process (only used in 'full' mode)"
+      ),
+    texture_image_url: z
+      .string()
+      .nullable()
+      .optional()
+      .describe(
+        "2D image to guide the texturing process (only used in 'full' mode)"
+      ),
+    enable_rigging: z
+      .boolean()
+      .default(false)
+      .describe(
+        "Automatically rig the generated model as a humanoid character. Includes basic walking and running animations. Best results with humanoid characters that have clearly defined limbs."
+      ),
+    rigging_height_meters: z
+      .number()
+      .gt(0)
+      .default(1.7)
+      .describe(
+        "Approximate height of the character in meters. Only used when enable_rigging is true."
+      ),
+    enable_animation: z
+      .boolean()
+      .default(false)
+      .describe(
+        "Apply an animation preset to the rigged model. Requires enable_rigging to be true."
+      ),
+    animation_action_id: z
+      .number()
+      .int()
+      .default(92)
+      .describe(
+        'Animation preset ID from Meshy\'s library. Only used when enable_animation is true; in that case it must be in [0, 696] (``0`` is the "Idle" preset) and is otherwise rejected with a 422. See https://docs.meshy.ai/en/api/animation-library for available action IDs.'
+      ),
+    enable_safety_checker: z
+      .boolean()
+      .default(true)
+      .describe(
+        "If set to true, input data will be checked for safety before processing."
+      ),
+    geometry_resolution: z
+      .enum(["standard", "2k", "4k"])
+      .nullable()
+      .optional()
+      .describe("Geometry resolution. 4k is only available with Meshy-7.1."),
+    ultra_mode: z
+      .boolean()
+      .default(false)
+      .describe(
+        "Deprecated: use geometry_resolution='2k'. If both fields are provided, geometry_resolution takes precedence."
+      ),
+  })
+  .describe("Input for Meshy-7.1 Text to 3D generation.");
+export type FalMeshyV7p1TextTo3dRequest = z.input<
+  typeof FalMeshyV7p1TextTo3dRequestSchema
+>;
+export type FalMeshyV7p1TextTo3dRequestInput = FalMeshyV7p1TextTo3dRequest;
+export type FalMeshyV7p1TextTo3dParsedRequest = z.output<
+  typeof FalMeshyV7p1TextTo3dRequestSchema
+>;
+
+// Docs: https://fal.ai/models/meshy/v7.1/image-to-3d/api
+export const FalMeshyV7p1ImageTo3dRequestSchema = z
+  .object({
+    image_url: z
+      .string()
+      .describe(
+        "Image URL or base64 data URI for 3D model creation. Supports .jpg, .jpeg, and .png formats. Also supports AVIF and HEIF formats which will be automatically converted."
+      ),
+    model_type: z
+      .enum(["standard", "lowpoly", "smart-topology"])
+      .default("standard")
+      .describe(
+        "Type of 3D mesh generation. 'standard' produces a regular high-detail mesh; 'lowpoly' produces a low-poly mesh optimized for cleaner polygons; 'smart-topology' uses Meshy-T2 for clean, natively separated parts. When set to 'lowpoly', the remesh controls (topology, target_polycount, should_remesh) are ignored by Meshy."
+      ),
+    topology: z
+      .enum(["quad", "triangle"])
+      .default("triangle")
+      .describe(
+        "Specify the topology of the generated model. Quad for smooth surfaces, Triangle for detailed geometry."
+      ),
+    target_polycount: z
+      .number()
+      .int()
+      .min(100)
+      .max(300000)
+      .default(30000)
+      .describe(
+        "Target number of polygons in the generated model. When model_type is 'smart-topology' and this is left unset, Meshy's lower smart-topology default (4,000) is used instead; smart topology accepts at most 15,000."
+      ),
+    symmetry_mode: z
+      .enum(["off", "auto", "on"])
+      .default("auto")
+      .describe(
+        "Controls symmetry behavior during model generation. Off disables symmetry, Auto determines it automatically, On enforces symmetry."
+      ),
+    should_remesh: z
+      .boolean()
+      .default(true)
+      .describe("Whether to enable the remesh phase"),
+    should_texture: z
+      .boolean()
+      .default(true)
+      .describe("Whether to generate textures"),
+    enable_pbr: z
+      .boolean()
+      .default(false)
+      .describe(
+        "Generate PBR Maps (metallic, roughness, normal) in addition to base color"
+      ),
+    is_a_t_pose: z
+      .boolean()
+      .default(false)
+      .describe(
+        "Deprecated: use pose_mode instead. When true, generates a T-pose model."
+      ),
+    pose_mode: z
+      .enum(["a-pose", "t-pose", ""])
+      .default("")
+      .describe(
+        "Pose mode for the generated model. 'a-pose' generates an A-pose, 't-pose' generates a T-pose, empty string for no specific pose."
+      ),
+    texture_prompt: z
+      .string()
+      .max(600)
+      .nullable()
+      .optional()
+      .describe("Text prompt to guide the texturing process"),
+    texture_image_url: z
+      .string()
+      .nullable()
+      .optional()
+      .describe("2D image to guide the texturing process"),
+    enable_rigging: z
+      .boolean()
+      .default(false)
+      .describe(
+        "Automatically rig the generated model as a humanoid character. Includes basic walking and running animations. Best results with humanoid characters that have clearly defined limbs."
+      ),
+    rigging_height_meters: z
+      .number()
+      .gt(0)
+      .default(1.7)
+      .describe(
+        "Approximate height of the character in meters. Only used when enable_rigging is true."
+      ),
+    enable_animation: z
+      .boolean()
+      .default(false)
+      .describe(
+        "Apply an animation preset to the rigged model. Requires enable_rigging to be true."
+      ),
+    animation_action_id: z
+      .number()
+      .int()
+      .default(92)
+      .describe(
+        'Animation preset ID from Meshy\'s library. Only used when enable_animation is true; in that case it must be in [0, 696] (``0`` is the "Idle" preset) and is otherwise rejected with a 422. See https://docs.meshy.ai/en/api/animation-library for available action IDs.'
+      ),
+    enable_safety_checker: z
+      .boolean()
+      .default(true)
+      .describe(
+        "If set to true, input data will be checked for safety before processing."
+      ),
+    geometry_resolution: z
+      .enum(["standard", "2k", "4k"])
+      .nullable()
+      .optional()
+      .describe("Geometry resolution. 4k is only available with Meshy-7.1."),
+    ultra_mode: z
+      .boolean()
+      .default(false)
+      .describe(
+        "Deprecated: use geometry_resolution='2k'. If both fields are provided, geometry_resolution takes precedence."
+      ),
+  })
+  .describe("Input for Meshy-7.1 Image to 3D conversion.");
+export type FalMeshyV7p1ImageTo3dRequest = z.input<
+  typeof FalMeshyV7p1ImageTo3dRequestSchema
+>;
+export type FalMeshyV7p1ImageTo3dRequestInput = FalMeshyV7p1ImageTo3dRequest;
+export type FalMeshyV7p1ImageTo3dParsedRequest = z.output<
+  typeof FalMeshyV7p1ImageTo3dRequestSchema
+>;
+
+// Docs: https://fal.ai/models/meshy/v7.1/multi-image-to-3d/api
+export const FalMeshyV7p1MultiImageTo3dRequestSchema = z
+  .object({
+    image_urls: z
+      .array(z.string())
+      .describe(
+        "1 to 4 images for 3D model creation. All images should depict the same object from different angles. Supports .jpg, .jpeg, .png formats, and AVIF/HEIF which will be automatically converted. If more than 4 images are provided, only the first 4 will be used."
+      ),
+    topology: z
+      .enum(["quad", "triangle"])
+      .default("triangle")
+      .describe(
+        "Specify the topology of the generated model. Quad for smooth surfaces, Triangle for detailed geometry."
+      ),
+    target_polycount: z
+      .number()
+      .int()
+      .min(100)
+      .max(300000)
+      .default(30000)
+      .describe("Target number of polygons in the generated model"),
+    symmetry_mode: z
+      .enum(["off", "auto", "on"])
+      .default("auto")
+      .describe("Controls symmetry behavior during model generation."),
+    should_remesh: z
+      .boolean()
+      .default(true)
+      .describe(
+        "Whether to enable the remesh phase. When false, returns triangular mesh ignoring topology and target_polycount."
+      ),
+    should_texture: z
+      .boolean()
+      .default(true)
+      .describe("Whether to generate textures."),
+    enable_pbr: z
+      .boolean()
+      .default(false)
+      .describe(
+        "Generate PBR Maps (metallic, roughness, normal) in addition to base color. Requires should_texture to be true."
+      ),
+    is_a_t_pose: z
+      .boolean()
+      .default(false)
+      .describe(
+        "Deprecated: use pose_mode instead. When true, generates a T-pose model."
+      ),
+    pose_mode: z
+      .enum(["a-pose", "t-pose", ""])
+      .default("")
+      .describe(
+        "Pose mode for the generated model. 'a-pose' generates an A-pose, 't-pose' generates a T-pose, empty string for no specific pose."
+      ),
+    texture_prompt: z
+      .string()
+      .max(600)
+      .nullable()
+      .optional()
+      .describe(
+        "Text prompt to guide the texturing process. Requires should_texture to be true."
+      ),
+    texture_image_url: z
+      .string()
+      .nullable()
+      .optional()
+      .describe(
+        "2D image to guide the texturing process. Requires should_texture to be true."
+      ),
+    enable_rigging: z
+      .boolean()
+      .default(false)
+      .describe(
+        "Automatically rig the generated model as a humanoid character. Includes basic walking and running animations. Best results with humanoid characters that have clearly defined limbs."
+      ),
+    rigging_height_meters: z
+      .number()
+      .gt(0)
+      .default(1.7)
+      .describe(
+        "Approximate height of the character in meters. Only used when enable_rigging is true."
+      ),
+    enable_animation: z
+      .boolean()
+      .default(false)
+      .describe(
+        "Apply an animation preset to the rigged model. Requires enable_rigging to be true."
+      ),
+    animation_action_id: z
+      .number()
+      .int()
+      .default(92)
+      .describe(
+        'Animation preset ID from Meshy\'s library. Only used when enable_animation is true; in that case it must be in [0, 696] (``0`` is the "Idle" preset) and is otherwise rejected with a 422. See https://docs.meshy.ai/en/api/animation-library for available action IDs.'
+      ),
+    enable_safety_checker: z
+      .boolean()
+      .default(true)
+      .describe(
+        "If set to true, input data will be checked for safety before processing."
+      ),
+    geometry_resolution: z
+      .enum(["standard", "2k"])
+      .nullable()
+      .optional()
+      .describe(
+        "Geometry resolution. Multi-image generation does not support 4k."
+      ),
+  })
+  .describe("Input for Meshy-7 and 7.1 Multi-Image to 3D conversion.");
+export type FalMeshyV7p1MultiImageTo3dRequest = z.input<
+  typeof FalMeshyV7p1MultiImageTo3dRequestSchema
+>;
+export type FalMeshyV7p1MultiImageTo3dRequestInput =
+  FalMeshyV7p1MultiImageTo3dRequest;
+export type FalMeshyV7p1MultiImageTo3dParsedRequest = z.output<
+  typeof FalMeshyV7p1MultiImageTo3dRequestSchema
+>;
+
+// Docs: https://fal.ai/models/google/lyria-3.5/api
+export const FalGoogleLyria3p5RequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(5000)
+    .describe(
+      "The text prompt describing the music you want to generate. Include genre, mood, instrumentation, tempo, vocals, and structure for best results. Lyria 3.5 supports full-length songs up to a few minutes — use timestamps or duration hints in your prompt to control song length, e.g. 'a 2-minute track' or section markers like '[0:00-0:30] Intro: ...' / '[0:30-1:00] Verse: ...'. Supports English, German, Spanish, French, Hindi, Japanese, Korean, and Portuguese."
+    ),
+  negative_prompt: z
+    .string()
+    .default("")
+    .describe("Negative prompting is not supported by Lyria 3.5."),
+  image_url: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "Optional image URL to use as visual inspiration for music generation. The model will create music that matches the mood and theme of the image."
+    ),
+});
+export type FalGoogleLyria3p5Request = z.input<
+  typeof FalGoogleLyria3p5RequestSchema
+>;
+export type FalGoogleLyria3p5RequestInput = FalGoogleLyria3p5Request;
+export type FalGoogleLyria3p5ParsedRequest = z.output<
+  typeof FalGoogleLyria3p5RequestSchema
+>;
+
+// Docs: https://fal.ai/models/bria/fibo-edit-1.5/virtual-try-on/api
+export const FalBriaFiboEdit1p5VirtualTryOnRequestSchema = z.object({
+  person_image_url: z
+    .string()
+    .describe("Photo of the person who will wear the garments."),
+  garment_image_urls: z
+    .array(z.string())
+    .min(1)
+    .max(3)
+    .describe("1-3 garment or accessory images to put on the person."),
+  instruction: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("Extra direction, appended after the built-in instruction."),
+  aspect_ratio: z
+    .enum(["1:1", "2:3", "3:2", "3:4", "4:3", "4:5", "5:4", "9:16", "16:9"])
+    .nullable()
+    .optional()
+    .describe(
+      "Output aspect ratio. Left unset, the output keeps the ratio of the person image."
+    ),
+  seed: z
+    .number()
+    .int()
+    .default(5555)
+    .describe("Random seed for reproducibility."),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If true, returns the image directly in the response (increases latency)."
+    ),
+});
+export type FalBriaFiboEdit1p5VirtualTryOnRequest = z.input<
+  typeof FalBriaFiboEdit1p5VirtualTryOnRequestSchema
+>;
+export type FalBriaFiboEdit1p5VirtualTryOnRequestInput =
+  FalBriaFiboEdit1p5VirtualTryOnRequest;
+export type FalBriaFiboEdit1p5VirtualTryOnParsedRequest = z.output<
+  typeof FalBriaFiboEdit1p5VirtualTryOnRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "bria/fibo-edit-1.5/virtual-try-on":
+    FalBriaFiboEdit1p5VirtualTryOnRequestSchema,
+  "google/lyria-3.5": FalGoogleLyria3p5RequestSchema,
+  "meshy/v7.1/multi-image-to-3d": FalMeshyV7p1MultiImageTo3dRequestSchema,
+  "meshy/v7.1/image-to-3d": FalMeshyV7p1ImageTo3dRequestSchema,
+  "meshy/v7.1/text-to-3d": FalMeshyV7p1TextTo3dRequestSchema,
+  "recraft/v4.1/flash/text-to-image":
+    FalRecraftV4p1FlashTextToImageRequestSchema,
+  "tripo3d/p2/image-to-3d": FalTripo3dP2ImageTo3dRequestSchema,
+  "tripo3d/p2/text-to-3d": FalTripo3dP2TextTo3dRequestSchema,
+  "bytedance/seedream/v5/flash/text-to-image":
+    FalBytedanceSeedreamV5FlashTextToImageRequestSchema,
+  "bytedance/seedream/v5/flash/edit":
+    FalBytedanceSeedreamV5FlashEditRequestSchema,
+  "bytedance/seedream/v5/flash/layerize":
+    FalBytedanceSeedreamV5FlashLayerizeRequestSchema,
+  "google/gemini-3.8-flash-lite-tts":
+    FalGoogleGemini3p8FlashLiteTtsRequestSchema,
+  "google/gemini-3.8-flash-tts": FalGoogleGemini3p8FlashTtsRequestSchema,
+  "elevenlabs/tts/eleven-v4": FalElevenlabsTtsElevenV4RequestSchema,
+  "elevenlabs/tts/eleven-v4-turbo": FalElevenlabsTtsElevenV4TurboRequestSchema,
+  "minimax/h3-max/insert-video": FalMinimaxH3MaxInsertVideoRequestSchema,
+  "ideogram/v4.5": FalIdeogramV4p5RequestSchema,
+  "ideogram/v4.5/edit": FalIdeogramV4p5EditRequestSchema,
+  "xai/grok-imagine-video/v1.5/lite/image-to-video":
+    FalXaiGrokImagineVideoV1p5LiteImageToVideoRequestSchema,
+  "blackforestlabs/flux-3/text-to-image": FalFlux3TextToImageRequestSchema,
+  "blackforestlabs/flux-3/edit-image": FalFlux3EditImageRequestSchema,
+  "minimax/h3-max/recast": FalMinimaxH3MaxRecastRequestSchema,
+  "xai/grok-imagine-video/v1.5/lite/text-to-video":
+    FalXaiGrokImagineVideoV1p5LiteTextToVideoRequestSchema,
+  "minimax/h3-max-turbo/extend-video":
+    FalMinimaxH3MaxTurboExtendVideoRequestSchema,
   "alibaba/qwen-image-3/text-to-image":
     FalAlibabaQwenImage3TextToImageRequestSchema,
   "blackforestlabs/flux-3/extend-video": FalFlux3ExtendVideoRequestSchema,

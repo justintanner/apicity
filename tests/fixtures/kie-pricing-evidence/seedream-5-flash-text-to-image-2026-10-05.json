@@ -1,0 +1,42 @@
+{
+  "source": "https://api.kie.ai/client/v1/model-pricing/page",
+  "asOf": "2026-10-05",
+  "records": [
+    {
+      "modelDescription": "seedream 5 Flash, Text to image, 2K",
+      "interfaceType": "image",
+      "provider": "ByteDance",
+      "creditPrice": "3.24",
+      "creditUnit": "per image",
+      "usdPrice": "0.0162",
+      "falPrice": "0.018",
+      "discountRate": 10,
+      "anchor": "https://kie.ai/seedream-5-0-flash?model=seedream%2F5-flash-text-to-image",
+      "discountPrice": false
+    },
+    {
+      "modelDescription": "seedream 5 Flash, Text to image, 1.5K",
+      "interfaceType": "image",
+      "provider": "ByteDance",
+      "creditPrice": "3.24",
+      "creditUnit": "per image",
+      "usdPrice": "0.0162",
+      "falPrice": "0.018",
+      "discountRate": 10,
+      "anchor": "https://kie.ai/seedream-5-0-flash?model=seedream%2F5-flash-text-to-image",
+      "discountPrice": false
+    },
+    {
+      "modelDescription": "seedream 5 Flash, Text to image , 1K",
+      "interfaceType": "image",
+      "provider": "ByteDance",
+      "creditPrice": "3.24",
+      "creditUnit": "per image",
+      "usdPrice": "0.0162",
+      "falPrice": "0.018",
+      "discountRate": 10,
+      "anchor": "https://kie.ai/seedream-5-0-flash?model=seedream%2F5-flash-text-to-image",
+      "discountPrice": false
+    }
+  ]
+}

@@ -527,6 +527,37 @@ const tieredImagePage = (
   source: pricePage(url, asOf),
 });
 
+// Output images a layer-decomposition job actually returns. The request
+// schema has no count field, so imageCount's default of 1 underquotes a
+// multi-layer result. A missing or non-positive hint fails closed.
+const outputImageCount = (hints?: CostHints): number | undefined => {
+  const count = hints?.outputImages;
+  return typeof count === "number" && Number.isInteger(count) && count > 0
+    ? count
+    : undefined;
+};
+
+const layerDecompositionPage = (
+  rates: Record<string, number>,
+  url: string,
+  asOf: string,
+  missingCountWarning: string
+): ModelPricing => ({
+  kind: "perUnit",
+  unit: "images",
+  units: (_payload, hints) => outputImageCount(hints),
+  warn: (_payload, hints) =>
+    outputImageCount(hints) === undefined ? [missingCountWarning] : [],
+  select: [
+    {
+      name: "size",
+      pick: (p) => asString(asObject(p.input)?.size) ?? "auto",
+    },
+  ],
+  rates,
+  source: pricePage(url, asOf),
+});
+
 // Area-billed image entry: kie prices the Qwen Image family per megapixel of
 // output rather than per image.
 const perMegapixel = (
@@ -2483,6 +2514,22 @@ export const kie: Record<string, ModelPricing> = {
   // (0.5 credits = $0.0025 per image beyond the first, which is free).
   // The page's separate Layer Decomposition rows now have their own callable
   // pricing key below.
+  // Official KIE pricing feed, 2026-10-05: 3.24 credits per image at
+  // every size, with one credit equal to $0.005.
+  "seedream/5-flash-text-to-image": tieredImagePage(
+    "size",
+    { "1K": 0.0162, "1.5K": 0.0162, "2K": 0.0162 },
+    "https://kie.ai/seedream-5-0-flash?model=seedream%2F5-flash-text-to-image",
+    "1K",
+    "2026-10-05"
+  ),
+  "seedream/5-flash-image-to-image": tieredImagePage(
+    "size",
+    { "1K": 0.0162, "1.5K": 0.0162, "2K": 0.0162 },
+    "https://kie.ai/seedream-5-0-flash?model=seedream%2F5-flash-image-to-image",
+    "1K",
+    "2026-10-05"
+  ),
   "seedream/5-pro-text-to-image": tieredImagePage(
     "quality",
     { basic: 0.035, high: 0.07 },
@@ -2497,16 +2544,27 @@ export const kie: Record<string, ModelPricing> = {
     seedreamProEditExtra
   ),
 
-  // Seedream 5 Pro layer decomposition — per image by output size. The
-  // callable schema exposes auto|1K|1.5K|2K and defaults to auto; KIE only
-  // publishes priced 1K/1.5K/2K cells, so auto remains an explicit
-  // unsupported selector rather than inheriting a guessed tier.
-  "seedream/5-pro-layer-decomposition": tieredImagePage(
-    "size",
+  // Seedream 5 Pro layer decomposition — per returned image by output
+  // size. The callable schema exposes auto|1K|1.5K|2K and defaults to auto;
+  // KIE only publishes priced 1K/1.5K/2K cells, so auto remains an explicit
+  // unsupported selector rather than inheriting a guessed tier. The live
+  // auto recording returned two images and consumed 14 credits, which is
+  // two times the published 1K/1.5K cell, so the count comes from
+  // costHints.outputImages and is never assumed.
+  "seedream/5-pro-layer-decomposition": layerDecompositionPage(
     { "1K": 0.035, "1.5K": 0.035, "2K": 0.07 },
     "https://kie.ai/seedream-5-0-pro",
-    "auto",
-    "2026-08-11"
+    "2026-08-11",
+    "Seedream 5 Pro layers bills each output image; pass a positive integer costHints.outputImages."
+  ),
+  // Flash's three published size tiers all cost 3.24 credits. As with Pro,
+  // auto has no explicit published tier, so it remains unestimated. The
+  // live fixture returned two images and consumed 6.48 credits.
+  "seedream/5-flash-layer-decomposition": layerDecompositionPage(
+    { "1K": 0.0162, "1.5K": 0.0162, "2K": 0.0162 },
+    "https://kie.ai/seedream-5-0-flash?model=seedream%2F5-flash-layer-decomposition",
+    "2026-10-05",
+    "Seedream 5 Flash layers bills each output image; pass a positive integer costHints.outputImages."
   ),
 
   // Seedream 4.5 — flat $0.0325/image on both published rows. The schema
@@ -3077,5 +3135,16 @@ export const kie: Record<string, ModelPricing> = {
     kind: "tokens",
     rate: { input: 0.7, output: 14 },
     source: pricePage("https://kie.ai/gemini-3.1-flash-tts", "2026-08-22"),
+  },
+  // Official feed: per million text-input tokens and audio-output tokens.
+  "google/gemini-3-8-flash-tts": {
+    kind: "tokens",
+    rate: { input: 0.35, output: 6.3 },
+    source: pricePage("https://kie.ai/gemini-3.8-flash-tts", "2026-10-05"),
+  },
+  "google/gemini-3-8-flash-lite-tts": {
+    kind: "tokens",
+    rate: { input: 0.35, output: 4.2 },
+    source: pricePage("https://kie.ai/gemini-3.8-flash-lite-tts", "2026-10-05"),
   },
 };

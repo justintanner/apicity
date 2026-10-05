@@ -3,6 +3,7 @@ import {
   ElevenLabsTextToDialogueStabilityContract,
   ElevenLabsTextToSpeechNumericContract,
   GoogleGeminiTtsAccentSchema,
+  GoogleGemini38TtsVoiceNameSchema,
   GoogleGeminiTtsDialogueTextMaxLength,
   GoogleGeminiTtsPaceSchema,
   GoogleGeminiTtsStyleSchema,
@@ -329,6 +330,71 @@ const googleGeminiTtsDialogueTurnItem = {
       minLength: 1,
       maxLength: GoogleGeminiTtsDialogueTextMaxLength,
       description: `Spoken text, optionally with tone tags (max ${GoogleGeminiTtsDialogueTextMaxLength} characters)`,
+    },
+  },
+} as const;
+
+const googleGemini38TtsFields = {
+  temperature: {
+    type: "number",
+    minimum: 0,
+    maximum: 2,
+    default: 1,
+    description: "Sampling temperature (default 1)",
+  },
+  speakers: {
+    type: "array",
+    required: true,
+    minItems: 1,
+    description: "Speaker configurations",
+    items: {
+      type: "object",
+      properties: {
+        speaker_id: {
+          type: "string",
+          required: true,
+          description: 'Speaker identifier in "Speaker N" format',
+        },
+        voice_name: {
+          type: "string",
+          enum: GoogleGemini38TtsVoiceNameSchema.options,
+          default: "Fola",
+          description: "Gemini 3.8 voice (default Fola)",
+        },
+      },
+    },
+  },
+  filler_words: {
+    type: "boolean",
+    default: false,
+    description: "Insert filler words; only takes effect with two speakers",
+  },
+  dialogue_turns: {
+    type: "array",
+    required: true,
+    minItems: 1,
+    description: "Dialogue turns in output order",
+    items: {
+      type: "object",
+      properties: {
+        speaker_id: {
+          type: "string",
+          required: true,
+          description: "Corresponding speaker identifier",
+        },
+        text: {
+          type: "string",
+          required: true,
+          minLength: 1,
+          maxLength: 10000,
+          description:
+            "Spoken text, including optional angle-bracket tone tags",
+        },
+        style: {
+          type: "string",
+          description: "Freeform per-turn tone, emotion, and pace",
+        },
+      },
     },
   },
 } as const;
@@ -2682,6 +2748,86 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  // https://docs.kie.ai/market/seedream/5-flash-text-to-image
+  "seedream/5-flash-text-to-image": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 3,
+        maxLength: 5000,
+        description: "Text description of the image to generate (3-5000 chars)",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: ["1:1", "4:3", "3:4", "16:9", "9:16", "2:3", "3:2", "21:9"],
+        default: "1:1",
+        description: "Output aspect ratio (default 1:1)",
+      },
+      size: {
+        type: "string",
+        enum: ["1K", "1.5K", "2K"],
+        default: "1K",
+        description: "Output size (default 1K)",
+      },
+      output_format: {
+        type: "string",
+        enum: ["png", "jpeg"],
+        default: "png",
+        description: "Output image format (default png)",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        description: "Content safety filter",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/seedream/5-flash-image-to-image
+  "seedream/5-flash-image-to-image": {
+    type: "image",
+    fields: {
+      image_urls: {
+        type: "array",
+        required: true,
+        minItems: 1,
+        maxItems: 10,
+        description:
+          "One to ten uploaded JPEG, PNG, or WebP image URLs. Each image must be at most 30 MB; remote file contents are checked by KIE.",
+      },
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 3,
+        maxLength: 5000,
+        description: "Text description of the image to generate (3-5000 chars)",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: ["1:1", "4:3", "3:4", "16:9", "9:16", "2:3", "3:2", "21:9"],
+        default: "1:1",
+        description: "Output aspect ratio (default 1:1)",
+      },
+      size: {
+        type: "string",
+        enum: ["1K", "1.5K", "2K"],
+        default: "1K",
+        description: "Output size (default 1K)",
+      },
+      output_format: {
+        type: "string",
+        enum: ["png", "jpeg"],
+        default: "png",
+        description: "Output image format (default png)",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        description: "Content safety filter",
+      },
+    },
+  },
+
   // https://docs.kie.ai/market/seedream/5-pro-layer-decomposition
   "seedream/5-pro-layer-decomposition": {
     type: "image",
@@ -2697,6 +2843,44 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         maxLength: 5000,
         description:
           "Optional element-selection prompt (up to 5000 characters). Without a prompt, elements are detected automatically. Passes through <bbox>x1 y1 x2 y2</bbox> markup with normalized 0-1000 coordinates unchanged.",
+      },
+      size: {
+        type: "string",
+        enum: ["auto", "1K", "1.5K", "2K"],
+        default: "auto",
+        description: "Output size (default auto)",
+      },
+      output_format: {
+        type: "string",
+        enum: ["png", "jpeg"],
+        default: "jpeg",
+        description:
+          "Base-image output format (default jpeg); all separated layers remain PNG.",
+      },
+    },
+  },
+
+  // https://docs.kie.ai/market/seedream/5-flash-layer-decomposition
+  "seedream/5-flash-layer-decomposition": {
+    type: "image",
+    fields: {
+      nsfw_checker: {
+        type: "boolean",
+        description:
+          "Optional content safety filter, documented on the product page.",
+      },
+      image_url: {
+        type: "string",
+        required: true,
+        description:
+          "Exactly one remote source image URL. Upstream accepts PNG, JPEG, WebP, BMP, TIFF, or GIF up to 30 MB, 262,144-36,000,000 pixels, and 1:16-16:1 aspect ratio; HEIC/HEIF is not supported. These are upstream remote-image constraints; the SDK does not fetch or inspect the binary locally.",
+      },
+      prompt: {
+        type: "string",
+        minLength: 3,
+        maxLength: 5000,
+        description:
+          "Optional element-selection prompt (3-5000 characters). Without a prompt, elements are detected automatically. Passes through <bbox>x1 y1 x2 y2</bbox> markup with normalized 0-1000 coordinates unchanged.",
       },
       size: {
         type: "string",
@@ -5610,6 +5794,18 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
   "google/gemini-3-1-flash-tts": {
     type: "audio",
     fields: googleGeminiTtsFields,
+  },
+
+  // https://docs.kie.ai/market/google/gemini-3-8-flash-tts
+  "google/gemini-3-8-flash-tts": {
+    type: "audio",
+    fields: googleGemini38TtsFields,
+  },
+
+  // https://docs.kie.ai/market/google/gemini-3-8-flash-lite-tts
+  "google/gemini-3-8-flash-lite-tts": {
+    type: "audio",
+    fields: googleGemini38TtsFields,
   },
 
   // Sources:

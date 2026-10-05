@@ -158,6 +158,8 @@ export const MODEL_SLUGS = {
     // (ac-6lg2s0).
     "google/gemini-2-5-pro-tts": "gem25tts",
     "google/gemini-3-1-flash-tts": "gem31tts",
+    "google/gemini-3-8-flash-tts": "gem38ft",
+    "google/gemini-3-8-flash-lite-tts": "gem38flt",
 
     // Video — PixVerse V6. Operations are modality metadata and share one
     // family slug; transition is page-sourced (ac-4v9ck1).
@@ -213,8 +215,11 @@ export const MODEL_SLUGS = {
     "seedream/5-lite-text-to-image": "sd5",
     "seedream/5-lite-image-to-image": "sd5",
     "seedream/5-pro-text-to-image": "sd5p",
+    "seedream/5-flash-text-to-image": "sd5f",
+    "seedream/5-flash-image-to-image": "sd5fi",
     "seedream/5-pro-image-to-image": "sd5p",
     "seedream/5-pro-layer-decomposition": "sd5p",
+    "seedream/5-flash-layer-decomposition": "sd5fl",
     "seedream/4.5-text-to-image": "sd4p5",
     "seedream/4.5-edit": "sd4p5",
 
@@ -407,6 +412,23 @@ export const MODEL_SLUGS = {
   // same underlying models kie also resells, so their slugs intentionally
   // match kie's.
   fal: {
+    "bria/fibo-edit-1.5/virtual-try-on": "briafiboedit",
+    "google/lyria-3.5": "googlelyria3",
+    "meshy/v7.1/multi-image-to-3d": "meshyv71",
+    "meshy/v7.1/image-to-3d": "meshyv71",
+    "meshy/v7.1/text-to-3d": "meshyv71",
+    "recraft/v4.1/flash/text-to-image": "recraftv41fl",
+    "tripo3d/p2/image-to-3d": "tripo3dp2",
+    "tripo3d/p2/text-to-3d": "tripo3dp2",
+    "bytedance/seedream/v5/flash/text-to-image": "bytedancesee",
+    "bytedance/seedream/v5/flash/edit": "bytedancesee",
+    "bytedance/seedream/v5/flash/layerize": "bytedancesee",
+    "google/gemini-3.8-flash-lite-tts": "googlegemi2",
+    "google/gemini-3.8-flash-tts": "googlegemini",
+    "elevenlabs/tts/eleven-v4": "elevenlabs2",
+    "elevenlabs/tts/eleven-v4-turbo": "elevenlabstt",
+    "ideogram/v4.5": "ideo45",
+    "ideogram/v4.5/edit": "ideo45",
     "fal-ai/bytedance/seed-speech/tts/v2": "seedtts2",
     "fal-ai/elevenlabs/speech-to-text/scribe-v2": "scribe2",
     "fal-ai/flux/dev": "fluxd",
@@ -433,6 +455,10 @@ export const MODEL_SLUGS = {
     "google/virtual-try-on": "vton",
 
     // Video — FLUX 3
+    "minimax/h3-max-turbo/extend-video": "h3mte",
+    "xai/grok-imagine-video/v1.5/lite/image-to-video": "grok15lt",
+    "xai/grok-imagine-video/v1.5/lite/text-to-video": "grok15lt",
+    "minimax/h3-max/recast": "h3mr",
     "blackforestlabs/flux-3/extend-video": "flux3",
     "blackforestlabs/flux-3/first-last-frame-to-video": "flux3",
     "blackforestlabs/flux-3/image-to-video": "flux3",
@@ -630,6 +656,8 @@ export const MODEL_DISPLAY = {
 
     "google/gemini-2-5-pro-tts": "Gemini 2.5 Pro TTS",
     "google/gemini-3-1-flash-tts": "Gemini 3.1 Flash TTS",
+    "google/gemini-3-8-flash-tts": "Gemini 3.8 Flash TTS",
+    "google/gemini-3-8-flash-lite-tts": "Gemini 3.8 Flash Lite TTS",
 
     "pixverse-v6/text-to-video": "PixVerse V6",
     "pixverse-v6/image-to-video": "PixVerse V6",
@@ -672,8 +700,11 @@ export const MODEL_DISPLAY = {
     "seedream/5-lite-text-to-image": "Seedream 5",
     "seedream/5-lite-image-to-image": "Seedream 5 Edit",
     "seedream/5-pro-text-to-image": "Seedream 5 Pro",
+    "seedream/5-flash-text-to-image": "Seedream 5 Flash",
+    "seedream/5-flash-image-to-image": "Seedream 5 Flash Edit",
     "seedream/5-pro-image-to-image": "Seedream 5 Pro Edit",
     "seedream/5-pro-layer-decomposition": "Seedream 5 Pro Layer Decomposition",
+    "seedream/5-flash-layer-decomposition": "Seedream 5 Flash Layers",
     "seedream/4.5-text-to-image": "Seedream 4.5",
     "seedream/4.5-edit": "Seedream 4.5 Edit",
     "bytedance/seedream": "Seedream 3",
@@ -825,6 +856,25 @@ export const MODEL_DISPLAY = {
   },
 
   fal: {
+    "bria/fibo-edit-1.5/virtual-try-on": "Bria Fibo Edit 1.5 Virtual Try On",
+    "google/lyria-3.5": "Google Lyria 3.5",
+    "meshy/v7.1/multi-image-to-3d": "Meshy 7.1 Multi Image To 3d",
+    "meshy/v7.1/image-to-3d": "Meshy 7.1 Image To 3d",
+    "meshy/v7.1/text-to-3d": "Meshy 7.1 Text To 3d",
+    "recraft/v4.1/flash/text-to-image": "Recraft 4.1 Flash Text To Image",
+    "tripo3d/p2/image-to-3d": "Tripo3d P2 Image To 3d",
+    "tripo3d/p2/text-to-3d": "Tripo3d P2 Text To 3d",
+    "bytedance/seedream/v5/flash/text-to-image":
+      "Bytedance Seedream V5 Flash Text To Image",
+    "bytedance/seedream/v5/flash/edit": "Bytedance Seedream V5 Flash Edit",
+    "bytedance/seedream/v5/flash/layerize":
+      "Bytedance Seedream V5 Flash Layerize",
+    "google/gemini-3.8-flash-lite-tts": "Google Gemini 3.8 Flash Lite TTS",
+    "google/gemini-3.8-flash-tts": "Google Gemini 3.8 Flash TTS",
+    "elevenlabs/tts/eleven-v4": "Elevenlabs TTS Eleven V4",
+    "ideogram/v4.5": "Ideogram 4.5",
+    "elevenlabs/tts/eleven-v4-turbo": "Elevenlabs TTS Eleven V4 Turbo",
+    "ideogram/v4.5/edit": "Ideogram 4.5 Edit",
     "fal-ai/bytedance/seed-speech/tts/v2": "Seed Speech TTS 2",
     "fal-ai/elevenlabs/speech-to-text/scribe-v2": "ElevenLabs Scribe V2",
     "fal-ai/flux/dev": "FLUX.1 Dev",
@@ -850,6 +900,10 @@ export const MODEL_DISPLAY = {
     "fal-ai/gpt-image-1.5/edit": "GPT Image 1.5 Edit",
     "google/virtual-try-on": "Google Virtual Try-On",
 
+    "minimax/h3-max-turbo/extend-video": "H3 Max Turbo Extend",
+    "xai/grok-imagine-video/v1.5/lite/image-to-video": "Grok 1.5 Lite",
+    "xai/grok-imagine-video/v1.5/lite/text-to-video": "Grok 1.5 Lite",
+    "minimax/h3-max/recast": "H3 Max Recast",
     "blackforestlabs/flux-3/extend-video": "FLUX 3",
     "blackforestlabs/flux-3/first-last-frame-to-video": "FLUX 3",
     "blackforestlabs/flux-3/image-to-video": "FLUX 3",

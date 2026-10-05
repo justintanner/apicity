@@ -3426,7 +3426,10 @@ describe("kie stale-family refresh (REQ-004)", () => {
 
       expect(parsed.success).toBe(true);
       if (!parsed.success) return;
-      const result = kieEstimate(parsed.data);
+      // The schema has no image count. One returned image is an explicit hint.
+      const result = kieEstimate(parsed.data, {
+        costHints: { outputImages: 1 },
+      });
       expect(result.usd).toBeCloseTo(rate, 10);
       expect(result.breakdown).toEqual({
         units: 1,

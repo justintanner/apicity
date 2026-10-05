@@ -371,7 +371,7 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
   // Not a count for its own sake — it makes any change to the guarded set show
   // up as a deliberate edit to this list.
   //
-  // The list is the point, not the number. It now holds all 147 ids of
+  // The list is the point, not the number. It now holds all 152 ids of
   // KIE_MEDIA_MODELS, which is what makes it worth spelling out rather than
   // asserting `guarded.sort()` equals `[...KIE_MEDIA_MODELS].sort()`: that
   // form is self-referential — it passes whatever the catalogue says, so an
@@ -380,8 +380,8 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
   it("guards exactly the models pinned in this list", () => {
     expect(
       guarded,
-      "Update this deliberate 147-entry pin when the guarded model set changes"
-    ).toHaveLength(147);
+      "Update this deliberate 152-entry pin when the guarded model set changes"
+    ).toHaveLength(152);
     expect([...guarded].sort()).toEqual(
       [
         "kling-3.0/video",
@@ -423,7 +423,10 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
         "seedream/5-lite-text-to-image",
         "seedream/5-pro-image-to-image",
         "seedream/5-pro-text-to-image",
+        "seedream/5-flash-text-to-image",
+        "seedream/5-flash-image-to-image",
         "seedream/5-pro-layer-decomposition",
+        "seedream/5-flash-layer-decomposition",
         "seedream/4.5-text-to-image",
         "seedream/4.5-edit",
         "grok-imagine/extend",
@@ -505,6 +508,8 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
         "minimax-h3/reference-to-video",
         "google/gemini-2-5-pro-tts",
         "google/gemini-3-1-flash-tts",
+        "google/gemini-3-8-flash-tts",
+        "google/gemini-3-8-flash-lite-tts",
         "google/gemini-omni-flash-1-1",
         "google/imagen4",
         "google/imagen4-fast",

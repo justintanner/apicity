@@ -151,6 +151,19 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST blackforestlabs.flux3.editImage": {
+    "source": "fal/flux-3-edit-image",
+    "payload": {
+      "prompt": "Restyle the image as a watercolor painting while preserving the composition.",
+      "image_urls": [
+        "https://storage.googleapis.com/falserverless/example_inputs/flux2_pro_edit_input.png"
+      ],
+      "resolution": "1k",
+      "aspect_ratio": "1:1"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST blackforestlabs.flux3.extendVideo": {
     "source": "fal/flux-3-extend-video",
     "payload": {
@@ -213,6 +226,16 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST blackforestlabs.flux3.textToImage": {
+    "source": "fal/flux-3-text-to-image",
+    "payload": {
+      "prompt": "A red fox leaping over a stream in a pine forest, watercolor illustration.",
+      "resolution": "1k",
+      "aspect_ratio": "1:1"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST blackforestlabs.flux3.textToVideo": {
     "source": "fal/flux-3-text-to-video",
     "payload": {
@@ -230,6 +253,17 @@
       "video_url": "<inline video/mp4 data URL — replace with a real URL or upload>",
       "upscale_factor": 1.5,
       "creativity": 0
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST bria.fiboEdit1p5.virtualTryOn": {
+    "source": "fal/bria-fibo-edit-1-5-virtual-try-on",
+    "payload": {
+      "person_image_url": "https://labs-assets.bria.ai/fal-examples/fibo-edit-1.5/virtual-try-on/person.jpg",
+      "garment_image_urls": [
+        "https://labs-assets.bria.ai/fal-examples/fibo-edit-1.5/virtual-try-on/garment-1.jpg"
+      ]
     },
     "tier": "prohibitive",
     "runByDefault": false
@@ -343,6 +377,36 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST bytedance.seedream.v5.flash.edit": {
+    "source": "fal/bytedance-seedream-v5-flash-edit",
+    "payload": {
+      "num_images": 1,
+      "prompt": "A red panda waves once, then holds still.",
+      "image_urls": [
+        "https://v3b.fal.media/files/b/0a8b90e0/BFLE9VDlZqsryU-UA3BoD_image_004.png"
+      ]
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST bytedance.seedream.v5.flash.layerize": {
+    "source": "fal/bytedance-seedream-v5-flash-layerize",
+    "payload": {
+      "image_url": "https://v3b.fal.media/files/b/0a8b90e0/BFLE9VDlZqsryU-UA3BoD_image_004.png",
+      "prompt": "A red panda waves once, then holds still."
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST bytedance.seedream.v5.flash.textToImage": {
+    "source": "fal/bytedance-seedream-v5-flash-text-to-image",
+    "payload": {
+      "num_images": 1,
+      "prompt": "A red panda waves once, then holds still."
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST bytedance.seedream.v5.lite.edit": {
     "source": "fal/bytedance-seedream-v5-lite-edit",
     "payload": {
@@ -401,6 +465,22 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST elevenlabs.tts.elevenV4": {
+    "source": "fal/elevenlabs-tts-eleven-v4",
+    "payload": {
+      "text": "A red panda waves once, then holds still."
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST elevenlabs.tts.elevenV4Turbo": {
+    "source": "fal/elevenlabs-tts-eleven-v4-turbo",
+    "payload": {
+      "text": "A red panda waves once, then holds still."
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST falAi.elevenlabs.speechToText.scribeV2": {
     "source": "fal/elevenlabs-speech-to-text-scribe-v2",
     "payload": {
@@ -454,6 +534,30 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST google.gemini3p8FlashLiteTts": {
+    "source": "fal/google-gemini-3-8-flash-lite-tts",
+    "payload": {
+      "prompt": "A red panda waves once, then holds still."
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST google.gemini3p8FlashTts": {
+    "source": "fal/google-gemini-3-8-flash-tts",
+    "payload": {
+      "prompt": "A red panda waves once, then holds still."
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST google.lyria3p5": {
+    "source": "fal/google-lyria-3-5",
+    "payload": {
+      "prompt": "Gentle solo piano, slow tempo, no vocals, about twenty seconds."
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST gptImage1p5": {
     "source": "fal/gpt-image-1.5",
     "payload": {
@@ -489,6 +593,27 @@
       ],
       "num_images": 1,
       "enable_safety_checker": true
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST ideogram.v4p5": {
+    "source": "fal/ideogram-v4-5",
+    "payload": {
+      "num_images": 1,
+      "quality": "low",
+      "prompt": "A red panda waves once, then holds still."
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST ideogram.v4p5.edit": {
+    "source": "fal/ideogram45-edit",
+    "payload": {
+      "prompt": "Render this scene as a watercolor painting while preserving its composition.",
+      "image_url": "https://v3b.fal.media/files/b/0a8b90e0/BFLE9VDlZqsryU-UA3BoD_image_004.png",
+      "quality": "very_low",
+      "num_images": 1
     },
     "tier": "prohibitive",
     "runByDefault": false
@@ -607,6 +732,32 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST meshy.v7p1.imageTo3d": {
+    "source": "fal/meshy-v7-1-image-to-3d",
+    "payload": {
+      "image_url": "https://v3b.fal.media/files/b/0a8b90e0/BFLE9VDlZqsryU-UA3BoD_image_004.png"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST meshy.v7p1.multiImageTo3d": {
+    "source": "fal/meshy-v7-1-multi-image-to-3d",
+    "payload": {
+      "image_urls": [
+        "https://v3b.fal.media/files/b/0a8b90e0/BFLE9VDlZqsryU-UA3BoD_image_004.png"
+      ]
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST meshy.v7p1.textTo3d": {
+    "source": "fal/meshy-v7-1-text-to-3d",
+    "payload": {
+      "prompt": "A red panda waves once, then holds still."
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST minimax.h3.imageToVideo": {
     "source": "fal/minimax-h3-image-to-video",
     "payload": {
@@ -640,6 +791,44 @@
       "duration": 5,
       "resolution": "480P",
       "prompt_expansion_mode": "disabled"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST minimax.h3Max.insertVideo": {
+    "source": "fal/minimax-h3-max-insert-video",
+    "payload": {
+      "video_url": "https://v3b.fal.media/files/b/0aac0919/5NYtHn5-5dxFlbH_U9oQW_video.mp4",
+      "prompt": "A red panda waves once, then holds still.",
+      "duration": 5,
+      "resume_time": 2.125,
+      "resolution": "480p",
+      "start_time": 1.625
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST minimax.h3Max.recast": {
+    "source": "fal/minimax-h3-max-recast",
+    "payload": {
+      "video_url": "https://v3b.fal.media/files/b/0aac0919/5NYtHn5-5dxFlbH_U9oQW_video.mp4",
+      "reference_image_urls": [
+        "https://v3b.fal.media/files/b/0aac0904/DYyrpDKza8aflsP6mMm0i_76qcS0F8.png"
+      ],
+      "resolution": "768P"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST minimax.h3MaxTurbo.extendVideo": {
+    "source": "fal/minimax-h3-max-turbo-extend-video",
+    "payload": {
+      "video_url": "https://storage.googleapis.com/falserverless/example_inputs/flux-3-red-panda.mp4",
+      "prompt": "The red panda keeps walking along the log, then looks up at a bird.",
+      "duration": 1,
+      "resolution": "480P",
+      "output": "continuation",
+      "enable_prompt_expansion": false
     },
     "tier": "prohibitive",
     "runByDefault": false
@@ -778,6 +967,14 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST recraft.v4p1.flash.textToImage": {
+    "source": "fal/recraft-v4-1-flash-text-to-image",
+    "payload": {
+      "prompt": "A red panda waves once, then holds still."
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST sora2.imageToVideo": {
     "source": "fal/sora-2-image-to-video",
     "payload": {
@@ -825,6 +1022,22 @@
       "video_url": "https://v3b.fal.media/files/b/0aa81cc4/YSFz_9f2qby6PzwOC6CMz_topaz-precision-source.mp4",
       "model": "Proteus",
       "upscale_factor": 1.25
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST tripo3d.p2.imageTo3d": {
+    "source": "fal/tripo3d-p2-image-to-3d",
+    "payload": {
+      "image_url": "https://v3b.fal.media/files/b/0a8b90e0/BFLE9VDlZqsryU-UA3BoD_image_004.png"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST tripo3d.p2.textTo3d": {
+    "source": "fal/tripo3d-p2-text-to-3d",
+    "payload": {
+      "prompt": "A red panda waves once, then holds still."
     },
     "tier": "prohibitive",
     "runByDefault": false
@@ -1032,6 +1245,28 @@
       "duration": 6,
       "aspect_ratio": "16:9",
       "resolution": "480p"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST xai.grokImagineVideo.v1p5.lite.imageToVideo": {
+    "source": "fal/grok-15-lite-image-to-video",
+    "payload": {
+      "prompt": "Gentle natural motion in the scene. Static camera.",
+      "duration": 1,
+      "resolution": "480p",
+      "image_url": "https://v3b.fal.media/files/b/0a8b90e0/BFLE9VDlZqsryU-UA3BoD_image_004.png"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST xai.grokImagineVideo.v1p5.lite.textToVideo": {
+    "source": "fal/grok-15-lite-text-to-video",
+    "payload": {
+      "prompt": "A red panda waves gently at the camera in a sunlit forest. Static camera.",
+      "duration": 1,
+      "resolution": "480p",
+      "aspect_ratio": "16:9"
     },
     "tier": "prohibitive",
     "runByDefault": false

@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-100 endpoints across 27 groups. Each method mirrors an upstream URL path.
+124 endpoints across 33 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -264,6 +264,23 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 ### blackforestlabs
 
 <details>
+<summary><code>POST</code> <b><code>fal.blackforestlabs.flux3.editImage</code></b></summary>
+
+<code>POST https://fal.run/blackforestlabs/flux-3/edit-image</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/blackforestlabs/flux-3/edit-image/api)
+
+```typescript
+const res = await fal.run.blackforestlabs.flux3.editImage({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
 <summary><code>POST</code> <b><code>fal.blackforestlabs.flux3.extendVideo</code></b></summary>
 
 <code>POST https://fal.run/blackforestlabs/flux-3/extend-video</code>
@@ -332,6 +349,23 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 </details>
 
 <details>
+<summary><code>POST</code> <b><code>fal.blackforestlabs.flux3.textToImage</code></b></summary>
+
+<code>POST https://fal.run/blackforestlabs/flux-3/text-to-image</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/blackforestlabs/flux-3/text-to-image/api)
+
+```typescript
+const res = await fal.run.blackforestlabs.flux3.textToImage({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
 <summary><code>POST</code> <b><code>fal.blackforestlabs.flux3.textToVideo</code></b></summary>
 
 <code>POST https://fal.run/blackforestlabs/flux-3/text-to-video</code>
@@ -359,6 +393,25 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.blackforestlabs.fluxVideoUpscale({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+### bria
+
+<details>
+<summary><code>POST</code> <b><code>fal.bria.fiboEdit1p5.virtualTryOn</code></b></summary>
+
+<code>POST https://fal.run/bria/fibo-edit-1.5/virtual-try-on</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/bria/fibo-edit-1.5/virtual-try-on/api)
+
+```typescript
+const res = await fal.run.bria.fiboEdit1p5.virtualTryOn({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -534,6 +587,57 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 </details>
 
 <details>
+<summary><code>POST</code> <b><code>fal.bytedance.seedream.v5.flash.edit</code></b></summary>
+
+<code>POST https://fal.run/bytedance/seedream/v5/flash/edit</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/bytedance/seedream/v5/flash/edit/api)
+
+```typescript
+const res = await fal.run.bytedance.seedream.v5.flash.edit({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.bytedance.seedream.v5.flash.layerize</code></b></summary>
+
+<code>POST https://fal.run/bytedance/seedream/v5/flash/layerize</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/bytedance/seedream/v5/flash/layerize/api)
+
+```typescript
+const res = await fal.run.bytedance.seedream.v5.flash.layerize({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.bytedance.seedream.v5.flash.textToImage</code></b></summary>
+
+<code>POST https://fal.run/bytedance/seedream/v5/flash/text-to-image</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/bytedance/seedream/v5/flash/text-to-image/api)
+
+```typescript
+const res = await fal.run.bytedance.seedream.v5.flash.textToImage({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
 <summary><code>POST</code> <b><code>fal.bytedance.seedream.v5.lite.edit</code></b></summary>
 
 <code>POST https://fal.run/fal-ai/bytedance/seedream/v5/lite/edit</code>
@@ -612,6 +716,42 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.bytedance.seedream.v5.pro.textToImage({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+### elevenlabs
+
+<details>
+<summary><code>POST</code> <b><code>fal.elevenlabs.tts.elevenV4</code></b></summary>
+
+<code>POST https://fal.run/elevenlabs/tts/eleven-v4</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/elevenlabs/tts/eleven-v4/api)
+
+```typescript
+const res = await fal.run.elevenlabs.tts.elevenV4({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.elevenlabs.tts.elevenV4Turbo</code></b></summary>
+
+<code>POST https://fal.run/elevenlabs/tts/eleven-v4-turbo</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/elevenlabs/tts/eleven-v4-turbo/api)
+
+```typescript
+const res = await fal.run.elevenlabs.tts.elevenV4Turbo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -707,6 +847,59 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 </details>
 
+### google
+
+<details>
+<summary><code>POST</code> <b><code>fal.google.gemini3p8FlashLiteTts</code></b></summary>
+
+<code>POST https://fal.run/google/gemini-3.8-flash-lite-tts</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/google/gemini-3.8-flash-lite-tts/api)
+
+```typescript
+const res = await fal.run.google.gemini3p8FlashLiteTts({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.google.gemini3p8FlashTts</code></b></summary>
+
+<code>POST https://fal.run/google/gemini-3.8-flash-tts</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/google/gemini-3.8-flash-tts/api)
+
+```typescript
+const res = await fal.run.google.gemini3p8FlashTts({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.google.lyria3p5</code></b></summary>
+
+<code>POST https://fal.run/google/lyria-3.5</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/google/lyria-3.5/api)
+
+```typescript
+const res = await fal.run.google.lyria3p5({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
 ### gptImage1p5
 
 <details>
@@ -756,6 +949,42 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.hunyuan.v3.instructEdit({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+### ideogram
+
+<details>
+<summary><code>POST</code> <b><code>fal.ideogram.v4p5</code></b></summary>
+
+<code>POST https://fal.run/ideogram/v4.5</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/ideogram/v4.5/api)
+
+```typescript
+const res = await fal.run.ideogram.v4p5({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.ideogram.v4p5.edit</code></b></summary>
+
+<code>POST https://fal.run/ideogram/v4.5/edit</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/ideogram/v4.5/edit/api)
+
+```typescript
+const res = await fal.run.ideogram.v4p5.edit({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -938,6 +1167,57 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 </details>
 
+<details>
+<summary><code>POST</code> <b><code>fal.meshy.v7p1.imageTo3d</code></b></summary>
+
+<code>POST https://fal.run/meshy/v7.1/image-to-3d</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/meshy/v7.1/image-to-3d/api)
+
+```typescript
+const res = await fal.run.meshy.v7p1.imageTo3d({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.meshy.v7p1.multiImageTo3d</code></b></summary>
+
+<code>POST https://fal.run/meshy/v7.1/multi-image-to-3d</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/meshy/v7.1/multi-image-to-3d/api)
+
+```typescript
+const res = await fal.run.meshy.v7p1.multiImageTo3d({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.meshy.v7p1.textTo3d</code></b></summary>
+
+<code>POST https://fal.run/meshy/v7.1/text-to-3d</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/meshy/v7.1/text-to-3d/api)
+
+```typescript
+const res = await fal.run.meshy.v7p1.textTo3d({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
 ### minimax
 
 <details>
@@ -985,6 +1265,57 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.minimax.h3.textToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.minimax.h3Max.insertVideo</code></b></summary>
+
+<code>POST https://fal.run/minimax/h3-max/insert-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/minimax/h3-max/insert-video/api)
+
+```typescript
+const res = await fal.run.minimax.h3Max.insertVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.minimax.h3Max.recast</code></b></summary>
+
+<code>POST https://fal.run/minimax/h3-max/recast</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/minimax/h3-max/recast/api)
+
+```typescript
+const res = await fal.run.minimax.h3Max.recast({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.minimax.h3MaxTurbo.extendVideo</code></b></summary>
+
+<code>POST https://fal.run/minimax/h3-max-turbo/extend-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/minimax/h3-max-turbo/extend-video/api)
+
+```typescript
+const res = await fal.run.minimax.h3MaxTurbo.extendVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -1311,6 +1642,25 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 </details>
 
+### recraft
+
+<details>
+<summary><code>POST</code> <b><code>fal.recraft.v4p1.flash.textToImage</code></b></summary>
+
+<code>POST https://fal.run/recraft/v4.1/flash/text-to-image</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/recraft/v4.1/flash/text-to-image/api)
+
+```typescript
+const res = await fal.run.recraft.v4p1.flash.textToImage({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
 ### serverless
 
 <details>
@@ -1500,6 +1850,42 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.topaz.upscale.video.precision({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+### tripo3d
+
+<details>
+<summary><code>POST</code> <b><code>fal.tripo3d.p2.imageTo3d</code></b></summary>
+
+<code>POST https://fal.run/tripo3d/p2/image-to-3d</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/tripo3d/p2/image-to-3d/api)
+
+```typescript
+const res = await fal.run.tripo3d.p2.imageTo3d({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.tripo3d.p2.textTo3d</code></b></summary>
+
+<code>POST https://fal.run/tripo3d/p2/text-to-3d</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/tripo3d/p2/text-to-3d/api)
+
+```typescript
+const res = await fal.run.tripo3d.p2.textTo3d({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -1846,6 +2232,40 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.xai.grokImagineVideo.referenceToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.xai.grokImagineVideo.v1p5.lite.imageToVideo</code></b></summary>
+
+<code>POST https://fal.run/xai/grok-imagine-video/v1.5/lite/image-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/xai/grok-imagine-video/v1.5/lite/image-to-video/api)
+
+```typescript
+const res = await fal.run.xai.grokImagineVideo.v1p5.lite.imageToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.xai.grokImagineVideo.v1p5.lite.textToVideo</code></b></summary>
+
+<code>POST https://fal.run/xai/grok-imagine-video/v1.5/lite/text-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/xai/grok-imagine-video/v1.5/lite/text-to-video/api)
+
+```typescript
+const res = await fal.run.xai.grokImagineVideo.v1p5.lite.textToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

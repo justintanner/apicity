@@ -257,7 +257,10 @@ export const KIE_MEDIA_MODELS = [
   "seedream/5-lite-text-to-image",
   "seedream/5-pro-image-to-image",
   "seedream/5-pro-text-to-image",
+  "seedream/5-flash-text-to-image",
+  "seedream/5-flash-image-to-image",
   "seedream/5-pro-layer-decomposition",
+  "seedream/5-flash-layer-decomposition",
   "seedream/4.5-text-to-image",
   "seedream/4.5-edit",
   "grok-imagine/extend",
@@ -349,6 +352,8 @@ export const KIE_MEDIA_MODELS = [
   "minimax-h3/reference-to-video",
   "google/gemini-2-5-pro-tts",
   "google/gemini-3-1-flash-tts",
+  "google/gemini-3-8-flash-tts",
+  "google/gemini-3-8-flash-lite-tts",
   // Gemini Omni 1.1 Flash — google/ namespaced, enum-only (no alias).
   "google/gemini-omni-flash-1-1",
   // Google Imagen 4 + namespaced Nano Banana — enum-only (no google/ alias).
@@ -4165,6 +4170,38 @@ export const SeedreamProTextToImageRequestSchema = z.object({
   }),
 });
 
+// Docs: https://docs.kie.ai/market/seedream/5-flash-text-to-image
+// Flash uses size rather than the Pro model's quality selector.
+export const SeedreamFlashTextToImageRequestSchema = z.object({
+  model: z.literal("seedream/5-flash-text-to-image"),
+  callBackUrl: z.string().url().optional(),
+  input: z.object({
+    prompt: z.string().min(3).max(5000),
+    aspect_ratio: z
+      .enum(["1:1", "4:3", "3:4", "16:9", "9:16", "2:3", "3:2", "21:9"])
+      .default("1:1"),
+    size: z.enum(["1K", "1.5K", "2K"]).default("1K"),
+    output_format: z.enum(["png", "jpeg"]).default("png"),
+    nsfw_checker: z.boolean().optional(),
+  }),
+});
+
+// Docs: https://docs.kie.ai/market/seedream/5-flash-image-to-image
+export const SeedreamFlashImageToImageRequestSchema = z.object({
+  model: z.literal("seedream/5-flash-image-to-image"),
+  callBackUrl: z.string().url().optional(),
+  input: z.object({
+    image_urls: z.array(z.string().url()).min(1).max(10),
+    prompt: z.string().min(3).max(5000),
+    aspect_ratio: z
+      .enum(["1:1", "4:3", "3:4", "16:9", "9:16", "2:3", "3:2", "21:9"])
+      .default("1:1"),
+    size: z.enum(["1K", "1.5K", "2K"]).default("1K"),
+    output_format: z.enum(["png", "jpeg"]).default("png"),
+    nsfw_checker: z.boolean().optional(),
+  }),
+});
+
 // Seedream 5 Pro layer decomposition accepts one remote source image and
 // separates automatically detected or prompt-selected elements into layers.
 // The documented defaults are applied when parsing, while createTask still
@@ -4177,6 +4214,20 @@ export const SeedreamProLayerDecompositionRequestSchema = z.object({
     prompt: z.string().max(5000).optional(),
     size: z.enum(["auto", "1K", "1.5K", "2K"]).default("auto"),
     output_format: z.enum(["png", "jpeg"]).default("jpeg"),
+  }),
+});
+
+// Docs: https://docs.kie.ai/market/seedream/5-flash-layer-decomposition
+// The product page also exposes the optional nsfw_checker field.
+export const SeedreamFlashLayerDecompositionRequestSchema = z.object({
+  model: z.literal("seedream/5-flash-layer-decomposition"),
+  callBackUrl: z.string().url().optional(),
+  input: z.object({
+    image_url: z.string().url(),
+    prompt: z.string().min(3).max(5000).optional(),
+    size: z.enum(["auto", "1K", "1.5K", "2K"]).default("auto"),
+    output_format: z.enum(["png", "jpeg"]).default("jpeg"),
+    nsfw_checker: z.boolean().optional(),
   }),
 });
 
@@ -5571,6 +5622,117 @@ export const GoogleGemini31FlashTtsRequestSchema = z.object({
   model: z.literal("google/gemini-3-1-flash-tts"),
   callBackUrl: z.string().url().optional(),
   input: GoogleGeminiTtsInputSchema,
+});
+
+// Docs: https://docs.kie.ai/market/google/gemini-3-8-flash-tts
+// Version 3.8 uses a new voice catalog and per-turn freeform style.
+export const GoogleGemini38TtsVoiceNames = [
+  "Bodi",
+  "Lumi",
+  "Sadaltager",
+  "Sola",
+  "Sulafat",
+  "Varo",
+  "Zephyr",
+  "Koda",
+  "Kore",
+  "Nika",
+  "Tavi",
+  "Zeno",
+  "Algenib",
+  "Despina",
+  "Erinome",
+  "Kira",
+  "Ludo",
+  "Mako",
+  "Rasalgethi",
+  "Rina",
+  "Alnilam",
+  "Brio",
+  "Jori",
+  "Laomedeia",
+  "Rami",
+  "Veda",
+  "Achird",
+  "Enzo",
+  "Riko",
+  "Sami",
+  "Zali",
+  "Zubenelgenubi",
+  "Algieba",
+  "Aoede",
+  "Autonoe",
+  "Callirrhoe",
+  "Enceladus",
+  "Gero",
+  "Iapetus",
+  "Neno",
+  "Olin",
+  "Tari",
+  "Umbriel",
+  "Achernar",
+  "Charon",
+  "Daro",
+  "Fola",
+  "Hali",
+  "Milo",
+  "Puck",
+  "Arlo",
+  "Cleo",
+  "Fenrir",
+  "Finn",
+  "Leda",
+  "Lora",
+  "Orus",
+  "Enya",
+  "Jett",
+  "Knox",
+  "Nyla",
+  "Sadachbia",
+  "Vindemiatrix",
+  "Cruz",
+  "Elio",
+  "Gacrux",
+  "Pulcherrima",
+  "Schedar",
+  "Tova",
+  "Zuri",
+] as const;
+export const GoogleGemini38TtsVoiceNameSchema = z.enum(
+  GoogleGemini38TtsVoiceNames
+);
+export const GoogleGemini38TtsSpeakerSchema = z
+  .object({
+    speaker_id: GoogleGeminiTtsSpeakerIdSchema,
+    voice_name: GoogleGemini38TtsVoiceNameSchema.default("Fola"),
+  })
+  .strict();
+export const GoogleGemini38TtsDialogueTurnSchema = z
+  .object({
+    speaker_id: GoogleGeminiTtsSpeakerIdSchema,
+    text: z.string().min(1).max(10000),
+    style: z.string().optional(),
+  })
+  .strict();
+export const GoogleGemini38TtsInputSchema = z
+  .object({
+    temperature: z.number().min(0).max(2).default(1),
+    speakers: z.array(GoogleGemini38TtsSpeakerSchema).min(1),
+    filler_words: z.boolean().default(false),
+    dialogue_turns: z.array(GoogleGemini38TtsDialogueTurnSchema).min(1),
+  })
+  .strict();
+export const GoogleGemini38FlashTtsRequestSchema = z.object({
+  model: z.literal("google/gemini-3-8-flash-tts"),
+  callBackUrl: z.string().url().optional(),
+  input: GoogleGemini38TtsInputSchema,
+});
+
+// Docs: https://docs.kie.ai/market/google/gemini-3-8-flash-lite-tts
+export const GoogleGemini38FlashLiteTtsRequestSchema = z.object({
+  model: z.literal("google/gemini-3-8-flash-lite-tts"),
+  callBackUrl: z.string().url().optional(),
+  input: GoogleGemini38TtsInputSchema,
 });
 
 // ---------------------------------------------------------------------------
@@ -8367,7 +8529,10 @@ export const MediaGenerationRequestSchema = z.union([
   SeedreamTextToImageRequestSchema,
   SeedreamProImageToImageRequestSchema,
   SeedreamProTextToImageRequestSchema,
+  SeedreamFlashTextToImageRequestSchema,
+  SeedreamFlashImageToImageRequestSchema,
   SeedreamProLayerDecompositionRequestSchema,
+  SeedreamFlashLayerDecompositionRequestSchema,
   Seedream45TextToImageRequestSchema,
   Seedream45EditRequestSchema,
   Qwen2TextToImageRequestSchema,
@@ -8444,6 +8609,8 @@ export const MediaGenerationRequestSchema = z.union([
   MiniMaxH3ReferenceToVideoRequestSchema,
   GoogleGemini25ProTtsRequestSchema,
   GoogleGemini31FlashTtsRequestSchema,
+  GoogleGemini38FlashTtsRequestSchema,
+  GoogleGemini38FlashLiteTtsRequestSchema,
   GoogleImagen4RequestSchema,
   GoogleImagen4FastRequestSchema,
   GoogleImagen4UltraRequestSchema,
@@ -10022,4 +10189,48 @@ export type MediaGenerationRequest = z.input<
 export type MediaGenerationRequestInput = MediaGenerationRequest;
 export type MediaGenerationParsedRequest = z.output<
   typeof MediaGenerationRequestSchema
+>;
+
+export type SeedreamFlashTextToImageRequest = z.input<
+  typeof SeedreamFlashTextToImageRequestSchema
+>;
+export type SeedreamFlashTextToImageRequestInput =
+  SeedreamFlashTextToImageRequest;
+export type SeedreamFlashTextToImageParsedRequest = z.output<
+  typeof SeedreamFlashTextToImageRequestSchema
+>;
+
+export type SeedreamFlashImageToImageRequest = z.input<
+  typeof SeedreamFlashImageToImageRequestSchema
+>;
+export type SeedreamFlashImageToImageRequestInput =
+  SeedreamFlashImageToImageRequest;
+export type SeedreamFlashImageToImageParsedRequest = z.output<
+  typeof SeedreamFlashImageToImageRequestSchema
+>;
+
+export type SeedreamFlashLayerDecompositionRequest = z.input<
+  typeof SeedreamFlashLayerDecompositionRequestSchema
+>;
+export type SeedreamFlashLayerDecompositionRequestInput =
+  SeedreamFlashLayerDecompositionRequest;
+export type SeedreamFlashLayerDecompositionParsedRequest = z.output<
+  typeof SeedreamFlashLayerDecompositionRequestSchema
+>;
+
+export type GoogleGemini38FlashTtsRequest = z.input<
+  typeof GoogleGemini38FlashTtsRequestSchema
+>;
+export type GoogleGemini38FlashTtsRequestInput = GoogleGemini38FlashTtsRequest;
+export type GoogleGemini38FlashTtsParsedRequest = z.output<
+  typeof GoogleGemini38FlashTtsRequestSchema
+>;
+
+export type GoogleGemini38FlashLiteTtsRequest = z.input<
+  typeof GoogleGemini38FlashLiteTtsRequestSchema
+>;
+export type GoogleGemini38FlashLiteTtsRequestInput =
+  GoogleGemini38FlashLiteTtsRequest;
+export type GoogleGemini38FlashLiteTtsParsedRequest = z.output<
+  typeof GoogleGemini38FlashLiteTtsRequestSchema
 >;

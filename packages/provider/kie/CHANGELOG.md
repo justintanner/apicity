@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added `google/gemini-3-8-flash-lite-tts` with the shared 3.8 voice and
+  per-turn style inputs, local validation, and dedicated token pricing.
+
+- Added `google/gemini-3-8-flash-tts` with 70 voices, per-turn style,
+  typed validation, CLI metadata, and input/audio-output token pricing.
+
+- Added `seedream/5-flash-layer-decomposition` with typed request metadata,
+  local validation, and pricing for the three published output sizes.
+
+- Added `seedream/5-flash-image-to-image` for editing with up to ten reference
+  images, typed request metadata, local validation, and 1K/1.5K/2K pricing.
+
+- Added `seedream/5-flash-text-to-image` with typed request metadata, local
+  validation, and size-based pricing for 1K, 1.5K, and 2K images.
+
 - `codex.v1.responses` now enumerates `gpt-6-astra`, `gpt-6-luna` and
   `gpt-6-sol` in its `model` enum, so `apicity describe` and the
   `KieResponsesModel` type autocomplete them. All three already validated

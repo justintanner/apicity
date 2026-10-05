@@ -23,6 +23,78 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalBriaFiboEdit1p5VirtualTryOnParsedRequest,
+  FalBriaFiboEdit1p5VirtualTryOnRequestInput,
+  FalBriaFiboEdit1p5VirtualTryOnRequest,
+  FalGoogleLyria3p5ParsedRequest,
+  FalGoogleLyria3p5RequestInput,
+  FalGoogleLyria3p5Request,
+  FalMeshyV7p1MultiImageTo3dParsedRequest,
+  FalMeshyV7p1MultiImageTo3dRequestInput,
+  FalMeshyV7p1MultiImageTo3dRequest,
+  FalMeshyV7p1ImageTo3dParsedRequest,
+  FalMeshyV7p1ImageTo3dRequestInput,
+  FalMeshyV7p1ImageTo3dRequest,
+  FalMeshyV7p1TextTo3dParsedRequest,
+  FalMeshyV7p1TextTo3dRequestInput,
+  FalMeshyV7p1TextTo3dRequest,
+  FalRecraftV4p1FlashTextToImageParsedRequest,
+  FalRecraftV4p1FlashTextToImageRequestInput,
+  FalRecraftV4p1FlashTextToImageRequest,
+  FalTripo3dP2ImageTo3dParsedRequest,
+  FalTripo3dP2ImageTo3dRequestInput,
+  FalTripo3dP2ImageTo3dRequest,
+  FalTripo3dP2TextTo3dParsedRequest,
+  FalTripo3dP2TextTo3dRequestInput,
+  FalTripo3dP2TextTo3dRequest,
+  FalBytedanceSeedreamV5FlashTextToImageParsedRequest,
+  FalBytedanceSeedreamV5FlashTextToImageRequestInput,
+  FalBytedanceSeedreamV5FlashTextToImageRequest,
+  FalBytedanceSeedreamV5FlashEditParsedRequest,
+  FalBytedanceSeedreamV5FlashEditRequestInput,
+  FalBytedanceSeedreamV5FlashEditRequest,
+  FalBytedanceSeedreamV5FlashLayerizeParsedRequest,
+  FalBytedanceSeedreamV5FlashLayerizeRequestInput,
+  FalBytedanceSeedreamV5FlashLayerizeRequest,
+  FalGoogleGemini3p8FlashLiteTtsParsedRequest,
+  FalGoogleGemini3p8FlashLiteTtsRequestInput,
+  FalGoogleGemini3p8FlashLiteTtsRequest,
+  FalGoogleGemini3p8FlashTtsParsedRequest,
+  FalGoogleGemini3p8FlashTtsRequestInput,
+  FalGoogleGemini3p8FlashTtsRequest,
+  FalElevenlabsTtsElevenV4ParsedRequest,
+  FalElevenlabsTtsElevenV4RequestInput,
+  FalElevenlabsTtsElevenV4Request,
+  FalElevenlabsTtsElevenV4TurboParsedRequest,
+  FalElevenlabsTtsElevenV4TurboRequestInput,
+  FalElevenlabsTtsElevenV4TurboRequest,
+  FalMinimaxH3MaxInsertVideoParsedRequest,
+  FalMinimaxH3MaxInsertVideoRequestInput,
+  FalMinimaxH3MaxInsertVideoRequest,
+  FalIdeogramV4p5ParsedRequest,
+  FalIdeogramV4p5RequestInput,
+  FalIdeogramV4p5Request,
+  FalIdeogramV4p5EditRequest,
+  FalIdeogramV4p5EditRequestInput,
+  FalIdeogramV4p5EditParsedRequest,
+  FalXaiGrokImagineVideoV1p5LiteImageToVideoRequest,
+  FalXaiGrokImagineVideoV1p5LiteImageToVideoRequestInput,
+  FalXaiGrokImagineVideoV1p5LiteImageToVideoParsedRequest,
+  FalFlux3TextToImageRequest,
+  FalFlux3TextToImageRequestInput,
+  FalFlux3TextToImageParsedRequest,
+  FalFlux3EditImageRequest,
+  FalFlux3EditImageRequestInput,
+  FalFlux3EditImageParsedRequest,
+  FalMinimaxH3MaxRecastRequest,
+  FalMinimaxH3MaxRecastRequestInput,
+  FalMinimaxH3MaxRecastParsedRequest,
+  FalXaiGrokImagineVideoV1p5LiteTextToVideoRequest,
+  FalXaiGrokImagineVideoV1p5LiteTextToVideoRequestInput,
+  FalXaiGrokImagineVideoV1p5LiteTextToVideoParsedRequest,
+  FalMinimaxH3MaxTurboExtendVideoRequest,
+  FalMinimaxH3MaxTurboExtendVideoRequestInput,
+  FalMinimaxH3MaxTurboExtendVideoParsedRequest,
   FalOptions,
   FalEstimateRequest,
   FalEstimateRequestInput,
@@ -362,6 +434,30 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalBriaFiboEdit1p5VirtualTryOnRequest,
+  FalGoogleLyria3p5Request,
+  FalMeshyV7p1MultiImageTo3dRequest,
+  FalMeshyV7p1ImageTo3dRequest,
+  FalMeshyV7p1TextTo3dRequest,
+  FalRecraftV4p1FlashTextToImageRequest,
+  FalTripo3dP2ImageTo3dRequest,
+  FalTripo3dP2TextTo3dRequest,
+  FalBytedanceSeedreamV5FlashTextToImageRequest,
+  FalBytedanceSeedreamV5FlashEditRequest,
+  FalBytedanceSeedreamV5FlashLayerizeRequest,
+  FalGoogleGemini3p8FlashLiteTtsRequest,
+  FalGoogleGemini3p8FlashTtsRequest,
+  FalElevenlabsTtsElevenV4Request,
+  FalElevenlabsTtsElevenV4TurboRequest,
+  FalMinimaxH3MaxInsertVideoRequest,
+  FalIdeogramV4p5Request,
+  FalIdeogramV4p5EditRequest,
+  FalXaiGrokImagineVideoV1p5LiteImageToVideoRequest,
+  FalFlux3TextToImageRequest,
+  FalFlux3EditImageRequest,
+  FalMinimaxH3MaxRecastRequest,
+  FalXaiGrokImagineVideoV1p5LiteTextToVideoRequest,
+  FalMinimaxH3MaxTurboExtendVideoRequest,
   FalEstimateRequest,
   FalQueueSubmitParams,
   FalQueueSubmitRequest,
@@ -2014,6 +2110,8 @@ export interface FalRunBytedanceSeedreamV5ProNamespace {
 }
 
 export interface FalRunBytedanceSeedreamV5Namespace {
+  flash: FalRunBytedanceSeedreamV5FlashNamespace;
+
   lite: FalRunBytedanceSeedreamV5LiteNamespace;
   pro: FalRunBytedanceSeedreamV5ProNamespace;
 }
@@ -2187,6 +2285,8 @@ export interface FalRunMeshyV7Namespace {
 }
 
 export interface FalRunMeshyNamespace {
+  v7p1: FalRunMeshyV7p1Namespace;
+
   v7: FalRunMeshyV7Namespace;
 }
 
@@ -2736,6 +2836,17 @@ export interface FalRunLightricksNamespace {
 }
 
 export interface FalRunNamespace {
+  bria: FalRunBriaNamespace;
+
+  recraft: FalRunRecraftNamespace;
+
+  tripo3d: FalRunTripo3dNamespace;
+
+  google: FalRunGoogleNamespace;
+
+  elevenlabs: FalRunElevenlabsFrontierNamespace;
+
+  ideogram: FalRunIdeogramNamespace;
   alibaba: FalRunAlibabaNamespace;
   blackforestlabs: FalRunBlackforestlabsNamespace;
   bytedance: FalRunBytedanceNamespace;
@@ -2979,4 +3090,609 @@ export interface FalProvider {
   get: FalGetNamespace;
   post: FalPostNamespace;
   delete: FalDeleteNamespace;
+}
+
+export interface FalMinimaxH3MaxTurboExtendVideoResponse {
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+  duration: number;
+  seed: number;
+  source: Record<string, unknown>;
+  expanded_prompt?: string | null;
+  timings?: Record<string, number>;
+}
+export interface FalRunMinimaxH3MaxTurboNamespace {
+  extendVideo: ((
+    params: FalMinimaxH3MaxTurboExtendVideoRequest,
+    signal?: AbortSignal
+  ) => Promise<FalMinimaxH3MaxTurboExtendVideoResponse>) & {
+    schema: ApicitySchema<FalMinimaxH3MaxTurboExtendVideoRequest>;
+  };
+}
+export interface FalRunMinimaxNamespace {
+  h3MaxTurbo: FalRunMinimaxH3MaxTurboNamespace;
+}
+
+export interface FalXaiGrokImagineVideoV1p5LiteTextToVideoResponse {
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+    fps?: number | null;
+    duration?: number | null;
+    num_frames?: number | null;
+  };
+}
+export interface FalRunXaiGrokImagineVideoV1p5LiteNamespace {
+  imageToVideo: ((
+    params: FalXaiGrokImagineVideoV1p5LiteImageToVideoRequest,
+    signal?: AbortSignal
+  ) => Promise<FalXaiGrokImagineVideoV1p5LiteImageToVideoResponse>) & {
+    schema: ApicitySchema<FalXaiGrokImagineVideoV1p5LiteImageToVideoRequest>;
+  };
+  textToVideo: ((
+    params: FalXaiGrokImagineVideoV1p5LiteTextToVideoRequest,
+    signal?: AbortSignal
+  ) => Promise<FalXaiGrokImagineVideoV1p5LiteTextToVideoResponse>) & {
+    schema: ApicitySchema<FalXaiGrokImagineVideoV1p5LiteTextToVideoRequest>;
+  };
+}
+export interface FalRunXaiGrokImagineVideoV1p5Namespace {
+  lite: FalRunXaiGrokImagineVideoV1p5LiteNamespace;
+}
+
+export interface FalMinimaxH3MaxRecastResponse {
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+  seed: number;
+}
+export interface FalRunMinimaxH3MaxNamespace {
+  insertVideo: ((
+    params: FalMinimaxH3MaxInsertVideoRequest,
+    signal?: AbortSignal
+  ) => Promise<FalMinimaxH3MaxInsertVideoResponse>) & {
+    schema: ApicitySchema<FalMinimaxH3MaxInsertVideoRequest>;
+  };
+
+  recast: ((
+    params: FalMinimaxH3MaxRecastRequest,
+    signal?: AbortSignal
+  ) => Promise<FalMinimaxH3MaxRecastResponse>) & {
+    schema: ApicitySchema<FalMinimaxH3MaxRecastRequest>;
+  };
+}
+export interface FalRunMinimaxNamespace {
+  h3Max: FalRunMinimaxH3MaxNamespace;
+}
+
+export interface FalFlux3EditImageResponse {
+  images: Array<{
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+  }>;
+}
+export interface FalRunFlux3Namespace {
+  editImage: ((
+    params: FalFlux3EditImageRequest,
+    signal?: AbortSignal
+  ) => Promise<FalFlux3EditImageResponse>) & {
+    schema: ApicitySchema<FalFlux3EditImageRequest>;
+  };
+}
+
+export interface FalFlux3TextToImageResponse {
+  images: Array<{
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+  }>;
+}
+export interface FalRunFlux3Namespace {
+  textToImage: ((
+    params: FalFlux3TextToImageRequest,
+    signal?: AbortSignal
+  ) => Promise<FalFlux3TextToImageResponse>) & {
+    schema: ApicitySchema<FalFlux3TextToImageRequest>;
+  };
+}
+
+export interface FalXaiGrokImagineVideoV1p5LiteImageToVideoResponse {
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+    fps?: number | null;
+    duration?: number | null;
+    num_frames?: number | null;
+  };
+}
+
+export interface FalIdeogramV4p5EditResponse {
+  images: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  }[];
+  seed: number;
+}
+export interface FalRunIdeogramV4p5Namespace {
+  (
+    params: FalIdeogramV4p5Request,
+    signal?: AbortSignal
+  ): Promise<FalIdeogramV4p5Response>;
+  schema: ApicitySchema<FalIdeogramV4p5Request>;
+
+  edit: ((
+    params: FalIdeogramV4p5EditRequest,
+    signal?: AbortSignal
+  ) => Promise<FalIdeogramV4p5EditResponse>) & {
+    schema: ApicitySchema<FalIdeogramV4p5EditRequest>;
+  };
+}
+export interface FalRunIdeogramNamespace {
+  v4p5: FalRunIdeogramV4p5Namespace;
+}
+
+export interface FalIdeogramV4p5Response {
+  seed: number;
+  images: {
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    url: string;
+  }[];
+}
+
+export interface FalMinimaxH3MaxInsertVideoResponse {
+  frame_count: number;
+  resume_time: number;
+  start_time: number;
+  video: {
+    url: string;
+    num_frames?: number | null;
+    file_size?: number | null;
+    content_type?: string | null;
+    height?: number | null;
+    width?: number | null;
+    file_name?: string | null;
+    duration?: number | null;
+    fps?: number | null;
+  };
+  expanded_prompt?: string | null;
+  injected_duration: number;
+  height: number;
+  seed: number;
+  width: number;
+  source: Record<string, unknown>;
+  duration: number;
+  timings: Record<string, number>;
+}
+
+export interface FalElevenlabsTtsElevenV4TurboResponse {
+  timestamps?: unknown[] | null;
+  audio: {
+    content_type?: string | null;
+    url: string;
+    file_size?: number | null;
+    file_name?: string | null;
+  };
+}
+
+export interface FalRunElevenlabsTtsNamespace {
+  elevenV4: ((
+    params: FalElevenlabsTtsElevenV4Request,
+    signal?: AbortSignal
+  ) => Promise<FalElevenlabsTtsElevenV4Response>) & {
+    schema: ApicitySchema<FalElevenlabsTtsElevenV4Request>;
+  };
+
+  elevenV4Turbo: ((
+    params: FalElevenlabsTtsElevenV4TurboRequest,
+    signal?: AbortSignal
+  ) => Promise<FalElevenlabsTtsElevenV4TurboResponse>) & {
+    schema: ApicitySchema<FalElevenlabsTtsElevenV4TurboRequest>;
+  };
+}
+
+export interface FalRunElevenlabsFrontierNamespace {
+  tts: FalRunElevenlabsTtsNamespace;
+}
+
+export interface FalElevenlabsTtsElevenV4Response {
+  timestamps?: unknown[] | null;
+  audio: {
+    content_type?: string | null;
+    url: string;
+    file_size?: number | null;
+    file_name?: string | null;
+  };
+}
+
+export interface FalGoogleGemini3p8FlashTtsResponse {
+  audio: {
+    file_size?: number | null;
+    content_type?: string | null;
+    url: string;
+    file_name?: string | null;
+  };
+}
+
+export interface FalRunGoogleNamespace {
+  lyria3p5: ((
+    params: FalGoogleLyria3p5Request,
+    signal?: AbortSignal
+  ) => Promise<FalGoogleLyria3p5Response>) & {
+    schema: ApicitySchema<FalGoogleLyria3p5Request>;
+  };
+
+  gemini3p8FlashLiteTts: ((
+    params: FalGoogleGemini3p8FlashLiteTtsRequest,
+    signal?: AbortSignal
+  ) => Promise<FalGoogleGemini3p8FlashLiteTtsResponse>) & {
+    schema: ApicitySchema<FalGoogleGemini3p8FlashLiteTtsRequest>;
+  };
+
+  gemini3p8FlashTts: ((
+    params: FalGoogleGemini3p8FlashTtsRequest,
+    signal?: AbortSignal
+  ) => Promise<FalGoogleGemini3p8FlashTtsResponse>) & {
+    schema: ApicitySchema<FalGoogleGemini3p8FlashTtsRequest>;
+  };
+}
+
+export interface FalGoogleGemini3p8FlashLiteTtsResponse {
+  audio: {
+    file_size?: number | null;
+    content_type?: string | null;
+    url: string;
+    file_name?: string | null;
+  };
+}
+
+export interface FalBytedanceSeedreamV5FlashLayerizeResponse {
+  layers: {
+    description?: string | null;
+    image: {
+      content_type?: string | null;
+      file_name?: string | null;
+      file_size?: number | null;
+      url: string;
+      width?: number | null;
+      height?: number | null;
+    };
+    z_index: number;
+    name?: string | null;
+    bounding_box?: unknown | null;
+  }[];
+  images: {
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    url: string;
+    width?: number | null;
+    height?: number | null;
+  }[];
+}
+
+export interface FalRunBytedanceSeedreamV5FlashNamespace {
+  textToImage: ((
+    params: FalBytedanceSeedreamV5FlashTextToImageRequest,
+    signal?: AbortSignal
+  ) => Promise<FalBytedanceSeedreamV5FlashTextToImageResponse>) & {
+    schema: ApicitySchema<FalBytedanceSeedreamV5FlashTextToImageRequest>;
+  };
+
+  edit: ((
+    params: FalBytedanceSeedreamV5FlashEditRequest,
+    signal?: AbortSignal
+  ) => Promise<FalBytedanceSeedreamV5FlashEditResponse>) & {
+    schema: ApicitySchema<FalBytedanceSeedreamV5FlashEditRequest>;
+  };
+
+  layerize: ((
+    params: FalBytedanceSeedreamV5FlashLayerizeRequest,
+    signal?: AbortSignal
+  ) => Promise<FalBytedanceSeedreamV5FlashLayerizeResponse>) & {
+    schema: ApicitySchema<FalBytedanceSeedreamV5FlashLayerizeRequest>;
+  };
+}
+
+export interface FalBytedanceSeedreamV5FlashEditResponse {
+  images: {
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    url: string;
+    width?: number | null;
+    height?: number | null;
+  }[];
+}
+
+export interface FalBytedanceSeedreamV5FlashTextToImageResponse {
+  images: {
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    url: string;
+    width?: number | null;
+    height?: number | null;
+  }[];
+}
+
+export interface FalTripo3dP2TextTo3dResponse {
+  model_mesh: {
+    file_size?: number | null;
+    content_type?: string | null;
+    url: string;
+    file_name?: string | null;
+  };
+  task_id?: string | null;
+  rendered_image?: FalFile | null;
+  model_urls: {
+    pbr_model?: FalFile | null;
+    base_model?: FalFile | null;
+    glb?: FalFile | null;
+    fbx?: FalFile | null;
+  };
+}
+
+export interface FalRunTripo3dP2Namespace {
+  imageTo3d: ((
+    params: FalTripo3dP2ImageTo3dRequest,
+    signal?: AbortSignal
+  ) => Promise<FalTripo3dP2ImageTo3dResponse>) & {
+    schema: ApicitySchema<FalTripo3dP2ImageTo3dRequest>;
+  };
+
+  textTo3d: ((
+    params: FalTripo3dP2TextTo3dRequest,
+    signal?: AbortSignal
+  ) => Promise<FalTripo3dP2TextTo3dResponse>) & {
+    schema: ApicitySchema<FalTripo3dP2TextTo3dRequest>;
+  };
+}
+
+export interface FalRunTripo3dNamespace {
+  p2: FalRunTripo3dP2Namespace;
+}
+
+export interface FalTripo3dP2ImageTo3dResponse {
+  model_mesh: {
+    file_size?: number | null;
+    content_type?: string | null;
+    url: string;
+    file_name?: string | null;
+  };
+  task_id?: string | null;
+  rendered_image?: FalFile | null;
+  model_urls: {
+    pbr_model?: FalFile | null;
+    base_model?: FalFile | null;
+    glb?: FalFile | null;
+    fbx?: FalFile | null;
+  };
+}
+
+export interface FalRecraftV4p1FlashTextToImageResponse {
+  images: {
+    content_type?: string | null;
+    url: string;
+    file_size?: number | null;
+    file_name?: string | null;
+  }[];
+}
+
+export interface FalRunRecraftV4p1FlashNamespace {
+  textToImage: ((
+    params: FalRecraftV4p1FlashTextToImageRequest,
+    signal?: AbortSignal
+  ) => Promise<FalRecraftV4p1FlashTextToImageResponse>) & {
+    schema: ApicitySchema<FalRecraftV4p1FlashTextToImageRequest>;
+  };
+}
+
+export interface FalRunRecraftV4p1Namespace {
+  flash: FalRunRecraftV4p1FlashNamespace;
+}
+
+export interface FalRunRecraftNamespace {
+  v4p1: FalRunRecraftV4p1Namespace;
+}
+
+export interface FalMeshyV7p1TextTo3dResponse {
+  thumbnail?: unknown | null;
+  basic_animations?: unknown | null;
+  rigged_character_fbx?: unknown | null;
+  animation_glb?: unknown | null;
+  rig_task_id?: string | null;
+  animation_fbx?: unknown | null;
+  prompt: string;
+  seed?: number | null;
+  rigged_character_glb?: unknown | null;
+  texture_urls?: {
+    normal?: unknown | null;
+    metallic?: unknown | null;
+    roughness?: unknown | null;
+    base_color: {
+      content_type?: string | null;
+      file_name?: string | null;
+      file_size?: number | null;
+      url: string;
+    };
+  }[];
+  model_glb: {
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    url: string;
+  };
+  model_urls: {
+    fbx?: unknown | null;
+    obj?: unknown | null;
+    usdz?: unknown | null;
+    glb?: unknown | null;
+    blend?: unknown | null;
+    stl?: unknown | null;
+  };
+  actual_prompt?: string | null;
+}
+
+export interface FalRunMeshyV7p1Namespace {
+  multiImageTo3d: ((
+    params: FalMeshyV7p1MultiImageTo3dRequest,
+    signal?: AbortSignal
+  ) => Promise<FalMeshyV7p1MultiImageTo3dResponse>) & {
+    schema: ApicitySchema<FalMeshyV7p1MultiImageTo3dRequest>;
+  };
+
+  imageTo3d: ((
+    params: FalMeshyV7p1ImageTo3dRequest,
+    signal?: AbortSignal
+  ) => Promise<FalMeshyV7p1ImageTo3dResponse>) & {
+    schema: ApicitySchema<FalMeshyV7p1ImageTo3dRequest>;
+  };
+
+  textTo3d: ((
+    params: FalMeshyV7p1TextTo3dRequest,
+    signal?: AbortSignal
+  ) => Promise<FalMeshyV7p1TextTo3dResponse>) & {
+    schema: ApicitySchema<FalMeshyV7p1TextTo3dRequest>;
+  };
+}
+
+export interface FalMeshyV7p1ImageTo3dResponse {
+  thumbnail?: unknown | null;
+  basic_animations?: unknown | null;
+  rigged_character_fbx?: unknown | null;
+  animation_glb?: unknown | null;
+  rig_task_id?: string | null;
+  animation_fbx?: unknown | null;
+  seed?: number | null;
+  rigged_character_glb?: unknown | null;
+  texture_urls?: {
+    normal?: unknown | null;
+    metallic?: unknown | null;
+    roughness?: unknown | null;
+    base_color: {
+      content_type?: string | null;
+      file_name?: string | null;
+      file_size?: number | null;
+      url: string;
+    };
+  }[];
+  model_glb: {
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    url: string;
+  };
+  model_urls: {
+    fbx?: unknown | null;
+    obj?: unknown | null;
+    usdz?: unknown | null;
+    glb?: unknown | null;
+    blend?: unknown | null;
+    stl?: unknown | null;
+  };
+}
+
+export interface FalMeshyV7p1MultiImageTo3dResponse {
+  thumbnail?: unknown | null;
+  basic_animations?: unknown | null;
+  rigged_character_fbx?: unknown | null;
+  animation_glb?: unknown | null;
+  rig_task_id?: string | null;
+  animation_fbx?: unknown | null;
+  seed?: number | null;
+  rigged_character_glb?: unknown | null;
+  texture_urls?: {
+    normal?: unknown | null;
+    metallic?: unknown | null;
+    roughness?: unknown | null;
+    base_color: {
+      content_type?: string | null;
+      file_name?: string | null;
+      file_size?: number | null;
+      url: string;
+    };
+  }[];
+  model_glb: {
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    url: string;
+  };
+  model_urls: {
+    fbx?: unknown | null;
+    obj?: unknown | null;
+    usdz?: unknown | null;
+    glb?: unknown | null;
+    blend?: unknown | null;
+    stl?: unknown | null;
+  };
+}
+
+export interface FalGoogleLyria3p5Response {
+  lyrics?: string | null;
+  audio: {
+    content_type?: string | null;
+    url: string;
+    file_size?: number | null;
+    file_name?: string | null;
+  };
+}
+
+export interface FalBriaFiboEdit1p5VirtualTryOnResponse {
+  structured_instruction: Record<string, unknown>;
+  images?: {
+    width?: number | null;
+    height?: number | null;
+    content_type?: string | null;
+    file_size?: number | null;
+    url: string;
+    file_name?: string | null;
+  }[];
+  image: {
+    width?: number | null;
+    height?: number | null;
+    content_type?: string | null;
+    file_size?: number | null;
+    url: string;
+    file_name?: string | null;
+  };
+}
+
+export interface FalRunBriaFiboEdit1p5Namespace {
+  virtualTryOn: ((
+    params: FalBriaFiboEdit1p5VirtualTryOnRequest,
+    signal?: AbortSignal
+  ) => Promise<FalBriaFiboEdit1p5VirtualTryOnResponse>) & {
+    schema: ApicitySchema<FalBriaFiboEdit1p5VirtualTryOnRequest>;
+  };
+}
+
+export interface FalRunBriaNamespace {
+  fiboEdit1p5: FalRunBriaFiboEdit1p5Namespace;
 }

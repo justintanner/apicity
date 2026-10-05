@@ -1,4 +1,52 @@
 import {
+  FalBriaFiboEdit1p5VirtualTryOnResponse,
+  FalBriaFiboEdit1p5VirtualTryOnRequest,
+  FalGoogleLyria3p5Response,
+  FalGoogleLyria3p5Request,
+  FalMeshyV7p1MultiImageTo3dResponse,
+  FalMeshyV7p1MultiImageTo3dRequest,
+  FalMeshyV7p1ImageTo3dResponse,
+  FalMeshyV7p1ImageTo3dRequest,
+  FalMeshyV7p1TextTo3dResponse,
+  FalMeshyV7p1TextTo3dRequest,
+  FalRecraftV4p1FlashTextToImageResponse,
+  FalRecraftV4p1FlashTextToImageRequest,
+  FalTripo3dP2ImageTo3dResponse,
+  FalTripo3dP2ImageTo3dRequest,
+  FalTripo3dP2TextTo3dResponse,
+  FalTripo3dP2TextTo3dRequest,
+  FalBytedanceSeedreamV5FlashTextToImageResponse,
+  FalBytedanceSeedreamV5FlashTextToImageRequest,
+  FalBytedanceSeedreamV5FlashEditResponse,
+  FalBytedanceSeedreamV5FlashEditRequest,
+  FalBytedanceSeedreamV5FlashLayerizeResponse,
+  FalBytedanceSeedreamV5FlashLayerizeRequest,
+  FalGoogleGemini3p8FlashLiteTtsResponse,
+  FalGoogleGemini3p8FlashLiteTtsRequest,
+  FalGoogleGemini3p8FlashTtsResponse,
+  FalGoogleGemini3p8FlashTtsRequest,
+  FalElevenlabsTtsElevenV4Response,
+  FalElevenlabsTtsElevenV4Request,
+  FalElevenlabsTtsElevenV4TurboResponse,
+  FalElevenlabsTtsElevenV4TurboRequest,
+  FalMinimaxH3MaxInsertVideoResponse,
+  FalMinimaxH3MaxInsertVideoRequest,
+  FalIdeogramV4p5Response,
+  FalIdeogramV4p5Request,
+  FalIdeogramV4p5EditRequest,
+  FalIdeogramV4p5EditResponse,
+  FalXaiGrokImagineVideoV1p5LiteImageToVideoRequest,
+  FalXaiGrokImagineVideoV1p5LiteImageToVideoResponse,
+  FalFlux3TextToImageRequest,
+  FalFlux3TextToImageResponse,
+  FalFlux3EditImageRequest,
+  FalFlux3EditImageResponse,
+  FalMinimaxH3MaxRecastRequest,
+  FalMinimaxH3MaxRecastResponse,
+  FalXaiGrokImagineVideoV1p5LiteTextToVideoRequest,
+  FalXaiGrokImagineVideoV1p5LiteTextToVideoResponse,
+  FalMinimaxH3MaxTurboExtendVideoRequest,
+  FalMinimaxH3MaxTurboExtendVideoResponse,
   ApicitySchema,
   FalOptions,
   FalProvider,
@@ -202,6 +250,23 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalBriaFiboEdit1p5VirtualTryOnRequestSchema,
+  FalGoogleLyria3p5RequestSchema,
+  FalMeshyV7p1MultiImageTo3dRequestSchema,
+  FalMeshyV7p1ImageTo3dRequestSchema,
+  FalMeshyV7p1TextTo3dRequestSchema,
+  FalRecraftV4p1FlashTextToImageRequestSchema,
+  FalTripo3dP2ImageTo3dRequestSchema,
+  FalTripo3dP2TextTo3dRequestSchema,
+  FalBytedanceSeedreamV5FlashTextToImageRequestSchema,
+  FalBytedanceSeedreamV5FlashEditRequestSchema,
+  FalBytedanceSeedreamV5FlashLayerizeRequestSchema,
+  FalGoogleGemini3p8FlashLiteTtsRequestSchema,
+  FalGoogleGemini3p8FlashTtsRequestSchema,
+  FalElevenlabsTtsElevenV4RequestSchema,
+  FalElevenlabsTtsElevenV4TurboRequestSchema,
+  FalMinimaxH3MaxInsertVideoRequestSchema,
+  FalIdeogramV4p5RequestSchema,
   FalPricingEstimateRequestSchema,
   FalDeletePayloadsRequestSchema,
   FalQueueSubmitRequestSchema,
@@ -259,6 +324,13 @@ import {
   FalFlux3ImageToVideoRequestSchema,
   FalFlux3FirstLastFrameToVideoRequestSchema,
   FalFlux3KeyframesToVideoRequestSchema,
+  FalMinimaxH3MaxTurboExtendVideoRequestSchema,
+  FalXaiGrokImagineVideoV1p5LiteImageToVideoRequestSchema,
+  FalXaiGrokImagineVideoV1p5LiteTextToVideoRequestSchema,
+  FalMinimaxH3MaxRecastRequestSchema,
+  FalFlux3EditImageRequestSchema,
+  FalFlux3TextToImageRequestSchema,
+  FalIdeogramV4p5EditRequestSchema,
   FalFlux3ExtendVideoRequestSchema,
   FalFluxVideoUpscaleRequestSchema,
   FalXaiGrokImagineImageRequestSchema,
@@ -930,6 +1002,84 @@ export function createFal(opts: FalOptions): FalProvider {
     "POST",
     "/blackforestlabs/flux-3/keyframes-to-video",
     FalFlux3KeyframesToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // POST https://fal.run/ideogram/v4.5/edit
+  // Docs: https://fal.ai/models/ideogram/v4.5/edit/api
+  const ideogramV4p5Edit = jsonBody<
+    FalIdeogramV4p5EditRequest,
+    FalIdeogramV4p5EditResponse
+  >("POST", "/ideogram/v4.5/edit", FalIdeogramV4p5EditRequestSchema, {
+    base: runBaseURL,
+  });
+
+  // POST https://fal.run/xai/grok-imagine-video/v1.5/lite/image-to-video
+  // Docs: https://fal.ai/models/xai/grok-imagine-video/v1.5/lite/image-to-video/api
+  const xaiGrokImagineVideoV1p5LiteImageToVideo = jsonBody<
+    FalXaiGrokImagineVideoV1p5LiteImageToVideoRequest,
+    FalXaiGrokImagineVideoV1p5LiteImageToVideoResponse
+  >(
+    "POST",
+    "/xai/grok-imagine-video/v1.5/lite/image-to-video",
+    FalXaiGrokImagineVideoV1p5LiteImageToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // POST https://fal.run/xai/grok-imagine-video/v1.5/lite/text-to-video
+  // Docs: https://fal.ai/models/xai/grok-imagine-video/v1.5/lite/text-to-video/api
+  const xaiGrokImagineVideoV1p5LiteTextToVideo = jsonBody<
+    FalXaiGrokImagineVideoV1p5LiteTextToVideoRequest,
+    FalXaiGrokImagineVideoV1p5LiteTextToVideoResponse
+  >(
+    "POST",
+    "/xai/grok-imagine-video/v1.5/lite/text-to-video",
+    FalXaiGrokImagineVideoV1p5LiteTextToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // POST https://fal.run/minimax/h3-max/recast
+  // Docs: https://fal.ai/models/minimax/h3-max/recast/api
+  const minimaxH3MaxRecast = jsonBody<
+    FalMinimaxH3MaxRecastRequest,
+    FalMinimaxH3MaxRecastResponse
+  >("POST", "/minimax/h3-max/recast", FalMinimaxH3MaxRecastRequestSchema, {
+    base: runBaseURL,
+  });
+
+  // POST https://fal.run/blackforestlabs/flux-3/edit-image
+  // Docs: https://fal.ai/models/blackforestlabs/flux-3/edit-image/api
+  const blackforestlabsFlux3EditImage = jsonBody<
+    FalFlux3EditImageRequest,
+    FalFlux3EditImageResponse
+  >(
+    "POST",
+    "/blackforestlabs/flux-3/edit-image",
+    FalFlux3EditImageRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // POST https://fal.run/blackforestlabs/flux-3/text-to-image
+  // Docs: https://fal.ai/models/blackforestlabs/flux-3/text-to-image/api
+  const blackforestlabsFlux3TextToImage = jsonBody<
+    FalFlux3TextToImageRequest,
+    FalFlux3TextToImageResponse
+  >(
+    "POST",
+    "/blackforestlabs/flux-3/text-to-image",
+    FalFlux3TextToImageRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // POST https://fal.run/minimax/h3-max-turbo/extend-video
+  // Docs: https://fal.ai/models/minimax/h3-max-turbo/extend-video/api
+  const minimaxH3MaxTurboExtendVideo = jsonBody<
+    FalMinimaxH3MaxTurboExtendVideoRequest,
+    FalMinimaxH3MaxTurboExtendVideoResponse
+  >(
+    "POST",
+    "/minimax/h3-max-turbo/extend-video",
+    FalMinimaxH3MaxTurboExtendVideoRequestSchema,
     { base: runBaseURL }
   );
 
@@ -1930,7 +2080,237 @@ export function createFal(opts: FalOptions): FalProvider {
     },
   };
 
+  // POST https://fal.run/ideogram/v4.5
+  // Docs: https://fal.ai/models/ideogram/v4.5/api
+  const ideogramV4p5 = jsonBody<
+    FalIdeogramV4p5Request,
+    FalIdeogramV4p5Response
+  >("POST", "/ideogram/v4.5", FalIdeogramV4p5RequestSchema, {
+    base: runBaseURL,
+  });
+
+  // POST https://fal.run/minimax/h3-max/insert-video
+  // Docs: https://fal.ai/models/minimax/h3-max/insert-video/api
+  const minimaxH3MaxInsertVideo = jsonBody<
+    FalMinimaxH3MaxInsertVideoRequest,
+    FalMinimaxH3MaxInsertVideoResponse
+  >(
+    "POST",
+    "/minimax/h3-max/insert-video",
+    FalMinimaxH3MaxInsertVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // POST https://fal.run/elevenlabs/tts/eleven-v4-turbo
+  // Docs: https://fal.ai/models/elevenlabs/tts/eleven-v4-turbo/api
+  const elevenlabsTtsElevenV4Turbo = jsonBody<
+    FalElevenlabsTtsElevenV4TurboRequest,
+    FalElevenlabsTtsElevenV4TurboResponse
+  >(
+    "POST",
+    "/elevenlabs/tts/eleven-v4-turbo",
+    FalElevenlabsTtsElevenV4TurboRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // POST https://fal.run/elevenlabs/tts/eleven-v4
+  // Docs: https://fal.ai/models/elevenlabs/tts/eleven-v4/api
+  const elevenlabsTtsElevenV4 = jsonBody<
+    FalElevenlabsTtsElevenV4Request,
+    FalElevenlabsTtsElevenV4Response
+  >(
+    "POST",
+    "/elevenlabs/tts/eleven-v4",
+    FalElevenlabsTtsElevenV4RequestSchema,
+    { base: runBaseURL }
+  );
+
+  // POST https://fal.run/google/gemini-3.8-flash-tts
+  // Docs: https://fal.ai/models/google/gemini-3.8-flash-tts/api
+  const googleGemini3p8FlashTts = jsonBody<
+    FalGoogleGemini3p8FlashTtsRequest,
+    FalGoogleGemini3p8FlashTtsResponse
+  >(
+    "POST",
+    "/google/gemini-3.8-flash-tts",
+    FalGoogleGemini3p8FlashTtsRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // POST https://fal.run/google/gemini-3.8-flash-lite-tts
+  // Docs: https://fal.ai/models/google/gemini-3.8-flash-lite-tts/api
+  const googleGemini3p8FlashLiteTts = jsonBody<
+    FalGoogleGemini3p8FlashLiteTtsRequest,
+    FalGoogleGemini3p8FlashLiteTtsResponse
+  >(
+    "POST",
+    "/google/gemini-3.8-flash-lite-tts",
+    FalGoogleGemini3p8FlashLiteTtsRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // POST https://fal.run/bytedance/seedream/v5/flash/layerize
+  // Docs: https://fal.ai/models/bytedance/seedream/v5/flash/layerize/api
+  const bytedanceSeedreamV5FlashLayerize = jsonBody<
+    FalBytedanceSeedreamV5FlashLayerizeRequest,
+    FalBytedanceSeedreamV5FlashLayerizeResponse
+  >(
+    "POST",
+    "/bytedance/seedream/v5/flash/layerize",
+    FalBytedanceSeedreamV5FlashLayerizeRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // POST https://fal.run/bytedance/seedream/v5/flash/edit
+  // Docs: https://fal.ai/models/bytedance/seedream/v5/flash/edit/api
+  const bytedanceSeedreamV5FlashEdit = jsonBody<
+    FalBytedanceSeedreamV5FlashEditRequest,
+    FalBytedanceSeedreamV5FlashEditResponse
+  >(
+    "POST",
+    "/bytedance/seedream/v5/flash/edit",
+    FalBytedanceSeedreamV5FlashEditRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // POST https://fal.run/bytedance/seedream/v5/flash/text-to-image
+  // Docs: https://fal.ai/models/bytedance/seedream/v5/flash/text-to-image/api
+  const bytedanceSeedreamV5FlashTextToImage = jsonBody<
+    FalBytedanceSeedreamV5FlashTextToImageRequest,
+    FalBytedanceSeedreamV5FlashTextToImageResponse
+  >(
+    "POST",
+    "/bytedance/seedream/v5/flash/text-to-image",
+    FalBytedanceSeedreamV5FlashTextToImageRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // POST https://fal.run/tripo3d/p2/text-to-3d
+  // Docs: https://fal.ai/models/tripo3d/p2/text-to-3d/api
+  const tripo3dP2TextTo3d = jsonBody<
+    FalTripo3dP2TextTo3dRequest,
+    FalTripo3dP2TextTo3dResponse
+  >("POST", "/tripo3d/p2/text-to-3d", FalTripo3dP2TextTo3dRequestSchema, {
+    base: runBaseURL,
+  });
+
+  // POST https://fal.run/tripo3d/p2/image-to-3d
+  // Docs: https://fal.ai/models/tripo3d/p2/image-to-3d/api
+  const tripo3dP2ImageTo3d = jsonBody<
+    FalTripo3dP2ImageTo3dRequest,
+    FalTripo3dP2ImageTo3dResponse
+  >("POST", "/tripo3d/p2/image-to-3d", FalTripo3dP2ImageTo3dRequestSchema, {
+    base: runBaseURL,
+  });
+
+  // POST https://fal.run/recraft/v4.1/flash/text-to-image
+  // Docs: https://fal.ai/models/recraft/v4.1/flash/text-to-image/api
+  const recraftV4p1FlashTextToImage = jsonBody<
+    FalRecraftV4p1FlashTextToImageRequest,
+    FalRecraftV4p1FlashTextToImageResponse
+  >(
+    "POST",
+    "/recraft/v4.1/flash/text-to-image",
+    FalRecraftV4p1FlashTextToImageRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // POST https://fal.run/meshy/v7.1/text-to-3d
+  // Docs: https://fal.ai/models/meshy/v7.1/text-to-3d/api
+  const meshyV7p1TextTo3d = jsonBody<
+    FalMeshyV7p1TextTo3dRequest,
+    FalMeshyV7p1TextTo3dResponse
+  >("POST", "/meshy/v7.1/text-to-3d", FalMeshyV7p1TextTo3dRequestSchema, {
+    base: runBaseURL,
+  });
+
+  // POST https://fal.run/meshy/v7.1/image-to-3d
+  // Docs: https://fal.ai/models/meshy/v7.1/image-to-3d/api
+  const meshyV7p1ImageTo3d = jsonBody<
+    FalMeshyV7p1ImageTo3dRequest,
+    FalMeshyV7p1ImageTo3dResponse
+  >("POST", "/meshy/v7.1/image-to-3d", FalMeshyV7p1ImageTo3dRequestSchema, {
+    base: runBaseURL,
+  });
+
+  // POST https://fal.run/meshy/v7.1/multi-image-to-3d
+  // Docs: https://fal.ai/models/meshy/v7.1/multi-image-to-3d/api
+  const meshyV7p1MultiImageTo3d = jsonBody<
+    FalMeshyV7p1MultiImageTo3dRequest,
+    FalMeshyV7p1MultiImageTo3dResponse
+  >(
+    "POST",
+    "/meshy/v7.1/multi-image-to-3d",
+    FalMeshyV7p1MultiImageTo3dRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // POST https://fal.run/google/lyria-3.5
+  // Docs: https://fal.ai/models/google/lyria-3.5/api
+  const googleLyria3p5 = jsonBody<
+    FalGoogleLyria3p5Request,
+    FalGoogleLyria3p5Response
+  >("POST", "/google/lyria-3.5", FalGoogleLyria3p5RequestSchema, {
+    base: runBaseURL,
+  });
+
+  // POST https://fal.run/bria/fibo-edit-1.5/virtual-try-on
+  // Docs: https://fal.ai/models/bria/fibo-edit-1.5/virtual-try-on/api
+  const briaFiboEdit1p5VirtualTryOn = jsonBody<
+    FalBriaFiboEdit1p5VirtualTryOnRequest,
+    FalBriaFiboEdit1p5VirtualTryOnResponse
+  >(
+    "POST",
+    "/bria/fibo-edit-1.5/virtual-try-on",
+    FalBriaFiboEdit1p5VirtualTryOnRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
+    // POST https://fal.run/bria/fibo-edit-1.5/virtual-try-on
+    // Docs: https://fal.ai/models/bria/fibo-edit-1.5/virtual-try-on/api
+    bria: { fiboEdit1p5: { virtualTryOn: briaFiboEdit1p5VirtualTryOn } },
+    // POST https://fal.run/recraft/v4.1/flash/text-to-image
+    // Docs: https://fal.ai/models/recraft/v4.1/flash/text-to-image/api
+    recraft: { v4p1: { flash: { textToImage: recraftV4p1FlashTextToImage } } },
+    // POST https://fal.run/tripo3d/p2/text-to-3d
+    // Docs: https://fal.ai/models/tripo3d/p2/text-to-3d/api
+    tripo3d: {
+      p2: {
+        // POST https://fal.run/tripo3d/p2/image-to-3d
+        // Docs: https://fal.ai/models/tripo3d/p2/image-to-3d/api
+        imageTo3d: tripo3dP2ImageTo3d,
+        textTo3d: tripo3dP2TextTo3d,
+      },
+    },
+    // POST https://fal.run/google/gemini-3.8-flash-tts
+    // Docs: https://fal.ai/models/google/gemini-3.8-flash-tts/api
+    google: {
+      // POST https://fal.run/google/lyria-3.5
+      // Docs: https://fal.ai/models/google/lyria-3.5/api
+      lyria3p5: googleLyria3p5,
+      // POST https://fal.run/google/gemini-3.8-flash-lite-tts
+      // Docs: https://fal.ai/models/google/gemini-3.8-flash-lite-tts/api
+      gemini3p8FlashLiteTts: googleGemini3p8FlashLiteTts,
+      gemini3p8FlashTts: googleGemini3p8FlashTts,
+    },
+    // POST https://fal.run/elevenlabs/tts/eleven-v4-turbo
+    // Docs: https://fal.ai/models/elevenlabs/tts/eleven-v4-turbo/api
+    elevenlabs: {
+      tts: {
+        // POST https://fal.run/elevenlabs/tts/eleven-v4
+        // Docs: https://fal.ai/models/elevenlabs/tts/eleven-v4/api
+        elevenV4: elevenlabsTtsElevenV4,
+        elevenV4Turbo: elevenlabsTtsElevenV4Turbo,
+      },
+    },
+    ideogram: {
+      v4p5: Object.assign(ideogramV4p5, {
+        // POST https://fal.run/ideogram/v4.5/edit
+        // Docs: https://fal.ai/models/ideogram/v4.5/edit/api
+        edit: ideogramV4p5Edit,
+      }),
+    },
     alibaba: {
       wan3p0: {
         textToVideo: alibabaWan3p0TextToVideo,
@@ -1949,6 +2329,12 @@ export function createFal(opts: FalOptions): FalProvider {
     },
     blackforestlabs: {
       flux3: {
+        // POST https://fal.run/blackforestlabs/flux-3/text-to-image
+        // Docs: https://fal.ai/models/blackforestlabs/flux-3/text-to-image/api
+        textToImage: blackforestlabsFlux3TextToImage,
+        // POST https://fal.run/blackforestlabs/flux-3/edit-image
+        // Docs: https://fal.ai/models/blackforestlabs/flux-3/edit-image/api
+        editImage: blackforestlabsFlux3EditImage,
         extendVideo: blackforestlabsFlux3ExtendVideo,
         firstLastFrameToVideo: blackforestlabsFlux3FirstLastFrameToVideo,
         imageToVideo: blackforestlabsFlux3ImageToVideo,
@@ -1980,6 +2366,17 @@ export function createFal(opts: FalOptions): FalProvider {
       },
       seedream: {
         v5: {
+          // POST https://fal.run/bytedance/seedream/v5/flash/layerize
+          // Docs: https://fal.ai/models/bytedance/seedream/v5/flash/layerize/api
+          flash: {
+            // POST https://fal.run/bytedance/seedream/v5/flash/text-to-image
+            // Docs: https://fal.ai/models/bytedance/seedream/v5/flash/text-to-image/api
+            textToImage: bytedanceSeedreamV5FlashTextToImage,
+            // POST https://fal.run/bytedance/seedream/v5/flash/edit
+            // Docs: https://fal.ai/models/bytedance/seedream/v5/flash/edit/api
+            edit: bytedanceSeedreamV5FlashEdit,
+            layerize: bytedanceSeedreamV5FlashLayerize,
+          },
           lite: {
             edit: seedreamV5LiteEdit,
             textToImage: seedreamV5LiteTextToImage,
@@ -1993,6 +2390,19 @@ export function createFal(opts: FalOptions): FalProvider {
       },
     },
     minimax: {
+      h3Max: {
+        // POST https://fal.run/minimax/h3-max/insert-video
+        // Docs: https://fal.ai/models/minimax/h3-max/insert-video/api
+        insertVideo: minimaxH3MaxInsertVideo,
+        // POST https://fal.run/minimax/h3-max/recast
+        // Docs: https://fal.ai/models/minimax/h3-max/recast/api
+        recast: minimaxH3MaxRecast,
+      },
+      h3MaxTurbo: {
+        // POST https://fal.run/minimax/h3-max-turbo/extend-video
+        // Docs: https://fal.ai/models/minimax/h3-max-turbo/extend-video/api
+        extendVideo: minimaxH3MaxTurboExtendVideo,
+      },
       h3: {
         textToVideo: minimaxH3TextToVideo,
         imageToVideo: minimaxH3ImageToVideo,
@@ -2047,6 +2457,17 @@ export function createFal(opts: FalOptions): FalProvider {
       },
     },
     meshy: {
+      // POST https://fal.run/meshy/v7.1/text-to-3d
+      // Docs: https://fal.ai/models/meshy/v7.1/text-to-3d/api
+      v7p1: {
+        // POST https://fal.run/meshy/v7.1/multi-image-to-3d
+        // Docs: https://fal.ai/models/meshy/v7.1/multi-image-to-3d/api
+        multiImageTo3d: meshyV7p1MultiImageTo3d,
+        // POST https://fal.run/meshy/v7.1/image-to-3d
+        // Docs: https://fal.ai/models/meshy/v7.1/image-to-3d/api
+        imageTo3d: meshyV7p1ImageTo3d,
+        textTo3d: meshyV7p1TextTo3d,
+      },
       v7: {
         imageTo3d: meshyV7ImageTo3d,
       },
@@ -2102,6 +2523,14 @@ export function createFal(opts: FalOptions): FalProvider {
         extendVideo: xaiGrokImagineVideoExtendVideo,
         editVideo: xaiGrokImagineVideoEditVideo,
         v1p5: {
+          lite: {
+            // POST https://fal.run/xai/grok-imagine-video/v1.5/lite/image-to-video
+            // Docs: https://fal.ai/models/xai/grok-imagine-video/v1.5/lite/image-to-video/api
+            imageToVideo: xaiGrokImagineVideoV1p5LiteImageToVideo,
+            // POST https://fal.run/xai/grok-imagine-video/v1.5/lite/text-to-video
+            // Docs: https://fal.ai/models/xai/grok-imagine-video/v1.5/lite/text-to-video/api
+            textToVideo: xaiGrokImagineVideoV1p5LiteTextToVideo,
+          },
           referenceToVideo: xaiGrokImagineVideoV1p5ReferenceToVideo,
         },
       },

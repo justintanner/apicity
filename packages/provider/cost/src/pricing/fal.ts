@@ -649,12 +649,131 @@ const gptImagePerImage = (
 //     bucket, against a page rate that predicts USD 0.39 per call. An
 //     identical payload that bills a different amount twice running is not
 //     payload-derivable at all.
+// FLUX 3 image generation/editing: official metadata bills megapixels, while the request
+// carries resolution tiers and can infer aspect ratio from a remote image.
+// The 2026-10-05 page publishes a 1K promotional example but no complete tier
+// grid or billable-dimension mapping. Use fal's pricing API; do not invent it.
+// https://fal.ai/models/blackforestlabs/flux-3/edit-image
+// https://fal.ai/models/blackforestlabs/flux-3/text-to-image
+
+// Gemini TTS bills spoken text only: single-speaker `prompt`, or each
+// dialogue turn's `text`. Style instructions and speaker aliases are
+// excluded. Missing spoken text returns undefined so the estimate warns.
+function spokenCharacters(p: Record<string, unknown>): number | undefined {
+  const prompt = asString(p.prompt);
+  const turns = Array.isArray(p.turns) ? p.turns : undefined;
+  if (prompt === undefined && turns === undefined) return undefined;
+  let count = prompt?.length ?? 0;
+  for (const turn of turns ?? []) {
+    const text = asString(asObject(turn)?.text);
+    if (text !== undefined) count += text.length;
+  }
+  return count;
+}
+
+const perSpokenCharacter = (
+  endpointId: string,
+  usd: number,
+  on: string
+): ModelPricing => ({
+  kind: "perUnit",
+  unit: "characters",
+  units: spokenCharacters,
+  select: [],
+  rates: { "": usd },
+  source: source(endpointId, on),
+});
+
+// Bills each returned image when the request cannot say how many images
+// will come back. Callers pass that count through costHints.outputImages.
+// A missing or non-positive count fails closed instead of assuming 1.
+function hintedOutputImages(
+  _p: Record<string, unknown>,
+  hints?: CostHints
+): number | undefined {
+  const count = hints?.outputImages;
+  return typeof count === "number" && Number.isInteger(count) && count > 0
+    ? count
+    : undefined;
+}
+
+const perOutputImage = (
+  endpointId: string,
+  usd: number,
+  on: string
+): ModelPricing => ({
+  kind: "perUnit",
+  unit: "images",
+  units: hintedOutputImages,
+  warn: (_payload, hints) =>
+    hintedOutputImages(_payload, hints) === undefined
+      ? [
+          `${endpointId} bills each returned image; pass a positive integer costHints.outputImages.`,
+        ]
+      : [],
+  select: [],
+  rates: { "": usd },
+  source: source(endpointId, on),
+});
+
+// Tripo P2 bills one generated model. Untextured (texture and pbr both
+// false) is $1.00. Otherwise the texture_quality rate applies, and pbr
+// turns textures on. Quad topology does not add a charge. An unknown
+// quality selects no rate.
+function tripoP2Tier(p: Record<string, unknown>): string {
+  const texture = p.texture === undefined ? true : p.texture === true;
+  const pbr = p.pbr === undefined ? true : p.pbr === true;
+  if (!texture && !pbr) return "none";
+  return asString(p.texture_quality) ?? "standard";
+}
+
+const tripoP2 = (endpointId: string, on: string): ModelPricing => ({
+  kind: "perUnit",
+  unit: "generations",
+  units: () => 1,
+  select: [{ name: "texture", pick: tripoP2Tier }],
+  rates: { none: 1, fast: 1.1, standard: 1.1, detailed: 1.2, extreme: 1.3 },
+  source: source(endpointId, on),
+});
+
+// Meshy 7.1 bills one model. preview is the untextured $0.80 base and full
+// is the textured $1.20 total. Auto-rigging adds $0.20 and animation adds
+// $0.12. An unknown mode selects no rate.
+const meshyV71 = (endpointId: string, on: string): ModelPricing => ({
+  kind: "perUnit",
+  unit: "generations",
+  units: () => 1,
+  select: [
+    {
+      name: "mode",
+      pick: (p) => {
+        // text-to-3d uses mode; image endpoints use should_texture.
+        if (p.mode === "preview" || p.should_texture === false)
+          return "preview";
+        const mode = asString(p.mode);
+        if (mode !== undefined && mode !== "full") return mode;
+        return "full";
+      },
+    },
+  ],
+  rates: { preview: 0.8, full: 1.2 },
+  extra: (p) => {
+    let usd = 0;
+    if (p.enable_rigging === true) usd += 0.2;
+    if (p.enable_animation === true) usd += 0.12;
+    return usd;
+  },
+  source: source(endpointId, on),
+});
+
 export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "alibaba/qwen-image-3/edit",
   "alibaba/qwen-image-3/text-to-image",
   "alibaba/wan-3.0/image-to-video",
   "alibaba/wan-3.0/reference-to-video",
   "alibaba/wan-3.0/text-to-video",
+  "blackforestlabs/flux-3/edit-image",
+  "blackforestlabs/flux-3/text-to-image",
   "blackforestlabs/flux-video-upscale",
   "bytedance/seedream/v5/pro/edit",
   "bytedance/seedream/v5/pro/layerize",
@@ -668,6 +787,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "lightricks/ltx-2.5/image-to-video/fast",
   "lightricks/ltx-2.5/image-to-video/pro",
   "meshy/v7/image-to-3d",
+  "minimax/h3-max/insert-video",
   "minimax/h3/image-to-video",
   "minimax/h3/reference-to-video",
   "minimax/h3/text-to-video",
@@ -680,6 +800,100 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  "bria/fibo-edit-1.5/virtual-try-on": perImage(
+    "bria/fibo-edit-1.5/virtual-try-on",
+    0.04,
+    "2026-10-05"
+  ),
+
+  "google/lyria-3.5": {
+    kind: "perUnit",
+    unit: "generations",
+    units: () => 1,
+    select: [],
+    rates: { "": 0.1 },
+    source: source("google/lyria-3.5", "2026-10-05"),
+  },
+
+  "meshy/v7.1/multi-image-to-3d": meshyV71(
+    "meshy/v7.1/multi-image-to-3d",
+    "2026-10-05"
+  ),
+
+  "meshy/v7.1/image-to-3d": meshyV71("meshy/v7.1/image-to-3d", "2026-10-05"),
+
+  "meshy/v7.1/text-to-3d": meshyV71("meshy/v7.1/text-to-3d", "2026-10-05"),
+
+  "recraft/v4.1/flash/text-to-image": perImage(
+    "recraft/v4.1/flash/text-to-image",
+    0.007,
+    "2026-10-05"
+  ),
+
+  "tripo3d/p2/image-to-3d": tripoP2("tripo3d/p2/image-to-3d", "2026-10-05"),
+
+  "tripo3d/p2/text-to-3d": tripoP2("tripo3d/p2/text-to-3d", "2026-10-05"),
+
+  "bytedance/seedream/v5/flash/text-to-image": perImage(
+    "bytedance/seedream/v5/flash/text-to-image",
+    0.027,
+    "2026-10-05"
+  ),
+
+  "bytedance/seedream/v5/flash/edit": perImage(
+    "bytedance/seedream/v5/flash/edit",
+    0.027,
+    "2026-10-05"
+  ),
+
+  "bytedance/seedream/v5/flash/layerize": perOutputImage(
+    "bytedance/seedream/v5/flash/layerize",
+    0.027,
+    "2026-10-05"
+  ),
+
+  "google/gemini-3.8-flash-lite-tts": perSpokenCharacter(
+    "google/gemini-3.8-flash-lite-tts",
+    3e-5,
+    "2026-10-05"
+  ),
+
+  "google/gemini-3.8-flash-tts": perSpokenCharacter(
+    "google/gemini-3.8-flash-tts",
+    4.5e-5,
+    "2026-10-05"
+  ),
+
+  "elevenlabs/tts/eleven-v4": perCharacter(
+    "elevenlabs/tts/eleven-v4",
+    8e-5,
+    "2026-10-05"
+  ),
+
+  "elevenlabs/tts/eleven-v4-turbo": perCharacter(
+    "elevenlabs/tts/eleven-v4-turbo",
+    4e-5,
+    "2026-10-05"
+  ),
+
+  "ideogram/v4.5": {
+    kind: "perUnit",
+    unit: "images",
+    units: imageCount,
+    select: [{ name: "quality", pick: (p) => asString(p.quality) ?? "medium" }],
+    rates: { low: 0.03, medium: 0.06, high: 0.22 },
+    source: source("ideogram/v4.5", "2026-10-05"),
+  },
+
+  "ideogram/v4.5/edit": {
+    kind: "perUnit",
+    unit: "images",
+    units: imageCount,
+    select: [{ name: "quality", pick: (p) => asString(p.quality) ?? "medium" }],
+    rates: { very_low: 0.008, low: 0.03, medium: 0.06, high: 0.22 },
+    source: source("ideogram/v4.5/edit", "2026-10-05"),
+  },
+
   // Audio — Seed Speech bills $0.03 per 1,000 input characters. Store the
   // page rate once as $0.00003/character; the request's literal text length is
   // an exact, payload-derivable unit count.
@@ -854,6 +1068,43 @@ export const fal: Record<string, ModelPricing> = {
   ),
 
   // Video — FLUX 3 (Black Forest Labs), resolution-tiered per output second
+  // Requested continuation seconds only; source duration is not billed.
+  "minimax/h3-max-turbo/extend-video": perSecondTiered(
+    "minimax/h3-max-turbo/extend-video",
+    [resolutionTier("768P")],
+    { "480P": 0.025, "768P": 0.04, "1080P": 0.08, "2K": 0.16 },
+    (p) => (p.duration === undefined ? 5 : asNumber(p.duration)),
+    "2026-10-05"
+  ),
+  // One input image adds $0.01 per request, independently of output duration.
+  "xai/grok-imagine-video/v1.5/lite/image-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: (p) => (p.duration === undefined ? 6 : asNumber(p.duration)),
+    select: [resolutionTier("720p")],
+    rates: { "480p": 0.02, "720p": 0.03, "1080p": 0.14 },
+    extra: () => 0.01,
+    source: source(
+      "xai/grok-imagine-video/v1.5/lite/image-to-video",
+      "2026-10-05"
+    ),
+  },
+  "xai/grok-imagine-video/v1.5/lite/text-to-video": perSecondTiered(
+    "xai/grok-imagine-video/v1.5/lite/text-to-video",
+    [resolutionTier("720p")],
+    { "480p": 0.02, "720p": 0.03, "1080p": 0.14 },
+    (p) => (p.duration === undefined ? 6 : asNumber(p.duration)),
+    "2026-10-05"
+  ),
+  // Output duration is not in the request; require costHints.durationSeconds.
+  // Reference images are included without an additional charge.
+  "minimax/h3-max/recast": perSecondTiered(
+    "minimax/h3-max/recast",
+    [resolutionTier("1080P")],
+    { "768P": 0.3, "1080P": 0.45 },
+    hintedSeconds,
+    "2026-10-05"
+  ),
   "blackforestlabs/flux-3/extend-video": perSecondTiered(
     "blackforestlabs/flux-3/extend-video",
     [resolutionTier("720p")],

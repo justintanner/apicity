@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalFlux3EditImageRequest,
+  FalFlux3EditImageRequestInput,
+  FalFlux3EditImageParsedRequest,
   FalMinimaxH3MaxRecastRequest,
   FalMinimaxH3MaxRecastRequestInput,
   FalMinimaxH3MaxRecastParsedRequest,
@@ -371,6 +374,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalFlux3EditImageRequest,
   FalMinimaxH3MaxRecastRequest,
   FalXaiGrokImagineVideoV1p5LiteTextToVideoRequest,
   FalMinimaxH3MaxTurboExtendVideoRequest,
@@ -3062,4 +3066,23 @@ export interface FalRunMinimaxH3MaxNamespace {
 }
 export interface FalRunMinimaxNamespace {
   h3Max: FalRunMinimaxH3MaxNamespace;
+}
+
+export interface FalFlux3EditImageResponse {
+  images: Array<{
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+  }>;
+}
+export interface FalRunFlux3Namespace {
+  editImage: ((
+    params: FalFlux3EditImageRequest,
+    signal?: AbortSignal
+  ) => Promise<FalFlux3EditImageResponse>) & {
+    schema: ApicitySchema<FalFlux3EditImageRequest>;
+  };
 }

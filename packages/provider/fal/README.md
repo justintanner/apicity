@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-103 endpoints across 27 groups. Each method mirrors an upstream URL path.
+104 endpoints across 27 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -262,6 +262,23 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 </details>
 
 ### blackforestlabs
+
+<details>
+<summary><code>POST</code> <b><code>fal.blackforestlabs.flux3.editImage</code></b></summary>
+
+<code>POST https://fal.run/blackforestlabs/flux-3/edit-image</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/blackforestlabs/flux-3/edit-image/api)
+
+```typescript
+const res = await fal.run.blackforestlabs.flux3.editImage({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>fal.blackforestlabs.flux3.extendVideo</code></b></summary>

@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added FLUX 3 image editing with 1–10 references, complete output controls,
+  typed schema/response, queue registration, and dynamic pricing discovery.
+
 - Added MiniMax H3 Max Recast with strict request metadata, typed response,
   queue registry support, and output-duration pricing using cost hints.
 

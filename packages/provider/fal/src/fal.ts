@@ -1,4 +1,6 @@
 import {
+  FalFlux3EditImageRequest,
+  FalFlux3EditImageResponse,
   FalMinimaxH3MaxRecastRequest,
   FalMinimaxH3MaxRecastResponse,
   FalXaiGrokImagineVideoV1p5LiteTextToVideoRequest,
@@ -268,6 +270,7 @@ import {
   FalMinimaxH3MaxTurboExtendVideoRequestSchema,
   FalXaiGrokImagineVideoV1p5LiteTextToVideoRequestSchema,
   FalMinimaxH3MaxRecastRequestSchema,
+  FalFlux3EditImageRequestSchema,
   FalFlux3ExtendVideoRequestSchema,
   FalFluxVideoUpscaleRequestSchema,
   FalXaiGrokImagineImageRequestSchema,
@@ -962,6 +965,18 @@ export function createFal(opts: FalOptions): FalProvider {
   >("POST", "/minimax/h3-max/recast", FalMinimaxH3MaxRecastRequestSchema, {
     base: runBaseURL,
   });
+
+  // POST https://fal.run/blackforestlabs/flux-3/edit-image
+  // Docs: https://fal.ai/models/blackforestlabs/flux-3/edit-image/api
+  const blackforestlabsFlux3EditImage = jsonBody<
+    FalFlux3EditImageRequest,
+    FalFlux3EditImageResponse
+  >(
+    "POST",
+    "/blackforestlabs/flux-3/edit-image",
+    FalFlux3EditImageRequestSchema,
+    { base: runBaseURL }
+  );
 
   // POST https://fal.run/minimax/h3-max-turbo/extend-video
   // Docs: https://fal.ai/models/minimax/h3-max-turbo/extend-video/api
@@ -1991,6 +2006,9 @@ export function createFal(opts: FalOptions): FalProvider {
     },
     blackforestlabs: {
       flux3: {
+        // POST https://fal.run/blackforestlabs/flux-3/edit-image
+        // Docs: https://fal.ai/models/blackforestlabs/flux-3/edit-image/api
+        editImage: blackforestlabsFlux3EditImage,
         extendVideo: blackforestlabsFlux3ExtendVideo,
         firstLastFrameToVideo: blackforestlabsFlux3FirstLastFrameToVideo,
         imageToVideo: blackforestlabsFlux3ImageToVideo,

@@ -21,6 +21,10 @@ export type {
 
 // Export all types
 export type {
+  FalFlux3EditImageRequest,
+  FalFlux3EditImageRequestInput,
+  FalFlux3EditImageParsedRequest,
+  FalFlux3EditImageResponse,
   FalMinimaxH3MaxRecastRequest,
   FalMinimaxH3MaxRecastRequestInput,
   FalMinimaxH3MaxRecastParsedRequest,

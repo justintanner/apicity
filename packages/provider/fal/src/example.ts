@@ -167,6 +167,19 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST blackforestlabs.flux3.editImage": {
+    "source": "fal/flux-3-edit-image",
+    "payload": {
+      "prompt": "Restyle the image as a watercolor painting while preserving the composition.",
+      "image_urls": [
+        "https://storage.googleapis.com/falserverless/example_inputs/flux2_pro_edit_input.png"
+      ],
+      "resolution": "1k",
+      "aspect_ratio": "1:1"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST blackforestlabs.flux3.extendVideo": {
     "source": "fal/flux-3-extend-video",
     "payload": {

@@ -3443,7 +3443,52 @@ export type FalMinimaxH3MaxRecastParsedRequest = z.output<
   typeof FalMinimaxH3MaxRecastRequestSchema
 >;
 
+// Docs: https://fal.ai/models/blackforestlabs/flux-3/edit-image/api
+export const FalFlux3EditImageRequestSchema = z.object({
+  prompt: z.string(),
+  image_urls: z
+    .array(z.string())
+    .min(1)
+    .max(10)
+    .describe(
+      "Reference URLs or data URIs: at least 256 pixels per dimension and at most 4 MP; first image controls auto aspect ratio"
+    ),
+  aspect_ratio: z
+    .enum([
+      "auto",
+      "21:9",
+      "2:1",
+      "16:9",
+      "3:2",
+      "7:5",
+      "4:3",
+      "5:4",
+      "1:1",
+      "4:5",
+      "3:4",
+      "5:7",
+      "2:3",
+      "9:16",
+      "1:2",
+    ])
+    .default("auto"),
+  resolution: z.enum(["512sq", "768sq", "1k", "2k", "4k"]).default("1k"),
+  enable_prompt_expansion: z.boolean().default(false),
+  safety_tolerance: z.number().int().min(0).max(4).default(2),
+  output_format: z.enum(["jpeg", "png"]).default("jpeg"),
+  sync_mode: z.boolean().default(false),
+  version: z.literal("latest").default("latest"),
+});
+export type FalFlux3EditImageRequest = z.input<
+  typeof FalFlux3EditImageRequestSchema
+>;
+export type FalFlux3EditImageRequestInput = FalFlux3EditImageRequest;
+export type FalFlux3EditImageParsedRequest = z.output<
+  typeof FalFlux3EditImageRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "blackforestlabs/flux-3/edit-image": FalFlux3EditImageRequestSchema,
   "minimax/h3-max/recast": FalMinimaxH3MaxRecastRequestSchema,
   "xai/grok-imagine-video/v1.5/lite/text-to-video":
     FalXaiGrokImagineVideoV1p5LiteTextToVideoRequestSchema,

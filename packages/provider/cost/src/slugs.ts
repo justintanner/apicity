@@ -438,6 +438,7 @@ export const MODEL_SLUGS = {
     "google/virtual-try-on": "vton",
 
     // Video — FLUX 3
+    "minimax/h3-max-turbo/extend-video": "h3mte",
     "blackforestlabs/flux-3/extend-video": "flux3",
     "blackforestlabs/flux-3/first-last-frame-to-video": "flux3",
     "blackforestlabs/flux-3/image-to-video": "flux3",
@@ -860,6 +861,7 @@ export const MODEL_DISPLAY = {
     "fal-ai/gpt-image-1.5/edit": "GPT Image 1.5 Edit",
     "google/virtual-try-on": "Google Virtual Try-On",
 
+    "minimax/h3-max-turbo/extend-video": "H3 Max Turbo Extend",
     "blackforestlabs/flux-3/extend-video": "FLUX 3",
     "blackforestlabs/flux-3/first-last-frame-to-video": "FLUX 3",
     "blackforestlabs/flux-3/image-to-video": "FLUX 3",

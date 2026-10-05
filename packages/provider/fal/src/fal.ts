@@ -1,4 +1,6 @@
 import {
+  FalMinimaxH3MaxTurboExtendVideoRequest,
+  FalMinimaxH3MaxTurboExtendVideoResponse,
   ApicitySchema,
   FalOptions,
   FalProvider,
@@ -259,6 +261,7 @@ import {
   FalFlux3ImageToVideoRequestSchema,
   FalFlux3FirstLastFrameToVideoRequestSchema,
   FalFlux3KeyframesToVideoRequestSchema,
+  FalMinimaxH3MaxTurboExtendVideoRequestSchema,
   FalFlux3ExtendVideoRequestSchema,
   FalFluxVideoUpscaleRequestSchema,
   FalXaiGrokImagineImageRequestSchema,
@@ -930,6 +933,18 @@ export function createFal(opts: FalOptions): FalProvider {
     "POST",
     "/blackforestlabs/flux-3/keyframes-to-video",
     FalFlux3KeyframesToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // POST https://fal.run/minimax/h3-max-turbo/extend-video
+  // Docs: https://fal.ai/models/minimax/h3-max-turbo/extend-video/api
+  const minimaxH3MaxTurboExtendVideo = jsonBody<
+    FalMinimaxH3MaxTurboExtendVideoRequest,
+    FalMinimaxH3MaxTurboExtendVideoResponse
+  >(
+    "POST",
+    "/minimax/h3-max-turbo/extend-video",
+    FalMinimaxH3MaxTurboExtendVideoRequestSchema,
     { base: runBaseURL }
   );
 
@@ -1993,6 +2008,11 @@ export function createFal(opts: FalOptions): FalProvider {
       },
     },
     minimax: {
+      h3MaxTurbo: {
+        // POST https://fal.run/minimax/h3-max-turbo/extend-video
+        // Docs: https://fal.ai/models/minimax/h3-max-turbo/extend-video/api
+        extendVideo: minimaxH3MaxTurboExtendVideo,
+      },
       h3: {
         textToVideo: minimaxH3TextToVideo,
         imageToVideo: minimaxH3ImageToVideo,

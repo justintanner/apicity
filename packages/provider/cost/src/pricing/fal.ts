@@ -854,6 +854,14 @@ export const fal: Record<string, ModelPricing> = {
   ),
 
   // Video — FLUX 3 (Black Forest Labs), resolution-tiered per output second
+  // Requested continuation seconds only; source duration is not billed.
+  "minimax/h3-max-turbo/extend-video": perSecondTiered(
+    "minimax/h3-max-turbo/extend-video",
+    [resolutionTier("768P")],
+    { "480P": 0.025, "768P": 0.04, "1080P": 0.08, "2K": 0.16 },
+    (p) => (p.duration === undefined ? 5 : asNumber(p.duration)),
+    "2026-10-05"
+  ),
   "blackforestlabs/flux-3/extend-video": perSecondTiered(
     "blackforestlabs/flux-3/extend-video",
     [resolutionTier("720p")],

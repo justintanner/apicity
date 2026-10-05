@@ -1668,3 +1668,4 @@ zaicoding	api.coding.paas.v4.chat.completions	POST	https://api.z.ai/api/coding/p
 zaicoding	api.monitor.usage.quota.limit	GET	https://api.z.ai/api/monitor/usage/quota/limit	https://docs.z.ai/api-reference/introduction
 zaicoding	api.monitor.usage.modelUsage	GET	https://api.z.ai/api/monitor/usage/model-usage	https://docs.z.ai/api-reference/introduction
 zaicoding	api.monitor.usage.toolUsage	GET	https://api.z.ai/api/monitor/usage/tool-usage	https://docs.z.ai/api-reference/introduction
+fal	minimax.h3MaxTurbo.extendVideo	POST	https://fal.run/minimax/h3-max-turbo/extend-video	https://fal.ai/models/minimax/h3-max-turbo/extend-video/api

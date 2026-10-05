@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added MiniMax H3 Max Turbo video extension with typed request/response,
+  queue schema registration, and continuation-duration pricing by resolution.
+
 - Separate `z.input` and `z.output` request aliases for every model schema.
 - A typed endpoint-to-input map for generic queue submissions.
 

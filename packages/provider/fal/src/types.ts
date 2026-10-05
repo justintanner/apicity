@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalMinimaxH3MaxTurboExtendVideoRequest,
+  FalMinimaxH3MaxTurboExtendVideoRequestInput,
+  FalMinimaxH3MaxTurboExtendVideoParsedRequest,
   FalOptions,
   FalEstimateRequest,
   FalEstimateRequestInput,
@@ -362,6 +365,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalMinimaxH3MaxTurboExtendVideoRequest,
   FalEstimateRequest,
   FalQueueSubmitParams,
   FalQueueSubmitRequest,
@@ -2979,4 +2983,29 @@ export interface FalProvider {
   get: FalGetNamespace;
   post: FalPostNamespace;
   delete: FalDeleteNamespace;
+}
+
+export interface FalMinimaxH3MaxTurboExtendVideoResponse {
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+  duration: number;
+  seed: number;
+  source: Record<string, unknown>;
+  expanded_prompt?: string | null;
+  timings?: Record<string, number>;
+}
+export interface FalRunMinimaxH3MaxTurboNamespace {
+  extendVideo: ((
+    params: FalMinimaxH3MaxTurboExtendVideoRequest,
+    signal?: AbortSignal
+  ) => Promise<FalMinimaxH3MaxTurboExtendVideoResponse>) & {
+    schema: ApicitySchema<FalMinimaxH3MaxTurboExtendVideoRequest>;
+  };
+}
+export interface FalRunMinimaxNamespace {
+  h3MaxTurbo: FalRunMinimaxH3MaxTurboNamespace;
 }

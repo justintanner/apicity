@@ -660,6 +660,19 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST minimax.h3MaxTurbo.extendVideo": {
+    "source": "fal/minimax-h3-max-turbo-extend-video",
+    "payload": {
+      "video_url": "https://storage.googleapis.com/falserverless/example_inputs/flux-3-red-panda.mp4",
+      "prompt": "The red panda keeps walking along the log, then looks up at a bird.",
+      "duration": 1,
+      "resolution": "480P",
+      "output": "continuation",
+      "enable_prompt_expansion": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST minimax.music3": {
     "source": "fal/minimax-music-3",
     "payload": {

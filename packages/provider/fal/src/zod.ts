@@ -3355,7 +3355,51 @@ export type FalOptions = z.infer<typeof FalOptionsSchema>;
 // as endpoint_id, i.e. without the leading slash) mapped to its request schema
 // ---------------------------------------------------------------------------
 
+// Docs: https://fal.ai/models/minimax/h3-max-turbo/extend-video/api
+export const FalMinimaxH3MaxTurboExtendVideoRequestSchema = z.object({
+  video_url: z
+    .string()
+    .min(1)
+    .describe(
+      "Source video URL: 1.625–60 seconds, up to 50 MB, aspect ratio 0.4–2.5"
+    ),
+  prompt: z.string().min(1).max(50000),
+  aspect_ratio: z
+    .enum(["auto", "21:9", "16:9", "4:3", "1:1", "3:4", "9:16"])
+    .default("auto"),
+  enable_prompt_expansion: z.boolean().default(true),
+  resolution: z.enum(["480P", "768P", "1080P", "2K"]).default("768P"),
+  enable_safety_checker: z.boolean().default(true),
+  duration: z
+    .number()
+    .min(0.71)
+    .max(15)
+    .default(5)
+    .describe(
+      "Seconds of new footage; billed independently of source duration"
+    ),
+  seed: z.number().int().nullable().optional(),
+  output: z.enum(["extended", "continuation"]).default("extended"),
+  reference_audio_urls: z
+    .array(z.string())
+    .max(3)
+    .optional()
+    .describe(
+      "Audio references: each 2–15 seconds, at most 15 seconds combined"
+    ),
+});
+export type FalMinimaxH3MaxTurboExtendVideoRequest = z.input<
+  typeof FalMinimaxH3MaxTurboExtendVideoRequestSchema
+>;
+export type FalMinimaxH3MaxTurboExtendVideoRequestInput =
+  FalMinimaxH3MaxTurboExtendVideoRequest;
+export type FalMinimaxH3MaxTurboExtendVideoParsedRequest = z.output<
+  typeof FalMinimaxH3MaxTurboExtendVideoRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "minimax/h3-max-turbo/extend-video":
+    FalMinimaxH3MaxTurboExtendVideoRequestSchema,
   "alibaba/qwen-image-3/text-to-image":
     FalAlibabaQwenImage3TextToImageRequestSchema,
   "blackforestlabs/flux-3/extend-video": FalFlux3ExtendVideoRequestSchema,

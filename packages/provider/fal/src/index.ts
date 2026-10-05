@@ -21,6 +21,11 @@ export type {
 
 // Export all types
 export type {
+  FalXaiGrokImagineVideoV1p5LiteTextToVideoRequest,
+  FalXaiGrokImagineVideoV1p5LiteTextToVideoRequestInput,
+  FalXaiGrokImagineVideoV1p5LiteTextToVideoParsedRequest,
+  FalXaiGrokImagineVideoV1p5LiteTextToVideoResponse,
+  FalRunXaiGrokImagineVideoV1p5LiteNamespace,
   FalMinimaxH3MaxTurboExtendVideoRequest,
   FalMinimaxH3MaxTurboExtendVideoRequestInput,
   FalMinimaxH3MaxTurboExtendVideoParsedRequest,

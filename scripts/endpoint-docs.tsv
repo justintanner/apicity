@@ -1669,3 +1669,4 @@ zaicoding	api.monitor.usage.quota.limit	GET	https://api.z.ai/api/monitor/usage/q
 zaicoding	api.monitor.usage.modelUsage	GET	https://api.z.ai/api/monitor/usage/model-usage	https://docs.z.ai/api-reference/introduction
 zaicoding	api.monitor.usage.toolUsage	GET	https://api.z.ai/api/monitor/usage/tool-usage	https://docs.z.ai/api-reference/introduction
 fal	minimax.h3MaxTurbo.extendVideo	POST	https://fal.run/minimax/h3-max-turbo/extend-video	https://fal.ai/models/minimax/h3-max-turbo/extend-video/api
+fal	xai.grokImagineVideo.v1p5.lite.textToVideo	POST	https://fal.run/xai/grok-imagine-video/v1.5/lite/text-to-video	https://fal.ai/models/xai/grok-imagine-video/v1.5/lite/text-to-video/api

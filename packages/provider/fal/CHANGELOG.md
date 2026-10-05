@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Grok Imagine Video 1.5 Lite text-to-video with typed schema metadata,
+  queue registry support, and pricing for all three resolutions.
+
 - Added MiniMax H3 Max Turbo video extension with typed request/response,
   queue schema registration, and continuation-duration pricing by resolution.
 

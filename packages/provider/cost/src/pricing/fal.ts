@@ -862,6 +862,13 @@ export const fal: Record<string, ModelPricing> = {
     (p) => (p.duration === undefined ? 5 : asNumber(p.duration)),
     "2026-10-05"
   ),
+  "xai/grok-imagine-video/v1.5/lite/text-to-video": perSecondTiered(
+    "xai/grok-imagine-video/v1.5/lite/text-to-video",
+    [resolutionTier("720p")],
+    { "480p": 0.02, "720p": 0.03, "1080p": 0.14 },
+    (p) => (p.duration === undefined ? 6 : asNumber(p.duration)),
+    "2026-10-05"
+  ),
   "blackforestlabs/flux-3/extend-video": perSecondTiered(
     "blackforestlabs/flux-3/extend-video",
     [resolutionTier("720p")],

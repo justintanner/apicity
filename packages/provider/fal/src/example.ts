@@ -1065,6 +1065,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST xai.grokImagineVideo.v1p5.lite.textToVideo": {
+    "source": "fal/grok-15-lite-text-to-video",
+    "payload": {
+      "prompt": "A red panda waves gently at the camera in a sunlit forest. Static camera.",
+      "duration": 1,
+      "resolution": "480p",
+      "aspect_ratio": "16:9"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST xai.grokImagineVideo.v1p5.referenceToVideo": {
     "source": "fal/xai-grok-imagine-video-v1-5-reference-to-video",
     "payload": {

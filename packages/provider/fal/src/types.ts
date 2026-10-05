@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalXaiGrokImagineVideoV1p5LiteTextToVideoRequest,
+  FalXaiGrokImagineVideoV1p5LiteTextToVideoRequestInput,
+  FalXaiGrokImagineVideoV1p5LiteTextToVideoParsedRequest,
   FalMinimaxH3MaxTurboExtendVideoRequest,
   FalMinimaxH3MaxTurboExtendVideoRequestInput,
   FalMinimaxH3MaxTurboExtendVideoParsedRequest,
@@ -365,6 +368,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalXaiGrokImagineVideoV1p5LiteTextToVideoRequest,
   FalMinimaxH3MaxTurboExtendVideoRequest,
   FalEstimateRequest,
   FalQueueSubmitParams,
@@ -3008,4 +3012,29 @@ export interface FalRunMinimaxH3MaxTurboNamespace {
 }
 export interface FalRunMinimaxNamespace {
   h3MaxTurbo: FalRunMinimaxH3MaxTurboNamespace;
+}
+
+export interface FalXaiGrokImagineVideoV1p5LiteTextToVideoResponse {
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+    fps?: number | null;
+    duration?: number | null;
+    num_frames?: number | null;
+  };
+}
+export interface FalRunXaiGrokImagineVideoV1p5LiteNamespace {
+  textToVideo: ((
+    params: FalXaiGrokImagineVideoV1p5LiteTextToVideoRequest,
+    signal?: AbortSignal
+  ) => Promise<FalXaiGrokImagineVideoV1p5LiteTextToVideoResponse>) & {
+    schema: ApicitySchema<FalXaiGrokImagineVideoV1p5LiteTextToVideoRequest>;
+  };
+}
+export interface FalRunXaiGrokImagineVideoV1p5Namespace {
+  lite: FalRunXaiGrokImagineVideoV1p5LiteNamespace;
 }

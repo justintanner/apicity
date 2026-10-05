@@ -3397,7 +3397,27 @@ export type FalMinimaxH3MaxTurboExtendVideoParsedRequest = z.output<
   typeof FalMinimaxH3MaxTurboExtendVideoRequestSchema
 >;
 
+// Docs: https://fal.ai/models/xai/grok-imagine-video/v1.5/lite/text-to-video/api
+export const FalXaiGrokImagineVideoV1p5LiteTextToVideoRequestSchema = z.object({
+  prompt: z.string().max(4096),
+  duration: z.number().int().min(1).max(15).default(6),
+  resolution: z.enum(["480p", "720p", "1080p"]).default("720p"),
+  aspect_ratio: z
+    .enum(["16:9", "4:3", "3:2", "1:1", "2:3", "3:4", "9:16"])
+    .default("16:9"),
+});
+export type FalXaiGrokImagineVideoV1p5LiteTextToVideoRequest = z.input<
+  typeof FalXaiGrokImagineVideoV1p5LiteTextToVideoRequestSchema
+>;
+export type FalXaiGrokImagineVideoV1p5LiteTextToVideoRequestInput =
+  FalXaiGrokImagineVideoV1p5LiteTextToVideoRequest;
+export type FalXaiGrokImagineVideoV1p5LiteTextToVideoParsedRequest = z.output<
+  typeof FalXaiGrokImagineVideoV1p5LiteTextToVideoRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "xai/grok-imagine-video/v1.5/lite/text-to-video":
+    FalXaiGrokImagineVideoV1p5LiteTextToVideoRequestSchema,
   "minimax/h3-max-turbo/extend-video":
     FalMinimaxH3MaxTurboExtendVideoRequestSchema,
   "alibaba/qwen-image-3/text-to-image":

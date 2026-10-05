@@ -3487,7 +3487,19 @@ export type FalFlux3EditImageParsedRequest = z.output<
   typeof FalFlux3EditImageRequestSchema
 >;
 
+// Docs: https://fal.ai/models/blackforestlabs/flux-3/text-to-image/api
+export const FalFlux3TextToImageRequestSchema =
+  FalFlux3EditImageRequestSchema.omit({ image_urls: true });
+export type FalFlux3TextToImageRequest = z.input<
+  typeof FalFlux3TextToImageRequestSchema
+>;
+export type FalFlux3TextToImageRequestInput = FalFlux3TextToImageRequest;
+export type FalFlux3TextToImageParsedRequest = z.output<
+  typeof FalFlux3TextToImageRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "blackforestlabs/flux-3/text-to-image": FalFlux3TextToImageRequestSchema,
   "blackforestlabs/flux-3/edit-image": FalFlux3EditImageRequestSchema,
   "minimax/h3-max/recast": FalMinimaxH3MaxRecastRequestSchema,
   "xai/grok-imagine-video/v1.5/lite/text-to-video":

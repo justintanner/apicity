@@ -649,11 +649,12 @@ const gptImagePerImage = (
 //     bucket, against a page rate that predicts USD 0.39 per call. An
 //     identical payload that bills a different amount twice running is not
 //     payload-derivable at all.
-// FLUX 3 image editing: official metadata bills megapixels, while the request
+// FLUX 3 image generation/editing: official metadata bills megapixels, while the request
 // carries resolution tiers and can infer aspect ratio from a remote image.
 // The 2026-10-05 page publishes a 1K promotional example but no complete tier
 // grid or billable-dimension mapping. Use fal's pricing API; do not invent it.
 // https://fal.ai/models/blackforestlabs/flux-3/edit-image
+// https://fal.ai/models/blackforestlabs/flux-3/text-to-image
 export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "alibaba/qwen-image-3/edit",
   "alibaba/qwen-image-3/text-to-image",
@@ -661,6 +662,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "alibaba/wan-3.0/reference-to-video",
   "alibaba/wan-3.0/text-to-video",
   "blackforestlabs/flux-3/edit-image",
+  "blackforestlabs/flux-3/text-to-image",
   "blackforestlabs/flux-video-upscale",
   "bytedance/seedream/v5/pro/edit",
   "bytedance/seedream/v5/pro/layerize",

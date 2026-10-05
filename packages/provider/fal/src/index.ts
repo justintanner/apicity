@@ -21,6 +21,10 @@ export type {
 
 // Export all types
 export type {
+  FalFlux3TextToImageRequest,
+  FalFlux3TextToImageRequestInput,
+  FalFlux3TextToImageParsedRequest,
+  FalFlux3TextToImageResponse,
   FalFlux3EditImageRequest,
   FalFlux3EditImageRequestInput,
   FalFlux3EditImageParsedRequest,

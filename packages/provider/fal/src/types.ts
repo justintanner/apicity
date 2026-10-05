@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalFlux3TextToImageRequest,
+  FalFlux3TextToImageRequestInput,
+  FalFlux3TextToImageParsedRequest,
   FalFlux3EditImageRequest,
   FalFlux3EditImageRequestInput,
   FalFlux3EditImageParsedRequest,
@@ -374,6 +377,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalFlux3TextToImageRequest,
   FalFlux3EditImageRequest,
   FalMinimaxH3MaxRecastRequest,
   FalXaiGrokImagineVideoV1p5LiteTextToVideoRequest,
@@ -3084,5 +3088,24 @@ export interface FalRunFlux3Namespace {
     signal?: AbortSignal
   ) => Promise<FalFlux3EditImageResponse>) & {
     schema: ApicitySchema<FalFlux3EditImageRequest>;
+  };
+}
+
+export interface FalFlux3TextToImageResponse {
+  images: Array<{
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+  }>;
+}
+export interface FalRunFlux3Namespace {
+  textToImage: ((
+    params: FalFlux3TextToImageRequest,
+    signal?: AbortSignal
+  ) => Promise<FalFlux3TextToImageResponse>) & {
+    schema: ApicitySchema<FalFlux3TextToImageRequest>;
   };
 }

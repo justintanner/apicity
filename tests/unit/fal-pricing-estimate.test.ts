@@ -1035,6 +1035,7 @@ describe("fal edit/image pricing estimates", () => {
       "alibaba/wan-3.0/reference-to-video",
       "alibaba/wan-3.0/text-to-video",
       "blackforestlabs/flux-3/edit-image",
+      "blackforestlabs/flux-3/text-to-image",
       "blackforestlabs/flux-video-upscale",
       "bytedance/seedream/v5/pro/edit",
       "bytedance/seedream/v5/pro/layerize",

@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added FLUX 3 text-to-image with the documented output controls, typed
+  response, queue registration, and dynamic pricing discovery.
+
 - Added FLUX 3 image editing with 1–10 references, complete output controls,
   typed schema/response, queue registration, and dynamic pricing discovery.
 

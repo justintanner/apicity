@@ -242,6 +242,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST blackforestlabs.flux3.textToImage": {
+    "source": "fal/flux-3-text-to-image",
+    "payload": {
+      "prompt": "A red fox leaping over a stream in a pine forest, watercolor illustration.",
+      "resolution": "1k",
+      "aspect_ratio": "1:1"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST blackforestlabs.flux3.textToVideo": {
     "source": "fal/flux-3-text-to-video",
     "payload": {

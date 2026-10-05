@@ -559,11 +559,22 @@ describe("KIE Google Gemini TTS modelInputSchemas metadata", () => {
     "dialogue_turns",
   ] as const;
 
-  it("exposes exactly two audio models with shared input fields", () => {
+  it("exposes the older and 3.8 audio models with versioned input fields", () => {
     const googleTtsModels = Object.keys(provider.modelInputSchemas).filter(
       (model) => model.startsWith("google/gemini-") && model.endsWith("-tts")
     );
-    expect(googleTtsModels).toEqual([...MODELS]);
+    expect(googleTtsModels).toEqual([...MODELS, "google/gemini-3-8-flash-tts"]);
+    const modern = provider.modelInputSchemas["google/gemini-3-8-flash-tts"];
+    expect(modern.type).toBe("audio");
+    expect(Object.keys(modern.fields)).toEqual([
+      "temperature",
+      "speakers",
+      "filler_words",
+      "dialogue_turns",
+    ]);
+    expect(modern.fields.speakers.items?.properties?.voice_name).toMatchObject({
+      default: "Fola",
+    });
 
     for (const model of MODELS) {
       const entry = provider.modelInputSchemas[model];

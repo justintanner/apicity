@@ -1801,10 +1801,10 @@
       "endpoints": 71
     },
     "final": {
-      "models": 150,
-      "pricingKeys": 174,
-      "slugKeys": 176,
-      "displayKeys": 176,
+      "models": 151,
+      "pricingKeys": 175,
+      "slugKeys": 177,
+      "displayKeys": 177,
       "schemaWithoutPricing": 6,
       "pricingOnly": 30,
       "endpoints": 86
@@ -1820,11 +1820,11 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:1ae9bd5a842df6b3d19d1d5138ada2f17f9f61dfb9ada5d132d090aa24d3cd08",
-      "packages/provider/kie/src/model-schemas.ts": "sha256:87d3646386e01a92fd58bbe507417d3de38926609a7f42625937fe8052e995a0",
-      "packages/provider/kie/src/kie.ts": "sha256:b03f5724eb922967a6b4e627b672735b7d8518438ce7297ba6411e0cfa77dded",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:8fe606a4c3f0a91d68205f8c890b8d89ff792ee360cf12c0e8694e371d1b150f",
-      "packages/provider/cost/src/slugs.ts": "sha256:51fd284014d56bfaabebdf30b05aa8175afb8a4edbf02659506e2458f3980c81",
+      "packages/provider/kie/src/zod.ts": "sha256:3fc8022252063bb56c5f21a1615629b0ae8ed03503c580a8d75b6b44e5cbaf6d",
+      "packages/provider/kie/src/model-schemas.ts": "sha256:805481ce424c1fcd8e1014d18f1f5613b79582b0cbb620d3c41d5b7cb540af13",
+      "packages/provider/kie/src/kie.ts": "sha256:7d1d940bc7124e9685936d489e12eabd9e42724c8b09f16c4fa5195181794140",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:93ea041edb598d2892ec1563813b97917911f81460ba874e7c7daf1b96964237",
+      "packages/provider/cost/src/slugs.ts": "sha256:cc32ff8fa22e191eed9a73c9a70c86e15af2298187705efa533896aa8059c223",
       "scripts/endpoint-docs.tsv": "sha256:f836792b46c8e7d0c185caee9328e4b61f92c6c3b50ca875354eeea9e9803bab"
     }
   },
@@ -24373,6 +24373,15 @@
         "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
       },
       {
+        "id": "google/gemini-3-8-flash-tts",
+        "descriptor": true,
+        "guard": true,
+        "pricingKey": "google/gemini-3-8-flash-tts",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
         "id": "google/gemini-omni-flash-1-1",
         "descriptor": true,
         "guard": true,
@@ -27130,6 +27139,12 @@
         "linkedRows": [],
         "disposition": "upstream-unmappable",
         "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "google/gemini-3-8-flash-tts",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
       }
     ],
     "slugs": [
@@ -27467,6 +27482,10 @@
       },
       {
         "key": "google/gemini-3-1-flash-tts",
+        "disposition": "supported"
+      },
+      {
+        "key": "google/gemini-3-8-flash-tts",
         "disposition": "supported"
       },
       {
@@ -28176,6 +28195,10 @@
         "disposition": "supported"
       },
       {
+        "key": "google/gemini-3-8-flash-tts",
+        "disposition": "supported"
+      },
+      {
         "key": "pixverse-v6/text-to-video",
         "disposition": "supported"
       },
@@ -28882,16 +28905,16 @@
     },
     "apiCity": {
       "models": {
-        "count": 150,
-        "descriptors": 150,
-        "guards": 150,
+        "count": 151,
+        "descriptors": 151,
+        "guards": 151,
         "withoutPricing": 6,
         "dispositionCounts": {
           "supported": 118,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 32
+          "upstream-unmappable": 33
         },
         "unclassified": 0
       },
@@ -28909,20 +28932,20 @@
         "unclassified": 0
       },
       "pricingKeys": {
-        "count": 174,
+        "count": 175,
         "dispositionCounts": {
           "supported": 146,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 28
+          "upstream-unmappable": 29
         },
         "unclassified": 0
       },
       "slugs": {
-        "count": 176,
+        "count": 177,
         "dispositionCounts": {
-          "supported": 176,
+          "supported": 177,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -28931,9 +28954,9 @@
         "unclassified": 0
       },
       "displays": {
-        "count": 176,
+        "count": 177,
         "dispositionCounts": {
-          "supported": 176,
+          "supported": 177,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,

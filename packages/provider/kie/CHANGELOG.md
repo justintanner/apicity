@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added `google/gemini-3-8-flash-tts` with 70 voices, per-turn style,
+  typed validation, CLI metadata, and input/audio-output token pricing.
+
 - Added `seedream/5-flash-layer-decomposition` with typed request metadata,
   local validation, and pricing for the three published output sizes.
 

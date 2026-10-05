@@ -3,6 +3,7 @@ import {
   ElevenLabsTextToDialogueStabilityContract,
   ElevenLabsTextToSpeechNumericContract,
   GoogleGeminiTtsAccentSchema,
+  GoogleGemini38TtsVoiceNameSchema,
   GoogleGeminiTtsDialogueTextMaxLength,
   GoogleGeminiTtsPaceSchema,
   GoogleGeminiTtsStyleSchema,
@@ -329,6 +330,71 @@ const googleGeminiTtsDialogueTurnItem = {
       minLength: 1,
       maxLength: GoogleGeminiTtsDialogueTextMaxLength,
       description: `Spoken text, optionally with tone tags (max ${GoogleGeminiTtsDialogueTextMaxLength} characters)`,
+    },
+  },
+} as const;
+
+const googleGemini38TtsFields = {
+  temperature: {
+    type: "number",
+    minimum: 0,
+    maximum: 2,
+    default: 1,
+    description: "Sampling temperature (default 1)",
+  },
+  speakers: {
+    type: "array",
+    required: true,
+    minItems: 1,
+    description: "Speaker configurations",
+    items: {
+      type: "object",
+      properties: {
+        speaker_id: {
+          type: "string",
+          required: true,
+          description: 'Speaker identifier in "Speaker N" format',
+        },
+        voice_name: {
+          type: "string",
+          enum: GoogleGemini38TtsVoiceNameSchema.options,
+          default: "Fola",
+          description: "Gemini 3.8 voice (default Fola)",
+        },
+      },
+    },
+  },
+  filler_words: {
+    type: "boolean",
+    default: false,
+    description: "Insert filler words; only takes effect with two speakers",
+  },
+  dialogue_turns: {
+    type: "array",
+    required: true,
+    minItems: 1,
+    description: "Dialogue turns in output order",
+    items: {
+      type: "object",
+      properties: {
+        speaker_id: {
+          type: "string",
+          required: true,
+          description: "Corresponding speaker identifier",
+        },
+        text: {
+          type: "string",
+          required: true,
+          minLength: 1,
+          maxLength: 10000,
+          description:
+            "Spoken text, including optional angle-bracket tone tags",
+        },
+        style: {
+          type: "string",
+          description: "Freeform per-turn tone, emotion, and pace",
+        },
+      },
     },
   },
 } as const;
@@ -5728,6 +5794,12 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
   "google/gemini-3-1-flash-tts": {
     type: "audio",
     fields: googleGeminiTtsFields,
+  },
+
+  // https://docs.kie.ai/market/google/gemini-3-8-flash-tts
+  "google/gemini-3-8-flash-tts": {
+    type: "audio",
+    fields: googleGemini38TtsFields,
   },
 
   // Sources:

@@ -16,13 +16,13 @@ This WI6 executable reconciliation joins the frozen official Kie pricing pull to
 
 | Surface                          | Baseline | Final | Detail                           |
 | -------------------------------- | -------: | ----: | -------------------------------- |
-| Schema model IDs                 |      127 |   150 | descriptors 150; guards 150      |
+| Schema model IDs                 |      127 |   151 | descriptors 151; guards 151      |
 | Documented endpoints             |       71 |    86 | 61 POST; 25 GET                  |
-| Runtime pricing keys             |      135 |   174 | current Kie table                |
+| Runtime pricing keys             |      135 |   175 | current Kie table                |
 | Schema-without-pricing inventory |       23 |     6 | explicit model memberships       |
 | Pricing-only inventory           |       31 |    30 | explicit runtime-key memberships |
-| Slug keys                        |      137 |   176 | Kie model metadata               |
-| Display keys                     |      137 |   176 | Kie model metadata               |
+| Slug keys                        |      137 |   177 | Kie model metadata               |
+| Display keys                     |      137 |   177 | Kie model metadata               |
 
 ## Row Dispositions
 
@@ -102,6 +102,7 @@ Schema models without a current usable pricing key: **6**; pricing-only runtime 
 | `pixverse-v6/transition`               | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
 | `google/gemini-2-5-pro-tts`            | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
 | `google/gemini-3-1-flash-tts`          | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `google/gemini-3-8-flash-tts`          | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
 | `topaz/image-upscale`                  | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
 
 ### Ideogram V3 Reframe pricing rows

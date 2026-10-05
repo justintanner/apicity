@@ -158,6 +158,7 @@ export const MODEL_SLUGS = {
     // (ac-6lg2s0).
     "google/gemini-2-5-pro-tts": "gem25tts",
     "google/gemini-3-1-flash-tts": "gem31tts",
+    "google/gemini-3-8-flash-tts": "gem38ft",
 
     // Video — PixVerse V6. Operations are modality metadata and share one
     // family slug; transition is page-sourced (ac-4v9ck1).
@@ -633,6 +634,7 @@ export const MODEL_DISPLAY = {
 
     "google/gemini-2-5-pro-tts": "Gemini 2.5 Pro TTS",
     "google/gemini-3-1-flash-tts": "Gemini 3.1 Flash TTS",
+    "google/gemini-3-8-flash-tts": "Gemini 3.8 Flash TTS",
 
     "pixverse-v6/text-to-video": "PixVerse V6",
     "pixverse-v6/image-to-video": "PixVerse V6",

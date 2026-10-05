@@ -352,6 +352,7 @@ export const KIE_MEDIA_MODELS = [
   "minimax-h3/reference-to-video",
   "google/gemini-2-5-pro-tts",
   "google/gemini-3-1-flash-tts",
+  "google/gemini-3-8-flash-tts",
   // Gemini Omni 1.1 Flash — google/ namespaced, enum-only (no alias).
   "google/gemini-omni-flash-1-1",
   // Google Imagen 4 + namespaced Nano Banana — enum-only (no google/ alias).
@@ -5622,6 +5623,110 @@ export const GoogleGemini31FlashTtsRequestSchema = z.object({
   input: GoogleGeminiTtsInputSchema,
 });
 
+// Docs: https://docs.kie.ai/market/google/gemini-3-8-flash-tts
+// Version 3.8 uses a new voice catalog and per-turn freeform style.
+export const GoogleGemini38TtsVoiceNames = [
+  "Bodi",
+  "Lumi",
+  "Sadaltager",
+  "Sola",
+  "Sulafat",
+  "Varo",
+  "Zephyr",
+  "Koda",
+  "Kore",
+  "Nika",
+  "Tavi",
+  "Zeno",
+  "Algenib",
+  "Despina",
+  "Erinome",
+  "Kira",
+  "Ludo",
+  "Mako",
+  "Rasalgethi",
+  "Rina",
+  "Alnilam",
+  "Brio",
+  "Jori",
+  "Laomedeia",
+  "Rami",
+  "Veda",
+  "Achird",
+  "Enzo",
+  "Riko",
+  "Sami",
+  "Zali",
+  "Zubenelgenubi",
+  "Algieba",
+  "Aoede",
+  "Autonoe",
+  "Callirrhoe",
+  "Enceladus",
+  "Gero",
+  "Iapetus",
+  "Neno",
+  "Olin",
+  "Tari",
+  "Umbriel",
+  "Achernar",
+  "Charon",
+  "Daro",
+  "Fola",
+  "Hali",
+  "Milo",
+  "Puck",
+  "Arlo",
+  "Cleo",
+  "Fenrir",
+  "Finn",
+  "Leda",
+  "Lora",
+  "Orus",
+  "Enya",
+  "Jett",
+  "Knox",
+  "Nyla",
+  "Sadachbia",
+  "Vindemiatrix",
+  "Cruz",
+  "Elio",
+  "Gacrux",
+  "Pulcherrima",
+  "Schedar",
+  "Tova",
+  "Zuri",
+] as const;
+export const GoogleGemini38TtsVoiceNameSchema = z.enum(
+  GoogleGemini38TtsVoiceNames
+);
+export const GoogleGemini38TtsSpeakerSchema = z
+  .object({
+    speaker_id: GoogleGeminiTtsSpeakerIdSchema,
+    voice_name: GoogleGemini38TtsVoiceNameSchema.default("Fola"),
+  })
+  .strict();
+export const GoogleGemini38TtsDialogueTurnSchema = z
+  .object({
+    speaker_id: GoogleGeminiTtsSpeakerIdSchema,
+    text: z.string().min(1).max(10000),
+    style: z.string().optional(),
+  })
+  .strict();
+export const GoogleGemini38TtsInputSchema = z
+  .object({
+    temperature: z.number().min(0).max(2).default(1),
+    speakers: z.array(GoogleGemini38TtsSpeakerSchema).min(1),
+    filler_words: z.boolean().default(false),
+    dialogue_turns: z.array(GoogleGemini38TtsDialogueTurnSchema).min(1),
+  })
+  .strict();
+export const GoogleGemini38FlashTtsRequestSchema = z.object({
+  model: z.literal("google/gemini-3-8-flash-tts"),
+  callBackUrl: z.string().url().optional(),
+  input: GoogleGemini38TtsInputSchema,
+});
+
 // ---------------------------------------------------------------------------
 // Google Imagen 4 + namespaced Nano Banana createTask models
 // Docs: https://docs.kie.ai/market/google/imagen4 and siblings
@@ -8496,6 +8601,7 @@ export const MediaGenerationRequestSchema = z.union([
   MiniMaxH3ReferenceToVideoRequestSchema,
   GoogleGemini25ProTtsRequestSchema,
   GoogleGemini31FlashTtsRequestSchema,
+  GoogleGemini38FlashTtsRequestSchema,
   GoogleImagen4RequestSchema,
   GoogleImagen4FastRequestSchema,
   GoogleImagen4UltraRequestSchema,
@@ -10101,4 +10207,12 @@ export type SeedreamFlashLayerDecompositionRequestInput =
   SeedreamFlashLayerDecompositionRequest;
 export type SeedreamFlashLayerDecompositionParsedRequest = z.output<
   typeof SeedreamFlashLayerDecompositionRequestSchema
+>;
+
+export type GoogleGemini38FlashTtsRequest = z.input<
+  typeof GoogleGemini38FlashTtsRequestSchema
+>;
+export type GoogleGemini38FlashTtsRequestInput = GoogleGemini38FlashTtsRequest;
+export type GoogleGemini38FlashTtsParsedRequest = z.output<
+  typeof GoogleGemini38FlashTtsRequestSchema
 >;

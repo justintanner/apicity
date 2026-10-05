@@ -3127,4 +3127,10 @@ export const kie: Record<string, ModelPricing> = {
     rate: { input: 0.7, output: 14 },
     source: pricePage("https://kie.ai/gemini-3.1-flash-tts", "2026-08-22"),
   },
+  // Official feed: per million text-input tokens and audio-output tokens.
+  "google/gemini-3-8-flash-tts": {
+    kind: "tokens",
+    rate: { input: 0.35, output: 6.3 },
+    source: pricePage("https://kie.ai/gemini-3.8-flash-tts", "2026-10-05"),
+  },
 };

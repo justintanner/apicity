@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Google Gemini 3.8 Flash Lite TTS (ac-grh4og).
+
 - Added Google Gemini 3.8 Flash TTS (ac-zoogdb).
 
 - Added Elevenlabs TTS Eleven V4 (ac-5zfk2j).

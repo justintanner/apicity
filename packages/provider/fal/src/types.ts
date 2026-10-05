@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalGoogleGemini3p8FlashLiteTtsParsedRequest,
+  FalGoogleGemini3p8FlashLiteTtsRequestInput,
+  FalGoogleGemini3p8FlashLiteTtsRequest,
   FalGoogleGemini3p8FlashTtsParsedRequest,
   FalGoogleGemini3p8FlashTtsRequestInput,
   FalGoogleGemini3p8FlashTtsRequest,
@@ -398,6 +401,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalGoogleGemini3p8FlashLiteTtsRequest,
   FalGoogleGemini3p8FlashTtsRequest,
   FalElevenlabsTtsElevenV4Request,
   FalElevenlabsTtsElevenV4TurboRequest,
@@ -3282,10 +3286,26 @@ export interface FalGoogleGemini3p8FlashTtsResponse {
 }
 
 export interface FalRunGoogleNamespace {
+  gemini3p8FlashLiteTts: ((
+    params: FalGoogleGemini3p8FlashLiteTtsRequest,
+    signal?: AbortSignal
+  ) => Promise<FalGoogleGemini3p8FlashLiteTtsResponse>) & {
+    schema: ApicitySchema<FalGoogleGemini3p8FlashLiteTtsRequest>;
+  };
+
   gemini3p8FlashTts: ((
     params: FalGoogleGemini3p8FlashTtsRequest,
     signal?: AbortSignal
   ) => Promise<FalGoogleGemini3p8FlashTtsResponse>) & {
     schema: ApicitySchema<FalGoogleGemini3p8FlashTtsRequest>;
+  };
+}
+
+export interface FalGoogleGemini3p8FlashLiteTtsResponse {
+  audio: {
+    file_size?: number | null;
+    content_type?: string | null;
+    url: string;
+    file_name?: string | null;
   };
 }

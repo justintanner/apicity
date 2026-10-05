@@ -527,6 +527,7 @@ fal	geminiOmniFlash	POST	prohibitive	Media-generation marketplace (image/video/a
 fal	geminiOmniFlash.edit	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	geminiOmniFlash.imageToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	geminiOmniFlash.referenceToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	google.gemini3p8FlashLiteTts	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	google.gemini3p8FlashTts	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	gptImage1p5	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	gptImage1p5.edit	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1

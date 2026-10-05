@@ -4056,7 +4056,135 @@ export type FalGoogleGemini3p8FlashTtsParsedRequest = z.output<
   typeof FalGoogleGemini3p8FlashTtsRequestSchema
 >;
 
+// Docs: https://fal.ai/models/google/gemini-3.8-flash-lite-tts/api
+export const FalGoogleGemini3p8FlashLiteTtsRequestSchema = z
+  .object({
+    prompt: z
+      .string()
+      .nullable()
+      .optional()
+      .describe(
+        "Verbatim text for single-speaker speech. Put delivery directions in style_instructions; inline vocal events may use <laugh> or <sigh>. For dialogue, omit prompt and provide speakers and turns instead. The provider limits the complete input to 8,192 tokens."
+      ),
+    style_instructions: z
+      .string()
+      .nullable()
+      .optional()
+      .describe(
+        "Delivery style, separate from the spoken transcript. Applies to all turns unless overridden."
+      ),
+    voice: z
+      .enum([
+        "Achernar",
+        "Achird",
+        "Algenib",
+        "Algieba",
+        "Alnilam",
+        "Aoede",
+        "Autonoe",
+        "Callirrhoe",
+        "Charon",
+        "Despina",
+        "Enceladus",
+        "Erinome",
+        "Fenrir",
+        "Gacrux",
+        "Iapetus",
+        "Kore",
+        "Laomedeia",
+        "Leda",
+        "Orus",
+        "Pulcherrima",
+        "Puck",
+        "Rasalgethi",
+        "Sadachbia",
+        "Sadaltager",
+        "Schedar",
+        "Sulafat",
+        "Umbriel",
+        "Vindemiatrix",
+        "Zephyr",
+        "Zubenelgenubi",
+      ])
+      .default("Kore")
+      .describe("Prebuilt voice for single-speaker speech."),
+    speakers: z
+      .array(
+        z
+          .object({
+            speaker_id: z.string().min(1),
+            voice: z.enum([
+              "Achernar",
+              "Achird",
+              "Algenib",
+              "Algieba",
+              "Alnilam",
+              "Aoede",
+              "Autonoe",
+              "Callirrhoe",
+              "Charon",
+              "Despina",
+              "Enceladus",
+              "Erinome",
+              "Fenrir",
+              "Gacrux",
+              "Iapetus",
+              "Kore",
+              "Laomedeia",
+              "Leda",
+              "Orus",
+              "Pulcherrima",
+              "Puck",
+              "Rasalgethi",
+              "Sadachbia",
+              "Sadaltager",
+              "Schedar",
+              "Sulafat",
+              "Umbriel",
+              "Vindemiatrix",
+              "Zephyr",
+              "Zubenelgenubi",
+            ]),
+          })
+          .strict()
+      )
+      .min(2)
+      .max(2)
+      .nullable()
+      .optional()
+      .describe(
+        "Exactly two distinct speaker aliases and their prebuilt voices for dialogue."
+      ),
+    turns: z
+      .array(
+        z
+          .object({
+            speaker_id: z.string().min(1),
+            text: z.string().min(1),
+            style_instructions: z.string().nullable().optional(),
+          })
+          .strict()
+      )
+      .min(1)
+      .nullable()
+      .optional()
+      .describe(
+        "Ordered dialogue turns, each identifying a configured speaker."
+      ),
+  })
+  .strict();
+export type FalGoogleGemini3p8FlashLiteTtsRequest = z.input<
+  typeof FalGoogleGemini3p8FlashLiteTtsRequestSchema
+>;
+export type FalGoogleGemini3p8FlashLiteTtsRequestInput =
+  FalGoogleGemini3p8FlashLiteTtsRequest;
+export type FalGoogleGemini3p8FlashLiteTtsParsedRequest = z.output<
+  typeof FalGoogleGemini3p8FlashLiteTtsRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "google/gemini-3.8-flash-lite-tts":
+    FalGoogleGemini3p8FlashLiteTtsRequestSchema,
   "google/gemini-3.8-flash-tts": FalGoogleGemini3p8FlashTtsRequestSchema,
   "elevenlabs/tts/eleven-v4": FalElevenlabsTtsElevenV4RequestSchema,
   "elevenlabs/tts/eleven-v4-turbo": FalElevenlabsTtsElevenV4TurboRequestSchema,

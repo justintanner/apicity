@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-112 endpoints across 30 groups. Each method mirrors an upstream URL path.
+113 endpoints across 30 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -778,6 +778,23 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 </details>
 
 ### google
+
+<details>
+<summary><code>POST</code> <b><code>fal.google.gemini3p8FlashLiteTts</code></b></summary>
+
+<code>POST https://fal.run/google/gemini-3.8-flash-lite-tts</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/google/gemini-3.8-flash-lite-tts/api)
+
+```typescript
+const res = await fal.run.google.gemini3p8FlashLiteTts({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>fal.google.gemini3p8FlashTts</code></b></summary>

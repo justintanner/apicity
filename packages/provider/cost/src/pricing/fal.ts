@@ -718,6 +718,12 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  "google/gemini-3.8-flash-lite-tts": perSpokenCharacter(
+    "google/gemini-3.8-flash-lite-tts",
+    3e-5,
+    "2026-10-05"
+  ),
+
   "google/gemini-3.8-flash-tts": perSpokenCharacter(
     "google/gemini-3.8-flash-tts",
     4.5e-5,

@@ -412,6 +412,7 @@ export const MODEL_SLUGS = {
   // same underlying models kie also resells, so their slugs intentionally
   // match kie's.
   fal: {
+    "google/gemini-3.8-flash-lite-tts": "googlegemi2",
     "google/gemini-3.8-flash-tts": "googlegemini",
     "elevenlabs/tts/eleven-v4": "elevenlabs2",
     "elevenlabs/tts/eleven-v4-turbo": "elevenlabstt",
@@ -844,6 +845,7 @@ export const MODEL_DISPLAY = {
   },
 
   fal: {
+    "google/gemini-3.8-flash-lite-tts": "Google Gemini 3.8 Flash Lite TTS",
     "google/gemini-3.8-flash-tts": "Google Gemini 3.8 Flash TTS",
     "elevenlabs/tts/eleven-v4": "Elevenlabs TTS Eleven V4",
     "ideogram/v4.5": "Ideogram 4.5",

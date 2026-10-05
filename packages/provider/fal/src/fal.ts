@@ -1,4 +1,6 @@
 import {
+  FalGoogleGemini3p8FlashLiteTtsResponse,
+  FalGoogleGemini3p8FlashLiteTtsRequest,
   FalGoogleGemini3p8FlashTtsResponse,
   FalGoogleGemini3p8FlashTtsRequest,
   FalElevenlabsTtsElevenV4Response,
@@ -226,6 +228,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalGoogleGemini3p8FlashLiteTtsRequestSchema,
   FalGoogleGemini3p8FlashTtsRequestSchema,
   FalElevenlabsTtsElevenV4RequestSchema,
   FalElevenlabsTtsElevenV4TurboRequestSchema,
@@ -2101,10 +2104,27 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/google/gemini-3.8-flash-lite-tts
+  // Docs: https://fal.ai/models/google/gemini-3.8-flash-lite-tts/api
+  const googleGemini3p8FlashLiteTts = jsonBody<
+    FalGoogleGemini3p8FlashLiteTtsRequest,
+    FalGoogleGemini3p8FlashLiteTtsResponse
+  >(
+    "POST",
+    "/google/gemini-3.8-flash-lite-tts",
+    FalGoogleGemini3p8FlashLiteTtsRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
     // POST https://fal.run/google/gemini-3.8-flash-tts
     // Docs: https://fal.ai/models/google/gemini-3.8-flash-tts/api
-    google: { gemini3p8FlashTts: googleGemini3p8FlashTts },
+    google: {
+      // POST https://fal.run/google/gemini-3.8-flash-lite-tts
+      // Docs: https://fal.ai/models/google/gemini-3.8-flash-lite-tts/api
+      gemini3p8FlashLiteTts: googleGemini3p8FlashLiteTts,
+      gemini3p8FlashTts: googleGemini3p8FlashTts,
+    },
     // POST https://fal.run/elevenlabs/tts/eleven-v4-turbo
     // Docs: https://fal.ai/models/elevenlabs/tts/eleven-v4-turbo/api
     elevenlabs: {

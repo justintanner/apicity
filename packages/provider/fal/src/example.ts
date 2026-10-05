@@ -509,6 +509,14 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST google.gemini3p8FlashLiteTts": {
+    "source": "fal/google-gemini-3-8-flash-lite-tts",
+    "payload": {
+      "prompt": "A red panda waves once, then holds still."
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST google.gemini3p8FlashTts": {
     "source": "fal/google-gemini-3-8-flash-tts",
     "payload": {

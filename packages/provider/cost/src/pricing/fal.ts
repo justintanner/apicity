@@ -746,7 +746,14 @@ const meshyV71 = (endpointId: string, on: string): ModelPricing => ({
   select: [
     {
       name: "mode",
-      pick: (p) => asString(p.mode) ?? "full",
+      pick: (p) => {
+        // text-to-3d uses mode; image endpoints use should_texture.
+        if (p.mode === "preview" || p.should_texture === false)
+          return "preview";
+        const mode = asString(p.mode);
+        if (mode !== undefined && mode !== "full") return mode;
+        return "full";
+      },
     },
   ],
   rates: { preview: 0.8, full: 1.2 },
@@ -793,6 +800,8 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  "meshy/v7.1/image-to-3d": meshyV71("meshy/v7.1/image-to-3d", "2026-10-05"),
+
   "meshy/v7.1/text-to-3d": meshyV71("meshy/v7.1/text-to-3d", "2026-10-05"),
 
   "recraft/v4.1/flash/text-to-image": perImage(

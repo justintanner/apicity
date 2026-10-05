@@ -21,6 +21,10 @@ export type {
 
 // Export all types
 export type {
+  FalMeshyV7p1ImageTo3dResponse,
+  FalMeshyV7p1ImageTo3dParsedRequest,
+  FalMeshyV7p1ImageTo3dRequestInput,
+  FalMeshyV7p1ImageTo3dRequest,
   FalRunMeshyV7p1Namespace,
   FalMeshyV7p1TextTo3dResponse,
   FalMeshyV7p1TextTo3dParsedRequest,

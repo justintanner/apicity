@@ -133,6 +133,29 @@ const guardedRejectionCases = [
     },
     expectedPath: "input.resolution",
   },
+  {
+    name: "bytedance/seedance-2-5 first-frame mode with a fixed ratio",
+    request: {
+      model: "bytedance/seedance-2-5",
+      input: {
+        first_frame_url: "https://example.com/first.png",
+        aspect_ratio: "9:16",
+      },
+    },
+    expectedPath: "input.aspect_ratio",
+  },
+  {
+    name: "bytedance/seedance-2-5 first-last-frame mode with a fixed ratio",
+    request: {
+      model: "bytedance/seedance-2-5",
+      input: {
+        first_frame_url: "https://example.com/first.png",
+        last_frame_url: "asset://last-frame",
+        aspect_ratio: "21:9",
+      },
+    },
+    expectedPath: "input.aspect_ratio",
+  },
   // Both seedream/4.5 rows exercise guards switched on by cataloguing these
   // ids: before promotion these exact payloads transmitted unvalidated.
   {

@@ -159,7 +159,7 @@ describe("KIE Zod schema validation", () => {
   });
 
   describe("bytedance/seedance-2-5", () => {
-    it("accepts every documented field and enum member", () => {
+    it("accepts a complete frame request", () => {
       const result = Seedance25RequestSchema.safeParse({
         model: SEEDANCE25_MODEL,
         callBackUrl: "https://example.com/callback",
@@ -170,7 +170,7 @@ describe("KIE Zod schema validation", () => {
           return_last_frame: true,
           generate_audio: false,
           resolution: "480p",
-          aspect_ratio: "21:9",
+          aspect_ratio: "adaptive",
           duration: 30,
           output_format: "mov",
           web_search: true,
@@ -187,13 +187,81 @@ describe("KIE Zod schema validation", () => {
         return_last_frame: true,
         generate_audio: false,
         resolution: "480p",
-        aspect_ratio: "21:9",
+        aspect_ratio: "adaptive",
         duration: 30,
         output_format: "mov",
         web_search: true,
         nsfw_checker: true,
       });
     });
+
+    it.each(["1:1", "4:3", "3:4", "16:9", "9:16", "21:9"])(
+      "rejects frame requests with fixed aspect ratio %s",
+      (aspectRatio) => {
+        for (const lastFrame of [undefined, "asset://last-frame"]) {
+          const request = {
+            model: SEEDANCE25_MODEL,
+            input: {
+              first_frame_url: SEEDANCE25_MEDIA,
+              last_frame_url: lastFrame,
+              aspect_ratio: aspectRatio,
+            },
+          };
+          const result = Seedance25RequestSchema.safeParse(request);
+          expect(result.success).toBe(false);
+          expect(result.error?.issues).toContainEqual({
+            code: "custom",
+            message:
+              "Seedance 2.5 first-frame and first-last-frame tasks only support adaptive aspect ratio",
+            path: ["input", "aspect_ratio"],
+          });
+          expect(CreateTaskRequestSchema.safeParse(request).success).toBe(
+            false
+          );
+          expect(request.input.aspect_ratio).toBe(aspectRatio);
+        }
+      }
+    );
+
+    it.each([undefined, "adaptive"])(
+      "accepts frame requests with aspect ratio %s",
+      (aspectRatio) => {
+        for (const lastFrame of [undefined, "asset://last-frame"]) {
+          const request = {
+            model: SEEDANCE25_MODEL,
+            input: {
+              first_frame_url: SEEDANCE25_MEDIA,
+              last_frame_url: lastFrame,
+              ...(aspectRatio ? { aspect_ratio: aspectRatio } : {}),
+            },
+          };
+          const result = Seedance25RequestSchema.parse(request);
+          expect(result.input.aspect_ratio).toBe("adaptive");
+          expect(CreateTaskRequestSchema.safeParse(request).success).toBe(true);
+          expect(request.input.aspect_ratio).toBe(aspectRatio);
+        }
+      }
+    );
+
+    it.each(["1:1", "4:3", "3:4", "16:9", "9:16", "21:9"])(
+      "preserves fixed aspect ratio %s in text and reference modes",
+      (aspectRatio) => {
+        for (const references of [undefined, [SEEDANCE25_MEDIA]]) {
+          const request = {
+            model: SEEDANCE25_MODEL,
+            input: {
+              prompt: SEEDANCE25_PROMPT,
+              reference_image_urls: references,
+              aspect_ratio: aspectRatio,
+            },
+          };
+          expect(
+            Seedance25RequestSchema.parse(request).input.aspect_ratio
+          ).toBe(aspectRatio);
+          expect(CreateTaskRequestSchema.safeParse(request).success).toBe(true);
+        }
+      }
+    );
 
     it("applies documented defaults while preserving text-only input", () => {
       const result = Seedance25RequestSchema.safeParse({
@@ -374,6 +442,15 @@ describe("KIE Zod schema validation", () => {
       expect(fields.reference_image_urls.maxItems).toBe(30);
       expect(fields.reference_video_urls.maxItems).toBe(10);
       expect(fields.reference_audio_urls.maxItems).toBe(10);
+      expect(fields.aspect_ratio.description).toBe(
+        "Output aspect ratio (default adaptive); first_frame_url or last_frame_url requires adaptive"
+      );
+      expect(
+        zodToJsonSchema(Seedance25InputSchema.shape.aspect_ratio)
+      ).toMatchObject({
+        default: "adaptive",
+        description: fields.aspect_ratio.description,
+      });
       expect(CREATE_TASK_GUARDS[SEEDANCE25_MODEL]).toBe(
         Seedance25RequestSchema
       );

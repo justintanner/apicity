@@ -3508,7 +3508,10 @@ export const Seedance25InputSchema = z.object({
   resolution: z.enum(["480p", "720p", "1080p"]).default("720p"),
   aspect_ratio: z
     .enum(["1:1", "4:3", "3:4", "16:9", "9:16", "21:9", "adaptive"])
-    .default("adaptive"),
+    .default("adaptive")
+    .describe(
+      "Output aspect ratio (default adaptive); first_frame_url or last_frame_url requires adaptive"
+    ),
   duration: z
     .union([z.literal(-1), z.number().int().min(4).max(30)])
     .default(5),
@@ -3540,6 +3543,15 @@ export const Seedance25RequestSchema =
 
     if (!hasFrame) {
       return;
+    }
+
+    if (input.aspect_ratio !== "adaptive") {
+      ctx.addIssue({
+        code: "custom",
+        message:
+          "Seedance 2.5 first-frame and first-last-frame tasks only support adaptive aspect ratio",
+        path: ["input", "aspect_ratio"],
+      });
     }
 
     for (const field of [

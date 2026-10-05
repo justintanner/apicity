@@ -1568,12 +1568,12 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       first_frame_url: {
         type: "string",
         description:
-          "First frame image URL or non-empty asset://{assetId} reference; mutually exclusive with populated reference_*_urls",
+          "First frame image URL or non-empty asset://{assetId} reference; requires adaptive aspect_ratio and is mutually exclusive with populated reference_*_urls",
       },
       last_frame_url: {
         type: "string",
         description:
-          "Last frame image URL or non-empty asset://{assetId} reference; requires first_frame_url and is mutually exclusive with populated reference_*_urls",
+          "Last frame image URL or non-empty asset://{assetId} reference; requires first_frame_url and adaptive aspect_ratio and is mutually exclusive with populated reference_*_urls",
       },
       reference_image_urls: {
         type: "array",
@@ -1617,7 +1617,8 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         type: "string",
         enum: ["1:1", "4:3", "3:4", "16:9", "9:16", "21:9", "adaptive"],
         default: "adaptive",
-        description: "Output aspect ratio (default adaptive)",
+        description:
+          "Output aspect ratio (default adaptive); first_frame_url or last_frame_url requires adaptive",
       },
       duration: {
         type: "integer",

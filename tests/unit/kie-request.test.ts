@@ -398,7 +398,7 @@ describe("KIE request utilities", () => {
           return_last_frame: true,
           generate_audio: false,
           resolution: "480p",
-          aspect_ratio: "21:9",
+          aspect_ratio: "adaptive",
           duration: 30,
           output_format: "mov",
           web_search: true,

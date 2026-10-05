@@ -2483,6 +2483,15 @@ export const kie: Record<string, ModelPricing> = {
   // (0.5 credits = $0.0025 per image beyond the first, which is free).
   // The page's separate Layer Decomposition rows now have their own callable
   // pricing key below.
+  // Official KIE pricing feed, 2026-10-05: 3.24 credits per image at
+  // every size, with one credit equal to $0.005.
+  "seedream/5-flash-text-to-image": tieredImagePage(
+    "size",
+    { "1K": 0.0162, "1.5K": 0.0162, "2K": 0.0162 },
+    "https://kie.ai/seedream-5-0-flash?model=seedream%2F5-flash-text-to-image",
+    "1K",
+    "2026-10-05"
+  ),
   "seedream/5-pro-text-to-image": tieredImagePage(
     "quality",
     { basic: 0.035, high: 0.07 },

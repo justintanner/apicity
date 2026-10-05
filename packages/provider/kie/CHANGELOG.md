@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added `seedream/5-flash-text-to-image` with typed request metadata, local
+  validation, and size-based pricing for 1K, 1.5K, and 2K images.
+
 - `codex.v1.responses` now enumerates `gpt-6-astra`, `gpt-6-luna` and
   `gpt-6-sol` in its `model` enum, so `apicity describe` and the
   `KieResponsesModel` type autocomplete them. All three already validated

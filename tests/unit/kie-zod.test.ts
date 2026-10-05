@@ -1622,6 +1622,7 @@ const MEDIA_MODEL_FAMILIES = [
       "seedream/5-lite-text-to-image",
       "seedream/5-pro-image-to-image",
       "seedream/5-pro-text-to-image",
+      "seedream/5-flash-text-to-image",
       "seedream/5-pro-layer-decomposition",
       "seedream/4.5-text-to-image",
       "seedream/4.5-edit",

@@ -257,6 +257,7 @@ export const KIE_MEDIA_MODELS = [
   "seedream/5-lite-text-to-image",
   "seedream/5-pro-image-to-image",
   "seedream/5-pro-text-to-image",
+  "seedream/5-flash-text-to-image",
   "seedream/5-pro-layer-decomposition",
   "seedream/4.5-text-to-image",
   "seedream/4.5-edit",
@@ -4162,6 +4163,22 @@ export const SeedreamProTextToImageRequestSchema = z.object({
     quality: z.enum(["basic", "high"]),
     output_format: z.enum(["png", "jpeg"]).default("png"),
     nsfw_checker: z.boolean().default(false),
+  }),
+});
+
+// Docs: https://docs.kie.ai/market/seedream/5-flash-text-to-image
+// Flash uses size rather than the Pro model's quality selector.
+export const SeedreamFlashTextToImageRequestSchema = z.object({
+  model: z.literal("seedream/5-flash-text-to-image"),
+  callBackUrl: z.string().url().optional(),
+  input: z.object({
+    prompt: z.string().min(3).max(5000),
+    aspect_ratio: z
+      .enum(["1:1", "4:3", "3:4", "16:9", "9:16", "2:3", "3:2", "21:9"])
+      .default("1:1"),
+    size: z.enum(["1K", "1.5K", "2K"]).default("1K"),
+    output_format: z.enum(["png", "jpeg"]).default("png"),
+    nsfw_checker: z.boolean().optional(),
   }),
 });
 
@@ -8367,6 +8384,7 @@ export const MediaGenerationRequestSchema = z.union([
   SeedreamTextToImageRequestSchema,
   SeedreamProImageToImageRequestSchema,
   SeedreamProTextToImageRequestSchema,
+  SeedreamFlashTextToImageRequestSchema,
   SeedreamProLayerDecompositionRequestSchema,
   Seedream45TextToImageRequestSchema,
   Seedream45EditRequestSchema,
@@ -10022,4 +10040,13 @@ export type MediaGenerationRequest = z.input<
 export type MediaGenerationRequestInput = MediaGenerationRequest;
 export type MediaGenerationParsedRequest = z.output<
   typeof MediaGenerationRequestSchema
+>;
+
+export type SeedreamFlashTextToImageRequest = z.input<
+  typeof SeedreamFlashTextToImageRequestSchema
+>;
+export type SeedreamFlashTextToImageRequestInput =
+  SeedreamFlashTextToImageRequest;
+export type SeedreamFlashTextToImageParsedRequest = z.output<
+  typeof SeedreamFlashTextToImageRequestSchema
 >;

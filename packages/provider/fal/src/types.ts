@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalIdeogramV4p5ParsedRequest,
+  FalIdeogramV4p5RequestInput,
+  FalIdeogramV4p5Request,
   FalIdeogramV4p5EditRequest,
   FalIdeogramV4p5EditRequestInput,
   FalIdeogramV4p5EditParsedRequest,
@@ -383,6 +386,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalIdeogramV4p5Request,
   FalIdeogramV4p5EditRequest,
   FalXaiGrokImagineVideoV1p5LiteImageToVideoRequest,
   FalFlux3TextToImageRequest,
@@ -3149,6 +3153,12 @@ export interface FalIdeogramV4p5EditResponse {
   seed: number;
 }
 export interface FalRunIdeogramV4p5Namespace {
+  (
+    params: FalIdeogramV4p5Request,
+    signal?: AbortSignal
+  ): Promise<FalIdeogramV4p5Response>;
+  schema: ApicitySchema<FalIdeogramV4p5Request>;
+
   edit: ((
     params: FalIdeogramV4p5EditRequest,
     signal?: AbortSignal
@@ -3158,4 +3168,14 @@ export interface FalRunIdeogramV4p5Namespace {
 }
 export interface FalRunIdeogramNamespace {
   v4p5: FalRunIdeogramV4p5Namespace;
+}
+
+export interface FalIdeogramV4p5Response {
+  seed: number;
+  images: {
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    url: string;
+  }[];
 }

@@ -21,6 +21,10 @@ export type {
 
 // Export all types
 export type {
+  FalIdeogramV4p5Response,
+  FalIdeogramV4p5ParsedRequest,
+  FalIdeogramV4p5RequestInput,
+  FalIdeogramV4p5Request,
   FalIdeogramV4p5EditRequest,
   FalIdeogramV4p5EditRequestInput,
   FalIdeogramV4p5EditParsedRequest,

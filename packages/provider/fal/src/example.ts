@@ -532,6 +532,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST ideogram.v4p5": {
+    "source": "fal/ideogram-v4-5",
+    "payload": {
+      "num_images": 1,
+      "quality": "low",
+      "prompt": "A red panda waves once, then holds still."
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST ideogram.v4p5.edit": {
     "source": "fal/ideogram45-edit",
     "payload": {

@@ -1,4 +1,6 @@
 import {
+  FalIdeogramV4p5Response,
+  FalIdeogramV4p5Request,
   FalIdeogramV4p5EditRequest,
   FalIdeogramV4p5EditResponse,
   FalXaiGrokImagineVideoV1p5LiteImageToVideoRequest,
@@ -216,6 +218,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalIdeogramV4p5RequestSchema,
   FalPricingEstimateRequestSchema,
   FalDeletePayloadsRequestSchema,
   FalQueueSubmitRequestSchema,
@@ -2029,13 +2032,22 @@ export function createFal(opts: FalOptions): FalProvider {
     },
   };
 
+  // POST https://fal.run/ideogram/v4.5
+  // Docs: https://fal.ai/models/ideogram/v4.5/api
+  const ideogramV4p5 = jsonBody<
+    FalIdeogramV4p5Request,
+    FalIdeogramV4p5Response
+  >("POST", "/ideogram/v4.5", FalIdeogramV4p5RequestSchema, {
+    base: runBaseURL,
+  });
+
   const run: FalRunNamespace = {
     ideogram: {
-      v4p5: {
+      v4p5: Object.assign(ideogramV4p5, {
         // POST https://fal.run/ideogram/v4.5/edit
         // Docs: https://fal.ai/models/ideogram/v4.5/edit/api
         edit: ideogramV4p5Edit,
-      },
+      }),
     },
     alibaba: {
       wan3p0: {

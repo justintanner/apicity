@@ -688,6 +688,15 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  "ideogram/v4.5": {
+    kind: "perUnit",
+    unit: "images",
+    units: imageCount,
+    select: [{ name: "quality", pick: (p) => asString(p.quality) ?? "medium" }],
+    rates: { low: 0.03, medium: 0.06, high: 0.22 },
+    source: source("ideogram/v4.5", "2026-10-05"),
+  },
+
   "ideogram/v4.5/edit": {
     kind: "perUnit",
     unit: "images",

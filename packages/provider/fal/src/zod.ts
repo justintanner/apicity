@@ -3607,7 +3607,118 @@ export type FalIdeogramV4p5EditParsedRequest = z.output<
   typeof FalIdeogramV4p5EditRequestSchema
 >;
 
+// Docs: https://fal.ai/models/ideogram/v4.5/api
+export const FalIdeogramV4p5RequestSchema = z
+  .object({
+    prompt: z
+      .string()
+      .min(1)
+      .max(10000)
+      .describe("The generation or editing prompt."),
+    image_size: z
+      .union([
+        z.object({
+          width: z.number().int().gt(0).max(14142).default(512),
+          height: z.number().int().gt(0).max(14142).default(512),
+        }),
+        z.enum([
+          "square_hd",
+          "square",
+          "portrait_4_3",
+          "portrait_16_9",
+          "landscape_4_3",
+          "landscape_16_9",
+        ]),
+      ])
+      .refine(
+        (size) =>
+          typeof size === "string" ||
+          new Set([
+            "1024x1024",
+            "1152x864",
+            "864x1152",
+            "1280x720",
+            "720x1280",
+            "1024x1024",
+            "1024x3072",
+            "1120x896",
+            "1152x2944",
+            "1152x864",
+            "1248x3328",
+            "1248x832",
+            "1280x3072",
+            "1280x720",
+            "1280x800",
+            "1296x3168",
+            "1440x2560",
+            "1440x2880",
+            "1440x720",
+            "1600x2560",
+            "1664x2496",
+            "1728x2304",
+            "1792x2240",
+            "2048x2048",
+            "2240x1792",
+            "2304x1728",
+            "2496x1664",
+            "2560x1440",
+            "2560x1600",
+            "2880x1440",
+            "2944x1152",
+            "3072x1024",
+            "3072x1280",
+            "3168x1296",
+            "3328x1248",
+            "720x1280",
+            "720x1440",
+            "800x1280",
+            "832x1248",
+            "864x1152",
+            "896x1120",
+          ]).has(`${size.width}x${size.height}`),
+        { message: "Explicit dimensions must be one of the documented sizes" }
+      )
+      .default("square_hd")
+      .describe(
+        "Output size. square is promoted to square_hd (1024x1024). 4:3 presets use 1152x864 or 864x1152; 16:9 presets use 1280x720 or 720x1280. Explicit dimensions must match a supported size: 1024x1024, 1024x3072, 1120x896, 1152x2944, 1152x864, 1248x3328, 1248x832, 1280x3072, 1280x720, 1280x800, 1296x3168, 1440x2560, 1440x2880, 1440x720, 1600x2560, 1664x2496, 1728x2304, 1792x2240, 2048x2048, 2240x1792, 2304x1728, 2496x1664, 2560x1440, 2560x1600, 2880x1440, 2944x1152, 3072x1024, 3072x1280, 3168x1296, 3328x1248, 720x1280, 720x1440, 800x1280, 832x1248, 864x1152, 896x1120"
+      ),
+    quality: z
+      .enum(["low", "medium", "high"])
+      .default("medium")
+      .describe("Text-to-image quality."),
+    enable_prompt_expansion: z
+      .boolean()
+      .default(true)
+      .describe("Enable partner prompt expansion."),
+    num_images: z
+      .number()
+      .int()
+      .min(1)
+      .max(8)
+      .default(1)
+      .describe("Number of images to generate."),
+    seed: z
+      .number()
+      .int()
+      .nullable()
+      .optional()
+      .describe("Random seed. Omit to choose automatically."),
+    sync_mode: z
+      .boolean()
+      .default(false)
+      .describe("Return image data directly in the response."),
+  })
+  .strict();
+export type FalIdeogramV4p5Request = z.input<
+  typeof FalIdeogramV4p5RequestSchema
+>;
+export type FalIdeogramV4p5RequestInput = FalIdeogramV4p5Request;
+export type FalIdeogramV4p5ParsedRequest = z.output<
+  typeof FalIdeogramV4p5RequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "ideogram/v4.5": FalIdeogramV4p5RequestSchema,
   "ideogram/v4.5/edit": FalIdeogramV4p5EditRequestSchema,
   "xai/grok-imagine-video/v1.5/lite/image-to-video":
     FalXaiGrokImagineVideoV1p5LiteImageToVideoRequestSchema,

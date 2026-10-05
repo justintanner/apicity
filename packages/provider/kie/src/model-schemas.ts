@@ -5802,6 +5802,12 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     fields: googleGemini38TtsFields,
   },
 
+  // https://docs.kie.ai/market/google/gemini-3-8-flash-lite-tts
+  "google/gemini-3-8-flash-lite-tts": {
+    type: "audio",
+    fields: googleGemini38TtsFields,
+  },
+
   // Sources:
   // - https://docs.kie.ai/market/google/imagen4
   // - https://docs.kie.ai/market/google/imagen4-fast

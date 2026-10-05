@@ -353,6 +353,7 @@ export const KIE_MEDIA_MODELS = [
   "google/gemini-2-5-pro-tts",
   "google/gemini-3-1-flash-tts",
   "google/gemini-3-8-flash-tts",
+  "google/gemini-3-8-flash-lite-tts",
   // Gemini Omni 1.1 Flash — google/ namespaced, enum-only (no alias).
   "google/gemini-omni-flash-1-1",
   // Google Imagen 4 + namespaced Nano Banana — enum-only (no google/ alias).
@@ -5727,6 +5728,13 @@ export const GoogleGemini38FlashTtsRequestSchema = z.object({
   input: GoogleGemini38TtsInputSchema,
 });
 
+// Docs: https://docs.kie.ai/market/google/gemini-3-8-flash-lite-tts
+export const GoogleGemini38FlashLiteTtsRequestSchema = z.object({
+  model: z.literal("google/gemini-3-8-flash-lite-tts"),
+  callBackUrl: z.string().url().optional(),
+  input: GoogleGemini38TtsInputSchema,
+});
+
 // ---------------------------------------------------------------------------
 // Google Imagen 4 + namespaced Nano Banana createTask models
 // Docs: https://docs.kie.ai/market/google/imagen4 and siblings
@@ -8602,6 +8610,7 @@ export const MediaGenerationRequestSchema = z.union([
   GoogleGemini25ProTtsRequestSchema,
   GoogleGemini31FlashTtsRequestSchema,
   GoogleGemini38FlashTtsRequestSchema,
+  GoogleGemini38FlashLiteTtsRequestSchema,
   GoogleImagen4RequestSchema,
   GoogleImagen4FastRequestSchema,
   GoogleImagen4UltraRequestSchema,
@@ -10215,4 +10224,13 @@ export type GoogleGemini38FlashTtsRequest = z.input<
 export type GoogleGemini38FlashTtsRequestInput = GoogleGemini38FlashTtsRequest;
 export type GoogleGemini38FlashTtsParsedRequest = z.output<
   typeof GoogleGemini38FlashTtsRequestSchema
+>;
+
+export type GoogleGemini38FlashLiteTtsRequest = z.input<
+  typeof GoogleGemini38FlashLiteTtsRequestSchema
+>;
+export type GoogleGemini38FlashLiteTtsRequestInput =
+  GoogleGemini38FlashLiteTtsRequest;
+export type GoogleGemini38FlashLiteTtsParsedRequest = z.output<
+  typeof GoogleGemini38FlashLiteTtsRequestSchema
 >;

@@ -563,18 +563,29 @@ describe("KIE Google Gemini TTS modelInputSchemas metadata", () => {
     const googleTtsModels = Object.keys(provider.modelInputSchemas).filter(
       (model) => model.startsWith("google/gemini-") && model.endsWith("-tts")
     );
-    expect(googleTtsModels).toEqual([...MODELS, "google/gemini-3-8-flash-tts"]);
-    const modern = provider.modelInputSchemas["google/gemini-3-8-flash-tts"];
-    expect(modern.type).toBe("audio");
-    expect(Object.keys(modern.fields)).toEqual([
-      "temperature",
-      "speakers",
-      "filler_words",
-      "dialogue_turns",
+    expect(googleTtsModels).toEqual([
+      ...MODELS,
+      "google/gemini-3-8-flash-tts",
+      "google/gemini-3-8-flash-lite-tts",
     ]);
-    expect(modern.fields.speakers.items?.properties?.voice_name).toMatchObject({
-      default: "Fola",
-    });
+    for (const model of [
+      "google/gemini-3-8-flash-tts",
+      "google/gemini-3-8-flash-lite-tts",
+    ] as const) {
+      const modern = provider.modelInputSchemas[model];
+      expect(modern.type).toBe("audio");
+      expect(Object.keys(modern.fields)).toEqual([
+        "temperature",
+        "speakers",
+        "filler_words",
+        "dialogue_turns",
+      ]);
+      expect(
+        modern.fields.speakers.items?.properties?.voice_name
+      ).toMatchObject({
+        default: "Fola",
+      });
+    }
 
     for (const model of MODELS) {
       const entry = provider.modelInputSchemas[model];

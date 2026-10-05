@@ -3133,4 +3133,9 @@ export const kie: Record<string, ModelPricing> = {
     rate: { input: 0.35, output: 6.3 },
     source: pricePage("https://kie.ai/gemini-3.8-flash-tts", "2026-10-05"),
   },
+  "google/gemini-3-8-flash-lite-tts": {
+    kind: "tokens",
+    rate: { input: 0.35, output: 4.2 },
+    source: pricePage("https://kie.ai/gemini-3.8-flash-lite-tts", "2026-10-05"),
+  },
 };

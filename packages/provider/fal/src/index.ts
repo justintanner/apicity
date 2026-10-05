@@ -21,6 +21,10 @@ export type {
 
 // Export all types
 export type {
+  FalBriaFiboEdit1p5ProductHoldingResponse,
+  FalBriaFiboEdit1p5ProductHoldingParsedRequest,
+  FalBriaFiboEdit1p5ProductHoldingRequestInput,
+  FalBriaFiboEdit1p5ProductHoldingRequest,
   FalRunBriaNamespace,
   FalRunBriaFiboEdit1p5Namespace,
   FalBriaFiboEdit1p5VirtualTryOnResponse,

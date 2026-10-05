@@ -273,6 +273,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST bria.fiboEdit1p5.productHolding": {
+    "source": "fal/bria-fibo-edit-1-5-product-holding",
+    "payload": {
+      "person_image_url": "https://labs-assets.bria.ai/fal-examples/fibo-edit-1.5/product-holding/person.jpg",
+      "product_image_urls": [
+        "https://labs-assets.bria.ai/fal-examples/fibo-edit-1.5/product-holding/product.jpg"
+      ]
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST bria.fiboEdit1p5.virtualTryOn": {
     "source": "fal/bria-fibo-edit-1-5-virtual-try-on",
     "payload": {

@@ -800,6 +800,12 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  "bria/fibo-edit-1.5/product-holding": perImage(
+    "bria/fibo-edit-1.5/product-holding",
+    0.04,
+    "2026-10-05"
+  ),
+
   "bria/fibo-edit-1.5/virtual-try-on": perImage(
     "bria/fibo-edit-1.5/virtual-try-on",
     0.04,

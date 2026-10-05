@@ -412,6 +412,7 @@ export const MODEL_SLUGS = {
   // same underlying models kie also resells, so their slugs intentionally
   // match kie's.
   fal: {
+    "bria/fibo-edit-1.5/product-holding": "briafiboedit",
     "bria/fibo-edit-1.5/virtual-try-on": "briafiboedit",
     "google/lyria-3.5": "googlelyria3",
     "meshy/v7.1/multi-image-to-3d": "meshyv71",
@@ -856,6 +857,7 @@ export const MODEL_DISPLAY = {
   },
 
   fal: {
+    "bria/fibo-edit-1.5/product-holding": "Bria Fibo Edit 1.5 Product Holding",
     "bria/fibo-edit-1.5/virtual-try-on": "Bria Fibo Edit 1.5 Virtual Try On",
     "google/lyria-3.5": "Google Lyria 3.5",
     "meshy/v7.1/multi-image-to-3d": "Meshy 7.1 Multi Image To 3d",

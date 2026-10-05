@@ -1692,3 +1692,4 @@ fal	meshy.v7p1.imageTo3d	POST	https://fal.run/meshy/v7.1/image-to-3d	https://fal
 fal	meshy.v7p1.multiImageTo3d	POST	https://fal.run/meshy/v7.1/multi-image-to-3d	https://fal.ai/models/meshy/v7.1/multi-image-to-3d/api
 fal	google.lyria3p5	POST	https://fal.run/google/lyria-3.5	https://fal.ai/models/google/lyria-3.5/api
 fal	bria.fiboEdit1p5.virtualTryOn	POST	https://fal.run/bria/fibo-edit-1.5/virtual-try-on	https://fal.ai/models/bria/fibo-edit-1.5/virtual-try-on/api
+fal	bria.fiboEdit1p5.productHolding	POST	https://fal.run/bria/fibo-edit-1.5/product-holding	https://fal.ai/models/bria/fibo-edit-1.5/product-holding/api

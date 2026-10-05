@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalBriaFiboEdit1p5ProductHoldingParsedRequest,
+  FalBriaFiboEdit1p5ProductHoldingRequestInput,
+  FalBriaFiboEdit1p5ProductHoldingRequest,
   FalBriaFiboEdit1p5VirtualTryOnParsedRequest,
   FalBriaFiboEdit1p5VirtualTryOnRequestInput,
   FalBriaFiboEdit1p5VirtualTryOnRequest,
@@ -434,6 +437,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalBriaFiboEdit1p5ProductHoldingRequest,
   FalBriaFiboEdit1p5VirtualTryOnRequest,
   FalGoogleLyria3p5Request,
   FalMeshyV7p1MultiImageTo3dRequest,
@@ -3685,6 +3689,13 @@ export interface FalBriaFiboEdit1p5VirtualTryOnResponse {
 }
 
 export interface FalRunBriaFiboEdit1p5Namespace {
+  productHolding: ((
+    params: FalBriaFiboEdit1p5ProductHoldingRequest,
+    signal?: AbortSignal
+  ) => Promise<FalBriaFiboEdit1p5ProductHoldingResponse>) & {
+    schema: ApicitySchema<FalBriaFiboEdit1p5ProductHoldingRequest>;
+  };
+
   virtualTryOn: ((
     params: FalBriaFiboEdit1p5VirtualTryOnRequest,
     signal?: AbortSignal
@@ -3695,4 +3706,24 @@ export interface FalRunBriaFiboEdit1p5Namespace {
 
 export interface FalRunBriaNamespace {
   fiboEdit1p5: FalRunBriaFiboEdit1p5Namespace;
+}
+
+export interface FalBriaFiboEdit1p5ProductHoldingResponse {
+  structured_instruction: Record<string, unknown>;
+  images?: {
+    width?: number | null;
+    height?: number | null;
+    content_type?: string | null;
+    file_size?: number | null;
+    url: string;
+    file_name?: string | null;
+  }[];
+  image: {
+    width?: number | null;
+    height?: number | null;
+    content_type?: string | null;
+    file_size?: number | null;
+    url: string;
+    file_name?: string | null;
+  };
 }

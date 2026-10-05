@@ -1,4 +1,6 @@
 import {
+  FalBriaFiboEdit1p5ProductHoldingResponse,
+  FalBriaFiboEdit1p5ProductHoldingRequest,
   FalBriaFiboEdit1p5VirtualTryOnResponse,
   FalBriaFiboEdit1p5VirtualTryOnRequest,
   FalGoogleLyria3p5Response,
@@ -250,6 +252,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalBriaFiboEdit1p5ProductHoldingRequestSchema,
   FalBriaFiboEdit1p5VirtualTryOnRequestSchema,
   FalGoogleLyria3p5RequestSchema,
   FalMeshyV7p1MultiImageTo3dRequestSchema,
@@ -2266,10 +2269,29 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/bria/fibo-edit-1.5/product-holding
+  // Docs: https://fal.ai/models/bria/fibo-edit-1.5/product-holding/api
+  const briaFiboEdit1p5ProductHolding = jsonBody<
+    FalBriaFiboEdit1p5ProductHoldingRequest,
+    FalBriaFiboEdit1p5ProductHoldingResponse
+  >(
+    "POST",
+    "/bria/fibo-edit-1.5/product-holding",
+    FalBriaFiboEdit1p5ProductHoldingRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
     // POST https://fal.run/bria/fibo-edit-1.5/virtual-try-on
     // Docs: https://fal.ai/models/bria/fibo-edit-1.5/virtual-try-on/api
-    bria: { fiboEdit1p5: { virtualTryOn: briaFiboEdit1p5VirtualTryOn } },
+    bria: {
+      fiboEdit1p5: {
+        // POST https://fal.run/bria/fibo-edit-1.5/product-holding
+        // Docs: https://fal.ai/models/bria/fibo-edit-1.5/product-holding/api
+        productHolding: briaFiboEdit1p5ProductHolding,
+        virtualTryOn: briaFiboEdit1p5VirtualTryOn,
+      },
+    },
     // POST https://fal.run/recraft/v4.1/flash/text-to-image
     // Docs: https://fal.ai/models/recraft/v4.1/flash/text-to-image/api
     recraft: { v4p1: { flash: { textToImage: recraftV4p1FlashTextToImage } } },

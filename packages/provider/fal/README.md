@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-116 endpoints across 30 groups. Each method mirrors an upstream URL path.
+117 endpoints across 31 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -1744,6 +1744,25 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.topaz.upscale.video.precision({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+### tripo3d
+
+<details>
+<summary><code>POST</code> <b><code>fal.tripo3d.p2.textTo3d</code></b></summary>
+
+<code>POST https://fal.run/tripo3d/p2/text-to-3d</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/tripo3d/p2/text-to-3d/api)
+
+```typescript
+const res = await fal.run.tripo3d.p2.textTo3d({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

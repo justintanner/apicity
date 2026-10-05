@@ -716,6 +716,26 @@ const perOutputImage = (
   source: source(endpointId, on),
 });
 
+// Tripo P2 bills one generated model. Untextured (texture and pbr both
+// false) is $1.00. Otherwise the texture_quality rate applies, and pbr
+// turns textures on. Quad topology does not add a charge. An unknown
+// quality selects no rate.
+function tripoP2Tier(p: Record<string, unknown>): string {
+  const texture = p.texture === undefined ? true : p.texture === true;
+  const pbr = p.pbr === undefined ? true : p.pbr === true;
+  if (!texture && !pbr) return "none";
+  return asString(p.texture_quality) ?? "standard";
+}
+
+const tripoP2 = (endpointId: string, on: string): ModelPricing => ({
+  kind: "perUnit",
+  unit: "generations",
+  units: () => 1,
+  select: [{ name: "texture", pick: tripoP2Tier }],
+  rates: { none: 1, fast: 1.1, standard: 1.1, detailed: 1.2, extreme: 1.3 },
+  source: source(endpointId, on),
+});
+
 export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "alibaba/qwen-image-3/edit",
   "alibaba/qwen-image-3/text-to-image",
@@ -750,6 +770,8 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  "tripo3d/p2/text-to-3d": tripoP2("tripo3d/p2/text-to-3d", "2026-10-05"),
+
   "bytedance/seedream/v5/flash/text-to-image": perImage(
     "bytedance/seedream/v5/flash/text-to-image",
     0.027,

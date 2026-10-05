@@ -1684,3 +1684,4 @@ fal	google.gemini3p8FlashLiteTts	POST	https://fal.run/google/gemini-3.8-flash-li
 fal	bytedance.seedream.v5.flash.layerize	POST	https://fal.run/bytedance/seedream/v5/flash/layerize	https://fal.ai/models/bytedance/seedream/v5/flash/layerize/api
 fal	bytedance.seedream.v5.flash.edit	POST	https://fal.run/bytedance/seedream/v5/flash/edit	https://fal.ai/models/bytedance/seedream/v5/flash/edit/api
 fal	bytedance.seedream.v5.flash.textToImage	POST	https://fal.run/bytedance/seedream/v5/flash/text-to-image	https://fal.ai/models/bytedance/seedream/v5/flash/text-to-image/api
+fal	tripo3d.p2.textTo3d	POST	https://fal.run/tripo3d/p2/text-to-3d	https://fal.ai/models/tripo3d/p2/text-to-3d/api

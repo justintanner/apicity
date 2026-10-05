@@ -989,6 +989,14 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST tripo3d.p2.textTo3d": {
+    "source": "fal/tripo3d-p2-text-to-3d",
+    "payload": {
+      "prompt": "A red panda waves once, then holds still."
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST v1.models.pricing.estimate": {
     "source": "fal/estimate-cost",
     "payload": {

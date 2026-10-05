@@ -412,6 +412,7 @@ export const MODEL_SLUGS = {
   // same underlying models kie also resells, so their slugs intentionally
   // match kie's.
   fal: {
+    "tripo3d/p2/text-to-3d": "tripo3dp2",
     "bytedance/seedream/v5/flash/text-to-image": "bytedancesee",
     "bytedance/seedream/v5/flash/edit": "bytedancesee",
     "bytedance/seedream/v5/flash/layerize": "bytedancesee",
@@ -848,6 +849,7 @@ export const MODEL_DISPLAY = {
   },
 
   fal: {
+    "tripo3d/p2/text-to-3d": "Tripo3d P2 Text To 3d",
     "bytedance/seedream/v5/flash/text-to-image":
       "Bytedance Seedream V5 Flash Text To Image",
     "bytedance/seedream/v5/flash/edit": "Bytedance Seedream V5 Flash Edit",

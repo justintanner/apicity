@@ -1,4 +1,6 @@
 import {
+  FalTripo3dP2TextTo3dResponse,
+  FalTripo3dP2TextTo3dRequest,
   FalBytedanceSeedreamV5FlashTextToImageResponse,
   FalBytedanceSeedreamV5FlashTextToImageRequest,
   FalBytedanceSeedreamV5FlashEditResponse,
@@ -234,6 +236,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalTripo3dP2TextTo3dRequestSchema,
   FalBytedanceSeedreamV5FlashTextToImageRequestSchema,
   FalBytedanceSeedreamV5FlashEditRequestSchema,
   FalBytedanceSeedreamV5FlashLayerizeRequestSchema,
@@ -2161,7 +2164,19 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/tripo3d/p2/text-to-3d
+  // Docs: https://fal.ai/models/tripo3d/p2/text-to-3d/api
+  const tripo3dP2TextTo3d = jsonBody<
+    FalTripo3dP2TextTo3dRequest,
+    FalTripo3dP2TextTo3dResponse
+  >("POST", "/tripo3d/p2/text-to-3d", FalTripo3dP2TextTo3dRequestSchema, {
+    base: runBaseURL,
+  });
+
   const run: FalRunNamespace = {
+    // POST https://fal.run/tripo3d/p2/text-to-3d
+    // Docs: https://fal.ai/models/tripo3d/p2/text-to-3d/api
+    tripo3d: { p2: { textTo3d: tripo3dP2TextTo3d } },
     // POST https://fal.run/google/gemini-3.8-flash-tts
     // Docs: https://fal.ai/models/google/gemini-3.8-flash-tts/api
     google: {

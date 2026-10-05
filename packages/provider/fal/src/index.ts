@@ -21,6 +21,12 @@ export type {
 
 // Export all types
 export type {
+  FalRunTripo3dNamespace,
+  FalRunTripo3dP2Namespace,
+  FalTripo3dP2TextTo3dResponse,
+  FalTripo3dP2TextTo3dParsedRequest,
+  FalTripo3dP2TextTo3dRequestInput,
+  FalTripo3dP2TextTo3dRequest,
   FalBytedanceSeedreamV5FlashTextToImageResponse,
   FalBytedanceSeedreamV5FlashTextToImageParsedRequest,
   FalBytedanceSeedreamV5FlashTextToImageRequestInput,

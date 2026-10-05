@@ -4342,7 +4342,106 @@ export type FalBytedanceSeedreamV5FlashTextToImageParsedRequest = z.output<
   typeof FalBytedanceSeedreamV5FlashTextToImageRequestSchema
 >;
 
+// Docs: https://fal.ai/models/tripo3d/p2/text-to-3d/api
+export const FalTripo3dP2TextTo3dRequestSchema = z
+  .object({
+    prompt: z
+      .string()
+      .min(1)
+      .max(1024)
+      .describe(
+        "Text description of the 3D object to generate. Maximum 1024 characters."
+      ),
+    negative_prompt: z
+      .string()
+      .max(255)
+      .nullable()
+      .optional()
+      .describe("Text describing features to avoid in the generated model."),
+    image_seed: z
+      .number()
+      .int()
+      .nullable()
+      .optional()
+      .describe("Seed for the internal text-to-image step."),
+    model_seed: z
+      .number()
+      .int()
+      .nullable()
+      .optional()
+      .describe("Seed for geometry generation reproducibility."),
+    face_limit: z
+      .number()
+      .int()
+      .min(48)
+      .max(50000)
+      .nullable()
+      .optional()
+      .describe(
+        "Maximum number of faces for the generated mesh. Quad meshes support up to 25,000 faces."
+      ),
+    texture: z
+      .boolean()
+      .default(true)
+      .describe("Whether to generate textures for the model."),
+    pbr: z
+      .boolean()
+      .default(true)
+      .describe(
+        "Whether to generate PBR material maps. Enabling PBR also enables textures."
+      ),
+    texture_seed: z
+      .number()
+      .int()
+      .nullable()
+      .optional()
+      .describe("Seed for texture generation reproducibility."),
+    texture_quality: z
+      .enum(["fast", "standard", "detailed", "extreme"])
+      .default("standard")
+      .describe("Texture quality level."),
+    texture_version: z
+      .enum(["v3.5-20260815", "v3.0-20250812", "v2.5-20250123"])
+      .nullable()
+      .optional()
+      .describe(
+        "Texture model version. The fast quality requires v3.5-20260815."
+      ),
+    delight: z
+      .boolean()
+      .default(true)
+      .describe(
+        "Remove baked-in lighting before texturing with v3.5-20260815."
+      ),
+    auto_size: z
+      .boolean()
+      .default(false)
+      .describe("Auto-scale the model to real-world dimensions in meters."),
+    export_uv: z
+      .boolean()
+      .default(true)
+      .describe("Whether to generate UV coordinates for the model."),
+    export_orientation: z
+      .enum(["+x", "-x", "-y", "+y"])
+      .nullable()
+      .optional()
+      .describe("Optional forward axis for the exported model."),
+    quad: z
+      .boolean()
+      .default(false)
+      .describe("Generate quad mesh topology instead of triangles."),
+  })
+  .describe("Input for Text to 3D generation using the P2 model.");
+export type FalTripo3dP2TextTo3dRequest = z.input<
+  typeof FalTripo3dP2TextTo3dRequestSchema
+>;
+export type FalTripo3dP2TextTo3dRequestInput = FalTripo3dP2TextTo3dRequest;
+export type FalTripo3dP2TextTo3dParsedRequest = z.output<
+  typeof FalTripo3dP2TextTo3dRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "tripo3d/p2/text-to-3d": FalTripo3dP2TextTo3dRequestSchema,
   "bytedance/seedream/v5/flash/text-to-image":
     FalBytedanceSeedreamV5FlashTextToImageRequestSchema,
   "bytedance/seedream/v5/flash/edit":

@@ -729,6 +729,14 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST meshy.v7p1.textTo3d": {
+    "source": "fal/meshy-v7-1-text-to-3d",
+    "payload": {
+      "prompt": "A red panda waves once, then holds still."
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST minimax.h3.imageToVideo": {
     "source": "fal/minimax-h3-image-to-video",
     "payload": {

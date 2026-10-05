@@ -736,6 +736,29 @@ const tripoP2 = (endpointId: string, on: string): ModelPricing => ({
   source: source(endpointId, on),
 });
 
+// Meshy 7.1 bills one model. preview is the untextured $0.80 base and full
+// is the textured $1.20 total. Auto-rigging adds $0.20 and animation adds
+// $0.12. An unknown mode selects no rate.
+const meshyV71 = (endpointId: string, on: string): ModelPricing => ({
+  kind: "perUnit",
+  unit: "generations",
+  units: () => 1,
+  select: [
+    {
+      name: "mode",
+      pick: (p) => asString(p.mode) ?? "full",
+    },
+  ],
+  rates: { preview: 0.8, full: 1.2 },
+  extra: (p) => {
+    let usd = 0;
+    if (p.enable_rigging === true) usd += 0.2;
+    if (p.enable_animation === true) usd += 0.12;
+    return usd;
+  },
+  source: source(endpointId, on),
+});
+
 export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "alibaba/qwen-image-3/edit",
   "alibaba/qwen-image-3/text-to-image",
@@ -770,6 +793,8 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  "meshy/v7.1/text-to-3d": meshyV71("meshy/v7.1/text-to-3d", "2026-10-05"),
+
   "recraft/v4.1/flash/text-to-image": perImage(
     "recraft/v4.1/flash/text-to-image",
     0.007,

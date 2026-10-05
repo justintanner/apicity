@@ -1687,3 +1687,4 @@ fal	bytedance.seedream.v5.flash.textToImage	POST	https://fal.run/bytedance/seedr
 fal	tripo3d.p2.textTo3d	POST	https://fal.run/tripo3d/p2/text-to-3d	https://fal.ai/models/tripo3d/p2/text-to-3d/api
 fal	tripo3d.p2.imageTo3d	POST	https://fal.run/tripo3d/p2/image-to-3d	https://fal.ai/models/tripo3d/p2/image-to-3d/api
 fal	recraft.v4p1.flash.textToImage	POST	https://fal.run/recraft/v4.1/flash/text-to-image	https://fal.ai/models/recraft/v4.1/flash/text-to-image/api
+fal	meshy.v7p1.textTo3d	POST	https://fal.run/meshy/v7.1/text-to-3d	https://fal.ai/models/meshy/v7.1/text-to-3d/api

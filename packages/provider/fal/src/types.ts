@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalMeshyV7p1TextTo3dParsedRequest,
+  FalMeshyV7p1TextTo3dRequestInput,
+  FalMeshyV7p1TextTo3dRequest,
   FalRecraftV4p1FlashTextToImageParsedRequest,
   FalRecraftV4p1FlashTextToImageRequestInput,
   FalRecraftV4p1FlashTextToImageRequest,
@@ -419,6 +422,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalMeshyV7p1TextTo3dRequest,
   FalRecraftV4p1FlashTextToImageRequest,
   FalTripo3dP2ImageTo3dRequest,
   FalTripo3dP2TextTo3dRequest,
@@ -2265,6 +2269,8 @@ export interface FalRunMeshyV7Namespace {
 }
 
 export interface FalRunMeshyNamespace {
+  v7p1: FalRunMeshyV7p1Namespace;
+
   v7: FalRunMeshyV7Namespace;
 }
 
@@ -3488,4 +3494,51 @@ export interface FalRunRecraftV4p1Namespace {
 
 export interface FalRunRecraftNamespace {
   v4p1: FalRunRecraftV4p1Namespace;
+}
+
+export interface FalMeshyV7p1TextTo3dResponse {
+  thumbnail?: unknown | null;
+  basic_animations?: unknown | null;
+  rigged_character_fbx?: unknown | null;
+  animation_glb?: unknown | null;
+  rig_task_id?: string | null;
+  animation_fbx?: unknown | null;
+  prompt: string;
+  seed?: number | null;
+  rigged_character_glb?: unknown | null;
+  texture_urls?: {
+    normal?: unknown | null;
+    metallic?: unknown | null;
+    roughness?: unknown | null;
+    base_color: {
+      content_type?: string | null;
+      file_name?: string | null;
+      file_size?: number | null;
+      url: string;
+    };
+  }[];
+  model_glb: {
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    url: string;
+  };
+  model_urls: {
+    fbx?: unknown | null;
+    obj?: unknown | null;
+    usdz?: unknown | null;
+    glb?: unknown | null;
+    blend?: unknown | null;
+    stl?: unknown | null;
+  };
+  actual_prompt?: string | null;
+}
+
+export interface FalRunMeshyV7p1Namespace {
+  textTo3d: ((
+    params: FalMeshyV7p1TextTo3dRequest,
+    signal?: AbortSignal
+  ) => Promise<FalMeshyV7p1TextTo3dResponse>) & {
+    schema: ApicitySchema<FalMeshyV7p1TextTo3dRequest>;
+  };
 }

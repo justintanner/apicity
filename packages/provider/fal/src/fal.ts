@@ -1,4 +1,6 @@
 import {
+  FalMeshyV7p1TextTo3dResponse,
+  FalMeshyV7p1TextTo3dRequest,
   FalRecraftV4p1FlashTextToImageResponse,
   FalRecraftV4p1FlashTextToImageRequest,
   FalTripo3dP2ImageTo3dResponse,
@@ -240,6 +242,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalMeshyV7p1TextTo3dRequestSchema,
   FalRecraftV4p1FlashTextToImageRequestSchema,
   FalTripo3dP2ImageTo3dRequestSchema,
   FalTripo3dP2TextTo3dRequestSchema,
@@ -2200,6 +2203,15 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/meshy/v7.1/text-to-3d
+  // Docs: https://fal.ai/models/meshy/v7.1/text-to-3d/api
+  const meshyV7p1TextTo3d = jsonBody<
+    FalMeshyV7p1TextTo3dRequest,
+    FalMeshyV7p1TextTo3dResponse
+  >("POST", "/meshy/v7.1/text-to-3d", FalMeshyV7p1TextTo3dRequestSchema, {
+    base: runBaseURL,
+  });
+
   const run: FalRunNamespace = {
     // POST https://fal.run/recraft/v4.1/flash/text-to-image
     // Docs: https://fal.ai/models/recraft/v4.1/flash/text-to-image/api
@@ -2385,6 +2397,9 @@ export function createFal(opts: FalOptions): FalProvider {
       },
     },
     meshy: {
+      // POST https://fal.run/meshy/v7.1/text-to-3d
+      // Docs: https://fal.ai/models/meshy/v7.1/text-to-3d/api
+      v7p1: { textTo3d: meshyV7p1TextTo3d },
       v7: {
         imageTo3d: meshyV7ImageTo3d,
       },

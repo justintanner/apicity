@@ -21,6 +21,11 @@ export type {
 
 // Export all types
 export type {
+  FalRunMeshyV7p1Namespace,
+  FalMeshyV7p1TextTo3dResponse,
+  FalMeshyV7p1TextTo3dParsedRequest,
+  FalMeshyV7p1TextTo3dRequestInput,
+  FalMeshyV7p1TextTo3dRequest,
   FalRunRecraftNamespace,
   FalRunRecraftV4p1Namespace,
   FalRunRecraftV4p1FlashNamespace,

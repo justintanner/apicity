@@ -21,6 +21,12 @@ export type {
 
 // Export all types
 export type {
+  FalRunBriaNamespace,
+  FalRunBriaFiboEdit1p5Namespace,
+  FalBriaFiboEdit1p5VirtualTryOnResponse,
+  FalBriaFiboEdit1p5VirtualTryOnParsedRequest,
+  FalBriaFiboEdit1p5VirtualTryOnRequestInput,
+  FalBriaFiboEdit1p5VirtualTryOnRequest,
   FalGoogleLyria3p5Response,
   FalGoogleLyria3p5ParsedRequest,
   FalGoogleLyria3p5RequestInput,

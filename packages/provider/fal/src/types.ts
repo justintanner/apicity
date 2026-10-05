@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalBriaFiboEdit1p5VirtualTryOnParsedRequest,
+  FalBriaFiboEdit1p5VirtualTryOnRequestInput,
+  FalBriaFiboEdit1p5VirtualTryOnRequest,
   FalGoogleLyria3p5ParsedRequest,
   FalGoogleLyria3p5RequestInput,
   FalGoogleLyria3p5Request,
@@ -431,6 +434,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalBriaFiboEdit1p5VirtualTryOnRequest,
   FalGoogleLyria3p5Request,
   FalMeshyV7p1MultiImageTo3dRequest,
   FalMeshyV7p1ImageTo3dRequest,
@@ -2832,6 +2836,8 @@ export interface FalRunLightricksNamespace {
 }
 
 export interface FalRunNamespace {
+  bria: FalRunBriaNamespace;
+
   recraft: FalRunRecraftNamespace;
 
   tripo3d: FalRunTripo3dNamespace;
@@ -3656,4 +3662,37 @@ export interface FalGoogleLyria3p5Response {
     file_size?: number | null;
     file_name?: string | null;
   };
+}
+
+export interface FalBriaFiboEdit1p5VirtualTryOnResponse {
+  structured_instruction: Record<string, unknown>;
+  images?: {
+    width?: number | null;
+    height?: number | null;
+    content_type?: string | null;
+    file_size?: number | null;
+    url: string;
+    file_name?: string | null;
+  }[];
+  image: {
+    width?: number | null;
+    height?: number | null;
+    content_type?: string | null;
+    file_size?: number | null;
+    url: string;
+    file_name?: string | null;
+  };
+}
+
+export interface FalRunBriaFiboEdit1p5Namespace {
+  virtualTryOn: ((
+    params: FalBriaFiboEdit1p5VirtualTryOnRequest,
+    signal?: AbortSignal
+  ) => Promise<FalBriaFiboEdit1p5VirtualTryOnResponse>) & {
+    schema: ApicitySchema<FalBriaFiboEdit1p5VirtualTryOnRequest>;
+  };
+}
+
+export interface FalRunBriaNamespace {
+  fiboEdit1p5: FalRunBriaFiboEdit1p5Namespace;
 }

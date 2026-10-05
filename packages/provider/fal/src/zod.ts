@@ -4990,7 +4990,52 @@ export type FalGoogleLyria3p5ParsedRequest = z.output<
   typeof FalGoogleLyria3p5RequestSchema
 >;
 
+// Docs: https://fal.ai/models/bria/fibo-edit-1.5/virtual-try-on/api
+export const FalBriaFiboEdit1p5VirtualTryOnRequestSchema = z.object({
+  person_image_url: z
+    .string()
+    .describe("Photo of the person who will wear the garments."),
+  garment_image_urls: z
+    .array(z.string())
+    .min(1)
+    .max(3)
+    .describe("1-3 garment or accessory images to put on the person."),
+  instruction: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("Extra direction, appended after the built-in instruction."),
+  aspect_ratio: z
+    .enum(["1:1", "2:3", "3:2", "3:4", "4:3", "4:5", "5:4", "9:16", "16:9"])
+    .nullable()
+    .optional()
+    .describe(
+      "Output aspect ratio. Left unset, the output keeps the ratio of the person image."
+    ),
+  seed: z
+    .number()
+    .int()
+    .default(5555)
+    .describe("Random seed for reproducibility."),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If true, returns the image directly in the response (increases latency)."
+    ),
+});
+export type FalBriaFiboEdit1p5VirtualTryOnRequest = z.input<
+  typeof FalBriaFiboEdit1p5VirtualTryOnRequestSchema
+>;
+export type FalBriaFiboEdit1p5VirtualTryOnRequestInput =
+  FalBriaFiboEdit1p5VirtualTryOnRequest;
+export type FalBriaFiboEdit1p5VirtualTryOnParsedRequest = z.output<
+  typeof FalBriaFiboEdit1p5VirtualTryOnRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "bria/fibo-edit-1.5/virtual-try-on":
+    FalBriaFiboEdit1p5VirtualTryOnRequestSchema,
   "google/lyria-3.5": FalGoogleLyria3p5RequestSchema,
   "meshy/v7.1/multi-image-to-3d": FalMeshyV7p1MultiImageTo3dRequestSchema,
   "meshy/v7.1/image-to-3d": FalMeshyV7p1ImageTo3dRequestSchema,

@@ -273,6 +273,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST bria.fiboEdit1p5.virtualTryOn": {
+    "source": "fal/bria-fibo-edit-1-5-virtual-try-on",
+    "payload": {
+      "person_image_url": "https://labs-assets.bria.ai/fal-examples/fibo-edit-1.5/virtual-try-on/person.jpg",
+      "garment_image_urls": [
+        "https://labs-assets.bria.ai/fal-examples/fibo-edit-1.5/virtual-try-on/garment-1.jpg"
+      ]
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST bytedance.seedSpeech.tts.v2": {
     "source": "fal/bytedance-seed-speech-tts-v2",
     "payload": {

@@ -1,4 +1,6 @@
 import {
+  FalBriaFiboEdit1p5VirtualTryOnResponse,
+  FalBriaFiboEdit1p5VirtualTryOnRequest,
   FalGoogleLyria3p5Response,
   FalGoogleLyria3p5Request,
   FalMeshyV7p1MultiImageTo3dResponse,
@@ -248,6 +250,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalBriaFiboEdit1p5VirtualTryOnRequestSchema,
   FalGoogleLyria3p5RequestSchema,
   FalMeshyV7p1MultiImageTo3dRequestSchema,
   FalMeshyV7p1ImageTo3dRequestSchema,
@@ -2251,7 +2254,22 @@ export function createFal(opts: FalOptions): FalProvider {
     base: runBaseURL,
   });
 
+  // POST https://fal.run/bria/fibo-edit-1.5/virtual-try-on
+  // Docs: https://fal.ai/models/bria/fibo-edit-1.5/virtual-try-on/api
+  const briaFiboEdit1p5VirtualTryOn = jsonBody<
+    FalBriaFiboEdit1p5VirtualTryOnRequest,
+    FalBriaFiboEdit1p5VirtualTryOnResponse
+  >(
+    "POST",
+    "/bria/fibo-edit-1.5/virtual-try-on",
+    FalBriaFiboEdit1p5VirtualTryOnRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
+    // POST https://fal.run/bria/fibo-edit-1.5/virtual-try-on
+    // Docs: https://fal.ai/models/bria/fibo-edit-1.5/virtual-try-on/api
+    bria: { fiboEdit1p5: { virtualTryOn: briaFiboEdit1p5VirtualTryOn } },
     // POST https://fal.run/recraft/v4.1/flash/text-to-image
     // Docs: https://fal.ai/models/recraft/v4.1/flash/text-to-image/api
     recraft: { v4p1: { flash: { textToImage: recraftV4p1FlashTextToImage } } },

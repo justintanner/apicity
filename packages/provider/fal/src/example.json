@@ -973,6 +973,14 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST tripo3d.p2.imageTo3d": {
+    "source": "fal/tripo3d-p2-image-to-3d",
+    "payload": {
+      "image_url": "https://v3b.fal.media/files/b/0a8b90e0/BFLE9VDlZqsryU-UA3BoD_image_004.png"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST tripo3d.p2.textTo3d": {
     "source": "fal/tripo3d-p2-text-to-3d",
     "payload": {

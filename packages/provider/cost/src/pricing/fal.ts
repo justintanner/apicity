@@ -770,6 +770,8 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  "tripo3d/p2/image-to-3d": tripoP2("tripo3d/p2/image-to-3d", "2026-10-05"),
+
   "tripo3d/p2/text-to-3d": tripoP2("tripo3d/p2/text-to-3d", "2026-10-05"),
 
   "bytedance/seedream/v5/flash/text-to-image": perImage(

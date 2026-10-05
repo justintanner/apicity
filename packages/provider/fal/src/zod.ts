@@ -4440,7 +4440,90 @@ export type FalTripo3dP2TextTo3dParsedRequest = z.output<
   typeof FalTripo3dP2TextTo3dRequestSchema
 >;
 
+// Docs: https://fal.ai/models/tripo3d/p2/image-to-3d/api
+export const FalTripo3dP2ImageTo3dRequestSchema = z
+  .object({
+    image_url: z
+      .string()
+      .describe("URL of the input image for 3D model creation."),
+    face_limit: z
+      .number()
+      .int()
+      .min(48)
+      .max(50000)
+      .nullable()
+      .optional()
+      .describe(
+        "Maximum number of faces for the generated mesh. Quad meshes support up to 25,000 faces."
+      ),
+    texture: z
+      .boolean()
+      .default(true)
+      .describe("Whether to generate textures for the model."),
+    pbr: z
+      .boolean()
+      .default(true)
+      .describe(
+        "Whether to generate PBR material maps. Enabling PBR also enables textures."
+      ),
+    model_seed: z
+      .number()
+      .int()
+      .nullable()
+      .optional()
+      .describe("Seed for geometry generation reproducibility."),
+    texture_seed: z
+      .number()
+      .int()
+      .nullable()
+      .optional()
+      .describe("Seed for texture generation reproducibility."),
+    texture_quality: z
+      .enum(["fast", "standard", "detailed", "extreme"])
+      .default("standard")
+      .describe("Texture quality level."),
+    texture_version: z
+      .enum(["v3.5-20260815", "v3.0-20250812", "v2.5-20250123"])
+      .nullable()
+      .optional()
+      .describe(
+        "Texture model version. The fast quality requires v3.5-20260815."
+      ),
+    delight: z
+      .boolean()
+      .default(true)
+      .describe(
+        "Remove baked-in lighting before texturing with v3.5-20260815."
+      ),
+    auto_size: z
+      .boolean()
+      .default(false)
+      .describe("Auto-scale the model to real-world dimensions in meters."),
+    export_uv: z
+      .boolean()
+      .default(true)
+      .describe("Whether to generate UV coordinates for the model."),
+    export_orientation: z
+      .enum(["+x", "-x", "-y", "+y"])
+      .nullable()
+      .optional()
+      .describe("Optional forward axis for the exported model."),
+    quad: z
+      .boolean()
+      .default(false)
+      .describe("Generate quad mesh topology instead of triangles."),
+  })
+  .describe("Input for Image to 3D generation using the P2 model.");
+export type FalTripo3dP2ImageTo3dRequest = z.input<
+  typeof FalTripo3dP2ImageTo3dRequestSchema
+>;
+export type FalTripo3dP2ImageTo3dRequestInput = FalTripo3dP2ImageTo3dRequest;
+export type FalTripo3dP2ImageTo3dParsedRequest = z.output<
+  typeof FalTripo3dP2ImageTo3dRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "tripo3d/p2/image-to-3d": FalTripo3dP2ImageTo3dRequestSchema,
   "tripo3d/p2/text-to-3d": FalTripo3dP2TextTo3dRequestSchema,
   "bytedance/seedream/v5/flash/text-to-image":
     FalBytedanceSeedreamV5FlashTextToImageRequestSchema,

@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalTripo3dP2ImageTo3dParsedRequest,
+  FalTripo3dP2ImageTo3dRequestInput,
+  FalTripo3dP2ImageTo3dRequest,
   FalTripo3dP2TextTo3dParsedRequest,
   FalTripo3dP2TextTo3dRequestInput,
   FalTripo3dP2TextTo3dRequest,
@@ -413,6 +416,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalTripo3dP2ImageTo3dRequest,
   FalTripo3dP2TextTo3dRequest,
   FalBytedanceSeedreamV5FlashTextToImageRequest,
   FalBytedanceSeedreamV5FlashEditRequest,
@@ -3418,6 +3422,13 @@ export interface FalTripo3dP2TextTo3dResponse {
 }
 
 export interface FalRunTripo3dP2Namespace {
+  imageTo3d: ((
+    params: FalTripo3dP2ImageTo3dRequest,
+    signal?: AbortSignal
+  ) => Promise<FalTripo3dP2ImageTo3dResponse>) & {
+    schema: ApicitySchema<FalTripo3dP2ImageTo3dRequest>;
+  };
+
   textTo3d: ((
     params: FalTripo3dP2TextTo3dRequest,
     signal?: AbortSignal
@@ -3428,4 +3439,21 @@ export interface FalRunTripo3dP2Namespace {
 
 export interface FalRunTripo3dNamespace {
   p2: FalRunTripo3dP2Namespace;
+}
+
+export interface FalTripo3dP2ImageTo3dResponse {
+  model_mesh: {
+    file_size?: number | null;
+    content_type?: string | null;
+    url: string;
+    file_name?: string | null;
+  };
+  task_id?: string | null;
+  rendered_image?: FalFile | null;
+  model_urls: {
+    pbr_model?: FalFile | null;
+    base_model?: FalFile | null;
+    glb?: FalFile | null;
+    fbx?: FalFile | null;
+  };
 }

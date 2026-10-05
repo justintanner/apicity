@@ -4961,7 +4961,37 @@ export type FalMeshyV7p1MultiImageTo3dParsedRequest = z.output<
   typeof FalMeshyV7p1MultiImageTo3dRequestSchema
 >;
 
+// Docs: https://fal.ai/models/google/lyria-3.5/api
+export const FalGoogleLyria3p5RequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(5000)
+    .describe(
+      "The text prompt describing the music you want to generate. Include genre, mood, instrumentation, tempo, vocals, and structure for best results. Lyria 3.5 supports full-length songs up to a few minutes — use timestamps or duration hints in your prompt to control song length, e.g. 'a 2-minute track' or section markers like '[0:00-0:30] Intro: ...' / '[0:30-1:00] Verse: ...'. Supports English, German, Spanish, French, Hindi, Japanese, Korean, and Portuguese."
+    ),
+  negative_prompt: z
+    .string()
+    .default("")
+    .describe("Negative prompting is not supported by Lyria 3.5."),
+  image_url: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "Optional image URL to use as visual inspiration for music generation. The model will create music that matches the mood and theme of the image."
+    ),
+});
+export type FalGoogleLyria3p5Request = z.input<
+  typeof FalGoogleLyria3p5RequestSchema
+>;
+export type FalGoogleLyria3p5RequestInput = FalGoogleLyria3p5Request;
+export type FalGoogleLyria3p5ParsedRequest = z.output<
+  typeof FalGoogleLyria3p5RequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "google/lyria-3.5": FalGoogleLyria3p5RequestSchema,
   "meshy/v7.1/multi-image-to-3d": FalMeshyV7p1MultiImageTo3dRequestSchema,
   "meshy/v7.1/image-to-3d": FalMeshyV7p1ImageTo3dRequestSchema,
   "meshy/v7.1/text-to-3d": FalMeshyV7p1TextTo3dRequestSchema,

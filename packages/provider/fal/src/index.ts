@@ -21,6 +21,10 @@ export type {
 
 // Export all types
 export type {
+  FalGoogleLyria3p5Response,
+  FalGoogleLyria3p5ParsedRequest,
+  FalGoogleLyria3p5RequestInput,
+  FalGoogleLyria3p5Request,
   FalMeshyV7p1MultiImageTo3dResponse,
   FalMeshyV7p1MultiImageTo3dParsedRequest,
   FalMeshyV7p1MultiImageTo3dRequestInput,

@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalGoogleLyria3p5ParsedRequest,
+  FalGoogleLyria3p5RequestInput,
+  FalGoogleLyria3p5Request,
   FalMeshyV7p1MultiImageTo3dParsedRequest,
   FalMeshyV7p1MultiImageTo3dRequestInput,
   FalMeshyV7p1MultiImageTo3dRequest,
@@ -428,6 +431,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalGoogleLyria3p5Request,
   FalMeshyV7p1MultiImageTo3dRequest,
   FalMeshyV7p1ImageTo3dRequest,
   FalMeshyV7p1TextTo3dRequest,
@@ -3330,6 +3334,13 @@ export interface FalGoogleGemini3p8FlashTtsResponse {
 }
 
 export interface FalRunGoogleNamespace {
+  lyria3p5: ((
+    params: FalGoogleLyria3p5Request,
+    signal?: AbortSignal
+  ) => Promise<FalGoogleLyria3p5Response>) & {
+    schema: ApicitySchema<FalGoogleLyria3p5Request>;
+  };
+
   gemini3p8FlashLiteTts: ((
     params: FalGoogleGemini3p8FlashLiteTtsRequest,
     signal?: AbortSignal
@@ -3634,5 +3645,15 @@ export interface FalMeshyV7p1MultiImageTo3dResponse {
     glb?: unknown | null;
     blend?: unknown | null;
     stl?: unknown | null;
+  };
+}
+
+export interface FalGoogleLyria3p5Response {
+  lyrics?: string | null;
+  audio: {
+    content_type?: string | null;
+    url: string;
+    file_size?: number | null;
+    file_name?: string | null;
   };
 }

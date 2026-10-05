@@ -555,6 +555,14 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST google.lyria3p5": {
+    "source": "fal/google-lyria-3-5",
+    "payload": {
+      "prompt": "Gentle solo piano, slow tempo, no vocals, about twenty seconds."
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST gptImage1p5": {
     "source": "fal/gpt-image-1.5",
     "payload": {

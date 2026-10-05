@@ -1,4 +1,6 @@
 import {
+  FalGoogleLyria3p5Response,
+  FalGoogleLyria3p5Request,
   FalMeshyV7p1MultiImageTo3dResponse,
   FalMeshyV7p1MultiImageTo3dRequest,
   FalMeshyV7p1ImageTo3dResponse,
@@ -246,6 +248,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalGoogleLyria3p5RequestSchema,
   FalMeshyV7p1MultiImageTo3dRequestSchema,
   FalMeshyV7p1ImageTo3dRequestSchema,
   FalMeshyV7p1TextTo3dRequestSchema,
@@ -2239,6 +2242,15 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/google/lyria-3.5
+  // Docs: https://fal.ai/models/google/lyria-3.5/api
+  const googleLyria3p5 = jsonBody<
+    FalGoogleLyria3p5Request,
+    FalGoogleLyria3p5Response
+  >("POST", "/google/lyria-3.5", FalGoogleLyria3p5RequestSchema, {
+    base: runBaseURL,
+  });
+
   const run: FalRunNamespace = {
     // POST https://fal.run/recraft/v4.1/flash/text-to-image
     // Docs: https://fal.ai/models/recraft/v4.1/flash/text-to-image/api
@@ -2256,6 +2268,9 @@ export function createFal(opts: FalOptions): FalProvider {
     // POST https://fal.run/google/gemini-3.8-flash-tts
     // Docs: https://fal.ai/models/google/gemini-3.8-flash-tts/api
     google: {
+      // POST https://fal.run/google/lyria-3.5
+      // Docs: https://fal.ai/models/google/lyria-3.5/api
+      lyria3p5: googleLyria3p5,
       // POST https://fal.run/google/gemini-3.8-flash-lite-tts
       // Docs: https://fal.ai/models/google/gemini-3.8-flash-lite-tts/api
       gemini3p8FlashLiteTts: googleGemini3p8FlashLiteTts,

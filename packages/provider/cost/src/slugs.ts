@@ -412,6 +412,7 @@ export const MODEL_SLUGS = {
   // same underlying models kie also resells, so their slugs intentionally
   // match kie's.
   fal: {
+    "google/lyria-3.5": "googlelyria3",
     "meshy/v7.1/multi-image-to-3d": "meshyv71",
     "meshy/v7.1/image-to-3d": "meshyv71",
     "meshy/v7.1/text-to-3d": "meshyv71",
@@ -854,6 +855,7 @@ export const MODEL_DISPLAY = {
   },
 
   fal: {
+    "google/lyria-3.5": "Google Lyria 3.5",
     "meshy/v7.1/multi-image-to-3d": "Meshy 7.1 Multi Image To 3d",
     "meshy/v7.1/image-to-3d": "Meshy 7.1 Image To 3d",
     "meshy/v7.1/text-to-3d": "Meshy 7.1 Text To 3d",

@@ -800,6 +800,15 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  "google/lyria-3.5": {
+    kind: "perUnit",
+    unit: "generations",
+    units: () => 1,
+    select: [],
+    rates: { "": 0.1 },
+    source: source("google/lyria-3.5", "2026-10-05"),
+  },
+
   "meshy/v7.1/multi-image-to-3d": meshyV71(
     "meshy/v7.1/multi-image-to-3d",
     "2026-10-05"

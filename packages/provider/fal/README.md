@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-122 endpoints across 32 groups. Each method mirrors an upstream URL path.
+123 endpoints across 32 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -858,6 +858,23 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.google.gemini3p8FlashTts({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.google.lyria3p5</code></b></summary>
+
+<code>POST https://fal.run/google/lyria-3.5</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/google/lyria-3.5/api)
+
+```typescript
+const res = await fal.run.google.lyria3p5({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

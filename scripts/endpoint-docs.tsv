@@ -1690,3 +1690,4 @@ fal	recraft.v4p1.flash.textToImage	POST	https://fal.run/recraft/v4.1/flash/text-
 fal	meshy.v7p1.textTo3d	POST	https://fal.run/meshy/v7.1/text-to-3d	https://fal.ai/models/meshy/v7.1/text-to-3d/api
 fal	meshy.v7p1.imageTo3d	POST	https://fal.run/meshy/v7.1/image-to-3d	https://fal.ai/models/meshy/v7.1/image-to-3d/api
 fal	meshy.v7p1.multiImageTo3d	POST	https://fal.run/meshy/v7.1/multi-image-to-3d	https://fal.ai/models/meshy/v7.1/multi-image-to-3d/api
+fal	google.lyria3p5	POST	https://fal.run/google/lyria-3.5	https://fal.ai/models/google/lyria-3.5/api

@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Google Lyria 3.5 (ac-1kvnsa).
+
 - Added Meshy 7.1 Multi Image To 3d (ac-aeqvyg).
 
 - Added Meshy 7.1 Image To 3d (ac-gnq3x2).

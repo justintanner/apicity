@@ -21,6 +21,12 @@ export type {
 
 // Export all types
 export type {
+  FalRunElevenlabsFrontierNamespace,
+  FalRunElevenlabsTtsNamespace,
+  FalElevenlabsTtsElevenV4TurboResponse,
+  FalElevenlabsTtsElevenV4TurboParsedRequest,
+  FalElevenlabsTtsElevenV4TurboRequestInput,
+  FalElevenlabsTtsElevenV4TurboRequest,
   FalMinimaxH3MaxInsertVideoResponse,
   FalMinimaxH3MaxInsertVideoParsedRequest,
   FalMinimaxH3MaxInsertVideoRequestInput,

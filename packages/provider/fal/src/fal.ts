@@ -1,4 +1,6 @@
 import {
+  FalElevenlabsTtsElevenV4TurboResponse,
+  FalElevenlabsTtsElevenV4TurboRequest,
   FalMinimaxH3MaxInsertVideoResponse,
   FalMinimaxH3MaxInsertVideoRequest,
   FalIdeogramV4p5Response,
@@ -220,6 +222,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalElevenlabsTtsElevenV4TurboRequestSchema,
   FalMinimaxH3MaxInsertVideoRequestSchema,
   FalIdeogramV4p5RequestSchema,
   FalPricingEstimateRequestSchema,
@@ -2056,7 +2059,22 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/elevenlabs/tts/eleven-v4-turbo
+  // Docs: https://fal.ai/models/elevenlabs/tts/eleven-v4-turbo/api
+  const elevenlabsTtsElevenV4Turbo = jsonBody<
+    FalElevenlabsTtsElevenV4TurboRequest,
+    FalElevenlabsTtsElevenV4TurboResponse
+  >(
+    "POST",
+    "/elevenlabs/tts/eleven-v4-turbo",
+    FalElevenlabsTtsElevenV4TurboRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
+    // POST https://fal.run/elevenlabs/tts/eleven-v4-turbo
+    // Docs: https://fal.ai/models/elevenlabs/tts/eleven-v4-turbo/api
+    elevenlabs: { tts: { elevenV4Turbo: elevenlabsTtsElevenV4Turbo } },
     ideogram: {
       v4p5: Object.assign(ideogramV4p5, {
         // POST https://fal.run/ideogram/v4.5/edit

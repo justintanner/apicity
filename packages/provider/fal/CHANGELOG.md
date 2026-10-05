@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Ideogram 4.5 editing with masks, reference images, precision and size
+  constraints, queue schema metadata, and quality-based per-image pricing.
+
 - Added Grok Imagine Video 1.5 Lite image-to-video with typed schema metadata,
   queue registry support, and pricing including the input-image charge.
 

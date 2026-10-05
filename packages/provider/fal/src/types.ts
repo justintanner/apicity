@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalIdeogramV4p5EditRequest,
+  FalIdeogramV4p5EditRequestInput,
+  FalIdeogramV4p5EditParsedRequest,
   FalXaiGrokImagineVideoV1p5LiteImageToVideoRequest,
   FalXaiGrokImagineVideoV1p5LiteImageToVideoRequestInput,
   FalXaiGrokImagineVideoV1p5LiteImageToVideoParsedRequest,
@@ -380,6 +383,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalIdeogramV4p5EditRequest,
   FalXaiGrokImagineVideoV1p5LiteImageToVideoRequest,
   FalFlux3TextToImageRequest,
   FalFlux3EditImageRequest,
@@ -2760,6 +2764,7 @@ export interface FalRunLightricksNamespace {
 }
 
 export interface FalRunNamespace {
+  ideogram: FalRunIdeogramNamespace;
   alibaba: FalRunAlibabaNamespace;
   blackforestlabs: FalRunBlackforestlabsNamespace;
   bytedance: FalRunBytedanceNamespace;
@@ -3132,4 +3137,25 @@ export interface FalXaiGrokImagineVideoV1p5LiteImageToVideoResponse {
     duration?: number | null;
     num_frames?: number | null;
   };
+}
+
+export interface FalIdeogramV4p5EditResponse {
+  images: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  }[];
+  seed: number;
+}
+export interface FalRunIdeogramV4p5Namespace {
+  edit: ((
+    params: FalIdeogramV4p5EditRequest,
+    signal?: AbortSignal
+  ) => Promise<FalIdeogramV4p5EditResponse>) & {
+    schema: ApicitySchema<FalIdeogramV4p5EditRequest>;
+  };
+}
+export interface FalRunIdeogramNamespace {
+  v4p5: FalRunIdeogramV4p5Namespace;
 }

@@ -516,6 +516,17 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST ideogram.v4p5.edit": {
+    "source": "fal/ideogram45-edit",
+    "payload": {
+      "prompt": "Render this scene as a watercolor painting while preserving its composition.",
+      "image_url": "https://v3b.fal.media/files/b/0a8b90e0/BFLE9VDlZqsryU-UA3BoD_image_004.png",
+      "quality": "very_low",
+      "num_images": 1
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST klingVideo.o3p4k.imageToVideo": {
     "source": "fal/kling-video-o3p4k-image-to-video",
     "payload": {

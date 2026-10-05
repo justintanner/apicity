@@ -21,6 +21,12 @@ export type {
 
 // Export all types
 export type {
+  FalIdeogramV4p5EditRequest,
+  FalIdeogramV4p5EditRequestInput,
+  FalIdeogramV4p5EditParsedRequest,
+  FalIdeogramV4p5EditResponse,
+  FalRunIdeogramNamespace,
+  FalRunIdeogramV4p5Namespace,
   FalXaiGrokImagineVideoV1p5LiteImageToVideoRequest,
   FalXaiGrokImagineVideoV1p5LiteImageToVideoRequestInput,
   FalXaiGrokImagineVideoV1p5LiteImageToVideoParsedRequest,

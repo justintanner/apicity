@@ -688,6 +688,15 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  "ideogram/v4.5/edit": {
+    kind: "perUnit",
+    unit: "images",
+    units: imageCount,
+    select: [{ name: "quality", pick: (p) => asString(p.quality) ?? "medium" }],
+    rates: { very_low: 0.008, low: 0.03, medium: 0.06, high: 0.22 },
+    source: source("ideogram/v4.5/edit", "2026-10-05"),
+  },
+
   // Audio — Seed Speech bills $0.03 per 1,000 input characters. Store the
   // page rate once as $0.00003/character; the request's literal text length is
   // an exact, payload-derivable unit count.

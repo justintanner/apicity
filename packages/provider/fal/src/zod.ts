@@ -3512,7 +3512,103 @@ export type FalXaiGrokImagineVideoV1p5LiteImageToVideoParsedRequest = z.output<
   typeof FalXaiGrokImagineVideoV1p5LiteImageToVideoRequestSchema
 >;
 
+// Docs: https://fal.ai/models/ideogram/v4.5/edit/api
+export const FalIdeogramV4p5EditRequestSchema = z
+  .object({
+    prompt: z.string().min(1).max(10000),
+    image_url: z.string(),
+    reference_image_urls: z
+      .array(z.string())
+      .max(4)
+      .optional()
+      .describe("Up to four references, or three when a mask is provided."),
+    mask_url: z
+      .string()
+      .nullable()
+      .optional()
+      .describe(
+        "Mask matching source dimensions: black edits, white preserves. Both regions must be present."
+      ),
+    edit_precision: z.enum(["regular", "high"]).default("regular"),
+    quality: z.enum(["very_low", "low", "medium", "high"]).default("medium"),
+    image_size: z
+      .union([
+        z.enum([
+          "auto",
+          "square",
+          "square_hd",
+          "portrait_4_3",
+          "landscape_4_3",
+          "portrait_16_9",
+          "landscape_16_9",
+        ]),
+        z
+          .object({
+            width: z
+              .number()
+              .int()
+              .min(256)
+              .max(14142)
+              .multipleOf(32)
+              .default(512),
+            height: z
+              .number()
+              .int()
+              .min(256)
+              .max(14142)
+              .multipleOf(32)
+              .default(512),
+          })
+          .refine(
+            (size) =>
+              size.width * size.height <= 4194304 &&
+              Math.max(size.width, size.height) /
+                Math.min(size.width, size.height) <=
+                6,
+            {
+              message:
+                "Custom sizes must have area <=4194304 and aspect ratio <=6:1",
+            }
+          ),
+      ])
+      .default("auto")
+      .describe(
+        "Only unmasked regular edits accept non-auto sizes. Custom dimensions must be multiples of 32, at least 256, with area <=4194304 and aspect ratio <=6:1."
+      ),
+    num_images: z.number().int().min(1).max(8).default(1),
+    seed: z.number().int().nullable().optional(),
+    sync_mode: z.boolean().default(false),
+  })
+  .strict()
+  .superRefine((p, ctx) => {
+    if (p.mask_url != null && (p.reference_image_urls?.length ?? 0) > 3) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["reference_image_urls"],
+        message: "Masked edits allow at most three reference images",
+      });
+    }
+    if (
+      (p.mask_url != null || p.edit_precision === "high") &&
+      p.image_size !== "auto"
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["image_size"],
+        message: "Masked and high-precision edits require image_size auto",
+      });
+    }
+  });
+export type FalIdeogramV4p5EditRequest = z.input<
+  typeof FalIdeogramV4p5EditRequestSchema
+>;
+export type FalIdeogramV4p5EditRequestInput = FalIdeogramV4p5EditRequest;
+export type FalIdeogramV4p5EditParsedRequest = z.output<
+  typeof FalIdeogramV4p5EditRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "ideogram/v4.5/edit": FalIdeogramV4p5EditRequestSchema,
   "xai/grok-imagine-video/v1.5/lite/image-to-video":
     FalXaiGrokImagineVideoV1p5LiteImageToVideoRequestSchema,
   "blackforestlabs/flux-3/text-to-image": FalFlux3TextToImageRequestSchema,

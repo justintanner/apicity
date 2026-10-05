@@ -1,4 +1,6 @@
 import {
+  FalIdeogramV4p5EditRequest,
+  FalIdeogramV4p5EditResponse,
   FalXaiGrokImagineVideoV1p5LiteImageToVideoRequest,
   FalXaiGrokImagineVideoV1p5LiteImageToVideoResponse,
   FalFlux3TextToImageRequest,
@@ -277,6 +279,7 @@ import {
   FalMinimaxH3MaxRecastRequestSchema,
   FalFlux3EditImageRequestSchema,
   FalFlux3TextToImageRequestSchema,
+  FalIdeogramV4p5EditRequestSchema,
   FalFlux3ExtendVideoRequestSchema,
   FalFluxVideoUpscaleRequestSchema,
   FalXaiGrokImagineImageRequestSchema,
@@ -950,6 +953,15 @@ export function createFal(opts: FalOptions): FalProvider {
     FalFlux3KeyframesToVideoRequestSchema,
     { base: runBaseURL }
   );
+
+  // POST https://fal.run/ideogram/v4.5/edit
+  // Docs: https://fal.ai/models/ideogram/v4.5/edit/api
+  const ideogramV4p5Edit = jsonBody<
+    FalIdeogramV4p5EditRequest,
+    FalIdeogramV4p5EditResponse
+  >("POST", "/ideogram/v4.5/edit", FalIdeogramV4p5EditRequestSchema, {
+    base: runBaseURL,
+  });
 
   // POST https://fal.run/xai/grok-imagine-video/v1.5/lite/image-to-video
   // Docs: https://fal.ai/models/xai/grok-imagine-video/v1.5/lite/image-to-video/api
@@ -2018,6 +2030,13 @@ export function createFal(opts: FalOptions): FalProvider {
   };
 
   const run: FalRunNamespace = {
+    ideogram: {
+      v4p5: {
+        // POST https://fal.run/ideogram/v4.5/edit
+        // Docs: https://fal.ai/models/ideogram/v4.5/edit/api
+        edit: ideogramV4p5Edit,
+      },
+    },
     alibaba: {
       wan3p0: {
         textToVideo: alibabaWan3p0TextToVideo,

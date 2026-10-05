@@ -3211,7 +3211,7 @@ export interface FalMinimaxH3MaxInsertVideoResponse {
   height: number;
   seed: number;
   width: number;
-  source: {};
+  source: Record<string, unknown>;
   duration: number;
   timings: Record<string, number>;
 }

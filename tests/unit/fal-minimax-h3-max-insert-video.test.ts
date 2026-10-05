@@ -5,11 +5,6 @@ import {
   FAL_ENDPOINT_REQUEST_SCHEMAS,
 } from "@apicity/fal/zod";
 import { computeEstimate } from "../../packages/provider/cost/src/compute";
-import {
-  modelSlug,
-  modelDisplay,
-  MODEL_SLUGS,
-} from "../../packages/provider/cost/src/slugs";
 import { FAL_DYNAMIC_PRICING_ENDPOINTS } from "../../packages/provider/cost/src/pricing/fal";
 
 const endpoint = "minimax/h3-max/insert-video";

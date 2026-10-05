@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Grok Imagine Video 1.5 Lite image-to-video with typed schema metadata,
+  queue registry support, and pricing including the input-image charge.
+
 - Added FLUX 3 text-to-image with the documented output controls, typed
   response, queue registration, and dynamic pricing discovery.
 

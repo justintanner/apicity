@@ -1,4 +1,6 @@
 import {
+  FalXaiGrokImagineVideoV1p5LiteImageToVideoRequest,
+  FalXaiGrokImagineVideoV1p5LiteImageToVideoResponse,
   FalFlux3TextToImageRequest,
   FalFlux3TextToImageResponse,
   FalFlux3EditImageRequest,
@@ -270,6 +272,7 @@ import {
   FalFlux3FirstLastFrameToVideoRequestSchema,
   FalFlux3KeyframesToVideoRequestSchema,
   FalMinimaxH3MaxTurboExtendVideoRequestSchema,
+  FalXaiGrokImagineVideoV1p5LiteImageToVideoRequestSchema,
   FalXaiGrokImagineVideoV1p5LiteTextToVideoRequestSchema,
   FalMinimaxH3MaxRecastRequestSchema,
   FalFlux3EditImageRequestSchema,
@@ -945,6 +948,18 @@ export function createFal(opts: FalOptions): FalProvider {
     "POST",
     "/blackforestlabs/flux-3/keyframes-to-video",
     FalFlux3KeyframesToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // POST https://fal.run/xai/grok-imagine-video/v1.5/lite/image-to-video
+  // Docs: https://fal.ai/models/xai/grok-imagine-video/v1.5/lite/image-to-video/api
+  const xaiGrokImagineVideoV1p5LiteImageToVideo = jsonBody<
+    FalXaiGrokImagineVideoV1p5LiteImageToVideoRequest,
+    FalXaiGrokImagineVideoV1p5LiteImageToVideoResponse
+  >(
+    "POST",
+    "/xai/grok-imagine-video/v1.5/lite/image-to-video",
+    FalXaiGrokImagineVideoV1p5LiteImageToVideoRequestSchema,
     { base: runBaseURL }
   );
 
@@ -2191,6 +2206,9 @@ export function createFal(opts: FalOptions): FalProvider {
         editVideo: xaiGrokImagineVideoEditVideo,
         v1p5: {
           lite: {
+            // POST https://fal.run/xai/grok-imagine-video/v1.5/lite/image-to-video
+            // Docs: https://fal.ai/models/xai/grok-imagine-video/v1.5/lite/image-to-video/api
+            imageToVideo: xaiGrokImagineVideoV1p5LiteImageToVideo,
             // POST https://fal.run/xai/grok-imagine-video/v1.5/lite/text-to-video
             // Docs: https://fal.ai/models/xai/grok-imagine-video/v1.5/lite/text-to-video/api
             textToVideo: xaiGrokImagineVideoV1p5LiteTextToVideo,

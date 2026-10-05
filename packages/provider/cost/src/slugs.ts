@@ -439,6 +439,7 @@ export const MODEL_SLUGS = {
 
     // Video — FLUX 3
     "minimax/h3-max-turbo/extend-video": "h3mte",
+    "xai/grok-imagine-video/v1.5/lite/image-to-video": "grok15lt",
     "xai/grok-imagine-video/v1.5/lite/text-to-video": "grok15lt",
     "minimax/h3-max/recast": "h3mr",
     "blackforestlabs/flux-3/extend-video": "flux3",
@@ -864,6 +865,7 @@ export const MODEL_DISPLAY = {
     "google/virtual-try-on": "Google Virtual Try-On",
 
     "minimax/h3-max-turbo/extend-video": "H3 Max Turbo Extend",
+    "xai/grok-imagine-video/v1.5/lite/image-to-video": "Grok 1.5 Lite",
     "xai/grok-imagine-video/v1.5/lite/text-to-video": "Grok 1.5 Lite",
     "minimax/h3-max/recast": "H3 Max Recast",
     "blackforestlabs/flux-3/extend-video": "FLUX 3",

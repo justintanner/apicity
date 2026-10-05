@@ -3498,7 +3498,23 @@ export type FalFlux3TextToImageParsedRequest = z.output<
   typeof FalFlux3TextToImageRequestSchema
 >;
 
+// Docs: https://fal.ai/models/xai/grok-imagine-video/v1.5/lite/image-to-video/api
+export const FalXaiGrokImagineVideoV1p5LiteImageToVideoRequestSchema =
+  FalXaiGrokImagineVideoV1p5LiteTextToVideoRequestSchema.omit({
+    aspect_ratio: true,
+  }).extend({ image_url: z.string() });
+export type FalXaiGrokImagineVideoV1p5LiteImageToVideoRequest = z.input<
+  typeof FalXaiGrokImagineVideoV1p5LiteImageToVideoRequestSchema
+>;
+export type FalXaiGrokImagineVideoV1p5LiteImageToVideoRequestInput =
+  FalXaiGrokImagineVideoV1p5LiteImageToVideoRequest;
+export type FalXaiGrokImagineVideoV1p5LiteImageToVideoParsedRequest = z.output<
+  typeof FalXaiGrokImagineVideoV1p5LiteImageToVideoRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "xai/grok-imagine-video/v1.5/lite/image-to-video":
+    FalXaiGrokImagineVideoV1p5LiteImageToVideoRequestSchema,
   "blackforestlabs/flux-3/text-to-image": FalFlux3TextToImageRequestSchema,
   "blackforestlabs/flux-3/edit-image": FalFlux3EditImageRequestSchema,
   "minimax/h3-max/recast": FalMinimaxH3MaxRecastRequestSchema,

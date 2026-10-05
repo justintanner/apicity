@@ -1100,6 +1100,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST xai.grokImagineVideo.v1p5.lite.imageToVideo": {
+    "source": "fal/grok-15-lite-image-to-video",
+    "payload": {
+      "prompt": "Gentle natural motion in the scene. Static camera.",
+      "duration": 1,
+      "resolution": "480p",
+      "image_url": "https://v3b.fal.media/files/b/0a8b90e0/BFLE9VDlZqsryU-UA3BoD_image_004.png"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST xai.grokImagineVideo.v1p5.lite.textToVideo": {
     "source": "fal/grok-15-lite-text-to-video",
     "payload": {

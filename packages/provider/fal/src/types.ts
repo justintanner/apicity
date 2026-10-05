@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalXaiGrokImagineVideoV1p5LiteImageToVideoRequest,
+  FalXaiGrokImagineVideoV1p5LiteImageToVideoRequestInput,
+  FalXaiGrokImagineVideoV1p5LiteImageToVideoParsedRequest,
   FalFlux3TextToImageRequest,
   FalFlux3TextToImageRequestInput,
   FalFlux3TextToImageParsedRequest,
@@ -377,6 +380,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalXaiGrokImagineVideoV1p5LiteImageToVideoRequest,
   FalFlux3TextToImageRequest,
   FalFlux3EditImageRequest,
   FalMinimaxH3MaxRecastRequest,
@@ -3040,6 +3044,12 @@ export interface FalXaiGrokImagineVideoV1p5LiteTextToVideoResponse {
   };
 }
 export interface FalRunXaiGrokImagineVideoV1p5LiteNamespace {
+  imageToVideo: ((
+    params: FalXaiGrokImagineVideoV1p5LiteImageToVideoRequest,
+    signal?: AbortSignal
+  ) => Promise<FalXaiGrokImagineVideoV1p5LiteImageToVideoResponse>) & {
+    schema: ApicitySchema<FalXaiGrokImagineVideoV1p5LiteImageToVideoRequest>;
+  };
   textToVideo: ((
     params: FalXaiGrokImagineVideoV1p5LiteTextToVideoRequest,
     signal?: AbortSignal
@@ -3107,5 +3117,19 @@ export interface FalRunFlux3Namespace {
     signal?: AbortSignal
   ) => Promise<FalFlux3TextToImageResponse>) & {
     schema: ApicitySchema<FalFlux3TextToImageRequest>;
+  };
+}
+
+export interface FalXaiGrokImagineVideoV1p5LiteImageToVideoResponse {
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+    fps?: number | null;
+    duration?: number | null;
+    num_frames?: number | null;
   };
 }

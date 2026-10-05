@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-105 endpoints across 27 groups. Each method mirrors an upstream URL path.
+106 endpoints across 27 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -1914,6 +1914,23 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.xai.grokImagineVideo.referenceToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.xai.grokImagineVideo.v1p5.lite.imageToVideo</code></b></summary>
+
+<code>POST https://fal.run/xai/grok-imagine-video/v1.5/lite/image-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/xai/grok-imagine-video/v1.5/lite/image-to-video/api)
+
+```typescript
+const res = await fal.run.xai.grokImagineVideo.v1p5.lite.imageToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

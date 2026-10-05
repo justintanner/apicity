@@ -870,6 +870,19 @@ export const fal: Record<string, ModelPricing> = {
     (p) => (p.duration === undefined ? 5 : asNumber(p.duration)),
     "2026-10-05"
   ),
+  // One input image adds $0.01 per request, independently of output duration.
+  "xai/grok-imagine-video/v1.5/lite/image-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: (p) => (p.duration === undefined ? 6 : asNumber(p.duration)),
+    select: [resolutionTier("720p")],
+    rates: { "480p": 0.02, "720p": 0.03, "1080p": 0.14 },
+    extra: () => 0.01,
+    source: source(
+      "xai/grok-imagine-video/v1.5/lite/image-to-video",
+      "2026-10-05"
+    ),
+  },
   "xai/grok-imagine-video/v1.5/lite/text-to-video": perSecondTiered(
     "xai/grok-imagine-video/v1.5/lite/text-to-video",
     [resolutionTier("720p")],

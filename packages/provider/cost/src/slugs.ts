@@ -412,6 +412,7 @@ export const MODEL_SLUGS = {
   // same underlying models kie also resells, so their slugs intentionally
   // match kie's.
   fal: {
+    "bytedance/seedream/v5/flash/edit": "bytedancesee",
     "bytedance/seedream/v5/flash/layerize": "bytedancesee",
     "google/gemini-3.8-flash-lite-tts": "googlegemi2",
     "google/gemini-3.8-flash-tts": "googlegemini",
@@ -846,6 +847,7 @@ export const MODEL_DISPLAY = {
   },
 
   fal: {
+    "bytedance/seedream/v5/flash/edit": "Bytedance Seedream V5 Flash Edit",
     "bytedance/seedream/v5/flash/layerize":
       "Bytedance Seedream V5 Flash Layerize",
     "google/gemini-3.8-flash-lite-tts": "Google Gemini 3.8 Flash Lite TTS",

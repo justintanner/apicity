@@ -4223,7 +4223,71 @@ export type FalBytedanceSeedreamV5FlashLayerizeParsedRequest = z.output<
   typeof FalBytedanceSeedreamV5FlashLayerizeRequestSchema
 >;
 
+// Docs: https://fal.ai/models/bytedance/seedream/v5/flash/edit/api
+export const FalBytedanceSeedreamV5FlashEditRequestSchema = z.object({
+  prompt: z.string().describe("The text prompt used to edit the image."),
+  image_size: z
+    .union([
+      z.object({
+        width: z.number().int().gt(0).max(14142).default(512),
+        height: z.number().int().gt(0).max(14142).default(512),
+      }),
+      z.enum([
+        "square_hd",
+        "square",
+        "portrait_4_3",
+        "portrait_16_9",
+        "landscape_4_3",
+        "landscape_16_9",
+        "auto_1K",
+        "auto_2K",
+      ]),
+    ])
+    .default("auto_2K")
+    .describe(
+      "The size of the generated image. Total pixels must be between 1024x1024 and 2048x2048, with aspect ratio between 1/16 and 16."
+    ),
+  num_images: z
+    .number()
+    .int()
+    .min(1)
+    .max(6)
+    .default(1)
+    .describe("Number of separate model generations to run with the prompt."),
+  output_format: z
+    .enum(["jpeg", "png"])
+    .default("jpeg")
+    .describe("The file format of the generated image."),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If `True`, the media will be returned as a data URI and the output data won't be available in the request history."
+    ),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe(
+      "If set to true, the safety checker will be enabled. Disabling it requires account authorization; unauthorized requests are always checked."
+    ),
+  image_urls: z
+    .array(z.string())
+    .describe(
+      "List of URLs of input reference images. Up to 10 images are supported; if more are sent, only the last 10 are used."
+    ),
+});
+export type FalBytedanceSeedreamV5FlashEditRequest = z.input<
+  typeof FalBytedanceSeedreamV5FlashEditRequestSchema
+>;
+export type FalBytedanceSeedreamV5FlashEditRequestInput =
+  FalBytedanceSeedreamV5FlashEditRequest;
+export type FalBytedanceSeedreamV5FlashEditParsedRequest = z.output<
+  typeof FalBytedanceSeedreamV5FlashEditRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "bytedance/seedream/v5/flash/edit":
+    FalBytedanceSeedreamV5FlashEditRequestSchema,
   "bytedance/seedream/v5/flash/layerize":
     FalBytedanceSeedreamV5FlashLayerizeRequestSchema,
   "google/gemini-3.8-flash-lite-tts":

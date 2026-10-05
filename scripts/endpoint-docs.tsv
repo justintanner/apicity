@@ -1682,3 +1682,4 @@ fal	elevenlabs.tts.elevenV4	POST	https://fal.run/elevenlabs/tts/eleven-v4	https:
 fal	google.gemini3p8FlashTts	POST	https://fal.run/google/gemini-3.8-flash-tts	https://fal.ai/models/google/gemini-3.8-flash-tts/api
 fal	google.gemini3p8FlashLiteTts	POST	https://fal.run/google/gemini-3.8-flash-lite-tts	https://fal.ai/models/google/gemini-3.8-flash-lite-tts/api
 fal	bytedance.seedream.v5.flash.layerize	POST	https://fal.run/bytedance/seedream/v5/flash/layerize	https://fal.ai/models/bytedance/seedream/v5/flash/layerize/api
+fal	bytedance.seedream.v5.flash.edit	POST	https://fal.run/bytedance/seedream/v5/flash/edit	https://fal.ai/models/bytedance/seedream/v5/flash/edit/api

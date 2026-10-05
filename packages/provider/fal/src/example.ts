@@ -382,6 +382,18 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST bytedance.seedream.v5.flash.edit": {
+    "source": "fal/bytedance-seedream-v5-flash-edit",
+    "payload": {
+      "num_images": 1,
+      "prompt": "A red panda waves once, then holds still.",
+      "image_urls": [
+        "https://v3b.fal.media/files/b/0a8b90e0/BFLE9VDlZqsryU-UA3BoD_image_004.png"
+      ]
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST bytedance.seedream.v5.flash.layerize": {
     "source": "fal/bytedance-seedream-v5-flash-layerize",
     "payload": {

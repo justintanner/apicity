@@ -21,6 +21,10 @@ export type {
 
 // Export all types
 export type {
+  FalBytedanceSeedreamV5FlashEditResponse,
+  FalBytedanceSeedreamV5FlashEditParsedRequest,
+  FalBytedanceSeedreamV5FlashEditRequestInput,
+  FalBytedanceSeedreamV5FlashEditRequest,
   FalRunBytedanceSeedreamV5FlashNamespace,
   FalBytedanceSeedreamV5FlashLayerizeResponse,
   FalBytedanceSeedreamV5FlashLayerizeParsedRequest,

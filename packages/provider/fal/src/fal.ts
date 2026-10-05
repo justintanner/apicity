@@ -1,4 +1,6 @@
 import {
+  FalBytedanceSeedreamV5FlashEditResponse,
+  FalBytedanceSeedreamV5FlashEditRequest,
   FalBytedanceSeedreamV5FlashLayerizeResponse,
   FalBytedanceSeedreamV5FlashLayerizeRequest,
   FalGoogleGemini3p8FlashLiteTtsResponse,
@@ -230,6 +232,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalBytedanceSeedreamV5FlashEditRequestSchema,
   FalBytedanceSeedreamV5FlashLayerizeRequestSchema,
   FalGoogleGemini3p8FlashLiteTtsRequestSchema,
   FalGoogleGemini3p8FlashTtsRequestSchema,
@@ -2131,6 +2134,18 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/bytedance/seedream/v5/flash/edit
+  // Docs: https://fal.ai/models/bytedance/seedream/v5/flash/edit/api
+  const bytedanceSeedreamV5FlashEdit = jsonBody<
+    FalBytedanceSeedreamV5FlashEditRequest,
+    FalBytedanceSeedreamV5FlashEditResponse
+  >(
+    "POST",
+    "/bytedance/seedream/v5/flash/edit",
+    FalBytedanceSeedreamV5FlashEditRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
     // POST https://fal.run/google/gemini-3.8-flash-tts
     // Docs: https://fal.ai/models/google/gemini-3.8-flash-tts/api
@@ -2214,7 +2229,12 @@ export function createFal(opts: FalOptions): FalProvider {
         v5: {
           // POST https://fal.run/bytedance/seedream/v5/flash/layerize
           // Docs: https://fal.ai/models/bytedance/seedream/v5/flash/layerize/api
-          flash: { layerize: bytedanceSeedreamV5FlashLayerize },
+          flash: {
+            // POST https://fal.run/bytedance/seedream/v5/flash/edit
+            // Docs: https://fal.ai/models/bytedance/seedream/v5/flash/edit/api
+            edit: bytedanceSeedreamV5FlashEdit,
+            layerize: bytedanceSeedreamV5FlashLayerize,
+          },
           lite: {
             edit: seedreamV5LiteEdit,
             textToImage: seedreamV5LiteTextToImage,

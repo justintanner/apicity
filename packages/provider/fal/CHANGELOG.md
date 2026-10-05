@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Bytedance Seedream V5 Flash Edit (ac-a25hdg).
+
 - Added Bytedance Seedream V5 Flash Layerize (ac-ent0d5).
 
 - Added Google Gemini 3.8 Flash Lite TTS (ac-grh4og).

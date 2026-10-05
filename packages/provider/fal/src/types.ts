@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalBytedanceSeedreamV5FlashEditParsedRequest,
+  FalBytedanceSeedreamV5FlashEditRequestInput,
+  FalBytedanceSeedreamV5FlashEditRequest,
   FalBytedanceSeedreamV5FlashLayerizeParsedRequest,
   FalBytedanceSeedreamV5FlashLayerizeRequestInput,
   FalBytedanceSeedreamV5FlashLayerizeRequest,
@@ -404,6 +407,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalBytedanceSeedreamV5FlashEditRequest,
   FalBytedanceSeedreamV5FlashLayerizeRequest,
   FalGoogleGemini3p8FlashLiteTtsRequest,
   FalGoogleGemini3p8FlashTtsRequest,
@@ -3342,10 +3346,28 @@ export interface FalBytedanceSeedreamV5FlashLayerizeResponse {
 }
 
 export interface FalRunBytedanceSeedreamV5FlashNamespace {
+  edit: ((
+    params: FalBytedanceSeedreamV5FlashEditRequest,
+    signal?: AbortSignal
+  ) => Promise<FalBytedanceSeedreamV5FlashEditResponse>) & {
+    schema: ApicitySchema<FalBytedanceSeedreamV5FlashEditRequest>;
+  };
+
   layerize: ((
     params: FalBytedanceSeedreamV5FlashLayerizeRequest,
     signal?: AbortSignal
   ) => Promise<FalBytedanceSeedreamV5FlashLayerizeResponse>) & {
     schema: ApicitySchema<FalBytedanceSeedreamV5FlashLayerizeRequest>;
   };
+}
+
+export interface FalBytedanceSeedreamV5FlashEditResponse {
+  images: {
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    url: string;
+    width?: number | null;
+    height?: number | null;
+  }[];
 }

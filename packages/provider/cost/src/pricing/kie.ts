@@ -2492,6 +2492,13 @@ export const kie: Record<string, ModelPricing> = {
     "1K",
     "2026-10-05"
   ),
+  "seedream/5-flash-image-to-image": tieredImagePage(
+    "size",
+    { "1K": 0.0162, "1.5K": 0.0162, "2K": 0.0162 },
+    "https://kie.ai/seedream-5-0-flash?model=seedream%2F5-flash-image-to-image",
+    "1K",
+    "2026-10-05"
+  ),
   "seedream/5-pro-text-to-image": tieredImagePage(
     "quality",
     { basic: 0.035, high: 0.07 },

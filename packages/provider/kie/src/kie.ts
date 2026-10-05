@@ -185,6 +185,7 @@ import {
   SeedreamProImageToImageRequestSchema,
   SeedreamProTextToImageRequestSchema,
   SeedreamFlashTextToImageRequestSchema,
+  SeedreamFlashImageToImageRequestSchema,
   SeedreamProLayerDecompositionRequestSchema,
   Qwen2TextToImageRequestSchema,
   Qwen2ImageEditRequestSchema,
@@ -323,6 +324,7 @@ export const CREATE_TASK_GUARDS = {
   "seedream/5-pro-image-to-image": SeedreamProImageToImageRequestSchema,
   "seedream/5-pro-text-to-image": SeedreamProTextToImageRequestSchema,
   "seedream/5-flash-text-to-image": SeedreamFlashTextToImageRequestSchema,
+  "seedream/5-flash-image-to-image": SeedreamFlashImageToImageRequestSchema,
   "seedream/5-pro-layer-decomposition":
     SeedreamProLayerDecompositionRequestSchema,
   "seedream/4.5-text-to-image": Seedream45TextToImageRequestSchema,

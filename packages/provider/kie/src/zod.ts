@@ -258,6 +258,7 @@ export const KIE_MEDIA_MODELS = [
   "seedream/5-pro-image-to-image",
   "seedream/5-pro-text-to-image",
   "seedream/5-flash-text-to-image",
+  "seedream/5-flash-image-to-image",
   "seedream/5-pro-layer-decomposition",
   "seedream/4.5-text-to-image",
   "seedream/4.5-edit",
@@ -4172,6 +4173,22 @@ export const SeedreamFlashTextToImageRequestSchema = z.object({
   model: z.literal("seedream/5-flash-text-to-image"),
   callBackUrl: z.string().url().optional(),
   input: z.object({
+    prompt: z.string().min(3).max(5000),
+    aspect_ratio: z
+      .enum(["1:1", "4:3", "3:4", "16:9", "9:16", "2:3", "3:2", "21:9"])
+      .default("1:1"),
+    size: z.enum(["1K", "1.5K", "2K"]).default("1K"),
+    output_format: z.enum(["png", "jpeg"]).default("png"),
+    nsfw_checker: z.boolean().optional(),
+  }),
+});
+
+// Docs: https://docs.kie.ai/market/seedream/5-flash-image-to-image
+export const SeedreamFlashImageToImageRequestSchema = z.object({
+  model: z.literal("seedream/5-flash-image-to-image"),
+  callBackUrl: z.string().url().optional(),
+  input: z.object({
+    image_urls: z.array(z.string().url()).min(1).max(10),
     prompt: z.string().min(3).max(5000),
     aspect_ratio: z
       .enum(["1:1", "4:3", "3:4", "16:9", "9:16", "2:3", "3:2", "21:9"])
@@ -8385,6 +8402,7 @@ export const MediaGenerationRequestSchema = z.union([
   SeedreamProImageToImageRequestSchema,
   SeedreamProTextToImageRequestSchema,
   SeedreamFlashTextToImageRequestSchema,
+  SeedreamFlashImageToImageRequestSchema,
   SeedreamProLayerDecompositionRequestSchema,
   Seedream45TextToImageRequestSchema,
   Seedream45EditRequestSchema,
@@ -10049,4 +10067,13 @@ export type SeedreamFlashTextToImageRequestInput =
   SeedreamFlashTextToImageRequest;
 export type SeedreamFlashTextToImageParsedRequest = z.output<
   typeof SeedreamFlashTextToImageRequestSchema
+>;
+
+export type SeedreamFlashImageToImageRequest = z.input<
+  typeof SeedreamFlashImageToImageRequestSchema
+>;
+export type SeedreamFlashImageToImageRequestInput =
+  SeedreamFlashImageToImageRequest;
+export type SeedreamFlashImageToImageParsedRequest = z.output<
+  typeof SeedreamFlashImageToImageRequestSchema
 >;

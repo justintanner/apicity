@@ -2718,6 +2718,50 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  // https://docs.kie.ai/market/seedream/5-flash-image-to-image
+  "seedream/5-flash-image-to-image": {
+    type: "image",
+    fields: {
+      image_urls: {
+        type: "array",
+        required: true,
+        minItems: 1,
+        maxItems: 10,
+        description:
+          "One to ten uploaded JPEG, PNG, or WebP image URLs. Each image must be at most 30 MB; remote file contents are checked by KIE.",
+      },
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 3,
+        maxLength: 5000,
+        description: "Text description of the image to generate (3-5000 chars)",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: ["1:1", "4:3", "3:4", "16:9", "9:16", "2:3", "3:2", "21:9"],
+        default: "1:1",
+        description: "Output aspect ratio (default 1:1)",
+      },
+      size: {
+        type: "string",
+        enum: ["1K", "1.5K", "2K"],
+        default: "1K",
+        description: "Output size (default 1K)",
+      },
+      output_format: {
+        type: "string",
+        enum: ["png", "jpeg"],
+        default: "png",
+        description: "Output image format (default png)",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        description: "Content safety filter",
+      },
+    },
+  },
+
   // https://docs.kie.ai/market/seedream/5-pro-layer-decomposition
   "seedream/5-pro-layer-decomposition": {
     type: "image",

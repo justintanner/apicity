@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added `seedream/5-flash-image-to-image` for editing with up to ten reference
+  images, typed request metadata, local validation, and 1K/1.5K/2K pricing.
+
 - Added `seedream/5-flash-text-to-image` with typed request metadata, local
   validation, and size-based pricing for 1K, 1.5K, and 2K images.
 

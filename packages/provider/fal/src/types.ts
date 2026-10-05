@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalBytedanceSeedreamV5FlashTextToImageParsedRequest,
+  FalBytedanceSeedreamV5FlashTextToImageRequestInput,
+  FalBytedanceSeedreamV5FlashTextToImageRequest,
   FalBytedanceSeedreamV5FlashEditParsedRequest,
   FalBytedanceSeedreamV5FlashEditRequestInput,
   FalBytedanceSeedreamV5FlashEditRequest,
@@ -407,6 +410,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalBytedanceSeedreamV5FlashTextToImageRequest,
   FalBytedanceSeedreamV5FlashEditRequest,
   FalBytedanceSeedreamV5FlashLayerizeRequest,
   FalGoogleGemini3p8FlashLiteTtsRequest,
@@ -3346,6 +3350,13 @@ export interface FalBytedanceSeedreamV5FlashLayerizeResponse {
 }
 
 export interface FalRunBytedanceSeedreamV5FlashNamespace {
+  textToImage: ((
+    params: FalBytedanceSeedreamV5FlashTextToImageRequest,
+    signal?: AbortSignal
+  ) => Promise<FalBytedanceSeedreamV5FlashTextToImageResponse>) & {
+    schema: ApicitySchema<FalBytedanceSeedreamV5FlashTextToImageRequest>;
+  };
+
   edit: ((
     params: FalBytedanceSeedreamV5FlashEditRequest,
     signal?: AbortSignal
@@ -3362,6 +3373,17 @@ export interface FalRunBytedanceSeedreamV5FlashNamespace {
 }
 
 export interface FalBytedanceSeedreamV5FlashEditResponse {
+  images: {
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    url: string;
+    width?: number | null;
+    height?: number | null;
+  }[];
+}
+
+export interface FalBytedanceSeedreamV5FlashTextToImageResponse {
   images: {
     content_type?: string | null;
     file_name?: string | null;

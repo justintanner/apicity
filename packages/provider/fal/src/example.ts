@@ -403,6 +403,15 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST bytedance.seedream.v5.flash.textToImage": {
+    "source": "fal/bytedance-seedream-v5-flash-text-to-image",
+    "payload": {
+      "num_images": 1,
+      "prompt": "A red panda waves once, then holds still."
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST bytedance.seedream.v5.lite.edit": {
     "source": "fal/bytedance-seedream-v5-lite-edit",
     "payload": {

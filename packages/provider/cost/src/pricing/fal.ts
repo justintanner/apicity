@@ -750,6 +750,12 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  "bytedance/seedream/v5/flash/text-to-image": perImage(
+    "bytedance/seedream/v5/flash/text-to-image",
+    0.027,
+    "2026-10-05"
+  ),
+
   "bytedance/seedream/v5/flash/edit": perImage(
     "bytedance/seedream/v5/flash/edit",
     0.027,

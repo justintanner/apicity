@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Bytedance Seedream V5 Flash Text To Image (ac-iodwot).
+
 - Added Bytedance Seedream V5 Flash Edit (ac-a25hdg).
 
 - Added Bytedance Seedream V5 Flash Layerize (ac-ent0d5).

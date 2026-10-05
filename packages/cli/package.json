@@ -1,6 +1,6 @@
 {
   "name": "@apicity/cli",
-  "version": "0.13.3",
+  "version": "0.14.0",
   "description": "Command-line interface and agent skill for every @apicity provider endpoint.",
   "license": "MIT",
   "repository": {

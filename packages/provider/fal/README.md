@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-118 endpoints across 31 groups. Each method mirrors an upstream URL path.
+119 endpoints across 32 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -1549,6 +1549,25 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.qwenImage.edit({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+### recraft
+
+<details>
+<summary><code>POST</code> <b><code>fal.recraft.v4p1.flash.textToImage</code></b></summary>
+
+<code>POST https://fal.run/recraft/v4.1/flash/text-to-image</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/recraft/v4.1/flash/text-to-image/api)
+
+```typescript
+const res = await fal.run.recraft.v4p1.flash.textToImage({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

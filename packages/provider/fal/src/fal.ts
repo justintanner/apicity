@@ -1,4 +1,6 @@
 import {
+  FalRecraftV4p1FlashTextToImageResponse,
+  FalRecraftV4p1FlashTextToImageRequest,
   FalTripo3dP2ImageTo3dResponse,
   FalTripo3dP2ImageTo3dRequest,
   FalTripo3dP2TextTo3dResponse,
@@ -238,6 +240,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalRecraftV4p1FlashTextToImageRequestSchema,
   FalTripo3dP2ImageTo3dRequestSchema,
   FalTripo3dP2TextTo3dRequestSchema,
   FalBytedanceSeedreamV5FlashTextToImageRequestSchema,
@@ -2185,7 +2188,22 @@ export function createFal(opts: FalOptions): FalProvider {
     base: runBaseURL,
   });
 
+  // POST https://fal.run/recraft/v4.1/flash/text-to-image
+  // Docs: https://fal.ai/models/recraft/v4.1/flash/text-to-image/api
+  const recraftV4p1FlashTextToImage = jsonBody<
+    FalRecraftV4p1FlashTextToImageRequest,
+    FalRecraftV4p1FlashTextToImageResponse
+  >(
+    "POST",
+    "/recraft/v4.1/flash/text-to-image",
+    FalRecraftV4p1FlashTextToImageRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
+    // POST https://fal.run/recraft/v4.1/flash/text-to-image
+    // Docs: https://fal.ai/models/recraft/v4.1/flash/text-to-image/api
+    recraft: { v4p1: { flash: { textToImage: recraftV4p1FlashTextToImage } } },
     // POST https://fal.run/tripo3d/p2/text-to-3d
     // Docs: https://fal.ai/models/tripo3d/p2/text-to-3d/api
     tripo3d: {

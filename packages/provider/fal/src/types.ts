@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalRecraftV4p1FlashTextToImageParsedRequest,
+  FalRecraftV4p1FlashTextToImageRequestInput,
+  FalRecraftV4p1FlashTextToImageRequest,
   FalTripo3dP2ImageTo3dParsedRequest,
   FalTripo3dP2ImageTo3dRequestInput,
   FalTripo3dP2ImageTo3dRequest,
@@ -416,6 +419,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalRecraftV4p1FlashTextToImageRequest,
   FalTripo3dP2ImageTo3dRequest,
   FalTripo3dP2TextTo3dRequest,
   FalBytedanceSeedreamV5FlashTextToImageRequest,
@@ -2810,6 +2814,8 @@ export interface FalRunLightricksNamespace {
 }
 
 export interface FalRunNamespace {
+  recraft: FalRunRecraftNamespace;
+
   tripo3d: FalRunTripo3dNamespace;
 
   google: FalRunGoogleNamespace;
@@ -3456,4 +3462,30 @@ export interface FalTripo3dP2ImageTo3dResponse {
     glb?: FalFile | null;
     fbx?: FalFile | null;
   };
+}
+
+export interface FalRecraftV4p1FlashTextToImageResponse {
+  images: {
+    content_type?: string | null;
+    url: string;
+    file_size?: number | null;
+    file_name?: string | null;
+  }[];
+}
+
+export interface FalRunRecraftV4p1FlashNamespace {
+  textToImage: ((
+    params: FalRecraftV4p1FlashTextToImageRequest,
+    signal?: AbortSignal
+  ) => Promise<FalRecraftV4p1FlashTextToImageResponse>) & {
+    schema: ApicitySchema<FalRecraftV4p1FlashTextToImageRequest>;
+  };
+}
+
+export interface FalRunRecraftV4p1Namespace {
+  flash: FalRunRecraftV4p1FlashNamespace;
+}
+
+export interface FalRunRecraftNamespace {
+  v4p1: FalRunRecraftV4p1Namespace;
 }

@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Recraft 4.1 Flash Text To Image (ac-eq9oma).
+
 - Added Tripo3d P2 Image To 3d (ac-4wypts).
 
 - Added Tripo3d P2 Text To 3d (ac-p2s677).

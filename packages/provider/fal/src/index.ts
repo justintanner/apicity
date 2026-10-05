@@ -21,6 +21,13 @@ export type {
 
 // Export all types
 export type {
+  FalRunRecraftNamespace,
+  FalRunRecraftV4p1Namespace,
+  FalRunRecraftV4p1FlashNamespace,
+  FalRecraftV4p1FlashTextToImageResponse,
+  FalRecraftV4p1FlashTextToImageParsedRequest,
+  FalRecraftV4p1FlashTextToImageRequestInput,
+  FalRecraftV4p1FlashTextToImageRequest,
   FalTripo3dP2ImageTo3dResponse,
   FalTripo3dP2ImageTo3dParsedRequest,
   FalTripo3dP2ImageTo3dRequestInput,

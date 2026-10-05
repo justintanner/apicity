@@ -4522,7 +4522,59 @@ export type FalTripo3dP2ImageTo3dParsedRequest = z.output<
   typeof FalTripo3dP2ImageTo3dRequestSchema
 >;
 
+// Docs: https://fal.ai/models/recraft/v4.1/flash/text-to-image/api
+export const FalRecraftV4p1FlashTextToImageRequestSchema = z.object({
+  prompt: z.string().min(1).max(10000),
+  image_size: z
+    .union([
+      z.object({
+        width: z.number().int().gt(0).max(14142).default(512),
+        height: z.number().int().gt(0).max(14142).default(512),
+      }),
+      z.enum([
+        "square_hd",
+        "square",
+        "portrait_4_3",
+        "portrait_16_9",
+        "landscape_4_3",
+        "landscape_16_9",
+      ]),
+    ])
+    .default("square_hd"),
+  colors: z
+    .array(
+      z.object({
+        r: z.number().int().min(0).max(255).default(0),
+        g: z.number().int().min(0).max(255).default(0),
+        b: z.number().int().min(0).max(255).default(0),
+      })
+    )
+    .default([])
+    .describe("An array of preferable colors"),
+  background_color: z
+    .unknown()
+    .nullable()
+    .optional()
+    .describe("The preferable background color of the generated images."),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe(
+      "If set to true, the safety checker will be enabled. Disabling it requires account authorization; unauthorized requests are always checked."
+    ),
+});
+export type FalRecraftV4p1FlashTextToImageRequest = z.input<
+  typeof FalRecraftV4p1FlashTextToImageRequestSchema
+>;
+export type FalRecraftV4p1FlashTextToImageRequestInput =
+  FalRecraftV4p1FlashTextToImageRequest;
+export type FalRecraftV4p1FlashTextToImageParsedRequest = z.output<
+  typeof FalRecraftV4p1FlashTextToImageRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "recraft/v4.1/flash/text-to-image":
+    FalRecraftV4p1FlashTextToImageRequestSchema,
   "tripo3d/p2/image-to-3d": FalTripo3dP2ImageTo3dRequestSchema,
   "tripo3d/p2/text-to-3d": FalTripo3dP2TextTo3dRequestSchema,
   "bytedance/seedream/v5/flash/text-to-image":

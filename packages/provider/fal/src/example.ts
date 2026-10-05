@@ -938,6 +938,14 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST recraft.v4p1.flash.textToImage": {
+    "source": "fal/recraft-v4-1-flash-text-to-image",
+    "payload": {
+      "prompt": "A red panda waves once, then holds still."
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST sora2.imageToVideo": {
     "source": "fal/sora-2-image-to-video",
     "payload": {

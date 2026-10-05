@@ -815,14 +815,25 @@ function representativePayload(
 // MiniMax H3), and representativePricingMetadata.costHints is the only
 // channel the guard's runtimeCase reads.
 function representativeCostHints(key, inventories, auditedUnit, payload) {
-  if (auditedUnit.unit !== "seconds") return undefined;
   const hints = {};
-  if (key !== "wan/2-2-a14b-speech-to-video-turbo") {
-    const fields = inventories.descriptorFields[key] ?? {};
-    if (!Object.hasOwn(fields, "duration")) hints.durationSeconds = 5;
+  if (auditedUnit.unit === "seconds") {
+    if (key !== "wan/2-2-a14b-speech-to-video-turbo") {
+      const fields = inventories.descriptorFields[key] ?? {};
+      if (!Object.hasOwn(fields, "duration")) hints.durationSeconds = 5;
+    }
+    const clips = payload?.input?.reference_video_urls;
+    if (Array.isArray(clips) && clips.length > 0) {
+      hints.inputDurationSeconds = 5;
+    }
   }
-  const clips = payload?.input?.reference_video_urls;
-  if (Array.isArray(clips) && clips.length > 0) hints.inputDurationSeconds = 5;
+  // Official layer cells are per image. The request cannot carry the count,
+  // so the representative case declares one returned image.
+  if (
+    key === "seedream/5-pro-layer-decomposition" ||
+    key === "seedream/5-flash-layer-decomposition"
+  ) {
+    hints.outputImages = 1;
+  }
   return Object.keys(hints).length ? hints : undefined;
 }
 

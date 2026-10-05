@@ -527,6 +527,37 @@ const tieredImagePage = (
   source: pricePage(url, asOf),
 });
 
+// Output images a layer-decomposition job actually returns. The request
+// schema has no count field, so imageCount's default of 1 underquotes a
+// multi-layer result. A missing or non-positive hint fails closed.
+const outputImageCount = (hints?: CostHints): number | undefined => {
+  const count = hints?.outputImages;
+  return typeof count === "number" && Number.isInteger(count) && count > 0
+    ? count
+    : undefined;
+};
+
+const layerDecompositionPage = (
+  rates: Record<string, number>,
+  url: string,
+  asOf: string,
+  missingCountWarning: string
+): ModelPricing => ({
+  kind: "perUnit",
+  unit: "images",
+  units: (_payload, hints) => outputImageCount(hints),
+  warn: (_payload, hints) =>
+    outputImageCount(hints) === undefined ? [missingCountWarning] : [],
+  select: [
+    {
+      name: "size",
+      pick: (p) => asString(asObject(p.input)?.size) ?? "auto",
+    },
+  ],
+  rates,
+  source: pricePage(url, asOf),
+});
+
 // Area-billed image entry: kie prices the Qwen Image family per megapixel of
 // output rather than per image.
 const perMegapixel = (
@@ -2513,50 +2544,28 @@ export const kie: Record<string, ModelPricing> = {
     seedreamProEditExtra
   ),
 
-  // Seedream 5 Pro layer decomposition — per image by output size. The
-  // callable schema exposes auto|1K|1.5K|2K and defaults to auto; KIE only
-  // publishes priced 1K/1.5K/2K cells, so auto remains an explicit
-  // unsupported selector rather than inheriting a guessed tier.
-  "seedream/5-pro-layer-decomposition": tieredImagePage(
-    "size",
+  // Seedream 5 Pro layer decomposition — per returned image by output
+  // size. The callable schema exposes auto|1K|1.5K|2K and defaults to auto;
+  // KIE only publishes priced 1K/1.5K/2K cells, so auto remains an explicit
+  // unsupported selector rather than inheriting a guessed tier. The live
+  // auto recording returned two images and consumed 14 credits, which is
+  // two times the published 1K/1.5K cell, so the count comes from
+  // costHints.outputImages and is never assumed.
+  "seedream/5-pro-layer-decomposition": layerDecompositionPage(
     { "1K": 0.035, "1.5K": 0.035, "2K": 0.07 },
     "https://kie.ai/seedream-5-0-pro",
-    "auto",
-    "2026-08-11"
+    "2026-08-11",
+    "Seedream 5 Pro layers bills each output image; pass a positive integer costHints.outputImages."
   ),
   // Flash's three published size tiers all cost 3.24 credits. As with Pro,
-  // auto has no explicit published tier, so it remains unestimated.
-  "seedream/5-flash-layer-decomposition": {
-    kind: "perUnit",
-    unit: "images",
-    // The live fixture returned two images and consumed 6.48 credits.
-    // The request does not determine the number of billable output images.
-    units: (_p, hints) => {
-      const count = hints?.outputImages;
-      return typeof count === "number" && Number.isInteger(count) && count > 0
-        ? count
-        : undefined;
-    },
-    warn: (_p, hints) => {
-      const count = hints?.outputImages;
-      return typeof count === "number" && Number.isInteger(count) && count > 0
-        ? []
-        : [
-            "Seedream 5 Flash layers bills each output image; pass a positive integer costHints.outputImages.",
-          ];
-    },
-    select: [
-      {
-        name: "size",
-        pick: (p) => asString(asObject(p.input)?.size) ?? "auto",
-      },
-    ],
-    rates: { "1K": 0.0162, "1.5K": 0.0162, "2K": 0.0162 },
-    source: pricePage(
-      "https://kie.ai/seedream-5-0-flash?model=seedream%2F5-flash-layer-decomposition",
-      "2026-10-05"
-    ),
-  },
+  // auto has no explicit published tier, so it remains unestimated. The
+  // live fixture returned two images and consumed 6.48 credits.
+  "seedream/5-flash-layer-decomposition": layerDecompositionPage(
+    { "1K": 0.0162, "1.5K": 0.0162, "2K": 0.0162 },
+    "https://kie.ai/seedream-5-0-flash?model=seedream%2F5-flash-layer-decomposition",
+    "2026-10-05",
+    "Seedream 5 Flash layers bills each output image; pass a positive integer costHints.outputImages."
+  ),
 
   // Seedream 4.5 — flat $0.0325/image on both published rows. The schema
   // carries a basic/high quality tier, but the page prices only one rate for

@@ -684,6 +684,38 @@ const perSpokenCharacter = (
   source: source(endpointId, on),
 });
 
+// Bills each returned image when the request cannot say how many images
+// will come back. Callers pass that count through costHints.outputImages.
+// A missing or non-positive count fails closed instead of assuming 1.
+function hintedOutputImages(
+  _p: Record<string, unknown>,
+  hints?: CostHints
+): number | undefined {
+  const count = hints?.outputImages;
+  return typeof count === "number" && Number.isInteger(count) && count > 0
+    ? count
+    : undefined;
+}
+
+const perOutputImage = (
+  endpointId: string,
+  usd: number,
+  on: string
+): ModelPricing => ({
+  kind: "perUnit",
+  unit: "images",
+  units: hintedOutputImages,
+  warn: (_payload, hints) =>
+    hintedOutputImages(_payload, hints) === undefined
+      ? [
+          `${endpointId} bills each returned image; pass a positive integer costHints.outputImages.`,
+        ]
+      : [],
+  select: [],
+  rates: { "": usd },
+  source: source(endpointId, on),
+});
+
 export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "alibaba/qwen-image-3/edit",
   "alibaba/qwen-image-3/text-to-image",
@@ -718,6 +750,12 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  "bytedance/seedream/v5/flash/layerize": perOutputImage(
+    "bytedance/seedream/v5/flash/layerize",
+    0.027,
+    "2026-10-05"
+  ),
+
   "google/gemini-3.8-flash-lite-tts": perSpokenCharacter(
     "google/gemini-3.8-flash-lite-tts",
     3e-5,

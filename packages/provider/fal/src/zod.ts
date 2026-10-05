@@ -4182,7 +4182,50 @@ export type FalGoogleGemini3p8FlashLiteTtsParsedRequest = z.output<
   typeof FalGoogleGemini3p8FlashLiteTtsRequestSchema
 >;
 
+// Docs: https://fal.ai/models/bytedance/seedream/v5/flash/layerize/api
+export const FalBytedanceSeedreamV5FlashLayerizeRequestSchema = z.object({
+  prompt: z
+    .string()
+    .default("")
+    .describe(
+      "Optional instructions describing which elements to separate. When empty, the model automatically separates the major elements. Normalized `<bbox>left top right bottom</bbox>` tags may be used for precise coordinate targeting."
+    ),
+  image_url: z
+    .string()
+    .describe(
+      "URL of the image to decompose into a base image and independently editable layers. The image must contain between 512x512 and 6000x6000 total pixels, have an aspect ratio between 1/16 and 16, and be no larger than 30 MB."
+    ),
+  image_size: z
+    .enum(["auto", "auto_1K", "auto_1.5K", "auto_2K"])
+    .default("auto")
+    .describe(
+      "Resolution tier for the output base image and layers. `auto` adapts to the input image while preserving each element's aspect ratio."
+    ),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If `True`, the media will be returned as a data URI and the output data won't be available in the request history."
+    ),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe(
+      "If set to true, the safety checker will be enabled. Disabling it requires account authorization; unauthorized requests are always checked."
+    ),
+});
+export type FalBytedanceSeedreamV5FlashLayerizeRequest = z.input<
+  typeof FalBytedanceSeedreamV5FlashLayerizeRequestSchema
+>;
+export type FalBytedanceSeedreamV5FlashLayerizeRequestInput =
+  FalBytedanceSeedreamV5FlashLayerizeRequest;
+export type FalBytedanceSeedreamV5FlashLayerizeParsedRequest = z.output<
+  typeof FalBytedanceSeedreamV5FlashLayerizeRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "bytedance/seedream/v5/flash/layerize":
+    FalBytedanceSeedreamV5FlashLayerizeRequestSchema,
   "google/gemini-3.8-flash-lite-tts":
     FalGoogleGemini3p8FlashLiteTtsRequestSchema,
   "google/gemini-3.8-flash-tts": FalGoogleGemini3p8FlashTtsRequestSchema,

@@ -21,6 +21,11 @@ export type {
 
 // Export all types
 export type {
+  FalRunBytedanceSeedreamV5FlashNamespace,
+  FalBytedanceSeedreamV5FlashLayerizeResponse,
+  FalBytedanceSeedreamV5FlashLayerizeParsedRequest,
+  FalBytedanceSeedreamV5FlashLayerizeRequestInput,
+  FalBytedanceSeedreamV5FlashLayerizeRequest,
   FalGoogleGemini3p8FlashLiteTtsResponse,
   FalGoogleGemini3p8FlashLiteTtsParsedRequest,
   FalGoogleGemini3p8FlashLiteTtsRequestInput,

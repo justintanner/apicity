@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalBytedanceSeedreamV5FlashLayerizeParsedRequest,
+  FalBytedanceSeedreamV5FlashLayerizeRequestInput,
+  FalBytedanceSeedreamV5FlashLayerizeRequest,
   FalGoogleGemini3p8FlashLiteTtsParsedRequest,
   FalGoogleGemini3p8FlashLiteTtsRequestInput,
   FalGoogleGemini3p8FlashLiteTtsRequest,
@@ -401,6 +404,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalBytedanceSeedreamV5FlashLayerizeRequest,
   FalGoogleGemini3p8FlashLiteTtsRequest,
   FalGoogleGemini3p8FlashTtsRequest,
   FalElevenlabsTtsElevenV4Request,
@@ -2066,6 +2070,8 @@ export interface FalRunBytedanceSeedreamV5ProNamespace {
 }
 
 export interface FalRunBytedanceSeedreamV5Namespace {
+  flash: FalRunBytedanceSeedreamV5FlashNamespace;
+
   lite: FalRunBytedanceSeedreamV5LiteNamespace;
   pro: FalRunBytedanceSeedreamV5ProNamespace;
 }
@@ -3307,5 +3313,39 @@ export interface FalGoogleGemini3p8FlashLiteTtsResponse {
     content_type?: string | null;
     url: string;
     file_name?: string | null;
+  };
+}
+
+export interface FalBytedanceSeedreamV5FlashLayerizeResponse {
+  layers: {
+    description?: string | null;
+    image: {
+      content_type?: string | null;
+      file_name?: string | null;
+      file_size?: number | null;
+      url: string;
+      width?: number | null;
+      height?: number | null;
+    };
+    z_index: number;
+    name?: string | null;
+    bounding_box?: unknown | null;
+  }[];
+  images: {
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    url: string;
+    width?: number | null;
+    height?: number | null;
+  }[];
+}
+
+export interface FalRunBytedanceSeedreamV5FlashNamespace {
+  layerize: ((
+    params: FalBytedanceSeedreamV5FlashLayerizeRequest,
+    signal?: AbortSignal
+  ) => Promise<FalBytedanceSeedreamV5FlashLayerizeResponse>) & {
+    schema: ApicitySchema<FalBytedanceSeedreamV5FlashLayerizeRequest>;
   };
 }

@@ -2524,6 +2524,39 @@ export const kie: Record<string, ModelPricing> = {
     "auto",
     "2026-08-11"
   ),
+  // Flash's three published size tiers all cost 3.24 credits. As with Pro,
+  // auto has no explicit published tier, so it remains unestimated.
+  "seedream/5-flash-layer-decomposition": {
+    kind: "perUnit",
+    unit: "images",
+    // The live fixture returned two images and consumed 6.48 credits.
+    // The request does not determine the number of billable output images.
+    units: (_p, hints) => {
+      const count = hints?.outputImages;
+      return typeof count === "number" && Number.isInteger(count) && count > 0
+        ? count
+        : undefined;
+    },
+    warn: (_p, hints) => {
+      const count = hints?.outputImages;
+      return typeof count === "number" && Number.isInteger(count) && count > 0
+        ? []
+        : [
+            "Seedream 5 Flash layers bills each output image; pass a positive integer costHints.outputImages.",
+          ];
+    },
+    select: [
+      {
+        name: "size",
+        pick: (p) => asString(asObject(p.input)?.size) ?? "auto",
+      },
+    ],
+    rates: { "1K": 0.0162, "1.5K": 0.0162, "2K": 0.0162 },
+    source: pricePage(
+      "https://kie.ai/seedream-5-0-flash?model=seedream%2F5-flash-layer-decomposition",
+      "2026-10-05"
+    ),
+  },
 
   // Seedream 4.5 — flat $0.0325/image on both published rows. The schema
   // carries a basic/high quality tier, but the page prices only one rate for

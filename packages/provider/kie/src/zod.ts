@@ -260,6 +260,7 @@ export const KIE_MEDIA_MODELS = [
   "seedream/5-flash-text-to-image",
   "seedream/5-flash-image-to-image",
   "seedream/5-pro-layer-decomposition",
+  "seedream/5-flash-layer-decomposition",
   "seedream/4.5-text-to-image",
   "seedream/4.5-edit",
   "grok-imagine/extend",
@@ -4211,6 +4212,20 @@ export const SeedreamProLayerDecompositionRequestSchema = z.object({
     prompt: z.string().max(5000).optional(),
     size: z.enum(["auto", "1K", "1.5K", "2K"]).default("auto"),
     output_format: z.enum(["png", "jpeg"]).default("jpeg"),
+  }),
+});
+
+// Docs: https://docs.kie.ai/market/seedream/5-flash-layer-decomposition
+// The product page also exposes the optional nsfw_checker field.
+export const SeedreamFlashLayerDecompositionRequestSchema = z.object({
+  model: z.literal("seedream/5-flash-layer-decomposition"),
+  callBackUrl: z.string().url().optional(),
+  input: z.object({
+    image_url: z.string().url(),
+    prompt: z.string().min(3).max(5000).optional(),
+    size: z.enum(["auto", "1K", "1.5K", "2K"]).default("auto"),
+    output_format: z.enum(["png", "jpeg"]).default("jpeg"),
+    nsfw_checker: z.boolean().optional(),
   }),
 });
 
@@ -8404,6 +8419,7 @@ export const MediaGenerationRequestSchema = z.union([
   SeedreamFlashTextToImageRequestSchema,
   SeedreamFlashImageToImageRequestSchema,
   SeedreamProLayerDecompositionRequestSchema,
+  SeedreamFlashLayerDecompositionRequestSchema,
   Seedream45TextToImageRequestSchema,
   Seedream45EditRequestSchema,
   Qwen2TextToImageRequestSchema,
@@ -10076,4 +10092,13 @@ export type SeedreamFlashImageToImageRequestInput =
   SeedreamFlashImageToImageRequest;
 export type SeedreamFlashImageToImageParsedRequest = z.output<
   typeof SeedreamFlashImageToImageRequestSchema
+>;
+
+export type SeedreamFlashLayerDecompositionRequest = z.input<
+  typeof SeedreamFlashLayerDecompositionRequestSchema
+>;
+export type SeedreamFlashLayerDecompositionRequestInput =
+  SeedreamFlashLayerDecompositionRequest;
+export type SeedreamFlashLayerDecompositionParsedRequest = z.output<
+  typeof SeedreamFlashLayerDecompositionRequestSchema
 >;

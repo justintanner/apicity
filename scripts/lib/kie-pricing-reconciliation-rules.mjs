@@ -97,6 +97,15 @@ export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
       "Seedream 5 Flash was added after the frozen September catalog; these live rates are backed by the dated supplemental feed capture.",
   })),
   ...["1K", "1.5K", "2K"].map((variant) => ({
+    key: "seedream/5-flash-layer-decomposition",
+    variant,
+    status: "pricing-only",
+    provenance:
+      "tests/fixtures/kie-pricing-evidence/seedream-5-flash-layer-decomposition-2026-10-05.json: official feed cells at 3.24 credits ($0.0162) per image",
+    rationale:
+      "Seedream 5 Flash was added after the frozen September catalog; these live rates are backed by the dated supplemental feed capture.",
+  })),
+  ...["1K", "1.5K", "2K"].map((variant) => ({
     key: "seedream/5-flash-image-to-image",
     variant,
     status: "pricing-only",

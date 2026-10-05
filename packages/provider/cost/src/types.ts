@@ -53,6 +53,10 @@ export interface CostEstimate {
 // Additive by design: new hint fields are optional, so adding one is never a
 // breaking change.
 export interface CostHints {
+  // Billable output images for requests whose result count cannot be known
+  // from the input, such as KIE Seedream 5 Flash layer decomposition.
+  // Cost-only: never merged into the generation request.
+  outputImages?: number;
   durationSeconds?: number;
   // Declared total length, in seconds, of the request's video INPUTS, for the
   // kie entries that bill (input video duration + output video duration) x

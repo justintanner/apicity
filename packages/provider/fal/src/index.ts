@@ -21,6 +21,10 @@ export type {
 
 // Export all types
 export type {
+  FalMinimaxH3MaxExtendVideoResponse,
+  FalMinimaxH3MaxExtendVideoParsedRequest,
+  FalMinimaxH3MaxExtendVideoRequestInput,
+  FalMinimaxH3MaxExtendVideoRequest,
   FalBriaFiboEdit1p5ProductHoldingResponse,
   FalBriaFiboEdit1p5ProductHoldingParsedRequest,
   FalBriaFiboEdit1p5ProductHoldingRequestInput,

@@ -565,6 +565,14 @@ const gptImagePerImage = (
 //     as the `alibaba/wan-3.0/*` video family, and the same rate. The
 //     statically priced `fal-ai/wan/v2.7/reference-to-video` sibling reports
 //     unit "seconds" (output seconds) at USD 0.1 from the same API instead.
+//   - minimax/h3-max/extend-video: the official card (read 2026-10-07)
+//     bills $0.05/$0.08/$0.16/$0.32 per generated second at
+//     480p/768p/1080p/2K, plus $0.02 per 1,000 reference tokens beyond the
+//     4,096 included with each request. Those tokens come from the source
+//     clip and the optional reference audio, which the payload carries only
+//     as URLs, so no request field determines the charge. The same card
+//     language made minimax/h3-max/insert-video dynamic; the turbo twin
+//     bills continuation seconds only and stays priced statically below.
 //   - xai/grok-imagine-video/v1.5/reference-to-video: billed per COMPUTE
 //     SECOND (USD 0.00017) as pulled 2026-08-28 from the same pricing API.
 //     Its UNVERSIONED sibling xai/grok-imagine-video/reference-to-video bills
@@ -787,6 +795,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "lightricks/ltx-2.5/image-to-video/fast",
   "lightricks/ltx-2.5/image-to-video/pro",
   "meshy/v7/image-to-3d",
+  "minimax/h3-max/extend-video",
   "minimax/h3-max/insert-video",
   "minimax/h3/image-to-video",
   "minimax/h3/reference-to-video",

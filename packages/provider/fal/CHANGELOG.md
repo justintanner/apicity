@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added MiniMax H3 Max video extension, dynamically priced (ac-b5tt8y).
+
 - Added Bria Fibo Edit 1.5 Product Holding (ac-6d3gzy).
 
 - Added Bria Fibo Edit 1.5 Virtual Try On (ac-lkly44).

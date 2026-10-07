@@ -1,7 +1,7 @@
 import { KieError } from "./types";
 import { KieClaudeRequestSchema } from "./zod";
 import type { ApicitySchema } from "./types";
-import { parseKieAnthropicErrorBody } from "./request";
+import { kieRequest, parseKieAnthropicErrorBody } from "./request";
 import { createTransport } from "./transport";
 
 // ---------------------------------------------------------------------------
@@ -146,11 +146,17 @@ export function createClaudeProvider(
               signal?: AbortSignal
             ): Promise<KieClaudeResponse> {
               try {
-                return await transport.postJson<KieClaudeResponse>(
-                  "/claude/v1/messages",
-                  req,
-                  { signal }
-                );
+                // KIE can answer HTTP 200 with its own `{ code, msg }`
+                // envelope instead of a message. hasPayload lets kieRequest
+                // reject it, as /anthropic/v1/messages does.
+                return await kieRequest<KieClaudeResponse>(transport, {
+                  method: "POST",
+                  path: "/claude/v1/messages",
+                  body: req,
+                  signal,
+                  hasPayload: (body) =>
+                    body.type === "message" || Array.isArray(body.content),
+                });
               } catch (error) {
                 if (error instanceof KieError) throw error;
                 if (error instanceof SyntaxError) {

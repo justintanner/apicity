@@ -1,5 +1,12 @@
-import { describe, expect, it } from "vitest";
-import { createFal } from "@apicity/fal";
+import { describe, expect, expectTypeOf, it } from "vitest";
+import { z } from "zod";
+import {
+  createFal,
+  type FalMinimaxH3MaxExtendVideoParsedRequest,
+  type FalMinimaxH3MaxExtendVideoRequest,
+  type FalMinimaxH3MaxExtendVideoRequestInput,
+  type FalMinimaxH3MaxExtendVideoResponse,
+} from "@apicity/fal";
 import {
   FalMinimaxH3MaxExtendVideoRequestSchema as schema,
   FalMinimaxH3MaxTurboExtendVideoRequestSchema as twin,
@@ -28,6 +35,28 @@ describe("MiniMax H3 Max video extension contract", () => {
     expect(leaf).toBe(provider.post.run.minimax.h3Max.extendVideo);
     expect(leaf.schema).toBe(schema);
     expect(FAL_ENDPOINT_REQUEST_SCHEMAS[endpoint]).toBe(schema);
+    // Compile-time only: the public request types and the six documented
+    // response members, with their optionality (REQ-004, REQ-005).
+    expectTypeOf<FalMinimaxH3MaxExtendVideoRequest>().toEqualTypeOf<
+      z.input<typeof schema>
+    >();
+    expectTypeOf<FalMinimaxH3MaxExtendVideoRequestInput>().toEqualTypeOf<FalMinimaxH3MaxExtendVideoRequest>();
+    expectTypeOf<FalMinimaxH3MaxExtendVideoParsedRequest>().toEqualTypeOf<
+      z.output<typeof schema>
+    >();
+    expectTypeOf<FalMinimaxH3MaxExtendVideoResponse>().toEqualTypeOf<{
+      video: {
+        url: string;
+        content_type?: string | null;
+        file_name?: string | null;
+        file_size?: number | null;
+      };
+      duration: number;
+      seed: number;
+      source: Record<string, unknown>;
+      expanded_prompt?: string | null;
+      timings?: Record<string, number>;
+    }>();
   });
 
   it("applies the documented defaults and leaves seed and audio absent", () =>
@@ -117,6 +146,9 @@ describe("MiniMax H3 Max video extension contract", () => {
         enable_prompt_expansion: false,
       },
       { ...input, legacy: true },
+      { ...input, duration: 15.1 },
+      { ...input, prompt: "p".repeat(50000) },
+      { ...input, video_url: "" },
     ];
     for (const payload of payloads) {
       const label = JSON.stringify(payload).slice(0, 120);
@@ -128,6 +160,15 @@ describe("MiniMax H3 Max video extension contract", () => {
     expect(schema.parse({ ...input, legacy: true })).not.toHaveProperty(
       "legacy"
     );
+    // The sampled payloads above cannot see a dropped enum member or an
+    // extra field, so compare the validators themselves, descriptions aside.
+    const validators = (s: z.ZodType) =>
+      JSON.parse(
+        JSON.stringify(z.toJSONSchema(s), (key, value) =>
+          key === "description" ? undefined : value
+        )
+      );
+    expect(validators(schema)).toStrictEqual(validators(twin));
   });
 
   it("describes the documented constraints without billing claims", () => {

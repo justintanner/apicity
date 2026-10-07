@@ -1,4 +1,6 @@
 import {
+  FalMinimaxH3MaxTextToVideoResponse,
+  FalMinimaxH3MaxTextToVideoRequest,
   FalMinimaxH3MaxImageToVideoResponse,
   FalMinimaxH3MaxImageToVideoRequest,
   FalMinimaxH3MaxExtendVideoResponse,
@@ -256,6 +258,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalMinimaxH3MaxTextToVideoRequestSchema,
   FalMinimaxH3MaxImageToVideoRequestSchema,
   FalMinimaxH3MaxExtendVideoRequestSchema,
   FalBriaFiboEdit1p5ProductHoldingRequestSchema,
@@ -2311,6 +2314,18 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/minimax/h3-max/text-to-video
+  // Docs: https://fal.ai/models/minimax/h3-max/text-to-video/api
+  const minimaxH3MaxTextToVideo = jsonBody<
+    FalMinimaxH3MaxTextToVideoRequest,
+    FalMinimaxH3MaxTextToVideoResponse
+  >(
+    "POST",
+    "/minimax/h3-max/text-to-video",
+    FalMinimaxH3MaxTextToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
     // POST https://fal.run/bria/fibo-edit-1.5/virtual-try-on
     // Docs: https://fal.ai/models/bria/fibo-edit-1.5/virtual-try-on/api
@@ -2443,6 +2458,9 @@ export function createFal(opts: FalOptions): FalProvider {
     },
     minimax: {
       h3Max: {
+        // POST https://fal.run/minimax/h3-max/text-to-video
+        // Docs: https://fal.ai/models/minimax/h3-max/text-to-video/api
+        textToVideo: minimaxH3MaxTextToVideo,
         // POST https://fal.run/minimax/h3-max/image-to-video
         // Docs: https://fal.ai/models/minimax/h3-max/image-to-video/api
         imageToVideo: minimaxH3MaxImageToVideo,

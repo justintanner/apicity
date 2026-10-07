@@ -5207,7 +5207,80 @@ export type FalMinimaxH3MaxImageToVideoParsedRequest = z.output<
   typeof FalMinimaxH3MaxImageToVideoRequestSchema
 >;
 
+// The live OpenAPI lists `prompt_expansion_mode` as required while also giving
+// it a default, and types it as a plain string with three examples. Upstream's
+// validator settles both, as it does for the image-to-video sibling: a `{}`
+// body is refused for `prompt` alone, and an unknown mode is refused with
+// "Input should be 'disabled', 'fast', 'balanced' or 'quality'" (two unbilled
+// 422 probes, 2026-10-07). So the field defaults to `balanced` and takes the
+// four values the validator accepts. The same probe showed that upstream
+// closes `aspect_ratio` to the six documented ratios.
+// Docs: https://fal.ai/models/minimax/h3-max/text-to-video/api
+export const FalMinimaxH3MaxTextToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(50000)
+    .describe("Text prompt for video generation"),
+  duration: z
+    .number()
+    .min(0.92)
+    .max(15)
+    .default(5)
+    .describe(
+      "Video length in seconds. The output can run up to about 0.7 s longer than requested. Use at least 2 s with target_audio_url."
+    ),
+  resolution: z
+    .enum(["480P", "768P", "1080P"])
+    .default("768P")
+    .describe(
+      "The native generation resolution, or 1080P latent refinement from a native 768P source."
+    ),
+  seed: z
+    .number()
+    .int()
+    .nullable()
+    .optional()
+    .describe("Random seed. A random seed is selected when omitted."),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe("If set to true, the safety checker will be enabled."),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe("Return the generated video as base64 instead of a CDN URL."),
+  prompt_expansion_mode: z
+    .enum(["disabled", "fast", "balanced", "quality"])
+    .default("balanced")
+    .describe(
+      "How much effort to spend rewriting the prompt before generation. 'disabled' skips prompt expansion. 'balanced' returns in about a second. 'quality' spends up to ~30s on a richer prompt."
+    ),
+  target_audio_url: z
+    .string()
+    .min(1)
+    .regex(/\S/)
+    .nullable()
+    .optional()
+    .describe(
+      "Optional URL of an audio clip at least 2 seconds long (maximum 15 MB) to pin to the generated soundtrack. Longer clips are trimmed to the generated video's length, keeping the beginning. The original audio replaces the output soundtrack, padded with silence if shorter than the video, without changing playback speed. Exceptionally high sample rates may be resampled to 96 kHz. Accepts an HTTP(S) URL or a base64 data URI."
+    ),
+  aspect_ratio: z
+    .enum(["21:9", "16:9", "4:3", "1:1", "3:4", "9:16"])
+    .default("16:9")
+    .describe("The aspect ratio of the generated video."),
+});
+export type FalMinimaxH3MaxTextToVideoRequest = z.input<
+  typeof FalMinimaxH3MaxTextToVideoRequestSchema
+>;
+export type FalMinimaxH3MaxTextToVideoRequestInput =
+  FalMinimaxH3MaxTextToVideoRequest;
+export type FalMinimaxH3MaxTextToVideoParsedRequest = z.output<
+  typeof FalMinimaxH3MaxTextToVideoRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "minimax/h3-max/text-to-video": FalMinimaxH3MaxTextToVideoRequestSchema,
   "minimax/h3-max/image-to-video": FalMinimaxH3MaxImageToVideoRequestSchema,
   "minimax/h3-max/extend-video": FalMinimaxH3MaxExtendVideoRequestSchema,
   "bria/fibo-edit-1.5/product-holding":

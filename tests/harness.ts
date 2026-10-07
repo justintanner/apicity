@@ -4,6 +4,10 @@ import FSPersister from "@pollyjs/persister-fs";
 import { createHash } from "node:crypto";
 import path from "path";
 import fs from "fs";
+import {
+  PERSISTED_REQUEST_HEADER_PLACEHOLDERS,
+  persistedRequestHeaderPlaceholder,
+} from "../scripts/lib/har-secrets.mjs";
 import { scrubSensitiveRecording, type HarCookieLike } from "./har-scrub.js";
 
 Polly.register(FetchAdapter);
@@ -283,6 +287,14 @@ function scrubRequestCookieHeaders(
 function scrubRequestCookies(cookies: HarCookieLike[] | undefined): void {
   cookies?.splice(0, cookies.length);
 }
+
+// The request headers redactPersistedHarSecrets redacts, each mapped to the
+// placeholder it writes. The table lives in scripts/lib/har-secrets.mjs so that
+// node scripts can read it without loading Polly; it is re-exported here as
+// this harness's redaction contract, which
+// tests/unit/har-request-secrets.test.ts holds every committed recording to.
+export { PERSISTED_REQUEST_HEADER_PLACEHOLDERS };
+
 export function redactPersistedHarSecrets(
   recording: PersistedHarRecording
 ): void {
@@ -292,20 +304,9 @@ export function redactPersistedHarSecrets(
 
   scrubRequestCookieHeaders(recording.request?.headers);
   for (const header of recording.request?.headers ?? []) {
-    if (header.name?.toLowerCase() === "authorization") {
-      header.value = "Bearer ***";
-    }
-    if (header.name?.toLowerCase() === "x-api-key") {
-      header.value = "***";
-    }
-    if (header.name?.toLowerCase() === "xi-api-key") {
-      header.value = "***";
-    }
-    if (header.name?.toLowerCase() === "x-goog-api-key") {
-      header.value = "***";
-    }
-    if (header.name?.toLowerCase() === "x-amz-security-token") {
-      header.value = "***";
+    const placeholder = persistedRequestHeaderPlaceholder(header.name);
+    if (placeholder !== undefined) {
+      header.value = placeholder;
     }
   }
 

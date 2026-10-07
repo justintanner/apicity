@@ -33,21 +33,26 @@
  * scripts/lib/cross-cutting-tests.mjs that provider scopes do not select
  * consistently: recording-corpus allowlists, endpoint-surface inventory,
  * cross-provider source pins, cross-provider registry parity, documentation
- * inventories, fal credential wiring, provider export surface, and
- * cross-ref namespace shape, and namespace-shape CLI. Those are the categories
- * tests/unit/cross-cutting-tests.test.ts sorts the block into, and it fails
- * when this paragraph stops naming one of them. The registry-parity guard,
- * `tests/unit/cost-slugs.test.ts`, enforces exact `fal` pricing/slug key
- * sets, slug/display coverage for every provider, every `kie` pricing key
- * resolving through both slug and display registries, and exact `googleflow`
- * slug/display keys; `tests/unit/cost-pricing.test.ts` enforces the mirror
- * direction. The documentation inventories,
+ * inventories, fal credential wiring, provider export surface, cross-ref
+ * namespace shape, namespace-shape CLI, and recorded request secrets. Those
+ * are the categories tests/unit/cross-cutting-tests.test.ts sorts the block
+ * into, and it fails when this paragraph stops naming one of them. The
+ * registry-parity guard, `tests/unit/cost-slugs.test.ts`, enforces exact
+ * `fal` pricing/slug key sets, slug/display coverage for every provider,
+ * every `kie` pricing key resolving through both slug and display
+ * registries, and exact `googleflow` slug/display keys;
+ * `tests/unit/cost-pricing.test.ts` enforces the mirror direction. The
+ * documentation inventories,
  * `tests/unit/provider-inventory-docs.test.ts`, pin the provider and
  * script-alias lists to the repository. The credential-wiring guard,
  * `tests/unit/recording-credential-hosts.test.ts`, requires every fal
  * recording to be replayed by a call site wired to the credential its host
  * needs; replay never contacts fal, so a miswiring is invisible until the
- * next paid `dev:record` (ac-wt8fzl). Without this step, provider-scoped
+ * next paid `dev:record` (ac-wt8fzl). The recorded-request-secrets guard,
+ * `tests/unit/har-request-secrets.test.ts`, holds every request header the
+ * harness redacts to the exact placeholder it writes, in every committed
+ * recording, so a hand-edited HAR carrying a live key fails here rather than
+ * reaching a public repository (ac-1zmydw). Without this step, provider-scoped
  * work can leave a whole-repo invariant stale until full CI — among them the
  * gaps behind ac-05hrc, ac-t2gfln, the `92323c18` hand repair, ac-y39i64,
  * ac-kabm2y, ac-gk1mlr, and ac-wt8fzl. Their measured cost lives in

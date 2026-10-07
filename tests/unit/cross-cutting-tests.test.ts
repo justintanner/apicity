@@ -56,6 +56,12 @@ const NAMESPACE_SHAPE_CLI_TESTS = [
   "tests/unit/compare-namespace-shapes-cli.test.ts",
 ] as const;
 
+// Recording-secrets suite (holds recorded request headers to the harness's
+// redaction placeholders).
+const RECORDING_SECRET_TESTS = [
+  "tests/unit/har-request-secrets.test.ts",
+] as const;
+
 // One canonical phrase per category, matched against the `cross-cutting`
 // enumeration in scripts/preflight-provider.mjs. This table is the single
 // place a category rename has to touch: the docblock is prose, so nothing
@@ -105,6 +111,11 @@ const CATEGORY_DOC_KEYWORDS = [
     name: "NAMESPACE_SHAPE_CLI_TESTS",
     tests: NAMESPACE_SHAPE_CLI_TESTS,
     keyword: "namespace-shape cli",
+  },
+  {
+    name: "RECORDING_SECRET_TESTS",
+    tests: RECORDING_SECRET_TESTS,
+    keyword: "recorded request secrets",
   },
 ] as const;
 
@@ -304,6 +315,18 @@ describe("cross-cutting repo-wide guard tests", () => {
       const source = readRepoFile(relativePath);
       expect(source, relativePath).toContain("compare-namespace-shapes.mjs");
       expect(source, relativePath).toContain("does not resolve");
+    }
+  });
+
+  it("recording-secret tests hold the corpus to the harness's own table", () => {
+    // The guard must walk the corpus with the shared finder and take the
+    // header table from the harness that applies it, so the names and
+    // placeholders have exactly one definition (ac-1zmydw).
+    for (const relativePath of RECORDING_SECRET_TESTS) {
+      const source = readRepoFile(relativePath);
+      expect(source, relativePath).toContain("readdirSync");
+      expect(source, relativePath).toContain("findUnredactedRequestSecrets");
+      expect(source, relativePath).toContain('from "../harness"');
     }
   });
 

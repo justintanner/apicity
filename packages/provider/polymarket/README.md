@@ -48,7 +48,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication.md)
 
 ```typescript
-const res = await polymarket.clob.auth.apiKey({ /* ... */ });
+const res = await polymarket.clob.auth.apiKey();
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -65,7 +65,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-spec/clob-openapi.yaml)
 
 ```typescript
-const res = await polymarket.clob.auth.builderApiKey({ /* ... */ });
+const res = await polymarket.clob.auth.builderApiKey();
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -82,7 +82,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/cancel-all-orders.md)
 
 ```typescript
-const res = await polymarket.clob.cancelAll({ /* ... */ });
+const res = await polymarket.clob.cancelAll();
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -184,7 +184,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication.md)
 
 ```typescript
-const res = await polymarket.clob.auth.banStatus.closedOnly({ /* ... */ });
+const res = await polymarket.clob.auth.banStatus.closedOnly();
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -201,7 +201,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-spec/clob-openapi.yaml)
 
 ```typescript
-const res = await polymarket.clob.auth.builderApiKey({ /* ... */ });
+const res = await polymarket.clob.auth.builderApiKey();
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -917,7 +917,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/data/get-server-time.md)
 
 ```typescript
-const res = await polymarket.clob.time({ /* ... */ });
+const res = await polymarket.clob.time();
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -951,7 +951,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-spec/clob-openapi.yaml)
 
 ```typescript
-const res = await polymarket.clob.auth.builderApiKey({ /* ... */ });
+const res = await polymarket.clob.auth.builderApiKey();
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -1002,7 +1002,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/send-heartbeat.md)
 
 ```typescript
-const res = await polymarket.clob.heartbeats({ /* ... */ });
+const res = await polymarket.clob.heartbeats();
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -1310,7 +1310,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-spec/data-openapi.yaml)
 
 ```typescript
-const res = await polymarket.data.health({ /* ... */ });
+const res = await polymarket.data.health();
 ```
 
 Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
@@ -1722,7 +1722,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/sports/get-sports-metadata-information.md)
 
 ```typescript
-const res = await polymarket.gamma.sports({ /* ... */ });
+const res = await polymarket.gamma.sports();
 ```
 
 Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
@@ -1739,7 +1739,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/sports/get-valid-sports-market-types.md)
 
 ```typescript
-const res = await polymarket.gamma.sports.marketTypes({ /* ... */ });
+const res = await polymarket.gamma.sports.marketTypes();
 ```
 
 Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
@@ -1756,7 +1756,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-spec/gamma-openapi.yaml)
 
 ```typescript
-const res = await polymarket.gamma.status({ /* ... */ });
+const res = await polymarket.gamma.status();
 ```
 
 Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)

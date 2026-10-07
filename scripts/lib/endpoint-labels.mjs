@@ -43,6 +43,12 @@ export function displayDotPath(providerName, ep) {
   if (ep.file.endsWith("/veo.ts")) return `veo.${ep.fullDotPath}`;
   if (ep.file.endsWith("/chat.ts")) return `chat.${ep.fullDotPath}`;
   if (ep.file.endsWith("/claude.ts")) return ep.fullDotPath;
+  // `createKie` mounts the `createResponsesProvider` tree under `post`, inside
+  // the `post: (() => { … })()` IIFE the walker does not descend, so the walker
+  // reads these leaves from responses.ts alone and never sees that segment:
+  // `kie.codex.v1.responses` is undefined, `kie.post.codex.v1.responses` is
+  // the leaf.
+  if (ep.file.endsWith("/responses.ts")) return `post.${ep.fullDotPath}`;
   return ep.fullDotPath ?? ep.dotPath;
 }
 

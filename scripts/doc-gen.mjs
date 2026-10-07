@@ -153,7 +153,45 @@ function sectionKey(dotPath) {
   return "general";
 }
 
-function formatUsageSnippet(providerName, dotPath) {
+/**
+ * Whether one parameter is the cancellation slot every endpoint takes,
+ * `signal?: AbortSignal`. The rule is `isSignalParam`'s in
+ * `scripts/gen-call-shapes.mjs`: the declared type must be exactly the signal,
+ * because several overloaded endpoints declare a union that merely includes it
+ * (`modelIdOrSignal?: string | AbortSignal`), and those are real inputs.
+ */
+function isSignalParam(param) {
+  const typeText = (param.getTypeNode()?.getText() ?? "").trim();
+  if (typeText === "AbortSignal" || typeText === "AbortSignal | undefined") {
+    return true;
+  }
+  return param.getName() === "signal" && typeText === "";
+}
+
+/**
+ * Whether a walked leaf takes no argument: its function declares no parameter
+ * but an optional `AbortSignal`, so its usage snippet is a bare `()` call. The
+ * generic request placeholder would land in the signal slot, where it does not
+ * type-check. A helper-built leaf (`jsonBody(...)` and its siblings) always
+ * takes a request, and a TSV-only endpoint has no leaf, so both keep the
+ * placeholder.
+ *
+ * @param {{leafNode?: import("ts-morph").Node}} ep
+ * @returns {boolean}
+ */
+export function takesNoArgument(ep) {
+  const leaf = ep.leafNode;
+  if (typeof leaf?.getParameters !== "function") return false;
+  return leaf
+    .getParameters()
+    .every(
+      (param) =>
+        isSignalParam(param) &&
+        (param.hasQuestionToken() || param.hasInitializer())
+    );
+}
+
+function formatUsageSnippet(providerName, dotPath, noArgument = false) {
   const call = dotPath ? `${providerName}.${dotPath}` : providerName;
   if (
     providerName === "google" &&
@@ -301,15 +339,6 @@ function formatUsageSnippet(providerName, dotPath) {
   ) {
     return `const res = await ${call}("voice_id", { /* ... */ });`;
   }
-  if (providerName === "elevenlabs" && dotPath === "v1.models") {
-    return `const res = await ${call}();`;
-  }
-  if (providerName === "elevenlabs" && dotPath === "docs") {
-    return `const res = await ${call}();`;
-  }
-  if (providerName === "elevenlabs" && dotPath === "v1.user.subscription") {
-    return `const res = await ${call}();`;
-  }
   if (
     providerName === "openligadb" &&
     (dotPath === "getbltable" || dotPath === "getgrouptable")
@@ -337,9 +366,6 @@ function formatUsageSnippet(providerName, dotPath) {
       "  limit: 3,",
       "});",
     ].join("\n");
-  }
-  if (providerName === "simplefunctions" && dotPath === "data.v1.heartbeat") {
-    return `const res = await ${call}();`;
   }
   if (providerName === "simplefunctions" && dotPath === "data.v1.markets") {
     return [
@@ -370,9 +396,6 @@ function formatUsageSnippet(providerName, dotPath) {
       "});",
     ].join("\n");
   }
-  if (providerName === "simplefunctions" && dotPath === "data.v1.snapshot") {
-    return `const res = await ${call}();`;
-  }
   if (providerName === "simplefunctions" && dotPath === "data.v1.movers") {
     return [
       `const res = await ${call}({`,
@@ -396,9 +419,6 @@ function formatUsageSnippet(providerName, dotPath) {
   }
   if (providerName === "simplefunctions" && dotPath === "data.v1.trades") {
     return `const res = await ${call}("KXPRESNOMD-28-GN", { limit: 50 });`;
-  }
-  if (providerName === "openligadb" && dotPath === "swagger.v1.swaggerJson") {
-    return `const res = await ${call}();`;
   }
   if (providerName === "openligadb" && dotPath === "getmatchdata.byId") {
     return `const res = await ${call}({ matchId: 68720 });`;
@@ -472,6 +492,7 @@ function formatUsageSnippet(providerName, dotPath) {
       "});",
     ].join("\n");
   }
+  if (noArgument) return `const res = await ${call}();`;
   return `const res = await ${call}({ /* ... */ });`;
 }
 
@@ -856,7 +877,11 @@ function renderEndpointDetails(ep, providerName, docsUrl, tier, dotPath) {
   //
   // So restore the namespace segments and keep dropping the verb (ac-5xsd5z).
   // The <summary> heading keeps the fully collapsed label either way.
-  const usage = formatUsageSnippet(providerName, callableDotPath(ep, dotPath));
+  const usage = formatUsageSnippet(
+    providerName,
+    callableDotPath(ep, dotPath),
+    takesNoArgument(ep)
+  );
   const relSrc = ep.file.replace(
     new RegExp(`^packages/provider/${providerName}/`),
     ""

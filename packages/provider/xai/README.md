@@ -317,7 +317,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/developers/rest-api-reference/inference/other)
 
 ```typescript
-const res = await xai.v1.apiKey({ /* ... */ });
+const res = await xai.v1.apiKey();
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)

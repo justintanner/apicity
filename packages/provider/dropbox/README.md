@@ -256,7 +256,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.dropbox.com/developers/documentation/http/documentation#users-get_current_account)
 
 ```typescript
-const res = await dropbox.users.getCurrentAccount({ /* ... */ });
+const res = await dropbox.users.getCurrentAccount();
 ```
 
 Source: [`packages/provider/dropbox/src/dropbox.ts`](src/dropbox.ts)

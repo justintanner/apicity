@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added MiniMax H3 Max reference-to-video, dynamically priced (ac-ibp1q7).
+
 - Added MiniMax H3 Max camera controls (ac-7xfptq).
 
 - Added MiniMax H3 Max text-to-video (ac-jg4hws).

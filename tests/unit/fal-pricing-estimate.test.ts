@@ -1051,6 +1051,7 @@ describe("fal edit/image pricing estimates", () => {
       "meshy/v7/image-to-3d",
       "minimax/h3-max/extend-video",
       "minimax/h3-max/insert-video",
+      "minimax/h3-max/reference-to-video",
       "minimax/h3/image-to-video",
       "minimax/h3/reference-to-video",
       "minimax/h3/text-to-video",

@@ -573,6 +573,15 @@ const gptImagePerImage = (
 //     as URLs, so no request field determines the charge. The same card
 //     language made minimax/h3-max/insert-video dynamic; the turbo twin
 //     bills continuation seconds only and stays priced statically below.
+//   - minimax/h3-max/reference-to-video: the official card (read
+//     2026-10-07) bills the requested seconds at $0.05/$0.08/$0.16 per
+//     second at 480p/768p/1080p, plus $0.02 per 1,000 reference tokens
+//     beyond the 4,096 included with each request. Reference tokens depend
+//     on each image's aspect ratio, each video's aspect ratio and frame
+//     count, and each audio clip's length, none of which the payload's URLs
+//     carry, so no request field determines the charge. Same card language
+//     as minimax/h3-max/extend-video above. The recorded 0.92 s 480P call
+//     with one square reference image billed 0.92 units, $0.046.
 //   - xai/grok-imagine-video/v1.5/reference-to-video: billed per COMPUTE
 //     SECOND (USD 0.00017) as pulled 2026-08-28 from the same pricing API.
 //     Its UNVERSIONED sibling xai/grok-imagine-video/reference-to-video bills
@@ -797,6 +806,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "meshy/v7/image-to-3d",
   "minimax/h3-max/extend-video",
   "minimax/h3-max/insert-video",
+  "minimax/h3-max/reference-to-video",
   "minimax/h3/image-to-video",
   "minimax/h3/reference-to-video",
   "minimax/h3/text-to-video",

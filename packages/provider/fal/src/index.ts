@@ -21,6 +21,10 @@ export type {
 
 // Export all types
 export type {
+  FalMinimaxH3MaxReferenceToVideoResponse,
+  FalMinimaxH3MaxReferenceToVideoParsedRequest,
+  FalMinimaxH3MaxReferenceToVideoRequestInput,
+  FalMinimaxH3MaxReferenceToVideoRequest,
   FalMinimaxH3MaxCameraControlsResponse,
   FalMinimaxH3MaxCameraControlsParsedRequest,
   FalMinimaxH3MaxCameraControlsRequestInput,

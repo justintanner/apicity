@@ -5405,7 +5405,165 @@ export type FalMinimaxH3MaxCameraControlsParsedRequest = z.output<
   typeof FalMinimaxH3MaxCameraControlsRequestSchema
 >;
 
+// The live OpenAPI lists `prompt_expansion_mode` as required while also giving
+// it a default, and types it as a plain string with three examples. Upstream's
+// validator settles both, as it does for the other minimax/h3-max leaves: a
+// body without the field draws no `missing` error (only `prompt` is
+// required), and an unknown mode is refused with "Input should be 'disabled',
+// 'fast', 'balanced' or 'quality'". The same unbilled 422 probes (2026-10-07)
+// showed one field rule the OpenAPI omits: a prompt of only whitespace is
+// refused, which the `\S` pattern restates. The three refinements restate
+// rules the field descriptions publish: at most 12 reference files in all, a
+// middle image only between start and end images at a native resolution, and
+// a middle frame time only with a middle image. The probes cannot reach those,
+// since a body that fails field validation is never checked against them.
+// Unlike minimax/h3/reference-to-video, audio may be the only reference
+// modality ("Images, videos, and audio can be provided individually or
+// together").
+// Docs: https://fal.ai/models/minimax/h3-max/reference-to-video/api
+export const FalMinimaxH3MaxReferenceToVideoRequestSchema = z
+  .object({
+    prompt: z
+      .string()
+      .min(1)
+      .max(50000)
+      .regex(/\S/, "Prompt cannot be empty or contain only whitespace")
+      .describe(
+        "Text prompt for video generation. Refer to reference assets by their modality and order in the reference lists: Image 1, Image 2, Video 1, Audio 1, and so on."
+      ),
+    reference_image_urls: z
+      .array(z.string())
+      .max(9)
+      .optional()
+      .describe(
+        "URLs of subject/style reference images, referenced in the prompt as Image 1, Image 2, and so on. Reference images, videos, and audio clips must add up to at most 12 files."
+      ),
+    reference_video_urls: z
+      .array(z.string())
+      .max(3)
+      .optional()
+      .describe(
+        "URLs of motion/reference video clips (2-15 seconds each, combined duration at most 15 seconds), referenced in the prompt as Video 1, Video 2, and so on. Reference images, videos, and audio clips must add up to at most 12 files."
+      ),
+    reference_audio_urls: z
+      .array(z.string())
+      .max(3)
+      .optional()
+      .describe(
+        "URLs of reference audio clips (2-15 seconds each, combined duration at most 15 seconds), referenced in the prompt as Audio 1, Audio 2, and so on. Images, videos, and audio can be provided individually or together. Reference images, videos, and audio clips must add up to at most 12 files."
+      ),
+    image_url: z
+      .string()
+      .min(1)
+      .nullable()
+      .optional()
+      .describe(
+        "Optional URL of the image to use as the first frame. The video opens exactly on this image while the references keep the subjects consistent; the output canvas follows this image."
+      ),
+    middle_image_url: z
+      .string()
+      .min(1)
+      .nullable()
+      .optional()
+      .describe(
+        "Optional image to guide the video at middle_frame_time. Requires start and end images and native 480P or 768P resolution."
+      ),
+    middle_frame_time: z
+      .number()
+      .gt(0)
+      .lt(15)
+      .nullable()
+      .optional()
+      .describe(
+        "Target time for the middle image, in seconds from the start. Rounded to the nearest frame at 24 fps; it must fall strictly between the first and last frames of the requested duration. Requires middle_image_url."
+      ),
+    end_image_url: z
+      .string()
+      .min(1)
+      .nullable()
+      .optional()
+      .describe(
+        "Optional URL of the image to use as the last frame. The video ends exactly on this image."
+      ),
+    duration: z
+      .number()
+      .min(0.92)
+      .max(15)
+      .default(5)
+      .describe(
+        "Video length in seconds. The output can run up to about 0.7 s longer than requested."
+      ),
+    resolution: z
+      .enum(["480P", "768P", "1080P"])
+      .default("768P")
+      .describe(
+        "The native generation resolution, or 1080P latent refinement from a native 768P source."
+      ),
+    seed: z
+      .number()
+      .int()
+      .nullable()
+      .optional()
+      .describe("Random seed. A random seed is selected when omitted."),
+    enable_safety_checker: z
+      .boolean()
+      .default(true)
+      .describe("If set to true, the safety checker will be enabled."),
+    sync_mode: z
+      .boolean()
+      .default(false)
+      .describe("Return the generated video as base64 instead of a CDN URL."),
+    prompt_expansion_mode: z
+      .enum(["disabled", "fast", "balanced", "quality"])
+      .default("balanced")
+      .describe(
+        "How much effort to spend rewriting the prompt before generation. 'disabled' skips prompt expansion. 'balanced' returns in about a second. 'quality' spends up to ~30s on a richer prompt."
+      ),
+    aspect_ratio: z
+      .enum(["adaptive", "21:9", "16:9", "4:3", "1:1", "3:4", "9:16"])
+      .default("adaptive")
+      .describe("The aspect ratio of the generated video."),
+  })
+  .refine(
+    (v) =>
+      (v.reference_image_urls?.length ?? 0) +
+        (v.reference_video_urls?.length ?? 0) +
+        (v.reference_audio_urls?.length ?? 0) <=
+      12,
+    {
+      message:
+        "minimax/h3-max/reference-to-video accepts at most 12 reference files across reference_image_urls, reference_video_urls, and reference_audio_urls",
+      path: ["reference_image_urls"],
+    }
+  )
+  .refine(
+    (v) =>
+      v.middle_image_url == null ||
+      (v.image_url != null &&
+        v.end_image_url != null &&
+        v.resolution !== "1080P"),
+    {
+      message:
+        "middle_image_url requires image_url, end_image_url, and a native 480P or 768P resolution",
+      path: ["middle_image_url"],
+    }
+  )
+  .refine((v) => v.middle_frame_time == null || v.middle_image_url != null, {
+    message: "middle_frame_time requires middle_image_url",
+    path: ["middle_frame_time"],
+  });
+export type FalMinimaxH3MaxReferenceToVideoRequest = z.input<
+  typeof FalMinimaxH3MaxReferenceToVideoRequestSchema
+>;
+export type FalMinimaxH3MaxReferenceToVideoRequestInput =
+  FalMinimaxH3MaxReferenceToVideoRequest;
+export type FalMinimaxH3MaxReferenceToVideoParsedRequest = z.output<
+  typeof FalMinimaxH3MaxReferenceToVideoRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "minimax/h3-max/reference-to-video":
+    FalMinimaxH3MaxReferenceToVideoRequestSchema,
   "minimax/h3-max/camera-controls": FalMinimaxH3MaxCameraControlsRequestSchema,
   "minimax/h3-max/text-to-video": FalMinimaxH3MaxTextToVideoRequestSchema,
   "minimax/h3-max/image-to-video": FalMinimaxH3MaxImageToVideoRequestSchema,

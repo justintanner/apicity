@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalMinimaxH3MaxImageToVideoParsedRequest,
+  FalMinimaxH3MaxImageToVideoRequestInput,
+  FalMinimaxH3MaxImageToVideoRequest,
   FalMinimaxH3MaxExtendVideoParsedRequest,
   FalMinimaxH3MaxExtendVideoRequestInput,
   FalMinimaxH3MaxExtendVideoRequest,
@@ -440,6 +443,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalMinimaxH3MaxImageToVideoRequest,
   FalMinimaxH3MaxExtendVideoRequest,
   FalBriaFiboEdit1p5ProductHoldingRequest,
   FalBriaFiboEdit1p5VirtualTryOnRequest,
@@ -3166,6 +3170,13 @@ export interface FalMinimaxH3MaxRecastResponse {
   seed: number;
 }
 export interface FalRunMinimaxH3MaxNamespace {
+  imageToVideo: ((
+    params: FalMinimaxH3MaxImageToVideoRequest,
+    signal?: AbortSignal
+  ) => Promise<FalMinimaxH3MaxImageToVideoResponse>) & {
+    schema: ApicitySchema<FalMinimaxH3MaxImageToVideoRequest>;
+  };
+
   extendVideo: ((
     params: FalMinimaxH3MaxExtendVideoRequest,
     signal?: AbortSignal
@@ -3751,4 +3762,15 @@ export interface FalMinimaxH3MaxExtendVideoResponse {
   source: Record<string, unknown>;
   expanded_prompt?: string | null;
   timings?: Record<string, number>;
+}
+
+export interface FalMinimaxH3MaxImageToVideoResponse {
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+  expanded_prompt?: string | null;
+  timings?: Record<string, number> | null;
 }

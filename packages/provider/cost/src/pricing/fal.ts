@@ -809,6 +809,17 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  // Bills the requested seconds (default 5) at the resolution tier (default
+  // 768P): the recorded 0.92 s 480P call billed 0.92 units, $0.0276.
+  // List rates; the promotional $0.03/$0.048/$0.096 per second ends 2026-10-15.
+  "minimax/h3-max/image-to-video": perSecondTiered(
+    "minimax/h3-max/image-to-video",
+    [resolutionTier("768P")],
+    { "480P": 0.05, "768P": 0.08, "1080P": 0.16 },
+    numericSeconds(5),
+    "2026-10-07"
+  ),
+
   "bria/fibo-edit-1.5/product-holding": perImage(
     "bria/fibo-edit-1.5/product-holding",
     0.04,

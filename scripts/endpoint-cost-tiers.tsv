@@ -556,6 +556,7 @@ fal	meshy.v7p1.textTo3d	POST	prohibitive	Media-generation marketplace (image/vid
 fal	minimax.h3.imageToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	minimax.h3.referenceToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	minimax.h3.textToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	minimax.h3Max.extendVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	minimax.h3Max.insertVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	minimax.h3Max.recast	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	minimax.h3MaxTurbo.extendVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1

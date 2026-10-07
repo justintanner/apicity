@@ -5078,7 +5078,55 @@ export type FalBriaFiboEdit1p5ProductHoldingParsedRequest = z.output<
   typeof FalBriaFiboEdit1p5ProductHoldingRequestSchema
 >;
 
+// Docs: https://fal.ai/models/minimax/h3-max/extend-video/api
+export const FalMinimaxH3MaxExtendVideoRequestSchema = z.object({
+  video_url: z
+    .string()
+    .min(1)
+    .describe(
+      "Source video URL: 1.625–60 seconds, up to 50 MB, aspect ratio 0.4–2.5"
+    ),
+  prompt: z.string().min(1).max(50000),
+  aspect_ratio: z
+    .enum(["auto", "21:9", "16:9", "4:3", "1:1", "3:4", "9:16"])
+    .default("auto"),
+  enable_prompt_expansion: z.boolean().default(true),
+  resolution: z.enum(["480P", "768P", "1080P", "2K"]).default("768P"),
+  enable_safety_checker: z.boolean().default(true),
+  duration: z
+    .number()
+    .min(0.71)
+    .max(15)
+    .default(5)
+    .describe(
+      "Seconds of new footage to add; the continuation clip also includes the source's last 1.625 seconds and may run longer because of frame rounding"
+    ),
+  seed: z.number().int().nullable().optional(),
+  output: z
+    .enum(["extended", "continuation"])
+    .default("extended")
+    .describe(
+      "'extended' returns the source and the new footage as one video; 'continuation' returns a clip that starts with a 1.625-second repeat of the source's ending, then the new footage"
+    ),
+  reference_audio_urls: z
+    .array(z.string())
+    .max(3)
+    .optional()
+    .describe(
+      "Audio references: each 2–15 seconds, at most 15 seconds combined; they guide the newly generated audio instead of the source soundtrack"
+    ),
+});
+export type FalMinimaxH3MaxExtendVideoRequest = z.input<
+  typeof FalMinimaxH3MaxExtendVideoRequestSchema
+>;
+export type FalMinimaxH3MaxExtendVideoRequestInput =
+  FalMinimaxH3MaxExtendVideoRequest;
+export type FalMinimaxH3MaxExtendVideoParsedRequest = z.output<
+  typeof FalMinimaxH3MaxExtendVideoRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "minimax/h3-max/extend-video": FalMinimaxH3MaxExtendVideoRequestSchema,
   "bria/fibo-edit-1.5/product-holding":
     FalBriaFiboEdit1p5ProductHoldingRequestSchema,
   "bria/fibo-edit-1.5/virtual-try-on":

@@ -85,7 +85,9 @@ describe("kie gemini 3.5 flash live", () => {
       ctx = setupPolly("kie/gemini-35-flash");
       const provider = createKie({
         apiKey: process.env.KIE_API_KEY ?? "sk-test-key",
-        // KIE's gemini proxies can take minutes to answer (mayor context).
+        // A paid turn must not be lost to a client timeout while recording:
+        // on 2026-10-01 KIE's native gemini origin hung until its edge
+        // answered HTTP 524 at about 125 s.
         timeout: 300_000,
       });
       // Live only: start at least 1.1 s after the free case answered.

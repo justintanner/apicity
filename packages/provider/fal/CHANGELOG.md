@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added MiniMax H3 Max camera controls (ac-7xfptq).
+
 - Added MiniMax H3 Max text-to-video (ac-jg4hws).
 
 - Added MiniMax H3 Max image-to-video (ac-k83o5s).

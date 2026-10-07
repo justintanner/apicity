@@ -5279,7 +5279,134 @@ export type FalMinimaxH3MaxTextToVideoParsedRequest = z.output<
   typeof FalMinimaxH3MaxTextToVideoRequestSchema
 >;
 
+// The live OpenAPI lists `prompt_expansion_mode` as required while also giving
+// it a default, and types it as a plain string with three examples. Upstream's
+// validator settles both, as it does for the image-to-video and text-to-video
+// siblings: a body without the field draws no `missing` error (only
+// `image_url` is required), and an unknown mode is refused with "Input should
+// be 'disabled', 'fast', 'balanced' or 'quality'". The same unbilled 422 probes
+// (2026-10-07) showed the two trajectory rules the refinements restate:
+// keyframe times must be strictly increasing, and the summed azimuth change
+// between consecutive keyframes may not exceed 32 turns (11,520 degrees).
+// Docs: https://fal.ai/models/minimax/h3-max/camera-controls/api
+export const FalMinimaxH3MaxCameraControlsRequestSchema = z.object({
+  prompt: z
+    .string()
+    .max(50000)
+    .default(
+      "The same elements in the reference are rigid. Preserve every element exactly. The entire scene is frozen. Only the camera moves. no scene motion only camera motion"
+    )
+    .describe(
+      "Text prompt for video generation. When omitted or blank, defaults to preserving the frozen reference scene while only the camera moves."
+    ),
+  duration: z
+    .number()
+    .min(0.92)
+    .max(15)
+    .default(5)
+    .describe(
+      "Video length in seconds. The output can run up to about 0.7 s longer than requested."
+    ),
+  resolution: z
+    .enum(["480P", "768P", "1080P"])
+    .default("480P")
+    .describe(
+      "The native generation resolution, or 1080P latent refinement from a native 768P source."
+    ),
+  seed: z
+    .number()
+    .int()
+    .nullable()
+    .optional()
+    .describe("Random seed. A random seed is selected when omitted."),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe("If set to true, the safety checker will be enabled."),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe("Return the generated video as base64 instead of a CDN URL."),
+  prompt_expansion_mode: z
+    .enum(["disabled", "fast", "balanced", "quality"])
+    .default("balanced")
+    .describe(
+      "How much effort to spend rewriting the prompt before generation. 'disabled' skips prompt expansion. 'balanced' returns in about a second. 'quality' spends up to ~30s on a richer prompt."
+    ),
+  image_url: z
+    .string()
+    .min(1)
+    .describe("URL of the image to use as the first frame."),
+  camera_trajectory: z
+    .array(
+      z
+        .object({
+          time: z
+            .number()
+            .min(0)
+            .max(1)
+            .describe(
+              "Normalized video time, from 0 at the start to 1 at the end."
+            ),
+          azimuth: z
+            .number()
+            .describe(
+              "Horizontal camera angle around the subject, in degrees."
+            ),
+          elevation: z
+            .number()
+            .min(-90)
+            .max(90)
+            .describe("Vertical camera angle around the subject, in degrees."),
+          distance: z
+            .number()
+            .positive()
+            .describe(
+              "Camera distance from the subject in normalized scene units."
+            ),
+        })
+        .describe(
+          "One camera pose at a normalized point in the generated clip."
+        )
+    )
+    .min(2)
+    .max(12)
+    .refine(
+      (keyframes) =>
+        keyframes.every((k, i) => i === 0 || k.time > keyframes[i - 1].time),
+      { message: "Camera keyframe times must be strictly increasing" }
+    )
+    .refine(
+      (keyframes) =>
+        keyframes.reduce(
+          (travel, k, i) =>
+            i === 0
+              ? 0
+              : travel + Math.abs(k.azimuth - keyframes[i - 1].azimuth),
+          0
+        ) <=
+        32 * 360,
+      {
+        message:
+          "Camera trajectory supports at most 32 turns of total azimuth travel",
+      }
+    )
+    .optional()
+    .describe(
+      "Ordered camera keyframes. The first pose is held before its time and the final pose is held for the remainder of the video. Signed full turns are preserved, with at most 32 turns of total azimuth travel."
+    ),
+});
+export type FalMinimaxH3MaxCameraControlsRequest = z.input<
+  typeof FalMinimaxH3MaxCameraControlsRequestSchema
+>;
+export type FalMinimaxH3MaxCameraControlsRequestInput =
+  FalMinimaxH3MaxCameraControlsRequest;
+export type FalMinimaxH3MaxCameraControlsParsedRequest = z.output<
+  typeof FalMinimaxH3MaxCameraControlsRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "minimax/h3-max/camera-controls": FalMinimaxH3MaxCameraControlsRequestSchema,
   "minimax/h3-max/text-to-video": FalMinimaxH3MaxTextToVideoRequestSchema,
   "minimax/h3-max/image-to-video": FalMinimaxH3MaxImageToVideoRequestSchema,
   "minimax/h3-max/extend-video": FalMinimaxH3MaxExtendVideoRequestSchema,

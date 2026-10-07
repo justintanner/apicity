@@ -1696,3 +1696,4 @@ fal	bria.fiboEdit1p5.productHolding	POST	https://fal.run/bria/fibo-edit-1.5/prod
 fal	minimax.h3Max.extendVideo	POST	https://fal.run/minimax/h3-max/extend-video	https://fal.ai/models/minimax/h3-max/extend-video/api
 fal	minimax.h3Max.imageToVideo	POST	https://fal.run/minimax/h3-max/image-to-video	https://fal.ai/models/minimax/h3-max/image-to-video/api
 fal	minimax.h3Max.textToVideo	POST	https://fal.run/minimax/h3-max/text-to-video	https://fal.ai/models/minimax/h3-max/text-to-video/api
+fal	minimax.h3Max.cameraControls	POST	https://fal.run/minimax/h3-max/camera-controls	https://fal.ai/models/minimax/h3-max/camera-controls/api

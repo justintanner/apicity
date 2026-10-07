@@ -412,6 +412,7 @@ export const MODEL_SLUGS = {
   // same underlying models kie also resells, so their slugs intentionally
   // match kie's.
   fal: {
+    "minimax/h3-max/camera-controls": "h3mcc",
     "minimax/h3-max/text-to-video": "h3mt2v",
     "minimax/h3-max/image-to-video": "h3mi2v",
     "bria/fibo-edit-1.5/product-holding": "briafiboedit",
@@ -859,6 +860,7 @@ export const MODEL_DISPLAY = {
   },
 
   fal: {
+    "minimax/h3-max/camera-controls": "H3 Max Camera Controls",
     "minimax/h3-max/text-to-video": "H3 Max Text To Video",
     "minimax/h3-max/image-to-video": "H3 Max Image To Video",
     "bria/fibo-edit-1.5/product-holding": "Bria Fibo Edit 1.5 Product Holding",

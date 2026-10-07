@@ -5561,7 +5561,77 @@ export type FalMinimaxH3MaxReferenceToVideoParsedRequest = z.output<
   typeof FalMinimaxH3MaxReferenceToVideoRequestSchema
 >;
 
+// Upstream refuses every media URL here, `video_url` and each
+// `reference_image_urls` entry, unless it is "an HTTPS URL without
+// credentials or fragments" (unbilled 422 probes, 2026-10-07): an `http:`
+// URL, a `user:pass@` authority and a `#fragment` were each refused, and an
+// upper-case `HTTPS:` scheme was accepted. The pattern restates that rule. It
+// spells the scheme's case out rather than using the `i` flag, which JSON
+// Schema's `pattern` drops.
+const FalMinimaxH3MaxThreeDToVideoMediaUrlSchema = z
+  .string()
+  .regex(
+    /^[Hh][Tt][Tt][Pp][Ss]:\/\/[^\s/?#@]+(?:[/?][^\s#]*)?$/,
+    "Media must be an HTTPS URL without credentials or fragments"
+  );
+
+// The live OpenAPI closes the input (`additionalProperties: false`), and the
+// same probes confirmed it ("Extra inputs are not permitted"), so the schema
+// is strict like its minimax/h3-max/recast sibling. They also showed that
+// `video_url` is the only required field, that
+// `max_generated_reference_images` takes integers only (a string, a fraction
+// and a boolean were refused), and that an empty or blank Scene Intent is
+// accepted. The output duration is not a request field: it follows the
+// source video.
+// Docs: https://fal.ai/models/minimax/h3-max/3d-to-video/api
+export const FalMinimaxH3MaxThreeDToVideoRequestSchema = z
+  .object({
+    video_url: FalMinimaxH3MaxThreeDToVideoMediaUrlSchema.describe(
+      "Blender video, up to 15 seconds and 32 shots, at a public HTTPS URL."
+    ),
+    prompt: z
+      .string()
+      .max(2000)
+      .nullable()
+      .optional()
+      .describe(
+        "Optional clarification of what your proxies represent or how they move, for example: 'The moving block represents a running person.' Camera, trajectories, timing and object count remain defined by the video."
+      ),
+    reference_image_urls: z
+      .array(FalMinimaxH3MaxThreeDToVideoMediaUrlSchema)
+      .max(8)
+      .optional()
+      .describe(
+        "Optional environment, subject, interior or detail references. When supplied, uses these images directly without visual planning or generating new images; Scene Intent is optional. Without references, automatically creates appearance references within your new-image limit. Camera and movement always come from the video."
+      ),
+    max_generated_reference_images: z
+      .number()
+      .int()
+      .min(1)
+      .max(8)
+      .default(2)
+      .describe(
+        "Maximum NEW images to generate when no reference images are supplied. Ignored when reference images are supplied. Uses fewer when enough views are covered. Uncovered shots stay in the video."
+      ),
+    resolution: z
+      .enum(["480P", "768P", "1080P"])
+      .default("768P")
+      .describe(
+        "Output quality. Duration is taken automatically from the video."
+      ),
+  })
+  .strict();
+export type FalMinimaxH3MaxThreeDToVideoRequest = z.input<
+  typeof FalMinimaxH3MaxThreeDToVideoRequestSchema
+>;
+export type FalMinimaxH3MaxThreeDToVideoRequestInput =
+  FalMinimaxH3MaxThreeDToVideoRequest;
+export type FalMinimaxH3MaxThreeDToVideoParsedRequest = z.output<
+  typeof FalMinimaxH3MaxThreeDToVideoRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "minimax/h3-max/3d-to-video": FalMinimaxH3MaxThreeDToVideoRequestSchema,
   "minimax/h3-max/reference-to-video":
     FalMinimaxH3MaxReferenceToVideoRequestSchema,
   "minimax/h3-max/camera-controls": FalMinimaxH3MaxCameraControlsRequestSchema,

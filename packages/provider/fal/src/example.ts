@@ -929,6 +929,18 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST minimax.h3Max.threeDToVideo": {
+    "source": "fal/minimax-h3-max-3d-to-video",
+    "payload": {
+      "video_url": "https://v3b.fal.media/files/b/0aaaaf78/M5dPeIbYcdI5BaIrbHuXq_blender-source.mp4",
+      "reference_image_urls": [
+        "https://v3b.fal.media/files/b/0aaab04d/YHhN06SXKgl5ufCWnYRfy_UIb6gaXa.jpg"
+      ],
+      "resolution": "480P"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST minimax.h3MaxTurbo.extendVideo": {
     "source": "fal/minimax-h3-max-turbo-extend-video",
     "payload": {

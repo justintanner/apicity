@@ -582,6 +582,17 @@ const gptImagePerImage = (
 //     carry, so no request field determines the charge. Same card language
 //     as minimax/h3-max/extend-video above. The recorded 0.92 s 480P call
 //     with one square reference image billed 0.92 units, $0.046.
+//   - minimax/h3-max/3d-to-video: the official card (read 2026-10-07) bills
+//     every output second at $0.05/$0.08/$0.16 at 480p/768p/1080p (5 s
+//     minimum), plus input-video and reference-image tokens priced as for
+//     minimax/h3-max/reference-to-video above, plus each reference it
+//     generates when none is supplied. The output length and shot count
+//     follow the source video, and the tokens follow its frames and each
+//     image's shape, all of which the payload carries only as URLs, so no
+//     request field determines the charge. The model page's own pricing
+//     section also lists a $0.50 processing fee per request, which the
+//     recorded call was not billed: its 8 s 480P source with one 16:9
+//     reference image billed 15.9832 units at $0.05, $0.79916 in all.
 //   - xai/grok-imagine-video/v1.5/reference-to-video: billed per COMPUTE
 //     SECOND (USD 0.00017) as pulled 2026-08-28 from the same pricing API.
 //     Its UNVERSIONED sibling xai/grok-imagine-video/reference-to-video bills
@@ -804,6 +815,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "lightricks/ltx-2.5/image-to-video/fast",
   "lightricks/ltx-2.5/image-to-video/pro",
   "meshy/v7/image-to-3d",
+  "minimax/h3-max/3d-to-video",
   "minimax/h3-max/extend-video",
   "minimax/h3-max/insert-video",
   "minimax/h3-max/reference-to-video",

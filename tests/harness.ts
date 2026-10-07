@@ -7,6 +7,7 @@ import fs from "fs";
 import {
   PERSISTED_REQUEST_HEADER_PLACEHOLDERS,
   persistedRequestHeaderPlaceholder,
+  redactFalCheckpoints,
 } from "../scripts/lib/har-secrets.mjs";
 import { scrubSensitiveRecording, type HarCookieLike } from "./har-scrub.js";
 
@@ -318,6 +319,7 @@ export function redactPersistedHarSecrets(
   if (responseContent && typeof responseContent.text === "string") {
     responseContent.text = redactResponseTextSecrets(responseContent.text);
   }
+  redactFalCheckpointResponseBody(recording);
   redactGuestTokenResponseBody(recording);
   redactFireworksApiKeyResponseBody(recording);
   redactResponseAccountMetadataBody(recording);
@@ -545,6 +547,33 @@ function writeJsonResponseBody(
   if (recording.response) {
     recording.response.bodySize = size;
   }
+}
+
+// A fal response can carry a `checkpoint`: a `.safetensors` URL and the
+// `signature` fal issues for it, valid for a day, bound for a public
+// repository. The rule lives in scripts/lib/har-secrets.mjs, whose finder
+// check-recording-secrets.mjs runs over every recording, and is scoped to that
+// object the way redactResponseTextSecrets scopes its `signature` rule to an
+// OSS upload policy: kimicoding thinking blocks carry a `signature` that the
+// next recorded request echoes.
+function redactFalCheckpointResponseBody(
+  recording: PersistedHarRecording
+): void {
+  const content = recording.response?.content;
+  const text = content?.text;
+  if (typeof text !== "string" || text.length === 0) return;
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(text);
+  } catch {
+    return;
+  }
+
+  const result = redactFalCheckpoints(parsed);
+  if (!result.redacted) return;
+
+  writeJsonResponseBody(recording, result.value, text);
 }
 
 function redactResponseAccountMetadata(value: unknown): {

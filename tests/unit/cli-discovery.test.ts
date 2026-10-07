@@ -598,6 +598,17 @@ describe("dispatcher routing", () => {
     expect(text).not.toContain("no credential at all");
     expect(text).toContain("Any other provider is reported as configured");
     expect(text).toContain("That check never runs `op`.");
+
+    // Nor any provider's credential variable: `named` sees lower-case
+    // provider words only, so an upper-case KIE_API_KEY would pass it.
+    for (const { provider, envVars } of summaries) {
+      for (const name of envVars) {
+        expect(
+          new RegExp(`(^|[^A-Z0-9_])${name}([^A-Z0-9_]|$)`, "m").test(text),
+          `${provider}: ${name}`
+        ).toBe(false);
+      }
+    }
   });
 
   // ac-8cvcs0: SKILL.md says this topic lists the other variables the CLI

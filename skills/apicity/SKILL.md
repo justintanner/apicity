@@ -476,7 +476,8 @@ names each item the vault lacks and labels the optional ones `(optional)`.
 
 Other variables the CLI reads: `$APICITY_OUTPUT_DIR` and `$CLAUDE_PROJECT_DIR`
 (where media lands), `$APICITY_PAYGATE_SECRET_FILE` (the operator's pay-gate
-secret — never read it yourself). `apicity help environment` lists them.
+secret — never read it yourself), `$APICITY_SETUP_AGENT` (which agent
+`apicity setup agents` connects). `apicity help environment` lists them.
 
 | Provider            | Credential variables (names only)                                                                                                                                                                                                       |
 | ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

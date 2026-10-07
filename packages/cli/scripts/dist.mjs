@@ -92,11 +92,15 @@ async function chmodBins() {
  * in package.json `files`). The source lives at the repository root because
  * `apicity skill` and the Claude Code plugin read the same copy.
  *
- * A missing source is a build failure, deliberately. The staged directory is
- * gitignored and the repository copy is what every test reads, so a build that
- * skipped this step would pass CI and the whole replay suite and still publish
- * a tarball where `apicity skill`, `skill install` and `setup` all fail. The
- * copy throwing is the only place that catches it.
+ * A missing source is a build failure, deliberately: the staged directory is
+ * gitignored, and a tarball without it would publish an `apicity skill`,
+ * `skill install` and `setup` that all fail. CI checks the staged copy with
+ * `test -f` right after the build, and two tests compare it with the
+ * repository copy: cli-skill.test.ts "stages the repository's skill for the
+ * tarball", which runs once dist/ exists and fails when the copy is missing
+ * or stale, and cli-skill-install.test.ts "reads the repository's skill
+ * byte-for-byte", which reads it through readSkill() and fails only when it
+ * is stale (a missing copy falls back to the repository one).
  */
 async function copySkill() {
   const src = path.join(PKG_DIR, "../../skills/apicity/SKILL.md");

@@ -319,8 +319,11 @@ describe("@apicity/cli packaging", () => {
     () => {
       // Gated on the build having run, not on the staged file existing: a
       // build that produced `dist` without the skill is exactly the hole this
-      // closes. Every other skill assertion reads the repository copy, which
-      // a published tarball cannot reach.
+      // closes. cli-skill-install.test.ts "reads the repository's skill
+      // byte-for-byte" also depends on the staged copy, which it reads
+      // through readSkill(), but fails only when the copy is stale: a missing
+      // one falls back to the repository copy, which a published tarball
+      // cannot reach.
       expect(existsSync(STAGED_SKILL)).toBe(true);
       expect(readFileSync(STAGED_SKILL, "utf8")).toBe(skill);
     }

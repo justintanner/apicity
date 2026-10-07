@@ -32,7 +32,9 @@ try {
 }
 
 const provider = scope.provider;
-const targets = [scope.packageDir, ...scope.tests];
+// The provider's `*.types.ts` companions are linted with its tests, though
+// only `scope.tests` is ever replayed.
+const targets = [scope.packageDir, ...scope.tests, ...scope.typeTests];
 
 function run(title, cmd, args) {
   console.error(`\n> ${title}`);

@@ -38,29 +38,45 @@ export function listProviderNames() {
 }
 
 export function listProviderTests(provider) {
+  return listProviderFiles(provider, ".test.ts");
+}
+
+// Type-level companions such as `tests/unit/kie-agent-proxies-wiring.types.ts`
+// are compiled by `pnpm run typecheck:tests` and never run. They are selected
+// by the same rules as the tests they sit beside, so `dev:preflight:fast`
+// formats them and it and `lint:provider` lint them (ac-22ro9z), but they
+// never join `listProviderTests` or `scope.tests`: Vitest is never handed one,
+// and `test:provider` and `test:affected` select exactly what they did before.
+export function listProviderTypeTests(provider) {
+  return listProviderFiles(provider, ".types.ts");
+}
+
+// Every file in `providerTestDirs` that ends in `suffix` and belongs to
+// `provider`. `root` defaults to this checkout; tests pass a fixture tree.
+export function listProviderFiles(provider, suffix, { root = repoRoot } = {}) {
   const matchesPrefix = (name) =>
-    name === `${provider}.test.ts` || name.startsWith(`${provider}-`);
+    name === `${provider}${suffix}` || name.startsWith(`${provider}-`);
 
   return providerTestDirs.flatMap((dir) => {
-    const testDir = path.join(repoRoot, dir);
+    const testDir = path.join(root, dir);
 
     // A repo checkout is not required to carry every optional test directory.
     if (!existsSync(testDir)) return [];
 
     const entries = readdirSync(testDir, { withFileTypes: true });
 
-    // Flat scan: top-level `<prefix>.test.ts` / `<prefix>-*.test.ts` files. The
-    // `isFile()` guard keeps a directory that merely ends in `.test.ts` from
-    // being mistaken for a test file.
+    // Flat scan: top-level `<prefix><suffix>` / `<prefix>-*<suffix>` files. The
+    // `isFile()` guard keeps a directory that merely ends in the suffix from
+    // being mistaken for a file.
     const flat = entries
       .filter((entry) => entry.isFile())
       .map((entry) => entry.name)
-      .filter((name) => name.endsWith(".test.ts"))
+      .filter((name) => name.endsWith(suffix))
       .filter(matchesPrefix)
       .map((name) => path.posix.join(dir, name));
 
     // Nested scan: descend exactly one level into an immediate subdirectory
-    // named after the provider and take EVERY `*.test.ts`
+    // named after the provider and take EVERY `*<suffix>`
     // inside it. The filename-prefix filter is deliberately NOT re-applied
     // here — nested suites are attributed by their directory name, not their
     // filename — so `tests/unit/kie/validate.test.ts` and
@@ -71,7 +87,7 @@ export function listProviderTests(provider) {
       .filter((entry) => entry.isDirectory() && entry.name === provider)
       .flatMap((entry) =>
         readdirSync(path.join(testDir, entry.name))
-          .filter((name) => name.endsWith(".test.ts"))
+          .filter((name) => name.endsWith(suffix))
           .map((name) => path.posix.join(dir, entry.name, name))
       );
 
@@ -94,6 +110,7 @@ export function resolveProviderScope(rawValue) {
             ? cliDir
             : path.posix.join("packages", "provider", provider),
         tests: listProviderTests(provider),
+        typeTests: listProviderTypeTests(provider),
         source: candidate.source,
         input: candidate.value,
       };

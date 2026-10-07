@@ -101,8 +101,9 @@ if (tests.length === 0) {
   process.exit(1);
 }
 
-// Only the provider package + its tests — NOT the whole root tree.
-const targets = [pkgDir, ...tests];
+// Only the provider package + its tests and their `*.types.ts` companions —
+// NOT the whole root tree. Only `tests` is ever handed to Vitest.
+const targets = [pkgDir, ...tests, ...scope.typeTests];
 
 const crossCuttingTests = listCrossCuttingTests({
   alreadySelected: passthrough.length === 0 ? tests : [],

@@ -1,9 +1,21 @@
+import {
+  mkdirSync,
+  mkdtempSync,
+  realpathSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
+import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
   integrationDir,
   hasEndpointDocsRows,
   cliDir,
+  listProviderFiles,
+  listProviderNames,
+  listProviderTests,
+  listProviderTypeTests,
   providerRoot,
   repoRoot,
   resolveProviderScope,
@@ -272,5 +284,94 @@ describe("resolveProviderScope", () => {
     expect(message).toContain("pnpm run test:provider -- openai");
     expect(message).toContain("Known providers:");
     expect(message).toContain("openai");
+  });
+});
+
+// ac-22ro9z: type-level `*.types.ts` companions join the scoped Prettier and
+// ESLint targets of `lint:provider` and `dev:preflight:fast` through
+// `scope.typeTests`, and never the Vitest selection in `scope.tests`.
+describe("*.types.ts companions", () => {
+  const temporaryRoots: string[] = [];
+
+  afterEach(() => {
+    for (const root of temporaryRoots.splice(0)) {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  // A throwaway tree of empty `files`, plus `dirs` as bare directories.
+  function writeFixtureTree(files: string[], dirs: string[] = []): string {
+    const root = realpathSync(
+      mkdtempSync(path.join(tmpdir(), "provider-scope-"))
+    );
+    temporaryRoots.push(root);
+    for (const dir of dirs) {
+      mkdirSync(path.join(root, dir), { recursive: true });
+    }
+    for (const file of files) {
+      mkdirSync(path.dirname(path.join(root, file)), { recursive: true });
+      writeFileSync(path.join(root, file), "");
+    }
+    return root;
+  }
+
+  it("adds kie's type-level pins to the scope, outside its tests", () => {
+    const kie = resolveProviderScope("kie");
+
+    expect(kie.typeTests).toEqual([
+      `${unitDir}/kie-agent-proxies-wiring.types.ts`,
+    ]);
+    expect(listProviderTypeTests("kie")).toEqual(kie.typeTests);
+    // The runtime sibling stays a test; the companion never becomes one.
+    expect(kie.tests).toContain(`${unitDir}/kie-agent-proxies-wiring.test.ts`);
+    expect(kie.tests).toEqual(listProviderTests("kie"));
+  });
+
+  it("never hands a *.types.ts file to Vitest", () => {
+    for (const provider of listProviderNames()) {
+      const tests = resolveProviderScope(provider).tests;
+      expect(tests.filter((test) => test.endsWith(".types.ts"))).toEqual([]);
+    }
+  });
+
+  it("leaves a provider without companions as it was", () => {
+    const openai = resolveProviderScope("openai");
+
+    expect(openai.typeTests).toEqual([]);
+    expect(openai.tests).toEqual(listProviderTests("openai"));
+    expectOpenAiTests(openai.tests);
+  });
+
+  it("selects companions by the same rules as tests", () => {
+    const root = writeFixtureTree(
+      [
+        `${integrationDir}/kie-live.types.ts`,
+        `${functionalDir}/kie-shape.types.ts`,
+        `${unitDir}/kie.types.ts`,
+        `${unitDir}/kie-wiring.types.ts`,
+        `${unitDir}/kie-wiring.test.ts`,
+        `${unitDir}/kie/nested.types.ts`,
+        `${unitDir}/kie/nested.test.ts`,
+        // Never selected: another prefix, a directory that is not the
+        // provider's, and anything below the provider directory's first level.
+        `${unitDir}/kiex-wiring.types.ts`,
+        `${unitDir}/shared/kie-helper.types.ts`,
+        `${unitDir}/kie/deeper/too-deep.types.ts`,
+      ],
+      // A directory that merely ends in `.types.ts` is not a file.
+      [`${unitDir}/kie-dir.types.ts`]
+    );
+
+    expect(listProviderFiles("kie", ".types.ts", { root })).toEqual([
+      `${integrationDir}/kie-live.types.ts`,
+      `${functionalDir}/kie-shape.types.ts`,
+      `${unitDir}/kie-wiring.types.ts`,
+      `${unitDir}/kie.types.ts`,
+      `${unitDir}/kie/nested.types.ts`,
+    ]);
+    expect(listProviderFiles("kie", ".test.ts", { root })).toEqual([
+      `${unitDir}/kie-wiring.test.ts`,
+      `${unitDir}/kie/nested.test.ts`,
+    ]);
   });
 });

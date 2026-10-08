@@ -7839,7 +7839,99 @@ export type FalOpenaiGptImage2p5SunburstEditParsedRequest = z.output<
   typeof FalOpenaiGptImage2p5SunburstEditRequestSchema
 >;
 
+const FalOpenaiGptImage2p5SunburstTextToImageImageSizeSchema = z.object({
+  width: z
+    .number()
+    .int()
+    .gt(0)
+    .max(14142)
+    .default(512)
+    .describe("The width of the generated image."),
+  height: z
+    .number()
+    .int()
+    .gt(0)
+    .max(14142)
+    .default(512)
+    .describe("The height of the generated image."),
+});
+
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 5721d6ddae78788031890764b6f1fc75136c39ab7b6c906c277e3e7d6e5d40cc). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/openai/gpt-image-2.5/sunburst/text-to-image/api
+export const FalOpenaiGptImage2p5SunburstTextToImageRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(32000)
+    .describe("The prompt for image generation"),
+  image_size: z
+    .union([
+      FalOpenaiGptImage2p5SunburstTextToImageImageSizeSchema,
+      z.enum([
+        "square_hd",
+        "square",
+        "portrait_4_3",
+        "portrait_16_9",
+        "landscape_4_3",
+        "landscape_16_9",
+        "auto",
+      ]),
+    ])
+    .default("landscape_4_3")
+    .describe(
+      "The size of the generated image. Supports preset names, explicit {width, height}, or 'auto' to let the model pick the best size. Concrete sizes must have both dimensions as multiples of 16, max edge 3840px, aspect ratio <= 3:1, total pixels between 655,360 and 8,294,400."
+    ),
+  background: z
+    .enum(["auto", "transparent", "opaque"])
+    .default("auto")
+    .describe("Background for the generated image"),
+  quality: z
+    .enum(["auto", "low", "medium", "high", "xhigh", "max"])
+    .default("high")
+    .describe(
+      "Quality for the generated image. Higher settings increase detail, latency, and token usage. Use 'auto' to let the model choose."
+    ),
+  num_images: z
+    .number()
+    .int()
+    .min(1)
+    .max(10)
+    .default(1)
+    .describe("Number of images to generate"),
+  output_format: z
+    .enum(["jpeg", "png", "webp"])
+    .default("png")
+    .describe("Output format for the images"),
+  output_compression: z
+    .number()
+    .int()
+    .min(0)
+    .max(100)
+    .nullable()
+    .optional()
+    .describe(
+      "Compression level from 0 to 100. Only supported when output_format is 'jpeg' or 'webp'."
+    ),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If `True`, the media will be returned as a data URI and the output data won't be available in the request history."
+    ),
+});
+export type FalOpenaiGptImage2p5SunburstTextToImageRequest = z.input<
+  typeof FalOpenaiGptImage2p5SunburstTextToImageRequestSchema
+>;
+export type FalOpenaiGptImage2p5SunburstTextToImageRequestInput =
+  FalOpenaiGptImage2p5SunburstTextToImageRequest;
+export type FalOpenaiGptImage2p5SunburstTextToImageParsedRequest = z.output<
+  typeof FalOpenaiGptImage2p5SunburstTextToImageRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "openai/gpt-image-2.5/sunburst/text-to-image":
+    FalOpenaiGptImage2p5SunburstTextToImageRequestSchema,
   "openai/gpt-image-2.5/sunburst/edit":
     FalOpenaiGptImage2p5SunburstEditRequestSchema,
   "meta/muse-image/edit": FalMetaMuseImageEditRequestSchema,

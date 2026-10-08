@@ -1334,6 +1334,15 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST openai.gptImage2p5.sunburst.textToImage": {
+    "source": "fal/openai-gpt-image-2-5-sunburst-text-to-image",
+    "payload": {
+      "prompt": "A red balloon.",
+      "quality": "low"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST qwenImage": {
     "source": "fal/qwen-image",
     "payload": {

@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added GPT Image 2.5 Sunburst text-to-image, dynamically priced (ac-1ylhf6).
+
 - Added GPT Image 2.5 Sunburst edit, dynamically priced (ac-pgig3k).
 
 - Added Muse Image edit (ac-nk9nff).

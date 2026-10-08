@@ -899,6 +899,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "minimax/h3/text-to-video",
   "minimax/music-3",
   "openai/gpt-image-2.5/sunburst/edit",
+  "openai/gpt-image-2.5/sunburst/text-to-image",
   "topaz/upscale/image/precision",
   "topaz/upscale/video/precision",
   "xai/grok-imagine-image/v2.0/edit",

@@ -912,6 +912,29 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  // Cosmos 3 Super image-to-video bills $0.05 per generated
+  // second, rounded up. num_frames defaults to 189 and
+  // frames_per_second to 24. Five frames at 24 fps is 0.208s
+  // of video and rounds up to one second. The recorded call
+  // billed x-fal-billable-units 1, so the charge is $0.05.
+  // Agentic generation bills every candidate, which the card
+  // does not count, so that flag warns instead of guessing.
+  // Prompt expansion is not a separate published charge.
+  "nvidia/cosmos-3-super/image-to-video": perSecond(
+    "nvidia/cosmos-3-super/image-to-video",
+    0.05,
+    (p) => {
+      // Agentic mode bills every candidate. The card does not publish
+      // how many renders that loop performs, so the estimate warns.
+      if (p.enable_agentic_generation === true) return undefined;
+      const frames = asNumber(p.num_frames) ?? 189;
+      const fps = asNumber(p.frames_per_second) ?? 24;
+      if (!(fps > 0)) return undefined;
+      return Math.ceil(frames / fps);
+    },
+    "2026-10-08"
+  ),
+
   // Muse Image edit bills $0.01 per image, the same card as
   // text-to-image. num_images defaults to 1. The recorded call
   // billed x-fal-billable-units 1, one image, so the charge is

@@ -412,6 +412,7 @@ export const MODEL_SLUGS = {
   // same underlying models kie also resells, so their slugs intentionally
   // match kie's.
   fal: {
+    "nvidia/cosmos-3-super/image-to-video": "cosmos3s",
     "meta/muse-image/edit": "muse",
     "meta/muse-image/text-to-image": "muse",
     "elevenlabs/music/v2.5": "elmusic25",
@@ -882,6 +883,7 @@ export const MODEL_DISPLAY = {
   },
 
   fal: {
+    "nvidia/cosmos-3-super/image-to-video": "Cosmos 3 Super",
     "meta/muse-image/edit": "Muse Image Edit",
     "meta/muse-image/text-to-image": "Muse Image",
     "elevenlabs/music/v2.5": "ElevenLabs Music 2.5",

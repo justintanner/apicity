@@ -1,4 +1,6 @@
 import {
+  FalNvidiaCosmos3SuperImageToVideoResponse,
+  FalNvidiaCosmos3SuperImageToVideoRequest,
   FalMicrosoftMaiImage2p5ProEditResponse,
   FalMicrosoftMaiImage2p5ProEditRequest,
   FalMicrosoftMaiImage2p5ProResponse,
@@ -330,6 +332,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalNvidiaCosmos3SuperImageToVideoRequestSchema,
   FalMicrosoftMaiImage2p5ProEditRequestSchema,
   FalMicrosoftMaiImage2p5ProRequestSchema,
   FalOpenaiGptImage2p5FlareTextToImageRequestSchema,
@@ -2896,7 +2899,26 @@ export function createFal(opts: FalOptions): FalProvider {
     }
   );
 
+  // POST https://fal.run/nvidia/cosmos-3-super/image-to-video
+  // Docs: https://fal.ai/models/nvidia/cosmos-3-super/image-to-video/api
+  const nvidiaCosmos3SuperImageToVideo = jsonBody<
+    FalNvidiaCosmos3SuperImageToVideoRequest,
+    FalNvidiaCosmos3SuperImageToVideoResponse
+  >(
+    "POST",
+    "/nvidia/cosmos-3-super/image-to-video",
+    FalNvidiaCosmos3SuperImageToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
+    nvidia: {
+      cosmos3Super: {
+        // POST https://fal.run/nvidia/cosmos-3-super/image-to-video
+        // Docs: https://fal.ai/models/nvidia/cosmos-3-super/image-to-video/api
+        imageToVideo: nvidiaCosmos3SuperImageToVideo,
+      },
+    },
     microsoft: {
       // sig-ok: stylistic dotPath divergence from URL
       // POST https://fal.run/microsoft/mai-image-2.5-pro

@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-164 endpoints across 36 groups. Each method mirrors an upstream URL path.
+165 endpoints across 37 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -2163,6 +2163,25 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.nanoBananaPro.textToImage({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+### nvidia
+
+<details>
+<summary><code>POST</code> <b><code>fal.nvidia.cosmos3Super.imageToVideo</code></b></summary>
+
+<code>POST https://fal.run/nvidia/cosmos-3-super/image-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/nvidia/cosmos-3-super/image-to-video/api)
+
+```typescript
+const res = await fal.run.nvidia.cosmos3Super.imageToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

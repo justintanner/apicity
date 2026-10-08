@@ -8212,7 +8212,164 @@ export type FalMicrosoftMaiImage2p5ProEditParsedRequest = z.output<
   typeof FalMicrosoftMaiImage2p5ProEditRequestSchema
 >;
 
+const FalNvidiaCosmos3SuperImageToVideoImageSizeSchema = z.object({
+  width: z
+    .number()
+    .int()
+    .gt(0)
+    .max(14142)
+    .default(512)
+    .describe("The width of the generated image."),
+  height: z
+    .number()
+    .int()
+    .gt(0)
+    .max(14142)
+    .default(512)
+    .describe("The height of the generated image."),
+});
+
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 4924d039363d46ea7c2caed4304f68383c957f05514cc14711d833dccb8ef079). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/nvidia/cosmos-3-super/image-to-video/api
+export const FalNvidiaCosmos3SuperImageToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(4096)
+    .describe(
+      "Text prompt describing the motion and scene of the video to generate."
+    ),
+  image_url: z
+    .string()
+    .describe("URL of the conditioning first-frame image for the video."),
+  negative_prompt: z
+    .string()
+    .max(2048)
+    .default(
+      "The video captures a series of frames showing macroblocking artifacts, chromatic aberration, high-frequency noise, and rolling shutter distortion. It includes static with no motion, motion blur, over-saturation, shaky footage, low resolution, grainy texture, pixelated images, poorly lit areas, underexposed and overexposed scenes, poor color balance, washed out colors, choppy sequences, jerky movements, low frame rate, bit-depth compression artifacts, color banding, unnatural transitions, outdated special effects, fake elements, unconvincing visuals, poorly edited content, jump cuts, hard cut, visual noise, and flickering. It features moiré patterns, edge halos, and temporal aliasing. Furthermore, the content defies common sense, generating illogical scenarios, nonsensical entities, absurd character behaviors, and conceptual paradoxes that violate basic human reasoning and everyday reality. The video looks like a surreal or glitchy hallucination. Overall, the video is of poor quality."
+    )
+    .describe(
+      "Content to steer the generation away from (artifacts, unwanted motion). Defaults to NVIDIA's recommended i2v negative prompt; pass an empty string to disable."
+    ),
+  enable_prompt_expansion: z
+    .boolean()
+    .default(true)
+    .describe(
+      "If true, the Cosmos3-Nano Reasoner (a VLM that sees the first frame) rewrites the prompt into the dense caption Cosmos3 was trained on. The app starts a local Reasoner by default, or uses COSMOS_PROMPT_UPSAMPLER_BASE_URL when configured. Falls back to the raw prompt if expansion fails."
+    ),
+  enable_agentic_generation: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Enable the iterative Cosmos agentic loop: prompt upsampling, candidate video generation, VLM critique of sampled frames, and prompt rewrite. Each candidate is a full render, so this is substantially slower and costlier than a single generation."
+    ),
+  agentic_max_iterations: z
+    .number()
+    .int()
+    .min(1)
+    .max(3)
+    .default(2)
+    .describe(
+      "Maximum agentic prompt stages when agentic generation is enabled."
+    ),
+  agentic_samples_per_iteration: z
+    .number()
+    .int()
+    .min(1)
+    .max(3)
+    .default(2)
+    .describe(
+      "Candidate videos to generate and judge per agentic iteration. The best candidate advances to the next rewrite stage."
+    ),
+  agentic_early_stop: z
+    .boolean()
+    .default(true)
+    .describe(
+      "Stop the agentic loop early when the critic score clears the strict quality threshold."
+    ),
+  image_size: z
+    .union([
+      FalNvidiaCosmos3SuperImageToVideoImageSizeSchema,
+      z.enum([
+        "square_hd",
+        "square",
+        "portrait_4_3",
+        "portrait_16_9",
+        "landscape_4_3",
+        "landscape_16_9",
+      ]),
+    ])
+    .default({ height: 480, width: 832 })
+    .describe(
+      "The size of the generated video. The request is clamped and snapped to the nearest supported NVIDIA tier (256p/480p/720p) and aspect ratio."
+    ),
+  num_frames: z
+    .number()
+    .int()
+    .min(5)
+    .max(189)
+    .default(189)
+    .describe(
+      "Number of frames to generate. More frames yield a longer video."
+    ),
+  frames_per_second: z
+    .number()
+    .int()
+    .min(4)
+    .max(60)
+    .default(24)
+    .describe("Frames per second of the output video."),
+  num_inference_steps: z
+    .number()
+    .int()
+    .min(1)
+    .max(50)
+    .default(28)
+    .describe(
+      "Number of denoising steps. More steps yield higher quality but take longer."
+    ),
+  guidance_scale: z
+    .number()
+    .min(0)
+    .max(20)
+    .default(6)
+    .describe(
+      "Classifier-free guidance scale. Higher values increase prompt adherence at the cost of diversity."
+    ),
+  seed: z
+    .number()
+    .int()
+    .nullable()
+    .optional()
+    .describe(
+      "The same seed and prompt given to the same model version will produce the same video every time."
+    ),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe(
+      "Enable content moderation for the input prompt and image. Disabling it requires account authorization; unauthorized requests are always checked."
+    ),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If `True`, the video is returned as a data URI and the output data won't be available in the request history."
+    ),
+});
+export type FalNvidiaCosmos3SuperImageToVideoRequest = z.input<
+  typeof FalNvidiaCosmos3SuperImageToVideoRequestSchema
+>;
+export type FalNvidiaCosmos3SuperImageToVideoRequestInput =
+  FalNvidiaCosmos3SuperImageToVideoRequest;
+export type FalNvidiaCosmos3SuperImageToVideoParsedRequest = z.output<
+  typeof FalNvidiaCosmos3SuperImageToVideoRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "nvidia/cosmos-3-super/image-to-video":
+    FalNvidiaCosmos3SuperImageToVideoRequestSchema,
   "microsoft/mai-image-2.5-pro/edit":
     FalMicrosoftMaiImage2p5ProEditRequestSchema,
   "microsoft/mai-image-2.5-pro": FalMicrosoftMaiImage2p5ProRequestSchema,

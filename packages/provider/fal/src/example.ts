@@ -561,6 +561,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST geminiOmniFlash.v1p1.edit": {
+    "source": "fal/google-gemini-omni-flash-v1-1-edit",
+    "payload": {
+      "prompt": "Make this video anime. Keep everything else the same.",
+      "video_url": "https://storage.googleapis.com/falserverless/model_tests/video_models/mmaudio_input.mp4",
+      "resolution": "360p"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST google.gemini3p8FlashLiteTts": {
     "source": "fal/google-gemini-3-8-flash-lite-tts",
     "payload": {

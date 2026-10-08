@@ -5911,7 +5911,36 @@ export type FalXaiGrokImagineVideoV1p5ImageToVideoParsedRequest = z.output<
   typeof FalXaiGrokImagineVideoV1p5ImageToVideoRequestSchema
 >;
 
+// The live OpenAPI requires `prompt` and `video_url`, and seven unbilled 422
+// probes (2026-10-08) found upstream's validator to match it: `resolution` is
+// closed to the documented lower-case values (`360P` and `4K` are refused),
+// `prompt` stops at 20,000 characters with no minimum, and `video_url` must be
+// a string, though not one checked as a URL. The endpoint documents no
+// duration or aspect ratio, and the validator ignored both, as it ignored an
+// unknown field, so the object is not strict.
+// Docs: https://fal.ai/models/google/gemini-omni-flash/v1.1/edit/api
+export const FalGeminiOmniFlashV1p1EditRequestSchema = z.object({
+  prompt: z
+    .string()
+    .max(20_000)
+    .describe("A simple instruction describing the edit."),
+  video_url: z.string().describe("URL of the video to edit."),
+  resolution: z
+    .enum(["360p", "720p", "1080p", "4k"])
+    .default("720p")
+    .describe("The resolution of the edited video."),
+});
+export type FalGeminiOmniFlashV1p1EditRequest = z.input<
+  typeof FalGeminiOmniFlashV1p1EditRequestSchema
+>;
+export type FalGeminiOmniFlashV1p1EditRequestInput =
+  FalGeminiOmniFlashV1p1EditRequest;
+export type FalGeminiOmniFlashV1p1EditParsedRequest = z.output<
+  typeof FalGeminiOmniFlashV1p1EditRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "google/gemini-omni-flash/v1.1/edit": FalGeminiOmniFlashV1p1EditRequestSchema,
   "xai/grok-imagine-video/v1.5/image-to-video":
     FalXaiGrokImagineVideoV1p5ImageToVideoRequestSchema,
   "xai/grok-imagine-video/v1.5/text-to-video":

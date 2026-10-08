@@ -688,6 +688,18 @@ const gptImagePerImage = (
 //     bucket, against a page rate that predicts USD 0.39 per call. An
 //     identical payload that bills a different amount twice running is not
 //     payload-derivable at all.
+//   - google/gemini-omni-flash/v1.1/edit: the official card (read
+//     2026-10-08) bills each second of output video at
+//     $0.03/$0.10/$0.15/$0.30 at 360p/720p/1080p/4K. The request carries no
+//     duration: the edit follows the source, which the payload carries only
+//     as a URL. costHints.durationSeconds could declare the source's length,
+//     but the billing does not follow it: the recorded 360p call sent a
+//     5.000 s source, got back 5.000 s of video (120 frames at 24 fps) with a
+//     generated 48 kHz audio track of 5.034667 s (236 AAC frames), and billed
+//     5.034667 units at $0.03, USD 0.15104 (fal's usage API reads the same
+//     5.034667 seconds), where the card predicts $0.15 for the 5 s source.
+//     The billed length is the output file's, set by the audio encoder's
+//     framing, so no rate is encoded.
 // FLUX 3 image generation/editing: official metadata bills megapixels, while the request
 // carries resolution tiers and can infer aspect ratio from a remote image.
 // The 2026-10-05 page publishes a 1K promotional example but no complete tier
@@ -821,6 +833,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "google/gemini-omni-flash/edit",
   "google/gemini-omni-flash/image-to-video",
   "google/gemini-omni-flash/reference-to-video",
+  "google/gemini-omni-flash/v1.1/edit",
   "google/nano-banana-2-lite",
   "google/nano-banana-lite/edit",
   "lightricks/ltx-2.5/image-to-video/fast",

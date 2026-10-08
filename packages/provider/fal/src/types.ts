@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalGeminiOmniFlashV1p1EditParsedRequest,
+  FalGeminiOmniFlashV1p1EditRequestInput,
+  FalGeminiOmniFlashV1p1EditRequest,
   FalXaiGrokImagineVideoV1p5ImageToVideoParsedRequest,
   FalXaiGrokImagineVideoV1p5ImageToVideoRequestInput,
   FalXaiGrokImagineVideoV1p5ImageToVideoRequest,
@@ -470,6 +473,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalGeminiOmniFlashV1p1EditRequest,
   FalXaiGrokImagineVideoV1p5ImageToVideoRequest,
   FalXaiGrokImagineVideoV1p5TextToVideoRequest,
   FalMinimaxH3MaxTurboTextToVideoRequest,
@@ -2343,6 +2347,7 @@ type FalGeminiOmniFlashFn = ((
   signal?: AbortSignal
 ) => Promise<FalGeminiOmniFlashResponse>) & {
   schema: ApicitySchema<FalGeminiOmniFlashRequest>;
+  v1p1: FalRunGeminiOmniFlashV1p1Namespace;
   edit: FalGeminiOmniFlashEditFn;
   imageToVideo: FalGeminiOmniFlashImageToVideoFn;
   referenceToVideo: FalGeminiOmniFlashReferenceToVideoFn;
@@ -2368,6 +2373,17 @@ type FalGeminiOmniFlashReferenceToVideoFn = ((
 ) => Promise<FalGeminiOmniFlashReferenceToVideoResponse>) & {
   schema: ApicitySchema<FalGeminiOmniFlashReferenceToVideoRequest>;
 };
+
+type FalGeminiOmniFlashV1p1EditFn = ((
+  params: FalGeminiOmniFlashV1p1EditRequest,
+  signal?: AbortSignal
+) => Promise<FalGeminiOmniFlashV1p1EditResponse>) & {
+  schema: ApicitySchema<FalGeminiOmniFlashV1p1EditRequest>;
+};
+
+export interface FalRunGeminiOmniFlashV1p1Namespace {
+  edit: FalGeminiOmniFlashV1p1EditFn;
+}
 
 type FalSeedreamV5LiteEditFn = ((
   params: FalSeedreamV5LiteEditRequest,
@@ -3981,5 +3997,14 @@ export interface FalXaiGrokImagineVideoV1p5ImageToVideoResponse {
     fps?: number | null;
     duration?: number | null;
     num_frames?: number | null;
+  };
+}
+
+export interface FalGeminiOmniFlashV1p1EditResponse {
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
   };
 }

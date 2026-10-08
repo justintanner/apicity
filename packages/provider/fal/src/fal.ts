@@ -1,4 +1,6 @@
 import {
+  FalMetaMuseImageTextToImageResponse,
+  FalMetaMuseImageTextToImageRequest,
   FalElevenlabsMusicV2p5Response,
   FalElevenlabsMusicV2p5Request,
   FalBriaFiboGen1p5TextToImageResponse,
@@ -314,6 +316,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalMetaMuseImageTextToImageRequestSchema,
   FalElevenlabsMusicV2p5RequestSchema,
   FalBriaFiboGen1p5TextToImageRequestSchema,
   FalBriaFiboEdit1p5EditRequestSchema,
@@ -2765,7 +2768,26 @@ export function createFal(opts: FalOptions): FalProvider {
     base: runBaseURL,
   });
 
+  // POST https://fal.run/meta/muse-image/text-to-image
+  // Docs: https://fal.ai/models/meta/muse-image/text-to-image/api
+  const metaMuseImageTextToImage = jsonBody<
+    FalMetaMuseImageTextToImageRequest,
+    FalMetaMuseImageTextToImageResponse
+  >(
+    "POST",
+    "/meta/muse-image/text-to-image",
+    FalMetaMuseImageTextToImageRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
+    meta: {
+      museImage: {
+        // POST https://fal.run/meta/muse-image/text-to-image
+        // Docs: https://fal.ai/models/meta/muse-image/text-to-image/api
+        textToImage: metaMuseImageTextToImage,
+      },
+    },
     // POST https://fal.run/bria/fibo-edit-1.5/virtual-try-on
     // Docs: https://fal.ai/models/bria/fibo-edit-1.5/virtual-try-on/api
     bria: {

@@ -989,6 +989,14 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST meta.museImage.textToImage": {
+    "source": "fal/meta-muse-image-text-to-image",
+    "payload": {
+      "prompt": "A cinematic editorial portrait in soft window light with crisp typography"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST minimax.h3.imageToVideo": {
     "source": "fal/minimax-h3-image-to-video",
     "payload": {

@@ -21,6 +21,12 @@ export type {
 
 // Export all types
 export type {
+  FalMetaMuseImageTextToImageResponse,
+  FalMetaMuseImageTextToImageParsedRequest,
+  FalMetaMuseImageTextToImageRequestInput,
+  FalMetaMuseImageTextToImageRequest,
+  FalRunMetaMuseImageNamespace,
+  FalRunMetaNamespace,
   FalElevenlabsMusicV2p5Response,
   FalElevenlabsMusicV2p5ParsedRequest,
   FalElevenlabsMusicV2p5RequestInput,

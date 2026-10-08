@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-156 endpoints across 33 groups. Each method mirrors an upstream URL path.
+157 endpoints across 34 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -1569,6 +1569,25 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.meshy.v7p1.textTo3d({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+### meta
+
+<details>
+<summary><code>POST</code> <b><code>fal.meta.museImage.textToImage</code></b></summary>
+
+<code>POST https://fal.run/meta/muse-image/text-to-image</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/meta/muse-image/text-to-image/api)
+
+```typescript
+const res = await fal.run.meta.museImage.textToImage({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

@@ -7644,7 +7644,51 @@ export type FalElevenlabsMusicV2p5ParsedRequest = z.output<
   typeof FalElevenlabsMusicV2p5RequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 88ebef33a2cb749a93a9d9e6fe885de49e69ef1f06f011e74da5133db82c8aa1). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/meta/muse-image/text-to-image/api
+export const FalMetaMuseImageTextToImageRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .describe("The text prompt used to generate or edit the image."),
+  aspect_ratio: z
+    .string()
+    .regex(/^[1-9][0-9]{0,4}:[1-9][0-9]{0,4}$/)
+    .nullable()
+    .optional()
+    .describe(
+      'Any custom output aspect ratio as "width:height", for example "16:9", "5:4", or "1920:1200". Common presets are "21:9", "16:9", "4:3", "3:2", "1:1", "2:3", "3:4", "9:16", "9:21". The ratio must be between 1:16 and 16:1, the range Muse supports. Only the ratio is used: Muse renders it at its own fixed resolution of roughly 2.5 megapixels, so "1920:1200" and "960:600" both return the same 1920x1200 image. If omitted, Muse chooses the output dimensions automatically.'
+    ),
+  num_images: z
+    .number()
+    .int()
+    .min(1)
+    .max(10)
+    .default(1)
+    .describe("The number of images to generate."),
+  output_format: z
+    .enum(["jpeg", "png", "webp"])
+    .default("webp")
+    .describe("The format of the generated image."),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If `True`, the image is returned as a data URI and is not persisted in the request history."
+    ),
+});
+export type FalMetaMuseImageTextToImageRequest = z.input<
+  typeof FalMetaMuseImageTextToImageRequestSchema
+>;
+export type FalMetaMuseImageTextToImageRequestInput =
+  FalMetaMuseImageTextToImageRequest;
+export type FalMetaMuseImageTextToImageParsedRequest = z.output<
+  typeof FalMetaMuseImageTextToImageRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "meta/muse-image/text-to-image": FalMetaMuseImageTextToImageRequestSchema,
   "elevenlabs/music/v2.5": FalElevenlabsMusicV2p5RequestSchema,
   "bria/fibo-gen-1.5/text-to-image": FalBriaFiboGen1p5TextToImageRequestSchema,
   "bria/fibo-edit-1.5/edit": FalBriaFiboEdit1p5EditRequestSchema,

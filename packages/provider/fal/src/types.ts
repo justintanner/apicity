@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalMetaMuseImageTextToImageParsedRequest,
+  FalMetaMuseImageTextToImageRequestInput,
+  FalMetaMuseImageTextToImageRequest,
   FalElevenlabsMusicV2p5ParsedRequest,
   FalElevenlabsMusicV2p5RequestInput,
   FalElevenlabsMusicV2p5Request,
@@ -530,6 +533,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalMetaMuseImageTextToImageRequest,
   FalElevenlabsMusicV2p5Request,
   FalBriaFiboGen1p5TextToImageRequest,
   FalBriaFiboEdit1p5EditRequest,
@@ -4547,4 +4551,34 @@ export interface FalRunElevenlabsMusicNamespace {
 
 export interface FalRunElevenlabsFrontierNamespace {
   music: FalRunElevenlabsMusicNamespace;
+}
+
+export interface FalMetaMuseImageTextToImageResponse {
+  images: Array<{
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+  }>;
+}
+
+type FalMetaMuseImageTextToImageFn = ((
+  params: FalMetaMuseImageTextToImageRequest,
+  signal?: AbortSignal
+) => Promise<FalMetaMuseImageTextToImageResponse>) & {
+  schema: ApicitySchema<FalMetaMuseImageTextToImageRequest>;
+};
+
+export interface FalRunMetaMuseImageNamespace {
+  textToImage: FalMetaMuseImageTextToImageFn;
+}
+
+export interface FalRunMetaNamespace {
+  museImage: FalRunMetaMuseImageNamespace;
+}
+
+export interface FalRunNamespace {
+  meta: FalRunMetaNamespace;
 }

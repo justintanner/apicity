@@ -6279,7 +6279,76 @@ export type FalLightricksLtx2p5AudioToVideoProParsedRequest = z.output<
   typeof FalLightricksLtx2p5AudioToVideoProRequestSchema
 >;
 
+// The live OpenAPI requires only `audio_url`, and seventeen unbilled 422
+// probes (2026-10-08) found upstream's validator to match it, answering as it
+// does for the pro tier: `audio_url` is a string (null is refused);
+// `image_url` is a string or null; `prompt` is a string of 1 to 5,000
+// characters or null; `guidance_scale` is a number from 1 to 50 or null;
+// `aspect_ratio` is closed to the documented values (null is refused). The
+// validator ignored an unknown field, so the object is not strict, and it
+// checked neither media URL's form. The refinement restates the rule both
+// media descriptions publish: without an image, a prompt is required. The
+// probes cannot reach it, since a body that fails field validation is never
+// checked against it. The audio's length limit (2 to 20 seconds on the fast
+// tier) is a property of the file, not of the request, so the description
+// states it and this schema does not encode it.
+// Docs: https://fal.ai/models/lightricks/ltx-2.5/audio-to-video/fast/api
+export const FalLightricksLtx2p5AudioToVideoFastRequestSchema = z
+  .object({
+    audio_url: z
+      .string()
+      .describe(
+        "URL of the audio file to generate a video from. Duration must be between 2 and 20 seconds; pro models support a maximum of 10 seconds. Must be publicly accessible or base64 data URI."
+      ),
+    image_url: z
+      .string()
+      .nullable()
+      .optional()
+      .describe(
+        "URL of an image to use as the first frame of the video. If not provided, prompt is required."
+      ),
+    prompt: z
+      .string()
+      .min(1)
+      .max(5000)
+      .nullable()
+      .optional()
+      .describe(
+        "Text description of how the video should be generated. Required if image_url is not provided. When image_url is provided, this describes how the image should be animated."
+      ),
+    guidance_scale: z
+      .number()
+      .min(1)
+      .max(50)
+      .nullable()
+      .optional()
+      .describe(
+        "Guidance scale for video generation. Higher values make the output more closely follow the prompt. Defaults to 5 for text-to-video, or 9 when providing an image."
+      ),
+    aspect_ratio: z
+      .enum(["auto", "16:9", "9:16"])
+      .default("auto")
+      .describe(
+        "The aspect ratio of the generated video. If 'auto', the aspect ratio will be determined automatically based on the input image, or defaults to 16:9 if no image is provided."
+      ),
+  })
+  .refine((v) => v.image_url != null || v.prompt != null, {
+    message:
+      "lightricks/ltx-2.5/audio-to-video/fast requires prompt when image_url is not provided",
+    path: ["prompt"],
+  });
+export type FalLightricksLtx2p5AudioToVideoFastRequest = z.input<
+  typeof FalLightricksLtx2p5AudioToVideoFastRequestSchema
+>;
+export type FalLightricksLtx2p5AudioToVideoFastRequestInput =
+  FalLightricksLtx2p5AudioToVideoFastRequest;
+export type FalLightricksLtx2p5AudioToVideoFastParsedRequest = z.output<
+  typeof FalLightricksLtx2p5AudioToVideoFastRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "lightricks/ltx-2.5/audio-to-video/fast":
+    FalLightricksLtx2p5AudioToVideoFastRequestSchema,
   "lightricks/ltx-2.5/audio-to-video/pro":
     FalLightricksLtx2p5AudioToVideoProRequestSchema,
   "lightricks/ltx-2.5/text-to-video/pro":

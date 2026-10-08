@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Lightricks LTX-2.5 Fast audio-to-video (ac-oudg7o).
+
 - Added Lightricks LTX-2.5 Pro audio-to-video (ac-l1lqa4).
 
 - Added Lightricks LTX-2.5 Pro text-to-video (ac-ep4zx8).

@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-143 endpoints across 33 groups. Each method mirrors an upstream URL path.
+144 endpoints across 33 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -1198,6 +1198,23 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 </details>
 
 ### lightricks
+
+<details>
+<summary><code>POST</code> <b><code>fal.lightricks.ltx2p5.audioToVideo.fast</code></b></summary>
+
+<code>POST https://fal.run/lightricks/ltx-2.5/audio-to-video/fast</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/lightricks/ltx-2.5/audio-to-video/fast/api)
+
+```typescript
+const res = await fal.run.lightricks.ltx2p5.audioToVideo.fast({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>fal.lightricks.ltx2p5.audioToVideo.pro</code></b></summary>

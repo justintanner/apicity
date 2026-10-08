@@ -1,4 +1,6 @@
 import {
+  FalLightricksLtx2p5AudioToVideoFastResponse,
+  FalLightricksLtx2p5AudioToVideoFastRequest,
   FalLightricksLtx2p5AudioToVideoProResponse,
   FalLightricksLtx2p5AudioToVideoProRequest,
   FalLightricksLtx2p5TextToVideoProResponse,
@@ -288,6 +290,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalLightricksLtx2p5AudioToVideoFastRequestSchema,
   FalLightricksLtx2p5AudioToVideoProRequestSchema,
   FalLightricksLtx2p5TextToVideoProRequestSchema,
   FalLightricksLtx2p5TextToVideoFastRequestSchema,
@@ -2569,6 +2572,18 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/lightricks/ltx-2.5/audio-to-video/fast
+  // Docs: https://fal.ai/models/lightricks/ltx-2.5/audio-to-video/fast/api
+  const lightricksLtx2p5AudioToVideoFast = jsonBody<
+    FalLightricksLtx2p5AudioToVideoFastRequest,
+    FalLightricksLtx2p5AudioToVideoFastResponse
+  >(
+    "POST",
+    "/lightricks/ltx-2.5/audio-to-video/fast",
+    FalLightricksLtx2p5AudioToVideoFastRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
     // POST https://fal.run/bria/fibo-edit-1.5/virtual-try-on
     // Docs: https://fal.ai/models/bria/fibo-edit-1.5/virtual-try-on/api
@@ -2814,6 +2829,9 @@ export function createFal(opts: FalOptions): FalProvider {
     lightricks: {
       ltx2p5: {
         audioToVideo: {
+          // POST https://fal.run/lightricks/ltx-2.5/audio-to-video/fast
+          // Docs: https://fal.ai/models/lightricks/ltx-2.5/audio-to-video/fast/api
+          fast: lightricksLtx2p5AudioToVideoFast,
           // POST https://fal.run/lightricks/ltx-2.5/audio-to-video/pro
           // Docs: https://fal.ai/models/lightricks/ltx-2.5/audio-to-video/pro/api
           pro: lightricksLtx2p5AudioToVideoPro,

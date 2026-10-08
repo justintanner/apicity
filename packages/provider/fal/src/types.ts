@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalLightricksLtx2p5AudioToVideoFastParsedRequest,
+  FalLightricksLtx2p5AudioToVideoFastRequestInput,
+  FalLightricksLtx2p5AudioToVideoFastRequest,
   FalLightricksLtx2p5AudioToVideoProParsedRequest,
   FalLightricksLtx2p5AudioToVideoProRequestInput,
   FalLightricksLtx2p5AudioToVideoProRequest,
@@ -491,6 +494,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalLightricksLtx2p5AudioToVideoFastRequest,
   FalLightricksLtx2p5AudioToVideoProRequest,
   FalLightricksLtx2p5TextToVideoProRequest,
   FalLightricksLtx2p5TextToVideoFastRequest,
@@ -2978,6 +2982,15 @@ export interface FalRunLightricksLtx2p5TextToVideoNamespace {
   fast: FalLightricksLtx2p5TextToVideoFastFn;
 }
 
+// The input audio sets the output's length: upstream takes 2 to 20
+// seconds of audio on the fast tier.
+type FalLightricksLtx2p5AudioToVideoFastFn = ((
+  params: FalLightricksLtx2p5AudioToVideoFastRequest,
+  signal?: AbortSignal
+) => Promise<FalLightricksLtx2p5AudioToVideoFastResponse>) & {
+  schema: ApicitySchema<FalLightricksLtx2p5AudioToVideoFastRequest>;
+};
+
 // The input audio sets the output's length: upstream takes 2 to 10
 // seconds of audio on the pro tier.
 type FalLightricksLtx2p5AudioToVideoProFn = ((
@@ -2991,6 +3004,7 @@ type FalLightricksLtx2p5AudioToVideoProFn = ((
 // audio-to-video at `/pro` and `/fast`, as it does text-to-video and
 // image-to-video.
 export interface FalRunLightricksLtx2p5AudioToVideoNamespace {
+  fast: FalLightricksLtx2p5AudioToVideoFastFn;
   pro: FalLightricksLtx2p5AudioToVideoProFn;
 }
 
@@ -4154,6 +4168,20 @@ export interface FalLightricksLtx2p5TextToVideoProResponse {
 }
 
 export interface FalLightricksLtx2p5AudioToVideoProResponse {
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+    fps?: number | null;
+    duration?: number | null;
+    num_frames?: number | null;
+  };
+}
+
+export interface FalLightricksLtx2p5AudioToVideoFastResponse {
   video: {
     url: string;
     content_type?: string | null;

@@ -1711,3 +1711,4 @@ fal	geminiOmniFlash.v1p1.textToVideo	POST	https://fal.run/google/gemini-omni-fla
 fal	lightricks.ltx2p5.textToVideo.fast	POST	https://fal.run/lightricks/ltx-2.5/text-to-video/fast	https://fal.ai/models/lightricks/ltx-2.5/text-to-video/fast/api
 fal	lightricks.ltx2p5.textToVideo.pro	POST	https://fal.run/lightricks/ltx-2.5/text-to-video/pro	https://fal.ai/models/lightricks/ltx-2.5/text-to-video/pro/api
 fal	lightricks.ltx2p5.audioToVideo.pro	POST	https://fal.run/lightricks/ltx-2.5/audio-to-video/pro	https://fal.ai/models/lightricks/ltx-2.5/audio-to-video/pro/api
+fal	lightricks.ltx2p5.audioToVideo.fast	POST	https://fal.run/lightricks/ltx-2.5/audio-to-video/fast	https://fal.ai/models/lightricks/ltx-2.5/audio-to-video/fast/api

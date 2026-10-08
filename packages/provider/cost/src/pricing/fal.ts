@@ -906,6 +906,20 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  // Bills each second of the INPUT audio (2 to 20 s on the fast tier) at
+  // one rate. The request carries the audio only as a URL, so the caller
+  // declares its length through costHints.durationSeconds, as for
+  // scribe-v2, and an omitted hint fails closed. fal counts the charge in
+  // cents: the recorded call sent 3.28 s of audio and billed 42.64 units at
+  // $0.01, $0.4264, the card's price for 3.28 s, though the returned clip
+  // ran 3.04 s.
+  "lightricks/ltx-2.5/audio-to-video/fast": perSecond(
+    "lightricks/ltx-2.5/audio-to-video/fast",
+    0.13,
+    hintedSeconds,
+    "2026-10-08"
+  ),
+
   // Bills each second of the INPUT audio (2 to 10 s on the pro tier) at one
   // rate. The request carries the audio only as a URL, so the caller
   // declares its length through costHints.durationSeconds, as for

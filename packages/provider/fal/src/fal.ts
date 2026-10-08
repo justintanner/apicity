@@ -1,4 +1,6 @@
 import {
+  FalLumaAgentRayV3p2TextToVideoResponse,
+  FalLumaAgentRayV3p2TextToVideoRequest,
   FalLumaAgentRayV3p2ImageToVideoResponse,
   FalLumaAgentRayV3p2ImageToVideoRequest,
   FalLumaAgentRayV3p2VideoToVideoResponse,
@@ -340,6 +342,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalLumaAgentRayV3p2TextToVideoRequestSchema,
   FalLumaAgentRayV3p2ImageToVideoRequestSchema,
   FalLumaAgentRayV3p2VideoToVideoRequestSchema,
   FalLumaAgentRayV3p2ReframeRequestSchema,
@@ -2974,11 +2977,28 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/luma/agent/ray/v3.2/text-to-video
+  // Docs: https://fal.ai/models/luma/agent/ray/v3.2/text-to-video/api
+  const lumaAgentRayV3p2TextToVideo = jsonBody<
+    FalLumaAgentRayV3p2TextToVideoRequest,
+    FalLumaAgentRayV3p2TextToVideoResponse
+  >(
+    "POST",
+    "/luma/agent/ray/v3.2/text-to-video",
+    FalLumaAgentRayV3p2TextToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
     luma: {
       agent: {
         ray: {
           v3p2: {
+            // sig-ok: stylistic dotPath divergence from URL
+            // POST https://fal.run/luma/agent/ray/v3.2/text-to-video
+            // Docs: https://fal.ai/models/luma/agent/ray/v3.2/text-to-video/api
+            textToVideo: lumaAgentRayV3p2TextToVideo,
             // sig-ok: stylistic dotPath divergence from URL
             // POST https://fal.run/luma/agent/ray/v3.2/image-to-video
             // Docs: https://fal.ai/models/luma/agent/ray/v3.2/image-to-video/api

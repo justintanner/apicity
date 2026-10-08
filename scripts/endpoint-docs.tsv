@@ -1737,3 +1737,4 @@ fal	nvidia.cosmos3Super.textToImage	POST	https://fal.run/nvidia/cosmos-3-super/t
 fal	luma.agent.ray.v3p2.reframe	POST	https://fal.run/luma/agent/ray/v3.2/reframe	https://fal.ai/models/luma/agent/ray/v3.2/reframe/api
 fal	luma.agent.ray.v3p2.videoToVideo	POST	https://fal.run/luma/agent/ray/v3.2/video-to-video	https://fal.ai/models/luma/agent/ray/v3.2/video-to-video/api
 fal	luma.agent.ray.v3p2.imageToVideo	POST	https://fal.run/luma/agent/ray/v3.2/image-to-video	https://fal.ai/models/luma/agent/ray/v3.2/image-to-video/api
+fal	luma.agent.ray.v3p2.textToVideo	POST	https://fal.run/luma/agent/ray/v3.2/text-to-video	https://fal.ai/models/luma/agent/ray/v3.2/text-to-video/api

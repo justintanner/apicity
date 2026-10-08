@@ -889,6 +889,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "lightricks/ltx-2.5/image-to-video/fast",
   "lightricks/ltx-2.5/image-to-video/pro",
   "luma/agent/ray/v3.2/reframe",
+  "luma/agent/ray/v3.2/text-to-video",
   "meshy/v7/image-to-3d",
   "microsoft/mai-image-2.5-pro",
   "microsoft/mai-image-2.5-pro/edit",

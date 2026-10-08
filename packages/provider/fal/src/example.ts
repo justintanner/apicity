@@ -976,6 +976,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST luma.agent.ray.v3p2.textToVideo": {
+    "source": "fal/luma-agent-ray-v3-2-text-to-video",
+    "payload": {
+      "prompt": "A herd of wild horses galloping across a dusty desert plain under a blazing midday sun, their manes flying in the wind; wide tracking shot.",
+      "duration": "5s",
+      "resolution": "540p"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST luma.agent.ray.v3p2.videoToVideo": {
     "source": "fal/luma-agent-ray-v3-2-video-to-video",
     "payload": {

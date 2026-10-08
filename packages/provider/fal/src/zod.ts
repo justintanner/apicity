@@ -8865,7 +8865,60 @@ export type FalLumaAgentRayV3p2ImageToVideoParsedRequest = z.output<
   typeof FalLumaAgentRayV3p2ImageToVideoRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 1b65c2b603474ce4cb84c9b680a6b5d374187e871ea347c5526ec5e9ac11e5e1). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/luma/agent/ray/v3.2/text-to-video/api
+export const FalLumaAgentRayV3p2TextToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(6000)
+    .describe("Text prompt describing the video to generate."),
+  aspect_ratio: z
+    .enum(["3:4", "4:3", "1:1", "9:16", "16:9", "21:9"])
+    .default("16:9")
+    .describe("Aspect ratio of the generated video."),
+  resolution: z
+    .enum(["540p", "720p", "1080p"])
+    .default("540p")
+    .describe(
+      "Resolution of the generated video. Higher resolutions cost more."
+    ),
+  duration: z
+    .enum(["5s", "10s"])
+    .default("5s")
+    .describe("Duration of the generated video."),
+  loop: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Generate a seamless loop. Only valid for 5s, standard-dynamic-range generations without an end frame."
+    ),
+  hdr: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Generate an HDR-encoded MP4. Requires HDR access on the account and a resolution of 720p or 1080p; not supported with 10s or loop."
+    ),
+  exr_export: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Also export an EXR file alongside the MP4. Requires hdr=true and HDR access."
+    ),
+});
+export type FalLumaAgentRayV3p2TextToVideoRequest = z.input<
+  typeof FalLumaAgentRayV3p2TextToVideoRequestSchema
+>;
+export type FalLumaAgentRayV3p2TextToVideoRequestInput =
+  FalLumaAgentRayV3p2TextToVideoRequest;
+export type FalLumaAgentRayV3p2TextToVideoParsedRequest = z.output<
+  typeof FalLumaAgentRayV3p2TextToVideoRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "luma/agent/ray/v3.2/text-to-video":
+    FalLumaAgentRayV3p2TextToVideoRequestSchema,
   "luma/agent/ray/v3.2/image-to-video":
     FalLumaAgentRayV3p2ImageToVideoRequestSchema,
   "luma/agent/ray/v3.2/video-to-video":

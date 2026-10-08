@@ -6888,7 +6888,65 @@ export type FalAlibabaHappyHorseV1p1ImageToVideoParsedRequest = z.output<
   typeof FalAlibabaHappyHorseV1p1ImageToVideoRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 6ef799aab74dd454c97802c98b8e8151130e7b09ad878eb7457bc5a091688955). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/alibaba/happy-horse/v1.1/text-to-video/api
+export const FalAlibabaHappyHorseV1p1TextToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .describe("Text prompt describing the desired video. Max 2500 characters."),
+  aspect_ratio: z
+    .enum(["16:9", "9:16", "1:1", "4:3", "3:4", "21:9", "9:21", "5:4", "4:5"])
+    .default("16:9")
+    .describe("Aspect ratio of the generated video."),
+  resolution: z
+    .enum(["720p", "1080p"])
+    .default("1080p")
+    .describe("Output video resolution tier."),
+  duration: z
+    .union([
+      z.literal(3),
+      z.literal(4),
+      z.literal(5),
+      z.literal(6),
+      z.literal(7),
+      z.literal(8),
+      z.literal(9),
+      z.literal(10),
+      z.literal(11),
+      z.literal(12),
+      z.literal(13),
+      z.literal(14),
+      z.literal(15),
+    ])
+    .default(5)
+    .describe("Output video duration in seconds (3-15)."),
+  seed: z
+    .number()
+    .int()
+    .nullable()
+    .optional()
+    .describe("Random seed for reproducibility (0-2147483647)."),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe(
+      "Enable content moderation for input and output. Disabling it requires account authorization; unauthorized requests are always checked."
+    ),
+});
+export type FalAlibabaHappyHorseV1p1TextToVideoRequest = z.input<
+  typeof FalAlibabaHappyHorseV1p1TextToVideoRequestSchema
+>;
+export type FalAlibabaHappyHorseV1p1TextToVideoRequestInput =
+  FalAlibabaHappyHorseV1p1TextToVideoRequest;
+export type FalAlibabaHappyHorseV1p1TextToVideoParsedRequest = z.output<
+  typeof FalAlibabaHappyHorseV1p1TextToVideoRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "alibaba/happy-horse/v1.1/text-to-video":
+    FalAlibabaHappyHorseV1p1TextToVideoRequestSchema,
   "alibaba/happy-horse/v1.1/image-to-video":
     FalAlibabaHappyHorseV1p1ImageToVideoRequestSchema,
   "alibaba/happy-horse/v1.1/reference-to-video":

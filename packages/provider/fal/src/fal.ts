@@ -1,4 +1,6 @@
 import {
+  FalAlibabaHappyHorseV1p1TextToVideoResponse,
+  FalAlibabaHappyHorseV1p1TextToVideoRequest,
   FalAlibabaHappyHorseV1p1ImageToVideoResponse,
   FalAlibabaHappyHorseV1p1ImageToVideoRequest,
   FalAlibabaHappyHorseV1p1ReferenceToVideoResponse,
@@ -304,6 +306,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalAlibabaHappyHorseV1p1TextToVideoRequestSchema,
   FalAlibabaHappyHorseV1p1ImageToVideoRequestSchema,
   FalAlibabaHappyHorseV1p1ReferenceToVideoRequestSchema,
   FalAlibabaQwenAudio3TtsRequestSchema,
@@ -2692,6 +2695,19 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/alibaba/happy-horse/v1.1/text-to-video
+  // Docs: https://fal.ai/models/alibaba/happy-horse/v1.1/text-to-video/api
+  const alibabaHappyHorseV1p1TextToVideo = jsonBody<
+    FalAlibabaHappyHorseV1p1TextToVideoRequest,
+    FalAlibabaHappyHorseV1p1TextToVideoResponse
+  >(
+    "POST",
+    "/alibaba/happy-horse/v1.1/text-to-video",
+    FalAlibabaHappyHorseV1p1TextToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
     // POST https://fal.run/bria/fibo-edit-1.5/virtual-try-on
     // Docs: https://fal.ai/models/bria/fibo-edit-1.5/virtual-try-on/api
@@ -2747,6 +2763,10 @@ export function createFal(opts: FalOptions): FalProvider {
     alibaba: {
       happyHorse: {
         v1p1: {
+          // sig-ok: stylistic dotPath divergence from URL
+          // POST https://fal.run/alibaba/happy-horse/v1.1/text-to-video
+          // Docs: https://fal.ai/models/alibaba/happy-horse/v1.1/text-to-video/api
+          textToVideo: alibabaHappyHorseV1p1TextToVideo,
           // sig-ok: stylistic dotPath divergence from URL
           // POST https://fal.run/alibaba/happy-horse/v1.1/image-to-video
           // Docs: https://fal.ai/models/alibaba/happy-horse/v1.1/image-to-video/api

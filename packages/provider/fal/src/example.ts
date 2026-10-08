@@ -89,6 +89,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST alibaba.happyHorse.v1p1.textToVideo": {
+    "source": "fal/alibaba-happy-horse-v1-1-text-to-video",
+    "payload": {
+      "prompt": "A horse walks through warm grass.",
+      "resolution": "720p",
+      "duration": 3
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST alibaba.qwenAudio3Tts": {
     "source": "fal/alibaba-qwen-audio-3-tts",
     "payload": {

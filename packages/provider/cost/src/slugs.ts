@@ -412,6 +412,7 @@ export const MODEL_SLUGS = {
   // same underlying models kie also resells, so their slugs intentionally
   // match kie's.
   fal: {
+    "alibaba/happy-horse/v1.1/text-to-video": "hh11",
     "alibaba/happy-horse/v1.1/image-to-video": "hh11",
     "alibaba/happy-horse/v1.1/reference-to-video": "hh11",
     "alibaba/qwen-audio-3-tts": "qwenaudio3",
@@ -875,6 +876,7 @@ export const MODEL_DISPLAY = {
   },
 
   fal: {
+    "alibaba/happy-horse/v1.1/text-to-video": "Happy Horse 1.1",
     "alibaba/happy-horse/v1.1/image-to-video": "Happy Horse 1.1",
     "alibaba/happy-horse/v1.1/reference-to-video": "Happy Horse 1.1",
     "alibaba/qwen-audio-3-tts": "Qwen Audio 3",

@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Happy Horse 1.1 text-to-video (ac-crtskn).
+
 - Added Happy Horse 1.1 image-to-video (ac-wadecc).
 
 - Added Happy Horse 1.1 reference-to-video (ac-rh4pwl).

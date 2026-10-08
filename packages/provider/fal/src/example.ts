@@ -767,6 +767,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST lightricks.ltx2p5.audioToVideo.pro": {
+    "source": "fal/lightricks-ltx-2-5-audio-to-video-pro",
+    "payload": {
+      "audio_url": "https://v3b.fal.media/files/b/0aad2527/MgFeC76hf4IYXYdYTcAbM_gemini_tts_output.wav",
+      "image_url": "https://v3b.fal.media/files/b/0a90dfd2/G1zBOgd-17yqZ-2S5TN4j_M3nzt3Sp.png",
+      "prompt": "A woman whispering to the microphone"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST lightricks.ltx2p5.imageToVideo.fast": {
     "source": "fal/lightricks-ltx2p5-image-to-video-fast",
     "payload": {

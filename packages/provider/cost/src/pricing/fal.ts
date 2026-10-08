@@ -906,6 +906,18 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  // Happy Horse 1.1 reference-to-video bills $0.14/s at 720p and
+  // $0.18/s at 1080p. Resolution defaults to 1080p and duration to
+  // 5. The recorded 3 s 720p call billed x-fal-billable-units 3, the
+  // requested seconds, so the charge is $0.42.
+  "alibaba/happy-horse/v1.1/reference-to-video": perSecondTiered(
+    "alibaba/happy-horse/v1.1/reference-to-video",
+    [resolutionTier("1080p")],
+    { "720p": 0.14, "1080p": 0.18 },
+    numericSeconds(5),
+    "2026-10-08"
+  ),
+
   // Qwen Audio 3 bills $0.05 per 1,000 input characters (pricing API
   // unit "1000 characters"; the card is blank). The request's text
   // length is the unit count. The recorded one-character call billed

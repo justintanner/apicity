@@ -65,6 +65,19 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST alibaba.happyHorse.v1p1.referenceToVideo": {
+    "source": "fal/alibaba-happy-horse-v1-1-reference-to-video",
+    "payload": {
+      "prompt": "A horse walks through warm grass.",
+      "image_urls": [
+        "https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20250925/wpimhv/rap.png"
+      ],
+      "resolution": "720p",
+      "duration": 3
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST alibaba.qwenAudio3Tts": {
     "source": "fal/alibaba-qwen-audio-3-tts",
     "payload": {

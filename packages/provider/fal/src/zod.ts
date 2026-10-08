@@ -6765,7 +6765,72 @@ export type FalAlibabaQwenAudio3TtsParsedRequest = z.output<
   typeof FalAlibabaQwenAudio3TtsRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 10e9ea49b4e3c7d3298ecdd9e8eda5fb332c5122e4f699b51592c839ae2c674e). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/alibaba/happy-horse/v1.1/reference-to-video/api
+export const FalAlibabaHappyHorseV1p1ReferenceToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .describe(
+      "Text prompt describing the desired video. Reference subjects from your images using ``character1``, ``character2``, ... up to ``character9`` (the order matches the order of ``image_urls``). Max 2500 characters."
+    ),
+  image_urls: z
+    .array(z.string())
+    .describe(
+      "Reference images for subject consistency (1-9 images). Formats: JPEG, JPG, PNG, WEBP. Shortest side must be at least 400 px (720P or higher recommended). Max 20 MB each."
+    ),
+  aspect_ratio: z
+    .enum(["16:9", "9:16", "1:1", "4:3", "3:4", "21:9", "9:21", "5:4", "4:5"])
+    .default("16:9")
+    .describe("Aspect ratio of the generated video."),
+  resolution: z
+    .enum(["720p", "1080p"])
+    .default("1080p")
+    .describe("Output video resolution tier."),
+  duration: z
+    .union([
+      z.literal(3),
+      z.literal(4),
+      z.literal(5),
+      z.literal(6),
+      z.literal(7),
+      z.literal(8),
+      z.literal(9),
+      z.literal(10),
+      z.literal(11),
+      z.literal(12),
+      z.literal(13),
+      z.literal(14),
+      z.literal(15),
+    ])
+    .default(5)
+    .describe("Output video duration in seconds (3-15)."),
+  seed: z
+    .number()
+    .int()
+    .nullable()
+    .optional()
+    .describe("Random seed for reproducibility (0-2147483647)."),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe(
+      "Enable content moderation for input and output. Disabling it requires account authorization; unauthorized requests are always checked."
+    ),
+});
+export type FalAlibabaHappyHorseV1p1ReferenceToVideoRequest = z.input<
+  typeof FalAlibabaHappyHorseV1p1ReferenceToVideoRequestSchema
+>;
+export type FalAlibabaHappyHorseV1p1ReferenceToVideoRequestInput =
+  FalAlibabaHappyHorseV1p1ReferenceToVideoRequest;
+export type FalAlibabaHappyHorseV1p1ReferenceToVideoParsedRequest = z.output<
+  typeof FalAlibabaHappyHorseV1p1ReferenceToVideoRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "alibaba/happy-horse/v1.1/reference-to-video":
+    FalAlibabaHappyHorseV1p1ReferenceToVideoRequestSchema,
   "alibaba/qwen-audio-3-tts": FalAlibabaQwenAudio3TtsRequestSchema,
   "fal-ai/kling-video/v3/turbo/pro/image-to-video":
     FalKlingVideoV3TurboProImageToVideoRequestSchema,

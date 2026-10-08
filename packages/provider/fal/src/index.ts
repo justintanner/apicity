@@ -21,6 +21,12 @@ export type {
 
 // Export all types
 export type {
+  FalAlibabaHappyHorseV1p1ReferenceToVideoResponse,
+  FalAlibabaHappyHorseV1p1ReferenceToVideoParsedRequest,
+  FalAlibabaHappyHorseV1p1ReferenceToVideoRequestInput,
+  FalAlibabaHappyHorseV1p1ReferenceToVideoRequest,
+  FalRunAlibabaHappyHorseV1p1Namespace,
+  FalRunAlibabaHappyHorseNamespace,
   FalAlibabaQwenAudio3TtsResponse,
   FalAlibabaQwenAudio3TtsParsedRequest,
   FalAlibabaQwenAudio3TtsRequestInput,

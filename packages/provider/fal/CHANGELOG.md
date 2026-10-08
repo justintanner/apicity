@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Happy Horse 1.1 reference-to-video (ac-rh4pwl).
+
 - Added Qwen Audio 3 text-to-speech (ac-n2pi30).
 
 - Added Kling v3 Turbo Pro image-to-video (ac-o17c19).

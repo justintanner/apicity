@@ -1438,6 +1438,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
     },
     "tier": "prohibitive",
     "runByDefault": false
+  },
+  "POST xai.grokImagineVideo.v1p5.textToVideo": {
+    "source": "fal/xai-grok-imagine-video-v1-5-text-to-video",
+    "payload": {
+      "prompt": "Anime schoolgirl bursting out of house door, cherry blossoms blowing, morning light, speed lines indicating rush, chibi-ready expressions, classic shojo aesthetic, vibrant colors",
+      "duration": 1,
+      "resolution": "480p"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   }
 };
 

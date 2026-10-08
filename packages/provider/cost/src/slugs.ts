@@ -412,6 +412,7 @@ export const MODEL_SLUGS = {
   // same underlying models kie also resells, so their slugs intentionally
   // match kie's.
   fal: {
+    "xai/grok-imagine-video/v1.5/text-to-video": "grokimgv1p5",
     "minimax/h3-max-turbo/text-to-video": "h3mtt2v",
     "minimax/h3-max-turbo/image-to-video": "h3mti2v",
     "minimax/h3-max/camera-controls": "h3mcc",
@@ -862,6 +863,7 @@ export const MODEL_DISPLAY = {
   },
 
   fal: {
+    "xai/grok-imagine-video/v1.5/text-to-video": "Grok Imagine Video 1.5",
     "minimax/h3-max-turbo/text-to-video": "H3 Max Turbo Text To Video",
     "minimax/h3-max-turbo/image-to-video": "H3 Max Turbo Image To Video",
     "minimax/h3-max/camera-controls": "H3 Max Camera Controls",

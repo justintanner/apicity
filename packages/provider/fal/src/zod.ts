@@ -5838,7 +5838,45 @@ export type FalMinimaxH3MaxTurboTextToVideoParsedRequest = z.output<
   typeof FalMinimaxH3MaxTurboTextToVideoRequestSchema
 >;
 
+// The live OpenAPI requires `prompt` alone, and five unbilled 422 probes
+// (2026-10-08) found upstream's validator to match it: `duration` is an
+// integer from 1 to 15, `resolution` and `aspect_ratio` are closed to the
+// documented values, and `prompt` stops at 4096 characters with no minimum.
+// An unknown field drew no error, so the object is not strict.
+// Docs: https://fal.ai/models/xai/grok-imagine-video/v1.5/text-to-video/api
+export const FalXaiGrokImagineVideoV1p5TextToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .max(4096)
+    .describe("Text description of the desired video."),
+  duration: z
+    .number()
+    .int()
+    .min(1)
+    .max(15)
+    .default(6)
+    .describe("Video duration in seconds."),
+  resolution: z
+    .enum(["480p", "720p", "1080p"])
+    .default("720p")
+    .describe("Resolution of the output video."),
+  aspect_ratio: z
+    .enum(["16:9", "4:3", "3:2", "1:1", "2:3", "3:4", "9:16"])
+    .default("16:9")
+    .describe("Aspect ratio of the generated video."),
+});
+export type FalXaiGrokImagineVideoV1p5TextToVideoRequest = z.input<
+  typeof FalXaiGrokImagineVideoV1p5TextToVideoRequestSchema
+>;
+export type FalXaiGrokImagineVideoV1p5TextToVideoRequestInput =
+  FalXaiGrokImagineVideoV1p5TextToVideoRequest;
+export type FalXaiGrokImagineVideoV1p5TextToVideoParsedRequest = z.output<
+  typeof FalXaiGrokImagineVideoV1p5TextToVideoRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "xai/grok-imagine-video/v1.5/text-to-video":
+    FalXaiGrokImagineVideoV1p5TextToVideoRequestSchema,
   "minimax/h3-max-turbo/text-to-video":
     FalMinimaxH3MaxTurboTextToVideoRequestSchema,
   "minimax/h3-max-turbo/image-to-video":

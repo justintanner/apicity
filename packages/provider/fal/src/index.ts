@@ -21,6 +21,11 @@ export type {
 
 // Export all types
 export type {
+  FalMinimaxH3MaxLipSyncImageToVideoResponse,
+  FalMinimaxH3MaxLipSyncImageToVideoParsedRequest,
+  FalMinimaxH3MaxLipSyncImageToVideoRequestInput,
+  FalMinimaxH3MaxLipSyncImageToVideoRequest,
+  FalRunMinimaxH3MaxLipSyncNamespace,
   FalMinimaxH3MaxThreeDToVideoResponse,
   FalMinimaxH3MaxThreeDToVideoParsedRequest,
   FalMinimaxH3MaxThreeDToVideoRequestInput,

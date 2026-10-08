@@ -5630,7 +5630,61 @@ export type FalMinimaxH3MaxThreeDToVideoParsedRequest = z.output<
   typeof FalMinimaxH3MaxThreeDToVideoRequestSchema
 >;
 
+// Upstream requires only `image_url` and `audio_url` and closes `resolution`
+// to the four documented values (unbilled 422 probes, 2026-10-08). The same
+// probes showed that `seed` takes integers from 0 to 2147483647 only, that an
+// unknown field is accepted, so the schema is not strict, and that neither
+// media URL is checked for its form before generation. The output length is
+// not a request field: it follows the supplied audio.
+// Docs: https://fal.ai/models/minimax/h3-max/lip-sync/image-to-video/api
+export const FalMinimaxH3MaxLipSyncImageToVideoRequestSchema = z.object({
+  image_url: z
+    .string()
+    .describe(
+      "Image to animate. The aspect ratio must be between 0.4 and 2.5."
+    ),
+  audio_url: z
+    .string()
+    .describe(
+      "Audio to synchronize the mouth movements to, at least 5 seconds long. Supports up to 15 minutes. The output video matches the supplied audio duration."
+    ),
+  resolution: z
+    .enum(["480P", "768P", "1080P", "2K"])
+    .default("768P")
+    .describe(
+      "Output resolution. Uses the supported aspect ratio nearest the image."
+    ),
+  enable_transcription: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Transcribe the supplied audio to guide lip synchronization. When disabled, synchronize to the audio without a transcript."
+    ),
+  seed: z
+    .number()
+    .int()
+    .min(0)
+    .max(2147483647)
+    .nullable()
+    .optional()
+    .describe("Random seed; selected randomly if omitted."),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe("Enable content safety checks."),
+});
+export type FalMinimaxH3MaxLipSyncImageToVideoRequest = z.input<
+  typeof FalMinimaxH3MaxLipSyncImageToVideoRequestSchema
+>;
+export type FalMinimaxH3MaxLipSyncImageToVideoRequestInput =
+  FalMinimaxH3MaxLipSyncImageToVideoRequest;
+export type FalMinimaxH3MaxLipSyncImageToVideoParsedRequest = z.output<
+  typeof FalMinimaxH3MaxLipSyncImageToVideoRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "minimax/h3-max/lip-sync/image-to-video":
+    FalMinimaxH3MaxLipSyncImageToVideoRequestSchema,
   "minimax/h3-max/3d-to-video": FalMinimaxH3MaxThreeDToVideoRequestSchema,
   "minimax/h3-max/reference-to-video":
     FalMinimaxH3MaxReferenceToVideoRequestSchema,

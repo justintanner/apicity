@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added MiniMax H3 Max lip-sync image-to-video, dynamically priced (ac-sgp4mn).
+
 - Added MiniMax H3 Max 3D-to-video, dynamically priced (ac-vwqc0l).
 
 - Added MiniMax H3 Max reference-to-video, dynamically priced (ac-ibp1q7).

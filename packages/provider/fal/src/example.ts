@@ -892,6 +892,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST minimax.h3Max.lipSync.imageToVideo": {
+    "source": "fal/minimax-h3-max-lip-sync-image-to-video",
+    "payload": {
+      "image_url": "https://v3b.fal.media/files/b/0aaad42b/j8WqFxwwop_xLekc9dsyh_6d2314abeb6b464aa14271bc70f2cc21.jpg",
+      "audio_url": "https://storage.googleapis.com/falserverless/example_inputs/elevenlabs/scribe_v2_in.mp3",
+      "resolution": "480P"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST minimax.h3Max.recast": {
     "source": "fal/minimax-h3-max-recast",
     "payload": {

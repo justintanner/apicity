@@ -1052,6 +1052,7 @@ describe("fal edit/image pricing estimates", () => {
       "minimax/h3-max/3d-to-video",
       "minimax/h3-max/extend-video",
       "minimax/h3-max/insert-video",
+      "minimax/h3-max/lip-sync/image-to-video",
       "minimax/h3-max/reference-to-video",
       "minimax/h3/image-to-video",
       "minimax/h3/reference-to-video",

@@ -593,6 +593,17 @@ const gptImagePerImage = (
 //     section also lists a $0.50 processing fee per request, which the
 //     recorded call was not billed: its 8 s 480P source with one 16:9
 //     reference image billed 15.9832 units at $0.05, $0.79916 in all.
+//   - minimax/h3-max/lip-sync/image-to-video: the official card (read
+//     2026-10-08) bills each second of generated video at
+//     $0.05/$0.08/$0.16/$0.32 at 480p/768p/1080p/2K, times 1.2 for a video
+//     over 15 s. The video runs as long as the audio, which the payload
+//     carries only as a URL. costHints.durationSeconds could declare that
+//     length, but the billing does not follow it: the recorded 480P call
+//     sent 5.72 s of audio, got back a video fal reports as 5.72 s (138
+//     frames at 24 fps, 5.75 s) and billed 6 units at $0.05, $0.30 (fal's
+//     usage API reads the same 6 seconds), where the card predicts $0.286 to
+//     $0.288. The card states no rounding, and one call cannot tell rounding
+//     up from rounding to the nearest second, so no rate is encoded.
 //   - xai/grok-imagine-video/v1.5/reference-to-video: billed per COMPUTE
 //     SECOND (USD 0.00017) as pulled 2026-08-28 from the same pricing API.
 //     Its UNVERSIONED sibling xai/grok-imagine-video/reference-to-video bills
@@ -818,6 +829,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "minimax/h3-max/3d-to-video",
   "minimax/h3-max/extend-video",
   "minimax/h3-max/insert-video",
+  "minimax/h3-max/lip-sync/image-to-video",
   "minimax/h3-max/reference-to-video",
   "minimax/h3/image-to-video",
   "minimax/h3/reference-to-video",

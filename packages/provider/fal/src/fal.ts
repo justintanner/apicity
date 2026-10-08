@@ -1,4 +1,6 @@
 import {
+  FalKlingVideoV3TurboStandardImageToVideoResponse,
+  FalKlingVideoV3TurboStandardImageToVideoRequest,
   FalKlingVideoV3TurboStandardTextToVideoResponse,
   FalKlingVideoV3TurboStandardTextToVideoRequest,
   FalLightricksLtx2p5AudioToVideoFastResponse,
@@ -292,6 +294,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalKlingVideoV3TurboStandardImageToVideoRequestSchema,
   FalKlingVideoV3TurboStandardTextToVideoRequestSchema,
   FalLightricksLtx2p5AudioToVideoFastRequestSchema,
   FalLightricksLtx2p5AudioToVideoProRequestSchema,
@@ -2600,6 +2603,19 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/fal-ai/kling-video/v3/turbo/standard/image-to-video
+  // Docs: https://fal.ai/models/fal-ai/kling-video/v3/turbo/standard/image-to-video/api
+  const klingVideoV3TurboStandardImageToVideo = jsonBody<
+    FalKlingVideoV3TurboStandardImageToVideoRequest,
+    FalKlingVideoV3TurboStandardImageToVideoResponse
+  >(
+    "POST",
+    "/fal-ai/kling-video/v3/turbo/standard/image-to-video",
+    FalKlingVideoV3TurboStandardImageToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
     // POST https://fal.run/bria/fibo-edit-1.5/virtual-try-on
     // Docs: https://fal.ai/models/bria/fibo-edit-1.5/virtual-try-on/api
@@ -2813,6 +2829,10 @@ export function createFal(opts: FalOptions): FalProvider {
       v3: {
         turbo: {
           standard: {
+            // sig-ok: stylistic dotPath divergence from URL
+            // POST https://fal.run/fal-ai/kling-video/v3/turbo/standard/image-to-video
+            // Docs: https://fal.ai/models/fal-ai/kling-video/v3/turbo/standard/image-to-video/api
+            imageToVideo: klingVideoV3TurboStandardImageToVideo,
             // sig-ok: stylistic dotPath divergence from URL
             // POST https://fal.run/fal-ai/kling-video/v3/turbo/standard/text-to-video
             // Docs: https://fal.ai/models/fal-ai/kling-video/v3/turbo/standard/text-to-video/api

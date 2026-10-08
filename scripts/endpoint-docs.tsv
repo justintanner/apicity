@@ -1713,3 +1713,4 @@ fal	lightricks.ltx2p5.textToVideo.pro	POST	https://fal.run/lightricks/ltx-2.5/te
 fal	lightricks.ltx2p5.audioToVideo.pro	POST	https://fal.run/lightricks/ltx-2.5/audio-to-video/pro	https://fal.ai/models/lightricks/ltx-2.5/audio-to-video/pro/api
 fal	lightricks.ltx2p5.audioToVideo.fast	POST	https://fal.run/lightricks/ltx-2.5/audio-to-video/fast	https://fal.ai/models/lightricks/ltx-2.5/audio-to-video/fast/api
 fal	klingVideo.v3.turbo.standard.textToVideo	POST	https://fal.run/fal-ai/kling-video/v3/turbo/standard/text-to-video	https://fal.ai/models/fal-ai/kling-video/v3/turbo/standard/text-to-video/api
+fal	klingVideo.v3.turbo.standard.imageToVideo	POST	https://fal.run/fal-ai/kling-video/v3/turbo/standard/image-to-video	https://fal.ai/models/fal-ai/kling-video/v3/turbo/standard/image-to-video/api

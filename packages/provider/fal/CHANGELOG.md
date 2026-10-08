@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Kling v3 Turbo Standard image-to-video (ac-bo14y6).
+
 - Added Kling v3 Turbo Standard text-to-video (ac-rjmitu).
 
 - Added Lightricks LTX-2.5 Fast audio-to-video (ac-oudg7o).

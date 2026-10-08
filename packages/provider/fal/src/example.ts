@@ -767,6 +767,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST klingVideo.v3.turbo.standard.imageToVideo": {
+    "source": "fal/kling-video-v3-turbo-standard-image-to-video",
+    "payload": {
+      "prompt": "A lioness and her cubs in warm grass, camera drifting closer.",
+      "image_url": "https://v3b.fal.media/files/b/0a90dfd2/G1zBOgd-17yqZ-2S5TN4j_M3nzt3Sp.png",
+      "duration": "3"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST klingVideo.v3.turbo.standard.textToVideo": {
     "source": "fal/kling-video-v3-turbo-standard-text-to-video",
     "payload": {

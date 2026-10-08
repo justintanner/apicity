@@ -6430,7 +6430,94 @@ export type FalKlingVideoV3TurboStandardTextToVideoParsedRequest = z.output<
   typeof FalKlingVideoV3TurboStandardTextToVideoRequestSchema
 >;
 
+const FalKlingVideoV3TurboStandardImageToVideoKlingV3MultiPromptElementSchema =
+  z.object({
+    prompt: z.string().describe("The prompt for this shot."),
+    duration: z
+      .enum([
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+      ])
+      .default("5")
+      .describe("The duration of this shot in seconds"),
+  });
+
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 241098dfefdebefe28a34cd7ef2b0b3cdd08572deb0a7f4587ff94e2288bc59e). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/fal-ai/kling-video/v3/turbo/standard/image-to-video/api
+export const FalKlingVideoV3TurboStandardImageToVideoRequestSchema = z
+  .object({
+    prompt: z
+      .string()
+      .max(3072)
+      .nullable()
+      .optional()
+      .describe(
+        "Optional text prompt. For best results keep the prompt under 2500 characters. Mutually exclusive with `multi_prompt`."
+      ),
+    multi_prompt: z
+      .array(
+        FalKlingVideoV3TurboStandardImageToVideoKlingV3MultiPromptElementSchema
+      )
+      .nullable()
+      .optional()
+      .describe(
+        "Multi-shot storyboard (1-6 shots). Each shot has its own prompt and duration; the total duration must not exceed 15s. Mutually exclusive with `prompt`."
+      ),
+    image_url: z
+      .string()
+      .describe(
+        "First-frame reference image. Formats: .jpg/.jpeg/.png; max 50MB; min 300px per side; aspect ratio within 1:2.5 to 2.5:1."
+      ),
+    duration: z
+      .enum([
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+      ])
+      .default("5")
+      .describe("Video length in seconds."),
+  })
+  .refine((v) => !(v.multi_prompt != null && v.prompt != null), {
+    message:
+      "fal-ai/kling-video/v3/turbo/standard/image-to-video multi_prompt and prompt are mutually exclusive",
+    path: ["prompt"],
+  });
+export type FalKlingVideoV3TurboStandardImageToVideoRequest = z.input<
+  typeof FalKlingVideoV3TurboStandardImageToVideoRequestSchema
+>;
+export type FalKlingVideoV3TurboStandardImageToVideoRequestInput =
+  FalKlingVideoV3TurboStandardImageToVideoRequest;
+export type FalKlingVideoV3TurboStandardImageToVideoParsedRequest = z.output<
+  typeof FalKlingVideoV3TurboStandardImageToVideoRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "fal-ai/kling-video/v3/turbo/standard/image-to-video":
+    FalKlingVideoV3TurboStandardImageToVideoRequestSchema,
   "fal-ai/kling-video/v3/turbo/standard/text-to-video":
     FalKlingVideoV3TurboStandardTextToVideoRequestSchema,
   "lightricks/ltx-2.5/audio-to-video/fast":

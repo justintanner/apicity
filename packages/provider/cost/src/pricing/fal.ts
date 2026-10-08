@@ -906,6 +906,18 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  // Kling v3 Turbo Standard image-to-video bills $0.112 per second at
+  // 720p, the same card rate as the text-to-video leaf. Duration is a
+  // digit string defaulting to "5". The recorded 3 s call billed
+  // x-fal-billable-units 3, the requested seconds, so the charge is
+  // $0.336.
+  "fal-ai/kling-video/v3/turbo/standard/image-to-video": perSecond(
+    "fal-ai/kling-video/v3/turbo/standard/image-to-video",
+    0.112,
+    klingSeconds,
+    "2026-10-08"
+  ),
+
   // Kling v3 Turbo Standard bills $0.112 per second at 720p. Duration
   // is a digit string defaulting to "5", and the card has no audio
   // toggle. The recorded 3 s call billed x-fal-billable-units 3, the

@@ -5682,7 +5682,92 @@ export type FalMinimaxH3MaxLipSyncImageToVideoParsedRequest = z.output<
   typeof FalMinimaxH3MaxLipSyncImageToVideoRequestSchema
 >;
 
+// The live OpenAPI documents the same input as minimax/h3-max/image-to-video,
+// field for field: it lists `prompt_expansion_mode` as required while giving
+// it a default, and types it as a plain string with three examples. Upstream's
+// validator settles both here too: a `{}` body is refused for `prompt` alone,
+// and an unknown mode is refused with "Input should be 'disabled', 'fast',
+// 'balanced' or 'quality'" (three unbilled 422 probes, 2026-10-08). So the
+// field defaults to `balanced` and takes the four values the validator
+// accepts. Both images are optional: with neither, upstream handles the
+// request as text-to-video.
+// Docs: https://fal.ai/models/minimax/h3-max-turbo/image-to-video/api
+export const FalMinimaxH3MaxTurboImageToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(50000)
+    .describe("Text prompt for video generation"),
+  duration: z
+    .number()
+    .min(0.92)
+    .max(15)
+    .default(5)
+    .describe(
+      "Video length in seconds. The output can run up to about 0.7 s longer than requested. Use at least 2 s with target_audio_url."
+    ),
+  resolution: z
+    .enum(["480P", "768P", "1080P"])
+    .default("768P")
+    .describe(
+      "The native generation resolution, or 1080P latent refinement from a native 768P source."
+    ),
+  seed: z
+    .number()
+    .int()
+    .nullable()
+    .optional()
+    .describe("Random seed. A random seed is selected when omitted."),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe("If set to true, the safety checker will be enabled."),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe("Return the generated video as base64 instead of a CDN URL."),
+  prompt_expansion_mode: z
+    .enum(["disabled", "fast", "balanced", "quality"])
+    .default("balanced")
+    .describe(
+      "How much effort to spend rewriting the prompt before generation. 'disabled' skips prompt expansion. 'balanced' returns in about a second. 'quality' spends up to ~30s on a richer prompt."
+    ),
+  target_audio_url: z
+    .string()
+    .min(1)
+    .regex(/\S/)
+    .nullable()
+    .optional()
+    .describe(
+      "Optional URL of an audio clip at least 2 seconds long (maximum 15 MB) to pin to the generated soundtrack. Longer clips are trimmed to the generated video's length, keeping the beginning. The original audio replaces the output soundtrack, padded with silence if shorter than the video, without changing playback speed. Exceptionally high sample rates may be resampled to 96 kHz. Accepts an HTTP(S) URL or a base64 data URI."
+    ),
+  image_url: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "Optional URL of the image to use as the first frame. When provided, the output canvas follows this image. If only end_image_url is provided, the canvas follows that last frame instead. If both images are omitted, the request is handled as text-to-video (16:9 by default)."
+    ),
+  end_image_url: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "Optional URL of the image to use as the last frame. It may be provided alone for end-only keyframe generation; in that case the output canvas follows this image."
+    ),
+});
+export type FalMinimaxH3MaxTurboImageToVideoRequest = z.input<
+  typeof FalMinimaxH3MaxTurboImageToVideoRequestSchema
+>;
+export type FalMinimaxH3MaxTurboImageToVideoRequestInput =
+  FalMinimaxH3MaxTurboImageToVideoRequest;
+export type FalMinimaxH3MaxTurboImageToVideoParsedRequest = z.output<
+  typeof FalMinimaxH3MaxTurboImageToVideoRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "minimax/h3-max-turbo/image-to-video":
+    FalMinimaxH3MaxTurboImageToVideoRequestSchema,
   "minimax/h3-max/lip-sync/image-to-video":
     FalMinimaxH3MaxLipSyncImageToVideoRequestSchema,
   "minimax/h3-max/3d-to-video": FalMinimaxH3MaxThreeDToVideoRequestSchema,

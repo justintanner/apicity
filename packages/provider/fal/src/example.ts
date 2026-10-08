@@ -964,6 +964,18 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST minimax.h3MaxTurbo.imageToVideo": {
+    "source": "fal/minimax-h3-max-turbo-image-to-video",
+    "payload": {
+      "prompt": "The camera slowly pulls back from the scene, revealing the full landscape as clouds drift overhead and light shifts across the terrain.",
+      "image_url": "https://storage.googleapis.com/falserverless/example_inputs/hailuo23/pro_i2v_in.jpg",
+      "duration": 0.92,
+      "resolution": "480P",
+      "prompt_expansion_mode": "disabled"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST minimax.music3": {
     "source": "fal/minimax-music-3",
     "payload": {

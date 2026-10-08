@@ -1,4 +1,6 @@
 import {
+  FalNvidiaCosmos3SuperTextToImageResponse,
+  FalNvidiaCosmos3SuperTextToImageRequest,
   FalNvidiaCosmos3SuperImageToVideoResponse,
   FalNvidiaCosmos3SuperImageToVideoRequest,
   FalMicrosoftMaiImage2p5ProEditResponse,
@@ -332,6 +334,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalNvidiaCosmos3SuperTextToImageRequestSchema,
   FalNvidiaCosmos3SuperImageToVideoRequestSchema,
   FalMicrosoftMaiImage2p5ProEditRequestSchema,
   FalMicrosoftMaiImage2p5ProRequestSchema,
@@ -2911,9 +2914,24 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/nvidia/cosmos-3-super/text-to-image
+  // Docs: https://fal.ai/models/nvidia/cosmos-3-super/text-to-image/api
+  const nvidiaCosmos3SuperTextToImage = jsonBody<
+    FalNvidiaCosmos3SuperTextToImageRequest,
+    FalNvidiaCosmos3SuperTextToImageResponse
+  >(
+    "POST",
+    "/nvidia/cosmos-3-super/text-to-image",
+    FalNvidiaCosmos3SuperTextToImageRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
     nvidia: {
       cosmos3Super: {
+        // POST https://fal.run/nvidia/cosmos-3-super/text-to-image
+        // Docs: https://fal.ai/models/nvidia/cosmos-3-super/text-to-image/api
+        textToImage: nvidiaCosmos3SuperTextToImage,
         // POST https://fal.run/nvidia/cosmos-3-super/image-to-video
         // Docs: https://fal.ai/models/nvidia/cosmos-3-super/image-to-video/api
         imageToVideo: nvidiaCosmos3SuperImageToVideo,

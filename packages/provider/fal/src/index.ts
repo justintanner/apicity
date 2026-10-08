@@ -21,6 +21,10 @@ export type {
 
 // Export all types
 export type {
+  FalNvidiaCosmos3SuperTextToImageResponse,
+  FalNvidiaCosmos3SuperTextToImageParsedRequest,
+  FalNvidiaCosmos3SuperTextToImageRequestInput,
+  FalNvidiaCosmos3SuperTextToImageRequest,
   FalNvidiaCosmos3SuperImageToVideoResponse,
   FalNvidiaCosmos3SuperImageToVideoParsedRequest,
   FalNvidiaCosmos3SuperImageToVideoRequestInput,

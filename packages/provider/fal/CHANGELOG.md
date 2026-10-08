@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Cosmos 3 Super text-to-image (ac-gih33k).
+
 - Added Cosmos 3 Super image-to-video (ac-1eow45).
 
 - Added MAI Image 2.5 Pro edit, dynamically priced (ac-97k3vy).

@@ -1335,6 +1335,14 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST nvidia.cosmos3Super.textToImage": {
+    "source": "fal/nvidia-cosmos-3-super-text-to-image",
+    "payload": {
+      "prompt": "A photorealistic close-up of two damp hands shaping a spinning cylinder of wet gray clay on a pottery wheel, fingers pinching the walls upward into a narrow-necked vase, water glistening on the clay, soft studio lighting, shallow depth of field."
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST openai.gptImage2p5.flare.edit": {
     "source": "fal/openai-gpt-image-2-5-flare-edit",
     "payload": {

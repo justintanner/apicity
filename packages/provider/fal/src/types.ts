@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalNvidiaCosmos3SuperTextToImageParsedRequest,
+  FalNvidiaCosmos3SuperTextToImageRequestInput,
+  FalNvidiaCosmos3SuperTextToImageRequest,
   FalNvidiaCosmos3SuperImageToVideoParsedRequest,
   FalNvidiaCosmos3SuperImageToVideoRequestInput,
   FalNvidiaCosmos3SuperImageToVideoRequest,
@@ -557,6 +560,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalNvidiaCosmos3SuperTextToImageRequest,
   FalNvidiaCosmos3SuperImageToVideoRequest,
   FalMicrosoftMaiImage2p5ProEditRequest,
   FalMicrosoftMaiImage2p5ProRequest,
@@ -4824,4 +4828,28 @@ export interface FalRunNvidiaNamespace {
 
 export interface FalRunNamespace {
   nvidia: FalRunNvidiaNamespace;
+}
+
+export interface FalNvidiaCosmos3SuperTextToImageResponse {
+  images: Array<{
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+  }>;
+  seed: number;
+  has_nsfw_concepts: Array<boolean>;
+}
+
+type FalNvidiaCosmos3SuperTextToImageFn = ((
+  params: FalNvidiaCosmos3SuperTextToImageRequest,
+  signal?: AbortSignal
+) => Promise<FalNvidiaCosmos3SuperTextToImageResponse>) & {
+  schema: ApicitySchema<FalNvidiaCosmos3SuperTextToImageRequest>;
+};
+
+export interface FalRunNvidiaCosmos3SuperNamespace {
+  textToImage: FalNvidiaCosmos3SuperTextToImageFn;
 }

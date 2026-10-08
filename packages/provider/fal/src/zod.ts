@@ -8367,7 +8367,152 @@ export type FalNvidiaCosmos3SuperImageToVideoParsedRequest = z.output<
   typeof FalNvidiaCosmos3SuperImageToVideoRequestSchema
 >;
 
+const FalNvidiaCosmos3SuperTextToImageImageSizeSchema = z.object({
+  width: z
+    .number()
+    .int()
+    .gt(0)
+    .max(14142)
+    .default(512)
+    .describe("The width of the generated image."),
+  height: z
+    .number()
+    .int()
+    .gt(0)
+    .max(14142)
+    .default(512)
+    .describe("The height of the generated image."),
+});
+
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 955b94ac6f9420a59b7c7fd9adfc3858137c4222458e3aa3349535984851bace). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/nvidia/cosmos-3-super/text-to-image/api
+export const FalNvidiaCosmos3SuperTextToImageRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(4096)
+    .describe("Text prompt describing the image to generate."),
+  negative_prompt: z
+    .string()
+    .max(1024)
+    .default("")
+    .describe(
+      "Content to steer the generation away from (colors, objects, artifacts)."
+    ),
+  enable_prompt_expansion: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Expand the prompt with OpenRouter before image generation. When enabled, the prompt is rewritten into the dense structured-JSON format Cosmos3 was trained on; generation falls back to the raw prompt if expansion fails."
+    ),
+  enable_agentic_generation: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Automatically generate and compare multiple candidate images, then refine the prompt between rounds to better match the original request. This can improve prompt adherence but increases latency and billable image generations."
+    ),
+  agentic_max_iterations: z
+    .number()
+    .int()
+    .min(1)
+    .max(3)
+    .default(2)
+    .describe(
+      "Maximum number of refinement rounds when agentic generation is enabled."
+    ),
+  agentic_samples_per_iteration: z
+    .number()
+    .int()
+    .min(1)
+    .max(3)
+    .default(2)
+    .describe(
+      "Candidate images to generate and judge per agentic iteration. The best candidate advances to the next rewrite stage."
+    ),
+  agentic_early_stop: z
+    .boolean()
+    .default(true)
+    .describe(
+      "Stop early when a candidate image is already a strong match for the prompt."
+    ),
+  image_size: z
+    .union([
+      FalNvidiaCosmos3SuperTextToImageImageSizeSchema,
+      z.enum([
+        "square_hd",
+        "square",
+        "portrait_4_3",
+        "portrait_16_9",
+        "landscape_4_3",
+        "landscape_16_9",
+      ]),
+    ])
+    .default("square_hd")
+    .describe(
+      "The size of the generated image. Each edge is clamped to 512-1280px (multiples of 16)."
+    ),
+  num_inference_steps: z
+    .number()
+    .int()
+    .min(1)
+    .max(50)
+    .default(28)
+    .describe(
+      "Number of denoising steps. More steps yield higher quality but take longer."
+    ),
+  guidance_scale: z
+    .number()
+    .min(0)
+    .max(20)
+    .default(4)
+    .describe(
+      "Classifier-free guidance scale. Higher values increase prompt adherence at the cost of diversity."
+    ),
+  num_images: z
+    .number()
+    .int()
+    .min(1)
+    .max(4)
+    .default(1)
+    .describe("The number of images to generate."),
+  seed: z
+    .number()
+    .int()
+    .nullable()
+    .optional()
+    .describe(
+      "The same seed and prompt given to the same model version will produce the same image every time."
+    ),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe(
+      "Enable content moderation for the input prompt and generated images. Disabling it requires account authorization; unauthorized requests are always checked, and images flagged as unsafe are returned as black images."
+    ),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If `True`, the image is returned as a data URI and the output data won't be available in the request history."
+    ),
+  output_format: z
+    .enum(["jpeg", "png"])
+    .default("jpeg")
+    .describe("The format of the generated image."),
+});
+export type FalNvidiaCosmos3SuperTextToImageRequest = z.input<
+  typeof FalNvidiaCosmos3SuperTextToImageRequestSchema
+>;
+export type FalNvidiaCosmos3SuperTextToImageRequestInput =
+  FalNvidiaCosmos3SuperTextToImageRequest;
+export type FalNvidiaCosmos3SuperTextToImageParsedRequest = z.output<
+  typeof FalNvidiaCosmos3SuperTextToImageRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "nvidia/cosmos-3-super/text-to-image":
+    FalNvidiaCosmos3SuperTextToImageRequestSchema,
   "nvidia/cosmos-3-super/image-to-video":
     FalNvidiaCosmos3SuperImageToVideoRequestSchema,
   "microsoft/mai-image-2.5-pro/edit":

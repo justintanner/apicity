@@ -1,4 +1,6 @@
 import {
+  FalMetaMuseImageEditResponse,
+  FalMetaMuseImageEditRequest,
   FalMetaMuseImageTextToImageResponse,
   FalMetaMuseImageTextToImageRequest,
   FalElevenlabsMusicV2p5Response,
@@ -316,6 +318,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalMetaMuseImageEditRequestSchema,
   FalMetaMuseImageTextToImageRequestSchema,
   FalElevenlabsMusicV2p5RequestSchema,
   FalBriaFiboGen1p5TextToImageRequestSchema,
@@ -2780,9 +2783,21 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/meta/muse-image/edit
+  // Docs: https://fal.ai/models/meta/muse-image/edit/api
+  const metaMuseImageEdit = jsonBody<
+    FalMetaMuseImageEditRequest,
+    FalMetaMuseImageEditResponse
+  >("POST", "/meta/muse-image/edit", FalMetaMuseImageEditRequestSchema, {
+    base: runBaseURL,
+  });
+
   const run: FalRunNamespace = {
     meta: {
       museImage: {
+        // POST https://fal.run/meta/muse-image/edit
+        // Docs: https://fal.ai/models/meta/muse-image/edit/api
+        edit: metaMuseImageEdit,
         // POST https://fal.run/meta/muse-image/text-to-image
         // Docs: https://fal.ai/models/meta/muse-image/text-to-image/api
         textToImage: metaMuseImageTextToImage,

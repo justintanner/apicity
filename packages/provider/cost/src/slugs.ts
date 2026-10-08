@@ -412,6 +412,7 @@ export const MODEL_SLUGS = {
   // same underlying models kie also resells, so their slugs intentionally
   // match kie's.
   fal: {
+    "meta/muse-image/edit": "muse",
     "meta/muse-image/text-to-image": "muse",
     "elevenlabs/music/v2.5": "elmusic25",
     "bria/fibo-gen-1.5/text-to-image": "briafibogen",
@@ -881,6 +882,7 @@ export const MODEL_DISPLAY = {
   },
 
   fal: {
+    "meta/muse-image/edit": "Muse Image Edit",
     "meta/muse-image/text-to-image": "Muse Image",
     "elevenlabs/music/v2.5": "ElevenLabs Music 2.5",
     "bria/fibo-gen-1.5/text-to-image": "Bria Fibo Gen 1.5",

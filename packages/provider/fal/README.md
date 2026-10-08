@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-157 endpoints across 34 groups. Each method mirrors an upstream URL path.
+158 endpoints across 34 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -1576,6 +1576,23 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 </details>
 
 ### meta
+
+<details>
+<summary><code>POST</code> <b><code>fal.meta.museImage.edit</code></b></summary>
+
+<code>POST https://fal.run/meta/muse-image/edit</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/meta/muse-image/edit/api)
+
+```typescript
+const res = await fal.run.meta.museImage.edit({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>fal.meta.museImage.textToImage</code></b></summary>

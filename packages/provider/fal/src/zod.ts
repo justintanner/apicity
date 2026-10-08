@@ -7687,7 +7687,57 @@ export type FalMetaMuseImageTextToImageParsedRequest = z.output<
   typeof FalMetaMuseImageTextToImageRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 17c4f7963251d25af485098d771d5a8c9f3f6942db30fd42d05dfeddb3412422). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/meta/muse-image/edit/api
+export const FalMetaMuseImageEditRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .describe("The text prompt used to generate or edit the image."),
+  image_urls: z
+    .array(z.string())
+    .min(1)
+    .max(10)
+    .describe(
+      "Reference images used for the edit. Provide between 1 and 10 HTTP(S) or data URLs."
+    ),
+  aspect_ratio: z
+    .string()
+    .regex(/^[1-9][0-9]{0,4}:[1-9][0-9]{0,4}$/)
+    .nullable()
+    .optional()
+    .describe(
+      'Any custom output aspect ratio as "width:height", for example "16:9", "5:4", or "1920:1200". Common presets are "21:9", "16:9", "4:3", "3:2", "1:1", "2:3", "3:4", "9:16", "9:21". The ratio must be between 1:16 and 16:1, the range Muse supports. Only the ratio is used: Muse renders it at its own fixed resolution of roughly 2.5 megapixels, so "1920:1200" and "960:600" both return the same 1920x1200 image. If omitted, Muse chooses the output dimensions automatically.'
+    ),
+  num_images: z
+    .number()
+    .int()
+    .min(1)
+    .max(10)
+    .default(1)
+    .describe("The number of edited images to generate."),
+  output_format: z
+    .enum(["jpeg", "png", "webp"])
+    .default("webp")
+    .describe("The format of the generated image."),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If `True`, the image is returned as a data URI and is not persisted in the request history."
+    ),
+});
+export type FalMetaMuseImageEditRequest = z.input<
+  typeof FalMetaMuseImageEditRequestSchema
+>;
+export type FalMetaMuseImageEditRequestInput = FalMetaMuseImageEditRequest;
+export type FalMetaMuseImageEditParsedRequest = z.output<
+  typeof FalMetaMuseImageEditRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "meta/muse-image/edit": FalMetaMuseImageEditRequestSchema,
   "meta/muse-image/text-to-image": FalMetaMuseImageTextToImageRequestSchema,
   "elevenlabs/music/v2.5": FalElevenlabsMusicV2p5RequestSchema,
   "bria/fibo-gen-1.5/text-to-image": FalBriaFiboGen1p5TextToImageRequestSchema,

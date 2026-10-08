@@ -21,6 +21,10 @@ export type {
 
 // Export all types
 export type {
+  FalMetaMuseImageEditResponse,
+  FalMetaMuseImageEditParsedRequest,
+  FalMetaMuseImageEditRequestInput,
+  FalMetaMuseImageEditRequest,
   FalMetaMuseImageTextToImageResponse,
   FalMetaMuseImageTextToImageParsedRequest,
   FalMetaMuseImageTextToImageRequestInput,

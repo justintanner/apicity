@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Muse Image edit (ac-nk9nff).
+
 - Added Muse Image text-to-image (ac-4h1r8i).
 
 - Added ElevenLabs Music v2.5 (ac-rrv8xf).

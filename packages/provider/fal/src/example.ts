@@ -989,6 +989,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST meta.museImage.edit": {
+    "source": "fal/meta-muse-image-edit",
+    "payload": {
+      "prompt": "A cinematic editorial portrait in soft window light with crisp typography",
+      "image_urls": [
+        "https://storage.googleapis.com/falserverless/example_inputs/kontext_example_input.webp"
+      ]
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST meta.museImage.textToImage": {
     "source": "fal/meta-muse-image-text-to-image",
     "payload": {

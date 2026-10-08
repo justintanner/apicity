@@ -906,6 +906,12 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  // Muse Image edit bills $0.01 per image, the same card as
+  // text-to-image. num_images defaults to 1. The recorded call
+  // billed x-fal-billable-units 1, one image, so the charge is
+  // $0.01.
+  "meta/muse-image/edit": perImage("meta/muse-image/edit", 0.01, "2026-10-08"),
+
   // Muse Image text-to-image bills $0.01 per image. num_images
   // defaults to 1. The recorded call billed x-fal-billable-units
   // 1, one image, so the charge is $0.01.

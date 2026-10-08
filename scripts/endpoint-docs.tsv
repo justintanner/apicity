@@ -1725,3 +1725,4 @@ fal	bria.fiboEdit1p5.edit	POST	https://fal.run/bria/fibo-edit-1.5/edit	https://f
 fal	bria.fiboGen1p5.textToImage	POST	https://fal.run/bria/fibo-gen-1.5/text-to-image	https://fal.ai/models/bria/fibo-gen-1.5/text-to-image/api
 fal	elevenlabs.music.v2p5	POST	https://fal.run/elevenlabs/music/v2.5	https://fal.ai/models/elevenlabs/music/v2.5/api
 fal	meta.museImage.textToImage	POST	https://fal.run/meta/muse-image/text-to-image	https://fal.ai/models/meta/muse-image/text-to-image/api
+fal	meta.museImage.edit	POST	https://fal.run/meta/muse-image/edit	https://fal.ai/models/meta/muse-image/edit/api

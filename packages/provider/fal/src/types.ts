@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalBriaFiboEdit1p5EditParsedRequest,
+  FalBriaFiboEdit1p5EditRequestInput,
+  FalBriaFiboEdit1p5EditRequest,
   FalBlackforestlabsFlux3EditVideoParsedRequest,
   FalBlackforestlabsFlux3EditVideoRequestInput,
   FalBlackforestlabsFlux3EditVideoRequest,
@@ -521,6 +524,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalBriaFiboEdit1p5EditRequest,
   FalBlackforestlabsFlux3EditVideoRequest,
   FalAlibabaHappyHorseV1p1TextToVideoRequest,
   FalAlibabaHappyHorseV1p1ImageToVideoRequest,
@@ -4452,4 +4456,35 @@ type FalBlackforestlabsFlux3EditVideoFn = ((
 
 export interface FalRunFlux3Namespace {
   editVideo: FalBlackforestlabsFlux3EditVideoFn;
+}
+
+export interface FalBriaFiboEdit1p5EditResponse {
+  image: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+  };
+  images?: Array<{
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+  }>;
+  structured_instruction: Record<string, unknown>;
+}
+
+type FalBriaFiboEdit1p5EditFn = ((
+  params: FalBriaFiboEdit1p5EditRequest,
+  signal?: AbortSignal
+) => Promise<FalBriaFiboEdit1p5EditResponse>) & {
+  schema: ApicitySchema<FalBriaFiboEdit1p5EditRequest>;
+};
+
+export interface FalRunBriaFiboEdit1p5Namespace {
+  edit: FalBriaFiboEdit1p5EditFn;
 }

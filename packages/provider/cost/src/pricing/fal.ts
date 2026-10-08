@@ -906,6 +906,16 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  // Bria Fibo Edit 1.5 edit bills $0.04 per image. The model
+  // page has no price card; the pricing API bills 0.04 USD per
+  // image. The recorded call billed x-fal-billable-units 1, one
+  // image, so the charge is $0.04.
+  "bria/fibo-edit-1.5/edit": perImage(
+    "bria/fibo-edit-1.5/edit",
+    0.04,
+    "2026-10-08"
+  ),
+
   // FLUX 3 edit-video bills $0.03 per second of generated 720p
   // video. The schema has no duration; length follows the input,
   // so the estimate uses costHints.durationSeconds. The example

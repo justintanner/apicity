@@ -21,6 +21,10 @@ export type {
 
 // Export all types
 export type {
+  FalBriaFiboEdit1p5EditResponse,
+  FalBriaFiboEdit1p5EditParsedRequest,
+  FalBriaFiboEdit1p5EditRequestInput,
+  FalBriaFiboEdit1p5EditRequest,
   FalBlackforestlabsFlux3EditVideoResponse,
   FalBlackforestlabsFlux3EditVideoParsedRequest,
   FalBlackforestlabsFlux3EditVideoRequestInput,

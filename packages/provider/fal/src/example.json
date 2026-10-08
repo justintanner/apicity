@@ -308,6 +308,18 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST bria.fiboEdit1p5.edit": {
+    "source": "fal/bria-fibo-edit-1-5-edit",
+    "payload": {
+      "image_urls": [
+        "https://v3b.fal.media/files/b/0aa69153/6d2UFjgrQCRM6BoWpXpZ3_126_1.jpg",
+        "https://v3b.fal.media/files/b/0aa69153/Gy-fjFofCbQP9w3lsfc2e_126_2.jpg"
+      ],
+      "instruction": "Uncross her arms and place the serum bottle in her right hand raised beside her face, label toward the camera."
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST bria.fiboEdit1p5.productHolding": {
     "source": "fal/bria-fibo-edit-1-5-product-holding",
     "payload": {

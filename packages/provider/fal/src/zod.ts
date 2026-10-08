@@ -6976,7 +6976,267 @@ export type FalBlackforestlabsFlux3EditVideoParsedRequest = z.output<
   typeof FalBlackforestlabsFlux3EditVideoRequestSchema
 >;
 
+const FalBriaFiboEdit1p5EditPromptObjectSchema = z.object({
+  description: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("A description of the object to be generated."),
+  location: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The location of the object in the image."),
+  relationship: z
+    .string()
+    .describe("The relationship of the object to other objects in the image."),
+  relative_size: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The relative size of the object in the image."),
+  shape_and_color: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The shape and color of the object."),
+  texture: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The texture of the object."),
+  appearance_details: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The appearance details of the object."),
+  number_of_objects: z
+    .number()
+    .int()
+    .nullable()
+    .optional()
+    .describe("The number of objects in the image."),
+  pose: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The pose of the object in the image."),
+  expression: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The expression of the object in the image."),
+  clothing: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The clothing of the object in the image."),
+  action: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The action of the object in the image."),
+  gender: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The gender of the object in the image."),
+  skin_tone_and_texture: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The skin tone and texture of the object in the image."),
+  orientation: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The orientation of the object in the image."),
+});
+
+const FalBriaFiboEdit1p5EditLightingSchema = z.object({
+  conditions: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The conditions of the lighting in the image to be generated."),
+  direction: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The direction of the lighting in the image to be generated."),
+  shadows: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The shadows in the image to be generated."),
+});
+
+const FalBriaFiboEdit1p5EditAestheticsSchema = z.object({
+  composition: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The composition of the image to be generated."),
+  color_scheme: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The color scheme of the image to be generated."),
+  mood_atmosphere: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The mood and atmosphere of the image to be generated."),
+  aesthetic_score: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The aesthetic score of the image to be generated."),
+  preference_score: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The preference score of the image to be generated."),
+});
+
+const FalBriaFiboEdit1p5EditPhotographicCharacteristicsSchema = z.object({
+  depth_of_field: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The depth of field in the image to be generated."),
+  focus: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The focus in the image to be generated."),
+  camera_angle: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The angle of the camera in the image to be generated."),
+  lens_focal_length: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The focal length of the lens in the image to be generated."),
+});
+
+const FalBriaFiboEdit1p5EditStructuredInstructionSchema = z.object({
+  short_description: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("A short description of the image to be generated."),
+  objects: z
+    .array(FalBriaFiboEdit1p5EditPromptObjectSchema)
+    .nullable()
+    .default([])
+    .describe(
+      "A list of objects in the image to be generated, along with their attributes and relationships to other objects in the image."
+    ),
+  background_setting: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The background setting of the image to be generated."),
+  lighting: FalBriaFiboEdit1p5EditLightingSchema.nullable()
+    .optional()
+    .describe("The lighting of the image to be generated."),
+  aesthetics: FalBriaFiboEdit1p5EditAestheticsSchema.nullable()
+    .optional()
+    .describe("The aesthetics of the image to be generated."),
+  photographic_characteristics:
+    FalBriaFiboEdit1p5EditPhotographicCharacteristicsSchema.nullable()
+      .optional()
+      .describe(
+        "The photographic characteristics of the image to be generated."
+      ),
+  style_medium: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The style medium of the image to be generated."),
+  text_render: z
+    .array(z.unknown())
+    .nullable()
+    .default([])
+    .describe("A list of text to be rendered in the image."),
+  context: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The context of the image to be generated."),
+  artistic_style: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The artistic style of the image to be generated."),
+  edit_instruction: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The edit instruction for the image."),
+});
+
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 8f2dd05d32cfe817ded5a34248afc7fe915074995a3b25eb547546d09c45319a). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/bria/fibo-edit-1.5/edit/api
+export const FalBriaFiboEdit1p5EditRequestSchema = z.object({
+  image_urls: z
+    .array(z.string())
+    .nullable()
+    .optional()
+    .describe(
+      "1-4 reference images (files or URLs). Order is significant: the instruction is resolved against the images in the order they are sent."
+    ),
+  instruction: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("Instruction for image editing."),
+  aspect_ratio: z
+    .enum(["1:1", "2:3", "3:2", "3:4", "4:3", "4:5", "5:4", "9:16", "16:9"])
+    .nullable()
+    .optional()
+    .describe(
+      "Output aspect ratio. Left unset, the output keeps the ratio of the first reference image. A chosen ratio applies only with two or more reference images; with a single reference the output keeps that image's ratio either way."
+    ),
+  seed: z
+    .number()
+    .int()
+    .default(5555)
+    .describe("Random seed for reproducibility."),
+  mask_url: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "Mask (file or URL) marking the region to regenerate: white where the model should edit, black elsewhere. Single-reference requests only, and it must be the same size as that image. A masked edit comes back at the reference's own resolution."
+    ),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If true, returns the image directly in the response (increases latency)."
+    ),
+  structured_instruction:
+    FalBriaFiboEdit1p5EditStructuredInstructionSchema.nullable()
+      .optional()
+      .describe(
+        "A pre-built structured prompt, used verbatim instead of having VGL build one when no instruction is sent. Accepts what a previous edit returned."
+      ),
+});
+export type FalBriaFiboEdit1p5EditRequest = z.input<
+  typeof FalBriaFiboEdit1p5EditRequestSchema
+>;
+export type FalBriaFiboEdit1p5EditRequestInput = FalBriaFiboEdit1p5EditRequest;
+export type FalBriaFiboEdit1p5EditParsedRequest = z.output<
+  typeof FalBriaFiboEdit1p5EditRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "bria/fibo-edit-1.5/edit": FalBriaFiboEdit1p5EditRequestSchema,
   "blackforestlabs/flux-3/edit-video":
     FalBlackforestlabsFlux3EditVideoRequestSchema,
   "alibaba/happy-horse/v1.1/text-to-video":

@@ -888,6 +888,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "google/nano-banana-lite/edit",
   "lightricks/ltx-2.5/image-to-video/fast",
   "lightricks/ltx-2.5/image-to-video/pro",
+  "luma/agent/ray/v3.2/reframe",
   "meshy/v7/image-to-3d",
   "microsoft/mai-image-2.5-pro",
   "microsoft/mai-image-2.5-pro/edit",

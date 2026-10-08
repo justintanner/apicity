@@ -1026,7 +1026,7 @@ describe("fal edit/image pricing estimates", () => {
     // source clip rather than request fields;
     // xai/grok-imagine-video/v1.5/reference-to-video is compute-second-metered
     // too, unlike its unversioned sibling, which bills per output second and
-    // stays statically priced. All forty-four therefore use fal's
+    // stays statically priced. All forty-five therefore use fal's
     // pricing-estimate API.
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toEqual([
       "alibaba/qwen-image-3/edit",
@@ -1052,6 +1052,7 @@ describe("fal edit/image pricing estimates", () => {
       "google/nano-banana-lite/edit",
       "lightricks/ltx-2.5/image-to-video/fast",
       "lightricks/ltx-2.5/image-to-video/pro",
+      "luma/agent/ray/v3.2/reframe",
       "meshy/v7/image-to-3d",
       "microsoft/mai-image-2.5-pro",
       "microsoft/mai-image-2.5-pro/edit",

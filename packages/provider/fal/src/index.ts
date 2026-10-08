@@ -21,6 +21,14 @@ export type {
 
 // Export all types
 export type {
+  FalLumaAgentRayV3p2ReframeResponse,
+  FalLumaAgentRayV3p2ReframeParsedRequest,
+  FalLumaAgentRayV3p2ReframeRequestInput,
+  FalLumaAgentRayV3p2ReframeRequest,
+  FalRunLumaAgentRayV3p2Namespace,
+  FalRunLumaAgentRayNamespace,
+  FalRunLumaAgentNamespace,
+  FalRunLumaNamespace,
   FalNvidiaCosmos3SuperTextToImageResponse,
   FalNvidiaCosmos3SuperTextToImageParsedRequest,
   FalNvidiaCosmos3SuperTextToImageRequestInput,

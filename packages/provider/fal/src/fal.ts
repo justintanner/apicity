@@ -1,4 +1,6 @@
 import {
+  FalLumaAgentRayV3p2ReframeResponse,
+  FalLumaAgentRayV3p2ReframeRequest,
   FalNvidiaCosmos3SuperTextToImageResponse,
   FalNvidiaCosmos3SuperTextToImageRequest,
   FalNvidiaCosmos3SuperImageToVideoResponse,
@@ -334,6 +336,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalLumaAgentRayV3p2ReframeRequestSchema,
   FalNvidiaCosmos3SuperTextToImageRequestSchema,
   FalNvidiaCosmos3SuperImageToVideoRequestSchema,
   FalMicrosoftMaiImage2p5ProEditRequestSchema,
@@ -2926,7 +2929,32 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/luma/agent/ray/v3.2/reframe
+  // Docs: https://fal.ai/models/luma/agent/ray/v3.2/reframe/api
+  const lumaAgentRayV3p2Reframe = jsonBody<
+    FalLumaAgentRayV3p2ReframeRequest,
+    FalLumaAgentRayV3p2ReframeResponse
+  >(
+    "POST",
+    "/luma/agent/ray/v3.2/reframe",
+    FalLumaAgentRayV3p2ReframeRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
+    luma: {
+      agent: {
+        ray: {
+          v3p2: {
+            // sig-ok: stylistic dotPath divergence from URL
+            // POST https://fal.run/luma/agent/ray/v3.2/reframe
+            // Docs: https://fal.ai/models/luma/agent/ray/v3.2/reframe/api
+            reframe: lumaAgentRayV3p2Reframe,
+          },
+        },
+      },
+    },
     nvidia: {
       cosmos3Super: {
         // POST https://fal.run/nvidia/cosmos-3-super/text-to-image

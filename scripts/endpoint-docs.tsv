@@ -1734,3 +1734,4 @@ fal	microsoft.maiImage2p5Pro	POST	https://fal.run/microsoft/mai-image-2.5-pro	ht
 fal	microsoft.maiImage2p5Pro.edit	POST	https://fal.run/microsoft/mai-image-2.5-pro/edit	https://fal.ai/models/microsoft/mai-image-2.5-pro/edit/api
 fal	nvidia.cosmos3Super.imageToVideo	POST	https://fal.run/nvidia/cosmos-3-super/image-to-video	https://fal.ai/models/nvidia/cosmos-3-super/image-to-video/api
 fal	nvidia.cosmos3Super.textToImage	POST	https://fal.run/nvidia/cosmos-3-super/text-to-image	https://fal.ai/models/nvidia/cosmos-3-super/text-to-image/api
+fal	luma.agent.ray.v3p2.reframe	POST	https://fal.run/luma/agent/ray/v3.2/reframe	https://fal.ai/models/luma/agent/ray/v3.2/reframe/api

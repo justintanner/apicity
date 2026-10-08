@@ -8510,7 +8510,84 @@ export type FalNvidiaCosmos3SuperTextToImageParsedRequest = z.output<
   typeof FalNvidiaCosmos3SuperTextToImageRequestSchema
 >;
 
+const FalLumaAgentRayV3p2ReframeRayReframeSourcePositionSchema = z.object({
+  x_norm: z
+    .number()
+    .min(-2)
+    .max(2)
+    .describe(
+      "Left edge of the source rectangle as a fraction of output width."
+    ),
+  y_norm: z
+    .number()
+    .min(-2)
+    .max(2)
+    .describe(
+      "Top edge of the source rectangle as a fraction of output height."
+    ),
+  w_norm: z
+    .number()
+    .gt(0)
+    .max(2)
+    .describe("Width of the source rectangle as a fraction of output width."),
+  h_norm: z
+    .number()
+    .gt(0)
+    .max(2)
+    .describe("Height of the source rectangle as a fraction of output height."),
+});
+
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 6b7fbb43e98d0206bcaffe7046e871a54a8b5e37b63a1264fe03e34b902bb335). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/luma/agent/ray/v3.2/reframe/api
+export const FalLumaAgentRayV3p2ReframeRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(6000)
+    .describe(
+      "Text prompt describing the content to paint into the newly exposed canvas area when reframing to the target aspect ratio."
+    ),
+  video_url: z
+    .string()
+    .min(1)
+    .describe(
+      "URL of the source video to reframe (must be 10 seconds or less)."
+    ),
+  aspect_ratio: z
+    .enum(["3:4", "4:3", "1:1", "9:16", "16:9", "21:9"])
+    .describe("Target aspect ratio for the reframed video."),
+  resolution: z
+    .enum(["540p", "720p", "1080p"])
+    .default("540p")
+    .describe(
+      "Resolution of the reframed video. Higher resolutions cost more."
+    ),
+  duration: z
+    .enum(["5s", "10s"])
+    .nullable()
+    .optional()
+    .describe(
+      "Duration of the reframed video. Defaults to matching the source video's duration; set explicitly to 5s or 10s to override."
+    ),
+  source_position:
+    FalLumaAgentRayV3p2ReframeRayReframeSourcePositionSchema.nullable()
+      .optional()
+      .describe(
+        "Optional normalized source rectangle controlling where the source video sits in the output canvas."
+      ),
+});
+export type FalLumaAgentRayV3p2ReframeRequest = z.input<
+  typeof FalLumaAgentRayV3p2ReframeRequestSchema
+>;
+export type FalLumaAgentRayV3p2ReframeRequestInput =
+  FalLumaAgentRayV3p2ReframeRequest;
+export type FalLumaAgentRayV3p2ReframeParsedRequest = z.output<
+  typeof FalLumaAgentRayV3p2ReframeRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "luma/agent/ray/v3.2/reframe": FalLumaAgentRayV3p2ReframeRequestSchema,
   "nvidia/cosmos-3-super/text-to-image":
     FalNvidiaCosmos3SuperTextToImageRequestSchema,
   "nvidia/cosmos-3-super/image-to-video":

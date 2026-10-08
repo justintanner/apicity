@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added ElevenLabs Music v2.5 (ac-rrv8xf).
+
 - Added Bria Fibo Gen 1.5 text-to-image (ac-0i2xq1).
 
 - Added Bria Fibo Edit 1.5 edit (ac-we6juy).

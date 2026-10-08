@@ -7477,7 +7477,175 @@ export type FalBriaFiboGen1p5TextToImageParsedRequest = z.output<
   typeof FalBriaFiboGen1p5TextToImageRequestSchema
 >;
 
+const FalElevenlabsMusicV2p5MusicAudioReferenceSchema = z
+  .object({
+    audio_url: z
+      .string()
+      .describe("URL of the audio clip to use as the style reference."),
+    start_ms: z
+      .number()
+      .int()
+      .min(0)
+      .default(0)
+      .describe(
+        "Offset into the clip where the referenced window starts, in milliseconds."
+      ),
+    end_ms: z
+      .number()
+      .int()
+      .gt(0)
+      .nullable()
+      .optional()
+      .describe(
+        "Offset into the clip where the referenced window ends, in milliseconds. Defaults to 30000ms after start_ms, or the end of the clip if it is shorter. The window must be at most 30000ms long."
+      ),
+    strength: z
+      .enum(["low", "medium", "high", "xhigh"])
+      .nullable()
+      .optional()
+      .describe(
+        "How strongly the model follows the reference. Low lets it deviate and be more creative, high keeps it close to the reference."
+      ),
+  })
+  .describe(
+    "An audio clip whose style conditions a ``music_v2`` / ``music_v2.5`` chunk.\n\nElevenLabs conditions on a *song id*, which only exists after the clip has\nbeen uploaded to them, so the app uploads on the caller's behalf and caches\nthe resulting id (see ``ElevenLabsTTS._resolve_audio_reference``)."
+  );
+
+const FalElevenlabsMusicV2p5MusicGenerationChunkSchema = z
+  .object({
+    text: z
+      .string()
+      .describe(
+        "The text to generate for this chunk. Can start with an optional section name in square brackets, e.g. [Verse 1], followed by lyric lines, plus inline directions in curly braces, e.g. {scratching}. Section names must be between 1 and 100 characters. At most 30 lines are allowed, each at most 200 characters."
+      ),
+    duration_ms: z
+      .number()
+      .int()
+      .min(3000)
+      .max(120000)
+      .describe(
+        "The duration of the chunk in milliseconds. Must be between 3000ms and 120000ms."
+      ),
+    positive_styles: z
+      .array(z.string())
+      .describe(
+        "The styles and musical directions that should be present in this chunk. Use English for best results. The styles of the first chunk matter most as they set the overall tone and genre; later chunks can add nuance, progression or change direction."
+      ),
+    negative_styles: z
+      .array(z.string())
+      .nullable()
+      .optional()
+      .describe(
+        "The styles and musical directions that should not be present in this chunk. Leaving this empty is a good default; only set it to explicitly avoid a particular style or direction."
+      ),
+    context_adherence: z
+      .enum(["low", "medium", "high"])
+      .nullable()
+      .optional()
+      .describe(
+        "How closely this chunk follows the context of its surrounding chunks. Low adherence lets the model deviate and be more creative, high adherence keeps it consistent with the surrounding context."
+      ),
+    audio_reference: FalElevenlabsMusicV2p5MusicAudioReferenceSchema.nullable()
+      .optional()
+      .describe(
+        "An audio clip whose style conditions this chunk. The reference on the first chunk matters most: it influences every later chunk, so condition from the first chunk to style the whole song."
+      ),
+  })
+  .describe(
+    "One generation chunk of a ``music_v2`` / ``music_v2.5`` composition plan.\n\nThe v2 models replaced v1's ``sections`` (``MusicPrompt``) with ``chunks``\n(``CompositionPlan``); the two shapes are not interchangeable -- sending a\nv1 section plan to a v2 model (or vice versa) is rejected by ElevenLabs."
+  );
+
+const FalElevenlabsMusicV2p5MusicV2CompositionPlanSchema = z.object({
+  chunks: z
+    .array(FalElevenlabsMusicV2p5MusicGenerationChunkSchema)
+    .min(1)
+    .max(30)
+    .describe(
+      "The chunks that make up the generation, in order. At most 30 chunks, totalling between 3000ms and 600000ms."
+    ),
+});
+
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 ba750092e132d055203a8475ce3aaddeee1683cc9ec0153368a476a9319a7ee3). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/elevenlabs/music/v2.5/api
+export const FalElevenlabsMusicV2p5RequestSchema = z.object({
+  prompt: z
+    .string()
+    .max(4100)
+    .nullable()
+    .optional()
+    .describe("The text prompt describing the music to generate"),
+  composition_plan:
+    FalElevenlabsMusicV2p5MusicV2CompositionPlanSchema.nullable()
+      .optional()
+      .describe("The chunk-based composition plan for the music"),
+  music_length_ms: z
+    .number()
+    .int()
+    .min(3000)
+    .max(600000)
+    .nullable()
+    .optional()
+    .describe(
+      "The length of the song to generate in milliseconds. Used only in conjunction with prompt. Must be between 3000ms and 600000ms. Optional - if not provided, the model will choose a length based on the prompt."
+    ),
+  force_instrumental: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If true, guarantees that the generated song will be instrumental. If false, the song may or may not be instrumental depending on the prompt. Can only be used with prompt."
+    ),
+  seed: z
+    .number()
+    .int()
+    .nullable()
+    .optional()
+    .describe(
+      "Random seed to initialize the music generation process. Can only be used with composition_plan. The same seed with the same parameters gives more consistent results, but exact reproducibility is not guaranteed."
+    ),
+  output_format: z
+    .enum([
+      "mp3_22050_32",
+      "mp3_24000_48",
+      "mp3_44100_32",
+      "mp3_44100_64",
+      "mp3_44100_96",
+      "mp3_44100_128",
+      "mp3_44100_192",
+      "mp3_48000_128",
+      "mp3_48000_192",
+      "mp3_48000_240",
+      "mp3_48000_320",
+      "pcm_8000",
+      "pcm_16000",
+      "pcm_22050",
+      "pcm_24000",
+      "pcm_32000",
+      "pcm_44100",
+      "pcm_48000",
+      "ulaw_8000",
+      "alaw_8000",
+      "opus_48000_32",
+      "opus_48000_64",
+      "opus_48000_96",
+      "opus_48000_128",
+      "opus_48000_192",
+    ])
+    .default("mp3_48000_192")
+    .describe(
+      "Output format of the generated audio. Formatted as codec_sample_rate_bitrate. So an mp3 with 22.05kHz sample rate at 32kbs is represented as mp3_22050_32. Note that the μ-law format (sometimes written mu-law, often approximated as u-law) is commonly used for Twilio audio inputs."
+    ),
+});
+export type FalElevenlabsMusicV2p5Request = z.input<
+  typeof FalElevenlabsMusicV2p5RequestSchema
+>;
+export type FalElevenlabsMusicV2p5RequestInput = FalElevenlabsMusicV2p5Request;
+export type FalElevenlabsMusicV2p5ParsedRequest = z.output<
+  typeof FalElevenlabsMusicV2p5RequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "elevenlabs/music/v2.5": FalElevenlabsMusicV2p5RequestSchema,
   "bria/fibo-gen-1.5/text-to-image": FalBriaFiboGen1p5TextToImageRequestSchema,
   "bria/fibo-edit-1.5/edit": FalBriaFiboEdit1p5EditRequestSchema,
   "blackforestlabs/flux-3/edit-video":

@@ -563,6 +563,15 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST elevenlabs.music.v2p5": {
+    "source": "fal/elevenlabs-music-v2-5",
+    "payload": {
+      "prompt": "Mysterious original soundtrack, themes of jungle, rainforest, nature, woodwinds, busy rhythmic tribal percussion.",
+      "music_length_ms": 3000
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST elevenlabs.tts.elevenV4": {
     "source": "fal/elevenlabs-tts-eleven-v4",
     "payload": {

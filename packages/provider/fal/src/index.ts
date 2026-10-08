@@ -21,6 +21,11 @@ export type {
 
 // Export all types
 export type {
+  FalElevenlabsMusicV2p5Response,
+  FalElevenlabsMusicV2p5ParsedRequest,
+  FalElevenlabsMusicV2p5RequestInput,
+  FalElevenlabsMusicV2p5Request,
+  FalRunElevenlabsMusicNamespace,
   FalBriaFiboGen1p5TextToImageResponse,
   FalBriaFiboGen1p5TextToImageParsedRequest,
   FalBriaFiboGen1p5TextToImageRequestInput,

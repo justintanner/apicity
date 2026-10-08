@@ -1723,3 +1723,4 @@ fal	alibaba.happyHorse.v1p1.textToVideo	POST	https://fal.run/alibaba/happy-horse
 fal	blackforestlabs.flux3.editVideo	POST	https://fal.run/blackforestlabs/flux-3/edit-video	https://fal.ai/models/blackforestlabs/flux-3/edit-video/api
 fal	bria.fiboEdit1p5.edit	POST	https://fal.run/bria/fibo-edit-1.5/edit	https://fal.ai/models/bria/fibo-edit-1.5/edit/api
 fal	bria.fiboGen1p5.textToImage	POST	https://fal.run/bria/fibo-gen-1.5/text-to-image	https://fal.ai/models/bria/fibo-gen-1.5/text-to-image/api
+fal	elevenlabs.music.v2p5	POST	https://fal.run/elevenlabs/music/v2.5	https://fal.ai/models/elevenlabs/music/v2.5/api

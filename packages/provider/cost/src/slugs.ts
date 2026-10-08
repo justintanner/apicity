@@ -412,6 +412,7 @@ export const MODEL_SLUGS = {
   // same underlying models kie also resells, so their slugs intentionally
   // match kie's.
   fal: {
+    "elevenlabs/music/v2.5": "elmusic25",
     "bria/fibo-gen-1.5/text-to-image": "briafibogen",
     "bria/fibo-edit-1.5/edit": "briafiboedit",
     "blackforestlabs/flux-3/edit-video": "flux3",
@@ -879,6 +880,7 @@ export const MODEL_DISPLAY = {
   },
 
   fal: {
+    "elevenlabs/music/v2.5": "ElevenLabs Music 2.5",
     "bria/fibo-gen-1.5/text-to-image": "Bria Fibo Gen 1.5",
     "bria/fibo-edit-1.5/edit": "Bria Fibo Edit 1.5 Edit",
     "blackforestlabs/flux-3/edit-video": "FLUX 3",

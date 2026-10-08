@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalElevenlabsMusicV2p5ParsedRequest,
+  FalElevenlabsMusicV2p5RequestInput,
+  FalElevenlabsMusicV2p5Request,
   FalBriaFiboGen1p5TextToImageParsedRequest,
   FalBriaFiboGen1p5TextToImageRequestInput,
   FalBriaFiboGen1p5TextToImageRequest,
@@ -527,6 +530,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalElevenlabsMusicV2p5Request,
   FalBriaFiboGen1p5TextToImageRequest,
   FalBriaFiboEdit1p5EditRequest,
   FalBlackforestlabsFlux3EditVideoRequest,
@@ -4519,4 +4523,28 @@ export interface FalRunBriaFiboGen1p5Namespace {
 
 export interface FalRunBriaNamespace {
   fiboGen1p5: FalRunBriaFiboGen1p5Namespace;
+}
+
+export interface FalElevenlabsMusicV2p5Response {
+  audio: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+}
+
+type FalElevenlabsMusicV2p5Fn = ((
+  params: FalElevenlabsMusicV2p5Request,
+  signal?: AbortSignal
+) => Promise<FalElevenlabsMusicV2p5Response>) & {
+  schema: ApicitySchema<FalElevenlabsMusicV2p5Request>;
+};
+
+export interface FalRunElevenlabsMusicNamespace {
+  v2p5: FalElevenlabsMusicV2p5Fn;
+}
+
+export interface FalRunElevenlabsFrontierNamespace {
+  music: FalRunElevenlabsMusicNamespace;
 }

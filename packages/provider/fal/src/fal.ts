@@ -1,4 +1,6 @@
 import {
+  FalElevenlabsMusicV2p5Response,
+  FalElevenlabsMusicV2p5Request,
   FalBriaFiboGen1p5TextToImageResponse,
   FalBriaFiboGen1p5TextToImageRequest,
   FalBriaFiboEdit1p5EditResponse,
@@ -312,6 +314,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalElevenlabsMusicV2p5RequestSchema,
   FalBriaFiboGen1p5TextToImageRequestSchema,
   FalBriaFiboEdit1p5EditRequestSchema,
   FalBlackforestlabsFlux3EditVideoRequestSchema,
@@ -2752,6 +2755,16 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/elevenlabs/music/v2.5
+  // Docs: https://fal.ai/models/elevenlabs/music/v2.5/api
+  const elevenlabsMusicV2p5 = jsonBody<
+    FalElevenlabsMusicV2p5Request,
+    FalElevenlabsMusicV2p5Response
+  >("POST", "/elevenlabs/music/v2.5", FalElevenlabsMusicV2p5RequestSchema, {
+    base: runBaseURL,
+  });
+
   const run: FalRunNamespace = {
     // POST https://fal.run/bria/fibo-edit-1.5/virtual-try-on
     // Docs: https://fal.ai/models/bria/fibo-edit-1.5/virtual-try-on/api
@@ -2800,6 +2813,12 @@ export function createFal(opts: FalOptions): FalProvider {
     // POST https://fal.run/elevenlabs/tts/eleven-v4-turbo
     // Docs: https://fal.ai/models/elevenlabs/tts/eleven-v4-turbo/api
     elevenlabs: {
+      music: {
+        // sig-ok: stylistic dotPath divergence from URL
+        // POST https://fal.run/elevenlabs/music/v2.5
+        // Docs: https://fal.ai/models/elevenlabs/music/v2.5/api
+        v2p5: elevenlabsMusicV2p5,
+      },
       tts: {
         // POST https://fal.run/elevenlabs/tts/eleven-v4
         // Docs: https://fal.ai/models/elevenlabs/tts/eleven-v4/api

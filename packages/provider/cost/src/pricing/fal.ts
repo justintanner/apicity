@@ -906,6 +906,23 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  // ElevenLabs Music v2.5 bills $0.60 per output minute, rounded
+  // up. music_length_ms is optional; an omitted length is chosen
+  // by the model, so the estimate warns instead of guessing. The
+  // recorded 3000 ms call billed x-fal-billable-units 1, one
+  // rounded minute, so the charge is $0.60.
+  "elevenlabs/music/v2.5": {
+    kind: "perUnit",
+    unit: "generations",
+    units: (p) => {
+      const ms = asNumber(p.music_length_ms);
+      return ms === undefined ? undefined : Math.ceil(ms / 60_000);
+    },
+    select: [],
+    rates: { "": 0.6 },
+    source: source("elevenlabs/music/v2.5", "2026-10-08"),
+  },
+
   // Bria Fibo Gen 1.5 text-to-image bills $0.04 per image. The
   // model page has no price card; the pricing API bills 0.04
   // USD per image. Resolution defaults to 1MP. The recorded

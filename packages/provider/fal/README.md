@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-155 endpoints across 33 groups. Each method mirrors an upstream URL path.
+156 endpoints across 33 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -859,6 +859,23 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 </details>
 
 ### elevenlabs
+
+<details>
+<summary><code>POST</code> <b><code>fal.elevenlabs.music.v2p5</code></b></summary>
+
+<code>POST https://fal.run/elevenlabs/music/v2.5</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/elevenlabs/music/v2.5/api)
+
+```typescript
+const res = await fal.run.elevenlabs.music.v2p5({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>fal.elevenlabs.tts.elevenV4</code></b></summary>

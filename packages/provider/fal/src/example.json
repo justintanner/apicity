@@ -555,6 +555,17 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST geminiOmniFlash.v1p1.imageToVideo": {
+    "source": "fal/google-gemini-omni-flash-v1-1-image-to-video",
+    "payload": {
+      "prompt": "The dog turns its head and wags its tail in warm sunlight.",
+      "image_url": "https://storage.googleapis.com/falserverless/example_inputs/dog.png",
+      "resolution": "360p",
+      "duration": 3
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST geminiOmniFlash.v1p1.referenceToVideo": {
     "source": "fal/google-gemini-omni-flash-v1-1-reference-to-video",
     "payload": {

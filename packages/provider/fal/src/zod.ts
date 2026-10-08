@@ -5992,7 +5992,58 @@ export type FalGeminiOmniFlashV1p1ReferenceToVideoParsedRequest = z.output<
   typeof FalGeminiOmniFlashV1p1ReferenceToVideoRequestSchema
 >;
 
+// The live OpenAPI requires `prompt` and `image_url`, and eleven unbilled 422
+// probes (2026-10-08) found upstream's validator to match it: `image_url` must
+// be a string and `end_image_url` a string or null, with no URL check on
+// either; `duration` is an integer from 3 to 10 (4.5 is refused);
+// `aspect_ratio` and `resolution` are closed to the documented values (`1:1`,
+// `360P` and `4K` are refused); and `prompt` stops at 20,000 characters with
+// no minimum. The validator ignored an unknown field, so the object is not
+// strict.
+// Docs: https://fal.ai/models/google/gemini-omni-flash/v1.1/image-to-video/api
+export const FalGeminiOmniFlashV1p1ImageToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .max(20_000)
+    .describe(
+      "The text prompt describing how the first image should be animated or interpolated into the optional end image."
+    ),
+  image_url: z.string().describe("URL of the first frame to animate."),
+  end_image_url: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "Optional URL of the end frame. When provided, the model interpolates between the two images in their listed order."
+    ),
+  aspect_ratio: z
+    .enum(["16:9", "9:16"])
+    .default("16:9")
+    .describe("The aspect ratio of the generated video."),
+  resolution: z
+    .enum(["360p", "720p", "1080p", "4k"])
+    .default("720p")
+    .describe("The resolution of the generated video."),
+  duration: z
+    .number()
+    .int()
+    .min(3)
+    .max(10)
+    .default(8)
+    .describe("The duration of the generated video, in seconds."),
+});
+export type FalGeminiOmniFlashV1p1ImageToVideoRequest = z.input<
+  typeof FalGeminiOmniFlashV1p1ImageToVideoRequestSchema
+>;
+export type FalGeminiOmniFlashV1p1ImageToVideoRequestInput =
+  FalGeminiOmniFlashV1p1ImageToVideoRequest;
+export type FalGeminiOmniFlashV1p1ImageToVideoParsedRequest = z.output<
+  typeof FalGeminiOmniFlashV1p1ImageToVideoRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "google/gemini-omni-flash/v1.1/image-to-video":
+    FalGeminiOmniFlashV1p1ImageToVideoRequestSchema,
   "google/gemini-omni-flash/v1.1/reference-to-video":
     FalGeminiOmniFlashV1p1ReferenceToVideoRequestSchema,
   "google/gemini-omni-flash/v1.1/edit": FalGeminiOmniFlashV1p1EditRequestSchema,

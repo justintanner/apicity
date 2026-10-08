@@ -700,6 +700,20 @@ const gptImagePerImage = (
 //     5.034667 seconds), where the card predicts $0.15 for the 5 s source.
 //     The billed length is the output file's, set by the audio encoder's
 //     framing, so no rate is encoded.
+//   - google/gemini-omni-flash/v1.1/image-to-video: the official card (read
+//     2026-10-08) bills each second of output video at
+//     $0.03/$0.10/$0.15/$0.30 at 360p/720p/1080p/4K, and the request
+//     carries its duration (3 to 10 s), so the card predicts 3 units for a
+//     3 s request. The recorded 360p call asked for 3 s from one first
+//     frame and got back 3.000 s of video (72 frames at 24 fps) with a
+//     generated 48 kHz audio track of 142 AAC frames, whose edit list skips
+//     the encoder's 1024 priming samples, so the file plays for 3.008 s. It
+//     billed 3.008 units at $0.03, USD 0.09024 (fal's usage API reads the
+//     same 3.008 seconds), where the card predicts $0.09. The billed length
+//     is the output file's, set by the audio encoder's framing and the
+//     muxer (the reference-to-video file below carried the same 142 frames
+//     with no edit list and billed 3.029333 s), not the requested
+//     duration, so no rate is encoded.
 //   - google/gemini-omni-flash/v1.1/reference-to-video: the official card
 //     (read 2026-10-08) bills each second of output video at
 //     $0.03/$0.10/$0.15/$0.30 at 360p/720p/1080p/4K, and the request
@@ -845,6 +859,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "google/gemini-omni-flash/image-to-video",
   "google/gemini-omni-flash/reference-to-video",
   "google/gemini-omni-flash/v1.1/edit",
+  "google/gemini-omni-flash/v1.1/image-to-video",
   "google/gemini-omni-flash/v1.1/reference-to-video",
   "google/nano-banana-2-lite",
   "google/nano-banana-lite/edit",

@@ -121,9 +121,26 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-150 endpoints across 33 groups. Each method mirrors an upstream URL path.
+151 endpoints across 33 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
+
+<details>
+<summary><code>POST</code> <b><code>fal.alibaba.happyHorse.v1p1.imageToVideo</code></b></summary>
+
+<code>POST https://fal.run/alibaba/happy-horse/v1.1/image-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/alibaba/happy-horse/v1.1/image-to-video/api)
+
+```typescript
+const res = await fal.run.alibaba.happyHorse.v1p1.imageToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>fal.alibaba.happyHorse.v1p1.referenceToVideo</code></b></summary>

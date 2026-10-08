@@ -21,6 +21,11 @@ export type {
 
 // Export all types
 export type {
+  FalOpenaiGptImage2p5FlareEditResponse,
+  FalOpenaiGptImage2p5FlareEditParsedRequest,
+  FalOpenaiGptImage2p5FlareEditRequestInput,
+  FalOpenaiGptImage2p5FlareEditRequest,
+  FalRunOpenaiGptImage2p5FlareNamespace,
   FalOpenaiGptImage2p5SunburstTextToImageResponse,
   FalOpenaiGptImage2p5SunburstTextToImageParsedRequest,
   FalOpenaiGptImage2p5SunburstTextToImageRequestInput,

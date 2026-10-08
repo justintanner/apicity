@@ -1016,6 +1016,15 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST microsoft.maiImage2p5Pro.edit": {
+    "source": "fal/microsoft-mai-image-2-5-pro-edit",
+    "payload": {
+      "prompt": "A red balloon.",
+      "image_url": "https://storage.googleapis.com/falserverless/example_inputs/nano-banana-edit-input.png"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST minimax.h3.imageToVideo": {
     "source": "fal/minimax-h3-image-to-video",
     "payload": {

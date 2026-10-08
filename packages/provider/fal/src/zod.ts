@@ -8164,7 +8164,57 @@ export type FalMicrosoftMaiImage2p5ProParsedRequest = z.output<
   typeof FalMicrosoftMaiImage2p5ProRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 39588aa3f4029718ccbd21956ceac6aad20cb2fafcc70280100476c18fea407f). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/microsoft/mai-image-2.5-pro/edit/api
+export const FalMicrosoftMaiImage2p5ProEditRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(3)
+    .max(5000)
+    .describe("The instruction describing how to edit the input image(s)."),
+  num_images: z
+    .number()
+    .int()
+    .min(1)
+    .max(4)
+    .default(1)
+    .describe("The number of images to generate."),
+  aspect_ratio: z
+    .enum(["auto", "1:1", "4:3", "3:4", "16:9", "9:16", "3:2", "2:3"])
+    .default("auto")
+    .describe(
+      'The aspect ratio of the generated image. Use "auto" to match the input or let the model decide.'
+    ),
+  output_format: z
+    .enum(["jpeg", "png", "webp"])
+    .default("png")
+    .describe("The format of the generated image."),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If `True`, the media will be returned as a data URI and the output data won't be available in the request history."
+    ),
+  image_url: z
+    .string()
+    .default("")
+    .describe(
+      "The URL of the image to edit. Provide one http(s) or data: URL."
+    ),
+});
+export type FalMicrosoftMaiImage2p5ProEditRequest = z.input<
+  typeof FalMicrosoftMaiImage2p5ProEditRequestSchema
+>;
+export type FalMicrosoftMaiImage2p5ProEditRequestInput =
+  FalMicrosoftMaiImage2p5ProEditRequest;
+export type FalMicrosoftMaiImage2p5ProEditParsedRequest = z.output<
+  typeof FalMicrosoftMaiImage2p5ProEditRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "microsoft/mai-image-2.5-pro/edit":
+    FalMicrosoftMaiImage2p5ProEditRequestSchema,
   "microsoft/mai-image-2.5-pro": FalMicrosoftMaiImage2p5ProRequestSchema,
   "openai/gpt-image-2.5/flare/text-to-image":
     FalOpenaiGptImage2p5FlareTextToImageRequestSchema,

@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalMicrosoftMaiImage2p5ProEditParsedRequest,
+  FalMicrosoftMaiImage2p5ProEditRequestInput,
+  FalMicrosoftMaiImage2p5ProEditRequest,
   FalMicrosoftMaiImage2p5ProParsedRequest,
   FalMicrosoftMaiImage2p5ProRequestInput,
   FalMicrosoftMaiImage2p5ProRequest,
@@ -551,6 +554,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalMicrosoftMaiImage2p5ProEditRequest,
   FalMicrosoftMaiImage2p5ProRequest,
   FalOpenaiGptImage2p5FlareTextToImageRequest,
   FalOpenaiGptImage2p5FlareEditRequest,
@@ -4759,4 +4763,27 @@ export interface FalRunMicrosoftNamespace {
 
 export interface FalRunNamespace {
   microsoft: FalRunMicrosoftNamespace;
+}
+
+export interface FalMicrosoftMaiImage2p5ProEditResponse {
+  images: Array<{
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+  }>;
+  description: string;
+}
+
+type FalMicrosoftMaiImage2p5ProEditFn = ((
+  params: FalMicrosoftMaiImage2p5ProEditRequest,
+  signal?: AbortSignal
+) => Promise<FalMicrosoftMaiImage2p5ProEditResponse>) & {
+  schema: ApicitySchema<FalMicrosoftMaiImage2p5ProEditRequest>;
+};
+
+export interface FalRunMicrosoftMaiImage2p5ProNamespace {
+  edit: FalMicrosoftMaiImage2p5ProEditFn;
 }

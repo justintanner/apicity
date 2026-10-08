@@ -21,6 +21,10 @@ export type {
 
 // Export all types
 export type {
+  FalMicrosoftMaiImage2p5ProEditResponse,
+  FalMicrosoftMaiImage2p5ProEditParsedRequest,
+  FalMicrosoftMaiImage2p5ProEditRequestInput,
+  FalMicrosoftMaiImage2p5ProEditRequest,
   FalMicrosoftMaiImage2p5ProResponse,
   FalMicrosoftMaiImage2p5ProParsedRequest,
   FalMicrosoftMaiImage2p5ProRequestInput,

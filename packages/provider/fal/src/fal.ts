@@ -1,4 +1,6 @@
 import {
+  FalMicrosoftMaiImage2p5ProEditResponse,
+  FalMicrosoftMaiImage2p5ProEditRequest,
   FalMicrosoftMaiImage2p5ProResponse,
   FalMicrosoftMaiImage2p5ProRequest,
   FalOpenaiGptImage2p5FlareTextToImageResponse,
@@ -328,6 +330,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalMicrosoftMaiImage2p5ProEditRequestSchema,
   FalMicrosoftMaiImage2p5ProRequestSchema,
   FalOpenaiGptImage2p5FlareTextToImageRequestSchema,
   FalOpenaiGptImage2p5FlareEditRequestSchema,
@@ -2860,6 +2863,19 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/microsoft/mai-image-2.5-pro/edit
+  // Docs: https://fal.ai/models/microsoft/mai-image-2.5-pro/edit/api
+  const microsoftMaiImage2p5ProEdit = jsonBody<
+    FalMicrosoftMaiImage2p5ProEditRequest,
+    FalMicrosoftMaiImage2p5ProEditResponse
+  >(
+    "POST",
+    "/microsoft/mai-image-2.5-pro/edit",
+    FalMicrosoftMaiImage2p5ProEditRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
   // POST https://fal.run/microsoft/mai-image-2.5-pro
   // Docs: https://fal.ai/models/microsoft/mai-image-2.5-pro/api
   const microsoftMaiImage2p5Pro = Object.assign(
@@ -2872,7 +2888,12 @@ export function createFal(opts: FalOptions): FalProvider {
       FalMicrosoftMaiImage2p5ProRequestSchema,
       { base: runBaseURL }
     ),
-    {}
+    {
+      // sig-ok: stylistic dotPath divergence from URL
+      // POST https://fal.run/microsoft/mai-image-2.5-pro/edit
+      // Docs: https://fal.ai/models/microsoft/mai-image-2.5-pro/edit/api
+      edit: microsoftMaiImage2p5ProEdit,
+    }
   );
 
   const run: FalRunNamespace = {

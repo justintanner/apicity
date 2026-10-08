@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added MAI Image 2.5 Pro edit, dynamically priced (ac-97k3vy).
+
 - Added MAI Image 2.5 Pro, dynamically priced (ac-51rxwv).
 
 - Added GPT Image 2.5 Flare text-to-image, dynamically priced (ac-8g3qfn).

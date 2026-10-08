@@ -1403,6 +1403,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST xai.grokImagineVideo.v1p5.imageToVideo": {
+    "source": "fal/xai-grok-imagine-video-v1-5-image-to-video",
+    "payload": {
+      "prompt": "Medieval knight in ornate armor walking through a mystical forest, bioluminescent plants pulsing with light, ancient stone ruins overgrown with glowing vines, over-the-shoulder camera, dark fantasy aesthetic, volumetric fog and Lumen lighting",
+      "duration": 1,
+      "resolution": "480p",
+      "image_url": "https://v3b.fal.media/files/b/0a8b90e0/BFLE9VDlZqsryU-UA3BoD_image_004.png"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST xai.grokImagineVideo.v1p5.lite.imageToVideo": {
     "source": "fal/grok-15-lite-image-to-video",
     "payload": {

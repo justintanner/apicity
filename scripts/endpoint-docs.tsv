@@ -1703,3 +1703,4 @@ fal	minimax.h3Max.lipSync.imageToVideo	POST	https://fal.run/minimax/h3-max/lip-s
 fal	minimax.h3MaxTurbo.imageToVideo	POST	https://fal.run/minimax/h3-max-turbo/image-to-video	https://fal.ai/models/minimax/h3-max-turbo/image-to-video/api
 fal	minimax.h3MaxTurbo.textToVideo	POST	https://fal.run/minimax/h3-max-turbo/text-to-video	https://fal.ai/models/minimax/h3-max-turbo/text-to-video/api
 fal	xai.grokImagineVideo.v1p5.textToVideo	POST	https://fal.run/xai/grok-imagine-video/v1.5/text-to-video	https://fal.ai/models/xai/grok-imagine-video/v1.5/text-to-video/api
+fal	xai.grokImagineVideo.v1p5.imageToVideo	POST	https://fal.run/xai/grok-imagine-video/v1.5/image-to-video	https://fal.ai/models/xai/grok-imagine-video/v1.5/image-to-video/api

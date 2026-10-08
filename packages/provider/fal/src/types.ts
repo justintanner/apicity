@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalXaiGrokImagineVideoV1p5ImageToVideoParsedRequest,
+  FalXaiGrokImagineVideoV1p5ImageToVideoRequestInput,
+  FalXaiGrokImagineVideoV1p5ImageToVideoRequest,
   FalXaiGrokImagineVideoV1p5TextToVideoParsedRequest,
   FalXaiGrokImagineVideoV1p5TextToVideoRequestInput,
   FalXaiGrokImagineVideoV1p5TextToVideoRequest,
@@ -467,6 +470,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalXaiGrokImagineVideoV1p5ImageToVideoRequest,
   FalXaiGrokImagineVideoV1p5TextToVideoRequest,
   FalMinimaxH3MaxTurboTextToVideoRequest,
   FalMinimaxH3MaxTurboImageToVideoRequest,
@@ -2576,6 +2580,13 @@ type FalXaiGrokImagineVideoV1p5TextToVideoFn = ((
   schema: ApicitySchema<FalXaiGrokImagineVideoV1p5TextToVideoRequest>;
 };
 
+type FalXaiGrokImagineVideoV1p5ImageToVideoFn = ((
+  params: FalXaiGrokImagineVideoV1p5ImageToVideoRequest,
+  signal?: AbortSignal
+) => Promise<FalXaiGrokImagineVideoV1p5ImageToVideoResponse>) & {
+  schema: ApicitySchema<FalXaiGrokImagineVideoV1p5ImageToVideoRequest>;
+};
+
 type FalXaiGrokImagineVideoExtendVideoFn = ((
   params: FalXaiGrokImagineVideoExtendVideoRequest,
   signal?: AbortSignal
@@ -2591,6 +2602,7 @@ type FalXaiGrokImagineVideoEditVideoFn = ((
 };
 
 export interface FalRunXaiGrokImagineVideoV1p5Namespace {
+  imageToVideo: FalXaiGrokImagineVideoV1p5ImageToVideoFn;
   textToVideo: FalXaiGrokImagineVideoV1p5TextToVideoFn;
   referenceToVideo: FalXaiGrokImagineVideoV1p5ReferenceToVideoFn;
 }
@@ -3945,6 +3957,20 @@ export interface FalMinimaxH3MaxTurboTextToVideoResponse {
 }
 
 export interface FalXaiGrokImagineVideoV1p5TextToVideoResponse {
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+    fps?: number | null;
+    duration?: number | null;
+    num_frames?: number | null;
+  };
+}
+
+export interface FalXaiGrokImagineVideoV1p5ImageToVideoResponse {
   video: {
     url: string;
     content_type?: string | null;

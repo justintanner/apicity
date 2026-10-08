@@ -5874,7 +5874,46 @@ export type FalXaiGrokImagineVideoV1p5TextToVideoParsedRequest = z.output<
   typeof FalXaiGrokImagineVideoV1p5TextToVideoRequestSchema
 >;
 
+// The live OpenAPI requires `prompt` and `image_url`, and six unbilled 422
+// probes (2026-10-08) found upstream's validator to match it: `duration` is an
+// integer from 1 to 15, `resolution` is closed to the documented values,
+// `prompt` stops at 4096 characters with no minimum, and `image_url` must be
+// a string, though not one checked as a URL. The endpoint documents no
+// `aspect_ratio`, and the validator ignored one, as it ignored an unknown
+// field, so the object is not strict.
+// Docs: https://fal.ai/models/xai/grok-imagine-video/v1.5/image-to-video/api
+export const FalXaiGrokImagineVideoV1p5ImageToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .max(4096)
+    .describe("Text description of desired changes or motion in the video."),
+  duration: z
+    .number()
+    .int()
+    .min(1)
+    .max(15)
+    .default(6)
+    .describe("Video duration in seconds."),
+  resolution: z
+    .enum(["480p", "720p", "1080p"])
+    .default("720p")
+    .describe("Resolution of the output video."),
+  image_url: z
+    .string()
+    .describe("URL of the input image for video generation."),
+});
+export type FalXaiGrokImagineVideoV1p5ImageToVideoRequest = z.input<
+  typeof FalXaiGrokImagineVideoV1p5ImageToVideoRequestSchema
+>;
+export type FalXaiGrokImagineVideoV1p5ImageToVideoRequestInput =
+  FalXaiGrokImagineVideoV1p5ImageToVideoRequest;
+export type FalXaiGrokImagineVideoV1p5ImageToVideoParsedRequest = z.output<
+  typeof FalXaiGrokImagineVideoV1p5ImageToVideoRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "xai/grok-imagine-video/v1.5/image-to-video":
+    FalXaiGrokImagineVideoV1p5ImageToVideoRequestSchema,
   "xai/grok-imagine-video/v1.5/text-to-video":
     FalXaiGrokImagineVideoV1p5TextToVideoRequestSchema,
   "minimax/h3-max-turbo/text-to-video":

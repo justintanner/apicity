@@ -21,6 +21,10 @@ export type {
 
 // Export all types
 export type {
+  FalXaiGrokImagineVideoV1p5ImageToVideoResponse,
+  FalXaiGrokImagineVideoV1p5ImageToVideoParsedRequest,
+  FalXaiGrokImagineVideoV1p5ImageToVideoRequestInput,
+  FalXaiGrokImagineVideoV1p5ImageToVideoRequest,
   FalXaiGrokImagineVideoV1p5TextToVideoResponse,
   FalXaiGrokImagineVideoV1p5TextToVideoParsedRequest,
   FalXaiGrokImagineVideoV1p5TextToVideoRequestInput,

@@ -844,6 +844,20 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 
 export const fal: Record<string, ModelPricing> = {
   // Bills the requested seconds (default 6) at the resolution tier (default
+  // 720p), plus $0.01 for the one input image. fal counts the charge in
+  // cents: the recorded 1 s 480p call billed 9 units at $0.01, $0.09, the
+  // card's $0.08 for one second at 480p plus its $0.01 per image.
+  "xai/grok-imagine-video/v1.5/image-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: numericSeconds(6),
+    select: [resolutionTier("720p")],
+    rates: { "480p": 0.08, "720p": 0.14, "1080p": 0.25 },
+    extra: () => 0.01,
+    source: source("xai/grok-imagine-video/v1.5/image-to-video", "2026-10-08"),
+  },
+
+  // Bills the requested seconds (default 6) at the resolution tier (default
   // 720p). fal counts the charge in cents: the recorded 1 s 480p call billed
   // 8 units at $0.01, $0.08, the card's price for one second at 480p.
   "xai/grok-imagine-video/v1.5/text-to-video": perSecondTiered(

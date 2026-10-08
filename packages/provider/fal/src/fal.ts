@@ -1,4 +1,6 @@
 import {
+  FalXaiGrokImagineVideoV1p5ImageToVideoResponse,
+  FalXaiGrokImagineVideoV1p5ImageToVideoRequest,
   FalXaiGrokImagineVideoV1p5TextToVideoResponse,
   FalXaiGrokImagineVideoV1p5TextToVideoRequest,
   FalMinimaxH3MaxTurboTextToVideoResponse,
@@ -272,6 +274,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalXaiGrokImagineVideoV1p5ImageToVideoRequestSchema,
   FalXaiGrokImagineVideoV1p5TextToVideoRequestSchema,
   FalMinimaxH3MaxTurboTextToVideoRequestSchema,
   FalMinimaxH3MaxTurboImageToVideoRequestSchema,
@@ -2431,6 +2434,18 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/xai/grok-imagine-video/v1.5/image-to-video
+  // Docs: https://fal.ai/models/xai/grok-imagine-video/v1.5/image-to-video/api
+  const xaiGrokImagineVideoV1p5ImageToVideo = jsonBody<
+    FalXaiGrokImagineVideoV1p5ImageToVideoRequest,
+    FalXaiGrokImagineVideoV1p5ImageToVideoResponse
+  >(
+    "POST",
+    "/xai/grok-imagine-video/v1.5/image-to-video",
+    FalXaiGrokImagineVideoV1p5ImageToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
     // POST https://fal.run/bria/fibo-edit-1.5/virtual-try-on
     // Docs: https://fal.ai/models/bria/fibo-edit-1.5/virtual-try-on/api
@@ -2724,6 +2739,9 @@ export function createFal(opts: FalOptions): FalProvider {
         extendVideo: xaiGrokImagineVideoExtendVideo,
         editVideo: xaiGrokImagineVideoEditVideo,
         v1p5: {
+          // POST https://fal.run/xai/grok-imagine-video/v1.5/image-to-video
+          // Docs: https://fal.ai/models/xai/grok-imagine-video/v1.5/image-to-video/api
+          imageToVideo: xaiGrokImagineVideoV1p5ImageToVideo,
           // POST https://fal.run/xai/grok-imagine-video/v1.5/text-to-video
           // Docs: https://fal.ai/models/xai/grok-imagine-video/v1.5/text-to-video/api
           textToVideo: xaiGrokImagineVideoV1p5TextToVideo,

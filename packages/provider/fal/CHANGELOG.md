@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Grok Imagine Video 1.5 image-to-video (ac-x3few1).
+
 - Added Grok Imagine Video 1.5 text-to-video (ac-ym2457).
 
 - Added MiniMax H3 Max Turbo text-to-video (ac-5rjh2s).

@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-167 endpoints across 38 groups. Each method mirrors an upstream URL path.
+168 endpoints across 38 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -1518,6 +1518,23 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.luma.agent.ray.v3p2.reframe({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.luma.agent.ray.v3p2.videoToVideo</code></b></summary>
+
+<code>POST https://fal.run/luma/agent/ray/v3.2/video-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/luma/agent/ray/v3.2/video-to-video/api)
+
+```typescript
+const res = await fal.run.luma.agent.ray.v3p2.videoToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

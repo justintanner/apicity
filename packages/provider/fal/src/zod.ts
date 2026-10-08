@@ -8586,7 +8586,202 @@ export type FalLumaAgentRayV3p2ReframeParsedRequest = z.output<
   typeof FalLumaAgentRayV3p2ReframeRequestSchema
 >;
 
+const FalLumaAgentRayV3p2VideoToVideoRayEditPoseControlSchema = z.object({
+  enabled: z
+    .boolean()
+    .default(true)
+    .describe("Enable pose / skeleton conditioning for the edit."),
+  strength: z
+    .enum(["precise", "coarse"])
+    .nullable()
+    .optional()
+    .describe(
+      "Pose conditioning precision. 'precise' follows the source pose tightly; 'coarse' allows more freedom. Leave unset for the default."
+    ),
+});
+
+const FalLumaAgentRayV3p2VideoToVideoRayEditDepthControlSchema = z.object({
+  enabled: z
+    .boolean()
+    .default(true)
+    .describe("Enable depth / scene-geometry conditioning for the edit."),
+  blur: z
+    .number()
+    .min(0)
+    .max(1)
+    .nullable()
+    .optional()
+    .describe(
+      "Depth blur. Higher values allow more geometric freedom. Leave unset for the default."
+    ),
+});
+
+const FalLumaAgentRayV3p2VideoToVideoRayEditNormalsControlSchema = z.object({
+  enabled: z
+    .boolean()
+    .default(true)
+    .describe("Enable surface-normals conditioning for the edit."),
+  augmentation: z
+    .number()
+    .min(0)
+    .max(1)
+    .nullable()
+    .optional()
+    .describe(
+      "Surface-normals augmentation. Higher values allow more reinterpretation of surface geometry. Leave unset for the default."
+    ),
+});
+
+const FalLumaAgentRayV3p2VideoToVideoRayEditTrajectoryControlSchema = z.object({
+  enabled: z
+    .boolean()
+    .default(true)
+    .describe("Enable motion-trajectory conditioning for the edit."),
+  sparsity: z
+    .number()
+    .min(0)
+    .max(1)
+    .nullable()
+    .optional()
+    .describe(
+      "Motion-trajectory sparsity. Higher values use fewer motion anchors. Leave unset for the default."
+    ),
+});
+
+const FalLumaAgentRayV3p2VideoToVideoRayEditFaceControlSchema = z.object({
+  enabled: z
+    .boolean()
+    .default(true)
+    .describe("Enable face-identity conditioning for the edit."),
+});
+
+const FalLumaAgentRayV3p2VideoToVideoRayEditControlsSchema = z
+  .object({
+    pose: FalLumaAgentRayV3p2VideoToVideoRayEditPoseControlSchema.nullable()
+      .optional()
+      .describe("Pose / skeleton conditioning."),
+    depth: FalLumaAgentRayV3p2VideoToVideoRayEditDepthControlSchema.nullable()
+      .optional()
+      .describe("Depth / scene-geometry conditioning."),
+    normals:
+      FalLumaAgentRayV3p2VideoToVideoRayEditNormalsControlSchema.nullable()
+        .optional()
+        .describe("Surface-normals conditioning."),
+    trajectory:
+      FalLumaAgentRayV3p2VideoToVideoRayEditTrajectoryControlSchema.nullable()
+        .optional()
+        .describe("Motion-trajectory conditioning."),
+    face: FalLumaAgentRayV3p2VideoToVideoRayEditFaceControlSchema.nullable()
+      .optional()
+      .describe("Face-identity conditioning."),
+  })
+  .describe(
+    "Per-signal conditioning controls for ray-3.2 video editing.\n\nEach signal is optional; include only the signals you want to tune. Cannot\nbe combined with auto_controls. Mirrors the Luma Agents ``video.edit.controls``\nobject — see https://docs.agents.lumalabs.ai/api/resources/generations."
+  );
+
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 8bd14a741c36236019df945f9b48fe593fddd54853d7ea947ace9731e68c84c3). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/luma/agent/ray/v3.2/video-to-video/api
+export const FalLumaAgentRayV3p2VideoToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(6000)
+    .describe("Text prompt describing how to edit the source video."),
+  video_url: z.string().min(1).describe("URL of the source video to edit."),
+  user: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "Optional opaque identifier for the end user making the request. Used only for abuse attribution; never interpreted by fal."
+    ),
+  start_image_url: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "Optional URL of an image to use as the edited video's first frame — e.g. a restyled version of the source's opening frame to steer the look of the edit. Leave unset to let the model derive the first frame from the source video."
+    ),
+  resolution: z
+    .enum(["540p", "720p", "1080p"])
+    .default("540p")
+    .describe("Resolution of the edited video. Higher resolutions cost more."),
+  duration: z
+    .enum(["5s", "10s"])
+    .default("5s")
+    .describe("Duration of the edited video."),
+  edit_strength: z
+    .enum([
+      "adhere_1",
+      "adhere_2",
+      "adhere_3",
+      "flex_1",
+      "flex_2",
+      "flex_3",
+      "reimagine_1",
+      "reimagine_2",
+      "reimagine_3",
+    ])
+    .nullable()
+    .optional()
+    .describe(
+      "How closely the edit preserves the source video. 'adhere_*' stays closest to the source, 'flex_*' is balanced, and 'reimagine_*' diverges most. Leave unset to use Luma's default. Cannot be combined with auto_controls."
+    ),
+  auto_controls: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Let the model derive the edit conditioning schedule from the source video. Cannot be combined with edit_strength."
+    ),
+  hdr: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Generate an HDR-encoded MP4. Requires HDR access on the account and a resolution of 720p or 1080p."
+    ),
+  exr_export: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Also export an EXR file alongside the MP4. Requires hdr=true and HDR access."
+    ),
+  controls: FalLumaAgentRayV3p2VideoToVideoRayEditControlsSchema.nullable()
+    .optional()
+    .describe(
+      "Per-signal conditioning controls (pose, depth, normals, trajectory, face) for finer control than edit_strength. Cannot be combined with auto_controls."
+    ),
+  keyframes: z
+    .array(z.string())
+    .min(1)
+    .max(64)
+    .nullable()
+    .optional()
+    .describe(
+      "Multi-keyframe edit guide frames: up to 64 image URLs pinned at the source-frame positions given by keyframe_indexes. Mutually exclusive with start_image_url. Provide keyframes and keyframe_indexes together (same length)."
+    ),
+  keyframe_indexes: z
+    .array(z.number().int())
+    .min(1)
+    .max(64)
+    .nullable()
+    .optional()
+    .describe(
+      "Source-video frame positions where each keyframes[i] is anchored. Non-negative, unique, and the same length as keyframes."
+    ),
+});
+export type FalLumaAgentRayV3p2VideoToVideoRequest = z.input<
+  typeof FalLumaAgentRayV3p2VideoToVideoRequestSchema
+>;
+export type FalLumaAgentRayV3p2VideoToVideoRequestInput =
+  FalLumaAgentRayV3p2VideoToVideoRequest;
+export type FalLumaAgentRayV3p2VideoToVideoParsedRequest = z.output<
+  typeof FalLumaAgentRayV3p2VideoToVideoRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "luma/agent/ray/v3.2/video-to-video":
+    FalLumaAgentRayV3p2VideoToVideoRequestSchema,
   "luma/agent/ray/v3.2/reframe": FalLumaAgentRayV3p2ReframeRequestSchema,
   "nvidia/cosmos-3-super/text-to-image":
     FalNvidiaCosmos3SuperTextToImageRequestSchema,

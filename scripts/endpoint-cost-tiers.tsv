@@ -570,6 +570,7 @@ fal	lightricks.ltx2p5.imageToVideo.pro	POST	prohibitive	Media-generation marketp
 fal	lightricks.ltx2p5.textToVideo.fast	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	lightricks.ltx2p5.textToVideo.pro	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	luma.agent.ray.v3p2.reframe	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	luma.agent.ray.v3p2.videoToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	meshy.v7.imageTo3d	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	meshy.v7p1.imageTo3d	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	meshy.v7p1.multiImageTo3d	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1

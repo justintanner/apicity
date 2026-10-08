@@ -913,6 +913,35 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  // Ray 3.2 video-to-video publishes two 540p packages:
+  // $0.72 for 5s and $1.44 for 10s. Duration defaults to 5s
+  // and resolution to 540p, so an omitted pair is $0.72.
+  // The recorded 5s call billed x-fal-billable-units 24.
+  // At the pricing API's $0.03 per unit that is $0.72, the
+  // 5s package. HDR, EXR, 720p, and 1080p are higher tiers
+  // with no published price, so those payloads warn.
+  "luma/agent/ray/v3.2/video-to-video": {
+    kind: "perUnit",
+    unit: "generations",
+    units: () => 1,
+    select: [
+      {
+        name: "package",
+        pick: (p) => {
+          // The card publishes only 540p packages. HDR, EXR, 720p,
+          // and 1080p are named as higher tiers without a price.
+          if (p.hdr === true || p.exr_export === true) return undefined;
+          const res = asString(p.resolution) ?? "540p";
+          if (res !== "540p") return undefined;
+          const d = asString(p.duration) ?? "5s";
+          return d === "5s" || d === "10s" ? d : undefined;
+        },
+      },
+    ],
+    rates: { "5s": 0.72, "10s": 1.44 },
+    source: source("luma/agent/ray/v3.2/video-to-video", "2026-10-08"),
+  },
+
   // Cosmos 3 Super text-to-image bills $0.04 per image.
   // num_images defaults to 1. The recorded call billed
   // x-fal-billable-units 1, one image, so the charge is $0.04.

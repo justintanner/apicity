@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Ray 3.2 video-to-video (ac-um1cp6).
+
 - Added Ray 3.2 reframe, dynamically priced (ac-yvzwpr).
 
 - Added Cosmos 3 Super text-to-image (ac-gih33k).

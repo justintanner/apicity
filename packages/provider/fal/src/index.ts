@@ -21,6 +21,10 @@ export type {
 
 // Export all types
 export type {
+  FalLumaAgentRayV3p2VideoToVideoResponse,
+  FalLumaAgentRayV3p2VideoToVideoParsedRequest,
+  FalLumaAgentRayV3p2VideoToVideoRequestInput,
+  FalLumaAgentRayV3p2VideoToVideoRequest,
   FalLumaAgentRayV3p2ReframeResponse,
   FalLumaAgentRayV3p2ReframeParsedRequest,
   FalLumaAgentRayV3p2ReframeRequestInput,

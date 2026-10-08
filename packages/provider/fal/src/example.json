@@ -949,6 +949,17 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST luma.agent.ray.v3p2.videoToVideo": {
+    "source": "fal/luma-agent-ray-v3-2-video-to-video",
+    "payload": {
+      "prompt": "Restyle the footage as a hand-painted watercolor animation with soft pastel colors.",
+      "video_url": "https://storage.googleapis.com/falserverless/example_inputs/birefnet-video-input.mp4",
+      "duration": "5s",
+      "resolution": "540p"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST meshy.v7.imageTo3d": {
     "source": "fal/meshy-v7-image-to-3d",
     "payload": {

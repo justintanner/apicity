@@ -1,4 +1,6 @@
 import {
+  FalGeminiOmniFlashV1p1ReferenceToVideoResponse,
+  FalGeminiOmniFlashV1p1ReferenceToVideoRequest,
   FalGeminiOmniFlashV1p1EditResponse,
   FalGeminiOmniFlashV1p1EditRequest,
   FalXaiGrokImagineVideoV1p5ImageToVideoResponse,
@@ -276,6 +278,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalGeminiOmniFlashV1p1ReferenceToVideoRequestSchema,
   FalGeminiOmniFlashV1p1EditRequestSchema,
   FalXaiGrokImagineVideoV1p5ImageToVideoRequestSchema,
   FalXaiGrokImagineVideoV1p5TextToVideoRequestSchema,
@@ -1490,6 +1493,19 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/google/gemini-omni-flash/v1.1/reference-to-video
+  // Docs: https://fal.ai/models/google/gemini-omni-flash/v1.1/reference-to-video/api
+  const geminiOmniFlashV1p1ReferenceToVideo = jsonBody<
+    FalGeminiOmniFlashV1p1ReferenceToVideoRequest,
+    FalGeminiOmniFlashV1p1ReferenceToVideoResponse
+  >(
+    "POST",
+    "/google/gemini-omni-flash/v1.1/reference-to-video",
+    FalGeminiOmniFlashV1p1ReferenceToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
   // POST https://fal.run/google/gemini-omni-flash
   // Docs: https://fal.ai/models/google/gemini-omni-flash/api
   const geminiOmniFlash = Object.assign(
@@ -1501,6 +1517,9 @@ export function createFal(opts: FalOptions): FalProvider {
     ),
     {
       v1p1: {
+        // POST https://fal.run/google/gemini-omni-flash/v1.1/reference-to-video
+        // Docs: https://fal.ai/models/google/gemini-omni-flash/v1.1/reference-to-video/api
+        referenceToVideo: geminiOmniFlashV1p1ReferenceToVideo,
         // POST https://fal.run/google/gemini-omni-flash/v1.1/edit
         // Docs: https://fal.ai/models/google/gemini-omni-flash/v1.1/edit/api
         edit: geminiOmniFlashV1p1Edit,

@@ -571,6 +571,19 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST geminiOmniFlash.v1p1.referenceToVideo": {
+    "source": "fal/google-gemini-omni-flash-v1-1-reference-to-video",
+    "payload": {
+      "prompt": "The family in <IMAGE_REF_0> waves from the lawn in front of the white farmhouse, camera holding still.",
+      "image_urls": [
+        "https://v3b.fal.media/files/b/0aa7d0a6/Zxzqx2mbFF7Ey3YVnD-g4_084_monochrome_expressionism.jpg"
+      ],
+      "resolution": "360p",
+      "duration": 3
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST google.gemini3p8FlashLiteTts": {
     "source": "fal/google-gemini-3-8-flash-lite-tts",
     "payload": {

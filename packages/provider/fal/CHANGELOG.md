@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added MiniMax H3 Max Turbo text-to-video (ac-5rjh2s).
+
 - Added MiniMax H3 Max Turbo image-to-video (ac-hsfjn8).
 
 - Added MiniMax H3 Max lip-sync image-to-video, dynamically priced (ac-sgp4mn).

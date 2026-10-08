@@ -1701,3 +1701,4 @@ fal	minimax.h3Max.referenceToVideo	POST	https://fal.run/minimax/h3-max/reference
 fal	minimax.h3Max.threeDToVideo	POST	https://fal.run/minimax/h3-max/3d-to-video	https://fal.ai/models/minimax/h3-max/3d-to-video/api
 fal	minimax.h3Max.lipSync.imageToVideo	POST	https://fal.run/minimax/h3-max/lip-sync/image-to-video	https://fal.ai/models/minimax/h3-max/lip-sync/image-to-video/api
 fal	minimax.h3MaxTurbo.imageToVideo	POST	https://fal.run/minimax/h3-max-turbo/image-to-video	https://fal.ai/models/minimax/h3-max-turbo/image-to-video/api
+fal	minimax.h3MaxTurbo.textToVideo	POST	https://fal.run/minimax/h3-max-turbo/text-to-video	https://fal.ai/models/minimax/h3-max-turbo/text-to-video/api

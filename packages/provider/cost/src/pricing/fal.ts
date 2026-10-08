@@ -846,6 +846,17 @@ export const fal: Record<string, ModelPricing> = {
   // Bills the requested seconds (default 5) at the resolution tier (default
   // 768P): the recorded 0.92 s 480P call billed 0.92 units, $0.0138. List
   // rates; the promotional $0.015/$0.024/$0.048 per second ends 2026-10-15.
+  "minimax/h3-max-turbo/text-to-video": perSecondTiered(
+    "minimax/h3-max-turbo/text-to-video",
+    [resolutionTier("768P")],
+    { "480P": 0.025, "768P": 0.04, "1080P": 0.08 },
+    numericSeconds(5),
+    "2026-10-08"
+  ),
+
+  // Bills the requested seconds (default 5) at the resolution tier (default
+  // 768P): the recorded 0.92 s 480P call billed 0.92 units, $0.0138. List
+  // rates; the promotional $0.015/$0.024/$0.048 per second ends 2026-10-15.
   "minimax/h3-max-turbo/image-to-video": perSecondTiered(
     "minimax/h3-max-turbo/image-to-video",
     [resolutionTier("768P")],

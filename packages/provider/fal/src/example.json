@@ -960,6 +960,17 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST minimax.h3MaxTurbo.textToVideo": {
+    "source": "fal/minimax-h3-max-turbo-text-to-video",
+    "payload": {
+      "prompt": "A white kitten chases a butterfly across a sunlit garden. Gentle camera tracking, natural movement, soft afternoon light filtering through the leaves.",
+      "duration": 0.92,
+      "resolution": "480P",
+      "prompt_expansion_mode": "disabled"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST minimax.music3": {
     "source": "fal/minimax-music-3",
     "payload": {

@@ -236,6 +236,15 @@ const flux3Seconds = (
   hints?: CostHints
 ): number | undefined => asNumber(p.duration) ?? hintSeconds(hints);
 
+// LTX-2.5 text-to-video's duration is 6 to 20 seconds or "auto", its
+// default, which lets the model choose the length: an omitted or "auto"
+// duration has no billed length to assume, so it prices only through the
+// caller's cost-only hint, and without one it warns.
+const ltx2p5Seconds = (
+  p: Record<string, unknown>,
+  hints?: CostHints
+): number | undefined => asNumber(p.duration) ?? hintSeconds(hints);
+
 // Audio/video operations whose source duration is not part of the request use
 // the shared cost-only channel. A missing hint still fails closed.
 const hintedSeconds = (
@@ -897,6 +906,18 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  // Bills the requested seconds at the resolution tier (default 1080p); the
+  // card's 4K is the 2160p tier. fal counts the charge in cents: the
+  // recorded 6 s 720p call billed 54 units at $0.01, $0.54, the card's
+  // price for six seconds at 720p, though the returned clip ran 6.12 s.
+  "lightricks/ltx-2.5/text-to-video/fast": perSecondTiered(
+    "lightricks/ltx-2.5/text-to-video/fast",
+    [resolutionTier("1080p")],
+    { "720p": 0.09, "1080p": 0.13, "1440p": 0.19, "2160p": 0.3 },
+    ltx2p5Seconds,
+    "2026-10-08"
+  ),
+
   // Bills the requested seconds (default 6) at the resolution tier (default
   // 720p), plus $0.01 for the one input image. fal counts the charge in
   // cents: the recorded 1 s 480p call billed 9 units at $0.01, $0.09, the

@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-140 endpoints across 33 groups. Each method mirrors an upstream URL path.
+141 endpoints across 33 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -1227,6 +1227,23 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.lightricks.ltx2p5.imageToVideo.pro({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.lightricks.ltx2p5.textToVideo.fast</code></b></summary>
+
+<code>POST https://fal.run/lightricks/ltx-2.5/text-to-video/fast</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/lightricks/ltx-2.5/text-to-video/fast/api)
+
+```typescript
+const res = await fal.run.lightricks.ltx2p5.textToVideo.fast({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

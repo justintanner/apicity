@@ -6079,7 +6079,82 @@ export type FalGeminiOmniFlashV1p1TextToVideoParsedRequest = z.output<
   typeof FalGeminiOmniFlashV1p1TextToVideoRequestSchema
 >;
 
+// The live OpenAPI requires only `prompt`, and sixteen unbilled 422 probes
+// (2026-10-08) found upstream's validator to match it: `prompt` is a string of
+// 1 to 5,000 characters; `duration`, `resolution`, `aspect_ratio` and `fps`
+// are closed to the documented values (null is refused for each);
+// `camera_motion` is the documented set or null. The validator ignored an
+// unknown field, so the object is not strict. As on the image-to-video/fast
+// sibling, the documented coupling of duration to resolution and frame rate
+// is a cross-field rule upstream enforces; the duration's description states
+// it, and this schema does not encode it.
+// Docs: https://fal.ai/models/lightricks/ltx-2.5/text-to-video/fast/api
+export const FalLightricksLtx2p5TextToVideoFastRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(5000)
+    .describe("The prompt to use for the generated video"),
+  // A fixed vocabulary, not a model registry, so it stays a closed union.
+  duration: z
+    .union([
+      z.literal(6),
+      z.literal(8),
+      z.literal(10),
+      z.literal(12),
+      z.literal(14),
+      z.literal(16),
+      z.literal(18),
+      z.literal(20),
+      z.literal("auto"),
+    ])
+    .default("auto")
+    .describe(
+      "The duration of the generated video in seconds. At 720p and 1080p, 24 or 25 FPS supports up to 20 seconds, while 48 or 50 FPS supports up to 10 seconds. At 1440p and 2160p, all frame rates support up to 10 seconds. Set to 'auto' to let the model choose the duration automatically."
+    ),
+  resolution: z
+    .enum(["720p", "1080p", "1440p", "2160p"])
+    .default("1080p")
+    .describe("The resolution of the generated video."),
+  aspect_ratio: z
+    .enum(["16:9", "9:16"])
+    .default("16:9")
+    .describe("The aspect ratio of the generated video"),
+  fps: z
+    .union([z.literal(24), z.literal(25), z.literal(48), z.literal(50)])
+    .default(25)
+    .describe("The frames per second of the generated video."),
+  generate_audio: z
+    .boolean()
+    .default(true)
+    .describe("Whether to generate audio for the generated video"),
+  camera_motion: z
+    .enum([
+      "dolly_in",
+      "dolly_out",
+      "dolly_left",
+      "dolly_right",
+      "jib_up",
+      "jib_down",
+      "static",
+      "focus_shift",
+    ])
+    .nullable()
+    .optional()
+    .describe("Optional camera motion applied to the generated video."),
+});
+export type FalLightricksLtx2p5TextToVideoFastRequest = z.input<
+  typeof FalLightricksLtx2p5TextToVideoFastRequestSchema
+>;
+export type FalLightricksLtx2p5TextToVideoFastRequestInput =
+  FalLightricksLtx2p5TextToVideoFastRequest;
+export type FalLightricksLtx2p5TextToVideoFastParsedRequest = z.output<
+  typeof FalLightricksLtx2p5TextToVideoFastRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "lightricks/ltx-2.5/text-to-video/fast":
+    FalLightricksLtx2p5TextToVideoFastRequestSchema,
   "google/gemini-omni-flash/v1.1/text-to-video":
     FalGeminiOmniFlashV1p1TextToVideoRequestSchema,
   "google/gemini-omni-flash/v1.1/image-to-video":

@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalLightricksLtx2p5TextToVideoFastParsedRequest,
+  FalLightricksLtx2p5TextToVideoFastRequestInput,
+  FalLightricksLtx2p5TextToVideoFastRequest,
   FalGeminiOmniFlashV1p1TextToVideoParsedRequest,
   FalGeminiOmniFlashV1p1TextToVideoRequestInput,
   FalGeminiOmniFlashV1p1TextToVideoRequest,
@@ -482,6 +485,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalLightricksLtx2p5TextToVideoFastRequest,
   FalGeminiOmniFlashV1p1TextToVideoRequest,
   FalGeminiOmniFlashV1p1ImageToVideoRequest,
   FalGeminiOmniFlashV1p1ReferenceToVideoRequest,
@@ -2943,7 +2947,21 @@ export interface FalRunLightricksLtx2p5ImageToVideoNamespace {
   fast: FalLtx2p5ImageToVideoFastFn;
 }
 
+type FalLightricksLtx2p5TextToVideoFastFn = ((
+  params: FalLightricksLtx2p5TextToVideoFastRequest,
+  signal?: AbortSignal
+) => Promise<FalLightricksLtx2p5TextToVideoFastResponse>) & {
+  schema: ApicitySchema<FalLightricksLtx2p5TextToVideoFastRequest>;
+};
+
+// `fast` is a URL segment, not a variant flag: upstream serves LTX-2.5
+// text-to-video at `/fast` and `/pro`, as it does image-to-video.
+export interface FalRunLightricksLtx2p5TextToVideoNamespace {
+  fast: FalLightricksLtx2p5TextToVideoFastFn;
+}
+
 export interface FalRunLightricksLtx2p5Namespace {
+  textToVideo: FalRunLightricksLtx2p5TextToVideoNamespace;
   imageToVideo: FalRunLightricksLtx2p5ImageToVideoNamespace;
 }
 
@@ -4069,5 +4087,19 @@ export interface FalGeminiOmniFlashV1p1TextToVideoResponse {
     content_type?: string | null;
     file_name?: string | null;
     file_size?: number | null;
+  };
+}
+
+export interface FalLightricksLtx2p5TextToVideoFastResponse {
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+    fps?: number | null;
+    duration?: number | null;
+    num_frames?: number | null;
   };
 }

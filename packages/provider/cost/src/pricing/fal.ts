@@ -236,6 +236,15 @@ const flux3Seconds = (
   hints?: CostHints
 ): number | undefined => asNumber(p.duration) ?? hintSeconds(hints);
 
+// LTX-2.5 text-to-video's duration is 6 to 20 seconds or "auto", its
+// default, which lets the model choose the length: an omitted or "auto"
+// duration has no billed length to assume, so it prices only through the
+// caller's cost-only hint, and without one it warns.
+const ltx2p5Seconds = (
+  p: Record<string, unknown>,
+  hints?: CostHints
+): number | undefined => asNumber(p.duration) ?? hintSeconds(hints);
+
 // Audio/video operations whose source duration is not part of the request use
 // the shared cost-only channel. A missing hint still fails closed.
 const hintedSeconds = (
@@ -573,6 +582,37 @@ const gptImagePerImage = (
 //     as URLs, so no request field determines the charge. The same card
 //     language made minimax/h3-max/insert-video dynamic; the turbo twin
 //     bills continuation seconds only and stays priced statically below.
+//   - minimax/h3-max/reference-to-video: the official card (read
+//     2026-10-07) bills the requested seconds at $0.05/$0.08/$0.16 per
+//     second at 480p/768p/1080p, plus $0.02 per 1,000 reference tokens
+//     beyond the 4,096 included with each request. Reference tokens depend
+//     on each image's aspect ratio, each video's aspect ratio and frame
+//     count, and each audio clip's length, none of which the payload's URLs
+//     carry, so no request field determines the charge. Same card language
+//     as minimax/h3-max/extend-video above. The recorded 0.92 s 480P call
+//     with one square reference image billed 0.92 units, $0.046.
+//   - minimax/h3-max/3d-to-video: the official card (read 2026-10-07) bills
+//     every output second at $0.05/$0.08/$0.16 at 480p/768p/1080p (5 s
+//     minimum), plus input-video and reference-image tokens priced as for
+//     minimax/h3-max/reference-to-video above, plus each reference it
+//     generates when none is supplied. The output length and shot count
+//     follow the source video, and the tokens follow its frames and each
+//     image's shape, all of which the payload carries only as URLs, so no
+//     request field determines the charge. The model page's own pricing
+//     section also lists a $0.50 processing fee per request, which the
+//     recorded call was not billed: its 8 s 480P source with one 16:9
+//     reference image billed 15.9832 units at $0.05, $0.79916 in all.
+//   - minimax/h3-max/lip-sync/image-to-video: the official card (read
+//     2026-10-08) bills each second of generated video at
+//     $0.05/$0.08/$0.16/$0.32 at 480p/768p/1080p/2K, times 1.2 for a video
+//     over 15 s. The video runs as long as the audio, which the payload
+//     carries only as a URL. costHints.durationSeconds could declare that
+//     length, but the billing does not follow it: the recorded 480P call
+//     sent 5.72 s of audio, got back a video fal reports as 5.72 s (138
+//     frames at 24 fps, 5.75 s) and billed 6 units at $0.05, $0.30 (fal's
+//     usage API reads the same 6 seconds), where the card predicts $0.286 to
+//     $0.288. The card states no rounding, and one call cannot tell rounding
+//     up from rounding to the nearest second, so no rate is encoded.
 //   - xai/grok-imagine-video/v1.5/reference-to-video: billed per COMPUTE
 //     SECOND (USD 0.00017) as pulled 2026-08-28 from the same pricing API.
 //     Its UNVERSIONED sibling xai/grok-imagine-video/reference-to-video bills
@@ -657,6 +697,56 @@ const gptImagePerImage = (
 //     bucket, against a page rate that predicts USD 0.39 per call. An
 //     identical payload that bills a different amount twice running is not
 //     payload-derivable at all.
+//   - google/gemini-omni-flash/v1.1/edit: the official card (read
+//     2026-10-08) bills each second of output video at
+//     $0.03/$0.10/$0.15/$0.30 at 360p/720p/1080p/4K. The request carries no
+//     duration: the edit follows the source, which the payload carries only
+//     as a URL. costHints.durationSeconds could declare the source's length,
+//     but the billing does not follow it: the recorded 360p call sent a
+//     5.000 s source, got back 5.000 s of video (120 frames at 24 fps) with a
+//     generated 48 kHz audio track of 5.034667 s (236 AAC frames), and billed
+//     5.034667 units at $0.03, USD 0.15104 (fal's usage API reads the same
+//     5.034667 seconds), where the card predicts $0.15 for the 5 s source.
+//     The billed length is the output file's, set by the audio encoder's
+//     framing, so no rate is encoded.
+//   - google/gemini-omni-flash/v1.1/image-to-video: the official card (read
+//     2026-10-08) bills each second of output video at
+//     $0.03/$0.10/$0.15/$0.30 at 360p/720p/1080p/4K, and the request
+//     carries its duration (3 to 10 s), so the card predicts 3 units for a
+//     3 s request. The recorded 360p call asked for 3 s from one first
+//     frame and got back 3.000 s of video (72 frames at 24 fps) with a
+//     generated 48 kHz audio track of 142 AAC frames, whose edit list skips
+//     the encoder's 1024 priming samples, so the file plays for 3.008 s. It
+//     billed 3.008 units at $0.03, USD 0.09024 (fal's usage API reads the
+//     same 3.008 seconds), where the card predicts $0.09. The billed length
+//     is the output file's, set by the audio encoder's framing and the
+//     muxer (the reference-to-video file below carried the same 142 frames
+//     with no edit list and billed 3.029333 s), not the requested
+//     duration, so no rate is encoded.
+//   - google/gemini-omni-flash/v1.1/reference-to-video: the official card
+//     (read 2026-10-08) bills each second of output video at
+//     $0.03/$0.10/$0.15/$0.30 at 360p/720p/1080p/4K, and the request
+//     carries its duration (3 to 10 s), so the card predicts 3 units for a
+//     3 s request. The recorded 360p call asked for 3 s with one reference
+//     image and got back 3.000 s of video (72 frames at 24 fps) with a
+//     generated 48 kHz audio track of 3.029333 s (142 AAC frames), and
+//     billed 3.029333 units at $0.03, USD 0.09088 (fal's usage API reads
+//     the same 3.029333 seconds), where the card predicts $0.09. The billed
+//     length is the output file's, set by the audio encoder's framing, not
+//     the requested duration, so no rate is encoded.
+//   - google/gemini-omni-flash/v1.1/text-to-video: the official card (read
+//     2026-10-08) bills each second of output video at
+//     $0.03/$0.10/$0.15/$0.30 at 360p/720p/1080p/4K, and the request
+//     carries its duration (3 to 10 s), so the card predicts 3 units for a
+//     3 s request. The recorded 360p call asked for 3 s from a prompt alone
+//     and got back 3.000 s of video (72 frames at 24 fps) with a generated
+//     48 kHz audio track of 3.029333 s (142 AAC frames, no edit list), and
+//     billed 3.029333 units at $0.03, USD 0.09088 (fal's usage API reads
+//     the same 3.029333 seconds), where the card predicts $0.09. The billed
+//     length is the output file's, set by the audio encoder's framing and
+//     the muxer (the image-to-video file above carried the same 142 frames
+//     behind an edit list and billed 3.008 s), not the requested duration,
+//     so no rate is encoded.
 // FLUX 3 image generation/editing: official metadata bills megapixels, while the request
 // carries resolution tiers and can infer aspect ratio from a remote image.
 // The 2026-10-05 page publishes a 1K promotional example but no complete tier
@@ -790,17 +880,32 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "google/gemini-omni-flash/edit",
   "google/gemini-omni-flash/image-to-video",
   "google/gemini-omni-flash/reference-to-video",
+  "google/gemini-omni-flash/v1.1/edit",
+  "google/gemini-omni-flash/v1.1/image-to-video",
+  "google/gemini-omni-flash/v1.1/reference-to-video",
+  "google/gemini-omni-flash/v1.1/text-to-video",
   "google/nano-banana-2-lite",
   "google/nano-banana-lite/edit",
   "lightricks/ltx-2.5/image-to-video/fast",
   "lightricks/ltx-2.5/image-to-video/pro",
+  "luma/agent/ray/v3.2/reframe",
+  "luma/agent/ray/v3.2/text-to-video",
   "meshy/v7/image-to-3d",
+  "microsoft/mai-image-2.5-pro",
+  "microsoft/mai-image-2.5-pro/edit",
+  "minimax/h3-max/3d-to-video",
   "minimax/h3-max/extend-video",
   "minimax/h3-max/insert-video",
+  "minimax/h3-max/lip-sync/image-to-video",
+  "minimax/h3-max/reference-to-video",
   "minimax/h3/image-to-video",
   "minimax/h3/reference-to-video",
   "minimax/h3/text-to-video",
   "minimax/music-3",
+  "openai/gpt-image-2.5/flare/edit",
+  "openai/gpt-image-2.5/flare/text-to-image",
+  "openai/gpt-image-2.5/sunburst/edit",
+  "openai/gpt-image-2.5/sunburst/text-to-image",
   "topaz/upscale/image/precision",
   "topaz/upscale/video/precision",
   "xai/grok-imagine-image/v2.0/edit",
@@ -809,6 +914,402 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  // Ray 3.2 image-to-video publishes one package: $0.15 for
+  // 5s at 540p. Duration defaults to 5s and resolution to
+  // 540p. The schema also allows 10s, but the card does not
+  // price it. The recorded 5s call billed
+  // x-fal-billable-units 5. At the pricing API's $0.03 per
+  // unit that is $0.15, the 5s package. HDR, EXR, 720p, and
+  // 1080p warn.
+  "luma/agent/ray/v3.2/image-to-video": {
+    kind: "perUnit",
+    unit: "generations",
+    units: () => 1,
+    select: [
+      {
+        name: "package",
+        pick: (p) => {
+          // The card publishes only the 540p 5s package. 10s, HDR,
+          // EXR, 720p, and 1080p have no price on this page.
+          if (p.hdr === true || p.exr_export === true) return undefined;
+          const res = asString(p.resolution) ?? "540p";
+          if (res !== "540p") return undefined;
+          const d = asString(p.duration) ?? "5s";
+          return d === "5s" ? "5s" : undefined;
+        },
+      },
+    ],
+    rates: { "5s": 0.15 },
+    source: source("luma/agent/ray/v3.2/image-to-video", "2026-10-08"),
+  },
+
+  // Ray 3.2 video-to-video publishes two 540p packages:
+  // $0.72 for 5s and $1.44 for 10s. Duration defaults to 5s
+  // and resolution to 540p, so an omitted pair is $0.72.
+  // The recorded 5s call billed x-fal-billable-units 24.
+  // At the pricing API's $0.03 per unit that is $0.72, the
+  // 5s package. HDR, EXR, 720p, and 1080p are higher tiers
+  // with no published price, so those payloads warn.
+  "luma/agent/ray/v3.2/video-to-video": {
+    kind: "perUnit",
+    unit: "generations",
+    units: () => 1,
+    select: [
+      {
+        name: "package",
+        pick: (p) => {
+          // The card publishes only 540p packages. HDR, EXR, 720p,
+          // and 1080p are named as higher tiers without a price.
+          if (p.hdr === true || p.exr_export === true) return undefined;
+          const res = asString(p.resolution) ?? "540p";
+          if (res !== "540p") return undefined;
+          const d = asString(p.duration) ?? "5s";
+          return d === "5s" || d === "10s" ? d : undefined;
+        },
+      },
+    ],
+    rates: { "5s": 0.72, "10s": 1.44 },
+    source: source("luma/agent/ray/v3.2/video-to-video", "2026-10-08"),
+  },
+
+  // Cosmos 3 Super text-to-image bills $0.04 per image.
+  // num_images defaults to 1. The recorded call billed
+  // x-fal-billable-units 1, one image, so the charge is $0.04.
+  // Prompt expansion adds $0.02 per request. Agentic generation
+  // bills every candidate, which the card does not count, so
+  // that flag warns instead of guessing. Both flags default
+  // to false.
+  "nvidia/cosmos-3-super/text-to-image": {
+    kind: "perUnit",
+    unit: "images",
+    units: (p) => {
+      // Agentic mode bills every candidate. The card does not publish
+      // how many images that loop renders, so the estimate warns.
+      if (p.enable_agentic_generation === true) return undefined;
+      return asNumber(p.num_images) ?? 1;
+    },
+    select: [],
+    rates: { "": 0.04 },
+    extra: (p) => (p.enable_prompt_expansion === true ? 0.02 : 0),
+    source: source("nvidia/cosmos-3-super/text-to-image", "2026-10-08"),
+  },
+
+  // Cosmos 3 Super image-to-video bills $0.05 per generated
+  // second, rounded up. num_frames defaults to 189 and
+  // frames_per_second to 24. Five frames at 24 fps is 0.208s
+  // of video and rounds up to one second. The recorded call
+  // billed x-fal-billable-units 1, so the charge is $0.05.
+  // Agentic generation bills every candidate, which the card
+  // does not count, so that flag warns instead of guessing.
+  // Prompt expansion is not a separate published charge.
+  "nvidia/cosmos-3-super/image-to-video": perSecond(
+    "nvidia/cosmos-3-super/image-to-video",
+    0.05,
+    (p) => {
+      // Agentic mode bills every candidate. The card does not publish
+      // how many renders that loop performs, so the estimate warns.
+      if (p.enable_agentic_generation === true) return undefined;
+      const frames = asNumber(p.num_frames) ?? 189;
+      const fps = asNumber(p.frames_per_second) ?? 24;
+      if (!(fps > 0)) return undefined;
+      return Math.ceil(frames / fps);
+    },
+    "2026-10-08"
+  ),
+
+  // Muse Image edit bills $0.01 per image, the same card as
+  // text-to-image. num_images defaults to 1. The recorded call
+  // billed x-fal-billable-units 1, one image, so the charge is
+  // $0.01.
+  "meta/muse-image/edit": perImage("meta/muse-image/edit", 0.01, "2026-10-08"),
+
+  // Muse Image text-to-image bills $0.01 per image. num_images
+  // defaults to 1. The recorded call billed x-fal-billable-units
+  // 1, one image, so the charge is $0.01.
+  "meta/muse-image/text-to-image": perImage(
+    "meta/muse-image/text-to-image",
+    0.01,
+    "2026-10-08"
+  ),
+
+  // ElevenLabs Music v2.5 bills $0.60 per output minute, rounded
+  // up. music_length_ms is optional; an omitted length is chosen
+  // by the model, so the estimate warns instead of guessing. The
+  // recorded 3000 ms call billed x-fal-billable-units 1, one
+  // rounded minute, so the charge is $0.60.
+  "elevenlabs/music/v2.5": {
+    kind: "perUnit",
+    unit: "generations",
+    units: (p) => {
+      const ms = asNumber(p.music_length_ms);
+      return ms === undefined ? undefined : Math.ceil(ms / 60_000);
+    },
+    select: [],
+    rates: { "": 0.6 },
+    source: source("elevenlabs/music/v2.5", "2026-10-08"),
+  },
+
+  // Bria Fibo Gen 1.5 text-to-image bills $0.04 per image. The
+  // model page has no price card; the pricing API bills 0.04
+  // USD per image. Resolution defaults to 1MP. The recorded
+  // call billed x-fal-billable-units 1, one image, so the
+  // charge is $0.04.
+  "bria/fibo-gen-1.5/text-to-image": perImage(
+    "bria/fibo-gen-1.5/text-to-image",
+    0.04,
+    "2026-10-08"
+  ),
+
+  // Bria Fibo Edit 1.5 edit bills $0.04 per image. The model
+  // page has no price card; the pricing API bills 0.04 USD per
+  // image. The recorded call billed x-fal-billable-units 1, one
+  // image, so the charge is $0.04.
+  "bria/fibo-edit-1.5/edit": perImage(
+    "bria/fibo-edit-1.5/edit",
+    0.04,
+    "2026-10-08"
+  ),
+
+  // FLUX 3 edit-video bills $0.03 per second of generated 720p
+  // video. The schema has no duration; length follows the input,
+  // so the estimate uses costHints.durationSeconds. The example
+  // source's movie header is 10.042 s. The recorded call billed
+  // x-fal-billable-units 10, so the charge is $0.30.
+  "blackforestlabs/flux-3/edit-video": perSecond(
+    "blackforestlabs/flux-3/edit-video",
+    0.03,
+    hintedSeconds,
+    "2026-10-08"
+  ),
+
+  // Happy Horse 1.1 text-to-video bills $0.14/s at 720p and $0.18/s
+  // at 1080p, the same card as the reference leaf. Resolution
+  // defaults to 1080p and duration to 5. The recorded 3 s 720p
+  // call billed x-fal-billable-units 3, the requested seconds, so
+  // the charge is $0.42.
+  "alibaba/happy-horse/v1.1/text-to-video": perSecondTiered(
+    "alibaba/happy-horse/v1.1/text-to-video",
+    [resolutionTier("1080p")],
+    { "720p": 0.14, "1080p": 0.18 },
+    numericSeconds(5),
+    "2026-10-08"
+  ),
+
+  // Happy Horse 1.1 image-to-video bills $0.14/s at 720p and
+  // $0.18/s at 1080p, the same card as the reference leaf.
+  // Resolution defaults to 1080p and duration to 5. The recorded 3 s
+  // 720p call billed x-fal-billable-units 3, the requested seconds,
+  // so the charge is $0.42.
+  "alibaba/happy-horse/v1.1/image-to-video": perSecondTiered(
+    "alibaba/happy-horse/v1.1/image-to-video",
+    [resolutionTier("1080p")],
+    { "720p": 0.14, "1080p": 0.18 },
+    numericSeconds(5),
+    "2026-10-08"
+  ),
+
+  // Happy Horse 1.1 reference-to-video bills $0.14/s at 720p and
+  // $0.18/s at 1080p. Resolution defaults to 1080p and duration to
+  // 5. The recorded 3 s 720p call billed x-fal-billable-units 3, the
+  // requested seconds, so the charge is $0.42.
+  "alibaba/happy-horse/v1.1/reference-to-video": perSecondTiered(
+    "alibaba/happy-horse/v1.1/reference-to-video",
+    [resolutionTier("1080p")],
+    { "720p": 0.14, "1080p": 0.18 },
+    numericSeconds(5),
+    "2026-10-08"
+  ),
+
+  // Qwen Audio 3 bills $0.05 per 1,000 input characters (pricing API
+  // unit "1000 characters"; the card is blank). The request's text
+  // length is the unit count. The recorded one-character call billed
+  // x-fal-billable-units 0.001, one thousandth of that unit, $0.00005.
+  "alibaba/qwen-audio-3-tts": perCharacter(
+    "alibaba/qwen-audio-3-tts",
+    0.05 / 1_000,
+    "2026-10-08"
+  ),
+
+  // Kling v3 Turbo Pro image-to-video bills $0.14 per second at 720p,
+  // the same card rate as the text-to-video leaf. Duration is a digit
+  // string defaulting to "5". The recorded 3 s call billed
+  // x-fal-billable-units 3, the requested seconds, so the charge is
+  // $0.42.
+  "fal-ai/kling-video/v3/turbo/pro/image-to-video": perSecond(
+    "fal-ai/kling-video/v3/turbo/pro/image-to-video",
+    0.14,
+    klingSeconds,
+    "2026-10-08"
+  ),
+
+  // Kling v3 Turbo Pro bills $0.14 per second at 720p. Duration is a
+  // digit string defaulting to "5", and the card has no audio toggle.
+  // The recorded 3 s call billed x-fal-billable-units 3, the requested
+  // seconds, so the charge is $0.42.
+  "fal-ai/kling-video/v3/turbo/pro/text-to-video": perSecond(
+    "fal-ai/kling-video/v3/turbo/pro/text-to-video",
+    0.14,
+    klingSeconds,
+    "2026-10-08"
+  ),
+
+  // Kling v3 Turbo Standard image-to-video bills $0.112 per second at
+  // 720p, the same card rate as the text-to-video leaf. Duration is a
+  // digit string defaulting to "5". The recorded 3 s call billed
+  // x-fal-billable-units 3, the requested seconds, so the charge is
+  // $0.336.
+  "fal-ai/kling-video/v3/turbo/standard/image-to-video": perSecond(
+    "fal-ai/kling-video/v3/turbo/standard/image-to-video",
+    0.112,
+    klingSeconds,
+    "2026-10-08"
+  ),
+
+  // Kling v3 Turbo Standard bills $0.112 per second at 720p. Duration
+  // is a digit string defaulting to "5", and the card has no audio
+  // toggle. The recorded 3 s call billed x-fal-billable-units 3, the
+  // requested seconds (pricing API: 0.112 USD per second), so the
+  // charge is $0.336. fal does not count this charge in cents.
+  "fal-ai/kling-video/v3/turbo/standard/text-to-video": perSecond(
+    "fal-ai/kling-video/v3/turbo/standard/text-to-video",
+    0.112,
+    klingSeconds,
+    "2026-10-08"
+  ),
+
+  // Bills each second of the INPUT audio (2 to 20 s on the fast tier) at
+  // one rate. The request carries the audio only as a URL, so the caller
+  // declares its length through costHints.durationSeconds, as for
+  // scribe-v2, and an omitted hint fails closed. fal counts the charge in
+  // cents: the recorded call sent 3.28 s of audio and billed 42.64 units at
+  // $0.01, $0.4264, the card's price for 3.28 s, though the returned clip
+  // ran 3.04 s.
+  "lightricks/ltx-2.5/audio-to-video/fast": perSecond(
+    "lightricks/ltx-2.5/audio-to-video/fast",
+    0.13,
+    hintedSeconds,
+    "2026-10-08"
+  ),
+
+  // Bills each second of the INPUT audio (2 to 10 s on the pro tier) at one
+  // rate. The request carries the audio only as a URL, so the caller
+  // declares its length through costHints.durationSeconds, as for
+  // scribe-v2, and an omitted hint fails closed. fal counts the charge in
+  // cents: the recorded call sent 3.28 s of audio and billed 55.76 units at
+  // $0.01, $0.5576, the card's price for 3.28 s, though the returned clip
+  // ran 3.04 s.
+  "lightricks/ltx-2.5/audio-to-video/pro": perSecond(
+    "lightricks/ltx-2.5/audio-to-video/pro",
+    0.17,
+    hintedSeconds,
+    "2026-10-08"
+  ),
+
+  // Bills the requested seconds at the resolution tier (default 1080p); the
+  // pro tier runs 6 to 10 seconds at 720p or 1080p. fal counts the charge
+  // in cents: the recorded 6 s 720p call billed 72 units at $0.01, $0.72,
+  // the card's price for six seconds at 720p, though the returned clip ran
+  // 6.12 s.
+  "lightricks/ltx-2.5/text-to-video/pro": perSecondTiered(
+    "lightricks/ltx-2.5/text-to-video/pro",
+    [resolutionTier("1080p")],
+    { "720p": 0.12, "1080p": 0.17 },
+    ltx2p5Seconds,
+    "2026-10-08"
+  ),
+
+  // Bills the requested seconds at the resolution tier (default 1080p); the
+  // card's 4K is the 2160p tier. fal counts the charge in cents: the
+  // recorded 6 s 720p call billed 54 units at $0.01, $0.54, the card's
+  // price for six seconds at 720p, though the returned clip ran 6.12 s.
+  "lightricks/ltx-2.5/text-to-video/fast": perSecondTiered(
+    "lightricks/ltx-2.5/text-to-video/fast",
+    [resolutionTier("1080p")],
+    { "720p": 0.09, "1080p": 0.13, "1440p": 0.19, "2160p": 0.3 },
+    ltx2p5Seconds,
+    "2026-10-08"
+  ),
+
+  // Bills the requested seconds (default 6) at the resolution tier (default
+  // 720p), plus $0.01 for the one input image. fal counts the charge in
+  // cents: the recorded 1 s 480p call billed 9 units at $0.01, $0.09, the
+  // card's $0.08 for one second at 480p plus its $0.01 per image.
+  "xai/grok-imagine-video/v1.5/image-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: numericSeconds(6),
+    select: [resolutionTier("720p")],
+    rates: { "480p": 0.08, "720p": 0.14, "1080p": 0.25 },
+    extra: () => 0.01,
+    source: source("xai/grok-imagine-video/v1.5/image-to-video", "2026-10-08"),
+  },
+
+  // Bills the requested seconds (default 6) at the resolution tier (default
+  // 720p). fal counts the charge in cents: the recorded 1 s 480p call billed
+  // 8 units at $0.01, $0.08, the card's price for one second at 480p.
+  "xai/grok-imagine-video/v1.5/text-to-video": perSecondTiered(
+    "xai/grok-imagine-video/v1.5/text-to-video",
+    [resolutionTier("720p")],
+    { "480p": 0.08, "720p": 0.14, "1080p": 0.25 },
+    numericSeconds(6),
+    "2026-10-08"
+  ),
+
+  // Bills the requested seconds (default 5) at the resolution tier (default
+  // 768P): the recorded 0.92 s 480P call billed 0.92 units, $0.0138. List
+  // rates; the promotional $0.015/$0.024/$0.048 per second ends 2026-10-15.
+  "minimax/h3-max-turbo/text-to-video": perSecondTiered(
+    "minimax/h3-max-turbo/text-to-video",
+    [resolutionTier("768P")],
+    { "480P": 0.025, "768P": 0.04, "1080P": 0.08 },
+    numericSeconds(5),
+    "2026-10-08"
+  ),
+
+  // Bills the requested seconds (default 5) at the resolution tier (default
+  // 768P): the recorded 0.92 s 480P call billed 0.92 units, $0.0138. List
+  // rates; the promotional $0.015/$0.024/$0.048 per second ends 2026-10-15.
+  "minimax/h3-max-turbo/image-to-video": perSecondTiered(
+    "minimax/h3-max-turbo/image-to-video",
+    [resolutionTier("768P")],
+    { "480P": 0.025, "768P": 0.04, "1080P": 0.08 },
+    numericSeconds(5),
+    "2026-10-08"
+  ),
+
+  // Bills the requested seconds (default 5) at the resolution tier (default
+  // 480P): the recorded 0.92 s 480P call billed 0.92 units, $0.0276.
+  // List rates; the promotional $0.03/$0.048/$0.096 per second ends 2026-10-15.
+  "minimax/h3-max/camera-controls": perSecondTiered(
+    "minimax/h3-max/camera-controls",
+    [resolutionTier("480P")],
+    { "480P": 0.05, "768P": 0.08, "1080P": 0.16 },
+    numericSeconds(5),
+    "2026-10-07"
+  ),
+
+  // Bills the requested seconds (default 5) at the resolution tier (default
+  // 768P): the recorded 0.92 s 480P call billed 0.92 units, $0.0276.
+  // List rates; the promotional $0.03/$0.048/$0.096 per second ends 2026-10-15.
+  "minimax/h3-max/text-to-video": perSecondTiered(
+    "minimax/h3-max/text-to-video",
+    [resolutionTier("768P")],
+    { "480P": 0.05, "768P": 0.08, "1080P": 0.16 },
+    numericSeconds(5),
+    "2026-10-07"
+  ),
+
+  // Bills the requested seconds (default 5) at the resolution tier (default
+  // 768P): the recorded 0.92 s 480P call billed 0.92 units, $0.0276.
+  // List rates; the promotional $0.03/$0.048/$0.096 per second ends 2026-10-15.
+  "minimax/h3-max/image-to-video": perSecondTiered(
+    "minimax/h3-max/image-to-video",
+    [resolutionTier("768P")],
+    { "480P": 0.05, "768P": 0.08, "1080P": 0.16 },
+    numericSeconds(5),
+    "2026-10-07"
+  ),
+
   "bria/fibo-edit-1.5/product-holding": perImage(
     "bria/fibo-edit-1.5/product-holding",
     0.04,

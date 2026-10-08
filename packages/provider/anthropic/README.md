@@ -461,7 +461,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.api.oauth.usage({ /* ... */ });
+const res = await anthropic.api.oauth.usage();
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)

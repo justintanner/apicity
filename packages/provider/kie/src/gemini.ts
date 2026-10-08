@@ -48,6 +48,8 @@ export interface KieGeminiCandidate {
 export interface KieGeminiUsageMetadata {
   candidatesTokenCount?: number;
   thoughtsTokenCount?: number;
+  /** KIE sends this; Google's own API sends `thoughtsTokenCount`. */
+  thinkingTokenCount?: number;
   totalTokenCount?: number;
   promptTokenCount?: number;
   [key: string]: unknown;
@@ -261,10 +263,13 @@ function formatGeminiError(
 }
 
 /**
- * Upstream sometimes returns HTTP 200 with an error body and no candidates:
- * the Kie envelope `{ code: 401, msg: "..." }`, or a top-level `error` object
- * (KIE docs' `{ error: { message, type } }`, Google's
- * `{ error: { code, message, status } }`). Surface those as KieError.
+ * Upstream sometimes returns HTTP 200 with the Kie envelope
+ * `{ code: 401, msg: "..." }` and no candidates. A top-level `error` object
+ * (KIE docs' `{ error: { message, type } }`, listed there for 400 and 401, or
+ * Google's `{ error: { code, message, status } }`) gets the same treatment,
+ * though that form has not been seen at HTTP 200. Surface those as KieError.
+ * Each leaf that calls this has a README note in scripts/doc-gen.mjs
+ * (ENDPOINT_NOTES); a new leaf needs one too.
  */
 function throwIfKieErrorEnvelope(body: unknown): void {
   if (!isGeminiErrorBody(body)) return;

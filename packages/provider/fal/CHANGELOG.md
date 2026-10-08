@@ -9,6 +9,94 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Ray 3.2 text-to-video, dynamically priced (ac-mkruvv).
+
+- Added Ray 3.2 image-to-video (ac-fst1vy).
+
+- Added Ray 3.2 video-to-video (ac-um1cp6).
+
+- Added Ray 3.2 reframe, dynamically priced (ac-yvzwpr).
+
+- Added Cosmos 3 Super text-to-image (ac-gih33k).
+
+- Added Cosmos 3 Super image-to-video (ac-1eow45).
+
+- Added MAI Image 2.5 Pro edit, dynamically priced (ac-97k3vy).
+
+- Added MAI Image 2.5 Pro, dynamically priced (ac-51rxwv).
+
+- Added GPT Image 2.5 Flare text-to-image, dynamically priced (ac-8g3qfn).
+
+- Added GPT Image 2.5 Flare edit, dynamically priced (ac-rnheo2).
+
+- Added GPT Image 2.5 Sunburst text-to-image, dynamically priced (ac-1ylhf6).
+
+- Added GPT Image 2.5 Sunburst edit, dynamically priced (ac-pgig3k).
+
+- Added Muse Image edit (ac-nk9nff).
+
+- Added Muse Image text-to-image (ac-4h1r8i).
+
+- Added ElevenLabs Music v2.5 (ac-rrv8xf).
+
+- Added Bria Fibo Gen 1.5 text-to-image (ac-0i2xq1).
+
+- Added Bria Fibo Edit 1.5 edit (ac-we6juy).
+
+- Added FLUX 3 edit-video (ac-6r7fak).
+
+- Added Happy Horse 1.1 text-to-video (ac-crtskn).
+
+- Added Happy Horse 1.1 image-to-video (ac-wadecc).
+
+- Added Happy Horse 1.1 reference-to-video (ac-rh4pwl).
+
+- Added Qwen Audio 3 text-to-speech (ac-n2pi30).
+
+- Added Kling v3 Turbo Pro image-to-video (ac-o17c19).
+
+- Added Kling v3 Turbo Pro text-to-video (ac-i5inny).
+
+- Added Kling v3 Turbo Standard image-to-video (ac-bo14y6).
+
+- Added Kling v3 Turbo Standard text-to-video (ac-rjmitu).
+
+- Added Lightricks LTX-2.5 Fast audio-to-video (ac-oudg7o).
+
+- Added Lightricks LTX-2.5 Pro audio-to-video (ac-l1lqa4).
+
+- Added Lightricks LTX-2.5 Pro text-to-video (ac-ep4zx8).
+
+- Added Lightricks LTX-2.5 Fast text-to-video (ac-jhmwuh).
+
+- Added Gemini Omni Flash 1.1 text-to-video, dynamically priced (ac-o4pjug).
+
+- Added Gemini Omni Flash 1.1 image-to-video, dynamically priced (ac-qkzpsi).
+
+- Added Gemini Omni Flash 1.1 reference-to-video, dynamically priced (ac-vvcfyg).
+
+- Added Gemini Omni Flash 1.1 edit, dynamically priced (ac-5lwz1w).
+
+- Added Grok Imagine Video 1.5 image-to-video (ac-x3few1).
+
+- Added Grok Imagine Video 1.5 text-to-video (ac-ym2457).
+
+- Added MiniMax H3 Max Turbo text-to-video (ac-5rjh2s).
+
+- Added MiniMax H3 Max Turbo image-to-video (ac-hsfjn8).
+
+- Added MiniMax H3 Max lip-sync image-to-video, dynamically priced (ac-sgp4mn).
+
+- Added MiniMax H3 Max 3D-to-video, dynamically priced (ac-vwqc0l).
+
+- Added MiniMax H3 Max reference-to-video, dynamically priced (ac-ibp1q7).
+
+- Added MiniMax H3 Max camera controls (ac-7xfptq).
+
+- Added MiniMax H3 Max text-to-video (ac-jg4hws).
+
+- Added MiniMax H3 Max image-to-video (ac-k83o5s).
+
 - Added MiniMax H3 Max video extension, dynamically priced (ac-b5tt8y).
 
 - Added Bria Fibo Edit 1.5 Product Holding (ac-6d3gzy).

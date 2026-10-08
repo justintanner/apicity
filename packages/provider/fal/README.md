@@ -121,9 +121,77 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-126 endpoints across 33 groups. Each method mirrors an upstream URL path.
+170 endpoints across 38 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
+
+<details>
+<summary><code>POST</code> <b><code>fal.alibaba.happyHorse.v1p1.imageToVideo</code></b></summary>
+
+<code>POST https://fal.run/alibaba/happy-horse/v1.1/image-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/alibaba/happy-horse/v1.1/image-to-video/api)
+
+```typescript
+const res = await fal.run.alibaba.happyHorse.v1p1.imageToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.alibaba.happyHorse.v1p1.referenceToVideo</code></b></summary>
+
+<code>POST https://fal.run/alibaba/happy-horse/v1.1/reference-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/alibaba/happy-horse/v1.1/reference-to-video/api)
+
+```typescript
+const res = await fal.run.alibaba.happyHorse.v1p1.referenceToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.alibaba.happyHorse.v1p1.textToVideo</code></b></summary>
+
+<code>POST https://fal.run/alibaba/happy-horse/v1.1/text-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/alibaba/happy-horse/v1.1/text-to-video/api)
+
+```typescript
+const res = await fal.run.alibaba.happyHorse.v1p1.textToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.alibaba.qwenAudio3Tts</code></b></summary>
+
+<code>POST https://fal.run/alibaba/qwen-audio-3-tts</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/alibaba/qwen-audio-3-tts/api)
+
+```typescript
+const res = await fal.run.alibaba.qwenAudio3Tts({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>fal.alibaba.qwenImage3.edit</code></b></summary>
@@ -281,6 +349,23 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 </details>
 
 <details>
+<summary><code>POST</code> <b><code>fal.blackforestlabs.flux3.editVideo</code></b></summary>
+
+<code>POST https://fal.run/blackforestlabs/flux-3/edit-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/blackforestlabs/flux-3/edit-video/api)
+
+```typescript
+const res = await fal.run.blackforestlabs.flux3.editVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
 <summary><code>POST</code> <b><code>fal.blackforestlabs.flux3.extendVideo</code></b></summary>
 
 <code>POST https://fal.run/blackforestlabs/flux-3/extend-video</code>
@@ -402,6 +487,23 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 ### bria
 
 <details>
+<summary><code>POST</code> <b><code>fal.bria.fiboEdit1p5.edit</code></b></summary>
+
+<code>POST https://fal.run/bria/fibo-edit-1.5/edit</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/bria/fibo-edit-1.5/edit/api)
+
+```typescript
+const res = await fal.run.bria.fiboEdit1p5.edit({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
 <summary><code>POST</code> <b><code>fal.bria.fiboEdit1p5.productHolding</code></b></summary>
 
 <code>POST https://fal.run/bria/fibo-edit-1.5/product-holding</code>
@@ -429,6 +531,23 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.bria.fiboEdit1p5.virtualTryOn({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.bria.fiboGen1p5.textToImage</code></b></summary>
+
+<code>POST https://fal.run/bria/fibo-gen-1.5/text-to-image</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/bria/fibo-gen-1.5/text-to-image/api)
+
+```typescript
+const res = await fal.run.bria.fiboGen1p5.textToImage({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -742,6 +861,23 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 ### elevenlabs
 
 <details>
+<summary><code>POST</code> <b><code>fal.elevenlabs.music.v2p5</code></b></summary>
+
+<code>POST https://fal.run/elevenlabs/music/v2.5</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/elevenlabs/music/v2.5/api)
+
+```typescript
+const res = await fal.run.elevenlabs.music.v2p5({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
 <summary><code>POST</code> <b><code>fal.elevenlabs.tts.elevenV4</code></b></summary>
 
 <code>POST https://fal.run/elevenlabs/tts/eleven-v4</code>
@@ -858,6 +994,74 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.geminiOmniFlash.referenceToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.geminiOmniFlash.v1p1.edit</code></b></summary>
+
+<code>POST https://fal.run/google/gemini-omni-flash/v1.1/edit</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/google/gemini-omni-flash/v1.1/edit/api)
+
+```typescript
+const res = await fal.run.geminiOmniFlash.v1p1.edit({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.geminiOmniFlash.v1p1.imageToVideo</code></b></summary>
+
+<code>POST https://fal.run/google/gemini-omni-flash/v1.1/image-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/google/gemini-omni-flash/v1.1/image-to-video/api)
+
+```typescript
+const res = await fal.run.geminiOmniFlash.v1p1.imageToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.geminiOmniFlash.v1p1.referenceToVideo</code></b></summary>
+
+<code>POST https://fal.run/google/gemini-omni-flash/v1.1/reference-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/google/gemini-omni-flash/v1.1/reference-to-video/api)
+
+```typescript
+const res = await fal.run.geminiOmniFlash.v1p1.referenceToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.geminiOmniFlash.v1p1.textToVideo</code></b></summary>
+
+<code>POST https://fal.run/google/gemini-omni-flash/v1.1/text-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/google/gemini-omni-flash/v1.1/text-to-video/api)
+
+```typescript
+const res = await fal.run.geminiOmniFlash.v1p1.textToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -1129,7 +1333,109 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 </details>
 
+<details>
+<summary><code>POST</code> <b><code>fal.klingVideo.v3.turbo.pro.imageToVideo</code></b></summary>
+
+<code>POST https://fal.run/fal-ai/kling-video/v3/turbo/pro/image-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/fal-ai/kling-video/v3/turbo/pro/image-to-video/api)
+
+```typescript
+const res = await fal.run.klingVideo.v3.turbo.pro.imageToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.klingVideo.v3.turbo.pro.textToVideo</code></b></summary>
+
+<code>POST https://fal.run/fal-ai/kling-video/v3/turbo/pro/text-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/fal-ai/kling-video/v3/turbo/pro/text-to-video/api)
+
+```typescript
+const res = await fal.run.klingVideo.v3.turbo.pro.textToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.klingVideo.v3.turbo.standard.imageToVideo</code></b></summary>
+
+<code>POST https://fal.run/fal-ai/kling-video/v3/turbo/standard/image-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/fal-ai/kling-video/v3/turbo/standard/image-to-video/api)
+
+```typescript
+const res = await fal.run.klingVideo.v3.turbo.standard.imageToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.klingVideo.v3.turbo.standard.textToVideo</code></b></summary>
+
+<code>POST https://fal.run/fal-ai/kling-video/v3/turbo/standard/text-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/fal-ai/kling-video/v3/turbo/standard/text-to-video/api)
+
+```typescript
+const res = await fal.run.klingVideo.v3.turbo.standard.textToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
 ### lightricks
+
+<details>
+<summary><code>POST</code> <b><code>fal.lightricks.ltx2p5.audioToVideo.fast</code></b></summary>
+
+<code>POST https://fal.run/lightricks/ltx-2.5/audio-to-video/fast</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/lightricks/ltx-2.5/audio-to-video/fast/api)
+
+```typescript
+const res = await fal.run.lightricks.ltx2p5.audioToVideo.fast({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.lightricks.ltx2p5.audioToVideo.pro</code></b></summary>
+
+<code>POST https://fal.run/lightricks/ltx-2.5/audio-to-video/pro</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/lightricks/ltx-2.5/audio-to-video/pro/api)
+
+```typescript
+const res = await fal.run.lightricks.ltx2p5.audioToVideo.pro({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>fal.lightricks.ltx2p5.imageToVideo.fast</code></b></summary>
@@ -1159,6 +1465,110 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.lightricks.ltx2p5.imageToVideo.pro({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.lightricks.ltx2p5.textToVideo.fast</code></b></summary>
+
+<code>POST https://fal.run/lightricks/ltx-2.5/text-to-video/fast</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/lightricks/ltx-2.5/text-to-video/fast/api)
+
+```typescript
+const res = await fal.run.lightricks.ltx2p5.textToVideo.fast({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.lightricks.ltx2p5.textToVideo.pro</code></b></summary>
+
+<code>POST https://fal.run/lightricks/ltx-2.5/text-to-video/pro</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/lightricks/ltx-2.5/text-to-video/pro/api)
+
+```typescript
+const res = await fal.run.lightricks.ltx2p5.textToVideo.pro({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+### luma
+
+<details>
+<summary><code>POST</code> <b><code>fal.luma.agent.ray.v3p2.imageToVideo</code></b></summary>
+
+<code>POST https://fal.run/luma/agent/ray/v3.2/image-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/luma/agent/ray/v3.2/image-to-video/api)
+
+```typescript
+const res = await fal.run.luma.agent.ray.v3p2.imageToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.luma.agent.ray.v3p2.reframe</code></b></summary>
+
+<code>POST https://fal.run/luma/agent/ray/v3.2/reframe</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/luma/agent/ray/v3.2/reframe/api)
+
+```typescript
+const res = await fal.run.luma.agent.ray.v3p2.reframe({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.luma.agent.ray.v3p2.textToVideo</code></b></summary>
+
+<code>POST https://fal.run/luma/agent/ray/v3.2/text-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/luma/agent/ray/v3.2/text-to-video/api)
+
+```typescript
+const res = await fal.run.luma.agent.ray.v3p2.textToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.luma.agent.ray.v3p2.videoToVideo</code></b></summary>
+
+<code>POST https://fal.run/luma/agent/ray/v3.2/video-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/luma/agent/ray/v3.2/video-to-video/api)
+
+```typescript
+const res = await fal.run.luma.agent.ray.v3p2.videoToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -1235,6 +1645,78 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 </details>
 
+### meta
+
+<details>
+<summary><code>POST</code> <b><code>fal.meta.museImage.edit</code></b></summary>
+
+<code>POST https://fal.run/meta/muse-image/edit</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/meta/muse-image/edit/api)
+
+```typescript
+const res = await fal.run.meta.museImage.edit({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.meta.museImage.textToImage</code></b></summary>
+
+<code>POST https://fal.run/meta/muse-image/text-to-image</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/meta/muse-image/text-to-image/api)
+
+```typescript
+const res = await fal.run.meta.museImage.textToImage({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+### microsoft
+
+<details>
+<summary><code>POST</code> <b><code>fal.microsoft.maiImage2p5Pro</code></b></summary>
+
+<code>POST https://fal.run/microsoft/mai-image-2.5-pro</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/microsoft/mai-image-2.5-pro/api)
+
+```typescript
+const res = await fal.run.microsoft.maiImage2p5Pro({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.microsoft.maiImage2p5Pro.edit</code></b></summary>
+
+<code>POST https://fal.run/microsoft/mai-image-2.5-pro/edit</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/microsoft/mai-image-2.5-pro/edit/api)
+
+```typescript
+const res = await fal.run.microsoft.maiImage2p5Pro.edit({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
 ### minimax
 
 <details>
@@ -1289,6 +1771,23 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 </details>
 
 <details>
+<summary><code>POST</code> <b><code>fal.minimax.h3Max.cameraControls</code></b></summary>
+
+<code>POST https://fal.run/minimax/h3-max/camera-controls</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/minimax/h3-max/camera-controls/api)
+
+```typescript
+const res = await fal.run.minimax.h3Max.cameraControls({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
 <summary><code>POST</code> <b><code>fal.minimax.h3Max.extendVideo</code></b></summary>
 
 <code>POST https://fal.run/minimax/h3-max/extend-video</code>
@@ -1299,6 +1798,23 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.minimax.h3Max.extendVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.minimax.h3Max.imageToVideo</code></b></summary>
+
+<code>POST https://fal.run/minimax/h3-max/image-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/minimax/h3-max/image-to-video/api)
+
+```typescript
+const res = await fal.run.minimax.h3Max.imageToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -1323,6 +1839,23 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 </details>
 
 <details>
+<summary><code>POST</code> <b><code>fal.minimax.h3Max.lipSync.imageToVideo</code></b></summary>
+
+<code>POST https://fal.run/minimax/h3-max/lip-sync/image-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/minimax/h3-max/lip-sync/image-to-video/api)
+
+```typescript
+const res = await fal.run.minimax.h3Max.lipSync.imageToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
 <summary><code>POST</code> <b><code>fal.minimax.h3Max.recast</code></b></summary>
 
 <code>POST https://fal.run/minimax/h3-max/recast</code>
@@ -1340,6 +1873,57 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 </details>
 
 <details>
+<summary><code>POST</code> <b><code>fal.minimax.h3Max.referenceToVideo</code></b></summary>
+
+<code>POST https://fal.run/minimax/h3-max/reference-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/minimax/h3-max/reference-to-video/api)
+
+```typescript
+const res = await fal.run.minimax.h3Max.referenceToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.minimax.h3Max.textToVideo</code></b></summary>
+
+<code>POST https://fal.run/minimax/h3-max/text-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/minimax/h3-max/text-to-video/api)
+
+```typescript
+const res = await fal.run.minimax.h3Max.textToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.minimax.h3Max.threeDToVideo</code></b></summary>
+
+<code>POST https://fal.run/minimax/h3-max/3d-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/minimax/h3-max/3d-to-video/api)
+
+```typescript
+const res = await fal.run.minimax.h3Max.threeDToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
 <summary><code>POST</code> <b><code>fal.minimax.h3MaxTurbo.extendVideo</code></b></summary>
 
 <code>POST https://fal.run/minimax/h3-max-turbo/extend-video</code>
@@ -1350,6 +1934,40 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.minimax.h3MaxTurbo.extendVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.minimax.h3MaxTurbo.imageToVideo</code></b></summary>
+
+<code>POST https://fal.run/minimax/h3-max-turbo/image-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/minimax/h3-max-turbo/image-to-video/api)
+
+```typescript
+const res = await fal.run.minimax.h3MaxTurbo.imageToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.minimax.h3MaxTurbo.textToVideo</code></b></summary>
+
+<code>POST https://fal.run/minimax/h3-max-turbo/text-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/minimax/h3-max-turbo/text-to-video/api)
+
+```typescript
+const res = await fal.run.minimax.h3MaxTurbo.textToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -1615,6 +2233,112 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.nanoBananaPro.textToImage({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+### nvidia
+
+<details>
+<summary><code>POST</code> <b><code>fal.nvidia.cosmos3Super.imageToVideo</code></b></summary>
+
+<code>POST https://fal.run/nvidia/cosmos-3-super/image-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/nvidia/cosmos-3-super/image-to-video/api)
+
+```typescript
+const res = await fal.run.nvidia.cosmos3Super.imageToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.nvidia.cosmos3Super.textToImage</code></b></summary>
+
+<code>POST https://fal.run/nvidia/cosmos-3-super/text-to-image</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/nvidia/cosmos-3-super/text-to-image/api)
+
+```typescript
+const res = await fal.run.nvidia.cosmos3Super.textToImage({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+### openai
+
+<details>
+<summary><code>POST</code> <b><code>fal.openai.gptImage2p5.flare.edit</code></b></summary>
+
+<code>POST https://fal.run/openai/gpt-image-2.5/flare/edit</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/openai/gpt-image-2.5/flare/edit/api)
+
+```typescript
+const res = await fal.run.openai.gptImage2p5.flare.edit({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.openai.gptImage2p5.flare.textToImage</code></b></summary>
+
+<code>POST https://fal.run/openai/gpt-image-2.5/flare/text-to-image</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/openai/gpt-image-2.5/flare/text-to-image/api)
+
+```typescript
+const res = await fal.run.openai.gptImage2p5.flare.textToImage({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.openai.gptImage2p5.sunburst.edit</code></b></summary>
+
+<code>POST https://fal.run/openai/gpt-image-2.5/sunburst/edit</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/openai/gpt-image-2.5/sunburst/edit/api)
+
+```typescript
+const res = await fal.run.openai.gptImage2p5.sunburst.edit({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.openai.gptImage2p5.sunburst.textToImage</code></b></summary>
+
+<code>POST https://fal.run/openai/gpt-image-2.5/sunburst/text-to-image</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/openai/gpt-image-2.5/sunburst/text-to-image/api)
+
+```typescript
+const res = await fal.run.openai.gptImage2p5.sunburst.textToImage({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -2273,6 +2997,23 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 </details>
 
 <details>
+<summary><code>POST</code> <b><code>fal.xai.grokImagineVideo.v1p5.imageToVideo</code></b></summary>
+
+<code>POST https://fal.run/xai/grok-imagine-video/v1.5/image-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/xai/grok-imagine-video/v1.5/image-to-video/api)
+
+```typescript
+const res = await fal.run.xai.grokImagineVideo.v1p5.imageToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
 <summary><code>POST</code> <b><code>fal.xai.grokImagineVideo.v1p5.lite.imageToVideo</code></b></summary>
 
 <code>POST https://fal.run/xai/grok-imagine-video/v1.5/lite/image-to-video</code>
@@ -2317,6 +3058,23 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.xai.grokImagineVideo.v1p5.referenceToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.xai.grokImagineVideo.v1p5.textToVideo</code></b></summary>
+
+<code>POST https://fal.run/xai/grok-imagine-video/v1.5/text-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/xai/grok-imagine-video/v1.5/text-to-video/api)
+
+```typescript
+const res = await fal.run.xai.grokImagineVideo.v1p5.textToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

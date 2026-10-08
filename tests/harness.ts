@@ -4,6 +4,11 @@ import FSPersister from "@pollyjs/persister-fs";
 import { createHash } from "node:crypto";
 import path from "path";
 import fs from "fs";
+import {
+  PERSISTED_REQUEST_HEADER_PLACEHOLDERS,
+  persistedRequestHeaderPlaceholder,
+  redactFalCheckpoints,
+} from "../scripts/lib/har-secrets.mjs";
 import { scrubSensitiveRecording, type HarCookieLike } from "./har-scrub.js";
 
 Polly.register(FetchAdapter);
@@ -283,6 +288,14 @@ function scrubRequestCookieHeaders(
 function scrubRequestCookies(cookies: HarCookieLike[] | undefined): void {
   cookies?.splice(0, cookies.length);
 }
+
+// The request headers redactPersistedHarSecrets redacts, each mapped to the
+// placeholder it writes. The table lives in scripts/lib/har-secrets.mjs so that
+// node scripts can read it without loading Polly; it is re-exported here as
+// this harness's redaction contract, which
+// tests/unit/har-request-secrets.test.ts holds every committed recording to.
+export { PERSISTED_REQUEST_HEADER_PLACEHOLDERS };
+
 export function redactPersistedHarSecrets(
   recording: PersistedHarRecording
 ): void {
@@ -292,20 +305,9 @@ export function redactPersistedHarSecrets(
 
   scrubRequestCookieHeaders(recording.request?.headers);
   for (const header of recording.request?.headers ?? []) {
-    if (header.name?.toLowerCase() === "authorization") {
-      header.value = "Bearer ***";
-    }
-    if (header.name?.toLowerCase() === "x-api-key") {
-      header.value = "***";
-    }
-    if (header.name?.toLowerCase() === "xi-api-key") {
-      header.value = "***";
-    }
-    if (header.name?.toLowerCase() === "x-goog-api-key") {
-      header.value = "***";
-    }
-    if (header.name?.toLowerCase() === "x-amz-security-token") {
-      header.value = "***";
+    const placeholder = persistedRequestHeaderPlaceholder(header.name);
+    if (placeholder !== undefined) {
+      header.value = placeholder;
     }
   }
 
@@ -317,6 +319,7 @@ export function redactPersistedHarSecrets(
   if (responseContent && typeof responseContent.text === "string") {
     responseContent.text = redactResponseTextSecrets(responseContent.text);
   }
+  redactFalCheckpointResponseBody(recording);
   redactGuestTokenResponseBody(recording);
   redactFireworksApiKeyResponseBody(recording);
   redactResponseAccountMetadataBody(recording);
@@ -544,6 +547,33 @@ function writeJsonResponseBody(
   if (recording.response) {
     recording.response.bodySize = size;
   }
+}
+
+// A fal response can carry a `checkpoint`: a `.safetensors` URL and the
+// `signature` fal issues for it, valid for a day, bound for a public
+// repository. The rule lives in scripts/lib/har-secrets.mjs, whose finder
+// check-recording-secrets.mjs runs over every recording, and is scoped to that
+// object the way redactResponseTextSecrets scopes its `signature` rule to an
+// OSS upload policy: kimicoding thinking blocks carry a `signature` that the
+// next recorded request echoes.
+function redactFalCheckpointResponseBody(
+  recording: PersistedHarRecording
+): void {
+  const content = recording.response?.content;
+  const text = content?.text;
+  if (typeof text !== "string" || text.length === 0) return;
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(text);
+  } catch {
+    return;
+  }
+
+  const result = redactFalCheckpoints(parsed);
+  if (!result.redacted) return;
+
+  writeJsonResponseBody(recording, result.value, text);
 }
 
 function redactResponseAccountMetadata(value: unknown): {

@@ -5125,7 +5125,3872 @@ export type FalMinimaxH3MaxExtendVideoParsedRequest = z.output<
   typeof FalMinimaxH3MaxExtendVideoRequestSchema
 >;
 
+// The live OpenAPI lists `prompt_expansion_mode` as required while also giving
+// it a default, and types it as a plain string with three examples. Upstream's
+// validator settles both: a `{}` body is refused for `prompt` alone, and an
+// unknown mode is refused with "Input should be 'disabled', 'fast', 'balanced'
+// or 'quality'" (two unbilled 422 probes, 2026-10-07). So the field defaults to
+// `balanced` and takes the four values the validator accepts, the vocabulary
+// the minimax/h3 siblings already enumerate. Both images are optional: with
+// neither, upstream handles the request as text-to-video.
+// Docs: https://fal.ai/models/minimax/h3-max/image-to-video/api
+export const FalMinimaxH3MaxImageToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(50000)
+    .describe("Text prompt for video generation"),
+  duration: z
+    .number()
+    .min(0.92)
+    .max(15)
+    .default(5)
+    .describe(
+      "Video length in seconds. The output can run up to about 0.7 s longer than requested. Use at least 2 s with target_audio_url."
+    ),
+  resolution: z
+    .enum(["480P", "768P", "1080P"])
+    .default("768P")
+    .describe(
+      "The native generation resolution, or 1080P latent refinement from a native 768P source."
+    ),
+  seed: z
+    .number()
+    .int()
+    .nullable()
+    .optional()
+    .describe("Random seed. A random seed is selected when omitted."),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe("If set to true, the safety checker will be enabled."),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe("Return the generated video as base64 instead of a CDN URL."),
+  prompt_expansion_mode: z
+    .enum(["disabled", "fast", "balanced", "quality"])
+    .default("balanced")
+    .describe(
+      "How much effort to spend rewriting the prompt before generation. 'disabled' skips prompt expansion. 'balanced' returns in about a second. 'quality' spends up to ~30s on a richer prompt."
+    ),
+  target_audio_url: z
+    .string()
+    .min(1)
+    .regex(/\S/)
+    .nullable()
+    .optional()
+    .describe(
+      "Optional URL of an audio clip at least 2 seconds long (maximum 15 MB) to pin to the generated soundtrack. Longer clips are trimmed to the generated video's length, keeping the beginning. The original audio replaces the output soundtrack, padded with silence if shorter than the video, without changing playback speed. Exceptionally high sample rates may be resampled to 96 kHz. Accepts an HTTP(S) URL or a base64 data URI."
+    ),
+  image_url: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "Optional URL of the image to use as the first frame. When provided, the output canvas follows this image. If only end_image_url is provided, the canvas follows that last frame instead. If both images are omitted, the request is handled as text-to-video (16:9 by default)."
+    ),
+  end_image_url: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "Optional URL of the image to use as the last frame. It may be provided alone for end-only keyframe generation; in that case the output canvas follows this image."
+    ),
+});
+export type FalMinimaxH3MaxImageToVideoRequest = z.input<
+  typeof FalMinimaxH3MaxImageToVideoRequestSchema
+>;
+export type FalMinimaxH3MaxImageToVideoRequestInput =
+  FalMinimaxH3MaxImageToVideoRequest;
+export type FalMinimaxH3MaxImageToVideoParsedRequest = z.output<
+  typeof FalMinimaxH3MaxImageToVideoRequestSchema
+>;
+
+// The live OpenAPI lists `prompt_expansion_mode` as required while also giving
+// it a default, and types it as a plain string with three examples. Upstream's
+// validator settles both, as it does for the image-to-video sibling: a `{}`
+// body is refused for `prompt` alone, and an unknown mode is refused with
+// "Input should be 'disabled', 'fast', 'balanced' or 'quality'" (two unbilled
+// 422 probes, 2026-10-07). So the field defaults to `balanced` and takes the
+// four values the validator accepts. The same probe showed that upstream
+// closes `aspect_ratio` to the six documented ratios.
+// Docs: https://fal.ai/models/minimax/h3-max/text-to-video/api
+export const FalMinimaxH3MaxTextToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(50000)
+    .describe("Text prompt for video generation"),
+  duration: z
+    .number()
+    .min(0.92)
+    .max(15)
+    .default(5)
+    .describe(
+      "Video length in seconds. The output can run up to about 0.7 s longer than requested. Use at least 2 s with target_audio_url."
+    ),
+  resolution: z
+    .enum(["480P", "768P", "1080P"])
+    .default("768P")
+    .describe(
+      "The native generation resolution, or 1080P latent refinement from a native 768P source."
+    ),
+  seed: z
+    .number()
+    .int()
+    .nullable()
+    .optional()
+    .describe("Random seed. A random seed is selected when omitted."),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe("If set to true, the safety checker will be enabled."),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe("Return the generated video as base64 instead of a CDN URL."),
+  prompt_expansion_mode: z
+    .enum(["disabled", "fast", "balanced", "quality"])
+    .default("balanced")
+    .describe(
+      "How much effort to spend rewriting the prompt before generation. 'disabled' skips prompt expansion. 'balanced' returns in about a second. 'quality' spends up to ~30s on a richer prompt."
+    ),
+  target_audio_url: z
+    .string()
+    .min(1)
+    .regex(/\S/)
+    .nullable()
+    .optional()
+    .describe(
+      "Optional URL of an audio clip at least 2 seconds long (maximum 15 MB) to pin to the generated soundtrack. Longer clips are trimmed to the generated video's length, keeping the beginning. The original audio replaces the output soundtrack, padded with silence if shorter than the video, without changing playback speed. Exceptionally high sample rates may be resampled to 96 kHz. Accepts an HTTP(S) URL or a base64 data URI."
+    ),
+  aspect_ratio: z
+    .enum(["21:9", "16:9", "4:3", "1:1", "3:4", "9:16"])
+    .default("16:9")
+    .describe("The aspect ratio of the generated video."),
+});
+export type FalMinimaxH3MaxTextToVideoRequest = z.input<
+  typeof FalMinimaxH3MaxTextToVideoRequestSchema
+>;
+export type FalMinimaxH3MaxTextToVideoRequestInput =
+  FalMinimaxH3MaxTextToVideoRequest;
+export type FalMinimaxH3MaxTextToVideoParsedRequest = z.output<
+  typeof FalMinimaxH3MaxTextToVideoRequestSchema
+>;
+
+// The live OpenAPI lists `prompt_expansion_mode` as required while also giving
+// it a default, and types it as a plain string with three examples. Upstream's
+// validator settles both, as it does for the image-to-video and text-to-video
+// siblings: a body without the field draws no `missing` error (only
+// `image_url` is required), and an unknown mode is refused with "Input should
+// be 'disabled', 'fast', 'balanced' or 'quality'". The same unbilled 422 probes
+// (2026-10-07) showed the two trajectory rules the refinements restate:
+// keyframe times must be strictly increasing, and the summed azimuth change
+// between consecutive keyframes may not exceed 32 turns (11,520 degrees).
+// Docs: https://fal.ai/models/minimax/h3-max/camera-controls/api
+export const FalMinimaxH3MaxCameraControlsRequestSchema = z.object({
+  prompt: z
+    .string()
+    .max(50000)
+    .default(
+      "The same elements in the reference are rigid. Preserve every element exactly. The entire scene is frozen. Only the camera moves. no scene motion only camera motion"
+    )
+    .describe(
+      "Text prompt for video generation. When omitted or blank, defaults to preserving the frozen reference scene while only the camera moves."
+    ),
+  duration: z
+    .number()
+    .min(0.92)
+    .max(15)
+    .default(5)
+    .describe(
+      "Video length in seconds. The output can run up to about 0.7 s longer than requested."
+    ),
+  resolution: z
+    .enum(["480P", "768P", "1080P"])
+    .default("480P")
+    .describe(
+      "The native generation resolution, or 1080P latent refinement from a native 768P source."
+    ),
+  seed: z
+    .number()
+    .int()
+    .nullable()
+    .optional()
+    .describe("Random seed. A random seed is selected when omitted."),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe("If set to true, the safety checker will be enabled."),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe("Return the generated video as base64 instead of a CDN URL."),
+  prompt_expansion_mode: z
+    .enum(["disabled", "fast", "balanced", "quality"])
+    .default("balanced")
+    .describe(
+      "How much effort to spend rewriting the prompt before generation. 'disabled' skips prompt expansion. 'balanced' returns in about a second. 'quality' spends up to ~30s on a richer prompt."
+    ),
+  image_url: z
+    .string()
+    .min(1)
+    .describe("URL of the image to use as the first frame."),
+  camera_trajectory: z
+    .array(
+      z
+        .object({
+          time: z
+            .number()
+            .min(0)
+            .max(1)
+            .describe(
+              "Normalized video time, from 0 at the start to 1 at the end."
+            ),
+          azimuth: z
+            .number()
+            .describe(
+              "Horizontal camera angle around the subject, in degrees."
+            ),
+          elevation: z
+            .number()
+            .min(-90)
+            .max(90)
+            .describe("Vertical camera angle around the subject, in degrees."),
+          distance: z
+            .number()
+            .positive()
+            .describe(
+              "Camera distance from the subject in normalized scene units."
+            ),
+        })
+        .describe(
+          "One camera pose at a normalized point in the generated clip."
+        )
+    )
+    .min(2)
+    .max(12)
+    .refine(
+      (keyframes) =>
+        keyframes.every((k, i) => i === 0 || k.time > keyframes[i - 1].time),
+      { message: "Camera keyframe times must be strictly increasing" }
+    )
+    .refine(
+      (keyframes) =>
+        keyframes.reduce(
+          (travel, k, i) =>
+            i === 0
+              ? 0
+              : travel + Math.abs(k.azimuth - keyframes[i - 1].azimuth),
+          0
+        ) <=
+        32 * 360,
+      {
+        message:
+          "Camera trajectory supports at most 32 turns of total azimuth travel",
+      }
+    )
+    .optional()
+    .describe(
+      "Ordered camera keyframes. The first pose is held before its time and the final pose is held for the remainder of the video. Signed full turns are preserved, with at most 32 turns of total azimuth travel."
+    ),
+});
+export type FalMinimaxH3MaxCameraControlsRequest = z.input<
+  typeof FalMinimaxH3MaxCameraControlsRequestSchema
+>;
+export type FalMinimaxH3MaxCameraControlsRequestInput =
+  FalMinimaxH3MaxCameraControlsRequest;
+export type FalMinimaxH3MaxCameraControlsParsedRequest = z.output<
+  typeof FalMinimaxH3MaxCameraControlsRequestSchema
+>;
+
+// The live OpenAPI lists `prompt_expansion_mode` as required while also giving
+// it a default, and types it as a plain string with three examples. Upstream's
+// validator settles both, as it does for the other minimax/h3-max leaves: a
+// body without the field draws no `missing` error (only `prompt` is
+// required), and an unknown mode is refused with "Input should be 'disabled',
+// 'fast', 'balanced' or 'quality'". The same unbilled 422 probes (2026-10-07)
+// showed one field rule the OpenAPI omits: a prompt of only whitespace is
+// refused, which the `\S` pattern restates. The three refinements restate
+// rules the field descriptions publish: at most 12 reference files in all, a
+// middle image only between start and end images at a native resolution, and
+// a middle frame time only with a middle image. The probes cannot reach those,
+// since a body that fails field validation is never checked against them.
+// Unlike minimax/h3/reference-to-video, audio may be the only reference
+// modality ("Images, videos, and audio can be provided individually or
+// together").
+// Docs: https://fal.ai/models/minimax/h3-max/reference-to-video/api
+export const FalMinimaxH3MaxReferenceToVideoRequestSchema = z
+  .object({
+    prompt: z
+      .string()
+      .min(1)
+      .max(50000)
+      .regex(/\S/, "Prompt cannot be empty or contain only whitespace")
+      .describe(
+        "Text prompt for video generation. Refer to reference assets by their modality and order in the reference lists: Image 1, Image 2, Video 1, Audio 1, and so on."
+      ),
+    reference_image_urls: z
+      .array(z.string())
+      .max(9)
+      .optional()
+      .describe(
+        "URLs of subject/style reference images, referenced in the prompt as Image 1, Image 2, and so on. Reference images, videos, and audio clips must add up to at most 12 files."
+      ),
+    reference_video_urls: z
+      .array(z.string())
+      .max(3)
+      .optional()
+      .describe(
+        "URLs of motion/reference video clips (2-15 seconds each, combined duration at most 15 seconds), referenced in the prompt as Video 1, Video 2, and so on. Reference images, videos, and audio clips must add up to at most 12 files."
+      ),
+    reference_audio_urls: z
+      .array(z.string())
+      .max(3)
+      .optional()
+      .describe(
+        "URLs of reference audio clips (2-15 seconds each, combined duration at most 15 seconds), referenced in the prompt as Audio 1, Audio 2, and so on. Images, videos, and audio can be provided individually or together. Reference images, videos, and audio clips must add up to at most 12 files."
+      ),
+    image_url: z
+      .string()
+      .min(1)
+      .nullable()
+      .optional()
+      .describe(
+        "Optional URL of the image to use as the first frame. The video opens exactly on this image while the references keep the subjects consistent; the output canvas follows this image."
+      ),
+    middle_image_url: z
+      .string()
+      .min(1)
+      .nullable()
+      .optional()
+      .describe(
+        "Optional image to guide the video at middle_frame_time. Requires start and end images and native 480P or 768P resolution."
+      ),
+    middle_frame_time: z
+      .number()
+      .gt(0)
+      .lt(15)
+      .nullable()
+      .optional()
+      .describe(
+        "Target time for the middle image, in seconds from the start. Rounded to the nearest frame at 24 fps; it must fall strictly between the first and last frames of the requested duration. Requires middle_image_url."
+      ),
+    end_image_url: z
+      .string()
+      .min(1)
+      .nullable()
+      .optional()
+      .describe(
+        "Optional URL of the image to use as the last frame. The video ends exactly on this image."
+      ),
+    duration: z
+      .number()
+      .min(0.92)
+      .max(15)
+      .default(5)
+      .describe(
+        "Video length in seconds. The output can run up to about 0.7 s longer than requested."
+      ),
+    resolution: z
+      .enum(["480P", "768P", "1080P"])
+      .default("768P")
+      .describe(
+        "The native generation resolution, or 1080P latent refinement from a native 768P source."
+      ),
+    seed: z
+      .number()
+      .int()
+      .nullable()
+      .optional()
+      .describe("Random seed. A random seed is selected when omitted."),
+    enable_safety_checker: z
+      .boolean()
+      .default(true)
+      .describe("If set to true, the safety checker will be enabled."),
+    sync_mode: z
+      .boolean()
+      .default(false)
+      .describe("Return the generated video as base64 instead of a CDN URL."),
+    prompt_expansion_mode: z
+      .enum(["disabled", "fast", "balanced", "quality"])
+      .default("balanced")
+      .describe(
+        "How much effort to spend rewriting the prompt before generation. 'disabled' skips prompt expansion. 'balanced' returns in about a second. 'quality' spends up to ~30s on a richer prompt."
+      ),
+    aspect_ratio: z
+      .enum(["adaptive", "21:9", "16:9", "4:3", "1:1", "3:4", "9:16"])
+      .default("adaptive")
+      .describe("The aspect ratio of the generated video."),
+  })
+  .refine(
+    (v) =>
+      (v.reference_image_urls?.length ?? 0) +
+        (v.reference_video_urls?.length ?? 0) +
+        (v.reference_audio_urls?.length ?? 0) <=
+      12,
+    {
+      message:
+        "minimax/h3-max/reference-to-video accepts at most 12 reference files across reference_image_urls, reference_video_urls, and reference_audio_urls",
+      path: ["reference_image_urls"],
+    }
+  )
+  .refine(
+    (v) =>
+      v.middle_image_url == null ||
+      (v.image_url != null &&
+        v.end_image_url != null &&
+        v.resolution !== "1080P"),
+    {
+      message:
+        "middle_image_url requires image_url, end_image_url, and a native 480P or 768P resolution",
+      path: ["middle_image_url"],
+    }
+  )
+  .refine((v) => v.middle_frame_time == null || v.middle_image_url != null, {
+    message: "middle_frame_time requires middle_image_url",
+    path: ["middle_frame_time"],
+  });
+export type FalMinimaxH3MaxReferenceToVideoRequest = z.input<
+  typeof FalMinimaxH3MaxReferenceToVideoRequestSchema
+>;
+export type FalMinimaxH3MaxReferenceToVideoRequestInput =
+  FalMinimaxH3MaxReferenceToVideoRequest;
+export type FalMinimaxH3MaxReferenceToVideoParsedRequest = z.output<
+  typeof FalMinimaxH3MaxReferenceToVideoRequestSchema
+>;
+
+// Upstream refuses every media URL here, `video_url` and each
+// `reference_image_urls` entry, unless it is "an HTTPS URL without
+// credentials or fragments" (unbilled 422 probes, 2026-10-07): an `http:`
+// URL, a `user:pass@` authority and a `#fragment` were each refused, and an
+// upper-case `HTTPS:` scheme was accepted. The pattern restates that rule. It
+// spells the scheme's case out rather than using the `i` flag, which JSON
+// Schema's `pattern` drops.
+const FalMinimaxH3MaxThreeDToVideoMediaUrlSchema = z
+  .string()
+  .regex(
+    /^[Hh][Tt][Tt][Pp][Ss]:\/\/[^\s/?#@]+(?:[/?][^\s#]*)?$/,
+    "Media must be an HTTPS URL without credentials or fragments"
+  );
+
+// The live OpenAPI closes the input (`additionalProperties: false`), and the
+// same probes confirmed it ("Extra inputs are not permitted"), so the schema
+// is strict like its minimax/h3-max/recast sibling. They also showed that
+// `video_url` is the only required field, that
+// `max_generated_reference_images` takes integers only (a string, a fraction
+// and a boolean were refused), and that an empty or blank Scene Intent is
+// accepted. The output duration is not a request field: it follows the
+// source video.
+// Docs: https://fal.ai/models/minimax/h3-max/3d-to-video/api
+export const FalMinimaxH3MaxThreeDToVideoRequestSchema = z
+  .object({
+    video_url: FalMinimaxH3MaxThreeDToVideoMediaUrlSchema.describe(
+      "Blender video, up to 15 seconds and 32 shots, at a public HTTPS URL."
+    ),
+    prompt: z
+      .string()
+      .max(2000)
+      .nullable()
+      .optional()
+      .describe(
+        "Optional clarification of what your proxies represent or how they move, for example: 'The moving block represents a running person.' Camera, trajectories, timing and object count remain defined by the video."
+      ),
+    reference_image_urls: z
+      .array(FalMinimaxH3MaxThreeDToVideoMediaUrlSchema)
+      .max(8)
+      .optional()
+      .describe(
+        "Optional environment, subject, interior or detail references. When supplied, uses these images directly without visual planning or generating new images; Scene Intent is optional. Without references, automatically creates appearance references within your new-image limit. Camera and movement always come from the video."
+      ),
+    max_generated_reference_images: z
+      .number()
+      .int()
+      .min(1)
+      .max(8)
+      .default(2)
+      .describe(
+        "Maximum NEW images to generate when no reference images are supplied. Ignored when reference images are supplied. Uses fewer when enough views are covered. Uncovered shots stay in the video."
+      ),
+    resolution: z
+      .enum(["480P", "768P", "1080P"])
+      .default("768P")
+      .describe(
+        "Output quality. Duration is taken automatically from the video."
+      ),
+  })
+  .strict();
+export type FalMinimaxH3MaxThreeDToVideoRequest = z.input<
+  typeof FalMinimaxH3MaxThreeDToVideoRequestSchema
+>;
+export type FalMinimaxH3MaxThreeDToVideoRequestInput =
+  FalMinimaxH3MaxThreeDToVideoRequest;
+export type FalMinimaxH3MaxThreeDToVideoParsedRequest = z.output<
+  typeof FalMinimaxH3MaxThreeDToVideoRequestSchema
+>;
+
+// Upstream requires only `image_url` and `audio_url` and closes `resolution`
+// to the four documented values (unbilled 422 probes, 2026-10-08). The same
+// probes showed that `seed` takes integers from 0 to 2147483647 only, that an
+// unknown field is accepted, so the schema is not strict, and that neither
+// media URL is checked for its form before generation. The output length is
+// not a request field: it follows the supplied audio.
+// Docs: https://fal.ai/models/minimax/h3-max/lip-sync/image-to-video/api
+export const FalMinimaxH3MaxLipSyncImageToVideoRequestSchema = z.object({
+  image_url: z
+    .string()
+    .describe(
+      "Image to animate. The aspect ratio must be between 0.4 and 2.5."
+    ),
+  audio_url: z
+    .string()
+    .describe(
+      "Audio to synchronize the mouth movements to, at least 5 seconds long. Supports up to 15 minutes. The output video matches the supplied audio duration."
+    ),
+  resolution: z
+    .enum(["480P", "768P", "1080P", "2K"])
+    .default("768P")
+    .describe(
+      "Output resolution. Uses the supported aspect ratio nearest the image."
+    ),
+  enable_transcription: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Transcribe the supplied audio to guide lip synchronization. When disabled, synchronize to the audio without a transcript."
+    ),
+  seed: z
+    .number()
+    .int()
+    .min(0)
+    .max(2147483647)
+    .nullable()
+    .optional()
+    .describe("Random seed; selected randomly if omitted."),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe("Enable content safety checks."),
+});
+export type FalMinimaxH3MaxLipSyncImageToVideoRequest = z.input<
+  typeof FalMinimaxH3MaxLipSyncImageToVideoRequestSchema
+>;
+export type FalMinimaxH3MaxLipSyncImageToVideoRequestInput =
+  FalMinimaxH3MaxLipSyncImageToVideoRequest;
+export type FalMinimaxH3MaxLipSyncImageToVideoParsedRequest = z.output<
+  typeof FalMinimaxH3MaxLipSyncImageToVideoRequestSchema
+>;
+
+// The live OpenAPI documents the same input as minimax/h3-max/image-to-video,
+// field for field: it lists `prompt_expansion_mode` as required while giving
+// it a default, and types it as a plain string with three examples. Upstream's
+// validator settles both here too: a `{}` body is refused for `prompt` alone,
+// and an unknown mode is refused with "Input should be 'disabled', 'fast',
+// 'balanced' or 'quality'" (three unbilled 422 probes, 2026-10-08). So the
+// field defaults to `balanced` and takes the four values the validator
+// accepts. Both images are optional: with neither, upstream handles the
+// request as text-to-video.
+// Docs: https://fal.ai/models/minimax/h3-max-turbo/image-to-video/api
+export const FalMinimaxH3MaxTurboImageToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(50000)
+    .describe("Text prompt for video generation"),
+  duration: z
+    .number()
+    .min(0.92)
+    .max(15)
+    .default(5)
+    .describe(
+      "Video length in seconds. The output can run up to about 0.7 s longer than requested. Use at least 2 s with target_audio_url."
+    ),
+  resolution: z
+    .enum(["480P", "768P", "1080P"])
+    .default("768P")
+    .describe(
+      "The native generation resolution, or 1080P latent refinement from a native 768P source."
+    ),
+  seed: z
+    .number()
+    .int()
+    .nullable()
+    .optional()
+    .describe("Random seed. A random seed is selected when omitted."),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe("If set to true, the safety checker will be enabled."),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe("Return the generated video as base64 instead of a CDN URL."),
+  prompt_expansion_mode: z
+    .enum(["disabled", "fast", "balanced", "quality"])
+    .default("balanced")
+    .describe(
+      "How much effort to spend rewriting the prompt before generation. 'disabled' skips prompt expansion. 'balanced' returns in about a second. 'quality' spends up to ~30s on a richer prompt."
+    ),
+  target_audio_url: z
+    .string()
+    .min(1)
+    .regex(/\S/)
+    .nullable()
+    .optional()
+    .describe(
+      "Optional URL of an audio clip at least 2 seconds long (maximum 15 MB) to pin to the generated soundtrack. Longer clips are trimmed to the generated video's length, keeping the beginning. The original audio replaces the output soundtrack, padded with silence if shorter than the video, without changing playback speed. Exceptionally high sample rates may be resampled to 96 kHz. Accepts an HTTP(S) URL or a base64 data URI."
+    ),
+  image_url: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "Optional URL of the image to use as the first frame. When provided, the output canvas follows this image. If only end_image_url is provided, the canvas follows that last frame instead. If both images are omitted, the request is handled as text-to-video (16:9 by default)."
+    ),
+  end_image_url: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "Optional URL of the image to use as the last frame. It may be provided alone for end-only keyframe generation; in that case the output canvas follows this image."
+    ),
+});
+export type FalMinimaxH3MaxTurboImageToVideoRequest = z.input<
+  typeof FalMinimaxH3MaxTurboImageToVideoRequestSchema
+>;
+export type FalMinimaxH3MaxTurboImageToVideoRequestInput =
+  FalMinimaxH3MaxTurboImageToVideoRequest;
+export type FalMinimaxH3MaxTurboImageToVideoParsedRequest = z.output<
+  typeof FalMinimaxH3MaxTurboImageToVideoRequestSchema
+>;
+
+// The live OpenAPI documents the same input as minimax/h3-max/text-to-video,
+// field for field: it lists `prompt_expansion_mode` as required while giving
+// it a default, and types it as a plain string with three examples. Upstream's
+// validator settles both here too: a `{}` body is refused for `prompt` alone,
+// and an unknown mode is refused with "Input should be 'disabled', 'fast',
+// 'balanced' or 'quality'" (three unbilled 422 probes, 2026-10-08). So the
+// field defaults to `balanced` and takes the four values the validator
+// accepts. The same probes showed that upstream closes `aspect_ratio` to the
+// six documented ratios.
+// Docs: https://fal.ai/models/minimax/h3-max-turbo/text-to-video/api
+export const FalMinimaxH3MaxTurboTextToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(50000)
+    .describe("Text prompt for video generation"),
+  duration: z
+    .number()
+    .min(0.92)
+    .max(15)
+    .default(5)
+    .describe(
+      "Video length in seconds. The output can run up to about 0.7 s longer than requested. Use at least 2 s with target_audio_url."
+    ),
+  resolution: z
+    .enum(["480P", "768P", "1080P"])
+    .default("768P")
+    .describe(
+      "The native generation resolution, or 1080P latent refinement from a native 768P source."
+    ),
+  seed: z
+    .number()
+    .int()
+    .nullable()
+    .optional()
+    .describe("Random seed. A random seed is selected when omitted."),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe("If set to true, the safety checker will be enabled."),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe("Return the generated video as base64 instead of a CDN URL."),
+  prompt_expansion_mode: z
+    .enum(["disabled", "fast", "balanced", "quality"])
+    .default("balanced")
+    .describe(
+      "How much effort to spend rewriting the prompt before generation. 'disabled' skips prompt expansion. 'balanced' returns in about a second. 'quality' spends up to ~30s on a richer prompt."
+    ),
+  target_audio_url: z
+    .string()
+    .min(1)
+    .regex(/\S/)
+    .nullable()
+    .optional()
+    .describe(
+      "Optional URL of an audio clip at least 2 seconds long (maximum 15 MB) to pin to the generated soundtrack. Longer clips are trimmed to the generated video's length, keeping the beginning. The original audio replaces the output soundtrack, padded with silence if shorter than the video, without changing playback speed. Exceptionally high sample rates may be resampled to 96 kHz. Accepts an HTTP(S) URL or a base64 data URI."
+    ),
+  aspect_ratio: z
+    .enum(["21:9", "16:9", "4:3", "1:1", "3:4", "9:16"])
+    .default("16:9")
+    .describe("The aspect ratio of the generated video."),
+});
+export type FalMinimaxH3MaxTurboTextToVideoRequest = z.input<
+  typeof FalMinimaxH3MaxTurboTextToVideoRequestSchema
+>;
+export type FalMinimaxH3MaxTurboTextToVideoRequestInput =
+  FalMinimaxH3MaxTurboTextToVideoRequest;
+export type FalMinimaxH3MaxTurboTextToVideoParsedRequest = z.output<
+  typeof FalMinimaxH3MaxTurboTextToVideoRequestSchema
+>;
+
+// The live OpenAPI requires `prompt` alone, and five unbilled 422 probes
+// (2026-10-08) found upstream's validator to match it: `duration` is an
+// integer from 1 to 15, `resolution` and `aspect_ratio` are closed to the
+// documented values, and `prompt` stops at 4096 characters with no minimum.
+// An unknown field drew no error, so the object is not strict.
+// Docs: https://fal.ai/models/xai/grok-imagine-video/v1.5/text-to-video/api
+export const FalXaiGrokImagineVideoV1p5TextToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .max(4096)
+    .describe("Text description of the desired video."),
+  duration: z
+    .number()
+    .int()
+    .min(1)
+    .max(15)
+    .default(6)
+    .describe("Video duration in seconds."),
+  resolution: z
+    .enum(["480p", "720p", "1080p"])
+    .default("720p")
+    .describe("Resolution of the output video."),
+  aspect_ratio: z
+    .enum(["16:9", "4:3", "3:2", "1:1", "2:3", "3:4", "9:16"])
+    .default("16:9")
+    .describe("Aspect ratio of the generated video."),
+});
+export type FalXaiGrokImagineVideoV1p5TextToVideoRequest = z.input<
+  typeof FalXaiGrokImagineVideoV1p5TextToVideoRequestSchema
+>;
+export type FalXaiGrokImagineVideoV1p5TextToVideoRequestInput =
+  FalXaiGrokImagineVideoV1p5TextToVideoRequest;
+export type FalXaiGrokImagineVideoV1p5TextToVideoParsedRequest = z.output<
+  typeof FalXaiGrokImagineVideoV1p5TextToVideoRequestSchema
+>;
+
+// The live OpenAPI requires `prompt` and `image_url`, and six unbilled 422
+// probes (2026-10-08) found upstream's validator to match it: `duration` is an
+// integer from 1 to 15, `resolution` is closed to the documented values,
+// `prompt` stops at 4096 characters with no minimum, and `image_url` must be
+// a string, though not one checked as a URL. The endpoint documents no
+// `aspect_ratio`, and the validator ignored one, as it ignored an unknown
+// field, so the object is not strict.
+// Docs: https://fal.ai/models/xai/grok-imagine-video/v1.5/image-to-video/api
+export const FalXaiGrokImagineVideoV1p5ImageToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .max(4096)
+    .describe("Text description of desired changes or motion in the video."),
+  duration: z
+    .number()
+    .int()
+    .min(1)
+    .max(15)
+    .default(6)
+    .describe("Video duration in seconds."),
+  resolution: z
+    .enum(["480p", "720p", "1080p"])
+    .default("720p")
+    .describe("Resolution of the output video."),
+  image_url: z
+    .string()
+    .describe("URL of the input image for video generation."),
+});
+export type FalXaiGrokImagineVideoV1p5ImageToVideoRequest = z.input<
+  typeof FalXaiGrokImagineVideoV1p5ImageToVideoRequestSchema
+>;
+export type FalXaiGrokImagineVideoV1p5ImageToVideoRequestInput =
+  FalXaiGrokImagineVideoV1p5ImageToVideoRequest;
+export type FalXaiGrokImagineVideoV1p5ImageToVideoParsedRequest = z.output<
+  typeof FalXaiGrokImagineVideoV1p5ImageToVideoRequestSchema
+>;
+
+// The live OpenAPI requires `prompt` and `video_url`, and seven unbilled 422
+// probes (2026-10-08) found upstream's validator to match it: `resolution` is
+// closed to the documented lower-case values (`360P` and `4K` are refused),
+// `prompt` stops at 20,000 characters with no minimum, and `video_url` must be
+// a string, though not one checked as a URL. The endpoint documents no
+// duration or aspect ratio, and the validator ignored both, as it ignored an
+// unknown field, so the object is not strict.
+// Docs: https://fal.ai/models/google/gemini-omni-flash/v1.1/edit/api
+export const FalGeminiOmniFlashV1p1EditRequestSchema = z.object({
+  prompt: z
+    .string()
+    .max(20_000)
+    .describe("A simple instruction describing the edit."),
+  video_url: z.string().describe("URL of the video to edit."),
+  resolution: z
+    .enum(["360p", "720p", "1080p", "4k"])
+    .default("720p")
+    .describe("The resolution of the edited video."),
+});
+export type FalGeminiOmniFlashV1p1EditRequest = z.input<
+  typeof FalGeminiOmniFlashV1p1EditRequestSchema
+>;
+export type FalGeminiOmniFlashV1p1EditRequestInput =
+  FalGeminiOmniFlashV1p1EditRequest;
+export type FalGeminiOmniFlashV1p1EditParsedRequest = z.output<
+  typeof FalGeminiOmniFlashV1p1EditRequestSchema
+>;
+
+// The live OpenAPI requires only `prompt`, and ten unbilled 422 probes
+// (2026-10-08) found upstream's validator to match it: `image_urls` holds at
+// most ten strings and `reference_video_urls` at most three, with no minimum
+// and no URL check on either; `duration` is an integer from 3 to 10 (4.5 is
+// refused); `aspect_ratio` and `resolution` are closed to the documented
+// values (`1:1`, `360P` and `4K` are refused); and `prompt` stops at 20,000
+// characters with no minimum. The validator ignored an unknown field, so the
+// object is not strict.
+// Docs: https://fal.ai/models/google/gemini-omni-flash/v1.1/reference-to-video/api
+export const FalGeminiOmniFlashV1p1ReferenceToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .max(20_000)
+    .describe(
+      "The text prompt describing the video. Reference media is sent in list order before the prompt."
+    ),
+  image_urls: z
+    .array(z.string())
+    .max(10)
+    .optional()
+    .describe("URLs of reference images to incorporate into the video."),
+  reference_video_urls: z
+    .array(z.string())
+    .max(3)
+    .optional()
+    .describe(
+      "URLs of up to three reference videos. Each video must be at most three seconds long."
+    ),
+  aspect_ratio: z
+    .enum(["16:9", "9:16"])
+    .default("16:9")
+    .describe("The aspect ratio of the generated video."),
+  resolution: z
+    .enum(["360p", "720p", "1080p", "4k"])
+    .default("720p")
+    .describe("The resolution of the generated video."),
+  duration: z
+    .number()
+    .int()
+    .min(3)
+    .max(10)
+    .default(8)
+    .describe("The duration of the generated video, in seconds."),
+});
+export type FalGeminiOmniFlashV1p1ReferenceToVideoRequest = z.input<
+  typeof FalGeminiOmniFlashV1p1ReferenceToVideoRequestSchema
+>;
+export type FalGeminiOmniFlashV1p1ReferenceToVideoRequestInput =
+  FalGeminiOmniFlashV1p1ReferenceToVideoRequest;
+export type FalGeminiOmniFlashV1p1ReferenceToVideoParsedRequest = z.output<
+  typeof FalGeminiOmniFlashV1p1ReferenceToVideoRequestSchema
+>;
+
+// The live OpenAPI requires `prompt` and `image_url`, and eleven unbilled 422
+// probes (2026-10-08) found upstream's validator to match it: `image_url` must
+// be a string and `end_image_url` a string or null, with no URL check on
+// either; `duration` is an integer from 3 to 10 (4.5 is refused);
+// `aspect_ratio` and `resolution` are closed to the documented values (`1:1`,
+// `360P` and `4K` are refused); and `prompt` stops at 20,000 characters with
+// no minimum. The validator ignored an unknown field, so the object is not
+// strict.
+// Docs: https://fal.ai/models/google/gemini-omni-flash/v1.1/image-to-video/api
+export const FalGeminiOmniFlashV1p1ImageToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .max(20_000)
+    .describe(
+      "The text prompt describing how the first image should be animated or interpolated into the optional end image."
+    ),
+  image_url: z.string().describe("URL of the first frame to animate."),
+  end_image_url: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "Optional URL of the end frame. When provided, the model interpolates between the two images in their listed order."
+    ),
+  aspect_ratio: z
+    .enum(["16:9", "9:16"])
+    .default("16:9")
+    .describe("The aspect ratio of the generated video."),
+  resolution: z
+    .enum(["360p", "720p", "1080p", "4k"])
+    .default("720p")
+    .describe("The resolution of the generated video."),
+  duration: z
+    .number()
+    .int()
+    .min(3)
+    .max(10)
+    .default(8)
+    .describe("The duration of the generated video, in seconds."),
+});
+export type FalGeminiOmniFlashV1p1ImageToVideoRequest = z.input<
+  typeof FalGeminiOmniFlashV1p1ImageToVideoRequestSchema
+>;
+export type FalGeminiOmniFlashV1p1ImageToVideoRequestInput =
+  FalGeminiOmniFlashV1p1ImageToVideoRequest;
+export type FalGeminiOmniFlashV1p1ImageToVideoParsedRequest = z.output<
+  typeof FalGeminiOmniFlashV1p1ImageToVideoRequestSchema
+>;
+
+// The live OpenAPI requires only `prompt`, and twelve unbilled 422 probes
+// (2026-10-08) found upstream's validator to match it: `prompt` must be a
+// string of at most 20,000 characters, with no minimum; `duration` is an
+// integer from 3 to 10 (4.5 and null are refused); and `aspect_ratio` and
+// `resolution` are closed to the documented values (`1:1`, null, `360P` and
+// `4K` are refused). The validator ignored an unknown field, so the object is
+// not strict.
+// Docs: https://fal.ai/models/google/gemini-omni-flash/v1.1/text-to-video/api
+export const FalGeminiOmniFlashV1p1TextToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .max(20_000)
+    .describe("The text prompt describing the video you want to generate."),
+  aspect_ratio: z
+    .enum(["16:9", "9:16"])
+    .default("16:9")
+    .describe("The aspect ratio of the generated video."),
+  resolution: z
+    .enum(["360p", "720p", "1080p", "4k"])
+    .default("720p")
+    .describe("The resolution of the generated video."),
+  duration: z
+    .number()
+    .int()
+    .min(3)
+    .max(10)
+    .default(8)
+    .describe("The duration of the generated video, in seconds."),
+});
+export type FalGeminiOmniFlashV1p1TextToVideoRequest = z.input<
+  typeof FalGeminiOmniFlashV1p1TextToVideoRequestSchema
+>;
+export type FalGeminiOmniFlashV1p1TextToVideoRequestInput =
+  FalGeminiOmniFlashV1p1TextToVideoRequest;
+export type FalGeminiOmniFlashV1p1TextToVideoParsedRequest = z.output<
+  typeof FalGeminiOmniFlashV1p1TextToVideoRequestSchema
+>;
+
+// The live OpenAPI requires only `prompt`, and sixteen unbilled 422 probes
+// (2026-10-08) found upstream's validator to match it: `prompt` is a string of
+// 1 to 5,000 characters; `duration`, `resolution`, `aspect_ratio` and `fps`
+// are closed to the documented values (null is refused for each);
+// `camera_motion` is the documented set or null. The validator ignored an
+// unknown field, so the object is not strict. As on the image-to-video/fast
+// sibling, the documented coupling of duration to resolution and frame rate
+// is a cross-field rule upstream enforces; the duration's description states
+// it, and this schema does not encode it.
+// Docs: https://fal.ai/models/lightricks/ltx-2.5/text-to-video/fast/api
+export const FalLightricksLtx2p5TextToVideoFastRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(5000)
+    .describe("The prompt to use for the generated video"),
+  // A fixed vocabulary, not a model registry, so it stays a closed union.
+  duration: z
+    .union([
+      z.literal(6),
+      z.literal(8),
+      z.literal(10),
+      z.literal(12),
+      z.literal(14),
+      z.literal(16),
+      z.literal(18),
+      z.literal(20),
+      z.literal("auto"),
+    ])
+    .default("auto")
+    .describe(
+      "The duration of the generated video in seconds. At 720p and 1080p, 24 or 25 FPS supports up to 20 seconds, while 48 or 50 FPS supports up to 10 seconds. At 1440p and 2160p, all frame rates support up to 10 seconds. Set to 'auto' to let the model choose the duration automatically."
+    ),
+  resolution: z
+    .enum(["720p", "1080p", "1440p", "2160p"])
+    .default("1080p")
+    .describe("The resolution of the generated video."),
+  aspect_ratio: z
+    .enum(["16:9", "9:16"])
+    .default("16:9")
+    .describe("The aspect ratio of the generated video"),
+  fps: z
+    .union([z.literal(24), z.literal(25), z.literal(48), z.literal(50)])
+    .default(25)
+    .describe("The frames per second of the generated video."),
+  generate_audio: z
+    .boolean()
+    .default(true)
+    .describe("Whether to generate audio for the generated video"),
+  camera_motion: z
+    .enum([
+      "dolly_in",
+      "dolly_out",
+      "dolly_left",
+      "dolly_right",
+      "jib_up",
+      "jib_down",
+      "static",
+      "focus_shift",
+    ])
+    .nullable()
+    .optional()
+    .describe("Optional camera motion applied to the generated video."),
+});
+export type FalLightricksLtx2p5TextToVideoFastRequest = z.input<
+  typeof FalLightricksLtx2p5TextToVideoFastRequestSchema
+>;
+export type FalLightricksLtx2p5TextToVideoFastRequestInput =
+  FalLightricksLtx2p5TextToVideoFastRequest;
+export type FalLightricksLtx2p5TextToVideoFastParsedRequest = z.output<
+  typeof FalLightricksLtx2p5TextToVideoFastRequestSchema
+>;
+
+// The live OpenAPI requires only `prompt`, and eighteen unbilled 422 probes
+// (2026-10-08) found upstream's validator to match it: `prompt` is a string of
+// 1 to 5,000 characters; `duration`, `resolution`, `aspect_ratio` and `fps`
+// are closed to the documented values (null is refused for each), which omit
+// the fast tier's 12 to 20 seconds, 1440p, 2160p and 48 FPS; `camera_motion`
+// is the documented set or null. The validator ignored an unknown field, so
+// the object is not strict.
+// Docs: https://fal.ai/models/lightricks/ltx-2.5/text-to-video/pro/api
+export const FalLightricksLtx2p5TextToVideoProRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(5000)
+    .describe("The prompt to use for the generated video"),
+  // A fixed vocabulary, not a model registry, so it stays a closed union.
+  duration: z
+    .union([z.literal(6), z.literal(8), z.literal(10), z.literal("auto")])
+    .default("auto")
+    .describe(
+      "The duration of the generated video in seconds, up to 10 seconds. Set to 'auto' to let the model choose the duration automatically."
+    ),
+  resolution: z
+    .enum(["720p", "1080p"])
+    .default("1080p")
+    .describe("The resolution of the generated video."),
+  aspect_ratio: z
+    .enum(["16:9", "9:16"])
+    .default("16:9")
+    .describe("The aspect ratio of the generated video"),
+  fps: z
+    .union([z.literal(24), z.literal(25), z.literal(50)])
+    .default(25)
+    .describe("The frames per second of the generated video."),
+  generate_audio: z
+    .boolean()
+    .default(true)
+    .describe("Whether to generate audio for the generated video"),
+  camera_motion: z
+    .enum([
+      "dolly_in",
+      "dolly_out",
+      "dolly_left",
+      "dolly_right",
+      "jib_up",
+      "jib_down",
+      "static",
+      "focus_shift",
+    ])
+    .nullable()
+    .optional()
+    .describe("Optional camera motion applied to the generated video."),
+});
+export type FalLightricksLtx2p5TextToVideoProRequest = z.input<
+  typeof FalLightricksLtx2p5TextToVideoProRequestSchema
+>;
+export type FalLightricksLtx2p5TextToVideoProRequestInput =
+  FalLightricksLtx2p5TextToVideoProRequest;
+export type FalLightricksLtx2p5TextToVideoProParsedRequest = z.output<
+  typeof FalLightricksLtx2p5TextToVideoProRequestSchema
+>;
+
+// The live OpenAPI requires only `audio_url`, and seventeen unbilled 422
+// probes (2026-10-08) found upstream's validator to match it: `audio_url` is
+// a string (null is refused); `image_url` is a string or null; `prompt` is a
+// string of 1 to 5,000 characters or null; `guidance_scale` is a number from
+// 1 to 50 or null; `aspect_ratio` is closed to the documented values (null is
+// refused). The validator ignored an unknown field, so the object is not
+// strict, and it checked neither media URL's form. The refinement restates
+// the rule both media descriptions publish: without an image, a prompt is
+// required. The probes cannot reach it, since a body that fails field
+// validation is never checked against it. The audio's length limit (2 to 10
+// seconds on the pro tier) is a property of the file, not of the request, so
+// the description states it and this schema does not encode it.
+// Docs: https://fal.ai/models/lightricks/ltx-2.5/audio-to-video/pro/api
+export const FalLightricksLtx2p5AudioToVideoProRequestSchema = z
+  .object({
+    audio_url: z
+      .string()
+      .describe(
+        "URL of the audio file to generate a video from. Duration must be between 2 and 20 seconds; pro models support a maximum of 10 seconds. Must be publicly accessible or base64 data URI."
+      ),
+    image_url: z
+      .string()
+      .nullable()
+      .optional()
+      .describe(
+        "URL of an image to use as the first frame of the video. If not provided, prompt is required."
+      ),
+    prompt: z
+      .string()
+      .min(1)
+      .max(5000)
+      .nullable()
+      .optional()
+      .describe(
+        "Text description of how the video should be generated. Required if image_url is not provided. When image_url is provided, this describes how the image should be animated."
+      ),
+    guidance_scale: z
+      .number()
+      .min(1)
+      .max(50)
+      .nullable()
+      .optional()
+      .describe(
+        "Guidance scale for video generation. Higher values make the output more closely follow the prompt. Defaults to 5 for text-to-video, or 9 when providing an image."
+      ),
+    aspect_ratio: z
+      .enum(["auto", "16:9", "9:16"])
+      .default("auto")
+      .describe(
+        "The aspect ratio of the generated video. If 'auto', the aspect ratio will be determined automatically based on the input image, or defaults to 16:9 if no image is provided."
+      ),
+  })
+  .refine((v) => v.image_url != null || v.prompt != null, {
+    message:
+      "lightricks/ltx-2.5/audio-to-video/pro requires prompt when image_url is not provided",
+    path: ["prompt"],
+  });
+export type FalLightricksLtx2p5AudioToVideoProRequest = z.input<
+  typeof FalLightricksLtx2p5AudioToVideoProRequestSchema
+>;
+export type FalLightricksLtx2p5AudioToVideoProRequestInput =
+  FalLightricksLtx2p5AudioToVideoProRequest;
+export type FalLightricksLtx2p5AudioToVideoProParsedRequest = z.output<
+  typeof FalLightricksLtx2p5AudioToVideoProRequestSchema
+>;
+
+// The live OpenAPI requires only `audio_url`, and seventeen unbilled 422
+// probes (2026-10-08) found upstream's validator to match it, answering as it
+// does for the pro tier: `audio_url` is a string (null is refused);
+// `image_url` is a string or null; `prompt` is a string of 1 to 5,000
+// characters or null; `guidance_scale` is a number from 1 to 50 or null;
+// `aspect_ratio` is closed to the documented values (null is refused). The
+// validator ignored an unknown field, so the object is not strict, and it
+// checked neither media URL's form. The refinement restates the rule both
+// media descriptions publish: without an image, a prompt is required. The
+// probes cannot reach it, since a body that fails field validation is never
+// checked against it. The audio's length limit (2 to 20 seconds on the fast
+// tier) is a property of the file, not of the request, so the description
+// states it and this schema does not encode it.
+// Docs: https://fal.ai/models/lightricks/ltx-2.5/audio-to-video/fast/api
+export const FalLightricksLtx2p5AudioToVideoFastRequestSchema = z
+  .object({
+    audio_url: z
+      .string()
+      .describe(
+        "URL of the audio file to generate a video from. Duration must be between 2 and 20 seconds; pro models support a maximum of 10 seconds. Must be publicly accessible or base64 data URI."
+      ),
+    image_url: z
+      .string()
+      .nullable()
+      .optional()
+      .describe(
+        "URL of an image to use as the first frame of the video. If not provided, prompt is required."
+      ),
+    prompt: z
+      .string()
+      .min(1)
+      .max(5000)
+      .nullable()
+      .optional()
+      .describe(
+        "Text description of how the video should be generated. Required if image_url is not provided. When image_url is provided, this describes how the image should be animated."
+      ),
+    guidance_scale: z
+      .number()
+      .min(1)
+      .max(50)
+      .nullable()
+      .optional()
+      .describe(
+        "Guidance scale for video generation. Higher values make the output more closely follow the prompt. Defaults to 5 for text-to-video, or 9 when providing an image."
+      ),
+    aspect_ratio: z
+      .enum(["auto", "16:9", "9:16"])
+      .default("auto")
+      .describe(
+        "The aspect ratio of the generated video. If 'auto', the aspect ratio will be determined automatically based on the input image, or defaults to 16:9 if no image is provided."
+      ),
+  })
+  .refine((v) => v.image_url != null || v.prompt != null, {
+    message:
+      "lightricks/ltx-2.5/audio-to-video/fast requires prompt when image_url is not provided",
+    path: ["prompt"],
+  });
+export type FalLightricksLtx2p5AudioToVideoFastRequest = z.input<
+  typeof FalLightricksLtx2p5AudioToVideoFastRequestSchema
+>;
+export type FalLightricksLtx2p5AudioToVideoFastRequestInput =
+  FalLightricksLtx2p5AudioToVideoFastRequest;
+export type FalLightricksLtx2p5AudioToVideoFastParsedRequest = z.output<
+  typeof FalLightricksLtx2p5AudioToVideoFastRequestSchema
+>;
+
+const FalKlingVideoV3TurboStandardTextToVideoKlingV3MultiPromptElementSchema =
+  z.object({
+    prompt: z.string().describe("The prompt for this shot."),
+    duration: z
+      .enum([
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+      ])
+      .default("5")
+      .describe("The duration of this shot in seconds"),
+  });
+
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 bfc28f267f80d27856a8d98a21988eefe395216750e988e53d9fe649ee4fc7fd). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/fal-ai/kling-video/v3/turbo/standard/text-to-video/api
+export const FalKlingVideoV3TurboStandardTextToVideoRequestSchema = z
+  .object({
+    prompt: z
+      .string()
+      .max(3072)
+      .nullable()
+      .optional()
+      .describe(
+        "Text prompt to generate the video with. For best results keep the prompt under 2500 characters. Mutually exclusive with `multi_prompt`."
+      ),
+    multi_prompt: z
+      .array(
+        FalKlingVideoV3TurboStandardTextToVideoKlingV3MultiPromptElementSchema
+      )
+      .nullable()
+      .optional()
+      .describe(
+        "Multi-shot storyboard (1-6 shots). Each shot has its own prompt and duration; the total duration must not exceed 15s. Mutually exclusive with `prompt`."
+      ),
+    aspect_ratio: z
+      .enum(["16:9", "9:16", "1:1"])
+      .default("16:9")
+      .describe("The aspect ratio (width:height) of the generated video."),
+    duration: z
+      .enum([
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+      ])
+      .default("5")
+      .describe("Video length in seconds."),
+  })
+  .refine((v) => !(v.multi_prompt != null && v.prompt != null), {
+    message:
+      "fal-ai/kling-video/v3/turbo/standard/text-to-video multi_prompt and prompt are mutually exclusive",
+    path: ["prompt"],
+  });
+export type FalKlingVideoV3TurboStandardTextToVideoRequest = z.input<
+  typeof FalKlingVideoV3TurboStandardTextToVideoRequestSchema
+>;
+export type FalKlingVideoV3TurboStandardTextToVideoRequestInput =
+  FalKlingVideoV3TurboStandardTextToVideoRequest;
+export type FalKlingVideoV3TurboStandardTextToVideoParsedRequest = z.output<
+  typeof FalKlingVideoV3TurboStandardTextToVideoRequestSchema
+>;
+
+const FalKlingVideoV3TurboStandardImageToVideoKlingV3MultiPromptElementSchema =
+  z.object({
+    prompt: z.string().describe("The prompt for this shot."),
+    duration: z
+      .enum([
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+      ])
+      .default("5")
+      .describe("The duration of this shot in seconds"),
+  });
+
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 241098dfefdebefe28a34cd7ef2b0b3cdd08572deb0a7f4587ff94e2288bc59e). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/fal-ai/kling-video/v3/turbo/standard/image-to-video/api
+export const FalKlingVideoV3TurboStandardImageToVideoRequestSchema = z
+  .object({
+    prompt: z
+      .string()
+      .max(3072)
+      .nullable()
+      .optional()
+      .describe(
+        "Optional text prompt. For best results keep the prompt under 2500 characters. Mutually exclusive with `multi_prompt`."
+      ),
+    multi_prompt: z
+      .array(
+        FalKlingVideoV3TurboStandardImageToVideoKlingV3MultiPromptElementSchema
+      )
+      .nullable()
+      .optional()
+      .describe(
+        "Multi-shot storyboard (1-6 shots). Each shot has its own prompt and duration; the total duration must not exceed 15s. Mutually exclusive with `prompt`."
+      ),
+    image_url: z
+      .string()
+      .describe(
+        "First-frame reference image. Formats: .jpg/.jpeg/.png; max 50MB; min 300px per side; aspect ratio within 1:2.5 to 2.5:1."
+      ),
+    duration: z
+      .enum([
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+      ])
+      .default("5")
+      .describe("Video length in seconds."),
+  })
+  .refine((v) => !(v.multi_prompt != null && v.prompt != null), {
+    message:
+      "fal-ai/kling-video/v3/turbo/standard/image-to-video multi_prompt and prompt are mutually exclusive",
+    path: ["prompt"],
+  });
+export type FalKlingVideoV3TurboStandardImageToVideoRequest = z.input<
+  typeof FalKlingVideoV3TurboStandardImageToVideoRequestSchema
+>;
+export type FalKlingVideoV3TurboStandardImageToVideoRequestInput =
+  FalKlingVideoV3TurboStandardImageToVideoRequest;
+export type FalKlingVideoV3TurboStandardImageToVideoParsedRequest = z.output<
+  typeof FalKlingVideoV3TurboStandardImageToVideoRequestSchema
+>;
+
+const FalKlingVideoV3TurboProTextToVideoKlingV3MultiPromptElementSchema =
+  z.object({
+    prompt: z.string().describe("The prompt for this shot."),
+    duration: z
+      .enum([
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+      ])
+      .default("5")
+      .describe("The duration of this shot in seconds"),
+  });
+
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 cba18c45da7f9c3cb4e6e5799d9d831b6eb2527448b562ba6bf48760b2eb4723). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/fal-ai/kling-video/v3/turbo/pro/text-to-video/api
+export const FalKlingVideoV3TurboProTextToVideoRequestSchema = z
+  .object({
+    prompt: z
+      .string()
+      .max(3072)
+      .nullable()
+      .optional()
+      .describe(
+        "Text prompt to generate the video with. For best results keep the prompt under 2500 characters. Mutually exclusive with `multi_prompt`."
+      ),
+    multi_prompt: z
+      .array(FalKlingVideoV3TurboProTextToVideoKlingV3MultiPromptElementSchema)
+      .nullable()
+      .optional()
+      .describe(
+        "Multi-shot storyboard (1-6 shots). Each shot has its own prompt and duration; the total duration must not exceed 15s. Mutually exclusive with `prompt`."
+      ),
+    aspect_ratio: z
+      .enum(["16:9", "9:16", "1:1"])
+      .default("16:9")
+      .describe("The aspect ratio (width:height) of the generated video."),
+    duration: z
+      .enum([
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+      ])
+      .default("5")
+      .describe("Video length in seconds."),
+  })
+  .refine((v) => !(v.multi_prompt != null && v.prompt != null), {
+    message:
+      "fal-ai/kling-video/v3/turbo/pro/text-to-video multi_prompt and prompt are mutually exclusive",
+    path: ["prompt"],
+  });
+export type FalKlingVideoV3TurboProTextToVideoRequest = z.input<
+  typeof FalKlingVideoV3TurboProTextToVideoRequestSchema
+>;
+export type FalKlingVideoV3TurboProTextToVideoRequestInput =
+  FalKlingVideoV3TurboProTextToVideoRequest;
+export type FalKlingVideoV3TurboProTextToVideoParsedRequest = z.output<
+  typeof FalKlingVideoV3TurboProTextToVideoRequestSchema
+>;
+
+const FalKlingVideoV3TurboProImageToVideoKlingV3MultiPromptElementSchema =
+  z.object({
+    prompt: z.string().describe("The prompt for this shot."),
+    duration: z
+      .enum([
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+      ])
+      .default("5")
+      .describe("The duration of this shot in seconds"),
+  });
+
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 43cab73a0ae9037b68d3efe4bcb85a8425ea6f35418b11574b891f16bbbe7c87). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/fal-ai/kling-video/v3/turbo/pro/image-to-video/api
+export const FalKlingVideoV3TurboProImageToVideoRequestSchema = z
+  .object({
+    prompt: z
+      .string()
+      .max(3072)
+      .nullable()
+      .optional()
+      .describe(
+        "Optional text prompt. For best results keep the prompt under 2500 characters. Mutually exclusive with `multi_prompt`."
+      ),
+    multi_prompt: z
+      .array(FalKlingVideoV3TurboProImageToVideoKlingV3MultiPromptElementSchema)
+      .nullable()
+      .optional()
+      .describe(
+        "Multi-shot storyboard (1-6 shots). Each shot has its own prompt and duration; the total duration must not exceed 15s. Mutually exclusive with `prompt`."
+      ),
+    image_url: z
+      .string()
+      .describe(
+        "First-frame reference image. Formats: .jpg/.jpeg/.png; max 50MB; min 300px per side; aspect ratio within 1:2.5 to 2.5:1."
+      ),
+    duration: z
+      .enum([
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+      ])
+      .default("5")
+      .describe("Video length in seconds."),
+  })
+  .refine((v) => !(v.multi_prompt != null && v.prompt != null), {
+    message:
+      "fal-ai/kling-video/v3/turbo/pro/image-to-video multi_prompt and prompt are mutually exclusive",
+    path: ["prompt"],
+  });
+export type FalKlingVideoV3TurboProImageToVideoRequest = z.input<
+  typeof FalKlingVideoV3TurboProImageToVideoRequestSchema
+>;
+export type FalKlingVideoV3TurboProImageToVideoRequestInput =
+  FalKlingVideoV3TurboProImageToVideoRequest;
+export type FalKlingVideoV3TurboProImageToVideoParsedRequest = z.output<
+  typeof FalKlingVideoV3TurboProImageToVideoRequestSchema
+>;
+
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 2d79f33cef2f2a6c196f66a3cb6bf720f86ede40075e79e06c45e10323b42dc1). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/alibaba/qwen-audio-3-tts/api
+export const FalAlibabaQwenAudio3TtsRequestSchema = z.object({
+  text: z.string().min(1).max(2000).describe("The text to convert to speech."),
+  voice: z
+    .enum([
+      "Cherry",
+      "Serena",
+      "Ethan",
+      "Chelsie",
+      "Momo",
+      "Vivian",
+      "Moon",
+      "Maia",
+      "Kai",
+      "Nofish",
+      "Bella",
+      "Jennifer",
+      "Ryan",
+      "Katerina",
+      "Aiden",
+      "Mia",
+      "Mochi",
+      "Bellona",
+      "Vincent",
+      "Bunny",
+      "Neil",
+      "Elias",
+      "Arthur",
+      "Nini",
+      "Seren",
+      "Pip",
+      "Stella",
+      "Bodega",
+      "Sonrisa",
+      "Alek",
+      "Dolce",
+      "Sohee",
+      "Lenn",
+      "Emilien",
+      "Andre",
+      "Jada",
+      "Dylan",
+      "Li",
+      "Marcus",
+      "Roy",
+      "Peter",
+      "Sunny",
+      "Eric",
+      "Rocky",
+      "Kiki",
+    ])
+    .default("Cherry")
+    .describe(
+      "The voice used for speech synthesis. See the [Qwen-TTS voice list](https://www.alibabacloud.com/help/en/model-studio/qwen-tts-voice-list) for each voice's language and dialect coverage."
+    ),
+  language: z
+    .enum([
+      "Auto",
+      "Chinese",
+      "English",
+      "Spanish",
+      "Russian",
+      "Italian",
+      "French",
+      "Korean",
+      "Japanese",
+      "German",
+      "Portuguese",
+    ])
+    .default("Auto")
+    .describe(
+      "Language of the input text. `Auto` lets the model detect it; setting it explicitly improves pronunciation and intonation."
+    ),
+});
+export type FalAlibabaQwenAudio3TtsRequest = z.input<
+  typeof FalAlibabaQwenAudio3TtsRequestSchema
+>;
+export type FalAlibabaQwenAudio3TtsRequestInput =
+  FalAlibabaQwenAudio3TtsRequest;
+export type FalAlibabaQwenAudio3TtsParsedRequest = z.output<
+  typeof FalAlibabaQwenAudio3TtsRequestSchema
+>;
+
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 10e9ea49b4e3c7d3298ecdd9e8eda5fb332c5122e4f699b51592c839ae2c674e). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/alibaba/happy-horse/v1.1/reference-to-video/api
+export const FalAlibabaHappyHorseV1p1ReferenceToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .describe(
+      "Text prompt describing the desired video. Reference subjects from your images using ``character1``, ``character2``, ... up to ``character9`` (the order matches the order of ``image_urls``). Max 2500 characters."
+    ),
+  image_urls: z
+    .array(z.string())
+    .describe(
+      "Reference images for subject consistency (1-9 images). Formats: JPEG, JPG, PNG, WEBP. Shortest side must be at least 400 px (720P or higher recommended). Max 20 MB each."
+    ),
+  aspect_ratio: z
+    .enum(["16:9", "9:16", "1:1", "4:3", "3:4", "21:9", "9:21", "5:4", "4:5"])
+    .default("16:9")
+    .describe("Aspect ratio of the generated video."),
+  resolution: z
+    .enum(["720p", "1080p"])
+    .default("1080p")
+    .describe("Output video resolution tier."),
+  duration: z
+    .union([
+      z.literal(3),
+      z.literal(4),
+      z.literal(5),
+      z.literal(6),
+      z.literal(7),
+      z.literal(8),
+      z.literal(9),
+      z.literal(10),
+      z.literal(11),
+      z.literal(12),
+      z.literal(13),
+      z.literal(14),
+      z.literal(15),
+    ])
+    .default(5)
+    .describe("Output video duration in seconds (3-15)."),
+  seed: z
+    .number()
+    .int()
+    .nullable()
+    .optional()
+    .describe("Random seed for reproducibility (0-2147483647)."),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe(
+      "Enable content moderation for input and output. Disabling it requires account authorization; unauthorized requests are always checked."
+    ),
+});
+export type FalAlibabaHappyHorseV1p1ReferenceToVideoRequest = z.input<
+  typeof FalAlibabaHappyHorseV1p1ReferenceToVideoRequestSchema
+>;
+export type FalAlibabaHappyHorseV1p1ReferenceToVideoRequestInput =
+  FalAlibabaHappyHorseV1p1ReferenceToVideoRequest;
+export type FalAlibabaHappyHorseV1p1ReferenceToVideoParsedRequest = z.output<
+  typeof FalAlibabaHappyHorseV1p1ReferenceToVideoRequestSchema
+>;
+
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 19e08067c44b97e67233cabf1e0ccfc17ef3efb25c01fcf4d0e4f3754501de68). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/alibaba/happy-horse/v1.1/image-to-video/api
+export const FalAlibabaHappyHorseV1p1ImageToVideoRequestSchema = z.object({
+  image_url: z
+    .string()
+    .describe(
+      "URL of the first frame image. Formats: JPEG, JPG, PNG, BMP, WEBP. Dimensions must be at least 300px. Aspect ratio must be between 1:2.5 and 2.5:1. Max 20 MB."
+    ),
+  prompt: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "Optional text prompt guiding the animation. Max 2500 characters."
+    ),
+  resolution: z
+    .enum(["720p", "1080p"])
+    .default("1080p")
+    .describe("Output video resolution tier."),
+  duration: z
+    .union([
+      z.literal(3),
+      z.literal(4),
+      z.literal(5),
+      z.literal(6),
+      z.literal(7),
+      z.literal(8),
+      z.literal(9),
+      z.literal(10),
+      z.literal(11),
+      z.literal(12),
+      z.literal(13),
+      z.literal(14),
+      z.literal(15),
+    ])
+    .default(5)
+    .describe("Output video duration in seconds (3-15)."),
+  seed: z
+    .number()
+    .int()
+    .nullable()
+    .optional()
+    .describe("Random seed for reproducibility (0-2147483647)."),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe(
+      "Enable content moderation for input and output. Disabling it requires account authorization; unauthorized requests are always checked."
+    ),
+});
+export type FalAlibabaHappyHorseV1p1ImageToVideoRequest = z.input<
+  typeof FalAlibabaHappyHorseV1p1ImageToVideoRequestSchema
+>;
+export type FalAlibabaHappyHorseV1p1ImageToVideoRequestInput =
+  FalAlibabaHappyHorseV1p1ImageToVideoRequest;
+export type FalAlibabaHappyHorseV1p1ImageToVideoParsedRequest = z.output<
+  typeof FalAlibabaHappyHorseV1p1ImageToVideoRequestSchema
+>;
+
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 6ef799aab74dd454c97802c98b8e8151130e7b09ad878eb7457bc5a091688955). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/alibaba/happy-horse/v1.1/text-to-video/api
+export const FalAlibabaHappyHorseV1p1TextToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .describe("Text prompt describing the desired video. Max 2500 characters."),
+  aspect_ratio: z
+    .enum(["16:9", "9:16", "1:1", "4:3", "3:4", "21:9", "9:21", "5:4", "4:5"])
+    .default("16:9")
+    .describe("Aspect ratio of the generated video."),
+  resolution: z
+    .enum(["720p", "1080p"])
+    .default("1080p")
+    .describe("Output video resolution tier."),
+  duration: z
+    .union([
+      z.literal(3),
+      z.literal(4),
+      z.literal(5),
+      z.literal(6),
+      z.literal(7),
+      z.literal(8),
+      z.literal(9),
+      z.literal(10),
+      z.literal(11),
+      z.literal(12),
+      z.literal(13),
+      z.literal(14),
+      z.literal(15),
+    ])
+    .default(5)
+    .describe("Output video duration in seconds (3-15)."),
+  seed: z
+    .number()
+    .int()
+    .nullable()
+    .optional()
+    .describe("Random seed for reproducibility (0-2147483647)."),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe(
+      "Enable content moderation for input and output. Disabling it requires account authorization; unauthorized requests are always checked."
+    ),
+});
+export type FalAlibabaHappyHorseV1p1TextToVideoRequest = z.input<
+  typeof FalAlibabaHappyHorseV1p1TextToVideoRequestSchema
+>;
+export type FalAlibabaHappyHorseV1p1TextToVideoRequestInput =
+  FalAlibabaHappyHorseV1p1TextToVideoRequest;
+export type FalAlibabaHappyHorseV1p1TextToVideoParsedRequest = z.output<
+  typeof FalAlibabaHappyHorseV1p1TextToVideoRequestSchema
+>;
+
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 15115befba2212917f30e6792e1216e68c97023871654b7ac26f337d6fbe2752). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/blackforestlabs/flux-3/edit-video/api
+export const FalBlackforestlabsFlux3EditVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .max(4096)
+    .describe(
+      "The text prompt describing how to change the input video. The clip is re-rendered preserving motion, timing, and framing."
+    ),
+  safety_tolerance: z
+    .number()
+    .int()
+    .min(0)
+    .max(4)
+    .default(2)
+    .describe(
+      "The safety tolerance level for the generated video. 0 is the strictest and 4 is the most permissive."
+    ),
+  video_url: z
+    .string()
+    .describe("URL of the input video. MP4, under 50 MB and under 15 seconds."),
+});
+export type FalBlackforestlabsFlux3EditVideoRequest = z.input<
+  typeof FalBlackforestlabsFlux3EditVideoRequestSchema
+>;
+export type FalBlackforestlabsFlux3EditVideoRequestInput =
+  FalBlackforestlabsFlux3EditVideoRequest;
+export type FalBlackforestlabsFlux3EditVideoParsedRequest = z.output<
+  typeof FalBlackforestlabsFlux3EditVideoRequestSchema
+>;
+
+const FalBriaFiboEdit1p5EditPromptObjectSchema = z.object({
+  description: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("A description of the object to be generated."),
+  location: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The location of the object in the image."),
+  relationship: z
+    .string()
+    .describe("The relationship of the object to other objects in the image."),
+  relative_size: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The relative size of the object in the image."),
+  shape_and_color: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The shape and color of the object."),
+  texture: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The texture of the object."),
+  appearance_details: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The appearance details of the object."),
+  number_of_objects: z
+    .number()
+    .int()
+    .nullable()
+    .optional()
+    .describe("The number of objects in the image."),
+  pose: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The pose of the object in the image."),
+  expression: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The expression of the object in the image."),
+  clothing: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The clothing of the object in the image."),
+  action: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The action of the object in the image."),
+  gender: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The gender of the object in the image."),
+  skin_tone_and_texture: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The skin tone and texture of the object in the image."),
+  orientation: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The orientation of the object in the image."),
+});
+
+const FalBriaFiboEdit1p5EditLightingSchema = z.object({
+  conditions: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The conditions of the lighting in the image to be generated."),
+  direction: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The direction of the lighting in the image to be generated."),
+  shadows: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The shadows in the image to be generated."),
+});
+
+const FalBriaFiboEdit1p5EditAestheticsSchema = z.object({
+  composition: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The composition of the image to be generated."),
+  color_scheme: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The color scheme of the image to be generated."),
+  mood_atmosphere: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The mood and atmosphere of the image to be generated."),
+  aesthetic_score: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The aesthetic score of the image to be generated."),
+  preference_score: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The preference score of the image to be generated."),
+});
+
+const FalBriaFiboEdit1p5EditPhotographicCharacteristicsSchema = z.object({
+  depth_of_field: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The depth of field in the image to be generated."),
+  focus: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The focus in the image to be generated."),
+  camera_angle: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The angle of the camera in the image to be generated."),
+  lens_focal_length: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The focal length of the lens in the image to be generated."),
+});
+
+const FalBriaFiboEdit1p5EditStructuredInstructionSchema = z.object({
+  short_description: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("A short description of the image to be generated."),
+  objects: z
+    .array(FalBriaFiboEdit1p5EditPromptObjectSchema)
+    .nullable()
+    .default([])
+    .describe(
+      "A list of objects in the image to be generated, along with their attributes and relationships to other objects in the image."
+    ),
+  background_setting: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The background setting of the image to be generated."),
+  lighting: FalBriaFiboEdit1p5EditLightingSchema.nullable()
+    .optional()
+    .describe("The lighting of the image to be generated."),
+  aesthetics: FalBriaFiboEdit1p5EditAestheticsSchema.nullable()
+    .optional()
+    .describe("The aesthetics of the image to be generated."),
+  photographic_characteristics:
+    FalBriaFiboEdit1p5EditPhotographicCharacteristicsSchema.nullable()
+      .optional()
+      .describe(
+        "The photographic characteristics of the image to be generated."
+      ),
+  style_medium: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The style medium of the image to be generated."),
+  text_render: z
+    .array(z.unknown())
+    .nullable()
+    .default([])
+    .describe("A list of text to be rendered in the image."),
+  context: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The context of the image to be generated."),
+  artistic_style: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The artistic style of the image to be generated."),
+  edit_instruction: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The edit instruction for the image."),
+});
+
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 8f2dd05d32cfe817ded5a34248afc7fe915074995a3b25eb547546d09c45319a). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/bria/fibo-edit-1.5/edit/api
+export const FalBriaFiboEdit1p5EditRequestSchema = z.object({
+  image_urls: z
+    .array(z.string())
+    .nullable()
+    .optional()
+    .describe(
+      "1-4 reference images (files or URLs). Order is significant: the instruction is resolved against the images in the order they are sent."
+    ),
+  instruction: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("Instruction for image editing."),
+  aspect_ratio: z
+    .enum(["1:1", "2:3", "3:2", "3:4", "4:3", "4:5", "5:4", "9:16", "16:9"])
+    .nullable()
+    .optional()
+    .describe(
+      "Output aspect ratio. Left unset, the output keeps the ratio of the first reference image. A chosen ratio applies only with two or more reference images; with a single reference the output keeps that image's ratio either way."
+    ),
+  seed: z
+    .number()
+    .int()
+    .default(5555)
+    .describe("Random seed for reproducibility."),
+  mask_url: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "Mask (file or URL) marking the region to regenerate: white where the model should edit, black elsewhere. Single-reference requests only, and it must be the same size as that image. A masked edit comes back at the reference's own resolution."
+    ),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If true, returns the image directly in the response (increases latency)."
+    ),
+  structured_instruction:
+    FalBriaFiboEdit1p5EditStructuredInstructionSchema.nullable()
+      .optional()
+      .describe(
+        "A pre-built structured prompt, used verbatim instead of having VGL build one when no instruction is sent. Accepts what a previous edit returned."
+      ),
+});
+export type FalBriaFiboEdit1p5EditRequest = z.input<
+  typeof FalBriaFiboEdit1p5EditRequestSchema
+>;
+export type FalBriaFiboEdit1p5EditRequestInput = FalBriaFiboEdit1p5EditRequest;
+export type FalBriaFiboEdit1p5EditParsedRequest = z.output<
+  typeof FalBriaFiboEdit1p5EditRequestSchema
+>;
+
+const FalBriaFiboGen1p5TextToImagePromptObjectSchema = z.object({
+  description: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("A description of the object to be generated."),
+  location: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The location of the object in the image."),
+  relationship: z
+    .string()
+    .describe("The relationship of the object to other objects in the image."),
+  relative_size: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The relative size of the object in the image."),
+  shape_and_color: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The shape and color of the object."),
+  texture: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The texture of the object."),
+  appearance_details: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The appearance details of the object."),
+  number_of_objects: z
+    .number()
+    .int()
+    .nullable()
+    .optional()
+    .describe("The number of objects in the image."),
+  pose: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The pose of the object in the image."),
+  expression: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The expression of the object in the image."),
+  clothing: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The clothing of the object in the image."),
+  action: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The action of the object in the image."),
+  gender: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The gender of the object in the image."),
+  skin_tone_and_texture: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The skin tone and texture of the object in the image."),
+  orientation: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The orientation of the object in the image."),
+});
+
+const FalBriaFiboGen1p5TextToImageLightingSchema = z.object({
+  conditions: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The conditions of the lighting in the image to be generated."),
+  direction: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The direction of the lighting in the image to be generated."),
+  shadows: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The shadows in the image to be generated."),
+});
+
+const FalBriaFiboGen1p5TextToImageAestheticsSchema = z.object({
+  composition: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The composition of the image to be generated."),
+  color_scheme: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The color scheme of the image to be generated."),
+  mood_atmosphere: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The mood and atmosphere of the image to be generated."),
+  aesthetic_score: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The aesthetic score of the image to be generated."),
+  preference_score: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The preference score of the image to be generated."),
+});
+
+const FalBriaFiboGen1p5TextToImagePhotographicCharacteristicsSchema = z.object({
+  depth_of_field: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The depth of field in the image to be generated."),
+  focus: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The focus in the image to be generated."),
+  camera_angle: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The angle of the camera in the image to be generated."),
+  lens_focal_length: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The focal length of the lens in the image to be generated."),
+});
+
+const FalBriaFiboGen1p5TextToImageStructuredPromptSchema = z.object({
+  short_description: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("A short description of the image to be generated."),
+  objects: z
+    .array(FalBriaFiboGen1p5TextToImagePromptObjectSchema)
+    .nullable()
+    .default([])
+    .describe(
+      "A list of objects in the image to be generated, along with their attributes and relationships to other objects in the image."
+    ),
+  background_setting: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The background setting of the image to be generated."),
+  lighting: FalBriaFiboGen1p5TextToImageLightingSchema.nullable()
+    .optional()
+    .describe("The lighting of the image to be generated."),
+  aesthetics: FalBriaFiboGen1p5TextToImageAestheticsSchema.nullable()
+    .optional()
+    .describe("The aesthetics of the image to be generated."),
+  photographic_characteristics:
+    FalBriaFiboGen1p5TextToImagePhotographicCharacteristicsSchema.nullable()
+      .optional()
+      .describe(
+        "The photographic characteristics of the image to be generated."
+      ),
+  style_medium: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The style medium of the image to be generated."),
+  text_render: z
+    .array(z.unknown())
+    .nullable()
+    .default([])
+    .describe("A list of text to be rendered in the image."),
+  context: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The context of the image to be generated."),
+  artistic_style: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The artistic style of the image to be generated."),
+});
+
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 d09a549c7740da5690caa8b876dd119bcd8b590d8adb4fb6f0caa896b52d3778). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/bria/fibo-gen-1.5/text-to-image/api
+export const FalBriaFiboGen1p5TextToImageRequestSchema = z.object({
+  prompt: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("Prompt for image generation."),
+  structured_prompt:
+    FalBriaFiboGen1p5TextToImageStructuredPromptSchema.nullable()
+      .optional()
+      .describe("The structured prompt to generate an image from."),
+  seed: z
+    .number()
+    .int()
+    .default(5555)
+    .describe("Random seed for reproducibility."),
+  aspect_ratio: z
+    .enum(["1:1", "2:3", "3:2", "3:4", "4:3", "4:5", "5:4", "9:16", "16:9"])
+    .default("1:1")
+    .describe(
+      "Aspect ratio. Options: 1:1, 2:3, 3:2, 3:4, 4:3, 4:5, 5:4, 9:16, 16:9"
+    ),
+  resolution: z
+    .enum(["1MP", "4MP"])
+    .default("1MP")
+    .describe("Output image resolution"),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If true, returns the image directly in the response (increases latency)."
+    ),
+});
+export type FalBriaFiboGen1p5TextToImageRequest = z.input<
+  typeof FalBriaFiboGen1p5TextToImageRequestSchema
+>;
+export type FalBriaFiboGen1p5TextToImageRequestInput =
+  FalBriaFiboGen1p5TextToImageRequest;
+export type FalBriaFiboGen1p5TextToImageParsedRequest = z.output<
+  typeof FalBriaFiboGen1p5TextToImageRequestSchema
+>;
+
+const FalElevenlabsMusicV2p5MusicAudioReferenceSchema = z
+  .object({
+    audio_url: z
+      .string()
+      .describe("URL of the audio clip to use as the style reference."),
+    start_ms: z
+      .number()
+      .int()
+      .min(0)
+      .default(0)
+      .describe(
+        "Offset into the clip where the referenced window starts, in milliseconds."
+      ),
+    end_ms: z
+      .number()
+      .int()
+      .gt(0)
+      .nullable()
+      .optional()
+      .describe(
+        "Offset into the clip where the referenced window ends, in milliseconds. Defaults to 30000ms after start_ms, or the end of the clip if it is shorter. The window must be at most 30000ms long."
+      ),
+    strength: z
+      .enum(["low", "medium", "high", "xhigh"])
+      .nullable()
+      .optional()
+      .describe(
+        "How strongly the model follows the reference. Low lets it deviate and be more creative, high keeps it close to the reference."
+      ),
+  })
+  .describe(
+    "An audio clip whose style conditions a ``music_v2`` / ``music_v2.5`` chunk.\n\nElevenLabs conditions on a *song id*, which only exists after the clip has\nbeen uploaded to them, so the app uploads on the caller's behalf and caches\nthe resulting id (see ``ElevenLabsTTS._resolve_audio_reference``)."
+  );
+
+const FalElevenlabsMusicV2p5MusicGenerationChunkSchema = z
+  .object({
+    text: z
+      .string()
+      .describe(
+        "The text to generate for this chunk. Can start with an optional section name in square brackets, e.g. [Verse 1], followed by lyric lines, plus inline directions in curly braces, e.g. {scratching}. Section names must be between 1 and 100 characters. At most 30 lines are allowed, each at most 200 characters."
+      ),
+    duration_ms: z
+      .number()
+      .int()
+      .min(3000)
+      .max(120000)
+      .describe(
+        "The duration of the chunk in milliseconds. Must be between 3000ms and 120000ms."
+      ),
+    positive_styles: z
+      .array(z.string())
+      .describe(
+        "The styles and musical directions that should be present in this chunk. Use English for best results. The styles of the first chunk matter most as they set the overall tone and genre; later chunks can add nuance, progression or change direction."
+      ),
+    negative_styles: z
+      .array(z.string())
+      .nullable()
+      .optional()
+      .describe(
+        "The styles and musical directions that should not be present in this chunk. Leaving this empty is a good default; only set it to explicitly avoid a particular style or direction."
+      ),
+    context_adherence: z
+      .enum(["low", "medium", "high"])
+      .nullable()
+      .optional()
+      .describe(
+        "How closely this chunk follows the context of its surrounding chunks. Low adherence lets the model deviate and be more creative, high adherence keeps it consistent with the surrounding context."
+      ),
+    audio_reference: FalElevenlabsMusicV2p5MusicAudioReferenceSchema.nullable()
+      .optional()
+      .describe(
+        "An audio clip whose style conditions this chunk. The reference on the first chunk matters most: it influences every later chunk, so condition from the first chunk to style the whole song."
+      ),
+  })
+  .describe(
+    "One generation chunk of a ``music_v2`` / ``music_v2.5`` composition plan.\n\nThe v2 models replaced v1's ``sections`` (``MusicPrompt``) with ``chunks``\n(``CompositionPlan``); the two shapes are not interchangeable -- sending a\nv1 section plan to a v2 model (or vice versa) is rejected by ElevenLabs."
+  );
+
+const FalElevenlabsMusicV2p5MusicV2CompositionPlanSchema = z.object({
+  chunks: z
+    .array(FalElevenlabsMusicV2p5MusicGenerationChunkSchema)
+    .min(1)
+    .max(30)
+    .describe(
+      "The chunks that make up the generation, in order. At most 30 chunks, totalling between 3000ms and 600000ms."
+    ),
+});
+
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 ba750092e132d055203a8475ce3aaddeee1683cc9ec0153368a476a9319a7ee3). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/elevenlabs/music/v2.5/api
+export const FalElevenlabsMusicV2p5RequestSchema = z.object({
+  prompt: z
+    .string()
+    .max(4100)
+    .nullable()
+    .optional()
+    .describe("The text prompt describing the music to generate"),
+  composition_plan:
+    FalElevenlabsMusicV2p5MusicV2CompositionPlanSchema.nullable()
+      .optional()
+      .describe("The chunk-based composition plan for the music"),
+  music_length_ms: z
+    .number()
+    .int()
+    .min(3000)
+    .max(600000)
+    .nullable()
+    .optional()
+    .describe(
+      "The length of the song to generate in milliseconds. Used only in conjunction with prompt. Must be between 3000ms and 600000ms. Optional - if not provided, the model will choose a length based on the prompt."
+    ),
+  force_instrumental: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If true, guarantees that the generated song will be instrumental. If false, the song may or may not be instrumental depending on the prompt. Can only be used with prompt."
+    ),
+  seed: z
+    .number()
+    .int()
+    .nullable()
+    .optional()
+    .describe(
+      "Random seed to initialize the music generation process. Can only be used with composition_plan. The same seed with the same parameters gives more consistent results, but exact reproducibility is not guaranteed."
+    ),
+  output_format: z
+    .enum([
+      "mp3_22050_32",
+      "mp3_24000_48",
+      "mp3_44100_32",
+      "mp3_44100_64",
+      "mp3_44100_96",
+      "mp3_44100_128",
+      "mp3_44100_192",
+      "mp3_48000_128",
+      "mp3_48000_192",
+      "mp3_48000_240",
+      "mp3_48000_320",
+      "pcm_8000",
+      "pcm_16000",
+      "pcm_22050",
+      "pcm_24000",
+      "pcm_32000",
+      "pcm_44100",
+      "pcm_48000",
+      "ulaw_8000",
+      "alaw_8000",
+      "opus_48000_32",
+      "opus_48000_64",
+      "opus_48000_96",
+      "opus_48000_128",
+      "opus_48000_192",
+    ])
+    .default("mp3_48000_192")
+    .describe(
+      "Output format of the generated audio. Formatted as codec_sample_rate_bitrate. So an mp3 with 22.05kHz sample rate at 32kbs is represented as mp3_22050_32. Note that the μ-law format (sometimes written mu-law, often approximated as u-law) is commonly used for Twilio audio inputs."
+    ),
+});
+export type FalElevenlabsMusicV2p5Request = z.input<
+  typeof FalElevenlabsMusicV2p5RequestSchema
+>;
+export type FalElevenlabsMusicV2p5RequestInput = FalElevenlabsMusicV2p5Request;
+export type FalElevenlabsMusicV2p5ParsedRequest = z.output<
+  typeof FalElevenlabsMusicV2p5RequestSchema
+>;
+
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 88ebef33a2cb749a93a9d9e6fe885de49e69ef1f06f011e74da5133db82c8aa1). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/meta/muse-image/text-to-image/api
+export const FalMetaMuseImageTextToImageRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .describe("The text prompt used to generate or edit the image."),
+  aspect_ratio: z
+    .string()
+    .regex(/^[1-9][0-9]{0,4}:[1-9][0-9]{0,4}$/)
+    .nullable()
+    .optional()
+    .describe(
+      'Any custom output aspect ratio as "width:height", for example "16:9", "5:4", or "1920:1200". Common presets are "21:9", "16:9", "4:3", "3:2", "1:1", "2:3", "3:4", "9:16", "9:21". The ratio must be between 1:16 and 16:1, the range Muse supports. Only the ratio is used: Muse renders it at its own fixed resolution of roughly 2.5 megapixels, so "1920:1200" and "960:600" both return the same 1920x1200 image. If omitted, Muse chooses the output dimensions automatically.'
+    ),
+  num_images: z
+    .number()
+    .int()
+    .min(1)
+    .max(10)
+    .default(1)
+    .describe("The number of images to generate."),
+  output_format: z
+    .enum(["jpeg", "png", "webp"])
+    .default("webp")
+    .describe("The format of the generated image."),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If `True`, the image is returned as a data URI and is not persisted in the request history."
+    ),
+});
+export type FalMetaMuseImageTextToImageRequest = z.input<
+  typeof FalMetaMuseImageTextToImageRequestSchema
+>;
+export type FalMetaMuseImageTextToImageRequestInput =
+  FalMetaMuseImageTextToImageRequest;
+export type FalMetaMuseImageTextToImageParsedRequest = z.output<
+  typeof FalMetaMuseImageTextToImageRequestSchema
+>;
+
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 17c4f7963251d25af485098d771d5a8c9f3f6942db30fd42d05dfeddb3412422). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/meta/muse-image/edit/api
+export const FalMetaMuseImageEditRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .describe("The text prompt used to generate or edit the image."),
+  image_urls: z
+    .array(z.string())
+    .min(1)
+    .max(10)
+    .describe(
+      "Reference images used for the edit. Provide between 1 and 10 HTTP(S) or data URLs."
+    ),
+  aspect_ratio: z
+    .string()
+    .regex(/^[1-9][0-9]{0,4}:[1-9][0-9]{0,4}$/)
+    .nullable()
+    .optional()
+    .describe(
+      'Any custom output aspect ratio as "width:height", for example "16:9", "5:4", or "1920:1200". Common presets are "21:9", "16:9", "4:3", "3:2", "1:1", "2:3", "3:4", "9:16", "9:21". The ratio must be between 1:16 and 16:1, the range Muse supports. Only the ratio is used: Muse renders it at its own fixed resolution of roughly 2.5 megapixels, so "1920:1200" and "960:600" both return the same 1920x1200 image. If omitted, Muse chooses the output dimensions automatically.'
+    ),
+  num_images: z
+    .number()
+    .int()
+    .min(1)
+    .max(10)
+    .default(1)
+    .describe("The number of edited images to generate."),
+  output_format: z
+    .enum(["jpeg", "png", "webp"])
+    .default("webp")
+    .describe("The format of the generated image."),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If `True`, the image is returned as a data URI and is not persisted in the request history."
+    ),
+});
+export type FalMetaMuseImageEditRequest = z.input<
+  typeof FalMetaMuseImageEditRequestSchema
+>;
+export type FalMetaMuseImageEditRequestInput = FalMetaMuseImageEditRequest;
+export type FalMetaMuseImageEditParsedRequest = z.output<
+  typeof FalMetaMuseImageEditRequestSchema
+>;
+
+const FalOpenaiGptImage2p5SunburstEditImageSizeSchema = z.object({
+  width: z
+    .number()
+    .int()
+    .gt(0)
+    .max(14142)
+    .default(512)
+    .describe("The width of the generated image."),
+  height: z
+    .number()
+    .int()
+    .gt(0)
+    .max(14142)
+    .default(512)
+    .describe("The height of the generated image."),
+});
+
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 987694eed0568f0c3eec54e80fce719467bafcb34a4fb5c414ba41d13bfe923b). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/openai/gpt-image-2.5/sunburst/edit/api
+export const FalOpenaiGptImage2p5SunburstEditRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(32000)
+    .describe("The prompt for image generation"),
+  image_urls: z
+    .array(z.string())
+    .max(16)
+    .describe(
+      "The URLs of the images to use as a reference for the generation. A maximum of 16 images are allowed."
+    ),
+  mask_url: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "The URL of the mask image to use for the generation. This indicates what part of the image to edit."
+    ),
+  image_size: z
+    .union([
+      FalOpenaiGptImage2p5SunburstEditImageSizeSchema,
+      z.enum([
+        "square_hd",
+        "square",
+        "portrait_4_3",
+        "portrait_16_9",
+        "landscape_4_3",
+        "landscape_16_9",
+        "auto",
+      ]),
+    ])
+    .default("auto")
+    .describe(
+      "The size of the generated image. Use 'auto' to infer from input images."
+    ),
+  background: z
+    .enum(["auto", "transparent", "opaque"])
+    .default("auto")
+    .describe("Background for the generated image"),
+  quality: z
+    .enum(["auto", "low", "medium", "high", "xhigh", "max"])
+    .default("high")
+    .describe(
+      "Quality for the generated image. Higher settings increase detail, latency, and token usage. Use 'auto' to let the model choose."
+    ),
+  num_images: z
+    .number()
+    .int()
+    .min(1)
+    .max(10)
+    .default(1)
+    .describe("Number of images to generate"),
+  output_format: z
+    .enum(["jpeg", "png", "webp"])
+    .default("png")
+    .describe("Output format for the images"),
+  output_compression: z
+    .number()
+    .int()
+    .min(0)
+    .max(100)
+    .nullable()
+    .optional()
+    .describe(
+      "Compression level from 0 to 100. Only supported when output_format is 'jpeg' or 'webp'."
+    ),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If `True`, the media will be returned as a data URI and the output data won't be available in the request history."
+    ),
+});
+export type FalOpenaiGptImage2p5SunburstEditRequest = z.input<
+  typeof FalOpenaiGptImage2p5SunburstEditRequestSchema
+>;
+export type FalOpenaiGptImage2p5SunburstEditRequestInput =
+  FalOpenaiGptImage2p5SunburstEditRequest;
+export type FalOpenaiGptImage2p5SunburstEditParsedRequest = z.output<
+  typeof FalOpenaiGptImage2p5SunburstEditRequestSchema
+>;
+
+const FalOpenaiGptImage2p5SunburstTextToImageImageSizeSchema = z.object({
+  width: z
+    .number()
+    .int()
+    .gt(0)
+    .max(14142)
+    .default(512)
+    .describe("The width of the generated image."),
+  height: z
+    .number()
+    .int()
+    .gt(0)
+    .max(14142)
+    .default(512)
+    .describe("The height of the generated image."),
+});
+
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 5721d6ddae78788031890764b6f1fc75136c39ab7b6c906c277e3e7d6e5d40cc). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/openai/gpt-image-2.5/sunburst/text-to-image/api
+export const FalOpenaiGptImage2p5SunburstTextToImageRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(32000)
+    .describe("The prompt for image generation"),
+  image_size: z
+    .union([
+      FalOpenaiGptImage2p5SunburstTextToImageImageSizeSchema,
+      z.enum([
+        "square_hd",
+        "square",
+        "portrait_4_3",
+        "portrait_16_9",
+        "landscape_4_3",
+        "landscape_16_9",
+        "auto",
+      ]),
+    ])
+    .default("landscape_4_3")
+    .describe(
+      "The size of the generated image. Supports preset names, explicit {width, height}, or 'auto' to let the model pick the best size. Concrete sizes must have both dimensions as multiples of 16, max edge 3840px, aspect ratio <= 3:1, total pixels between 655,360 and 8,294,400."
+    ),
+  background: z
+    .enum(["auto", "transparent", "opaque"])
+    .default("auto")
+    .describe("Background for the generated image"),
+  quality: z
+    .enum(["auto", "low", "medium", "high", "xhigh", "max"])
+    .default("high")
+    .describe(
+      "Quality for the generated image. Higher settings increase detail, latency, and token usage. Use 'auto' to let the model choose."
+    ),
+  num_images: z
+    .number()
+    .int()
+    .min(1)
+    .max(10)
+    .default(1)
+    .describe("Number of images to generate"),
+  output_format: z
+    .enum(["jpeg", "png", "webp"])
+    .default("png")
+    .describe("Output format for the images"),
+  output_compression: z
+    .number()
+    .int()
+    .min(0)
+    .max(100)
+    .nullable()
+    .optional()
+    .describe(
+      "Compression level from 0 to 100. Only supported when output_format is 'jpeg' or 'webp'."
+    ),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If `True`, the media will be returned as a data URI and the output data won't be available in the request history."
+    ),
+});
+export type FalOpenaiGptImage2p5SunburstTextToImageRequest = z.input<
+  typeof FalOpenaiGptImage2p5SunburstTextToImageRequestSchema
+>;
+export type FalOpenaiGptImage2p5SunburstTextToImageRequestInput =
+  FalOpenaiGptImage2p5SunburstTextToImageRequest;
+export type FalOpenaiGptImage2p5SunburstTextToImageParsedRequest = z.output<
+  typeof FalOpenaiGptImage2p5SunburstTextToImageRequestSchema
+>;
+
+const FalOpenaiGptImage2p5FlareEditImageSizeSchema = z.object({
+  width: z
+    .number()
+    .int()
+    .gt(0)
+    .max(14142)
+    .default(512)
+    .describe("The width of the generated image."),
+  height: z
+    .number()
+    .int()
+    .gt(0)
+    .max(14142)
+    .default(512)
+    .describe("The height of the generated image."),
+});
+
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 334fdc31c66f89efbc208261b35d4e7b4dd085ad7f8940e18b22160fd19d8efe). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/openai/gpt-image-2.5/flare/edit/api
+export const FalOpenaiGptImage2p5FlareEditRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(32000)
+    .describe("The prompt for image generation"),
+  image_urls: z
+    .array(z.string())
+    .max(16)
+    .describe(
+      "The URLs of the images to use as a reference for the generation. A maximum of 16 images are allowed."
+    ),
+  mask_url: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "The URL of the mask image to use for the generation. This indicates what part of the image to edit."
+    ),
+  image_size: z
+    .union([
+      FalOpenaiGptImage2p5FlareEditImageSizeSchema,
+      z.enum([
+        "square_hd",
+        "square",
+        "portrait_4_3",
+        "portrait_16_9",
+        "landscape_4_3",
+        "landscape_16_9",
+        "auto",
+      ]),
+    ])
+    .default("auto")
+    .describe(
+      "The size of the generated image. Use 'auto' to infer from input images."
+    ),
+  background: z
+    .enum(["auto", "transparent", "opaque"])
+    .default("auto")
+    .describe("Background for the generated image"),
+  quality: z
+    .enum(["auto", "low", "medium", "high", "xhigh", "max"])
+    .default("high")
+    .describe(
+      "Quality for the generated image. Higher settings increase detail, latency, and token usage. Use 'auto' to let the model choose."
+    ),
+  num_images: z
+    .number()
+    .int()
+    .min(1)
+    .max(10)
+    .default(1)
+    .describe("Number of images to generate"),
+  output_format: z
+    .enum(["jpeg", "png", "webp"])
+    .default("png")
+    .describe("Output format for the images"),
+  output_compression: z
+    .number()
+    .int()
+    .min(0)
+    .max(100)
+    .nullable()
+    .optional()
+    .describe(
+      "Compression level from 0 to 100. Only supported when output_format is 'jpeg' or 'webp'."
+    ),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If `True`, the media will be returned as a data URI and the output data won't be available in the request history."
+    ),
+});
+export type FalOpenaiGptImage2p5FlareEditRequest = z.input<
+  typeof FalOpenaiGptImage2p5FlareEditRequestSchema
+>;
+export type FalOpenaiGptImage2p5FlareEditRequestInput =
+  FalOpenaiGptImage2p5FlareEditRequest;
+export type FalOpenaiGptImage2p5FlareEditParsedRequest = z.output<
+  typeof FalOpenaiGptImage2p5FlareEditRequestSchema
+>;
+
+const FalOpenaiGptImage2p5FlareTextToImageImageSizeSchema = z.object({
+  width: z
+    .number()
+    .int()
+    .gt(0)
+    .max(14142)
+    .default(512)
+    .describe("The width of the generated image."),
+  height: z
+    .number()
+    .int()
+    .gt(0)
+    .max(14142)
+    .default(512)
+    .describe("The height of the generated image."),
+});
+
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 15adb86fc7e37de581565f74ff324161a7218000ae2753bddd034dac4242a293). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/openai/gpt-image-2.5/flare/text-to-image/api
+export const FalOpenaiGptImage2p5FlareTextToImageRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(32000)
+    .describe("The prompt for image generation"),
+  image_size: z
+    .union([
+      FalOpenaiGptImage2p5FlareTextToImageImageSizeSchema,
+      z.enum([
+        "square_hd",
+        "square",
+        "portrait_4_3",
+        "portrait_16_9",
+        "landscape_4_3",
+        "landscape_16_9",
+        "auto",
+      ]),
+    ])
+    .default("landscape_4_3")
+    .describe(
+      "The size of the generated image. Supports preset names, explicit {width, height}, or 'auto' to let the model pick the best size. Concrete sizes must have both dimensions as multiples of 16, max edge 3840px, aspect ratio <= 3:1, total pixels between 655,360 and 8,294,400."
+    ),
+  background: z
+    .enum(["auto", "transparent", "opaque"])
+    .default("auto")
+    .describe("Background for the generated image"),
+  quality: z
+    .enum(["auto", "low", "medium", "high", "xhigh", "max"])
+    .default("high")
+    .describe(
+      "Quality for the generated image. Higher settings increase detail, latency, and token usage. Use 'auto' to let the model choose."
+    ),
+  num_images: z
+    .number()
+    .int()
+    .min(1)
+    .max(10)
+    .default(1)
+    .describe("Number of images to generate"),
+  output_format: z
+    .enum(["jpeg", "png", "webp"])
+    .default("png")
+    .describe("Output format for the images"),
+  output_compression: z
+    .number()
+    .int()
+    .min(0)
+    .max(100)
+    .nullable()
+    .optional()
+    .describe(
+      "Compression level from 0 to 100. Only supported when output_format is 'jpeg' or 'webp'."
+    ),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If `True`, the media will be returned as a data URI and the output data won't be available in the request history."
+    ),
+});
+export type FalOpenaiGptImage2p5FlareTextToImageRequest = z.input<
+  typeof FalOpenaiGptImage2p5FlareTextToImageRequestSchema
+>;
+export type FalOpenaiGptImage2p5FlareTextToImageRequestInput =
+  FalOpenaiGptImage2p5FlareTextToImageRequest;
+export type FalOpenaiGptImage2p5FlareTextToImageParsedRequest = z.output<
+  typeof FalOpenaiGptImage2p5FlareTextToImageRequestSchema
+>;
+
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 1b18a611c1f4a0a7f2430aaa0cdb8ff3063021366f02e513c4f55aafe0920089). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/microsoft/mai-image-2.5-pro/api
+export const FalMicrosoftMaiImage2p5ProRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(3)
+    .max(5000)
+    .describe("The text prompt to generate an image from."),
+  num_images: z
+    .number()
+    .int()
+    .min(1)
+    .max(4)
+    .default(1)
+    .describe("The number of images to generate."),
+  aspect_ratio: z
+    .enum(["auto", "1:1", "4:3", "3:4", "16:9", "9:16", "3:2", "2:3"])
+    .default("auto")
+    .describe(
+      'The aspect ratio of the generated image. Use "auto" to let the model decide based on the prompt.'
+    ),
+  output_format: z
+    .enum(["jpeg", "png", "webp"])
+    .default("png")
+    .describe("The format of the generated image."),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If `True`, the media will be returned as a data URI and the output data won't be available in the request history."
+    ),
+});
+export type FalMicrosoftMaiImage2p5ProRequest = z.input<
+  typeof FalMicrosoftMaiImage2p5ProRequestSchema
+>;
+export type FalMicrosoftMaiImage2p5ProRequestInput =
+  FalMicrosoftMaiImage2p5ProRequest;
+export type FalMicrosoftMaiImage2p5ProParsedRequest = z.output<
+  typeof FalMicrosoftMaiImage2p5ProRequestSchema
+>;
+
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 39588aa3f4029718ccbd21956ceac6aad20cb2fafcc70280100476c18fea407f). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/microsoft/mai-image-2.5-pro/edit/api
+export const FalMicrosoftMaiImage2p5ProEditRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(3)
+    .max(5000)
+    .describe("The instruction describing how to edit the input image(s)."),
+  num_images: z
+    .number()
+    .int()
+    .min(1)
+    .max(4)
+    .default(1)
+    .describe("The number of images to generate."),
+  aspect_ratio: z
+    .enum(["auto", "1:1", "4:3", "3:4", "16:9", "9:16", "3:2", "2:3"])
+    .default("auto")
+    .describe(
+      'The aspect ratio of the generated image. Use "auto" to match the input or let the model decide.'
+    ),
+  output_format: z
+    .enum(["jpeg", "png", "webp"])
+    .default("png")
+    .describe("The format of the generated image."),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If `True`, the media will be returned as a data URI and the output data won't be available in the request history."
+    ),
+  image_url: z
+    .string()
+    .default("")
+    .describe(
+      "The URL of the image to edit. Provide one http(s) or data: URL."
+    ),
+});
+export type FalMicrosoftMaiImage2p5ProEditRequest = z.input<
+  typeof FalMicrosoftMaiImage2p5ProEditRequestSchema
+>;
+export type FalMicrosoftMaiImage2p5ProEditRequestInput =
+  FalMicrosoftMaiImage2p5ProEditRequest;
+export type FalMicrosoftMaiImage2p5ProEditParsedRequest = z.output<
+  typeof FalMicrosoftMaiImage2p5ProEditRequestSchema
+>;
+
+const FalNvidiaCosmos3SuperImageToVideoImageSizeSchema = z.object({
+  width: z
+    .number()
+    .int()
+    .gt(0)
+    .max(14142)
+    .default(512)
+    .describe("The width of the generated image."),
+  height: z
+    .number()
+    .int()
+    .gt(0)
+    .max(14142)
+    .default(512)
+    .describe("The height of the generated image."),
+});
+
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 4924d039363d46ea7c2caed4304f68383c957f05514cc14711d833dccb8ef079). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/nvidia/cosmos-3-super/image-to-video/api
+export const FalNvidiaCosmos3SuperImageToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(4096)
+    .describe(
+      "Text prompt describing the motion and scene of the video to generate."
+    ),
+  image_url: z
+    .string()
+    .describe("URL of the conditioning first-frame image for the video."),
+  negative_prompt: z
+    .string()
+    .max(2048)
+    .default(
+      "The video captures a series of frames showing macroblocking artifacts, chromatic aberration, high-frequency noise, and rolling shutter distortion. It includes static with no motion, motion blur, over-saturation, shaky footage, low resolution, grainy texture, pixelated images, poorly lit areas, underexposed and overexposed scenes, poor color balance, washed out colors, choppy sequences, jerky movements, low frame rate, bit-depth compression artifacts, color banding, unnatural transitions, outdated special effects, fake elements, unconvincing visuals, poorly edited content, jump cuts, hard cut, visual noise, and flickering. It features moiré patterns, edge halos, and temporal aliasing. Furthermore, the content defies common sense, generating illogical scenarios, nonsensical entities, absurd character behaviors, and conceptual paradoxes that violate basic human reasoning and everyday reality. The video looks like a surreal or glitchy hallucination. Overall, the video is of poor quality."
+    )
+    .describe(
+      "Content to steer the generation away from (artifacts, unwanted motion). Defaults to NVIDIA's recommended i2v negative prompt; pass an empty string to disable."
+    ),
+  enable_prompt_expansion: z
+    .boolean()
+    .default(true)
+    .describe(
+      "If true, the Cosmos3-Nano Reasoner (a VLM that sees the first frame) rewrites the prompt into the dense caption Cosmos3 was trained on. The app starts a local Reasoner by default, or uses COSMOS_PROMPT_UPSAMPLER_BASE_URL when configured. Falls back to the raw prompt if expansion fails."
+    ),
+  enable_agentic_generation: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Enable the iterative Cosmos agentic loop: prompt upsampling, candidate video generation, VLM critique of sampled frames, and prompt rewrite. Each candidate is a full render, so this is substantially slower and costlier than a single generation."
+    ),
+  agentic_max_iterations: z
+    .number()
+    .int()
+    .min(1)
+    .max(3)
+    .default(2)
+    .describe(
+      "Maximum agentic prompt stages when agentic generation is enabled."
+    ),
+  agentic_samples_per_iteration: z
+    .number()
+    .int()
+    .min(1)
+    .max(3)
+    .default(2)
+    .describe(
+      "Candidate videos to generate and judge per agentic iteration. The best candidate advances to the next rewrite stage."
+    ),
+  agentic_early_stop: z
+    .boolean()
+    .default(true)
+    .describe(
+      "Stop the agentic loop early when the critic score clears the strict quality threshold."
+    ),
+  image_size: z
+    .union([
+      FalNvidiaCosmos3SuperImageToVideoImageSizeSchema,
+      z.enum([
+        "square_hd",
+        "square",
+        "portrait_4_3",
+        "portrait_16_9",
+        "landscape_4_3",
+        "landscape_16_9",
+      ]),
+    ])
+    .default({ height: 480, width: 832 })
+    .describe(
+      "The size of the generated video. The request is clamped and snapped to the nearest supported NVIDIA tier (256p/480p/720p) and aspect ratio."
+    ),
+  num_frames: z
+    .number()
+    .int()
+    .min(5)
+    .max(189)
+    .default(189)
+    .describe(
+      "Number of frames to generate. More frames yield a longer video."
+    ),
+  frames_per_second: z
+    .number()
+    .int()
+    .min(4)
+    .max(60)
+    .default(24)
+    .describe("Frames per second of the output video."),
+  num_inference_steps: z
+    .number()
+    .int()
+    .min(1)
+    .max(50)
+    .default(28)
+    .describe(
+      "Number of denoising steps. More steps yield higher quality but take longer."
+    ),
+  guidance_scale: z
+    .number()
+    .min(0)
+    .max(20)
+    .default(6)
+    .describe(
+      "Classifier-free guidance scale. Higher values increase prompt adherence at the cost of diversity."
+    ),
+  seed: z
+    .number()
+    .int()
+    .nullable()
+    .optional()
+    .describe(
+      "The same seed and prompt given to the same model version will produce the same video every time."
+    ),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe(
+      "Enable content moderation for the input prompt and image. Disabling it requires account authorization; unauthorized requests are always checked."
+    ),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If `True`, the video is returned as a data URI and the output data won't be available in the request history."
+    ),
+});
+export type FalNvidiaCosmos3SuperImageToVideoRequest = z.input<
+  typeof FalNvidiaCosmos3SuperImageToVideoRequestSchema
+>;
+export type FalNvidiaCosmos3SuperImageToVideoRequestInput =
+  FalNvidiaCosmos3SuperImageToVideoRequest;
+export type FalNvidiaCosmos3SuperImageToVideoParsedRequest = z.output<
+  typeof FalNvidiaCosmos3SuperImageToVideoRequestSchema
+>;
+
+const FalNvidiaCosmos3SuperTextToImageImageSizeSchema = z.object({
+  width: z
+    .number()
+    .int()
+    .gt(0)
+    .max(14142)
+    .default(512)
+    .describe("The width of the generated image."),
+  height: z
+    .number()
+    .int()
+    .gt(0)
+    .max(14142)
+    .default(512)
+    .describe("The height of the generated image."),
+});
+
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 955b94ac6f9420a59b7c7fd9adfc3858137c4222458e3aa3349535984851bace). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/nvidia/cosmos-3-super/text-to-image/api
+export const FalNvidiaCosmos3SuperTextToImageRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(4096)
+    .describe("Text prompt describing the image to generate."),
+  negative_prompt: z
+    .string()
+    .max(1024)
+    .default("")
+    .describe(
+      "Content to steer the generation away from (colors, objects, artifacts)."
+    ),
+  enable_prompt_expansion: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Expand the prompt with OpenRouter before image generation. When enabled, the prompt is rewritten into the dense structured-JSON format Cosmos3 was trained on; generation falls back to the raw prompt if expansion fails."
+    ),
+  enable_agentic_generation: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Automatically generate and compare multiple candidate images, then refine the prompt between rounds to better match the original request. This can improve prompt adherence but increases latency and billable image generations."
+    ),
+  agentic_max_iterations: z
+    .number()
+    .int()
+    .min(1)
+    .max(3)
+    .default(2)
+    .describe(
+      "Maximum number of refinement rounds when agentic generation is enabled."
+    ),
+  agentic_samples_per_iteration: z
+    .number()
+    .int()
+    .min(1)
+    .max(3)
+    .default(2)
+    .describe(
+      "Candidate images to generate and judge per agentic iteration. The best candidate advances to the next rewrite stage."
+    ),
+  agentic_early_stop: z
+    .boolean()
+    .default(true)
+    .describe(
+      "Stop early when a candidate image is already a strong match for the prompt."
+    ),
+  image_size: z
+    .union([
+      FalNvidiaCosmos3SuperTextToImageImageSizeSchema,
+      z.enum([
+        "square_hd",
+        "square",
+        "portrait_4_3",
+        "portrait_16_9",
+        "landscape_4_3",
+        "landscape_16_9",
+      ]),
+    ])
+    .default("square_hd")
+    .describe(
+      "The size of the generated image. Each edge is clamped to 512-1280px (multiples of 16)."
+    ),
+  num_inference_steps: z
+    .number()
+    .int()
+    .min(1)
+    .max(50)
+    .default(28)
+    .describe(
+      "Number of denoising steps. More steps yield higher quality but take longer."
+    ),
+  guidance_scale: z
+    .number()
+    .min(0)
+    .max(20)
+    .default(4)
+    .describe(
+      "Classifier-free guidance scale. Higher values increase prompt adherence at the cost of diversity."
+    ),
+  num_images: z
+    .number()
+    .int()
+    .min(1)
+    .max(4)
+    .default(1)
+    .describe("The number of images to generate."),
+  seed: z
+    .number()
+    .int()
+    .nullable()
+    .optional()
+    .describe(
+      "The same seed and prompt given to the same model version will produce the same image every time."
+    ),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe(
+      "Enable content moderation for the input prompt and generated images. Disabling it requires account authorization; unauthorized requests are always checked, and images flagged as unsafe are returned as black images."
+    ),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If `True`, the image is returned as a data URI and the output data won't be available in the request history."
+    ),
+  output_format: z
+    .enum(["jpeg", "png"])
+    .default("jpeg")
+    .describe("The format of the generated image."),
+});
+export type FalNvidiaCosmos3SuperTextToImageRequest = z.input<
+  typeof FalNvidiaCosmos3SuperTextToImageRequestSchema
+>;
+export type FalNvidiaCosmos3SuperTextToImageRequestInput =
+  FalNvidiaCosmos3SuperTextToImageRequest;
+export type FalNvidiaCosmos3SuperTextToImageParsedRequest = z.output<
+  typeof FalNvidiaCosmos3SuperTextToImageRequestSchema
+>;
+
+const FalLumaAgentRayV3p2ReframeRayReframeSourcePositionSchema = z.object({
+  x_norm: z
+    .number()
+    .min(-2)
+    .max(2)
+    .describe(
+      "Left edge of the source rectangle as a fraction of output width."
+    ),
+  y_norm: z
+    .number()
+    .min(-2)
+    .max(2)
+    .describe(
+      "Top edge of the source rectangle as a fraction of output height."
+    ),
+  w_norm: z
+    .number()
+    .gt(0)
+    .max(2)
+    .describe("Width of the source rectangle as a fraction of output width."),
+  h_norm: z
+    .number()
+    .gt(0)
+    .max(2)
+    .describe("Height of the source rectangle as a fraction of output height."),
+});
+
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 6b7fbb43e98d0206bcaffe7046e871a54a8b5e37b63a1264fe03e34b902bb335). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/luma/agent/ray/v3.2/reframe/api
+export const FalLumaAgentRayV3p2ReframeRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(6000)
+    .describe(
+      "Text prompt describing the content to paint into the newly exposed canvas area when reframing to the target aspect ratio."
+    ),
+  video_url: z
+    .string()
+    .min(1)
+    .describe(
+      "URL of the source video to reframe (must be 10 seconds or less)."
+    ),
+  aspect_ratio: z
+    .enum(["3:4", "4:3", "1:1", "9:16", "16:9", "21:9"])
+    .describe("Target aspect ratio for the reframed video."),
+  resolution: z
+    .enum(["540p", "720p", "1080p"])
+    .default("540p")
+    .describe(
+      "Resolution of the reframed video. Higher resolutions cost more."
+    ),
+  duration: z
+    .enum(["5s", "10s"])
+    .nullable()
+    .optional()
+    .describe(
+      "Duration of the reframed video. Defaults to matching the source video's duration; set explicitly to 5s or 10s to override."
+    ),
+  source_position:
+    FalLumaAgentRayV3p2ReframeRayReframeSourcePositionSchema.nullable()
+      .optional()
+      .describe(
+        "Optional normalized source rectangle controlling where the source video sits in the output canvas."
+      ),
+});
+export type FalLumaAgentRayV3p2ReframeRequest = z.input<
+  typeof FalLumaAgentRayV3p2ReframeRequestSchema
+>;
+export type FalLumaAgentRayV3p2ReframeRequestInput =
+  FalLumaAgentRayV3p2ReframeRequest;
+export type FalLumaAgentRayV3p2ReframeParsedRequest = z.output<
+  typeof FalLumaAgentRayV3p2ReframeRequestSchema
+>;
+
+const FalLumaAgentRayV3p2VideoToVideoRayEditPoseControlSchema = z.object({
+  enabled: z
+    .boolean()
+    .default(true)
+    .describe("Enable pose / skeleton conditioning for the edit."),
+  strength: z
+    .enum(["precise", "coarse"])
+    .nullable()
+    .optional()
+    .describe(
+      "Pose conditioning precision. 'precise' follows the source pose tightly; 'coarse' allows more freedom. Leave unset for the default."
+    ),
+});
+
+const FalLumaAgentRayV3p2VideoToVideoRayEditDepthControlSchema = z.object({
+  enabled: z
+    .boolean()
+    .default(true)
+    .describe("Enable depth / scene-geometry conditioning for the edit."),
+  blur: z
+    .number()
+    .min(0)
+    .max(1)
+    .nullable()
+    .optional()
+    .describe(
+      "Depth blur. Higher values allow more geometric freedom. Leave unset for the default."
+    ),
+});
+
+const FalLumaAgentRayV3p2VideoToVideoRayEditNormalsControlSchema = z.object({
+  enabled: z
+    .boolean()
+    .default(true)
+    .describe("Enable surface-normals conditioning for the edit."),
+  augmentation: z
+    .number()
+    .min(0)
+    .max(1)
+    .nullable()
+    .optional()
+    .describe(
+      "Surface-normals augmentation. Higher values allow more reinterpretation of surface geometry. Leave unset for the default."
+    ),
+});
+
+const FalLumaAgentRayV3p2VideoToVideoRayEditTrajectoryControlSchema = z.object({
+  enabled: z
+    .boolean()
+    .default(true)
+    .describe("Enable motion-trajectory conditioning for the edit."),
+  sparsity: z
+    .number()
+    .min(0)
+    .max(1)
+    .nullable()
+    .optional()
+    .describe(
+      "Motion-trajectory sparsity. Higher values use fewer motion anchors. Leave unset for the default."
+    ),
+});
+
+const FalLumaAgentRayV3p2VideoToVideoRayEditFaceControlSchema = z.object({
+  enabled: z
+    .boolean()
+    .default(true)
+    .describe("Enable face-identity conditioning for the edit."),
+});
+
+const FalLumaAgentRayV3p2VideoToVideoRayEditControlsSchema = z
+  .object({
+    pose: FalLumaAgentRayV3p2VideoToVideoRayEditPoseControlSchema.nullable()
+      .optional()
+      .describe("Pose / skeleton conditioning."),
+    depth: FalLumaAgentRayV3p2VideoToVideoRayEditDepthControlSchema.nullable()
+      .optional()
+      .describe("Depth / scene-geometry conditioning."),
+    normals:
+      FalLumaAgentRayV3p2VideoToVideoRayEditNormalsControlSchema.nullable()
+        .optional()
+        .describe("Surface-normals conditioning."),
+    trajectory:
+      FalLumaAgentRayV3p2VideoToVideoRayEditTrajectoryControlSchema.nullable()
+        .optional()
+        .describe("Motion-trajectory conditioning."),
+    face: FalLumaAgentRayV3p2VideoToVideoRayEditFaceControlSchema.nullable()
+      .optional()
+      .describe("Face-identity conditioning."),
+  })
+  .describe(
+    "Per-signal conditioning controls for ray-3.2 video editing.\n\nEach signal is optional; include only the signals you want to tune. Cannot\nbe combined with auto_controls. Mirrors the Luma Agents ``video.edit.controls``\nobject — see https://docs.agents.lumalabs.ai/api/resources/generations."
+  );
+
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 8bd14a741c36236019df945f9b48fe593fddd54853d7ea947ace9731e68c84c3). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/luma/agent/ray/v3.2/video-to-video/api
+export const FalLumaAgentRayV3p2VideoToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(6000)
+    .describe("Text prompt describing how to edit the source video."),
+  video_url: z.string().min(1).describe("URL of the source video to edit."),
+  user: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "Optional opaque identifier for the end user making the request. Used only for abuse attribution; never interpreted by fal."
+    ),
+  start_image_url: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "Optional URL of an image to use as the edited video's first frame — e.g. a restyled version of the source's opening frame to steer the look of the edit. Leave unset to let the model derive the first frame from the source video."
+    ),
+  resolution: z
+    .enum(["540p", "720p", "1080p"])
+    .default("540p")
+    .describe("Resolution of the edited video. Higher resolutions cost more."),
+  duration: z
+    .enum(["5s", "10s"])
+    .default("5s")
+    .describe("Duration of the edited video."),
+  edit_strength: z
+    .enum([
+      "adhere_1",
+      "adhere_2",
+      "adhere_3",
+      "flex_1",
+      "flex_2",
+      "flex_3",
+      "reimagine_1",
+      "reimagine_2",
+      "reimagine_3",
+    ])
+    .nullable()
+    .optional()
+    .describe(
+      "How closely the edit preserves the source video. 'adhere_*' stays closest to the source, 'flex_*' is balanced, and 'reimagine_*' diverges most. Leave unset to use Luma's default. Cannot be combined with auto_controls."
+    ),
+  auto_controls: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Let the model derive the edit conditioning schedule from the source video. Cannot be combined with edit_strength."
+    ),
+  hdr: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Generate an HDR-encoded MP4. Requires HDR access on the account and a resolution of 720p or 1080p."
+    ),
+  exr_export: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Also export an EXR file alongside the MP4. Requires hdr=true and HDR access."
+    ),
+  controls: FalLumaAgentRayV3p2VideoToVideoRayEditControlsSchema.nullable()
+    .optional()
+    .describe(
+      "Per-signal conditioning controls (pose, depth, normals, trajectory, face) for finer control than edit_strength. Cannot be combined with auto_controls."
+    ),
+  keyframes: z
+    .array(z.string())
+    .min(1)
+    .max(64)
+    .nullable()
+    .optional()
+    .describe(
+      "Multi-keyframe edit guide frames: up to 64 image URLs pinned at the source-frame positions given by keyframe_indexes. Mutually exclusive with start_image_url. Provide keyframes and keyframe_indexes together (same length)."
+    ),
+  keyframe_indexes: z
+    .array(z.number().int())
+    .min(1)
+    .max(64)
+    .nullable()
+    .optional()
+    .describe(
+      "Source-video frame positions where each keyframes[i] is anchored. Non-negative, unique, and the same length as keyframes."
+    ),
+});
+export type FalLumaAgentRayV3p2VideoToVideoRequest = z.input<
+  typeof FalLumaAgentRayV3p2VideoToVideoRequestSchema
+>;
+export type FalLumaAgentRayV3p2VideoToVideoRequestInput =
+  FalLumaAgentRayV3p2VideoToVideoRequest;
+export type FalLumaAgentRayV3p2VideoToVideoParsedRequest = z.output<
+  typeof FalLumaAgentRayV3p2VideoToVideoRequestSchema
+>;
+
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 e95ae20b1a5eaf379534320d570eed680354232f5c035907988f14486305d5cd). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/luma/agent/ray/v3.2/image-to-video/api
+export const FalLumaAgentRayV3p2ImageToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(6000)
+    .describe("Text prompt describing the motion/scene to generate."),
+  image_url: z
+    .string()
+    .min(1)
+    .nullable()
+    .optional()
+    .describe(
+      "URL of the image used as the first frame of the video. Provide either image_url (optionally with end_image_url) or keyframes — the two anchoring modes are mutually exclusive."
+    ),
+  end_image_url: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "Optional URL of an image used as the last frame. When set, the model interpolates between image_url and end_image_url. Cannot be combined with keyframes."
+    ),
+  aspect_ratio: z
+    .enum(["3:4", "4:3", "1:1", "9:16", "16:9", "21:9"])
+    .default("16:9")
+    .describe("Aspect ratio of the generated video."),
+  resolution: z
+    .enum(["540p", "720p", "1080p"])
+    .default("540p")
+    .describe(
+      "Resolution of the generated video. Higher resolutions cost more."
+    ),
+  duration: z
+    .enum(["5s", "10s"])
+    .default("5s")
+    .describe(
+      "Duration of the generated video. 10s requires multi-keyframe input (keyframes / keyframe_indexes); it is not supported with a single image_url / end_image_url anchor."
+    ),
+  loop: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Generate a seamless loop. Only valid for standard-dynamic-range generations without an end frame or keyframes."
+    ),
+  hdr: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Generate an HDR-encoded MP4. Requires HDR access on the account and a resolution of 720p or 1080p; not supported with loop."
+    ),
+  exr_export: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Also export an EXR file alongside the MP4. Requires hdr=true and HDR access."
+    ),
+  keyframes: z
+    .array(z.string())
+    .min(1)
+    .max(64)
+    .nullable()
+    .optional()
+    .describe(
+      "Multi-keyframe image-to-video guide frames: 1-64 image URLs pinned at the positions given by keyframe_indexes. Mutually exclusive with image_url, end_image_url, and loop; unlocks 10s and HDR. Provide keyframes and keyframe_indexes together (same length)."
+    ),
+  keyframe_indexes: z
+    .array(z.number().int())
+    .min(1)
+    .max(64)
+    .nullable()
+    .optional()
+    .describe(
+      "Output-frame positions (duration x 24fps: 5s -> 0-120, 10s -> 0-240) where each keyframes[i] is anchored. Non-negative, unique, and the same length as keyframes."
+    ),
+});
+export type FalLumaAgentRayV3p2ImageToVideoRequest = z.input<
+  typeof FalLumaAgentRayV3p2ImageToVideoRequestSchema
+>;
+export type FalLumaAgentRayV3p2ImageToVideoRequestInput =
+  FalLumaAgentRayV3p2ImageToVideoRequest;
+export type FalLumaAgentRayV3p2ImageToVideoParsedRequest = z.output<
+  typeof FalLumaAgentRayV3p2ImageToVideoRequestSchema
+>;
+
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 1b65c2b603474ce4cb84c9b680a6b5d374187e871ea347c5526ec5e9ac11e5e1). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/luma/agent/ray/v3.2/text-to-video/api
+export const FalLumaAgentRayV3p2TextToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(6000)
+    .describe("Text prompt describing the video to generate."),
+  aspect_ratio: z
+    .enum(["3:4", "4:3", "1:1", "9:16", "16:9", "21:9"])
+    .default("16:9")
+    .describe("Aspect ratio of the generated video."),
+  resolution: z
+    .enum(["540p", "720p", "1080p"])
+    .default("540p")
+    .describe(
+      "Resolution of the generated video. Higher resolutions cost more."
+    ),
+  duration: z
+    .enum(["5s", "10s"])
+    .default("5s")
+    .describe("Duration of the generated video."),
+  loop: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Generate a seamless loop. Only valid for 5s, standard-dynamic-range generations without an end frame."
+    ),
+  hdr: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Generate an HDR-encoded MP4. Requires HDR access on the account and a resolution of 720p or 1080p; not supported with 10s or loop."
+    ),
+  exr_export: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Also export an EXR file alongside the MP4. Requires hdr=true and HDR access."
+    ),
+});
+export type FalLumaAgentRayV3p2TextToVideoRequest = z.input<
+  typeof FalLumaAgentRayV3p2TextToVideoRequestSchema
+>;
+export type FalLumaAgentRayV3p2TextToVideoRequestInput =
+  FalLumaAgentRayV3p2TextToVideoRequest;
+export type FalLumaAgentRayV3p2TextToVideoParsedRequest = z.output<
+  typeof FalLumaAgentRayV3p2TextToVideoRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "luma/agent/ray/v3.2/text-to-video":
+    FalLumaAgentRayV3p2TextToVideoRequestSchema,
+  "luma/agent/ray/v3.2/image-to-video":
+    FalLumaAgentRayV3p2ImageToVideoRequestSchema,
+  "luma/agent/ray/v3.2/video-to-video":
+    FalLumaAgentRayV3p2VideoToVideoRequestSchema,
+  "luma/agent/ray/v3.2/reframe": FalLumaAgentRayV3p2ReframeRequestSchema,
+  "nvidia/cosmos-3-super/text-to-image":
+    FalNvidiaCosmos3SuperTextToImageRequestSchema,
+  "nvidia/cosmos-3-super/image-to-video":
+    FalNvidiaCosmos3SuperImageToVideoRequestSchema,
+  "microsoft/mai-image-2.5-pro/edit":
+    FalMicrosoftMaiImage2p5ProEditRequestSchema,
+  "microsoft/mai-image-2.5-pro": FalMicrosoftMaiImage2p5ProRequestSchema,
+  "openai/gpt-image-2.5/flare/text-to-image":
+    FalOpenaiGptImage2p5FlareTextToImageRequestSchema,
+  "openai/gpt-image-2.5/flare/edit": FalOpenaiGptImage2p5FlareEditRequestSchema,
+  "openai/gpt-image-2.5/sunburst/text-to-image":
+    FalOpenaiGptImage2p5SunburstTextToImageRequestSchema,
+  "openai/gpt-image-2.5/sunburst/edit":
+    FalOpenaiGptImage2p5SunburstEditRequestSchema,
+  "meta/muse-image/edit": FalMetaMuseImageEditRequestSchema,
+  "meta/muse-image/text-to-image": FalMetaMuseImageTextToImageRequestSchema,
+  "elevenlabs/music/v2.5": FalElevenlabsMusicV2p5RequestSchema,
+  "bria/fibo-gen-1.5/text-to-image": FalBriaFiboGen1p5TextToImageRequestSchema,
+  "bria/fibo-edit-1.5/edit": FalBriaFiboEdit1p5EditRequestSchema,
+  "blackforestlabs/flux-3/edit-video":
+    FalBlackforestlabsFlux3EditVideoRequestSchema,
+  "alibaba/happy-horse/v1.1/text-to-video":
+    FalAlibabaHappyHorseV1p1TextToVideoRequestSchema,
+  "alibaba/happy-horse/v1.1/image-to-video":
+    FalAlibabaHappyHorseV1p1ImageToVideoRequestSchema,
+  "alibaba/happy-horse/v1.1/reference-to-video":
+    FalAlibabaHappyHorseV1p1ReferenceToVideoRequestSchema,
+  "alibaba/qwen-audio-3-tts": FalAlibabaQwenAudio3TtsRequestSchema,
+  "fal-ai/kling-video/v3/turbo/pro/image-to-video":
+    FalKlingVideoV3TurboProImageToVideoRequestSchema,
+  "fal-ai/kling-video/v3/turbo/pro/text-to-video":
+    FalKlingVideoV3TurboProTextToVideoRequestSchema,
+  "fal-ai/kling-video/v3/turbo/standard/image-to-video":
+    FalKlingVideoV3TurboStandardImageToVideoRequestSchema,
+  "fal-ai/kling-video/v3/turbo/standard/text-to-video":
+    FalKlingVideoV3TurboStandardTextToVideoRequestSchema,
+  "lightricks/ltx-2.5/audio-to-video/fast":
+    FalLightricksLtx2p5AudioToVideoFastRequestSchema,
+  "lightricks/ltx-2.5/audio-to-video/pro":
+    FalLightricksLtx2p5AudioToVideoProRequestSchema,
+  "lightricks/ltx-2.5/text-to-video/pro":
+    FalLightricksLtx2p5TextToVideoProRequestSchema,
+  "lightricks/ltx-2.5/text-to-video/fast":
+    FalLightricksLtx2p5TextToVideoFastRequestSchema,
+  "google/gemini-omni-flash/v1.1/text-to-video":
+    FalGeminiOmniFlashV1p1TextToVideoRequestSchema,
+  "google/gemini-omni-flash/v1.1/image-to-video":
+    FalGeminiOmniFlashV1p1ImageToVideoRequestSchema,
+  "google/gemini-omni-flash/v1.1/reference-to-video":
+    FalGeminiOmniFlashV1p1ReferenceToVideoRequestSchema,
+  "google/gemini-omni-flash/v1.1/edit": FalGeminiOmniFlashV1p1EditRequestSchema,
+  "xai/grok-imagine-video/v1.5/image-to-video":
+    FalXaiGrokImagineVideoV1p5ImageToVideoRequestSchema,
+  "xai/grok-imagine-video/v1.5/text-to-video":
+    FalXaiGrokImagineVideoV1p5TextToVideoRequestSchema,
+  "minimax/h3-max-turbo/text-to-video":
+    FalMinimaxH3MaxTurboTextToVideoRequestSchema,
+  "minimax/h3-max-turbo/image-to-video":
+    FalMinimaxH3MaxTurboImageToVideoRequestSchema,
+  "minimax/h3-max/lip-sync/image-to-video":
+    FalMinimaxH3MaxLipSyncImageToVideoRequestSchema,
+  "minimax/h3-max/3d-to-video": FalMinimaxH3MaxThreeDToVideoRequestSchema,
+  "minimax/h3-max/reference-to-video":
+    FalMinimaxH3MaxReferenceToVideoRequestSchema,
+  "minimax/h3-max/camera-controls": FalMinimaxH3MaxCameraControlsRequestSchema,
+  "minimax/h3-max/text-to-video": FalMinimaxH3MaxTextToVideoRequestSchema,
+  "minimax/h3-max/image-to-video": FalMinimaxH3MaxImageToVideoRequestSchema,
   "minimax/h3-max/extend-video": FalMinimaxH3MaxExtendVideoRequestSchema,
   "bria/fibo-edit-1.5/product-holding":
     FalBriaFiboEdit1p5ProductHoldingRequestSchema,

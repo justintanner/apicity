@@ -1622,7 +1622,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://elevenlabs.io/docs/api-reference/knowledge-base/rag-index-overview)
 
 ```typescript
-const res = await elevenlabs.v1.convai.knowledgeBase.ragIndex({ /* ... */ });
+const res = await elevenlabs.v1.convai.knowledgeBase.ragIndex();
 ```
 
 Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
@@ -1843,7 +1843,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://elevenlabs.io/docs/api-reference/llm/list)
 
 ```typescript
-const res = await elevenlabs.v1.convai.llm.list({ /* ... */ });
+const res = await elevenlabs.v1.convai.llm.list();
 ```
 
 Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
@@ -1928,7 +1928,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://elevenlabs.io/docs/api-reference/mcp/list)
 
 ```typescript
-const res = await elevenlabs.v1.convai.mcpServers.list({ /* ... */ });
+const res = await elevenlabs.v1.convai.mcpServers.list();
 ```
 
 Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
@@ -2285,7 +2285,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://elevenlabs.io/docs/api-reference/workspace/get)
 
 ```typescript
-const res = await elevenlabs.v1.convai.settings({ /* ... */ });
+const res = await elevenlabs.v1.convai.settings();
 ```
 
 Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
@@ -2302,7 +2302,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://elevenlabs.io/docs/api-reference/workspace/dashboard/get)
 
 ```typescript
-const res = await elevenlabs.v1.convai.settings.dashboard({ /* ... */ });
+const res = await elevenlabs.v1.convai.settings.dashboard();
 ```
 
 Source: [`packages/provider/elevenlabs/src/convai.ts`](src/convai.ts)
@@ -3568,7 +3568,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://elevenlabs.io/docs/api-reference/service-accounts/list)
 
 ```typescript
-const res = await elevenlabs.v1.serviceAccounts.list({ /* ... */ });
+const res = await elevenlabs.v1.serviceAccounts.list();
 ```
 
 Source: [`packages/provider/elevenlabs/src/service-accounts.ts`](src/service-accounts.ts)
@@ -4094,7 +4094,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://elevenlabs.io/docs/api-reference/studio/get-projects)
 
 ```typescript
-const res = await elevenlabs.v1.studio.projects.list({ /* ... */ });
+const res = await elevenlabs.v1.studio.projects.list();
 ```
 
 Source: [`packages/provider/elevenlabs/src/studio.ts`](src/studio.ts)
@@ -4457,7 +4457,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://elevenlabs.io/docs/api-reference/user/get)
 
 ```typescript
-const res = await elevenlabs.v1.user({ /* ... */ });
+const res = await elevenlabs.v1.user();
 ```
 
 Source: [`packages/provider/elevenlabs/src/user.ts`](src/user.ts)
@@ -4876,7 +4876,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://elevenlabs.io/docs/api-reference/voices/settings/get-default)
 
 ```typescript
-const res = await elevenlabs.v1.voices.settings.default({ /* ... */ });
+const res = await elevenlabs.v1.voices.settings.default();
 ```
 
 Source: [`packages/provider/elevenlabs/src/voices.ts`](src/voices.ts)
@@ -5014,7 +5014,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://elevenlabs.io/docs/api-reference/workspace/auth-connections/list)
 
 ```typescript
-const res = await elevenlabs.v1.workspace.authConnections.list({ /* ... */ });
+const res = await elevenlabs.v1.workspace.authConnections.list();
 ```
 
 Source: [`packages/provider/elevenlabs/src/workspace.ts`](src/workspace.ts)
@@ -5048,7 +5048,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://elevenlabs.io/docs/api-reference/workspace/groups/list)
 
 ```typescript
-const res = await elevenlabs.v1.workspace.groups.list({ /* ... */ });
+const res = await elevenlabs.v1.workspace.groups.list();
 ```
 
 Source: [`packages/provider/elevenlabs/src/workspace.ts`](src/workspace.ts)

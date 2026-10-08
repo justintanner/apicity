@@ -129,9 +129,26 @@ import { repoRoot } from "./provider-scope.mjs";
  * literal — and, like the rest of this list, is named after no provider, so no
  * provider scope selects it.
  *
+ * The recorded-request-secrets guard reads the request side of every committed
+ * recording. `tests/harness.ts` redacts `authorization` and the provider-key
+ * headers before Polly persists a HAR, so a live key reaches the corpus only
+ * through a hand edit or a harness regression. When the ac-0hyt0n review
+ * planted both into a recording — `authorization: Bearer
+ * kie0123456789abcdefLIVE` and an extra `x-goog-api-key` header — a literal
+ * `ci:local` failed on neither. `tests/unit/har-request-secrets.test.ts` walks
+ * every `tests/recordings/**\/*.har` and fails each request header that the
+ * harness's table in `scripts/lib/har-secrets.mjs` (or the guard-only
+ * `api-key`) names with a value other than its exact placeholder, naming file
+ * and header. It imports that table from the harness, which applies and
+ * re-exports it, so the guard and the redaction cannot drift; the import loads
+ * Polly's modules but starts no Polly instance. A recording added under one
+ * provider is a provider-scoped diff, and the file is named after no provider,
+ * so this entry is what runs it in the fast gates (ac-1zmydw).
+ *
  * The fast gates run these guards so a broken repo-wide invariant cannot pass
- * the local merge gate. They are filesystem- and source-parse-only (no Polly,
- * no network); `CROSS_CUTTING_COST_SECONDS` records their measured cost.
+ * the local merge gate. They are filesystem- and source-parse-only (no Polly
+ * replay, no network); `CROSS_CUTTING_COST_SECONDS` records their measured
+ * cost.
  *
  * Add any whole-repo guard that provider scopes do not select consistently to
  * this list.
@@ -146,7 +163,7 @@ import { repoRoot } from "./provider-scope.mjs";
  * the script prints `crossCuttingCostNote()` and the `.claude/CLAUDE.md` prose
  * is pinned to this value by `tests/unit/cross-cutting-tests.test.ts`.
  *
- * The value is the median of three runs of the WHOLE block at its current
+ * The value is the median of three runs of the WHOLE block at its then
  * eleven-entry membership - 918 tests across 11 files - measured on 2026-09-17
  * at commit f5226e3f on the reference host: an Intel Core i7-8700 @ 3.20GHz, 12
  * threads, Linux 6.8.0-124, Node v22.23.2. After one warm-up run, discarded
@@ -180,10 +197,31 @@ import { repoRoot } from "./provider-scope.mjs";
  * pair that arrived with the export-surface guard describes a different,
  * unnamed machine and was never this block's cost on this one.
  *
+ * Re-measured on 2026-10-07 for ac-1zmydw, which added the twelfth entry,
+ * `tests/unit/har-request-secrets.test.ts` (966 tests across 12 files), on the
+ * tree of that commit (parent 8d46a843). The host matched three of the four
+ * facts - the model name, 12 threads, kernel 6.8.0-124-generic - but not the
+ * fourth: Node is now v22.23.3, against the v22.23.2 above, so by the rule
+ * below the value was not re-pinned. The figures agree with it anyway. After
+ * one discarded warm-up (12.603s at a 1-minute load of 22.51), three timed
+ * runs of the twelve entries were interleaved with three of the eleven before
+ * them, as the plan's OQ-7 asked: 13.904s, 17.465s and 12.455s wall at
+ * 1-minute loads of 25.31, 27.47 and 26.73 (median 13.904s, 13.9 to one
+ * decimal), against 16.619s, 14.203s and 14.942s at 23.71, 27.94 and 28.43
+ * for the eleven (953 tests, median 14.942s). The twelve-entry min-max,
+ * 12.455-17.465s, contains 14.9, so the rule would keep it on a matching host
+ * too. The new entry did not move the block; like the export-surface guard, it
+ * is not the critical path. An earlier pass the same day, at 1-minute loads of
+ * 10.62-12.80 and one test case short of this tree, gave 8.6 (8.584s, 8.631s
+ * and 10.758s, against an 8.953s median for the eleven): the figure this host
+ * gave in the comparable 9.67-12.28 regime, so again load, not the block.
+ *
  * Every entry stays filesystem- and source-parse-only; the credential guard's
  * dominant cost is one JSON parse of the fal HAR corpus plus a single pass
  * over the test tree, and the namespace-shape guard parses all 29 provider
- * factories in about 0.3s.
+ * factories in about 0.3s. The request-secrets guard parses every HAR once and
+ * imports `tests/harness.ts` for its table, which loads Polly's modules
+ * without starting a Polly instance.
  *
  * Re-measure when the membership changes, and record the result here. The
  * protocol is the one this figure was taken by (ac-iag7fk): on this host -
@@ -209,7 +247,7 @@ export function crossCuttingCostNote() {
   // One decimal, as pinned: JavaScript would print 11.0 as "11".
   const seconds = CROSS_CUTTING_COST_SECONDS.toFixed(1);
   return (
-    "filesystem- and source-parse-only (no Polly, no network); about " +
+    "filesystem- and source-parse-only (no Polly replay, no network); about " +
     `${seconds}s, last measured on an Intel i7-8700`
   );
 }
@@ -225,6 +263,7 @@ export const CROSS_CUTTING_TESTS = [
   "tests/unit/provider-export-surface.test.ts",
   "tests/unit/provider-namespace-shape.test.ts",
   "tests/unit/compare-namespace-shapes-cli.test.ts",
+  "tests/unit/har-request-secrets.test.ts",
 ];
 
 /**

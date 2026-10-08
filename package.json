@@ -97,7 +97,7 @@
     "lint:repo": "pnpm run lint:endpoints && pnpm run lint:signatures && pnpm run lint:factory && pnpm run lint:recordings && pnpm run lint:timers && pnpm run lint:file-url-entry-guards && pnpm run lint:ignores && pnpm run gen:shared:check && pnpm run lint:compare-payloads",
     "lint:compare-payloads": "pnpm run build:kie --silent && node scripts/check-compare-cost-payloads.mjs",
     "lint:endpoints": "node scripts/check-endpoint-comments.mjs",
-    "lint:recordings": "node scripts/check-orphan-recordings.mjs",
+    "lint:recordings": "node scripts/check-orphan-recordings.mjs && node scripts/check-recording-secrets.mjs",
     "lint:signatures": "node scripts/check-endpoint-signatures.mjs",
     "lint:signatures:fix": "node scripts/apply-sigok-comments.mjs",
     "lint:factory": "node scripts/check-factory-signatures.mjs",

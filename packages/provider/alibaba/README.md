@@ -205,7 +205,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://help.aliyun.com/zh/model-studio)
 
 ```typescript
-const res = await alibaba.compatibleMode.v1.models({ /* ... */ });
+const res = await alibaba.compatibleMode.v1.models();
 ```
 
 Source: [`packages/provider/alibaba/src/alibaba.ts`](src/alibaba.ts)

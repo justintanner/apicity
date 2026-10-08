@@ -751,6 +751,16 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST klingVideo.v3.turbo.standard.textToVideo": {
+    "source": "fal/kling-video-v3-turbo-standard-text-to-video",
+    "payload": {
+      "prompt": "A lioness and her cubs in warm grass, camera drifting closer.",
+      "duration": "3",
+      "aspect_ratio": "16:9"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST lightricks.ltx2p5.audioToVideo.fast": {
     "source": "fal/lightricks-ltx-2-5-audio-to-video-fast",
     "payload": {

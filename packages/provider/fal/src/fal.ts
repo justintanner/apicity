@@ -1,4 +1,6 @@
 import {
+  FalKlingVideoV3TurboStandardTextToVideoResponse,
+  FalKlingVideoV3TurboStandardTextToVideoRequest,
   FalLightricksLtx2p5AudioToVideoFastResponse,
   FalLightricksLtx2p5AudioToVideoFastRequest,
   FalLightricksLtx2p5AudioToVideoProResponse,
@@ -290,6 +292,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalKlingVideoV3TurboStandardTextToVideoRequestSchema,
   FalLightricksLtx2p5AudioToVideoFastRequestSchema,
   FalLightricksLtx2p5AudioToVideoProRequestSchema,
   FalLightricksLtx2p5TextToVideoProRequestSchema,
@@ -2584,6 +2587,19 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/fal-ai/kling-video/v3/turbo/standard/text-to-video
+  // Docs: https://fal.ai/models/fal-ai/kling-video/v3/turbo/standard/text-to-video/api
+  const klingVideoV3TurboStandardTextToVideo = jsonBody<
+    FalKlingVideoV3TurboStandardTextToVideoRequest,
+    FalKlingVideoV3TurboStandardTextToVideoResponse
+  >(
+    "POST",
+    "/fal-ai/kling-video/v3/turbo/standard/text-to-video",
+    FalKlingVideoV3TurboStandardTextToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
     // POST https://fal.run/bria/fibo-edit-1.5/virtual-try-on
     // Docs: https://fal.ai/models/bria/fibo-edit-1.5/virtual-try-on/api
@@ -2795,6 +2811,14 @@ export function createFal(opts: FalOptions): FalProvider {
     qwenImage,
     klingVideo: {
       v3: {
+        turbo: {
+          standard: {
+            // sig-ok: stylistic dotPath divergence from URL
+            // POST https://fal.run/fal-ai/kling-video/v3/turbo/standard/text-to-video
+            // Docs: https://fal.ai/models/fal-ai/kling-video/v3/turbo/standard/text-to-video/api
+            textToVideo: klingVideoV3TurboStandardTextToVideo,
+          },
+        },
         pro: {
           imageToVideo: klingVideoV3ProImageToVideo,
           textToVideo: klingVideoV3ProTextToVideo,

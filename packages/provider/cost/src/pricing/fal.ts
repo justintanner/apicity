@@ -906,6 +906,18 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  // Kling v3 Turbo Standard bills $0.112 per second at 720p. Duration
+  // is a digit string defaulting to "5", and the card has no audio
+  // toggle. The recorded 3 s call billed x-fal-billable-units 3, the
+  // requested seconds (pricing API: 0.112 USD per second), so the
+  // charge is $0.336. fal does not count this charge in cents.
+  "fal-ai/kling-video/v3/turbo/standard/text-to-video": perSecond(
+    "fal-ai/kling-video/v3/turbo/standard/text-to-video",
+    0.112,
+    klingSeconds,
+    "2026-10-08"
+  ),
+
   // Bills each second of the INPUT audio (2 to 20 s on the fast tier) at
   // one rate. The request carries the audio only as a URL, so the caller
   // declares its length through costHints.durationSeconds, as for

@@ -1888,6 +1888,59 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  // https://docs.kie.ai/market/google/nanobanana-2-1
+  "nano-banana-2-1": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        maxLength: 20000,
+        description: "Image generation prompt (max 20000 chars)",
+      },
+      image_input: {
+        type: "array",
+        maxItems: 10,
+        description: "Reference image URLs (max 10)",
+        items: { type: "string" },
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: [
+          "1:1",
+          "1:4",
+          "1:8",
+          "2:3",
+          "3:2",
+          "3:4",
+          "4:1",
+          "4:3",
+          "4:5",
+          "5:4",
+          "8:1",
+          "9:16",
+          "16:9",
+          "21:9",
+          "auto",
+        ],
+        default: "auto",
+        description: "Output aspect ratio (default auto)",
+      },
+      resolution: {
+        type: "string",
+        enum: ["1K", "2K", "4K"],
+        default: "1K",
+        description: "Output resolution (default 1K)",
+      },
+      output_format: {
+        type: "string",
+        enum: ["png", "jpg"],
+        default: "jpg",
+        description: "Image format (default jpg)",
+      },
+    },
+  },
+
   // https://docs.kie.ai/market/seedream/seedream (model id bytedance/seedream)
   "bytedance/seedream": {
     type: "image",

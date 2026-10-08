@@ -1801,10 +1801,10 @@
       "endpoints": 71
     },
     "final": {
-      "models": 152,
-      "pricingKeys": 176,
-      "slugKeys": 178,
-      "displayKeys": 178,
+      "models": 153,
+      "pricingKeys": 177,
+      "slugKeys": 179,
+      "displayKeys": 179,
       "schemaWithoutPricing": 6,
       "pricingOnly": 30,
       "endpoints": 86
@@ -1820,11 +1820,11 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:d3dec545a532b2b23cf341e44d9bf24fcd63f09ddb2c93396aa67c8e3e5d31a7",
-      "packages/provider/kie/src/model-schemas.ts": "sha256:043ab64dd35c74ed99ba4d307894dc7017b3297862549ce879c168e185827775",
-      "packages/provider/kie/src/kie.ts": "sha256:f7f8b3e2b71f77fa952e2177c584c5b25590983d073e425e239d803cfac3a39e",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:a3e40dafb9d6f67a3e12fa3210e15db881fb8e73cd48a5cb7ad2955bfe87b79c",
-      "packages/provider/cost/src/slugs.ts": "sha256:01757624e315bbd8028d1368aef697461b86e8262d28594f17386e27a0087192",
+      "packages/provider/kie/src/zod.ts": "sha256:96b0d6951c28a736909e1594082c2125ff7a6b626571c61b290a2d557aaebd24",
+      "packages/provider/kie/src/model-schemas.ts": "sha256:c4a10e42c2c1bcb13fef2d8a6f643fb4738071b1da861893f7a9807704b26bc5",
+      "packages/provider/kie/src/kie.ts": "sha256:a342bbe1f2964af593d246760c1e3ab1af4430f005cb8d83181ad69a41bec83f",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:0695218f1cf1971d50eee07ea92c4ffcea6e5584e0c8f21aa02a5c5d4e0ac355",
+      "packages/provider/cost/src/slugs.ts": "sha256:bf3863dcc1c23f3d464121fb074e206aa52b0b2117b7735cf1c0026754e9b57d",
       "scripts/endpoint-docs.tsv": "sha256:6b01c7358ad0dd3a48ae4495c85c55f7229e6827ed08defe0f13caf7be14dd3e"
     }
   },
@@ -23233,6 +23233,15 @@
         "rationale": "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
       },
       {
+        "id": "nano-banana-2-1",
+        "descriptor": true,
+        "guard": true,
+        "pricingKey": "nano-banana-2-1",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
         "id": "nano-banana-2-lite",
         "descriptor": true,
         "guard": true,
@@ -26705,6 +26714,12 @@
         "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
       },
       {
+        "key": "nano-banana-2-1",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
         "key": "gpt-image/1.5-text-to-image",
         "linkedRows": [
           "sha256:e4f233e680645e44bf3f87850bb8dea8ba3baaac34b2ed294badadc756535225#1",
@@ -27575,6 +27590,10 @@
         "disposition": "supported"
       },
       {
+        "key": "nano-banana-2-1",
+        "disposition": "supported"
+      },
+      {
         "key": "nano-banana-pro",
         "disposition": "supported"
       },
@@ -28289,6 +28308,10 @@
         "disposition": "supported"
       },
       {
+        "key": "nano-banana-2-1",
+        "disposition": "supported"
+      },
+      {
         "key": "nano-banana-pro",
         "disposition": "supported"
       },
@@ -28943,16 +28966,16 @@
     },
     "apiCity": {
       "models": {
-        "count": 152,
-        "descriptors": 152,
-        "guards": 152,
+        "count": 153,
+        "descriptors": 153,
+        "guards": 153,
         "withoutPricing": 6,
         "dispositionCounts": {
           "supported": 118,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 34
+          "upstream-unmappable": 35
         },
         "unclassified": 0
       },
@@ -28970,20 +28993,20 @@
         "unclassified": 0
       },
       "pricingKeys": {
-        "count": 176,
+        "count": 177,
         "dispositionCounts": {
           "supported": 146,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 30
+          "upstream-unmappable": 31
         },
         "unclassified": 0
       },
       "slugs": {
-        "count": 178,
+        "count": 179,
         "dispositionCounts": {
-          "supported": 178,
+          "supported": 179,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -28992,9 +29015,9 @@
         "unclassified": 0
       },
       "displays": {
-        "count": 178,
+        "count": 179,
         "dispositionCounts": {
-          "supported": 178,
+          "supported": 179,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -29033,6 +29056,27 @@
   },
   "runtimeCoverage": {
     "exceptions": [
+      {
+        "key": "nano-banana-2-1",
+        "variant": "1K",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/nano-banana-2-1-2026-10-08.json: official feed cells at 4 credits ($0.020) for 1K, 6 credits ($0.030) for 2K, and 9 credits ($0.045) for 4K",
+        "rationale": "Nano Banana 2.1 was added after the frozen September catalog; these live rates are backed by the dated supplemental feed capture."
+      },
+      {
+        "key": "nano-banana-2-1",
+        "variant": "2K",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/nano-banana-2-1-2026-10-08.json: official feed cells at 4 credits ($0.020) for 1K, 6 credits ($0.030) for 2K, and 9 credits ($0.045) for 4K",
+        "rationale": "Nano Banana 2.1 was added after the frozen September catalog; these live rates are backed by the dated supplemental feed capture."
+      },
+      {
+        "key": "nano-banana-2-1",
+        "variant": "4K",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/nano-banana-2-1-2026-10-08.json: official feed cells at 4 credits ($0.020) for 1K, 6 credits ($0.030) for 2K, and 9 credits ($0.045) for 4K",
+        "rationale": "Nano Banana 2.1 was added after the frozen September catalog; these live rates are backed by the dated supplemental feed capture."
+      },
       {
         "key": "seedream/5-flash-text-to-image",
         "variant": "1K",

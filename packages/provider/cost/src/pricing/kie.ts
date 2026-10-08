@@ -2630,6 +2630,17 @@ export const kie: Record<string, ModelPricing> = {
     0.02,
     "https://kie.ai/nano-banana-2-lite"
   ),
+  // Nano Banana 2.1 — per image by input.resolution. The product page and
+  // the public pricing feed on 2026-10-08 print 4 credits ($0.02) at 1K,
+  // 6 credits ($0.03) at 2K, and 9 credits ($0.045) at 4K. The schema
+  // default is 1K, so an omitted resolution uses that rate.
+  "nano-banana-2-1": tieredImagePage(
+    "resolution",
+    { "1K": 0.02, "2K": 0.03, "4K": 0.045 },
+    "https://kie.ai/nano-banana-2-1",
+    "1K",
+    "2026-10-08"
+  ),
 
   // GPT Image 1.5 — per image by `input.quality`: medium $0.02, high $0.11.
   // docs.kie.ai documents the default as "medium" on both models, applied as

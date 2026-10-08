@@ -42,7 +42,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.moonshot.ai/docs)
 
 ```typescript
-const res = await kimicoding.coding.v1.models();
+const res = await kimicoding.get.coding.v1.models();
 ```
 
 Source: [`packages/provider/kimicoding/src/kimicoding.ts`](src/kimicoding.ts)
@@ -59,7 +59,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://www.kimi.com/code/docs/en/)
 
 ```typescript
-const res = await kimicoding.coding.v1.chat.completions({ /* ... */ });
+const res = await kimicoding.post.coding.v1.chat.completions({ /* ... */ });
 ```
 
 Source: [`packages/provider/kimicoding/src/kimicoding.ts`](src/kimicoding.ts)
@@ -76,7 +76,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.moonshot.ai/docs)
 
 ```typescript
-const res = await kimicoding.coding.v1.countTokens({ /* ... */ });
+const res = await kimicoding.post.coding.v1.countTokens({ /* ... */ });
 ```
 
 Source: [`packages/provider/kimicoding/src/kimicoding.ts`](src/kimicoding.ts)
@@ -93,7 +93,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.moonshot.ai/docs)
 
 ```typescript
-const res = await kimicoding.coding.v1.embeddings({ /* ... */ });
+const res = await kimicoding.post.coding.v1.embeddings({ /* ... */ });
 ```
 
 Source: [`packages/provider/kimicoding/src/kimicoding.ts`](src/kimicoding.ts)
@@ -110,7 +110,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.moonshot.ai/docs)
 
 ```typescript
-const res = await kimicoding.coding.v1.messages({ /* ... */ });
+const res = await kimicoding.post.coding.v1.messages({ /* ... */ });
 ```
 
 Source: [`packages/provider/kimicoding/src/kimicoding.ts`](src/kimicoding.ts)

@@ -42,7 +42,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.z.ai/api-reference/llm/chat-completion)
 
 ```typescript
-const res = await zaicoding.api.coding.paas.v4.chat.completions({ /* ... */ });
+const res = await zaicoding.post.api.coding.paas.v4.chat.completions({ /* ... */ });
 ```
 
 Source: [`packages/provider/zaicoding/src/zaicoding.ts`](src/zaicoding.ts)
@@ -61,7 +61,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.z.ai/api-reference/introduction)
 
 ```typescript
-const res = await zaicoding.api.monitor.usage.modelUsage({ /* ... */ });
+const res = await zaicoding.get.api.monitor.usage.modelUsage({ /* ... */ });
 ```
 
 Source: [`packages/provider/zaicoding/src/zaicoding.ts`](src/zaicoding.ts)
@@ -78,7 +78,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.z.ai/api-reference/introduction)
 
 ```typescript
-const res = await zaicoding.api.monitor.usage.quota.limit({ /* ... */ });
+const res = await zaicoding.get.api.monitor.usage.quota.limit({ /* ... */ });
 ```
 
 Source: [`packages/provider/zaicoding/src/zaicoding.ts`](src/zaicoding.ts)
@@ -95,7 +95,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.z.ai/api-reference/introduction)
 
 ```typescript
-const res = await zaicoding.api.monitor.usage.toolUsage({ /* ... */ });
+const res = await zaicoding.get.api.monitor.usage.toolUsage({ /* ... */ });
 ```
 
 Source: [`packages/provider/zaicoding/src/zaicoding.ts`](src/zaicoding.ts)

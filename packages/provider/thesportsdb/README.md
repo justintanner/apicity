@@ -177,7 +177,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-all)
 
 ```typescript
-const res = await thesportsdb.v2.all.countries();
+const res = await thesportsdb.get.v2.all.countries();
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -194,7 +194,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-all)
 
 ```typescript
-const res = await thesportsdb.v2.all.leagues();
+const res = await thesportsdb.get.v2.all.leagues();
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -211,7 +211,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-all)
 
 ```typescript
-const res = await thesportsdb.v2.all.sports();
+const res = await thesportsdb.get.v2.all.sports();
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -458,7 +458,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-filter)
 
 ```typescript
-const res = await thesportsdb.v2.filter.tv.channel({ /* ... */ });
+const res = await thesportsdb.get.v2.filter.tv.channel({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -475,7 +475,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-filter)
 
 ```typescript
-const res = await thesportsdb.v2.filter.tv.channelid({ /* ... */ });
+const res = await thesportsdb.get.v2.filter.tv.channelid({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -492,7 +492,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-filter)
 
 ```typescript
-const res = await thesportsdb.v2.filter.tv.country({ /* ... */ });
+const res = await thesportsdb.get.v2.filter.tv.country({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -509,7 +509,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-filter)
 
 ```typescript
-const res = await thesportsdb.v2.filter.tv.day({ /* ... */ });
+const res = await thesportsdb.get.v2.filter.tv.day({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -526,7 +526,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-filter)
 
 ```typescript
-const res = await thesportsdb.v2.filter.tv.sport({ /* ... */ });
+const res = await thesportsdb.get.v2.filter.tv.sport({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -545,7 +545,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-list)
 
 ```typescript
-const res = await thesportsdb.v2.list.players({ /* ... */ });
+const res = await thesportsdb.get.v2.list.players({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -562,7 +562,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-list)
 
 ```typescript
-const res = await thesportsdb.v2.list.seasonposters({ /* ... */ });
+const res = await thesportsdb.get.v2.list.seasonposters({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -579,7 +579,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-list)
 
 ```typescript
-const res = await thesportsdb.v2.list.seasons({ /* ... */ });
+const res = await thesportsdb.get.v2.list.seasons({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -596,7 +596,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-list)
 
 ```typescript
-const res = await thesportsdb.v2.list.teams({ /* ... */ });
+const res = await thesportsdb.get.v2.list.teams({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -615,7 +615,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-livescores)
 
 ```typescript
-const res = await thesportsdb.v2.livescore.all();
+const res = await thesportsdb.get.v2.livescore.all();
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -632,7 +632,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-livescores)
 
 ```typescript
-const res = await thesportsdb.v2.livescore.byLeague({ /* ... */ });
+const res = await thesportsdb.get.v2.livescore.byLeague({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -649,7 +649,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-livescores)
 
 ```typescript
-const res = await thesportsdb.v2.livescore.bySport({ /* ... */ });
+const res = await thesportsdb.get.v2.livescore.bySport({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -668,7 +668,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
 
 ```typescript
-const res = await thesportsdb.v2.lookup.event({ /* ... */ });
+const res = await thesportsdb.get.v2.lookup.event({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -685,7 +685,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
 
 ```typescript
-const res = await thesportsdb.v2.lookup.eventHighlights({ /* ... */ });
+const res = await thesportsdb.get.v2.lookup.eventHighlights({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -702,7 +702,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
 
 ```typescript
-const res = await thesportsdb.v2.lookup.eventLineup({ /* ... */ });
+const res = await thesportsdb.get.v2.lookup.eventLineup({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -719,7 +719,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
 
 ```typescript
-const res = await thesportsdb.v2.lookup.eventResults({ /* ... */ });
+const res = await thesportsdb.get.v2.lookup.eventResults({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -736,7 +736,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
 
 ```typescript
-const res = await thesportsdb.v2.lookup.eventStats({ /* ... */ });
+const res = await thesportsdb.get.v2.lookup.eventStats({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -753,7 +753,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
 
 ```typescript
-const res = await thesportsdb.v2.lookup.eventTimeline({ /* ... */ });
+const res = await thesportsdb.get.v2.lookup.eventTimeline({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -770,7 +770,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
 
 ```typescript
-const res = await thesportsdb.v2.lookup.eventTv({ /* ... */ });
+const res = await thesportsdb.get.v2.lookup.eventTv({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -787,7 +787,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
 
 ```typescript
-const res = await thesportsdb.v2.lookup.league({ /* ... */ });
+const res = await thesportsdb.get.v2.lookup.league({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -804,7 +804,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
 
 ```typescript
-const res = await thesportsdb.v2.lookup.player({ /* ... */ });
+const res = await thesportsdb.get.v2.lookup.player({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -821,7 +821,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
 
 ```typescript
-const res = await thesportsdb.v2.lookup.playerContracts({ /* ... */ });
+const res = await thesportsdb.get.v2.lookup.playerContracts({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -838,7 +838,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
 
 ```typescript
-const res = await thesportsdb.v2.lookup.playerHonours({ /* ... */ });
+const res = await thesportsdb.get.v2.lookup.playerHonours({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -855,7 +855,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
 
 ```typescript
-const res = await thesportsdb.v2.lookup.playerMilestones({ /* ... */ });
+const res = await thesportsdb.get.v2.lookup.playerMilestones({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -872,7 +872,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
 
 ```typescript
-const res = await thesportsdb.v2.lookup.playerResults({ /* ... */ });
+const res = await thesportsdb.get.v2.lookup.playerResults({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -889,7 +889,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
 
 ```typescript
-const res = await thesportsdb.v2.lookup.playerStats({ /* ... */ });
+const res = await thesportsdb.get.v2.lookup.playerStats({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -906,7 +906,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
 
 ```typescript
-const res = await thesportsdb.v2.lookup.playerTeams({ /* ... */ });
+const res = await thesportsdb.get.v2.lookup.playerTeams({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -923,7 +923,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
 
 ```typescript
-const res = await thesportsdb.v2.lookup.team({ /* ... */ });
+const res = await thesportsdb.get.v2.lookup.team({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -940,7 +940,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
 
 ```typescript
-const res = await thesportsdb.v2.lookup.teamEquipment({ /* ... */ });
+const res = await thesportsdb.get.v2.lookup.teamEquipment({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -957,7 +957,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
 
 ```typescript
-const res = await thesportsdb.v2.lookup.venue({ /* ... */ });
+const res = await thesportsdb.get.v2.lookup.venue({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -1308,7 +1308,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-schedule)
 
 ```typescript
-const res = await thesportsdb.v2.schedule.full.team({ /* ... */ });
+const res = await thesportsdb.get.v2.schedule.full.team({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -1325,7 +1325,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-schedule)
 
 ```typescript
-const res = await thesportsdb.v2.schedule.league({ /* ... */ });
+const res = await thesportsdb.get.v2.schedule.league({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -1342,7 +1342,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-schedule)
 
 ```typescript
-const res = await thesportsdb.v2.schedule.next.league({ /* ... */ });
+const res = await thesportsdb.get.v2.schedule.next.league({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -1359,7 +1359,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-schedule)
 
 ```typescript
-const res = await thesportsdb.v2.schedule.next.team({ /* ... */ });
+const res = await thesportsdb.get.v2.schedule.next.team({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -1376,7 +1376,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-schedule)
 
 ```typescript
-const res = await thesportsdb.v2.schedule.next.venue({ /* ... */ });
+const res = await thesportsdb.get.v2.schedule.next.venue({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -1393,7 +1393,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-schedule)
 
 ```typescript
-const res = await thesportsdb.v2.schedule.previous.league({ /* ... */ });
+const res = await thesportsdb.get.v2.schedule.previous.league({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -1410,7 +1410,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-schedule)
 
 ```typescript
-const res = await thesportsdb.v2.schedule.previous.team({ /* ... */ });
+const res = await thesportsdb.get.v2.schedule.previous.team({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -1427,7 +1427,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-schedule)
 
 ```typescript
-const res = await thesportsdb.v2.schedule.previous.venue({ /* ... */ });
+const res = await thesportsdb.get.v2.schedule.previous.venue({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -1446,7 +1446,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-search)
 
 ```typescript
-const res = await thesportsdb.v2.search.event({ /* ... */ });
+const res = await thesportsdb.get.v2.search.event({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -1463,7 +1463,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-search)
 
 ```typescript
-const res = await thesportsdb.v2.search.league({ /* ... */ });
+const res = await thesportsdb.get.v2.search.league({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -1480,7 +1480,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-search)
 
 ```typescript
-const res = await thesportsdb.v2.search.player({ /* ... */ });
+const res = await thesportsdb.get.v2.search.player({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -1497,7 +1497,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-search)
 
 ```typescript
-const res = await thesportsdb.v2.search.team({ /* ... */ });
+const res = await thesportsdb.get.v2.search.team({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -1514,7 +1514,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-search)
 
 ```typescript
-const res = await thesportsdb.v2.search.venue({ /* ... */ });
+const res = await thesportsdb.get.v2.search.venue({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)

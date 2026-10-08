@@ -284,7 +284,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/watch-alerts)
 
 ```typescript
-const res = await simplefunctions.api.alertRules({ /* ... */ });
+const res = await simplefunctions.api.alertRules.delete({ /* ... */ });
 ```
 
 Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
@@ -500,7 +500,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/market-watch)
 
 ```typescript
-const res = await simplefunctions.api.dashboard2.marketWatch.panels({ /* ... */ });
+const res = await simplefunctions.api.dashboard2.marketWatch.panels.delete({ /* ... */ });
 ```
 
 Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
@@ -534,7 +534,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/market-watch)
 
 ```typescript
-const res = await simplefunctions.api.dashboard2.marketWatch.panels({ /* ... */ });
+const res = await simplefunctions.api.dashboard2.marketWatch.panels.run({ /* ... */ });
 ```
 
 Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
@@ -846,7 +846,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/execution-intents)
 
 ```typescript
-const res = await simplefunctions.api.intents({ /* ... */ });
+const res = await simplefunctions.api.intents.delete({ /* ... */ });
 ```
 
 Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
@@ -933,7 +933,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/keys)
 
 ```typescript
-const res = await simplefunctions.api.keys({ /* ... */ });
+const res = await simplefunctions.api.keys.delete({ /* ... */ });
 ```
 
 Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
@@ -1209,7 +1209,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
 ```typescript
-const res = await simplefunctions.api.portfolio.secrets({ /* ... */ });
+const res = await simplefunctions.api.portfolio.secrets.delete({ /* ... */ });
 ```
 
 Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
@@ -1294,7 +1294,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
 ```typescript
-const res = await simplefunctions.api.portfolio.strategy({ /* ... */ });
+const res = await simplefunctions.api.portfolio.strategy.delete({ /* ... */ });
 ```
 
 Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
@@ -1481,7 +1481,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
 ```typescript
-const res = await simplefunctions.api.portfolio.views({ /* ... */ });
+const res = await simplefunctions.api.portfolio.views.delete({ /* ... */ });
 ```
 
 Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
@@ -2682,7 +2682,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/thesis)
 
 ```typescript
-const res = await simplefunctions.api.thesis({ /* ... */ });
+const res = await simplefunctions.api.thesis.delete({ /* ... */ });
 ```
 
 Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
@@ -2750,7 +2750,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/thesis)
 
 ```typescript
-const res = await simplefunctions.api.thesis.heartbeat({ /* ... */ });
+const res = await simplefunctions.api.thesis.heartbeat.get({ /* ... */ });
 ```
 
 Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
@@ -2818,7 +2818,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/thesis)
 
 ```typescript
-const res = await simplefunctions.api.thesis.positions({ /* ... */ });
+const res = await simplefunctions.api.thesis.positions.delete({ /* ... */ });
 ```
 
 Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
@@ -2954,7 +2954,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/thesis)
 
 ```typescript
-const res = await simplefunctions.api.thesis.strategies({ /* ... */ });
+const res = await simplefunctions.api.thesis.strategies.delete({ /* ... */ });
 ```
 
 Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
@@ -3162,7 +3162,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/watch-alerts)
 
 ```typescript
-const res = await simplefunctions.api.watch({ /* ... */ });
+const res = await simplefunctions.api.watch.delete({ /* ... */ });
 ```
 
 Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
@@ -3283,7 +3283,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/watch-alerts)
 
 ```typescript
-const res = await simplefunctions.api.webhookEndpoints({ /* ... */ });
+const res = await simplefunctions.api.webhookEndpoints.delete({ /* ... */ });
 ```
 
 Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)

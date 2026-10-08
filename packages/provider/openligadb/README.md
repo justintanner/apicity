@@ -244,7 +244,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://api.openligadb.de/swagger/v1/swagger.json)
 
 ```typescript
-const res = await openligadb.getbltable({
+const res = await openligadb.get.getbltable({
   leagueShortcut: "bl1",
   leagueSeason: 2024,
 });
@@ -285,7 +285,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://api.openligadb.de/swagger/v1/swagger.json)
 
 ```typescript
-const res = await openligadb.getgoalgetters({
+const res = await openligadb.get.getgoalgetters({
   leagueShortcut: "bl1",
   leagueSeason: 2024,
 });
@@ -307,7 +307,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://api.openligadb.de/swagger/v1/swagger.json)
 
 ```typescript
-const res = await openligadb.getgrouptable({
+const res = await openligadb.get.getgrouptable({
   leagueShortcut: "bl1",
   leagueSeason: 2024,
 });

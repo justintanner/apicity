@@ -200,7 +200,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.apiKeys({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.apiKeys.delete({ /* ... */ });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -251,7 +251,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.batchInferenceJobs({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.batchInferenceJobs.delete({ /* ... */ });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -268,7 +268,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.batchInferenceJobs({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.batchInferenceJobs.get({ /* ... */ });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -319,7 +319,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.datasets({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.datasets.delete({ /* ... */ });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -336,7 +336,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.datasets({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.datasets.get({ /* ... */ });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -455,7 +455,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.deployedModels({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.deployedModels.delete({ /* ... */ });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -472,7 +472,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.deployedModels({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.deployedModels.get({ /* ... */ });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -523,7 +523,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.deploymentShapes({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.deploymentShapes.get({ /* ... */ });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -540,7 +540,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.deploymentShapes.versions({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.deploymentShapes.versions.get({ /* ... */ });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -591,7 +591,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.deployments({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.deployments.delete({ /* ... */ });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -608,7 +608,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.deployments({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.deployments.get({ /* ... */ });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -710,7 +710,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.dpoJobs({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.dpoJobs.delete({ /* ... */ });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -727,7 +727,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.dpoJobs({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.dpoJobs.get({ /* ... */ });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -812,7 +812,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.evaluationJobs({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.evaluationJobs.delete({ /* ... */ });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -829,7 +829,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.evaluationJobs({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.evaluationJobs.get({ /* ... */ });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -897,7 +897,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.evaluators({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.evaluators.delete({ /* ... */ });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -914,7 +914,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.evaluators({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.evaluators.get({ /* ... */ });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1033,7 +1033,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.get({ /* ... */ });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1084,7 +1084,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.models({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.models.delete({ /* ... */ });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1101,7 +1101,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.models({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.models.get({ /* ... */ });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1237,7 +1237,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.reinforcementFineTuningJobs({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.reinforcementFineTuningJobs.delete({ /* ... */ });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1254,7 +1254,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.reinforcementFineTuningJobs({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.reinforcementFineTuningJobs.get({ /* ... */ });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1322,7 +1322,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.rlorTrainerJobs({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.rlorTrainerJobs.delete({ /* ... */ });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1356,7 +1356,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.rlorTrainerJobs({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.rlorTrainerJobs.get({ /* ... */ });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1424,7 +1424,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.secrets({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.secrets.delete({ /* ... */ });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1441,7 +1441,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.secrets({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.secrets.get({ /* ... */ });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1509,7 +1509,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.supervisedFineTuningJobs({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.supervisedFineTuningJobs.delete({ /* ... */ });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1526,7 +1526,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.supervisedFineTuningJobs({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.supervisedFineTuningJobs.get({ /* ... */ });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1594,7 +1594,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.users({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.users.get({ /* ... */ });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1645,7 +1645,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.audio.batch({ /* ... */ });
+const res = await fireworks.inference.v1.audio.batch.get({ /* ... */ });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1798,7 +1798,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.users.update({ /* ... */ });
+const res = await fireworks.post.inference.v1.accounts.users.update({ /* ... */ });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1815,7 +1815,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.messages({ /* ... */ });
+const res = await fireworks.post.inference.v1.messages({ /* ... */ });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1832,7 +1832,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.workflows.getResult({ /* ... */ });
+const res = await fireworks.post.inference.v1.workflows.getResult({ /* ... */ });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1849,7 +1849,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.workflows.kontext({ /* ... */ });
+const res = await fireworks.post.inference.v1.workflows.kontext({ /* ... */ });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1866,7 +1866,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.workflows.textToImage({ /* ... */ });
+const res = await fireworks.post.inference.v1.workflows.textToImage({ /* ... */ });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)

@@ -272,7 +272,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.x.com/x-api/media/get-media-upload-status)
 
 ```typescript
-const res = await x.v2.media.upload({ /* ... */ });
+const res = await x.get.v2.media.upload({ /* ... */ });
 ```
 
 Source: [`packages/provider/x/src/x.ts`](src/x.ts)
@@ -289,7 +289,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.x.com/x-api/media/append-media-upload)
 
 ```typescript
-const res = await x.v2.media.upload.append({ /* ... */ });
+const res = await x.post.v2.media.upload.append({ /* ... */ });
 ```
 
 Source: [`packages/provider/x/src/x.ts`](src/x.ts)
@@ -306,7 +306,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.x.com/x-api/media/finalize-media-upload)
 
 ```typescript
-const res = await x.v2.media.upload.finalize({ /* ... */ });
+const res = await x.post.v2.media.upload.finalize({ /* ... */ });
 ```
 
 Source: [`packages/provider/x/src/x.ts`](src/x.ts)
@@ -323,7 +323,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.x.com/x-api/media/media-upload-initialize)
 
 ```typescript
-const res = await x.v2.media.upload.initialize({ /* ... */ });
+const res = await x.post.v2.media.upload.initialize({ /* ... */ });
 ```
 
 Source: [`packages/provider/x/src/x.ts`](src/x.ts)
@@ -342,7 +342,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.x.com/x-api/posts/create-post)
 
 ```typescript
-const res = await x.v2.tweets({ /* ... */ });
+const res = await x.post.v2.tweets({ /* ... */ });
 ```
 
 Source: [`packages/provider/x/src/x.ts`](src/x.ts)
@@ -361,7 +361,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.x.com/x-api/users/get-my-user)
 
 ```typescript
-const res = await x.v2.users.me({ /* ... */ });
+const res = await x.get.v2.users.me({ /* ... */ });
 ```
 
 Source: [`packages/provider/x/src/x.ts`](src/x.ts)

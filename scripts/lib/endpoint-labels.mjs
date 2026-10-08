@@ -47,7 +47,7 @@ export function displayDotPath(providerName, ep) {
   // the `post: (() => { … })()` IIFE the walker does not descend, so the walker
   // reads these leaves from responses.ts alone and never sees that segment:
   // `kie.codex.v1.responses` is undefined, `kie.post.codex.v1.responses` is
-  // the leaf.
+  // the leaf (ac-kqdzn9).
   if (ep.file.endsWith("/responses.ts")) return `post.${ep.fullDotPath}`;
   return ep.fullDotPath ?? ep.dotPath;
 }

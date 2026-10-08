@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalLumaAgentRayV3p2ImageToVideoParsedRequest,
+  FalLumaAgentRayV3p2ImageToVideoRequestInput,
+  FalLumaAgentRayV3p2ImageToVideoRequest,
   FalLumaAgentRayV3p2VideoToVideoParsedRequest,
   FalLumaAgentRayV3p2VideoToVideoRequestInput,
   FalLumaAgentRayV3p2VideoToVideoRequest,
@@ -566,6 +569,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalLumaAgentRayV3p2ImageToVideoRequest,
   FalLumaAgentRayV3p2VideoToVideoRequest,
   FalLumaAgentRayV3p2ReframeRequest,
   FalNvidiaCosmos3SuperTextToImageRequest,
@@ -4928,4 +4932,30 @@ type FalLumaAgentRayV3p2VideoToVideoFn = ((
 
 export interface FalRunLumaAgentRayV3p2Namespace {
   videoToVideo: FalLumaAgentRayV3p2VideoToVideoFn;
+}
+
+export interface FalLumaAgentRayV3p2ImageToVideoResponse {
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+  exr_file?: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  } | null;
+}
+
+type FalLumaAgentRayV3p2ImageToVideoFn = ((
+  params: FalLumaAgentRayV3p2ImageToVideoRequest,
+  signal?: AbortSignal
+) => Promise<FalLumaAgentRayV3p2ImageToVideoResponse>) & {
+  schema: ApicitySchema<FalLumaAgentRayV3p2ImageToVideoRequest>;
+};
+
+export interface FalRunLumaAgentRayV3p2Namespace {
+  imageToVideo: FalLumaAgentRayV3p2ImageToVideoFn;
 }

@@ -913,6 +913,35 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  // Ray 3.2 image-to-video publishes one package: $0.15 for
+  // 5s at 540p. Duration defaults to 5s and resolution to
+  // 540p. The schema also allows 10s, but the card does not
+  // price it. The recorded 5s call billed
+  // x-fal-billable-units 5. At the pricing API's $0.03 per
+  // unit that is $0.15, the 5s package. HDR, EXR, 720p, and
+  // 1080p warn.
+  "luma/agent/ray/v3.2/image-to-video": {
+    kind: "perUnit",
+    unit: "generations",
+    units: () => 1,
+    select: [
+      {
+        name: "package",
+        pick: (p) => {
+          // The card publishes only the 540p 5s package. 10s, HDR,
+          // EXR, 720p, and 1080p have no price on this page.
+          if (p.hdr === true || p.exr_export === true) return undefined;
+          const res = asString(p.resolution) ?? "540p";
+          if (res !== "540p") return undefined;
+          const d = asString(p.duration) ?? "5s";
+          return d === "5s" ? "5s" : undefined;
+        },
+      },
+    ],
+    rates: { "5s": 0.15 },
+    source: source("luma/agent/ray/v3.2/image-to-video", "2026-10-08"),
+  },
+
   // Ray 3.2 video-to-video publishes two 540p packages:
   // $0.72 for 5s and $1.44 for 10s. Duration defaults to 5s
   // and resolution to 540p, so an omitted pair is $0.72.

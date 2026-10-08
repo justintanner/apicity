@@ -8779,7 +8779,95 @@ export type FalLumaAgentRayV3p2VideoToVideoParsedRequest = z.output<
   typeof FalLumaAgentRayV3p2VideoToVideoRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 e95ae20b1a5eaf379534320d570eed680354232f5c035907988f14486305d5cd). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/luma/agent/ray/v3.2/image-to-video/api
+export const FalLumaAgentRayV3p2ImageToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(6000)
+    .describe("Text prompt describing the motion/scene to generate."),
+  image_url: z
+    .string()
+    .min(1)
+    .nullable()
+    .optional()
+    .describe(
+      "URL of the image used as the first frame of the video. Provide either image_url (optionally with end_image_url) or keyframes — the two anchoring modes are mutually exclusive."
+    ),
+  end_image_url: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "Optional URL of an image used as the last frame. When set, the model interpolates between image_url and end_image_url. Cannot be combined with keyframes."
+    ),
+  aspect_ratio: z
+    .enum(["3:4", "4:3", "1:1", "9:16", "16:9", "21:9"])
+    .default("16:9")
+    .describe("Aspect ratio of the generated video."),
+  resolution: z
+    .enum(["540p", "720p", "1080p"])
+    .default("540p")
+    .describe(
+      "Resolution of the generated video. Higher resolutions cost more."
+    ),
+  duration: z
+    .enum(["5s", "10s"])
+    .default("5s")
+    .describe(
+      "Duration of the generated video. 10s requires multi-keyframe input (keyframes / keyframe_indexes); it is not supported with a single image_url / end_image_url anchor."
+    ),
+  loop: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Generate a seamless loop. Only valid for standard-dynamic-range generations without an end frame or keyframes."
+    ),
+  hdr: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Generate an HDR-encoded MP4. Requires HDR access on the account and a resolution of 720p or 1080p; not supported with loop."
+    ),
+  exr_export: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Also export an EXR file alongside the MP4. Requires hdr=true and HDR access."
+    ),
+  keyframes: z
+    .array(z.string())
+    .min(1)
+    .max(64)
+    .nullable()
+    .optional()
+    .describe(
+      "Multi-keyframe image-to-video guide frames: 1-64 image URLs pinned at the positions given by keyframe_indexes. Mutually exclusive with image_url, end_image_url, and loop; unlocks 10s and HDR. Provide keyframes and keyframe_indexes together (same length)."
+    ),
+  keyframe_indexes: z
+    .array(z.number().int())
+    .min(1)
+    .max(64)
+    .nullable()
+    .optional()
+    .describe(
+      "Output-frame positions (duration x 24fps: 5s -> 0-120, 10s -> 0-240) where each keyframes[i] is anchored. Non-negative, unique, and the same length as keyframes."
+    ),
+});
+export type FalLumaAgentRayV3p2ImageToVideoRequest = z.input<
+  typeof FalLumaAgentRayV3p2ImageToVideoRequestSchema
+>;
+export type FalLumaAgentRayV3p2ImageToVideoRequestInput =
+  FalLumaAgentRayV3p2ImageToVideoRequest;
+export type FalLumaAgentRayV3p2ImageToVideoParsedRequest = z.output<
+  typeof FalLumaAgentRayV3p2ImageToVideoRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "luma/agent/ray/v3.2/image-to-video":
+    FalLumaAgentRayV3p2ImageToVideoRequestSchema,
   "luma/agent/ray/v3.2/video-to-video":
     FalLumaAgentRayV3p2VideoToVideoRequestSchema,
   "luma/agent/ray/v3.2/reframe": FalLumaAgentRayV3p2ReframeRequestSchema,

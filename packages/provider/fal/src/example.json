@@ -937,6 +937,17 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST luma.agent.ray.v3p2.imageToVideo": {
+    "source": "fal/luma-agent-ray-v3-2-image-to-video",
+    "payload": {
+      "prompt": "Low-angle shot of a majestic tiger prowling through a snowy landscape, leaving paw prints on the white blanket.",
+      "image_url": "https://storage.googleapis.com/falserverless/gallery/example_inputs_liuyifei.png",
+      "duration": "5s",
+      "resolution": "540p"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST luma.agent.ray.v3p2.reframe": {
     "source": "fal/luma-agent-ray-v3-2-reframe",
     "payload": {

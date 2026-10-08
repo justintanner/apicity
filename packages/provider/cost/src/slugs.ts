@@ -412,6 +412,7 @@ export const MODEL_SLUGS = {
   // same underlying models kie also resells, so their slugs intentionally
   // match kie's.
   fal: {
+    "luma/agent/ray/v3.2/image-to-video": "ray32i",
     "luma/agent/ray/v3.2/video-to-video": "ray32v",
     "nvidia/cosmos-3-super/text-to-image": "cosmos3i",
     "nvidia/cosmos-3-super/image-to-video": "cosmos3s",
@@ -885,6 +886,7 @@ export const MODEL_DISPLAY = {
   },
 
   fal: {
+    "luma/agent/ray/v3.2/image-to-video": "Ray 3.2 Image",
     "luma/agent/ray/v3.2/video-to-video": "Ray 3.2 Video",
     "nvidia/cosmos-3-super/text-to-image": "Cosmos 3 Super Image",
     "nvidia/cosmos-3-super/image-to-video": "Cosmos 3 Super",

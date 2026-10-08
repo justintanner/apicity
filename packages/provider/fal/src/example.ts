@@ -222,6 +222,15 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST blackforestlabs.flux3.editVideo": {
+    "source": "fal/blackforestlabs-flux-3-edit-video",
+    "payload": {
+      "prompt": "Make it snow heavily; give the scene a cold winter palette.",
+      "video_url": "https://storage.googleapis.com/falserverless/example_inputs/flux-3-red-panda.mp4"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST blackforestlabs.flux3.extendVideo": {
     "source": "fal/flux-3-extend-video",
     "payload": {

@@ -412,6 +412,7 @@ export const MODEL_SLUGS = {
   // same underlying models kie also resells, so their slugs intentionally
   // match kie's.
   fal: {
+    "blackforestlabs/flux-3/edit-video": "flux3",
     "alibaba/happy-horse/v1.1/text-to-video": "hh11",
     "alibaba/happy-horse/v1.1/image-to-video": "hh11",
     "alibaba/happy-horse/v1.1/reference-to-video": "hh11",
@@ -876,6 +877,7 @@ export const MODEL_DISPLAY = {
   },
 
   fal: {
+    "blackforestlabs/flux-3/edit-video": "FLUX 3",
     "alibaba/happy-horse/v1.1/text-to-video": "Happy Horse 1.1",
     "alibaba/happy-horse/v1.1/image-to-video": "Happy Horse 1.1",
     "alibaba/happy-horse/v1.1/reference-to-video": "Happy Horse 1.1",

@@ -21,6 +21,10 @@ export type {
 
 // Export all types
 export type {
+  FalBlackforestlabsFlux3EditVideoResponse,
+  FalBlackforestlabsFlux3EditVideoParsedRequest,
+  FalBlackforestlabsFlux3EditVideoRequestInput,
+  FalBlackforestlabsFlux3EditVideoRequest,
   FalAlibabaHappyHorseV1p1TextToVideoResponse,
   FalAlibabaHappyHorseV1p1TextToVideoParsedRequest,
   FalAlibabaHappyHorseV1p1TextToVideoRequestInput,

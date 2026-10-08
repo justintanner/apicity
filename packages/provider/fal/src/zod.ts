@@ -6944,7 +6944,41 @@ export type FalAlibabaHappyHorseV1p1TextToVideoParsedRequest = z.output<
   typeof FalAlibabaHappyHorseV1p1TextToVideoRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 15115befba2212917f30e6792e1216e68c97023871654b7ac26f337d6fbe2752). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/blackforestlabs/flux-3/edit-video/api
+export const FalBlackforestlabsFlux3EditVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .max(4096)
+    .describe(
+      "The text prompt describing how to change the input video. The clip is re-rendered preserving motion, timing, and framing."
+    ),
+  safety_tolerance: z
+    .number()
+    .int()
+    .min(0)
+    .max(4)
+    .default(2)
+    .describe(
+      "The safety tolerance level for the generated video. 0 is the strictest and 4 is the most permissive."
+    ),
+  video_url: z
+    .string()
+    .describe("URL of the input video. MP4, under 50 MB and under 15 seconds."),
+});
+export type FalBlackforestlabsFlux3EditVideoRequest = z.input<
+  typeof FalBlackforestlabsFlux3EditVideoRequestSchema
+>;
+export type FalBlackforestlabsFlux3EditVideoRequestInput =
+  FalBlackforestlabsFlux3EditVideoRequest;
+export type FalBlackforestlabsFlux3EditVideoParsedRequest = z.output<
+  typeof FalBlackforestlabsFlux3EditVideoRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "blackforestlabs/flux-3/edit-video":
+    FalBlackforestlabsFlux3EditVideoRequestSchema,
   "alibaba/happy-horse/v1.1/text-to-video":
     FalAlibabaHappyHorseV1p1TextToVideoRequestSchema,
   "alibaba/happy-horse/v1.1/image-to-video":

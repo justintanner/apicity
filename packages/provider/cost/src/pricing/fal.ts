@@ -906,6 +906,18 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  // FLUX 3 edit-video bills $0.03 per second of generated 720p
+  // video. The schema has no duration; length follows the input,
+  // so the estimate uses costHints.durationSeconds. The example
+  // source's movie header is 10.042 s. The recorded call billed
+  // x-fal-billable-units 10, so the charge is $0.30.
+  "blackforestlabs/flux-3/edit-video": perSecond(
+    "blackforestlabs/flux-3/edit-video",
+    0.03,
+    hintedSeconds,
+    "2026-10-08"
+  ),
+
   // Happy Horse 1.1 text-to-video bills $0.14/s at 720p and $0.18/s
   // at 1080p, the same card as the reference leaf. Resolution
   // defaults to 1080p and duration to 5. The recorded 3 s 720p

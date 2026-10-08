@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added FLUX 3 edit-video (ac-6r7fak).
+
 - Added Happy Horse 1.1 text-to-video (ac-crtskn).
 
 - Added Happy Horse 1.1 image-to-video (ac-wadecc).

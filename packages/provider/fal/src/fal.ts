@@ -1,4 +1,6 @@
 import {
+  FalBlackforestlabsFlux3EditVideoResponse,
+  FalBlackforestlabsFlux3EditVideoRequest,
   FalAlibabaHappyHorseV1p1TextToVideoResponse,
   FalAlibabaHappyHorseV1p1TextToVideoRequest,
   FalAlibabaHappyHorseV1p1ImageToVideoResponse,
@@ -306,6 +308,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalBlackforestlabsFlux3EditVideoRequestSchema,
   FalAlibabaHappyHorseV1p1TextToVideoRequestSchema,
   FalAlibabaHappyHorseV1p1ImageToVideoRequestSchema,
   FalAlibabaHappyHorseV1p1ReferenceToVideoRequestSchema,
@@ -2708,6 +2711,18 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/blackforestlabs/flux-3/edit-video
+  // Docs: https://fal.ai/models/blackforestlabs/flux-3/edit-video/api
+  const blackforestlabsFlux3EditVideo = jsonBody<
+    FalBlackforestlabsFlux3EditVideoRequest,
+    FalBlackforestlabsFlux3EditVideoResponse
+  >(
+    "POST",
+    "/blackforestlabs/flux-3/edit-video",
+    FalBlackforestlabsFlux3EditVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
     // POST https://fal.run/bria/fibo-edit-1.5/virtual-try-on
     // Docs: https://fal.ai/models/bria/fibo-edit-1.5/virtual-try-on/api
@@ -2797,6 +2812,9 @@ export function createFal(opts: FalOptions): FalProvider {
     },
     blackforestlabs: {
       flux3: {
+        // POST https://fal.run/blackforestlabs/flux-3/edit-video
+        // Docs: https://fal.ai/models/blackforestlabs/flux-3/edit-video/api
+        editVideo: blackforestlabsFlux3EditVideo,
         // POST https://fal.run/blackforestlabs/flux-3/text-to-image
         // Docs: https://fal.ai/models/blackforestlabs/flux-3/text-to-image/api
         textToImage: blackforestlabsFlux3TextToImage,

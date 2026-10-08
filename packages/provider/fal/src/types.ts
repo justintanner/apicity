@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalBlackforestlabsFlux3EditVideoParsedRequest,
+  FalBlackforestlabsFlux3EditVideoRequestInput,
+  FalBlackforestlabsFlux3EditVideoRequest,
   FalAlibabaHappyHorseV1p1TextToVideoParsedRequest,
   FalAlibabaHappyHorseV1p1TextToVideoRequestInput,
   FalAlibabaHappyHorseV1p1TextToVideoRequest,
@@ -518,6 +521,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalBlackforestlabsFlux3EditVideoRequest,
   FalAlibabaHappyHorseV1p1TextToVideoRequest,
   FalAlibabaHappyHorseV1p1ImageToVideoRequest,
   FalAlibabaHappyHorseV1p1ReferenceToVideoRequest,
@@ -4427,4 +4431,25 @@ type FalAlibabaHappyHorseV1p1TextToVideoFn = ((
 
 export interface FalRunAlibabaHappyHorseV1p1Namespace {
   textToVideo: FalAlibabaHappyHorseV1p1TextToVideoFn;
+}
+
+export interface FalBlackforestlabsFlux3EditVideoResponse {
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+  seed: number;
+}
+
+type FalBlackforestlabsFlux3EditVideoFn = ((
+  params: FalBlackforestlabsFlux3EditVideoRequest,
+  signal?: AbortSignal
+) => Promise<FalBlackforestlabsFlux3EditVideoResponse>) & {
+  schema: ApicitySchema<FalBlackforestlabsFlux3EditVideoRequest>;
+};
+
+export interface FalRunFlux3Namespace {
+  editVideo: FalBlackforestlabsFlux3EditVideoFn;
 }

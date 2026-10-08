@@ -1720,3 +1720,4 @@ fal	alibaba.qwenAudio3Tts	POST	https://fal.run/alibaba/qwen-audio-3-tts	https://
 fal	alibaba.happyHorse.v1p1.referenceToVideo	POST	https://fal.run/alibaba/happy-horse/v1.1/reference-to-video	https://fal.ai/models/alibaba/happy-horse/v1.1/reference-to-video/api
 fal	alibaba.happyHorse.v1p1.imageToVideo	POST	https://fal.run/alibaba/happy-horse/v1.1/image-to-video	https://fal.ai/models/alibaba/happy-horse/v1.1/image-to-video/api
 fal	alibaba.happyHorse.v1p1.textToVideo	POST	https://fal.run/alibaba/happy-horse/v1.1/text-to-video	https://fal.ai/models/alibaba/happy-horse/v1.1/text-to-video/api
+fal	blackforestlabs.flux3.editVideo	POST	https://fal.run/blackforestlabs/flux-3/edit-video	https://fal.ai/models/blackforestlabs/flux-3/edit-video/api

@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Kling v3 Turbo Pro image-to-video (ac-o17c19).
+
 - Added Kling v3 Turbo Pro text-to-video (ac-i5inny).
 
 - Added Kling v3 Turbo Standard image-to-video (ac-bo14y6).

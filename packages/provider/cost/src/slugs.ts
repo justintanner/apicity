@@ -412,6 +412,7 @@ export const MODEL_SLUGS = {
   // same underlying models kie also resells, so their slugs intentionally
   // match kie's.
   fal: {
+    "fal-ai/kling-video/v3/turbo/pro/image-to-video": "kling3tp",
     "fal-ai/kling-video/v3/turbo/pro/text-to-video": "kling3tp",
     "fal-ai/kling-video/v3/turbo/standard/image-to-video": "kling3ts",
     "fal-ai/kling-video/v3/turbo/standard/text-to-video": "kling3ts",
@@ -871,6 +872,7 @@ export const MODEL_DISPLAY = {
   },
 
   fal: {
+    "fal-ai/kling-video/v3/turbo/pro/image-to-video": "Kling v3 Turbo Pro",
     "fal-ai/kling-video/v3/turbo/pro/text-to-video": "Kling v3 Turbo Pro",
     "fal-ai/kling-video/v3/turbo/standard/image-to-video":
       "Kling v3 Turbo Standard",

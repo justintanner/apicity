@@ -21,6 +21,10 @@ export type {
 
 // Export all types
 export type {
+  FalKlingVideoV3TurboProImageToVideoResponse,
+  FalKlingVideoV3TurboProImageToVideoParsedRequest,
+  FalKlingVideoV3TurboProImageToVideoRequestInput,
+  FalKlingVideoV3TurboProImageToVideoRequest,
   FalKlingVideoV3TurboProTextToVideoResponse,
   FalKlingVideoV3TurboProTextToVideoParsedRequest,
   FalKlingVideoV3TurboProTextToVideoRequestInput,

@@ -1,4 +1,6 @@
 import {
+  FalKlingVideoV3TurboProImageToVideoResponse,
+  FalKlingVideoV3TurboProImageToVideoRequest,
   FalKlingVideoV3TurboProTextToVideoResponse,
   FalKlingVideoV3TurboProTextToVideoRequest,
   FalKlingVideoV3TurboStandardImageToVideoResponse,
@@ -296,6 +298,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalKlingVideoV3TurboProImageToVideoRequestSchema,
   FalKlingVideoV3TurboProTextToVideoRequestSchema,
   FalKlingVideoV3TurboStandardImageToVideoRequestSchema,
   FalKlingVideoV3TurboStandardTextToVideoRequestSchema,
@@ -2632,6 +2635,19 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/fal-ai/kling-video/v3/turbo/pro/image-to-video
+  // Docs: https://fal.ai/models/fal-ai/kling-video/v3/turbo/pro/image-to-video/api
+  const klingVideoV3TurboProImageToVideo = jsonBody<
+    FalKlingVideoV3TurboProImageToVideoRequest,
+    FalKlingVideoV3TurboProImageToVideoResponse
+  >(
+    "POST",
+    "/fal-ai/kling-video/v3/turbo/pro/image-to-video",
+    FalKlingVideoV3TurboProImageToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
     // POST https://fal.run/bria/fibo-edit-1.5/virtual-try-on
     // Docs: https://fal.ai/models/bria/fibo-edit-1.5/virtual-try-on/api
@@ -2845,6 +2861,10 @@ export function createFal(opts: FalOptions): FalProvider {
       v3: {
         turbo: {
           pro: {
+            // sig-ok: stylistic dotPath divergence from URL
+            // POST https://fal.run/fal-ai/kling-video/v3/turbo/pro/image-to-video
+            // Docs: https://fal.ai/models/fal-ai/kling-video/v3/turbo/pro/image-to-video/api
+            imageToVideo: klingVideoV3TurboProImageToVideo,
             // sig-ok: stylistic dotPath divergence from URL
             // POST https://fal.run/fal-ai/kling-video/v3/turbo/pro/text-to-video
             // Docs: https://fal.ai/models/fal-ai/kling-video/v3/turbo/pro/text-to-video/api

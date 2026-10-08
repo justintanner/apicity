@@ -87,6 +87,15 @@ export function validateFamilyRegistrations() {
 }
 
 export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
+  ...["1K", "2K", "4K"].map((variant) => ({
+    key: "nano-banana-2-1",
+    variant,
+    status: "pricing-only",
+    provenance:
+      "tests/fixtures/kie-pricing-evidence/nano-banana-2-1-2026-10-08.json: official feed cells at 4 credits ($0.020) for 1K, 6 credits ($0.030) for 2K, and 9 credits ($0.045) for 4K",
+    rationale:
+      "Nano Banana 2.1 was added after the frozen September catalog; these live rates are backed by the dated supplemental feed capture.",
+  })),
   ...["1K", "1.5K", "2K"].map((variant) => ({
     key: "seedream/5-flash-text-to-image",
     variant,

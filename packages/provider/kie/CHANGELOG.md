@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added `nano-banana-2-1` for text and reference image generation, with up
+  to ten reference images, 1K/2K/4K pricing, and a recorded successful task.
+
 - Added `google/gemini-3-8-flash-lite-tts` with the shared 3.8 voice and
   per-turn style inputs, local validation, and dedicated token pricing.
 

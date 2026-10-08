@@ -1445,6 +1445,11 @@ const IMAGE_FAMILY_RATES = [
   // Seedream 4.5 — one published rate for the family.
   { model: "seedream/4.5-text-to-image", input: {}, usd: 0.0325 },
   { model: "seedream/4.5-edit", input: {}, usd: 0.0325 },
+  // Nano Banana 2.1 — resolution tiers. Omitted resolution uses the 1K default.
+  { model: "nano-banana-2-1", input: {}, usd: 0.02 },
+  { model: "nano-banana-2-1", input: { resolution: "1K" }, usd: 0.02 },
+  { model: "nano-banana-2-1", input: { resolution: "2K" }, usd: 0.03 },
+  { model: "nano-banana-2-1", input: { resolution: "4K" }, usd: 0.045 },
   // Flat single-rate families.
   { model: "nano-banana-2-lite", input: {}, usd: 0.02 },
   { model: "google/nano-banana", input: {}, usd: 0.02 },

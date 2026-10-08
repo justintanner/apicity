@@ -244,6 +244,7 @@ export const KIE_MEDIA_MODELS = [
   "grok-imagine-video-1-5-preview",
   "nano-banana-pro",
   "nano-banana-2",
+  "nano-banana-2-1",
   "nano-banana-2-lite",
   "gpt-image/1.5-image-to-image",
   "gpt-image/1.5-text-to-image",
@@ -3832,6 +3833,38 @@ export const NanoBanana2RequestSchema = z.object({
   input: z.object({
     prompt: z.string().min(1).max(20000),
     image_input: z.array(z.string().url()).max(14).optional(),
+    aspect_ratio: z
+      .enum([
+        "1:1",
+        "1:4",
+        "1:8",
+        "2:3",
+        "3:2",
+        "3:4",
+        "4:1",
+        "4:3",
+        "4:5",
+        "5:4",
+        "8:1",
+        "9:16",
+        "16:9",
+        "21:9",
+        "auto",
+      ])
+      .default("auto"),
+    resolution: NanoBananaResolutionSchema.default("1K"),
+    output_format: NanoBananaOutputFormatSchema.default("jpg"),
+  }),
+});
+
+// Docs: https://docs.kie.ai/market/google/nanobanana-2-1
+// Same knobs as Nano Banana 2, except image_input accepts at most 10 URLs.
+export const NanoBanana21RequestSchema = z.object({
+  model: z.literal("nano-banana-2-1"),
+  callBackUrl: z.string().url().optional(),
+  input: z.object({
+    prompt: z.string().min(1).max(20000),
+    image_input: z.array(z.string().url()).max(10).optional(),
     aspect_ratio: z
       .enum([
         "1:1",
@@ -8516,6 +8549,7 @@ export const MediaGenerationRequestSchema = z.union([
   GrokImagineImage2SegmentEditRequestSchema,
   NanoBananaProRequestSchema,
   NanoBanana2RequestSchema,
+  NanoBanana21RequestSchema,
   NanoBanana2LiteRequestSchema,
   GptImageToImageRequestSchema,
   GptImage15TextToImageRequestSchema,
@@ -9318,6 +9352,11 @@ export type NanoBanana2Request = z.input<typeof NanoBanana2RequestSchema>;
 export type NanoBanana2RequestInput = NanoBanana2Request;
 export type NanoBanana2ParsedRequest = z.output<
   typeof NanoBanana2RequestSchema
+>;
+export type NanoBanana21Request = z.input<typeof NanoBanana21RequestSchema>;
+export type NanoBanana21RequestInput = NanoBanana21Request;
+export type NanoBanana21ParsedRequest = z.output<
+  typeof NanoBanana21RequestSchema
 >;
 export type NanoBanana2LiteAspectRatio = z.infer<
   typeof NanoBanana2LiteAspectRatioSchema

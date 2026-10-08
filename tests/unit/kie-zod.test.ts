@@ -1587,7 +1587,12 @@ const MEDIA_MODEL_FAMILIES = [
   },
   {
     family: "Nano Banana",
-    listed: ["nano-banana-pro", "nano-banana-2", "nano-banana-2-lite"],
+    listed: [
+      "nano-banana-pro",
+      "nano-banana-2",
+      "nano-banana-2-1",
+      "nano-banana-2-lite",
+    ],
     aliases: ["nano-banana-3", "nano-banana-pro-max"],
     rejected: ["nano-banana", "nanobanana-2", "nano_banana_2", "NANO-BANANA-2"],
   },

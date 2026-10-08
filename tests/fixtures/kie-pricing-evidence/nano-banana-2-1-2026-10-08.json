@@ -1,0 +1,42 @@
+{
+  "source": "https://api.kie.ai/client/v1/model-pricing/page",
+  "asOf": "2026-10-08",
+  "records": [
+    {
+      "modelDescription": "nano-banana-2-1, 4K",
+      "interfaceType": "image",
+      "provider": "Google",
+      "creditPrice": "9",
+      "creditUnit": "per image",
+      "usdPrice": "0.045",
+      "falPrice": "0.16",
+      "discountRate": 71.88,
+      "anchor": "https://kie.ai/nano-banana-2-1",
+      "discountPrice": false
+    },
+    {
+      "modelDescription": "nano-banana-2-1, 2K",
+      "interfaceType": "image",
+      "provider": "Google",
+      "creditPrice": "6",
+      "creditUnit": "per image",
+      "usdPrice": "0.030",
+      "falPrice": "0.12",
+      "discountRate": 75,
+      "anchor": "https://kie.ai/nano-banana-2-1",
+      "discountPrice": false
+    },
+    {
+      "modelDescription": "nano-banana-2-1, 1K",
+      "interfaceType": "image",
+      "provider": "Google",
+      "creditPrice": "4",
+      "creditUnit": "per image",
+      "usdPrice": "0.020",
+      "falPrice": "0.080",
+      "discountRate": 75,
+      "anchor": "https://kie.ai/nano-banana-2-1",
+      "discountPrice": false
+    }
+  ]
+}

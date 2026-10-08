@@ -317,7 +317,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/developers/rest-api-reference/inference/other)
 
 ```typescript
-const res = await xai.v1.apiKey({ /* ... */ });
+const res = await xai.get.v1.apiKey({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -336,7 +336,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.batches({ /* ... */ });
+const res = await xai.get.v1.batches({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -353,7 +353,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.batches.requests({ /* ... */ });
+const res = await xai.get.v1.batches.requests({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -370,7 +370,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.batches.results({ /* ... */ });
+const res = await xai.get.v1.batches.results({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -387,7 +387,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.batches({ /* ... */ });
+const res = await xai.post.v1.batches({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -404,7 +404,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.batches.cancel({ /* ... */ });
+const res = await xai.post.v1.batches.cancel({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -421,7 +421,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.batches.requests({ /* ... */ });
+const res = await xai.post.v1.batches.requests({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -440,7 +440,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.chat.deferredCompletion({ /* ... */ });
+const res = await xai.get.v1.chat.deferredCompletion({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -457,7 +457,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.chat.completions({ /* ... */ });
+const res = await xai.post.v1.chat.completions({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -476,7 +476,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/developers/model-capabilities/audio/custom-voices)
 
 ```typescript
-const res = await xai.v1.customVoices({ /* ... */ });
+const res = await xai.delete.v1.customVoices({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -493,7 +493,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/developers/model-capabilities/audio/custom-voices)
 
 ```typescript
-const res = await xai.v1.customVoices({ /* ... */ });
+const res = await xai.get.v1.customVoices({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -510,7 +510,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/developers/model-capabilities/audio/custom-voices)
 
 ```typescript
-const res = await xai.v1.customVoices.audio({ /* ... */ });
+const res = await xai.get.v1.customVoices.audio({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -527,7 +527,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/developers/model-capabilities/audio/custom-voices)
 
 ```typescript
-const res = await xai.v1.customVoices({ /* ... */ });
+const res = await xai.patch.v1.customVoices({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -544,7 +544,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/developers/model-capabilities/audio/custom-voices)
 
 ```typescript
-const res = await xai.v1.customVoices({ /* ... */ });
+const res = await xai.post.v1.customVoices({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -563,7 +563,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.documents.search({ /* ... */ });
+const res = await xai.post.v1.documents.search({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -582,7 +582,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.files({ /* ... */ });
+const res = await xai.delete.v1.files({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -599,7 +599,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.files({ /* ... */ });
+const res = await xai.get.v1.files({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -616,7 +616,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.files.content({ /* ... */ });
+const res = await xai.get.v1.files.content({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -633,7 +633,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.files({ /* ... */ });
+const res = await xai.post.v1.files({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -650,7 +650,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/developers/files/public-urls)
 
 ```typescript
-const res = await xai.v1.files.publicUrl({ /* ... */ });
+const res = await xai.post.v1.files.publicUrl({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -667,7 +667,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/developers/files/public-urls)
 
 ```typescript
-const res = await xai.v1.files.publicUrl.revoke({ /* ... */ });
+const res = await xai.post.v1.files.publicUrl.revoke({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -686,7 +686,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.imageGenerationModels({ /* ... */ });
+const res = await xai.get.v1.imageGenerationModels({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -705,7 +705,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.x.ai/developers/rest-api-reference/inference/images)
 
 ```typescript
-const res = await xai.v1.images.edits({ /* ... */ });
+const res = await xai.post.v1.images.edits({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -722,7 +722,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.x.ai/developers/rest-api-reference/inference/images)
 
 ```typescript
-const res = await xai.v1.images.generations({ /* ... */ });
+const res = await xai.post.v1.images.generations({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -741,7 +741,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.languageModels({ /* ... */ });
+const res = await xai.get.v1.languageModels({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -760,7 +760,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.managementApi.v1.collections({ /* ... */ });
+const res = await xai.delete.managementApi.v1.collections({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -777,7 +777,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.managementApi.v1.collections.documents({ /* ... */ });
+const res = await xai.delete.managementApi.v1.collections.documents({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -794,7 +794,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/developers/rest-api-reference/management/auth)
 
 ```typescript
-const res = await xai.managementApi.auth.teams.apiKeys({ /* ... */ });
+const res = await xai.get.managementApi.auth.teams.apiKeys({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -811,7 +811,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/developers/rest-api-reference/management/billing)
 
 ```typescript
-const res = await xai.managementApi.v1.billing.teams.postpaid.invoice.preview({ /* ... */ });
+const res = await xai.get.managementApi.v1.billing.teams.postpaid.invoice.preview({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -828,7 +828,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/developers/rest-api-reference/management/billing)
 
 ```typescript
-const res = await xai.managementApi.v1.billing.teams.postpaid.spendingLimits({ /* ... */ });
+const res = await xai.get.managementApi.v1.billing.teams.postpaid.spendingLimits({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -845,7 +845,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/developers/rest-api-reference/management/billing)
 
 ```typescript
-const res = await xai.managementApi.v1.billing.teams.prepaid.balance({ /* ... */ });
+const res = await xai.get.managementApi.v1.billing.teams.prepaid.balance({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -862,7 +862,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.managementApi.v1.collections({ /* ... */ });
+const res = await xai.get.managementApi.v1.collections({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -879,7 +879,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.managementApi.v1.collections.documents({ /* ... */ });
+const res = await xai.get.managementApi.v1.collections.documents({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -896,7 +896,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.managementApi.v1.collections.documents.batchGet({ /* ... */ });
+const res = await xai.get.managementApi.v1.collections.documents.batchGet({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -913,7 +913,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.managementApi.v1.collections.documents({ /* ... */ });
+const res = await xai.patch.managementApi.v1.collections.documents({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -930,7 +930,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/developers/rest-api-reference/management/billing)
 
 ```typescript
-const res = await xai.managementApi.v1.billing.teams.usage({ /* ... */ });
+const res = await xai.post.managementApi.v1.billing.teams.usage({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -947,7 +947,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.managementApi.v1.collections({ /* ... */ });
+const res = await xai.post.managementApi.v1.collections({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -964,7 +964,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.managementApi.v1.collections.documents({ /* ... */ });
+const res = await xai.post.managementApi.v1.collections.documents({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -981,7 +981,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.managementApi.v1.collections({ /* ... */ });
+const res = await xai.put.managementApi.v1.collections({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -1000,7 +1000,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.models({ /* ... */ });
+const res = await xai.get.v1.models({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -1019,7 +1019,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.realtime.clientSecrets({ /* ... */ });
+const res = await xai.post.v1.realtime.clientSecrets({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -1038,7 +1038,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.responses({ /* ... */ });
+const res = await xai.delete.v1.responses({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -1055,7 +1055,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.responses({ /* ... */ });
+const res = await xai.get.v1.responses({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -1072,7 +1072,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.responses({ /* ... */ });
+const res = await xai.post.v1.responses({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -1089,7 +1089,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.responses.compact({ /* ... */ });
+const res = await xai.post.v1.responses.compact({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -1108,7 +1108,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.stt({ /* ... */ });
+const res = await xai.post.v1.stt({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -1127,7 +1127,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.tokenizeText({ /* ... */ });
+const res = await xai.post.v1.tokenizeText({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -1146,7 +1146,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.tts({ /* ... */ });
+const res = await xai.post.v1.tts({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -1165,7 +1165,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.videoGenerationModels({ /* ... */ });
+const res = await xai.get.v1.videoGenerationModels({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -1184,7 +1184,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.videos({ /* ... */ });
+const res = await xai.get.v1.videos({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -1201,7 +1201,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.videos.edits({ /* ... */ });
+const res = await xai.post.v1.videos.edits({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -1218,7 +1218,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.videos.extensions({ /* ... */ });
+const res = await xai.post.v1.videos.extensions({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -1235,7 +1235,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.videos.generations({ /* ... */ });
+const res = await xai.post.v1.videos.generations({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -1252,7 +1252,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.x.ai/developers/model-capabilities/video/image-to-video)
 
 ```typescript
-const res = await xai.v1.videos.generations.imageToVideo({ /* ... */ });
+const res = await xai.post.v1.videos.generations.imageToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)

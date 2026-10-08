@@ -14,9 +14,37 @@
  * and the three doc-gen-private helpers this file needs (`cleanTsvValue`, the
  * TSV index, and the docs-row lookup) are mirrored below rather than imported.
  */
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
+import { createAlibaba } from "@apicity/alibaba";
+import { createAnthropic } from "@apicity/anthropic";
+import { createB2 } from "@apicity/b2";
+import { createBinance } from "@apicity/binance";
+import { createDoltHub } from "@apicity/dolthub";
+import { createDropbox } from "@apicity/dropbox";
+import { createElevenLabs } from "@apicity/elevenlabs";
+import { createFal } from "@apicity/fal";
+import { createFireworks } from "@apicity/fireworks";
+import { createFreeMediaUpload } from "@apicity/free-media-upload";
+import { createGoogle } from "@apicity/google";
+import { createGoogleFlow } from "@apicity/googleflow";
+import { createKie } from "@apicity/kie";
+import { createKimiCoding } from "@apicity/kimicoding";
+import { createMeta } from "@apicity/meta";
+import { createOpenAi } from "@apicity/openai";
+import { createOpenF1 } from "@apicity/openf1";
+import { createOpenLigaDB } from "@apicity/openligadb";
+import { createPolymarket } from "@apicity/polymarket";
+import { createQuo } from "@apicity/quo";
+import { createS3 } from "@apicity/s3";
+import { createSimpleFunctions } from "@apicity/simplefunctions";
+import { createTelegram } from "@apicity/telegram";
+import { createTheSportsDB } from "@apicity/thesportsdb";
+import { createX } from "@apicity/x";
+import { createXai } from "@apicity/xai";
+import { createYouTube } from "@apicity/youtube";
+import { createZaiCoding } from "@apicity/zaicoding";
 import {
   displayDotPath,
   resolveEndpointLabels,
@@ -441,5 +469,164 @@ describe("usage snippets name a callable path", () => {
     // `post.stream.v1.serverless.logs.stream` already names `stream`; the
     // restoration must not prepend a second one.
     expect(renderFalApiReference()).not.toContain("fal.stream.post.stream.");
+  });
+});
+
+/** Follows a snippet's `provider.a.b.c` call path on a provider instance. */
+function resolveCallPath(root: unknown, call: string): unknown {
+  return call
+    .split(".")
+    .slice(1)
+    .reduce<unknown>(
+      (node, key) =>
+        node === null || node === undefined
+          ? undefined
+          : (node as Record<string, unknown>)[key],
+      root
+    );
+}
+
+// One real factory per provider that ships a generated README. `cost` has no
+// endpoint surface. Options differ by provider; the cast only satisfies the
+// constructors. Nothing in this describe calls an endpoint.
+const PROVIDER_FACTORIES = {
+  alibaba: createAlibaba,
+  anthropic: createAnthropic,
+  b2: createB2,
+  binance: createBinance,
+  dolthub: createDoltHub,
+  dropbox: createDropbox,
+  elevenlabs: createElevenLabs,
+  fal: createFal,
+  fireworks: createFireworks,
+  "free-media-upload": createFreeMediaUpload,
+  google: createGoogle,
+  googleflow: createGoogleFlow,
+  kie: createKie,
+  kimicoding: createKimiCoding,
+  meta: createMeta,
+  openai: createOpenAi,
+  openf1: createOpenF1,
+  openligadb: createOpenLigaDB,
+  polymarket: createPolymarket,
+  quo: createQuo,
+  s3: createS3,
+  simplefunctions: createSimpleFunctions,
+  telegram: createTelegram,
+  thesportsdb: createTheSportsDB,
+  x: createX,
+  xai: createXai,
+  youtube: createYouTube,
+  zaicoding: createZaiCoding,
+} as const;
+
+const SNIPPET_PROBE_OPTS = {
+  apiKey: "doc-gen-snippet-probe",
+  token: "doc-gen-snippet-probe",
+  botToken: "123456:doc-gen-snippet-probe",
+  accessToken: "doc-gen-snippet-probe",
+  accessKeyId: "AKIAPROBE",
+  secretAccessKey: "doc-gen-snippet-probe",
+  region: "us-east-1",
+  endpoint: "https://example.invalid",
+  bucket: "probe",
+};
+
+type ProviderName = keyof typeof PROVIDER_FACTORIES;
+
+function providerInstance(provider: ProviderName): unknown {
+  const factory = PROVIDER_FACTORIES[provider] as (
+    opts: typeof SNIPPET_PROBE_OPTS
+  ) => unknown;
+  return factory(SNIPPET_PROBE_OPTS);
+}
+
+function snippetCalls(provider: string, text: string): string[] {
+  const escaped = provider.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const re = new RegExp(`const \\w+ = await (${escaped}\\.[\\w.]+)\\(`, "g");
+  return [...text.matchAll(re)].map((match) => match[1]);
+}
+
+describe("usage snippets name a function on every provider factory", () => {
+  let rendered: Map<string, string>;
+
+  beforeAll(async () => {
+    const project = loadProject();
+    const byProvider = new Map<string, WalkedEndpoint[]>();
+    for await (const ep of walkAllEndpoints(project)) {
+      const endpoint = ep as WalkedEndpoint;
+      const list = byProvider.get(endpoint.provider) ?? [];
+      list.push(endpoint);
+      byProvider.set(endpoint.provider, list);
+    }
+    rendered = new Map(
+      [...byProvider.entries()].map(([provider, endpoints]) => [
+        provider,
+        renderApiReference(provider, endpoints).text,
+      ])
+    );
+  }, 300_000);
+
+  it("resolves every rendered snippet to a function", () => {
+    const misses: string[] = [];
+    const seen = new Set<string>();
+    for (const provider of Object.keys(PROVIDER_FACTORIES) as ProviderName[]) {
+      // b2 is docs-only in the endpoint walk, so its README is the snippet
+      // source. Every walked provider uses the text doc-gen is about to write.
+      const readmePath = path.join(
+        repoRoot,
+        "packages/provider",
+        provider,
+        "README.md"
+      );
+      const text =
+        rendered.get(provider) ??
+        (existsSync(readmePath) ? readFileSync(readmePath, "utf8") : "");
+      if (!text) {
+        misses.push(`no API reference for ${provider}`);
+        continue;
+      }
+      seen.add(provider);
+      const instance = providerInstance(provider);
+      const calls = snippetCalls(provider, text);
+      if (calls.length === 0) {
+        misses.push(`no snippets for ${provider}`);
+        continue;
+      }
+      for (const call of calls) {
+        const resolved = resolveCallPath(instance, call);
+        if (typeof resolved !== "function") {
+          misses.push(`${typeof resolved} ${call}`);
+        }
+      }
+    }
+    for (const provider of rendered.keys()) {
+      if (!seen.has(provider)) misses.push(`untested provider ${provider}`);
+    }
+    expect(misses).toEqual([]);
+  }, 120_000);
+
+  it("restores the verb on a verb-only factory and the leaf on a namespace", () => {
+    const openai = rendered.get("openai") ?? "";
+    expect(openai).toContain("<b><code>openai.v1.audio.speech</code></b>");
+    expect(openai).toContain(
+      "const res = await openai.post.v1.audio.speech({ /* ... */ });"
+    );
+    expect(openai).not.toContain(
+      "const res = await openai.v1.audio.speech({ /* ... */ });"
+    );
+
+    const fireworks = rendered.get("fireworks") ?? "";
+    expect(fireworks).toContain(
+      "const res = await fireworks.inference.v1.accounts.apiKeys.delete("
+    );
+    const youtube = rendered.get("youtube") ?? "";
+    expect(youtube).toContain(
+      "const res = await youtube.transcripts.get({ /* ... */ });"
+    );
+    const fal = rendered.get("fal") ?? "";
+    expect(fal).toContain(
+      "const res = await fal.v1.serverless.logs.stream({ /* ... */ });"
+    );
   });
 });

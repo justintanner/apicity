@@ -205,7 +205,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://help.aliyun.com/zh/model-studio)
 
 ```typescript
-const res = await alibaba.compatibleMode.v1.models({ /* ... */ });
+const res = await alibaba.get.compatibleMode.v1.models({ /* ... */ });
 ```
 
 Source: [`packages/provider/alibaba/src/alibaba.ts`](src/alibaba.ts)
@@ -222,7 +222,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://help.aliyun.com/zh/model-studio)
 
 ```typescript
-const res = await alibaba.compatibleMode.v1.chat.completions({ /* ... */ });
+const res = await alibaba.post.compatibleMode.v1.chat.completions({ /* ... */ });
 ```
 
 Source: [`packages/provider/alibaba/src/alibaba.ts`](src/alibaba.ts)
@@ -239,7 +239,7 @@ Source: [`packages/provider/alibaba/src/alibaba.ts`](src/alibaba.ts)
 Cost tier: <code>expensive</code>
 
 ```typescript
-const res = await alibaba.api.v1.services.aigc.imageGeneration.generation({ /* ... */ });
+const res = await alibaba.post.api.v1.services.aigc.imageGeneration.generation({ /* ... */ });
 ```
 
 Source: [`packages/provider/alibaba/src/alibaba.ts`](src/alibaba.ts)
@@ -256,7 +256,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://www.alibabacloud.com/help/en/model-studio/qwen-image-edit)
 
 ```typescript
-const res = await alibaba.api.v1.services.aigc.multimodalGeneration.generation({ /* ... */ });
+const res = await alibaba.post.api.v1.services.aigc.multimodalGeneration.generation({ /* ... */ });
 ```
 
 Source: [`packages/provider/alibaba/src/alibaba.ts`](src/alibaba.ts)
@@ -273,7 +273,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://help.aliyun.com/zh/model-studio)
 
 ```typescript
-const res = await alibaba.api.v1.services.aigc.videoGeneration.videoSynthesis({ /* ... */ });
+const res = await alibaba.post.api.v1.services.aigc.videoGeneration.videoSynthesis({ /* ... */ });
 ```
 
 Source: [`packages/provider/alibaba/src/alibaba.ts`](src/alibaba.ts)
@@ -292,7 +292,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://help.aliyun.com/zh/model-studio)
 
 ```typescript
-const res = await alibaba.api.v1.tasks({ /* ... */ });
+const res = await alibaba.get.api.v1.tasks({ /* ... */ });
 ```
 
 Source: [`packages/provider/alibaba/src/alibaba.ts`](src/alibaba.ts)
@@ -311,7 +311,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://help.aliyun.com/zh/model-studio)
 
 ```typescript
-const res = await alibaba.api.v1.uploads({ /* ... */ });
+const res = await alibaba.get.api.v1.uploads({ /* ... */ });
 ```
 
 Source: [`packages/provider/alibaba/src/alibaba.ts`](src/alibaba.ts)

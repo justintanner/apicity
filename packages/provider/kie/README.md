@@ -841,7 +841,7 @@ Source: [`packages/provider/kie/src/claude.ts`](src/claude.ts)
 ### codex
 
 <details>
-<summary><code>POST</code> <b><code>kie.codex.v1.responses</code></b></summary>
+<summary><code>POST</code> <b><code>kie.post.codex.v1.responses</code></b></summary>
 
 <code>POST https://api.kie.ai/codex/v1/responses</code>
 
@@ -850,7 +850,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.kie.ai/market/chat/gpt-5-5)
 
 ```typescript
-const res = await kie.codex.v1.responses({ /* ... */ });
+const res = await kie.post.codex.v1.responses({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/responses.ts`](src/responses.ts)
@@ -1383,7 +1383,7 @@ Source: [`packages/provider/kie/src/gpt-52.ts`](src/gpt-52.ts)
 ### grok
 
 <details>
-<summary><code>POST</code> <b><code>kie.grok.v1.responses</code></b></summary>
+<summary><code>POST</code> <b><code>kie.post.grok.v1.responses</code></b></summary>
 
 <code>POST https://api.kie.ai/grok/v1/responses</code>
 
@@ -1392,7 +1392,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.kie.ai/market/grok/grok-4-7)
 
 ```typescript
-const res = await kie.grok.v1.responses({ /* ... */ });
+const res = await kie.post.grok.v1.responses({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/responses.ts`](src/responses.ts)
@@ -1629,7 +1629,7 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 </details>
 
 <details>
-<summary><code>POST</code> <b><code>kie.openai.v1.responses</code></b></summary>
+<summary><code>POST</code> <b><code>kie.post.openai.v1.responses</code></b></summary>
 
 <code>POST https://api.kie.ai/openai/v1/responses</code>
 
@@ -1638,7 +1638,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.kie.ai/market/kimi/kimi-k3)
 
 ```typescript
-const res = await kie.openai.v1.responses({ /* ... */ });
+const res = await kie.post.openai.v1.responses({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/responses.ts`](src/responses.ts)
@@ -1648,7 +1648,7 @@ Source: [`packages/provider/kie/src/responses.ts`](src/responses.ts)
 ### responses
 
 <details>
-<summary><code>POST</code> <b><code>kie.api.v1.responses</code></b></summary>
+<summary><code>POST</code> <b><code>kie.post.api.v1.responses</code></b></summary>
 
 <code>POST https://api.kie.ai/api/v1/responses</code>
 
@@ -1657,7 +1657,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.kie.ai/market/codex/gpt-codex)
 
 ```typescript
-const res = await kie.api.v1.responses({ /* ... */ });
+const res = await kie.post.api.v1.responses({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/responses.ts`](src/responses.ts)
@@ -2049,7 +2049,7 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 </details>
 
 <details>
-<summary><code>POST</code> <b><code>kie.xai.v1.responses</code></b></summary>
+<summary><code>POST</code> <b><code>kie.post.xai.v1.responses</code></b></summary>
 
 <code>POST https://api.kie.ai/xai/v1/responses</code>
 
@@ -2058,7 +2058,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.kie.ai/ai-agent/grok-build)
 
 ```typescript
-const res = await kie.xai.v1.responses({ /* ... */ });
+const res = await kie.post.xai.v1.responses({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/responses.ts`](src/responses.ts)

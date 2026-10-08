@@ -305,7 +305,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://developers.facebook.com/docs/instagram-platform/reference/ig-container/)
 
 ```typescript
-const res = await meta.v25.container({ /* ... */ });
+const res = await meta.get.v25.container({ /* ... */ });
 ```
 
 Source: [`packages/provider/meta/src/meta.ts`](src/meta.ts)
@@ -324,7 +324,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://developers.facebook.com/docs/instagram-platform/instagram-graph-api/reference/ig-user/media/)
 
 ```typescript
-const res = await meta.v25.media({ /* ... */ });
+const res = await meta.post.v25.media({ /* ... */ });
 ```
 
 Source: [`packages/provider/meta/src/meta.ts`](src/meta.ts)
@@ -343,7 +343,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://developers.facebook.com/docs/instagram-platform/instagram-graph-api/reference/ig-user/media_publish/)
 
 ```typescript
-const res = await meta.v25.mediaPublish({ /* ... */ });
+const res = await meta.post.v25.mediaPublish({ /* ... */ });
 ```
 
 Source: [`packages/provider/meta/src/meta.ts`](src/meta.ts)

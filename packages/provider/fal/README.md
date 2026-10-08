@@ -1385,7 +1385,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.v1.models.requests.payloads({ /* ... */ });
+const res = await fal.get.v1.models.requests.payloads({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -1758,7 +1758,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
-const res = await fal.v1.serverless.logs({ /* ... */ });
+const res = await fal.v1.serverless.logs.stream({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

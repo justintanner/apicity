@@ -42,7 +42,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.audio.speech({ /* ... */ });
+const res = await openai.post.v1.audio.speech({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -59,7 +59,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.audio.transcriptions({ /* ... */ });
+const res = await openai.post.v1.audio.transcriptions({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -76,7 +76,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.audio.translations({ /* ... */ });
+const res = await openai.post.v1.audio.translations({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -95,7 +95,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.batches({ /* ... */ });
+const res = await openai.get.v1.batches({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -112,7 +112,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.batches({ /* ... */ });
+const res = await openai.post.v1.batches({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -129,7 +129,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.batches.cancel({ /* ... */ });
+const res = await openai.post.v1.batches.cancel({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -148,7 +148,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.chat.completions({ /* ... */ });
+const res = await openai.delete.v1.chat.completions({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -165,7 +165,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.chat.completions({ /* ... */ });
+const res = await openai.get.v1.chat.completions({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -182,7 +182,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.chat.completions.messages({ /* ... */ });
+const res = await openai.get.v1.chat.completions.messages({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -199,7 +199,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.chat.completions({ /* ... */ });
+const res = await openai.post.v1.chat.completions({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -218,7 +218,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://developers.openai.com/codex/pricing)
 
 ```typescript
-const res = await openai.codex.usage({ /* ... */ });
+const res = await openai.get.codex.usage({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -237,7 +237,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference/completions/create)
 
 ```typescript
-const res = await openai.v1.completions({ /* ... */ });
+const res = await openai.post.v1.completions({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -256,7 +256,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference/containers/createContainers)
 
 ```typescript
-const res = await openai.v1.containers({ /* ... */ });
+const res = await openai.post.v1.containers({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -275,7 +275,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference/conversations/retrieve)
 
 ```typescript
-const res = await openai.v1.conversations.retrieve({ /* ... */ });
+const res = await openai.get.v1.conversations.retrieve({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -292,7 +292,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.conversations({ /* ... */ });
+const res = await openai.post.v1.conversations({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -311,7 +311,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.embeddings({ /* ... */ });
+const res = await openai.post.v1.embeddings({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -330,7 +330,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference/evals/create)
 
 ```typescript
-const res = await openai.v1.evals({ /* ... */ });
+const res = await openai.post.v1.evals({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -349,7 +349,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.files({ /* ... */ });
+const res = await openai.delete.v1.files({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -366,7 +366,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.files({ /* ... */ });
+const res = await openai.get.v1.files({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -383,7 +383,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.files.content({ /* ... */ });
+const res = await openai.get.v1.files.content({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -400,7 +400,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.files({ /* ... */ });
+const res = await openai.post.v1.files({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -419,7 +419,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.fineTuning.checkpoints.permissions({ /* ... */ });
+const res = await openai.delete.v1.fineTuning.checkpoints.permissions({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -436,7 +436,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.fineTuning.checkpoints.permissions({ /* ... */ });
+const res = await openai.get.v1.fineTuning.checkpoints.permissions({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -453,7 +453,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.fineTuning.jobs({ /* ... */ });
+const res = await openai.get.v1.fineTuning.jobs({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -470,7 +470,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.fineTuning.jobs.checkpoints({ /* ... */ });
+const res = await openai.get.v1.fineTuning.jobs.checkpoints({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -487,7 +487,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.fineTuning.jobs.events({ /* ... */ });
+const res = await openai.get.v1.fineTuning.jobs.events({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -504,7 +504,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.fineTuning.checkpoints.permissions({ /* ... */ });
+const res = await openai.post.v1.fineTuning.checkpoints.permissions({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -521,7 +521,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.fineTuning.jobs({ /* ... */ });
+const res = await openai.post.v1.fineTuning.jobs({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -538,7 +538,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.fineTuning.jobs.cancel({ /* ... */ });
+const res = await openai.post.v1.fineTuning.jobs.cancel({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -555,7 +555,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.fineTuning.jobs.pause({ /* ... */ });
+const res = await openai.post.v1.fineTuning.jobs.pause({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -572,7 +572,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.fineTuning.jobs.resume({ /* ... */ });
+const res = await openai.post.v1.fineTuning.jobs.resume({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -591,7 +591,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.images.edits({ /* ... */ });
+const res = await openai.post.v1.images.edits({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -608,7 +608,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.images.generations({ /* ... */ });
+const res = await openai.post.v1.images.generations({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -625,7 +625,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.images.variations({ /* ... */ });
+const res = await openai.post.v1.images.variations({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -644,7 +644,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.models({ /* ... */ });
+const res = await openai.delete.v1.models({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -661,7 +661,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.models({ /* ... */ });
+const res = await openai.get.v1.models({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -680,7 +680,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.moderations({ /* ... */ });
+const res = await openai.post.v1.moderations({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -699,7 +699,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference/usage)
 
 ```typescript
-const res = await openai.v1.organization.costs({ /* ... */ });
+const res = await openai.get.v1.organization.costs({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -716,7 +716,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference/projects)
 
 ```typescript
-const res = await openai.v1.organization.projects({ /* ... */ });
+const res = await openai.get.v1.organization.projects({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -733,7 +733,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference/project-rate-limits)
 
 ```typescript
-const res = await openai.v1.organization.projects.rateLimits({ /* ... */ });
+const res = await openai.get.v1.organization.projects.rateLimits({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -750,7 +750,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference/usage)
 
 ```typescript
-const res = await openai.v1.organization.usage.audioSpeeches({ /* ... */ });
+const res = await openai.get.v1.organization.usage.audioSpeeches({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -767,7 +767,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference/usage)
 
 ```typescript
-const res = await openai.v1.organization.usage.audioTranscriptions({ /* ... */ });
+const res = await openai.get.v1.organization.usage.audioTranscriptions({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -784,7 +784,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference/usage)
 
 ```typescript
-const res = await openai.v1.organization.usage.codeInterpreterSessions({ /* ... */ });
+const res = await openai.get.v1.organization.usage.codeInterpreterSessions({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -801,7 +801,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference/usage)
 
 ```typescript
-const res = await openai.v1.organization.usage.completions({ /* ... */ });
+const res = await openai.get.v1.organization.usage.completions({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -818,7 +818,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference/usage)
 
 ```typescript
-const res = await openai.v1.organization.usage.embeddings({ /* ... */ });
+const res = await openai.get.v1.organization.usage.embeddings({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -835,7 +835,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference/usage)
 
 ```typescript
-const res = await openai.v1.organization.usage.images({ /* ... */ });
+const res = await openai.get.v1.organization.usage.images({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -852,7 +852,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference/usage)
 
 ```typescript
-const res = await openai.v1.organization.usage.moderations({ /* ... */ });
+const res = await openai.get.v1.organization.usage.moderations({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -869,7 +869,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference/usage)
 
 ```typescript
-const res = await openai.v1.organization.usage.vectorStores({ /* ... */ });
+const res = await openai.get.v1.organization.usage.vectorStores({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -888,7 +888,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference/realtime-sessions/create-client-secret)
 
 ```typescript
-const res = await openai.v1.realtime.clientSecrets({ /* ... */ });
+const res = await openai.post.v1.realtime.clientSecrets({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -907,7 +907,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.responses({ /* ... */ });
+const res = await openai.delete.v1.responses({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -924,7 +924,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.responses({ /* ... */ });
+const res = await openai.get.v1.responses({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -941,7 +941,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.responses.inputItems({ /* ... */ });
+const res = await openai.get.v1.responses.inputItems({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -958,7 +958,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.responses({ /* ... */ });
+const res = await openai.post.v1.responses({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -975,7 +975,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.responses.cancel({ /* ... */ });
+const res = await openai.post.v1.responses.cancel({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -992,7 +992,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.responses.compact({ /* ... */ });
+const res = await openai.post.v1.responses.compact({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -1009,7 +1009,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.responses.inputTokens({ /* ... */ });
+const res = await openai.post.v1.responses.inputTokens({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -1028,7 +1028,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference/uploads/create)
 
 ```typescript
-const res = await openai.v1.uploads({ /* ... */ });
+const res = await openai.post.v1.uploads({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -1047,7 +1047,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference/vector-stores/list)
 
 ```typescript
-const res = await openai.v1.vectorStores({ /* ... */ });
+const res = await openai.get.v1.vectorStores({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -1064,7 +1064,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference/vector-stores-files/listFiles)
 
 ```typescript
-const res = await openai.v1.vectorStores.files({ /* ... */ });
+const res = await openai.get.v1.vectorStores.files({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -1081,7 +1081,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference/vector-stores/create)
 
 ```typescript
-const res = await openai.v1.vectorStores({ /* ... */ });
+const res = await openai.post.v1.vectorStores({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -1098,7 +1098,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference/vector-stores-files/createFile)
 
 ```typescript
-const res = await openai.v1.vectorStores.files({ /* ... */ });
+const res = await openai.post.v1.vectorStores.files({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -1115,7 +1115,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference/vector-stores/search)
 
 ```typescript
-const res = await openai.v1.vectorStores.search({ /* ... */ });
+const res = await openai.post.v1.vectorStores.search({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)

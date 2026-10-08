@@ -125,7 +125,7 @@ Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)
 Cost tier: <code>cheap</code>
 
 ```typescript
-const res = await dolthub.api.v2.databases.pulls({ /* ... */ });
+const res = await dolthub.api.v2.databases.pulls.get({ /* ... */ });
 ```
 
 Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)
@@ -210,7 +210,7 @@ Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)
 Cost tier: <code>cheap</code>
 
 ```typescript
-const res = await dolthub.api.v2.operations({ /* ... */ });
+const res = await dolthub.api.v2.operations.get({ /* ... */ });
 ```
 
 Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)
@@ -227,7 +227,7 @@ Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)
 Cost tier: <code>cheap</code>
 
 ```typescript
-const res = await dolthub.api.v2.user({ /* ... */ });
+const res = await dolthub.api.v2.user.get({ /* ... */ });
 ```
 
 Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)
@@ -312,7 +312,7 @@ Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)
 Cost tier: <code>cheap</code>
 
 ```typescript
-const res = await dolthub.v1alpha1.pulls({ /* ... */ });
+const res = await dolthub.v1alpha1.pulls.get({ /* ... */ });
 ```
 
 Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)
@@ -412,7 +412,7 @@ Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)
 Cost tier: <code>cheap</code>
 
 ```typescript
-const res = await dolthub.v1alpha1.user({ /* ... */ });
+const res = await dolthub.v1alpha1.user.get({ /* ... */ });
 ```
 
 Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)

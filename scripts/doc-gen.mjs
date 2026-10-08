@@ -150,8 +150,11 @@ function sectionKey(dotPath) {
   return "general";
 }
 
-function formatUsageSnippet(providerName, dotPath) {
-  const call = dotPath ? `${providerName}.${dotPath}` : providerName;
+function formatUsageSnippet(providerName, dotPath, callPath = dotPath) {
+  // `dotPath` is the collapsed display label. Special cases match that label.
+  // `callPath` is the copy-pasteable path, which may put back a verb or leaf
+  // the label dropped (ac-kqdzn9).
+  const call = callPath ? `${providerName}.${callPath}` : providerName;
   if (
     providerName === "google" &&
     dotPath === "v1.publishers.google.models.countTokens"
@@ -776,40 +779,75 @@ function renderSimpleFunctionsAuthenticatedGuide() {
 }
 
 /**
- * The display label, with any namespace root the label dropped restored.
+ * Segments `logicalDotPath` drops. `s3` has no verb namespace, so a leading
+ * `get` there is a real key and must stay.
  *
- * `resolveEndpointLabels` collapses two different kinds of segment, and they
- * are not equivalent:
+ * @param {string} segment
+ * @param {string} providerName
+ * @returns {boolean}
+ */
+function isCollapsedSegment(segment, providerName) {
+  const lower = segment.toLowerCase();
+  if (providerName !== "s3" && METHOD_KEYS.has(lower)) return true;
+  return STREAM_KEYS.has(lower);
+}
+
+/**
+ * The copy-pasteable call path for one rendered block.
  *
- *   - HTTP-verb segments (`post`, `get`, …) alias a path that is callable
- *     without them, so dropping them leaves a snippet that still compiles.
- *   - `run` / `stream` / `ws` are genuine namespaces. `FalProvider` exposes
- *     only `run`, with no top-level `alibaba`, so dropping it rendered
- *     `fal.alibaba.wan3p0.textToVideo(...)` — copy-pasteable source that does
- *     not compile (ac-5xsd5z).
+ * The display label drops HTTP-verb segments and `run` / `stream` / `ws`
+ * wherever they sit. That is not always a path on the factory:
  *
- * Only the second kind is restored, and only as a leading root, because that
- * is the whole defect. The label is otherwise returned untouched: it also
- * carries disambiguating prefixes that `fullDotPath` does not (kie's `suno`
- * sub-provider, for one), so rebuilding the path from `fullDotPath` wholesale
- * would trade this bug for a worse one.
+ *   - Some factories expose only verb namespaces. `createOpenAI` returns
+ *     `post` / `get` / `delete`, so `openai.v1.audio.speech` does not
+ *     resolve and `openai.post.v1.audio.speech` does (ac-kqdzn9). A verb
+ *     is not a universal alias.
+ *   - `run` / `stream` / `ws` are real namespaces. `FalProvider` has no
+ *     top-level `alibaba`, so the collapsed label rendered
+ *     `fal.alibaba.wan3p0.textToVideo(...)`, which does not compile
+ *     (ac-5xsd5z).
+ *   - A trailing or interior leaf (`delete`, `get`, `stream`) is the
+ *     function. The collapsed label stops on the namespace object:
+ *     `fireworks.inference.v1.accounts.apiKeys` is not callable,
+ *     `.delete` is.
+ *
+ * `fullDotPath` is the access path the walker found. When the label is that
+ * path with only the collapsed segments removed, put those segments back.
+ * A label that already contains `fullDotPath` — including one with a
+ * disambiguating prefix `fullDotPath` does not have, such as kie `suno.` —
+ * is kept. Rebuilding every snippet from `fullDotPath` alone would drop
+ * that prefix.
  *
  * @param {{fullDotPath?: string}} ep
  * @param {string} dotPath - the collapsed display label
+ * @param {string} providerName
  * @returns {string}
  */
-function callableDotPath(ep, dotPath) {
+function callableDotPath(ep, dotPath, providerName) {
   if (!ep.fullDotPath) return dotPath;
-  const segments = ep.fullDotPath.split(".");
-  while (segments.length > 1 && METHOD_KEYS.has(segments[0])) segments.shift();
-  const root = segments[0];
-  if (!STREAM_KEYS.has(root)) return dotPath;
-  const label = dotPath.split(".");
-  // The label may already carry the namespace, and not always in first
-  // position: `resolveEndpointLabels` disambiguates streaming siblings as
-  // `post.stream.v1.messages`, where `stream` sits at index 1. Prepending
-  // there would produce `stream.post.stream.v1.messages`.
-  return label.includes(root) ? dotPath : [root, ...label].join(".");
+  const full = ep.fullDotPath.split(".");
+  const label = dotPath.split(".").filter((segment) => segment.length > 0);
+  const fullText = full.join(".");
+  const labelText = label.join(".");
+  if (labelText === fullText || labelText.endsWith(`.${fullText}`)) {
+    return dotPath;
+  }
+  const logical = full.filter(
+    (segment) => !isCollapsedSegment(segment, providerName)
+  );
+  const logicalText = logical.join(".");
+  if (logicalText.length > 0 && labelText === logicalText) return fullText;
+  if (
+    logicalText.length > 0 &&
+    labelText.endsWith(`.${logicalText}`) &&
+    label.length > logical.length
+  ) {
+    const prefix = label.slice(0, label.length - logical.length);
+    return [...prefix, ...full].join(".");
+  }
+  // The label is already a distinct path (a sibling labelled with its own
+  // fullDotPath, or a label that retained `stream`). Do not prepend.
+  return dotPath;
 }
 
 function renderEndpointDetails(ep, providerName, docsUrl, tier, dotPath) {
@@ -826,18 +864,14 @@ function renderEndpointDetails(ep, providerName, docsUrl, tier, dotPath) {
   const noteLine =
     ENDPOINT_NOTES.get(`${providerName}\t${dotPath}\t${method}`) ?? "";
 
-  // The snippet is copy-pasteable source, so it must name a CALLABLE path.
-  // `dotPath` here is the display label, which drops both verb segments
-  // (`post`, `get`, …) and namespace segments (`run`, `stream`, `ws`). Those
-  // two are not equivalent: a verb alias mirrors a path that is callable
-  // without it (`openai.post.v1.audio.speech` and `openai.v1.audio.speech`
-  // both resolve), but `run` is a real namespace with no top-level mirror —
-  // `FalProvider` exposes only `run`, so the collapsed label rendered
-  // `fal.alibaba.wan3p0.textToVideo(...)`, which does not compile.
-  //
-  // So restore the namespace segments and keep dropping the verb (ac-5xsd5z).
-  // The <summary> heading keeps the fully collapsed label either way.
-  const usage = formatUsageSnippet(providerName, callableDotPath(ep, dotPath));
+  // The snippet is copy-pasteable source, so it must name a callable on the
+  // factory. The <summary> heading keeps the collapsed label. See
+  // `callableDotPath` for which segments are put back (ac-kqdzn9).
+  const usage = formatUsageSnippet(
+    providerName,
+    dotPath,
+    callableDotPath(ep, dotPath, providerName)
+  );
   const relSrc = ep.file.replace(
     new RegExp(`^packages/provider/${providerName}/`),
     ""

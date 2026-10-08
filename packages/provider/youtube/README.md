@@ -59,7 +59,7 @@ Source: [`packages/provider/youtube/src/youtube.ts`](src/youtube.ts)
 Cost tier: <code>cheap</code>
 
 ```typescript
-const res = await youtube.transcripts({ /* ... */ });
+const res = await youtube.transcripts.get({ /* ... */ });
 ```
 
 Source: [`packages/provider/youtube/src/youtube.ts`](src/youtube.ts)

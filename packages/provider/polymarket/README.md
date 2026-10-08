@@ -48,7 +48,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication.md)
 
 ```typescript
-const res = await polymarket.clob.auth.apiKey({ /* ... */ });
+const res = await polymarket.delete.clob.auth.apiKey({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -65,7 +65,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-spec/clob-openapi.yaml)
 
 ```typescript
-const res = await polymarket.clob.auth.builderApiKey({ /* ... */ });
+const res = await polymarket.delete.clob.auth.builderApiKey({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -82,7 +82,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/cancel-all-orders.md)
 
 ```typescript
-const res = await polymarket.clob.cancelAll({ /* ... */ });
+const res = await polymarket.delete.clob.cancelAll({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -99,7 +99,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/cancel-orders-for-a-market.md)
 
 ```typescript
-const res = await polymarket.clob.cancelMarketOrders({ /* ... */ });
+const res = await polymarket.delete.clob.cancelMarketOrders({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -116,7 +116,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication.md)
 
 ```typescript
-const res = await polymarket.clob.notifications({ /* ... */ });
+const res = await polymarket.delete.clob.notifications({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -133,7 +133,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/cancel-single-order.md)
 
 ```typescript
-const res = await polymarket.clob.order({ /* ... */ });
+const res = await polymarket.delete.clob.order({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -150,7 +150,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/cancel-multiple-orders.md)
 
 ```typescript
-const res = await polymarket.clob.orders({ /* ... */ });
+const res = await polymarket.delete.clob.orders({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -167,7 +167,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication.md)
 
 ```typescript
-const res = await polymarket.clob.auth.apiKeys({ /* ... */ });
+const res = await polymarket.get.clob.auth.apiKeys({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -184,7 +184,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication.md)
 
 ```typescript
-const res = await polymarket.clob.auth.banStatus.closedOnly({ /* ... */ });
+const res = await polymarket.get.clob.auth.banStatus.closedOnly({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -201,7 +201,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-spec/clob-openapi.yaml)
 
 ```typescript
-const res = await polymarket.clob.auth.builderApiKey({ /* ... */ });
+const res = await polymarket.get.clob.auth.builderApiKey({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -218,7 +218,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication.md)
 
 ```typescript
-const res = await polymarket.clob.auth.deriveApiKey({ /* ... */ });
+const res = await polymarket.get.clob.auth.deriveApiKey({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -235,7 +235,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication.md)
 
 ```typescript
-const res = await polymarket.clob.balanceAllowance({ /* ... */ });
+const res = await polymarket.get.clob.balanceAllowance({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -252,7 +252,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication.md)
 
 ```typescript
-const res = await polymarket.clob.balanceAllowance.update({ /* ... */ });
+const res = await polymarket.get.clob.balanceAllowance.update({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -269,7 +269,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/market-data/get-order-book.md)
 
 ```typescript
-const res = await polymarket.clob.book({ /* ... */ });
+const res = await polymarket.get.clob.book({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -286,7 +286,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-spec/clob-openapi.yaml)
 
 ```typescript
-const res = await polymarket.clob.books({ /* ... */ });
+const res = await polymarket.get.clob.books({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -303,7 +303,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/get-builder-trades.md)
 
 ```typescript
-const res = await polymarket.clob.builderTrades({ /* ... */ });
+const res = await polymarket.get.clob.builderTrades({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -320,7 +320,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/markets/get-clob-market-info.md)
 
 ```typescript
-const res = await polymarket.clob.clobMarkets({ /* ... */ });
+const res = await polymarket.get.clob.clobMarkets({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -337,7 +337,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/get-single-order-by-id.md)
 
 ```typescript
-const res = await polymarket.clob.data.order({ /* ... */ });
+const res = await polymarket.get.clob.data.order({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -354,7 +354,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/get-user-orders.md)
 
 ```typescript
-const res = await polymarket.clob.data.orders({ /* ... */ });
+const res = await polymarket.get.clob.data.orders({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -371,7 +371,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/get-trades.md)
 
 ```typescript
-const res = await polymarket.clob.data.trades({ /* ... */ });
+const res = await polymarket.get.clob.data.trades({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -388,7 +388,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/market-data/get-fee-rate-by-path-parameter.md)
 
 ```typescript
-const res = await polymarket.clob.feeRate({ /* ... */ });
+const res = await polymarket.get.clob.feeRate({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -405,7 +405,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/market-data/get-fee-rate.md)
 
 ```typescript
-const res = await polymarket.clob.feeRateByQuery({ /* ... */ });
+const res = await polymarket.get.clob.feeRateByQuery({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -422,7 +422,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/market-data/get-last-trade-price.md)
 
 ```typescript
-const res = await polymarket.clob.lastTradePrice({ /* ... */ });
+const res = await polymarket.get.clob.lastTradePrice({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -439,7 +439,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/market-data/get-last-trade-prices-query-parameters.md)
 
 ```typescript
-const res = await polymarket.clob.lastTradesPrices({ /* ... */ });
+const res = await polymarket.get.clob.lastTradesPrices({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -456,7 +456,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-spec/clob-openapi.yaml)
 
 ```typescript
-const res = await polymarket.clob.marketLiveActivity({ /* ... */ });
+const res = await polymarket.get.clob.marketLiveActivity({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -475,7 +475,7 @@ Cost tier: <code>cheap</code>
 > **Legacy compatibility:** current public market discovery is documented on the Gamma `/markets` pages. The CLOB `/markets` compatibility path is retained for existing callers and is documented by the CLOB OpenAPI spec.
 
 ```typescript
-const res = await polymarket.clob.markets({ /* ... */ });
+const res = await polymarket.get.clob.markets({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -492,7 +492,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/markets/get-market-by-token.md)
 
 ```typescript
-const res = await polymarket.clob.marketsByToken({ /* ... */ });
+const res = await polymarket.get.clob.marketsByToken({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -509,7 +509,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/data/get-midpoint-price.md)
 
 ```typescript
-const res = await polymarket.clob.midpoint({ /* ... */ });
+const res = await polymarket.get.clob.midpoint({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -526,7 +526,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/market-data/get-midpoint-prices-query-parameters.md)
 
 ```typescript
-const res = await polymarket.clob.midpoints({ /* ... */ });
+const res = await polymarket.get.clob.midpoints({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -543,7 +543,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-spec/clob-openapi.yaml)
 
 ```typescript
-const res = await polymarket.clob.negRisk({ /* ... */ });
+const res = await polymarket.get.clob.negRisk({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -560,7 +560,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-spec/clob-openapi.yaml)
 
 ```typescript
-const res = await polymarket.clob.negRiskByQuery({ /* ... */ });
+const res = await polymarket.get.clob.negRiskByQuery({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -577,7 +577,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication.md)
 
 ```typescript
-const res = await polymarket.clob.notifications({ /* ... */ });
+const res = await polymarket.get.clob.notifications({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -594,7 +594,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/get-order-scoring-status.md)
 
 ```typescript
-const res = await polymarket.clob.orderScoring({ /* ... */ });
+const res = await polymarket.get.clob.orderScoring({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -611,7 +611,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/get-order-scoring-status.md)
 
 ```typescript
-const res = await polymarket.clob.ordersScoring({ /* ... */ });
+const res = await polymarket.get.clob.ordersScoring({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -628,7 +628,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/market-data/get-market-price.md)
 
 ```typescript
-const res = await polymarket.clob.price({ /* ... */ });
+const res = await polymarket.get.clob.price({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -645,7 +645,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/market-data/get-market-prices-query-parameters.md)
 
 ```typescript
-const res = await polymarket.clob.prices({ /* ... */ });
+const res = await polymarket.get.clob.prices({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -662,7 +662,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/markets/get-prices-history.md)
 
 ```typescript
-const res = await polymarket.clob.pricesHistory({ /* ... */ });
+const res = await polymarket.get.clob.pricesHistory({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -679,7 +679,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/rebates/get-current-rebated-fees-for-a-maker.md)
 
 ```typescript
-const res = await polymarket.clob.rebates.current({ /* ... */ });
+const res = await polymarket.get.clob.rebates.current({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -696,7 +696,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/rewards/get-raw-rewards-for-a-specific-market.md)
 
 ```typescript
-const res = await polymarket.clob.rewards.markets.byCondition({ /* ... */ });
+const res = await polymarket.get.clob.rewards.markets.byCondition({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -713,7 +713,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/rewards/get-current-active-rewards-configurations.md)
 
 ```typescript
-const res = await polymarket.clob.rewards.markets.current({ /* ... */ });
+const res = await polymarket.get.clob.rewards.markets.current({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -730,7 +730,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/rewards/get-multiple-markets-with-rewards.md)
 
 ```typescript
-const res = await polymarket.clob.rewards.markets.multi({ /* ... */ });
+const res = await polymarket.get.clob.rewards.markets.multi({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -747,7 +747,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/rewards/get-earnings-for-user-by-date.md)
 
 ```typescript
-const res = await polymarket.clob.rewards.user({ /* ... */ });
+const res = await polymarket.get.clob.rewards.user({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -764,7 +764,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/rewards/get-user-earnings-and-markets-configuration.md)
 
 ```typescript
-const res = await polymarket.clob.rewards.userMarkets({ /* ... */ });
+const res = await polymarket.get.clob.rewards.userMarkets({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -781,7 +781,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/rewards/get-reward-percentages-for-user.md)
 
 ```typescript
-const res = await polymarket.clob.rewards.userPercentages({ /* ... */ });
+const res = await polymarket.get.clob.rewards.userPercentages({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -798,7 +798,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/rewards/get-total-earnings-for-user-by-date.md)
 
 ```typescript
-const res = await polymarket.clob.rewards.userTotal({ /* ... */ });
+const res = await polymarket.get.clob.rewards.userTotal({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -815,7 +815,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/markets/get-sampling-markets.md)
 
 ```typescript
-const res = await polymarket.clob.samplingMarkets({ /* ... */ });
+const res = await polymarket.get.clob.samplingMarkets({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -832,7 +832,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/markets/get-sampling-simplified-markets.md)
 
 ```typescript
-const res = await polymarket.clob.samplingSimplifiedMarkets({ /* ... */ });
+const res = await polymarket.get.clob.samplingSimplifiedMarkets({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -849,7 +849,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/markets/get-simplified-markets.md)
 
 ```typescript
-const res = await polymarket.clob.simplifiedMarkets({ /* ... */ });
+const res = await polymarket.get.clob.simplifiedMarkets({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -866,7 +866,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/market-data/get-spread.md)
 
 ```typescript
-const res = await polymarket.clob.spread({ /* ... */ });
+const res = await polymarket.get.clob.spread({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -883,7 +883,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/market-data/get-tick-size-by-path-parameter.md)
 
 ```typescript
-const res = await polymarket.clob.tickSize({ /* ... */ });
+const res = await polymarket.get.clob.tickSize({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -900,7 +900,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/market-data/get-tick-size.md)
 
 ```typescript
-const res = await polymarket.clob.tickSizeByQuery({ /* ... */ });
+const res = await polymarket.get.clob.tickSizeByQuery({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -917,7 +917,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/data/get-server-time.md)
 
 ```typescript
-const res = await polymarket.clob.time({ /* ... */ });
+const res = await polymarket.get.clob.time({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -934,7 +934,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication.md)
 
 ```typescript
-const res = await polymarket.clob.auth.apiKey({ /* ... */ });
+const res = await polymarket.post.clob.auth.apiKey({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -951,7 +951,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-spec/clob-openapi.yaml)
 
 ```typescript
-const res = await polymarket.clob.auth.builderApiKey({ /* ... */ });
+const res = await polymarket.post.clob.auth.builderApiKey({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -968,7 +968,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/markets/get-batch-prices-history.md)
 
 ```typescript
-const res = await polymarket.clob.batchPricesHistory({ /* ... */ });
+const res = await polymarket.post.clob.batchPricesHistory({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -985,7 +985,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/market-data/get-order-books-request-body.md)
 
 ```typescript
-const res = await polymarket.clob.books({ /* ... */ });
+const res = await polymarket.post.clob.books({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -1002,7 +1002,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/send-heartbeat.md)
 
 ```typescript
-const res = await polymarket.clob.heartbeats({ /* ... */ });
+const res = await polymarket.post.clob.heartbeats({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -1019,7 +1019,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/market-data/get-last-trade-prices-request-body.md)
 
 ```typescript
-const res = await polymarket.clob.lastTradesPrices({ /* ... */ });
+const res = await polymarket.post.clob.lastTradesPrices({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -1036,7 +1036,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-spec/clob-openapi.yaml)
 
 ```typescript
-const res = await polymarket.clob.marketsLiveActivity({ /* ... */ });
+const res = await polymarket.post.clob.marketsLiveActivity({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -1053,7 +1053,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/market-data/get-midpoint-prices-request-body.md)
 
 ```typescript
-const res = await polymarket.clob.midpoints({ /* ... */ });
+const res = await polymarket.post.clob.midpoints({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -1070,7 +1070,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/post-a-new-order.md)
 
 ```typescript
-const res = await polymarket.clob.order({ /* ... */ });
+const res = await polymarket.post.clob.order({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -1087,7 +1087,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/post-multiple-orders.md)
 
 ```typescript
-const res = await polymarket.clob.orders({ /* ... */ });
+const res = await polymarket.post.clob.orders({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -1104,7 +1104,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/get-order-scoring-status.md)
 
 ```typescript
-const res = await polymarket.clob.ordersScoring({ /* ... */ });
+const res = await polymarket.post.clob.ordersScoring({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -1121,7 +1121,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/post-a-new-order.md)
 
 ```typescript
-const res = await polymarket.clob.placeOrder({ /* ... */ });
+const res = await polymarket.post.clob.placeOrder({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -1138,7 +1138,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/market-data/get-market-prices-request-body.md)
 
 ```typescript
-const res = await polymarket.clob.prices({ /* ... */ });
+const res = await polymarket.post.clob.prices({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -1155,7 +1155,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/market-data/get-spreads.md)
 
 ```typescript
-const res = await polymarket.clob.spreads({ /* ... */ });
+const res = await polymarket.post.clob.spreads({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -1172,7 +1172,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/send-heartbeat.md)
 
 ```typescript
-const res = await polymarket.clob.v1.heartbeats({ /* ... */ });
+const res = await polymarket.post.clob.v1.heartbeats({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -1189,7 +1189,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication.md)
 
 ```typescript
-const res = await polymarket.clob.balanceAllowance({ /* ... */ });
+const res = await polymarket.put.clob.balanceAllowance({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -1208,7 +1208,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/misc/download-an-accounting-snapshot-zip-of-csvs.md)
 
 ```typescript
-const res = await polymarket.data.accounting.snapshot({ /* ... */ });
+const res = await polymarket.get.data.accounting.snapshot({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
@@ -1225,7 +1225,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/core/get-user-activity.md)
 
 ```typescript
-const res = await polymarket.data.activity({ /* ... */ });
+const res = await polymarket.get.data.activity({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
@@ -1242,7 +1242,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/core/get-user-combo-activity.md)
 
 ```typescript
-const res = await polymarket.data.activity.combos({ /* ... */ });
+const res = await polymarket.get.data.activity.combos({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
@@ -1259,7 +1259,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/builders/get-aggregated-builder-leaderboard.md)
 
 ```typescript
-const res = await polymarket.data.builders.leaderboard({ /* ... */ });
+const res = await polymarket.get.data.builders.leaderboard({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
@@ -1276,7 +1276,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/builders/get-daily-builder-volume-time-series.md)
 
 ```typescript
-const res = await polymarket.data.builders.volume({ /* ... */ });
+const res = await polymarket.get.data.builders.volume({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
@@ -1293,7 +1293,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/core/get-closed-positions-for-a-user.md)
 
 ```typescript
-const res = await polymarket.data.closedPositions({ /* ... */ });
+const res = await polymarket.get.data.closedPositions({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
@@ -1310,7 +1310,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-spec/data-openapi.yaml)
 
 ```typescript
-const res = await polymarket.data.health({ /* ... */ });
+const res = await polymarket.get.data.health({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
@@ -1327,7 +1327,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/core/get-top-holders-for-markets.md)
 
 ```typescript
-const res = await polymarket.data.holders({ /* ... */ });
+const res = await polymarket.get.data.holders({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
@@ -1344,7 +1344,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/core/get-trader-leaderboard-rankings.md)
 
 ```typescript
-const res = await polymarket.data.leaderboard({ /* ... */ });
+const res = await polymarket.get.data.leaderboard({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
@@ -1361,7 +1361,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/misc/get-live-volume-for-an-event.md)
 
 ```typescript
-const res = await polymarket.data.liveVolume({ /* ... */ });
+const res = await polymarket.get.data.liveVolume({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
@@ -1378,7 +1378,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/core/get-positions-for-a-market.md)
 
 ```typescript
-const res = await polymarket.data.marketPositions({ /* ... */ });
+const res = await polymarket.get.data.marketPositions({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
@@ -1395,7 +1395,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/misc/get-open-interest.md)
 
 ```typescript
-const res = await polymarket.data.oi({ /* ... */ });
+const res = await polymarket.get.data.oi({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
@@ -1412,7 +1412,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/core/get-current-positions-for-a-user.md)
 
 ```typescript
-const res = await polymarket.data.positions({ /* ... */ });
+const res = await polymarket.get.data.positions({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
@@ -1429,7 +1429,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/core/get-user-combo-positions.md)
 
 ```typescript
-const res = await polymarket.data.positions.combos({ /* ... */ });
+const res = await polymarket.get.data.positions.combos({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
@@ -1446,7 +1446,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/misc/get-total-markets-a-user-has-traded.md)
 
 ```typescript
-const res = await polymarket.data.traded({ /* ... */ });
+const res = await polymarket.get.data.traded({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
@@ -1463,7 +1463,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/core/get-trades-for-a-user-or-markets.md)
 
 ```typescript
-const res = await polymarket.data.trades({ /* ... */ });
+const res = await polymarket.get.data.trades({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
@@ -1480,7 +1480,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/core/get-total-value-of-a-users-positions.md)
 
 ```typescript
-const res = await polymarket.data.value({ /* ... */ });
+const res = await polymarket.get.data.value({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
@@ -1499,7 +1499,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/comments/list-comments.md)
 
 ```typescript
-const res = await polymarket.gamma.comments({ /* ... */ });
+const res = await polymarket.get.gamma.comments({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
@@ -1516,7 +1516,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/comments/get-comments-by-user-address.md)
 
 ```typescript
-const res = await polymarket.gamma.comments.byUser({ /* ... */ });
+const res = await polymarket.get.gamma.comments.byUser({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
@@ -1535,7 +1535,7 @@ Cost tier: <code>cheap</code>
 > **Deprecated upstream:** the replay fixture for the list form `GET /events?...` returned `Deprecation: true`, `Sunset: Fri, 01 May 2026 00:00:00 GMT`, and `Warning: 299 - "use /events/keyset"`. This compatibility method remains for existing bare-array `/events` callers; prefer `polymarket.gamma.events.keyset()` for new paginated event lists.
 
 ```typescript
-const res = await polymarket.gamma.events({ /* ... */ });
+const res = await polymarket.get.gamma.events({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
@@ -1552,7 +1552,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/events/list-events-keyset-pagination.md)
 
 ```typescript
-const res = await polymarket.gamma.events.keyset({ /* ... */ });
+const res = await polymarket.get.gamma.events.keyset({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
@@ -1569,7 +1569,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/events/get-event-by-slug.md)
 
 ```typescript
-const res = await polymarket.gamma.events.slug({ /* ... */ });
+const res = await polymarket.get.gamma.events.slug({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
@@ -1586,7 +1586,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/events/get-event-tags.md)
 
 ```typescript
-const res = await polymarket.gamma.events.tags({ /* ... */ });
+const res = await polymarket.get.gamma.events.tags({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
@@ -1603,7 +1603,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/markets/list-markets.md)
 
 ```typescript
-const res = await polymarket.gamma.markets({ /* ... */ });
+const res = await polymarket.get.gamma.markets({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
@@ -1620,7 +1620,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/markets/list-markets-keyset-pagination.md)
 
 ```typescript
-const res = await polymarket.gamma.markets.keyset({ /* ... */ });
+const res = await polymarket.get.gamma.markets.keyset({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
@@ -1637,7 +1637,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/markets/get-market-by-slug.md)
 
 ```typescript
-const res = await polymarket.gamma.markets.slug({ /* ... */ });
+const res = await polymarket.get.gamma.markets.slug({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
@@ -1654,7 +1654,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/markets/get-market-tags-by-id.md)
 
 ```typescript
-const res = await polymarket.gamma.markets.tags({ /* ... */ });
+const res = await polymarket.get.gamma.markets.tags({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
@@ -1671,7 +1671,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/profiles/get-public-profile-by-wallet-address.md)
 
 ```typescript
-const res = await polymarket.gamma.publicProfile({ /* ... */ });
+const res = await polymarket.get.gamma.publicProfile({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
@@ -1688,7 +1688,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/search/search-markets-events-and-profiles.md)
 
 ```typescript
-const res = await polymarket.gamma.search({ /* ... */ });
+const res = await polymarket.get.gamma.search({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
@@ -1705,7 +1705,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/series/list-series.md)
 
 ```typescript
-const res = await polymarket.gamma.series({ /* ... */ });
+const res = await polymarket.get.gamma.series({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
@@ -1722,7 +1722,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/sports/get-sports-metadata-information.md)
 
 ```typescript
-const res = await polymarket.gamma.sports({ /* ... */ });
+const res = await polymarket.get.gamma.sports({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
@@ -1739,7 +1739,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/sports/get-valid-sports-market-types.md)
 
 ```typescript
-const res = await polymarket.gamma.sports.marketTypes({ /* ... */ });
+const res = await polymarket.get.gamma.sports.marketTypes({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
@@ -1756,7 +1756,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-spec/gamma-openapi.yaml)
 
 ```typescript
-const res = await polymarket.gamma.status({ /* ... */ });
+const res = await polymarket.get.gamma.status({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
@@ -1773,7 +1773,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/tags/list-tags.md)
 
 ```typescript
-const res = await polymarket.gamma.tags({ /* ... */ });
+const res = await polymarket.get.gamma.tags({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
@@ -1790,7 +1790,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/tags/get-related-tags-relationships-by-tag-id.md)
 
 ```typescript
-const res = await polymarket.gamma.tags.relatedTags({ /* ... */ });
+const res = await polymarket.get.gamma.tags.relatedTags({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
@@ -1807,7 +1807,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/tags/get-related-tags-relationships-by-tag-slug.md)
 
 ```typescript
-const res = await polymarket.gamma.tags.relatedTags.slug({ /* ... */ });
+const res = await polymarket.get.gamma.tags.relatedTags.slug({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
@@ -1824,7 +1824,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/tags/get-tags-related-to-a-tag-id.md)
 
 ```typescript
-const res = await polymarket.gamma.tags.relatedTags.tags({ /* ... */ });
+const res = await polymarket.get.gamma.tags.relatedTags.tags({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
@@ -1841,7 +1841,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/tags/get-tags-related-to-a-tag-slug.md)
 
 ```typescript
-const res = await polymarket.gamma.tags.relatedTags.tags.slug({ /* ... */ });
+const res = await polymarket.get.gamma.tags.relatedTags.tags.slug({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
@@ -1858,7 +1858,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/tags/get-tag-by-slug.md)
 
 ```typescript
-const res = await polymarket.gamma.tags.slug({ /* ... */ });
+const res = await polymarket.get.gamma.tags.slug({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
@@ -1875,7 +1875,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/sports/list-teams.md)
 
 ```typescript
-const res = await polymarket.gamma.teams({ /* ... */ });
+const res = await polymarket.get.gamma.teams({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)

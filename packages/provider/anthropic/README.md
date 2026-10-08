@@ -183,7 +183,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.files.del({ /* ... */ });
+const res = await anthropic.delete.v1.files.del({ /* ... */ });
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -200,7 +200,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.files.content({ /* ... */ });
+const res = await anthropic.get.v1.files.content({ /* ... */ });
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -217,7 +217,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.files.list({ /* ... */ });
+const res = await anthropic.get.v1.files.list({ /* ... */ });
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -234,7 +234,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.files.retrieve({ /* ... */ });
+const res = await anthropic.get.v1.files.retrieve({ /* ... */ });
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -251,7 +251,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.files({ /* ... */ });
+const res = await anthropic.post.v1.files({ /* ... */ });
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -270,7 +270,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.messages.batches.del({ /* ... */ });
+const res = await anthropic.delete.v1.messages.batches.del({ /* ... */ });
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -287,7 +287,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.messages.batches.list({ /* ... */ });
+const res = await anthropic.get.v1.messages.batches.list({ /* ... */ });
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -304,7 +304,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.messages.batches.results({ /* ... */ });
+const res = await anthropic.get.v1.messages.batches.results({ /* ... */ });
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -321,7 +321,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.messages.batches.retrieve({ /* ... */ });
+const res = await anthropic.get.v1.messages.batches.retrieve({ /* ... */ });
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -355,7 +355,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.messages.batches.cancel({ /* ... */ });
+const res = await anthropic.post.v1.messages.batches.cancel({ /* ... */ });
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -425,7 +425,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.models.list({ /* ... */ });
+const res = await anthropic.get.v1.models.list({ /* ... */ });
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -442,7 +442,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.models.retrieve({ /* ... */ });
+const res = await anthropic.get.v1.models.retrieve({ /* ... */ });
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -480,7 +480,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.skills.del({ /* ... */ });
+const res = await anthropic.delete.v1.skills.del({ /* ... */ });
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -497,7 +497,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.skills.versions.del({ /* ... */ });
+const res = await anthropic.delete.v1.skills.versions.del({ /* ... */ });
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -514,7 +514,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.skills.list({ /* ... */ });
+const res = await anthropic.get.v1.skills.list({ /* ... */ });
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -531,7 +531,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.skills.retrieve({ /* ... */ });
+const res = await anthropic.get.v1.skills.retrieve({ /* ... */ });
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -548,7 +548,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.skills.versions.list({ /* ... */ });
+const res = await anthropic.get.v1.skills.versions.list({ /* ... */ });
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -565,7 +565,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.skills.create({ /* ... */ });
+const res = await anthropic.post.v1.skills.create({ /* ... */ });
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -582,7 +582,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.skills.versions.create({ /* ... */ });
+const res = await anthropic.post.v1.skills.versions.create({ /* ... */ });
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)

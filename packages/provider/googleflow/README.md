@@ -42,7 +42,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://useapi.net/docs/api-google-flow-v1/delete-google-flow-accounts-email)
 
 ```typescript
-const res = await googleflow.v1.accounts({ /* ... */ });
+const res = await googleflow.delete.v1.accounts({ /* ... */ });
 ```
 
 Source: [`packages/provider/googleflow/src/google.ts`](src/google.ts)
@@ -59,7 +59,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://useapi.net/docs/api-google-flow-v1/get-google-flow-accounts)
 
 ```typescript
-const res = await googleflow.v1.accounts({ /* ... */ });
+const res = await googleflow.get.v1.accounts({ /* ... */ });
 ```
 
 Source: [`packages/provider/googleflow/src/google.ts`](src/google.ts)
@@ -76,7 +76,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://useapi.net/docs/api-google-flow-v1/get-google-flow-accounts-captcha-providers)
 
 ```typescript
-const res = await googleflow.v1.accounts.captchaProviders({ /* ... */ });
+const res = await googleflow.get.v1.accounts.captchaProviders({ /* ... */ });
 ```
 
 Source: [`packages/provider/googleflow/src/google.ts`](src/google.ts)
@@ -93,7 +93,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://useapi.net/docs/api-google-flow-v1/get-google-flow-accounts-captcha-stats)
 
 ```typescript
-const res = await googleflow.v1.accounts.captchaStats({ /* ... */ });
+const res = await googleflow.get.v1.accounts.captchaStats({ /* ... */ });
 ```
 
 Source: [`packages/provider/googleflow/src/google.ts`](src/google.ts)
@@ -110,7 +110,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://useapi.net/docs/api-google-flow-v1/get-google-flow-accounts-email)
 
 ```typescript
-const res = await googleflow.v1.accounts.retrieve({ /* ... */ });
+const res = await googleflow.get.v1.accounts.retrieve({ /* ... */ });
 ```
 
 Source: [`packages/provider/googleflow/src/google.ts`](src/google.ts)
@@ -163,7 +163,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://useapi.net/docs/api-google-flow-v1/get-google-flow-assets-mediagenerationid)
 
 ```typescript
-const res = await googleflow.v1.assets.retrieve({ /* ... */ });
+const res = await googleflow.get.v1.assets.retrieve({ /* ... */ });
 ```
 
 Source: [`packages/provider/googleflow/src/google.ts`](src/google.ts)
@@ -199,7 +199,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://useapi.net/docs/api-google-flow-v1/delete-google-flow-characters-ref)
 
 ```typescript
-const res = await googleflow.v1.characters({ /* ... */ });
+const res = await googleflow.delete.v1.characters({ /* ... */ });
 ```
 
 Source: [`packages/provider/googleflow/src/google.ts`](src/google.ts)
@@ -216,7 +216,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://useapi.net/docs/api-google-flow-v1/get-google-flow-characters)
 
 ```typescript
-const res = await googleflow.v1.characters({ /* ... */ });
+const res = await googleflow.get.v1.characters({ /* ... */ });
 ```
 
 Source: [`packages/provider/googleflow/src/google.ts`](src/google.ts)
@@ -233,7 +233,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://useapi.net/docs/api-google-flow-v1/get-google-flow-characters-ref)
 
 ```typescript
-const res = await googleflow.v1.characters.retrieve({ /* ... */ });
+const res = await googleflow.get.v1.characters.retrieve({ /* ... */ });
 ```
 
 Source: [`packages/provider/googleflow/src/google.ts`](src/google.ts)
@@ -305,7 +305,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://useapi.net/docs/api-google-flow-v1/get-google-flow-jobs)
 
 ```typescript
-const res = await googleflow.v1.jobs({ /* ... */ });
+const res = await googleflow.get.v1.jobs({ /* ... */ });
 ```
 
 Source: [`packages/provider/googleflow/src/google.ts`](src/google.ts)
@@ -322,7 +322,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://useapi.net/docs/api-google-flow-v1/get-google-flow-jobs-jobid)
 
 ```typescript
-const res = await googleflow.v1.jobs.retrieve({ /* ... */ });
+const res = await googleflow.get.v1.jobs.retrieve({ /* ... */ });
 ```
 
 Source: [`packages/provider/googleflow/src/google.ts`](src/google.ts)
@@ -428,7 +428,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://useapi.net/docs/api-google-flow-v1/delete-google-flow-voices-ref)
 
 ```typescript
-const res = await googleflow.v1.voices({ /* ... */ });
+const res = await googleflow.delete.v1.voices({ /* ... */ });
 ```
 
 Source: [`packages/provider/googleflow/src/google.ts`](src/google.ts)
@@ -445,7 +445,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://useapi.net/docs/api-google-flow-v1/get-google-flow-voices)
 
 ```typescript
-const res = await googleflow.v1.voices({ /* ... */ });
+const res = await googleflow.get.v1.voices({ /* ... */ });
 ```
 
 Source: [`packages/provider/googleflow/src/google.ts`](src/google.ts)
@@ -462,7 +462,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://useapi.net/docs/api-google-flow-v1/get-google-flow-voices-ref)
 
 ```typescript
-const res = await googleflow.v1.voices.retrieve({ /* ... */ });
+const res = await googleflow.get.v1.voices.retrieve({ /* ... */ });
 ```
 
 Source: [`packages/provider/googleflow/src/google.ts`](src/google.ts)

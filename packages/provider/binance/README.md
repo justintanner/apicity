@@ -326,7 +326,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Exchange-Information)
 
 ```typescript
-const res = await binance.dapi.v1.exchangeInfo({ /* ... */ });
+const res = await binance.dapi.v1.exchangeInfo();
 ```
 
 Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
@@ -343,7 +343,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Get-Funding-Info)
 
 ```typescript
-const res = await binance.dapi.v1.fundingInfo({ /* ... */ });
+const res = await binance.dapi.v1.fundingInfo();
 ```
 
 Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
@@ -445,7 +445,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Test-Connectivity)
 
 ```typescript
-const res = await binance.dapi.v1.ping({ /* ... */ });
+const res = await binance.dapi.v1.ping();
 ```
 
 Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
@@ -547,7 +547,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Check-Server-time)
 
 ```typescript
-const res = await binance.dapi.v1.time({ /* ... */ });
+const res = await binance.dapi.v1.time();
 ```
 
 Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
@@ -636,7 +636,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/options-trading/market-data/Exchange-Information)
 
 ```typescript
-const res = await binance.eapi.v1.exchangeInfo({ /* ... */ });
+const res = await binance.eapi.v1.exchangeInfo();
 ```
 
 Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
@@ -738,7 +738,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/options-trading/market-data/Test-Connectivity)
 
 ```typescript
-const res = await binance.eapi.v1.ping({ /* ... */ });
+const res = await binance.eapi.v1.ping();
 ```
 
 Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
@@ -772,7 +772,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/options-trading/market-data/Check-Server-Time)
 
 ```typescript
-const res = await binance.eapi.v1.time({ /* ... */ });
+const res = await binance.eapi.v1.time();
 ```
 
 Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
@@ -931,7 +931,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Exchange-Information)
 
 ```typescript
-const res = await binance.fapi.v1.exchangeInfo({ /* ... */ });
+const res = await binance.fapi.v1.exchangeInfo();
 ```
 
 Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
@@ -948,7 +948,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Get-Funding-Rate-Info)
 
 ```typescript
-const res = await binance.fapi.v1.fundingInfo({ /* ... */ });
+const res = await binance.fapi.v1.fundingInfo();
 ```
 
 Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
@@ -1084,7 +1084,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Test-Connectivity)
 
 ```typescript
-const res = await binance.fapi.v1.ping({ /* ... */ });
+const res = await binance.fapi.v1.ping();
 ```
 
 Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
@@ -1203,7 +1203,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Check-Server-Time)
 
 ```typescript
-const res = await binance.fapi.v1.time({ /* ... */ });
+const res = await binance.fapi.v1.time();
 ```
 
 Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
@@ -1237,7 +1237,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Trading-Schedule)
 
 ```typescript
-const res = await binance.fapi.v1.tradingSchedule({ /* ... */ });
+const res = await binance.fapi.v1.tradingSchedule();
 ```
 
 Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
@@ -1451,7 +1451,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://developers.binance.com/docs/binance-spot-api-docs/rest-api/general-endpoints#test-connectivity)
 
 ```typescript
-const res = await binance.api.v3.ping({ /* ... */ });
+const res = await binance.api.v3.ping();
 ```
 
 Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
@@ -1470,7 +1470,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/options-trading/market-data/Test-Connectivity)
 
 ```typescript
-const res = await binance.public.options.eapi.v1.ping({ /* ... */ });
+const res = await binance.public.options.eapi.v1.ping();
 ```
 
 Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
@@ -1487,7 +1487,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://developers.binance.com/docs/binance-spot-api-docs/rest-api/general-endpoints#test-connectivity)
 
 ```typescript
-const res = await binance.public.spot.api.v3.ping({ /* ... */ });
+const res = await binance.public.spot.api.v3.ping();
 ```
 
 Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
@@ -1504,7 +1504,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://developers.binance.com/docs/binance-spot-api-docs/faqs/market_data_only)
 
 ```typescript
-const res = await binance.public.spotData.api.v3.ping({ /* ... */ });
+const res = await binance.public.spotData.api.v3.ping();
 ```
 
 Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
@@ -1521,7 +1521,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Test-Connectivity)
 
 ```typescript
-const res = await binance.public.usdMFutures.fapi.v1.ping({ /* ... */ });
+const res = await binance.public.usdMFutures.fapi.v1.ping();
 ```
 
 Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
@@ -1663,7 +1663,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://developers.binance.com/docs/binance-spot-api-docs/rest-api/general-endpoints#check-server-time)
 
 ```typescript
-const res = await binance.api.v3.time({ /* ... */ });
+const res = await binance.api.v3.time();
 ```
 
 Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)

@@ -8,6 +8,9 @@
  *   node scripts/doc-gen.mjs              # regenerate every provider README
  *   node scripts/doc-gen.mjs <provider>   # regenerate one provider README
  *   node scripts/doc-gen.mjs --check      # exit 1 if any README is stale
+ *
+ * Every mode exits 1 before rendering anything when an `ENDPOINT_NOTES` key
+ * matches no generated endpoint.
  */
 
 import fs from "node:fs/promises";
@@ -116,7 +119,7 @@ function resolveEndpointDocRow(docs, ep, providerName, label) {
   return null;
 }
 
-async function collectEndpointsByProvider() {
+export async function collectEndpointsByProvider() {
   const project = loadProject();
   const byProvider = new Map();
   for await (const ep of walkAllEndpoints(project)) {
@@ -150,7 +153,50 @@ function sectionKey(dotPath) {
   return "general";
 }
 
-function formatUsageSnippet(providerName, dotPath, callPath = dotPath) {
+/**
+ * Whether one parameter is the cancellation slot every endpoint takes,
+ * `signal?: AbortSignal`. The rule is `isSignalParam`'s in
+ * `scripts/gen-call-shapes.mjs`: the declared type must be exactly the signal,
+ * because several overloaded endpoints declare a union that merely includes it
+ * (`modelIdOrSignal?: string | AbortSignal`), and those are real inputs.
+ */
+function isSignalParam(param) {
+  const typeText = (param.getTypeNode()?.getText() ?? "").trim();
+  if (typeText === "AbortSignal" || typeText === "AbortSignal | undefined") {
+    return true;
+  }
+  return param.getName() === "signal" && typeText === "";
+}
+
+/**
+ * Whether a walked leaf takes no argument: its function declares no parameter
+ * but an optional `AbortSignal`, so its usage snippet is a bare `()` call. The
+ * generic request placeholder would land in the signal slot, where it does not
+ * type-check. A helper-built leaf (`jsonBody(...)` and its siblings) always
+ * takes a request, and a TSV-only endpoint has no leaf, so both keep the
+ * placeholder.
+ *
+ * @param {{leafNode?: import("ts-morph").Node}} ep
+ * @returns {boolean}
+ */
+export function takesNoArgument(ep) {
+  const leaf = ep.leafNode;
+  if (typeof leaf?.getParameters !== "function") return false;
+  return leaf
+    .getParameters()
+    .every(
+      (param) =>
+        isSignalParam(param) &&
+        (param.hasQuestionToken() || param.hasInitializer())
+    );
+}
+
+function formatUsageSnippet(
+  providerName,
+  dotPath,
+  callPath = dotPath,
+  noArgument = false
+) {
   // `dotPath` is the collapsed display label. Special cases match that label.
   // `callPath` is the copy-pasteable path, which may put back a verb or leaf
   // the label dropped (ac-kqdzn9).
@@ -301,15 +347,6 @@ function formatUsageSnippet(providerName, dotPath, callPath = dotPath) {
   ) {
     return `const res = await ${call}("voice_id", { /* ... */ });`;
   }
-  if (providerName === "elevenlabs" && dotPath === "v1.models") {
-    return `const res = await ${call}();`;
-  }
-  if (providerName === "elevenlabs" && dotPath === "docs") {
-    return `const res = await ${call}();`;
-  }
-  if (providerName === "elevenlabs" && dotPath === "v1.user.subscription") {
-    return `const res = await ${call}();`;
-  }
   if (
     providerName === "openligadb" &&
     (dotPath === "getbltable" || dotPath === "getgrouptable")
@@ -337,9 +374,6 @@ function formatUsageSnippet(providerName, dotPath, callPath = dotPath) {
       "  limit: 3,",
       "});",
     ].join("\n");
-  }
-  if (providerName === "simplefunctions" && dotPath === "data.v1.heartbeat") {
-    return `const res = await ${call}();`;
   }
   if (providerName === "simplefunctions" && dotPath === "data.v1.markets") {
     return [
@@ -370,9 +404,6 @@ function formatUsageSnippet(providerName, dotPath, callPath = dotPath) {
       "});",
     ].join("\n");
   }
-  if (providerName === "simplefunctions" && dotPath === "data.v1.snapshot") {
-    return `const res = await ${call}();`;
-  }
   if (providerName === "simplefunctions" && dotPath === "data.v1.movers") {
     return [
       `const res = await ${call}({`,
@@ -396,9 +427,6 @@ function formatUsageSnippet(providerName, dotPath, callPath = dotPath) {
   }
   if (providerName === "simplefunctions" && dotPath === "data.v1.trades") {
     return `const res = await ${call}("KXPRESNOMD-28-GN", { limit: 50 });`;
-  }
-  if (providerName === "openligadb" && dotPath === "swagger.v1.swaggerJson") {
-    return `const res = await ${call}();`;
   }
   if (providerName === "openligadb" && dotPath === "getmatchdata.byId") {
     return `const res = await ${call}({ matchId: 68720 });`;
@@ -472,6 +500,7 @@ function formatUsageSnippet(providerName, dotPath, callPath = dotPath) {
       "});",
     ].join("\n");
   }
+  if (noArgument) return `const res = await ${call}();`;
   return `const res = await ${call}({ /* ... */ });`;
 }
 
@@ -483,7 +512,13 @@ const KIE_GEMINI_HTTP_200_ERROR_NOTE = [
   "or Google's `{ error: { code, message, status } }`).",
 ].join(" ");
 
-const ENDPOINT_NOTES = new Map([
+/**
+ * README notes for single endpoints, keyed `provider<TAB>label<TAB>method`:
+ * the dot path the endpoint's README heading prints and the method its block
+ * renders (`endpointNoteKey`). A key that names no rendered block fails the
+ * run (`assertEndpointNotesMatch`) instead of dropping its note.
+ */
+export const ENDPOINT_NOTES = new Map([
   [
     "polymarket\tclob.markets\tGET",
     [
@@ -850,6 +885,16 @@ function callableDotPath(ep, dotPath, providerName) {
   return dotPath;
 }
 
+/**
+ * The `ENDPOINT_NOTES` key of one rendered block: its provider, its display
+ * label (the dot path its heading prints) and the method the block renders.
+ * `renderEndpointDetails` looks notes up by it, and `endpointNoteKeys` lists
+ * every key a provider's README can look up.
+ */
+function endpointNoteKey(providerName, label, method) {
+  return `${providerName}\t${label}\t${method ?? ""}`;
+}
+
 function renderEndpointDetails(ep, providerName, docsUrl, tier, dotPath) {
   const method = ep.method ?? "";
   const headerCode = method ? `<code>${method}</code> ` : "";
@@ -862,15 +907,17 @@ function renderEndpointDetails(ep, providerName, docsUrl, tier, dotPath) {
   const docsLine =
     docsUrl && docsUrl.length > 0 ? `[Upstream docs ↗](${docsUrl})` : "";
   const noteLine =
-    ENDPOINT_NOTES.get(`${providerName}\t${dotPath}\t${method}`) ?? "";
+    ENDPOINT_NOTES.get(endpointNoteKey(providerName, dotPath, method)) ?? "";
 
   // The snippet is copy-pasteable source, so it must name a callable on the
   // factory. The <summary> heading keeps the collapsed label. See
-  // `callableDotPath` for which segments are put back (ac-kqdzn9).
+  // `callableDotPath` for which segments are put back (ac-kqdzn9). A leaf
+  // that takes nothing but an optional AbortSignal is a bare `()` call.
   const usage = formatUsageSnippet(
     providerName,
     dotPath,
-    callableDotPath(ep, dotPath, providerName)
+    callableDotPath(ep, dotPath, providerName),
+    takesNoArgument(ep)
   );
   const relSrc = ep.file.replace(
     new RegExp(`^packages/provider/${providerName}/`),
@@ -907,6 +954,24 @@ function groupEndpoints(endpoints) {
   return new Map([...groups.entries()].sort(([a], [b]) => a.localeCompare(b)));
 }
 
+/**
+ * One rendered block's endpoint-docs.tsv row, and the endpoint with the
+ * method and URL that row fills in. `renderApiReference` renders the enriched
+ * endpoint and `endpointNoteKeys` keys on it, so a note key names exactly the
+ * block a README prints.
+ */
+function enrichEndpoint(docs, ep, providerName, label) {
+  const docRow = resolveEndpointDocRow(docs, ep, providerName, label);
+  const endpoint = docRow
+    ? {
+        ...ep,
+        method: ep.method ?? cleanTsvValue(docRow.method),
+        fullUrl: ep.fullUrl ?? cleanTsvValue(docRow.fullUrl),
+      }
+    : ep;
+  return { docRow, endpoint };
+}
+
 export function renderApiReference(providerName, endpoints) {
   const sections = ["## API Reference", ""];
   // Verb aliases of one path collapse to a single block; genuinely distinct
@@ -928,14 +993,12 @@ export function renderApiReference(providerName, endpoints) {
     sections.push(`### ${group}`, "");
     for (const ep of list) {
       const label = labels.get(ep);
-      const docRow = resolveEndpointDocRow(docs, ep, providerName, label);
-      const enrichedEndpoint = docRow
-        ? {
-            ...ep,
-            method: ep.method ?? cleanTsvValue(docRow.method),
-            fullUrl: ep.fullUrl ?? cleanTsvValue(docRow.fullUrl),
-          }
-        : ep;
+      const { docRow, endpoint: enrichedEndpoint } = enrichEndpoint(
+        docs,
+        ep,
+        providerName,
+        label
+      );
       const tierKey = `${providerName}\t${
         docRow?.dotPath ??
         enrichedEndpoint.fullDotPath ??
@@ -954,6 +1017,71 @@ export function renderApiReference(providerName, endpoints) {
     }
   }
   return { text: sections.join("\n"), renderedCount: rendered.length };
+}
+
+/**
+ * Every `ENDPOINT_NOTES` key that `providerName`'s README can look up: one per
+ * block `renderApiReference` renders for `endpoints`.
+ */
+function endpointNoteKeys(providerName, endpoints, docs) {
+  const { labels, rendered } = resolveEndpointLabels(providerName, endpoints);
+  return new Set(
+    rendered.map((ep) => {
+      const label = labels.get(ep);
+      const { endpoint } = enrichEndpoint(docs, ep, providerName, label);
+      return endpointNoteKey(providerName, label, endpoint.method);
+    })
+  );
+}
+
+/**
+ * Throws unless every `notes` key names a block its provider's README renders.
+ * A key that matches nothing drops its note silently, and the README
+ * regenerated without the note still passes `--check` (ac-shq7sd: one renamed
+ * gemini key left the kie README with four of its five notes).
+ *
+ * Each key is checked against its own provider's endpoints, whichever
+ * providers a run renders, so a single-provider run (`doc-gen:fal`) checks the
+ * kie and polymarket keys too and never fails a valid one.
+ *
+ * @param {Map<string, object[]>} endpointsByProvider - every provider's
+ *   endpoints, as `collectEndpointsByProvider` returns them
+ * @param {Map<string, string>} [notes]
+ */
+export function assertEndpointNotesMatch(
+  endpointsByProvider,
+  notes = ENDPOINT_NOTES
+) {
+  const docs = loadDocsTsv();
+  const keysByProvider = new Map();
+  const unmatched = [];
+  for (const key of notes.keys()) {
+    const [provider] = key.split("\t");
+    if (!keysByProvider.has(provider)) {
+      const endpoints = endpointsByProvider.get(provider) ?? [];
+      keysByProvider.set(provider, endpointNoteKeys(provider, endpoints, docs));
+    }
+    if (!keysByProvider.get(provider).has(key)) {
+      unmatched.push(`  provider ${provider}: ${JSON.stringify(key)}`);
+    }
+  }
+  if (unmatched.length === 0) return;
+
+  const count = unmatched.length;
+  const summary =
+    count === 1
+      ? "1 ENDPOINT_NOTES key matches no generated endpoint, so its note " +
+        "never renders:"
+      : `${count} ENDPOINT_NOTES keys match no generated endpoint, so their ` +
+        "notes never render:";
+  throw new Error(
+    [
+      summary,
+      ...unmatched,
+      'Each key is "<provider>\\t<label>\\t<method>" of a block a README ' +
+        "renders; fix or remove it in scripts/doc-gen.mjs.",
+    ].join("\n")
+  );
 }
 
 async function extractProviderMetadata(providerDir) {
@@ -4334,11 +4462,11 @@ async function checkProviderReadme(providerName, endpointsByProvider) {
 
 const KNOWN_FLAGS = new Set(["--check"]);
 
-async function main() {
+export async function main(argv = process.argv.slice(2)) {
   // `pnpm run doc-gen -- --check` forwards the bare `--` separator through to
   // argv, so drop it before classifying — otherwise the unknown-flag guard
   // below rejects pnpm's own passthrough syntax.
-  const args = process.argv.slice(2).filter((a) => a !== "--");
+  const args = argv.filter((a) => a !== "--");
   const flags = args.filter((a) => a.startsWith("--"));
   const positional = args.filter((a) => !a.startsWith("--"));
 
@@ -4352,6 +4480,16 @@ async function main() {
 
   const check = flags.includes("--check");
   const endpointsByProvider = await collectEndpointsByProvider();
+
+  // In both modes and before anything renders: a README regenerated without a
+  // stale key's note would pass its own drift check.
+  try {
+    assertEndpointNotesMatch(endpointsByProvider);
+  } catch (error) {
+    console.error(`❌ ${error.message}`);
+    process.exitCode = 1;
+    return;
+  }
 
   let providers;
   if (positional.length === 0) {

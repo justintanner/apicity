@@ -227,7 +227,7 @@ Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)
 Cost tier: <code>cheap</code>
 
 ```typescript
-const res = await dolthub.api.v2.user.get({ /* ... */ });
+const res = await dolthub.api.v2.user.get();
 ```
 
 Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)
@@ -412,7 +412,7 @@ Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)
 Cost tier: <code>cheap</code>
 
 ```typescript
-const res = await dolthub.v1alpha1.user.get({ /* ... */ });
+const res = await dolthub.v1alpha1.user.get();
 ```
 
 Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)

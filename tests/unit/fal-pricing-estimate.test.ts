@@ -1026,7 +1026,7 @@ describe("fal edit/image pricing estimates", () => {
     // source clip rather than request fields;
     // xai/grok-imagine-video/v1.5/reference-to-video is compute-second-metered
     // too, unlike its unversioned sibling, which bills per output second and
-    // stays statically priced. All twenty-seven therefore use fal's
+    // stays statically priced. All forty-six therefore use fal's
     // pricing-estimate API.
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toEqual([
       "alibaba/qwen-image-3/edit",
@@ -1044,17 +1044,32 @@ describe("fal edit/image pricing estimates", () => {
       "google/gemini-omni-flash/edit",
       "google/gemini-omni-flash/image-to-video",
       "google/gemini-omni-flash/reference-to-video",
+      "google/gemini-omni-flash/v1.1/edit",
+      "google/gemini-omni-flash/v1.1/image-to-video",
+      "google/gemini-omni-flash/v1.1/reference-to-video",
+      "google/gemini-omni-flash/v1.1/text-to-video",
       "google/nano-banana-2-lite",
       "google/nano-banana-lite/edit",
       "lightricks/ltx-2.5/image-to-video/fast",
       "lightricks/ltx-2.5/image-to-video/pro",
+      "luma/agent/ray/v3.2/reframe",
+      "luma/agent/ray/v3.2/text-to-video",
       "meshy/v7/image-to-3d",
+      "microsoft/mai-image-2.5-pro",
+      "microsoft/mai-image-2.5-pro/edit",
+      "minimax/h3-max/3d-to-video",
       "minimax/h3-max/extend-video",
       "minimax/h3-max/insert-video",
+      "minimax/h3-max/lip-sync/image-to-video",
+      "minimax/h3-max/reference-to-video",
       "minimax/h3/image-to-video",
       "minimax/h3/reference-to-video",
       "minimax/h3/text-to-video",
       "minimax/music-3",
+      "openai/gpt-image-2.5/flare/edit",
+      "openai/gpt-image-2.5/flare/text-to-image",
+      "openai/gpt-image-2.5/sunburst/edit",
+      "openai/gpt-image-2.5/sunburst/text-to-image",
       "topaz/upscale/image/precision",
       "topaz/upscale/video/precision",
       "xai/grok-imagine-image/v2.0/edit",

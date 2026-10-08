@@ -42,7 +42,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://platform.moonshot.ai/docs)
 
 ```typescript
-const res = await kimicoding.get.coding.v1.models({ /* ... */ });
+const res = await kimicoding.get.coding.v1.models();
 ```
 
 Source: [`packages/provider/kimicoding/src/kimicoding.ts`](src/kimicoding.ts)

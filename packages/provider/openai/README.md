@@ -218,7 +218,7 @@ Cost tier: <code>expensive</code>
 [Upstream docs ↗](https://developers.openai.com/codex/pricing)
 
 ```typescript
-const res = await openai.get.codex.usage({ /* ... */ });
+const res = await openai.get.codex.usage();
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)

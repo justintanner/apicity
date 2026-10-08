@@ -144,6 +144,7 @@ const TOPIC_TEXT: Record<HelpTopic, () => string> = {
       "  APICITY_OUTPUT_DIR            where media lands, as --output-dir",
       "  CLAUDE_PROJECT_DIR            where media lands when neither is set",
       "  APICITY_PAYGATE_SECRET_FILE   arms the pay gate, as --paygate-secret-file",
+      "  APICITY_SETUP_AGENT           which agent `apicity setup agents` connects",
     ].join("\n"),
 
   agents: () =>

@@ -177,7 +177,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-all)
 
 ```typescript
-const res = await thesportsdb.get.v2.all.countries({ /* ... */ });
+const res = await thesportsdb.get.v2.all.countries();
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -194,7 +194,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-all)
 
 ```typescript
-const res = await thesportsdb.get.v2.all.leagues({ /* ... */ });
+const res = await thesportsdb.get.v2.all.leagues();
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -211,7 +211,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-all)
 
 ```typescript
-const res = await thesportsdb.get.v2.all.sports({ /* ... */ });
+const res = await thesportsdb.get.v2.all.sports();
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -230,7 +230,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://thedatadb.readme.io/reference/getallcountries)
 
 ```typescript
-const res = await thesportsdb.v1.allCountries({ /* ... */ });
+const res = await thesportsdb.v1.allCountries();
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -249,7 +249,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-list)
 
 ```typescript
-const res = await thesportsdb.v1.allLeagues({ /* ... */ });
+const res = await thesportsdb.v1.allLeagues();
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -268,7 +268,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://thedatadb.readme.io/reference/getallsports)
 
 ```typescript
-const res = await thesportsdb.v1.allSports({ /* ... */ });
+const res = await thesportsdb.v1.allSports();
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -615,7 +615,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-livescores)
 
 ```typescript
-const res = await thesportsdb.get.v2.livescore.all({ /* ... */ });
+const res = await thesportsdb.get.v2.livescore.all();
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)

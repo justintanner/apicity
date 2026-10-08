@@ -195,7 +195,7 @@ Cost tier: <code>cheap</code>
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/world-state)
 
 ```typescript
-const res = await simplefunctions.api.agent.world.feed({ /* ... */ });
+const res = await simplefunctions.api.agent.world.feed();
 ```
 
 Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)

@@ -49,6 +49,48 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST alibaba.happyHorse.v1p1.imageToVideo": {
+    "source": "fal/alibaba-happy-horse-v1-1-image-to-video",
+    "payload": {
+      "image_url": "https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20250925/wpimhv/rap.png",
+      "prompt": "A horse walks through warm grass.",
+      "resolution": "720p",
+      "duration": 3
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST alibaba.happyHorse.v1p1.referenceToVideo": {
+    "source": "fal/alibaba-happy-horse-v1-1-reference-to-video",
+    "payload": {
+      "prompt": "A horse walks through warm grass.",
+      "image_urls": [
+        "https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20250925/wpimhv/rap.png"
+      ],
+      "resolution": "720p",
+      "duration": 3
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST alibaba.happyHorse.v1p1.textToVideo": {
+    "source": "fal/alibaba-happy-horse-v1-1-text-to-video",
+    "payload": {
+      "prompt": "A horse walks through warm grass.",
+      "resolution": "720p",
+      "duration": 3
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST alibaba.qwenAudio3Tts": {
+    "source": "fal/alibaba-qwen-audio-3-tts",
+    "payload": {
+      "text": "A"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST alibaba.qwenImage3.edit": {
     "source": "fal/alibaba-qwen-image-3-edit",
     "payload": {
@@ -164,6 +206,15 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST blackforestlabs.flux3.editVideo": {
+    "source": "fal/blackforestlabs-flux-3-edit-video",
+    "payload": {
+      "prompt": "Make it snow heavily; give the scene a cold winter palette.",
+      "video_url": "https://storage.googleapis.com/falserverless/example_inputs/flux-3-red-panda.mp4"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST blackforestlabs.flux3.extendVideo": {
     "source": "fal/flux-3-extend-video",
     "payload": {
@@ -257,6 +308,18 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST bria.fiboEdit1p5.edit": {
+    "source": "fal/bria-fibo-edit-1-5-edit",
+    "payload": {
+      "image_urls": [
+        "https://v3b.fal.media/files/b/0aa69153/6d2UFjgrQCRM6BoWpXpZ3_126_1.jpg",
+        "https://v3b.fal.media/files/b/0aa69153/Gy-fjFofCbQP9w3lsfc2e_126_2.jpg"
+      ],
+      "instruction": "Uncross her arms and place the serum bottle in her right hand raised beside her face, label toward the camera."
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST bria.fiboEdit1p5.productHolding": {
     "source": "fal/bria-fibo-edit-1-5-product-holding",
     "payload": {
@@ -275,6 +338,14 @@
       "garment_image_urls": [
         "https://labs-assets.bria.ai/fal-examples/fibo-edit-1.5/virtual-try-on/garment-1.jpg"
       ]
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST bria.fiboGen1p5.textToImage": {
+    "source": "fal/bria-fibo-gen-1-5-text-to-image",
+    "payload": {
+      "prompt": "A weathered brown leather armchair in a sunlit study, cracked grain texture, soft afternoon light raking across the surface."
     },
     "tier": "prohibitive",
     "runByDefault": false
@@ -476,6 +547,15 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST elevenlabs.music.v2p5": {
+    "source": "fal/elevenlabs-music-v2-5",
+    "payload": {
+      "prompt": "Mysterious original soundtrack, themes of jungle, rainforest, nature, woodwinds, busy rhythmic tribal percussion.",
+      "music_length_ms": 3000
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST elevenlabs.tts.elevenV4": {
     "source": "fal/elevenlabs-tts-eleven-v4",
     "payload": {
@@ -540,6 +620,50 @@
         "https://storage.googleapis.com/falserverless/example_inputs/veo31-r2v-input-1.png"
       ],
       "aspect_ratio": "16:9",
+      "duration": 3
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST geminiOmniFlash.v1p1.edit": {
+    "source": "fal/google-gemini-omni-flash-v1-1-edit",
+    "payload": {
+      "prompt": "Make this video anime. Keep everything else the same.",
+      "video_url": "https://storage.googleapis.com/falserverless/model_tests/video_models/mmaudio_input.mp4",
+      "resolution": "360p"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST geminiOmniFlash.v1p1.imageToVideo": {
+    "source": "fal/google-gemini-omni-flash-v1-1-image-to-video",
+    "payload": {
+      "prompt": "The dog turns its head and wags its tail in warm sunlight.",
+      "image_url": "https://storage.googleapis.com/falserverless/example_inputs/dog.png",
+      "resolution": "360p",
+      "duration": 3
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST geminiOmniFlash.v1p1.referenceToVideo": {
+    "source": "fal/google-gemini-omni-flash-v1-1-reference-to-video",
+    "payload": {
+      "prompt": "The family in <IMAGE_REF_0> waves from the lawn in front of the white farmhouse, camera holding still.",
+      "image_urls": [
+        "https://v3b.fal.media/files/b/0aa7d0a6/Zxzqx2mbFF7Ey3YVnD-g4_084_monochrome_expressionism.jpg"
+      ],
+      "resolution": "360p",
+      "duration": 3
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST geminiOmniFlash.v1p1.textToVideo": {
+    "source": "fal/google-gemini-omni-flash-v1-1-text-to-video",
+    "payload": {
+      "prompt": "A cinematic wide shot of a lighthouse on a rocky cliff at dusk, waves crashing below, the beam sweeping across the dark sea.",
+      "resolution": "360p",
       "duration": 3
     },
     "tier": "prohibitive",
@@ -707,6 +831,66 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST klingVideo.v3.turbo.pro.imageToVideo": {
+    "source": "fal/kling-video-v3-turbo-pro-image-to-video",
+    "payload": {
+      "prompt": "A lioness and her cubs in warm grass, camera drifting closer.",
+      "image_url": "https://v3b.fal.media/files/b/0a90dfd2/G1zBOgd-17yqZ-2S5TN4j_M3nzt3Sp.png",
+      "duration": "3"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST klingVideo.v3.turbo.pro.textToVideo": {
+    "source": "fal/kling-video-v3-turbo-pro-text-to-video",
+    "payload": {
+      "prompt": "A lioness and her cubs in warm grass, camera drifting closer.",
+      "duration": "3",
+      "aspect_ratio": "16:9"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST klingVideo.v3.turbo.standard.imageToVideo": {
+    "source": "fal/kling-video-v3-turbo-standard-image-to-video",
+    "payload": {
+      "prompt": "A lioness and her cubs in warm grass, camera drifting closer.",
+      "image_url": "https://v3b.fal.media/files/b/0a90dfd2/G1zBOgd-17yqZ-2S5TN4j_M3nzt3Sp.png",
+      "duration": "3"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST klingVideo.v3.turbo.standard.textToVideo": {
+    "source": "fal/kling-video-v3-turbo-standard-text-to-video",
+    "payload": {
+      "prompt": "A lioness and her cubs in warm grass, camera drifting closer.",
+      "duration": "3",
+      "aspect_ratio": "16:9"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST lightricks.ltx2p5.audioToVideo.fast": {
+    "source": "fal/lightricks-ltx-2-5-audio-to-video-fast",
+    "payload": {
+      "audio_url": "https://v3b.fal.media/files/b/0aad2527/MgFeC76hf4IYXYdYTcAbM_gemini_tts_output.wav",
+      "image_url": "https://v3b.fal.media/files/b/0a90dfd2/G1zBOgd-17yqZ-2S5TN4j_M3nzt3Sp.png",
+      "prompt": "A woman whispering to the microphone"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST lightricks.ltx2p5.audioToVideo.pro": {
+    "source": "fal/lightricks-ltx-2-5-audio-to-video-pro",
+    "payload": {
+      "audio_url": "https://v3b.fal.media/files/b/0aad2527/MgFeC76hf4IYXYdYTcAbM_gemini_tts_output.wav",
+      "image_url": "https://v3b.fal.media/files/b/0a90dfd2/G1zBOgd-17yqZ-2S5TN4j_M3nzt3Sp.png",
+      "prompt": "A woman whispering to the microphone"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST lightricks.ltx2p5.imageToVideo.fast": {
     "source": "fal/lightricks-ltx2p5-image-to-video-fast",
     "payload": {
@@ -729,6 +913,70 @@
       "resolution": "720p",
       "fps": 24,
       "generate_audio": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST lightricks.ltx2p5.textToVideo.fast": {
+    "source": "fal/lightricks-ltx-2-5-text-to-video-fast",
+    "payload": {
+      "prompt": "Through-the-veil shot of a bride's face during an Indian wed… <truncated 411 chars>",
+      "duration": 6,
+      "resolution": "720p"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST lightricks.ltx2p5.textToVideo.pro": {
+    "source": "fal/lightricks-ltx-2-5-text-to-video-pro",
+    "payload": {
+      "prompt": "Through-the-veil shot of a bride's face during an Indian wed… <truncated 411 chars>",
+      "duration": 6,
+      "resolution": "720p"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST luma.agent.ray.v3p2.imageToVideo": {
+    "source": "fal/luma-agent-ray-v3-2-image-to-video",
+    "payload": {
+      "prompt": "Low-angle shot of a majestic tiger prowling through a snowy landscape, leaving paw prints on the white blanket.",
+      "image_url": "https://storage.googleapis.com/falserverless/gallery/example_inputs_liuyifei.png",
+      "duration": "5s",
+      "resolution": "540p"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST luma.agent.ray.v3p2.reframe": {
+    "source": "fal/luma-agent-ray-v3-2-reframe",
+    "payload": {
+      "prompt": "Extend the scene into cinematic widescreen with matching lighting and background detail.",
+      "video_url": "https://storage.googleapis.com/falserverless/example_inputs/birefnet-video-input.mp4",
+      "aspect_ratio": "21:9",
+      "resolution": "540p",
+      "duration": "5s"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST luma.agent.ray.v3p2.textToVideo": {
+    "source": "fal/luma-agent-ray-v3-2-text-to-video",
+    "payload": {
+      "prompt": "A herd of wild horses galloping across a dusty desert plain under a blazing midday sun, their manes flying in the wind; wide tracking shot.",
+      "duration": "5s",
+      "resolution": "540p"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST luma.agent.ray.v3p2.videoToVideo": {
+    "source": "fal/luma-agent-ray-v3-2-video-to-video",
+    "payload": {
+      "prompt": "Restyle the footage as a hand-painted watercolor animation with soft pastel colors.",
+      "video_url": "https://storage.googleapis.com/falserverless/example_inputs/birefnet-video-input.mp4",
+      "duration": "5s",
+      "resolution": "540p"
     },
     "tier": "prohibitive",
     "runByDefault": false
@@ -765,6 +1013,42 @@
     "source": "fal/meshy-v7-1-text-to-3d",
     "payload": {
       "prompt": "A red panda waves once, then holds still."
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST meta.museImage.edit": {
+    "source": "fal/meta-muse-image-edit",
+    "payload": {
+      "prompt": "A cinematic editorial portrait in soft window light with crisp typography",
+      "image_urls": [
+        "https://storage.googleapis.com/falserverless/example_inputs/kontext_example_input.webp"
+      ]
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST meta.museImage.textToImage": {
+    "source": "fal/meta-muse-image-text-to-image",
+    "payload": {
+      "prompt": "A cinematic editorial portrait in soft window light with crisp typography"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST microsoft.maiImage2p5Pro": {
+    "source": "fal/microsoft-mai-image-2-5-pro",
+    "payload": {
+      "prompt": "A red balloon."
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST microsoft.maiImage2p5Pro.edit": {
+    "source": "fal/microsoft-mai-image-2-5-pro-edit",
+    "payload": {
+      "prompt": "A red balloon.",
+      "image_url": "https://storage.googleapis.com/falserverless/example_inputs/nano-banana-edit-input.png"
     },
     "tier": "prohibitive",
     "runByDefault": false
@@ -806,6 +1090,38 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST minimax.h3Max.cameraControls": {
+    "source": "fal/minimax-h3-max-camera-controls",
+    "payload": {
+      "prompt": "Orbit precisely around the subject while preserving its identity and the scene.",
+      "duration": 0.92,
+      "resolution": "480P",
+      "prompt_expansion_mode": "disabled",
+      "image_url": "https://storage.googleapis.com/falserverless/example_inputs/hailuo23/pro_i2v_in.jpg",
+      "camera_trajectory": [
+        {
+          "time": 0,
+          "azimuth": 0,
+          "elevation": 0,
+          "distance": 1
+        },
+        {
+          "time": 0.3,
+          "azimuth": 45,
+          "elevation": 15,
+          "distance": 0.2
+        },
+        {
+          "time": 0.8,
+          "azimuth": 90,
+          "elevation": -90,
+          "distance": 1
+        }
+      ]
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST minimax.h3Max.extendVideo": {
     "source": "fal/minimax-h3-max-extend-video",
     "payload": {
@@ -815,6 +1131,18 @@
       "resolution": "480P",
       "output": "continuation",
       "enable_prompt_expansion": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST minimax.h3Max.imageToVideo": {
+    "source": "fal/minimax-h3-max-image-to-video",
+    "payload": {
+      "prompt": "The camera slowly pulls back from the scene, revealing the full landscape as clouds drift overhead and light shifts across the terrain.",
+      "image_url": "https://storage.googleapis.com/falserverless/example_inputs/hailuo23/pro_i2v_in.jpg",
+      "duration": 0.92,
+      "resolution": "480P",
+      "prompt_expansion_mode": "disabled"
     },
     "tier": "prohibitive",
     "runByDefault": false
@@ -832,6 +1160,16 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST minimax.h3Max.lipSync.imageToVideo": {
+    "source": "fal/minimax-h3-max-lip-sync-image-to-video",
+    "payload": {
+      "image_url": "https://v3b.fal.media/files/b/0aaad42b/j8WqFxwwop_xLekc9dsyh_6d2314abeb6b464aa14271bc70f2cc21.jpg",
+      "audio_url": "https://storage.googleapis.com/falserverless/example_inputs/elevenlabs/scribe_v2_in.mp3",
+      "resolution": "480P"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST minimax.h3Max.recast": {
     "source": "fal/minimax-h3-max-recast",
     "payload": {
@@ -840,6 +1178,43 @@
         "https://v3b.fal.media/files/b/0aac0904/DYyrpDKza8aflsP6mMm0i_76qcS0F8.png"
       ],
       "resolution": "768P"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST minimax.h3Max.referenceToVideo": {
+    "source": "fal/minimax-h3-max-reference-to-video",
+    "payload": {
+      "prompt": "Image 1 is the mountain biker. Keep the rider and the bike consistent with Image 1 as they land the jump and ride on along the sunlit forest trail.",
+      "reference_image_urls": [
+        "https://storage.googleapis.com/falserverless/example_inputs/hailuo23/pro_i2v_in.jpg"
+      ],
+      "duration": 0.92,
+      "resolution": "480P",
+      "prompt_expansion_mode": "disabled"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST minimax.h3Max.textToVideo": {
+    "source": "fal/minimax-h3-max-text-to-video",
+    "payload": {
+      "prompt": "A white kitten chases a butterfly across a sunlit garden. Gentle camera tracking, natural movement, soft afternoon light filtering through the leaves.",
+      "duration": 0.92,
+      "resolution": "480P",
+      "prompt_expansion_mode": "disabled"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST minimax.h3Max.threeDToVideo": {
+    "source": "fal/minimax-h3-max-3d-to-video",
+    "payload": {
+      "video_url": "https://v3b.fal.media/files/b/0aaaaf78/M5dPeIbYcdI5BaIrbHuXq_blender-source.mp4",
+      "reference_image_urls": [
+        "https://v3b.fal.media/files/b/0aaab04d/YHhN06SXKgl5ufCWnYRfy_UIb6gaXa.jpg"
+      ],
+      "resolution": "480P"
     },
     "tier": "prohibitive",
     "runByDefault": false
@@ -853,6 +1228,29 @@
       "resolution": "480P",
       "output": "continuation",
       "enable_prompt_expansion": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST minimax.h3MaxTurbo.imageToVideo": {
+    "source": "fal/minimax-h3-max-turbo-image-to-video",
+    "payload": {
+      "prompt": "The camera slowly pulls back from the scene, revealing the full landscape as clouds drift overhead and light shifts across the terrain.",
+      "image_url": "https://storage.googleapis.com/falserverless/example_inputs/hailuo23/pro_i2v_in.jpg",
+      "duration": 0.92,
+      "resolution": "480P",
+      "prompt_expansion_mode": "disabled"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST minimax.h3MaxTurbo.textToVideo": {
+    "source": "fal/minimax-h3-max-turbo-text-to-video",
+    "payload": {
+      "prompt": "A white kitten chases a butterfly across a sunlit garden. Gentle camera tracking, natural movement, soft afternoon light filtering through the leaves.",
+      "duration": 0.92,
+      "resolution": "480P",
+      "prompt_expansion_mode": "disabled"
     },
     "tier": "prohibitive",
     "runByDefault": false
@@ -965,6 +1363,68 @@
       "output_format": "png",
       "safety_tolerance": "4",
       "resolution": "1K"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST nvidia.cosmos3Super.imageToVideo": {
+    "source": "fal/nvidia-cosmos-3-super-image-to-video",
+    "payload": {
+      "prompt": "The camera slowly pushes in as the subject turns their head toward the light, hair drifting in a gentle breeze, dust motes floating through warm afternoon sun.",
+      "image_url": "https://storage.googleapis.com/falserverless/example_inputs/hunyuan_i2v.jpg",
+      "num_frames": 5,
+      "enable_agentic_generation": false,
+      "enable_prompt_expansion": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST nvidia.cosmos3Super.textToImage": {
+    "source": "fal/nvidia-cosmos-3-super-text-to-image",
+    "payload": {
+      "prompt": "A photorealistic close-up of two damp hands shaping a spinning cylinder of wet gray clay on a pottery wheel, fingers pinching the walls upward into a narrow-necked vase, water glistening on the clay, soft studio lighting, shallow depth of field."
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST openai.gptImage2p5.flare.edit": {
+    "source": "fal/openai-gpt-image-2-5-flare-edit",
+    "payload": {
+      "prompt": "A red balloon.",
+      "image_urls": [
+        "https://storage.googleapis.com/falserverless/example_inputs/nano-banana-edit-input.png"
+      ],
+      "quality": "low"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST openai.gptImage2p5.flare.textToImage": {
+    "source": "fal/openai-gpt-image-2-5-flare-text-to-image",
+    "payload": {
+      "prompt": "A red balloon.",
+      "quality": "low"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST openai.gptImage2p5.sunburst.edit": {
+    "source": "fal/openai-gpt-image-2-5-sunburst-edit",
+    "payload": {
+      "prompt": "A red balloon.",
+      "image_urls": [
+        "https://storage.googleapis.com/falserverless/example_inputs/nano-banana-edit-input.png"
+      ],
+      "quality": "low"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST openai.gptImage2p5.sunburst.textToImage": {
+    "source": "fal/openai-gpt-image-2-5-sunburst-text-to-image",
+    "payload": {
+      "prompt": "A red balloon.",
+      "quality": "low"
     },
     "tier": "prohibitive",
     "runByDefault": false
@@ -1273,6 +1733,17 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST xai.grokImagineVideo.v1p5.imageToVideo": {
+    "source": "fal/xai-grok-imagine-video-v1-5-image-to-video",
+    "payload": {
+      "prompt": "Medieval knight in ornate armor walking through a mystical forest, bioluminescent plants pulsing with light, ancient stone ruins overgrown with glowing vines, over-the-shoulder camera, dark fantasy aesthetic, volumetric fog and Lumen lighting",
+      "duration": 1,
+      "resolution": "480p",
+      "image_url": "https://v3b.fal.media/files/b/0a8b90e0/BFLE9VDlZqsryU-UA3BoD_image_004.png"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST xai.grokImagineVideo.v1p5.lite.imageToVideo": {
     "source": "fal/grok-15-lite-image-to-video",
     "payload": {
@@ -1305,6 +1776,16 @@
       "duration": 4,
       "resolution": "480p",
       "aspect_ratio": "16:9"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST xai.grokImagineVideo.v1p5.textToVideo": {
+    "source": "fal/xai-grok-imagine-video-v1-5-text-to-video",
+    "payload": {
+      "prompt": "Anime schoolgirl bursting out of house door, cherry blossoms blowing, morning light, speed lines indicating rush, chibi-ready expressions, classic shojo aesthetic, vibrant colors",
+      "duration": 1,
+      "resolution": "480p"
     },
     "tier": "prohibitive",
     "runByDefault": false

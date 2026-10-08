@@ -812,7 +812,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.kie.ai/common-api/get-account-credits)
 
 ```typescript
-const res = await kie.get.api.v1.chat.credit({ /* ... */ });
+const res = await kie.get.api.v1.chat.credit();
 ```
 
 Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
@@ -1621,7 +1621,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.kie.ai/ai-agent/codex-cli)
 
 ```typescript
-const res = await kie.get.openai.v1.models({ /* ... */ });
+const res = await kie.get.openai.v1.models();
 ```
 
 Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
@@ -2041,7 +2041,7 @@ Cost tier: <code>prohibitive</code>
 [Upstream docs ↗](https://docs.kie.ai/ai-agent/grok-build)
 
 ```typescript
-const res = await kie.get.xai.v1.models({ /* ... */ });
+const res = await kie.get.xai.v1.models();
 ```
 
 Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)

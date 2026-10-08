@@ -163,8 +163,10 @@ export function createAnthropicProvider(
   doFetch: typeof fetch,
   timeout: number
 ): KieAnthropicProvider {
-  // A failure is `{ type: "error", error: { type, message } }`, and every call
-  // carries the protocol version Claude Code itself sends (ac-wma4p9 OQ-6).
+  // A failure is Anthropic's `{ type: "error", error: { type, message } }` or
+  // KIE's own `{ code, msg }` envelope, and parseKieAnthropicErrorBody reads
+  // both (the Anthropic shape first). Every call carries the protocol version
+  // Claude Code itself sends (ac-wma4p9 OQ-6).
   const transport = createTransport({
     baseUrl: baseURL.replace(/\/$/, ""),
     timeoutMs: timeout,

@@ -11,11 +11,14 @@
  *
  * `scripts/doc-gen.mjs` is safe to import because its CLI `main()` is guarded
  * to run only on direct entry. The label layer still lives in its own module,
- * and the three doc-gen-private helpers this file needs (`cleanTsvValue`, the
- * TSV index, and the docs-row lookup) are mirrored below rather than imported.
+ * and the four doc-gen-private helpers this file needs (`cleanTsvValue`, the
+ * TSV index, the docs-row lookup, and a block's `<summary>` text) are mirrored
+ * below rather than imported.
  */
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
+import { Project } from "ts-morph";
+import type { Node } from "ts-morph";
 import { beforeAll, describe, expect, it } from "vitest";
 import { createAlibaba } from "@apicity/alibaba";
 import { createAnthropic } from "@apicity/anthropic";
@@ -54,7 +57,7 @@ import {
   walkAllEndpoints,
 } from "../../scripts/lib/endpoint-walk.mjs";
 import { repoRoot } from "../../scripts/lib/provider-scope.mjs";
-import { renderApiReference } from "../../scripts/doc-gen.mjs";
+import { renderApiReference, takesNoArgument } from "../../scripts/doc-gen.mjs";
 
 interface WalkedEndpoint {
   provider: string;
@@ -63,6 +66,8 @@ interface WalkedEndpoint {
   fullDotPath: string;
   method: string | null;
   fullUrl: string | null;
+  /** The walked function node; synthetic test sites leave it out. */
+  leafNode?: Node;
 }
 
 interface DocsRow {
@@ -249,6 +254,40 @@ function describeCollisions(
   return collisions;
 }
 
+/** The `<summary>` text `renderEndpointDetails` prints for one block. */
+function summaryText(provider: string, block: RenderedBlock): string {
+  const method = block.method ? `<code>${block.method}</code> ` : "";
+  const label = block.label ? `.${block.label}` : "";
+  return `${method}<b><code>${provider}${label}</code></b>`;
+}
+
+/** Each `<details>` block of a rendered API reference, keyed by its summary. */
+function blocksBySummary(text: string): Map<string, string> {
+  const blocks = new Map<string, string>();
+  for (const block of text.split("<details>").slice(1)) {
+    const summary = /<summary>(.*)<\/summary>/.exec(block)?.[1];
+    if (summary) blocks.set(summary, block);
+  }
+  return blocks;
+}
+
+/** A snippet line that calls its leaf with no argument at all. */
+const BARE_CALL = /^const \w+ = await [\w.]+\(\);$/m;
+
+/** Follows a snippet's `provider.a.b.c` call path on a provider instance. */
+function resolveCallPath(root: unknown, call: string): unknown {
+  return call
+    .split(".")
+    .slice(1)
+    .reduce<unknown>(
+      (node, key) =>
+        node === null || node === undefined
+          ? undefined
+          : (node as Record<string, unknown>)[key],
+      root
+    );
+}
+
 describe("doc-gen API reference", () => {
   it("renders the exact fallback and zero count for no endpoints", () => {
     expect(renderApiReference("empty-provider", [])).toEqual({
@@ -404,6 +443,201 @@ describe("doc-gen endpoint labels", () => {
       "https://elevenlabs.io/docs/api-reference/text-to-speech/stream-with-timestamps"
     );
   });
+
+  it("labels the kie responses.ts leaves under post, where createKie mounts them", () => {
+    // `createKie` mounts the responses.ts tree under `post`, inside an IIFE
+    // the walker does not descend, so the walker's own path lacks the segment
+    // and the README used to print `kie.codex.v1.responses` (ac-hqpdc7). The
+    // endpoint-docs.tsv row must still attach through the walker's dot path.
+    const endpoints = endpointsByProvider.get("kie") ?? [];
+    const responses = renderedBlocks(docs, "kie", endpoints)
+      .filter((block) => block.endpoint.file.endsWith("/responses.ts"))
+      .map((block) => {
+        const row = resolveDocRow(docs, "kie", block.endpoint, block.label);
+        return `${block.label} ${block.method} ${rowIdentity(row)}`;
+      })
+      .sort();
+
+    expect(responses).toEqual([
+      "post.api.v1.responses POST kie api.v1.responses POST",
+      "post.codex.v1.responses POST kie codex.v1.responses POST",
+      "post.grok.v1.responses POST kie grok.v1.responses POST",
+      "post.openai.v1.responses POST kie openai.v1.responses POST",
+      "post.xai.v1.responses POST kie xai.v1.responses POST",
+    ]);
+  });
+
+  it("prints a bare call exactly for the leaves that take no argument", () => {
+    // A leaf that declares nothing but an optional `signal` rendered
+    // `({ /* ... */ })`, which puts the placeholder in the AbortSignal slot
+    // and does not type-check (ac-hqpdc7). Swept over every provider, both
+    // ways, so a block the generic fallback renders and a hand-written one
+    // are held to the same rule.
+    const offenders: string[] = [];
+    let noArgumentBlocks = 0;
+    for (const [provider, endpoints] of endpointsByProvider) {
+      const blocks = blocksBySummary(
+        renderApiReference(provider, endpoints).text
+      );
+      for (const block of renderedBlocks(docs, provider, endpoints)) {
+        const noArgument = takesNoArgument(block.endpoint);
+        if (noArgument) noArgumentBlocks++;
+        const text = blocks.get(summaryText(provider, block));
+        if (text === undefined || BARE_CALL.test(text) !== noArgument) {
+          offenders.push(
+            `${provider} ${block.label} ${block.method}: ` +
+              `${noArgument ? "takes no argument" : "takes an argument"}, ` +
+              `${text === undefined ? "no block" : "wrong snippet"}`
+          );
+        }
+      }
+    }
+
+    expect(offenders).toEqual([]);
+    // 68 at the time of writing: 3 kie leaves declare no parameter and 65
+    // declare only `signal?`. A floor, so a new such leaf passes and a rule
+    // that stops recognising one fails.
+    expect(noArgumentBlocks).toBeGreaterThanOrEqual(68);
+  });
+
+  it("keeps the bare calls that were hand-written special cases", () => {
+    // `formatUsageSnippet` special-cased these six; the no-argument rule now
+    // renders each of them the same way.
+    const render = (provider: string): string =>
+      renderApiReference(provider, endpointsByProvider.get(provider) ?? [])
+        .text;
+    const elevenlabs = render("elevenlabs");
+    const openligadb = render("openligadb");
+    const simplefunctions = render("simplefunctions");
+
+    expect(elevenlabs).toContain("const res = await elevenlabs.docs();");
+    expect(elevenlabs).toContain("const res = await elevenlabs.v1.models();");
+    expect(elevenlabs).toContain(
+      "const res = await elevenlabs.v1.user.subscription();"
+    );
+    expect(openligadb).toContain(
+      "const res = await openligadb.swagger.v1.swaggerJson();"
+    );
+    expect(simplefunctions).toContain(
+      "const res = await simplefunctions.data.v1.heartbeat();"
+    );
+    expect(simplefunctions).toContain(
+      "const res = await simplefunctions.data.v1.snapshot();"
+    );
+  });
+});
+
+describe("takesNoArgument", () => {
+  const source = new Project({
+    useInMemoryFileSystem: true,
+  }).createSourceFile(
+    "leaves.ts",
+    [
+      "async function none() {}",
+      "async function signalOnly(signal?: AbortSignal) {}",
+      "async function signalOrUndefined(signal?: AbortSignal | undefined) {}",
+      "async function untypedSignal(signal?) {}",
+      "async function requiredSignal(signal: AbortSignal) {}",
+      "async function request(req: { id: string }, signal?: AbortSignal) {}",
+      "async function optionalRequest(req = {}, signal?: AbortSignal) {}",
+      "async function overloaded(modelIdOrSignal?: string | AbortSignal) {}",
+      "async function callOptions(opts?: { signal?: AbortSignal }) {}",
+      "const arrow = async (signal?: AbortSignal) => {};",
+      'const helperBuilt = jsonBody("POST", "/v1/things", ThingSchema);',
+    ].join("\n")
+  );
+  const fn = (name: string) => ({
+    leafNode: source.getFunctionOrThrow(name),
+  });
+  const initializer = (name: string) => ({
+    leafNode: source
+      .getVariableDeclarationOrThrow(name)
+      .getInitializerOrThrow(),
+  });
+
+  it("is true for a leaf that declares nothing but an optional signal", () => {
+    expect(takesNoArgument(fn("none"))).toBe(true);
+    expect(takesNoArgument(fn("signalOnly"))).toBe(true);
+    expect(takesNoArgument(fn("signalOrUndefined"))).toBe(true);
+    expect(takesNoArgument(fn("untypedSignal"))).toBe(true);
+    expect(takesNoArgument(initializer("arrow"))).toBe(true);
+  });
+
+  it("is false for a leaf that takes any other argument", () => {
+    // A required signal must be passed. A union that merely includes the
+    // signal is a real input (the `isSignalParam` rule of
+    // scripts/gen-call-shapes.mjs), and so are a call-options object and an
+    // optional request.
+    expect(takesNoArgument(fn("requiredSignal"))).toBe(false);
+    expect(takesNoArgument(fn("request"))).toBe(false);
+    expect(takesNoArgument(fn("optionalRequest"))).toBe(false);
+    expect(takesNoArgument(fn("overloaded"))).toBe(false);
+    expect(takesNoArgument(fn("callOptions"))).toBe(false);
+  });
+
+  it("is false for a helper-built leaf and for an endpoint without a leaf", () => {
+    // `jsonBody(...)` returns `(params, signal?)`; a TSV-only endpoint (b2)
+    // has no leaf to read.
+    expect(takesNoArgument(initializer("helperBuilt"))).toBe(false);
+    expect(takesNoArgument({})).toBe(false);
+  });
+});
+
+describe("kie usage snippets name a callable path", () => {
+  let kieReadme: string;
+
+  beforeAll(async () => {
+    const project = loadProject(["kie"]);
+    const endpoints: WalkedEndpoint[] = [];
+    for await (const ep of walkAllEndpoints(project)) {
+      endpoints.push(ep as WalkedEndpoint);
+    }
+    kieReadme = renderApiReference("kie", endpoints).text;
+  }, 120_000);
+
+  // The snippet is copy-pasteable source, so it must name a function on the
+  // object `createKie` returns. The responses.ts leaves printed
+  // `kie.codex.v1.responses(...)`, which is undefined there (ac-hqpdc7).
+  it("names a function on createKie() in every snippet", () => {
+    const kie = createKie({ apiKey: "doc-gen-labels-test" });
+    const calls = [
+      ...kieReadme.matchAll(/const \w+ = await (kie\.[\w.]+)\(/g),
+    ].map((match) => match[1]);
+    const unresolved = calls.filter(
+      (call) => typeof resolveCallPath(kie, call) !== "function"
+    );
+
+    expect(calls.length).toBeGreaterThan(0);
+    expect(unresolved).toEqual([]);
+  });
+
+  it("prints the responses.ts leaves with their post segment", () => {
+    for (const root of ["api", "codex", "grok", "openai", "xai"]) {
+      expect(kieReadme).toContain(
+        `<b><code>kie.post.${root}.v1.responses</code></b>`
+      );
+      expect(kieReadme).toContain(
+        `const res = await kie.post.${root}.v1.responses({ /* ... */ });`
+      );
+    }
+    expect(kieReadme).not.toMatch(
+      /\bkie\.(api|codex|grok|openai|xai)\.v1\.responses\b/
+    );
+  });
+
+  it("prints a bare call for the leaves that take no argument", () => {
+    expect(kieReadme).toContain(
+      "const res = await kie.get.openai.v1.models();"
+    );
+    expect(kieReadme).toContain("const res = await kie.get.xai.v1.models();");
+    expect(kieReadme).toContain(
+      "const res = await kie.get.api.v1.chat.credit();"
+    );
+    // An optional request (`req = {}`) is still an argument.
+    expect(kieReadme).toContain(
+      "const res = await kie.get.api.v1.models({ /* ... */ });"
+    );
+  });
 });
 
 describe("usage snippets name a callable path", () => {
@@ -471,20 +705,6 @@ describe("usage snippets name a callable path", () => {
     expect(renderFalApiReference()).not.toContain("fal.stream.post.stream.");
   });
 });
-
-/** Follows a snippet's `provider.a.b.c` call path on a provider instance. */
-function resolveCallPath(root: unknown, call: string): unknown {
-  return call
-    .split(".")
-    .slice(1)
-    .reduce<unknown>(
-      (node, key) =>
-        node === null || node === undefined
-          ? undefined
-          : (node as Record<string, unknown>)[key],
-      root
-    );
-}
 
 // One real factory per provider that ships a generated README. `cost` has no
 // endpoint surface. Options differ by provider; the cast only satisfies the

@@ -1008,6 +1008,14 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST microsoft.maiImage2p5Pro": {
+    "source": "fal/microsoft-mai-image-2-5-pro",
+    "payload": {
+      "prompt": "A red balloon."
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST minimax.h3.imageToVideo": {
     "source": "fal/minimax-h3-image-to-video",
     "payload": {

@@ -21,6 +21,12 @@ export type {
 
 // Export all types
 export type {
+  FalMicrosoftMaiImage2p5ProResponse,
+  FalMicrosoftMaiImage2p5ProParsedRequest,
+  FalMicrosoftMaiImage2p5ProRequestInput,
+  FalMicrosoftMaiImage2p5ProRequest,
+  FalRunMicrosoftMaiImage2p5ProNamespace,
+  FalRunMicrosoftNamespace,
   FalOpenaiGptImage2p5FlareTextToImageResponse,
   FalOpenaiGptImage2p5FlareTextToImageParsedRequest,
   FalOpenaiGptImage2p5FlareTextToImageRequestInput,

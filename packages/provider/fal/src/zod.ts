@@ -8122,7 +8122,50 @@ export type FalOpenaiGptImage2p5FlareTextToImageParsedRequest = z.output<
   typeof FalOpenaiGptImage2p5FlareTextToImageRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 1b18a611c1f4a0a7f2430aaa0cdb8ff3063021366f02e513c4f55aafe0920089). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/microsoft/mai-image-2.5-pro/api
+export const FalMicrosoftMaiImage2p5ProRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(3)
+    .max(5000)
+    .describe("The text prompt to generate an image from."),
+  num_images: z
+    .number()
+    .int()
+    .min(1)
+    .max(4)
+    .default(1)
+    .describe("The number of images to generate."),
+  aspect_ratio: z
+    .enum(["auto", "1:1", "4:3", "3:4", "16:9", "9:16", "3:2", "2:3"])
+    .default("auto")
+    .describe(
+      'The aspect ratio of the generated image. Use "auto" to let the model decide based on the prompt.'
+    ),
+  output_format: z
+    .enum(["jpeg", "png", "webp"])
+    .default("png")
+    .describe("The format of the generated image."),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If `True`, the media will be returned as a data URI and the output data won't be available in the request history."
+    ),
+});
+export type FalMicrosoftMaiImage2p5ProRequest = z.input<
+  typeof FalMicrosoftMaiImage2p5ProRequestSchema
+>;
+export type FalMicrosoftMaiImage2p5ProRequestInput =
+  FalMicrosoftMaiImage2p5ProRequest;
+export type FalMicrosoftMaiImage2p5ProParsedRequest = z.output<
+  typeof FalMicrosoftMaiImage2p5ProRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "microsoft/mai-image-2.5-pro": FalMicrosoftMaiImage2p5ProRequestSchema,
   "openai/gpt-image-2.5/flare/text-to-image":
     FalOpenaiGptImage2p5FlareTextToImageRequestSchema,
   "openai/gpt-image-2.5/flare/edit": FalOpenaiGptImage2p5FlareEditRequestSchema,

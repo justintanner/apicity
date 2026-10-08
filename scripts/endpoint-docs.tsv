@@ -1730,3 +1730,4 @@ fal	openai.gptImage2p5.sunburst.edit	POST	https://fal.run/openai/gpt-image-2.5/s
 fal	openai.gptImage2p5.sunburst.textToImage	POST	https://fal.run/openai/gpt-image-2.5/sunburst/text-to-image	https://fal.ai/models/openai/gpt-image-2.5/sunburst/text-to-image/api
 fal	openai.gptImage2p5.flare.edit	POST	https://fal.run/openai/gpt-image-2.5/flare/edit	https://fal.ai/models/openai/gpt-image-2.5/flare/edit/api
 fal	openai.gptImage2p5.flare.textToImage	POST	https://fal.run/openai/gpt-image-2.5/flare/text-to-image	https://fal.ai/models/openai/gpt-image-2.5/flare/text-to-image/api
+fal	microsoft.maiImage2p5Pro	POST	https://fal.run/microsoft/mai-image-2.5-pro	https://fal.ai/models/microsoft/mai-image-2.5-pro/api

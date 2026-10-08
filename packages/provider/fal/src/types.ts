@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalLightricksLtx2p5TextToVideoProParsedRequest,
+  FalLightricksLtx2p5TextToVideoProRequestInput,
+  FalLightricksLtx2p5TextToVideoProRequest,
   FalLightricksLtx2p5TextToVideoFastParsedRequest,
   FalLightricksLtx2p5TextToVideoFastRequestInput,
   FalLightricksLtx2p5TextToVideoFastRequest,
@@ -485,6 +488,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalLightricksLtx2p5TextToVideoProRequest,
   FalLightricksLtx2p5TextToVideoFastRequest,
   FalGeminiOmniFlashV1p1TextToVideoRequest,
   FalGeminiOmniFlashV1p1ImageToVideoRequest,
@@ -2947,6 +2951,15 @@ export interface FalRunLightricksLtx2p5ImageToVideoNamespace {
   fast: FalLtx2p5ImageToVideoFastFn;
 }
 
+// The pro tier's contract is narrower than the fast tier's: up to 10
+// seconds, 720p or 1080p, and 24, 25 or 50 FPS.
+type FalLightricksLtx2p5TextToVideoProFn = ((
+  params: FalLightricksLtx2p5TextToVideoProRequest,
+  signal?: AbortSignal
+) => Promise<FalLightricksLtx2p5TextToVideoProResponse>) & {
+  schema: ApicitySchema<FalLightricksLtx2p5TextToVideoProRequest>;
+};
+
 type FalLightricksLtx2p5TextToVideoFastFn = ((
   params: FalLightricksLtx2p5TextToVideoFastRequest,
   signal?: AbortSignal
@@ -2957,6 +2970,7 @@ type FalLightricksLtx2p5TextToVideoFastFn = ((
 // `fast` is a URL segment, not a variant flag: upstream serves LTX-2.5
 // text-to-video at `/fast` and `/pro`, as it does image-to-video.
 export interface FalRunLightricksLtx2p5TextToVideoNamespace {
+  pro: FalLightricksLtx2p5TextToVideoProFn;
   fast: FalLightricksLtx2p5TextToVideoFastFn;
 }
 
@@ -4091,6 +4105,20 @@ export interface FalGeminiOmniFlashV1p1TextToVideoResponse {
 }
 
 export interface FalLightricksLtx2p5TextToVideoFastResponse {
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+    fps?: number | null;
+    duration?: number | null;
+    num_frames?: number | null;
+  };
+}
+
+export interface FalLightricksLtx2p5TextToVideoProResponse {
   video: {
     url: string;
     content_type?: string | null;

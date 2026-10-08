@@ -412,6 +412,7 @@ export const MODEL_SLUGS = {
   // same underlying models kie also resells, so their slugs intentionally
   // match kie's.
   fal: {
+    "lightricks/ltx-2.5/text-to-video/pro": "ltx2p5p",
     "lightricks/ltx-2.5/text-to-video/fast": "ltx2p5f",
     "xai/grok-imagine-video/v1.5/image-to-video": "grokimgv1p5",
     "xai/grok-imagine-video/v1.5/text-to-video": "grokimgv1p5",
@@ -865,6 +866,7 @@ export const MODEL_DISPLAY = {
   },
 
   fal: {
+    "lightricks/ltx-2.5/text-to-video/pro": "LTX 2.5 Pro",
     "lightricks/ltx-2.5/text-to-video/fast": "LTX 2.5 Fast",
     "xai/grok-imagine-video/v1.5/image-to-video": "Grok Imagine Video 1.5",
     "xai/grok-imagine-video/v1.5/text-to-video": "Grok Imagine Video 1.5",

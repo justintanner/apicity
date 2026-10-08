@@ -21,6 +21,10 @@ export type {
 
 // Export all types
 export type {
+  FalLightricksLtx2p5TextToVideoProResponse,
+  FalLightricksLtx2p5TextToVideoProParsedRequest,
+  FalLightricksLtx2p5TextToVideoProRequestInput,
+  FalLightricksLtx2p5TextToVideoProRequest,
   FalLightricksLtx2p5TextToVideoFastResponse,
   FalLightricksLtx2p5TextToVideoFastParsedRequest,
   FalLightricksLtx2p5TextToVideoFastRequestInput,

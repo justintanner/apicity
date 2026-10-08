@@ -907,6 +907,19 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 
 export const fal: Record<string, ModelPricing> = {
   // Bills the requested seconds at the resolution tier (default 1080p); the
+  // pro tier runs 6 to 10 seconds at 720p or 1080p. fal counts the charge
+  // in cents: the recorded 6 s 720p call billed 72 units at $0.01, $0.72,
+  // the card's price for six seconds at 720p, though the returned clip ran
+  // 6.12 s.
+  "lightricks/ltx-2.5/text-to-video/pro": perSecondTiered(
+    "lightricks/ltx-2.5/text-to-video/pro",
+    [resolutionTier("1080p")],
+    { "720p": 0.12, "1080p": 0.17 },
+    ltx2p5Seconds,
+    "2026-10-08"
+  ),
+
+  // Bills the requested seconds at the resolution tier (default 1080p); the
   // card's 4K is the 2160p tier. fal counts the charge in cents: the
   // recorded 6 s 720p call billed 54 units at $0.01, $0.54, the card's
   // price for six seconds at 720p, though the returned clip ran 6.12 s.

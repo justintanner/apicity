@@ -6152,7 +6152,70 @@ export type FalLightricksLtx2p5TextToVideoFastParsedRequest = z.output<
   typeof FalLightricksLtx2p5TextToVideoFastRequestSchema
 >;
 
+// The live OpenAPI requires only `prompt`, and eighteen unbilled 422 probes
+// (2026-10-08) found upstream's validator to match it: `prompt` is a string of
+// 1 to 5,000 characters; `duration`, `resolution`, `aspect_ratio` and `fps`
+// are closed to the documented values (null is refused for each), which omit
+// the fast tier's 12 to 20 seconds, 1440p, 2160p and 48 FPS; `camera_motion`
+// is the documented set or null. The validator ignored an unknown field, so
+// the object is not strict.
+// Docs: https://fal.ai/models/lightricks/ltx-2.5/text-to-video/pro/api
+export const FalLightricksLtx2p5TextToVideoProRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(5000)
+    .describe("The prompt to use for the generated video"),
+  // A fixed vocabulary, not a model registry, so it stays a closed union.
+  duration: z
+    .union([z.literal(6), z.literal(8), z.literal(10), z.literal("auto")])
+    .default("auto")
+    .describe(
+      "The duration of the generated video in seconds, up to 10 seconds. Set to 'auto' to let the model choose the duration automatically."
+    ),
+  resolution: z
+    .enum(["720p", "1080p"])
+    .default("1080p")
+    .describe("The resolution of the generated video."),
+  aspect_ratio: z
+    .enum(["16:9", "9:16"])
+    .default("16:9")
+    .describe("The aspect ratio of the generated video"),
+  fps: z
+    .union([z.literal(24), z.literal(25), z.literal(50)])
+    .default(25)
+    .describe("The frames per second of the generated video."),
+  generate_audio: z
+    .boolean()
+    .default(true)
+    .describe("Whether to generate audio for the generated video"),
+  camera_motion: z
+    .enum([
+      "dolly_in",
+      "dolly_out",
+      "dolly_left",
+      "dolly_right",
+      "jib_up",
+      "jib_down",
+      "static",
+      "focus_shift",
+    ])
+    .nullable()
+    .optional()
+    .describe("Optional camera motion applied to the generated video."),
+});
+export type FalLightricksLtx2p5TextToVideoProRequest = z.input<
+  typeof FalLightricksLtx2p5TextToVideoProRequestSchema
+>;
+export type FalLightricksLtx2p5TextToVideoProRequestInput =
+  FalLightricksLtx2p5TextToVideoProRequest;
+export type FalLightricksLtx2p5TextToVideoProParsedRequest = z.output<
+  typeof FalLightricksLtx2p5TextToVideoProRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "lightricks/ltx-2.5/text-to-video/pro":
+    FalLightricksLtx2p5TextToVideoProRequestSchema,
   "lightricks/ltx-2.5/text-to-video/fast":
     FalLightricksLtx2p5TextToVideoFastRequestSchema,
   "google/gemini-omni-flash/v1.1/text-to-video":

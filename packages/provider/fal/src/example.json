@@ -787,6 +787,16 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST lightricks.ltx2p5.textToVideo.pro": {
+    "source": "fal/lightricks-ltx-2-5-text-to-video-pro",
+    "payload": {
+      "prompt": "Through-the-veil shot of a bride's face during an Indian wed… <truncated 411 chars>",
+      "duration": 6,
+      "resolution": "720p"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST meshy.v7.imageTo3d": {
     "source": "fal/meshy-v7-image-to-3d",
     "payload": {

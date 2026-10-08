@@ -1716,3 +1716,4 @@ fal	klingVideo.v3.turbo.standard.textToVideo	POST	https://fal.run/fal-ai/kling-v
 fal	klingVideo.v3.turbo.standard.imageToVideo	POST	https://fal.run/fal-ai/kling-video/v3/turbo/standard/image-to-video	https://fal.ai/models/fal-ai/kling-video/v3/turbo/standard/image-to-video/api
 fal	klingVideo.v3.turbo.pro.textToVideo	POST	https://fal.run/fal-ai/kling-video/v3/turbo/pro/text-to-video	https://fal.ai/models/fal-ai/kling-video/v3/turbo/pro/text-to-video/api
 fal	klingVideo.v3.turbo.pro.imageToVideo	POST	https://fal.run/fal-ai/kling-video/v3/turbo/pro/image-to-video	https://fal.ai/models/fal-ai/kling-video/v3/turbo/pro/image-to-video/api
+fal	alibaba.qwenAudio3Tts	POST	https://fal.run/alibaba/qwen-audio-3-tts	https://fal.ai/models/alibaba/qwen-audio-3-tts/api

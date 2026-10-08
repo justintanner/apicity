@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalAlibabaQwenAudio3TtsParsedRequest,
+  FalAlibabaQwenAudio3TtsRequestInput,
+  FalAlibabaQwenAudio3TtsRequest,
   FalKlingVideoV3TurboProImageToVideoParsedRequest,
   FalKlingVideoV3TurboProImageToVideoRequestInput,
   FalKlingVideoV3TurboProImageToVideoRequest,
@@ -506,6 +509,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalAlibabaQwenAudio3TtsRequest,
   FalKlingVideoV3TurboProImageToVideoRequest,
   FalKlingVideoV3TurboProTextToVideoRequest,
   FalKlingVideoV3TurboStandardImageToVideoRequest,
@@ -4301,4 +4305,28 @@ type FalKlingVideoV3TurboProImageToVideoFn = ((
 
 export interface FalRunKlingVideoV3TurboProNamespace {
   imageToVideo: FalKlingVideoV3TurboProImageToVideoFn;
+}
+
+export interface FalAlibabaQwenAudio3TtsResponse {
+  audio: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    duration?: number | null;
+    channels?: number | null;
+    sample_rate?: number | null;
+    bitrate?: string | number | null;
+  };
+}
+
+type FalAlibabaQwenAudio3TtsFn = ((
+  params: FalAlibabaQwenAudio3TtsRequest,
+  signal?: AbortSignal
+) => Promise<FalAlibabaQwenAudio3TtsResponse>) & {
+  schema: ApicitySchema<FalAlibabaQwenAudio3TtsRequest>;
+};
+
+export interface FalRunAlibabaNamespace {
+  qwenAudio3Tts: FalAlibabaQwenAudio3TtsFn;
 }

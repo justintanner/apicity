@@ -412,6 +412,7 @@ export const MODEL_SLUGS = {
   // same underlying models kie also resells, so their slugs intentionally
   // match kie's.
   fal: {
+    "alibaba/qwen-audio-3-tts": "qwenaudio3",
     "fal-ai/kling-video/v3/turbo/pro/image-to-video": "kling3tp",
     "fal-ai/kling-video/v3/turbo/pro/text-to-video": "kling3tp",
     "fal-ai/kling-video/v3/turbo/standard/image-to-video": "kling3ts",
@@ -872,6 +873,7 @@ export const MODEL_DISPLAY = {
   },
 
   fal: {
+    "alibaba/qwen-audio-3-tts": "Qwen Audio 3",
     "fal-ai/kling-video/v3/turbo/pro/image-to-video": "Kling v3 Turbo Pro",
     "fal-ai/kling-video/v3/turbo/pro/text-to-video": "Kling v3 Turbo Pro",
     "fal-ai/kling-video/v3/turbo/standard/image-to-video":

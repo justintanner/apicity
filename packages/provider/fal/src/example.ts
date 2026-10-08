@@ -65,6 +65,14 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST alibaba.qwenAudio3Tts": {
+    "source": "fal/alibaba-qwen-audio-3-tts",
+    "payload": {
+      "text": "A"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST alibaba.qwenImage3.edit": {
     "source": "fal/alibaba-qwen-image-3-edit",
     "payload": {

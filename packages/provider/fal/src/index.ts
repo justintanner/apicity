@@ -21,6 +21,10 @@ export type {
 
 // Export all types
 export type {
+  FalAlibabaQwenAudio3TtsResponse,
+  FalAlibabaQwenAudio3TtsParsedRequest,
+  FalAlibabaQwenAudio3TtsRequestInput,
+  FalAlibabaQwenAudio3TtsRequest,
   FalKlingVideoV3TurboProImageToVideoResponse,
   FalKlingVideoV3TurboProImageToVideoParsedRequest,
   FalKlingVideoV3TurboProImageToVideoRequestInput,

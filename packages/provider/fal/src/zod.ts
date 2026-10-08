@@ -6680,7 +6680,93 @@ export type FalKlingVideoV3TurboProImageToVideoParsedRequest = z.output<
   typeof FalKlingVideoV3TurboProImageToVideoRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 2d79f33cef2f2a6c196f66a3cb6bf720f86ede40075e79e06c45e10323b42dc1). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/alibaba/qwen-audio-3-tts/api
+export const FalAlibabaQwenAudio3TtsRequestSchema = z.object({
+  text: z.string().min(1).max(2000).describe("The text to convert to speech."),
+  voice: z
+    .enum([
+      "Cherry",
+      "Serena",
+      "Ethan",
+      "Chelsie",
+      "Momo",
+      "Vivian",
+      "Moon",
+      "Maia",
+      "Kai",
+      "Nofish",
+      "Bella",
+      "Jennifer",
+      "Ryan",
+      "Katerina",
+      "Aiden",
+      "Mia",
+      "Mochi",
+      "Bellona",
+      "Vincent",
+      "Bunny",
+      "Neil",
+      "Elias",
+      "Arthur",
+      "Nini",
+      "Seren",
+      "Pip",
+      "Stella",
+      "Bodega",
+      "Sonrisa",
+      "Alek",
+      "Dolce",
+      "Sohee",
+      "Lenn",
+      "Emilien",
+      "Andre",
+      "Jada",
+      "Dylan",
+      "Li",
+      "Marcus",
+      "Roy",
+      "Peter",
+      "Sunny",
+      "Eric",
+      "Rocky",
+      "Kiki",
+    ])
+    .default("Cherry")
+    .describe(
+      "The voice used for speech synthesis. See the [Qwen-TTS voice list](https://www.alibabacloud.com/help/en/model-studio/qwen-tts-voice-list) for each voice's language and dialect coverage."
+    ),
+  language: z
+    .enum([
+      "Auto",
+      "Chinese",
+      "English",
+      "Spanish",
+      "Russian",
+      "Italian",
+      "French",
+      "Korean",
+      "Japanese",
+      "German",
+      "Portuguese",
+    ])
+    .default("Auto")
+    .describe(
+      "Language of the input text. `Auto` lets the model detect it; setting it explicitly improves pronunciation and intonation."
+    ),
+});
+export type FalAlibabaQwenAudio3TtsRequest = z.input<
+  typeof FalAlibabaQwenAudio3TtsRequestSchema
+>;
+export type FalAlibabaQwenAudio3TtsRequestInput =
+  FalAlibabaQwenAudio3TtsRequest;
+export type FalAlibabaQwenAudio3TtsParsedRequest = z.output<
+  typeof FalAlibabaQwenAudio3TtsRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "alibaba/qwen-audio-3-tts": FalAlibabaQwenAudio3TtsRequestSchema,
   "fal-ai/kling-video/v3/turbo/pro/image-to-video":
     FalKlingVideoV3TurboProImageToVideoRequestSchema,
   "fal-ai/kling-video/v3/turbo/pro/text-to-video":

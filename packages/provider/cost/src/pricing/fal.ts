@@ -906,6 +906,16 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  // Qwen Audio 3 bills $0.05 per 1,000 input characters (pricing API
+  // unit "1000 characters"; the card is blank). The request's text
+  // length is the unit count. The recorded one-character call billed
+  // x-fal-billable-units 0.001, one thousandth of that unit, $0.00005.
+  "alibaba/qwen-audio-3-tts": perCharacter(
+    "alibaba/qwen-audio-3-tts",
+    0.05 / 1_000,
+    "2026-10-08"
+  ),
+
   // Kling v3 Turbo Pro image-to-video bills $0.14 per second at 720p,
   // the same card rate as the text-to-video leaf. Duration is a digit
   // string defaulting to "5". The recorded 3 s call billed

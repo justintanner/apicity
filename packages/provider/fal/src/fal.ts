@@ -1,4 +1,6 @@
 import {
+  FalAlibabaQwenAudio3TtsResponse,
+  FalAlibabaQwenAudio3TtsRequest,
   FalKlingVideoV3TurboProImageToVideoResponse,
   FalKlingVideoV3TurboProImageToVideoRequest,
   FalKlingVideoV3TurboProTextToVideoResponse,
@@ -298,6 +300,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalAlibabaQwenAudio3TtsRequestSchema,
   FalKlingVideoV3TurboProImageToVideoRequestSchema,
   FalKlingVideoV3TurboProTextToVideoRequestSchema,
   FalKlingVideoV3TurboStandardImageToVideoRequestSchema,
@@ -2648,6 +2651,15 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/alibaba/qwen-audio-3-tts
+  // Docs: https://fal.ai/models/alibaba/qwen-audio-3-tts/api
+  const alibabaQwenAudio3Tts = jsonBody<
+    FalAlibabaQwenAudio3TtsRequest,
+    FalAlibabaQwenAudio3TtsResponse
+  >("POST", "/alibaba/qwen-audio-3-tts", FalAlibabaQwenAudio3TtsRequestSchema, {
+    base: runBaseURL,
+  });
+
   const run: FalRunNamespace = {
     // POST https://fal.run/bria/fibo-edit-1.5/virtual-try-on
     // Docs: https://fal.ai/models/bria/fibo-edit-1.5/virtual-try-on/api
@@ -2701,6 +2713,9 @@ export function createFal(opts: FalOptions): FalProvider {
       }),
     },
     alibaba: {
+      // POST https://fal.run/alibaba/qwen-audio-3-tts
+      // Docs: https://fal.ai/models/alibaba/qwen-audio-3-tts/api
+      qwenAudio3Tts: alibabaQwenAudio3Tts,
       wan3p0: {
         textToVideo: alibabaWan3p0TextToVideo,
         imageToVideo: alibabaWan3p0ImageToVideo,

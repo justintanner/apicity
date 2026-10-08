@@ -121,9 +121,26 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-148 endpoints across 33 groups. Each method mirrors an upstream URL path.
+149 endpoints across 33 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
+
+<details>
+<summary><code>POST</code> <b><code>fal.alibaba.qwenAudio3Tts</code></b></summary>
+
+<code>POST https://fal.run/alibaba/qwen-audio-3-tts</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/alibaba/qwen-audio-3-tts/api)
+
+```typescript
+const res = await fal.run.alibaba.qwenAudio3Tts({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>fal.alibaba.qwenImage3.edit</code></b></summary>

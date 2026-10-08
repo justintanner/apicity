@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalBriaFiboGen1p5TextToImageParsedRequest,
+  FalBriaFiboGen1p5TextToImageRequestInput,
+  FalBriaFiboGen1p5TextToImageRequest,
   FalBriaFiboEdit1p5EditParsedRequest,
   FalBriaFiboEdit1p5EditRequestInput,
   FalBriaFiboEdit1p5EditRequest,
@@ -524,6 +527,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalBriaFiboGen1p5TextToImageRequest,
   FalBriaFiboEdit1p5EditRequest,
   FalBlackforestlabsFlux3EditVideoRequest,
   FalAlibabaHappyHorseV1p1TextToVideoRequest,
@@ -4487,4 +4491,32 @@ type FalBriaFiboEdit1p5EditFn = ((
 
 export interface FalRunBriaFiboEdit1p5Namespace {
   edit: FalBriaFiboEdit1p5EditFn;
+}
+
+export interface FalBriaFiboGen1p5TextToImageResponse {
+  image: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+  };
+  images?: Array<Record<string, unknown>>;
+  structured_prompt: Record<string, unknown>;
+}
+
+type FalBriaFiboGen1p5TextToImageFn = ((
+  params: FalBriaFiboGen1p5TextToImageRequest,
+  signal?: AbortSignal
+) => Promise<FalBriaFiboGen1p5TextToImageResponse>) & {
+  schema: ApicitySchema<FalBriaFiboGen1p5TextToImageRequest>;
+};
+
+export interface FalRunBriaFiboGen1p5Namespace {
+  textToImage: FalBriaFiboGen1p5TextToImageFn;
+}
+
+export interface FalRunBriaNamespace {
+  fiboGen1p5: FalRunBriaFiboGen1p5Namespace;
 }

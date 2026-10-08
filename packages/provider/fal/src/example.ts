@@ -358,6 +358,14 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST bria.fiboGen1p5.textToImage": {
+    "source": "fal/bria-fibo-gen-1-5-text-to-image",
+    "payload": {
+      "prompt": "A weathered brown leather armchair in a sunlit study, cracked grain texture, soft afternoon light raking across the surface."
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST bytedance.seedSpeech.tts.v2": {
     "source": "fal/bytedance-seed-speech-tts-v2",
     "payload": {

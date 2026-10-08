@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Bria Fibo Gen 1.5 text-to-image (ac-0i2xq1).
+
 - Added Bria Fibo Edit 1.5 edit (ac-we6juy).
 
 - Added FLUX 3 edit-video (ac-6r7fak).

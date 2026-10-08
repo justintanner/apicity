@@ -21,6 +21,11 @@ export type {
 
 // Export all types
 export type {
+  FalBriaFiboGen1p5TextToImageResponse,
+  FalBriaFiboGen1p5TextToImageParsedRequest,
+  FalBriaFiboGen1p5TextToImageRequestInput,
+  FalBriaFiboGen1p5TextToImageRequest,
+  FalRunBriaFiboGen1p5Namespace,
   FalBriaFiboEdit1p5EditResponse,
   FalBriaFiboEdit1p5EditParsedRequest,
   FalBriaFiboEdit1p5EditRequestInput,

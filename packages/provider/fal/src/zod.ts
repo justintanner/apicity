@@ -7235,7 +7235,250 @@ export type FalBriaFiboEdit1p5EditParsedRequest = z.output<
   typeof FalBriaFiboEdit1p5EditRequestSchema
 >;
 
+const FalBriaFiboGen1p5TextToImagePromptObjectSchema = z.object({
+  description: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("A description of the object to be generated."),
+  location: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The location of the object in the image."),
+  relationship: z
+    .string()
+    .describe("The relationship of the object to other objects in the image."),
+  relative_size: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The relative size of the object in the image."),
+  shape_and_color: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The shape and color of the object."),
+  texture: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The texture of the object."),
+  appearance_details: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The appearance details of the object."),
+  number_of_objects: z
+    .number()
+    .int()
+    .nullable()
+    .optional()
+    .describe("The number of objects in the image."),
+  pose: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The pose of the object in the image."),
+  expression: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The expression of the object in the image."),
+  clothing: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The clothing of the object in the image."),
+  action: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The action of the object in the image."),
+  gender: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The gender of the object in the image."),
+  skin_tone_and_texture: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The skin tone and texture of the object in the image."),
+  orientation: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The orientation of the object in the image."),
+});
+
+const FalBriaFiboGen1p5TextToImageLightingSchema = z.object({
+  conditions: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The conditions of the lighting in the image to be generated."),
+  direction: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The direction of the lighting in the image to be generated."),
+  shadows: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The shadows in the image to be generated."),
+});
+
+const FalBriaFiboGen1p5TextToImageAestheticsSchema = z.object({
+  composition: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The composition of the image to be generated."),
+  color_scheme: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The color scheme of the image to be generated."),
+  mood_atmosphere: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The mood and atmosphere of the image to be generated."),
+  aesthetic_score: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The aesthetic score of the image to be generated."),
+  preference_score: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The preference score of the image to be generated."),
+});
+
+const FalBriaFiboGen1p5TextToImagePhotographicCharacteristicsSchema = z.object({
+  depth_of_field: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The depth of field in the image to be generated."),
+  focus: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The focus in the image to be generated."),
+  camera_angle: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The angle of the camera in the image to be generated."),
+  lens_focal_length: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The focal length of the lens in the image to be generated."),
+});
+
+const FalBriaFiboGen1p5TextToImageStructuredPromptSchema = z.object({
+  short_description: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("A short description of the image to be generated."),
+  objects: z
+    .array(FalBriaFiboGen1p5TextToImagePromptObjectSchema)
+    .nullable()
+    .default([])
+    .describe(
+      "A list of objects in the image to be generated, along with their attributes and relationships to other objects in the image."
+    ),
+  background_setting: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The background setting of the image to be generated."),
+  lighting: FalBriaFiboGen1p5TextToImageLightingSchema.nullable()
+    .optional()
+    .describe("The lighting of the image to be generated."),
+  aesthetics: FalBriaFiboGen1p5TextToImageAestheticsSchema.nullable()
+    .optional()
+    .describe("The aesthetics of the image to be generated."),
+  photographic_characteristics:
+    FalBriaFiboGen1p5TextToImagePhotographicCharacteristicsSchema.nullable()
+      .optional()
+      .describe(
+        "The photographic characteristics of the image to be generated."
+      ),
+  style_medium: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The style medium of the image to be generated."),
+  text_render: z
+    .array(z.unknown())
+    .nullable()
+    .default([])
+    .describe("A list of text to be rendered in the image."),
+  context: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The context of the image to be generated."),
+  artistic_style: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("The artistic style of the image to be generated."),
+});
+
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 d09a549c7740da5690caa8b876dd119bcd8b590d8adb4fb6f0caa896b52d3778). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/bria/fibo-gen-1.5/text-to-image/api
+export const FalBriaFiboGen1p5TextToImageRequestSchema = z.object({
+  prompt: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("Prompt for image generation."),
+  structured_prompt:
+    FalBriaFiboGen1p5TextToImageStructuredPromptSchema.nullable()
+      .optional()
+      .describe("The structured prompt to generate an image from."),
+  seed: z
+    .number()
+    .int()
+    .default(5555)
+    .describe("Random seed for reproducibility."),
+  aspect_ratio: z
+    .enum(["1:1", "2:3", "3:2", "3:4", "4:3", "4:5", "5:4", "9:16", "16:9"])
+    .default("1:1")
+    .describe(
+      "Aspect ratio. Options: 1:1, 2:3, 3:2, 3:4, 4:3, 4:5, 5:4, 9:16, 16:9"
+    ),
+  resolution: z
+    .enum(["1MP", "4MP"])
+    .default("1MP")
+    .describe("Output image resolution"),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If true, returns the image directly in the response (increases latency)."
+    ),
+});
+export type FalBriaFiboGen1p5TextToImageRequest = z.input<
+  typeof FalBriaFiboGen1p5TextToImageRequestSchema
+>;
+export type FalBriaFiboGen1p5TextToImageRequestInput =
+  FalBriaFiboGen1p5TextToImageRequest;
+export type FalBriaFiboGen1p5TextToImageParsedRequest = z.output<
+  typeof FalBriaFiboGen1p5TextToImageRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "bria/fibo-gen-1.5/text-to-image": FalBriaFiboGen1p5TextToImageRequestSchema,
   "bria/fibo-edit-1.5/edit": FalBriaFiboEdit1p5EditRequestSchema,
   "blackforestlabs/flux-3/edit-video":
     FalBlackforestlabsFlux3EditVideoRequestSchema,

@@ -906,6 +906,17 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  // Bria Fibo Gen 1.5 text-to-image bills $0.04 per image. The
+  // model page has no price card; the pricing API bills 0.04
+  // USD per image. Resolution defaults to 1MP. The recorded
+  // call billed x-fal-billable-units 1, one image, so the
+  // charge is $0.04.
+  "bria/fibo-gen-1.5/text-to-image": perImage(
+    "bria/fibo-gen-1.5/text-to-image",
+    0.04,
+    "2026-10-08"
+  ),
+
   // Bria Fibo Edit 1.5 edit bills $0.04 per image. The model
   // page has no price card; the pricing API bills 0.04 USD per
   // image. The recorded call billed x-fal-billable-units 1, one

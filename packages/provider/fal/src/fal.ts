@@ -1,4 +1,6 @@
 import {
+  FalBriaFiboGen1p5TextToImageResponse,
+  FalBriaFiboGen1p5TextToImageRequest,
   FalBriaFiboEdit1p5EditResponse,
   FalBriaFiboEdit1p5EditRequest,
   FalBlackforestlabsFlux3EditVideoResponse,
@@ -310,6 +312,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalBriaFiboGen1p5TextToImageRequestSchema,
   FalBriaFiboEdit1p5EditRequestSchema,
   FalBlackforestlabsFlux3EditVideoRequestSchema,
   FalAlibabaHappyHorseV1p1TextToVideoRequestSchema,
@@ -2736,10 +2739,29 @@ export function createFal(opts: FalOptions): FalProvider {
     base: runBaseURL,
   });
 
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/bria/fibo-gen-1.5/text-to-image
+  // Docs: https://fal.ai/models/bria/fibo-gen-1.5/text-to-image/api
+  const briaFiboGen1p5TextToImage = jsonBody<
+    FalBriaFiboGen1p5TextToImageRequest,
+    FalBriaFiboGen1p5TextToImageResponse
+  >(
+    "POST",
+    "/bria/fibo-gen-1.5/text-to-image",
+    FalBriaFiboGen1p5TextToImageRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
     // POST https://fal.run/bria/fibo-edit-1.5/virtual-try-on
     // Docs: https://fal.ai/models/bria/fibo-edit-1.5/virtual-try-on/api
     bria: {
+      fiboGen1p5: {
+        // sig-ok: stylistic dotPath divergence from URL
+        // POST https://fal.run/bria/fibo-gen-1.5/text-to-image
+        // Docs: https://fal.ai/models/bria/fibo-gen-1.5/text-to-image/api
+        textToImage: briaFiboGen1p5TextToImage,
+      },
       fiboEdit1p5: {
         // sig-ok: stylistic dotPath divergence from URL
         // POST https://fal.run/bria/fibo-edit-1.5/edit

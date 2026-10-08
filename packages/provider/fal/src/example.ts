@@ -595,6 +595,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST geminiOmniFlash.v1p1.textToVideo": {
+    "source": "fal/google-gemini-omni-flash-v1-1-text-to-video",
+    "payload": {
+      "prompt": "A cinematic wide shot of a lighthouse on a rocky cliff at dusk, waves crashing below, the beam sweeping across the dark sea.",
+      "resolution": "360p",
+      "duration": 3
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST google.gemini3p8FlashLiteTts": {
     "source": "fal/google-gemini-3-8-flash-lite-tts",
     "payload": {

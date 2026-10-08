@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Gemini Omni Flash 1.1 text-to-video, dynamically priced (ac-o4pjug).
+
 - Added Gemini Omni Flash 1.1 image-to-video, dynamically priced (ac-qkzpsi).
 
 - Added Gemini Omni Flash 1.1 reference-to-video, dynamically priced (ac-vvcfyg).

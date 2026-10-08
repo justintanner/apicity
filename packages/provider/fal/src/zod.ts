@@ -6041,7 +6041,47 @@ export type FalGeminiOmniFlashV1p1ImageToVideoParsedRequest = z.output<
   typeof FalGeminiOmniFlashV1p1ImageToVideoRequestSchema
 >;
 
+// The live OpenAPI requires only `prompt`, and twelve unbilled 422 probes
+// (2026-10-08) found upstream's validator to match it: `prompt` must be a
+// string of at most 20,000 characters, with no minimum; `duration` is an
+// integer from 3 to 10 (4.5 and null are refused); and `aspect_ratio` and
+// `resolution` are closed to the documented values (`1:1`, null, `360P` and
+// `4K` are refused). The validator ignored an unknown field, so the object is
+// not strict.
+// Docs: https://fal.ai/models/google/gemini-omni-flash/v1.1/text-to-video/api
+export const FalGeminiOmniFlashV1p1TextToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .max(20_000)
+    .describe("The text prompt describing the video you want to generate."),
+  aspect_ratio: z
+    .enum(["16:9", "9:16"])
+    .default("16:9")
+    .describe("The aspect ratio of the generated video."),
+  resolution: z
+    .enum(["360p", "720p", "1080p", "4k"])
+    .default("720p")
+    .describe("The resolution of the generated video."),
+  duration: z
+    .number()
+    .int()
+    .min(3)
+    .max(10)
+    .default(8)
+    .describe("The duration of the generated video, in seconds."),
+});
+export type FalGeminiOmniFlashV1p1TextToVideoRequest = z.input<
+  typeof FalGeminiOmniFlashV1p1TextToVideoRequestSchema
+>;
+export type FalGeminiOmniFlashV1p1TextToVideoRequestInput =
+  FalGeminiOmniFlashV1p1TextToVideoRequest;
+export type FalGeminiOmniFlashV1p1TextToVideoParsedRequest = z.output<
+  typeof FalGeminiOmniFlashV1p1TextToVideoRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "google/gemini-omni-flash/v1.1/text-to-video":
+    FalGeminiOmniFlashV1p1TextToVideoRequestSchema,
   "google/gemini-omni-flash/v1.1/image-to-video":
     FalGeminiOmniFlashV1p1ImageToVideoRequestSchema,
   "google/gemini-omni-flash/v1.1/reference-to-video":

@@ -1707,3 +1707,4 @@ fal	xai.grokImagineVideo.v1p5.imageToVideo	POST	https://fal.run/xai/grok-imagine
 fal	geminiOmniFlash.v1p1.edit	POST	https://fal.run/google/gemini-omni-flash/v1.1/edit	https://fal.ai/models/google/gemini-omni-flash/v1.1/edit/api
 fal	geminiOmniFlash.v1p1.referenceToVideo	POST	https://fal.run/google/gemini-omni-flash/v1.1/reference-to-video	https://fal.ai/models/google/gemini-omni-flash/v1.1/reference-to-video/api
 fal	geminiOmniFlash.v1p1.imageToVideo	POST	https://fal.run/google/gemini-omni-flash/v1.1/image-to-video	https://fal.ai/models/google/gemini-omni-flash/v1.1/image-to-video/api
+fal	geminiOmniFlash.v1p1.textToVideo	POST	https://fal.run/google/gemini-omni-flash/v1.1/text-to-video	https://fal.ai/models/google/gemini-omni-flash/v1.1/text-to-video/api

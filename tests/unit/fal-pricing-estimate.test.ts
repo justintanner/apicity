@@ -1047,6 +1047,7 @@ describe("fal edit/image pricing estimates", () => {
       "google/gemini-omni-flash/v1.1/edit",
       "google/gemini-omni-flash/v1.1/image-to-video",
       "google/gemini-omni-flash/v1.1/reference-to-video",
+      "google/gemini-omni-flash/v1.1/text-to-video",
       "google/nano-banana-2-lite",
       "google/nano-banana-lite/edit",
       "lightricks/ltx-2.5/image-to-video/fast",

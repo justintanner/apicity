@@ -21,6 +21,10 @@ export type {
 
 // Export all types
 export type {
+  FalGeminiOmniFlashV1p1TextToVideoResponse,
+  FalGeminiOmniFlashV1p1TextToVideoParsedRequest,
+  FalGeminiOmniFlashV1p1TextToVideoRequestInput,
+  FalGeminiOmniFlashV1p1TextToVideoRequest,
   FalGeminiOmniFlashV1p1ImageToVideoResponse,
   FalGeminiOmniFlashV1p1ImageToVideoParsedRequest,
   FalGeminiOmniFlashV1p1ImageToVideoRequestInput,

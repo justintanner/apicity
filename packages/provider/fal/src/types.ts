@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalGeminiOmniFlashV1p1TextToVideoParsedRequest,
+  FalGeminiOmniFlashV1p1TextToVideoRequestInput,
+  FalGeminiOmniFlashV1p1TextToVideoRequest,
   FalGeminiOmniFlashV1p1ImageToVideoParsedRequest,
   FalGeminiOmniFlashV1p1ImageToVideoRequestInput,
   FalGeminiOmniFlashV1p1ImageToVideoRequest,
@@ -479,6 +482,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalGeminiOmniFlashV1p1TextToVideoRequest,
   FalGeminiOmniFlashV1p1ImageToVideoRequest,
   FalGeminiOmniFlashV1p1ReferenceToVideoRequest,
   FalGeminiOmniFlashV1p1EditRequest,
@@ -2403,7 +2407,15 @@ type FalGeminiOmniFlashV1p1ImageToVideoFn = ((
   schema: ApicitySchema<FalGeminiOmniFlashV1p1ImageToVideoRequest>;
 };
 
+type FalGeminiOmniFlashV1p1TextToVideoFn = ((
+  params: FalGeminiOmniFlashV1p1TextToVideoRequest,
+  signal?: AbortSignal
+) => Promise<FalGeminiOmniFlashV1p1TextToVideoResponse>) & {
+  schema: ApicitySchema<FalGeminiOmniFlashV1p1TextToVideoRequest>;
+};
+
 export interface FalRunGeminiOmniFlashV1p1Namespace {
+  textToVideo: FalGeminiOmniFlashV1p1TextToVideoFn;
   imageToVideo: FalGeminiOmniFlashV1p1ImageToVideoFn;
   referenceToVideo: FalGeminiOmniFlashV1p1ReferenceToVideoFn;
   edit: FalGeminiOmniFlashV1p1EditFn;
@@ -4043,6 +4055,15 @@ export interface FalGeminiOmniFlashV1p1ReferenceToVideoResponse {
 }
 
 export interface FalGeminiOmniFlashV1p1ImageToVideoResponse {
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+}
+
+export interface FalGeminiOmniFlashV1p1TextToVideoResponse {
   video: {
     url: string;
     content_type?: string | null;

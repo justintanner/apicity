@@ -725,6 +725,19 @@ const gptImagePerImage = (
 //     the same 3.029333 seconds), where the card predicts $0.09. The billed
 //     length is the output file's, set by the audio encoder's framing, not
 //     the requested duration, so no rate is encoded.
+//   - google/gemini-omni-flash/v1.1/text-to-video: the official card (read
+//     2026-10-08) bills each second of output video at
+//     $0.03/$0.10/$0.15/$0.30 at 360p/720p/1080p/4K, and the request
+//     carries its duration (3 to 10 s), so the card predicts 3 units for a
+//     3 s request. The recorded 360p call asked for 3 s from a prompt alone
+//     and got back 3.000 s of video (72 frames at 24 fps) with a generated
+//     48 kHz audio track of 3.029333 s (142 AAC frames, no edit list), and
+//     billed 3.029333 units at $0.03, USD 0.09088 (fal's usage API reads
+//     the same 3.029333 seconds), where the card predicts $0.09. The billed
+//     length is the output file's, set by the audio encoder's framing and
+//     the muxer (the image-to-video file above carried the same 142 frames
+//     behind an edit list and billed 3.008 s), not the requested duration,
+//     so no rate is encoded.
 // FLUX 3 image generation/editing: official metadata bills megapixels, while the request
 // carries resolution tiers and can infer aspect ratio from a remote image.
 // The 2026-10-05 page publishes a 1K promotional example but no complete tier
@@ -861,6 +874,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "google/gemini-omni-flash/v1.1/edit",
   "google/gemini-omni-flash/v1.1/image-to-video",
   "google/gemini-omni-flash/v1.1/reference-to-video",
+  "google/gemini-omni-flash/v1.1/text-to-video",
   "google/nano-banana-2-lite",
   "google/nano-banana-lite/edit",
   "lightricks/ltx-2.5/image-to-video/fast",

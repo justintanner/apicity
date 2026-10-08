@@ -1729,3 +1729,4 @@ fal	meta.museImage.edit	POST	https://fal.run/meta/muse-image/edit	https://fal.ai
 fal	openai.gptImage2p5.sunburst.edit	POST	https://fal.run/openai/gpt-image-2.5/sunburst/edit	https://fal.ai/models/openai/gpt-image-2.5/sunburst/edit/api
 fal	openai.gptImage2p5.sunburst.textToImage	POST	https://fal.run/openai/gpt-image-2.5/sunburst/text-to-image	https://fal.ai/models/openai/gpt-image-2.5/sunburst/text-to-image/api
 fal	openai.gptImage2p5.flare.edit	POST	https://fal.run/openai/gpt-image-2.5/flare/edit	https://fal.ai/models/openai/gpt-image-2.5/flare/edit/api
+fal	openai.gptImage2p5.flare.textToImage	POST	https://fal.run/openai/gpt-image-2.5/flare/text-to-image	https://fal.ai/models/openai/gpt-image-2.5/flare/text-to-image/api

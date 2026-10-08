@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalOpenaiGptImage2p5FlareTextToImageParsedRequest,
+  FalOpenaiGptImage2p5FlareTextToImageRequestInput,
+  FalOpenaiGptImage2p5FlareTextToImageRequest,
   FalOpenaiGptImage2p5FlareEditParsedRequest,
   FalOpenaiGptImage2p5FlareEditRequestInput,
   FalOpenaiGptImage2p5FlareEditRequest,
@@ -545,6 +548,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalOpenaiGptImage2p5FlareTextToImageRequest,
   FalOpenaiGptImage2p5FlareEditRequest,
   FalOpenaiGptImage2p5SunburstTextToImageRequest,
   FalOpenaiGptImage2p5SunburstEditRequest,
@@ -4701,4 +4705,26 @@ export interface FalRunOpenaiGptImage2p5FlareNamespace {
 
 export interface FalRunOpenaiGptImage2p5Namespace {
   flare: FalRunOpenaiGptImage2p5FlareNamespace;
+}
+
+export interface FalOpenaiGptImage2p5FlareTextToImageResponse {
+  images: Array<{
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+  }>;
+}
+
+type FalOpenaiGptImage2p5FlareTextToImageFn = ((
+  params: FalOpenaiGptImage2p5FlareTextToImageRequest,
+  signal?: AbortSignal
+) => Promise<FalOpenaiGptImage2p5FlareTextToImageResponse>) & {
+  schema: ApicitySchema<FalOpenaiGptImage2p5FlareTextToImageRequest>;
+};
+
+export interface FalRunOpenaiGptImage2p5FlareNamespace {
+  textToImage: FalOpenaiGptImage2p5FlareTextToImageFn;
 }

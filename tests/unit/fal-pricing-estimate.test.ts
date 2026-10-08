@@ -1026,7 +1026,7 @@ describe("fal edit/image pricing estimates", () => {
     // source clip rather than request fields;
     // xai/grok-imagine-video/v1.5/reference-to-video is compute-second-metered
     // too, unlike its unversioned sibling, which bills per output second and
-    // stays statically priced. All forty-one therefore use fal's
+    // stays statically priced. All forty-two therefore use fal's
     // pricing-estimate API.
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toEqual([
       "alibaba/qwen-image-3/edit",
@@ -1063,6 +1063,7 @@ describe("fal edit/image pricing estimates", () => {
       "minimax/h3/text-to-video",
       "minimax/music-3",
       "openai/gpt-image-2.5/flare/edit",
+      "openai/gpt-image-2.5/flare/text-to-image",
       "openai/gpt-image-2.5/sunburst/edit",
       "openai/gpt-image-2.5/sunburst/text-to-image",
       "topaz/upscale/image/precision",

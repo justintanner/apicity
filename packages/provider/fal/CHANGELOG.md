@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added GPT Image 2.5 Flare text-to-image, dynamically priced (ac-8g3qfn).
+
 - Added GPT Image 2.5 Flare edit, dynamically priced (ac-rnheo2).
 
 - Added GPT Image 2.5 Sunburst text-to-image, dynamically priced (ac-1ylhf6).

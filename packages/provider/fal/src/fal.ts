@@ -1,4 +1,6 @@
 import {
+  FalOpenaiGptImage2p5FlareTextToImageResponse,
+  FalOpenaiGptImage2p5FlareTextToImageRequest,
   FalOpenaiGptImage2p5FlareEditResponse,
   FalOpenaiGptImage2p5FlareEditRequest,
   FalOpenaiGptImage2p5SunburstTextToImageResponse,
@@ -324,6 +326,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalOpenaiGptImage2p5FlareTextToImageRequestSchema,
   FalOpenaiGptImage2p5FlareEditRequestSchema,
   FalOpenaiGptImage2p5SunburstTextToImageRequestSchema,
   FalOpenaiGptImage2p5SunburstEditRequestSchema,
@@ -2840,10 +2843,27 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/openai/gpt-image-2.5/flare/text-to-image
+  // Docs: https://fal.ai/models/openai/gpt-image-2.5/flare/text-to-image/api
+  const openaiGptImage2p5FlareTextToImage = jsonBody<
+    FalOpenaiGptImage2p5FlareTextToImageRequest,
+    FalOpenaiGptImage2p5FlareTextToImageResponse
+  >(
+    "POST",
+    "/openai/gpt-image-2.5/flare/text-to-image",
+    FalOpenaiGptImage2p5FlareTextToImageRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
     openai: {
       gptImage2p5: {
         flare: {
+          // sig-ok: stylistic dotPath divergence from URL
+          // POST https://fal.run/openai/gpt-image-2.5/flare/text-to-image
+          // Docs: https://fal.ai/models/openai/gpt-image-2.5/flare/text-to-image/api
+          textToImage: openaiGptImage2p5FlareTextToImage,
           // sig-ok: stylistic dotPath divergence from URL
           // POST https://fal.run/openai/gpt-image-2.5/flare/edit
           // Docs: https://fal.ai/models/openai/gpt-image-2.5/flare/edit/api

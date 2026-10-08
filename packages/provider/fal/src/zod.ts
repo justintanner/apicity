@@ -8032,7 +8032,99 @@ export type FalOpenaiGptImage2p5FlareEditParsedRequest = z.output<
   typeof FalOpenaiGptImage2p5FlareEditRequestSchema
 >;
 
+const FalOpenaiGptImage2p5FlareTextToImageImageSizeSchema = z.object({
+  width: z
+    .number()
+    .int()
+    .gt(0)
+    .max(14142)
+    .default(512)
+    .describe("The width of the generated image."),
+  height: z
+    .number()
+    .int()
+    .gt(0)
+    .max(14142)
+    .default(512)
+    .describe("The height of the generated image."),
+});
+
+// Pinned to the live queue OpenAPI read on 2026-10-08
+// (sha256 15adb86fc7e37de581565f74ff324161a7218000ae2753bddd034dac4242a293). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/openai/gpt-image-2.5/flare/text-to-image/api
+export const FalOpenaiGptImage2p5FlareTextToImageRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(32000)
+    .describe("The prompt for image generation"),
+  image_size: z
+    .union([
+      FalOpenaiGptImage2p5FlareTextToImageImageSizeSchema,
+      z.enum([
+        "square_hd",
+        "square",
+        "portrait_4_3",
+        "portrait_16_9",
+        "landscape_4_3",
+        "landscape_16_9",
+        "auto",
+      ]),
+    ])
+    .default("landscape_4_3")
+    .describe(
+      "The size of the generated image. Supports preset names, explicit {width, height}, or 'auto' to let the model pick the best size. Concrete sizes must have both dimensions as multiples of 16, max edge 3840px, aspect ratio <= 3:1, total pixels between 655,360 and 8,294,400."
+    ),
+  background: z
+    .enum(["auto", "transparent", "opaque"])
+    .default("auto")
+    .describe("Background for the generated image"),
+  quality: z
+    .enum(["auto", "low", "medium", "high", "xhigh", "max"])
+    .default("high")
+    .describe(
+      "Quality for the generated image. Higher settings increase detail, latency, and token usage. Use 'auto' to let the model choose."
+    ),
+  num_images: z
+    .number()
+    .int()
+    .min(1)
+    .max(10)
+    .default(1)
+    .describe("Number of images to generate"),
+  output_format: z
+    .enum(["jpeg", "png", "webp"])
+    .default("png")
+    .describe("Output format for the images"),
+  output_compression: z
+    .number()
+    .int()
+    .min(0)
+    .max(100)
+    .nullable()
+    .optional()
+    .describe(
+      "Compression level from 0 to 100. Only supported when output_format is 'jpeg' or 'webp'."
+    ),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If `True`, the media will be returned as a data URI and the output data won't be available in the request history."
+    ),
+});
+export type FalOpenaiGptImage2p5FlareTextToImageRequest = z.input<
+  typeof FalOpenaiGptImage2p5FlareTextToImageRequestSchema
+>;
+export type FalOpenaiGptImage2p5FlareTextToImageRequestInput =
+  FalOpenaiGptImage2p5FlareTextToImageRequest;
+export type FalOpenaiGptImage2p5FlareTextToImageParsedRequest = z.output<
+  typeof FalOpenaiGptImage2p5FlareTextToImageRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "openai/gpt-image-2.5/flare/text-to-image":
+    FalOpenaiGptImage2p5FlareTextToImageRequestSchema,
   "openai/gpt-image-2.5/flare/edit": FalOpenaiGptImage2p5FlareEditRequestSchema,
   "openai/gpt-image-2.5/sunburst/text-to-image":
     FalOpenaiGptImage2p5SunburstTextToImageRequestSchema,

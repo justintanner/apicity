@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalOpenaiGptImage2p5SunburstEditParsedRequest,
+  FalOpenaiGptImage2p5SunburstEditRequestInput,
+  FalOpenaiGptImage2p5SunburstEditRequest,
   FalMetaMuseImageEditParsedRequest,
   FalMetaMuseImageEditRequestInput,
   FalMetaMuseImageEditRequest,
@@ -536,6 +539,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalOpenaiGptImage2p5SunburstEditRequest,
   FalMetaMuseImageEditRequest,
   FalMetaMuseImageTextToImageRequest,
   FalElevenlabsMusicV2p5Request,
@@ -4607,4 +4611,38 @@ type FalMetaMuseImageEditFn = ((
 
 export interface FalRunMetaMuseImageNamespace {
   edit: FalMetaMuseImageEditFn;
+}
+
+export interface FalOpenaiGptImage2p5SunburstEditResponse {
+  images: Array<{
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+  }>;
+}
+
+type FalOpenaiGptImage2p5SunburstEditFn = ((
+  params: FalOpenaiGptImage2p5SunburstEditRequest,
+  signal?: AbortSignal
+) => Promise<FalOpenaiGptImage2p5SunburstEditResponse>) & {
+  schema: ApicitySchema<FalOpenaiGptImage2p5SunburstEditRequest>;
+};
+
+export interface FalRunOpenaiGptImage2p5SunburstNamespace {
+  edit: FalOpenaiGptImage2p5SunburstEditFn;
+}
+
+export interface FalRunOpenaiGptImage2p5Namespace {
+  sunburst: FalRunOpenaiGptImage2p5SunburstNamespace;
+}
+
+export interface FalRunOpenaiNamespace {
+  gptImage2p5: FalRunOpenaiGptImage2p5Namespace;
+}
+
+export interface FalRunNamespace {
+  openai: FalRunOpenaiNamespace;
 }

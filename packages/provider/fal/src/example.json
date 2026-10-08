@@ -1306,6 +1306,18 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST openai.gptImage2p5.sunburst.edit": {
+    "source": "fal/openai-gpt-image-2-5-sunburst-edit",
+    "payload": {
+      "prompt": "A red balloon.",
+      "image_urls": [
+        "https://storage.googleapis.com/falserverless/example_inputs/nano-banana-edit-input.png"
+      ],
+      "quality": "low"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST qwenImage": {
     "source": "fal/qwen-image",
     "payload": {

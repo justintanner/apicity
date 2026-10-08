@@ -1,4 +1,6 @@
 import {
+  FalOpenaiGptImage2p5SunburstEditResponse,
+  FalOpenaiGptImage2p5SunburstEditRequest,
   FalMetaMuseImageEditResponse,
   FalMetaMuseImageEditRequest,
   FalMetaMuseImageTextToImageResponse,
@@ -318,6 +320,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalOpenaiGptImage2p5SunburstEditRequestSchema,
   FalMetaMuseImageEditRequestSchema,
   FalMetaMuseImageTextToImageRequestSchema,
   FalElevenlabsMusicV2p5RequestSchema,
@@ -2792,7 +2795,30 @@ export function createFal(opts: FalOptions): FalProvider {
     base: runBaseURL,
   });
 
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/openai/gpt-image-2.5/sunburst/edit
+  // Docs: https://fal.ai/models/openai/gpt-image-2.5/sunburst/edit/api
+  const openaiGptImage2p5SunburstEdit = jsonBody<
+    FalOpenaiGptImage2p5SunburstEditRequest,
+    FalOpenaiGptImage2p5SunburstEditResponse
+  >(
+    "POST",
+    "/openai/gpt-image-2.5/sunburst/edit",
+    FalOpenaiGptImage2p5SunburstEditRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
+    openai: {
+      gptImage2p5: {
+        sunburst: {
+          // sig-ok: stylistic dotPath divergence from URL
+          // POST https://fal.run/openai/gpt-image-2.5/sunburst/edit
+          // Docs: https://fal.ai/models/openai/gpt-image-2.5/sunburst/edit/api
+          edit: openaiGptImage2p5SunburstEdit,
+        },
+      },
+    },
     meta: {
       museImage: {
         // POST https://fal.run/meta/muse-image/edit

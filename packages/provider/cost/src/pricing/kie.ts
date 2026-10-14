@@ -136,9 +136,15 @@ const seedance25Seconds = (
   return 5;
 };
 
-// Seedance 1.0 Lite/Pro bill the wire duration, defaulting to five seconds.
+// Vidu Q4 bills the wire duration, defaulting to five seconds.
 // Neither a cost-only hint nor the legacy top-level estimate field changes
 // that request. Explicit malformed values (including null) fail closed.
+const viduQ4Seconds = (p: Record<string, unknown>): number | undefined => {
+  const wire = asObject(p.input)?.duration;
+  return wire === undefined ? 5 : coerceSeconds(wire);
+};
+
+// Seedance 1.0 Lite/Pro use the same wire-only duration semantics.
 const seedanceV1Seconds = (p: Record<string, unknown>): number | undefined => {
   const wire = asObject(p.input)?.duration;
   return wire === undefined ? 5 : coerceSeconds(wire);
@@ -942,6 +948,17 @@ const miniMaxH3Video = (key: string, url: string): ModelPricing => ({
 });
 
 export const kie: Record<string, ModelPricing> = {
+  // Vidu Q4 bills output seconds; audio does not change the rate.
+  // HAR (2026-10-14): 3 s at 540p, audio omitted, creditsConsumed=21.6
+  // (3 × 7.2 credits = $0.108), matching the published rate.
+  "vidu-q4/image-to-video": tieredVideoPage(
+    "resolution",
+    { "540p": 0.036, "720p": 0.076, "1080p": 0.096, "2k": 0.152, "4k": 0.312 },
+    "https://kie.ai/vidu-q4?model=vidu-q4%2Fimage-to-video",
+    "720p",
+    "2026-10-14",
+    viduQ4Seconds
+  ),
   // veo3 = the page's Quality tier. Both 4K rows print $1.85 while their
   // credit cells disagree (text-to-video 380 credits, image-to-video 370);
   // the published USD is identical either way, so one rate is correct here

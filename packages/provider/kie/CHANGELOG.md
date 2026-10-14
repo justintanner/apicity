@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added `vidu-q4/image-to-video` with duration, resolution and audio controls,
+  per-second pricing, and an owned-image recording.
+
 - Added `nano-banana-2-1` for text and reference image generation, with up
   to ten reference images, 1K/2K/4K pricing, and a recorded successful task.
 

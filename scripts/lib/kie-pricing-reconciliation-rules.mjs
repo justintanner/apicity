@@ -87,6 +87,15 @@ export function validateFamilyRegistrations() {
 }
 
 export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
+  ...["540p", "720p", "1080p", "2k", "4k"].map((variant) => ({
+    key: "vidu-q4/image-to-video",
+    variant,
+    status: "pricing-only",
+    provenance:
+      "tests/fixtures/kie-pricing-evidence/vidu-q4-image-to-video-2026-10-14.json: 7.2/15.2/19.2/30.4/62.4 credits = 0.036/0.076/0.096/0.152/0.312 USD per second",
+    rationale:
+      "Vidu Q4 was added after the frozen September catalog; these live rates are backed by the dated supplemental feed capture.",
+  })),
   ...["1K", "2K", "4K"].map((variant) => ({
     key: "nano-banana-2-1",
     variant,

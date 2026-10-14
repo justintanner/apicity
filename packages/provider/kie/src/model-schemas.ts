@@ -25,7 +25,27 @@ import {
   Qwen21OutputFormatSchema,
   Qwen21ResolutionSchema,
   Wan27VideoEditDurationValues,
+  ViduQ4ResolutionSchema,
 } from "./zod";
+
+const viduQ4DurationField = {
+  type: "integer",
+  minimum: 3,
+  maximum: 16,
+  default: 5,
+  description: "Output duration in seconds (3-16; default 5)",
+} as const;
+const viduQ4ResolutionField = {
+  type: "string",
+  enum: ViduQ4ResolutionSchema.options,
+  default: "720p",
+  description: "Output resolution (default 720p)",
+} as const;
+const viduQ4AudioField = {
+  type: "boolean",
+  default: true,
+  description: "Generate audio (default true); does not change pricing",
+} as const;
 
 const happyHorseDurationField = {
   type: "integer",
@@ -426,6 +446,26 @@ const googleGeminiTtsFields = {
 } as const;
 
 export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
+  // https://docs.kie.ai/market/vidu-q4/image-to-video
+  "vidu-q4/image-to-video": {
+    type: "video",
+    fields: {
+      image_url: {
+        type: "string",
+        required: true,
+        description:
+          "HTTP(S) JPG/JPEG/PNG/WEBP image URL, up to 50 MB; output inherits aspect ratio",
+      },
+      prompt: {
+        type: "string",
+        maxLength: 20000,
+        description: "Optional video prompt (max 20000 characters)",
+      },
+      duration: viduQ4DurationField,
+      resolution: viduQ4ResolutionField,
+      audio: viduQ4AudioField,
+    },
+  },
   "kling-3.0/video": {
     type: "video",
     fields: {

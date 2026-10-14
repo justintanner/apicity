@@ -172,6 +172,7 @@ import {
   NanoBananaProRequestSchema,
   NanoBanana2RequestSchema,
   NanoBanana21RequestSchema,
+  ViduQ4ImageToVideoRequestSchema,
   NanoBanana2LiteRequestSchema,
   GptImageToImageRequestSchema,
   GptImage15TextToImageRequestSchema,
@@ -456,6 +457,7 @@ export const CREATE_TASK_GUARDS = {
   "hailuo/2-3-image-to-video-pro": Hailuo23ImageToVideoProRequestSchema,
   "hailuo/2-3-image-to-video-standard":
     Hailuo23ImageToVideoStandardRequestSchema,
+  "vidu-q4/image-to-video": ViduQ4ImageToVideoRequestSchema,
 } as const satisfies Record<KieMediaModel, z.ZodType>;
 
 function validateCreateTaskRequest(req: MediaGenerationRequest): void {

@@ -959,6 +959,17 @@ export const kie: Record<string, ModelPricing> = {
     "2026-10-14",
     viduQ4Seconds
   ),
+  // Vidu Q4 reference-to-video bills output seconds, independently of audio.
+  // HAR (2026-10-14): 3 s at 540p, audio false, creditsConsumed=21.6
+  // (3 × 7.2 credits = $0.108), matching the published rate.
+  "vidu-q4/reference-to-video": tieredVideoPage(
+    "resolution",
+    { "540p": 0.036, "720p": 0.076, "1080p": 0.096, "2k": 0.152, "4k": 0.312 },
+    "https://kie.ai/vidu-q4?model=vidu-q4%2Freference-to-video",
+    "720p",
+    "2026-10-14",
+    viduQ4Seconds
+  ),
   // veo3 = the page's Quality tier. Both 4K rows print $1.85 while their
   // credit cells disagree (text-to-video 380 credits, image-to-video 370);
   // the published USD is identical either way, so one rate is correct here

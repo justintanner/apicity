@@ -1,0 +1,66 @@
+{
+  "source": "https://api.kie.ai/client/v1/model-pricing/page",
+  "asOf": "2026-10-14",
+  "records": [
+    {
+      "modelDescription": "Vidu Q4, reference-to-video, 4k",
+      "interfaceType": "video",
+      "provider": "",
+      "creditPrice": "62.4",
+      "creditUnit": "per second",
+      "usdPrice": "0.312",
+      "falPrice": "0.39",
+      "discountRate": 20.0,
+      "anchor": "https://kie.ai/vidu-q4?model=vidu-q4%2Freference-to-video",
+      "discountPrice": false
+    },
+    {
+      "modelDescription": "Vidu Q4, reference-to-video, 2k",
+      "interfaceType": "video",
+      "provider": "",
+      "creditPrice": "30.4",
+      "creditUnit": "per second",
+      "usdPrice": "0.152",
+      "falPrice": "0.19",
+      "discountRate": 20.0,
+      "anchor": "https://kie.ai/vidu-q4?model=vidu-q4%2Freference-to-video",
+      "discountPrice": false
+    },
+    {
+      "modelDescription": "Vidu Q4, reference-to-video, 1080p",
+      "interfaceType": "video",
+      "provider": "",
+      "creditPrice": "19.2",
+      "creditUnit": "per second",
+      "usdPrice": "0.096",
+      "falPrice": "0.12",
+      "discountRate": 20.0,
+      "anchor": "https://kie.ai/vidu-q4?model=vidu-q4%2Freference-to-video",
+      "discountPrice": false
+    },
+    {
+      "modelDescription": "Vidu Q4, reference-to-video, 720p",
+      "interfaceType": "video",
+      "provider": "",
+      "creditPrice": "15.2",
+      "creditUnit": "per second",
+      "usdPrice": "0.076",
+      "falPrice": "0.095",
+      "discountRate": 20.0,
+      "anchor": "https://kie.ai/vidu-q4?model=vidu-q4%2Freference-to-video",
+      "discountPrice": false
+    },
+    {
+      "modelDescription": "Vidu Q4, reference-to-video, 540p",
+      "interfaceType": "video",
+      "provider": "",
+      "creditPrice": "7.2",
+      "creditUnit": "per second",
+      "usdPrice": "0.036",
+      "falPrice": "0.045",
+      "discountRate": 20.0,
+      "anchor": "https://kie.ai/vidu-q4?model=vidu-q4%2Freference-to-video",
+      "discountPrice": false
+    }
+  ]
+}

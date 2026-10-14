@@ -1798,7 +1798,10 @@ const MEDIA_SINGLETON_MODELS = [
   "z-image",
 ] as const;
 
-const VIDU_Q4_EXACT_ONLY_MODELS = ["vidu-q4/image-to-video"];
+const VIDU_Q4_EXACT_ONLY_MODELS = [
+  "vidu-q4/image-to-video",
+  "vidu-q4/reference-to-video",
+];
 const VIDU_Q4_REJECTED_MODELS = [
   "vidu-q5/image-to-video",
   "vidu-q4/text-to-video",

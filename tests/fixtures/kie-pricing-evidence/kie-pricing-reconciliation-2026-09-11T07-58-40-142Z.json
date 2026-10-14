@@ -1801,10 +1801,10 @@
       "endpoints": 71
     },
     "final": {
-      "models": 154,
-      "pricingKeys": 178,
-      "slugKeys": 180,
-      "displayKeys": 180,
+      "models": 155,
+      "pricingKeys": 179,
+      "slugKeys": 181,
+      "displayKeys": 181,
       "schemaWithoutPricing": 6,
       "pricingOnly": 30,
       "endpoints": 86
@@ -1820,11 +1820,11 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:f68ba10f979dd57c776ddf0fb49b5f05354294ba685b2dbca688ac023c27a8d6",
-      "packages/provider/kie/src/model-schemas.ts": "sha256:5efaa9560381551507338ab62c96cddf0c31f90b8b327098054688bb247ef990",
-      "packages/provider/kie/src/kie.ts": "sha256:5149221f6d0cbd902a1bb91d444782dc1b6f70ca676239537422ccacb16bcc7a",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:26830db4730b393a2b3c35e3f3b2b8b41722247494105a287184810934ea3958",
-      "packages/provider/cost/src/slugs.ts": "sha256:3b471b62fe35c17e0472e606ecf6419cfa17d87575b49439cf989d0e63076049",
+      "packages/provider/kie/src/zod.ts": "sha256:5e6143ad5219b2dc4fa51b405ed0bcb4763ff467f71a48aaf2599a0a186dd8b4",
+      "packages/provider/kie/src/model-schemas.ts": "sha256:e4f5e1f0ff32866c6b4d07e069a4ed4d66f6e9e7283f2755c78d073101fd4eb0",
+      "packages/provider/kie/src/kie.ts": "sha256:80835a3243b4109fc15f3ceb6c2afc936629b0489d1345c027d49e8f12da3960",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:c19f7a73c0393c0e202f8b482f07621f94f17204f88b710aa9fd70321a5c2b8d",
+      "packages/provider/cost/src/slugs.ts": "sha256:f0d5dec6e26077bb1dfd1fff0cc055fde17dbd9bb1f7eef144a59878c6e2b191",
       "scripts/endpoint-docs.tsv": "sha256:6b01c7358ad0dd3a48ae4495c85c55f7229e6827ed08defe0f13caf7be14dd3e"
     }
   },
@@ -24750,6 +24750,15 @@
         "linkedRows": [],
         "disposition": "upstream-unmappable",
         "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
+        "id": "vidu-q4/reference-to-video",
+        "descriptor": true,
+        "guard": true,
+        "pricingKey": "vidu-q4/reference-to-video",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
       }
     ],
     "endpoints": [
@@ -25617,6 +25626,12 @@
     "pricingKeys": [
       {
         "key": "vidu-q4/image-to-video",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "vidu-q4/reference-to-video",
         "linkedRows": [],
         "disposition": "upstream-unmappable",
         "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
@@ -27613,6 +27628,10 @@
         "disposition": "supported"
       },
       {
+        "key": "vidu-q4/reference-to-video",
+        "disposition": "supported"
+      },
+      {
         "key": "nano-banana-pro",
         "disposition": "supported"
       },
@@ -28335,6 +28354,10 @@
         "disposition": "supported"
       },
       {
+        "key": "vidu-q4/reference-to-video",
+        "disposition": "supported"
+      },
+      {
         "key": "nano-banana-pro",
         "disposition": "supported"
       },
@@ -28989,16 +29012,16 @@
     },
     "apiCity": {
       "models": {
-        "count": 154,
-        "descriptors": 154,
-        "guards": 154,
+        "count": 155,
+        "descriptors": 155,
+        "guards": 155,
         "withoutPricing": 6,
         "dispositionCounts": {
           "supported": 118,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 36
+          "upstream-unmappable": 37
         },
         "unclassified": 0
       },
@@ -29016,20 +29039,20 @@
         "unclassified": 0
       },
       "pricingKeys": {
-        "count": 178,
+        "count": 179,
         "dispositionCounts": {
           "supported": 146,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 32
+          "upstream-unmappable": 33
         },
         "unclassified": 0
       },
       "slugs": {
-        "count": 180,
+        "count": 181,
         "dispositionCounts": {
-          "supported": 180,
+          "supported": 181,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -29038,9 +29061,9 @@
         "unclassified": 0
       },
       "displays": {
-        "count": 180,
+        "count": 181,
         "dispositionCounts": {
-          "supported": 180,
+          "supported": 181,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -29112,6 +29135,41 @@
         "variant": "4k",
         "status": "pricing-only",
         "provenance": "tests/fixtures/kie-pricing-evidence/vidu-q4-image-to-video-2026-10-14.json: 7.2/15.2/19.2/30.4/62.4 credits = 0.036/0.076/0.096/0.152/0.312 USD per second",
+        "rationale": "Vidu Q4 was added after the frozen September catalog; these live rates are backed by the dated supplemental feed capture."
+      },
+      {
+        "key": "vidu-q4/reference-to-video",
+        "variant": "540p",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/vidu-q4-reference-to-video-2026-10-14.json: 7.2/15.2/19.2/30.4/62.4 credits = 0.036/0.076/0.096/0.152/0.312 USD per second",
+        "rationale": "Vidu Q4 was added after the frozen September catalog; these live rates are backed by the dated supplemental feed capture."
+      },
+      {
+        "key": "vidu-q4/reference-to-video",
+        "variant": "720p",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/vidu-q4-reference-to-video-2026-10-14.json: 7.2/15.2/19.2/30.4/62.4 credits = 0.036/0.076/0.096/0.152/0.312 USD per second",
+        "rationale": "Vidu Q4 was added after the frozen September catalog; these live rates are backed by the dated supplemental feed capture."
+      },
+      {
+        "key": "vidu-q4/reference-to-video",
+        "variant": "1080p",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/vidu-q4-reference-to-video-2026-10-14.json: 7.2/15.2/19.2/30.4/62.4 credits = 0.036/0.076/0.096/0.152/0.312 USD per second",
+        "rationale": "Vidu Q4 was added after the frozen September catalog; these live rates are backed by the dated supplemental feed capture."
+      },
+      {
+        "key": "vidu-q4/reference-to-video",
+        "variant": "2k",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/vidu-q4-reference-to-video-2026-10-14.json: 7.2/15.2/19.2/30.4/62.4 credits = 0.036/0.076/0.096/0.152/0.312 USD per second",
+        "rationale": "Vidu Q4 was added after the frozen September catalog; these live rates are backed by the dated supplemental feed capture."
+      },
+      {
+        "key": "vidu-q4/reference-to-video",
+        "variant": "4k",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/vidu-q4-reference-to-video-2026-10-14.json: 7.2/15.2/19.2/30.4/62.4 credits = 0.036/0.076/0.096/0.152/0.312 USD per second",
         "rationale": "Vidu Q4 was added after the frozen September catalog; these live rates are backed by the dated supplemental feed capture."
       },
       {

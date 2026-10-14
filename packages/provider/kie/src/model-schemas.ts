@@ -26,6 +26,7 @@ import {
   Qwen21ResolutionSchema,
   Wan27VideoEditDurationValues,
   ViduQ4ResolutionSchema,
+  ViduQ4ReferenceAspectRatioSchema,
 } from "./zod";
 
 const viduQ4DurationField = {
@@ -460,6 +461,43 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         type: "string",
         maxLength: 20000,
         description: "Optional video prompt (max 20000 characters)",
+      },
+      duration: viduQ4DurationField,
+      resolution: viduQ4ResolutionField,
+      audio: viduQ4AudioField,
+    },
+  },
+  // https://docs.kie.ai/market/vidu-q4/reference-to-video
+  "vidu-q4/reference-to-video": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 20000,
+        description: "Video prompt; reference images and audio by their order",
+      },
+      reference_image_urls: {
+        type: "array",
+        required: true,
+        minItems: 1,
+        maxItems: 15,
+        items: { type: "string" },
+        description: "1-15 HTTP(S) JPG/JPEG/PNG/WEBP reference image URLs",
+      },
+      reference_audio_urls: {
+        type: "array",
+        maxItems: 3,
+        items: { type: "string" },
+        description:
+          "Up to 3 HTTP(S) MP3 references, 3-12 seconds each, up to 50 MB",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: ViduQ4ReferenceAspectRatioSchema.options,
+        default: "16:9",
+        description: "Output aspect ratio (default 16:9)",
       },
       duration: viduQ4DurationField,
       resolution: viduQ4ResolutionField,

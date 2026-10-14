@@ -2016,6 +2016,42 @@ const VIDEO_PER_VIDEO_RATES = [
 // the published rate.
 const VIDEO_PER_SECOND_RATES = [
   {
+    label: "Vidu Q4 reference-to-video 540p",
+    model: "vidu-q4/reference-to-video",
+    input: { resolution: "540p", duration: 3 },
+    seconds: 3,
+    perUnitUsd: 0.036,
+  },
+  {
+    label: "Vidu Q4 reference-to-video 720p",
+    model: "vidu-q4/reference-to-video",
+    input: { resolution: "720p", duration: 3 },
+    seconds: 3,
+    perUnitUsd: 0.076,
+  },
+  {
+    label: "Vidu Q4 reference-to-video 1080p",
+    model: "vidu-q4/reference-to-video",
+    input: { resolution: "1080p", duration: 3 },
+    seconds: 3,
+    perUnitUsd: 0.096,
+  },
+  {
+    label: "Vidu Q4 reference-to-video 2k",
+    model: "vidu-q4/reference-to-video",
+    input: { resolution: "2k", duration: 3 },
+    seconds: 3,
+    perUnitUsd: 0.152,
+  },
+  {
+    label: "Vidu Q4 reference-to-video 4k",
+    model: "vidu-q4/reference-to-video",
+    input: { resolution: "4k", duration: 3 },
+    seconds: 3,
+    perUnitUsd: 0.312,
+  },
+
+  {
     label: "Vidu Q4 540p",
     model: "vidu-q4/image-to-video",
     input: { resolution: "540p", duration: 3 },

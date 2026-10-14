@@ -392,6 +392,7 @@ export const KIE_MEDIA_MODELS = [
   "hailuo/2-3-image-to-video-standard",
   // Vidu Q4 — explicit operations, no family alias.
   "vidu-q4/image-to-video",
+  "vidu-q4/reference-to-video",
 ] as const;
 
 export const KieMediaModelSchema = z
@@ -3885,6 +3886,38 @@ export const ViduQ4ImageToVideoRequestSchema = z.object({
       "JPG/JPEG/PNG/WEBP image, up to 50 MB; output inherits its aspect ratio"
     ),
     prompt: z.string().max(20000).optional(),
+    duration: ViduQ4DurationSchema.default(5),
+    resolution: ViduQ4ResolutionSchema.default("720p"),
+    audio: z.boolean().default(true),
+  }),
+});
+
+// Docs: https://docs.kie.ai/market/vidu-q4/reference-to-video
+export const ViduQ4ReferenceAspectRatioSchema = z.enum([
+  "16:9",
+  "9:16",
+  "1:1",
+  "4:3",
+  "3:4",
+]);
+export const ViduQ4ReferenceToVideoRequestSchema = z.object({
+  model: z.literal("vidu-q4/reference-to-video"),
+  callBackUrl: z.string().url().optional(),
+  input: z.object({
+    prompt: z.string().min(1).max(20000),
+    reference_image_urls: z
+      .array(ViduQ4MediaUrlSchema)
+      .min(1)
+      .max(15)
+      .describe(
+        "JPG/JPEG/PNG/WEBP reference images, referenced in prompt by order"
+      ),
+    reference_audio_urls: z
+      .array(ViduQ4MediaUrlSchema)
+      .max(3)
+      .optional()
+      .describe("MP3 references, 3-12 seconds each, up to 50 MB"),
+    aspect_ratio: ViduQ4ReferenceAspectRatioSchema.default("16:9"),
     duration: ViduQ4DurationSchema.default(5),
     resolution: ViduQ4ResolutionSchema.default("720p"),
     audio: z.boolean().default(true),
@@ -8585,6 +8618,7 @@ export const MediaGenerationRequestSchema = z.union([
   NanoBanana2RequestSchema,
   NanoBanana21RequestSchema,
   ViduQ4ImageToVideoRequestSchema,
+  ViduQ4ReferenceToVideoRequestSchema,
   NanoBanana2LiteRequestSchema,
   GptImageToImageRequestSchema,
   GptImage15TextToImageRequestSchema,
@@ -10317,4 +10351,15 @@ export type ViduQ4ImageToVideoRequest = z.input<
 export type ViduQ4ImageToVideoRequestInput = ViduQ4ImageToVideoRequest;
 export type ViduQ4ImageToVideoParsedRequest = z.output<
   typeof ViduQ4ImageToVideoRequestSchema
+>;
+
+export type ViduQ4ReferenceAspectRatio = z.infer<
+  typeof ViduQ4ReferenceAspectRatioSchema
+>;
+export type ViduQ4ReferenceToVideoRequest = z.input<
+  typeof ViduQ4ReferenceToVideoRequestSchema
+>;
+export type ViduQ4ReferenceToVideoRequestInput = ViduQ4ReferenceToVideoRequest;
+export type ViduQ4ReferenceToVideoParsedRequest = z.output<
+  typeof ViduQ4ReferenceToVideoRequestSchema
 >;

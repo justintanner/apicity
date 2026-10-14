@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added `vidu-q4/reference-to-video` with image/audio references, aspect-ratio
+  controls, per-second pricing, and an owned-assets recording.
+
 - Added `vidu-q4/image-to-video` with duration, resolution and audio controls,
   per-second pricing, and an owned-image recording.
 

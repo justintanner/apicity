@@ -91,16 +91,37 @@ the only in-progress `mol-apicity-release` run for this rig — and if it isn't,
 STOP without touching npm or the remote.
 
 ```bash
-# Identify our OWN workflow root. The running release step bead is assigned to
-# this session and carries gc.root_bead_id (the workflow root) + a step_ref.
+# Identify our OWN workflow root. The running release step bead carries
+# gc.root_bead_id (the workflow root) + a step_ref. Native claims assign that
+# step to the lane template, not to this session, so resolve it in order:
+#   1. GC_TRIGGER_BEAD_ID, the step bead this session was launched for;
+#   2. an in-progress release step whose gc.session_id (or, failing that,
+#      gc.session_name) metadata names this session;
+#   3. the legacy claim, assigned to this session's ID or name.
 self_root=""
-# Claims record the session ID. The name is a compatibility fallback only.
-for session_owner in "${GC_SESSION_ID:-}" "${GC_SESSION_NAME:-}"; do
-  [ -n "$session_owner" ] || continue
-  self_root=$(bd list --status in_progress --assignee "$session_owner" --limit 0 --json 2>/dev/null \
-    | jq -r '[.[] | select(.metadata."gc.step_ref" == "mol-apicity-release.release")][0].metadata."gc.root_bead_id" // empty')
-  [ -z "$self_root" ] || break
-done
+if [ -n "${GC_TRIGGER_BEAD_ID:-}" ]; then
+  self_root=$(bd show "$GC_TRIGGER_BEAD_ID" --json 2>/dev/null \
+    | jq -r '(if type == "array" then .[0] else . end)
+      | select(.metadata."gc.step_ref" == "mol-apicity-release.release")
+      | .metadata."gc.root_bead_id" // empty')
+fi
+if [ -z "$self_root" ]; then
+  self_root=$(bd list --status in_progress --metadata-field gc.step_ref=mol-apicity-release.release --limit 0 --json 2>/dev/null \
+    | jq -r --arg id "${GC_SESSION_ID:-}" --arg name "${GC_SESSION_NAME:-}" '
+      [.[] | select(.metadata."gc.step_ref" == "mol-apicity-release.release")] as $steps
+      | [($steps[] | select($id != "" and .metadata."gc.session_id" == $id)),
+         ($steps[] | select($name != "" and .metadata."gc.session_name" == $name))]
+      | .[0].metadata."gc.root_bead_id" // empty')
+fi
+if [ -z "$self_root" ]; then
+  # Claims record the session ID. The name is a compatibility fallback only.
+  for session_owner in "${GC_SESSION_ID:-}" "${GC_SESSION_NAME:-}"; do
+    [ -n "$session_owner" ] || continue
+    self_root=$(bd list --status in_progress --assignee "$session_owner" --limit 0 --json 2>/dev/null \
+      | jq -r '[.[] | select(.metadata."gc.step_ref" == "mol-apicity-release.release")][0].metadata."gc.root_bead_id" // empty')
+    [ -z "$self_root" ] || break
+  done
+fi
 
 # All in-progress release WORKFLOW roots for this rig. The workflow root's title
 # is exactly "mol-apicity-release"; filter to gc.kind=workflow so fix/feature

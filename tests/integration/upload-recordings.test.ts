@@ -58,6 +58,14 @@ function multipart(fields: Record<string, unknown>): Record<string, unknown> {
 
 const summarizedMultipartFixtures: HarFixture[] = [
   {
+    path: "../recordings/kie_2079838932/vidu-q4-image-to-video_2985262405/recording.har",
+    entryIndex: 0,
+    expected: multipart({
+      file: fileSummary("cat1.jpg", "image/jpeg", 83558),
+      uploadPath: "images/test-uploads",
+    }),
+  },
+  {
     path: "../recordings/alibaba_1329897167/uploads-policy_611870938/recording.har",
     entryIndex: 1,
     expected: multipart({

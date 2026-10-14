@@ -184,6 +184,7 @@ const KieMediaPixverseModelAliasSchema = z
 // gain an alias only if kie ships a grammar that can be justified; until then
 // each new id from those vendors is an explicit enum addition.
 //
+// Vidu Q4 stays enum-only: documented operations do not establish a version grammar.
 // MiniMax H3 also stays enum-only even though it has three task variants. The
 // approved surface is exactly these H3 ids; the variants do not establish a
 // version grammar or authorize arbitrary future task slugs.
@@ -389,6 +390,8 @@ export const KIE_MEDIA_MODELS = [
   "hailuo/02-text-to-video-standard",
   "hailuo/2-3-image-to-video-pro",
   "hailuo/2-3-image-to-video-standard",
+  // Vidu Q4 — explicit operations, no family alias.
+  "vidu-q4/image-to-video",
 ] as const;
 
 export const KieMediaModelSchema = z
@@ -3854,6 +3857,37 @@ export const NanoBanana2RequestSchema = z.object({
       .default("auto"),
     resolution: NanoBananaResolutionSchema.default("1K"),
     output_format: NanoBananaOutputFormatSchema.default("jpg"),
+  }),
+});
+
+// Docs: https://docs.kie.ai/market/vidu-q4/image-to-video
+export const ViduQ4ResolutionSchema = z.enum([
+  "540p",
+  "720p",
+  "1080p",
+  "2k",
+  "4k",
+]);
+export const ViduQ4DurationSchema = z.number().int().min(3).max(16);
+export const ViduQ4MediaUrlSchema = z.string().refine((value) => {
+  try {
+    return ["http:", "https:"].includes(new URL(value).protocol);
+  } catch {
+    return false;
+  }
+}, "Expected an HTTP(S) media URL");
+
+export const ViduQ4ImageToVideoRequestSchema = z.object({
+  model: z.literal("vidu-q4/image-to-video"),
+  callBackUrl: z.string().url().optional(),
+  input: z.object({
+    image_url: ViduQ4MediaUrlSchema.describe(
+      "JPG/JPEG/PNG/WEBP image, up to 50 MB; output inherits its aspect ratio"
+    ),
+    prompt: z.string().max(20000).optional(),
+    duration: ViduQ4DurationSchema.default(5),
+    resolution: ViduQ4ResolutionSchema.default("720p"),
+    audio: z.boolean().default(true),
   }),
 });
 
@@ -8550,6 +8584,7 @@ export const MediaGenerationRequestSchema = z.union([
   NanoBananaProRequestSchema,
   NanoBanana2RequestSchema,
   NanoBanana21RequestSchema,
+  ViduQ4ImageToVideoRequestSchema,
   NanoBanana2LiteRequestSchema,
   GptImageToImageRequestSchema,
   GptImage15TextToImageRequestSchema,
@@ -10272,4 +10307,14 @@ export type GoogleGemini38FlashLiteTtsRequestInput =
   GoogleGemini38FlashLiteTtsRequest;
 export type GoogleGemini38FlashLiteTtsParsedRequest = z.output<
   typeof GoogleGemini38FlashLiteTtsRequestSchema
+>;
+
+export type ViduQ4Resolution = z.infer<typeof ViduQ4ResolutionSchema>;
+export type ViduQ4Duration = z.infer<typeof ViduQ4DurationSchema>;
+export type ViduQ4ImageToVideoRequest = z.input<
+  typeof ViduQ4ImageToVideoRequestSchema
+>;
+export type ViduQ4ImageToVideoRequestInput = ViduQ4ImageToVideoRequest;
+export type ViduQ4ImageToVideoParsedRequest = z.output<
+  typeof ViduQ4ImageToVideoRequestSchema
 >;

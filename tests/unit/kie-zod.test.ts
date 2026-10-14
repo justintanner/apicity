@@ -1515,7 +1515,7 @@ describe("TRI-008 VeoExtendRequestSchema.model stays a closed set", () => {
 // while singletons and fixed-product sets (omnihuman + sub-tasks, volcengine,
 // gemini-omni, recraft, topaz, infinitalk, z-image), Flux-2
 // (four exact modes), Ideogram (six exact modes), Hailuo (six exact modes),
-// the three exact MiniMax H3 modes, the Google market enum set (two TTS + five
+// the exact Vidu Q4 modes, the three exact MiniMax H3 modes, the Google market enum set (two TTS + five
 // Imagen/Nano Banana), and unversioned Qwen v1 stay enumerated with no alias
 // at all.
 //
@@ -1798,6 +1798,15 @@ const MEDIA_SINGLETON_MODELS = [
   "z-image",
 ] as const;
 
+const VIDU_Q4_EXACT_ONLY_MODELS = ["vidu-q4/image-to-video"];
+const VIDU_Q4_REJECTED_MODELS = [
+  "vidu-q5/image-to-video",
+  "vidu-q4/text-to-video",
+  "viduq4/image-to-video",
+  "vidu_q4/image_to_video",
+  "VIDU-Q4/IMAGE-TO-VIDEO",
+];
+
 const MINIMAX_H3_EXACT_ONLY_MODELS = [
   "minimax-h3/text-to-video",
   "minimax-h3/image-to-video",
@@ -2006,6 +2015,13 @@ describe("TRI-001 KieMediaModelSchema", () => {
     }
   );
 
+  it.each(VIDU_Q4_EXACT_ONLY_MODELS)("keeps Vidu Q4 %s enum-only", (model) => {
+    expect(KieMediaModelSchema.safeParse(model).success).toBe(true);
+    expect(mediaAliasPatterns.filter((re) => re.test(model))).toEqual([]);
+  });
+  it.each(VIDU_Q4_REJECTED_MODELS)("rejects Vidu Q4 near-miss %s", (model) => {
+    expect(KieMediaModelSchema.safeParse(model).success).toBe(false);
+  });
   it.each(MINIMAX_H3_EXACT_ONLY_MODELS)(
     "keeps MiniMax H3 model %s reachable only through the enum",
     (model) => {

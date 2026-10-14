@@ -181,6 +181,8 @@ export const MODEL_SLUGS = {
     "nano-banana": "nb",
     "nano-banana-2": "nb2",
     "nano-banana-2-1": "nb21",
+    // Video — Vidu Q4
+    "vidu-q4/image-to-video": "viduq4",
     "nano-banana-pro": "nbp",
 
     // Image — GPT Image 2
@@ -707,6 +709,8 @@ export const MODEL_DISPLAY = {
     "nano-banana": "Nano Banana",
     "nano-banana-2": "Nano Banana 2",
     "nano-banana-2-1": "Nano Banana 2.1",
+    // Video — Vidu Q4
+    "vidu-q4/image-to-video": "Vidu Q4",
     "nano-banana-pro": "Nano Banana Pro",
 
     "gpt-image-2-text-to-image": "GPT Image 2.0",

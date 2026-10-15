@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Kandinsky 6.0 Lite text-to-video, dynamically priced (ac-hz8o8g).
+
 - Added Kandinsky 6.0 VSR Lite video upscaling, dynamically priced (ac-bx8k98).
 
 - Added Kandinsky 6.0 VSR video upscaling, dynamically priced (ac-tajy82).

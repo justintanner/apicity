@@ -787,6 +787,15 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST kandinsky6Lite.textToVideo": {
+    "source": "fal/kandinsky6-lite-text-to-video",
+    "payload": {
+      "prompt": "A red panda waves once, then holds still.",
+      "num_inference_steps": 4
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST kandinsky6Vsr": {
     "source": "fal/kandinsky6-vsr",
     "payload": {

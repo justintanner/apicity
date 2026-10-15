@@ -1294,6 +1294,16 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST mireloAi.sfx2p0.textToAudio": {
+    "source": "fal/mirelo-ai-sfx2-0-text-to-audio",
+    "payload": {
+      "prompt": "Rain falling on a tin roof, gentle thunder in distance",
+      "duration": 1.5,
+      "num_samples": 1
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST nanoBanana.edit": {
     "source": "fal/nano-banana-edit",
     "payload": {

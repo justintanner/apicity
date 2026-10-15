@@ -1,4 +1,6 @@
 import {
+  FalMireloAiSfx2p0TextToAudioRequest,
+  FalMireloAiSfx2p0TextToAudioResponse,
   FalMarigoldV2Request,
   FalMarigoldV2Response,
   FalBriaGuidedRemoveBackgroundRequest,
@@ -348,6 +350,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalMireloAiSfx2p0TextToAudioRequestSchema,
   FalMarigoldV2RequestSchema,
   FalBriaGuidedRemoveBackgroundRequestSchema,
   FalBriaFiboEdit1p5ExpandRequestSchema,
@@ -3034,7 +3037,28 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/mirelo-ai/sfx2.0/text-to-audio
+  // Docs: https://fal.ai/models/mirelo-ai/sfx2.0/text-to-audio/api
+  const mireloAiSfx2p0TextToAudio = jsonBody<
+    FalMireloAiSfx2p0TextToAudioRequest,
+    FalMireloAiSfx2p0TextToAudioResponse
+  >(
+    "POST",
+    "/mirelo-ai/sfx2.0/text-to-audio",
+    FalMireloAiSfx2p0TextToAudioRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
+    mireloAi: {
+      sfx2p0: {
+        // sig-ok: stylistic dotPath divergence from URL
+        // POST https://fal.run/mirelo-ai/sfx2.0/text-to-audio
+        // Docs: https://fal.ai/models/mirelo-ai/sfx2.0/text-to-audio/api
+        textToAudio: mireloAiSfx2p0TextToAudio,
+      },
+    },
     // sig-ok: stylistic dotPath divergence from URL
     // POST https://fal.run/fal-ai/marigold-v2
     // Docs: https://fal.ai/models/fal-ai/marigold-v2/api

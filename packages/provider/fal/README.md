@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-173 endpoints across 39 groups. Each method mirrors an upstream URL path.
+174 endpoints across 40 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -2038,6 +2038,25 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.minimax.music3({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+### mireloAi
+
+<details>
+<summary><code>POST</code> <b><code>fal.mireloAi.sfx2p0.textToAudio</code></b></summary>
+
+<code>POST https://fal.run/mirelo-ai/sfx2.0/text-to-audio</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/mirelo-ai/sfx2.0/text-to-audio/api)
+
+```typescript
+const res = await fal.run.mireloAi.sfx2p0.textToAudio({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

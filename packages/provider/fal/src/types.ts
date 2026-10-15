@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalMireloAiSfx2p0TextToAudioRequest,
+  FalMireloAiSfx2p0TextToAudioRequestInput,
+  FalMireloAiSfx2p0TextToAudioParsedRequest,
   FalMarigoldV2ParsedRequest,
   FalMarigoldV2RequestInput,
   FalMarigoldV2Request,
@@ -581,6 +584,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalMireloAiSfx2p0TextToAudioRequest,
   FalMarigoldV2Request,
   FalBriaGuidedRemoveBackgroundRequest,
   FalBriaFiboEdit1p5ExpandRequest,
@@ -5072,4 +5076,34 @@ type FalMarigoldV2Fn = ((
 
 export interface FalRunNamespace {
   marigoldV2: FalMarigoldV2Fn;
+}
+
+export interface FalMireloAiSfx2p0TextToAudioResponse {
+  model: string;
+  seeds: number[];
+  audio: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  }[];
+}
+
+type FalMireloAiSfx2p0TextToAudioFn = ((
+  params: FalMireloAiSfx2p0TextToAudioRequest,
+  signal?: AbortSignal
+) => Promise<FalMireloAiSfx2p0TextToAudioResponse>) & {
+  schema: ApicitySchema<FalMireloAiSfx2p0TextToAudioRequest>;
+};
+
+export interface FalRunMireloAiSfx2p0Namespace {
+  textToAudio: FalMireloAiSfx2p0TextToAudioFn;
+}
+
+export interface FalRunMireloAiNamespace {
+  sfx2p0: FalRunMireloAiSfx2p0Namespace;
+}
+
+export interface FalRunNamespace {
+  mireloAi: FalRunMireloAiNamespace;
 }

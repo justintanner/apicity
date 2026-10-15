@@ -1026,7 +1026,9 @@ describe("fal edit/image pricing estimates", () => {
     // source clip rather than request fields;
     // xai/grok-imagine-video/v1.5/reference-to-video is compute-second-metered
     // too, unlike its unversioned sibling, which bills per output second and
-    // stays statically priced. All forty-six therefore use fal's
+    // stays statically priced. Mirelo SFX 2.0 text-to-audio bills 2 units for a 1.5-second sample,
+    // contradicting the card's unrounded seconds formula. All forty-seven
+    // therefore use fal's
     // pricing-estimate API.
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toEqual([
       "alibaba/qwen-image-3/edit",
@@ -1066,6 +1068,7 @@ describe("fal edit/image pricing estimates", () => {
       "minimax/h3/reference-to-video",
       "minimax/h3/text-to-video",
       "minimax/music-3",
+      "mirelo-ai/sfx2.0/text-to-audio",
       "openai/gpt-image-2.5/flare/edit",
       "openai/gpt-image-2.5/flare/text-to-image",
       "openai/gpt-image-2.5/sunburst/edit",

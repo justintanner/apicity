@@ -1340,6 +1340,15 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST mureka.api.generate.instrumental": {
+    "source": "fal/mureka-api-generate-instrumental",
+    "payload": {
+      "model": "mureka-7.6",
+      "prompt": "calm lo-fi piano loop"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST mureka.api.generate.lyrics": {
     "source": "fal/mureka-api-generate-lyrics",
     "payload": {

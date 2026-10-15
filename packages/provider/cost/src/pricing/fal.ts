@@ -905,6 +905,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "mirelo-ai/sfx2.0/text-to-audio",
   "mirelo-ai/sfx2.0/video-to-audio",
   "mirelo-ai/sfx2.0/video-to-video",
+  "mureka/api/generate/instrumental",
   "openai/gpt-image-2.5/flare/edit",
   "openai/gpt-image-2.5/flare/text-to-image",
   "openai/gpt-image-2.5/sunburst/edit",

@@ -17,6 +17,8 @@ Polly.register(FSPersister);
 export interface PollyContext {
   polly: Polly;
   mode: string;
+  /** Releases this context's hold on the recording dispatcher. */
+  releaseDispatcher?: () => void;
 }
 
 interface PersistedHarHeader {
@@ -889,6 +891,84 @@ function resolvePollyMode(): {
   return { raw, adapter: raw, recordIfMissing: false };
 }
 
+// ---------------------------------------------------------------------------
+// Slow responses while recording
+// ---------------------------------------------------------------------------
+//
+// Node's built-in fetch (undici) aborts a request whose response headers take
+// longer than 300 s, or whose body stalls for 300 s, whatever timeout the
+// provider sets. A sync call such as fal.run sends nothing until the media is
+// ready, so a long recording would die on our side while the provider still
+// finished and billed it, leaving no HAR (ac-qpennr: a Vidu Q4
+// reference-to-video call queued for 147 s and ran for 261 s). Outside
+// replay, setupPolly therefore holds a global dispatcher with both timeouts
+// disabled until teardownPolly, so the provider's own timeout decides. Replay
+// never reaches the network and leaves the dispatcher alone.
+
+// Node's bundled undici keeps its global dispatcher under this symbol.
+const UNDICI_GLOBAL_DISPATCHER = Symbol.for("undici.globalDispatcher.1");
+
+type UndiciAgentClass = new (options: {
+  headersTimeout: number;
+  bodyTimeout: number;
+}) => object;
+
+/**
+ * Builds an Agent of Node's own bundled undici class whose headers and body
+ * timeouts are `timeoutMs` (0 disables them). Pass it as a fetch init's
+ * `dispatcher`, or let holdRecordingDispatcher install one globally.
+ */
+export function createUndiciAgent(timeoutMs: number): object {
+  // Reading fetch loads Node's bundled undici, which registers its Agent.
+  void globalThis.fetch;
+  const globalAgent = (globalThis as unknown as Record<symbol, unknown>)[
+    UNDICI_GLOBAL_DISPATCHER
+  ];
+  if (typeof globalAgent !== "object" || globalAgent === null) {
+    throw new Error(
+      "tests/harness.ts: Node's undici global dispatcher is missing, so a " +
+        "recording slower than 300 s would abort after the provider billed " +
+        "it; update UNDICI_GLOBAL_DISPATCHER before recording."
+    );
+  }
+  const Agent = globalAgent.constructor as UndiciAgentClass;
+  return new Agent({ headersTimeout: timeoutMs, bodyTimeout: timeoutMs });
+}
+
+let recordingDispatcherHolds = 0;
+let dispatcherBeforeRecording: unknown;
+
+/**
+ * Outside replay, installs a patient undici Agent (timeouts `timeoutMs`,
+ * disabled by default) as the global fetch dispatcher and returns the
+ * function that releases this hold. Holds are counted: the first installs the
+ * Agent (its `timeoutMs` wins) and the last release restores the previous
+ * dispatcher. In replay it changes nothing and returns a no-op.
+ */
+export function holdRecordingDispatcher(
+  mode: RawPollyMode,
+  timeoutMs = 0
+): () => void {
+  if (mode === "replay") return () => {};
+  const globals = globalThis as unknown as Record<symbol, unknown>;
+  if (recordingDispatcherHolds === 0) {
+    const patient = createUndiciAgent(timeoutMs);
+    dispatcherBeforeRecording = globals[UNDICI_GLOBAL_DISPATCHER];
+    globals[UNDICI_GLOBAL_DISPATCHER] = patient;
+  }
+  recordingDispatcherHolds++;
+  let released = false;
+  return () => {
+    if (released) return;
+    released = true;
+    recordingDispatcherHolds--;
+    if (recordingDispatcherHolds === 0) {
+      globals[UNDICI_GLOBAL_DISPATCHER] = dispatcherBeforeRecording;
+      dispatcherBeforeRecording = undefined;
+    }
+  };
+}
+
 function setupPollyWithOptions(
   recordingName: string,
   options: {
@@ -897,6 +977,7 @@ function setupPollyWithOptions(
   }
 ): PollyContext {
   const { raw, adapter, recordIfMissing } = resolvePollyMode();
+  const releaseDispatcher = holdRecordingDispatcher(raw);
   const recordingsDir = path.resolve(import.meta.dirname, "recordings");
 
   const defaultMatchRequestsBy = {
@@ -914,18 +995,25 @@ function setupPollyWithOptions(
     },
   };
 
-  const polly = new Polly(recordingName, {
-    mode: adapter,
-    adapters: [FetchAdapter],
-    persister: FSPersister,
-    persisterOptions: {
-      fs: { recordingsDir },
-    },
-    recordIfMissing,
-    recordFailedRequests: true,
-    timing: Timing.fixed(0),
-    matchRequestsBy: options.matchRequestsBy ?? defaultMatchRequestsBy,
-  });
+  let polly: Polly;
+  try {
+    polly = new Polly(recordingName, {
+      mode: adapter,
+      adapters: [FetchAdapter],
+      persister: FSPersister,
+      persisterOptions: {
+        fs: { recordingsDir },
+      },
+      recordIfMissing,
+      recordFailedRequests: true,
+      timing: Timing.fixed(0),
+      matchRequestsBy: options.matchRequestsBy ?? defaultMatchRequestsBy,
+    });
+  } catch (error) {
+    // No context exists to tear down, so give the hold back here.
+    releaseDispatcher();
+    throw error;
+  }
 
   // Redact sensitive values before persisting to disk and keep a scrubbed
   // multipart summary so prompts remain visible in the harness viewer.
@@ -951,11 +1039,15 @@ function setupPollyWithOptions(
     redactPersistedHarSecrets(recording as PersistedHarRecording);
   });
 
-  return { polly, mode: raw };
+  return { polly, mode: raw, releaseDispatcher };
 }
 
 export async function teardownPolly(ctx: PollyContext): Promise<void> {
-  await ctx.polly.stop();
+  try {
+    await ctx.polly.stop();
+  } finally {
+    ctx.releaseDispatcher?.();
+  }
 }
 
 export function recordingExists(recordingName: string): boolean {

@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Kandinsky 6.0 VSR video upscaling, dynamically priced (ac-tajy82).
+
 - Added MiniMax H3 Max relight (ac-chupol).
 
 - Added Vidu Q4 reference-to-video (ac-qpennr).

@@ -1751,3 +1751,4 @@ fal	nanoBanana2p1.edit	POST	https://fal.run/google/nano-banana-2.1/edit	https://
 fal	vidu.q4.imageToVideo	POST	https://fal.run/fal-ai/vidu/q4/image-to-video	https://fal.ai/models/fal-ai/vidu/q4/image-to-video/api
 fal	vidu.q4.referenceToVideo	POST	https://fal.run/fal-ai/vidu/q4/reference-to-video	https://fal.ai/models/fal-ai/vidu/q4/reference-to-video/api
 fal	minimax.h3Max.relight	POST	https://fal.run/minimax/h3-max/relight	https://fal.ai/models/minimax/h3-max/relight/api
+fal	kandinsky6Vsr	POST	https://fal.run/fal-ai/kandinsky6-vsr	https://fal.ai/models/fal-ai/kandinsky6-vsr/api

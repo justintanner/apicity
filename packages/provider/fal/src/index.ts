@@ -21,6 +21,11 @@ export type {
 
 // Export all types
 export type {
+  FalKandinsky6VsrRequest,
+  FalKandinsky6VsrRequestInput,
+  FalKandinsky6VsrParsedRequest,
+  FalKandinsky6VsrResponse,
+  FalRunKandinsky6VsrNamespace,
   FalMinimaxH3MaxRelightRequest,
   FalMinimaxH3MaxRelightRequestInput,
   FalMinimaxH3MaxRelightParsedRequest,

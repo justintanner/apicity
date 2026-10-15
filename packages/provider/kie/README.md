@@ -963,6 +963,8 @@ Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.kie.ai/market/gemini/gemini-3-flash-v1beta)
 
+> **Deprecated:** KIE has stopped documenting and pricing Gemini 3 Flash on this v1beta route. On 2026-10-15 the docs page linked above answered HTTP 404 and was gone from `llms.txt`, and KIE's public pricing feed no longer carried the model's rows (the 2026-09-11 feed did). This method still sends requests unchanged, but KIE may stop answering them without notice. Prefer a documented Gemini Flash endpoint, such as `kie.gemini.post.v1.models.gemini38Flash.streamGenerateContent`.
+
 > **HTTP 200 error bodies:** this method rejects with `KieError` when an HTTP 200 JSON body has no `candidates` array and carries either KIE's numeric `code` envelope (`{ code, msg }`, any `code` other than 200) or a top-level `error` object (such as KIE docs' `{ error: { message, type } }` or Google's `{ error: { code, message, status } }`).
 
 ```typescript
@@ -983,6 +985,8 @@ Source: [`packages/provider/kie/src/gemini.ts`](src/gemini.ts)
 Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.kie.ai/market/gemini/gemini-2-5-flash)
+
+> **Deprecated:** KIE has stopped documenting and pricing Gemini 2.5 Flash chat. On 2026-10-15 the docs page linked above answered HTTP 404 and was gone from `llms.txt`, and KIE's public pricing feed no longer carried the model's rows (the 2026-09-11 feed did). This method still sends requests unchanged, but KIE may stop answering them without notice. Prefer a documented Gemini Flash endpoint, such as `kie.gemini38FlashOpenai.post.v1.chat.completions`.
 
 ```typescript
 const res = await kie.gemini25Flash.post.v1.chat.completions({ /* ... */ });
@@ -1116,6 +1120,8 @@ Source: [`packages/provider/kie/src/gemini-38-flash-openai.ts`](src/gemini-38-fl
 Cost tier: <code>prohibitive</code>
 
 [Upstream docs ↗](https://docs.kie.ai/market/gemini/gemini-3-flash)
+
+> **Deprecated:** KIE has stopped documenting and pricing Gemini 3 Flash chat. On 2026-10-15 the docs page linked above answered HTTP 404 and was gone from `llms.txt`, and KIE's public pricing feed no longer carried the model's rows (the 2026-09-11 feed did). This method still sends requests unchanged, but KIE may stop answering them without notice. Prefer a documented Gemini Flash endpoint, such as `kie.gemini38FlashOpenai.post.v1.chat.completions`.
 
 ```typescript
 const res = await kie.gemini3Flash.post.v1.chat.completions({ /* ... */ });

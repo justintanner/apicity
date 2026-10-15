@@ -74,6 +74,14 @@ interface KieGemini25FlashChatCompletionsMethod {
 }
 
 interface KieGemini25FlashChatNamespace {
+  /**
+   * @deprecated KIE no longer documents Gemini 2.5 Flash chat or lists a
+   * price for it: on 2026-10-15 its docs page answered HTTP 404 and the
+   * public pricing feed no longer carried its rows. Requests are still sent
+   * unchanged, but KIE may stop answering them without notice. Prefer a
+   * documented Gemini Flash endpoint, such as
+   * `gemini38FlashOpenai.post.v1.chat.completions`.
+   */
   completions: KieGemini25FlashChatCompletionsMethod;
 }
 

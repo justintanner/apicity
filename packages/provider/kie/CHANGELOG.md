@@ -58,6 +58,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `paygate: { secret: "" }` still fails closed. Migration: if you relied on
   paid calls failing closed by default, pass `paygate: { secret }`.
 
+### Deprecated
+
+- `gemini25Flash.post.v1.chat.completions`,
+  `gemini3Flash.post.v1.chat.completions` and
+  `gemini.post.v1.models.gemini3FlashV1betamodels.streamGenerateContent`.
+  KIE has stopped documenting and pricing Gemini 2.5 Flash and Gemini 3 Flash:
+  on 2026-10-15 their docs pages answered HTTP 404 and the public pricing feed
+  no longer carried their rows. The methods still send requests unchanged, but
+  KIE may stop answering them without notice. Migration: move to a documented
+  Gemini Flash endpoint, such as `gemini38FlashOpenai.post.v1.chat.completions`
+  or `gemini.post.v1.models.gemini38Flash.streamGenerateContent`.
+
 ### Fixed
 
 - Qwen2 image-edit seed validation and discovery metadata now follow KIE's

@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-181 endpoints across 42 groups. Each method mirrors an upstream URL path.
+182 endpoints across 42 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -2380,6 +2380,23 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 </details>
 
 ### nanoBanana2p1
+
+<details>
+<summary><code>POST</code> <b><code>fal.nanoBanana2p1.edit</code></b></summary>
+
+<code>POST https://fal.run/google/nano-banana-2.1/edit</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/google/nano-banana-2.1/edit/api)
+
+```typescript
+const res = await fal.run.nanoBanana2p1.edit({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>fal.nanoBanana2p1.textToImage</code></b></summary>

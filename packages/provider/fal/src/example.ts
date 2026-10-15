@@ -1460,6 +1460,19 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST nanoBanana2p1.edit": {
+    "source": "fal/google-nano-banana-2-1-edit",
+    "payload": {
+      "prompt": "Give the cat in image 1 a small red knitted scarf.",
+      "image_urls": [
+        "<inline image/jpeg data URL — replace with a real URL or upload>"
+      ],
+      "resolution": "1K",
+      "thinking_level": "minimal"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST nanoBanana2p1.textToImage": {
     "source": "fal/google-nano-banana-2-1",
     "payload": {

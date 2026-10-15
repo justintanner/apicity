@@ -23,7 +23,10 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalNanoBanana2p1EditRequest,
   FalNanoBanana2p1TextToImageRequest,
+  FalNanoBanana2p1EditRequestInput,
+  FalNanoBanana2p1EditParsedRequest,
   FalNanoBanana2p1TextToImageRequestInput,
   FalNanoBanana2p1TextToImageParsedRequest,
   FalMurekaApiGeneratePodcastRequest,
@@ -605,6 +608,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalNanoBanana2p1EditRequest,
   FalNanoBanana2p1TextToImageRequest,
   FalMurekaApiGeneratePodcastRequest,
   FalMurekaApiGenerateSongRequest,
@@ -5400,7 +5404,29 @@ type FalNanoBanana2p1TextToImageFn = ((
   schema: ApicitySchema<FalNanoBanana2p1TextToImageRequest>;
 };
 
+export interface FalNanoBanana2p1EditResponse {
+  /** The edited images. */
+  images: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+  }[];
+  /** The description of the generated images. */
+  description: string;
+}
+
+type FalNanoBanana2p1EditFn = ((
+  params: FalNanoBanana2p1EditRequest,
+  signal?: AbortSignal
+) => Promise<FalNanoBanana2p1EditResponse>) & {
+  schema: ApicitySchema<FalNanoBanana2p1EditRequest>;
+};
+
 export interface FalRunNanoBanana2p1Namespace {
+  edit: FalNanoBanana2p1EditFn;
   textToImage: FalNanoBanana2p1TextToImageFn;
 }
 export interface FalRunNamespace {

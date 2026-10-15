@@ -1034,7 +1034,7 @@ describe("fal edit/image pricing estimates", () => {
     // Banana 2.1 bills prompt, thinking and image tokens that no request field
     // fixes. Kandinsky 6.0 VSR bills output megapixels per output frame, set by
     // the source clip and the model rather than a request field. All
-    // fifty-four use fal's pricing-estimate API.
+    // fifty-five use fal's pricing-estimate API.
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toEqual([
       "alibaba/qwen-image-3/edit",
       "alibaba/qwen-image-3/text-to-image",
@@ -1048,6 +1048,7 @@ describe("fal edit/image pricing estimates", () => {
       "bytedance/seedream/v5/pro/layerize",
       "bytedance/seedream/v5/pro/text-to-image",
       "fal-ai/kandinsky6-vsr",
+      "fal-ai/kandinsky6-vsr/lite",
       "google/gemini-omni-flash",
       "google/gemini-omni-flash/edit",
       "google/gemini-omni-flash/image-to-video",

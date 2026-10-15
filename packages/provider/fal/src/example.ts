@@ -796,6 +796,15 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST kandinsky6Vsr.lite": {
+    "source": "fal/kandinsky6-vsr-lite",
+    "payload": {
+      "video_url": "<inline video/mp4 data URL — replace with a real URL or upload>",
+      "upscale_factor": 2
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST klingVideo.o3p4k.imageToVideo": {
     "source": "fal/kling-video-o3p4k-image-to-video",
     "payload": {

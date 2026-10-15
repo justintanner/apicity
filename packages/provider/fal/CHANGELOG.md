@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Mirelo SFX 2.0 video-to-audio, dynamically priced (ac-qwv5yi).
+
 - Added Mirelo SFX 2.0 text-to-audio, dynamically priced (ac-ity0w3).
 
 - Added Marigold V2 depth (ac-7r67ib).

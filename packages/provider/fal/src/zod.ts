@@ -9219,7 +9219,111 @@ export type FalMireloAiSfx2p0TextToAudioParsedRequest = z.output<
   typeof FalMireloAiSfx2p0TextToAudioRequestSchema
 >;
 
+// Mirelo SFX 2.0 video-to-audio.
+export const FalMireloAiSfx2p0VideoToAudioRequestSchema = z
+  .object({
+    video_url: z.string().describe("Video URL to add sound to."),
+    text_prompt: z
+      .string()
+      .max(2000)
+      .nullable()
+      .optional()
+      .describe("Optional text prompt guiding generation."),
+    negative_prompt: z
+      .string()
+      .max(1000)
+      .nullable()
+      .optional()
+      .describe(
+        "Sounds to keep out of the result, as a short comma-separated list."
+      ),
+    preserve_speech: z
+      .boolean()
+      .default(true)
+      .describe(
+        "Keep the speech in the input's audio and generate the rest of the soundtrack around it. False generates sound effects only and suppresses speech."
+      ),
+    duration: z
+      .number()
+      .min(1)
+      .max(600)
+      .default(10)
+      .describe(
+        "Seconds of sound to generate, at least 1 s, clamped to the video's length. Over 10 s generates in 10 s windows. A video shorter than 1 s answers 400."
+      ),
+    num_samples: z
+      .number()
+      .int()
+      .min(1)
+      .max(4)
+      .default(2)
+      .describe("Number of variations to generate."),
+    seed: z
+      .number()
+      .refine(Number.isInteger, "Seed must be an integer")
+      .min(-1)
+      .max(18446744073709552000)
+      .nullable()
+      .optional()
+      .describe("Seed for generation. -1 or None for random."),
+    upload_audio_format: z
+      .enum(["wav", "mp3", "aac", "flac"])
+      .default("wav")
+      .describe("Audio format of each file"),
+    upload_audio_bitrate_kbps: z
+      .number()
+      .int()
+      .min(32)
+      .max(320)
+      .nullable()
+      .optional()
+      .describe(
+        "Bitrate in kbps for an mp3 or aac upload. mp3 is written at exactly this constant rate, one of 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320. aac takes 32 to 256 as a target the encoder may undershoot on mono or sparse audio. Unset keeps the default: mp3 at LAME V0 VBR, aac at a 256 kbps target. Refused with a lossless upload_audio_format."
+      ),
+  })
+  .refine(
+    (p) =>
+      p.upload_audio_bitrate_kbps == null ||
+      p.upload_audio_format === "mp3" ||
+      p.upload_audio_format === "aac",
+    {
+      path: ["upload_audio_bitrate_kbps"],
+      message: "Bitrate is refused for lossless audio formats",
+    }
+  )
+  .refine(
+    (p) =>
+      p.upload_audio_bitrate_kbps == null ||
+      p.upload_audio_format !== "mp3" ||
+      [32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320].includes(
+        p.upload_audio_bitrate_kbps
+      ),
+    {
+      path: ["upload_audio_bitrate_kbps"],
+      message: "mp3 requires a supported constant bitrate",
+    }
+  )
+  .refine(
+    (p) =>
+      p.upload_audio_bitrate_kbps == null ||
+      p.upload_audio_format !== "aac" ||
+      p.upload_audio_bitrate_kbps <= 256,
+    {
+      path: ["upload_audio_bitrate_kbps"],
+      message: "aac bitrate must not exceed 256 kbps",
+    }
+  );
+export type FalMireloAiSfx2p0VideoToAudioRequest = z.input<
+  typeof FalMireloAiSfx2p0VideoToAudioRequestSchema
+>;
+export type FalMireloAiSfx2p0VideoToAudioRequestInput =
+  FalMireloAiSfx2p0VideoToAudioRequest;
+export type FalMireloAiSfx2p0VideoToAudioParsedRequest = z.output<
+  typeof FalMireloAiSfx2p0VideoToAudioRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "mirelo-ai/sfx2.0/video-to-audio": FalMireloAiSfx2p0VideoToAudioRequestSchema,
   "mirelo-ai/sfx2.0/text-to-audio": FalMireloAiSfx2p0TextToAudioRequestSchema,
   "fal-ai/marigold-v2": FalMarigoldV2RequestSchema,
   "bria/guided-remove-background": FalBriaGuidedRemoveBackgroundRequestSchema,

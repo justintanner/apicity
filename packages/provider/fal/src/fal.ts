@@ -1,4 +1,6 @@
 import {
+  FalMireloAiSfx2p0VideoToAudioRequest,
+  FalMireloAiSfx2p0VideoToAudioResponse,
   FalMireloAiSfx2p0TextToAudioRequest,
   FalMireloAiSfx2p0TextToAudioResponse,
   FalMarigoldV2Request,
@@ -350,6 +352,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalMireloAiSfx2p0VideoToAudioRequestSchema,
   FalMireloAiSfx2p0TextToAudioRequestSchema,
   FalMarigoldV2RequestSchema,
   FalBriaGuidedRemoveBackgroundRequestSchema,
@@ -3050,6 +3053,19 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/mirelo-ai/sfx2.0/video-to-audio
+  // Docs: https://fal.ai/models/mirelo-ai/sfx2.0/video-to-audio/api
+  const mireloAiSfx2p0VideoToAudio = jsonBody<
+    FalMireloAiSfx2p0VideoToAudioRequest,
+    FalMireloAiSfx2p0VideoToAudioResponse
+  >(
+    "POST",
+    "/mirelo-ai/sfx2.0/video-to-audio",
+    FalMireloAiSfx2p0VideoToAudioRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
     mireloAi: {
       sfx2p0: {
@@ -3057,6 +3073,10 @@ export function createFal(opts: FalOptions): FalProvider {
         // POST https://fal.run/mirelo-ai/sfx2.0/text-to-audio
         // Docs: https://fal.ai/models/mirelo-ai/sfx2.0/text-to-audio/api
         textToAudio: mireloAiSfx2p0TextToAudio,
+        // sig-ok: stylistic dotPath divergence from URL
+        // POST https://fal.run/mirelo-ai/sfx2.0/video-to-audio
+        // Docs: https://fal.ai/models/mirelo-ai/sfx2.0/video-to-audio/api
+        videoToAudio: mireloAiSfx2p0VideoToAudio,
       },
     },
     // sig-ok: stylistic dotPath divergence from URL

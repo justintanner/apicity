@@ -51,7 +51,10 @@ describe("Nano Banana 2.1 text-to-image contract", () => {
     const provider = createFal({ apiKey: "test-key" });
     const leaf = provider.run.nanoBanana2p1.textToImage;
     expect(leaf).toBe(provider.post.run.nanoBanana2p1.textToImage);
-    expect(Object.keys(provider.run.nanoBanana2p1)).toEqual(["textToImage"]);
+    expect(Object.keys(provider.run.nanoBanana2p1)).toEqual([
+      "edit",
+      "textToImage",
+    ]);
     expect(leaf.schema).toBe(schema);
     expect(FAL_ENDPOINT_REQUEST_SCHEMAS[endpoint]).toBe(schema);
     expectTypeOf<

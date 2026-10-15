@@ -1689,6 +1689,17 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST vidu.q4.imageToVideo": {
+    "source": "fal/vidu-q4-image-to-video",
+    "payload": {
+      "image_url": "<inline image/jpeg data URL — replace with a real URL or upload>",
+      "prompt": "The white cat looks toward the camera, blinks slowly, and gently tilts its head.",
+      "duration": 3,
+      "resolution": "540p"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST virtualTryOn": {
     "source": "fal/google-virtual-try-on",
     "payload": {

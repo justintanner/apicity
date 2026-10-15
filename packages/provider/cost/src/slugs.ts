@@ -416,6 +416,7 @@ export const MODEL_SLUGS = {
   // same underlying models kie also resells, so their slugs intentionally
   // match kie's.
   fal: {
+    "fal-ai/vidu/q4/image-to-video": "viduq4",
     "fal-ai/marigold-v2": "marigold2",
     "mureka/api/generate/song": "mureka",
     "mureka/api/generate/lyrics": "mureka",
@@ -899,6 +900,7 @@ export const MODEL_DISPLAY = {
   },
 
   fal: {
+    "fal-ai/vidu/q4/image-to-video": "Vidu Q4",
     "fal-ai/marigold-v2": "Marigold V2",
     "mureka/api/generate/song": "Mureka Song",
     "mureka/api/generate/lyrics": "Mureka Lyrics",

@@ -1,4 +1,6 @@
 import {
+  FalViduQ4ImageToVideoRequest,
+  FalViduQ4ImageToVideoResponse,
   FalNanoBanana2p1EditRequest,
   FalNanoBanana2p1EditResponse,
   FalNanoBanana2p1TextToImageRequest,
@@ -366,6 +368,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalViduQ4ImageToVideoRequestSchema,
   FalNanoBanana2p1EditRequestSchema,
   FalNanoBanana2p1TextToImageRequestSchema,
   FalMurekaApiGeneratePodcastRequestSchema,
@@ -3171,7 +3174,28 @@ export function createFal(opts: FalOptions): FalProvider {
     base: runBaseURL,
   });
 
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/fal-ai/vidu/q4/image-to-video
+  // Docs: https://fal.ai/models/fal-ai/vidu/q4/image-to-video/api
+  const viduQ4ImageToVideo = jsonBody<
+    FalViduQ4ImageToVideoRequest,
+    FalViduQ4ImageToVideoResponse
+  >(
+    "POST",
+    "/fal-ai/vidu/q4/image-to-video",
+    FalViduQ4ImageToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
+    vidu: {
+      q4: {
+        // sig-ok: stylistic dotPath divergence from URL
+        // POST https://fal.run/fal-ai/vidu/q4/image-to-video
+        // Docs: https://fal.ai/models/fal-ai/vidu/q4/image-to-video/api
+        imageToVideo: viduQ4ImageToVideo,
+      },
+    },
     nanoBanana2p1: {
       // sig-ok: stylistic dotPath divergence from URL
       // POST https://fal.run/google/nano-banana-2.1/edit

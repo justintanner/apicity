@@ -2102,13 +2102,15 @@ export const KieGemini25ProResponseFormatSchema = z
   })
   .passthrough();
 
+// Docs: https://docs.kie.ai/market/gemini/gemini-2-5-pro (2026-10-15)
+// No `model` field; `stream` and `include_thoughts` default to false,
+// while `reasoning_effort` defaults to "high".
 export const KieGemini25ProChatCompletionsRequestSchema = z
   .object({
-    model: z.literal("gemini-2.5-pro").optional(),
     messages: z.array(KieGemini25ProMessageSchema).min(1),
-    stream: z.boolean().default(true),
+    stream: z.boolean().default(false),
     tools: z.array(KieGemini25ProToolSchema).min(0).optional(),
-    include_thoughts: z.boolean().default(true),
+    include_thoughts: z.boolean().default(false),
     reasoning_effort: KieGemini25ProReasoningEffortSchema.default("high"),
     response_format: KieGemini25ProResponseFormatSchema.optional(),
   })

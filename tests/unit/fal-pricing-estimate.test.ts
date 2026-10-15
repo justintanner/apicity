@@ -1034,9 +1034,9 @@ describe("fal edit/image pricing estimates", () => {
     // Banana 2.1 bills prompt, thinking and image tokens that no request field
     // fixes. Kandinsky 6.0 VSR bills output megapixels per output frame, set by
     // the source clip and the model rather than a request field. Kandinsky
-    // 6.0 Lite text-to-video billed 0.5011 units ($0.0802) for a four-step
-    // clip its card prices at $0.08. All fifty-six use fal's pricing-estimate
-    // API.
+    // 6.0 Lite text-to-video and image-to-video each billed 0.5011 units
+    // ($0.0802 and $0.0852) for a four-step clip their cards price at half a
+    // unit ($0.08 and $0.085). All fifty-seven use fal's pricing-estimate API.
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toEqual([
       "alibaba/qwen-image-3/edit",
       "alibaba/qwen-image-3/text-to-image",
@@ -1049,6 +1049,7 @@ describe("fal edit/image pricing estimates", () => {
       "bytedance/seedream/v5/pro/edit",
       "bytedance/seedream/v5/pro/layerize",
       "bytedance/seedream/v5/pro/text-to-image",
+      "fal-ai/kandinsky6-lite/image-to-video",
       "fal-ai/kandinsky6-lite/text-to-video",
       "fal-ai/kandinsky6-vsr",
       "fal-ai/kandinsky6-vsr/lite",

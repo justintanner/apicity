@@ -787,6 +787,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST kandinsky6Lite.imageToVideo": {
+    "source": "fal/kandinsky6-lite-image-to-video",
+    "payload": {
+      "prompt": "the cat blinks",
+      "image_url": "<inline image/jpeg data URL — replace with a real URL or upload>",
+      "num_inference_steps": 4
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST kandinsky6Lite.textToVideo": {
     "source": "fal/kandinsky6-lite-text-to-video",
     "payload": {

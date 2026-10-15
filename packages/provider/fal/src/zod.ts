@@ -10143,7 +10143,74 @@ export type FalKandinsky6LiteTextToVideoParsedRequest = z.output<
   typeof FalKandinsky6LiteTextToVideoRequestSchema
 >;
 
+// Kandinsky 6.0 Lite image-to-video: live OpenAPI 2026-10-15.
+// Docs: https://fal.ai/models/fal-ai/kandinsky6-lite/image-to-video/api
+export const FalKandinsky6LiteImageToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .describe("The text prompt describing the video and its sound."),
+  image_url: z
+    .string()
+    .describe("The image used as the first frame of the video."),
+  aspect_ratio: z
+    .enum(["16:9", "9:16", "1:1", "4:3", "3:4", "auto"])
+    .default("auto")
+    .describe(
+      "The aspect ratio of the generated video. `auto` picks the supported ratio closest to the image's; the image is center-cropped to it."
+    ),
+  generate_audio: z
+    .boolean()
+    .default(true)
+    .describe("Whether to generate a synchronized audio track."),
+  enable_prompt_expansion: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Whether to rewrite the prompt into a detailed video+audio description with the model's own Qwen2.5-VL text encoder before generating."
+    ),
+  upscale_factor: z
+    .union([z.literal(2), z.literal(2.25), z.literal(4)])
+    .nullable()
+    .optional()
+    .describe(
+      "If set, upscale the generated video by this factor with Kandinsky 6 video super-resolution. One of 2, 2.25 or 4; 2.25 turns the 480p output into 1080p."
+    ),
+  seed: z
+    .number()
+    .int()
+    .nullable()
+    .optional()
+    .describe("The random seed used for the generation process."),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If `True`, the media will be returned as a data URI and the output data won't be available in the request history."
+    ),
+  num_inference_steps: z
+    .number()
+    .int()
+    .min(4)
+    .max(16)
+    .default(10)
+    .describe("The number of denoising steps. Lite is tuned for 10."),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe("Authorized callers may set false to request relaxed screening."),
+});
+export type FalKandinsky6LiteImageToVideoRequest = z.input<
+  typeof FalKandinsky6LiteImageToVideoRequestSchema
+>;
+export type FalKandinsky6LiteImageToVideoRequestInput =
+  FalKandinsky6LiteImageToVideoRequest;
+export type FalKandinsky6LiteImageToVideoParsedRequest = z.output<
+  typeof FalKandinsky6LiteImageToVideoRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "fal-ai/kandinsky6-lite/image-to-video":
+    FalKandinsky6LiteImageToVideoRequestSchema,
   "fal-ai/kandinsky6-lite/text-to-video":
     FalKandinsky6LiteTextToVideoRequestSchema,
   "fal-ai/kandinsky6-vsr/lite": FalKandinsky6VsrLiteRequestSchema,

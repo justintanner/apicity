@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-189 endpoints across 45 groups. Each method mirrors an upstream URL path.
+190 endpoints across 46 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -1276,6 +1276,25 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.kandinsky6Lite.textToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+### kandinsky6Pro
+
+<details>
+<summary><code>POST</code> <b><code>fal.kandinsky6Pro.textToVideo</code></b></summary>
+
+<code>POST https://fal.run/fal-ai/kandinsky6-pro/text-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/fal-ai/kandinsky6-pro/text-to-video/api)
+
+```typescript
+const res = await fal.run.kandinsky6Pro.textToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

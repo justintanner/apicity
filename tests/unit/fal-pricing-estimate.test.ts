@@ -1030,8 +1030,9 @@ describe("fal edit/image pricing estimates", () => {
     // and video-to-video each bill 2 units for a 1.5-second sample,
     // contradicting the card's seconds formula. Mureka instrumental billed 2
     // units ($0.015) for a mureka-7.6 request its card prices at $0.045.
-    // Mureka podcast bills output minutes that no request field fixes. All
-    // fifty-one use fal's pricing-estimate API.
+    // Mureka podcast bills output minutes that no request field fixes. Nano
+    // Banana 2.1 bills prompt, thinking and image tokens that no request field
+    // fixes. All fifty-two use fal's pricing-estimate API.
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toEqual([
       "alibaba/qwen-image-3/edit",
       "alibaba/qwen-image-3/text-to-image",
@@ -1053,6 +1054,7 @@ describe("fal edit/image pricing estimates", () => {
       "google/gemini-omni-flash/v1.1/reference-to-video",
       "google/gemini-omni-flash/v1.1/text-to-video",
       "google/nano-banana-2-lite",
+      "google/nano-banana-2.1",
       "google/nano-banana-lite/edit",
       "lightricks/ltx-2.5/image-to-video/fast",
       "lightricks/ltx-2.5/image-to-video/pro",

@@ -1,4 +1,6 @@
 import {
+  FalNanoBanana2p1TextToImageRequest,
+  FalNanoBanana2p1TextToImageResponse,
   FalMurekaApiGeneratePodcastRequest,
   FalMurekaApiGeneratePodcastResponse,
   FalMurekaApiGenerateSongRequest,
@@ -362,6 +364,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalNanoBanana2p1TextToImageRequestSchema,
   FalMurekaApiGeneratePodcastRequestSchema,
   FalMurekaApiGenerateSongRequestSchema,
   FalMurekaApiGenerateInstrumentalRequestSchema,
@@ -3142,7 +3145,26 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/google/nano-banana-2.1
+  // Docs: https://fal.ai/models/google/nano-banana-2.1/api
+  const nanoBanana2p1TextToImage = jsonBody<
+    FalNanoBanana2p1TextToImageRequest,
+    FalNanoBanana2p1TextToImageResponse
+  >(
+    "POST",
+    "/google/nano-banana-2.1",
+    FalNanoBanana2p1TextToImageRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
+    nanoBanana2p1: {
+      // sig-ok: stylistic dotPath divergence from URL
+      // POST https://fal.run/google/nano-banana-2.1
+      // Docs: https://fal.ai/models/google/nano-banana-2.1/api
+      textToImage: nanoBanana2p1TextToImage,
+    },
     mureka: {
       api: {
         generate: {

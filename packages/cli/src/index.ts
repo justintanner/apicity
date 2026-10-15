@@ -43,6 +43,8 @@ export {
   downloadUrlsInResult,
   guessExtension,
   isBinary,
+  DOWNLOAD_STALL_TIMEOUT_MS,
+  type DownloadOptions,
 } from "./output.js";
 export {
   CALL_SHAPES,

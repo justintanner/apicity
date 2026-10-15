@@ -10281,7 +10281,87 @@ export type FalKandinsky6ProTextToVideoParsedRequest = z.output<
   typeof FalKandinsky6ProTextToVideoRequestSchema
 >;
 
+// Kandinsky 6.0 Pro image-to-video: live OpenAPI 2026-10-15.
+// Docs: https://fal.ai/models/fal-ai/kandinsky6-pro/image-to-video/api
+export const FalKandinsky6ProImageToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .describe("The text prompt describing the video and its sound."),
+  image_url: z
+    .string()
+    .describe("The image used as the first frame of the video."),
+  negative_prompt: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "What to avoid in the video. Defaults to the model's built-in negative prompt."
+    ),
+  aspect_ratio: z
+    .enum(["16:9", "9:16", "1:1", "4:3", "3:4", "auto"])
+    .default("auto")
+    .describe(
+      "The aspect ratio of the generated video. `auto` picks the supported ratio closest to the image's; the image is center-cropped to it."
+    ),
+  generate_audio: z
+    .boolean()
+    .default(true)
+    .describe("Whether to generate a synchronized audio track."),
+  enable_prompt_expansion: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Whether to rewrite the prompt into a detailed video+audio description with the model's own Qwen2.5-VL text encoder before generating."
+    ),
+  upscale_factor: z
+    .union([z.literal(2), z.literal(2.25), z.literal(4)])
+    .nullable()
+    .optional()
+    .describe(
+      "If set, upscale the generated video by this factor with Kandinsky 6 video super-resolution. One of 2, 2.25 or 4; 2.25 turns the 480p output into 1080p."
+    ),
+  seed: z
+    .number()
+    .int()
+    .nullable()
+    .optional()
+    .describe("The random seed used for the generation process."),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If `True`, the media will be returned as a data URI and the output data won't be available in the request history."
+    ),
+  num_inference_steps: z
+    .number()
+    .int()
+    .min(8)
+    .max(50)
+    .default(50)
+    .describe("The number of denoising steps."),
+  guidance_scale: z
+    .number()
+    .min(1)
+    .max(10)
+    .default(5)
+    .describe("Classifier-free guidance strength."),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe("Authorized callers may set false to request relaxed screening."),
+});
+export type FalKandinsky6ProImageToVideoRequest = z.input<
+  typeof FalKandinsky6ProImageToVideoRequestSchema
+>;
+export type FalKandinsky6ProImageToVideoRequestInput =
+  FalKandinsky6ProImageToVideoRequest;
+export type FalKandinsky6ProImageToVideoParsedRequest = z.output<
+  typeof FalKandinsky6ProImageToVideoRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "fal-ai/kandinsky6-pro/image-to-video":
+    FalKandinsky6ProImageToVideoRequestSchema,
   "fal-ai/kandinsky6-pro/text-to-video":
     FalKandinsky6ProTextToVideoRequestSchema,
   "fal-ai/kandinsky6-lite/image-to-video":

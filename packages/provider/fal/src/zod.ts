@@ -9445,7 +9445,115 @@ export type FalMurekaApiGenerateInstrumentalParsedRequest = z.output<
   typeof FalMurekaApiGenerateInstrumentalRequestSchema
 >;
 
+// Mureka song generation.
+export const FalMurekaApiGenerateSongRequestSchema = z
+  .object({
+    model: z
+      .enum(["mureka-7.6", "mureka-o2", "mureka-8", "mureka-9", "mureka-9.5"])
+      .or(FalMurekaModelAliasSchema)
+      .default("mureka-9.5")
+      .describe("The model to use for song generation."),
+    lyrics: z
+      .string()
+      .min(1)
+      .max(5000)
+      .nullable()
+      .optional()
+      .describe(
+        "Lyrics to sing, up to 5,000 characters. Provide this for lyrics-to-song generation; otherwise provide prompt for prompt-to-song generation."
+      ),
+    styles: z
+      .array(
+        z.enum([
+          "pop",
+          "rock",
+          "jazz",
+          "r&b",
+          "edm",
+          "ambient",
+          "folk",
+          "latin",
+          "k-pop",
+          "j-pop",
+          "house",
+          "gospel",
+          "lo-fi",
+        ])
+      )
+      .min(1)
+      .nullable()
+      .optional()
+      .describe(
+        "One or more musical genres for prompt-to-song generation. This cannot be used when lyrics is provided."
+      ),
+    prompt: z
+      .string()
+      .min(1)
+      .max(2000)
+      .nullable()
+      .optional()
+      .describe(
+        "Describe the desired song, mood, instrumentation, and vocals. Required when lyrics is omitted; with lyrics, it acts as a music-style control."
+      ),
+    gender: z
+      .enum(["female", "male"])
+      .nullable()
+      .optional()
+      .describe(
+        "Preferred vocal gender for lyrics-to-song generation. An uploaded or cloned voice takes precedence."
+      ),
+    reference_id: z
+      .string()
+      .min(1)
+      .nullable()
+      .optional()
+      .describe(
+        "Reference-music ID returned by /files/upload with purpose='reference'."
+      ),
+    vocal_id: z
+      .string()
+      .min(1)
+      .nullable()
+      .optional()
+      .describe("Voice ID returned by /voice/clone."),
+    melody_id: z
+      .string()
+      .min(1)
+      .nullable()
+      .optional()
+      .describe(
+        "Melody ID returned by /files/upload with purpose='melody'. This cannot be combined with prompt, reference_id, or vocal_id."
+      ),
+  })
+  .refine((p) => p.lyrics != null || p.prompt != null, {
+    path: ["prompt"],
+    message: "Prompt is required when lyrics is omitted.",
+  })
+  .refine((p) => p.lyrics == null || p.styles == null, {
+    path: ["styles"],
+    message: "Styles cannot be used when lyrics is provided.",
+  })
+  .refine(
+    (p) =>
+      p.melody_id == null ||
+      (p.prompt == null && p.reference_id == null && p.vocal_id == null),
+    {
+      path: ["melody_id"],
+      message:
+        "Melody ID cannot be combined with prompt, reference_id, or vocal_id.",
+    }
+  );
+export type FalMurekaApiGenerateSongRequest = z.input<
+  typeof FalMurekaApiGenerateSongRequestSchema
+>;
+export type FalMurekaApiGenerateSongRequestInput =
+  FalMurekaApiGenerateSongRequest;
+export type FalMurekaApiGenerateSongParsedRequest = z.output<
+  typeof FalMurekaApiGenerateSongRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "mureka/api/generate/song": FalMurekaApiGenerateSongRequestSchema,
   "mureka/api/generate/instrumental":
     FalMurekaApiGenerateInstrumentalRequestSchema,
   "mureka/api/generate/lyrics": FalMurekaApiGenerateLyricsRequestSchema,

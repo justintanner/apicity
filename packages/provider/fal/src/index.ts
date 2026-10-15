@@ -21,6 +21,10 @@ export type {
 
 // Export all types
 export type {
+  FalMurekaApiGenerateSongRequest,
+  FalMurekaApiGenerateSongRequestInput,
+  FalMurekaApiGenerateSongParsedRequest,
+  FalMurekaApiGenerateSongResponse,
   FalMurekaApiGenerateInstrumentalRequest,
   FalMurekaApiGenerateInstrumentalRequestInput,
   FalMurekaApiGenerateInstrumentalParsedRequest,

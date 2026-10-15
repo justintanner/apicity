@@ -1357,6 +1357,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST mureka.api.generate.song": {
+    "source": "fal/mureka-api-generate-song",
+    "payload": {
+      "model": "mureka-7.6",
+      "lyrics": "[verse]\nMorning light filtering through the pine\n",
+      "prompt": "acoustic pop"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST nanoBanana.edit": {
     "source": "fal/nano-banana-edit",
     "payload": {

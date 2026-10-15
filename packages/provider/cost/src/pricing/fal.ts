@@ -920,6 +920,30 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 export const fal: Record<string, ModelPricing> = {
   // No card: publicEndpointBilling, pricing API and usage agree on
   // $0.0135 per request; the recorded call billed one unit.
+  // Lyrics-mode mureka-7.6 recorded 6 units at $0.0075 ($0.045),
+  // confirmed by the usage API; rates follow the model page's card.
+  "mureka/api/generate/song": {
+    kind: "perUnit",
+    unit: "generations",
+    units: () => 1,
+    select: [
+      { name: "model", pick: (p) => asString(p.model) ?? "mureka-9.5" },
+      { name: "mode", pick: (p) => (p.lyrics != null ? "lyrics" : "prompt") },
+    ],
+    rates: {
+      "mureka-7.6|lyrics": 0.045,
+      "mureka-o2|lyrics": 0.0675,
+      "mureka-8|lyrics": 0.0675,
+      "mureka-9|lyrics": 0.0675,
+      "mureka-9.5|lyrics": 0.225,
+      "mureka-7.6|prompt": 0.45,
+      "mureka-o2|prompt": 0.45,
+      "mureka-8|prompt": 0.45,
+      "mureka-9|prompt": 0.45,
+      "mureka-9.5|prompt": 0.75,
+    },
+    source: source("mureka/api/generate/song", "2026-10-15"),
+  },
   "mureka/api/generate/lyrics": {
     kind: "perUnit",
     unit: "generations",

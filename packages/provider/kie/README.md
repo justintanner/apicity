@@ -760,7 +760,7 @@ console.log(segmentEditTask.data?.taskId);
 
 ## API Reference
 
-74 endpoints across 36 groups. Each method mirrors an upstream URL path.
+73 endpoints across 35 groups. Each method mirrors an upstream URL path.
 
 ### anthropic
 
@@ -972,27 +972,6 @@ const res = await kie.gemini.post.v1.models.gemini3FlashV1betamodels.streamGener
 ```
 
 Source: [`packages/provider/kie/src/gemini.ts`](src/gemini.ts)
-
-</details>
-
-### gemini25Flash
-
-<details>
-<summary><code>POST</code> <b><code>kie.gemini25Flash.post.v1.chat.completions</code></b></summary>
-
-<code>POST https://api.kie.ai/gemini-2.5-flash/v1/chat/completions</code>
-
-Cost tier: <code>prohibitive</code>
-
-[Upstream docs ↗](https://docs.kie.ai/market/gemini/gemini-2-5-flash)
-
-> **Deprecated:** KIE has stopped documenting and pricing Gemini 2.5 Flash chat. On 2026-10-15 the docs page linked above answered HTTP 404 and was gone from `llms.txt`, and KIE's public pricing feed no longer carried the model's rows (the 2026-09-11 feed did). This method still sends requests unchanged, but KIE may stop answering them without notice. Prefer a documented Gemini Flash endpoint, such as `kie.gemini38FlashOpenai.post.v1.chat.completions`.
-
-```typescript
-const res = await kie.gemini25Flash.post.v1.chat.completions({ /* ... */ });
-```
-
-Source: [`packages/provider/kie/src/gemini-25-flash.ts`](src/gemini-25-flash.ts)
 
 </details>
 

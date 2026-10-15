@@ -1,4 +1,6 @@
 import {
+  FalBriaFiboEdit1p5ExpandResponse,
+  FalBriaFiboEdit1p5ExpandRequest,
   FalLumaAgentRayV3p2TextToVideoResponse,
   FalLumaAgentRayV3p2TextToVideoRequest,
   FalLumaAgentRayV3p2ImageToVideoResponse,
@@ -342,6 +344,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalBriaFiboEdit1p5ExpandRequestSchema,
   FalLumaAgentRayV3p2TextToVideoRequestSchema,
   FalLumaAgentRayV3p2ImageToVideoRequestSchema,
   FalLumaAgentRayV3p2VideoToVideoRequestSchema,
@@ -2990,6 +2993,19 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/bria/fibo-edit-1.5/expand
+  // Docs: https://fal.ai/models/bria/fibo-edit-1.5/expand/api
+  const briaFiboEdit1p5Expand = jsonBody<
+    FalBriaFiboEdit1p5ExpandRequest,
+    FalBriaFiboEdit1p5ExpandResponse
+  >(
+    "POST",
+    "/bria/fibo-edit-1.5/expand",
+    FalBriaFiboEdit1p5ExpandRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
     luma: {
       agent: {
@@ -3075,6 +3091,10 @@ export function createFal(opts: FalOptions): FalProvider {
         textToImage: briaFiboGen1p5TextToImage,
       },
       fiboEdit1p5: {
+        // sig-ok: stylistic dotPath divergence from URL
+        // POST https://fal.run/bria/fibo-edit-1.5/expand
+        // Docs: https://fal.ai/models/bria/fibo-edit-1.5/expand/api
+        expand: briaFiboEdit1p5Expand,
         // sig-ok: stylistic dotPath divergence from URL
         // POST https://fal.run/bria/fibo-edit-1.5/edit
         // Docs: https://fal.ai/models/bria/fibo-edit-1.5/edit/api

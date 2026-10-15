@@ -8916,7 +8916,105 @@ export type FalLumaAgentRayV3p2TextToVideoParsedRequest = z.output<
   typeof FalLumaAgentRayV3p2TextToVideoRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-10-15
+// (sha256 d9b32415819fc7e1e7b4cee205718e2a16343e07a0b4fd5e4245736ae738b505). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/bria/fibo-edit-1.5/expand/api
+export const FalBriaFiboEdit1p5ExpandRequestSchema = z.object({
+  image_url: z.string().describe("The image to expand (file or URL)."),
+  canvas_size: z
+    .array(z.number().int())
+    .min(2)
+    .max(2)
+    .nullable()
+    .optional()
+    .describe(
+      "The desired size of the final image after the expansion, as [width, height]. Area must be under 25 megapixels. Pairs with 'original_image_location'."
+    ),
+  aspect_ratio: z
+    .enum(["1:1", "2:3", "3:2", "3:4", "4:3", "4:5", "5:4", "9:16", "16:9"])
+    .nullable()
+    .optional()
+    .describe(
+      "The desired aspect ratio of the final image. Used over 'original_image_size' and 'original_image_location' if provided: the original is centred and the canvas grows around it."
+    ),
+  original_image_size: z
+    .array(z.number().int())
+    .min(2)
+    .max(2)
+    .nullable()
+    .optional()
+    .describe(
+      "The desired size of the original inside the canvas, as [width, height]; it is resized to this before being placed. Ignored if 'aspect_ratio' is provided."
+    ),
+  original_image_location: z
+    .array(z.number().int())
+    .min(2)
+    .max(2)
+    .nullable()
+    .optional()
+    .describe(
+      "Top-left corner of the original within the canvas, as [x, y]. May sit outside the canvas, in which case the original is cropped. Ignored if 'aspect_ratio' is provided."
+    ),
+  prompt: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "What should appear in the expanded area. Omit it and the model is asked only to extend the image, which is usually what you want for a plain canvas change."
+    ),
+  seed: z
+    .number()
+    .int()
+    .min(0)
+    .max(2147483647)
+    .nullable()
+    .optional()
+    .describe(
+      "Reuse the seed from a previous response to recreate that result. Omit it for a random one, which is reported in the response either way."
+    ),
+  negative_prompt: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "Not supported by this model, and refused rather than ignored -- see 'prompt'. Present only so a request written against the SDXL expansion endpoint fails loudly here instead of silently losing the field."
+    ),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If true, returns the image directly in the response (increases latency)."
+    ),
+  retain_original_quality: z
+    .boolean()
+    .default(true)
+    .describe(
+      "Keep the original's own pixels at full resolution. Generation happens near one megapixel, so a larger canvas is scaled up afterwards; leave this on and the region the mask protected is not resampled at all. Turn it off for a uniformly soft result, which can hide the seam on a textured background."
+    ),
+  preserve_alpha: z
+    .boolean()
+    .default(true)
+    .describe(
+      "Keep the input's transparency. The model works in RGB, so the alpha channel is not generated -- the original's own is extended outwards by replicating its edges, which is what expanding a cutout means. Turn it off to get a flattened RGB result."
+    ),
+  return_model_output: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Also return the model's own frame, before the original was pasted back and the seam blended. Diagnostic only -- it does not change the returned image. Use it to tell a bad generation apart from a bad composite: a boundary already broken in that frame came from the model, not from post-processing."
+    ),
+});
+export type FalBriaFiboEdit1p5ExpandRequest = z.input<
+  typeof FalBriaFiboEdit1p5ExpandRequestSchema
+>;
+export type FalBriaFiboEdit1p5ExpandRequestInput =
+  FalBriaFiboEdit1p5ExpandRequest;
+export type FalBriaFiboEdit1p5ExpandParsedRequest = z.output<
+  typeof FalBriaFiboEdit1p5ExpandRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "bria/fibo-edit-1.5/expand": FalBriaFiboEdit1p5ExpandRequestSchema,
   "luma/agent/ray/v3.2/text-to-video":
     FalLumaAgentRayV3p2TextToVideoRequestSchema,
   "luma/agent/ray/v3.2/image-to-video":

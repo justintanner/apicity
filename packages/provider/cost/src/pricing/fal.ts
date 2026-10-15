@@ -914,6 +914,16 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  // Bria Fibo Edit 1.5 expand bills $0.04 per image. The card
+  // reads $0.04 per image and the pricing API bills 0.04 USD per
+  // image. The recorded call billed x-fal-billable-units 1, one
+  // image, so the charge is $0.04.
+  "bria/fibo-edit-1.5/expand": perImage(
+    "bria/fibo-edit-1.5/expand",
+    0.04,
+    "2026-10-15"
+  ),
+
   // Ray 3.2 image-to-video publishes one package: $0.15 for
   // 5s at 540p. Duration defaults to 5s and resolution to
   // 540p. The schema also allows 10s, but the card does not

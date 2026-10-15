@@ -336,6 +336,15 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST bria.fiboEdit1p5.expand": {
+    "source": "fal/bria-fibo-edit-1-5-expand",
+    "payload": {
+      "image_url": "<inline image/jpeg data URL — replace with a real URL or upload>",
+      "aspect_ratio": "16:9"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST bria.fiboEdit1p5.productHolding": {
     "source": "fal/bria-fibo-edit-1-5-product-holding",
     "payload": {

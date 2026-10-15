@@ -21,6 +21,11 @@ export type {
 
 // Export all types
 export type {
+  FalKandinsky6ProTextToVideoRequest,
+  FalKandinsky6ProTextToVideoRequestInput,
+  FalKandinsky6ProTextToVideoParsedRequest,
+  FalKandinsky6ProTextToVideoResponse,
+  FalRunKandinsky6ProNamespace,
   FalKandinsky6LiteImageToVideoRequest,
   FalKandinsky6LiteImageToVideoRequestInput,
   FalKandinsky6LiteImageToVideoParsedRequest,

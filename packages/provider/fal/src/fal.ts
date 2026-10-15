@@ -33,8 +33,10 @@ import {
   FalNanoBanana2p1TextToImageResponse,
   FalMurekaApiGeneratePodcastRequest,
   FalMurekaApiGeneratePodcastResponse,
+  FalMurekaApiGenerateLyricsVideoRequest,
   FalMurekaApiGenerateSongRequest,
   FalMurekaApiGenerateInstrumentalRequest,
+  FalMurekaApiGenerateLyricsVideoResponse,
   FalMurekaApiGenerateSongResponse,
   FalMurekaApiGenerateInstrumentalResponse,
   FalMurekaApiGenerateLyricsRequest,
@@ -411,6 +413,7 @@ import {
   FalNanoBanana2p1EditRequestSchema,
   FalNanoBanana2p1TextToImageRequestSchema,
   FalMurekaApiGeneratePodcastRequestSchema,
+  FalMurekaApiGenerateLyricsVideoRequestSchema,
   FalMurekaApiGenerateSongRequestSchema,
   FalMurekaApiGenerateInstrumentalRequestSchema,
   FalMurekaApiGenerateLyricsRequestSchema,
@@ -3383,6 +3386,18 @@ export function createFal(opts: FalOptions): FalProvider {
     FalOpenrouterRouterDecisionsRequestSchema,
     { base: runBaseURL }
   );
+  // POST https://fal.run/mureka/api/generate/lyrics-video
+  // Docs: https://fal.ai/models/mureka/api/generate/lyrics-video/api
+  const murekaApiGenerateLyricsVideo = jsonBody<
+    FalMurekaApiGenerateLyricsVideoRequest,
+    FalMurekaApiGenerateLyricsVideoResponse
+  >(
+    "POST",
+    "/mureka/api/generate/lyrics-video",
+    FalMurekaApiGenerateLyricsVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
     openrouter: {
       router: {
@@ -3466,6 +3481,9 @@ export function createFal(opts: FalOptions): FalProvider {
           // POST https://fal.run/mureka/api/generate/podcast
           // Docs: https://fal.ai/models/mureka/api/generate/podcast/api
           podcast: murekaApiGeneratePodcast,
+          // POST https://fal.run/mureka/api/generate/lyrics-video
+          // Docs: https://fal.ai/models/mureka/api/generate/lyrics-video/api
+          lyricsVideo: murekaApiGenerateLyricsVideo,
         },
       },
     },

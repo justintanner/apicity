@@ -1193,6 +1193,7 @@ describe("fal edit/image pricing estimates", () => {
       "mirelo-ai/sfx2.0/video-to-audio",
       "mirelo-ai/sfx2.0/video-to-video",
       "mureka/api/generate/instrumental",
+      "mureka/api/generate/lyrics-video",
       "mureka/api/generate/podcast",
       "openai/gpt-image-2.5/flare/edit",
       "openai/gpt-image-2.5/flare/text-to-image",

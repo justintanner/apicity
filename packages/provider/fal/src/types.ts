@@ -72,6 +72,9 @@ export type {
   FalNanoBanana2p1TextToImageRequestInput,
   FalNanoBanana2p1TextToImageParsedRequest,
   FalMurekaApiGeneratePodcastRequest,
+  FalMurekaApiGenerateLyricsVideoRequest,
+  FalMurekaApiGenerateLyricsVideoRequestInput,
+  FalMurekaApiGenerateLyricsVideoParsedRequest,
   FalMurekaApiGenerateSongRequest,
   FalMurekaApiGeneratePodcastRequestInput,
   FalMurekaApiGeneratePodcastParsedRequest,
@@ -667,6 +670,7 @@ import type {
   FalNanoBanana2p1EditRequest,
   FalNanoBanana2p1TextToImageRequest,
   FalMurekaApiGeneratePodcastRequest,
+  FalMurekaApiGenerateLyricsVideoRequest,
   FalMurekaApiGenerateSongRequest,
   FalMurekaApiGenerateInstrumentalRequest,
   FalMurekaApiGenerateLyricsRequest,
@@ -5870,4 +5874,23 @@ export interface FalRunOpenrouterNamespace {
 }
 export interface FalRunNamespace {
   openrouter: FalRunOpenrouterNamespace;
+}
+
+export interface FalMurekaApiGenerateLyricsVideoResponse {
+  /** The generated video file. */
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+}
+type FalMurekaApiGenerateLyricsVideoFn = ((
+  params: FalMurekaApiGenerateLyricsVideoRequest,
+  signal?: AbortSignal
+) => Promise<FalMurekaApiGenerateLyricsVideoResponse>) & {
+  schema: ApicitySchema<FalMurekaApiGenerateLyricsVideoRequest>;
+};
+export interface FalRunMurekaApiGenerateNamespace {
+  lyricsVideo: FalMurekaApiGenerateLyricsVideoFn;
 }

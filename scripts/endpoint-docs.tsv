@@ -1762,3 +1762,4 @@ fal	kandinsky6Vsr	POST	https://fal.run/fal-ai/kandinsky6-vsr	https://fal.ai/mode
 fal	veed.cleanAudio	POST	https://fal.run/veed/clean-audio	https://fal.ai/models/veed/clean-audio/api
 fal	creatify.boreal	POST	https://fal.run/creatify/boreal	https://fal.ai/models/creatify/boreal/api
 fal	openrouter.router.decisions	POST	https://fal.run/openrouter/router/decisions	https://fal.ai/models/openrouter/router/decisions/api
+fal	mureka.api.generate.lyricsVideo	POST	https://fal.run/mureka/api/generate/lyrics-video	https://fal.ai/models/mureka/api/generate/lyrics-video/api

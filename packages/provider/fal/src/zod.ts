@@ -10825,7 +10825,136 @@ export type FalOpenrouterRouterDecisionsParsedRequest = z.output<
   typeof FalOpenrouterRouterDecisionsRequestSchema
 >;
 
+// Mureka lyrics video.
+export const FalMurekaApiGenerateLyricsVideoRequestSchema = z
+  .object({
+    song_id: z
+      .string()
+      .min(1)
+      .nullable()
+      .optional()
+      .describe(
+        "Generated audio ID from song_id in a song or instrumental response. Provide exactly one of song_id or upload_audio_id."
+      ),
+    upload_audio_id: z
+      .string()
+      .min(1)
+      .nullable()
+      .optional()
+      .describe(
+        "Audio ID returned by /files/upload with purpose='audio'. Provide exactly one of song_id or upload_audio_id."
+      ),
+    background_id: z
+      .string()
+      .min(1)
+      .nullable()
+      .optional()
+      .describe(
+        "Background image ID returned by /files/upload with purpose='lyrics-video'."
+      ),
+    cover_url: z
+      .string()
+      .nullable()
+      .optional()
+      .describe(
+        "Optional public HTTPS URL or data URI for a JPG, PNG, or WebP cover. Not supported with layout_1."
+      ),
+    title: z
+      .string()
+      .min(1)
+      .nullable()
+      .optional()
+      .describe("Optional title displayed in the lyrics video."),
+    aspect_ratio: z
+      .enum(["16:9", "9:16", "3:4", "4:3"])
+      .default("9:16")
+      .describe("Output video aspect ratio."),
+    layout: z
+      .enum([
+        "layout_1",
+        "layout_2",
+        "layout_3",
+        "layout_4",
+        "layout_5",
+        "layout_6",
+        "layout_7",
+      ])
+      .default("layout_1")
+      .describe("Visual layout template for the lyrics video."),
+    lyrics_start_row: z
+      .number()
+      .int()
+      .min(1)
+      .nullable()
+      .optional()
+      .describe(
+        "First lyric row to include, starting at 1. Must be paired with lyrics_end_row and cannot be combined with a time selection."
+      ),
+    lyrics_end_row: z
+      .number()
+      .int()
+      .min(1)
+      .nullable()
+      .optional()
+      .describe(
+        "Last lyric row to include. Must be paired with lyrics_start_row and cannot be combined with a time selection."
+      ),
+    selection_start: z
+      .number()
+      .int()
+      .min(0)
+      .nullable()
+      .optional()
+      .describe(
+        "Start of the included audio range in milliseconds. Must be paired with selection_end and cannot be combined with lyric-row selection."
+      ),
+    selection_end: z
+      .number()
+      .int()
+      .min(0)
+      .nullable()
+      .optional()
+      .describe(
+        "End of the included audio range in milliseconds. Must be paired with selection_start and cannot be combined with lyric-row selection."
+      ),
+  })
+  .refine((p) => (p.song_id != null) !== (p.upload_audio_id != null), {
+    path: ["song_id"],
+    message: "Provide exactly one of song_id or upload_audio_id.",
+  })
+  .refine((p) => (p.lyrics_start_row != null) === (p.lyrics_end_row != null), {
+    path: ["lyrics_start_row"],
+    message: "lyrics_start_row must be paired with lyrics_end_row.",
+  })
+  .refine((p) => (p.selection_start != null) === (p.selection_end != null), {
+    path: ["selection_start"],
+    message: "selection_start must be paired with selection_end.",
+  })
+  .refine(
+    (p) =>
+      (p.lyrics_start_row == null && p.lyrics_end_row == null) ||
+      (p.selection_start == null && p.selection_end == null),
+    {
+      path: ["selection_start"],
+      message: "Lyric-row selection cannot be combined with a time selection.",
+    }
+  )
+  .refine((p) => p.cover_url == null || p.layout !== "layout_1", {
+    path: ["cover_url"],
+    message: "cover_url is not supported with layout_1.",
+  });
+export type FalMurekaApiGenerateLyricsVideoRequest = z.input<
+  typeof FalMurekaApiGenerateLyricsVideoRequestSchema
+>;
+export type FalMurekaApiGenerateLyricsVideoRequestInput =
+  FalMurekaApiGenerateLyricsVideoRequest;
+export type FalMurekaApiGenerateLyricsVideoParsedRequest = z.output<
+  typeof FalMurekaApiGenerateLyricsVideoRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "mureka/api/generate/lyrics-video":
+    FalMurekaApiGenerateLyricsVideoRequestSchema,
   "openrouter/router/decisions": FalOpenrouterRouterDecisionsRequestSchema,
   "creatify/boreal": FalCreatifyBorealRequestSchema,
   "veed/clean-audio": FalVeedCleanAudioRequestSchema,

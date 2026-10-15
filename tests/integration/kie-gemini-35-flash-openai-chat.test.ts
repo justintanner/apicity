@@ -51,9 +51,10 @@ describe("kie gemini 3.5 flash openai chat completions", () => {
 
     expect(valid.success).toBe(true);
     if (!valid.success) throw new Error("expected success");
-    expect(valid.data.stream).toBe(true);
-    expect(valid.data.include_thoughts).toBe(true);
-    expect(valid.data.reasoning_effort).toBe("high");
+    expect(valid.data.stream).toBe(false);
+    expect(valid.data.include_thoughts).toBeUndefined();
+    expect(valid.data.reasoning_effort).toBeUndefined();
+    expect(valid.data).not.toHaveProperty("model");
 
     const customTool =
       KieGemini35FlashOpenaiChatCompletionsRequestSchema.safeParse({

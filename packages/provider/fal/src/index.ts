@@ -21,6 +21,10 @@ export type {
 
 // Export all types
 export type {
+  FalBriaFiboEdit1p5ExpandResponse,
+  FalBriaFiboEdit1p5ExpandParsedRequest,
+  FalBriaFiboEdit1p5ExpandRequestInput,
+  FalBriaFiboEdit1p5ExpandRequest,
   FalLumaAgentRayV3p2TextToVideoResponse,
   FalLumaAgentRayV3p2TextToVideoParsedRequest,
   FalLumaAgentRayV3p2TextToVideoRequestInput,

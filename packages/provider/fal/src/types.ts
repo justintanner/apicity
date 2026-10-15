@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalBriaFiboEdit1p5ExpandParsedRequest,
+  FalBriaFiboEdit1p5ExpandRequestInput,
+  FalBriaFiboEdit1p5ExpandRequest,
   FalLumaAgentRayV3p2TextToVideoParsedRequest,
   FalLumaAgentRayV3p2TextToVideoRequestInput,
   FalLumaAgentRayV3p2TextToVideoRequest,
@@ -572,6 +575,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalBriaFiboEdit1p5ExpandRequest,
   FalLumaAgentRayV3p2TextToVideoRequest,
   FalLumaAgentRayV3p2ImageToVideoRequest,
   FalLumaAgentRayV3p2VideoToVideoRequest,
@@ -4988,4 +4992,36 @@ type FalLumaAgentRayV3p2TextToVideoFn = ((
 
 export interface FalRunLumaAgentRayV3p2Namespace {
   textToVideo: FalLumaAgentRayV3p2TextToVideoFn;
+}
+
+export interface FalBriaFiboEdit1p5ExpandResponse {
+  image: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+  };
+  seed: number;
+  structured_instruction: Record<string, unknown>;
+  model_output?: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+  } | null;
+}
+
+type FalBriaFiboEdit1p5ExpandFn = ((
+  params: FalBriaFiboEdit1p5ExpandRequest,
+  signal?: AbortSignal
+) => Promise<FalBriaFiboEdit1p5ExpandResponse>) & {
+  schema: ApicitySchema<FalBriaFiboEdit1p5ExpandRequest>;
+};
+
+export interface FalRunBriaFiboEdit1p5Namespace {
+  expand: FalBriaFiboEdit1p5ExpandFn;
 }

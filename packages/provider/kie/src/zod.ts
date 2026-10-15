@@ -1273,15 +1273,16 @@ export const KieGemini35FlashOpenaiResponseFormatSchema = z
   })
   .passthrough();
 
+// Docs: https://docs.kie.ai/market/gemini/gemini-3-5-flash-openai (2026-10-15)
+// No `model` field; `stream` defaults to false. `include_thoughts` and
+// `reasoning_effort` have examples but no declared defaults.
 export const KieGemini35FlashOpenaiChatCompletionsRequestSchema = z
   .object({
-    model: z.literal("gemini-3-5-flash-thinking").optional(),
     messages: z.array(KieGemini35FlashOpenaiMessageSchema).min(1),
-    stream: z.boolean().default(true),
+    stream: z.boolean().default(false),
     tools: z.array(KieGemini35FlashOpenaiToolSchema).min(0).optional(),
-    include_thoughts: z.boolean().default(true),
-    reasoning_effort:
-      KieGemini35FlashOpenaiReasoningEffortSchema.default("high"),
+    include_thoughts: z.boolean().optional(),
+    reasoning_effort: KieGemini35FlashOpenaiReasoningEffortSchema.optional(),
     response_format: KieGemini35FlashOpenaiResponseFormatSchema.optional(),
   })
   .passthrough();

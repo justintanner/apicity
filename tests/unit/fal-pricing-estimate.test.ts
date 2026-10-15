@@ -1029,8 +1029,9 @@ describe("fal edit/image pricing estimates", () => {
     // stays statically priced. Mirelo SFX 2.0 text-to-audio, video-to-audio
     // and video-to-video each bill 2 units for a 1.5-second sample,
     // contradicting the card's seconds formula. Mureka instrumental billed 2
-    // units ($0.015) for a mureka-7.6 request its card prices at $0.045. All
-    // fifty use fal's pricing-estimate API.
+    // units ($0.015) for a mureka-7.6 request its card prices at $0.045.
+    // Mureka podcast bills output minutes that no request field fixes. All
+    // fifty-one use fal's pricing-estimate API.
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toEqual([
       "alibaba/qwen-image-3/edit",
       "alibaba/qwen-image-3/text-to-image",
@@ -1073,6 +1074,7 @@ describe("fal edit/image pricing estimates", () => {
       "mirelo-ai/sfx2.0/video-to-audio",
       "mirelo-ai/sfx2.0/video-to-video",
       "mureka/api/generate/instrumental",
+      "mureka/api/generate/podcast",
       "openai/gpt-image-2.5/flare/edit",
       "openai/gpt-image-2.5/flare/text-to-image",
       "openai/gpt-image-2.5/sunburst/edit",

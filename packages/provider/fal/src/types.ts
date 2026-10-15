@@ -23,7 +23,10 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalMurekaApiGeneratePodcastRequest,
   FalMurekaApiGenerateSongRequest,
+  FalMurekaApiGeneratePodcastRequestInput,
+  FalMurekaApiGeneratePodcastParsedRequest,
   FalMurekaApiGenerateSongRequestInput,
   FalMurekaApiGenerateSongParsedRequest,
   FalMurekaApiGenerateInstrumentalRequest,
@@ -599,6 +602,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalMurekaApiGeneratePodcastRequest,
   FalMurekaApiGenerateSongRequest,
   FalMurekaApiGenerateInstrumentalRequest,
   FalMurekaApiGenerateLyricsRequest,
@@ -5311,4 +5315,62 @@ type FalMurekaApiGenerateSongFn = ((
 
 export interface FalRunMurekaApiGenerateNamespace {
   song: FalMurekaApiGenerateSongFn;
+}
+
+export interface FalMurekaApiGeneratePodcastResponse {
+  /**
+   * Reusable identifier for this audio. Pass it to endpoints that accept
+   * song_id.
+   */
+  song_id?: string | null;
+  /** The generated audio file. */
+  audio: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+  /** Duration of the generated audio in milliseconds, when available. */
+  duration?: number | null;
+  /** Timed lyric sections for the generated audio, when available. */
+  lyrics_sections?:
+    | {
+        section_type?:
+          | "intro"
+          | "verse"
+          | "pre-chorus"
+          | "chorus"
+          | "bridge"
+          | "break"
+          | "outro"
+          | null;
+        start?: number | null;
+        end?: number | null;
+        lines?:
+          | {
+              start?: number | null;
+              end?: number | null;
+              text?: string | null;
+              words?:
+                | {
+                    start?: number | null;
+                    end?: number | null;
+                    text?: string | null;
+                  }[]
+                | null;
+            }[]
+          | null;
+      }[]
+    | null;
+}
+
+type FalMurekaApiGeneratePodcastFn = ((
+  params: FalMurekaApiGeneratePodcastRequest,
+  signal?: AbortSignal
+) => Promise<FalMurekaApiGeneratePodcastResponse>) & {
+  schema: ApicitySchema<FalMurekaApiGeneratePodcastRequest>;
+};
+
+export interface FalRunMurekaApiGenerateNamespace {
+  podcast: FalMurekaApiGeneratePodcastFn;
 }

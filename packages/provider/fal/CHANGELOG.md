@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Mureka podcast generation, dynamically priced (ac-0v1x2x).
+
 - Added Mureka song generation (ac-6pa6if).
 
 - Added Mureka instrumental generation, dynamically priced (ac-4xhisw).

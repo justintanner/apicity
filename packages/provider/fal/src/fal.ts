@@ -1,4 +1,6 @@
 import {
+  FalKandinsky6LiteImageToVideoRequest,
+  FalKandinsky6LiteImageToVideoResponse,
   FalKandinsky6LiteTextToVideoRequest,
   FalKandinsky6LiteTextToVideoResponse,
   FalKandinsky6VsrLiteRequest,
@@ -378,6 +380,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalKandinsky6LiteImageToVideoRequestSchema,
   FalKandinsky6LiteTextToVideoRequestSchema,
   FalKandinsky6VsrLiteRequestSchema,
   FalKandinsky6VsrRequestSchema,
@@ -3265,8 +3268,25 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/fal-ai/kandinsky6-lite/image-to-video
+  // Docs: https://fal.ai/models/fal-ai/kandinsky6-lite/image-to-video/api
+  const kandinsky6LiteImageToVideo = jsonBody<
+    FalKandinsky6LiteImageToVideoRequest,
+    FalKandinsky6LiteImageToVideoResponse
+  >(
+    "POST",
+    "/fal-ai/kandinsky6-lite/image-to-video",
+    FalKandinsky6LiteImageToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
     kandinsky6Lite: {
+      // sig-ok: stylistic dotPath divergence from URL
+      // POST https://fal.run/fal-ai/kandinsky6-lite/image-to-video
+      // Docs: https://fal.ai/models/fal-ai/kandinsky6-lite/image-to-video/api
+      imageToVideo: kandinsky6LiteImageToVideo,
       // sig-ok: stylistic dotPath divergence from URL
       // POST https://fal.run/fal-ai/kandinsky6-lite/text-to-video
       // Docs: https://fal.ai/models/fal-ai/kandinsky6-lite/text-to-video/api

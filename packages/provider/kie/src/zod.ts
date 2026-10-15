@@ -763,13 +763,15 @@ export const KieGemini31ProToolSchema = z
   })
   .strict();
 
+// Docs: https://docs.kie.ai/market/gemini/gemini-3-1-pro (2026-10-15)
+// No `model` field; `stream` and `include_thoughts` default to false,
+// while `reasoning_effort` defaults to "high".
 export const KieGemini31ProChatCompletionsRequestSchema = z
   .object({
-    model: z.literal("gemini-3.1-pro").optional(),
     messages: z.array(KieGemini31ProMessageSchema).min(1),
-    stream: z.boolean().default(true),
+    stream: z.boolean().default(false),
     tools: z.array(KieGemini31ProToolSchema).min(0).optional(),
-    include_thoughts: z.boolean().default(true),
+    include_thoughts: z.boolean().default(false),
     reasoning_effort: KieGemini31ProReasoningEffortSchema.default("high"),
   })
   .passthrough();

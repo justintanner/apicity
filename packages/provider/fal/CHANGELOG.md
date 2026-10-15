@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Bria Guided Remove Background background removal (ac-qhznxn).
+
 - Added Bria Fibo Edit 1.5 expand (ac-p98k0z).
 
 - Added Ray 3.2 text-to-video, dynamically priced (ac-mkruvv).

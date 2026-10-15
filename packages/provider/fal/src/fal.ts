@@ -1,4 +1,6 @@
 import {
+  FalBriaGuidedRemoveBackgroundRequest,
+  FalBriaGuidedRemoveBackgroundResponse,
   FalBriaFiboEdit1p5ExpandResponse,
   FalBriaFiboEdit1p5ExpandRequest,
   FalLumaAgentRayV3p2TextToVideoResponse,
@@ -344,6 +346,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalBriaGuidedRemoveBackgroundRequestSchema,
   FalBriaFiboEdit1p5ExpandRequestSchema,
   FalLumaAgentRayV3p2TextToVideoRequestSchema,
   FalLumaAgentRayV3p2ImageToVideoRequestSchema,
@@ -3006,6 +3009,18 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/bria/guided-remove-background
+  // Docs: https://fal.ai/models/bria/guided-remove-background/api
+  const briaGuidedRemoveBackground = jsonBody<
+    FalBriaGuidedRemoveBackgroundRequest,
+    FalBriaGuidedRemoveBackgroundResponse
+  >(
+    "POST",
+    "/bria/guided-remove-background",
+    FalBriaGuidedRemoveBackgroundRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
     luma: {
       agent: {
@@ -3084,6 +3099,9 @@ export function createFal(opts: FalOptions): FalProvider {
     // POST https://fal.run/bria/fibo-edit-1.5/virtual-try-on
     // Docs: https://fal.ai/models/bria/fibo-edit-1.5/virtual-try-on/api
     bria: {
+      // POST https://fal.run/bria/guided-remove-background
+      // Docs: https://fal.ai/models/bria/guided-remove-background/api
+      guidedRemoveBackground: briaGuidedRemoveBackground,
       fiboGen1p5: {
         // sig-ok: stylistic dotPath divergence from URL
         // POST https://fal.run/bria/fibo-gen-1.5/text-to-image

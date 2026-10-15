@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalBriaGuidedRemoveBackgroundParsedRequest,
+  FalBriaGuidedRemoveBackgroundRequestInput,
+  FalBriaGuidedRemoveBackgroundRequest,
   FalBriaFiboEdit1p5ExpandParsedRequest,
   FalBriaFiboEdit1p5ExpandRequestInput,
   FalBriaFiboEdit1p5ExpandRequest,
@@ -575,6 +578,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalBriaGuidedRemoveBackgroundRequest,
   FalBriaFiboEdit1p5ExpandRequest,
   FalLumaAgentRayV3p2TextToVideoRequest,
   FalLumaAgentRayV3p2ImageToVideoRequest,
@@ -4058,6 +4062,12 @@ export interface FalRunBriaFiboEdit1p5Namespace {
 }
 
 export interface FalRunBriaNamespace {
+  guidedRemoveBackground: ((
+    params: FalBriaGuidedRemoveBackgroundRequest,
+    signal?: AbortSignal
+  ) => Promise<FalBriaGuidedRemoveBackgroundResponse>) & {
+    schema: ApicitySchema<FalBriaGuidedRemoveBackgroundRequest>;
+  };
   fiboEdit1p5: FalRunBriaFiboEdit1p5Namespace;
 }
 
@@ -5024,4 +5034,15 @@ type FalBriaFiboEdit1p5ExpandFn = ((
 
 export interface FalRunBriaFiboEdit1p5Namespace {
   expand: FalBriaFiboEdit1p5ExpandFn;
+}
+
+export interface FalBriaGuidedRemoveBackgroundResponse {
+  image: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+  };
 }

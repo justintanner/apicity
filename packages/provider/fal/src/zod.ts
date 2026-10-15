@@ -9013,7 +9013,45 @@ export type FalBriaFiboEdit1p5ExpandParsedRequest = z.output<
   typeof FalBriaFiboEdit1p5ExpandRequestSchema
 >;
 
+// Live fal OpenAPI verified 2026-10-15.
+export const FalBriaGuidedRemoveBackgroundRequestSchema = z.object({
+  image_url: z
+    .string()
+    .default(
+      "https://labs-assets.bria.ai/api-examples/guided-remove-background/yoga_studio_input.jpg"
+    )
+    .describe(
+      "Source image as a public URL, a base64 data URI (data:image/png;base64,...) or raw base64-encoded image bytes."
+    ),
+  prompt: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "Optional. Plain words for how to change the default cutout of the photo's obvious subject: add something ('the person with the mat and the plant'), drop something ('the woman at her desk without the lamp') or narrow it ('only the chair'). Everything kept is the original pixels with a new alpha channel. Leave it empty for the plain cutout of the obvious subject."
+    ),
+  autocrop: z
+    .boolean()
+    .default(false)
+    .describe("Tighten the output canvas to the kept content."),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If true, the function waits for the image to be generated and uploaded before returning, so the image is returned directly (base64) instead of via the CDN. Increases latency."
+    ),
+});
+export type FalBriaGuidedRemoveBackgroundRequest = z.input<
+  typeof FalBriaGuidedRemoveBackgroundRequestSchema
+>;
+export type FalBriaGuidedRemoveBackgroundRequestInput =
+  FalBriaGuidedRemoveBackgroundRequest;
+export type FalBriaGuidedRemoveBackgroundParsedRequest = z.output<
+  typeof FalBriaGuidedRemoveBackgroundRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "bria/guided-remove-background": FalBriaGuidedRemoveBackgroundRequestSchema,
   "bria/fibo-edit-1.5/expand": FalBriaFiboEdit1p5ExpandRequestSchema,
   "luma/agent/ray/v3.2/text-to-video":
     FalLumaAgentRayV3p2TextToVideoRequestSchema,

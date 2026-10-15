@@ -21,6 +21,11 @@ export type {
 
 // Export all types
 export type {
+  FalNanoBanana2p1TextToImageRequest,
+  FalNanoBanana2p1TextToImageRequestInput,
+  FalNanoBanana2p1TextToImageParsedRequest,
+  FalNanoBanana2p1TextToImageResponse,
+  FalRunNanoBanana2p1Namespace,
   FalMurekaApiGeneratePodcastRequest,
   FalMurekaApiGeneratePodcastRequestInput,
   FalMurekaApiGeneratePodcastParsedRequest,

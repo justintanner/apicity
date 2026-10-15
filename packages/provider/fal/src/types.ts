@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalNanoBanana2p1TextToImageRequest,
+  FalNanoBanana2p1TextToImageRequestInput,
+  FalNanoBanana2p1TextToImageParsedRequest,
   FalMurekaApiGeneratePodcastRequest,
   FalMurekaApiGenerateSongRequest,
   FalMurekaApiGeneratePodcastRequestInput,
@@ -602,6 +605,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalNanoBanana2p1TextToImageRequest,
   FalMurekaApiGeneratePodcastRequest,
   FalMurekaApiGenerateSongRequest,
   FalMurekaApiGenerateInstrumentalRequest,
@@ -5373,4 +5377,32 @@ type FalMurekaApiGeneratePodcastFn = ((
 
 export interface FalRunMurekaApiGenerateNamespace {
   podcast: FalMurekaApiGeneratePodcastFn;
+}
+
+export interface FalNanoBanana2p1TextToImageResponse {
+  /** The generated images. */
+  images: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+  }[];
+  /** The description of the generated images. */
+  description: string;
+}
+
+type FalNanoBanana2p1TextToImageFn = ((
+  params: FalNanoBanana2p1TextToImageRequest,
+  signal?: AbortSignal
+) => Promise<FalNanoBanana2p1TextToImageResponse>) & {
+  schema: ApicitySchema<FalNanoBanana2p1TextToImageRequest>;
+};
+
+export interface FalRunNanoBanana2p1Namespace {
+  textToImage: FalNanoBanana2p1TextToImageFn;
+}
+export interface FalRunNamespace {
+  nanoBanana2p1: FalRunNanoBanana2p1Namespace;
 }

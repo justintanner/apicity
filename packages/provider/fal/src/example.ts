@@ -1460,6 +1460,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST nanoBanana2p1.textToImage": {
+    "source": "fal/google-nano-banana-2-1",
+    "payload": {
+      "prompt": "A red panda waves once, then holds still.",
+      "num_images": 1,
+      "resolution": "1K",
+      "thinking_level": "minimal"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST nanoBananaPro.edit": {
     "source": "fal/nano-banana-pro-edit",
     "payload": {

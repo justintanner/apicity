@@ -9582,7 +9582,109 @@ export type FalMurekaApiGeneratePodcastParsedRequest = z.output<
   typeof FalMurekaApiGeneratePodcastRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-10-15
+// (sha256 1c5ec483eb4aa2e6efbd59994755d1afaea973d23cda42c6269f43cd0772253b). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/google/nano-banana-2.1/api
+export const FalNanoBanana2p1TextToImageRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(3)
+    .max(50000)
+    .describe("The text prompt to generate an image from."),
+  num_images: z
+    .number()
+    .int()
+    .min(1)
+    .max(4)
+    .default(1)
+    .describe("The number of images to generate."),
+  seed: z
+    .number()
+    .int()
+    .nullable()
+    .optional()
+    .describe("The seed for the random number generator."),
+  aspect_ratio: z
+    .enum([
+      "auto",
+      "21:9",
+      "16:9",
+      "3:2",
+      "4:3",
+      "5:4",
+      "1:1",
+      "4:5",
+      "3:4",
+      "2:3",
+      "9:16",
+      "4:1",
+      "1:4",
+      "8:1",
+      "1:8",
+    ])
+    .nullable()
+    .default("auto")
+    .describe(
+      'The aspect ratio of the generated image. Supports extreme ratios: 4:1, 1:4, 8:1, 1:8. Use "auto" to let the model decide based on the prompt.'
+    ),
+  output_format: z
+    .enum(["jpeg", "png", "webp"])
+    .default("png")
+    .describe("The format of the generated image."),
+  safety_tolerance: z
+    .enum(["1", "2", "3", "4", "5", "6"])
+    .default("4")
+    .describe(
+      "The safety tolerance level for content moderation. 1 is the most strict (blocks most content), 6 is the least strict."
+    ),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If true, the media will be returned as a data URI and the output data won't be available in the request history."
+    ),
+  system_prompt: z
+    .string()
+    .max(50000)
+    .default("")
+    .describe(
+      "Optional system instruction that steers the model's persona and output style across the request. Leave blank to omit."
+    ),
+  resolution: z
+    .enum(["1K", "2K", "4K"])
+    .default("1K")
+    .describe("The resolution of the image to generate."),
+  limit_generations: z
+    .boolean()
+    .default(true)
+    .describe(
+      "Experimental: limit each round of prompting to one generation. When true, instructions in the prompt about the number of images are disregarded and intermediate images are ignored. This may affect generation quality."
+    ),
+  enable_web_search: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Let the model use the latest information from the web to generate the image."
+    ),
+  thinking_level: z
+    .enum(["minimal", "medium", "high"])
+    .nullable()
+    .default("medium")
+    .describe(
+      "How much the model reasons before generating. Higher levels can improve complex compositions."
+    ),
+});
+export type FalNanoBanana2p1TextToImageRequest = z.input<
+  typeof FalNanoBanana2p1TextToImageRequestSchema
+>;
+export type FalNanoBanana2p1TextToImageRequestInput =
+  FalNanoBanana2p1TextToImageRequest;
+export type FalNanoBanana2p1TextToImageParsedRequest = z.output<
+  typeof FalNanoBanana2p1TextToImageRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "google/nano-banana-2.1": FalNanoBanana2p1TextToImageRequestSchema,
   "mureka/api/generate/podcast": FalMurekaApiGeneratePodcastRequestSchema,
   "mureka/api/generate/song": FalMurekaApiGenerateSongRequestSchema,
   "mureka/api/generate/instrumental":

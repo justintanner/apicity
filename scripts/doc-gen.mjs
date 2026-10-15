@@ -581,13 +581,6 @@ export const ENDPOINT_NOTES = new Map([
     ].join("\n\n"),
   ],
   [
-    "kie\tgemini3Flash.post.v1.chat.completions\tPOST",
-    kieDelistedGeminiNote(
-      "Gemini 3 Flash chat",
-      "kie.gemini38FlashOpenai.post.v1.chat.completions"
-    ),
-  ],
-  [
     "kie\tpost.anthropic.v1.messages\tPOST",
     [
       "> **Latency:** this method uses the `createKie` `timeout`, which",

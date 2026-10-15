@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalKandinsky6VsrRequest,
+  FalKandinsky6VsrRequestInput,
+  FalKandinsky6VsrParsedRequest,
   FalMinimaxH3MaxRelightRequest,
   FalMinimaxH3MaxRelightRequestInput,
   FalMinimaxH3MaxRelightParsedRequest,
@@ -617,6 +620,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalKandinsky6VsrRequest,
   FalMinimaxH3MaxRelightRequest,
   FalViduQ4ReferenceToVideoRequest,
   FalViduQ4ImageToVideoRequest,
@@ -5531,4 +5535,28 @@ export interface FalMinimaxH3MaxRelightResponse {
   seed: number;
   /** Inference duration in seconds, when available. */
   timings?: Record<string, number> | null;
+}
+
+export interface FalKandinsky6VsrResponse {
+  /** Upscaled video file after processing. */
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+  /** The random seed used for the generation process. */
+  seed: number;
+}
+
+export interface FalRunKandinsky6VsrNamespace {
+  (
+    params: FalKandinsky6VsrRequest,
+    signal?: AbortSignal
+  ): Promise<FalKandinsky6VsrResponse>;
+  schema: ApicitySchema<FalKandinsky6VsrRequest>;
+}
+
+export interface FalRunNamespace {
+  kandinsky6Vsr: FalRunKandinsky6VsrNamespace;
 }

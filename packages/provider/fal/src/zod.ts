@@ -9984,7 +9984,60 @@ export type FalMinimaxH3MaxRelightParsedRequest = z.output<
   typeof FalMinimaxH3MaxRelightRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-10-15
+// (sha256 72a97fab0452ca5c7f76a61db3139abb0b99227dda754d218f9d015c7ca1bab5). Field order follows x-fal-order-properties.
+// Free 422 probes the same day confirmed video_url as the only required field,
+// the upscale_factor set ("must be one of [2.0, 2.25, 4.0]") and the step
+// bounds, and showed an undocumented field is ignored, so the schema is not
+// strict. The multiple-of-16 rule for 2x and 4x is a model-level check that a
+// free probe cannot reach, so it stays in the description.
+// Docs: https://fal.ai/models/fal-ai/kandinsky6-vsr/api
+export const FalKandinsky6VsrRequestSchema = z.object({
+  video_url: z
+    .string()
+    .describe(
+      "The input video to upscale. Clips are resampled to 24fps and capped at 121 frames (~5s). For 2x and 4x upscaling, width and height must be multiples of 16."
+    ),
+  upscale_factor: z
+    .union([z.literal(2), z.literal(2.25), z.literal(4)])
+    .default(2.25)
+    .describe(
+      "Total upscale factor applied to the input resolution. One of 2, 2.25 or 4."
+    ),
+  num_inference_steps: z
+    .number()
+    .int()
+    .min(2)
+    .max(50)
+    .default(5)
+    .describe("The number of denoising steps used for each tile."),
+  seed: z
+    .number()
+    .int()
+    .nullable()
+    .optional()
+    .describe("The random seed used for the generation process."),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If `True`, the media will be returned as a data URI and the output data won't be available in the request history."
+    ),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe("Authorized callers may set false to request relaxed screening."),
+});
+export type FalKandinsky6VsrRequest = z.input<
+  typeof FalKandinsky6VsrRequestSchema
+>;
+export type FalKandinsky6VsrRequestInput = FalKandinsky6VsrRequest;
+export type FalKandinsky6VsrParsedRequest = z.output<
+  typeof FalKandinsky6VsrRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "fal-ai/kandinsky6-vsr": FalKandinsky6VsrRequestSchema,
   "minimax/h3-max/relight": FalMinimaxH3MaxRelightRequestSchema,
   "fal-ai/vidu/q4/reference-to-video": FalViduQ4ReferenceToVideoRequestSchema,
   "fal-ai/vidu/q4/image-to-video": FalViduQ4ImageToVideoRequestSchema,

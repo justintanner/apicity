@@ -1,4 +1,6 @@
 import {
+  FalKandinsky6VsrRequest,
+  FalKandinsky6VsrResponse,
   FalMinimaxH3MaxRelightRequest,
   FalMinimaxH3MaxRelightResponse,
   FalViduQ4ReferenceToVideoRequest,
@@ -372,6 +374,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalKandinsky6VsrRequestSchema,
   FalMinimaxH3MaxRelightRequestSchema,
   FalViduQ4ReferenceToVideoRequestSchema,
   FalViduQ4ImageToVideoRequestSchema,
@@ -3215,7 +3218,24 @@ export function createFal(opts: FalOptions): FalProvider {
     base: runBaseURL,
   });
 
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/fal-ai/kandinsky6-vsr
+  // Docs: https://fal.ai/models/fal-ai/kandinsky6-vsr/api
+  const kandinsky6Vsr = Object.assign(
+    jsonBody<FalKandinsky6VsrRequest, FalKandinsky6VsrResponse>(
+      "POST",
+      "/fal-ai/kandinsky6-vsr",
+      FalKandinsky6VsrRequestSchema,
+      { base: runBaseURL }
+    ),
+    {}
+  );
+
   const run: FalRunNamespace = {
+    // sig-ok: stylistic dotPath divergence from URL
+    // POST https://fal.run/fal-ai/kandinsky6-vsr
+    // Docs: https://fal.ai/models/fal-ai/kandinsky6-vsr/api
+    kandinsky6Vsr,
     vidu: {
       q4: {
         // sig-ok: stylistic dotPath divergence from URL

@@ -760,7 +760,7 @@ console.log(segmentEditTask.data?.taskId);
 
 ## API Reference
 
-72 endpoints across 34 groups. Each method mirrors an upstream URL path.
+71 endpoints across 34 groups. Each method mirrors an upstream URL path.
 
 ### anthropic
 
@@ -948,27 +948,6 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await kie.gemini.post.v1.models.gemini38Flash.streamGenerateContent({ /* ... */ });
-```
-
-Source: [`packages/provider/kie/src/gemini.ts`](src/gemini.ts)
-
-</details>
-
-<details>
-<summary><code>POST</code> <b><code>kie.gemini.post.v1.models.gemini3FlashV1betamodels.streamGenerateContent</code></b></summary>
-
-<code>POST https://api.kie.ai/gemini/v1/models/gemini-3-flash-v1betamodels:streamGenerateContent</code>
-
-Cost tier: <code>prohibitive</code>
-
-[Upstream docs ↗](https://docs.kie.ai/market/gemini/gemini-3-flash-v1beta)
-
-> **Deprecated:** KIE has stopped documenting and pricing Gemini 3 Flash on this v1beta route. On 2026-10-15 the docs page linked above answered HTTP 404 and was gone from `llms.txt`, and KIE's public pricing feed no longer carried the model's rows (the 2026-09-11 feed did). This method still sends requests unchanged, but KIE may stop answering them without notice. Prefer a documented Gemini Flash endpoint, such as `kie.gemini.post.v1.models.gemini38Flash.streamGenerateContent`.
-
-> **HTTP 200 error bodies:** this method rejects with `KieError` when an HTTP 200 JSON body has no `candidates` array and carries either KIE's numeric `code` envelope (`{ code, msg }`, any `code` other than 200) or a top-level `error` object (such as KIE docs' `{ error: { message, type } }` or Google's `{ error: { code, message, status } }`).
-
-```typescript
-const res = await kie.gemini.post.v1.models.gemini3FlashV1betamodels.streamGenerateContent({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/gemini.ts`](src/gemini.ts)

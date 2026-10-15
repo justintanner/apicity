@@ -1364,7 +1364,6 @@ export interface KieProvider {
   gemini: import("./gemini").KieGeminiProvider["gemini"];
   gemini31Pro: import("./gemini-31-pro").KieGemini31ProProvider["gemini31Pro"];
   gpt52: import("./gpt-52").KieGpt52Provider["gpt52"];
-  gemini3Flash: import("./gemini-3-flash").KieGemini3FlashProvider["gemini3Flash"];
   gemini35FlashOpenai: import("./gemini-35-flash-openai").KieGemini35FlashOpenaiProvider["gemini35FlashOpenai"];
   gemini36FlashOpenai: import("./gemini-36-flash-openai").KieGemini36FlashOpenaiProvider["gemini36FlashOpenai"];
   gemini37FlashOpenai: import("./gemini-37-flash-openai").KieGemini37FlashOpenaiProvider["gemini37FlashOpenai"];

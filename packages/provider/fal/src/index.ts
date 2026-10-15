@@ -21,6 +21,12 @@ export type {
 
 // Export all types
 export type {
+  FalMireloAiSfx2p0TextToAudioRequest,
+  FalMireloAiSfx2p0TextToAudioRequestInput,
+  FalMireloAiSfx2p0TextToAudioParsedRequest,
+  FalMireloAiSfx2p0TextToAudioResponse,
+  FalRunMireloAiNamespace,
+  FalRunMireloAiSfx2p0Namespace,
   FalMarigoldV2Response,
   FalMarigoldV2Request,
   FalMarigoldV2RequestInput,

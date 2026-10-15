@@ -9125,7 +9125,102 @@ export type FalMarigoldV2ParsedRequest = z.output<
   typeof FalMarigoldV2RequestSchema
 >;
 
+// Mirelo SFX 2.0 text-to-audio.
+export const FalMireloAiSfx2p0TextToAudioRequestSchema = z
+  .object({
+    prompt: z
+      .string()
+      .min(1)
+      .max(2000)
+      .describe("What the sound effect should sound like"),
+    negative_prompt: z
+      .string()
+      .max(1000)
+      .nullable()
+      .optional()
+      .describe("Sounds to keep out of the result"),
+    duration: z
+      .number()
+      .min(0.1)
+      .max(600)
+      .default(30)
+      .describe(
+        "Seconds of sound to generate, up to the deployment's text-to-SFX maximum"
+      ),
+    // Upstream permits int64 seeds beyond Zod int()'s safe-integer range.
+    seed: z
+      .number()
+      .refine(Number.isInteger, "Seed must be an integer")
+      .min(-1)
+      .max(9223372036854776000)
+      .nullable()
+      .optional()
+      .describe("Seed of the first sample; -1 or unset is random"),
+    num_samples: z
+      .number()
+      .int()
+      .min(1)
+      .max(4)
+      .default(2)
+      .describe("Number of samples to generate, in one batched forward"),
+    upload_audio_format: z
+      .enum(["wav", "mp3", "aac", "flac"])
+      .default("wav")
+      .describe("Audio format of each file"),
+    upload_audio_bitrate_kbps: z
+      .number()
+      .int()
+      .min(32)
+      .max(320)
+      .nullable()
+      .optional()
+      .describe(
+        "Bitrate in kbps for an mp3 or aac upload. mp3 is written at exactly this constant rate, one of 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320. aac takes 32 to 256 as a target the encoder may undershoot on mono or sparse audio. Unset keeps the default: mp3 at LAME V0 VBR, aac at a 256 kbps target. Refused with a lossless upload_audio_format."
+      ),
+  })
+  .refine(
+    (p) =>
+      p.upload_audio_bitrate_kbps == null ||
+      p.upload_audio_format === "mp3" ||
+      p.upload_audio_format === "aac",
+    {
+      path: ["upload_audio_bitrate_kbps"],
+      message: "Bitrate is refused for lossless audio formats",
+    }
+  )
+  .refine(
+    (p) =>
+      p.upload_audio_bitrate_kbps == null ||
+      p.upload_audio_format !== "mp3" ||
+      [32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320].includes(
+        p.upload_audio_bitrate_kbps
+      ),
+    {
+      path: ["upload_audio_bitrate_kbps"],
+      message: "mp3 requires a supported constant bitrate",
+    }
+  )
+  .refine(
+    (p) =>
+      p.upload_audio_bitrate_kbps == null ||
+      p.upload_audio_format !== "aac" ||
+      p.upload_audio_bitrate_kbps <= 256,
+    {
+      path: ["upload_audio_bitrate_kbps"],
+      message: "aac bitrate must not exceed 256 kbps",
+    }
+  );
+export type FalMireloAiSfx2p0TextToAudioRequest = z.input<
+  typeof FalMireloAiSfx2p0TextToAudioRequestSchema
+>;
+export type FalMireloAiSfx2p0TextToAudioRequestInput =
+  FalMireloAiSfx2p0TextToAudioRequest;
+export type FalMireloAiSfx2p0TextToAudioParsedRequest = z.output<
+  typeof FalMireloAiSfx2p0TextToAudioRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "mirelo-ai/sfx2.0/text-to-audio": FalMireloAiSfx2p0TextToAudioRequestSchema,
   "fal-ai/marigold-v2": FalMarigoldV2RequestSchema,
   "bria/guided-remove-background": FalBriaGuidedRemoveBackgroundRequestSchema,
   "bria/fibo-edit-1.5/expand": FalBriaFiboEdit1p5ExpandRequestSchema,

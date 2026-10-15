@@ -921,6 +921,18 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  // Bills the generated length, which no request field carries, so the entry
+  // needs costHints.durationSeconds: the source converted to 24 fps and
+  // trimmed to the closest 17n+5 frames (at least 56). The recorded 4 s,
+  // 96-frame source came back as 90 frames and billed 3.75 units of $0.05 at
+  // 480P ($0.1875).
+  "minimax/h3-max/relight": perSecondTiered(
+    "minimax/h3-max/relight",
+    [resolutionTier("768P")],
+    { "480P": 0.05, "768P": 0.08, "1080P": 0.16, "2K": 0.32 },
+    hintedSeconds,
+    "2026-10-15"
+  ),
   // Bills the requested seconds (default 5) at the resolution tier (default
   // 720p); audio does not change the price. The recorded 3 s 540p call billed
   // 27 units of $0.0035 ($0.0945) although the file played 3.042 s. List

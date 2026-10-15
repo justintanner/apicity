@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalMinimaxH3MaxRelightRequest,
+  FalMinimaxH3MaxRelightRequestInput,
+  FalMinimaxH3MaxRelightParsedRequest,
   FalViduQ4ReferenceToVideoRequest,
   FalViduQ4ReferenceToVideoRequestInput,
   FalViduQ4ReferenceToVideoParsedRequest,
@@ -614,6 +617,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalMinimaxH3MaxRelightRequest,
   FalViduQ4ReferenceToVideoRequest,
   FalViduQ4ImageToVideoRequest,
   FalNanoBanana2p1EditRequest,
@@ -3525,6 +3529,13 @@ export interface FalRunMinimaxH3MaxLipSyncNamespace {
 export interface FalRunMinimaxH3MaxNamespace {
   lipSync: FalRunMinimaxH3MaxLipSyncNamespace;
 
+  relight: ((
+    params: FalMinimaxH3MaxRelightRequest,
+    signal?: AbortSignal
+  ) => Promise<FalMinimaxH3MaxRelightResponse>) & {
+    schema: ApicitySchema<FalMinimaxH3MaxRelightRequest>;
+  };
+
   threeDToVideo: ((
     params: FalMinimaxH3MaxThreeDToVideoRequest,
     signal?: AbortSignal
@@ -5506,4 +5517,18 @@ export interface FalRunViduNamespace {
 }
 export interface FalRunNamespace {
   vidu: FalRunViduNamespace;
+}
+
+export interface FalMinimaxH3MaxRelightResponse {
+  /** The relighted video. */
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+  /** Base seed for reproducing the generation. */
+  seed: number;
+  /** Inference duration in seconds, when available. */
+  timings?: Record<string, number> | null;
 }

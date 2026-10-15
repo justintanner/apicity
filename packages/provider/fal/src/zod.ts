@@ -9933,7 +9933,59 @@ export type FalViduQ4ReferenceToVideoParsedRequest = z.output<
   typeof FalViduQ4ReferenceToVideoRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-10-15
+// (sha256 64357740e7d598378b8e14a81afc273e34c1456f9a2da4974a758e9460eeff2e, the same JSON as the planning archive). Field order follows x-fal-order-properties.
+// additionalProperties is false, and a free 422 probe the same day refused an
+// undocumented field (extra_forbidden), so the schema is strict, like recast.
+// Docs: https://fal.ai/models/minimax/h3-max/relight/api
+export const FalMinimaxH3MaxRelightRequestSchema = z
+  .object({
+    video_url: z
+      .string()
+      .min(1)
+      .describe(
+        "Source video up to 15 seconds long. Converted to constant 24 fps and trimmed at the end to the closest 17n+5 frame count, with at least 56 frames (about 2.33 seconds) remaining. The output matches this prepared video's frame count and duration."
+      ),
+    reference_image_url: z
+      .string()
+      .min(1)
+      .describe("Sphere render showing the target lighting."),
+    resolution: z
+      .enum(["480P", "768P", "1080P", "2K"])
+      .default("768P")
+      .describe(
+        "Output video resolution. 480P and 768P generate natively; 1080P and 2K (1440p) use latent upscaling and refinement from 768P."
+      ),
+    aspect_ratio: z
+      .enum(["adaptive", "21:9", "16:9", "4:3", "1:1", "3:4", "9:16"])
+      .default("16:9")
+      .describe("Output video aspect ratio."),
+    seed: z
+      .number()
+      .int()
+      .nullable()
+      .optional()
+      .describe("Random seed for video generation."),
+    enable_safety_checker: z
+      .boolean()
+      .default(true)
+      .describe("Enable safety checking."),
+    sync_mode: z
+      .boolean()
+      .default(false)
+      .describe("Return video as a data URI."),
+  })
+  .strict();
+export type FalMinimaxH3MaxRelightRequest = z.input<
+  typeof FalMinimaxH3MaxRelightRequestSchema
+>;
+export type FalMinimaxH3MaxRelightRequestInput = FalMinimaxH3MaxRelightRequest;
+export type FalMinimaxH3MaxRelightParsedRequest = z.output<
+  typeof FalMinimaxH3MaxRelightRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "minimax/h3-max/relight": FalMinimaxH3MaxRelightRequestSchema,
   "fal-ai/vidu/q4/reference-to-video": FalViduQ4ReferenceToVideoRequestSchema,
   "fal-ai/vidu/q4/image-to-video": FalViduQ4ImageToVideoRequestSchema,
   "google/nano-banana-2.1/edit": FalNanoBanana2p1EditRequestSchema,

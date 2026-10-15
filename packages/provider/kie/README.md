@@ -760,7 +760,7 @@ console.log(segmentEditTask.data?.taskId);
 
 ## API Reference
 
-73 endpoints across 35 groups. Each method mirrors an upstream URL path.
+74 endpoints across 36 groups. Each method mirrors an upstream URL path.
 
 ### anthropic
 
@@ -1141,6 +1141,25 @@ const res = await kie.gemini3Pro.post.v1.chat.completions({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/gemini-3-pro.ts`](src/gemini-3-pro.ts)
+
+</details>
+
+### gemini4ArgonOpenai
+
+<details>
+<summary><code>POST</code> <b><code>kie.gemini4ArgonOpenai.post.v1.chat.completions</code></b></summary>
+
+<code>POST https://api.kie.ai/gemini-4-argon-openai/v1/chat/completions</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.kie.ai/market/gemini/gemini-4-argon-openai)
+
+```typescript
+const res = await kie.gemini4ArgonOpenai.post.v1.chat.completions({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/gemini-4-argon-openai.ts`](src/gemini-4-argon-openai.ts)
 
 </details>
 

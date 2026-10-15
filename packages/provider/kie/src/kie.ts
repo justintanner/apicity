@@ -237,6 +237,7 @@ import { createGemini35FlashOpenaiProvider } from "./gemini-35-flash-openai";
 import { createGemini36FlashOpenaiProvider } from "./gemini-36-flash-openai";
 import { createGemini37FlashOpenaiProvider } from "./gemini-37-flash-openai";
 import { createGemini38FlashOpenaiProvider } from "./gemini-38-flash-openai";
+import { createGemini4ArgonOpenaiProvider } from "./gemini-4-argon-openai";
 import { createGemini3ProProvider } from "./gemini-3-pro";
 import { createGemini25ProProvider } from "./gemini-25-pro";
 import { attachExamples } from "./example";
@@ -980,6 +981,12 @@ export function createKie(opts: KieOptions): KieProvider {
           timeout
         ),
         ...createGemini38FlashOpenaiProvider(
+          baseURL,
+          opts.apiKey,
+          doFetch,
+          timeout
+        ),
+        ...createGemini4ArgonOpenaiProvider(
           baseURL,
           opts.apiKey,
           doFetch,

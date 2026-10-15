@@ -9552,7 +9552,38 @@ export type FalMurekaApiGenerateSongParsedRequest = z.output<
   typeof FalMurekaApiGenerateSongRequestSchema
 >;
 
+// Live OpenAPI checked twice on 2026-10-15; no safety-checker input.
+export const FalMurekaApiGeneratePodcastRequestSchema = z.object({
+  conversations: z
+    .array(
+      z.object({
+        text: z
+          .string()
+          .min(1)
+          .max(400)
+          .describe(
+            "Text spoken in this conversation turn, up to 400 characters."
+          ),
+        voice: z
+          .enum(["Ethan", "Victoria", "Jake", "Luna", "Emma"])
+          .describe("Built-in voice used for this conversation turn."),
+      })
+    )
+    .min(1)
+    .max(10)
+    .describe("Ordered conversation turns used to generate the podcast audio."),
+});
+export type FalMurekaApiGeneratePodcastRequest = z.input<
+  typeof FalMurekaApiGeneratePodcastRequestSchema
+>;
+export type FalMurekaApiGeneratePodcastRequestInput =
+  FalMurekaApiGeneratePodcastRequest;
+export type FalMurekaApiGeneratePodcastParsedRequest = z.output<
+  typeof FalMurekaApiGeneratePodcastRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "mureka/api/generate/podcast": FalMurekaApiGeneratePodcastRequestSchema,
   "mureka/api/generate/song": FalMurekaApiGenerateSongRequestSchema,
   "mureka/api/generate/instrumental":
     FalMurekaApiGenerateInstrumentalRequestSchema,

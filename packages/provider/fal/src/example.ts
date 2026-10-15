@@ -1357,6 +1357,23 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST mureka.api.generate.podcast": {
+    "source": "fal/mureka-api-generate-podcast",
+    "payload": {
+      "conversations": [
+        {
+          "text": "Hello from Apicity. Have a wonderful day.",
+          "voice": "Emma"
+        },
+        {
+          "text": "A red panda waves once, then holds still.",
+          "voice": "Ethan"
+        }
+      ]
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST mureka.api.generate.song": {
     "source": "fal/mureka-api-generate-song",
     "payload": {

@@ -1745,3 +1745,4 @@ fal	mireloAi.sfx2p0.videoToVideo	POST	https://fal.run/mirelo-ai/sfx2.0/video-to-
 fal	mureka.api.generate.lyrics	POST	https://fal.run/mureka/api/generate/lyrics	https://fal.ai/models/mureka/api/generate/lyrics/api
 fal	mureka.api.generate.instrumental	POST	https://fal.run/mureka/api/generate/instrumental	https://fal.ai/models/mureka/api/generate/instrumental/api
 fal	mureka.api.generate.song	POST	https://fal.run/mureka/api/generate/song	https://fal.ai/models/mureka/api/generate/song/api
+fal	mureka.api.generate.podcast	POST	https://fal.run/mureka/api/generate/podcast	https://fal.ai/models/mureka/api/generate/podcast/api

@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Mureka lyrics generation (ac-e9on10).
+
 - Added Mirelo SFX 2.0 video-to-video, dynamically priced (ac-ltve83).
 
 - Added Mirelo SFX 2.0 video-to-audio, dynamically priced (ac-qwv5yi).

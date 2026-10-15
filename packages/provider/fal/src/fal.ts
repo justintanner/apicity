@@ -1,4 +1,6 @@
 import {
+  FalMurekaApiGenerateLyricsRequest,
+  FalMurekaApiGenerateLyricsResponse,
   FalMireloAiSfx2p0VideoToVideoRequest,
   FalMireloAiSfx2p0VideoToVideoResponse,
   FalMireloAiSfx2p0VideoToAudioRequest,
@@ -354,6 +356,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalMurekaApiGenerateLyricsRequestSchema,
   FalMireloAiSfx2p0VideoToVideoRequestSchema,
   FalMireloAiSfx2p0VideoToAudioRequestSchema,
   FalMireloAiSfx2p0TextToAudioRequestSchema,
@@ -3082,7 +3085,28 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/mureka/api/generate/lyrics
+  // Docs: https://fal.ai/models/mureka/api/generate/lyrics/api
+  const murekaApiGenerateLyrics = jsonBody<
+    FalMurekaApiGenerateLyricsRequest,
+    FalMurekaApiGenerateLyricsResponse
+  >(
+    "POST",
+    "/mureka/api/generate/lyrics",
+    FalMurekaApiGenerateLyricsRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
+    mureka: {
+      api: {
+        generate: {
+          // POST https://fal.run/mureka/api/generate/lyrics
+          // Docs: https://fal.ai/models/mureka/api/generate/lyrics/api
+          lyrics: murekaApiGenerateLyrics,
+        },
+      },
+    },
     mireloAi: {
       sfx2p0: {
         // sig-ok: stylistic dotPath divergence from URL

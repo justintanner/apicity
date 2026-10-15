@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-176 endpoints across 40 groups. Each method mirrors an upstream URL path.
+177 endpoints across 41 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -2195,6 +2195,25 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.v1.models.requests.payloads({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+### mureka
+
+<details>
+<summary><code>POST</code> <b><code>fal.mureka.api.generate.lyrics</code></b></summary>
+
+<code>POST https://fal.run/mureka/api/generate/lyrics</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/mureka/api/generate/lyrics/api)
+
+```typescript
+const res = await fal.run.mureka.api.generate.lyrics({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

@@ -9378,7 +9378,24 @@ export type FalMireloAiSfx2p0VideoToVideoParsedRequest = z.output<
   typeof FalMireloAiSfx2p0VideoToVideoRequestSchema
 >;
 
+// Mureka lyrics generation.
+export const FalMurekaApiGenerateLyricsRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .describe("Topic, theme, or title to use when writing the lyrics."),
+});
+export type FalMurekaApiGenerateLyricsRequest = z.input<
+  typeof FalMurekaApiGenerateLyricsRequestSchema
+>;
+export type FalMurekaApiGenerateLyricsRequestInput =
+  FalMurekaApiGenerateLyricsRequest;
+export type FalMurekaApiGenerateLyricsParsedRequest = z.output<
+  typeof FalMurekaApiGenerateLyricsRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "mureka/api/generate/lyrics": FalMurekaApiGenerateLyricsRequestSchema,
   "mirelo-ai/sfx2.0/video-to-video": FalMireloAiSfx2p0VideoToVideoRequestSchema,
   "mirelo-ai/sfx2.0/video-to-audio": FalMireloAiSfx2p0VideoToAudioRequestSchema,
   "mirelo-ai/sfx2.0/text-to-audio": FalMireloAiSfx2p0TextToAudioRequestSchema,

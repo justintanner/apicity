@@ -21,6 +21,13 @@ export type {
 
 // Export all types
 export type {
+  FalMurekaApiGenerateLyricsRequest,
+  FalMurekaApiGenerateLyricsRequestInput,
+  FalMurekaApiGenerateLyricsParsedRequest,
+  FalMurekaApiGenerateLyricsResponse,
+  FalRunMurekaNamespace,
+  FalRunMurekaApiNamespace,
+  FalRunMurekaApiGenerateNamespace,
   FalMireloAiSfx2p0VideoToVideoRequest,
   FalMireloAiSfx2p0VideoToVideoRequestInput,
   FalMireloAiSfx2p0VideoToVideoParsedRequest,

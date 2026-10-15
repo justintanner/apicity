@@ -917,6 +917,16 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  // No card: publicEndpointBilling, pricing API and usage agree on
+  // $0.0135 per request; the recorded call billed one unit.
+  "mureka/api/generate/lyrics": {
+    kind: "perUnit",
+    unit: "generations",
+    units: () => 1,
+    select: [],
+    rates: { "": 0.0135 },
+    source: source("mureka/api/generate/lyrics", "2026-10-15"),
+  },
   // Card, pricing API and usage read: $0.03 per image, whatever the output
   // size; recorded billable units: 1.
   "fal-ai/marigold-v2": perImage("fal-ai/marigold-v2", 0.03, "2026-10-15"),

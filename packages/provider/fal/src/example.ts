@@ -375,6 +375,15 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST bria.guidedRemoveBackground": {
+    "source": "fal/bria-guided-remove-background",
+    "payload": {
+      "image_url": "<inline image/jpeg data URL — replace with a real URL or upload>",
+      "prompt": "separate the cat from the background"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST bytedance.seedSpeech.tts.v2": {
     "source": "fal/bytedance-seed-speech-tts-v2",
     "payload": {

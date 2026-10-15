@@ -914,6 +914,12 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  // Card and pricing API: $0.03 per image; recorded billable units: 1.
+  "bria/guided-remove-background": perImage(
+    "bria/guided-remove-background",
+    0.03,
+    "2026-10-15"
+  ),
   // Bria Fibo Edit 1.5 expand bills $0.04 per image. The card
   // reads $0.04 per image and the pricing API bills 0.04 USD per
   // image. The recorded call billed x-fal-billable-units 1, one

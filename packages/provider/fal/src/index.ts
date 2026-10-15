@@ -21,6 +21,10 @@ export type {
 
 // Export all types
 export type {
+  FalBriaGuidedRemoveBackgroundResponse,
+  FalBriaGuidedRemoveBackgroundRequest,
+  FalBriaGuidedRemoveBackgroundRequestInput,
+  FalBriaGuidedRemoveBackgroundParsedRequest,
   FalBriaFiboEdit1p5ExpandResponse,
   FalBriaFiboEdit1p5ExpandParsedRequest,
   FalBriaFiboEdit1p5ExpandRequestInput,

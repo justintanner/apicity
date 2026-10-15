@@ -21,6 +21,12 @@ export type {
 
 // Export all types
 export type {
+  FalViduQ4ImageToVideoRequest,
+  FalViduQ4ImageToVideoRequestInput,
+  FalViduQ4ImageToVideoParsedRequest,
+  FalViduQ4ImageToVideoResponse,
+  FalRunViduNamespace,
+  FalRunViduQ4Namespace,
   FalNanoBanana2p1EditRequest,
   FalNanoBanana2p1EditRequestInput,
   FalNanoBanana2p1EditParsedRequest,

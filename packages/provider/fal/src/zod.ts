@@ -9810,7 +9810,57 @@ export type FalNanoBanana2p1EditParsedRequest = z.output<
   typeof FalNanoBanana2p1EditRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-10-15
+// (sha256 6d9c73eca933c4393df207f09673c106c7d141ee3c8f051ff1439ba18ba8acb8). Field order follows x-fal-order-properties.
+// Free 422 probes the same day confirmed image_url as the only required
+// field, the prompt, duration and resolution validators below, and that an
+// undocumented field is ignored, so the schema is not strict.
+// Docs: https://fal.ai/models/fal-ai/vidu/q4/image-to-video/api
+export const FalViduQ4ImageToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .max(5000)
+    .default("")
+    .describe("Text prompt for video generation, max 5000 characters"),
+  image_url: z
+    .string()
+    .describe(
+      "URL or base64 data URI of the image to use as the first frame. Supports png, jpeg, jpg and webp up to 50 MB."
+    ),
+  duration: z
+    .number()
+    .int()
+    .min(3)
+    .max(16)
+    .default(5)
+    .describe("Duration of the video in seconds (3-16)"),
+  seed: z
+    .number()
+    .int()
+    .nullable()
+    .optional()
+    .describe(
+      "Random seed for reproducibility. A random seed is chosen when it is omitted or null."
+    ),
+  resolution: z
+    .enum(["540p", "720p", "1080p", "2K", "4K"])
+    .default("720p")
+    .describe("Output video resolution"),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe("Authorized callers may set false to request relaxed screening."),
+});
+export type FalViduQ4ImageToVideoRequest = z.input<
+  typeof FalViduQ4ImageToVideoRequestSchema
+>;
+export type FalViduQ4ImageToVideoRequestInput = FalViduQ4ImageToVideoRequest;
+export type FalViduQ4ImageToVideoParsedRequest = z.output<
+  typeof FalViduQ4ImageToVideoRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "fal-ai/vidu/q4/image-to-video": FalViduQ4ImageToVideoRequestSchema,
   "google/nano-banana-2.1/edit": FalNanoBanana2p1EditRequestSchema,
   "google/nano-banana-2.1": FalNanoBanana2p1TextToImageRequestSchema,
   "mureka/api/generate/podcast": FalMurekaApiGeneratePodcastRequestSchema,

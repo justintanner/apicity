@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalViduQ4ImageToVideoRequest,
+  FalViduQ4ImageToVideoRequestInput,
+  FalViduQ4ImageToVideoParsedRequest,
   FalNanoBanana2p1EditRequest,
   FalNanoBanana2p1TextToImageRequest,
   FalNanoBanana2p1EditRequestInput,
@@ -608,6 +611,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalViduQ4ImageToVideoRequest,
   FalNanoBanana2p1EditRequest,
   FalNanoBanana2p1TextToImageRequest,
   FalMurekaApiGeneratePodcastRequest,
@@ -5431,4 +5435,42 @@ export interface FalRunNanoBanana2p1Namespace {
 }
 export interface FalRunNamespace {
   nanoBanana2p1: FalRunNanoBanana2p1Namespace;
+}
+
+export interface FalViduQ4ImageToVideoResponse {
+  /** The generated video from image using the Q4 model. */
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+  /** Cover image of the generated video. */
+  cover_image?: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+  } | null;
+  /** The random seed used for generation. */
+  seed: number;
+}
+
+type FalViduQ4ImageToVideoFn = ((
+  params: FalViduQ4ImageToVideoRequest,
+  signal?: AbortSignal
+) => Promise<FalViduQ4ImageToVideoResponse>) & {
+  schema: ApicitySchema<FalViduQ4ImageToVideoRequest>;
+};
+
+export interface FalRunViduQ4Namespace {
+  imageToVideo: FalViduQ4ImageToVideoFn;
+}
+export interface FalRunViduNamespace {
+  q4: FalRunViduQ4Namespace;
+}
+export interface FalRunNamespace {
+  vidu: FalRunViduNamespace;
 }

@@ -75,6 +75,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- An upload ticket, an object carrying `upload_url` or `uploadUrl` such as
+  the answer of fal's `storage.upload.initiate` and `initiateMultipart`, is
+  returned as sent instead of having its `file_url` downloaded. Nothing exists
+  there until the bytes are uploaded and fal's CDN holds that GET open, so the
+  call printed nothing until it was killed. Any other download that goes 60
+  seconds without data (`DOWNLOAD_STALL_TIMEOUT_MS`) is now abandoned and
+  reported in its `<key>_savedTo` as an error instead of waiting forever;
+  `downloadUrlsInResult` takes an optional `{ stallTimeoutMs }`.
+
 - Discovery and endpoint commands now apply the same last-flag-wins rule
   when both `--op-token` and `--op-service-token` are supplied, including
   empty values. Unreadable default env files again report their path.

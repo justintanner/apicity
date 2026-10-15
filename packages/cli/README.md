@@ -361,9 +361,14 @@ becomes `{ savedTo, bytes }`. A JSON response is walked for `https://` strings
 under the media keys `url`, `downloadUrl`, `download_url`, `audio_url`,
 `audioUrl`, `video_url`, `videoUrl`, `image_url`, `imageUrl`, `fileUrl` and
 `file_url`; each is downloaded and a sibling `<key>_savedTo` added next to it.
+An object that also carries an `upload_url` or `uploadUrl` is an upload ticket
+(`fal storage.upload.initiate`, say): nothing exists at its URLs until you PUT
+the bytes, so none of them is fetched and the object comes back as sent.
 A download that fails is inlined as `<key>_savedTo: "error: …"` and never fails
-the call. The directory is `--output-dir`, else `APICITY_OUTPUT_DIR`, else
-`CLAUDE_PROJECT_DIR`, else the working directory.
+the call. One that goes 60 seconds without receiving any data counts as failed,
+so a stalled transfer cannot hold the result back. The directory is
+`--output-dir`, else `APICITY_OUTPUT_DIR`, else `CLAUDE_PROJECT_DIR`, else the
+working directory.
 
 Streaming endpoints are buffered into an array rather than streamed: the CLI
 prints one document.

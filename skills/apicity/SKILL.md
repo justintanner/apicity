@@ -146,8 +146,10 @@ is for shells, and several codes share one.
 Media never comes back as bytes on stdout. A binary result is written to the
 output directory and reported as `{"savedTo": "<path>", "bytes": 12345}`; a JSON
 result carrying media URLs is returned with a sibling `<key>_savedTo` beside
-each one. The directory is `--output-dir`, else `$APICITY_OUTPUT_DIR`, else
-`$CLAUDE_PROJECT_DIR`, else the working directory.
+each one. An upload ticket, an object that also carries `upload_url` or
+`uploadUrl`, comes back untouched: nothing exists at its URLs until you PUT the
+bytes to its upload URL. The directory is `--output-dir`, else
+`$APICITY_OUTPUT_DIR`, else `$CLAUDE_PROJECT_DIR`, else the working directory.
 
 ## Quick Reference
 

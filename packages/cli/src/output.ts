@@ -15,6 +15,28 @@ const URL_KEYS = new Set([
   "file_url",
 ]);
 
+/**
+ * The keys that mark an upload ticket. fal's `storage.upload.initiate`
+ * answers `{ file_url, upload_url }`, and nothing exists at that `file_url`
+ * until the caller PUTs the bytes to `upload_url` — fal's CDN holds a GET on
+ * it open without answering. So an object carrying one of these is returned
+ * as sent, and none of its URLs is fetched.
+ */
+const UPLOAD_TARGET_KEYS = ["upload_url", "uploadUrl"];
+
+/**
+ * How long one download may go without progress — no response headers yet,
+ * or no body bytes since the last chunk — before it is abandoned and reported
+ * in its `_savedTo` sibling. It measures silence, not total time, so a large
+ * file that keeps arriving is never cut off.
+ */
+export const DOWNLOAD_STALL_TIMEOUT_MS = 60_000;
+
+export interface DownloadOptions {
+  /** Overrides {@link DOWNLOAD_STALL_TIMEOUT_MS}. */
+  stallTimeoutMs?: number;
+}
+
 const EXT_BY_HINT: Array<[RegExp, string]> = [
   [/(speech|tts|audio|voice|sound|stt|transcrib|translat)/i, "mp3"],
   [/video/i, "mp4"],
@@ -54,20 +76,23 @@ export function isBinary(value: unknown): value is ArrayBuffer | Uint8Array {
  * Walk a JSON-shaped result, find URL strings under known keys, and download
  * each into outDir. Returns a deep-cloned result with sibling `_savedTo` keys
  * inserted next to the original URL fields. Best-effort — network failures
- * leave the URL untouched and don't throw.
+ * and stalls leave the URL untouched and don't throw. An upload ticket's URLs
+ * are never fetched (see `UPLOAD_TARGET_KEYS`).
  */
 export async function downloadUrlsInResult(
   result: unknown,
   outDir: string,
-  baseHint: string
+  baseHint: string,
+  options: DownloadOptions = {}
 ): Promise<unknown> {
+  const stallTimeoutMs = options.stallTimeoutMs ?? DOWNLOAD_STALL_TIMEOUT_MS;
   const cloned = deepClone(result);
   const downloads: Promise<void>[] = [];
   walk(cloned, (parent, key, value) => {
-    if (typeof value !== "string" || !URL_KEYS.has(key)) return;
-    if (!/^https?:\/\//.test(value)) return;
+    if (!URL_KEYS.has(key) || !isHttpUrl(value)) return;
+    if (isUploadTicket(parent)) return;
     downloads.push(
-      downloadOne(value, baseHint, outDir)
+      downloadOne(value, baseHint, outDir, stallTimeoutMs)
         .then((path) => {
           (parent as Record<string, unknown>)[`${key}_savedTo`] = path;
         })
@@ -82,20 +107,76 @@ export async function downloadUrlsInResult(
   return cloned;
 }
 
+function isHttpUrl(value: unknown): value is string {
+  return typeof value === "string" && /^https?:\/\//.test(value);
+}
+
+function isUploadTicket(node: object): boolean {
+  const record = node as Record<string, unknown>;
+  return UPLOAD_TARGET_KEYS.some((key) => isHttpUrl(record[key]));
+}
+
 async function downloadOne(
   url: string,
   baseHint: string,
-  outDir: string
+  outDir: string,
+  stallTimeoutMs: number
 ): Promise<string> {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`HTTP ${res.status} fetching ${url}`);
-  const contentType = res.headers.get("content-type") ?? "";
+  const { bytes, contentType } = await fetchBody(url, stallTimeoutMs);
   const ext = extFromContentType(contentType) ?? extFromUrl(url) ?? "bin";
   const ts = new Date().toISOString().replace(/[:.]/g, "-");
   const baseName = `${baseHint}__${ts}.${ext}`;
-  const buf = Buffer.from(await res.arrayBuffer());
-  const out = await writeBinary(buf, baseName, outDir);
+  const out = await writeBinary(bytes, baseName, outDir);
   return out.savedTo;
+}
+
+/**
+ * GET `url` and buffer its body, abandoning the transfer once it has gone
+ * `stallTimeoutMs` without progress. The timer restarts when the headers
+ * arrive and after every chunk. The stall message names no URL, so a signed
+ * query string never reaches it.
+ */
+async function fetchBody(
+  url: string,
+  stallTimeoutMs: number
+): Promise<{ bytes: Buffer; contentType: string }> {
+  const controller = new AbortController();
+  let stalled = false;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const restartStallTimer = (): void => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      stalled = true;
+      controller.abort();
+    }, stallTimeoutMs);
+  };
+
+  restartStallTimer();
+  try {
+    const res = await fetch(url, { signal: controller.signal });
+    if (!res.ok) throw new Error(`HTTP ${res.status} fetching ${url}`);
+    const chunks: Uint8Array[] = [];
+    if (res.body) {
+      const reader = res.body.getReader();
+      for (;;) {
+        restartStallTimer();
+        const { done, value } = await reader.read();
+        if (done) break;
+        chunks.push(value);
+      }
+    }
+    return {
+      bytes: Buffer.concat(chunks),
+      contentType: res.headers.get("content-type") ?? "",
+    };
+  } catch (err) {
+    if (stalled) {
+      throw new Error(`download stalled: no data for ${stallTimeoutMs} ms`);
+    }
+    throw err;
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 function extFromContentType(ct: string): string | null {

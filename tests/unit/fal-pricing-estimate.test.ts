@@ -1036,9 +1036,10 @@ describe("fal edit/image pricing estimates", () => {
     // the source clip and the model rather than a request field. Kandinsky
     // 6.0 Lite text-to-video and image-to-video each billed 0.5011 units
     // ($0.0802 and $0.0852) for a four-step clip their cards price at half a
-    // unit ($0.08 and $0.085), and Kandinsky 6.0 Pro text-to-video billed
-    // 0.1756 units ($0.2371) for an eight-step clip its card prices at $0.24.
-    // All fifty-eight use fal's pricing-estimate API.
+    // unit ($0.08 and $0.085), and Kandinsky 6.0 Pro text-to-video and
+    // image-to-video each billed 0.1756 units ($0.2371 and $0.2458) for an
+    // eight-step clip their cards price at $0.24 and $0.25. All fifty-nine
+    // use fal's pricing-estimate API.
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toEqual([
       "alibaba/qwen-image-3/edit",
       "alibaba/qwen-image-3/text-to-image",
@@ -1053,6 +1054,7 @@ describe("fal edit/image pricing estimates", () => {
       "bytedance/seedream/v5/pro/text-to-image",
       "fal-ai/kandinsky6-lite/image-to-video",
       "fal-ai/kandinsky6-lite/text-to-video",
+      "fal-ai/kandinsky6-pro/image-to-video",
       "fal-ai/kandinsky6-pro/text-to-video",
       "fal-ai/kandinsky6-vsr",
       "fal-ai/kandinsky6-vsr/lite",

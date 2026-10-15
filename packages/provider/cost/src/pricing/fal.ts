@@ -878,6 +878,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "bytedance/seedream/v5/pro/text-to-image",
   "fal-ai/kandinsky6-lite/image-to-video",
   "fal-ai/kandinsky6-lite/text-to-video",
+  "fal-ai/kandinsky6-pro/image-to-video",
   "fal-ai/kandinsky6-pro/text-to-video",
   "fal-ai/kandinsky6-vsr",
   "fal-ai/kandinsky6-vsr/lite",

@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Kandinsky 6.0 Pro image-to-video, dynamically priced (ac-ty4ptz).
+
 - Added Kandinsky 6.0 Pro text-to-video, dynamically priced (ac-1d4azs).
 
 - Added Kandinsky 6.0 Lite image-to-video, dynamically priced (ac-joik9a).

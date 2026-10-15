@@ -43,12 +43,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **Breaking:** The `gemini31Pro`, `gemini3Pro`, `gemini25Pro`,
-  `gemini35FlashOpenai`, and `gemini36FlashOpenai` chat request schemas now
+  `gemini35FlashOpenai`, `gemini36FlashOpenai`, and `gemini37FlashOpenai`
+  chat request schemas now
   follow KIE's current docs: `stream` defaults to `false`, and the
   undocumented `model` field is no longer declared. For `gemini31Pro`,
   `gemini3Pro`, and `gemini25Pro`, `include_thoughts` defaults to `false` and
-  `reasoning_effort` still defaults to `"high"`. For `gemini35FlashOpenai` and
-  `gemini36FlashOpenai`, `include_thoughts` and `reasoning_effort` have no
+  `reasoning_effort` still defaults to `"high"`. For `gemini35FlashOpenai`,
+  `gemini36FlashOpenai`, and `gemini37FlashOpenai`, `include_thoughts` and
+  `reasoning_effort` have no
   default and are optional in the `...ChatCompletionsParsedRequest` types;
   treat them as possibly `undefined`. The provider still sends your payload
   unchanged. This changes `.schema.parse()` output, parsed types, and

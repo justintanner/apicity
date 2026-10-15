@@ -9322,7 +9322,64 @@ export type FalMireloAiSfx2p0VideoToAudioParsedRequest = z.output<
   typeof FalMireloAiSfx2p0VideoToAudioRequestSchema
 >;
 
+// Mirelo SFX 2.0 video-to-video.
+export const FalMireloAiSfx2p0VideoToVideoRequestSchema = z.object({
+  video_url: z.string().describe("Video URL to add sound to."),
+  text_prompt: z
+    .string()
+    .max(2000)
+    .nullable()
+    .optional()
+    .describe("Optional text prompt guiding generation."),
+  negative_prompt: z
+    .string()
+    .max(1000)
+    .nullable()
+    .optional()
+    .describe(
+      "Sounds to keep out of the result, as a short comma-separated list."
+    ),
+  preserve_speech: z
+    .boolean()
+    .default(true)
+    .describe(
+      "Keep the speech in the input's audio and generate the rest of the soundtrack around it. False generates sound effects only and suppresses speech."
+    ),
+  duration: z
+    .number()
+    .min(1)
+    .max(600)
+    .default(10)
+    .describe(
+      "Seconds of sound to generate, at least 1 s, clamped to the video's length. Over 10 s generates in 10 s windows. A video shorter than 1 s answers 400."
+    ),
+  num_samples: z
+    .number()
+    .int()
+    .min(1)
+    .max(4)
+    .default(2)
+    .describe("Number of variations to generate."),
+  seed: z
+    .number()
+    .refine(Number.isInteger, "Seed must be an integer")
+    .min(-1)
+    .max(18446744073709552000)
+    .nullable()
+    .optional()
+    .describe("Seed for generation. -1 or None for random."),
+});
+export type FalMireloAiSfx2p0VideoToVideoRequest = z.input<
+  typeof FalMireloAiSfx2p0VideoToVideoRequestSchema
+>;
+export type FalMireloAiSfx2p0VideoToVideoRequestInput =
+  FalMireloAiSfx2p0VideoToVideoRequest;
+export type FalMireloAiSfx2p0VideoToVideoParsedRequest = z.output<
+  typeof FalMireloAiSfx2p0VideoToVideoRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "mirelo-ai/sfx2.0/video-to-video": FalMireloAiSfx2p0VideoToVideoRequestSchema,
   "mirelo-ai/sfx2.0/video-to-audio": FalMireloAiSfx2p0VideoToAudioRequestSchema,
   "mirelo-ai/sfx2.0/text-to-audio": FalMireloAiSfx2p0TextToAudioRequestSchema,
   "fal-ai/marigold-v2": FalMarigoldV2RequestSchema,

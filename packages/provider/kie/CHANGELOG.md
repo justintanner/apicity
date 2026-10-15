@@ -42,18 +42,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **Breaking:** The `gemini31Pro`, `gemini3Pro`, `gemini25Pro`, and
-  `gemini35FlashOpenai` chat request schemas now follow KIE's current docs:
-  `stream` defaults to `false`, and the undocumented `model` field is no
-  longer declared. For `gemini31Pro`, `gemini3Pro`, and `gemini25Pro`,
-  `include_thoughts` defaults to `false` and `reasoning_effort` still defaults
-  to `"high"`. For `gemini35FlashOpenai`, `include_thoughts` and
-  `reasoning_effort` have no default and are optional in the
-  `...ChatCompletionsParsedRequest` types; treat them as possibly `undefined`.
-  The provider still sends your payload unchanged. This changes
-  `.schema.parse()` output, parsed types, and `apicity describe`. Migration:
-  pass `stream: true` explicitly if you send parsed output and want
-  server-sent events. Parsed types no longer type `model`.
+- **Breaking:** The `gemini31Pro`, `gemini3Pro`, `gemini25Pro`,
+  `gemini35FlashOpenai`, and `gemini36FlashOpenai` chat request schemas now
+  follow KIE's current docs: `stream` defaults to `false`, and the
+  undocumented `model` field is no longer declared. For `gemini31Pro`,
+  `gemini3Pro`, and `gemini25Pro`, `include_thoughts` defaults to `false` and
+  `reasoning_effort` still defaults to `"high"`. For `gemini35FlashOpenai` and
+  `gemini36FlashOpenai`, `include_thoughts` and `reasoning_effort` have no
+  default and are optional in the `...ChatCompletionsParsedRequest` types;
+  treat them as possibly `undefined`. The provider still sends your payload
+  unchanged. This changes `.schema.parse()` output, parsed types, and
+  `apicity describe`. Migration: pass `stream: true` explicitly if you send
+  parsed output and want server-sent events. Parsed types no longer type `model`.
 
 - **Breaking:** paid endpoints (`post.api.v1.jobs.createTask`, the direct VEO
   and Suno rows, and the other `PAID_ENDPOINTS` rows) now dispatch when

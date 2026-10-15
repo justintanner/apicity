@@ -65,31 +65,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `paygate: { secret: "" }` still fails closed. Migration: if you relied on
   paid calls failing closed by default, pass `paygate: { secret }`.
 
-### Deprecated
-
-- `gemini.post.v1.models.gemini3FlashV1betamodels.streamGenerateContent`.
-  KIE has stopped documenting and pricing Gemini 3 Flash on this route: on
-  2026-10-15 its docs page answered HTTP 404 and the public pricing feed no
-  longer carried the model's rows. The same day KIE answered a valid-key call
-  with HTTP 200 and
-  `{"code":422,"msg":"The channel is not supported","data":null}`, which the
-  method throws as `KieError` with status 422. It is scheduled for removal.
-  Migration: move to a documented native Gemini Flash route, such as
-  `gemini.post.v1.models.gemini38Flash.streamGenerateContent`.
-
 ### Removed
 
-- **Breaking:** `gemini25Flash.post.v1.chat.completions` and
-  `gemini3Flash.post.v1.chat.completions`, because KIE retired Gemini 2.5
-  Flash and Gemini 3 Flash chat. On 2026-10-15 KIE answered a valid-key call
-  to each with HTTP 200 and
+- **Breaking:** `gemini25Flash.post.v1.chat.completions`,
+  `gemini3Flash.post.v1.chat.completions` and
+  `gemini.post.v1.models.gemini3FlashV1betamodels.streamGenerateContent`,
+  because KIE retired Gemini 2.5 Flash and Gemini 3 Flash. On 2026-10-15 KIE
+  answered a valid-key call to each with HTTP 200 and
   `{"code":422,"msg":"The channel is not supported","data":null}`, which the
   methods threw as `KieError` with status 422, and KIE no longer documents or
   prices the models. The `createGemini25FlashProvider` and
-  `createGemini3FlashProvider` factories, every `KieGemini25Flash*` schema and
-  type, and the `KieGemini3Flash*` chat schemas and types go with them.
-  Migration: move to a documented Gemini Flash endpoint, such as
-  `gemini38FlashOpenai.post.v1.chat.completions`.
+  `createGemini3FlashProvider` factories and every `KieGemini25Flash*` and
+  `KieGemini3Flash*` schema and type, the `KieGemini3FlashV1betamodels*` ones
+  included, go with them. Migration: move to a documented Gemini Flash
+  endpoint, such as `gemini38FlashOpenai.post.v1.chat.completions` or
+  `gemini.post.v1.models.gemini38Flash.streamGenerateContent`.
 
 ### Fixed
 

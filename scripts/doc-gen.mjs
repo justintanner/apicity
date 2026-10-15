@@ -513,21 +513,6 @@ const KIE_GEMINI_HTTP_200_ERROR_NOTE = [
 ].join(" ");
 
 /**
- * README note for a KIE Gemini leaf whose model KIE stopped documenting and
- * pricing (ac-szyesa). `successor` is a documented leaf's README call path.
- */
-function kieDelistedGeminiNote(model, successor) {
-  return [
-    `> **Deprecated:** KIE has stopped documenting and pricing ${model}.`,
-    "On 2026-10-15 the docs page linked above answered HTTP 404 and was gone",
-    "from `llms.txt`, and KIE's public pricing feed no longer carried the",
-    "model's rows (the 2026-09-11 feed did). This method still sends requests",
-    "unchanged, but KIE may stop answering them without notice. Prefer a",
-    `documented Gemini Flash endpoint, such as \`${successor}\`.`,
-  ].join(" ");
-}
-
-/**
  * README notes for single endpoints, keyed `provider<TAB>label<TAB>method`:
  * the dot path the endpoint's README heading prints and the method its block
  * renders (`endpointNoteKey`). A key that names no rendered block fails the
@@ -569,16 +554,6 @@ export const ENDPOINT_NOTES = new Map([
   [
     "kie\tgemini.post.v1.models.gemini38Flash.streamGenerateContent\tPOST",
     KIE_GEMINI_HTTP_200_ERROR_NOTE,
-  ],
-  [
-    "kie\tgemini.post.v1.models.gemini3FlashV1betamodels.streamGenerateContent\tPOST",
-    [
-      kieDelistedGeminiNote(
-        "Gemini 3 Flash on this v1beta route",
-        "kie.gemini.post.v1.models.gemini38Flash.streamGenerateContent"
-      ),
-      KIE_GEMINI_HTTP_200_ERROR_NOTE,
-    ].join("\n\n"),
   ],
   [
     "kie\tpost.anthropic.v1.messages\tPOST",

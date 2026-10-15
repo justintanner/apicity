@@ -10448,7 +10448,127 @@ export type FalFlux2FlexParsedRequest = z.output<
   typeof FalFlux2FlexRequestSchema
 >;
 
+// Upstream refuses image_url and end_image_url unless each is "a valid HTTPS
+// URL or a Data URI" (unbilled 422 probes, 2026-10-15). An empty string, a
+// bare https://, an ftp: URL, a relative path and the upper-case HTTPS: and
+// DATA: schemes were refused; a lower-case http: URL, any data: URI (even
+// text/plain) and a leading space passed. The pattern restates what passed.
+const FalKlingVideoO3StandardImageToVideoImageUrlSchema = z
+  .string()
+  .regex(
+    /^\s*(?:https?:\/\/[^\s/?#]+|data:)/,
+    "Input must be a valid HTTPS URL or a Data URI"
+  );
+
+const FalKlingVideoO3StandardImageToVideoKlingV3MultiPromptElementSchema =
+  z.object({
+    prompt: z.string().describe("The prompt for this shot."),
+    duration: z
+      .enum([
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+      ])
+      .default("5")
+      .describe("The duration of this shot in seconds"),
+  });
+
+// Kling O3 Standard image-to-video: live OpenAPI 2026-10-15. Field order
+// follows x-fal-order-properties. The prompt-or-multi_prompt rule comes from
+// the prompt description; a guarded 422 probe cannot reach it.
+// Docs: https://fal.ai/models/fal-ai/kling-video/o3/standard/image-to-video/api
+export const FalKlingVideoO3StandardImageToVideoRequestSchema = z
+  .object({
+    enable_safety_checker: z
+      .boolean()
+      .default(true)
+      .describe(
+        "Disabling safety checks requires account authorization; unauthorized requests are always checked."
+      ),
+    prompt: z
+      .string()
+      .max(2500)
+      .nullable()
+      .optional()
+      .describe(
+        "Text prompt for video generation. Either prompt or multi_prompt must be provided, but not both."
+      ),
+    image_url: FalKlingVideoO3StandardImageToVideoImageUrlSchema.describe(
+      "URL of the start frame image. At most 50 MB, at least 300 px per side, with an aspect ratio from 0.4 to 2.5."
+    ),
+    end_image_url: FalKlingVideoO3StandardImageToVideoImageUrlSchema.nullable()
+      .optional()
+      .describe(
+        "URL of the end frame image (optional). At most 50 MB, at least 300 px per side, with an aspect ratio from 0.4 to 2.5."
+      ),
+    duration: z
+      .enum([
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+      ])
+      .default("5")
+      .describe("Video duration in seconds (3-15s)."),
+    generate_audio: z
+      .boolean()
+      .default(false)
+      .describe("Whether to generate native audio for the video."),
+    multi_prompt: z
+      .array(FalKlingVideoO3StandardImageToVideoKlingV3MultiPromptElementSchema)
+      .nullable()
+      .optional()
+      .describe("List of prompts for multi-shot video generation."),
+    shot_type: z
+      .enum(["customize", "intelligent"])
+      .default("customize")
+      .describe(
+        "The type of multi-shot video generation. 'intelligent' lets the model automatically determine shot structure."
+      ),
+  })
+  .refine((v) => v.prompt != null || v.multi_prompt != null, {
+    message:
+      "fal-ai/kling-video/o3/standard/image-to-video needs prompt or multi_prompt",
+    path: ["prompt"],
+  })
+  .refine((v) => !(v.prompt != null && v.multi_prompt != null), {
+    message:
+      "fal-ai/kling-video/o3/standard/image-to-video multi_prompt and prompt are mutually exclusive",
+    path: ["prompt"],
+  });
+export type FalKlingVideoO3StandardImageToVideoRequest = z.input<
+  typeof FalKlingVideoO3StandardImageToVideoRequestSchema
+>;
+export type FalKlingVideoO3StandardImageToVideoRequestInput =
+  FalKlingVideoO3StandardImageToVideoRequest;
+export type FalKlingVideoO3StandardImageToVideoParsedRequest = z.output<
+  typeof FalKlingVideoO3StandardImageToVideoRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "fal-ai/kling-video/o3/standard/image-to-video":
+    FalKlingVideoO3StandardImageToVideoRequestSchema,
   "fal-ai/flux-2-flex": FalFlux2FlexRequestSchema,
   "fal-ai/kandinsky6-pro/image-to-video":
     FalKandinsky6ProImageToVideoRequestSchema,

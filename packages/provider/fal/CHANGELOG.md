@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Kling O3 Standard image-to-video (ac-7emr38).
+
 - Added FLUX.2 Flex text-to-image, dynamically priced (ac-ip1jtk).
 
 - Added Kandinsky 6.0 Pro image-to-video, dynamically priced (ac-ty4ptz).

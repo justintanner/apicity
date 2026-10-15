@@ -851,6 +851,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST klingVideo.o3.standard.imageToVideo": {
+    "source": "fal/kling-video-o3-standard-image-to-video",
+    "payload": {
+      "image_url": "<inline image/jpeg data URL — replace with a real URL or upload>",
+      "prompt": "the cat blinks",
+      "duration": "3"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST klingVideo.o3p4k.imageToVideo": {
     "source": "fal/kling-video-o3p4k-image-to-video",
     "payload": {

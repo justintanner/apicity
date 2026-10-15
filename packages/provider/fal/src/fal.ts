@@ -1,4 +1,6 @@
 import {
+  FalKlingVideoO3StandardImageToVideoRequest,
+  FalKlingVideoO3StandardImageToVideoResponse,
   FalFlux2FlexRequest,
   FalFlux2FlexResponse,
   FalKandinsky6ProImageToVideoRequest,
@@ -386,6 +388,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalKlingVideoO3StandardImageToVideoRequestSchema,
   FalFlux2FlexRequestSchema,
   FalKandinsky6ProImageToVideoRequestSchema,
   FalKandinsky6ProTextToVideoRequestSchema,
@@ -3329,6 +3332,19 @@ export function createFal(opts: FalOptions): FalProvider {
     {}
   );
 
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/fal-ai/kling-video/o3/standard/image-to-video
+  // Docs: https://fal.ai/models/fal-ai/kling-video/o3/standard/image-to-video/api
+  const klingVideoO3StandardImageToVideo = jsonBody<
+    FalKlingVideoO3StandardImageToVideoRequest,
+    FalKlingVideoO3StandardImageToVideoResponse
+  >(
+    "POST",
+    "/fal-ai/kling-video/o3/standard/image-to-video",
+    FalKlingVideoO3StandardImageToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
     // sig-ok: stylistic dotPath divergence from URL
     // POST https://fal.run/fal-ai/flux-2-flex
@@ -3749,6 +3765,14 @@ export function createFal(opts: FalOptions): FalProvider {
     geminiOmniFlash,
     qwenImage,
     klingVideo: {
+      o3: {
+        standard: {
+          // sig-ok: stylistic dotPath divergence from URL
+          // POST https://fal.run/fal-ai/kling-video/o3/standard/image-to-video
+          // Docs: https://fal.ai/models/fal-ai/kling-video/o3/standard/image-to-video/api
+          imageToVideo: klingVideoO3StandardImageToVideo,
+        },
+      },
       v3: {
         turbo: {
           pro: {

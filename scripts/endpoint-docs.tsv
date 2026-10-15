@@ -1749,3 +1749,4 @@ fal	mureka.api.generate.podcast	POST	https://fal.run/mureka/api/generate/podcast
 fal	nanoBanana2p1.textToImage	POST	https://fal.run/google/nano-banana-2.1	https://fal.ai/models/google/nano-banana-2.1/api
 fal	nanoBanana2p1.edit	POST	https://fal.run/google/nano-banana-2.1/edit	https://fal.ai/models/google/nano-banana-2.1/edit/api
 fal	vidu.q4.imageToVideo	POST	https://fal.run/fal-ai/vidu/q4/image-to-video	https://fal.ai/models/fal-ai/vidu/q4/image-to-video/api
+fal	vidu.q4.referenceToVideo	POST	https://fal.run/fal-ai/vidu/q4/reference-to-video	https://fal.ai/models/fal-ai/vidu/q4/reference-to-video/api

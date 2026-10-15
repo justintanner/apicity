@@ -1,4 +1,6 @@
 import {
+  FalViduQ4ReferenceToVideoRequest,
+  FalViduQ4ReferenceToVideoResponse,
   FalViduQ4ImageToVideoRequest,
   FalViduQ4ImageToVideoResponse,
   FalNanoBanana2p1EditRequest,
@@ -368,6 +370,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalViduQ4ReferenceToVideoRequestSchema,
   FalViduQ4ImageToVideoRequestSchema,
   FalNanoBanana2p1EditRequestSchema,
   FalNanoBanana2p1TextToImageRequestSchema,
@@ -3187,9 +3190,26 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/fal-ai/vidu/q4/reference-to-video
+  // Docs: https://fal.ai/models/fal-ai/vidu/q4/reference-to-video/api
+  const viduQ4ReferenceToVideo = jsonBody<
+    FalViduQ4ReferenceToVideoRequest,
+    FalViduQ4ReferenceToVideoResponse
+  >(
+    "POST",
+    "/fal-ai/vidu/q4/reference-to-video",
+    FalViduQ4ReferenceToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
     vidu: {
       q4: {
+        // sig-ok: stylistic dotPath divergence from URL
+        // POST https://fal.run/fal-ai/vidu/q4/reference-to-video
+        // Docs: https://fal.ai/models/fal-ai/vidu/q4/reference-to-video/api
+        referenceToVideo: viduQ4ReferenceToVideo,
         // sig-ok: stylistic dotPath divergence from URL
         // POST https://fal.run/fal-ai/vidu/q4/image-to-video
         // Docs: https://fal.ai/models/fal-ai/vidu/q4/image-to-video/api

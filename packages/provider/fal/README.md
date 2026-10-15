@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-183 endpoints across 43 groups. Each method mirrors an upstream URL path.
+184 endpoints across 43 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -2911,6 +2911,23 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.vidu.q4.imageToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.vidu.q4.referenceToVideo</code></b></summary>
+
+<code>POST https://fal.run/fal-ai/vidu/q4/reference-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/fal-ai/vidu/q4/reference-to-video/api)
+
+```typescript
+const res = await fal.run.vidu.q4.referenceToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

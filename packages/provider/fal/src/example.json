@@ -1700,6 +1700,21 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST vidu.q4.referenceToVideo": {
+    "source": "fal/vidu-q4-reference-to-video",
+    "payload": {
+      "prompt": "In the scene of [@reference_image_1], the white cat from [@reference_image_2] sits on the wet sand, blinks, and turns its head toward the waves.",
+      "reference_image_urls": [
+        "<inline image/png data URL — replace with a real URL or upload>",
+        "<inline image/jpeg data URL — replace with a real URL or upload>"
+      ],
+      "duration": 3,
+      "resolution": "540p",
+      "audio": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST virtualTryOn": {
     "source": "fal/google-virtual-try-on",
     "payload": {

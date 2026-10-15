@@ -922,6 +922,18 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 
 export const fal: Record<string, ModelPricing> = {
   // Bills the requested seconds (default 5) at the resolution tier (default
+  // 720p); audio does not change the price. The recorded 3 s 540p call billed
+  // 27 units of $0.0035 ($0.0945) although the file played 3.042 s. List
+  // rates; the promotional 30% off ($0.0315/$0.0665/$0.084/$0.133/$0.273 per
+  // second) ends 2026-11-30.
+  "fal-ai/vidu/q4/reference-to-video": perSecondTiered(
+    "fal-ai/vidu/q4/reference-to-video",
+    [resolutionTier("720p")],
+    { "540p": 0.045, "720p": 0.095, "1080p": 0.12, "2K": 0.19, "4K": 0.39 },
+    numericSeconds(5),
+    "2026-10-15"
+  ),
+  // Bills the requested seconds (default 5) at the resolution tier (default
   // 720p): the recorded 3 s 540p call billed 27 units of $0.0035 ($0.0945)
   // although the file played 3.042 s. List rates; the promotional 30% off
   // ($0.0315/$0.0665/$0.084/$0.133/$0.273 per second) ends 2026-11-30.

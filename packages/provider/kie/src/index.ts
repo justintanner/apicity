@@ -268,19 +268,6 @@ export {
   KieGpt52ToolFunctionSchema,
   KieGpt52ToolSchema,
   KieGpt52ToolTypeSchema,
-  KieGemini3FlashChatCompletionsRequestSchema,
-  KieGemini3FlashContentItemSchema,
-  KieGemini3FlashContentItemTypeSchema,
-  KieGemini3FlashMediaContentItemSchema,
-  KieGemini3FlashMessageRoleSchema,
-  KieGemini3FlashMessageSchema,
-  KieGemini3FlashReasoningEffortSchema,
-  KieGemini3FlashResponseFormatSchema,
-  KieGemini3FlashTextContentItemSchema,
-  KieGemini3FlashToolFunctionParametersSchema,
-  KieGemini3FlashToolFunctionSchema,
-  KieGemini3FlashToolSchema,
-  KieGemini3FlashToolTypeSchema,
   KieGemini35FlashOpenaiChatCompletionsRequestSchema,
   KieGemini35FlashOpenaiContentItemSchema,
   KieGemini35FlashOpenaiContentItemTypeSchema,
@@ -472,7 +459,6 @@ export { createGeminiProvider } from "./gemini";
 export { createResponsesProvider } from "./responses";
 export { createGemini31ProProvider } from "./gemini-31-pro";
 export { createGpt52Provider } from "./gpt-52";
-export { createGemini3FlashProvider } from "./gemini-3-flash";
 export { createGemini35FlashOpenaiProvider } from "./gemini-35-flash-openai";
 export { createGemini36FlashOpenaiProvider } from "./gemini-36-flash-openai";
 export { createGemini37FlashOpenaiProvider } from "./gemini-37-flash-openai";
@@ -1481,21 +1467,6 @@ export type {
   KieGpt52ToolFunctionName,
   KieGpt52ToolFunctionParameters,
   KieGpt52ToolType,
-  KieGemini3FlashChatCompletionsRequest,
-  KieGemini3FlashChatCompletionsRequestInput,
-  KieGemini3FlashChatCompletionsParsedRequest,
-  KieGemini3FlashContentItem,
-  KieGemini3FlashContentItemType,
-  KieGemini3FlashMediaContentItem,
-  KieGemini3FlashMessage,
-  KieGemini3FlashMessageRole,
-  KieGemini3FlashReasoningEffort,
-  KieGemini3FlashResponseFormat,
-  KieGemini3FlashTextContentItem,
-  KieGemini3FlashTool,
-  KieGemini3FlashToolFunction,
-  KieGemini3FlashToolFunctionParameters,
-  KieGemini3FlashToolType,
   KieGemini35FlashOpenaiChatCompletionsRequest,
   KieGemini35FlashOpenaiChatCompletionsRequestInput,
   KieGemini35FlashOpenaiChatCompletionsParsedRequest,
@@ -1650,18 +1621,6 @@ export type {
   KieGpt52CompletionTokensDetails,
   KieGpt52Provider,
 } from "./gpt-52";
-
-export type {
-  KieGemini3FlashChatChoice,
-  KieGemini3FlashChatCompletionChunk,
-  KieGemini3FlashChatCompletionResponse,
-  KieGemini3FlashChatCompletionsResult,
-  KieGemini3FlashChatDelta,
-  KieGemini3FlashChatMessage,
-  KieGemini3FlashChatUsage,
-  KieGemini3FlashCompletionTokensDetails,
-  KieGemini3FlashProvider,
-} from "./gemini-3-flash";
 
 export type {
   KieGemini35FlashOpenaiChatChoice,

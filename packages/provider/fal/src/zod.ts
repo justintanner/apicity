@@ -9394,7 +9394,60 @@ export type FalMurekaApiGenerateLyricsParsedRequest = z.output<
   typeof FalMurekaApiGenerateLyricsRequestSchema
 >;
 
+// Mureka ships new model ids on its own cadence, so the Mureka model enums
+// are unioned with an alias instead of a bare `.or(z.string())`, which would
+// accept typos. The alias matches Mureka's id grammar: `mureka-` followed by
+// a numeric version with an optional dotted minor (mureka-8, mureka-9.5) or
+// an o-series id (mureka-o1). Anything else must be added to an enum.
+const FalMurekaModelAliasSchema = z
+  .string()
+  .regex(
+    /^mureka-(?:o\d+|\d+(?:\.\d+)?)$/,
+    "Expected a listed model or a versioned Mureka alias (e.g. mureka-10)"
+  );
+
+// Mureka instrumental generation.
+export const FalMurekaApiGenerateInstrumentalRequestSchema = z
+  .object({
+    model: z
+      .enum(["mureka-7.6", "mureka-8", "mureka-9", "mureka-9.5"])
+      .or(FalMurekaModelAliasSchema)
+      .default("mureka-9.5")
+      .describe("Model used to generate the instrumental."),
+    prompt: z
+      .string()
+      .min(1)
+      .max(1024)
+      .nullable()
+      .optional()
+      .describe(
+        "Description of the desired instrumental. Provide exactly one of prompt or instrumental_id."
+      ),
+    instrumental_id: z
+      .string()
+      .min(1)
+      .nullable()
+      .optional()
+      .describe(
+        "Instrumental ID returned by /files/upload with purpose='instrumental'. Provide exactly one of instrumental_id or prompt."
+      ),
+  })
+  .refine((p) => (p.prompt != null) !== (p.instrumental_id != null), {
+    path: ["prompt"],
+    message: "Provide exactly one of prompt or instrumental_id.",
+  });
+export type FalMurekaApiGenerateInstrumentalRequest = z.input<
+  typeof FalMurekaApiGenerateInstrumentalRequestSchema
+>;
+export type FalMurekaApiGenerateInstrumentalRequestInput =
+  FalMurekaApiGenerateInstrumentalRequest;
+export type FalMurekaApiGenerateInstrumentalParsedRequest = z.output<
+  typeof FalMurekaApiGenerateInstrumentalRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "mureka/api/generate/instrumental":
+    FalMurekaApiGenerateInstrumentalRequestSchema,
   "mureka/api/generate/lyrics": FalMurekaApiGenerateLyricsRequestSchema,
   "mirelo-ai/sfx2.0/video-to-video": FalMireloAiSfx2p0VideoToVideoRequestSchema,
   "mirelo-ai/sfx2.0/video-to-audio": FalMireloAiSfx2p0VideoToAudioRequestSchema,

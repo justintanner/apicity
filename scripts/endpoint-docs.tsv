@@ -1743,3 +1743,4 @@ fal	mireloAi.sfx2p0.textToAudio	POST	https://fal.run/mirelo-ai/sfx2.0/text-to-au
 fal	mireloAi.sfx2p0.videoToAudio	POST	https://fal.run/mirelo-ai/sfx2.0/video-to-audio	https://fal.ai/models/mirelo-ai/sfx2.0/video-to-audio/api
 fal	mireloAi.sfx2p0.videoToVideo	POST	https://fal.run/mirelo-ai/sfx2.0/video-to-video	https://fal.ai/models/mirelo-ai/sfx2.0/video-to-video/api
 fal	mureka.api.generate.lyrics	POST	https://fal.run/mureka/api/generate/lyrics	https://fal.ai/models/mureka/api/generate/lyrics/api
+fal	mureka.api.generate.instrumental	POST	https://fal.run/mureka/api/generate/instrumental	https://fal.ai/models/mureka/api/generate/instrumental/api

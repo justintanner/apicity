@@ -42,9 +42,23 @@ export type {
   DropboxUsersGetCurrentAccountResponse,
   DropboxUsersNamespace,
   DropboxWriteMode,
+  DropboxOAuthNamespace,
+  DropboxOAuthTokenRequest,
+  DropboxOAuthTokenResponse,
+  DropboxUploadSessionNamespace,
+  DropboxUploadSessionCursor,
+  DropboxUploadSessionStartRequest,
+  DropboxUploadSessionStartResponse,
+  DropboxUploadSessionAppendRequest,
+  DropboxUploadSessionFinishRequest,
 } from "./types";
 
 export {
+  DropboxOAuthTokenRequestSchema,
+  DropboxUploadSessionStartRequestSchema,
+  DropboxUploadSessionAppendRequestSchema,
+  DropboxUploadSessionFinishRequestSchema,
+  DropboxUploadSessionCursorSchema,
   DropboxBodyInitSchema,
   DropboxCheckUserRequestSchema,
   DropboxCheckUserResponseSchema,

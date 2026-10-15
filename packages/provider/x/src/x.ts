@@ -10,6 +10,8 @@ import {
   XUsersMeResponse,
   XTweetCreateRequest,
   XTweetCreateResponse,
+  XTweetLookupRequest,
+  XTweetLookupResponse,
   XProvider,
   XError,
 } from "./types";
@@ -18,6 +20,7 @@ import {
   XMediaUploadAppendRequestSchema,
   XUsersMeRequestSchema,
   XTweetCreateRequestSchema,
+  XTweetLookupRequestSchema,
 } from "./zod";
 import { attachExamples } from "./example";
 import { createTransport } from "./transport";
@@ -192,6 +195,28 @@ export function createX(opts: XOptions): XProvider {
     { schema: XTweetCreateRequestSchema }
   );
 
+  // sig-ok: numeric URL segments (`/2/`) become identifier-safe (`v2`)
+  // GET https://api.x.com/2/tweets/{id}{query}
+  // Docs: https://docs.x.com/x-api/posts/get-post-by-id
+  const tweetsLookup = Object.assign(
+    async (
+      id: string,
+      req?: XTweetLookupRequest,
+      signal?: AbortSignal
+    ): Promise<XTweetLookupResponse> => {
+      const params = new URLSearchParams();
+      appendArrayQuery(params, "tweet.fields", req?.["tweet.fields"]);
+      appendArrayQuery(params, "media.fields", req?.["media.fields"]);
+      appendArrayQuery(params, "expansions", req?.expansions);
+      const query = params.toString();
+      return transport.getJson<XTweetLookupResponse>(
+        `/2/tweets/${encodeURIComponent(id)}${query ? `?${query}` : ""}`,
+        { signal }
+      );
+    },
+    { schema: XTweetLookupRequestSchema }
+  );
+
   return attachExamples({
     post: {
       v2: {
@@ -207,6 +232,7 @@ export function createX(opts: XOptions): XProvider {
     },
     get: {
       v2: {
+        tweets: tweetsLookup,
         media: {
           upload: mediaUploadStatus,
         },

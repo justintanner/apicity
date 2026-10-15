@@ -9637,4 +9637,13 @@ export const CALL_SHAPES: Record<string, CallShape> = {
     injected: ["apiKey"],
     derived: [],
   },
+  "x\tGET\tv2.tweets": {
+    provider: "x",
+    method: "GET",
+    dotPath: "v2.tweets",
+    positional: [{ placeholder: "id", param: "id", optional: false }],
+    fields: [],
+    injected: [],
+    derived: [],
+  },
 };

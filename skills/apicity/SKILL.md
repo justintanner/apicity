@@ -357,7 +357,7 @@ apicity telegram sendVideo --data '{"chat_id":123456789,"video":"https://example
 
 ```bash
 apicity x v2.users.me --json
-apicity x v2.tweets --data '{"text":"Shipping today."}'
+apicity x v2.tweets --method POST --data '{"text":"Shipping today."}'
 apicity x v2.media.upload.initialize --data '{"media_type":"video/mp4","total_bytes":1048576}'
 ```
 

@@ -195,6 +195,10 @@ dropbox	files.listFolder	POST	cheap	Dropbox file/metadata operations; no per-cal
 dropbox	files.listFolderContinue	POST	cheap	Dropbox file/metadata operations; no per-call USD compute cost
 dropbox	files.moveV2	POST	cheap	Dropbox file/metadata operations; no per-call USD compute cost
 dropbox	files.upload	POST	cheap	Dropbox file/metadata operations; no per-call USD compute cost
+dropbox	files.uploadSession.appendV2	POST	cheap	Dropbox file/metadata operations; no per-call USD compute cost
+dropbox	files.uploadSession.finish	POST	cheap	Dropbox file/metadata operations; no per-call USD compute cost
+dropbox	files.uploadSession.start	POST	cheap	Dropbox file/metadata operations; no per-call USD compute cost
+dropbox	oauth2.token	POST	cheap	Dropbox file/metadata operations; no per-call USD compute cost
 dropbox	sharing.createSharedLinkWithSettings	POST	cheap	Dropbox file/metadata operations; no per-call USD compute cost
 dropbox	sharing.listSharedLinks	POST	cheap	Dropbox file/metadata operations; no per-call USD compute cost
 dropbox	users.getCurrentAccount	POST	cheap	Dropbox file/metadata operations; no per-call USD compute cost
@@ -1716,6 +1720,7 @@ x	v2.media.upload	GET	cheap	X (Twitter) posting API; no per-call USD compute cos
 x	v2.media.upload.append	POST	cheap	X (Twitter) posting API; no per-call USD compute cost
 x	v2.media.upload.finalize	POST	cheap	X (Twitter) posting API; no per-call USD compute cost
 x	v2.media.upload.initialize	POST	cheap	X (Twitter) posting API; no per-call USD compute cost
+x	v2.tweets	GET	cheap	X (Twitter) posting API; no per-call USD compute cost
 x	v2.tweets	POST	cheap	X (Twitter) posting API; no per-call USD compute cost
 x	v2.users.me	GET	cheap	X (Twitter) posting API; no per-call USD compute cost
 xai	managementApi.auth.teams.apiKeys	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money

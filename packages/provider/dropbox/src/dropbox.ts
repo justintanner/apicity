@@ -25,6 +25,12 @@ import type {
   DropboxSharingListSharedLinksResponse,
   DropboxSharingSharedLinkMetadata,
   DropboxUsersGetCurrentAccountResponse,
+  DropboxOAuthTokenRequest,
+  DropboxOAuthTokenResponse,
+  DropboxUploadSessionStartRequest,
+  DropboxUploadSessionStartResponse,
+  DropboxUploadSessionAppendRequest,
+  DropboxUploadSessionFinishRequest,
 } from "./types";
 import {
   DropboxCheckUserRequestSchema,
@@ -38,6 +44,10 @@ import {
   DropboxFilesUploadRequestSchema,
   DropboxSharingCreateSharedLinkWithSettingsRequestSchema,
   DropboxSharingListSharedLinksRequestSchema,
+  DropboxOAuthTokenRequestSchema,
+  DropboxUploadSessionStartRequestSchema,
+  DropboxUploadSessionAppendRequestSchema,
+  DropboxUploadSessionFinishRequestSchema,
 } from "./zod";
 
 interface DropboxErrorDetails {
@@ -54,6 +64,9 @@ export function createDropbox(opts: DropboxOptions = {}): DropboxProvider {
   );
   const uploadBaseURL = (
     opts.contentBaseURL ?? "https://content.dropboxapi.com/2"
+  ).replace(/\/+$/, "");
+  const apiBaseURL = (
+    opts.oauthBaseURL ?? "https://api.dropboxapi.com"
   ).replace(/\/+$/, "");
   const doFetch = opts.fetch ?? fetch;
   const timeout = opts.timeout ?? 30000;
@@ -162,7 +175,11 @@ export function createDropbox(opts: DropboxOptions = {}): DropboxProvider {
 
   async function makeUploadRequest<T>(
     path: string,
-    req: DropboxFilesUploadRequest,
+    req:
+      | DropboxFilesUploadRequest
+      | DropboxUploadSessionStartRequest
+      | DropboxUploadSessionAppendRequest
+      | DropboxUploadSessionFinishRequest,
     signal?: AbortSignal,
     options: { baseOverride: string } = { baseOverride: uploadBaseURL }
   ): Promise<T> {
@@ -485,7 +502,86 @@ export function createDropbox(opts: DropboxOptions = {}): DropboxProvider {
     { schema: DropboxSharingListSharedLinksRequestSchema }
   );
 
+  // sig-ok: intentional
+  // POST https://content.dropboxapi.com/2/files/upload_session/start
+  // Docs: https://www.dropbox.com/developers/documentation/http/documentation#files-upload_session-start
+  const uploadSessionStart = Object.assign(
+    async (
+      req: DropboxUploadSessionStartRequest,
+      signal?: AbortSignal
+    ): Promise<DropboxUploadSessionStartResponse> =>
+      makeUploadRequest<DropboxUploadSessionStartResponse>(
+        "/files/upload_session/start",
+        req,
+        signal
+      ),
+    { schema: DropboxUploadSessionStartRequestSchema }
+  );
+
+  // sig-ok: intentional
+  // POST https://content.dropboxapi.com/2/files/upload_session/append_v2
+  // Docs: https://www.dropbox.com/developers/documentation/http/documentation#files-upload_session-append_v2
+  const uploadSessionAppendV2 = Object.assign(
+    async (
+      req: DropboxUploadSessionAppendRequest,
+      signal?: AbortSignal
+    ): Promise<null> =>
+      makeUploadRequest<null>("/files/upload_session/append_v2", req, signal),
+    { schema: DropboxUploadSessionAppendRequestSchema }
+  );
+
+  // sig-ok: intentional
+  // POST https://content.dropboxapi.com/2/files/upload_session/finish
+  // Docs: https://www.dropbox.com/developers/documentation/http/documentation#files-upload_session-finish
+  const uploadSessionFinish = Object.assign(
+    async (
+      req: DropboxUploadSessionFinishRequest,
+      signal?: AbortSignal
+    ): Promise<DropboxFileMetadata> =>
+      makeUploadRequest<DropboxFileMetadata>(
+        "/files/upload_session/finish",
+        req,
+        signal
+      ),
+    { schema: DropboxUploadSessionFinishRequestSchema }
+  );
+
+  // sig-ok: intentional
+  // POST https://api.dropboxapi.com/oauth2/token
+  // Docs: https://www.dropbox.com/developers/documentation/http/documentation#oauth2-token
+  const oauthTokenExchange = Object.assign(
+    async (
+      req: DropboxOAuthTokenRequest,
+      signal?: AbortSignal
+    ): Promise<DropboxOAuthTokenResponse> => {
+      if (!opts.clientId)
+        throw new DropboxError("Dropbox clientId is required for OAuth", 401);
+      const form = new URLSearchParams({ client_id: opts.clientId, ...req });
+      if (opts.clientSecret) form.set("client_secret", opts.clientSecret);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
+      if (signal) attachAbortHandler(signal, controller);
+      try {
+        const res = await doFetch(`${apiBaseURL}/oauth2/token`, {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: form,
+          signal: controller.signal,
+        });
+        if (!res.ok) await throwDropboxError(res);
+        return (await parseBody(res)) as DropboxOAuthTokenResponse;
+      } catch (error) {
+        if (error instanceof DropboxError) throw error;
+        throw new DropboxError(`Dropbox OAuth request failed: ${error}`, 500);
+      } finally {
+        clearTimeout(timeoutId);
+      }
+    },
+    { schema: DropboxOAuthTokenRequestSchema }
+  );
+
   return attachExamples({
+    oauth2: { token: oauthTokenExchange },
     check: {
       user: checkUser,
     },
@@ -493,6 +589,11 @@ export function createDropbox(opts: DropboxOptions = {}): DropboxProvider {
       getCurrentAccount,
     },
     files: {
+      uploadSession: {
+        start: uploadSessionStart,
+        appendV2: uploadSessionAppendV2,
+        finish: uploadSessionFinish,
+      },
       listFolder,
       listFolderContinue,
       getMetadata,

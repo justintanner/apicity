@@ -4,6 +4,7 @@ import type {
   XUsersMeRequest,
   XTweetCreateRequest,
   XOAuthTokenRequest,
+  XTweetLookupRequest,
 } from "./zod";
 
 export interface ApicitySchemaIssue {
@@ -44,6 +45,7 @@ export type {
   XOAuthTokenRequest,
   XOAuthTokenRequestInput,
   XOAuthTokenParsedRequest,
+  XTweetLookupRequest,
 } from "./zod";
 
 // -- Error -------------------------------------------------------------------
@@ -140,6 +142,37 @@ export interface XUsersMeResponse {
   includes?: XUsersMeIncludes;
 }
 
+export interface XTweetLookupResponse {
+  data?: XTweet & {
+    author_id?: string;
+    created_at?: string;
+    public_metrics?: Record<string, number>;
+    non_public_metrics?: Record<string, number>;
+    organic_metrics?: Record<string, number>;
+    attachments?: { media_keys?: string[] };
+  };
+  includes?: {
+    media?: Array<{
+      media_key: string;
+      type: string;
+      public_metrics?: Record<string, number>;
+      non_public_metrics?: Record<string, number>;
+      organic_metrics?: Record<string, number>;
+    }>;
+    users?: XUser[];
+  };
+  errors?: XApiProblem[];
+}
+
+export interface XTweetLookupMethod {
+  (
+    id: string,
+    req?: XTweetLookupRequest,
+    signal?: AbortSignal
+  ): Promise<XTweetLookupResponse>;
+  schema: ApicitySchema<XTweetLookupRequest>;
+}
+
 // refresh_token is present on authorization_code grants that requested the
 // offline.access scope; refresh grants may rotate it or omit it (keep the
 // old one when omitted).
@@ -228,6 +261,7 @@ export interface XGetUsersNamespace {
 export interface XGetV2Namespace {
   media: XGetMediaNamespace;
   users: XGetUsersNamespace;
+  tweets: XTweetLookupMethod;
 }
 
 export interface XGetNamespace {

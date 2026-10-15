@@ -1747,3 +1747,4 @@ fal	mureka.api.generate.instrumental	POST	https://fal.run/mureka/api/generate/in
 fal	mureka.api.generate.song	POST	https://fal.run/mureka/api/generate/song	https://fal.ai/models/mureka/api/generate/song/api
 fal	mureka.api.generate.podcast	POST	https://fal.run/mureka/api/generate/podcast	https://fal.ai/models/mureka/api/generate/podcast/api
 fal	nanoBanana2p1.textToImage	POST	https://fal.run/google/nano-banana-2.1	https://fal.ai/models/google/nano-banana-2.1/api
+fal	nanoBanana2p1.edit	POST	https://fal.run/google/nano-banana-2.1/edit	https://fal.ai/models/google/nano-banana-2.1/edit/api

@@ -21,6 +21,10 @@ export type {
 
 // Export all types
 export type {
+  FalNanoBanana2p1EditRequest,
+  FalNanoBanana2p1EditRequestInput,
+  FalNanoBanana2p1EditParsedRequest,
+  FalNanoBanana2p1EditResponse,
   FalNanoBanana2p1TextToImageRequest,
   FalNanoBanana2p1TextToImageRequestInput,
   FalNanoBanana2p1TextToImageParsedRequest,

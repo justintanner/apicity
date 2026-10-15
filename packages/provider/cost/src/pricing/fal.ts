@@ -886,6 +886,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "google/gemini-omni-flash/v1.1/text-to-video",
   "google/nano-banana-2-lite",
   "google/nano-banana-2.1",
+  "google/nano-banana-2.1/edit",
   "google/nano-banana-lite/edit",
   "lightricks/ltx-2.5/image-to-video/fast",
   "lightricks/ltx-2.5/image-to-video/pro",

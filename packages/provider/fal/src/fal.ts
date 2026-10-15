@@ -1,4 +1,6 @@
 import {
+  FalNanoBanana2p1EditRequest,
+  FalNanoBanana2p1EditResponse,
   FalNanoBanana2p1TextToImageRequest,
   FalNanoBanana2p1TextToImageResponse,
   FalMurekaApiGeneratePodcastRequest,
@@ -364,6 +366,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalNanoBanana2p1EditRequestSchema,
   FalNanoBanana2p1TextToImageRequestSchema,
   FalMurekaApiGeneratePodcastRequestSchema,
   FalMurekaApiGenerateSongRequestSchema,
@@ -3158,8 +3161,22 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/google/nano-banana-2.1/edit
+  // Docs: https://fal.ai/models/google/nano-banana-2.1/edit/api
+  const nanoBanana2p1Edit = jsonBody<
+    FalNanoBanana2p1EditRequest,
+    FalNanoBanana2p1EditResponse
+  >("POST", "/google/nano-banana-2.1/edit", FalNanoBanana2p1EditRequestSchema, {
+    base: runBaseURL,
+  });
+
   const run: FalRunNamespace = {
     nanoBanana2p1: {
+      // sig-ok: stylistic dotPath divergence from URL
+      // POST https://fal.run/google/nano-banana-2.1/edit
+      // Docs: https://fal.ai/models/google/nano-banana-2.1/edit/api
+      edit: nanoBanana2p1Edit,
       // sig-ok: stylistic dotPath divergence from URL
       // POST https://fal.run/google/nano-banana-2.1
       // Docs: https://fal.ai/models/google/nano-banana-2.1/api

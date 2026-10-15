@@ -9683,7 +9683,135 @@ export type FalNanoBanana2p1TextToImageParsedRequest = z.output<
   typeof FalNanoBanana2p1TextToImageRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-10-15
+// (sha256 05484a53bb030d157a1f2afd93122309b94d686760de0cdb76359562a9a1c462). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/google/nano-banana-2.1/edit/api
+export const FalNanoBanana2p1EditRequestSchema = z
+  .object({
+    prompt: z
+      .string()
+      .min(3)
+      .max(50000)
+      .describe("The prompt for image editing."),
+    num_images: z
+      .number()
+      .int()
+      .min(1)
+      .max(4)
+      .default(1)
+      .describe("The number of images to generate."),
+    seed: z
+      .number()
+      .int()
+      .nullable()
+      .optional()
+      .describe("The seed for the random number generator."),
+    aspect_ratio: z
+      .enum([
+        "auto",
+        "21:9",
+        "16:9",
+        "3:2",
+        "4:3",
+        "5:4",
+        "1:1",
+        "4:5",
+        "3:4",
+        "2:3",
+        "9:16",
+        "4:1",
+        "1:4",
+        "8:1",
+        "1:8",
+      ])
+      .nullable()
+      .default("auto")
+      .describe(
+        'The aspect ratio of the generated image. Supports extreme ratios: 4:1, 1:4, 8:1, 1:8. Use "auto" to let the model decide based on the prompt.'
+      ),
+    output_format: z
+      .enum(["jpeg", "png", "webp"])
+      .default("png")
+      .describe("The format of the generated image."),
+    safety_tolerance: z
+      .enum(["1", "2", "3", "4", "5", "6"])
+      .default("4")
+      .describe(
+        "The safety tolerance level for content moderation. 1 is the most strict (blocks most content), 6 is the least strict."
+      ),
+    sync_mode: z
+      .boolean()
+      .default(false)
+      .describe(
+        "If true, the media will be returned as a data URI and the output data won't be available in the request history."
+      ),
+    image_urls: z
+      .array(z.string())
+      .optional()
+      .describe(
+        "The image URLs to edit. Optional when video_url or pdf_url is provided."
+      ),
+    system_prompt: z
+      .string()
+      .max(50000)
+      .default("")
+      .describe(
+        "Optional system instruction that steers the model's persona and output style across the request. Leave blank to omit."
+      ),
+    resolution: z
+      .enum(["1K", "2K", "4K"])
+      .default("1K")
+      .describe("The resolution of the image to generate."),
+    video_url: z
+      .string()
+      .nullable()
+      .optional()
+      .describe(
+        "Optional video context: an http(s)/data URL (max 15MB) or a YouTube URL."
+      ),
+    pdf_url: z
+      .string()
+      .nullable()
+      .optional()
+      .describe("Optional PDF context: an http(s)/data URL (max 15MB)."),
+    limit_generations: z
+      .boolean()
+      .default(true)
+      .describe(
+        "Experimental: limit each round of prompting to one generation. When true, instructions in the prompt about the number of images are disregarded and intermediate images are ignored. This may affect generation quality."
+      ),
+    enable_web_search: z
+      .boolean()
+      .default(false)
+      .describe(
+        "Let the model use the latest information from the web to generate the image."
+      ),
+    thinking_level: z
+      .enum(["minimal", "medium", "high"])
+      .nullable()
+      .default("medium")
+      .describe(
+        "How much the model reasons before generating. Higher levels can improve complex compositions."
+      ),
+  })
+  .refine(
+    (value) =>
+      Boolean(value.image_urls?.length || value.video_url || value.pdf_url),
+    {
+      message: "Provide image_urls, video_url, or pdf_url.",
+      path: ["image_urls"],
+    }
+  );
+export type FalNanoBanana2p1EditRequest = z.input<
+  typeof FalNanoBanana2p1EditRequestSchema
+>;
+export type FalNanoBanana2p1EditRequestInput = FalNanoBanana2p1EditRequest;
+export type FalNanoBanana2p1EditParsedRequest = z.output<
+  typeof FalNanoBanana2p1EditRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "google/nano-banana-2.1/edit": FalNanoBanana2p1EditRequestSchema,
   "google/nano-banana-2.1": FalNanoBanana2p1TextToImageRequestSchema,
   "mureka/api/generate/podcast": FalMurekaApiGeneratePodcastRequestSchema,
   "mureka/api/generate/song": FalMurekaApiGenerateSongRequestSchema,

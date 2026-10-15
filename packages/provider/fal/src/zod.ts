@@ -10359,7 +10359,97 @@ export type FalKandinsky6ProImageToVideoParsedRequest = z.output<
   typeof FalKandinsky6ProImageToVideoRequestSchema
 >;
 
+// The ImageSize component publishes only 0 < side <= 14142. The field's x-fal
+// hints (sides from 256 to 2560 in multiples of 16, at most 4194304 pixels)
+// all passed fal's validator in free 422 probes (2026-10-15), so they stay in
+// the description rather than in the schema.
+const FalFlux2FlexImageSizeSchema = z.object({
+  width: z
+    .number()
+    .int()
+    .gt(0)
+    .max(14142)
+    .default(512)
+    .describe("The width of the generated image."),
+  height: z
+    .number()
+    .int()
+    .gt(0)
+    .max(14142)
+    .default(512)
+    .describe("The height of the generated image."),
+});
+
+// FLUX.2 Flex text-to-image: live OpenAPI 2026-10-15.
+// Docs: https://fal.ai/models/fal-ai/flux-2-flex/api
+export const FalFlux2FlexRequestSchema = z.object({
+  prompt: z.string().describe("The prompt to generate an image from."),
+  image_size: z
+    .union([
+      FalFlux2FlexImageSizeSchema,
+      z.enum([
+        "square_hd",
+        "square",
+        "portrait_4_3",
+        "portrait_16_9",
+        "landscape_4_3",
+        "landscape_16_9",
+      ]),
+    ])
+    .default("landscape_4_3")
+    .describe(
+      "The size of the generated image. fal publishes these limits for an explicit size: each side from 256 to 2560 pixels in multiples of 16, and at most 4194304 pixels in total."
+    ),
+  seed: z
+    .number()
+    .int()
+    .nullable()
+    .optional()
+    .describe("The seed to use for the generation."),
+  safety_tolerance: z
+    .enum(["1", "2", "3", "4", "5"])
+    .default("2")
+    .describe(
+      "The safety tolerance level for the generated image. 1 being the most strict and 5 being the most permissive."
+    ),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe(
+      "Whether to enable the safety checker. Disabling it requires account authorization; unauthorized requests are always checked."
+    ),
+  output_format: z
+    .enum(["jpeg", "png"])
+    .default("jpeg")
+    .describe("The format of the generated image."),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If `True`, the media will be returned as a data URI and the output data won't be available in the request history."
+    ),
+  guidance_scale: z
+    .number()
+    .min(1.5)
+    .max(10)
+    .default(3.5)
+    .describe("The guidance scale to use for the generation."),
+  num_inference_steps: z
+    .number()
+    .int()
+    .min(2)
+    .max(50)
+    .default(28)
+    .describe("The number of inference steps to perform."),
+});
+export type FalFlux2FlexRequest = z.input<typeof FalFlux2FlexRequestSchema>;
+export type FalFlux2FlexRequestInput = FalFlux2FlexRequest;
+export type FalFlux2FlexParsedRequest = z.output<
+  typeof FalFlux2FlexRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "fal-ai/flux-2-flex": FalFlux2FlexRequestSchema,
   "fal-ai/kandinsky6-pro/image-to-video":
     FalKandinsky6ProImageToVideoRequestSchema,
   "fal-ai/kandinsky6-pro/text-to-video":

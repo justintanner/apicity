@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalFlux2FlexRequest,
+  FalFlux2FlexRequestInput,
+  FalFlux2FlexParsedRequest,
   FalKandinsky6ProImageToVideoRequest,
   FalKandinsky6ProImageToVideoRequestInput,
   FalKandinsky6ProImageToVideoParsedRequest,
@@ -635,6 +638,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalFlux2FlexRequest,
   FalKandinsky6ProImageToVideoRequest,
   FalKandinsky6ProTextToVideoRequest,
   FalKandinsky6LiteImageToVideoRequest,
@@ -5694,4 +5698,30 @@ export interface FalRunKandinsky6ProNamespace {
 }
 export interface FalRunNamespace {
   kandinsky6Pro: FalRunKandinsky6ProNamespace;
+}
+
+export interface FalFlux2FlexResponse {
+  /** The generated images. */
+  images: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+  }[];
+  /** The seed used for the generation. */
+  seed: number;
+}
+
+export interface FalRunFlux2FlexNamespace {
+  (
+    params: FalFlux2FlexRequest,
+    signal?: AbortSignal
+  ): Promise<FalFlux2FlexResponse>;
+  schema: ApicitySchema<FalFlux2FlexRequest>;
+}
+
+export interface FalRunNamespace {
+  flux2Flex: FalRunFlux2FlexNamespace;
 }

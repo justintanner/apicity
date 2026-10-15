@@ -21,6 +21,11 @@ export type {
 
 // Export all types
 export type {
+  FalFlux2FlexRequest,
+  FalFlux2FlexRequestInput,
+  FalFlux2FlexParsedRequest,
+  FalFlux2FlexResponse,
+  FalRunFlux2FlexNamespace,
   FalKandinsky6ProImageToVideoRequest,
   FalKandinsky6ProImageToVideoRequestInput,
   FalKandinsky6ProImageToVideoParsedRequest,

@@ -1,4 +1,5 @@
 provider	dotPath	method	fullUrl	docsUrl
+fal	flux2Flex	POST	https://fal.run/fal-ai/flux-2-flex	https://fal.ai/models/fal-ai/flux-2-flex/api
 fal	kandinsky6Pro.imageToVideo	POST	https://fal.run/fal-ai/kandinsky6-pro/image-to-video	https://fal.ai/models/fal-ai/kandinsky6-pro/image-to-video/api
 fal	kandinsky6Pro.textToVideo	POST	https://fal.run/fal-ai/kandinsky6-pro/text-to-video	https://fal.ai/models/fal-ai/kandinsky6-pro/text-to-video/api
 fal	kandinsky6Lite.imageToVideo	POST	https://fal.run/fal-ai/kandinsky6-lite/image-to-video	https://fal.ai/models/fal-ai/kandinsky6-lite/image-to-video/api

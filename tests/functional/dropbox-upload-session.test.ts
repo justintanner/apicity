@@ -131,3 +131,17 @@ it("exchanges PKCE codes and refreshes through the form-encoded OAuth endpoint",
     new URLSearchParams(received.at(-1)?.body.toString()).get("refresh_token")
   ).toBe("refresh");
 });
+
+it("preserves Unicode destination folders through ASCII HTTP headers", async () => {
+  const client = createDropbox({
+    oauthToken: "access",
+    contentBaseURL: `${baseURL}/2`,
+  });
+  const path = "/คลิป/été/🎬.mp4";
+  await client.files.uploadSession.finish({
+    contents: "",
+    cursor: { session_id: "session-1", offset: 0 },
+    commit: { path },
+  });
+  expect(received.at(-1)?.arg).toMatchObject({ commit: { path } });
+});

@@ -57,6 +57,13 @@ interface DropboxErrorDetails {
 
 type JsonBody = unknown;
 
+function headerJson(value: unknown): string {
+  return JSON.stringify(value).replace(
+    /[\u007f-\uffff]/g,
+    (character) => `\\u${character.charCodeAt(0).toString(16).padStart(4, "0")}`
+  );
+}
+
 export function createDropbox(opts: DropboxOptions = {}): DropboxProvider {
   const baseURL = (opts.apiBaseURL ?? "https://api.dropboxapi.com/2").replace(
     /\/+$/,
@@ -194,7 +201,7 @@ export function createDropbox(opts: DropboxOptions = {}): DropboxProvider {
         headers: {
           ...authHeaders(),
           "Content-Type": "application/octet-stream",
-          "Dropbox-API-Arg": JSON.stringify(arg),
+          "Dropbox-API-Arg": headerJson(arg),
         },
         body: contents,
         signal: controller.signal,
@@ -243,7 +250,7 @@ export function createDropbox(opts: DropboxOptions = {}): DropboxProvider {
         method: "POST",
         headers: {
           ...authHeaders(),
-          "Dropbox-API-Arg": JSON.stringify(req),
+          "Dropbox-API-Arg": headerJson(req),
         },
         signal: controller.signal,
       });

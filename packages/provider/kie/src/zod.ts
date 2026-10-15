@@ -1754,6 +1754,148 @@ export type KieGemini38FlashOpenaiChatCompletionsParsedRequest = z.output<
   typeof KieGemini38FlashOpenaiChatCompletionsRequestSchema
 >;
 
+// Gemini 4 Argon OpenAI-compatible chat completions
+// Docs: https://docs.kie.ai/market/gemini/gemini-4-argon-openai
+export const KieGemini4ArgonOpenaiMessageRoleSchema = z.enum([
+  "developer",
+  "system",
+  "user",
+  "assistant",
+  "tool",
+]);
+
+export const KieGemini4ArgonOpenaiContentItemTypeSchema = z.enum([
+  "text",
+  "image_url",
+]);
+
+export const KieGemini4ArgonOpenaiReasoningEffortSchema = z.enum([
+  "low",
+  "high",
+]);
+
+export const KieGemini4ArgonOpenaiToolTypeSchema = z.enum(["function"]);
+
+export const KieGemini4ArgonOpenaiTextContentItemSchema = z
+  .object({
+    type: z.literal("text"),
+    text: z.string(),
+  })
+  .strict();
+
+// Images, video, audio, and PDFs all travel as `image_url`; only `url` changes.
+export const KieGemini4ArgonOpenaiMediaContentItemSchema = z
+  .object({
+    type: z.literal("image_url"),
+    image_url: z.object({ url: z.string().url() }).strict(),
+  })
+  .strict();
+
+export const KieGemini4ArgonOpenaiContentItemSchema = z.discriminatedUnion(
+  "type",
+  [
+    KieGemini4ArgonOpenaiTextContentItemSchema,
+    KieGemini4ArgonOpenaiMediaContentItemSchema,
+  ]
+);
+
+export const KieGemini4ArgonOpenaiMessageSchema = z
+  .object({
+    role: KieGemini4ArgonOpenaiMessageRoleSchema,
+    content: z.array(KieGemini4ArgonOpenaiContentItemSchema).min(1),
+  })
+  .passthrough();
+
+export const KieGemini4ArgonOpenaiToolFunctionParametersSchema = z
+  .object({
+    type: z.literal("object"),
+    properties: z.record(z.string(), z.unknown()).optional(),
+    required: z.array(z.string()).optional(),
+  })
+  .passthrough();
+
+// googleSearch or custom function declarations (mutually exclusive upstream).
+export const KieGemini4ArgonOpenaiToolFunctionSchema = z
+  .object({
+    name: z.string().min(1),
+    description: z.string().optional(),
+    parameters: KieGemini4ArgonOpenaiToolFunctionParametersSchema.optional(),
+  })
+  .passthrough();
+
+export const KieGemini4ArgonOpenaiToolSchema = z
+  .object({
+    type: KieGemini4ArgonOpenaiToolTypeSchema,
+    function: KieGemini4ArgonOpenaiToolFunctionSchema,
+  })
+  .strict();
+
+export const KieGemini4ArgonOpenaiResponseFormatSchema = z
+  .object({
+    type: z.string().optional(),
+    json_schema: z.record(z.string(), z.unknown()).optional(),
+    properties: z.record(z.string(), z.unknown()).optional(),
+  })
+  .passthrough();
+
+// The docs declare no `model` field and default `stream` to false; they show
+// `include_thoughts` and `reasoning_effort` examples but declare no default.
+export const KieGemini4ArgonOpenaiChatCompletionsRequestSchema = z
+  .object({
+    messages: z.array(KieGemini4ArgonOpenaiMessageSchema).min(1),
+    stream: z.boolean().default(false),
+    tools: z.array(KieGemini4ArgonOpenaiToolSchema).min(0).optional(),
+    include_thoughts: z.boolean().optional(),
+    reasoning_effort: KieGemini4ArgonOpenaiReasoningEffortSchema.optional(),
+    response_format: KieGemini4ArgonOpenaiResponseFormatSchema.optional(),
+  })
+  .passthrough();
+
+export type KieGemini4ArgonOpenaiMessageRole = z.infer<
+  typeof KieGemini4ArgonOpenaiMessageRoleSchema
+>;
+export type KieGemini4ArgonOpenaiContentItemType = z.infer<
+  typeof KieGemini4ArgonOpenaiContentItemTypeSchema
+>;
+export type KieGemini4ArgonOpenaiReasoningEffort = z.infer<
+  typeof KieGemini4ArgonOpenaiReasoningEffortSchema
+>;
+export type KieGemini4ArgonOpenaiToolType = z.infer<
+  typeof KieGemini4ArgonOpenaiToolTypeSchema
+>;
+export type KieGemini4ArgonOpenaiTextContentItem = z.infer<
+  typeof KieGemini4ArgonOpenaiTextContentItemSchema
+>;
+export type KieGemini4ArgonOpenaiMediaContentItem = z.infer<
+  typeof KieGemini4ArgonOpenaiMediaContentItemSchema
+>;
+export type KieGemini4ArgonOpenaiContentItem = z.infer<
+  typeof KieGemini4ArgonOpenaiContentItemSchema
+>;
+export type KieGemini4ArgonOpenaiMessage = z.infer<
+  typeof KieGemini4ArgonOpenaiMessageSchema
+>;
+export type KieGemini4ArgonOpenaiToolFunctionParameters = z.infer<
+  typeof KieGemini4ArgonOpenaiToolFunctionParametersSchema
+>;
+export type KieGemini4ArgonOpenaiToolFunction = z.infer<
+  typeof KieGemini4ArgonOpenaiToolFunctionSchema
+>;
+export type KieGemini4ArgonOpenaiTool = z.infer<
+  typeof KieGemini4ArgonOpenaiToolSchema
+>;
+export type KieGemini4ArgonOpenaiResponseFormat = z.infer<
+  typeof KieGemini4ArgonOpenaiResponseFormatSchema
+>;
+export type KieGemini4ArgonOpenaiChatCompletionsRequest = z.input<
+  typeof KieGemini4ArgonOpenaiChatCompletionsRequestSchema
+>;
+export type KieGemini4ArgonOpenaiChatCompletionsRequestInput =
+  KieGemini4ArgonOpenaiChatCompletionsRequest;
+export type KieGemini4ArgonOpenaiChatCompletionsParsedRequest = z.output<
+  typeof KieGemini4ArgonOpenaiChatCompletionsRequestSchema
+>;
+
 // Gemini 3 Pro OpenAI-compatible chat completions
 // Docs: https://docs.kie.ai/market/gemini/gemini-3-pro
 export const KieGemini3ProMessageRoleSchema = z.enum([

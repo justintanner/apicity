@@ -871,6 +871,27 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST gemini4ArgonOpenai.v1.chat.completions": {
+    "source": "kie/gemini-4-argon-openai-chat",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "Reply with the single word: pong"
+            }
+          ]
+        }
+      ],
+      "stream": false,
+      "include_thoughts": false,
+      "reasoning_effort": "low"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST gpt52.v1.chat.completions": {
     "source": "kie/gpt-5-2-chat",
     "payload": {

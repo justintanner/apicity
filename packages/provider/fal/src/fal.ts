@@ -1,4 +1,6 @@
 import {
+  FalMinimaxH3MaxRelightRequest,
+  FalMinimaxH3MaxRelightResponse,
   FalViduQ4ReferenceToVideoRequest,
   FalViduQ4ReferenceToVideoResponse,
   FalViduQ4ImageToVideoRequest,
@@ -370,6 +372,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalMinimaxH3MaxRelightRequestSchema,
   FalViduQ4ReferenceToVideoRequestSchema,
   FalViduQ4ImageToVideoRequestSchema,
   FalNanoBanana2p1EditRequestSchema,
@@ -3203,6 +3206,15 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/minimax/h3-max/relight
+  // Docs: https://fal.ai/models/minimax/h3-max/relight/api
+  const minimaxH3MaxRelight = jsonBody<
+    FalMinimaxH3MaxRelightRequest,
+    FalMinimaxH3MaxRelightResponse
+  >("POST", "/minimax/h3-max/relight", FalMinimaxH3MaxRelightRequestSchema, {
+    base: runBaseURL,
+  });
+
   const run: FalRunNamespace = {
     vidu: {
       q4: {
@@ -3519,6 +3531,9 @@ export function createFal(opts: FalOptions): FalProvider {
           // Docs: https://fal.ai/models/minimax/h3-max/lip-sync/image-to-video/api
           imageToVideo: minimaxH3MaxLipSyncImageToVideo,
         },
+        // POST https://fal.run/minimax/h3-max/relight
+        // Docs: https://fal.ai/models/minimax/h3-max/relight/api
+        relight: minimaxH3MaxRelight,
         // POST https://fal.run/minimax/h3-max/3d-to-video
         // Docs: https://fal.ai/models/minimax/h3-max/3d-to-video/api
         threeDToVideo: minimaxH3MaxThreeDToVideo,

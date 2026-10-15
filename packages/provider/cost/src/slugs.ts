@@ -416,6 +416,7 @@ export const MODEL_SLUGS = {
   // same underlying models kie also resells, so their slugs intentionally
   // match kie's.
   fal: {
+    "minimax/h3-max/relight": "h3mrl",
     "fal-ai/vidu/q4/reference-to-video": "viduq4",
     "fal-ai/vidu/q4/image-to-video": "viduq4",
     "fal-ai/marigold-v2": "marigold2",
@@ -901,6 +902,7 @@ export const MODEL_DISPLAY = {
   },
 
   fal: {
+    "minimax/h3-max/relight": "H3 Max Relight",
     "fal-ai/vidu/q4/reference-to-video": "Vidu Q4",
     "fal-ai/vidu/q4/image-to-video": "Vidu Q4",
     "fal-ai/marigold-v2": "Marigold V2",

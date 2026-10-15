@@ -581,13 +581,6 @@ export const ENDPOINT_NOTES = new Map([
     ].join("\n\n"),
   ],
   [
-    "kie\tgemini25Flash.post.v1.chat.completions\tPOST",
-    kieDelistedGeminiNote(
-      "Gemini 2.5 Flash chat",
-      "kie.gemini38FlashOpenai.post.v1.chat.completions"
-    ),
-  ],
-  [
     "kie\tgemini3Flash.post.v1.chat.completions\tPOST",
     kieDelistedGeminiNote(
       "Gemini 3 Flash chat",

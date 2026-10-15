@@ -231,7 +231,6 @@ import { createGeminiProvider } from "./gemini";
 import { createResponsesProvider } from "./responses";
 import { createGemini31ProProvider } from "./gemini-31-pro";
 import { createGpt52Provider } from "./gpt-52";
-import { createGemini25FlashProvider } from "./gemini-25-flash";
 import { createGemini3FlashProvider } from "./gemini-3-flash";
 import { createGemini35FlashOpenaiProvider } from "./gemini-35-flash-openai";
 import { createGemini36FlashOpenaiProvider } from "./gemini-36-flash-openai";
@@ -960,7 +959,6 @@ export function createKie(opts: KieOptions): KieProvider {
         ...createGeminiProvider(baseURL, opts.apiKey, doFetch, timeout),
         ...createGemini31ProProvider(baseURL, opts.apiKey, doFetch, timeout),
         ...createGpt52Provider(baseURL, opts.apiKey, doFetch, timeout),
-        ...createGemini25FlashProvider(baseURL, opts.apiKey, doFetch, timeout),
         ...createGemini3FlashProvider(baseURL, opts.apiKey, doFetch, timeout),
         ...createGemini35FlashOpenaiProvider(
           baseURL,

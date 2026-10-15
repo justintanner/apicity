@@ -1038,8 +1038,10 @@ describe("fal edit/image pricing estimates", () => {
     // ($0.0802 and $0.0852) for a four-step clip their cards price at half a
     // unit ($0.08 and $0.085), and Kandinsky 6.0 Pro text-to-video and
     // image-to-video each billed 0.1756 units ($0.2371 and $0.2458) for an
-    // eight-step clip their cards price at $0.24 and $0.25. All fifty-nine
-    // use fal's pricing-estimate API.
+    // eight-step clip their cards price at $0.24 and $0.25. FLUX.2 Flex billed
+    // 0.834 processed megapixels ($0.0417) for a 1024x768 image its card
+    // rounds up to one megapixel ($0.05). All sixty use fal's
+    // pricing-estimate API.
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toEqual([
       "alibaba/qwen-image-3/edit",
       "alibaba/qwen-image-3/text-to-image",
@@ -1052,6 +1054,7 @@ describe("fal edit/image pricing estimates", () => {
       "bytedance/seedream/v5/pro/edit",
       "bytedance/seedream/v5/pro/layerize",
       "bytedance/seedream/v5/pro/text-to-image",
+      "fal-ai/flux-2-flex",
       "fal-ai/kandinsky6-lite/image-to-video",
       "fal-ai/kandinsky6-lite/text-to-video",
       "fal-ai/kandinsky6-pro/image-to-video",

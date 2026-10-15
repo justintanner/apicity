@@ -1,4 +1,6 @@
 import {
+  FalFlux2FlexRequest,
+  FalFlux2FlexResponse,
   FalKandinsky6ProImageToVideoRequest,
   FalKandinsky6ProImageToVideoResponse,
   FalKandinsky6ProTextToVideoRequest,
@@ -384,6 +386,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalFlux2FlexRequestSchema,
   FalKandinsky6ProImageToVideoRequestSchema,
   FalKandinsky6ProTextToVideoRequestSchema,
   FalKandinsky6LiteImageToVideoRequestSchema,
@@ -3313,7 +3316,24 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/fal-ai/flux-2-flex
+  // Docs: https://fal.ai/models/fal-ai/flux-2-flex/api
+  const flux2Flex = Object.assign(
+    jsonBody<FalFlux2FlexRequest, FalFlux2FlexResponse>(
+      "POST",
+      "/fal-ai/flux-2-flex",
+      FalFlux2FlexRequestSchema,
+      { base: runBaseURL }
+    ),
+    {}
+  );
+
   const run: FalRunNamespace = {
+    // sig-ok: stylistic dotPath divergence from URL
+    // POST https://fal.run/fal-ai/flux-2-flex
+    // Docs: https://fal.ai/models/fal-ai/flux-2-flex/api
+    flux2Flex,
     kandinsky6Pro: {
       // sig-ok: stylistic dotPath divergence from URL
       // POST https://fal.run/fal-ai/kandinsky6-pro/image-to-video

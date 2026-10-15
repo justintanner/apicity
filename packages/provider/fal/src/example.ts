@@ -617,6 +617,14 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST flux2Flex": {
+    "source": "fal/flux-2-flex",
+    "payload": {
+      "prompt": "A red panda waves once, then holds still."
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST geminiOmniFlash": {
     "source": "fal/google-gemini-omni-flash",
     "payload": {

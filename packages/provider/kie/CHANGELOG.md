@@ -42,13 +42,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **Breaking:** The `gemini31Pro` chat request schema now follows KIE's current
-  docs: `stream` and `include_thoughts` default to `false`, `reasoning_effort`
-  still defaults to `"high"`, and the undocumented `model` field is no longer
-  declared. The provider still sends your payload unchanged. This changes
-  `.schema.parse()` output, the `...ChatCompletionsParsedRequest` type, and
-  `apicity describe`. Migration: pass `stream: true` explicitly if you send
-  parsed output and want server-sent events. Parsed types no longer type `model`.
+- **Breaking:** The `gemini31Pro` and `gemini3Pro` chat request schemas now
+  follow KIE's current docs: `stream` and `include_thoughts` default to
+  `false`, `reasoning_effort` still defaults to `"high"`, and the undocumented
+  `model` field is no longer declared. The provider still sends your payload
+  unchanged. This changes `.schema.parse()` output, the
+  `...ChatCompletionsParsedRequest` types, and `apicity describe`. Migration:
+  pass `stream: true` explicitly if you send parsed output and want server-
+  sent events. Parsed types no longer type `model`.
 
 - **Breaking:** paid endpoints (`post.api.v1.jobs.createTask`, the direct VEO
   and Suno rows, and the other `PAID_ENDPOINTS` rows) now dispatch when

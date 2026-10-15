@@ -21,6 +21,10 @@ export type {
 
 // Export all types
 export type {
+  FalViduQ4ReferenceToVideoRequest,
+  FalViduQ4ReferenceToVideoRequestInput,
+  FalViduQ4ReferenceToVideoParsedRequest,
+  FalViduQ4ReferenceToVideoResponse,
   FalViduQ4ImageToVideoRequest,
   FalViduQ4ImageToVideoRequestInput,
   FalViduQ4ImageToVideoParsedRequest,

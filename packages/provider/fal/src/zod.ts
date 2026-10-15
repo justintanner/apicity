@@ -9859,7 +9859,82 @@ export type FalViduQ4ImageToVideoParsedRequest = z.output<
   typeof FalViduQ4ImageToVideoRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-10-15
+// (sha256 6e7d7ffccca066c5971c586e7ee4da9d15c97987b694c90f4010ef50cab096d2). Field order follows x-fal-order-properties.
+// The OpenAPI states the reference limits only in its descriptions. Free 422
+// probes the same day showed the validator enforces both ("Maximum 12
+// reference images are allowed", "Maximum 3 reference audio clips are
+// allowed"), so they are restated as .max(). The probes also accepted a
+// prompt with no references and ignored an undocumented field, so neither
+// list is required and the schema is not strict.
+// Docs: https://fal.ai/models/fal-ai/vidu/q4/reference-to-video/api
+export const FalViduQ4ReferenceToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(5000)
+    .describe(
+      "Text prompt for video generation, max 5000 characters. Refer to references by their position in the lists: [@reference_image_1], [@reference_image_2], ... for images and [reference_audio_1], [reference_audio_2], ... for audio clips."
+    ),
+  reference_image_urls: z
+    .array(z.string())
+    .max(12)
+    .optional()
+    .describe(
+      "URLs or base64 data URIs of up to 12 reference images (png, jpeg, jpg, webp) used to keep subjects consistent."
+    ),
+  reference_audio_urls: z
+    .array(z.string())
+    .max(3)
+    .optional()
+    .describe(
+      "URLs or base64 data URIs of up to 3 mp3 reference audio clips (3-12 seconds each, max 50 MB) used to keep voices consistent."
+    ),
+  duration: z
+    .number()
+    .int()
+    .min(3)
+    .max(16)
+    .default(5)
+    .describe("Duration of the video in seconds (3-16)"),
+  seed: z
+    .number()
+    .int()
+    .nullable()
+    .optional()
+    .describe(
+      "Random seed for reproducibility. A random seed is chosen when it is omitted or null."
+    ),
+  aspect_ratio: z
+    .enum(["16:9", "9:16", "4:3", "3:4", "1:1"])
+    .default("16:9")
+    .describe("The aspect ratio of the output video"),
+  resolution: z
+    .enum(["540p", "720p", "1080p", "2K", "4K"])
+    .default("720p")
+    .describe("Output video resolution"),
+  audio: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Whether to generate audio (dialogue and sound effects) with the video. When false, the output video is silent."
+    ),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe("Authorized callers may set false to request relaxed screening."),
+});
+export type FalViduQ4ReferenceToVideoRequest = z.input<
+  typeof FalViduQ4ReferenceToVideoRequestSchema
+>;
+export type FalViduQ4ReferenceToVideoRequestInput =
+  FalViduQ4ReferenceToVideoRequest;
+export type FalViduQ4ReferenceToVideoParsedRequest = z.output<
+  typeof FalViduQ4ReferenceToVideoRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "fal-ai/vidu/q4/reference-to-video": FalViduQ4ReferenceToVideoRequestSchema,
   "fal-ai/vidu/q4/image-to-video": FalViduQ4ImageToVideoRequestSchema,
   "google/nano-banana-2.1/edit": FalNanoBanana2p1EditRequestSchema,
   "google/nano-banana-2.1": FalNanoBanana2p1TextToImageRequestSchema,

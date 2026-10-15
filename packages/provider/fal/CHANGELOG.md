@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Vidu Q4 reference-to-video (ac-qpennr).
+
 - Added Vidu Q4 image-to-video (ac-wz3s2z).
 
 - Added Nano Banana 2.1 edit, dynamically priced (ac-tw5y06).

@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalMireloAiSfx2p0VideoToAudioRequest,
+  FalMireloAiSfx2p0VideoToAudioRequestInput,
+  FalMireloAiSfx2p0VideoToAudioParsedRequest,
   FalMireloAiSfx2p0TextToAudioRequest,
   FalMireloAiSfx2p0TextToAudioRequestInput,
   FalMireloAiSfx2p0TextToAudioParsedRequest,
@@ -584,6 +587,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalMireloAiSfx2p0VideoToAudioRequest,
   FalMireloAiSfx2p0TextToAudioRequest,
   FalMarigoldV2Request,
   FalBriaGuidedRemoveBackgroundRequest,
@@ -5106,4 +5110,25 @@ export interface FalRunMireloAiNamespace {
 
 export interface FalRunNamespace {
   mireloAi: FalRunMireloAiNamespace;
+}
+
+export interface FalMireloAiSfx2p0VideoToAudioResponse {
+  model: string;
+  audio: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  }[];
+}
+
+type FalMireloAiSfx2p0VideoToAudioFn = ((
+  params: FalMireloAiSfx2p0VideoToAudioRequest,
+  signal?: AbortSignal
+) => Promise<FalMireloAiSfx2p0VideoToAudioResponse>) & {
+  schema: ApicitySchema<FalMireloAiSfx2p0VideoToAudioRequest>;
+};
+
+export interface FalRunMireloAiSfx2p0Namespace {
+  videoToAudio: FalMireloAiSfx2p0VideoToAudioFn;
 }

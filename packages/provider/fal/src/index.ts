@@ -21,6 +21,10 @@ export type {
 
 // Export all types
 export type {
+  FalMireloAiSfx2p0VideoToAudioRequest,
+  FalMireloAiSfx2p0VideoToAudioRequestInput,
+  FalMireloAiSfx2p0VideoToAudioParsedRequest,
+  FalMireloAiSfx2p0VideoToAudioResponse,
   FalMireloAiSfx2p0TextToAudioRequest,
   FalMireloAiSfx2p0TextToAudioRequestInput,
   FalMireloAiSfx2p0TextToAudioParsedRequest,

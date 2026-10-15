@@ -903,6 +903,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "minimax/h3/text-to-video",
   "minimax/music-3",
   "mirelo-ai/sfx2.0/text-to-audio",
+  "mirelo-ai/sfx2.0/video-to-audio",
   "openai/gpt-image-2.5/flare/edit",
   "openai/gpt-image-2.5/flare/text-to-image",
   "openai/gpt-image-2.5/sunburst/edit",

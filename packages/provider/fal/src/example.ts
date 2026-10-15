@@ -1320,6 +1320,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST mireloAi.sfx2p0.videoToAudio": {
+    "source": "fal/mirelo-ai-sfx2-0-video-to-audio",
+    "payload": {
+      "video_url": "https://v3b.fal.media/files/b/0aae75bd/Y4B2Ki-9zZ5gWeEpfw42T_mirelo-sfx2-source.mp4",
+      "duration": 1.5,
+      "num_samples": 1
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST nanoBanana.edit": {
     "source": "fal/nano-banana-edit",
     "payload": {

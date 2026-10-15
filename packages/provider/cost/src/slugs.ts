@@ -417,6 +417,7 @@ export const MODEL_SLUGS = {
   // match kie's.
   fal: {
     "fal-ai/marigold-v2": "marigold2",
+    "mureka/api/generate/song": "mureka",
     "mureka/api/generate/lyrics": "mureka",
     "bria/guided-remove-background": "briagrb",
     "bria/fibo-edit-1.5/expand": "briafiboedit",
@@ -899,6 +900,7 @@ export const MODEL_DISPLAY = {
 
   fal: {
     "fal-ai/marigold-v2": "Marigold V2",
+    "mureka/api/generate/song": "Mureka Song",
     "mureka/api/generate/lyrics": "Mureka Lyrics",
     "bria/guided-remove-background": "Bria Guided Remove Background",
     "bria/fibo-edit-1.5/expand": "Bria Fibo Edit 1.5 Expand",

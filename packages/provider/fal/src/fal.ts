@@ -1,5 +1,7 @@
 import {
+  FalMurekaApiGenerateSongRequest,
   FalMurekaApiGenerateInstrumentalRequest,
+  FalMurekaApiGenerateSongResponse,
   FalMurekaApiGenerateInstrumentalResponse,
   FalMurekaApiGenerateLyricsRequest,
   FalMurekaApiGenerateLyricsResponse,
@@ -358,6 +360,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalMurekaApiGenerateSongRequestSchema,
   FalMurekaApiGenerateInstrumentalRequestSchema,
   FalMurekaApiGenerateLyricsRequestSchema,
   FalMireloAiSfx2p0VideoToVideoRequestSchema,
@@ -3112,6 +3115,18 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/mureka/api/generate/song
+  // Docs: https://fal.ai/models/mureka/api/generate/song/api
+  const murekaApiGenerateSong = jsonBody<
+    FalMurekaApiGenerateSongRequest,
+    FalMurekaApiGenerateSongResponse
+  >(
+    "POST",
+    "/mureka/api/generate/song",
+    FalMurekaApiGenerateSongRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
     mureka: {
       api: {
@@ -3122,6 +3137,9 @@ export function createFal(opts: FalOptions): FalProvider {
           // POST https://fal.run/mureka/api/generate/instrumental
           // Docs: https://fal.ai/models/mureka/api/generate/instrumental/api
           instrumental: murekaApiGenerateInstrumental,
+          // POST https://fal.run/mureka/api/generate/song
+          // Docs: https://fal.ai/models/mureka/api/generate/song/api
+          song: murekaApiGenerateSong,
         },
       },
     },

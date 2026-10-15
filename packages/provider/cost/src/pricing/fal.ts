@@ -876,6 +876,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "bytedance/seedream/v5/pro/edit",
   "bytedance/seedream/v5/pro/layerize",
   "bytedance/seedream/v5/pro/text-to-image",
+  "fal-ai/kandinsky6-lite/text-to-video",
   "fal-ai/kandinsky6-vsr",
   "fal-ai/kandinsky6-vsr/lite",
   "google/gemini-omni-flash",

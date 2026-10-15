@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalKandinsky6LiteTextToVideoRequest,
+  FalKandinsky6LiteTextToVideoRequestInput,
+  FalKandinsky6LiteTextToVideoParsedRequest,
   FalKandinsky6VsrLiteRequest,
   FalKandinsky6VsrLiteRequestInput,
   FalKandinsky6VsrLiteParsedRequest,
@@ -623,6 +626,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalKandinsky6LiteTextToVideoRequest,
   FalKandinsky6VsrLiteRequest,
   FalKandinsky6VsrRequest,
   FalMinimaxH3MaxRelightRequest,
@@ -5586,4 +5590,30 @@ type FalKandinsky6VsrLiteFn = ((
 
 export interface FalRunKandinsky6VsrNamespace {
   lite: FalKandinsky6VsrLiteFn;
+}
+
+export interface FalKandinsky6LiteTextToVideoResponse {
+  /** The generated video, with its audio track when requested. */
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+  /** The random seed used for the generation process. */
+  seed: number;
+}
+
+type FalKandinsky6LiteTextToVideoFn = ((
+  params: FalKandinsky6LiteTextToVideoRequest,
+  signal?: AbortSignal
+) => Promise<FalKandinsky6LiteTextToVideoResponse>) & {
+  schema: ApicitySchema<FalKandinsky6LiteTextToVideoRequest>;
+};
+
+export interface FalRunKandinsky6LiteNamespace {
+  textToVideo: FalKandinsky6LiteTextToVideoFn;
+}
+export interface FalRunNamespace {
+  kandinsky6Lite: FalRunKandinsky6LiteNamespace;
 }

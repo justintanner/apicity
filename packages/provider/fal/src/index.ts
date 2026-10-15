@@ -21,6 +21,10 @@ export type {
 
 // Export all types
 export type {
+  FalKandinsky6VsrLiteRequest,
+  FalKandinsky6VsrLiteRequestInput,
+  FalKandinsky6VsrLiteParsedRequest,
+  FalKandinsky6VsrLiteResponse,
   FalKandinsky6VsrRequest,
   FalKandinsky6VsrRequestInput,
   FalKandinsky6VsrParsedRequest,

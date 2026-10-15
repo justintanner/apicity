@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalKandinsky6VsrLiteRequest,
+  FalKandinsky6VsrLiteRequestInput,
+  FalKandinsky6VsrLiteParsedRequest,
   FalKandinsky6VsrRequest,
   FalKandinsky6VsrRequestInput,
   FalKandinsky6VsrParsedRequest,
@@ -620,6 +623,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalKandinsky6VsrLiteRequest,
   FalKandinsky6VsrRequest,
   FalMinimaxH3MaxRelightRequest,
   FalViduQ4ReferenceToVideoRequest,
@@ -5559,4 +5563,27 @@ export interface FalRunKandinsky6VsrNamespace {
 
 export interface FalRunNamespace {
   kandinsky6Vsr: FalRunKandinsky6VsrNamespace;
+}
+
+export interface FalKandinsky6VsrLiteResponse {
+  /** Upscaled video file after processing. */
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+  /** The random seed used for the generation process. */
+  seed: number;
+}
+
+type FalKandinsky6VsrLiteFn = ((
+  params: FalKandinsky6VsrLiteRequest,
+  signal?: AbortSignal
+) => Promise<FalKandinsky6VsrLiteResponse>) & {
+  schema: ApicitySchema<FalKandinsky6VsrLiteRequest>;
+};
+
+export interface FalRunKandinsky6VsrNamespace {
+  lite: FalKandinsky6VsrLiteFn;
 }

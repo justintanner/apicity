@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-186 endpoints across 44 groups. Each method mirrors an upstream URL path.
+187 endpoints across 44 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -1259,6 +1259,23 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.kandinsky6Vsr({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.kandinsky6Vsr.lite</code></b></summary>
+
+<code>POST https://fal.run/fal-ai/kandinsky6-vsr/lite</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/fal-ai/kandinsky6-vsr/lite/api)
+
+```typescript
+const res = await fal.run.kandinsky6Vsr.lite({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

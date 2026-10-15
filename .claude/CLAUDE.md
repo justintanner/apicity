@@ -264,7 +264,7 @@ Timing baseline recorded on 2026-06-30 in a fresh worktree:
 `pnpm run typecheck:provider -- openai --base=HEAD` completed in 10.33s real
 time on the clean fast path.
 
-Tests use `setupPolly(recordingName)` / `teardownPolly(ctx)` from `tests/harness.ts`. Recordings stored as HAR files in `tests/recordings/`. Auth headers are auto-redacted before persisting.
+Tests use `setupPolly(recordingName)` / `teardownPolly(ctx)` from `tests/harness.ts`. Recordings stored as HAR files in `tests/recordings/`. Auth headers are auto-redacted before persisting. Outside replay, `setupPolly` also lifts undici's 300 s headers and body timeouts until `teardownPolly`, so a slow sync call (a `fal.run` video) waits for the provider's own `timeout` instead of aborting after the provider has billed it.
 
 **Integration test recording workflow — NEVER skip this when adding/modifying integration tests:**
 

@@ -1,4 +1,6 @@
 import {
+  FalMarigoldV2Request,
+  FalMarigoldV2Response,
   FalBriaGuidedRemoveBackgroundRequest,
   FalBriaGuidedRemoveBackgroundResponse,
   FalBriaFiboEdit1p5ExpandResponse,
@@ -346,6 +348,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalMarigoldV2RequestSchema,
   FalBriaGuidedRemoveBackgroundRequestSchema,
   FalBriaFiboEdit1p5ExpandRequestSchema,
   FalLumaAgentRayV3p2TextToVideoRequestSchema,
@@ -3021,7 +3024,21 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/fal-ai/marigold-v2
+  // Docs: https://fal.ai/models/fal-ai/marigold-v2/api
+  const marigoldV2 = jsonBody<FalMarigoldV2Request, FalMarigoldV2Response>(
+    "POST",
+    "/fal-ai/marigold-v2",
+    FalMarigoldV2RequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
+    // sig-ok: stylistic dotPath divergence from URL
+    // POST https://fal.run/fal-ai/marigold-v2
+    // Docs: https://fal.ai/models/fal-ai/marigold-v2/api
+    marigoldV2,
     luma: {
       agent: {
         ray: {

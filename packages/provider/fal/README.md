@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-172 endpoints across 38 groups. Each method mirrors an upstream URL path.
+173 endpoints across 39 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -1603,6 +1603,25 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.luma.agent.ray.v3p2.videoToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+### marigoldV2
+
+<details>
+<summary><code>POST</code> <b><code>fal.marigoldV2</code></b></summary>
+
+<code>POST https://fal.run/fal-ai/marigold-v2</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/fal-ai/marigold-v2/api)
+
+```typescript
+const res = await fal.run.marigoldV2({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

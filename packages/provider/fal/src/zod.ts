@@ -9050,7 +9050,83 @@ export type FalBriaGuidedRemoveBackgroundParsedRequest = z.output<
   typeof FalBriaGuidedRemoveBackgroundRequestSchema
 >;
 
+// The ImageSize component publishes only 0 < side <= 14142. fal's validator
+// is stricter for an explicit size and answers 422 (free, 2026-10-15) unless
+// each side is a multiple of 16 and at most 2048 and the aspect ratio is
+// between 1:16 and 16:1, as the field description says.
+const FalMarigoldV2ImageSizeSchema = z
+  .object({
+    width: z
+      .number()
+      .int()
+      .gt(0)
+      .max(2048)
+      .multipleOf(16)
+      .default(512)
+      .describe("The width of the generated image."),
+    height: z
+      .number()
+      .int()
+      .gt(0)
+      .max(2048)
+      .multipleOf(16)
+      .default(512)
+      .describe("The height of the generated image."),
+  })
+  .refine(
+    (size) =>
+      Math.max(size.width, size.height) / Math.min(size.width, size.height) <=
+      16,
+    { message: "image_size aspect ratio must be between 1:16 and 16:1" }
+  );
+
+// Pinned to the live queue OpenAPI read on 2026-10-15
+// (sha256 f29dd92e601effe057892d51be46ec5c097c84cd5060b6f6454ed7f447a1108c). Field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/fal-ai/marigold-v2/api
+export const FalMarigoldV2RequestSchema = z.object({
+  prediction_type: z
+    .enum(["depth", "see-through-depth", "normals", "albedo"])
+    .default("depth")
+    .describe("Prediction map to generate."),
+  image_url: z.string().describe("Input image url."),
+  image_size: z
+    .union([
+      FalMarigoldV2ImageSizeSchema,
+      z.enum([
+        "square_hd",
+        "square",
+        "portrait_4_3",
+        "portrait_16_9",
+        "landscape_4_3",
+        "landscape_16_9",
+      ]),
+    ])
+    .nullable()
+    .optional()
+    .describe(
+      "Inference size as an explicit {width, height} object or a preset string (e.g. square_hd, landscape_4_3). Both dimensions must be multiples of 16 and no larger than 2048 pixels on either side, with an aspect ratio between 1:16 and 16:1. Defaults to the input image's dimensions rounded to the nearest multiple of 16."
+    ),
+  seed: z
+    .number()
+    .int()
+    .nullable()
+    .optional()
+    .describe(
+      "Random seed. Only affects the VAE encoder's latent sampling (the forward pass itself is a single deterministic step); the same seed and image reproduce the same output."
+    ),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe("Authorized callers may set false to request relaxed screening."),
+});
+export type FalMarigoldV2Request = z.input<typeof FalMarigoldV2RequestSchema>;
+export type FalMarigoldV2RequestInput = FalMarigoldV2Request;
+export type FalMarigoldV2ParsedRequest = z.output<
+  typeof FalMarigoldV2RequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "fal-ai/marigold-v2": FalMarigoldV2RequestSchema,
   "bria/guided-remove-background": FalBriaGuidedRemoveBackgroundRequestSchema,
   "bria/fibo-edit-1.5/expand": FalBriaFiboEdit1p5ExpandRequestSchema,
   "luma/agent/ray/v3.2/text-to-video":

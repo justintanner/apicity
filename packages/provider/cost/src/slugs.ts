@@ -416,6 +416,7 @@ export const MODEL_SLUGS = {
   // same underlying models kie also resells, so their slugs intentionally
   // match kie's.
   fal: {
+    "fal-ai/marigold-v2": "marigold2",
     "bria/guided-remove-background": "briagrb",
     "bria/fibo-edit-1.5/expand": "briafiboedit",
     "luma/agent/ray/v3.2/image-to-video": "ray32i",
@@ -896,6 +897,7 @@ export const MODEL_DISPLAY = {
   },
 
   fal: {
+    "fal-ai/marigold-v2": "Marigold V2",
     "bria/guided-remove-background": "Bria Guided Remove Background",
     "bria/fibo-edit-1.5/expand": "Bria Fibo Edit 1.5 Expand",
     "luma/agent/ray/v3.2/image-to-video": "Ray 3.2 Image",

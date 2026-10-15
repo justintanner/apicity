@@ -1742,3 +1742,4 @@ fal	marigoldV2	POST	https://fal.run/fal-ai/marigold-v2	https://fal.ai/models/fal
 fal	mireloAi.sfx2p0.textToAudio	POST	https://fal.run/mirelo-ai/sfx2.0/text-to-audio	https://fal.ai/models/mirelo-ai/sfx2.0/text-to-audio/api
 fal	mireloAi.sfx2p0.videoToAudio	POST	https://fal.run/mirelo-ai/sfx2.0/video-to-audio	https://fal.ai/models/mirelo-ai/sfx2.0/video-to-audio/api
 fal	mireloAi.sfx2p0.videoToVideo	POST	https://fal.run/mirelo-ai/sfx2.0/video-to-video	https://fal.ai/models/mirelo-ai/sfx2.0/video-to-video/api
+fal	mureka.api.generate.lyrics	POST	https://fal.run/mureka/api/generate/lyrics	https://fal.ai/models/mureka/api/generate/lyrics/api

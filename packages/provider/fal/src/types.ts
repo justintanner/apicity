@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalMurekaApiGenerateLyricsRequest,
+  FalMurekaApiGenerateLyricsRequestInput,
+  FalMurekaApiGenerateLyricsParsedRequest,
   FalMireloAiSfx2p0VideoToVideoRequest,
   FalMireloAiSfx2p0VideoToVideoRequestInput,
   FalMireloAiSfx2p0VideoToVideoParsedRequest,
@@ -590,6 +593,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalMurekaApiGenerateLyricsRequest,
   FalMireloAiSfx2p0VideoToVideoRequest,
   FalMireloAiSfx2p0VideoToAudioRequest,
   FalMireloAiSfx2p0TextToAudioRequest,
@@ -5156,4 +5160,31 @@ type FalMireloAiSfx2p0VideoToVideoFn = ((
 
 export interface FalRunMireloAiSfx2p0Namespace {
   videoToVideo: FalMireloAiSfx2p0VideoToVideoFn;
+}
+
+export interface FalMurekaApiGenerateLyricsResponse {
+  /** The title generated from the prompt. */
+  title: string;
+  /** The lyrics generated from the prompt. */
+  lyrics: string;
+}
+
+type FalMurekaApiGenerateLyricsFn = ((
+  params: FalMurekaApiGenerateLyricsRequest,
+  signal?: AbortSignal
+) => Promise<FalMurekaApiGenerateLyricsResponse>) & {
+  schema: ApicitySchema<FalMurekaApiGenerateLyricsRequest>;
+};
+
+export interface FalRunMurekaApiGenerateNamespace {
+  lyrics: FalMurekaApiGenerateLyricsFn;
+}
+export interface FalRunMurekaApiNamespace {
+  generate: FalRunMurekaApiGenerateNamespace;
+}
+export interface FalRunMurekaNamespace {
+  api: FalRunMurekaApiNamespace;
+}
+export interface FalRunNamespace {
+  mureka: FalRunMurekaNamespace;
 }

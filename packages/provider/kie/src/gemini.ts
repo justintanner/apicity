@@ -189,6 +189,14 @@ interface KieGeminiModelsNamespace {
     streamGenerateContent: KieGemini38FlashStreamGenerateContentMethod;
   };
   gemini3FlashV1betamodels: {
+    /**
+     * @deprecated KIE no longer documents this Gemini 3 Flash v1beta route
+     * or lists a price for Gemini 3 Flash: on 2026-10-15 its docs page
+     * answered HTTP 404 and the public pricing feed no longer carried the
+     * model's rows. Requests are still sent unchanged, but KIE may stop
+     * answering them without notice. Prefer a documented native Gemini
+     * Flash route, such as `gemini38Flash.streamGenerateContent`.
+     */
     streamGenerateContent: KieGemini3FlashV1betamodelsStreamGenerateContentMethod;
   };
 }

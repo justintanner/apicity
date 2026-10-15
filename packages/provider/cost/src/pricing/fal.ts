@@ -914,6 +914,9 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  // Card, pricing API and usage read: $0.03 per image, whatever the output
+  // size; recorded billable units: 1.
+  "fal-ai/marigold-v2": perImage("fal-ai/marigold-v2", 0.03, "2026-10-15"),
   // Card and pricing API: $0.03 per image; recorded billable units: 1.
   "bria/guided-remove-background": perImage(
     "bria/guided-remove-background",

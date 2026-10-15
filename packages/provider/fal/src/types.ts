@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalMarigoldV2ParsedRequest,
+  FalMarigoldV2RequestInput,
+  FalMarigoldV2Request,
   FalBriaGuidedRemoveBackgroundParsedRequest,
   FalBriaGuidedRemoveBackgroundRequestInput,
   FalBriaGuidedRemoveBackgroundRequest,
@@ -578,6 +581,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalMarigoldV2Request,
   FalBriaGuidedRemoveBackgroundRequest,
   FalBriaFiboEdit1p5ExpandRequest,
   FalLumaAgentRayV3p2TextToVideoRequest,
@@ -5045,4 +5049,27 @@ export interface FalBriaGuidedRemoveBackgroundResponse {
     width?: number | null;
     height?: number | null;
   };
+}
+
+export interface FalMarigoldV2Response {
+  image: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+  };
+  seed: number;
+}
+
+type FalMarigoldV2Fn = ((
+  params: FalMarigoldV2Request,
+  signal?: AbortSignal
+) => Promise<FalMarigoldV2Response>) & {
+  schema: ApicitySchema<FalMarigoldV2Request>;
+};
+
+export interface FalRunNamespace {
+  marigoldV2: FalMarigoldV2Fn;
 }

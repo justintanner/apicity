@@ -21,6 +21,10 @@ export type {
 
 // Export all types
 export type {
+  FalMarigoldV2Response,
+  FalMarigoldV2Request,
+  FalMarigoldV2RequestInput,
+  FalMarigoldV2ParsedRequest,
   FalBriaGuidedRemoveBackgroundResponse,
   FalBriaGuidedRemoveBackgroundRequest,
   FalBriaGuidedRemoveBackgroundRequestInput,

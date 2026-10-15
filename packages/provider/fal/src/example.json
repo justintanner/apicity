@@ -999,6 +999,15 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST marigoldV2": {
+    "source": "fal/marigold-v2",
+    "payload": {
+      "image_url": "<inline image/png data URL — replace with a real URL or upload>",
+      "prediction_type": "depth"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST meshy.v7.imageTo3d": {
     "source": "fal/meshy-v7-image-to-3d",
     "payload": {

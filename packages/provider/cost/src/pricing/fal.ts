@@ -988,6 +988,27 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  // Input audio length is supplied only through the cost hint. The card rounds
+  // to whole seconds, then up to minutes, with a one-minute minimum.
+  "veed/clean-audio": {
+    kind: "perUnit",
+    unit: "minutes",
+    units: (_p, hints) => {
+      const seconds = hintSeconds(hints);
+      return seconds === undefined
+        ? undefined
+        : Math.max(1, Math.ceil(Math.round(seconds) / 60));
+    },
+    warn: (_p, hints) =>
+      hintSeconds(hints) === undefined
+        ? [
+            "fal 'veed/clean-audio': input audio duration is required; pass costHints.durationSeconds",
+          ]
+        : [],
+    select: [],
+    rates: { "": 0.0125 },
+    source: source("veed/clean-audio", "2026-10-16"),
+  },
   // Bills each requested second (duration, a digit string defaulting to "5")
   // at $0.084 with audio off and $0.112 with audio on; generate_audio
   // defaults to false here, unlike Kling v3. fal counts the charge in

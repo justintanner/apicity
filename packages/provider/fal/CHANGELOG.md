@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added MiniMax H3 Max Retro Toon 70s styled text-to-video (ac-tq3j9l).
+
 - Added MiniMax H3 Max VHS styled text-to-video (ac-nt16hd).
 
 - Added PixVerse VibeMV music video (ac-bk3129).

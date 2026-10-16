@@ -1771,3 +1771,4 @@ fal	minimax.h3Max.styles.vhs	POST	https://fal.run/minimax/h3-max/styles/vhs	http
 fal	minimax.h3Max.styles.sixteenBitPixel	POST	https://fal.run/minimax/h3-max/styles/16bit-pixel	https://fal.ai/models/minimax/h3-max/styles/16bit-pixel/api
 fal	minimax.h3Max.styles.handDrawn	POST	https://fal.run/minimax/h3-max/styles/hand-drawn	https://fal.ai/models/minimax/h3-max/styles/hand-drawn/api
 fal	minimax.h3Max.styles.lowPoly	POST	https://fal.run/minimax/h3-max/styles/low-poly	https://fal.ai/models/minimax/h3-max/styles/low-poly/api
+fal	bytedance.seedance2p0.us.textToVideo	POST	https://fal.run/bytedance/seedance-2.0/us/text-to-video	https://fal.ai/models/bytedance/seedance-2.0/us/text-to-video/api

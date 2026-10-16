@@ -1068,6 +1068,13 @@ const PAYLOAD_RULES = Object.freeze([
     },
   },
   {
+    family: "qwen-image-size",
+    matches: (key) => key === "qwen/text-to-image",
+    apply: (input) => {
+      input.image_size = "square_hd";
+    },
+  },
+  {
     family: "qwen-image-input",
     matches: (key) => key === "qwen/image-edit" || key === "qwen2/image-edit",
     apply: (input) => {

@@ -3548,8 +3548,8 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
           "landscape_4_3",
           "landscape_16_9",
         ],
-        default: "square_hd",
-        description: "Output image size token (default square_hd)",
+        description:
+          "Output image size token (no documented default; set it explicitly)",
       },
       num_inference_steps: {
         type: "number",

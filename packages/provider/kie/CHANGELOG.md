@@ -42,6 +42,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Breaking:** `QwenTextToImageRequestSchema` and
+  `modelInputSchemas["qwen/text-to-image"]` no longer default
+  `input.image_size` to `square_hd`. KIE's docs and live model schema dropped
+  that default ("Set this field explicitly", read 2026-10-16). The field stays
+  optional with the same six presets, so parsing no longer adds it; set it
+  explicitly.
 - **Breaking:** The `gemini31Pro`, `gemini3Pro`, `gemini25Pro`,
   `gemini35FlashOpenai`, `gemini36FlashOpenai`, `gemini37FlashOpenai`, and
   `gemini38FlashOpenai` chat request schemas now follow KIE's current docs:

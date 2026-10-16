@@ -723,9 +723,12 @@ describe("KIE Qwen v1 modelInputSchemas metadata", () => {
       required: true,
       maxLength: 5000,
     });
+    // Upstream dropped the square_hd default (docs and live schema,
+    // 2026-10-16: "Set this field explicitly"), and the field stays optional.
+    expect(fields.image_size.default).toBeUndefined();
+    expect(fields.image_size.required).toBeUndefined();
     expect(fields.image_size).toMatchObject({
       type: "string",
-      default: "square_hd",
       enum: [
         "square",
         "square_hd",

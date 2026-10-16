@@ -2836,7 +2836,10 @@ export const kie: Record<string, ModelPricing> = {
   // and $0.03/MP (OQ-4). Units are ceil(megapixels per image) × image count,
   // resolved from the `input.image_size` preset through the shared
   // IMAGE_SIZE_DIMENSIONS table; each model's documented schema default is the
-  // absent-field fallback.
+  // absent-field fallback. image-edit documents landscape_4_3. text-to-image
+  // has documented none since upstream dropped square_hd ("Set this field
+  // explicitly", docs and live schema read 2026-10-16), so a text-to-image
+  // payload without image_size warns instead of quoting an assumed area.
   //
   // Both area rates over-quote KIE's billing, and no per-megapixel rule
   // reproduces it. The terminal recordInfo of each 2026-10-16 recording under
@@ -2865,11 +2868,7 @@ export const kie: Record<string, ModelPricing> = {
   // or batch field, so one call is one image. Both owned billing probes (a
   // 1672x941 source) failed upstream with a 500 and billed 0, so no recording
   // backs this entry yet.
-  "qwen/text-to-image": perMegapixel(
-    0.02,
-    "https://kie.ai/qwen-image",
-    "square_hd"
-  ),
+  "qwen/text-to-image": perMegapixel(0.02, "https://kie.ai/qwen-image"),
   "qwen/image-to-image": flatImagePricePage(
     0.02,
     "https://kie.ai/qwen-image",

@@ -2994,7 +2994,11 @@ export const QwenTextToImageRequestSchema = z.object({
   callBackUrl: z.string().url().optional(),
   input: z.object({
     prompt: z.string().min(1).max(5000),
-    image_size: QwenImageSizeSchema.default("square_hd"),
+    // Docs and KIE's live /models/qwen/text-to-image/schema (2026-10-16) give
+    // image_size no default: "The size of the generated image. Set this field
+    // explicitly." It is still not required. The 2026-09-10 docs defaulted it
+    // to square_hd.
+    image_size: QwenImageSizeSchema.optional(),
     num_inference_steps: z.number().min(2).max(250).default(30),
     seed: z.number().int().optional(),
     guidance_scale: z.number().min(0).max(20).default(2.5),

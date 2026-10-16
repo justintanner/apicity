@@ -21,6 +21,12 @@ export type {
 
 // Export all types
 export type {
+  FalOpenrouterRouterDecisionsRequest,
+  FalOpenrouterRouterDecisionsRequestInput,
+  FalOpenrouterRouterDecisionsParsedRequest,
+  FalOpenrouterRouterDecisionsResponse,
+  FalRunOpenrouterRouterNamespace,
+  FalRunOpenrouterNamespace,
   FalCreatifyBorealRequest,
   FalCreatifyBorealRequestInput,
   FalCreatifyBorealParsedRequest,

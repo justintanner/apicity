@@ -1648,6 +1648,20 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST openrouter.router.decisions": {
+    "source": "fal/openrouter-router-decisions",
+    "payload": {
+      "state": "Hello from Apicity. Have a wonderful day.",
+      "questions": {
+        "is_greeting": {
+          "type": "noul",
+          "instructions": "Is this message a greeting?"
+        }
+      }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST qwenImage": {
     "source": "fal/qwen-image",
     "payload": {

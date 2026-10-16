@@ -1761,3 +1761,4 @@ fal	minimax.h3Max.relight	POST	https://fal.run/minimax/h3-max/relight	https://fa
 fal	kandinsky6Vsr	POST	https://fal.run/fal-ai/kandinsky6-vsr	https://fal.ai/models/fal-ai/kandinsky6-vsr/api
 fal	veed.cleanAudio	POST	https://fal.run/veed/clean-audio	https://fal.ai/models/veed/clean-audio/api
 fal	creatify.boreal	POST	https://fal.run/creatify/boreal	https://fal.ai/models/creatify/boreal/api
+fal	openrouter.router.decisions	POST	https://fal.run/openrouter/router/decisions	https://fal.ai/models/openrouter/router/decisions/api

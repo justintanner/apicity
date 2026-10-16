@@ -1,4 +1,6 @@
 import {
+  FalOpenrouterRouterDecisionsRequest,
+  FalOpenrouterRouterDecisionsResponse,
   FalCreatifyBorealRequest,
   FalCreatifyBorealResponse,
   FalVeedCleanAudioRequest,
@@ -392,6 +394,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalOpenrouterRouterDecisionsRequestSchema,
   FalCreatifyBorealRequestSchema,
   FalVeedCleanAudioRequestSchema,
   FalKlingVideoO3StandardImageToVideoRequestSchema,
@@ -3369,7 +3372,25 @@ export function createFal(opts: FalOptions): FalProvider {
     base: runBaseURL,
   });
 
+  // POST https://fal.run/openrouter/router/decisions
+  // Docs: https://fal.ai/models/openrouter/router/decisions/api
+  const openrouterRouterDecisions = jsonBody<
+    FalOpenrouterRouterDecisionsRequest,
+    FalOpenrouterRouterDecisionsResponse
+  >(
+    "POST",
+    "/openrouter/router/decisions",
+    FalOpenrouterRouterDecisionsRequestSchema,
+    { base: runBaseURL }
+  );
   const run: FalRunNamespace = {
+    openrouter: {
+      router: {
+        // POST https://fal.run/openrouter/router/decisions
+        // Docs: https://fal.ai/models/openrouter/router/decisions/api
+        decisions: openrouterRouterDecisions,
+      },
+    },
     creatify: {
       // POST https://fal.run/creatify/boreal
       // Docs: https://fal.ai/models/creatify/boreal/api

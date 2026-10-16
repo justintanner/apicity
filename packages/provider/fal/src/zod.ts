@@ -10672,7 +10672,161 @@ export type FalCreatifyBorealParsedRequest = z.output<
   typeof FalCreatifyBorealRequestSchema
 >;
 
+// OpenRouter Decisions model IDs retain their vendor/name grammar.
+const FalOpenrouterDecisionsModelAliasSchema = z
+  .string()
+  .regex(/^[a-z0-9]+(?:[.-][a-z0-9]+)*\/[a-z0-9]+(?:[._:-][a-z0-9]+)*$/);
+export const FalOpenrouterRouterDecisionsRequestSchema = z
+  .object({
+    state: z
+      .union([
+        z.string(),
+        z.record(z.string(), z.unknown()),
+        z.array(z.unknown()),
+      ])
+      .describe(
+        "Text, structured JSON, or an array mixing text strings with OpenRouter media parts: image_url, input_audio, and video_url. Images and videos use base64 data URLs; input_audio uses raw base64 data and a format. Media support and limits depend on the selected Decisions model. See https://openrouter.ai/docs/guides/community/multimodal-decisions."
+      ),
+    image_urls: z
+      .union([z.array(z.string()), z.null()])
+      .describe(
+        "Optional image URLs or base64 image data URLs appended to state. Public images are downloaded and encoded inline for OpenRouter. Inline images are limited to 16 MiB per image. Up to 128 convenience images and 32 MiB of total encoded image data (including data URL metadata) are allowed per request. The selected Decisions model must support images."
+      )
+      .optional(),
+    questions: z
+      .record(
+        z.string(),
+        z.discriminatedUnion("type", [
+          z.object({
+            type: z.literal("noul"),
+            instructions: z
+              .union([
+                z.string(),
+                z.record(z.string(), z.unknown()),
+                z.array(z.unknown()),
+              ])
+              .describe(
+                "The yes/no question, as text or structured multimodal content."
+              ),
+            criteria: z
+              .union([
+                z.object({
+                  true: z
+                    .union([
+                      z.string(),
+                      z.record(z.string(), z.unknown()),
+                      z.array(z.unknown()),
+                    ])
+                    .describe("What should count as a yes/true outcome."),
+                  false: z
+                    .union([
+                      z.string(),
+                      z.record(z.string(), z.unknown()),
+                      z.array(z.unknown()),
+                    ])
+                    .describe("What should count as a no/false outcome."),
+                }),
+                z.null(),
+              ])
+              .describe(
+                "Optional descriptions clarifying true and false outcomes."
+              )
+              .optional(),
+          }),
+          z.object({
+            type: z.literal("choice"),
+            instructions: z
+              .union([
+                z.string(),
+                z.record(z.string(), z.unknown()),
+                z.array(z.unknown()),
+              ])
+              .describe(
+                "The question, as text or structured multimodal content."
+              ),
+            criteria: z
+              .record(
+                z.string(),
+                z.union([
+                  z.string(),
+                  z.record(z.string(), z.unknown()),
+                  z.array(z.unknown()),
+                  z.null(),
+                ])
+              )
+              .refine((value) => Object.keys(value).length >= 2, {
+                message: "Must contain at least 2 entries",
+              })
+              .refine((value) => Object.keys(value).length <= 255, {
+                message: "Must contain at most 255 entries",
+              })
+              .describe(
+                "Answer options mapped to descriptions of each option."
+              ),
+          }),
+          z.object({
+            type: z.literal("score"),
+            instructions: z
+              .union([
+                z.string(),
+                z.record(z.string(), z.unknown()),
+                z.array(z.unknown()),
+              ])
+              .describe(
+                "The property to score, as text or structured multimodal content."
+              ),
+            criteria: z
+              .array(
+                z.union([
+                  z.string(),
+                  z.record(z.string(), z.unknown()),
+                  z.array(z.unknown()),
+                ])
+              )
+              .min(2)
+              .max(10)
+              .describe(
+                "Ordered level descriptions, from the low end to the high end."
+              ),
+          }),
+        ])
+      )
+      .refine((value) => Object.keys(value).length >= 1, {
+        message: "Must contain at least 1 entries",
+      })
+      .describe(
+        "Questions keyed by caller-defined IDs. Each question is evaluated independently against the same state."
+      ),
+    model: z
+      .enum(["typesafe/jev-1.13"])
+      .or(FalOpenrouterDecisionsModelAliasSchema)
+      .default("typesafe/jev-1.13")
+      .describe(
+        "Any OpenRouter Decisions model ID or alias. Choose a model that supports the supplied input modalities."
+      ),
+    session_id: z
+      .union([z.string().max(256), z.null()])
+      .describe("Identifier for grouping related decision requests.")
+      .optional(),
+    enable_safety_checker: z
+      .boolean()
+      .default(true)
+      .describe(
+        "Authorized callers may set false to request relaxed screening."
+      ),
+  })
+  .strict();
+export type FalOpenrouterRouterDecisionsRequest = z.input<
+  typeof FalOpenrouterRouterDecisionsRequestSchema
+>;
+export type FalOpenrouterRouterDecisionsRequestInput =
+  FalOpenrouterRouterDecisionsRequest;
+export type FalOpenrouterRouterDecisionsParsedRequest = z.output<
+  typeof FalOpenrouterRouterDecisionsRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "openrouter/router/decisions": FalOpenrouterRouterDecisionsRequestSchema,
   "creatify/boreal": FalCreatifyBorealRequestSchema,
   "veed/clean-audio": FalVeedCleanAudioRequestSchema,
   "fal-ai/kling-video/o3/standard/image-to-video":

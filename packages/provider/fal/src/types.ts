@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalOpenrouterRouterDecisionsRequest,
+  FalOpenrouterRouterDecisionsRequestInput,
+  FalOpenrouterRouterDecisionsParsedRequest,
   FalCreatifyBorealRequest,
   FalCreatifyBorealRequestInput,
   FalCreatifyBorealParsedRequest,
@@ -647,6 +650,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalOpenrouterRouterDecisionsRequest,
   FalCreatifyBorealRequest,
   FalVeedCleanAudioRequest,
   FalKlingVideoO3StandardImageToVideoRequest,
@@ -5819,4 +5823,51 @@ export interface FalRunCreatifyNamespace {
 }
 export interface FalRunNamespace {
   creatify: FalRunCreatifyNamespace;
+}
+
+export interface FalOpenrouterRouterDecisionsResponse {
+  provider?: string | null;
+  answers: Record<
+    string,
+    | { noul: number; type: "noul" }
+    | {
+        choice: string;
+        type: "choice";
+        probabilities?: Record<string, number> | null;
+        confidence?: number | null;
+      }
+    | {
+        legend?: Record<
+          string,
+          string | Record<string, unknown> | Array<unknown>
+        > | null;
+        type: "score";
+        confidence?: number | null;
+        score: number;
+        probabilities?: Record<string, number> | null;
+      }
+  >;
+  model: string;
+  id?: string | null;
+  usage: {
+    total_tokens?: number | null;
+    output_tokens: number;
+    input_tokens: number;
+    cost?: number | null;
+  };
+}
+type FalOpenrouterRouterDecisionsFn = ((
+  params: FalOpenrouterRouterDecisionsRequest,
+  signal?: AbortSignal
+) => Promise<FalOpenrouterRouterDecisionsResponse>) & {
+  schema: ApicitySchema<FalOpenrouterRouterDecisionsRequest>;
+};
+export interface FalRunOpenrouterRouterNamespace {
+  decisions: FalOpenrouterRouterDecisionsFn;
+}
+export interface FalRunOpenrouterNamespace {
+  router: FalRunOpenrouterRouterNamespace;
+}
+export interface FalRunNamespace {
+  openrouter: FalRunOpenrouterNamespace;
 }

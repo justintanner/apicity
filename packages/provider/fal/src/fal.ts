@@ -1,4 +1,6 @@
 import {
+  FalBytedanceSeedance2p0UsTextToVideoRequest,
+  FalBytedanceSeedance2p0UsTextToVideoResponse,
   FalMinimaxH3MaxStylesSixteenBitPixelRequest,
   FalMinimaxH3MaxStylesHandDrawnRequest,
   FalMinimaxH3MaxStylesLowPolyRequest,
@@ -412,6 +414,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalBytedanceSeedance2p0UsTextToVideoRequestSchema,
   FalMinimaxH3MaxStylesSixteenBitPixelRequestSchema,
   FalMinimaxH3MaxStylesHandDrawnRequestSchema,
   FalMinimaxH3MaxStylesLowPolyRequestSchema,
@@ -3514,6 +3517,19 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/bytedance/seedance-2.0/us/text-to-video
+  // Docs: https://fal.ai/models/bytedance/seedance-2.0/us/text-to-video/api
+  const bytedanceSeedance2p0UsTextToVideo = jsonBody<
+    FalBytedanceSeedance2p0UsTextToVideoRequest,
+    FalBytedanceSeedance2p0UsTextToVideoResponse
+  >(
+    "POST",
+    "/bytedance/seedance-2.0/us/text-to-video",
+    FalBytedanceSeedance2p0UsTextToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
     pixverse: {
       musicVideo: {
@@ -3842,6 +3858,11 @@ export function createFal(opts: FalOptions): FalProvider {
     },
     bytedance: {
       seedance2p0: {
+        us: {
+          // POST https://fal.run/bytedance/seedance-2.0/us/text-to-video
+          // Docs: https://fal.ai/models/bytedance/seedance-2.0/us/text-to-video/api
+          textToVideo: bytedanceSeedance2p0UsTextToVideo,
+        },
         imageToVideo: bytedanceSeedance2p0ImageToVideo,
         textToVideo: bytedanceSeedance2p0TextToVideo,
         referenceToVideo: bytedanceSeedance2p0ReferenceToVideo,

@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Seedance 2.0 US text-to-video, dynamically priced (ac-likism).
+
 - Added MiniMax H3 Max 16-bit Pixel styled text-to-video (ac-pw3eda).
 
 - Added MiniMax H3 Max Hand Drawn styled text-to-video (ac-11zsm1).

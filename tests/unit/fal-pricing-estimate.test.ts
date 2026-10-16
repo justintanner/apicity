@@ -1143,7 +1143,9 @@ describe("fal edit/image pricing estimates", () => {
     // rounds up to one megapixel ($0.05). FLUX 3 Action SO-101 bills compute
     // seconds that no request field fixes. Grok Voice bills seconds whose
     // meaning is unpublished and which differ from input/reply duration.
-    // All sixty-three use fal's
+    // Seedance 2.0 US text-to-video bills tokens of the output file: 38.8
+    // units for a four-second 640x640 clip of 97 frames, where the seedance
+    // per-second table predicts 38.88. All sixty-four use fal's
     // pricing-estimate API.
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toEqual([
       "alibaba/qwen-image-3/edit",
@@ -1154,6 +1156,7 @@ describe("fal edit/image pricing estimates", () => {
       "blackforestlabs/flux-3/edit-image",
       "blackforestlabs/flux-3/text-to-image",
       "blackforestlabs/flux-video-upscale",
+      "bytedance/seedance-2.0/us/text-to-video",
       "bytedance/seedream/v5/pro/edit",
       "bytedance/seedream/v5/pro/layerize",
       "bytedance/seedream/v5/pro/text-to-image",

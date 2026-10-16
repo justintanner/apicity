@@ -1766,3 +1766,4 @@ fal	flux3Action.so101	POST	https://fal.run/fal-ai/flux-3-action/so101	https://fa
 fal	xai.grokVoice	POST	https://fal.run/xai/grok-voice	https://fal.ai/models/xai/grok-voice/api
 fal	pixelcut.loopingVideo	POST	https://fal.run/pixelcut/looping-video	https://fal.ai/models/pixelcut/looping-video/api
 fal	pixverse.musicVideo.vibemv	POST	https://fal.run/pixverse/music-video/vibemv	https://fal.ai/models/pixverse/music-video/vibemv/api
+fal	minimax.h3Max.styles.vhs	POST	https://fal.run/minimax/h3-max/styles/vhs	https://fal.ai/models/minimax/h3-max/styles/vhs/api

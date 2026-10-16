@@ -21,6 +21,11 @@ export type {
 
 // Export all types
 export type {
+  FalMinimaxH3MaxStylesVhsRequest,
+  FalMinimaxH3MaxStylesVhsRequestInput,
+  FalMinimaxH3MaxStylesVhsParsedRequest,
+  FalMinimaxH3MaxStylesVhsResponse,
+  FalRunMinimaxH3MaxStylesNamespace,
   FalPixverseMusicVideoVibemvRequest,
   FalPixverseMusicVideoVibemvRequestInput,
   FalPixverseMusicVideoVibemvParsedRequest,

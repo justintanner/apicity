@@ -11372,7 +11372,61 @@ export type FalPixverseMusicVideoVibemvParsedRequest = z.output<
   typeof FalPixverseMusicVideoVibemvRequestSchema
 >;
 
+// MiniMax H3 Max VHS styled text-to-video
+export const FalMinimaxH3MaxStylesVhsRequestSchema = z
+  .object({
+    prompt: z
+      .string()
+      .min(1)
+      .max(49910)
+      .describe(
+        "Describe the scene, action, camera and sound. VHS style and tape damage are applied automatically."
+      ),
+    image_url: z
+      .string()
+      .nullable()
+      .describe(
+        "Optional first-frame image. Use a 4:3 image for the classic VHS frame; the image's aspect ratio determines the output canvas."
+      )
+      .optional(),
+    damage_level: z
+      .enum(["light", "medium", "heavy"])
+      .default("medium")
+      .describe(
+        "Tape wear: light adds subtle analog noise, medium adds visible damage, and heavy adds strong tracking errors and distortion."
+      ),
+    duration: z
+      .number()
+      .int()
+      .min(5)
+      .max(15)
+      .default(5)
+      .describe("Requested video duration in seconds."),
+    aspect_ratio: z
+      .enum(["21:9", "16:9", "4:3", "1:1", "3:4", "9:16"])
+      .default("16:9")
+      .describe(
+        "Video aspect ratio for text-only generation. Ignored when image_url is provided."
+      ),
+    seed: z
+      .number()
+      .int()
+      .nullable()
+      .describe("Random seed. Omit to choose one automatically.")
+      .optional(),
+  })
+  .strict();
+export type FalMinimaxH3MaxStylesVhsRequest = z.input<
+  typeof FalMinimaxH3MaxStylesVhsRequestSchema
+>;
+export type FalMinimaxH3MaxStylesVhsRequestInput =
+  FalMinimaxH3MaxStylesVhsRequest;
+export type FalMinimaxH3MaxStylesVhsParsedRequest = z.output<
+  typeof FalMinimaxH3MaxStylesVhsRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "minimax/h3-max/styles/vhs": FalMinimaxH3MaxStylesVhsRequestSchema,
   "pixverse/music-video/vibemv": FalPixverseMusicVideoVibemvRequestSchema,
   "pixelcut/looping-video": FalPixelcutLoopingVideoRequestSchema,
   "xai/grok-voice": FalXaiGrokVoiceRequestSchema,

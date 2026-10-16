@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalMinimaxH3MaxStylesVhsRequest,
+  FalMinimaxH3MaxStylesVhsRequestInput,
+  FalMinimaxH3MaxStylesVhsParsedRequest,
   FalPixverseMusicVideoVibemvRequest,
   FalPixverseMusicVideoVibemvRequestInput,
   FalPixverseMusicVideoVibemvParsedRequest,
@@ -662,6 +665,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalMinimaxH3MaxStylesVhsRequest,
   FalPixverseMusicVideoVibemvRequest,
   FalPixelcutLoopingVideoRequest,
   FalXaiGrokVoiceRequest,
@@ -5983,4 +5987,27 @@ export interface FalRunPixverseNamespace {
 }
 export interface FalRunNamespace {
   pixverse: FalRunPixverseNamespace;
+}
+
+export interface FalMinimaxH3MaxStylesVhsResponse {
+  /** Generated 768P VHS-style video with audio. */
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+  /** Seed used for this generation. */
+  seed: number;
+}
+export interface FalRunMinimaxH3MaxStylesNamespace {
+  vhs: ((
+    params: FalMinimaxH3MaxStylesVhsRequest,
+    signal?: AbortSignal
+  ) => Promise<FalMinimaxH3MaxStylesVhsResponse>) & {
+    schema: ApicitySchema<FalMinimaxH3MaxStylesVhsRequest>;
+  };
+}
+export interface FalRunMinimaxH3MaxNamespace {
+  styles: FalRunMinimaxH3MaxStylesNamespace;
 }

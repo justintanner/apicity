@@ -416,6 +416,7 @@ export const MODEL_SLUGS = {
   // same underlying models kie also resells, so their slugs intentionally
   // match kie's.
   fal: {
+    "minimax/h3-max/styles/vhs": "h3mstyle",
     "pixverse/music-video/vibemv": "vibemv",
     "pixelcut/looping-video": "pixelloop",
     "creatify/boreal": "boreal",
@@ -907,6 +908,7 @@ export const MODEL_DISPLAY = {
   },
 
   fal: {
+    "minimax/h3-max/styles/vhs": "H3 Max Styles",
     "pixverse/music-video/vibemv": "PixVerse VibeMV",
     "pixelcut/looping-video": "Pixelcut Looping Video",
     "creatify/boreal": "Creatify Boreal",

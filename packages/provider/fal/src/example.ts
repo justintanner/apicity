@@ -1351,6 +1351,15 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST minimax.h3Max.styles.vhs": {
+    "source": "fal/minimax-h3-max-styles-vhs",
+    "payload": {
+      "prompt": "A red panda waves once, then holds still.",
+      "duration": 5
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST minimax.h3Max.textToVideo": {
     "source": "fal/minimax-h3-max-text-to-video",
     "payload": {

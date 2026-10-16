@@ -1,4 +1,6 @@
 import {
+  FalMinimaxH3MaxStylesVhsRequest,
+  FalMinimaxH3MaxStylesVhsResponse,
   FalPixverseMusicVideoVibemvRequest,
   FalPixverseMusicVideoVibemvResponse,
   FalPixelcutLoopingVideoRequest,
@@ -402,6 +404,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalMinimaxH3MaxStylesVhsRequestSchema,
   FalPixverseMusicVideoVibemvRequestSchema,
   FalPixelcutLoopingVideoRequestSchema,
   FalXaiGrokVoiceRequestSchema,
@@ -3439,6 +3442,18 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/minimax/h3-max/styles/vhs
+  // Docs: https://fal.ai/models/minimax/h3-max/styles/vhs/api
+  const minimaxH3MaxStylesVhs = jsonBody<
+    FalMinimaxH3MaxStylesVhsRequest,
+    FalMinimaxH3MaxStylesVhsResponse
+  >(
+    "POST",
+    "/minimax/h3-max/styles/vhs",
+    FalMinimaxH3MaxStylesVhsRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
     pixverse: {
       musicVideo: {
@@ -3813,6 +3828,11 @@ export function createFal(opts: FalOptions): FalProvider {
     },
     minimax: {
       h3Max: {
+        styles: {
+          // POST https://fal.run/minimax/h3-max/styles/vhs
+          // Docs: https://fal.ai/models/minimax/h3-max/styles/vhs/api
+          vhs: minimaxH3MaxStylesVhs,
+        },
         lipSync: {
           // POST https://fal.run/minimax/h3-max/lip-sync/image-to-video
           // Docs: https://fal.ai/models/minimax/h3-max/lip-sync/image-to-video/api

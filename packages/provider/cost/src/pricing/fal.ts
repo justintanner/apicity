@@ -997,6 +997,16 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  // Bills each requested second at $0.08: the output is fixed at 768p with
+  // audio, and duration runs 5 to 15 seconds (default 5). fal counts the
+  // charge in units of $0.05: the recorded 5 s call billed 8 units, $0.40,
+  // the card's price, though the returned clip ran 5.18 s.
+  "minimax/h3-max/styles/vhs": perSecond(
+    "minimax/h3-max/styles/vhs",
+    0.08,
+    numericSeconds(5),
+    "2026-10-16"
+  ),
   // Bills each second of the INPUT audio at the resolution tier (default
   // 720p): $0.06 at 720p and $0.09 at 1080p, rounded up to whole seconds
   // with a 10-second minimum and a 6-minute maximum. The request carries the

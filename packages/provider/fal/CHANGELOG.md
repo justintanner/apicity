@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added FLUX 3 Action SO-101 robot action, dynamically priced (ac-l079w5).
 - Added OpenRouter Router decisions, dynamically priced (ac-gohbne).
 - Added Creatify Boreal text-to-video (ac-7dbhic).
 - Added VEED Clean Audio audio clean-up (ac-asjuop).

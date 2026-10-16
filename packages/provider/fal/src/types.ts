@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalFlux3ActionSo101Request,
+  FalFlux3ActionSo101RequestInput,
+  FalFlux3ActionSo101ParsedRequest,
   FalOpenrouterRouterDecisionsRequest,
   FalOpenrouterRouterDecisionsRequestInput,
   FalOpenrouterRouterDecisionsParsedRequest,
@@ -650,6 +653,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalFlux3ActionSo101Request,
   FalOpenrouterRouterDecisionsRequest,
   FalCreatifyBorealRequest,
   FalVeedCleanAudioRequest,
@@ -5870,4 +5874,33 @@ export interface FalRunOpenrouterNamespace {
 }
 export interface FalRunNamespace {
   openrouter: FalRunOpenrouterNamespace;
+}
+
+export interface FalFlux3ActionSo101Response {
+  /** Predicted action chunk, one row per control step in time order. DROID: 32x8 absolute joint targets (rad) plus gripper closed fraction at 15 Hz. SO-101: 42x6 absolute commands (deg, gripper %) at 30 Hz. Not clipped: enforce joint, velocity and workspace limits on the robot. */
+  actions: number[][];
+  /** Name of each action column. */
+  action_labels: string[];
+  /** Control rate of the action rows. */
+  action_hz: number;
+  /** Execute this many leading actions, then request a new chunk. */
+  execute_steps: number;
+  /** Seed used for sampling. */
+  seed: number;
+  /** Server-side timings in seconds. */
+  timings: Record<string, number>;
+}
+
+type FalFlux3ActionSo101Fn = ((
+  params: FalFlux3ActionSo101Request,
+  signal?: AbortSignal
+) => Promise<FalFlux3ActionSo101Response>) & {
+  schema: ApicitySchema<FalFlux3ActionSo101Request>;
+};
+
+export interface FalRunFlux3ActionNamespace {
+  so101: FalFlux3ActionSo101Fn;
+}
+export interface FalRunNamespace {
+  flux3Action: FalRunFlux3ActionNamespace;
 }

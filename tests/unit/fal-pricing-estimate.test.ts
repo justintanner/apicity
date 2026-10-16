@@ -1140,7 +1140,7 @@ describe("fal edit/image pricing estimates", () => {
     // image-to-video each billed 0.1756 units ($0.2371 and $0.2458) for an
     // eight-step clip their cards price at $0.24 and $0.25. FLUX.2 Flex billed
     // 0.834 processed megapixels ($0.0417) for a 1024x768 image its card
-    // rounds up to one megapixel ($0.05). All sixty-one use fal's
+    // rounds up to one megapixel ($0.05). All sixty-two use fal's
     // pricing-estimate API.
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toEqual([
       "alibaba/qwen-image-3/edit",

@@ -22,11 +22,11 @@ import {
   MODEL_SLUGS,
 } from "../../packages/provider/cost/src/slugs";
 
-// Live OpenAPI 2026-10-15: enable_safety_checker removed from the archived input.
+// Live OpenAPI 2026-10-16: enable_safety_checker is present again.
 const endpoint = "mureka/api/generate/lyrics-video";
-// Owned song ID from the committed P09 song generation HAR.
+// Owned vocal song generated under the amended ac-d5kmgo authorization.
 const recorded = {
-  song_id: "166489254723585",
+  song_id: "166608639098881",
 } satisfies FalMurekaApiGenerateLyricsVideoRequest;
 const accepts = (body: Record<string, unknown>) =>
   schema.safeParse({ ...recorded, ...body }).success;
@@ -83,7 +83,7 @@ describe("Mureka lyrics video", () => {
     expect(JSON.parse(String(init?.body))).toEqual(recorded);
   });
 
-  it("mirrors input fields and defaults only aspect ratio and layout", () => {
+  it("mirrors input fields and applies documented defaults", () => {
     expect(Object.keys(schema.shape)).toEqual([
       "song_id",
       "upload_audio_id",
@@ -96,13 +96,20 @@ describe("Mureka lyrics video", () => {
       "lyrics_end_row",
       "selection_start",
       "selection_end",
+      "enable_safety_checker",
     ]);
     expect(schema.parse(recorded)).toEqual({
       ...recorded,
       aspect_ratio: "9:16",
       layout: "layout_1",
+      enable_safety_checker: true,
     });
     expect(accepts({ unknown_field: true })).toBe(true);
+  });
+  it("validates the optional safety checker", () => {
+    expect(accepts({ enable_safety_checker: false })).toBe(true);
+    for (const value of [null, "true", 1])
+      expect(accepts({ enable_safety_checker: value })).toBe(false);
   });
   it("requires exactly one nonempty audio ID", () => {
     for (const body of [

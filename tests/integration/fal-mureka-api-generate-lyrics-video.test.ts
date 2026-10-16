@@ -15,9 +15,9 @@ describe("fal Mureka lyrics video", () => {
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
       timeout: 900000,
     });
-    // song_id from our committed fal-mureka-api-generate-instrumental recording (P08 fallback).
+    // Fresh owned vocal song with timed lyrics; generated once under ac-d5kmgo.
     const result = await provider.run.mureka.api.generate.lyricsVideo({
-      song_id: "166484846510081",
+      song_id: "166608639098881",
     });
     expect(typeof result.video.url).toBe("string");
     expect(result.video.url).toMatch(/^https:\/\//);

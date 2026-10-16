@@ -10825,7 +10825,8 @@ export type FalOpenrouterRouterDecisionsParsedRequest = z.output<
   typeof FalOpenrouterRouterDecisionsRequestSchema
 >;
 
-// Mureka lyrics video.
+// Live OpenAPI checked twice on 2026-10-16; safety checking returned after
+// the intermittent 2026-10-15 rollout. Omitted from the recording payload.
 export const FalMurekaApiGenerateLyricsVideoRequestSchema = z
   .object({
     song_id: z
@@ -10916,6 +10917,12 @@ export const FalMurekaApiGenerateLyricsVideoRequestSchema = z
       .optional()
       .describe(
         "End of the included audio range in milliseconds. Must be paired with selection_start and cannot be combined with lyric-row selection."
+      ),
+    enable_safety_checker: z
+      .boolean()
+      .default(true)
+      .describe(
+        "Enable safety checking; fal rolled this optional field out on 2026-10-15."
       ),
   })
   .refine((p) => (p.song_id != null) !== (p.upload_audio_id != null), {

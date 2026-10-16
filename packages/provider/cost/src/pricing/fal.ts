@@ -988,16 +988,23 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
-  // Input audio length is supplied only through the cost hint. The card rounds
-  // to whole seconds, then up to minutes, with a one-minute minimum.
+  // Bills $0.0125 per minute of INPUT audio. The card rounds the length to
+  // whole seconds, then up to whole minutes, with a one-minute minimum. The
+  // request carries the audio only as a URL, so the caller declares its
+  // length through costHints.durationSeconds, as for scribe-v2, and an
+  // omitted hint fails closed. CostUnit has no minutes member, so the entry
+  // prices the billed minutes as seconds (60 per minute) at the minute rate
+  // over 60, as scribe-v2 does. fal counts the charge in minutes: the
+  // recorded call sent 6.008 s of audio and billed x-fal-billable-units 1,
+  // one minute, so the charge is $0.0125.
   "veed/clean-audio": {
     kind: "perUnit",
-    unit: "minutes",
+    unit: "seconds",
     units: (_p, hints) => {
       const seconds = hintSeconds(hints);
       return seconds === undefined
         ? undefined
-        : Math.max(1, Math.ceil(Math.round(seconds) / 60));
+        : 60 * Math.max(1, Math.ceil(Math.round(seconds) / 60));
     },
     warn: (_p, hints) =>
       hintSeconds(hints) === undefined
@@ -1006,7 +1013,7 @@ export const fal: Record<string, ModelPricing> = {
           ]
         : [],
     select: [],
-    rates: { "": 0.0125 },
+    rates: { "": 0.0125 / 60 },
     source: source("veed/clean-audio", "2026-10-16"),
   },
   // Bills each requested second (duration, a digit string defaulting to "5")

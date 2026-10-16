@@ -155,7 +155,7 @@ describe("VEED Clean Audio pricing", () => {
     [120, 2],
     [600, 10],
     [1800, 30],
-  ])("prices %s input seconds as %s minutes", (durationSeconds, units) => {
+  ])("prices %s input seconds as %s minutes", (durationSeconds, minutes) => {
     const result = computeEstimate({
       provider: "fal",
       endpoint,
@@ -163,11 +163,11 @@ describe("VEED Clean Audio pricing", () => {
       costHints: { durationSeconds },
     });
     expect(result.breakdown).toEqual({
-      units,
-      unit: "minutes",
-      perUnitUsd: 0.0125,
+      units: minutes * 60,
+      unit: "seconds",
+      perUnitUsd: 0.0125 / 60,
     });
-    expect(result.usd).toBeCloseTo(units * 0.0125, 10);
+    expect(result.usd).toBeCloseTo(minutes * 0.0125, 10);
     expect(result.rateAsOf).toBe("2026-10-16");
     expect(result.warnings).toEqual([]);
   });
@@ -186,6 +186,19 @@ describe("VEED Clean Audio pricing", () => {
       ]);
     }
   );
+  it("prices the recorded call and the card examples exactly", () => {
+    const usd = (durationSeconds: number) =>
+      computeEstimate({
+        provider: "fal",
+        endpoint,
+        payload,
+        costHints: { durationSeconds },
+      }).usd;
+    // The recorded call sent 6.008 s of audio and billed one minute.
+    expect(usd(6.008)).toBe(0.0125);
+    expect(usd(600)).toBe(0.125);
+    expect(usd(1800)).toBe(0.375);
+  });
   it("registers the verified static card rate and model names", () => {
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS as readonly string[]).not.toContain(
       endpoint

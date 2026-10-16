@@ -31,6 +31,7 @@ import {
   Seedance25RequestSchema,
   Qwen3ProTextToImageRequestSchema,
   Qwen3ProImageToImageRequestSchema,
+  QwenTextToImageRequestSchema,
   PixverseV6TextToVideoRequestSchema,
   PixverseV6ImageToVideoRequestSchema,
   PixverseV6ExtendRequestSchema,
@@ -1781,16 +1782,39 @@ describe("kie qwen per-megapixel pricing (OQ-4)", () => {
     }
   );
 
-  // Schema defaults are the absent-field fallback: square_hd (2 MP) for
-  // text-to-image, landscape_4_3 (1 MP) for image-edit.
-  it.each([
-    { model: "qwen/text-to-image", usd: 0.04 },
-    { model: "qwen/image-edit", usd: 0.03 },
-  ])("applies $model's documented image_size default", ({ model, usd }) => {
-    expect(kieEstimate({ model, input: { prompt: "x" } }).usd).toBeCloseTo(
-      usd,
-      10
-    );
+  // A documented schema default is the absent-field fallback: landscape_4_3
+  // (1 MP) for image-edit.
+  it("applies qwen/image-edit's documented image_size default", () => {
+    expect(
+      kieEstimate({ model: "qwen/image-edit", input: { prompt: "x" } }).usd
+    ).toBeCloseTo(0.03, 10);
+  });
+
+  // Text-to-image documents no default since upstream dropped square_hd
+  // ("Set this field explicitly", docs and live schema read 2026-10-16), so an
+  // absent image_size warns instead of quoting an assumed area. An explicit
+  // preset still prices as in the table above.
+  it("fails qwen/text-to-image without image_size, which has no documented default", () => {
+    // The shipped SDK schema applies no default either, so the parsed payload
+    // reaches the estimator without an area to price.
+    const parsed = QwenTextToImageRequestSchema.parse({
+      model: "qwen/text-to-image",
+      input: { prompt: "x" },
+    });
+    expect(parsed.input.image_size).toBeUndefined();
+    expect(
+      QwenTextToImageRequestSchema.parse({
+        model: "qwen/text-to-image",
+        input: { prompt: "x", image_size: "landscape_4_3" },
+      }).input.image_size
+    ).toBe("landscape_4_3");
+
+    const result = kieEstimate(parsed);
+
+    expect(result.usd).toBe(0);
+    expect(result.breakdown).toEqual({});
+    expect(result.warnings).toHaveLength(1);
+    expect(result.warnings[0]).toContain("could not derive units");
   });
 
   // Billed floor (ac-dgvqms): the terminal recordInfo of each 2026-10-16

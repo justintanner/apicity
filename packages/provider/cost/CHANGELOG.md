@@ -19,6 +19,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- KIE `qwen/text-to-image` no longer prices an absent `input.image_size` as
+  `square_hd` ($0.04). KIE dropped that documented default, so such a payload
+  now returns $0 with a "could not derive units" warning. An explicit preset
+  prices as before.
 - **Breaking:** `dispatchWithPaidGate` and `withPaidGate` make the pay gate
   opt-in. With no config (a provider built without `paygate`), a paid endpoint
   now dispatches. A config with a non-empty `secret` arms the OTP gate, whose

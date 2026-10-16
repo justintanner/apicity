@@ -23,10 +23,13 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalBytedanceSeedance2p0UsReferenceToVideoRequest,
   FalBytedanceSeedance2p0UsImageToVideoRequest,
   FalBytedanceSeedance2p0UsTextToVideoRequest,
+  FalBytedanceSeedance2p0UsReferenceToVideoRequestInput,
   FalBytedanceSeedance2p0UsImageToVideoRequestInput,
   FalBytedanceSeedance2p0UsTextToVideoRequestInput,
+  FalBytedanceSeedance2p0UsReferenceToVideoParsedRequest,
   FalBytedanceSeedance2p0UsImageToVideoParsedRequest,
   FalBytedanceSeedance2p0UsTextToVideoParsedRequest,
   FalMinimaxH3MaxStylesSixteenBitPixelRequest,
@@ -683,6 +686,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalBytedanceSeedance2p0UsReferenceToVideoRequest,
   FalBytedanceSeedance2p0UsImageToVideoRequest,
   FalBytedanceSeedance2p0UsTextToVideoRequest,
   FalMinimaxH3MaxStylesSixteenBitPixelRequest,
@@ -6138,6 +6142,17 @@ export interface FalBytedanceSeedance2p0UsImageToVideoResponse {
   /** The seed used for generation. */
   seed: number;
 }
+export interface FalBytedanceSeedance2p0UsReferenceToVideoResponse {
+  /** The generated video file. */
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+  /** The seed used for generation. */
+  seed: number;
+}
 export interface FalRunBytedanceSeedance2p0UsNamespace {
   textToVideo: ((
     params: FalBytedanceSeedance2p0UsTextToVideoRequest,
@@ -6150,6 +6165,12 @@ export interface FalRunBytedanceSeedance2p0UsNamespace {
     signal?: AbortSignal
   ) => Promise<FalBytedanceSeedance2p0UsImageToVideoResponse>) & {
     schema: ApicitySchema<FalBytedanceSeedance2p0UsImageToVideoRequest>;
+  };
+  referenceToVideo: ((
+    params: FalBytedanceSeedance2p0UsReferenceToVideoRequest,
+    signal?: AbortSignal
+  ) => Promise<FalBytedanceSeedance2p0UsReferenceToVideoResponse>) & {
+    schema: ApicitySchema<FalBytedanceSeedance2p0UsReferenceToVideoRequest>;
   };
 }
 export interface FalRunBytedanceSeedance2p0Namespace {

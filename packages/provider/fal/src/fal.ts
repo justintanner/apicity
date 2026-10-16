@@ -1,6 +1,8 @@
 import {
+  FalBytedanceSeedance2p0UsReferenceToVideoRequest,
   FalBytedanceSeedance2p0UsImageToVideoRequest,
   FalBytedanceSeedance2p0UsTextToVideoRequest,
+  FalBytedanceSeedance2p0UsReferenceToVideoResponse,
   FalBytedanceSeedance2p0UsImageToVideoResponse,
   FalBytedanceSeedance2p0UsTextToVideoResponse,
   FalMinimaxH3MaxStylesSixteenBitPixelRequest,
@@ -416,6 +418,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalBytedanceSeedance2p0UsReferenceToVideoRequestSchema,
   FalBytedanceSeedance2p0UsImageToVideoRequestSchema,
   FalBytedanceSeedance2p0UsTextToVideoRequestSchema,
   FalMinimaxH3MaxStylesSixteenBitPixelRequestSchema,
@@ -3544,6 +3547,18 @@ export function createFal(opts: FalOptions): FalProvider {
     FalBytedanceSeedance2p0UsImageToVideoRequestSchema,
     { base: runBaseURL }
   );
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/bytedance/seedance-2.0/us/reference-to-video
+  // Docs: https://fal.ai/models/bytedance/seedance-2.0/us/reference-to-video/api
+  const bytedanceSeedance2p0UsReferenceToVideo = jsonBody<
+    FalBytedanceSeedance2p0UsReferenceToVideoRequest,
+    FalBytedanceSeedance2p0UsReferenceToVideoResponse
+  >(
+    "POST",
+    "/bytedance/seedance-2.0/us/reference-to-video",
+    FalBytedanceSeedance2p0UsReferenceToVideoRequestSchema,
+    { base: runBaseURL }
+  );
 
   const run: FalRunNamespace = {
     pixverse: {
@@ -3880,6 +3895,9 @@ export function createFal(opts: FalOptions): FalProvider {
           // POST https://fal.run/bytedance/seedance-2.0/us/image-to-video
           // Docs: https://fal.ai/models/bytedance/seedance-2.0/us/image-to-video/api
           imageToVideo: bytedanceSeedance2p0UsImageToVideo,
+          // POST https://fal.run/bytedance/seedance-2.0/us/reference-to-video
+          // Docs: https://fal.ai/models/bytedance/seedance-2.0/us/reference-to-video/api
+          referenceToVideo: bytedanceSeedance2p0UsReferenceToVideo,
         },
         imageToVideo: bytedanceSeedance2p0ImageToVideo,
         textToVideo: bytedanceSeedance2p0TextToVideo,

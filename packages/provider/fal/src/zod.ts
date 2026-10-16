@@ -11765,7 +11765,118 @@ export type FalBytedanceSeedance2p0UsImageToVideoParsedRequest = z.output<
   typeof FalBytedanceSeedance2p0UsImageToVideoRequestSchema
 >;
 
+// Bytedance Seedance 2.0 US reference-to-video
+export const FalBytedanceSeedance2p0UsReferenceToVideoRequestSchema = z
+  .object({
+    prompt: z.string().describe("The text prompt used to generate the video."),
+    image_urls: z
+      .array(z.string())
+      .max(9)
+      .optional()
+      .describe(
+        "Reference images to guide video generation. Refer to them in the prompt as @Image1, @Image2, etc. Supported formats: JPEG, PNG, WebP. Max 30 MB per image. Up to 9 images. Total files across all modalities must not exceed 12."
+      ),
+    video_urls: z
+      .array(z.string())
+      .max(3)
+      .optional()
+      .describe(
+        "Reference videos to guide video generation. Refer to them in the prompt as @Video1, @Video2, etc. Supported formats: MP4, MOV. Up to 3 videos, combined duration must be between 2 and 15 seconds, total size under 50 MB. Each video must be between ~480p (640x640) and ~720p (834x1112) in resolution."
+      ),
+    audio_urls: z
+      .array(z.string())
+      .max(3)
+      .optional()
+      .describe(
+        "Reference audio to guide video generation. Refer to them in the prompt as @Audio1, @Audio2, etc. Supported formats: MP3, WAV. Up to 3 files, combined duration must not exceed 15 seconds. Max 15 MB per file. At least one reference image or video is required."
+      ),
+    resolution: z
+      .enum(["480p", "720p", "1080p", "4k"])
+      .default("720p")
+      .describe(
+        "Video resolution - 480p for faster generation, 720p for balance, 1080p for high quality, 4k for highest quality."
+      ),
+    duration: z
+      .enum([
+        "auto",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+      ])
+      .default("auto")
+      .describe(
+        "Duration of the video in seconds. Supports 4 to 15 seconds, or auto to let the model decide based on the prompt."
+      ),
+    aspect_ratio: z
+      .enum(["auto", "21:9", "16:9", "4:3", "1:1", "3:4", "9:16"])
+      .default("auto")
+      .describe(
+        "The aspect ratio of the generated video. Use 16:9 for landscape, 9:16 for portrait/vertical, 1:1 for square, 21:9 for ultrawide cinematic, or auto to let the model decide."
+      ),
+    generate_audio: z
+      .boolean()
+      .default(true)
+      .describe(
+        "Whether to generate synchronized audio for the video, including sound effects, ambient sounds, and lip-synced speech."
+      ),
+    bitrate_mode: z
+      .enum(["standard", "high"])
+      .default("standard")
+      .describe(
+        "Output bitrate mode. 'high' requests a higher-quality, larger-file encode from the model; 'standard' uses the default bitrate."
+      ),
+    codec: z
+      .enum(["auto", "H264", "H265"])
+      .default("auto")
+      .describe(
+        "'auto' retains default video codec behaviour; 'H264' uses H.264; 'H265' uses H.265."
+      ),
+    end_user_id: z
+      .string()
+      .nullable()
+      .describe("The unique user ID of the end user.")
+      .optional(),
+  })
+  // Both rules are documented in the field descriptions only; fal's 422
+  // validator does not report them, so they are restated here.
+  .refine(
+    (v) =>
+      (v.image_urls?.length ?? 0) +
+        (v.video_urls?.length ?? 0) +
+        (v.audio_urls?.length ?? 0) <=
+      12,
+    { message: "Total files across all modalities must not exceed 12" }
+  )
+  .refine(
+    (v) =>
+      (v.audio_urls?.length ?? 0) === 0 ||
+      (v.image_urls?.length ?? 0) + (v.video_urls?.length ?? 0) > 0,
+    {
+      message: "Audio references require at least one image or video",
+      path: ["audio_urls"],
+    }
+  );
+export type FalBytedanceSeedance2p0UsReferenceToVideoRequest = z.input<
+  typeof FalBytedanceSeedance2p0UsReferenceToVideoRequestSchema
+>;
+export type FalBytedanceSeedance2p0UsReferenceToVideoRequestInput =
+  FalBytedanceSeedance2p0UsReferenceToVideoRequest;
+export type FalBytedanceSeedance2p0UsReferenceToVideoParsedRequest = z.output<
+  typeof FalBytedanceSeedance2p0UsReferenceToVideoRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "bytedance/seedance-2.0/us/reference-to-video":
+    FalBytedanceSeedance2p0UsReferenceToVideoRequestSchema,
   "bytedance/seedance-2.0/us/image-to-video":
     FalBytedanceSeedance2p0UsImageToVideoRequestSchema,
   "bytedance/seedance-2.0/us/text-to-video":

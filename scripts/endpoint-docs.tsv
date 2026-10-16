@@ -1778,3 +1778,4 @@ fal	bytedance.seedance2p5.us.textToVideo	POST	https://fal.run/bytedance/seedance
 fal	bytedance.seedance2p5.us.imageToVideo	POST	https://fal.run/bytedance/seedance-2.5/us/image-to-video	https://fal.ai/models/bytedance/seedance-2.5/us/image-to-video/api
 fal	bytedance.seedance2p5.us.referenceToVideo	POST	https://fal.run/bytedance/seedance-2.5/us/reference-to-video	https://fal.ai/models/bytedance/seedance-2.5/us/reference-to-video/api
 fal	bytedance.seedance2p5.draft.complete	POST	https://fal.run/bytedance/seedance-2.5/draft/complete	https://fal.ai/models/bytedance/seedance-2.5/draft/complete/api
+fal	meshy.v6Lite.retexture	POST	https://fal.run/meshy/v6-lite/retexture	https://fal.ai/models/meshy/v6-lite/retexture/api

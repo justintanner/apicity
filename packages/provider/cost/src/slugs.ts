@@ -416,6 +416,7 @@ export const MODEL_SLUGS = {
   // same underlying models kie also resells, so their slugs intentionally
   // match kie's.
   fal: {
+    "meshy/v6-lite/retexture": "meshyv6l",
     "minimax/h3-max/styles/16bit-pixel": "h3mstyle",
     "minimax/h3-max/styles/hand-drawn": "h3mstyle",
     "minimax/h3-max/styles/low-poly": "h3mstyle",
@@ -912,6 +913,7 @@ export const MODEL_DISPLAY = {
   },
 
   fal: {
+    "meshy/v6-lite/retexture": "Meshy 6 Lite Retexture",
     "minimax/h3-max/styles/16bit-pixel": "H3 Max Styles",
     "minimax/h3-max/styles/hand-drawn": "H3 Max Styles",
     "minimax/h3-max/styles/low-poly": "H3 Max Styles",

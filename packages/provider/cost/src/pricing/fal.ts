@@ -934,6 +934,10 @@ const meshyV71 = (endpointId: string, on: string): ModelPricing => ({
 // the output file (card read 2026-10-15). Our 480p, 1:1, "4" s call returned
 // 640x640 at 97 frames and billed 38.8 units ($0.65184), which the seedance
 // table above (16:9 dims, 24 frames per requested second) puts at 38.88.
+// bytedance/seedance-2.0/us/reference-to-video also bills the reference
+// videos' duration, at x0.6 (card read 2026-10-15). The same clip with one
+// 4 s reference video billed 47.43168 units ($0.796852224), where the
+// output-only reference table above predicts 23.328.
 export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "alibaba/qwen-image-3/edit",
   "alibaba/qwen-image-3/text-to-image",
@@ -944,6 +948,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "blackforestlabs/flux-3/text-to-image",
   "blackforestlabs/flux-video-upscale",
   "bytedance/seedance-2.0/us/image-to-video",
+  "bytedance/seedance-2.0/us/reference-to-video",
   "bytedance/seedance-2.0/us/text-to-video",
   "bytedance/seedream/v5/pro/edit",
   "bytedance/seedream/v5/pro/layerize",

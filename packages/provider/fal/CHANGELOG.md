@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Seedance 2.0 US reference-to-video, dynamically priced (ac-1c62os).
+
 - Added Seedance 2.0 US image-to-video, dynamically priced (ac-1ld8kd).
 
 - Added Seedance 2.0 US text-to-video, dynamically priced (ac-likism).

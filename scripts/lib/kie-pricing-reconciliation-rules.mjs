@@ -370,11 +370,11 @@ export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
   {
     key: "qwen/image-to-image",
     variant: "",
-    status: "unreachable",
+    status: "pricing-only",
     provenance:
-      "frozen Qwen Image image-to-image cell is nonzero, but no output-area or megapixel selector exists in the callable schema",
+      "live feed, https://kie.ai/qwen-image groupData pricingDesc and KIE /models/{id}/price read 2026-10-16 (plans/ac-dgvqms/evidence): 4 credits ($0.02) per image; the frozen 2026-09-11 cell was per megapixel",
     rationale:
-      "The live rate is units-unreachable; it must fail closed rather than injecting undeclared image_size or claiming a free/default area.",
+      "Upstream changed the billing unit after the frozen pull. The runtime prices the live per-image cell under the pricing/kie.ts page-evidence rule, and the frozen per-megapixel row stays upstream-unmappable.",
   },
 ]);
 
@@ -1248,7 +1248,7 @@ const KNOWN_FALSE_MAPPING_RULES = Object.freeze([
     family: "qwen-image-area",
     matches: (description) => /Qwen Image,\s*image-to-image/i.test(description),
     message:
-      "Qwen image-to-image is nonzero in the table, but the callable schema has no output-area field that can derive the per-megapixel units; the estimator must fail closed.",
+      "The frozen Qwen image-to-image cell is per megapixel, but the callable schema has no output-area field that can derive megapixel units, and upstream has since moved this model to per-image billing (live evidence 2026-10-16); the runtime per-image rate is a pricing-only exception, not this row.",
   },
 ]);
 

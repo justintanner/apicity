@@ -422,6 +422,10 @@ const IMAGE_SIZE_DIMENSIONS: Record<string, readonly [number, number]> = {
 // rounding remain unverified KIE assumptions: its public pricing sources do
 // not consistently establish either rule (rechecked 2026-10-16, ac-7l96dz).
 // fal's separately verified 1,048,576-pixel rule does not establish KIE billing.
+// KIE's billed Qwen recordings fit neither divisor with either rounding
+// (2026-10-16, ac-dgvqms; see the Qwen Image entries), and this rule quotes
+// each of them at or above its bill. The 1,048,576-pixel divisor would quote
+// square_hd text-to-image at 4 credits against a billed 5.
 //
 // `defaultPreset` is the model's documented schema default and is applied only
 // when `input.image_size` is absent. A model with no documented default — and
@@ -2828,24 +2832,50 @@ export const kie: Record<string, ModelPricing> = {
     source: pricePage("https://kie.ai/topaz-image-upscale"),
   },
 
-  // Qwen Image — area-billed: $0.02/megapixel for the base pair, $0.03/MP for
-  // the edit model (OQ-4). Units are ceil(megapixels per image) × image count,
+  // Qwen Image — text-to-image and image-edit are area-billed: $0.02/megapixel
+  // and $0.03/MP (OQ-4). Units are ceil(megapixels per image) × image count,
   // resolved from the `input.image_size` preset through the shared
   // IMAGE_SIZE_DIMENSIONS table; each model's documented schema default is the
   // absent-field fallback.
   //
-  // `qwen/image-to-image` has NO size field at all, and docs.kie.ai documents
-  // no default output size for it (the output follows the source image, which
-  // the payload does not size). Rather than guess an area, it carries the
-  // published $0.02/MP rate with no default preset, so the estimate fails with
-  // a units-derivation warning — the page rate stays recorded and visible
-  // instead of the request falling through as "model not found".
+  // Both area rates over-quote KIE's billing, and no per-megapixel rule
+  // reproduces it. The terminal recordInfo of each 2026-10-16 recording under
+  // tests/recordings/kie_2079838932/ (ac-dgvqms) bills, at 1 credit = $0.005:
+  // qwen-text-to-image-square-hd 5 credits for a 1328x1328 output (quoted 8),
+  // qwen-text-to-image-landscape-4-3 3 credits for 1472x1104 (quoted 4) and
+  // qwen-image-edit-square-hd 7 credits for 2048x2048 (quoted 12). Neither
+  // divisor with either rounding fits those bills at the published 4 and 5
+  // credits/MP, whether the area is the preset's or the output's.
+  //
+  // image-edit's published figures also disagree: the feed row is 5 credits/MP
+  // at USD 0.025 (2026-10-16; the frozen 2026-09-11 cell priced the same 5
+  // credits at USD 0.03), the product page, catalog and /models/{id}/price say
+  // about $0.03/MP depending on the aspect ratio, the page's per-image README
+  // table works out to about 3.33 credits/MP ($0.0165/MP), and the docs
+  // callback example bills 5 credits at landscape_4_3. $0.03/MP stays because
+  // it quotes at or above every one of them
+  // (plans/ac-dgvqms/evidence/findings.md).
+  //
+  // `qwen/image-to-image` bills PER IMAGE: 4 credits ($0.02). The live feed row,
+  // the https://kie.ai/qwen-image groupData pricingDesc ("Qwen Image-to-Image
+  // costs 4 credits per image (= $0.02)") and KIE's /models catalog and
+  // /models/{id}/price agree (read 2026-10-16, ac-dgvqms), and the docs
+  // callback example bills 4 credits for a 1536x1024 (1.57 MP) source. The
+  // frozen 2026-09-11 feed cell priced it per megapixel. The schema has no size
+  // or batch field, so one call is one image. Both owned billing probes (a
+  // 1672x941 source) failed upstream with a 500 and billed 0, so no recording
+  // backs this entry yet.
   "qwen/text-to-image": perMegapixel(
     0.02,
     "https://kie.ai/qwen-image",
     "square_hd"
   ),
-  "qwen/image-to-image": perMegapixel(0.02, "https://kie.ai/qwen-image"),
+  "qwen/image-to-image": flatImagePricePage(
+    0.02,
+    "https://kie.ai/qwen-image",
+    "2026-10-16",
+    () => 1
+  ),
   "qwen/image-edit": perMegapixel(
     0.03,
     "https://kie.ai/qwen/image-edit",

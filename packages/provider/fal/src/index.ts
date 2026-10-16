@@ -21,6 +21,11 @@ export type {
 
 // Export all types
 export type {
+  FalPixelcutLoopingVideoRequest,
+  FalPixelcutLoopingVideoRequestInput,
+  FalPixelcutLoopingVideoParsedRequest,
+  FalPixelcutLoopingVideoResponse,
+  FalRunPixelcutNamespace,
   FalXaiGrokVoiceRequest,
   FalXaiGrokVoiceRequestInput,
   FalXaiGrokVoiceParsedRequest,

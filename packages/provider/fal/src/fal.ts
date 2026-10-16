@@ -1,4 +1,6 @@
 import {
+  FalPixelcutLoopingVideoRequest,
+  FalPixelcutLoopingVideoResponse,
   FalXaiGrokVoiceRequest,
   FalXaiGrokVoiceResponse,
   FalFlux3ActionSo101Request,
@@ -398,6 +400,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalPixelcutLoopingVideoRequestSchema,
   FalXaiGrokVoiceRequestSchema,
   FalFlux3ActionSo101RequestSchema,
   FalOpenrouterRouterDecisionsRequestSchema,
@@ -3412,7 +3415,21 @@ export function createFal(opts: FalOptions): FalProvider {
     {}
   );
 
+  // POST https://fal.run/pixelcut/looping-video
+  // Docs: https://fal.ai/models/pixelcut/looping-video/api
+  const pixelcutLoopingVideo = jsonBody<
+    FalPixelcutLoopingVideoRequest,
+    FalPixelcutLoopingVideoResponse
+  >("POST", "/pixelcut/looping-video", FalPixelcutLoopingVideoRequestSchema, {
+    base: runBaseURL,
+  });
+
   const run: FalRunNamespace = {
+    pixelcut: {
+      // POST https://fal.run/pixelcut/looping-video
+      // Docs: https://fal.ai/models/pixelcut/looping-video/api
+      loopingVideo: pixelcutLoopingVideo,
+    },
     flux3Action: {
       // sig-ok: stylistic dotPath divergence from URL
       // POST https://fal.run/fal-ai/flux-3-action/so101

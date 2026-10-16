@@ -1,5 +1,7 @@
 import {
+  FalMinimaxH3MaxStylesHandDrawnRequest,
   FalMinimaxH3MaxStylesLowPolyRequest,
+  FalMinimaxH3MaxStylesHandDrawnResponse,
   FalMinimaxH3MaxStylesLowPolyResponse,
   FalMinimaxH3MaxStylesRetroToon70sRequest,
   FalMinimaxH3MaxStylesRetroToon70sResponse,
@@ -408,6 +410,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalMinimaxH3MaxStylesHandDrawnRequestSchema,
   FalMinimaxH3MaxStylesLowPolyRequestSchema,
   FalMinimaxH3MaxStylesRetroToon70sRequestSchema,
   FalMinimaxH3MaxStylesVhsRequestSchema,
@@ -3484,6 +3487,18 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/minimax/h3-max/styles/hand-drawn
+  // Docs: https://fal.ai/models/minimax/h3-max/styles/hand-drawn/api
+  const minimaxH3MaxStylesHandDrawn = jsonBody<
+    FalMinimaxH3MaxStylesHandDrawnRequest,
+    FalMinimaxH3MaxStylesHandDrawnResponse
+  >(
+    "POST",
+    "/minimax/h3-max/styles/hand-drawn",
+    FalMinimaxH3MaxStylesHandDrawnRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
     pixverse: {
       musicVideo: {
@@ -3859,6 +3874,9 @@ export function createFal(opts: FalOptions): FalProvider {
     minimax: {
       h3Max: {
         styles: {
+          // POST https://fal.run/minimax/h3-max/styles/hand-drawn
+          // Docs: https://fal.ai/models/minimax/h3-max/styles/hand-drawn/api
+          handDrawn: minimaxH3MaxStylesHandDrawn,
           // POST https://fal.run/minimax/h3-max/styles/low-poly
           // Docs: https://fal.ai/models/minimax/h3-max/styles/low-poly/api
           lowPoly: minimaxH3MaxStylesLowPoly,

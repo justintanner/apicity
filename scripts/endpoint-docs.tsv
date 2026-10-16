@@ -1763,3 +1763,4 @@ fal	veed.cleanAudio	POST	https://fal.run/veed/clean-audio	https://fal.ai/models/
 fal	creatify.boreal	POST	https://fal.run/creatify/boreal	https://fal.ai/models/creatify/boreal/api
 fal	openrouter.router.decisions	POST	https://fal.run/openrouter/router/decisions	https://fal.ai/models/openrouter/router/decisions/api
 fal	flux3Action.so101	POST	https://fal.run/fal-ai/flux-3-action/so101	https://fal.ai/models/fal-ai/flux-3-action/so101/api
+fal	xai.grokVoice	POST	https://fal.run/xai/grok-voice	https://fal.ai/models/xai/grok-voice/api

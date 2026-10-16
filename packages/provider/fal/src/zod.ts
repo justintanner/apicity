@@ -10942,7 +10942,300 @@ export type FalFlux3ActionSo101ParsedRequest = z.output<
   typeof FalFlux3ActionSo101RequestSchema
 >;
 
+// Grok Voice one-shot speech reply and its typed server-side tools.
+const FalXaiGrokSearchLocationSchema = z
+  .object({
+    timezone: z
+      .string()
+      .min(1)
+      .max(128)
+      .nullable()
+      .describe("IANA timezone name, for example America/New_York.")
+      .default(null),
+    city: z
+      .string()
+      .min(1)
+      .max(128)
+      .nullable()
+      .describe("City used to localize web-search results.")
+      .default(null),
+    country: z
+      .string()
+      .min(1)
+      .max(128)
+      .nullable()
+      .describe("Country used to localize web-search results.")
+      .default(null),
+    region: z
+      .string()
+      .min(1)
+      .max(128)
+      .nullable()
+      .describe("Region used to localize web-search results.")
+      .default(null),
+  })
+  .strict();
+
+const FalXaiGrokWebSearchToolSchema = z
+  .object({
+    allowed_domains: z
+      .array(
+        z
+          .string()
+          .regex(
+            /^[^:/]+$/,
+            "Domains must contain a hostname only, without protocol or path."
+          )
+      )
+      .min(1)
+      .max(5)
+      .nullable()
+      .describe(
+        "Restrict results to at most five domains, without protocol or path."
+      )
+      .default(null),
+    excluded_domains: z
+      .array(
+        z
+          .string()
+          .regex(
+            /^[^:/]+$/,
+            "Domains must contain a hostname only, without protocol or path."
+          )
+      )
+      .min(1)
+      .max(5)
+      .nullable()
+      .describe(
+        "Exclude results from at most five domains, without protocol or path."
+      )
+      .default(null),
+    enabled: z
+      .boolean()
+      .describe(
+        "Whether to include web_search in session.tools. Disabled by default; set true to let the agent search the web."
+      )
+      .default(false),
+    location: FalXaiGrokSearchLocationSchema.nullable()
+      .describe("Optional location used to localize search results.")
+      .default(null),
+    enable_image_understanding: z
+      .boolean()
+      .nullable()
+      .describe("Allow the agent to inspect images found during web search.")
+      .default(null),
+  })
+  .strict()
+  .describe("Configuration for one xAI web_search tool declaration.")
+  .refine((v) => v.allowed_domains == null || v.excluded_domains == null, {
+    message: "allowed_domains and excluded_domains are mutually exclusive.",
+  });
+
+const FalXaiGrokXSearchToolSchema = z
+  .object({
+    from_date: z
+      .string()
+      .date()
+      .nullable()
+      .describe("Earliest post date, as ISO YYYY-MM-DD.")
+      .default(null),
+    allowed_x_handles: z
+      .array(z.string())
+      .min(1)
+      .max(20)
+      .nullable()
+      .describe("Restrict results to posts from at most 20 X handles.")
+      .default(null),
+    excluded_x_handles: z
+      .array(z.string())
+      .min(1)
+      .max(20)
+      .nullable()
+      .describe("Exclude posts from at most 20 X handles.")
+      .default(null),
+    enabled: z
+      .boolean()
+      .describe(
+        "Whether to include x_search in session.tools. Disabled by default; set true to let the agent search X posts."
+      )
+      .default(false),
+    enable_video_understanding: z
+      .boolean()
+      .nullable()
+      .describe("Allow the agent to inspect videos found on X.")
+      .default(null),
+    to_date: z
+      .string()
+      .date()
+      .nullable()
+      .describe("Latest post date, as ISO YYYY-MM-DD.")
+      .default(null),
+    enable_image_understanding: z
+      .boolean()
+      .nullable()
+      .describe("Allow the agent to inspect images found on X.")
+      .default(null),
+  })
+  .strict()
+  .describe("Configuration for one xAI x_search tool declaration.")
+  .refine((v) => v.allowed_x_handles == null || v.excluded_x_handles == null, {
+    message: "allowed_x_handles and excluded_x_handles are mutually exclusive.",
+  })
+  .refine(
+    (v) => v.from_date == null || v.to_date == null || v.from_date <= v.to_date,
+    {
+      message: "from_date must be on or before to_date.",
+    }
+  );
+
+const FalXaiGrokRemoteMCPToolSchema = z
+  .object({
+    server_description: z
+      .string()
+      .max(2000)
+      .nullable()
+      .describe("Description of the capabilities exposed by this server.")
+      .default(null),
+    allowed_tools: z
+      .array(z.string())
+      .min(1)
+      .nullable()
+      .describe("Optional allow-list of tool names exposed from this server.")
+      .default(null),
+    authorization: z
+      .string()
+      .nullable()
+      .describe("Sensitive authorization value forwarded only to xAI.")
+      .default(null),
+    enabled: z.boolean().describe("False omits this server.").default(true),
+    server_label: z
+      .string()
+      .min(1)
+      .max(128)
+      .describe("Label xAI uses to identify and prefix this server's tools."),
+    server_url: z
+      .string()
+      .url()
+      .regex(/^https?:\/\//, "URL scheme should be http or https")
+      .min(1)
+      .describe(
+        "Caller-selected HTTP(S) MCP endpoint. xAI makes the remote connection and supports Streaming HTTP/SSE transports. Use at your own risk; fal does not connect to or SSRF-fetch this URL."
+      ),
+    headers: z
+      .record(z.string(), z.string())
+      .nullable()
+      .describe("Sensitive MCP request headers forwarded only to xAI.")
+      .default(null),
+  })
+  .strict()
+  .describe(
+    "A caller-selected remote MCP server that xAI will connect to.\n\nUse at your own risk. The connection is made by xAI's infrastructure,\nnot by fal; choosing this tool explicitly accepts that trust boundary.\nAuthentication and headers are masked in fal error metadata and logs."
+  );
+
+const FalXaiGrokToolsConfigurationSchema = z
+  .object({
+    web_search: FalXaiGrokWebSearchToolSchema.describe(
+      "xAI-managed web search; off unless enabled is set true."
+    ).default({
+      allowed_domains: null,
+      excluded_domains: null,
+      enabled: false,
+      location: null,
+      enable_image_understanding: null,
+    }),
+    x_search: FalXaiGrokXSearchToolSchema.describe(
+      "xAI-managed X search; off unless enabled is set true."
+    ).default({
+      from_date: null,
+      allowed_x_handles: null,
+      excluded_x_handles: null,
+      enabled: false,
+      enable_video_understanding: null,
+      to_date: null,
+      enable_image_understanding: null,
+    }),
+    mcp_servers: z
+      .array(FalXaiGrokRemoteMCPToolSchema)
+      .describe("Remote MCP servers that xAI connects to and executes.")
+      .optional(),
+  })
+  .strict()
+  .describe(
+    "Typed xAI tools supported by this app's convenience configuration.\n\nEvery tool is disabled in the default configuration: the searches must\nbe switched on via their ``enabled`` flags and ``mcp_servers`` starts\nempty. ``file_search`` / collections are intentionally absent and\nunsupported due to Zero Data Retention (ZDR) requirements. Caller-side\nfunction tools are likewise absent from the typed configuration — they\nrequire a client that answers callback events over /realtime, so they\nremain available only to raw ``session.update`` passthrough clients.\nRaw realtime passthrough stays generic except that ZDR-incompatible\ntool declarations are rejected in-band."
+  );
+
+export const FalXaiGrokVoiceRequestSchema = z.object({
+  voice: z
+    .enum([
+      "carina",
+      "zagan",
+      "helix",
+      "orion",
+      "luna",
+      "iris",
+      "altair",
+      "zenith",
+      "perseus",
+      "helios",
+      "lux",
+      "kepler",
+      "rigel",
+      "cosmo",
+      "celeste",
+      "ursa",
+      "sirius",
+      "lumen",
+      "castor",
+      "naksh",
+      "atlas",
+      "aurora",
+      "liora",
+      "ara",
+      "eve",
+      "leo",
+      "rex",
+      "sal",
+    ])
+    .nullable()
+    .describe(
+      "Built-in xAI voice for the agent's reply. Uses Grok's default voice when omitted."
+    )
+    .optional(),
+  tools: FalXaiGrokToolsConfigurationSchema.describe(
+    "Server-side tools available to the agent. Web, X, and remote MCP tools are supported; every tool is disabled by default. file_search/collections are unsupported by the typed configuration due to ZDR."
+  ).prefault({
+    web_search: { enabled: false },
+    x_search: { enabled: false },
+    mcp_servers: [],
+  }),
+  prompt: z
+    .string()
+    .max(20000)
+    .nullable()
+    .describe(
+      "Optional system instructions describing the agent's persona and conversation context. Uses Grok's default persona when omitted."
+    )
+    .optional(),
+  enable_safety_checker: z
+    .boolean()
+    .describe("Authorized callers may set false to request relaxed screening.")
+    .default(true),
+  audio_url: z
+    .string()
+    .describe(
+      "URL of the audio containing the user's speech. The Grok agent listens to it and replies with speech. Most common audio formats are supported; the audio is converted to 16-bit 24 kHz mono PCM before being sent to Grok. Maximum duration 10 minutes, maximum file size 50 MB."
+    ),
+});
+export type FalXaiGrokVoiceRequest = z.input<
+  typeof FalXaiGrokVoiceRequestSchema
+>;
+export type FalXaiGrokVoiceRequestInput = FalXaiGrokVoiceRequest;
+export type FalXaiGrokVoiceParsedRequest = z.output<
+  typeof FalXaiGrokVoiceRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "xai/grok-voice": FalXaiGrokVoiceRequestSchema,
   "fal-ai/flux-3-action/so101": FalFlux3ActionSo101RequestSchema,
   "openrouter/router/decisions": FalOpenrouterRouterDecisionsRequestSchema,
   "creatify/boreal": FalCreatifyBorealRequestSchema,

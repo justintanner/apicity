@@ -21,6 +21,11 @@ export type {
 
 // Export all types
 export type {
+  FalXaiGrokVoiceRequest,
+  FalXaiGrokVoiceRequestInput,
+  FalXaiGrokVoiceParsedRequest,
+  FalXaiGrokVoiceResponse,
+  FalRunXaiGrokVoiceNamespace,
   FalFlux3ActionSo101Request,
   FalFlux3ActionSo101RequestInput,
   FalFlux3ActionSo101ParsedRequest,

@@ -2090,6 +2090,15 @@ const EXAMPLES: Record<string, EndpointExample> = {
     },
     "tier": "prohibitive",
     "runByDefault": false
+  },
+  "POST xai.grokVoice": {
+    "source": "fal/xai-grok-voice",
+    "payload": {
+      "audio_url": "<inline audio/mpeg data URL — replace with a real URL or upload>",
+      "prompt": "You are a concise Apicity route-test assistant."
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   }
 };
 

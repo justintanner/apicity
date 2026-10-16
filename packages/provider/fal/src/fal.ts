@@ -1,4 +1,6 @@
 import {
+  FalXaiGrokVoiceRequest,
+  FalXaiGrokVoiceResponse,
   FalFlux3ActionSo101Request,
   FalFlux3ActionSo101Response,
   FalOpenrouterRouterDecisionsRequest,
@@ -396,6 +398,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalXaiGrokVoiceRequestSchema,
   FalFlux3ActionSo101RequestSchema,
   FalOpenrouterRouterDecisionsRequestSchema,
   FalCreatifyBorealRequestSchema,
@@ -3397,6 +3400,18 @@ export function createFal(opts: FalOptions): FalProvider {
     base: runBaseURL,
   });
 
+  // POST https://fal.run/xai/grok-voice
+  // Docs: https://fal.ai/models/xai/grok-voice/api
+  const xaiGrokVoice = Object.assign(
+    jsonBody<FalXaiGrokVoiceRequest, FalXaiGrokVoiceResponse>(
+      "POST",
+      "/xai/grok-voice",
+      FalXaiGrokVoiceRequestSchema,
+      { base: runBaseURL }
+    ),
+    {}
+  );
+
   const run: FalRunNamespace = {
     flux3Action: {
       // sig-ok: stylistic dotPath divergence from URL
@@ -3962,6 +3977,9 @@ export function createFal(opts: FalOptions): FalProvider {
       },
     },
     xai: {
+      // POST https://fal.run/xai/grok-voice
+      // Docs: https://fal.ai/models/xai/grok-voice/api
+      grokVoice: xaiGrokVoice,
       grokImagineImage: xaiGrokImagineImage,
       grokImagineVideo: {
         imageToVideo: xaiGrokImagineVideoImageToVideo,

@@ -33,6 +33,7 @@ describe("MiniMax H3 Max VHS styled text-to-video", () => {
   it("exports the owned styles namespace, schema, registry and types", () => {
     const p = createFal({ apiKey: "test-key" });
     expect(Object.keys(p.run.minimax.h3Max.styles)).toEqual([
+      "handDrawn",
       "lowPoly",
       "retroToon70s",
       "vhs",

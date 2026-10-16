@@ -416,6 +416,7 @@ export const MODEL_SLUGS = {
   // same underlying models kie also resells, so their slugs intentionally
   // match kie's.
   fal: {
+    "minimax/h3-max/styles/hand-drawn": "h3mstyle",
     "minimax/h3-max/styles/low-poly": "h3mstyle",
     "minimax/h3-max/styles/retro-toon-70s": "h3mstyle",
     "minimax/h3-max/styles/vhs": "h3mstyle",
@@ -910,6 +911,7 @@ export const MODEL_DISPLAY = {
   },
 
   fal: {
+    "minimax/h3-max/styles/hand-drawn": "H3 Max Styles",
     "minimax/h3-max/styles/low-poly": "H3 Max Styles",
     "minimax/h3-max/styles/retro-toon-70s": "H3 Max Styles",
     "minimax/h3-max/styles/vhs": "H3 Max Styles",

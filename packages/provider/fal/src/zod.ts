@@ -11519,7 +11519,56 @@ export type FalMinimaxH3MaxStylesLowPolyParsedRequest = z.output<
   typeof FalMinimaxH3MaxStylesLowPolyRequestSchema
 >;
 
+// MiniMax H3 Max Hand Drawn styled text-to-video
+export const FalMinimaxH3MaxStylesHandDrawnRequestSchema = z
+  .object({
+    prompt: z
+      .string()
+      .min(1)
+      .max(49868)
+      .describe(
+        "Describe the scene, action, camera and sound. The Hand drawn style is applied automatically."
+      ),
+    image_url: z
+      .string()
+      .nullable()
+      .describe(
+        "Optional first-frame image. Use pencil artwork for the most consistent look; the image's aspect ratio determines the output canvas."
+      )
+      .optional(),
+    duration: z
+      .number()
+      .int()
+      .min(5)
+      .max(15)
+      .default(5)
+      .describe("Requested video duration in seconds."),
+    aspect_ratio: z
+      .enum(["21:9", "16:9", "4:3", "1:1", "3:4", "9:16"])
+      .default("16:9")
+      .describe(
+        "Video aspect ratio for text-only generation. Ignored when image_url is provided."
+      ),
+    seed: z
+      .number()
+      .int()
+      .nullable()
+      .describe("Random seed. Omit to choose one automatically.")
+      .optional(),
+  })
+  .strict();
+export type FalMinimaxH3MaxStylesHandDrawnRequest = z.input<
+  typeof FalMinimaxH3MaxStylesHandDrawnRequestSchema
+>;
+export type FalMinimaxH3MaxStylesHandDrawnRequestInput =
+  FalMinimaxH3MaxStylesHandDrawnRequest;
+export type FalMinimaxH3MaxStylesHandDrawnParsedRequest = z.output<
+  typeof FalMinimaxH3MaxStylesHandDrawnRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "minimax/h3-max/styles/hand-drawn":
+    FalMinimaxH3MaxStylesHandDrawnRequestSchema,
   "minimax/h3-max/styles/low-poly": FalMinimaxH3MaxStylesLowPolyRequestSchema,
   "minimax/h3-max/styles/retro-toon-70s":
     FalMinimaxH3MaxStylesRetroToon70sRequestSchema,

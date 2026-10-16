@@ -23,8 +23,11 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalMinimaxH3MaxStylesHandDrawnRequest,
   FalMinimaxH3MaxStylesLowPolyRequest,
+  FalMinimaxH3MaxStylesHandDrawnRequestInput,
   FalMinimaxH3MaxStylesLowPolyRequestInput,
+  FalMinimaxH3MaxStylesHandDrawnParsedRequest,
   FalMinimaxH3MaxStylesLowPolyParsedRequest,
   FalMinimaxH3MaxStylesRetroToon70sRequest,
   FalMinimaxH3MaxStylesRetroToon70sRequestInput,
@@ -671,6 +674,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalMinimaxH3MaxStylesHandDrawnRequest,
   FalMinimaxH3MaxStylesLowPolyRequest,
   FalMinimaxH3MaxStylesRetroToon70sRequest,
   FalMinimaxH3MaxStylesVhsRequest,
@@ -6057,5 +6061,25 @@ export interface FalRunMinimaxH3MaxStylesNamespace {
     signal?: AbortSignal
   ) => Promise<FalMinimaxH3MaxStylesLowPolyResponse>) & {
     schema: ApicitySchema<FalMinimaxH3MaxStylesLowPolyRequest>;
+  };
+}
+
+export interface FalMinimaxH3MaxStylesHandDrawnResponse {
+  /** Generated 768P hand-drawn animation video with audio. */
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+  /** Seed used for this generation. */
+  seed: number;
+}
+export interface FalRunMinimaxH3MaxStylesNamespace {
+  handDrawn: ((
+    params: FalMinimaxH3MaxStylesHandDrawnRequest,
+    signal?: AbortSignal
+  ) => Promise<FalMinimaxH3MaxStylesHandDrawnResponse>) & {
+    schema: ApicitySchema<FalMinimaxH3MaxStylesHandDrawnRequest>;
   };
 }

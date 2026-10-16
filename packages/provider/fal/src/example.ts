@@ -1351,6 +1351,15 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST minimax.h3Max.styles.handDrawn": {
+    "source": "fal/minimax-h3-max-styles-hand-drawn",
+    "payload": {
+      "prompt": "A red panda waves once, then holds still.",
+      "duration": 5
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST minimax.h3Max.styles.lowPoly": {
     "source": "fal/minimax-h3-max-styles-low-poly",
     "payload": {

@@ -999,6 +999,14 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 export const fal: Record<string, ModelPricing> = {
   // Requested seconds at $0.08, fixed 768p with audio. The five-second
   // recording billed 8 units at $0.05; usage confirmed the card's $0.40.
+  "minimax/h3-max/styles/hand-drawn": perSecond(
+    "minimax/h3-max/styles/hand-drawn",
+    0.08,
+    numericSeconds(5),
+    "2026-10-16"
+  ),
+  // Requested seconds at $0.08, fixed 768p with audio. The five-second
+  // recording billed 8 units at $0.05; usage confirmed the card's $0.40.
   "minimax/h3-max/styles/low-poly": perSecond(
     "minimax/h3-max/styles/low-poly",
     0.08,

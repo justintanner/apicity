@@ -11279,7 +11279,101 @@ export type FalPixelcutLoopingVideoParsedRequest = z.output<
   typeof FalPixelcutLoopingVideoRequestSchema
 >;
 
+// PixVerse VibeMV music video
+export const FalPixverseMusicVideoVibemvRequestSchema = z.object({
+  audio_url: z
+    .string()
+    .describe("URL of an MP3 or WAV file between 10 seconds and 6 minutes."),
+  image_url: z
+    .string()
+    .nullable()
+    .describe("Optional character reference image URL.")
+    .optional(),
+  style_image_url: z
+    .string()
+    .nullable()
+    .describe(
+      "Optional style reference image URL. Only used with the Custom style."
+    )
+    .optional(),
+  music_style: z
+    .enum([
+      "Pop",
+      "Rock",
+      "Hip Hop",
+      "R&B",
+      "Jazz",
+      "Reggae",
+      "Country",
+      "Folk",
+      "Electronic",
+      "Classical",
+      "Soul",
+      "Funk",
+      "Metal",
+      "Ambient",
+      "Others",
+    ])
+    .nullable()
+    .describe("Optional musical genre used to guide the visuals.")
+    .optional(),
+  style: z
+    .enum([
+      "Custom",
+      "Cinematic",
+      "Lo-fi",
+      "Dreamscape",
+      "Woolen Felt",
+      "Candy",
+      "Golden Age",
+      "Voxel",
+      "Retro Game",
+      "Claymation",
+      "Woodland Tale",
+      "Impressionism",
+      "Decadence",
+      "Futuristic",
+      "Chromatic Clash",
+      "Holiday",
+    ])
+    .default("Cinematic")
+    .describe("Visual style for the music video."),
+  aspect_ratio: z
+    .enum(["16:9", "9:16", "1:1", "4:3", "3:4"])
+    .default("16:9")
+    .describe("Aspect ratio of the generated video."),
+  resolution: z
+    .enum(["720p", "1080p"])
+    .default("720p")
+    .describe("Resolution of the generated video."),
+  lyrics: z
+    .string()
+    .max(5000)
+    .nullable()
+    .describe("Optional lyrics to display as subtitles.")
+    .optional(),
+  lip_sync_switch: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Enable lip sync so characters mouth the vocals. Works best with a character reference image."
+    ),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe("Authorized callers may set false to request relaxed screening."),
+});
+export type FalPixverseMusicVideoVibemvRequest = z.input<
+  typeof FalPixverseMusicVideoVibemvRequestSchema
+>;
+export type FalPixverseMusicVideoVibemvRequestInput =
+  FalPixverseMusicVideoVibemvRequest;
+export type FalPixverseMusicVideoVibemvParsedRequest = z.output<
+  typeof FalPixverseMusicVideoVibemvRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "pixverse/music-video/vibemv": FalPixverseMusicVideoVibemvRequestSchema,
   "pixelcut/looping-video": FalPixelcutLoopingVideoRequestSchema,
   "xai/grok-voice": FalXaiGrokVoiceRequestSchema,
   "fal-ai/flux-3-action/so101": FalFlux3ActionSo101RequestSchema,

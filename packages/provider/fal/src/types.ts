@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalPixverseMusicVideoVibemvRequest,
+  FalPixverseMusicVideoVibemvRequestInput,
+  FalPixverseMusicVideoVibemvParsedRequest,
   FalPixelcutLoopingVideoRequest,
   FalPixelcutLoopingVideoRequestInput,
   FalPixelcutLoopingVideoParsedRequest,
@@ -659,6 +662,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalPixverseMusicVideoVibemvRequest,
   FalPixelcutLoopingVideoRequest,
   FalXaiGrokVoiceRequest,
   FalFlux3ActionSo101Request,
@@ -5955,4 +5959,28 @@ export interface FalRunPixelcutNamespace {
 }
 export interface FalRunNamespace {
   pixelcut: FalRunPixelcutNamespace;
+}
+
+export interface FalPixverseMusicVideoVibemvResponse {
+  /** The generated video */
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+}
+export interface FalRunPixverseMusicVideoNamespace {
+  vibemv: ((
+    params: FalPixverseMusicVideoVibemvRequest,
+    signal?: AbortSignal
+  ) => Promise<FalPixverseMusicVideoVibemvResponse>) & {
+    schema: ApicitySchema<FalPixverseMusicVideoVibemvRequest>;
+  };
+}
+export interface FalRunPixverseNamespace {
+  musicVideo: FalRunPixverseMusicVideoNamespace;
+}
+export interface FalRunNamespace {
+  pixverse: FalRunPixverseNamespace;
 }

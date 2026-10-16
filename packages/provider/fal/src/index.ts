@@ -21,6 +21,12 @@ export type {
 
 // Export all types
 export type {
+  FalPixverseMusicVideoVibemvRequest,
+  FalPixverseMusicVideoVibemvRequestInput,
+  FalPixverseMusicVideoVibemvParsedRequest,
+  FalPixverseMusicVideoVibemvResponse,
+  FalRunPixverseNamespace,
+  FalRunPixverseMusicVideoNamespace,
   FalPixelcutLoopingVideoRequest,
   FalPixelcutLoopingVideoRequestInput,
   FalPixelcutLoopingVideoParsedRequest,

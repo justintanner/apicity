@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Creatify Boreal text-to-video (ac-7dbhic).
 - Added VEED Clean Audio audio clean-up (ac-asjuop).
 - Added Kling O3 Standard image-to-video (ac-7emr38).
 

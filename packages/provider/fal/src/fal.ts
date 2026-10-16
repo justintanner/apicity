@@ -1,4 +1,6 @@
 import {
+  FalCreatifyBorealRequest,
+  FalCreatifyBorealResponse,
   FalVeedCleanAudioRequest,
   FalVeedCleanAudioResponse,
   FalKlingVideoO3StandardImageToVideoRequest,
@@ -390,6 +392,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalCreatifyBorealRequestSchema,
   FalVeedCleanAudioRequestSchema,
   FalKlingVideoO3StandardImageToVideoRequestSchema,
   FalFlux2FlexRequestSchema,
@@ -3357,7 +3360,21 @@ export function createFal(opts: FalOptions): FalProvider {
     base: runBaseURL,
   });
 
+  // POST https://fal.run/creatify/boreal
+  // Docs: https://fal.ai/models/creatify/boreal/api
+  const creatifyBoreal = jsonBody<
+    FalCreatifyBorealRequest,
+    FalCreatifyBorealResponse
+  >("POST", "/creatify/boreal", FalCreatifyBorealRequestSchema, {
+    base: runBaseURL,
+  });
+
   const run: FalRunNamespace = {
+    creatify: {
+      // POST https://fal.run/creatify/boreal
+      // Docs: https://fal.ai/models/creatify/boreal/api
+      boreal: creatifyBoreal,
+    },
     veed: {
       // POST https://fal.run/veed/clean-audio
       // Docs: https://fal.ai/models/veed/clean-audio/api

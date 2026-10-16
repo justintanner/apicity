@@ -21,6 +21,11 @@ export type {
 
 // Export all types
 export type {
+  FalCreatifyBorealRequest,
+  FalCreatifyBorealRequestInput,
+  FalCreatifyBorealParsedRequest,
+  FalCreatifyBorealResponse,
+  FalRunCreatifyNamespace,
   FalVeedCleanAudioRequest,
   FalVeedCleanAudioRequestInput,
   FalVeedCleanAudioParsedRequest,

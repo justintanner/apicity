@@ -10606,7 +10606,74 @@ export type FalVeedCleanAudioParsedRequest = z.output<
   typeof FalVeedCleanAudioRequestSchema
 >;
 
+// Creatify Boreal
+export const FalCreatifyBorealRequestSchema = z.object({
+  prompt: z
+    .string()
+    .min(1)
+    .max(5000)
+    .describe(
+      "Direction for the visuals, spoken dialogue, sounds, and on-screen text. Structure it with `[VISUAL]`, `[SPEECH]`, `[SOUNDS]`, and `[TEXT]` sections for best results. English is the validated language."
+    ),
+  image_url: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "Optional reference image to animate. Guides identity, composition, and appearance; the output follows this image's aspect ratio."
+    ),
+  audio_url: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "Optional driving audio (narration, dialogue, or a soundtrack). When provided it is preserved in the output instead of generated speech."
+    ),
+  negative_prompt: z
+    .string()
+    .default("")
+    .describe("Content or artifacts to avoid in the generated video."),
+  resolution: z
+    .enum(["720p", "1080p", "2k"])
+    .default("720p")
+    .describe(
+      "Delivery tier. `2k` is 2016 px on the long edge for 16:9 and 9:16, and the 1440p row for 1:1, 4:3 and 3:4."
+    ),
+  aspect_ratio: z
+    .enum(["auto", "16:9", "9:16", "1:1", "4:3", "3:4"])
+    .default("auto")
+    .describe(
+      "Frame ratio. `auto` follows the reference image's own ratio, and is landscape (16:9) when there is no image. A named ratio renders that ratio; with an image it centre-crops the image to it."
+    ),
+  duration: z
+    .number()
+    .min(1)
+    .max(20)
+    .default(10)
+    .describe(
+      "Length of the generated video in seconds at 24 FPS, rounded by the model to the nearest legal frame count (5 s -> 121 frames, 10 s -> 241, 15 s -> 361). With `audio_url`, the first `duration` seconds of the audio are used; shorter audio is padded with silence."
+    ),
+  manifest_disclosure: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Add a visible `AI-generated` disclosure label to the video. Invisible C2PA metadata and watermarking are always applied."
+    ),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe("Authorized callers may set false to request relaxed screening."),
+});
+export type FalCreatifyBorealRequest = z.input<
+  typeof FalCreatifyBorealRequestSchema
+>;
+export type FalCreatifyBorealRequestInput = FalCreatifyBorealRequest;
+export type FalCreatifyBorealParsedRequest = z.output<
+  typeof FalCreatifyBorealRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "creatify/boreal": FalCreatifyBorealRequestSchema,
   "veed/clean-audio": FalVeedCleanAudioRequestSchema,
   "fal-ai/kling-video/o3/standard/image-to-video":
     FalKlingVideoO3StandardImageToVideoRequestSchema,

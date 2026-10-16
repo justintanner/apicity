@@ -1329,7 +1329,9 @@ describe("kie modelInputSchemas", () => {
     expect(schema.type).toBe("image");
     expect(schema.fields.prompt.required).toBe(true);
     expect(schema.fields.prompt.maxLength).toBe(5000);
-    expect(schema.fields.image_size.default).toBe("square_hd");
+    // Upstream dropped the square_hd default (docs and live schema,
+    // 2026-10-16: "Set this field explicitly").
+    expect(schema.fields.image_size.default).toBeUndefined();
     expect(schema.fields.image_size.enum).toEqual([
       "square",
       "square_hd",

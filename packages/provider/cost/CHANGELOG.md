@@ -31,6 +31,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- KIE `qwen/image-to-image` estimates $0.02 per call from its live per-image
+  rate (4 credits) instead of returning $0 with a "could not derive units"
+  warning. KIE moved the model from per-megapixel to per-image billing after
+  the 2026-09-11 pricing pull, and its schema has no size field.
 - Fal per-megapixel estimates count a megapixel as 1024 x 1024 = 1,048,576
   pixels, the unit fal bills, instead of 1,000,000, so a 1024x1024 image is 1
   megapixel, not 2. `fal-ai/flux/dev`, `fal-ai/flux/schnell` and

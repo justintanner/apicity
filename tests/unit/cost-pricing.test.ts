@@ -1793,6 +1793,38 @@ describe("kie qwen per-megapixel pricing (OQ-4)", () => {
     );
   });
 
+  // Billed floor (ac-dgvqms): the terminal recordInfo of each 2026-10-16
+  // recording under tests/recordings/kie_2079838932/ bills, at $0.005 per
+  // credit, qwen-text-to-image-square-hd 5 credits,
+  // qwen-text-to-image-landscape-4-3 3 and qwen-image-edit-square-hd 7. No
+  // per-megapixel rule reproduces those bills, so the estimate stays an
+  // over-quote; this keeps a divisor or rounding change from quoting a billed
+  // call below its bill (1,048,576 px would quote square_hd text-to-image at 4).
+  it.each([
+    { model: "qwen/text-to-image", image_size: "square_hd", billedUsd: 0.025 },
+    {
+      model: "qwen/text-to-image",
+      image_size: "landscape_4_3",
+      billedUsd: 0.015,
+    },
+    { model: "qwen/image-edit", image_size: "square_hd", billedUsd: 0.035 },
+  ])(
+    "quotes $model $image_size at or above its billed recording",
+    ({ model, image_size, billedUsd }) => {
+      const result = kieEstimate({
+        model,
+        input: {
+          prompt: "x",
+          image_url: "https://example.com/x.jpg",
+          image_size,
+        },
+      });
+
+      expect(result.warnings).toEqual([]);
+      expect(result.usd).toBeGreaterThanOrEqual(billedUsd);
+    }
+  );
+
   it("multiplies megapixels by the string-enum num_images", () => {
     const result = kieEstimate({
       model: "qwen/image-edit",
@@ -1826,23 +1858,29 @@ describe("kie qwen per-megapixel pricing (OQ-4)", () => {
     expect(result.warnings[0]).toContain("could not derive units");
   });
 
-  // qwen/image-to-image carries the published $0.02/MP rate but has no size
-  // field and no documented default output size, so no payload can derive an
-  // area. It stays an entry — the rate and the gap are recorded in one place
-  // — and every request warns rather than being priced off an invented size.
-  it("keeps qwen/image-to-image priced but underivable", () => {
+  // qwen/image-to-image bills 4 credits ($0.02) per image: the live feed row,
+  // the page's pricingDesc and KIE's /models/{id}/price agree (read 2026-10-16,
+  // ac-dgvqms). The schema has no size or batch field, so one call is one image.
+  it("prices qwen/image-to-image per image from the 2026-10-16 page read", () => {
     const entry = PRICING.kie["qwen/image-to-image"];
     expect(entry.kind).toBe("perUnit");
     if (entry.kind !== "perUnit") throw new Error("expected a perUnit entry");
-    expect(entry.unit).toBe("megapixels");
-    expect(entry.rates[""]).toBe(0.02);
+    expect(entry.source).toEqual({
+      url: "https://kie.ai/qwen-image",
+      asOf: "2026-10-16",
+    });
 
     const result = kieEstimate({
       model: "qwen/image-to-image",
       input: { prompt: "x", image_url: "https://example.com/x.jpg" },
     });
-    expect(result.usd).toBe(0);
-    expect(result.warnings[0]).toContain("could not derive units");
+    expect(result.usd).toBeCloseTo(0.02, 10);
+    expect(result.breakdown).toEqual({
+      units: 1,
+      unit: "images",
+      perUnitUsd: 0.02,
+    });
+    expect(result.warnings).toEqual([]);
   });
 });
 
@@ -2455,7 +2493,6 @@ describe("kie 2026-08-06 pricing pull provenance", () => {
       "recraft/remove-background",
       "topaz/image-upscale",
       "qwen/text-to-image",
-      "qwen/image-to-image",
       "qwen/image-edit",
       "kling-2.6/text-to-video",
       "kling-2.6/image-to-video",

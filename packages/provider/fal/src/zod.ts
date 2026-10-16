@@ -11472,7 +11472,55 @@ export type FalMinimaxH3MaxStylesRetroToon70sParsedRequest = z.output<
   typeof FalMinimaxH3MaxStylesRetroToon70sRequestSchema
 >;
 
+// MiniMax H3 Max Low Poly styled text-to-video
+export const FalMinimaxH3MaxStylesLowPolyRequestSchema = z
+  .object({
+    prompt: z
+      .string()
+      .min(1)
+      .max(49914)
+      .describe(
+        "Describe the scene, action, camera and sound. The retro low-poly 3D style is applied automatically."
+      ),
+    image_url: z
+      .string()
+      .nullable()
+      .describe(
+        "Optional first-frame image. Use low-poly or retro 3D artwork for the most consistent look; the image's aspect ratio determines the output canvas."
+      )
+      .optional(),
+    duration: z
+      .number()
+      .int()
+      .min(5)
+      .max(15)
+      .default(5)
+      .describe("Requested video duration in seconds."),
+    aspect_ratio: z
+      .enum(["21:9", "16:9", "4:3", "1:1", "3:4", "9:16"])
+      .default("16:9")
+      .describe(
+        "Video aspect ratio for text-only generation. Ignored when image_url is provided."
+      ),
+    seed: z
+      .number()
+      .int()
+      .nullable()
+      .describe("Random seed. Omit to choose one automatically.")
+      .optional(),
+  })
+  .strict();
+export type FalMinimaxH3MaxStylesLowPolyRequest = z.input<
+  typeof FalMinimaxH3MaxStylesLowPolyRequestSchema
+>;
+export type FalMinimaxH3MaxStylesLowPolyRequestInput =
+  FalMinimaxH3MaxStylesLowPolyRequest;
+export type FalMinimaxH3MaxStylesLowPolyParsedRequest = z.output<
+  typeof FalMinimaxH3MaxStylesLowPolyRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "minimax/h3-max/styles/low-poly": FalMinimaxH3MaxStylesLowPolyRequestSchema,
   "minimax/h3-max/styles/retro-toon-70s":
     FalMinimaxH3MaxStylesRetroToon70sRequestSchema,
   "minimax/h3-max/styles/vhs": FalMinimaxH3MaxStylesVhsRequestSchema,

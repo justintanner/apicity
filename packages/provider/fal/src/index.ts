@@ -21,6 +21,10 @@ export type {
 
 // Export all types
 export type {
+  FalMinimaxH3MaxStylesLowPolyRequest,
+  FalMinimaxH3MaxStylesLowPolyRequestInput,
+  FalMinimaxH3MaxStylesLowPolyParsedRequest,
+  FalMinimaxH3MaxStylesLowPolyResponse,
   FalMinimaxH3MaxStylesRetroToon70sRequest,
   FalMinimaxH3MaxStylesRetroToon70sRequestInput,
   FalMinimaxH3MaxStylesRetroToon70sParsedRequest,

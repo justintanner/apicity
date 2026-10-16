@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalMinimaxH3MaxStylesLowPolyRequest,
+  FalMinimaxH3MaxStylesLowPolyRequestInput,
+  FalMinimaxH3MaxStylesLowPolyParsedRequest,
   FalMinimaxH3MaxStylesRetroToon70sRequest,
   FalMinimaxH3MaxStylesRetroToon70sRequestInput,
   FalMinimaxH3MaxStylesRetroToon70sParsedRequest,
@@ -668,6 +671,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalMinimaxH3MaxStylesLowPolyRequest,
   FalMinimaxH3MaxStylesRetroToon70sRequest,
   FalMinimaxH3MaxStylesVhsRequest,
   FalPixverseMusicVideoVibemvRequest,
@@ -6033,5 +6037,25 @@ export interface FalRunMinimaxH3MaxStylesNamespace {
     signal?: AbortSignal
   ) => Promise<FalMinimaxH3MaxStylesRetroToon70sResponse>) & {
     schema: ApicitySchema<FalMinimaxH3MaxStylesRetroToon70sRequest>;
+  };
+}
+
+export interface FalMinimaxH3MaxStylesLowPolyResponse {
+  /** Generated 768P retro low-poly 3D video with audio. */
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+  /** Seed used for this generation. */
+  seed: number;
+}
+export interface FalRunMinimaxH3MaxStylesNamespace {
+  lowPoly: ((
+    params: FalMinimaxH3MaxStylesLowPolyRequest,
+    signal?: AbortSignal
+  ) => Promise<FalMinimaxH3MaxStylesLowPolyResponse>) & {
+    schema: ApicitySchema<FalMinimaxH3MaxStylesLowPolyRequest>;
   };
 }

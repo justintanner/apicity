@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalMinimaxH3MaxStylesRetroToon70sRequest,
+  FalMinimaxH3MaxStylesRetroToon70sRequestInput,
+  FalMinimaxH3MaxStylesRetroToon70sParsedRequest,
   FalMinimaxH3MaxStylesVhsRequest,
   FalMinimaxH3MaxStylesVhsRequestInput,
   FalMinimaxH3MaxStylesVhsParsedRequest,
@@ -665,6 +668,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalMinimaxH3MaxStylesRetroToon70sRequest,
   FalMinimaxH3MaxStylesVhsRequest,
   FalPixverseMusicVideoVibemvRequest,
   FalPixelcutLoopingVideoRequest,
@@ -6010,4 +6014,24 @@ export interface FalRunMinimaxH3MaxStylesNamespace {
 }
 export interface FalRunMinimaxH3MaxNamespace {
   styles: FalRunMinimaxH3MaxStylesNamespace;
+}
+
+export interface FalMinimaxH3MaxStylesRetroToon70sResponse {
+  /** Generated 768P retro hand-painted animation video with audio. */
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+  /** Seed used for this generation. */
+  seed: number;
+}
+export interface FalRunMinimaxH3MaxStylesNamespace {
+  retroToon70s: ((
+    params: FalMinimaxH3MaxStylesRetroToon70sRequest,
+    signal?: AbortSignal
+  ) => Promise<FalMinimaxH3MaxStylesRetroToon70sResponse>) & {
+    schema: ApicitySchema<FalMinimaxH3MaxStylesRetroToon70sRequest>;
+  };
 }

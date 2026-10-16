@@ -32,7 +32,10 @@ const valid = (extra: Record<string, unknown>) =>
 describe("MiniMax H3 Max VHS styled text-to-video", () => {
   it("exports the owned styles namespace, schema, registry and types", () => {
     const p = createFal({ apiKey: "test-key" });
-    expect(Object.keys(p.run.minimax.h3Max.styles)).toEqual(["vhs"]);
+    expect(Object.keys(p.run.minimax.h3Max.styles)).toEqual([
+      "retroToon70s",
+      "vhs",
+    ]);
     expect(p.run.minimax.h3Max.styles.vhs).toBe(
       p.post.run.minimax.h3Max.styles.vhs
     );

@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalCreatifyBorealRequest,
+  FalCreatifyBorealRequestInput,
+  FalCreatifyBorealParsedRequest,
   FalVeedCleanAudioRequest,
   FalVeedCleanAudioRequestInput,
   FalVeedCleanAudioParsedRequest,
@@ -644,6 +647,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalCreatifyBorealRequest,
   FalVeedCleanAudioRequest,
   FalKlingVideoO3StandardImageToVideoRequest,
   FalFlux2FlexRequest,
@@ -5788,4 +5792,31 @@ export interface FalRunVeedNamespace {
 
 export interface FalRunNamespace {
   veed: FalRunVeedNamespace;
+}
+
+export interface FalCreatifyBorealResponse {
+  /** Generated video with synchronized native audio. */
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+    fps?: number | null;
+    duration?: number | null;
+    num_frames?: number | null;
+  };
+}
+type FalCreatifyBorealFn = ((
+  params: FalCreatifyBorealRequest,
+  signal?: AbortSignal
+) => Promise<FalCreatifyBorealResponse>) & {
+  schema: ApicitySchema<FalCreatifyBorealRequest>;
+};
+export interface FalRunCreatifyNamespace {
+  boreal: FalCreatifyBorealFn;
+}
+export interface FalRunNamespace {
+  creatify: FalRunCreatifyNamespace;
 }

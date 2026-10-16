@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-194 endpoints across 48 groups. Each method mirrors an upstream URL path.
+195 endpoints across 49 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -886,6 +886,25 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.bytedance.seedream.v5.pro.textToImage({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+### creatify
+
+<details>
+<summary><code>POST</code> <b><code>fal.creatify.boreal</code></b></summary>
+
+<code>POST https://fal.run/creatify/boreal</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/creatify/boreal/api)
+
+```typescript
+const res = await fal.run.creatify.boreal({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

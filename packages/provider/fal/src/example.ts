@@ -581,6 +581,15 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST creatify.boreal": {
+    "source": "fal/creatify-boreal",
+    "payload": {
+      "prompt": "A red panda waves once, then holds still.",
+      "duration": 1
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST elevenlabs.music.v2p5": {
     "source": "fal/elevenlabs-music-v2-5",
     "payload": {

@@ -988,6 +988,16 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  // Bills requested seconds at the card's resolution tier. A one-second 720p
+  // call produced 25 frames but billed 1 unit; usage confirmed $0.01, matching
+  // the card rather than the frame-rounded output duration (2026-10-16).
+  "creatify/boreal": perSecondTiered(
+    "creatify/boreal",
+    [resolutionTier("720p")],
+    { "720p": 0.01, "1080p": 0.03, "2k": 0.12 },
+    numericSeconds(10),
+    "2026-10-16"
+  ),
   // Bills $0.0125 per minute of INPUT audio. The card rounds the length to
   // whole seconds, then up to whole minutes, with a one-minute minimum. The
   // request carries the audio only as a URL, so the caller declares its

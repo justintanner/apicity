@@ -416,6 +416,7 @@ export const MODEL_SLUGS = {
   // same underlying models kie also resells, so their slugs intentionally
   // match kie's.
   fal: {
+    "creatify/boreal": "boreal",
     "veed/clean-audio": "veedclean",
     "fal-ai/kling-video/o3/standard/image-to-video": "klingo3s",
     "minimax/h3-max/relight": "h3mrl",
@@ -904,6 +905,7 @@ export const MODEL_DISPLAY = {
   },
 
   fal: {
+    "creatify/boreal": "Creatify Boreal",
     "veed/clean-audio": "VEED Clean Audio",
     "fal-ai/kling-video/o3/standard/image-to-video": "Kling o3 Standard",
     "minimax/h3-max/relight": "H3 Max Relight",

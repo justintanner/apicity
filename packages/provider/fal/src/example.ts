@@ -493,6 +493,14 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST bytedance.seedance2p5.draft.complete": {
+    "source": "fal/bytedance-seedance2p5-draft-complete",
+    "payload": {
+      "draft_id": ""
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST bytedance.seedance2p5.imageToVideo": {
     "source": "fal/bytedance-seedance2p5-image-to-video",
     "payload": {

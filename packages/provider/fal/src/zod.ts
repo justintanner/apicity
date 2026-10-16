@@ -12183,7 +12183,38 @@ export type FalBytedanceSeedance2p5UsReferenceToVideoParsedRequest = z.output<
   typeof FalBytedanceSeedance2p5UsReferenceToVideoRequestSchema
 >;
 
+// Bytedance Seedance 2.5 draft completion
+export const FalBytedanceSeedance2p5DraftCompleteRequestSchema = z.object({
+  draft_id: z
+    .string()
+    .min(1)
+    .max(8192)
+    .describe(
+      "The draft_id returned with draft enabled. Valid for seven days and only for the original caller."
+    ),
+  resolution: z
+    .literal("1080p")
+    .default("1080p")
+    .describe("Completed drafts only support 1080p output."),
+  codec: z
+    .enum(["auto", "H264", "H265"])
+    .default("auto")
+    .describe(
+      "'auto' retains default video codec behaviour; 'H264' uses H.264; 'H265' uses H.265."
+    ),
+});
+export type FalBytedanceSeedance2p5DraftCompleteRequest = z.input<
+  typeof FalBytedanceSeedance2p5DraftCompleteRequestSchema
+>;
+export type FalBytedanceSeedance2p5DraftCompleteRequestInput =
+  FalBytedanceSeedance2p5DraftCompleteRequest;
+export type FalBytedanceSeedance2p5DraftCompleteParsedRequest = z.output<
+  typeof FalBytedanceSeedance2p5DraftCompleteRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "bytedance/seedance-2.5/draft/complete":
+    FalBytedanceSeedance2p5DraftCompleteRequestSchema,
   "bytedance/seedance-2.5/us/reference-to-video":
     FalBytedanceSeedance2p5UsReferenceToVideoRequestSchema,
   "bytedance/seedance-2.5/us/image-to-video":

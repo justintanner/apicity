@@ -946,6 +946,9 @@ const meshyV71 = (endpointId: string, on: string): ModelPricing => ({
 // bytedance/seedance-2.5/us/reference-to-video bills the card's formula with
 // the reference video's frames added, at x0.6: 46.32 units ($1.1894976) for
 // a 4 s reference, where seedance25ReferenceRates (output only) has 23.328.
+// bytedance/seedance-2.5/draft/complete bills $0.0214 per 1000 tokens of a
+// 1080p clip whose length the draft sets; no success is recorded (card read
+// 2026-10-15; a 4 s completion is about $4.66 by the card).
 export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "alibaba/qwen-image-3/edit",
   "alibaba/qwen-image-3/text-to-image",
@@ -958,6 +961,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "bytedance/seedance-2.0/us/image-to-video",
   "bytedance/seedance-2.0/us/reference-to-video",
   "bytedance/seedance-2.0/us/text-to-video",
+  "bytedance/seedance-2.5/draft/complete",
   "bytedance/seedance-2.5/us/image-to-video",
   "bytedance/seedance-2.5/us/reference-to-video",
   "bytedance/seedance-2.5/us/text-to-video",

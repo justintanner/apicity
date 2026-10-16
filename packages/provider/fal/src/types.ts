@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalBytedanceSeedance2p5DraftCompleteRequest,
+  FalBytedanceSeedance2p5DraftCompleteRequestInput,
+  FalBytedanceSeedance2p5DraftCompleteParsedRequest,
   FalBytedanceSeedance2p5UsReferenceToVideoRequest,
   FalBytedanceSeedance2p5UsImageToVideoRequest,
   FalBytedanceSeedance2p5UsTextToVideoRequest,
@@ -695,6 +698,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalBytedanceSeedance2p5DraftCompleteRequest,
   FalBytedanceSeedance2p5UsReferenceToVideoRequest,
   FalBytedanceSeedance2p5UsImageToVideoRequest,
   FalBytedanceSeedance2p5UsTextToVideoRequest,
@@ -6250,4 +6254,29 @@ export interface FalRunBytedanceSeedance2p5UsNamespace {
 }
 export interface FalRunBytedanceSeedance2p5Namespace {
   us: FalRunBytedanceSeedance2p5UsNamespace;
+}
+
+export interface FalBytedanceSeedance2p5DraftCompleteResponse {
+  /** The generated video file. */
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+  /** The seed used for generation. */
+  seed: number;
+  /** The draft ID, or null when draft mode is disabled. */
+  draft_id?: string | null;
+}
+export interface FalRunBytedanceSeedance2p5DraftNamespace {
+  complete: ((
+    params: FalBytedanceSeedance2p5DraftCompleteRequest,
+    signal?: AbortSignal
+  ) => Promise<FalBytedanceSeedance2p5DraftCompleteResponse>) & {
+    schema: ApicitySchema<FalBytedanceSeedance2p5DraftCompleteRequest>;
+  };
+}
+export interface FalRunBytedanceSeedance2p5Namespace {
+  draft: FalRunBytedanceSeedance2p5DraftNamespace;
 }

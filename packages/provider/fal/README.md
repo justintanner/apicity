@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-199 endpoints across 52 groups. Each method mirrors an upstream URL path.
+200 endpoints across 53 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -2788,6 +2788,25 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.pixelcut.loopingVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+### pixverse
+
+<details>
+<summary><code>POST</code> <b><code>fal.pixverse.musicVideo.vibemv</code></b></summary>
+
+<code>POST https://fal.run/pixverse/music-video/vibemv</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/pixverse/music-video/vibemv/api)
+
+```typescript
+const res = await fal.run.pixverse.musicVideo.vibemv({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

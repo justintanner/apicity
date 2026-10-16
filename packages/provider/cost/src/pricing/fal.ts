@@ -997,6 +997,26 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  // Bills each second of the INPUT audio at the resolution tier (default
+  // 720p): $0.06 at 720p and $0.09 at 1080p, rounded up to whole seconds
+  // with a 10-second minimum and a 6-minute maximum. The request carries the
+  // audio only as a URL, so the caller declares its length through
+  // costHints.durationSeconds, as for the LTX 2.5 audio-to-video tiers, and
+  // an omitted hint fails closed. The recorded 12.0 s clip at 720p billed
+  // x-fal-billable-units 12, $0.72, the card's price, though the returned
+  // video ran 12.16 s.
+  "pixverse/music-video/vibemv": perSecondTiered(
+    "pixverse/music-video/vibemv",
+    [resolutionTier("720p")],
+    { "720p": 0.06, "1080p": 0.09 },
+    (_p, hints) => {
+      const seconds = hintSeconds(hints);
+      return seconds === undefined
+        ? undefined
+        : Math.min(360, Math.max(10, Math.ceil(seconds)));
+    },
+    "2026-10-16"
+  ),
   // The five-second 480p recording billed 5 units, matching the card rate.
   "pixelcut/looping-video": perSecondTiered(
     "pixelcut/looping-video",

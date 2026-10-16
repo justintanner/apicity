@@ -1,4 +1,6 @@
 import {
+  FalPixverseMusicVideoVibemvRequest,
+  FalPixverseMusicVideoVibemvResponse,
   FalPixelcutLoopingVideoRequest,
   FalPixelcutLoopingVideoResponse,
   FalXaiGrokVoiceRequest,
@@ -400,6 +402,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalPixverseMusicVideoVibemvRequestSchema,
   FalPixelcutLoopingVideoRequestSchema,
   FalXaiGrokVoiceRequestSchema,
   FalFlux3ActionSo101RequestSchema,
@@ -3424,7 +3427,26 @@ export function createFal(opts: FalOptions): FalProvider {
     base: runBaseURL,
   });
 
+  // POST https://fal.run/pixverse/music-video/vibemv
+  // Docs: https://fal.ai/models/pixverse/music-video/vibemv/api
+  const pixverseMusicVideoVibemv = jsonBody<
+    FalPixverseMusicVideoVibemvRequest,
+    FalPixverseMusicVideoVibemvResponse
+  >(
+    "POST",
+    "/pixverse/music-video/vibemv",
+    FalPixverseMusicVideoVibemvRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
+    pixverse: {
+      musicVideo: {
+        // POST https://fal.run/pixverse/music-video/vibemv
+        // Docs: https://fal.ai/models/pixverse/music-video/vibemv/api
+        vibemv: pixverseMusicVideoVibemv,
+      },
+    },
     pixelcut: {
       // POST https://fal.run/pixelcut/looping-video
       // Docs: https://fal.ai/models/pixelcut/looping-video/api

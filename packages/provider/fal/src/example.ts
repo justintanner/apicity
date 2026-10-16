@@ -1706,6 +1706,14 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST pixverse.musicVideo.vibemv": {
+    "source": "fal/pixverse-music-video-vibemv",
+    "payload": {
+      "audio_url": "https://v3b.fal.media/files/b/0aae934a/lt6LMO4KefWquL27tCWTH_pixverse-vibemv-source.wav"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST qwenImage": {
     "source": "fal/qwen-image",
     "payload": {

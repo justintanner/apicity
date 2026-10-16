@@ -924,6 +924,8 @@ const meshyV71 = (endpointId: string, on: string): ModelPricing => ({
   source: source(endpointId, on),
 });
 
+// openrouter/router/decisions bills input and output tokens; no request field
+// fixes the output token count (card read 2026-10-16).
 export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "alibaba/qwen-image-3/edit",
   "alibaba/qwen-image-3/text-to-image",
@@ -980,6 +982,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "openai/gpt-image-2.5/flare/text-to-image",
   "openai/gpt-image-2.5/sunburst/edit",
   "openai/gpt-image-2.5/sunburst/text-to-image",
+  "openrouter/router/decisions",
   "topaz/upscale/image/precision",
   "topaz/upscale/video/precision",
   "xai/grok-imagine-image/v2.0/edit",

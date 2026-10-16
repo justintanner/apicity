@@ -417,10 +417,11 @@ const IMAGE_SIZE_DIMENSIONS: Record<string, readonly [number, number]> = {
   landscape_16_9: [1024, 576],
 };
 
-// Billable megapixels for the whole request: each image is rounded UP to the
-// next whole megapixel, then multiplied by the image count. kie publishes a
-// per-megapixel rate without documenting its rounding, so this follows the
-// fal rule for the same area-billed models.
+// Legacy KIE estimate: assume 1 megapixel = 1,000,000 pixels, round each image
+// UP to a whole megapixel, then multiply by the image count. The divisor and
+// rounding remain unverified KIE assumptions: its public pricing sources do
+// not consistently establish either rule (rechecked 2026-10-16, ac-7l96dz).
+// fal's separately verified 1,048,576-pixel rule does not establish KIE billing.
 //
 // `defaultPreset` is the model's documented schema default and is applied only
 // when `input.image_size` is absent. A model with no documented default — and

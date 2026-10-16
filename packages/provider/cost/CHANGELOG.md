@@ -31,6 +31,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Fal per-megapixel estimates count a megapixel as 1024 x 1024 = 1,048,576
+  pixels, the unit fal bills, instead of 1,000,000, so a 1024x1024 image is 1
+  megapixel, not 2. `fal-ai/flux/dev`, `fal-ai/flux/schnell` and
+  `fal-ai/qwen-image` still round each image up to a whole megapixel.
+  `fal-ai/hunyuan-image/v3/instruct/edit` and `fal-ai/qwen-image-edit` publish
+  no rounding rule, so they price only sizes that are a whole number of
+  megapixels and warn for any other size.
 - Fal per-megapixel estimates now resolve documented endpoint defaults
   explicitly and warn when no fixed default is published.
 - Kling 3.0 video estimates select the sound rate when `multi_shots: true`

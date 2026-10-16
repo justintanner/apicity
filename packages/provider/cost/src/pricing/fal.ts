@@ -11,8 +11,9 @@ import { asNumber, asObject, asString, hintSeconds } from "./helpers";
 // Two billing shapes appear upstream:
 //
 //   - per image      — a flat (or resolution-tiered) price per output image.
-//   - per megapixel  — price scales with output area, rounded up to the next
-//                      whole megapixel per image.
+//   - per megapixel  — price scales with output area, counted in binary
+//                      megapixels (1024 x 1024 px each); see megapixels()
+//                      for how each endpoint rounds.
 //
 // Rates were read from each model's own fal.ai page on the `asOf` date; the
 // flux/dev rate additionally matches the recorded
@@ -39,6 +40,11 @@ const seedance25AsOf = "2026-08-23";
 // Wan 3.0 pricing was pulled from fal's pricing API
 // (GET /v1/models/pricing?endpoint_id=...) on this date.
 const wan30AsOf = "2026-08-25";
+
+// The five per-megapixel entries were re-read on this date: each model's
+// fal.ai page and GET /v1/models/pricing, with the megapixel definition and
+// rounding checked against billed usage (ac-hntqm6).
+const megapixelAsOf = "2026-10-15";
 
 // Grok Imagine v1 image pricing was re-pulled from fal's pricing API on this
 // date, which is when the folded input component was found to be gone.
@@ -80,16 +86,29 @@ function maxImageCount(p: Record<string, unknown>): number {
   return asNumber(p.max_images) ?? 1;
 }
 
-// Billable megapixels across the whole request. fal rounds each image up to
-// the next whole megapixel before charging, so the ceil is applied per image
-// and then multiplied by the image count.
-//
-// When `image_size` is absent, use only an endpoint default verified from that
-// endpoint's own fal.ai page. An endpoint with no documented fixed default
-// leaves `defaultPreset` undefined and warns instead of silently guessing.
-// An `image_size` that is present but unrecognized follows the same warning
-// path.
-function megapixels(
+// fal counts a megapixel as 1024 x 1024 = 1,048,576 pixels, not 1,000,000.
+// Every billed record that tells the two apart agrees: fal-ai/qwen-image
+// billed a square_hd (1024x1024) image as 1 megapixel, the two edit endpoints
+// below billed approximately 1024x1024-area outputs as 1; FLUX 3 billed 1024x1024
+// as 1. fal's own FLUX.2 [pro] card also prices a 512x512 output at 0.25
+// megapixels.
+const PIXELS_PER_MEGAPIXEL = 1024 * 1024;
+
+// How one image's area becomes billable megapixels:
+//   - "ceil":  the card says images are billed by rounding up to the nearest
+//              megapixel, so each image rounds up on its own.
+//   - "whole": the card gives a per-megapixel rate but no rounding rule, and
+//              every billed call so far was exactly one megapixel, which
+//              cannot tell rounding up from fractional billing. Only an area
+//              of a whole number of megapixels is priced; any other area warns.
+type MegapixelRounding = "ceil" | "whole";
+
+// One image's area in pixels. When `image_size` is absent, use only an
+// endpoint default verified from that endpoint's own fal.ai page. An endpoint
+// with no documented fixed default leaves `defaultPreset` undefined and warns
+// instead of silently guessing. An `image_size` that is present but
+// unrecognized follows the same warning path.
+function imageArea(
   p: Record<string, unknown>,
   defaultPreset?: string
 ): number | undefined {
@@ -103,7 +122,22 @@ function megapixels(
   const height = dims ? dims[1] : asNumber(explicit?.height);
   if (width === undefined || height === undefined) return undefined;
 
-  return Math.ceil((width * height) / 1_000_000) * imageCount(p);
+  return width * height;
+}
+
+// Billable megapixels across the whole request: each image's megapixels under
+// the endpoint's rounding, multiplied by the image count.
+function megapixels(
+  p: Record<string, unknown>,
+  rounding: MegapixelRounding,
+  defaultPreset?: string
+): number | undefined {
+  const area = imageArea(p, defaultPreset);
+  if (area === undefined) return undefined;
+
+  const perImage = area / PIXELS_PER_MEGAPIXEL;
+  if (rounding === "ceil") return Math.ceil(perImage) * imageCount(p);
+  return Number.isInteger(perImage) ? perImage * imageCount(p) : undefined;
 }
 
 // Resolution tier for models whose per-image price scales with output
@@ -148,7 +182,33 @@ const perMegapixel = (
 ): ModelPricing => ({
   kind: "perUnit",
   unit: "megapixels",
-  units: (p) => megapixels(p, defaultPreset),
+  units: (p) => megapixels(p, "ceil", defaultPreset),
+  select: [],
+  rates: { "": usd },
+  source: source(endpointId, on),
+});
+
+// Per-megapixel entry whose card states no rounding rule ("whole" above). A
+// size that is not a whole number of megapixels gets its own warning. An
+// absent, "auto" or unrecognized size keeps the generic units warning.
+const perWholeMegapixel = (
+  endpointId: string,
+  usd: number,
+  on: string
+): ModelPricing => ({
+  kind: "perUnit",
+  unit: "megapixels",
+  units: (p) => megapixels(p, "whole"),
+  warn: (p) => {
+    const area = imageArea(p);
+    if (area === undefined || Number.isInteger(area / PIXELS_PER_MEGAPIXEL)) {
+      return [];
+    }
+    const perImage = (area / PIXELS_PER_MEGAPIXEL).toFixed(4);
+    return [
+      `fal '${endpointId}': image_size is ${perImage} megapixels per image; fal publishes no rounding rule for this endpoint, so only whole-megapixel sizes are priced`,
+    ];
+  },
   select: [],
   rates: { "": usd },
   source: source(endpointId, on),
@@ -1566,25 +1626,28 @@ export const fal: Record<string, ModelPricing> = {
     audioAsOf
   ),
 
-  // Image — Flux (area-priced)
+  // Image — Flux (area-priced). Each card says images are billed by rounding
+  // up to the nearest megapixel.
   "fal-ai/flux/dev": perMegapixel(
     "fal-ai/flux/dev",
     0.025,
-    undefined,
+    megapixelAsOf,
     "landscape_4_3"
   ),
   "fal-ai/flux/schnell": perMegapixel(
     "fal-ai/flux/schnell",
     0.003,
-    undefined,
+    megapixelAsOf,
     "landscape_4_3"
   ),
 
-  // Image — Qwen Image (area-priced)
+  // Image — Qwen Image (area-priced, rounded up per image like Flux). The
+  // recorded square_hd call billed x-fal-billable-units 1, and the usage API
+  // agrees: 1 megapixel at $0.02.
   "fal-ai/qwen-image": perMegapixel(
     "fal-ai/qwen-image",
     0.02,
-    undefined,
+    megapixelAsOf,
     "landscape_4_3"
   ),
 
@@ -1685,22 +1748,26 @@ export const fal: Record<string, ModelPricing> = {
     grokImagineV1AsOf
   ),
 
-  // Image — Hunyuan Image 3 instruct edit (area-priced). image_size defaults
-  // to "auto" upstream, which has no fixed dimensions — so an omitted field
-  // is as underivable as an explicit "auto" and takes the warning path.
-  "fal-ai/hunyuan-image/v3/instruct/edit": perMegapixel(
+  // Image — Hunyuan Image 3 instruct edit (area-priced, whole megapixels
+  // only). image_size defaults to "auto" upstream, which has no fixed
+  // dimensions — so an omitted field is as underivable as an explicit "auto"
+  // and takes the warning path. The recorded "auto" call returned 1038x1010
+  // and billed 1 megapixel.
+  "fal-ai/hunyuan-image/v3/instruct/edit": perWholeMegapixel(
     "fal-ai/hunyuan-image/v3/instruct/edit",
     0.09,
-    sweepAsOf
+    megapixelAsOf
   ),
 
-  // Image — Qwen Image Edit (area-priced like fal-ai/qwen-image). Its fal.ai
+  // Image — Qwen Image Edit (area-priced, whole megapixels only). Its fal.ai
   // page publishes no fixed image_size default, so omission warns rather than
-  // assuming the generation endpoint's landscape_4_3 default.
-  "fal-ai/qwen-image-edit": perMegapixel(
+  // assuming the generation endpoint's landscape_4_3 default. The recorded
+  // call returned 1376x768, which is more than one megapixel, yet billed 1:
+  // returned dimensions alone do not establish its rounding rule.
+  "fal-ai/qwen-image-edit": perWholeMegapixel(
     "fal-ai/qwen-image-edit",
     0.03,
-    sweepAsOf
+    megapixelAsOf
   ),
 
   // Image — GPT Image 1.5 (per image on a quality × size grid)

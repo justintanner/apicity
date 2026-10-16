@@ -845,10 +845,10 @@ describe("fal edit/image pricing estimates", () => {
     const hunyuan = estimate("fal-ai/hunyuan-image/v3/instruct/edit", {
       image_size: { width: 2048, height: 2048 },
     });
-    // 2048*2048 = 4.19 MP, rounded up to 5 whole megapixels
-    expect(hunyuan.usd).toBeCloseTo(0.45, 10);
+    // 2048*2048 = 4,194,304 px = exactly 4 megapixels of 1024x1024 px
+    expect(hunyuan.usd).toBeCloseTo(0.36, 10);
     expect(hunyuan.breakdown).toEqual({
-      units: 5,
+      units: 4,
       unit: "megapixels",
       perUnitUsd: 0.09,
     });
@@ -857,10 +857,110 @@ describe("fal edit/image pricing estimates", () => {
       image_size: "square_hd",
       num_images: 2,
     });
-    // 1024x1024 = 1.049 MP, rounded up to 2 MP per image.
-    expect(qwen.usd).toBeCloseTo(0.12, 10);
-    expect(qwen.breakdown.units).toBe(4);
+    // 1024x1024 is exactly 1 megapixel per image, 2 images.
+    expect(qwen.usd).toBeCloseTo(0.06, 10);
+    expect(qwen.breakdown.units).toBe(2);
   });
+
+  // ac-hntqm6: fal counts a megapixel as 1024x1024 = 1,048,576 px. The three
+  // card-stated endpoints round each image up; usd = units x the card rate.
+  it.each([
+    ["square_hd", "square_hd", 1, 1],
+    ["1024x1024", { width: 1024, height: 1024 }, 1, 1],
+    ["1000x1000", { width: 1000, height: 1000 }, 1, 1],
+    ["1024x1040", { width: 1024, height: 1040 }, 1, 2],
+    ["1920x1080", { width: 1920, height: 1080 }, 1, 2],
+    ["1448x1448", { width: 1448, height: 1448 }, 1, 2],
+    ["2048x2048", { width: 2048, height: 2048 }, 1, 4],
+    ["2048x2064", { width: 2048, height: 2064 }, 1, 5],
+    ["square_hd x2", "square_hd", 2, 2],
+    ["1920x1080 x4", { width: 1920, height: 1080 }, 4, 8],
+  ] as const)(
+    "rounds %s up to whole 1024x1024 megapixels per image",
+    (_label, image_size, num_images, units) => {
+      for (const [endpoint, rate] of [
+        ["fal-ai/flux/dev", 0.025],
+        ["fal-ai/flux/schnell", 0.003],
+        ["fal-ai/qwen-image", 0.02],
+      ] as const) {
+        const result = estimate(endpoint, {
+          prompt: "x",
+          image_size,
+          num_images,
+        });
+        expect(result.breakdown, endpoint).toEqual({
+          units,
+          unit: "megapixels",
+          perUnitUsd: rate,
+        });
+        expect(result.usd, endpoint).toBeCloseTo(units * rate, 10);
+        expect(result.rateAsOf, endpoint).toBe("2026-10-15");
+        expect(result.warnings, endpoint).toEqual([]);
+      }
+    }
+  );
+
+  it("prices the recorded qwen-image square_hd call as one megapixel", () => {
+    // tests/recordings/fal_2801268556/qwen-image_1996519734 returned one
+    // 1024x1024 image and billed x-fal-billable-units 1. fal's usage API
+    // reads 1 megapixel at $0.02 for that minute (2026-04-18T10:35Z).
+    const result = estimate("fal-ai/qwen-image", {
+      prompt:
+        "An action shot of a black lab swimming in an inground suburban swimming pool.",
+      num_images: 1,
+      image_size: "square_hd",
+      output_format: "png",
+      num_inference_steps: 30,
+    });
+    expect(result.breakdown.units).toBe(1);
+    expect(result.usd).toBeCloseTo(0.02, 10);
+  });
+
+  it.each([
+    ["square_hd", "square_hd", 1, 1],
+    ["1024x2048", { width: 1024, height: 2048 }, 1, 2],
+    ["2048x2048", { width: 2048, height: 2048 }, 1, 4],
+    ["square_hd x2", "square_hd", 2, 2],
+  ] as const)(
+    "prices %s on the whole-megapixel edit endpoints",
+    (_label, image_size, num_images, units) => {
+      for (const [endpoint, rate] of [
+        ["fal-ai/hunyuan-image/v3/instruct/edit", 0.09],
+        ["fal-ai/qwen-image-edit", 0.03],
+      ] as const) {
+        const result = estimate(endpoint, { image_size, num_images });
+        expect(result.breakdown, endpoint).toEqual({
+          units,
+          unit: "megapixels",
+          perUnitUsd: rate,
+        });
+        expect(result.usd, endpoint).toBeCloseTo(units * rate, 10);
+        expect(result.warnings, endpoint).toEqual([]);
+      }
+    }
+  );
+
+  it.each([
+    ["square", "square", "0.2500"],
+    ["landscape_4_3", "landscape_4_3", "0.7500"],
+    ["1000x1000", { width: 1000, height: 1000 }, "0.9537"],
+    ["1024x1040", { width: 1024, height: 1040 }, "1.0156"],
+    ["1920x1080", { width: 1920, height: 1080 }, "1.9775"],
+  ] as const)(
+    "warns on the partial-megapixel %s edit size instead of rounding",
+    (_label, image_size, perImage) => {
+      for (const endpoint of [
+        "fal-ai/hunyuan-image/v3/instruct/edit",
+        "fal-ai/qwen-image-edit",
+      ]) {
+        const result = estimate(endpoint, { image_size });
+        expect(result.usd, endpoint).toBe(0);
+        expect(result.warnings, endpoint).toEqual([
+          `fal '${endpoint}': image_size is ${perImage} megapixels per image; fal publishes no rounding rule for this endpoint, so only whole-megapixel sizes are priced`,
+        ]);
+      }
+    }
+  );
 
   it("warns when qwen image edit omits its undocumented size", () => {
     const result = estimate("fal-ai/qwen-image-edit", {

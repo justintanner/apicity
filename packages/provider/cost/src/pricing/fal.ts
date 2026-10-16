@@ -926,6 +926,10 @@ const meshyV71 = (endpointId: string, on: string): ModelPricing => ({
 
 // openrouter/router/decisions bills input and output tokens; no request field
 // fixes the output token count (card read 2026-10-16).
+// xai/grok-voice: unpublished, fal dashboard. The pricing API and page list
+// $0.00083/second (2026-10-16), but do not define the seconds. Our 6.008 s
+// input and 2.54 s reply billed 1.897 units ($0.00157451); request audio
+// duration cannot determine these units, so keep dynamic estimation.
 export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "alibaba/qwen-image-3/edit",
   "alibaba/qwen-image-3/text-to-image",
@@ -989,6 +993,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "xai/grok-imagine-image/v2.0/edit",
   "xai/grok-imagine-image/v2.0/text-to-image",
   "xai/grok-imagine-video/v1.5/reference-to-video",
+  "xai/grok-voice",
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {

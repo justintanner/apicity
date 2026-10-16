@@ -1141,7 +1141,9 @@ describe("fal edit/image pricing estimates", () => {
     // eight-step clip their cards price at $0.24 and $0.25. FLUX.2 Flex billed
     // 0.834 processed megapixels ($0.0417) for a 1024x768 image its card
     // rounds up to one megapixel ($0.05). FLUX 3 Action SO-101 bills compute
-    // seconds that no request field fixes. All sixty-two use fal's
+    // seconds that no request field fixes. Grok Voice bills seconds whose
+    // meaning is unpublished and which differ from input/reply duration.
+    // All sixty-three use fal's
     // pricing-estimate API.
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toEqual([
       "alibaba/qwen-image-3/edit",
@@ -1206,6 +1208,7 @@ describe("fal edit/image pricing estimates", () => {
       "xai/grok-imagine-image/v2.0/edit",
       "xai/grok-imagine-image/v2.0/text-to-image",
       "xai/grok-imagine-video/v1.5/reference-to-video",
+      "xai/grok-voice",
     ]);
     for (const endpoint of FAL_DYNAMIC_PRICING_ENDPOINTS) {
       expect(falPricing[endpoint], endpoint).toBeUndefined();

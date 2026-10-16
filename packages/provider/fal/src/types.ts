@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalXaiGrokVoiceRequest,
+  FalXaiGrokVoiceRequestInput,
+  FalXaiGrokVoiceParsedRequest,
   FalFlux3ActionSo101Request,
   FalFlux3ActionSo101RequestInput,
   FalFlux3ActionSo101ParsedRequest,
@@ -653,6 +656,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalXaiGrokVoiceRequest,
   FalFlux3ActionSo101Request,
   FalOpenrouterRouterDecisionsRequest,
   FalCreatifyBorealRequest,
@@ -2896,6 +2900,7 @@ export interface FalRunXaiGrokImagineVideoNamespace {
 }
 
 export interface FalRunXaiNamespace {
+  grokVoice: FalRunXaiGrokVoiceNamespace;
   grokImagineImage: FalXaiGrokImagineImageFn;
   grokImagineVideo: FalRunXaiGrokImagineVideoNamespace;
 }
@@ -5903,4 +5908,26 @@ export interface FalRunFlux3ActionNamespace {
 }
 export interface FalRunNamespace {
   flux3Action: FalRunFlux3ActionNamespace;
+}
+
+export interface FalXaiGrokVoiceResponse {
+  /** The spoken reply, WAV at 24 kHz mono. */
+  audio: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+  /** Generated audio duration in seconds. */
+  duration: number;
+  /** Transcript when supplied by Grok; otherwise an empty string. */
+  text?: string;
+}
+
+export interface FalRunXaiGrokVoiceNamespace {
+  (
+    params: FalXaiGrokVoiceRequest,
+    signal?: AbortSignal
+  ): Promise<FalXaiGrokVoiceResponse>;
+  schema: ApicitySchema<FalXaiGrokVoiceRequest>;
 }

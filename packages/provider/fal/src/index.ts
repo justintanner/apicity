@@ -21,6 +21,12 @@ export type {
 
 // Export all types
 export type {
+  FalKlingVideoO3StandardImageToVideoRequest,
+  FalKlingVideoO3StandardImageToVideoRequestInput,
+  FalKlingVideoO3StandardImageToVideoParsedRequest,
+  FalKlingVideoO3StandardImageToVideoResponse,
+  FalRunKlingVideoO3Namespace,
+  FalRunKlingVideoO3StandardNamespace,
   FalFlux2FlexRequest,
   FalFlux2FlexRequestInput,
   FalFlux2FlexParsedRequest,

@@ -928,6 +928,31 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  // Bills each requested second (duration, a digit string defaulting to "5")
+  // at $0.084 with audio off and $0.112 with audio on; generate_audio
+  // defaults to false here, unlike Kling v3. fal counts the charge in
+  // seconds of $0.14: the recorded 3 s call with audio off billed 1.8 units
+  // ($0.252, the card's price) although the file ran 3.042 s. multi_prompt
+  // shots carry their own durations, which the card does not price, so a
+  // payload with shots warns.
+  "fal-ai/kling-video/o3/standard/image-to-video": perSecondTiered(
+    "fal-ai/kling-video/o3/standard/image-to-video",
+    [
+      {
+        name: "generate_audio",
+        pick: (p) =>
+          typeof p.generate_audio === "boolean"
+            ? String(p.generate_audio)
+            : "false",
+      },
+    ],
+    { false: 0.084, true: 0.112 },
+    (p) =>
+      Array.isArray(p.multi_prompt) && p.multi_prompt.length > 0
+        ? undefined
+        : klingSeconds(p),
+    "2026-10-15"
+  ),
   // Bills the generated length, which no request field carries, so the entry
   // needs costHints.durationSeconds: the source converted to 24 fps and
   // trimmed to the closest 17n+5 frames (at least 56). The recorded 4 s,

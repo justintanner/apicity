@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalKlingVideoO3StandardImageToVideoRequest,
+  FalKlingVideoO3StandardImageToVideoRequestInput,
+  FalKlingVideoO3StandardImageToVideoParsedRequest,
   FalFlux2FlexRequest,
   FalFlux2FlexRequestInput,
   FalFlux2FlexParsedRequest,
@@ -638,6 +641,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalKlingVideoO3StandardImageToVideoRequest,
   FalFlux2FlexRequest,
   FalKandinsky6ProImageToVideoRequest,
   FalKandinsky6ProTextToVideoRequest,
@@ -5724,4 +5728,33 @@ export interface FalRunFlux2FlexNamespace {
 
 export interface FalRunNamespace {
   flux2Flex: FalRunFlux2FlexNamespace;
+}
+
+export interface FalKlingVideoO3StandardImageToVideoResponse {
+  /** The generated video. */
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+}
+
+type FalKlingVideoO3StandardImageToVideoFn = ((
+  params: FalKlingVideoO3StandardImageToVideoRequest,
+  signal?: AbortSignal
+) => Promise<FalKlingVideoO3StandardImageToVideoResponse>) & {
+  schema: ApicitySchema<FalKlingVideoO3StandardImageToVideoRequest>;
+};
+
+export interface FalRunKlingVideoO3StandardNamespace {
+  imageToVideo: FalKlingVideoO3StandardImageToVideoFn;
+}
+
+export interface FalRunKlingVideoO3Namespace {
+  standard: FalRunKlingVideoO3StandardNamespace;
+}
+
+export interface FalRunKlingVideoNamespace {
+  o3: FalRunKlingVideoO3Namespace;
 }

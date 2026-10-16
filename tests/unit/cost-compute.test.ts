@@ -723,10 +723,10 @@ describe("computeEstimate", () => {
         endpoint: "fal-ai/flux/dev",
         payload: { image_size: { width: 2048, height: 2048 } },
       });
-      // 2048*2048 = 4.19 MP, rounded up to 5 whole megapixels
-      expect(result.usd).toBeCloseTo(0.125, 10);
+      // 2048*2048 = 4,194,304 px = exactly 4 megapixels of 1024x1024 px
+      expect(result.usd).toBeCloseTo(0.1, 10);
       expect(result.breakdown).toEqual({
-        units: 5,
+        units: 4,
         unit: "megapixels",
         perUnitUsd: 0.025,
       });
@@ -738,7 +738,7 @@ describe("computeEstimate", () => {
         endpoint: "fal-ai/flux/schnell",
         payload: { image_size: "landscape_16_9", num_images: 2 },
       });
-      // 1024*576 = 0.59 MP → 1 MP per image, 2 images
+      // 1024*576 = 0.5625 MP → 1 MP per image, 2 images
       expect(preset.breakdown.units).toBe(2);
       expect(preset.usd).toBeCloseTo(0.006, 10);
 

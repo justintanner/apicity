@@ -941,6 +941,8 @@ const meshyV71 = (endpointId: string, on: string): ModelPricing => ({
 // bytedance/seedance-2.5/us/text-to-video bills $0.02568 per 1000 tokens of
 // the output file at 480p and 720p (card read 2026-10-15). The same payload
 // billed 38.8 units ($0.996384), where seedance25Rates predicts 38.88.
+// bytedance/seedance-2.5/us/image-to-video takes the input image's aspect:
+// cat1.jpg gave 648x630 at 97 frames, 38.671 units ($0.99307128).
 export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "alibaba/qwen-image-3/edit",
   "alibaba/qwen-image-3/text-to-image",
@@ -953,6 +955,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "bytedance/seedance-2.0/us/image-to-video",
   "bytedance/seedance-2.0/us/reference-to-video",
   "bytedance/seedance-2.0/us/text-to-video",
+  "bytedance/seedance-2.5/us/image-to-video",
   "bytedance/seedance-2.5/us/text-to-video",
   "bytedance/seedream/v5/pro/edit",
   "bytedance/seedream/v5/pro/layerize",

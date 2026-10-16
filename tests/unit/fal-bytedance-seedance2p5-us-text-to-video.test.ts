@@ -38,6 +38,7 @@ describe("Bytedance Seedance 2.5 US text-to-video", () => {
     const p = createFal({ apiKey: "test-key" });
     expect(Object.keys(p.run.bytedance.seedance2p5.us)).toEqual([
       "textToVideo",
+      "imageToVideo",
     ]);
     expect(p.run.bytedance.seedance2p5.us.textToVideo).toBe(
       p.post.run.bytedance.seedance2p5.us.textToVideo

@@ -930,7 +930,7 @@ const meshyV71 = (endpointId: string, on: string): ModelPricing => ({
 // $0.00083/second (2026-10-16), but do not define the seconds. Our 6.008 s
 // input and 2.54 s reply billed 1.897 units ($0.00157451); request audio
 // duration cannot determine these units, so keep dynamic estimation.
-// bytedance/seedance-2.0/us/text-to-video bills $0.0168 per 1000 tokens of
+// bytedance/seedance-2.0/us/{text,image}-to-video bill $0.0168 per 1000 tokens of
 // the output file (card read 2026-10-15). Our 480p, 1:1, "4" s call returned
 // 640x640 at 97 frames and billed 38.8 units ($0.65184), which the seedance
 // table above (16:9 dims, 24 frames per requested second) puts at 38.88.
@@ -943,6 +943,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "blackforestlabs/flux-3/edit-image",
   "blackforestlabs/flux-3/text-to-image",
   "blackforestlabs/flux-video-upscale",
+  "bytedance/seedance-2.0/us/image-to-video",
   "bytedance/seedance-2.0/us/text-to-video",
   "bytedance/seedream/v5/pro/edit",
   "bytedance/seedream/v5/pro/layerize",

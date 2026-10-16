@@ -21,9 +21,13 @@ export type {
 
 // Export all types
 export type {
+  FalBytedanceSeedance2p0UsImageToVideoRequest,
   FalBytedanceSeedance2p0UsTextToVideoRequest,
+  FalBytedanceSeedance2p0UsImageToVideoRequestInput,
   FalBytedanceSeedance2p0UsTextToVideoRequestInput,
+  FalBytedanceSeedance2p0UsImageToVideoParsedRequest,
   FalBytedanceSeedance2p0UsTextToVideoParsedRequest,
+  FalBytedanceSeedance2p0UsImageToVideoResponse,
   FalBytedanceSeedance2p0UsTextToVideoResponse,
   FalRunBytedanceSeedance2p0UsNamespace,
   FalMinimaxH3MaxStylesSixteenBitPixelRequest,

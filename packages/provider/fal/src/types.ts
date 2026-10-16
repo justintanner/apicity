@@ -23,8 +23,11 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalBytedanceSeedance2p0UsImageToVideoRequest,
   FalBytedanceSeedance2p0UsTextToVideoRequest,
+  FalBytedanceSeedance2p0UsImageToVideoRequestInput,
   FalBytedanceSeedance2p0UsTextToVideoRequestInput,
+  FalBytedanceSeedance2p0UsImageToVideoParsedRequest,
   FalBytedanceSeedance2p0UsTextToVideoParsedRequest,
   FalMinimaxH3MaxStylesSixteenBitPixelRequest,
   FalMinimaxH3MaxStylesHandDrawnRequest,
@@ -680,6 +683,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalBytedanceSeedance2p0UsImageToVideoRequest,
   FalBytedanceSeedance2p0UsTextToVideoRequest,
   FalMinimaxH3MaxStylesSixteenBitPixelRequest,
   FalMinimaxH3MaxStylesHandDrawnRequest,
@@ -6123,12 +6127,29 @@ export interface FalBytedanceSeedance2p0UsTextToVideoResponse {
   /** The seed used for generation. */
   seed: number;
 }
+export interface FalBytedanceSeedance2p0UsImageToVideoResponse {
+  /** The generated video file. */
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+  /** The seed used for generation. */
+  seed: number;
+}
 export interface FalRunBytedanceSeedance2p0UsNamespace {
   textToVideo: ((
     params: FalBytedanceSeedance2p0UsTextToVideoRequest,
     signal?: AbortSignal
   ) => Promise<FalBytedanceSeedance2p0UsTextToVideoResponse>) & {
     schema: ApicitySchema<FalBytedanceSeedance2p0UsTextToVideoRequest>;
+  };
+  imageToVideo: ((
+    params: FalBytedanceSeedance2p0UsImageToVideoRequest,
+    signal?: AbortSignal
+  ) => Promise<FalBytedanceSeedance2p0UsImageToVideoResponse>) & {
+    schema: ApicitySchema<FalBytedanceSeedance2p0UsImageToVideoRequest>;
   };
 }
 export interface FalRunBytedanceSeedance2p0Namespace {

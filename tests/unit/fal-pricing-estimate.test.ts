@@ -1145,7 +1145,7 @@ describe("fal edit/image pricing estimates", () => {
     // meaning is unpublished and which differ from input/reply duration.
     // Seedance 2.0 US text-to-video bills tokens of the output file: 38.8
     // units for a four-second 640x640 clip of 97 frames, where the seedance
-    // per-second table predicts 38.88. All sixty-four use fal's
+    // per-second table predicts 38.88. All sixty-five use fal's
     // pricing-estimate API.
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toEqual([
       "alibaba/qwen-image-3/edit",
@@ -1156,6 +1156,7 @@ describe("fal edit/image pricing estimates", () => {
       "blackforestlabs/flux-3/edit-image",
       "blackforestlabs/flux-3/text-to-image",
       "blackforestlabs/flux-video-upscale",
+      "bytedance/seedance-2.0/us/image-to-video",
       "bytedance/seedance-2.0/us/text-to-video",
       "bytedance/seedream/v5/pro/edit",
       "bytedance/seedream/v5/pro/layerize",

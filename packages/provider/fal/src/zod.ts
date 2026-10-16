@@ -11681,7 +11681,93 @@ export type FalBytedanceSeedance2p0UsTextToVideoParsedRequest = z.output<
   typeof FalBytedanceSeedance2p0UsTextToVideoRequestSchema
 >;
 
+// Bytedance Seedance 2.0 US image-to-video
+export const FalBytedanceSeedance2p0UsImageToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .describe(
+      "The text prompt describing the desired motion and action for the video."
+    ),
+  image_url: z
+    .string()
+    .describe(
+      "The URL of the starting frame image to animate. Supported formats: JPEG, PNG, WebP. Max 30 MB."
+    ),
+  end_image_url: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "The URL of the image to use as the last frame of the video. When provided, the generated video will transition from the starting image to this ending image. Supported formats: JPEG, PNG, WebP. Max 30 MB."
+    ),
+  resolution: z
+    .enum(["480p", "720p", "1080p", "4k"])
+    .default("720p")
+    .describe(
+      "Video resolution - 480p for faster generation, 720p for balance, 1080p for high quality, 4k for highest quality."
+    ),
+  duration: z
+    .enum([
+      "auto",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+    ])
+    .default("auto")
+    .describe(
+      "Duration of the video in seconds. Supports 4 to 15 seconds, or auto to let the model decide based on the prompt."
+    ),
+  aspect_ratio: z
+    .enum(["auto", "21:9", "16:9", "4:3", "1:1", "3:4", "9:16"])
+    .default("auto")
+    .describe(
+      "The aspect ratio of the generated video. Use 16:9 for landscape, 9:16 for portrait/vertical, 1:1 for square, 21:9 for ultrawide cinematic, or auto to infer from the input image."
+    ),
+  generate_audio: z
+    .boolean()
+    .default(true)
+    .describe(
+      "Whether to generate synchronized audio for the video, including sound effects, ambient sounds, and lip-synced speech."
+    ),
+  bitrate_mode: z
+    .enum(["standard", "high"])
+    .default("standard")
+    .describe(
+      "Output bitrate mode. 'high' requests a higher-quality, larger-file encode from the model; 'standard' uses the default bitrate."
+    ),
+  codec: z
+    .enum(["auto", "H264", "H265"])
+    .default("auto")
+    .describe(
+      "'auto' retains default video codec behaviour; 'H264' uses H.264; 'H265' uses H.265."
+    ),
+  end_user_id: z
+    .string()
+    .nullable()
+    .describe("The unique user ID of the end user.")
+    .optional(),
+});
+export type FalBytedanceSeedance2p0UsImageToVideoRequest = z.input<
+  typeof FalBytedanceSeedance2p0UsImageToVideoRequestSchema
+>;
+export type FalBytedanceSeedance2p0UsImageToVideoRequestInput =
+  FalBytedanceSeedance2p0UsImageToVideoRequest;
+export type FalBytedanceSeedance2p0UsImageToVideoParsedRequest = z.output<
+  typeof FalBytedanceSeedance2p0UsImageToVideoRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "bytedance/seedance-2.0/us/image-to-video":
+    FalBytedanceSeedance2p0UsImageToVideoRequestSchema,
   "bytedance/seedance-2.0/us/text-to-video":
     FalBytedanceSeedance2p0UsTextToVideoRequestSchema,
   "minimax/h3-max/styles/16bit-pixel":

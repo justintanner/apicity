@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-206 endpoints across 53 groups. Each method mirrors an upstream URL path.
+207 endpoints across 53 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -699,6 +699,23 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.bytedance.seedance2p0.textToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.bytedance.seedance2p0.us.imageToVideo</code></b></summary>
+
+<code>POST https://fal.run/bytedance/seedance-2.0/us/image-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/bytedance/seedance-2.0/us/image-to-video/api)
+
+```typescript
+const res = await fal.run.bytedance.seedance2p0.us.imageToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

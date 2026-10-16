@@ -1823,7 +1823,7 @@
       "packages/provider/kie/src/zod.ts": "sha256:241055bd5131ac3f9b8a20a7aa94958cb8573332118c97ea0da0b52d5214445d",
       "packages/provider/kie/src/model-schemas.ts": "sha256:1af2594233cb63d20a44c4466c378cb4bd2f62c7995b93e61d6c69114f1b10b7",
       "packages/provider/kie/src/kie.ts": "sha256:c1354ddba53f59fb13dae3f7baaad2404a506bc5b104656e586416b50f5cd4e8",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:92fa1eccaaae247b2b779ca5368829a4aa2ce77239effb2fc65489c0f00fc63b",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:4d5012a053b6498d60472932a220f0c82eb4a8c40ef056d95010103762488c18",
       "packages/provider/cost/src/slugs.ts": "sha256:ff5f58bd6f8bb80ebb4e7e952352dc4034778f66728635dc8fc98c42ed187d96",
       "scripts/endpoint-docs.tsv": "sha256:648e9c07310da5d3f94f73db56c13e59182c5e02df0bbc4109979b67ce68cfb0"
     }
@@ -20091,33 +20091,14 @@
         "anchor": "https://kie.ai/qwen-image",
         "discountPrice": false
       },
-      "disposition": "canonical-alias",
-      "mappedApiCityKeys": ["qwen/text-to-image"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/qwen-image",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The official label is an upstream alias for one canonical ApiCity pricing key with a complete official cell.",
-      "canonicalKey": "qwen/text-to-image",
-      "unit": "megapixels",
-      "officialUnit": "megapixels",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "4.0",
-        "creditUnit": "per megapixel",
-        "usdPrice": "0.02",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {},
-      "selectorSources": {},
-      "representativePayload": {
-        "model": "qwen/text-to-image",
-        "input": {
-          "image_size": "square_hd",
-          "prompt": "audit"
-        }
-      }
+      "rationale": "The frozen per-megapixel Qwen Image cell is contradicted by KIE's billed recordings, which charge a fixed amount per image_size preset (2026-10-16); the runtime per-preset rates are pricing-only exceptions, not this row.",
+      "technicalBlocker": "The frozen per-megapixel Qwen Image cell is contradicted by KIE's billed recordings, which charge a fixed amount per image_size preset (2026-10-16); the runtime per-preset rates are pricing-only exceptions, not this row."
     },
     {
       "occurrenceId": "sha256:051e4bb4d0bb685897d09c8fbb6bb577201789d611f198cf0dbd7333ada789d2#1",
@@ -21419,32 +21400,14 @@
         "anchor": "https://kie.ai/qwen/image-edit",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["qwen/image-edit"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/qwen/image-edit",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "The row maps to an existing ApiCity pricing key with a complete official cell.",
-      "unit": "megapixels",
-      "officialUnit": "megapixels",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "5.0",
-        "creditUnit": "per megapixel",
-        "usdPrice": "0.03",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {},
-      "selectorSources": {},
-      "representativePayload": {
-        "model": "qwen/image-edit",
-        "input": {
-          "image_url": "https://example.com/a.png",
-          "prompt": "audit"
-        }
-      }
+      "rationale": "The frozen per-megapixel Qwen Image cell is contradicted by KIE's billed recordings, which charge a fixed amount per image_size preset (2026-10-16); the runtime per-preset rates are pricing-only exceptions, not this row.",
+      "technicalBlocker": "The frozen per-megapixel Qwen Image cell is contradicted by KIE's billed recordings, which charge a fixed amount per image_size preset (2026-10-16); the runtime per-preset rates are pricing-only exceptions, not this row."
     },
     {
       "occurrenceId": "sha256:f7e3f8ff6d264503a24bfa50f3b807561126ae664b1778e71b8ca5b18fda7b12#1",
@@ -23624,22 +23587,18 @@
         "descriptor": true,
         "guard": true,
         "pricingKey": "qwen/text-to-image",
-        "linkedRows": [
-          "sha256:0418584183ffec22c16eee7edf11f213c52a9b18fb199511fadb39e3ee10b04a#1"
-        ],
-        "disposition": "supported",
-        "rationale": "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
       },
       {
         "id": "qwen/image-edit",
         "descriptor": true,
         "guard": true,
         "pricingKey": "qwen/image-edit",
-        "linkedRows": [
-          "sha256:eee31f426586f90e55e528f44135f7143be23556931631c0e13fecbf7a86f4f9#1"
-        ],
-        "disposition": "supported",
-        "rationale": "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
       },
       {
         "id": "qwen/image-to-image",
@@ -26916,11 +26875,9 @@
       },
       {
         "key": "qwen/text-to-image",
-        "linkedRows": [
-          "sha256:0418584183ffec22c16eee7edf11f213c52a9b18fb199511fadb39e3ee10b04a#1"
-        ],
-        "disposition": "supported",
-        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
       },
       {
         "key": "qwen/image-to-image",
@@ -26930,11 +26887,9 @@
       },
       {
         "key": "qwen/image-edit",
-        "linkedRows": [
-          "sha256:eee31f426586f90e55e528f44135f7143be23556931631c0e13fecbf7a86f4f9#1"
-        ],
-        "disposition": "supported",
-        "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
       },
       {
         "key": "gpt4o-image/generate",
@@ -28967,13 +28922,13 @@
       "unique": 483,
       "duplicateOccurrences": 0,
       "dispositionCounts": {
-        "implemented": 250,
-        "canonical-alias": 123,
+        "implemented": 249,
+        "canonical-alias": 122,
         "duplicate": 0,
         "free-nonbillable": 3,
         "unsupported-endpoint": 3,
         "token-billed": 80,
-        "upstream-unmappable": 24
+        "upstream-unmappable": 26
       },
       "unclassified": 0,
       "evidenceConflicts": {
@@ -28998,11 +28953,11 @@
         "guards": 155,
         "withoutPricing": 6,
         "dispositionCounts": {
-          "supported": 118,
+          "supported": 116,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 37
+          "upstream-unmappable": 39
         },
         "unclassified": 0
       },
@@ -29022,11 +28977,11 @@
       "pricingKeys": {
         "count": 179,
         "dispositionCounts": {
-          "supported": 146,
+          "supported": 144,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 33
+          "upstream-unmappable": 35
         },
         "unclassified": 0
       },
@@ -29768,6 +29723,90 @@
         "status": "legacy",
         "provenance": "frozen snapshot contains nano-banana family rows, but they identify google/nano-banana, nano-banana-2, nano-banana-pro, or google/nano-banana-edit rather than the legacy nano-banana runtime key",
         "rationale": "The legacy family key is retained as legacy; family-name collapse must not substitute it for a concrete official model operation."
+      },
+      {
+        "key": "qwen/text-to-image",
+        "variant": "square",
+        "status": "pricing-only",
+        "provenance": "billed recordings tests/recordings/kie_2079838932/qwen-text-to-image-<preset>_* (2026-10-16): square 1, square_hd 5, portrait_4_3 3, portrait_16_9 2, landscape_4_3 3, landscape_16_9 2 credits per image",
+        "rationale": "KIE bills this model a fixed credit amount per image_size preset, charged at submission; the frozen 2026-09-11 cell priced it per megapixel, which the billed recordings contradict."
+      },
+      {
+        "key": "qwen/text-to-image",
+        "variant": "square_hd",
+        "status": "pricing-only",
+        "provenance": "billed recordings tests/recordings/kie_2079838932/qwen-text-to-image-<preset>_* (2026-10-16): square 1, square_hd 5, portrait_4_3 3, portrait_16_9 2, landscape_4_3 3, landscape_16_9 2 credits per image",
+        "rationale": "KIE bills this model a fixed credit amount per image_size preset, charged at submission; the frozen 2026-09-11 cell priced it per megapixel, which the billed recordings contradict."
+      },
+      {
+        "key": "qwen/text-to-image",
+        "variant": "portrait_4_3",
+        "status": "pricing-only",
+        "provenance": "billed recordings tests/recordings/kie_2079838932/qwen-text-to-image-<preset>_* (2026-10-16): square 1, square_hd 5, portrait_4_3 3, portrait_16_9 2, landscape_4_3 3, landscape_16_9 2 credits per image",
+        "rationale": "KIE bills this model a fixed credit amount per image_size preset, charged at submission; the frozen 2026-09-11 cell priced it per megapixel, which the billed recordings contradict."
+      },
+      {
+        "key": "qwen/text-to-image",
+        "variant": "portrait_16_9",
+        "status": "pricing-only",
+        "provenance": "billed recordings tests/recordings/kie_2079838932/qwen-text-to-image-<preset>_* (2026-10-16): square 1, square_hd 5, portrait_4_3 3, portrait_16_9 2, landscape_4_3 3, landscape_16_9 2 credits per image",
+        "rationale": "KIE bills this model a fixed credit amount per image_size preset, charged at submission; the frozen 2026-09-11 cell priced it per megapixel, which the billed recordings contradict."
+      },
+      {
+        "key": "qwen/text-to-image",
+        "variant": "landscape_4_3",
+        "status": "pricing-only",
+        "provenance": "billed recordings tests/recordings/kie_2079838932/qwen-text-to-image-<preset>_* (2026-10-16): square 1, square_hd 5, portrait_4_3 3, portrait_16_9 2, landscape_4_3 3, landscape_16_9 2 credits per image",
+        "rationale": "KIE bills this model a fixed credit amount per image_size preset, charged at submission; the frozen 2026-09-11 cell priced it per megapixel, which the billed recordings contradict."
+      },
+      {
+        "key": "qwen/text-to-image",
+        "variant": "landscape_16_9",
+        "status": "pricing-only",
+        "provenance": "billed recordings tests/recordings/kie_2079838932/qwen-text-to-image-<preset>_* (2026-10-16): square 1, square_hd 5, portrait_4_3 3, portrait_16_9 2, landscape_4_3 3, landscape_16_9 2 credits per image",
+        "rationale": "KIE bills this model a fixed credit amount per image_size preset, charged at submission; the frozen 2026-09-11 cell priced it per megapixel, which the billed recordings contradict."
+      },
+      {
+        "key": "qwen/image-edit",
+        "variant": "square",
+        "status": "pricing-only",
+        "provenance": "billed recordings tests/recordings/kie_2079838932/qwen-image-edit-<preset>_* (2026-10-16): square 2, square_hd 7, portrait_4_3 5, portrait_16_9 4, landscape_4_3 5, landscape_16_9 4 credits per image",
+        "rationale": "KIE bills this model a fixed credit amount per image_size preset, charged at submission; the frozen 2026-09-11 cell priced it per megapixel, which the billed recordings contradict."
+      },
+      {
+        "key": "qwen/image-edit",
+        "variant": "square_hd",
+        "status": "pricing-only",
+        "provenance": "billed recordings tests/recordings/kie_2079838932/qwen-image-edit-<preset>_* (2026-10-16): square 2, square_hd 7, portrait_4_3 5, portrait_16_9 4, landscape_4_3 5, landscape_16_9 4 credits per image",
+        "rationale": "KIE bills this model a fixed credit amount per image_size preset, charged at submission; the frozen 2026-09-11 cell priced it per megapixel, which the billed recordings contradict."
+      },
+      {
+        "key": "qwen/image-edit",
+        "variant": "portrait_4_3",
+        "status": "pricing-only",
+        "provenance": "billed recordings tests/recordings/kie_2079838932/qwen-image-edit-<preset>_* (2026-10-16): square 2, square_hd 7, portrait_4_3 5, portrait_16_9 4, landscape_4_3 5, landscape_16_9 4 credits per image",
+        "rationale": "KIE bills this model a fixed credit amount per image_size preset, charged at submission; the frozen 2026-09-11 cell priced it per megapixel, which the billed recordings contradict."
+      },
+      {
+        "key": "qwen/image-edit",
+        "variant": "portrait_16_9",
+        "status": "pricing-only",
+        "provenance": "billed recordings tests/recordings/kie_2079838932/qwen-image-edit-<preset>_* (2026-10-16): square 2, square_hd 7, portrait_4_3 5, portrait_16_9 4, landscape_4_3 5, landscape_16_9 4 credits per image",
+        "rationale": "KIE bills this model a fixed credit amount per image_size preset, charged at submission; the frozen 2026-09-11 cell priced it per megapixel, which the billed recordings contradict."
+      },
+      {
+        "key": "qwen/image-edit",
+        "variant": "landscape_4_3",
+        "status": "pricing-only",
+        "provenance": "billed recordings tests/recordings/kie_2079838932/qwen-image-edit-<preset>_* (2026-10-16): square 2, square_hd 7, portrait_4_3 5, portrait_16_9 4, landscape_4_3 5, landscape_16_9 4 credits per image",
+        "rationale": "KIE bills this model a fixed credit amount per image_size preset, charged at submission; the frozen 2026-09-11 cell priced it per megapixel, which the billed recordings contradict."
+      },
+      {
+        "key": "qwen/image-edit",
+        "variant": "landscape_16_9",
+        "status": "pricing-only",
+        "provenance": "billed recordings tests/recordings/kie_2079838932/qwen-image-edit-<preset>_* (2026-10-16): square 2, square_hd 7, portrait_4_3 5, portrait_16_9 4, landscape_4_3 5, landscape_16_9 4 credits per image",
+        "rationale": "KIE bills this model a fixed credit amount per image_size preset, charged at submission; the frozen 2026-09-11 cell priced it per megapixel, which the billed recordings contradict."
       },
       {
         "key": "qwen/image-to-image",

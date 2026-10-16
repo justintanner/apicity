@@ -403,44 +403,6 @@ const pixverseV6 = (
   ),
 });
 
-// kie's `image_size` presets are the same named tokens fal uses for the same
-// upstream models. kie's market pages publish the token list without pixel
-// dimensions, so the dimensions come from fal's documented values for those
-// presets (pricing/fal.ts PRESET_DIMENSIONS) — kept byte-identical so the two
-// providers cannot drift apart on the same model's area.
-const IMAGE_SIZE_DIMENSIONS: Record<string, readonly [number, number]> = {
-  square: [512, 512],
-  square_hd: [1024, 1024],
-  portrait_4_3: [768, 1024],
-  portrait_16_9: [576, 1024],
-  landscape_4_3: [1024, 768],
-  landscape_16_9: [1024, 576],
-};
-
-// Legacy KIE estimate: assume 1 megapixel = 1,000,000 pixels, round each image
-// UP to a whole megapixel, then multiply by the image count. The divisor and
-// rounding remain unverified KIE assumptions: its public pricing sources do
-// not consistently establish either rule (rechecked 2026-10-16, ac-7l96dz).
-// fal's separately verified 1,048,576-pixel rule does not establish KIE billing.
-// KIE's billed Qwen recordings fit neither divisor with either rounding
-// (2026-10-16, ac-dgvqms; see the Qwen Image entries), and this rule quotes
-// each of them at or above its bill. The 1,048,576-pixel divisor would quote
-// square_hd text-to-image at 4 credits against a billed 5.
-//
-// `defaultPreset` is the model's documented schema default and is applied only
-// when `input.image_size` is absent. A model with no documented default — and
-// a preset that is present but unrecognized — yields undefined units, so the
-// estimate fails with a derivation warning instead of guessing an area.
-const megapixels = (
-  p: Record<string, unknown>,
-  defaultPreset?: string
-): number | undefined => {
-  const preset = asString(asObject(p.input)?.image_size) ?? defaultPreset;
-  const dims = preset ? IMAGE_SIZE_DIMENSIONS[preset] : undefined;
-  if (!dims) return undefined;
-  return Math.ceil((dims[0] * dims[1]) / 1_000_000) * imageCount(p);
-};
-
 const flatImage = (perUnit: number, url: string): ModelPricing => ({
   kind: "perUnit",
   unit: "images",
@@ -567,21 +529,6 @@ const layerDecompositionPage = (
   ],
   rates,
   source: pricePage(url, asOf),
-});
-
-// Area-billed image entry: kie prices the Qwen Image family per megapixel of
-// output rather than per image.
-const perMegapixel = (
-  perUnit: number,
-  url: string,
-  defaultPreset?: string
-): ModelPricing => ({
-  kind: "perUnit",
-  unit: "megapixels",
-  units: (p) => megapixels(p, defaultPreset),
-  select: [],
-  rates: { "": perUnit },
-  source: pricePage(url),
 });
 
 // Image entry tiered by input.resolution (e.g. "1K"|"2K"|"4K").
@@ -2832,53 +2779,76 @@ export const kie: Record<string, ModelPricing> = {
     source: pricePage("https://kie.ai/topaz-image-upscale"),
   },
 
-  // Qwen Image — text-to-image and image-edit are area-billed: $0.02/megapixel
-  // and $0.03/MP (OQ-4). Units are ceil(megapixels per image) × image count,
-  // resolved from the `input.image_size` preset through the shared
-  // IMAGE_SIZE_DIMENSIONS table; each model's documented schema default is the
-  // absent-field fallback. image-edit documents landscape_4_3. text-to-image
-  // has documented none since upstream dropped square_hd ("Set this field
-  // explicitly", docs and live schema read 2026-10-16), so a text-to-image
-  // payload without image_size warns instead of quoting an assumed area.
+  // Qwen Image — text-to-image and image-edit bill a FIXED number of credits
+  // per input.image_size preset (1 credit = $0.005), charged at submission:
+  // every probe's first recordInfo poll already showed its final
+  // creditsConsumed. The bill tracks the preset, not the output, which is not
+  // the page's nominal size (text-to-image square and square_hd both came back
+  // 1328x1328, at 1 and 5 credits). Billed credits per preset, text-to-image /
+  // image-edit, one 2026-10-16 recording per cell under
+  // tests/recordings/kie_2079838932/qwen-{text-to-image,image-edit}-<preset>_*
+  // (ac-dgvqms P1 to P3, ac-ul6b3m T1 to T4 and E1 to E5): square 1 / 2,
+  // square_hd 5 / 7, portrait_4_3 3 / 5, portrait_16_9 2 / 4, landscape_4_3
+  // 3 / 5, landscape_16_9 2 / 4. Every probe sent only prompt, image_size and
+  // (image-edit) image_url, so acceleration, num_inference_steps and
+  // guidance_scale stayed at their schema defaults; no source publishes them
+  // as a price axis.
   //
-  // Both area rates over-quote KIE's billing, and no per-megapixel rule
-  // reproduces it. The terminal recordInfo of each 2026-10-16 recording under
-  // tests/recordings/kie_2079838932/ (ac-dgvqms) bills, at 1 credit = $0.005:
-  // qwen-text-to-image-square-hd 5 credits for a 1328x1328 output (quoted 8),
-  // qwen-text-to-image-landscape-4-3 3 credits for 1472x1104 (quoted 4) and
-  // qwen-image-edit-square-hd 7 credits for 2048x2048 (quoted 12). Neither
-  // divisor with either rounding fits those bills at the published 4 and 5
-  // credits/MP, whether the area is the preset's or the output's.
+  // The published per-megapixel figures are contradicted by that billing: the
+  // feed's 4 (text-to-image) and 5 (image-edit) credits/MP, the image-edit
+  // page's about $0.03/MP, and its per-image README table at about 3.33
+  // credits/MP, whose cells the billed image-edit credits double exactly. The
+  // README also says to multiply per image, which is the only source for
+  // scaling image-edit by num_images; no probe billed more than one image.
   //
-  // image-edit's published figures also disagree: the feed row is 5 credits/MP
-  // at USD 0.025 (2026-10-16; the frozen 2026-09-11 cell priced the same 5
-  // credits at USD 0.03), the product page, catalog and /models/{id}/price say
-  // about $0.03/MP depending on the aspect ratio, the page's per-image README
-  // table works out to about 3.33 credits/MP ($0.0165/MP), and the docs
-  // callback example bills 5 credits at landscape_4_3. $0.03/MP stays because
-  // it quotes at or above every one of them
-  // (plans/ac-dgvqms/evidence/findings.md).
-  //
+  // text-to-image has no default: upstream dropped square_hd ("Set this field
+  // explicitly", docs and live schema read 2026-10-16), so a payload without
+  // image_size quotes nothing. image-edit documents landscape_4_3.
+  "qwen/text-to-image": tieredImagePage(
+    "image_size",
+    {
+      square: 0.005,
+      square_hd: 0.025,
+      portrait_4_3: 0.015,
+      portrait_16_9: 0.01,
+      landscape_4_3: 0.015,
+      landscape_16_9: 0.01,
+    },
+    "https://kie.ai/qwen-image",
+    undefined,
+    "2026-10-16"
+  ),
   // `qwen/image-to-image` bills PER IMAGE: 4 credits ($0.02). The live feed row,
   // the https://kie.ai/qwen-image groupData pricingDesc ("Qwen Image-to-Image
   // costs 4 credits per image (= $0.02)") and KIE's /models catalog and
   // /models/{id}/price agree (read 2026-10-16, ac-dgvqms), and the docs
   // callback example bills 4 credits for a 1536x1024 (1.57 MP) source. The
   // frozen 2026-09-11 feed cell priced it per megapixel. The schema has no size
-  // or batch field, so one call is one image. Both owned billing probes (a
-  // 1672x941 source) failed upstream with a 500 and billed 0, so no recording
-  // backs this entry yet.
-  "qwen/text-to-image": perMegapixel(0.02, "https://kie.ai/qwen-image"),
+  // or batch field, so one call is one image. All three owned billing probes
+  // failed upstream with a 500 after KIE charged 4.0 credits at submission and
+  // refunded it: ac-dgvqms P5 twice on a 1672x941 PNG and ac-ul6b3m I1 on the
+  // 1024x1008 cat2.jpg. That submission charge is billing evidence for the
+  // per-image unit (per-megapixel billing would have charged the 1.57 MP source
+  // 8 or about 6.3), but no successful recording backs this entry yet.
   "qwen/image-to-image": flatImagePricePage(
     0.02,
     "https://kie.ai/qwen-image",
     "2026-10-16",
     () => 1
   ),
-  "qwen/image-edit": perMegapixel(
-    0.03,
+  "qwen/image-edit": tieredImagePage(
+    "image_size",
+    {
+      square: 0.01,
+      square_hd: 0.035,
+      portrait_4_3: 0.025,
+      portrait_16_9: 0.02,
+      landscape_4_3: 0.025,
+      landscape_16_9: 0.02,
+    },
     "https://kie.ai/qwen/image-edit",
-    "landscape_4_3"
+    "landscape_4_3",
+    "2026-10-16"
   ),
 
   // gpt4o-image/generate — endpoint-keyed. One published rate, 6 credits

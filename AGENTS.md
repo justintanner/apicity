@@ -11,7 +11,7 @@ bd ready              # Find available work
 bd show <id>          # View issue details
 bd update <id> --claim  # Claim work atomically
 bd close <id>         # Complete work
-bd dolt push          # Push beads data to remote
+# Remote beads sync is owned by the city's beads-maintenance loop; never run it by hand.
 ```
 
 ## Dolt Sync Recovery

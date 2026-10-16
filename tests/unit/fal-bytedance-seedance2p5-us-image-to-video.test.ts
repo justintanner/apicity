@@ -40,6 +40,7 @@ describe("Bytedance Seedance 2.5 US image-to-video", () => {
     expect(Object.keys(p.run.bytedance.seedance2p5.us)).toEqual([
       "textToVideo",
       "imageToVideo",
+      "referenceToVideo",
     ]);
     expect(p.run.bytedance.seedance2p5.us.imageToVideo).toBe(
       p.post.run.bytedance.seedance2p5.us.imageToVideo

@@ -938,6 +938,9 @@ const meshyV71 = (endpointId: string, on: string): ModelPricing => ({
 // videos' duration, at x0.6 (card read 2026-10-15). The same clip with one
 // 4 s reference video billed 47.43168 units ($0.796852224), where the
 // output-only reference table above predicts 23.328.
+// bytedance/seedance-2.5/us/text-to-video bills $0.02568 per 1000 tokens of
+// the output file at 480p and 720p (card read 2026-10-15). The same payload
+// billed 38.8 units ($0.996384), where seedance25Rates predicts 38.88.
 export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "alibaba/qwen-image-3/edit",
   "alibaba/qwen-image-3/text-to-image",
@@ -950,6 +953,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "bytedance/seedance-2.0/us/image-to-video",
   "bytedance/seedance-2.0/us/reference-to-video",
   "bytedance/seedance-2.0/us/text-to-video",
+  "bytedance/seedance-2.5/us/text-to-video",
   "bytedance/seedream/v5/pro/edit",
   "bytedance/seedream/v5/pro/layerize",
   "bytedance/seedream/v5/pro/text-to-image",

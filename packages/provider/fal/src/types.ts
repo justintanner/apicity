@@ -23,8 +23,11 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalBytedanceSeedance2p5UsImageToVideoRequest,
   FalBytedanceSeedance2p5UsTextToVideoRequest,
+  FalBytedanceSeedance2p5UsImageToVideoRequestInput,
   FalBytedanceSeedance2p5UsTextToVideoRequestInput,
+  FalBytedanceSeedance2p5UsImageToVideoParsedRequest,
   FalBytedanceSeedance2p5UsTextToVideoParsedRequest,
   FalBytedanceSeedance2p0UsReferenceToVideoRequest,
   FalBytedanceSeedance2p0UsImageToVideoRequest,
@@ -689,6 +692,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalBytedanceSeedance2p5UsImageToVideoRequest,
   FalBytedanceSeedance2p5UsTextToVideoRequest,
   FalBytedanceSeedance2p0UsReferenceToVideoRequest,
   FalBytedanceSeedance2p0UsImageToVideoRequest,
@@ -6194,12 +6198,31 @@ export interface FalBytedanceSeedance2p5UsTextToVideoResponse {
   /** The draft ID, or null when draft mode is disabled. */
   draft_id?: string | null;
 }
+export interface FalBytedanceSeedance2p5UsImageToVideoResponse {
+  /** The generated video file. */
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+  /** The seed used for generation. */
+  seed: number;
+  /** The draft ID, or null when draft mode is disabled. */
+  draft_id?: string | null;
+}
 export interface FalRunBytedanceSeedance2p5UsNamespace {
   textToVideo: ((
     params: FalBytedanceSeedance2p5UsTextToVideoRequest,
     signal?: AbortSignal
   ) => Promise<FalBytedanceSeedance2p5UsTextToVideoResponse>) & {
     schema: ApicitySchema<FalBytedanceSeedance2p5UsTextToVideoRequest>;
+  };
+  imageToVideo: ((
+    params: FalBytedanceSeedance2p5UsImageToVideoRequest,
+    signal?: AbortSignal
+  ) => Promise<FalBytedanceSeedance2p5UsImageToVideoResponse>) & {
+    schema: ApicitySchema<FalBytedanceSeedance2p5UsImageToVideoRequest>;
   };
 }
 export interface FalRunBytedanceSeedance2p5Namespace {

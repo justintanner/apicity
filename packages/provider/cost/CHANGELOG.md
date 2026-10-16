@@ -19,6 +19,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- KIE `qwen/text-to-image` and `qwen/image-edit` are priced per image from a
+  table keyed by `input.image_size`, not per megapixel. KIE charges a fixed
+  credit amount per preset at submission: text-to-image costs 1, 5, 3, 2, 3
+  and 2 credits for `square`, `square_hd`, `portrait_4_3`, `portrait_16_9`,
+  `landscape_4_3` and `landscape_16_9`, and image-edit costs 2, 7, 5, 4, 5 and
+  4 ($0.005 per credit). Each cell comes from a billed recording. Estimates
+  fall at every preset; for example, text-to-image `square_hd` drops from
+  $0.04 to $0.025. A text-to-image payload without `image_size` now warns
+  "missing required selector(s): image_size". Image-edit still defaults to
+  `landscape_4_3` and multiplies by `num_images`.
 - KIE `qwen/text-to-image` no longer prices an absent `input.image_size` as
   `square_hd` ($0.04). KIE dropped that documented default, so such a payload
   now returns $0 with a "could not derive units" warning. An explicit preset

@@ -1746,57 +1746,73 @@ describe("kie createTask image families (REQ-005)", () => {
 
 // OQ-4: the Qwen Image family is area-billed. Units are ceil(megapixels per
 // image) x image count, resolved from the `image_size` preset.
-describe("kie qwen per-megapixel pricing (OQ-4)", () => {
+describe("kie qwen per-preset pricing", () => {
+  // KIE bills Qwen Image text-to-image and image-edit a fixed credit amount
+  // per input.image_size preset, charged at submission (1 credit = $0.005).
+  // Every cell is the creditsConsumed of its own 2026-10-16 recording,
+  // tests/recordings/kie_2079838932/qwen-<model>-<preset>_* (ac-dgvqms P1 to
+  // P3, ac-ul6b3m T1 to T4 and E1 to E5).
   it.each([
-    { model: "qwen/text-to-image", image_size: "square", mp: 1, usd: 0.02 },
-    { model: "qwen/text-to-image", image_size: "square_hd", mp: 2, usd: 0.04 },
-    {
-      model: "qwen/text-to-image",
-      image_size: "portrait_4_3",
-      mp: 1,
-      usd: 0.02,
-    },
-    {
-      model: "qwen/text-to-image",
-      image_size: "landscape_16_9",
-      mp: 1,
-      usd: 0.02,
-    },
-    { model: "qwen/image-edit", image_size: "landscape_4_3", mp: 1, usd: 0.03 },
-    { model: "qwen/image-edit", image_size: "square_hd", mp: 2, usd: 0.06 },
+    { model: "qwen/text-to-image", image_size: "square", credits: 1 },
+    { model: "qwen/text-to-image", image_size: "square_hd", credits: 5 },
+    { model: "qwen/text-to-image", image_size: "portrait_4_3", credits: 3 },
+    { model: "qwen/text-to-image", image_size: "portrait_16_9", credits: 2 },
+    { model: "qwen/text-to-image", image_size: "landscape_4_3", credits: 3 },
+    { model: "qwen/text-to-image", image_size: "landscape_16_9", credits: 2 },
+    { model: "qwen/image-edit", image_size: "square", credits: 2 },
+    { model: "qwen/image-edit", image_size: "square_hd", credits: 7 },
+    { model: "qwen/image-edit", image_size: "portrait_4_3", credits: 5 },
+    { model: "qwen/image-edit", image_size: "portrait_16_9", credits: 4 },
+    { model: "qwen/image-edit", image_size: "landscape_4_3", credits: 5 },
+    { model: "qwen/image-edit", image_size: "landscape_16_9", credits: 4 },
   ])(
-    "prices $model $image_size as $mp MP = $usd",
-    ({ model, image_size, mp, usd }) => {
+    "prices $model $image_size at its billed $credits credits",
+    ({ model, image_size, credits }) => {
       const result = kieEstimate({
         model,
-        input: { prompt: "x", image_size },
+        input: {
+          prompt: "x",
+          image_url: "https://example.com/x.jpg",
+          image_size,
+        },
       });
 
-      expect(result.usd).toBeCloseTo(usd, 10);
+      expect(result.usd).toBeCloseTo(credits * 0.005, 10);
       expect(result.breakdown).toEqual({
-        units: mp,
-        unit: "megapixels",
-        perUnitUsd: model === "qwen/image-edit" ? 0.03 : 0.02,
+        units: 1,
+        unit: "images",
+        perUnitUsd: credits * 0.005,
       });
       expect(result.warnings).toEqual([]);
     }
   );
 
-  // A documented schema default is the absent-field fallback: landscape_4_3
-  // (1 MP) for image-edit.
-  it("applies qwen/image-edit's documented image_size default", () => {
-    expect(
-      kieEstimate({ model: "qwen/image-edit", input: { prompt: "x" } }).usd
-    ).toBeCloseTo(0.03, 10);
+  it("dates both tables to the 2026-10-16 probes on their product pages", () => {
+    for (const [model, url] of [
+      ["qwen/text-to-image", "https://kie.ai/qwen-image"],
+      ["qwen/image-edit", "https://kie.ai/qwen/image-edit"],
+    ] as const) {
+      expect(PRICING.kie[model].source).toEqual({ url, asOf: "2026-10-16" });
+    }
+  });
+
+  // image-edit documents landscape_4_3 as its default.
+  it("prices qwen/image-edit without image_size as landscape_4_3", () => {
+    const result = kieEstimate({
+      model: "qwen/image-edit",
+      input: { prompt: "x", image_url: "https://example.com/x.jpg" },
+    });
+
+    expect(result.usd).toBeCloseTo(0.025, 10);
+    expect(result.warnings).toEqual([]);
   });
 
   // Text-to-image documents no default since upstream dropped square_hd
   // ("Set this field explicitly", docs and live schema read 2026-10-16), so an
-  // absent image_size warns instead of quoting an assumed area. An explicit
-  // preset still prices as in the table above.
+  // absent image_size quotes nothing.
   it("fails qwen/text-to-image without image_size, which has no documented default", () => {
     // The shipped SDK schema applies no default either, so the parsed payload
-    // reaches the estimator without an area to price.
+    // reaches the estimator without a preset to price.
     const parsed = QwenTextToImageRequestSchema.parse({
       model: "qwen/text-to-image",
       input: { prompt: "x" },
@@ -1814,42 +1830,14 @@ describe("kie qwen per-megapixel pricing (OQ-4)", () => {
     expect(result.usd).toBe(0);
     expect(result.breakdown).toEqual({});
     expect(result.warnings).toHaveLength(1);
-    expect(result.warnings[0]).toContain("could not derive units");
+    expect(result.warnings[0]).toContain(
+      "missing required selector(s): image_size"
+    );
   });
 
-  // Billed floor (ac-dgvqms): the terminal recordInfo of each 2026-10-16
-  // recording under tests/recordings/kie_2079838932/ bills, at $0.005 per
-  // credit, qwen-text-to-image-square-hd 5 credits,
-  // qwen-text-to-image-landscape-4-3 3 and qwen-image-edit-square-hd 7. No
-  // per-megapixel rule reproduces those bills, so the estimate stays an
-  // over-quote; this keeps a divisor or rounding change from quoting a billed
-  // call below its bill (1,048,576 px would quote square_hd text-to-image at 4).
-  it.each([
-    { model: "qwen/text-to-image", image_size: "square_hd", billedUsd: 0.025 },
-    {
-      model: "qwen/text-to-image",
-      image_size: "landscape_4_3",
-      billedUsd: 0.015,
-    },
-    { model: "qwen/image-edit", image_size: "square_hd", billedUsd: 0.035 },
-  ])(
-    "quotes $model $image_size at or above its billed recording",
-    ({ model, image_size, billedUsd }) => {
-      const result = kieEstimate({
-        model,
-        input: {
-          prompt: "x",
-          image_url: "https://example.com/x.jpg",
-          image_size,
-        },
-      });
-
-      expect(result.warnings).toEqual([]);
-      expect(result.usd).toBeGreaterThanOrEqual(billedUsd);
-    }
-  );
-
-  it("multiplies megapixels by the string-enum num_images", () => {
+  // The image-edit README says to multiply per image; no probe billed more
+  // than one, so this scaling is page-sourced.
+  it("multiplies the image-edit cell by the string-enum num_images", () => {
     const result = kieEstimate({
       model: "qwen/image-edit",
       input: {
@@ -1860,31 +1848,38 @@ describe("kie qwen per-megapixel pricing (OQ-4)", () => {
       },
     });
 
-    expect(result.usd).toBeCloseTo(0.18, 10);
+    expect(result.usd).toBeCloseTo(0.105, 10);
     expect(result.breakdown).toEqual({
-      units: 6,
-      unit: "megapixels",
-      perUnitUsd: 0.03,
+      units: 3,
+      unit: "images",
+      perUnitUsd: 0.035,
     });
   });
 
-  // Warn, don't guess: an unrecognized preset has no dimensions to derive an
-  // area from, so the estimate fails instead of assuming a square.
-  it("fails on an unrecognized image_size preset instead of guessing", () => {
-    const result = kieEstimate({
-      model: "qwen/text-to-image",
-      input: { prompt: "x", image_size: "ultra_wide_9000" },
-    });
+  it.each(["qwen/text-to-image", "qwen/image-edit"])(
+    "warns for %s on an unrecognized image_size preset instead of guessing",
+    (model) => {
+      const result = kieEstimate({
+        model,
+        input: {
+          prompt: "x",
+          image_url: "https://example.com/x.jpg",
+          image_size: "ultra_wide_9000",
+        },
+      });
 
-    expect(result.usd).toBe(0);
-    expect(result.breakdown).toEqual({});
-    expect(result.warnings).toHaveLength(1);
-    expect(result.warnings[0]).toContain("could not derive units");
-  });
+      expect(result.usd).toBe(0);
+      expect(result.breakdown).toEqual({});
+      expect(result.warnings).toHaveLength(1);
+      expect(result.warnings[0]).toContain("no rate for variant");
+    }
+  );
 
   // qwen/image-to-image bills 4 credits ($0.02) per image: the live feed row,
   // the page's pricingDesc and KIE's /models/{id}/price agree (read 2026-10-16,
-  // ac-dgvqms). The schema has no size or batch field, so one call is one image.
+  // ac-dgvqms), and every owned probe was charged 4.0 credits at submission
+  // before failing upstream and being refunded. The schema has no size or
+  // batch field, so one call is one image.
   it("prices qwen/image-to-image per image from the 2026-10-16 page read", () => {
     const entry = PRICING.kie["qwen/image-to-image"];
     expect(entry.kind).toBe("perUnit");
@@ -2516,8 +2511,6 @@ describe("kie 2026-08-06 pricing pull provenance", () => {
       "recraft/crisp-upscale",
       "recraft/remove-background",
       "topaz/image-upscale",
-      "qwen/text-to-image",
-      "qwen/image-edit",
       "kling-2.6/text-to-video",
       "kling-2.6/image-to-video",
       "kling-2.6/motion-control",

@@ -367,6 +367,38 @@ export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
     rationale:
       "The legacy family key is retained as legacy; family-name collapse must not substitute it for a concrete official model operation.",
   },
+  ...[
+    "square",
+    "square_hd",
+    "portrait_4_3",
+    "portrait_16_9",
+    "landscape_4_3",
+    "landscape_16_9",
+  ].map((variant) => ({
+    key: "qwen/text-to-image",
+    variant,
+    status: "pricing-only",
+    provenance:
+      "billed recordings tests/recordings/kie_2079838932/qwen-text-to-image-<preset>_* (2026-10-16): square 1, square_hd 5, portrait_4_3 3, portrait_16_9 2, landscape_4_3 3, landscape_16_9 2 credits per image",
+    rationale:
+      "KIE bills this model a fixed credit amount per image_size preset, charged at submission; the frozen 2026-09-11 cell priced it per megapixel, which the billed recordings contradict.",
+  })),
+  ...[
+    "square",
+    "square_hd",
+    "portrait_4_3",
+    "portrait_16_9",
+    "landscape_4_3",
+    "landscape_16_9",
+  ].map((variant) => ({
+    key: "qwen/image-edit",
+    variant,
+    status: "pricing-only",
+    provenance:
+      "billed recordings tests/recordings/kie_2079838932/qwen-image-edit-<preset>_* (2026-10-16): square 2, square_hd 7, portrait_4_3 5, portrait_16_9 4, landscape_4_3 5, landscape_16_9 4 credits per image",
+    rationale:
+      "KIE bills this model a fixed credit amount per image_size preset, charged at submission; the frozen 2026-09-11 cell priced it per megapixel, which the billed recordings contradict.",
+  })),
   {
     key: "qwen/image-to-image",
     variant: "",
@@ -1068,13 +1100,6 @@ const PAYLOAD_RULES = Object.freeze([
     },
   },
   {
-    family: "qwen-image-size",
-    matches: (key) => key === "qwen/text-to-image",
-    apply: (input) => {
-      input.image_size = "square_hd";
-    },
-  },
-  {
     family: "qwen-image-input",
     matches: (key) => key === "qwen/image-edit" || key === "qwen2/image-edit",
     apply: (input) => {
@@ -1250,6 +1275,14 @@ const KNOWN_FALSE_MAPPING_RULES = Object.freeze([
       String(official.usdPrice) === "0.028",
     message:
       "The official PixVerse V6 Extend 540p-with-audio cell publishes $0.028/s beside a 7.2-credit price, the falPrice/usdPrice pair of the adjacent 5.6-credit rows; the $0.005 credit basis, https://kie.ai/pixverse-v6?model=pixverse-v6%2Fextend (540P: 7.2 credits/s, $0.036/s, with audio) and the feed's own 7.2-credit 720P extend cell all print $0.036/s, the callable runtime rate; retain the upstream rate conflict explicitly rather than quoting either figure as exact evidence.",
+  },
+  {
+    family: "qwen-image-per-preset",
+    matches: (description) =>
+      /^Qwen Image\s*,\s*text-to-image$/i.test(description) ||
+      /^Qwen image-edit,\s*image-to-image$/i.test(description),
+    message:
+      "The frozen per-megapixel Qwen Image cell is contradicted by KIE's billed recordings, which charge a fixed amount per image_size preset (2026-10-16); the runtime per-preset rates are pricing-only exceptions, not this row.",
   },
   {
     family: "qwen-image-area",

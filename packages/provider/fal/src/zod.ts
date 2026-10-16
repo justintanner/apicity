@@ -11566,7 +11566,56 @@ export type FalMinimaxH3MaxStylesHandDrawnParsedRequest = z.output<
   typeof FalMinimaxH3MaxStylesHandDrawnRequestSchema
 >;
 
+// MiniMax H3 Max 16-bit Pixel styled text-to-video
+export const FalMinimaxH3MaxStylesSixteenBitPixelRequestSchema = z
+  .object({
+    prompt: z
+      .string()
+      .min(1)
+      .max(49815)
+      .describe(
+        "Describe the scene, action, camera and sound. The 16-bit pixel style is applied automatically."
+      ),
+    image_url: z
+      .string()
+      .nullable()
+      .describe(
+        "Optional first-frame image. Use pixel artwork for the most consistent style. When provided, its aspect ratio determines the output canvas."
+      )
+      .optional(),
+    duration: z
+      .number()
+      .int()
+      .min(5)
+      .max(15)
+      .default(5)
+      .describe("Requested video duration in seconds."),
+    aspect_ratio: z
+      .enum(["21:9", "16:9", "4:3", "1:1", "3:4", "9:16"])
+      .default("16:9")
+      .describe(
+        "Video aspect ratio for text-only generation. Ignored when image_url is provided."
+      ),
+    seed: z
+      .number()
+      .int()
+      .nullable()
+      .describe("Random seed. Omit to choose one automatically.")
+      .optional(),
+  })
+  .strict();
+export type FalMinimaxH3MaxStylesSixteenBitPixelRequest = z.input<
+  typeof FalMinimaxH3MaxStylesSixteenBitPixelRequestSchema
+>;
+export type FalMinimaxH3MaxStylesSixteenBitPixelRequestInput =
+  FalMinimaxH3MaxStylesSixteenBitPixelRequest;
+export type FalMinimaxH3MaxStylesSixteenBitPixelParsedRequest = z.output<
+  typeof FalMinimaxH3MaxStylesSixteenBitPixelRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "minimax/h3-max/styles/16bit-pixel":
+    FalMinimaxH3MaxStylesSixteenBitPixelRequestSchema,
   "minimax/h3-max/styles/hand-drawn":
     FalMinimaxH3MaxStylesHandDrawnRequestSchema,
   "minimax/h3-max/styles/low-poly": FalMinimaxH3MaxStylesLowPolyRequestSchema,

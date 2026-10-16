@@ -23,10 +23,13 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalMinimaxH3MaxStylesSixteenBitPixelRequest,
   FalMinimaxH3MaxStylesHandDrawnRequest,
   FalMinimaxH3MaxStylesLowPolyRequest,
+  FalMinimaxH3MaxStylesSixteenBitPixelRequestInput,
   FalMinimaxH3MaxStylesHandDrawnRequestInput,
   FalMinimaxH3MaxStylesLowPolyRequestInput,
+  FalMinimaxH3MaxStylesSixteenBitPixelParsedRequest,
   FalMinimaxH3MaxStylesHandDrawnParsedRequest,
   FalMinimaxH3MaxStylesLowPolyParsedRequest,
   FalMinimaxH3MaxStylesRetroToon70sRequest,
@@ -674,6 +677,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalMinimaxH3MaxStylesSixteenBitPixelRequest,
   FalMinimaxH3MaxStylesHandDrawnRequest,
   FalMinimaxH3MaxStylesLowPolyRequest,
   FalMinimaxH3MaxStylesRetroToon70sRequest,
@@ -6081,5 +6085,25 @@ export interface FalRunMinimaxH3MaxStylesNamespace {
     signal?: AbortSignal
   ) => Promise<FalMinimaxH3MaxStylesHandDrawnResponse>) & {
     schema: ApicitySchema<FalMinimaxH3MaxStylesHandDrawnRequest>;
+  };
+}
+
+export interface FalMinimaxH3MaxStylesSixteenBitPixelResponse {
+  /** Generated 768P pixel-animation video with audio. */
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+  /** Seed used for this generation. */
+  seed: number;
+}
+export interface FalRunMinimaxH3MaxStylesNamespace {
+  sixteenBitPixel: ((
+    params: FalMinimaxH3MaxStylesSixteenBitPixelRequest,
+    signal?: AbortSignal
+  ) => Promise<FalMinimaxH3MaxStylesSixteenBitPixelResponse>) & {
+    schema: ApicitySchema<FalMinimaxH3MaxStylesSixteenBitPixelRequest>;
   };
 }

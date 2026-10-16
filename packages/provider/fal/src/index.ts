@@ -21,12 +21,16 @@ export type {
 
 // Export all types
 export type {
+  FalMinimaxH3MaxStylesSixteenBitPixelRequest,
   FalMinimaxH3MaxStylesHandDrawnRequest,
   FalMinimaxH3MaxStylesLowPolyRequest,
+  FalMinimaxH3MaxStylesSixteenBitPixelRequestInput,
   FalMinimaxH3MaxStylesHandDrawnRequestInput,
   FalMinimaxH3MaxStylesLowPolyRequestInput,
+  FalMinimaxH3MaxStylesSixteenBitPixelParsedRequest,
   FalMinimaxH3MaxStylesHandDrawnParsedRequest,
   FalMinimaxH3MaxStylesLowPolyParsedRequest,
+  FalMinimaxH3MaxStylesSixteenBitPixelResponse,
   FalMinimaxH3MaxStylesHandDrawnResponse,
   FalMinimaxH3MaxStylesLowPolyResponse,
   FalMinimaxH3MaxStylesRetroToon70sRequest,

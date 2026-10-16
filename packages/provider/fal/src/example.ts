@@ -634,6 +634,24 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST flux3Action.so101": {
+    "source": "fal/flux-3-action-so101",
+    "payload": {
+      "prompt": "A red panda waves once, then holds still.",
+      "scene_image_url": "<inline image/jpeg data URL — replace with a real URL or upload>",
+      "wrist_image_url": "<inline image/jpeg data URL — replace with a real URL or upload>",
+      "state": [
+        0,
+        90,
+        90,
+        0,
+        0,
+        50
+      ]
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST geminiOmniFlash": {
     "source": "fal/google-gemini-omni-flash",
     "payload": {

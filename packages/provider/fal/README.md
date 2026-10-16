@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-196 endpoints across 50 groups. Each method mirrors an upstream URL path.
+197 endpoints across 51 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -996,6 +996,25 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.flux2Flex({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+### flux3Action
+
+<details>
+<summary><code>POST</code> <b><code>fal.flux3Action.so101</code></b></summary>
+
+<code>POST https://fal.run/fal-ai/flux-3-action/so101</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/fal-ai/flux-3-action/so101/api)
+
+```typescript
+const res = await fal.run.flux3Action.so101({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

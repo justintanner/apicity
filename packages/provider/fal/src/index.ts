@@ -21,6 +21,11 @@ export type {
 
 // Export all types
 export type {
+  FalFlux3ActionSo101Request,
+  FalFlux3ActionSo101RequestInput,
+  FalFlux3ActionSo101ParsedRequest,
+  FalFlux3ActionSo101Response,
+  FalRunFlux3ActionNamespace,
   FalOpenrouterRouterDecisionsRequest,
   FalOpenrouterRouterDecisionsRequestInput,
   FalOpenrouterRouterDecisionsParsedRequest,

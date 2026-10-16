@@ -1,4 +1,6 @@
 import {
+  FalFlux3ActionSo101Request,
+  FalFlux3ActionSo101Response,
   FalOpenrouterRouterDecisionsRequest,
   FalOpenrouterRouterDecisionsResponse,
   FalCreatifyBorealRequest,
@@ -394,6 +396,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalFlux3ActionSo101RequestSchema,
   FalOpenrouterRouterDecisionsRequestSchema,
   FalCreatifyBorealRequestSchema,
   FalVeedCleanAudioRequestSchema,
@@ -3383,7 +3386,24 @@ export function createFal(opts: FalOptions): FalProvider {
     FalOpenrouterRouterDecisionsRequestSchema,
     { base: runBaseURL }
   );
+
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/fal-ai/flux-3-action/so101
+  // Docs: https://fal.ai/models/fal-ai/flux-3-action/so101/api
+  const flux3ActionSo101 = jsonBody<
+    FalFlux3ActionSo101Request,
+    FalFlux3ActionSo101Response
+  >("POST", "/fal-ai/flux-3-action/so101", FalFlux3ActionSo101RequestSchema, {
+    base: runBaseURL,
+  });
+
   const run: FalRunNamespace = {
+    flux3Action: {
+      // sig-ok: stylistic dotPath divergence from URL
+      // POST https://fal.run/fal-ai/flux-3-action/so101
+      // Docs: https://fal.ai/models/fal-ai/flux-3-action/so101/api
+      so101: flux3ActionSo101,
+    },
     openrouter: {
       router: {
         // POST https://fal.run/openrouter/router/decisions

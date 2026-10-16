@@ -10825,7 +10825,125 @@ export type FalOpenrouterRouterDecisionsParsedRequest = z.output<
   typeof FalOpenrouterRouterDecisionsRequestSchema
 >;
 
+// One SO-101 joint row: shoulder pan, shoulder lift, elbow flex, wrist flex,
+// wrist roll (degrees) and gripper (percent).
+const FalFlux3ActionSo101JointRowSchema = z.array(z.number()).min(6).max(6);
+
+// FLUX 3 Action SO-101 robot action: live OpenAPI 2026-10-16.
+// Docs: https://fal.ai/models/fal-ai/flux-3-action/so101/api
+// Free 422 probes (2026-10-16) returned three pairing rules as field errors,
+// beyond the OpenAPI's "Requires" notes: the two histories come together, the
+// two history frames come together, and the frames need both histories.
+export const FalFlux3ActionSo101RequestSchema = z
+  .object({
+    prompt: z
+      .string()
+      .min(1)
+      .max(2000)
+      .describe("Natural-language task instruction for the robot."),
+    scene_image_url: z
+      .string()
+      .describe(
+        "Current frame from the fixed scene camera (tiled left). Resized to 256x256."
+      ),
+    wrist_image_url: z
+      .string()
+      .describe(
+        "Current frame from the wrist camera (tiled right). Resized to 256x256."
+      ),
+    state: FalFlux3ActionSo101JointRowSchema.describe(
+      "Measured state: shoulder pan, shoulder lift, elbow flex, wrist flex, wrist roll (degrees), gripper (percent)."
+    ),
+    state_history: z
+      .array(FalFlux3ActionSo101JointRowSchema)
+      .min(7)
+      .max(7)
+      .nullable()
+      .optional()
+      .describe(
+        "Measured states at the 7 control ticks (30 Hz) before `state`, oldest first. Requires `command_history`. Omit for a fresh episode."
+      ),
+    command_history: z
+      .array(FalFlux3ActionSo101JointRowSchema)
+      .min(8)
+      .max(8)
+      .nullable()
+      .optional()
+      .describe(
+        "Absolute commands in effect at each of the 8 observation ticks, oldest first; the last row is the most recent command sent. Requires `state_history`."
+      ),
+    history_scene_image_url: z
+      .string()
+      .nullable()
+      .optional()
+      .describe(
+        "Scene frame from the oldest history tick (7 ticks before now). Requires `state_history`. Defaults to the current frame."
+      ),
+    history_wrist_image_url: z
+      .string()
+      .nullable()
+      .optional()
+      .describe(
+        "Wrist frame from the oldest history tick. Requires `state_history`."
+      ),
+    num_inference_steps: z
+      .number()
+      .int()
+      .min(1)
+      .max(8)
+      .default(4)
+      .describe("Euler denoising steps. The checkpoint was validated at 4."),
+    guidance_scale: z
+      .number()
+      .min(1)
+      .max(10)
+      .default(3)
+      .describe(
+        "Classifier-free guidance on video and action; 1.0 disables CFG."
+      ),
+    seed: z
+      .number()
+      .int()
+      .nullable()
+      .optional()
+      .describe(
+        "Sampling seed. Omit for a random seed; the reference evaluation seed is 0 for DROID and 42 for SO-101."
+      ),
+  })
+  .refine((v) => (v.state_history == null) === (v.command_history == null), {
+    message: "state_history and command_history must be provided together",
+    path: ["command_history"],
+  })
+  .refine(
+    (v) =>
+      (v.history_scene_image_url == null) ===
+      (v.history_wrist_image_url == null),
+    {
+      message:
+        "history_scene_image_url and history_wrist_image_url must be provided together",
+      path: ["history_wrist_image_url"],
+    }
+  )
+  .refine(
+    (v) =>
+      (v.history_scene_image_url == null &&
+        v.history_wrist_image_url == null) ||
+      (v.state_history != null && v.command_history != null),
+    {
+      message: "history images require state_history and command_history",
+      path: ["history_wrist_image_url"],
+    }
+  );
+export type FalFlux3ActionSo101Request = z.input<
+  typeof FalFlux3ActionSo101RequestSchema
+>;
+export type FalFlux3ActionSo101RequestInput = FalFlux3ActionSo101Request;
+export type FalFlux3ActionSo101ParsedRequest = z.output<
+  typeof FalFlux3ActionSo101RequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "fal-ai/flux-3-action/so101": FalFlux3ActionSo101RequestSchema,
   "openrouter/router/decisions": FalOpenrouterRouterDecisionsRequestSchema,
   "creatify/boreal": FalCreatifyBorealRequestSchema,
   "veed/clean-audio": FalVeedCleanAudioRequestSchema,

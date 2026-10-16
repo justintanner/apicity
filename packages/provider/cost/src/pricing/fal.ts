@@ -997,6 +997,14 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  // The five-second 480p recording billed 5 units, matching the card rate.
+  "pixelcut/looping-video": perSecondTiered(
+    "pixelcut/looping-video",
+    [resolutionTier("1080p")],
+    { "480p": 0.08, "768p": 0.16, "1080p": 0.32 },
+    numericSeconds(5),
+    "2026-10-16"
+  ),
   // Bills requested seconds at the card's resolution tier. A one-second 720p
   // call produced 25 frames but billed 1 unit; usage confirmed $0.01, matching
   // the card rather than the frame-rounded output duration (2026-10-16).

@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-198 endpoints across 51 groups. Each method mirrors an upstream URL path.
+199 endpoints across 52 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -2769,6 +2769,25 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.openrouter.router.decisions({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+### pixelcut
+
+<details>
+<summary><code>POST</code> <b><code>fal.pixelcut.loopingVideo</code></b></summary>
+
+<code>POST https://fal.run/pixelcut/looping-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/pixelcut/looping-video/api)
+
+```typescript
+const res = await fal.run.pixelcut.loopingVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

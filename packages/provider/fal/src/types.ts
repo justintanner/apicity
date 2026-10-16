@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalPixelcutLoopingVideoRequest,
+  FalPixelcutLoopingVideoRequestInput,
+  FalPixelcutLoopingVideoParsedRequest,
   FalXaiGrokVoiceRequest,
   FalXaiGrokVoiceRequestInput,
   FalXaiGrokVoiceParsedRequest,
@@ -656,6 +659,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalPixelcutLoopingVideoRequest,
   FalXaiGrokVoiceRequest,
   FalFlux3ActionSo101Request,
   FalOpenrouterRouterDecisionsRequest,
@@ -5930,4 +5934,25 @@ export interface FalRunXaiGrokVoiceNamespace {
     signal?: AbortSignal
   ): Promise<FalXaiGrokVoiceResponse>;
   schema: ApicitySchema<FalXaiGrokVoiceRequest>;
+}
+
+export interface FalPixelcutLoopingVideoResponse {
+  /** Looping MP4 that starts and ends on the input image. */
+  video?: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  } | null;
+}
+export interface FalRunPixelcutNamespace {
+  loopingVideo: ((
+    params: FalPixelcutLoopingVideoRequest,
+    signal?: AbortSignal
+  ) => Promise<FalPixelcutLoopingVideoResponse>) & {
+    schema: ApicitySchema<FalPixelcutLoopingVideoRequest>;
+  };
+}
+export interface FalRunNamespace {
+  pixelcut: FalRunPixelcutNamespace;
 }

@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Pixelcut Looping Video image-to-video (ac-wmv97x).
+
 - Added Grok Voice voice reply, dynamically priced (ac-zput7x).
 
 - Added FLUX 3 Action SO-101 robot action, dynamically priced (ac-l079w5).

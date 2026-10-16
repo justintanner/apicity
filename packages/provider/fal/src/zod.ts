@@ -11234,7 +11234,53 @@ export type FalXaiGrokVoiceParsedRequest = z.output<
   typeof FalXaiGrokVoiceRequestSchema
 >;
 
+// Pixelcut Looping Video
+export const FalPixelcutLoopingVideoRequestSchema = z.object({
+  image_url: z
+    .string()
+    .describe("Input image the video starts and ends on (JPEG, PNG, or WebP)"),
+  prompt: z
+    .string()
+    .max(4000)
+    .default("")
+    .describe(
+      "Optional creative direction for the motion. Camera stays locked regardless."
+    ),
+  duration: z
+    .number()
+    .int()
+    .min(5)
+    .max(15)
+    .default(5)
+    .describe("Video duration in seconds"),
+  resolution: z
+    .enum(["480p", "768p", "1080p"])
+    .default("1080p")
+    .describe("Output resolution"),
+  motion: z
+    .enum(["subtle", "spin"])
+    .default("subtle")
+    .describe(
+      "Motion style: subtle for gentle ambient movement, spin for one full 360-degree revolution ending on the source frame"
+    ),
+  include_audio: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Keep the generated audio track (off by default; the loop is silent)"
+    ),
+});
+export type FalPixelcutLoopingVideoRequest = z.input<
+  typeof FalPixelcutLoopingVideoRequestSchema
+>;
+export type FalPixelcutLoopingVideoRequestInput =
+  FalPixelcutLoopingVideoRequest;
+export type FalPixelcutLoopingVideoParsedRequest = z.output<
+  typeof FalPixelcutLoopingVideoRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "pixelcut/looping-video": FalPixelcutLoopingVideoRequestSchema,
   "xai/grok-voice": FalXaiGrokVoiceRequestSchema,
   "fal-ai/flux-3-action/so101": FalFlux3ActionSo101RequestSchema,
   "openrouter/router/decisions": FalOpenrouterRouterDecisionsRequestSchema,

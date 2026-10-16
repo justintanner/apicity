@@ -1696,6 +1696,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST pixelcut.loopingVideo": {
+    "source": "fal/pixelcut-looping-video",
+    "payload": {
+      "image_url": "<inline image/jpeg data URL — replace with a real URL or upload>",
+      "duration": 5,
+      "resolution": "480p"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST qwenImage": {
     "source": "fal/qwen-image",
     "payload": {

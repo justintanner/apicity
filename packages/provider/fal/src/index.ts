@@ -21,6 +21,11 @@ export type {
 
 // Export all types
 export type {
+  FalVeedCleanAudioRequest,
+  FalVeedCleanAudioRequestInput,
+  FalVeedCleanAudioParsedRequest,
+  FalVeedCleanAudioResponse,
+  FalRunVeedNamespace,
   FalKlingVideoO3StandardImageToVideoRequest,
   FalKlingVideoO3StandardImageToVideoRequestInput,
   FalKlingVideoO3StandardImageToVideoParsedRequest,

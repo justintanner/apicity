@@ -1765,6 +1765,14 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST veed.cleanAudio": {
+    "source": "fal/veed-clean-audio",
+    "payload": {
+      "audio_url": "<inline audio/mpeg data URL — replace with a real URL or upload>"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST veo3p1.imageToVideo": {
     "source": "fal/veo3-1-image-to-video",
     "payload": {

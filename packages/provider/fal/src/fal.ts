@@ -1,4 +1,6 @@
 import {
+  FalVeedCleanAudioRequest,
+  FalVeedCleanAudioResponse,
   FalKlingVideoO3StandardImageToVideoRequest,
   FalKlingVideoO3StandardImageToVideoResponse,
   FalFlux2FlexRequest,
@@ -388,6 +390,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalVeedCleanAudioRequestSchema,
   FalKlingVideoO3StandardImageToVideoRequestSchema,
   FalFlux2FlexRequestSchema,
   FalKandinsky6ProImageToVideoRequestSchema,
@@ -3345,7 +3348,21 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/veed/clean-audio
+  // Docs: https://fal.ai/models/veed/clean-audio/api
+  const veedCleanAudio = jsonBody<
+    FalVeedCleanAudioRequest,
+    FalVeedCleanAudioResponse
+  >("POST", "/veed/clean-audio", FalVeedCleanAudioRequestSchema, {
+    base: runBaseURL,
+  });
+
   const run: FalRunNamespace = {
+    veed: {
+      // POST https://fal.run/veed/clean-audio
+      // Docs: https://fal.ai/models/veed/clean-audio/api
+      cleanAudio: veedCleanAudio,
+    },
     // sig-ok: stylistic dotPath divergence from URL
     // POST https://fal.run/fal-ai/flux-2-flex
     // Docs: https://fal.ai/models/fal-ai/flux-2-flex/api

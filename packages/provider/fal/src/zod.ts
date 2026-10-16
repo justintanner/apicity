@@ -10566,7 +10566,48 @@ export type FalKlingVideoO3StandardImageToVideoParsedRequest = z.output<
   typeof FalKlingVideoO3StandardImageToVideoRequestSchema
 >;
 
+// VEED Clean Audio
+export const FalVeedCleanAudioRequestSchema = z.object({
+  audio_url: z
+    .string()
+    .describe(
+      "The recording to clean. Any audio or video ffmpeg can decode (wav, mp3, m4a, aac, ogg, mp4, mov, webm, ...); a video's audio track is used (call /video to get the video back with the cleaned track) and multi-channel input is mixed down to mono. Up to 30 minutes and 512 MB. A public URL or a data URI."
+    ),
+  strength: z
+    .number()
+    .min(0)
+    .max(1)
+    .default(0.874)
+    .describe(
+      "How much of the original is allowed to remain under speech: the suppression floor is 1 - strength (the default 0.874 is the validated -18 dB). Lower keeps more room tone behind the voice; silence between words is always fully cleaned."
+    ),
+  target_lufs: z
+    .number()
+    .min(-40)
+    .max(-8)
+    .nullable()
+    .default(-19)
+    .describe(
+      "Integrated loudness of the output (ITU-R BS.1770). The default -19 LUFS is the level the VEED editor delivers; true peak is capped at -1.1 dBTP. Pass null through the API to skip loudness normalization and keep the input level."
+    ),
+  output_format: z
+    .enum(["flac", "wav"])
+    .default("flac")
+    .describe(
+      "Container for the 48 kHz mono 16-bit output. FLAC is lossless at about half the size of WAV."
+    ),
+});
+
+export type FalVeedCleanAudioRequest = z.input<
+  typeof FalVeedCleanAudioRequestSchema
+>;
+export type FalVeedCleanAudioRequestInput = FalVeedCleanAudioRequest;
+export type FalVeedCleanAudioParsedRequest = z.output<
+  typeof FalVeedCleanAudioRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "veed/clean-audio": FalVeedCleanAudioRequestSchema,
   "fal-ai/kling-video/o3/standard/image-to-video":
     FalKlingVideoO3StandardImageToVideoRequestSchema,
   "fal-ai/flux-2-flex": FalFlux2FlexRequestSchema,

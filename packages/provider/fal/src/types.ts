@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalVeedCleanAudioRequest,
+  FalVeedCleanAudioRequestInput,
+  FalVeedCleanAudioParsedRequest,
   FalKlingVideoO3StandardImageToVideoRequest,
   FalKlingVideoO3StandardImageToVideoRequestInput,
   FalKlingVideoO3StandardImageToVideoParsedRequest,
@@ -641,6 +644,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalVeedCleanAudioRequest,
   FalKlingVideoO3StandardImageToVideoRequest,
   FalFlux2FlexRequest,
   FalKandinsky6ProImageToVideoRequest,
@@ -5757,4 +5761,31 @@ export interface FalRunKlingVideoO3Namespace {
 
 export interface FalRunKlingVideoNamespace {
   o3: FalRunKlingVideoO3Namespace;
+}
+
+export interface FalVeedCleanAudioResponse {
+  /** Cleaned 48 kHz mono 16-bit audio. */
+  audio: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+  /** Input duration in seconds. */
+  audio_duration: number;
+}
+
+type FalVeedCleanAudioFn = ((
+  params: FalVeedCleanAudioRequest,
+  signal?: AbortSignal
+) => Promise<FalVeedCleanAudioResponse>) & {
+  schema: ApicitySchema<FalVeedCleanAudioRequest>;
+};
+
+export interface FalRunVeedNamespace {
+  cleanAudio: FalVeedCleanAudioFn;
+}
+
+export interface FalRunNamespace {
+  veed: FalRunVeedNamespace;
 }

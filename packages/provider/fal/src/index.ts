@@ -21,6 +21,11 @@ export type {
 
 // Export all types
 export type {
+  FalBytedanceSeedance2p5DraftCompleteRequest,
+  FalBytedanceSeedance2p5DraftCompleteRequestInput,
+  FalBytedanceSeedance2p5DraftCompleteParsedRequest,
+  FalBytedanceSeedance2p5DraftCompleteResponse,
+  FalRunBytedanceSeedance2p5DraftNamespace,
   FalBytedanceSeedance2p5UsReferenceToVideoRequest,
   FalBytedanceSeedance2p5UsImageToVideoRequest,
   FalBytedanceSeedance2p5UsTextToVideoRequest,

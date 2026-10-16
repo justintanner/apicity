@@ -1,4 +1,6 @@
 import {
+  FalBytedanceSeedance2p5DraftCompleteRequest,
+  FalBytedanceSeedance2p5DraftCompleteResponse,
   FalBytedanceSeedance2p5UsReferenceToVideoRequest,
   FalBytedanceSeedance2p5UsImageToVideoRequest,
   FalBytedanceSeedance2p5UsTextToVideoRequest,
@@ -424,6 +426,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalBytedanceSeedance2p5DraftCompleteRequestSchema,
   FalBytedanceSeedance2p5UsReferenceToVideoRequestSchema,
   FalBytedanceSeedance2p5UsImageToVideoRequestSchema,
   FalBytedanceSeedance2p5UsTextToVideoRequestSchema,
@@ -3604,6 +3607,18 @@ export function createFal(opts: FalOptions): FalProvider {
     FalBytedanceSeedance2p5UsReferenceToVideoRequestSchema,
     { base: runBaseURL }
   );
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://fal.run/bytedance/seedance-2.5/draft/complete
+  // Docs: https://fal.ai/models/bytedance/seedance-2.5/draft/complete/api
+  const bytedanceSeedance2p5DraftComplete = jsonBody<
+    FalBytedanceSeedance2p5DraftCompleteRequest,
+    FalBytedanceSeedance2p5DraftCompleteResponse
+  >(
+    "POST",
+    "/bytedance/seedance-2.5/draft/complete",
+    FalBytedanceSeedance2p5DraftCompleteRequestSchema,
+    { base: runBaseURL }
+  );
 
   const run: FalRunNamespace = {
     pixverse: {
@@ -3964,6 +3979,11 @@ export function createFal(opts: FalOptions): FalProvider {
           // POST https://fal.run/bytedance/seedance-2.5/us/reference-to-video
           // Docs: https://fal.ai/models/bytedance/seedance-2.5/us/reference-to-video/api
           referenceToVideo: bytedanceSeedance2p5UsReferenceToVideo,
+        },
+        draft: {
+          // POST https://fal.run/bytedance/seedance-2.5/draft/complete
+          // Docs: https://fal.ai/models/bytedance/seedance-2.5/draft/complete/api
+          complete: bytedanceSeedance2p5DraftComplete,
         },
         imageToVideo: bytedanceSeedance2p5ImageToVideo,
         referenceToVideo: bytedanceSeedance2p5ReferenceToVideo,

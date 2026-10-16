@@ -1,4 +1,6 @@
 import {
+  FalMinimaxH3MaxStylesLowPolyRequest,
+  FalMinimaxH3MaxStylesLowPolyResponse,
   FalMinimaxH3MaxStylesRetroToon70sRequest,
   FalMinimaxH3MaxStylesRetroToon70sResponse,
   FalMinimaxH3MaxStylesVhsRequest,
@@ -406,6 +408,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalMinimaxH3MaxStylesLowPolyRequestSchema,
   FalMinimaxH3MaxStylesRetroToon70sRequestSchema,
   FalMinimaxH3MaxStylesVhsRequestSchema,
   FalPixverseMusicVideoVibemvRequestSchema,
@@ -3469,6 +3472,18 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/minimax/h3-max/styles/low-poly
+  // Docs: https://fal.ai/models/minimax/h3-max/styles/low-poly/api
+  const minimaxH3MaxStylesLowPoly = jsonBody<
+    FalMinimaxH3MaxStylesLowPolyRequest,
+    FalMinimaxH3MaxStylesLowPolyResponse
+  >(
+    "POST",
+    "/minimax/h3-max/styles/low-poly",
+    FalMinimaxH3MaxStylesLowPolyRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
     pixverse: {
       musicVideo: {
@@ -3844,6 +3859,9 @@ export function createFal(opts: FalOptions): FalProvider {
     minimax: {
       h3Max: {
         styles: {
+          // POST https://fal.run/minimax/h3-max/styles/low-poly
+          // Docs: https://fal.ai/models/minimax/h3-max/styles/low-poly/api
+          lowPoly: minimaxH3MaxStylesLowPoly,
           // POST https://fal.run/minimax/h3-max/styles/retro-toon-70s
           // Docs: https://fal.ai/models/minimax/h3-max/styles/retro-toon-70s/api
           retroToon70s: minimaxH3MaxStylesRetroToon70s,

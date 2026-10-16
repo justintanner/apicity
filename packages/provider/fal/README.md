@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-212 endpoints across 53 groups. Each method mirrors an upstream URL path.
+213 endpoints across 53 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -1930,6 +1930,23 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 </details>
 
 ### meshy
+
+<details>
+<summary><code>POST</code> <b><code>fal.meshy.v6Lite.retexture</code></b></summary>
+
+<code>POST https://fal.run/meshy/v6-lite/retexture</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/meshy/v6-lite/retexture/api)
+
+```typescript
+const res = await fal.run.meshy.v6Lite.retexture({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>fal.meshy.v7.imageTo3d</code></b></summary>

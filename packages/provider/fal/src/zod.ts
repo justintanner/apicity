@@ -12212,7 +12212,71 @@ export type FalBytedanceSeedance2p5DraftCompleteParsedRequest = z.output<
   typeof FalBytedanceSeedance2p5DraftCompleteRequestSchema
 >;
 
+// Meshy 6 Lite retexture
+export const FalMeshyV6LiteRetextureRequestSchema = z
+  .object({
+    model_url: z
+      .string()
+      .describe(
+        "URL or base64 data URI of a 3D model to texture. Supports .glb, .gltf, .obj, .fbx, .stl formats. Can be a publicly accessible URL or data URI with MIME type application/octet-stream."
+      ),
+    text_style_prompt: z
+      .string()
+      .max(600)
+      .nullable()
+      .optional()
+      .describe(
+        "Describe your desired texture style using text. Maximum 600 characters. Required if image_style_url is not provided."
+      ),
+    image_style_url: z
+      .string()
+      .nullable()
+      .optional()
+      .describe(
+        "2D image to guide the texturing process. Supports .jpg, .jpeg, and .png formats. Required if text_style_prompt is not provided. If both are provided, image_style_url takes precedence."
+      ),
+    texture_resolution: z
+      .enum(["2k", "4k", "8k"])
+      .default("2k")
+      .describe(
+        "Base color resolution: 2k (2048), 4k (4096), or 8k (8192). 4k and 8k require Meshy 6 or 7, so this Meshy 6 Lite endpoint supports 2k only. At 8k, PBR maps are 4k and no emission map is generated."
+      ),
+    enable_original_uv: z
+      .boolean()
+      .default(true)
+      .describe(
+        "Use the original UV mapping of the model instead of generating new UVs. If the model has no original UV, output quality may be reduced."
+      ),
+    enable_pbr: z
+      .boolean()
+      .default(false)
+      .describe(
+        "Generate PBR Maps (metallic, roughness, normal) in addition to base color."
+      ),
+    enable_safety_checker: z
+      .boolean()
+      .default(true)
+      .describe(
+        "If set to true, input data will be checked for safety before processing."
+      ),
+  })
+  // Documented in the field descriptions only; fal's 422 validator does not
+  // report it, so it is restated here.
+  .refine((v) => v.text_style_prompt != null || v.image_style_url != null, {
+    message: "Either text_style_prompt or image_style_url is required",
+    path: ["text_style_prompt"],
+  });
+export type FalMeshyV6LiteRetextureRequest = z.input<
+  typeof FalMeshyV6LiteRetextureRequestSchema
+>;
+export type FalMeshyV6LiteRetextureRequestInput =
+  FalMeshyV6LiteRetextureRequest;
+export type FalMeshyV6LiteRetextureParsedRequest = z.output<
+  typeof FalMeshyV6LiteRetextureRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "meshy/v6-lite/retexture": FalMeshyV6LiteRetextureRequestSchema,
   "bytedance/seedance-2.5/draft/complete":
     FalBytedanceSeedance2p5DraftCompleteRequestSchema,
   "bytedance/seedance-2.5/us/reference-to-video":

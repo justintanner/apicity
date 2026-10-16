@@ -1,4 +1,6 @@
 import {
+  FalMeshyV6LiteRetextureRequest,
+  FalMeshyV6LiteRetextureResponse,
   FalBytedanceSeedance2p5DraftCompleteRequest,
   FalBytedanceSeedance2p5DraftCompleteResponse,
   FalBytedanceSeedance2p5UsReferenceToVideoRequest,
@@ -426,6 +428,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalMeshyV6LiteRetextureRequestSchema,
   FalBytedanceSeedance2p5DraftCompleteRequestSchema,
   FalBytedanceSeedance2p5UsReferenceToVideoRequestSchema,
   FalBytedanceSeedance2p5UsImageToVideoRequestSchema,
@@ -3619,6 +3622,14 @@ export function createFal(opts: FalOptions): FalProvider {
     FalBytedanceSeedance2p5DraftCompleteRequestSchema,
     { base: runBaseURL }
   );
+  // POST https://fal.run/meshy/v6-lite/retexture
+  // Docs: https://fal.ai/models/meshy/v6-lite/retexture/api
+  const meshyV6LiteRetexture = jsonBody<
+    FalMeshyV6LiteRetextureRequest,
+    FalMeshyV6LiteRetextureResponse
+  >("POST", "/meshy/v6-lite/retexture", FalMeshyV6LiteRetextureRequestSchema, {
+    base: runBaseURL,
+  });
 
   const run: FalRunNamespace = {
     pixverse: {
@@ -4167,6 +4178,11 @@ export function createFal(opts: FalOptions): FalProvider {
       },
     },
     meshy: {
+      v6Lite: {
+        // POST https://fal.run/meshy/v6-lite/retexture
+        // Docs: https://fal.ai/models/meshy/v6-lite/retexture/api
+        retexture: meshyV6LiteRetexture,
+      },
       // POST https://fal.run/meshy/v7.1/text-to-3d
       // Docs: https://fal.ai/models/meshy/v7.1/text-to-3d/api
       v7p1: {

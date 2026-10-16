@@ -1023,6 +1023,16 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
 ] as const;
 
 export const fal: Record<string, ModelPricing> = {
+  // $0.30 per retextured model, PBR maps at no extra cost. The recording
+  // billed 1 generation; usage confirmed the card's $0.30.
+  "meshy/v6-lite/retexture": {
+    kind: "perUnit",
+    unit: "generations",
+    units: () => 1,
+    select: [],
+    rates: { "": 0.3 },
+    source: source("meshy/v6-lite/retexture", "2026-10-16"),
+  },
   // Requested seconds at $0.08, fixed 768p with audio. The five-second
   // recording billed 8 units at $0.05; usage confirmed the card's $0.40.
   "minimax/h3-max/styles/16bit-pixel": perSecond(

@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalMeshyV6LiteRetextureRequest,
+  FalMeshyV6LiteRetextureRequestInput,
+  FalMeshyV6LiteRetextureParsedRequest,
   FalBytedanceSeedance2p5DraftCompleteRequest,
   FalBytedanceSeedance2p5DraftCompleteRequestInput,
   FalBytedanceSeedance2p5DraftCompleteParsedRequest,
@@ -698,6 +701,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalMeshyV6LiteRetextureRequest,
   FalBytedanceSeedance2p5DraftCompleteRequest,
   FalBytedanceSeedance2p5UsReferenceToVideoRequest,
   FalBytedanceSeedance2p5UsImageToVideoRequest,
@@ -6279,4 +6283,32 @@ export interface FalRunBytedanceSeedance2p5DraftNamespace {
 }
 export interface FalRunBytedanceSeedance2p5Namespace {
   draft: FalRunBytedanceSeedance2p5DraftNamespace;
+}
+
+// Upstream requires only `model_glb` and `model_urls`; the style fields echo
+// whichever of text_style_prompt and image_style_url the request used.
+export interface FalMeshyV6LiteRetextureResponse {
+  /** Retextured 3D object in GLB format. */
+  model_glb: FalFile;
+  /** Preview thumbnail of the retextured model */
+  thumbnail?: FalFile | null;
+  /** URLs for different 3D model formats */
+  model_urls: FalMeshyV7ModelUrls;
+  /** Array of texture file objects */
+  texture_urls?: FalMeshyV7TextureFiles[];
+  /** The text prompt used for texturing (if provided) */
+  text_style_prompt?: string | null;
+  /** The image URL used for texturing (if provided) */
+  image_style_url?: string | null;
+}
+export interface FalRunMeshyV6LiteNamespace {
+  retexture: ((
+    params: FalMeshyV6LiteRetextureRequest,
+    signal?: AbortSignal
+  ) => Promise<FalMeshyV6LiteRetextureResponse>) & {
+    schema: ApicitySchema<FalMeshyV6LiteRetextureRequest>;
+  };
+}
+export interface FalRunMeshyNamespace {
+  v6Lite: FalRunMeshyV6LiteNamespace;
 }

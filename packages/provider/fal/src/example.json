@@ -1203,6 +1203,15 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST meshy.v6Lite.retexture": {
+    "source": "fal/meshy-v6-lite-retexture",
+    "payload": {
+      "model_url": "https://v3b.fal.media/files/b/0aad25a0/zKZ5AnFvG08mYptABK7Jd_model.glb",
+      "text_style_prompt": "watercolor painting"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST meshy.v7.imageTo3d": {
     "source": "fal/meshy-v7-image-to-3d",
     "payload": {

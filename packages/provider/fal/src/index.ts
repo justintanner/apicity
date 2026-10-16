@@ -21,6 +21,11 @@ export type {
 
 // Export all types
 export type {
+  FalMeshyV6LiteRetextureRequest,
+  FalMeshyV6LiteRetextureRequestInput,
+  FalMeshyV6LiteRetextureParsedRequest,
+  FalMeshyV6LiteRetextureResponse,
+  FalRunMeshyV6LiteNamespace,
   FalBytedanceSeedance2p5DraftCompleteRequest,
   FalBytedanceSeedance2p5DraftCompleteRequestInput,
   FalBytedanceSeedance2p5DraftCompleteParsedRequest,

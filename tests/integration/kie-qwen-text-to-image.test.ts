@@ -11,13 +11,14 @@ import { createKie, type MediaGenerationRequest } from "@apicity/kie";
 
 // Qwen Image text-to-image (`qwen/text-to-image`, KIE market): createTask ->
 // poll recordInfo to a completed image, once per image_size preset. These
-// recordings are the billing evidence behind @apicity/cost's per-megapixel
-// Qwen estimate (ac-dgvqms probes P1 and P2): only prompt and image_size are
-// sent, so every other input keeps its upstream default and the terminal
-// recordInfo's creditsConsumed varies with the preset alone. The outputs
-// measured 1328x1328 and 1472x1104, not the page's nominal 1024x1024 and
-// 1024x768. The poll runs to `success` BEFORE teardownPolly so the committed
-// recording.har ends on the finished media URL.
+// recordings are the billing evidence behind @apicity/cost's per-preset Qwen
+// estimate (ac-dgvqms probes P1 and P2, ac-ul6b3m probes T1 to T4): only
+// prompt and image_size are sent, so every other input keeps its upstream
+// default and creditsConsumed varies with the preset alone. KIE fixes it at
+// submission, and the outputs are not the page's nominal sizes (square_hd
+// measured 1328x1328, landscape_4_3 1472x1104). The poll runs to `success`
+// BEFORE teardownPolly so the committed recording.har ends on the finished
+// media URL.
 
 interface CompletedTask {
   resultUrls: string[];
@@ -111,6 +112,98 @@ describe("kie qwen/text-to-image integration", () => {
       const { creditsConsumed } = await createAndWait(provider, {
         model: "qwen/text-to-image",
         input: { prompt: PROMPT, image_size: "landscape_4_3" },
+      });
+
+      // Soft on purpose: an upstream omission must not fail a paid fixture.
+      if (creditsConsumed !== undefined) {
+        expect(creditsConsumed).toBeGreaterThan(0);
+      }
+    }
+  );
+
+  it(
+    "generates one square image and polls it to completion",
+    { timeout: 600_000 },
+    async () => {
+      ctx = setupPolly("kie/qwen-text-to-image-square");
+
+      const provider = createKie({
+        paygate: { secret: TEST_PAYGATE_SECRET },
+        apiKey: process.env.KIE_API_KEY ?? "test-key",
+      });
+
+      const { creditsConsumed } = await createAndWait(provider, {
+        model: "qwen/text-to-image",
+        input: { prompt: PROMPT, image_size: "square" },
+      });
+
+      // Soft on purpose: an upstream omission must not fail a paid fixture.
+      if (creditsConsumed !== undefined) {
+        expect(creditsConsumed).toBeGreaterThan(0);
+      }
+    }
+  );
+
+  it(
+    "generates one portrait_4_3 image and polls it to completion",
+    { timeout: 600_000 },
+    async () => {
+      ctx = setupPolly("kie/qwen-text-to-image-portrait-4-3");
+
+      const provider = createKie({
+        paygate: { secret: TEST_PAYGATE_SECRET },
+        apiKey: process.env.KIE_API_KEY ?? "test-key",
+      });
+
+      const { creditsConsumed } = await createAndWait(provider, {
+        model: "qwen/text-to-image",
+        input: { prompt: PROMPT, image_size: "portrait_4_3" },
+      });
+
+      // Soft on purpose: an upstream omission must not fail a paid fixture.
+      if (creditsConsumed !== undefined) {
+        expect(creditsConsumed).toBeGreaterThan(0);
+      }
+    }
+  );
+
+  it(
+    "generates one portrait_16_9 image and polls it to completion",
+    { timeout: 600_000 },
+    async () => {
+      ctx = setupPolly("kie/qwen-text-to-image-portrait-16-9");
+
+      const provider = createKie({
+        paygate: { secret: TEST_PAYGATE_SECRET },
+        apiKey: process.env.KIE_API_KEY ?? "test-key",
+      });
+
+      const { creditsConsumed } = await createAndWait(provider, {
+        model: "qwen/text-to-image",
+        input: { prompt: PROMPT, image_size: "portrait_16_9" },
+      });
+
+      // Soft on purpose: an upstream omission must not fail a paid fixture.
+      if (creditsConsumed !== undefined) {
+        expect(creditsConsumed).toBeGreaterThan(0);
+      }
+    }
+  );
+
+  it(
+    "generates one landscape_16_9 image and polls it to completion",
+    { timeout: 600_000 },
+    async () => {
+      ctx = setupPolly("kie/qwen-text-to-image-landscape-16-9");
+
+      const provider = createKie({
+        paygate: { secret: TEST_PAYGATE_SECRET },
+        apiKey: process.env.KIE_API_KEY ?? "test-key",
+      });
+
+      const { creditsConsumed } = await createAndWait(provider, {
+        model: "qwen/text-to-image",
+        input: { prompt: PROMPT, image_size: "landscape_16_9" },
       });
 
       // Soft on purpose: an upstream omission must not fail a paid fixture.

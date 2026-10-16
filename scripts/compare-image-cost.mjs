@@ -297,8 +297,8 @@ export const lineup = [
       },
     },
   },
-  // qwen — area-billed: the image_size preset sets the billable megapixels,
-  // so two presets of the same model land on different prices.
+  // qwen — per-preset billing: KIE charges a fixed amount per image_size
+  // preset, so two presets of the same model land on different prices.
   {
     ...createTaskEndpointAssociation,
     label: "qwen t2i square_hd",

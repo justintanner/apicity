@@ -1768,5 +1768,6 @@ fal	pixelcut.loopingVideo	POST	https://fal.run/pixelcut/looping-video	https://fa
 fal	pixverse.musicVideo.vibemv	POST	https://fal.run/pixverse/music-video/vibemv	https://fal.ai/models/pixverse/music-video/vibemv/api
 fal	minimax.h3Max.styles.retroToon70s	POST	https://fal.run/minimax/h3-max/styles/retro-toon-70s	https://fal.ai/models/minimax/h3-max/styles/retro-toon-70s/api
 fal	minimax.h3Max.styles.vhs	POST	https://fal.run/minimax/h3-max/styles/vhs	https://fal.ai/models/minimax/h3-max/styles/vhs/api
+fal	minimax.h3Max.styles.sixteenBitPixel	POST	https://fal.run/minimax/h3-max/styles/16bit-pixel	https://fal.ai/models/minimax/h3-max/styles/16bit-pixel/api
 fal	minimax.h3Max.styles.handDrawn	POST	https://fal.run/minimax/h3-max/styles/hand-drawn	https://fal.ai/models/minimax/h3-max/styles/hand-drawn/api
 fal	minimax.h3Max.styles.lowPoly	POST	https://fal.run/minimax/h3-max/styles/low-poly	https://fal.ai/models/minimax/h3-max/styles/low-poly/api

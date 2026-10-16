@@ -1,6 +1,8 @@
 import {
+  FalMinimaxH3MaxStylesSixteenBitPixelRequest,
   FalMinimaxH3MaxStylesHandDrawnRequest,
   FalMinimaxH3MaxStylesLowPolyRequest,
+  FalMinimaxH3MaxStylesSixteenBitPixelResponse,
   FalMinimaxH3MaxStylesHandDrawnResponse,
   FalMinimaxH3MaxStylesLowPolyResponse,
   FalMinimaxH3MaxStylesRetroToon70sRequest,
@@ -410,6 +412,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalMinimaxH3MaxStylesSixteenBitPixelRequestSchema,
   FalMinimaxH3MaxStylesHandDrawnRequestSchema,
   FalMinimaxH3MaxStylesLowPolyRequestSchema,
   FalMinimaxH3MaxStylesRetroToon70sRequestSchema,
@@ -3499,6 +3502,18 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/minimax/h3-max/styles/16bit-pixel
+  // Docs: https://fal.ai/models/minimax/h3-max/styles/16bit-pixel/api
+  const minimaxH3MaxStylesSixteenBitPixel = jsonBody<
+    FalMinimaxH3MaxStylesSixteenBitPixelRequest,
+    FalMinimaxH3MaxStylesSixteenBitPixelResponse
+  >(
+    "POST",
+    "/minimax/h3-max/styles/16bit-pixel",
+    FalMinimaxH3MaxStylesSixteenBitPixelRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
     pixverse: {
       musicVideo: {
@@ -3874,6 +3889,10 @@ export function createFal(opts: FalOptions): FalProvider {
     minimax: {
       h3Max: {
         styles: {
+          // sig-ok: 16bit-pixel starts with a digit; spell the number in the identifier
+          // POST https://fal.run/minimax/h3-max/styles/16bit-pixel
+          // Docs: https://fal.ai/models/minimax/h3-max/styles/16bit-pixel/api
+          sixteenBitPixel: minimaxH3MaxStylesSixteenBitPixel,
           // POST https://fal.run/minimax/h3-max/styles/hand-drawn
           // Docs: https://fal.ai/models/minimax/h3-max/styles/hand-drawn/api
           handDrawn: minimaxH3MaxStylesHandDrawn,

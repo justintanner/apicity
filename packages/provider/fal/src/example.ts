@@ -1378,6 +1378,15 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST minimax.h3Max.styles.sixteenBitPixel": {
+    "source": "fal/minimax-h3-max-styles-16bit-pixel",
+    "payload": {
+      "prompt": "A red panda waves once, then holds still.",
+      "duration": 5
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST minimax.h3Max.styles.vhs": {
     "source": "fal/minimax-h3-max-styles-vhs",
     "payload": {

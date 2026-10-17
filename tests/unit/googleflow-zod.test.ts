@@ -232,6 +232,22 @@ const videosMatrix: Array<[Record<string, unknown>, boolean]> = [
     false,
   ],
   [{ model: "omni-flash", startFrameIndex_1: 10, endFrameIndex_1: 20 }, false],
+  // resolution (ac-benilg): omni-flash declares 360p | 720p, so a typo is
+  // caught locally. Veo publishes no 360p variant and upstream rejects it on a
+  // Veo model, so every enumerated Veo branch rejects it too, the default
+  // (model omitted) included. Other values pass through Veo like any
+  // undeclared field, and the alias fallback stays permissive.
+  [{ model: "omni-flash", resolution: "360p" }, true],
+  [{ model: "omni-flash", resolution: "720p" }, true],
+  [{ model: "omni-flash", resolution: "1080p" }, false],
+  [{ model: "omni-flash", resolution: "360" }, false],
+  [{ resolution: "360p" }, false],
+  [{ model: "veo-3.1-fast", resolution: "360p" }, false],
+  [{ model: "veo-3.1-quality", resolution: "360p" }, false],
+  [{ model: "veo-3.1-lite", resolution: "360p" }, false],
+  [{ model: "veo-3.1-lite-low-priority", resolution: "360p" }, false],
+  [{ model: "veo-3.1-fast", resolution: "720p" }, true],
+  [{ model: "veo-3.2-fast", resolution: "360p" }, true],
 ];
 
 // Both committed POST /videos recordings must still parse unchanged (REQ-012).
@@ -297,6 +313,59 @@ describe("GoogleFlowVideosRequestSchema per-model union (GF-S3)", () => {
         "omni-flash",
       ])
     );
+  });
+
+  // ac-benilg: `apicity describe` shows resolution on the omni-flash branch
+  // only, with its values and the documented default and cost note.
+  it("describes resolution on the omni-flash branch only", () => {
+    const json = zodToJsonSchema(GoogleFlowVideosRequestSchema);
+    const branches = (json.anyOf as JsonSchema[] | undefined) ?? [];
+    const byModel = new Map(
+      branches.map((branch) => {
+        const props = (branch.properties ?? {}) as Record<string, JsonSchema>;
+        return [props.model?.const, props] as const;
+      })
+    );
+    const omni = byModel.get("omni-flash");
+    expect(omni?.resolution?.enum).toEqual(["360p", "720p"]);
+    expect(omni?.resolution?.description).toContain("default 720p");
+    expect(omni?.resolution?.description).toContain("about half the credits");
+    for (const model of [
+      "veo-3.1-fast",
+      "veo-3.1-quality",
+      "veo-3.1-lite",
+      "veo-3.1-lite-low-priority",
+    ]) {
+      expect(byModel.get(model)?.resolution, model).toBeUndefined();
+    }
+  });
+
+  it("points the Veo 360p rejection at the resolution field", () => {
+    const result = GoogleFlowVideosRequestSchema.safeParse({
+      ...videosBase,
+      model: "veo-3.1-quality",
+      resolution: "360p",
+    });
+    expect(result.success).toBe(false);
+    // zod 4 nests each union branch's issues under `errors`.
+    interface Issue {
+      path: PropertyKey[];
+      message: string;
+      errors?: Issue[][];
+    }
+    const flatten = (issues: Issue[]): Issue[] =>
+      issues.flatMap((issue) => [
+        issue,
+        ...flatten((issue.errors ?? []).flat()),
+      ]);
+    const issues = flatten((result.error?.issues ?? []) as Issue[]);
+    expect(
+      issues.some(
+        (issue) =>
+          issue.path.join(".") === "resolution" &&
+          issue.message.includes("omni-flash only")
+      )
+    ).toBe(true);
   });
 });
 

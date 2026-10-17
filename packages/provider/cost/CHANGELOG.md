@@ -50,6 +50,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `computeEstimate`'s warning for ten dynamically priced fal endpoints names
+  the billed unit and why the request cannot fix it, instead of the generic
+  "compute seconds, delivered output metadata, or tokens" list. The endpoints
+  are `google/nano-banana-2.1` and its edit (token-billed units of $1),
+  `fal-ai/flux-2-flex` (processed megapixels), the four
+  `fal-ai/kandinsky6-{lite,pro}/{text,image}-to-video` endpoints (compute
+  units), `fal-ai/kandinsky6-vsr` and its lite (output megapixel-frames) and
+  `mirelo-ai/sfx2.0/video-to-video` (output seconds with an unpublished
+  rounding). Their cards, OpenAPIs and pricing-API rows were re-read on
+  2026-10-17 and are unchanged, and each recorded bill shows the request
+  cannot fix the quantity, so all ten stay dynamic (ac-j3d6ki.4).
 - The five `minimax/h3-max/styles/*` fal endpoints display their own style
   instead of the shared "H3 Max Styles": "H3 Max 16-bit Pixel", "H3 Max Hand
   Drawn", "H3 Max Low Poly", "H3 Max Retro Toon 70s" and "H3 Max VHS". They

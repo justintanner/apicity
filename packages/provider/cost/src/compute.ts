@@ -1,5 +1,8 @@
 import { PRICING, PRICING_AS_OF, type PricedProviderId } from "./pricing/index";
-import { FAL_DYNAMIC_PRICING_ENDPOINTS } from "./pricing/fal";
+import {
+  FAL_DYNAMIC_PRICING_ENDPOINTS,
+  falDynamicBilledUnit,
+} from "./pricing/fal";
 import { asString } from "./pricing/helpers";
 
 import type {
@@ -381,9 +384,12 @@ export function computeEstimate(req: EstimateRequest): CostEstimate {
     // The generic "not found in pricing table" warning cannot tell those two
     // apart, so a caller had no way to know that a real number is one call
     // away. `@apicity/cost` stays dependency-free and pure-local — it does not
-    // make the call — but it now names it (ac-nz65nc).
+    // make the call — but it now names it (ac-nz65nc). Where the endpoint's
+    // card and recorded bill were checked, the warning names its billed unit
+    // and why the request cannot fix it (ac-j3d6ki.4).
     case "fal": {
       if (req.endpoint && isFalDynamicEndpoint(req.endpoint)) {
+        const billed = falDynamicBilledUnit(req.endpoint);
         return {
           usd: 0,
           currency: "USD",
@@ -391,10 +397,15 @@ export function computeEstimate(req: EstimateRequest): CostEstimate {
           breakdown: {},
           rateAsOf: PRICING_AS_OF,
           warnings: [
-            `fal '${req.endpoint}' is billed on a unit this estimator cannot ` +
-              "derive from the request payload (compute seconds, delivered " +
-              "output metadata, or tokens with no published per-image " +
-              "constant), so no local rate exists for it. fal reports the " +
+            (billed
+              ? `fal '${req.endpoint}' bills ${billed.unit}. This estimator ` +
+                "cannot derive that quantity from the request payload: " +
+                `${billed.why}, so no local rate exists for it. `
+              : `fal '${req.endpoint}' is billed on a unit this estimator cannot ` +
+                "derive from the request payload (compute seconds, delivered " +
+                "output metadata, or tokens with no published per-image " +
+                "constant), so no local rate exists for it. ") +
+              "fal reports the " +
               "billed units after the call (x-fal-billable-units); to price " +
               "them, pass them as unitQuantity to resolveFalDynamicEstimate, " +
               "which calls fal's own pricing API: " +

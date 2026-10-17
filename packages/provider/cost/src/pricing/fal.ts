@@ -1280,6 +1280,75 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "xai/grok-voice",
 ] as const;
 
+/** What a dynamically priced fal endpoint bills, and why a request cannot fix it. */
+export interface FalDynamicBilledUnit {
+  /** The billed unit and its price, as fal's card and pricing API name it. */
+  unit: string;
+  /** Why no request field determines the quantity, from the recorded bill. */
+  why: string;
+}
+
+// The billed unit of each dynamically priced fal endpoint whose card and
+// recorded bill were checked, and why the request cannot fix the quantity.
+// computeEstimate names both in its dynamic warning. Cards, OpenAPIs and the
+// pricing API were re-read on 2026-10-17 and matched the 2026-10-15 reads
+// behind each recording (ac-j3d6ki.4).
+export const FAL_DYNAMIC_BILLED_UNITS = {
+  "google/nano-banana-2.1": {
+    unit: "units of $1, summed from text, thinking and image tokens at the card's per-million-token rates",
+    why: "no request field fixes the thinking or output image token counts",
+  },
+  "google/nano-banana-2.1/edit": {
+    unit: "units of $1, summed from text, thinking and input and output image tokens at the card's per-million-token rates",
+    why: "no request field fixes the thinking or output image token counts",
+  },
+  "fal-ai/flux-2-flex": {
+    unit: "processed megapixels at $0.05",
+    why: "a recorded 1024x768 output billed 0.834, neither the card's rounded-up 1 megapixel nor the output's own area",
+  },
+  "fal-ai/kandinsky6-pro/text-to-video": {
+    unit: "units at $1.35, one unit being a 50-step 5-second 480p video",
+    why: "the bill follows compute, not the card's step and upscale points (an 8-step call billed 0.1756 units where the card's $0.24 implies 0.1778)",
+  },
+  "fal-ai/kandinsky6-pro/image-to-video": {
+    unit: "units at $1.40, one unit being a 50-step 5-second 480p video",
+    why: "the bill follows compute, not the card's step and upscale points (an 8-step call billed 0.1756 units where the card's $0.25 implies 0.1786)",
+  },
+  "fal-ai/kandinsky6-lite/text-to-video": {
+    unit: "units at $0.16, one unit being a 10-step 5-second 480p video",
+    why: "the bill follows compute, not the card's step and upscale points (a 4-step call billed 0.5011 units where the card's $0.08 implies 0.5)",
+  },
+  "fal-ai/kandinsky6-lite/image-to-video": {
+    unit: "units at $0.17, one unit being a 10-step 5-second 480p video",
+    why: "the bill follows compute, not the card's step and upscale points (a 4-step call billed 0.5011 units where the card's $0.085 implies 0.5)",
+  },
+  "fal-ai/kandinsky6-vsr": {
+    unit: "output megapixels times output frames at $0.00036",
+    why: "the output size follows the input clip times upscale_factor, and the model sets the frame count (a 96-frame input came back with 89 frames)",
+  },
+  "fal-ai/kandinsky6-vsr/lite": {
+    unit: "units at $0.00036, which the card calls output megapixels times output frames",
+    why: "the output size follows the input clip and the model sets the frame count, and a recorded call billed 124.1384 units for an output of 147.64 megapixel-frames",
+  },
+  "mirelo-ai/sfx2.0/video-to-video": {
+    unit: "output seconds times samples, $0.01 per second until 2026-12-13 and $0.015 from 2026-12-14",
+    why: "a 1.5-second request billed 2 seconds, and fal publishes no rounding rule",
+  },
+} as const satisfies Partial<
+  Record<(typeof FAL_DYNAMIC_PRICING_ENDPOINTS)[number], FalDynamicBilledUnit>
+>;
+
+/** The billed unit recorded for a dynamically priced fal endpoint, if any. */
+export function falDynamicBilledUnit(
+  endpoint: string
+): FalDynamicBilledUnit | undefined {
+  return Object.hasOwn(FAL_DYNAMIC_BILLED_UNITS, endpoint)
+    ? FAL_DYNAMIC_BILLED_UNITS[
+        endpoint as keyof typeof FAL_DYNAMIC_BILLED_UNITS
+      ]
+    : undefined;
+}
+
 export const fal: Record<string, ModelPricing> = {
   // $0.30 per retextured model, PBR maps at no extra cost. The recording
   // billed 1 generation; usage confirmed the card's $0.30.

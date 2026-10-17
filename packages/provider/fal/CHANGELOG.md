@@ -241,6 +241,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Separate `z.input` and `z.output` request aliases for every model schema.
 - A typed endpoint-to-input map for generic queue submissions.
 
+### Changed
+
+- **Breaking:** the nine non-US Seedance 2.0, 2.0 Fast and 2.5 request
+  schemas follow fal's live queue OpenAPI Inputs (read 2026-10-17, ac-f6nytq).
+  `seed` is no longer declared on
+  `bytedance/seedance-2.0/{text,image,reference}-to-video`,
+  `bytedance/seedance-2.0/fast/{text,image,reference}-to-video` and
+  `bytedance/seedance-2.5/{text,image}-to-video`, whose live Inputs dropped
+  it, so `.schema.parse()` strips it there.
+  `bytedance/seedance-2.5/reference-to-video` keeps `seed` as an integer or
+  `null`. `bytedance/seedance-2.5/image-to-video` narrows `aspect_ratio` to
+  the live const `"auto"`, since the output follows the input image. Typed
+  payloads that set either field no longer compile. In the parsed types,
+  `end_user_id` and `end_image_url` may now be `null`, and so may the 2.5
+  image- and reference-to-video `prompt`, which may also be `undefined`.
+  Migration: drop `seed` from those eight payloads, and omit `aspect_ratio`
+  or pass `"auto"` on 2.5 image-to-video.
+- The same nine schemas gain the rest of the live Inputs:
+  - All nine take `bitrate_mode` (`standard` or `high`) and `codec` (`auto`,
+    `H264` or `H265`).
+  - 2.0 `resolution` adds `1080p` and `4k`.
+  - The three 2.5 schemas take `draft`, and their response types gain
+    `draft_id`. 2.5 reference-to-video also takes `task` (`reference`,
+    `editing` or `extension`).
+  - `end_user_id` and `end_image_url` accept `null`.
+  - 2.5 image-to-video requires only `image_url`, and 2.5 reference-to-video
+    requires nothing.
+  - 2.0 and 2.0 Fast reference-to-video now enforce two rules documented in
+    their field descriptions: at most 12 files across all modalities, and
+    audio references only beside an image or video. `.schema.parse()`
+    rejects payloads that break them.
+  - 2.5 reference-to-video drops its audio rule, which its live Input does
+    not document.
+
 ## [0.1.0] - 2026-05-16
 
 ### Added

@@ -1349,16 +1349,22 @@ export interface FalSeedance2p0FastReferenceToVideoResponse {
 export interface FalSeedance2p5TextToVideoResponse {
   video: FalFile;
   seed: number;
+  /** The draft ID, or null when draft mode is disabled. */
+  draft_id?: string | null;
 }
 
 export interface FalSeedance2p5ImageToVideoResponse {
   video: FalFile;
   seed: number;
+  /** The draft ID, or null when draft mode is disabled. */
+  draft_id?: string | null;
 }
 
 export interface FalSeedance2p5ReferenceToVideoResponse {
   video: FalFile;
   seed: number;
+  /** The draft ID, or null when draft mode is disabled. */
+  draft_id?: string | null;
 }
 
 // LTX-2.5 image-to-video (Lightricks). Upstream returns the generated clip and

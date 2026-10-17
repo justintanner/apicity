@@ -62,7 +62,7 @@ describe("fal bytedance seedance2p0 text-to-video integration", () => {
     const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.bytedance.seedance2p0.textToVideo.schema.safeParse({
       prompt: "a cat",
-      resolution: "1080p",
+      resolution: "8k",
     });
     expect(v.success).toBe(false);
   });

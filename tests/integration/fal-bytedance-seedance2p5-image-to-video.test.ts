@@ -37,6 +37,9 @@ describe("fal bytedance seedance2p5 image-to-video integration", () => {
       image_url: imageDataUrl,
       resolution: "480p",
       duration: "4",
+      // The live Input now declares aspect_ratio const "auto". This recording
+      // sent "1:1"; fal accepted it and followed the image's aspect (648x630).
+      // @ts-expect-error recorded before the schema narrowed to "auto"
       aspect_ratio: "1:1",
       generate_audio: false,
     });
@@ -55,16 +58,18 @@ describe("fal bytedance seedance2p5 image-to-video integration", () => {
     expect(result.success).toBe(true);
   });
 
-  it("should reject a payload missing prompt", () => {
+  it("should accept a payload without prompt", () => {
+    // The live Input requires only image_url; prompt is a string or null.
     const provider = createFal({ apiKey: "fal-test-key" });
-    const result =
-      provider.run.bytedance.seedance2p5.imageToVideo.schema.safeParse({
-        image_url: "https://example.com/cat.jpg",
-      });
-    expect(result.success).toBe(false);
-    if (result.success) throw new Error("expected failure");
+    const schema = provider.run.bytedance.seedance2p5.imageToVideo.schema;
     expect(
-      result.error.issues.some((issue) => issue.path.includes("prompt"))
+      schema.safeParse({ image_url: "https://example.com/cat.jpg" }).success
+    ).toBe(true);
+    expect(
+      schema.safeParse({
+        prompt: null,
+        image_url: "https://example.com/cat.jpg",
+      }).success
     ).toBe(true);
   });
 

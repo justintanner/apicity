@@ -60,15 +60,12 @@ describe("fal bytedance seedance2p5 reference-to-video integration", () => {
     expect(result.success).toBe(true);
   });
 
-  it("should reject a payload missing prompt", () => {
+  it("should accept a payload without prompt", () => {
+    // The live Input requires nothing; prompt is a string or null.
     const provider = createFal({ apiKey: "fal-test-key" });
-    const result =
-      provider.run.bytedance.seedance2p5.referenceToVideo.schema.safeParse({});
-    expect(result.success).toBe(false);
-    if (result.success) throw new Error("expected failure");
-    expect(
-      result.error.issues.some((issue) => issue.path.includes("prompt"))
-    ).toBe(true);
+    const schema = provider.run.bytedance.seedance2p5.referenceToVideo.schema;
+    expect(schema.safeParse({}).success).toBe(true);
+    expect(schema.safeParse({ prompt: null }).success).toBe(true);
   });
 
   it("should enforce the documented per-modality caps", () => {
@@ -100,22 +97,15 @@ describe("fal bytedance seedance2p5 reference-to-video integration", () => {
     ).toBe(false);
   });
 
-  it("should require an image or video when audio is provided", () => {
+  it("should not invent an image-or-video rule for audio references", () => {
+    // Unlike 2.0, the live 2.5 Input documents no rule that audio needs an
+    // image or video beside it (read 2026-10-16 and 2026-10-17), so the
+    // schema does not enforce one.
     const provider = createFal({ apiKey: "fal-test-key" });
     const schema = provider.run.bytedance.seedance2p5.referenceToVideo.schema;
-    const audioOnly = schema.safeParse({
-      prompt: "follow the rhythm",
-      audio_urls: ["https://example.com/audio.mp3"],
-    });
-    expect(audioOnly.success).toBe(false);
-    if (audioOnly.success) throw new Error("expected failure");
-    expect(
-      audioOnly.error.issues.some((issue) => issue.path.includes("audio_urls"))
-    ).toBe(true);
     expect(
       schema.safeParse({
         prompt: "follow the rhythm",
-        image_urls: ["https://example.com/image.jpg"],
         audio_urls: ["https://example.com/audio.mp3"],
       }).success
     ).toBe(true);

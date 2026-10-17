@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `costHints.googleFlowPlan` accepts `"plus"` (Google AI Plus, $7.99/mo for
+  200 credits, $0.04 per credit) and `"ultra-99"` (Google AI Ultra $99,
+  $99.99/mo for 10,000 credits, $0.01 per credit), beside `"pro"` and
+  `"ultra"` (Ultra $199), which keep their meaning. Plus pays the non-Ultra
+  credit costs and Ultra $99 the halved Ultra Veo Lite and Fast costs, so
+  `veo-3.1-fast` is $0.80 on Plus and $0.10 on Ultra $99. Both used to fall
+  back to the Pro basis with an unknown-tier warning. An omitted plan still
+  prices on Pro, which under-estimates a Plus account by half (ac-1zjd41).
 - `CostHints.aspectRatio`, an optional cost-only hint carrying a fal
   Seedance 2.5 draft's fixed aspect ratio (`"21:9"`, `"16:9"`, `"4:3"`,
   `"1:1"`, `"3:4"` or `"9:16"`) for `bytedance/seedance-2.5/draft/complete`,
@@ -34,6 +42,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- An unrecognized `costHints.googleFlowPlan` prices on the Plus basis
+  ($0.04 per credit, the highest of the four tiers) instead of Pro, so it
+  never under-charges now that Plus is modelled; the warning reads
+  `googleflow: unknown plan tier '<value>', using Plus basis`. For example,
+  `veo-3.1-fast` with `googleFlowPlan: "platinum"` estimates $0.80 instead of
+  $0.40. An omitted plan is unchanged (ac-1zjd41).
 - fal Seedance 2.0, 2.0 Fast and 2.5 are priced locally again for requests
   that fix their output: `bytedance/seedance-2.0/{text,image}-to-video`,
   `bytedance/seedance-2.0/fast/{text,image}-to-video`,

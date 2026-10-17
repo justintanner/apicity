@@ -1161,7 +1161,7 @@ describe("computeEstimate", () => {
       expect(at("veo-3.1-quality", 8)).toBe(2);
       expect(at("veo-3.1-lite", 4)).toBe(0.2);
       expect(at("veo-3.1-lite", 8)).toBe(0.2);
-      // Ultra 20x only, and free of credits there — $0 is the real rate.
+      // Ultra $199 only, and free of credits there — $0 is the real rate.
       expect(at("veo-3.1-lite-low-priority", 8)).toBe(0);
     });
 
@@ -1369,29 +1369,127 @@ describe("computeEstimate", () => {
       }
     });
 
-    it("veo-3.1-lite-low-priority is free on both tiers (Ultra-only edge case)", () => {
-      expect(priceGoogleflow("veo-3.1-lite-low-priority").usd).toBe(0);
-      expect(
-        priceGoogleflow(
-          "veo-3.1-lite-low-priority",
-          {},
-          { googleFlowPlan: "ultra" }
-        ).usd
-      ).toBe(0);
+    // Plus and Ultra $99 (ac-1zjd41). Each case is
+    // [model, extra, plus USD, ultra-99 USD]; every figure is the overview's
+    // per-plan "est. $/gen" cell (useapi.net, read 2026-10-17). Plus pays the
+    // non-Ultra credit costs at $0.04, Ultra $99 the halved Ultra Veo Lite /
+    // Fast costs at $0.01, and both pay the same omni-flash credits as Pro.
+    const plusAndUltra99: Array<
+      [string, Record<string, unknown>, number, number]
+    > = [
+      ["veo-3.1-quality", {}, 4, 1],
+      ["veo-3.1-fast", {}, 0.8, 0.1],
+      ["veo-3.1-lite", {}, 0.4, 0.05],
+      ["omni-flash", { duration: 4 }, 0.28, 0.07],
+      ["omni-flash", { duration: 6 }, 0.4, 0.1],
+      ["omni-flash", { duration: 8 }, 0.48, 0.12],
+      ["omni-flash", { duration: 10 }, 0.6, 0.15],
+      [
+        "omni-flash",
+        { referenceVideo_1: "https://example.com/in.mp4" },
+        0.8,
+        0.2,
+      ],
+      ["omni-flash", { duration: 4, resolution: "360p" }, 0.16, 0.04],
+      ["omni-flash", { duration: 6, resolution: "360p" }, 0.2, 0.05],
+      ["omni-flash", { duration: 8, resolution: "360p" }, 0.24, 0.06],
+      ["omni-flash", { duration: 10, resolution: "360p" }, 0.28, 0.07],
+      [
+        "omni-flash",
+        {
+          referenceVideo_1: "https://example.com/in.mp4",
+          resolution: "360p",
+        },
+        0.4,
+        0.1,
+      ],
+    ];
+
+    it("plus tier prices on the Plus basis, above Pro", () => {
+      for (const [model, extra, expectedPlus] of plusAndUltra99) {
+        const plus = priceGoogleflow(model, extra, { googleFlowPlan: "plus" });
+        const pro = priceGoogleflow(model, extra);
+        const label = `${model} ${JSON.stringify(extra)}`;
+        expect(plus.usd, `${label} plus usd`).toBe(expectedPlus);
+        expect(plus.usd, `${label} plus > pro`).toBeGreaterThan(pro.usd);
+        expect(plus.breakdown.perUnitUsd, `${label} perUnitUsd`).toBe(
+          expectedPlus
+        );
+        expect(plus.warnings, `${label} plus warnings`).toEqual([]);
+        expect(plus.rateAsOf, `${label} plus rateAsOf`).toBe(
+          videoRateAsOf(model)
+        );
+        expect(plus.source, `${label} plus source`).toBe("per-unit-table");
+      }
     });
 
-    // AC-4 / REQ-005: an unrecognized tier falls back to the Pro over-estimate
-    // (never 0, never an under-charge) and warns, naming the value.
-    it("unknown plan tier falls back to Pro and warns naming the value", () => {
+    it("ultra-99 tier prices between Pro and Ultra $199", () => {
+      for (const [model, extra, , expectedUltra99] of plusAndUltra99) {
+        const ultra99 = priceGoogleflow(model, extra, {
+          googleFlowPlan: "ultra-99",
+        });
+        const pro = priceGoogleflow(model, extra);
+        const ultra = priceGoogleflow(model, extra, {
+          googleFlowPlan: "ultra",
+        });
+        const label = `${model} ${JSON.stringify(extra)}`;
+        expect(ultra99.usd, `${label} ultra-99 usd`).toBe(expectedUltra99);
+        expect(ultra99.usd, `${label} ultra-99 < pro`).toBeLessThan(pro.usd);
+        expect(ultra99.usd, `${label} ultra-99 > ultra`).toBeGreaterThan(
+          ultra.usd
+        );
+        expect(ultra99.breakdown.perUnitUsd, `${label} perUnitUsd`).toBe(
+          expectedUltra99
+        );
+        expect(ultra99.warnings, `${label} ultra-99 warnings`).toEqual([]);
+        expect(ultra99.rateAsOf, `${label} ultra-99 rateAsOf`).toBe(
+          videoRateAsOf(model)
+        );
+      }
+    });
+
+    it("multiplies a plan rate by count", () => {
       const result = priceGoogleflow(
         "veo-3.1-fast",
-        {},
-        { googleFlowPlan: "platinum" }
+        { count: 3 },
+        { googleFlowPlan: "plus" }
       );
-      expect(result.usd).toBe(0.4); // Pro basis: not 0, not the Ultra 0.08
-      expect(result.warnings).toContain(
-        "googleflow: unknown plan tier 'platinum', using Pro basis"
-      );
+      expect(result.usd).toBeCloseTo(2.4, 10); // 3 * 20 credits * $0.04
+      expect(result.breakdown.units).toBe(3);
+    });
+
+    it("veo-3.1-lite-low-priority is free on every plan (Ultra $199 only)", () => {
+      // Ultra $199 runs it for 0 credits; every other plan is refused
+      // upstream before any credit is drawn, so $0 is the real cost there too.
+      for (const googleFlowPlan of [
+        undefined,
+        "plus",
+        "pro",
+        "ultra-99",
+        "ultra",
+      ]) {
+        const result = priceGoogleflow(
+          "veo-3.1-lite-low-priority",
+          {},
+          googleFlowPlan === undefined ? undefined : { googleFlowPlan }
+        );
+        expect(result.usd, String(googleFlowPlan)).toBe(0);
+        expect(result.warnings, String(googleFlowPlan)).toEqual([]);
+      }
+    });
+
+    // AC-4 / REQ-005: an unrecognized tier falls back to the Plus basis, the
+    // highest credit value (never 0, never an under-charge), and warns, naming
+    // the value (ac-1zjd41; it fell back to Pro while Plus was unmodelled).
+    it("unknown plan tier falls back to Plus and warns naming the value", () => {
+      for (const googleFlowPlan of ["platinum", "Pro", "ultra-199", ""]) {
+        const result = priceGoogleflow("veo-3.1-fast", {}, { googleFlowPlan });
+        // Plus basis: not 0, not the Pro 0.40, not the Ultra 0.08
+        expect(result.usd, googleFlowPlan).toBe(0.8);
+        expect(result.warnings, googleFlowPlan).toEqual([
+          `googleflow: unknown plan tier '${googleFlowPlan}', using Plus basis`,
+        ]);
+      }
     });
 
     it("unknown plan tier still resolves on the omni-flash cross-product", () => {
@@ -1400,10 +1498,10 @@ describe("computeEstimate", () => {
         { duration: 8 },
         { googleFlowPlan: "platinum" }
       );
-      // Pro duration-8, not the zero-USD "no rate for variant" path.
-      expect(result.usd).toBe(0.24);
+      // Plus duration-8, not the zero-USD "no rate for variant" path.
+      expect(result.usd).toBe(0.48);
       expect(result.warnings).toContain(
-        "googleflow: unknown plan tier 'platinum', using Pro basis"
+        "googleflow: unknown plan tier 'platinum', using Plus basis"
       );
     });
 
@@ -1427,7 +1525,7 @@ describe("computeEstimate", () => {
 
     // Every Flow image model, the two deprecated aliases included. Flow
     // includes image generation in every plan, so each image is 0 credits on
-    // both tiers: a resolved $0 rate, not the "not found" miss these ids hit
+    // every tier: a resolved $0 rate, not the "not found" miss these ids hit
     // before they were priced.
     const imageModels = [
       "nano-banana-2-lite",
@@ -1455,14 +1553,17 @@ describe("computeEstimate", () => {
 
     it("prices every image model at 0 credits on an explicit plan", () => {
       for (const model of imageModels) {
-        const ultra = priceGoogleflow(model, {}, { googleFlowPlan: "ultra" });
-        expect(ultra.usd, `${model} ultra`).toBe(0);
-        expect(ultra.breakdown, `${model} ultra`).toEqual({
-          units: 4,
-          unit: "images",
-          perUnitUsd: 0,
-        });
-        expect(ultra.warnings, `${model} ultra`).toEqual([]);
+        for (const googleFlowPlan of ["plus", "ultra-99", "ultra"]) {
+          const label = `${model} ${googleFlowPlan}`;
+          const result = priceGoogleflow(model, {}, { googleFlowPlan });
+          expect(result.usd, label).toBe(0);
+          expect(result.breakdown, label).toEqual({
+            units: 4,
+            unit: "images",
+            perUnitUsd: 0,
+          });
+          expect(result.warnings, label).toEqual([]);
+        }
 
         const pro = priceGoogleflow(model, {}, { googleFlowPlan: "pro" });
         expect(pro, `${model} pro`).toEqual(priceGoogleflow(model));
@@ -1482,7 +1583,7 @@ describe("computeEstimate", () => {
       expect(unknownPlan.usd).toBe(0);
       expect(unknownPlan.breakdown.perUnitUsd).toBe(0);
       expect(unknownPlan.warnings).toEqual([
-        "googleflow: unknown plan tier 'platinum', using Pro basis",
+        "googleflow: unknown plan tier 'platinum', using Plus basis",
       ]);
     });
   });

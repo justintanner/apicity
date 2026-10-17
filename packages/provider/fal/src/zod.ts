@@ -76,14 +76,30 @@ export const FalDeletePayloadsRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// Bytedance Seedance 2.0 / 2.5 shared encoding options
+// ---------------------------------------------------------------------------
+
+const SeedanceBitrateModeSchema = z
+  .enum(["standard", "high"])
+  .describe(
+    "Output bitrate mode. 'high' requests a higher-quality, larger-file encode from the model; 'standard' uses the default bitrate."
+  );
+
+const SeedanceCodecSchema = z
+  .enum(["auto", "H264", "H265"])
+  .describe(
+    "'auto' retains default video codec behaviour; 'H264' uses H.264; 'H265' uses H.265."
+  );
+
+// ---------------------------------------------------------------------------
 // Bytedance Seedance 2.0 image-to-video
 // ---------------------------------------------------------------------------
 
 export const FalSeedance2p0ImageToVideoRequestSchema = z.object({
   prompt: z.string(),
   image_url: z.string(),
-  end_image_url: z.string().optional(),
-  resolution: z.enum(["480p", "720p"]).optional(),
+  end_image_url: z.string().nullable().optional(),
+  resolution: z.enum(["480p", "720p", "1080p", "4k"]).optional(),
   duration: z
     .enum([
       "auto",
@@ -105,8 +121,9 @@ export const FalSeedance2p0ImageToVideoRequestSchema = z.object({
     .enum(["auto", "21:9", "16:9", "4:3", "1:1", "3:4", "9:16"])
     .optional(),
   generate_audio: z.boolean().optional(),
-  seed: z.number().optional(),
-  end_user_id: z.string().optional(),
+  bitrate_mode: SeedanceBitrateModeSchema.optional(),
+  codec: SeedanceCodecSchema.optional(),
+  end_user_id: z.string().nullable().optional(),
 });
 
 // ---------------------------------------------------------------------------
@@ -115,7 +132,7 @@ export const FalSeedance2p0ImageToVideoRequestSchema = z.object({
 
 export const FalSeedance2p0TextToVideoRequestSchema = z.object({
   prompt: z.string(),
-  resolution: z.enum(["480p", "720p"]).optional(),
+  resolution: z.enum(["480p", "720p", "1080p", "4k"]).optional(),
   duration: z
     .enum([
       "auto",
@@ -137,8 +154,9 @@ export const FalSeedance2p0TextToVideoRequestSchema = z.object({
     .enum(["auto", "21:9", "16:9", "4:3", "1:1", "3:4", "9:16"])
     .optional(),
   generate_audio: z.boolean().optional(),
-  seed: z.number().optional(),
-  end_user_id: z.string().optional(),
+  bitrate_mode: SeedanceBitrateModeSchema.optional(),
+  codec: SeedanceCodecSchema.optional(),
+  end_user_id: z.string().nullable().optional(),
 });
 
 // ---------------------------------------------------------------------------
@@ -148,7 +166,7 @@ export const FalSeedance2p0TextToVideoRequestSchema = z.object({
 export const FalSeedance2p0FastImageToVideoRequestSchema = z.object({
   prompt: z.string(),
   image_url: z.string(),
-  end_image_url: z.string().optional(),
+  end_image_url: z.string().nullable().optional(),
   resolution: z.enum(["480p", "720p"]).optional(),
   duration: z
     .enum([
@@ -171,8 +189,9 @@ export const FalSeedance2p0FastImageToVideoRequestSchema = z.object({
     .enum(["auto", "21:9", "16:9", "4:3", "1:1", "3:4", "9:16"])
     .optional(),
   generate_audio: z.boolean().optional(),
-  seed: z.number().optional(),
-  end_user_id: z.string().optional(),
+  bitrate_mode: SeedanceBitrateModeSchema.optional(),
+  codec: SeedanceCodecSchema.optional(),
+  end_user_id: z.string().nullable().optional(),
 });
 
 // ---------------------------------------------------------------------------
@@ -203,8 +222,9 @@ export const FalSeedance2p0FastTextToVideoRequestSchema = z.object({
     .enum(["auto", "21:9", "16:9", "4:3", "1:1", "3:4", "9:16"])
     .optional(),
   generate_audio: z.boolean().optional(),
-  seed: z.number().optional(),
-  end_user_id: z.string().optional(),
+  bitrate_mode: SeedanceBitrateModeSchema.optional(),
+  codec: SeedanceCodecSchema.optional(),
+  end_user_id: z.string().nullable().optional(),
 });
 
 // ---------------------------------------------------------------------------
@@ -237,35 +257,71 @@ const Seedance2p0ReferenceAspectRatioSchema = z.enum([
   "9:16",
 ]);
 
-export const FalSeedance2p0ReferenceToVideoRequestSchema = z.object({
-  prompt: z.string(),
-  image_urls: z.array(z.string()).max(9).optional(),
-  video_urls: z.array(z.string()).max(3).optional(),
-  audio_urls: z.array(z.string()).max(3).optional(),
-  resolution: z.enum(["480p", "720p"]).optional(),
-  duration: Seedance2p0ReferenceDurationSchema.optional(),
-  aspect_ratio: Seedance2p0ReferenceAspectRatioSchema.optional(),
-  generate_audio: z.boolean().optional(),
-  seed: z.number().int().optional(),
-  end_user_id: z.string().optional(),
-});
+// The 2.0 reference-to-video field descriptions document two cross-field
+// rules: at most 12 files across all modalities, and audio only beside at
+// least one image or video. Both schemas restate them, as the US twin does.
+interface SeedanceReferenceMedia {
+  image_urls?: string[];
+  video_urls?: string[];
+  audio_urls?: string[];
+}
+
+const seedanceReferenceFileCount = (v: SeedanceReferenceMedia) =>
+  (v.image_urls?.length ?? 0) +
+  (v.video_urls?.length ?? 0) +
+  (v.audio_urls?.length ?? 0);
+
+const seedanceAudioHasVisual = (v: SeedanceReferenceMedia) =>
+  (v.audio_urls?.length ?? 0) === 0 ||
+  (v.image_urls?.length ?? 0) + (v.video_urls?.length ?? 0) > 0;
+
+export const FalSeedance2p0ReferenceToVideoRequestSchema = z
+  .object({
+    prompt: z.string(),
+    image_urls: z.array(z.string()).max(9).optional(),
+    video_urls: z.array(z.string()).max(3).optional(),
+    audio_urls: z.array(z.string()).max(3).optional(),
+    resolution: z.enum(["480p", "720p", "1080p", "4k"]).optional(),
+    duration: Seedance2p0ReferenceDurationSchema.optional(),
+    aspect_ratio: Seedance2p0ReferenceAspectRatioSchema.optional(),
+    generate_audio: z.boolean().optional(),
+    bitrate_mode: SeedanceBitrateModeSchema.optional(),
+    codec: SeedanceCodecSchema.optional(),
+    end_user_id: z.string().nullable().optional(),
+  })
+  .refine((v) => seedanceReferenceFileCount(v) <= 12, {
+    message: "Total files across all modalities must not exceed 12",
+  })
+  .refine(seedanceAudioHasVisual, {
+    message: "Audio references require at least one image or video",
+    path: ["audio_urls"],
+  });
 
 // ---------------------------------------------------------------------------
 // Bytedance Seedance 2.0 Fast reference-to-video
 // ---------------------------------------------------------------------------
 
-export const FalSeedance2p0FastReferenceToVideoRequestSchema = z.object({
-  prompt: z.string(),
-  image_urls: z.array(z.string()).max(9).optional(),
-  video_urls: z.array(z.string()).max(3).optional(),
-  audio_urls: z.array(z.string()).max(3).optional(),
-  resolution: z.enum(["480p", "720p"]).optional(),
-  duration: Seedance2p0ReferenceDurationSchema.optional(),
-  aspect_ratio: Seedance2p0ReferenceAspectRatioSchema.optional(),
-  generate_audio: z.boolean().optional(),
-  seed: z.number().int().optional(),
-  end_user_id: z.string().optional(),
-});
+export const FalSeedance2p0FastReferenceToVideoRequestSchema = z
+  .object({
+    prompt: z.string(),
+    image_urls: z.array(z.string()).max(9).optional(),
+    video_urls: z.array(z.string()).max(3).optional(),
+    audio_urls: z.array(z.string()).max(3).optional(),
+    resolution: z.enum(["480p", "720p"]).optional(),
+    duration: Seedance2p0ReferenceDurationSchema.optional(),
+    aspect_ratio: Seedance2p0ReferenceAspectRatioSchema.optional(),
+    generate_audio: z.boolean().optional(),
+    bitrate_mode: SeedanceBitrateModeSchema.optional(),
+    codec: SeedanceCodecSchema.optional(),
+    end_user_id: z.string().nullable().optional(),
+  })
+  .refine((v) => seedanceReferenceFileCount(v) <= 12, {
+    message: "Total files across all modalities must not exceed 12",
+  })
+  .refine(seedanceAudioHasVisual, {
+    message: "Audio references require at least one image or video",
+    path: ["audio_urls"],
+  });
 
 // ---------------------------------------------------------------------------
 // Bytedance Seedance 2.5 shared vocabularies
@@ -314,8 +370,6 @@ const Seedance2p5AspectRatioSchema = z.enum([
   "9:16",
 ]);
 
-const Seedance2p5BitrateModeSchema = z.enum(["standard", "high"]);
-
 // ---------------------------------------------------------------------------
 // Bytedance Seedance 2.5 text-to-video
 // ---------------------------------------------------------------------------
@@ -323,12 +377,18 @@ const Seedance2p5BitrateModeSchema = z.enum(["standard", "high"]);
 export const FalSeedance2p5TextToVideoRequestSchema = z.object({
   prompt: z.string(),
   resolution: Seedance2p5ResolutionSchema.optional(),
+  draft: z
+    .boolean()
+    .describe(
+      "Generate a draft preview at 480p, overriding resolution. Returns a draft_id for completing the draft at 1080p within seven days."
+    )
+    .optional(),
   duration: Seedance2p5DurationSchema.optional(),
   aspect_ratio: Seedance2p5AspectRatioSchema.optional(),
   generate_audio: z.boolean().optional(),
-  bitrate_mode: Seedance2p5BitrateModeSchema.optional(),
-  seed: z.number().int().optional(),
-  end_user_id: z.string().optional(),
+  bitrate_mode: SeedanceBitrateModeSchema.optional(),
+  codec: SeedanceCodecSchema.optional(),
+  end_user_id: z.string().nullable().optional(),
 });
 
 // ---------------------------------------------------------------------------
@@ -337,38 +397,33 @@ export const FalSeedance2p5TextToVideoRequestSchema = z.object({
 
 export const FalSeedance2p5ImageToVideoRequestSchema =
   FalSeedance2p5TextToVideoRequestSchema.extend({
+    prompt: z.string().nullable().optional(),
     image_url: z.string(),
-    end_image_url: z.string().optional(),
+    end_image_url: z.string().nullable().optional(),
+    // The live Input declares aspect_ratio const "auto" ("Always "auto" for
+    // image-to-video"): the output follows the input image's aspect.
+    aspect_ratio: z.literal("auto").optional(),
   });
 
 // ---------------------------------------------------------------------------
 // Bytedance Seedance 2.5 reference-to-video
 // ---------------------------------------------------------------------------
 
+// The per-modality caps are documented in the field descriptions; together
+// they also bound the documented 50-file total.
 export const FalSeedance2p5ReferenceToVideoRequestSchema =
   FalSeedance2p5TextToVideoRequestSchema.extend({
+    prompt: z.string().nullable().optional(),
+    task: z
+      .enum(["reference", "editing", "extension"])
+      .describe(
+        "The type of video generation task. Reference uses the supplied media as guidance. Editing modifies a reference video and automatically coerces aspect_ratio and duration to auto. Extension continues a reference video and automatically coerces aspect_ratio to auto."
+      )
+      .optional(),
     image_urls: z.array(z.string()).max(30).optional(),
     video_urls: z.array(z.string()).max(10).optional(),
     audio_urls: z.array(z.string()).max(10).optional(),
-  }).superRefine((value, context) => {
-    const imageCount = value.image_urls?.length ?? 0;
-    const videoCount = value.video_urls?.length ?? 0;
-    const audioCount = value.audio_urls?.length ?? 0;
-
-    if (imageCount + videoCount + audioCount > 50) {
-      context.addIssue({
-        code: "custom",
-        message: "Total reference inputs must not exceed 50",
-      });
-    }
-
-    if (audioCount > 0 && imageCount === 0 && videoCount === 0) {
-      context.addIssue({
-        code: "custom",
-        path: ["audio_urls"],
-        message: "Audio references require at least one image or video",
-      });
-    }
+    seed: z.number().int().nullable().optional(),
   });
 
 // ---------------------------------------------------------------------------

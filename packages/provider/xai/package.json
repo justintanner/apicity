@@ -22,9 +22,14 @@
     "./zod": {
       "import": "./dist/src/zod.js",
       "types": "./dist/src/zod.d.ts"
+    },
+    "./realtime": {
+      "import": "./dist/src/realtime.js",
+      "types": "./dist/src/realtime.d.ts"
     }
   },
   "dependencies": {
+    "ws": "^8.21.0",
     "zod": "^4.4.3"
   },
   "files": [
@@ -52,5 +57,8 @@
   "homepage": "https://github.com/justintanner/apicity#readme",
   "bugs": {
     "url": "https://github.com/justintanner/apicity/issues"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.18.1"
   }
 }

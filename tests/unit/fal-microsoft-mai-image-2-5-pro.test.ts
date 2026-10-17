@@ -173,9 +173,9 @@ describe("MAI Image 2.5 Pro contract", () => {
     expect(
       (MODEL_SLUGS.fal as Record<string, string>)[endpoint]
     ).toBeUndefined();
-    expect(
-      (MODEL_DISPLAY.fal as Record<string, string>)[endpoint]
-    ).toBeUndefined();
+    expect((MODEL_DISPLAY.fal as Record<string, string>)[endpoint]).toBe(
+      "MAI Image 2.5 Pro"
+    );
     const estimate = computeEstimate({
       provider: "fal",
       endpoint,

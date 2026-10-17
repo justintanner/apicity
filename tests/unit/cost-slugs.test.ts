@@ -7,6 +7,8 @@ import {
   type SlugModelId,
 } from "../../packages/provider/cost/src/slugs";
 import { PRICING } from "../../packages/provider/cost/src/pricing/index";
+import { FAL_DYNAMIC_PRICING_ENDPOINTS } from "../../packages/provider/cost/src/pricing/fal";
+import { FAL_ENDPOINT_REQUEST_SCHEMAS } from "../../packages/provider/fal/src/zod";
 
 describe("MODEL_SLUGS", () => {
   it("has all expected providers", () => {
@@ -857,5 +859,92 @@ describe("kie pricing-refresh slugs (REQ-007)", () => {
         `${model} display`
       ).toBeDefined();
     }
+  });
+});
+
+describe("fal display-only names (ac-j3d6ki.6)", () => {
+  const display = MODEL_DISPLAY.fal as Record<string, string>;
+  const slugs = MODEL_SLUGS.fal as Record<string, string>;
+
+  it("names every FAL_ENDPOINT_REQUEST_SCHEMAS key", () => {
+    const unnamed = Object.keys(FAL_ENDPOINT_REQUEST_SCHEMAS).filter(
+      (endpoint) => !display[endpoint]
+    );
+    expect(unnamed).toEqual([]);
+  });
+
+  it("names only schema keys and priced ids", () => {
+    const known = new Set([
+      ...Object.keys(FAL_ENDPOINT_REQUEST_SCHEMAS),
+      ...Object.keys(PRICING.fal),
+    ]);
+    expect(Object.keys(display).filter((k) => !known.has(k))).toEqual([]);
+  });
+
+  it("keeps display-only rows exactly the dynamic ids", () => {
+    const displayOnly = Object.keys(display).filter((k) => !(k in slugs));
+    expect(displayOnly.sort()).toEqual(
+      [...FAL_DYNAMIC_PRICING_ENDPOINTS].sort()
+    );
+  });
+
+  it("allows display-only rows on fal alone", () => {
+    for (const [provider, models] of Object.entries(MODEL_SLUGS)) {
+      if (provider === "fal") continue;
+      expect(
+        Object.keys(
+          (MODEL_DISPLAY as Record<string, Record<string, string>>)[provider]
+        ).sort(),
+        provider
+      ).toEqual(Object.keys(models).sort());
+    }
+  });
+
+  it("names the dynamic endpoints Videobook reported", () => {
+    expect(display).toMatchObject({
+      "bytedance/seedance-2.5/us/image-to-video": "Seedance 2.5 US",
+      "fal-ai/flux-2-flex": "Flux 2 Flex",
+      "fal-ai/kandinsky6-pro/text-to-video": "Kandinsky 6.0 Pro",
+      "fal-ai/kandinsky6-pro/image-to-video": "Kandinsky 6.0 Pro",
+      "fal-ai/kandinsky6-lite/text-to-video": "Kandinsky 6.0 Lite",
+      "fal-ai/kandinsky6-lite/image-to-video": "Kandinsky 6.0 Lite",
+      "fal-ai/kandinsky6-vsr": "Kandinsky 6.0 VSR",
+      "fal-ai/kandinsky6-vsr/lite": "Kandinsky 6.0 VSR Lite",
+      "google/nano-banana-2.1": "Nano Banana 2.1",
+      "google/nano-banana-2.1/edit": "Nano Banana 2.1 Edit",
+      "mirelo-ai/sfx2.0/video-to-video": "Mirelo SFX 2.0",
+      "mirelo-ai/sfx2.0/video-to-audio": "Mirelo SFX 2.0",
+      "mirelo-ai/sfx2.0/text-to-audio": "Mirelo SFX 2.0",
+      "mureka/api/generate/podcast": "Mureka Podcast",
+      "mureka/api/generate/instrumental": "Mureka Instrumental",
+      "xai/grok-voice": "Grok Voice",
+      "fal-ai/flux-3-action/so101": "FLUX 3 Action",
+      "openrouter/router/decisions": "OpenRouter Router",
+    });
+  });
+
+  it("resolves a dynamic id through modelDisplay but not modelSlug", () => {
+    expect(modelDisplay("fal", "google/nano-banana-2.1")).toBe(
+      "Nano Banana 2.1"
+    );
+    // @ts-expect-error a dynamic id has no slug, so modelSlug rejects it
+    expect(() => modelSlug("fal", "google/nano-banana-2.1")).toThrow(
+      "No slug registered for fal/google/nano-banana-2.1"
+    );
+  });
+
+  it("names each H3 Max style on one shared slug", () => {
+    const styles = [
+      ["minimax/h3-max/styles/16bit-pixel", "H3 Max 16-bit Pixel"],
+      ["minimax/h3-max/styles/hand-drawn", "H3 Max Hand Drawn"],
+      ["minimax/h3-max/styles/low-poly", "H3 Max Low Poly"],
+      ["minimax/h3-max/styles/retro-toon-70s", "H3 Max Retro Toon 70s"],
+      ["minimax/h3-max/styles/vhs", "H3 Max VHS"],
+    ] as const;
+    for (const [endpoint, name] of styles) {
+      expect(display[endpoint], endpoint).toBe(name);
+      expect(slugs[endpoint], endpoint).toBe("h3mstyle");
+    }
+    expect(new Set(styles.map(([endpoint]) => display[endpoint])).size).toBe(5);
   });
 });

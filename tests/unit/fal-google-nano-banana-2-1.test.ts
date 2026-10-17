@@ -264,7 +264,9 @@ describe("Nano Banana 2.1 text-to-image contract", () => {
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toContain(endpoint);
     expect(falPricing[endpoint]).toBeUndefined();
     expect(MODEL_SLUGS.fal).not.toHaveProperty(endpoint);
-    expect(MODEL_DISPLAY.fal).not.toHaveProperty(endpoint);
+    expect((MODEL_DISPLAY.fal as Record<string, string>)[endpoint]).toBe(
+      "Nano Banana 2.1"
+    );
     const estimate = computeEstimate({
       provider: "fal",
       endpoint,

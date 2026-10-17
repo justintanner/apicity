@@ -187,9 +187,9 @@ describe("Ray 3.2 text-to-video contract", () => {
     expect(
       (MODEL_SLUGS.fal as Record<string, string>)[endpoint]
     ).toBeUndefined();
-    expect(
-      (MODEL_DISPLAY.fal as Record<string, string>)[endpoint]
-    ).toBeUndefined();
+    expect((MODEL_DISPLAY.fal as Record<string, string>)[endpoint]).toBe(
+      "Ray 3.2 Text"
+    );
     const estimate = computeEstimate({
       provider: "fal",
       endpoint,

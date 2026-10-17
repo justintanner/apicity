@@ -199,13 +199,13 @@ describe("MiniMax H3 Max video extension contract", () => {
     expect(estimate.warnings[0]).toContain("fal.v1.models.pricing.estimate");
   });
 
-  it("carries no local rate, slug or display name", () => {
+  it("carries no local rate or slug, only a display name", () => {
     expect(falPricing[endpoint]).toBeUndefined();
     expect(
       (MODEL_SLUGS.fal as Record<string, string>)[endpoint]
     ).toBeUndefined();
-    expect(
-      (MODEL_DISPLAY.fal as Record<string, string>)[endpoint]
-    ).toBeUndefined();
+    expect((MODEL_DISPLAY.fal as Record<string, string>)[endpoint]).toBe(
+      "H3 Max Extend"
+    );
   });
 });

@@ -121,7 +121,9 @@ describe("Mureka podcast generation", () => {
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toContain(endpoint);
     expect(falPricing[endpoint]).toBeUndefined();
     expect(MODEL_SLUGS.fal).not.toHaveProperty(endpoint);
-    expect(MODEL_DISPLAY.fal).not.toHaveProperty(endpoint);
+    expect((MODEL_DISPLAY.fal as Record<string, string>)[endpoint]).toBe(
+      "Mureka Podcast"
+    );
     expect(
       computeEstimate({ provider: "fal", endpoint, payload: recorded }).warnings
         .length

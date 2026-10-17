@@ -825,16 +825,17 @@ describe("fal video pricing estimates", () => {
     const names = MODEL_DISPLAY.fal as Record<string, string>;
     // No 2.0 or 2.0 Fast reference call is recorded, and the 2.0 US one
     // divides by 1000; 2.5 image-to-video follows the input image's aspect.
-    for (const endpoint of [
-      "bytedance/seedance-2.0/fast/reference-to-video",
-      "bytedance/seedance-2.0/reference-to-video",
-      "bytedance/seedance-2.5/image-to-video",
-      "bytedance/seedance-2.5/us/image-to-video",
+    // Dynamic ids carry a display-only name (ac-j3d6ki.6), never a slug.
+    for (const [endpoint, name] of [
+      ["bytedance/seedance-2.0/fast/reference-to-video", "Seedance 2 Fast"],
+      ["bytedance/seedance-2.0/reference-to-video", "Seedance 2"],
+      ["bytedance/seedance-2.5/image-to-video", "Seedance 2.5"],
+      ["bytedance/seedance-2.5/us/image-to-video", "Seedance 2.5 US"],
     ]) {
       expect(dynamic, endpoint).toContain(endpoint);
       expect(falPricing[endpoint], endpoint).toBeUndefined();
       expect(slugs[endpoint], endpoint).toBeUndefined();
-      expect(names[endpoint], endpoint).toBeUndefined();
+      expect(names[endpoint], endpoint).toBe(name);
       const result = seedance(endpoint, seedanceReference, {
         inputDurationSeconds: 4,
       });

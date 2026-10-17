@@ -202,9 +202,9 @@ describe("Ray 3.2 reframe contract", () => {
     expect(
       (MODEL_SLUGS.fal as Record<string, string>)[endpoint]
     ).toBeUndefined();
-    expect(
-      (MODEL_DISPLAY.fal as Record<string, string>)[endpoint]
-    ).toBeUndefined();
+    expect((MODEL_DISPLAY.fal as Record<string, string>)[endpoint]).toBe(
+      "Ray 3.2 Reframe"
+    );
     const estimate = computeEstimate({
       provider: "fal",
       endpoint,

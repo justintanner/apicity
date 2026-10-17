@@ -169,8 +169,8 @@ describe("Mirelo SFX 2.0 text-to-audio", () => {
     expect(
       (MODEL_SLUGS.fal as Record<string, string>)[endpoint]
     ).toBeUndefined();
-    expect(
-      (MODEL_DISPLAY.fal as Record<string, string>)[endpoint]
-    ).toBeUndefined();
+    expect((MODEL_DISPLAY.fal as Record<string, string>)[endpoint]).toBe(
+      "Mirelo SFX 2.0"
+    );
   });
 });

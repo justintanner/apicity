@@ -29,7 +29,8 @@ media APIs, and more.
 - **Composable middleware.** `withRetry` / `withFallback` / `withRateLimit` as
   plain function wrappers.
 - **Minimal provider dependencies.** Providers depend only on `zod` — plus
-  `viem` in `@apicity/polymarket` for order signing. Paid endpoint OTP
+  `viem` in `@apicity/polymarket` for order signing and `ws` in
+  `@apicity/openai` for its Realtime WebSocket transport. Paid endpoint OTP
   verification and B2's S3-compatible transport are bundled inside their
   provider packages. ESM, strict TypeScript.
 

@@ -22,10 +22,18 @@
     "./zod": {
       "import": "./dist/src/zod.js",
       "types": "./dist/src/zod.d.ts"
+    },
+    "./realtime": {
+      "import": "./dist/src/realtime.js",
+      "types": "./dist/src/realtime.d.ts"
     }
   },
   "dependencies": {
+    "ws": "^8.21.0",
     "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.18.1"
   },
   "files": [
     "dist",

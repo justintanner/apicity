@@ -147,6 +147,7 @@
     "@pollyjs/core": "^6.0.6",
     "@pollyjs/persister-fs": "^6.0.6",
     "@types/node": "^20.19.42",
+    "@types/ws": "^8.18.1",
     "@vitest/coverage-v8": "^4.1.11",
     "@vitest/ui": "^4.1.11",
     "eslint": "^9.39.4",
@@ -160,6 +161,7 @@
     "typescript-eslint": "^8.61.0",
     "viem": "^2.52.2",
     "vitest": "^4.1.11",
+    "ws": "^8.21.0",
     "zod": "^4.4.3"
   },
   "overrides": {

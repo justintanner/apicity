@@ -1,6 +1,12 @@
 import type { CostHints } from "../types";
 import type { ModelPricing } from "./types";
-import { asNumber, asObject, asString, hintSeconds } from "./helpers";
+import {
+  asNumber,
+  asObject,
+  asString,
+  hintInputSeconds,
+  hintSeconds,
+} from "./helpers";
 
 // fal bills image generation per generated image, not per token. Unlike the
 // other per-unit providers, the payload carries no model field — the model
@@ -55,6 +61,10 @@ const virtualTryOnAsOf = "2026-08-27";
 // this date. Both the source-video input and edited output bill for the same
 // hinted clip length, so their per-second components can be summed exactly.
 const grokEditAsOf = "2026-08-22";
+
+// Seedance 2.0, 2.0 Fast and 2.5: the fal cards were re-read, and ByteDance's
+// output-size table read, on this date (ac-j3d6ki.3).
+const seedanceAsOf = "2026-10-17";
 
 const source = (endpointId: string, on: string = asOf) => ({
   url: `https://fal.ai/models/${endpointId}`,
@@ -228,9 +238,10 @@ const perCharacter = (
 // Video
 // ---------------------------------------------------------------------------
 //
-// Every fal video family bills per output second, flat or tiered on payload
+// fal video families bill per output second, flat or tiered on payload
 // fields (resolution / generate_audio) whose rate keys mirror the upstream
-// values verbatim. Duration shapes differ per family — number, digit string,
+// values verbatim; Seedance bills output tokens instead (seedanceTokens
+// below). Duration shapes differ per family — number, digit string,
 // "8s"-style enum — so each family gets its own reader rather than one
 // guessing parser: an absent optional field falls back to fal's documented
 // schema default, while a present-but-unrecognized value returns undefined /
@@ -348,6 +359,332 @@ const perSecondTiered = (
   select,
   rates,
   source: source(endpointId, on),
+});
+
+// ---------------------------------------------------------------------------
+// Seedance 2.0, 2.0 Fast and 2.5
+// ---------------------------------------------------------------------------
+//
+// fal bills Seedance in tokens of the delivered video, at each card's rate
+// per 1000 tokens: tokens = width x height x frames / 1024.
+//
+// Width x height is ByteDance's published output size for the model,
+// resolution and aspect ratio: the BytePlus ModelArk video-generation
+// tutorial ("The pixel dimensions of output videos for each model are listed
+// below"), read 2026-10-17,
+// https://docs.byteplus.com/en/docs/ModelArk/video-generation-tutorial.
+// ByteDance's own price examples reproduce that table, fal's per-1000-token
+// card rates are exactly twice ByteDance's per-million rates (the US twins
+// charge 1.2 x fal), and 640x640, the one size recorded on every family
+// (480p, 1:1), is the table's.
+//
+// Frames: the video runs at 24 fps, and every committed success delivered 97
+// frames for duration "4", one more than 24 x 4, so frames = 24 x d + 1.
+// Other durations are unrecorded. Were one to deliver 24 x d frames, the
+// estimate would be 1 / (24 x d + 1) high, at most 1% (at 4 s).
+//
+// Reference clips: with video_urls, fal also bills the clips' frames, 24 x
+// their summed length in costHints.inputDurationSeconds, at the OUTPUT size,
+// and multiplies the whole count by 0.6. Clips under 4 s fail closed:
+// ByteDance bills them at the 4 s price and fal's handling is unrecorded.
+// Image- or audio-only references bill the output alone, without the 0.6.
+// bytedance/seedance-2.0/us/reference-to-video divides by 1000, not the
+// card's 1024, the one measured exception, so it prices only with video.
+//
+// Recorded identities, all at 480p, 1:1 and "4" (640x640, 97 frames):
+// - 38.8 units = 640 x 640 x 97 / 1024 / 1000 on every text-to-video id and
+//   on the 2.0, 2.0 Fast and 2.0 US image-to-video ids;
+// - 46.32 = 0.6 x 640 x 640 x (96 + 97) / 1024 / 1000 on 2.5 and 2.5 US
+//   reference-to-video, with a 4.000 s, 96-frame clip;
+// - 47.43168 = 0.6 x 640 x 640 x (96 + 97) / 1000 / 1000 on 2.0 US
+//   reference-to-video, with the same clip.
+//
+// A request fixes the output only through an explicit resolution (default
+// "720p"), a fixed aspect_ratio and a digit duration, or a duration given in
+// costHints.durationSeconds. Anything else fails closed with a warning that
+// names the field or hint that would price it. generate_audio, bitrate_mode,
+// codec and seed never change the price: fal's schema says audio costs the
+// same, and neither the cards nor ByteDance price bitrate or codec. The
+// cards' per-second examples ("$0.3034/second" and the like) are rough
+// figures; only their per-1000-token rates are used.
+//
+// Four ids stay in FAL_DYNAMIC_PRICING_ENDPOINTS. 2.0 and 2.0 Fast
+// reference-to-video have no recording, and the one 2.0-series reference
+// recording (2.0 US) divides by 1000 where the card says 1024. 2.5 and 2.5 US
+// image-to-video follow the input image's aspect, for which ByteDance
+// publishes no sizing rule.
+
+// [width, height] by resolution and aspect ratio, copied from ByteDance's
+// table: one column for the 2.0 series (2.0, 2.0 Fast and 2.0 US), and one
+// for 2.5 (2.5 US and the draft completion too), which has no 4k.
+type SeedanceSizes = Readonly<
+  Record<string, Readonly<Record<string, readonly [number, number]>>>
+>;
+
+const SEEDANCE_2P0_SIZES: SeedanceSizes = {
+  "480p": {
+    "16:9": [864, 496],
+    "4:3": [752, 560],
+    "1:1": [640, 640],
+    "3:4": [560, 752],
+    "9:16": [496, 864],
+    "21:9": [992, 432],
+  },
+  "720p": {
+    "16:9": [1280, 720],
+    "4:3": [1112, 834],
+    "1:1": [960, 960],
+    "3:4": [834, 1112],
+    "9:16": [720, 1280],
+    "21:9": [1470, 630],
+  },
+  "1080p": {
+    "16:9": [1920, 1080],
+    "4:3": [1664, 1248],
+    "1:1": [1440, 1440],
+    "3:4": [1248, 1664],
+    "9:16": [1080, 1920],
+    "21:9": [2206, 946],
+  },
+  "4k": {
+    "16:9": [3840, 2160],
+    "4:3": [3326, 2494],
+    "1:1": [2880, 2880],
+    "3:4": [2494, 3326],
+    "9:16": [2160, 3840],
+    "21:9": [4398, 1886],
+  },
+};
+
+const SEEDANCE_2P5_SIZES: SeedanceSizes = {
+  "480p": {
+    "16:9": [854, 480],
+    "4:3": [752, 560],
+    "1:1": [640, 640],
+    "3:4": [560, 752],
+    "9:16": [480, 854],
+    "21:9": [992, 432],
+  },
+  "720p": {
+    "16:9": [1280, 720],
+    "4:3": [1112, 834],
+    "1:1": [960, 960],
+    "3:4": [834, 1112],
+    "9:16": [720, 1280],
+    "21:9": [1470, 630],
+  },
+  "1080p": {
+    "16:9": [1920, 1080],
+    "4:3": [1664, 1248],
+    "1:1": [1440, 1440],
+    "3:4": [1248, 1664],
+    "9:16": [1080, 1920],
+    "21:9": [2206, 946],
+  },
+};
+
+const SEEDANCE_RATIOS = "21:9, 16:9, 4:3, 1:1, 3:4 or 9:16";
+
+interface SeedanceSpec {
+  endpointId: string;
+  sizes: SeedanceSizes;
+  // The longest digit duration in the endpoint's enum: 15 for the 2.0
+  // series, 30 for 2.5. The shortest is 4 on every id.
+  maxSeconds: number;
+  // USD per token by resolution: the card's rate per 1000 tokens / 1000.
+  rates: Record<string, number>;
+  // Text- and image-to-video omit it. A completed draft has no resolution,
+  // duration or aspect_ratio field of its own.
+  operation?: "reference" | "complete";
+  // 2.5's draft flag renders a 480p preview whatever resolution says.
+  draftFlag?: boolean;
+  // 2.5 reference-to-video's task: with editing or extension, fal coerces
+  // aspect_ratio (and, for editing, duration) to auto.
+  taskField?: boolean;
+  // Set only on 2.0 US reference-to-video, whose one recording (with
+  // video_urls) divided by 1000. Its divisor without video is unrecorded, so
+  // such a request fails closed.
+  videoOnlyDivisor?: number;
+}
+
+// An own entry of a lookup table, or undefined: a request value such as
+// "constructor" must not reach Object.prototype.
+const own = <T>(record: Readonly<Record<string, T>>, key: string) =>
+  Object.hasOwn(record, key) ? record[key] : undefined;
+
+// payload.resolution, defaulting to the documented "720p". 2.5's draft flag
+// forces 480p, and a completed draft is always 1080p.
+function seedanceResolution(
+  spec: SeedanceSpec,
+  p: Record<string, unknown>
+): string | undefined {
+  if (spec.operation === "complete") return "1080p";
+  if (spec.draftFlag && p.draft === true) return "480p";
+  return p.resolution === undefined ? "720p" : asString(p.resolution);
+}
+
+// Whole seconds from 4 to the endpoint's maximum: a digit duration as is,
+// or, for "auto" (the default, the model picks the length), the caller's
+// costHints.durationSeconds. A completed draft reads the hint alone.
+function seedanceSeconds(
+  spec: SeedanceSpec,
+  p: Record<string, unknown>,
+  hints?: CostHints
+): number | undefined {
+  const inRange = (n: number | undefined) =>
+    n !== undefined && Number.isInteger(n) && n >= 4 && n <= spec.maxSeconds
+      ? n
+      : undefined;
+  if (
+    spec.operation !== "complete" &&
+    p.duration !== undefined &&
+    p.duration !== "auto"
+  ) {
+    return inRange(digitSeconds(p.duration));
+  }
+  return inRange(asNumber(hints?.durationSeconds));
+}
+
+// The billed tokens, or the reason the request does not fix them. units and
+// warn both read this, so a priced request carries no warning and every
+// unpriced one names its cause.
+function seedanceTokens(
+  spec: SeedanceSpec,
+  p: Record<string, unknown>,
+  hints?: CostHints
+): { tokens: number } | { warning: string } {
+  const id = `fal '${spec.endpointId}'`;
+  const resolution = seedanceResolution(spec, p);
+  if (resolution === undefined || own(spec.rates, resolution) === undefined) {
+    return {
+      warning:
+        `${id}: resolution '${String(p.resolution)}' has no published rate; ` +
+        `the card prices ${Object.keys(spec.rates).join(", ")}`,
+    };
+  }
+
+  if (spec.taskField && p.task !== undefined && p.task !== "reference") {
+    return {
+      warning:
+        `${id}: task '${String(p.task)}' is not priced; with editing or ` +
+        "extension fal coerces aspect_ratio (and, for editing, duration) to " +
+        "auto, so the request does not fix the output size",
+    };
+  }
+
+  const ratio =
+    spec.operation === "complete"
+      ? asString(hints?.aspectRatio)
+      : p.aspect_ratio === undefined
+        ? "auto"
+        : asString(p.aspect_ratio);
+  const row = own(spec.sizes, resolution);
+  const size = ratio === undefined || !row ? undefined : own(row, ratio);
+  if (!size) {
+    if (spec.operation === "complete") {
+      return {
+        warning:
+          `${id}: a completed draft keeps the draft's aspect ratio, which the ` +
+          `request does not carry; pass the draft's ratio (${SEEDANCE_RATIOS}) ` +
+          "as costHints.aspectRatio",
+      };
+    }
+    return {
+      warning:
+        ratio === "auto"
+          ? `${id}: aspect_ratio "auto" (the default) lets the model pick the ` +
+            `output size; pass a fixed aspect_ratio (${SEEDANCE_RATIOS})`
+          : `${id}: aspect_ratio '${String(p.aspect_ratio)}' has no published ` +
+            `output size; pass ${SEEDANCE_RATIOS}`,
+    };
+  }
+
+  const seconds = seedanceSeconds(spec, p, hints);
+  if (seconds === undefined) {
+    const range = `4 to ${spec.maxSeconds}`;
+    if (spec.operation === "complete") {
+      return {
+        warning:
+          `${id}: a completed draft keeps the draft's duration, which the ` +
+          "request does not carry; pass it as costHints.durationSeconds, " +
+          `whole seconds from ${range}`,
+      };
+    }
+    return {
+      warning:
+        p.duration === undefined || p.duration === "auto"
+          ? `${id}: duration "auto" (the default) lets the model pick the ` +
+            `length; pass a digit duration ("4" to "${spec.maxSeconds}") or ` +
+            `costHints.durationSeconds as whole seconds from ${range}`
+          : `${id}: duration '${String(p.duration)}' is not a digit string ` +
+            `from "4" to "${spec.maxSeconds}"`,
+    };
+  }
+
+  // Reference clips sent with the request, or, for a completed draft, the
+  // clips the draft had (a valid inputDurationSeconds says it had them).
+  let video = false;
+  if (spec.operation === "reference") {
+    const urls = p.video_urls;
+    if (urls !== undefined && !Array.isArray(urls)) {
+      return {
+        warning:
+          `${id}: video_urls is not an array, so the reference clips cannot ` +
+          "be counted; pass the clip URLs as an array and declare their " +
+          "total length as costHints.inputDurationSeconds",
+      };
+    }
+    video = Array.isArray(urls) && urls.length > 0;
+    if (!video && spec.videoOnlyDivisor !== undefined) {
+      return {
+        warning:
+          `${id}: only a request with video_urls is priced; the one recorded ` +
+          `call had a reference clip and divided by ${spec.videoOnlyDivisor}, ` +
+          "and the divisor without one is unrecorded",
+      };
+    }
+  }
+  const input = hintInputSeconds(hints);
+  if (spec.operation === "complete") video = input !== undefined;
+  if (video && input === undefined) {
+    return {
+      warning:
+        `${id}: video_urls carry no clip length in the request, and fal ` +
+        "bills the clips' frames beside the output; declare their total " +
+        "length as costHints.inputDurationSeconds (at least 4 s)",
+    };
+  }
+  if (video && input !== undefined && input < 4) {
+    return {
+      warning:
+        `${id}: costHints.inputDurationSeconds is ${input} s; clips under 4 s ` +
+        "are not priced, because ByteDance bills them at the 4 s price and " +
+        "fal's handling is unrecorded",
+    };
+  }
+
+  const [width, height] = size;
+  const clipFrames = video && input !== undefined ? 24 * input : 0;
+  const pixels = width * height * (clipFrames + 24 * seconds + 1);
+  const divisor = spec.videoOnlyDivisor ?? 1024;
+  // 0.6 as 3 / 5 keeps whole-number token counts exact.
+  return { tokens: video ? (pixels * 3) / (5 * divisor) : pixels / divisor };
+}
+
+const seedance = (spec: SeedanceSpec): ModelPricing => ({
+  kind: "perUnit",
+  unit: "tokens",
+  units: (p, hints) => {
+    const result = seedanceTokens(spec, p, hints);
+    return "tokens" in result ? result.tokens : undefined;
+  },
+  warn: (p, hints) => {
+    const result = seedanceTokens(spec, p, hints);
+    return "warning" in result ? [result.warning] : [];
+  },
+  select: [{ name: "resolution", pick: (p) => seedanceResolution(spec, p) }],
+  rates: spec.rates,
+  source: source(spec.endpointId, seedanceAsOf),
 });
 
 // Rate tables shared by the variants of one family — the generation/edit
@@ -862,29 +1199,17 @@ const meshyV71 = (endpointId: string, on: string): ModelPricing => ({
 // $0.00083/second (2026-10-16), but do not define the seconds. Our 6.008 s
 // input and 2.54 s reply billed 1.897 units ($0.00157451); request audio
 // duration cannot determine these units, so keep dynamic estimation.
-// Seedance 2.0, 2.0 Fast and 2.5 (bytedance/seedance-2.0/* and
-// bytedance/seedance-2.5/*, US twins included) bill 1000-token units of the
-// OUTPUT file. Per 1000 tokens at 480p: $0.014 (2.0), $0.0112 (2.0 Fast),
-// $0.0168 (2.0 US), $0.0214 (2.5) and $0.02568 (2.5 US); cards read
-// 2026-10-15 and 2026-10-16. Every committed success asked for 480p and "4" s
-// and returned 97 frames. Each billed width x height x frames / 1024 tokens,
-// except 2.0 US reference-to-video, which divides by 1000:
-// - 640x640 billed 38.8 units on every text-to-video id and on 2.0, 2.0 Fast
-//   and 2.0 US image-to-video, where a 16:9 per-second table puts 38.88.
-// - 2.5 and 2.5 US image-to-video follow the input image's aspect: cat1.jpg
-//   gave 648x630 and billed 38.671 units.
-// - Reference-to-video with a video input also bills the 96-frame input clip
-//   at the output's dimensions, times 0.6. 2.5 and 2.5 US billed 46.32 units,
-//   0.6 x (38,800 + 38,400) tokens; 2.0 US billed 47.43168 units,
-//   0.6 x 640 x 640 x (97 + 96) / 1000 tokens. An output-only table puts
-//   23.328.
-// - bytedance/seedance-2.5/draft/complete bills a 1080p clip whose length the
-//   draft sets; no success is recorded (a 4 s completion is about $4.66 by
-//   the card).
-// The nine non-US text-, image- and reference-to-video ids default
-// aspect_ratio and duration to "auto", fal publishes no per-aspect table, and
-// no request field gives a reference clip's length, so no request field fixes
-// the charge (ac-jhck87).
+// Four Seedance ids stay dynamic. The other twelve bill output tokens that an
+// explicit request fixes (seedanceTokens above; ac-j3d6ki.3).
+// - bytedance/seedance-2.0/reference-to-video and
+//   bytedance/seedance-2.0/fast/reference-to-video: no call is recorded, and
+//   the one 2.0-series reference recording (2.0 US) divided by 1000 where the
+//   card says 1024, so neither divisor is known.
+// - bytedance/seedance-2.5/image-to-video and
+//   bytedance/seedance-2.5/us/image-to-video: aspect_ratio is the const
+//   "auto", and the output follows the input image. cat1.jpg (686x667) gave
+//   648x630 at 97 frames and billed 38.671 units. ByteDance publishes no
+//   sizing rule for that adaptive ratio, so no request field fixes the size.
 export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "alibaba/qwen-image-3/edit",
   "alibaba/qwen-image-3/text-to-image",
@@ -894,22 +1219,10 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "blackforestlabs/flux-3/edit-image",
   "blackforestlabs/flux-3/text-to-image",
   "blackforestlabs/flux-video-upscale",
-  "bytedance/seedance-2.0/fast/image-to-video",
   "bytedance/seedance-2.0/fast/reference-to-video",
-  "bytedance/seedance-2.0/fast/text-to-video",
-  "bytedance/seedance-2.0/image-to-video",
   "bytedance/seedance-2.0/reference-to-video",
-  "bytedance/seedance-2.0/text-to-video",
-  "bytedance/seedance-2.0/us/image-to-video",
-  "bytedance/seedance-2.0/us/reference-to-video",
-  "bytedance/seedance-2.0/us/text-to-video",
-  "bytedance/seedance-2.5/draft/complete",
   "bytedance/seedance-2.5/image-to-video",
-  "bytedance/seedance-2.5/reference-to-video",
-  "bytedance/seedance-2.5/text-to-video",
   "bytedance/seedance-2.5/us/image-to-video",
-  "bytedance/seedance-2.5/us/reference-to-video",
-  "bytedance/seedance-2.5/us/text-to-video",
   "bytedance/seedream/v5/pro/edit",
   "bytedance/seedream/v5/pro/layerize",
   "bytedance/seedream/v5/pro/text-to-image",
@@ -1948,6 +2261,127 @@ export const fal: Record<string, ModelPricing> = {
     numericSeconds(5),
     flux3AsOf
   ),
+
+  // Video — Seedance 2.0, 2.0 Fast and 2.5 bill output tokens (seedanceTokens
+  // above). Each rate is the card's USD per 1000 tokens, divided by 1000.
+  // 2.0: $0.014 at 480p, 720p and 1080p, and $0.008 at 4k.
+  "bytedance/seedance-2.0/text-to-video": seedance({
+    endpointId: "bytedance/seedance-2.0/text-to-video",
+    sizes: SEEDANCE_2P0_SIZES,
+    maxSeconds: 15,
+    rates: {
+      "480p": 0.014 / 1000,
+      "720p": 0.014 / 1000,
+      "1080p": 0.014 / 1000,
+      "4k": 0.008 / 1000,
+    },
+  }),
+  "bytedance/seedance-2.0/image-to-video": seedance({
+    endpointId: "bytedance/seedance-2.0/image-to-video",
+    sizes: SEEDANCE_2P0_SIZES,
+    maxSeconds: 15,
+    rates: {
+      "480p": 0.014 / 1000,
+      "720p": 0.014 / 1000,
+      "1080p": 0.014 / 1000,
+      "4k": 0.008 / 1000,
+    },
+  }),
+  // 2.0 Fast: $0.0112 at 480p and 720p, its only resolutions.
+  "bytedance/seedance-2.0/fast/text-to-video": seedance({
+    endpointId: "bytedance/seedance-2.0/fast/text-to-video",
+    sizes: SEEDANCE_2P0_SIZES,
+    maxSeconds: 15,
+    rates: { "480p": 0.0112 / 1000, "720p": 0.0112 / 1000 },
+  }),
+  "bytedance/seedance-2.0/fast/image-to-video": seedance({
+    endpointId: "bytedance/seedance-2.0/fast/image-to-video",
+    sizes: SEEDANCE_2P0_SIZES,
+    maxSeconds: 15,
+    rates: { "480p": 0.0112 / 1000, "720p": 0.0112 / 1000 },
+  }),
+  // 2.0 US: $0.0168 at 480p and 720p. The schema also offers 1080p and 4k,
+  // but the card publishes no rate for them, so they fail closed.
+  "bytedance/seedance-2.0/us/text-to-video": seedance({
+    endpointId: "bytedance/seedance-2.0/us/text-to-video",
+    sizes: SEEDANCE_2P0_SIZES,
+    maxSeconds: 15,
+    rates: { "480p": 0.0168 / 1000, "720p": 0.0168 / 1000 },
+  }),
+  "bytedance/seedance-2.0/us/image-to-video": seedance({
+    endpointId: "bytedance/seedance-2.0/us/image-to-video",
+    sizes: SEEDANCE_2P0_SIZES,
+    maxSeconds: 15,
+    rates: { "480p": 0.0168 / 1000, "720p": 0.0168 / 1000 },
+  }),
+  "bytedance/seedance-2.0/us/reference-to-video": seedance({
+    endpointId: "bytedance/seedance-2.0/us/reference-to-video",
+    sizes: SEEDANCE_2P0_SIZES,
+    maxSeconds: 15,
+    rates: { "480p": 0.0168 / 1000, "720p": 0.0168 / 1000 },
+    operation: "reference",
+    videoOnlyDivisor: 1000,
+  }),
+  // 2.5: $0.0214 at 480p and 720p, and $0.0234 at 1080p.
+  "bytedance/seedance-2.5/text-to-video": seedance({
+    endpointId: "bytedance/seedance-2.5/text-to-video",
+    sizes: SEEDANCE_2P5_SIZES,
+    maxSeconds: 30,
+    rates: {
+      "480p": 0.0214 / 1000,
+      "720p": 0.0214 / 1000,
+      "1080p": 0.0234 / 1000,
+    },
+    draftFlag: true,
+  }),
+  "bytedance/seedance-2.5/reference-to-video": seedance({
+    endpointId: "bytedance/seedance-2.5/reference-to-video",
+    sizes: SEEDANCE_2P5_SIZES,
+    maxSeconds: 30,
+    rates: {
+      "480p": 0.0214 / 1000,
+      "720p": 0.0214 / 1000,
+      "1080p": 0.0234 / 1000,
+    },
+    operation: "reference",
+    draftFlag: true,
+    taskField: true,
+  }),
+  // 2.5 US: $0.02568 at 480p and 720p, and $0.02808 at 1080p. The US
+  // schemas have no draft flag.
+  "bytedance/seedance-2.5/us/text-to-video": seedance({
+    endpointId: "bytedance/seedance-2.5/us/text-to-video",
+    sizes: SEEDANCE_2P5_SIZES,
+    maxSeconds: 30,
+    rates: {
+      "480p": 0.02568 / 1000,
+      "720p": 0.02568 / 1000,
+      "1080p": 0.02808 / 1000,
+    },
+  }),
+  "bytedance/seedance-2.5/us/reference-to-video": seedance({
+    endpointId: "bytedance/seedance-2.5/us/reference-to-video",
+    sizes: SEEDANCE_2P5_SIZES,
+    maxSeconds: 30,
+    rates: {
+      "480p": 0.02568 / 1000,
+      "720p": 0.02568 / 1000,
+      "1080p": 0.02808 / 1000,
+    },
+    operation: "reference",
+    taskField: true,
+  }),
+  // A completed 2.5 draft: always 1080p, at $0.0234. It keeps the draft's
+  // duration, aspect ratio and inputs, which arrive as costHints
+  // (durationSeconds, aspectRatio and, for a draft with video inputs,
+  // inputDurationSeconds).
+  "bytedance/seedance-2.5/draft/complete": seedance({
+    endpointId: "bytedance/seedance-2.5/draft/complete",
+    sizes: SEEDANCE_2P5_SIZES,
+    maxSeconds: 30,
+    rates: { "1080p": 0.0234 / 1000 },
+    operation: "complete",
+  }),
 
   // Video — Wan 3.0 Prime bills a flat USD 0.05 per OUTPUT second with no
   // resolution tier (fal's pricing API reports one unit_price for all three

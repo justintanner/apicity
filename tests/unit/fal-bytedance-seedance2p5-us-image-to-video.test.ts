@@ -194,8 +194,10 @@ describe("Bytedance Seedance 2.5 US image-to-video", () => {
 
 describe("Bytedance Seedance 2.5 US image-to-video pricing", () => {
   // The recorded 480p, 4 s call billed 38.671 units ($0.99307128): 648x630,
-  // the input image's aspect, with 97 frames. A 16:9 per-second table predicts
-  // 38.88; output dimensions and frame count keep this dynamic (P-7 rules 1, 4).
+  // the input image's aspect, with 97 frames. aspect_ratio is the const
+  // "auto" and ByteDance publishes no sizing rule for it, so no request field
+  // fixes the output size and this stays dynamic while its text- and
+  // reference-to-video twins are priced (P-7 rules 1, 4; ac-j3d6ki.3).
   it("stays dynamically priced because output frames set the charge", () => {
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS as readonly string[]).toContain(
       endpoint

@@ -412,7 +412,7 @@ export const MODEL_SLUGS = {
   },
 
   // Keys are fal endpoint ids, matching PRICING.fal. Nano Banana,
-  // Seedream 5, Wan 2.7, Kling v3, and Grok Imagine are the same
+  // Seedream 5, Seedance 2, Wan 2.7, Kling v3, and Grok Imagine are the same
   // underlying models kie also resells, so their slugs intentionally match
   // kie's.
   fal: {
@@ -517,6 +517,24 @@ export const MODEL_SLUGS = {
     "blackforestlabs/flux-3/image-to-video": "flux3",
     "blackforestlabs/flux-3/keyframes-to-video": "flux3",
     "blackforestlabs/flux-3/text-to-video": "flux3",
+
+    // Video — Seedance 2.0 and 2.0 Fast, US twins included (the 2.0 and
+    // 2.0 Fast reference-to-video ids are dynamic and carry no slug).
+    "bytedance/seedance-2.0/text-to-video": "sd2",
+    "bytedance/seedance-2.0/image-to-video": "sd2",
+    "bytedance/seedance-2.0/fast/text-to-video": "sd2f",
+    "bytedance/seedance-2.0/fast/image-to-video": "sd2f",
+    "bytedance/seedance-2.0/us/text-to-video": "sd2",
+    "bytedance/seedance-2.0/us/image-to-video": "sd2",
+    "bytedance/seedance-2.0/us/reference-to-video": "sd2",
+
+    // Video — Seedance 2.5, US twins and the draft completion included (2.5
+    // and 2.5 US image-to-video are dynamic and carry no slug).
+    "bytedance/seedance-2.5/text-to-video": "sd2p5",
+    "bytedance/seedance-2.5/reference-to-video": "sd2p5",
+    "bytedance/seedance-2.5/us/text-to-video": "sd2p5",
+    "bytedance/seedance-2.5/us/reference-to-video": "sd2p5",
+    "bytedance/seedance-2.5/draft/complete": "sd2p5",
 
     // Video — Wan 3.0 Prime (the base wan-3.0 family bills per compute
     // second and is deliberately unpriced, so it carries no slug either).
@@ -1013,6 +1031,20 @@ export const MODEL_DISPLAY = {
     "blackforestlabs/flux-3/image-to-video": "FLUX 3",
     "blackforestlabs/flux-3/keyframes-to-video": "FLUX 3",
     "blackforestlabs/flux-3/text-to-video": "FLUX 3",
+
+    "bytedance/seedance-2.0/text-to-video": "Seedance 2",
+    "bytedance/seedance-2.0/image-to-video": "Seedance 2",
+    "bytedance/seedance-2.0/fast/text-to-video": "Seedance 2 Fast",
+    "bytedance/seedance-2.0/fast/image-to-video": "Seedance 2 Fast",
+    "bytedance/seedance-2.0/us/text-to-video": "Seedance 2 US",
+    "bytedance/seedance-2.0/us/image-to-video": "Seedance 2 US",
+    "bytedance/seedance-2.0/us/reference-to-video": "Seedance 2 US",
+
+    "bytedance/seedance-2.5/text-to-video": "Seedance 2.5",
+    "bytedance/seedance-2.5/reference-to-video": "Seedance 2.5",
+    "bytedance/seedance-2.5/us/text-to-video": "Seedance 2.5 US",
+    "bytedance/seedance-2.5/us/reference-to-video": "Seedance 2.5 US",
+    "bytedance/seedance-2.5/draft/complete": "Seedance 2.5",
 
     "alibaba/wan-3.0-prime/text-to-video": "Wan 3.0 Prime",
     "alibaba/wan-3.0-prime/image-to-video": "Wan 3.0 Prime",

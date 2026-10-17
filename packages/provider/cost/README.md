@@ -154,6 +154,14 @@ infers it; the caller usually knows it; the payload has nowhere to put it.
 interface CostHints {
   durationSeconds?: number;
   inputDurationSeconds?: number;
+  aspectRatio?:
+    | "21:9"
+    | "16:9"
+    | "4:3"
+    | "1:1"
+    | "3:4"
+    | "9:16"
+    | (string & {});
   googleFlowPlan?: "pro" | "ultra" | (string & {});
   inputTokens?: number;
   outputTokens?: number;
@@ -202,25 +210,35 @@ then `costHints.durationSeconds`; only `v1/videos/edits`, which has no
 
 ### Endpoints that need it
 
-| Provider | Pricing key                          | Length follows                           |
-| -------- | ------------------------------------ | ---------------------------------------- |
-| `kie`    | `veo3` / `veo3_fast`                 | model-fixed clip                         |
-| `kie`    | `happyhorse/video-edit`              | source `video_url`, billed on both sides |
-| `kie`    | `kling-3.0/motion-control`           | motion video                             |
-| `kie`    | `omnihuman-1-5`                      | driving audio                            |
-| `kie`    | `volcengine/video-to-video-lip-sync` | source video                             |
-| `xai`    | `v1/videos/edits`                    | source video                             |
-| `fal`    | `fal-ai/wan/v2.7/edit-video`         | source video                             |
+| Provider | Pricing key                             | Length follows                           |
+| -------- | --------------------------------------- | ---------------------------------------- |
+| `kie`    | `veo3` / `veo3_fast`                    | model-fixed clip                         |
+| `kie`    | `happyhorse/video-edit`                 | source `video_url`, billed on both sides |
+| `kie`    | `kling-3.0/motion-control`              | motion video                             |
+| `kie`    | `omnihuman-1-5`                         | driving audio                            |
+| `kie`    | `volcengine/video-to-video-lip-sync`    | source video                             |
+| `xai`    | `v1/videos/edits`                       | source video                             |
+| `fal`    | `fal-ai/wan/v2.7/edit-video`            | source video                             |
+| `fal`    | Seedance 2.0 / 2.5, duration `"auto"`   | the model's pick                         |
+| `fal`    | `bytedance/seedance-2.5/draft/complete` | the draft, with `aspectRatio`            |
 
 wan edit-video defaults `duration` to `0` ("match the source clip"). That is
-not a length, so it reaches the hint exactly like an omitted field would.
+not a length, so it reaches the hint exactly like an omitted field would. The
+fal Seedance entries default `duration` to `"auto"`, which lets the model pick
+the length, so an omitted or `"auto"` duration prices only through
+`costHints.durationSeconds`, as whole seconds in the endpoint's range (4-15 on
+the 2.0 series, 4-30 on 2.5). A completed 2.5 draft keeps the draft's
+duration and aspect ratio, and its request carries neither: pass both
+`durationSeconds` and `aspectRatio` (see
+[Output size](#output-size-fal-seedance) below).
 
 Every other per-second entry reads a real wire duration; passing `costHints`
 alongside one is harmless — the wire field wins.
 
-### Input video duration (kie)
+### Input video duration (kie, fal Seedance)
 
-Eight kie entries bill on **both** sides of the request: their product pages
+Eight kie entries and three fal Seedance entries bill on **both** sides of
+the request. For kie: their product pages
 print the rule "(input video duration + output video duration) × unit price"
 (Wan 3.0 confirmed 2026-09-16; the Seedance 2 family, Seedance 2.5, HappyHorse
 video-edit and MiniMax H3 re-read 2026-09-17), and the input side is a clip
@@ -265,16 +283,25 @@ Like every `costHints` field it is cost-only: never merged into `payload`, never
 sent upstream, never canonicalized or signed — see [Hash and OTP
 guarantee](#hash-and-otp-guarantee) below.
 
-| Provider | Pricing key                     | Input side follows                                                                            |
-| -------- | ------------------------------- | --------------------------------------------------------------------------------------------- |
-| `kie`    | `wan/3-0-video`                 | `reference_video_urls` clip length                                                            |
-| `kie`    | `wan/3-0-video-prime`           | `reference_video_urls` clip length                                                            |
-| `kie`    | `bytedance/seedance-2`          | `reference_video_urls` clip length                                                            |
-| `kie`    | `bytedance/seedance-2-fast`     | `reference_video_urls` clip length                                                            |
-| `kie`    | `bytedance/seedance-2-mini`     | `reference_video_urls` clip length                                                            |
-| `kie`    | `bytedance/seedance-2-5`        | `reference_video_urls` clip length (the "with video" column; audio selects no rate)           |
-| `kie`    | `minimax-h3/reference-to-video` | `reference_video_urls` clip length, plus the image surcharge                                  |
-| `kie`    | `happyhorse/video-edit`         | source `video_url`: the declared `durationSeconds` unless `inputDurationSeconds` overrides it |
+| Provider | Pricing key                                    | Input side follows                                                                            |
+| -------- | ---------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `kie`    | `wan/3-0-video`                                | `reference_video_urls` clip length                                                            |
+| `kie`    | `wan/3-0-video-prime`                          | `reference_video_urls` clip length                                                            |
+| `kie`    | `bytedance/seedance-2`                         | `reference_video_urls` clip length                                                            |
+| `kie`    | `bytedance/seedance-2-fast`                    | `reference_video_urls` clip length                                                            |
+| `kie`    | `bytedance/seedance-2-mini`                    | `reference_video_urls` clip length                                                            |
+| `kie`    | `bytedance/seedance-2-5`                       | `reference_video_urls` clip length (the "with video" column; audio selects no rate)           |
+| `kie`    | `minimax-h3/reference-to-video`                | `reference_video_urls` clip length, plus the image surcharge                                  |
+| `kie`    | `happyhorse/video-edit`                        | source `video_url`: the declared `durationSeconds` unless `inputDurationSeconds` overrides it |
+| `fal`    | `bytedance/seedance-2.0/us/reference-to-video` | `video_urls` clip length, at least 4 s                                                        |
+| `fal`    | `bytedance/seedance-2.5/reference-to-video`    | `video_urls` clip length, at least 4 s                                                        |
+| `fal`    | `bytedance/seedance-2.5/us/reference-to-video` | `video_urls` clip length, at least 4 s                                                        |
+
+The fal Seedance entries bill the clips' frames (24 per declared second) at
+the output's size, then multiply the whole count by 0.6. A clip length under
+4 s fails closed, and an images- or audio-only reference bills the output
+alone. `bytedance/seedance-2.5/draft/complete` reads the same field as the
+draft's clip length: a valid value prices the completion with video inputs.
 
 `happyhorse/video-edit` needs no second hint in the common case: the output
 matches the source clip, so `{ durationSeconds: 6 }` alone prices 12 s
@@ -292,6 +319,45 @@ per-second tier and no input-duration rule (re-read 2026-09-16 and
 billed 100 credits = 5 s × 20 credits/s — the output seconds alone, where the
 rule would bill 200. Both entries keep billing output seconds at the
 video-input tier, and `inputDurationSeconds` is ignored for them.
+
+### Output size (fal Seedance)
+
+fal bills Seedance 2.0, 2.0 Fast and 2.5 in tokens of the delivered video:
+`width x height x frames / 1024` at each card's rate per 1000 tokens. Width
+and height come from ByteDance's published output-size table for the model,
+resolution and aspect ratio (BytePlus ModelArk video-generation tutorial,
+read 2026-10-17), and frames are `24 x duration + 1`, the 97 frames every
+recorded "4" s call delivered. So an estimate needs an explicit resolution
+(default `720p`), a fixed `aspect_ratio` (`21:9`, `16:9`, `4:3`, `1:1`, `3:4`
+or `9:16`) and a digit duration or `costHints.durationSeconds`:
+
+```ts
+c.estimate({
+  provider: "fal",
+  endpoint: "bytedance/seedance-2.0/text-to-video",
+  payload: {
+    prompt: "...",
+    resolution: "720p",
+    aspect_ratio: "16:9",
+    duration: "5",
+  },
+});
+// → usd: 1.5246, breakdown: { units: 108900, unit: "tokens", perUnitUsd: 0.000014 } — 1280 x 720 x 121 / 1024 tokens at $0.014 / 1000
+```
+
+These fail closed (`usd: 0` and one warning naming the cause or the hint):
+`aspect_ratio` `"auto"` (the default), duration `"auto"` without the hint,
+reference clips without `inputDurationSeconds` or shorter than 4 s, 2.5
+reference-to-video `task` `"editing"` or `"extension"`, 2.0 US above 720p
+(its card publishes no rate there), 2.0 US reference-to-video without
+`video_urls`, and a completed draft without `durationSeconds` or
+`aspectRatio`. 2.5's `draft: true` prices as 480p, and audio, bitrate and
+codec never change the price.
+
+Four ids stay on `FAL_DYNAMIC_PRICING_ENDPOINTS`: 2.0 and 2.0 Fast
+reference-to-video (unrecorded, and 2.0 US reference divides by 1000 where
+its card says 1024), and 2.5 and 2.5 US image-to-video, whose output follows
+the input image's aspect.
 
 ### Plan tier (googleflow)
 

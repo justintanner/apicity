@@ -190,15 +190,20 @@ describe("Bytedance Seedance 2.5 US text-to-video", () => {
 
 describe("Bytedance Seedance 2.5 US text-to-video pricing", () => {
   // The recorded 480p, 1:1, 4 s call billed 38.8 units ($0.996384): 640x640
-  // with 97 frames. A 16:9 per-second table predicts 38.88; output dimensions
-  // and frame count keep this dynamic (P-7 rules 1, 4).
-  it("stays dynamically priced because output frames set the charge", () => {
-    expect(FAL_DYNAMIC_PRICING_ENDPOINTS as readonly string[]).toContain(
+  // with 97 frames, 640 x 640 x 97 / 1024 tokens at the card's $0.02568
+  // (ac-j3d6ki.3).
+  it("prices the recorded call from its output tokens", () => {
+    expect(FAL_DYNAMIC_PRICING_ENDPOINTS as readonly string[]).not.toContain(
       endpoint
     );
-    expect(pricing[endpoint]).toBeUndefined();
-    expect(Object.keys(MODEL_SLUGS.fal)).not.toContain(endpoint);
-    expect(Object.keys(MODEL_DISPLAY.fal)).not.toContain(endpoint);
-    expect(computeEstimate({ provider: "fal", endpoint, payload }).usd).toBe(0);
+    expect(pricing[endpoint]).toBeDefined();
+    expect((MODEL_SLUGS.fal as Record<string, string>)[endpoint]).toBe("sd2p5");
+    expect((MODEL_DISPLAY.fal as Record<string, string>)[endpoint]).toBe(
+      "Seedance 2.5 US"
+    );
+    const result = computeEstimate({ provider: "fal", endpoint, payload });
+    expect(result.usd).toBeCloseTo(0.996384, 10);
+    expect(result.breakdown.units).toBeCloseTo(38800, 6);
+    expect(result.warnings).toEqual([]);
   });
 });

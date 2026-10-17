@@ -34,9 +34,6 @@ const flux3AsOf = "2026-08-21";
 // this date.
 const audioAsOf = "2026-08-22";
 
-// Seedance 2.5 pricing was re-pulled from fal's pricing API on this date.
-const seedance25AsOf = "2026-08-23";
-
 // Wan 3.0 pricing was pulled from fal's pricing API
 // (GET /v1/models/pricing?endpoint_id=...) on this date.
 const wan30AsOf = "2026-08-25";
@@ -240,27 +237,17 @@ const perCharacter = (
 // selects no rate so the estimate warns instead of silently mispricing (the
 // megapixels() contract).
 //
-// Input-media billing components (wan/seedance reference-to-video input
-// seconds, grok extend's $0.01/s source-video seconds, grok's $0.002
-// image-input surcharge) depend on source media not present in the payload;
-// estimates cover the output component only.
+// Input-media billing components (wan reference-to-video input seconds,
+// grok extend's $0.01/s source-video seconds, grok's $0.002 image-input
+// surcharge) depend on source media not present in the payload; estimates
+// cover the output component only.
 
 // Whole digit-string seconds ("5" → 5). Kling publishes duration as a bare
-// string, seedance as a digit-string enum; anything else — "5s", numbers,
-// seedance's "auto" — is unrecognized here.
+// string; anything else — "5s", numbers, "auto" — is unrecognized here.
 function digitSeconds(d: unknown): number | undefined {
   const s = asString(d);
   return s !== undefined && /^\d+$/.test(s) ? Number(s) : undefined;
 }
-
-// Seedance's duration default is "auto" — the model picks the output length —
-// so an omitted (or explicit "auto") duration has no billed default to
-// assume. A caller who knows the clip length declares it through the
-// cost-only hint channel; without either, this still warns.
-const seedanceSeconds = (
-  p: Record<string, unknown>,
-  hints?: CostHints
-): number | undefined => digitSeconds(p.duration) ?? hintSeconds(hints);
 
 // Kling duration is a digit string defaulting to "5".
 const klingSeconds = (p: Record<string, unknown>): number | undefined =>
@@ -362,61 +349,6 @@ const perSecondTiered = (
   rates,
   source: source(endpointId, on),
 });
-
-// Seedance 2.0 bills tokens — height × width × 24 / 1024 per output second —
-// at $0.014/1000 tokens ($0.0112 fast). The rates below are the page's own
-// per-second simplification at 16:9 output: 480p (864×480) → 9720 tokens/s,
-// 720p (1280×720) → 21600 tokens/s.
-const seedanceRates = (usdPerThousandTokens: number) => ({
-  "480p": (9720 / 1000) * usdPerThousandTokens,
-  "720p": (21600 / 1000) * usdPerThousandTokens,
-});
-
-// Seedance 2.5 bills output tokens at a flat $0.0214/1000 tokens according to
-// GET https://api.fal.ai/v1/models/pricing, freshly pulled 2026-08-23.
-// tokens/s = width × height × 24 / 1024 at 16:9: 480p (864×480) → 9720,
-// 720p (1280×720) → 21600, and 1080p (1920×1080) → 48600 tokens/s.
-// A 2026-08-22 observation of ≈$0.0234/1000 tokens at 1080p is superseded by
-// that authoritative flat-price pull. Reference-clip input tokens are metered
-// upstream but their duration is not a request field, so estimates cover only
-// the output component. The published token formula has no audio term; all
-// observed fal Seedance recordings are audio-off, so equal audio-on billing is
-// an explicit but unverified assumption rather than a separate invented axis.
-const seedance25Rates = (usdPerThousandTokens: number) => ({
-  "480p": (9720 / 1000) * usdPerThousandTokens,
-  "720p": (21600 / 1000) * usdPerThousandTokens,
-  "1080p": (48600 / 1000) * usdPerThousandTokens,
-});
-
-// Reference-to-video applies a ×0.6 price multiplier when video inputs are
-// present. The input videos' own tokens are also metered upstream but their
-// length is not in the payload — output component only.
-const seedanceVideoInput = {
-  name: "video_urls",
-  pick: (p: Record<string, unknown>) =>
-    Array.isArray(p.video_urls) && p.video_urls.length > 0
-      ? "video"
-      : undefined,
-};
-
-const seedanceReferenceRates = (usdPerThousandTokens: number) => {
-  const base = seedanceRates(usdPerThousandTokens);
-  return {
-    ...base,
-    "480p|video": base["480p"] * 0.6,
-    "720p|video": base["720p"] * 0.6,
-  };
-};
-
-const seedance25ReferenceRates = (usdPerThousandTokens: number) => {
-  const base = seedance25Rates(usdPerThousandTokens);
-  return {
-    ...base,
-    "480p|video": base["480p"] * 0.6,
-    "720p|video": base["720p"] * 0.6,
-    "1080p|video": base["1080p"] * 0.6,
-  };
-};
 
 // Rate tables shared by the variants of one family — the generation/edit
 // twins and the text-to-video/image-to-video pairs bill identically, so each
@@ -930,25 +862,29 @@ const meshyV71 = (endpointId: string, on: string): ModelPricing => ({
 // $0.00083/second (2026-10-16), but do not define the seconds. Our 6.008 s
 // input and 2.54 s reply billed 1.897 units ($0.00157451); request audio
 // duration cannot determine these units, so keep dynamic estimation.
-// bytedance/seedance-2.0/us/{text,image}-to-video bill $0.0168 per 1000 tokens of
-// the output file (card read 2026-10-15). Our 480p, 1:1, "4" s call returned
-// 640x640 at 97 frames and billed 38.8 units ($0.65184), which the seedance
-// table above (16:9 dims, 24 frames per requested second) puts at 38.88.
-// bytedance/seedance-2.0/us/reference-to-video also bills the reference
-// videos' duration, at x0.6 (card read 2026-10-15). The same clip with one
-// 4 s reference video billed 47.43168 units ($0.796852224), where the
-// output-only reference table above predicts 23.328.
-// bytedance/seedance-2.5/us/text-to-video bills $0.02568 per 1000 tokens of
-// the output file at 480p and 720p (card read 2026-10-15). The same payload
-// billed 38.8 units ($0.996384), where seedance25Rates predicts 38.88.
-// bytedance/seedance-2.5/us/image-to-video takes the input image's aspect:
-// cat1.jpg gave 648x630 at 97 frames, 38.671 units ($0.99307128).
-// bytedance/seedance-2.5/us/reference-to-video bills the card's formula with
-// the reference video's frames added, at x0.6: 46.32 units ($1.1894976) for
-// a 4 s reference, where seedance25ReferenceRates (output only) has 23.328.
-// bytedance/seedance-2.5/draft/complete bills $0.0214 per 1000 tokens of a
-// 1080p clip whose length the draft sets; no success is recorded (card read
-// 2026-10-15; a 4 s completion is about $4.66 by the card).
+// Seedance 2.0, 2.0 Fast and 2.5 (bytedance/seedance-2.0/* and
+// bytedance/seedance-2.5/*, US twins included) bill 1000-token units of the
+// OUTPUT file. Per 1000 tokens at 480p: $0.014 (2.0), $0.0112 (2.0 Fast),
+// $0.0168 (2.0 US), $0.0214 (2.5) and $0.02568 (2.5 US); cards read
+// 2026-10-15 and 2026-10-16. Every committed success asked for 480p and "4" s
+// and returned 97 frames. Each billed width x height x frames / 1024 tokens,
+// except 2.0 US reference-to-video, which divides by 1000:
+// - 640x640 billed 38.8 units on every text-to-video id and on 2.0, 2.0 Fast
+//   and 2.0 US image-to-video, where a 16:9 per-second table puts 38.88.
+// - 2.5 and 2.5 US image-to-video follow the input image's aspect: cat1.jpg
+//   gave 648x630 and billed 38.671 units.
+// - Reference-to-video with a video input also bills the 96-frame input clip
+//   at the output's dimensions, times 0.6. 2.5 and 2.5 US billed 46.32 units,
+//   0.6 x (38,800 + 38,400) tokens; 2.0 US billed 47.43168 units,
+//   0.6 x 640 x 640 x (97 + 96) / 1000 tokens. An output-only table puts
+//   23.328.
+// - bytedance/seedance-2.5/draft/complete bills a 1080p clip whose length the
+//   draft sets; no success is recorded (a 4 s completion is about $4.66 by
+//   the card).
+// The nine non-US text-, image- and reference-to-video ids default
+// aspect_ratio and duration to "auto", fal publishes no per-aspect table, and
+// no request field gives a reference clip's length, so no request field fixes
+// the charge (ac-jhck87).
 export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "alibaba/qwen-image-3/edit",
   "alibaba/qwen-image-3/text-to-image",
@@ -958,10 +894,19 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "blackforestlabs/flux-3/edit-image",
   "blackforestlabs/flux-3/text-to-image",
   "blackforestlabs/flux-video-upscale",
+  "bytedance/seedance-2.0/fast/image-to-video",
+  "bytedance/seedance-2.0/fast/reference-to-video",
+  "bytedance/seedance-2.0/fast/text-to-video",
+  "bytedance/seedance-2.0/image-to-video",
+  "bytedance/seedance-2.0/reference-to-video",
+  "bytedance/seedance-2.0/text-to-video",
   "bytedance/seedance-2.0/us/image-to-video",
   "bytedance/seedance-2.0/us/reference-to-video",
   "bytedance/seedance-2.0/us/text-to-video",
   "bytedance/seedance-2.5/draft/complete",
+  "bytedance/seedance-2.5/image-to-video",
+  "bytedance/seedance-2.5/reference-to-video",
+  "bytedance/seedance-2.5/text-to-video",
   "bytedance/seedance-2.5/us/image-to-video",
   "bytedance/seedance-2.5/us/reference-to-video",
   "bytedance/seedance-2.5/us/text-to-video",
@@ -2002,67 +1947,6 @@ export const fal: Record<string, ModelPricing> = {
     FLUX_3_RATES,
     numericSeconds(5),
     flux3AsOf
-  ),
-
-  // Video — Seedance 2.0 (token-metered; see seedanceRates)
-  "bytedance/seedance-2.0/text-to-video": perSecondTiered(
-    "bytedance/seedance-2.0/text-to-video",
-    [resolutionTier("720p")],
-    seedanceRates(0.014),
-    seedanceSeconds
-  ),
-  "bytedance/seedance-2.0/image-to-video": perSecondTiered(
-    "bytedance/seedance-2.0/image-to-video",
-    [resolutionTier("720p")],
-    seedanceRates(0.014),
-    seedanceSeconds
-  ),
-  "bytedance/seedance-2.0/reference-to-video": perSecondTiered(
-    "bytedance/seedance-2.0/reference-to-video",
-    [resolutionTier("720p"), seedanceVideoInput],
-    seedanceReferenceRates(0.014),
-    seedanceSeconds
-  ),
-  "bytedance/seedance-2.0/fast/text-to-video": perSecondTiered(
-    "bytedance/seedance-2.0/fast/text-to-video",
-    [resolutionTier("720p")],
-    seedanceRates(0.0112),
-    seedanceSeconds
-  ),
-  "bytedance/seedance-2.0/fast/image-to-video": perSecondTiered(
-    "bytedance/seedance-2.0/fast/image-to-video",
-    [resolutionTier("720p")],
-    seedanceRates(0.0112),
-    seedanceSeconds
-  ),
-  "bytedance/seedance-2.0/fast/reference-to-video": perSecondTiered(
-    "bytedance/seedance-2.0/fast/reference-to-video",
-    [resolutionTier("720p"), seedanceVideoInput],
-    seedanceReferenceRates(0.0112),
-    seedanceSeconds
-  ),
-
-  // Video — Seedance 2.5 (token-metered; see seedance25Rates)
-  "bytedance/seedance-2.5/text-to-video": perSecondTiered(
-    "bytedance/seedance-2.5/text-to-video",
-    [resolutionTier("720p")],
-    seedance25Rates(0.0214),
-    seedanceSeconds,
-    seedance25AsOf
-  ),
-  "bytedance/seedance-2.5/image-to-video": perSecondTiered(
-    "bytedance/seedance-2.5/image-to-video",
-    [resolutionTier("720p")],
-    seedance25Rates(0.0214),
-    seedanceSeconds,
-    seedance25AsOf
-  ),
-  "bytedance/seedance-2.5/reference-to-video": perSecondTiered(
-    "bytedance/seedance-2.5/reference-to-video",
-    [resolutionTier("720p"), seedanceVideoInput],
-    seedance25ReferenceRates(0.0214),
-    seedanceSeconds,
-    seedance25AsOf
   ),
 
   // Video — Wan 3.0 Prime bills a flat USD 0.05 per OUTPUT second with no

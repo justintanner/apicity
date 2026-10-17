@@ -183,9 +183,9 @@ describe("Bytedance Seedance 2.0 US text-to-video", () => {
 
 describe("Bytedance Seedance 2.0 US text-to-video pricing", () => {
   // The recorded 480p, 1:1, "4" s call billed 38.8 units of 1000 tokens
-  // ($0.65184): 640x640 at 97 frames. The seedance per-second table (16:9
-  // dims, 24 frames per requested second) predicts 38.88, so no request
-  // field fixes the charge and the endpoint stays dynamic (P-7 rules 1, 4).
+  // ($0.65184): 640x640 at 97 frames. A 16:9 per-second table (24 frames
+  // per requested second) predicts 38.88, so no request field fixes the
+  // charge and the endpoint stays dynamic (P-7 rules 1, 4).
   it("stays dynamically priced because output frames set the charge", () => {
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS as readonly string[]).toContain(
       endpoint

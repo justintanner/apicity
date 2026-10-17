@@ -19,6 +19,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Breaking:** fal Seedance 2.0, 2.0 Fast and 2.5
+  (`bytedance/seedance-2.0/{text,image,reference}-to-video`,
+  `bytedance/seedance-2.0/fast/{text,image,reference}-to-video` and
+  `bytedance/seedance-2.5/{text,image,reference}-to-video`) are priced
+  dynamically, like their US twins. fal bills 1000-token units of the output
+  file (width x height x frames / 1024 in every committed recording), whose
+  dimensions no request field fixes under the default `aspect_ratio: "auto"`,
+  and reference-to-video with video inputs also bills the input clips. The
+  static per-second rates assumed 16:9 output and 24 frames per requested
+  second: they put a recorded 38.8-unit call at 38.88 units and a 46.32-unit
+  reference-to-video call at 23.328. `computeEstimate` now returns `usd: 0`
+  with the warning that names `POST /v1/models/pricing/estimate`, and
+  `resolveFalDynamicEstimate` asks fal for these ids. The nine ids leave
+  `PRICING.fal`, `MODEL_SLUGS.fal` and `MODEL_DISPLAY.fal`, so
+  `modelSlug("fal", id)` and `modelDisplay("fal", id)` no longer accept them;
+  the kie ids keep the `sd2`, `sd2f` and `sd2p5` slugs. Migration: pass
+  `fal.v1.models.pricing.estimate` (with `FAL_ADMIN_API_KEY`) to
+  `resolveFalDynamicEstimate`, or read the billed units from the
+  `x-fal-billable-units` response header.
 - KIE `qwen/text-to-image` and `qwen/image-edit` are priced per image from a
   table keyed by `input.image_size`, not per megapixel. KIE charges a fixed
   credit amount per preset at submission: text-to-image costs 1, 5, 3, 2, 3

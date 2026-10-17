@@ -7,7 +7,10 @@ import {
   fal as falPricing,
   FAL_DYNAMIC_PRICING_ENDPOINTS,
 } from "../../packages/provider/cost/src/pricing/fal";
-import { MODEL_SLUGS } from "../../packages/provider/cost/src/slugs";
+import {
+  MODEL_DISPLAY,
+  MODEL_SLUGS,
+} from "../../packages/provider/cost/src/slugs";
 
 function jsonResponse(body: unknown): Response {
   return new Response(JSON.stringify(body), {
@@ -426,126 +429,61 @@ describe("fal video pricing estimates", () => {
     ).toBeCloseTo(0.8, 10);
   });
 
-  it("prices seedance's token-derived per-second rates", () => {
-    // 720p → 21600 tokens/s × $0.014/1000 = $0.3024/s.
-    expect(
-      est("bytedance/seedance-2.0/text-to-video", {
-        prompt: "p",
-        duration: "5",
-        resolution: "720p",
-      }).usd
-    ).toBeCloseTo(1.512, 10);
-
-    // image-to-video shares the text-to-video token rates.
-    expect(
-      est("bytedance/seedance-2.0/image-to-video", {
-        prompt: "p",
-        image_url: "u",
-        duration: "5",
-        resolution: "720p",
-      }).usd
-    ).toBeCloseTo(1.512, 10);
-
-    // Omitted resolution defaults to 720p; fast bills $0.0112/1000 tokens.
-    expect(
-      est("bytedance/seedance-2.0/fast/image-to-video", {
-        prompt: "p",
-        image_url: "u",
-        duration: "10",
-      }).usd
-    ).toBeCloseTo(2.4192, 10);
-
-    // 480p → 9720 tokens/s.
-    expect(
-      est("bytedance/seedance-2.0/fast/text-to-video", {
-        prompt: "p",
-        duration: "10",
-        resolution: "480p",
-      }).usd
-    ).toBeCloseTo(1.08864, 10);
-
-    // Reference-to-video with video inputs bills at ×0.6.
-    expect(
-      est("bytedance/seedance-2.0/reference-to-video", {
-        prompt: "p",
-        video_urls: ["u"],
-        duration: "5",
-        resolution: "720p",
-      }).usd
-    ).toBeCloseTo(0.9072, 10);
-
-    // The fast reference-to-video twin: $0.24192/s × 0.6 with video inputs.
-    expect(
-      est("bytedance/seedance-2.0/fast/reference-to-video", {
-        prompt: "p",
-        video_urls: ["u"],
-        duration: "5",
-        resolution: "720p",
-      }).usd
-    ).toBeCloseTo(0.72576, 10);
-
-    // Image references only: full price.
-    expect(
-      est("bytedance/seedance-2.0/reference-to-video", {
-        prompt: "p",
+  it("prices Seedance 2.0, 2.0 Fast and 2.5 dynamically (ac-jhck87)", () => {
+    // fal bills these in 1000-token units of the OUTPUT file. Every committed
+    // 480p, 1:1, "4" s recording returned 97 frames and divides by 1024:
+    // 640x640x97 billed 38.8 units (2.0, 2.0 Fast and 2.5 text-to-video; 2.0
+    // and 2.0 Fast image-to-video), where the retired 16:9 per-second table
+    // put 38.88. 2.5 image-to-video followed the input image to 648x630x97
+    // and billed 38.671, and 2.5 reference-to-video with a 96-frame, 4 s clip
+    // billed 46.32 = 0.6 x (38,800 output + 38,400 input) tokens, where the
+    // table put 23.328. No 2.0 or 2.0 Fast reference-to-video is recorded.
+    const recorded = {
+      prompt: "p",
+      resolution: "480p",
+      duration: "4",
+      aspect_ratio: "1:1",
+      generate_audio: false,
+    };
+    const payloads: Record<string, Record<string, unknown>> = {
+      "image-to-video": { ...recorded, image_url: "u" },
+      "reference-to-video": {
+        ...recorded,
         image_urls: ["u"],
-        duration: "5",
-        resolution: "720p",
-      }).usd
-    ).toBeCloseTo(1.512, 10);
-
-    // Seedance 2.5 uses the freshly rechecked flat $0.0214/1000-token rate.
-    expect(
-      est("bytedance/seedance-2.5/text-to-video", {
-        prompt: "p",
-        duration: "5",
-        resolution: "720p",
-      }).usd
-    ).toBeCloseTo(2.3112, 10);
-
-    expect(
-      est("bytedance/seedance-2.5/text-to-video", {
-        prompt: "p",
-        duration: "10",
-        resolution: "480p",
-      }).usd
-    ).toBeCloseTo(2.08008, 10);
-
-    // The committed HAR records x-fal-billable-units: 38.8 for 480p × 4s.
-    expect(
-      est("bytedance/seedance-2.5/text-to-video", {
-        prompt: "p",
-        duration: "4",
-        resolution: "480p",
-      }).usd
-    ).toBeCloseTo(0.832032, 10);
-
-    expect(
-      est("bytedance/seedance-2.5/text-to-video", {
-        prompt: "p",
-        duration: "4",
-        resolution: "1080p",
-      }).usd
-    ).toBeCloseTo(4.16016, 10);
-
-    expect(
-      est("bytedance/seedance-2.5/reference-to-video", {
-        prompt: "p",
         video_urls: ["u"],
-        duration: "5",
-        resolution: "720p",
-      }).usd
-    ).toBeCloseTo(1.38672, 10);
+      },
+      "text-to-video": recorded,
+    };
+    const dynamic: readonly string[] = FAL_DYNAMIC_PRICING_ENDPOINTS;
+    for (const endpoint of [
+      "bytedance/seedance-2.0/fast/image-to-video",
+      "bytedance/seedance-2.0/fast/reference-to-video",
+      "bytedance/seedance-2.0/fast/text-to-video",
+      "bytedance/seedance-2.0/image-to-video",
+      "bytedance/seedance-2.0/reference-to-video",
+      "bytedance/seedance-2.0/text-to-video",
+      "bytedance/seedance-2.5/image-to-video",
+      "bytedance/seedance-2.5/reference-to-video",
+      "bytedance/seedance-2.5/text-to-video",
+    ]) {
+      const operation = endpoint.slice(endpoint.lastIndexOf("/") + 1);
+      expect(dynamic, endpoint).toContain(endpoint);
+      expect(falPricing[endpoint], endpoint).toBeUndefined();
+      expect(
+        (MODEL_SLUGS.fal as Record<string, string>)[endpoint],
+        endpoint
+      ).toBeUndefined();
+      expect(
+        (MODEL_DISPLAY.fal as Record<string, string>)[endpoint],
+        endpoint
+      ).toBeUndefined();
+      const result = est(endpoint, payloads[operation]);
+      expect(result.usd, endpoint).toBe(0);
+      expect(result.warnings[0], endpoint).toContain("models/pricing/estimate");
+    }
+  });
 
-    expect(
-      est("bytedance/seedance-2.5/reference-to-video", {
-        prompt: "p",
-        image_urls: ["u"],
-        duration: "5",
-        resolution: "720p",
-      }).usd
-    ).toBeCloseTo(2.3112, 10);
-
+  it("prices Wan 3.0 Prime per output second", () => {
     // Wan 3.0 Prime bills a flat $0.05 per OUTPUT second, with no resolution
     // tier — fal's pricing API reports one unit_price for all three operations
     // (pulled 2026-08-25). `duration` is an integer defaulting to 5.
@@ -598,24 +536,6 @@ describe("fal video pricing estimates", () => {
   });
 
   it("warns instead of guessing when seconds are not derivable", () => {
-    // Seedance duration defaults to "auto" — model-chosen output length,
-    // no billed default to assume, whether omitted or explicit.
-    for (const endpoint of [
-      "bytedance/seedance-2.0/text-to-video",
-      "bytedance/seedance-2.5/text-to-video",
-      "bytedance/seedance-2.5/image-to-video",
-      "bytedance/seedance-2.5/reference-to-video",
-    ]) {
-      for (const payload of [
-        { prompt: "p" },
-        { prompt: "p", duration: "auto" },
-      ]) {
-        const res = est(endpoint, payload);
-        expect(res.usd).toBe(0);
-        expect(res.warnings.join(" ")).toMatch(/could not derive units/);
-      }
-    }
-
     // Kling duration is a bare string upstream; non-digit strings warn.
     const kling = est("fal-ai/kling-video/v3/pro/text-to-video", {
       prompt: "p",
@@ -1143,9 +1063,12 @@ describe("fal edit/image pricing estimates", () => {
     // rounds up to one megapixel ($0.05). FLUX 3 Action SO-101 bills compute
     // seconds that no request field fixes. Grok Voice bills seconds whose
     // meaning is unpublished and which differ from input/reply duration.
-    // Seedance 2.0 US text-to-video bills tokens of the output file: 38.8
-    // units for a four-second 640x640 clip of 97 frames, where the seedance
-    // per-second table predicts 38.88. All seventy use fal's
+    // Seedance 2.0, 2.0 Fast and 2.5, US twins included, bill tokens of the
+    // output file: 38.8 units for a four-second 640x640 clip of 97 frames,
+    // where a 16:9 per-second table predicts 38.88. 2.5 image-to-video
+    // follows the input image's aspect, and reference-to-video also bills its
+    // input clips. 2.0 US reference-to-video divides by 1000; every other
+    // measured id divides by 1024 (ac-jhck87). All seventy-nine use fal's
     // pricing-estimate API.
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toEqual([
       "alibaba/qwen-image-3/edit",
@@ -1156,10 +1079,19 @@ describe("fal edit/image pricing estimates", () => {
       "blackforestlabs/flux-3/edit-image",
       "blackforestlabs/flux-3/text-to-image",
       "blackforestlabs/flux-video-upscale",
+      "bytedance/seedance-2.0/fast/image-to-video",
+      "bytedance/seedance-2.0/fast/reference-to-video",
+      "bytedance/seedance-2.0/fast/text-to-video",
+      "bytedance/seedance-2.0/image-to-video",
+      "bytedance/seedance-2.0/reference-to-video",
+      "bytedance/seedance-2.0/text-to-video",
       "bytedance/seedance-2.0/us/image-to-video",
       "bytedance/seedance-2.0/us/reference-to-video",
       "bytedance/seedance-2.0/us/text-to-video",
       "bytedance/seedance-2.5/draft/complete",
+      "bytedance/seedance-2.5/image-to-video",
+      "bytedance/seedance-2.5/reference-to-video",
+      "bytedance/seedance-2.5/text-to-video",
       "bytedance/seedance-2.5/us/image-to-video",
       "bytedance/seedance-2.5/us/reference-to-video",
       "bytedance/seedance-2.5/us/text-to-video",

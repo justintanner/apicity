@@ -234,13 +234,13 @@ describe("MiniMax H3 Max lip sync image-to-video contract", () => {
     }
   );
 
-  it("carries no local rate, slug or display name", () => {
+  it("carries no local rate or slug, only a display name", () => {
     expect(falPricing[endpoint]).toBeUndefined();
     expect(
       (MODEL_SLUGS.fal as Record<string, string>)[endpoint]
     ).toBeUndefined();
-    expect(
-      (MODEL_DISPLAY.fal as Record<string, string>)[endpoint]
-    ).toBeUndefined();
+    expect((MODEL_DISPLAY.fal as Record<string, string>)[endpoint]).toBe(
+      "H3 Max Lip Sync"
+    );
   });
 });

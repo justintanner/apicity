@@ -207,9 +207,9 @@ describe("GPT Image 2.5 Sunburst text-to-image contract", () => {
     expect(
       (MODEL_SLUGS.fal as Record<string, string>)[endpoint]
     ).toBeUndefined();
-    expect(
-      (MODEL_DISPLAY.fal as Record<string, string>)[endpoint]
-    ).toBeUndefined();
+    expect((MODEL_DISPLAY.fal as Record<string, string>)[endpoint]).toBe(
+      "GPT Image 2.5 Sunburst"
+    );
     const estimate = computeEstimate({
       provider: "fal",
       endpoint,

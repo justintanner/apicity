@@ -195,7 +195,9 @@ describe("Kandinsky 6.0 Lite text-to-video contract", () => {
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toContain(endpoint);
     expect(falPricing[endpoint]).toBeUndefined();
     expect(MODEL_SLUGS.fal).not.toHaveProperty(endpoint);
-    expect(MODEL_DISPLAY.fal).not.toHaveProperty(endpoint);
+    expect((MODEL_DISPLAY.fal as Record<string, string>)[endpoint]).toBe(
+      "Kandinsky 6.0 Lite"
+    );
     const estimate = computeEstimate({
       provider: "fal",
       endpoint,

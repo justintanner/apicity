@@ -151,7 +151,7 @@ describe("MiniMax H3 Max Hand Drawn pricing", () => {
       0.4
     );
     expect(MODEL_SLUGS.fal[endpoint]).toBe("h3mstyle");
-    expect(MODEL_DISPLAY.fal[endpoint]).toBe("H3 Max Styles");
+    expect(MODEL_DISPLAY.fal[endpoint]).toBe("H3 Max Hand Drawn");
   });
   it("bills each requested second at the card's $0.08 and defaults to 5", () => {
     for (const duration of [5, 10, 15])

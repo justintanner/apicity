@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `MODEL_DISPLAY.fal` names every dynamically priced fal endpoint, all 67 ids
+  in `FAL_DYNAMIC_PRICING_ENDPOINTS`; for example `google/nano-banana-2.1` is
+  "Nano Banana 2.1" and `fal-ai/kandinsky6-pro/text-to-video` is "Kandinsky 6.0
+  Pro". These rows are display-only: a dynamic id still has no `MODEL_SLUGS`
+  entry and no `PRICING.fal` rate. `modelDisplay` accepts them, because its
+  `model` parameter is now `SlugModelId<P> | DisplayModelId<P>`, and
+  `DisplayModelId` is exported; `modelSlug` still rejects them. Every
+  `FAL_ENDPOINT_REQUEST_SCHEMAS` key now has a display name (ac-j3d6ki.6).
 - `costHints.googleFlowPlan` accepts `"plus"` (Google AI Plus, $7.99/mo for
   200 credits, $0.04 per credit) and `"ultra-99"` (Google AI Ultra $99,
   $99.99/mo for 10,000 credits, $0.01 per credit), beside `"pro"` and
@@ -42,6 +50,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- The five `minimax/h3-max/styles/*` fal endpoints display their own style
+  instead of the shared "H3 Max Styles": "H3 Max 16-bit Pixel", "H3 Max Hand
+  Drawn", "H3 Max Low Poly", "H3 Max Retro Toon 70s" and "H3 Max VHS". They
+  keep the shared slug `h3mstyle`, since all five bill $0.08 per second
+  (ac-j3d6ki.6).
 - An unrecognized `costHints.googleFlowPlan` prices on the Plus basis
   ($0.04 per credit, the highest of the four tiers) instead of Pro, so it
   never under-charges now that Plus is modelled; the warning reads

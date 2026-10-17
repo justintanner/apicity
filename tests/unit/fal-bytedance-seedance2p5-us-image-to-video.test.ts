@@ -204,7 +204,9 @@ describe("Bytedance Seedance 2.5 US image-to-video pricing", () => {
     );
     expect(pricing[endpoint]).toBeUndefined();
     expect(Object.keys(MODEL_SLUGS.fal)).not.toContain(endpoint);
-    expect(Object.keys(MODEL_DISPLAY.fal)).not.toContain(endpoint);
+    expect((MODEL_DISPLAY.fal as Record<string, string>)[endpoint]).toBe(
+      "Seedance 2.5 US"
+    );
     expect(computeEstimate({ provider: "fal", endpoint, payload }).usd).toBe(0);
   });
 });

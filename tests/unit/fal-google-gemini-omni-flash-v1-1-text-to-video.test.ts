@@ -225,13 +225,13 @@ describe("Google Gemini Omni Flash 1.1 text-to-video contract", () => {
     }
   );
 
-  it("carries no local rate, slug or display name", () => {
+  it("carries no local rate or slug, only a display name", () => {
     expect(falPricing[endpoint]).toBeUndefined();
     expect(
       (MODEL_SLUGS.fal as Record<string, string>)[endpoint]
     ).toBeUndefined();
-    expect(
-      (MODEL_DISPLAY.fal as Record<string, string>)[endpoint]
-    ).toBeUndefined();
+    expect((MODEL_DISPLAY.fal as Record<string, string>)[endpoint]).toBe(
+      "Gemini Omni 1.1 Flash"
+    );
   });
 });

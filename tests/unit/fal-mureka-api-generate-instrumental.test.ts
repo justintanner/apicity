@@ -189,9 +189,9 @@ describe("Mureka instrumental generation", () => {
     expect(
       (MODEL_SLUGS.fal as Record<string, string>)[endpoint]
     ).toBeUndefined();
-    expect(
-      (MODEL_DISPLAY.fal as Record<string, string>)[endpoint]
-    ).toBeUndefined();
+    expect((MODEL_DISPLAY.fal as Record<string, string>)[endpoint]).toBe(
+      "Mureka Instrumental"
+    );
     const estimate = computeEstimate({
       provider: "fal",
       endpoint,

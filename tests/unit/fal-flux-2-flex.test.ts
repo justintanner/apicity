@@ -226,7 +226,9 @@ describe("FLUX.2 Flex text-to-image contract", () => {
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toContain(endpoint);
     expect(falPricing[endpoint]).toBeUndefined();
     expect(MODEL_SLUGS.fal).not.toHaveProperty(endpoint);
-    expect(MODEL_DISPLAY.fal).not.toHaveProperty(endpoint);
+    expect((MODEL_DISPLAY.fal as Record<string, string>)[endpoint]).toBe(
+      "Flux 2 Flex"
+    );
     const estimate = computeEstimate({
       provider: "fal",
       endpoint,

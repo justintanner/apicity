@@ -616,10 +616,15 @@ export function modelSlug<P extends SlugProviderId>(
   return slug;
 }
 
-// Human-readable display names. Parallel to MODEL_SLUGS — same provider/
-// model keys. Used by UIs that surface model identity to end users
-// (activity logs, model pickers, cost breakdowns). Title-case is
+// Human-readable display names. Used by UIs that surface model identity to
+// end users (activity logs, model pickers, cost breakdowns). Title-case is
 // intentional; consumers can lowercase if they prefer.
+//
+// Every MODEL_SLUGS key has a display name here. fal also names every
+// endpoint in FAL_DYNAMIC_PRICING_ENDPOINTS: those rows are display-only (no
+// slug and no PRICING.fal entry), because a name is the model's identity
+// while a slug marks its local price tier. Display-only rows are fal-only;
+// every other provider's keys equal its MODEL_SLUGS keys.
 export const MODEL_DISPLAY = {
   kie: {
     "bytedance/seedance-2": "Seedance 2",
@@ -928,11 +933,11 @@ export const MODEL_DISPLAY = {
 
   fal: {
     "meshy/v6-lite/retexture": "Meshy 6 Lite Retexture",
-    "minimax/h3-max/styles/16bit-pixel": "H3 Max Styles",
-    "minimax/h3-max/styles/hand-drawn": "H3 Max Styles",
-    "minimax/h3-max/styles/low-poly": "H3 Max Styles",
-    "minimax/h3-max/styles/retro-toon-70s": "H3 Max Styles",
-    "minimax/h3-max/styles/vhs": "H3 Max Styles",
+    "minimax/h3-max/styles/16bit-pixel": "H3 Max 16-bit Pixel",
+    "minimax/h3-max/styles/hand-drawn": "H3 Max Hand Drawn",
+    "minimax/h3-max/styles/low-poly": "H3 Max Low Poly",
+    "minimax/h3-max/styles/retro-toon-70s": "H3 Max Retro Toon 70s",
+    "minimax/h3-max/styles/vhs": "H3 Max VHS",
     "pixverse/music-video/vibemv": "PixVerse VibeMV",
     "pixelcut/looping-video": "Pixelcut Looping Video",
     "creatify/boreal": "Creatify Boreal",
@@ -1073,6 +1078,78 @@ export const MODEL_DISPLAY = {
     "xai/grok-imagine-video/reference-to-video": "Grok Imagine",
     "xai/grok-imagine-video/extend-video": "Grok Extend",
     "xai/grok-imagine-video/edit-video": "Grok Imagine Video Edit",
+
+    // Dynamically priced (FAL_DYNAMIC_PRICING_ENDPOINTS): display-only rows,
+    // no slug and no PRICING.fal entry. Names follow the same model on
+    // another provider, then the fal family's existing names, then fal's
+    // own model title (ac-j3d6ki.6).
+    "alibaba/qwen-image-3/edit": "Qwen Image 3 Edit",
+    "alibaba/qwen-image-3/text-to-image": "Qwen Image 3",
+    "alibaba/wan-3.0/image-to-video": "Wan 3.0",
+    "alibaba/wan-3.0/reference-to-video": "Wan 3.0",
+    "alibaba/wan-3.0/text-to-video": "Wan 3.0",
+    "blackforestlabs/flux-3/edit-image": "FLUX 3 Image Edit",
+    "blackforestlabs/flux-3/text-to-image": "FLUX 3 Image",
+    "blackforestlabs/flux-video-upscale": "FLUX Video Upscale",
+    "bytedance/seedance-2.0/fast/reference-to-video": "Seedance 2 Fast",
+    "bytedance/seedance-2.0/reference-to-video": "Seedance 2",
+    "bytedance/seedance-2.5/image-to-video": "Seedance 2.5",
+    "bytedance/seedance-2.5/us/image-to-video": "Seedance 2.5 US",
+    "bytedance/seedream/v5/pro/edit": "Seedream 5 Pro Edit",
+    "bytedance/seedream/v5/pro/layerize": "Seedream 5 Pro Layer Decomposition",
+    "bytedance/seedream/v5/pro/text-to-image": "Seedream 5 Pro",
+    "fal-ai/flux-2-flex": "Flux 2 Flex",
+    "fal-ai/flux-3-action/so101": "FLUX 3 Action",
+    "fal-ai/kandinsky6-lite/image-to-video": "Kandinsky 6.0 Lite",
+    "fal-ai/kandinsky6-lite/text-to-video": "Kandinsky 6.0 Lite",
+    "fal-ai/kandinsky6-pro/image-to-video": "Kandinsky 6.0 Pro",
+    "fal-ai/kandinsky6-pro/text-to-video": "Kandinsky 6.0 Pro",
+    "fal-ai/kandinsky6-vsr": "Kandinsky 6.0 VSR",
+    "fal-ai/kandinsky6-vsr/lite": "Kandinsky 6.0 VSR Lite",
+    "google/gemini-omni-flash": "Gemini Omni Flash",
+    "google/gemini-omni-flash/edit": "Gemini Omni Flash Edit",
+    "google/gemini-omni-flash/image-to-video": "Gemini Omni Flash",
+    "google/gemini-omni-flash/reference-to-video": "Gemini Omni Flash",
+    "google/gemini-omni-flash/v1.1/edit": "Gemini Omni 1.1 Flash Edit",
+    "google/gemini-omni-flash/v1.1/image-to-video": "Gemini Omni 1.1 Flash",
+    "google/gemini-omni-flash/v1.1/reference-to-video": "Gemini Omni 1.1 Flash",
+    "google/gemini-omni-flash/v1.1/text-to-video": "Gemini Omni 1.1 Flash",
+    "google/nano-banana-2-lite": "Nano Banana 2 Lite",
+    "google/nano-banana-2.1": "Nano Banana 2.1",
+    "google/nano-banana-2.1/edit": "Nano Banana 2.1 Edit",
+    "google/nano-banana-lite/edit": "Nano Banana 2 Lite Edit",
+    "lightricks/ltx-2.5/image-to-video/fast": "LTX 2.5 Fast",
+    "lightricks/ltx-2.5/image-to-video/pro": "LTX 2.5 Pro",
+    "luma/agent/ray/v3.2/reframe": "Ray 3.2 Reframe",
+    "luma/agent/ray/v3.2/text-to-video": "Ray 3.2 Text",
+    "meshy/v7/image-to-3d": "Meshy 7 Image To 3D",
+    "microsoft/mai-image-2.5-pro": "MAI Image 2.5 Pro",
+    "microsoft/mai-image-2.5-pro/edit": "MAI Image 2.5 Pro Edit",
+    "minimax/h3-max/3d-to-video": "H3 Max 3D To Video",
+    "minimax/h3-max/extend-video": "H3 Max Extend",
+    "minimax/h3-max/insert-video": "H3 Max Insert",
+    "minimax/h3-max/lip-sync/image-to-video": "H3 Max Lip Sync",
+    "minimax/h3-max/reference-to-video": "H3 Max Reference To Video",
+    "minimax/h3/image-to-video": "MiniMax H3",
+    "minimax/h3/reference-to-video": "MiniMax H3",
+    "minimax/h3/text-to-video": "MiniMax H3",
+    "minimax/music-3": "MiniMax Music 3",
+    "mirelo-ai/sfx2.0/text-to-audio": "Mirelo SFX 2.0",
+    "mirelo-ai/sfx2.0/video-to-audio": "Mirelo SFX 2.0",
+    "mirelo-ai/sfx2.0/video-to-video": "Mirelo SFX 2.0",
+    "mureka/api/generate/instrumental": "Mureka Instrumental",
+    "mureka/api/generate/podcast": "Mureka Podcast",
+    "openai/gpt-image-2.5/flare/edit": "GPT Image 2.5 Flare Edit",
+    "openai/gpt-image-2.5/flare/text-to-image": "GPT Image 2.5 Flare",
+    "openai/gpt-image-2.5/sunburst/edit": "GPT Image 2.5 Sunburst Edit",
+    "openai/gpt-image-2.5/sunburst/text-to-image": "GPT Image 2.5 Sunburst",
+    "openrouter/router/decisions": "OpenRouter Router",
+    "topaz/upscale/image/precision": "Topaz Image Upscale Precision",
+    "topaz/upscale/video/precision": "Topaz Video Upscale Precision",
+    "xai/grok-imagine-image/v2.0/edit": "Grok Imagine Image 2.0 Edit",
+    "xai/grok-imagine-image/v2.0/text-to-image": "Grok Imagine Image 2.0",
+    "xai/grok-imagine-video/v1.5/reference-to-video": "Grok Imagine Video 1.5",
+    "xai/grok-voice": "Grok Voice",
   },
 
   googleflow: {
@@ -1090,9 +1167,16 @@ export const MODEL_DISPLAY = {
   },
 } as const;
 
+// Every key MODEL_DISPLAY names for a provider: its MODEL_SLUGS keys plus,
+// for fal, the display-only dynamic ids.
+export type DisplayModelId<P extends SlugProviderId> =
+  keyof (typeof MODEL_DISPLAY)[P];
+
+// Accepts SlugModelId too, so a generic caller holding a SlugModelId<P>
+// still type-checks (the union is the same set for every concrete P).
 export function modelDisplay<P extends SlugProviderId>(
   provider: P,
-  model: SlugModelId<P>
+  model: SlugModelId<P> | DisplayModelId<P>
 ): string {
   const display = (MODEL_DISPLAY[provider] as Record<string, string>)[
     model as string

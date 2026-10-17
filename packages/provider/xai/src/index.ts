@@ -176,6 +176,8 @@ export type {
   XaiRealtimeSessionUpdate,
   XaiRealtimeInputAudioBufferAppend,
   XaiRealtimeInputAudioBufferCommit,
+  XaiRealtimeForceMessageItem,
+  XaiRealtimeConversationItem,
   XaiRealtimeConversationItemCreate,
   XaiRealtimeResponseCreate,
   XaiRealtimeResponseCancel,

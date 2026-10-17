@@ -1,13 +1,14 @@
 # @apicity/xai
 
 [![npm](https://img.shields.io/npm/v/@apicity/xai?color=cb0000)](https://www.npmjs.com/package/@apicity/xai)
-[![dependencies](https://img.shields.io/badge/dependencies-1-blue)](package.json)
+[![dependencies](https://img.shields.io/badge/dependencies-2-blue)](package.json)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue?logo=typescript&logoColor=white)](tsconfig.json)
 
 X.AI / Grok provider for chat and search.
 
 Runtime dependencies:
 
+- `ws@^8.21.0` — authenticated server WebSocket transport exported from `@apicity/xai/realtime`
 - `zod@^4.4.3` — request schemas attached to every POST endpoint as `.schema`
 
 ## Installation
@@ -300,6 +301,59 @@ See xAI's
 and [Imagine Files API integration](https://docs.x.ai/developers/model-capabilities/imagine/files)
 docs for supported content types, size limits, and the
 `storage_options.public_url` generation path.
+
+## Realtime server transport
+
+`@apicity/xai/realtime` exports `connectXaiRealtime`, a WebSocket
+transport for server-side voice sessions built on `ws`. It sends your
+API key as an `Authorization: Bearer` header, so keep it on the server;
+browsers should connect with an ephemeral secret from
+`xai.post.v1.realtime.clientSecrets` instead.
+
+```typescript
+import { connectXaiRealtime } from "@apicity/xai/realtime";
+
+const connection = await connectXaiRealtime({
+  apiKey: process.env.XAI_API_KEY!,
+  model: "grok-voice-latest",
+  onEvent: (event) => console.log(event.type),
+});
+
+connection.send({
+  type: "session.update",
+  session: { voice: "eve", audio: { output: { speed: 1.1 } } },
+});
+
+// Speak a scripted line without model inference. The force_message
+// item is the whole turn, so do not follow it with response.create.
+connection.send({
+  type: "conversation.item.create",
+  item: {
+    type: "force_message",
+    role: "assistant",
+    interruptible: false,
+    content: [{ type: "output_text", text: "This call is being recorded." }],
+  },
+});
+
+connection.close();
+await connection.closed;
+```
+
+- Pass `callId` instead of `model` to attach to an inbound SIP call.
+- `audio.output.speed` is a playback multiplier from 0.7 to 1.5
+  (default 1.0).
+- `interruptible: false` drops caller audio until the force message
+  finishes playing (default `true`).
+- `timeout` bounds the handshake (default 15 s) and `signal` aborts it
+  or an open connection. A rejected handshake rejects with `XaiError`
+  carrying the HTTP status and parsed body.
+- A server event that is not a JSON text frame with a `type` closes the
+  connection and reports `Invalid Realtime event` through `onError`.
+
+See xAI's
+[Speech to Speech](https://docs.x.ai/developers/model-capabilities/audio/speech-to-speech)
+docs for session parameters and events.
 
 ## API Reference
 

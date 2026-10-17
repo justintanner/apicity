@@ -684,7 +684,11 @@ export interface XaiRealtimeAudioFormat {
 
 export interface XaiRealtimeAudioConfig {
   input?: { format?: XaiRealtimeAudioFormat };
-  output?: { format?: XaiRealtimeAudioFormat };
+  output?: {
+    format?: XaiRealtimeAudioFormat;
+    // Playback speed multiplier for assistant audio: 0.7-1.5, default 1.0.
+    speed?: number;
+  };
 }
 
 export interface XaiRealtimeFunctionTool {
@@ -727,6 +731,7 @@ export type XaiRealtimeTool =
   | XaiRealtimeMcpTool;
 
 export interface XaiRealtimeSession {
+  reasoning?: { effort: "high" | "none" };
   instructions?: string;
   voice?: string;
   turn_detection?: XaiRealtimeTurnDetection;
@@ -749,20 +754,34 @@ export interface XaiRealtimeInputAudioBufferCommit {
   type: "input_audio_buffer.commit";
 }
 
+// Scripted assistant line synthesized via TTS without model inference (xAI
+// extension). The item is the whole turn: do not follow it with
+// response.create.
+export interface XaiRealtimeForceMessageItem {
+  type: "force_message";
+  role: "assistant";
+  content: { type: "output_text"; text: string }[];
+  // Defaults to true; false drops caller audio until playback completes.
+  interruptible?: boolean;
+}
+
+export type XaiRealtimeConversationItem =
+  | {
+      type: "message";
+      role: "user" | "assistant";
+      content: { type: "input_text"; text: string }[];
+    }
+  | {
+      type: "function_call_output";
+      call_id: string;
+      output: string;
+    }
+  | XaiRealtimeForceMessageItem;
+
 export interface XaiRealtimeConversationItemCreate {
   type: "conversation.item.create";
   previous_item_id?: string;
-  item:
-    | {
-        type: "message";
-        role: "user" | "assistant";
-        content: { type: "input_text"; text: string }[];
-      }
-    | {
-        type: "function_call_output";
-        call_id: string;
-        output: string;
-      };
+  item: XaiRealtimeConversationItem;
 }
 
 export interface XaiRealtimeResponseCreate {

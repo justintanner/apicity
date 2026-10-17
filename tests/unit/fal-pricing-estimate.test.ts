@@ -1364,6 +1364,11 @@ describe("fal edit/image pricing estimates", () => {
         "fal.v1.models.pricing.estimate"
       );
       expect(result.warnings[0], endpoint).toContain("FAL_ADMIN_API_KEY");
+      // fal's estimate API prices a quantity, not a payload, so the warning
+      // says where the quantity comes from and which option takes it
+      // (ac-ytg1l1).
+      expect(result.warnings[0], endpoint).toContain("x-fal-billable-units");
+      expect(result.warnings[0], endpoint).toContain("unitQuantity");
       // The generic lookup-miss wording must NOT be what a caller sees here.
       expect(result.warnings[0], endpoint).not.toContain(
         "not found in pricing table"

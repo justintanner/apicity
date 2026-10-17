@@ -499,6 +499,42 @@ module in `src/pricing/`, bump `PRICING_AS_OF`.
 | `kie`                                                              | `per-unit-table`         | per second of video / per image / per generation; `endpoint` discriminator for Suno |
 | `free`                                                             | `free`                   | always $0                                                                           |
 
+## Dynamically priced fal endpoints
+
+fal endpoints on `FAL_DYNAMIC_PRICING_ENDPOINTS` bill a unit the request does
+not fix (compute seconds, output metadata or tokens), so `computeEstimate`
+returns `usd: 0` with a warning for them. fal reports the billed units after the
+call, in the `x-fal-billable-units` response header. fal's pricing API
+(`POST https://api.fal.ai/v1/models/pricing/estimate`, with `FAL_ADMIN_API_KEY`)
+prices a quantity, never a request payload. `resolveFalDynamicEstimate` takes
+fal's estimator and the quantity to price:
+
+```ts
+import { createFal } from "@apicity/fal";
+import { resolveFalDynamicEstimate } from "@apicity/cost";
+
+const fal = createFal({ apiKey: process.env.FAL_ADMIN_API_KEY });
+const est = await resolveFalDynamicEstimate(
+  "alibaba/wan-3.0/text-to-video",
+  { prompt: "a red panda", duration: 5 },
+  fal.v1.models.pricing.estimate,
+  { unitQuantity: 5 } // billed units, e.g. a prior call's x-fal-billable-units
+);
+```
+
+- `unitQuantity` prices those units at fal's unit price (`unit_price`), with no
+  warning.
+- `callQuantity` asks for fal's historical average per call
+  (`historical_api_price`). It ignores the payload, says so in a warning, and
+  can be far from this request's cost.
+- With neither, nothing is called: the local `usd: 0` comes back with a warning
+  naming both options.
+
+Statically priced endpoints never reach the network. `cache` (for example
+`createFalEstimateCache({ ttlMs })`) collapses repeat lookups. Its key is the
+endpoint, the estimate type and the quantity. A `keyFor` result replaces the
+endpoint part, and the estimate type and quantity are always appended.
+
 ## Paid endpoint guard (OTP pay gate)
 
 The cost package keeps a small, explicit **paid-endpoint registry** used for

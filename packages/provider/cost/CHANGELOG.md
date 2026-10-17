@@ -104,10 +104,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `resolveFalDynamicEstimate` asks fal for these ids. The nine ids leave
   `PRICING.fal`, `MODEL_SLUGS.fal` and `MODEL_DISPLAY.fal`, so
   `modelSlug("fal", id)` and `modelDisplay("fal", id)` no longer accept them;
-  the kie ids keep the `sd2`, `sd2f` and `sd2p5` slugs. Migration: pass
-  `fal.v1.models.pricing.estimate` (with `FAL_ADMIN_API_KEY`) to
-  `resolveFalDynamicEstimate`, or read the billed units from the
-  `x-fal-billable-units` response header.
+  the kie ids keep the `sd2`, `sd2f` and `sd2p5` slugs. Migration: read the
+  billed units from the `x-fal-billable-units` response header, and price them
+  by passing them as `unitQuantity` to `resolveFalDynamicEstimate` with
+  `fal.v1.models.pricing.estimate` (and `FAL_ADMIN_API_KEY`).
 - KIE `qwen/text-to-image` and `qwen/image-edit` are priced per image from a
   table keyed by `input.image_size`, not per megapixel. KIE charges a fixed
   credit amount per preset at submission: text-to-image costs 1, 5, 3, 2, 3
@@ -134,6 +134,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `resolveFalDynamicEstimate` sends fal's documented estimate body, one
+  quantity per endpoint, instead of the request payload. fal answered the
+  payload body with HTTP 400, so the resolver had never returned a number.
+  `options.unitQuantity` prices billed units (for example a finished call's
+  `x-fal-billable-units`) at fal's unit price with no warning, and
+  `options.callQuantity` asks for fal's historical average per call, with a
+  warning that it ignores the payload. With neither, the resolver makes no
+  remote call and returns the local `usd: 0` with a warning naming both
+  options. The cache key is now the endpoint, the estimate type and the
+  quantity, and a `keyFor` result gets the estimate type and quantity
+  appended. `FalEstimator` takes fal's documented request shape, which
+  `fal.v1.models.pricing.estimate` still satisfies. The `computeEstimate`
+  warning for a dynamic fal id now points at `x-fal-billable-units` and
+  `unitQuantity` (ac-ytg1l1).
 - Google Flow `omni-flash` estimates use the credits useapi.net lists as of
   2026-10-17, about half the earlier figures. At 720p, 4 / 6 / 8 / 10 s cost
   7 / 10 / 12 / 15 credits, down from 15 / 20 / 25 / 30, and a

@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import {
+  computeEstimate,
   createFalEstimateCache,
   falEstimateCacheKey,
   isFalDynamicPricingEndpoint,
@@ -36,24 +37,105 @@ describe("resolveFalDynamicEstimate", () => {
     }
   });
 
-  it("returns the remote total for a dynamic endpoint", async () => {
+  it("prices a unit quantity with fal's documented unit_price body", async () => {
     const calls: unknown[] = [];
     const result = await resolveFalDynamicEstimate(
       DYNAMIC,
       { prompt: "a red panda", duration: 5 },
-      estimator({ total_cost: 0.0341, currency: "USD" }, calls)
+      estimator({ total_cost: 0.25, currency: "USD" }, calls),
+      { unitQuantity: 5 }
     );
-    expect(result.usd).toBeCloseTo(0.0341, 12);
+    expect(result.usd).toBeCloseTo(0.25, 12);
     expect(result.currency).toBe("USD");
     expect(result.warnings).toEqual([]);
     // Priced as of now, not as of a table pull.
     expect(result.rateAsOf).toBeNull();
+    // fal's oneOf: one quantity per endpoint, never the request payload
+    // (ac-ytg1l1; the payload body was a 400).
     expect(calls).toEqual([
       {
         estimate_type: "unit_price",
-        endpoints: { [DYNAMIC]: { prompt: "a red panda", duration: 5 } },
+        endpoints: { [DYNAMIC]: { unit_quantity: 5 } },
       },
     ]);
+  });
+
+  it("asks for fal's historical average with callQuantity, and says it ignores the payload", async () => {
+    const calls: unknown[] = [];
+    const result = await resolveFalDynamicEstimate(
+      DYNAMIC,
+      { prompt: "a red panda", duration: 5 },
+      estimator(
+        {
+          total_cost: 1.2,
+          currency: "USD",
+          estimate_type: "historical_api_price",
+        },
+        calls
+      ),
+      { callQuantity: 1 }
+    );
+    expect(result.usd).toBeCloseTo(1.2, 12);
+    expect(calls).toEqual([
+      {
+        estimate_type: "historical_api_price",
+        endpoints: { [DYNAMIC]: { call_quantity: 1 } },
+      },
+    ]);
+    expect(result.warnings).toEqual([
+      `fal pricing estimate for '${DYNAMIC}' is fal's historical average per call x 1; it ignores this request's payload`,
+    ]);
+  });
+
+  it("makes no remote call without a quantity", async () => {
+    const calls: unknown[] = [];
+    const payload = { prompt: "a red panda", duration: 5 };
+    const result = await resolveFalDynamicEstimate(
+      DYNAMIC,
+      payload,
+      estimator({ total_cost: 999, currency: "USD" }, calls),
+      {}
+    );
+    expect(calls).toEqual([]);
+    expect(result.usd).toBe(0);
+    const local = computeEstimate({
+      provider: "fal",
+      endpoint: DYNAMIC,
+      payload,
+    });
+    // The local warning first, then the resolver's own, naming both options.
+    expect(result.warnings.slice(0, local.warnings.length)).toEqual(
+      local.warnings
+    );
+    const own = result.warnings[result.warnings.length - 1];
+    expect(own).toContain("not requested");
+    expect(own).toContain("unitQuantity");
+    expect(own).toContain("x-fal-billable-units");
+    expect(own).toContain("callQuantity");
+  });
+
+  it("rejects an unusable quantity without calling", async () => {
+    for (const [options, needle] of [
+      [{ unitQuantity: 0 }, "unitQuantity 0"],
+      [{ unitQuantity: Number.NaN }, "unitQuantity NaN"],
+      [{ callQuantity: 0 }, "callQuantity 0"],
+      [{ callQuantity: 1.5 }, "callQuantity 1.5"],
+      [{ unitQuantity: 1, callQuantity: 1 }, "not both"],
+    ] as const) {
+      const calls: unknown[] = [];
+      const result = await resolveFalDynamicEstimate(
+        DYNAMIC,
+        { prompt: "x" },
+        estimator({ total_cost: 999, currency: "USD" }, calls),
+        options
+      );
+      expect(calls, needle).toEqual([]);
+      expect(result.usd, needle).toBe(0);
+      expect(
+        result.warnings.some((w) => w.includes(needle)),
+        needle
+      ).toBe(true);
+    }
   });
 
   it("never calls the estimator for a statically-priced endpoint", async () => {
@@ -61,7 +143,8 @@ describe("resolveFalDynamicEstimate", () => {
     const result = await resolveFalDynamicEstimate(
       STATIC,
       { prompt: "a red panda", duration: 2 },
-      estimator({ total_cost: 999, currency: "USD" }, calls)
+      estimator({ total_cost: 999, currency: "USD" }, calls),
+      { unitQuantity: 2 }
     );
     // Wiring this in must not turn every estimate into a request.
     expect(calls).toEqual([]);
@@ -73,7 +156,8 @@ describe("resolveFalDynamicEstimate", () => {
     const result = await resolveFalDynamicEstimate(
       DYNAMIC,
       { prompt: "a red panda" },
-      estimator(new Error("ECONNRESET"))
+      estimator(new Error("ECONNRESET")),
+      { unitQuantity: 5 }
     );
     expect(result.usd).toBe(0);
     // An advisory estimate must not fail a caller because a lookup timed out.
@@ -91,7 +175,8 @@ describe("resolveFalDynamicEstimate", () => {
       const result = await resolveFalDynamicEstimate(
         DYNAMIC,
         { prompt: "x" },
-        estimator(answer)
+        estimator(answer),
+        { unitQuantity: 5 }
       );
       expect(result.usd).toBe(0);
       expect(
@@ -104,7 +189,8 @@ describe("resolveFalDynamicEstimate", () => {
     const result = await resolveFalDynamicEstimate(
       DYNAMIC,
       { prompt: "x" },
-      estimator({ total_cost: 5, currency: "EUR" })
+      estimator({ total_cost: 5, currency: "EUR" }),
+      { unitQuantity: 5 }
     );
     expect(result.usd).toBe(0);
     expect(result.warnings.some((w) => w.includes("EUR"))).toBe(true);
@@ -146,15 +232,13 @@ describe("resolveFalDynamicEstimate", () => {
         DYNAMIC,
         payload,
         estimate,
-        {
-          cache,
-        }
+        { cache, unitQuantity: 5 }
       );
       const second = await resolveFalDynamicEstimate(
         DYNAMIC,
         payload,
         estimate,
-        { cache }
+        { cache, unitQuantity: 5 }
       );
 
       expect(first.usd).toBeCloseTo(0.02, 12);
@@ -162,24 +246,31 @@ describe("resolveFalDynamicEstimate", () => {
       expect(calls).toHaveLength(1);
     });
 
-    it("misses when any payload field differs", async () => {
+    it("keys on the estimate type and quantity, not the payload", async () => {
       const calls: unknown[] = [];
       const cache = createFalEstimateCache({ ttlMs: 60_000 });
       const estimate = estimator({ total_cost: 0.02, currency: "USD" }, calls);
-      await resolveFalDynamicEstimate(
-        DYNAMIC,
-        { prompt: "a", duration: 5 },
-        estimate,
-        { cache }
-      );
-      await resolveFalDynamicEstimate(
-        DYNAMIC,
-        { prompt: "a", duration: 6 },
-        estimate,
-        { cache }
-      );
-      // Conservative by design: an extra request is cheaper than a wrong price.
-      expect(calls).toHaveLength(2);
+      // fal's answer cannot depend on the payload, so a different payload
+      // with the same quantity is a hit...
+      await resolveFalDynamicEstimate(DYNAMIC, { prompt: "a" }, estimate, {
+        cache,
+        unitQuantity: 5,
+      });
+      await resolveFalDynamicEstimate(DYNAMIC, { prompt: "b" }, estimate, {
+        cache,
+        unitQuantity: 5,
+      });
+      expect(calls).toHaveLength(1);
+      // ...while another quantity or estimate type is a miss.
+      await resolveFalDynamicEstimate(DYNAMIC, { prompt: "a" }, estimate, {
+        cache,
+        unitQuantity: 6,
+      });
+      await resolveFalDynamicEstimate(DYNAMIC, { prompt: "a" }, estimate, {
+        cache,
+        callQuantity: 5,
+      });
+      expect(calls).toHaveLength(3);
     });
 
     it("is insensitive to payload key order", () => {
@@ -203,7 +294,7 @@ describe("resolveFalDynamicEstimate", () => {
         DYNAMIC,
         payload,
         estimator(new Error("ECONNRESET"), calls),
-        { cache }
+        { cache, unitQuantity: 5 }
       );
       expect(failed.usd).toBe(0);
 
@@ -212,10 +303,27 @@ describe("resolveFalDynamicEstimate", () => {
         DYNAMIC,
         payload,
         estimator({ total_cost: 0.03, currency: "USD" }, calls),
-        { cache }
+        { cache, unitQuantity: 5 }
       );
       expect(recovered.usd).toBeCloseTo(0.03, 12);
       expect(recovered.warnings).toEqual([]);
+    });
+
+    it("caches a historical answer despite its warning", async () => {
+      const calls: unknown[] = [];
+      const cache = createFalEstimateCache({ ttlMs: 60_000 });
+      const estimate = estimator({ total_cost: 1.2, currency: "USD" }, calls);
+      for (let i = 0; i < 2; i++) {
+        const result = await resolveFalDynamicEstimate(
+          DYNAMIC,
+          { prompt: "a" },
+          estimate,
+          { cache, callQuantity: 1 }
+        );
+        expect(result.usd).toBeCloseTo(1.2, 12);
+        expect(result.warnings).toHaveLength(1);
+      }
+      expect(calls).toHaveLength(1);
     });
 
     it("expires an entry once its TTL passes", async () => {
@@ -230,12 +338,13 @@ describe("resolveFalDynamicEstimate", () => {
           calls
         );
         const payload = { prompt: "a" };
-        await resolveFalDynamicEstimate(DYNAMIC, payload, estimate, { cache });
+        const options = { cache, unitQuantity: 5 };
+        await resolveFalDynamicEstimate(DYNAMIC, payload, estimate, options);
         vi.advanceTimersByTime(59_000);
-        await resolveFalDynamicEstimate(DYNAMIC, payload, estimate, { cache });
+        await resolveFalDynamicEstimate(DYNAMIC, payload, estimate, options);
         expect(calls, "still fresh").toHaveLength(1);
         vi.advanceTimersByTime(2_000);
-        await resolveFalDynamicEstimate(DYNAMIC, payload, estimate, { cache });
+        await resolveFalDynamicEstimate(DYNAMIC, payload, estimate, options);
         expect(calls, "expired").toHaveLength(2);
       } finally {
         vi.useRealTimers();
@@ -247,16 +356,15 @@ describe("resolveFalDynamicEstimate", () => {
       const cache = createFalEstimateCache({ ttlMs: 60_000, maxEntries: 2 });
       const estimate = estimator({ total_cost: 0.02, currency: "USD" }, calls);
       for (const n of [1, 2, 3]) {
-        await resolveFalDynamicEstimate(
-          DYNAMIC,
-          { prompt: String(n) },
-          estimate,
-          { cache }
-        );
+        await resolveFalDynamicEstimate(DYNAMIC, { prompt: "x" }, estimate, {
+          cache,
+          unitQuantity: n,
+        });
       }
       // Re-requesting the oldest must miss: it was evicted at the cap.
-      await resolveFalDynamicEstimate(DYNAMIC, { prompt: "1" }, estimate, {
+      await resolveFalDynamicEstimate(DYNAMIC, { prompt: "x" }, estimate, {
         cache,
+        unitQuantity: 1,
       });
       expect(calls).toHaveLength(4);
     });
@@ -269,29 +377,30 @@ describe("resolveFalDynamicEstimate", () => {
       ).toThrow(/maxEntries/);
     });
 
-    it("honours a caller-supplied key function", async () => {
+    it("appends the estimate type and quantity to a caller-supplied key", async () => {
       const calls: unknown[] = [];
       const cache = createFalEstimateCache({ ttlMs: 60_000 });
       const estimate = estimator({ total_cost: 0.02, currency: "USD" }, calls);
-      // A caller that knows `seed` cannot move its price narrows the key.
-      const keyFor = (endpoint: string, payload: Record<string, unknown>) => {
-        const rest = { ...payload };
-        delete rest.seed;
-        return falEstimateCacheKey(endpoint, rest);
-      };
-      await resolveFalDynamicEstimate(
-        DYNAMIC,
-        { prompt: "a", seed: 1 },
-        estimate,
-        { cache, keyFor }
-      );
-      await resolveFalDynamicEstimate(
-        DYNAMIC,
-        { prompt: "a", seed: 2 },
-        estimate,
-        { cache, keyFor }
-      );
+      // A caller-supplied key replaces the endpoint prefix. It can never make
+      // two quantities share an answer, because the discriminator follows it.
+      const keyFor = (endpoint: string) => `account-a:${endpoint}`;
+      await resolveFalDynamicEstimate(DYNAMIC, { prompt: "a" }, estimate, {
+        cache,
+        keyFor,
+        unitQuantity: 5,
+      });
+      await resolveFalDynamicEstimate(DYNAMIC, { prompt: "b" }, estimate, {
+        cache,
+        keyFor,
+        unitQuantity: 5,
+      });
       expect(calls).toHaveLength(1);
+      await resolveFalDynamicEstimate(DYNAMIC, { prompt: "a" }, estimate, {
+        cache,
+        keyFor,
+        unitQuantity: 7,
+      });
+      expect(calls).toHaveLength(2);
     });
 
     it("never consults the cache for a statically-priced endpoint", async () => {
@@ -301,7 +410,7 @@ describe("resolveFalDynamicEstimate", () => {
         STATIC,
         { prompt: "x", duration: 2 },
         estimator({ total_cost: 999, currency: "USD" }, calls),
-        { cache }
+        { cache, unitQuantity: 2 }
       );
       expect(calls).toEqual([]);
       expect(result.usd).toBeCloseTo(0.1, 12);

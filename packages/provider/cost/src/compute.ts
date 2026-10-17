@@ -394,11 +394,12 @@ export function computeEstimate(req: EstimateRequest): CostEstimate {
             `fal '${req.endpoint}' is billed on a unit this estimator cannot ` +
               "derive from the request payload (compute seconds, delivered " +
               "output metadata, or tokens with no published per-image " +
-              "constant), so no local rate exists for it. For a real number " +
-              "call fal's own pricing API: " +
+              "constant), so no local rate exists for it. fal reports the " +
+              "billed units after the call (x-fal-billable-units); to price " +
+              "them, pass them as unitQuantity to resolveFalDynamicEstimate, " +
+              "which calls fal's own pricing API: " +
               "POST https://api.fal.ai/v1/models/pricing/estimate, exposed as " +
-              "fal.v1.models.pricing.estimate({ estimate_type, endpoints }) " +
-              "with FAL_ADMIN_API_KEY.",
+              "fal.v1.models.pricing.estimate, with FAL_ADMIN_API_KEY.",
           ],
         };
       }

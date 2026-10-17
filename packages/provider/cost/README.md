@@ -530,6 +530,10 @@ const est = await resolveFalDynamicEstimate(
 - With neither, nothing is called: the local `usd: 0` comes back with a warning
   naming both options.
 
+For endpoints whose card and recorded bill have been checked, the
+`computeEstimate` warning also names the billed unit and why the request
+cannot fix it (`FAL_DYNAMIC_BILLED_UNITS` in `src/pricing/fal.ts`).
+
 Statically priced endpoints never reach the network. `cache` (for example
 `createFalEstimateCache({ ttlMs })`) collapses repeat lookups. Its key is the
 endpoint, the estimate type and the quantity. A `keyFor` result replaces the

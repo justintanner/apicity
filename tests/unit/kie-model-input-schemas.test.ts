@@ -509,8 +509,10 @@ describe("KIE MiniMax H3 modelInputSchemas metadata (REQ-007)", () => {
       "H.264/H.265",
       "AAC/MP3",
       "50 MB",
-      "2-15 seconds",
-      "15 seconds combined",
+      "2000-15000 ms (2-15 seconds)",
+      "15000 ms combined",
+      "Kie rejects a clip outside the per-file window at submission",
+      "MiniMaxH3ReferenceClipDurationMs.video",
       "256-5760",
       "0.4-2.5",
       "23.976-60",
@@ -520,8 +522,10 @@ describe("KIE MiniMax H3 modelInputSchemas metadata (REQ-007)", () => {
       "not inspected locally",
       "WAV/MP3",
       "15 MB",
-      "2-15 seconds",
-      "15 seconds combined",
+      "2000-15000 ms (2-15 seconds)",
+      "15000 ms combined",
+      "documented upstream but not yet observed at runtime",
+      "MiniMaxH3ReferenceClipDurationMs.audio",
     ]);
   });
 

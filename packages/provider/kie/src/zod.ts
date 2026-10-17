@@ -2213,6 +2213,29 @@ export const MiniMaxH3MediaAddressSchema = z
     message: "Expected an HTTP, HTTPS, or OSS media address",
   });
 
+// Reference media durations for minimax-h3/reference-to-video, in
+// milliseconds, the unit Kie reports them in. A URL carries no duration, so
+// the request schema can only describe these windows; callers check local
+// media against them before submitting. The docs give videos and audio the
+// same rule: 2-15 s per file and at most 15 s across all files
+// (https://docs.kie.ai/market/minimax-h3/reference-to-video, read
+// 2026-10-17). Kie enforces the video per-file window at submission: a
+// 29.9 s clip was rejected with "content[2].video_url: invalid param: video
+// duration 29917 ms, expected [2000, 15000] ms (2013)". The audio window and
+// both combined caps are documented upstream but not yet observed at runtime.
+export const MiniMaxH3ReferenceClipDurationMs = {
+  video: { minimum: 2000, maximum: 15000, maximumTotal: 15000 },
+  audio: { minimum: 2000, maximum: 15000, maximumTotal: 15000 },
+} as const;
+
+function describeMiniMaxH3ReferenceClipWindow(window: {
+  minimum: number;
+  maximum: number;
+  maximumTotal: number;
+}): string {
+  return `Each file must last ${window.minimum}-${window.maximum} ms (${window.minimum / 1000}-${window.maximum / 1000} seconds), with ${window.maximumTotal} ms combined at most`;
+}
+
 // ---------------------------------------------------------------------------
 // Sub-schemas (composable building blocks)
 // ---------------------------------------------------------------------------
@@ -5528,11 +5551,17 @@ export const MiniMaxH3ReferenceToVideoInputSchema = z
     reference_video_urls: z
       .array(MiniMaxH3MediaAddressSchema)
       .max(3)
-      .optional(),
+      .optional()
+      .describe(
+        `MP4/MOV reference videos. ${describeMiniMaxH3ReferenceClipWindow(MiniMaxH3ReferenceClipDurationMs.video)}; Kie rejects a clip outside the per-file window at submission. URLs are not inspected locally, so check local media against MiniMaxH3ReferenceClipDurationMs.video.`
+      ),
     reference_audio_urls: z
       .array(MiniMaxH3MediaAddressSchema)
       .max(3)
-      .optional(),
+      .optional()
+      .describe(
+        `WAV/MP3 reference audio; it cannot be the sole reference. ${describeMiniMaxH3ReferenceClipWindow(MiniMaxH3ReferenceClipDurationMs.audio)}, as documented upstream but not yet observed at runtime. URLs are not inspected locally, so check local media against MiniMaxH3ReferenceClipDurationMs.audio.`
+      ),
     aspect_ratio: MiniMaxH3ReferenceAspectRatioSchema.optional(),
     duration: MiniMaxH3DurationSchema,
     resolution: MiniMaxH3ResolutionSchema.optional(),

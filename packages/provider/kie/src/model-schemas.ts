@@ -19,6 +19,7 @@ import {
   KlingOmniResolutionSchema,
   MiniMaxH3FixedAspectRatioSchema,
   MiniMaxH3ReferenceAspectRatioSchema,
+  MiniMaxH3ReferenceClipDurationMs,
   MiniMaxH3ResolutionSchema,
   Qwen21AspectRatioSchema,
   Qwen21BackgroundSchema,
@@ -181,6 +182,14 @@ const miniMaxH3MediaAddressItem = {
   type: "string",
   description: "HTTP, HTTPS, or OSS media URL",
 } as const;
+
+function miniMaxH3ReferenceClipWindow(window: {
+  minimum: number;
+  maximum: number;
+  maximumTotal: number;
+}): string {
+  return `Each file must last ${window.minimum}-${window.maximum} ms (${window.minimum / 1000}-${window.maximum / 1000} seconds), with ${window.maximumTotal} ms combined at most`;
+}
 
 const klingOmniMediaReferenceItem = {
   type: "string",
@@ -5891,15 +5900,13 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       reference_video_urls: {
         type: "array",
         maxItems: 3,
-        description:
-          "HTTP, HTTPS, or OSS reference video URLs (max 3); at least one of reference_image_urls or reference_video_urls must be non-empty. Upstream media restrictions (not inspected locally): MP4/MOV with H.264/H.265 video and AAC/MP3 audio, at most 50 MB per file, 2-15 seconds per file and 15 seconds combined, side length 256-5760 px, aspect ratio 0.4-2.5, and frame rate 23.976-60 fps",
+        description: `HTTP, HTTPS, or OSS reference video URLs (max 3); at least one of reference_image_urls or reference_video_urls must be non-empty. ${miniMaxH3ReferenceClipWindow(MiniMaxH3ReferenceClipDurationMs.video)}; Kie rejects a clip outside the per-file window at submission, so check local media against MiniMaxH3ReferenceClipDurationMs.video. Other upstream media restrictions (not inspected locally): MP4/MOV with H.264/H.265 video and AAC/MP3 audio, at most 50 MB per file, side length 256-5760 px, aspect ratio 0.4-2.5, and frame rate 23.976-60 fps`,
         items: miniMaxH3MediaAddressItem,
       },
       reference_audio_urls: {
         type: "array",
         maxItems: 3,
-        description:
-          "HTTP, HTTPS, or OSS reference audio URLs (max 3); audio cannot be the sole reference and must accompany an image or video. Upstream media restrictions (not inspected locally): WAV/MP3, at most 15 MB per file, 2-15 seconds per file and 15 seconds combined",
+        description: `HTTP, HTTPS, or OSS reference audio URLs (max 3); audio cannot be the sole reference and must accompany an image or video. ${miniMaxH3ReferenceClipWindow(MiniMaxH3ReferenceClipDurationMs.audio)}, as documented upstream but not yet observed at runtime; check local media against MiniMaxH3ReferenceClipDurationMs.audio. Other upstream media restrictions (not inspected locally): WAV/MP3, at most 15 MB per file`,
         items: miniMaxH3MediaAddressItem,
       },
       aspect_ratio: {

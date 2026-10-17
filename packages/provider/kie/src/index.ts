@@ -428,6 +428,7 @@ export {
   TaskResponseSchema,
   Wan27VideoEditDurationSchema,
   Wan27VideoEditDurationValues,
+  MiniMaxH3ReferenceClipDurationMs,
 } from "./zod";
 
 // Export error class

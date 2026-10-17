@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added `MiniMaxH3ReferenceClipDurationMs`, the `minimax-h3/reference-to-video`
+  reference media duration windows in milliseconds, exported from
+  `@apicity/kie` and `@apicity/kie/zod` (ac-j3d6ki.2). Videos and audio each
+  allow 2000-15000 ms per file and 15000 ms combined. Kie rejects a reference
+  video outside the per-file window at submission, and a URL cannot be checked
+  locally, so compare local media durations against it before submitting. The
+  `reference_video_urls` and `reference_audio_urls` schema descriptions and
+  `modelInputSchemas` metadata now state both windows; the audio window and
+  the combined caps are documented upstream but not yet observed at runtime.
+
 - Added `vidu-q4/reference-to-video` with image/audio references, aspect-ratio
   controls, per-second pricing, and an owned-assets recording.
 

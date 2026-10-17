@@ -145,6 +145,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Published `.d.ts` files give every relative import an explicit `.js`
+  extension, including the 10 inline `import("./x")` types and the two
+  `pricing/` `from "../types"` clauses, so a `moduleResolution: node16` or
+  `nodenext` consumer with `skipLibCheck: false` no longer gets TS2835 from
+  them (ac-0su9ax).
+
 - fal Seedance 2.5 prices 1080p at the billed $0.0234116 per 1000 tokens
   (0.0214 x 1.094) instead of the card's rounded "roughly $0.0234", for
   `bytedance/seedance-2.5/text-to-video`,

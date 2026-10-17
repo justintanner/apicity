@@ -112,6 +112,13 @@ jobs:
           # the skill fails here first, before test:run reaches either case.
           test -f packages/cli/skills/apicity/SKILL.md
 
+      # Pack every provider and type-check a consumer of every exports subpath
+      # under moduleResolution node16 with skipLibCheck false. The steps above
+      # and below read source; this is the only one that reads the packed
+      # declarations a consumer installs (ac-0su9ax).
+      - name: Type-check packed providers (node16 consumer)
+        run: pnpm run check:packed-types
+
       # Type-check the whole tests/ tree (tests/tsconfig.json). The build step
       # above only tsc's packages/**, and test:run executes rather than
       # type-checks the vitest suite, so without this a test-only type

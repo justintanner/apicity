@@ -99,6 +99,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Published `.d.ts` files give every relative import an explicit `.js`
+  extension, including the 36 inline `import("./x")` types, so a
+  `moduleResolution: node16` or `nodenext` consumer with `skipLibCheck: false`
+  no longer gets TS2835 from them (ac-0su9ax).
+
 - Qwen2 image-edit seed validation and discovery metadata now follow KIE's
   published integer contract. This narrows caller-visible validation: replace
   fractional seed values with an integer or omit `seed` before upgrading.

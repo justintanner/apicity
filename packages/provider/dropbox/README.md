@@ -28,11 +28,13 @@ const dropbox = createDropbox({ oauthToken: process.env.DROPBOX_OAUTH_TOKEN! });
 ```
 
 If `oauthToken` is omitted, the provider reads `DROPBOX_OAUTH_TOKEN` at request time.
-Tokens are only sent in the `Authorization: Bearer ...` header.
+The access token is only sent in the `Authorization: Bearer ...` header.
+
+`oauth2.token` exchanges an authorization code (with an optional PKCE `code_verifier`) or a refresh token for an access token. It requires the `clientId` option, adds `clientSecret` when set, and posts the grant as a form body to `oauthBaseURL` (default `https://api.dropboxapi.com`).
 
 ## API Reference
 
-13 endpoints across 4 groups. Each method mirrors an upstream URL path.
+17 endpoints across 5 groups. Each method mirrors an upstream URL path.
 
 ### check
 
@@ -202,6 +204,76 @@ Cost tier: <code>cheap</code>
 
 ```typescript
 const res = await dropbox.files.upload({ /* ... */ });
+```
+
+Source: [`packages/provider/dropbox/src/dropbox.ts`](src/dropbox.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>dropbox.files.uploadSession.appendV2</code></b></summary>
+
+<code>POST https://content.dropboxapi.com/2/files/upload_session/append_v2</code>
+
+Cost tier: <code>cheap</code>
+
+[Upstream docs ↗](https://www.dropbox.com/developers/documentation/http/documentation#files-upload_session-append_v2)
+
+```typescript
+const res = await dropbox.files.uploadSession.appendV2({ /* ... */ });
+```
+
+Source: [`packages/provider/dropbox/src/dropbox.ts`](src/dropbox.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>dropbox.files.uploadSession.finish</code></b></summary>
+
+<code>POST https://content.dropboxapi.com/2/files/upload_session/finish</code>
+
+Cost tier: <code>cheap</code>
+
+[Upstream docs ↗](https://www.dropbox.com/developers/documentation/http/documentation#files-upload_session-finish)
+
+```typescript
+const res = await dropbox.files.uploadSession.finish({ /* ... */ });
+```
+
+Source: [`packages/provider/dropbox/src/dropbox.ts`](src/dropbox.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>dropbox.files.uploadSession.start</code></b></summary>
+
+<code>POST https://content.dropboxapi.com/2/files/upload_session/start</code>
+
+Cost tier: <code>cheap</code>
+
+[Upstream docs ↗](https://www.dropbox.com/developers/documentation/http/documentation#files-upload_session-start)
+
+```typescript
+const res = await dropbox.files.uploadSession.start({ /* ... */ });
+```
+
+Source: [`packages/provider/dropbox/src/dropbox.ts`](src/dropbox.ts)
+
+</details>
+
+### oauth2
+
+<details>
+<summary><code>POST</code> <b><code>dropbox.oauth2.token</code></b></summary>
+
+<code>POST https://api.dropboxapi.com/oauth2/token</code>
+
+Cost tier: <code>cheap</code>
+
+[Upstream docs ↗](https://www.dropbox.com/developers/documentation/http/documentation#oauth2-token)
+
+```typescript
+const res = await dropbox.oauth2.token({ /* ... */ });
 ```
 
 Source: [`packages/provider/dropbox/src/dropbox.ts`](src/dropbox.ts)

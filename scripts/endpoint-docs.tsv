@@ -1781,3 +1781,8 @@ fal	bytedance.seedance2p5.us.imageToVideo	POST	https://fal.run/bytedance/seedanc
 fal	bytedance.seedance2p5.us.referenceToVideo	POST	https://fal.run/bytedance/seedance-2.5/us/reference-to-video	https://fal.ai/models/bytedance/seedance-2.5/us/reference-to-video/api
 fal	bytedance.seedance2p5.draft.complete	POST	https://fal.run/bytedance/seedance-2.5/draft/complete	https://fal.ai/models/bytedance/seedance-2.5/draft/complete/api
 fal	meshy.v6Lite.retexture	POST	https://fal.run/meshy/v6-lite/retexture	https://fal.ai/models/meshy/v6-lite/retexture/api
+x	v2.tweets	GET	https://api.x.com/2/tweets/{id}{query}	https://docs.x.com/x-api/posts/get-post-by-id
+dropbox	files.uploadSession.start	POST	https://content.dropboxapi.com/2/files/upload_session/start	https://www.dropbox.com/developers/documentation/http/documentation#files-upload_session-start
+dropbox	files.uploadSession.appendV2	POST	https://content.dropboxapi.com/2/files/upload_session/append_v2	https://www.dropbox.com/developers/documentation/http/documentation#files-upload_session-append_v2
+dropbox	files.uploadSession.finish	POST	https://content.dropboxapi.com/2/files/upload_session/finish	https://www.dropbox.com/developers/documentation/http/documentation#files-upload_session-finish
+dropbox	oauth2.token	POST	https://api.dropboxapi.com/oauth2/token	https://www.dropbox.com/developers/documentation/http/documentation#oauth2-token

@@ -8,6 +8,9 @@ export const DropboxTaggedSchema = z
 
 export const DropboxOptionsSchema = z.object({
   oauthToken: z.string().optional(),
+  clientId: z.string().optional(),
+  clientSecret: z.string().optional(),
+  oauthBaseURL: z.string().optional(),
   apiBaseURL: z.string().optional(),
   contentBaseURL: z.string().optional(),
   timeout: z.number().optional(),
@@ -190,6 +193,49 @@ export const DropboxFilesDownloadRequestSchema = z.object({
   path: z.string().min(1),
   rev: z.string().optional(),
 });
+
+export const DropboxUploadSessionStartRequestSchema = z.object({
+  contents: DropboxBodyInitSchema,
+  close: z.boolean().optional(),
+  content_hash: z.string().optional(),
+});
+
+export const DropboxUploadSessionCursorSchema = z.object({
+  session_id: z.string().min(1),
+  offset: z.number().int().nonnegative(),
+});
+
+export const DropboxUploadSessionAppendRequestSchema =
+  DropboxUploadSessionStartRequestSchema.extend({
+    cursor: DropboxUploadSessionCursorSchema,
+  });
+
+export const DropboxUploadSessionFinishRequestSchema = z.object({
+  contents: DropboxBodyInitSchema,
+  cursor: DropboxUploadSessionCursorSchema,
+  commit: DropboxFilesUploadRequestSchema.omit({
+    contents: true,
+    content_hash: true,
+  }),
+  content_hash: z.string().optional(),
+});
+
+export const DropboxOAuthTokenRequestSchema = z.discriminatedUnion(
+  "grant_type",
+  [
+    z.object({
+      grant_type: z.literal("authorization_code"),
+      code: z.string().min(1),
+      redirect_uri: z.string().optional(),
+      code_verifier: z.string().optional(),
+    }),
+    z.object({
+      grant_type: z.literal("refresh_token"),
+      refresh_token: z.string().min(1),
+      scope: z.string().optional(),
+    }),
+  ]
+);
 
 export const DropboxFilesDownloadResponseSchema = z.object({
   metadata: DropboxFileMetadataSchema,

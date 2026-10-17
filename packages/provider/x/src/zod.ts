@@ -225,6 +225,31 @@ export type XUsersMeRequest = z.input<typeof XUsersMeRequestSchema>;
 export type XUsersMeRequestInput = XUsersMeRequest;
 export type XUsersMeParsedRequest = z.output<typeof XUsersMeRequestSchema>;
 
+export const XTweetLookupRequestSchema = z.object({
+  "tweet.fields": z.array(XTweetFieldSchema).min(1).optional(),
+  expansions: z
+    .array(z.enum(["attachments.media_keys", "author_id"]))
+    .min(1)
+    .optional(),
+  "media.fields": z
+    .array(
+      z.enum([
+        "media_key",
+        "type",
+        "duration_ms",
+        "preview_image_url",
+        "public_metrics",
+        "non_public_metrics",
+        "organic_metrics",
+        "promoted_metrics",
+      ])
+    )
+    .min(1)
+    .optional(),
+});
+
+export type XTweetLookupRequest = z.input<typeof XTweetLookupRequestSchema>;
+
 // ---------------------------------------------------------------------------
 // POST /2/tweets
 // ---------------------------------------------------------------------------

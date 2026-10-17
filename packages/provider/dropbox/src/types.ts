@@ -24,6 +24,9 @@ export class DropboxError extends Error {
 
 export interface DropboxOptions {
   oauthToken?: string;
+  clientId?: string;
+  clientSecret?: string;
+  oauthBaseURL?: string;
   apiBaseURL?: string;
   contentBaseURL?: string;
   timeout?: number;
@@ -216,6 +219,66 @@ export interface DropboxFilesDownloadRequest {
   rev?: string;
 }
 
+export interface DropboxUploadSessionStartRequest {
+  contents: BodyInit;
+  close?: boolean;
+  content_hash?: string;
+}
+
+export interface DropboxUploadSessionStartResponse {
+  session_id: string;
+}
+
+export interface DropboxUploadSessionCursor {
+  session_id: string;
+  offset: number;
+}
+
+export interface DropboxUploadSessionAppendRequest {
+  contents: BodyInit;
+  cursor: DropboxUploadSessionCursor;
+  close?: boolean;
+  content_hash?: string;
+}
+
+export interface DropboxUploadSessionFinishRequest {
+  contents: BodyInit;
+  cursor: DropboxUploadSessionCursor;
+  commit: Omit<DropboxFilesUploadRequest, "contents" | "content_hash">;
+  content_hash?: string;
+}
+
+export type DropboxOAuthTokenRequest =
+  | {
+      grant_type: "authorization_code";
+      code: string;
+      redirect_uri?: string;
+      code_verifier?: string;
+    }
+  | { grant_type: "refresh_token"; refresh_token: string; scope?: string };
+
+export interface DropboxOAuthTokenResponse {
+  access_token: string;
+  token_type: string;
+  expires_in: number;
+  refresh_token?: string;
+  account_id?: string;
+  scope?: string;
+}
+
+export interface DropboxOAuthNamespace {
+  token: DropboxMethod<DropboxOAuthTokenRequest, DropboxOAuthTokenResponse>;
+}
+
+export interface DropboxUploadSessionNamespace {
+  start: DropboxMethod<
+    DropboxUploadSessionStartRequest,
+    DropboxUploadSessionStartResponse
+  >;
+  appendV2: DropboxMethod<DropboxUploadSessionAppendRequest, null>;
+  finish: DropboxMethod<DropboxUploadSessionFinishRequest, DropboxFileMetadata>;
+}
+
 export interface DropboxFilesDownloadResponse {
   metadata: DropboxFileMetadata;
   content: ArrayBuffer;
@@ -280,6 +343,7 @@ export interface DropboxUsersNamespace {
 }
 
 export interface DropboxFilesNamespace {
+  uploadSession: DropboxUploadSessionNamespace;
   listFolder: DropboxMethod<
     DropboxFilesListFolderRequest,
     DropboxFilesListFolderResponse
@@ -324,6 +388,7 @@ export interface DropboxSharingNamespace {
 }
 
 export interface DropboxProvider {
+  oauth2: DropboxOAuthNamespace;
   check: DropboxCheckNamespace;
   users: DropboxUsersNamespace;
   files: DropboxFilesNamespace;

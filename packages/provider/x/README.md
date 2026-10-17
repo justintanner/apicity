@@ -258,7 +258,7 @@ console.log(tweet.data.text);
 
 ## API Reference
 
-6 endpoints across 3 groups. Each method mirrors an upstream URL path.
+7 endpoints across 3 groups. Each method mirrors an upstream URL path.
 
 ### media
 
@@ -331,6 +331,23 @@ Source: [`packages/provider/x/src/x.ts`](src/x.ts)
 </details>
 
 ### tweets
+
+<details>
+<summary><code>GET</code> <b><code>x.v2.tweets</code></b></summary>
+
+<code>GET https://api.x.com/2/tweets/{id}{query}</code>
+
+Cost tier: <code>cheap</code>
+
+[Upstream docs ↗](https://docs.x.com/x-api/posts/get-post-by-id)
+
+```typescript
+const res = await x.get.v2.tweets({ /* ... */ });
+```
+
+Source: [`packages/provider/x/src/x.ts`](src/x.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>x.v2.tweets</code></b></summary>

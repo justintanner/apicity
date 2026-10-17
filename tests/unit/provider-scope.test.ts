@@ -214,6 +214,7 @@ describe("resolveProviderScope", () => {
         `${integrationDir}/x-post-video.test.ts`,
         `${integrationDir}/x-tweets.test.ts`,
         `${integrationDir}/x-users-me.test.ts`,
+        "tests/functional/x-post-lookup.test.ts",
         `${unitDir}/x-oauth.test.ts`,
         `${unitDir}/x-zod.test.ts`,
       ],

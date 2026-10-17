@@ -98,6 +98,7 @@ pnpm run lint                    # Full lint: format check + ESLint + repo check
 pnpm run lint:after-format       # Full lint minus format check; safe after pnpm run format
 pnpm run lint:provider -- <name-or-path> # Scoped ESLint + provider-relevant checks
 pnpm run typecheck:provider -- <name-or-path> # Fast provider typecheck; falls back to full on shared/package diffs
+pnpm run check:packed-types      # After build: pack every provider, type-check a node16 consumer (part of ci:local)
 pnpm run test:run                # Run tests once (Polly.js replay; no network)
 pnpm run test:affected           # Provider tests for provider-only diffs; full fallback otherwise
 pnpm run test:provider -- <name-or-path> # Typecheck + replay one provider
@@ -109,7 +110,7 @@ pnpm run dev:preflight:fast -- <name-or-path> # Fast provider gate: scoped forma
 pnpm run dev:preflight:provider -- <name-or-path> # Explicit alias for the fast provider gate
 pnpm run dev:preflight:changed -- [paths...] # Changed-file format/lint plus full typecheck+test
 pnpm run dev:preflight           # Full local gate: format + typecheck + lint:after-format + test:run
-pnpm run ci:local                # Full CI-style gate: audit + gen:examples:check + gen:call-shapes:check + doc-gen:check + build + typecheck:tests + lint + test:run
+pnpm run ci:local                # Full CI-style gate: audit + gen:examples:check + gen:call-shapes:check + doc-gen:check + build + check:packed-types + typecheck:tests + lint + test:run
 pnpm run harness:telegram -- --dry-run # Preview per-endpoint Telegram messages (changed recordings)
 pnpm run harness:telegram -- --all <pattern> --dry-run # Preview ANY recording by name/path substring
 

@@ -42,7 +42,9 @@ async function addJsExtensions(dir) {
       // and the whole package silently degrades to `any` for consumers.
       const content = await fs.readFile(fullPath, "utf8");
       const updatedContent = content.replace(
-        /from\s+["'](\.\/[^"']+)["']/g,
+        // `from` clauses, inline `import("./x")` types and bare imports, at any
+        // `./` or `../` depth (ac-0su9ax).
+        /(?:\bfrom\s+|\bimport\s*\(\s*|^\s*import\s+)["'](\.{1,2}\/[^"']+)["']/gm,
         (match, importPath) => {
           if (!importPath.endsWith(".js") && !importPath.endsWith(".json")) {
             return match.replace(importPath, importPath + ".js");

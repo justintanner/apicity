@@ -1,6 +1,6 @@
 import { WebSocket } from "ws";
 import { XaiError } from "./types";
-import type { XaiRealtimeSession } from "./types";
+import type { XaiRealtimeConversationItem, XaiRealtimeSession } from "./types";
 
 export interface XaiRealtimeServerEvent {
   type: string;
@@ -26,7 +26,7 @@ export type XaiRealtimeClientEvent = (
   | { type: "session.update"; session: XaiRealtimeSession }
   | {
       type: "conversation.item.create";
-      item: Record<string, unknown>;
+      item: XaiRealtimeConversationItem;
       previous_item_id?: string;
     }
   | {

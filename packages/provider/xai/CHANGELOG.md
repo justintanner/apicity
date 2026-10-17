@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added the `@apicity/xai/realtime` subpath export with `connectXaiRealtime`,
+  an authenticated server-side Realtime WebSocket transport built on `ws`, now
+  a runtime dependency (ac-j3d6ki.11). It sends the API key as an
+  `Authorization: Bearer` header, connects by `model` or SIP `callId`, bounds
+  the handshake with `timeout`, aborts on `signal`, and closes on malformed
+  server events. A rejected handshake rejects with `XaiError` carrying the
+  HTTP status and parsed body.
+
+- Typed the `force_message` conversation item as
+  `XaiRealtimeForceMessageItem` (an assistant line synthesized via TTS without
+  a `response.create` round trip, with optional `interruptible`). It joins the
+  new `XaiRealtimeConversationItem` union, which both the main entry's
+  `XaiRealtimeConversationItemCreate` and the transport's
+  `conversation.item.create` event use. `XaiRealtimeSession` now types
+  `audio.output.speed` (0.7-1.5, default 1.0) and `reasoning.effort`.
+
 ### Changed
 
 - **Breaking:** the six paid image and video rows (`v1.images.generations`,

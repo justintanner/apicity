@@ -1,9 +1,16 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, expectTypeOf, it } from "vitest";
 import { createServer } from "node:http";
 import { once } from "node:events";
 import { WebSocketServer } from "ws";
+import type {
+  XaiRealtimeAudioConfig,
+  XaiRealtimeConversationItem,
+  XaiRealtimeConversationItemCreate,
+  XaiRealtimeForceMessageItem,
+} from "@apicity/xai";
 import { connectXaiRealtime } from "../../packages/provider/xai/src/realtime";
 import type {
+  XaiRealtimeClientEvent,
   XaiRealtimeConnection,
   XaiRealtimeServerEvent,
 } from "../../packages/provider/xai/src/realtime";
@@ -70,6 +77,93 @@ describe("xAI Realtime WebSocket transport", () => {
     expect(() => connection.send({ type: "response.create" })).toThrow(
       "closed"
     );
+  });
+
+  it("sends a force_message item and audio.output.speed over a real socket", async () => {
+    const { socket, baseURL } = await server();
+    const received = new Promise<unknown[]>((resolve) =>
+      socket.once("connection", (peer) => {
+        const messages: unknown[] = [];
+        peer.on("message", (data) => {
+          messages.push(JSON.parse(data.toString()));
+          if (messages.length === 2) resolve(messages);
+        });
+      })
+    );
+    const connection = await connectXaiRealtime({
+      apiKey: "sk-fixture",
+      baseURL,
+      model: "grok-voice-think-fast-2.0",
+      onEvent: () => undefined,
+    });
+    connections.push(connection);
+    const sessionUpdate = {
+      type: "session.update",
+      session: {
+        voice: "eve",
+        audio: { output: { format: { type: "audio/pcm" }, speed: 1.25 } },
+      },
+    } satisfies XaiRealtimeClientEvent;
+    const activationLine = {
+      type: "conversation.item.create",
+      item: {
+        type: "force_message",
+        role: "assistant",
+        interruptible: false,
+        content: [{ type: "output_text", text: "Voice mode is on." }],
+      },
+    } satisfies XaiRealtimeClientEvent;
+    connection.send(sessionUpdate);
+    connection.send(activationLine);
+    expect(await received).toEqual([sessionUpdate, activationLine]);
+  });
+
+  it("types force_message items and audio.output.speed for both entry points", () => {
+    expectTypeOf<
+      NonNullable<XaiRealtimeAudioConfig["output"]>["speed"]
+    >().toEqualTypeOf<number | undefined>();
+    expectTypeOf<XaiRealtimeForceMessageItem>().toEqualTypeOf<{
+      type: "force_message";
+      role: "assistant";
+      content: { type: "output_text"; text: string }[];
+      interruptible?: boolean;
+    }>();
+    expectTypeOf<
+      XaiRealtimeConversationItemCreate["item"]
+    >().toEqualTypeOf<XaiRealtimeConversationItem>();
+    expectTypeOf<
+      Extract<
+        XaiRealtimeClientEvent,
+        { type: "conversation.item.create" }
+      >["item"]
+    >().toEqualTypeOf<XaiRealtimeConversationItem>();
+
+    const rejected: XaiRealtimeClientEvent[] = [
+      {
+        type: "conversation.item.create",
+        item: {
+          type: "force_message",
+          // @ts-expect-error force_message items are always assistant turns.
+          role: "user",
+          content: [{ type: "output_text", text: "Hello" }],
+        },
+      },
+      {
+        type: "conversation.item.create",
+        item: {
+          type: "force_message",
+          role: "assistant",
+          // @ts-expect-error force_message content parts are output_text.
+          content: [{ type: "input_text", text: "Hello" }],
+        },
+      },
+      {
+        type: "session.update",
+        // @ts-expect-error audio.output.speed is a numeric multiplier.
+        session: { audio: { output: { speed: "fast" } } },
+      },
+    ];
+    expect(rejected).toHaveLength(3);
   });
 
   it("closes malformed events and reports a redacted transport error", async () => {

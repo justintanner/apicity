@@ -508,6 +508,25 @@ function videosKeyframeIssues(
   return issues;
 }
 
+// resolution is an omni-flash field. Veo publishes no 360p variant, and
+// upstream rejects 360p on a Veo model rather than silently generating 720p at
+// full price, so the Veo branches reject it here too. Any other value passes
+// through like every undeclared field. The alias fallback stays permissive.
+// [videos §resolution] https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos
+function veoResolutionIssues(
+  value: Record<string, unknown>
+): VideosRefinementIssue[] {
+  return value.resolution === "360p"
+    ? [
+        {
+          path: ["resolution"],
+          message:
+            "resolution 360p is omni-flash only; Veo models have no 360p variant",
+        },
+      ]
+    : [];
+}
+
 // Fast-family (veo-3.1-fast / -lite / -lite-low-priority) branch constraints:
 // referenceImage_1..3 / character_1..3 budget, plus reference-to-video duration.
 function veoFastFamilyIssues(
@@ -532,6 +551,7 @@ function veoFastFamilyIssues(
     });
   }
   issues.push(...videosKeyframeIssues(value));
+  issues.push(...veoResolutionIssues(value));
   return issues;
 }
 
@@ -621,6 +641,7 @@ const veoQualityVideosSchema = z
         "veo-3.1-quality does not support referenceImage_*/character_* inputs"
       ),
       ...videosKeyframeIssues(record),
+      ...veoResolutionIssues(record),
     ];
     for (const issue of issues) {
       ctx.addIssue({
@@ -692,6 +713,14 @@ const omniFlashVideosSchema = z
     // [videos §Aspect Ratio]
     aspectRatio: z.enum(["landscape", "portrait"]).optional(),
     duration: videosWideDurationSchema,
+    // omni-flash only; Veo models reject 360p (veoResolutionIssues).
+    // [videos §resolution]
+    resolution: z
+      .enum(["360p", "720p"])
+      .describe(
+        "Output resolution, 360p or 720p (default 720p). 360p costs about half the credits of 720p."
+      )
+      .optional(),
     ...videosCountSeedFields,
     ...videosKeyframeFields,
     ...videosOmniReferenceFields,

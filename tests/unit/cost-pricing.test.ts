@@ -660,8 +660,19 @@ describe("PRICING data", () => {
   });
 
   it("stamps googleflow rates with their own asOf, ahead of the global", () => {
+    // The video credit costs were read on 2026-07-20; the image models'
+    // zero-credit entries were read on 2026-10-17 (ac-j3d6ki.5).
+    const imageModels = new Set([
+      "nano-banana-2-lite",
+      "nano-banana-2",
+      "nano-banana-pro",
+      "nano-banana",
+      "imagen-4",
+    ]);
     for (const [model, entry] of Object.entries(PRICING.googleflow)) {
-      expect(entry.source.asOf, model).toBe("2026-07-20");
+      expect(entry.source.asOf, model).toBe(
+        imageModels.has(model) ? "2026-10-17" : "2026-07-20"
+      );
       expect(Date.parse(entry.source.asOf as string), model).toBeGreaterThan(
         Date.parse(PRICING_AS_OF)
       );

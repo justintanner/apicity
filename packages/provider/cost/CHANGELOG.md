@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Google Flow image pricing for the `POST /images` models `nano-banana-2-lite`,
+  `nano-banana-2`, `nano-banana-pro` and the deprecated aliases `nano-banana`
+  and `imagen-4`. Flow includes image generation in every plan, so each image
+  is 0 credits on both the `pro` and `ultra` tiers and `computeEstimate`
+  returns `usd: 0` with no warning, where it used to warn that the model was
+  not in the pricing table. `count` (1-4) defaults to 4 images.
+  `MODEL_SLUGS.googleflow` and `MODEL_DISPLAY.googleflow` add the five ids,
+  named for the model each one runs: `nano-banana-2` and its `nano-banana`
+  alias run Nano Banana 2.1 (`nb21`), and `imagen-4` runs Nano Banana 2 Lite
+  (`nb2l`) (ac-j3d6ki.5).
 - KIE HappyHorse 1.1 bundled per-second pricing for text-to-video,
   image-to-video, and reference-to-video modes.
 - `CostHints.durationSeconds`, a pricing-only channel for media requests whose

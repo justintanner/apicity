@@ -4,6 +4,7 @@ import {
   modelDisplay,
   MODEL_SLUGS,
   MODEL_DISPLAY,
+  type SlugModelId,
 } from "../../packages/provider/cost/src/slugs";
 import { PRICING } from "../../packages/provider/cost/src/pricing/index";
 
@@ -526,6 +527,11 @@ describe("googleflow slugs", () => {
     "veo-3.1-lite",
     "veo-3.1-lite-low-priority",
     "omni-flash",
+    "nano-banana-2-lite",
+    "nano-banana-2",
+    "nano-banana-pro",
+    "nano-banana",
+    "imagen-4",
   ] as const;
 
   it("resolves a slug for every registered Google Flow model", () => {
@@ -544,6 +550,28 @@ describe("googleflow slugs", () => {
     expect(modelSlug("googleflow", "omni-flash")).toBe(
       modelSlug("kie", "gemini-omni-video")
     );
+  });
+
+  // Flow's nano-banana-2 runs Nano Banana 2.1, and each deprecated alias
+  // takes the slug and name of the model it runs.
+  it("shares kie's slugs and names for the models each image id runs", () => {
+    const runs: Array<[(typeof models)[number], SlugModelId<"kie">]> = [
+      ["nano-banana-2-lite", "nano-banana-2-lite"],
+      ["nano-banana-2", "nano-banana-2-1"],
+      ["nano-banana-pro", "nano-banana-pro"],
+      ["nano-banana", "nano-banana-2-1"],
+      ["imagen-4", "nano-banana-2-lite"],
+    ];
+    for (const [flowModel, kieModel] of runs) {
+      expect(modelSlug("googleflow", flowModel), flowModel).toBe(
+        modelSlug("kie", kieModel)
+      );
+      expect(modelDisplay("googleflow", flowModel), flowModel).toBe(
+        modelDisplay("kie", kieModel)
+      );
+    }
+    expect(modelSlug("googleflow", "nano-banana-2")).toBe("nb21");
+    expect(modelDisplay("googleflow", "imagen-4")).toBe("Nano Banana 2 Lite");
   });
 
   it("resolves a display name for every registered Google Flow model", () => {

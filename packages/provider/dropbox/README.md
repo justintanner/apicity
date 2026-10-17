@@ -28,7 +28,9 @@ const dropbox = createDropbox({ oauthToken: process.env.DROPBOX_OAUTH_TOKEN! });
 ```
 
 If `oauthToken` is omitted, the provider reads `DROPBOX_OAUTH_TOKEN` at request time.
-Tokens are only sent in the `Authorization: Bearer ...` header.
+The access token is only sent in the `Authorization: Bearer ...` header.
+
+`oauth2.token` exchanges an authorization code (with an optional PKCE `code_verifier`) or a refresh token for an access token. It requires the `clientId` option, adds `clientSecret` when set, and posts the grant as a form body to `oauthBaseURL` (default `https://api.dropboxapi.com`).
 
 ## API Reference
 

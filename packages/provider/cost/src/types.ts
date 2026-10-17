@@ -65,12 +65,36 @@ export interface CostHints {
   // URLs and carry no duration in the request, and happyhorse/video-edit,
   // whose required source `video_url` is billed beside the output and
   // defaults to the declared `durationSeconds` when this field is absent.
+  // The fal Seedance 2.0 US, 2.5 and 2.5 US reference-to-video entries read
+  // it as the summed length of their `video_urls` clips, billed at the
+  // output size, and fail closed below 4 s. For fal
+  // `bytedance/seedance-2.5/draft/complete`, whose request carries no media,
+  // a valid value means the draft had video inputs, and prices the
+  // completion with them.
   // Ignored when the payload has no video input; a zero, negative, non-finite
   // or non-numeric value counts as absent, and a reference-video request with
   // no valid value fails closed with a warning that names this field.
   // Cost-only, like the rest of CostHints: never merged into payload, never
   // canonicalHash'd, never signed.
   inputDurationSeconds?: number;
+  // The fixed aspect ratio of a fal Seedance 2.5 draft, for
+  // `bytedance/seedance-2.5/draft/complete`. A completed draft keeps the
+  // draft's duration (`durationSeconds`), aspect ratio and inputs, and its
+  // request carries only the `draft_id`, so the output size is not in the
+  // request. "auto" or any value outside the six fixed ratios counts as
+  // absent, and the estimate fails closed with a warning that names this
+  // field. The (string & {}) member keeps autocomplete for the known ratios
+  // while still accepting a runtime-sourced value. Cost-only, like the rest
+  // of CostHints: never merged into payload, never canonicalHash'd, never
+  // signed.
+  aspectRatio?:
+    | "21:9"
+    | "16:9"
+    | "4:3"
+    | "1:1"
+    | "3:4"
+    | "9:16"
+    | (string & {});
   // Google Flow plan tier that sets the googleflow credit->USD basis. Omitted
   // => "pro" (the safe over-estimate default, byte-for-byte the pre-selector
   // output); "ultra" prices on the Google AI Ultra 20x basis. The (string & {})

@@ -131,14 +131,32 @@ describe("Bytedance Seedance 2.5 draft completion", () => {
 describe("Bytedance Seedance 2.5 draft completion pricing", () => {
   // No success is recorded: the cheapest one (4 s at 1080p, about $4.66 by
   // the card) is above the $2.00 ceiling and needs a paid draft generation.
-  // The output length comes from the draft, which no request field fixes.
-  it("stays dynamically priced because the draft sets the length", () => {
-    expect(FAL_DYNAMIC_PRICING_ENDPOINTS as readonly string[]).toContain(
+  // A completion is always 1080p and keeps the draft's duration and aspect
+  // ratio, which arrive as costHints (ac-j3d6ki.3): 1920 x 1080 x 121 / 1024
+  // tokens for a 5 s 16:9 draft, at the card's $0.0234.
+  it("prices the completion from the draft's hinted duration and aspect", () => {
+    expect(FAL_DYNAMIC_PRICING_ENDPOINTS as readonly string[]).not.toContain(
       endpoint
     );
-    expect(pricing[endpoint]).toBeUndefined();
-    expect(Object.keys(MODEL_SLUGS.fal)).not.toContain(endpoint);
-    expect(Object.keys(MODEL_DISPLAY.fal)).not.toContain(endpoint);
-    expect(computeEstimate({ provider: "fal", endpoint, payload }).usd).toBe(0);
+    expect(pricing[endpoint]).toBeDefined();
+    expect((MODEL_SLUGS.fal as Record<string, string>)[endpoint]).toBe("sd2p5");
+    expect((MODEL_DISPLAY.fal as Record<string, string>)[endpoint]).toBe(
+      "Seedance 2.5"
+    );
+    const result = computeEstimate({
+      provider: "fal",
+      endpoint,
+      payload,
+      costHints: { durationSeconds: 5, aspectRatio: "16:9" },
+    });
+    expect(result.usd).toBeCloseTo(5.733585, 10);
+    expect(result.breakdown.units).toBeCloseTo(245025, 6);
+    expect(result.warnings).toEqual([]);
+  });
+
+  it("fails closed without the draft's hints", () => {
+    const result = computeEstimate({ provider: "fal", endpoint, payload });
+    expect(result.usd).toBe(0);
+    expect(result.warnings[0]).toContain("costHints.aspectRatio");
   });
 });

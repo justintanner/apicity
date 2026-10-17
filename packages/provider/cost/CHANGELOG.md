@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `CostHints.aspectRatio`, an optional cost-only hint carrying a fal
+  Seedance 2.5 draft's fixed aspect ratio (`"21:9"`, `"16:9"`, `"4:3"`,
+  `"1:1"`, `"3:4"` or `"9:16"`) for `bytedance/seedance-2.5/draft/complete`,
+  whose request carries only the `draft_id`. `"auto"` or any other value
+  counts as absent (ac-j3d6ki.3).
 - Google Flow image pricing for the `POST /images` models `nano-banana-2-lite`,
   `nano-banana-2`, `nano-banana-pro` and the deprecated aliases `nano-banana`
   and `imagen-4`. Flow includes image generation in every plan, so each image
@@ -29,6 +34,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- fal Seedance 2.0, 2.0 Fast and 2.5 are priced locally again for requests
+  that fix their output: `bytedance/seedance-2.0/{text,image}-to-video`,
+  `bytedance/seedance-2.0/fast/{text,image}-to-video`,
+  `bytedance/seedance-2.0/us/{text,image,reference}-to-video`,
+  `bytedance/seedance-2.5/{text,reference}-to-video`,
+  `bytedance/seedance-2.5/us/{text,reference}-to-video` and
+  `bytedance/seedance-2.5/draft/complete`. Each bills tokens of the delivered
+  video, `width x height x frames / 1024` at its card's rate per 1000
+  tokens. Width and height are ByteDance's published output size for the
+  resolution and aspect ratio, and frames are `24 x duration + 1`. That
+  formula reproduces every recorded bill (38.8, 46.32 and, on 2.0 US
+  reference-to-video, which divides by 1000, 47.43168 units). A request
+  needs an explicit resolution (default `720p`), a fixed `aspect_ratio` and
+  a digit duration, or `costHints.durationSeconds` for duration `"auto"`.
+  Reference clips need `costHints.inputDurationSeconds` (at least 4 s), and
+  a completed draft needs `durationSeconds` and `aspectRatio`. Every other
+  request fails closed with a warning naming the cause. The twelve ids
+  return to `PRICING.fal`, `MODEL_SLUGS.fal` (`sd2`, `sd2f`, `sd2p5`, as on
+  kie) and `MODEL_DISPLAY.fal`. `isFalDynamicPricingEndpoint` is now false
+  for them, so `resolveFalDynamicEstimate` prices them locally without
+  calling fal. This supersedes, for these twelve, the 0.15.0 change below
+  that priced the family dynamically. Four ids stay dynamic:
+  `bytedance/seedance-2.0/reference-to-video` and
+  `bytedance/seedance-2.0/fast/reference-to-video`, which have no recording
+  (and the 2.0 US twin divides by 1000 where its card says 1024), and
+  `bytedance/seedance-2.5/image-to-video` and
+  `bytedance/seedance-2.5/us/image-to-video`, whose output follows the input
+  image's aspect (ac-j3d6ki.3).
 - **Breaking:** fal Seedance 2.0, 2.0 Fast and 2.5
   (`bytedance/seedance-2.0/{text,image,reference}-to-video`,
   `bytedance/seedance-2.0/fast/{text,image,reference}-to-video` and

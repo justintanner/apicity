@@ -11,6 +11,7 @@ import {
   MODEL_DISPLAY,
   MODEL_SLUGS,
 } from "../../packages/provider/cost/src/slugs";
+import type { CostHints } from "../../packages/provider/cost/src/types";
 
 function jsonResponse(body: unknown): Response {
   return new Response(JSON.stringify(body), {
@@ -429,58 +430,446 @@ describe("fal video pricing estimates", () => {
     ).toBeCloseTo(0.8, 10);
   });
 
-  it("prices Seedance 2.0, 2.0 Fast and 2.5 dynamically (ac-jhck87)", () => {
-    // fal bills these in 1000-token units of the OUTPUT file. Every committed
-    // 480p, 1:1, "4" s recording returned 97 frames and divides by 1024:
-    // 640x640x97 billed 38.8 units (2.0, 2.0 Fast and 2.5 text-to-video; 2.0
-    // and 2.0 Fast image-to-video), where the retired 16:9 per-second table
-    // put 38.88. 2.5 image-to-video followed the input image to 648x630x97
-    // and billed 38.671, and 2.5 reference-to-video with a 96-frame, 4 s clip
-    // billed 46.32 = 0.6 x (38,800 output + 38,400 input) tokens, where the
-    // table put 23.328. No 2.0 or 2.0 Fast reference-to-video is recorded.
-    const recorded = {
-      prompt: "p",
-      resolution: "480p",
-      duration: "4",
-      aspect_ratio: "1:1",
-      generate_audio: false,
-    };
-    const payloads: Record<string, Record<string, unknown>> = {
-      "image-to-video": { ...recorded, image_url: "u" },
-      "reference-to-video": {
-        ...recorded,
-        image_urls: ["u"],
-        video_urls: ["u"],
-      },
-      "text-to-video": recorded,
-    };
-    const dynamic: readonly string[] = FAL_DYNAMIC_PRICING_ENDPOINTS;
-    for (const endpoint of [
-      "bytedance/seedance-2.0/fast/image-to-video",
-      "bytedance/seedance-2.0/fast/reference-to-video",
-      "bytedance/seedance-2.0/fast/text-to-video",
-      "bytedance/seedance-2.0/image-to-video",
-      "bytedance/seedance-2.0/reference-to-video",
+  // Seedance 2.0, 2.0 Fast and 2.5 bill tokens of the delivered video:
+  // ByteDance's published width x height for the resolution and aspect
+  // ratio, times 24 x duration + 1 frames, / 1024. Reference clips add their
+  // own frames at the output size, x 0.6. Twelve ids price locally; four stay
+  // dynamic (planning ac-0ay3v4 for ac-j3d6ki.3). Every expected number is a
+  // literal worked from that formula, never through the code under test.
+  const seedanceRecorded = {
+    prompt: "p",
+    resolution: "480p",
+    duration: "4",
+    aspect_ratio: "1:1",
+    generate_audio: false,
+  };
+  const seedanceReference = {
+    ...seedanceRecorded,
+    image_urls: ["u"],
+    video_urls: ["u"],
+  };
+  const seedance = (
+    endpoint: string,
+    payload: Record<string, unknown>,
+    costHints?: CostHints
+  ) =>
+    computeEstimate({
+      provider: "fal",
+      endpoint,
+      payload,
+      ...(costHints ? { costHints } : {}),
+    });
+
+  it("reproduces every recorded Seedance bill (ac-j3d6ki.3)", () => {
+    // Each recorded call was 480p, 1:1, "4" s, audio off: 640x640 at 97
+    // frames. Reference-to-video sent a 4.000 s, 96-frame clip.
+    const cases: Array<
+      [string, Record<string, unknown>, number, number, number]
+    > = [
+      // endpoint, payload, tokens, USD per token, USD
+      ["bytedance/seedance-2.0/text-to-video", {}, 38800, 0.000014, 0.5432],
+      [
+        "bytedance/seedance-2.0/image-to-video",
+        { image_url: "u" },
+        38800,
+        0.000014,
+        0.5432,
+      ],
+      [
+        "bytedance/seedance-2.0/fast/text-to-video",
+        {},
+        38800,
+        0.0000112,
+        0.43456,
+      ],
+      [
+        "bytedance/seedance-2.0/fast/image-to-video",
+        { image_url: "u" },
+        38800,
+        0.0000112,
+        0.43456,
+      ],
+      [
+        "bytedance/seedance-2.0/us/text-to-video",
+        {},
+        38800,
+        0.0000168,
+        0.65184,
+      ],
+      [
+        "bytedance/seedance-2.0/us/image-to-video",
+        { image_url: "u" },
+        38800,
+        0.0000168,
+        0.65184,
+      ],
+      ["bytedance/seedance-2.5/text-to-video", {}, 38800, 0.0000214, 0.83032],
+      [
+        "bytedance/seedance-2.5/us/text-to-video",
+        {},
+        38800,
+        0.00002568,
+        0.996384,
+      ],
+    ];
+    for (const [endpoint, extra, tokens, perUnitUsd, usd] of cases) {
+      const result = seedance(endpoint, { ...seedanceRecorded, ...extra });
+      expect(result.usd, endpoint).toBeCloseTo(usd, 10);
+      expect(result.warnings, endpoint).toEqual([]);
+      expect(result.breakdown.unit, endpoint).toBe("tokens");
+      expect(result.breakdown.units, endpoint).toBeCloseTo(tokens, 6);
+      expect(result.breakdown.perUnitUsd, endpoint).toBeCloseTo(perUnitUsd, 15);
+    }
+
+    // 47.43168 units: 0.6 x 640 x 640 x (96 + 97) / 1000. 2.0 US is the one
+    // reference endpoint measured dividing by 1000.
+    const usReference = seedance(
+      "bytedance/seedance-2.0/us/reference-to-video",
+      seedanceReference,
+      { inputDurationSeconds: 4 }
+    );
+    expect(usReference.usd).toBeCloseTo(0.796852224, 10);
+    expect(usReference.breakdown.units).toBeCloseTo(47431.68, 6);
+    expect(usReference.warnings).toEqual([]);
+
+    // 46.32 units: 0.6 x 640 x 640 x (96 + 97) / 1024.
+    for (const [endpoint, usd] of [
+      ["bytedance/seedance-2.5/reference-to-video", 0.991248],
+      ["bytedance/seedance-2.5/us/reference-to-video", 1.1894976],
+    ] as const) {
+      const result = seedance(endpoint, seedanceReference, {
+        inputDurationSeconds: 4,
+      });
+      expect(result.usd, endpoint).toBeCloseTo(usd, 10);
+      expect(result.breakdown.units, endpoint).toBeCloseTo(46320, 6);
+      expect(result.warnings, endpoint).toEqual([]);
+    }
+  });
+
+  it("prices other Seedance sizes and lengths from the same formula", () => {
+    const at = (
+      endpoint: string,
+      resolution: string,
+      aspect_ratio: string,
+      duration: string
+    ) =>
+      seedance(endpoint, {
+        ...seedanceRecorded,
+        resolution,
+        aspect_ratio,
+        duration,
+      });
+    const cases: Array<[string, string, string, string, number]> = [
+      // 1280 x 720 x 121 / 1024 = 108,900 tokens at $0.014.
+      ["bytedance/seedance-2.0/text-to-video", "720p", "16:9", "5", 1.5246],
+      // 1920 x 1080 x 121 / 1024 = 245,025 tokens at $0.014.
+      ["bytedance/seedance-2.0/text-to-video", "1080p", "16:9", "5", 3.43035],
+      // 3840 x 2160 x 121 / 1024 = 980,100 tokens at $0.008.
+      ["bytedance/seedance-2.0/text-to-video", "4k", "16:9", "5", 7.8408],
+      // 720 x 1280 x 121 / 1024 = 108,900 tokens at $0.0112.
+      [
+        "bytedance/seedance-2.0/fast/text-to-video",
+        "720p",
+        "9:16",
+        "5",
+        1.21968,
+      ],
+      // 864 x 496 x 361 / 1024 = 151,078.5 tokens at $0.0112.
+      [
+        "bytedance/seedance-2.0/fast/text-to-video",
+        "480p",
+        "16:9",
+        "15",
+        1.6920792,
+      ],
+      // 2.5's own 480p 16:9 cell, 854 x 480: 48,437.8125 tokens at $0.0214.
+      [
+        "bytedance/seedance-2.5/text-to-video",
+        "480p",
+        "16:9",
+        "5",
+        1.0365691875,
+      ],
+      // 245,025 tokens at 2.5's 1080p $0.0234.
+      ["bytedance/seedance-2.5/text-to-video", "1080p", "16:9", "5", 5.733585],
+      // 1112 x 834 x 721 / 1024 = 652,989.421875 tokens at $0.0214.
+      [
+        "bytedance/seedance-2.5/text-to-video",
+        "720p",
+        "4:3",
+        "30",
+        13.973973628125,
+      ],
+      // 2206 x 946 x 97 / 1024 = 197,682.58984375 tokens at $0.02808.
+      [
+        "bytedance/seedance-2.5/us/text-to-video",
+        "1080p",
+        "21:9",
+        "4",
+        5.5509271228125,
+      ],
+    ];
+    for (const [endpoint, resolution, aspect, duration, usd] of cases) {
+      const result = at(endpoint, resolution, aspect, duration);
+      const label = `${endpoint} ${resolution} ${aspect} ${duration}`;
+      expect(result.usd, label).toBeCloseTo(usd, 10);
+      expect(result.warnings, label).toEqual([]);
+    }
+
+    // An omitted resolution is the documented default, 720p.
+    expect(
+      seedance("bytedance/seedance-2.0/text-to-video", {
+        prompt: "p",
+        duration: "5",
+        aspect_ratio: "16:9",
+        generate_audio: false,
+      }).usd
+    ).toBeCloseTo(1.5246, 10);
+
+    // duration "auto" prices through costHints.durationSeconds.
+    const auto = seedance(
       "bytedance/seedance-2.0/text-to-video",
-      "bytedance/seedance-2.5/image-to-video",
-      "bytedance/seedance-2.5/reference-to-video",
-      "bytedance/seedance-2.5/text-to-video",
+      {
+        ...seedanceRecorded,
+        resolution: "720p",
+        aspect_ratio: "16:9",
+        duration: "auto",
+      },
+      { durationSeconds: 5 }
+    );
+    expect(auto.usd).toBeCloseTo(1.5246, 10);
+    expect(auto.warnings).toEqual([]);
+
+    // A 2.5 draft renders at 480p whatever resolution says.
+    const draft = seedance("bytedance/seedance-2.5/text-to-video", {
+      ...seedanceRecorded,
+      resolution: "1080p",
+      draft: true,
+      aspect_ratio: "16:9",
+      duration: "5",
+    });
+    expect(draft.usd).toBeCloseTo(1.0365691875, 10);
+    expect(draft.warnings).toEqual([]);
+
+    // An images-only reference bills the output alone, without the 0.6.
+    const imagesOnly = seedance("bytedance/seedance-2.5/reference-to-video", {
+      ...seedanceRecorded,
+      image_urls: ["u"],
+    });
+    expect(imagesOnly.usd).toBeCloseTo(0.83032, 10);
+    expect(imagesOnly.warnings).toEqual([]);
+
+    // Audio, bitrate, codec and an end frame never change the price.
+    const base = seedance("bytedance/seedance-2.0/image-to-video", {
+      ...seedanceRecorded,
+      image_url: "u",
+    }).usd;
+    for (const extra of [
+      { generate_audio: true },
+      { generate_audio: undefined },
+      { bitrate_mode: "high" },
+      { bitrate_mode: "standard" },
+      { codec: "H265" },
+      { end_image_url: "u" },
     ]) {
-      const operation = endpoint.slice(endpoint.lastIndexOf("/") + 1);
+      expect(
+        seedance("bytedance/seedance-2.0/image-to-video", {
+          ...seedanceRecorded,
+          image_url: "u",
+          ...extra,
+        }).usd,
+        JSON.stringify(extra)
+      ).toBe(base);
+    }
+  });
+
+  it("prices a completed Seedance 2.5 draft from its hints", () => {
+    const endpoint = "bytedance/seedance-2.5/draft/complete";
+    // 1920 x 1080 x 121 / 1024 = 245,025 tokens at $0.0234.
+    const plain = seedance(
+      endpoint,
+      { draft_id: "d" },
+      { durationSeconds: 5, aspectRatio: "16:9" }
+    );
+    expect(plain.usd).toBeCloseTo(5.733585, 10);
+    expect(plain.warnings).toEqual([]);
+    // A draft with a 4 s video input: 0.6 x 1920 x 1080 x (96 + 121) / 1024
+    // = 263,655 tokens.
+    const withVideo = seedance(
+      endpoint,
+      { draft_id: "d" },
+      { durationSeconds: 5, aspectRatio: "16:9", inputDurationSeconds: 4 }
+    );
+    expect(withVideo.usd).toBeCloseTo(6.169527, 10);
+    expect(withVideo.warnings).toEqual([]);
+  });
+
+  it("fails closed when a Seedance request does not fix the output", () => {
+    const failsWith = (
+      label: string,
+      result: ReturnType<typeof computeEstimate>,
+      ...fragments: string[]
+    ) => {
+      expect(result.usd, label).toBe(0);
+      expect(result.warnings, label).toHaveLength(1);
+      for (const fragment of fragments) {
+        expect(result.warnings[0], label).toContain(fragment);
+      }
+    };
+    const t2v = "bytedance/seedance-2.0/text-to-video";
+
+    failsWith(
+      "aspect auto",
+      seedance(t2v, { ...seedanceRecorded, aspect_ratio: "auto" }),
+      'aspect_ratio "auto"'
+    );
+    failsWith(
+      "aspect omitted",
+      seedance(t2v, {
+        prompt: "p",
+        resolution: "480p",
+        duration: "4",
+        generate_audio: false,
+      }),
+      'aspect_ratio "auto"'
+    );
+    failsWith(
+      "duration auto, no hint",
+      seedance(t2v, { ...seedanceRecorded, duration: "auto" }),
+      'duration "auto"',
+      "costHints.durationSeconds"
+    );
+    failsWith(
+      "duration auto, fractional hint",
+      seedance(
+        t2v,
+        { ...seedanceRecorded, duration: "auto" },
+        { durationSeconds: 4.5 }
+      ),
+      "costHints.durationSeconds"
+    );
+    failsWith(
+      "reference clip, no hint",
+      seedance("bytedance/seedance-2.5/reference-to-video", seedanceReference),
+      "costHints.inputDurationSeconds"
+    );
+    failsWith(
+      "reference clip under 4 s",
+      seedance("bytedance/seedance-2.5/reference-to-video", seedanceReference, {
+        inputDurationSeconds: 3,
+      }),
+      "costHints.inputDurationSeconds",
+      "under 4 s"
+    );
+    for (const task of ["editing", "extension"]) {
+      failsWith(
+        `task ${task}`,
+        seedance(
+          "bytedance/seedance-2.5/reference-to-video",
+          { ...seedanceReference, task },
+          { inputDurationSeconds: 4 }
+        ),
+        `task '${task}'`
+      );
+    }
+    for (const resolution of ["1080p", "4k"]) {
+      failsWith(
+        `2.0 US ${resolution}`,
+        seedance("bytedance/seedance-2.0/us/text-to-video", {
+          ...seedanceRecorded,
+          resolution,
+        }),
+        `resolution '${resolution}' has no published rate`
+      );
+    }
+    failsWith(
+      "2.0 US reference without video",
+      seedance("bytedance/seedance-2.0/us/reference-to-video", {
+        ...seedanceRecorded,
+        image_urls: ["u"],
+      }),
+      "only a request with video_urls"
+    );
+    failsWith(
+      "draft completion, no aspect",
+      seedance(
+        "bytedance/seedance-2.5/draft/complete",
+        { draft_id: "d" },
+        { durationSeconds: 5 }
+      ),
+      "costHints.aspectRatio"
+    );
+    failsWith(
+      "draft completion, auto aspect",
+      seedance(
+        "bytedance/seedance-2.5/draft/complete",
+        { draft_id: "d" },
+        { durationSeconds: 5, aspectRatio: "auto" }
+      ),
+      "costHints.aspectRatio"
+    );
+    failsWith(
+      "draft completion, no duration",
+      seedance(
+        "bytedance/seedance-2.5/draft/complete",
+        { draft_id: "d" },
+        { aspectRatio: "16:9" }
+      ),
+      "costHints.durationSeconds"
+    );
+  });
+
+  it("keeps four Seedance ids dynamic and slugs the twelve priced ones", () => {
+    const dynamic: readonly string[] = FAL_DYNAMIC_PRICING_ENDPOINTS;
+    const slugs = MODEL_SLUGS.fal as Record<string, string>;
+    const names = MODEL_DISPLAY.fal as Record<string, string>;
+    // No 2.0 or 2.0 Fast reference call is recorded, and the 2.0 US one
+    // divides by 1000; 2.5 image-to-video follows the input image's aspect.
+    for (const endpoint of [
+      "bytedance/seedance-2.0/fast/reference-to-video",
+      "bytedance/seedance-2.0/reference-to-video",
+      "bytedance/seedance-2.5/image-to-video",
+      "bytedance/seedance-2.5/us/image-to-video",
+    ]) {
       expect(dynamic, endpoint).toContain(endpoint);
       expect(falPricing[endpoint], endpoint).toBeUndefined();
-      expect(
-        (MODEL_SLUGS.fal as Record<string, string>)[endpoint],
-        endpoint
-      ).toBeUndefined();
-      expect(
-        (MODEL_DISPLAY.fal as Record<string, string>)[endpoint],
-        endpoint
-      ).toBeUndefined();
-      const result = est(endpoint, payloads[operation]);
+      expect(slugs[endpoint], endpoint).toBeUndefined();
+      expect(names[endpoint], endpoint).toBeUndefined();
+      const result = seedance(endpoint, seedanceReference, {
+        inputDurationSeconds: 4,
+      });
       expect(result.usd, endpoint).toBe(0);
       expect(result.warnings[0], endpoint).toContain("models/pricing/estimate");
     }
+    const priced: Array<[string, string, string]> = [
+      ["bytedance/seedance-2.0/text-to-video", "sd2", "Seedance 2"],
+      ["bytedance/seedance-2.0/image-to-video", "sd2", "Seedance 2"],
+      ["bytedance/seedance-2.0/fast/text-to-video", "sd2f", "Seedance 2 Fast"],
+      ["bytedance/seedance-2.0/fast/image-to-video", "sd2f", "Seedance 2 Fast"],
+      ["bytedance/seedance-2.0/us/text-to-video", "sd2", "Seedance 2 US"],
+      ["bytedance/seedance-2.0/us/image-to-video", "sd2", "Seedance 2 US"],
+      ["bytedance/seedance-2.0/us/reference-to-video", "sd2", "Seedance 2 US"],
+      ["bytedance/seedance-2.5/text-to-video", "sd2p5", "Seedance 2.5"],
+      ["bytedance/seedance-2.5/reference-to-video", "sd2p5", "Seedance 2.5"],
+      ["bytedance/seedance-2.5/us/text-to-video", "sd2p5", "Seedance 2.5 US"],
+      [
+        "bytedance/seedance-2.5/us/reference-to-video",
+        "sd2p5",
+        "Seedance 2.5 US",
+      ],
+      ["bytedance/seedance-2.5/draft/complete", "sd2p5", "Seedance 2.5"],
+    ];
+    for (const [endpoint, slug, name] of priced) {
+      expect(dynamic, endpoint).not.toContain(endpoint);
+      expect(falPricing[endpoint], endpoint).toBeDefined();
+      expect(falPricing[endpoint].source.asOf, endpoint).toBe("2026-10-17");
+      expect(slugs[endpoint], endpoint).toBe(slug);
+      expect(names[endpoint], endpoint).toBe(name);
+    }
+    // The same models kie resells keep the same slugs.
+    expect(MODEL_SLUGS.kie["bytedance/seedance-2"]).toBe("sd2");
+    expect(MODEL_SLUGS.kie["bytedance/seedance-2-fast"]).toBe("sd2f");
+    expect(MODEL_SLUGS.kie["bytedance/seedance-2-5"]).toBe("sd2p5");
   });
 
   it("prices Wan 3.0 Prime per output second", () => {
@@ -1063,13 +1452,11 @@ describe("fal edit/image pricing estimates", () => {
     // rounds up to one megapixel ($0.05). FLUX 3 Action SO-101 bills compute
     // seconds that no request field fixes. Grok Voice bills seconds whose
     // meaning is unpublished and which differ from input/reply duration.
-    // Seedance 2.0, 2.0 Fast and 2.5, US twins included, bill tokens of the
-    // output file: 38.8 units for a four-second 640x640 clip of 97 frames,
-    // where a 16:9 per-second table predicts 38.88. 2.5 image-to-video
-    // follows the input image's aspect, and reference-to-video also bills its
-    // input clips. 2.0 US reference-to-video divides by 1000; every other
-    // measured id divides by 1024 (ac-jhck87). All seventy-nine use fal's
-    // pricing-estimate API.
+    // Four Seedance ids stay. 2.0 and 2.0 Fast reference-to-video are
+    // unrecorded, and the one 2.0-series reference recording (2.0 US)
+    // divides by 1000 where the card says 1024. 2.5 and 2.5 US
+    // image-to-video follow the input image's aspect, which no request field
+    // sizes (ac-j3d6ki.3). All sixty-seven use fal's pricing-estimate API.
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toEqual([
       "alibaba/qwen-image-3/edit",
       "alibaba/qwen-image-3/text-to-image",
@@ -1079,22 +1466,10 @@ describe("fal edit/image pricing estimates", () => {
       "blackforestlabs/flux-3/edit-image",
       "blackforestlabs/flux-3/text-to-image",
       "blackforestlabs/flux-video-upscale",
-      "bytedance/seedance-2.0/fast/image-to-video",
       "bytedance/seedance-2.0/fast/reference-to-video",
-      "bytedance/seedance-2.0/fast/text-to-video",
-      "bytedance/seedance-2.0/image-to-video",
       "bytedance/seedance-2.0/reference-to-video",
-      "bytedance/seedance-2.0/text-to-video",
-      "bytedance/seedance-2.0/us/image-to-video",
-      "bytedance/seedance-2.0/us/reference-to-video",
-      "bytedance/seedance-2.0/us/text-to-video",
-      "bytedance/seedance-2.5/draft/complete",
       "bytedance/seedance-2.5/image-to-video",
-      "bytedance/seedance-2.5/reference-to-video",
-      "bytedance/seedance-2.5/text-to-video",
       "bytedance/seedance-2.5/us/image-to-video",
-      "bytedance/seedance-2.5/us/reference-to-video",
-      "bytedance/seedance-2.5/us/text-to-video",
       "bytedance/seedream/v5/pro/edit",
       "bytedance/seedream/v5/pro/layerize",
       "bytedance/seedream/v5/pro/text-to-image",

@@ -218,17 +218,33 @@ describe("Bytedance Seedance 2.5 US reference-to-video", () => {
 });
 
 describe("Bytedance Seedance 2.5 US reference-to-video pricing", () => {
-  // The recorded 480p, 1:1, 4 s call with one 4 s reference video billed
-  // 46.32 units ($1.1894976) for a 640x640 clip of 97 frames. An output-only
-  // 16:9 per-second table predicts 23.328, and the reference video's length
-  // is not a request field, so it stays dynamic (P-7 rules 1, 4).
-  it("stays dynamically priced because the reference video's length bills", () => {
-    expect(FAL_DYNAMIC_PRICING_ENDPOINTS as readonly string[]).toContain(
+  // The recorded 480p, 1:1, 4 s call with one 4.000 s, 96-frame reference
+  // video billed 46.32 units ($1.1894976) for a 640x640 clip of 97 frames:
+  // 0.6 x 640 x 640 x (96 + 97) / 1024 tokens. The clip's length is
+  // declared through costHints.inputDurationSeconds (ac-j3d6ki.3).
+  it("prices the recorded call from its output and clip tokens", () => {
+    expect(FAL_DYNAMIC_PRICING_ENDPOINTS as readonly string[]).not.toContain(
       endpoint
     );
-    expect(pricing[endpoint]).toBeUndefined();
-    expect(Object.keys(MODEL_SLUGS.fal)).not.toContain(endpoint);
-    expect(Object.keys(MODEL_DISPLAY.fal)).not.toContain(endpoint);
-    expect(computeEstimate({ provider: "fal", endpoint, payload }).usd).toBe(0);
+    expect(pricing[endpoint]).toBeDefined();
+    expect((MODEL_SLUGS.fal as Record<string, string>)[endpoint]).toBe("sd2p5");
+    expect((MODEL_DISPLAY.fal as Record<string, string>)[endpoint]).toBe(
+      "Seedance 2.5 US"
+    );
+    const result = computeEstimate({
+      provider: "fal",
+      endpoint,
+      payload,
+      costHints: { inputDurationSeconds: 4 },
+    });
+    expect(result.usd).toBeCloseTo(1.1894976, 10);
+    expect(result.breakdown.units).toBeCloseTo(46320, 6);
+    expect(result.warnings).toEqual([]);
+  });
+
+  it("fails closed without the reference clip's length", () => {
+    const result = computeEstimate({ provider: "fal", endpoint, payload });
+    expect(result.usd).toBe(0);
+    expect(result.warnings[0]).toContain("costHints.inputDurationSeconds");
   });
 });

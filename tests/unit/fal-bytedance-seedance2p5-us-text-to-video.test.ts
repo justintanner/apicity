@@ -190,7 +190,7 @@ describe("Bytedance Seedance 2.5 US text-to-video", () => {
 
 describe("Bytedance Seedance 2.5 US text-to-video pricing", () => {
   // The recorded 480p, 1:1, 4 s call billed 38.8 units ($0.996384): 640x640
-  // with 97 frames. The seedance 2.5 table predicts 38.88; output dimensions
+  // with 97 frames. A 16:9 per-second table predicts 38.88; output dimensions
   // and frame count keep this dynamic (P-7 rules 1, 4).
   it("stays dynamically priced because output frames set the charge", () => {
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS as readonly string[]).toContain(

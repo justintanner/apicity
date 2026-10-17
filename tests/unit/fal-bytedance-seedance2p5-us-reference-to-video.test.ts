@@ -219,9 +219,9 @@ describe("Bytedance Seedance 2.5 US reference-to-video", () => {
 
 describe("Bytedance Seedance 2.5 US reference-to-video pricing", () => {
   // The recorded 480p, 1:1, 4 s call with one 4 s reference video billed
-  // 46.32 units ($1.1894976) for a 640x640 clip of 97 frames. The output-only
-  // seedance 2.5 reference table predicts 23.328, and the reference video's
-  // length is not a request field, so it stays dynamic (P-7 rules 1, 4).
+  // 46.32 units ($1.1894976) for a 640x640 clip of 97 frames. An output-only
+  // 16:9 per-second table predicts 23.328, and the reference video's length
+  // is not a request field, so it stays dynamic (P-7 rules 1, 4).
   it("stays dynamically priced because the reference video's length bills", () => {
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS as readonly string[]).toContain(
       endpoint

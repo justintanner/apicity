@@ -198,7 +198,7 @@ describe("Bytedance Seedance 2.0 US image-to-video", () => {
 
 describe("Bytedance Seedance 2.0 US image-to-video pricing", () => {
   // The recorded 480p, 1:1, 4 s call billed 38.8 units ($0.65184):
-  // 640x640 with 97 frames. The existing seedance table predicts 38.88;
+  // 640x640 with 97 frames. A 16:9 per-second table predicts 38.88;
   // output dimensions and frame count keep this dynamic (P-7 rules 1, 4).
   it("stays dynamically priced because output frames set the charge", () => {
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS as readonly string[]).toContain(

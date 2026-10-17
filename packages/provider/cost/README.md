@@ -365,10 +365,15 @@ the input image's aspect.
 `credits x the plan's credit value`. Two Google AI plan tiers set that value,
 and — where upstream documents it — the per-generation credit cost:
 
-| Tier            | Credit value    | Notes                                                                     |
-| --------------- | --------------- | ------------------------------------------------------------------------- |
-| `pro` (default) | `$0.02`/credit  | Google AI Pro; the non-Ultra credit costs.                                |
-| `ultra`         | `$0.008`/credit | Google AI Ultra 20x; Veo Lite/Fast credit costs are halved (10→5, 20→10). |
+| Tier            | Credit value    | Notes                                                                      |
+| --------------- | --------------- | -------------------------------------------------------------------------- |
+| `pro` (default) | `$0.02`/credit  | Google AI Pro; the non-Ultra credit costs.                                 |
+| `ultra`         | `$0.008`/credit | Google AI Ultra $199; Veo Lite/Fast credit costs are halved (10→5, 20→10). |
+
+useapi.net also lists Plus (about `$0.04`/credit) and Ultra $99 (about
+`$0.01`/credit). Neither is modelled, so a value naming them falls back to the
+Pro basis with a warning, and for a Plus account that is about half the real
+cost.
 
 `costHints.googleFlowPlan` selects the tier. It **defaults to `pro`** when
 omitted, so existing callers get byte-for-byte the same estimate as before this
@@ -382,7 +387,7 @@ c.estimate({
   payload: { model: "veo-3.1-fast", prompt: "a cat" },
 }).usd; // → 0.40  (20 credits × $0.02)
 
-// Ultra 20x account
+// Ultra $199 account
 c.estimate({
   provider: "googleflow",
   payload: { model: "veo-3.1-fast", prompt: "a cat" },
@@ -390,18 +395,26 @@ c.estimate({
 }).usd; // → 0.08  (10 credits × $0.008)
 ```
 
-Per-model USD by tier (video `source.asOf: "2026-07-20"`, images
-`source.asOf: "2026-10-17"`):
+Per-model USD by tier (Veo `source.asOf: "2026-07-20"`, `omni-flash` and
+images `source.asOf: "2026-10-17"`):
 
-| Model                        | Pro USD                 | Ultra USD               |
-| ---------------------------- | ----------------------- | ----------------------- |
-| `veo-3.1-quality`            | $2.00                   | $0.80                   |
-| `veo-3.1-fast`               | $0.40                   | $0.08                   |
-| `veo-3.1-lite`               | $0.20                   | $0.04                   |
-| `veo-3.1-lite-low-priority`  | $0.00                   | $0.00                   |
-| `omni-flash` (4/6/8/10s)     | $0.30/$0.40/$0.50/$0.60 | $0.12/$0.16/$0.20/$0.24 |
-| `omni-flash` reference-video | $0.80                   | $0.32                   |
-| image models, per image      | $0.00                   | $0.00                   |
+| Model                             | Pro USD                 | Ultra USD                  |
+| --------------------------------- | ----------------------- | -------------------------- |
+| `veo-3.1-quality`                 | $2.00                   | $0.80                      |
+| `veo-3.1-fast`                    | $0.40                   | $0.08                      |
+| `veo-3.1-lite`                    | $0.20                   | $0.04                      |
+| `veo-3.1-lite-low-priority`       | $0.00                   | $0.00                      |
+| `omni-flash` 720p (4/6/8/10s)     | $0.14/$0.20/$0.24/$0.30 | $0.056/$0.08/$0.096/$0.12  |
+| `omni-flash` 360p (4/6/8/10s)     | $0.08/$0.10/$0.12/$0.14 | $0.032/$0.04/$0.048/$0.056 |
+| `omni-flash` reference-video 720p | $0.40                   | $0.16                      |
+| `omni-flash` reference-video 360p | $0.20                   | $0.08                      |
+| image models, per image           | $0.00                   | $0.00                      |
+
+`omni-flash` reads `resolution` from the payload: `720p` (the default) or
+`360p`, which upstream prices at roughly half the credits. Any other value
+fails the estimate with a "no rate for variant" warning, since upstream
+rejects it. A reference-video (`referenceVideo_1`) edit is a flat price per
+resolution, whatever the duration.
 
 The image models are the `POST /images` ids `nano-banana-2-lite`,
 `nano-banana-2`, `nano-banana-pro`, and the deprecated aliases `nano-banana`
@@ -412,8 +425,8 @@ Ultra is strictly lower than Pro for every priced model **except**
 `veo-3.1-lite-low-priority`, which is `$0` on both tiers (it is an Ultra-only,
 zero-credit generation), and the image models, which are `$0` on both tiers.
 
-An **unrecognized** tier falls back to the Pro basis (never `$0`, never an
-under-charge) and adds a warning naming the value:
+An **unrecognized** tier falls back to the Pro basis (never `$0`, and never an
+under-charge for the two modelled tiers) and adds a warning naming the value:
 
 ```ts
 const est = c.estimate({

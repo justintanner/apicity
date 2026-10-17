@@ -590,8 +590,14 @@ describe("fal video pricing estimates", () => {
         "5",
         1.0365691875,
       ],
-      // 245,025 tokens at 2.5's 1080p $0.0234.
-      ["bytedance/seedance-2.5/text-to-video", "1080p", "16:9", "5", 5.733585],
+      // 245,025 tokens at 2.5's billed 1080p $0.0234116 (0.0214 x 1.094).
+      [
+        "bytedance/seedance-2.5/text-to-video",
+        "1080p",
+        "16:9",
+        "5",
+        5.73642729,
+      ],
       // 1112 x 834 x 721 / 1024 = 652,989.421875 tokens at $0.0214.
       [
         "bytedance/seedance-2.5/text-to-video",
@@ -685,13 +691,14 @@ describe("fal video pricing estimates", () => {
 
   it("prices a completed Seedance 2.5 draft from its hints", () => {
     const endpoint = "bytedance/seedance-2.5/draft/complete";
-    // 1920 x 1080 x 121 / 1024 = 245,025 tokens at $0.0234.
+    // 1920 x 1080 x 121 / 1024 = 245,025 tokens at the billed 1080p
+    // $0.0234116 (0.0214 x 1.094).
     const plain = seedance(
       endpoint,
       { draft_id: "d" },
       { durationSeconds: 5, aspectRatio: "16:9" }
     );
-    expect(plain.usd).toBeCloseTo(5.733585, 10);
+    expect(plain.usd).toBeCloseTo(5.73642729, 10);
     expect(plain.warnings).toEqual([]);
     // A draft with a 4 s video input: 0.6 x 1920 x 1080 x (96 + 121) / 1024
     // = 263,655 tokens.
@@ -700,8 +707,24 @@ describe("fal video pricing estimates", () => {
       { draft_id: "d" },
       { durationSeconds: 5, aspectRatio: "16:9", inputDurationSeconds: 4 }
     );
-    expect(withVideo.usd).toBeCloseTo(6.169527, 10);
+    expect(withVideo.usd).toBeCloseTo(6.172585398, 10);
     expect(withVideo.warnings).toEqual([]);
+  });
+
+  // ac-i5zo6h: the first billed 1080p 2.5 call. A 1:1 4 s draft completed to
+  // 1440x1440 at 97 frames, 196,425 formula tokens, and fal billed 214.88895
+  // units = 196.425 x 1.094 at $0.0214: $4.59862353, the usage API's
+  // cost_total. The card's rounded $0.0234 would put it at $4.596345.
+  it("reproduces the recorded 1080p draft completion bill", () => {
+    const result = seedance(
+      "bytedance/seedance-2.5/draft/complete",
+      { draft_id: "d" },
+      { durationSeconds: 4, aspectRatio: "1:1" }
+    );
+    expect(result.usd).toBeCloseTo(4.59862353, 10);
+    expect(result.breakdown.units).toBeCloseTo(196425, 6);
+    expect(result.breakdown.perUnitUsd).toBeCloseTo(0.0000234116, 15);
+    expect(result.warnings).toEqual([]);
   });
 
   it("fails closed when a Seedance request does not fix the output", () => {

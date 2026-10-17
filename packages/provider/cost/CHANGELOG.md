@@ -145,6 +145,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- fal Seedance 2.5 prices 1080p at the billed $0.0234116 per 1000 tokens
+  (0.0214 x 1.094) instead of the card's rounded "roughly $0.0234", for
+  `bytedance/seedance-2.5/text-to-video`,
+  `bytedance/seedance-2.5/reference-to-video` and
+  `bytedance/seedance-2.5/draft/complete`. The first billed 1080p call, a 1:1
+  4 s draft completion, billed 214.88895 units = 196.425 formula units x
+  1.094 ($4.59862353); the old rate put it at $4.596345, 0.05% low. The US
+  twins keep their card rate, since no US 1080p call is recorded
+  (ac-i5zo6h).
 - `resolveFalDynamicEstimate` sends fal's documented estimate body, one
   quantity per endpoint, instead of the request payload. fal answered the
   payload body with HTTP 400, so the resolver had never returned a number.

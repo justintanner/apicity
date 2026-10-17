@@ -406,7 +406,9 @@ const perSecondTiered = (
 // codec and seed never change the price: fal's schema says audio costs the
 // same, and neither the cards nor ByteDance price bitrate or codec. The
 // cards' per-second examples ("$0.3034/second" and the like) are rough
-// figures; only their per-1000-token rates are used.
+// figures; only their per-1000-token rates are used, except 2.5's 1080p,
+// which prices at the billed 0.0214 x 1.094 rather than the card's rounded
+// "roughly $0.0234" (see the 2.5 entries).
 //
 // Four ids stay in FAL_DYNAMIC_PRICING_ENDPOINTS. 2.0 and 2.0 Fast
 // reference-to-video have no recording, and the one 2.0-series reference
@@ -2391,7 +2393,11 @@ export const fal: Record<string, ModelPricing> = {
     operation: "reference",
     videoOnlyDivisor: 1000,
   }),
-  // 2.5: $0.0214 at 480p and 720p, and $0.0234 at 1080p.
+  // 2.5: $0.0214 at 480p and 720p, and $0.0234116 at 1080p. fal bills 1080p
+  // as 1.094 x the formula tokens at the base $0.0214, which the card rounds
+  // to "roughly $0.0234". The first billed 1080p call, a 1:1 4 s draft
+  // completion (1440x1440, 97 frames: 196,425 formula tokens), billed
+  // 214.88895 units = 196.425 x 1.094, $4.59862353 (ac-i5zo6h).
   "bytedance/seedance-2.5/text-to-video": seedance({
     endpointId: "bytedance/seedance-2.5/text-to-video",
     sizes: SEEDANCE_2P5_SIZES,
@@ -2399,7 +2405,7 @@ export const fal: Record<string, ModelPricing> = {
     rates: {
       "480p": 0.0214 / 1000,
       "720p": 0.0214 / 1000,
-      "1080p": 0.0234 / 1000,
+      "1080p": 0.0234116 / 1000,
     },
     draftFlag: true,
   }),
@@ -2410,13 +2416,15 @@ export const fal: Record<string, ModelPricing> = {
     rates: {
       "480p": 0.0214 / 1000,
       "720p": 0.0214 / 1000,
-      "1080p": 0.0234 / 1000,
+      "1080p": 0.0234116 / 1000,
     },
     operation: "reference",
     draftFlag: true,
     taskField: true,
   }),
-  // 2.5 US: $0.02568 at 480p and 720p, and $0.02808 at 1080p. The US
+  // 2.5 US: $0.02568 at 480p and 720p, and $0.02808 at 1080p, the card's
+  // figure. No US 1080p call is recorded; if it carries the same 1.094 factor
+  // as 2.5, the bill is 0.02568 x 1.094 = $0.02809392, 0.05% above. The US
   // schemas have no draft flag.
   "bytedance/seedance-2.5/us/text-to-video": seedance({
     endpointId: "bytedance/seedance-2.5/us/text-to-video",
@@ -2440,15 +2448,15 @@ export const fal: Record<string, ModelPricing> = {
     operation: "reference",
     taskField: true,
   }),
-  // A completed 2.5 draft: always 1080p, at $0.0234. It keeps the draft's
-  // duration, aspect ratio and inputs, which arrive as costHints
-  // (durationSeconds, aspectRatio and, for a draft with video inputs,
-  // inputDurationSeconds).
+  // A completed 2.5 draft: always 1080p, at the billed $0.0234116 (above).
+  // It keeps the draft's duration, aspect ratio and inputs, which arrive as
+  // costHints (durationSeconds, aspectRatio and, for a draft with video
+  // inputs, inputDurationSeconds).
   "bytedance/seedance-2.5/draft/complete": seedance({
     endpointId: "bytedance/seedance-2.5/draft/complete",
     sizes: SEEDANCE_2P5_SIZES,
     maxSeconds: 30,
-    rates: { "1080p": 0.0234 / 1000 },
+    rates: { "1080p": 0.0234116 / 1000 },
     operation: "complete",
   }),
 

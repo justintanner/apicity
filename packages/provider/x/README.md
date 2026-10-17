@@ -337,7 +337,7 @@ Source: [`packages/provider/x/src/x.ts`](src/x.ts)
 
 <code>GET https://api.x.com/2/tweets/{id}{query}</code>
 
-Cost tier: <code>prohibitive</code>
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://docs.x.com/x-api/posts/get-post-by-id)
 

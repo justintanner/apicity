@@ -213,7 +213,7 @@ Source: [`packages/provider/dropbox/src/dropbox.ts`](src/dropbox.ts)
 
 <code>POST https://content.dropboxapi.com/2/files/upload_session/append_v2</code>
 
-Cost tier: <code>prohibitive</code>
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.dropbox.com/developers/documentation/http/documentation#files-upload_session-append_v2)
 
@@ -230,7 +230,7 @@ Source: [`packages/provider/dropbox/src/dropbox.ts`](src/dropbox.ts)
 
 <code>POST https://content.dropboxapi.com/2/files/upload_session/finish</code>
 
-Cost tier: <code>prohibitive</code>
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.dropbox.com/developers/documentation/http/documentation#files-upload_session-finish)
 
@@ -247,7 +247,7 @@ Source: [`packages/provider/dropbox/src/dropbox.ts`](src/dropbox.ts)
 
 <code>POST https://content.dropboxapi.com/2/files/upload_session/start</code>
 
-Cost tier: <code>prohibitive</code>
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.dropbox.com/developers/documentation/http/documentation#files-upload_session-start)
 
@@ -264,9 +264,9 @@ Source: [`packages/provider/dropbox/src/dropbox.ts`](src/dropbox.ts)
 <details>
 <summary><code>POST</code> <b><code>dropbox.oauth2.token</code></b></summary>
 
-<code>POST https://api.dropboxapi.com/2/{param}/oauth2/token</code>
+<code>POST https://api.dropboxapi.com/oauth2/token</code>
 
-Cost tier: <code>prohibitive</code>
+Cost tier: <code>cheap</code>
 
 [Upstream docs ↗](https://www.dropbox.com/developers/documentation/http/documentation#oauth2-token)
 

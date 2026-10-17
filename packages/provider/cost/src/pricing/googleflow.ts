@@ -8,11 +8,16 @@ import { asNumber, asString } from "./helpers";
 //
 // Credit costs per generation come from the upstream endpoint docs:
 //   Veo 3.1 Lite                 non-Ultra 10 / Ultra 5
-//   Veo 3.1 Lite Lower Priority  0 (Google AI Ultra 20x only)
+//   Veo 3.1 Lite Lower Priority  0 (Google AI Ultra $199 only)
 //   Veo 3.1 Fast                 non-Ultra 20 / Ultra 10
 //   Veo 3.1 Quality              100 (flat; 8s max)
-//   Gemini Omni Flash            4s 15 / 6s 20 / 8s 25 / 10s 30
-//   Gemini Omni Flash + V2V      40
+//   Omni 1.1 Flash, 720p         4s 7 / 6s 10 / 8s 12 / 10s 15
+//   Omni 1.1 Flash, 360p         4s 4 / 6s 5 / 8s 6 / 10s 7
+//   Omni 1.1 Flash + V2V         720p 20 / 360p 10
+// The Omni figures are from the 2026-10-17 re-read of the endpoint page and
+// the overview's per-plan table, which lists the same Omni credits on every
+// plan. They replaced the 2026-07-20 figures (4s 15 / 6s 20 / 8s 25 / 10s 30,
+// V2V 40), which upstream had cut by about half.
 //
 // Image generation draws no credits on any plan. The Google Flow overview
 // lists Nano Banana Pro, Nano Banana 2.1 and Nano Banana 2 Lite as
@@ -23,25 +28,28 @@ import { asNumber, asString } from "./helpers";
 //   (-> nano-banana-2) and imagen-4 (-> nano-banana-2-lite)    0
 //
 // Two Google AI plan tiers set the credit -> USD value:
-//   pro    Google AI Pro,       $19.99/mo for  1,000 credits => $0.02  / credit
-//   ultra  Google AI Ultra 20x, $200/mo   for 25,000 credits => $0.008 / credit
+//   pro    Google AI Pro,        $19.99/mo  for  1,000 credits => $0.02  / credit
+//   ultra  Google AI Ultra $199, $199.99/mo for 25,000 credits => $0.008 / credit
+// The overview also lists Plus ($7.99/mo, 200 credits, ~$0.04 / credit) and
+// Ultra $99 ($99.99/mo, 10,000 credits, ~$0.01 / credit); neither is modelled.
 // The credit *costs* also differ by tier, but only where upstream documents a
-// halved Ultra cost: Veo Lite 10 -> 5 and Veo Fast 20 -> 10. Veo Quality (100),
-// the omni-flash duration tiers (15/20/25/30), and the omni-flash V2V flat 40
-// carry no documented Ultra halving, so for those only the credit *value*
-// changes. veo-3.1-lite-low-priority is an Ultra-only, zero-credit generation
-// ($0 on both tiers), and the image models are zero-credit on both tiers too:
-// the models where Ultra is not strictly below Pro.
+// halved Ultra cost: Veo Lite 10 -> 5 and Veo Fast 20 -> 10. Veo Quality (100)
+// and every omni-flash cost carry no documented Ultra halving, so for those
+// only the credit *value* changes. veo-3.1-lite-low-priority is an Ultra-only,
+// zero-credit generation ($0 on both tiers), and the image models are
+// zero-credit on both tiers too: the models where Ultra is not strictly below
+// Pro.
 //
-// | Model                     | Pro credits x $0.02 | Ultra credits x $0.008 | Pro USD | Ultra USD |
-// | ------------------------- | ------------------- | ---------------------- | ------- | --------- |
-// | veo-3.1-quality           | 100                 | 100                    | $2.00   | $0.80     |
-// | veo-3.1-fast              | 20                  | 10 (halved)            | $0.40   | $0.08     |
-// | veo-3.1-lite              | 10                  | 5 (halved)             | $0.20   | $0.04     |
-// | veo-3.1-lite-low-priority | 0                   | 0 (Ultra-only, free)   | $0.00   | $0.00     |
-// | omni-flash dur-4/6/8/10   | 15/20/25/30         | 15/20/25/30            | ...     | x $0.008  |
-// | omni-flash reference-video| 40                  | 40                     | $0.80   | $0.32     |
-// | each image model, /image  | 0 (included)        | 0 (included)           | $0.00   | $0.00     |
+// | Model                       | Pro credits x $0.02 | Ultra credits x $0.008 | Pro USD | Ultra USD |
+// | --------------------------- | ------------------- | ---------------------- | ------- | --------- |
+// | veo-3.1-quality             | 100                 | 100                    | $2.00   | $0.80     |
+// | veo-3.1-fast                | 20                  | 10 (halved)            | $0.40   | $0.08     |
+// | veo-3.1-lite                | 10                  | 5 (halved)             | $0.20   | $0.04     |
+// | veo-3.1-lite-low-priority   | 0                   | 0 (Ultra-only, free)   | $0.00   | $0.00     |
+// | omni-flash 720p 4/6/8/10s   | 7/10/12/15          | 7/10/12/15             | ...     | x $0.008  |
+// | omni-flash 360p 4/6/8/10s   | 4/5/6/7             | 4/5/6/7                | ...     | x $0.008  |
+// | omni-flash V2V 720p / 360p  | 20 / 10             | 20 / 10                | ...     | x $0.008  |
+// | each image model, /image    | 0 (included)        | 0 (included)           | $0.00   | $0.00     |
 //
 // The tier is a COST-ONLY selector read from costHints.googleFlowPlan; it is
 // never in the request payload, never merged into it, and never signed. Omitted
@@ -70,6 +78,13 @@ const source = {
   // existing mechanism for this; PRICING_AS_OF stays global). The plan tier
   // changes the credit basis, not the rate's provenance date or URL.
   asOf: "2026-07-20",
+};
+
+// The omni-flash credits were re-priced from a later read of the same page,
+// so they carry that read's stamp; the Veo entries keep the 2026-07-20 one.
+const omniFlashSource = {
+  url: "https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos",
+  asOf: "2026-10-17",
 };
 
 // The image rates' provenance: the overview's pricing table, which is where
@@ -153,12 +168,23 @@ const flatImage = ({
 });
 
 // Omni Flash is the only duration-tiered model, and a video-to-video request
-// (referenceVideo_1 set) overrides the duration tier with a flat 40 credits.
+// (referenceVideo_1 set) overrides the duration tier with a flat edit price.
 // One selector emits the whole variant key so the two axes stay in one place.
 const omniFlashVariant = (p: Record<string, unknown>): string =>
   asString(p.referenceVideo_1)
     ? "reference-video"
     : `duration-${asNumber(p.duration) ?? 8}`;
+
+// `resolution` is omni-flash only: 720p (the default) or 360p, which roughly
+// halves the credits. 720p stays out of the variant key, so the default keys
+// read as they always have. Any other value lands on a key with no rate and
+// the estimate fails closed, as upstream rejects the request.
+const omniFlashResolution = (
+  p: Record<string, unknown>
+): string | undefined => {
+  const resolution = asString(p.resolution);
+  return resolution === "720p" ? undefined : resolution;
+};
 
 export const googleflow: Record<string, ModelPricing> = {
   "veo-3.1-quality": flatVideo({ pro: 100, ultra: 100 }),
@@ -172,26 +198,39 @@ export const googleflow: Record<string, ModelPricing> = {
     kind: "perUnit",
     unit: "generations",
     units: generations,
-    // Selector order is [variant, plan], so the variant key is e.g.
-    // "duration-8|pro" or "reference-video|ultra".
+    // Selector order is [variant, resolution, plan], so the variant key is
+    // e.g. "duration-8|pro" at 720p or "reference-video|360p|ultra".
     select: [
       { name: "variant", pick: omniFlashVariant },
+      { name: "resolution", pick: omniFlashResolution },
       { name: "plan", pick: planPick },
     ],
     rates: {
-      "duration-4|pro": proUsd(15),
-      "duration-4|ultra": ultraUsd(15),
-      "duration-6|pro": proUsd(20),
-      "duration-6|ultra": ultraUsd(20),
-      "duration-8|pro": proUsd(25),
-      "duration-8|ultra": ultraUsd(25),
-      "duration-10|pro": proUsd(30),
-      "duration-10|ultra": ultraUsd(30),
-      "reference-video|pro": proUsd(40),
-      "reference-video|ultra": ultraUsd(40),
+      // 720p, the default
+      "duration-4|pro": proUsd(7),
+      "duration-4|ultra": ultraUsd(7),
+      "duration-6|pro": proUsd(10),
+      "duration-6|ultra": ultraUsd(10),
+      "duration-8|pro": proUsd(12),
+      "duration-8|ultra": ultraUsd(12),
+      "duration-10|pro": proUsd(15),
+      "duration-10|ultra": ultraUsd(15),
+      "reference-video|pro": proUsd(20),
+      "reference-video|ultra": ultraUsd(20),
+      // 360p
+      "duration-4|360p|pro": proUsd(4),
+      "duration-4|360p|ultra": ultraUsd(4),
+      "duration-6|360p|pro": proUsd(5),
+      "duration-6|360p|ultra": ultraUsd(5),
+      "duration-8|360p|pro": proUsd(6),
+      "duration-8|360p|ultra": ultraUsd(6),
+      "duration-10|360p|pro": proUsd(7),
+      "duration-10|360p|ultra": ultraUsd(7),
+      "reference-video|360p|pro": proUsd(10),
+      "reference-video|360p|ultra": ultraUsd(10),
     },
     warn: planWarn,
-    source,
+    source: omniFlashSource,
   },
 
   // POST /images models: included in every plan, so zero credits per image

@@ -1174,17 +1174,60 @@ describe("computeEstimate", () => {
       expect(result.breakdown.units).toBe(3);
     });
 
-    it("tiers omni-flash by duration and defaults to 8s", () => {
+    it("tiers omni-flash by duration and defaults to 8s at 720p", () => {
       const at = (payload: Record<string, unknown>) =>
         computeEstimate({
           provider: "googleflow" as const,
           payload: { model: "omni-flash", prompt: "a cat", ...payload },
         }).usd;
-      expect(at({ duration: 4 })).toBe(0.3);
-      expect(at({ duration: 6 })).toBe(0.4);
-      expect(at({ duration: 8 })).toBe(0.5);
-      expect(at({ duration: 10 })).toBe(0.6);
-      expect(at({})).toBe(0.5); // upstream default duration is 8
+      // 7 / 10 / 12 / 15 credits * $0.02 (useapi.net, read 2026-10-17)
+      expect(at({ duration: 4 })).toBe(0.14);
+      expect(at({ duration: 6 })).toBe(0.2);
+      expect(at({ duration: 8 })).toBe(0.24);
+      expect(at({ duration: 10 })).toBe(0.3);
+      expect(at({})).toBe(0.24); // upstream default duration is 8
+      // resolution defaults to 720p, so an explicit 720p is the same price.
+      expect(at({ duration: 8, resolution: "720p" })).toBe(0.24);
+    });
+
+    it("prices omni-flash at 360p for roughly half the 720p credits", () => {
+      const at = (payload: Record<string, unknown>) =>
+        computeEstimate({
+          provider: "googleflow" as const,
+          payload: {
+            model: "omni-flash",
+            prompt: "a cat",
+            resolution: "360p",
+            ...payload,
+          },
+        });
+      // 4 / 5 / 6 / 7 credits * $0.02
+      expect(at({ duration: 4 }).usd).toBe(0.08);
+      expect(at({ duration: 6 }).usd).toBe(0.1);
+      expect(at({ duration: 8 }).usd).toBe(0.12);
+      expect(at({ duration: 10 }).usd).toBe(0.14);
+      expect(at({}).usd).toBe(0.12); // upstream default duration is 8
+      // A 360p video-to-video edit is a flat 10 credits.
+      const edit = at({ referenceVideo_1: "https://example.com/in.mp4" });
+      expect(edit.usd).toBe(0.2);
+      expect(edit.warnings).toEqual([]);
+      expect(edit.rateAsOf).toBe("2026-10-17");
+    });
+
+    it("fails closed on an omni-flash resolution upstream does not offer", () => {
+      const result = computeEstimate({
+        provider: "googleflow" as const,
+        payload: {
+          model: "omni-flash",
+          prompt: "a cat",
+          duration: 8,
+          resolution: "1080p",
+        },
+      });
+      expect(result.usd).toBe(0);
+      expect(result.warnings).toContain(
+        "googleflow 'omni-flash': no rate for variant 'duration-8|1080p|pro' (selectors: variant, resolution, plan)"
+      );
     });
 
     it("prices omni-flash video-to-video flat, overriding duration", () => {
@@ -1197,7 +1240,7 @@ describe("computeEstimate", () => {
           referenceVideo_1: "https://example.com/in.mp4",
         },
       });
-      expect(result.usd).toBe(0.8); // 40 credits * $0.02
+      expect(result.usd).toBe(0.4); // 20 credits * $0.02 at 720p
       expect(result.warnings).toEqual([]);
     });
 
@@ -1228,24 +1271,41 @@ describe("computeEstimate", () => {
     // AC-1 / REQ-001: every priced entry, with no costHints, returns exactly
     // the pre-selector Pro-basis USD, an empty warnings list, and the same
     // rateAsOf. This is the default-parity sweep across all model entries.
+    // Veo rates were priced from the 2026-07-20 read; omni-flash's from the
+    // 2026-10-17 re-read (ac-yvnmf4).
+    const videoRateAsOf = (model: string): string =>
+      model === "omni-flash" ? "2026-10-17" : "2026-07-20";
+
     it("default (no costHints) prices every entry on the Pro basis", () => {
       const cases: Array<[string, Record<string, unknown>, number]> = [
         ["veo-3.1-quality", {}, 2],
         ["veo-3.1-fast", {}, 0.4],
         ["veo-3.1-lite", {}, 0.2],
         ["veo-3.1-lite-low-priority", {}, 0],
-        ["omni-flash", { duration: 4 }, 0.3],
-        ["omni-flash", { duration: 6 }, 0.4],
-        ["omni-flash", { duration: 8 }, 0.5],
-        ["omni-flash", { duration: 10 }, 0.6],
-        ["omni-flash", { referenceVideo_1: "https://example.com/in.mp4" }, 0.8],
+        ["omni-flash", { duration: 4 }, 0.14],
+        ["omni-flash", { duration: 6 }, 0.2],
+        ["omni-flash", { duration: 8 }, 0.24],
+        ["omni-flash", { duration: 10 }, 0.3],
+        ["omni-flash", { referenceVideo_1: "https://example.com/in.mp4" }, 0.4],
+        ["omni-flash", { duration: 4, resolution: "360p" }, 0.08],
+        ["omni-flash", { duration: 6, resolution: "360p" }, 0.1],
+        ["omni-flash", { duration: 8, resolution: "360p" }, 0.12],
+        ["omni-flash", { duration: 10, resolution: "360p" }, 0.14],
+        [
+          "omni-flash",
+          {
+            referenceVideo_1: "https://example.com/in.mp4",
+            resolution: "360p",
+          },
+          0.2,
+        ],
       ];
       for (const [model, extra, expected] of cases) {
         const result = priceGoogleflow(model, extra);
         const label = `${model} ${JSON.stringify(extra)}`;
         expect(result.usd, label).toBe(expected);
         expect(result.warnings, `${label} warnings`).toEqual([]);
-        expect(result.rateAsOf, `${label} rateAsOf`).toBe("2026-07-20");
+        expect(result.rateAsOf, `${label} rateAsOf`).toBe(videoRateAsOf(model));
         expect(result.source, `${label} source`).toBe("per-unit-table");
       }
     });
@@ -1269,14 +1329,26 @@ describe("computeEstimate", () => {
         ["veo-3.1-quality", {}, 0.8],
         ["veo-3.1-fast", {}, 0.08],
         ["veo-3.1-lite", {}, 0.04],
-        ["omni-flash", { duration: 4 }, 0.12],
-        ["omni-flash", { duration: 6 }, 0.16],
-        ["omni-flash", { duration: 8 }, 0.2],
-        ["omni-flash", { duration: 10 }, 0.24],
+        ["omni-flash", { duration: 4 }, 0.056],
+        ["omni-flash", { duration: 6 }, 0.08],
+        ["omni-flash", { duration: 8 }, 0.096],
+        ["omni-flash", { duration: 10 }, 0.12],
         [
           "omni-flash",
           { referenceVideo_1: "https://example.com/in.mp4" },
-          0.32,
+          0.16,
+        ],
+        ["omni-flash", { duration: 4, resolution: "360p" }, 0.032],
+        ["omni-flash", { duration: 6, resolution: "360p" }, 0.04],
+        ["omni-flash", { duration: 8, resolution: "360p" }, 0.048],
+        ["omni-flash", { duration: 10, resolution: "360p" }, 0.056],
+        [
+          "omni-flash",
+          {
+            referenceVideo_1: "https://example.com/in.mp4",
+            resolution: "360p",
+          },
+          0.08,
         ],
       ];
       for (const [model, extra, expectedUltra] of cases) {
@@ -1291,7 +1363,9 @@ describe("computeEstimate", () => {
           expectedUltra
         );
         expect(ultra.warnings, `${label} ultra warnings`).toEqual([]);
-        expect(ultra.rateAsOf, `${label} ultra rateAsOf`).toBe("2026-07-20");
+        expect(ultra.rateAsOf, `${label} ultra rateAsOf`).toBe(
+          videoRateAsOf(model)
+        );
       }
     });
 
@@ -1327,7 +1401,7 @@ describe("computeEstimate", () => {
         { googleFlowPlan: "platinum" }
       );
       // Pro duration-8, not the zero-USD "no rate for variant" path.
-      expect(result.usd).toBe(0.5);
+      expect(result.usd).toBe(0.24);
       expect(result.warnings).toContain(
         "googleflow: unknown plan tier 'platinum', using Pro basis"
       );

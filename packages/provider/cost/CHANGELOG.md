@@ -107,6 +107,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Google Flow `omni-flash` estimates use the credits useapi.net lists as of
+  2026-10-17, about half the earlier figures. At 720p, 4 / 6 / 8 / 10 s cost
+  7 / 10 / 12 / 15 credits, down from 15 / 20 / 25 / 30, and a
+  video-to-video edit (`referenceVideo_1`) costs 20, down from 40. An 8 s
+  request on the default `pro` tier is now $0.24 instead of $0.50. A payload
+  with `resolution: "360p"` uses the 360p credits: 4 / 5 / 6 / 7, and 10 for
+  an edit. 720p stays the default; any other resolution fails the estimate
+  with a "no rate for variant" warning, because upstream rejects it
+  (ac-yvnmf4).
 - KIE `qwen/image-to-image` estimates $0.02 per call from its live per-image
   rate (4 credits) instead of returning $0 with a "could not derive units"
   warning. KIE moved the model from per-megapixel to per-image billing after

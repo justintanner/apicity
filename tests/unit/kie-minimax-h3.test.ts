@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
   createKie,
   KieError,
+  MiniMaxH3ReferenceClipDurationMs,
   type MediaGenerationRequest,
   type MiniMaxH3FixedAspectRatio,
   type MiniMaxH3ImageToVideoInput,
@@ -15,10 +16,15 @@ import {
 import {
   CreateTaskRequestSchema,
   MiniMaxH3ImageToVideoRequestSchema,
+  MiniMaxH3ReferenceClipDurationMs as ZodReferenceClipDurationMs,
   MiniMaxH3ReferenceToVideoRequestSchema,
   MiniMaxH3TextToVideoRequestSchema,
 } from "@apicity/kie/zod";
 
+import {
+  zodToJsonSchema,
+  type JsonSchema,
+} from "../../packages/cli/src/schema";
 import { modelInputSchemas } from "../../packages/provider/kie/src/model-schemas";
 import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
@@ -721,4 +727,48 @@ describe("KIE MiniMax H3 createTask contracts", () => {
       expect(mockFetch).not.toHaveBeenCalled();
     }
   );
+});
+
+describe("KIE MiniMax H3 reference clip durations", () => {
+  // Kie rejected a 29.9 s reference video at submission with
+  // "content[2].video_url: invalid param: video duration 29917 ms, expected
+  // [2000, 15000] ms (2013)". A URL carries no duration, so the schema can
+  // only describe the window; callers check local media against the constant.
+  it("exports the per-file and combined windows in milliseconds", () => {
+    expect(MiniMaxH3ReferenceClipDurationMs).toBe(ZodReferenceClipDurationMs);
+    expect(MiniMaxH3ReferenceClipDurationMs).toEqual({
+      video: { minimum: 2000, maximum: 15000, maximumTotal: 15000 },
+      audio: { minimum: 2000, maximum: 15000, maximumTotal: 15000 },
+    });
+  });
+
+  it("describes both windows on the reference arrays in the request schema", () => {
+    const request = zodToJsonSchema(MiniMaxH3ReferenceToVideoRequestSchema);
+    const input = (request.properties as Record<string, JsonSchema>).input;
+    const fields = input.properties as Record<string, JsonSchema>;
+    const video = fields.reference_video_urls.description;
+    const audio = fields.reference_audio_urls.description;
+
+    for (const fragment of [
+      "MP4/MOV",
+      "2000-15000 ms (2-15 seconds)",
+      "15000 ms combined",
+      "Kie rejects a clip outside the per-file window at submission",
+      "not inspected locally",
+      "MiniMaxH3ReferenceClipDurationMs.video",
+    ]) {
+      expect(video).toContain(fragment);
+    }
+    for (const fragment of [
+      "WAV/MP3",
+      "cannot be the sole reference",
+      "2000-15000 ms (2-15 seconds)",
+      "15000 ms combined",
+      "documented upstream but not yet observed at runtime",
+      "not inspected locally",
+      "MiniMaxH3ReferenceClipDurationMs.audio",
+    ]) {
+      expect(audio).toContain(fragment);
+    }
+  });
 });

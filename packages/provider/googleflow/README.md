@@ -6,6 +6,8 @@
 
 useapi.net Google Flow proxy.
 
+Every method resolves to the generic `GoogleFlowResponse` and never validates the response body. For typed access, parse the result with the response schema the package exports for that endpoint; each schema has a same-name `z.output` type. For example, `GoogleFlowImagesResponseSchema.parse(await flow.v1.images(req))` types `media[].image.generatedImage.fifeUrl`. The schemas follow useapi.net's documented response models and are not yet verified against live responses, so parsing reports any drift instead of trusting it.
+
 Runtime dependencies:
 
 - `zod@^4.4.3` — request schemas attached to every POST endpoint as `.schema`

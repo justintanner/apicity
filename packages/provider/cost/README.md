@@ -162,7 +162,7 @@ interface CostHints {
     | "3:4"
     | "9:16"
     | (string & {});
-  googleFlowPlan?: "pro" | "ultra" | (string & {});
+  googleFlowPlan?: "plus" | "pro" | "ultra-99" | "ultra" | (string & {});
   inputTokens?: number;
   outputTokens?: number;
 }
@@ -362,23 +362,26 @@ the input image's aspect.
 ### Plan tier (googleflow)
 
 `googleflow` bills in **Google Flow credits**, not USD, so a USD estimate is
-`credits x the plan's credit value`. Two Google AI plan tiers set that value,
+`credits x the plan's credit value`. Four Google AI plan tiers set that value,
 and — where upstream documents it — the per-generation credit cost:
 
-| Tier            | Credit value    | Notes                                                                      |
-| --------------- | --------------- | -------------------------------------------------------------------------- |
-| `pro` (default) | `$0.02`/credit  | Google AI Pro; the non-Ultra credit costs.                                 |
-| `ultra`         | `$0.008`/credit | Google AI Ultra $199; Veo Lite/Fast credit costs are halved (10→5, 20→10). |
+| Tier            | Plan                                             | Credit value    | Notes                                                |
+| --------------- | ------------------------------------------------ | --------------- | ---------------------------------------------------- |
+| `plus`          | Google AI Plus, $7.99/mo, 200 credits            | `$0.04`/credit  | The non-Ultra credit costs.                          |
+| `pro` (default) | Google AI Pro, $19.99/mo, 1,000 credits          | `$0.02`/credit  | The non-Ultra credit costs.                          |
+| `ultra-99`      | Google AI Ultra $99, $99.99/mo, 10,000 credits   | `$0.01`/credit  | Veo Lite/Fast credit costs are halved (10→5, 20→10). |
+| `ultra`         | Google AI Ultra $199, $199.99/mo, 25,000 credits | `$0.008`/credit | Veo Lite/Fast credit costs are halved (10→5, 20→10). |
 
-useapi.net also lists Plus (about `$0.04`/credit) and Ultra $99 (about
-`$0.01`/credit). Neither is modelled, so a value naming them falls back to the
-Pro basis with a warning, and for a Plus account that is about half the real
-cost.
+Each credit value is the plan price divided by its monthly credits, rounded up
+as useapi.net rounds it, so the rounding only ever over-estimates. Google's own
+credits page calls the two Ultra plans Ultra $100 and Ultra $200; `ultra` keeps
+meaning the $199 plan, as it did before `ultra-99` existed.
 
 `costHints.googleFlowPlan` selects the tier. It **defaults to `pro`** when
 omitted, so existing callers get byte-for-byte the same estimate as before this
-field existed (the Pro basis is the deliberate over-estimate, the safe direction
-for a pay-gate):
+field existed. Pro is not the highest basis: it under-estimates a Plus account
+by half, so a Plus caller passes `"plus"`, and a pay-gate that does not know the
+plan can pass `"plus"` for the upper bound:
 
 ```ts
 // default (omitted) — Pro basis
@@ -396,19 +399,20 @@ c.estimate({
 ```
 
 Per-model USD by tier (Veo `source.asOf: "2026-07-20"`, `omni-flash` and
-images `source.asOf: "2026-10-17"`):
+images `source.asOf: "2026-10-17"`; the tier credit values were read
+2026-10-17):
 
-| Model                             | Pro USD                 | Ultra USD                  |
-| --------------------------------- | ----------------------- | -------------------------- |
-| `veo-3.1-quality`                 | $2.00                   | $0.80                      |
-| `veo-3.1-fast`                    | $0.40                   | $0.08                      |
-| `veo-3.1-lite`                    | $0.20                   | $0.04                      |
-| `veo-3.1-lite-low-priority`       | $0.00                   | $0.00                      |
-| `omni-flash` 720p (4/6/8/10s)     | $0.14/$0.20/$0.24/$0.30 | $0.056/$0.08/$0.096/$0.12  |
-| `omni-flash` 360p (4/6/8/10s)     | $0.08/$0.10/$0.12/$0.14 | $0.032/$0.04/$0.048/$0.056 |
-| `omni-flash` reference-video 720p | $0.40                   | $0.16                      |
-| `omni-flash` reference-video 360p | $0.20                   | $0.08                      |
-| image models, per image           | $0.00                   | $0.00                      |
+| Model                             | `plus` USD              | `pro` USD               | `ultra-99` USD          | `ultra` USD                |
+| --------------------------------- | ----------------------- | ----------------------- | ----------------------- | -------------------------- |
+| `veo-3.1-quality`                 | $4.00                   | $2.00                   | $1.00                   | $0.80                      |
+| `veo-3.1-fast`                    | $0.80                   | $0.40                   | $0.10                   | $0.08                      |
+| `veo-3.1-lite`                    | $0.40                   | $0.20                   | $0.05                   | $0.04                      |
+| `veo-3.1-lite-low-priority`       | $0.00                   | $0.00                   | $0.00                   | $0.00                      |
+| `omni-flash` 720p (4/6/8/10s)     | $0.28/$0.40/$0.48/$0.60 | $0.14/$0.20/$0.24/$0.30 | $0.07/$0.10/$0.12/$0.15 | $0.056/$0.08/$0.096/$0.12  |
+| `omni-flash` 360p (4/6/8/10s)     | $0.16/$0.20/$0.24/$0.28 | $0.08/$0.10/$0.12/$0.14 | $0.04/$0.05/$0.06/$0.07 | $0.032/$0.04/$0.048/$0.056 |
+| `omni-flash` reference-video 720p | $0.80                   | $0.40                   | $0.20                   | $0.16                      |
+| `omni-flash` reference-video 360p | $0.40                   | $0.20                   | $0.10                   | $0.08                      |
+| image models, per image           | $0.00                   | $0.00                   | $0.00                   | $0.00                      |
 
 `omni-flash` reads `resolution` from the payload: `720p` (the default) or
 `360p`, which upstream prices at roughly half the credits. Any other value
@@ -419,14 +423,17 @@ resolution, whatever the duration.
 The image models are the `POST /images` ids `nano-banana-2-lite`,
 `nano-banana-2`, `nano-banana-pro`, and the deprecated aliases `nano-banana`
 and `imagen-4`. Google Flow includes image generation in every plan, so each
-image is 0 credits on both tiers. `count` (1-4) defaults to 4 images.
+image is 0 credits on every tier. `count` (1-4) defaults to 4 images.
 
-Ultra is strictly lower than Pro for every priced model **except**
-`veo-3.1-lite-low-priority`, which is `$0` on both tiers (it is an Ultra-only,
-zero-credit generation), and the image models, which are `$0` on both tiers.
+For every priced model the tiers are strictly ordered: `plus` > `pro` >
+`ultra-99` > `ultra`. The exceptions are the image models and
+`veo-3.1-lite-low-priority`, which are `$0` on every tier. That model runs only
+on Ultra $199, for zero credits; every other plan is refused upstream before
+any credit is drawn.
 
-An **unrecognized** tier falls back to the Pro basis (never `$0`, and never an
-under-charge for the two modelled tiers) and adds a warning naming the value:
+An **unrecognized** tier falls back to the Plus basis, the highest credit value
+(never `$0`, and never an under-charge), and adds a warning naming the value.
+Matching is exact, so `"Plus"` or `"ultra-199"` is unrecognized too:
 
 ```ts
 const est = c.estimate({
@@ -434,8 +441,8 @@ const est = c.estimate({
   payload: { model: "veo-3.1-fast", prompt: "a cat" },
   costHints: { googleFlowPlan: "platinum" },
 });
-est.usd; // → 0.40  (Pro over-estimate)
-est.warnings; // → ["googleflow: unknown plan tier 'platinum', using Pro basis"]
+est.usd; // → 0.80  (Plus basis: 20 credits × $0.04)
+est.warnings; // → ["googleflow: unknown plan tier 'platinum', using Plus basis"]
 ```
 
 Like every `costHints` field, `googleFlowPlan` is **cost-only**: it is read only

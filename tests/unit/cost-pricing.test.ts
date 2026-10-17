@@ -681,25 +681,34 @@ describe("PRICING data", () => {
     }
   });
 
-  // REQ-003 table shape: every googleflow variant exposes both a `pro` and an
-  // `ultra` rate, and the Ultra rate never exceeds the Pro rate — so selecting
-  // Ultra can only lower (or, for the free lite-low-priority, equal) the cost.
-  it("googleflow exposes a pro and ultra rate per variant, ultra <= pro", () => {
+  // REQ-003 table shape: every googleflow variant exposes exactly the four
+  // plan rates, ordered by credit value. A priced variant is strictly
+  // plus > pro > ultra-99 > ultra > 0, so Plus is the highest rate everywhere
+  // (the unrecognized-tier fallback never under-charges); a zero-credit
+  // variant (lite-low-priority, every image model) is 0 on all four.
+  it("googleflow prices every variant on all four plans, plus > pro > ultra-99 > ultra", () => {
+    const plans = ["plus", "pro", "ultra-99", "ultra"];
     for (const [model, entry] of Object.entries(PRICING.googleflow)) {
       expect(entry.kind, model).toBe("perUnit");
       if (entry.kind !== "perUnit") continue;
-      const proKeys = Object.keys(entry.rates).filter(
-        (k) => k === "pro" || k.endsWith("|pro")
-      );
-      expect(proKeys.length, `${model} pro rates`).toBeGreaterThan(0);
-      for (const proKey of proKeys) {
-        const ultraKey =
-          proKey === "pro" ? "ultra" : proKey.replace(/\|pro$/, "|ultra");
-        expect(entry.rates, `${model} ${ultraKey}`).toHaveProperty(ultraKey);
-        expect(
-          entry.rates[ultraKey],
-          `${model} ${ultraKey} <= ${proKey}`
-        ).toBeLessThanOrEqual(entry.rates[proKey]);
+      const variants = new Map<string, Map<string, number>>();
+      for (const [key, usd] of Object.entries(entry.rates)) {
+        const cut = key.lastIndexOf("|");
+        const variant = cut === -1 ? "" : key.slice(0, cut);
+        const plan = key.slice(cut + 1);
+        if (!variants.has(variant)) variants.set(variant, new Map());
+        variants.get(variant)?.set(plan, usd);
+      }
+      expect(variants.size, `${model} variants`).toBeGreaterThan(0);
+      for (const [variant, byPlan] of variants) {
+        const label = `${model} ${variant || "(flat)"}`;
+        expect([...byPlan.keys()].sort(), label).toEqual([...plans].sort());
+        const usd = plans.map((plan) => byPlan.get(plan) ?? NaN);
+        if (usd.every((x) => x === 0)) continue;
+        expect(usd[0], `${label} plus > pro`).toBeGreaterThan(usd[1]);
+        expect(usd[1], `${label} pro > ultra-99`).toBeGreaterThan(usd[2]);
+        expect(usd[2], `${label} ultra-99 > ultra`).toBeGreaterThan(usd[3]);
+        expect(usd[3], `${label} ultra > 0`).toBeGreaterThan(0);
       }
     }
   });

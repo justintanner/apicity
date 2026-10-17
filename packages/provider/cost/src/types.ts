@@ -95,16 +95,19 @@ export interface CostHints {
     | "3:4"
     | "9:16"
     | (string & {});
-  // Google Flow plan tier that sets the googleflow credit->USD basis. Omitted
-  // => "pro" (the safe over-estimate default, byte-for-byte the pre-selector
-  // output); "ultra" prices on the Google AI Ultra 20x basis. The (string & {})
-  // member keeps autocomplete for the two known literals while still accepting a
-  // runtime-sourced value: an unrecognized tier warns and falls back to "pro"
-  // rather than being a compile error. Cost-only, like the rest of CostHints:
-  // never merged into payload, never canonicalHash'd, never signed. A future
-  // Gemini list-rate USD source (REQ-004) would land as a second additive field
-  // (e.g. googleFlowRateSource) here, non-breaking.
-  googleFlowPlan?: "pro" | "ultra" | (string & {});
+  // Google Flow plan tier that sets the googleflow credit->USD basis: "plus"
+  // (Google AI Plus, $0.04/credit), "pro" (Google AI Pro, $0.02), "ultra-99"
+  // (Google AI Ultra $99, $0.01) or "ultra" (Google AI Ultra $199, $0.008).
+  // Omitted => "pro", byte-for-byte the pre-selector output; it under-estimates
+  // a Plus account by half, so a Plus caller passes "plus". The (string & {})
+  // member keeps autocomplete for the four known literals while still accepting
+  // a runtime-sourced value: an unrecognized tier warns and falls back to
+  // "plus", the highest credit value, rather than being a compile error.
+  // Cost-only, like the rest of CostHints: never merged into payload, never
+  // canonicalHash'd, never signed. A future Gemini list-rate USD source
+  // (REQ-004) would land as a second additive field (e.g.
+  // googleFlowRateSource) here, non-breaking.
+  googleFlowPlan?: "plus" | "pro" | "ultra-99" | "ultra" | (string & {});
   // Billable token counts for models an upstream prices per token while the
   // request body carries neither count. KIE's `google/gemini-2-5-pro-tts` and
   // `google/gemini-3-1-flash-tts` publish exact rates ($0.70 per million input

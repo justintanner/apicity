@@ -1348,6 +1348,69 @@ describe("computeEstimate", () => {
       expect(inPayload.usd).toBe(0.4); // Pro default; payload field ignored
       expect(inPayload.warnings).toEqual([]);
     });
+
+    // --- POST /images models (ac-j3d6ki.5) ---
+
+    // Every Flow image model, the two deprecated aliases included. Flow
+    // includes image generation in every plan, so each image is 0 credits on
+    // both tiers: a resolved $0 rate, not the "not found" miss these ids hit
+    // before they were priced.
+    const imageModels = [
+      "nano-banana-2-lite",
+      "nano-banana-2",
+      "nano-banana-pro",
+      "nano-banana",
+      "imagen-4",
+    ];
+
+    it("prices every image model at 0 credits on the default Pro basis", () => {
+      for (const model of imageModels) {
+        const result = priceGoogleflow(model);
+        expect(result.usd, model).toBe(0);
+        expect(result.source, model).toBe("per-unit-table");
+        // count defaults to 4 images on POST /images.
+        expect(result.breakdown, model).toEqual({
+          units: 4,
+          unit: "images",
+          perUnitUsd: 0,
+        });
+        expect(result.rateAsOf, model).toBe("2026-10-17");
+        expect(result.warnings, model).toEqual([]);
+      }
+    });
+
+    it("prices every image model at 0 credits on an explicit plan", () => {
+      for (const model of imageModels) {
+        const ultra = priceGoogleflow(model, {}, { googleFlowPlan: "ultra" });
+        expect(ultra.usd, `${model} ultra`).toBe(0);
+        expect(ultra.breakdown, `${model} ultra`).toEqual({
+          units: 4,
+          unit: "images",
+          perUnitUsd: 0,
+        });
+        expect(ultra.warnings, `${model} ultra`).toEqual([]);
+
+        const pro = priceGoogleflow(model, {}, { googleFlowPlan: "pro" });
+        expect(pro, `${model} pro`).toEqual(priceGoogleflow(model));
+      }
+    });
+
+    it("counts image variations and reads the plan the same way as video", () => {
+      const one = priceGoogleflow("nano-banana-pro", { count: 1 });
+      expect(one.breakdown.units).toBe(1);
+      expect(one.usd).toBe(0);
+
+      const unknownPlan = priceGoogleflow(
+        "nano-banana-pro",
+        {},
+        { googleFlowPlan: "platinum" }
+      );
+      expect(unknownPlan.usd).toBe(0);
+      expect(unknownPlan.breakdown.perUnitUsd).toBe(0);
+      expect(unknownPlan.warnings).toEqual([
+        "googleflow: unknown plan tier 'platinum', using Pro basis",
+      ]);
+    });
   });
 
   describe("free-media-upload", () => {

@@ -14,6 +14,14 @@ import { asNumber, asString } from "./helpers";
 //   Gemini Omni Flash            4s 15 / 6s 20 / 8s 25 / 10s 30
 //   Gemini Omni Flash + V2V      40
 //
+// Image generation draws no credits on any plan. The Google Flow overview
+// lists Nano Banana Pro, Nano Banana 2.1 and Nano Banana 2 Lite as
+// "included" on Flow Pro and Flow Ultra, and image generation works even on
+// a free account (read 2026-10-17):
+//   nano-banana-2-lite (default), nano-banana-2 (Nano Banana 2.1),
+//   nano-banana-pro, and the deprecated aliases nano-banana
+//   (-> nano-banana-2) and imagen-4 (-> nano-banana-2-lite)    0
+//
 // Two Google AI plan tiers set the credit -> USD value:
 //   pro    Google AI Pro,       $19.99/mo for  1,000 credits => $0.02  / credit
 //   ultra  Google AI Ultra 20x, $200/mo   for 25,000 credits => $0.008 / credit
@@ -22,7 +30,8 @@ import { asNumber, asString } from "./helpers";
 // the omni-flash duration tiers (15/20/25/30), and the omni-flash V2V flat 40
 // carry no documented Ultra halving, so for those only the credit *value*
 // changes. veo-3.1-lite-low-priority is an Ultra-only, zero-credit generation
-// ($0 on both tiers) — the one model where Ultra is not strictly below Pro.
+// ($0 on both tiers), and the image models are zero-credit on both tiers too:
+// the models where Ultra is not strictly below Pro.
 //
 // | Model                     | Pro credits x $0.02 | Ultra credits x $0.008 | Pro USD | Ultra USD |
 // | ------------------------- | ------------------- | ---------------------- | ------- | --------- |
@@ -32,6 +41,7 @@ import { asNumber, asString } from "./helpers";
 // | veo-3.1-lite-low-priority | 0                   | 0 (Ultra-only, free)   | $0.00   | $0.00     |
 // | omni-flash dur-4/6/8/10   | 15/20/25/30         | 15/20/25/30            | ...     | x $0.008  |
 // | omni-flash reference-video| 40                  | 40                     | $0.80   | $0.32     |
+// | each image model, /image  | 0 (included)        | 0 (included)           | $0.00   | $0.00     |
 //
 // The tier is a COST-ONLY selector read from costHints.googleFlowPlan; it is
 // never in the request payload, never merged into it, and never signed. Omitted
@@ -62,10 +72,21 @@ const source = {
   asOf: "2026-07-20",
 };
 
+// The image rates' provenance: the overview's pricing table, which is where
+// the "included" entries are published, read when the image entries landed.
+const imageSource = {
+  url: "https://useapi.net/docs/api-google-flow-v1",
+  asOf: "2026-10-17",
+};
+
 // `count` is the number of video variations to generate (1-4, default 1);
 // each variation is a separate generation and draws its own credits.
 const generations = (p: Record<string, unknown>): number =>
   asNumber(p.count) ?? 1;
+
+// `count` is the number of image variations to generate (1-4); POST /images
+// defaults it to 4, unlike POST /videos.
+const images = (p: Record<string, unknown>): number => asNumber(p.count) ?? 4;
 
 // Cost-only plan-tier selector. Reads ONLY costHints.googleFlowPlan and always
 // returns a known plan key, so the variant lookup never misses (and the
@@ -111,6 +132,26 @@ const flatVideo = ({
   source,
 });
 
+// Per-image rate on the same plan tiers as video: `pro` / `ultra` are the
+// per-tier credit costs of one image. Every Flow image model is included in
+// every plan, so both are an explicit 0, a real $0 estimate rather than a
+// missing rate.
+const flatImage = ({
+  pro,
+  ultra,
+}: {
+  pro: number;
+  ultra: number;
+}): PerUnitPricing => ({
+  kind: "perUnit",
+  unit: "images",
+  units: images,
+  select: [{ name: "plan", pick: planPick }],
+  rates: { pro: proUsd(pro), ultra: ultraUsd(ultra) },
+  warn: planWarn,
+  source: imageSource,
+});
+
 // Omni Flash is the only duration-tiered model, and a video-to-video request
 // (referenceVideo_1 set) overrides the duration tier with a flat 40 credits.
 // One selector emits the whole variant key so the two axes stay in one place.
@@ -152,4 +193,15 @@ export const googleflow: Record<string, ModelPricing> = {
     warn: planWarn,
     source,
   },
+
+  // POST /images models: included in every plan, so zero credits per image
+  // on both tiers.
+  "nano-banana-2-lite": flatImage({ pro: 0, ultra: 0 }),
+  "nano-banana-2": flatImage({ pro: 0, ultra: 0 }),
+  "nano-banana-pro": flatImage({ pro: 0, ultra: 0 }),
+  // Deprecated aliases upstream still accepts: nano-banana runs
+  // nano-banana-2, and imagen-4 runs nano-banana-2-lite (Google removed Imagen
+  // from Flow in July 2026).
+  "nano-banana": flatImage({ pro: 0, ultra: 0 }),
+  "imagen-4": flatImage({ pro: 0, ultra: 0 }),
 };

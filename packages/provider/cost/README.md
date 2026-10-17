@@ -324,7 +324,8 @@ c.estimate({
 }).usd; // → 0.08  (10 credits × $0.008)
 ```
 
-Per-model USD by tier (`source.asOf: "2026-07-20"`):
+Per-model USD by tier (video `source.asOf: "2026-07-20"`, images
+`source.asOf: "2026-10-17"`):
 
 | Model                        | Pro USD                 | Ultra USD               |
 | ---------------------------- | ----------------------- | ----------------------- |
@@ -334,10 +335,16 @@ Per-model USD by tier (`source.asOf: "2026-07-20"`):
 | `veo-3.1-lite-low-priority`  | $0.00                   | $0.00                   |
 | `omni-flash` (4/6/8/10s)     | $0.30/$0.40/$0.50/$0.60 | $0.12/$0.16/$0.20/$0.24 |
 | `omni-flash` reference-video | $0.80                   | $0.32                   |
+| image models, per image      | $0.00                   | $0.00                   |
+
+The image models are the `POST /images` ids `nano-banana-2-lite`,
+`nano-banana-2`, `nano-banana-pro`, and the deprecated aliases `nano-banana`
+and `imagen-4`. Google Flow includes image generation in every plan, so each
+image is 0 credits on both tiers. `count` (1-4) defaults to 4 images.
 
 Ultra is strictly lower than Pro for every priced model **except**
 `veo-3.1-lite-low-priority`, which is `$0` on both tiers (it is an Ultra-only,
-zero-credit generation).
+zero-credit generation), and the image models, which are `$0` on both tiers.
 
 An **unrecognized** tier falls back to the Pro basis (never `$0`, never an
 under-charge) and adds a warning naming the value:

@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, expectTypeOf, it } from "vitest";
+import type { FalSeedance2p5TextToVideoResponse } from "@apicity/fal";
 import {
   FalSeedance2p0FastImageToVideoRequestSchema,
   FalSeedance2p0FastReferenceToVideoRequestSchema,
@@ -196,6 +197,14 @@ describe("Seedance 2.5 draft and task", () => {
     const base = { prompt: "p", image_url: IMAGE };
     expect(schema.parse({ ...base, draft: true }).draft).toBe(true);
     expect(schema.safeParse({ ...base, draft: "yes" }).success).toBe(false);
+  });
+
+  it("types the draft_id a draft-enabled text-to-video returns", () => {
+    // The live Output declares draft_id as a string or null and does not
+    // require it; draft/complete takes that id (ac-qstko3).
+    expectTypeOf<FalSeedance2p5TextToVideoResponse["draft_id"]>().toEqualTypeOf<
+      string | null | undefined
+    >();
   });
 
   it("closes the reference-to-video task vocabulary", () => {

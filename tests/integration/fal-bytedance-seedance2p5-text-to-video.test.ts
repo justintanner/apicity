@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import {
+  setupPolly,
   setupPollyIgnoringBody,
   teardownPolly,
   type PollyContext,
@@ -111,4 +112,41 @@ describe("fal bytedance seedance2p5 text-to-video integration", () => {
       provider.post.run.bytedance.seedance2p5.textToVideo
     );
   });
+});
+
+// Draft mode (ac-qstko3): draft: true previews at 480p, overriding resolution,
+// and returns a draft_id that fal-bytedance-seedance2p5-draft-complete.test.ts
+// completes at 1080p. Same prompt and settings as the recording above, in its
+// own recording.
+describe("fal bytedance seedance2p5 text-to-video draft integration", () => {
+  let ctx: PollyContext;
+
+  beforeEach(() => {
+    ctx = setupPolly("fal/bytedance-seedance2p5-text-to-video-draft");
+  });
+
+  afterEach(async () => {
+    await teardownPolly(ctx);
+  });
+
+  it("should return a draft_id for a draft-enabled generation", async () => {
+    const provider = createFal({
+      apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
+      timeout: 900000,
+    });
+
+    const result = await provider.run.bytedance.seedance2p5.textToVideo({
+      prompt:
+        "A white odd-eyed cat blinks slowly and tilts its head, soft breeze through fur, cinematic close-up.",
+      draft: true,
+      duration: "4",
+      aspect_ratio: "1:1",
+      generate_audio: false,
+    });
+
+    expect(result.video.url.startsWith("http")).toBe(true);
+    expect(typeof result.seed).toBe("number");
+    expect(typeof result.draft_id).toBe("string");
+    expect(result.draft_id?.length).toBeGreaterThan(0);
+  }, 900000);
 });

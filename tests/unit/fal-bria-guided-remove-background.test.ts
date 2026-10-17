@@ -14,6 +14,10 @@ import {
   FalBriaGuidedRemoveBackgroundRequestSchema as schema,
   FAL_ENDPOINT_REQUEST_SCHEMAS,
 } from "@apicity/fal/zod";
+import {
+  zodToJsonSchema,
+  type JsonSchema,
+} from "../../packages/cli/src/schema";
 import { computeEstimate } from "../../packages/provider/cost/src/compute";
 import {
   fal as falPricing,
@@ -60,6 +64,12 @@ describe("Bria Guided Remove Background contract", () => {
     expectTypeOf<FalBriaGuidedRemoveBackgroundRequest>().toEqualTypeOf<
       z.input<typeof schema>
     >();
+    expectTypeOf<FalBriaGuidedRemoveBackgroundRequest>().toEqualTypeOf<{
+      image_url: string;
+      prompt?: string | null | undefined;
+      autocrop?: boolean | undefined;
+      sync_mode?: boolean | undefined;
+    }>();
     expectTypeOf<FalBriaGuidedRemoveBackgroundRequestInput>().toEqualTypeOf<FalBriaGuidedRemoveBackgroundRequest>();
     expectTypeOf<FalBriaGuidedRemoveBackgroundParsedRequest>().toEqualTypeOf<
       z.output<typeof schema>
@@ -102,13 +112,24 @@ describe("Bria Guided Remove Background contract", () => {
     expect(JSON.parse(String(init.body))).toEqual(recorded);
   });
 
-  it("has no required fields and fills only documented defaults", () => {
-    expect(schema.parse({})).toEqual({
-      image_url:
-        "https://labs-assets.bria.ai/api-examples/guided-remove-background/yoga_studio_input.jpg",
+  it("requires image_url instead of defaulting to Bria's sample photo", () => {
+    for (const body of [{}, { prompt: recorded.prompt }]) {
+      const result = schema.safeParse(body);
+      expect(result.success).toBe(false);
+      expect(result.error?.issues.map((issue) => issue.path)).toEqual([
+        ["image_url"],
+      ]);
+    }
+    expect(schema.parse({ image_url: recorded.image_url })).toEqual({
+      image_url: recorded.image_url,
       autocrop: false,
       sync_mode: false,
     });
+    const described = zodToJsonSchema(schema);
+    expect(described.required).toEqual(["image_url"]);
+    expect(
+      (described.properties as Record<string, JsonSchema>).image_url
+    ).not.toHaveProperty("default");
     expect(Object.keys(schema.shape)).toEqual([
       "image_url",
       "prompt",

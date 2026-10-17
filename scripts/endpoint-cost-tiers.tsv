@@ -981,6 +981,8 @@ openai	v1.organization.usage.embeddings	GET	expensive	Metered LLM/inference prov
 openai	v1.organization.usage.images	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
 openai	v1.organization.usage.moderations	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
 openai	v1.organization.usage.vectorStores	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.realtime.calls	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
+openai	v1.realtime.calls.hangup	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
 openai	v1.realtime.clientSecrets	POST	expensive	Metered LLM/inference provider; per-call token cost bills real money
 openai	v1.responses	DELETE	expensive	Metered LLM/inference provider; per-call token cost bills real money
 openai	v1.responses	GET	expensive	Metered LLM/inference provider; per-call token cost bills real money

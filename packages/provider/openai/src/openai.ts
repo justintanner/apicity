@@ -49,6 +49,8 @@ import {
   OpenAiConversationRetrieveResponse,
   OpenAiRealtimeClientSecretRequest,
   OpenAiRealtimeClientSecretResponse,
+  OpenAiRealtimeCallRequest,
+  OpenAiRealtimeCallResponse,
   OpenAiVectorStoreCreateRequest,
   OpenAiVectorStore,
   OpenAiVectorStoreListRequest,
@@ -116,6 +118,8 @@ import {
   OpenAiEvalCreateRequestSchema,
   OpenAiConversationCreateRequestSchema,
   OpenAiRealtimeClientSecretRequestSchema,
+  OpenAiRealtimeCallRequestSchema,
+  OpenAiRealtimeCallHangupRequestSchema,
   OpenAiVectorStoreCreateRequestSchema,
   OpenAiVectorStoreFileCreateRequestSchema,
   OpenAiVectorStoreSearchRequestSchema,
@@ -711,6 +715,46 @@ export function createOpenAi(opts: OpenAiOptions): OpenAiProvider {
       }
     ),
     realtime: {
+      // POST https://api.openai.com/v1/realtime/calls
+      // Docs: https://developers.openai.com/api/docs/guides/voice-webrtc
+      calls: Object.assign(
+        async (
+          req: OpenAiRealtimeCallRequest,
+          signal?: AbortSignal
+        ): Promise<OpenAiRealtimeCallResponse> => {
+          const form = new FormData();
+          form.set("sdp", req.sdp);
+          if (req.session) form.set("session", JSON.stringify(req.session));
+          const response = await transport.raw("/realtime/calls", {
+            method: "POST",
+            body: form,
+            signal,
+          });
+          const location = response.headers.get("location");
+          const callId = location?.split("/").pop();
+          if (!callId || !/^rtc_[a-zA-Z0-9_-]+$/.test(callId)) {
+            throw new OpenAiError(
+              "Realtime call response omitted its call ID",
+              502
+            );
+          }
+          return { sdp: await response.text(), callId };
+        },
+        {
+          schema: OpenAiRealtimeCallRequestSchema,
+          // POST https://api.openai.com/v1/realtime/calls/{call_id}/hangup
+          // Docs: https://developers.openai.com/api/reference/resources/realtime/subresources/calls/methods/hangup
+          hangup: Object.assign(
+            async (callId: string, signal?: AbortSignal): Promise<void> => {
+              await transport.emptyPost(
+                `/realtime/calls/${encodeURIComponent(callId)}/hangup`,
+                { signal }
+              );
+            },
+            { schema: OpenAiRealtimeCallHangupRequestSchema }
+          ),
+        }
+      ),
       // POST https://api.openai.com/v1/realtime/client_secrets
       // Docs: https://platform.openai.com/docs/api-reference/realtime-sessions/create-client-secret
       clientSecrets: Object.assign(

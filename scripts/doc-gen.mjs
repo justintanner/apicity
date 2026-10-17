@@ -570,6 +570,19 @@ export const ENDPOINT_NOTES = new Map([
 
 const PROVIDER_NOTES = new Map([
   [
+    "openai",
+    [
+      "Realtime voice over WebRTC: `openai.post.v1.realtime.calls({ sdp,",
+      "session })` sends the browser's SDP offer and resolves to the SDP",
+      "answer plus the `callId` (from the `Location` header). The",
+      "`@apicity/openai/realtime` subpath exports `connectOpenAiRealtime`, which",
+      "opens a server-side WebSocket to that call (`callId`) or to a new",
+      "session (`model`): `send()` client events such as `session.update`, and",
+      "receive server events through `onEvent`.",
+      "`openai.post.v1.realtime.calls.hangup(callId)` ends the call.",
+    ].join(" "),
+  ],
+  [
     "binance",
     [
       "Binance coverage is focused on public REST market-data reads across",
@@ -4098,6 +4111,9 @@ const DEP_NOTES = {
 };
 
 const PROVIDER_DEP_NOTES = {
+  openai: {
+    ws: "WebSocket client for the Realtime server control channel in `@apicity/openai/realtime`",
+  },
   openligadb: {
     zod: "request schemas attached to endpoint methods as `.schema`; response schemas exported",
   },

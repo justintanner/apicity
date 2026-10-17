@@ -1165,6 +1165,8 @@ openai	v1.images.variations	POST	https://api.openai.com/v1/images/variations	htt
 openai	v1.models	DELETE	https://api.openai.com/v1/models/{id}	https://platform.openai.com/docs/api-reference
 openai	v1.models	GET	https://api.openai.com/v1/models/{id}	https://platform.openai.com/docs/api-reference
 openai	v1.moderations	POST	https://api.openai.com/v1/moderations	https://platform.openai.com/docs/api-reference
+openai	v1.realtime.calls	POST	https://api.openai.com/v1/realtime/calls	https://developers.openai.com/api/docs/guides/voice-webrtc
+openai	v1.realtime.calls.hangup	POST	https://api.openai.com/v1/realtime/calls/{call_id}/hangup	https://developers.openai.com/api/reference/resources/realtime/subresources/calls/methods/hangup
 openai	v1.realtime.clientSecrets	POST	https://api.openai.com/v1/realtime/client_secrets	https://platform.openai.com/docs/api-reference/realtime-sessions/create-client-secret
 openai	v1.organization.costs	GET	https://api.openai.com/v1/organization/costs	https://platform.openai.com/docs/api-reference/usage
 openai	v1.organization.projects	GET	https://api.openai.com/v1/organization/projects/{idOrOpts}	https://platform.openai.com/docs/api-reference/projects

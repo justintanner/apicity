@@ -49,6 +49,9 @@ importers:
       '@types/node':
         specifier: ^20.19.42
         version: 20.19.42
+      '@types/ws':
+        specifier: ^8.18.1
+        version: 8.18.2
       '@vitest/coverage-v8':
         specifier: ^4.1.11
         version: 4.1.11(vitest@4.1.11)
@@ -88,6 +91,9 @@ importers:
       vitest:
         specifier: ^4.1.11
         version: 4.1.11(@types/node@20.19.42)(@vitest/coverage-v8@4.1.11)(@vitest/ui@4.1.11)(vite@6.4.3(@types/node@20.19.42))
+      ws:
+        specifier: ^8.21.0
+        version: 8.21.0
       zod:
         specifier: ^4.4.3
         version: 4.4.3
@@ -282,9 +288,16 @@ importers:
 
   packages/provider/openai:
     dependencies:
+      ws:
+        specifier: ^8.21.0
+        version: 8.21.0
       zod:
         specifier: ^4.4.3
         version: 4.4.3
+    devDependencies:
+      '@types/ws':
+        specifier: ^8.18.1
+        version: 8.18.2
 
   packages/provider/openf1:
     dependencies:
@@ -828,6 +841,9 @@ packages:
 
   '@types/set-cookie-parser@2.4.10':
     resolution: {integrity: sha512-GGmQVGpQWUe5qglJozEjZV/5dyxbOOZ0LHe/lqyWssB88Y4svNfst0uqBVscdDeIKl5Jy5+aPSvy7mI9tYRguw==}
+
+  '@types/ws@8.18.2':
+    resolution: {integrity: sha512-67MQl+fpWKVTT1NYdnmo3U4sc/xPo/zQBncVnI74qmQa0z/b+1g6iYqNmGCPbxO+zz2aklb08a0oHfegiVd0/w==}
 
   '@typescript-eslint/eslint-plugin@8.61.0':
     resolution: {integrity: sha512-bFNvl9ZczlVb+wR2Akszf3gHfKVj/8WanXaGJ3UstTA7brNKg0cNdk6X1Psu5V7MZ2oQtzZKOEzIUehaoxbDGw==}
@@ -2281,6 +2297,10 @@ snapshots:
       undici-types: 6.21.0
 
   '@types/set-cookie-parser@2.4.10':
+    dependencies:
+      '@types/node': 20.19.42
+
+  '@types/ws@8.18.2':
     dependencies:
       '@types/node': 20.19.42
 

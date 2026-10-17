@@ -148,6 +148,9 @@ export type {
   OpenAiRealtimeClientSecretRequest,
   OpenAiRealtimeClientSecretRequestInput,
   OpenAiRealtimeClientSecretParsedRequest,
+  OpenAiRealtimeCallRequest,
+  OpenAiRealtimeCallRequestInput,
+  OpenAiRealtimeCallParsedRequest,
   OpenAiVectorStoreExpirationPolicy,
   OpenAiVectorStoreAutoChunkingStrategy,
   OpenAiVectorStoreStaticChunkingStrategy,
@@ -1258,6 +1261,13 @@ export interface OpenAiRealtimeClientSecretResponse {
     | OpenAiRealtimeTranscriptionSessionResponse;
 }
 
+// POST /v1/realtime/calls answers with the SDP answer as text/plain and the
+// call ID only in its Location header.
+export interface OpenAiRealtimeCallResponse {
+  sdp: string;
+  callId: string;
+}
+
 // ---------------------------------------------------------------------------
 // Method interface types (endpoint shapes with .schema)
 // ---------------------------------------------------------------------------
@@ -1286,6 +1296,7 @@ import type {
   OpenAiEvalCreateRequest,
   OpenAiConversationCreateRequest,
   OpenAiRealtimeClientSecretRequest,
+  OpenAiRealtimeCallRequest,
   OpenAiVectorStoreExpirationPolicy,
   OpenAiVectorStoreChunkingStrategy,
   OpenAiVectorStoreCreateRequest,
@@ -1474,6 +1485,20 @@ export interface OpenAiPostV1RealtimeClientSecrets {
   schema: z.ZodType<OpenAiRealtimeClientSecretRequest>;
 }
 
+export interface OpenAiPostV1RealtimeCallsHangup {
+  (callId: string, signal?: AbortSignal): Promise<void>;
+  schema: z.ZodType<Record<string, never>>;
+}
+
+export interface OpenAiPostV1RealtimeCalls {
+  (
+    req: OpenAiRealtimeCallRequest,
+    signal?: AbortSignal
+  ): Promise<OpenAiRealtimeCallResponse>;
+  schema: z.ZodType<OpenAiRealtimeCallRequest>;
+  hangup: OpenAiPostV1RealtimeCallsHangup;
+}
+
 export interface OpenAiPostV1Batches {
   (req: OpenAiBatchCreateRequest, signal?: AbortSignal): Promise<OpenAiBatch>;
   schema: z.ZodType<OpenAiBatchCreateRequest>;
@@ -1558,6 +1583,7 @@ export interface OpenAiPostV1FineTuningNamespace {
 // Realtime namespace for POST v1
 export interface OpenAiPostV1RealtimeNamespace {
   clientSecrets: OpenAiPostV1RealtimeClientSecrets;
+  calls: OpenAiPostV1RealtimeCalls;
 }
 
 // POST v1 namespace

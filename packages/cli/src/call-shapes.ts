@@ -6260,6 +6260,22 @@ export const CALL_SHAPES: Record<string, CallShape> = {
     injected: [],
     derived: [],
   },
+  "openai\tPOST\tv1.realtime.calls.hangup": {
+    provider: "openai",
+    method: "POST",
+    dotPath: "v1.realtime.calls.hangup",
+    positional: [
+      {
+        placeholder: "call_id",
+        param: "callId",
+        optional: false,
+        alias: "call_id",
+      },
+    ],
+    fields: [],
+    injected: [],
+    derived: [],
+  },
   "openai\tGET\tv1.organization.projects": {
     provider: "openai",
     method: "GET",

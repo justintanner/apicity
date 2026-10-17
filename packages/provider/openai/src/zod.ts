@@ -924,6 +924,13 @@ export const OpenAiRealtimeClientSecretRequestSchema = z.object({
     .optional(),
 });
 
+export const OpenAiRealtimeCallRequestSchema = z.object({
+  sdp: z.string().min(1),
+  session: OpenAiRealtimeSessionCreateRequestSchema.optional(),
+});
+
+export const OpenAiRealtimeCallHangupRequestSchema = z.object({});
+
 // ---------------------------------------------------------------------------
 // Vector stores
 // ---------------------------------------------------------------------------
@@ -1516,6 +1523,13 @@ export type OpenAiRealtimeClientSecretRequestInput =
   OpenAiRealtimeClientSecretRequest;
 export type OpenAiRealtimeClientSecretParsedRequest = z.output<
   typeof OpenAiRealtimeClientSecretRequestSchema
+>;
+export type OpenAiRealtimeCallRequest = z.input<
+  typeof OpenAiRealtimeCallRequestSchema
+>;
+export type OpenAiRealtimeCallRequestInput = OpenAiRealtimeCallRequest;
+export type OpenAiRealtimeCallParsedRequest = z.output<
+  typeof OpenAiRealtimeCallRequestSchema
 >;
 export type OpenAiVectorStoreExpirationPolicy = z.infer<
   typeof OpenAiVectorStoreExpirationPolicySchema

@@ -1,13 +1,16 @@
 # @apicity/openai
 
 [![npm](https://img.shields.io/npm/v/@apicity/openai?color=cb0000)](https://www.npmjs.com/package/@apicity/openai)
-[![dependencies](https://img.shields.io/badge/dependencies-1-blue)](package.json)
+[![dependencies](https://img.shields.io/badge/dependencies-2-blue)](package.json)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue?logo=typescript&logoColor=white)](tsconfig.json)
 
 OpenAI / GPT provider for chat completions.
 
+Realtime voice over WebRTC: `openai.post.v1.realtime.calls({ sdp, session })` sends the browser's SDP offer and resolves to the SDP answer plus the `callId` (from the `Location` header). The `@apicity/openai/realtime` subpath exports `connectOpenAiRealtime`, which opens a server-side WebSocket to that call (`callId`) or to a new session (`model`): `send()` client events such as `session.update`, and receive server events through `onEvent`. `openai.post.v1.realtime.calls.hangup(callId)` ends the call.
+
 Runtime dependencies:
 
+- `ws@^8.21.0` — WebSocket client for the Realtime server control channel in `@apicity/openai/realtime`
 - `zod@^4.4.3` — request schemas attached to every POST endpoint as `.schema`
 
 ## Installation
@@ -28,7 +31,7 @@ const openai = createOpenAi({ apiKey: process.env.OPENAI_API_KEY! });
 
 ## API Reference
 
-62 endpoints across 19 groups. Each method mirrors an upstream URL path.
+64 endpoints across 19 groups. Each method mirrors an upstream URL path.
 
 ### audio
 
@@ -877,6 +880,40 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 </details>
 
 ### realtime
+
+<details>
+<summary><code>POST</code> <b><code>openai.v1.realtime.calls</code></b></summary>
+
+<code>POST https://api.openai.com/v1/realtime/calls</code>
+
+Cost tier: <code>expensive</code>
+
+[Upstream docs ↗](https://developers.openai.com/api/docs/guides/voice-webrtc)
+
+```typescript
+const res = await openai.post.v1.realtime.calls({ /* ... */ });
+```
+
+Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>openai.v1.realtime.calls.hangup</code></b></summary>
+
+<code>POST https://api.openai.com/v1/realtime/calls/{call_id}/hangup</code>
+
+Cost tier: <code>expensive</code>
+
+[Upstream docs ↗](https://developers.openai.com/api/reference/resources/realtime/subresources/calls/methods/hangup)
+
+```typescript
+const res = await openai.post.v1.realtime.calls.hangup({ /* ... */ });
+```
+
+Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>openai.v1.realtime.clientSecrets</code></b></summary>

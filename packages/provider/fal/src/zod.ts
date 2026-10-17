@@ -9068,13 +9068,14 @@ export type FalBriaFiboEdit1p5ExpandParsedRequest = z.output<
   typeof FalBriaFiboEdit1p5ExpandRequestSchema
 >;
 
-// Live fal OpenAPI verified 2026-10-15.
+// Live fal OpenAPI verified 2026-10-15 and unchanged on 2026-10-17. Its
+// Input requires nothing: image_url defaults to the example image, Bria's
+// own sample photo, which fal then processes and bills. image_url is
+// required here instead, so a request without a source image fails
+// validation rather than paying for that sample.
 export const FalBriaGuidedRemoveBackgroundRequestSchema = z.object({
   image_url: z
     .string()
-    .default(
-      "https://labs-assets.bria.ai/api-examples/guided-remove-background/yoga_studio_input.jpg"
-    )
     .describe(
       "Source image as a public URL, a base64 data URI (data:image/png;base64,...) or raw base64-encoded image bytes."
     ),

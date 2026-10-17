@@ -243,6 +243,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Breaking:** `bria/guided-remove-background` requires `image_url`
+  (ac-j3d6ki.1). fal's live queue OpenAPI Input defaults it to Bria's own
+  sample photo, and the schema mirrored that default, so a request without a
+  source image passed validation and fal processed and billed the sample.
+  `.schema.parse()` now rejects a payload without `image_url`, and typed
+  payloads that omit it no longer compile. Migration: pass the source image
+  as `image_url`.
 - **Breaking:** the nine non-US Seedance 2.0, 2.0 Fast and 2.5 request
   schemas follow fal's live queue OpenAPI Inputs (read 2026-10-17, ac-f6nytq).
   `seed` is no longer declared on

@@ -2,3 +2,10 @@ packages:
   - "packages/*"
   - "packages/provider/*"
   - "examples/*"
+
+# Dependency install scripts pnpm may run. esbuild's postinstall only
+# re-checks the platform binary pnpm already installs as an optional
+# dependency (@esbuild/<platform>), so it stays off. Recording the decision
+# replaces the "Ignored build scripts" warning on every fresh install.
+allowBuilds:
+  esbuild: false

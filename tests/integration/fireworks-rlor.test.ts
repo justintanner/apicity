@@ -154,7 +154,11 @@ describe("fireworks rlor trainer jobs integration", () => {
             learningRate: 1e-5,
           },
         })
-      ).rejects.toThrow();
+      ).rejects.toMatchObject({
+        name: "FireworksError",
+        status: 400,
+        body: { message: expect.stringContaining('unknown field "evaluator"') },
+      });
     });
   });
 
@@ -171,7 +175,7 @@ describe("fireworks rlor trainer jobs integration", () => {
       const jobId = "test-rlor-job-id";
       await expect(
         provider().inference.v1.accounts.rlorTrainerJobs.get(accountId, jobId)
-      ).rejects.toThrow();
+      ).rejects.toMatchObject({ name: "FireworksError", status: 404 });
     });
   });
 
@@ -195,7 +199,7 @@ describe("fireworks rlor trainer jobs integration", () => {
             outputModel: "accounts/test-account/models/step-output-model",
           }
         )
-      ).rejects.toThrow();
+      ).rejects.toMatchObject({ name: "FireworksError", status: 404 });
     });
   });
 
@@ -212,7 +216,7 @@ describe("fireworks rlor trainer jobs integration", () => {
       const jobId = "invalid-job-id";
       await expect(
         provider().inference.v1.accounts.rlorTrainerJobs.get(accountId, jobId)
-      ).rejects.toThrow();
+      ).rejects.toMatchObject({ name: "FireworksError", status: 404 });
     });
   });
 });

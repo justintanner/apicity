@@ -19,6 +19,8 @@ export interface PollyContext {
   mode: string;
   /** Releases this context's hold on the recording dispatcher. */
   releaseDispatcher?: () => void;
+  /** Requests replay found no recording for; teardownPolly fails on them. */
+  replayMisses?: string[];
 }
 
 interface PersistedHarHeader {
@@ -969,6 +971,17 @@ export function holdRecordingDispatcher(
   };
 }
 
+// The error Polly's adapter raises in replay when no recorded entry matches
+// a request's identifiers.
+const MISSING_RECORDING_MESSAGE =
+  "Recording for the following request is not found";
+
+function isMissingRecordingError(error: unknown): boolean {
+  return (
+    error instanceof Error && error.message.includes(MISSING_RECORDING_MESSAGE)
+  );
+}
+
 function setupPollyWithOptions(
   recordingName: string,
   options: {
@@ -1015,6 +1028,17 @@ function setupPollyWithOptions(
     throw error;
   }
 
+  // Providers wrap a replay miss into their own error, so a test that only
+  // asserts the call rejects passes without replaying anything (ac-wzvwud:
+  // two fireworks fixtures with stale entry ids). teardownPolly fails on
+  // these instead.
+  const replayMisses: string[] = [];
+  polly.server.any().on("error", (req, error) => {
+    if (isMissingRecordingError(error)) {
+      replayMisses.push(`${req.method} ${req.url}`);
+    }
+  });
+
   // Redact sensitive values before persisting to disk and keep a scrubbed
   // multipart summary so prompts remain visible in the harness viewer.
   polly.server.any().on("beforePersist", (req, recording) => {
@@ -1039,7 +1063,7 @@ function setupPollyWithOptions(
     redactPersistedHarSecrets(recording as PersistedHarRecording);
   });
 
-  return { polly, mode: raw, releaseDispatcher };
+  return { polly, mode: raw, releaseDispatcher, replayMisses };
 }
 
 export async function teardownPolly(ctx: PollyContext): Promise<void> {
@@ -1047,6 +1071,14 @@ export async function teardownPolly(ctx: PollyContext): Promise<void> {
     await ctx.polly.stop();
   } finally {
     ctx.releaseDispatcher?.();
+  }
+  const misses = ctx.replayMisses ?? [];
+  if (misses.length > 0) {
+    throw new Error(
+      `Polly replay found no recording in "${ctx.polly.recordingName}" for ` +
+        `${misses.join(", ")}. Fix the request or the recording's entry so ` +
+        "they match, or record it with `pnpm run dev:record -- <file>`."
+    );
   }
 }
 

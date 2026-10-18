@@ -104,10 +104,10 @@ pnpm run harness:screenshot:media # Generate + screenshot ONLY media-bearing rec
 pnpm run check:op                # Verify 1Password service account is working
 
 # Standalone HAR viewer
-npx tsx tests/harness-serve.ts path/to/file.har        # View specific HAR file(s)
-npx tsx tests/harness-serve.ts tests/recordings/       # View a directory of recordings
-npx tsx tests/harness-serve.ts --html out.html <paths> # Generate self-contained HTML
-npx tsx tests/harness-serve.ts --git-approve <paths>   # Enable approve button (git add)
+pnpm exec tsx tests/harness-serve.ts path/to/file.har        # View specific HAR file(s)
+pnpm exec tsx tests/harness-serve.ts tests/recordings/       # View a directory of recordings
+pnpm exec tsx tests/harness-serve.ts --html out.html <paths> # Generate self-contained HTML
+pnpm exec tsx tests/harness-serve.ts --git-approve <paths>   # Enable approve button (git add)
 ```
 
 Every package has a single-package `build:<name>` alias, and every provider

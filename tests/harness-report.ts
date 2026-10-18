@@ -4,8 +4,8 @@
  *   - harness-report.html : SPA shell with manifest
  *   - har-data-<shortSha>.json : per-commit recording data
  *
- * CI via: npx tsx tests/harness-report.ts --out-dir <path> [--media-only]
- * Local: npx tsx tests/harness-report.ts [--media-only]
+ * CI via: pnpm exec tsx tests/harness-report.ts --out-dir <path> [--media-only]
+ * Local: pnpm exec tsx tests/harness-report.ts [--media-only]
  */
 
 import fs from "node:fs";
@@ -56,7 +56,7 @@ const outDirIdx = process.argv.indexOf("--out-dir");
 const outDir = outDirIdx >= 0 ? process.argv[outDirIdx + 1] : ".";
 if (outDirIdx >= 0 && !outDir) {
   console.error(
-    "Usage: npx tsx tests/harness-report.ts [--out-dir <path>] [--media-only]"
+    "Usage: pnpm exec tsx tests/harness-report.ts [--out-dir <path>] [--media-only]"
   );
   process.exit(1);
 }

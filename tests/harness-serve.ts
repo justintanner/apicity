@@ -33,7 +33,7 @@ for (let i = 0; i < args.length; i++) {
 
 if (paths.length === 0) {
   console.error(
-    "Usage: npx tsx tests/harness-serve.ts [--media-only] [--compare] [--git-approve] [--port N] <file.har|dir> ..."
+    "Usage: pnpm exec tsx tests/harness-serve.ts [--media-only] [--compare] [--git-approve] [--port N] <file.har|dir> ..."
   );
   process.exit(1);
 }

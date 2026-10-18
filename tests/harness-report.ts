@@ -4,8 +4,17 @@
  *   - harness-report.html : SPA shell with manifest
  *   - har-data-<shortSha>.json : per-commit recording data
  *
- * CI via: pnpm exec tsx tests/harness-report.ts --out-dir <path> [--media-only]
- * Local: pnpm exec tsx tests/harness-report.ts [--media-only]
+ * Local, on demand: pnpm run harness:report (writes into the current
+ * directory), or
+ *   mkdir -p <path> && pnpm exec tsx tests/harness-report.ts --out-dir <path> [--media-only]
+ * pnpm run harness:screenshot[:media] runs it into
+ * tests/fixtures/harness-generated before taking the screenshot. The shell
+ * fetches its per-commit JSON, so serve the directory over http to browse it
+ * (python3 -m http.server --directory <path>).
+ *
+ * No CI job runs this script: the PR-only harness-report job was removed. The
+ * one CI job that still runs a harness script is endpoint-telegram, which
+ * runs pnpm run harness:telegram.
  */
 
 import fs from "node:fs";

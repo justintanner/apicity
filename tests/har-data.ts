@@ -295,7 +295,8 @@ export function parseHarPaths(paths: string[]): HarRecording[] {
   return results;
 }
 
-// --- CI diff helpers (used by harness-report.ts and harness-summary.ts) ---
+// --- CI diff helpers (harness-report.ts, harness-summary.ts,
+// harness-telegram.ts) ---
 
 export interface ChangedRecording {
   filePath: string;

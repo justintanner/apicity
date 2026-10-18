@@ -6,8 +6,9 @@
  *
  * Local, on demand: pnpm run harness:report (writes into the current
  * directory), or
- *   mkdir -p <path> && pnpm exec tsx tests/harness-report.ts --out-dir <path> [--media-only]
- * pnpm run harness:screenshot[:media] runs it into
+ *   pnpm exec tsx tests/harness-report.ts --out-dir <path> [--media-only]
+ * The script creates <path> when it does not exist. pnpm run
+ * harness:screenshot[:media] runs it into
  * tests/fixtures/harness-generated before taking the screenshot. The shell
  * fetches its per-commit JSON, so serve the directory over http to browse it
  * (python3 -m http.server --directory <path>).
@@ -70,13 +71,17 @@ if (outDirIdx >= 0 && !outDir) {
   process.exit(1);
 }
 
+// Before any write. A changed recording emits har-data-<sha>.json inside
+// the loop, ahead of harness-report.html; that write exits ENOENT when
+// --out-dir does not exist yet.
+fs.mkdirSync(outDir, { recursive: true });
+
 const baseBranch = getBaseBranch();
 const commits = getCommitsOnBranch(baseBranch);
 
 // No commits on branch → empty state
 if (commits.length === 0) {
   const emptyHtml = generateEmptyHtml(mediaOnly);
-  fs.mkdirSync(outDir, { recursive: true });
   fs.writeFileSync(
     path.join(outDir, "harness-report.html"),
     emptyHtml,
@@ -138,5 +143,4 @@ const html =
     ? generateEmptyHtml(mediaOnly)
     : generateSpaHtml(manifest);
 
-fs.mkdirSync(outDir, { recursive: true });
 fs.writeFileSync(path.join(outDir, "harness-report.html"), html, "utf-8");

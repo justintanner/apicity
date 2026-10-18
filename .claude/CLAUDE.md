@@ -301,7 +301,7 @@ The recording system uses two modes, chosen based on whether you're adding new t
    pnpm vitest run --config tests/vitest.integration.ts tests/integration/<file>.test.ts
    ```
 
-Recordings are committed alongside source code and included in PRs. CI no longer generates a harness report or screenshots on PRs; instead, on **push to main** the `endpoint-telegram` job sends one Telegram message per changed recording. To inspect recording diffs locally, use the harness viewer (`pnpm run harness`, `pnpm run harness:report`, `pnpm run harness:telegram -- --dry-run`).
+Recordings are committed alongside source code and included in PRs. CI no longer generates a harness report or screenshots on PRs; instead, on every push (any branch) the `endpoint-telegram` job sends one Telegram message per changed recording. To inspect recording diffs locally, use the harness viewer (`pnpm run harness`, `pnpm run harness:report`, `pnpm run harness:telegram -- --dry-run`).
 
 **Secrets management:**
 
@@ -309,7 +309,7 @@ API keys are resolved at runtime via the [1Password CLI](https://developer.1pass
 
 ### CI
 
-GitHub Actions (`ci.yml`): two jobs — **test** (guard against cassette re-recording, install, audit, build, verify artifacts, packed-provider type check, lint, integration tests via Polly.js replay; runs on push + PR) and **endpoint-telegram** (push-only; sends one Telegram message per changed recording). The old PR-only harness-report job (HTML report + Chromium screenshot + PR comment) has been removed — the harness viewer is now a local-only tool.
+GitHub Actions (`ci.yml`): two jobs — **test** (guard against cassette re-recording, install, audit, build, verify artifacts, packed-provider type check, lint, integration tests via Polly.js replay; runs on push + PR) and **endpoint-telegram** (every push, any branch; sends one Telegram message per changed recording). The old PR-only harness-report job (HTML report + Chromium screenshot + PR comment) has been removed — the harness viewer is now a local-only tool.
 
 ## Code Conventions
 
@@ -385,7 +385,7 @@ stay in sync. `pnpm run lint` includes `gen:shared:check` and fails on drift.
 | 5   | Pre-push         | `pnpm run dev:preflight:fast -- <name-or-path>` for provider work (includes the whole tests-project typecheck), `pnpm run dev:preflight:changed` for known changed-file work, or `dev:preflight` for full |
 | 6   | CI dry-run       | `pnpm run ci:local`                                                                                                                                                                                       |
 | 7   | Push + open PR   | `git push -u origin HEAD && gh pr create`                                                                                                                                                                 |
-| 8   | CI               | _(automatic — replay suite on PR; Telegram per changed recording on push to main)_                                                                                                                        |
+| 8   | CI               | _(automatic — replay suite on PR; Telegram per changed recording on every push)_                                                                                                                          |
 
 **Escape hatches**
 
@@ -396,7 +396,7 @@ stay in sync. `pnpm run lint` includes `gen:shared:check` and fails on drift.
   before recording.
 - `pnpm run harness` — local HAR viewer at `localhost:3475`.
 - `pnpm run harness:telegram -- --dry-run` — write
-  `harness-telegram-messages.json` without sending. On **push to main** CI sends
+  `harness-telegram-messages.json` without sending. On every push (any branch) CI sends
   these same per-endpoint HTML messages when Telegram secrets are present.
 - `pnpm run harness:screenshot:media` — generate a media-only PNG of the harness
   viewer locally, useful when iterating on `har-viewer.html` rendering.
@@ -411,7 +411,7 @@ stay in sync. `pnpm run lint` includes `gen:shared:check` and fails on drift.
   and imported by a node16 consumer with `skipLibCheck: false`) + the
   tests-project typecheck (`typecheck:tests`) + lint + integration tests via
   Polly.js replay. Equivalent to `ci:local`.
-- **endpoint-telegram** (push only) — diffs recordings since the previous push
+- **endpoint-telegram** (every push, any branch) — diffs recordings since the previous push
   and sends one Telegram message per changed recording (full headers, payloads,
   response, inline media). Skips cleanly when nothing changed.
 

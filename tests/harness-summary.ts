@@ -2,7 +2,7 @@
  * Generates a visual Markdown summary of changed HAR recordings for PR comments.
  * Shows the full story of every API interaction: credits checks first, then
  * every request/response in order, with polling steps rendered inline.
- * Used in CI via: npx tsx tests/harness-summary.ts
+ * Used in CI via: pnpm exec tsx tests/harness-summary.ts
  * Writes harness-summary.md and sets GitHub Actions outputs.
  */
 

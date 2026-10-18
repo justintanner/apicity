@@ -3,7 +3,7 @@
  * full-page screenshot. Used by CI to attach a visual artifact to PRs.
  *
  * Usage:
- *   npx tsx tests/harness-screenshot.ts <input.html> <output.png> [--width N]
+ *   pnpm exec tsx tests/harness-screenshot.ts <input.html> <output.png> [--width N]
  */
 
 import { chromium } from "playwright";
@@ -33,7 +33,7 @@ function parseArgs(argv: string[]): ScreenshotOptions {
 
   if (!htmlPath || !outPath) {
     throw new Error(
-      "Usage: tsx tests/harness-screenshot.ts <input.html> <output.png> [--width N]"
+      "Usage: pnpm exec tsx tests/harness-screenshot.ts <input.html> <output.png> [--width N]"
     );
   }
 

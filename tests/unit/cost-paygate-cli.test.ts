@@ -209,10 +209,10 @@ describe("CLI subprocess", () => {
 
   function runCli(args: string[]): Promise<CliResult> {
     const usesBuiltCli = existsSync(cliDistPath);
-    const command = usesBuiltCli ? process.execPath : "npx";
+    const command = usesBuiltCli ? process.execPath : "pnpm";
     const commandArgs = usesBuiltCli
       ? [cliDistPath, ...args]
-      : ["tsx", cliSourcePath, ...args];
+      : ["exec", "tsx", cliSourcePath, ...args];
 
     return new Promise((resolve, reject) => {
       execFile(
@@ -235,9 +235,9 @@ describe("CLI subprocess", () => {
 
   beforeAll(() => {
     // runCli prefers the BUILT CLI (fast `node dist` spawn) but falls back to
-    // `npx tsx` when dist is missing — the common local case, since `pnpm
-    // test:run` doesn't build first. tsx isn't a project dependency, so each
-    // fallback spawn re-downloads/recompiles (~3s each; ~11s for this file).
+    // the workspace's pinned tsx (`pnpm exec tsx`) when dist is missing — the
+    // common local case, since `pnpm test:run` doesn't build first. Each
+    // fallback spawn transpiles the source on the fly (~0.5s each).
     // Build the dist when it is missing OR stale (a source file is newer than
     // the built CLI) so we never test a stale artifact. CI skips this entirely
     // — its build already ran and is current — and local runs pay the one-time

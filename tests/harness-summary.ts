@@ -1,9 +1,18 @@
 /**
- * Generates a visual Markdown summary of changed HAR recordings for PR comments.
- * Shows the full story of every API interaction: credits checks first, then
- * every request/response in order, with polling steps rendered inline.
- * Used in CI via: pnpm exec tsx tests/harness-summary.ts
- * Writes harness-summary.md and sets GitHub Actions outputs.
+ * Generates a visual Markdown summary of changed HAR recordings, laid out as
+ * a PR comment. Shows the full story of every API interaction: credits checks
+ * first, then every request/response in order, with polling steps rendered
+ * inline.
+ *
+ * Local, on demand: pnpm exec tsx tests/harness-summary.ts
+ * Writes harness-summary.md into the current directory and saves inline
+ * base64 image outputs under tests/fixtures/harness-generated/. The GitHub
+ * Actions outputs (has_changes, has_assets) are set only when GITHUB_OUTPUT
+ * is defined, so a local run just writes the files.
+ *
+ * No CI job runs this script or posts its comment: the PR-only harness-report
+ * job was removed. The one CI job that still runs a harness script is
+ * endpoint-telegram, which runs pnpm run harness:telegram.
  */
 
 import fs from "node:fs";

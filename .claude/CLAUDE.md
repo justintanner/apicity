@@ -103,10 +103,11 @@ pnpm run harness:screenshot:media # Generate + screenshot ONLY media-bearing rec
 # Secrets
 pnpm run check:op                # Verify 1Password service account is working
 
-# Standalone HAR viewer
+# Standalone HAR viewer (serves only; for an HTML report of this branch's
+# changed recordings, use pnpm run harness:report above)
 pnpm exec tsx tests/harness-serve.ts path/to/file.har        # View specific HAR file(s)
 pnpm exec tsx tests/harness-serve.ts tests/recordings/       # View a directory of recordings
-pnpm exec tsx tests/harness-serve.ts --html out.html <paths> # Generate self-contained HTML
+pnpm exec tsx tests/harness-serve.ts --media-only <paths>    # View only media-bearing recordings
 pnpm exec tsx tests/harness-serve.ts --git-approve <paths>   # Enable approve button (git add)
 ```
 

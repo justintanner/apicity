@@ -1,6 +1,12 @@
 /**
- * Renders a HAR viewer HTML file in headless Chromium and captures a
- * full-page screenshot. Used by CI to attach a visual artifact to PRs.
+ * Renders a HAR viewer HTML file (a path or an http(s) URL) in headless
+ * Chromium and captures a full-page screenshot. A local, on-demand tool:
+ * pnpm run harness:screenshot and harness:screenshot:media build the report
+ * with harness-report.ts, then screenshot it with this script.
+ *
+ * No CI job runs this script: the PR-only harness-report job that attached
+ * the screenshot to PRs was removed. The one CI job that still runs a harness
+ * script is endpoint-telegram, which runs pnpm run harness:telegram.
  *
  * Usage:
  *   pnpm exec tsx tests/harness-screenshot.ts <input.html> <output.png> [--width N]

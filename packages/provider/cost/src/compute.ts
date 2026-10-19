@@ -222,22 +222,37 @@ function evaluateDeclaredTokens(
   entry: TokenPricing,
   hints?: CostHints
 ): CostEstimate {
-  const { inputTokens, outputTokens } = hints ?? {};
-  const missing: string[] = [];
-  if (typeof inputTokens !== "number") missing.push("costHints.inputTokens");
-  if (typeof outputTokens !== "number") missing.push("costHints.outputTokens");
-  if (typeof inputTokens !== "number" || typeof outputTokens !== "number") {
+  const inputTokens = hints?.inputTokens;
+  const outputTokens = hints?.outputTokens;
+  // Same bound as declared OpenAI usage: a present count that is not a
+  // non-negative safe integer is not a billable quantity (ac-wunvff).
+  if (!isTokenCount(inputTokens) || !isTokenCount(outputTokens)) {
+    const missing: string[] = [];
+    const invalid: string[] = [];
+    if (inputTokens === undefined) missing.push("costHints.inputTokens");
+    else if (!isTokenCount(inputTokens)) invalid.push("costHints.inputTokens");
+    if (outputTokens === undefined) missing.push("costHints.outputTokens");
+    else if (!isTokenCount(outputTokens)) {
+      invalid.push("costHints.outputTokens");
+    }
+    const warnings: string[] = [];
+    if (missing.length > 0) {
+      warnings.push(
+        `${provider} '${pricingKey}' is billed per token and the request carries ` +
+          `no token count; pass ${missing.join(" and ")}. Characters are not ` +
+          "tokens and no published conversion exists, so no estimate is quoted."
+      );
+    }
+    if (invalid.length > 0) {
+      warnings.push(`${invalid.join(" and ")} must be a non-negative integer`);
+    }
     return {
       usd: 0,
       currency: "USD",
       source: "declared-tokens+table",
       breakdown: { unit: "tokens" },
       rateAsOf: entry.source.asOf ?? PRICING_AS_OF,
-      warnings: [
-        `${provider} '${pricingKey}' is billed per token and the request carries ` +
-          `no token count; pass ${missing.join(" and ")}. Characters are not ` +
-          "tokens and no published conversion exists, so no estimate is quoted.",
-      ],
+      warnings,
     };
   }
   const { rate } = entry;

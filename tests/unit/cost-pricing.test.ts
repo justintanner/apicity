@@ -3204,6 +3204,64 @@ describe("kie stale-family refresh (REQ-004)", () => {
     }
   );
 
+  it.each([
+    ["NaN", Number.NaN],
+    ["negative", -1],
+    ["fractional", 1.5],
+    ["non-number", "100" as unknown as number],
+  ])(
+    "fails closed on a %s declared input token count",
+    (_label, inputTokens) => {
+      const model = "google/gemini-2-5-pro-tts";
+      const result = kieEstimate(
+        { model, input: { text: "hello" } },
+        {
+          endpoint: model,
+          costHints: { inputTokens, outputTokens: 1_000 },
+        }
+      );
+      expect(result.usd).toBe(0);
+      expect(result.breakdown.inputUsdPerMillion).toBeUndefined();
+      expect(result.breakdown.outputUsdPerMillion).toBeUndefined();
+      expect(result.warnings.join(" ")).toContain(
+        "costHints.inputTokens must be a non-negative integer"
+      );
+      expect(classifyEstimate(result)).toBe("prohibitive");
+    }
+  );
+
+  it("fails closed on a negative declared output token count", () => {
+    const model = "google/gemini-3-1-flash-tts";
+    const result = kieEstimate(
+      { model },
+      {
+        endpoint: model,
+        costHints: { inputTokens: 120, outputTokens: -1 },
+      }
+    );
+    expect(result.usd).toBe(0);
+    expect(result.breakdown.outputUsdPerMillion).toBeUndefined();
+    expect(result.warnings.join(" ")).toContain(
+      "costHints.outputTokens must be a non-negative integer"
+    );
+    expect(classifyEstimate(result)).toBe("prohibitive");
+  });
+
+  it("prices a zero declared token count at the published rates", () => {
+    const model = "google/gemini-2-5-pro-tts";
+    const result = kieEstimate(
+      { model },
+      { endpoint: model, costHints: { inputTokens: 0, outputTokens: 0 } }
+    );
+    expect(result.usd).toBe(0);
+    expect(result.warnings).toEqual([]);
+    expect(result.source).toBe("declared-tokens+table");
+    expect(result.breakdown.inputTokens).toBe(0);
+    expect(result.breakdown.outputTokens).toBe(0);
+    expect(result.breakdown.inputUsdPerMillion).toBe(0.7);
+    expect(result.breakdown.outputUsdPerMillion).toBe(14);
+  });
+
   it("names only the missing half of the token contract", () => {
     const model = "google/gemini-2-5-pro-tts";
     const noOutput = kieEstimate(

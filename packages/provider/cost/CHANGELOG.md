@@ -65,6 +65,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Static Fal pricing for video plus the remaining supported edit/image
   endpoints.
 - Alibaba `wan2.7-image` and KIE `nano-banana` per-image pricing.
+- An offline test and a README note pin xAI `grok-voice-think-fast-2.0` as
+  deliberately unpriced. xAI's primary pages list no rate for that id, and
+  the voice rates they do list ($0.08 per minute plus $0.004 per text input)
+  name no clock, rounding or text-input unit. A reported
+  `cost_in_usd_ticks` is the actual charge and is never added to an
+  estimate (ac-kvmsvg).
 
 ### Changed
 

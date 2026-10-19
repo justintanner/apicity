@@ -583,6 +583,19 @@ module in `src/pricing/`, bump `PRICING_AS_OF`.
 | `kie`                                                              | `per-unit-table`         | per second of video / per image / per generation; `endpoint` discriminator for Suno |
 | `free`                                                             | `free`                   | always $0                                                                           |
 
+**xAI voice is unpriced.** `grok-voice-think-fast-2.0` has no bundled rate.
+As of 2026-10-19, xAI's [pricing](https://docs.x.ai/developers/pricing) and
+[models](https://docs.x.ai/developers/models) pages, its voice API reference
+and its realtime schema list only `grok-voice-latest` (an alias of
+`grok-voice-3.0`), `grok-voice-3.0` and the deprecated `grok-voice-2.0`. Those
+bill $0.08 per minute plus $0.004 per text input, with no stated clock,
+rounding or text-input unit, and a realtime `response.done` reports tokens
+only. Its estimate is `usd: 0` with a model-not-found warning (`prohibitive`),
+and no other voice id's rate is copied onto it. Where xAI reports
+`cost_in_usd_ticks` (USD = ticks / 1e10), that is the actual charge: record
+it as the cost and never add an estimate to it. `@apicity/cost` never reads
+ticks.
+
 ## Dynamically priced fal endpoints
 
 fal endpoints on `FAL_DYNAMIC_PRICING_ENDPOINTS` bill a unit the request does

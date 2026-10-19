@@ -189,6 +189,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- KIE declared-token estimates (`google/gemini-2-5-pro-tts` and
+  `google/gemini-3-1-flash-tts`) reject NaN, negative, fractional and
+  non-number `costHints` token counts. An invalid count fails closed with
+  `usd: 0`, no rate in the breakdown, and a warning that the field must be a
+  non-negative integer. A count of `0` still prices at the published rates
+  (ac-wunvff).
 - Published `.d.ts` files give every relative import an explicit `.js`
   extension, including the 10 inline `import("./x")` types and the two
   `pricing/` `from "../types"` clauses, so a `moduleResolution: node16` or

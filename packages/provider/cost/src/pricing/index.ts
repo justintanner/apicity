@@ -46,4 +46,5 @@ export type {
   PerUnitPricing,
   RateSource,
   TokenPricing,
+  TokenRate,
 } from "./types";

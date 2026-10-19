@@ -46,6 +46,7 @@ export type {
   PricedProviderId,
   RateSource,
   TokenPricing,
+  TokenRate,
 } from "./pricing/index";
 
 export type {

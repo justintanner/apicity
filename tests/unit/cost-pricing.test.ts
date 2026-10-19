@@ -293,6 +293,46 @@ describe("PRICING data", () => {
     });
   });
 
+  it("openai prices gpt-5.6-sol with cache and long-context rates", () => {
+    expect(PRICING.openai["gpt-5.6-sol"]).toEqual({
+      kind: "tokens",
+      rate: { input: 4, output: 20, cacheRead: 0.4, cacheWrite: 5 },
+      longContext: {
+        aboveInputTokens: 272_000,
+        rate: { input: 8, output: 30, cacheRead: 0.8, cacheWrite: 10 },
+      },
+      source: {
+        url: "https://developers.openai.com/api/docs/pricing",
+        asOf: "2026-10-19",
+      },
+    });
+  });
+
+  it("keeps every long-context tier on the base tier's rate keys", () => {
+    for (const [provider, table] of Object.entries(PRICING)) {
+      for (const [model, entry] of Object.entries(
+        table as Record<string, (typeof PRICING)["openai"][string]>
+      )) {
+        if (entry.kind !== "tokens") continue;
+        const label = `${provider}/${model}`;
+        expect(
+          entry.rate.cacheWrite !== undefined &&
+            entry.rate.cacheWrite5m !== undefined,
+          `${label} sets both cacheWrite and cacheWrite5m`
+        ).toBe(false);
+        if (!entry.longContext) continue;
+        expect(
+          Number.isSafeInteger(entry.longContext.aboveInputTokens) &&
+            entry.longContext.aboveInputTokens > 0,
+          `${label} aboveInputTokens`
+        ).toBe(true);
+        expect(Object.keys(entry.longContext.rate).sort(), label).toEqual(
+          Object.keys(entry.rate).sort()
+        );
+      }
+    }
+  });
+
   it("anthropic has token-priced models with cache rates", () => {
     expect(PRICING.anthropic["claude-opus-4-7"]).toMatchObject({
       kind: "tokens",

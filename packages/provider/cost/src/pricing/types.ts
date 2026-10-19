@@ -25,16 +25,38 @@ export interface RateSource {
   asOf?: string;
 }
 
+// USD per million tokens for one pricing tier of a token-billed model.
+//
+// `cacheRead` prices input tokens served from the provider's prompt cache.
+// `cacheWrite5m` is Anthropic's five-minute cache-write rate. `cacheWrite` is
+// the cache-write rate of a provider that publishes a single one with no
+// retention variant (OpenAI GPT-5.6: 1.25x the uncached input rate, with a
+// 30-minute cache TTL); an entry sets at most one of the two write fields.
+export interface TokenRate {
+  input: number;
+  output: number;
+  cacheRead?: number;
+  cacheWrite5m?: number;
+  cacheWrite?: number;
+}
+
 // Token-billed providers: openai, anthropic, xai, kimicoding, fireworks,
-// alibaba. Token counts come from outside (upstream tokenizer or chars/4
-// heuristic) — selectors and units derivation aren't needed.
+// alibaba. Token counts come from the chars/4 heuristic or, on the openai
+// route, from caller-declared usage (CostHints) — selectors and units
+// derivation aren't needed.
+//
+// `longContext` reprices the WHOLE request at `longContext.rate` when the
+// declared total input tokens exceed `aboveInputTokens` (OpenAI GPT-5.6 Sol:
+// "Prompts with >272K input tokens are priced at 2x input and 1.5x output
+// for the full request"). An entry that sets `longContext` or
+// `rate.cacheWrite` is priced only from declared usage: chars/4 cannot see
+// cache writes or which side of the boundary a request falls on.
 export interface TokenPricing {
   kind: "tokens";
-  rate: {
-    input: number;
-    output: number;
-    cacheRead?: number;
-    cacheWrite5m?: number;
+  rate: TokenRate;
+  longContext?: {
+    aboveInputTokens: number;
+    rate: TokenRate;
   };
   source: RateSource;
 }

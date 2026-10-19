@@ -91,6 +91,7 @@ interface CostEstimate {
   currency: "USD";
   source:
     | "tokens-heuristic+table" // openai/anthropic/xai/kimicoding/fireworks/alibaba — chars/4 ≈ tokens × bundled rate
+    | "declared-tokens+table" // costHints token counts × bundled rate (declared openai usage, kie Gemini TTS)
     | "per-unit-table" // elevenlabs/kie — payload-derived units × bundled rate
     | "free";
   breakdown: {
@@ -107,6 +108,12 @@ interface CostEstimate {
     inputUsdPerMillion?: number;
     outputUsdPerMillion?: number;
     perUnitUsd?: number;
+    // declared openai usage only — see "Declared usage (openai)"
+    cacheReadInputTokens?: number;
+    cacheWriteInputTokens?: number;
+    cacheReadUsdPerMillion?: number;
+    cacheWriteUsdPerMillion?: number;
+    contextTier?: "short" | "long";
   };
   rateAsOf: string | null; // YYYY-MM-DD — the rate entry's as-of date, falling back to PRICING_AS_OF
   warnings: string[]; // non-empty when fallback fired (unknown model, missing max_tokens, missing duration, etc.)
@@ -165,6 +172,10 @@ interface CostHints {
   googleFlowPlan?: "plus" | "pro" | "ultra-99" | "ultra" | (string & {});
   inputTokens?: number;
   outputTokens?: number;
+  cacheReadInputTokens?: number;
+  cacheWriteInputTokens?: number;
+  serviceTier?: string;
+  regionalProcessing?: boolean;
 }
 ```
 
@@ -450,6 +461,78 @@ by the local rate table, never merged into `payload`, never sent upstream, and
 never canonicalized or signed — see [Hash and OTP
 guarantee](#hash-and-otp-guarantee) below.
 
+### Declared usage (openai)
+
+An OpenAI response reports what it billed in `usage`. Pass those counts as
+`costHints` and the openai route prices them exactly, instead of estimating
+chars/4 tokens from the payload. Declaring any of `inputTokens`,
+`outputTokens`, `cacheReadInputTokens` or `cacheWriteInputTokens` switches an
+openai estimate to `source: "declared-tokens+table"`; without them the chars/4
+path is unchanged for legacy models. `gpt-5.6-sol` always requires declared
+usage.
+
+| `costHints`             | Responses API `usage`                     | Chat Completions `usage`                   |
+| ----------------------- | ----------------------------------------- | ------------------------------------------ |
+| `inputTokens`           | `input_tokens`                            | `prompt_tokens`                            |
+| `cacheReadInputTokens`  | `input_tokens_details.cached_tokens`      | `prompt_tokens_details.cached_tokens`      |
+| `cacheWriteInputTokens` | `input_tokens_details.cache_write_tokens` | `prompt_tokens_details.cache_write_tokens` |
+| `outputTokens`          | `output_tokens`                           | `completion_tokens`                        |
+| `serviceTier`           | `service_tier`                            | `service_tier`                             |
+
+`inputTokens` is the **total** input. The cached and cache-write counts are
+subsets of it that never overlap, so the uncached remainder is `inputTokens`
+minus both, and no token is billed twice. Do not pass an uncached-only count
+as `inputTokens`: subsets larger than the total fail the estimate.
+`service_tier` is a top-level response field, outside `usage`.
+`outputTokens` already includes reasoning tokens; never add
+`reasoning_tokens` on top.
+
+`gpt-5.6-sol` (Standard processing, rates verified 2026-10-19 against
+[OpenAI's pricing page](https://developers.openai.com/api/docs/pricing)) is
+priced only this way:
+
+| Input tokens in the request | Input | Cached input | Cache writes | Output |
+| --------------------------- | ----- | ------------ | ------------ | ------ |
+| up to 272,000               | $4.00 | $0.40        | $5.00        | $20.00 |
+| more than 272,000           | $8.00 | $0.80        | $10.00       | $30.00 |
+
+USD per million tokens. Above 272,000 total input tokens (cached and
+cache-write tokens count toward it) the **whole request** bills at the
+long-context rates, and `breakdown.contextTier` says which tier applied. Cache
+writes are 1.25x the uncached input rate; GPT-5.6 writes the cache by default,
+so both cache counts are required (`0` when the response reports none). These
+are OpenAI's promotional prices, available at least through November 21, 2026.
+
+```ts
+c.estimate({
+  provider: "openai",
+  payload: { model: "gpt-5.6-sol", input: "..." },
+  costHints: {
+    inputTokens: 15_000, // usage.input_tokens
+    cacheReadInputTokens: 12_000, // usage.input_tokens_details.cached_tokens
+    cacheWriteInputTokens: 3_000, // usage.input_tokens_details.cache_write_tokens
+    outputTokens: 500, // usage.output_tokens
+  },
+}).usd; // → 0.0298  (12,000 × $0.40 + 3,000 × $5 + 500 × $20, per million)
+```
+
+Every gap returns `usd: 0` with one warning and no rate in the breakdown, so
+`classifyEstimate` reads it as unknown (`prohibitive`), never as cheap:
+
+- `gpt-5.6-sol` with no declared usage: chars/4 cannot see cache writes or
+  which side of 272,000 a request falls on.
+- A missing count, or one that is not a non-negative integer.
+- Cache subsets larger than `inputTokens`.
+- A positive cache count on a model with no bundled rate for it (the older
+  openai rows carry input and output rates only).
+- A service tier other than Standard: `costHints.serviceTier`, else the
+  request's `service_tier`, must be absent, `"default"` or `"auto"`. Batch,
+  Flex, Fast (`"priority"`/`"fast"`) and Scale prices are not bundled. Pass the
+  response's `service_tier`: a project whose default tier is Fast runs
+  `"auto"` requests on Fast.
+- `regionalProcessing: true`: data-residency (regional processing) and FedRAMP
+  endpoints bill a 10% uplift that is not bundled.
+
 ### Hash and OTP guarantee
 
 `costHints` lives outside `payload`, so `canonicalHash(payload)` is
@@ -495,6 +578,7 @@ module in `src/pricing/`, bump `PRICING_AS_OF`.
 | Provider                                                           | source                   | Notes                                                                               |
 | ------------------------------------------------------------------ | ------------------------ | ----------------------------------------------------------------------------------- |
 | `openai`, `anthropic`, `xai`, `kimicoding`, `fireworks`, `alibaba` | `tokens-heuristic+table` | chars/4 ≈ tokens — no upstream call                                                 |
+| `openai` with declared usage                                       | `declared-tokens+table`  | response `usage` counts; required for `gpt-5.6-sol`                                 |
 | `elevenlabs`                                                       | `per-unit-table`         | priced per character                                                                |
 | `kie`                                                              | `per-unit-table`         | per second of video / per image / per generation; `endpoint` discriminator for Suno |
 | `free`                                                             | `free`                   | always $0                                                                           |
@@ -827,7 +911,11 @@ empty is a `usage` error, never a disarmed gate.
 ## Out of scope
 
 - Anthropic prompt-cache pricing (rates are in the table but `estimate()` ignores them — assumes no caching)
-- Batch API discount (50% off across providers)
+- Batch API discount (50% off across providers), and OpenAI's Flex, Fast and Scale tiers
+- OpenAI's 10% regional-processing (data residency) and FedRAMP uplift
+- OpenAI built-in tool fees (web search, file search, containers), billed per call beside tokens
+- The `gpt-5.6` alias and `gpt-5.6-terra` / `gpt-5.6-luna`: only the exact `gpt-5.6-sol` id is priced
+- The end of a promotional price: the estimator has no clock, so `rateAsOf` dates each rate
 - Tier-based fallback for fireworks (parameter-count brackets)
 - Suno per-song pricing on kie (no stable published rate)
 - Caller-side `pricingOverrides`

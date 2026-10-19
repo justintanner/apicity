@@ -9,6 +9,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `gpt-5.6-sol` pricing, verified 2026-10-19 against OpenAI's pricing page:
+  Standard processing at $4 input, $0.40 cached input, $5 cache writes and
+  $20 output per million tokens, and $8 / $0.80 / $10 / $30 for the whole
+  request above 272,000 input tokens. These are OpenAI's promotional prices,
+  available at least through November 21, 2026. The model is priced only
+  from declared usage. `MODEL_SLUGS.openai` adds `gpt5p6sol` and
+  `MODEL_DISPLAY.openai` "GPT-5.6 Sol" (ac-0y875w).
+- Declared OpenAI usage: `costHints.cacheReadInputTokens` and
+  `cacheWriteInputTokens`, the cached and cache-write subsets of
+  `inputTokens`; `costHints.serviceTier`, the response's `service_tier`; and
+  `costHints.regionalProcessing`. Only Standard processing on global
+  endpoints is priced. Any other tier, regional processing, a missing or
+  non-integer count, or cache subsets larger than `inputTokens` return
+  `usd: 0` with a warning and no rate. `CostBreakdown` reports the cache
+  counts and rates and a `contextTier`, and `TokenPricing` gains an exported
+  `TokenRate`, a retention-agnostic `rate.cacheWrite` and an optional
+  `longContext` tier (ac-0y875w).
+
 - `MODEL_DISPLAY.fal` names every dynamically priced fal endpoint, all 67 ids
   in `FAL_DYNAMIC_PRICING_ENDPOINTS`; for example `google/nano-banana-2.1` is
   "Nano Banana 2.1" and `fal-ai/kandinsky6-pro/text-to-video` is "Kandinsky 6.0
@@ -50,6 +68,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `computeEstimate`'s openai route reads `costHints.inputTokens` and
+  `outputTokens`, which it used to ignore. Declaring any token count prices
+  the declared usage (`source: "declared-tokens+table"`) instead of the
+  chars/4 heuristic, and a missing or invalid count now fails closed. Without
+  declared counts every existing openai estimate is unchanged (ac-0y875w).
 - `computeEstimate`'s warning for ten dynamically priced fal endpoints names
   the billed unit and why the request cannot fix it, instead of the generic
   "compute seconds, delivered output metadata, or tokens" list. The endpoints

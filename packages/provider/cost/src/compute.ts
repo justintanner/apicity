@@ -256,6 +256,198 @@ function evaluateDeclaredTokens(
   };
 }
 
+// The CostHints token counts. Declaring any of them on the openai route
+// switches it from the chars/4 heuristic to evaluateDeclaredUsage.
+const DECLARED_USAGE_FIELDS = [
+  "inputTokens",
+  "outputTokens",
+  "cacheReadInputTokens",
+  "cacheWriteInputTokens",
+] as const;
+
+type DeclaredUsageField = (typeof DECLARED_USAGE_FIELDS)[number];
+
+// Service tiers billed at the bundled Standard rates. OpenAI's response
+// reports Standard processing as "default"; a request's "auto" (or no
+// service_tier at all) runs on the project's default tier, Standard unless
+// the project is configured otherwise -- which costHints.serviceTier, read
+// from the response, overrides.
+const STANDARD_SERVICE_TIERS: ReadonlySet<string> = new Set([
+  "default",
+  "auto",
+]);
+
+function hasDeclaredUsage(hints?: CostHints): boolean {
+  return DECLARED_USAGE_FIELDS.some((field) => hints?.[field] !== undefined);
+}
+
+// Cache writes and a long-context tier both depend on billed counts that a
+// chars/4 estimate cannot see, so such an entry has no heuristic path.
+function requiresDeclaredUsage(entry: TokenPricing): boolean {
+  return entry.rate.cacheWrite !== undefined || entry.longContext !== undefined;
+}
+
+function isTokenCount(value: unknown): value is number {
+  return typeof value === "number" && Number.isSafeInteger(value) && value >= 0;
+}
+
+// Prices caller-declared token usage, typically a response's reported
+// `usage` (ac-0y875w). `inputTokens` is the TOTAL input and the two cache
+// counts are disjoint subsets of it, so the uncached remainder is
+// inputTokens - cacheReadInputTokens - cacheWriteInputTokens and no token is
+// billed twice. The long-context tier is selected on that total. Every gap --
+// a missing or invalid count, subsets larger than the total, a count with no
+// bundled rate, a tier other than Standard, regional processing -- fails
+// closed with no rate in the breakdown, so classifyEstimate reads it as
+// unknown instead of quoting Standard rates for a bill OpenAI computes
+// differently.
+function evaluateDeclaredUsage(
+  provider: PricedProviderId,
+  model: string,
+  payload: Record<string, unknown>,
+  hints?: CostHints
+): CostEstimate {
+  const source: CostSource = "declared-tokens+table";
+  const entry = PRICING[provider][model];
+  if (!entry) {
+    return failed(source, [
+      `model '${model}' not found in pricing table for provider '${provider}'`,
+    ]);
+  }
+  if (entry.kind !== "tokens") {
+    return failed(source, [
+      `${provider} '${model}' is per-unit billed, not token-billed`,
+    ]);
+  }
+  const rateAsOf = entry.source.asOf ?? PRICING_AS_OF;
+  const unknown = (warning: string): CostEstimate => ({
+    usd: 0,
+    currency: "USD",
+    source,
+    breakdown: { unit: "tokens" },
+    rateAsOf,
+    warnings: [warning],
+  });
+
+  const required: DeclaredUsageField[] = ["inputTokens", "outputTokens"];
+  if (entry.rate.cacheRead !== undefined) required.push("cacheReadInputTokens");
+  if (entry.rate.cacheWrite !== undefined) {
+    required.push("cacheWriteInputTokens");
+  }
+  const named = (fields: readonly DeclaredUsageField[]): string =>
+    fields.map((field) => `costHints.${field}`).join(", ");
+  if (!hasDeclaredUsage(hints)) {
+    return unknown(
+      `${provider} '${model}' bills cache writes or a long-context tier that ` +
+        "a chars/4 estimate cannot see; pass the response's usage as " +
+        `${named(required)}. No estimate is quoted.`
+    );
+  }
+  const missing = required.filter((field) => hints?.[field] === undefined);
+  const invalid = DECLARED_USAGE_FIELDS.filter(
+    (field) => hints?.[field] !== undefined && !isTokenCount(hints?.[field])
+  );
+  if (missing.length > 0 || invalid.length > 0) {
+    const problems: string[] = [];
+    if (missing.length > 0) problems.push(`pass ${named(missing)}`);
+    if (invalid.length > 0) {
+      problems.push(`${named(invalid)} must be a non-negative integer`);
+    }
+    return unknown(
+      `${provider} '${model}' is priced from declared token usage; ` +
+        `${problems.join("; ")}. No estimate is quoted.`
+    );
+  }
+
+  const inputTokens = hints?.inputTokens ?? 0;
+  const outputTokens = hints?.outputTokens ?? 0;
+  const cacheRead = hints?.cacheReadInputTokens ?? 0;
+  const cacheWrite = hints?.cacheWriteInputTokens ?? 0;
+  if (cacheRead + cacheWrite > inputTokens) {
+    return unknown(
+      `${provider} '${model}': costHints.cacheReadInputTokens + ` +
+        `costHints.cacheWriteInputTokens (${cacheRead + cacheWrite}) exceed ` +
+        `costHints.inputTokens (${inputTokens}). inputTokens is the total ` +
+        "input, cached and cache-write tokens included (usage.input_tokens " +
+        "or usage.prompt_tokens). No estimate is quoted."
+    );
+  }
+
+  const tier = hints?.serviceTier ?? payload.service_tier;
+  if (
+    tier !== undefined &&
+    tier !== null &&
+    !(typeof tier === "string" && STANDARD_SERVICE_TIERS.has(tier))
+  ) {
+    return unknown(
+      `${provider} '${model}': service tier ${JSON.stringify(tier)} is not ` +
+        'bundled; only Standard processing (service_tier "default" or ' +
+        '"auto") is priced. No estimate is quoted.'
+    );
+  }
+  if (
+    hints?.regionalProcessing !== undefined &&
+    hints.regionalProcessing !== false
+  ) {
+    return unknown(
+      `${provider} '${model}': regional processing (data residency) and ` +
+        "FedRAMP endpoints bill an uplift that is not bundled. No estimate " +
+        "is quoted."
+    );
+  }
+
+  const long =
+    entry.longContext !== undefined &&
+    inputTokens > entry.longContext.aboveInputTokens;
+  const rate = long && entry.longContext ? entry.longContext.rate : entry.rate;
+  if (cacheRead > 0 && rate.cacheRead === undefined) {
+    return unknown(
+      `${provider} '${model}' has no bundled cached-input rate, so ` +
+        "costHints.cacheReadInputTokens must be 0. No estimate is quoted."
+    );
+  }
+  if (cacheWrite > 0 && rate.cacheWrite === undefined) {
+    return unknown(
+      `${provider} '${model}' has no bundled cache-write rate, so ` +
+        "costHints.cacheWriteInputTokens must be 0. No estimate is quoted."
+    );
+  }
+  const uncached = inputTokens - cacheRead - cacheWrite;
+  const usd =
+    (uncached * rate.input +
+      cacheRead * (rate.cacheRead ?? 0) +
+      cacheWrite * (rate.cacheWrite ?? 0) +
+      outputTokens * rate.output) /
+    1_000_000;
+  return {
+    usd,
+    currency: "USD",
+    source,
+    breakdown: {
+      inputTokens,
+      outputTokens,
+      unit: "tokens",
+      inputUsdPerMillion: rate.input,
+      outputUsdPerMillion: rate.output,
+      ...(rate.cacheRead !== undefined
+        ? {
+            cacheReadInputTokens: cacheRead,
+            cacheReadUsdPerMillion: rate.cacheRead,
+          }
+        : {}),
+      ...(rate.cacheWrite !== undefined
+        ? {
+            cacheWriteInputTokens: cacheWrite,
+            cacheWriteUsdPerMillion: rate.cacheWrite,
+          }
+        : {}),
+      ...(entry.longContext ? { contextTier: long ? "long" : "short" } : {}),
+    },
+    rateAsOf,
+    warnings: [],
+  };
+}
+
 const FAL_DYNAMIC_ENDPOINT_SET: ReadonlySet<string> = new Set(
   FAL_DYNAMIC_PRICING_ENDPOINTS
 );
@@ -297,12 +489,36 @@ export function computeEstimate(req: EstimateRequest): CostEstimate {
         ext.data.maxOutputTokens
       );
     }
-    case "openai":
+    // OpenAI also prices declared usage (ac-0y875w): any CostHints token
+    // count opts in, and an entry that bills cache writes or a long-context
+    // tier (gpt-5.6-sol) requires it. Without either, the chars/4 path below
+    // runs exactly as before.
+    case "openai": {
+      const model = asString(req.payload.model);
+      const entry = model ? PRICING.openai[model] : undefined;
+      if (
+        model &&
+        (hasDeclaredUsage(req.costHints) ||
+          (entry?.kind === "tokens" && requiresDeclaredUsage(entry)))
+      ) {
+        return evaluateDeclaredUsage(
+          "openai",
+          model,
+          req.payload,
+          req.costHints
+        );
+      }
+      const ext = extractOpenAi(req.payload);
+      if (!ext.ok) return failed("tokens-heuristic+table", ext.warnings);
+      return applyTokenRate(
+        "openai",
+        ext.data.model,
+        heuristicTokens(ext.data.text),
+        ext.data.maxOutputTokens
+      );
+    }
     case "anthropic": {
-      const ext =
-        req.provider === "openai"
-          ? extractOpenAi(req.payload)
-          : extractAnthropic(req.payload);
+      const ext = extractAnthropic(req.payload);
       if (!ext.ok) return failed("tokens-heuristic+table", ext.warnings);
       const inputTokens = heuristicTokens(ext.data.text);
       return applyTokenRate(

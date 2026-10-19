@@ -2,8 +2,9 @@
 // "declared-tokens+table" — token counts supplied by the caller through
 //   CostHints. Used where an upstream publishes a per-token rate but the
 //   request body carries no billable token count and no defensible conversion
-//   exists (KIE's Gemini TTS models), so the caller must declare them or the
-//   estimate fails closed.
+//   exists (KIE's Gemini TTS models), and on the openai route whenever the
+//   caller declares usage or the model bills cache writes or a long-context
+//   tier (gpt-5.6-sol). Missing or invalid counts fail the estimate closed.
 // "per-unit-table" — units derived from the payload (seconds, images, ...).
 // "free" — no charge.
 export type CostSource =
@@ -30,6 +31,15 @@ export interface CostBreakdown {
   outputUsdPerMillion?: number;
   perUnitUsd?: number;
   extraUsd?: number;
+  // Declared openai usage only: the cached-input and cache-write subsets of
+  // `inputTokens` with the per-million rates that priced them (present when
+  // the model publishes that rate), and which context tier priced the request
+  // (present when the model publishes a long-context tier).
+  cacheReadInputTokens?: number;
+  cacheWriteInputTokens?: number;
+  cacheReadUsdPerMillion?: number;
+  cacheWriteUsdPerMillion?: number;
+  contextTier?: "short" | "long";
 }
 
 export interface CostEstimate {
@@ -117,10 +127,43 @@ export interface CostHints {
   // invented; both fields are required together for those models and their
   // absence fails closed with a warning rather than quoting a number.
   //
+  // On the openai route these are declared usage, typically a response's
+  // reported `usage`. `inputTokens` is the TOTAL input, cached and cache-write
+  // tokens included (Responses `usage.input_tokens`, Chat Completions
+  // `usage.prompt_tokens`); `outputTokens` is the total output, reasoning
+  // tokens included (`usage.output_tokens` / `usage.completion_tokens`;
+  // never add `reasoning_tokens` on top). Declaring any count switches the
+  // openai route from the chars/4 heuristic to declared usage, where every
+  // count must be a non-negative integer.
+  //
   // Cost-only, like the rest of CostHints: never merged into payload, never
   // canonicalHash'd, never signed.
   inputTokens?: number;
   outputTokens?: number;
+  // The subsets of `inputTokens` billed at the cached-input and cache-write
+  // rates: OpenAI's `input_tokens_details.cached_tokens` and
+  // `input_tokens_details.cache_write_tokens` (Chat Completions:
+  // `prompt_tokens_details.*`). They never overlap and never exceed
+  // `inputTokens`; the uncached remainder is inputTokens minus both. Required
+  // (0 when none) for a model that publishes the matching rate, because
+  // GPT-5.6 writes the cache by default and bills writes at 1.25x input.
+  // The write count names no retention window. Cost-only.
+  cacheReadInputTokens?: number;
+  cacheWriteInputTokens?: number;
+  // The processing tier that billed the request, as the response's
+  // `service_tier` reports it ("default" is Standard). It overrides the
+  // request's `service_tier`, which can say "auto" or nothing and still run on
+  // a project's Fast default. Declared openai usage prices Standard only:
+  // absent, "default" or "auto" is Standard, and anything else ("priority",
+  // "flex", "batch", ...) fails closed rather than quoting Standard rates.
+  // Cost-only.
+  serviceTier?: string;
+  // True when an openai request ran on a regional-processing (data
+  // residency) or FedRAMP endpoint, which OpenAI bills at a 10% uplift for
+  // eligible models released on or after 2026-03-05. The uplift is not
+  // bundled, so declared openai usage fails closed when this is set; the
+  // estimator cannot see the endpoint otherwise. Cost-only.
+  regionalProcessing?: boolean;
 }
 
 // All provider routes are pure-table lookups. Token-billed providers

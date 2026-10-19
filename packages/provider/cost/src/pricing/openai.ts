@@ -24,6 +24,25 @@ export const openai: Record<string, ModelPricing> = {
       asOf: "2026-10-19",
     },
   },
+  // GPT-Realtime-2.1, verified 2026-10-19 against
+  // https://developers.openai.com/api/docs/pricing and
+  // https://developers.openai.com/api/docs/models/gpt-realtime-2.1
+  // (ac-ow167y). Realtime bills text, audio and image tokens at separate
+  // rates; `rate` is the text rate. Image is an input-only modality, and no
+  // cache-write charge is published. Priced only from declared modality usage
+  // (a Realtime response.done `usage`).
+  "gpt-realtime-2.1": {
+    kind: "tokens",
+    rate: { input: 4, output: 24, cacheRead: 0.4 },
+    modalityRates: {
+      audio: { input: 32, cacheRead: 0.4, output: 64 },
+      image: { input: 5, cacheRead: 0.5 },
+    },
+    source: {
+      url: "https://developers.openai.com/api/docs/pricing",
+      asOf: "2026-10-19",
+    },
+  },
   "gpt-5": { kind: "tokens", rate: { input: 1.25, output: 10 }, source },
   "gpt-5-mini": { kind: "tokens", rate: { input: 0.25, output: 2 }, source },
   "gpt-5-nano": { kind: "tokens", rate: { input: 0.05, output: 0.4 }, source },

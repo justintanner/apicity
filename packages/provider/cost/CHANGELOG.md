@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `gpt-realtime-2.1` pricing per token modality, verified 2026-10-19 against
+  OpenAI's pricing page: text $4 input, $0.40 cached input and $24 output;
+  audio $32, $0.40 and $64; image $5 and $0.50, input only, per million
+  tokens. The model is priced only from a declared Realtime usage, never at
+  one flat rate. `MODEL_SLUGS.openai` adds `gptrt2p1` and
+  `MODEL_DISPLAY.openai` "GPT Realtime 2.1" (ac-ow167y).
+- Declared per-modality usage: `costHints.audioInputTokens`,
+  `imageInputTokens`, `cacheReadAudioInputTokens`,
+  `cacheReadImageInputTokens` and `audioOutputTokens`, which are subsets of
+  the declared totals, with text as the remainder. A missing modality count
+  or an inconsistent partition fails closed. `TokenPricing.modalityRates`
+  and the exported `ModalityRate` carry the audio and image rates, and
+  `CostBreakdown.modalities` (`CostModalityBreakdown`) reports each
+  modality's counts and rates (ac-ow167y).
+
 - `gpt-5.6-sol` pricing, verified 2026-10-19 against OpenAI's pricing page:
   Standard processing at $4 input, $0.40 cached input, $5 cache writes and
   $20 output per million tokens, and $8 / $0.80 / $10 / $30 for the whole

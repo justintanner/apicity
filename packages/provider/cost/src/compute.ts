@@ -8,10 +8,11 @@ import { asString } from "./pricing/helpers";
 import type {
   CostEstimate,
   CostHints,
+  CostModalityBreakdown,
   CostSource,
   EstimateRequest,
 } from "./types";
-import type { TokenPricing } from "./pricing/types";
+import type { ModalityRate, TokenPricing } from "./pricing/types";
 
 import { extractAnthropic } from "./extract/anthropic";
 import { extractChat } from "./extract/chat";
@@ -263,6 +264,11 @@ const DECLARED_USAGE_FIELDS = [
   "outputTokens",
   "cacheReadInputTokens",
   "cacheWriteInputTokens",
+  "audioInputTokens",
+  "imageInputTokens",
+  "cacheReadAudioInputTokens",
+  "cacheReadImageInputTokens",
+  "audioOutputTokens",
 ] as const;
 
 type DeclaredUsageField = (typeof DECLARED_USAGE_FIELDS)[number];
@@ -281,10 +287,70 @@ function hasDeclaredUsage(hints?: CostHints): boolean {
   return DECLARED_USAGE_FIELDS.some((field) => hints?.[field] !== undefined);
 }
 
-// Cache writes and a long-context tier both depend on billed counts that a
-// chars/4 estimate cannot see, so such an entry has no heuristic path.
+// Cache writes, a long-context tier and per-modality rates all depend on
+// billed counts that a chars/4 estimate cannot see, so such an entry has no
+// heuristic path.
 function requiresDeclaredUsage(entry: TokenPricing): boolean {
-  return entry.rate.cacheWrite !== undefined || entry.longContext !== undefined;
+  return (
+    entry.rate.cacheWrite !== undefined ||
+    entry.longContext !== undefined ||
+    entry.modalityRates !== undefined
+  );
+}
+
+// The audio and image counts partition the totals; text is what remains of
+// inputTokens, cacheReadInputTokens and outputTokens (ac-ow167y). Returns the
+// first violated bound, or undefined.
+function modalityPartitionProblem(c: {
+  input: number;
+  cacheRead: number;
+  output: number;
+  audioIn: number;
+  imageIn: number;
+  audioCached: number;
+  imageCached: number;
+  audioOut: number;
+}): string | undefined {
+  if (c.audioIn + c.imageIn > c.input) {
+    return (
+      "costHints.audioInputTokens + costHints.imageInputTokens " +
+      `(${c.audioIn + c.imageIn}) exceed costHints.inputTokens (${c.input})`
+    );
+  }
+  if (c.audioCached > c.audioIn) {
+    return (
+      `costHints.cacheReadAudioInputTokens (${c.audioCached}) exceeds ` +
+      `costHints.audioInputTokens (${c.audioIn})`
+    );
+  }
+  if (c.imageCached > c.imageIn) {
+    return (
+      `costHints.cacheReadImageInputTokens (${c.imageCached}) exceeds ` +
+      `costHints.imageInputTokens (${c.imageIn})`
+    );
+  }
+  if (c.audioCached + c.imageCached > c.cacheRead) {
+    return (
+      "costHints.cacheReadAudioInputTokens + " +
+      `costHints.cacheReadImageInputTokens (${c.audioCached + c.imageCached}) ` +
+      `exceed costHints.cacheReadInputTokens (${c.cacheRead})`
+    );
+  }
+  const textCached = c.cacheRead - c.audioCached - c.imageCached;
+  const textIn = c.input - c.audioIn - c.imageIn;
+  if (textCached > textIn) {
+    return (
+      `the cached text tokens (${textCached}) exceed the text input tokens ` +
+      `(${textIn})`
+    );
+  }
+  if (c.audioOut > c.output) {
+    return (
+      `costHints.audioOutputTokens (${c.audioOut}) exceeds ` +
+      `costHints.outputTokens (${c.output})`
+    );
+  }
+  return undefined;
 }
 
 function isTokenCount(value: unknown): value is number {
@@ -334,12 +400,28 @@ function evaluateDeclaredUsage(
   if (entry.rate.cacheWrite !== undefined) {
     required.push("cacheWriteInputTokens");
   }
+  const audioRate = entry.modalityRates?.audio;
+  const imageRate = entry.modalityRates?.image;
+  if (audioRate) {
+    required.push("audioInputTokens");
+    if (audioRate.cacheRead !== undefined) {
+      required.push("cacheReadAudioInputTokens");
+    }
+    if (audioRate.output !== undefined) required.push("audioOutputTokens");
+  }
+  if (imageRate) {
+    required.push("imageInputTokens");
+    if (imageRate.cacheRead !== undefined) {
+      required.push("cacheReadImageInputTokens");
+    }
+  }
   const named = (fields: readonly DeclaredUsageField[]): string =>
     fields.map((field) => `costHints.${field}`).join(", ");
   if (!hasDeclaredUsage(hints)) {
     return unknown(
-      `${provider} '${model}' bills cache writes or a long-context tier that ` +
-        "a chars/4 estimate cannot see; pass the response's usage as " +
+      `${provider} '${model}' bills cache writes, a long-context tier or ` +
+        "per-modality rates that a chars/4 estimate cannot see; pass the " +
+        "response's usage as " +
         `${named(required)}. No estimate is quoted.`
     );
   }
@@ -370,6 +452,29 @@ function evaluateDeclaredUsage(
         `costHints.inputTokens (${inputTokens}). inputTokens is the total ` +
         "input, cached and cache-write tokens included (usage.input_tokens " +
         "or usage.prompt_tokens). No estimate is quoted."
+    );
+  }
+
+  const audioIn = hints?.audioInputTokens ?? 0;
+  const imageIn = hints?.imageInputTokens ?? 0;
+  const audioCached = hints?.cacheReadAudioInputTokens ?? 0;
+  const imageCached = hints?.cacheReadImageInputTokens ?? 0;
+  const audioOut = hints?.audioOutputTokens ?? 0;
+  const modalityProblem = modalityPartitionProblem({
+    input: inputTokens,
+    cacheRead,
+    output: outputTokens,
+    audioIn,
+    imageIn,
+    audioCached,
+    imageCached,
+    audioOut,
+  });
+  if (modalityProblem) {
+    return unknown(
+      `${provider} '${model}': ${modalityProblem}. The audio and image ` +
+        "counts are subsets of the totals and text is what remains. No " +
+        "estimate is quoted."
     );
   }
 
@@ -412,13 +517,65 @@ function evaluateDeclaredUsage(
         "costHints.cacheWriteInputTokens must be 0. No estimate is quoted."
     );
   }
-  const uncached = inputTokens - cacheRead - cacheWrite;
+  if ((audioIn > 0 || audioOut > 0) && !audioRate) {
+    return unknown(
+      `${provider} '${model}' has no bundled audio-token rate, so ` +
+        "costHints.audioInputTokens and costHints.audioOutputTokens must be " +
+        "0. No estimate is quoted."
+    );
+  }
+  if (imageIn > 0 && !imageRate) {
+    return unknown(
+      `${provider} '${model}' has no bundled image-token rate, so ` +
+        "costHints.imageInputTokens must be 0. No estimate is quoted."
+    );
+  }
+  if (
+    (audioCached > 0 && audioRate?.cacheRead === undefined) ||
+    (imageCached > 0 && imageRate?.cacheRead === undefined) ||
+    (audioOut > 0 && audioRate?.output === undefined)
+  ) {
+    return unknown(
+      `${provider} '${model}' has no bundled rate for a declared modality ` +
+        "count. No estimate is quoted."
+    );
+  }
+  // Text is what remains of each total once audio and image are taken out;
+  // without modality rates every count stays text.
+  const textIn = inputTokens - audioIn - imageIn;
+  const textCached = cacheRead - audioCached - imageCached;
+  const textOut = outputTokens - audioOut;
+  const uncached = textIn - textCached - cacheWrite;
   const usd =
     (uncached * rate.input +
-      cacheRead * (rate.cacheRead ?? 0) +
+      textCached * (rate.cacheRead ?? 0) +
       cacheWrite * (rate.cacheWrite ?? 0) +
-      outputTokens * rate.output) /
+      textOut * rate.output +
+      (audioIn - audioCached) * (audioRate?.input ?? 0) +
+      audioCached * (audioRate?.cacheRead ?? 0) +
+      audioOut * (audioRate?.output ?? 0) +
+      (imageIn - imageCached) * (imageRate?.input ?? 0) +
+      imageCached * (imageRate?.cacheRead ?? 0)) /
     1_000_000;
+  const modality = (
+    inputCount: number,
+    cachedCount: number,
+    modalityRate: ModalityRate,
+    outputCount?: number
+  ): CostModalityBreakdown => ({
+    inputTokens: inputCount,
+    cacheReadInputTokens: cachedCount,
+    ...(modalityRate.output !== undefined
+      ? { outputTokens: outputCount ?? 0 }
+      : {}),
+    inputUsdPerMillion: modalityRate.input,
+    ...(modalityRate.cacheRead !== undefined
+      ? { cacheReadUsdPerMillion: modalityRate.cacheRead }
+      : {}),
+    ...(modalityRate.output !== undefined
+      ? { outputUsdPerMillion: modalityRate.output }
+      : {}),
+  });
   return {
     usd,
     currency: "USD",
@@ -442,6 +599,19 @@ function evaluateDeclaredUsage(
           }
         : {}),
       ...(entry.longContext ? { contextTier: long ? "long" : "short" } : {}),
+      ...(entry.modalityRates
+        ? {
+            modalities: {
+              text: modality(textIn, textCached, rate, textOut),
+              ...(audioRate
+                ? { audio: modality(audioIn, audioCached, audioRate, audioOut) }
+                : {}),
+              ...(imageRate
+                ? { image: modality(imageIn, imageCached, imageRate) }
+                : {}),
+            },
+          }
+        : {}),
     },
     rateAsOf,
     warnings: [],

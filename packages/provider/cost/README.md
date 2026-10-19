@@ -114,6 +114,12 @@ interface CostEstimate {
     cacheReadUsdPerMillion?: number;
     cacheWriteUsdPerMillion?: number;
     contextTier?: "short" | "long";
+    modalities?: {
+      // per-modality rows (gpt-realtime-2.1)
+      text: CostModalityBreakdown;
+      audio?: CostModalityBreakdown;
+      image?: CostModalityBreakdown;
+    };
   };
   rateAsOf: string | null; // YYYY-MM-DD — the rate entry's as-of date, falling back to PRICING_AS_OF
   warnings: string[]; // non-empty when fallback fired (unknown model, missing max_tokens, missing duration, etc.)
@@ -174,6 +180,11 @@ interface CostHints {
   outputTokens?: number;
   cacheReadInputTokens?: number;
   cacheWriteInputTokens?: number;
+  audioInputTokens?: number;
+  imageInputTokens?: number;
+  cacheReadAudioInputTokens?: number;
+  cacheReadImageInputTokens?: number;
+  audioOutputTokens?: number;
   serviceTier?: string;
   regionalProcessing?: boolean;
 }
@@ -466,9 +477,10 @@ guarantee](#hash-and-otp-guarantee) below.
 An OpenAI response reports what it billed in `usage`. Pass those counts as
 `costHints` and the openai route prices them exactly, instead of estimating
 chars/4 tokens from the payload. Declaring any of `inputTokens`,
-`outputTokens`, `cacheReadInputTokens` or `cacheWriteInputTokens` switches an
-openai estimate to `source: "declared-tokens+table"`; without them the chars/4
-path is unchanged for legacy models. `gpt-5.6-sol` always requires declared
+`outputTokens`, `cacheReadInputTokens` or `cacheWriteInputTokens` (or a
+[Realtime](#realtime-gpt-realtime-21) modality count) switches an openai
+estimate to `source: "declared-tokens+table"`; without them the chars/4 path
+is unchanged for legacy models. `gpt-5.6-sol` always requires declared
 usage.
 
 | `costHints`             | Responses API `usage`                     | Chat Completions `usage`                   |
@@ -533,6 +545,60 @@ Every gap returns `usd: 0` with one warning and no rate in the breakdown, so
 - `regionalProcessing: true`: data-residency (regional processing) and FedRAMP
   endpoints bill a 10% uplift that is not bundled.
 
+#### Realtime (gpt-realtime-2.1)
+
+The Realtime API bills text, audio and image tokens at separate rates, so
+`gpt-realtime-2.1` is priced only from a Realtime `response.done` usage that
+splits them. Pass the totals and the audio and image subsets; text is what
+remains of each total, so no text count is passed:
+
+| `costHints`                 | Realtime `response.done` `usage`                         |
+| --------------------------- | -------------------------------------------------------- |
+| `inputTokens`               | `input_tokens`                                           |
+| `cacheReadInputTokens`      | `input_token_details.cached_tokens`                      |
+| `audioInputTokens`          | `input_token_details.audio_tokens`                       |
+| `imageInputTokens`          | `input_token_details.image_tokens`                       |
+| `cacheReadAudioInputTokens` | `input_token_details.cached_tokens_details.audio_tokens` |
+| `cacheReadImageInputTokens` | `input_token_details.cached_tokens_details.image_tokens` |
+| `outputTokens`              | `output_tokens`                                          |
+| `audioOutputTokens`         | `output_token_details.audio_tokens`                      |
+
+Rates verified 2026-10-19 against
+[OpenAI's pricing page](https://developers.openai.com/api/docs/pricing), USD
+per million tokens:
+
+| Modality | Input  | Cached input | Output |
+| -------- | ------ | ------------ | ------ |
+| Text     | $4.00  | $0.40        | $24.00 |
+| Audio    | $32.00 | $0.40        | $64.00 |
+| Image    | $5.00  | $0.50        | none   |
+
+```ts
+c.estimate({
+  provider: "openai",
+  payload: { model: "gpt-realtime-2.1" },
+  costHints: {
+    inputTokens: 132, // 119 text + 13 audio + 0 image
+    cacheReadInputTokens: 64, // all text
+    audioInputTokens: 13,
+    imageInputTokens: 0,
+    cacheReadAudioInputTokens: 0,
+    cacheReadImageInputTokens: 0,
+    outputTokens: 121, // 30 text + 91 audio
+    audioOutputTokens: 91,
+  },
+}).usd; // → 0.0072056  (55 × $4 + 64 × $0.40 + 13 × $32 + 30 × $24 + 91 × $64, per million)
+```
+
+All eight counts are required (`0` when none); audio tokens are never
+estimated from text. `breakdown.modalities` gives each modality's counts and
+rates. Besides the cases above, a declared usage also fails closed when the
+audio and image counts do not fit inside their totals, when the cached text
+would exceed the text input, when a cache-write count is declared (no
+cache-write rate is published for this model), or when audio or image counts
+are declared for a model with no rate for that modality. Input transcription
+is billed by a separate transcription model and is not included.
+
 ### Hash and OTP guarantee
 
 `costHints` lives outside `payload`, so `canonicalHash(payload)` is
@@ -578,7 +644,7 @@ module in `src/pricing/`, bump `PRICING_AS_OF`.
 | Provider                                                           | source                   | Notes                                                                               |
 | ------------------------------------------------------------------ | ------------------------ | ----------------------------------------------------------------------------------- |
 | `openai`, `anthropic`, `xai`, `kimicoding`, `fireworks`, `alibaba` | `tokens-heuristic+table` | chars/4 ≈ tokens — no upstream call                                                 |
-| `openai` with declared usage                                       | `declared-tokens+table`  | response `usage` counts; required for `gpt-5.6-sol`                                 |
+| `openai` with declared usage                                       | `declared-tokens+table`  | response `usage` counts; required for `gpt-5.6-sol` and `gpt-realtime-2.1`          |
 | `elevenlabs`                                                       | `per-unit-table`         | priced per character                                                                |
 | `kie`                                                              | `per-unit-table`         | per second of video / per image / per generation; `endpoint` discriminator for Suno |
 | `free`                                                             | `free`                   | always $0                                                                           |
@@ -928,6 +994,7 @@ empty is a `usage` error, never a disarmed gate.
 - OpenAI's 10% regional-processing (data residency) and FedRAMP uplift
 - OpenAI built-in tool fees (web search, file search, containers), billed per call beside tokens
 - The `gpt-5.6` alias and `gpt-5.6-terra` / `gpt-5.6-luna`: only the exact `gpt-5.6-sol` id is priced
+- Other Realtime models (`gpt-realtime-2.1-mini`, `gpt-realtime-2`, `gpt-realtime`, ...), Realtime input transcription, and GPT-Live voice minutes
 - The end of a promotional price: the estimator has no clock, so `rateAsOf` dates each rate
 - Tier-based fallback for fireworks (parameter-count brackets)
 - Suno per-song pricing on kie (no stable published rate)

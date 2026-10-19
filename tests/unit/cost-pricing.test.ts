@@ -308,6 +308,36 @@ describe("PRICING data", () => {
     });
   });
 
+  it("openai prices gpt-realtime-2.1 per token modality", () => {
+    expect(PRICING.openai["gpt-realtime-2.1"]).toEqual({
+      kind: "tokens",
+      rate: { input: 4, output: 24, cacheRead: 0.4 },
+      modalityRates: {
+        audio: { input: 32, cacheRead: 0.4, output: 64 },
+        image: { input: 5, cacheRead: 0.5 },
+      },
+      source: {
+        url: "https://developers.openai.com/api/docs/pricing",
+        asOf: "2026-10-19",
+      },
+    });
+  });
+
+  it("keeps per-modality rows free of cache writes and long context", () => {
+    for (const [provider, table] of Object.entries(PRICING)) {
+      for (const [model, entry] of Object.entries(
+        table as Record<string, (typeof PRICING)["openai"][string]>
+      )) {
+        if (entry.kind !== "tokens" || !entry.modalityRates) continue;
+        const label = `${provider}/${model}`;
+        expect(entry.longContext, label).toBeUndefined();
+        expect(entry.rate.cacheWrite, label).toBeUndefined();
+        expect(entry.rate.cacheWrite5m, label).toBeUndefined();
+        expect(entry.modalityRates.image?.output, label).toBeUndefined();
+      }
+    }
+  });
+
   it("keeps every long-context tier on the base tier's rate keys", () => {
     for (const [provider, table] of Object.entries(PRICING)) {
       for (const [model, entry] of Object.entries(

@@ -40,6 +40,15 @@ export interface TokenRate {
   cacheWrite?: number;
 }
 
+// USD per million tokens of one non-text token modality (OpenAI Realtime
+// audio and image tokens). `output` is absent for an input-only modality: an
+// image is never generated, so no image-output rate exists to bundle.
+export interface ModalityRate {
+  input: number;
+  cacheRead?: number;
+  output?: number;
+}
+
 // Token-billed providers: openai, anthropic, xai, kimicoding, fireworks,
 // alibaba. Token counts come from the chars/4 heuristic or, on the openai
 // route, from caller-declared usage (CostHints) — selectors and units
@@ -57,6 +66,15 @@ export interface TokenPricing {
   longContext?: {
     aboveInputTokens: number;
     rate: TokenRate;
+  };
+  // Per-modality rates for a model that prices audio and image tokens apart
+  // from text (OpenAI gpt-realtime-2.1). `rate` is then the TEXT rate. A row
+  // that sets this is priced only from declared modality usage, so one flat
+  // rate never prices mixed modalities, and it sets no longContext and no
+  // cache-write rate.
+  modalityRates?: {
+    audio?: ModalityRate;
+    image?: ModalityRate;
   };
   source: RateSource;
 }

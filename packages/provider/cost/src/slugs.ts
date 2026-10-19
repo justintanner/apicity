@@ -344,6 +344,7 @@ export const MODEL_SLUGS = {
 
   openai: {
     "gpt-5.6-sol": "gpt5p6sol",
+    "gpt-realtime-2.1": "gptrt2p1",
     "gpt-5": "gpt5",
     "gpt-5-mini": "gpt5m",
     "gpt-5-nano": "gpt5n",
@@ -872,6 +873,7 @@ export const MODEL_DISPLAY = {
 
   openai: {
     "gpt-5.6-sol": "GPT-5.6 Sol",
+    "gpt-realtime-2.1": "GPT Realtime 2.1",
     "gpt-5": "GPT-5",
     "gpt-5-mini": "GPT-5 Mini",
     "gpt-5-nano": "GPT-5 Nano",

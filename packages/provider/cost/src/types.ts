@@ -22,6 +22,18 @@ export type CostUnit =
   | "generations"
   | "megapixels";
 
+// One token modality's share of a declared usage estimate (text, audio or
+// image): its input tokens, cached subset included, its output tokens (absent
+// for an input-only modality) and the rates that priced them.
+export interface CostModalityBreakdown {
+  inputTokens: number;
+  cacheReadInputTokens: number;
+  outputTokens?: number;
+  inputUsdPerMillion: number;
+  cacheReadUsdPerMillion?: number;
+  outputUsdPerMillion?: number;
+}
+
 export interface CostBreakdown {
   inputTokens?: number;
   outputTokens?: number;
@@ -40,6 +52,14 @@ export interface CostBreakdown {
   cacheReadUsdPerMillion?: number;
   cacheWriteUsdPerMillion?: number;
   contextTier?: "short" | "long";
+  // Declared openai usage on a row with per-modality rates (gpt-realtime-2.1):
+  // each modality's counts and rates. The top-level rate fields then carry
+  // the text rates; these entries explain the whole price.
+  modalities?: {
+    text: CostModalityBreakdown;
+    audio?: CostModalityBreakdown;
+    image?: CostModalityBreakdown;
+  };
 }
 
 export interface CostEstimate {
@@ -150,6 +170,20 @@ export interface CostHints {
   // The write count names no retention window. Cost-only.
   cacheReadInputTokens?: number;
   cacheWriteInputTokens?: number;
+  // Per-modality subsets for a model that prices audio and image tokens apart
+  // from text (gpt-realtime-2.1), from a Realtime `response.done` usage:
+  // `input_token_details.audio_tokens` / `.image_tokens` (cached included),
+  // `input_token_details.cached_tokens_details.audio_tokens` / `.image_tokens`
+  // and `output_token_details.audio_tokens`. The totals stay inputTokens,
+  // cacheReadInputTokens and outputTokens; text is what remains of each, so
+  // no text count is passed. Required (0 when none) for such a model, never
+  // estimated from characters, and a positive count on a model without that
+  // modality's rate fails closed. Cost-only.
+  audioInputTokens?: number;
+  imageInputTokens?: number;
+  cacheReadAudioInputTokens?: number;
+  cacheReadImageInputTokens?: number;
+  audioOutputTokens?: number;
   // The processing tier that billed the request, as the response's
   // `service_tier` reports it ("default" is Standard). It overrides the
   // request's `service_tier`, which can say "auto" or nothing and still run on

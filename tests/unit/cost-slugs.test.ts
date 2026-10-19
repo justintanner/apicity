@@ -120,6 +120,7 @@ describe("MODEL_SLUGS", () => {
   it("has openai models", () => {
     expect(MODEL_SLUGS.openai).toMatchObject({
       "gpt-5.6-sol": "gpt5p6sol",
+      "gpt-realtime-2.1": "gptrt2p1",
       "gpt-5": "gpt5",
       "gpt-5-mini": "gpt5m",
       "gpt-5-nano": "gpt5n",
@@ -356,6 +357,7 @@ describe("MODEL_DISPLAY", () => {
   it("has openai display names", () => {
     expect(MODEL_DISPLAY.openai).toMatchObject({
       "gpt-5.6-sol": "GPT-5.6 Sol",
+      "gpt-realtime-2.1": "GPT Realtime 2.1",
       "gpt-5": "GPT-5",
       "gpt-5-mini": "GPT-5 Mini",
       "gpt-5-nano": "GPT-5 Nano",

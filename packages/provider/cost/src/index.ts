@@ -41,6 +41,7 @@ export type { SlugProviderId, SlugModelId, DisplayModelId } from "./slugs";
 
 export type {
   CostUnit,
+  ModalityRate,
   ModelPricing,
   PerUnitPricing,
   PricedProviderId,
@@ -52,6 +53,7 @@ export type {
 export type {
   CostBreakdown,
   CostEstimate,
+  CostModalityBreakdown,
   CostHints,
   CostProvider,
   CostSource,

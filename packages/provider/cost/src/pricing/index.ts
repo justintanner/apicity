@@ -42,6 +42,7 @@ export type PricedProviderId = keyof typeof PRICING;
 
 export type {
   CostUnit,
+  ModalityRate,
   ModelPricing,
   PerUnitPricing,
   RateSource,

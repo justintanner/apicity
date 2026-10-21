@@ -1742,20 +1742,24 @@ function buildMessageFromReview(
   endpointDocs: EndpointDocRow[]
 ): TelegramHarnessMessage {
   const entry = generationReview?.entry ?? endpointEntry;
+  // The rendered body is the generation request plus the terminal poll.
+  // Label that request: a preceding file upload must not keep the URL,
+  // SDK path, or docs while createTask's payload is what the preview shows.
+  const labeledEntry = generationReview?.requestEntry ?? endpointEntry;
   const doc =
-    findHintedEndpointDoc(sanitizedRecording, endpointEntry, endpointDocs) ??
+    findHintedEndpointDoc(sanitizedRecording, labeledEntry, endpointDocs) ??
     findMatchingEndpointDoc(
-      endpointEntry,
+      labeledEntry,
       endpointDocs,
       sanitizedRecording.provider
     );
-  const endpoint = `${endpointEntry.request.method} ${stripQuery(endpointEntry.request.url)}`;
+  const endpoint = `${labeledEntry.request.method} ${stripQuery(labeledEntry.request.url)}`;
   const status = `${entry.response.status} ${entry.response.statusText}`.trim();
-  const apicityPath = apicityPathFor(sanitizedRecording, endpointEntry, doc);
+  const apicityPath = apicityPathFor(sanitizedRecording, labeledEntry, doc);
 
   const header = renderHeader(
     sanitizedRecording,
-    endpointEntry,
+    labeledEntry,
     doc,
     endpoint,
     apicityPath,

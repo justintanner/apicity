@@ -324,6 +324,18 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST bria.fibo2.edit": {
+    "source": "fal/bria-fibo-2-edit",
+    "payload": {
+      "instruction": "Give the cat in image 1 a small red knitted scarf.",
+      "image_urls": [
+        "<inline image/jpeg data URL — replace with a real URL or upload>"
+      ],
+      "seed": 5555
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST bria.fibo2.generate": {
     "source": "fal/bria-fibo-2-generate",
     "payload": {

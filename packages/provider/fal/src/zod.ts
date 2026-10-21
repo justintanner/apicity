@@ -12595,6 +12595,139 @@ export type FalBriaFibo2GenerateParsedRequest = z.output<
   typeof FalBriaFibo2GenerateRequestSchema
 >;
 
+// Pinned to queue OpenAPI on 2026-10-21, SHA256 6640b80bea925979b34b6b489b09b88269e535edffb14b8a92c84493f9e7e9be.
+// Docs: https://fal.ai/models/bria/fibo-2/edit/api
+const FalBriaFibo2VglEditSchema = z
+  .object({
+    short_description: z
+      .union([z.string(), z.null()])
+      .optional()
+      .describe("A short description of the image to be generated."),
+    objects: z
+      .union([z.array(FalBriaFibo2PromptObjectSchema), z.null()])
+      .default([])
+      .describe(
+        "A list of objects in the image to be generated, along with their attributes and relationships to other objects in the image."
+      ),
+    background_setting: z
+      .union([z.string(), z.null()])
+      .optional()
+      .describe("The background setting of the image to be generated."),
+    lighting: z
+      .union([FalBriaFibo2LightingSchema, z.null()])
+      .optional()
+      .describe("The lighting of the image to be generated."),
+    aesthetics: z
+      .union([FalBriaFibo2AestheticsSchema, z.null()])
+      .optional()
+      .describe("The aesthetics of the image to be generated."),
+    photographic_characteristics: z
+      .union([FalBriaFibo2PhotographicCharacteristicsSchema, z.null()])
+      .optional()
+      .describe(
+        "The photographic characteristics of the image to be generated."
+      ),
+    style_medium: z
+      .union([z.string(), z.null()])
+      .optional()
+      .describe("The style medium of the image to be generated."),
+    text_render: z
+      .union([z.array(FalBriaFibo2TextRenderSchema), z.null()])
+      .default([])
+      .describe("A list of text to be rendered in the image."),
+    context: z
+      .union([z.string(), z.null()])
+      .optional()
+      .describe("The context of the image to be generated."),
+    artistic_style: z
+      .union([z.string(), z.null()])
+      .optional()
+      .describe("The artistic style of the image to be generated."),
+    edit_instruction: z
+      .union([z.string(), z.null()])
+      .optional()
+      .describe("The edit instruction for the image."),
+  })
+  .passthrough();
+export const FalBriaFibo2EditRequestSchema = z.object({
+  image_urls: z
+    .array(z.string())
+    .min(1)
+    .max(4)
+    .describe(
+      "1-4 images to edit (files or URLs). The instruction refers to them as <image_1>, <image_2> and so on, in the order they are sent."
+    ),
+  instruction: z
+    .union([z.string(), z.null()])
+    .optional()
+    .describe(
+      "The edit, in free-form text. It is expanded into a VGL, which is returned. With 'vgl', the change to make to it."
+    ),
+  aspect_ratio: z
+    .union([
+      z.enum([
+        "1:1",
+        "1:2",
+        "1:3",
+        "1:4",
+        "1:5",
+        "2:1",
+        "2:3",
+        "3:1",
+        "3:2",
+        "3:4",
+        "4:1",
+        "4:3",
+        "4:5",
+        "5:1",
+        "5:4",
+        "9:16",
+        "9:21",
+        "10:16",
+        "16:9",
+        "16:10",
+        "21:9",
+      ]),
+      z.null(),
+    ])
+    .optional()
+    .describe(
+      "Output aspect ratio, at about one megapixel. Left unset, the output keeps the ratio of the first image. A single image always keeps its own ratio."
+    ),
+  seed: z
+    .number()
+    .int()
+    .min(0)
+    .max(2147483647)
+    .default(5555)
+    .describe("Random seed for reproducibility, 0 to 2147483647."),
+  mask_url: z
+    .union([z.string(), z.null()])
+    .optional()
+    .describe(
+      "Mask (file or URL) marking the region to regenerate: white where the model should edit, black elsewhere. Single-image requests only, at that image's size. A masked edit comes back at the image's own size, with its own pixels outside the mask."
+    ),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If true, returns the image directly in the response (increases latency)."
+    ),
+  vgl: z
+    .union([FalBriaFibo2VglEditSchema, z.null()])
+    .optional()
+    .describe(
+      "A VGL (Visual Generation Language) document. Alone, it is the edit as-is and must carry its 'edit_instruction'. With 'instruction', it is the first image's VGL, the baseline the edit is written from. Accepts what a previous request returned."
+    ),
+});
+export type FalBriaFibo2EditRequest = z.input<
+  typeof FalBriaFibo2EditRequestSchema
+>;
+export type FalBriaFibo2EditRequestInput = FalBriaFibo2EditRequest;
+export type FalBriaFibo2EditParsedRequest = z.output<
+  typeof FalBriaFibo2EditRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "meshy/v6-lite/retexture": FalMeshyV6LiteRetextureRequestSchema,
   "bytedance/seedance-2.5/draft/complete":
@@ -12680,6 +12813,7 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "meta/muse-image/text-to-image": FalMetaMuseImageTextToImageRequestSchema,
   "elevenlabs/music/v2.5": FalElevenlabsMusicV2p5RequestSchema,
   "bria/fibo-gen-1.5/text-to-image": FalBriaFiboGen1p5TextToImageRequestSchema,
+  "bria/fibo-2/edit": FalBriaFibo2EditRequestSchema,
   "bria/fibo-2/generate": FalBriaFibo2GenerateRequestSchema,
   "bria/fibo-edit-1.5/edit": FalBriaFiboEdit1p5EditRequestSchema,
   "blackforestlabs/flux-3/edit-video":

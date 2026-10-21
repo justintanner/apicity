@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalBriaFibo2GenerateRequest,
+  FalBriaFibo2GenerateRequestInput,
+  FalBriaFibo2GenerateParsedRequest,
   FalMeshyV6LiteRetextureRequest,
   FalMeshyV6LiteRetextureRequestInput,
   FalMeshyV6LiteRetextureParsedRequest,
@@ -701,6 +704,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalBriaFibo2GenerateRequest,
   FalMeshyV6LiteRetextureRequest,
   FalBytedanceSeedance2p5DraftCompleteRequest,
   FalBytedanceSeedance2p5UsReferenceToVideoRequest,
@@ -6317,4 +6321,35 @@ export interface FalRunMeshyV6LiteNamespace {
 }
 export interface FalRunMeshyNamespace {
   v6Lite: FalRunMeshyV6LiteNamespace;
+}
+
+export interface FalBriaFibo2GenerateResponse {
+  image: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+  };
+  images?: Array<{
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+  }>;
+  vgl: Record<string, unknown>;
+}
+export interface FalRunBriaFibo2Namespace {
+  generate: ((
+    params: FalBriaFibo2GenerateRequest,
+    signal?: AbortSignal
+  ) => Promise<FalBriaFibo2GenerateResponse>) & {
+    schema: ApicitySchema<FalBriaFibo2GenerateRequest>;
+  };
+}
+export interface FalRunBriaNamespace {
+  fibo2: FalRunBriaFibo2Namespace;
 }

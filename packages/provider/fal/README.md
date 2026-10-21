@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-213 endpoints across 53 groups. Each method mirrors an upstream URL path.
+214 endpoints across 53 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -485,6 +485,23 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 </details>
 
 ### bria
+
+<details>
+<summary><code>POST</code> <b><code>fal.bria.fibo2.generate</code></b></summary>
+
+<code>POST https://fal.run/bria/fibo-2/generate</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/bria/fibo-2/generate/api)
+
+```typescript
+const res = await fal.run.bria.fibo2.generate({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>fal.bria.fiboEdit1p5.edit</code></b></summary>

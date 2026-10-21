@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Bria Fibo 2 generate with structured VGL prompts and image pricing.
+
 - Added Meshy 6 Lite retexture (ac-ikf3fv).
 
 - Added Seedance 2.5 draft completion, dynamically priced (ac-z0ypw0).

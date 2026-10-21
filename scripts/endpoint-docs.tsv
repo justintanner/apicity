@@ -1786,3 +1786,4 @@ dropbox	files.uploadSession.start	POST	https://content.dropboxapi.com/2/files/up
 dropbox	files.uploadSession.appendV2	POST	https://content.dropboxapi.com/2/files/upload_session/append_v2	https://www.dropbox.com/developers/documentation/http/documentation#files-upload_session-append_v2
 dropbox	files.uploadSession.finish	POST	https://content.dropboxapi.com/2/files/upload_session/finish	https://www.dropbox.com/developers/documentation/http/documentation#files-upload_session-finish
 dropbox	oauth2.token	POST	https://api.dropboxapi.com/oauth2/token	https://www.dropbox.com/developers/documentation/http/documentation#oauth2-token
+fal	bria.fibo2.generate	POST	https://fal.run/bria/fibo-2/generate	https://fal.ai/models/bria/fibo-2/generate/api

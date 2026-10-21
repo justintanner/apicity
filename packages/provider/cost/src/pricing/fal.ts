@@ -1227,6 +1227,7 @@ const meshyV71 = (endpointId: string, on: string): ModelPricing => ({
 //   648x630 at 97 frames and billed 38.671 units. ByteDance publishes no
 //   sizing rule for that adaptive ratio, so no request field fixes the size.
 export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
+  "minimax/h3-max/reframe-video",
   "alibaba/qwen-image-3/edit",
   "alibaba/qwen-image-3/text-to-image",
   "alibaba/wan-3.0/image-to-video",
@@ -1310,6 +1311,12 @@ export interface FalDynamicBilledUnit {
 // pricing API were re-read on 2026-10-17 and matched the 2026-10-15 reads
 // behind each recording (ac-j3d6ki.4).
 export const FAL_DYNAMIC_BILLED_UNITS = {
+  // Card and queue result checked 2026-10-21: a four-second 480p clip
+  // billed 4 units ($0.20); longer clips also bill generated overlap.
+  "minimax/h3-max/reframe-video": {
+    unit: "units at $0.05, with the card quoting generated seconds at $0.05 for 480p and $0.08 for 768p",
+    why: "the request does not fix generated duration, and overlapping processing windows are also billable",
+  },
   "google/nano-banana-2.1": {
     unit: "units of $1, summed from text, thinking and image tokens at the card's per-million-token rates",
     why: "no request field fixes the thinking or output image token counts",

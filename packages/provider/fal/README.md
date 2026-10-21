@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-218 endpoints across 53 groups. Each method mirrors an upstream URL path.
+219 endpoints across 53 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -2339,6 +2339,23 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.minimax.h3Max.referenceToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.minimax.h3Max.reframeVideo</code></b></summary>
+
+<code>POST https://fal.run/minimax/h3-max/reframe-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/minimax/h3-max/reframe-video/api)
+
+```typescript
+const res = await fal.run.minimax.h3Max.reframeVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

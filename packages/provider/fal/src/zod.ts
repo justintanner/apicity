@@ -10086,6 +10086,49 @@ export type FalViduQ4ReferenceToVideoParsedRequest = z.output<
   typeof FalViduQ4ReferenceToVideoRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-10-21.
+// sha256 c3742d25a3e1a809a3a3c5348ce4f6db1dffa64d4d5e0e853f57409ec3162e24
+// additionalProperties is false; field order follows x-fal-order-properties.
+// Docs: https://fal.ai/models/minimax/h3-max/reframe-video/api
+export const FalMinimaxH3MaxReframeVideoRequestSchema = z
+  .object({
+    prompt: z
+      .string()
+      .max(50000)
+      .default("")
+      .describe(
+        "Optional guidance for the new surroundings. Expansion captions the source automatically."
+      ),
+    video_url: z
+      .string()
+      .describe(
+        "Source video, 0.25 to 300 seconds; fitted onto the target canvas with its timeline and audio preserved."
+      ),
+    aspect_ratio: z
+      .enum(["16:9", "9:16", "1:1", "4:3", "3:4", "21:9", "9:21"])
+      .default("16:9")
+      .describe(
+        "Target canvas aspect ratio; the source is contain-fitted and the rest is outpainted."
+      ),
+    resolution: z
+      .enum(["480p", "768p", "1080p"])
+      .default("768p")
+      .describe(
+        "Target canvas resolution profile. 1080p uses learned latent upscaling from a native 768p reframe."
+      ),
+    seed: z.number().int().min(0).max(4294967295).nullable().optional(),
+    enable_safety_checker: z.boolean().default(true),
+  })
+  .strict();
+export type FalMinimaxH3MaxReframeVideoRequest = z.input<
+  typeof FalMinimaxH3MaxReframeVideoRequestSchema
+>;
+export type FalMinimaxH3MaxReframeVideoRequestInput =
+  FalMinimaxH3MaxReframeVideoRequest;
+export type FalMinimaxH3MaxReframeVideoParsedRequest = z.output<
+  typeof FalMinimaxH3MaxReframeVideoRequestSchema
+>;
+
 // Pinned to the live queue OpenAPI read on 2026-10-15
 // (sha256 64357740e7d598378b8e14a81afc273e34c1456f9a2da4974a758e9460eeff2e, the same JSON as the planning archive). Field order follows x-fal-order-properties.
 // additionalProperties is false, and a free 422 probe the same day refused an
@@ -12869,6 +12912,7 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
     FalKandinsky6LiteTextToVideoRequestSchema,
   "fal-ai/kandinsky6-vsr/lite": FalKandinsky6VsrLiteRequestSchema,
   "fal-ai/kandinsky6-vsr": FalKandinsky6VsrRequestSchema,
+  "minimax/h3-max/reframe-video": FalMinimaxH3MaxReframeVideoRequestSchema,
   "minimax/h3-max/relight": FalMinimaxH3MaxRelightRequestSchema,
   "fal-ai/vidu/q4/reference-to-video": FalViduQ4ReferenceToVideoRequestSchema,
   "fal-ai/vidu/q4/image-to-video": FalViduQ4ImageToVideoRequestSchema,

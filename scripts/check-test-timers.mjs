@@ -41,6 +41,11 @@ const TEST_DIRS = ["tests/unit", "tests/functional", "tests/integration"];
 // hatch, so it must justify itself.
 const ALLOWLIST = new Map([
   [
+    "tests/integration/fal-minimax-h3-max-reframe-video.test.ts",
+    'Real sleep is guarded behind `ctx.mode !== "replay"` while recording ' +
+      "the fal queue status/result flow; offline replay never sleeps.",
+  ],
+  [
     "tests/integration/fal-bria-fibo-2-edit.test.ts",
     'Real sleep is guarded behind `ctx.mode !== "replay"` while recording ' +
       "the fal queue status/result flow; offline replay never sleeps.",

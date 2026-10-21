@@ -1791,3 +1791,4 @@ dropbox	files.uploadSession.finish	POST	https://content.dropboxapi.com/2/files/u
 dropbox	oauth2.token	POST	https://api.dropboxapi.com/oauth2/token	https://www.dropbox.com/developers/documentation/http/documentation#oauth2-token
 fal	bria.fibo2.generate	POST	https://fal.run/bria/fibo-2/generate	https://fal.ai/models/bria/fibo-2/generate/api
 fal	bria.fibo2.edit	POST	https://fal.run/bria/fibo-2/edit	https://fal.ai/models/bria/fibo-2/edit/api
+fal	minimax.h3Max.reframeVideo	POST	https://fal.run/minimax/h3-max/reframe-video	https://fal.ai/models/minimax/h3-max/reframe-video/api

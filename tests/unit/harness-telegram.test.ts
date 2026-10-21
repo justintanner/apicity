@@ -232,10 +232,24 @@ const endpointDocs: EndpointDocRow[] = [
   },
   {
     provider: "kie",
+    dotPath: "api.fileStreamUpload",
+    method: "POST",
+    fullUrl: "https://kieai.redpandaai.co/api/file-stream-upload",
+    docsUrl: "https://docs.kie.ai/file-upload-api/upload-file-stream",
+  },
+  {
+    provider: "kie",
     dotPath: "api.v1.jobs.createTask",
     method: "POST",
     fullUrl: "https://api.kie.ai/api/v1/jobs/createTask",
     docsUrl: "https://docs.kie.ai/market/quickstart",
+  },
+  {
+    provider: "kie",
+    dotPath: "api.v1.jobs.recordInfo",
+    method: "GET",
+    fullUrl: "https://api.kie.ai/api/v1/jobs/recordInfo?taskId={taskId}",
+    docsUrl: "https://docs.kie.ai/market/common/get-task-detail",
   },
   {
     provider: "alibaba",
@@ -1091,6 +1105,88 @@ function kiePendingGenerationRecording(): ChangedRecording {
   };
 }
 
+// Upload, then createTask, then recordInfo. The recording name does not hint
+// createTask, so endpoint selection used to stop on the upload while the
+// preview body still rendered the generation request.
+function kieUploadFirstGenerationRecording(): ChangedRecording {
+  const taskId = "task-upload-edit";
+  const uploadedUrl = "https://tempfile.example/uploads/cat1.jpg";
+  const resultUrl = "https://tempfile.aiquickdraw.com/generated/edit-final.jpg";
+  const param = JSON.stringify({
+    input: JSON.stringify({
+      image_urls: [uploadedUrl],
+      prompt: "Give the cat a small red bow tie.",
+    }),
+    model: "flux-3/klein-edit-image",
+  });
+
+  return {
+    provider: "kie",
+    recordingName: "kie/flux3-klein-edit-image",
+    changeType: "new",
+    filePath:
+      "tests/recordings/kie_2079838932/" +
+      "flux3-klein-edit-image_123/recording.har",
+    entries: [
+      jsonHarEntry(
+        "POST",
+        "https://kieai.redpandaai.co/api/file-stream-upload",
+        { file: "cat1.jpg", uploadPath: "images/test-uploads" },
+        {
+          success: true,
+          code: 200,
+          msg: "success",
+          data: { fileName: "cat1.jpg", downloadUrl: uploadedUrl },
+        }
+      ),
+      jsonHarEntry(
+        "POST",
+        "https://api.kie.ai/api/v1/jobs/createTask",
+        {
+          model: "flux-3/klein-edit-image",
+          input: {
+            prompt: "Give the cat a small red bow tie.",
+            image_urls: [uploadedUrl],
+          },
+        },
+        { code: 200, msg: "success", data: { taskId, recordId: taskId } }
+      ),
+      jsonHarEntry(
+        "GET",
+        `https://api.kie.ai/api/v1/jobs/recordInfo?taskId=${taskId}`,
+        null,
+        {
+          code: 200,
+          msg: "success",
+          data: {
+            taskId,
+            model: "flux-3/klein-edit-image",
+            state: "waiting",
+            param,
+            resultJson: "",
+          },
+        }
+      ),
+      jsonHarEntry(
+        "GET",
+        `https://api.kie.ai/api/v1/jobs/recordInfo?taskId=${taskId}`,
+        null,
+        {
+          code: 200,
+          msg: "success",
+          data: {
+            taskId,
+            model: "flux-3/klein-edit-image",
+            state: "success",
+            param,
+            resultJson: JSON.stringify({ resultUrls: [resultUrl] }),
+          },
+        }
+      ),
+    ],
+  };
+}
+
 // Build the kie success poll body the live poll endpoint would return.
 function kieLiveSuccessBody(taskId: string, finalUrl: string): string {
   return JSON.stringify({
@@ -1514,6 +1610,34 @@ describe("harness Telegram messages", () => {
       data: Buffer.from("fake-mp3-bytes").toString("base64"),
     });
     expect(items[0].caption.length).toBeLessThanOrEqual(1024);
+  });
+
+  it("labels upload-then-createTask recordings as createTask", () => {
+    const uploadedUrl = "https://tempfile.example/uploads/cat1.jpg";
+    const [message] = buildTelegramHarnessMessages(
+      [kieUploadFirstGenerationRecording()],
+      endpointDocs
+    );
+    const text = message.chunks.join("\n");
+
+    expect(message.endpoint).toBe(
+      "POST https://api.kie.ai/api/v1/jobs/createTask"
+    );
+    expect(message.apicityPath).toBe("kie.api.v1.jobs.createTask");
+    expect(text).toContain("https://docs.kie.ai/market/quickstart");
+    expect(text).not.toContain(
+      "https://docs.kie.ai/file-upload-api/upload-file-stream"
+    );
+    expect(text).not.toContain(
+      "https://docs.kie.ai/market/common/get-task-detail"
+    );
+    expect(text).toContain("Give the cat a small red bow tie.");
+    expect(text).toContain(uploadedUrl);
+    expect(text).not.toContain("file-stream-upload");
+    expect(mediaUrls(message)).toEqual([
+      "https://tempfile.aiquickdraw.com/generated/edit-final.jpg",
+      uploadedUrl,
+    ]);
   });
 
   it("uses the final KIE image generation poll response for review media", () => {

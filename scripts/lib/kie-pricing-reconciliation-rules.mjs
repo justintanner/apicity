@@ -87,6 +87,17 @@ export function validateFamilyRegistrations() {
 }
 
 export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
+  ...["flux-3/klein-text-to-image", "flux-3/klein-edit-image"].flatMap((key) =>
+    ["1K", "2K", "4K"].map((variant) => ({
+      key,
+      variant,
+      status: "pricing-only",
+      provenance:
+        "tests/fixtures/kie-pricing-evidence/flux3-klein-2026-10-21.json: official product page lists 1.6/2.5/6.5 credits = 0.008/0.0125/0.0325 USD per image",
+      rationale:
+        "FLUX 3 Klein was added after the frozen September catalog; dated product-page evidence supplies the resolution tiers, and successful 1K HARs confirm 1.6 credits per image.",
+    }))
+  ),
   ...["540p", "720p", "1080p", "2k", "4k"].map((variant) => ({
     key: "vidu-q4/image-to-video",
     variant,

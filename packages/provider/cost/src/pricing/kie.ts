@@ -484,7 +484,7 @@ const tieredImagePage = (
     payload: Record<string, unknown>,
     hints?: CostHints
   ) => number | undefined
-): ModelPricing => ({
+): PerUnitPricing => ({
   kind: "perUnit",
   unit: "images",
   units: imageCount,
@@ -498,6 +498,30 @@ const tieredImagePage = (
   rates,
   ...(extra ? { extra } : {}),
   source: pricePage(url, asOf),
+});
+
+// KIE documents custom dimensions overriding resolution, but publishes no
+// dimension-to-price mapping. Do not quote the ignored resolution tier.
+const flux3KleinImagePage = (url: string): ModelPricing => ({
+  ...tieredImagePage(
+    "resolution",
+    { "1K": 0.008, "2K": 0.0125, "4K": 0.0325 },
+    url,
+    "1K",
+    "2026-10-21"
+  ),
+  select: [
+    {
+      name: "resolution",
+      required: true,
+      pick: (payload) => {
+        const input = asObject(payload.input);
+        if (input?.width !== undefined || input?.height !== undefined)
+          return undefined;
+        return asString(input?.resolution) ?? "1K";
+      },
+    },
+  ],
 });
 
 // Output images a layer-decomposition job actually returns. The request
@@ -2667,6 +2691,13 @@ export const kie: Record<string, ModelPricing> = {
 
   // Z-Image — flat $0.004/image (aspect_ratio is the only knob).
   "z-image": flatImagePricePage(0.004, "https://kie.ai/z-image"),
+
+  "flux-3/klein-text-to-image": flux3KleinImagePage(
+    "https://kie.ai/flux-3?model=flux-3%2Fklein-text-to-image"
+  ),
+  "flux-3/klein-edit-image": flux3KleinImagePage(
+    "https://kie.ai/flux-3?model=flux-3%2Fklein-edit-image"
+  ),
 
   // Flux 2 — per image by `input.resolution`. Flex is the expensive tier
   // (1K $0.07, 2K $0.12), Pro the cheap one (1K $0.025, 2K $0.035). The field

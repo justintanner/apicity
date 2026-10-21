@@ -1801,10 +1801,10 @@
       "endpoints": 71
     },
     "final": {
-      "models": 155,
-      "pricingKeys": 179,
-      "slugKeys": 181,
-      "displayKeys": 181,
+      "models": 157,
+      "pricingKeys": 181,
+      "slugKeys": 183,
+      "displayKeys": 183,
       "schemaWithoutPricing": 6,
       "pricingOnly": 30,
       "endpoints": 84
@@ -1820,11 +1820,11 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:79d0b2f51691d65b36f785b4a661bf48700b9a0003471bfc28cbd71679c3b6de",
-      "packages/provider/kie/src/model-schemas.ts": "sha256:2abf1b1c11cc1c8d8e3efc1e977ed50793e9847560176e7ef6a51c4cf8ed4d07",
-      "packages/provider/kie/src/kie.ts": "sha256:c1354ddba53f59fb13dae3f7baaad2404a506bc5b104656e586416b50f5cd4e8",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:4d5012a053b6498d60472932a220f0c82eb4a8c40ef056d95010103762488c18",
-      "packages/provider/cost/src/slugs.ts": "sha256:0e4f638157065bfde2a33b12572fe4cfb48d57dc20eb15c1c5fa3014c9f5f0f2",
+      "packages/provider/kie/src/zod.ts": "sha256:8a1c933abeee519e888373c80aff9051282031fd1f1a1243536477888de8bf4a",
+      "packages/provider/kie/src/model-schemas.ts": "sha256:2277030349670d24262aedbed35e356ee8a1f9aab43894f9dbc95a72c850c6fb",
+      "packages/provider/kie/src/kie.ts": "sha256:3be8d9008640702d5264ee3adebf5dd7e391c1d43db3532e85f7405cbb9a71c5",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:99c10a7e0f3d8b7b06249b21f12be19ae89381f57f1198649727b65631e09eb0",
+      "packages/provider/cost/src/slugs.ts": "sha256:c5dd209e3b29b7604dd4fde8e1b01df3732b97eb1ad981f224943dc9a6ee8a7d",
       "scripts/endpoint-docs.tsv": "sha256:8b890109addec4dd4b260693bc1f3ef13f61492902862facad44f9c30f733f16"
     }
   },
@@ -24552,6 +24552,24 @@
         "rationale": "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
       },
       {
+        "id": "flux-3/klein-text-to-image",
+        "descriptor": true,
+        "guard": true,
+        "pricingKey": "flux-3/klein-text-to-image",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
+        "id": "flux-3/klein-edit-image",
+        "descriptor": true,
+        "guard": true,
+        "pricingKey": "flux-3/klein-edit-image",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
         "id": "ideogram/character",
         "descriptor": true,
         "guard": true,
@@ -26756,6 +26774,18 @@
         "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
       },
       {
+        "key": "flux-3/klein-text-to-image",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "flux-3/klein-edit-image",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
         "key": "flux-2/flex-text-to-image",
         "linkedRows": [
           "sha256:18578bf4759c05816cb3766205821fa513777a2206443a0c7c5c5b2167b61554#1",
@@ -27724,6 +27754,14 @@
         "disposition": "supported"
       },
       {
+        "key": "flux-3/klein-text-to-image",
+        "disposition": "supported"
+      },
+      {
+        "key": "flux-3/klein-edit-image",
+        "disposition": "supported"
+      },
+      {
         "key": "flux-2/flex-text-to-image",
         "disposition": "supported"
       },
@@ -28450,6 +28488,14 @@
         "disposition": "supported"
       },
       {
+        "key": "flux-3/klein-text-to-image",
+        "disposition": "supported"
+      },
+      {
+        "key": "flux-3/klein-edit-image",
+        "disposition": "supported"
+      },
+      {
         "key": "flux-2/flex-text-to-image",
         "disposition": "supported"
       },
@@ -28948,16 +28994,16 @@
     },
     "apiCity": {
       "models": {
-        "count": 155,
-        "descriptors": 155,
-        "guards": 155,
+        "count": 157,
+        "descriptors": 157,
+        "guards": 157,
         "withoutPricing": 6,
         "dispositionCounts": {
           "supported": 116,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 39
+          "upstream-unmappable": 41
         },
         "unclassified": 0
       },
@@ -28975,20 +29021,20 @@
         "unclassified": 0
       },
       "pricingKeys": {
-        "count": 179,
+        "count": 181,
         "dispositionCounts": {
           "supported": 144,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 35
+          "upstream-unmappable": 37
         },
         "unclassified": 0
       },
       "slugs": {
-        "count": 181,
+        "count": 183,
         "dispositionCounts": {
-          "supported": 181,
+          "supported": 183,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -28997,9 +29043,9 @@
         "unclassified": 0
       },
       "displays": {
-        "count": 181,
+        "count": 183,
         "dispositionCounts": {
-          "supported": 181,
+          "supported": 183,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -29038,6 +29084,48 @@
   },
   "runtimeCoverage": {
     "exceptions": [
+      {
+        "key": "flux-3/klein-text-to-image",
+        "variant": "1K",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/flux3-klein-2026-10-21.json: official product page lists 1.6/2.5/6.5 credits = 0.008/0.0125/0.0325 USD per image",
+        "rationale": "FLUX 3 Klein was added after the frozen September catalog; dated product-page evidence supplies the resolution tiers, and successful 1K HARs confirm 1.6 credits per image."
+      },
+      {
+        "key": "flux-3/klein-text-to-image",
+        "variant": "2K",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/flux3-klein-2026-10-21.json: official product page lists 1.6/2.5/6.5 credits = 0.008/0.0125/0.0325 USD per image",
+        "rationale": "FLUX 3 Klein was added after the frozen September catalog; dated product-page evidence supplies the resolution tiers, and successful 1K HARs confirm 1.6 credits per image."
+      },
+      {
+        "key": "flux-3/klein-text-to-image",
+        "variant": "4K",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/flux3-klein-2026-10-21.json: official product page lists 1.6/2.5/6.5 credits = 0.008/0.0125/0.0325 USD per image",
+        "rationale": "FLUX 3 Klein was added after the frozen September catalog; dated product-page evidence supplies the resolution tiers, and successful 1K HARs confirm 1.6 credits per image."
+      },
+      {
+        "key": "flux-3/klein-edit-image",
+        "variant": "1K",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/flux3-klein-2026-10-21.json: official product page lists 1.6/2.5/6.5 credits = 0.008/0.0125/0.0325 USD per image",
+        "rationale": "FLUX 3 Klein was added after the frozen September catalog; dated product-page evidence supplies the resolution tiers, and successful 1K HARs confirm 1.6 credits per image."
+      },
+      {
+        "key": "flux-3/klein-edit-image",
+        "variant": "2K",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/flux3-klein-2026-10-21.json: official product page lists 1.6/2.5/6.5 credits = 0.008/0.0125/0.0325 USD per image",
+        "rationale": "FLUX 3 Klein was added after the frozen September catalog; dated product-page evidence supplies the resolution tiers, and successful 1K HARs confirm 1.6 credits per image."
+      },
+      {
+        "key": "flux-3/klein-edit-image",
+        "variant": "4K",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/flux3-klein-2026-10-21.json: official product page lists 1.6/2.5/6.5 credits = 0.008/0.0125/0.0325 USD per image",
+        "rationale": "FLUX 3 Klein was added after the frozen September catalog; dated product-page evidence supplies the resolution tiers, and successful 1K HARs confirm 1.6 credits per image."
+      },
       {
         "key": "vidu-q4/image-to-video",
         "variant": "540p",

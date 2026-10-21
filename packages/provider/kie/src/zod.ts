@@ -375,6 +375,8 @@ export const KIE_MEDIA_MODELS = [
   "flux-2/flex-text-to-image",
   "flux-2/pro-image-to-image",
   "flux-2/pro-text-to-image",
+  "flux-3/klein-text-to-image",
+  "flux-3/klein-edit-image",
   // Ideogram — enum-only vendor (no alias hatch).
   "ideogram/character",
   "ideogram/character-edit",
@@ -6156,6 +6158,85 @@ export const Flux2FlexImageToImageRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// FLUX 3 Klein image models. Custom dimensions override ratio/resolution.
+export const Flux3KleinAspectRatioSchema = z.enum([
+  "1:1",
+  "4:3",
+  "3:4",
+  "3:2",
+  "2:3",
+  "16:9",
+  "9:16",
+  "21:9",
+  "9:21",
+]);
+export const Flux3KleinResolutionSchema = z.enum(["1K", "2K", "4K"]);
+const flux3KleinInputShape = {
+  prompt: z.string().min(1).max(5000),
+  resolution: Flux3KleinResolutionSchema.default("1K"),
+  width: z.number().int().min(256).max(4096).optional(),
+  height: z.number().int().min(256).max(4096).optional(),
+  output_format: z.enum(["png", "jpeg", "webp"]).default("png"),
+  num_images: z.number().int().min(1).max(4).default(1),
+  seed: z.number().int().min(0).max(2147483647).optional(),
+  enhance_prompt: z.boolean().default(true),
+  nsfw_checker: z.boolean().default(false),
+};
+const refineFlux3KleinDimensions = (
+  value: { input: { width?: number; height?: number } },
+  ctx: z.RefinementCtx
+) => {
+  const { width, height } = value.input;
+  if ((width === undefined) !== (height === undefined)) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["input", "width"],
+      message: "width and height must be supplied together",
+    });
+  } else if (
+    width !== undefined &&
+    height !== undefined &&
+    (width / height < 0.4 || width / height > 2.5)
+  ) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["input", "width"],
+      message: "Custom width:height must be between 1:2.5 and 2.5:1",
+    });
+  }
+};
+
+// Docs: https://docs.kie.ai/market/flux3/klein-text-to-image
+export const Flux3KleinTextToImageRequestSchema = z
+  .object({
+    model: z.literal("flux-3/klein-text-to-image"),
+    callBackUrl: z.string().optional(),
+    input: z.object({
+      ...flux3KleinInputShape,
+      aspect_ratio: Flux3KleinAspectRatioSchema.default("1:1"),
+    }),
+  })
+  .superRefine(refineFlux3KleinDimensions);
+
+// Docs: https://docs.kie.ai/market/flux3/klein-edit-image
+export const Flux3KleinEditImageRequestSchema = z
+  .object({
+    model: z.literal("flux-3/klein-edit-image"),
+    callBackUrl: z.string().optional(),
+    input: z.object({
+      ...flux3KleinInputShape,
+      image_urls: z
+        .array(z.string().regex(/^https?:\/\/.+/))
+        .min(1)
+        .max(10),
+      aspect_ratio: z
+        .enum([...Flux3KleinAspectRatioSchema.options, "auto"])
+        .default("auto"),
+    }),
+  })
+  .superRefine(refineFlux3KleinDimensions);
+
+// ---------------------------------------------------------------------------
 // Hailuo market createTask models (02 + 2-3, text/image to video)
 // Docs: https://docs.kie.ai/market/hailuo/02-text-to-video-pro and siblings
 // ---------------------------------------------------------------------------
@@ -8639,6 +8720,8 @@ export const MediaGenerationRequestSchema = z.union([
   TopazVideoUpscaleRequestSchema,
   InfinitalkFromAudioRequestSchema,
   ZImageRequestSchema,
+  Flux3KleinTextToImageRequestSchema,
+  Flux3KleinEditImageRequestSchema,
   Flux2ProTextToImageRequestSchema,
   Flux2FlexTextToImageRequestSchema,
   Flux2ProImageToImageRequestSchema,
@@ -10271,4 +10354,24 @@ export type ViduQ4ReferenceToVideoRequest = z.input<
 export type ViduQ4ReferenceToVideoRequestInput = ViduQ4ReferenceToVideoRequest;
 export type ViduQ4ReferenceToVideoParsedRequest = z.output<
   typeof ViduQ4ReferenceToVideoRequestSchema
+>;
+
+export type Flux3KleinAspectRatio = z.infer<typeof Flux3KleinAspectRatioSchema>;
+
+export type Flux3KleinResolution = z.infer<typeof Flux3KleinResolutionSchema>;
+
+export type Flux3KleinTextToImageRequest = z.input<
+  typeof Flux3KleinTextToImageRequestSchema
+>;
+export type Flux3KleinTextToImageRequestInput = Flux3KleinTextToImageRequest;
+export type Flux3KleinTextToImageParsedRequest = z.output<
+  typeof Flux3KleinTextToImageRequestSchema
+>;
+
+export type Flux3KleinEditImageRequest = z.input<
+  typeof Flux3KleinEditImageRequestSchema
+>;
+export type Flux3KleinEditImageRequestInput = Flux3KleinEditImageRequest;
+export type Flux3KleinEditImageParsedRequest = z.output<
+  typeof Flux3KleinEditImageRequestSchema
 >;

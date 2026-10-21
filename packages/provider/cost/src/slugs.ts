@@ -253,6 +253,8 @@ export const MODEL_SLUGS = {
     "z-image": "zimg",
 
     // Image — Flux 2 (flex and pro are price tiers, so distinct slugs)
+    "flux-3/klein-text-to-image": "flux3k",
+    "flux-3/klein-edit-image": "flux3k",
     "flux-2/flex-text-to-image": "flux2f",
     "flux-2/flex-image-to-image": "flux2f",
     "flux-2/pro-text-to-image": "flux2p",
@@ -802,6 +804,8 @@ export const MODEL_DISPLAY = {
 
     "z-image": "Z-Image",
 
+    "flux-3/klein-text-to-image": "FLUX 3 Klein",
+    "flux-3/klein-edit-image": "FLUX 3 Klein Edit",
     "flux-2/flex-text-to-image": "Flux 2 Flex",
     "flux-2/flex-image-to-image": "Flux 2 Flex Edit",
     "flux-2/pro-text-to-image": "Flux 2 Pro",

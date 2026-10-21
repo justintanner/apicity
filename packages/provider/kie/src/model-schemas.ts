@@ -6394,6 +6394,186 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  // https://docs.kie.ai/market/flux3/klein-text-to-image
+  "flux-3/klein-text-to-image": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        minLength: 1,
+        maxLength: 5000,
+        description:
+          "A text description of the image you want to generate (Max length: 5000 characters)",
+        required: true,
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: [
+          "1:1",
+          "4:3",
+          "3:4",
+          "3:2",
+          "2:3",
+          "16:9",
+          "9:16",
+          "21:9",
+          "9:21",
+        ],
+        default: "1:1",
+        description:
+          "Aspect ratio of the generated image\nOptions: 1:1; 4:3; 3:4; 3:2; 2:3; 16:9; 9:16; 21:9; 9:21",
+      },
+      resolution: {
+        type: "string",
+        enum: ["1K", "2K", "4K"],
+        default: "1K",
+        description: "Resolution of the generated image\nOptions: 1K; 2K; 4K",
+      },
+      width: {
+        type: "integer",
+        minimum: 256,
+        maximum: 4096,
+        description:
+          "Image width. Both width and height must be passed at the same time. Aspect ratio must be between 1:2.5 and 2.5:1. Once passed, aspect_ratio and resolution are ignored.",
+      },
+      height: {
+        type: "integer",
+        minimum: 256,
+        maximum: 4096,
+        description:
+          "Image height. Both width and height must be passed at the same time. Aspect ratio must be between 1:2.5 and 2.5:1. Once passed, aspect_ratio and resolution are ignored.",
+      },
+      output_format: {
+        type: "string",
+        enum: ["png", "jpeg", "webp"],
+        default: "png",
+        description: "Format of the output image\nOptions: png; jpeg; webp",
+      },
+      num_images: {
+        type: "integer",
+        minimum: 1,
+        maximum: 4,
+        default: 1,
+        description: "Number of images to generate",
+      },
+      seed: {
+        type: "integer",
+        minimum: 0,
+        maximum: 2147483647,
+        description: "Random seed",
+      },
+      enhance_prompt: {
+        type: "boolean",
+        enum: [true, false],
+        default: true,
+        description:
+          "Rewrites the prompt into a fuller description before generating, which noticeably improves quality. Enabled by default (also when the parameter is omitted); pass false to turn it off. Applies to both text-to-image and image editing; in editing, the rewrite preserves the intent of the original instruction.",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        description:
+          "Defaults to false. When false, no additional content filtering is applied and results are returned directly by the model.",
+        default: false,
+      },
+    },
+  },
+  // https://docs.kie.ai/market/flux3/klein-edit-image
+  "flux-3/klein-edit-image": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        minLength: 1,
+        maxLength: 5000,
+        description:
+          "An instruction describing how to edit the image (Max length: 5000 characters)",
+        required: true,
+      },
+      image_urls: {
+        type: "array",
+        minItems: 1,
+        maxItems: 10,
+        description:
+          "Input images to transform or use as reference (supports up to 10 images) (File URL after upload, not file content; Accepted types: image/jpeg, image/png, image/webp; Max size: 30.0MB)",
+        required: true,
+        items: {
+          type: "string",
+          pattern: "^https?://.+",
+        },
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: [
+          "1:1",
+          "4:3",
+          "3:4",
+          "3:2",
+          "2:3",
+          "16:9",
+          "9:16",
+          "21:9",
+          "9:21",
+          "auto",
+        ],
+        default: "auto",
+        description:
+          "Aspect ratio of the generated image. Select auto to match the first input image ratio.\nOptions: 1:1; 4:3; 3:4; 3:2; 2:3; 16:9; 9:16; 21:9; 9:21; auto",
+      },
+      resolution: {
+        type: "string",
+        enum: ["1K", "2K", "4K"],
+        default: "1K",
+        description: "Resolution of the generated image\nOptions: 1K; 2K; 4K",
+      },
+      width: {
+        type: "integer",
+        minimum: 256,
+        maximum: 4096,
+        description:
+          "Width of the generated image. Both width and height must be passed at the same time. Must be an integer between 256 and 4096. The aspect ratio (width:height) must be between 1:2.5 and 2.5:1. Once passed, aspect_ratio and resolution are ignored.",
+      },
+      height: {
+        type: "integer",
+        minimum: 256,
+        maximum: 4096,
+        description:
+          "Height of the generated image. Both width and height must be passed at the same time. Must be an integer between 256 and 4096. The aspect ratio (width:height) must be between 1:2.5 and 2.5:1. Once passed, aspect_ratio and resolution are ignored.",
+      },
+      output_format: {
+        type: "string",
+        enum: ["png", "jpeg", "webp"],
+        default: "png",
+        description: "Format of the output image\nOptions: png; jpeg; webp",
+      },
+      num_images: {
+        type: "integer",
+        minimum: 1,
+        maximum: 4,
+        default: 1,
+        description: "Number of images to generate",
+      },
+      seed: {
+        type: "integer",
+        minimum: 0,
+        maximum: 2147483647,
+        description: "Random seed",
+      },
+      enhance_prompt: {
+        type: "boolean",
+        enum: [true, false],
+        default: true,
+        description:
+          "Rewrites the prompt into a fuller description before generating, which noticeably improves quality. Enabled by default (also when the parameter is omitted); pass false to turn it off. Applies to both text-to-image and image editing; in editing, the rewrite preserves the intent of the original instruction.",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        description:
+          "Defaults to false. When false, no additional content filtering is applied and results are returned directly by the model.",
+        default: false,
+      },
+    },
+  },
+
   // https://docs.kie.ai/market/flux2/pro-text-to-image
   "flux-2/pro-text-to-image": {
     type: "image",

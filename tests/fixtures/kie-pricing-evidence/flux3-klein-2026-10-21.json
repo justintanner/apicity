@@ -1,0 +1,28 @@
+{
+  "capturedAt": "2026-10-21",
+  "source": "https://kie.ai/flux-3?model=flux-3%2Fklein-text-to-image",
+  "models": ["flux-3/klein-text-to-image", "flux-3/klein-edit-image"],
+  "basis": "Published product-page pricingDesc for each model; USD amounts copied directly from page, not inferred from credits.",
+  "rates": [
+    {
+      "resolution": "1K",
+      "creditsPerImage": 1.6,
+      "usdPerImage": 0.008
+    },
+    {
+      "resolution": "2K",
+      "creditsPerImage": 2.5,
+      "usdPerImage": 0.0125
+    },
+    {
+      "resolution": "4K",
+      "creditsPerImage": 6.5,
+      "usdPerImage": 0.0325
+    }
+  ],
+  "customDimensions": "No dimension-to-price mapping published; estimates fail closed.",
+  "recordings": [
+    "tests/recordings/kie_2079838932/flux3-klein-text-to-image_1038092297/recording.har",
+    "tests/recordings/kie_2079838932/flux3-klein-edit-image_596228242/recording.har"
+  ]
+}

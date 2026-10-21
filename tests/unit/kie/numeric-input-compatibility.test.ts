@@ -116,6 +116,9 @@ function numericVariant(
 
   if (schema.type !== "string") return undefined;
 
+  // FLUX 3 Klein reference URLs cannot contain a numeric-only value.
+  if (schema.pattern === /^https?:\/\/.+/.source) return undefined;
+
   if (
     typeof schema.pattern === "string" &&
     !REVIEWED_NUMERIC_STRING_PATTERNS.has(schema.pattern)

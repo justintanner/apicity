@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added `flux-3/klein-text-to-image` with typed inputs, resolution pricing, and a recorded image generation test.
+- Added `flux-3/klein-edit-image` with reference images, resolution pricing, and a recorded cat fixture edit test.
+
 - Added `MiniMaxH3ReferenceClipDurationMs`, the `minimax-h3/reference-to-video`
   reference media duration windows in milliseconds, exported from
   `@apicity/kie` and `@apicity/kie/zod` (ac-j3d6ki.2). Videos and audio each

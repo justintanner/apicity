@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added FLUX 3 Max text-to-video (ac-h9hyir).
+- Added FLUX 3 Max image-to-video (ac-h9hyir).
+- Added FLUX 3 Max keyframes-to-video (ac-h9hyir).
+
 - Added Bria Fibo 2 edit with up to four reference images and structured VGL.
 
 - Added Bria Fibo 2 generate with structured VGL prompts and image pricing.

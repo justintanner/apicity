@@ -36,6 +36,11 @@ const sweepAsOf = "2026-07-22";
 // its OpenAPI input schema on this date.
 const flux3AsOf = "2026-08-21";
 
+// FLUX 3 Max promotional rates, read from each model's fal.ai
+// pricingInfoOverride on this date. The card bills output seconds through
+// 2026-11-07; list rates after that are $0.17 at 720p and $0.29 at 1080p.
+const flux3MaxAsOf = "2026-10-21";
+
 // Audio endpoints were read directly from each model's fal.ai pricing card on
 // this date.
 const audioAsOf = "2026-08-22";
@@ -739,6 +744,15 @@ const FLUX_3_RATES: Record<string, number> = {
 const FLUX_3_EXTEND_RATES: Record<string, number> = {
   "720p": 0.41,
   "1080p": 0.53,
+};
+
+// Promotional card through 2026-11-07: $0.0425/s at 720p and $0.0725/s at
+// 1080p (list $0.17 / $0.29 after). Pricing API the same day: unit_price
+// $0.02125, and a 5s clip bills 10 units ($0.2125). Audio and
+// reasoning_level are not separate billing dimensions.
+const FLUX_3_MAX_RATES: Record<string, number> = {
+  "720p": 0.0425,
+  "1080p": 0.0725,
 };
 
 // GPT Image 1.5 prices per image on a quality × size grid. `quality`
@@ -2337,6 +2351,28 @@ export const fal: Record<string, ModelPricing> = {
     FLUX_3_RATES,
     numericSeconds(5),
     flux3AsOf
+  ),
+  // OpenAPI defaults omitted duration to 5 seconds and resolution to 720p.
+  "blackforestlabs/flux-3-max/text-to-video": perSecondTiered(
+    "blackforestlabs/flux-3-max/text-to-video",
+    [resolutionTier("720p")],
+    FLUX_3_MAX_RATES,
+    numericSeconds(5),
+    flux3MaxAsOf
+  ),
+  "blackforestlabs/flux-3-max/image-to-video": perSecondTiered(
+    "blackforestlabs/flux-3-max/image-to-video",
+    [resolutionTier("720p")],
+    FLUX_3_MAX_RATES,
+    numericSeconds(5),
+    flux3MaxAsOf
+  ),
+  "blackforestlabs/flux-3-max/keyframes-to-video": perSecondTiered(
+    "blackforestlabs/flux-3-max/keyframes-to-video",
+    [resolutionTier("720p")],
+    FLUX_3_MAX_RATES,
+    numericSeconds(5),
+    flux3MaxAsOf
   ),
 
   // Video — Seedance 2.0, 2.0 Fast and 2.5 bill output tokens (seedanceTokens

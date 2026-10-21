@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-215 endpoints across 53 groups. Each method mirrors an upstream URL path.
+218 endpoints across 53 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -461,6 +461,57 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.blackforestlabs.flux3.textToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.blackforestlabs.flux3Max.imageToVideo</code></b></summary>
+
+<code>POST https://fal.run/blackforestlabs/flux-3-max/image-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/blackforestlabs/flux-3-max/image-to-video/api)
+
+```typescript
+const res = await fal.run.blackforestlabs.flux3Max.imageToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.blackforestlabs.flux3Max.keyframesToVideo</code></b></summary>
+
+<code>POST https://fal.run/blackforestlabs/flux-3-max/keyframes-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/blackforestlabs/flux-3-max/keyframes-to-video/api)
+
+```typescript
+const res = await fal.run.blackforestlabs.flux3Max.keyframesToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.blackforestlabs.flux3Max.textToVideo</code></b></summary>
+
+<code>POST https://fal.run/blackforestlabs/flux-3-max/text-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/blackforestlabs/flux-3-max/text-to-video/api)
+
+```typescript
+const res = await fal.run.blackforestlabs.flux3Max.textToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

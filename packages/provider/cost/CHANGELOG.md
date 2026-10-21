@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added FLUX 3 Max text-to-video pricing (ac-h9hyir).
+- Added FLUX 3 Max image-to-video pricing (ac-h9hyir).
+- Added FLUX 3 Max keyframes-to-video pricing (ac-h9hyir).
+
 - `gpt-realtime-2.1` pricing per token modality, verified 2026-10-19 against
   OpenAI's pricing page: text $4 input, $0.40 cached input and $24 output;
   audio $32, $0.40 and $64; image $5 and $0.50, input only, per million

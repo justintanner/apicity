@@ -1485,7 +1485,7 @@ describe("fal edit/image pricing estimates", () => {
     // unrecorded, and the one 2.0-series reference recording (2.0 US)
     // divides by 1000 where the card says 1024. 2.5 and 2.5 US
     // image-to-video follow the input image's aspect, which no request field
-    // sizes (ac-j3d6ki.3). All sixty-seven use fal's pricing-estimate API.
+    // sizes (ac-j3d6ki.3). Reframe-video also bills generated overlap. All use fal's pricing-estimate API.
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toEqual([
       "alibaba/qwen-image-3/edit",
       "alibaba/qwen-image-3/text-to-image",
@@ -1534,6 +1534,7 @@ describe("fal edit/image pricing estimates", () => {
       "minimax/h3-max/insert-video",
       "minimax/h3-max/lip-sync/image-to-video",
       "minimax/h3-max/reference-to-video",
+      "minimax/h3-max/reframe-video",
       "minimax/h3/image-to-video",
       "minimax/h3/reference-to-video",
       "minimax/h3/text-to-video",

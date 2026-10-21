@@ -1227,7 +1227,6 @@ const meshyV71 = (endpointId: string, on: string): ModelPricing => ({
 //   648x630 at 97 frames and billed 38.671 units. ByteDance publishes no
 //   sizing rule for that adaptive ratio, so no request field fixes the size.
 export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
-  "minimax/h3-max/reframe-video",
   "alibaba/qwen-image-3/edit",
   "alibaba/qwen-image-3/text-to-image",
   "alibaba/wan-3.0/image-to-video",
@@ -1275,6 +1274,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "minimax/h3-max/insert-video",
   "minimax/h3-max/lip-sync/image-to-video",
   "minimax/h3-max/reference-to-video",
+  "minimax/h3-max/reframe-video",
   "minimax/h3/image-to-video",
   "minimax/h3/reference-to-video",
   "minimax/h3/text-to-video",

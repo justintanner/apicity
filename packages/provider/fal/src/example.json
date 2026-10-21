@@ -308,6 +308,16 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST bria.fibo2.generate": {
+    "source": "fal/bria-fibo-2-generate",
+    "payload": {
+      "prompt": "A watercolor painting of a small orange cat sitting beside a blue vase.",
+      "aspect_ratio": "1:1",
+      "seed": 5555
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST bria.fiboEdit1p5.edit": {
     "source": "fal/bria-fibo-edit-1-5-edit",
     "payload": {

@@ -12331,6 +12331,270 @@ export type FalMeshyV6LiteRetextureParsedRequest = z.output<
   typeof FalMeshyV6LiteRetextureRequestSchema
 >;
 
+// Pinned to queue OpenAPI on 2026-10-21, SHA256 d2e92b45121a0a4a962289efa74efff19eb6736e4f0a13560d522e5de79b6dde.
+// Docs: https://fal.ai/models/bria/fibo-2/generate/api
+const FalBriaFibo2PromptObjectSchema = z.object({
+  description: z
+    .union([z.string(), z.null()])
+    .optional()
+    .describe("A description of the object to be generated."),
+  location: z
+    .union([z.string(), z.null()])
+    .optional()
+    .describe("The location of the object in the image."),
+  relationship: z
+    .string()
+    .describe("The relationship of the object to other objects in the image."),
+  relative_size: z
+    .union([z.string(), z.null()])
+    .optional()
+    .describe("The relative size of the object in the image."),
+  shape_and_color: z
+    .union([z.string(), z.null()])
+    .optional()
+    .describe("The shape and color of the object."),
+  texture: z
+    .union([z.string(), z.null()])
+    .optional()
+    .describe("The texture of the object."),
+  appearance_details: z
+    .union([z.string(), z.null()])
+    .optional()
+    .describe("The appearance details of the object."),
+  number_of_objects: z
+    .union([z.number().int(), z.null()])
+    .optional()
+    .describe("The number of objects in the image."),
+  pose: z
+    .union([z.string(), z.null()])
+    .optional()
+    .describe("The pose of the object in the image."),
+  expression: z
+    .union([z.string(), z.null()])
+    .optional()
+    .describe("The expression of the object in the image."),
+  clothing: z
+    .union([z.string(), z.null()])
+    .optional()
+    .describe("The clothing of the object in the image."),
+  action: z
+    .union([z.string(), z.null()])
+    .optional()
+    .describe("The action of the object in the image."),
+  gender: z
+    .union([z.string(), z.null()])
+    .optional()
+    .describe("The gender of the object in the image."),
+  skin_tone_and_texture: z
+    .union([z.string(), z.null()])
+    .optional()
+    .describe("The skin tone and texture of the object in the image."),
+  orientation: z
+    .union([z.string(), z.null()])
+    .optional()
+    .describe("The orientation of the object in the image."),
+});
+
+const FalBriaFibo2LightingSchema = z.object({
+  conditions: z
+    .union([z.string(), z.null()])
+    .optional()
+    .describe("The conditions of the lighting in the image to be generated."),
+  direction: z
+    .union([z.string(), z.null()])
+    .optional()
+    .describe("The direction of the lighting in the image to be generated."),
+  shadows: z
+    .union([z.string(), z.null()])
+    .optional()
+    .describe("The shadows in the image to be generated."),
+});
+
+const FalBriaFibo2AestheticsSchema = z.object({
+  composition: z
+    .union([z.string(), z.null()])
+    .optional()
+    .describe("The composition of the image to be generated."),
+  color_scheme: z
+    .union([z.string(), z.null()])
+    .optional()
+    .describe("The color scheme of the image to be generated."),
+  mood_atmosphere: z
+    .union([z.string(), z.null()])
+    .optional()
+    .describe("The mood and atmosphere of the image to be generated."),
+});
+
+const FalBriaFibo2PhotographicCharacteristicsSchema = z.object({
+  depth_of_field: z
+    .union([z.string(), z.null()])
+    .optional()
+    .describe("The depth of field in the image to be generated."),
+  focus: z
+    .union([z.string(), z.null()])
+    .optional()
+    .describe("The focus in the image to be generated."),
+  camera_angle: z
+    .union([z.string(), z.null()])
+    .optional()
+    .describe("The angle of the camera in the image to be generated."),
+  lens_focal_length: z
+    .union([z.string(), z.null()])
+    .optional()
+    .describe("The focal length of the lens in the image to be generated."),
+});
+
+const FalBriaFibo2TextRenderSchema = z.object({
+  text: z
+    .string()
+    .describe(
+      "The text to render. fibo-2 is also shown an image of it, so it renders as written."
+    ),
+  location: z
+    .union([z.string(), z.null()])
+    .optional()
+    .describe("Where the text sits in the image."),
+  size: z
+    .union([z.string(), z.null()])
+    .optional()
+    .describe("The size of the text in the image."),
+  color: z
+    .union([z.string(), z.null()])
+    .optional()
+    .describe("The color of the text."),
+  font: z
+    .union([z.string(), z.null()])
+    .optional()
+    .describe("The style of the font."),
+  appearance_details: z
+    .union([z.string(), z.null()])
+    .optional()
+    .describe("Any other notable visual details of the text."),
+});
+
+const FalBriaFibo2VglSchema = z.object({
+  short_description: z
+    .union([z.string(), z.null()])
+    .optional()
+    .describe("A short description of the image to be generated."),
+  objects: z
+    .union([z.array(FalBriaFibo2PromptObjectSchema), z.null()])
+    .default([])
+    .describe(
+      "A list of objects in the image to be generated, along with their attributes and relationships to other objects in the image."
+    ),
+  background_setting: z
+    .union([z.string(), z.null()])
+    .optional()
+    .describe("The background setting of the image to be generated."),
+  lighting: z
+    .union([FalBriaFibo2LightingSchema, z.null()])
+    .optional()
+    .describe("The lighting of the image to be generated."),
+  aesthetics: z
+    .union([FalBriaFibo2AestheticsSchema, z.null()])
+    .optional()
+    .describe("The aesthetics of the image to be generated."),
+  photographic_characteristics: z
+    .union([FalBriaFibo2PhotographicCharacteristicsSchema, z.null()])
+    .optional()
+    .describe("The photographic characteristics of the image to be generated."),
+  style_medium: z
+    .union([z.string(), z.null()])
+    .optional()
+    .describe("The style medium of the image to be generated."),
+  text_render: z
+    .union([z.array(FalBriaFibo2TextRenderSchema), z.null()])
+    .default([])
+    .describe("A list of text to be rendered in the image."),
+  context: z
+    .union([z.string(), z.null()])
+    .optional()
+    .describe("The context of the image to be generated."),
+  artistic_style: z
+    .union([z.string(), z.null()])
+    .optional()
+    .describe("The artistic style of the image to be generated."),
+});
+
+export const FalBriaFibo2GenerateRequestSchema = z.object({
+  prompt: z
+    .union([z.string(), z.null()])
+    .optional()
+    .describe(
+      "What to generate, in free-form text. It is expanded into a VGL, which is returned. With 'vgl', the change to make to it."
+    ),
+  style: z
+    .union([
+      z.enum(["Kodak Film", "Hard Flash", "Hazy Dreamy", "Rough Realism"]),
+      z.null(),
+    ])
+    .optional()
+    .describe(
+      "A style for the generated image. Requires 'prompt'; not with 'image_url', 'vgl' or 'negative_prompt'."
+    ),
+  image_url: z
+    .union([z.string(), z.null()])
+    .optional()
+    .describe(
+      "A reference image (inspire mode). With 'prompt', VGL uses it as a visual reference for the prompt's scene and generates a new image of that scene, not the image. Alone, the VGL describes the image itself, so the result is a close variation of it. Not with 'vgl'."
+    ),
+  vgl: z
+    .union([FalBriaFibo2VglSchema, z.null()])
+    .optional()
+    .describe(
+      "A VGL (Visual Generation Language) document: the structured JSON description of the scene. Alone, the model renders it as-is. With 'prompt', VGL changes it by the prompt (refine) and the result is rendered. Accepts what a previous request returned. Not with 'image_url' or 'style'."
+    ),
+  seed: z
+    .number()
+    .int()
+    .min(0)
+    .max(2147483647)
+    .default(5555)
+    .describe("Random seed for reproducibility, 0 to 2147483647."),
+  aspect_ratio: z
+    .enum([
+      "1:1",
+      "1:2",
+      "1:3",
+      "1:4",
+      "1:5",
+      "2:1",
+      "2:3",
+      "3:1",
+      "3:2",
+      "3:4",
+      "4:1",
+      "4:3",
+      "4:5",
+      "5:1",
+      "5:4",
+      "9:16",
+      "9:21",
+      "10:16",
+      "16:9",
+      "16:10",
+      "21:9",
+    ])
+    .default("1:1")
+    .describe(
+      "Aspect ratio of the image, at about one megapixel. Options: 1:1, 1:2, 1:3, 1:4, 1:5, 2:1, 2:3, 3:1, 3:2, 3:4, 4:1, 4:3, 4:5, 5:1, 5:4, 9:16, 9:21, 10:16, 16:9, 16:10, 21:9"
+    ),
+  sync_mode: z
+    .boolean()
+    .default(false)
+    .describe(
+      "If true, returns the image directly in the response (increases latency)."
+    ),
+});
+export type FalBriaFibo2GenerateRequest = z.input<
+  typeof FalBriaFibo2GenerateRequestSchema
+>;
+export type FalBriaFibo2GenerateRequestInput = FalBriaFibo2GenerateRequest;
+export type FalBriaFibo2GenerateParsedRequest = z.output<
+  typeof FalBriaFibo2GenerateRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "meshy/v6-lite/retexture": FalMeshyV6LiteRetextureRequestSchema,
   "bytedance/seedance-2.5/draft/complete":
@@ -12416,6 +12680,7 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "meta/muse-image/text-to-image": FalMetaMuseImageTextToImageRequestSchema,
   "elevenlabs/music/v2.5": FalElevenlabsMusicV2p5RequestSchema,
   "bria/fibo-gen-1.5/text-to-image": FalBriaFiboGen1p5TextToImageRequestSchema,
+  "bria/fibo-2/generate": FalBriaFibo2GenerateRequestSchema,
   "bria/fibo-edit-1.5/edit": FalBriaFiboEdit1p5EditRequestSchema,
   "blackforestlabs/flux-3/edit-video":
     FalBlackforestlabsFlux3EditVideoRequestSchema,

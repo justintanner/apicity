@@ -117,6 +117,8 @@ import {
   FalElevenlabsMusicV2p5Request,
   FalBriaFiboGen1p5TextToImageResponse,
   FalBriaFiboGen1p5TextToImageRequest,
+  FalBriaFibo2GenerateRequest,
+  FalBriaFibo2GenerateResponse,
   FalBriaFiboEdit1p5EditResponse,
   FalBriaFiboEdit1p5EditRequest,
   FalBlackforestlabsFlux3EditVideoResponse,
@@ -487,6 +489,7 @@ import {
   FalMetaMuseImageTextToImageRequestSchema,
   FalElevenlabsMusicV2p5RequestSchema,
   FalBriaFiboGen1p5TextToImageRequestSchema,
+  FalBriaFibo2GenerateRequestSchema,
   FalBriaFiboEdit1p5EditRequestSchema,
   FalBlackforestlabsFlux3EditVideoRequestSchema,
   FalAlibabaHappyHorseV1p1TextToVideoRequestSchema,
@@ -2903,6 +2906,15 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/bria/fibo-2/generate
+  // Docs: https://fal.ai/models/bria/fibo-2/generate/api
+  const briaFibo2Generate = jsonBody<
+    FalBriaFibo2GenerateRequest,
+    FalBriaFibo2GenerateResponse
+  >("POST", "/bria/fibo-2/generate", FalBriaFibo2GenerateRequestSchema, {
+    base: runBaseURL,
+  });
+
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://fal.run/bria/fibo-edit-1.5/edit
   // Docs: https://fal.ai/models/bria/fibo-edit-1.5/edit/api
@@ -3832,6 +3844,11 @@ export function createFal(opts: FalOptions): FalProvider {
     // POST https://fal.run/bria/fibo-edit-1.5/virtual-try-on
     // Docs: https://fal.ai/models/bria/fibo-edit-1.5/virtual-try-on/api
     bria: {
+      fibo2: {
+        // POST https://fal.run/bria/fibo-2/generate
+        // Docs: https://fal.ai/models/bria/fibo-2/generate/api
+        generate: briaFibo2Generate,
+      },
       // POST https://fal.run/bria/guided-remove-background
       // Docs: https://fal.ai/models/bria/guided-remove-background/api
       guidedRemoveBackground: briaGuidedRemoveBackground,

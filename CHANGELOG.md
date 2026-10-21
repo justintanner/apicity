@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Bria Fibo 2 generate with structured VGL prompts and image pricing.
+
 - First-class `costHints.durationSeconds` metadata for pricing media whose wire
   request does not contain its billable duration.
 - Static pricing coverage for Fal video and edit/image endpoints, Alibaba Wan

@@ -367,6 +367,10 @@ import {
   FalFlux3KeyframesToVideoRequest,
   FalFlux3ExtendVideoRequest,
   FalFlux3VideoResponse,
+  FalFlux3MaxTextToVideoRequest,
+  FalFlux3MaxImageToVideoRequest,
+  FalFlux3MaxKeyframesToVideoRequest,
+  FalFlux3MaxVideoResponse,
   FalFluxVideoUpscaleRequest,
   FalFluxVideoUpscaleResponse,
   FalXaiGrokImagineImageRequest,
@@ -597,6 +601,9 @@ import {
   FalFlux3ImageToVideoRequestSchema,
   FalFlux3FirstLastFrameToVideoRequestSchema,
   FalFlux3KeyframesToVideoRequestSchema,
+  FalFlux3MaxTextToVideoRequestSchema,
+  FalFlux3MaxImageToVideoRequestSchema,
+  FalFlux3MaxKeyframesToVideoRequestSchema,
   FalMinimaxH3MaxTurboExtendVideoRequestSchema,
   FalXaiGrokImagineVideoV1p5LiteImageToVideoRequestSchema,
   FalXaiGrokImagineVideoV1p5LiteTextToVideoRequestSchema,
@@ -1236,6 +1243,42 @@ export function createFal(opts: FalOptions): FalProvider {
     "POST",
     "/blackforestlabs/flux-3/text-to-video",
     FalFlux3TextToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // POST https://fal.run/blackforestlabs/flux-3-max/text-to-video
+  // Docs: https://fal.ai/models/blackforestlabs/flux-3-max/text-to-video/api
+  const blackforestlabsFlux3MaxTextToVideo = jsonBody<
+    FalFlux3MaxTextToVideoRequest,
+    FalFlux3MaxVideoResponse
+  >(
+    "POST",
+    "/blackforestlabs/flux-3-max/text-to-video",
+    FalFlux3MaxTextToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // POST https://fal.run/blackforestlabs/flux-3-max/image-to-video
+  // Docs: https://fal.ai/models/blackforestlabs/flux-3-max/image-to-video/api
+  const blackforestlabsFlux3MaxImageToVideo = jsonBody<
+    FalFlux3MaxImageToVideoRequest,
+    FalFlux3MaxVideoResponse
+  >(
+    "POST",
+    "/blackforestlabs/flux-3-max/image-to-video",
+    FalFlux3MaxImageToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // POST https://fal.run/blackforestlabs/flux-3-max/keyframes-to-video
+  // Docs: https://fal.ai/models/blackforestlabs/flux-3-max/keyframes-to-video/api
+  const blackforestlabsFlux3MaxKeyframesToVideo = jsonBody<
+    FalFlux3MaxKeyframesToVideoRequest,
+    FalFlux3MaxVideoResponse
+  >(
+    "POST",
+    "/blackforestlabs/flux-3-max/keyframes-to-video",
+    FalFlux3MaxKeyframesToVideoRequestSchema,
     { base: runBaseURL }
   );
 
@@ -3986,6 +4029,17 @@ export function createFal(opts: FalOptions): FalProvider {
         imageToVideo: blackforestlabsFlux3ImageToVideo,
         keyframesToVideo: blackforestlabsFlux3KeyframesToVideo,
         textToVideo: blackforestlabsFlux3TextToVideo,
+      },
+      flux3Max: {
+        // POST https://fal.run/blackforestlabs/flux-3-max/image-to-video
+        // Docs: https://fal.ai/models/blackforestlabs/flux-3-max/image-to-video/api
+        imageToVideo: blackforestlabsFlux3MaxImageToVideo,
+        // POST https://fal.run/blackforestlabs/flux-3-max/keyframes-to-video
+        // Docs: https://fal.ai/models/blackforestlabs/flux-3-max/keyframes-to-video/api
+        keyframesToVideo: blackforestlabsFlux3MaxKeyframesToVideo,
+        // POST https://fal.run/blackforestlabs/flux-3-max/text-to-video
+        // Docs: https://fal.ai/models/blackforestlabs/flux-3-max/text-to-video/api
+        textToVideo: blackforestlabsFlux3MaxTextToVideo,
       },
       fluxVideoUpscale: blackforestlabsFluxVideoUpscale,
     },

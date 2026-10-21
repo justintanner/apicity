@@ -429,6 +429,9 @@ export type {
   FalFlux3FirstLastFrameToVideoParams,
   FalFlux3KeyframesToVideoParams,
   FalFlux3ExtendVideoParams,
+  FalFlux3MaxTextToVideoParams,
+  FalFlux3MaxImageToVideoParams,
+  FalFlux3MaxKeyframesToVideoParams,
   FalFluxVideoUpscaleParams,
   FalXaiGrokImagineImageParams,
   FalXaiGrokImagineImageV2p0TextToImageParams,
@@ -622,6 +625,20 @@ export type {
   FalFlux3ExtendVideoRequest,
   FalFlux3ExtendVideoRequestInput,
   FalFlux3ExtendVideoParsedRequest,
+  FalFlux3MaxAspectRatio,
+  FalFlux3MaxResolution,
+  FalFlux3MaxDuration,
+  FalFlux3MaxReasoningLevel,
+  FalFlux3MaxKeyframe,
+  FalFlux3MaxTextToVideoRequest,
+  FalFlux3MaxTextToVideoRequestInput,
+  FalFlux3MaxTextToVideoParsedRequest,
+  FalFlux3MaxImageToVideoRequest,
+  FalFlux3MaxImageToVideoRequestInput,
+  FalFlux3MaxImageToVideoParsedRequest,
+  FalFlux3MaxKeyframesToVideoRequest,
+  FalFlux3MaxKeyframesToVideoRequestInput,
+  FalFlux3MaxKeyframesToVideoParsedRequest,
   FalFluxVideoUpscaleRequest,
   FalFluxVideoUpscaleRequestInput,
   FalFluxVideoUpscaleParsedRequest,
@@ -887,6 +904,9 @@ import type {
   FalFlux3FirstLastFrameToVideoRequest,
   FalFlux3KeyframesToVideoRequest,
   FalFlux3ExtendVideoRequest,
+  FalFlux3MaxTextToVideoRequest,
+  FalFlux3MaxImageToVideoRequest,
+  FalFlux3MaxKeyframesToVideoRequest,
   FalFluxVideoUpscaleRequest,
   FalXaiGrokImagineImageEditRequest,
   FalSora2TextToVideoRequest,
@@ -1274,6 +1294,12 @@ export interface FalFlux3Keyframe {
 export interface FalFlux3VideoResponse {
   video: FalVideoFile;
   seed: number;
+}
+
+export interface FalFlux3MaxVideoResponse {
+  video: FalVideoFile;
+  seed: number;
+  timings?: Record<string, number>;
 }
 
 export interface FalFluxVideoUpscaleResponse {
@@ -3221,8 +3247,36 @@ export interface FalRunFlux3Namespace {
   textToVideo: FalFlux3TextToVideoFn;
 }
 
+type FalFlux3MaxTextToVideoFn = ((
+  params: FalFlux3MaxTextToVideoRequest,
+  signal?: AbortSignal
+) => Promise<FalFlux3MaxVideoResponse>) & {
+  schema: ApicitySchema<FalFlux3MaxTextToVideoRequest>;
+};
+
+type FalFlux3MaxImageToVideoFn = ((
+  params: FalFlux3MaxImageToVideoRequest,
+  signal?: AbortSignal
+) => Promise<FalFlux3MaxVideoResponse>) & {
+  schema: ApicitySchema<FalFlux3MaxImageToVideoRequest>;
+};
+
+type FalFlux3MaxKeyframesToVideoFn = ((
+  params: FalFlux3MaxKeyframesToVideoRequest,
+  signal?: AbortSignal
+) => Promise<FalFlux3MaxVideoResponse>) & {
+  schema: ApicitySchema<FalFlux3MaxKeyframesToVideoRequest>;
+};
+
+export interface FalRunFlux3MaxNamespace {
+  imageToVideo: FalFlux3MaxImageToVideoFn;
+  keyframesToVideo: FalFlux3MaxKeyframesToVideoFn;
+  textToVideo: FalFlux3MaxTextToVideoFn;
+}
+
 export interface FalRunBlackforestlabsNamespace {
   flux3: FalRunFlux3Namespace;
+  flux3Max: FalRunFlux3MaxNamespace;
   fluxVideoUpscale: FalFluxVideoUpscaleFn;
 }
 

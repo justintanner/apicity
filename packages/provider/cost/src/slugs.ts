@@ -523,6 +523,9 @@ export const MODEL_SLUGS = {
     "blackforestlabs/flux-3/image-to-video": "flux3",
     "blackforestlabs/flux-3/keyframes-to-video": "flux3",
     "blackforestlabs/flux-3/text-to-video": "flux3",
+    "blackforestlabs/flux-3-max/image-to-video": "flux3max",
+    "blackforestlabs/flux-3-max/keyframes-to-video": "flux3max",
+    "blackforestlabs/flux-3-max/text-to-video": "flux3max",
 
     // Video — Seedance 2.0 and 2.0 Fast, US twins included (the 2.0 and
     // 2.0 Fast reference-to-video ids are dynamic and carry no slug).
@@ -1048,6 +1051,9 @@ export const MODEL_DISPLAY = {
     "blackforestlabs/flux-3/image-to-video": "FLUX 3",
     "blackforestlabs/flux-3/keyframes-to-video": "FLUX 3",
     "blackforestlabs/flux-3/text-to-video": "FLUX 3",
+    "blackforestlabs/flux-3-max/image-to-video": "FLUX 3 Max",
+    "blackforestlabs/flux-3-max/keyframes-to-video": "FLUX 3 Max",
+    "blackforestlabs/flux-3-max/text-to-video": "FLUX 3 Max",
 
     "bytedance/seedance-2.0/text-to-video": "Seedance 2",
     "bytedance/seedance-2.0/image-to-video": "Seedance 2",

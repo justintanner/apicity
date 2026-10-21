@@ -314,6 +314,50 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST blackforestlabs.flux3Max.imageToVideo": {
+    "source": "fal/flux-3-max-image-to-video",
+    "payload": {
+      "prompt": "The cat turns its head and blinks",
+      "image_url": "<inline image/jpeg data URL — replace with a real URL or upload>",
+      "resolution": "720p",
+      "duration": 5,
+      "generate_audio": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST blackforestlabs.flux3Max.keyframesToVideo": {
+    "source": "fal/flux-3-max-keyframes-to-video",
+    "payload": {
+      "prompt": "A cat shifts its pose in one continuous shot",
+      "keyframes": [
+        {
+          "image_url": "<inline image/jpeg data URL — replace with a real URL or upload>",
+          "frame_index": 0
+        },
+        {
+          "image_url": "<inline image/jpeg data URL — replace with a real URL or upload>",
+          "frame_index": 96
+        }
+      ],
+      "resolution": "720p",
+      "duration": 5,
+      "generate_audio": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST blackforestlabs.flux3Max.textToVideo": {
+    "source": "fal/flux-3-max-text-to-video",
+    "payload": {
+      "prompt": "A paper boat glides through a quiet rain puddle",
+      "resolution": "720p",
+      "duration": 5,
+      "generate_audio": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST blackforestlabs.fluxVideoUpscale": {
     "source": "fal/flux-video-upscale",
     "payload": {

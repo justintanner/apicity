@@ -3385,6 +3385,103 @@ export type FalFlux3ExtendVideoParsedRequest = z.output<
   typeof FalFlux3ExtendVideoRequestSchema
 >;
 
+// ---------------------------------------------------------------------------
+// FLUX 3 Max (Black Forest Labs, post-trained by fal)
+// Pinned to the live queue OpenAPI read on 2026-10-21. Duration is an
+// integer second from 5 to 20 (default 5); "auto" is not accepted.
+// reasoning_level and seed are Max-only. safety_tolerance is absent.
+// ---------------------------------------------------------------------------
+
+const Flux3MaxAspectRatioSchema = z.enum([
+  "auto",
+  "21:9",
+  "2:1",
+  "16:9",
+  "4:3",
+  "1:1",
+  "3:4",
+  "9:16",
+]);
+
+const Flux3MaxResolutionSchema = z.enum(["720p", "1080p"]);
+
+const Flux3MaxDurationSchema = z.number().int().min(5).max(20);
+
+const Flux3MaxReasoningLevelSchema = z.enum(["low", "high"]);
+
+const Flux3MaxVideoRequestBaseSchema = z.object({
+  prompt: z.string().min(1),
+  aspect_ratio: Flux3MaxAspectRatioSchema.optional(),
+  duration: Flux3MaxDurationSchema.optional(),
+  generate_audio: z.boolean().optional(),
+  resolution: Flux3MaxResolutionSchema.optional(),
+  reasoning_level: Flux3MaxReasoningLevelSchema.optional(),
+  seed: z.number().int().nullable().optional(),
+});
+
+export const FalFlux3MaxTextToVideoRequestSchema =
+  Flux3MaxVideoRequestBaseSchema;
+
+export type FalFlux3MaxAspectRatio = z.infer<typeof Flux3MaxAspectRatioSchema>;
+export type FalFlux3MaxResolution = z.infer<typeof Flux3MaxResolutionSchema>;
+export type FalFlux3MaxDuration = z.infer<typeof Flux3MaxDurationSchema>;
+export type FalFlux3MaxReasoningLevel = z.infer<
+  typeof Flux3MaxReasoningLevelSchema
+>;
+
+export type FalFlux3MaxTextToVideoParams = z.infer<
+  typeof FalFlux3MaxTextToVideoRequestSchema
+>;
+export type FalFlux3MaxTextToVideoRequest = z.input<
+  typeof FalFlux3MaxTextToVideoRequestSchema
+>;
+export type FalFlux3MaxTextToVideoRequestInput = FalFlux3MaxTextToVideoRequest;
+export type FalFlux3MaxTextToVideoParsedRequest = z.output<
+  typeof FalFlux3MaxTextToVideoRequestSchema
+>;
+
+export const FalFlux3MaxImageToVideoRequestSchema =
+  Flux3MaxVideoRequestBaseSchema.extend({
+    image_url: z.string(),
+    end_image_url: z.string().nullable().optional(),
+  });
+
+export type FalFlux3MaxImageToVideoParams = z.infer<
+  typeof FalFlux3MaxImageToVideoRequestSchema
+>;
+export type FalFlux3MaxImageToVideoRequest = z.input<
+  typeof FalFlux3MaxImageToVideoRequestSchema
+>;
+export type FalFlux3MaxImageToVideoRequestInput =
+  FalFlux3MaxImageToVideoRequest;
+export type FalFlux3MaxImageToVideoParsedRequest = z.output<
+  typeof FalFlux3MaxImageToVideoRequestSchema
+>;
+
+export const FalFlux3MaxKeyframeSchema = z.object({
+  image_url: z.string(),
+  frame_index: z.number().int().min(0),
+});
+
+export type FalFlux3MaxKeyframe = z.infer<typeof FalFlux3MaxKeyframeSchema>;
+
+export const FalFlux3MaxKeyframesToVideoRequestSchema =
+  Flux3MaxVideoRequestBaseSchema.extend({
+    keyframes: z.array(FalFlux3MaxKeyframeSchema).min(1).max(10),
+  });
+
+export type FalFlux3MaxKeyframesToVideoParams = z.infer<
+  typeof FalFlux3MaxKeyframesToVideoRequestSchema
+>;
+export type FalFlux3MaxKeyframesToVideoRequest = z.input<
+  typeof FalFlux3MaxKeyframesToVideoRequestSchema
+>;
+export type FalFlux3MaxKeyframesToVideoRequestInput =
+  FalFlux3MaxKeyframesToVideoRequest;
+export type FalFlux3MaxKeyframesToVideoParsedRequest = z.output<
+  typeof FalFlux3MaxKeyframesToVideoRequestSchema
+>;
+
 export const FalFluxVideoUpscaleRequestSchema = z.object({
   video_url: z.string(),
   upscale_factor: z.number().min(1.5).max(3).optional(),
@@ -12909,6 +13006,12 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
   "blackforestlabs/flux-3/keyframes-to-video":
     FalFlux3KeyframesToVideoRequestSchema,
   "blackforestlabs/flux-3/text-to-video": FalFlux3TextToVideoRequestSchema,
+  "blackforestlabs/flux-3-max/image-to-video":
+    FalFlux3MaxImageToVideoRequestSchema,
+  "blackforestlabs/flux-3-max/keyframes-to-video":
+    FalFlux3MaxKeyframesToVideoRequestSchema,
+  "blackforestlabs/flux-3-max/text-to-video":
+    FalFlux3MaxTextToVideoRequestSchema,
   "blackforestlabs/flux-video-upscale": FalFluxVideoUpscaleRequestSchema,
   "bytedance/seedance-2.0/image-to-video":
     FalSeedance2p0ImageToVideoRequestSchema,

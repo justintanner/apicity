@@ -12,7 +12,8 @@ concurrency:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    # Pin as of 2026-10-19 to prevent ubuntu-latest image migrations.
+    runs-on: ubuntu-24.04
     env:
       # Defense-in-depth: lint and tests run against source, never dist, so they
       # must not trigger a build. The prelint / pretest:run hooks that used to
@@ -137,7 +138,7 @@ jobs:
   endpoint-telegram:
     if: github.event_name == 'push'
     needs: test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7

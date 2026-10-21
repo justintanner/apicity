@@ -1145,6 +1145,7 @@ export const MODEL_DISPLAY = {
     "microsoft/mai-image-2.5-pro/edit": "MAI Image 2.5 Pro Edit",
     "minimax/h3-max/3d-to-video": "H3 Max 3D To Video",
     "minimax/h3-max/extend-video": "H3 Max Extend",
+    "minimax/h3-max/reframe-video": "H3 Max Reframe Video",
     "minimax/h3-max/insert-video": "H3 Max Insert",
     "minimax/h3-max/lip-sync/image-to-video": "H3 Max Lip Sync",
     "minimax/h3-max/reference-to-video": "H3 Max Reference To Video",

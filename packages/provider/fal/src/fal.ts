@@ -56,7 +56,9 @@ import {
   FalKandinsky6VsrRequest,
   FalKandinsky6VsrResponse,
   FalMinimaxH3MaxRelightRequest,
+  FalMinimaxH3MaxReframeVideoRequest,
   FalMinimaxH3MaxRelightResponse,
+  FalMinimaxH3MaxReframeVideoResponse,
   FalViduQ4ReferenceToVideoRequest,
   FalViduQ4ReferenceToVideoResponse,
   FalViduQ4ImageToVideoRequest,
@@ -465,6 +467,7 @@ import {
   FalKandinsky6VsrLiteRequestSchema,
   FalKandinsky6VsrRequestSchema,
   FalMinimaxH3MaxRelightRequestSchema,
+  FalMinimaxH3MaxReframeVideoRequestSchema,
   FalViduQ4ReferenceToVideoRequestSchema,
   FalViduQ4ImageToVideoRequestSchema,
   FalNanoBanana2p1EditRequestSchema,
@@ -3357,6 +3360,20 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/minimax/h3-max/reframe-video
+  // Docs: https://fal.ai/models/minimax/h3-max/reframe-video/api
+  const minimaxH3MaxReframeVideo = jsonBody<
+    FalMinimaxH3MaxReframeVideoRequest,
+    FalMinimaxH3MaxReframeVideoResponse
+  >(
+    "POST",
+    "/minimax/h3-max/reframe-video",
+    FalMinimaxH3MaxReframeVideoRequestSchema,
+    {
+      base: runBaseURL,
+    }
+  );
+
   // POST https://fal.run/minimax/h3-max/relight
   // Docs: https://fal.ai/models/minimax/h3-max/relight/api
   const minimaxH3MaxRelight = jsonBody<
@@ -4141,6 +4158,9 @@ export function createFal(opts: FalOptions): FalProvider {
           // Docs: https://fal.ai/models/minimax/h3-max/lip-sync/image-to-video/api
           imageToVideo: minimaxH3MaxLipSyncImageToVideo,
         },
+        // POST https://fal.run/minimax/h3-max/reframe-video
+        // Docs: https://fal.ai/models/minimax/h3-max/reframe-video/api
+        reframeVideo: minimaxH3MaxReframeVideo,
         // POST https://fal.run/minimax/h3-max/relight
         // Docs: https://fal.ai/models/minimax/h3-max/relight/api
         relight: minimaxH3MaxRelight,

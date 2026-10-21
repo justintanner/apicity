@@ -6,6 +6,7 @@ import {
   falDynamicBilledUnit,
 } from "../../packages/provider/cost/src/pricing/fal";
 
+// Includes the reframe-video card checked on 2026-10-21.
 // The ten 0.15.0 fal endpoints ac-j3d6ki.4 re-checked on 2026-10-17. Each card,
 // OpenAPI and pricing-API row matched the 2026-10-15 reads behind its
 // recording, and each recorded bill shows the request cannot fix the billed
@@ -20,6 +21,7 @@ const CHECKED = [
   "fal-ai/kandinsky6-vsr/lite",
   "google/nano-banana-2.1",
   "google/nano-banana-2.1/edit",
+  "minimax/h3-max/reframe-video",
   "mirelo-ai/sfx2.0/video-to-video",
 ];
 

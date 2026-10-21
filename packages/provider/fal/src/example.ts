@@ -1509,6 +1509,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST minimax.h3Max.reframeVideo": {
+    "source": "fal/minimax-h3-max-reframe-video",
+    "payload": {
+      "video_url": "<inline video/mp4 data URL — replace with a real URL or upload>",
+      "resolution": "480p",
+      "aspect_ratio": "9:16",
+      "seed": 5555
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST minimax.h3Max.relight": {
     "source": "fal/minimax-h3-max-relight",
     "payload": {

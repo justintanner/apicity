@@ -114,8 +114,11 @@ export type {
   FalKandinsky6VsrRequestInput,
   FalKandinsky6VsrParsedRequest,
   FalMinimaxH3MaxRelightRequest,
+  FalMinimaxH3MaxReframeVideoRequest,
   FalMinimaxH3MaxRelightRequestInput,
+  FalMinimaxH3MaxReframeVideoRequestInput,
   FalMinimaxH3MaxRelightParsedRequest,
+  FalMinimaxH3MaxReframeVideoParsedRequest,
   FalViduQ4ReferenceToVideoRequest,
   FalViduQ4ReferenceToVideoRequestInput,
   FalViduQ4ReferenceToVideoParsedRequest,
@@ -755,6 +758,7 @@ import type {
   FalKandinsky6VsrLiteRequest,
   FalKandinsky6VsrRequest,
   FalMinimaxH3MaxRelightRequest,
+  FalMinimaxH3MaxReframeVideoRequest,
   FalViduQ4ReferenceToVideoRequest,
   FalViduQ4ImageToVideoRequest,
   FalNanoBanana2p1EditRequest,
@@ -5698,6 +5702,34 @@ export interface FalRunViduNamespace {
 }
 export interface FalRunNamespace {
   vidu: FalRunViduNamespace;
+}
+
+export interface FalMinimaxH3MaxReframeVideoResponse {
+  /** Reframed video, preserving the source timeline and audio. */
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+    fps?: number | null;
+    duration?: number | null;
+    num_frames?: number | null;
+  };
+  seed: number;
+  placement: Record<string, number>;
+  frame_count: number;
+  frames_per_second?: number;
+  expanded_prompt?: string | null;
+}
+export interface FalRunMinimaxH3MaxNamespace {
+  reframeVideo: ((
+    params: FalMinimaxH3MaxReframeVideoRequest,
+    signal?: AbortSignal
+  ) => Promise<FalMinimaxH3MaxReframeVideoResponse>) & {
+    schema: ApicitySchema<FalMinimaxH3MaxReframeVideoRequest>;
+  };
 }
 
 export interface FalMinimaxH3MaxRelightResponse {

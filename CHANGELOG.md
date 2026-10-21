@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added MiniMax H3 Max reframe-video with queue replay and dynamic billed-unit pricing guidance.
+
 - Added Bria Fibo 2 edit with up to four reference images and structured VGL.
 
 - Added Bria Fibo 2 generate with structured VGL prompts and image pricing.

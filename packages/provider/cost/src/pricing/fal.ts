@@ -1729,6 +1729,9 @@ export const fal: Record<string, ModelPricing> = {
     "2026-10-08"
   ),
 
+  // Fibo 2 edit returns one image at $0.04 per image.
+  "bria/fibo-2/edit": perImage("bria/fibo-2/edit", 0.04, "2026-10-21"),
+
   // Fibo 2 generate returns one image at $0.04 per image.
   "bria/fibo-2/generate": perImage("bria/fibo-2/generate", 0.04, "2026-10-21"),
 

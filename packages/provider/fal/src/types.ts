@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalBriaFibo2EditRequest,
+  FalBriaFibo2EditRequestInput,
+  FalBriaFibo2EditParsedRequest,
   FalBriaFibo2GenerateRequest,
   FalBriaFibo2GenerateRequestInput,
   FalBriaFibo2GenerateParsedRequest,
@@ -704,6 +707,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalBriaFibo2EditRequest,
   FalBriaFibo2GenerateRequest,
   FalMeshyV6LiteRetextureRequest,
   FalBytedanceSeedance2p5DraftCompleteRequest,
@@ -6352,4 +6356,33 @@ export interface FalRunBriaFibo2Namespace {
 }
 export interface FalRunBriaNamespace {
   fibo2: FalRunBriaFibo2Namespace;
+}
+
+export interface FalBriaFibo2EditResponse {
+  image: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+  };
+  images?: Array<{
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+    width?: number | null;
+    height?: number | null;
+  }>;
+  vgl: Record<string, unknown>;
+}
+
+export interface FalRunBriaFibo2Namespace {
+  edit: ((
+    params: FalBriaFibo2EditRequest,
+    signal?: AbortSignal
+  ) => Promise<FalBriaFibo2EditResponse>) & {
+    schema: ApicitySchema<FalBriaFibo2EditRequest>;
+  };
 }

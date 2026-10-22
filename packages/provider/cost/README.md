@@ -3,7 +3,7 @@
 Cross-provider cost & token estimation for the
 [apicity](https://github.com/justintanner/apicity) monorepo: a USD figure for a
 planned API call to the billed providers (openai, anthropic, xai, kimicoding,
-fireworks, alibaba, kie, elevenlabs — see [Coverage](#coverage)), computed
+fireworks, alibaba, kie, elevenlabs, machgen — see [Coverage](#coverage)), computed
 purely locally from bundled rate tables — no keys, no network.
 
 Zero dependencies, and not a wrapper for any single upstream API — a deliberate
@@ -144,6 +144,9 @@ rate is current; `tokens-heuristic+table` (chars/4 ≈ tokens) is rougher —
 treat it as ±20%. Nothing calls upstream.
 
 ## How payloads are parsed
+
+MachGen reads `model`, `task_type`, `video_config` and source media, with
+cost-only hints for unknown output and input-video lengths.
 
 Each provider has a small extractor in `src/extract/` that pulls the fields
 the rate table discriminates on. Unrecognized payloads return `usd: 0` plus a
@@ -640,6 +643,9 @@ upstream never sees or bind the OTP to a hash the real call cannot reproduce.
 
 ## Bundled pricing
 
+MachGen rates are gross USD per second, verified 2026-10-22 against
+https://www.machgen.ai/pricing, before any Generation Credit rebate.
+
 Rates are frozen at `PRICING_AS_OF` (currently `2026-04-30`; individual
 entries may carry their own as-of date) and shipped in `src/pricing/` as
 per-provider modules covering each provider's most common models. Unknown
@@ -659,6 +665,7 @@ module in `src/pricing/`, bump `PRICING_AS_OF`.
 | `openai`, `anthropic`, `xai`, `kimicoding`, `fireworks`, `alibaba` | `tokens-heuristic+table` | chars/4 ≈ tokens — no upstream call                                                 |
 | `openai` with declared usage                                       | `declared-tokens+table`  | response `usage` counts; required for `gpt-5.6-sol` and `gpt-realtime-2.1`          |
 | `elevenlabs`                                                       | `per-unit-table`         | priced per character                                                                |
+| `machgen`                                                          | `per-unit-table`         | per second of video; H3 graduated pricing and input-video hints                     |
 | `kie`                                                              | `per-unit-table`         | per second of video / per image / per generation; `endpoint` discriminator for Suno |
 | `free`                                                             | `free`                   | always $0                                                                           |
 
@@ -1018,3 +1025,7 @@ Part of the [apicity](https://github.com/justintanner/apicity) monorepo.
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+### MachGen
+
+MachGen is included in bundled pricing and coverage for MiniMax H3, Seedance 2.5/2.0, Wan 3.0, HappyHorse 1.1 and Grok Imagine Video 1.5. Payloads are parsed by `model`, `task_type`, `video_config` and source media. Rates are gross USD per second before Generation Credit. H3 uses graduated pricing above 15 seconds. Pass `costHints.durationSeconds` for Smart duration and `costHints.inputDurationSeconds` for input-video billing. Unknown rates, hidden task references, unpublished H3 1080p and sharpen pricing fail closed.

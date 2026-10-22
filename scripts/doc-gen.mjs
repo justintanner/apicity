@@ -4120,6 +4120,7 @@ const PROVIDER_AUTH = {
     env: "TELEGRAM_BOT_KEY",
     showMiddleware: false,
   },
+  machgen: { showMiddleware: false },
   quo: {
     showMiddleware: false,
   },
@@ -4133,6 +4134,7 @@ const PROVIDER_AUTH = {
 // Per-provider upstream documentation URLs. When set, a docs badge is
 // rendered in the README header.
 const PROVIDER_DOCS = {
+  machgen: "https://www.machgen.ai/docs/rest_api",
   google:
     "https://docs.cloud.google.com/vertex-ai/generative-ai/docs/reference/express-mode/rest/v1/publishers.models/generateContent",
   polymarket: "https://docs.polymarket.com/api-reference/introduction",

@@ -246,6 +246,7 @@ any mode.
 | `free-media-upload` | _(none — public API)_                                                                                                                                                                                         |
 | `youtube`           | `YOUTUBE_ACCESS_TOKEN` _(optional — keyless endpoints work without it)_                                                                                                                                       |
 | `telegram`          | `TELEGRAM_BOT_KEY`                                                                                                                                                                                            |
+| `machgen`           | `MACHGEN_API_KEY`                                                                                                                                                                                             |
 | `quo`               | `QUO_API_KEY`                                                                                                                                                                                                 |
 | `thesportsdb`       | `THESPORTSDB_API_KEY` _(optional — keyless endpoints work without it)_                                                                                                                                        |
 

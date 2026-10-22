@@ -74,6 +74,12 @@ export interface EndpointCostPolicy {
  * `tests/unit/endpoint-cost-tiers.test.ts` fails otherwise.
  */
 export const ENDPOINT_COST_POLICIES: readonly EndpointCostPolicy[] = [
+  {
+    match: { provider: "machgen" },
+    tier: "prohibitive",
+    rationale:
+      "Per-second video generation; status and asset reads share the provider policy.",
+  },
   // ── cheap: no marginal USD compute cost ────────────────────────────────
   // Public market-data / sports-data / open-data REST. No per-call USD charge.
   {

@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- MachGen video pricing for six frontier models, per-second gross rates, graduated H3 pricing and input-video duration hints. Rates verified 2026-10-22 against https://www.machgen.ai/pricing; shared model slugs and display names.
+
 - KIE `gpt-6-1-sol` token pricing, verified 2026-10-22 against
   https://kie.ai/gpt-6-1-sol: $0.60 input, $0.03 cached input, $0.75 cache
   writes and $3.00 output per million tokens. Counts are declared.

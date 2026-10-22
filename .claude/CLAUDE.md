@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Apicity is a TypeScript monorepo of standalone API provider packages
 (<!-- provider-inventory:providers:start -->`@apicity/openai`, `@apicity/anthropic`, `@apicity/xai`, `@apicity/fal`,
-`@apicity/google`, `@apicity/googleflow`, `@apicity/kie`, `@apicity/kimicoding`,
+`@apicity/google`, `@apicity/googleflow`, `@apicity/kie`, `@apicity/kimicoding`, `@apicity/machgen`,
 `@apicity/alibaba`, `@apicity/fireworks`, `@apicity/zaicoding`, `@apicity/binance`,
 `@apicity/polymarket`, `@apicity/simplefunctions`, `@apicity/openligadb`,
 `@apicity/thesportsdb`, `@apicity/openf1`, `@apicity/elevenlabs`, `@apicity/s3`,
@@ -119,8 +119,8 @@ the repository by `tests/unit/provider-inventory-docs.test.ts`, so a new
 package that ships without its aliases — or an alias documented here that no
 longer exists — fails a gate rather than going stale.
 
-- `build:` — <!-- provider-inventory:claude-build-scripts:start -->`build:alibaba`, `build:anthropic`, `build:b2`, `build:binance`, `build:cli`, `build:cost`, `build:dolthub`, `build:dropbox`, `build:elevenlabs`, `build:fal`, `build:fireworks`, `build:free-media-upload`, `build:google`, `build:googleflow`, `build:kie`, `build:kimicoding`, `build:meta`, `build:openai`, `build:openf1`, `build:openligadb`, `build:polymarket`, `build:quo`, `build:s3`, `build:simplefunctions`, `build:telegram`, `build:thesportsdb`, `build:x`, `build:xai`, `build:youtube`, `build:zaicoding`<!-- provider-inventory:claude-build-scripts:end -->
-- `doc-gen:` — <!-- provider-inventory:claude-doc-gen-scripts:start -->`doc-gen:alibaba`, `doc-gen:anthropic`, `doc-gen:b2`, `doc-gen:binance`, `doc-gen:dolthub`, `doc-gen:dropbox`, `doc-gen:elevenlabs`, `doc-gen:fal`, `doc-gen:fireworks`, `doc-gen:free-media-upload`, `doc-gen:google`, `doc-gen:googleflow`, `doc-gen:kie`, `doc-gen:kimicoding`, `doc-gen:meta`, `doc-gen:openai`, `doc-gen:openf1`, `doc-gen:openligadb`, `doc-gen:polymarket`, `doc-gen:quo`, `doc-gen:s3`, `doc-gen:simplefunctions`, `doc-gen:telegram`, `doc-gen:thesportsdb`, `doc-gen:x`, `doc-gen:xai`, `doc-gen:youtube`, `doc-gen:zaicoding`<!-- provider-inventory:claude-doc-gen-scripts:end -->
+- `build:` — <!-- provider-inventory:claude-build-scripts:start -->`build:alibaba`, `build:anthropic`, `build:b2`, `build:binance`, `build:cli`, `build:cost`, `build:dolthub`, `build:dropbox`, `build:elevenlabs`, `build:fal`, `build:fireworks`, `build:free-media-upload`, `build:google`, `build:googleflow`, `build:kie`, `build:kimicoding`, `build:machgen`, `build:meta`, `build:openai`, `build:openf1`, `build:openligadb`, `build:polymarket`, `build:quo`, `build:s3`, `build:simplefunctions`, `build:telegram`, `build:thesportsdb`, `build:x`, `build:xai`, `build:youtube`, `build:zaicoding`<!-- provider-inventory:claude-build-scripts:end -->
+- `doc-gen:` — <!-- provider-inventory:claude-doc-gen-scripts:start -->`doc-gen:alibaba`, `doc-gen:anthropic`, `doc-gen:b2`, `doc-gen:binance`, `doc-gen:dolthub`, `doc-gen:dropbox`, `doc-gen:elevenlabs`, `doc-gen:fal`, `doc-gen:fireworks`, `doc-gen:free-media-upload`, `doc-gen:google`, `doc-gen:googleflow`, `doc-gen:kie`, `doc-gen:kimicoding`, `doc-gen:machgen`, `doc-gen:meta`, `doc-gen:openai`, `doc-gen:openf1`, `doc-gen:openligadb`, `doc-gen:polymarket`, `doc-gen:quo`, `doc-gen:s3`, `doc-gen:simplefunctions`, `doc-gen:telegram`, `doc-gen:thesportsdb`, `doc-gen:x`, `doc-gen:xai`, `doc-gen:youtube`, `doc-gen:zaicoding`<!-- provider-inventory:claude-doc-gen-scripts:end -->
   (`cost` is excluded: its README is hand-written and it exposes no endpoint
   surface.)
 
@@ -170,6 +170,7 @@ packages/provider/<name>/
 **polymarket** — Gamma, Data, and CLOB market-data/trading endpoints
 **meta** — Instagram Graph API: posting reels via the public-URL flow (graph.instagram.com)
 **telegram** — Telegram Bot API: send text, photo, video, audio messages
+**machgen** — Video generation, task status, authenticated assets
 **quo** — Quo business text messaging
 **x** — X (Twitter) social API for posting content (api.x.com)
 **youtube** — YouTube Data API v3 for posting content

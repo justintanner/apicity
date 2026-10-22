@@ -869,6 +869,13 @@ export function computeEstimate(req: EstimateRequest): CostEstimate {
         req.costHints
       );
     }
+    case "machgen":
+      return evaluatePerUnit(
+        "machgen",
+        req.payload,
+        { keyedBy: "model" },
+        req.costHints
+      );
     case "googleflow":
       return evaluatePerUnit(
         "googleflow",

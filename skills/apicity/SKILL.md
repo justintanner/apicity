@@ -2,7 +2,7 @@
 name: apicity
 description: |
   Call any supported provider API (OpenAI, Anthropic, xAI, fal, KIE, ElevenLabs,
-  S3, Telegram, Polymarket and 19 more) through the apicity CLI. Use for ANY
+  S3, Telegram, Polymarket and 20 more) through the apicity CLI. Use for ANY
   task that needs a provider API: generation, upload, lookup, posting, trading
   data, or checking what an endpoint expects.
 triggers:
@@ -20,7 +20,7 @@ triggers:
   - post to x
 ---
 
-# apicity — one command line for 28 provider APIs
+# apicity — one command line for 29 provider APIs
 
 `apicity` calls any endpoint of any supported provider. There is no tool list to
 load and no catalog to memorise: three offline commands discover what exists,
@@ -446,6 +446,12 @@ apicity thesportsdb v1.lookup.table --data '{"l":"4328","s":"2025-2026"}'
 apicity thesportsdb v1.eventsnext --data '{"id":"133604"}'
 ```
 
+### machgen — video generation, task status and assets
+
+Video generation: `apicity machgen api.v0.generate --data-file request.json`.
+Poll `apicity machgen api.v0.tasks --taskId <id>`, then download with
+`apicity machgen api.v0.assets --taskId <id>`. Generation bills per second.
+
 ## Credentials and configuration
 
 Credentials are the operator's, not yours. `apicity` resolves them itself, for
@@ -512,6 +518,7 @@ secret — never read it yourself), `$APICITY_SETUP_AGENT` (which agent
 | `free-media-upload` | none — anonymous hosts                                                                                                                                                                                                                  |
 | `youtube`           | `YOUTUBE_ACCESS_TOKEN` (optional; public reads work without it)                                                                                                                                                                         |
 | `telegram`          | `TELEGRAM_BOT_KEY`                                                                                                                                                                                                                      |
+| `machgen`           | `MACHGEN_API_KEY`                                                                                                                                                                                                                       |
 | `quo`               | `QUO_API_KEY`                                                                                                                                                                                                                           |
 | `thesportsdb`       | `THESPORTSDB_API_KEY` (optional; the free tier works without it)                                                                                                                                                                        |
 

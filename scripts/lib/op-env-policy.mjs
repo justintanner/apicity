@@ -84,6 +84,7 @@ export const OP_ENV_POLICY = Object.freeze({
   DASHSCOPE_API_KEY: credential(),
   ELEVENLABS_API_KEY: credential(),
   DROPBOX_OAUTH_TOKEN: credential(),
+  MACHGEN_API_KEY: credential(),
   QUO_API_KEY: credential(),
 
   S3_ACCESS_KEY_ID: credential(),

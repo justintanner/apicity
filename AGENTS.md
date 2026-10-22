@@ -61,7 +61,7 @@ cp -rf source dest          # NOT: cp -r source dest
 
 Apicity is a TypeScript monorepo of standalone API provider packages
 (<!-- provider-inventory:providers:start -->`@apicity/openai`, `@apicity/anthropic`, `@apicity/xai`, `@apicity/fal`,
-`@apicity/google`, `@apicity/googleflow`, `@apicity/kie`, `@apicity/kimicoding`,
+`@apicity/google`, `@apicity/googleflow`, `@apicity/kie`, `@apicity/kimicoding`, `@apicity/machgen`,
 `@apicity/alibaba`, `@apicity/fireworks`, `@apicity/zaicoding`, `@apicity/binance`,
 `@apicity/polymarket`, `@apicity/simplefunctions`, `@apicity/openligadb`,
 `@apicity/thesportsdb`, `@apicity/openf1`, `@apicity/elevenlabs`, `@apicity/s3`,

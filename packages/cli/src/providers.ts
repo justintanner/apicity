@@ -255,6 +255,12 @@ export const PROVIDERS: Record<string, ProviderSpec> = {
     importPath: "@apicity/telegram",
     factoryName: "createTelegram",
   },
+  machgen: {
+    envVar: "MACHGEN_API_KEY",
+    optionKey: "apiKey",
+    importPath: "@apicity/machgen",
+    factoryName: "createMachGen",
+  },
   quo: {
     envVar: "QUO_API_KEY",
     optionKey: "apiKey",

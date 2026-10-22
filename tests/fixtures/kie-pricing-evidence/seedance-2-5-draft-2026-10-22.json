@@ -47,9 +47,7 @@
   "estimatedRenderUsd": 3.16,
   "observedPrecursorCredits": 112,
   "observedPrecursorUsd": 0.56,
-  "renderAttempt": {
-    "code": 402,
-    "message": "Credits insufficient",
-    "taskCreated": false
-  }
+  "observedRenderCredits": 632.0,
+  "observedRenderUsd": 3.16,
+  "observedTotalUsd": 3.72
 }

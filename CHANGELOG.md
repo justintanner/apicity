@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added MachGen provider (`@apicity/machgen`) for MiniMax H3, Seedance 2.5/2.0, Wan 3.0, HappyHorse 1.1 and Grok Imagine Video 1.5, with task status, authenticated asset download, per-second pricing and recorded replays. At recording time (2026-10-22) MachGen rejected Wan 3.0 requests that omitted its documented `video_config` (`aspect_ratio: "adaptive"`, `fps: 30`, `audio: true`), at zero charge; the Wan replays use the documented config.
 
 - Added `apicity frontier <type>` and the `frontier()` registry in `@apicity/cost`, keyed by task type, with the ranking moved to `docs/frontier.md`.
+- Added frontier text-to-image (`t2i`) and image-to-image (`i2i`) snapshots.
 - Added KIE `gpt-6-1-sol` on `POST /codex/v1/responses`, with per-token pricing and a recorded completion.
 - Added KIE `claude-haiku-5-5` on `POST /claude/v1/messages`, with per-token pricing and a recorded completion.
 - Added KIE Seedance 2.5 draft generation and 1080p rendering with recorded replay and current pricing.

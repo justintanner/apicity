@@ -1,0 +1,84 @@
+{
+  "GPT Image 2.5 Sunburst (max)": [
+    {
+      "provider": "fal",
+      "dotPath": "openai.gptImage2p5.sunburst.textToImage"
+    },
+    {
+      "provider": "kie",
+      "dotPath": "api.v1.jobs.createTask",
+      "modelId": "gpt-image-2-5-sunburst-text-to-image"
+    }
+  ],
+  "GPT Image 2.5 Flare (max)": [
+    {
+      "provider": "fal",
+      "dotPath": "openai.gptImage2p5.flare.textToImage"
+    },
+    {
+      "provider": "kie",
+      "dotPath": "api.v1.jobs.createTask",
+      "modelId": "gpt-image-2-5-flare-text-to-image"
+    }
+  ],
+  "GPT Image 2 (high)": [
+    {
+      "provider": "kie",
+      "dotPath": "api.v1.jobs.createTask",
+      "modelId": "gpt-image-2-text-to-image"
+    }
+  ],
+  "Nano Banana 2.1": [
+    {
+      "provider": "fal",
+      "dotPath": "nanoBanana2p1.textToImage"
+    },
+    {
+      "provider": "kie",
+      "dotPath": "api.v1.jobs.createTask",
+      "modelId": "nano-banana-2-1"
+    }
+  ],
+  "MAI-Image-2.6": [],
+  "Grok Imagine Image 2.0": [
+    {
+      "provider": "fal",
+      "dotPath": "xai.grokImagineImage.v2p0.textToImage"
+    },
+    {
+      "provider": "kie",
+      "dotPath": "api.v1.jobs.createTask",
+      "modelId": "grok-imagine-image-2-0/text-to-image"
+    }
+  ],
+  "Nano Banana 2 (Gemini 3.1 Flash Image)": [
+    {
+      "provider": "fal",
+      "dotPath": "nanoBanana2.textToImage"
+    },
+    {
+      "provider": "kie",
+      "dotPath": "api.v1.jobs.createTask",
+      "modelId": "nano-banana-2"
+    },
+    {
+      "provider": "googleflow",
+      "dotPath": "v1.images",
+      "modelId": "nano-banana-2"
+    }
+  ],
+  "Muse Image": [
+    {
+      "provider": "fal",
+      "dotPath": "meta.museImage.textToImage"
+    }
+  ],
+  "GPT Image 1.5 (high)": [
+    {
+      "provider": "kie",
+      "dotPath": "api.v1.jobs.createTask",
+      "modelId": "gpt-image/1.5-text-to-image"
+    }
+  ],
+  "MAI-Image-2.6-Flash": []
+}

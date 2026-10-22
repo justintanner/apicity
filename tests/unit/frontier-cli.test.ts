@@ -65,6 +65,10 @@ describe("apicity frontier", () => {
     ]);
     const i2v = envelope.data.find((row) => row.type === "i2v");
     expect(i2v).toMatchObject({ models: "10/10", captured: "2026-10-22" });
+    const t2i = envelope.data.find((row) => row.type === "t2i");
+    expect(t2i).toMatchObject({ models: "8/10", captured: "2026-10-22" });
+    const i2i = envelope.data.find((row) => row.type === "i2i");
+    expect(i2i).toMatchObject({ models: "7/10", captured: "2026-10-22" });
     const derived = envelope.data.find((row) => row.type === "r2v");
     expect(derived?.leaderboard).toBe("derived");
   });
@@ -133,6 +137,47 @@ describe("apicity frontier", () => {
     expect(table).not.toContain("fal");
     expect(table).not.toContain("not yet in apicity");
     expect(table).not.toContain("present");
+  });
+
+  it("prints t2i rows and names the unmapped image models", async () => {
+    const { writer, out, err } = capture();
+    await expect(
+      runMain(["frontier", "t2i"], writer, {
+        stdoutIsTTY: true,
+        env: QUIET_ENV,
+      })
+    ).resolves.toBe(0);
+    expect(err).toEqual([]);
+    const table = out.join("\n");
+    expect(table).toContain("GPT Image 2.5 Sunburst (max)");
+    expect(table).toContain("openai.gptImage2p5.sunburst.textToImage");
+    expect(table).toContain("gpt-image-2-5-sunburst-text-to-image");
+    expect(table).toContain("nano-banana-2");
+    expect(table).toContain("v1.images");
+    expect(table).toContain(
+      "not yet in apicity: MAI-Image-2.6, MAI-Image-2.6-Flash"
+    );
+  });
+
+  it("prints i2i fal rows and keeps the gaps", async () => {
+    const { writer, out } = capture();
+    await expect(
+      runMain(["frontier", "i2i", "--provider", "fal"], writer, {
+        stdoutIsTTY: true,
+        env: {},
+      })
+    ).resolves.toBe(0);
+    const table = out.join("\n");
+    expect(table).toContain("openai.gptImage2p5.sunburst.edit");
+    expect(table).toContain("nanoBanana2p1.edit");
+    expect(table).toContain("bytedance.seedream.v5.pro.edit");
+    expect(table).toContain("meta.museImage.edit");
+    expect(table).toContain("microsoft.maiImage2p5Pro.edit");
+    expect(table).not.toContain("kie");
+    expect(table).toContain("Krea 3 (Ultra)");
+    expect(table).toContain(
+      "not yet in apicity: MAI-Image-2.6, Krea 3 (Ultra), MAI-Image-2.6-Flash"
+    );
   });
 
   it("rejects an unknown type and names the six codes", async () => {

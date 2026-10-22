@@ -12,7 +12,7 @@ Each task type lives in its own directory under `scripts/frontier/<type>/`.
 - `catalog.json` — the six type codes, names, aliases, and leaderboard
   identities. A type with no directory yet ships as an empty registry entry.
 
-`i2v` is the only directory in this change. The other five types stay in the
+`t2i`, `i2i`, and `i2v` have directories. `t2v`, `v2v`, and `r2v` stay in the
 catalog until their own snapshots land.
 
 Paste the new JSON, bump the capture date, then run `pnpm run gen:frontier`

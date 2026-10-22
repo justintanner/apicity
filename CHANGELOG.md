@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added a root README Frontier models section ranked from a committed Artificial Analysis image-to-video leaderboard snapshot.
 - Added KIE `gpt-6-1-sol` on `POST /codex/v1/responses`, with per-token pricing and a recorded completion.
 - Added KIE `claude-haiku-5-5` on `POST /claude/v1/messages`, with per-token pricing and a recorded completion.
 - Added KIE Seedance 2.5 draft generation and 1080p rendering with recorded replay and current pricing.

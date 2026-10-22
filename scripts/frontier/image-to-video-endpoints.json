@@ -1,0 +1,233 @@
+{
+  "MiniMax H3 (768p)": [
+    {
+      "provider": "fal",
+      "id": "minimax.h3.imageToVideo"
+    },
+    {
+      "provider": "kie",
+      "id": "minimax-h3/image-to-video",
+      "endpoint": "post.api.v1.jobs.createTask"
+    }
+  ],
+  "FLUX 3 Max (720p)": [
+    {
+      "provider": "fal",
+      "id": "blackforestlabs.flux3Max.imageToVideo"
+    }
+  ],
+  "Dreamina Seedance 2.5": [
+    {
+      "provider": "fal",
+      "id": "bytedance.seedance2p5.imageToVideo"
+    },
+    {
+      "provider": "fal",
+      "id": "bytedance.seedance2p5.us.imageToVideo"
+    },
+    {
+      "provider": "kie",
+      "id": "bytedance/seedance-2-5",
+      "endpoint": "post.api.v1.jobs.createTask"
+    }
+  ],
+  "Gemini Omni Flash 1.1": [
+    {
+      "provider": "fal",
+      "id": "geminiOmniFlash.v1p1.imageToVideo"
+    },
+    {
+      "provider": "kie",
+      "id": "google/gemini-omni-flash-1-1",
+      "endpoint": "post.api.v1.jobs.createTask"
+    },
+    {
+      "provider": "googleflow",
+      "id": "omni-flash",
+      "endpoint": "v1.videos"
+    }
+  ],
+  "Wan 3.0": [
+    {
+      "provider": "fal",
+      "id": "alibaba.wan3p0.imageToVideo"
+    },
+    {
+      "provider": "fal",
+      "id": "alibaba.wan3p0Prime.imageToVideo"
+    },
+    {
+      "provider": "kie",
+      "id": "wan/3-0-video",
+      "endpoint": "post.api.v1.jobs.createTask"
+    },
+    {
+      "provider": "kie",
+      "id": "wan/3-0-video-prime",
+      "endpoint": "post.api.v1.jobs.createTask"
+    }
+  ],
+  "MiniMax H3 Max": [
+    {
+      "provider": "fal",
+      "id": "minimax.h3Max.imageToVideo"
+    },
+    {
+      "provider": "fal",
+      "id": "minimax.h3MaxTurbo.imageToVideo"
+    }
+  ],
+  "Dreamina Seedance 2.0": [
+    {
+      "provider": "fal",
+      "id": "bytedance.seedance2p0.imageToVideo"
+    },
+    {
+      "provider": "fal",
+      "id": "bytedance.seedance2p0.us.imageToVideo"
+    },
+    {
+      "provider": "kie",
+      "id": "bytedance/seedance-2",
+      "endpoint": "post.api.v1.jobs.createTask"
+    }
+  ],
+  "FLUX 3": [
+    {
+      "provider": "fal",
+      "id": "blackforestlabs.flux3.imageToVideo"
+    }
+  ],
+  "Grok Imagine Video 1.5": [
+    {
+      "provider": "fal",
+      "id": "xai.grokImagineVideo.v1p5.imageToVideo"
+    },
+    {
+      "provider": "kie",
+      "id": "grok-imagine/image-to-video",
+      "endpoint": "post.api.v1.jobs.createTask"
+    },
+    {
+      "provider": "kie",
+      "id": "grok-imagine-video-1-5-preview",
+      "endpoint": "post.api.v1.jobs.createTask"
+    },
+    {
+      "provider": "xai",
+      "id": "v1.videos.generations.imageToVideo"
+    }
+  ],
+  "HappyHorse-1.1": [
+    {
+      "provider": "fal",
+      "id": "alibaba.happyHorse.v1p1.imageToVideo"
+    },
+    {
+      "provider": "kie",
+      "id": "happyhorse-1-1/image-to-video",
+      "endpoint": "post.api.v1.jobs.createTask"
+    }
+  ],
+  "MAGI-2 Preview": [],
+  "HappyHorse-1.0": [
+    {
+      "provider": "kie",
+      "id": "happyhorse/image-to-video",
+      "endpoint": "post.api.v1.jobs.createTask"
+    }
+  ],
+  "Wan 2.7": [
+    {
+      "provider": "fal",
+      "id": "wan.v2p7.imageToVideo"
+    },
+    {
+      "provider": "kie",
+      "id": "wan/2-7-image-to-video",
+      "endpoint": "post.api.v1.jobs.createTask"
+    },
+    {
+      "provider": "alibaba",
+      "id": "wan2.7-i2v",
+      "endpoint": "api.v1.services.aigc.videoGeneration.videoSynthesis"
+    }
+  ],
+  "Veo 3.1": [
+    {
+      "provider": "fal",
+      "id": "veo3p1.imageToVideo"
+    },
+    {
+      "provider": "googleflow",
+      "id": "veo-3.1-quality",
+      "endpoint": "v1.videos"
+    },
+    {
+      "provider": "kie",
+      "id": "veo3",
+      "endpoint": "veo.post.api.v1.veo.generate"
+    }
+  ],
+  "PixVerse V6": [
+    {
+      "provider": "kie",
+      "id": "pixverse-v6/image-to-video",
+      "endpoint": "post.api.v1.jobs.createTask"
+    }
+  ],
+  "Veo 3.1 Fast": [
+    {
+      "provider": "googleflow",
+      "id": "veo-3.1-fast",
+      "endpoint": "v1.videos"
+    },
+    {
+      "provider": "kie",
+      "id": "veo3_fast",
+      "endpoint": "veo.post.api.v1.veo.generate"
+    }
+  ],
+  "Vidu Q3 Pro": [],
+  "Kling 3.0 Omni 1080p (Pro)": [
+    {
+      "provider": "fal",
+      "id": "klingVideo.o3.standard.imageToVideo"
+    },
+    {
+      "provider": "fal",
+      "id": "klingVideo.o3p4k.imageToVideo"
+    },
+    {
+      "provider": "kie",
+      "id": "kling-3.0-omni/image-to-video",
+      "endpoint": "post.api.v1.jobs.createTask"
+    }
+  ],
+  "Kling 3.0 1080p (Pro)": [
+    {
+      "provider": "fal",
+      "id": "klingVideo.v3.pro.imageToVideo"
+    },
+    {
+      "provider": "kie",
+      "id": "kling-3.0/video",
+      "endpoint": "post.api.v1.jobs.createTask"
+    }
+  ],
+  "LTX-2.5 Fast": [
+    {
+      "provider": "fal",
+      "id": "lightricks.ltx2p5.imageToVideo.fast"
+    }
+  ],
+  "Vidu Q3 Turbo": [],
+  "LTX-2.5 Pro": [
+    {
+      "provider": "fal",
+      "id": "lightricks.ltx2p5.imageToVideo.pro"
+    }
+  ],
+  "LTX-2.3 Pro": [],
+  "LTX-2.3 Fast": []
+}

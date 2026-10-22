@@ -33,6 +33,17 @@ export interface FrontierHelperType {
   derived: boolean;
 }
 
+export type FrontierHelperPrice =
+  | { unit: "dynamic" }
+  | {
+      unit: string;
+      min: number;
+      max: number;
+      asOf: string;
+      url: string;
+    }
+  | null;
+
 export interface FrontierHelperRow {
   type: string;
   rank: number;
@@ -42,6 +53,7 @@ export interface FrontierHelperRow {
   provider: string;
   dotPath: string;
   modelId?: string;
+  price: FrontierHelperPrice;
 }
 
 export interface CostHelpers {
@@ -55,6 +67,7 @@ export interface CostHelpers {
     type: string,
     options?: { provider?: string }
   ) => FrontierHelperRow[];
+  formatFrontierPrice: (price: FrontierHelperPrice) => string;
   FRONTIER_TYPES: FrontierHelperType[];
   /**
    * Snapshots, including models with an empty endpoint list.
@@ -72,6 +85,7 @@ export function loadCostHelpers(): Promise<CostHelpers> {
     const paidEndpoints = exports.PAID_ENDPOINTS;
     const isPaidEndpoint = exports.isPaidEndpoint;
     const frontier = exports.frontier;
+    const formatFrontierPrice = exports.formatFrontierPrice;
     const frontierTypes = exports.FRONTIER_TYPES;
     const frontierData = exports.FRONTIER;
 
@@ -88,6 +102,11 @@ export function loadCostHelpers(): Promise<CostHelpers> {
     if (typeof frontier !== "function") {
       throw new Error(
         "Expected @apicity/cost to export frontier as a function"
+      );
+    }
+    if (typeof formatFrontierPrice !== "function") {
+      throw new Error(
+        "Expected @apicity/cost to export formatFrontierPrice as a function"
       );
     }
     if (!Array.isArray(frontierTypes)) {
@@ -107,6 +126,8 @@ export function loadCostHelpers(): Promise<CostHelpers> {
       PAID_ENDPOINTS: paidEndpoints as CostPaidEndpointEntry[],
       isPaidEndpoint: isPaidEndpoint as CostHelpers["isPaidEndpoint"],
       frontier: frontier as CostHelpers["frontier"],
+      formatFrontierPrice:
+        formatFrontierPrice as CostHelpers["formatFrontierPrice"],
       FRONTIER_TYPES: frontierTypes as CostHelpers["FRONTIER_TYPES"],
       FRONTIER: frontierData as CostHelpers["FRONTIER"],
     };

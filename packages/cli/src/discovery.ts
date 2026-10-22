@@ -5,7 +5,11 @@ import {
   type CatalogEntry,
 } from "./catalog.js";
 import { CALL_SHAPES, callShapeKey, type CallShape } from "./call-shapes.js";
-import { loadCostHelpers, type FrontierHelperEntry } from "./cost.js";
+import {
+  loadCostHelpers,
+  type FrontierHelperEntry,
+  type FrontierHelperPrice,
+} from "./cost.js";
 import { createWriter, type CliWriter } from "./envelope.js";
 import {
   isProviderConfigured,
@@ -403,6 +407,7 @@ interface FrontierDetailRow {
   provider: string;
   dotPath: string;
   modelId: string;
+  price: FrontierHelperPrice;
   configured: boolean;
 }
 
@@ -479,6 +484,7 @@ export async function runFrontier(
       provider: row.provider,
       dotPath: row.dotPath,
       modelId: row.modelId ?? "-",
+      price: row.price,
       configured,
     };
   });
@@ -488,7 +494,7 @@ export async function runFrontier(
     .map((entry) => entry.model);
 
   return respond(writer, options, rows, () => {
-    const table = frontierRowsTable(rows);
+    const table = frontierRowsTable(rows, helpers.formatFrontierPrice);
     if (unmapped.length === 0) return table;
     return `${table}\nnot yet in apicity: ${unmapped.join(", ")}`;
   });
@@ -508,7 +514,10 @@ function frontierTypesTable(summaries: FrontierTypeSummary[]): string {
   ]);
 }
 
-function frontierRowsTable(rows: FrontierDetailRow[]): string {
+function frontierRowsTable(
+  rows: FrontierDetailRow[],
+  formatPrice: (price: FrontierHelperPrice) => string
+): string {
   const body = rows.map((row) => [
     String(row.rank),
     row.model,
@@ -516,10 +525,20 @@ function frontierRowsTable(rows: FrontierDetailRow[]): string {
     row.provider,
     row.dotPath,
     row.modelId,
+    formatPrice(row.price),
     row.configured ? "yes" : "no",
   ]);
   return renderTable([
-    ["rank", "model", "elo", "provider", "dotPath", "modelId", "configured"],
+    [
+      "rank",
+      "model",
+      "elo",
+      "provider",
+      "dotPath",
+      "modelId",
+      "price",
+      "configured",
+    ],
     ...body,
   ]);
 }

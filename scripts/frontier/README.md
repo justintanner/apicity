@@ -6,9 +6,12 @@ Each task type lives in its own directory under `scripts/frontier/<type>/`.
   and each entry's rank, model, creator, and Elo. Ranks are contiguous from 1
   and stop at 10. A board with fewer than 10 models lists all of them.
 - `endpoints.json` — every leaderboard model, mapped to
-  `{ provider, dotPath, modelId? }` or to `[]` when apicity does not serve it.
-  `dotPath` is the `scripts/endpoint-docs.tsv` path. A dedicated leaf has no
-  `modelId`. A shared callable carries the provider model id.
+  `{ provider, dotPath, modelId?, pricingKey? }` or to `[]` when apicity does
+  not serve it. `dotPath` is the `scripts/endpoint-docs.tsv` path. A dedicated
+  leaf has no `modelId` and sets `pricingKey` to the `PRICING[provider]` key
+  (for fal, the upstream endpoint id) or to `"unpriced"`. A shared callable
+  carries the provider model id, which is the pricing key when that id is in
+  the table.
 - `catalog.json` — the six type codes, names, aliases, and leaderboard
   identities. A type with no directory yet ships as an empty registry entry.
 

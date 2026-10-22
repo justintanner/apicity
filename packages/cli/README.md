@@ -152,7 +152,7 @@ each call actually requested, which is how to check rather than guess.
 
 ## Frontier models
 
-`apicity frontier` lists the six image and video task types. `apicity frontier <type>` lists the ranked models and the endpoint to call (`dotPath`, and `modelId` when the endpoint is shared). `--provider` keeps one provider's rows. The list is a committed snapshot; the tables are in [docs/frontier.md](../../docs/frontier.md).
+`apicity frontier` lists the six image and video task types. `apicity frontier <type>` lists the ranked models, the endpoint to call (`dotPath`, and `modelId` when the endpoint is shared), and a `price` from the bundled cost tables (`0.04-0.16 USD/s`, `0.08 USD/image`, `dynamic`, or `-`). `--json` carries the price object. `--provider` keeps one provider's rows. The list is a committed snapshot; the tables are in [docs/frontier.md](../../docs/frontier.md).
 
 ## Environment variables
 

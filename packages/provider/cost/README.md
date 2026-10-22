@@ -15,8 +15,12 @@ mint OTPs, and document the shared OTP format.
 
 `frontier(type)` returns the committed snapshot of frontier image and video
 models for one task type (`t2i`, `i2i`, `t2v`, `i2v`, `v2v`, `r2v`): one row
-per mapped endpoint, in rank order. It reads no files and makes no network
-call. `apicity frontier <type>` prints the same rows.
+per mapped endpoint, in rank order. Each row's `price` comes from the pricing
+tables in this package: `{ unit, min, max, asOf, url }` is the min and max of
+a per-unit rate, `{ unit: "dynamic" }` is a fal endpoint priced from billed
+units, and `null` means unpriced or token-priced. It reads no files and makes
+no network call. `apicity frontier <type>` prints the same rows, with `price`
+rendered as `0.04-0.16 USD/s`, `0.08 USD/image`, `dynamic` or `-`.
 
 ```ts
 import { frontier } from "@apicity/cost";

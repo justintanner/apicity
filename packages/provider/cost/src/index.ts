@@ -102,13 +102,17 @@ export {
   FRONTIER,
   FRONTIER_TYPES,
   FRONTIER_TYPE_CODES,
+  formatFrontierPrice,
   frontier,
   frontierType,
 } from "./frontier/index";
 export type {
+  FrontierDynamicPrice,
   FrontierEndpoint,
   FrontierEntry,
   FrontierOptions,
+  FrontierPrice,
+  FrontierRatePrice,
   FrontierRow,
   FrontierSnapshot,
   FrontierType,

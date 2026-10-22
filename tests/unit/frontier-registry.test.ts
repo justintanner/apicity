@@ -8,7 +8,13 @@
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { frontier, frontierType, FRONTIER } from "@apicity/cost";
+import {
+  FRONTIER,
+  PRICING,
+  PRICING_AS_OF,
+  frontier,
+  frontierType,
+} from "@apicity/cost";
 import { createFal } from "@apicity/fal";
 import { GoogleFlowVideosRequestSchema } from "@apicity/googleflow/zod";
 import { VeoGenerateRequestSchema } from "@apicity/kie/zod";
@@ -23,6 +29,12 @@ import {
   zodToJsonSchema,
   type JsonSchema,
 } from "../../packages/cli/src/schema";
+import {
+  formatFrontierPrice,
+  formatFrontierRate,
+  frontierPrice,
+} from "../../packages/provider/cost/src/frontier/price";
+import { FAL_DYNAMIC_PRICING_ENDPOINTS } from "../../packages/provider/cost/src/pricing/fal";
 import { modelInputSchemas } from "../../packages/provider/kie/src/model-schemas";
 import {
   DOCS_PATH,
@@ -504,6 +516,7 @@ interface EndpointRecord {
   provider: string;
   dotPath: string;
   modelId?: string;
+  pricingKey?: string;
 }
 
 function frontierFiles(type: string) {
@@ -1410,7 +1423,13 @@ describe("frontier generated registry", () => {
     expect(doc).toContain("xai `grok-imagine-video-1.5`");
     expect(doc).toContain("machgen `Alibaba-Wan-3.0`");
     expect(doc).toContain("## Refresh");
-    expect(doc).toContain("re-derives\n`r2v`");
+    expect(doc).toContain("re-derives `r2v`");
+    expect(doc).toMatch(
+      /\| Rank \| Model +\| Creator +\| Elo +\| Price +\| apicity endpoints +\|/
+    );
+    expect(doc).toContain("Prices as of");
+    expect(doc).toContain("dynamic, 0.04-0.065 USD/s, 0.035-0.15 USD/s");
+    expect(doc).toContain("or a price");
   });
 
   it("points the root README at the doc and drops the old table", () => {
@@ -1438,7 +1457,9 @@ describe("frontier generated registry", () => {
         file.endsWith(".mjs")
       ),
       path.join(repoRoot, "scripts/gen-frontier.mjs"),
+      path.join(repoRoot, "scripts/lib/frontier-price-catalog.ts"),
       path.join(repoRoot, "packages/provider/cost/src/frontier/index.ts"),
+      path.join(repoRoot, "packages/provider/cost/src/frontier/price.ts"),
     ];
     for (const file of authored) {
       const text = readFileSync(file, "utf8");
@@ -1478,5 +1499,199 @@ describe("frontier generated registry", () => {
         expect(text, file).not.toContain("artificialanalysis.ai");
       }
     }
+  });
+});
+
+const RATE_SUFFIX: Record<string, string> = {
+  seconds: "s",
+  images: "image",
+  generations: "generation",
+  megapixels: "megapixel",
+  songs: "song",
+  characters: "character",
+  tokens: "token",
+};
+
+interface LooseRate {
+  kind: string;
+  unit: string;
+  rates: Record<string, number>;
+  source: { asOf?: string; url: string };
+}
+
+describe("frontier prices", () => {
+  const dynamic = new Set<string>(FAL_DYNAMIC_PRICING_ENDPOINTS);
+  const docs = loadEndpointDocRows();
+  const tables = PRICING as unknown as Record<
+    string,
+    Record<string, LooseRate>
+  >;
+
+  function postUrl(provider: string, dotPath: string): string {
+    const rows = docs.filter(
+      (row) =>
+        row.provider === provider &&
+        row.dotPath === dotPath &&
+        row.method === "POST"
+    );
+    expect(rows, `${provider} ${dotPath}`).toHaveLength(1);
+    return rows[0]?.fullUrl ?? "";
+  }
+
+  it("requires pricingKey on a dedicated leaf", () => {
+    const snapshot = { entries: [{ model: "Demo" }] };
+    expect(
+      endpointMapProblems(snapshot, {
+        Demo: [{ provider: "fal", dotPath: "minimax.h3.imageToVideo" }],
+      }).some((problem) => problem.includes("pricingKey"))
+    ).toBe(true);
+    expect(
+      endpointMapProblems(snapshot, {
+        Demo: [
+          {
+            provider: "fal",
+            dotPath: "minimax.h3.imageToVideo",
+            pricingKey: "unpriced",
+          },
+        ],
+      })
+    ).toEqual([]);
+  });
+
+  it("renders the design examples and the token and unpriced cases", () => {
+    expect(formatFrontierPrice(null)).toBe("-");
+    expect(formatFrontierPrice({ unit: "dynamic" })).toBe("dynamic");
+    expect(
+      formatFrontierPrice({
+        unit: "seconds",
+        min: 0.04,
+        max: 0.16,
+        asOf: "2026-01-01",
+        url: "https://example.invalid",
+      })
+    ).toBe("0.04-0.16 USD/s");
+    expect(
+      formatFrontierPrice({
+        unit: "images",
+        min: 0.08,
+        max: 0.08,
+        asOf: "2026-01-01",
+        url: "https://example.invalid",
+      })
+    ).toBe("0.08 USD/image");
+    expect(
+      frontierPrice({
+        provider: "xai",
+        dotPath: "v1.chat.completions",
+        modelId: "grok-4",
+      })
+    ).toBeNull();
+    expect(
+      frontierPrice({
+        provider: "fal",
+        dotPath: "example.leaf",
+        pricingKey: "unpriced",
+      })
+    ).toBeNull();
+    expect(() =>
+      frontierPrice({
+        provider: "kie",
+        dotPath: "api.v1.jobs.createTask",
+        modelId: "not-a-model",
+      })
+    ).toThrow(/unpriced/);
+  });
+
+  it("resolves every frontier key and matches the rendered rate", () => {
+    const types = ["t2i", "i2i", "t2v", "i2v", "v2v", "r2v"] as const;
+    for (const type of types) {
+      const { endpointMap } = frontierFiles(type);
+      for (const [model, list] of Object.entries(endpointMap)) {
+        list.forEach((entry, index) => {
+          const where = `${type} ${model}[${index}] ${entry.provider}`;
+          const table = tables[entry.provider];
+          if (
+            (entry.provider === "kie" || entry.provider === "machgen") &&
+            entry.modelId !== undefined &&
+            table?.[entry.modelId] !== undefined
+          ) {
+            expect(entry.pricingKey, where).toBeUndefined();
+          }
+          if (entry.provider === "fal") {
+            const id = new URL(
+              postUrl(entry.provider, entry.dotPath)
+            ).pathname.replace(/^\//, "");
+            expect(entry.pricingKey, where).toBe(id);
+            expect(
+              dynamic.has(id) || table?.[id] !== undefined || id === "unpriced",
+              where
+            ).toBe(true);
+          }
+        });
+      }
+
+      for (const row of frontier(type)) {
+        const entry = endpointMap[row.model]?.find(
+          (candidate) =>
+            candidate.provider === row.provider &&
+            candidate.dotPath === row.dotPath &&
+            candidate.modelId === row.modelId
+        );
+        expect(entry, `${type} ${row.model} ${row.provider}`).toBeDefined();
+        if (entry === undefined) continue;
+        const key = entry.pricingKey ?? entry.modelId ?? "";
+        const where = `${type} ${row.model} ${row.provider} ${key}`;
+        const rendered = formatFrontierPrice(row.price);
+        if (key === "unpriced") {
+          expect(row.price, where).toBeNull();
+          expect(rendered).toBe("-");
+          continue;
+        }
+        if (row.provider === "fal" && dynamic.has(key)) {
+          expect(row.price, where).toEqual({ unit: "dynamic" });
+          expect(rendered).toBe("dynamic");
+          continue;
+        }
+        const priced = tables[row.provider]?.[key];
+        expect(priced, where).toBeDefined();
+        if (priced === undefined) continue;
+        if (priced.kind === "tokens") {
+          expect(row.price, where).toBeNull();
+          expect(rendered).toBe("-");
+          continue;
+        }
+        const values = Object.values(priced.rates);
+        expect(row.price, where).toMatchObject({
+          unit: priced.unit,
+          min: Number(Math.min(...values).toFixed(10)),
+          max: Number(Math.max(...values).toFixed(10)),
+          asOf: priced.source.asOf ?? PRICING_AS_OF,
+          url: priced.source.url,
+        });
+        if (row.price === null || row.price.unit === "dynamic") {
+          throw new Error(`${where} should be a per-unit price`);
+        }
+        const suffix = RATE_SUFFIX[row.price.unit];
+        const min = formatFrontierRate(row.price.min);
+        const max = formatFrontierRate(row.price.max);
+        const expected =
+          min === max ? `${min} USD/${suffix}` : `${min}-${max} USD/${suffix}`;
+        expect(rendered, where).toBe(expected);
+      }
+    }
+
+    for (const row of frontier("i2v")) {
+      if (row.provider !== "kie" && row.provider !== "fal") continue;
+      expect(row.price, `${row.provider} ${row.dotPath}`).not.toBeNull();
+      if (row.provider === "fal" && row.price?.unit !== "dynamic") {
+        expect(row.price).toMatchObject({ unit: expect.any(String) });
+        expect(typeof row.price?.min).toBe("number");
+      }
+    }
+
+    const xai = frontierFiles("i2v").endpointMap[
+      "Grok Imagine Video 1.5"
+    ]?.find((entry) => entry.provider === "xai");
+    expect(xai?.pricingKey).toBe(`${XAI_GROK_IMAGINE_VIDEO_1_5}-preview`);
   });
 });

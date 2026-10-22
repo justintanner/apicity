@@ -5,6 +5,14 @@
  * This module adds the lookup. It reads no files and makes no network calls.
  */
 import { FRONTIER as FRONTIER_DATA, FRONTIER_TYPES as TYPE_DATA } from "./data";
+import { frontierPrice, type FrontierPrice } from "./price";
+
+export type {
+  FrontierDynamicPrice,
+  FrontierPrice,
+  FrontierRatePrice,
+} from "./price";
+export { formatFrontierPrice } from "./price";
 
 export const FRONTIER_TYPE_CODES = [
   "t2i",
@@ -21,6 +29,11 @@ export interface FrontierEndpoint {
   provider: string;
   dotPath: string;
   modelId?: string;
+  /**
+   * Key into `PRICING[provider]`, or `"unpriced"`.
+   * Omitted on a shared callable whose `modelId` is that key.
+   */
+  pricingKey?: string;
 }
 
 export interface FrontierEntry {
@@ -60,6 +73,8 @@ export interface FrontierRow {
   provider: string;
   dotPath: string;
   modelId?: string;
+  /** Bundled per-unit range, `{ unit: "dynamic" }`, or null. */
+  price: FrontierPrice | null;
 }
 
 export interface FrontierOptions {
@@ -92,7 +107,7 @@ export function frontierType(input: string): FrontierType | undefined {
  *
  * An unknown type throws a `RangeError` that names the six codes. Models
  * with an empty endpoint list are omitted. `modelId` is set only for a
- * shared callable.
+ * shared callable. `price` comes from the bundled tables.
  */
 export function frontier(
   type: string,
@@ -118,6 +133,7 @@ export function frontier(
         elo: entry.elo,
         provider: endpoint.provider,
         dotPath: endpoint.dotPath,
+        price: frontierPrice(endpoint),
       };
       if (endpoint.modelId !== undefined) row.modelId = endpoint.modelId;
       rows.push(row);

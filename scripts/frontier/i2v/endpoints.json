@@ -2,7 +2,8 @@
   "MiniMax H3 (768p)": [
     {
       "provider": "fal",
-      "dotPath": "minimax.h3.imageToVideo"
+      "dotPath": "minimax.h3.imageToVideo",
+      "pricingKey": "minimax/h3/image-to-video"
     },
     {
       "provider": "kie",
@@ -18,17 +19,20 @@
   "FLUX 3 Max (720p)": [
     {
       "provider": "fal",
-      "dotPath": "blackforestlabs.flux3Max.imageToVideo"
+      "dotPath": "blackforestlabs.flux3Max.imageToVideo",
+      "pricingKey": "blackforestlabs/flux-3-max/image-to-video"
     }
   ],
   "Dreamina Seedance 2.5": [
     {
       "provider": "fal",
-      "dotPath": "bytedance.seedance2p5.imageToVideo"
+      "dotPath": "bytedance.seedance2p5.imageToVideo",
+      "pricingKey": "bytedance/seedance-2.5/image-to-video"
     },
     {
       "provider": "fal",
-      "dotPath": "bytedance.seedance2p5.us.imageToVideo"
+      "dotPath": "bytedance.seedance2p5.us.imageToVideo",
+      "pricingKey": "bytedance/seedance-2.5/us/image-to-video"
     },
     {
       "provider": "kie",
@@ -44,7 +48,8 @@
   "Gemini Omni Flash 1.1": [
     {
       "provider": "fal",
-      "dotPath": "geminiOmniFlash.v1p1.imageToVideo"
+      "dotPath": "geminiOmniFlash.v1p1.imageToVideo",
+      "pricingKey": "google/gemini-omni-flash/v1.1/image-to-video"
     },
     {
       "provider": "kie",
@@ -60,11 +65,13 @@
   "Wan 3.0": [
     {
       "provider": "fal",
-      "dotPath": "alibaba.wan3p0.imageToVideo"
+      "dotPath": "alibaba.wan3p0.imageToVideo",
+      "pricingKey": "alibaba/wan-3.0/image-to-video"
     },
     {
       "provider": "fal",
-      "dotPath": "alibaba.wan3p0Prime.imageToVideo"
+      "dotPath": "alibaba.wan3p0Prime.imageToVideo",
+      "pricingKey": "alibaba/wan-3.0-prime/image-to-video"
     },
     {
       "provider": "kie",
@@ -85,21 +92,25 @@
   "MiniMax H3 Max": [
     {
       "provider": "fal",
-      "dotPath": "minimax.h3Max.imageToVideo"
+      "dotPath": "minimax.h3Max.imageToVideo",
+      "pricingKey": "minimax/h3-max/image-to-video"
     },
     {
       "provider": "fal",
-      "dotPath": "minimax.h3MaxTurbo.imageToVideo"
+      "dotPath": "minimax.h3MaxTurbo.imageToVideo",
+      "pricingKey": "minimax/h3-max-turbo/image-to-video"
     }
   ],
   "Dreamina Seedance 2.0": [
     {
       "provider": "fal",
-      "dotPath": "bytedance.seedance2p0.imageToVideo"
+      "dotPath": "bytedance.seedance2p0.imageToVideo",
+      "pricingKey": "bytedance/seedance-2.0/image-to-video"
     },
     {
       "provider": "fal",
-      "dotPath": "bytedance.seedance2p0.us.imageToVideo"
+      "dotPath": "bytedance.seedance2p0.us.imageToVideo",
+      "pricingKey": "bytedance/seedance-2.0/us/image-to-video"
     },
     {
       "provider": "kie",
@@ -115,13 +126,15 @@
   "FLUX 3": [
     {
       "provider": "fal",
-      "dotPath": "blackforestlabs.flux3.imageToVideo"
+      "dotPath": "blackforestlabs.flux3.imageToVideo",
+      "pricingKey": "blackforestlabs/flux-3/image-to-video"
     }
   ],
   "Grok Imagine Video 1.5": [
     {
       "provider": "fal",
-      "dotPath": "xai.grokImagineVideo.v1p5.imageToVideo"
+      "dotPath": "xai.grokImagineVideo.v1p5.imageToVideo",
+      "pricingKey": "xai/grok-imagine-video/v1.5/image-to-video"
     },
     {
       "provider": "kie",
@@ -135,7 +148,8 @@
     },
     {
       "provider": "xai",
-      "dotPath": "v1.videos.generations.imageToVideo"
+      "dotPath": "v1.videos.generations.imageToVideo",
+      "pricingKey": "grok-imagine-video-1.5-preview"
     },
     {
       "provider": "machgen",
@@ -146,7 +160,8 @@
   "HappyHorse-1.1": [
     {
       "provider": "fal",
-      "dotPath": "alibaba.happyHorse.v1p1.imageToVideo"
+      "dotPath": "alibaba.happyHorse.v1p1.imageToVideo",
+      "pricingKey": "alibaba/happy-horse/v1.1/image-to-video"
     },
     {
       "provider": "kie",

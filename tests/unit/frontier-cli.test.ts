@@ -98,6 +98,7 @@ describe("apicity frontier", () => {
         provider: string;
         dotPath: string;
         modelId: string;
+        price: { unit: string; min?: number; max?: number } | null;
         configured: boolean;
       }>;
     };
@@ -109,11 +110,17 @@ describe("apicity frontier", () => {
       provider: "fal",
       dotPath: "minimax.h3.imageToVideo",
       modelId: "-",
+      price: { unit: "dynamic" },
       configured: false,
     });
     const kie = envelope.data.find((row) => row.provider === "kie");
     expect(kie?.configured).toBe(true);
     expect(kie?.modelId).not.toBe("-");
+    expect(kie?.price).toMatchObject({
+      unit: "seconds",
+      min: 0.04,
+      max: 0.065,
+    });
 
     const quiet = capture();
     await expect(
@@ -140,9 +147,11 @@ describe("apicity frontier", () => {
     ).resolves.toBe(0);
     const table = out.join("\n");
     expect(table.split("\n")[0]).toContain("modelId");
+    expect(table.split("\n")[0]).toContain("price");
     expect(table).toContain("configured");
     expect(table).toContain("api.v1.jobs.createTask");
     expect(table).toContain("minimax-h3/image-to-video");
+    expect(table).toContain("0.04-0.065 USD/s");
     expect(table).toContain("yes");
     expect(table).not.toContain("fal");
     expect(table).not.toContain("not yet in apicity");

@@ -51,7 +51,7 @@ operator arms the pay gate: [docs/paygate.md](docs/paygate.md).
 
 ```bash
 apicity frontier                    # the types: t2i, i2i, t2v, i2v, v2v, r2v
-apicity frontier i2v                # top 10 image-to-video models and how to call each
+apicity frontier i2v                # top 10 image-to-video models, the call, and the price
 apicity frontier t2i --provider kie
 ```
 

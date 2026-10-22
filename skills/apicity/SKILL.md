@@ -34,7 +34,8 @@ apicity anthropic v1.messages --data '{"model":"claude-sonnet-4-5","max_tokens":
 ```
 
 To pick an image or video model, run `apicity frontier <type>` and call the
-dotPath it prints with the model id it prints.
+dotPath it prints with the model id it prints. `price` is the bundled rate
+(`0.04-0.16 USD/s`, `0.08 USD/image`, `dynamic`, or `-`).
 
 The shape never changes: **`apicity <provider> <dotPath> [flags]`**, where
 `<dotPath>` mirrors the upstream URL path (`/v1/chat/completions` is

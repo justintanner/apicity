@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `frontier()` rows carry `price`: the min and max of a bundled per-unit rate (`{ unit, min, max, asOf, url }`), `{ unit: "dynamic" }` for a fal endpoint priced from billed units, or `null` when the row is unpriced or token-priced. No rate changed.
+
 - MachGen video pricing for six frontier models, per-second gross rates, graduated H3 pricing and input-video duration hints. Rates verified 2026-10-22 against https://www.machgen.ai/pricing; shared model slugs and display names.
 
 - KIE `gpt-6-1-sol` token pricing, verified 2026-10-22 against

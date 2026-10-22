@@ -11,6 +11,19 @@ cross-provider helper. Provider packages keep their runtime pay-gate verifier
 bundled locally; this package remains the canonical place to estimate costs,
 mint OTPs, and document the shared OTP format.
 
+## Frontier models
+
+`frontier(type)` returns the committed snapshot of frontier image and video
+models for one task type (`t2i`, `i2i`, `t2v`, `i2v`, `v2v`, `r2v`): one row
+per mapped endpoint, in rank order. It reads no files and makes no network
+call. `apicity frontier <type>` prints the same rows.
+
+```ts
+import { frontier } from "@apicity/cost";
+
+frontier("i2v");
+```
+
 ## Install
 
 ```bash

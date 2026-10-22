@@ -9,9 +9,8 @@
  *   node scripts/doc-gen.mjs <provider>   # regenerate one provider README
  *   node scripts/doc-gen.mjs --check      # exit 1 if any README is stale
  *
- * Also refreshes the root README "Frontier models" section from the
- * checked-in image-to-video leaderboard snapshot. That section is never
- * downloaded.
+ * Also refreshes docs/frontier.md from the checked-in frontier snapshots.
+ * That file is never downloaded.
  *
  * Every mode exits 1 before rendering anything when an `ENDPOINT_NOTES` key
  * matches no generated endpoint.
@@ -33,7 +32,7 @@ import {
   displayDotPath,
   resolveEndpointLabels,
 } from "./lib/endpoint-labels.mjs";
-import { syncRootFrontier } from "./lib/frontier-models.mjs";
+import { syncFrontierDoc } from "./lib/frontier-models.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -4638,7 +4637,7 @@ export async function main(argv = process.argv.slice(2)) {
 
   if (!failed) {
     try {
-      const frontierStale = await syncRootFrontier({ check });
+      const frontierStale = await syncFrontierDoc({ check });
       if (frontierStale) stale.push(frontierStale);
     } catch (error) {
       console.error(`❌ Frontier models: ${error.message}`);
@@ -4649,7 +4648,7 @@ export async function main(argv = process.argv.slice(2)) {
 
   if (!check) {
     if (!failed) {
-      console.log("✅ Generated README.md frontier section");
+      console.log("✅ Generated docs/frontier.md");
     }
     return;
   }

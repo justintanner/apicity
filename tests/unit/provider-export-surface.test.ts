@@ -64,9 +64,10 @@ const EXPECTED_BASELINE_TOTAL = 0;
  */
 const EXPECTED_NESTED_SURFACES: Record<string, number> = {
   "packages/provider/cost/src/extract": 6,
+  "packages/provider/cost/src/frontier": 2,
   "packages/provider/cost/src/pricing": 13,
 };
-const EXPECTED_NESTED_SURFACE_TOTAL = 19;
+const EXPECTED_NESTED_SURFACE_TOTAL = 21;
 
 const UPDATE_NESTED_PIN =
   "update EXPECTED_NESTED_SURFACES and EXPECTED_NESTED_SURFACE_TOTAL in " +

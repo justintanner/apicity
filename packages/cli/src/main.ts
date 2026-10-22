@@ -25,7 +25,12 @@ import {
   type CliWriter,
 } from "./envelope.js";
 import { CliError, classifyError, type ClassifyContext } from "./errors.js";
-import { runCommands, runDescribe, runProviders } from "./discovery.js";
+import {
+  runCommands,
+  runDescribe,
+  runFrontier,
+  runProviders,
+} from "./discovery.js";
 import { isHelpTopic, printHelpTopic } from "./help.js";
 import { bindArguments, callEndpoint, mergeRequestFields } from "./invoke.js";
 import type { OpInject, OpListItemTitles } from "./one-password.js";
@@ -205,6 +210,33 @@ async function dispatch(
     return runDescribe(writer, provider, dotPath, {
       ...output,
       method: flags.options.method,
+    });
+  }
+
+  if (first === "frontier") {
+    const [type, extra] = flags.positional;
+    if (extra !== undefined) {
+      throw new CliError("usage", "frontier takes at most one type", {
+        hint: "run: apicity frontier <type>",
+      });
+    }
+    const unknown = Object.keys(flags.options).filter(
+      (name) => name !== "provider"
+    );
+    if (unknown.length > 0) {
+      throw new CliError("usage", `unknown flag: --${unknown[0]}`, {
+        hint: "run: apicity frontier <type> [--provider <provider>]",
+      });
+    }
+    if (type === undefined && flags.options.provider !== undefined) {
+      throw new CliError("usage", "frontier --provider needs a type", {
+        hint: "run: apicity frontier <type> --provider <provider>",
+      });
+    }
+    return runFrontier(writer, {
+      ...output,
+      type,
+      provider: flags.options.provider,
     });
   }
 

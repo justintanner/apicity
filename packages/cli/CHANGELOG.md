@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `apicity frontier` lists image and video task types, and
+  `apicity frontier <type>` lists the ranked models and the endpoint to call.
+  `--provider` filters one provider. `--json` and `--quiet` follow the
+  discovery output rule.
 - Initial release.
 - `apicity setup 1password --op-vault <vault> --op-token <token>` saves the
   1Password vault and service-account token to the CLI's env file

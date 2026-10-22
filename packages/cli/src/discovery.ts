@@ -5,6 +5,7 @@ import {
   type CatalogEntry,
 } from "./catalog.js";
 import { CALL_SHAPES, callShapeKey, type CallShape } from "./call-shapes.js";
+import { loadCostHelpers, type FrontierHelperEntry } from "./cost.js";
 import { createWriter, type CliWriter } from "./envelope.js";
 import {
   isProviderConfigured,
@@ -374,4 +375,151 @@ function providersTable(summaries: ProviderSummary[]): string {
     summary.envVars.join(" ") || "(none)",
   ]);
   return renderTable([["provider", "endpoints", "configured", "env"], ...rows]);
+}
+
+// ---------------------------------------------------------------------------
+// frontier
+// ---------------------------------------------------------------------------
+
+export interface FrontierCommandOptions
+  extends DiscoveryOptions, OutputOptions {
+  /** A type code, long name, or alias. Absent lists the six types. */
+  type?: string;
+  provider?: string;
+}
+
+interface FrontierTypeSummary {
+  type: string;
+  name: string;
+  leaderboard: string;
+  captured: string;
+  models: string;
+}
+
+interface FrontierDetailRow {
+  rank: number;
+  model: string;
+  elo: number;
+  provider: string;
+  dotPath: string;
+  modelId: string;
+  configured: boolean;
+}
+
+function mappedCount(entries: readonly FrontierHelperEntry[]): number {
+  return entries.filter((entry) => entry.endpoints.length > 0).length;
+}
+
+/**
+ * `apicity frontier` and `apicity frontier <type>`.
+ *
+ * The registry comes from `@apicity/cost` through `loadCostHelpers`, the
+ * same offline import `commands` already pays for. No provider package is
+ * loaded. `configured` uses the credential sources `commands` uses.
+ */
+export async function runFrontier(
+  writer: CliWriter,
+  options: FrontierCommandOptions = {}
+): Promise<number> {
+  const helpers = await loadCostHelpers();
+  const env = options.env ?? process.env;
+  const sources = readCredentialSources(env, options.flags);
+
+  if (options.type === undefined) {
+    const summaries: FrontierTypeSummary[] = helpers.FRONTIER_TYPES.map(
+      (info) => {
+        const entries = helpers.FRONTIER[info.type]?.entries ?? [];
+        return {
+          type: info.type,
+          name: info.name,
+          leaderboard: info.derived ? "derived" : info.leaderboardId,
+          captured: info.capturedOn === "" ? "-" : info.capturedOn,
+          models: `${mappedCount(entries)}/${entries.length}`,
+        };
+      }
+    );
+    return respond(writer, options, summaries, () =>
+      frontierTypesTable(summaries)
+    );
+  }
+
+  const info = helpers.FRONTIER_TYPES.find(
+    (item) =>
+      item.type === options.type ||
+      item.name === options.type ||
+      item.aliases.includes(options.type ?? "")
+  );
+  if (info === undefined) {
+    const codes = helpers.FRONTIER_TYPES.map((item) => item.type).join(", ");
+    throw new CliError("not_found", `unknown frontier type: ${options.type}`, {
+      hint: `types: ${codes}`,
+    });
+  }
+
+  const flat = helpers.frontier(info.type, { provider: options.provider });
+  if (options.provider !== undefined && flat.length === 0) {
+    throw new CliError(
+      "not_found",
+      `no ${info.type} frontier rows for provider: ${options.provider}`,
+      { hint: `run: apicity frontier ${info.type}` }
+    );
+  }
+
+  const configuredByProvider = new Map<string, boolean>();
+  const rows: FrontierDetailRow[] = flat.map((row) => {
+    let configured = configuredByProvider.get(row.provider);
+    if (configured === undefined) {
+      configured = isProviderConfigured(row.provider, env, sources);
+      configuredByProvider.set(row.provider, configured);
+    }
+    return {
+      rank: row.rank,
+      model: row.model,
+      elo: row.elo,
+      provider: row.provider,
+      dotPath: row.dotPath,
+      modelId: row.modelId ?? "-",
+      configured,
+    };
+  });
+
+  const unmapped = (helpers.FRONTIER[info.type]?.entries ?? [])
+    .filter((entry) => entry.endpoints.length === 0)
+    .map((entry) => entry.model);
+
+  return respond(writer, options, rows, () => {
+    const table = frontierRowsTable(rows);
+    if (unmapped.length === 0) return table;
+    return `${table}\nnot yet in apicity: ${unmapped.join(", ")}`;
+  });
+}
+
+function frontierTypesTable(summaries: FrontierTypeSummary[]): string {
+  const rows = summaries.map((summary) => [
+    summary.type,
+    summary.name,
+    summary.leaderboard,
+    summary.captured,
+    summary.models,
+  ]);
+  return renderTable([
+    ["type", "name", "leaderboard", "captured", "models"],
+    ...rows,
+  ]);
+}
+
+function frontierRowsTable(rows: FrontierDetailRow[]): string {
+  const body = rows.map((row) => [
+    String(row.rank),
+    row.model,
+    String(row.elo),
+    row.provider,
+    row.dotPath,
+    row.modelId,
+    row.configured ? "yes" : "no",
+  ]);
+  return renderTable([
+    ["rank", "model", "elo", "provider", "dotPath", "modelId", "configured"],
+    ...body,
+  ]);
 }

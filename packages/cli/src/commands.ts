@@ -20,6 +20,10 @@ export const BUILTIN_COMMANDS: readonly BuiltinCommand[] = [
     summary: "Show one endpoint's schema, example and call shape.",
   },
   { name: "providers", summary: "List providers, their env vars and status." },
+  {
+    name: "frontier",
+    summary: "List frontier image and video models by task type.",
+  },
   { name: "skill", summary: "Print the agent skill this CLI ships." },
   {
     name: "skill install",

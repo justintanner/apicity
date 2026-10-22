@@ -1,0 +1,68 @@
+{
+  "leaderboardId": "AA-Video-I2V v1.1",
+  "sourceUrl": "https://artificialanalysis.ai/video/leaderboard/image-to-video",
+  "capturedOn": "2026-10-22",
+  "methodology": "Elo from blind comparisons by validated private evaluators.",
+  "entries": [
+    {
+      "rank": 1,
+      "model": "MiniMax H3 (768p)",
+      "creator": "MiniMax",
+      "elo": 1140
+    },
+    {
+      "rank": 2,
+      "model": "FLUX 3 Max (720p)",
+      "creator": "Black Forest Labs",
+      "elo": 1138
+    },
+    {
+      "rank": 3,
+      "model": "Dreamina Seedance 2.5",
+      "creator": "ByteDance",
+      "elo": 1138
+    },
+    {
+      "rank": 4,
+      "model": "Gemini Omni Flash 1.1",
+      "creator": "Google",
+      "elo": 1132
+    },
+    {
+      "rank": 5,
+      "model": "Wan 3.0",
+      "creator": "Alibaba",
+      "elo": 1127
+    },
+    {
+      "rank": 6,
+      "model": "MiniMax H3 Max",
+      "creator": "MiniMax",
+      "elo": 1125
+    },
+    {
+      "rank": 7,
+      "model": "Dreamina Seedance 2.0",
+      "creator": "ByteDance",
+      "elo": 1121
+    },
+    {
+      "rank": 8,
+      "model": "FLUX 3",
+      "creator": "Black Forest Labs",
+      "elo": 1086
+    },
+    {
+      "rank": 9,
+      "model": "Grok Imagine Video 1.5",
+      "creator": "SpaceXAI",
+      "elo": 1067
+    },
+    {
+      "rank": 10,
+      "model": "HappyHorse-1.1",
+      "creator": "Alibaba",
+      "elo": 1061
+    }
+  ]
+}

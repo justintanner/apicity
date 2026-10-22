@@ -33,6 +33,9 @@ apicity describe anthropic v1.messages     # one endpoint, in full
 apicity anthropic v1.messages --data '{"model":"claude-sonnet-4-5","max_tokens":1024,"messages":[{"role":"user","content":"hi"}]}'
 ```
 
+To pick an image or video model, run `apicity frontier <type>` and call the
+dotPath it prints with the model id it prints.
+
 The shape never changes: **`apicity <provider> <dotPath> [flags]`**, where
 `<dotPath>` mirrors the upstream URL path (`/v1/chat/completions` is
 `v1.chat.completions`, `/api/v1/common/download-url` is

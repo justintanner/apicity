@@ -42,6 +42,7 @@ describe("apicity dispatcher", () => {
       "commands",
       "describe",
       "providers",
+      "frontier",
       "skill",
       "skill install",
       "setup",

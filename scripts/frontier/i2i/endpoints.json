@@ -1,0 +1,68 @@
+{
+  "GPT Image 2.5 Sunburst (max)": [
+    {
+      "provider": "fal",
+      "dotPath": "openai.gptImage2p5.sunburst.edit"
+    },
+    {
+      "provider": "kie",
+      "dotPath": "api.v1.jobs.createTask",
+      "modelId": "gpt-image-2-5-sunburst-image-to-image"
+    }
+  ],
+  "GPT Image 2.5 Flare (max)": [
+    {
+      "provider": "fal",
+      "dotPath": "openai.gptImage2p5.flare.edit"
+    },
+    {
+      "provider": "kie",
+      "dotPath": "api.v1.jobs.createTask",
+      "modelId": "gpt-image-2-5-flare-image-to-image"
+    }
+  ],
+  "MAI-Image-2.6": [],
+  "Nano Banana 2.1": [
+    {
+      "provider": "fal",
+      "dotPath": "nanoBanana2p1.edit"
+    },
+    {
+      "provider": "kie",
+      "dotPath": "api.v1.jobs.createTask",
+      "modelId": "nano-banana-2-1"
+    }
+  ],
+  "Krea 3 (Ultra)": [],
+  "MAI-Image-2.6-Flash": [],
+  "GPT Image 2 (high)": [
+    {
+      "provider": "kie",
+      "dotPath": "api.v1.jobs.createTask",
+      "modelId": "gpt-image-2-image-to-image"
+    }
+  ],
+  "Seedream 5.0 Pro": [
+    {
+      "provider": "fal",
+      "dotPath": "bytedance.seedream.v5.pro.edit"
+    },
+    {
+      "provider": "kie",
+      "dotPath": "api.v1.jobs.createTask",
+      "modelId": "seedream/5-pro-image-to-image"
+    }
+  ],
+  "Muse Image": [
+    {
+      "provider": "fal",
+      "dotPath": "meta.museImage.edit"
+    }
+  ],
+  "MAI-Image-2.5": [
+    {
+      "provider": "fal",
+      "dotPath": "microsoft.maiImage2p5Pro.edit"
+    }
+  ]
+}

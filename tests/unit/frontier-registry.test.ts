@@ -40,6 +40,45 @@ const KIE_IMAGE_FIELDS = [
   "first_frame",
 ] as const;
 
+/** Image inputs on a KIE image model. Size and count fields are not inputs. */
+const KIE_IMAGE_INPUT_FIELDS = [
+  "image",
+  "image_input",
+  "image_url",
+  "image_urls",
+  "input_urls",
+  "reference_image_urls",
+] as const;
+
+const T2I_SEED: ReadonlyArray<readonly [number, string, string, number]> = [
+  [1, "GPT Image 2.5 Sunburst (max)", "OpenAI", 1222],
+  [2, "GPT Image 2.5 Flare (max)", "OpenAI", 1207],
+  [3, "GPT Image 2 (high)", "OpenAI", 1186],
+  [4, "Nano Banana 2.1", "Google", 1176],
+  [5, "MAI-Image-2.6", "Microsoft AI", 1166],
+  [6, "Grok Imagine Image 2.0", "SpaceXAI", 1166],
+  [7, "Nano Banana 2 (Gemini 3.1 Flash Image)", "Google", 1140],
+  [8, "Muse Image", "Meta", 1127],
+  [9, "GPT Image 1.5 (high)", "OpenAI", 1123],
+  [10, "MAI-Image-2.6-Flash", "Microsoft AI", 1119],
+];
+
+const I2I_SEED: ReadonlyArray<readonly [number, string, string, number]> = [
+  [1, "GPT Image 2.5 Sunburst (max)", "OpenAI", 1200],
+  [2, "GPT Image 2.5 Flare (max)", "OpenAI", 1183],
+  [3, "MAI-Image-2.6", "Microsoft AI", 1153],
+  [4, "Nano Banana 2.1", "Google", 1152],
+  [5, "Krea 3 (Ultra)", "Krea", 1152],
+  [6, "MAI-Image-2.6-Flash", "Microsoft AI", 1144],
+  [7, "GPT Image 2 (high)", "OpenAI", 1137],
+  [8, "Seedream 5.0 Pro", "ByteDance Seed", 1132],
+  [9, "Muse Image", "Meta", 1131],
+  [10, "MAI-Image-2.5", "Microsoft AI", 1128],
+];
+
+const T2I_UNMAPPED = ["MAI-Image-2.6", "MAI-Image-2.6-Flash"];
+const I2I_UNMAPPED = ["MAI-Image-2.6", "Krea 3 (Ultra)", "MAI-Image-2.6-Flash"];
+
 const I2V_SEED: ReadonlyArray<readonly [number, string, string, number]> = [
   [1, "MiniMax H3 (768p)", "MiniMax", 1140],
   [2, "FLUX 3 Max (720p)", "Black Forest Labs", 1138],
@@ -65,6 +104,14 @@ function readConstArray(source: string, name: string): string[] {
   return readQuoted(match[1]);
 }
 
+function readGoogleFlowImageModels(source: string): string[] {
+  const match = source.match(
+    /export const GoogleFlowImagesRequestSchema = z[\s\S]*?model: z\s*\.enum\(\[([\s\S]*?)\]\)/
+  );
+  if (!match?.[1]) throw new Error("missing googleflow image model enum");
+  return readQuoted(match[1]);
+}
+
 function readVeoModels(source: string): string[] {
   const match = source.match(
     /export const VeoGenerateRequestSchema = z\.object\(\{[\s\S]*?\.enum\(\[([\s\S]*?)\]\)\s*\.or\(KieVeoModelAliasSchema\)/
@@ -83,6 +130,38 @@ function kieCreateTaskModels(): Set<string> {
     if (imageBacked) ids.add(id);
   }
   return ids;
+}
+
+/**
+ * A KIE image id is edit-only when it cannot run from a prompt alone: a
+ * required image input, or a name that is an edit / image-to-image operation.
+ * An optional image field keeps the id in both registries.
+ */
+function isKieEditOnly(
+  id: string,
+  imageFields: ReadonlyArray<readonly [string, { required?: boolean }]>
+): boolean {
+  if (imageFields.some(([, field]) => field.required === true)) return true;
+  return (
+    id.includes("image-to-image") ||
+    id.includes("image-edit") ||
+    id.endsWith("/edit") ||
+    id.endsWith("-edit")
+  );
+}
+
+function kieImageTaskModels(): { t2i: Set<string>; i2i: Set<string> } {
+  const t2i = new Set<string>();
+  const i2i = new Set<string>();
+  for (const [id, schema] of Object.entries(modelInputSchemas)) {
+    if (schema.type !== "image") continue;
+    const imageFields = Object.entries(schema.fields).filter(([name]) =>
+      (KIE_IMAGE_INPUT_FIELDS as readonly string[]).includes(name)
+    );
+    if (!isKieEditOnly(id, imageFields)) t2i.add(id);
+    if (imageFields.length > 0) i2i.add(id);
+  }
+  return { t2i, i2i };
 }
 
 function liveRegistry() {
@@ -111,9 +190,11 @@ function liveRegistry() {
     }
   }
   const kieCreateTask = kieCreateTaskModels();
+  const kieImage = kieImageTaskModels();
   const googleflowVideos = new Set(
     readConstArray(googleflowZod, "VIDEOS_ENUMERATED_MODELS")
   );
+  const googleflowImages = new Set(readGoogleFlowImageModels(googleflowZod));
   const alibabaVideo = new Set(
     readConstArray(alibabaZod, "WAN_VIDEO_SYNTHESIS_MODELS").filter((model) =>
       model.includes("i2v")
@@ -132,6 +213,20 @@ function liveRegistry() {
     type: string,
     entry: { provider: string; dotPath: string; modelId?: string }
   ) => {
+    if (type === "t2i" || type === "i2i") {
+      if (entry.modelId === undefined) return false;
+      if (
+        entry.provider === "kie" &&
+        entry.dotPath === "api.v1.jobs.createTask"
+      ) {
+        const ids = type === "t2i" ? kieImage.t2i : kieImage.i2i;
+        return ids.has(entry.modelId);
+      }
+      if (entry.provider === "googleflow" && entry.dotPath === "v1.images") {
+        return googleflowImages.has(entry.modelId);
+      }
+      return false;
+    }
     if (type !== "i2v" || entry.modelId === undefined) return false;
     if (
       entry.provider === "kie" &&
@@ -160,8 +255,8 @@ function liveRegistry() {
   };
 }
 
-function i2vFiles() {
-  const dir = path.join(repoRoot, "scripts/frontier/i2v");
+function frontierFiles(type: string) {
+  const dir = path.join(repoRoot, "scripts/frontier", type);
   return {
     snapshot: JSON.parse(
       readFileSync(path.join(dir, "leaderboard.json"), "utf8")
@@ -199,7 +294,7 @@ function withoutFences(source: string): string {
 }
 
 describe("frontier snapshots", () => {
-  const { snapshot, endpointMap } = i2vFiles();
+  const { snapshot, endpointMap } = frontierFiles("i2v");
 
   it("accepts the catalog and every present type directory", () => {
     expect(catalogProblems(loadCatalog())).toEqual([]);
@@ -291,7 +386,12 @@ describe("frontier snapshots", () => {
 
   it("matches a dedicated leaf by the type keyword and not by editVideo", () => {
     expect(textCarriesTypeKeyword("i2v", "minimax.h3.imageToVideo")).toBe(true);
+    expect(textCarriesTypeKeyword("t2i", "nanoBanana2.textToImage")).toBe(true);
+    expect(textCarriesTypeKeyword("t2i", "gptImage1p5")).toBe(false);
     expect(textCarriesTypeKeyword("i2i", "models.edit")).toBe(true);
+    expect(textCarriesTypeKeyword("i2i", "microsoft.maiImage2p5Pro.edit")).toBe(
+      true
+    );
     expect(textCarriesTypeKeyword("i2i", "models.editVideo")).toBe(false);
     expect(textCarriesTypeKeyword("t2v", "textToVideo")).toBe(true);
     expect(Object.keys(TYPE_KEYWORDS)).toEqual([
@@ -330,6 +430,143 @@ describe("frontier snapshots", () => {
   });
 });
 
+function unmappedNames(endpointMap: Record<string, unknown[]>): string[] {
+  return Object.entries(endpointMap)
+    .filter(([, list]) => Array.isArray(list) && list.length === 0)
+    .map(([model]) => model);
+}
+
+function mappedCount(endpointMap: Record<string, unknown[]>): number {
+  return Object.values(endpointMap).filter(
+    (list) => Array.isArray(list) && list.length > 0
+  ).length;
+}
+
+describe("frontier image snapshots", () => {
+  const t2i = frontierFiles("t2i");
+  const i2i = frontierFiles("i2i");
+
+  it("commits the AA-Image-T2I v2.1 top 10 verbatim", () => {
+    expect(t2i.snapshot.leaderboardId).toBe("AA-Image-T2I v2.1");
+    expect(t2i.snapshot.sourceUrl).toBe(
+      "https://artificialanalysis.ai/image/leaderboard/text-to-image"
+    );
+    expect(t2i.snapshot.capturedOn).toBe("2026-10-22");
+    expect(t2i.snapshot.methodology).toBe(
+      "Models are ranked using an Elo rating system derived from blind comparisons judged by our validated private evaluators."
+    );
+    expect(
+      t2i.snapshot.entries.map((entry) => [
+        entry.rank,
+        entry.model,
+        entry.creator,
+        entry.elo,
+      ])
+    ).toEqual(T2I_SEED.map((row) => [...row]));
+    expect(snapshotProblems(t2i.snapshot)).toEqual([]);
+    expect(unmappedNames(t2i.endpointMap)).toEqual(T2I_UNMAPPED);
+    expect(mappedCount(t2i.endpointMap)).toBe(8);
+    expect(Object.keys(t2i.endpointMap)).toHaveLength(10);
+  });
+
+  it("commits the AA-Image-Editing v2.1 top 10 verbatim", () => {
+    expect(i2i.snapshot.leaderboardId).toBe("AA-Image-Editing v2.1");
+    expect(i2i.snapshot.sourceUrl).toBe(
+      "https://artificialanalysis.ai/image/leaderboard/editing"
+    );
+    expect(i2i.snapshot.capturedOn).toBe("2026-10-22");
+    expect(i2i.snapshot.methodology).toBe(
+      "Ranks image models on editing an image from a text instruction, by Elo from pairwise human preference votes."
+    );
+    expect(
+      i2i.snapshot.entries.map((entry) => [
+        entry.rank,
+        entry.model,
+        entry.creator,
+        entry.elo,
+      ])
+    ).toEqual(I2I_SEED.map((row) => [...row]));
+    expect(snapshotProblems(i2i.snapshot)).toEqual([]);
+    expect(unmappedNames(i2i.endpointMap)).toEqual(I2I_UNMAPPED);
+    expect(mappedCount(i2i.endpointMap)).toBe(7);
+    expect(Object.keys(i2i.endpointMap)).toHaveLength(10);
+  });
+
+  it("keeps text-to-image ids out of the edit-only registry", () => {
+    const { t2i: text, i2i: edit } = kieImageTaskModels();
+    expect(text.has("nano-banana-2-1")).toBe(true);
+    expect(edit.has("nano-banana-2-1")).toBe(true);
+    expect(text.has("gpt-image-2-text-to-image")).toBe(true);
+    expect(edit.has("gpt-image-2-text-to-image")).toBe(false);
+    expect(text.has("gpt-image-2-image-to-image")).toBe(false);
+    expect(edit.has("gpt-image-2-image-to-image")).toBe(true);
+    expect(text.has("grok-imagine-image-2-0/image-edit")).toBe(false);
+    expect(edit.has("grok-imagine-image-2-0/text-to-image")).toBe(false);
+    expect(edit.has("seedream/5-pro-image-to-image")).toBe(true);
+    expect(text.has("seedream/5-pro-text-to-image")).toBe(true);
+  });
+
+  it("resolves every mapped t2i and i2i endpoint", () => {
+    expect(resolutionProblems("t2i", t2i.endpointMap, liveRegistry())).toEqual(
+      []
+    );
+    expect(resolutionProblems("i2i", i2i.endpointMap, liveRegistry())).toEqual(
+      []
+    );
+  });
+
+  it("refuses an edit-only id on t2i and a text-only id on i2i", () => {
+    const ctx = liveRegistry();
+    const kie = {
+      provider: "kie",
+      dotPath: "api.v1.jobs.createTask",
+    };
+    expect(
+      resolutionProblems(
+        "t2i",
+        {
+          Demo: [{ ...kie, modelId: "gpt-image-2-image-to-image" }],
+        },
+        ctx
+      ).some((problem) => problem.includes("t2i model registry"))
+    ).toBe(true);
+    expect(
+      resolutionProblems(
+        "i2i",
+        {
+          Demo: [{ ...kie, modelId: "gpt-image-2-text-to-image" }],
+        },
+        ctx
+      ).some((problem) => problem.includes("i2i model registry"))
+    ).toBe(true);
+    expect(
+      resolutionProblems(
+        "t2i",
+        {
+          Demo: [
+            {
+              provider: "googleflow",
+              dotPath: "v1.images",
+              modelId: "nano-banana-2.1",
+            },
+          ],
+        },
+        ctx
+      ).some((problem) => problem.includes("t2i model registry"))
+    ).toBe(true);
+  });
+
+  it("maps GPT Image 1.5 through the KIE text-to-image id", () => {
+    expect(t2i.endpointMap["GPT Image 1.5 (high)"]).toEqual([
+      {
+        provider: "kie",
+        dotPath: "api.v1.jobs.createTask",
+        modelId: "gpt-image/1.5-text-to-image",
+      },
+    ]);
+  });
+});
+
 describe("frontier generated registry", () => {
   it("keeps data.ts equal to a fresh render and FRONTIER equal to the JSON", async () => {
     const rendered = await renderFrontierModule();
@@ -337,14 +574,23 @@ describe("frontier generated registry", () => {
     expect(rendered).toContain("Generated by pnpm run gen:frontier");
     expect(rendered).toContain("Do not edit");
 
-    const { snapshot, endpointMap } = i2vFiles();
+    const { snapshot, endpointMap } = frontierFiles("i2v");
     expect(FRONTIER.i2v.entries.map((entry) => entry.model)).toEqual(
       snapshot.entries.map((entry) => entry.model)
     );
     for (const entry of FRONTIER.i2v.entries) {
       expect(entry.endpoints).toEqual(endpointMap[entry.model]);
     }
-    expect(FRONTIER.t2i.entries).toEqual([]);
+    for (const type of ["t2i", "i2i"] as const) {
+      const files = frontierFiles(type);
+      expect(FRONTIER[type].entries.map((entry) => entry.model)).toEqual(
+        files.snapshot.entries.map((entry) => entry.model)
+      );
+      for (const entry of FRONTIER[type].entries) {
+        expect(entry.endpoints).toEqual(files.endpointMap[entry.model]);
+      }
+    }
+    expect(FRONTIER.t2v.entries).toEqual([]);
     expect(FRONTIER.r2v.entries).toEqual([]);
 
     const rows = frontier("i2v");
@@ -371,6 +617,9 @@ describe("frontier generated registry", () => {
     );
     expect(doc).toContain("leaderboard\nexists.");
     expect(doc).toContain("image-to-video),\ncaptured 2026-10-22");
+    expect(doc).toContain("text-to-image),\ncaptured 2026-10-22");
+    expect(doc).toContain("editing),\ncaptured 2026-10-22");
+    expect(doc).toContain("not yet in apicity");
     expect(doc).not.toMatch(/^, captured /m);
     expect(doc).toContain("no data yet");
     expect(doc).toContain("fal `minimax.h3.imageToVideo`");

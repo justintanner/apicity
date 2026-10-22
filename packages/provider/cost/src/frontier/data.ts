@@ -14,8 +14,9 @@ export const FRONTIER_TYPES = [
     aliases: [],
     leaderboardId: "AA-Image-T2I v2.1",
     sourceUrl: "https://artificialanalysis.ai/image/leaderboard/text-to-image",
-    capturedOn: "",
-    methodology: "",
+    capturedOn: "2026-10-22",
+    methodology:
+      "Models are ranked using an Elo rating system derived from blind comparisons judged by our validated private evaluators.",
     derived: false,
   },
   {
@@ -24,8 +25,9 @@ export const FRONTIER_TYPES = [
     aliases: ["image-editing"],
     leaderboardId: "AA-Image-Editing v2.1",
     sourceUrl: "https://artificialanalysis.ai/image/leaderboard/editing",
-    capturedOn: "",
-    methodology: "",
+    capturedOn: "2026-10-22",
+    methodology:
+      "Ranks image models on editing an image from a text instruction, by Elo from pairwise human preference votes.",
     derived: false,
   },
   {
@@ -74,16 +76,288 @@ export const FRONTIER = {
   t2i: {
     leaderboardId: "AA-Image-T2I v2.1",
     sourceUrl: "https://artificialanalysis.ai/image/leaderboard/text-to-image",
-    capturedOn: "",
-    methodology: "",
-    entries: [],
+    capturedOn: "2026-10-22",
+    methodology:
+      "Models are ranked using an Elo rating system derived from blind comparisons judged by our validated private evaluators.",
+    entries: [
+      {
+        rank: 1,
+        model: "GPT Image 2.5 Sunburst (max)",
+        creator: "OpenAI",
+        elo: 1222,
+        endpoints: [
+          {
+            provider: "fal",
+            dotPath: "openai.gptImage2p5.sunburst.textToImage",
+          },
+          {
+            provider: "kie",
+            dotPath: "api.v1.jobs.createTask",
+            modelId: "gpt-image-2-5-sunburst-text-to-image",
+          },
+        ],
+      },
+      {
+        rank: 2,
+        model: "GPT Image 2.5 Flare (max)",
+        creator: "OpenAI",
+        elo: 1207,
+        endpoints: [
+          {
+            provider: "fal",
+            dotPath: "openai.gptImage2p5.flare.textToImage",
+          },
+          {
+            provider: "kie",
+            dotPath: "api.v1.jobs.createTask",
+            modelId: "gpt-image-2-5-flare-text-to-image",
+          },
+        ],
+      },
+      {
+        rank: 3,
+        model: "GPT Image 2 (high)",
+        creator: "OpenAI",
+        elo: 1186,
+        endpoints: [
+          {
+            provider: "kie",
+            dotPath: "api.v1.jobs.createTask",
+            modelId: "gpt-image-2-text-to-image",
+          },
+        ],
+      },
+      {
+        rank: 4,
+        model: "Nano Banana 2.1",
+        creator: "Google",
+        elo: 1176,
+        endpoints: [
+          {
+            provider: "fal",
+            dotPath: "nanoBanana2p1.textToImage",
+          },
+          {
+            provider: "kie",
+            dotPath: "api.v1.jobs.createTask",
+            modelId: "nano-banana-2-1",
+          },
+        ],
+      },
+      {
+        rank: 5,
+        model: "MAI-Image-2.6",
+        creator: "Microsoft AI",
+        elo: 1166,
+        endpoints: [],
+      },
+      {
+        rank: 6,
+        model: "Grok Imagine Image 2.0",
+        creator: "SpaceXAI",
+        elo: 1166,
+        endpoints: [
+          {
+            provider: "fal",
+            dotPath: "xai.grokImagineImage.v2p0.textToImage",
+          },
+          {
+            provider: "kie",
+            dotPath: "api.v1.jobs.createTask",
+            modelId: "grok-imagine-image-2-0/text-to-image",
+          },
+        ],
+      },
+      {
+        rank: 7,
+        model: "Nano Banana 2 (Gemini 3.1 Flash Image)",
+        creator: "Google",
+        elo: 1140,
+        endpoints: [
+          {
+            provider: "fal",
+            dotPath: "nanoBanana2.textToImage",
+          },
+          {
+            provider: "kie",
+            dotPath: "api.v1.jobs.createTask",
+            modelId: "nano-banana-2",
+          },
+          {
+            provider: "googleflow",
+            dotPath: "v1.images",
+            modelId: "nano-banana-2",
+          },
+        ],
+      },
+      {
+        rank: 8,
+        model: "Muse Image",
+        creator: "Meta",
+        elo: 1127,
+        endpoints: [
+          {
+            provider: "fal",
+            dotPath: "meta.museImage.textToImage",
+          },
+        ],
+      },
+      {
+        rank: 9,
+        model: "GPT Image 1.5 (high)",
+        creator: "OpenAI",
+        elo: 1123,
+        endpoints: [
+          {
+            provider: "kie",
+            dotPath: "api.v1.jobs.createTask",
+            modelId: "gpt-image/1.5-text-to-image",
+          },
+        ],
+      },
+      {
+        rank: 10,
+        model: "MAI-Image-2.6-Flash",
+        creator: "Microsoft AI",
+        elo: 1119,
+        endpoints: [],
+      },
+    ],
   },
   i2i: {
     leaderboardId: "AA-Image-Editing v2.1",
     sourceUrl: "https://artificialanalysis.ai/image/leaderboard/editing",
-    capturedOn: "",
-    methodology: "",
-    entries: [],
+    capturedOn: "2026-10-22",
+    methodology:
+      "Ranks image models on editing an image from a text instruction, by Elo from pairwise human preference votes.",
+    entries: [
+      {
+        rank: 1,
+        model: "GPT Image 2.5 Sunburst (max)",
+        creator: "OpenAI",
+        elo: 1200,
+        endpoints: [
+          {
+            provider: "fal",
+            dotPath: "openai.gptImage2p5.sunburst.edit",
+          },
+          {
+            provider: "kie",
+            dotPath: "api.v1.jobs.createTask",
+            modelId: "gpt-image-2-5-sunburst-image-to-image",
+          },
+        ],
+      },
+      {
+        rank: 2,
+        model: "GPT Image 2.5 Flare (max)",
+        creator: "OpenAI",
+        elo: 1183,
+        endpoints: [
+          {
+            provider: "fal",
+            dotPath: "openai.gptImage2p5.flare.edit",
+          },
+          {
+            provider: "kie",
+            dotPath: "api.v1.jobs.createTask",
+            modelId: "gpt-image-2-5-flare-image-to-image",
+          },
+        ],
+      },
+      {
+        rank: 3,
+        model: "MAI-Image-2.6",
+        creator: "Microsoft AI",
+        elo: 1153,
+        endpoints: [],
+      },
+      {
+        rank: 4,
+        model: "Nano Banana 2.1",
+        creator: "Google",
+        elo: 1152,
+        endpoints: [
+          {
+            provider: "fal",
+            dotPath: "nanoBanana2p1.edit",
+          },
+          {
+            provider: "kie",
+            dotPath: "api.v1.jobs.createTask",
+            modelId: "nano-banana-2-1",
+          },
+        ],
+      },
+      {
+        rank: 5,
+        model: "Krea 3 (Ultra)",
+        creator: "Krea",
+        elo: 1152,
+        endpoints: [],
+      },
+      {
+        rank: 6,
+        model: "MAI-Image-2.6-Flash",
+        creator: "Microsoft AI",
+        elo: 1144,
+        endpoints: [],
+      },
+      {
+        rank: 7,
+        model: "GPT Image 2 (high)",
+        creator: "OpenAI",
+        elo: 1137,
+        endpoints: [
+          {
+            provider: "kie",
+            dotPath: "api.v1.jobs.createTask",
+            modelId: "gpt-image-2-image-to-image",
+          },
+        ],
+      },
+      {
+        rank: 8,
+        model: "Seedream 5.0 Pro",
+        creator: "ByteDance Seed",
+        elo: 1132,
+        endpoints: [
+          {
+            provider: "fal",
+            dotPath: "bytedance.seedream.v5.pro.edit",
+          },
+          {
+            provider: "kie",
+            dotPath: "api.v1.jobs.createTask",
+            modelId: "seedream/5-pro-image-to-image",
+          },
+        ],
+      },
+      {
+        rank: 9,
+        model: "Muse Image",
+        creator: "Meta",
+        elo: 1131,
+        endpoints: [
+          {
+            provider: "fal",
+            dotPath: "meta.museImage.edit",
+          },
+        ],
+      },
+      {
+        rank: 10,
+        model: "MAI-Image-2.5",
+        creator: "Microsoft AI",
+        elo: 1128,
+        endpoints: [
+          {
+            provider: "fal",
+            dotPath: "microsoft.maiImage2p5Pro.edit",
+          },
+        ],
+      },
+    ],
   },
   t2v: {
     leaderboardId: "AA-Video-T2V v2.1",

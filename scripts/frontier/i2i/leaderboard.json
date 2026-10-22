@@ -1,0 +1,68 @@
+{
+  "leaderboardId": "AA-Image-Editing v2.1",
+  "sourceUrl": "https://artificialanalysis.ai/image/leaderboard/editing",
+  "capturedOn": "2026-10-22",
+  "methodology": "Ranks image models on editing an image from a text instruction, by Elo from pairwise human preference votes.",
+  "entries": [
+    {
+      "rank": 1,
+      "model": "GPT Image 2.5 Sunburst (max)",
+      "creator": "OpenAI",
+      "elo": 1200
+    },
+    {
+      "rank": 2,
+      "model": "GPT Image 2.5 Flare (max)",
+      "creator": "OpenAI",
+      "elo": 1183
+    },
+    {
+      "rank": 3,
+      "model": "MAI-Image-2.6",
+      "creator": "Microsoft AI",
+      "elo": 1153
+    },
+    {
+      "rank": 4,
+      "model": "Nano Banana 2.1",
+      "creator": "Google",
+      "elo": 1152
+    },
+    {
+      "rank": 5,
+      "model": "Krea 3 (Ultra)",
+      "creator": "Krea",
+      "elo": 1152
+    },
+    {
+      "rank": 6,
+      "model": "MAI-Image-2.6-Flash",
+      "creator": "Microsoft AI",
+      "elo": 1144
+    },
+    {
+      "rank": 7,
+      "model": "GPT Image 2 (high)",
+      "creator": "OpenAI",
+      "elo": 1137
+    },
+    {
+      "rank": 8,
+      "model": "Seedream 5.0 Pro",
+      "creator": "ByteDance Seed",
+      "elo": 1132
+    },
+    {
+      "rank": 9,
+      "model": "Muse Image",
+      "creator": "Meta",
+      "elo": 1131
+    },
+    {
+      "rank": 10,
+      "model": "MAI-Image-2.5",
+      "creator": "Microsoft AI",
+      "elo": 1128
+    }
+  ]
+}

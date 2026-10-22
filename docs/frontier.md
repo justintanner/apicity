@@ -6,15 +6,41 @@ exists.
 
 ## text-to-image (`t2i`)
 
-[AA-Image-T2I v2.1](https://artificialanalysis.ai/image/leaderboard/text-to-image)
+[AA-Image-T2I v2.1](https://artificialanalysis.ai/image/leaderboard/text-to-image),
+captured 2026-10-22. Models are ranked using an Elo rating system derived from
+blind comparisons judged by our validated private evaluators.
 
-no data yet
+| Rank | Model                                  | Creator      | Elo  | apicity endpoints                                                                                                                                                                                                               |
+| ---- | -------------------------------------- | ------------ | ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1    | GPT Image 2.5 Sunburst (max)           | OpenAI       | 1222 | [fal `openai.gptImage2p5.sunburst.textToImage`](../packages/provider/fal/README.md#openai), [kie `gpt-image-2-5-sunburst-text-to-image`](../packages/provider/kie/README.md#jobs)                                               |
+| 2    | GPT Image 2.5 Flare (max)              | OpenAI       | 1207 | [fal `openai.gptImage2p5.flare.textToImage`](../packages/provider/fal/README.md#openai), [kie `gpt-image-2-5-flare-text-to-image`](../packages/provider/kie/README.md#jobs)                                                     |
+| 3    | GPT Image 2 (high)                     | OpenAI       | 1186 | [kie `gpt-image-2-text-to-image`](../packages/provider/kie/README.md#jobs)                                                                                                                                                      |
+| 4    | Nano Banana 2.1                        | Google       | 1176 | [fal `nanoBanana2p1.textToImage`](../packages/provider/fal/README.md#nanobanana2p1), [kie `nano-banana-2-1`](../packages/provider/kie/README.md#jobs)                                                                           |
+| 5    | MAI-Image-2.6                          | Microsoft AI | 1166 | not yet in apicity                                                                                                                                                                                                              |
+| 6    | Grok Imagine Image 2.0                 | SpaceXAI     | 1166 | [fal `xai.grokImagineImage.v2p0.textToImage`](../packages/provider/fal/README.md#xai), [kie `grok-imagine-image-2-0/text-to-image`](../packages/provider/kie/README.md#jobs)                                                    |
+| 7    | Nano Banana 2 (Gemini 3.1 Flash Image) | Google       | 1140 | [fal `nanoBanana2.textToImage`](../packages/provider/fal/README.md#nanobanana2), [kie `nano-banana-2`](../packages/provider/kie/README.md#jobs), [googleflow `nano-banana-2`](../packages/provider/googleflow/README.md#images) |
+| 8    | Muse Image                             | Meta         | 1127 | [fal `meta.museImage.textToImage`](../packages/provider/fal/README.md#meta)                                                                                                                                                     |
+| 9    | GPT Image 1.5 (high)                   | OpenAI       | 1123 | [kie `gpt-image/1.5-text-to-image`](../packages/provider/kie/README.md#jobs)                                                                                                                                                    |
+| 10   | MAI-Image-2.6-Flash                    | Microsoft AI | 1119 | not yet in apicity                                                                                                                                                                                                              |
 
 ## image-to-image (`i2i`)
 
-[AA-Image-Editing v2.1](https://artificialanalysis.ai/image/leaderboard/editing)
+[AA-Image-Editing v2.1](https://artificialanalysis.ai/image/leaderboard/editing),
+captured 2026-10-22. Ranks image models on editing an image from a text
+instruction, by Elo from pairwise human preference votes.
 
-no data yet
+| Rank | Model                        | Creator        | Elo  | apicity endpoints                                                                                                                                                           |
+| ---- | ---------------------------- | -------------- | ---- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1    | GPT Image 2.5 Sunburst (max) | OpenAI         | 1200 | [fal `openai.gptImage2p5.sunburst.edit`](../packages/provider/fal/README.md#openai), [kie `gpt-image-2-5-sunburst-image-to-image`](../packages/provider/kie/README.md#jobs) |
+| 2    | GPT Image 2.5 Flare (max)    | OpenAI         | 1183 | [fal `openai.gptImage2p5.flare.edit`](../packages/provider/fal/README.md#openai), [kie `gpt-image-2-5-flare-image-to-image`](../packages/provider/kie/README.md#jobs)       |
+| 3    | MAI-Image-2.6                | Microsoft AI   | 1153 | not yet in apicity                                                                                                                                                          |
+| 4    | Nano Banana 2.1              | Google         | 1152 | [fal `nanoBanana2p1.edit`](../packages/provider/fal/README.md#nanobanana2p1), [kie `nano-banana-2-1`](../packages/provider/kie/README.md#jobs)                              |
+| 5    | Krea 3 (Ultra)               | Krea           | 1152 | not yet in apicity                                                                                                                                                          |
+| 6    | MAI-Image-2.6-Flash          | Microsoft AI   | 1144 | not yet in apicity                                                                                                                                                          |
+| 7    | GPT Image 2 (high)           | OpenAI         | 1137 | [kie `gpt-image-2-image-to-image`](../packages/provider/kie/README.md#jobs)                                                                                                 |
+| 8    | Seedream 5.0 Pro             | ByteDance Seed | 1132 | [fal `bytedance.seedream.v5.pro.edit`](../packages/provider/fal/README.md#bytedance), [kie `seedream/5-pro-image-to-image`](../packages/provider/kie/README.md#jobs)        |
+| 9    | Muse Image                   | Meta           | 1131 | [fal `meta.museImage.edit`](../packages/provider/fal/README.md#meta)                                                                                                        |
+| 10   | MAI-Image-2.5                | Microsoft AI   | 1128 | [fal `microsoft.maiImage2p5Pro.edit`](../packages/provider/fal/README.md#microsoft)                                                                                         |
 
 ## text-to-video (`t2v`)
 

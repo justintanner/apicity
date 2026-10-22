@@ -391,6 +391,11 @@ export const FRONTIER = {
             dotPath: "api.v1.jobs.createTask",
             modelId: "wan/3-0-video-prime",
           },
+          {
+            provider: "machgen",
+            dotPath: "api.v0.generate",
+            modelId: "Alibaba-Wan-3.0",
+          },
         ],
       },
       {
@@ -422,6 +427,11 @@ export const FRONTIER = {
             dotPath: "api.v1.jobs.createTask",
             modelId: "minimax-h3/text-to-video",
           },
+          {
+            provider: "machgen",
+            dotPath: "api.v0.generate",
+            modelId: "MiniMax-H3",
+          },
         ],
       },
       {
@@ -442,6 +452,11 @@ export const FRONTIER = {
             provider: "kie",
             dotPath: "api.v1.jobs.createTask",
             modelId: "bytedance/seedance-2-5",
+          },
+          {
+            provider: "machgen",
+            dotPath: "api.v0.generate",
+            modelId: "Seedance-2.5",
           },
         ],
       },
@@ -504,6 +519,11 @@ export const FRONTIER = {
             dotPath: "api.v1.jobs.createTask",
             modelId: "bytedance/seedance-2",
           },
+          {
+            provider: "machgen",
+            dotPath: "api.v0.generate",
+            modelId: "Seedance-2.0",
+          },
         ],
       },
       {
@@ -551,6 +571,11 @@ export const FRONTIER = {
             dotPath: "api.v1.jobs.createTask",
             modelId: "minimax-h3/image-to-video",
           },
+          {
+            provider: "machgen",
+            dotPath: "api.v0.generate",
+            modelId: "MiniMax-H3",
+          },
         ],
       },
       {
@@ -583,6 +608,11 @@ export const FRONTIER = {
             provider: "kie",
             dotPath: "api.v1.jobs.createTask",
             modelId: "bytedance/seedance-2-5",
+          },
+          {
+            provider: "machgen",
+            dotPath: "api.v0.generate",
+            modelId: "Seedance-2.5",
           },
         ],
       },
@@ -632,6 +662,11 @@ export const FRONTIER = {
             dotPath: "api.v1.jobs.createTask",
             modelId: "wan/3-0-video-prime",
           },
+          {
+            provider: "machgen",
+            dotPath: "api.v0.generate",
+            modelId: "Alibaba-Wan-3.0",
+          },
         ],
       },
       {
@@ -668,6 +703,11 @@ export const FRONTIER = {
             provider: "kie",
             dotPath: "api.v1.jobs.createTask",
             modelId: "bytedance/seedance-2",
+          },
+          {
+            provider: "machgen",
+            dotPath: "api.v0.generate",
+            modelId: "Seedance-2.0",
           },
         ],
       },
@@ -707,6 +747,11 @@ export const FRONTIER = {
             provider: "xai",
             dotPath: "v1.videos.generations.imageToVideo",
           },
+          {
+            provider: "machgen",
+            dotPath: "api.v0.generate",
+            modelId: "Grok-Imagine-Video-1.5",
+          },
         ],
       },
       {
@@ -723,6 +768,11 @@ export const FRONTIER = {
             provider: "kie",
             dotPath: "api.v1.jobs.createTask",
             modelId: "happyhorse-1-1/image-to-video",
+          },
+          {
+            provider: "machgen",
+            dotPath: "api.v0.generate",
+            modelId: "HappyHorse-1.1",
           },
         ],
       },
@@ -877,6 +927,11 @@ export const FRONTIER = {
             dotPath: "api.v1.jobs.createTask",
             modelId: "wan/3-0-video-prime",
           },
+          {
+            provider: "machgen",
+            dotPath: "api.v0.generate",
+            modelId: "Alibaba-Wan-3.0",
+          },
         ],
       },
       {
@@ -893,6 +948,11 @@ export const FRONTIER = {
             provider: "kie",
             dotPath: "api.v1.jobs.createTask",
             modelId: "minimax-h3/reference-to-video",
+          },
+          {
+            provider: "machgen",
+            dotPath: "api.v0.generate",
+            modelId: "MiniMax-H3",
           },
         ],
       },
@@ -914,6 +974,11 @@ export const FRONTIER = {
             provider: "kie",
             dotPath: "api.v1.jobs.createTask",
             modelId: "bytedance/seedance-2-5",
+          },
+          {
+            provider: "machgen",
+            dotPath: "api.v0.generate",
+            modelId: "Seedance-2.5",
           },
         ],
       },
@@ -947,6 +1012,11 @@ export const FRONTIER = {
             provider: "kie",
             dotPath: "api.v1.jobs.createTask",
             modelId: "bytedance/seedance-2",
+          },
+          {
+            provider: "machgen",
+            dotPath: "api.v0.generate",
+            modelId: "Seedance-2.0",
           },
         ],
       },
@@ -1003,6 +1073,11 @@ export const FRONTIER = {
             provider: "kie",
             dotPath: "api.v1.jobs.createTask",
             modelId: "happyhorse-1-1/reference-to-video",
+          },
+          {
+            provider: "machgen",
+            dotPath: "api.v0.generate",
+            modelId: "HappyHorse-1.1",
           },
         ],
       },

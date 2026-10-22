@@ -17,6 +17,11 @@
       "provider": "kie",
       "dotPath": "api.v1.jobs.createTask",
       "modelId": "wan/3-0-video-prime"
+    },
+    {
+      "provider": "machgen",
+      "dotPath": "api.v0.generate",
+      "modelId": "Alibaba-Wan-3.0"
     }
   ],
   "Utopai X": [],
@@ -30,6 +35,11 @@
       "provider": "kie",
       "dotPath": "api.v1.jobs.createTask",
       "modelId": "minimax-h3/text-to-video"
+    },
+    {
+      "provider": "machgen",
+      "dotPath": "api.v0.generate",
+      "modelId": "MiniMax-H3"
     }
   ],
   "Dreamina Seedance 2.5": [
@@ -45,6 +55,11 @@
       "provider": "kie",
       "dotPath": "api.v1.jobs.createTask",
       "modelId": "bytedance/seedance-2-5"
+    },
+    {
+      "provider": "machgen",
+      "dotPath": "api.v0.generate",
+      "modelId": "Seedance-2.5"
     }
   ],
   "FLUX 3 Max (720p)": [
@@ -82,6 +97,11 @@
       "provider": "kie",
       "dotPath": "api.v1.jobs.createTask",
       "modelId": "bytedance/seedance-2"
+    },
+    {
+      "provider": "machgen",
+      "dotPath": "api.v0.generate",
+      "modelId": "Seedance-2.0"
     }
   ],
   "Gemini Omni Flash 1.1": [

@@ -12,6 +12,7 @@ import { frontier, frontierType, FRONTIER } from "@apicity/cost";
 import { createFal } from "@apicity/fal";
 import { GoogleFlowVideosRequestSchema } from "@apicity/googleflow/zod";
 import { VeoGenerateRequestSchema } from "@apicity/kie/zod";
+import { MACHGEN_VIDEO_MODEL_TASK_TYPES } from "@apicity/machgen";
 import {
   XAI_GROK_IMAGINE_VIDEO,
   XAI_GROK_IMAGINE_VIDEO_1_5,
@@ -182,6 +183,31 @@ const KIE_NOT_AN_EDIT =
 
 const ALIBABA_VIDEO_SYNTHESIS =
   "api.v1.services.aigc.videoGeneration.videoSynthesis";
+
+/** MachGen task types per frontier type. It has no image or V2V task type. */
+const MACHGEN_TASK: Readonly<Record<string, string>> = {
+  t2v: "T2V",
+  i2v: "I2V",
+  r2v: "R2V",
+};
+
+/** The MachGen model ids per frontier model, one shared generate call. */
+const MACHGEN_IDS: Readonly<Record<string, string>> = {
+  "MiniMax H3 (768p)": "MiniMax-H3",
+  "Dreamina Seedance 2.5": "Seedance-2.5",
+  "Wan 3.0": "Alibaba-Wan-3.0",
+  "Dreamina Seedance 2.0": "Seedance-2.0",
+  "Grok Imagine Video 1.5": "Grok-Imagine-Video-1.5",
+  "HappyHorse-1.1": "HappyHorse-1.1",
+};
+
+/** True when MachGen lists the frontier type's task for this model id. */
+function machgenHas(type: string, modelId: string): boolean {
+  const tasks: Readonly<Record<string, readonly string[]>> =
+    MACHGEN_VIDEO_MODEL_TASK_TYPES;
+  const task = MACHGEN_TASK[type];
+  return task !== undefined && (tasks[modelId] ?? []).includes(task);
+}
 
 function readQuoted(block: string): string[] {
   return [...block.matchAll(/"([^"]+)"/g)].map((match) => match[1]);
@@ -395,6 +421,9 @@ function liveRegistry() {
     type: string,
     entry: { provider: string; dotPath: string; modelId?: string }
   ) => {
+    if (entry.provider === "machgen" && entry.dotPath === "api.v0.generate") {
+      return entry.modelId !== undefined && machgenHas(type, entry.modelId);
+    }
     if (type === "t2i" || type === "i2i") {
       if (entry.modelId === undefined) return false;
       if (
@@ -1193,6 +1222,77 @@ describe("frontier video snapshots", () => {
     ).toBe(true);
   });
 
+  it("lists MachGen through its generate call for t2v, i2v and r2v", () => {
+    const machgenRows = (map: Record<string, EndpointRecord[]>) =>
+      Object.fromEntries(
+        Object.entries(map)
+          .map(
+            ([model, list]) =>
+              [
+                model,
+                list.filter((entry) => entry.provider === "machgen"),
+              ] as const
+          )
+          .filter(([, list]) => list.length > 0)
+      );
+    const expected = (models: string[]) =>
+      Object.fromEntries(
+        models.map((model) => [
+          model,
+          [
+            {
+              provider: "machgen",
+              dotPath: "api.v0.generate",
+              modelId: MACHGEN_IDS[model],
+            },
+          ],
+        ])
+      );
+    expect(machgenRows(t2v.endpointMap)).toEqual(
+      expected([
+        "Wan 3.0",
+        "MiniMax H3 (768p)",
+        "Dreamina Seedance 2.5",
+        "Dreamina Seedance 2.0",
+      ])
+    );
+    expect(machgenRows(i2v.endpointMap)).toEqual(
+      expected(Object.keys(MACHGEN_IDS))
+    );
+    expect(machgenRows(r2v.endpointMap)).toEqual(
+      expected([
+        "Wan 3.0",
+        "MiniMax H3 (768p)",
+        "Dreamina Seedance 2.5",
+        "Dreamina Seedance 2.0",
+        "HappyHorse-1.1",
+      ])
+    );
+    for (const type of ["t2i", "i2i", "v2v"]) {
+      expect(machgenRows(frontierFiles(type).endpointMap), type).toEqual({});
+    }
+  });
+
+  it("refuses a MachGen id on a type MachGen does not run it for", () => {
+    const ctx = liveRegistry();
+    const refused = (type: string, modelId: string) =>
+      resolutionProblems(
+        type,
+        {
+          Demo: [{ provider: "machgen", dotPath: "api.v0.generate", modelId }],
+        },
+        ctx
+      ).some((problem) => problem.includes(`machgen ${type} model registry`));
+    expect(refused("i2v", "Grok-Imagine-Video-1.5")).toBe(false);
+    expect(refused("t2v", "Grok-Imagine-Video-1.5")).toBe(true);
+    expect(refused("r2v", "Grok-Imagine-Video-1.5")).toBe(true);
+    for (const type of ["t2v", "i2v", "r2v"]) {
+      expect(refused(type, "MiniMax-H3-Turbo"), type).toBe(true);
+    }
+    expect(refused("v2v", "Seedance-2.5")).toBe(true);
+    expect(refused("t2i", "MiniMax-H3")).toBe(true);
+  });
+
   it("lists the same model's endpoints across t2v, i2v and r2v", () => {
     const ctx = liveRegistry();
     const maps = {
@@ -1308,6 +1408,7 @@ describe("frontier generated registry", () => {
     expect(doc).toContain("kie `minimax-h3/image-to-video`");
     expect(doc).toContain("fal `geminiOmniFlash.v1p1.edit`");
     expect(doc).toContain("xai `grok-imagine-video-1.5`");
+    expect(doc).toContain("machgen `Alibaba-Wan-3.0`");
     expect(doc).toContain("## Refresh");
     expect(doc).toContain("re-derives\n`r2v`");
   });

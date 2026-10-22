@@ -262,6 +262,39 @@ describe("apicity frontier", () => {
     expect(table.out.join("\n")).not.toContain("not yet in apicity");
   });
 
+  it("filters the video types to MachGen's generate rows", async () => {
+    const env = { MACHGEN_API_KEY: "present" };
+    const counts: Record<string, number> = {};
+    for (const type of ["t2v", "i2v", "r2v"]) {
+      const { writer, out } = capture();
+      await expect(
+        runMain(["frontier", type, "--provider", "machgen", "--json"], writer, {
+          stdoutIsTTY: true,
+          env,
+        })
+      ).resolves.toBe(0);
+      const envelope = JSON.parse(out.join("\n")) as {
+        data: Array<{ dotPath: string; modelId: string; configured: boolean }>;
+      };
+      expect(
+        envelope.data.every(
+          (row) => row.dotPath === "api.v0.generate" && row.configured
+        )
+      ).toBe(true);
+      counts[type] = envelope.data.length;
+    }
+    expect(counts).toEqual({ t2v: 4, i2v: 6, r2v: 5 });
+
+    const { writer, err } = capture();
+    await expect(
+      runMain(["frontier", "v2v", "--provider", "machgen"], writer, {
+        stdoutIsTTY: false,
+        env: {},
+      })
+    ).resolves.toBe(2);
+    expect(err.join("\n")).toContain("run: apicity frontier v2v");
+  });
+
   it("rejects an unknown type and names the six codes", async () => {
     const { writer, out, err } = capture();
     await expect(

@@ -16,25 +16,25 @@ This WI6 executable reconciliation joins the frozen official Kie pricing pull to
 
 | Surface                          | Baseline | Final | Detail                           |
 | -------------------------------- | -------: | ----: | -------------------------------- |
-| Schema model IDs                 |      127 |   157 | descriptors 157; guards 157      |
+| Schema model IDs                 |      127 |   158 | descriptors 158; guards 158      |
 | Documented endpoints             |       71 |    84 | 59 POST; 25 GET                  |
-| Runtime pricing keys             |      135 |   183 | current Kie table                |
+| Runtime pricing keys             |      135 |   184 | current Kie table                |
 | Schema-without-pricing inventory |       23 |     6 | explicit model memberships       |
 | Pricing-only inventory           |       31 |    32 | explicit runtime-key memberships |
-| Slug keys                        |      137 |   185 | Kie model metadata               |
-| Display keys                     |      137 |   185 | Kie model metadata               |
+| Slug keys                        |      137 |   186 | Kie model metadata               |
+| Display keys                     |      137 |   186 | Kie model metadata               |
 
 ## Row Dispositions
 
 | Disposition          | Count |
 | -------------------- | ----: |
-| implemented          |   249 |
+| implemented          |   247 |
 | canonical-alias      |   122 |
 | duplicate            |     0 |
 | free-nonbillable     |     3 |
 | unsupported-endpoint |     3 |
 | token-billed         |    80 |
-| upstream-unmappable  |    26 |
+| upstream-unmappable  |    28 |
 
 Malformed or conflicting cells explicitly classified by WI6: **15**.
 Examples: sha256:ced34c57a62c8f45f09d4e4365083724674af8dc0682294e19c856fb3268390f#1 (credit-unit-format), sha256:adcf600f9d0b0fe0bcc7595c232df1d6dd059046c0685c8f7d76f02c9dcf358d#1 (credit-unit-format), sha256:d10e3c724e726150962a018770b8bc5680c826d10fe151ce317cfe76a0c9b22e#1 (credit-unit-format), sha256:c661563e2a79e52a935f4375e7c1549f54efce2ed051199573d07c3bce962847#1 (credit-unit-format), sha256:75676629885edb93635ce4f355e50a9584aab60bbceb153b7174df460f916507#1 (credit-unit-format), sha256:412c186f278699f823412f4ddeb6c58ad7dc21d756d986a13cd4a9d5782dd3ee#1 (credit-unit-format), sha256:6d02ded92b2ac43445e40b03c06639de472601391a1005a8dd6e776a89b80bff#1 (credit-unit-format), sha256:91d91736be572f35eb57d3ab4adb8b67292b14084240c6f286b0a6ab6cd14260#1 (credit-unit-format)
@@ -58,8 +58,6 @@ The mandatory four official cells are executable against the integrated WI6 cost
 
 | Resolution | Video input | USD/sec | Occurrence                                                                |
 | ---------- | ----------- | ------: | ------------------------------------------------------------------------- |
-| 1080p      | video       |  0.3425 | sha256:ac7978e4c0bc04ee1606c3bf4dda45fe53532f9ec6098942be3c2a3ed5a16a6d#1 |
-| 1080p      | no-video    |   0.570 | sha256:f47489cf45f834fd2b48a4dc6b8c77f1c4541e5e72043c20465ed7954054682e#1 |
 | 720p       | video       |   0.190 | sha256:f343208348f54abf2d1c4e40751bd996115e248bf6c395382f52ea838228efe2#1 |
 | 720p       | no-video    |   0.315 | sha256:985b30aa8f4221a3230a72a03d84feab5302ae165424ceef9113aca9e5558522#1 |
 | 480p       | video       |   0.085 | sha256:307d3eedee19303eb54a9c3a4eb647c5e1d5912123e08bb72d21c6f7c1c7005a#1 |
@@ -87,6 +85,7 @@ Schema models without a current usable pricing key: **6**; pricing-only runtime 
 | `qwen/text-to-image`                   | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
 | `qwen/image-edit`                      | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
 | `qwen/image-to-image`                  | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
+| `bytedance/seedance-2-5-draft`         | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
 | `bytedance/seedream`                   | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
 | `bytedance/seedream-v4-edit`           | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
 | `bytedance/seedream-v4-text-to-image`  | upstream-unmappable | The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership. | none      |
@@ -125,10 +124,14 @@ The official Reframe pricing rows remain explicit unsupported-endpoint dispositi
 
 ## Runtime Variant Coverage
 
-Every live Kie per-unit rate variant is covered by an executable official case or one of **117** explicit exceptions below. Zero-rate Grok and Topaz entries are unreachable sentinels, not free variants.
+Every live Kie per-unit rate variant is covered by an executable official case or one of **121** explicit exceptions below. Zero-rate Grok and Topaz entries are unreachable sentinels, not free variants.
 
 | Runtime identity                      | Status          | Provenance   | Rationale                                                                                                                                                                                                                                   |
 | ------------------------------------- | --------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `bytedance/seedance-2-5               | 1080p           | video`       | pricing-only                                                                                                                                                                                                                                | https://kie.ai/seedance-2-5 model-tab pricing cards captured 2026-10-22 in tests/fixtures/kie-pricing-evidence/seedance-2-5-draft-2026-10-22.json: 95 credits/s ($0.475) with video, 158 credits/s ($0.790) without video; draft render inherits the source billing mode                                                                                                                        | The live 1080p rates supersede the frozen September cells; the draft-render model is absent from that snapshot.                                                                                               |
+| `bytedance/seedance-2-5               | 1080p           | no-video`    | pricing-only                                                                                                                                                                                                                                | https://kie.ai/seedance-2-5 model-tab pricing cards captured 2026-10-22 in tests/fixtures/kie-pricing-evidence/seedance-2-5-draft-2026-10-22.json: 95 credits/s ($0.475) with video, 158 credits/s ($0.790) without video; draft render inherits the source billing mode                                                                                                                        | The live 1080p rates supersede the frozen September cells; the draft-render model is absent from that snapshot.                                                                                               |
+| `bytedance/seedance-2-5-draft         | 1080p           | video`       | pricing-only                                                                                                                                                                                                                                | https://kie.ai/seedance-2-5 model-tab pricing cards captured 2026-10-22 in tests/fixtures/kie-pricing-evidence/seedance-2-5-draft-2026-10-22.json: 95 credits/s ($0.475) with video, 158 credits/s ($0.790) without video; draft render inherits the source billing mode                                                                                                                        | The live 1080p rates supersede the frozen September cells; the draft-render model is absent from that snapshot.                                                                                               |
+| `bytedance/seedance-2-5-draft         | 1080p           | no-video`    | pricing-only                                                                                                                                                                                                                                | https://kie.ai/seedance-2-5 model-tab pricing cards captured 2026-10-22 in tests/fixtures/kie-pricing-evidence/seedance-2-5-draft-2026-10-22.json: 95 credits/s ($0.475) with video, 158 credits/s ($0.790) without video; draft render inherits the source billing mode                                                                                                                        | The live 1080p rates supersede the frozen September cells; the draft-render model is absent from that snapshot.                                                                                               |
 | `flux-3/klein-text-to-image           | 1K`             | pricing-only | tests/fixtures/kie-pricing-evidence/flux3-klein-2026-10-21.json: official product page lists 1.6/2.5/6.5 credits = 0.008/0.0125/0.0325 USD per image                                                                                        | FLUX 3 Klein was added after the frozen September catalog; dated product-page evidence supplies the resolution tiers, and successful 1K HARs confirm 1.6 credits per image.                                                                                                                                                                                                                     |
 | `flux-3/klein-text-to-image           | 2K`             | pricing-only | tests/fixtures/kie-pricing-evidence/flux3-klein-2026-10-21.json: official product page lists 1.6/2.5/6.5 credits = 0.008/0.0125/0.0325 USD per image                                                                                        | FLUX 3 Klein was added after the frozen September catalog; dated product-page evidence supplies the resolution tiers, and successful 1K HARs confirm 1.6 credits per image.                                                                                                                                                                                                                     |
 | `flux-3/klein-text-to-image           | 4K`             | pricing-only | tests/fixtures/kie-pricing-evidence/flux3-klein-2026-10-21.json: official product page lists 1.6/2.5/6.5 credits = 0.008/0.0125/0.0325 USD per image                                                                                        | FLUX 3 Klein was added after the frozen September catalog; dated product-page evidence supplies the resolution tiers, and successful 1K HARs confirm 1.6 credits per image.                                                                                                                                                                                                                     |

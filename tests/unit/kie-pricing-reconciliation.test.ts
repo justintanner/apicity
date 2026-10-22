@@ -280,12 +280,12 @@ describe("Kie pricing reconciliation", () => {
       root
     )) as unknown as TestInventory;
 
-    expect(inventory.models).toHaveLength(157);
-    expect(inventory.descriptors).toHaveLength(157);
-    expect(inventory.guards).toHaveLength(157);
-    expect(inventory.pricingKeys).toHaveLength(183);
-    expect(inventory.slugKeys).toHaveLength(185);
-    expect(inventory.displayKeys).toHaveLength(185);
+    expect(inventory.models).toHaveLength(158);
+    expect(inventory.descriptors).toHaveLength(158);
+    expect(inventory.guards).toHaveLength(158);
+    expect(inventory.pricingKeys).toHaveLength(184);
+    expect(inventory.slugKeys).toHaveLength(186);
+    expect(inventory.displayKeys).toHaveLength(186);
     expect(inventory.endpoints).toHaveLength(84);
     expect(
       inventory.endpoints.filter((entry) => entry.method === "POST")
@@ -333,7 +333,7 @@ describe("Kie pricing reconciliation", () => {
       }
     }
     expect(mismatches).toEqual([]);
-    expect(Object.keys(inventory.descriptorFields)).toHaveLength(157);
+    expect(Object.keys(inventory.descriptorFields)).toHaveLength(158);
 
     const fields = inventory.descriptorFields;
     expect(fields["minimax-h3/text-to-video"].resolution).toEqual({
@@ -397,11 +397,11 @@ describe("Kie pricing reconciliation", () => {
     expect(result).toMatchObject({
       status: "ok",
       rows: 483,
-      models: 157,
+      models: 158,
       endpoints: 84,
-      pricingKeys: 183,
-      slugs: 185,
-      displays: 185,
+      pricingKeys: 184,
+      slugs: 186,
+      displays: 186,
       zeroUnclassifiedRows: true,
       zeroUnclassifiedApiCityKeys: true,
     });
@@ -427,10 +427,10 @@ describe("Kie pricing reconciliation", () => {
       endpoints: 71,
     });
     expect(manifest.inventory.final).toEqual({
-      models: 157,
-      pricingKeys: 183,
-      slugKeys: 185,
-      displayKeys: 185,
+      models: 158,
+      pricingKeys: 184,
+      slugKeys: 186,
+      displayKeys: 186,
       schemaWithoutPricing: 6,
       pricingOnly: 32,
       endpoints: 84,
@@ -468,14 +468,12 @@ describe("Kie pricing reconciliation", () => {
       row.mappedApiCityKeys.includes("bytedance/seedance-2-5")
     );
 
-    expect(seedance).toHaveLength(6);
+    expect(seedance).toHaveLength(4);
     // The page's columns are keyed on video input (ac-u8y5xg): the cheaper
     // "with video" cell bills (input + output) seconds.
     expect(
       seedance.map((row) => [row.selectorValues, row.rateBasis?.usdPrice])
     ).toEqual([
-      [{ resolution: "1080p", videoInput: "video" }, "0.3425"],
-      [{ resolution: "1080p", videoInput: "no-video" }, "0.570"],
       [{ resolution: "720p", videoInput: "video" }, "0.190"],
       [{ resolution: "720p", videoInput: "no-video" }, "0.315"],
       [{ resolution: "480p", videoInput: "video" }, "0.085"],
@@ -487,9 +485,9 @@ describe("Kie pricing reconciliation", () => {
   // rate" rule fail a reference-video request closed unless the clips'
   // length is declared, so every executed row whose representative payload
   // carries clips must carry costHints.inputDurationSeconds — the only
-  // channel runtimeCase reads (ac-u8y5xg). Ten rows: seedance-2
+  // channel runtimeCase reads (ac-u8y5xg). Nine rows: seedance-2
   // 720p/1080p/4K, seedance-2-fast 480p/720p, seedance-2-mini 480P/720P and
-  // the three Seedance 2.5 "with video" cells; each bills 5 + 5 seconds.
+  // the two frozen Seedance 2.5 "with video" cells; each bills 5 + 5 seconds.
   it("declares the input video duration for every executed reference-video row", async () => {
     const manifest = generatedManifest;
     const rows = implementedRows(manifest).filter((row) => {
@@ -506,7 +504,6 @@ describe("Kie pricing reconciliation", () => {
       "bytedance/seedance-2, 1080p with video input",
       "bytedance/seedance-2, 4K with video input",
       "bytedance/seedance-2, 720p with video input",
-      "bytedance/seedance-2-5, 1080p with video",
       "bytedance/seedance-2-5, 480p with video",
       "bytedance/seedance-2-5, 720p with video",
       "bytedance/seedance-2-mini, 480P with video",
@@ -1267,13 +1264,13 @@ describe("Kie pricing reconciliation", () => {
     expect(markdown).toContain("## Seedance 2.5");
     expect(markdown).toContain("## Explicit Audit Queue");
     expect(markdown).toContain("## Runtime Variant Coverage");
-    expect(markdown).toContain("| Schema model IDs | 127 | 157 |");
+    expect(markdown).toContain("| Schema model IDs | 127 | 158 |");
     expect(markdown).toContain("| Documented endpoints | 71 | 84 |");
-    expect(markdown).toContain("| Runtime pricing keys | 135 | 183 |");
+    expect(markdown).toContain("| Runtime pricing keys | 135 | 184 |");
     expect(markdown).toContain("| Schema-without-pricing inventory | 23 | 6 |");
     expect(markdown).toContain("| Pricing-only inventory | 31 | 32 |");
-    expect(markdown).toContain("| Slug keys | 137 | 185 |");
-    expect(markdown).toContain("| Display keys | 137 | 185 |");
+    expect(markdown).toContain("| Slug keys | 137 | 186 |");
+    expect(markdown).toContain("| Display keys | 137 | 186 |");
     expect(markdown).toContain("Zero unclassified raw rows");
     expect(markdown).toContain("Zero unclassified ApiCity keys");
   });

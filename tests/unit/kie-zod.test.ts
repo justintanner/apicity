@@ -409,6 +409,7 @@ describe("KIE Zod schema validation", () => {
       expect(Object.keys(fields).sort()).toEqual(
         [
           "aspect_ratio",
+          "draft",
           "duration",
           "first_frame_url",
           "generate_audio",

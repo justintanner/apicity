@@ -3622,8 +3622,8 @@ describe("kie stale-family refresh (REQ-004)", () => {
     { resolution: "480p", generate_audio: true, rate: 0.14 },
     { resolution: "720p", generate_audio: false, rate: 0.315 },
     { resolution: "720p", generate_audio: true, rate: 0.315 },
-    { resolution: "1080p", generate_audio: true, rate: 0.57 },
-    { resolution: "1080p", generate_audio: false, rate: 0.57 },
+    { resolution: "1080p", generate_audio: true, rate: 0.79 },
+    { resolution: "1080p", generate_audio: false, rate: 0.79 },
   ])(
     "prices Seedance 2.5 $resolution generate_audio=$generate_audio (no video) at $rate/s",
     ({ resolution, generate_audio, rate }) => {
@@ -3654,7 +3654,7 @@ describe("kie stale-family refresh (REQ-004)", () => {
   it.each([
     { resolution: "480p", rate: 0.085 },
     { resolution: "720p", rate: 0.19 },
-    { resolution: "1080p", rate: 0.3425 },
+    { resolution: "1080p", rate: 0.475 },
   ])(
     "prices Seedance 2.5 $resolution with video at $rate/s on input + output seconds",
     ({ resolution, rate }) => {
@@ -3730,7 +3730,7 @@ describe("kie stale-family refresh (REQ-004)", () => {
     });
     expect(PRICING.kie["bytedance/seedance-2-5"].source).toEqual({
       url: "https://kie.ai/seedance-2-5",
-      asOf: "2026-08-22",
+      asOf: "2026-10-22",
     });
   });
 
@@ -4825,7 +4825,7 @@ describe("kie wan 2.2 / 2.5 per-model pricing (REQ-004)", () => {
         usd: 2.28,
         units: 12,
         perUnitUsd: 0.19,
-        rateAsOf: "2026-08-22",
+        rateAsOf: "2026-10-22",
       },
       {
         label:
@@ -5281,10 +5281,10 @@ describe("kie wan 2.2 / 2.5 per-model pricing (REQ-004)", () => {
           "480p|no-video": 0.14,
           "720p|video": 0.19,
           "720p|no-video": 0.315,
-          "1080p|video": 0.3425,
-          "1080p|no-video": 0.57,
+          "1080p|video": 0.475,
+          "1080p|no-video": 0.79,
         },
-        source: { url: "https://kie.ai/seedance-2-5", asOf: "2026-08-22" },
+        source: { url: "https://kie.ai/seedance-2-5", asOf: "2026-10-22" },
       },
       {
         model: "minimax-h3/reference-to-video",

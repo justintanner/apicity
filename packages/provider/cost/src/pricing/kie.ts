@@ -2053,11 +2053,52 @@ export const kie: Record<string, ModelPricing> = {
       "480p|no-video": 0.14,
       "720p|video": 0.19,
       "720p|no-video": 0.315,
-      "1080p|video": 0.3425,
-      "1080p|no-video": 0.57,
+      "1080p|video": 0.475,
+      "1080p|no-video": 0.79,
     },
     warn: inputDurationWarning("bytedance/seedance-2-5", seedance25Seconds),
-    source: pricePage("https://kie.ai/seedance-2-5", "2026-08-22"),
+    source: pricePage("https://kie.ai/seedance-2-5", "2026-10-22"),
+  },
+
+  // The render inherits source-draft inputs and duration, neither of which
+  // is present in draft_task_id. Require explicit cost hints, including zero
+  // input seconds to confirm a source without video, rather than guessing.
+  "bytedance/seedance-2-5-draft": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: (_p, hints) => {
+      const output = hintSeconds(hints);
+      const input = hints?.inputDurationSeconds;
+      if (
+        !output ||
+        typeof input !== "number" ||
+        !Number.isFinite(input) ||
+        input < 0
+      )
+        return undefined;
+      return output + input;
+    },
+    select: [
+      { name: "resolution", required: true, pick: (p) => inputResolution(p) },
+      {
+        name: "videoInput",
+        required: true,
+        pick: (_p, hints) => {
+          const input = hints?.inputDurationSeconds;
+          if (typeof input !== "number" || !Number.isFinite(input) || input < 0)
+            return undefined;
+          return input > 0 ? "video" : "no-video";
+        },
+      },
+    ],
+    rates: { "1080p|video": 0.475, "1080p|no-video": 0.79 },
+    warn: () => [
+      "Seedance 2.5 draft render inherits billed duration and video-input mode from draft_task_id. Declare costHints.durationSeconds and costHints.inputDurationSeconds (0 for no video); the precursor is billed separately.",
+    ],
+    source: pricePage(
+      "https://kie.ai/seedance-2-5?model=bytedance%2Fseedance-2-5-draft",
+      "2026-10-22"
+    ),
   },
 
   // bytedance/seedance-2-mini: 4 rates, resolution x reference video input.

@@ -1789,6 +1789,12 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         default: "mp4",
         description: "Output video format (default mp4)",
       },
+      draft: {
+        type: "boolean",
+        default: false,
+        description:
+          "Generate a 480p preview draft; task ID is valid for 7 days",
+      },
       web_search: {
         type: "boolean",
         description: "Enable web search for generation",
@@ -1797,6 +1803,40 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         type: "boolean",
         default: false,
         description: "Content safety filter (default false)",
+      },
+    },
+  },
+
+  "bytedance/seedance-2-5-draft": {
+    type: "video",
+    fields: {
+      draft_task_id: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        description:
+          "Seedance 2.5 draft task ID, valid for 7 days from creation",
+      },
+      resolution: {
+        type: "string",
+        required: true,
+        enum: ["1080p"],
+        description: "Output video resolution",
+      },
+      output_format: {
+        type: "string",
+        enum: ["mp4", "mov"],
+        description: "Output video format",
+      },
+      return_last_frame: {
+        type: "boolean",
+        default: false,
+        description: "Return the last frame as a JPEG",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description: "Content safety filter",
       },
     },
   },

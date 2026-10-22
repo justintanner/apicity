@@ -243,6 +243,12 @@ export const ENDPOINT_COST_POLICIES: readonly EndpointCostPolicy[] = [
       "Third-party proxy for Google Flow (Veo) video generation; per-call " +
       "media-generation cost is high and request-dependent",
   },
+  {
+    match: { provider: "machgen" },
+    tier: "prohibitive",
+    rationale:
+      "Per-second video generation; status and asset reads share the provider policy.",
+  },
 
   // ── exact prohibitive overrides inside otherwise-`expensive` providers ──
   // xAI image/video generation: these mirror the paid-endpoint registry and

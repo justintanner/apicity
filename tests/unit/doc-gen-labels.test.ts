@@ -39,6 +39,7 @@ import { createOpenAi } from "@apicity/openai";
 import { createOpenF1 } from "@apicity/openf1";
 import { createOpenLigaDB } from "@apicity/openligadb";
 import { createPolymarket } from "@apicity/polymarket";
+import { createMachGen } from "@apicity/machgen";
 import { createQuo } from "@apicity/quo";
 import { createS3 } from "@apicity/s3";
 import { createSimpleFunctions } from "@apicity/simplefunctions";
@@ -729,6 +730,7 @@ const PROVIDER_FACTORIES = {
   openf1: createOpenF1,
   openligadb: createOpenLigaDB,
   polymarket: createPolymarket,
+  machgen: createMachGen,
   quo: createQuo,
   s3: createS3,
   simplefunctions: createSimpleFunctions,

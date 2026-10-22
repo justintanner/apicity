@@ -154,6 +154,9 @@ importers:
       '@apicity/kimicoding':
         specifier: workspace:*
         version: link:../provider/kimicoding
+      '@apicity/machgen':
+        specifier: workspace:*
+        version: link:../provider/machgen
       '@apicity/meta':
         specifier: workspace:*
         version: link:../provider/meta
@@ -278,6 +281,12 @@ importers:
         version: 4.4.3
 
   packages/provider/kimicoding:
+    dependencies:
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
+
+  packages/provider/machgen:
     dependencies:
       zod:
         specifier: ^4.4.3

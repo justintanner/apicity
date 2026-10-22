@@ -20,6 +20,7 @@ import { fireworks } from "./fireworks";
 import { googleflow } from "./googleflow";
 import { kie } from "./kie";
 import { kimicoding } from "./kimicoding";
+import { machgen } from "./machgen";
 import { openai } from "./openai";
 import { xai } from "./xai";
 
@@ -34,6 +35,7 @@ export const PRICING = {
   googleflow,
   kie,
   kimicoding,
+  machgen,
   openai,
   xai,
 } as const;

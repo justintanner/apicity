@@ -606,6 +606,14 @@ export const MODEL_SLUGS = {
     "nano-banana": "nb21",
     "imagen-4": "nb2l",
   },
+  machgen: {
+    "MiniMax-H3": "mmh3",
+    "Seedance-2.5": "sd2p5",
+    "Seedance-2.0": "sd2",
+    "Alibaba-Wan-3.0": "wan3p0",
+    "HappyHorse-1.1": "hh1p1",
+    "Grok-Imagine-Video-1.5": "grokimgv1p5",
+  },
 } as const;
 
 export type SlugProviderId = keyof typeof MODEL_SLUGS;
@@ -1193,6 +1201,14 @@ export const MODEL_DISPLAY = {
     "nano-banana-pro": "Nano Banana Pro",
     "nano-banana": "Nano Banana 2.1",
     "imagen-4": "Nano Banana 2 Lite",
+  },
+  machgen: {
+    "MiniMax-H3": "MiniMax H3",
+    "Seedance-2.5": "Seedance 2.5",
+    "Seedance-2.0": "Seedance 2",
+    "Alibaba-Wan-3.0": "Wan 3.0",
+    "HappyHorse-1.1": "HappyHorse 1.1",
+    "Grok-Imagine-Video-1.5": "Grok Imagine Video 1.5",
   },
 } as const;
 

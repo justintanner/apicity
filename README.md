@@ -119,6 +119,7 @@ Upload, status, and helper endpoints are unlisted and remain free.
 
 <!-- provider-inventory:providers:start -->
 
+| [@apicity/machgen](packages/provider/machgen) | Video generation, task status and authenticated assets |
 | [@apicity/openai](packages/provider/openai) | OpenAI chat, responses, images, audio, embeddings, files |
 | [@apicity/anthropic](packages/provider/anthropic) | Anthropic messages, streams, batches, files, models, admin APIs |
 | [@apicity/xai](packages/provider/xai) | xAI chat, responses, Grok images/video, files, collections, search |

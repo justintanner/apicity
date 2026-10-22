@@ -226,7 +226,8 @@ export type EstimateRequest =
         | "kie"
         | "elevenlabs"
         | "fal"
-        | "googleflow";
+        | "googleflow"
+        | "machgen";
       payload: Record<string, unknown>;
       endpoint?: string;
       costHints?: CostHints;

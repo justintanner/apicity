@@ -634,6 +634,18 @@ const PROVIDER_NOTES = new Map([
       "responses, so parsing reports any drift instead of trusting it.",
     ].join(" "),
   ],
+  [
+    "machgen",
+    [
+      "Send `Alibaba-Wan-3.0` requests with MachGen's documented",
+      '`video_config`: `aspect_ratio: "adaptive"`, `fps: 30` and `audio: true`.',
+      "On 2026-10-22, seven Wan 3.0 tasks that omitted `aspect_ratio` and",
+      "`fps` and sent `audio: false` were accepted, then failed upstream with",
+      "`Request Rejected` at zero charge. With the documented config, 2-second",
+      "480p T2V, I2V and R2V requests completed. Which of the three fields",
+      "MachGen requires has not been isolated.",
+    ].join(" "),
+  ],
 ]);
 
 function renderBinancePublicDataGuide() {
@@ -4120,6 +4132,7 @@ const PROVIDER_AUTH = {
     env: "TELEGRAM_BOT_KEY",
     showMiddleware: false,
   },
+  machgen: { showMiddleware: false },
   quo: {
     showMiddleware: false,
   },
@@ -4133,6 +4146,7 @@ const PROVIDER_AUTH = {
 // Per-provider upstream documentation URLs. When set, a docs badge is
 // rendered in the README header.
 const PROVIDER_DOCS = {
+  machgen: "https://www.machgen.ai/docs/rest_api",
   google:
     "https://docs.cloud.google.com/vertex-ai/generative-ai/docs/reference/express-mode/rest/v1/publishers.models/generateContent",
   polymarket: "https://docs.polymarket.com/api-reference/introduction",

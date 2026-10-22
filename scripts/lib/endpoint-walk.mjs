@@ -16,6 +16,11 @@ const REPO_ROOT = path.resolve(__dirname, "..", "..");
  */
 const PROVIDERS = [
   {
+    name: "machgen",
+    entryFiles: ["packages/provider/machgen/src/machgen.ts"],
+    factoryNames: ["createMachGen"],
+  },
+  {
     name: "openai",
     entryFiles: ["packages/provider/openai/src/openai.ts"],
     factoryNames: ["createOpenAi"],

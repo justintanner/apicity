@@ -212,6 +212,14 @@ export default defineConfig({
         __dirname,
         "../packages/provider/simplefunctions/src"
       ),
+      "@apicity/machgen/zod": path.resolve(
+        __dirname,
+        "../packages/provider/machgen/src/zod"
+      ),
+      "@apicity/machgen": path.resolve(
+        __dirname,
+        "../packages/provider/machgen/src"
+      ),
       "@apicity/quo/zod": path.resolve(
         __dirname,
         "../packages/provider/quo/src/zod"

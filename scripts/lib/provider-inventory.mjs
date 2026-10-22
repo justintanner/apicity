@@ -2,9 +2,10 @@
  * The single definition of "which providers this monorepo ships", plus the
  * pure checking logic the documentation guard consumes.
  *
- * The provider list was restated by hand in three prose surfaces —
- * `.claude/CLAUDE.md`, `AGENTS.md`, and `README.md` — with nothing tying any of
- * them to the directories on disk. It drifted: at `469efc28` the repository
+ * The provider list was restated by hand in prose surfaces —
+ * `.claude/CLAUDE.md`, `AGENTS.md`, `README.md`, and `docs/providers.md` —
+ * with nothing tying any of them to the directories on disk. It drifted: at
+ * `469efc28` the repository
  * held 29 provider directories while `.claude/CLAUDE.md` named 23, and
  * `googleflow` was absent from the overview even though `.claude/CLAUDE.md`'s
  * own Code Conventions section cited `packages/provider/googleflow/src/zod.ts`
@@ -42,6 +43,7 @@ export const PROVIDER_DOC_SURFACES = Object.freeze([
   ".claude/CLAUDE.md",
   "AGENTS.md",
   "README.md",
+  "docs/providers.md",
 ]);
 
 /**

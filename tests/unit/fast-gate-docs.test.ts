@@ -11,7 +11,8 @@ import { repoRoot } from "../../scripts/lib/provider-scope.mjs";
 // The fast-gate step list lived in four places — the script that runs it and
 // three prose surfaces — so a step could be added, removed, or reordered in one
 // and left stale in the others. That is exactly what happened: at `aa9f6805`
-// both README.md and AGENTS.md described four steps while the gate ran five.
+// both the fast-gate prose (then README.md, now CONTRIBUTING.md) and AGENTS.md
+// described four steps while the gate ran five.
 // `scripts/lib/fast-gate-steps.mjs` is now the single definition, and this
 // guard fails when a documented surface stops matching it in either direction.
 //

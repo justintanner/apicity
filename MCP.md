@@ -18,17 +18,27 @@ apicity doctor
 
 Agents then call `apicity <provider> <dotPath>` after `apicity commands` and
 `apicity describe`. The reference is [packages/cli/README.md](packages/cli/README.md);
-the "CLI and coding agents" section of the [root README](README.md) covers the
-host setup.
+the "Coding agents" section of the [root README](README.md) covers the host
+setup.
 
 ## If the server was registered
 
 - Claude Code: `claude mcp remove apicity`.
 - Codex: `codex mcp remove apicity`.
 - Any other client: delete the `apicity` entry from its MCP configuration file.
-- A launcher script that execs the old `apicity-mcp` bin is retired, not
-  repointed; this repository's own city launcher is one such script.
-- Agents that cannot install plugins read the standard `AGENTS.md` sentence:
+- A launcher that execs the old server bin from `node_modules/.bin` has
+  nothing left to launch: remove it together with its `@apicity/mcp-server`
+  dependency rather than repointing it. This repository's own city launcher
+  is one such script.
+- Agents that cannot install plugins read a short section in the project's
+  `AGENTS.md` (and `CLAUDE.md` or `.claude/CLAUDE.md`, for Claude Code):
   "apicity is driven through the `apicity` CLI on PATH, never an MCP server.
   Run `apicity --help` for the command set and `apicity skill` for the agent
-  guide."
+  guide (`apicity commands`, `apicity describe`, then the call). Credentials
+  are configured by the operator; never request, copy, or read them."
+- After the release, the operator deprecates the old package. That is a
+  manual, post-publish step no part of the build performs:
+
+  ```bash
+  npm deprecate @apicity/mcp-server "Replaced by @apicity/cli; MCP support was removed, use the apicity CLI and agent skill"
+  ```

@@ -42,6 +42,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Root README rewritten; detail moved to docs/paygate.md, docs/middleware.md,
+  docs/providers.md, CONTRIBUTING.md and MCP.md.
 - `apicity commands`, `apicity providers` and `apicity describe`, and the
   `apicity <provider>` and endpoint `--help` forms that reuse them, now answer
   the success envelope `{"ok": true, "data": …}` with `--json` or a

@@ -5,401 +5,140 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue?logo=typescript&logoColor=white)](tsconfig.base.json)
 [![Node](https://img.shields.io/badge/Node.js-%E2%89%A518-339933?logo=nodedotjs&logoColor=white)](package.json)
 
-A thin wrapper for many APIs: AI image and video generation, all major social
-media APIs, and more.
+One command and one function per upstream endpoint, for AI image and video
+generation, LLMs, social posting, storage and market data. TypeScript, ESM,
+providers that depend only on zod, a cost estimate and an opt-in pay gate for
+every paid call.
 
-## Features
-
-- **OTP pay gate — opt-in, no bypass once armed.** Paid endpoints (media
-  generation, etc.) work out of the box. Give the provider a pay-gate secret
-  and every paid call then needs a human- or code-client-minted, single-use OTP
-  bound to the exact request, so an autonomous agent can't self-approve or run
-  up your bill. [Details ↓](#paid-endpoints-otp-pay-gate)
-- **Pre-flight cost estimates.** Pure local USD estimates for the billed
-  providers (openai, anthropic, xai, kimicoding, fireworks, alibaba, kie,
-  elevenlabs) — no keys, no network.
-- **Schemas for agents.** Every POST endpoint ships a zod request schema
-  (`endpoint.schema`) — hosts and agents catch a hallucinated call locally
-  instead of at the API; the CLI reads it as the request schema agents can
-  inspect with `apicity describe`.
-  Provider packages may carry Zod 3 or Zod 4 at runtime; the compatibility
-  policy is documented in [docs/zod-compatibility.md](docs/zod-compatibility.md).
-- **CLI and agent skills.** Every endpoint is one `apicity` command; an
-  embedded skill teaches agents to discover and call them.
-- **Composable middleware.** `withRetry` / `withFallback` / `withRateLimit` as
-  plain function wrappers.
-- **Minimal provider dependencies.** Providers depend only on `zod` — plus
-  `viem` in `@apicity/polymarket` for order signing and `ws` in
-  `@apicity/openai` and `@apicity/xai` for their Realtime WebSocket
-  transports. Paid endpoint OTP
-  verification and B2's S3-compatible transport are bundled inside their
-  provider packages. ESM, strict TypeScript.
-
-## Frontier models
-
-`apicity frontier` lists the image and video task types. `apicity frontier i2v`
-lists the ranked models and the endpoint to call:
-
-```bash
-apicity frontier
-apicity frontier i2v
-```
-
-The same list is a committed snapshot:
-
-```ts
-import { frontier } from "@apicity/cost";
-```
-
-The tables are in [docs/frontier.md](docs/frontier.md).
-
-## Example
-
-The headline behavior: a **paid endpoint works out of the box, and an operator
-can gate it**. Built without a pay-gate secret, a provider dispatches paid
-calls like any other. Built with one, every paid call needs an approved,
-single-use OTP, and an autonomous caller cannot bypass it.
-
-```ts
-import { createKie } from "@apicity/kie";
-import { mintOtp, createCost } from "@apicity/cost";
-
-// Same JSON body you'd POST to /api/v1/jobs/createTask.
-const payload = {
-  model: "gpt-image-2-text-to-image",
-  input: {
-    prompt: "A cinematic night-city poster with neon reflections.",
-    aspect_ratio: "16:9",
-    resolution: "4K",
-  },
-};
-
-// Pure local cost preview — no keys, no network, sync.
-const estimate = createCost().estimate({ provider: "kie", payload });
-// estimate.usd === 0.08
-
-// No pay-gate secret → the gate is off. The paid call dispatches (and bills).
-const kie = createKie({ apiKey: process.env.KIE_API_KEY! });
-await kie.post.api.v1.jobs.createTask(payload);
-// ✅ { code: 200, msg: "success", data: { taskId: "…" } }
-
-// Arm the gate: the code client holds the secret (from your secret manager /
-// config). The autonomous caller never sees it, so it can't self-approve.
-const secret = loadSecret();
-const gated = createKie({
-  apiKey: process.env.KIE_API_KEY!,
-  paygate: { secret },
-});
-
-// Armed, no OTP → fails closed. No bypass.
-await gated.post.api.v1.jobs.createTask(payload);
-// ❌ throws PayGateError { code: "otp-missing" }
-
-// A human (or the code client) mints a single-use OTP bound to THIS request.
-const otp = mintOtp(secret, {
-  dotPath: "api.v1.jobs.createTask",
-  request: payload,
-  ttl: "10m",
-});
-
-// Approved — runs once. Replaying the OTP, or changing any byte of the
-// payload, fails verification.
-const task = await gated.post.api.v1.jobs.createTask(payload, { otp });
-```
-
-Direct KIE VEO calls are gated separately from `createTask`: for
-`kie.veo.post.api.v1.veo.generate` mint with `dotPath: "api.v1.veo.generate"`,
-for `kie.veo.post.api.v1.veo.extend` use `dotPath: "api.v1.veo.extend"`.
-Upload, status, and helper endpoints are unlisted and remain free.
-
-## Packages
-
-| Package | Focus |
-| ------- | ----- |
-
-<!-- provider-inventory:providers:start -->
-
-| [@apicity/machgen](packages/provider/machgen) | Video generation, task status and authenticated assets |
-| [@apicity/openai](packages/provider/openai) | OpenAI chat, responses, images, audio, embeddings, files |
-| [@apicity/anthropic](packages/provider/anthropic) | Anthropic messages, streams, batches, files, models, admin APIs |
-| [@apicity/xai](packages/provider/xai) | xAI chat, responses, Grok images/video, files, collections, search |
-| [@apicity/fal](packages/provider/fal) | fal model registry, generation, pricing, usage, analytics |
-| [@apicity/google](packages/provider/google) | Google Gemini express-mode generateContent |
-| [@apicity/kie](packages/provider/kie) | KIE media generation for video, image, audio, Claude, Suno |
-| [@apicity/alibaba](packages/provider/alibaba) | Alibaba DashScope/Qwen chat, image, and video workflows |
-| [@apicity/binance](packages/provider/binance) | Binance Spot REST public/general endpoints |
-| [@apicity/openligadb](packages/provider/openligadb) | OpenLigaDB public soccer match data, standings, and scorers |
-| [@apicity/fireworks](packages/provider/fireworks) | Fireworks chat, embeddings, audio, deployments, fine-tuning |
-| [@apicity/kimicoding](packages/provider/kimicoding) | Kimi Coding messages, streaming, models, embeddings |
-| [@apicity/elevenlabs](packages/provider/elevenlabs) | ElevenLabs text-to-speech, sound effects, audio APIs |
-| [@apicity/s3](packages/provider/s3) | S3-compatible object storage |
-| [@apicity/b2](packages/provider/b2) | Backblaze B2 S3-compatible object storage |
-| [@apicity/free-media-upload](packages/provider/free-media-upload) | Public file upload/hosting services |
-| [@apicity/x](packages/provider/x) | X API posting and media upload |
-| [@apicity/meta](packages/provider/meta) | Instagram Graph API reel publishing |
-| [@apicity/polymarket](packages/provider/polymarket) | Polymarket Gamma, Data, and CLOB public market data |
-| [@apicity/simplefunctions](packages/provider/simplefunctions) | SimpleFunctions public prediction-market and analytical APIs |
-| [@apicity/telegram](packages/provider/telegram) | Telegram Bot API text, photo, video, and audio sending |
-| [@apicity/quo](packages/provider/quo) | Quo business text messaging |
-| [@apicity/thesportsdb](packages/provider/thesportsdb) | TheSportsDB public sports player data |
-| [@apicity/googleflow](packages/provider/googleflow) | Google Flow video generation via the useapi.net proxy |
-| [@apicity/zaicoding](packages/provider/zaicoding) | Z.ai GLM coding-plan chat completions and quota monitoring |
-| [@apicity/openf1](packages/provider/openf1) | OpenF1 Formula 1 historical and live timing data |
-| [@apicity/dropbox](packages/provider/dropbox) | Dropbox users, files, content upload/download, and sharing |
-| [@apicity/dolthub](packages/provider/dolthub) | DoltHub SQL execution and Dolt database management |
-| [@apicity/youtube](packages/provider/youtube) | YouTube Data API v3 video publishing |
-| [@apicity/cost](packages/provider/cost) | Pure local cost/token estimates across providers |
-| [@apicity/cli](packages/cli) | CLI and agent skill for every provider endpoint |
-
-<!-- provider-inventory:providers:end -->
-
-## CLI and coding agents
-
-Every endpoint is one `apicity` command, and the CLI ships the agent skill
-that teaches a coding agent to find and call them.
+## Install
 
 ```bash
 npm install -g @apicity/cli
 # or, without installing:
-npx -y @apicity/cli@latest commands --provider xai
+npx -y @apicity/cli@latest providers
 ```
 
-A first call — discovery is offline, so only the last line needs a key:
+Node.js 20 or newer for the CLI. Each provider is also its own package that
+runs on Node 18+, Cloudflare Workers, Deno and Bun: `npm install @apicity/kie`.
+
+## Getting started
 
 ```bash
 apicity providers                 # who exists, which env var, which are set
-apicity commands --provider xai   # that provider's endpoints
+apicity commands --provider xai   # one provider's endpoints
 apicity describe xai v1.tokenizeText
 apicity xai v1.tokenizeText --data '{"model":"grok-3","text":"Hello, world!"}'
 ```
 
-Connect the agents on this host:
+Discovery is offline; only the call needs a key. Keys come from the
+environment, an env file or 1Password: `apicity help environment`.
+
+## Using the CLI
+
+```bash
+apicity kie api.v1.jobs.createTask --data '{"model":"minimax-h3/image-to-video","input":{...}}'
+apicity commands --json | jq '.data[] | select(.paid)'   # every billed endpoint
+apicity doctor                                           # the install, in twelve rows
+```
+
+Every command explains itself with `--help`. At a terminal the output is made
+for reading. Piped, or with `--json`, a command writes one JSON envelope
+`{ok, data}`, plus `summary` when the command sets one; `--quiet` writes the
+data alone. A paid endpoint says so in `apicity describe` and bills unless the
+operator arms the pay gate: [docs/paygate.md](docs/paygate.md).
+
+## Frontier models
+
+```bash
+apicity frontier                    # the types: t2i, i2i, t2v, i2v, v2v, r2v
+apicity frontier i2v                # top 10 image-to-video models and how to call each
+apicity frontier t2i --provider kie
+```
+
+```ts
+import { frontier } from "@apicity/cost";
+frontier("i2v");
+frontier("t2i", { provider: "fal" });
+```
+
+A committed snapshot of the Artificial Analysis leaderboards, top 10 per type,
+never fetched at runtime. [docs/frontier.md](docs/frontier.md) has the current
+ranking and the refresh procedure.
+
+## Library
+
+```ts
+import { createKie } from "@apicity/kie";
+
+const kie = createKie({ apiKey: process.env.KIE_API_KEY! });
+await kie.post.api.v1.jobs.createTask({
+  model: "minimax-h3/image-to-video",
+  input: { prompt: "...", image_url: "..." },
+});
+```
+
+Every endpoint is a plain async function with a zod `.schema`. `withRetry`,
+`withFallback` and `withRateLimit` wrap any of them:
+[docs/middleware.md](docs/middleware.md).
+
+## Coding agents
 
 ```bash
 apicity setup claude   # the skill plus the Claude Code plugin
 apicity setup codex    # the skill Codex reads
-apicity doctor         # what is installed, configured and stale
+apicity skill          # print the skill
 ```
 
-For an agent that cannot install a plugin, put this in the project's
-`AGENTS.md` instead:
+Agents discover endpoints with `apicity commands` and `apicity describe`, then
+call them. There is no MCP server: [MCP.md](MCP.md).
 
-> apicity is driven through the `apicity` CLI on PATH, never an MCP server. Run
-> `apicity --help` for the command set and `apicity skill` for the agent guide
-> (`apicity commands`, `apicity describe`, then the call). Credentials are
-> configured by the operator; never request, copy, or read them.
+## Providers
 
-MCP support was removed in September 2026; [MCP.md](MCP.md) is the migration
-note for anyone still running `@apicity/mcp-server`.
+<!-- provider-inventory:providers:start -->
 
-### Switching from `@apicity/mcp-server`
+<!-- prettier-ignore -->
+[@apicity/machgen](packages/provider/machgen), [@apicity/openai](packages/provider/openai),
+[@apicity/anthropic](packages/provider/anthropic), [@apicity/xai](packages/provider/xai),
+[@apicity/fal](packages/provider/fal), [@apicity/google](packages/provider/google),
+[@apicity/kie](packages/provider/kie), [@apicity/alibaba](packages/provider/alibaba),
+[@apicity/binance](packages/provider/binance), [@apicity/openligadb](packages/provider/openligadb),
+[@apicity/fireworks](packages/provider/fireworks), [@apicity/kimicoding](packages/provider/kimicoding),
+[@apicity/elevenlabs](packages/provider/elevenlabs), [@apicity/s3](packages/provider/s3),
+[@apicity/b2](packages/provider/b2), [@apicity/free-media-upload](packages/provider/free-media-upload),
+[@apicity/x](packages/provider/x), [@apicity/meta](packages/provider/meta),
+[@apicity/polymarket](packages/provider/polymarket), [@apicity/simplefunctions](packages/provider/simplefunctions),
+[@apicity/telegram](packages/provider/telegram), [@apicity/quo](packages/provider/quo),
+[@apicity/thesportsdb](packages/provider/thesportsdb), [@apicity/googleflow](packages/provider/googleflow),
+[@apicity/zaicoding](packages/provider/zaicoding), [@apicity/openf1](packages/provider/openf1),
+[@apicity/dropbox](packages/provider/dropbox), [@apicity/dolthub](packages/provider/dolthub),
+[@apicity/youtube](packages/provider/youtube), [@apicity/cost](packages/provider/cost).
 
-`@apicity/mcp-server` was renamed `@apicity/cli`, and MCP support ended with
-`@apicity/mcp-server` 0.11.2: the CLI has no server to register.
+<!-- provider-inventory:providers:end -->
 
-1. **Install the CLI.** `npm install -g @apicity/cli` (or run it through
-   `npx -y @apicity/cli@latest`).
-2. **Check the host.** `apicity doctor` reports the CLI and Node versions, the
-   env file, 1Password, the pay-gate secret, the output directory, how many
-   providers are configured, and the skill and plugin install — one row each,
-   `--json` for a machine.
-3. **Connect the agents.** `apicity setup claude` installs the skill and the
-   Claude Code plugin; `apicity setup codex` installs the skill Codex reads.
-   `apicity setup agents` does whichever is unambiguous on this host.
-4. **Remove the old MCP registration.** `claude mcp remove apicity`,
-   `codex mcp remove apicity`, or delete the `mcpServers.apicity` entry from
-   the client's config file. Agents reach the endpoints through the CLI and the
-   skill from here on.
-5. **Retire a launcher script.** A launcher that execs the old server bin from
-   `node_modules/.bin` has nothing left to launch: remove it together with its
-   `@apicity/mcp-server` dependency rather than repointing it. This
-   repository's own city launcher is one such script.
-6. **Tell the agents that cannot install plugins.** Add a short section to the
-   project's `AGENTS.md` (and `CLAUDE.md` or `.claude/CLAUDE.md`, for Claude Code):
+[docs/providers.md](docs/providers.md) says what each one covers.
 
-   > apicity is driven through the `apicity` CLI on PATH, never an MCP server.
-   > Run `apicity --help` for the command set and `apicity skill` for the agent
-   > guide (`apicity commands`, `apicity describe`, then the call). Credentials
-   > are configured by the operator; never request, copy, or read them.
+## Docs
 
-7. **After the release, the operator deprecates the old package** — a manual,
-   post-publish step no part of the build performs:
-
-   ```bash
-   npm deprecate @apicity/mcp-server "Replaced by @apicity/cli; MCP support was removed, use the apicity CLI and agent skill"
-   ```
-
-## Middleware
-
-Every endpoint is a plain `(req, signal?) => Promise<T>` function, and every
-package exports `withRetry`, `withFallback`, and `withRateLimit` — generic
-wrappers that compose, or you can pass endpoint functions into your own
-orchestration layer. (`@apicity/kimicoding` also ships `withStreamRetry` /
-`withStreamFallback` for streamed async iterables.)
-
-### `withRetry` — exponential backoff
-
-Retries transient errors (HTTP 429 and 5xx) with configurable backoff:
-
-```ts
-import { createOpenAi, withRetry } from "@apicity/openai";
-
-const openai = createOpenAi({ apiKey: process.env.OPENAI_API_KEY! });
-
-const chat = withRetry(openai.v1.chat.completions, {
-  retries: 3, // max attempts (default: 2)
-  baseMs: 500, // initial delay in ms (default: 300)
-  factor: 2, // exponential multiplier (default: 2)
-  jitter: true, // randomize delay ±20% (default: true)
-});
-```
-
-### `withFallback` — multi-provider failover
-
-Tries each function in order; wrappers keep the same signature, so they nest:
-
-```ts
-import { createXai, withFallback, withRetry } from "@apicity/xai";
-
-const primary = createXai({ apiKey: process.env.XAI_API_KEY_PRIMARY! });
-const backup = createXai({ apiKey: process.env.XAI_API_KEY_BACKUP! });
-
-const image = withFallback([
-  withRetry(primary.v1.images.generations, { retries: 2 }),
-  withRetry(backup.v1.images.generations, { retries: 1 }),
-]);
-
-const result = await image({
-  model: "grok-2-image",
-  prompt: "A product photo of a small brass desk lamp",
-  n: 1,
-});
-```
-
-### `withRateLimit` — client-side throttling
-
-Bounds requests-per-minute and concurrency through a shared limiter:
-
-```ts
-import {
-  createOpenAi,
-  withRateLimit,
-  createRateLimiter,
-} from "@apicity/openai";
-
-const openai = createOpenAi({ apiKey: process.env.OPENAI_API_KEY! });
-const limiter = createRateLimiter({ rpm: 60, concurrent: 5 });
-
-const chat = withRateLimit(openai.v1.chat.completions, limiter);
-```
-
-## Paid endpoints (OTP pay gate)
-
-Endpoints with direct marginal cost (e.g. `kie.post.api.v1.jobs.createTask`,
-direct VEO calls under `kie.veo.post.api.v1.veo.*`, and xai's image and video
-generation) are listed in `PAID_ENDPOINTS`. The pay gate in front of them is
-**opt-in**:
-
-- **Off by default.** A provider built without `paygate` dispatches a paid
-  call like any other call: it goes upstream, and it bills.
-- **Armed by a secret.** `paygate: { secret }` at provider construction arms
-  it; in the CLI, `--paygate-secret-file` or `APICITY_PAYGATE_SECRET_FILE`
-  does. Once armed, the gate is **fail-closed**, exactly as before: every paid
-  call needs a valid OTP minted from that same secret, single-use and bound to
-  the exact request, and a missing or bad one throws before anything is sent.
-  The flow is the [example above](#example). The autonomous caller never sees
-  the secret, so it cannot self-approve. A supplied but empty secret fails
-  closed too, with `paygate-not-configured`.
-- **An OTP needs an armed gate.** An OTP passed to a provider built without
-  `paygate` is refused with `paygate-not-configured`, never silently dropped:
-  whoever passes one believes a gate exists.
-
-Armed or not, `paid: true` in `apicity describe` (and the `paid` column of
-`apicity commands`) is the cue to say that a call bills before making it.
-Unlisted endpoints are free.
-
-The OTP is signed with a single shared **HMAC secret** — no key files, no
-environment variables, no cost coupling — and commits to the exact
-`(provider, method, dotPath, requestHash, exp)` tuple: change any byte of the
-payload and verification fails. The `jti` is consumed before dispatch, so a
-failed network call still burns the token — mint a fresh OTP for any retry.
-
-Operators (or the code client) mint OTPs with `mintOtp(secret, { dotPath,
-request, ttl })` or the CLI — the secret is read from a file, never an env
-var:
-
-```bash
-apicity-paygate otp mint \
-  --secret-file ./paygate.secret \
-  --dot-path api.v1.jobs.createTask \
-  --payload-file request.json \
-  --ttl 10m
-```
-
-A blocked call throws `PayGateError` whose `.code` is one of
-`paygate-not-configured`, `otp-missing`, `otp-malformed`,
-`otp-invalid-signature`, `otp-expired`, `otp-mismatched-request`, or
-`otp-replayed`.
-
-The gate is generic: a provider joins it by adding `PAID_ENDPOINTS` entries,
-as `kie` and `xai` do. See [@apicity/cost](packages/provider/cost) for the full
-spec and the CLI's `--paygate-secret-file` wiring (`apicity … --otp <token>`,
-on a host whose operator armed the gate).
+- [packages/cli/README.md](packages/cli/README.md): every command, flag, output format and exit code
+- [docs/frontier.md](docs/frontier.md): the frontier ranking by type and how it is refreshed
+- [docs/paygate.md](docs/paygate.md): cost estimates and the OTP pay gate
+- [docs/middleware.md](docs/middleware.md): retry, fallback and rate limiting
+- [docs/providers.md](docs/providers.md): what each provider package covers
+- [docs/zod-compatibility.md](docs/zod-compatibility.md): Zod 3 and Zod 4 in one repository
+- [MCP.md](MCP.md): migrating from `@apicity/mcp-server`
 
 ## Development
 
-- **Runtime** — Node 18+, Cloudflare Workers, Deno, Bun. ESM only.
-- **Build & test** — `pnpm install && pnpm run build && pnpm run test:run`.
-  Integration tests record/replay via Polly.js (no keys needed for replay).
-- **Provider-scoped loop** — use
-  `pnpm run dev:preflight:fast -- <name-or-path>` as the fast pre-push
-  checklist for narrow provider work. It prints and runs the
-  steps: <!-- fast-gate-steps:start -->Prettier on the provider
-  package/tests<!-- fast-gate-step:format -->,
-  `lint:provider`<!-- fast-gate-step:lint -->, the whole tests-project
-  typecheck (`typecheck:tests`, unscoped by
-  design)<!-- fast-gate-step:typecheck-tests -->, `test:provider` for
-  provider typecheck + replay<!-- fast-gate-step:test-provider -->, then the
-  cross-cutting repo-wide guard tests<!-- fast-gate-step:cross-cutting --><!-- fast-gate-steps:end -->.
-  `<name-or-path>` can be `openai`,
-  `packages/provider/openai/src/openai.ts`, or a matching
-  `tests/integration/openai-*.test.ts` path. From a provider package,
-  `pnpm -w run dev:preflight:fast` infers the provider from `INIT_CWD`.
-  Use `pnpm run test:provider -- <name-or-path>` for test-only loops,
-  `pnpm run typecheck:provider -- <name-or-path>` for provider-only compile
-  checks, and `pnpm run lint:provider -- <name-or-path>` for provider-only
-  lint. `pnpm run test:affected` auto-selects provider tests from the current
-  git diff when every changed file belongs to provider packages, provider
-  integration tests, or provider recordings; it falls back to full
-  `pnpm run test:run` for shared scripts/config, unit or functional tests,
-  docs, package metadata, or other ambiguous changes. `pnpm run dev:preflight`
-  and `pnpm run ci:local` remain the full repository gates.
-- **Changed-file loop** — use `pnpm run format:changed` to run Prettier only
-  on files changed from `origin/main`, staged/unstaged files, and untracked
-  files. Use `pnpm run dev:preflight:changed` when you want that scoped
-  Prettier step followed by the repository checks that still run globally:
-  full typecheck, scoped ESLint for changed JS/TS files, endpoint comment
-  checks, orphan-recording checks, test-timer checks, and the replay suite.
-  Pass explicit paths when the changed surface is known; for example, pass
-  `package.json README.md` after `--`. Prefer `dev:preflight:fast` instead
-  when the diff is cleanly provider-scoped. The full repository gates remain
-  `pnpm run lint` for format check plus full linting/repo checks,
-  `pnpm run lint:after-format` after formatting, `pnpm run dev:preflight`,
-  and `pnpm run ci:local`.
-- **Typecheck-only fast path** — use
-  `pnpm run typecheck:provider -- <name-or-path>` for provider-only diffs.
-  It includes staged and unstaged files in its safety check, and falls back to
-  the full `pnpm run typecheck` when the diff touches another package or shared
-  package/TypeScript config. Baseline timing on 2026-06-30: full typecheck
-  105.61s real, representative provider tsconfig 5.79s real; the guarded
-  fast path validated at 10.33s real with
-  `pnpm run typecheck:provider -- openai --base=HEAD`.
-- **Validate before sending** — every POST endpoint exposes a `.schema`:
-  `createOpenAi(...).v1.chat.completions.schema.safeParse(payload)` catches a
-  hallucinated call locally instead of at the API.
+```bash
+pnpm install
+pnpm run build
+pnpm run test:run
+```
+
+[CONTRIBUTING.md](CONTRIBUTING.md) has the gates, the provider loop and the
+recording rules.
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
-
-Based on [TetherAI](https://github.com/nbursa/TetherAI) by Nenad Bursac.
+MIT. See [LICENSE](LICENSE). Based on
+[TetherAI](https://github.com/nbursa/TetherAI).

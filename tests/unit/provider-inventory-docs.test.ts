@@ -136,9 +136,9 @@ describe("provider inventory documentation", () => {
   });
 
   it("skips alias regions on surfaces that do not carry them", () => {
-    // README.md and AGENTS.md document the providers but not the script
-    // aliases; an absent alias region there is not drift.
-    for (const surface of ["README.md", "AGENTS.md"]) {
+    // README.md, docs/providers.md and AGENTS.md document the providers but
+    // not the script aliases; an absent alias region there is not drift.
+    for (const surface of ["README.md", "docs/providers.md", "AGENTS.md"]) {
       const { problems } = readRegion(
         surface,
         readSurface(surface),

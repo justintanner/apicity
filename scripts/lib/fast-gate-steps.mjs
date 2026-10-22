@@ -28,7 +28,7 @@ import { TESTS_TYPECHECK_STEP } from "./tests-project.mjs";
  */
 export const FAST_GATE_DOC_SURFACES = Object.freeze([
   ".claude/CLAUDE.md",
-  "README.md",
+  "CONTRIBUTING.md",
   "AGENTS.md",
 ]);
 
@@ -53,7 +53,7 @@ export const FAST_GATE_DOC_SURFACES = Object.freeze([
  *   printed checklist stays byte-identical.
  * - `prose` — one required substring per surface. The surfaces legitimately
  *   paraphrase (`scoped format` in `.claude/CLAUDE.md` against `Prettier on the
- *   provider package/tests` in `README.md`), so printed titles cannot be
+ *   provider package/tests` in `CONTRIBUTING.md`), so printed titles cannot be
  *   matched against prose directly. Every step declares an entry for every
  *   surface in `FAST_GATE_DOC_SURFACES`; the guard asserts that completeness,
  *   so adding a step without its evidence is itself red.
@@ -75,7 +75,7 @@ export const FAST_GATE_STEPS = Object.freeze([
     title: "prettier --write (provider package + tests)",
     prose: Object.freeze({
       ".claude/CLAUDE.md": "scoped format",
-      "README.md": "Prettier on the provider package/tests",
+      "CONTRIBUTING.md": "Prettier on the provider package/tests",
       "AGENTS.md": "scoped format",
     }),
   }),
@@ -84,7 +84,7 @@ export const FAST_GATE_STEPS = Object.freeze([
     title: "lint:provider",
     prose: Object.freeze({
       ".claude/CLAUDE.md": "scoped lint",
-      "README.md": "`lint:provider`",
+      "CONTRIBUTING.md": "`lint:provider`",
       "AGENTS.md": "scoped lint",
     }),
   }),
@@ -93,7 +93,7 @@ export const FAST_GATE_STEPS = Object.freeze([
     title: TESTS_TYPECHECK_STEP.title,
     prose: Object.freeze({
       ".claude/CLAUDE.md": "whole tests-project typecheck",
-      "README.md": "whole tests-project typecheck",
+      "CONTRIBUTING.md": "whole tests-project typecheck",
       "AGENTS.md": "whole tests-project typecheck",
     }),
   }),
@@ -102,7 +102,7 @@ export const FAST_GATE_STEPS = Object.freeze([
     title: "test:provider (provider typecheck + replay)",
     prose: Object.freeze({
       ".claude/CLAUDE.md": "provider typecheck and replay",
-      "README.md": "`test:provider` for provider typecheck + replay",
+      "CONTRIBUTING.md": "`test:provider` for provider typecheck + replay",
       "AGENTS.md": "provider typecheck and replay",
     }),
   }),
@@ -111,7 +111,7 @@ export const FAST_GATE_STEPS = Object.freeze([
     title: "cross-cutting repo-wide guard tests",
     prose: Object.freeze({
       ".claude/CLAUDE.md": "cross-cutting repo-wide guard tests",
-      "README.md": "cross-cutting repo-wide guard tests",
+      "CONTRIBUTING.md": "cross-cutting repo-wide guard tests",
       "AGENTS.md": "cross-cutting repo-wide guard tests",
     }),
   }),
@@ -221,8 +221,8 @@ export function checkFastGateDocs(surface, text, steps = FAST_GATE_STEPS) {
     const marker = markers[position];
     const previous = position > 0 ? markers[position - 1] : null;
     const spanStart = previous ? previous.index + previous[0].length : 0;
-    // Whitespace collapse is required, not cosmetic: README.md wraps at 80
-    // columns, so `Prettier on the provider package/tests` is split across a
+    // Whitespace collapse is required, not cosmetic: CONTRIBUTING.md wraps
+    // at 80 columns, so `Prettier on the provider package/tests` is split across a
     // line break and an indent in the raw file.
     const span = collapseWhitespace(region.slice(spanStart, marker.index));
 

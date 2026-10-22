@@ -43,10 +43,11 @@ export interface CostBreakdown {
   outputUsdPerMillion?: number;
   perUnitUsd?: number;
   extraUsd?: number;
-  // Declared openai usage only: the cached-input and cache-write subsets of
-  // `inputTokens` with the per-million rates that priced them (present when
-  // the model publishes that rate), and which context tier priced the request
-  // (present when the model publishes a long-context tier).
+  // Declared usage: the cached-input and cache-write subsets of `inputTokens`
+  // with the per-million rates that priced them (present when the model
+  // publishes that rate). OpenAI gpt-5.6-sol and KIE chat models that publish
+  // a cache rate use these fields. `contextTier` is present when the model
+  // publishes a long-context tier.
   cacheReadInputTokens?: number;
   cacheWriteInputTokens?: number;
   cacheReadUsdPerMillion?: number;

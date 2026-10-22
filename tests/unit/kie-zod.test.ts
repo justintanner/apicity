@@ -1276,6 +1276,7 @@ const OPENED_MODEL_FIELDS = [
       "gpt-6-astra",
       "gpt-6-luna",
       "gpt-6-sol",
+      "gpt-6-1-sol",
     ],
     aliases: ["gpt-6", "gpt-5-5-mini"],
     // BR-3 bare family and spelled-out/truncated versions; BR-4 a Grok id on
@@ -1412,7 +1413,12 @@ const OPENED_MODEL_FIELDS = [
   {
     triage: "TRI-007",
     label: "KieClaudeRequestSchema.model",
-    listed: ["claude-sonnet-4-6", "claude-haiku-4-5", "claude-opus-5"],
+    listed: [
+      "claude-sonnet-4-6",
+      "claude-haiku-4-5",
+      "claude-haiku-5-5",
+      "claude-opus-5",
+    ],
     aliases: ["claude-opus-5-0"],
     // BR-3 versionless and familyless near-misses of a listed id; BR-4 a GPT
     // id on a Claude-only field.

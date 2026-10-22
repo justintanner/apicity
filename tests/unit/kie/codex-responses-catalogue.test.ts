@@ -22,12 +22,17 @@ const CODEX_CATALOGUE_IDS = [
   "gpt-5-6-terra",
 ] as const;
 
-// The three GPT-6 ids kie documented on the codex path as of 2026-09-25
-// (https://docs.kie.ai/market/chat/gpt-6-astra, /gpt-6-luna, /gpt-6-sol).
-// Only gpt-6-astra was called live, and its completed response is the
-// recording kie/gpt-6-astra-responses (recorded 2026-09-27). gpt-6-luna and
-// gpt-6-sol are enumerated from their docs pages alone and were never called.
-const GPT_6_CATALOGUE_IDS = ["gpt-6-astra", "gpt-6-luna", "gpt-6-sol"] as const;
+// GPT-6 ids kie documents on the codex path
+// (https://docs.kie.ai/market/chat/gpt-6-astra, /gpt-6-luna, /gpt-6-sol,
+// /gpt-6-1-sol). gpt-6-astra (kie/gpt-6-astra-responses, 2026-09-27) and
+// gpt-6-1-sol (kie/gpt-6-1-sol-responses, 2026-10-22) were called live.
+// gpt-6-luna and gpt-6-sol are enumerated from their docs pages alone.
+const GPT_6_CATALOGUE_IDS = [
+  "gpt-6-astra",
+  "gpt-6-luna",
+  "gpt-6-sol",
+  "gpt-6-1-sol",
+] as const;
 
 // In the enum on the *other* surface, and served there — the control that keeps
 // the cross-surface rejection below from being vacuous.
@@ -119,8 +124,8 @@ describe("kie codex Responses catalogue ids", () => {
   });
 });
 
-// The same five pins for the GPT-6 ids. Like the four above, all three already
-// parsed through the alias hatch before they were enumerated, so membership and
+// The same five pins for the GPT-6 ids. Like the four above, every one already
+// parsed through the alias hatch before it was enumerated, so membership and
 // the enum branch are the assertions that fail on a tree without them.
 describe("kie codex Responses GPT-6 ids", () => {
   it.each(GPT_6_CATALOGUE_IDS)(
@@ -139,7 +144,7 @@ describe("kie codex Responses GPT-6 ids", () => {
     }
   });
 
-  it("would accept all three through the alias hatch alone", () => {
+  it("would accept every GPT-6 id through the alias hatch alone", () => {
     const branches = modelBranches(zodToJsonSchema(KieResponsesRequestSchema));
     const alias = new RegExp(String(branches[1].pattern));
 

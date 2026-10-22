@@ -602,9 +602,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "runByDefault": false
   },
   "POST codex.v1.responses": {
-    "source": "kie/gpt-6-astra-responses",
+    "source": "kie/gpt-6-1-sol-responses",
     "payload": {
-      "model": "gpt-6-astra",
+      "model": "gpt-6-1-sol",
       "input": "ping",
       "stream": false,
       "reasoning": {

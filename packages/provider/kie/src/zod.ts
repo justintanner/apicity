@@ -7936,16 +7936,18 @@ const KieOpenAiModelAliasSchema = z
 // distinction is unobservable through safeParse: a success cannot say which
 // branch matched, so only membership in this array pins the enum entries.
 //
-// The GPT-6 ids come from kie's docs as read on 2026-09-25, each page
-// documenting this same path with a one-id `model` enum:
-// https://docs.kie.ai/market/chat/gpt-6-astra,
-// https://docs.kie.ai/market/chat/gpt-6-luna and
-// https://docs.kie.ai/market/chat/gpt-6-sol. gpt-6-astra is also backed by a
-// recorded completed response (kie/gpt-6-astra-responses, recorded
-// 2026-09-27). gpt-6-luna and gpt-6-sol rest on those docs pages and the
-// kie.ai/gpt-6-sol-and-luna product page alone; neither was called live.
-// All three match the alias grammar too, so listing them adds autocomplete
-// only.
+// The GPT-6 ids come from kie's docs, each page documenting this same path
+// with a one-id `model` enum: https://docs.kie.ai/market/chat/gpt-6-astra,
+// https://docs.kie.ai/market/chat/gpt-6-luna,
+// https://docs.kie.ai/market/chat/gpt-6-sol and
+// https://docs.kie.ai/market/chat/gpt-6-1-sol (read 2026-10-22). Requests
+// send `gpt-6-1-sol`; responses report the dotted `gpt-6.1-sol`.
+// gpt-6-astra and gpt-6-1-sol are backed by recorded completed responses
+// (kie/gpt-6-astra-responses, recorded 2026-09-27; kie/gpt-6-1-sol-responses,
+// recorded 2026-10-22). gpt-6-luna and gpt-6-sol rest on those docs pages
+// and the kie.ai/gpt-6-sol-and-luna product page alone; neither was called
+// live. All four match the alias grammar too, so listing them adds
+// autocomplete only.
 export const KIE_RESPONSES_MODELS = [
   "gpt-5-4",
   "gpt-5-5",
@@ -7955,6 +7957,7 @@ export const KIE_RESPONSES_MODELS = [
   "gpt-6-astra",
   "gpt-6-luna",
   "gpt-6-sol",
+  "gpt-6-1-sol",
 ] as const;
 
 export const KieResponsesModelSchema = z
@@ -8384,9 +8387,18 @@ const KieClaudeModelAliasSchema = z
     "Expected a listed model or a versioned Claude alias (e.g. claude-opus-5-0)"
   );
 
+// https://docs.kie.ai/market/claude/claude-haiku-5-5 documents this path
+// with a one-id enum, read 2026-10-22. The id already matches the alias
+// grammar, so listing it adds autocomplete only. Backed by the recording
+// kie/claude-haiku-5-5-chat-hello.
 export const KieClaudeRequestSchema = z.object({
   model: z
-    .enum(["claude-sonnet-4-6", "claude-haiku-4-5", "claude-opus-5"])
+    .enum([
+      "claude-sonnet-4-6",
+      "claude-haiku-4-5",
+      "claude-haiku-5-5",
+      "claude-opus-5",
+    ])
     .or(KieClaudeModelAliasSchema),
   messages: z.array(KieClaudeMessageSchema),
   tools: z.array(KieClaudeToolSchema).optional(),

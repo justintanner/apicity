@@ -1,0 +1,35 @@
+{
+  "capturedAt": "2026-10-22T01:40:00Z",
+  "creditUsd": 0.005,
+  "models": [
+    {
+      "id": "gpt-6-1-sol",
+      "url": "https://kie.ai/gpt-6-1-sol",
+      "docsUrl": "https://docs.kie.ai/market/chat/gpt-6-1-sol",
+      "pageSha256": "3723d9f1c454c65e92d610b64a34d952b5fedb6f7415153747bc2253dbc89aa6",
+      "userPath": "gpt-6-1-sol",
+      "path": "",
+      "pricingDesc": "Input 120 credits / 1M tokens (≈ $0.60), Cached Input 6 credits / 1M tokens (≈ $0.03), Cache Writes 150 credits / 1M tokens (≈ $0.75), Output 600 credits / 1M tokens (≈ $3.00) — all 70% below official pricing.\n\nHigh-tier top-ups come with bonus credits that lower the effective price by about 10%.",
+      "ratesUsdPerMillion": {
+        "input": 0.6,
+        "cacheRead": 0.03,
+        "cacheWrite": 0.75,
+        "output": 3
+      }
+    },
+    {
+      "id": "claude-haiku-5-5",
+      "url": "https://kie.ai/claude-haiku-5-5",
+      "docsUrl": "https://docs.kie.ai/market/claude/claude-haiku-5-5",
+      "pageSha256": "fb4f83e1490083bbda0d9c1f1fc0aacb1abce2107732d11f0a71c639bac446a8",
+      "userPath": "claude-haiku-5-5",
+      "path": "",
+      "pricingDesc": "Input 12 credits / 1M tokens (≈ $0.06), Output 60 credits / 1M tokens (≈ $0.30) — both 40% below official pricing.\n\nHigh-tier top-ups come with bonus credits that lower the effective price by about 10%.",
+      "ratesUsdPerMillion": {
+        "input": 0.06,
+        "output": 0.3
+      }
+    }
+  ],
+  "bonusTopUps": "Not applied. The card's standard credit × $0.005 rates are the priced rates."
+}

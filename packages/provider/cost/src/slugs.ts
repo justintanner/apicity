@@ -161,6 +161,11 @@ export const MODEL_SLUGS = {
     "google/gemini-3-8-flash-tts": "gem38ft",
     "google/gemini-3-8-flash-lite-tts": "gem38flt",
 
+    // Chat — token billed from declared counts (ac-08tkob). Hyphenated
+    // minor versions use "p", the same way seedance-2-5 is sd2p5.
+    "gpt-6-1-sol": "gpt6p1sol",
+    "claude-haiku-5-5": "haiku5p5",
+
     // Video — PixVerse V6. Operations are modality metadata and share one
     // family slug; transition is page-sourced (ac-4v9ck1).
     "pixverse-v6/text-to-video": "pixv6",
@@ -739,6 +744,9 @@ export const MODEL_DISPLAY = {
     "google/gemini-3-1-flash-tts": "Gemini 3.1 Flash TTS",
     "google/gemini-3-8-flash-tts": "Gemini 3.8 Flash TTS",
     "google/gemini-3-8-flash-lite-tts": "Gemini 3.8 Flash Lite TTS",
+
+    "gpt-6-1-sol": "GPT-6.1 Sol",
+    "claude-haiku-5-5": "Claude Haiku 5.5",
 
     "pixverse-v6/text-to-video": "PixVerse V6",
     "pixverse-v6/image-to-video": "PixVerse V6",

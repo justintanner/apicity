@@ -492,7 +492,7 @@ ownership marker and a version stamp, spelled `.managed-by-apicity`;
 `.claude-plugin/` layout — `plugin.json`, the skills link and the SessionStart
 liveness hook — plus a marketplace manifest so the repository installs; and
 the README-and-`AGENTS.md` guidance for agents, here as the root README's
-"CLI and coding agents", this file, and the `apicity CLI` sections in
+"Coding agents", this file, and the `apicity CLI` sections in
 `.claude/CLAUDE.md` and `AGENTS.md`. **Adapted:** hey's styled
 terminal output and JSON-when-piped rule, which here prints pretty data at a
 terminal and the envelope everywhere else, with `--json` forcing it; hey's

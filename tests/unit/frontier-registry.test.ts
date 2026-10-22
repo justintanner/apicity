@@ -1415,15 +1415,18 @@ describe("frontier generated registry", () => {
 
   it("points the root README at the doc and drops the old table", () => {
     const readme = readFileSync(path.join(repoRoot, "README.md"), "utf8");
-    const features = readme.indexOf("## Features");
+    const using = readme.indexOf("## Using the CLI");
     const section = readme.indexOf("## Frontier models");
-    const example = readme.indexOf("\n## Example\n");
-    expect(features).toBeGreaterThan(-1);
-    expect(section).toBeGreaterThan(features);
-    expect(example).toBeGreaterThan(section);
+    const library = readme.indexOf("\n## Library\n");
+    expect(using).toBeGreaterThan(-1);
+    expect(section).toBeGreaterThan(using);
+    expect(library).toBeGreaterThan(section);
     expect(readme).toContain("apicity frontier");
+    expect(readme).toContain('frontier("i2v")');
     expect(readme).toContain('import { frontier } from "@apicity/cost"');
     expect(readme).toContain("docs/frontier.md");
+    expect(readme).not.toContain("## Features");
+    expect(readme).not.toContain("\n## Example\n");
     expect(readme).not.toContain("frontier-models:");
     expect(readme).not.toContain("| Rank |");
     expect(readme).not.toContain("Frontier image-to-video models");

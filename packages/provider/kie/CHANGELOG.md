@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `codex.v1.responses` now enumerates `gpt-6-1-sol`. The id already validated
+  through the versioned GPT alias. Responses report the model as
+  `gpt-6.1-sol`. A recorded low-effort completion covers the id.
+- `claude.v1.messages` now enumerates `claude-haiku-5-5`. The id already
+  validated through the versioned Claude alias. A recorded short completion
+  covers the id.
+
 - Added `flux-3/klein-text-to-image` with typed inputs, resolution pricing, and a recorded image generation test.
 - Added `flux-3/klein-edit-image` with reference images, resolution pricing, and a recorded cat fixture edit test.
 

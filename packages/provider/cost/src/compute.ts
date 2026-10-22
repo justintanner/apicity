@@ -211,11 +211,16 @@ function evaluatePerUnit(
 }
 
 // Token-billed entry whose counts the caller declares rather than the payload
-// carrying them (KIE's Gemini TTS models). Distinct from `applyTokenRate` in
-// two ways that matter: nothing is inferred from text, and BOTH counts are
-// required — an absent output count fails closed instead of being treated as
-// zero, because output is the expensive side ($14 vs $0.70 per million) and a
-// silent zero would under-quote by twenty times.
+// carrying them (KIE's Gemini TTS models, and KIE chat models priced per
+// token). Distinct from `applyTokenRate` in two ways that matter: nothing is
+// inferred from text, and BOTH counts are required — an absent output count
+// fails closed instead of being treated as zero, because output is the
+// expensive side and a silent zero would under-quote it.
+//
+// A rate that publishes cacheRead or cacheWrite also requires that count.
+// inputTokens stays the total; the cache counts are disjoint subsets, and the
+// uncached remainder is inputTokens minus both. A model with no cache rate
+// ignores those hints, so Gemini TTS estimates are unchanged.
 function evaluateDeclaredTokens(
   provider: PricedProviderId,
   pricingKey: string,
@@ -224,17 +229,39 @@ function evaluateDeclaredTokens(
 ): CostEstimate {
   const inputTokens = hints?.inputTokens;
   const outputTokens = hints?.outputTokens;
+  const { rate } = entry;
+  const wantsCacheRead = rate.cacheRead !== undefined;
+  const wantsCacheWrite = rate.cacheWrite !== undefined;
+  const cacheReadTokens = hints?.cacheReadInputTokens;
+  const cacheWriteTokens = hints?.cacheWriteInputTokens;
+  const missing: string[] = [];
+  const invalid: string[] = [];
   // Same bound as declared OpenAI usage: a present count that is not a
   // non-negative safe integer is not a billable quantity (ac-wunvff).
-  if (!isTokenCount(inputTokens) || !isTokenCount(outputTokens)) {
-    const missing: string[] = [];
-    const invalid: string[] = [];
-    if (inputTokens === undefined) missing.push("costHints.inputTokens");
-    else if (!isTokenCount(inputTokens)) invalid.push("costHints.inputTokens");
-    if (outputTokens === undefined) missing.push("costHints.outputTokens");
-    else if (!isTokenCount(outputTokens)) {
-      invalid.push("costHints.outputTokens");
+  const consider = (value: unknown, required: boolean, name: string): void => {
+    if (value === undefined) {
+      if (required) missing.push(name);
+      return;
     }
+    if (required && !isTokenCount(value)) invalid.push(name);
+  };
+  consider(inputTokens, true, "costHints.inputTokens");
+  consider(outputTokens, true, "costHints.outputTokens");
+  consider(cacheReadTokens, wantsCacheRead, "costHints.cacheReadInputTokens");
+  consider(
+    cacheWriteTokens,
+    wantsCacheWrite,
+    "costHints.cacheWriteInputTokens"
+  );
+  const closed = (warnings: string[]): CostEstimate => ({
+    usd: 0,
+    currency: "USD",
+    source: "declared-tokens+table",
+    breakdown: { unit: "tokens" },
+    rateAsOf: entry.source.asOf ?? PRICING_AS_OF,
+    warnings,
+  });
+  if (missing.length > 0 || invalid.length > 0) {
     const warnings: string[] = [];
     if (missing.length > 0) {
       warnings.push(
@@ -246,26 +273,45 @@ function evaluateDeclaredTokens(
     if (invalid.length > 0) {
       warnings.push(`${invalid.join(" and ")} must be a non-negative integer`);
     }
-    return {
-      usd: 0,
-      currency: "USD",
-      source: "declared-tokens+table",
-      breakdown: { unit: "tokens" },
-      rateAsOf: entry.source.asOf ?? PRICING_AS_OF,
-      warnings,
-    };
+    return closed(warnings);
   }
-  const { rate } = entry;
+  const cacheRead = wantsCacheRead ? (cacheReadTokens as number) : 0;
+  const cacheWrite = wantsCacheWrite ? (cacheWriteTokens as number) : 0;
+  if (cacheRead + cacheWrite > (inputTokens as number)) {
+    return closed([
+      `${provider} '${pricingKey}': costHints.cacheReadInputTokens + ` +
+        `costHints.cacheWriteInputTokens (${cacheRead + cacheWrite}) exceed ` +
+        `costHints.inputTokens (${inputTokens as number})`,
+    ]);
+  }
+  const uncached = (inputTokens as number) - cacheRead - cacheWrite;
   return {
-    usd: (inputTokens * rate.input + outputTokens * rate.output) / 1_000_000,
+    usd:
+      (uncached * rate.input +
+        cacheRead * (rate.cacheRead ?? 0) +
+        cacheWrite * (rate.cacheWrite ?? 0) +
+        (outputTokens as number) * rate.output) /
+      1_000_000,
     currency: "USD",
     source: "declared-tokens+table",
     breakdown: {
-      inputTokens,
-      outputTokens,
+      inputTokens: inputTokens as number,
+      outputTokens: outputTokens as number,
       unit: "tokens",
       inputUsdPerMillion: rate.input,
       outputUsdPerMillion: rate.output,
+      ...(wantsCacheRead
+        ? {
+            cacheReadInputTokens: cacheRead,
+            cacheReadUsdPerMillion: rate.cacheRead,
+          }
+        : {}),
+      ...(wantsCacheWrite
+        ? {
+            cacheWriteInputTokens: cacheWrite,
+            cacheWriteUsdPerMillion: rate.cacheWrite,
+          }
+        : {}),
     },
     rateAsOf: entry.source.asOf ?? PRICING_AS_OF,
     warnings: [],
@@ -749,10 +795,11 @@ export function computeEstimate(req: EstimateRequest): CostEstimate {
         ext.data.maxOutputTokens
       );
     }
-    // KIE is per-unit for every media model, but two Gemini TTS models are
-    // billed purely per token. Route on the pricing entry's own `kind`, the
-    // way xai and alibaba already do, so the table stays the single source of
-    // truth for which models bill which way (ac-6lg2s0).
+    // KIE is per-unit for every media model. Gemini TTS and the chat models
+    // that publish a token rate are billed per token. Route on the pricing
+    // entry's own `kind`, the way xai and alibaba already do, so the table
+    // stays the single source of truth for which models bill which way
+    // (ac-6lg2s0).
     case "kie": {
       const pricingKey =
         req.endpoint ??

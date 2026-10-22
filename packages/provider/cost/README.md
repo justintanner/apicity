@@ -91,7 +91,7 @@ interface CostEstimate {
   currency: "USD";
   source:
     | "tokens-heuristic+table" // openai/anthropic/xai/kimicoding/fireworks/alibaba — chars/4 ≈ tokens × bundled rate
-    | "declared-tokens+table" // costHints token counts × bundled rate (declared openai usage, kie Gemini TTS)
+    | "declared-tokens+table" // costHints token counts × bundled rate (declared openai usage, kie Gemini TTS and token-priced kie chat models)
     | "per-unit-table" // elevenlabs/kie — payload-derived units × bundled rate
     | "free";
   breakdown: {

@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- KIE `gpt-6-1-sol` token pricing, verified 2026-10-22 against
+  https://kie.ai/gpt-6-1-sol: $0.60 input, $0.03 cached input, $0.75 cache
+  writes and $3.00 output per million tokens. Counts are declared.
+  `inputTokens` is the total; the cache counts are subsets and are required.
+  `MODEL_SLUGS.kie` adds `gpt6p1sol` and `MODEL_DISPLAY.kie` "GPT-6.1 Sol"
+  (ac-08tkob).
+- KIE `claude-haiku-5-5` token pricing, verified 2026-10-22 against
+  https://kie.ai/claude-haiku-5-5: $0.06 input and $0.30 output per million
+  tokens, from declared counts. The card publishes no cache rate.
+  `MODEL_SLUGS.kie` adds `haiku5p5` and `MODEL_DISPLAY.kie`
+  "Claude Haiku 5.5" (ac-08tkob).
+
 - Added FLUX 3 Max text-to-video pricing (ac-h9hyir).
 - Added FLUX 3 Max image-to-video pricing (ac-h9hyir).
 - Added FLUX 3 Max keyframes-to-video pricing (ac-h9hyir).

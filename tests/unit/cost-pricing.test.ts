@@ -3277,6 +3277,95 @@ describe("kie stale-family refresh (REQ-004)", () => {
     );
   });
 
+  // Page cards read 2026-10-22. USD is credits × $0.005, which matches the
+  // card's own dollar figures. gpt-6-1-sol publishes cache rates, so those
+  // counts are required and are subsets of inputTokens. claude-haiku-5-5
+  // publishes input and output only. High-tier top-up bonuses are not priced.
+  it("prices gpt-6-1-sol from declared token counts", () => {
+    const model = "gpt-6-1-sol";
+    expect(PRICING.kie[model]).toEqual({
+      kind: "tokens",
+      rate: { input: 0.6, output: 3, cacheRead: 0.03, cacheWrite: 0.75 },
+      source: { url: "https://kie.ai/gpt-6-1-sol", asOf: "2026-10-22" },
+    });
+
+    const priced = kieEstimate(
+      { model, input: "ping" },
+      {
+        costHints: {
+          inputTokens: 1_000_000,
+          cacheReadInputTokens: 100_000,
+          cacheWriteInputTokens: 50_000,
+          outputTokens: 1_000_000,
+        },
+      }
+    );
+    // 850k uncached × $0.60 + 100k cached × $0.03 + 50k writes × $0.75
+    // + 1M output × $3.00
+    expect(priced.usd).toBeCloseTo(
+      0.85 * 0.6 + 0.1 * 0.03 + 0.05 * 0.75 + 3,
+      10
+    );
+    expect(priced.source).toBe("declared-tokens+table");
+    expect(priced.warnings).toEqual([]);
+    expect(priced.breakdown.cacheReadInputTokens).toBe(100_000);
+    expect(priced.breakdown.cacheWriteInputTokens).toBe(50_000);
+    expect(priced.breakdown.cacheReadUsdPerMillion).toBe(0.03);
+    expect(priced.breakdown.cacheWriteUsdPerMillion).toBe(0.75);
+    expect(priced.rateAsOf).toBe("2026-10-22");
+  });
+
+  it("prices claude-haiku-5-5 from declared input and output tokens", () => {
+    const model = "claude-haiku-5-5";
+    expect(PRICING.kie[model]).toEqual({
+      kind: "tokens",
+      rate: { input: 0.06, output: 0.3 },
+      source: { url: "https://kie.ai/claude-haiku-5-5", asOf: "2026-10-22" },
+    });
+    const priced = kieEstimate(
+      { model },
+      { costHints: { inputTokens: 1_000_000, outputTokens: 1_000_000 } }
+    );
+    expect(priced.usd).toBeCloseTo(0.36, 10);
+    expect(priced.warnings).toEqual([]);
+    expect(priced.breakdown.cacheReadInputTokens).toBeUndefined();
+    expect(priced.source).toBe("declared-tokens+table");
+  });
+
+  it("fails closed on gpt-6-1-sol without cache counts", () => {
+    const model = "gpt-6-1-sol";
+    const result = kieEstimate(
+      { model },
+      { costHints: { inputTokens: 100, outputTokens: 20 } }
+    );
+    expect(result.usd).toBe(0);
+    expect(result.warnings.join(" ")).toContain(
+      "costHints.cacheReadInputTokens"
+    );
+    expect(result.warnings.join(" ")).toContain(
+      "costHints.cacheWriteInputTokens"
+    );
+    expect(result.breakdown.inputUsdPerMillion).toBeUndefined();
+  });
+
+  it("fails closed when gpt-6-1-sol cache counts exceed input tokens", () => {
+    const model = "gpt-6-1-sol";
+    const result = kieEstimate(
+      { model },
+      {
+        costHints: {
+          inputTokens: 10,
+          cacheReadInputTokens: 8,
+          cacheWriteInputTokens: 8,
+          outputTokens: 1,
+        },
+      }
+    );
+    expect(result.usd).toBe(0);
+    expect(result.warnings.join(" ")).toContain("exceed");
+    expect(result.breakdown.inputUsdPerMillion).toBeUndefined();
+  });
+
   it("never derives Gemini TTS tokens from the request text", () => {
     // A very long text must not change the estimate: the payload is not a
     // token source for these models, by design.

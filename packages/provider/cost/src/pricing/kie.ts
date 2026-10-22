@@ -3217,4 +3217,28 @@ export const kie: Record<string, ModelPricing> = {
     rate: { input: 0.35, output: 4.2 },
     source: pricePage("https://kie.ai/gemini-3.8-flash-lite-tts", "2026-10-05"),
   },
+
+  // Chat models billed per token. Counts come from costHints, the same
+  // declared-token path as Gemini TTS. A published cache rate makes that
+  // count required: inputTokens is the total, and the cache counts are
+  // disjoint subsets. High-tier top-up bonuses (~10%) are not applied.
+  //
+  // Page-evidence rule (pricing/kie.ts header), read 2026-10-22. Each
+  // groupData object has an empty path, so the model id is userPath.
+  // pricingDesc USD equals credits × $0.005. Archived in
+  // tests/fixtures/kie-pricing-evidence/chat-models-2026-10-22.json.
+  // https://kie.ai/gpt-6-1-sol — Input 120 ($0.60), Cached Input 6 ($0.03),
+  // Cache Writes 150 ($0.75), Output 600 ($3.00) per million tokens.
+  "gpt-6-1-sol": {
+    kind: "tokens",
+    rate: { input: 0.6, output: 3, cacheRead: 0.03, cacheWrite: 0.75 },
+    source: pricePage("https://kie.ai/gpt-6-1-sol", "2026-10-22"),
+  },
+  // https://kie.ai/claude-haiku-5-5 — Input 12 ($0.06) and Output 60 ($0.30)
+  // per million tokens. The card publishes no cache rate.
+  "claude-haiku-5-5": {
+    kind: "tokens",
+    rate: { input: 0.06, output: 0.3 },
+    source: pricePage("https://kie.ai/claude-haiku-5-5", "2026-10-22"),
+  },
 };

@@ -48,7 +48,9 @@ const SOURCE_FILES = Object.freeze({
   endpoints: "scripts/endpoint-docs.tsv",
 });
 
-// Seedance 2.5's six official cells, keyed resolution|videoInput: the page's
+// Seedance 2.5's four still-current frozen cells, keyed resolution|videoInput.
+// The 1080p cells were superseded on 2026-10-22 (pricing-only exceptions).
+// The page's
 // "with video" column is the cheaper one because it bills (input + output)
 // seconds, and generate_audio selects no rate (ac-u8y5xg).
 const REQUIRED_SEEDANCE_RATES = Object.freeze({
@@ -56,8 +58,6 @@ const REQUIRED_SEEDANCE_RATES = Object.freeze({
   "480p|video": "0.085",
   "720p|no-video": "0.315",
   "720p|video": "0.190",
-  "1080p|no-video": "0.570",
-  "1080p|video": "0.3425",
 });
 
 // Seedance 2.5's videoInput selector is derived from the schema field
@@ -1010,7 +1010,7 @@ function classifyRawRow(raw, inventories) {
     }
     mappedKeys.push("bytedance/seedance-2-5");
     rationale =
-      "Mandatory Seedance 2.5 row; the final cost table contains the supported pricing key and all six official cells.";
+      "Mandatory Seedance 2.5 row; the final cost table contains the supported pricing key and the still-current official cells.";
   } else if (queryConflict) {
     disposition = "upstream-unmappable";
     rationale =
@@ -1260,7 +1260,7 @@ function inventoryEntries(inventories, rows) {
       disposition,
       rationale:
         id === "bytedance/seedance-2-5"
-          ? "WI6 reconciles the required Seedance 2.5 matrix against all six official cells."
+          ? "WI6 reconciles the required Seedance 2.5 matrix against the still-current official cells."
           : linkedRows.length && pricingKey
             ? "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
             : "WI6 records this model as an explicit schema audit membership because no usable runtime pricing key is evidenced.",

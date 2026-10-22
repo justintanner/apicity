@@ -287,6 +287,7 @@ export const KIE_MEDIA_MODELS = [
   "bytedance/seedance-2-fast",
   "bytedance/seedance-2",
   "bytedance/seedance-2-5",
+  "bytedance/seedance-2-5-draft",
   "bytedance/seedance-2-mini",
   "bytedance/seedance-1.5-pro",
   // ByteDance non-Seedance createTask models — enum-only (Seedance alias is
@@ -3439,6 +3440,7 @@ export const Seedance25InputSchema = z.object({
     .default(5),
   output_format: z.enum(["mp4", "mov"]).default("mp4"),
   web_search: z.boolean().optional(),
+  draft: z.boolean().default(false),
   nsfw_checker: z.boolean().default(false),
 });
 
@@ -3451,6 +3453,13 @@ const Seedance25RequestObjectSchema = z.object({
 export const Seedance25RequestSchema =
   Seedance25RequestObjectSchema.superRefine((value, ctx) => {
     const { input } = value;
+    if (input.draft && input.resolution !== "480p") {
+      ctx.addIssue({
+        code: "custom",
+        message: "Seedance 2.5 draft mode requires 480p resolution",
+        path: ["input", "resolution"],
+      });
+    }
     const hasFirstFrame = Boolean(input.first_frame_url);
     const hasLastFrame = Boolean(input.last_frame_url);
     const hasFrame = hasFirstFrame || hasLastFrame;
@@ -3490,6 +3499,20 @@ export const Seedance25RequestSchema =
       }
     }
   });
+
+export const Seedance25DraftInputSchema = z.object({
+  draft_task_id: z.string().min(1),
+  resolution: z.literal("1080p"),
+  output_format: z.enum(["mp4", "mov"]).optional(),
+  return_last_frame: z.boolean().default(false),
+  nsfw_checker: z.boolean().default(false),
+});
+
+export const Seedance25DraftRequestSchema = z.object({
+  model: z.literal("bytedance/seedance-2-5-draft"),
+  callBackUrl: z.string().url().optional(),
+  input: Seedance25DraftInputSchema,
+});
 
 export const Seedance2MiniInputSchema = z.object({
   prompt: z.string().max(20000).optional(),
@@ -8661,6 +8684,7 @@ export const MediaGenerationRequestSchema = z.union([
   Seedance2FastRequestSchema,
   Seedance2RequestSchema,
   Seedance25RequestSchema,
+  Seedance25DraftRequestSchema,
   Seedance2MiniRequestSchema,
   Seedance15ProRequestSchema,
   BytedanceSeedreamRequestSchema,
@@ -10386,4 +10410,13 @@ export type Flux3KleinEditImageRequest = z.input<
 export type Flux3KleinEditImageRequestInput = Flux3KleinEditImageRequest;
 export type Flux3KleinEditImageParsedRequest = z.output<
   typeof Flux3KleinEditImageRequestSchema
+>;
+
+export type Seedance25DraftInput = z.infer<typeof Seedance25DraftInputSchema>;
+export type Seedance25DraftRequest = z.input<
+  typeof Seedance25DraftRequestSchema
+>;
+export type Seedance25DraftRequestInput = Seedance25DraftRequest;
+export type Seedance25DraftParsedRequest = z.output<
+  typeof Seedance25DraftRequestSchema
 >;

@@ -1,0 +1,55 @@
+{
+  "capturedAt": "2026-10-22",
+  "source": "https://kie.ai/seedance-2-5",
+  "draftSource": "https://kie.ai/seedance-2-5?model=bytedance%2Fseedance-2-5-draft",
+  "models": ["bytedance/seedance-2-5", "bytedance/seedance-2-5-draft"],
+  "basis": "Published model-tab pricing cards. Draft render inherits source with-video/no-video billing mode and standard resolution rate; with-video bills input plus output duration. No-video bills output duration.",
+  "rates": [
+    {
+      "resolution": "480p",
+      "videoInput": true,
+      "creditsPerSecond": 17,
+      "usdPerSecond": 0.085
+    },
+    {
+      "resolution": "480p",
+      "videoInput": false,
+      "creditsPerSecond": 28,
+      "usdPerSecond": 0.14
+    },
+    {
+      "resolution": "720p",
+      "videoInput": true,
+      "creditsPerSecond": 38,
+      "usdPerSecond": 0.19
+    },
+    {
+      "resolution": "720p",
+      "videoInput": false,
+      "creditsPerSecond": 63,
+      "usdPerSecond": 0.315
+    },
+    {
+      "resolution": "1080p",
+      "videoInput": true,
+      "creditsPerSecond": 95,
+      "usdPerSecond": 0.475
+    },
+    {
+      "resolution": "1080p",
+      "videoInput": false,
+      "creditsPerSecond": 158,
+      "usdPerSecond": 0.79
+    }
+  ],
+  "recordingBudgetUsd": 4,
+  "estimatedPrecursorUsd": 0.56,
+  "estimatedRenderUsd": 3.16,
+  "observedPrecursorCredits": 112,
+  "observedPrecursorUsd": 0.56,
+  "renderAttempt": {
+    "code": 402,
+    "message": "Credits insufficient",
+    "taskCreated": false
+  }
+}

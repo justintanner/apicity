@@ -1801,10 +1801,10 @@
       "endpoints": 71
     },
     "final": {
-      "models": 157,
-      "pricingKeys": 183,
-      "slugKeys": 185,
-      "displayKeys": 185,
+      "models": 158,
+      "pricingKeys": 184,
+      "slugKeys": 186,
+      "displayKeys": 186,
       "schemaWithoutPricing": 6,
       "pricingOnly": 32,
       "endpoints": 84
@@ -1820,11 +1820,11 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:6593071a9f339c5bec542ec2b8a885a31107ef7fbf78353fd475e2a2530ef9ad",
-      "packages/provider/kie/src/model-schemas.ts": "sha256:2277030349670d24262aedbed35e356ee8a1f9aab43894f9dbc95a72c850c6fb",
-      "packages/provider/kie/src/kie.ts": "sha256:3be8d9008640702d5264ee3adebf5dd7e391c1d43db3532e85f7405cbb9a71c5",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:294445f94655cc881fa5682cc8de438431bb946f6a1939f65c5c6be4ce48161c",
-      "packages/provider/cost/src/slugs.ts": "sha256:25b5d32abc5c207c2175b14f7df96176d7dfbe589133f1cbfcf377535310cda3",
+      "packages/provider/kie/src/zod.ts": "sha256:4a5cc76cc53ceb88ab95eaf089fa6efba6439e9482d964da79a21af6cafe2e90",
+      "packages/provider/kie/src/model-schemas.ts": "sha256:c2053fdae21d1eabc9576b7ca69f00c1cb9d42d2a4c7dcadcf3f070beb17aab2",
+      "packages/provider/kie/src/kie.ts": "sha256:a2cb998e08abb16df92f0be5a438d13c0a476e8e9c884e7217a30ec93aee1d0e",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:36028e29418233deb37eeaf9ca46b669c59cecd6e129996214d06e749bcdc912",
+      "packages/provider/cost/src/slugs.ts": "sha256:f50fe8c70fb2d3e2af61bc5516074ee3033c80caff197e4003f3396663b635a3",
       "scripts/endpoint-docs.tsv": "sha256:748ea8b2a7cca690954edecd0a31aa4719fbf04e0024af1f9e9df5f9f0f94301"
     }
   },
@@ -5350,45 +5350,14 @@
         "anchor": "https://kie.ai/seedance-2-5",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["bytedance/seedance-2-5"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/seedance-2-5",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "Mandatory Seedance 2.5 row; the final cost table contains the supported pricing key and all six official cells.",
-      "unit": "seconds",
-      "officialUnit": "seconds",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "68.5",
-        "creditUnit": "per second",
-        "usdPrice": "0.3425",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "resolution": "1080p",
-        "videoInput": "video"
-      },
-      "selectorSources": {
-        "resolution": "modelInputSchemas:bytedance/seedance-2-5",
-        "videoInput": "derived:bytedance/seedance-2-5#reference_video_urls"
-      },
-      "representativePricingMetadata": {
-        "costHints": {
-          "inputDurationSeconds": 5
-        }
-      },
-      "representativePayload": {
-        "model": "bytedance/seedance-2-5",
-        "input": {
-          "prompt": "audit",
-          "resolution": "1080p",
-          "reference_video_urls": ["https://example.com/a.mp4"],
-          "duration": 5
-        }
-      }
+      "rationale": "The frozen September 1080p rates are superseded by the 2026-10-22 model-tab card (95 credits/s with video, 158 without); current rates are documented pricing-only exceptions.",
+      "technicalBlocker": "The frozen September 1080p rates are superseded by the 2026-10-22 model-tab card (95 credits/s with video, 158 without); current rates are documented pricing-only exceptions."
     },
     {
       "occurrenceId": "sha256:f47489cf45f834fd2b48a4dc6b8c77f1c4541e5e72043c20465ed7954054682e#1",
@@ -5406,39 +5375,14 @@
         "anchor": "https://kie.ai/seedance-2-5",
         "discountPrice": false
       },
-      "disposition": "implemented",
-      "mappedApiCityKeys": ["bytedance/seedance-2-5"],
+      "disposition": "upstream-unmappable",
+      "mappedApiCityKeys": [],
       "evidence": {
         "url": "https://kie.ai/seedance-2-5",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "Mandatory Seedance 2.5 row; the final cost table contains the supported pricing key and all six official cells.",
-      "unit": "seconds",
-      "officialUnit": "seconds",
-      "officialUnitQuantity": 1,
-      "rateBasis": {
-        "kind": "official-usd-price",
-        "creditPrice": "114",
-        "creditUnit": "per second",
-        "usdPrice": "0.570",
-        "rounding": "official value retained as published"
-      },
-      "selectorValues": {
-        "resolution": "1080p",
-        "videoInput": "no-video"
-      },
-      "selectorSources": {
-        "resolution": "modelInputSchemas:bytedance/seedance-2-5",
-        "videoInput": "derived:bytedance/seedance-2-5#reference_video_urls"
-      },
-      "representativePayload": {
-        "model": "bytedance/seedance-2-5",
-        "input": {
-          "prompt": "audit",
-          "resolution": "1080p",
-          "duration": 5
-        }
-      }
+      "rationale": "The frozen September 1080p rates are superseded by the 2026-10-22 model-tab card (95 credits/s with video, 158 without); current rates are documented pricing-only exceptions.",
+      "technicalBlocker": "The frozen September 1080p rates are superseded by the 2026-10-22 model-tab card (95 credits/s with video, 158 without); current rates are documented pricing-only exceptions."
     },
     {
       "occurrenceId": "sha256:f343208348f54abf2d1c4e40751bd996115e248bf6c395382f52ea838228efe2#1",
@@ -5462,7 +5406,7 @@
         "url": "https://kie.ai/seedance-2-5",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "Mandatory Seedance 2.5 row; the final cost table contains the supported pricing key and all six official cells.",
+      "rationale": "Mandatory Seedance 2.5 row; the final cost table contains the supported pricing key and the still-current official cells.",
       "unit": "seconds",
       "officialUnit": "seconds",
       "officialUnitQuantity": 1,
@@ -5518,7 +5462,7 @@
         "url": "https://kie.ai/seedance-2-5",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "Mandatory Seedance 2.5 row; the final cost table contains the supported pricing key and all six official cells.",
+      "rationale": "Mandatory Seedance 2.5 row; the final cost table contains the supported pricing key and the still-current official cells.",
       "unit": "seconds",
       "officialUnit": "seconds",
       "officialUnitQuantity": 1,
@@ -5568,7 +5512,7 @@
         "url": "https://kie.ai/seedance-2-5",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "Mandatory Seedance 2.5 row; the final cost table contains the supported pricing key and all six official cells.",
+      "rationale": "Mandatory Seedance 2.5 row; the final cost table contains the supported pricing key and the still-current official cells.",
       "unit": "seconds",
       "officialUnit": "seconds",
       "officialUnitQuantity": 1,
@@ -5624,7 +5568,7 @@
         "url": "https://kie.ai/seedance-2-5",
         "source": "frozen official Kie snapshot"
       },
-      "rationale": "Mandatory Seedance 2.5 row; the final cost table contains the supported pricing key and all six official cells.",
+      "rationale": "Mandatory Seedance 2.5 row; the final cost table contains the supported pricing key and the still-current official cells.",
       "unit": "seconds",
       "officialUnit": "seconds",
       "officialUnitQuantity": 1,
@@ -23646,15 +23590,22 @@
         "guard": true,
         "pricingKey": "bytedance/seedance-2-5",
         "linkedRows": [
-          "sha256:ac7978e4c0bc04ee1606c3bf4dda45fe53532f9ec6098942be3c2a3ed5a16a6d#1",
-          "sha256:f47489cf45f834fd2b48a4dc6b8c77f1c4541e5e72043c20465ed7954054682e#1",
           "sha256:f343208348f54abf2d1c4e40751bd996115e248bf6c395382f52ea838228efe2#1",
           "sha256:985b30aa8f4221a3230a72a03d84feab5302ae165424ceef9113aca9e5558522#1",
           "sha256:307d3eedee19303eb54a9c3a4eb647c5e1d5912123e08bb72d21c6f7c1c7005a#1",
           "sha256:40f9dba288fd7eaee8235c7749b7c1171e9f9e2804e8689355f5e05a96059453#1"
         ],
         "disposition": "supported",
-        "rationale": "WI6 reconciles the required Seedance 2.5 matrix against all six official cells."
+        "rationale": "WI6 reconciles the required Seedance 2.5 matrix against the still-current official cells."
+      },
+      {
+        "id": "bytedance/seedance-2-5-draft",
+        "descriptor": true,
+        "guard": true,
+        "pricingKey": "bytedance/seedance-2-5-draft",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
       },
       {
         "id": "bytedance/seedance-2-mini",
@@ -26225,8 +26176,6 @@
       {
         "key": "bytedance/seedance-2-5",
         "linkedRows": [
-          "sha256:ac7978e4c0bc04ee1606c3bf4dda45fe53532f9ec6098942be3c2a3ed5a16a6d#1",
-          "sha256:f47489cf45f834fd2b48a4dc6b8c77f1c4541e5e72043c20465ed7954054682e#1",
           "sha256:f343208348f54abf2d1c4e40751bd996115e248bf6c395382f52ea838228efe2#1",
           "sha256:985b30aa8f4221a3230a72a03d84feab5302ae165424ceef9113aca9e5558522#1",
           "sha256:307d3eedee19303eb54a9c3a4eb647c5e1d5912123e08bb72d21c6f7c1c7005a#1",
@@ -26234,6 +26183,12 @@
         ],
         "disposition": "supported",
         "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
+      },
+      {
+        "key": "bytedance/seedance-2-5-draft",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
       },
       {
         "key": "bytedance/seedance-2-mini",
@@ -27214,6 +27169,10 @@
         "disposition": "supported"
       },
       {
+        "key": "bytedance/seedance-2-5-draft",
+        "disposition": "supported"
+      },
+      {
         "key": "bytedance/seedance-2-mini",
         "disposition": "supported"
       },
@@ -27953,6 +27912,10 @@
       },
       {
         "key": "bytedance/seedance-2-5",
+        "disposition": "supported"
+      },
+      {
+        "key": "bytedance/seedance-2-5-draft",
         "disposition": "supported"
       },
       {
@@ -29008,13 +28971,13 @@
       "unique": 483,
       "duplicateOccurrences": 0,
       "dispositionCounts": {
-        "implemented": 249,
+        "implemented": 247,
         "canonical-alias": 122,
         "duplicate": 0,
         "free-nonbillable": 3,
         "unsupported-endpoint": 3,
         "token-billed": 80,
-        "upstream-unmappable": 26
+        "upstream-unmappable": 28
       },
       "unclassified": 0,
       "evidenceConflicts": {
@@ -29034,16 +28997,16 @@
     },
     "apiCity": {
       "models": {
-        "count": 157,
-        "descriptors": 157,
-        "guards": 157,
+        "count": 158,
+        "descriptors": 158,
+        "guards": 158,
         "withoutPricing": 6,
         "dispositionCounts": {
           "supported": 116,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 41
+          "upstream-unmappable": 42
         },
         "unclassified": 0
       },
@@ -29061,20 +29024,20 @@
         "unclassified": 0
       },
       "pricingKeys": {
-        "count": 183,
+        "count": 184,
         "dispositionCounts": {
           "supported": 144,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 39
+          "upstream-unmappable": 40
         },
         "unclassified": 0
       },
       "slugs": {
-        "count": 185,
+        "count": 186,
         "dispositionCounts": {
-          "supported": 185,
+          "supported": 186,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -29083,9 +29046,9 @@
         "unclassified": 0
       },
       "displays": {
-        "count": 185,
+        "count": 186,
         "dispositionCounts": {
-          "supported": 185,
+          "supported": 186,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -29124,6 +29087,34 @@
   },
   "runtimeCoverage": {
     "exceptions": [
+      {
+        "key": "bytedance/seedance-2-5",
+        "variant": "1080p|video",
+        "status": "pricing-only",
+        "provenance": "https://kie.ai/seedance-2-5 model-tab pricing cards captured 2026-10-22 in tests/fixtures/kie-pricing-evidence/seedance-2-5-draft-2026-10-22.json: 95 credits/s ($0.475) with video, 158 credits/s ($0.790) without video; draft render inherits the source billing mode",
+        "rationale": "The live 1080p rates supersede the frozen September cells; the draft-render model is absent from that snapshot."
+      },
+      {
+        "key": "bytedance/seedance-2-5",
+        "variant": "1080p|no-video",
+        "status": "pricing-only",
+        "provenance": "https://kie.ai/seedance-2-5 model-tab pricing cards captured 2026-10-22 in tests/fixtures/kie-pricing-evidence/seedance-2-5-draft-2026-10-22.json: 95 credits/s ($0.475) with video, 158 credits/s ($0.790) without video; draft render inherits the source billing mode",
+        "rationale": "The live 1080p rates supersede the frozen September cells; the draft-render model is absent from that snapshot."
+      },
+      {
+        "key": "bytedance/seedance-2-5-draft",
+        "variant": "1080p|video",
+        "status": "pricing-only",
+        "provenance": "https://kie.ai/seedance-2-5 model-tab pricing cards captured 2026-10-22 in tests/fixtures/kie-pricing-evidence/seedance-2-5-draft-2026-10-22.json: 95 credits/s ($0.475) with video, 158 credits/s ($0.790) without video; draft render inherits the source billing mode",
+        "rationale": "The live 1080p rates supersede the frozen September cells; the draft-render model is absent from that snapshot."
+      },
+      {
+        "key": "bytedance/seedance-2-5-draft",
+        "variant": "1080p|no-video",
+        "status": "pricing-only",
+        "provenance": "https://kie.ai/seedance-2-5 model-tab pricing cards captured 2026-10-22 in tests/fixtures/kie-pricing-evidence/seedance-2-5-draft-2026-10-22.json: 95 credits/s ($0.475) with video, 158 credits/s ($0.790) without video; draft render inherits the source billing mode",
+        "rationale": "The live 1080p rates supersede the frozen September cells; the draft-render model is absent from that snapshot."
+      },
       {
         "key": "flux-3/klein-text-to-image",
         "variant": "1K",

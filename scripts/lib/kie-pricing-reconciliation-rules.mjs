@@ -87,6 +87,18 @@ export function validateFamilyRegistrations() {
 }
 
 export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
+  ...["bytedance/seedance-2-5", "bytedance/seedance-2-5-draft"].flatMap((key) =>
+    ["1080p|video", "1080p|no-video"].map((variant) => ({
+      key,
+      variant,
+      status: "pricing-only",
+      provenance:
+        "https://kie.ai/seedance-2-5 model-tab pricing cards captured 2026-10-22 in tests/fixtures/kie-pricing-evidence/seedance-2-5-draft-2026-10-22.json: 95 credits/s ($0.475) with video, 158 credits/s ($0.790) without video; draft render inherits the source billing mode",
+      rationale:
+        "The live 1080p rates supersede the frozen September cells; the draft-render model is absent from that snapshot.",
+    }))
+  ),
+
   ...["flux-3/klein-text-to-image", "flux-3/klein-edit-image"].flatMap((key) =>
     ["1K", "2K", "4K"].map((variant) => ({
       key,
@@ -1286,6 +1298,13 @@ const KNOWN_FALSE_MAPPING_RULES = Object.freeze([
       String(official.usdPrice) === "0.028",
     message:
       "The official PixVerse V6 Extend 540p-with-audio cell publishes $0.028/s beside a 7.2-credit price, the falPrice/usdPrice pair of the adjacent 5.6-credit rows; the $0.005 credit basis, https://kie.ai/pixverse-v6?model=pixverse-v6%2Fextend (540P: 7.2 credits/s, $0.036/s, with audio) and the feed's own 7.2-credit 720P extend cell all print $0.036/s, the callable runtime rate; retain the upstream rate conflict explicitly rather than quoting either figure as exact evidence.",
+  },
+  {
+    family: "seedance-2-5-1080p-refreshed",
+    matches: (description, key) =>
+      key === "bytedance/seedance-2-5" && /1080p/i.test(description),
+    message:
+      "The frozen September 1080p rates are superseded by the 2026-10-22 model-tab card (95 credits/s with video, 158 without); current rates are documented pricing-only exceptions.",
   },
   {
     family: "qwen-image-per-preset",

@@ -14,7 +14,7 @@ Apicity is a TypeScript monorepo of standalone API provider packages
 `@apicity/telegram`, `@apicity/quo`, `@apicity/x`, `@apicity/youtube`,
 `@apicity/free-media-upload`, `@apicity/cost`<!-- provider-inventory:providers:end -->). Each package is self-contained with a minimal dependency footprint: every provider depends on `zod` (endpoint `.schema` definitions), polymarket also depends on `viem` for EIP-712 order signing, and the OpenAI and xAI Realtime server transports use `ws`. Shared provider helpers are copied into packages as synced local source rather than consumed through workspace package dependencies. Based on [TetherAI](https://github.com/nbursa/TetherAI).
 
-`@apicity/cost` is a dependency-free cross-provider helper: pure local USD cost/token estimation (`createCost`, `computeEstimate`, bundled rate tables) plus the canonical OTP pay-gate (`withPaidGate`) source vendored into kie and xai.
+`@apicity/cost` is a dependency-free cross-provider helper: pure local USD cost/token estimation (`createCost`, `computeEstimate`, bundled rate tables), a committed frontier-model registry (`frontier`, `FRONTIER_TYPES`), plus the canonical OTP pay-gate (`withPaidGate`) source vendored into kie and xai.
 
 `@apicity/cli` (under `packages/cli`, not `packages/provider/`) is the `apicity` CLI and agent skill.
 
@@ -61,6 +61,8 @@ pnpm run doc-gen:check           # Check generated READMEs for drift (part of ci
 pnpm run doc-gen:kie             # Regenerate one provider README (one alias per provider; see below)
 pnpm run gen:call-shapes         # Regenerate packages/cli/src/call-shapes.ts from the endpoint sources
 pnpm run gen:call-shapes:check   # Check the generated call-shape table for drift (part of ci:local)
+pnpm run gen:frontier            # Regenerate the frontier registry from scripts/frontier
+pnpm run gen:frontier:check      # Check the frontier registry for drift (part of ci:local)
 pnpm run gen:kie-pricing-manifest # Regenerate the committed KIE pricing manifest
 pnpm run gen:kie-pricing-manifest:check # Check the KIE pricing manifest for drift
 pnpm run gen:shared              # Sync canonical shared/provider-src files into provider copies
@@ -90,7 +92,7 @@ pnpm run dev:preflight:fast -- <name-or-path> # fast provider gate: scoped forma
 pnpm run dev:preflight:provider <name-or-path> # explicit alias for the fast provider gate
 pnpm run dev:preflight:changed   # changed-file format/lint plus full typecheck + replay suite
 pnpm run dev:preflight           # full local gate: format + typecheck + lint:after-format + test:run
-pnpm run ci:local                # full CI-style gate: audit + gen:examples:check + gen:call-shapes:check + doc-gen:check + build + check:packed-types + typecheck:tests + lint + test:run
+pnpm run ci:local                # full CI-style gate: audit + gen:examples:check + gen:call-shapes:check + gen:frontier:check + doc-gen:check + build + check:packed-types + typecheck:tests + lint + test:run
 
 # Harness viewer + screenshots
 pnpm run harness                 # HAR viewer at localhost:3475 (all recordings)

@@ -1,0 +1,132 @@
+{
+  "MiniMax H3 (768p)": [
+    {
+      "provider": "fal",
+      "dotPath": "minimax.h3.imageToVideo"
+    },
+    {
+      "provider": "kie",
+      "dotPath": "api.v1.jobs.createTask",
+      "modelId": "minimax-h3/image-to-video"
+    }
+  ],
+  "FLUX 3 Max (720p)": [
+    {
+      "provider": "fal",
+      "dotPath": "blackforestlabs.flux3Max.imageToVideo"
+    }
+  ],
+  "Dreamina Seedance 2.5": [
+    {
+      "provider": "fal",
+      "dotPath": "bytedance.seedance2p5.imageToVideo"
+    },
+    {
+      "provider": "fal",
+      "dotPath": "bytedance.seedance2p5.us.imageToVideo"
+    },
+    {
+      "provider": "kie",
+      "dotPath": "api.v1.jobs.createTask",
+      "modelId": "bytedance/seedance-2-5"
+    }
+  ],
+  "Gemini Omni Flash 1.1": [
+    {
+      "provider": "fal",
+      "dotPath": "geminiOmniFlash.v1p1.imageToVideo"
+    },
+    {
+      "provider": "kie",
+      "dotPath": "api.v1.jobs.createTask",
+      "modelId": "google/gemini-omni-flash-1-1"
+    },
+    {
+      "provider": "googleflow",
+      "dotPath": "v1.videos",
+      "modelId": "omni-flash"
+    }
+  ],
+  "Wan 3.0": [
+    {
+      "provider": "fal",
+      "dotPath": "alibaba.wan3p0.imageToVideo"
+    },
+    {
+      "provider": "fal",
+      "dotPath": "alibaba.wan3p0Prime.imageToVideo"
+    },
+    {
+      "provider": "kie",
+      "dotPath": "api.v1.jobs.createTask",
+      "modelId": "wan/3-0-video"
+    },
+    {
+      "provider": "kie",
+      "dotPath": "api.v1.jobs.createTask",
+      "modelId": "wan/3-0-video-prime"
+    }
+  ],
+  "MiniMax H3 Max": [
+    {
+      "provider": "fal",
+      "dotPath": "minimax.h3Max.imageToVideo"
+    },
+    {
+      "provider": "fal",
+      "dotPath": "minimax.h3MaxTurbo.imageToVideo"
+    }
+  ],
+  "Dreamina Seedance 2.0": [
+    {
+      "provider": "fal",
+      "dotPath": "bytedance.seedance2p0.imageToVideo"
+    },
+    {
+      "provider": "fal",
+      "dotPath": "bytedance.seedance2p0.us.imageToVideo"
+    },
+    {
+      "provider": "kie",
+      "dotPath": "api.v1.jobs.createTask",
+      "modelId": "bytedance/seedance-2"
+    }
+  ],
+  "FLUX 3": [
+    {
+      "provider": "fal",
+      "dotPath": "blackforestlabs.flux3.imageToVideo"
+    }
+  ],
+  "Grok Imagine Video 1.5": [
+    {
+      "provider": "fal",
+      "dotPath": "xai.grokImagineVideo.v1p5.imageToVideo"
+    },
+    {
+      "provider": "kie",
+      "dotPath": "api.v1.jobs.createTask",
+      "modelId": "grok-imagine/image-to-video"
+    },
+    {
+      "provider": "kie",
+      "dotPath": "api.v1.jobs.createTask",
+      "modelId": "grok-imagine-video-1-5-preview"
+    },
+    {
+      "provider": "xai",
+      "dotPath": "v1.videos.generations.imageToVideo"
+    }
+  ],
+  "HappyHorse-1.1": [
+    {
+      "provider": "fal",
+      "dotPath": "alibaba.happyHorse.v1p1.imageToVideo"
+    },
+    {
+      "provider": "kie",
+      "dotPath": "api.v1.jobs.createTask",
+      "modelId": "happyhorse-1-1/image-to-video"
+    }
+  ]
+}

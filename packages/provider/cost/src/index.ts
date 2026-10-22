@@ -97,3 +97,20 @@ export type {
 
 export { withPaidGate } from "./with-paid-gate";
 export type { WithPaidGateOptions } from "./with-paid-gate";
+
+export {
+  FRONTIER,
+  FRONTIER_TYPES,
+  FRONTIER_TYPE_CODES,
+  frontier,
+  frontierType,
+} from "./frontier/index";
+export type {
+  FrontierEndpoint,
+  FrontierEntry,
+  FrontierOptions,
+  FrontierRow,
+  FrontierSnapshot,
+  FrontierType,
+  FrontierTypeInfo,
+} from "./frontier/index";

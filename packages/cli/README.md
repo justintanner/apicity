@@ -138,6 +138,7 @@ each call actually requested, which is how to check rather than guess.
 | `apicity commands`               | Every endpoint, or one provider's with `--provider`. `--json` for a catalog.                                          |
 | `apicity describe <p> <dotPath>` | One endpoint: method, URL, docs URL, path parameters, request parameters, whether it is paid, and the request schema. |
 | `apicity providers`              | Every provider, the env vars it reads (names only) and whether it is configured.                                      |
+| `apicity frontier [type]`        | Ranked image and video models for a task type. `--provider` filters. `--json` for the rows.                           |
 | `apicity skill`                  | Print the agent skill this package ships, byte for byte.                                                              |
 | `apicity skill install`          | Install that skill into `~/.agents/skills/apicity`. `--remove` undoes it.                                             |
 | `apicity setup claude`           | Install the skill and the Claude Code plugin.                                                                         |
@@ -148,6 +149,10 @@ each call actually requested, which is how to check rather than guess.
 | `apicity doctor`                 | Twelve rows about this host's install, always exit 0.                                                                 |
 | `apicity help [topic]`           | Usage, or one of the topics `output`, `exit-codes`, `environment`, `agents`.                                          |
 | `apicity version`                | The package version.                                                                                                  |
+
+## Frontier models
+
+`apicity frontier` lists the six image and video task types. `apicity frontier <type>` lists the ranked models and the endpoint to call (`dotPath`, and `modelId` when the endpoint is shared). `--provider` keeps one provider's rows. The list is a committed snapshot; the tables are in [docs/frontier.md](../../docs/frontier.md).
 
 ## Environment variables
 

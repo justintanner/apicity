@@ -1,0 +1,50 @@
+[
+  {
+    "type": "t2i",
+    "name": "text-to-image",
+    "aliases": [],
+    "leaderboardId": "AA-Image-T2I v2.1",
+    "sourceUrl": "https://artificialanalysis.ai/image/leaderboard/text-to-image",
+    "derived": false
+  },
+  {
+    "type": "i2i",
+    "name": "image-to-image",
+    "aliases": ["image-editing"],
+    "leaderboardId": "AA-Image-Editing v2.1",
+    "sourceUrl": "https://artificialanalysis.ai/image/leaderboard/editing",
+    "derived": false
+  },
+  {
+    "type": "t2v",
+    "name": "text-to-video",
+    "aliases": [],
+    "leaderboardId": "AA-Video-T2V v2.1",
+    "sourceUrl": "https://artificialanalysis.ai/video/leaderboard/text-to-video",
+    "derived": false
+  },
+  {
+    "type": "i2v",
+    "name": "image-to-video",
+    "aliases": [],
+    "leaderboardId": "AA-Video-I2V v1.1",
+    "sourceUrl": "https://artificialanalysis.ai/video/leaderboard/image-to-video",
+    "derived": false
+  },
+  {
+    "type": "v2v",
+    "name": "video-to-video",
+    "aliases": ["video-editing"],
+    "leaderboardId": "AA-Video-Editing v1.1",
+    "sourceUrl": "https://artificialanalysis.ai/video/leaderboard/video-editing",
+    "derived": false
+  },
+  {
+    "type": "r2v",
+    "name": "reference-to-video",
+    "aliases": [],
+    "leaderboardId": "",
+    "sourceUrl": "",
+    "derived": true
+  }
+]

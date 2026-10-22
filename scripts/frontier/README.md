@@ -1,3 +1,21 @@
-# Refreshing the image-to-video frontier snapshot
+# Refreshing a frontier snapshot
 
-Paste a new leaderboard into `image-to-video-leaderboard.json` (leaderboard id, source URL, capture date, and each entry's rank, model, creator, and Elo), then update `image-to-video-endpoints.json` so every model has an endpoint list or an explicit empty list. Bump the capture date, run `pnpm run doc-gen`, and commit the data files with the regenerated root `README.md`. Nothing in code, tests, or CI may download the leaderboard.
+Each task type lives in its own directory under `scripts/frontier/<type>/`.
+
+- `leaderboard.json` — leaderboard id, source URL, capture date, methodology,
+  and each entry's rank, model, creator, and Elo. Ranks are contiguous from 1
+  and stop at 10. A board with fewer than 10 models lists all of them.
+- `endpoints.json` — every leaderboard model, mapped to
+  `{ provider, dotPath, modelId? }` or to `[]` when apicity does not serve it.
+  `dotPath` is the `scripts/endpoint-docs.tsv` path. A dedicated leaf has no
+  `modelId`. A shared callable carries the provider model id.
+- `catalog.json` — the six type codes, names, aliases, and leaderboard
+  identities. A type with no directory yet ships as an empty registry entry.
+
+`i2v` is the only directory in this change. The other five types stay in the
+catalog until their own snapshots land.
+
+Paste the new JSON, bump the capture date, then run `pnpm run gen:frontier`
+and `pnpm run doc-gen`. Commit the JSON with the regenerated
+`packages/provider/cost/src/frontier/data.ts` and `docs/frontier.md`. Nothing
+in code, tests, or CI may download a leaderboard or a price.

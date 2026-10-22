@@ -77,11 +77,13 @@ export {
   listProviders,
   runCommands,
   runDescribe,
+  runFrontier,
   runProviders,
   type CommandsOptions,
   type DescribeOptions,
   type DiscoveryOptions,
   type EndpointDescription,
+  type FrontierCommandOptions,
   type ProviderLoader,
   type ProviderSummary,
 } from "./discovery.js";

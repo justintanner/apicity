@@ -3,7 +3,7 @@ import type { ModelPricing, PerUnitPricing } from "./types";
 import { asNumber, asObject, hintSeconds, hintInputSeconds } from "./helpers";
 
 // MachGen pricebook snapshot, 2026-10-22. Gross USD, before Generation Credit.
-// Recorded billing is reconciled in plans/ac-u8vzzk/machgen-spend-ledger.tsv.
+// Each machgen replay test asserts its recorded billing receipt equals the estimate.
 const source = { url: "https://www.machgen.ai/pricing", asOf: "2026-10-22" };
 const config = (p: Record<string, unknown>) => asObject(p.video_config) ?? {};
 const has = (p: Record<string, unknown>, key: string) =>

@@ -7,6 +7,8 @@
 
 MachGen video generation API provider.
 
+Send `Alibaba-Wan-3.0` requests with MachGen's documented `video_config`: `aspect_ratio: "adaptive"`, `fps: 30` and `audio: true`. On 2026-10-22, seven Wan 3.0 tasks that omitted `aspect_ratio` and `fps` and sent `audio: false` were accepted, then failed upstream with `Request Rejected` at zero charge. With the documented config, 2-second 480p T2V, I2V and R2V requests completed. Which of the three fields MachGen requires has not been isolated.
+
 Runtime dependencies:
 
 - `zod@^4.4.3` — request schemas attached to every POST endpoint as `.schema`

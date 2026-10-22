@@ -33,7 +33,12 @@ export function machgenPayload(
     video_config: {
       duration_secs,
       height,
-      ...(audio ? { audio: false } : {}),
+      // MachGen's documented Wan 3.0 example config (ac-ed194s).
+      ...(model === "Alibaba-Wan-3.0"
+        ? { aspect_ratio: "adaptive" as const, fps: 30, audio: true }
+        : audio
+          ? { audio: false }
+          : {}),
       ...(model === "Seedance-2.5" && task_type === "I2V"
         ? { aspect_ratio: "adaptive" as const }
         : {}),

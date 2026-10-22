@@ -20,8 +20,8 @@ import { fireworks } from "./fireworks";
 import { googleflow } from "./googleflow";
 import { kie } from "./kie";
 import { kimicoding } from "./kimicoding";
-import { openai } from "./openai";
 import { machgen } from "./machgen";
+import { openai } from "./openai";
 import { xai } from "./xai";
 
 export const PRICING_AS_OF = "2026-04-30";
@@ -35,9 +35,9 @@ export const PRICING = {
   googleflow,
   kie,
   kimicoding,
+  machgen,
   openai,
   xai,
-  machgen,
 } as const;
 
 export type PricedProviderId = keyof typeof PRICING;

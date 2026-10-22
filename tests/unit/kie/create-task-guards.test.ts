@@ -126,6 +126,22 @@ const guardedRejectionCases = [
     expectedPath: "input.image_urls",
   },
   {
+    name: "Seedance 2.5 draft render without a source task",
+    request: {
+      model: "bytedance/seedance-2-5-draft",
+      input: { resolution: "1080p" },
+    },
+    expectedPath: "input.draft_task_id",
+  },
+  {
+    name: "Seedance 2.5 preview at an unsupported resolution",
+    request: {
+      model: "bytedance/seedance-2-5",
+      input: { draft: true, resolution: "720p" },
+    },
+    expectedPath: "input.resolution",
+  },
+  {
     name: "bytedance/seedance-2-5 with an out-of-vocabulary resolution",
     request: {
       model: "bytedance/seedance-2-5",
@@ -380,8 +396,8 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
   it("guards exactly the models pinned in this list", () => {
     expect(
       guarded,
-      "Update this deliberate 157-entry pin when the guarded model set changes"
-    ).toHaveLength(157);
+      "Update this deliberate 158-entry pin when the guarded model set changes"
+    ).toHaveLength(158);
     expect([...guarded].sort()).toEqual(
       [
         "kling-3.0/video",
@@ -450,6 +466,7 @@ describe("CREATE_TASK_GUARDS membership rule", () => {
         "bytedance/seedance-2-fast",
         "bytedance/seedance-2",
         "bytedance/seedance-2-5",
+        "bytedance/seedance-2-5-draft",
         "bytedance/seedance-2-mini",
         "bytedance/seedance-1.5-pro",
         "bytedance/seedream",

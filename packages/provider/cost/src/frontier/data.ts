@@ -91,6 +91,7 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "openai.gptImage2p5.sunburst.textToImage",
+            pricingKey: "openai/gpt-image-2.5/sunburst/text-to-image",
           },
           {
             provider: "kie",
@@ -108,6 +109,7 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "openai.gptImage2p5.flare.textToImage",
+            pricingKey: "openai/gpt-image-2.5/flare/text-to-image",
           },
           {
             provider: "kie",
@@ -138,6 +140,7 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "nanoBanana2p1.textToImage",
+            pricingKey: "google/nano-banana-2.1",
           },
           {
             provider: "kie",
@@ -162,6 +165,7 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "xai.grokImagineImage.v2p0.textToImage",
+            pricingKey: "xai/grok-imagine-image/v2.0/text-to-image",
           },
           {
             provider: "kie",
@@ -179,6 +183,7 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "nanoBanana2.textToImage",
+            pricingKey: "fal-ai/nano-banana-2",
           },
           {
             provider: "kie",
@@ -201,6 +206,7 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "meta.museImage.textToImage",
+            pricingKey: "meta/muse-image/text-to-image",
           },
         ],
       },
@@ -242,6 +248,7 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "openai.gptImage2p5.sunburst.edit",
+            pricingKey: "openai/gpt-image-2.5/sunburst/edit",
           },
           {
             provider: "kie",
@@ -259,6 +266,7 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "openai.gptImage2p5.flare.edit",
+            pricingKey: "openai/gpt-image-2.5/flare/edit",
           },
           {
             provider: "kie",
@@ -283,6 +291,7 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "nanoBanana2p1.edit",
+            pricingKey: "google/nano-banana-2.1/edit",
           },
           {
             provider: "kie",
@@ -327,6 +336,7 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "bytedance.seedream.v5.pro.edit",
+            pricingKey: "bytedance/seedream/v5/pro/edit",
           },
           {
             provider: "kie",
@@ -344,6 +354,7 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "meta.museImage.edit",
+            pricingKey: "meta/muse-image/edit",
           },
         ],
       },
@@ -356,6 +367,7 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "microsoft.maiImage2p5Pro.edit",
+            pricingKey: "microsoft/mai-image-2.5-pro/edit",
           },
         ],
       },
@@ -376,10 +388,12 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "alibaba.wan3p0.textToVideo",
+            pricingKey: "alibaba/wan-3.0/text-to-video",
           },
           {
             provider: "fal",
             dotPath: "alibaba.wan3p0Prime.textToVideo",
+            pricingKey: "alibaba/wan-3.0-prime/text-to-video",
           },
           {
             provider: "kie",
@@ -421,6 +435,7 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "minimax.h3.textToVideo",
+            pricingKey: "minimax/h3/text-to-video",
           },
           {
             provider: "kie",
@@ -443,10 +458,12 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "bytedance.seedance2p5.textToVideo",
+            pricingKey: "bytedance/seedance-2.5/text-to-video",
           },
           {
             provider: "fal",
             dotPath: "bytedance.seedance2p5.us.textToVideo",
+            pricingKey: "bytedance/seedance-2.5/us/text-to-video",
           },
           {
             provider: "kie",
@@ -469,6 +486,7 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "blackforestlabs.flux3Max.textToVideo",
+            pricingKey: "blackforestlabs/flux-3-max/text-to-video",
           },
         ],
       },
@@ -481,10 +499,12 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "minimax.h3Max.textToVideo",
+            pricingKey: "minimax/h3-max/text-to-video",
           },
           {
             provider: "fal",
             dotPath: "minimax.h3MaxTurbo.textToVideo",
+            pricingKey: "minimax/h3-max-turbo/text-to-video",
           },
         ],
       },
@@ -497,6 +517,7 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "blackforestlabs.flux3.textToVideo",
+            pricingKey: "blackforestlabs/flux-3/text-to-video",
           },
         ],
       },
@@ -509,10 +530,12 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "bytedance.seedance2p0.textToVideo",
+            pricingKey: "bytedance/seedance-2.0/text-to-video",
           },
           {
             provider: "fal",
             dotPath: "bytedance.seedance2p0.us.textToVideo",
+            pricingKey: "bytedance/seedance-2.0/us/text-to-video",
           },
           {
             provider: "kie",
@@ -535,6 +558,7 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "geminiOmniFlash.v1p1.textToVideo",
+            pricingKey: "google/gemini-omni-flash/v1.1/text-to-video",
           },
           {
             provider: "kie",
@@ -565,6 +589,7 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "minimax.h3.imageToVideo",
+            pricingKey: "minimax/h3/image-to-video",
           },
           {
             provider: "kie",
@@ -587,6 +612,7 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "blackforestlabs.flux3Max.imageToVideo",
+            pricingKey: "blackforestlabs/flux-3-max/image-to-video",
           },
         ],
       },
@@ -599,10 +625,12 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "bytedance.seedance2p5.imageToVideo",
+            pricingKey: "bytedance/seedance-2.5/image-to-video",
           },
           {
             provider: "fal",
             dotPath: "bytedance.seedance2p5.us.imageToVideo",
+            pricingKey: "bytedance/seedance-2.5/us/image-to-video",
           },
           {
             provider: "kie",
@@ -625,6 +653,7 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "geminiOmniFlash.v1p1.imageToVideo",
+            pricingKey: "google/gemini-omni-flash/v1.1/image-to-video",
           },
           {
             provider: "kie",
@@ -647,10 +676,12 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "alibaba.wan3p0.imageToVideo",
+            pricingKey: "alibaba/wan-3.0/image-to-video",
           },
           {
             provider: "fal",
             dotPath: "alibaba.wan3p0Prime.imageToVideo",
+            pricingKey: "alibaba/wan-3.0-prime/image-to-video",
           },
           {
             provider: "kie",
@@ -678,10 +709,12 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "minimax.h3Max.imageToVideo",
+            pricingKey: "minimax/h3-max/image-to-video",
           },
           {
             provider: "fal",
             dotPath: "minimax.h3MaxTurbo.imageToVideo",
+            pricingKey: "minimax/h3-max-turbo/image-to-video",
           },
         ],
       },
@@ -694,10 +727,12 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "bytedance.seedance2p0.imageToVideo",
+            pricingKey: "bytedance/seedance-2.0/image-to-video",
           },
           {
             provider: "fal",
             dotPath: "bytedance.seedance2p0.us.imageToVideo",
+            pricingKey: "bytedance/seedance-2.0/us/image-to-video",
           },
           {
             provider: "kie",
@@ -720,6 +755,7 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "blackforestlabs.flux3.imageToVideo",
+            pricingKey: "blackforestlabs/flux-3/image-to-video",
           },
         ],
       },
@@ -732,6 +768,7 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "xai.grokImagineVideo.v1p5.imageToVideo",
+            pricingKey: "xai/grok-imagine-video/v1.5/image-to-video",
           },
           {
             provider: "kie",
@@ -746,6 +783,7 @@ export const FRONTIER = {
           {
             provider: "xai",
             dotPath: "v1.videos.generations.imageToVideo",
+            pricingKey: "grok-imagine-video-1.5-preview",
           },
           {
             provider: "machgen",
@@ -763,6 +801,7 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "alibaba.happyHorse.v1p1.imageToVideo",
+            pricingKey: "alibaba/happy-horse/v1.1/image-to-video",
           },
           {
             provider: "kie",
@@ -801,10 +840,12 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "bytedance.seedance2p5.referenceToVideo",
+            pricingKey: "bytedance/seedance-2.5/reference-to-video",
           },
           {
             provider: "fal",
             dotPath: "bytedance.seedance2p5.us.referenceToVideo",
+            pricingKey: "bytedance/seedance-2.5/us/reference-to-video",
           },
         ],
       },
@@ -817,6 +858,7 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "geminiOmniFlash.v1p1.edit",
+            pricingKey: "google/gemini-omni-flash/v1.1/edit",
           },
           {
             provider: "googleflow",
@@ -861,6 +903,7 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "wan.v2p7.editVideo",
+            pricingKey: "fal-ai/wan/v2.7/edit-video",
           },
           {
             provider: "kie",
@@ -912,10 +955,12 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "alibaba.wan3p0.referenceToVideo",
+            pricingKey: "alibaba/wan-3.0/reference-to-video",
           },
           {
             provider: "fal",
             dotPath: "alibaba.wan3p0Prime.referenceToVideo",
+            pricingKey: "alibaba/wan-3.0-prime/reference-to-video",
           },
           {
             provider: "kie",
@@ -943,6 +988,7 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "minimax.h3.referenceToVideo",
+            pricingKey: "minimax/h3/reference-to-video",
           },
           {
             provider: "kie",
@@ -965,10 +1011,12 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "bytedance.seedance2p5.referenceToVideo",
+            pricingKey: "bytedance/seedance-2.5/reference-to-video",
           },
           {
             provider: "fal",
             dotPath: "bytedance.seedance2p5.us.referenceToVideo",
+            pricingKey: "bytedance/seedance-2.5/us/reference-to-video",
           },
           {
             provider: "kie",
@@ -991,6 +1039,7 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "minimax.h3Max.referenceToVideo",
+            pricingKey: "minimax/h3-max/reference-to-video",
           },
         ],
       },
@@ -1003,10 +1052,12 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "bytedance.seedance2p0.referenceToVideo",
+            pricingKey: "bytedance/seedance-2.0/reference-to-video",
           },
           {
             provider: "fal",
             dotPath: "bytedance.seedance2p0.us.referenceToVideo",
+            pricingKey: "bytedance/seedance-2.0/us/reference-to-video",
           },
           {
             provider: "kie",
@@ -1029,6 +1080,7 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "geminiOmniFlash.v1p1.referenceToVideo",
+            pricingKey: "google/gemini-omni-flash/v1.1/reference-to-video",
           },
           {
             provider: "kie",
@@ -1051,6 +1103,7 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "xai.grokImagineVideo.v1p5.referenceToVideo",
+            pricingKey: "xai/grok-imagine-video/v1.5/reference-to-video",
           },
           {
             provider: "xai",
@@ -1068,6 +1121,7 @@ export const FRONTIER = {
           {
             provider: "fal",
             dotPath: "alibaba.happyHorse.v1p1.referenceToVideo",
+            pricingKey: "alibaba/happy-horse/v1.1/reference-to-video",
           },
           {
             provider: "kie",

@@ -2,11 +2,13 @@
   "Wan 3.0": [
     {
       "provider": "fal",
-      "dotPath": "alibaba.wan3p0.textToVideo"
+      "dotPath": "alibaba.wan3p0.textToVideo",
+      "pricingKey": "alibaba/wan-3.0/text-to-video"
     },
     {
       "provider": "fal",
-      "dotPath": "alibaba.wan3p0Prime.textToVideo"
+      "dotPath": "alibaba.wan3p0Prime.textToVideo",
+      "pricingKey": "alibaba/wan-3.0-prime/text-to-video"
     },
     {
       "provider": "kie",
@@ -29,7 +31,8 @@
   "MiniMax H3 (768p)": [
     {
       "provider": "fal",
-      "dotPath": "minimax.h3.textToVideo"
+      "dotPath": "minimax.h3.textToVideo",
+      "pricingKey": "minimax/h3/text-to-video"
     },
     {
       "provider": "kie",
@@ -45,11 +48,13 @@
   "Dreamina Seedance 2.5": [
     {
       "provider": "fal",
-      "dotPath": "bytedance.seedance2p5.textToVideo"
+      "dotPath": "bytedance.seedance2p5.textToVideo",
+      "pricingKey": "bytedance/seedance-2.5/text-to-video"
     },
     {
       "provider": "fal",
-      "dotPath": "bytedance.seedance2p5.us.textToVideo"
+      "dotPath": "bytedance.seedance2p5.us.textToVideo",
+      "pricingKey": "bytedance/seedance-2.5/us/text-to-video"
     },
     {
       "provider": "kie",
@@ -65,33 +70,39 @@
   "FLUX 3 Max (720p)": [
     {
       "provider": "fal",
-      "dotPath": "blackforestlabs.flux3Max.textToVideo"
+      "dotPath": "blackforestlabs.flux3Max.textToVideo",
+      "pricingKey": "blackforestlabs/flux-3-max/text-to-video"
     }
   ],
   "MiniMax H3 Max": [
     {
       "provider": "fal",
-      "dotPath": "minimax.h3Max.textToVideo"
+      "dotPath": "minimax.h3Max.textToVideo",
+      "pricingKey": "minimax/h3-max/text-to-video"
     },
     {
       "provider": "fal",
-      "dotPath": "minimax.h3MaxTurbo.textToVideo"
+      "dotPath": "minimax.h3MaxTurbo.textToVideo",
+      "pricingKey": "minimax/h3-max-turbo/text-to-video"
     }
   ],
   "FLUX 3": [
     {
       "provider": "fal",
-      "dotPath": "blackforestlabs.flux3.textToVideo"
+      "dotPath": "blackforestlabs.flux3.textToVideo",
+      "pricingKey": "blackforestlabs/flux-3/text-to-video"
     }
   ],
   "Dreamina Seedance 2.0": [
     {
       "provider": "fal",
-      "dotPath": "bytedance.seedance2p0.textToVideo"
+      "dotPath": "bytedance.seedance2p0.textToVideo",
+      "pricingKey": "bytedance/seedance-2.0/text-to-video"
     },
     {
       "provider": "fal",
-      "dotPath": "bytedance.seedance2p0.us.textToVideo"
+      "dotPath": "bytedance.seedance2p0.us.textToVideo",
+      "pricingKey": "bytedance/seedance-2.0/us/text-to-video"
     },
     {
       "provider": "kie",
@@ -107,7 +118,8 @@
   "Gemini Omni Flash 1.1": [
     {
       "provider": "fal",
-      "dotPath": "geminiOmniFlash.v1p1.textToVideo"
+      "dotPath": "geminiOmniFlash.v1p1.textToVideo",
+      "pricingKey": "google/gemini-omni-flash/v1.1/text-to-video"
     },
     {
       "provider": "kie",

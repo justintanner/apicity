@@ -2,7 +2,8 @@
   "GPT Image 2.5 Sunburst (max)": [
     {
       "provider": "fal",
-      "dotPath": "openai.gptImage2p5.sunburst.edit"
+      "dotPath": "openai.gptImage2p5.sunburst.edit",
+      "pricingKey": "openai/gpt-image-2.5/sunburst/edit"
     },
     {
       "provider": "kie",
@@ -13,7 +14,8 @@
   "GPT Image 2.5 Flare (max)": [
     {
       "provider": "fal",
-      "dotPath": "openai.gptImage2p5.flare.edit"
+      "dotPath": "openai.gptImage2p5.flare.edit",
+      "pricingKey": "openai/gpt-image-2.5/flare/edit"
     },
     {
       "provider": "kie",
@@ -25,7 +27,8 @@
   "Nano Banana 2.1": [
     {
       "provider": "fal",
-      "dotPath": "nanoBanana2p1.edit"
+      "dotPath": "nanoBanana2p1.edit",
+      "pricingKey": "google/nano-banana-2.1/edit"
     },
     {
       "provider": "kie",
@@ -45,7 +48,8 @@
   "Seedream 5.0 Pro": [
     {
       "provider": "fal",
-      "dotPath": "bytedance.seedream.v5.pro.edit"
+      "dotPath": "bytedance.seedream.v5.pro.edit",
+      "pricingKey": "bytedance/seedream/v5/pro/edit"
     },
     {
       "provider": "kie",
@@ -56,13 +60,15 @@
   "Muse Image": [
     {
       "provider": "fal",
-      "dotPath": "meta.museImage.edit"
+      "dotPath": "meta.museImage.edit",
+      "pricingKey": "meta/muse-image/edit"
     }
   ],
   "MAI-Image-2.5": [
     {
       "provider": "fal",
-      "dotPath": "microsoft.maiImage2p5Pro.edit"
+      "dotPath": "microsoft.maiImage2p5Pro.edit",
+      "pricingKey": "microsoft/mai-image-2.5-pro/edit"
     }
   ]
 }

@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `apicity frontier <type>` adds a price column from the bundled cost tables
+  (`0.04-0.16 USD/s`, `0.08 USD/image`, `dynamic`, or `-`). `--json` includes
+  the price object.
 - `apicity frontier` lists image and video task types, and
   `apicity frontier <type>` lists the ranked models and the endpoint to call.
   `--provider` filters one provider. `--json` and `--quiet` follow the

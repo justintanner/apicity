@@ -22,7 +22,7 @@ export const BUILTIN_COMMANDS: readonly BuiltinCommand[] = [
   { name: "providers", summary: "List providers, their env vars and status." },
   {
     name: "frontier",
-    summary: "List frontier image and video models by task type.",
+    summary: "List frontier image and video models and their bundled price.",
   },
   { name: "skill", summary: "Print the agent skill this CLI ships." },
   {

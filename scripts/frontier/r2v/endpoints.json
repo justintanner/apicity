@@ -2,11 +2,13 @@
   "Wan 3.0": [
     {
       "provider": "fal",
-      "dotPath": "alibaba.wan3p0.referenceToVideo"
+      "dotPath": "alibaba.wan3p0.referenceToVideo",
+      "pricingKey": "alibaba/wan-3.0/reference-to-video"
     },
     {
       "provider": "fal",
-      "dotPath": "alibaba.wan3p0Prime.referenceToVideo"
+      "dotPath": "alibaba.wan3p0Prime.referenceToVideo",
+      "pricingKey": "alibaba/wan-3.0-prime/reference-to-video"
     },
     {
       "provider": "kie",
@@ -27,7 +29,8 @@
   "MiniMax H3 (768p)": [
     {
       "provider": "fal",
-      "dotPath": "minimax.h3.referenceToVideo"
+      "dotPath": "minimax.h3.referenceToVideo",
+      "pricingKey": "minimax/h3/reference-to-video"
     },
     {
       "provider": "kie",
@@ -43,11 +46,13 @@
   "Dreamina Seedance 2.5": [
     {
       "provider": "fal",
-      "dotPath": "bytedance.seedance2p5.referenceToVideo"
+      "dotPath": "bytedance.seedance2p5.referenceToVideo",
+      "pricingKey": "bytedance/seedance-2.5/reference-to-video"
     },
     {
       "provider": "fal",
-      "dotPath": "bytedance.seedance2p5.us.referenceToVideo"
+      "dotPath": "bytedance.seedance2p5.us.referenceToVideo",
+      "pricingKey": "bytedance/seedance-2.5/us/reference-to-video"
     },
     {
       "provider": "kie",
@@ -63,17 +68,20 @@
   "MiniMax H3 Max": [
     {
       "provider": "fal",
-      "dotPath": "minimax.h3Max.referenceToVideo"
+      "dotPath": "minimax.h3Max.referenceToVideo",
+      "pricingKey": "minimax/h3-max/reference-to-video"
     }
   ],
   "Dreamina Seedance 2.0": [
     {
       "provider": "fal",
-      "dotPath": "bytedance.seedance2p0.referenceToVideo"
+      "dotPath": "bytedance.seedance2p0.referenceToVideo",
+      "pricingKey": "bytedance/seedance-2.0/reference-to-video"
     },
     {
       "provider": "fal",
-      "dotPath": "bytedance.seedance2p0.us.referenceToVideo"
+      "dotPath": "bytedance.seedance2p0.us.referenceToVideo",
+      "pricingKey": "bytedance/seedance-2.0/us/reference-to-video"
     },
     {
       "provider": "kie",
@@ -89,7 +97,8 @@
   "Gemini Omni Flash 1.1": [
     {
       "provider": "fal",
-      "dotPath": "geminiOmniFlash.v1p1.referenceToVideo"
+      "dotPath": "geminiOmniFlash.v1p1.referenceToVideo",
+      "pricingKey": "google/gemini-omni-flash/v1.1/reference-to-video"
     },
     {
       "provider": "kie",
@@ -105,7 +114,8 @@
   "Grok Imagine Video 1.5": [
     {
       "provider": "fal",
-      "dotPath": "xai.grokImagineVideo.v1p5.referenceToVideo"
+      "dotPath": "xai.grokImagineVideo.v1p5.referenceToVideo",
+      "pricingKey": "xai/grok-imagine-video/v1.5/reference-to-video"
     },
     {
       "provider": "xai",
@@ -116,7 +126,8 @@
   "HappyHorse-1.1": [
     {
       "provider": "fal",
-      "dotPath": "alibaba.happyHorse.v1p1.referenceToVideo"
+      "dotPath": "alibaba.happyHorse.v1p1.referenceToVideo",
+      "pricingKey": "alibaba/happy-horse/v1.1/reference-to-video"
     },
     {
       "provider": "kie",

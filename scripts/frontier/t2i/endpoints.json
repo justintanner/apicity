@@ -2,7 +2,8 @@
   "GPT Image 2.5 Sunburst (max)": [
     {
       "provider": "fal",
-      "dotPath": "openai.gptImage2p5.sunburst.textToImage"
+      "dotPath": "openai.gptImage2p5.sunburst.textToImage",
+      "pricingKey": "openai/gpt-image-2.5/sunburst/text-to-image"
     },
     {
       "provider": "kie",
@@ -13,7 +14,8 @@
   "GPT Image 2.5 Flare (max)": [
     {
       "provider": "fal",
-      "dotPath": "openai.gptImage2p5.flare.textToImage"
+      "dotPath": "openai.gptImage2p5.flare.textToImage",
+      "pricingKey": "openai/gpt-image-2.5/flare/text-to-image"
     },
     {
       "provider": "kie",
@@ -31,7 +33,8 @@
   "Nano Banana 2.1": [
     {
       "provider": "fal",
-      "dotPath": "nanoBanana2p1.textToImage"
+      "dotPath": "nanoBanana2p1.textToImage",
+      "pricingKey": "google/nano-banana-2.1"
     },
     {
       "provider": "kie",
@@ -43,7 +46,8 @@
   "Grok Imagine Image 2.0": [
     {
       "provider": "fal",
-      "dotPath": "xai.grokImagineImage.v2p0.textToImage"
+      "dotPath": "xai.grokImagineImage.v2p0.textToImage",
+      "pricingKey": "xai/grok-imagine-image/v2.0/text-to-image"
     },
     {
       "provider": "kie",
@@ -54,7 +58,8 @@
   "Nano Banana 2 (Gemini 3.1 Flash Image)": [
     {
       "provider": "fal",
-      "dotPath": "nanoBanana2.textToImage"
+      "dotPath": "nanoBanana2.textToImage",
+      "pricingKey": "fal-ai/nano-banana-2"
     },
     {
       "provider": "kie",
@@ -70,7 +75,8 @@
   "Muse Image": [
     {
       "provider": "fal",
-      "dotPath": "meta.museImage.textToImage"
+      "dotPath": "meta.museImage.textToImage",
+      "pricingKey": "meta/muse-image/text-to-image"
     }
   ],
   "GPT Image 1.5 (high)": [

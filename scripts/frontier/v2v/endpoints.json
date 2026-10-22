@@ -3,17 +3,20 @@
   "Dreamina Seedance 2.5": [
     {
       "provider": "fal",
-      "dotPath": "bytedance.seedance2p5.referenceToVideo"
+      "dotPath": "bytedance.seedance2p5.referenceToVideo",
+      "pricingKey": "bytedance/seedance-2.5/reference-to-video"
     },
     {
       "provider": "fal",
-      "dotPath": "bytedance.seedance2p5.us.referenceToVideo"
+      "dotPath": "bytedance.seedance2p5.us.referenceToVideo",
+      "pricingKey": "bytedance/seedance-2.5/us/reference-to-video"
     }
   ],
   "Gemini Omni Flash 1.1": [
     {
       "provider": "fal",
-      "dotPath": "geminiOmniFlash.v1p1.edit"
+      "dotPath": "geminiOmniFlash.v1p1.edit",
+      "pricingKey": "google/gemini-omni-flash/v1.1/edit"
     },
     {
       "provider": "googleflow",
@@ -33,7 +36,8 @@
   "Wan 2.7": [
     {
       "provider": "fal",
-      "dotPath": "wan.v2p7.editVideo"
+      "dotPath": "wan.v2p7.editVideo",
+      "pricingKey": "fal-ai/wan/v2.7/edit-video"
     },
     {
       "provider": "kie",

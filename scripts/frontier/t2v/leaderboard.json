@@ -1,0 +1,68 @@
+{
+  "leaderboardId": "AA-Video-T2V v2.1",
+  "sourceUrl": "https://artificialanalysis.ai/video/leaderboard/text-to-video",
+  "capturedOn": "2026-10-22",
+  "methodology": "Elo from blind comparisons by validated private evaluators.",
+  "entries": [
+    {
+      "rank": 1,
+      "model": "Wan 3.0",
+      "creator": "Alibaba",
+      "elo": 1175
+    },
+    {
+      "rank": 2,
+      "model": "Utopai X",
+      "creator": "Utopai Studios",
+      "elo": 1167
+    },
+    {
+      "rank": 3,
+      "model": "HeyGen Video (ultraquality)",
+      "creator": "HeyGen",
+      "elo": 1160
+    },
+    {
+      "rank": 4,
+      "model": "MiniMax H3 (768p)",
+      "creator": "MiniMax",
+      "elo": 1158
+    },
+    {
+      "rank": 5,
+      "model": "Dreamina Seedance 2.5",
+      "creator": "ByteDance Seed",
+      "elo": 1158
+    },
+    {
+      "rank": 6,
+      "model": "FLUX 3 Max (720p)",
+      "creator": "Black Forest Labs",
+      "elo": 1155
+    },
+    {
+      "rank": 7,
+      "model": "MiniMax H3 Max",
+      "creator": "MiniMax",
+      "elo": 1154
+    },
+    {
+      "rank": 8,
+      "model": "FLUX 3",
+      "creator": "Black Forest Labs",
+      "elo": 1145
+    },
+    {
+      "rank": 9,
+      "model": "Dreamina Seedance 2.0",
+      "creator": "ByteDance Seed",
+      "elo": 1136
+    },
+    {
+      "rank": 10,
+      "model": "Gemini Omni Flash 1.1",
+      "creator": "Google",
+      "elo": 1130
+    }
+  ]
+}

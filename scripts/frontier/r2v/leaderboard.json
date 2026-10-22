@@ -1,0 +1,57 @@
+{
+  "derived": true,
+  "sources": ["AA-Video-T2V v2.1", "AA-Video-I2V v1.1"],
+  "sourceUrl": "https://artificialanalysis.ai/video/leaderboard/text-to-video",
+  "capturedOn": "2026-10-22",
+  "methodology": "Derived: models from the text-to-video and image-to-video top 10 with a reference-to-video endpoint, ordered by the better of their two Elos; Artificial Analysis publishes no reference-to-video leaderboard.",
+  "entries": [
+    {
+      "rank": 1,
+      "model": "Wan 3.0",
+      "creator": "Alibaba",
+      "elo": 1175
+    },
+    {
+      "rank": 2,
+      "model": "MiniMax H3 (768p)",
+      "creator": "MiniMax",
+      "elo": 1158
+    },
+    {
+      "rank": 3,
+      "model": "Dreamina Seedance 2.5",
+      "creator": "ByteDance Seed",
+      "elo": 1158
+    },
+    {
+      "rank": 4,
+      "model": "MiniMax H3 Max",
+      "creator": "MiniMax",
+      "elo": 1154
+    },
+    {
+      "rank": 5,
+      "model": "Dreamina Seedance 2.0",
+      "creator": "ByteDance Seed",
+      "elo": 1136
+    },
+    {
+      "rank": 6,
+      "model": "Gemini Omni Flash 1.1",
+      "creator": "Google",
+      "elo": 1132
+    },
+    {
+      "rank": 7,
+      "model": "Grok Imagine Video 1.5",
+      "creator": "SpaceXAI",
+      "elo": 1067
+    },
+    {
+      "rank": 8,
+      "model": "HappyHorse-1.1",
+      "creator": "Alibaba",
+      "elo": 1061
+    }
+  ]
+}

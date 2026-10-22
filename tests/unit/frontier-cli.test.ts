@@ -40,7 +40,9 @@ describe("apicity frontier", () => {
     expect(table).toContain("10/10");
     expect(table).toContain("2026-10-22");
     expect(table).toContain("derived");
-    expect(table).toContain("0/0");
+    expect(table).toContain("5/9");
+    expect(table).toContain("8/8");
+    expect(table).not.toContain("0/0");
     expect(table).not.toContain("present");
   });
 
@@ -69,8 +71,16 @@ describe("apicity frontier", () => {
     expect(t2i).toMatchObject({ models: "8/10", captured: "2026-10-22" });
     const i2i = envelope.data.find((row) => row.type === "i2i");
     expect(i2i).toMatchObject({ models: "7/10", captured: "2026-10-22" });
+    const t2v = envelope.data.find((row) => row.type === "t2v");
+    expect(t2v).toMatchObject({ models: "8/10", captured: "2026-10-22" });
+    const v2v = envelope.data.find((row) => row.type === "v2v");
+    expect(v2v).toMatchObject({ models: "5/9", captured: "2026-10-22" });
     const derived = envelope.data.find((row) => row.type === "r2v");
-    expect(derived?.leaderboard).toBe("derived");
+    expect(derived).toMatchObject({
+      leaderboard: "derived",
+      models: "8/8",
+      captured: "2026-10-22",
+    });
   });
 
   it("prints i2v rows for --json and the data alone for --quiet", async () => {
@@ -178,6 +188,78 @@ describe("apicity frontier", () => {
     expect(table).toContain(
       "not yet in apicity: MAI-Image-2.6, Krea 3 (Ultra), MAI-Image-2.6-Flash"
     );
+  });
+
+  it("prints t2v rows and names the unmapped video models", async () => {
+    const { writer, out, err } = capture();
+    await expect(
+      runMain(["frontier", "t2v"], writer, {
+        stdoutIsTTY: true,
+        env: QUIET_ENV,
+      })
+    ).resolves.toBe(0);
+    expect(err).toEqual([]);
+    const table = out.join("\n");
+    expect(table).toContain("alibaba.wan3p0.textToVideo");
+    expect(table).toContain("wan/3-0-video-prime");
+    expect(table).toContain("omni-flash");
+    expect(table).toContain(
+      "not yet in apicity: Utopai X, HeyGen Video (ultraquality)"
+    );
+  });
+
+  it("prints v2v rows through the video-editing alias", async () => {
+    const { writer, out } = capture();
+    await expect(
+      runMain(["frontier", "video-editing"], writer, {
+        stdoutIsTTY: true,
+        env: {},
+      })
+    ).resolves.toBe(0);
+    const table = out.join("\n");
+    expect(table).toContain("geminiOmniFlash.v1p1.edit");
+    expect(table).toContain("wan.v2p7.editVideo");
+    expect(table).toContain("wan2.7-videoedit");
+    expect(table).toContain("kling-3.0-omni/transformation");
+    expect(table).toContain(
+      "not yet in apicity: Wan 3.0, MiniMax H3 (768p), Dreamina Seedance 2.0, Aleph 2.0"
+    );
+  });
+
+  it("prints the derived r2v rows with no gaps", async () => {
+    const { writer, out } = capture();
+    await expect(
+      runMain(["frontier", "r2v", "--json"], writer, {
+        stdoutIsTTY: true,
+        env: {},
+      })
+    ).resolves.toBe(0);
+    const envelope = JSON.parse(out.join("\n")) as {
+      ok: boolean;
+      data: Array<{ rank: number; model: string; provider: string }>;
+    };
+    expect(envelope.ok).toBe(true);
+    expect([...new Set(envelope.data.map((row) => row.model))]).toHaveLength(8);
+    expect(envelope.data[0]).toMatchObject({
+      rank: 1,
+      model: "Wan 3.0",
+      provider: "fal",
+    });
+    expect(
+      envelope.data.some(
+        (row) =>
+          row.model === "Grok Imagine Video 1.5" && row.provider === "xai"
+      )
+    ).toBe(true);
+
+    const table = capture();
+    await expect(
+      runMain(["frontier", "reference-to-video"], table.writer, {
+        stdoutIsTTY: true,
+        env: {},
+      })
+    ).resolves.toBe(0);
+    expect(table.out.join("\n")).not.toContain("not yet in apicity");
   });
 
   it("rejects an unknown type and names the six codes", async () => {

@@ -44,9 +44,21 @@ instruction, by Elo from pairwise human preference votes.
 
 ## text-to-video (`t2v`)
 
-[AA-Video-T2V v2.1](https://artificialanalysis.ai/video/leaderboard/text-to-video)
+[AA-Video-T2V v2.1](https://artificialanalysis.ai/video/leaderboard/text-to-video),
+captured 2026-10-22. Elo from blind comparisons by validated private evaluators.
 
-no data yet
+| Rank | Model                       | Creator           | Elo  | apicity endpoints                                                                                                                                                                                                                                                                                         |
+| ---- | --------------------------- | ----------------- | ---- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1    | Wan 3.0                     | Alibaba           | 1175 | [fal `alibaba.wan3p0.textToVideo`](../packages/provider/fal/README.md#alibaba), [fal `alibaba.wan3p0Prime.textToVideo`](../packages/provider/fal/README.md#alibaba), [kie `wan/3-0-video`](../packages/provider/kie/README.md#jobs), [kie `wan/3-0-video-prime`](../packages/provider/kie/README.md#jobs) |
+| 2    | Utopai X                    | Utopai Studios    | 1167 | not yet in apicity                                                                                                                                                                                                                                                                                        |
+| 3    | HeyGen Video (ultraquality) | HeyGen            | 1160 | not yet in apicity                                                                                                                                                                                                                                                                                        |
+| 4    | MiniMax H3 (768p)           | MiniMax           | 1158 | [fal `minimax.h3.textToVideo`](../packages/provider/fal/README.md#minimax), [kie `minimax-h3/text-to-video`](../packages/provider/kie/README.md#jobs)                                                                                                                                                     |
+| 5    | Dreamina Seedance 2.5       | ByteDance Seed    | 1158 | [fal `bytedance.seedance2p5.textToVideo`](../packages/provider/fal/README.md#bytedance), [fal `bytedance.seedance2p5.us.textToVideo`](../packages/provider/fal/README.md#bytedance), [kie `bytedance/seedance-2-5`](../packages/provider/kie/README.md#jobs)                                              |
+| 6    | FLUX 3 Max (720p)           | Black Forest Labs | 1155 | [fal `blackforestlabs.flux3Max.textToVideo`](../packages/provider/fal/README.md#blackforestlabs)                                                                                                                                                                                                          |
+| 7    | MiniMax H3 Max              | MiniMax           | 1154 | [fal `minimax.h3Max.textToVideo`](../packages/provider/fal/README.md#minimax), [fal `minimax.h3MaxTurbo.textToVideo`](../packages/provider/fal/README.md#minimax)                                                                                                                                         |
+| 8    | FLUX 3                      | Black Forest Labs | 1145 | [fal `blackforestlabs.flux3.textToVideo`](../packages/provider/fal/README.md#blackforestlabs)                                                                                                                                                                                                             |
+| 9    | Dreamina Seedance 2.0       | ByteDance Seed    | 1136 | [fal `bytedance.seedance2p0.textToVideo`](../packages/provider/fal/README.md#bytedance), [fal `bytedance.seedance2p0.us.textToVideo`](../packages/provider/fal/README.md#bytedance), [kie `bytedance/seedance-2`](../packages/provider/kie/README.md#jobs)                                                |
+| 10   | Gemini Omni Flash 1.1       | Google            | 1130 | [fal `geminiOmniFlash.v1p1.textToVideo`](../packages/provider/fal/README.md#geminiomniflash), [kie `google/gemini-omni-flash-1-1`](../packages/provider/kie/README.md#jobs), [googleflow `omni-flash`](../packages/provider/googleflow/README.md#videos)                                                  |
 
 ## image-to-video (`i2v`)
 
@@ -68,15 +80,41 @@ captured 2026-10-22. Elo from blind comparisons by validated private evaluators.
 
 ## video-to-video (`v2v`)
 
-[AA-Video-Editing v1.1](https://artificialanalysis.ai/video/leaderboard/video-editing)
+[AA-Video-Editing v1.1](https://artificialanalysis.ai/video/leaderboard/video-editing),
+captured 2026-10-22. Ranks video models on editing a video from a text
+instruction, audio kept, by Elo from pairwise human preference votes.
 
-no data yet
+| Rank | Model                      | Creator        | Elo  | apicity endpoints                                                                                                                                                                                                     |
+| ---- | -------------------------- | -------------- | ---- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1    | Wan 3.0                    | Alibaba        | 1198 | not yet in apicity                                                                                                                                                                                                    |
+| 2    | Dreamina Seedance 2.5      | ByteDance Seed | 1155 | [fal `bytedance.seedance2p5.referenceToVideo`](../packages/provider/fal/README.md#bytedance), [fal `bytedance.seedance2p5.us.referenceToVideo`](../packages/provider/fal/README.md#bytedance)                         |
+| 3    | Gemini Omni Flash 1.1      | Google         | 1148 | [fal `geminiOmniFlash.v1p1.edit`](../packages/provider/fal/README.md#geminiomniflash), [googleflow `omni-flash`](../packages/provider/googleflow/README.md#videos)                                                    |
+| 4    | MiniMax H3 (768p)          | MiniMax        | 1124 | not yet in apicity                                                                                                                                                                                                    |
+| 5    | HappyHorse-1.0             | Alibaba-ATH    | 1090 | [kie `happyhorse/video-edit`](../packages/provider/kie/README.md#jobs)                                                                                                                                                |
+| 6    | Dreamina Seedance 2.0      | ByteDance Seed | 1082 | not yet in apicity                                                                                                                                                                                                    |
+| 7    | Wan 2.7                    | Alibaba        | 1077 | [fal `wan.v2p7.editVideo`](../packages/provider/fal/README.md#wan), [kie `wan/2-7-videoedit`](../packages/provider/kie/README.md#jobs), [alibaba `wan2.7-videoedit`](../packages/provider/alibaba/README.md#services) |
+| 8    | Aleph 2.0                  | Runway         | 1012 | not yet in apicity                                                                                                                                                                                                    |
+| 9    | Kling 3.0 Omni 1080p (Pro) | KlingAI        | 1000 | [kie `kling-3.0-omni/transformation`](../packages/provider/kie/README.md#jobs)                                                                                                                                        |
 
 ## reference-to-video (`r2v`)
 
-Derived. Artificial Analysis publishes no reference-to-video leaderboard.
+[AA-Video-T2V v2.1](https://artificialanalysis.ai/video/leaderboard/text-to-video)
+and
+[AA-Video-I2V v1.1](https://artificialanalysis.ai/video/leaderboard/image-to-video),
+captured 2026-10-22. Derived: models from the text-to-video and image-to-video
+top 10 with a reference-to-video endpoint, ordered by the better of their two
+Elos; Artificial Analysis publishes no reference-to-video leaderboard.
 
-no data yet
+| Rank | Model                  | Creator        | Elo  | apicity endpoints                                                                                                                                                                                                                                                                                                   |
+| ---- | ---------------------- | -------------- | ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1    | Wan 3.0                | Alibaba        | 1175 | [fal `alibaba.wan3p0.referenceToVideo`](../packages/provider/fal/README.md#alibaba), [fal `alibaba.wan3p0Prime.referenceToVideo`](../packages/provider/fal/README.md#alibaba), [kie `wan/3-0-video`](../packages/provider/kie/README.md#jobs), [kie `wan/3-0-video-prime`](../packages/provider/kie/README.md#jobs) |
+| 2    | MiniMax H3 (768p)      | MiniMax        | 1158 | [fal `minimax.h3.referenceToVideo`](../packages/provider/fal/README.md#minimax), [kie `minimax-h3/reference-to-video`](../packages/provider/kie/README.md#jobs)                                                                                                                                                     |
+| 3    | Dreamina Seedance 2.5  | ByteDance Seed | 1158 | [fal `bytedance.seedance2p5.referenceToVideo`](../packages/provider/fal/README.md#bytedance), [fal `bytedance.seedance2p5.us.referenceToVideo`](../packages/provider/fal/README.md#bytedance), [kie `bytedance/seedance-2-5`](../packages/provider/kie/README.md#jobs)                                              |
+| 4    | MiniMax H3 Max         | MiniMax        | 1154 | [fal `minimax.h3Max.referenceToVideo`](../packages/provider/fal/README.md#minimax)                                                                                                                                                                                                                                  |
+| 5    | Dreamina Seedance 2.0  | ByteDance Seed | 1136 | [fal `bytedance.seedance2p0.referenceToVideo`](../packages/provider/fal/README.md#bytedance), [fal `bytedance.seedance2p0.us.referenceToVideo`](../packages/provider/fal/README.md#bytedance), [kie `bytedance/seedance-2`](../packages/provider/kie/README.md#jobs)                                                |
+| 6    | Gemini Omni Flash 1.1  | Google         | 1132 | [fal `geminiOmniFlash.v1p1.referenceToVideo`](../packages/provider/fal/README.md#geminiomniflash), [kie `google/gemini-omni-flash-1-1`](../packages/provider/kie/README.md#jobs), [googleflow `omni-flash`](../packages/provider/googleflow/README.md#videos)                                                       |
+| 7    | Grok Imagine Video 1.5 | SpaceXAI       | 1067 | [fal `xai.grokImagineVideo.v1p5.referenceToVideo`](../packages/provider/fal/README.md#xai), [xai `grok-imagine-video-1.5`](../packages/provider/xai/README.md#videos)                                                                                                                                               |
+| 8    | HappyHorse-1.1         | Alibaba        | 1061 | [fal `alibaba.happyHorse.v1p1.referenceToVideo`](../packages/provider/fal/README.md#alibaba), [kie `happyhorse-1-1/reference-to-video`](../packages/provider/kie/README.md#jobs)                                                                                                                                    |
 
 ## Refresh
 
@@ -85,5 +123,8 @@ update `scripts/frontier/<type>/endpoints.json` so every model has an endpoint
 list or an explicit empty list. Keep ranks contiguous from 1 and stop at 10, or
 list every model when the board has fewer than 10. Bump the capture date, run
 `pnpm run gen:frontier` and `pnpm run doc-gen`, and commit the JSON with the
-regenerated registry and this file. Nothing in code, tests, or CI may download a
-leaderboard.
+regenerated registry and this file. A `t2v` or `i2v` refresh also re-derives
+`r2v`: list the models of both top 10 that have a reference-to-video endpoint,
+better Elo first, each with that Elo and that board's creator. The generator
+refuses a derived list that no longer matches its sources. Nothing in code,
+tests, or CI may download a leaderboard.

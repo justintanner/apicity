@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added `apicity frontier <type>` and the `frontier()` registry in `@apicity/cost`, keyed by task type, with the ranking moved to `docs/frontier.md`.
 - Added frontier text-to-image (`t2i`) and image-to-image (`i2i`) snapshots.
+- Added frontier text-to-video (`t2v`) and video-to-video (`v2v`) snapshots, and a reference-to-video (`r2v`) list derived from the `t2v` and `i2v` top 10.
 - Added KIE `gpt-6-1-sol` on `POST /codex/v1/responses`, with per-token pricing and a recorded completion.
 - Added KIE `claude-haiku-5-5` on `POST /claude/v1/messages`, with per-token pricing and a recorded completion.
 - Added KIE Seedance 2.5 draft generation and 1080p rendering with recorded replay and current pricing.

@@ -1,0 +1,62 @@
+{
+  "leaderboardId": "AA-Video-Editing v1.1",
+  "sourceUrl": "https://artificialanalysis.ai/video/leaderboard/video-editing",
+  "capturedOn": "2026-10-22",
+  "methodology": "Ranks video models on editing a video from a text instruction, audio kept, by Elo from pairwise human preference votes.",
+  "entries": [
+    {
+      "rank": 1,
+      "model": "Wan 3.0",
+      "creator": "Alibaba",
+      "elo": 1198
+    },
+    {
+      "rank": 2,
+      "model": "Dreamina Seedance 2.5",
+      "creator": "ByteDance Seed",
+      "elo": 1155
+    },
+    {
+      "rank": 3,
+      "model": "Gemini Omni Flash 1.1",
+      "creator": "Google",
+      "elo": 1148
+    },
+    {
+      "rank": 4,
+      "model": "MiniMax H3 (768p)",
+      "creator": "MiniMax",
+      "elo": 1124
+    },
+    {
+      "rank": 5,
+      "model": "HappyHorse-1.0",
+      "creator": "Alibaba-ATH",
+      "elo": 1090
+    },
+    {
+      "rank": 6,
+      "model": "Dreamina Seedance 2.0",
+      "creator": "ByteDance Seed",
+      "elo": 1082
+    },
+    {
+      "rank": 7,
+      "model": "Wan 2.7",
+      "creator": "Alibaba",
+      "elo": 1077
+    },
+    {
+      "rank": 8,
+      "model": "Aleph 2.0",
+      "creator": "Runway",
+      "elo": 1012
+    },
+    {
+      "rank": 9,
+      "model": "Kling 3.0 Omni 1080p (Pro)",
+      "creator": "KlingAI",
+      "elo": 1000
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "Wan 3.0": [],
+  "Dreamina Seedance 2.5": [
+    {
+      "provider": "fal",
+      "dotPath": "bytedance.seedance2p5.referenceToVideo"
+    },
+    {
+      "provider": "fal",
+      "dotPath": "bytedance.seedance2p5.us.referenceToVideo"
+    }
+  ],
+  "Gemini Omni Flash 1.1": [
+    {
+      "provider": "fal",
+      "dotPath": "geminiOmniFlash.v1p1.edit"
+    },
+    {
+      "provider": "googleflow",
+      "dotPath": "v1.videos",
+      "modelId": "omni-flash"
+    }
+  ],
+  "MiniMax H3 (768p)": [],
+  "HappyHorse-1.0": [
+    {
+      "provider": "kie",
+      "dotPath": "api.v1.jobs.createTask",
+      "modelId": "happyhorse/video-edit"
+    }
+  ],
+  "Dreamina Seedance 2.0": [],
+  "Wan 2.7": [
+    {
+      "provider": "fal",
+      "dotPath": "wan.v2p7.editVideo"
+    },
+    {
+      "provider": "kie",
+      "dotPath": "api.v1.jobs.createTask",
+      "modelId": "wan/2-7-videoedit"
+    },
+    {
+      "provider": "alibaba",
+      "dotPath": "api.v1.services.aigc.videoGeneration.videoSynthesis",
+      "modelId": "wan2.7-videoedit"
+    }
+  ],
+  "Aleph 2.0": [],
+  "Kling 3.0 Omni 1080p (Pro)": [
+    {
+      "provider": "kie",
+      "dotPath": "api.v1.jobs.createTask",
+      "modelId": "kling-3.0-omni/transformation"
+    }
+  ]
+}

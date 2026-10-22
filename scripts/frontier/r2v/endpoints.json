@@ -1,0 +1,107 @@
+{
+  "Wan 3.0": [
+    {
+      "provider": "fal",
+      "dotPath": "alibaba.wan3p0.referenceToVideo"
+    },
+    {
+      "provider": "fal",
+      "dotPath": "alibaba.wan3p0Prime.referenceToVideo"
+    },
+    {
+      "provider": "kie",
+      "dotPath": "api.v1.jobs.createTask",
+      "modelId": "wan/3-0-video"
+    },
+    {
+      "provider": "kie",
+      "dotPath": "api.v1.jobs.createTask",
+      "modelId": "wan/3-0-video-prime"
+    }
+  ],
+  "MiniMax H3 (768p)": [
+    {
+      "provider": "fal",
+      "dotPath": "minimax.h3.referenceToVideo"
+    },
+    {
+      "provider": "kie",
+      "dotPath": "api.v1.jobs.createTask",
+      "modelId": "minimax-h3/reference-to-video"
+    }
+  ],
+  "Dreamina Seedance 2.5": [
+    {
+      "provider": "fal",
+      "dotPath": "bytedance.seedance2p5.referenceToVideo"
+    },
+    {
+      "provider": "fal",
+      "dotPath": "bytedance.seedance2p5.us.referenceToVideo"
+    },
+    {
+      "provider": "kie",
+      "dotPath": "api.v1.jobs.createTask",
+      "modelId": "bytedance/seedance-2-5"
+    }
+  ],
+  "MiniMax H3 Max": [
+    {
+      "provider": "fal",
+      "dotPath": "minimax.h3Max.referenceToVideo"
+    }
+  ],
+  "Dreamina Seedance 2.0": [
+    {
+      "provider": "fal",
+      "dotPath": "bytedance.seedance2p0.referenceToVideo"
+    },
+    {
+      "provider": "fal",
+      "dotPath": "bytedance.seedance2p0.us.referenceToVideo"
+    },
+    {
+      "provider": "kie",
+      "dotPath": "api.v1.jobs.createTask",
+      "modelId": "bytedance/seedance-2"
+    }
+  ],
+  "Gemini Omni Flash 1.1": [
+    {
+      "provider": "fal",
+      "dotPath": "geminiOmniFlash.v1p1.referenceToVideo"
+    },
+    {
+      "provider": "kie",
+      "dotPath": "api.v1.jobs.createTask",
+      "modelId": "google/gemini-omni-flash-1-1"
+    },
+    {
+      "provider": "googleflow",
+      "dotPath": "v1.videos",
+      "modelId": "omni-flash"
+    }
+  ],
+  "Grok Imagine Video 1.5": [
+    {
+      "provider": "fal",
+      "dotPath": "xai.grokImagineVideo.v1p5.referenceToVideo"
+    },
+    {
+      "provider": "xai",
+      "dotPath": "v1.videos.generations",
+      "modelId": "grok-imagine-video-1.5"
+    }
+  ],
+  "HappyHorse-1.1": [
+    {
+      "provider": "fal",
+      "dotPath": "alibaba.happyHorse.v1p1.referenceToVideo"
+    },
+    {
+      "provider": "kie",
+      "dotPath": "api.v1.jobs.createTask",
+      "modelId": "happyhorse-1-1/reference-to-video"
+    }
+  ]
+}

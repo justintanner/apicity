@@ -269,14 +269,46 @@ export function catalogProblems(catalog) {
   return problems;
 }
 
+/**
+ * Shape checks for one leaderboard.json.
+ *
+ * A derived snapshot (`derived: true`) names the leaderboards it re-ranks in
+ * `sources` instead of a `leaderboardId`. `derivedProblems` checks its
+ * entries against those boards.
+ */
 export function snapshotProblems(snapshot) {
   const problems = [];
   if (!isObject(snapshot)) return ["snapshot must be an object"];
-  if (
-    typeof snapshot.leaderboardId !== "string" ||
-    snapshot.leaderboardId.trim() === ""
-  ) {
-    problems.push("snapshot.leaderboardId must be a non-empty string");
+  if (snapshot.derived !== undefined && typeof snapshot.derived !== "boolean") {
+    problems.push("snapshot.derived must be a boolean when present");
+  }
+  if (snapshot.derived === true) {
+    if (snapshot.leaderboardId !== undefined) {
+      problems.push(
+        "a derived snapshot names its sources instead of a leaderboardId"
+      );
+    }
+    if (
+      !Array.isArray(snapshot.sources) ||
+      snapshot.sources.length === 0 ||
+      !snapshot.sources.every(
+        (source) => typeof source === "string" && source.trim() !== ""
+      )
+    ) {
+      problems.push("snapshot.sources must list the source leaderboard ids");
+    } else if (new Set(snapshot.sources).size !== snapshot.sources.length) {
+      problems.push("snapshot.sources lists a leaderboard twice");
+    }
+  } else {
+    if (
+      typeof snapshot.leaderboardId !== "string" ||
+      snapshot.leaderboardId.trim() === ""
+    ) {
+      problems.push("snapshot.leaderboardId must be a non-empty string");
+    }
+    if (snapshot.sources !== undefined) {
+      problems.push("snapshot.sources belongs to a derived snapshot");
+    }
   }
   if (
     typeof snapshot.sourceUrl !== "string" ||
@@ -350,6 +382,83 @@ export function snapshotProblems(snapshot) {
         `snapshot ranks must be contiguous 1..${count}; found ${rank}`
       );
     }
+  }
+  return problems;
+}
+
+/**
+ * A derived list re-ranks the models of its source snapshots.
+ *
+ * Each entry has to come from a source and carry the better of its source
+ * Elos, with the creator that board gives it; when a model has the same Elo
+ * on both boards, the earlier source in `sources` supplies it. Entries run
+ * from the best Elo down, and equal Elos keep source order, then source
+ * rank. Every entry needs an endpoint: the list holds only models apicity
+ * serves for the type.
+ *
+ * @param {object} snapshot the derived leaderboard.json
+ * @param {Record<string, unknown>} endpointMap its endpoints.json
+ * @param {Array<{ leaderboardId: string, entries: object[] }>} sources the
+ *   source snapshots, in `snapshot.sources` order
+ */
+export function derivedProblems(snapshot, endpointMap, sources) {
+  const problems = [];
+  if (!isObject(snapshot) || !Array.isArray(snapshot.entries)) return problems;
+  const best = new Map();
+  sources.forEach((source, sourceIndex) => {
+    const entries = Array.isArray(source?.entries) ? source.entries : [];
+    for (const entry of entries) {
+      if (!isObject(entry) || typeof entry.model !== "string") continue;
+      const current = best.get(entry.model);
+      if (current === undefined || entry.elo > current.elo) {
+        best.set(entry.model, {
+          elo: entry.elo,
+          creator: entry.creator,
+          board: source.leaderboardId,
+          sourceIndex,
+          rank: entry.rank,
+        });
+      }
+    }
+  });
+
+  const ranked = [];
+  snapshot.entries.forEach((entry, index) => {
+    if (!isObject(entry) || typeof entry.model !== "string") return;
+    const where = `snapshot.entries[${index}] ${JSON.stringify(entry.model)}`;
+    const origin = best.get(entry.model);
+    if (origin === undefined) {
+      problems.push(`${where} is in no source snapshot`);
+      return;
+    }
+    if (entry.elo !== origin.elo) {
+      problems.push(
+        `${where} elo must be ${origin.elo}, its better source Elo (${origin.board})`
+      );
+    }
+    if (entry.creator !== origin.creator) {
+      problems.push(
+        `${where} creator must be ${JSON.stringify(origin.creator)}, as ${origin.board} gives it`
+      );
+    }
+    const list = isObject(endpointMap) ? endpointMap[entry.model] : undefined;
+    if (!Array.isArray(list) || list.length === 0) {
+      problems.push(`${where} has no endpoint; a derived entry needs one`);
+    }
+    ranked.push({ model: entry.model, ...origin });
+  });
+
+  const actual = ranked.map((item) => item.model);
+  const expected = [...ranked]
+    .sort(
+      (a, b) =>
+        b.elo - a.elo || a.sourceIndex - b.sourceIndex || a.rank - b.rank
+    )
+    .map((item) => item.model);
+  if (!sameList(expected, actual)) {
+    problems.push(
+      `entries must run from the best Elo down: ${expected.map((model) => JSON.stringify(model)).join(", ")}`
+    );
   }
   return problems;
 }
@@ -438,13 +547,14 @@ function findDocRow(docsRows, provider, dotPath) {
  * Every mapped endpoint must resolve.
  *
  * A dedicated leaf (no modelId) has to carry the type keyword in its dot
- * path or its URL. A shared callable's modelId has to be in
- * `ctx.registryHas(type, entry)`.
+ * path or its URL, or `ctx.leafDocuments(type, entry)`, when given, has to
+ * find the mode in the leaf's own request schema. A shared callable's
+ * modelId has to be in `ctx.registryHas(type, entry)`.
  */
 export function resolutionProblems(type, endpointMap, ctx) {
   const problems = [];
   if (!isObject(endpointMap)) return problems;
-  const { docsRows, registryHas, sourceHasUrl } = ctx ?? {};
+  const { docsRows, registryHas, sourceHasUrl, leafDocuments } = ctx ?? {};
   if (
     typeof registryHas !== "function" ||
     typeof sourceHasUrl !== "function" ||
@@ -477,10 +587,12 @@ export function resolutionProblems(type, endpointMap, ctx) {
         );
       }
       if (entry.modelId === undefined) {
-        if (
-          !textCarriesTypeKeyword(type, entry.dotPath) &&
-          !textCarriesTypeKeyword(type, fullUrl)
-        ) {
+        const named =
+          textCarriesTypeKeyword(type, entry.dotPath) ||
+          textCarriesTypeKeyword(type, fullUrl);
+        const documented =
+          typeof leafDocuments === "function" && leafDocuments(type, entry);
+        if (!named && !documented) {
           problems.push(`${where} is not a ${type} endpoint`);
         }
         return;
@@ -513,7 +625,8 @@ function knownType(type) {
  * Catalog shape plus every present type directory.
  *
  * A missing directory is an empty registry entry, not an error. A present
- * directory must have both JSON files and a valid top-10 snapshot.
+ * directory must have both JSON files and a valid top-10 snapshot. A derived
+ * type's snapshot must also match the source snapshots it names.
  */
 export function structuralProblems(repoRoot = REPO_ROOT) {
   const problems = [];
@@ -575,7 +688,80 @@ export function structuralProblems(repoRoot = REPO_ROOT) {
         );
       }
     }
+    if (!isObject(snapshot)) continue;
+    if ((snapshot.derived === true) !== identity.derived) {
+      problems.push(
+        identity.derived
+          ? `${prefix}: the snapshot must be derived: true`
+          : `${prefix}: only a derived type may set derived: true`
+      );
+      continue;
+    }
+    if (identity.derived && Array.isArray(snapshot.sources)) {
+      for (const problem of derivedSourceProblems(
+        snapshot,
+        endpointMap,
+        catalog,
+        repoRoot
+      )) {
+        problems.push(`${prefix}: ${problem}`);
+      }
+    }
   }
+  return problems;
+}
+
+/**
+ * Resolve a derived snapshot's sources through the catalog and check the
+ * derivation. The snapshot links its first source.
+ */
+function derivedSourceProblems(snapshot, endpointMap, catalog, repoRoot) {
+  const problems = [];
+  const sources = [];
+  for (const leaderboardId of snapshot.sources) {
+    const item = catalog.find(
+      (entry) =>
+        isObject(entry) &&
+        entry.derived === false &&
+        entry.leaderboardId === leaderboardId
+    );
+    if (item === undefined) {
+      problems.push(
+        `source ${JSON.stringify(leaderboardId)} is not a leaderboard in scripts/frontier/catalog.json`
+      );
+      continue;
+    }
+    const sourcePath = path.join(
+      repoRoot,
+      "scripts",
+      "frontier",
+      item.type,
+      "leaderboard.json"
+    );
+    if (!fs.existsSync(sourcePath)) {
+      problems.push(
+        `source ${JSON.stringify(leaderboardId)} has no snapshot in scripts/frontier/${item.type}`
+      );
+      continue;
+    }
+    sources.push({ item, snapshot: readJson(sourcePath) });
+  }
+  if (problems.length > 0) return problems;
+  if (snapshot.sourceUrl !== sources[0].item.sourceUrl) {
+    problems.push(
+      `sourceUrl must be the ${sources[0].item.type} sourceUrl, its first source`
+    );
+  }
+  problems.push(
+    ...derivedProblems(
+      snapshot,
+      endpointMap,
+      sources.map((source) => ({
+        leaderboardId: source.item.leaderboardId,
+        entries: source.snapshot?.entries,
+      }))
+    )
+  );
   return problems;
 }
 
@@ -595,9 +781,13 @@ function loadPresent(repoRoot) {
 /**
  * The six types, with entries filled only where a directory exists.
  *
+ * `sources` lists, for a derived type, the leaderboards it re-ranks. The docs
+ * link them; the registry does not carry them.
+ *
  * @returns {{
  *   types: object[],
  *   frontier: Record<string, { entries: object[] }>,
+ *   sources: Record<string, Array<{ leaderboardId: string, sourceUrl: string }>>,
  * }}
  */
 export function loadFrontierModel(repoRoot = REPO_ROOT) {
@@ -607,6 +797,7 @@ export function loadFrontierModel(repoRoot = REPO_ROOT) {
   const present = loadPresent(repoRoot);
   const types = [];
   const frontier = {};
+  const sources = {};
   for (const identity of TYPE_IDENTITY) {
     const item = catalog.find((entry) => entry.type === identity.type);
     const loaded = present.get(identity.type);
@@ -640,8 +831,15 @@ export function loadFrontierModel(repoRoot = REPO_ROOT) {
       methodology,
       entries,
     };
+    if (identity.derived && Array.isArray(loaded?.snapshot.sources)) {
+      sources[identity.type] = loaded.snapshot.sources.map((id) => ({
+        leaderboardId: id,
+        sourceUrl:
+          catalog.find((entry) => entry.leaderboardId === id)?.sourceUrl ?? "",
+      }));
+    }
   }
-  return { types, frontier };
+  return { types, frontier, sources };
 }
 
 export async function renderFrontierModule(repoRoot = REPO_ROOT) {
@@ -721,7 +919,7 @@ function providerReadmes(providers, repoRoot) {
   return readmes;
 }
 
-function typeSection(info, snapshot, readmes) {
+function typeSection(info, snapshot, sources, readmes) {
   const heading = `## ${info.name} (\`${info.type}\`)`;
   if (snapshot.entries.length === 0) {
     const intro = info.derived
@@ -729,8 +927,14 @@ function typeSection(info, snapshot, readmes) {
       : `[${info.leaderboardId}](${info.sourceUrl})`;
     return `${heading}\n\n${intro}\n\n${NO_DATA_LABEL}\n`;
   }
+  // A derived list links every board it re-ranks; its methodology says how.
+  const boards = info.derived
+    ? sources
+        .map((source) => `[${source.leaderboardId}](${source.sourceUrl})`)
+        .join(" and ")
+    : `[${info.leaderboardId}](${info.sourceUrl})`;
   const prose = wrapProse(
-    `[${info.leaderboardId}](${info.sourceUrl}), captured ${info.capturedOn}. ${info.methodology}`
+    `${boards}, captured ${info.capturedOn}. ${info.methodology}`
   );
   const lines = [
     heading,
@@ -753,7 +957,7 @@ export async function renderFrontierDocument(repoRoot = REPO_ROOT) {
   if (problems.length > 0) {
     throw new Error(problems.join("\n"));
   }
-  const { types, frontier } = loadFrontierModel(repoRoot);
+  const { types, frontier, sources } = loadFrontierModel(repoRoot);
   const providers = new Set();
   for (const snapshot of Object.values(frontier)) {
     for (const entry of snapshot.entries) {
@@ -766,10 +970,10 @@ export async function renderFrontierDocument(repoRoot = REPO_ROOT) {
   }
   const readmes = providerReadmes(providers, repoRoot);
   const sections = types.map((info) =>
-    typeSection(info, frontier[info.type], readmes)
+    typeSection(info, frontier[info.type], sources[info.type] ?? [], readmes)
   );
   const refresh = wrapProse(
-    "Paste a new leaderboard into `scripts/frontier/<type>/leaderboard.json` and update `scripts/frontier/<type>/endpoints.json` so every model has an endpoint list or an explicit empty list. Keep ranks contiguous from 1 and stop at 10, or list every model when the board has fewer than 10. Bump the capture date, run `pnpm run gen:frontier` and `pnpm run doc-gen`, and commit the JSON with the regenerated registry and this file. Nothing in code, tests, or CI may download a leaderboard."
+    "Paste a new leaderboard into `scripts/frontier/<type>/leaderboard.json` and update `scripts/frontier/<type>/endpoints.json` so every model has an endpoint list or an explicit empty list. Keep ranks contiguous from 1 and stop at 10, or list every model when the board has fewer than 10. Bump the capture date, run `pnpm run gen:frontier` and `pnpm run doc-gen`, and commit the JSON with the regenerated registry and this file. A `t2v` or `i2v` refresh also re-derives `r2v`: list the models of both top 10 that have a reference-to-video endpoint, better Elo first, each with that Elo and that board's creator. The generator refuses a derived list that no longer matches its sources. Nothing in code, tests, or CI may download a leaderboard."
   );
   const source = [
     "# Frontier models",

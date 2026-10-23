@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-223 endpoints across 54 groups. Each method mirrors an upstream URL path.
+224 endpoints across 54 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -1453,6 +1453,23 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 </details>
 
 ### heygen
+
+<details>
+<summary><code>POST</code> <b><code>fal.heygen.heygenVideo.textToVideo</code></b></summary>
+
+<code>POST https://fal.run/heygen/heygen-video/text-to-video</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/heygen/heygen-video/text-to-video/api)
+
+```typescript
+const res = await fal.run.heygen.heygenVideo.textToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>fal.heygen.heygenVoice</code></b></summary>

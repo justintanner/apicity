@@ -424,7 +424,13 @@ export const FRONTIER = {
         model: "HeyGen Video (ultraquality)",
         creator: "HeyGen",
         elo: 1160,
-        endpoints: [],
+        endpoints: [
+          {
+            provider: "fal",
+            dotPath: "heygen.heygenVideo.textToVideo",
+            pricingKey: "heygen/heygen-video/text-to-video",
+          },
+        ],
       },
       {
         rank: 4,

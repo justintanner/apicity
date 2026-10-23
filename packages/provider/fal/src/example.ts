@@ -948,6 +948,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST heygen.heygenVideo.textToVideo": {
+    "source": "fal/heygen-heygen-video-text-to-video",
+    "payload": {
+      "prompt": "A red panda waves once, then holds still.",
+      "duration": 5,
+      "resolution": "480p",
+      "prompt_enhancement": "disabled"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST heygen.heygenVoice": {
     "source": "fal/heygen-heygen-voice",
     "payload": {

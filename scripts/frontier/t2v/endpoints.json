@@ -27,7 +27,13 @@
     }
   ],
   "Utopai X": [],
-  "HeyGen Video (ultraquality)": [],
+  "HeyGen Video (ultraquality)": [
+    {
+      "provider": "fal",
+      "dotPath": "heygen.heygenVideo.textToVideo",
+      "pricingKey": "heygen/heygen-video/text-to-video"
+    }
+  ],
   "MiniMax H3 (768p)": [
     {
       "provider": "fal",

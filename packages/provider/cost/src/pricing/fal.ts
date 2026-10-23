@@ -1271,6 +1271,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "fal-ai/heygen/avatar5/digital-twin",
   "fal-ai/heygen/v2/translate/precision",
   "fal-ai/heygen/v2/translate/speed",
+  "fal-ai/heygen/v2/video-agent",
   "fal-ai/heygen/v3/filler-word-removal",
   "fal-ai/heygen/v3/lipsync/precision",
   "fal-ai/heygen/v3/lipsync/speed",
@@ -1342,6 +1343,13 @@ export interface FalDynamicBilledUnit {
 // pricing API were re-read on 2026-10-17 and matched the 2026-10-15 reads
 // behind each recording (ac-j3d6ki.4).
 export const FAL_DYNAMIC_BILLED_UNITS = {
+  // Card and pricing API checked 2026-10-23: $0.034 per output video second.
+  // Asked for about 5 s (config.duration 5), the agent returned 3.93 s and
+  // billed 4 units ($0.136): whole output seconds of a length it chose.
+  "fal-ai/heygen/v2/video-agent": {
+    unit: "seconds of output video at $0.034",
+    why: "the agent decides the output length; config.duration is only approximate",
+  },
   // Card checked 2026-10-23: $0.094/s at 720p and $0.141/s at 1080p on the
   // input plus output length, at least twice the output, while
   // publicEndpointBilling and the pricing API list seconds at $0.157. Editing

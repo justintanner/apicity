@@ -1,4 +1,6 @@
 import {
+  FalHeygenV2VideoAgentRequest,
+  FalHeygenV2VideoAgentResponse,
   FalKlingV4VideoToVideoEditRequest,
   FalKlingV4VideoToVideoEditResponse,
   FalKlingV4ReferenceToVideoRequest,
@@ -478,6 +480,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalHeygenV2VideoAgentRequestSchema,
   FalKlingV4VideoToVideoEditRequestSchema,
   FalKlingV4ReferenceToVideoRequestSchema,
   FalKlingV4ImageToVideoRequestSchema,
@@ -4006,6 +4009,18 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/fal-ai/heygen/v2/video-agent
+  // Docs: https://fal.ai/models/fal-ai/heygen/v2/video-agent/api
+  const heygenV2VideoAgent = jsonBody<
+    FalHeygenV2VideoAgentRequest,
+    FalHeygenV2VideoAgentResponse
+  >(
+    "POST",
+    "/fal-ai/heygen/v2/video-agent",
+    FalHeygenV2VideoAgentRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
     kling: {
       v4: {
@@ -4027,6 +4042,9 @@ export function createFal(opts: FalOptions): FalProvider {
     },
     heygen: {
       v2: {
+        // POST https://fal.run/fal-ai/heygen/v2/video-agent
+        // Docs: https://fal.ai/models/fal-ai/heygen/v2/video-agent/api
+        videoAgent: heygenV2VideoAgent,
         translate: {
           // POST https://fal.run/fal-ai/heygen/v2/translate/speed
           // Docs: https://fal.ai/models/fal-ai/heygen/v2/translate/speed/api

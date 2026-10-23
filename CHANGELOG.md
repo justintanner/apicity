@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added fal HeyGen Video Agent 2 (`fal-ai/heygen/v2/video-agent`) as `run.heygen.v2.videoAgent`, reusing the stock avatar catalog; dynamically priced, since the agent chooses the billed output length and `config.duration` is only approximate (ac-8eqafo).
+
 - Added fal Kling 4 video edit (`kling/v4/video-to-video/edit`) as `run.kling.v4.videoToVideo.edit`, owning the new `videoToVideo` object; dynamically priced, since fal bills the source video's length plus the output's ($0.094/s at 720p, $0.141/s at 1080p, counted in $0.157 units) (ac-j3wid6).
 
 - Added fal Kling 4 reference-to-video (`kling/v4/reference-to-video`) as `run.kling.v4.referenceToVideo`, with its element rule restated from fal's validator; text and image references are priced per requested second by resolution ($0.157/s at 720p, $0.235/s at 1080p), while reference videos and video elements, which the card bills on input plus output length, warn instead of pricing (ac-jn033c).

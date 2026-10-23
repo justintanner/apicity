@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalHeygenV2VideoAgentRequest,
+  FalHeygenV2VideoAgentRequestInput,
+  FalHeygenV2VideoAgentParsedRequest,
   FalKlingV4VideoToVideoEditRequest,
   FalKlingV4VideoToVideoEditRequestInput,
   FalKlingV4VideoToVideoEditParsedRequest,
@@ -787,6 +790,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalHeygenV2VideoAgentRequest,
   FalKlingV4VideoToVideoEditRequest,
   FalKlingV4ReferenceToVideoRequest,
   FalKlingV4ImageToVideoRequest,
@@ -7023,4 +7027,23 @@ export interface FalRunKlingV4VideoToVideoNamespace {
 }
 export interface FalRunKlingV4Namespace {
   videoToVideo: FalRunKlingV4VideoToVideoNamespace;
+}
+
+export interface FalHeygenV2VideoAgentResponse {
+  /** The generated video file */
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+}
+
+export interface FalRunHeygenV2Namespace {
+  videoAgent: ((
+    params: FalHeygenV2VideoAgentRequest,
+    signal?: AbortSignal
+  ) => Promise<FalHeygenV2VideoAgentResponse>) & {
+    schema: ApicitySchema<FalHeygenV2VideoAgentRequest>;
+  };
 }

@@ -21,6 +21,12 @@ export type {
 
 // Export all types
 export type {
+  FalHeygenV2TranslateSpeedRequest,
+  FalHeygenV2TranslateSpeedRequestInput,
+  FalHeygenV2TranslateSpeedParsedRequest,
+  FalHeygenV2TranslateSpeedResponse,
+  FalRunHeygenV2TranslateNamespace,
+  FalRunHeygenV2Namespace,
   FalHeygenV3LipsyncPrecisionRequest,
   FalHeygenV3LipsyncPrecisionRequestInput,
   FalHeygenV3LipsyncPrecisionParsedRequest,

@@ -15030,7 +15030,252 @@ export type FalHeygenV3LipsyncPrecisionParsedRequest = z.output<
   typeof FalHeygenV3LipsyncPrecisionRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-10-23
+// (sha256 8c880d3bf1a13d6d5375b716462775380682dce2c8836209abd98b0654fce4e3).
+// Field order follows x-fal-order-properties. The input is open; free 422
+// probes confirmed the output_language set, an integer speaker_num and the
+// srt_role set, accepted nulls and unknown fields, and showed fal downloading
+// video_url during validation. The precision tier's input is identical.
+// Docs: https://fal.ai/models/fal-ai/heygen/v2/translate/speed/api
+export const FalHeygenV2TranslateSpeedRequestSchema = z.object({
+  video_url: z
+    .string()
+    .describe("URL of the video to translate. Maximum length is 8 minutes."),
+  output_language: z
+    .enum([
+      "English",
+      "Spanish",
+      "French",
+      "Hindi",
+      "Italian",
+      "German",
+      "Polish",
+      "Portuguese",
+      "Chinese",
+      "Japanese",
+      "Dutch",
+      "Turkish",
+      "Korean",
+      "Danish",
+      "Arabic",
+      "Romanian",
+      "Mandarin",
+      "Filipino",
+      "Swedish",
+      "Indonesian",
+      "Ukrainian",
+      "Greek",
+      "Czech",
+      "Bulgarian",
+      "Malay",
+      "Slovak",
+      "Croatian",
+      "Tamil",
+      "Finnish",
+      "Russian",
+      "Afrikaans (South Africa)",
+      "Albanian (Albania)",
+      "Amharic (Ethiopia)",
+      "Arabic (Algeria)",
+      "Arabic (Bahrain)",
+      "Arabic (Egypt)",
+      "Arabic (Iraq)",
+      "Arabic (Jordan)",
+      "Arabic (Kuwait)",
+      "Arabic (Lebanon)",
+      "Arabic (Libya)",
+      "Arabic (Morocco)",
+      "Arabic (Oman)",
+      "Arabic (Qatar)",
+      "Arabic (Saudi Arabia)",
+      "Arabic (Syria)",
+      "Arabic (Tunisia)",
+      "Arabic (United Arab Emirates)",
+      "Arabic (Yemen)",
+      "Armenian (Armenia)",
+      "Azerbaijani (Latin, Azerbaijan)",
+      "Bangla (Bangladesh)",
+      "Basque",
+      "Bengali (India)",
+      "Bosnian (Bosnia and Herzegovina)",
+      "Bulgarian (Bulgaria)",
+      "Burmese (Myanmar)",
+      "Catalan",
+      "Chinese (Cantonese, Traditional)",
+      "Chinese (Jilu Mandarin, Simplified)",
+      "Chinese (Mandarin, Simplified)",
+      "Chinese (Northeastern Mandarin, Simplified)",
+      "Chinese (Southwestern Mandarin, Simplified)",
+      "Chinese (Taiwanese Mandarin, Traditional)",
+      "Chinese (Wu, Simplified)",
+      "Chinese (Zhongyuan Mandarin Henan, Simplified)",
+      "Chinese (Zhongyuan Mandarin Shaanxi, Simplified)",
+      "Croatian (Croatia)",
+      "Czech (Czechia)",
+      "Danish (Denmark)",
+      "Dutch (Belgium)",
+      "Dutch (Netherlands)",
+      "English (Australia)",
+      "English (Canada)",
+      "English (Hong Kong SAR)",
+      "English (India)",
+      "English (Ireland)",
+      "English (Kenya)",
+      "English (New Zealand)",
+      "English (Nigeria)",
+      "English (Philippines)",
+      "English (Singapore)",
+      "English (South Africa)",
+      "English (Tanzania)",
+      "English (UK)",
+      "English (United States)",
+      "Estonian (Estonia)",
+      "Filipino (Philippines)",
+      "Finnish (Finland)",
+      "French (Belgium)",
+      "French (Canada)",
+      "French (France)",
+      "French (Switzerland)",
+      "Galician",
+      "Georgian (Georgia)",
+      "German (Austria)",
+      "German (Germany)",
+      "German (Switzerland)",
+      "Greek (Greece)",
+      "Gujarati (India)",
+      "Hebrew (Israel)",
+      "Hindi (India)",
+      "Hungarian (Hungary)",
+      "Icelandic (Iceland)",
+      "Indonesian (Indonesia)",
+      "Irish (Ireland)",
+      "Italian (Italy)",
+      "Japanese (Japan)",
+      "Javanese (Latin, Indonesia)",
+      "Kannada (India)",
+      "Kazakh (Kazakhstan)",
+      "Khmer (Cambodia)",
+      "Korean (Korea)",
+      "Lao (Laos)",
+      "Latvian (Latvia)",
+      "Lithuanian (Lithuania)",
+      "Macedonian (North Macedonia)",
+      "Malay (Malaysia)",
+      "Malayalam (India)",
+      "Maltese (Malta)",
+      "Marathi (India)",
+      "Mongolian (Mongolia)",
+      "Nepali (Nepal)",
+      "Norwegian Bokmål (Norway)",
+      "Pashto (Afghanistan)",
+      "Persian (Iran)",
+      "Polish (Poland)",
+      "Portuguese (Brazil)",
+      "Portuguese (Portugal)",
+      "Romanian (Romania)",
+      "Russian (Russia)",
+      "Serbian (Latin, Serbia)",
+      "Sinhala (Sri Lanka)",
+      "Slovak (Slovakia)",
+      "Slovenian (Slovenia)",
+      "Somali (Somalia)",
+      "Spanish (Argentina)",
+      "Spanish (Bolivia)",
+      "Spanish (Chile)",
+      "Spanish (Colombia)",
+      "Spanish (Costa Rica)",
+      "Spanish (Cuba)",
+      "Spanish (Dominican Republic)",
+      "Spanish (Ecuador)",
+      "Spanish (El Salvador)",
+      "Spanish (Equatorial Guinea)",
+      "Spanish (Guatemala)",
+      "Spanish (Honduras)",
+      "Spanish (Mexico)",
+      "Spanish (Nicaragua)",
+      "Spanish (Panama)",
+      "Spanish (Paraguay)",
+      "Spanish (Peru)",
+      "Spanish (Puerto Rico)",
+      "Spanish (Spain)",
+      "Spanish (United States)",
+      "Spanish (Uruguay)",
+      "Spanish (Venezuela)",
+      "Sundanese (Indonesia)",
+      "Swahili (Kenya)",
+      "Swahili (Tanzania)",
+      "Swedish (Sweden)",
+      "Tamil (India)",
+      "Tamil (Malaysia)",
+      "Tamil (Singapore)",
+      "Tamil (Sri Lanka)",
+      "Telugu (India)",
+      "Thai (Thailand)",
+      "Turkish (Türkiye)",
+      "Ukrainian (Ukraine)",
+      "Urdu (India)",
+      "Urdu (Pakistan)",
+      "Uzbek (Latin, Uzbekistan)",
+      "Vietnamese (Vietnam)",
+      "Welsh (United Kingdom)",
+      "Zulu (South Africa)",
+      "English - Your Accent",
+      "English - American Accent",
+    ])
+    .describe("The target language to translate the video into"),
+  translate_audio_only: z
+    .boolean()
+    .nullable()
+    .default(false)
+    .describe(
+      "Translate only the audio, ignore the faces and only translate the voice track"
+    ),
+  speaker_num: z
+    .number()
+    .int()
+    .nullable()
+    .optional()
+    .describe("Number of speakers in the video"),
+  enable_dynamic_duration: z
+    .boolean()
+    .nullable()
+    .default(true)
+    .describe(
+      "Enable dynamic duration to enhance conversational fluidity between languages with different speaking rates"
+    ),
+  brand_glossary_id: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("HeyGen brand glossary ID for custom term translations."),
+  srt_url: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("Optional URL of a custom SRT subtitle file."),
+  srt_role: z
+    .enum(["input", "output"])
+    .nullable()
+    .optional()
+    .describe(
+      "Whether the custom SRT applies to the source or translated video."
+    ),
+  enable_caption: z
+    .boolean()
+    .default(false)
+    .describe("Generate an SRT caption file alongside the translated video."),
+});
+export type FalHeygenV2TranslateSpeedRequest = z.input<
+  typeof FalHeygenV2TranslateSpeedRequestSchema
+>;
+export type FalHeygenV2TranslateSpeedRequestInput =
+  FalHeygenV2TranslateSpeedRequest;
+export type FalHeygenV2TranslateSpeedParsedRequest = z.output<
+  typeof FalHeygenV2TranslateSpeedRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "fal-ai/heygen/v2/translate/speed": FalHeygenV2TranslateSpeedRequestSchema,
   "fal-ai/heygen/v3/lipsync/precision":
     FalHeygenV3LipsyncPrecisionRequestSchema,
   "fal-ai/heygen/v3/lipsync/speed": FalHeygenV3LipsyncSpeedRequestSchema,

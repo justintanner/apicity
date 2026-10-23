@@ -1248,6 +1248,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "fal-ai/heygen/avatar4/digital-twin",
   "fal-ai/heygen/avatar4/image-to-video",
   "fal-ai/heygen/avatar5/digital-twin",
+  "fal-ai/heygen/v2/translate/speed",
   "fal-ai/heygen/v3/lipsync/precision",
   "fal-ai/heygen/v3/lipsync/speed",
   "fal-ai/kandinsky6-lite/image-to-video",
@@ -1317,6 +1318,13 @@ export interface FalDynamicBilledUnit {
 // pricing API were re-read on 2026-10-17 and matched the 2026-10-15 reads
 // behind each recording (ac-j3d6ki.4).
 export const FAL_DYNAMIC_BILLED_UNITS = {
+  // Card and pricing API checked 2026-10-23: $0.05 per output video second.
+  // Translating our 2.96 s avatar clip into Spanish returned 3.24 s and billed
+  // 4 units ($0.20): whole output seconds of a length the translation sets.
+  "fal-ai/heygen/v2/translate/speed": {
+    unit: "seconds of output video at $0.05",
+    why: "the source video and the translation set the output length, and no request field fixes it",
+  },
   // publicEndpointBilling and pricing API checked 2026-10-23: $0.10 per
   // second (no card). The speed tier's recorded inputs returned 2.88 s here
   // too and billed 3 units ($0.30): whole output seconds.

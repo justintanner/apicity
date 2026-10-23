@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalHeygenV2TranslateSpeedRequest,
+  FalHeygenV2TranslateSpeedRequestInput,
+  FalHeygenV2TranslateSpeedParsedRequest,
   FalHeygenV3LipsyncPrecisionRequest,
   FalHeygenV3LipsyncPrecisionRequestInput,
   FalHeygenV3LipsyncPrecisionParsedRequest,
@@ -766,6 +769,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalHeygenV2TranslateSpeedRequest,
   FalHeygenV3LipsyncPrecisionRequest,
   FalHeygenV3LipsyncSpeedRequest,
   FalHeygenAvatar5DigitalTwinRequest,
@@ -6825,4 +6829,36 @@ export interface FalRunHeygenV3LipsyncNamespace {
   ) => Promise<FalHeygenV3LipsyncPrecisionResponse>) & {
     schema: ApicitySchema<FalHeygenV3LipsyncPrecisionRequest>;
   };
+}
+
+export interface FalHeygenV2TranslateSpeedResponse {
+  /** The translated video file */
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+  /** Generated SRT captions when enable_caption is true. */
+  caption_file?: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  } | null;
+}
+
+export interface FalRunHeygenV2TranslateNamespace {
+  speed: ((
+    params: FalHeygenV2TranslateSpeedRequest,
+    signal?: AbortSignal
+  ) => Promise<FalHeygenV2TranslateSpeedResponse>) & {
+    schema: ApicitySchema<FalHeygenV2TranslateSpeedRequest>;
+  };
+}
+export interface FalRunHeygenV2Namespace {
+  translate: FalRunHeygenV2TranslateNamespace;
+}
+export interface FalRunHeygenNamespace {
+  v2: FalRunHeygenV2Namespace;
 }

@@ -1,4 +1,6 @@
 import {
+  FalHeygenV3VideoAgentRequest,
+  FalHeygenV3VideoAgentResponse,
   FalHeygenV2VideoAgentRequest,
   FalHeygenV2VideoAgentResponse,
   FalKlingV4VideoToVideoEditRequest,
@@ -480,6 +482,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalHeygenV3VideoAgentRequestSchema,
   FalHeygenV2VideoAgentRequestSchema,
   FalKlingV4VideoToVideoEditRequestSchema,
   FalKlingV4ReferenceToVideoRequestSchema,
@@ -4021,6 +4024,18 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/fal-ai/heygen/v3/video-agent
+  // Docs: https://fal.ai/models/fal-ai/heygen/v3/video-agent/api
+  const heygenV3VideoAgent = jsonBody<
+    FalHeygenV3VideoAgentRequest,
+    FalHeygenV3VideoAgentResponse
+  >(
+    "POST",
+    "/fal-ai/heygen/v3/video-agent",
+    FalHeygenV3VideoAgentRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
     kling: {
       v4: {
@@ -4058,6 +4073,9 @@ export function createFal(opts: FalOptions): FalProvider {
         // POST https://fal.run/fal-ai/heygen/v3/filler-word-removal
         // Docs: https://fal.ai/models/fal-ai/heygen/v3/filler-word-removal/api
         fillerWordRemoval: heygenV3FillerWordRemoval,
+        // POST https://fal.run/fal-ai/heygen/v3/video-agent
+        // Docs: https://fal.ai/models/fal-ai/heygen/v3/video-agent/api
+        videoAgent: heygenV3VideoAgent,
         lipsync: {
           // POST https://fal.run/fal-ai/heygen/v3/lipsync/speed
           // Docs: https://fal.ai/models/fal-ai/heygen/v3/lipsync/speed/api

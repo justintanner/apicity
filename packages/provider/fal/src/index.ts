@@ -21,6 +21,10 @@ export type {
 
 // Export all types
 export type {
+  FalHeygenV3VideoAgentRequest,
+  FalHeygenV3VideoAgentRequestInput,
+  FalHeygenV3VideoAgentParsedRequest,
+  FalHeygenV3VideoAgentResponse,
   FalHeygenV2VideoAgentRequest,
   FalHeygenV2VideoAgentRequestInput,
   FalHeygenV2VideoAgentParsedRequest,

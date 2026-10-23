@@ -1275,6 +1275,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "fal-ai/heygen/v3/filler-word-removal",
   "fal-ai/heygen/v3/lipsync/precision",
   "fal-ai/heygen/v3/lipsync/speed",
+  "fal-ai/heygen/v3/video-agent",
   "fal-ai/kandinsky6-lite/image-to-video",
   "fal-ai/kandinsky6-lite/text-to-video",
   "fal-ai/kandinsky6-pro/image-to-video",
@@ -1343,6 +1344,14 @@ export interface FalDynamicBilledUnit {
 // pricing API were re-read on 2026-10-17 and matched the 2026-10-15 reads
 // behind each recording (ac-j3d6ki.4).
 export const FAL_DYNAMIC_BILLED_UNITS = {
+  // publicEndpointBilling and pricing API checked 2026-10-23: $0.034 per
+  // output second (no card). Asked to keep a five-second clip under ten
+  // seconds, the agent returned 3.22 s and billed 4 units ($0.136): whole
+  // output seconds of a length it chose.
+  "fal-ai/heygen/v3/video-agent": {
+    unit: "seconds of output video at $0.034",
+    why: "the agent decides the output length and no request field fixes it",
+  },
   // Card and pricing API checked 2026-10-23: $0.034 per output video second.
   // Asked for about 5 s (config.duration 5), the agent returned 3.93 s and
   // billed 4 units ($0.136): whole output seconds of a length it chose.

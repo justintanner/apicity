@@ -15669,7 +15669,70 @@ export type FalHeygenV2VideoAgentParsedRequest = z.output<
   typeof FalHeygenV2VideoAgentRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-10-23
+// (sha256 c4ff495b4c92891649987e740ec38b8ef706aa8fe238c4d508eca84e3dbbd7dd).
+// Field order follows x-fal-order-properties. The avatar and voice lists are
+// "auto" plus the shared stock catalogs. The input is open; free 422 probes
+// confirmed the prompt and file_urls maxima, string file URLs, the
+// orientation set and a boolean incognito_mode, and accepted a blank
+// prompt, nulls, unknown fields and unknown avatar and voice names.
+// Docs: https://fal.ai/models/fal-ai/heygen/v3/video-agent/api
+export const FalHeygenV3VideoAgentRequestSchema = z.object({
+  prompt: z
+    .string()
+    .max(10000)
+    .describe(
+      "Natural language prompt describing the video to generate. The agent handles avatar selection, script, and production automatically."
+    ),
+  avatar: z
+    .enum(["auto", ...HeygenStockAvatarSchema.options])
+    .default("auto")
+    .describe(
+      "Avatar to use in the video. Set to 'auto' to let the agent auto-select based on the prompt."
+    ),
+  voice: z
+    .enum(["auto", ...HeygenStockVoiceSchema.options])
+    .default("auto")
+    .describe(
+      "Voice for narration. Set to 'auto' to let the agent auto-select."
+    ),
+  style_id: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("Style template ID from the /v3/video-agent/styles endpoint."),
+  orientation: z
+    .enum(["landscape", "portrait"])
+    .nullable()
+    .optional()
+    .describe("Video orientation. Auto-detected from the prompt if omitted."),
+  file_urls: z
+    .array(z.string())
+    .max(20)
+    .nullable()
+    .optional()
+    .describe(
+      "URLs of files to include as assets in the video (images, videos, audio, PDFs). Maximum 20 files."
+    ),
+  incognito_mode: z
+    .boolean()
+    .default(false)
+    .describe("When enabled, disables the agent's memory functions."),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe("Authorized callers may set false to request relaxed screening."),
+});
+export type FalHeygenV3VideoAgentRequest = z.input<
+  typeof FalHeygenV3VideoAgentRequestSchema
+>;
+export type FalHeygenV3VideoAgentRequestInput = FalHeygenV3VideoAgentRequest;
+export type FalHeygenV3VideoAgentParsedRequest = z.output<
+  typeof FalHeygenV3VideoAgentRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "fal-ai/heygen/v3/video-agent": FalHeygenV3VideoAgentRequestSchema,
   "fal-ai/heygen/v2/video-agent": FalHeygenV2VideoAgentRequestSchema,
   "kling/v4/video-to-video/edit": FalKlingV4VideoToVideoEditRequestSchema,
   "kling/v4/reference-to-video": FalKlingV4ReferenceToVideoRequestSchema,

@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added HeyGen Video Agent 3, dynamically priced (ac-egreqg).
+
 - Added HeyGen Video Agent 2, dynamically priced (ac-8eqafo).
 
 - Added Kling 4 video edit, dynamically priced (ac-j3wid6).

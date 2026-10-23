@@ -23,6 +23,7 @@ const CHECKED = [
   "fal-ai/heygen/v3/filler-word-removal",
   "fal-ai/heygen/v3/lipsync/precision",
   "fal-ai/heygen/v3/lipsync/speed",
+  "fal-ai/heygen/v3/video-agent",
   "fal-ai/kandinsky6-lite/image-to-video",
   "fal-ai/kandinsky6-lite/text-to-video",
   "fal-ai/kandinsky6-pro/image-to-video",

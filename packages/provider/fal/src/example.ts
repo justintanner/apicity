@@ -1105,6 +1105,15 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST heygen.v3.videoAgent": {
+    "source": "fal/heygen-v3-video-agent",
+    "payload": {
+      "prompt": "A five-second clip in which a presenter says: A red panda waves once, then holds still. Keep it under ten seconds.",
+      "orientation": "landscape"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST hunyuan.v3.instructEdit": {
     "source": "fal/hunyuan-image-v3-instruct-edit",
     "payload": {

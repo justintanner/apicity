@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added fal Ideogram Vector image-to-vector (`ideogram/vector/image-to-vector`) as `run.ideogram.vector.imageToVector`, priced at $0.10 per generated SVG (ac-hsbaox).
+
 - Added fal HeyGen Voice Turbo text-to-speech (`heygen/heygen-voice/turbo`) as `run.heygen.heygenVoice.turbo`, priced per input character from its card; fal billed the recorded call at half the card rate (ac-52hhep).
 
 - Added fal HeyGen Voice text-to-speech (`heygen/heygen-voice`), priced per input character from its card; fal billed the recorded call at half the card rate (ac-7wb7u7).

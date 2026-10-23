@@ -982,6 +982,14 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST ideogram.vector.imageToVector": {
+    "source": "fal/ideogram-vector-image-to-vector",
+    "payload": {
+      "image_url": "https://v3b.fal.media/files/b/0aaf7eca/YdKOoA8T48QoJMIc7Sflb_apicity-cat1.jpg"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST kandinsky6Lite.imageToVideo": {
     "source": "fal/kandinsky6-lite-image-to-video",
     "payload": {

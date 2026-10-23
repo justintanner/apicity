@@ -1,4 +1,6 @@
 import {
+  FalIdeogramVectorImageToVectorRequest,
+  FalIdeogramVectorImageToVectorResponse,
   FalHeygenHeygenVoiceTurboRequest,
   FalHeygenHeygenVoiceTurboResponse,
   FalHeygenHeygenVoiceRequest,
@@ -442,6 +444,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalIdeogramVectorImageToVectorRequestSchema,
   FalHeygenHeygenVoiceTurboRequestSchema,
   FalHeygenHeygenVoiceRequestSchema,
   FalMeshyV6LiteRetextureRequestSchema,
@@ -3742,6 +3745,18 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/ideogram/vector/image-to-vector
+  // Docs: https://fal.ai/models/ideogram/vector/image-to-vector/api
+  const ideogramVectorImageToVector = jsonBody<
+    FalIdeogramVectorImageToVectorRequest,
+    FalIdeogramVectorImageToVectorResponse
+  >(
+    "POST",
+    "/ideogram/vector/image-to-vector",
+    FalIdeogramVectorImageToVectorRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
     heygen: {
       // POST https://fal.run/heygen/heygen-voice
@@ -4025,6 +4040,11 @@ export function createFal(opts: FalOptions): FalProvider {
       },
     },
     ideogram: {
+      vector: {
+        // POST https://fal.run/ideogram/vector/image-to-vector
+        // Docs: https://fal.ai/models/ideogram/vector/image-to-vector/api
+        imageToVector: ideogramVectorImageToVector,
+      },
       v4p5: Object.assign(ideogramV4p5, {
         // POST https://fal.run/ideogram/v4.5/edit
         // Docs: https://fal.ai/models/ideogram/v4.5/edit/api

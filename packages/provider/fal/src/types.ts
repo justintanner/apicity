@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalIdeogramVectorImageToVectorRequest,
+  FalIdeogramVectorImageToVectorRequestInput,
+  FalIdeogramVectorImageToVectorParsedRequest,
   FalHeygenHeygenVoiceTurboRequest,
   FalHeygenHeygenVoiceTurboRequestInput,
   FalHeygenHeygenVoiceTurboParsedRequest,
@@ -733,6 +736,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalIdeogramVectorImageToVectorRequest,
   FalHeygenHeygenVoiceTurboRequest,
   FalHeygenHeygenVoiceRequest,
   FalBriaFibo2EditRequest,
@@ -6526,4 +6530,28 @@ export interface FalRunHeygenHeygenVoiceNamespace {
   ) => Promise<FalHeygenHeygenVoiceTurboResponse>) & {
     schema: ApicitySchema<FalHeygenHeygenVoiceTurboRequest>;
   };
+}
+
+export interface FalIdeogramVectorImageToVectorResponse {
+  /** The generated SVG files. */
+  images: Array<{
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  }>;
+  /** Seed used for generation, if provided. */
+  seed?: number | null;
+}
+
+export interface FalRunIdeogramVectorNamespace {
+  imageToVector: ((
+    params: FalIdeogramVectorImageToVectorRequest,
+    signal?: AbortSignal
+  ) => Promise<FalIdeogramVectorImageToVectorResponse>) & {
+    schema: ApicitySchema<FalIdeogramVectorImageToVectorRequest>;
+  };
+}
+export interface FalRunIdeogramNamespace {
+  vector: FalRunIdeogramVectorNamespace;
 }

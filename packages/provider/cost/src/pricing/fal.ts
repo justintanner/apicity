@@ -1373,6 +1373,18 @@ export function falDynamicBilledUnit(
 }
 
 export const fal: Record<string, ModelPricing> = {
+  // Ideogram Vector image-to-vector bills $0.10 per generated SVG in both
+  // modes (card read 2026-10-23); one request converts one image into one
+  // SVG. The recording billed 10 units at $0.01, and the usage read confirmed
+  // the card's $0.10.
+  "ideogram/vector/image-to-vector": {
+    kind: "perUnit",
+    unit: "images",
+    units: () => 1,
+    select: [],
+    rates: { "": 0.1 },
+    source: source("ideogram/vector/image-to-vector", "2026-10-23"),
+  },
   // HeyGen Voice Turbo's card bills $0.004 per 1,000 input characters, and
   // the request's text length is the unit count: the 41-character recording
   // billed 0.041 units. As with HeyGen Voice, the pricing API and the usage

@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Ideogram Vector image-to-vector, statically priced per SVG (ac-hsbaox).
+
 - Added HeyGen Voice Turbo text-to-speech, statically priced per input character (ac-52hhep).
 
 - Added HeyGen Voice text-to-speech, statically priced per input character (ac-7wb7u7).

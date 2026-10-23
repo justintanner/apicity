@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added HeyGen Voice text-to-speech, statically priced per input character (ac-7wb7u7).
+
 - Added FLUX 3 Max text-to-video (ac-h9hyir).
 - Added FLUX 3 Max image-to-video (ac-h9hyir).
 - Added FLUX 3 Max keyframes-to-video (ac-h9hyir).

@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added fal HeyGen Voice text-to-speech (`heygen/heygen-voice`), priced per input character from its card; fal billed the recorded call at half the card rate (ac-7wb7u7).
+
 - Added a `price` to each `frontier()` row and to `apicity frontier <type>`, taken from the bundled `@apicity/cost` rates (`0.04-0.16 USD/s`, `0.08 USD/image`, `dynamic`, or `-`). `docs/frontier.md` has the same column. A missing rate stays `unpriced`; no rate table changed.
 
 - Added MachGen provider (`@apicity/machgen`) for MiniMax H3, Seedance 2.5/2.0, Wan 3.0, HappyHorse 1.1 and Grok Imagine Video 1.5, with task status, authenticated asset download, per-second pricing and recorded replays. At recording time (2026-10-22) MachGen rejected Wan 3.0 requests that omitted its documented `video_config` (`aspect_ratio: "adaptive"`, `fps: 30`, `audio: true`), at zero charge; the Wan replays use the documented config.

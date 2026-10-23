@@ -1373,6 +1373,16 @@ export function falDynamicBilledUnit(
 }
 
 export const fal: Record<string, ModelPricing> = {
+  // HeyGen Voice's card bills $0.03 per 1,000 input characters, and the
+  // request's text length is the unit count: the 41-character recording billed
+  // 0.041 units. The pricing API and the usage read charged that call at $0.015
+  // per 1,000 (cost_total $0.000615), half the card, with no promotion or end
+  // date published (2026-10-23), so the card's list rate stands.
+  "heygen/heygen-voice": perCharacter(
+    "heygen/heygen-voice",
+    0.03 / 1_000,
+    "2026-10-23"
+  ),
   // $0.30 per retextured model, PBR maps at no extra cost. The recording
   // billed 1 generation; usage confirmed the card's $0.30.
   "meshy/v6-lite/retexture": {

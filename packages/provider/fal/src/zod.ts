@@ -12868,7 +12868,123 @@ export type FalBriaFibo2EditParsedRequest = z.output<
   typeof FalBriaFibo2EditRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-10-23
+// (sha256 38699e695604901e3a29ce970df53431f02b98fd6a315712c32be4a26776d00b).
+// Field order follows x-fal-order-properties. additionalProperties is false,
+// and free 422 probes the same day refused an extra field, an out-of-set
+// language and an expressiveness_boost outside 0 to 1, while accepting a blank
+// text, a null language and any reference_audio_url string.
+// Docs: https://fal.ai/models/heygen/heygen-voice/api
+export const FalHeygenHeygenVoiceRequestSchema = z
+  .object({
+    text: z.string().min(1).max(5000).describe("The text to speak."),
+    voice: z
+      .enum([
+        "Jonah",
+        "Nadine",
+        "Tabitha",
+        "Soren",
+        "Elowen",
+        "Vincent",
+        "Jocelyn",
+        "Marielle",
+        "Corinne",
+        "Lucian",
+        "Kieran",
+        "Hugh",
+        "Noelle",
+        "Bram",
+        "Ewan",
+        "Iona",
+        "Cecily",
+        "Simon",
+        "Weston",
+        "Felicity",
+        "Gareth",
+        "Rory",
+        "Meredith",
+        "Sabrina",
+      ])
+      .default("Jonah")
+      .describe(
+        "HeyGen public voice. Ignored when reference_audio_url is set."
+      ),
+    reference_audio_url: z
+      .string()
+      .nullable()
+      .optional()
+      .describe(
+        "Recording of a single speaker to clone instead of using a public voice. Only the first 3 minutes are used."
+      ),
+    language: z
+      .enum([
+        "ar",
+        "be",
+        "bg",
+        "ca",
+        "cs",
+        "da",
+        "de",
+        "el",
+        "en",
+        "es",
+        "fa",
+        "fi",
+        "fr",
+        "he",
+        "hi",
+        "hr",
+        "hu",
+        "id",
+        "it",
+        "ja",
+        "ko",
+        "mk",
+        "ms",
+        "nl",
+        "pl",
+        "pt",
+        "ro",
+        "ru",
+        "sk",
+        "sl",
+        "sr",
+        "sv",
+        "ta",
+        "th",
+        "tl",
+        "tr",
+        "uk",
+        "vi",
+        "zh",
+      ])
+      .nullable()
+      .optional()
+      .describe("Language of the text. Detected from the text when omitted."),
+    expressiveness_boost: z
+      .number()
+      .min(0)
+      .max(1)
+      .default(1)
+      .describe("How expressive the delivery is."),
+    enable_safety_checker: z
+      .boolean()
+      .default(true)
+      .describe(
+        "Authorized callers may set false to request relaxed screening."
+      ),
+  })
+  .strict();
+export type FalHeygenHeygenVoiceRequest = z.input<
+  typeof FalHeygenHeygenVoiceRequestSchema
+>;
+export type FalHeygenHeygenVoiceRequestInput = FalHeygenHeygenVoiceRequest;
+export type FalHeygenHeygenVoiceParsedRequest = z.output<
+  typeof FalHeygenHeygenVoiceRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "heygen/heygen-voice": FalHeygenHeygenVoiceRequestSchema,
   "meshy/v6-lite/retexture": FalMeshyV6LiteRetextureRequestSchema,
   "bytedance/seedance-2.5/draft/complete":
     FalBytedanceSeedance2p5DraftCompleteRequestSchema,

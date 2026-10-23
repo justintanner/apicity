@@ -1,4 +1,6 @@
 import {
+  FalHeygenHeygenVoiceRequest,
+  FalHeygenHeygenVoiceResponse,
   FalMeshyV6LiteRetextureRequest,
   FalMeshyV6LiteRetextureResponse,
   FalBytedanceSeedance2p5DraftCompleteRequest,
@@ -438,6 +440,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalHeygenHeygenVoiceRequestSchema,
   FalMeshyV6LiteRetextureRequestSchema,
   FalBytedanceSeedance2p5DraftCompleteRequestSchema,
   FalBytedanceSeedance2p5UsReferenceToVideoRequestSchema,
@@ -3715,7 +3718,21 @@ export function createFal(opts: FalOptions): FalProvider {
     base: runBaseURL,
   });
 
+  // POST https://fal.run/heygen/heygen-voice
+  // Docs: https://fal.ai/models/heygen/heygen-voice/api
+  const heygenHeygenVoice = jsonBody<
+    FalHeygenHeygenVoiceRequest,
+    FalHeygenHeygenVoiceResponse
+  >("POST", "/heygen/heygen-voice", FalHeygenHeygenVoiceRequestSchema, {
+    base: runBaseURL,
+  });
+
   const run: FalRunNamespace = {
+    heygen: {
+      // POST https://fal.run/heygen/heygen-voice
+      // Docs: https://fal.ai/models/heygen/heygen-voice/api
+      heygenVoice: heygenHeygenVoice,
+    },
     pixverse: {
       musicVideo: {
         // POST https://fal.run/pixverse/music-video/vibemv

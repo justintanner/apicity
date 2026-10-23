@@ -1245,6 +1245,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "fal-ai/flux-2-flex",
   "fal-ai/flux-3-action/so101",
   "fal-ai/heygen/avatar3/digital-twin",
+  "fal-ai/heygen/avatar4/digital-twin",
   "fal-ai/kandinsky6-lite/image-to-video",
   "fal-ai/kandinsky6-lite/text-to-video",
   "fal-ai/kandinsky6-pro/image-to-video",
@@ -1312,6 +1313,13 @@ export interface FalDynamicBilledUnit {
 // pricing API were re-read on 2026-10-17 and matched the 2026-10-15 reads
 // behind each recording (ac-j3d6ki.4).
 export const FAL_DYNAMIC_BILLED_UNITS = {
+  // Card and pricing API checked 2026-10-23: $0.10 per output video second.
+  // The 41-character recording returned 2.96 s of video and billed 3 units
+  // ($0.30), so whole output seconds bill and the script sets them.
+  "fal-ai/heygen/avatar4/digital-twin": {
+    unit: "seconds of output video at $0.10",
+    why: "the spoken script or audio sets the output length, and no request field fixes it",
+  },
   // Card and pricing API checked 2026-10-23: $0.034 per output video second.
   // The 41-character recording returned 2.96 s of video and billed 3 units
   // ($0.102), so whole output seconds bill and the script sets them.

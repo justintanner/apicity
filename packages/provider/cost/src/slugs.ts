@@ -970,6 +970,7 @@ export const MODEL_DISPLAY = {
   },
 
   fal: {
+    "fal-ai/heygen/avatar4/digital-twin": "HeyGen Avatar 4 Digital Twin",
     "fal-ai/heygen/avatar3/digital-twin": "HeyGen Avatar 3 Digital Twin",
     "heygen/heygen-video/text-to-video": "HeyGen Video",
     "heygen/heygen-video/reference-to-video": "HeyGen Video",

@@ -1798,3 +1798,4 @@ fal	minimax.h3Max.reframeVideo	POST	https://fal.run/minimax/h3-max/reframe-video
 fal	heygen.heygenVoice	POST	https://fal.run/heygen/heygen-voice	https://fal.ai/models/heygen/heygen-voice/api
 fal	heygen.heygenVoice.turbo	POST	https://fal.run/heygen/heygen-voice/turbo	https://fal.ai/models/heygen/heygen-voice/turbo/api
 fal	ideogram.vector.imageToVector	POST	https://fal.run/ideogram/vector/image-to-vector	https://fal.ai/models/ideogram/vector/image-to-vector/api
+fal	ideogram.vector.textToVector	POST	https://fal.run/ideogram/vector/text-to-vector	https://fal.ai/models/ideogram/vector/text-to-vector/api

@@ -13026,7 +13026,82 @@ export type FalIdeogramVectorImageToVectorParsedRequest = z.output<
   typeof FalIdeogramVectorImageToVectorRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-10-23
+// (sha256 8141fc19a5f3a5fbe9b59247ab983a5804d268dfbae311963cd6e4ae88cd6dfe).
+// Field order follows x-fal-order-properties. additionalProperties is false.
+// Docs: https://fal.ai/models/ideogram/vector/text-to-vector/api
+export const FalIdeogramVectorTextToVectorRequestSchema = z
+  .object({
+    prompt: z
+      .string()
+      .min(1)
+      .max(9500)
+      .describe("A text description of the SVG to generate."),
+    quality: z
+      .enum(["low", "medium", "high"])
+      .default("medium")
+      .describe(
+        "Generation quality. `low` is fastest, `high` is highest quality."
+      ),
+    num_images: z
+      .number()
+      .int()
+      .min(1)
+      .max(8)
+      .default(1)
+      .describe("Number of SVGs to generate."),
+    aspect_ratio: z
+      .enum([
+        "auto",
+        "1:1",
+        "1:4",
+        "1:3",
+        "1:2",
+        "9:16",
+        "10:16",
+        "2:3",
+        "3:4",
+        "4:5",
+        "5:4",
+        "4:3",
+        "3:2",
+        "16:10",
+        "16:9",
+        "2:1",
+        "3:1",
+        "4:1",
+      ])
+      .default("auto")
+      .describe("The aspect ratio of the generated SVG."),
+    seed: z
+      .number()
+      .int()
+      .min(0)
+      .max(2147483647)
+      .nullable()
+      .optional()
+      .describe("Seed for reproducible generation."),
+    image_urls: z
+      .array(z.string())
+      .max(5)
+      .nullable()
+      .optional()
+      .describe(
+        "Optional reference images (up to 5, max 10MB each). The first image is the primary source; the others are additional references."
+      ),
+  })
+  .strict();
+export type FalIdeogramVectorTextToVectorRequest = z.input<
+  typeof FalIdeogramVectorTextToVectorRequestSchema
+>;
+export type FalIdeogramVectorTextToVectorRequestInput =
+  FalIdeogramVectorTextToVectorRequest;
+export type FalIdeogramVectorTextToVectorParsedRequest = z.output<
+  typeof FalIdeogramVectorTextToVectorRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "ideogram/vector/text-to-vector": FalIdeogramVectorTextToVectorRequestSchema,
   "ideogram/vector/image-to-vector":
     FalIdeogramVectorImageToVectorRequestSchema,
   "heygen/heygen-voice/turbo": FalHeygenHeygenVoiceTurboRequestSchema,

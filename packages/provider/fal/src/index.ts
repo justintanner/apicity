@@ -21,6 +21,10 @@ export type {
 
 // Export all types
 export type {
+  FalIdeogramVectorTextToVectorRequest,
+  FalIdeogramVectorTextToVectorRequestInput,
+  FalIdeogramVectorTextToVectorParsedRequest,
+  FalIdeogramVectorTextToVectorResponse,
   FalIdeogramVectorImageToVectorRequest,
   FalIdeogramVectorImageToVectorRequestInput,
   FalIdeogramVectorImageToVectorParsedRequest,

@@ -426,6 +426,7 @@ export const MODEL_SLUGS = {
   // underlying models kie also resells, so their slugs intentionally match
   // kie's.
   fal: {
+    "kling/v4/image-to-video": "kling4",
     "kling/v4/text-to-video": "kling4",
     "heygen/heygen-video/text-to-video": "heygenvideo",
     "heygen/heygen-video/reference-to-video": "heygenvideo",
@@ -971,6 +972,7 @@ export const MODEL_DISPLAY = {
   },
 
   fal: {
+    "kling/v4/image-to-video": "Kling 4",
     "kling/v4/text-to-video": "Kling 4",
     "fal-ai/heygen/v3/filler-word-removal": "HeyGen Filler Word Removal",
     "fal-ai/heygen/v2/translate/precision": "HeyGen Translate Precision",

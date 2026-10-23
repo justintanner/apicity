@@ -15382,7 +15382,68 @@ export type FalKlingV4TextToVideoParsedRequest = z.output<
   typeof FalKlingV4TextToVideoRequestSchema
 >;
 
+// Kling 4.0 media inputs: free 422 probes on all four kling/v4 endpoints
+// (2026-10-23) refused, with this message, any image or video URL that is
+// neither an http(s) URL with a dotted host nor a data URI. A data URI must
+// start with a lowercase "data:" and contain a comma; its media type and
+// payload went unchecked.
+const KlingV4MediaUrlSchema = z
+  .string()
+  .refine(
+    (v) => /^data:[^,]*,/.test(v) || /^https?:\/\/[^\s/?#]+\.[^\s/?#]+/.test(v),
+    { message: "Input must be a valid HTTPS URL or a Data URI" }
+  );
+
+// Pinned to the live queue OpenAPI read on 2026-10-23
+// (sha256 391eb745954b9a89dd333e980d7f75b5f4d10deba8ca8235c1a0882c0986b0d2).
+// Field order follows x-fal-order-properties; the output aspect ratio follows
+// the input frames. The input is open; free 422 probes confirmed the media URL
+// rule on start_image_url and end_image_url, the duration bounds, the
+// resolution set and the shot rules, and accepted nulls and unknown fields.
+// Docs: https://fal.ai/models/kling/v4/image-to-video/api
+export const FalKlingV4ImageToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .max(26000)
+    .nullable()
+    .optional()
+    .describe("Text prompt. Either prompt or multi_prompt must be provided."),
+  start_image_url: KlingV4MediaUrlSchema.describe(
+    "Image to use as the first frame of the video.\n\nMax file size: 30.0MB, Min width: 300px, Min height: 300px, Min aspect ratio: 0.40, Max aspect ratio: 2.50, Timeout: 20.0s"
+  ),
+  end_image_url: KlingV4MediaUrlSchema.nullable()
+    .optional()
+    .describe("Image to use as the last frame of the video."),
+  multi_prompt: z
+    .array(KlingV4ShotSchema)
+    .min(1)
+    .nullable()
+    .optional()
+    .describe(
+      "Per-shot prompts for multi-shot generation. The video duration is the sum of the shot durations."
+    ),
+  duration: z
+    .number()
+    .int()
+    .min(3)
+    .max(30)
+    .default(5)
+    .describe("Video duration in seconds (3-30)."),
+  resolution: z
+    .enum(["720p", "1080p"])
+    .default("1080p")
+    .describe("Output resolution."),
+});
+export type FalKlingV4ImageToVideoRequest = z.input<
+  typeof FalKlingV4ImageToVideoRequestSchema
+>;
+export type FalKlingV4ImageToVideoRequestInput = FalKlingV4ImageToVideoRequest;
+export type FalKlingV4ImageToVideoParsedRequest = z.output<
+  typeof FalKlingV4ImageToVideoRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "kling/v4/image-to-video": FalKlingV4ImageToVideoRequestSchema,
   "kling/v4/text-to-video": FalKlingV4TextToVideoRequestSchema,
   "fal-ai/heygen/v3/filler-word-removal":
     FalHeygenV3FillerWordRemovalRequestSchema,

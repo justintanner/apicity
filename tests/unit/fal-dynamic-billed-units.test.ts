@@ -17,6 +17,7 @@ const CHECKED = [
   "fal-ai/heygen/avatar4/digital-twin",
   "fal-ai/heygen/avatar4/image-to-video",
   "fal-ai/heygen/avatar5/digital-twin",
+  "fal-ai/heygen/v3/lipsync/speed",
   "fal-ai/kandinsky6-lite/image-to-video",
   "fal-ai/kandinsky6-lite/text-to-video",
   "fal-ai/kandinsky6-pro/image-to-video",

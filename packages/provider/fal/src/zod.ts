@@ -14962,7 +14962,60 @@ export type FalHeygenAvatar5DigitalTwinParsedRequest = z.output<
   typeof FalHeygenAvatar5DigitalTwinRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-10-23
+// (sha256 0463a29ebf4175b9c0cdeeca4353f3e248b221f267bb733b3471d5e7d25cf8b6).
+// Field order follows x-fal-order-properties. The input is open; free 422
+// probes confirmed the start_time/end_time minimum and the boolean flags, and
+// accepted nulls and unknown fields. The precision tier's input is identical.
+// Docs: https://fal.ai/models/fal-ai/heygen/v3/lipsync/speed/api
+export const FalHeygenV3LipsyncSpeedRequestSchema = z.object({
+  video_url: z.string().describe("URL of the source video to lip-sync."),
+  audio_url: z.string().describe("URL of the replacement audio file."),
+  title: z
+    .string()
+    .nullable()
+    .optional()
+    .describe("Optional title for the lipsync job."),
+  enable_caption: z
+    .boolean()
+    .default(false)
+    .describe("Generate captions in the output video."),
+  enable_dynamic_duration: z
+    .boolean()
+    .default(true)
+    .describe("Allow duration adjustment to match the new audio."),
+  disable_music_track: z
+    .boolean()
+    .default(false)
+    .describe("Remove background music from the source video."),
+  enable_speech_enhancement: z
+    .boolean()
+    .default(false)
+    .describe("Enhance the replacement audio quality."),
+  start_time: z
+    .number()
+    .min(0)
+    .nullable()
+    .optional()
+    .describe("Start time in seconds for partial lipsync."),
+  end_time: z
+    .number()
+    .min(0)
+    .nullable()
+    .optional()
+    .describe("End time in seconds for partial lipsync."),
+});
+export type FalHeygenV3LipsyncSpeedRequest = z.input<
+  typeof FalHeygenV3LipsyncSpeedRequestSchema
+>;
+export type FalHeygenV3LipsyncSpeedRequestInput =
+  FalHeygenV3LipsyncSpeedRequest;
+export type FalHeygenV3LipsyncSpeedParsedRequest = z.output<
+  typeof FalHeygenV3LipsyncSpeedRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "fal-ai/heygen/v3/lipsync/speed": FalHeygenV3LipsyncSpeedRequestSchema,
   "fal-ai/heygen/avatar5/digital-twin":
     FalHeygenAvatar5DigitalTwinRequestSchema,
   "fal-ai/heygen/avatar4/image-to-video":

@@ -1248,6 +1248,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "fal-ai/heygen/avatar4/digital-twin",
   "fal-ai/heygen/avatar4/image-to-video",
   "fal-ai/heygen/avatar5/digital-twin",
+  "fal-ai/heygen/v3/lipsync/speed",
   "fal-ai/kandinsky6-lite/image-to-video",
   "fal-ai/kandinsky6-lite/text-to-video",
   "fal-ai/kandinsky6-pro/image-to-video",
@@ -1315,6 +1316,13 @@ export interface FalDynamicBilledUnit {
 // pricing API were re-read on 2026-10-17 and matched the 2026-10-15 reads
 // behind each recording (ac-j3d6ki.4).
 export const FAL_DYNAMIC_BILLED_UNITS = {
+  // publicEndpointBilling and pricing API checked 2026-10-23: $0.05 per
+  // second (no card). Lip-syncing our 2.96 s avatar video to our 2.90 s HeyGen
+  // Voice clip returned 2.88 s and billed 3 units ($0.15): whole output seconds.
+  "fal-ai/heygen/v3/lipsync/speed": {
+    unit: "seconds of output video at $0.05",
+    why: "the source video and replacement audio set the output length, and no request field fixes it",
+  },
   // Card and pricing API checked 2026-10-23: $0.10 per second of generated
   // output video. The 41-character recording returned 2.96 s at 720p and
   // billed 3 units ($0.30), so whole output seconds bill.

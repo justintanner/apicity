@@ -15,6 +15,7 @@ const CHECKED = [
   "fal-ai/flux-2-flex",
   "fal-ai/heygen/avatar3/digital-twin",
   "fal-ai/heygen/avatar4/digital-twin",
+  "fal-ai/heygen/avatar4/image-to-video",
   "fal-ai/kandinsky6-lite/image-to-video",
   "fal-ai/kandinsky6-lite/text-to-video",
   "fal-ai/kandinsky6-pro/image-to-video",

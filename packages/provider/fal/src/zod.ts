@@ -14830,7 +14830,141 @@ export type FalHeygenAvatar4ImageToVideoParsedRequest = z.output<
   typeof FalHeygenAvatar4ImageToVideoRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-10-23
+// (sha256 86e5a05104f3b9a5b19186e924335ada4f6ce52f8796e5050f66070455820740).
+// Field order follows x-fal-order-properties. The input is open and has no
+// required field. avatar is a free string (the OpenAPI lists 497 Avatar
+// V-eligible names as examples, not an enum); voice is the stock catalog.
+// Free 422 probes confirmed the fit, output_format, background.type and
+// watermark rules, accepted nulls and unknown names, and found no field rule
+// requiring a prompt or an audio_url.
+// Docs: https://fal.ai/models/fal-ai/heygen/avatar5/digital-twin/api
+export const FalHeygenAvatar5DigitalTwinRequestSchema = z.object({
+  avatar: z
+    .string()
+    .nullable()
+    .default("Abigail Sofa Front")
+    .describe("Name of the Avatar V-eligible avatar to use."),
+  prompt: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "Text the avatar will speak. Required when ``audio_url`` is not provided."
+    ),
+  voice: HeygenStockVoiceSchema.nullable()
+    .default("Warm Pro Narrator")
+    .describe(
+      "Name of the text-to-speech voice to use for the avatar when ``audio_url`` is not provided."
+    ),
+  audio_url: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "HTTP(S) URL of an audio file for the avatar to lip-sync to. When provided, the avatar uses this audio instead of text-to-speech and ``prompt``/``voice`` are ignored."
+    ),
+  fit: z
+    .enum(["contain", "cover"])
+    .default("cover")
+    .describe(
+      "How the avatar fits within the output frame. 'contain' keeps the full avatar in view (may letterbox); 'cover' fills the frame (may crop)."
+    ),
+  remove_background: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Remove the avatar's background. Requires a matting-enabled avatar."
+    ),
+  background: z
+    .object({
+      type: z
+        .enum(["color", "image"])
+        .default("color")
+        .describe(
+          "Type of background. 'color' for a solid hex color, 'image' for an image URL."
+        ),
+      value: z
+        .string()
+        .default("#FFFFFF")
+        .describe(
+          "Background value \u2014 hex color for 'color' type, or HTTP(S) URL for 'image' type."
+        ),
+    })
+    .nullable()
+    .optional()
+    .describe(
+      "Optional background to composite behind the avatar. Ignored when ``output_format='webm'`` (webm output is transparent)."
+    ),
+  watermark: z
+    .object({
+      image_url: z
+        .string()
+        .describe(
+          "HTTP(S) URL of the watermark image to overlay on the video."
+        ),
+      scale: z
+        .number()
+        .gt(0)
+        .max(2)
+        .nullable()
+        .optional()
+        .describe(
+          "Watermark scale relative to the video (0.0 exclusive\u20132.0)."
+        ),
+      opacity: z
+        .number()
+        .min(0)
+        .max(1)
+        .nullable()
+        .optional()
+        .describe("Watermark opacity (0.0 = transparent, 1.0 = opaque)."),
+      placement: z
+        .enum(["top-left", "top-right", "bottom-left", "bottom-right"])
+        .nullable()
+        .optional()
+        .describe("Where to place the watermark on the video."),
+    })
+    .nullable()
+    .optional()
+    .describe("Optional watermark image to overlay on the output video."),
+  caption: z
+    .boolean()
+    .default(false)
+    .describe("Generate a sidecar SRT caption file alongside the video."),
+  output_format: z
+    .enum(["mp4", "webm"])
+    .default("mp4")
+    .describe(
+      "Output container format. 'webm' produces a transparent video (automatically removes the background) and ignores the ``background`` field."
+    ),
+  resolution: z
+    .enum(["720p", "1080p", "4k"])
+    .default("720p")
+    .describe("Output resolution preset."),
+  aspect_ratio: z
+    .enum(["16:9", "9:16", "4:5", "5:4", "1:1", "auto"])
+    .default("16:9")
+    .describe(
+      "Aspect ratio of the output video. Supported values: '16:9', '9:16', '4:5', '5:4', '1:1', and 'auto'. 'auto' preserves the source aspect ratio when HeyGen can read it, falling back to '16:9' otherwise."
+    ),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe("Authorized callers may set false to request relaxed screening."),
+});
+export type FalHeygenAvatar5DigitalTwinRequest = z.input<
+  typeof FalHeygenAvatar5DigitalTwinRequestSchema
+>;
+export type FalHeygenAvatar5DigitalTwinRequestInput =
+  FalHeygenAvatar5DigitalTwinRequest;
+export type FalHeygenAvatar5DigitalTwinParsedRequest = z.output<
+  typeof FalHeygenAvatar5DigitalTwinRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "fal-ai/heygen/avatar5/digital-twin":
+    FalHeygenAvatar5DigitalTwinRequestSchema,
   "fal-ai/heygen/avatar4/image-to-video":
     FalHeygenAvatar4ImageToVideoRequestSchema,
   "fal-ai/heygen/avatar4/digital-twin":

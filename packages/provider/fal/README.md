@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-229 endpoints across 54 groups. Each method mirrors an upstream URL path.
+230 endpoints across 54 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -1499,6 +1499,23 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.heygen.avatar4.imageToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.heygen.avatar5.digitalTwin</code></b></summary>
+
+<code>POST https://fal.run/fal-ai/heygen/avatar5/digital-twin</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/fal-ai/heygen/avatar5/digital-twin/api)
+
+```typescript
+const res = await fal.run.heygen.avatar5.digitalTwin({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

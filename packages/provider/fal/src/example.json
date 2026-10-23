@@ -973,6 +973,14 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST heygen.avatar5.digitalTwin": {
+    "source": "fal/heygen-avatar5-digital-twin",
+    "payload": {
+      "prompt": "A red panda waves once, then holds still."
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST heygen.heygenVideo.imageToVideo": {
     "source": "fal/heygen-heygen-video-image-to-video",
     "payload": {

@@ -13134,7 +13134,41 @@ export type FalHeygenHeygenVideoTextToVideoParsedRequest = z.output<
   typeof FalHeygenHeygenVideoTextToVideoRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-10-23
+// (sha256 2b872b7c7eb6bae233b43ad3ccaeb18f372ff6465154e563aca1896ac9068c21).
+// Field order follows x-fal-order-properties; additionalProperties is false.
+// The OpenAPI describes only image_url and enable_safety_checker.
+// Docs: https://fal.ai/models/heygen/heygen-video/image-to-video/api
+export const FalHeygenHeygenVideoImageToVideoRequestSchema = z
+  .object({
+    prompt: z.string().min(1).max(32000),
+    duration: z.number().int().min(5).max(15).default(5),
+    resolution: z.enum(["480p", "768p", "1080p", "2k"]).default("768p"),
+    prompt_enhancement: z
+      .enum(["turbo", "quality", "ultraquality", "disabled"])
+      .default("turbo"),
+    seed: z.number().int().min(0).max(4294967295).nullable().optional(),
+    image_url: z.string().describe("Image to use as the first frame"),
+    enable_safety_checker: z
+      .boolean()
+      .default(true)
+      .describe(
+        "Authorized callers may set false to request relaxed screening."
+      ),
+  })
+  .strict();
+export type FalHeygenHeygenVideoImageToVideoRequest = z.input<
+  typeof FalHeygenHeygenVideoImageToVideoRequestSchema
+>;
+export type FalHeygenHeygenVideoImageToVideoRequestInput =
+  FalHeygenHeygenVideoImageToVideoRequest;
+export type FalHeygenHeygenVideoImageToVideoParsedRequest = z.output<
+  typeof FalHeygenHeygenVideoImageToVideoRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "heygen/heygen-video/image-to-video":
+    FalHeygenHeygenVideoImageToVideoRequestSchema,
   "heygen/heygen-video/text-to-video":
     FalHeygenHeygenVideoTextToVideoRequestSchema,
   "ideogram/vector/text-to-vector": FalIdeogramVectorTextToVectorRequestSchema,

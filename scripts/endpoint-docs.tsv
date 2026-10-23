@@ -1800,3 +1800,4 @@ fal	heygen.heygenVoice.turbo	POST	https://fal.run/heygen/heygen-voice/turbo	http
 fal	ideogram.vector.imageToVector	POST	https://fal.run/ideogram/vector/image-to-vector	https://fal.ai/models/ideogram/vector/image-to-vector/api
 fal	ideogram.vector.textToVector	POST	https://fal.run/ideogram/vector/text-to-vector	https://fal.ai/models/ideogram/vector/text-to-vector/api
 fal	heygen.heygenVideo.textToVideo	POST	https://fal.run/heygen/heygen-video/text-to-video	https://fal.ai/models/heygen/heygen-video/text-to-video/api
+fal	heygen.heygenVideo.imageToVideo	POST	https://fal.run/heygen/heygen-video/image-to-video	https://fal.ai/models/heygen/heygen-video/image-to-video/api

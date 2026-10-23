@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added fal HeyGen Avatar 5 digital twin (`fal-ai/heygen/avatar5/digital-twin`) as `run.heygen.avatar5.digitalTwin`, with its background, watermark and transparent webm options; dynamically priced (whole output seconds set by the script) (ac-tsxf3o).
+
 - Added fal HeyGen Avatar 4 image-to-video (`fal-ai/heygen/avatar4/image-to-video`) as `run.heygen.avatar4.imageToVideo`, restating fal's rule that a prompt without `audio_url` needs a `voice`; dynamically priced (ac-fh66p2).
 
 - Added fal HeyGen Avatar 4 digital twin (`fal-ai/heygen/avatar4/digital-twin`) as `run.heygen.avatar4.digitalTwin`, reusing the stock catalogs; dynamically priced (whole output seconds set by the script) (ac-0y2ni6).

@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalHeygenAvatar5DigitalTwinRequest,
+  FalHeygenAvatar5DigitalTwinRequestInput,
+  FalHeygenAvatar5DigitalTwinParsedRequest,
   FalHeygenAvatar4ImageToVideoRequest,
   FalHeygenAvatar4ImageToVideoRequestInput,
   FalHeygenAvatar4ImageToVideoParsedRequest,
@@ -757,6 +760,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalHeygenAvatar5DigitalTwinRequest,
   FalHeygenAvatar4ImageToVideoRequest,
   FalHeygenAvatar4DigitalTwinRequest,
   FalHeygenAvatar3DigitalTwinRequest,
@@ -6726,4 +6730,33 @@ export interface FalRunHeygenAvatar4Namespace {
   ) => Promise<FalHeygenAvatar4ImageToVideoResponse>) & {
     schema: ApicitySchema<FalHeygenAvatar4ImageToVideoRequest>;
   };
+}
+
+export interface FalHeygenAvatar5DigitalTwinResponse {
+  /** The generated Avatar V video file. */
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+  /** Generated caption file (SRT) when caption=True and HeyGen returns one. */
+  caption_file?: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  } | null;
+}
+
+export interface FalRunHeygenAvatar5Namespace {
+  digitalTwin: ((
+    params: FalHeygenAvatar5DigitalTwinRequest,
+    signal?: AbortSignal
+  ) => Promise<FalHeygenAvatar5DigitalTwinResponse>) & {
+    schema: ApicitySchema<FalHeygenAvatar5DigitalTwinRequest>;
+  };
+}
+export interface FalRunHeygenNamespace {
+  avatar5: FalRunHeygenAvatar5Namespace;
 }

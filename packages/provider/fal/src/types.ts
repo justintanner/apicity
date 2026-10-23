@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalHeygenAvatar3DigitalTwinRequest,
+  FalHeygenAvatar3DigitalTwinRequestInput,
+  FalHeygenAvatar3DigitalTwinParsedRequest,
   FalHeygenHeygenVideoReferenceToVideoRequest,
   FalHeygenHeygenVideoReferenceToVideoRequestInput,
   FalHeygenHeygenVideoReferenceToVideoParsedRequest,
@@ -748,6 +751,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalHeygenAvatar3DigitalTwinRequest,
   FalHeygenHeygenVideoReferenceToVideoRequest,
   FalHeygenHeygenVideoImageToVideoRequest,
   FalHeygenHeygenVideoTextToVideoRequest,
@@ -6651,4 +6655,26 @@ export interface FalRunHeygenHeygenVideoNamespace {
   ) => Promise<FalHeygenHeygenVideoReferenceToVideoResponse>) & {
     schema: ApicitySchema<FalHeygenHeygenVideoReferenceToVideoRequest>;
   };
+}
+
+export interface FalHeygenAvatar3DigitalTwinResponse {
+  /** The generated video file */
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+}
+
+export interface FalRunHeygenAvatar3Namespace {
+  digitalTwin: ((
+    params: FalHeygenAvatar3DigitalTwinRequest,
+    signal?: AbortSignal
+  ) => Promise<FalHeygenAvatar3DigitalTwinResponse>) & {
+    schema: ApicitySchema<FalHeygenAvatar3DigitalTwinRequest>;
+  };
+}
+export interface FalRunHeygenNamespace {
+  avatar3: FalRunHeygenAvatar3Namespace;
 }

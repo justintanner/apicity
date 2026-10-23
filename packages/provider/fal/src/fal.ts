@@ -1,4 +1,6 @@
 import {
+  FalHeygenAvatar3DigitalTwinRequest,
+  FalHeygenAvatar3DigitalTwinResponse,
   FalHeygenHeygenVideoReferenceToVideoRequest,
   FalHeygenHeygenVideoReferenceToVideoResponse,
   FalHeygenHeygenVideoImageToVideoRequest,
@@ -452,6 +454,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalHeygenAvatar3DigitalTwinRequestSchema,
   FalHeygenHeygenVideoReferenceToVideoRequestSchema,
   FalHeygenHeygenVideoImageToVideoRequestSchema,
   FalHeygenHeygenVideoTextToVideoRequestSchema,
@@ -3817,8 +3820,25 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/fal-ai/heygen/avatar3/digital-twin
+  // Docs: https://fal.ai/models/fal-ai/heygen/avatar3/digital-twin/api
+  const heygenAvatar3DigitalTwin = jsonBody<
+    FalHeygenAvatar3DigitalTwinRequest,
+    FalHeygenAvatar3DigitalTwinResponse
+  >(
+    "POST",
+    "/fal-ai/heygen/avatar3/digital-twin",
+    FalHeygenAvatar3DigitalTwinRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
     heygen: {
+      avatar3: {
+        // POST https://fal.run/fal-ai/heygen/avatar3/digital-twin
+        // Docs: https://fal.ai/models/fal-ai/heygen/avatar3/digital-twin/api
+        digitalTwin: heygenAvatar3DigitalTwin,
+      },
       heygenVideo: {
         // POST https://fal.run/heygen/heygen-video/text-to-video
         // Docs: https://fal.ai/models/heygen/heygen-video/text-to-video/api

@@ -21,6 +21,11 @@ export type {
 
 // Export all types
 export type {
+  FalHeygenAvatar3DigitalTwinRequest,
+  FalHeygenAvatar3DigitalTwinRequestInput,
+  FalHeygenAvatar3DigitalTwinParsedRequest,
+  FalHeygenAvatar3DigitalTwinResponse,
+  FalRunHeygenAvatar3Namespace,
   FalHeygenHeygenVideoReferenceToVideoRequest,
   FalHeygenHeygenVideoReferenceToVideoRequestInput,
   FalHeygenHeygenVideoReferenceToVideoParsedRequest,

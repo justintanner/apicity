@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added fal HeyGen Avatar 3 digital twin (`fal-ai/heygen/avatar3/digital-twin`) as `run.heygen.avatar3.digitalTwin`, with HeyGen's published stock avatar (1286) and voice (102) catalogs; dynamically priced, since the spoken script sets the billed output seconds (ac-5jmpds).
+
 - Added fal HeyGen Video reference-to-video (`heygen/heygen-video/reference-to-video`) as `run.heygen.heygenVideo.referenceToVideo`, priced per requested second by resolution, and added HeyGen Video (ultraquality) to the derived reference-to-video frontier list at rank 2 (ac-habde4).
 
 - Added fal HeyGen Video image-to-video (`heygen/heygen-video/image-to-video`) as `run.heygen.heygenVideo.imageToVideo`, priced per requested second by resolution like text-to-video (ac-3bshuk).

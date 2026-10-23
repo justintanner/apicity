@@ -1485,7 +1485,9 @@ describe("fal edit/image pricing estimates", () => {
     // unrecorded, and the one 2.0-series reference recording (2.0 US)
     // divides by 1000 where the card says 1024. 2.5 and 2.5 US
     // image-to-video follow the input image's aspect, which no request field
-    // sizes (ac-j3d6ki.3). Reframe-video also bills generated overlap. All use fal's pricing-estimate API.
+    // sizes (ac-j3d6ki.3). Reframe-video also bills generated overlap. HeyGen
+    // digital twins bill whole output seconds that the spoken script sets
+    // (ac-7wb7u7). All use fal's pricing-estimate API.
     expect(FAL_DYNAMIC_PRICING_ENDPOINTS).toEqual([
       "alibaba/qwen-image-3/edit",
       "alibaba/qwen-image-3/text-to-image",
@@ -1504,6 +1506,7 @@ describe("fal edit/image pricing estimates", () => {
       "bytedance/seedream/v5/pro/text-to-image",
       "fal-ai/flux-2-flex",
       "fal-ai/flux-3-action/so101",
+      "fal-ai/heygen/avatar3/digital-twin",
       "fal-ai/kandinsky6-lite/image-to-video",
       "fal-ai/kandinsky6-lite/text-to-video",
       "fal-ai/kandinsky6-pro/image-to-video",

@@ -1373,6 +1373,17 @@ export function falDynamicBilledUnit(
 }
 
 export const fal: Record<string, ModelPricing> = {
+  // HeyGen Voice Turbo's card bills $0.004 per 1,000 input characters, and
+  // the request's text length is the unit count: the 41-character recording
+  // billed 0.041 units. As with HeyGen Voice, the pricing API and the usage
+  // read charged that call half the card ($0.002 per 1,000, cost_total
+  // $0.000082) with no promotion published (2026-10-23); the card's list rate
+  // stands.
+  "heygen/heygen-voice/turbo": perCharacter(
+    "heygen/heygen-voice/turbo",
+    0.004 / 1_000,
+    "2026-10-23"
+  ),
   // HeyGen Voice's card bills $0.03 per 1,000 input characters, and the
   // request's text length is the unit count: the 41-character recording billed
   // 0.041 units. The pricing API and the usage read charged that call at $0.015

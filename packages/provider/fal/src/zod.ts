@@ -12983,7 +12983,25 @@ export type FalHeygenHeygenVoiceParsedRequest = z.output<
   typeof FalHeygenHeygenVoiceRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-10-23
+// (sha256 e415617de686d811142876f673690a0da2fe1d981d7ce4ffc10caccde88e7ac5).
+// Its HeygenVoiceTurboInput is JSON-identical to heygen/heygen-voice's input,
+// and the same free 422 probes drew the same field errors, so turbo shares that
+// schema.
+// Docs: https://fal.ai/models/heygen/heygen-voice/turbo/api
+export const FalHeygenHeygenVoiceTurboRequestSchema =
+  FalHeygenHeygenVoiceRequestSchema;
+export type FalHeygenHeygenVoiceTurboRequest = z.input<
+  typeof FalHeygenHeygenVoiceTurboRequestSchema
+>;
+export type FalHeygenHeygenVoiceTurboRequestInput =
+  FalHeygenHeygenVoiceTurboRequest;
+export type FalHeygenHeygenVoiceTurboParsedRequest = z.output<
+  typeof FalHeygenHeygenVoiceTurboRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "heygen/heygen-voice/turbo": FalHeygenHeygenVoiceTurboRequestSchema,
   "heygen/heygen-voice": FalHeygenHeygenVoiceRequestSchema,
   "meshy/v6-lite/retexture": FalMeshyV6LiteRetextureRequestSchema,
   "bytedance/seedance-2.5/draft/complete":

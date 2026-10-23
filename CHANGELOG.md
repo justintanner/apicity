@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added fal HeyGen Voice Turbo text-to-speech (`heygen/heygen-voice/turbo`) as `run.heygen.heygenVoice.turbo`, priced per input character from its card; fal billed the recorded call at half the card rate (ac-52hhep).
+
 - Added fal HeyGen Voice text-to-speech (`heygen/heygen-voice`), priced per input character from its card; fal billed the recorded call at half the card rate (ac-7wb7u7).
 
 - Added a `price` to each `frontier()` row and to `apicity frontier <type>`, taken from the bundled `@apicity/cost` rates (`0.04-0.16 USD/s`, `0.08 USD/image`, `dynamic`, or `-`). `docs/frontier.md` has the same column. A missing rate stays `unpriced`; no rate table changed.

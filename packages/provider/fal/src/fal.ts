@@ -1,4 +1,6 @@
 import {
+  FalHeygenHeygenVoiceTurboRequest,
+  FalHeygenHeygenVoiceTurboResponse,
   FalHeygenHeygenVoiceRequest,
   FalHeygenHeygenVoiceResponse,
   FalMeshyV6LiteRetextureRequest,
@@ -440,6 +442,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalHeygenHeygenVoiceTurboRequestSchema,
   FalHeygenHeygenVoiceRequestSchema,
   FalMeshyV6LiteRetextureRequestSchema,
   FalBytedanceSeedance2p5DraftCompleteRequestSchema,
@@ -3727,11 +3730,27 @@ export function createFal(opts: FalOptions): FalProvider {
     base: runBaseURL,
   });
 
+  // POST https://fal.run/heygen/heygen-voice/turbo
+  // Docs: https://fal.ai/models/heygen/heygen-voice/turbo/api
+  const heygenHeygenVoiceTurbo = jsonBody<
+    FalHeygenHeygenVoiceTurboRequest,
+    FalHeygenHeygenVoiceTurboResponse
+  >(
+    "POST",
+    "/heygen/heygen-voice/turbo",
+    FalHeygenHeygenVoiceTurboRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
     heygen: {
       // POST https://fal.run/heygen/heygen-voice
       // Docs: https://fal.ai/models/heygen/heygen-voice/api
-      heygenVoice: heygenHeygenVoice,
+      heygenVoice: Object.assign(heygenHeygenVoice, {
+        // POST https://fal.run/heygen/heygen-voice/turbo
+        // Docs: https://fal.ai/models/heygen/heygen-voice/turbo/api
+        turbo: heygenHeygenVoiceTurbo,
+      }),
     },
     pixverse: {
       musicVideo: {

@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalHeygenHeygenVoiceTurboRequest,
+  FalHeygenHeygenVoiceTurboRequestInput,
+  FalHeygenHeygenVoiceTurboParsedRequest,
   FalHeygenHeygenVoiceRequest,
   FalHeygenHeygenVoiceRequestInput,
   FalHeygenHeygenVoiceParsedRequest,
@@ -730,6 +733,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalHeygenHeygenVoiceTurboRequest,
   FalHeygenHeygenVoiceRequest,
   FalBriaFibo2EditRequest,
   FalBriaFibo2GenerateRequest,
@@ -6501,4 +6505,25 @@ export interface FalRunHeygenNamespace {
 }
 export interface FalRunNamespace {
   heygen: FalRunHeygenNamespace;
+}
+
+export interface FalHeygenHeygenVoiceTurboResponse {
+  /** Generated speech as a 44.1 kHz WAV file. */
+  audio: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+  /** Duration of the audio in seconds. */
+  duration: number;
+}
+
+export interface FalRunHeygenHeygenVoiceNamespace {
+  turbo: ((
+    params: FalHeygenHeygenVoiceTurboRequest,
+    signal?: AbortSignal
+  ) => Promise<FalHeygenHeygenVoiceTurboResponse>) & {
+    schema: ApicitySchema<FalHeygenHeygenVoiceTurboRequest>;
+  };
 }

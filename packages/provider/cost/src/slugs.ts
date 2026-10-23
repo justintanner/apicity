@@ -427,6 +427,7 @@ export const MODEL_SLUGS = {
   // kie's.
   fal: {
     "heygen/heygen-voice": "heygenvoice",
+    "heygen/heygen-voice/turbo": "heygenvoicet",
     "meshy/v6-lite/retexture": "meshyv6l",
     "minimax/h3-max/styles/16bit-pixel": "h3mstyle",
     "minimax/h3-max/styles/hand-drawn": "h3mstyle",
@@ -965,6 +966,7 @@ export const MODEL_DISPLAY = {
 
   fal: {
     "heygen/heygen-voice": "HeyGen Voice",
+    "heygen/heygen-voice/turbo": "HeyGen Voice Turbo",
     "meshy/v6-lite/retexture": "Meshy 6 Lite Retexture",
     "minimax/h3-max/styles/16bit-pixel": "H3 Max 16-bit Pixel",
     "minimax/h3-max/styles/hand-drawn": "H3 Max Hand Drawn",

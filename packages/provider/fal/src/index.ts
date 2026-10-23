@@ -21,6 +21,10 @@ export type {
 
 // Export all types
 export type {
+  FalHeygenHeygenVoiceTurboRequest,
+  FalHeygenHeygenVoiceTurboRequestInput,
+  FalHeygenHeygenVoiceTurboParsedRequest,
+  FalHeygenHeygenVoiceTurboResponse,
   FalHeygenHeygenVoiceRequest,
   FalHeygenHeygenVoiceRequestInput,
   FalHeygenHeygenVoiceParsedRequest,

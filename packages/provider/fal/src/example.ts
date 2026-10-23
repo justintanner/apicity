@@ -956,6 +956,14 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST heygen.heygenVoice.turbo": {
+    "source": "fal/heygen-heygen-voice-turbo",
+    "payload": {
+      "text": "A red panda waves once, then holds still."
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST hunyuan.v3.instructEdit": {
     "source": "fal/hunyuan-image-v3-instruct-edit",
     "payload": {

@@ -1797,3 +1797,4 @@ fal	bria.fibo2.edit	POST	https://fal.run/bria/fibo-2/edit	https://fal.ai/models/
 fal	minimax.h3Max.reframeVideo	POST	https://fal.run/minimax/h3-max/reframe-video	https://fal.ai/models/minimax/h3-max/reframe-video/api
 fal	heygen.heygenVoice	POST	https://fal.run/heygen/heygen-voice	https://fal.ai/models/heygen/heygen-voice/api
 fal	heygen.heygenVoice.turbo	POST	https://fal.run/heygen/heygen-voice/turbo	https://fal.ai/models/heygen/heygen-voice/turbo/api
+fal	ideogram.vector.imageToVector	POST	https://fal.run/ideogram/vector/image-to-vector	https://fal.ai/models/ideogram/vector/image-to-vector/api

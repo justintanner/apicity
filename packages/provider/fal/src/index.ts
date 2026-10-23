@@ -21,6 +21,11 @@ export type {
 
 // Export all types
 export type {
+  FalIdeogramVectorImageToVectorRequest,
+  FalIdeogramVectorImageToVectorRequestInput,
+  FalIdeogramVectorImageToVectorParsedRequest,
+  FalIdeogramVectorImageToVectorResponse,
+  FalRunIdeogramVectorNamespace,
   FalHeygenHeygenVoiceTurboRequest,
   FalHeygenHeygenVoiceTurboRequestInput,
   FalHeygenHeygenVoiceTurboParsedRequest,

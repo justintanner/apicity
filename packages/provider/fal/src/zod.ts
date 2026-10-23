@@ -13000,7 +13000,35 @@ export type FalHeygenHeygenVoiceTurboParsedRequest = z.output<
   typeof FalHeygenHeygenVoiceTurboRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-10-23
+// (sha256 91c773e92a8764a6ddbdec3d4c5e2076aa5bb97459f55d50f66f1dbda3ff18d9).
+// Field order follows x-fal-order-properties. additionalProperties is false.
+// Docs: https://fal.ai/models/ideogram/vector/image-to-vector/api
+export const FalIdeogramVectorImageToVectorRequestSchema = z
+  .object({
+    image_url: z
+      .string()
+      .describe("The image to convert to SVG. JPEG, PNG or WebP, max 50MB."),
+    mode: z
+      .enum(["default", "simple"])
+      .default("default")
+      .describe(
+        "`default` preserves finer details; `simple` uses fewer, simpler shapes."
+      ),
+  })
+  .strict();
+export type FalIdeogramVectorImageToVectorRequest = z.input<
+  typeof FalIdeogramVectorImageToVectorRequestSchema
+>;
+export type FalIdeogramVectorImageToVectorRequestInput =
+  FalIdeogramVectorImageToVectorRequest;
+export type FalIdeogramVectorImageToVectorParsedRequest = z.output<
+  typeof FalIdeogramVectorImageToVectorRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "ideogram/vector/image-to-vector":
+    FalIdeogramVectorImageToVectorRequestSchema,
   "heygen/heygen-voice/turbo": FalHeygenHeygenVoiceTurboRequestSchema,
   "heygen/heygen-voice": FalHeygenHeygenVoiceRequestSchema,
   "meshy/v6-lite/retexture": FalMeshyV6LiteRetextureRequestSchema,

@@ -15559,7 +15559,71 @@ export type FalKlingV4ReferenceToVideoParsedRequest = z.output<
   typeof FalKlingV4ReferenceToVideoRequestSchema
 >;
 
+// A Kling 4.0 image element of the video edit input.
+const KlingV4ImageElementSchema = z.object({
+  frontal_image_url: KlingV4MediaUrlSchema.describe(
+    "The frontal image of the element (main view).\n\nMax file size: 30.0MB, Min width: 300px, Min height: 300px, Min aspect ratio: 0.40, Max aspect ratio: 2.50, Timeout: 20.0s"
+  ),
+  reference_image_urls: z
+    .array(KlingV4MediaUrlSchema)
+    .min(1)
+    .max(3)
+    .describe("Additional views of the element from different angles (1-3)."),
+});
+
+// Pinned to the live queue OpenAPI read on 2026-10-23
+// (sha256 6b77dabd8cb452df550e38c2a03125a725c2f26ba13b993d53863ce7509090e2).
+// Field order follows x-fal-order-properties. The input is open; free 422
+// probes confirmed the media URL rule, the prompt, list and duration bounds
+// and the element fields (one to three references), and accepted a blank
+// prompt, nulls and unknown fields, also inside an element.
+// Docs: https://fal.ai/models/kling/v4/video-to-video/edit/api
+export const FalKlingV4VideoToVideoEditRequestSchema = z.object({
+  prompt: z
+    .string()
+    .max(26000)
+    .describe("Edit instruction. Reference the source video as @Video1."),
+  video_url: KlingV4MediaUrlSchema.describe(
+    "The video to edit (3-30s), referenced as @Video1.\n\nMax file size: 300.0MB, Min width: 700px, Min height: 700px, Max width: 4553px, Max height: 4553px, Min aspect ratio: 0.40, Max aspect ratio: 2.50, Min duration: 3.0s, Max duration: 30.05s, Min FPS: 23.9, Max FPS: 60.05, Timeout: 30.0s"
+  ),
+  image_urls: z
+    .array(KlingV4MediaUrlSchema)
+    .max(10)
+    .nullable()
+    .optional()
+    .describe("Reference images, referenced as @Image1, @Image2, ..."),
+  elements: z
+    .array(KlingV4ImageElementSchema)
+    .max(7)
+    .nullable()
+    .optional()
+    .describe("Characters/objects, referenced as @Element1, @Element2, ..."),
+  duration: z
+    .number()
+    .int()
+    .min(3)
+    .max(30)
+    .nullable()
+    .optional()
+    .describe(
+      "Output duration in seconds (3-30). Defaults to the source video's length."
+    ),
+  resolution: z
+    .enum(["720p", "1080p"])
+    .default("1080p")
+    .describe("Output resolution."),
+});
+export type FalKlingV4VideoToVideoEditRequest = z.input<
+  typeof FalKlingV4VideoToVideoEditRequestSchema
+>;
+export type FalKlingV4VideoToVideoEditRequestInput =
+  FalKlingV4VideoToVideoEditRequest;
+export type FalKlingV4VideoToVideoEditParsedRequest = z.output<
+  typeof FalKlingV4VideoToVideoEditRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "kling/v4/video-to-video/edit": FalKlingV4VideoToVideoEditRequestSchema,
   "kling/v4/reference-to-video": FalKlingV4ReferenceToVideoRequestSchema,
   "kling/v4/image-to-video": FalKlingV4ImageToVideoRequestSchema,
   "kling/v4/text-to-video": FalKlingV4TextToVideoRequestSchema,

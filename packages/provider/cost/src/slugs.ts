@@ -973,6 +973,7 @@ export const MODEL_DISPLAY = {
   },
 
   fal: {
+    "kling/v4/video-to-video/edit": "Kling 4 Video Edit",
     "kling/v4/reference-to-video": "Kling 4",
     "kling/v4/image-to-video": "Kling 4",
     "kling/v4/text-to-video": "Kling 4",

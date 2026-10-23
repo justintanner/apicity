@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added fal HeyGen Lipsync Precision (`fal-ai/heygen/v3/lipsync/precision`) as `run.heygen.v3.lipsync.precision`, sharing the speed tier's input schema; dynamically priced (ac-k8hxp1).
+
 - Added fal HeyGen Lipsync Speed (`fal-ai/heygen/v3/lipsync/speed`) as `run.heygen.v3.lipsync.speed`; dynamically priced, since the source media set the billed output seconds (ac-cjtbhw).
 
 - Added fal HeyGen Avatar 5 digital twin (`fal-ai/heygen/avatar5/digital-twin`) as `run.heygen.avatar5.digitalTwin`, with its background, watermark and transparent webm options; dynamically priced (whole output seconds set by the script) (ac-tsxf3o).

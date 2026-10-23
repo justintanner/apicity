@@ -970,6 +970,7 @@ export const MODEL_DISPLAY = {
   },
 
   fal: {
+    "fal-ai/heygen/v3/lipsync/precision": "HeyGen Lipsync Precision",
     "fal-ai/heygen/v3/lipsync/speed": "HeyGen Lipsync Speed",
     "fal-ai/heygen/avatar5/digital-twin": "HeyGen Avatar 5 Digital Twin",
     "fal-ai/heygen/avatar4/image-to-video": "HeyGen Avatar 4 Image To Video",

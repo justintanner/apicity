@@ -1,4 +1,6 @@
 import {
+  FalHeygenV3LipsyncPrecisionRequest,
+  FalHeygenV3LipsyncPrecisionResponse,
   FalHeygenV3LipsyncSpeedRequest,
   FalHeygenV3LipsyncSpeedResponse,
   FalHeygenAvatar5DigitalTwinRequest,
@@ -462,6 +464,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalHeygenV3LipsyncPrecisionRequestSchema,
   FalHeygenV3LipsyncSpeedRequestSchema,
   FalHeygenAvatar5DigitalTwinRequestSchema,
   FalHeygenAvatar4ImageToVideoRequestSchema,
@@ -3892,6 +3895,18 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/fal-ai/heygen/v3/lipsync/precision
+  // Docs: https://fal.ai/models/fal-ai/heygen/v3/lipsync/precision/api
+  const heygenV3LipsyncPrecision = jsonBody<
+    FalHeygenV3LipsyncPrecisionRequest,
+    FalHeygenV3LipsyncPrecisionResponse
+  >(
+    "POST",
+    "/fal-ai/heygen/v3/lipsync/precision",
+    FalHeygenV3LipsyncPrecisionRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
     heygen: {
       v3: {
@@ -3899,6 +3914,9 @@ export function createFal(opts: FalOptions): FalProvider {
           // POST https://fal.run/fal-ai/heygen/v3/lipsync/speed
           // Docs: https://fal.ai/models/fal-ai/heygen/v3/lipsync/speed/api
           speed: heygenV3LipsyncSpeed,
+          // POST https://fal.run/fal-ai/heygen/v3/lipsync/precision
+          // Docs: https://fal.ai/models/fal-ai/heygen/v3/lipsync/precision/api
+          precision: heygenV3LipsyncPrecision,
         },
       },
       avatar5: {

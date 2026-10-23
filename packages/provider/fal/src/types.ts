@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalHeygenV3LipsyncPrecisionRequest,
+  FalHeygenV3LipsyncPrecisionRequestInput,
+  FalHeygenV3LipsyncPrecisionParsedRequest,
   FalHeygenV3LipsyncSpeedRequest,
   FalHeygenV3LipsyncSpeedRequestInput,
   FalHeygenV3LipsyncSpeedParsedRequest,
@@ -763,6 +766,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalHeygenV3LipsyncPrecisionRequest,
   FalHeygenV3LipsyncSpeedRequest,
   FalHeygenAvatar5DigitalTwinRequest,
   FalHeygenAvatar4ImageToVideoRequest,
@@ -6795,4 +6799,30 @@ export interface FalRunHeygenV3Namespace {
 }
 export interface FalRunHeygenNamespace {
   v3: FalRunHeygenV3Namespace;
+}
+
+export interface FalHeygenV3LipsyncPrecisionResponse {
+  /** The lip-synced video file with new audio synced. */
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+  /** Generated caption file when enable_caption is enabled and HeyGen returns one. */
+  caption_file?: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  } | null;
+}
+
+export interface FalRunHeygenV3LipsyncNamespace {
+  precision: ((
+    params: FalHeygenV3LipsyncPrecisionRequest,
+    signal?: AbortSignal
+  ) => Promise<FalHeygenV3LipsyncPrecisionResponse>) & {
+    schema: ApicitySchema<FalHeygenV3LipsyncPrecisionRequest>;
+  };
 }

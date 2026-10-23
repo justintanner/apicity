@@ -1807,3 +1807,4 @@ fal	heygen.avatar4.digitalTwin	POST	https://fal.run/fal-ai/heygen/avatar4/digita
 fal	heygen.avatar4.imageToVideo	POST	https://fal.run/fal-ai/heygen/avatar4/image-to-video	https://fal.ai/models/fal-ai/heygen/avatar4/image-to-video/api
 fal	heygen.avatar5.digitalTwin	POST	https://fal.run/fal-ai/heygen/avatar5/digital-twin	https://fal.ai/models/fal-ai/heygen/avatar5/digital-twin/api
 fal	heygen.v3.lipsync.speed	POST	https://fal.run/fal-ai/heygen/v3/lipsync/speed	https://fal.ai/models/fal-ai/heygen/v3/lipsync/speed/api
+fal	heygen.v3.lipsync.precision	POST	https://fal.run/fal-ai/heygen/v3/lipsync/precision	https://fal.ai/models/fal-ai/heygen/v3/lipsync/precision/api

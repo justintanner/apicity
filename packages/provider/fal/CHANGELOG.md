@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added HeyGen Lipsync Precision, dynamically priced (ac-k8hxp1).
+
 - Added HeyGen Lipsync Speed, dynamically priced (ac-cjtbhw).
 
 - Added HeyGen Avatar 5 digital twin, dynamically priced (ac-tsxf3o).

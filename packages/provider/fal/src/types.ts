@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalHeygenV3LipsyncSpeedRequest,
+  FalHeygenV3LipsyncSpeedRequestInput,
+  FalHeygenV3LipsyncSpeedParsedRequest,
   FalHeygenAvatar5DigitalTwinRequest,
   FalHeygenAvatar5DigitalTwinRequestInput,
   FalHeygenAvatar5DigitalTwinParsedRequest,
@@ -760,6 +763,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalHeygenV3LipsyncSpeedRequest,
   FalHeygenAvatar5DigitalTwinRequest,
   FalHeygenAvatar4ImageToVideoRequest,
   FalHeygenAvatar4DigitalTwinRequest,
@@ -6759,4 +6763,36 @@ export interface FalRunHeygenAvatar5Namespace {
 }
 export interface FalRunHeygenNamespace {
   avatar5: FalRunHeygenAvatar5Namespace;
+}
+
+export interface FalHeygenV3LipsyncSpeedResponse {
+  /** The lip-synced video file with new audio synced. */
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+  /** Generated caption file when enable_caption is enabled and HeyGen returns one. */
+  caption_file?: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  } | null;
+}
+
+export interface FalRunHeygenV3LipsyncNamespace {
+  speed: ((
+    params: FalHeygenV3LipsyncSpeedRequest,
+    signal?: AbortSignal
+  ) => Promise<FalHeygenV3LipsyncSpeedResponse>) & {
+    schema: ApicitySchema<FalHeygenV3LipsyncSpeedRequest>;
+  };
+}
+export interface FalRunHeygenV3Namespace {
+  lipsync: FalRunHeygenV3LipsyncNamespace;
+}
+export interface FalRunHeygenNamespace {
+  v3: FalRunHeygenV3Namespace;
 }

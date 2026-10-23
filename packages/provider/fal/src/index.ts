@@ -21,6 +21,12 @@ export type {
 
 // Export all types
 export type {
+  FalHeygenV3LipsyncSpeedRequest,
+  FalHeygenV3LipsyncSpeedRequestInput,
+  FalHeygenV3LipsyncSpeedParsedRequest,
+  FalHeygenV3LipsyncSpeedResponse,
+  FalRunHeygenV3LipsyncNamespace,
+  FalRunHeygenV3Namespace,
   FalHeygenAvatar5DigitalTwinRequest,
   FalHeygenAvatar5DigitalTwinRequestInput,
   FalHeygenAvatar5DigitalTwinParsedRequest,

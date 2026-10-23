@@ -1,4 +1,6 @@
 import {
+  FalKlingV4ReferenceToVideoRequest,
+  FalKlingV4ReferenceToVideoResponse,
   FalKlingV4ImageToVideoRequest,
   FalKlingV4ImageToVideoResponse,
   FalKlingV4TextToVideoRequest,
@@ -474,6 +476,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalKlingV4ReferenceToVideoRequestSchema,
   FalKlingV4ImageToVideoRequestSchema,
   FalKlingV4TextToVideoRequestSchema,
   FalHeygenV3FillerWordRemovalRequestSchema,
@@ -3976,12 +3979,27 @@ export function createFal(opts: FalOptions): FalProvider {
     base: runBaseURL,
   });
 
+  // POST https://fal.run/kling/v4/reference-to-video
+  // Docs: https://fal.ai/models/kling/v4/reference-to-video/api
+  const klingV4ReferenceToVideo = jsonBody<
+    FalKlingV4ReferenceToVideoRequest,
+    FalKlingV4ReferenceToVideoResponse
+  >(
+    "POST",
+    "/kling/v4/reference-to-video",
+    FalKlingV4ReferenceToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
     kling: {
       v4: {
         // POST https://fal.run/kling/v4/text-to-video
         // Docs: https://fal.ai/models/kling/v4/text-to-video/api
         textToVideo: klingV4TextToVideo,
+        // POST https://fal.run/kling/v4/reference-to-video
+        // Docs: https://fal.ai/models/kling/v4/reference-to-video/api
+        referenceToVideo: klingV4ReferenceToVideo,
         // POST https://fal.run/kling/v4/image-to-video
         // Docs: https://fal.ai/models/kling/v4/image-to-video/api
         imageToVideo: klingV4ImageToVideo,

@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Kling 4 reference-to-video, statically priced per requested second by resolution; video references warn (ac-jn033c).
+
 - Added Kling 4 image-to-video, statically priced per requested second by resolution (ac-7e9ecr).
 
 - Added Kling 4 text-to-video under a new `run.kling` namespace, statically priced per requested second by resolution (ac-dhxn43).

@@ -30,6 +30,7 @@ const CHECKED = [
   "fal-ai/kandinsky6-vsr/lite",
   "google/nano-banana-2.1",
   "google/nano-banana-2.1/edit",
+  "kling/v4/video-to-video/edit",
   "minimax/h3-max/reframe-video",
   "mirelo-ai/sfx2.0/video-to-video",
 ];

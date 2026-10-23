@@ -1292,6 +1292,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "google/nano-banana-2.1",
   "google/nano-banana-2.1/edit",
   "google/nano-banana-lite/edit",
+  "kling/v4/video-to-video/edit",
   "lightricks/ltx-2.5/image-to-video/fast",
   "lightricks/ltx-2.5/image-to-video/pro",
   "luma/agent/ray/v3.2/reframe",
@@ -1341,6 +1342,16 @@ export interface FalDynamicBilledUnit {
 // pricing API were re-read on 2026-10-17 and matched the 2026-10-15 reads
 // behind each recording (ac-j3d6ki.4).
 export const FAL_DYNAMIC_BILLED_UNITS = {
+  // Card checked 2026-10-23: $0.094/s at 720p and $0.141/s at 1080p on the
+  // input plus output length, at least twice the output, while
+  // publicEndpointBilling and the pricing API list seconds at $0.157. Editing
+  // our 3.04 s Kling 4 clip at 720p returned 3.04 s and billed 3.6175 units
+  // ($0.568): the card's $0.094 on 6.042 s, a little under the two files'
+  // 6.08 s, counted in $0.157 units.
+  "kling/v4/video-to-video/edit": {
+    unit: "units at $0.157, with the card quoting $0.094 (720p) or $0.141 (1080p) per second of input plus output video, at least twice the output",
+    why: "the source video's length is billed and no request field states it",
+  },
   // Card and pricing API checked 2026-10-23: $0.01 per second of input video,
   // with a 60-second minimum, and no charge when no cut is made. Our 2.96 s
   // avatar clip came back unchanged (num_cuts 0, a byte-identical file) and

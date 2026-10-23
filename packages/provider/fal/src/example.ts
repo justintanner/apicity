@@ -1235,6 +1235,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST kling.v4.videoToVideo.edit": {
+    "source": "fal/kling-v4-video-to-video-edit",
+    "payload": {
+      "prompt": "Make it snow in @Video1.",
+      "video_url": "https://v3b.fal.media/files/b/0aaf8d10/7yl5MsJnBrE_BfOVG-ntX_output.mp4",
+      "resolution": "720p"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST klingVideo.o3.standard.imageToVideo": {
     "source": "fal/kling-video-o3-standard-image-to-video",
     "payload": {

@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalKlingV4VideoToVideoEditRequest,
+  FalKlingV4VideoToVideoEditRequestInput,
+  FalKlingV4VideoToVideoEditParsedRequest,
   FalKlingV4ReferenceToVideoRequest,
   FalKlingV4ReferenceToVideoRequestInput,
   FalKlingV4ReferenceToVideoParsedRequest,
@@ -784,6 +787,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalKlingV4VideoToVideoEditRequest,
   FalKlingV4ReferenceToVideoRequest,
   FalKlingV4ImageToVideoRequest,
   FalKlingV4TextToVideoRequest,
@@ -6997,4 +7001,26 @@ export interface FalRunKlingV4Namespace {
   ) => Promise<FalKlingV4ReferenceToVideoResponse>) & {
     schema: ApicitySchema<FalKlingV4ReferenceToVideoRequest>;
   };
+}
+
+export interface FalKlingV4VideoToVideoEditResponse {
+  /** The generated video. */
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+}
+
+export interface FalRunKlingV4VideoToVideoNamespace {
+  edit: ((
+    params: FalKlingV4VideoToVideoEditRequest,
+    signal?: AbortSignal
+  ) => Promise<FalKlingV4VideoToVideoEditResponse>) & {
+    schema: ApicitySchema<FalKlingV4VideoToVideoEditRequest>;
+  };
+}
+export interface FalRunKlingV4Namespace {
+  videoToVideo: FalRunKlingV4VideoToVideoNamespace;
 }

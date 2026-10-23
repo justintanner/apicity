@@ -21,6 +21,10 @@ export type {
 
 // Export all types
 export type {
+  FalHeygenV3FillerWordRemovalRequest,
+  FalHeygenV3FillerWordRemovalRequestInput,
+  FalHeygenV3FillerWordRemovalParsedRequest,
+  FalHeygenV3FillerWordRemovalResponse,
   FalHeygenV2TranslatePrecisionRequest,
   FalHeygenV2TranslatePrecisionRequestInput,
   FalHeygenV2TranslatePrecisionParsedRequest,

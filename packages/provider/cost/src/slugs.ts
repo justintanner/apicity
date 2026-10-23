@@ -970,6 +970,7 @@ export const MODEL_DISPLAY = {
   },
 
   fal: {
+    "fal-ai/heygen/v3/filler-word-removal": "HeyGen Filler Word Removal",
     "fal-ai/heygen/v2/translate/precision": "HeyGen Translate Precision",
     "fal-ai/heygen/v2/translate/speed": "HeyGen Translate Speed",
     "fal-ai/heygen/v3/lipsync/precision": "HeyGen Lipsync Precision",

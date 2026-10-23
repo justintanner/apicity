@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalHeygenV3FillerWordRemovalRequest,
+  FalHeygenV3FillerWordRemovalRequestInput,
+  FalHeygenV3FillerWordRemovalParsedRequest,
   FalHeygenV2TranslatePrecisionRequest,
   FalHeygenV2TranslatePrecisionRequestInput,
   FalHeygenV2TranslatePrecisionParsedRequest,
@@ -772,6 +775,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalHeygenV3FillerWordRemovalRequest,
   FalHeygenV2TranslatePrecisionRequest,
   FalHeygenV2TranslateSpeedRequest,
   FalHeygenV3LipsyncPrecisionRequest,
@@ -6890,5 +6894,32 @@ export interface FalRunHeygenV2TranslateNamespace {
     signal?: AbortSignal
   ) => Promise<FalHeygenV2TranslatePrecisionResponse>) & {
     schema: ApicitySchema<FalHeygenV2TranslatePrecisionRequest>;
+  };
+}
+
+export interface FalHeygenV3FillerWordRemovalResponse {
+  /** The cleaned video file. */
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+  /** Duration of the source video in seconds. */
+  original_duration: number;
+  /** Duration of the cleaned video in seconds. */
+  output_duration: number;
+  /** Number of filler-word segments removed. */
+  num_cuts: number;
+  /** Percentage of the source duration removed. */
+  reduction_pct: number;
+}
+
+export interface FalRunHeygenV3Namespace {
+  fillerWordRemoval: ((
+    params: FalHeygenV3FillerWordRemovalRequest,
+    signal?: AbortSignal
+  ) => Promise<FalHeygenV3FillerWordRemovalResponse>) & {
+    schema: ApicitySchema<FalHeygenV3FillerWordRemovalRequest>;
   };
 }

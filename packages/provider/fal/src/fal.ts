@@ -1,4 +1,6 @@
 import {
+  FalHeygenV3FillerWordRemovalRequest,
+  FalHeygenV3FillerWordRemovalResponse,
   FalHeygenV2TranslatePrecisionRequest,
   FalHeygenV2TranslatePrecisionResponse,
   FalHeygenV2TranslateSpeedRequest,
@@ -468,6 +470,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalHeygenV3FillerWordRemovalRequestSchema,
   FalHeygenV2TranslatePrecisionRequestSchema,
   FalHeygenV2TranslateSpeedRequestSchema,
   FalHeygenV3LipsyncPrecisionRequestSchema,
@@ -3937,6 +3940,18 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/fal-ai/heygen/v3/filler-word-removal
+  // Docs: https://fal.ai/models/fal-ai/heygen/v3/filler-word-removal/api
+  const heygenV3FillerWordRemoval = jsonBody<
+    FalHeygenV3FillerWordRemovalRequest,
+    FalHeygenV3FillerWordRemovalResponse
+  >(
+    "POST",
+    "/fal-ai/heygen/v3/filler-word-removal",
+    FalHeygenV3FillerWordRemovalRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
     heygen: {
       v2: {
@@ -3950,6 +3965,9 @@ export function createFal(opts: FalOptions): FalProvider {
         },
       },
       v3: {
+        // POST https://fal.run/fal-ai/heygen/v3/filler-word-removal
+        // Docs: https://fal.ai/models/fal-ai/heygen/v3/filler-word-removal/api
+        fillerWordRemoval: heygenV3FillerWordRemoval,
         lipsync: {
           // POST https://fal.run/fal-ai/heygen/v3/lipsync/speed
           // Docs: https://fal.ai/models/fal-ai/heygen/v3/lipsync/speed/api

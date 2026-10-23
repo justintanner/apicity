@@ -1250,6 +1250,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "fal-ai/heygen/avatar5/digital-twin",
   "fal-ai/heygen/v2/translate/precision",
   "fal-ai/heygen/v2/translate/speed",
+  "fal-ai/heygen/v3/filler-word-removal",
   "fal-ai/heygen/v3/lipsync/precision",
   "fal-ai/heygen/v3/lipsync/speed",
   "fal-ai/kandinsky6-lite/image-to-video",
@@ -1319,6 +1320,14 @@ export interface FalDynamicBilledUnit {
 // pricing API were re-read on 2026-10-17 and matched the 2026-10-15 reads
 // behind each recording (ac-j3d6ki.4).
 export const FAL_DYNAMIC_BILLED_UNITS = {
+  // Card and pricing API checked 2026-10-23: $0.01 per second of input video,
+  // with a 60-second minimum, and no charge when no cut is made. Our 2.96 s
+  // avatar clip came back unchanged (num_cuts 0, a byte-identical file) and
+  // billed 0 units, so the input's length and content set the bill.
+  "fal-ai/heygen/v3/filler-word-removal": {
+    unit: "seconds of input video at $0.01, with a 60-second minimum",
+    why: "the charge follows the input video's length (no request field states it), and nothing is charged when no cut is made",
+  },
   // Card checked 2026-10-23: $0.10 per output video second, while
   // publicEndpointBilling and the pricing API list $0.05 per second.
   // Translating our 2.96 s avatar clip into Spanish returned 3.28 s and billed

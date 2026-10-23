@@ -1,4 +1,6 @@
 import {
+  FalHeygenHeygenVideoImageToVideoRequest,
+  FalHeygenHeygenVideoImageToVideoResponse,
   FalHeygenHeygenVideoTextToVideoRequest,
   FalHeygenHeygenVideoTextToVideoResponse,
   FalIdeogramVectorTextToVectorRequest,
@@ -448,6 +450,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalHeygenHeygenVideoImageToVideoRequestSchema,
   FalHeygenHeygenVideoTextToVideoRequestSchema,
   FalIdeogramVectorTextToVectorRequestSchema,
   FalIdeogramVectorImageToVectorRequestSchema,
@@ -3787,12 +3790,27 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/heygen/heygen-video/image-to-video
+  // Docs: https://fal.ai/models/heygen/heygen-video/image-to-video/api
+  const heygenHeygenVideoImageToVideo = jsonBody<
+    FalHeygenHeygenVideoImageToVideoRequest,
+    FalHeygenHeygenVideoImageToVideoResponse
+  >(
+    "POST",
+    "/heygen/heygen-video/image-to-video",
+    FalHeygenHeygenVideoImageToVideoRequestSchema,
+    { base: runBaseURL }
+  );
+
   const run: FalRunNamespace = {
     heygen: {
       heygenVideo: {
         // POST https://fal.run/heygen/heygen-video/text-to-video
         // Docs: https://fal.ai/models/heygen/heygen-video/text-to-video/api
         textToVideo: heygenHeygenVideoTextToVideo,
+        // POST https://fal.run/heygen/heygen-video/image-to-video
+        // Docs: https://fal.ai/models/heygen/heygen-video/image-to-video/api
+        imageToVideo: heygenHeygenVideoImageToVideo,
       },
       // POST https://fal.run/heygen/heygen-voice
       // Docs: https://fal.ai/models/heygen/heygen-voice/api

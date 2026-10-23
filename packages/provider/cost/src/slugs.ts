@@ -427,6 +427,7 @@ export const MODEL_SLUGS = {
   // kie's.
   fal: {
     "heygen/heygen-video/text-to-video": "heygenvideo",
+    "heygen/heygen-video/image-to-video": "heygenvideo",
     "ideogram/vector/image-to-vector": "ideovector",
     "ideogram/vector/text-to-vector": "ideovector",
     "heygen/heygen-voice": "heygenvoice",
@@ -969,6 +970,7 @@ export const MODEL_DISPLAY = {
 
   fal: {
     "heygen/heygen-video/text-to-video": "HeyGen Video",
+    "heygen/heygen-video/image-to-video": "HeyGen Video",
     "ideogram/vector/image-to-vector": "Ideogram Vector",
     "ideogram/vector/text-to-vector": "Ideogram Vector",
     "heygen/heygen-voice": "HeyGen Voice",

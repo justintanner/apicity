@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added fal HeyGen Video image-to-video (`heygen/heygen-video/image-to-video`) as `run.heygen.heygenVideo.imageToVideo`, priced per requested second by resolution like text-to-video (ac-3bshuk).
+
 - Added fal HeyGen Video text-to-video (`heygen/heygen-video/text-to-video`) as `run.heygen.heygenVideo.textToVideo`, priced per requested second by resolution ($0.02/s at 480p and 768p, $0.06/s at 1080p and 2K; fal billed the recorded call at half the card rate), and mapped the frontier text-to-video board's HeyGen Video (ultraquality) to it (ac-djhegp).
 
 - Added fal Ideogram Vector text-to-vector (`ideogram/vector/text-to-vector`) as `run.ideogram.vector.textToVector`, priced per generated SVG by quality ($0.13 low, $0.16 medium, $0.20 high, $0.32 high with reference images) (ac-h61hu4).

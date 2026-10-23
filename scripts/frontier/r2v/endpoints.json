@@ -26,6 +26,13 @@
       "modelId": "Alibaba-Wan-3.0"
     }
   ],
+  "HeyGen Video (ultraquality)": [
+    {
+      "provider": "fal",
+      "dotPath": "heygen.heygenVideo.referenceToVideo",
+      "pricingKey": "heygen/heygen-video/reference-to-video"
+    }
+  ],
   "MiniMax H3 (768p)": [
     {
       "provider": "fal",

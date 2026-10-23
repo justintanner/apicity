@@ -13166,7 +13166,58 @@ export type FalHeygenHeygenVideoImageToVideoParsedRequest = z.output<
   typeof FalHeygenHeygenVideoImageToVideoRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-10-23
+// (sha256 851444de7b5a9fca64f2e0884f9ca58bea71b0dad031e7394a9811056abd074d).
+// Field order follows x-fal-order-properties; additionalProperties is false.
+// Free 422 probes the same day returned "At least one reference image or
+// video is required" at reference_video_urls whenever neither list had an
+// item (audio references alone do not count), and refused null lists.
+// Docs: https://fal.ai/models/heygen/heygen-video/reference-to-video/api
+export const FalHeygenHeygenVideoReferenceToVideoRequestSchema = z
+  .object({
+    prompt: z.string().min(1).max(32000),
+    duration: z.number().int().min(5).max(15).default(5),
+    resolution: z.enum(["480p", "768p", "1080p", "2k"]).default("768p"),
+    prompt_enhancement: z
+      .enum(["turbo", "quality", "ultraquality", "disabled"])
+      .default("turbo"),
+    seed: z.number().int().min(0).max(4294967295).nullable().optional(),
+    reference_image_urls: z.array(z.string()).max(9).optional(),
+    reference_video_urls: z.array(z.string()).max(3).optional(),
+    reference_audio_urls: z.array(z.string()).max(3).optional(),
+    aspect_ratio: z
+      .enum(["adaptive", "21:9", "16:9", "4:3", "1:1", "3:4", "9:16"])
+      .default("adaptive"),
+    enable_safety_checker: z
+      .boolean()
+      .default(true)
+      .describe(
+        "Authorized callers may set false to request relaxed screening."
+      ),
+  })
+  .strict()
+  .refine(
+    (v) =>
+      (v.reference_image_urls?.length ?? 0) +
+        (v.reference_video_urls?.length ?? 0) >
+      0,
+    {
+      message: "At least one reference image or video is required",
+      path: ["reference_video_urls"],
+    }
+  );
+export type FalHeygenHeygenVideoReferenceToVideoRequest = z.input<
+  typeof FalHeygenHeygenVideoReferenceToVideoRequestSchema
+>;
+export type FalHeygenHeygenVideoReferenceToVideoRequestInput =
+  FalHeygenHeygenVideoReferenceToVideoRequest;
+export type FalHeygenHeygenVideoReferenceToVideoParsedRequest = z.output<
+  typeof FalHeygenHeygenVideoReferenceToVideoRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "heygen/heygen-video/reference-to-video":
+    FalHeygenHeygenVideoReferenceToVideoRequestSchema,
   "heygen/heygen-video/image-to-video":
     FalHeygenHeygenVideoImageToVideoRequestSchema,
   "heygen/heygen-video/text-to-video":

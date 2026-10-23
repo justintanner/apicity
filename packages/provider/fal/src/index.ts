@@ -21,6 +21,10 @@ export type {
 
 // Export all types
 export type {
+  FalHeygenHeygenVideoReferenceToVideoRequest,
+  FalHeygenHeygenVideoReferenceToVideoRequestInput,
+  FalHeygenHeygenVideoReferenceToVideoParsedRequest,
+  FalHeygenHeygenVideoReferenceToVideoResponse,
   FalHeygenHeygenVideoImageToVideoRequest,
   FalHeygenHeygenVideoImageToVideoRequestInput,
   FalHeygenHeygenVideoImageToVideoParsedRequest,

@@ -148,13 +148,14 @@ const V2V_SEED: ReadonlyArray<readonly [number, string, string, number]> = [
 /** Derived: each Elo is the better of the model's t2v and i2v Elos. */
 const R2V_SEED: ReadonlyArray<readonly [number, string, string, number]> = [
   [1, "Wan 3.0", "Alibaba", 1175],
-  [2, "MiniMax H3 (768p)", "MiniMax", 1158],
-  [3, "Dreamina Seedance 2.5", "ByteDance Seed", 1158],
-  [4, "MiniMax H3 Max", "MiniMax", 1154],
-  [5, "Dreamina Seedance 2.0", "ByteDance Seed", 1136],
-  [6, "Gemini Omni Flash 1.1", "Google", 1132],
-  [7, "Grok Imagine Video 1.5", "SpaceXAI", 1067],
-  [8, "HappyHorse-1.1", "Alibaba", 1061],
+  [2, "HeyGen Video (ultraquality)", "HeyGen", 1160],
+  [3, "MiniMax H3 (768p)", "MiniMax", 1158],
+  [4, "Dreamina Seedance 2.5", "ByteDance Seed", 1158],
+  [5, "MiniMax H3 Max", "MiniMax", 1154],
+  [6, "Dreamina Seedance 2.0", "ByteDance Seed", 1136],
+  [7, "Gemini Omni Flash 1.1", "Google", 1132],
+  [8, "Grok Imagine Video 1.5", "SpaceXAI", 1067],
+  [9, "HappyHorse-1.1", "Alibaba", 1061],
 ];
 
 const T2V_UNMAPPED = ["Utopai X"];
@@ -166,12 +167,7 @@ const V2V_UNMAPPED = [
 ];
 
 /** t2v and i2v top-10 models with no reference-to-video endpoint. */
-const R2V_LEFT_OUT = [
-  "Utopai X",
-  "HeyGen Video (ultraquality)",
-  "FLUX 3 Max (720p)",
-  "FLUX 3",
-];
+const R2V_LEFT_OUT = ["Utopai X", "FLUX 3 Max (720p)", "FLUX 3"];
 
 /** KIE field names that carry media rather than a setting. */
 const KIE_MEDIA_FIELD =
@@ -994,7 +990,7 @@ describe("frontier video snapshots", () => {
     expect(snapshotProblems(r2v.snapshot)).toEqual([]);
     expect(derivedProblems(r2v.snapshot, r2v.endpointMap, sources)).toEqual([]);
     expect(unmappedNames(r2v.endpointMap)).toEqual([]);
-    expect(mappedCount(r2v.endpointMap)).toBe(8);
+    expect(mappedCount(r2v.endpointMap)).toBe(9);
 
     const ranked = [
       ...new Set([

@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added HeyGen Video reference-to-video, statically priced per requested second by resolution (ac-habde4).
+
 - Added HeyGen Video image-to-video, statically priced per requested second by resolution (ac-3bshuk).
 
 - Added HeyGen Video text-to-video, statically priced per requested second by resolution (ac-djhegp).

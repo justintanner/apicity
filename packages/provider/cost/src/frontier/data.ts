@@ -987,6 +987,19 @@ export const FRONTIER = {
       },
       {
         rank: 2,
+        model: "HeyGen Video (ultraquality)",
+        creator: "HeyGen",
+        elo: 1160,
+        endpoints: [
+          {
+            provider: "fal",
+            dotPath: "heygen.heygenVideo.referenceToVideo",
+            pricingKey: "heygen/heygen-video/reference-to-video",
+          },
+        ],
+      },
+      {
+        rank: 3,
         model: "MiniMax H3 (768p)",
         creator: "MiniMax",
         elo: 1158,
@@ -1009,7 +1022,7 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 3,
+        rank: 4,
         model: "Dreamina Seedance 2.5",
         creator: "ByteDance Seed",
         elo: 1158,
@@ -1037,7 +1050,7 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 4,
+        rank: 5,
         model: "MiniMax H3 Max",
         creator: "MiniMax",
         elo: 1154,
@@ -1050,7 +1063,7 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 5,
+        rank: 6,
         model: "Dreamina Seedance 2.0",
         creator: "ByteDance Seed",
         elo: 1136,
@@ -1078,7 +1091,7 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 6,
+        rank: 7,
         model: "Gemini Omni Flash 1.1",
         creator: "Google",
         elo: 1132,
@@ -1101,7 +1114,7 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 7,
+        rank: 8,
         model: "Grok Imagine Video 1.5",
         creator: "SpaceXAI",
         elo: 1067,
@@ -1119,7 +1132,7 @@ export const FRONTIER = {
         ],
       },
       {
-        rank: 8,
+        rank: 9,
         model: "HappyHorse-1.1",
         creator: "Alibaba",
         elo: 1061,

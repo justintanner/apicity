@@ -41,7 +41,7 @@ describe("apicity frontier", () => {
     expect(table).toContain("2026-10-22");
     expect(table).toContain("derived");
     expect(table).toContain("5/9");
-    expect(table).toContain("8/8");
+    expect(table).toContain("9/9");
     expect(table).not.toContain("0/0");
     expect(table).not.toContain("present");
   });
@@ -78,7 +78,7 @@ describe("apicity frontier", () => {
     const derived = envelope.data.find((row) => row.type === "r2v");
     expect(derived).toMatchObject({
       leaderboard: "derived",
-      models: "8/8",
+      models: "9/9",
       captured: "2026-10-22",
     });
   });
@@ -246,7 +246,7 @@ describe("apicity frontier", () => {
       data: Array<{ rank: number; model: string; provider: string }>;
     };
     expect(envelope.ok).toBe(true);
-    expect([...new Set(envelope.data.map((row) => row.model))]).toHaveLength(8);
+    expect([...new Set(envelope.data.map((row) => row.model))]).toHaveLength(9);
     expect(envelope.data[0]).toMatchObject({
       rank: 1,
       model: "Wan 3.0",

@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added fal HeyGen Video reference-to-video (`heygen/heygen-video/reference-to-video`) as `run.heygen.heygenVideo.referenceToVideo`, priced per requested second by resolution, and added HeyGen Video (ultraquality) to the derived reference-to-video frontier list at rank 2 (ac-habde4).
+
 - Added fal HeyGen Video image-to-video (`heygen/heygen-video/image-to-video`) as `run.heygen.heygenVideo.imageToVideo`, priced per requested second by resolution like text-to-video (ac-3bshuk).
 
 - Added fal HeyGen Video text-to-video (`heygen/heygen-video/text-to-video`) as `run.heygen.heygenVideo.textToVideo`, priced per requested second by resolution ($0.02/s at 480p and 768p, $0.06/s at 1080p and 2K; fal billed the recorded call at half the card rate), and mapped the frontier text-to-video board's HeyGen Video (ultraquality) to it (ac-djhegp).

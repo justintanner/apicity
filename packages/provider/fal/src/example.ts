@@ -960,6 +960,20 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST heygen.heygenVideo.referenceToVideo": {
+    "source": "fal/heygen-heygen-video-reference-to-video",
+    "payload": {
+      "prompt": "The cat from the reference image waves once, then holds still.",
+      "reference_image_urls": [
+        "<inline image/jpeg data URL — replace with a real URL or upload>"
+      ],
+      "duration": 5,
+      "resolution": "480p",
+      "prompt_enhancement": "disabled"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST heygen.heygenVideo.textToVideo": {
     "source": "fal/heygen-heygen-video-text-to-video",
     "payload": {

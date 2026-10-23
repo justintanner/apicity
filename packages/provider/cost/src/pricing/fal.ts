@@ -1373,6 +1373,19 @@ export function falDynamicBilledUnit(
 }
 
 export const fal: Record<string, ModelPricing> = {
+  // HeyGen Video reference-to-video's card prices it like text-to-video,
+  // with no reference surcharge: the requested seconds at $0.02/s (480p,
+  // 768p) and $0.06/s (1080p, 2K). The 5 s 480p recording with one
+  // reference image returned 5.17 s of video and 5.26 s of audio and billed
+  // exactly 5 units, charged at half the card ($0.01/s, 2026-10-23); no
+  // video or audio reference was recorded. The card's list rates stand.
+  "heygen/heygen-video/reference-to-video": perSecondTiered(
+    "heygen/heygen-video/reference-to-video",
+    [resolutionTier("768p")],
+    { "480p": 0.02, "768p": 0.02, "1080p": 0.06, "2k": 0.06 },
+    numericSeconds(5),
+    "2026-10-23"
+  ),
   // HeyGen Video image-to-video bills like text-to-video: the requested
   // seconds at the card's $0.02/s (480p, 768p) and $0.06/s (1080p, 2K). The
   // 5 s 480p recording returned 5.17 s of video and 5.26 s of audio and

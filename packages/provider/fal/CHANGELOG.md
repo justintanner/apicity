@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added HeyGen Translate Speed, dynamically priced (ac-hzil38).
+
 - Added HeyGen Lipsync Precision, dynamically priced (ac-k8hxp1).
 
 - Added HeyGen Lipsync Speed, dynamically priced (ac-cjtbhw).

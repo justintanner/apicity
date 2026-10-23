@@ -1510,6 +1510,7 @@ describe("fal edit/image pricing estimates", () => {
       "fal-ai/heygen/avatar4/digital-twin",
       "fal-ai/heygen/avatar4/image-to-video",
       "fal-ai/heygen/avatar5/digital-twin",
+      "fal-ai/heygen/v2/translate/speed",
       "fal-ai/heygen/v3/lipsync/precision",
       "fal-ai/heygen/v3/lipsync/speed",
       "fal-ai/kandinsky6-lite/image-to-video",

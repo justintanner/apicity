@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added HeyGen Avatar 4 digital twin, dynamically priced (ac-0y2ni6).
+
 - Added HeyGen Avatar 3 digital twin, dynamically priced (ac-5jmpds).
 
 - Added HeyGen Video reference-to-video, statically priced per requested second by resolution (ac-habde4).

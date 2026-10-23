@@ -14697,7 +14697,51 @@ export type FalHeygenAvatar3DigitalTwinParsedRequest = z.output<
   typeof FalHeygenAvatar3DigitalTwinRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-10-23
+// (sha256 fb0e640568d5eba6dab7fd146f72be4938d10c14c16e9fd356889c9d98630d23).
+// Field order follows x-fal-order-properties. The input equals avatar3's
+// except that aspect_ratio adds "auto"; free 422 probes drew the same field
+// errors (open input, unknown avatar and voice names accepted).
+// Docs: https://fal.ai/models/fal-ai/heygen/avatar4/digital-twin/api
+export const FalHeygenAvatar4DigitalTwinRequestSchema = z.object({
+  character: HeygenDigitalTwinCharacterSchema,
+  voice: HeygenDigitalTwinTextVoiceSchema,
+  audio_url: z
+    .string()
+    .nullable()
+    .optional()
+    .describe(
+      "URL of an audio file for the avatar to lip-sync to. When provided, the avatar uses this audio instead of text-to-speech."
+    ),
+  resolution: z
+    .enum(["360p", "480p", "540p", "720p", "1080p"])
+    .default("720p")
+    .describe(
+      "Video resolution preset. Options: 360p, 480p, 540p, 720p, 1080p"
+    ),
+  aspect_ratio: z
+    .enum(["16:9", "9:16", "4:5", "5:4", "1:1", "auto"])
+    .default("16:9")
+    .describe(
+      "Aspect ratio of the output video. Supported values: '16:9', '9:16', '4:5', '5:4', '1:1', and 'auto'. 'auto' preserves the source aspect ratio when HeyGen can read it, falling back to '16:9' otherwise."
+    ),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe("Authorized callers may set false to request relaxed screening."),
+});
+export type FalHeygenAvatar4DigitalTwinRequest = z.input<
+  typeof FalHeygenAvatar4DigitalTwinRequestSchema
+>;
+export type FalHeygenAvatar4DigitalTwinRequestInput =
+  FalHeygenAvatar4DigitalTwinRequest;
+export type FalHeygenAvatar4DigitalTwinParsedRequest = z.output<
+  typeof FalHeygenAvatar4DigitalTwinRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "fal-ai/heygen/avatar4/digital-twin":
+    FalHeygenAvatar4DigitalTwinRequestSchema,
   "fal-ai/heygen/avatar3/digital-twin":
     FalHeygenAvatar3DigitalTwinRequestSchema,
   "heygen/heygen-video/reference-to-video":

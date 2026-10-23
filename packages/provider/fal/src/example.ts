@@ -963,6 +963,21 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST heygen.avatar4.digitalTwin": {
+    "source": "fal/heygen-avatar4-digital-twin",
+    "payload": {
+      "character": {
+        "avatar": "Abigail Office Front"
+      },
+      "voice": {
+        "prompt": "A red panda waves once, then holds still.",
+        "voice": "Ivy"
+      },
+      "resolution": "360p"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST heygen.heygenVideo.imageToVideo": {
     "source": "fal/heygen-heygen-video-image-to-video",
     "payload": {

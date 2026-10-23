@@ -281,6 +281,20 @@ const numericSeconds =
   (p: Record<string, unknown>): number | undefined =>
     p.duration === undefined ? defaultSeconds : asNumber(p.duration);
 
+// Kling 4.0 videos run the requested duration (5 s by default), or, with
+// multi_prompt, the sum of the shot durations (each 5 s by default).
+const klingV4Seconds = (p: Record<string, unknown>): number | undefined => {
+  if (!Array.isArray(p.multi_prompt)) return numericSeconds(5)(p);
+  let total = 0;
+  for (const shot of p.multi_prompt) {
+    const duration = asObject(shot)?.duration;
+    const seconds = duration === undefined ? 5 : asNumber(duration);
+    if (seconds === undefined) return undefined;
+    total += seconds;
+  }
+  return total;
+};
+
 // wan edit-video's duration defaults to 0, meaning "match the source
 // video" — a length that is not in the payload, so it can only come from the
 // caller's cost-only hint channel.
@@ -1448,6 +1462,16 @@ export function falDynamicBilledUnit(
 }
 
 export const fal: Record<string, ModelPricing> = {
+  // Kling 4.0's card bills $0.157/s at 720p and $0.235/s at 1080p, and the
+  // pricing API lists the 720p rate. The 3 s 720p recording returned 3.04 s
+  // and billed 3 units ($0.471): the requested seconds.
+  "kling/v4/text-to-video": perSecondTiered(
+    "kling/v4/text-to-video",
+    [resolutionTier("1080p")],
+    { "720p": 0.157, "1080p": 0.235 },
+    klingV4Seconds,
+    "2026-10-23"
+  ),
   // HeyGen Video reference-to-video's card prices it like text-to-video,
   // with no reference surcharge: the requested seconds at $0.02/s (480p,
   // 768p) and $0.06/s (1080p, 2K). The 5 s 480p recording with one

@@ -1,4 +1,6 @@
 import {
+  FalKlingV4TextToVideoRequest,
+  FalKlingV4TextToVideoResponse,
   FalHeygenV3FillerWordRemovalRequest,
   FalHeygenV3FillerWordRemovalResponse,
   FalHeygenV2TranslatePrecisionRequest,
@@ -470,6 +472,7 @@ import {
   FalRunNamespace,
 } from "./types";
 import {
+  FalKlingV4TextToVideoRequestSchema,
   FalHeygenV3FillerWordRemovalRequestSchema,
   FalHeygenV2TranslatePrecisionRequestSchema,
   FalHeygenV2TranslateSpeedRequestSchema,
@@ -3952,7 +3955,23 @@ export function createFal(opts: FalOptions): FalProvider {
     { base: runBaseURL }
   );
 
+  // POST https://fal.run/kling/v4/text-to-video
+  // Docs: https://fal.ai/models/kling/v4/text-to-video/api
+  const klingV4TextToVideo = jsonBody<
+    FalKlingV4TextToVideoRequest,
+    FalKlingV4TextToVideoResponse
+  >("POST", "/kling/v4/text-to-video", FalKlingV4TextToVideoRequestSchema, {
+    base: runBaseURL,
+  });
+
   const run: FalRunNamespace = {
+    kling: {
+      v4: {
+        // POST https://fal.run/kling/v4/text-to-video
+        // Docs: https://fal.ai/models/kling/v4/text-to-video/api
+        textToVideo: klingV4TextToVideo,
+      },
+    },
     heygen: {
       v2: {
         translate: {

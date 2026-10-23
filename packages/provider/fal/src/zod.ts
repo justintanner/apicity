@@ -15321,7 +15321,69 @@ export type FalHeygenV3FillerWordRemovalParsedRequest = z.output<
   typeof FalHeygenV3FillerWordRemovalRequestSchema
 >;
 
+// One shot of a Kling 4.0 multi-shot prompt (identical in the text-, image-
+// and reference-to-video inputs).
+const KlingV4ShotSchema = z.object({
+  prompt: z.string().min(1).max(512).describe("The prompt for this shot."),
+  duration: z
+    .number()
+    .int()
+    .min(1)
+    .max(30)
+    .default(5)
+    .describe("Shot duration in seconds."),
+});
+
+// Pinned to the live queue OpenAPI read on 2026-10-23
+// (sha256 ea74eb8549123787065241f081373a6d1da0272b1cb1a0206ae5be42d70f5e40).
+// Field order follows x-fal-order-properties. The input is open; free 422
+// probes confirmed the prompt and duration bounds, the resolution and
+// aspect_ratio sets, the multi_prompt minimum and the shot bounds, and
+// accepted a blank prompt, nulls and unknown fields, also inside a shot. The
+// prompt-or-multi_prompt rule did not surface as a field error, so it stays
+// described.
+// Docs: https://fal.ai/models/kling/v4/text-to-video/api
+export const FalKlingV4TextToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .max(26000)
+    .nullable()
+    .optional()
+    .describe("Text prompt. Either prompt or multi_prompt must be provided."),
+  multi_prompt: z
+    .array(KlingV4ShotSchema)
+    .min(1)
+    .nullable()
+    .optional()
+    .describe(
+      "Per-shot prompts for multi-shot generation. The video duration is the sum of the shot durations."
+    ),
+  duration: z
+    .number()
+    .int()
+    .min(3)
+    .max(30)
+    .default(5)
+    .describe("Video duration in seconds (3-30)."),
+  resolution: z
+    .enum(["720p", "1080p"])
+    .default("1080p")
+    .describe("Output resolution."),
+  aspect_ratio: z
+    .enum(["16:9", "9:16", "1:1", "21:9"])
+    .default("16:9")
+    .describe("Aspect ratio of the generated video."),
+});
+export type FalKlingV4TextToVideoRequest = z.input<
+  typeof FalKlingV4TextToVideoRequestSchema
+>;
+export type FalKlingV4TextToVideoRequestInput = FalKlingV4TextToVideoRequest;
+export type FalKlingV4TextToVideoParsedRequest = z.output<
+  typeof FalKlingV4TextToVideoRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "kling/v4/text-to-video": FalKlingV4TextToVideoRequestSchema,
   "fal-ai/heygen/v3/filler-word-removal":
     FalHeygenV3FillerWordRemovalRequestSchema,
   "fal-ai/heygen/v2/translate/precision":

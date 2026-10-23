@@ -21,6 +21,12 @@ export type {
 
 // Export all types
 export type {
+  FalKlingV4TextToVideoRequest,
+  FalKlingV4TextToVideoRequestInput,
+  FalKlingV4TextToVideoParsedRequest,
+  FalKlingV4TextToVideoResponse,
+  FalRunKlingV4Namespace,
+  FalRunKlingNamespace,
   FalHeygenV3FillerWordRemovalRequest,
   FalHeygenV3FillerWordRemovalRequestInput,
   FalHeygenV3FillerWordRemovalParsedRequest,

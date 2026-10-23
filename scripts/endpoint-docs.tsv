@@ -1811,3 +1811,4 @@ fal	heygen.v3.lipsync.precision	POST	https://fal.run/fal-ai/heygen/v3/lipsync/pr
 fal	heygen.v2.translate.speed	POST	https://fal.run/fal-ai/heygen/v2/translate/speed	https://fal.ai/models/fal-ai/heygen/v2/translate/speed/api
 fal	heygen.v2.translate.precision	POST	https://fal.run/fal-ai/heygen/v2/translate/precision	https://fal.ai/models/fal-ai/heygen/v2/translate/precision/api
 fal	heygen.v3.fillerWordRemoval	POST	https://fal.run/fal-ai/heygen/v3/filler-word-removal	https://fal.ai/models/fal-ai/heygen/v3/filler-word-removal/api
+fal	kling.v4.textToVideo	POST	https://fal.run/kling/v4/text-to-video	https://fal.ai/models/kling/v4/text-to-video/api

@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added Kling 4 text-to-video under a new `run.kling` namespace, statically priced per requested second by resolution (ac-dhxn43).
+
 - Added HeyGen Filler Word Removal, dynamically priced (ac-zx7lj9).
 
 - Added HeyGen Translate Precision, dynamically priced (ac-2dfgvj).

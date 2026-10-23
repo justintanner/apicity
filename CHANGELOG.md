@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added fal Kling 4 text-to-video (`kling/v4/text-to-video`) as `run.kling.v4.textToVideo`, the first member of a new `run.kling` namespace (separate from `run.klingVideo`), priced per requested second by resolution ($0.157/s at 720p, $0.235/s at 1080p; a multi-shot video bills the sum of its shot durations) (ac-dhxn43).
+
 - Added fal HeyGen Filler Word Removal (`fal-ai/heygen/v3/filler-word-removal`) as `run.heygen.v3.fillerWordRemoval`; dynamically priced, since the input video's length and whether any cut is made set the charge (ac-zx7lj9).
 
 - Added fal HeyGen Translate Precision (`fal-ai/heygen/v2/translate/precision`) as `run.heygen.v2.translate.precision`, sharing the speed tier's input schema; dynamically priced, billing two $0.05 units per whole output second (the card's $0.10 a second) (ac-2dfgvj).

@@ -1185,6 +1185,16 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST kling.v4.textToVideo": {
+    "source": "fal/kling-v4-text-to-video",
+    "payload": {
+      "prompt": "A red panda waves once, then holds still.",
+      "duration": 3,
+      "resolution": "720p"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST klingVideo.o3.standard.imageToVideo": {
     "source": "fal/kling-video-o3-standard-image-to-video",
     "payload": {

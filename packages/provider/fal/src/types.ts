@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalHeygenV2TranslatePrecisionRequest,
+  FalHeygenV2TranslatePrecisionRequestInput,
+  FalHeygenV2TranslatePrecisionParsedRequest,
   FalHeygenV2TranslateSpeedRequest,
   FalHeygenV2TranslateSpeedRequestInput,
   FalHeygenV2TranslateSpeedParsedRequest,
@@ -769,6 +772,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalHeygenV2TranslatePrecisionRequest,
   FalHeygenV2TranslateSpeedRequest,
   FalHeygenV3LipsyncPrecisionRequest,
   FalHeygenV3LipsyncSpeedRequest,
@@ -6861,4 +6865,30 @@ export interface FalRunHeygenV2Namespace {
 }
 export interface FalRunHeygenNamespace {
   v2: FalRunHeygenV2Namespace;
+}
+
+export interface FalHeygenV2TranslatePrecisionResponse {
+  /** The translated video file */
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+  /** Generated SRT captions when enable_caption is true. */
+  caption_file?: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  } | null;
+}
+
+export interface FalRunHeygenV2TranslateNamespace {
+  precision: ((
+    params: FalHeygenV2TranslatePrecisionRequest,
+    signal?: AbortSignal
+  ) => Promise<FalHeygenV2TranslatePrecisionResponse>) & {
+    schema: ApicitySchema<FalHeygenV2TranslatePrecisionRequest>;
+  };
 }

@@ -15033,9 +15033,11 @@ export type FalHeygenV3LipsyncPrecisionParsedRequest = z.output<
 // Pinned to the live queue OpenAPI read on 2026-10-23
 // (sha256 8c880d3bf1a13d6d5375b716462775380682dce2c8836209abd98b0654fce4e3).
 // Field order follows x-fal-order-properties. The input is open; free 422
-// probes confirmed the output_language set, an integer speaker_num and the
-// srt_role set, accepted nulls and unknown fields, and showed fal downloading
-// video_url during validation. The precision tier's input is identical.
+// probes confirmed an integer speaker_num and the srt_role set, accepted
+// nulls and unknown fields, and showed fal downloading video_url during
+// validation. The 178-language output_language set is the documented
+// contract only: the validator let "Klingon" through to that download. The
+// precision tier's input is identical.
 // Docs: https://fal.ai/models/fal-ai/heygen/v2/translate/speed/api
 export const FalHeygenV2TranslateSpeedRequestSchema = z.object({
   video_url: z
@@ -15274,7 +15276,26 @@ export type FalHeygenV2TranslateSpeedParsedRequest = z.output<
   typeof FalHeygenV2TranslateSpeedRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-10-23
+// (sha256 d91c4603858d69fed8e809f5b285ac7a8e0f4f75f6acaf52db298e4ad5dc1e19).
+// Its input is identical to the speed tier's in the live OpenAPI, so the
+// schemas are shared; the same free 422 probes, sent to this endpoint,
+// returned the speed tier's errors.
+// Docs: https://fal.ai/models/fal-ai/heygen/v2/translate/precision/api
+export const FalHeygenV2TranslatePrecisionRequestSchema =
+  FalHeygenV2TranslateSpeedRequestSchema;
+export type FalHeygenV2TranslatePrecisionRequest = z.input<
+  typeof FalHeygenV2TranslatePrecisionRequestSchema
+>;
+export type FalHeygenV2TranslatePrecisionRequestInput =
+  FalHeygenV2TranslatePrecisionRequest;
+export type FalHeygenV2TranslatePrecisionParsedRequest = z.output<
+  typeof FalHeygenV2TranslatePrecisionRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "fal-ai/heygen/v2/translate/precision":
+    FalHeygenV2TranslatePrecisionRequestSchema,
   "fal-ai/heygen/v2/translate/speed": FalHeygenV2TranslateSpeedRequestSchema,
   "fal-ai/heygen/v3/lipsync/precision":
     FalHeygenV3LipsyncPrecisionRequestSchema,

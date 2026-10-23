@@ -1034,6 +1034,15 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST heygen.v2.translate.precision": {
+    "source": "fal/heygen-v2-translate-precision",
+    "payload": {
+      "video_url": "https://v3b.fal.media/files/b/0aaf8622/62FTWTu-9SFpD5P1Vh3Bm_0IjiKdRc.mp4",
+      "output_language": "Spanish"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST heygen.v2.translate.speed": {
     "source": "fal/heygen-v2-translate-speed",
     "payload": {

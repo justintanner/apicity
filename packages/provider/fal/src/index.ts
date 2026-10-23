@@ -21,6 +21,12 @@ export type {
 
 // Export all types
 export type {
+  FalHeygenHeygenVoiceRequest,
+  FalHeygenHeygenVoiceRequestInput,
+  FalHeygenHeygenVoiceParsedRequest,
+  FalHeygenHeygenVoiceResponse,
+  FalRunHeygenHeygenVoiceNamespace,
+  FalRunHeygenNamespace,
   FalMeshyV6LiteRetextureRequest,
   FalMeshyV6LiteRetextureRequestInput,
   FalMeshyV6LiteRetextureParsedRequest,

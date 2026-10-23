@@ -15014,7 +15014,25 @@ export type FalHeygenV3LipsyncSpeedParsedRequest = z.output<
   typeof FalHeygenV3LipsyncSpeedRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-10-23
+// (sha256 be02cf5994fec755821650ca28d228e6a84b35b5992fa165ee148e7abe89e8ce).
+// Its input is identical to the speed tier's in the live OpenAPI, so the
+// schemas are shared.
+// Docs: https://fal.ai/models/fal-ai/heygen/v3/lipsync/precision/api
+export const FalHeygenV3LipsyncPrecisionRequestSchema =
+  FalHeygenV3LipsyncSpeedRequestSchema;
+export type FalHeygenV3LipsyncPrecisionRequest = z.input<
+  typeof FalHeygenV3LipsyncPrecisionRequestSchema
+>;
+export type FalHeygenV3LipsyncPrecisionRequestInput =
+  FalHeygenV3LipsyncPrecisionRequest;
+export type FalHeygenV3LipsyncPrecisionParsedRequest = z.output<
+  typeof FalHeygenV3LipsyncPrecisionRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "fal-ai/heygen/v3/lipsync/precision":
+    FalHeygenV3LipsyncPrecisionRequestSchema,
   "fal-ai/heygen/v3/lipsync/speed": FalHeygenV3LipsyncSpeedRequestSchema,
   "fal-ai/heygen/avatar5/digital-twin":
     FalHeygenAvatar5DigitalTwinRequestSchema,

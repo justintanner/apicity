@@ -1050,6 +1050,15 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST heygen.v3.lipsync.precision": {
+    "source": "fal/heygen-v3-lipsync-precision",
+    "payload": {
+      "video_url": "https://v3b.fal.media/files/b/0aaf8622/62FTWTu-9SFpD5P1Vh3Bm_0IjiKdRc.mp4",
+      "audio_url": "https://v3b.fal.media/files/b/0aaf7c7f/k4ZZrI81q1gsEsdnPUCWC_v3lOq760.wav"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST heygen.v3.lipsync.speed": {
     "source": "fal/heygen-v3-lipsync-speed",
     "payload": {

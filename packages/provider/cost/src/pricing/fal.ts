@@ -1373,6 +1373,31 @@ export function falDynamicBilledUnit(
 }
 
 export const fal: Record<string, ModelPricing> = {
+  // Ideogram Vector text-to-vector bills each generated SVG by quality: low
+  // $0.13, medium $0.16, high $0.20, and high with reference images $0.32
+  // (low and medium unchanged; card read 2026-10-23). The one-SVG low
+  // recording billed 13 units at $0.01, and the usage read confirmed $0.13.
+  "ideogram/vector/text-to-vector": {
+    kind: "perUnit",
+    unit: "images",
+    units: imageCount,
+    select: [
+      {
+        name: "quality",
+        pick: (p) => {
+          const quality = asString(p.quality) ?? "medium";
+          const references = Array.isArray(p.image_urls)
+            ? p.image_urls.length
+            : 0;
+          return quality === "high" && references > 0
+            ? "high_with_references"
+            : quality;
+        },
+      },
+    ],
+    rates: { low: 0.13, medium: 0.16, high: 0.2, high_with_references: 0.32 },
+    source: source("ideogram/vector/text-to-vector", "2026-10-23"),
+  },
   // Ideogram Vector image-to-vector bills $0.10 per generated SVG in both
   // modes (card read 2026-10-23); one request converts one image into one
   // SVG. The recording billed 10 units at $0.01, and the usage read confirmed

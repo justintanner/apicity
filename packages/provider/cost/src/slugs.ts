@@ -427,6 +427,7 @@ export const MODEL_SLUGS = {
   // kie's.
   fal: {
     "ideogram/vector/image-to-vector": "ideovector",
+    "ideogram/vector/text-to-vector": "ideovector",
     "heygen/heygen-voice": "heygenvoice",
     "heygen/heygen-voice/turbo": "heygenvoicet",
     "meshy/v6-lite/retexture": "meshyv6l",
@@ -967,6 +968,7 @@ export const MODEL_DISPLAY = {
 
   fal: {
     "ideogram/vector/image-to-vector": "Ideogram Vector",
+    "ideogram/vector/text-to-vector": "Ideogram Vector",
     "heygen/heygen-voice": "HeyGen Voice",
     "heygen/heygen-voice/turbo": "HeyGen Voice Turbo",
     "meshy/v6-lite/retexture": "Meshy 6 Lite Retexture",

@@ -1006,6 +1006,15 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST ideogram.vector.textToVector": {
+    "source": "fal/ideogram-vector-text-to-vector",
+    "payload": {
+      "prompt": "A red panda waves once, then holds still.",
+      "quality": "low"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST kandinsky6Lite.imageToVideo": {
     "source": "fal/kandinsky6-lite-image-to-video",
     "payload": {

@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-222 endpoints across 54 groups. Each method mirrors an upstream URL path.
+223 endpoints across 54 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -1554,6 +1554,23 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.run.ideogram.vector.imageToVector({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.ideogram.vector.textToVector</code></b></summary>
+
+<code>POST https://fal.run/ideogram/vector/text-to-vector</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/models/ideogram/vector/text-to-vector/api)
+
+```typescript
+const res = await fal.run.ideogram.vector.textToVector({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

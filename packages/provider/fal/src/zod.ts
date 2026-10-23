@@ -15293,7 +15293,37 @@ export type FalHeygenV2TranslatePrecisionParsedRequest = z.output<
   typeof FalHeygenV2TranslatePrecisionRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-10-23
+// (sha256 a3b40b064d5e1220d58a17af556cb5f99b1330cdf10b42d97d45ff99c94f8e1c).
+// Field order follows x-fal-order-properties. The input is open; free 422
+// probes confirmed the 255-character title limit and accepted a null or blank
+// title, a blank video_url and unknown fields.
+// Docs: https://fal.ai/models/fal-ai/heygen/v3/filler-word-removal/api
+export const FalHeygenV3FillerWordRemovalRequestSchema = z.object({
+  video_url: z
+    .string()
+    .describe(
+      "URL of the source video to remove filler words and long silences from."
+    ),
+  title: z
+    .string()
+    .max(255)
+    .nullable()
+    .optional()
+    .describe("Optional display title for the removal job."),
+});
+export type FalHeygenV3FillerWordRemovalRequest = z.input<
+  typeof FalHeygenV3FillerWordRemovalRequestSchema
+>;
+export type FalHeygenV3FillerWordRemovalRequestInput =
+  FalHeygenV3FillerWordRemovalRequest;
+export type FalHeygenV3FillerWordRemovalParsedRequest = z.output<
+  typeof FalHeygenV3FillerWordRemovalRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "fal-ai/heygen/v3/filler-word-removal":
+    FalHeygenV3FillerWordRemovalRequestSchema,
   "fal-ai/heygen/v2/translate/precision":
     FalHeygenV2TranslatePrecisionRequestSchema,
   "fal-ai/heygen/v2/translate/speed": FalHeygenV2TranslateSpeedRequestSchema,

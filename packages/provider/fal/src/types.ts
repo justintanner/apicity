@@ -23,6 +23,9 @@ export interface ApicitySchema<T = unknown> {
 // ---------------------------------------------------------------------------
 
 export type {
+  FalHeygenHeygenVideoTextToVideoRequest,
+  FalHeygenHeygenVideoTextToVideoRequestInput,
+  FalHeygenHeygenVideoTextToVideoParsedRequest,
   FalIdeogramVectorTextToVectorRequest,
   FalIdeogramVectorTextToVectorRequestInput,
   FalIdeogramVectorTextToVectorParsedRequest,
@@ -739,6 +742,7 @@ export type {
 
 // Re-import for use in this file's interface definitions
 import type {
+  FalHeygenHeygenVideoTextToVideoRequest,
   FalIdeogramVectorTextToVectorRequest,
   FalIdeogramVectorImageToVectorRequest,
   FalHeygenHeygenVoiceTurboRequest,
@@ -6579,4 +6583,26 @@ export interface FalRunIdeogramVectorNamespace {
   ) => Promise<FalIdeogramVectorTextToVectorResponse>) & {
     schema: ApicitySchema<FalIdeogramVectorTextToVectorRequest>;
   };
+}
+
+export interface FalHeygenHeygenVideoTextToVideoResponse {
+  video: {
+    url: string;
+    content_type?: string | null;
+    file_name?: string | null;
+    file_size?: number | null;
+  };
+  seed?: number | null;
+}
+
+export interface FalRunHeygenHeygenVideoNamespace {
+  textToVideo: ((
+    params: FalHeygenHeygenVideoTextToVideoRequest,
+    signal?: AbortSignal
+  ) => Promise<FalHeygenHeygenVideoTextToVideoResponse>) & {
+    schema: ApicitySchema<FalHeygenHeygenVideoTextToVideoRequest>;
+  };
+}
+export interface FalRunHeygenNamespace {
+  heygenVideo: FalRunHeygenHeygenVideoNamespace;
 }

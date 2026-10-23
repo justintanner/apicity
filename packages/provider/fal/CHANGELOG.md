@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added HeyGen Video text-to-video, statically priced per requested second by resolution (ac-djhegp).
+
 - Added Ideogram Vector text-to-vector, statically priced per SVG by quality (ac-h61hu4).
 
 - Added Ideogram Vector image-to-vector, statically priced per SVG (ac-hsbaox).

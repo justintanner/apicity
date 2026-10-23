@@ -1373,6 +1373,18 @@ export function falDynamicBilledUnit(
 }
 
 export const fal: Record<string, ModelPricing> = {
+  // HeyGen Video's card bills $0.02/s at 480p and 768p and $0.06/s at 1080p
+  // and 2K. It bills the requested seconds: the 5 s 480p recording returned
+  // 5.17 s of video and 5.26 s of audio and billed exactly 5 units. The
+  // pricing API and the usage read charged them $0.01/s, half the card, with
+  // no promotion published (2026-10-23); the card's list rates stand.
+  "heygen/heygen-video/text-to-video": perSecondTiered(
+    "heygen/heygen-video/text-to-video",
+    [resolutionTier("768p")],
+    { "480p": 0.02, "768p": 0.02, "1080p": 0.06, "2k": 0.06 },
+    numericSeconds(5),
+    "2026-10-23"
+  ),
   // Ideogram Vector text-to-vector bills each generated SVG by quality: low
   // $0.13, medium $0.16, high $0.20, and high with reference images $0.32
   // (low and medium unchanged; card read 2026-10-23). The one-SVG low

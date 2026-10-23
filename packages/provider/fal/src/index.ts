@@ -21,6 +21,11 @@ export type {
 
 // Export all types
 export type {
+  FalHeygenHeygenVideoTextToVideoRequest,
+  FalHeygenHeygenVideoTextToVideoRequestInput,
+  FalHeygenHeygenVideoTextToVideoParsedRequest,
+  FalHeygenHeygenVideoTextToVideoResponse,
+  FalRunHeygenHeygenVideoNamespace,
   FalIdeogramVectorTextToVectorRequest,
   FalIdeogramVectorTextToVectorRequestInput,
   FalIdeogramVectorTextToVectorParsedRequest,

@@ -13100,7 +13100,43 @@ export type FalIdeogramVectorTextToVectorParsedRequest = z.output<
   typeof FalIdeogramVectorTextToVectorRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-10-23
+// (sha256 32f6a4ab26aebcb0d97234366f2ac872045fa5eff5ecd430b6cf3a5285e4629d).
+// Field order follows x-fal-order-properties; additionalProperties is false.
+// The OpenAPI describes only enable_safety_checker.
+// Docs: https://fal.ai/models/heygen/heygen-video/text-to-video/api
+export const FalHeygenHeygenVideoTextToVideoRequestSchema = z
+  .object({
+    prompt: z.string().min(1).max(32000),
+    duration: z.number().int().min(5).max(15).default(5),
+    resolution: z.enum(["480p", "768p", "1080p", "2k"]).default("768p"),
+    prompt_enhancement: z
+      .enum(["turbo", "quality", "ultraquality", "disabled"])
+      .default("turbo"),
+    seed: z.number().int().min(0).max(4294967295).nullable().optional(),
+    aspect_ratio: z
+      .enum(["21:9", "16:9", "4:3", "1:1", "3:4", "9:16"])
+      .default("16:9"),
+    enable_safety_checker: z
+      .boolean()
+      .default(true)
+      .describe(
+        "Authorized callers may set false to request relaxed screening."
+      ),
+  })
+  .strict();
+export type FalHeygenHeygenVideoTextToVideoRequest = z.input<
+  typeof FalHeygenHeygenVideoTextToVideoRequestSchema
+>;
+export type FalHeygenHeygenVideoTextToVideoRequestInput =
+  FalHeygenHeygenVideoTextToVideoRequest;
+export type FalHeygenHeygenVideoTextToVideoParsedRequest = z.output<
+  typeof FalHeygenHeygenVideoTextToVideoRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "heygen/heygen-video/text-to-video":
+    FalHeygenHeygenVideoTextToVideoRequestSchema,
   "ideogram/vector/text-to-vector": FalIdeogramVectorTextToVectorRequestSchema,
   "ideogram/vector/image-to-vector":
     FalIdeogramVectorImageToVectorRequestSchema,

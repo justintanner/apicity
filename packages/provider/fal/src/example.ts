@@ -978,6 +978,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST heygen.avatar4.imageToVideo": {
+    "source": "fal/heygen-avatar4-image-to-video",
+    "payload": {
+      "image_url": "<inline image/jpeg data URL — replace with a real URL or upload>",
+      "prompt": "A red panda waves once, then holds still.",
+      "voice": "Ivy",
+      "resolution": "360p"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST heygen.heygenVideo.imageToVideo": {
     "source": "fal/heygen-heygen-video-image-to-video",
     "payload": {

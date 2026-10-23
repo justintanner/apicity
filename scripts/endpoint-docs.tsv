@@ -1804,3 +1804,4 @@ fal	heygen.heygenVideo.imageToVideo	POST	https://fal.run/heygen/heygen-video/ima
 fal	heygen.heygenVideo.referenceToVideo	POST	https://fal.run/heygen/heygen-video/reference-to-video	https://fal.ai/models/heygen/heygen-video/reference-to-video/api
 fal	heygen.avatar3.digitalTwin	POST	https://fal.run/fal-ai/heygen/avatar3/digital-twin	https://fal.ai/models/fal-ai/heygen/avatar3/digital-twin/api
 fal	heygen.avatar4.digitalTwin	POST	https://fal.run/fal-ai/heygen/avatar4/digital-twin	https://fal.ai/models/fal-ai/heygen/avatar4/digital-twin/api
+fal	heygen.avatar4.imageToVideo	POST	https://fal.run/fal-ai/heygen/avatar4/image-to-video	https://fal.ai/models/fal-ai/heygen/avatar4/image-to-video/api

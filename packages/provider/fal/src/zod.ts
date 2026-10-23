@@ -14739,7 +14739,100 @@ export type FalHeygenAvatar4DigitalTwinParsedRequest = z.output<
   typeof FalHeygenAvatar4DigitalTwinRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-10-23
+// (sha256 8b7bd442063f5217a7d5e9237d22fa3770fba78a899225f38bbdfde8e4bd7191).
+// Field order follows x-fal-order-properties. The input is open; free 422
+// probes confirmed the talking_style, expression and background.type rules,
+// accepted nulls and an unknown voice, and found no field rule requiring a
+// prompt or an audio_url. A first paid attempt returned a free 422 (zero units)
+// with the body-level rule restated below.
+// Docs: https://fal.ai/models/fal-ai/heygen/avatar4/image-to-video/api
+export const FalHeygenAvatar4ImageToVideoRequestSchema = z
+  .object({
+    image_url: z
+      .string()
+      .describe(
+        "URL of the image to animate. The image should contain a clear face."
+      ),
+    prompt: z
+      .string()
+      .nullable()
+      .optional()
+      .describe("The text the avatar will speak"),
+    voice: HeygenStockVoiceSchema.nullable()
+      .optional()
+      .describe("Name of the voice to use for the avatar"),
+    audio_url: z
+      .string()
+      .nullable()
+      .optional()
+      .describe(
+        "URL of an audio file for the avatar to lip-sync to. When provided, overrides prompt and voice."
+      ),
+    talking_style: z
+      .enum(["stable", "expressive"])
+      .default("stable")
+      .describe(
+        "Talking style - 'stable' for minimal movement, 'expressive' for more animation"
+      ),
+    expression: z
+      .literal("happy")
+      .nullable()
+      .optional()
+      .describe("Facial expression"),
+    background: z
+      .object({
+        type: z
+          .enum(["color", "image", "video"])
+          .default("color")
+          .describe("Type of background"),
+        value: z
+          .string()
+          .default("#FFFFFF")
+          .describe(
+            "Background value - hex color for 'color' type, URL for 'image' or 'video' type"
+          ),
+      })
+      .optional()
+      .describe("Background configuration"),
+    resolution: z
+      .enum(["360p", "480p", "540p", "720p", "1080p"])
+      .default("720p")
+      .describe(
+        "Video resolution preset. Options: 360p, 480p, 540p, 720p, 1080p"
+      ),
+    aspect_ratio: z
+      .enum(["16:9", "9:16", "4:5", "5:4", "1:1", "auto"])
+      .default("16:9")
+      .describe(
+        "Aspect ratio of the output video. Supported values: '16:9', '9:16', '4:5', '5:4', '1:1', and 'auto'. 'auto' preserves the source aspect ratio when HeyGen can read it, falling back to '16:9' otherwise."
+      ),
+    caption: z
+      .boolean()
+      .default(false)
+      .describe("Whether to add captions to the video"),
+    enable_safety_checker: z
+      .boolean()
+      .default(true)
+      .describe(
+        "Authorized callers may set false to request relaxed screening."
+      ),
+  })
+  .refine((v) => !v.prompt || Boolean(v.audio_url) || Boolean(v.voice), {
+    message: "voice is required when using prompt (without audio_url)",
+  });
+export type FalHeygenAvatar4ImageToVideoRequest = z.input<
+  typeof FalHeygenAvatar4ImageToVideoRequestSchema
+>;
+export type FalHeygenAvatar4ImageToVideoRequestInput =
+  FalHeygenAvatar4ImageToVideoRequest;
+export type FalHeygenAvatar4ImageToVideoParsedRequest = z.output<
+  typeof FalHeygenAvatar4ImageToVideoRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "fal-ai/heygen/avatar4/image-to-video":
+    FalHeygenAvatar4ImageToVideoRequestSchema,
   "fal-ai/heygen/avatar4/digital-twin":
     FalHeygenAvatar4DigitalTwinRequestSchema,
   "fal-ai/heygen/avatar3/digital-twin":

@@ -973,6 +973,7 @@ export const MODEL_DISPLAY = {
   },
 
   fal: {
+    "fal-ai/heygen/v2/video-agent": "HeyGen Video Agent 2",
     "kling/v4/video-to-video/edit": "Kling 4 Video Edit",
     "kling/v4/reference-to-video": "Kling 4",
     "kling/v4/image-to-video": "Kling 4",

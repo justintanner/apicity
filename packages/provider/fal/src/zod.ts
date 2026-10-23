@@ -15622,7 +15622,55 @@ export type FalKlingV4VideoToVideoEditParsedRequest = z.output<
   typeof FalKlingV4VideoToVideoEditRequestSchema
 >;
 
+// Pinned to the live queue OpenAPI read on 2026-10-23
+// (sha256 896571542e77dada6cfd0bcabc34f17f1db6e4b7afdfa75784e8b3a72461bb05).
+// Field order follows x-fal-order-properties. The input is open; free 422
+// probes confirmed config.orientation, an integer config.duration of at
+// least 5 and a non-null config, and accepted unknown fields and an unknown
+// avatar (the schema keeps the published stock catalog).
+// Docs: https://fal.ai/models/fal-ai/heygen/v2/video-agent/api
+export const FalHeygenV2VideoAgentRequestSchema = z.object({
+  prompt: z
+    .string()
+    .describe(
+      "Natural language prompt describing the video to generate. Include details about style, visual elements, and desired length for best results."
+    ),
+  config: z
+    .object({
+      orientation: z
+        .enum(["portrait", "landscape"])
+        .default("portrait")
+        .describe("Video orientation"),
+      avatar: HeygenStockAvatarSchema.default(
+        "Adriana SuitSofa Front"
+      ).describe("Optional avatar name to use"),
+      duration: z
+        .number()
+        .int()
+        .min(5)
+        .nullable()
+        .optional()
+        .describe(
+          "Approximate duration in seconds (minimum 5). Suggested presets: 30, 60, or 90 seconds."
+        ),
+    })
+    .optional()
+    .describe("Video configuration options"),
+  enable_safety_checker: z
+    .boolean()
+    .default(true)
+    .describe("Authorized callers may set false to request relaxed screening."),
+});
+export type FalHeygenV2VideoAgentRequest = z.input<
+  typeof FalHeygenV2VideoAgentRequestSchema
+>;
+export type FalHeygenV2VideoAgentRequestInput = FalHeygenV2VideoAgentRequest;
+export type FalHeygenV2VideoAgentParsedRequest = z.output<
+  typeof FalHeygenV2VideoAgentRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "fal-ai/heygen/v2/video-agent": FalHeygenV2VideoAgentRequestSchema,
   "kling/v4/video-to-video/edit": FalKlingV4VideoToVideoEditRequestSchema,
   "kling/v4/reference-to-video": FalKlingV4ReferenceToVideoRequestSchema,
   "kling/v4/image-to-video": FalKlingV4ImageToVideoRequestSchema,

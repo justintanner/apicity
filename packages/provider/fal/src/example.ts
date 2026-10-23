@@ -1068,6 +1068,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST heygen.v2.videoAgent": {
+    "source": "fal/heygen-v2-video-agent",
+    "payload": {
+      "prompt": "A five-second clip in which a presenter says: A red panda waves once, then holds still.",
+      "config": {
+        "duration": 5
+      }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST heygen.v3.fillerWordRemoval": {
     "source": "fal/heygen-v3-filler-word-removal",
     "payload": {

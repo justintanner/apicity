@@ -1809,3 +1809,4 @@ fal	heygen.avatar5.digitalTwin	POST	https://fal.run/fal-ai/heygen/avatar5/digita
 fal	heygen.v3.lipsync.speed	POST	https://fal.run/fal-ai/heygen/v3/lipsync/speed	https://fal.ai/models/fal-ai/heygen/v3/lipsync/speed/api
 fal	heygen.v3.lipsync.precision	POST	https://fal.run/fal-ai/heygen/v3/lipsync/precision	https://fal.ai/models/fal-ai/heygen/v3/lipsync/precision/api
 fal	heygen.v2.translate.speed	POST	https://fal.run/fal-ai/heygen/v2/translate/speed	https://fal.ai/models/fal-ai/heygen/v2/translate/speed/api
+fal	heygen.v2.translate.precision	POST	https://fal.run/fal-ai/heygen/v2/translate/precision	https://fal.ai/models/fal-ai/heygen/v2/translate/precision/api

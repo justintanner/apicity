@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added fal HeyGen Translate Precision (`fal-ai/heygen/v2/translate/precision`) as `run.heygen.v2.translate.precision`, sharing the speed tier's input schema; dynamically priced, billing two $0.05 units per whole output second (the card's $0.10 a second) (ac-2dfgvj).
+
 - Added fal HeyGen Translate Speed (`fal-ai/heygen/v2/translate/speed`) as `run.heygen.v2.translate.speed`, with its 178 output languages; dynamically priced, since the translation sets the billed output seconds (ac-hzil38).
 
 - Added fal HeyGen Lipsync Precision (`fal-ai/heygen/v3/lipsync/precision`) as `run.heygen.v3.lipsync.precision`, sharing the speed tier's input schema; dynamically priced (ac-k8hxp1).

@@ -15442,7 +15442,125 @@ export type FalKlingV4ImageToVideoParsedRequest = z.output<
   typeof FalKlingV4ImageToVideoRequestSchema
 >;
 
+// A Kling 4.0 reference element (an image character or a video element).
+// Free 422 probes returned this rule as a field error on elements[i]: a
+// frontal image with at least one reference image, or a video, but not both.
+// A frontal image alone or references alone fail; either one beside a video
+// passes.
+const KlingV4ElementSchema = z
+  .object({
+    frontal_image_url: KlingV4MediaUrlSchema.nullable()
+      .optional()
+      .describe("The frontal image of the element (main view)."),
+    reference_image_urls: z
+      .array(KlingV4MediaUrlSchema)
+      .max(3)
+      .nullable()
+      .optional()
+      .describe("Additional views of the element from different angles (1-3)."),
+    video_url: KlingV4MediaUrlSchema.nullable()
+      .optional()
+      .describe("A video of the element, used instead of images (3-30s)."),
+    voice_id: z
+      .string()
+      .nullable()
+      .optional()
+      .describe(
+        "Voice bound to this element. Create one with https://fal.ai/models/fal-ai/kling-video/create-voice"
+      ),
+  })
+  .refine(
+    (e) =>
+      Boolean(e.frontal_image_url && e.reference_image_urls?.length) !==
+      Boolean(e.video_url),
+    {
+      message:
+        "An element needs either frontal_image_url with reference_image_urls, or video_url, but not both.",
+    }
+  );
+
+// Pinned to the live queue OpenAPI read on 2026-10-23
+// (sha256 3ff67e55f550d7d72418efb1a5fffed687cefd75697c47228e07810bfad583ff).
+// Field order follows x-fal-order-properties. The input is open; free 422
+// probes confirmed the media URL rule on every image and video field, the list
+// maxima, the duration maximum, the aspect_ratio set and the element rule,
+// and accepted nulls and unknown fields.
+// Docs: https://fal.ai/models/kling/v4/reference-to-video/api
+export const FalKlingV4ReferenceToVideoRequestSchema = z.object({
+  prompt: z
+    .string()
+    .max(26000)
+    .nullable()
+    .optional()
+    .describe(
+      "Text prompt. Reference inputs as @Image1, @Video1, @Element1, etc. Either prompt or multi_prompt must be provided."
+    ),
+  multi_prompt: z
+    .array(KlingV4ShotSchema)
+    .min(1)
+    .nullable()
+    .optional()
+    .describe(
+      "Per-shot prompts for multi-shot generation. The video duration is the sum of the shot durations."
+    ),
+  duration: z
+    .number()
+    .int()
+    .min(3)
+    .max(30)
+    .default(5)
+    .describe("Video duration in seconds (3-30)."),
+  start_image_url: KlingV4MediaUrlSchema.nullable()
+    .optional()
+    .describe(
+      "Optional image to use as the first frame. Counts toward the image reference limit."
+    ),
+  image_urls: z
+    .array(KlingV4MediaUrlSchema)
+    .max(10)
+    .nullable()
+    .optional()
+    .describe(
+      "Reference images, referenced as @Image1, @Image2, ... (max 10)."
+    ),
+  video_urls: z
+    .array(KlingV4MediaUrlSchema)
+    .max(5)
+    .nullable()
+    .optional()
+    .describe(
+      "Reference videos (3-30s each, 30s combined with element videos), referenced as @Video1, @Video2, ... (max 5)."
+    ),
+  elements: z
+    .array(KlingV4ElementSchema)
+    .max(7)
+    .nullable()
+    .optional()
+    .describe(
+      "Characters/objects, referenced as @Element1, @Element2, ... (max 7). Up to 3 elements may carry a voice_id and up to 3 may be video elements."
+    ),
+  resolution: z
+    .enum(["720p", "1080p"])
+    .default("1080p")
+    .describe("Output resolution."),
+  aspect_ratio: z
+    .enum(["auto", "16:9", "9:16", "1:1", "21:9"])
+    .default("16:9")
+    .describe(
+      "Aspect ratio of the generated video. 'auto' adapts it to the references."
+    ),
+});
+export type FalKlingV4ReferenceToVideoRequest = z.input<
+  typeof FalKlingV4ReferenceToVideoRequestSchema
+>;
+export type FalKlingV4ReferenceToVideoRequestInput =
+  FalKlingV4ReferenceToVideoRequest;
+export type FalKlingV4ReferenceToVideoParsedRequest = z.output<
+  typeof FalKlingV4ReferenceToVideoRequestSchema
+>;
+
 export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
+  "kling/v4/reference-to-video": FalKlingV4ReferenceToVideoRequestSchema,
   "kling/v4/image-to-video": FalKlingV4ImageToVideoRequestSchema,
   "kling/v4/text-to-video": FalKlingV4TextToVideoRequestSchema,
   "fal-ai/heygen/v3/filler-word-removal":

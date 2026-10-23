@@ -295,6 +295,13 @@ const klingV4Seconds = (p: Record<string, unknown>): number | undefined => {
   return total;
 };
 
+// A Kling 4.0 reference-to-video payload with a reference video or a video
+// element, which the card bills on input plus output length.
+const klingV4HasVideoReference = (p: Record<string, unknown>): boolean =>
+  (Array.isArray(p.video_urls) && p.video_urls.length > 0) ||
+  (Array.isArray(p.elements) &&
+    p.elements.some((element) => Boolean(asObject(element)?.video_url)));
+
 // wan edit-video's duration defaults to 0, meaning "match the source
 // video" — a length that is not in the payload, so it can only come from the
 // caller's cost-only hint channel.
@@ -1462,6 +1469,28 @@ export function falDynamicBilledUnit(
 }
 
 export const fal: Record<string, ModelPricing> = {
+  // Kling 4.0 reference-to-video: the card bills $0.157/s at 720p and $0.235/s
+  // at 1080p, like text-to-video, and the pricing API lists the 720p rate.
+  // The 3 s 720p recording with one reference image returned 3.04 s and
+  // billed 3 units ($0.471): the requested seconds.
+  // With reference videos or video elements the card switches to $0.094/s
+  // (720p) and $0.141/s (1080p) on the input plus output length, at least
+  // twice the output. That branch is unrecorded and the input length is not in
+  // the payload, so those payloads warn instead of pricing.
+  "kling/v4/reference-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: (p) => (klingV4HasVideoReference(p) ? undefined : klingV4Seconds(p)),
+    warn: (p) =>
+      klingV4HasVideoReference(p)
+        ? [
+            "fal 'kling/v4/reference-to-video': reference videos and video elements bill $0.094/s (720p) or $0.141/s (1080p) on the input plus output length, at least twice the output; the input length is not in the payload, so this request is not priced",
+          ]
+        : [],
+    select: [resolutionTier("1080p")],
+    rates: { "720p": 0.157, "1080p": 0.235 },
+    source: source("kling/v4/reference-to-video", "2026-10-23"),
+  },
   // Kling 4.0 image-to-video: the card bills $0.157/s at 720p and $0.235/s at
   // 1080p, and the pricing API lists the 720p rate. The 3 s 720p recording
   // returned 3.04 s (992x964, following the input's aspect) and billed 3 units

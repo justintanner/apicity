@@ -1212,6 +1212,19 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST kling.v4.referenceToVideo": {
+    "source": "fal/kling-v4-reference-to-video",
+    "payload": {
+      "prompt": "@Image1 waves once, then holds still.",
+      "image_urls": [
+        "<inline image/jpeg data URL — replace with a real URL or upload>"
+      ],
+      "duration": 3,
+      "resolution": "720p"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST kling.v4.textToVideo": {
     "source": "fal/kling-v4-text-to-video",
     "payload": {

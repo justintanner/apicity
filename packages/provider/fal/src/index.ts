@@ -21,6 +21,10 @@ export type {
 
 // Export all types
 export type {
+  FalKlingV4ReferenceToVideoRequest,
+  FalKlingV4ReferenceToVideoRequestInput,
+  FalKlingV4ReferenceToVideoParsedRequest,
+  FalKlingV4ReferenceToVideoResponse,
   FalKlingV4ImageToVideoRequest,
   FalKlingV4ImageToVideoRequestInput,
   FalKlingV4ImageToVideoParsedRequest,

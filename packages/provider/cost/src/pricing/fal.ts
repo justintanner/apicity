@@ -1462,6 +1462,17 @@ export function falDynamicBilledUnit(
 }
 
 export const fal: Record<string, ModelPricing> = {
+  // Kling 4.0 image-to-video: the card bills $0.157/s at 720p and $0.235/s at
+  // 1080p, and the pricing API lists the 720p rate. The 3 s 720p recording
+  // returned 3.04 s (992x964, following the input's aspect) and billed 3 units
+  // ($0.471): the requested seconds.
+  "kling/v4/image-to-video": perSecondTiered(
+    "kling/v4/image-to-video",
+    [resolutionTier("1080p")],
+    { "720p": 0.157, "1080p": 0.235 },
+    klingV4Seconds,
+    "2026-10-23"
+  ),
   // Kling 4.0's card bills $0.157/s at 720p and $0.235/s at 1080p, and the
   // pricing API lists the 720p rate. The 3 s 720p recording returned 3.04 s
   // and billed 3 units ($0.471): the requested seconds.

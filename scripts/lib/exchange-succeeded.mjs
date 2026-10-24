@@ -1,34 +1,39 @@
 /**
- * Whether this exchange is evidence for a working request payload.
- * Keep business-envelope rules provider-scoped: arbitrary response fields are
- * not a universal success protocol. Surveyed against the committed HAR corpus.
+ * Failure envelopes observed in committed 2xx recordings. KIE also proxies
+ * vendor-native responses: absence of a numeric code is not a failure.
+ * Other providers use HTTP status alone until corpus evidence warrants a rule.
  */
-const ENVELOPE_RULES = {
-  kie: (body) => body?.code === 200,
-  // Telegram's Bot API always wraps its JSON results in { ok, result }.
-  telegram: (body) => body?.ok === true,
-  // Uguu uses success; Catbox returns plain text. Google Flow returns several
-  // resource shapes, so only an explicit negative envelope rejects those.
-  "free-media-upload": (body) => body?.success !== false,
-  googleflow: (body) => body?.ok !== false,
-  zaicoding: (body) =>
-    body?.success !== false && (body?.code === undefined || body.code === 200),
-  // Async status/read endpoints can carry a provider error with HTTP 200.
-  openai: (body) => body?.error == null,
-  xai: (body) => body?.error == null,
-  elevenlabs: (body) => body?.error == null,
+const FAILURE_ENVELOPES = {
+  kie: (body) =>
+    (typeof body.code === "number" && body.code !== 200) || body.error != null,
+  xai: (body) => body.error != null,
 };
 
+/** Read only JSON-object envelopes, including HAR base64-encoded content. */
+export function responseObject(entry) {
+  const content = entry?.response?.content;
+  if (typeof content?.text !== "string") return null;
+  try {
+    const text =
+      content.encoding === "base64"
+        ? Buffer.from(content.text, "base64").toString("utf8")
+        : content.text;
+    const body = JSON.parse(text);
+    return body !== null && typeof body === "object" && !Array.isArray(body)
+      ? body
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Whether this exchange is evidence for a working request payload. */
 export function exchangeSucceeded(provider, entry) {
   const status = Number(entry?.response?.status);
   if (!Number.isFinite(status) || status < 200 || status >= 300) return false;
-  const rule = ENVELOPE_RULES[provider];
-  if (!rule) return true;
-  let body;
-  try {
-    body = JSON.parse(entry?.response?.content?.text ?? "");
-  } catch {
-    // Binary/plain-text responses have no JSON business envelope.
-  }
-  return rule(body);
+  const rule = Object.hasOwn(FAILURE_ENVELOPES, provider)
+    ? FAILURE_ENVELOPES[provider]
+    : null;
+  const body = rule ? responseObject(entry) : null;
+  return !body || !rule(body);
 }

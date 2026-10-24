@@ -34,7 +34,8 @@
  * consistently: recording-corpus allowlists, endpoint-surface inventory,
  * cross-provider source pins, cross-provider registry parity, documentation
  * inventories, fal credential wiring, provider export surface, cross-ref
- * namespace shape, namespace-shape CLI, and recorded request secrets. Those
+ * namespace shape, namespace-shape CLI, recorded request secrets, and example
+ * provenance. Those
  * are the categories tests/unit/cross-cutting-tests.test.ts sorts the block
  * into, and it fails when this paragraph stops naming one of them. The
  * registry-parity guard, `tests/unit/cost-slugs.test.ts`, enforces exact

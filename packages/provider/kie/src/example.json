@@ -104,6 +104,22 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST anthropic.v1.messages": {
+    "source": "kie/anthropic-messages",
+    "payload": {
+      "model": "claude-haiku-4-5",
+      "max_tokens": 16,
+      "messages": [
+        {
+          "role": "user",
+          "content": "Reply with the single word: pong"
+        }
+      ],
+      "stream": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.fileBase64Upload": {
     "source": "kie/file-uploads/base64",
     "payload": {
@@ -299,6 +315,16 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST api.v1.responses": {
+    "source": "static:kie-api-responses-minimal",
+    "payload": {
+      "model": "gpt-5.1-codex",
+      "input": "ping",
+      "stream": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST api.v1.runway.extend": {
     "source": "kie/runway/extend-not-found",
     "payload": {
@@ -350,6 +376,313 @@
       "vocalEndS": 10,
       "language": "en",
       "callBackUrl": "https://example.com/cb"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST claude.v1.messages": {
+    "source": "kie/claude-opus-5-chat-hello",
+    "payload": {
+      "model": "claude-opus-5",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Say hello in one sentence."
+        }
+      ],
+      "stream": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST codex.v1.responses": {
+    "source": "kie/gpt-6-1-sol-responses",
+    "payload": {
+      "model": "gpt-6-1-sol",
+      "input": "ping",
+      "stream": false,
+      "reasoning": {
+        "effort": "low"
+      }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST gemini.v1.models.gemini35Flash.streamGenerateContent": {
+    "source": "kie/gemini-35-flash",
+    "payload": {
+      "stream": false,
+      "contents": [
+        {
+          "role": "user",
+          "parts": [
+            {
+              "text": "Reply with the single word: pong"
+            }
+          ]
+        }
+      ],
+      "generationConfig": {
+        "thinkingConfig": {
+          "thinkingLevel": "low",
+          "includeThoughts": false
+        }
+      }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST gemini.v1.models.gemini36Flash.streamGenerateContent": {
+    "source": "static:kie-gemini-36-flash-minimal",
+    "payload": {
+      "stream": false,
+      "contents": [
+        {
+          "role": "user",
+          "parts": [
+            {
+              "text": "ping"
+            }
+          ]
+        }
+      ]
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST gemini.v1.models.gemini37Flash.streamGenerateContent": {
+    "source": "static:kie-gemini-37-flash-minimal",
+    "payload": {
+      "stream": false,
+      "contents": [
+        {
+          "role": "user",
+          "parts": [
+            {
+              "text": "ping"
+            }
+          ]
+        }
+      ]
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST gemini.v1.models.gemini38Flash.streamGenerateContent": {
+    "source": "static:kie-gemini-38-flash-minimal",
+    "payload": {
+      "stream": false,
+      "contents": [
+        {
+          "role": "user",
+          "parts": [
+            {
+              "text": "ping"
+            }
+          ]
+        }
+      ]
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST gemini25Pro.v1.chat.completions": {
+    "source": "static:kie-gemini-25-pro-chat-minimal",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "ping"
+            }
+          ]
+        }
+      ],
+      "stream": false,
+      "include_thoughts": false,
+      "reasoning_effort": "low"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST gemini31Pro.v1.chat.completions": {
+    "source": "kie/gemini-31-pro-chat",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Reply with the single word: pong"
+        }
+      ],
+      "stream": false,
+      "include_thoughts": false,
+      "reasoning_effort": "low"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST gemini35FlashOpenai.v1.chat.completions": {
+    "source": "static:kie-gemini-35-flash-openai-chat-minimal",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "ping"
+            }
+          ]
+        }
+      ],
+      "stream": false,
+      "include_thoughts": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST gemini36FlashOpenai.v1.chat.completions": {
+    "source": "static:kie-gemini-36-flash-openai-chat-minimal",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "ping"
+            }
+          ]
+        }
+      ],
+      "stream": false,
+      "include_thoughts": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST gemini37FlashOpenai.v1.chat.completions": {
+    "source": "static:kie-gemini-37-flash-openai-chat-minimal",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "ping"
+            }
+          ]
+        }
+      ],
+      "stream": false,
+      "include_thoughts": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST gemini38FlashOpenai.v1.chat.completions": {
+    "source": "static:kie-gemini-38-flash-openai-chat-minimal",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "ping"
+            }
+          ]
+        }
+      ],
+      "stream": false,
+      "include_thoughts": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST gemini3Pro.v1.chat.completions": {
+    "source": "static:kie-gemini-3-pro-chat-minimal",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "ping"
+            }
+          ]
+        }
+      ],
+      "stream": false,
+      "include_thoughts": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST gemini4ArgonOpenai.v1.chat.completions": {
+    "source": "kie/gemini-4-argon-openai-chat",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": [
+            {
+              "type": "text",
+              "text": "Reply with the single word: pong"
+            }
+          ]
+        }
+      ],
+      "stream": false,
+      "include_thoughts": false,
+      "reasoning_effort": "low"
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST gpt52.v1.chat.completions": {
+    "source": "kie/gpt-5-2-chat",
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "Reply with the single word: pong"
+        }
+      ]
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST grok.v1.responses": {
+    "source": "kie/grok-4-6-responses",
+    "payload": {
+      "model": "grok-4-6",
+      "input": "ping",
+      "stream": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST openai.v1.responses": {
+    "source": "kie/openai-responses-codex",
+    "payload": {
+      "model": "gpt-5.5",
+      "input": "Reply with the single word: pong",
+      "stream": false
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
+  "POST xai.v1.responses": {
+    "source": "kie/xai-responses",
+    "payload": {
+      "model": "grok-4-6",
+      "input": "Reply with the single word: pong",
+      "stream": false
     },
     "tier": "prohibitive",
     "runByDefault": false

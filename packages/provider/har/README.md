@@ -1,7 +1,9 @@
 # @apicity/har
 
-Dependency-free Node.js HAR 1.2 serialization and secret scrubbing. This package
-provides data helpers; it does not install capture hooks or write recordings.
+Dependency-free Node.js HAR 1.2 serialization, secret scrubbing and opt-in
+request/response capture. `createHarCapture` provides an injectable fetch,
+call scopes, optional global installation, and scrubbed files with a JSONL index.
+See the [capture guide](../../../docs/har-capture.md) for setup and retention details.
 
 ```ts
 import { exchangeToEntry, scrubHar, pollyEntryId } from "@apicity/har";
@@ -13,6 +15,11 @@ const entry = await exchangeToEntry(request, response, {
 entry._id = pollyEntryId(entry);
 ```
 
+- `createHarCapture({ dir, mode: "all" | "failures", providers?, maxBodyBytes?,
+  context?, onError?, clock?, idFactory? })` returns `{ fetch, call, install,
+  flush, close }`. Wrap provider work in `call({ provider, endpoint, input }, fn)`
+  and await `close()` before exit. Capture is disabled after a write error without
+  changing the provider result.
 - `exchangeToEntry(request: Request, responseOrError: Response | Error, timing,
   options?)` reads clones and returns a scrubbed entry. Timing has `startedAt`,
   `durationMs` and optional HAR `timings`. Options are `maxBodyBytes` (262144 by
@@ -24,7 +31,7 @@ entry._id = pollyEntryId(entry);
   `log._apicity`. Bodies must be unused and streams must eventually finish.
 - `scrubEntry(entry)` and `scrubHar(har)` mutate and return their argument.
   Scrubbing covers provider credentials in headers, URLs and JSON, cookies,
-  response account metadata and `_apicity.input`. It preserves prompts and
+  response account metadata and `_apicity` input/context/error fields. It preserves prompts and
   ordinary payloads. It is not a general personal-data anonymizer.
 - `pollyEntryId(entry, options?)` hashes the identifying fields using the
   repository's default harness matching rules. Custom matching requires

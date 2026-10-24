@@ -62,6 +62,7 @@ export interface HarTimings {
 }
 export interface ApicityEntryMetadata {
   kind: "http" | "local";
+  error?: ApicityCallMetadata["error"];
   role?: "create" | "poll" | "result" | "upload" | "download" | "other";
   pollRepeat?: number;
   streamed?: boolean;

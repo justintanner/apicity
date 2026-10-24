@@ -9,9 +9,9 @@ export interface FetchHost {
 /**
  * Log one line per HTTP call for the lifetime of this process.
  *
- * Wrapping the global is the only way `--verbose` can see a status at all:
- * only six of the 28 factories accept an injected `fetch` (plan F-5), and
- * every provider ultimately calls the global. The wrapper reads the method,
+ * The CLI installs this before constructing providers so their default fetch
+ * captures the wrapper. Every network factory also accepts an injected fetch.
+ * The wrapper reads the method,
  * the URL, the status and the elapsed time and nothing else — never a header,
  * never a body, so a credential cannot reach the log.
  *

@@ -26,6 +26,8 @@ import { sseToIterable } from "./sse";
 import { attachExamples } from "./example";
 import { createTransport } from "./transport";
 
+const providerFetch = new WeakMap<object, typeof fetch>();
+
 export function createAlibaba(opts: AlibabaOptions): AlibabaProvider {
   const baseURL =
     opts.baseURL ?? "https://dashscope.aliyuncs.com/compatible-mode/v1";
@@ -306,6 +308,7 @@ export function createAlibaba(opts: AlibabaOptions): AlibabaProvider {
     },
   };
 
+  providerFetch.set(getApiV1.uploads, opts.fetch ?? fetch);
   return attachExamples({
     post: {
       compatibleMode: { v1: postV1 },
@@ -360,7 +363,13 @@ export async function uploadFile(
   const endpoint = p.upload_host.startsWith("http")
     ? p.upload_host
     : `https://${p.upload_host}`;
-  const res = await fetch(endpoint, { method: "POST", body: form });
+  const res = await (providerFetch.get(provider.get.api.v1.uploads) ?? fetch)(
+    endpoint,
+    {
+      method: "POST",
+      body: form,
+    }
+  );
   if (!res.ok) {
     const body = await res.text().catch(() => "");
     throw new AlibabaError(

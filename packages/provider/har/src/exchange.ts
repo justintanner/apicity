@@ -25,6 +25,7 @@ interface SerializedBody {
   text: string;
   bytes: number;
   truncated: boolean;
+  sha256: string;
 }
 const DEFAULT_MAX_BODY_BYTES = 262144;
 
@@ -42,7 +43,12 @@ async function serializeBody(
   if (/^multipart\/form-data\b/i.test(contentType)) {
     const form = await message.formData();
     const text = JSON.stringify(summarizeMultipartFormData(form));
-    return { text, bytes: Buffer.byteLength(text), truncated: false };
+    return {
+      text,
+      bytes: Buffer.byteLength(text),
+      truncated: false,
+      sha256: createHash("sha256").update(text).digest("hex"),
+    };
   }
   const hash = createHash("sha256");
   const chunks: Uint8Array[] = [];
@@ -66,6 +72,7 @@ async function serializeBody(
       reader.releaseLock();
     }
   }
+  const sha256 = hash.digest("hex");
   const textual =
     /(?:json|^text\/|xml|application\/x-www-form-urlencoded)/i.test(
       contentType
@@ -74,12 +81,13 @@ async function serializeBody(
     return {
       text: JSON.stringify({
         _apicity_placeholder: {
-          sha256: hash.digest("hex"),
+          sha256,
           bytes,
           contentType,
         },
       }),
       bytes,
+      sha256,
       truncated: bytes > max,
     };
   }
@@ -87,12 +95,13 @@ async function serializeBody(
     return {
       text: JSON.stringify({
         _apicity_placeholder: {
-          sha256: hash.digest("hex"),
+          sha256,
           bytes,
           contentType,
         },
       }),
       bytes,
+      sha256,
       truncated: bytes > max,
     };
   }
@@ -105,7 +114,7 @@ async function serializeBody(
   } catch {
     /* Plain text or SSE. */
   }
-  return { text, bytes, truncated: bytes > max };
+  return { text, bytes, truncated: bytes > max, sha256 };
 }
 
 /** Serializes clones: the caller's request and response bodies remain readable. */
@@ -115,6 +124,17 @@ export async function exchangeToEntry(
   timing: ExchangeTiming,
   opts: ExchangeOptions = {}
 ): Promise<HarEntry> {
+  return (await serializeExchange(request, responseOrError, timing, opts))
+    .entry;
+}
+
+/** Internal capture adapter; the wire hash is never persisted as metadata. */
+export async function serializeExchange(
+  request: Request,
+  responseOrError: Response | Error,
+  timing: ExchangeTiming,
+  opts: ExchangeOptions = {}
+): Promise<{ entry: HarEntry; responseBodySha256: string }> {
   const max = opts.maxBodyBytes ?? DEFAULT_MAX_BODY_BYTES;
   if (!Number.isSafeInteger(max) || max < 0)
     throw new RangeError("maxBodyBytes must be a non-negative safe integer");
@@ -124,10 +144,13 @@ export async function exchangeToEntry(
     opts.streamed ??
     response?.headers.get("content-type")?.includes("text/event-stream") ??
     false;
-  const req = await serializeBody(request.clone(), max, false);
-  const res = response
-    ? await serializeBody(response.clone(), max, streamed)
-    : { text: "", bytes: 0, truncated: false };
+  // Tee both bodies before the first await, while the caller can still read them.
+  const requestCopy = request.clone();
+  const responseCopy = response?.clone();
+  const req = await serializeBody(requestCopy, max, false);
+  const res = responseCopy
+    ? await serializeBody(responseCopy, max, streamed)
+    : { text: "", bytes: 0, truncated: false, sha256: "" };
   const entry: HarEntry = {
     startedDateTime: new Date(timing.startedAt).toISOString(),
     time: timing.durationMs,
@@ -189,5 +212,5 @@ export async function exchangeToEntry(
     new URL(entry.request.url).searchParams,
     ([name, value]) => ({ name, value })
   );
-  return entry;
+  return { entry, responseBodySha256: res.sha256 };
 }

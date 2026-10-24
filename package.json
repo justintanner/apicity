@@ -14,6 +14,7 @@
     "examples/*"
   ],
   "scripts": {
+    "har:promote": "tsx scripts/har-promote.mjs",
     "build": "pnpm run gen:examples && pnpm run gen:call-shapes && pnpm run gen:frontier && pnpm -r --filter './packages/**' run build && pnpm run doc-gen",
     "build:dolthub": "pnpm --filter @apicity/dolthub run build",
     "build:dropbox": "pnpm --filter @apicity/dropbox run build",

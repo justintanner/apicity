@@ -429,3 +429,88 @@ interface ErrorGroup {
   };
 }
 ```
+
+## From capture to test
+
+Promote a captured successful call to an existing endpoint without a provider
+request or recording spend:
+
+```bash
+pnpm run har:promote -- capture.har --name fal/my-real-payload --dry-run
+pnpm run har:promote -- capture.har --name fal/my-real-payload
+```
+
+Use `<provider>/<test-name>` (Google Flow uses `google-flow`). The test name is
+lowercase kebab case, at most 80 characters. Optional flags are
+`--test-file tests/integration/<provider>-<name>.test.ts`, `--dry-run`,
+`--force`, `--keep`, and the maintainer/testing flag `--root <directory>`.
+Values also accept `--flag=value`. An alternate root must be outside the
+repository.
+
+The command first reconstructs the endpoint calls and executes them against
+the captured exchanges through an injected fetch, with global fetch disabled.
+It preserves captured request objects and wire bodies, resolves positional
+arguments from URLs, and includes async create, poll, and result calls. Every
+expanded exchange must be consumed. The generated test uses the current
+repository lifecycle template, provider credential environment names, and the
+existing harness OTP helpers for paid endpoints.
+
+The outputs are `tests/recordings/<provider>_<hash>/<test-name>_<hash>/recording.har`
+and `tests/integration/<provider>-<test-name>.test.ts`. The recording uses
+Polly's creator (required by its persister), default request identities and
+per-identity occurrence orders. Collapsed polls expand back to individual
+exchanges. Apicity metadata is retained and scrubbed again. The test asserts
+response keys and status fields plus the exact replayed exchange count.
+
+Before success, promotion runs secret and orphan-recording checks, the fal
+credential audit when applicable, a targeted TypeScript check, and Polly replay.
+Replay children remove provider credentials and force replay mode. The
+`POLLY_RECORDINGS_DIR` harness override accepts an alternate recordings root
+only in replay mode; recording with it set throws.
+
+Refusals (exit **2**) happen before writing:
+
+- Invalid/unsuccessful captures: `unreadable`, `not-annotated`,
+  `outcome-not-ok`, `no-http-entry`, `local-entry`, `exchange-failed`,
+  `needs-scrub`, `endpoint-not-in-catalog`.
+- Unsupported bodies or identities: `streamed`, `truncated`, `binary-body`,
+  `multipart-body`, `media-summary`, `non-json-body`, `redacted-body`,
+  `unsafe-key`, `credential-in-url`, `query-shape`, `too-many-exchanges`.
+  Query fragments, duplicate or valueless keys, and characters whose Polly
+  normalization differs are refused. The expanded limit is 500 exchanges.
+- Unsupported providers: `provider-unsupported` for S3, B2, Polymarket,
+  Telegram, TheSportsDB, Quo, and free-media-upload; fal also refuses
+  `fal-unknown-host` and `fal-mixed-hosts`.
+- Invalid destinations or templates: `name`, `test-file`, `exists`,
+  `force-unrecoverable`, `force-shared-recording`, `force-shared-test`,
+  `template`, `no-otp-helper`.
+- A call that cannot reproduce its exchanges: `dry-replay:unmatched-exchange`,
+  `dry-replay:identity`, `dry-replay:not-issued`, `dry-replay:no-primary`,
+  `dry-replay:threw`, `dry-replay:timeout`, `dry-replay:bypassed-fetch`,
+  `dry-replay:result-type`, `dry-replay:lenient-placeholders`,
+  `dry-replay:field-mismatch`, or `dry-replay:paid-positional`.
+
+`--dry-run` performs the refusal checks and dry replay, then prints targets,
+credential wiring, call plan and generated source without writing. `--force`
+replaces only exact, tracked, clean files recoverable from git; it refuses
+shared recordings, tests referencing other recordings, and normalized-name
+collisions. On a failed post-write check (exit **1**), created files/directories
+are removed and replaced files restored byte for byte. `--keep` instead keeps
+the files for inspection. Exit **0** means all checks passed, or the dry-run
+plan succeeded.
+
+A successful HTTP/KIE envelope can still describe a failed generation. The
+command prints a note and the generated test pins that state: promotion proves
+the recorded exchange sequence, not generation success.
+
+After promotion, review and stage the files, then run:
+
+```bash
+pnpm run gen:examples
+pnpm run harness:telegram -- --all my-real-payload --dry-run
+pnpm run dev:preflight:fast -- fal
+```
+
+Example selection follows the normal recording rules. Run
+`apicity har scrub --check capture.har` before sharing any capture; never copy
+it directly into the recordings tree.

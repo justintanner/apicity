@@ -90,6 +90,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- The 29 provider packages that ship zod schemas now depend on `zod@^4.6.6`,
+  up from `^4.4.3`. 4.6.6 is the first zod release patched for
+  GHSA-mrhx-c7xc-m3w5, so an install can no longer resolve a vulnerable zod.
+  4.6.6 also rejects an array over its `max` before parsing its elements, so a
+  union schema such as `AlibabaMultimodalGenerationRequestSchema` reports an
+  oversized `content` as one root `invalid_union` (ac-eix0vh).
 - Root README rewritten; detail moved to docs/paygate.md, docs/middleware.md,
   docs/providers.md, CONTRIBUTING.md and MCP.md.
 - `apicity commands`, `apicity providers` and `apicity describe`, and the

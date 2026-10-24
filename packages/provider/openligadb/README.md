@@ -11,7 +11,7 @@ OpenLigaDB is a public read-only API. `createOpenLigaDB()` does not take credent
 
 Runtime dependencies:
 
-- `zod@^4.4.3` — request schemas attached to endpoint methods as `.schema`; response schemas exported
+- `zod@^4.6.6` — request schemas attached to endpoint methods as `.schema`; response schemas exported
 
 ## Installation
 

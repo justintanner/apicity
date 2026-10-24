@@ -9,7 +9,7 @@ Dropbox HTTP API provider for users, files, content upload/download, and sharing
 
 Runtime dependencies:
 
-- `zod@^4.4.3` — request schemas attached to Dropbox endpoint methods as `.schema`
+- `zod@^4.6.6` — request schemas attached to Dropbox endpoint methods as `.schema`
 
 ## Installation
 

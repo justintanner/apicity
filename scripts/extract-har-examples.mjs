@@ -329,6 +329,38 @@ const STATIC_EXAMPLES_BY_PROVIDER = {
   },
 };
 
+// Curated overrides for accepted submits with unusable media (ac-fevz1c).
+// xai/video-edit's poll reports that the old sample URL returned HTTP 404;
+// both extension recordings use that same URL (free HEAD confirmed 404).
+// Replacement: free HEAD + GET returned video/mp4 on 2026-10-24;
+// MP4 metadata: H.264 (avc1), 5 seconds. No paid generation was performed.
+// This is explicit example curation, not a generic async job-outcome rule.
+const STATIC_EXAMPLE_OVERRIDES_BY_PROVIDER = {
+  xai: {
+    "POST v1.videos.edits": {
+      source: "static:xai-video-edit-reachable-sample",
+      payload: {
+        model: "grok-imagine-video",
+        prompt: "Add a warm cinematic color grade to the scene",
+        video: {
+          url: "https://storage.googleapis.com/falserverless/model_tests/video_models/mmaudio_input.mp4",
+        },
+      },
+    },
+    "POST v1.videos.extensions": {
+      source: "static:xai-video-extension-reachable-sample",
+      payload: {
+        model: "grok-imagine-video",
+        prompt: "Continue the motion in the scene",
+        video: {
+          url: "https://storage.googleapis.com/falserverless/model_tests/video_models/mmaudio_input.mp4",
+        },
+        duration: 5,
+      },
+    },
+  },
+};
+
 await main();
 
 async function main() {
@@ -419,6 +451,16 @@ async function main() {
     }
   }
 
+  // Unlike static fallbacks, these intentionally replace recorded submits
+  // whose example inputs have separately been shown unusable.
+  for (const [provider, overrides] of Object.entries(
+    STATIC_EXAMPLE_OVERRIDES_BY_PROVIDER
+  )) {
+    const examples = examplesByProvider.get(provider) ?? {};
+    Object.assign(examples, overrides);
+    examplesByProvider.set(provider, examples);
+  }
+
   // Coverage stats.
   const covered = [];
   const missing = [];
@@ -499,7 +541,10 @@ function printReport(covered, missing, unmatched, candidatesByKey, failed) {
   for (const [key, candidates] of [...candidatesByKey].sort()) {
     const chosen = selectGreenPath(candidates);
     if (!chosen) continue;
-    console.log(`  ${key}  →  ${chosen.recordingName}`);
+    const [provider, methodAndPath] = key.split("::");
+    const override =
+      STATIC_EXAMPLE_OVERRIDES_BY_PROVIDER[provider]?.[methodAndPath];
+    console.log(`  ${key}  →  ${override?.source ?? chosen.recordingName}`);
   }
   if (failed.length > 0) {
     console.log("\n== demoted sources (failed exchange) ==");

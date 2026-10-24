@@ -193,24 +193,24 @@
     "runByDefault": false
   },
   "POST v1.videos.edits": {
-    "source": "xai/video-edit",
+    "source": "static:xai-video-edit-reachable-sample",
     "payload": {
       "model": "grok-imagine-video",
-      "prompt": "Give the woman a silver necklace",
+      "prompt": "Add a warm cinematic color grade to the scene",
       "video": {
-        "url": "https://vidgen.x.ai/xai-vidgen-bucket/xai-video-sample.mp4"
+        "url": "https://storage.googleapis.com/falserverless/model_tests/video_models/mmaudio_input.mp4"
       }
     },
     "tier": "prohibitive",
     "runByDefault": false
   },
   "POST v1.videos.extensions": {
-    "source": "xai/video-extensions-basic",
+    "source": "static:xai-video-extension-reachable-sample",
     "payload": {
       "model": "grok-imagine-video",
-      "prompt": "The scene continues with the character walking into a magical forest",
+      "prompt": "Continue the motion in the scene",
       "video": {
-        "url": "https://vidgen.x.ai/xai-vidgen-bucket/xai-video-sample.mp4"
+        "url": "https://storage.googleapis.com/falserverless/model_tests/video_models/mmaudio_input.mp4"
       },
       "duration": 5
     },

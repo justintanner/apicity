@@ -61,3 +61,5 @@ const limiter = createRateLimiter({ rpm: 60, concurrent: 5 });
 
 const chat = withRateLimit(openai.v1.chat.completions, limiter);
 ```
+
+For opt-in request/response recording, see [HAR capture](har-capture.md).

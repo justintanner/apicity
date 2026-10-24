@@ -815,6 +815,8 @@ async function* sseToIterable<T>(res: Response): AsyncIterable<T> {
   }
 }
 
+const providerFetch = new WeakMap<object, typeof fetch>();
+
 export function createFal(opts: FalOptions): FalProvider {
   const baseURL = opts.baseURL ?? "https://api.fal.ai/v1";
   const doFetch = opts.fetch ?? fetch;
@@ -5574,6 +5576,7 @@ export function createFal(opts: FalOptions): FalProvider {
     workflows,
   };
 
+  providerFetch.set(storage.upload.initiate, opts.fetch ?? fetch);
   return attachExamples({
     // api.fal.ai/v1/* — management API
     v1: aiV1,
@@ -5618,7 +5621,9 @@ export async function uploadFile(
       ? args.data
       : new Blob([new Uint8Array(args.data)], { type: args.contentType });
 
-  const res = await fetch(upload_url, {
+  const res = await (
+    providerFetch.get(provider.storage.upload.initiate) ?? fetch
+  )(upload_url, {
     method: "PUT",
     headers: { "Content-Type": args.contentType },
     body,

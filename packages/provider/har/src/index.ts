@@ -1,5 +1,9 @@
 export * from "./types.js";
-export * from "./exchange.js";
+export {
+  exchangeToEntry,
+  type ExchangeTiming,
+  type ExchangeOptions,
+} from "./exchange.js";
 export * from "./scrub.js";
 export * from "./polly.js";
 export * from "./har-scrub.js";
@@ -19,3 +23,4 @@ export {
   redactedRequestId,
   type PersistedHarRecording,
 } from "./persist.js";
+export * from "./capture.js";

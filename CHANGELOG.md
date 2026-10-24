@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added opt-in `createHarCapture` with call scopes, failures mode, scrubbed HAR files and an index; Alibaba OSS and fal storage uploads now honor the factory’s injected fetch (ac-s3b2gq).
+
 - Added `@apicity/har` with HAR serialization, secret scrubbing and Polly identity helpers.
 
 - Added fal HeyGen Video Agent 3 (`fal-ai/heygen/v3/video-agent`) as `run.heygen.v3.videoAgent`, with `"auto"` plus the stock avatar and voice catalogs; dynamically priced, since the agent chooses the billed output length (ac-egreqg).

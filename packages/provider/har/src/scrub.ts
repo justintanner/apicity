@@ -33,15 +33,27 @@ export function scrubHar<T extends Har>(har: T): T {
       providerUrls[meta.provider] ??
       har.log.entries[0]?.request.url ??
       "https://local.invalid/";
-    const text = JSON.stringify(meta.input);
-    if (text !== undefined) {
+    function scrubValue(value: unknown): unknown {
+      const text = JSON.stringify(value);
+      if (text === undefined) return value;
       const entry: PersistedHarRecording = {
         request: { url, postData: { text } },
       };
       scrubEntry(entry);
       entry.response = { content: { text: entry.request!.postData!.text! } };
       scrubEntry(entry);
-      meta.input = JSON.parse(entry.response.content!.text!);
+      return JSON.parse(entry.response.content!.text!);
+    }
+    meta.input = scrubValue(meta.input);
+    if (meta.context)
+      meta.context = scrubValue(meta.context) as typeof meta.context;
+    if (meta.error) meta.error = scrubValue(meta.error) as typeof meta.error;
+    for (const entry of har.log.entries) {
+      if (entry._apicity?.error) {
+        entry._apicity.error = scrubValue(
+          entry._apicity.error
+        ) as typeof meta.error;
+      }
     }
   }
   return har;

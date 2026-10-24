@@ -111,7 +111,7 @@ call them. There is no MCP server: [MCP.md](MCP.md).
 [@apicity/thesportsdb](packages/provider/thesportsdb), [@apicity/googleflow](packages/provider/googleflow),
 [@apicity/zaicoding](packages/provider/zaicoding), [@apicity/openf1](packages/provider/openf1),
 [@apicity/dropbox](packages/provider/dropbox), [@apicity/dolthub](packages/provider/dolthub),
-[@apicity/youtube](packages/provider/youtube), [@apicity/cost](packages/provider/cost).
+[@apicity/youtube](packages/provider/youtube), [@apicity/cost](packages/provider/cost), [@apicity/har](packages/provider/har).
 
 <!-- provider-inventory:providers:end -->
 

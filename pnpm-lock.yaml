@@ -148,6 +148,9 @@ importers:
       '@apicity/googleflow':
         specifier: workspace:*
         version: link:../provider/googleflow
+      '@apicity/har':
+        specifier: workspace:*
+        version: link:../provider/har
       '@apicity/kie':
         specifier: workspace:*
         version: link:../provider/kie
@@ -273,6 +276,8 @@ importers:
       zod:
         specifier: ^4.4.3
         version: 4.6.7
+
+  packages/provider/har: {}
 
   packages/provider/kie:
     dependencies:

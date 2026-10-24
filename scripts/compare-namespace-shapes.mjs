@@ -30,7 +30,10 @@ import {
   readNamespaceShapesFromDir,
   readNamespaceShapesFromRef,
 } from "./lib/namespace-shape.mjs";
-import { REPO_ROOT, readProviderNames } from "./lib/provider-inventory.mjs";
+import {
+  REPO_ROOT,
+  readFactoryProviderNames,
+} from "./lib/provider-inventory.mjs";
 
 /** The ref a fan-out branches from when nothing better can be derived. */
 const FALLBACK_BASE = "main";
@@ -238,7 +241,7 @@ export function buildReport(options, repoRoot) {
   const providers =
     options.providers.length > 0
       ? options.providers
-      : readProviderNames(repoRoot);
+      : readFactoryProviderNames(repoRoot);
   const participants =
     options.participants.length > 0
       ? options.participants

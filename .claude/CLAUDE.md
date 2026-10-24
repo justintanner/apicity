@@ -12,9 +12,11 @@ Apicity is a TypeScript monorepo of standalone API provider packages
 `@apicity/thesportsdb`, `@apicity/openf1`, `@apicity/elevenlabs`, `@apicity/s3`,
 `@apicity/b2`, `@apicity/dropbox`, `@apicity/dolthub`, `@apicity/meta`,
 `@apicity/telegram`, `@apicity/quo`, `@apicity/x`, `@apicity/youtube`,
-`@apicity/free-media-upload`, `@apicity/cost`<!-- provider-inventory:providers:end -->). Each package is self-contained with a minimal dependency footprint: every provider depends on `zod` (endpoint `.schema` definitions), polymarket also depends on `viem` for EIP-712 order signing, and the OpenAI and xAI Realtime server transports use `ws`. Shared provider helpers are copied into packages as synced local source rather than consumed through workspace package dependencies. Based on [TetherAI](https://github.com/nbursa/TetherAI).
+`@apicity/free-media-upload`, `@apicity/cost`, `@apicity/har`<!-- provider-inventory:providers:end -->). Each package is self-contained with a minimal dependency footprint: every provider depends on `zod` (endpoint `.schema` definitions), polymarket also depends on `viem` for EIP-712 order signing, and the OpenAI and xAI Realtime server transports use `ws`. Shared provider helpers are copied into packages as synced local source rather than consumed through workspace package dependencies. Based on [TetherAI](https://github.com/nbursa/TetherAI).
 
 `@apicity/cost` is a dependency-free cross-provider helper: pure local USD cost/token estimation (`createCost`, `computeEstimate`, bundled rate tables), a committed frontier-model registry (`frontier`, `FRONTIER_TYPES`), plus the canonical OTP pay-gate (`withPaidGate`) source vendored into kie and xai.
+
+`@apicity/har` is a dependency-free helper for HAR 1.2 serialization, secret scrubbing and Polly recording identities.
 
 `@apicity/cli` (under `packages/cli`, not `packages/provider/`) is the `apicity` CLI and agent skill.
 
@@ -119,9 +121,9 @@ the repository by `tests/unit/provider-inventory-docs.test.ts`, so a new
 package that ships without its aliases — or an alias documented here that no
 longer exists — fails a gate rather than going stale.
 
-- `build:` — <!-- provider-inventory:claude-build-scripts:start -->`build:alibaba`, `build:anthropic`, `build:b2`, `build:binance`, `build:cli`, `build:cost`, `build:dolthub`, `build:dropbox`, `build:elevenlabs`, `build:fal`, `build:fireworks`, `build:free-media-upload`, `build:google`, `build:googleflow`, `build:kie`, `build:kimicoding`, `build:machgen`, `build:meta`, `build:openai`, `build:openf1`, `build:openligadb`, `build:polymarket`, `build:quo`, `build:s3`, `build:simplefunctions`, `build:telegram`, `build:thesportsdb`, `build:x`, `build:xai`, `build:youtube`, `build:zaicoding`<!-- provider-inventory:claude-build-scripts:end -->
+- `build:` — <!-- provider-inventory:claude-build-scripts:start -->`build:alibaba`, `build:anthropic`, `build:b2`, `build:binance`, `build:cli`, `build:cost`, `build:dolthub`, `build:dropbox`, `build:elevenlabs`, `build:fal`, `build:fireworks`, `build:free-media-upload`, `build:google`, `build:googleflow`, `build:har`, `build:kie`, `build:kimicoding`, `build:machgen`, `build:meta`, `build:openai`, `build:openf1`, `build:openligadb`, `build:polymarket`, `build:quo`, `build:s3`, `build:simplefunctions`, `build:telegram`, `build:thesportsdb`, `build:x`, `build:xai`, `build:youtube`, `build:zaicoding`<!-- provider-inventory:claude-build-scripts:end -->
 - `doc-gen:` — <!-- provider-inventory:claude-doc-gen-scripts:start -->`doc-gen:alibaba`, `doc-gen:anthropic`, `doc-gen:b2`, `doc-gen:binance`, `doc-gen:dolthub`, `doc-gen:dropbox`, `doc-gen:elevenlabs`, `doc-gen:fal`, `doc-gen:fireworks`, `doc-gen:free-media-upload`, `doc-gen:google`, `doc-gen:googleflow`, `doc-gen:kie`, `doc-gen:kimicoding`, `doc-gen:machgen`, `doc-gen:meta`, `doc-gen:openai`, `doc-gen:openf1`, `doc-gen:openligadb`, `doc-gen:polymarket`, `doc-gen:quo`, `doc-gen:s3`, `doc-gen:simplefunctions`, `doc-gen:telegram`, `doc-gen:thesportsdb`, `doc-gen:x`, `doc-gen:xai`, `doc-gen:youtube`, `doc-gen:zaicoding`<!-- provider-inventory:claude-doc-gen-scripts:end -->
-  (`cost` is excluded: its README is hand-written and it exposes no endpoint
+  (`cost` and `har` are excluded: their READMEs are hand-written and they expose no endpoint
   surface.)
 
 `pnpm run lint` intentionally rebuilds only `@apicity/kie` before the

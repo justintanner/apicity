@@ -144,7 +144,8 @@
     "compare:video": "pnpm run build:cost --silent && node scripts/compare-video-cost.mjs",
     "compare:image": "pnpm run build:cost --silent && node scripts/compare-image-cost.mjs",
     "build:machgen": "pnpm --filter @apicity/machgen build",
-    "doc-gen:machgen": "node scripts/doc-gen.mjs machgen"
+    "doc-gen:machgen": "node scripts/doc-gen.mjs machgen",
+    "build:har": "pnpm --filter @apicity/har run build"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",

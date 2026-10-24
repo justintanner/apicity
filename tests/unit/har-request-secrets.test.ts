@@ -100,8 +100,8 @@ describe("HAR request secrets", () => {
   });
 
   it("takes its names and placeholders from the table the harness applies", () => {
-    // Re-exported, not copied: one object behind both imports.
-    expect(PERSISTED_REQUEST_HEADER_PLACEHOLDERS).toBe(SHARED_PLACEHOLDERS);
+    // Scripts use the checked gen:shared copy of the shipped table.
+    expect(PERSISTED_REQUEST_HEADER_PLACEHOLDERS).toEqual(SHARED_PLACEHOLDERS);
     expect(Object.isFrozen(PERSISTED_REQUEST_HEADER_PLACEHOLDERS)).toBe(true);
 
     // What the harness persists for every table header is exactly what the
@@ -146,7 +146,7 @@ describe("HAR request secrets", () => {
     }
   });
 
-  it("checks guard-only names the harness leaves as recorded", () => {
+  it("scrubs the formerly guard-only api-key header", () => {
     const recording: PersistedHarRecording = {
       request: { headers: [{ name: "api-key", value: "raw api-key value" }] },
     };
@@ -154,13 +154,11 @@ describe("HAR request secrets", () => {
     redactPersistedHarSecrets(recording);
 
     expect(recording.request?.headers).toEqual([
-      { name: "api-key", value: "raw api-key value" },
+      { name: "api-key", value: "***" },
     ]);
     expect(
       findUnredactedRequestSecrets({ log: { entries: [recording] } })
-    ).toEqual([
-      { entryIndex: 0, headerIndex: 0, name: "api-key", placeholder: "***" },
-    ]);
+    ).toEqual([]);
   });
 
   it("fails a live authorization value, naming the entry and header", () => {
@@ -242,6 +240,48 @@ describe("HAR request secrets", () => {
     expect(findUnredactedRequestSecrets(null)).toEqual([]);
     expect(
       findUnredactedRequestSecrets({ log: { entries: [{}, { request: {} }] } })
+    ).toEqual([]);
+  });
+});
+
+describe("new shipped scrubber URL and authorization rules", () => {
+  it("redacts thesportsdb path credentials without touching unrelated paths", () => {
+    const recording = {
+      request: {
+        url: "https://www.thesportsdb.com/api/v1/json/private/searchteams.php?t=Arsenal",
+      },
+    };
+    redactPersistedHarSecrets(recording);
+    expect(recording.request.url).toBe(
+      "https://www.thesportsdb.com/api/v1/json/***/searchteams.php?t=Arsenal"
+    );
+  });
+  it.each([
+    "X-Amz-Signature",
+    "X-Amz-Credential",
+    "OSSAccessKeyId",
+    "Signature",
+  ])("removes signed query %s", (key) => {
+    const recording = {
+      request: { url: `https://bucket.example/object?${key}=private&keep=one` },
+    };
+    redactPersistedHarSecrets(recording);
+    expect(recording.request.url).toBe(
+      "https://bucket.example/object?keep=one"
+    );
+  });
+  it("preserves fal Key scheme and accepts both historical placeholders", () => {
+    const recording = {
+      request: { headers: [{ name: "Authorization", value: "Key private" }] },
+    };
+    redactPersistedHarSecrets(recording);
+    expect(recording.request.headers[0].value).toBe("Key ***");
+    expect(
+      findUnredactedRequestSecrets({ log: { entries: [recording] } })
+    ).toEqual([]);
+    recording.request.headers[0].value = "Bearer ***";
+    expect(
+      findUnredactedRequestSecrets({ log: { entries: [recording] } })
     ).toEqual([]);
   });
 });

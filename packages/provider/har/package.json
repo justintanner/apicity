@@ -1,0 +1,46 @@
+{
+  "name": "@apicity/har",
+  "version": "0.17.0",
+  "description": "HAR 1.2 serialization, secret scrubbing and Polly recording identity.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/justintanner/apicity.git",
+    "directory": "packages/provider/har"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/src/index.js",
+      "types": "./dist/src/index.d.ts"
+    }
+  },
+  "files": [
+    "bin",
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "keywords": [
+    "har",
+    "apicity"
+  ],
+  "author": "Justin Tanner",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node scripts/dist.mjs",
+    "prepublishOnly": "pnpm run build"
+  },
+  "homepage": "https://github.com/justintanner/apicity#readme",
+  "bugs": {
+    "url": "https://github.com/justintanner/apicity/issues"
+  }
+}

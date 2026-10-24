@@ -43,6 +43,7 @@ table includes it so the published roster stays in one place.
 | [@apicity/dolthub](../packages/provider/dolthub)                     | DoltHub SQL execution and Dolt database management                 |
 | [@apicity/youtube](../packages/provider/youtube)                     | YouTube Data API v3 video publishing                               |
 | [@apicity/cost](../packages/provider/cost)                           | Pure local cost/token estimates across providers                   |
+| [@apicity/har](../packages/provider/har)                             | HAR serialization and secret scrubbing                             |
 | [@apicity/cli](../packages/cli)                                      | CLI and agent skill for every provider endpoint                    |
 
 <!-- provider-inventory:providers:end -->

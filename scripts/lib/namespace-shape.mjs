@@ -2,7 +2,7 @@ import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import ts from "typescript";
-import { REPO_ROOT, readProviderNames } from "./provider-inventory.mjs";
+import { REPO_ROOT, readFactoryProviderNames } from "./provider-inventory.mjs";
 
 /**
  * The namespace shape inventory: which dot paths a provider factory declares
@@ -1458,14 +1458,14 @@ export function readNamespaceShapesFromRef(
 /**
  * Every provider's inventory, from the working tree.
  *
- * Provider discovery is `readProviderNames`, so a package added tomorrow is
+ * Provider discovery is `readFactoryProviderNames`, so a package added tomorrow is
  * covered the day it lands rather than when someone remembers a list.
  *
  * @param {string} [repoRoot]
  * @returns {NamespaceInventory[]}
  */
 export function readTreeNamespaceShapes(repoRoot = REPO_ROOT) {
-  return readProviderNames(repoRoot).map((provider) =>
+  return readFactoryProviderNames(repoRoot).map((provider) =>
     readNamespaceShapesFromDir(repoRoot, provider)
   );
 }

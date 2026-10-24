@@ -82,7 +82,8 @@
     "@apicity/xai": "workspace:*",
     "@apicity/youtube": "workspace:*",
     "@apicity/zaicoding": "workspace:*",
-    "@apicity/machgen": "workspace:*"
+    "@apicity/machgen": "workspace:*",
+    "@apicity/har": "workspace:*"
   },
   "homepage": "https://github.com/justintanner/apicity#readme",
   "bugs": {

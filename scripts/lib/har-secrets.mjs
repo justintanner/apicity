@@ -1,51 +1,65 @@
-/**
- * Secrets in recorded HARs: request headers (ac-1zmydw) and fal checkpoints
- * (ac-yv3xum).
- *
- * Before Polly persists a recording, `redactPersistedHarSecrets` in
- * `tests/harness.ts` overwrites the value of every request header named in
- * `PERSISTED_REQUEST_HEADER_PLACEHOLDERS` with that header's placeholder. The
- * table lives here rather than in the harness so that a node script can read it
- * without loading Polly. The harness imports it, applies it and re-exports it,
- * so the names and placeholders have one definition, not two.
- *
- * `findUnredactedRequestSecrets` is the corpus check built on that table. A
- * committed HAR whose request carries one of those headers with any other value
- * was edited by hand or written by a regressed harness, and either way may hold
- * a live key bound for a public repository.
- * `tests/unit/har-request-secrets.test.ts` runs it over every recording.
- *
- * A fal response can also carry a `checkpoint` object: a `.safetensors` URL and
- * a `signature` fal issues for it, valid for a day. `redactFalCheckpoints` is
- * the rule the harness applies to a parsed response body before persisting it,
- * and `findLiveFalCheckpoints` reports what that rule would still change in a
- * committed recording. `scripts/check-recording-secrets.mjs`, part of
- * `pnpm run lint:recordings`, runs both finders over every recording.
- */
-
-/**
- * Request headers the harness redacts at persist time, keyed by lower-case
- * name, each mapped to the exact value it writes in place of the original.
- */
+// AUTO-GENERATED from packages/provider/har/src/har-secrets.mjs; do not edit.
+// Edit the canonical file and run `pnpm run gen:shared`.
+/** Canonical request credential placeholders and corpus guards. Synced to scripts by gen:shared. */
 export const PERSISTED_REQUEST_HEADER_PLACEHOLDERS = Object.freeze({
   authorization: "Bearer ***",
   "x-api-key": "***",
   "xi-api-key": "***",
   "x-goog-api-key": "***",
   "x-amz-security-token": "***",
+  "api-key": "***",
+  "x-telegram-bot-api-secret-token": "***",
+  "poly-api-key": "***",
+  "poly-passphrase": "***",
+  "poly-signature": "***",
+  "poly-address": "***",
+  "poly-timestamp": "***",
+  "poly-nonce": "***",
 });
 
-/**
- * Headers the corpus check holds to a placeholder although the harness does
- * not redact them. ac-1zmydw names `api-key` among the provider-key headers a
- * recording must never carry raw. Adding it to the table above would change
- * what the harness redacts, which that bead puts out of scope, so it is kept
- * here instead. No committed recording carries one, so the first that does
- * fails the check until the harness is taught to redact it.
- */
-export const GUARD_ONLY_REQUEST_HEADER_PLACEHOLDERS = Object.freeze({
-  "api-key": "***",
+/** Per-provider URL path credentials. */
+export const PROVIDER_PATH_SECRET_RULES = Object.freeze({
+  thesportsdb:
+    /(https?:\/\/(?:www\.)?thesportsdb\.com\/api\/v1\/json\/)[^/?#"\\\s]+/gi,
 });
+
+/** Scrub signed query credentials.
+ * @param {string} url
+ * @returns {string}
+ */
+export function redactUrlSecrets(url) {
+  let result = url.replace(
+    /(https:\/\/api\.telegram\.org\/bot)[^/?#"\\\s]+/g,
+    "$1***"
+  );
+  for (const pattern of Object.values(PROVIDER_PATH_SECRET_RULES)) {
+    result = result.replace(pattern, "$1***");
+  }
+  return result.replace(/https?:\/\/[^"\\\s]+/g, (value) => {
+    try {
+      const parsed = new URL(value);
+      let changed = false;
+      for (const key of [...parsed.searchParams.keys()]) {
+        if (
+          /^(OSSAccessKeyId|Signature|X-Amz-Signature|X-Amz-Credential)$/i.test(
+            key
+          )
+        ) {
+          parsed.searchParams.delete(key);
+          changed = true;
+        }
+      }
+      return changed ? parsed.toString() : value;
+    } catch {
+      return value;
+    }
+  });
+}
+
+/** Compatibility export: all formerly guard-only headers are now scrubbed.
+ * @type {Readonly<Record<string, string>>}
+ */
+export const GUARD_ONLY_REQUEST_HEADER_PLACEHOLDERS = Object.freeze({});
 
 /**
  * @param {Readonly<Record<string, string>>} table
@@ -105,7 +119,12 @@ export function findUnredactedRequestSecrets(har) {
       const placeholder =
         placeholderIn(PERSISTED_REQUEST_HEADER_PLACEHOLDERS, name) ??
         placeholderIn(GUARD_ONLY_REQUEST_HEADER_PLACEHOLDERS, name);
-      if (placeholder === undefined || header.value === placeholder) return;
+      if (
+        placeholder === undefined ||
+        header.value === placeholder ||
+        (name?.toLowerCase() === "authorization" && header.value === "Key ***")
+      )
+        return;
       findings.push({ entryIndex, headerIndex, name, placeholder });
     });
   });

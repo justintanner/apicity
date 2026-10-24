@@ -102,24 +102,25 @@ built-in that does not know it is a usage error (`--verbose needs a value`,
 exit 1) rather than a silent no-op, and `doctor` names an argument it ignored
 on stderr.
 
-| Flag                           | Description                                                                                                                                                                                     |
-| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--json`                       | Force the machine envelope, even at a terminal. With `--quiet`, force compact JSON.                                                                                                             |
-| `--quiet`                      | Print the data alone, without the envelope.                                                                                                                                                     |
-| `--verbose`                    | One line per HTTP call on stderr: method, URL, status, elapsed. Never a header or a body.                                                                                                       |
-| `--method <M>`                 | Pick one method when a dotPath answers several.                                                                                                                                                 |
-| `--data <json>`                | The request body; `-` reads stdin.                                                                                                                                                              |
-| `--data-file <path>`           | The request body, read from a file; `-` reads stdin.                                                                                                                                            |
-| `--otp <token>`                | A paid endpoint's single-use approval, needed only when the operator armed the gate; refused with no secret ([Paid endpoints](#paid-endpoints)).                                                |
-| `--output-dir <path>`          | Where binary results and downloaded media land. Also `APICITY_OUTPUT_DIR`.                                                                                                                      |
-| `--env-file <path>`            | Load provider settings from a dotenv file. Set env vars win; `op://` references resolve (see [1Password](#1password)).                                                                          |
-| `--op-vault <vault>`           | The vault convention: fill missing credentials from `op://<vault>/<ENV_VAR>/password`. Also `APICITY_OP_VAULT`.                                                                                 |
-| `--op-token <token>`           | 1Password service-account token: a literal, `env:VAR`, `$VAR`, or a variable name. It also authenticates `op://` references. `--op-service-token` is an alias. Also `APICITY_OP_SERVICE_TOKEN`. |
-| `--paygate-secret-file <path>` | Arms the pay gate: the shared HMAC secret that verifies paid-endpoint OTPs. Unset, the gate is off. Also `APICITY_PAYGATE_SECRET_FILE`.                                                         |
-| `--base-url <url>`             | Override the provider's base URL (see the note below).                                                                                                                                          |
-| `--timeout <ms>`               | Override the provider's request timeout, in milliseconds.                                                                                                                                       |
-| `--help`, `-h`                 | On the endpoint form, describe the endpoint; otherwise print usage.                                                                                                                             |
-| `--version`                    | Print the package version.                                                                                                                                                                      |
+| Flag                            | Description                                                                                                                                                                                     |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--json`                        | Force the machine envelope, even at a terminal. With `--quiet`, force compact JSON.                                                                                                             |
+| `--quiet`                       | Print the data alone, without the envelope.                                                                                                                                                     |
+| `--capture-har [all\|failures]` | Capture scrubbed endpoint calls; bare means all. Overrides APICITY_HAR_CAPTURE.                                                                                                                 |
+| `--verbose`                     | One line per HTTP call on stderr: method, URL, status, elapsed. Never a header or a body.                                                                                                       |
+| `--method <M>`                  | Pick one method when a dotPath answers several.                                                                                                                                                 |
+| `--data <json>`                 | The request body; `-` reads stdin.                                                                                                                                                              |
+| `--data-file <path>`            | The request body, read from a file; `-` reads stdin.                                                                                                                                            |
+| `--otp <token>`                 | A paid endpoint's single-use approval, needed only when the operator armed the gate; refused with no secret ([Paid endpoints](#paid-endpoints)).                                                |
+| `--output-dir <path>`           | Where binary results and downloaded media land. Also `APICITY_OUTPUT_DIR`.                                                                                                                      |
+| `--env-file <path>`             | Load provider settings from a dotenv file. Set env vars win; `op://` references resolve (see [1Password](#1password)).                                                                          |
+| `--op-vault <vault>`            | The vault convention: fill missing credentials from `op://<vault>/<ENV_VAR>/password`. Also `APICITY_OP_VAULT`.                                                                                 |
+| `--op-token <token>`            | 1Password service-account token: a literal, `env:VAR`, `$VAR`, or a variable name. It also authenticates `op://` references. `--op-service-token` is an alias. Also `APICITY_OP_SERVICE_TOKEN`. |
+| `--paygate-secret-file <path>`  | Arms the pay gate: the shared HMAC secret that verifies paid-endpoint OTPs. Unset, the gate is off. Also `APICITY_PAYGATE_SECRET_FILE`.                                                         |
+| `--base-url <url>`              | Override the provider's base URL (see the note below).                                                                                                                                          |
+| `--timeout <ms>`                | Override the provider's request timeout, in milliseconds.                                                                                                                                       |
+| `--help`, `-h`                  | On the endpoint form, describe the endpoint; otherwise print usage.                                                                                                                             |
+| `--version`                     | Print the package version.                                                                                                                                                                      |
 
 **`--base-url` and `--timeout` reach the addressed factory, and support is not
 uniform.** They are merged into the factory's options as `baseURL` (`baseUrl`
@@ -162,6 +163,8 @@ each call actually requested, which is how to check rather than guess.
 | `APICITY_OP_VAULT`            | The 1Password vault, as `--op-vault`; `apicity setup 1password` saves it.  |
 | `APICITY_OP_SERVICE_TOKEN`    | The 1Password token, as `--op-token`; `apicity setup 1password` saves it.  |
 | `APICITY_PAYGATE_SECRET_FILE` | The pay-gate secret file that arms the gate, as `--paygate-secret-file`.   |
+| `APICITY_HAR_CAPTURE`         | `all`, `failures` or `off` (default). Endpoint flag wins.                  |
+| `APICITY_HAR_DIR`             | Capture directory; defaults to `$HOME/.config/apicity/har`.                |
 | `APICITY_OUTPUT_DIR`          | Where results land, as `--output-dir`.                                     |
 | `APICITY_SETUP_AGENT`         | `claude`, `codex`, `all` or `none` — what `apicity setup agents` connects. |
 | `CLAUDE_PROJECT_DIR`          | Read by Claude Code sessions; the output directory when nothing else says. |
@@ -573,3 +576,33 @@ Part of the [apicity](https://github.com/justintanner/apicity) monorepo.
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+## HAR capture
+
+Capture is opt-in: pass `--capture-har` (all calls) or
+`--capture-har failures` on an endpoint, or set `APICITY_HAR_CAPTURE` to
+`all`, `failures` or `off`. The flag wins; the default is off and writes
+nothing. `APICITY_HAR_DIR` defaults to `$HOME/.config/apicity/har`.
+The CLI creates the capture directory with mode 0700 on the first capture write.
+Success and error envelopes include `meta.har` when a file was written;
+`--verbose` also prints its path on stderr. Successful calls in failures mode
+have no file or `meta.har`. Capture errors do not change the endpoint result.
+Media downloads and WebSockets are outside the capture scope.
+
+```bash
+apicity har list --dir ./captures --since 2026-10-01 --failures --provider openai --json
+apicity har show <file-or-callId> --dir ./captures --bodies --json
+apicity har scrub <file.har> [more.har ...] --check
+apicity har scrub <file.har> [more.har ...]
+```
+
+`list` reads `index.jsonl`, newest first (ts, provider, endpoint, outcome,
+status, file). `show` summarizes the call outcome, duration, context and each
+exchange's method, URL, status, size, role and pollRepeat. `--bodies` adds
+scrubbed request/response bodies and call input. `scrub` rewrites changed
+files in place; `--check` only checks, names files needing changes and exits 1.
+Management commands use local files and need no provider credentials.
+`apicity doctor` reports capture mode, directory and writability without
+creating the directory. Captures retain prompts, model parameters, media URLs
+and responses; the shipped scrubber removes known credential fields, not
+arbitrary sensitive text. Review captures before sharing them.

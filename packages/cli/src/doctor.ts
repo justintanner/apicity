@@ -1,4 +1,5 @@
 import { accessSync, constants, readFileSync, statSync } from "node:fs";
+import { captureSettings, captureWritable } from "./har.js";
 import { join } from "node:path";
 
 import { parseGlobalFlags } from "./args.js";
@@ -73,6 +74,7 @@ export const DOCTOR_ROW_NAMES = [
   "Providers",
   "Paygate Secret File",
   "Output Dir",
+  "HAR Capture",
   "Agent Skill",
   "Claude Code Plugin",
   "Claude Code Plugin Version",
@@ -166,6 +168,7 @@ export async function collectDoctorRows(
     providersRow(context),
     paygateRow(context),
     outputDirRow(context),
+    harCaptureRow(context),
     agentSkillRow(context),
     claudePluginRow(context),
     claudePluginVersionRow(context),
@@ -667,5 +670,20 @@ function canAccess(path: string, mode: number): boolean {
     return true;
   } catch {
     return false;
+  }
+}
+
+function harCaptureRow(context: DoctorContext): DoctorRow {
+  const name = "HAR Capture";
+  try {
+    const { mode, dir } = captureSettings(undefined, context.env);
+    const writable = captureWritable(dir);
+    return {
+      name,
+      status: mode === "off" || writable ? "ok" : "warning",
+      message: `${mode}; ${dir}; writable: ${writable ? "yes" : "no"}`,
+    };
+  } catch (error) {
+    return { name, status: "error", message: errorMessage(error) };
   }
 }

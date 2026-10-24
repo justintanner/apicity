@@ -178,6 +178,8 @@ export function createHarCapture(options: HarCaptureOptions): HarCapture {
     writes = writes
       .then(async () => {
         if (disabled) return;
+        // Create the private root only when a capture is actually persisted.
+        await mkdir(options.dir, { recursive: true, mode: 0o700 });
         const target = join(options.dir, file);
         await mkdir(dirname(target), { recursive: true });
         await writeFile(target, content, { flag: "wx" });

@@ -1,3 +1,4 @@
+import { startCapture, runHarCommand } from "./har.js";
 import { readFileSync } from "node:fs";
 
 import {
@@ -126,6 +127,18 @@ async function dispatch(
     return 0;
   }
 
+  if (
+    !Object.prototype.hasOwnProperty.call(PROVIDERS, first ?? "") &&
+    rest.some(
+      (arg) => arg === "--capture-har" || arg.startsWith("--capture-har=")
+    )
+  ) {
+    throw new CliError(
+      "usage",
+      "--capture-har is only supported on endpoint commands"
+    );
+  }
+
   if (first === "help") {
     const [topic] = rest;
     if (topic !== undefined && isHelpTopic(topic)) {
@@ -160,6 +173,8 @@ async function dispatch(
       stdoutIsTTY: options.stdoutIsTTY,
     });
   }
+
+  if (first === "har") return runHarCommand(rest, writer, options);
 
   if (first === "doctor") {
     return runDoctor(rest, writer, {
@@ -345,6 +360,9 @@ export async function runEndpoint(
 ): Promise<number> {
   const env = options.env ?? process.env;
   const context: ClassifyContext = {};
+  let capture: Awaited<ReturnType<typeof startCapture>>;
+  let har: string | undefined;
+  let verbose = false;
   let out = createWriter({
     stdoutIsTTY: options.stdoutIsTTY,
     stdout: writer.out,
@@ -361,6 +379,7 @@ export async function runEndpoint(
       stderr: writer.err,
     });
 
+    verbose = flags.verbose;
     const [first, ...endpointArgv] = rest;
     // `apicity openai` is `apicity commands --provider openai`: the first
     // thing anyone types after learning a provider exists.
@@ -428,43 +447,84 @@ export async function runEndpoint(
       );
     }
 
+    capture = await startCapture(
+      flags.captureHar,
+      env,
+      [provider, dotPath, ...argv],
+      writer
+    );
+
     const paygateSecretFile =
       flags.paygateSecretFile ?? env.APICITY_PAYGATE_SECRET_FILE;
     context.paygateSecretFile = paygateSecretFile;
 
-    const instantiate = options.instantiate ?? instantiateProvider;
-    const instance = await instantiate(
-      provider,
-      PROVIDERS[provider],
-      readPaygateSecret(paygateSecretFile),
-      factoryOverrides(flags)
-    );
-    if (!instance) {
-      throw new CliError("auth", `no credential configured for ${provider}`, {
-        hint: `set ${describeEnvVars(provider)}; see apicity doctor`,
-      });
-    }
+    const invoke = async () => {
+      try {
+        const instantiate = options.instantiate ?? instantiateProvider;
+        const instance = await instantiate(
+          provider,
+          PROVIDERS[provider],
+          readPaygateSecret(paygateSecretFile),
+          {
+            ...factoryOverrides(flags),
+            ...(capture ? { fetch: capture.runtime.fetch } : {}),
+          }
+        );
+        if (!instance) {
+          throw new CliError(
+            "auth",
+            `no credential configured for ${provider}`,
+            {
+              hint: `set ${describeEnvVars(provider)}; see apicity doctor`,
+            }
+          );
+        }
 
-    const result = await callEndpoint(
-      instance,
-      entry,
-      bindArguments({
-        entry,
-        shape,
-        positional: bound.positional,
-        body: request,
-        otp: flags.otp,
-      })
-    );
+        return await callEndpoint(
+          instance,
+          entry,
+          bindArguments({
+            entry,
+            shape,
+            positional: bound.positional,
+            body: request,
+            otp: flags.otp,
+          })
+        );
+      } catch (err) {
+        const classified = classifyError(err, context);
+        // The runtime records the same classified code/message as the envelope.
+        throw Object.assign(classified, { status: classified.meta?.status });
+      }
+    };
+    const result = capture
+      ? await capture.runtime.call(
+          { provider, endpoint: dotPath, input: request },
+          invoke
+        )
+      : await invoke();
+    har = await capture?.finish();
+    if (har && verbose) writer.err(`[apicity] HAR: ${har}`);
 
     const data = await persistResult(
       entry,
       result,
       resolveOutputDirectory(flags.outputDir, env, options.cwd)
     );
-    return out.success(data);
+    return out.success(data, har ? { meta: { har } } : undefined);
   } catch (err) {
-    return out.failure(classifyError(err, context));
+    har ??= await capture?.finish();
+    if (har && verbose) writer.err(`[apicity] HAR: ${har}`);
+    const failure = classifyError(err, context);
+    return out.failure(
+      har
+        ? new CliError(failure.code, failure.message, {
+            hint: failure.hint,
+            cause: failure,
+            meta: { ...failure.meta, har },
+          })
+        : failure
+    );
   }
 }
 

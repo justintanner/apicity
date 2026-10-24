@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added CLI `--capture-har`, `APICITY_HAR_CAPTURE` and `APICITY_HAR_DIR` (default `$HOME/.config/apicity/har`), capture paths in envelopes, `har list|show|scrub` commands and a doctor capture row (ac-7m8lw4).
+
 - Added opt-in `createHarCapture` with call scopes, failures mode, scrubbed HAR files and an index; Alibaba OSS and fal storage uploads now honor the factory’s injected fetch (ac-s3b2gq).
 
 - Added `@apicity/har` with HAR serialization, secret scrubbing and Polly identity helpers.

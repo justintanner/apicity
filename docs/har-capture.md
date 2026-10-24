@@ -120,3 +120,12 @@ Media downloads are excluded. Write failures leave the endpoint result intact.
 Captures retain application data, including prompts and media URLs. Scrubbing
 covers known credential fields; it cannot identify arbitrary private text.
 Review captures before sharing, in addition to running `scrub --check`.
+
+Generic credential body fields are scrubbed recursively in request/response
+JSON and call metadata: `api_key`, `access_token`, `refresh_token`,
+`auth_token`, `client_secret`, `secret_access_key`, `private_key` and
+`password` (case, camelCase, underscore and hyphen variants). Credential
+values become `***`; nulls stay null. Quoted credential fields in partial
+JSON and SSE text are also scrubbed. Generic `key`, `token` and `signature`
+fields retain their existing provider-specific rules because they can carry
+model data rather than credentials. Other sensitive prose still needs review.

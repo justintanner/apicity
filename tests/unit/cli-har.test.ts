@@ -143,7 +143,7 @@ describe("CLI HAR capture", () => {
           "--capture-har",
           "--verbose",
           "--data",
-          '{"signature":"fake-body-secret"}',
+          '{"api_key":"fake-body-secret"}',
         ],
         { ...fake(outcome), installVerbose: () => {} }
       );

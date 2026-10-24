@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- HAR capture now scrubs generic credential body fields such as `api_key`, `apiKey`, access tokens and client secrets in requests, responses and call input, including local failures (ac-5ljiib).
+
 ### Added
 
 - Added CLI `--capture-har`, `APICITY_HAR_CAPTURE` and `APICITY_HAR_DIR` (default `$HOME/.config/apicity/har`), capture paths in envelopes, `har list|show|scrub` commands and a doctor capture row (ac-7m8lw4).

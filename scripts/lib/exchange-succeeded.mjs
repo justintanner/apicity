@@ -1,3 +1,5 @@
+// AUTO-GENERATED from packages/provider/har/src/exchange-succeeded.mjs; do not edit.
+// Edit the canonical file and run `pnpm run gen:shared`.
 /**
  * Failure envelopes observed in committed 2xx recordings. KIE also proxies
  * vendor-native responses: absence of a numeric code is not a failure.
@@ -10,6 +12,8 @@ const FAILURE_ENVELOPES = {
 };
 
 /** Read only JSON-object envelopes, including HAR base64-encoded content. */
+/** @param {{response?: {content?: {text?: string, encoding?: string}}}} entry
+ * @returns {Record<string, unknown> | null} */
 export function responseObject(entry) {
   const content = entry?.response?.content;
   if (typeof content?.text !== "string") return null;
@@ -28,6 +32,9 @@ export function responseObject(entry) {
 }
 
 /** Whether this exchange is evidence for a working request payload. */
+/** @param {string} provider
+ * @param {{response?: {status?: unknown, content?: {text?: string, encoding?: string}}}} entry
+ * @returns {boolean} */
 export function exchangeSucceeded(provider, entry) {
   const status = Number(entry?.response?.status);
   if (!Number.isFinite(status) || status < 200 || status >= 300) return false;

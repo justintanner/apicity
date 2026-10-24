@@ -1,3 +1,4 @@
+import { runHarReport } from "./har-report.js";
 import { randomUUID } from "node:crypto";
 import { accessSync, constants, existsSync, statSync } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
@@ -132,8 +133,9 @@ export async function runHarCommand(
   options: { env?: NodeJS.ProcessEnv; stdoutIsTTY?: boolean } = {}
 ): Promise<number> {
   const [command, ...args] = argv;
+  if (command === "report") return runHarReport(args, writer);
   if (!["list", "show", "scrub"].includes(command)) {
-    throw new CliError("usage", "run: apicity har list|show|scrub");
+    throw new CliError("usage", "run: apicity har list|show|scrub|report");
   }
   const values: Record<string, string> = {};
   const switches = new Set<string>();

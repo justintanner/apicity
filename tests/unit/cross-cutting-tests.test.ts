@@ -70,7 +70,14 @@ const EXAMPLE_PROVENANCE_TESTS = [
   "tests/unit/examples-from-failed-exchanges.test.ts",
 ] as const;
 
+const HAR_REPORT_TESTS = ["tests/unit/har-report-golden.test.ts"] as const;
+
 const CATEGORY_DOC_KEYWORDS = [
+  {
+    name: "HAR_REPORT_TESTS",
+    tests: HAR_REPORT_TESTS,
+    keyword: "har report golden",
+  },
   {
     name: "EXAMPLE_PROVENANCE_TESTS",
     tests: EXAMPLE_PROVENANCE_TESTS,
@@ -336,6 +343,15 @@ describe("cross-cutting repo-wide guard tests", () => {
       expect(source, relativePath).toContain("readdirSync");
       expect(source, relativePath).toContain("findUnredactedRequestSecrets");
       expect(source, relativePath).toContain('from "../harness"');
+    }
+  });
+
+  it("har report golden pins real schema output byte-for-byte", () => {
+    for (const path of HAR_REPORT_TESTS) {
+      const source = readRepoFile(path);
+      expect(source).toContain("runHarCommand");
+      expect(source).toContain(".golden");
+      expect(source).toContain("toBe(actual)");
     }
   });
 

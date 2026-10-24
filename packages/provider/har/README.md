@@ -68,3 +68,15 @@ from outside the repository without a package build or a Vitest alias.
 `gen:examples:check`, `lint:recordings` and `doc-gen:check` run on a clean checkout
 before any package build. `gen:shared:check` prevents drift. No runtime package
 dependency or build-on-import is needed by those scripts.
+
+## Exchange analysis helpers
+
+`exchangeSucceeded(provider, entry)` requires HTTP 2xx and rejects KIE and xAI
+failure envelopes. `responseObject(entry)` decodes JSON object responses,
+including base64 HAR content.
+
+`findMatchingRow(entry, rows, {provider})` first matches full URLs, then uses a
+provider-scoped path match. Rows carry `provider`, `method`, `dotPath` and
+`fullUrl`. `matchHarEntryStrict`, `matchHarEntryLenient` and
+`compileTsvUrlPattern` expose the individual matching operations. These are
+the canonical implementations also synced to the repository scripts.

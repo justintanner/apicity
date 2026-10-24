@@ -1,3 +1,7 @@
+// AUTO-GENERATED from packages/provider/har/src/match-har-to-endpoint.mjs; do not edit.
+// Edit the canonical file and run `pnpm run gen:shared`.
+/** @typedef {{provider: string, method: string, fullUrl: string, dotPath: string}} EndpointRow */
+/** @typedef {{request?: {url?: string, method?: string}}} RequestEntry */
 /**
  * Match a HAR request entry to a row in scripts/endpoint-docs.tsv.
  *
@@ -18,12 +22,14 @@
  *      path wins (most specific).
  */
 
+/** @param {string} fullUrl @returns {RegExp} */
 export function compileTsvUrlPattern(fullUrl) {
   const stripped = stripQueryMarker(fullUrl).split("?")[0];
   const escaped = escapeRegExp(stripped).replace(/\\\{[^}]+\\\}/g, "[^/]+");
   return new RegExp(`^${escaped}$`);
 }
 
+/** @param {RequestEntry} entry @param {EndpointRow} tsvRow @returns {boolean} */
 export function matchHarEntryStrict(entry, tsvRow) {
   if (!entry?.request?.url || !entry?.request?.method) return false;
   if (entry.request.method.toUpperCase() !== tsvRow.method.toUpperCase()) {
@@ -34,6 +40,7 @@ export function matchHarEntryStrict(entry, tsvRow) {
   );
 }
 
+/** @param {RequestEntry} entry @param {EndpointRow} tsvRow @returns {boolean} */
 export function matchHarEntryLenient(entry, tsvRow) {
   if (!entry?.request?.url || !entry?.request?.method) return false;
   if (entry.request.method.toUpperCase() !== tsvRow.method.toUpperCase()) {
@@ -50,6 +57,9 @@ export function matchHarEntryLenient(entry, tsvRow) {
  * rows first; if nothing matches, lenient pass scoped to `provider`,
  * picking the row with the longest placeholder-stripped path.
  */
+/** @template {EndpointRow} T
+ * @param {RequestEntry} entry @param {T[]} tsvRows
+ * @param {{provider?: string | null}} options @returns {T | null} */
 export function findMatchingRow(entry, tsvRows, { provider } = {}) {
   for (const row of tsvRows) {
     if (matchHarEntryStrict(entry, row)) return row;

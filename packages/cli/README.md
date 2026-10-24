@@ -606,3 +606,14 @@ Management commands use local files and need no provider credentials.
 creating the directory. Captures retain prompts, model parameters, media URLs
 and responses; the shipped scrubber removes known credential fields, not
 arbitrary sensitive text. Review captures before sharing them.
+
+### HAR learning reports
+
+Run `apicity har report <path...> [--provider fal,kie] [--endpoint dot.path]
+[--since iso] [--baseline dir | --no-baseline] [--json]` to analyze captures or
+legacy HAR recordings offline. Extract archives first. Output is Markdown even
+when redirected; `--json` emits `{ok: true, data: ...}` with `schemaVersion: 1`.
+Reports group errors, compare real request schemas, summarize defaults and
+response drift, and include local failures. Nothing is sent to a provider.
+See [the report contract](../../docs/har-capture.md#learning-report) for units,
+filters, baseline rules and unavailable sections.

@@ -2,6 +2,19 @@ export const SCHEMA_FRAGMENT_EXCLUDED = ["kie", "fal", "xai"];
 
 export const sharedSrcEntries = [
   {
+    id: "exchange-succeeded",
+    class: "helper",
+    source: "packages/provider/har/src/exchange-succeeded.mjs",
+    targets: ["scripts/lib/exchange-succeeded.mjs"],
+  },
+  {
+    id: "match-har-to-endpoint",
+    class: "helper",
+    source: "packages/provider/har/src/match-har-to-endpoint.mjs",
+    targets: ["scripts/lib/match-har-to-endpoint.mjs"],
+  },
+
+  {
     id: "har-secrets",
     class: "helper",
     source: "packages/provider/har/src/har-secrets.mjs",

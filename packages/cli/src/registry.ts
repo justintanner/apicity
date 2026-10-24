@@ -65,6 +65,7 @@ export async function loadTsv(): Promise<EndpointTsvRow[]> {
     join(process.cwd(), "scripts/endpoint-docs.tsv"),
     join(here, "..", "endpoint-docs.tsv"),
     join(here, "..", "..", "..", "..", "scripts/endpoint-docs.tsv"),
+    join(here, "..", "..", "..", "scripts/endpoint-docs.tsv"),
   ]);
   const lines = tsv.split("\n").filter((l) => l.trim().length > 0);
   const [header, ...rows] = lines;

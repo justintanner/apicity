@@ -476,8 +476,9 @@ Refusals (exit **2**) happen before writing:
 - Unsupported bodies or identities: `streamed`, `truncated`, `binary-body`,
   `multipart-body`, `media-summary`, `non-json-body`, `redacted-body`,
   `unsafe-key`, `credential-in-url`, `query-shape`, `too-many-exchanges`.
-  Query fragments, duplicate or valueless keys, and characters whose Polly
-  normalization differs are refused. The expanded limit is 500 exchanges.
+  `query-shape` refuses malformed percent escapes or invalid UTF-8 escapes
+  in queries. Repeated or valueless keys, reserved or escaped characters, and
+  fragments are supported. The expanded limit is 500 exchanges.
 - Unsupported providers: `provider-unsupported` for S3, B2, Polymarket,
   Telegram, TheSportsDB, Quo, and free-media-upload; fal also refuses
   `fal-unknown-host` and `fal-mixed-hosts`.

@@ -25,6 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Documented the first offline video/image learning pass in `docs/har-learning-pass-1.md`: triaged committed HAR findings and videobook overrides, retained newer provider constraints over historical successes, and filed six provider-family follow-ups for unproven constraints and product-dependent defaults. No schemas, defaults or recordings changed (ac-07gwrq).
+
 - Added the failing-payload regression suite: `tests/failures/<provider>/<name>.har` with `.expect.json` sidecars and `tests/failures/passthrough.json`, held by `tests/integration/captured-failures.test.ts` (a cross-cutting guard) and `lint:recordings`. Every provider rejection there is either caught locally with its rule phrase or listed with a reason. It is seeded from the triage of the committed corpus's 139 failed exchanges (130 are not payload failures) and from two plan-evidence captures: 6 caught, 5 pass-throughs (ac-tsul8r).
 
 - Added offline `har:promote` to turn successful captures into checked Polly recordings and integration tests, replay-only `POLLY_RECORDINGS_DIR`, and orphan-check `--recordings`/`--tests` roots (ac-3uda2b).

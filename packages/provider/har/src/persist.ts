@@ -100,8 +100,62 @@ function findHeaderValue(
   return headers?.find((header) => header.name?.toLowerCase() === lower)?.value;
 }
 
+// Explicit credential names only: generic `key`, `token` and `signature`
+// also describe model data, so their existing provider-specific rules stay.
+const GENERIC_CREDENTIAL_KEYS = new Set([
+  "apikey",
+  "accesstoken",
+  "refreshtoken",
+  "authtoken",
+  "clientsecret",
+  "secretaccesskey",
+  "privatekey",
+  "password",
+]);
+
+function isCredentialKey(key: string): boolean {
+  return GENERIC_CREDENTIAL_KEYS.has(key.replace(/[_-]/g, "").toLowerCase());
+}
+
+function redactGenericCredentialText(text: string): string {
+  let changed = false;
+  function visit(value: unknown, key?: string): unknown {
+    if (key && isCredentialKey(key) && value !== null) {
+      changed ||= value !== "***";
+      return "***";
+    }
+    if (Array.isArray(value)) return value.map((item) => visit(item));
+    if (value === null || typeof value !== "object") return value;
+    const result: Record<string, unknown> = Object.create(null);
+    for (const [name, item] of Object.entries(value)) {
+      result[name] = visit(item, name);
+    }
+    return result;
+  }
+  try {
+    const clean = visit(JSON.parse(text) as unknown);
+    // Keep formatting and ordinary provider payloads byte-for-byte.
+    return changed ? JSON.stringify(clean) : text;
+  } catch {
+    // SSE and truncated JSON cannot be parsed as one document. Match JSON
+    // string fields (including escaped quotes) without rewriting other text.
+    return text.replace(
+      /("([^"\\]*(?:\\.[^"\\]*)*)"\s*:\s*")((?:\\.|[^"\\])*)("|$)/g,
+      (match, prefix: string, key: string, _value: string, end: string) => {
+        try {
+          return isCredentialKey(JSON.parse(`"${key}"`) as string)
+            ? `${prefix}***${end}`
+            : match;
+        } catch {
+          return match;
+        }
+      }
+    );
+  }
+}
+
 function redactResponseTextSecrets(text: string): string {
-  const redacted = redactUrlSecrets(text);
+  const redacted = redactUrlSecrets(redactGenericCredentialText(text));
   if (
     !/"upload_host"\s*:/.test(redacted) ||
     !/"oss_access_key_id"\s*:/.test(redacted)
@@ -165,8 +219,10 @@ function redactRequestPostDataTextSecrets(
   recording: PersistedHarRecording
 ): void {
   const postData = recording.request?.postData;
-  const text = postData?.text;
-  if (!postData || typeof text !== "string") return;
+  const raw = postData?.text;
+  if (!postData || typeof raw !== "string") return;
+  const text = redactGenericCredentialText(raw);
+  postData.text = text;
   const secretKeys = new Set(REQUEST_POST_DATA_SECRET_KEYS);
 
   try {

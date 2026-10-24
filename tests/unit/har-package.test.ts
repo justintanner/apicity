@@ -441,3 +441,106 @@ describe("call metadata and URL arrays", () => {
     expect(body.constructor).toBe("also kept");
   });
 });
+
+describe("generic credential body keys", () => {
+  it.each([
+    "api_key",
+    "apiKey",
+    "API-KEY",
+    "apikey",
+    "access_token",
+    "accessToken",
+    "refresh_token",
+    "authToken",
+    "client_secret",
+    "secretAccessKey",
+    "private_key",
+    "password",
+  ])("scrubs %s in request and response JSON at every depth", (key) => {
+    const entry = bodyEntry({
+      [key]: "private",
+      nested: [{ [key]: ["one", "two"], prompt: "kept" }],
+      key: "model-key",
+      token: "model-token",
+      tokens: 10,
+      api_key_id: "id",
+    });
+    scrubEntry(entry);
+    const expected = {
+      [key]: "***",
+      nested: [{ [key]: "***", prompt: "kept" }],
+      key: "model-key",
+      token: "model-token",
+      tokens: 10,
+      api_key_id: "id",
+    };
+    expect(JSON.parse(entry.request!.postData!.text!)).toEqual(expected);
+    expect(JSON.parse(entry.response!.content!.text!)).toEqual(expected);
+    const once = JSON.stringify(entry);
+    scrubEntry(entry);
+    expect(JSON.stringify(entry)).toBe(once);
+  });
+  it("preserves ordinary JSON formatting and null credentials", () => {
+    const text = '{ "prompt": "keep", "tokens": 12, "api_key": null }';
+    const entry = {
+      request: { postData: { text } },
+      response: { content: { text } },
+    };
+    scrubEntry(entry);
+    expect(entry.request.postData.text).toBe(text);
+    expect(entry.response.content.text).toBe(text);
+  });
+  it.each([
+    'data: {"api_key":"private","prompt":"kept"}\n\ndata: [DONE]',
+    '{"apiKey":"private',
+    '{"api_key":"escaped\\"secret","prompt":"kept"',
+    '{"api\\u005fkey":"private"',
+  ])("scrubs string credentials in partial JSON/SSE: %s", (text) => {
+    const entry = {
+      request: { postData: { text } },
+      response: { content: { text } },
+    };
+    scrubEntry(entry);
+    expect(entry.request.postData.text).not.toMatch(/private|secret/);
+    expect(entry.response.content.text).not.toMatch(/private|secret/);
+    expect(entry.request.postData.text).toContain("***");
+    const once = JSON.stringify(entry);
+    scrubEntry(entry);
+    expect(JSON.stringify(entry)).toBe(once);
+  });
+  it("redacts input/context for local failures with no exchange", () => {
+    const har: Har = {
+      log: {
+        version: "1.2",
+        creator: { name: "test", version: "1" },
+        entries: [],
+        _apicity: {
+          callId: "test",
+          provider: "openai",
+          endpoint: "v1.models",
+          input: {
+            api_key: "private",
+            nested: [{ clientSecret: "private" }],
+            prompt: "kept",
+          },
+          context: { authToken: "private" },
+          outcome: "local_error",
+          apicityVersion: "test",
+          runtime: "node",
+          startedAt: timing.startedAt,
+          durationMs: 0,
+        },
+      },
+    };
+    scrubHar(har);
+    expect(har.log._apicity!.input).toEqual({
+      api_key: "***",
+      nested: [{ clientSecret: "***" }],
+      prompt: "kept",
+    });
+    expect(har.log._apicity!.context).toEqual({ authToken: "***" });
+    const once = JSON.stringify(har);
+    scrubHar(har);
+    expect(JSON.stringify(har)).toBe(once);
+  });
+});

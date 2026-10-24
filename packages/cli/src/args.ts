@@ -27,6 +27,7 @@ export interface GlobalFlags {
   otp?: string;
   data?: string;
   dataFile?: string;
+  captureHar?: string;
 }
 
 type BooleanFlag = "json" | "quiet" | "verbose" | "help" | "version";
@@ -59,6 +60,7 @@ const VALUE_FLAGS: Record<string, ValueFlag> = {
 
 /** Every global flag name, for help text and error messages. */
 export const GLOBAL_FLAGS: readonly string[] = [
+  "--capture-har",
   ...Object.keys(BOOLEAN_FLAGS),
   ...Object.keys(VALUE_FLAGS),
 ];
@@ -98,6 +100,20 @@ export function parseGlobalFlags(argv: string[]): ParsedGlobalFlags {
 
     const eq = arg.indexOf("=");
     const name = eq === -1 ? arg : arg.slice(0, eq);
+    if (name === "--capture-har") {
+      const next = argv[i + 1];
+      const mode =
+        eq !== -1
+          ? arg.slice(eq + 1)
+          : next === "all" || next === "failures"
+            ? argv[++i]
+            : "all";
+      if (mode !== "all" && mode !== "failures") {
+        throw new CliError("usage", "--capture-har takes all or failures");
+      }
+      flags.captureHar = mode;
+      continue;
+    }
     const valueFlag = VALUE_FLAGS[name];
     if (!valueFlag) {
       rest.push(arg);

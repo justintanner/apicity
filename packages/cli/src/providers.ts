@@ -313,6 +313,7 @@ export type InstantiatedProvider = Record<string, unknown>;
 export interface ProviderOverrides {
   baseURL?: string;
   timeout?: number;
+  fetch?: typeof globalThis.fetch;
 }
 
 /**
@@ -332,6 +333,7 @@ function withOverrides(
     opts[name === "zaicoding" ? "baseUrl" : "baseURL"] = overrides.baseURL;
   }
   if (overrides.timeout !== undefined) opts.timeout = overrides.timeout;
+  if (overrides.fetch !== undefined) opts.fetch = overrides.fetch;
   return opts;
 }
 

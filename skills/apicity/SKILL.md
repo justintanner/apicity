@@ -605,3 +605,15 @@ Other things worth knowing:
   many providers expire those links within hours.
 - **Nothing reads stdin except `--data -`**, so a command never hangs waiting
   for input.
+
+### Opt-in HAR capture
+
+For diagnostics, add endpoint-only `--capture-har [all|failures]` (bare means
+all), or set `APICITY_HAR_CAPTURE=all|failures|off`; the flag wins and the
+default is off. `APICITY_HAR_DIR` defaults to `$HOME/.config/apicity/har`.
+Saved calls expose `meta.har`; `--verbose` prints the path. Inspect local
+captures with `apicity har list` and `apicity har show <file|callId> --bodies`;
+run `apicity har scrub <file...> --check` before sharing, and omit `--check`
+to scrub in place. `apicity doctor` reports capture settings and writability.
+Captures retain prompts and responses; known credential fields are scrubbed,
+so review for other private data before sharing. Media downloads are excluded.

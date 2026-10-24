@@ -94,3 +94,29 @@ capture instance for the remainder of its lifetime, and leaves provider results
 and thrown values unchanged. `flush` and `close` do not throw capture failures.
 `clock` and `idFactory` are optional deterministic test hooks; IDs must be unique
 within a directory and timestamp. There is no automatic retention or rotation.
+
+## CLI
+
+Use `apicity <provider> <dotPath> --capture-har [all|failures]` to capture an
+endpoint call (bare flag means `all`). The flag overrides
+`APICITY_HAR_CAPTURE=all|failures|off`; default `off` writes nothing.
+`APICITY_HAR_DIR` defaults to `$HOME/.config/apicity/har`. The CLI creates
+that directory with mode 0700 on the first capture write. Each saved call contributes
+one HAR and one `index.jsonl` row. `meta.har` in success/error envelopes and
+`--verbose` stderr identify the file; successful calls in failures mode have
+neither. Command-line values are omitted from context, cwd is omitted, and
+context.cli records the CLI version. Call input uses the runtime scrubber.
+Media downloads are excluded. Write failures leave the endpoint result intact.
+
+- `apicity har list [--dir d] [--since iso] [--failures] [--provider p] [--json]`:
+  newest first; ts, provider, endpoint, outcome, status, file.
+- `apicity har show <file|callId> [--dir d] [--bodies] [--json]`: outcome,
+  duration, context and exchange method, URL, status, size, role, pollRepeat;
+  bodies and call input appear only with `--bodies` and are scrubbed on read.
+- `apicity har scrub <file...> [--check]`: re-scrub in place; `--check` is
+  read-only and exits 1, naming each file that would change.
+- `apicity doctor`: capture mode, dir and writability (no directory creation).
+
+Captures retain application data, including prompts and media URLs. Scrubbing
+covers known credential fields; it cannot identify arbitrary private text.
+Review captures before sharing, in addition to running `scrub --check`.

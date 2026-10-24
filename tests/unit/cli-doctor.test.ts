@@ -34,7 +34,7 @@ import {
 // AC-12 / REQ-013: `apicity doctor`. Every scenario is a sandboxed home, and
 // the row set never changes shape — a check that does not apply to the host
 // says so rather than disappearing, so a caller reading the `--json` array by
-// index reads the same twelve rows everywhere.
+// index reads the same thirteen rows everywhere.
 
 const CLI_VERSION = "0.11.2";
 const ALLOWED_STATUSES = ["ok", "warning", "error"];
@@ -139,7 +139,7 @@ function opSeam(
 }
 
 describe("apicity doctor", () => {
-  it("answers the twelve rows in order, whatever the host", async () => {
+  it("answers the thirteen rows in order, whatever the host", async () => {
     const bare = await rows();
     withClaudeHome();
     mkdirSync(join(home, ".codex"), { recursive: true });

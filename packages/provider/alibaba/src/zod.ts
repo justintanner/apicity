@@ -555,11 +555,12 @@ const countAlibabaImageContentParts = (
 // `qwen-image-`, the edit alias requires the literal `edit`), so exactly one
 // branch ever applies to a given id and zod reports that branch's issues with
 // their original paths — except where the surviving branch fails with an
-// aborting issue (a wrong-typed `input`, which is `invalid_type` on an object
-// and therefore fatal). That kills the last live branch, and the union falls
-// back to a single pathless `invalid_union` at the root, for listed ids as
-// much as for aliased ones. Both shapes are pinned in
-// tests/unit/alibaba-zod.test.ts.
+// aborting issue: a wrong-typed `input`, which is `invalid_type` on an object
+// and therefore fatal, or, since zod 4.6.6, a `content` array over its
+// `max(4)`, which fails before any part is parsed. That kills the last live
+// branch, and the union falls back to a single pathless `invalid_union` at
+// the root, for listed ids as much as for aliased ones. Both shapes are
+// pinned in tests/unit/alibaba-zod.test.ts.
 export const AlibabaMultimodalGenerationRequestSchema = z
   .union([
     AlibabaQwenImageGenerationRequestSchema,

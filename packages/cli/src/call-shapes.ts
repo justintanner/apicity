@@ -146,10 +146,10 @@ export const CALL_SHAPES: Record<string, CallShape> = {
     injected: [],
     derived: [],
   },
-  "simplefunctions\tPOST\tapi.dashboard2.marketWatch.panels": {
+  "simplefunctions\tPOST\tapi.dashboard2.marketWatch.panels.run": {
     provider: "simplefunctions",
     method: "POST",
-    dotPath: "api.dashboard2.marketWatch.panels",
+    dotPath: "api.dashboard2.marketWatch.panels.run",
     positional: [],
     fields: [{ placeholder: "id", property: "id" }],
     injected: [],

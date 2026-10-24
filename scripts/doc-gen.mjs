@@ -92,6 +92,29 @@ function cleanTsvValue(value) {
 }
 
 /**
+ * The logical dot path of a leaf literally named `stream`, `ws` or `run`, with
+ * that leaf kept: `logicalDotPath` drops those names wherever they sit, but
+ * fal's `v1.serverless.logs.stream` and simplefunctions'
+ * `api.dashboard2.marketWatch.panels.run` are tsv rows under the full name.
+ * Null for any other leaf, so no other block's lookup changes.
+ *
+ * @param {string} providerName
+ * @param {{ fullDotPath?: string }} ep
+ * @returns {string | null}
+ */
+function leafDotPath(providerName, ep) {
+  const segs = String(ep.fullDotPath ?? "")
+    .split(".")
+    .filter(Boolean);
+  const leaf = segs[segs.length - 1];
+  if (!leaf || !STREAM_KEYS.has(leaf.toLowerCase())) return null;
+  const kept = segs
+    .slice(0, -1)
+    .filter((seg) => !isCollapsedSegment(seg, providerName));
+  return [...kept, leaf].join(".");
+}
+
+/**
  * The `scripts/endpoint-docs.tsv` row that documents one rendered block.
  *
  * `label` is the heading the block renders under (from `resolveEndpointLabels`)
@@ -103,7 +126,11 @@ function cleanTsvValue(value) {
 function resolveEndpointDocRow(docs, ep, providerName, label) {
   const displayPath = displayDotPath(providerName, ep);
   const dotPaths = [
-    ...new Set([label, displayPath, ep.dotPath].filter(Boolean)),
+    ...new Set(
+      [label, displayPath, ep.dotPath, leafDotPath(providerName, ep)].filter(
+        Boolean
+      )
+    ),
   ];
   const method = ep.method ?? "?";
 

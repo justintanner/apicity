@@ -3,7 +3,7 @@ import type { CatalogEntry } from "./catalog.js";
 import { CliError } from "./errors.js";
 import { isRecord } from "./internal.js";
 import type { InstantiatedProvider } from "./providers.js";
-import { resolveEndpointFn } from "./registry.js";
+import { resolveEndpoint } from "./registry.js";
 
 export interface BindArgumentsOptions {
   entry: CatalogEntry;
@@ -51,17 +51,26 @@ export function bindArguments(options: BindArgumentsOptions): unknown[] {
 /**
  * Call the endpoint the catalog row names, buffering a streamed result.
  *
- * The null branch cannot be reached by a row `cli-catalog.test.ts` resolves —
- * it walks every row against every provider tree — but a provider that
- * renames a namespace between releases would land here, and "the tree has no
- * function at this path" is a far better answer than `fn is not a function`.
+ * The catalog-resolution test walks every row against its provider tree.
+ * A provider that renames a namespace between releases can still land here,
+ * where "the tree has no function at this path" is more useful than
+ * `fn is not a function`.
  */
 export async function callEndpoint(
   instance: InstantiatedProvider,
   entry: CatalogEntry,
   args: unknown[]
 ): Promise<unknown> {
-  const fn = resolveEndpointFn(instance, entry.method, entry.dotPath);
+  const resolved = resolveEndpoint(instance, entry.method, entry.dotPath);
+  if (resolved.fn === null && resolved.reason === "ambiguous") {
+    throw new CliError(
+      "api",
+      `\`${entry.dotPath}\` for \`${entry.method}\` resolves under ` +
+        `${resolved.roots.join(", ")}; refusing to pick one`,
+      { hint: `run: apicity commands --provider ${entry.provider}` }
+    );
+  }
+  const fn = resolved.fn;
   if (!fn) {
     throw new CliError(
       "api",

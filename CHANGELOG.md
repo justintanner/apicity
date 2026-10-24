@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- xAI video edit and extension examples now use a freely verified, reachable 5-second MP4 sample instead of the old URL that returns 404; examples are explicitly static, and original recordings remain unchanged (ac-fevz1c).
+
 - `gen:examples` no longer ships payloads whose own recorded exchange failed: removed 45 examples (dolthub 5, elevenlabs 16, fireworks 2, google 1, kie 20 including five GET status reads, quo 1), replaced ten KIE Gemini and `/api/v1/responses` invalid-key examples with static minimal payloads, and re-sourced fal `bytedance.seedance2p5.draft.complete` and kimicoding `coding.v1.messages` from successful recordings. The report lists demoted sources; a corpus guard checks exact-payload provenance and static schemas (ac-ygpjmh).
 
 - HAR capture now scrubs generic credential body fields such as `api_key`, `apiKey`, access tokens and client secrets in requests, responses and call input, including local failures (ac-5ljiib).

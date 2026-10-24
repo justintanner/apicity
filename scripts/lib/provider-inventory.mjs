@@ -63,6 +63,7 @@ export const NON_PROVIDER_PACKAGES = Object.freeze(["cli"]);
  * directory must carry a `doc-gen:<name>` alias.
  */
 export const DOC_GEN_EXEMPT = Object.freeze({
+  har: "README is hand-written; the package exposes no endpoint surface",
   cost: "README is hand-written; the package exposes no endpoint surface",
 });
 
@@ -82,6 +83,18 @@ export function readProviderNames(repoRoot = REPO_ROOT) {
     )
     .map((entry) => entry.name)
     .sort();
+}
+
+/** Packages with no provider factory: HAR exposes standalone data helpers. */
+export const FACTORY_EXEMPT = Object.freeze({
+  har: "Standalone HAR data helpers; no provider factory",
+});
+
+/** @param {string} [repoRoot] @returns {string[]} */
+export function readFactoryProviderNames(repoRoot = REPO_ROOT) {
+  return readProviderNames(repoRoot).filter(
+    (name) => !(name in FACTORY_EXEMPT)
+  );
 }
 
 /**

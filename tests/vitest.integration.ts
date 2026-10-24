@@ -16,6 +16,7 @@ export default defineConfig({
     fileParallelism: true,
     setupFiles: ["tests/integration-setup.ts"],
     alias: {
+      "@apicity/har": path.resolve(__dirname, "../packages/provider/har/src"),
       "@apicity/kimicoding/zod": path.resolve(
         __dirname,
         "../packages/provider/kimicoding/src/zod"

@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { execSync } from "node:child_process";
-import { scrubSensitiveRecording } from "./har-scrub.js";
+import { scrubEntry } from "../packages/provider/har/src/index.js";
 
 export interface HarPostDataParam {
   name: string;
@@ -135,7 +135,7 @@ export function parseHarFile(filePath: string): HarRecording {
 
 function sanitizeHarEntries(entries: HarEntry[]): HarEntry[] {
   for (const entry of entries) {
-    scrubSensitiveRecording(entry);
+    scrubEntry(entry);
   }
   return entries;
 }

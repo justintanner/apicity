@@ -1007,6 +1007,7 @@ describe("provider namespace shape: the live tree", () => {
 
   it("discovers every provider and its factory from disk", () => {
     const inventories = LIVE_TREE;
+    expect(inventories.map((entry) => entry.provider)).not.toContain("har");
     expect(inventories.length).toBeGreaterThanOrEqual(29);
     expect(inventories.map((entry) => entry.provider)).toContain("fal");
 

@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added `@apicity/har` with HAR serialization, secret scrubbing and Polly identity helpers.
+
 - Added fal HeyGen Video Agent 3 (`fal-ai/heygen/v3/video-agent`) as `run.heygen.v3.videoAgent`, with `"auto"` plus the stock avatar and voice catalogs; dynamically priced, since the agent chooses the billed output length (ac-egreqg).
 
 - Added fal HeyGen Video Agent 2 (`fal-ai/heygen/v2/video-agent`) as `run.heygen.v2.videoAgent`, reusing the stock avatar catalog; dynamically priced, since the agent chooses the billed output length and `config.duration` is only approximate (ac-8eqafo).

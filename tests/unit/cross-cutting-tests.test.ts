@@ -72,11 +72,21 @@ const EXAMPLE_PROVENANCE_TESTS = [
 
 const HAR_REPORT_TESTS = ["tests/unit/har-report-golden.test.ts"] as const;
 
+// Captured-failure suites (a provider rejection is caught locally or listed).
+const CAPTURED_FAILURE_TESTS = [
+  "tests/integration/captured-failures.test.ts",
+] as const;
+
 const CATEGORY_DOC_KEYWORDS = [
   {
     name: "HAR_REPORT_TESTS",
     tests: HAR_REPORT_TESTS,
     keyword: "har report golden",
+  },
+  {
+    name: "CAPTURED_FAILURE_TESTS",
+    tests: CAPTURED_FAILURE_TESTS,
+    keyword: "captured payload failures",
   },
   {
     name: "EXAMPLE_PROVENANCE_TESTS",
@@ -343,6 +353,17 @@ describe("cross-cutting repo-wide guard tests", () => {
       expect(source, relativePath).toContain("readdirSync");
       expect(source, relativePath).toContain("findUnredactedRequestSecrets");
       expect(source, relativePath).toContain('from "../harness"');
+    }
+  });
+
+  it("captured-failure suites validate every failure HAR locally", () => {
+    for (const relativePath of CAPTURED_FAILURE_TESTS) {
+      const source = readRepoFile(relativePath);
+      expect(source, relativePath).toContain('path.resolve("tests/failures")');
+      expect(source, relativePath).toContain("passthrough.json");
+      expect(source, relativePath).toContain("RUNTIME_VALIDATED");
+      expect(source, relativePath).toContain("safeParse");
+      expect(source, relativePath).toContain('"scrub", "--check"');
     }
   });
 

@@ -170,23 +170,30 @@ export const XaiFieldDefinitionSchema = z.object({
 // Chat completions
 // ---------------------------------------------------------------------------
 
-export const XaiChatRequestSchema = z.object({
-  model: z.string().optional(),
-  messages: z.array(XaiMessageSchema),
-  temperature: z.number().min(0).max(2).optional(),
-  max_tokens: z.number().int().positive().optional(),
-  tools: z.array(XaiToolSchema).optional(),
-  tool_choice: z
-    .union([
-      z.enum(["auto", "none"]),
-      z.object({
-        type: z.literal("function"),
-        function: z.object({ name: z.string() }),
-      }),
-    ])
-    .optional(),
-  deferred: z.boolean().optional(),
-});
+export const XaiChatRequestSchema = z
+  .object({
+    model: z.string().optional(),
+    messages: z.array(XaiMessageSchema),
+    temperature: z.number().min(0).max(2).optional(),
+    max_tokens: z.number().int().positive().optional(),
+    tools: z.array(XaiToolSchema).optional(),
+    tool_choice: z
+      .union([
+        z.enum(["auto", "none"]),
+        z.object({
+          type: z.literal("function"),
+          function: z.object({ name: z.string() }),
+        }),
+      ])
+      .optional(),
+    deferred: z.boolean().optional(),
+  })
+  // xAI answers an empty list with 400 "Bad data: Messages cannot be empty"
+  // (tests/failures/xai/chat-completions-empty-messages.har).
+  .refine((v) => v.messages.length > 0, {
+    message: "messages cannot be empty",
+    path: ["messages"],
+  });
 
 // ---------------------------------------------------------------------------
 // Images

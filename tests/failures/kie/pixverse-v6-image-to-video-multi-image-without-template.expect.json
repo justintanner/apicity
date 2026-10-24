@@ -1,0 +1,5 @@
+{
+  "endpoint": "api.v1.jobs.createTask",
+  "rule": "template_id cannot be empty when multiple image_urls are provided",
+  "source": "tests/recordings/kie_2079838932/pixverse-v6-image-to-video_1799646426/recording.har entry 2, moved here when the createTask guard began rejecting the payload before fetch (ac-tsul8r)"
+}

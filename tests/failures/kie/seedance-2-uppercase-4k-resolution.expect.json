@@ -1,0 +1,5 @@
+{
+  "endpoint": "api.v1.jobs.createTask",
+  "rule": "input.resolution: Invalid option",
+  "source": "/gc/apicity/plans/ac-8cfo6r/build/evidence-uppercase-4K-422.har entry 0 (ac-8cfo6r evidence)"
+}

@@ -54,13 +54,17 @@ describe("kie pixverse-v6/image-to-video integration", () => {
       const prompt =
         "The cats stay still as the camera slowly pushes in; soft daylight drifts across their fur.";
 
-      // Two images with `duration` and no `template_id` passes the SDK schema —
-      // upstream documents the two fields as exclusive and states no cross-field
-      // rule against `image_urls` — but the server rejects it. Recorded because
-      // this envelope is the only statement of the rule that exists: a
-      // multi-image payload must carry the `template_id` whose `effect_type`
-      // matches the image count. The single-image happy path below is
-      // upstream's own documented example shape.
+      // Two images with `duration` and no `template_id`: upstream documents the
+      // two fields as exclusive and states no cross-field rule against
+      // `image_urls`, but the server rejects it with a 422 envelope that is the
+      // only statement of the rule: a multi-image payload must carry the
+      // `template_id` whose `effect_type` matches the image count. That
+      // envelope is now
+      // tests/failures/kie/pixverse-v6-image-to-video-multi-image-without-template.har
+      // and the createTask guard rejects the payload before fetch, so the
+      // recording's multi-image exchange is no longer replayed. The
+      // single-image happy path below is upstream's own documented example
+      // shape.
       const multiImageRequest = {
         model: "pixverse-v6/image-to-video",
         input: {
@@ -76,14 +80,14 @@ describe("kie pixverse-v6/image-to-video integration", () => {
           seed: 123456789,
         },
       } satisfies MediaGenerationRequest;
-      const rejected = await provider.post.api.v1.jobs.createTask(
-        multiImageRequest,
-        mintKieCreateTaskOtp(multiImageRequest)
+      await expect(
+        provider.post.api.v1.jobs.createTask(
+          multiImageRequest,
+          mintKieCreateTaskOtp(multiImageRequest)
+        )
+      ).rejects.toThrow(
+        "template_id cannot be empty when multiple image_urls are provided"
       );
-
-      expect(rejected.code).toBe(422);
-      expect(rejected.msg).toContain("template_id");
-      expect(rejected.data).toBeNull();
 
       const request = {
         model: "pixverse-v6/image-to-video",

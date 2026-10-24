@@ -1002,10 +1002,31 @@ describe("KIE Zod schema validation", () => {
         input: { ...base, duration: 5, ...patch },
       });
 
-    it.each([1, 2])("accepts %s image_urls", (count) => {
+    // Two images need the template whose effect_type matches the count
+    // (tests/failures/kie/pixverse-v6-image-to-video-multi-image-without-template.har).
+    it.each([
+      [1, { duration: 5 }],
+      [2, { template_id: "t-two-images" }],
+    ])("accepts %s image_urls", (count, timing) => {
       expect(
-        parseInput({ image_urls: Array(count).fill(FRAME_URL) }).success
+        CreateTaskRequestSchema.safeParse({
+          model: "pixverse-v6/image-to-video",
+          input: {
+            ...base,
+            image_urls: Array(count).fill(FRAME_URL),
+            ...timing,
+          },
+        }).success
       ).toBe(true);
+    });
+
+    it("rejects 2 image_urls without a template_id", () => {
+      const result = parseInput({ image_urls: [FRAME_URL, FRAME_URL] });
+
+      expect(result.success).toBe(false);
+      expect(issueMessages(result)).toContain(
+        "template_id cannot be empty when multiple image_urls are provided"
+      );
     });
 
     it.each([0, 3])("rejects %s image_urls", (count) => {

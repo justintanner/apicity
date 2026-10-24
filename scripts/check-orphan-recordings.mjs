@@ -6,6 +6,8 @@
 //     references (left behind when a test is removed or renamed)
 //   - missing recordings -- a setupPolly()/recordingExists() name with no
 //     recording.har on disk (a phantom reference)
+//   - captured failures  -- a tests/failures/**/<name>.har without its
+//     <name>.expect.json, or a sidecar without its HAR
 //
 // The name<->path mapping mirrors recordingExists() in tests/harness.ts: each
 // directory segment carries a trailing "_<hash>" suffix, and dots in a
@@ -237,6 +239,36 @@ function exampleSourceNames() {
 
 // --- compare ----------------------------------------------------------------
 
+// tests/failures/<provider>/<name>.har holds failed captures, not Polly
+// recordings. tests/integration/captured-failures.test.ts walks the directory
+// and reads each HAR through its <name>.expect.json sidecar, so a HAR without
+// one is an orphan and a sidecar without its HAR is a missing failure
+// (ac-tsul8r).
+const FAILURES_SUITE = path.join("integration", "captured-failures.test.ts");
+
+function failureHarProblems(providers) {
+  const failuresDir = path.join(testsDir, "failures");
+  if (!fs.existsSync(failuresDir)) return { count: 0, problems: [] };
+  const inScope = (file) =>
+    providers.size === 0 ||
+    providers.has(path.relative(failuresDir, file).split(path.sep)[0]);
+  const files = walkFiles(failuresDir, inScope);
+  const hars = files.filter((file) => file.endsWith(".har"));
+  const problems = [];
+  if (hars.length && !fs.existsSync(path.join(testsDir, FAILURES_SUITE)))
+    problems.push(`no ${FAILURES_SUITE} reads tests/failures`);
+  for (const file of hars)
+    if (!files.includes(file.replace(/\.har$/, ".expect.json")))
+      problems.push(`ORPHAN failure HAR, no .expect.json: ${file}`);
+  for (const file of files.filter((f) => f.endsWith(".expect.json")))
+    if (!files.includes(file.replace(/\.expect\.json$/, ".har")))
+      problems.push(`MISSING failure HAR for sidecar: ${file}`);
+  return {
+    count: hars.length,
+    problems: problems.map((p) => p.replace(`${root}${path.sep}`, "")),
+  };
+}
+
 function run() {
   const options = parseArgSets();
   if (!options) return 1;
@@ -245,6 +277,8 @@ function run() {
     return 0;
   }
 
+  const failures = failureHarProblems(options.providers);
+  for (const problem of failures.problems) console.error(problem);
   const diskEntries = diskRecordingEntries();
   const diskAllNames = new Set(diskEntries.keys());
   const disk = filterByProvider(diskAllNames, options.providers);
@@ -268,7 +302,11 @@ function run() {
     console.warn(`warn: non-static setupPolly name, skipped -- ${entry}`);
   }
 
-  if (orphans.length === 0 && missing.length === 0) {
+  if (
+    orphans.length === 0 &&
+    missing.length === 0 &&
+    failures.problems.length === 0
+  ) {
     const providerLabel =
       options.providers.size > 0
         ? ` [providers: ${[...options.providers].join(", ")}]`
@@ -276,7 +314,8 @@ function run() {
     console.log(
       `check-orphan-recordings: OK (${disk.size} recordings, ` +
         `${filteredTestRefs.size} test refs, ` +
-        `${filteredExampleRefs.size} example sources)` +
+        `${filteredExampleRefs.size} example sources, ` +
+        `${failures.count} captured failures)` +
         `${providerLabel}`
     );
     return 0;

@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Two provider rules seen only in recorded rejections now apply locally. KIE `pixverse-v6/image-to-video` createTask rejects two `image_urls` without a `template_id` before the request leaves (KIE's 422 "template_id cannot be empty when multiple image_urls are provided"), and the xAI chat completions schema rejects an empty `messages` list (xAI's 400 "Messages cannot be empty") (ac-tsul8r).
+
 - `har:promote` accepts repeated and valueless query keys, reserved or escaped characters, and fragments now that capture identities match Polly; malformed percent or UTF-8 query escapes remain refused (ac-eulnmf).
 
 - Fixed 31 unreachable CLI catalog rows: 29 KIE Suno routes now resolve through an unambiguous sub-provider fallback, ambiguous roots are named and refused, and fal logs-stream and simplefunctions panel-run rows name their real leaves. HAR promotion follows the same Suno accessor (ac-chttrw).
@@ -22,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - HAR capture now scrubs generic credential body fields such as `api_key`, `apiKey`, access tokens and client secrets in requests, responses and call input, including local failures (ac-5ljiib).
 
 ### Added
+
+- Added the failing-payload regression suite: `tests/failures/<provider>/<name>.har` with `.expect.json` sidecars and `tests/failures/passthrough.json`, held by `tests/integration/captured-failures.test.ts` (a cross-cutting guard) and `lint:recordings`. Every provider rejection there is either caught locally with its rule phrase or listed with a reason. It is seeded from the triage of the committed corpus's 139 failed exchanges (130 are not payload failures) and from two plan-evidence captures: 6 caught, 5 pass-throughs (ac-tsul8r).
 
 - Added offline `har:promote` to turn successful captures into checked Polly recordings and integration tests, replay-only `POLLY_RECORDINGS_DIR`, and orphan-check `--recordings`/`--tests` roots (ac-3uda2b).
 

@@ -1,0 +1,5 @@
+{
+  "endpoint": "heygen.avatar4.imageToVideo",
+  "rule": "voice is required when using prompt (without audio_url)",
+  "source": "/gc/apicity/plans/ac-7wb7u7/evidence/P10-heygen-avatar4-image-to-video/refused-no-voice-422.har entry 0 (ac-7wb7u7 P10 recording attempt)"
+}

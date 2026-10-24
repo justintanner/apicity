@@ -1,0 +1,4 @@
+{
+  "endpoint": "inference.v1.accounts.rlorTrainerJobs.create",
+  "source": "tests/recordings/fireworks_626462085/rlor-trainer-jobs-create_894495660/recording.har entry 0"
+}

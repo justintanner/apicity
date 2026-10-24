@@ -5421,6 +5421,19 @@ export const PixverseV6ImageToVideoRequestSchema = z
         path: ["input", "duration"],
       });
     }
+
+    // Upstream states this rule only in its 422 envelope
+    // (tests/failures/kie/pixverse-v6-image-to-video-multi-image-without-template.har):
+    // a multi-image payload must carry the template whose effect_type matches
+    // the image count.
+    if (v.input.image_urls.length > 1 && !hasTemplateId) {
+      ctx.addIssue({
+        code: "custom",
+        message:
+          "template_id cannot be empty when multiple image_urls are provided",
+        path: ["input", "template_id"],
+      });
+    }
   });
 
 // PixVerse V6 first & last frame transition. No aspect_ratio and no

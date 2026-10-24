@@ -316,14 +316,20 @@ describe("Zod schema validation edge cases", () => {
   });
 
   describe("array validation edge cases", () => {
-    it("should validate empty required array", () => {
+    it("should reject an empty messages array, as xAI does", () => {
       const result = XaiChatRequestSchema.safeParse({
         model: "grok-3",
-        messages: [], // Empty but required
+        messages: [],
       });
 
-      // Empty array is still an array, schema validates the type not length
-      expect(result.success).toBe(true);
+      // tests/failures/xai/chat-completions-empty-messages.har
+      expect(result.success).toBe(false);
+      expect(result.error?.issues).toEqual([
+        expect.objectContaining({
+          message: "messages cannot be empty",
+          path: ["messages"],
+        }),
+      ]);
     });
 
     it("should validate array item types", () => {

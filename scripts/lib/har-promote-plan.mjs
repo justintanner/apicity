@@ -324,6 +324,12 @@ function accessorFor(instance, row, fn) {
     chains.push(chain, [...chain, m]);
   for (const key of Object.keys(instance))
     if (segs.includes(key)) chains.push([key, m, ...segs]);
+  // Match the resolver's final fallback for sub-providers whose URL paths
+  // do not contain their mount key (for example kie.suno).
+  const methods = new Set(["post", "get", "put", "delete", "patch", "head"]);
+  for (const key of Object.keys(instance).sort()) {
+    if (!methods.has(key)) chains.push([key, m, ...segs]);
+  }
   const found = chains.find(
     (chain) => chain.reduce((v, k) => v?.[k], instance) === fn
   );

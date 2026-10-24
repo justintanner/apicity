@@ -151,11 +151,69 @@ function walkPath(root: unknown, segments: string[]): EndpointFn | null {
   return typeof cur === "function" ? (cur as EndpointFn) : null;
 }
 
+const HTTP_KEYS = new Set(["post", "get", "put", "delete", "patch", "head"]);
+
+/** How a catalog row reached its function, or why it did not. */
+export type EndpointResolution =
+  | { fn: EndpointFn; via: "path" }
+  | { fn: EndpointFn; via: "sub-provider"; root: string }
+  | { fn: null; reason: "not-found" }
+  | { fn: null; reason: "ambiguous"; roots: string[] };
+
+/**
+ * Resolve a catalog row, saying why when it cannot. The path strategies of
+ * `resolveEndpointFn` run first and are unchanged. Only when every one of them
+ * misses does the sub-provider fallback run: a sub-provider mounted at the root
+ * whose key is not a segment of its dot paths (kie's `suno` tree serves
+ * `api.v1.generate`). It must find exactly one distinct function across all
+ * root keys; two are refused as ambiguous instead of picked by key order.
+ */
+export function resolveEndpoint(
+  provider: InstantiatedProvider,
+  method: string,
+  dotPath: string
+): EndpointResolution {
+  const direct = resolveByPath(provider, method, dotPath);
+  if (direct) return { fn: direct, via: "path" };
+  const m = method.toLowerCase();
+  const segs = dotPath.split(".");
+  const root = provider as Record<string, unknown>;
+  const found = new Map<EndpointFn, string[]>();
+  for (const key of Object.keys(root).sort()) {
+    if (HTTP_KEYS.has(key)) continue;
+    const sub = root[key];
+    if (!sub || typeof sub !== "object") continue;
+    const subMethod = (sub as Record<string, unknown>)[m];
+    if (!subMethod) continue;
+    const fn = walkPath(subMethod, segs);
+    if (fn) found.set(fn, [...(found.get(fn) ?? []), key]);
+  }
+  if (found.size === 1) {
+    const [[fn, keys]] = [...found.entries()];
+    return { fn, via: "sub-provider", root: keys[0] };
+  }
+  if (found.size > 1)
+    return {
+      fn: null,
+      reason: "ambiguous",
+      roots: [...found.values()].flat().sort(),
+    };
+  return { fn: null, reason: "not-found" };
+}
+
+export function resolveEndpointFn(
+  provider: InstantiatedProvider,
+  method: string,
+  dotPath: string
+): EndpointFn | null {
+  return resolveEndpoint(provider, method, dotPath).fn;
+}
+
 // Providers don't all share the same shape: most expose a `post`/`get`/...
 // namespace at the root, but `fal` nests POSTs under `.run.*` as well, `free`
 // has no method namespace at all, and `kie` re-exports endpoints under
 // per-sub-provider roots (`claude`, `veo`, `suno`, `chat`).
-export function resolveEndpointFn(
+function resolveByPath(
   provider: InstantiatedProvider,
   method: string,
   dotPath: string
@@ -188,7 +246,6 @@ export function resolveEndpointFn(
   // the leading segment (e.g. dotPath `api.v1.veo.generate` lives at
   // `provider.veo.post.api.v1.veo.generate`). Try every top-level non-method
   // key as a candidate sub-provider root.
-  const HTTP_KEYS = new Set(["post", "get", "put", "delete", "patch", "head"]);
   for (const key of Object.keys(root)) {
     if (HTTP_KEYS.has(key)) continue;
     if (!segs.includes(key)) continue;

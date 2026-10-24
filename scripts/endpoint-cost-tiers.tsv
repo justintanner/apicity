@@ -705,7 +705,7 @@ fal	v1.models.usage	GET	prohibitive	Media-generation marketplace (image/video/au
 fal	v1.queue.submit	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	v1.serverless.files.uploadLocal	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	v1.serverless.files.uploadUrl	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
-fal	v1.serverless.logs	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
+fal	v1.serverless.logs.stream	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	v1.workflows	GET	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	veed.cleanAudio	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
 fal	veo3p1.imageToVideo	POST	prohibitive	Media-generation marketplace (image/video/audio synthesis); per-call cost is model-dependent and routinely exceeds $1
@@ -1316,9 +1316,9 @@ simplefunctions	api.changes	GET	cheap	Public agent/world data API; no per-call U
 simplefunctions	api.contracts.tools	GET	cheap	Public agent/world data API; no per-call USD compute cost
 simplefunctions	api.dashboard.usage	GET	cheap	Public agent/world data API; no per-call USD compute cost
 simplefunctions	api.dashboard2.marketWatch.panels	DELETE	cheap	Public agent/world data API; no per-call USD compute cost
-simplefunctions	api.dashboard2.marketWatch.panels	POST	cheap	Public agent/world data API; no per-call USD compute cost
 simplefunctions	api.dashboard2.marketWatch.panels.create	POST	cheap	Public agent/world data API; no per-call USD compute cost
 simplefunctions	api.dashboard2.marketWatch.panels.reorder	POST	cheap	Public agent/world data API; no per-call USD compute cost
+simplefunctions	api.dashboard2.marketWatch.panels.run	POST	cheap	Public agent/world data API; no per-call USD compute cost
 simplefunctions	api.dashboard2.marketWatch.panels.update	PATCH	cheap	Public agent/world data API; no per-call USD compute cost
 simplefunctions	api.dashboard2.marketWatchV2	GET	cheap	Public agent/world data API; no per-call USD compute cost
 simplefunctions	api.edges	GET	cheap	Public agent/world data API; no per-call USD compute cost

@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Fixed 31 unreachable CLI catalog rows: 29 KIE Suno routes now resolve through an unambiguous sub-provider fallback, ambiguous roots are named and refused, and fal logs-stream and simplefunctions panel-run rows name their real leaves. HAR promotion follows the same Suno accessor (ac-chttrw).
+
 - `@apicity/har` `pollyEntryId` now normalizes a request URL the way Polly does, through a dependency-free port of the qs parse and RFC 3986 stringify behind Polly's url-parse URL: escaped reserved characters and spaces, repeated keys, valueless keys such as S3's `?cors`, bracket arrays and fragments now hash to Polly's id. It reproduces 2,759 of 3,098 committed entry `_id`s with default options (was 2,720); the rest differ by request body (ac-9e2ha7).
 
 - xAI video edit and extension examples now use a freely verified, reachable 5-second MP4 sample instead of the old URL that returns 404; examples are explicitly static, and original recordings remain unchanged (ac-fevz1c).

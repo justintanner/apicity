@@ -44,7 +44,7 @@ simplefunctions	api.changes	GET	https://simplefunctions.dev/api/changes{query}	h
 simplefunctions	api.contracts.tools	GET	https://simplefunctions.dev/api/contracts/tools	https://docs.simplefunctions.dev/api-reference/contract-tools
 simplefunctions	api.dashboard.usage	GET	https://simplefunctions.dev/api/dashboard/usage{query}	https://docs.simplefunctions.dev/api-reference/account
 simplefunctions	api.dashboard2.marketWatch.panels	DELETE	https://simplefunctions.dev/api/dashboard2/market-watch/panels/{id}	https://docs.simplefunctions.dev/api-reference/market-watch
-simplefunctions	api.dashboard2.marketWatch.panels	POST	https://simplefunctions.dev/api/dashboard2/market-watch/panels/{id}/run	https://docs.simplefunctions.dev/api-reference/market-watch
+simplefunctions	api.dashboard2.marketWatch.panels.run	POST	https://simplefunctions.dev/api/dashboard2/market-watch/panels/{id}/run	https://docs.simplefunctions.dev/api-reference/market-watch
 simplefunctions	api.dashboard2.marketWatch.panels.create	POST	https://simplefunctions.dev/api/dashboard2/market-watch/panels	https://docs.simplefunctions.dev/api-reference/market-watch
 simplefunctions	api.dashboard2.marketWatch.panels.reorder	POST	https://simplefunctions.dev/api/dashboard2/market-watch/panels/reorder	https://docs.simplefunctions.dev/api-reference/market-watch
 simplefunctions	api.dashboard2.marketWatch.panels.update	PATCH	https://simplefunctions.dev/api/dashboard2/market-watch/panels/{id}	https://docs.simplefunctions.dev/api-reference/market-watch
@@ -882,7 +882,7 @@ fal	v1.models.usage	GET	https://api.fal.ai/v1/models/usage	https://docs.fal.ai
 fal	v1.queue.submit	POST	https://api.fal.ai/v1/POST	https://docs.fal.ai
 fal	v1.serverless.files.uploadLocal	POST	https://api.fal.ai/v1/serverless/files/file/local/{param}	https://docs.fal.ai
 fal	v1.serverless.files.uploadUrl	POST	https://api.fal.ai/v1/serverless/files/file/url/{param}	https://docs.fal.ai
-fal	v1.serverless.logs	POST	https://api.fal.ai/v1/serverless/logs/stream	https://docs.fal.ai
+fal	v1.serverless.logs.stream	POST	https://api.fal.ai/v1/serverless/logs/stream	https://docs.fal.ai
 fal	v1.workflows	GET	https://api.fal.ai/v1/workflows	https://docs.fal.ai
 fal	veo3p1.imageToVideo	POST	https://fal.run/fal-ai/veo3.1/image-to-video	https://docs.fal.ai
 fal	veo3p1.textToVideo	POST	https://fal.run/fal-ai/veo3.1	https://docs.fal.ai

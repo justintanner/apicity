@@ -565,3 +565,10 @@ To triage a captured or recorded failure:
    Pin the rule in that provider's unit tests. If the rule cannot be expressed
    locally (it depends on the provider's own state or undocumented lists), or
    it waits for a later change, add a `passthrough.json` entry that says so.
+
+## First committed-corpus learning pass
+
+[The 2026-10-24 learning report](har-learning-pass-1.md) records frontier coverage,
+per-finding verdicts, videobook overrides and provider-family follow-up beads.
+It distinguishes successful overrides from evidence that a default is invalid,
+and historical successes from a newer provider contract.

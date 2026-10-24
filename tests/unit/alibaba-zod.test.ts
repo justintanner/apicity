@@ -49,6 +49,22 @@ function hatchPatternOf(schema: unknown): RegExp {
   return new RegExp(pattern as string);
 }
 
+interface NestedIssue {
+  readonly path?: readonly PropertyKey[];
+  readonly errors?: readonly (readonly NestedIssue[])[];
+}
+
+// Dotted paths of every leaf issue, descending into a failed union's branch
+// `errors`. An over-max array aborts its branch (see "union error paths"), so
+// those paths can reach the caller only nested inside one root invalid_union.
+function issueLeafPaths(issues: readonly NestedIssue[] = []): string[] {
+  return issues.flatMap((issue) =>
+    issue.errors
+      ? issueLeafPaths(issue.errors.flat())
+      : [(issue.path ?? []).map(String).join(".")]
+  );
+}
+
 describe("Alibaba Zod schema validation", () => {
   describe("null and undefined handling", () => {
     it("should reject null payload for chat", () => {
@@ -1078,8 +1094,8 @@ describe("Alibaba Zod schema validation", () => {
         },
       });
       expect(result.success).toBe(false);
-      expect(result.error?.issues.some((i) => i.path.includes("content"))).toBe(
-        true
+      expect(issueLeafPaths(result.error?.issues)).toContain(
+        "input.messages.0.content"
       );
     });
 
@@ -1102,8 +1118,8 @@ describe("Alibaba Zod schema validation", () => {
         },
       });
       expect(result.success).toBe(false);
-      expect(result.error?.issues.some((i) => i.path.includes("content"))).toBe(
-        true
+      expect(issueLeafPaths(result.error?.issues)).toContain(
+        "input.messages.0.content"
       );
     });
 
@@ -1180,23 +1196,13 @@ describe("Alibaba Zod schema validation", () => {
     // A branch that fails only on non-aborting issues stays live, so zod
     // surfaces its own issues at the paths they occurred at. `qwen-image-2.0`
     // is a listed generation id, so only the generation branch is applicable;
-    // four image parts breaks that branch's `<=4 items` bound and refinement.
+    // an empty `content` breaks that branch's `>=1 items` bound and
+    // refinement, neither of which aborts.
     it("keeps original issue paths when the live branch fails non-fatally", () => {
       const result = AlibabaMultimodalGenerationRequestSchema.safeParse({
         model: "qwen-image-2.0",
         input: {
-          messages: [
-            {
-              role: "user",
-              content: [
-                { text: "A koi pond" },
-                { image: "https://example.com/1.jpg" },
-                { image: "https://example.com/2.jpg" },
-                { image: "https://example.com/3.jpg" },
-                { image: "https://example.com/4.jpg" },
-              ],
-            },
-          ],
+          messages: [{ role: "user", content: [] }],
         },
       });
       expect(result.success).toBe(false);
@@ -1226,6 +1232,43 @@ describe("Alibaba Zod schema validation", () => {
         expect(result.error?.issues).toHaveLength(1);
         expect(result.error?.issues[0].code).toBe("invalid_union");
         expect(result.error?.issues[0].path).toEqual([]);
+      }
+    );
+
+    // The same boundary from an over-max array: since zod 4.6.6 a container
+    // longer than its `max` fails before any element is parsed, and that issue
+    // aborts. Five parts break every branch's `max(4)`, so the union collapses
+    // the same way, and the content path survives only in the branch errors.
+    it.each([
+      ["listed", "qwen-image-2.0"],
+      ["aliased", "qwen-image-3.0"],
+    ])(
+      "collapses to a pathless invalid_union for a %s id over the content max",
+      (_label, model) => {
+        const result = AlibabaMultimodalGenerationRequestSchema.safeParse({
+          model,
+          input: {
+            messages: [
+              {
+                role: "user",
+                content: [
+                  { text: "A koi pond" },
+                  { image: "https://example.com/1.jpg" },
+                  { image: "https://example.com/2.jpg" },
+                  { image: "https://example.com/3.jpg" },
+                  { image: "https://example.com/4.jpg" },
+                ],
+              },
+            ],
+          },
+        });
+        expect(result.success).toBe(false);
+        expect(result.error?.issues).toHaveLength(1);
+        expect(result.error?.issues[0].code).toBe("invalid_union");
+        expect(result.error?.issues[0].path).toEqual([]);
+        expect(issueLeafPaths(result.error?.issues)).toContain(
+          "input.messages.0.content"
+        );
       }
     );
   });

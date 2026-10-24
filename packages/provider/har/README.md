@@ -35,8 +35,14 @@ entry._id = pollyEntryId(entry);
   ordinary payloads. It is not a general personal-data anonymizer.
 - `pollyEntryId(entry, options?)` hashes the identifying fields using the
   repository's default harness matching rules. Custom matching requires
-  `excludeHeaders`, `headers: false`, or `body: false` as appropriate. Summarized
-  bodies cannot reproduce the identity of their original raw bytes.
+  `excludeHeaders`, `headers: false`, or `body: false` as appropriate. The URL
+  is normalized as Polly's url-parse and qs normalize it: keys are sorted and
+  RFC 3986 escaped, repeated, valueless and bracket keys are kept, and the
+  fragment is dropped. Summarized bodies cannot reproduce the identity of their
+  original raw bytes, nor can a query part with a malformed percent escape once
+  a `Request` has re-encoded it. A recorded URL with an unclosed `[` or more
+  than five bracket levels in a key hashes as a new request to that URL would,
+  not as recorded: Polly's re-serialization is not stable there.
 - `pollyRecordingDir(name)` implements Polly's per-segment slug and FNV-1a hash.
 - HAR types: `Har`, `HarLog`, `HarEntry`, `HarRequest`, `HarResponse`, `HarContent`,
   `HarPostData`, `HarNameValue`, `HarCookie`, `HarPage`, `HarCacheEntry`,

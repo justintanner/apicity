@@ -145,6 +145,10 @@ import { repoRoot } from "./provider-scope.mjs";
  * provider is a provider-scoped diff, and the file is named after no provider,
  * so this entry is what runs it in the fast gates (ac-1zmydw).
  *
+ * Example provenance checks match each example payload to its own successful
+ * recorded exchange and validate static payloads against endpoint schemas.
+ * Provider scopes cannot select this whole-corpus guard (ac-ygpjmh).
+ *
  * The fast gates run these guards so a broken repo-wide invariant cannot pass
  * the local merge gate. They are filesystem- and source-parse-only (no Polly
  * replay, no network); `CROSS_CUTTING_COST_SECONDS` records their measured
@@ -264,6 +268,7 @@ export const CROSS_CUTTING_TESTS = [
   "tests/unit/provider-namespace-shape.test.ts",
   "tests/unit/compare-namespace-shapes-cli.test.ts",
   "tests/unit/har-request-secrets.test.ts",
+  "tests/unit/examples-from-failed-exchanges.test.ts",
 ];
 
 /**

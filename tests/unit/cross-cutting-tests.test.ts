@@ -66,7 +66,16 @@ const RECORDING_SECRET_TESTS = [
 // enumeration in scripts/preflight-provider.mjs. This table is the single
 // place a category rename has to touch: the docblock is prose, so nothing
 // else keeps it in agreement with the taxonomy above (ac-j82r26).
+const EXAMPLE_PROVENANCE_TESTS = [
+  "tests/unit/examples-from-failed-exchanges.test.ts",
+] as const;
+
 const CATEGORY_DOC_KEYWORDS = [
+  {
+    name: "EXAMPLE_PROVENANCE_TESTS",
+    tests: EXAMPLE_PROVENANCE_TESTS,
+    keyword: "example provenance",
+  },
   {
     name: "RECORDING_ENUMERATION_TESTS",
     tests: RECORDING_ENUMERATION_TESTS,
@@ -327,6 +336,16 @@ describe("cross-cutting repo-wide guard tests", () => {
       expect(source, relativePath).toContain("readdirSync");
       expect(source, relativePath).toContain("findUnredactedRequestSecrets");
       expect(source, relativePath).toContain('from "../harness"');
+    }
+  });
+
+  it("example provenance guards match exact payloads and validate statics", () => {
+    for (const relativePath of EXAMPLE_PROVENANCE_TESTS) {
+      const source = readRepoFile(relativePath);
+      expect(source).toContain("exampleCandidate");
+      expect(source).toContain("exchangeSucceeded");
+      expect(source).toContain("isDeepStrictEqual");
+      expect(source).toContain("safeParse");
     }
   });
 

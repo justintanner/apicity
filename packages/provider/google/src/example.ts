@@ -61,12 +61,6 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "payload": {},
     "tier": "expensive",
     "runByDefault": false
-  },
-  "POST v1internal.retrieveUserQuotaSummary": {
-    "source": "google/antigravity-quota-summary",
-    "payload": {},
-    "tier": "expensive",
-    "runByDefault": false
   }
 };
 

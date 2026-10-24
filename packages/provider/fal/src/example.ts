@@ -560,9 +560,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "runByDefault": false
   },
   "POST bytedance.seedance2p5.draft.complete": {
-    "source": "fal/bytedance-seedance2p5-draft-complete",
+    "source": "fal/bytedance-seedance2p5-draft-complete-success",
     "payload": {
-      "draft_id": ""
+      "draft_id": "draft_gAAAAABq0xVDhFe2o6ncEhgHBwJ3dYhX_vQg0W-JjHL0PAkaGrhMfT… <truncated 490 chars>"
     },
     "tier": "prohibitive",
     "runByDefault": false

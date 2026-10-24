@@ -236,49 +236,6 @@
     "tier": "expensive",
     "runByDefault": false
   },
-  "PATCH v1.convai.whatsappAccounts.update": {
-    "source": "elevenlabs/convai-telephony-integrations",
-    "payload": {
-      "assigned_agent_id": null,
-      "enable_messaging": true,
-      "enable_audio_message_response": false
-    },
-    "tier": "expensive",
-    "runByDefault": false
-  },
-  "PATCH v1.productions.orders.update": {
-    "source": "elevenlabs/productions-orders",
-    "payload": {
-      "request": {
-        "name": "Spanish Dubs"
-      }
-    },
-    "tier": "expensive",
-    "runByDefault": false
-  },
-  "PATCH v1.serviceAccounts.apiKeys.update": {
-    "source": "elevenlabs/service-accounts",
-    "payload": {
-      "is_enabled": "no_update",
-      "name": null,
-      "permissions": "no_update",
-      "character_limit": "no_update",
-      "allowed_ips": "clear",
-      "third_party_disable_allowed": "no_update"
-    },
-    "tier": "expensive",
-    "runByDefault": false
-  },
-  "POST v1.audioNative.content.fromUrl": {
-    "source": "elevenlabs/audio-native-content-url",
-    "payload": {
-      "url": "https://elevenlabs.io/blog",
-      "title": "Apicity Audio Native URL",
-      "author": "Apicity"
-    },
-    "tier": "expensive",
-    "runByDefault": false
-  },
   "POST v1.convai.agentTesting.bulkMove": {
     "source": "elevenlabs/convai-agent-testing",
     "payload": {
@@ -370,19 +327,6 @@
     "tier": "expensive",
     "runByDefault": false
   },
-  "POST v1.convai.exotel.outboundCall": {
-    "source": "elevenlabs/convai-telephony-integrations",
-    "payload": {
-      "agent_id": "apicity-route-test-agent",
-      "agent_phone_number_id": "apicity-route-test-phone",
-      "to_number": "+15005550006",
-      "telephony_call_config": {
-        "ringing_timeout_secs": 30
-      }
-    },
-    "tier": "expensive",
-    "runByDefault": false
-  },
   "POST v1.convai.knowledgeBase.text": {
     "source": "elevenlabs/convai-knowledge-base",
     "payload": {
@@ -435,16 +379,6 @@
     "tier": "expensive",
     "runByDefault": false
   },
-  "POST v1.convai.sipTrunk.outboundCall": {
-    "source": "elevenlabs/convai-outbound-calls",
-    "payload": {
-      "agent_id": "apicity-route-test-agent",
-      "agent_phone_number_id": "apicity-route-test-phone",
-      "to_number": "+15005550006"
-    },
-    "tier": "expensive",
-    "runByDefault": false
-  },
   "POST v1.convai.tags.create": {
     "source": "elevenlabs/convai-tags",
     "payload": {
@@ -477,67 +411,6 @@
           "method": "GET"
         }
       }
-    },
-    "tier": "expensive",
-    "runByDefault": false
-  },
-  "POST v1.convai.twilio.outboundCall": {
-    "source": "elevenlabs/convai-outbound-calls",
-    "payload": {
-      "agent_id": "apicity-route-test-agent",
-      "agent_phone_number_id": "apicity-route-test-phone",
-      "to_number": "+15005550006"
-    },
-    "tier": "expensive",
-    "runByDefault": false
-  },
-  "POST v1.convai.twilio.registerCall": {
-    "source": "elevenlabs/convai-telephony-integrations",
-    "payload": {
-      "agent_id": "apicity-route-test-agent",
-      "from_number": "+15005550006",
-      "to_number": "+15005550006",
-      "direction": "inbound",
-      "conversation_initiation_client_data": {
-        "dynamic_variables": {
-          "source": "apicity"
-        }
-      }
-    },
-    "tier": "expensive",
-    "runByDefault": false
-  },
-  "POST v1.convai.whatsapp.outboundCall": {
-    "source": "elevenlabs/convai-telephony-integrations",
-    "payload": {
-      "whatsapp_phone_number_id": "apicity-route-test-whatsapp-phone",
-      "whatsapp_user_id": "15555550123",
-      "whatsapp_call_permission_request_template_name": "apicity_call_permission",
-      "whatsapp_call_permission_request_template_language_code": "en_US",
-      "agent_id": "apicity-route-test-agent"
-    },
-    "tier": "expensive",
-    "runByDefault": false
-  },
-  "POST v1.convai.whatsapp.outboundMessage": {
-    "source": "elevenlabs/convai-telephony-integrations",
-    "payload": {
-      "whatsapp_phone_number_id": "apicity-route-test-whatsapp-phone",
-      "whatsapp_user_id": "15555550123",
-      "template_name": "apicity_template",
-      "template_language_code": "en_US",
-      "template_params": [
-        {
-          "type": "body",
-          "parameters": [
-            {
-              "type": "text",
-              "text": "hello"
-            }
-          ]
-        }
-      ],
-      "agent_id": "apicity-route-test-agent"
     },
     "tier": "expensive",
     "runByDefault": false
@@ -581,75 +454,12 @@
     "tier": "expensive",
     "runByDefault": false
   },
-  "POST v1.productions.orders.create": {
-    "source": "elevenlabs/productions-orders",
-    "payload": {
-      "sandbox": true
-    },
-    "tier": "expensive",
-    "runByDefault": false
-  },
-  "POST v1.productions.orders.items.upsert": {
-    "source": "elevenlabs/productions-orders",
-    "payload": {
-      "request": {
-        "item": {
-          "kind": "dub",
-          "media_id": "prodmedia_01jgb2zd68f8f9tfvbb968wb8z",
-          "source_language": "en",
-          "destination_languages": [
-            "es",
-            "fr"
-          ],
-          "include_captions": true,
-          "include_source_captions": false
-        }
-      }
-    },
-    "tier": "expensive",
-    "runByDefault": false
-  },
-  "POST v1.serviceAccounts.apiKeys.create": {
-    "source": "elevenlabs/service-accounts",
-    "payload": {
-      "name": "apicity-route-test",
-      "permissions": [
-        "workspace_read",
-        "service_account_write"
-      ],
-      "character_limit": null,
-      "allowed_ips": [
-        "203.0.113.10"
-      ],
-      "third_party_disable_allowed": null
-    },
-    "tier": "expensive",
-    "runByDefault": false
-  },
   "POST v1.soundGeneration": {
     "source": "elevenlabs/sound-generation",
     "payload": {
       "text": "soft ui click",
       "duration_seconds": 0.5,
       "prompt_influence": 0.3
-    },
-    "tier": "expensive",
-    "runByDefault": false
-  },
-  "POST v1.studio.podcasts.create": {
-    "source": "elevenlabs/studio",
-    "payload": {
-      "model_id": "eleven_multilingual_v2",
-      "mode": {
-        "type": "bulletin",
-        "bulletin": {
-          "host_voice_id": "apicity-fake-voice"
-        }
-      },
-      "source": {
-        "type": "text",
-        "text": "Hello from apicity."
-      }
     },
     "tier": "expensive",
     "runByDefault": false
@@ -719,26 +529,6 @@
         "language": "en",
         "accent": "en-US"
       }
-    },
-    "tier": "expensive",
-    "runByDefault": false
-  },
-  "POST v1.voices.pvc.samples": {
-    "source": "elevenlabs/voice-pvc-sample-update",
-    "payload": {
-      "remove_background_noise": false,
-      "selected_speaker_ids": null,
-      "trim_start_time": null,
-      "trim_end_time": null,
-      "file_name": "apicity-sample.wav"
-    },
-    "tier": "expensive",
-    "runByDefault": false
-  },
-  "POST v1.voices.pvc.train": {
-    "source": "elevenlabs/pvc-train",
-    "payload": {
-      "model_id": "eleven_turbo_v2"
     },
     "tier": "expensive",
     "runByDefault": false

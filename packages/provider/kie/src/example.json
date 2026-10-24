@@ -1,22 +1,6 @@
 {
-  "GET api.v1.flux.kontext.recordInfo": {
-    "source": "kie/flux-kontext-record-info-not-found",
-    "payload": {
-      "taskId": "apicity-test-nonexistent-task-id-do-not-record-real"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
   "GET api.v1.generate.recordInfo": {
     "source": "kie/suno/record-info-not-found",
-    "payload": {
-      "taskId": "apicity-test-nonexistent-task-id-do-not-record-real"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "GET api.v1.gpt4oImage.recordInfo": {
-    "source": "kie/gpt4o-image/record-info-not-found",
     "payload": {
       "taskId": "apicity-test-nonexistent-task-id-do-not-record-real"
     },
@@ -43,14 +27,6 @@
     "source": "kie/midi/record-info-not-found",
     "payload": {
       "taskId": "apicity-test-nonexistent-task-id-do-not-record-real"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "GET api.v1.mj.recordInfo": {
-    "source": "kie/mj/record-info-not-found",
-    "payload": {
-      "taskId": "apicity-test-nonexistent-mj-task-id-do-not-record-real"
     },
     "tier": "prohibitive",
     "runByDefault": false
@@ -84,23 +60,6 @@
     "source": "kie/suno/cover-record-info-not-found",
     "payload": {
       "taskId": "apicity-test-nonexistent-task-id-do-not-record-real"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "GET api.v1.suno.recovery.recordInfo": {
-    "source": "kie/suno/recovery-record-info-not-found",
-    "payload": {
-      "task_id": "apicity-test-nonexistent-task-id-do-not-record-real"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "GET api.v1.veo.get1080pVideo": {
-    "source": "kie/veo/get-1080p-video",
-    "payload": {
-      "taskId": "apicity-test-veo-1080p-not-found",
-      "index": 0
     },
     "tier": "prohibitive",
     "runByDefault": false
@@ -182,14 +141,6 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
-  "POST api.v1.common.downloadUrl": {
-    "source": "kie/download-url/convert",
-    "payload": {
-      "url": "https://cdn.kie.ai/files/sample-test-file.mp4"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
   "POST api.v1.flux.kontext.generate": {
     "source": "kie/flux-kontext-generate",
     "payload": {
@@ -255,26 +206,6 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
-  "POST api.v1.generate.generatePersona": {
-    "source": "kie/suno/generate-persona-not-found",
-    "payload": {
-      "taskId": "apicity-test-nonexistent-task-id-do-not-record-real",
-      "audioId": "apicity-test-nonexistent-audio-id-do-not-record-real",
-      "name": "Apicity Test Persona",
-      "description": "error-path fixture only — nonexistent task/audio ids"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "POST api.v1.generate.getTimestampedLyrics": {
-    "source": "kie/suno/get-timestamped-lyrics-not-found",
-    "payload": {
-      "taskId": "apicity-test-nonexistent-task-id-do-not-record-real",
-      "audioId": "apicity-test-nonexistent-audio-id-do-not-record-real"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
   "POST api.v1.generate.mashup": {
     "source": "kie/suno/mashup-submit",
     "payload": {
@@ -284,21 +215,6 @@
       ],
       "customMode": false,
       "model": "V4",
-      "callBackUrl": "https://example.com/cb"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "POST api.v1.generate.replaceSection": {
-    "source": "kie/suno/replace-music-section-full-lyrics-validation",
-    "payload": {
-      "taskId": "test-task-id",
-      "audioId": "test-audio-id",
-      "prompt": "Replace with upbeat electronic section",
-      "tags": "electronic, upbeat",
-      "title": "Test Replacement",
-      "infillStartS": 10,
-      "infillEndS": 20,
       "callBackUrl": "https://example.com/cb"
     },
     "tier": "prohibitive",
@@ -344,15 +260,6 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
-  "POST api.v1.gpt4oImage.downloadUrl": {
-    "source": "kie/gpt4o-image/download-url-not-found",
-    "payload": {
-      "taskId": "apicity-test-nonexistent-task-id-do-not-record-real",
-      "url": "https://tempfile.aiquickdraw.com/v/apicity-test-nonexistent.png"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
   "POST api.v1.gpt4oImage.generate": {
     "source": "kie/gpt4o-image-generate",
     "payload": {
@@ -383,15 +290,6 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
-  "POST api.v1.midi.generate": {
-    "source": "kie/suno/midi-bogus-task-id",
-    "payload": {
-      "taskId": "apicity-test-bogus-vocal-removal-task-id",
-      "callBackUrl": "https://example.com/cb"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
   "POST api.v1.mj.generate": {
     "source": "kie/mj-generate",
     "payload": {
@@ -402,16 +300,6 @@
       "version": "7",
       "stylization": 100,
       "weirdness": 0
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "POST api.v1.mp4.generate": {
-    "source": "kie/suno/mp4-bogus-ids",
-    "payload": {
-      "taskId": "apicity-test-bogus-task-id",
-      "audioId": "apicity-test-bogus-audio-id",
-      "callBackUrl": "https://example.com/cb"
     },
     "tier": "prohibitive",
     "runByDefault": false
@@ -428,7 +316,7 @@
     "runByDefault": false
   },
   "POST api.v1.responses": {
-    "source": "kie/api-responses-auth-error",
+    "source": "static:kie-api-responses-minimal",
     "payload": {
       "model": "gpt-5.1-codex",
       "input": "ping",
@@ -467,23 +355,6 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
-  "POST api.v1.suno.cover.generate": {
-    "source": "kie/suno/cover-generate-bogus-task",
-    "payload": {
-      "taskId": "apicity-test-bogus-cover-task-id",
-      "callBackUrl": "https://example.com/cb"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "POST api.v1.suno.recovery": {
-    "source": "kie/suno/recovery-invalid-task",
-    "payload": {
-      "task_id": "apicity-test-nonexistent-task-id-do-not-record-real"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
   "POST api.v1.veo.generate": {
     "source": "kie/veo/aspect-ratio-probe",
     "payload": {
@@ -497,57 +368,6 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
-  "POST api.v1.veo.get4kVideo": {
-    "source": "kie/veo/get-4k-video",
-    "payload": {
-      "taskId": "apicity-test-veo-4k-not-found",
-      "index": 0
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "POST api.v1.vocalRemoval.generate": {
-    "source": "kie/suno/vocal-removal-bogus-ids",
-    "payload": {
-      "taskId": "apicity-test-bogus-task-id",
-      "audioId": "apicity-test-bogus-audio-id",
-      "callBackUrl": "https://example.com/cb",
-      "type": "separate_vocal"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "POST api.v1.voice.checkVoice": {
-    "source": "kie/suno/voice-check-voice-not-found",
-    "payload": {
-      "task_id": "apicity-test-nonexistent-task-id-do-not-record-real"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "POST api.v1.voice.generate": {
-    "source": "kie/suno/voice-generate-bogus-ids",
-    "payload": {
-      "taskId": "apicity-test-bogus-task-id",
-      "verifyUrl": "https://invalid-host-apicity-test.invalid/verify.mp3",
-      "voiceName": "Apicity Test Voice",
-      "description": "error-path fixture only",
-      "style": "Pop",
-      "callBackUrl": "https://example.com/cb",
-      "singerSkillLevel": "beginner"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "POST api.v1.voice.regenerate": {
-    "source": "kie/suno/voice-regenerate-bogus-task",
-    "payload": {
-      "taskId": "apicity-test-bogus-task-id",
-      "calBackUrl": "https://example.com/cb"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
   "POST api.v1.voice.validate": {
     "source": "kie/suno/voice-validate-bogus-url",
     "payload": {
@@ -555,16 +375,6 @@
       "vocalStartS": 0,
       "vocalEndS": 10,
       "language": "en",
-      "callBackUrl": "https://example.com/cb"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "POST api.v1.wav.generate": {
-    "source": "kie/suno/wav-bogus-ids",
-    "payload": {
-      "taskId": "apicity-test-bogus-task-id",
-      "audioId": "apicity-test-bogus-audio-id",
       "callBackUrl": "https://example.com/cb"
     },
     "tier": "prohibitive",
@@ -623,7 +433,7 @@
     "runByDefault": false
   },
   "POST gemini.v1.models.gemini36Flash.streamGenerateContent": {
-    "source": "kie/gemini-36-flash-auth-error",
+    "source": "static:kie-gemini-36-flash-minimal",
     "payload": {
       "stream": false,
       "contents": [
@@ -641,7 +451,7 @@
     "runByDefault": false
   },
   "POST gemini.v1.models.gemini37Flash.streamGenerateContent": {
-    "source": "kie/gemini-37-flash-auth-error",
+    "source": "static:kie-gemini-37-flash-minimal",
     "payload": {
       "stream": false,
       "contents": [
@@ -659,7 +469,7 @@
     "runByDefault": false
   },
   "POST gemini.v1.models.gemini38Flash.streamGenerateContent": {
-    "source": "kie/gemini-38-flash-auth-error",
+    "source": "static:kie-gemini-38-flash-minimal",
     "payload": {
       "stream": false,
       "contents": [
@@ -677,7 +487,7 @@
     "runByDefault": false
   },
   "POST gemini25Pro.v1.chat.completions": {
-    "source": "kie/gemini-25-pro-chat-auth-error",
+    "source": "static:kie-gemini-25-pro-chat-minimal",
     "payload": {
       "messages": [
         {
@@ -714,7 +524,7 @@
     "runByDefault": false
   },
   "POST gemini35FlashOpenai.v1.chat.completions": {
-    "source": "kie/gemini-35-flash-openai-chat-auth-error",
+    "source": "static:kie-gemini-35-flash-openai-chat-minimal",
     "payload": {
       "messages": [
         {
@@ -734,7 +544,7 @@
     "runByDefault": false
   },
   "POST gemini36FlashOpenai.v1.chat.completions": {
-    "source": "kie/gemini-36-flash-openai-chat-auth-error",
+    "source": "static:kie-gemini-36-flash-openai-chat-minimal",
     "payload": {
       "messages": [
         {
@@ -754,7 +564,7 @@
     "runByDefault": false
   },
   "POST gemini37FlashOpenai.v1.chat.completions": {
-    "source": "kie/gemini-37-flash-openai-chat-auth-error",
+    "source": "static:kie-gemini-37-flash-openai-chat-minimal",
     "payload": {
       "messages": [
         {
@@ -774,7 +584,7 @@
     "runByDefault": false
   },
   "POST gemini38FlashOpenai.v1.chat.completions": {
-    "source": "kie/gemini-38-flash-openai-chat-auth-error",
+    "source": "static:kie-gemini-38-flash-openai-chat-minimal",
     "payload": {
       "messages": [
         {
@@ -794,7 +604,7 @@
     "runByDefault": false
   },
   "POST gemini3Pro.v1.chat.completions": {
-    "source": "kie/gemini-3-pro-chat-auth-error",
+    "source": "static:kie-gemini-3-pro-chat-minimal",
     "payload": {
       "messages": [
         {

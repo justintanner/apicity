@@ -40,14 +40,14 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "runByDefault": false
   },
   "POST coding.v1.messages": {
-    "source": "kimicoding/messages-rate-limit",
+    "source": "kimicoding/openai-base-url",
     "payload": {
       "model": "k3-256k",
       "max_tokens": 256,
       "messages": [
         {
           "role": "user",
-          "content": "hi"
+          "content": "Say OK."
         }
       ]
     },

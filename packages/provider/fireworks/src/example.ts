@@ -147,30 +147,6 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "expensive",
     "runByDefault": false
   },
-  "POST inference.v1.accounts.rlorTrainerJobs.create": {
-    "source": "fireworks/rlor-trainer-jobs-create",
-    "payload": {
-      "dataset": "accounts/test-account/datasets/test-rlor-dataset",
-      "evaluator": "accounts/test-account/evaluators/test-evaluator",
-      "displayName": "Test RLOR Trainer Job",
-      "trainingConfig": {
-        "baseModel": "accounts/fireworks/models/llama-v3p1-8b-instruct",
-        "epochs": 1,
-        "learningRate": 0.00001
-      }
-    },
-    "tier": "expensive",
-    "runByDefault": false
-  },
-  "POST inference.v1.accounts.rlorTrainerJobs.executeTrainStep": {
-    "source": "fireworks/rlor-trainer-jobs-execute-step",
-    "payload": {
-      "dataset": "accounts/test-account/datasets/step-dataset",
-      "outputModel": "accounts/test-account/models/step-output-model"
-    },
-    "tier": "expensive",
-    "runByDefault": false
-  },
   "POST inference.v1.chat.completions": {
     "source": "fireworks/chat-hello",
     "payload": {

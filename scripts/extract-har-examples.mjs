@@ -15,6 +15,7 @@ import { existsSync } from "node:fs";
 import { join, dirname, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { findMatchingRow } from "./lib/match-har-to-endpoint.mjs";
+import { exchangeSucceeded } from "./lib/exchange-succeeded.mjs";
 import { selectGreenPath } from "./lib/select-green-path.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -170,6 +171,7 @@ async function main() {
   const harFiles = await findHarFiles(RECORDINGS_DIR);
   const candidatesByKey = new Map(); // "provider::METHOD <dotPath>" → candidate[]
   const unmatched = [];
+  const failed = [];
 
   for (const harPath of harFiles) {
     const har = await readJson(harPath);
@@ -209,6 +211,18 @@ async function main() {
         continue;
       }
       if (!extracted) continue;
+      if (!exchangeSucceeded(row?.provider ?? providerHint, entry)) {
+        failed.push({
+          recordingName,
+          endpoint: row
+            ? `${row.provider} ${row.method} ${row.dotPath}`
+            : `${providerHint} ${method}`,
+          file: relative(ROOT, harPath),
+          status: entry.response?.status,
+          reason: "failed exchange",
+        });
+        continue;
+      }
       if (!row) {
         unmatched.push({
           recordingName,
@@ -275,7 +289,7 @@ async function main() {
   }
 
   if (MODE === "report") {
-    printReport(covered, missing, unmatched, candidatesByKey);
+    printReport(covered, missing, unmatched, candidatesByKey, failed);
     return;
   }
 
@@ -333,7 +347,7 @@ async function main() {
   }
 }
 
-function printReport(covered, missing, unmatched, candidatesByKey) {
+function printReport(covered, missing, unmatched, candidatesByKey, failed) {
   console.log(
     `Coverage: ${covered.length} covered, ${missing.length} missing\n`
   );
@@ -342,6 +356,14 @@ function printReport(covered, missing, unmatched, candidatesByKey) {
     const chosen = selectGreenPath(candidates);
     if (!chosen) continue;
     console.log(`  ${key}  →  ${chosen.recordingName}`);
+  }
+  if (failed.length > 0) {
+    console.log("\n== demoted candidates (failed exchange) ==");
+    for (const row of failed) {
+      console.log(
+        `  ${row.endpoint} → ${row.recordingName} (${row.file}, HTTP ${row.status}): ${row.reason}`
+      );
+    }
   }
   if (missing.length > 0) {
     console.log(

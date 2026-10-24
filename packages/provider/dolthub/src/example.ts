@@ -14,69 +14,7 @@ export interface EndpointExample {
   runByDefault: boolean;
 }
 
-const EXAMPLES: Record<string, EndpointExample> = {
-  "POST api.v2.databases.branches.create": {
-    "source": "dolthub/branch-create-unauthenticated",
-    "payload": {
-      "name": "apicity-branch-probe",
-      "from": {
-        "branch": "main"
-      }
-    },
-    "tier": "cheap",
-    "runByDefault": true
-  },
-  "POST api.v2.databases.create": {
-    "source": "dolthub/database-create-unauthenticated",
-    "payload": {
-      "owner": "apicity",
-      "name": "apicity-database-probe",
-      "visibility": "private"
-    },
-    "tier": "cheap",
-    "runByDefault": true
-  },
-  "POST api.v2.databases.forks.create": {
-    "source": "dolthub/fork-create-unauthenticated",
-    "payload": {
-      "owner": "apicity-fork-probe"
-    },
-    "tier": "cheap",
-    "runByDefault": true
-  },
-  "POST api.v2.databases.pulls.create": {
-    "source": "dolthub/pulls-create-unauthenticated",
-    "payload": {
-      "title": "apicity-pull-probe",
-      "from_branch": {
-        "database": {
-          "owner": "dolthub",
-          "name": "ip-to-country"
-        },
-        "branch_name": "apicity-branch-probe"
-      },
-      "to_branch": {
-        "database": {
-          "owner": "dolthub",
-          "name": "ip-to-country"
-        },
-        "branch_name": "main"
-      }
-    },
-    "tier": "cheap",
-    "runByDefault": true
-  },
-  "POST api.v2.databases.sql.write": {
-    "source": "dolthub/sql-write-v2-unauthenticated",
-    "payload": {
-      "from_branch": "main",
-      "to_branch": "apicity-probe",
-      "q": "INSERT INTO apicity_probe (id) VALUES (1)"
-    },
-    "tier": "cheap",
-    "runByDefault": true
-  }
-};
+const EXAMPLES: Record<string, EndpointExample> = {};
 
 export default EXAMPLES;
 

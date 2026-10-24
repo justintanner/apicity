@@ -15,24 +15,8 @@ export interface EndpointExample {
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
-  "GET api.v1.flux.kontext.recordInfo": {
-    "source": "kie/flux-kontext-record-info-not-found",
-    "payload": {
-      "taskId": "apicity-test-nonexistent-task-id-do-not-record-real"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
   "GET api.v1.generate.recordInfo": {
     "source": "kie/suno/record-info-not-found",
-    "payload": {
-      "taskId": "apicity-test-nonexistent-task-id-do-not-record-real"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "GET api.v1.gpt4oImage.recordInfo": {
-    "source": "kie/gpt4o-image/record-info-not-found",
     "payload": {
       "taskId": "apicity-test-nonexistent-task-id-do-not-record-real"
     },
@@ -59,14 +43,6 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "source": "kie/midi/record-info-not-found",
     "payload": {
       "taskId": "apicity-test-nonexistent-task-id-do-not-record-real"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "GET api.v1.mj.recordInfo": {
-    "source": "kie/mj/record-info-not-found",
-    "payload": {
-      "taskId": "apicity-test-nonexistent-mj-task-id-do-not-record-real"
     },
     "tier": "prohibitive",
     "runByDefault": false
@@ -100,23 +76,6 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "source": "kie/suno/cover-record-info-not-found",
     "payload": {
       "taskId": "apicity-test-nonexistent-task-id-do-not-record-real"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "GET api.v1.suno.recovery.recordInfo": {
-    "source": "kie/suno/recovery-record-info-not-found",
-    "payload": {
-      "task_id": "apicity-test-nonexistent-task-id-do-not-record-real"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "GET api.v1.veo.get1080pVideo": {
-    "source": "kie/veo/get-1080p-video",
-    "payload": {
-      "taskId": "apicity-test-veo-1080p-not-found",
-      "index": 0
     },
     "tier": "prohibitive",
     "runByDefault": false
@@ -161,22 +120,6 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
-  "POST anthropic.v1.messages": {
-    "source": "kie/anthropic-messages",
-    "payload": {
-      "model": "claude-haiku-4-5",
-      "max_tokens": 16,
-      "messages": [
-        {
-          "role": "user",
-          "content": "Reply with the single word: pong"
-        }
-      ],
-      "stream": false
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
   "POST api.fileBase64Upload": {
     "source": "kie/file-uploads/base64",
     "payload": {
@@ -194,14 +137,6 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "fileUrl": "https://static.aiquickdraw.com/tools/example/1767694885407_pObJoMcy.png",
       "uploadPath": "images/test-uploads",
       "fileName": "apicity-url-upload.png"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "POST api.v1.common.downloadUrl": {
-    "source": "kie/download-url/convert",
-    "payload": {
-      "url": "https://cdn.kie.ai/files/sample-test-file.mp4"
     },
     "tier": "prohibitive",
     "runByDefault": false
@@ -271,26 +206,6 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
-  "POST api.v1.generate.generatePersona": {
-    "source": "kie/suno/generate-persona-not-found",
-    "payload": {
-      "taskId": "apicity-test-nonexistent-task-id-do-not-record-real",
-      "audioId": "apicity-test-nonexistent-audio-id-do-not-record-real",
-      "name": "Apicity Test Persona",
-      "description": "error-path fixture only — nonexistent task/audio ids"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "POST api.v1.generate.getTimestampedLyrics": {
-    "source": "kie/suno/get-timestamped-lyrics-not-found",
-    "payload": {
-      "taskId": "apicity-test-nonexistent-task-id-do-not-record-real",
-      "audioId": "apicity-test-nonexistent-audio-id-do-not-record-real"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
   "POST api.v1.generate.mashup": {
     "source": "kie/suno/mashup-submit",
     "payload": {
@@ -300,21 +215,6 @@ const EXAMPLES: Record<string, EndpointExample> = {
       ],
       "customMode": false,
       "model": "V4",
-      "callBackUrl": "https://example.com/cb"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "POST api.v1.generate.replaceSection": {
-    "source": "kie/suno/replace-music-section-full-lyrics-validation",
-    "payload": {
-      "taskId": "test-task-id",
-      "audioId": "test-audio-id",
-      "prompt": "Replace with upbeat electronic section",
-      "tags": "electronic, upbeat",
-      "title": "Test Replacement",
-      "infillStartS": 10,
-      "infillEndS": 20,
       "callBackUrl": "https://example.com/cb"
     },
     "tier": "prohibitive",
@@ -360,15 +260,6 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
-  "POST api.v1.gpt4oImage.downloadUrl": {
-    "source": "kie/gpt4o-image/download-url-not-found",
-    "payload": {
-      "taskId": "apicity-test-nonexistent-task-id-do-not-record-real",
-      "url": "https://tempfile.aiquickdraw.com/v/apicity-test-nonexistent.png"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
   "POST api.v1.gpt4oImage.generate": {
     "source": "kie/gpt4o-image-generate",
     "payload": {
@@ -399,15 +290,6 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
-  "POST api.v1.midi.generate": {
-    "source": "kie/suno/midi-bogus-task-id",
-    "payload": {
-      "taskId": "apicity-test-bogus-vocal-removal-task-id",
-      "callBackUrl": "https://example.com/cb"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
   "POST api.v1.mj.generate": {
     "source": "kie/mj-generate",
     "payload": {
@@ -422,16 +304,6 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
-  "POST api.v1.mp4.generate": {
-    "source": "kie/suno/mp4-bogus-ids",
-    "payload": {
-      "taskId": "apicity-test-bogus-task-id",
-      "audioId": "apicity-test-bogus-audio-id",
-      "callBackUrl": "https://example.com/cb"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
   "POST api.v1.omni.audio.create": {
     "source": "kie/audio/gemini-omni-audio-create",
     "payload": {
@@ -439,16 +311,6 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "name": "Apicity HAR Test Narrator",
       "voice_description": "A calm, clear, friendly voice for a short API smoke test.",
       "example_dialogue": "Hello from the Apicity Kie audio HAR test."
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "POST api.v1.responses": {
-    "source": "kie/api-responses-auth-error",
-    "payload": {
-      "model": "gpt-5.1-codex",
-      "input": "ping",
-      "stream": false
     },
     "tier": "prohibitive",
     "runByDefault": false
@@ -483,23 +345,6 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
-  "POST api.v1.suno.cover.generate": {
-    "source": "kie/suno/cover-generate-bogus-task",
-    "payload": {
-      "taskId": "apicity-test-bogus-cover-task-id",
-      "callBackUrl": "https://example.com/cb"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "POST api.v1.suno.recovery": {
-    "source": "kie/suno/recovery-invalid-task",
-    "payload": {
-      "task_id": "apicity-test-nonexistent-task-id-do-not-record-real"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
   "POST api.v1.veo.generate": {
     "source": "kie/veo/aspect-ratio-probe",
     "payload": {
@@ -513,57 +358,6 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "tier": "prohibitive",
     "runByDefault": false
   },
-  "POST api.v1.veo.get4kVideo": {
-    "source": "kie/veo/get-4k-video",
-    "payload": {
-      "taskId": "apicity-test-veo-4k-not-found",
-      "index": 0
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "POST api.v1.vocalRemoval.generate": {
-    "source": "kie/suno/vocal-removal-bogus-ids",
-    "payload": {
-      "taskId": "apicity-test-bogus-task-id",
-      "audioId": "apicity-test-bogus-audio-id",
-      "callBackUrl": "https://example.com/cb",
-      "type": "separate_vocal"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "POST api.v1.voice.checkVoice": {
-    "source": "kie/suno/voice-check-voice-not-found",
-    "payload": {
-      "task_id": "apicity-test-nonexistent-task-id-do-not-record-real"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "POST api.v1.voice.generate": {
-    "source": "kie/suno/voice-generate-bogus-ids",
-    "payload": {
-      "taskId": "apicity-test-bogus-task-id",
-      "verifyUrl": "https://invalid-host-apicity-test.invalid/verify.mp3",
-      "voiceName": "Apicity Test Voice",
-      "description": "error-path fixture only",
-      "style": "Pop",
-      "callBackUrl": "https://example.com/cb",
-      "singerSkillLevel": "beginner"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "POST api.v1.voice.regenerate": {
-    "source": "kie/suno/voice-regenerate-bogus-task",
-    "payload": {
-      "taskId": "apicity-test-bogus-task-id",
-      "calBackUrl": "https://example.com/cb"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
   "POST api.v1.voice.validate": {
     "source": "kie/suno/voice-validate-bogus-url",
     "payload": {
@@ -572,323 +366,6 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "vocalEndS": 10,
       "language": "en",
       "callBackUrl": "https://example.com/cb"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "POST api.v1.wav.generate": {
-    "source": "kie/suno/wav-bogus-ids",
-    "payload": {
-      "taskId": "apicity-test-bogus-task-id",
-      "audioId": "apicity-test-bogus-audio-id",
-      "callBackUrl": "https://example.com/cb"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "POST claude.v1.messages": {
-    "source": "kie/claude-opus-5-chat-hello",
-    "payload": {
-      "model": "claude-opus-5",
-      "messages": [
-        {
-          "role": "user",
-          "content": "Say hello in one sentence."
-        }
-      ],
-      "stream": false
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "POST codex.v1.responses": {
-    "source": "kie/gpt-6-1-sol-responses",
-    "payload": {
-      "model": "gpt-6-1-sol",
-      "input": "ping",
-      "stream": false,
-      "reasoning": {
-        "effort": "low"
-      }
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "POST gemini.v1.models.gemini35Flash.streamGenerateContent": {
-    "source": "kie/gemini-35-flash",
-    "payload": {
-      "stream": false,
-      "contents": [
-        {
-          "role": "user",
-          "parts": [
-            {
-              "text": "Reply with the single word: pong"
-            }
-          ]
-        }
-      ],
-      "generationConfig": {
-        "thinkingConfig": {
-          "thinkingLevel": "low",
-          "includeThoughts": false
-        }
-      }
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "POST gemini.v1.models.gemini36Flash.streamGenerateContent": {
-    "source": "kie/gemini-36-flash-auth-error",
-    "payload": {
-      "stream": false,
-      "contents": [
-        {
-          "role": "user",
-          "parts": [
-            {
-              "text": "ping"
-            }
-          ]
-        }
-      ]
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "POST gemini.v1.models.gemini37Flash.streamGenerateContent": {
-    "source": "kie/gemini-37-flash-auth-error",
-    "payload": {
-      "stream": false,
-      "contents": [
-        {
-          "role": "user",
-          "parts": [
-            {
-              "text": "ping"
-            }
-          ]
-        }
-      ]
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "POST gemini.v1.models.gemini38Flash.streamGenerateContent": {
-    "source": "kie/gemini-38-flash-auth-error",
-    "payload": {
-      "stream": false,
-      "contents": [
-        {
-          "role": "user",
-          "parts": [
-            {
-              "text": "ping"
-            }
-          ]
-        }
-      ]
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "POST gemini25Pro.v1.chat.completions": {
-    "source": "kie/gemini-25-pro-chat-auth-error",
-    "payload": {
-      "messages": [
-        {
-          "role": "user",
-          "content": [
-            {
-              "type": "text",
-              "text": "ping"
-            }
-          ]
-        }
-      ],
-      "stream": false,
-      "include_thoughts": false,
-      "reasoning_effort": "low"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "POST gemini31Pro.v1.chat.completions": {
-    "source": "kie/gemini-31-pro-chat",
-    "payload": {
-      "messages": [
-        {
-          "role": "user",
-          "content": "Reply with the single word: pong"
-        }
-      ],
-      "stream": false,
-      "include_thoughts": false,
-      "reasoning_effort": "low"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "POST gemini35FlashOpenai.v1.chat.completions": {
-    "source": "kie/gemini-35-flash-openai-chat-auth-error",
-    "payload": {
-      "messages": [
-        {
-          "role": "user",
-          "content": [
-            {
-              "type": "text",
-              "text": "ping"
-            }
-          ]
-        }
-      ],
-      "stream": false,
-      "include_thoughts": false
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "POST gemini36FlashOpenai.v1.chat.completions": {
-    "source": "kie/gemini-36-flash-openai-chat-auth-error",
-    "payload": {
-      "messages": [
-        {
-          "role": "user",
-          "content": [
-            {
-              "type": "text",
-              "text": "ping"
-            }
-          ]
-        }
-      ],
-      "stream": false,
-      "include_thoughts": false
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "POST gemini37FlashOpenai.v1.chat.completions": {
-    "source": "kie/gemini-37-flash-openai-chat-auth-error",
-    "payload": {
-      "messages": [
-        {
-          "role": "user",
-          "content": [
-            {
-              "type": "text",
-              "text": "ping"
-            }
-          ]
-        }
-      ],
-      "stream": false,
-      "include_thoughts": false
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "POST gemini38FlashOpenai.v1.chat.completions": {
-    "source": "kie/gemini-38-flash-openai-chat-auth-error",
-    "payload": {
-      "messages": [
-        {
-          "role": "user",
-          "content": [
-            {
-              "type": "text",
-              "text": "ping"
-            }
-          ]
-        }
-      ],
-      "stream": false,
-      "include_thoughts": false
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "POST gemini3Pro.v1.chat.completions": {
-    "source": "kie/gemini-3-pro-chat-auth-error",
-    "payload": {
-      "messages": [
-        {
-          "role": "user",
-          "content": [
-            {
-              "type": "text",
-              "text": "ping"
-            }
-          ]
-        }
-      ],
-      "stream": false,
-      "include_thoughts": false
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "POST gemini4ArgonOpenai.v1.chat.completions": {
-    "source": "kie/gemini-4-argon-openai-chat",
-    "payload": {
-      "messages": [
-        {
-          "role": "user",
-          "content": [
-            {
-              "type": "text",
-              "text": "Reply with the single word: pong"
-            }
-          ]
-        }
-      ],
-      "stream": false,
-      "include_thoughts": false,
-      "reasoning_effort": "low"
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "POST gpt52.v1.chat.completions": {
-    "source": "kie/gpt-5-2-chat",
-    "payload": {
-      "messages": [
-        {
-          "role": "user",
-          "content": "Reply with the single word: pong"
-        }
-      ]
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "POST grok.v1.responses": {
-    "source": "kie/grok-4-6-responses",
-    "payload": {
-      "model": "grok-4-6",
-      "input": "ping",
-      "stream": false
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "POST openai.v1.responses": {
-    "source": "kie/openai-responses-codex",
-    "payload": {
-      "model": "gpt-5.5",
-      "input": "Reply with the single word: pong",
-      "stream": false
-    },
-    "tier": "prohibitive",
-    "runByDefault": false
-  },
-  "POST xai.v1.responses": {
-    "source": "kie/xai-responses",
-    "payload": {
-      "model": "grok-4-6",
-      "input": "Reply with the single word: pong",
-      "stream": false
     },
     "tier": "prohibitive",
     "runByDefault": false

@@ -1,6 +1,6 @@
 {
   "name": "@apicity/machgen",
-  "version": "0.17.1",
+  "version": "0.18.0",
   "description": "MachGen video generation API provider.",
   "license": "MIT",
   "repository": {

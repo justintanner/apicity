@@ -14,6 +14,10 @@ import {
   type Har,
 } from "@apicity/har";
 import { main, promote, PAID_OTP_HELPERS } from "../../scripts/har-promote.mjs";
+import {
+  validateBodies,
+  validateCapture,
+} from "../../scripts/lib/har-promote-plan.mjs";
 import { PAID_ENDPOINTS } from "../../packages/provider/cost/src/paid-endpoints";
 import { auditFalCredentialWiring } from "../../scripts/lib/fal-credential-hosts.mjs";
 import { runHarCommand } from "../../packages/cli/src/har";
@@ -204,6 +208,84 @@ describe("HAR promotion", () => {
     120000
   );
 
+  it("promotes repeated, valueless and reserved query keys with a fragment", async () => {
+    const dir = root("query");
+    const previous = globalThis.fetch;
+    const input = {
+      repeated: ["one", "two"],
+      empty: "",
+      "reserved & key": "a/b + ☀",
+    };
+    globalThis.fetch = async () =>
+      new Response('{"models":[]}', {
+        headers: { "content-type": "application/json" },
+      });
+    const capture = createHarCapture({
+      dir: path.join(dir, "capture"),
+      mode: "all",
+    });
+    try {
+      const client = createFal({ apiKey: "test-key", fetch: capture.fetch });
+      await capture.call(
+        { provider: "fal", endpoint: "v1.models", input },
+        () => client.v1.models(input as never)
+      );
+    } finally {
+      await capture.close();
+      globalThis.fetch = previous;
+    }
+    const file = findHar(path.join(dir, "capture"));
+    const har = read(file);
+    // Polly drops prototype keys and fragments; the generated provider call
+    // therefore has the same identity without this valueless query key.
+    har.log.entries[0].request.url += "&__proto__#fragment";
+    fs.writeFileSync(file, JSON.stringify(scrubHar(har)));
+    const io = logs();
+    expect(
+      await main(
+        [file, "--name", "fal/query-shapes", "--root", root("query-output")],
+        io
+      ),
+      io.lines.join("\n")
+    ).toBe(0);
+    expect(io.lines.join("\n")).toContain("har:promote: replay passed");
+  }, 120000);
+
+  it.each(["?flag", "?a=one&a=two", "?q=a%2Fb+%E2%98%80", "#fragment"])(
+    "accepts query identity %s before call reconstruction",
+    (suffix) => {
+      const har = read(captures.fal);
+      har.log.entries[0].request.url += suffix;
+      expect(() =>
+        validateBodies(validateCapture(scrubHar(har)))
+      ).not.toThrow();
+    }
+  );
+
+  it.each(["%", "%GG", "%FF", "%C3%28", "%E2%82"])(
+    "refuses malformed query escape %s",
+    async (escape) => {
+      const file = changed("invalid-query", (har) => {
+        har.log.entries[0].request.url += `?${escape}=value`;
+        Object.assign(har, scrubHar(har));
+      });
+      const io = logs();
+      expect(
+        await main(
+          [
+            file,
+            "--name",
+            "fal/invalid-query",
+            "--root",
+            root("invalid-query"),
+          ],
+          io
+        )
+      ).toBe(2);
+      expect(io.lines.join("\n")).toContain("(query-shape)");
+    }
+  );
+
   const refusals: Array<[string, (h: Har) => void, string?]> = [
     [
       "outcome-not-ok",
@@ -256,7 +338,7 @@ describe("HAR promotion", () => {
     [
       "query-shape",
       (h) => {
-        h.log.entries[0].request.url += "?a=one&a=two";
+        h.log.entries[0].request.url += "?a=%ZZ";
         Object.assign(h, scrubHar(h));
       },
     ],

@@ -233,28 +233,20 @@ export function validateBodies(context) {
   }
   if (contains(meta.input, (v) => plain(v) && Object.hasOwn(v, "__proto__")))
     refuse("unsafe-key");
+  for (const e of entries) {
+    // Validate raw query escapes before URLSearchParams can replace invalid
+    // UTF-8. Valid duplicate/valueless keys and fragments match Polly's ID.
+    try {
+      decodeURIComponent(new URL(e.request.url).search);
+    } catch {
+      refuse("query-shape");
+    }
+  }
   if (
     entries.some((e) => decodeURIComponent(e.request.url).includes("***")) ||
     candidates.some((r) => CALL_SHAPES[keyOf(r)]?.injected.length)
   )
     refuse("credential-in-url");
-  for (const e of entries) {
-    const u = new URL(e.request.url);
-    const keys = [...u.searchParams.keys()];
-    if (
-      u.hash ||
-      keys.length !== new Set(keys).size ||
-      (u.search &&
-        u.search
-          .slice(1)
-          .split("&")
-          .some((p) => !p.includes("="))) ||
-      [...u.searchParams].some((pair) =>
-        pair.some((v) => !/^[A-Za-z0-9._-]*$/.test(v))
-      )
-    )
-      refuse("query-shape");
-  }
   context.envVar = context.spec.envVar;
   if (context.provider === "fal") {
     const c = classifyHosts([

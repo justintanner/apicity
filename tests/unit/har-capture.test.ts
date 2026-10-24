@@ -312,6 +312,79 @@ describe("HAR capture runtime", () => {
       );
     }
   });
+  it("merges each concurrent call's own context over the capture context", async () => {
+    let release!: () => void;
+    const bothActive = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    let started = 0;
+    vi.stubGlobal("fetch", async () => {
+      // Hold every exchange until both call scopes are in flight.
+      if (++started === 2) release();
+      await bothActive;
+      return json({ ok: true });
+    });
+    const context = { app: "videobook", attemptId: "default" };
+    const { dir, capture } = await setup({ context });
+    await Promise.all(
+      ["book-1", "book-2"].map((book) =>
+        capture.call(
+          {
+            ...meta,
+            input: book,
+            context: {
+              book,
+              attemptId: `${book}-attempt`,
+              api_key: "per-call-secret",
+            },
+          },
+          () =>
+            capture.call(
+              { ...meta, endpoint: "inner", context: { book: "nested" } },
+              () => capture.fetch(`https://api.kie.ai/${book}`)
+            )
+        )
+      )
+    );
+    await capture.call({ ...meta, input: "default" }, () =>
+      capture.fetch("https://api.kie.ai/default")
+    );
+    await capture.flush();
+    const { lines, hars } = await read(dir);
+    const expected: Record<string, Record<string, unknown>> = {
+      "book-1": {
+        app: "videobook",
+        attemptId: "book-1-attempt",
+        book: "book-1",
+        api_key: "***",
+      },
+      "book-2": {
+        app: "videobook",
+        attemptId: "book-2-attempt",
+        book: "book-2",
+        api_key: "***",
+      },
+      default: context,
+    };
+    expect(hars).toHaveLength(3);
+    for (const [i, har] of hars.entries()) {
+      const call = har.log._apicity!;
+      const input = call.input as string;
+      expect(har.log.entries.map((e) => e.request.url)).toEqual([
+        `https://api.kie.ai/${input}`,
+      ]);
+      expect(call.context).toEqual(expected[input]);
+      expect(lines[i].callId).toBe(call.callId);
+      expect(lines[i].context).toEqual(expected[input]);
+    }
+    expect(hars.map((har) => har.log._apicity?.input).sort()).toEqual([
+      "book-1",
+      "book-2",
+      "default",
+    ]);
+    expect(context).toEqual({ app: "videobook", attemptId: "default" });
+    expect(JSON.stringify({ lines, hars })).not.toContain("per-call-secret");
+  });
   it("disables on write failure and calls onError once, even if the callback throws", async () => {
     vi.stubGlobal("fetch", async () => json({ ok: true }));
     const onError = vi.fn(() => {

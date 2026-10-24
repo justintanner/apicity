@@ -13,6 +13,7 @@ export interface HarCaptureOptions {
   mode: "all" | "failures";
   providers?: string[];
   maxBodyBytes?: number;
+  /** Default context of every call; a call's own `context` merges over it. */
   context?: Record<string, unknown>;
   onError?: (error: unknown) => void;
   clock?: () => number;
@@ -22,6 +23,8 @@ export interface HarCallMeta {
   provider: string;
   endpoint: string;
   input: unknown;
+  /** Merged shallowly over the capture's `context` for this call only. */
+  context?: Record<string, unknown>;
 }
 export interface HarFetchHost {
   fetch: typeof globalThis.fetch;
@@ -199,12 +202,15 @@ export function createHarCapture(options: HarCaptureOptions): HarCapture {
     let started: number;
     try {
       started = clock();
+      const { context, ...fields } = meta;
       scope = {
         metadata: {
-          ...meta,
+          ...fields,
           callId: idFactory(),
           outcome: "ok",
-          context: options.context,
+          context: context
+            ? { ...options.context, ...context }
+            : options.context,
           apicityVersion,
           runtime: `node ${process.version}`,
           startedAt: new Date(started).toISOString(),

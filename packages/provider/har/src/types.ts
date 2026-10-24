@@ -81,6 +81,7 @@ export interface ApicityCallMetadata {
     code?: string | number;
     status?: number;
   };
+  /** The capture's context with the call's own context merged over it. */
   context?: Record<string, unknown>;
   apicityVersion: string;
   runtime: string;

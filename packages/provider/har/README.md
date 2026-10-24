@@ -17,9 +17,11 @@ entry._id = pollyEntryId(entry);
 
 - `createHarCapture({ dir, mode: "all" | "failures", providers?, maxBodyBytes?,
   context?, onError?, clock?, idFactory? })` returns `{ fetch, call, install,
-  flush, close }`. Wrap provider work in `call({ provider, endpoint, input }, fn)`
-  and await `close()` before exit. Capture is disabled after a write error without
-  changing the provider result.
+  flush, close }`. Wrap provider work in
+  `call({ provider, endpoint, input, context? }, fn)` and await `close()` before
+  exit; a call's `context` is merged shallowly over the capture's `context` for
+  that call only. Capture is disabled after a write error without changing the
+  provider result.
 - `exchangeToEntry(request: Request, responseOrError: Response | Error, timing,
   options?)` reads clones and returns a scrubbed entry. Timing has `startedAt`,
   `durationMs` and optional HAR `timings`. Options are `maxBodyBytes` (262144 by

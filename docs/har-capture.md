@@ -67,6 +67,15 @@ Nested calls join the outer call and use its metadata. Concurrent outer calls
 remain isolated. Await the provider work inside the callback so its exchanges
 belong to that call.
 
+The `context` option is the default context of every call. To attribute
+concurrent work through one capture, give each call its own context:
+`capture.call({ provider, endpoint, input, context: { runId, attemptId } }, fn)`.
+It is merged shallowly over the capture's `context` for that call only: its
+keys replace the capture's values for the same keys, and calls without it keep
+the capture's context. A nested call's `context` is ignored, like the rest of
+its metadata. The merged context is scrubbed like call input and written to
+`log._apicity.context` and the index row.
+
 `capture.fetch` has the global fetch signature. Outside a call it records an
 implicit call under provider `unknown`, endpoint `unscoped`. It uses the global
 fetch present when the capture is constructed. To compose another fetch wrapper,

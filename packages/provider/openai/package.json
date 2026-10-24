@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "ws": "^8.21.0",
-    "zod": "^4.4.3"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@types/ws": "^8.18.1"

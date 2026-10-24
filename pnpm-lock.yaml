@@ -98,7 +98,7 @@ importers:
         specifier: ^8.21.0
         version: 8.21.0
       zod:
-        specifier: ^4.4.3
+        specifier: ^4.6.6
         version: 4.6.7
 
   examples/kimicoding-promises:
@@ -206,25 +206,25 @@ importers:
   packages/provider/alibaba:
     dependencies:
       zod:
-        specifier: ^4.4.3
+        specifier: ^4.6.6
         version: 4.6.7
 
   packages/provider/anthropic:
     dependencies:
       zod:
-        specifier: ^4.4.3
+        specifier: ^4.6.6
         version: 4.6.7
 
   packages/provider/b2:
     dependencies:
       zod:
-        specifier: ^4.4.3
+        specifier: ^4.6.6
         version: 4.6.7
 
   packages/provider/binance:
     dependencies:
       zod:
-        specifier: ^4.4.3
+        specifier: ^4.6.6
         version: 4.6.7
 
   packages/provider/cost: {}
@@ -232,49 +232,49 @@ importers:
   packages/provider/dolthub:
     dependencies:
       zod:
-        specifier: ^4.4.3
+        specifier: ^4.6.6
         version: 4.6.7
 
   packages/provider/dropbox:
     dependencies:
       zod:
-        specifier: ^4.4.3
+        specifier: ^4.6.6
         version: 4.6.7
 
   packages/provider/elevenlabs:
     dependencies:
       zod:
-        specifier: ^4.4.3
+        specifier: ^4.6.6
         version: 4.6.7
 
   packages/provider/fal:
     dependencies:
       zod:
-        specifier: ^4.4.3
+        specifier: ^4.6.6
         version: 4.6.7
 
   packages/provider/fireworks:
     dependencies:
       zod:
-        specifier: ^4.4.3
+        specifier: ^4.6.6
         version: 4.6.7
 
   packages/provider/free-media-upload:
     dependencies:
       zod:
-        specifier: ^4.4.3
+        specifier: ^4.6.6
         version: 4.6.7
 
   packages/provider/google:
     dependencies:
       zod:
-        specifier: ^4.4.3
+        specifier: ^4.6.6
         version: 4.6.7
 
   packages/provider/googleflow:
     dependencies:
       zod:
-        specifier: ^4.4.3
+        specifier: ^4.6.6
         version: 4.6.7
 
   packages/provider/har: {}
@@ -282,25 +282,25 @@ importers:
   packages/provider/kie:
     dependencies:
       zod:
-        specifier: ^4.4.3
+        specifier: ^4.6.6
         version: 4.6.7
 
   packages/provider/kimicoding:
     dependencies:
       zod:
-        specifier: ^4.4.3
+        specifier: ^4.6.6
         version: 4.6.7
 
   packages/provider/machgen:
     dependencies:
       zod:
-        specifier: ^4.4.3
+        specifier: ^4.6.6
         version: 4.6.7
 
   packages/provider/meta:
     dependencies:
       zod:
-        specifier: ^4.4.3
+        specifier: ^4.6.6
         version: 4.6.7
 
   packages/provider/openai:
@@ -309,7 +309,7 @@ importers:
         specifier: ^8.21.0
         version: 8.21.0
       zod:
-        specifier: ^4.4.3
+        specifier: ^4.6.6
         version: 4.6.7
     devDependencies:
       '@types/ws':
@@ -319,13 +319,13 @@ importers:
   packages/provider/openf1:
     dependencies:
       zod:
-        specifier: ^4.4.3
+        specifier: ^4.6.6
         version: 4.6.7
 
   packages/provider/openligadb:
     dependencies:
       zod:
-        specifier: ^4.4.3
+        specifier: ^4.6.6
         version: 4.6.7
 
   packages/provider/polymarket:
@@ -334,43 +334,43 @@ importers:
         specifier: ^2.52.2
         version: 2.52.2(typescript@5.9.3)(zod@4.6.7)
       zod:
-        specifier: ^4.4.3
+        specifier: ^4.6.6
         version: 4.6.7
 
   packages/provider/quo:
     dependencies:
       zod:
-        specifier: ^4.4.3
+        specifier: ^4.6.6
         version: 4.6.7
 
   packages/provider/s3:
     dependencies:
       zod:
-        specifier: ^4.4.3
+        specifier: ^4.6.6
         version: 4.6.7
 
   packages/provider/simplefunctions:
     dependencies:
       zod:
-        specifier: ^4.4.3
+        specifier: ^4.6.6
         version: 4.6.7
 
   packages/provider/telegram:
     dependencies:
       zod:
-        specifier: ^4.4.3
+        specifier: ^4.6.6
         version: 4.6.7
 
   packages/provider/thesportsdb:
     dependencies:
       zod:
-        specifier: ^4.4.3
+        specifier: ^4.6.6
         version: 4.6.7
 
   packages/provider/x:
     dependencies:
       zod:
-        specifier: ^4.4.3
+        specifier: ^4.6.6
         version: 4.6.7
 
   packages/provider/xai:
@@ -379,7 +379,7 @@ importers:
         specifier: ^8.21.0
         version: 8.21.0
       zod:
-        specifier: ^4.4.3
+        specifier: ^4.6.6
         version: 4.6.7
     devDependencies:
       '@types/ws':
@@ -389,13 +389,13 @@ importers:
   packages/provider/youtube:
     dependencies:
       zod:
-        specifier: ^4.4.3
+        specifier: ^4.6.6
         version: 4.6.7
 
   packages/provider/zaicoding:
     dependencies:
       zod:
-        specifier: ^4.4.3
+        specifier: ^4.6.6
         version: 4.6.7
 
 packages:

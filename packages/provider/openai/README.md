@@ -11,7 +11,7 @@ Realtime voice over WebRTC: `openai.post.v1.realtime.calls({ sdp, session })` se
 Runtime dependencies:
 
 - `ws@^8.21.0` — WebSocket client for the Realtime server control channel in `@apicity/openai/realtime`
-- `zod@^4.4.3` — request schemas attached to every POST endpoint as `.schema`
+- `zod@^4.6.6` — request schemas attached to every POST endpoint as `.schema`
 
 ## Installation
 

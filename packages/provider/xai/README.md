@@ -9,7 +9,7 @@ X.AI / Grok provider for chat and search.
 Runtime dependencies:
 
 - `ws@^8.21.0` — authenticated server WebSocket transport exported from `@apicity/xai/realtime`
-- `zod@^4.4.3` — request schemas attached to every POST endpoint as `.schema`
+- `zod@^4.6.6` — request schemas attached to every POST endpoint as `.schema`
 
 ## Installation
 

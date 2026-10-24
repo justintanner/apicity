@@ -8,7 +8,7 @@ Instagram Graph API provider for posting reels via the public-URL flow (graph.in
 
 Runtime dependencies:
 
-- `zod@^4.4.3` — request schemas attached to every POST endpoint as `.schema`
+- `zod@^4.6.6` — request schemas attached to every POST endpoint as `.schema`
 
 ## Installation
 

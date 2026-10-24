@@ -9,7 +9,7 @@ Quo API provider for sending SMS text messages.
 
 Runtime dependencies:
 
-- `zod@^4.4.3` — request schemas attached to every POST endpoint as `.schema`
+- `zod@^4.6.6` — request schemas attached to every POST endpoint as `.schema`
 
 ## Installation
 

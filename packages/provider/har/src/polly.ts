@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { stableStringify } from "./persist.js";
+import { pollyQuery } from "./polly-query.js";
 import type { HarEntry } from "./types.js";
 
 export interface PollyIdentityOptions {
@@ -26,13 +27,13 @@ export function pollyEntryId(
 ): string {
   const request = entry.request;
   const url = new URL(request.url);
-  const query = Object.fromEntries(url.searchParams);
+  const query = pollyQuery(url.search);
   url.search = "";
-  for (const key of Object.keys(query).sort())
-    url.searchParams.set(key, query[key]);
+  // Polly's default matchRequestsBy.url ignores the fragment.
+  url.hash = "";
   const identifiers: Record<string, unknown> = {
     method: request.method.toUpperCase(),
-    url: url.href,
+    url: url.href + query,
   };
   if (options.headers !== false) {
     const excluded = new Set(

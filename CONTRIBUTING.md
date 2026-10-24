@@ -58,3 +58,28 @@ development loop: the gates, the provider loop and the recording rules.
 - **Validate before sending** — every POST endpoint exposes a `.schema`:
   `createOpenAi(...).v1.chat.completions.schema.safeParse(payload)` catches a
   hallucinated call locally instead of at the API.
+
+## Recording rules
+
+A **new endpoint or model** needs one approved paid recording with
+`pnpm run dev:record -- tests/integration/<file>.test.ts`, after operator spend
+approval. The 2026-10-21 rule remains: new models get new tests; do not spend
+credits recording existing models' missing modes.
+
+For an existing endpoint's other modes or real-world payloads, promote an
+already captured successful call for free:
+
+```bash
+pnpm run har:promote -- <capture.har> --name <provider>/<test-name>
+```
+
+Promotion reconstructs the calls offline, writes a Polly recording and an
+integration test, and checks both. See [From capture to test](docs/har-capture.md#from-capture-to-test)
+for supported shapes, refusals, and rollback. A promoted test pins the recorded
+exchange sequence; it does not establish that a generated asset succeeded.
+
+Run `apicity har scrub --check <capture.har>` before sharing a capture. Never
+copy captures or other HAR files into `tests/recordings` by hand: promotion is
+the supported route, and `lint:recordings` rejects orphan recordings without a
+test. Re-record an existing fixture only with
+`pnpm run dev:rerecord -- tests/integration/<file>.test.ts`.

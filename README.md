@@ -136,7 +136,7 @@ pnpm run test:run
 ```
 
 [CONTRIBUTING.md](CONTRIBUTING.md) has the gates, the provider loop and the
-recording rules.
+[recording rules](CONTRIBUTING.md#recording-rules).
 
 ## License
 

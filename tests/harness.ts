@@ -195,6 +195,17 @@ function isMissingRecordingError(error: unknown): boolean {
   );
 }
 
+function recordingsRoot(): string {
+  const override = process.env.POLLY_RECORDINGS_DIR;
+  if (!override) return path.resolve(import.meta.dirname, "recordings");
+  if ((process.env.POLLY_MODE ?? "replay") !== "replay") {
+    throw new Error(
+      "POLLY_RECORDINGS_DIR is replay-only; unset it to record into tests/recordings."
+    );
+  }
+  return path.resolve(override);
+}
+
 function setupPollyWithOptions(
   recordingName: string,
   options: {
@@ -203,8 +214,8 @@ function setupPollyWithOptions(
   }
 ): PollyContext {
   const { raw, adapter, recordIfMissing } = resolvePollyMode();
+  const recordingsDir = recordingsRoot();
   const releaseDispatcher = holdRecordingDispatcher(raw);
-  const recordingsDir = path.resolve(import.meta.dirname, "recordings");
 
   const defaultMatchRequestsBy = {
     headers: {
@@ -298,7 +309,7 @@ export async function teardownPolly(ctx: PollyContext): Promise<void> {
 }
 
 export function recordingExists(recordingName: string): boolean {
-  const recordingsDir = path.resolve(import.meta.dirname, "recordings");
+  const recordingsDir = recordingsRoot();
   // Polly normalizes dots to hyphens when creating directory names
   const parts = recordingName.split("/").map((p) => p.replace(/\./g, "-"));
   function walk(dir: string, depth: number): boolean {

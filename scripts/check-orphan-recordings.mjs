@@ -26,8 +26,8 @@ import {
 } from "./lib/recording-names.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const recordingsDir = path.join(root, "tests", "recordings");
-const testsDir = path.join(root, "tests");
+let recordingsDir = path.join(root, "tests", "recordings");
+let testsDir = path.join(root, "tests");
 const providerNames = listProviderNames();
 
 function parseArgs(argv) {
@@ -41,6 +41,15 @@ function parseArgs(argv) {
     const arg = argv[i];
     if (arg === "--help" || arg === "-h") {
       options.help = true;
+      continue;
+    }
+    if (/^--(recordings|tests)(=|$)/.test(arg)) {
+      const [flag, inline] = arg.split(/=(.*)/s);
+      const value = inline ?? argv[++i];
+      if (!value || value.startsWith("--"))
+        throw new Error(`${flag} requires a directory`);
+      if (flag === "--recordings") recordingsDir = path.resolve(value);
+      else testsDir = path.resolve(value);
       continue;
     }
     if (arg === "--delete") {
@@ -88,6 +97,8 @@ function usage() {
   --providers <list>   Alias for --provider
   --provider= <list>   Alias for --provider
   --providers= <list>  Alias for --provider
+  --recordings <dir>   Recordings root (default: tests/recordings)
+  --tests <dir>        Test sources root (default: tests)
   --delete             Delete orphan recordings after reporting (dangerous)
   --help, -h           Show this help`);
 }

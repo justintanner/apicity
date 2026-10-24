@@ -1,0 +1,1032 @@
+# apicity har report
+
+Inputs: 9 files (6 annotated, 3 legacy), 20 entries, 1 unreadable. Baseline: tests/fixtures/har-report/baseline. Filters: {"providers":null,"endpoint":null,"since":null}.
+
+## Summary
+
+| Endpoint | Variant | Calls | OK | Provider errors | Local errors | Network errors | p50 ms | p95 ms | Error groups | Too loose | Too strict | Unknown keys | Drift |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| fal POST kling.v4.textToVideo | — | 4 | 4 | 0 | 0 | 0 | 100 | 100 | 0 | 0 | 1 | 0 | 3 |
+| fal POST nanoBananaPro.edit | — | 1 | 1 | 0 | 0 | 0 | 100 | 100 | 0 | 0 | 0 | 0 | n/a |
+| kie POST api.v1.jobs.createTask | model=kling-3.0/video | 4 | 2 | 1 | 1 | 0 | 100 | 100 | 1 | 1 | 1 | 1 | 0 |
+| kie POST api.v1.jobs.createTask | model=kling-3.1/video | 1 | 1 | 0 | 0 | 0 | 100 | 100 | 0 | 0 | 1 | 0 | 0 |
+| kie POST api.v1.jobs.createTask | model=kling/v3-turbo-text-to-video | 3 | 3 | 0 | 0 | 0 | 100 | 100 | 0 | 0 | 0 | 0 | 0 |
+| kie GET api.v1.jobs.recordInfo | — | 3 | 2 | 0 | 0 | 1 | 100 | 100 | 0 | 0 | 0 | 0 | n/a |
+
+## fal POST kling.v4.textToVideo
+
+### 1. Volume
+
+```json
+{
+  "calls": 4,
+  "callsBySource": {
+    "annotated": 0,
+    "legacy": 4
+  },
+  "outcomes": {
+    "ok": 4,
+    "provider_error": 0,
+    "local_error": 0,
+    "network_error": 0
+  },
+  "exchanges": {
+    "primary": 4,
+    "auxiliary": 0,
+    "local": 0
+  },
+  "matchedBy": {
+    "strict": 4,
+    "lenient": 0,
+    "soleEntry": 0
+  },
+  "exchangeSuccess": {
+    "succeeded": 4,
+    "failed": 0
+  },
+  "statusHistogram": [
+    {
+      "status": 200,
+      "count": 4
+    }
+  ],
+  "polls": {
+    "available": false,
+    "reason": "no _apicity block",
+    "repeats": 0
+  },
+  "latencyMs": {
+    "samples": 4,
+    "p50": 100,
+    "p95": 100
+  },
+  "auxiliaryTargets": []
+}
+```
+Poll repeats: not available (no _apicity block)
+
+### 2. Provider errors
+
+none
+
+### 3. Schema too loose
+
+```json
+{
+  "checked": 0,
+  "rejectedBySchema": 0
+}
+```
+none
+
+### 4. Schema too strict
+
+```json
+{
+  "checked": 4,
+  "rejected": 1,
+  "safeParseErrors": 0,
+  "placeholderIssues": 0
+}
+```
+```json
+[
+  {
+    "code": "too_big",
+    "path": "duration",
+    "message": "Too big: expected number to be <=30",
+    "count": 1
+  }
+]
+```
+
+Unknown keys
+
+none
+```json
+{
+  "valuesOutsideEnum": [],
+  "valuesOutsideRange": [
+    {
+      "path": "duration",
+      "minimum": null,
+      "maximum": 30,
+      "inclusive": true,
+      "values": [
+        {
+          "value": 45,
+          "count": 1
+        }
+      ],
+      "otherCount": 0
+    }
+  ]
+}
+```
+
+### 5. Defaults
+
+Schema defaults
+
+```json
+[
+  {
+    "path": "aspect_ratio",
+    "default": "16:9",
+    "observed": 4,
+    "absent": 2,
+    "equal": 1,
+    "overridden": 1,
+    "overrideRate": 0.25,
+    "values": [
+      {
+        "value": "16:9",
+        "count": 1,
+        "succeeded": 1
+      },
+      {
+        "value": "9:16",
+        "count": 1,
+        "succeeded": 1
+      }
+    ],
+    "otherCount": 0
+  },
+  {
+    "path": "duration",
+    "default": 5,
+    "observed": 4,
+    "absent": 1,
+    "equal": 1,
+    "overridden": 2,
+    "overrideRate": 0.5,
+    "values": [
+      {
+        "value": 10,
+        "count": 1,
+        "succeeded": 1
+      },
+      {
+        "value": 45,
+        "count": 1,
+        "succeeded": 1
+      },
+      {
+        "value": 5,
+        "count": 1,
+        "succeeded": 1
+      }
+    ],
+    "otherCount": 0
+  },
+  {
+    "path": "resolution",
+    "default": "1080p",
+    "observed": 4,
+    "absent": 3,
+    "equal": 1,
+    "overridden": 0,
+    "overrideRate": 0,
+    "values": [
+      {
+        "value": "1080p",
+        "count": 1,
+        "succeeded": 1
+      }
+    ],
+    "otherCount": 0
+  }
+]
+```
+
+Factory defaults sent
+
+not available (no _apicity block)
+
+### 6. Response drift
+
+```json
+[
+  {
+    "available": true,
+    "reason": null,
+    "baselineResponses": 2,
+    "corpusResponses": 4,
+    "newKeys": [
+      {
+        "path": "seed",
+        "types": [
+          "number"
+        ],
+        "count": 4
+      }
+    ],
+    "missingKeys": [
+      {
+        "path": "video.file_name",
+        "types": [
+          "string"
+        ],
+        "baselineCount": 2
+      }
+    ],
+    "typeChanges": [
+      {
+        "path": "video.file_size",
+        "baselineTypes": [
+          "number"
+        ],
+        "corpusTypes": [
+          "null",
+          "number"
+        ],
+        "newTypes": [
+          "null"
+        ]
+      }
+    ]
+  }
+]
+```
+
+### 7. Local failures
+
+not available (no _apicity block)
+
+## fal POST nanoBananaPro.edit
+
+### 1. Volume
+
+```json
+{
+  "calls": 1,
+  "callsBySource": {
+    "annotated": 1,
+    "legacy": 0
+  },
+  "outcomes": {
+    "ok": 1,
+    "provider_error": 0,
+    "local_error": 0,
+    "network_error": 0
+  },
+  "exchanges": {
+    "primary": 1,
+    "auxiliary": 2,
+    "local": 0
+  },
+  "matchedBy": {
+    "strict": 1,
+    "lenient": 0,
+    "soleEntry": 0
+  },
+  "exchangeSuccess": {
+    "succeeded": 1,
+    "failed": 0
+  },
+  "statusHistogram": [
+    {
+      "status": 200,
+      "count": 1
+    }
+  ],
+  "polls": {
+    "available": true,
+    "reason": null,
+    "repeats": 0
+  },
+  "latencyMs": {
+    "samples": 1,
+    "p50": 100,
+    "p95": 100
+  },
+  "auxiliaryTargets": [
+    {
+      "target": "PUT v3b.fal.media/files/upload/<id>",
+      "count": 1
+    },
+    {
+      "target": "fal POST storage.upload.initiate",
+      "count": 1
+    }
+  ]
+}
+```
+
+### 2. Provider errors
+
+none
+
+### 3. Schema too loose
+
+```json
+{
+  "checked": 0,
+  "rejectedBySchema": 0
+}
+```
+none
+
+### 4. Schema too strict
+
+```json
+{
+  "checked": 1,
+  "rejected": 0,
+  "safeParseErrors": 0,
+  "placeholderIssues": 0
+}
+```
+none
+
+Unknown keys
+
+none
+```json
+{
+  "valuesOutsideEnum": [],
+  "valuesOutsideRange": []
+}
+```
+
+### 5. Defaults
+
+Schema defaults
+
+none
+
+Factory defaults sent
+
+```json
+[
+  {
+    "path": "safety_tolerance",
+    "count": 1,
+    "values": [
+      {
+        "value": "6",
+        "count": 1
+      }
+    ],
+    "otherCount": 0
+  }
+]
+```
+
+### 6. Response drift
+
+not available (no successful baseline response)
+
+### 7. Local failures
+
+none
+
+## kie POST api.v1.jobs.createTask [model=kling-3.0/video]
+
+### 1. Volume
+
+```json
+{
+  "calls": 4,
+  "callsBySource": {
+    "annotated": 2,
+    "legacy": 2
+  },
+  "outcomes": {
+    "ok": 2,
+    "provider_error": 1,
+    "local_error": 1,
+    "network_error": 0
+  },
+  "exchanges": {
+    "primary": 3,
+    "auxiliary": 0,
+    "local": 1
+  },
+  "matchedBy": {
+    "strict": 3,
+    "lenient": 0,
+    "soleEntry": 0
+  },
+  "exchangeSuccess": {
+    "succeeded": 2,
+    "failed": 1
+  },
+  "statusHistogram": [
+    {
+      "status": 200,
+      "count": 3
+    }
+  ],
+  "polls": {
+    "available": true,
+    "reason": null,
+    "repeats": 0
+  },
+  "latencyMs": {
+    "samples": 3,
+    "p50": 100,
+    "p95": 100
+  },
+  "auxiliaryTargets": []
+}
+```
+
+### 2. Provider errors
+
+```json
+[
+  {
+    "status": 200,
+    "code": "422",
+    "message": "The duration <n> is not supported for task <id>",
+    "source": "response-body",
+    "payloadRelevant": true,
+    "count": 1,
+    "firstSeen": "2026-10-24T00:00:00.000Z",
+    "lastSeen": "2026-10-24T00:00:00.000Z",
+    "fields": [
+      "input.duration"
+    ],
+    "files": [
+      "tests/fixtures/har-report/corpus/c1.har"
+    ],
+    "sample": {
+      "file": "tests/fixtures/har-report/corpus/c1.har",
+      "entry": 0,
+      "method": "POST",
+      "url": "https://api.kie.ai/api/v1/jobs/createTask",
+      "body": {
+        "source": "request",
+        "mimeType": "application/json",
+        "value": {
+          "input": {
+            "duration": "5",
+            "mode": "std",
+            "multi_shots": false,
+            "prompt": "A quiet forest"
+          },
+          "model": "kling-3.0/video"
+        }
+      }
+    }
+  }
+]
+```
+
+### 3. Schema too loose
+
+```json
+{
+  "checked": 1,
+  "rejectedBySchema": 0
+}
+```
+```json
+[
+  {
+    "status": 200,
+    "code": "422",
+    "message": "The duration <n> is not supported for task <id>",
+    "count": 1,
+    "files": [
+      "tests/fixtures/har-report/corpus/c1.har"
+    ]
+  }
+]
+```
+
+### 4. Schema too strict
+
+```json
+{
+  "checked": 2,
+  "rejected": 1,
+  "safeParseErrors": 0,
+  "placeholderIssues": 0
+}
+```
+```json
+[
+  {
+    "code": "invalid_value",
+    "path": "input.duration",
+    "message": "Invalid option: expected one of \"3\"|\"4\"|\"5\"|\"6\"|\"7\"|\"8\"|\"9\"|\"10\"|\"11\"|\"12\"|\"13\"|\"14\"|\"15\"",
+    "count": 1
+  }
+]
+```
+
+Unknown keys
+
+```json
+[
+  {
+    "path": "input.extra_flag",
+    "count": 1,
+    "acceptedBySchema": 1
+  }
+]
+```
+```json
+{
+  "valuesOutsideEnum": [
+    {
+      "path": "input.duration",
+      "allowed": [
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15"
+      ],
+      "allowedCount": 13,
+      "values": [
+        {
+          "value": "16",
+          "count": 1
+        }
+      ],
+      "otherCount": 0
+    }
+  ],
+  "valuesOutsideRange": []
+}
+```
+
+### 5. Defaults
+
+Schema defaults
+
+none
+
+Factory defaults sent
+
+none
+
+### 6. Response drift
+
+none
+
+### 7. Local failures
+
+```json
+[
+  {
+    "code": "api",
+    "message": "Invalid Kie createTask request: input.duration: Invalid option: expected one of ...",
+    "count": 1,
+    "firstSeen": "2026-10-24T00:00:00.000Z",
+    "lastSeen": "2026-10-24T00:00:00.000Z",
+    "files": [
+      "tests/fixtures/har-report/corpus/c5.har"
+    ],
+    "inputShape": [
+      {
+        "path": "input",
+        "types": [
+          "object"
+        ]
+      },
+      {
+        "path": "input.duration",
+        "types": [
+          "string"
+        ]
+      },
+      {
+        "path": "input.mode",
+        "types": [
+          "string"
+        ]
+      },
+      {
+        "path": "input.multi_shots",
+        "types": [
+          "boolean"
+        ]
+      },
+      {
+        "path": "input.prompt",
+        "types": [
+          "string"
+        ]
+      },
+      {
+        "path": "model",
+        "types": [
+          "string"
+        ]
+      }
+    ]
+  }
+]
+```
+
+## kie POST api.v1.jobs.createTask [model=kling-3.1/video]
+
+### 1. Volume
+
+```json
+{
+  "calls": 1,
+  "callsBySource": {
+    "annotated": 0,
+    "legacy": 1
+  },
+  "outcomes": {
+    "ok": 1,
+    "provider_error": 0,
+    "local_error": 0,
+    "network_error": 0
+  },
+  "exchanges": {
+    "primary": 1,
+    "auxiliary": 0,
+    "local": 0
+  },
+  "matchedBy": {
+    "strict": 1,
+    "lenient": 0,
+    "soleEntry": 0
+  },
+  "exchangeSuccess": {
+    "succeeded": 1,
+    "failed": 0
+  },
+  "statusHistogram": [
+    {
+      "status": 200,
+      "count": 1
+    }
+  ],
+  "polls": {
+    "available": false,
+    "reason": "no _apicity block",
+    "repeats": 0
+  },
+  "latencyMs": {
+    "samples": 1,
+    "p50": 100,
+    "p95": 100
+  },
+  "auxiliaryTargets": []
+}
+```
+Poll repeats: not available (no _apicity block)
+
+### 2. Provider errors
+
+none
+
+### 3. Schema too loose
+
+```json
+{
+  "checked": 0,
+  "rejectedBySchema": 0
+}
+```
+none
+
+### 4. Schema too strict
+
+```json
+{
+  "checked": 1,
+  "rejected": 1,
+  "safeParseErrors": 0,
+  "placeholderIssues": 0
+}
+```
+```json
+[
+  {
+    "code": "invalid_union",
+    "path": "(root)",
+    "message": "Invalid input",
+    "count": 1
+  }
+]
+```
+
+Unknown keys
+
+not available (no schema option for this variant)
+```json
+{
+  "valuesOutsideEnum": [],
+  "valuesOutsideRange": []
+}
+```
+
+### 5. Defaults
+
+Schema defaults
+
+not available (no schema option for this variant)
+
+Factory defaults sent
+
+not available (no _apicity block)
+
+### 6. Response drift
+
+none
+
+### 7. Local failures
+
+not available (no _apicity block)
+
+## kie POST api.v1.jobs.createTask [model=kling/v3-turbo-text-to-video]
+
+### 1. Volume
+
+```json
+{
+  "calls": 3,
+  "callsBySource": {
+    "annotated": 0,
+    "legacy": 3
+  },
+  "outcomes": {
+    "ok": 3,
+    "provider_error": 0,
+    "local_error": 0,
+    "network_error": 0
+  },
+  "exchanges": {
+    "primary": 3,
+    "auxiliary": 0,
+    "local": 0
+  },
+  "matchedBy": {
+    "strict": 3,
+    "lenient": 0,
+    "soleEntry": 0
+  },
+  "exchangeSuccess": {
+    "succeeded": 3,
+    "failed": 0
+  },
+  "statusHistogram": [
+    {
+      "status": 200,
+      "count": 3
+    }
+  ],
+  "polls": {
+    "available": false,
+    "reason": "no _apicity block",
+    "repeats": 0
+  },
+  "latencyMs": {
+    "samples": 3,
+    "p50": 100,
+    "p95": 100
+  },
+  "auxiliaryTargets": []
+}
+```
+Poll repeats: not available (no _apicity block)
+
+### 2. Provider errors
+
+none
+
+### 3. Schema too loose
+
+```json
+{
+  "checked": 0,
+  "rejectedBySchema": 0
+}
+```
+none
+
+### 4. Schema too strict
+
+```json
+{
+  "checked": 3,
+  "rejected": 0,
+  "safeParseErrors": 0,
+  "placeholderIssues": 0
+}
+```
+none
+
+Unknown keys
+
+none
+```json
+{
+  "valuesOutsideEnum": [],
+  "valuesOutsideRange": []
+}
+```
+
+### 5. Defaults
+
+Schema defaults
+
+```json
+[
+  {
+    "path": "input.aspect_ratio",
+    "default": "16:9",
+    "observed": 3,
+    "absent": 1,
+    "equal": 1,
+    "overridden": 1,
+    "overrideRate": 0.3333,
+    "values": [
+      {
+        "value": "16:9",
+        "count": 1,
+        "succeeded": 1
+      },
+      {
+        "value": "9:16",
+        "count": 1,
+        "succeeded": 1
+      }
+    ],
+    "otherCount": 0
+  },
+  {
+    "path": "input.duration",
+    "default": "5",
+    "observed": 3,
+    "absent": 2,
+    "equal": 1,
+    "overridden": 0,
+    "overrideRate": 0,
+    "values": [
+      {
+        "value": "5",
+        "count": 1,
+        "succeeded": 1
+      }
+    ],
+    "otherCount": 0
+  },
+  {
+    "path": "input.resolution",
+    "default": "720p",
+    "observed": 3,
+    "absent": 3,
+    "equal": 0,
+    "overridden": 0,
+    "overrideRate": 0,
+    "values": [],
+    "otherCount": 0
+  }
+]
+```
+
+Factory defaults sent
+
+not available (no _apicity block)
+
+### 6. Response drift
+
+none
+
+### 7. Local failures
+
+not available (no _apicity block)
+
+## kie GET api.v1.jobs.recordInfo
+
+### 1. Volume
+
+```json
+{
+  "calls": 3,
+  "callsBySource": {
+    "annotated": 2,
+    "legacy": 1
+  },
+  "outcomes": {
+    "ok": 2,
+    "provider_error": 0,
+    "local_error": 0,
+    "network_error": 1
+  },
+  "exchanges": {
+    "primary": 4,
+    "auxiliary": 0,
+    "local": 0
+  },
+  "matchedBy": {
+    "strict": 4,
+    "lenient": 0,
+    "soleEntry": 0
+  },
+  "exchangeSuccess": {
+    "succeeded": 3,
+    "failed": 1
+  },
+  "statusHistogram": [
+    {
+      "status": 0,
+      "count": 1
+    },
+    {
+      "status": 200,
+      "count": 3
+    }
+  ],
+  "polls": {
+    "available": true,
+    "reason": null,
+    "repeats": 3
+  },
+  "latencyMs": {
+    "samples": 4,
+    "p50": 100,
+    "p95": 100
+  },
+  "auxiliaryTargets": []
+}
+```
+
+### 2. Provider errors
+
+none
+
+### 3. Schema too loose
+
+not available (no JSON request bodies)
+
+### 4. Schema too strict
+
+not available (no JSON request bodies)
+
+### 5. Defaults
+
+Schema defaults
+
+not available (no JSON request bodies)
+
+Factory defaults sent
+
+not available (no JSON request bodies)
+
+### 6. Response drift
+
+not available (no successful baseline response)
+
+### 7. Local failures
+
+none
+
+## Unmatched exchanges
+
+```json
+[
+  {
+    "method": "GET",
+    "host": "cdn.example.invalid",
+    "path": "/assets/<id>/video.mp4",
+    "providerHint": null,
+    "count": 1
+  }
+]
+```
+
+## Unresolved calls
+
+```json
+[
+  {
+    "provider": "unknown",
+    "endpoint": "unscoped",
+    "reason": "not-in-catalog",
+    "count": 1,
+    "files": [
+      "tests/fixtures/har-report/corpus/c8.har"
+    ]
+  }
+]
+```
+
+## Skipped files
+
+```json
+[
+  {
+    "file": "tests/fixtures/har-report/corpus/c9.har",
+    "reason": "not-a-har"
+  }
+]
+```

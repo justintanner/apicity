@@ -24,3 +24,11 @@ export {
   type PersistedHarRecording,
 } from "./persist.js";
 export * from "./capture.js";
+
+export { exchangeSucceeded, responseObject } from "./exchange-succeeded.mjs";
+export {
+  findMatchingRow,
+  matchHarEntryStrict,
+  matchHarEntryLenient,
+  compileTsvUrlPattern,
+} from "./match-har-to-endpoint.mjs";

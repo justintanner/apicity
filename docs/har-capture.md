@@ -129,3 +129,303 @@ values become `***`; nulls stay null. Quoted credential fields in partial
 JSON and SSE text are also scrubbed. Generic `key`, `token` and `signature`
 fields retain their existing provider-specific rules because they can carry
 model data rather than credentials. Other sensitive prose still needs review.
+
+## Learning report
+
+```sh
+apicity har report ./captures --provider fal,kie > report.md
+apicity har report ./captures --baseline tests/recordings --json > report.json
+apicity har report single.har --since 2026-10-01 --no-baseline
+```
+
+The command reads directories recursively or individual files without provider
+calls. Extract archives first. Hidden directories and node_modules are skipped;
+directory symlinks are not followed. Repeated real paths are counted once.
+Unreadable files are listed; at least one readable HAR gives exit 0, including
+reports with findings. Missing paths or no readable HAR give not_found (exit 2);
+bad flags, providers or dates give usage (exit 1).
+
+Markdown is printed even when stdout is redirected, an intentional exception
+to the CLI's automatic JSON rule. `--json` prints the normal success envelope
+`{ok: true, data: <HarReport>}`. Every field below is present; unavailable values
+are null. `schemaVersion` is 1: renames, removals and semantic changes require
+a new version, additive fields do not. No generation time or package version
+appears. Equal inputs give equal bytes.
+
+An annotated file is one call attributed to its `_apicity` endpoint. Primary
+HTTP exchanges match that endpoint; uploads and other auxiliary exchanges
+contribute volume but no schema or response-drift evidence. A legacy exchange
+is one call, attributed by full URL first, then provider-scoped path matching.
+Root discriminated unions create one record per variant (KIE's model).
+Unknown annotations appear in unresolvedCalls and their HTTP exchanges are
+matched as legacy. Unmatched URL paths mask IDs and omit queries.
+
+`--provider p[,p]` and `--endpoint dot.path` filter after attribution. Endpoint
+filtering clears unmatched/unresolved entries. `--since` is inclusive, applies
+to call timestamps, and counts missing timestamps separately. All inputs are
+scrubbed before analysis, and emitted strings are bounded.
+
+The seven sections count:
+
+1. Volume: calls and outcomes separately from exchange success, primary HTTP
+   statuses, nearest-rank p50/p95 latency (rounded milliseconds), and collapsed
+   pollRepeat totals. Repeats never weight other statistics.
+2. Provider errors: failed primary exchanges except status 0, plus annotated
+   provider failures discovered after successful primary exchanges. Groups use
+   status, code and normalized message (URLs, IDs and digits masked). Samples
+   are scrubbed, bounded, and chosen deterministically.
+3. Schema too loose: JSON object requests accepted by real `.schema.safeParse`
+   but rejected with payload-relevant 4xx errors (including KIE envelope codes).
+   Auth, credit, rate limits, timeouts and server failures are excluded.
+4. Schema too strict: successful JSON object requests rejected by safeParse,
+   plus keys absent from the converted schema even if safeParse strips them.
+   Enum and numeric range violations are listed. Captured media placeholders
+   are counted separately and never treated as evidence of schema rejection.
+   GET/HEAD/DELETE queries, form data and multipart summaries are not validated.
+5. Defaults: schema default observations count bodies where the parent object
+   exists; absent + equal + overridden = observed. Override rates divide by
+   observed and round to four decimals. Factory defaults compare primary bodies
+   with annotated input: these may also be derived fields, not just defaults.
+6. Response drift: successful JSON response shapes, top-level and one level
+   nested (including object elements in arrays). New keys compare against the
+   baseline union; missing keys must appear in every baseline response. Type
+   changes report newly observed types. KIE/xAI business failures are excluded.
+7. Local failures: normalized error groups with attempted input shapes only.
+
+Baseline defaults to tests/recordings only when both that directory and
+scripts/endpoint-docs.tsv exist in the working directory; otherwise none.
+`--baseline dir` overrides it and `--no-baseline` disables it. Input files are
+excluded by realpath, so a corpus is never compared with itself. Baselines are
+unfiltered, share response shapes across endpoint variants, and expose only
+shapes. Promotion candidates are resolved annotated OK calls whose HTTP
+exchanges all succeed; promotion must still run scrub --check. committedFiles
+counts successful baseline files for the same variant, or null with no baseline.
+
+Unavailable reasons are identical in JSON and Markdown:
+`no _apicity block`, `no JSON request bodies`, `endpoint has no .schema`,
+`endpoint function not found in the provider tree`,
+`provider package could not be loaded`, `schema conversion failed`,
+`no schema option for this variant`, `no baseline`,
+`no successful JSON response`, `no successful baseline response`. Legacy
+recordings lack poll-repeat, factory-default and local-failure annotations.
+Available sections without findings say `none`. Value lists keep the 20 most
+frequent values (canonical JSON breaks ties) and count the remainder in
+otherCount. Markdown shortens file lists to five; JSON retains every file.
+
+```ts
+type Outcomes = {
+  ok: number;
+  provider_error: number;
+  local_error: number;
+  network_error: number;
+};
+type ValueList = {
+  values: Array<{ value: unknown; count: number }>;
+  otherCount: number;
+};
+interface HarReport {
+  schemaVersion: 1;
+  filters: {
+    providers: string[] | null;
+    endpoint: string | null;
+    since: string | null;
+  };
+  baseline: {
+    source: "default" | "flag" | "none";
+    path: string | null;
+    files: number;
+    responses: number;
+  };
+  inputs: {
+    paths: string[];
+    files: number;
+    annotatedFiles: number;
+    legacyFiles: number;
+    duplicateFiles: number;
+    unreadable: Array<{
+      file: string;
+      reason: "invalid-json" | "not-a-har" | "read-error";
+    }>;
+    entries: number;
+    skipped: {
+      malformedEntries: number;
+      localEntries: number;
+      beforeSince: number;
+      noTimestamp: number;
+    };
+  };
+  summary: {
+    endpoints: number;
+    records: number;
+    calls: number;
+    outcomes: Outcomes;
+    primaryExchanges: number;
+    auxiliaryExchanges: number;
+    unmatchedExchanges: number;
+    unresolvedCalls: number;
+  };
+  endpoints: EndpointRecord[];
+  unmatched: Array<{
+    method: string;
+    host: string;
+    path: string;
+    providerHint: string | null;
+    count: number;
+  }>;
+  unresolvedCalls: Array<{
+    provider: string;
+    endpoint: string;
+    reason: "not-in-catalog" | "method-ambiguous";
+    count: number;
+    files: string[];
+  }>;
+}
+interface EndpointRecord {
+  provider: string;
+  method: string;
+  dotPath: string;
+  variant: { key: string; value: string } | null;
+  schema: {
+    status: "ok" | "no-introspection" | "absent" | "unresolved" | "unavailable";
+    variantKey: string | null;
+    option: "selected" | "none" | null;
+  };
+  volume: {
+    // section 1
+    calls: number;
+    callsBySource: { annotated: number; legacy: number };
+    outcomes: Outcomes;
+    exchanges: { primary: number; auxiliary: number; local: number };
+    matchedBy: { strict: number; lenient: number; soleEntry: number };
+    exchangeSuccess: { succeeded: number; failed: number };
+    statusHistogram: Array<{ status: number; count: number }>;
+    polls: { available: boolean; reason: string | null; repeats: number };
+    latencyMs: { samples: number; p50: number | null; p95: number | null };
+    auxiliaryTargets: Array<{ target: string; count: number }>; // "<provider> <METHOD> <dotPath>" or "<METHOD> <host><masked path>"
+  };
+  providerErrors: { groups: ErrorGroup[] }; // section 2
+  schemaTooLoose: {
+    available: boolean;
+    reason: string | null;
+    checked: number;
+    rejectedBySchema: number; // section 3
+    groups: Array<{
+      status: number;
+      code: string | null;
+      message: string;
+      count: number;
+      files: string[];
+    }>;
+  };
+  schemaTooStrict: {
+    available: boolean;
+    reason: string | null;
+    checked: number;
+    rejected: number; // section 4
+    safeParseErrors: number;
+    placeholderIssues: number;
+    issues: Array<{
+      code: string;
+      path: string;
+      message: string;
+      count: number;
+    }>;
+    unknownKeys: {
+      available: boolean;
+      reason: string | null;
+      keys: Array<{ path: string; count: number; acceptedBySchema: number }>;
+    };
+    valuesOutsideEnum: Array<
+      { path: string; allowed: unknown[]; allowedCount: number } & ValueList
+    >;
+    valuesOutsideRange: Array<
+      {
+        path: string;
+        minimum: number | null;
+        maximum: number | null;
+        inclusive: boolean;
+      } & ValueList
+    >;
+  };
+  defaults: {
+    // section 5
+    schemaDefaults: {
+      available: boolean;
+      reason: string | null;
+      bodies: number;
+      fields: Array<{
+        path: string;
+        default: unknown;
+        observed: number;
+        absent: number;
+        equal: number;
+        overridden: number;
+        overrideRate: number | null;
+        values: Array<{ value: unknown; count: number; succeeded: number }>;
+        otherCount: number;
+      }>;
+    };
+    factoryDefaults: {
+      available: boolean;
+      reason: string | null;
+      calls: number;
+      fields: Array<{ path: string; count: number } & ValueList>;
+    };
+  };
+  responseDrift: {
+    available: boolean;
+    reason: string | null;
+    baselineResponses: number;
+    corpusResponses: number; // section 6
+    newKeys: Array<{ path: string; types: string[]; count: number }>;
+    missingKeys: Array<{
+      path: string;
+      types: string[];
+      baselineCount: number;
+    }>;
+    typeChanges: Array<{
+      path: string;
+      baselineTypes: string[];
+      corpusTypes: string[];
+      newTypes: string[];
+    }>;
+  };
+  localFailures: {
+    available: boolean;
+    reason: string | null; // section 7
+    groups: Array<{
+      code: string | null;
+      message: string;
+      count: number;
+      firstSeen: string | null;
+      lastSeen: string | null;
+      files: string[];
+      inputShape: Array<{ path: string; types: string[] }>;
+    }>;
+  };
+  promotion: { candidates: string[]; committedFiles: number | null };
+}
+interface ErrorGroup {
+  status: number;
+  code: string | null;
+  message: string;
+  source: "response-body" | "call-error" | "http-status";
+  payloadRelevant: boolean;
+  count: number;
+  firstSeen: string | null;
+  lastSeen: string | null;
+  fields: string[];
+  files: string[];
+  sample: {
+    file: string;
+    entry: number | null;
+    method: string | null;
+    url: string | null;
+    body: {
+      source: "request" | "input";
+      mimeType: string | null;
+      value: unknown;
+    } | null;
+  };
+}
+```

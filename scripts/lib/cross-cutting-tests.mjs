@@ -149,6 +149,10 @@ import { repoRoot } from "./provider-scope.mjs";
  * recorded exchange and validate static payloads against endpoint schemas.
  * Provider scopes cannot select this whole-corpus guard (ac-ygpjmh).
  *
+ * The har report golden pins real fal and kie schemas against the versioned
+ * learning report contract, including defaults and error attribution. Provider
+ * scopes do not consistently select it (ac-45uanr).
+ *
  * The fast gates run these guards so a broken repo-wide invariant cannot pass
  * the local merge gate. They are filesystem- and source-parse-only (no Polly
  * replay, no network); `CROSS_CUTTING_COST_SECONDS` records their measured
@@ -227,6 +231,13 @@ import { repoRoot } from "./provider-scope.mjs";
  * imports `tests/harness.ts` for its table, which loads Polly's modules
  * without starting a Polly instance.
  *
+ * Re-measured for ac-45uanr at base f5c2ddea with the HAR report golden:
+ * fourteen entries, 1,028 tests in 14 files. Warm-up 19.487s (load 17.97);
+ * timed runs 21.666s, 19.300s, 20.427s at loads 22.45, 26.22, 28.52
+ * (median 20.427s). CPU i7-8700, 12 threads and kernel 6.8.0-124-generic
+ * match, but Node v22.23.4 differs from v22.23.2. By the protocol below,
+ * retain 14.9 rather than re-pin across Node versions and load regimes.
+ *
  * Re-measure when the membership changes, and record the result here. The
  * protocol is the one this figure was taken by (ac-iag7fk): on this host -
  * `/proc/cpuinfo` model name, `nproc`, `uname -r` and `node -v` must match the
@@ -269,6 +280,7 @@ export const CROSS_CUTTING_TESTS = [
   "tests/unit/compare-namespace-shapes-cli.test.ts",
   "tests/unit/har-request-secrets.test.ts",
   "tests/unit/examples-from-failed-exchanges.test.ts",
+  "tests/unit/har-report-golden.test.ts",
 ];
 
 /**

@@ -153,6 +153,16 @@ import { repoRoot } from "./provider-scope.mjs";
  * learning report contract, including defaults and error attribution. Provider
  * scopes do not consistently select it (ac-45uanr).
  *
+ * The captured-failures suite holds apicity to every provider rejection it has
+ * recorded. `tests/integration/captured-failures.test.ts` runs the failed
+ * request body of each `tests/failures/<provider>/<name>.har` through that
+ * endpoint's local validation — the KIE createTask and xai video guards when
+ * called, `.schema.safeParse` otherwise — and requires a rejection containing
+ * the sidecar's rule phrase or a `tests/failures/passthrough.json` entry. A
+ * provider diff that loosens a `.refine` or stops a guard from running is
+ * provider-scoped, and the file is named after no provider, so this entry is
+ * what runs it in the fast gates (ac-tsul8r).
+ *
  * The fast gates run these guards so a broken repo-wide invariant cannot pass
  * the local merge gate. They are filesystem- and source-parse-only (no Polly
  * replay, no network); `CROSS_CUTTING_COST_SECONDS` records their measured
@@ -238,6 +248,12 @@ import { repoRoot } from "./provider-scope.mjs";
  * match, but Node v22.23.4 differs from v22.23.2. By the protocol below,
  * retain 14.9 rather than re-pin across Node versions and load regimes.
  *
+ * Re-measured for ac-tsul8r at base e37de018 with the captured-failures
+ * suite: fifteen entries, 1,045 tests in 15 files. Warm-up 18.701s (load
+ * 20.63); timed runs 20.395s, 21.333s, 19.381s at loads 21.35, 24.99, 27.20
+ * (median 20.395s). CPU, threads and kernel match; Node is still v22.23.4,
+ * not v22.23.2, so 14.9 stays by the same rule.
+ *
  * Re-measure when the membership changes, and record the result here. The
  * protocol is the one this figure was taken by (ac-iag7fk): on this host -
  * `/proc/cpuinfo` model name, `nproc`, `uname -r` and `node -v` must match the
@@ -281,6 +297,7 @@ export const CROSS_CUTTING_TESTS = [
   "tests/unit/har-request-secrets.test.ts",
   "tests/unit/examples-from-failed-exchanges.test.ts",
   "tests/unit/har-report-golden.test.ts",
+  "tests/integration/captured-failures.test.ts",
 ];
 
 /**

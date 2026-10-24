@@ -1,0 +1,5 @@
+{
+  "endpoint": "v1.chat.completions",
+  "rule": "messages cannot be empty",
+  "source": "tests/recordings/xai_3613880225/error-handling_2629711517/recording.har entry 0"
+}

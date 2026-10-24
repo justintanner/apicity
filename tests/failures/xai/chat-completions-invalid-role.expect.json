@@ -1,0 +1,5 @@
+{
+  "endpoint": "v1.chat.completions",
+  "rule": "messages.0.role: Invalid option",
+  "source": "tests/recordings/xai_3613880225/error-handling_2629711517/recording.har entry 1"
+}

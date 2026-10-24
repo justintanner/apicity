@@ -1,0 +1,5 @@
+{
+  "endpoint": "bytedance.seedance2p5.draft.complete",
+  "rule": "draft_id: Too small",
+  "source": "tests/recordings/fal_2801268556/bytedance-seedance2p5-draft-complete_1619169906/recording.har entry 0"
+}

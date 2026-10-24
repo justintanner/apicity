@@ -515,3 +515,53 @@ pnpm run dev:preflight:fast -- fal
 Example selection follows the normal recording rules. Run
 `apicity har scrub --check capture.har` before sharing any capture; never copy
 it directly into the recordings tree.
+
+## Failures become tests
+
+Every provider rejection apicity has seen is held to one rule: apicity either
+rejects the payload before the network, with a message that restates the
+provider's rule, or the failure is listed as a pass-through with a reason.
+`tests/integration/captured-failures.test.ts` enforces it without Polly or a
+network:
+
+- `tests/failures/<provider>/<name>.har` is a scrubbed HAR holding exactly one
+  failed exchange (HTTP non-2xx, or a KIE/xAI failure envelope) that sent a
+  request body.
+- `tests/failures/<provider>/<name>.expect.json` names the endpoint dot path
+  (as in `scripts/endpoint-docs.tsv`), the `rule` phrase the local rejection
+  message must contain, and the `source` the HAR came from:
+  `{ "endpoint": "...", "rule": "...", "source": "..." }`. A listed
+  pass-through may omit `rule`.
+- `tests/failures/passthrough.json` lists the files whose rule apicity does not
+  enforce, each as `{ "file", "reason", "providerMessage" }`. The provider
+  message must appear in that file's response.
+
+For each file the suite takes the failed request body (for multipart, the
+`_multipart` summary's fields) and builds the provider with a fetch that only
+counts calls. KIE `api.v1.jobs.createTask` and xAI `v1.videos.generations`
+validate when called, so the suite calls them; for every other endpoint the
+local check is `.schema.safeParse`. A file not in `passthrough.json` must be
+rejected locally with its sidecar's rule phrase, without reaching fetch. A
+listed file must reach the provider: once apicity rejects it locally, the
+suite fails until the entry is removed and the sidecar carries the rule. The
+suite also runs `apicity har scrub --check` over every file, and
+`pnpm run lint:recordings` reports a failure HAR without its sidecar.
+
+To triage a captured or recorded failure:
+
+1. Keep only payload failures. Missing or invalid credentials (401), plan,
+   permission or feature errors (403), rate limits (429), unknown ids (404, or
+   "not found" / "does not exist"), server errors (5xx) and requests without a
+   body are not payload rules; do not add them.
+2. Copy the one failed entry into a new HAR, run
+   `apicity har scrub <file>`, and save it as
+   `tests/failures/<provider>/<name>.har`.
+3. Write `<name>.expect.json` with the endpoint, the source, and the phrase
+   your local message will contain.
+4. Run `pnpm run test:run tests/integration/captured-failures.test.ts`. A
+   failure quotes the provider's error body. Restate the rule locally: an
+   object-level `.refine` with `message` and `path`, as in
+   `packages/provider/fal/src/zod.ts`, or the KIE createTask guard's schema.
+   Pin the rule in that provider's unit tests. If the rule cannot be expressed
+   locally (it depends on the provider's own state or undocumented lists), or
+   it waits for a later change, add a `passthrough.json` entry that says so.

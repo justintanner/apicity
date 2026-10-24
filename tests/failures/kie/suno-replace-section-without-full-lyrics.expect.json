@@ -1,0 +1,5 @@
+{
+  "endpoint": "api.v1.generate.replaceSection",
+  "rule": "fullLyrics cannot be blank",
+  "source": "tests/recordings/kie_2079838932/suno_690832138/replace-music-section-full-lyrics-validation_2363596710/recording.har entry 0"
+}

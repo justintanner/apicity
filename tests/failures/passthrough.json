@@ -1,0 +1,27 @@
+[
+  {
+    "file": "elevenlabs/service-account-api-key-documentation-range-ip.har",
+    "reason": "Not expressible: ElevenLabs rejects allowed_ips it calls private, including 203.0.113.10 from the TEST-NET-3 documentation range, and does not document which ranges; a schema cannot reproduce the rule.",
+    "providerMessage": "[{\"type\":\"value_error\",\"loc\":[\"body\",\"allowed_ips\",0],\"msg\":\"Value error, Private IP ranges are not allowed: '203.0.113.10'\",\"input\":\"203.0.113.10\",\"ctx\":{\"error\":{}}}]"
+  },
+  {
+    "file": "fireworks/rlor-trainer-job-create-unknown-evaluator.har",
+    "reason": "Deferred to P08: FireworksRlorTrainerJobCreateRequestSchema requires the evaluator field that the API rejects as unknown. The fix removes a required field, which changes the request type; it is a schema correction, not a refine.",
+    "providerMessage": "proto: (line 1:59): unknown field \"evaluator\""
+  },
+  {
+    "file": "kie/common-download-url-foreign-url.har",
+    "reason": "Not expressible: KIE converts only URLs of files it generated, and its docs do not list which hosts qualify, so a schema cannot tell a foreign URL from a KIE one.",
+    "providerMessage": "url is wrong"
+  },
+  {
+    "file": "kie/suno-replace-section-without-full-lyrics.har",
+    "reason": "Expressible, deferred to P08: fullLyrics should be a required non-blank string. P07 adds at most one rule per provider family, and KIE's is the pixverse-v6 image-to-video template_id rule.",
+    "providerMessage": "fullLyrics cannot be blank"
+  },
+  {
+    "file": "quo/messages-fictional-to-number.har",
+    "reason": "Not expressible: Quo validates to numbers against real numbering plans (it rejects the fictional +1 555-01xx range); a schema can only check E.164 shape.",
+    "providerMessage": "At least one of the phone numbers in the `to` array is invalid"
+  }
+]

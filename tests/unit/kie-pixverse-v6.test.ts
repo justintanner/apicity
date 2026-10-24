@@ -252,6 +252,13 @@ const GUARD_MODELS: readonly GuardModel[] = [
         message:
           "pixverse-v6/image-to-video requires exactly one of duration or template_id",
       },
+      {
+        // tests/failures/kie/pixverse-v6-image-to-video-multi-image-without-template.har
+        label: "two image_urls without template_id",
+        patch: { image_urls: [FRAME_URL, FRAME_URL] },
+        message:
+          "input.template_id: template_id cannot be empty when multiple image_urls are provided",
+      },
     ],
   },
   {

@@ -200,6 +200,47 @@ sources and the repository's
 [numeric-input compatibility audit](../../../docs/kie-numeric-input-compatibility.md)
 for the evidence and field-specific decisions.
 
+## Grok Imagine 1.5 preview frame controls
+
+Only `grok-imagine-video-1-5-preview` takes KIE's frame controls, added
+on 2026-10-22: `first_frame_url`, `last_frame_url`, `loop_url` and up
+to four `keyframes`, each an image `url` pinned at `timestamp_s`
+seconds. Each `timestamp_s` must be greater than 0 and less than
+`duration` (default 8), and keyframes must be at least 1/3 second
+apart; the createTask guard rejects a violation before the request
+leaves. `loop_url` uses one image as both the first and the last frame,
+so it cannot be combined with a different `first_frame_url` or
+`last_frame_url`. `image_urls` stays required.
+
+```typescript
+declare const anchorImageUrl: string;
+declare const studioImageUrl: string;
+
+const framed = await kie.post.api.v1.jobs.createTask({
+  model: "grok-imagine-video-1-5-preview",
+  input: {
+    prompt: "The camera pulls back across the control room, then returns.",
+    image_urls: [anchorImageUrl],
+    first_frame_url: anchorImageUrl,
+    keyframes: [{ url: studioImageUrl, timestamp_s: 1.5 }],
+    last_frame_url: anchorImageUrl,
+    resolution: "480p",
+    duration: 3,
+  },
+});
+```
+
+KIE's OpenAPI types `timestamp_s` as an integer, but the API accepted
+and stored `1.5` in a recorded task, so Apicity accepts any number in
+range. Its docs also cap `image_urls` at one image, but a two-image
+request succeeded, so the schema still accepts more. `enable_audio`
+defaults to `true`; `false` returned a video with no audio track,
+although KIE's page says the audio cannot be turned off. Frame
+controls do not change the price: 2.4 credits ($0.012) per
+second at 480p and 4.5 credits ($0.0225) at 720p. See
+https://docs.kie.ai/market/grok-imagine/1-5-preview for the upstream
+contract.
+
 ## Grok Imagine Extend numeric contract
 
 `grok-imagine/extend` requires a completed source task and preserves

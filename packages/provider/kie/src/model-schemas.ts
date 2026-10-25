@@ -1550,8 +1550,9 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
-  // Legacy compatibility slug from KIE's earlier Grok Imagine Video 1.5 preview
-  // surface. Prefer grok-imagine/image-to-video for the current Quick Start.
+  // KIE's Grok Imagine Video 1.5 preview slug. Prefer
+  // grok-imagine/image-to-video for the current Quick Start; only this slug
+  // takes the frame controls (first and last frame, loop, keyframes).
   "grok-imagine-video-1-5-preview": {
     type: "video",
     fields: {
@@ -1584,6 +1585,48 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         maximum: 15,
         default: 8,
         description: "Duration in seconds (1-15, default 8)",
+      },
+      first_frame_url: {
+        type: "string",
+        description: "First-frame image URL; can be sent with image_urls",
+      },
+      last_frame_url: {
+        type: "string",
+        description: "Last-frame image URL",
+      },
+      loop_url: {
+        type: "string",
+        description:
+          "One image URL used as both the first and the last frame; cannot be combined with a different first_frame_url or last_frame_url",
+      },
+      keyframes: {
+        type: "array",
+        maxItems: 4,
+        description:
+          "Up to 4 mid-video keyframes, each an image url pinned at timestamp_s seconds",
+        items: {
+          type: "object",
+          properties: {
+            url: {
+              type: "string",
+              required: true,
+              description: "Keyframe image URL",
+            },
+            timestamp_s: {
+              type: "number",
+              required: true,
+              exclusiveMinimum: 0,
+              description:
+                "Seconds into the video, greater than 0 and less than duration; keyframes at least 1/3 s apart",
+            },
+          },
+        },
+      },
+      enable_audio: {
+        type: "boolean",
+        default: true,
+        description:
+          "Generate an audio track (default true; false returns a video without one)",
       },
       nsfw_checker: {
         type: "boolean",

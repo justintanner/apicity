@@ -2014,8 +2014,8 @@ export const GrokImagineImageUrlSchema = z
 
 // The current KIE Grok Imagine 1.5 Quick Start still publishes video calls under
 // the existing grok-imagine/text-to-video and grok-imagine/image-to-video suite
-// slugs. This preview-only slug is kept for compatibility with earlier KIE
-// recordings that exposed a separate image-to-video preview model.
+// slugs. KIE still documents the separate image-to-video preview slug, and
+// only that slug takes the 2026-10-22 frame controls.
 export const GrokVideo15AspectRatioSchema = z.enum([
   "auto",
   "1:1",
@@ -3423,20 +3423,99 @@ export const GrokImageToVideoRequestSchema = z
     }
   });
 
-// Legacy preview compatibility slug. Current KIE Grok Imagine 1.5 public docs
-// use grok-imagine/image-to-video for image-to-video calls.
-export const GrokVideo15PreviewRequestSchema = z.object({
-  model: z.literal("grok-imagine-video-1-5-preview"),
-  callBackUrl: z.string().optional(),
-  input: z.object({
-    prompt: z.string().max(4096).optional(),
-    image_urls: z.array(z.string()).min(1),
-    aspect_ratio: GrokVideo15AspectRatioSchema.default("auto"),
-    resolution: GrokImagineLegacyResolutionSchema.default("480p"),
-    duration: z.number().int().min(1).max(15).default(8),
-    nsfw_checker: z.boolean().default(true),
-  }),
+// A mid-video keyframe: an image pinned at timestamp_s seconds.
+export const GrokVideo15KeyframeSchema = z.object({
+  url: z.string().describe("Keyframe image URL"),
+  timestamp_s: z
+    .number()
+    .positive()
+    .describe(
+      "Seconds into the video, greater than 0 and less than duration; keyframes at least 1/3 s apart"
+    ),
 });
+
+// Docs: https://docs.kie.ai/market/grok-imagine/1-5-preview
+// The frame controls (first_frame_url, last_frame_url, loop_url, keyframes)
+// arrived on 2026-10-22 and exist only on this slug, not on the
+// grok-imagine/* suite slugs.
+export const GrokVideo15PreviewInputSchema = z.object({
+  prompt: z.string().max(4096).optional(),
+  image_urls: z.array(z.string()).min(1),
+  aspect_ratio: GrokVideo15AspectRatioSchema.default("auto"),
+  resolution: GrokImagineLegacyResolutionSchema.default("480p"),
+  duration: z.number().int().min(1).max(15).default(8),
+  first_frame_url: z
+    .string()
+    .optional()
+    .describe("First-frame image URL; can be sent with image_urls"),
+  last_frame_url: z.string().optional().describe("Last-frame image URL"),
+  loop_url: z
+    .string()
+    .optional()
+    .describe(
+      "One image URL used as both the first and the last frame; cannot be combined with a different first_frame_url or last_frame_url"
+    ),
+  keyframes: z
+    .array(GrokVideo15KeyframeSchema)
+    .max(4)
+    .optional()
+    .describe(
+      "Up to 4 mid-video keyframes, each an image url pinned at timestamp_s seconds"
+    ),
+  enable_audio: z
+    .boolean()
+    .default(true)
+    .describe(
+      "Generate an audio track (default true; false returns a video without one)"
+    ),
+  nsfw_checker: z.boolean().default(true),
+});
+
+// KIE's docs put each keyframe strictly inside the clip and at least 1/3 s
+// from the next, and forbid pairing loop_url with a different end frame. The
+// guard checks all three before an OTP is spent.
+export const GrokVideo15PreviewRequestSchema = z
+  .object({
+    model: z.literal("grok-imagine-video-1-5-preview"),
+    callBackUrl: z.string().optional(),
+    input: GrokVideo15PreviewInputSchema,
+  })
+  .superRefine((v, ctx) => {
+    const { duration, keyframes = [], loop_url } = v.input;
+
+    keyframes.forEach(({ timestamp_s }, index) => {
+      if (timestamp_s >= duration) {
+        ctx.addIssue({
+          code: "custom",
+          message: `keyframe timestamp_s must be less than duration (${duration}s)`,
+          path: ["input", "keyframes", index, "timestamp_s"],
+        });
+      }
+    });
+
+    const times = keyframes
+      .map(({ timestamp_s }) => timestamp_s)
+      .sort((a, b) => a - b);
+    // The epsilon absorbs float error in exact thirds such as 2/3 - 1/3.
+    if (times.some((t, i) => i > 0 && t - times[i - 1] < 1 / 3 - 1e-9)) {
+      ctx.addIssue({
+        code: "custom",
+        message: "keyframes must be at least 1/3 second apart",
+        path: ["input", "keyframes"],
+      });
+    }
+
+    for (const field of ["first_frame_url", "last_frame_url"] as const) {
+      const frame = v.input[field];
+      if (loop_url !== undefined && frame !== undefined && frame !== loop_url) {
+        ctx.addIssue({
+          code: "custom",
+          message: `loop_url cannot be combined with a different ${field}`,
+          path: ["input", field],
+        });
+      }
+    }
+  });
 
 export const GrokVideoExtendRequestSchema = z.object({
   model: z.literal("grok-imagine/extend"),
@@ -9697,6 +9776,10 @@ export type GrokImageToVideoRequest = z.input<
 export type GrokImageToVideoRequestInput = GrokImageToVideoRequest;
 export type GrokImageToVideoParsedRequest = z.output<
   typeof GrokImageToVideoRequestSchema
+>;
+export type GrokVideo15Keyframe = z.input<typeof GrokVideo15KeyframeSchema>;
+export type GrokVideo15PreviewInput = z.input<
+  typeof GrokVideo15PreviewInputSchema
 >;
 export type GrokVideo15PreviewRequest = z.input<
   typeof GrokVideo15PreviewRequestSchema

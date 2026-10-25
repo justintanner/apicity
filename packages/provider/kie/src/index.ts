@@ -580,6 +580,8 @@ export type {
   GrokImageToVideoRequest,
   GrokImageToVideoRequestInput,
   GrokImageToVideoParsedRequest,
+  GrokVideo15Keyframe,
+  GrokVideo15PreviewInput,
   GrokVideo15PreviewRequest,
   GrokVideo15PreviewRequestInput,
   GrokVideo15PreviewParsedRequest,

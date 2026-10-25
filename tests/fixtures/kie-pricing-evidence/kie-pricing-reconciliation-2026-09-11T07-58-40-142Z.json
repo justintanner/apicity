@@ -1801,10 +1801,10 @@
       "endpoints": 71
     },
     "final": {
-      "models": 158,
-      "pricingKeys": 184,
-      "slugKeys": 186,
-      "displayKeys": 186,
+      "models": 160,
+      "pricingKeys": 186,
+      "slugKeys": 188,
+      "displayKeys": 188,
       "schemaWithoutPricing": 6,
       "pricingOnly": 32,
       "endpoints": 84
@@ -1820,11 +1820,11 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:ec57f54db3d590cae09fb864215265623d7dde3ea5f5e51bb354976872e8d08e",
-      "packages/provider/kie/src/model-schemas.ts": "sha256:c2053fdae21d1eabc9576b7ca69f00c1cb9d42d2a4c7dcadcf3f070beb17aab2",
-      "packages/provider/kie/src/kie.ts": "sha256:a2cb998e08abb16df92f0be5a438d13c0a476e8e9c884e7217a30ec93aee1d0e",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:36028e29418233deb37eeaf9ca46b669c59cecd6e129996214d06e749bcdc912",
-      "packages/provider/cost/src/slugs.ts": "sha256:32f0ef99b878c2ff342e9c335289f451971bdde14ddc8f861b34faae77d15f02",
+      "packages/provider/kie/src/zod.ts": "sha256:c365fbe28c57e0d377d668f3ae2f6d863b10104bb14f01ef112e77b82971e045",
+      "packages/provider/kie/src/model-schemas.ts": "sha256:b87f94df80d03c284609facfc77d3a1e3daaf6514798d8a659bcaa16e8c9fc83",
+      "packages/provider/kie/src/kie.ts": "sha256:5043cd2b18e3c45c08640cda9266c5f756f860fe933dfc0daa1c3a9dad74f62b",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:9dfeb10b1bf3737793c3535e6c0a5c6ac2212b9b17bc46b463cbf06590007e47",
+      "packages/provider/cost/src/slugs.ts": "sha256:8ce67f5101ed2b41b19d317f7cf7f91a436a4195880c4d2e144e6c259e18980d",
       "scripts/endpoint-docs.tsv": "sha256:1d8d4b2c722b3ceb0efef0edacb472f7aebc3b558285883271813ced6ff4f343"
     }
   },
@@ -23057,6 +23057,24 @@
         "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
       },
       {
+        "id": "kling-4.0/reference-to-video",
+        "descriptor": true,
+        "guard": true,
+        "pricingKey": "kling-4.0/reference-to-video",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
+        "id": "kling-4.0/keyframe-to-video",
+        "descriptor": true,
+        "guard": true,
+        "pricingKey": "kling-4.0/keyframe-to-video",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
         "id": "grok-imagine/text-to-image",
         "descriptor": true,
         "guard": true,
@@ -25662,6 +25680,18 @@
         "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
       },
       {
+        "key": "kling-4.0/reference-to-video",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "kling-4.0/keyframe-to-video",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
         "key": "kling/v3-turbo-image-to-video",
         "linkedRows": [
           "sha256:e8ab0b4ad355cab09e038c71a4c50518fe8d5ca80c2f7b041b51ebcdb7add8a7#1",
@@ -27217,6 +27247,14 @@
         "disposition": "supported"
       },
       {
+        "key": "kling-4.0/reference-to-video",
+        "disposition": "supported"
+      },
+      {
+        "key": "kling-4.0/keyframe-to-video",
+        "disposition": "supported"
+      },
+      {
         "key": "wan/2-2-a14b-text-to-video-turbo",
         "disposition": "supported"
       },
@@ -27960,6 +27998,14 @@
       },
       {
         "key": "kling-3.0-omni/transformation",
+        "disposition": "supported"
+      },
+      {
+        "key": "kling-4.0/reference-to-video",
+        "disposition": "supported"
+      },
+      {
+        "key": "kling-4.0/keyframe-to-video",
         "disposition": "supported"
       },
       {
@@ -28997,16 +29043,16 @@
     },
     "apiCity": {
       "models": {
-        "count": 158,
-        "descriptors": 158,
-        "guards": 158,
+        "count": 160,
+        "descriptors": 160,
+        "guards": 160,
         "withoutPricing": 6,
         "dispositionCounts": {
           "supported": 116,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 42
+          "upstream-unmappable": 44
         },
         "unclassified": 0
       },
@@ -29024,20 +29070,20 @@
         "unclassified": 0
       },
       "pricingKeys": {
-        "count": 184,
+        "count": 186,
         "dispositionCounts": {
           "supported": 144,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 40
+          "upstream-unmappable": 42
         },
         "unclassified": 0
       },
       "slugs": {
-        "count": 186,
+        "count": 188,
         "dispositionCounts": {
-          "supported": 186,
+          "supported": 188,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -29046,9 +29092,9 @@
         "unclassified": 0
       },
       "displays": {
-        "count": 186,
+        "count": 188,
         "dispositionCounts": {
-          "supported": 186,
+          "supported": 188,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -29087,6 +29133,48 @@
   },
   "runtimeCoverage": {
     "exceptions": [
+      {
+        "key": "kling-4.0/reference-to-video",
+        "variant": "720p",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/kling-4-0-2026-10-25.json: feed rows and https://kie.ai/kling-4-0 tabs read 2026-10-25: 28.5/42.5 credits = 0.1425/0.2125 USD/s at 720p/1080p, 17/25.5 credits = 0.085/0.1275 USD/s with video input",
+        "rationale": "Kling 4.0 was added after the frozen September catalog; the dated feed and page capture supplies the rates, and the docs callback examples (285 and 425 credits for 10 s) confirm them."
+      },
+      {
+        "key": "kling-4.0/reference-to-video",
+        "variant": "720p|video",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/kling-4-0-2026-10-25.json: feed rows and https://kie.ai/kling-4-0 tabs read 2026-10-25: 28.5/42.5 credits = 0.1425/0.2125 USD/s at 720p/1080p, 17/25.5 credits = 0.085/0.1275 USD/s with video input",
+        "rationale": "Kling 4.0 was added after the frozen September catalog; the dated feed and page capture supplies the rates, and the docs callback examples (285 and 425 credits for 10 s) confirm them."
+      },
+      {
+        "key": "kling-4.0/reference-to-video",
+        "variant": "1080p",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/kling-4-0-2026-10-25.json: feed rows and https://kie.ai/kling-4-0 tabs read 2026-10-25: 28.5/42.5 credits = 0.1425/0.2125 USD/s at 720p/1080p, 17/25.5 credits = 0.085/0.1275 USD/s with video input",
+        "rationale": "Kling 4.0 was added after the frozen September catalog; the dated feed and page capture supplies the rates, and the docs callback examples (285 and 425 credits for 10 s) confirm them."
+      },
+      {
+        "key": "kling-4.0/reference-to-video",
+        "variant": "1080p|video",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/kling-4-0-2026-10-25.json: feed rows and https://kie.ai/kling-4-0 tabs read 2026-10-25: 28.5/42.5 credits = 0.1425/0.2125 USD/s at 720p/1080p, 17/25.5 credits = 0.085/0.1275 USD/s with video input",
+        "rationale": "Kling 4.0 was added after the frozen September catalog; the dated feed and page capture supplies the rates, and the docs callback examples (285 and 425 credits for 10 s) confirm them."
+      },
+      {
+        "key": "kling-4.0/keyframe-to-video",
+        "variant": "720p",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/kling-4-0-2026-10-25.json: feed rows and https://kie.ai/kling-4-0 tabs read 2026-10-25: 28.5/42.5 credits = 0.1425/0.2125 USD/s at 720p/1080p, 17/25.5 credits = 0.085/0.1275 USD/s with video input",
+        "rationale": "Kling 4.0 was added after the frozen September catalog; the dated feed and page capture supplies the rates, and the docs callback examples (285 and 425 credits for 10 s) confirm them."
+      },
+      {
+        "key": "kling-4.0/keyframe-to-video",
+        "variant": "1080p",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/kling-4-0-2026-10-25.json: feed rows and https://kie.ai/kling-4-0 tabs read 2026-10-25: 28.5/42.5 credits = 0.1425/0.2125 USD/s at 720p/1080p, 17/25.5 credits = 0.085/0.1275 USD/s with video input",
+        "rationale": "Kling 4.0 was added after the frozen September catalog; the dated feed and page capture supplies the rates, and the docs callback examples (285 and 425 credits for 10 s) confirm them."
+      },
       {
         "key": "bytedance/seedance-2-5",
         "variant": "1080p|video",

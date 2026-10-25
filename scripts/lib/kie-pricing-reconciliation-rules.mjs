@@ -86,7 +86,27 @@ export function validateFamilyRegistrations() {
   return MODEL_FAMILY_REGISTRATIONS;
 }
 
+// Shared by the six Kling 4.0 variants below (ac-0t56dd).
+const KLING_40_EXCEPTION = Object.freeze({
+  status: "pricing-only",
+  provenance:
+    "tests/fixtures/kie-pricing-evidence/kling-4-0-2026-10-25.json: feed rows and https://kie.ai/kling-4-0 tabs read 2026-10-25: 28.5/42.5 credits = 0.1425/0.2125 USD/s at 720p/1080p, 17/25.5 credits = 0.085/0.1275 USD/s with video input",
+  rationale:
+    "Kling 4.0 was added after the frozen September catalog; the dated feed and page capture supplies the rates, and the docs callback examples (285 and 425 credits for 10 s) confirm them.",
+});
+
 export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
+  ...["720p", "720p|video", "1080p", "1080p|video"].map((variant) => ({
+    key: "kling-4.0/reference-to-video",
+    variant,
+    ...KLING_40_EXCEPTION,
+  })),
+  ...["720p", "1080p"].map((variant) => ({
+    key: "kling-4.0/keyframe-to-video",
+    variant,
+    ...KLING_40_EXCEPTION,
+  })),
+
   ...["bytedance/seedance-2-5", "bytedance/seedance-2-5-draft"].flatMap((key) =>
     ["1080p|video", "1080p|no-video"].map((variant) => ({
       key,

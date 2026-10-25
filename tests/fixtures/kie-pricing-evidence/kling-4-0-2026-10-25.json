@@ -1,0 +1,219 @@
+{
+  "capturedAt": "2026-10-25",
+  "source": "https://kie.ai/kling-4-0",
+  "models": ["kling-4.0/reference-to-video", "kling-4.0/keyframe-to-video"],
+  "basis": "Live pricing-feed rows, the product page's per-tab pricingDesc and the docs callback examples (real billing records) agree. Both models bill output seconds; reference-to-video with video input (video_urls or a video element) bills the with-video rate on output + max(output, input) seconds.",
+  "feed": {
+    "endpoint": "POST https://api.kie.ai/client/v1/model-pricing/page",
+    "fetchedAt": "2026-10-25T04:04:21Z",
+    "pages": [
+      {
+        "pageNum": 1,
+        "status": 200,
+        "sha256": "152acffc9a58e2e6a392ce523772441b984e3feddb7c4eee8b3dd1f493a40069",
+        "records": 100
+      },
+      {
+        "pageNum": 2,
+        "status": 200,
+        "sha256": "73590180aba8820392a1411e99295d87ff409670af34444fd62f385f013d23d3",
+        "records": 100
+      },
+      {
+        "pageNum": 3,
+        "status": 200,
+        "sha256": "295bd658f2a5433feefdad13a3efff34b3055b4404e72457895e6895567bbd8a",
+        "records": 100
+      },
+      {
+        "pageNum": 4,
+        "status": 200,
+        "sha256": "59a519a4fd2f6165c7598c5b9b9d825a1929fb76fbaf7cc6d7660c0955cf6b0b",
+        "records": 100
+      },
+      {
+        "pageNum": 5,
+        "status": 200,
+        "sha256": "d0d0e17efc7cdc0f7858c6ace434010f3d6be509e930bc2e980f997f21820abd",
+        "records": 100
+      },
+      {
+        "pageNum": 6,
+        "status": 200,
+        "sha256": "79dd547fa113d27bed94ea14513680ee350b88614cfed1e3666492d41c879774",
+        "records": 100
+      },
+      {
+        "pageNum": 7,
+        "status": 200,
+        "sha256": "268842f30d0023d3557be87c54f1235c4a1cb031d7085eb574c020013f564805",
+        "records": 5
+      }
+    ],
+    "rows": [
+      {
+        "modelDescription": "kling 4.0, keyframe-to-video, 1080P",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "42.5",
+        "creditUnit": "per second",
+        "usdPrice": "0.2125",
+        "falPrice": "0.235",
+        "discountRate": 9.57,
+        "anchor": "https://kie.ai/kling-4-0?model=kling-4.0%2Fkeyframe-to-video",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "kling 4.0, keyframe-to-video, 720P",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "28.5",
+        "creditUnit": "per second",
+        "usdPrice": "0.1425",
+        "falPrice": "0.157",
+        "discountRate": 9.24,
+        "anchor": "https://kie.ai/kling-4-0?model=kling-4.0%2Fkeyframe-to-video",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "kling 4.0, reference-to-video, 1080P with video input",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "25.5",
+        "creditUnit": "per second",
+        "usdPrice": "0.1275",
+        "falPrice": "0.141",
+        "discountRate": 9.57,
+        "anchor": "https://kie.ai/kling-4-0?model=kling-4.0%2Freference-to-video",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "kling 4.0, reference-to-video, 720P with video input",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "17",
+        "creditUnit": "per second",
+        "usdPrice": "0.085",
+        "falPrice": "0.094",
+        "discountRate": 9.57,
+        "anchor": "https://kie.ai/kling-4-0?model=kling-4.0%2Freference-to-video",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "kling 4.0, reference-to-video, 1080P no video input",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "42.5",
+        "creditUnit": "per second",
+        "usdPrice": "0.2125",
+        "falPrice": "0.235",
+        "discountRate": 9.57,
+        "anchor": "https://kie.ai/kling-4-0?model=kling-4.0%2Freference-to-video",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "kling 4.0, reference-to-video, 720P no video input",
+        "interfaceType": "video",
+        "provider": "Kling",
+        "creditPrice": "28.5",
+        "creditUnit": "per second",
+        "usdPrice": "0.1425",
+        "falPrice": "0.157",
+        "discountRate": 9.24,
+        "anchor": "https://kie.ai/kling-4-0?model=kling-4.0%2Freference-to-video",
+        "discountPrice": false
+      }
+    ]
+  },
+  "page": {
+    "url": "https://kie.ai/kling-4-0",
+    "fetchedAt": "2026-10-25T04:04:22Z",
+    "sha256": "55974278e8c719a1465e09bafbfb5bb5d835707bbebc7be148940ef3b5e58040",
+    "groupData": [
+      {
+        "userPath": "kling-4.0",
+        "path": "reference-to-video",
+        "apiDocumentUrl": "https://docs.kie.ai/market/kling/v4-reference-to-video",
+        "channel": "fal_request",
+        "pricingDesc": "720P: 17 credits/s ($0.085/s, with video) | 28.5 credits/s ($0.1425/s, no video)\n1080P: 25.5 credits/s ($0.1275/s, with video) | 42.5 credits/s ($0.2125/s, no video)\n\n🔸Note🔸: Video input has a lower per-second rate because the input duration is billed as well.\n\n- No video input (text, images, image subjects or voices only): rate × output duration\n- With video input: rate × (output × 2) when total input duration ≤ output duration; rate × (input + output) when input is longer. Multiple input videos are summed. Example: 10 s output + 5 s input = 20 s; with a 15 s input, 25 s.\n\nHigh-tier top-ups include +10% bonus credits. Effective pricing is approximately 10% lower than the above rates."
+      },
+      {
+        "userPath": "kling-4.0",
+        "path": "keyframe-to-video",
+        "apiDocumentUrl": "https://docs.kie.ai/market/kling/v4-keyframe-to-video",
+        "channel": "fal_request",
+        "pricingDesc": "720P: 28.5 credits/s ($0.1425), 1080P: 42.5 credits/s ($0.2125) — billed on the output duration (3–30 s).\n\nHigh-tier top-ups include +10% bonus credits. Effective pricing is approximately 10% lower than the above rates."
+      }
+    ]
+  },
+  "docs": [
+    {
+      "model": "kling-4.0/reference-to-video",
+      "url": "https://docs.kie.ai/market/kling/v4-reference-to-video.md",
+      "fetchedAt": "2026-10-25T04:04:23Z",
+      "sha256": "f8e1c1457fe155044b5614fe92b23651090f560ed26585a5fff8d544ee135128",
+      "callbackExamples": [
+        {
+          "creditsConsumed": 425.0,
+          "duration": 10,
+          "resolution": "1080p",
+          "videoUrls": 0
+        }
+      ]
+    },
+    {
+      "model": "kling-4.0/keyframe-to-video",
+      "url": "https://docs.kie.ai/market/kling/v4-keyframe-to-video.md",
+      "fetchedAt": "2026-10-25T04:04:23Z",
+      "sha256": "33d6ec00e597219d4eec6dcdc7c02afe52a7d1501162305328b047149ce6b3cf",
+      "callbackExamples": [
+        {
+          "creditsConsumed": 285.0,
+          "duration": 10,
+          "resolution": "720p",
+          "videoUrls": 0
+        }
+      ]
+    }
+  ],
+  "recordingBudgetUsd": 5,
+  "recordings": [
+    {
+      "model": "kling-4.0/reference-to-video",
+      "har": "tests/recordings/kie_2079838932/kling-40-reference-to-video_1989697215/recording.har",
+      "request": {
+        "duration": 3,
+        "resolution": "720p",
+        "videoInput": false
+      },
+      "creditsConsumed": 85.5,
+      "usd": 0.4275,
+      "output": {
+        "seconds": 3.04,
+        "width": 1280,
+        "height": 720
+      }
+    },
+    {
+      "model": "kling-4.0/keyframe-to-video",
+      "har": "tests/recordings/kie_2079838932/kling-40-keyframe-to-video_3000017112/recording.har",
+      "request": {
+        "duration": 3,
+        "resolution": "720p",
+        "frames": 3
+      },
+      "creditsConsumed": 85.5,
+      "usd": 0.4275,
+      "output": {
+        "seconds": 3.04,
+        "width": 992,
+        "height": 964
+      }
+    }
+  ],
+  "balanceCredits": {
+    "before": 850.86,
+    "after": 679.86
+  },
+  "observedTotalUsd": 0.855
+}

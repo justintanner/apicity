@@ -846,5 +846,7 @@ Kie provider documentation, retrieved on 2026-08-16 (`GI2-01` through
 | flux-3/klein-edit-image | input.height | optional; integer min=256 max=4096 | https://docs.kie.ai/market/flux3/klein-edit-image @ 2026-10-21 | integer | absent | none beyond current OpenAPI | number-only | high | retain integer bounds; reject strings |
 | flux-3/klein-edit-image | input.num_images | optional; integer min=1 max=4 default=1 | https://docs.kie.ai/market/flux3/klein-edit-image @ 2026-10-21 | integer | number (1) | HAR sends number 1; task succeeded | number-only | high | retain integer bounds; reject strings |
 | flux-3/klein-edit-image | input.seed | optional; integer min=0 max=2147483647 | https://docs.kie.ai/market/flux3/klein-edit-image @ 2026-10-21 | integer | absent | none beyond current OpenAPI | number-only | high | retain integer bounds; reject strings |
+| kling-4.0/reference-to-video | input.duration | optional; integer min=3 max=30 default=5 | https://docs.kie.ai/market/kling/v4-reference-to-video @ 2026-10-25 | integer min=3 max=30 default=5 | number (3) | HAR sends number 3; task succeeded | number-only | high | enforce integer range and default 5 |
+| kling-4.0/keyframe-to-video | input.duration | optional; integer min=3 max=30 default=5 | https://docs.kie.ai/market/kling/v4-keyframe-to-video @ 2026-10-25 | integer min=3 max=30 default=5 | number (3) | HAR sends number 3; task succeeded | number-only | high | enforce integer range and default 5 |
 
 <!-- numeric-inventory:end -->

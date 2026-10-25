@@ -238,6 +238,9 @@ export const KIE_MEDIA_MODELS = [
   "kling-3.0-omni/image-to-video",
   "kling-3.0-omni/reference-to-video",
   "kling-3.0-omni/transformation",
+  // Kling 4.0. Docs under https://docs.kie.ai/market/kling/.
+  "kling-4.0/reference-to-video",
+  "kling-4.0/keyframe-to-video",
   "grok-imagine/text-to-image",
   "grok-imagine/image-to-image",
   "grok-imagine/text-to-video",
@@ -2827,6 +2830,259 @@ export const KlingOmniTransformationRequestSchema =
       });
     }
   });
+
+// ---------------------------------------------------------------------------
+// Kling 4.0 createTask models
+// Docs: https://docs.kie.ai/market/kling/v4-reference-to-video
+//       https://docs.kie.ai/market/kling/v4-keyframe-to-video
+// ---------------------------------------------------------------------------
+
+export const Kling40ResolutionSchema = z.enum(["720p", "1080p"]);
+export const Kling40DurationSchema = z.number().int().min(3).max(30);
+export const Kling40AspectRatioSchema = z.enum([
+  "auto",
+  "16:9",
+  "9:16",
+  "1:1",
+  "21:9",
+]);
+export const Kling40MediaUrlSchema = z.string().regex(/^https?:\/\/.+/);
+export const Kling40ElementTagSchema = z.enum([
+  "character",
+  "animal",
+  "prop",
+  "costume",
+  "scene",
+  "effect",
+  "others",
+]);
+
+const Kling40PromptSchema = z.string().min(1).max(8000);
+
+// The @name an element or voice is mentioned by. Uniqueness across both
+// lists and the reserved positional tags are checked on the request.
+const Kling40MaterialNameSchema = z
+  .string()
+  .regex(/^[\u4e00-\u9fa5A-Za-z0-9_]{1,20}$/)
+  .describe(
+    "Mentioned in the prompt as @name: 1-20 Chinese characters, letters, digits or underscores, unique across elements and voices (case-insensitive). image_N, video_N, keyframe_N, object_N, audio_N, first_frame and last_frame are reserved"
+  );
+
+const KLING_40_RESERVED_NAME =
+  /^(?:(?:image|video|keyframe|object|audio)_\d+|first_frame|last_frame)$/i;
+
+export const Kling40ElementSchema = z.object({
+  name: Kling40MaterialNameSchema,
+  image_urls: z
+    .array(Kling40MediaUrlSchema)
+    .min(2)
+    .max(4)
+    .optional()
+    .describe(
+      "Image subject: 2-4 image URLs, the first is the primary view; exclusive with video_url"
+    ),
+  video_url: Kling40MediaUrlSchema.optional().describe(
+    "Video subject: one 3-8 s single-shot character video, shortest side at least 700 px; exclusive with image_urls"
+  ),
+  tag: Kling40ElementTagSchema.optional().describe(
+    "Subject category; inferred from the primary image when omitted. A video subject is always character"
+  ),
+  description: z.string().max(100).optional(),
+  voice_url: Kling40MediaUrlSchema.optional().describe(
+    "Reference audio bound to a character subject; not mentionable on its own and outside the voices quota"
+  ),
+});
+
+export const Kling40VoiceSchema = z.object({
+  name: Kling40MaterialNameSchema,
+  audio_url: Kling40MediaUrlSchema.describe(
+    "Reference audio URL; the task fails when no usable voice is detected"
+  ),
+});
+
+// Input objects remain plain ZodObjects so metadata consumers can inspect
+// `.shape`; quotas and naming rules across the material lists live on the
+// request.
+export const Kling40ReferenceToVideoInputSchema = z.object({
+  prompt: Kling40PromptSchema.describe(
+    "Video prompt (1-8000 characters). Mention materials as @image_1, @video_1 or @name; every mention must match a material in this request"
+  ),
+  duration: Kling40DurationSchema.default(5),
+  resolution: Kling40ResolutionSchema.default("720p"),
+  aspect_ratio: Kling40AspectRatioSchema.optional().describe(
+    "Output aspect ratio; upstream uses auto when any material is provided and 16:9 otherwise"
+  ),
+  image_urls: z
+    .array(Kling40MediaUrlSchema)
+    .max(10)
+    .default([])
+    .describe(
+      "Reference images, mentioned as @image_1, @image_2, ... in order; each side 300-65536 px, aspect ratio 0.40-2.5"
+    ),
+  video_urls: z
+    .array(Kling40MediaUrlSchema)
+    .max(5)
+    .default([])
+    .describe(
+      "Reference videos of 2-30 s each, mentioned as @video_1, @video_2, ...; at most 5 together with video elements"
+    ),
+  keep_original_sound: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Keep the reference videos' audio; applies only with video_urls, otherwise native audio is generated"
+    ),
+  elements: z
+    .array(Kling40ElementSchema)
+    .max(7)
+    .default([])
+    .describe("Subjects for this task, at most 3 of them video subjects"),
+  voices: z
+    .array(Kling40VoiceSchema)
+    .max(3)
+    .default([])
+    .describe("Standalone voice references, mentioned as @name"),
+});
+
+const Kling40ReferenceToVideoRequestObjectSchema = z.object({
+  model: z.literal("kling-4.0/reference-to-video"),
+  callBackUrl: z.string().url().optional(),
+  input: Kling40ReferenceToVideoInputSchema,
+});
+
+export const Kling40ReferenceToVideoRequestSchema =
+  Kling40ReferenceToVideoRequestObjectSchema.superRefine((value, ctx) => {
+    const { input } = value;
+    const issue = (message: string, path: Array<string | number>) =>
+      ctx.addIssue({ code: "custom", message, path: ["input", ...path] });
+
+    input.elements.forEach((element, index) => {
+      const isVideo = element.video_url !== undefined;
+      if (isVideo === (element.image_urls !== undefined)) {
+        issue("An element takes either 2-4 image_urls or one video_url", [
+          "elements",
+          index,
+        ]);
+      }
+      if (element.tag === undefined || element.tag === "character") return;
+      if (isVideo) {
+        issue("A video element is always a character subject", [
+          "elements",
+          index,
+          "tag",
+        ]);
+      } else if (element.voice_url !== undefined) {
+        issue("voice_url binds only to a character subject", [
+          "elements",
+          index,
+          "voice_url",
+        ]);
+      }
+    });
+
+    const videoElements = input.elements.filter(
+      (element) => element.video_url !== undefined
+    ).length;
+    if (videoElements > 3) {
+      issue("At most 3 elements can be video subjects", ["elements"]);
+    }
+    if (input.video_urls.length + videoElements > 5) {
+      issue("video_urls and video elements together cannot exceed 5", [
+        "video_urls",
+      ]);
+    }
+    const materials =
+      input.image_urls.length +
+      input.video_urls.length +
+      input.elements.length +
+      input.voices.length;
+    if (materials > 15) {
+      issue(
+        "image_urls, video_urls, elements and voices together cannot exceed 15",
+        ["elements"]
+      );
+    }
+
+    const seen = new Set<string>();
+    const named = [
+      ...input.elements.map((element, index) => ({
+        name: element.name,
+        path: ["elements", index, "name"],
+      })),
+      ...input.voices.map((voice, index) => ({
+        name: voice.name,
+        path: ["voices", index, "name"],
+      })),
+    ];
+    for (const { name, path } of named) {
+      if (KLING_40_RESERVED_NAME.test(name)) {
+        issue(`${name} is a reserved material name`, path);
+      } else if (seen.has(name.toLowerCase())) {
+        issue(
+          `${name} repeats a name in elements or voices (case-insensitive)`,
+          path
+        );
+      }
+      seen.add(name.toLowerCase());
+    }
+  });
+
+export const Kling40KeyframeToVideoInputSchema = z.object({
+  prompt: Kling40PromptSchema.describe(
+    "Video prompt (1-8000 characters). Mention frames as @first_frame, @keyframe_1, ... and @last_frame; only frames in this request can be mentioned"
+  ),
+  duration: Kling40DurationSchema.default(5).describe(
+    "Output seconds, 3-30 (default 5). Also caps first + keyframes + last: 3 s allows 4 frames, one more per second, 10 from 9 s"
+  ),
+  resolution: Kling40ResolutionSchema.default("720p"),
+  aspect_ratio: Kling40AspectRatioSchema.optional().describe(
+    "Used only without frames (text-to-video, default 16:9); with frames the output follows the first frame"
+  ),
+  first_frame_url: Kling40MediaUrlSchema.optional().describe(
+    "First-frame image URL, mentioned as @first_frame"
+  ),
+  keyframe_urls: z
+    .array(Kling40MediaUrlSchema)
+    .max(8)
+    .default([])
+    .describe(
+      "Middle-frame image URLs in chronological order, mentioned as @keyframe_1, @keyframe_2, ..."
+    ),
+  last_frame_url: Kling40MediaUrlSchema.optional().describe(
+    "Last-frame image URL, mentioned as @last_frame"
+  ),
+});
+
+const Kling40KeyframeToVideoRequestObjectSchema = z.object({
+  model: z.literal("kling-4.0/keyframe-to-video"),
+  callBackUrl: z.string().url().optional(),
+  input: Kling40KeyframeToVideoInputSchema,
+});
+
+// Upstream creates the task and only then fails it on the frame cap, so the
+// cap is checked here before an OTP is spent.
+export const Kling40KeyframeToVideoRequestSchema =
+  Kling40KeyframeToVideoRequestObjectSchema.superRefine((value, ctx) => {
+    const { input } = value;
+    const frames =
+      (input.first_frame_url === undefined ? 0 : 1) +
+      input.keyframe_urls.length +
+      (input.last_frame_url === undefined ? 0 : 1);
+    const maxFrames = Math.min(input.duration + 1, 10);
+    if (frames > maxFrames) {
+      ctx.addIssue({
+        code: "custom",
+        message: `duration ${input.duration}s allows at most ${maxFrames} frames (first + keyframes + last), got ${frames}`,
+        path: ["input", "keyframe_urls"],
+      });
+    }
+  });
+
+// resultJson of a successful Kling 4.0 task, either model: `resultUrls` holds
+// the generated .mp4 URLs. JSON.parse(data.resultJson) before validating.
+export const Kling40TaskResultJsonSchema = z.object({
+  resultUrls: z.array(z.string().url()).min(1),
+});
 
 export const GrokTextToImageRequestSchema = z.object({
   model: z.literal("grok-imagine/text-to-image"),
@@ -8648,6 +8904,8 @@ export const MediaGenerationRequestSchema = z.union([
   KlingOmniImageToVideoRequestSchema,
   KlingOmniReferenceToVideoRequestSchema,
   KlingOmniTransformationRequestSchema,
+  Kling40ReferenceToVideoRequestSchema,
+  Kling40KeyframeToVideoRequestSchema,
   GrokTextToImageRequestSchema,
   GrokImageToImageRequestSchema,
   GrokTextToVideoRequestSchema,
@@ -8976,6 +9234,13 @@ export type KlingOmniMultiShotPrompt = z.input<
   typeof KlingOmniMultiShotPromptSchema
 >;
 export type KlingOmniElement = z.input<typeof KlingOmniElementSchema>;
+export type Kling40Resolution = z.infer<typeof Kling40ResolutionSchema>;
+export type Kling40Duration = z.infer<typeof Kling40DurationSchema>;
+export type Kling40AspectRatio = z.infer<typeof Kling40AspectRatioSchema>;
+export type Kling40ElementTag = z.infer<typeof Kling40ElementTagSchema>;
+export type Kling40Element = z.input<typeof Kling40ElementSchema>;
+export type Kling40Voice = z.input<typeof Kling40VoiceSchema>;
+export type Kling40TaskResultJson = z.infer<typeof Kling40TaskResultJsonSchema>;
 export type GoogleGeminiTtsVoiceName = z.infer<
   typeof GoogleGeminiTtsVoiceNameSchema
 >;
@@ -9158,6 +9423,33 @@ export type KlingOmniTransformationRequestInput =
   KlingOmniTransformationRequest;
 export type KlingOmniTransformationParsedRequest = z.output<
   typeof KlingOmniTransformationRequestSchema
+>;
+export type Kling40ReferenceToVideoInput = z.input<
+  typeof Kling40ReferenceToVideoInputSchema
+>;
+export type Kling40ReferenceToVideoParsedInput = z.output<
+  typeof Kling40ReferenceToVideoInputSchema
+>;
+export type Kling40ReferenceToVideoRequest = z.input<
+  typeof Kling40ReferenceToVideoRequestSchema
+>;
+export type Kling40ReferenceToVideoRequestInput =
+  Kling40ReferenceToVideoRequest;
+export type Kling40ReferenceToVideoParsedRequest = z.output<
+  typeof Kling40ReferenceToVideoRequestSchema
+>;
+export type Kling40KeyframeToVideoInput = z.input<
+  typeof Kling40KeyframeToVideoInputSchema
+>;
+export type Kling40KeyframeToVideoParsedInput = z.output<
+  typeof Kling40KeyframeToVideoInputSchema
+>;
+export type Kling40KeyframeToVideoRequest = z.input<
+  typeof Kling40KeyframeToVideoRequestSchema
+>;
+export type Kling40KeyframeToVideoRequestInput = Kling40KeyframeToVideoRequest;
+export type Kling40KeyframeToVideoParsedRequest = z.output<
+  typeof Kling40KeyframeToVideoRequestSchema
 >;
 export type GrokTextToImageRequest = z.input<
   typeof GrokTextToImageRequestSchema

@@ -36,6 +36,10 @@ export const MODEL_SLUGS = {
     "kling-3.0-omni/reference-to-video": "klingo3r",
     "kling-3.0-omni/transformation": "klingo3x",
 
+    // Video — Kling 4.0 (the fal Kling 4 family slug)
+    "kling-4.0/reference-to-video": "kling4",
+    "kling-4.0/keyframe-to-video": "kling4",
+
     // Video — Wan 2.2 (A14B Turbo trio + the Animate pair). All five share the
     // family slug: there is no separately-priced non-turbo wan 2.2 generation
     // surface for a tier letter to distinguish, and the animate ops differ by
@@ -676,6 +680,8 @@ export const MODEL_DISPLAY = {
     "kling-3.0-omni/image-to-video": "Kling 3.0 Omni Image-to-Video",
     "kling-3.0-omni/reference-to-video": "Kling 3.0 Omni Reference-to-Video",
     "kling-3.0-omni/transformation": "Kling 3.0 Omni Transformation",
+    "kling-4.0/reference-to-video": "Kling 4.0 Reference-to-Video",
+    "kling-4.0/keyframe-to-video": "Kling 4.0 Keyframe-to-Video",
 
     "wan/2-2-a14b-text-to-video-turbo": "Wan 2.2",
     "wan/2-2-a14b-image-to-video-turbo": "Wan 2.2",

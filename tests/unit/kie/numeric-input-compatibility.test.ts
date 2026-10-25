@@ -116,8 +116,14 @@ function numericVariant(
 
   if (schema.type !== "string") return undefined;
 
-  // FLUX 3 Klein reference URLs cannot contain a numeric-only value.
+  // FLUX 3 Klein and Kling 4.0 media URLs cannot contain a numeric-only value.
   if (schema.pattern === /^https?:\/\/.+/.source) return undefined;
+
+  // Kling 4.0 element and voice names are @-mention identifiers, never
+  // numeric inputs.
+  if (schema.pattern === /^[\u4e00-\u9fa5A-Za-z0-9_]{1,20}$/.source) {
+    return undefined;
+  }
 
   if (
     typeof schema.pattern === "string" &&

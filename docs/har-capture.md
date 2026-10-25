@@ -164,7 +164,12 @@ appears. Equal inputs give equal bytes.
 An annotated file is one call attributed to its `_apicity` endpoint. Primary
 HTTP exchanges match that endpoint; uploads and other auxiliary exchanges
 contribute volume but no schema or response-drift evidence. A legacy exchange
-is one call, attributed by full URL first, then provider-scoped path matching.
+is one call, attributed by full URL first, then provider-scoped path matching,
+then full URL again with a fal endpoint id spanning path segments
+(`POST queue.fal.run/fal-ai/flux/dev` is `v1.queue.submit`), so a fal model row
+keeps a queue submit to its own path. `matchedBy` counts full-URL matches as
+`strict`, path matches as `lenient`, and an annotated call's only HTTP
+exchange, kept when its URL matched no row, as `soleEntry`.
 Root discriminated unions create one record per variant (KIE's model).
 Unknown annotations appear in unresolvedCalls and their HTTP exchanges are
 matched as legacy. Unmatched URL paths mask IDs and omit queries.

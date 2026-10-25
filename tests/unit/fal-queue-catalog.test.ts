@@ -120,6 +120,40 @@ it("har report resolves fal queue polls under their SDK dot paths", async () => 
   expect(status.flatMap((e) => e.providerErrors.groups)).toEqual([
     expect.objectContaining({ status: 422, fields: ["request_id"] }),
   ]);
+  // Each exchange matches its row's full URL with the endpoint id spanning
+  // segments; the submit no longer falls back to the sole entry (ac-bynay5).
+  expect(
+    Object.fromEntries(r.endpoints.map((e) => [e.dotPath, e.volume.matchedBy]))
+  ).toEqual({
+    "v1.queue.result": { strict: 1, lenient: 0, soleEntry: 0 },
+    "v1.queue.status": { strict: 2, lenient: 0, soleEntry: 0 },
+    "v1.queue.submit": { strict: 1, lenient: 0, soleEntry: 0 },
+  });
+});
+
+it("har report attributes every exchange of a retried queue submit to its row", async () => {
+  // Two submit exchanges in one call rule out the sole-entry fallback, so the
+  // catalog row's URL must match `fal-ai/flux/dev` itself.
+  const r = await report(
+    "tests/fixtures/har-report/fal-queue/submit-retry.har"
+  );
+  expect(r.unresolvedCalls).toEqual([]);
+  expect(r.unmatched).toEqual([]);
+  expect(r.endpoints).toHaveLength(1);
+  expect(r.endpoints[0]).toMatchObject({
+    method: "POST",
+    dotPath: "v1.queue.submit",
+    volume: {
+      calls: 1,
+      outcomes: { ok: 1 },
+      exchanges: { primary: 2, auxiliary: 0, local: 0 },
+      matchedBy: { strict: 2, lenient: 0, soleEntry: 0 },
+      statusHistogram: [
+        { status: 200, count: 1 },
+        { status: 503, count: 1 },
+      ],
+    },
+  });
 });
 
 it("describes the queue polls with their queue.fal.run URLs and request fields", async () => {

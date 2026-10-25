@@ -144,6 +144,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Breaking:** KIE `Seedance25RequestSchema` and `Seedance25InputSchema`
+  (`bytedance/seedance-2-5`) now default `input.generate_audio` to `false`,
+  not `true`, and the `modelInputSchemas["bytedance/seedance-2-5"]`
+  descriptor says so. `.schema.parse()` output and `apicity describe`
+  change. KIE's documented default is still `true`; every recorded
+  seedance-2-5 run sent `false` (3 of 3 in the 2026-10-24 HAR learning
+  pass), so the schema now follows them. createTask still sends the request
+  as written, so an omitted field still gets KIE's `true`: send
+  `generate_audio: false` for a silent clip. The price does not depend on it
+  (ac-lsk3d7).
+- **Breaking:** KIE `GrokVideo15PreviewRequestSchema` and
+  `GrokVideo15PreviewInputSchema` now default `input.nsfw_checker` to
+  `false`, not `true`, as KIE's docs and live model schema say (read
+  2026-10-25). `.schema.parse()` output and `apicity describe` change.
+  createTask still sends the request as written, so an omitted field gets
+  KIE's own default. Pass `nsfw_checker: true` to keep KIE's content filter
+  on (ac-lsk3d7, folded from ac-xgp38d).
 - The 29 provider packages that ship zod schemas now depend on `zod@^4.6.6`,
   up from `^4.4.3`. 4.6.6 is the first zod release patched for
   GHSA-mrhx-c7xc-m3w5, so an install can no longer resolve a vulnerable zod.

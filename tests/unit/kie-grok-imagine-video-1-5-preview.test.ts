@@ -132,12 +132,17 @@ describe("Grok Imagine Video 1.5 Preview frame controls", () => {
     expect(issues({ ...FRAMES, resolution: "1080p" })).toEqual([]);
   });
 
-  it("defaults audio on", () => {
+  it("defaults audio on and the NSFW checker off", () => {
     const parsed = parse({ image_urls: [ANCHOR] });
     expect(parsed.data?.input).toMatchObject({
       enable_audio: true,
+      nsfw_checker: false,
       duration: 8,
     });
+    expect(
+      parse({ image_urls: [ANCHOR], nsfw_checker: true }).data?.input
+        .nsfw_checker
+    ).toBe(true);
     expect(parsed.data?.input.keyframes).toBeUndefined();
     expect(
       parse({ image_urls: [ANCHOR], enable_audio: false }).data?.input
@@ -286,6 +291,15 @@ describe("Grok Imagine Video 1.5 Preview model input descriptor", () => {
     });
     expect(descriptor.fields.image_urls.maxItems).toBeUndefined();
     expect(properties.image_urls.maxItems).toBeUndefined();
+  });
+
+  // KIE's docs and live model schema say "Defaults to false" (read
+  // 2026-10-25); the June 2026 docs said true.
+  it("describes the NSFW checker's false default", () => {
+    expect(properties.nsfw_checker.default).toBe(false);
+    expect(descriptor.fields.nsfw_checker.description).toBe(
+      "Enable content filtering (default false; false returns raw model output)"
+    );
   });
 
   it("lists the 1080p tier", () => {

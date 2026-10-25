@@ -3438,8 +3438,7 @@ export const GrokVideo15KeyframeSchema = z.object({
 // The frame controls (first_frame_url, last_frame_url, loop_url, keyframes)
 // arrived on 2026-10-22 and exist only on this slug, not on the
 // grok-imagine/* suite slugs. The docs added 1080p by 2026-10-25, with one
-// image only at that resolution. They now default nsfw_checker to false; that
-// parse-default change is Breaking and waits for a minor release (ac-xgp38d).
+// image only at that resolution, and now default nsfw_checker to false.
 export const GrokVideo15PreviewInputSchema = z.object({
   prompt: z.string().max(4096).optional(),
   image_urls: z.array(z.string()).min(1),
@@ -3470,7 +3469,7 @@ export const GrokVideo15PreviewInputSchema = z.object({
     .describe(
       "Generate an audio track (default true; false returns a video without one)"
     ),
-  nsfw_checker: z.boolean().default(true),
+  nsfw_checker: z.boolean().default(false),
 });
 
 // KIE's docs put each keyframe strictly inside the clip and at least 1/3 s
@@ -3782,7 +3781,10 @@ export const Seedance25InputSchema = z.object({
     .max(10)
     .optional(),
   return_last_frame: z.boolean().default(false),
-  generate_audio: z.boolean().default(true),
+  // KIE's default is true, but every recorded run sent false, so the schema
+  // defaults to false (operator decision, 2026-10-25). createTask sends the
+  // request as written, so an omitted field still gets KIE's true.
+  generate_audio: z.boolean().default(false),
   resolution: z.enum(["480p", "720p", "1080p"]).default("720p"),
   aspect_ratio: z
     .enum(["1:1", "4:3", "3:4", "16:9", "9:16", "21:9", "adaptive"])

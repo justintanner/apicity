@@ -136,7 +136,7 @@ describe("MachGen pricing", () => {
         checked++;
       }
     }
-    expect(checked).toBe(324);
+    expect(checked).toBe(332);
   });
   it("prices exactly the models the evidence prices", () => {
     const priced = new Set(
@@ -388,8 +388,11 @@ describe("MachGen pricing", () => {
       "HappyHorse-1.0": "hh",
       "Kling-o3": "klingo3",
       "Vidu-Q3": "viduq3",
+      "Veo-3.1": "veo3p1",
+      "Veo-3.1-Fast": "veo3p1f",
+      "Grok-Imagine-Video": "grokimgv",
     });
-    // A model kie or xai also sells shares their slug; the rest are new.
+    // A model another provider also sells shares its slug; the rest are new.
     const elsewhere = new Set(
       Object.entries(MODEL_SLUGS)
         .filter(([provider]) => provider !== "machgen")
@@ -404,14 +407,8 @@ describe("MachGen pricing", () => {
       "pixc1",
       "viduq3",
     ];
-    for (const slug of Object.values(MODEL_SLUGS.machgen)) {
-      if (own.includes(slug)) expect(elsewhere.has(slug), slug).toBe(false);
-      else
-        expect([
-          ...Object.values(MODEL_SLUGS.kie),
-          ...Object.values(MODEL_SLUGS.xai),
-        ]).toContain(slug);
-    }
+    for (const slug of Object.values(MODEL_SLUGS.machgen))
+      expect(elsewhere.has(slug), slug).toBe(!own.includes(slug));
     expect(Object.keys(MODEL_DISPLAY.machgen)).toEqual(
       Object.keys(MODEL_SLUGS.machgen)
     );

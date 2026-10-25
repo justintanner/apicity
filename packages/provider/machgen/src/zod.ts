@@ -102,8 +102,7 @@ const IMAGES_ONLY = (images: number) => ({
 
 // T2V, I2V and R2V grids, read from MachGen's 400 responses to off-grid
 // requests on 2026-10-25
-// (tests/fixtures/machgen-evidence/machgen-grids-2026-10-25.json). A T2V-only
-// model's aspect ratios were not probed, so they are not checked.
+// (tests/fixtures/machgen-evidence/machgen-grids-2026-10-25.json).
 export const MACHGEN_VIDEO_GRIDS: Readonly<
   Record<
     string,
@@ -231,7 +230,11 @@ export const MACHGEN_VIDEO_GRIDS: Readonly<
     },
   },
   "Kling-o3": {
-    T2V: { heights: [720, 1080, 2160], durations: secs(3, 15) },
+    T2V: {
+      heights: [720, 1080, 2160],
+      durations: secs(3, 15),
+      aspectRatios: ["16:9", "9:16", "1:1"],
+    },
     R2V: {
       heights: [720, 1080, 2160],
       durations: secs(3, 15),
@@ -281,8 +284,20 @@ export const MACHGEN_VIDEO_GRIDS: Readonly<
       aspectRatios: ["adaptive", "16:9", "9:16", "1:1", "4:3", "3:4"],
     },
   },
-  "Veo-3.1": { T2V: { heights: [720, 1080, 2160], durations: [4, 6, 8] } },
-  "Veo-3.1-Fast": { T2V: { heights: [720, 1080, 2160], durations: [4, 6, 8] } },
+  "Veo-3.1": {
+    T2V: {
+      heights: [720, 1080, 2160],
+      durations: [4, 6, 8],
+      aspectRatios: ["16:9", "9:16"],
+    },
+  },
+  "Veo-3.1-Fast": {
+    T2V: {
+      heights: [720, 1080, 2160],
+      durations: [4, 6, 8],
+      aspectRatios: ["16:9", "9:16"],
+    },
+  },
   "Pixverse-V6": {
     T2V: {
       heights: [360, 540, 720, 1080],
@@ -346,7 +361,7 @@ export const MACHGEN_VIDEO_GRIDS: Readonly<
     },
   },
   "Grok-Imagine-Video": {
-    T2V: { heights: [480, 720], durations: secs(1, 15) },
+    T2V: { heights: [480, 720], durations: secs(1, 15), aspectRatios: VIDU },
   },
   "Grok-Imagine-Video-1.5": {
     I2V: {

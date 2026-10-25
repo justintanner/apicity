@@ -38,6 +38,9 @@ const PRICED_TASKS: Record<string, readonly string[]> = {
   "Kling-v3": T2V_I2V,
   "Kling-o3": ["T2V", "R2V"],
   "Vidu-Q3": ["R2V"],
+  "Veo-3.1": ["T2V"],
+  "Veo-3.1-Fast": ["T2V"],
+  "Grok-Imagine-Video": ["T2V"],
   "Vidu-Q4-Preview": ["I2V", "R2V"],
   "Vidu-Q3-Pro-Fast": ["I2V"],
   "Pixverse-V6": ALL,
@@ -414,4 +417,8 @@ export const machgen: Record<string, ModelPricing> = {
     [audio, height]
   ),
   "Vidu-Q3": flat({ "540": 0.042, "720": 0.071, "1080": 0.089 }),
+  // Veo 3.1 audio is always on (docs); the pricebook has one rate per height.
+  "Veo-3.1": flat({ "720": 0.471, "1080": 0.471, "2160": 0.706 }),
+  "Veo-3.1-Fast": flat({ "720": 0.118, "1080": 0.142, "2160": 0.353 }),
+  "Grok-Imagine-Video": flat({ "480": 0.059, "720": 0.083 }),
 };

@@ -649,6 +649,9 @@ export const MODEL_SLUGS = {
     "HappyHorse-1.0": "hh",
     "Kling-o3": "klingo3",
     "Vidu-Q3": "viduq3",
+    "Veo-3.1": "veo3p1",
+    "Veo-3.1-Fast": "veo3p1f",
+    "Grok-Imagine-Video": "grokimgv",
   },
 } as const;
 
@@ -1287,6 +1290,9 @@ export const MODEL_DISPLAY = {
     "HappyHorse-1.0": "HappyHorse 1.0",
     "Kling-o3": "Kling 3.0 Omni",
     "Vidu-Q3": "Vidu Q3",
+    "Veo-3.1": "Veo 3.1",
+    "Veo-3.1-Fast": "Veo 3.1 Fast",
+    "Grok-Imagine-Video": "Grok Imagine Video",
   },
 } as const;
 

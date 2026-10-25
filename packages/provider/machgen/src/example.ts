@@ -16,14 +16,14 @@ export interface EndpointExample {
 
 const EXAMPLES: Record<string, EndpointExample> = {
   "POST api.v0.generate": {
-    "source": "machgen/wan-2-2-a14b-t2v",
+    "source": "machgen/veo-3-1-t2v",
     "payload": {
-      "model": "Wan2.2-A14B",
+      "model": "Veo-3.1",
       "task_type": "T2V",
       "prompt": "A red paper boat drifts across a calm pond at sunrise.",
       "video_config": {
-        "duration_secs": 5,
-        "height": 480
+        "duration_secs": 4,
+        "height": 720
       }
     },
     "tier": "expensive",

@@ -42,6 +42,10 @@ export const MACHGEN_CASES = [
   ["happyhorse-1-0", "HappyHorse-1.0", 3, 720, false],
   ["vidu-q3", "Vidu-Q3", 3, 540, true],
   ["kling-o3", "Kling-o3", 3, 720, true],
+  // T2V-only models. Veo 3.1's audio is always on, so it takes no audio flag.
+  ["veo-3-1", "Veo-3.1", 4, 720, false],
+  ["veo-3-1-fast", "Veo-3.1-Fast", 4, 720, false],
+  ["grok-imagine-video", "Grok-Imagine-Video", 1, 480, false],
 ] as const;
 // The task metadata names the model an alias resolves to.
 const resolvedModel = (model: string, task: string) =>
@@ -144,6 +148,9 @@ export const MACHGEN_RECORDED: ReadonlyArray<
   [19, "R2V", undefined, 0.126],
   [20, "R2V", undefined, 0.24],
   [20, "R2V", { audio: true }, 0.318],
+  [21, "T2V", undefined, 1.884],
+  [22, "T2V", undefined, 0.472],
+  [23, "T2V", undefined, 0.059],
 ];
 export function machgenPayload(
   index: number,

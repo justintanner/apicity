@@ -28,7 +28,7 @@
     "Input-video rows bill input plus output seconds; the input is what MachGen reads after reference_video_start_secs (MiniMax-H3-Turbo: a 4 s clip read from 1 s with a 4 s output billed 70000 micros = 7 x 0.01). A model without input-video rows bills its one rate on both: Alibaba-Wan-3.0 at 480p, a 4 s reference and 2 s out, billed 294000 micros = 6 x 0.049. An edit renders its source's length (Seedance-2.5: 4 s source, 480000 micros = 8 x 0.06). Audio references do not bill (MiniMax-H3: audio-only 1 s, 50000 micros).",
     "MiniMax H3's upscale bills input plus output seconds, and its output runs the source's length: a 5 s 768p source upscaled to 1440p billed 500000 micros = 10 x 0.05.",
     "MiniMax H3 bills an I2V request with an end frame at its Image to Video rate: a 2 s 480p request with two src_image_urls billed 70000 micros (0.035 USD/s), not the Reference to Video / Frame to Frame rate of 0.05 USD/s (tests/recordings/machgen_3663587242/minimax-h3-i2v-end-frame-2s_*). The Frame to Frame rows are priced here for R2V only.",
-    "Every model with duration bands, audio tiers or an alias, and every R2V and UPSCALE price added for ac-ks4no2, was checked against a billed receipt: 43 tasks recorded on 2026-10-25 billed exactly their estimate (22 for ac-fs70lj; 21 for ac-ks4no2, in tests/machgen-helpers.ts MACHGEN_RECORDED plus the MiniMax-H3 upscale and its source), and the ac-ks4no2 Topaz upscale billed exactly MachGen's quote."
+    "Every model with duration bands, audio tiers or an alias, and every R2V and UPSCALE price added for ac-ks4no2, was checked against a billed receipt: 46 tasks recorded on 2026-10-25 billed exactly their estimate (22 for ac-fs70lj; 21 for ac-ks4no2, in tests/machgen-helpers.ts MACHGEN_RECORDED plus the MiniMax-H3 upscale and its source; 3 for ac-5qfga3, one T2V clip per T2V-only model), and the ac-ks4no2 Topaz upscale billed exactly MachGen's quote."
   ],
   "models": [
     {
@@ -1285,7 +1285,7 @@
       "seconds": null,
       "usdPerSecond": 0.059,
       "example": "($0.295 / 5s clip)",
-      "unpriced": "T2V-only model: validated, priced in a follow-up (ac-5qfga3)"
+      "prices": ["T2V"]
     },
     {
       "display": "Grok Imagine Video",
@@ -1297,7 +1297,7 @@
       "seconds": null,
       "usdPerSecond": 0.083,
       "example": "($0.415 / 5s clip)",
-      "unpriced": "T2V-only model: validated, priced in a follow-up (ac-5qfga3)"
+      "prices": ["T2V"]
     },
     {
       "display": "Grok Imagine Video 1.5",
@@ -1705,7 +1705,7 @@
       "seconds": null,
       "usdPerSecond": 0.118,
       "example": "($0.59 / 5s clip)",
-      "unpriced": "T2V-only model: validated, priced in a follow-up (ac-5qfga3)"
+      "prices": ["T2V"]
     },
     {
       "display": "Veo 3.1 Fast",
@@ -1717,7 +1717,7 @@
       "seconds": null,
       "usdPerSecond": 0.142,
       "example": "($0.71 / 5s clip)",
-      "unpriced": "T2V-only model: validated, priced in a follow-up (ac-5qfga3)"
+      "prices": ["T2V"]
     },
     {
       "display": "Veo 3.1 Fast",
@@ -1729,7 +1729,7 @@
       "seconds": null,
       "usdPerSecond": 0.353,
       "example": "($1.765 / 5s clip)",
-      "unpriced": "T2V-only model: validated, priced in a follow-up (ac-5qfga3)"
+      "prices": ["T2V"]
     },
     {
       "display": "Veo 3.1 Standard",
@@ -1741,7 +1741,7 @@
       "seconds": null,
       "usdPerSecond": 0.471,
       "example": "($2.355 / 5s clip)",
-      "unpriced": "T2V-only model: validated, priced in a follow-up (ac-5qfga3)"
+      "prices": ["T2V"]
     },
     {
       "display": "Veo 3.1 Standard",
@@ -1753,7 +1753,7 @@
       "seconds": null,
       "usdPerSecond": 0.471,
       "example": "($2.355 / 5s clip)",
-      "unpriced": "T2V-only model: validated, priced in a follow-up (ac-5qfga3)"
+      "prices": ["T2V"]
     },
     {
       "display": "Veo 3.1 Standard",
@@ -1765,7 +1765,7 @@
       "seconds": null,
       "usdPerSecond": 0.706,
       "example": "($3.53 / 5s clip)",
-      "unpriced": "T2V-only model: validated, priced in a follow-up (ac-5qfga3)"
+      "prices": ["T2V"]
     },
     {
       "display": "Vidu Q3",

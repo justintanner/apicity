@@ -58,13 +58,13 @@ accepts the task, and does not bill it. The grids were read from those
 | `Vidu-Q4-Preview` |  | ✓ | ✓ |  |  | 540, 720, 1080, 1440, 2160 | 3-16 | I2V, R2V |
 | `Vidu-Q3-Pro-Fast` |  | ✓ |  |  |  | 720, 1080 | 1-16 | I2V |
 | `Alibaba-Wan-3.0` | ✓ | ✓ | ✓ |  | start + end | 480, 720, 1080 | -1, 2-30 | T2V, I2V, R2V |
-| `Veo-3.1` | ✓ |  |  |  |  |  |  |  |
-| `Veo-3.1-Fast` | ✓ |  |  |  |  |  |  |  |
+| `Veo-3.1` | ✓ |  |  |  |  |  |  | T2V |
+| `Veo-3.1-Fast` | ✓ |  |  |  |  |  |  | T2V |
 | `Pixverse-V6` | ✓ | ✓ | ✓ |  |  | 360, 540, 720, 1080 | 1-15 | T2V, I2V, R2V |
 | `Pixverse-C1` | ✓ | ✓ | ✓ |  |  | 360, 540, 720, 1080 | 1-15 | T2V, I2V, R2V |
 | `HappyHorse-1.1` | ✓ | ✓ | ✓ |  |  | 720, 1080 | 3-15 | T2V, I2V, R2V |
 | `HappyHorse-1.0` | ✓ | ✓ | ✓ |  |  | 720, 1080 | 3-15 | T2V, I2V, R2V |
-| `Grok-Imagine-Video` | ✓ |  |  |  |  |  |  |  |
+| `Grok-Imagine-Video` | ✓ |  |  |  |  |  |  | T2V |
 | `Grok-Imagine-Video-1.5` |  | ✓ |  |  |  | 480, 720, 1080 | 1-15 | I2V |
 | `Topaz-Video-Precision` |  |  |  | ✓ |  |  |  |  |
 | `Topaz-Video-Precision-Animation` |  |  |  | ✓ |  |  |  |  |

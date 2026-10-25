@@ -1,10 +1,10 @@
 {
   "capturedAt": "2026-10-25",
   "source": "Probes of POST https://api.machgen.ai/api/v0/generate and POST https://api.machgen.ai/api/v0/upscale/quote (MachGen's web app price check; it never creates a task). MachGen rejects an off-grid request with HTTP 400 before accepting it, and a rejected request is never billed (https://www.machgen.ai/docs/rest_api#error-codes). Each probe sent one deliberately invalid value, so the 400 detail lists the allowed values. Three probes in `accepted` were not rejected and billed (task ids and receipts in the ac-ks4no2 PR). The lists match the capability contract in the www.machgen.ai Next.js bundle.",
-  "probes": 426,
+  "probes": 430,
   "statuses": {
     "200": 48,
-    "400": 351,
+    "400": 355,
     "403": 3,
     "422": 2,
     "500": 22
@@ -329,7 +329,8 @@
       },
       "T2V": {
         "heights": [720, 1080, 2160],
-        "durations": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+        "durations": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "aspectRatios": ["16:9", "9:16", "1:1"]
       }
     },
     "Vidu-Q4-Preview": {
@@ -380,13 +381,15 @@
     "Veo-3.1": {
       "T2V": {
         "heights": [720, 1080, 2160],
-        "durations": [4, 6, 8]
+        "durations": [4, 6, 8],
+        "aspectRatios": ["16:9", "9:16"]
       }
     },
     "Veo-3.1-Fast": {
       "T2V": {
         "heights": [720, 1080, 2160],
-        "durations": [4, 6, 8]
+        "durations": [4, 6, 8],
+        "aspectRatios": ["16:9", "9:16"]
       }
     },
     "Pixverse-V6": {
@@ -460,7 +463,8 @@
     "Grok-Imagine-Video": {
       "T2V": {
         "heights": [480, 720],
-        "durations": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+        "durations": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "aspectRatios": ["16:9", "9:16", "1:1", "4:3"]
       }
     },
     "Grok-Imagine-Video-1.5": {

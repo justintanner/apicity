@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Six fal endpoints written as method shorthand were invisible to the endpoint walker, so their URL comments went unchecked and the catalog and README left them out. `v1.serverless.files.list`, `v1.serverless.apps.queue`, `v1.serverless.metrics` and `v1.workflows.get` now have catalog rows, with call shapes for the `{owner}`/`{name}` and `{username}`/`{workflow_name}` path fields, and `v1.models.usage` and `v1.models.analytics` now appear in the fal README. Call behavior is unchanged (ac-3ba9xb).
+
 - fal queue polls are now in the endpoint catalog: `v1.queue.status` (`GET https://queue.fal.run/{endpoint_id}/requests/{request_id}/status`) and `v1.queue.result` (`GET https://queue.fal.run/{endpoint_id}/requests/{request_id}`) have rows and call shapes, so `apicity har report` resolves polling captures instead of listing them as not-in-catalog, and a failed poll counts as a provider error. The `v1.queue.submit` row now names the URL the factory sends, `POST https://queue.fal.run/{endpoint_id}`, instead of `https://api.fal.ai/v1/POST` (ac-8zeblu).
 
 - Two provider rules seen only in recorded rejections now apply locally. KIE `pixverse-v6/image-to-video` createTask rejects two `image_urls` without a `template_id` before the request leaves (KIE's 422 "template_id cannot be empty when multiple image_urls are provided"), and the xAI chat completions schema rejects an empty `messages` list (xAI's 400 "Messages cannot be empty") (ac-tsul8r).

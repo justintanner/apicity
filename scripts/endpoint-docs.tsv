@@ -882,10 +882,14 @@ fal	v1.models.usage	GET	https://api.fal.ai/v1/models/usage	https://docs.fal.ai
 fal	v1.queue.result	GET	https://queue.fal.run/{endpoint_id}/requests/{request_id}	https://fal.ai/docs/inference-api/queue/result
 fal	v1.queue.status	GET	https://queue.fal.run/{endpoint_id}/requests/{request_id}/status	https://fal.ai/docs/inference-api/queue/status
 fal	v1.queue.submit	POST	https://queue.fal.run/{endpoint_id}{query}	https://fal.ai/docs/inference-api/queue/submit
+fal	v1.serverless.apps.queue	GET	https://api.fal.ai/v1/serverless/apps/{owner}/{name}/queue	https://fal.ai/docs/platform-apis/v1/serverless/apps/queue
+fal	v1.serverless.files.list	GET	https://api.fal.ai/v1/serverless/files/list	https://fal.ai/docs/platform-apis/v1/serverless/files/list
 fal	v1.serverless.files.uploadLocal	POST	https://api.fal.ai/v1/serverless/files/file/local/{param}	https://docs.fal.ai
 fal	v1.serverless.files.uploadUrl	POST	https://api.fal.ai/v1/serverless/files/file/url/{param}	https://docs.fal.ai
 fal	v1.serverless.logs.stream	POST	https://api.fal.ai/v1/serverless/logs/stream	https://docs.fal.ai
+fal	v1.serverless.metrics	GET	https://api.fal.ai/v1/serverless/metrics	https://fal.ai/docs/platform-apis/v1/serverless/metrics
 fal	v1.workflows	GET	https://api.fal.ai/v1/workflows	https://docs.fal.ai
+fal	v1.workflows.get	GET	https://api.fal.ai/v1/workflows/{username}/{workflow_name}	https://fal.ai/docs/platform-apis/v1/workflows/get
 fal	veo3p1.imageToVideo	POST	https://fal.run/fal-ai/veo3.1/image-to-video	https://docs.fal.ai
 fal	veo3p1.textToVideo	POST	https://fal.run/fal-ai/veo3.1	https://docs.fal.ai
 fal	virtualTryOn	POST	https://fal.run/google/virtual-try-on	https://fal.ai/models/google/virtual-try-on/api

@@ -4691,6 +4691,18 @@ export const CALL_SHAPES: Record<string, CallShape> = {
     injected: [],
     derived: [],
   },
+  "fal\tGET\tv1.serverless.apps.queue": {
+    provider: "fal",
+    method: "GET",
+    dotPath: "v1.serverless.apps.queue",
+    positional: [],
+    fields: [
+      { placeholder: "owner", property: "owner" },
+      { placeholder: "name", property: "name" },
+    ],
+    injected: [],
+    derived: [],
+  },
   "fal\tPOST\tv1.serverless.files.uploadLocal": {
     provider: "fal",
     method: "POST",
@@ -4706,6 +4718,18 @@ export const CALL_SHAPES: Record<string, CallShape> = {
     dotPath: "v1.serverless.files.uploadUrl",
     positional: [],
     fields: [{ placeholder: "param", property: "file" }],
+    injected: [],
+    derived: [],
+  },
+  "fal\tGET\tv1.workflows.get": {
+    provider: "fal",
+    method: "GET",
+    dotPath: "v1.workflows.get",
+    positional: [],
+    fields: [
+      { placeholder: "username", property: "username" },
+      { placeholder: "workflow_name", property: "workflow_name" },
+    ],
     injected: [],
     derived: [],
   },

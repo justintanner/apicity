@@ -417,8 +417,11 @@ describe("doc-gen endpoint labels", () => {
     }
 
     // Exact equality, not a count: a future relabelling that collides with an
-    // unrelated row fails here and names the block that moved.
+    // unrelated row fails here and names the block that moved. The walker's
+    // path drops a leaf named `get`, so without its label fal's workflow
+    // lookup would borrow the `v1.workflows` listing row.
     expect(differences).toEqual([
+      "fal v1.workflows.get: fal v1.workflows GET -> fal v1.workflows.get GET",
       "elevenlabs v1.textToSpeech.stream.withTimestamps: " +
         "elevenlabs v1.textToSpeech.withTimestamps POST -> " +
         "elevenlabs v1.textToSpeech.stream.withTimestamps POST",

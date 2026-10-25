@@ -1164,7 +1164,7 @@ export function createFal(opts: FalOptions): FalProvider {
 
       // GET https://api.fal.ai/v1/models/usage
       // Docs: https://docs.fal.ai
-      async usage(
+      usage: async function usage(
         params?: FalUsageParams,
         signal?: AbortSignal
       ): Promise<FalUsageResponse> {
@@ -1178,7 +1178,7 @@ export function createFal(opts: FalOptions): FalProvider {
 
       // GET https://api.fal.ai/v1/models/analytics
       // Docs: https://docs.fal.ai
-      async analytics(
+      analytics: async function analytics(
         params: FalAnalyticsParams,
         signal?: AbortSignal
       ): Promise<FalAnalyticsResponse> {
@@ -4937,14 +4937,26 @@ export function createFal(opts: FalOptions): FalProvider {
     },
 
     files: {
-      async list(
+      // GET https://api.fal.ai/v1/serverless/files/list
+      // Docs: https://fal.ai/docs/platform-apis/v1/serverless/files/list
+      list: async function list(
         params?: FalFilesListParams,
         signal?: AbortSignal
       ): Promise<FalFileItem[]> {
-        const path = params?.dir
-          ? `/serverless/files/list/${params.dir}`
-          : "/serverless/files/list";
-        return makeRequest<FalFileItem[]>("GET", path, undefined, signal);
+        if (!params?.dir) {
+          return makeRequest<FalFileItem[]>(
+            "GET",
+            "/serverless/files/list",
+            undefined,
+            signal
+          );
+        }
+        return makeRequest<FalFileItem[]>(
+          "GET",
+          `/serverless/files/list/${params.dir}`,
+          undefined,
+          signal
+        );
       },
 
       // sig-ok: stylistic dotPath divergence from URL
@@ -5003,20 +5015,25 @@ export function createFal(opts: FalOptions): FalProvider {
     },
 
     apps: {
-      async queue(
+      // GET https://api.fal.ai/v1/serverless/apps/{owner}/{name}/queue
+      // Docs: https://fal.ai/docs/platform-apis/v1/serverless/apps/queue
+      queue: async function queue(
         params: FalAppsQueueParams,
         signal?: AbortSignal
       ): Promise<FalAppsQueueResponse> {
+        const { owner, name } = params;
         return makeRequest<FalAppsQueueResponse>(
           "GET",
-          `/serverless/apps/${encodeURIComponent(params.owner)}/${encodeURIComponent(params.name)}/queue`,
+          `/serverless/apps/${encodeURIComponent(owner)}/${encodeURIComponent(name)}/queue`,
           undefined,
           signal
         );
       },
     },
 
-    async metrics(signal?: AbortSignal): Promise<string> {
+    // GET https://api.fal.ai/v1/serverless/metrics
+    // Docs: https://fal.ai/docs/platform-apis/v1/serverless/metrics
+    metrics: async function metrics(signal?: AbortSignal): Promise<string> {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), timeout);
 
@@ -5024,10 +5041,8 @@ export function createFal(opts: FalOptions): FalProvider {
         attachAbortHandler(signal, controller);
       }
 
-      const url = `${baseURL}/serverless/metrics`;
-
       try {
-        const res = await doFetch(url, {
+        const res = await doFetch(`${baseURL}/serverless/metrics`, {
           method: "GET",
           headers: {
             Authorization: `Key ${opts.apiKey}`,
@@ -5088,13 +5103,16 @@ export function createFal(opts: FalOptions): FalProvider {
       );
     },
     {
-      async get(
+      // GET https://api.fal.ai/v1/workflows/{username}/{workflow_name}
+      // Docs: https://fal.ai/docs/platform-apis/v1/workflows/get
+      get: async function get(
         params: FalWorkflowGetParams,
         signal?: AbortSignal
       ): Promise<FalWorkflowGetResponse> {
+        const { username, workflow_name } = params;
         return makeRequest<FalWorkflowGetResponse>(
           "GET",
-          `/workflows/${encodeURIComponent(params.username)}/${encodeURIComponent(params.workflow_name)}`,
+          `/workflows/${encodeURIComponent(username)}/${encodeURIComponent(workflow_name)}`,
           undefined,
           signal
         );
@@ -5177,7 +5195,7 @@ export function createFal(opts: FalOptions): FalProvider {
 
       // GET https://api.fal.ai/v1/models/usage
       // Docs: https://docs.fal.ai
-      async usage(
+      usage: async function usage(
         params?: FalUsageParams,
         signal?: AbortSignal
       ): Promise<FalUsageResponse> {
@@ -5191,7 +5209,7 @@ export function createFal(opts: FalOptions): FalProvider {
 
       // GET https://api.fal.ai/v1/models/analytics
       // Docs: https://docs.fal.ai
-      async analytics(
+      analytics: async function analytics(
         params: FalAnalyticsParams,
         signal?: AbortSignal
       ): Promise<FalAnalyticsResponse> {
@@ -5250,25 +5268,40 @@ export function createFal(opts: FalOptions): FalProvider {
   };
 
   const getV1ServerlessFiles = {
-    async list(
+    // GET https://api.fal.ai/v1/serverless/files/list
+    // Docs: https://fal.ai/docs/platform-apis/v1/serverless/files/list
+    list: async function list(
       params?: FalFilesListParams,
       signal?: AbortSignal
     ): Promise<FalFileItem[]> {
-      const path = params?.dir
-        ? `/serverless/files/list/${params.dir}`
-        : "/serverless/files/list";
-      return makeRequest<FalFileItem[]>("GET", path, undefined, signal);
+      if (!params?.dir) {
+        return makeRequest<FalFileItem[]>(
+          "GET",
+          "/serverless/files/list",
+          undefined,
+          signal
+        );
+      }
+      return makeRequest<FalFileItem[]>(
+        "GET",
+        `/serverless/files/list/${params.dir}`,
+        undefined,
+        signal
+      );
     },
   };
 
   const getV1ServerlessApps = {
-    async queue(
+    // GET https://api.fal.ai/v1/serverless/apps/{owner}/{name}/queue
+    // Docs: https://fal.ai/docs/platform-apis/v1/serverless/apps/queue
+    queue: async function queue(
       params: FalAppsQueueParams,
       signal?: AbortSignal
     ): Promise<FalAppsQueueResponse> {
+      const { owner, name } = params;
       return makeRequest<FalAppsQueueResponse>(
         "GET",
-        `/serverless/apps/${encodeURIComponent(params.owner)}/${encodeURIComponent(params.name)}/queue`,
+        `/serverless/apps/${encodeURIComponent(owner)}/${encodeURIComponent(name)}/queue`,
         undefined,
         signal
       );
@@ -5279,7 +5312,9 @@ export function createFal(opts: FalOptions): FalProvider {
     files: getV1ServerlessFiles,
     apps: getV1ServerlessApps,
 
-    async metrics(signal?: AbortSignal): Promise<string> {
+    // GET https://api.fal.ai/v1/serverless/metrics
+    // Docs: https://fal.ai/docs/platform-apis/v1/serverless/metrics
+    metrics: async function metrics(signal?: AbortSignal): Promise<string> {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), timeout);
 
@@ -5287,10 +5322,8 @@ export function createFal(opts: FalOptions): FalProvider {
         attachAbortHandler(signal, controller);
       }
 
-      const url = `${baseURL}/serverless/metrics`;
-
       try {
-        const res = await doFetch(url, {
+        const res = await doFetch(`${baseURL}/serverless/metrics`, {
           method: "GET",
           headers: {
             Authorization: `Key ${opts.apiKey}`,
@@ -5352,13 +5385,16 @@ export function createFal(opts: FalOptions): FalProvider {
       );
     },
     {
-      async get(
+      // GET https://api.fal.ai/v1/workflows/{username}/{workflow_name}
+      // Docs: https://fal.ai/docs/platform-apis/v1/workflows/get
+      get: async function get(
         params: FalWorkflowGetParams,
         signal?: AbortSignal
       ): Promise<FalWorkflowGetResponse> {
+        const { username, workflow_name } = params;
         return makeRequest<FalWorkflowGetResponse>(
           "GET",
-          `/workflows/${encodeURIComponent(params.username)}/${encodeURIComponent(params.workflow_name)}`,
+          `/workflows/${encodeURIComponent(username)}/${encodeURIComponent(workflow_name)}`,
           undefined,
           signal
         );

@@ -96,6 +96,9 @@ export interface CostHints {
   // URLs and carry no duration in the request, and happyhorse/video-edit,
   // whose required source `video_url` is billed beside the output and
   // defaults to the declared `durationSeconds` when this field is absent.
+  // kie `kling-4.0/reference-to-video` reads it as the summed length of its
+  // `video_urls` clips and video elements, billing output + max(output,
+  // input) seconds.
   // The fal Seedance 2.0 US, 2.5 and 2.5 US reference-to-video entries read
   // it as the summed length of their `video_urls` clips, billed at the
   // output size, and fail closed below 4 s. For fal

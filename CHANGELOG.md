@@ -29,6 +29,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added KIE Kling 4.0 `kling-4.0/reference-to-video` and `kling-4.0/keyframe-to-video` createTask models. Their request schemas check the documented limits: material quotas, element and voice names, and the keyframe frame cap. They also come with `Kling40TaskResultJsonSchema`, `modelInputSchemas` descriptors and per-second pricing: $0.1425/s at 720p and $0.2125/s at 1080p. With video input, reference-to-video bills $0.085/s or $0.1275/s on output + max(output, input) seconds, the input read from `costHints.inputDurationSeconds`. Each model has a recorded 3 s generation (ac-0t56dd).
+
 - `@apicity/har` capture calls accept their own `context` (`HarCallMeta.context`), merged shallowly over the capture's `context` for that call only, so one capture instance can attribute concurrent books, runs or attempts. The construction-time context stays the default; recording identity and scrubbing are unchanged (ac-g0ani3).
 
 - Documented the first offline video/image learning pass in `docs/har-learning-pass-1.md`: triaged committed HAR findings and videobook overrides, retained newer provider constraints over historical successes, and filed six provider-family follow-ups for unproven constraints and product-dependent defaults. No schemas, defaults or recordings changed (ac-07gwrq).

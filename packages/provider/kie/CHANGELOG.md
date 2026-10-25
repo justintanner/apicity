@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added `kling-4.0/reference-to-video` and `kling-4.0/keyframe-to-video` (Kling 4.0) with typed inputs, the documented material and frame limits, `Kling40TaskResultJsonSchema`, per-second pricing, and a recorded 3 s generation each.
+
 - `codex.v1.responses` now enumerates `gpt-6-1-sol`. The id already validated
   through the versioned GPT alias. Responses report the model as
   `gpt-6.1-sol`. A recorded low-effort completion covers the id.

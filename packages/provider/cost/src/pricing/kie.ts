@@ -259,6 +259,69 @@ const happyHorseEditSeconds: SecondsResolver = (p, hints) => {
   return output + (hintInputSeconds(hints) ?? output);
 };
 
+// Kling 4.0 bills the wire duration, defaulting to five seconds. Explicit
+// malformed values (including null) fail closed.
+const kling40Seconds = (p: Record<string, unknown>): number | undefined => {
+  const wire = asObject(p.input)?.duration;
+  return wire === undefined ? 5 : coerceSeconds(wire);
+};
+
+// Video input on kling-4.0/reference-to-video: a reference video_urls clip or
+// a video subject in elements. Images, image subjects and voices bill as no
+// video input. Tri-state like referenceVideoInput: `undefined` when either
+// list is present but not an array, so a malformed request never prices on
+// the no-video ladder.
+const kling40VideoInput = (p: Record<string, unknown>): boolean | undefined => {
+  const input = asObject(p.input);
+  const videos = input?.video_urls ?? [];
+  const elements = input?.elements ?? [];
+  if (!Array.isArray(videos) || !Array.isArray(elements)) return undefined;
+  return (
+    videos.length > 0 ||
+    elements.some((element) => asObject(element)?.video_url !== undefined)
+  );
+};
+
+// With video input the page bills rate x (output x 2) while the summed input
+// clips are no longer than the output, and rate x (input + output) past that:
+// output + max(output, input) seconds. The clips carry no duration in the
+// request, so the input side is costHints.inputDurationSeconds and a video
+// request without it fails closed.
+const kling40ReferenceSeconds: SecondsResolver = (p, hints) => {
+  const output = kling40Seconds(p);
+  if (output === undefined) return undefined;
+  const video = kling40VideoInput(p);
+  if (video === undefined) return undefined;
+  if (!video) return output;
+  const input = hintInputSeconds(hints);
+  return input === undefined ? undefined : output + Math.max(output, input);
+};
+
+// Names the missing declaration only when the input side is what fails the
+// estimate closed, as inputDurationWarning does for reference_video_urls.
+const kling40ReferenceWarning = (
+  p: Record<string, unknown>,
+  hints?: CostHints
+): string[] => {
+  if (kling40Seconds(p) === undefined) return [];
+  const video = kling40VideoInput(p);
+  if (video === undefined) {
+    return [
+      "kie 'kling-4.0/reference-to-video': video_urls or elements is not an " +
+        "array, so the video input cannot be read; pass both as arrays",
+    ];
+  }
+  if (video && hintInputSeconds(hints) === undefined) {
+    return [
+      "kie 'kling-4.0/reference-to-video': reference videos and video " +
+        "elements carry no duration in the request and the page bills " +
+        "rate x (output + max(output, input)) seconds; declare the input " +
+        "clips' total length as costHints.inputDurationSeconds",
+    ];
+  }
+  return [];
+};
+
 // Both Wan 3.0 entries: resolution-tiered per second on the (input + output)
 // rule. Mirrors tieredVideoPage's `resolution` picker and `1080P` default byte
 // for byte; only the units resolver and the warn hook differ. Spreading
@@ -1143,6 +1206,49 @@ export const kie: Record<string, ModelPricing> = {
     source: pricePage(
       "https://kie.ai/kling-o3?model=kling-3.0-omni%2Ftransformation",
       "2026-08-20"
+    ),
+  },
+
+  // Kling 4.0: both tasks bill the output seconds (3-30, default 5) at 720p
+  // 28.5 credits ($0.1425) and 1080p 42.5 credits ($0.2125), resolution
+  // default 720p. Reference-to-video with video input switches to 17 credits
+  // ($0.085) and 25.5 credits ($0.1275) on output + max(output, input)
+  // seconds (kling40ReferenceSeconds). The live feed rows, the kie.ai/kling-4-0
+  // page and the docs callback examples (keyframe 10 s 720p = 285 credits,
+  // reference 10 s 1080p without video = 425 credits) agree; read 2026-10-25,
+  // tests/fixtures/kie-pricing-evidence/kling-4-0-2026-10-25.json.
+  "kling-4.0/reference-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: kling40ReferenceSeconds,
+    select: [
+      { name: "resolution", pick: (p) => inputResolution(p) ?? "720p" },
+      {
+        name: "video",
+        pick: (p) => (kling40VideoInput(p) ? "video" : undefined),
+      },
+    ],
+    rates: {
+      "720p": 0.1425,
+      "720p|video": 0.085,
+      "1080p": 0.2125,
+      "1080p|video": 0.1275,
+    },
+    warn: kling40ReferenceWarning,
+    source: pricePage(
+      "https://kie.ai/kling-4-0?model=kling-4.0%2Freference-to-video",
+      "2026-10-25"
+    ),
+  },
+  "kling-4.0/keyframe-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: kling40Seconds,
+    select: [{ name: "resolution", pick: (p) => inputResolution(p) ?? "720p" }],
+    rates: { "720p": 0.1425, "1080p": 0.2125 },
+    source: pricePage(
+      "https://kie.ai/kling-4-0?model=kling-4.0%2Fkeyframe-to-video",
+      "2026-10-25"
     ),
   },
 

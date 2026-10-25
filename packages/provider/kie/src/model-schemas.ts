@@ -15,6 +15,9 @@ import {
   GptImage25ResolutionSchema,
   HAPPYHORSE_DURATION_MAX_SECONDS,
   HAPPYHORSE_DURATION_MIN_SECONDS,
+  Kling40AspectRatioSchema,
+  Kling40ElementTagSchema,
+  Kling40ResolutionSchema,
   KlingOmniAspectRatioSchema,
   KlingOmniResolutionSchema,
   MiniMaxH3FixedAspectRatioSchema,
@@ -298,6 +301,87 @@ const klingOmniMultiShotFields = {
       "Enable intelligent shot planning; mutually exclusive with customize_multi_shots",
   },
   multi_prompt: klingOmniMultiPromptField,
+} as const;
+
+const kling40MediaUrlItem = {
+  type: "string",
+  pattern: "^https?://.+",
+  description: "HTTP or HTTPS URL",
+} as const;
+
+const kling40DurationField = {
+  type: "integer",
+  minimum: 3,
+  maximum: 30,
+  default: 5,
+  description: "Output seconds, 3-30 (default 5)",
+} as const;
+
+const kling40ResolutionField = {
+  type: "string",
+  enum: Kling40ResolutionSchema.options,
+  default: "720p",
+  description: "Output resolution (default 720p)",
+} as const;
+
+const kling40MaterialNameField = {
+  type: "string",
+  required: true,
+  pattern: "^[\\u4e00-\\u9fa5A-Za-z0-9_]{1,20}$",
+  description:
+    "Mentioned in the prompt as @name: 1-20 Chinese characters, letters, digits or underscores, unique across elements and voices (case-insensitive). image_N, video_N, keyframe_N, object_N, audio_N, first_frame and last_frame are reserved",
+} as const;
+
+const kling40ElementItem = {
+  type: "object",
+  properties: {
+    name: kling40MaterialNameField,
+    image_urls: {
+      type: "array",
+      minItems: 2,
+      maxItems: 4,
+      description:
+        "Image subject: 2-4 image URLs, the first is the primary view; exclusive with video_url",
+      items: kling40MediaUrlItem,
+    },
+    video_url: {
+      type: "string",
+      pattern: "^https?://.+",
+      description:
+        "Video subject: one 3-8 s single-shot character video, shortest side at least 700 px; exclusive with image_urls",
+    },
+    tag: {
+      type: "string",
+      enum: Kling40ElementTagSchema.options,
+      description:
+        "Subject category; inferred from the primary image when omitted. A video subject is always character",
+    },
+    description: {
+      type: "string",
+      maxLength: 100,
+      description: "Optional subject description (max 100 characters)",
+    },
+    voice_url: {
+      type: "string",
+      pattern: "^https?://.+",
+      description:
+        "Reference audio bound to a character subject; not mentionable on its own and outside the voices quota",
+    },
+  },
+} as const;
+
+const kling40VoiceItem = {
+  type: "object",
+  properties: {
+    name: kling40MaterialNameField,
+    audio_url: {
+      type: "string",
+      required: true,
+      pattern: "^https?://.+",
+      description:
+        "Reference audio URL; the task fails when no usable voice is detected",
+    },
+  },
 } as const;
 
 const googleGeminiTtsTemperatureField = {
@@ -1198,6 +1282,114 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         description:
           "One-time subjects: up to 7 multi-image subjects, up to 3 video subjects, or up to 3 video plus 4 multi-image subjects",
         items: klingOmniElementItem,
+      },
+    },
+  },
+
+  // Sources:
+  // - https://docs.kie.ai/market/kling/v4-reference-to-video
+  // - https://docs.kie.ai/market/kling/v4-keyframe-to-video
+  "kling-4.0/reference-to-video": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 8000,
+        description:
+          "Video prompt (1-8000 characters). Mention materials as @image_1, @video_1 or @name; every mention must match a material in this request",
+      },
+      duration: kling40DurationField,
+      resolution: kling40ResolutionField,
+      aspect_ratio: {
+        type: "string",
+        enum: Kling40AspectRatioSchema.options,
+        description:
+          "Output aspect ratio; upstream uses auto when any material is provided and 16:9 otherwise",
+      },
+      image_urls: {
+        type: "array",
+        maxItems: 10,
+        default: [],
+        description:
+          "Reference images, mentioned as @image_1, @image_2, ... in order; each side 300-65536 px, aspect ratio 0.40-2.5",
+        items: kling40MediaUrlItem,
+      },
+      video_urls: {
+        type: "array",
+        maxItems: 5,
+        default: [],
+        description:
+          "Reference videos of 2-30 s each, mentioned as @video_1, @video_2, ...; at most 5 together with video elements",
+        items: kling40MediaUrlItem,
+      },
+      keep_original_sound: {
+        type: "boolean",
+        default: false,
+        description:
+          "Keep the reference videos' audio; applies only with video_urls, otherwise native audio is generated",
+      },
+      elements: {
+        type: "array",
+        maxItems: 7,
+        default: [],
+        description: "Subjects for this task, at most 3 of them video subjects",
+        items: kling40ElementItem,
+      },
+      voices: {
+        type: "array",
+        maxItems: 3,
+        default: [],
+        description: "Standalone voice references, mentioned as @name",
+        items: kling40VoiceItem,
+      },
+    },
+  },
+
+  "kling-4.0/keyframe-to-video": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 8000,
+        description:
+          "Video prompt (1-8000 characters). Mention frames as @first_frame, @keyframe_1, ... and @last_frame; only frames in this request can be mentioned",
+      },
+      duration: {
+        type: "integer",
+        minimum: 3,
+        maximum: 30,
+        default: 5,
+        description:
+          "Output seconds, 3-30 (default 5). Also caps first + keyframes + last: 3 s allows 4 frames, one more per second, 10 from 9 s",
+      },
+      resolution: kling40ResolutionField,
+      aspect_ratio: {
+        type: "string",
+        enum: Kling40AspectRatioSchema.options,
+        description:
+          "Used only without frames (text-to-video, default 16:9); with frames the output follows the first frame",
+      },
+      first_frame_url: {
+        type: "string",
+        pattern: "^https?://.+",
+        description: "First-frame image URL, mentioned as @first_frame",
+      },
+      keyframe_urls: {
+        type: "array",
+        maxItems: 8,
+        default: [],
+        description:
+          "Middle-frame image URLs in chronological order, mentioned as @keyframe_1, @keyframe_2, ...",
+        items: kling40MediaUrlItem,
+      },
+      last_frame_url: {
+        type: "string",
+        pattern: "^https?://.+",
+        description: "Last-frame image URL, mentioned as @last_frame",
       },
     },
   },

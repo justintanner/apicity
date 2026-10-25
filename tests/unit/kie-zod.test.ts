@@ -1889,6 +1889,20 @@ const GOOGLE_GEMINI_OMNI_REJECTED_MODELS = [
   "GOOGLE/GEMINI-OMNI-FLASH-1-1",
 ] as const;
 
+// OmniHuman 2.0: the explicit enum addition zod.ts asks of each new OmniHuman
+// id, beside the 1.5 entry in MEDIA_SINGLETON_MODELS. No alias admits a
+// future release, and 1.5's sub-tasks have no 2.0 form.
+const OMNIHUMAN_20_EXACT_ONLY_MODELS = ["omnihuman-2-0"] as const;
+
+const OMNIHUMAN_20_REJECTED_MODELS = [
+  "omnihuman-2-5",
+  "omnihuman-2.0",
+  "omnihuman-2",
+  "omnihuman2-0",
+  "omnihuman-2-0/subject-detection",
+  "OMNIHUMAN-2-0",
+] as const;
+
 // Google Imagen 4 + namespaced Nano Banana: five exact market ids, no open
 // google/ alias hatch (product segments are not a version grammar).
 const GOOGLE_IMAGEN_NANO_BANANA_EXACT_ONLY_MODELS = [
@@ -2103,6 +2117,21 @@ describe("TRI-001 KieMediaModelSchema", () => {
 
   it.each(GOOGLE_GEMINI_OMNI_REJECTED_MODELS)(
     "rejects the out-of-scope Gemini Omni Flash model %j",
+    (model) => {
+      expect(KieMediaModelSchema.safeParse(model).success).toBe(false);
+    }
+  );
+
+  it.each(OMNIHUMAN_20_EXACT_ONLY_MODELS)(
+    "keeps OmniHuman model %s reachable only through the enum",
+    (model) => {
+      expect(KieMediaModelSchema.safeParse(model).success).toBe(true);
+      expect(mediaAliasPatterns.filter((re) => re.test(model))).toEqual([]);
+    }
+  );
+
+  it.each(OMNIHUMAN_20_REJECTED_MODELS)(
+    "rejects the unlisted OmniHuman model %j",
     (model) => {
       expect(KieMediaModelSchema.safeParse(model).success).toBe(false);
     }

@@ -224,6 +224,7 @@ import {
   ElevenLabsTextToSpeechTurbo25RequestSchema,
   ElevenLabsSoundEffectV2RequestSchema,
   Omnihuman15RequestSchema,
+  Omnihuman20RequestSchema,
   VolcengineVideoToVideoLipSyncRequestSchema,
   RecraftCrispUpscaleRequestSchema,
   RecraftRemoveBackgroundRequestSchema,
@@ -415,6 +416,7 @@ export const CREATE_TASK_GUARDS = {
   "omnihuman-1-5/human-identification":
     Omnihuman15HumanIdentificationRequestSchema,
   "omnihuman-1-5/subject-detection": Omnihuman15SubjectDetectionRequestSchema,
+  "omnihuman-2-0": Omnihuman20RequestSchema,
   "volcengine/video-to-video-lip-sync":
     VolcengineVideoToVideoLipSyncRequestSchema,
   "gemini-omni-video": GeminiOmniVideoRequestSchema,

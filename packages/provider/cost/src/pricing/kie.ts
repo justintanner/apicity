@@ -150,6 +150,18 @@ const seedanceV1Seconds = (p: Record<string, unknown>): number | undefined => {
   return wire === undefined ? 5 : coerceSeconds(wire);
 };
 
+// OmniHuman 2.0 renders whole seconds of video and bills the video. In the
+// recorded generation a 6.008 s driving audio became a 7.000 s video (168
+// frames at 24 fps) billed 98 credits = 7 x 14, so the declared audio length
+// prices rounded up to the next whole second.
+const omnihuman20Seconds = (
+  p: Record<string, unknown>,
+  hints?: CostHints
+): number | undefined => {
+  const value = seconds(p, hints);
+  return value === undefined ? undefined : Math.ceil(value);
+};
+
 // Rate-key form of a selector field upstream types as a number. `asString`
 // deliberately rejects non-strings, so a numeric wire value — runway's
 // `duration: 5` is a numeric literal union, not a string — would otherwise
@@ -2041,6 +2053,29 @@ export const kie: Record<string, ModelPricing> = {
   // "no published rate" case, beside the billed lip-sync tab's own ladder.
   // With no billing evidence they keep no pricing key and fail safe into the
   // prohibitive tier rather than being assumed free or borrowing lip-sync.
+
+  // omnihuman-2-0: flat 14 credits/s ($0.07) on the output video, which is
+  // 720P and follows the driving audio (4-300 s) in whole seconds. The live
+  // feed row ("omnihuman-2-0, avatar video, 720p"), the
+  // https://kie.ai/omnihuman-2-0 pricingDesc and the recorded generation (98
+  // credits for a 7 s video from 6.008 s of audio) agree; read 2026-10-25,
+  // tests/fixtures/kie-pricing-evidence/omnihuman-2-0-2026-10-25.json. The
+  // docs callback example's 1.23 credits is a template (placeholder task id
+  // and timestamps), not a billing record. Like 1.5, the schema has no
+  // duration field, so callers declare the audio length as
+  // costHints.durationSeconds, which omnihuman20Seconds rounds up;
+  // enable_watermark does not change the rate.
+  "omnihuman-2-0": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: omnihuman20Seconds,
+    select: [],
+    rates: { "": 0.07 },
+    source: pricePage(
+      "https://kie.ai/omnihuman-2-0?model=omnihuman-2-0",
+      "2026-10-25"
+    ),
+  },
 
   // volcengine/video-to-video-lip-sync: flat 8 credits/s ($0.04). Both
   // input.mode tiers ("lite"/"basic") bill at the same published rate, so

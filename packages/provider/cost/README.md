@@ -258,6 +258,7 @@ then `costHints.durationSeconds`; only `v1/videos/edits`, which has no
 | `kie`    | `happyhorse/video-edit`                 | source `video_url`, billed on both sides |
 | `kie`    | `kling-3.0/motion-control`              | motion video                             |
 | `kie`    | `omnihuman-1-5`                         | driving audio                            |
+| `kie`    | `omnihuman-2-0`                         | driving audio                            |
 | `kie`    | `volcengine/video-to-video-lip-sync`    | source video                             |
 | `xai`    | `v1/videos/edits`                       | source video                             |
 | `fal`    | `fal-ai/wan/v2.7/edit-video`            | source video                             |

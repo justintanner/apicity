@@ -30,5 +30,6 @@ export {
   findMatchingRow,
   matchHarEntryStrict,
   matchHarEntryLenient,
+  matchHarEntrySpanning,
   compileTsvUrlPattern,
 } from "./match-har-to-endpoint.mjs";

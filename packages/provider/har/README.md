@@ -84,7 +84,9 @@ failure envelopes. `responseObject(entry)` decodes JSON object responses,
 including base64 HAR content.
 
 `findMatchingRow(entry, rows, {provider})` first matches full URLs, then uses a
-provider-scoped path match. Rows carry `provider`, `method`, `dotPath` and
-`fullUrl`. `matchHarEntryStrict`, `matchHarEntryLenient` and
-`compileTsvUrlPattern` expose the individual matching operations. These are
-the canonical implementations also synced to the repository scripts.
+provider-scoped path match, then matches full URLs again with fal's
+`{endpoint_id}` spanning whole path segments (`fal-ai/flux/dev`). Rows carry
+`provider`, `method`, `dotPath` and `fullUrl`. `matchHarEntryStrict`,
+`matchHarEntryLenient`, `matchHarEntrySpanning` and `compileTsvUrlPattern`
+expose the individual matching operations. These are the canonical
+implementations also synced to the repository scripts.

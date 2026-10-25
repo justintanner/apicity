@@ -4,6 +4,7 @@ import {
   scrubHar,
   exchangeSucceeded,
   findMatchingRow,
+  matchHarEntrySpanning,
   matchHarEntryStrict,
   type Har,
   type HarEntry,
@@ -41,6 +42,12 @@ export interface Corpus {
   unmatched: HarReport["unmatched"];
   unresolved: HarReport["unresolvedCalls"];
   realpaths: Set<string>;
+}
+// A full-URL match is strict, including a fal endpoint id spanning segments.
+function matchedBy(entry: HarEntry, row: EndpointTsvRow): Entry["matchedBy"] {
+  return matchHarEntryStrict(entry, row) || matchHarEntrySpanning(entry, row)
+    ? "strict"
+    : "lenient";
 }
 export function requestBody(entry: HarEntry): Record<string, unknown> | null {
   return ["GET", "HEAD", "DELETE"].includes(
@@ -244,12 +251,7 @@ export async function loadCorpus(
         });
         if (match) {
           row ??= match;
-          primary.push({
-            ...e,
-            matchedBy: matchHarEntryStrict(e.entry, match)
-              ? "strict"
-              : "lenient",
-          });
+          primary.push({ ...e, matchedBy: matchedBy(e.entry, match) });
         }
       }
       if (!primary.length && http.length === 1) {
@@ -310,14 +312,7 @@ export async function loadCorpus(
           row,
           file,
           meta: null,
-          primary: [
-            {
-              ...e,
-              matchedBy: matchHarEntryStrict(e.entry, row)
-                ? "strict"
-                : "lenient",
-            },
-          ],
+          primary: [{ ...e, matchedBy: matchedBy(e.entry, row) }],
           auxiliary: [],
           local: [],
           outcome: outcome(e.entry, row),

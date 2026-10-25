@@ -3,7 +3,7 @@
 /**
  * Match a HAR request entry to a row in scripts/endpoint-docs.tsv.
  *
- * Two passes, in order — first match wins:
+ * Three passes, in order — first match wins:
  *
  *   1. Strict: full URL (host + path) must match exactly. `{paramName}` in
  *      the TSV `fullUrl` becomes `[^/]+`. This handles concrete URLs that
@@ -18,12 +18,29 @@
  *      contiguous window of the HAR path's segments. When several provider
  *      rows match leniently, the row with the longest placeholder-stripped
  *      path wins (most specific).
+ *
+ *   3. Spanning: full URL again, but a placeholder listed for the row's
+ *      provider in SEGMENT_SPANNING_PLACEHOLDERS covers one or more whole
+ *      segments. fal endpoint ids are `owner/model[/variant]`, so only this
+ *      pass matches `POST queue.fal.run/fal-ai/flux/dev` to v1.queue.submit
+ *      (`https://queue.fal.run/{endpoint_id}`). It runs after the lenient
+ *      pass, so a fal model row keeps a queue submit to its own path.
  */
 
-/** @param {string} fullUrl @returns {RegExp} */
-export function compileTsvUrlPattern(fullUrl) {
+/**
+ * Placeholders whose values span path segments, by provider. The fal queue
+ * rows interpolate the endpoint id unencoded (`fal-ai/flux/dev`).
+ * @type {Record<string, string[]>}
+ */
+const SEGMENT_SPANNING_PLACEHOLDERS = { fal: ["endpoint_id"] };
+
+/** @param {string} fullUrl @param {string[]} [spanning] @returns {RegExp} */
+export function compileTsvUrlPattern(fullUrl, spanning = []) {
   const stripped = stripQueryMarker(fullUrl).split("?")[0];
-  const escaped = escapeRegExp(stripped).replace(/\\\{[^}]+\\\}/g, "[^/]+");
+  const escaped = escapeRegExp(stripped).replace(
+    /\\\{([^}]+)\\\}/g,
+    (_, name) => (spanning.includes(name) ? "[^/]+(?:/[^/]+)*" : "[^/]+")
+  );
   return new RegExp(`^${escaped}$`);
 }
 
@@ -51,9 +68,30 @@ export function matchHarEntryLenient(entry, tsvRow) {
 }
 
 /**
+ * Full-URL match in which the row provider's segment-spanning placeholders
+ * cover one or more whole segments. False for a row without one, which only
+ * the strict match can claim.
+ */
+/** @param {RequestEntry} entry @param {EndpointRow} tsvRow @returns {boolean} */
+export function matchHarEntrySpanning(entry, tsvRow) {
+  if (!entry?.request?.url || !entry?.request?.method) return false;
+  if (entry.request.method.toUpperCase() !== tsvRow.method.toUpperCase()) {
+    return false;
+  }
+  const spanning = (
+    SEGMENT_SPANNING_PLACEHOLDERS[tsvRow.provider] ?? []
+  ).filter((name) => tsvRow.fullUrl.includes(`{${name}}`));
+  if (spanning.length === 0) return false;
+  return compileTsvUrlPattern(tsvRow.fullUrl, spanning).test(
+    stripQueryMarker(entry.request.url).split("?")[0]
+  );
+}
+
+/**
  * Find the best-matching TSV row for a HAR entry. Strict pass over all
  * rows first; if nothing matches, lenient pass scoped to `provider`,
- * picking the row with the longest placeholder-stripped path.
+ * picking the row with the longest placeholder-stripped path; then the
+ * spanning pass over all rows.
  */
 /** @template {EndpointRow} T
  * @param {RequestEntry} entry @param {T[]} tsvRows
@@ -62,19 +100,26 @@ export function findMatchingRow(entry, tsvRows, { provider } = {}) {
   for (const row of tsvRows) {
     if (matchHarEntryStrict(entry, row)) return row;
   }
-  if (!provider) return null;
-  let best = null;
-  let bestLen = -1;
-  for (const row of tsvRows) {
-    if (row.provider !== provider) continue;
-    if (!matchHarEntryLenient(entry, row)) continue;
-    const stripped = pathSegments(row.fullUrl).filter((s) => !isPlaceholder(s));
-    if (stripped.length > bestLen) {
-      best = row;
-      bestLen = stripped.length;
+  if (provider) {
+    let best = null;
+    let bestLen = -1;
+    for (const row of tsvRows) {
+      if (row.provider !== provider) continue;
+      if (!matchHarEntryLenient(entry, row)) continue;
+      const stripped = pathSegments(row.fullUrl).filter(
+        (s) => !isPlaceholder(s)
+      );
+      if (stripped.length > bestLen) {
+        best = row;
+        bestLen = stripped.length;
+      }
     }
+    if (best) return best;
   }
-  return best;
+  for (const row of tsvRows) {
+    if (matchHarEntrySpanning(entry, row)) return row;
+  }
+  return null;
 }
 
 function pathSegments(url) {

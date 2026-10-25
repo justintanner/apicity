@@ -5534,6 +5534,102 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  // PixVerse V6 Max: upstream documents no defaults beyond
+  // generate_audio_switch, so none are recorded here. image-to-video's
+  // forbidden aspect_ratio is a schema-side rejection, not a field to send.
+  "pixverse-v6-max/text-to-video": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 5000,
+        description: "Generation prompt (1-5000 characters)",
+      },
+      aspect_ratio: {
+        type: "string",
+        required: true,
+        enum: ["16:9", "4:3", "1:1", "3:4", "9:16", "2:3", "3:2", "21:9"],
+        description: "Output aspect ratio",
+      },
+      quality: {
+        type: "string",
+        required: true,
+        enum: ["360p", "540p", "720p", "1080p"],
+        description: "Output resolution: 360p, 540p, 720p or 1080p",
+      },
+      duration: {
+        type: "integer",
+        required: true,
+        minimum: 1,
+        maximum: 15,
+        description: "Output length in seconds, 1-15",
+      },
+      generate_audio_switch: {
+        type: "boolean",
+        default: false,
+        description:
+          "Generate native audio synchronized with the video (default false)",
+      },
+      seed: {
+        type: "integer",
+        minimum: 0,
+        maximum: 2147483647,
+        description: "Random seed, 0-2147483647; omit it for a random seed",
+      },
+    },
+  },
+
+  "pixverse-v6-max/image-to-video": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 5000,
+        description: "Generation prompt (1-5000 characters)",
+      },
+      image_urls: {
+        type: "array",
+        required: true,
+        minItems: 1,
+        maxItems: 1,
+        description:
+          "Exactly one first-frame image URL (HTTP, HTTPS or OSS; JPG, JPEG, PNG or WebP, each side at most 10,000 px, at most 20 MB). The output aspect ratio follows this image",
+        items: {
+          type: "string",
+        },
+      },
+      quality: {
+        type: "string",
+        required: true,
+        enum: ["360p", "540p", "720p", "1080p"],
+        description: "Output resolution: 360p, 540p, 720p or 1080p",
+      },
+      duration: {
+        type: "integer",
+        required: true,
+        minimum: 1,
+        maximum: 15,
+        description: "Output length in seconds, 1-15",
+      },
+      generate_audio_switch: {
+        type: "boolean",
+        default: false,
+        description:
+          "Generate native audio synchronized with the video (default false)",
+      },
+      seed: {
+        type: "integer",
+        minimum: 0,
+        maximum: 2147483647,
+        description: "Random seed, 0-2147483647; omit it for a random seed",
+      },
+    },
+  },
+
   "happyhorse/text-to-video": {
     type: "video",
     fields: {

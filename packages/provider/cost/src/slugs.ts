@@ -179,6 +179,11 @@ export const MODEL_SLUGS = {
     "pixverse-v6/reference-to-video": "pixv6",
     "pixverse-v6/transition": "pixv6",
 
+    // Video — PixVerse V6 Max, a separately priced tier of V6 (the trailing
+    // tier word follows the flux3max precedent).
+    "pixverse-v6-max/text-to-video": "pixv6max",
+    "pixverse-v6-max/image-to-video": "pixv6max",
+
     // Image — Grok Imagine
     "grok-imagine/text-to-image": "grok",
     "grok-imagine/image-to-image": "grok",
@@ -779,6 +784,8 @@ export const MODEL_DISPLAY = {
     "pixverse-v6/extend": "PixVerse V6 Extend",
     "pixverse-v6/reference-to-video": "PixVerse V6 Reference",
     "pixverse-v6/transition": "PixVerse V6 Transition",
+    "pixverse-v6-max/text-to-video": "PixVerse V6 Max",
+    "pixverse-v6-max/image-to-video": "PixVerse V6 Max",
 
     "grok-imagine/text-to-image": "Grok Imagine",
     "grok-imagine/image-to-image": "Grok Imagine",

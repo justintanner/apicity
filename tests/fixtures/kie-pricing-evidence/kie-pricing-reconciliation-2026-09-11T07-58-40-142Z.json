@@ -1801,10 +1801,10 @@
       "endpoints": 71
     },
     "final": {
-      "models": 160,
-      "pricingKeys": 186,
-      "slugKeys": 188,
-      "displayKeys": 188,
+      "models": 162,
+      "pricingKeys": 188,
+      "slugKeys": 190,
+      "displayKeys": 190,
       "schemaWithoutPricing": 6,
       "pricingOnly": 32,
       "endpoints": 84
@@ -1820,11 +1820,11 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:c365fbe28c57e0d377d668f3ae2f6d863b10104bb14f01ef112e77b82971e045",
-      "packages/provider/kie/src/model-schemas.ts": "sha256:b87f94df80d03c284609facfc77d3a1e3daaf6514798d8a659bcaa16e8c9fc83",
-      "packages/provider/kie/src/kie.ts": "sha256:5043cd2b18e3c45c08640cda9266c5f756f860fe933dfc0daa1c3a9dad74f62b",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:9dfeb10b1bf3737793c3535e6c0a5c6ac2212b9b17bc46b463cbf06590007e47",
-      "packages/provider/cost/src/slugs.ts": "sha256:8ce67f5101ed2b41b19d317f7cf7f91a436a4195880c4d2e144e6c259e18980d",
+      "packages/provider/kie/src/zod.ts": "sha256:e221d51933b0edef22cd4e539656837d65c30f968bcd0eef1f325c2666131e51",
+      "packages/provider/kie/src/model-schemas.ts": "sha256:41372f3ee8127655a751389d68f2fc263b4fd825f9138751cd2f4767eee7b2e2",
+      "packages/provider/kie/src/kie.ts": "sha256:5815bea47fd37edba6f2a8c6c09b85cda45968771864b4fbc0ade0fcf67e19f1",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:b58eee8746df64500317ef7183516e7f1056b2e65957686fbd4af6a1e1fb4827",
+      "packages/provider/cost/src/slugs.ts": "sha256:4b52511cb4fb8aea285bb9c07bfe5347be0162486b33194c1e88b17ad5ffb70e",
       "scripts/endpoint-docs.tsv": "sha256:1d8d4b2c722b3ceb0efef0edacb472f7aebc3b558285883271813ced6ff4f343"
     }
   },
@@ -24271,6 +24271,24 @@
         "rationale": "Current schema, runtime guard, and pricing key are reconciled to frozen official evidence."
       },
       {
+        "id": "pixverse-v6-max/text-to-video",
+        "descriptor": true,
+        "guard": true,
+        "pricingKey": "pixverse-v6-max/text-to-video",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
+        "id": "pixverse-v6-max/image-to-video",
+        "descriptor": true,
+        "guard": true,
+        "pricingKey": "pixverse-v6-max/image-to-video",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
         "id": "minimax-h3/text-to-video",
         "descriptor": true,
         "guard": true,
@@ -25928,6 +25946,18 @@
         "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
       },
       {
+        "key": "pixverse-v6-max/text-to-video",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
+        "key": "pixverse-v6-max/image-to-video",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
         "key": "grok-imagine/text-to-video",
         "linkedRows": [
           "sha256:07ab28044579e7281765f1123b449573bf5dc7e652398e5dfa04de54fe05efa4#1",
@@ -27571,6 +27601,14 @@
         "disposition": "supported"
       },
       {
+        "key": "pixverse-v6-max/text-to-video",
+        "disposition": "supported"
+      },
+      {
+        "key": "pixverse-v6-max/image-to-video",
+        "disposition": "supported"
+      },
+      {
         "key": "grok-imagine/text-to-image",
         "disposition": "supported"
       },
@@ -28325,6 +28363,14 @@
         "disposition": "supported"
       },
       {
+        "key": "pixverse-v6-max/text-to-video",
+        "disposition": "supported"
+      },
+      {
+        "key": "pixverse-v6-max/image-to-video",
+        "disposition": "supported"
+      },
+      {
         "key": "grok-imagine/text-to-image",
         "disposition": "supported"
       },
@@ -29043,16 +29089,16 @@
     },
     "apiCity": {
       "models": {
-        "count": 160,
-        "descriptors": 160,
-        "guards": 160,
+        "count": 162,
+        "descriptors": 162,
+        "guards": 162,
         "withoutPricing": 6,
         "dispositionCounts": {
           "supported": 116,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 44
+          "upstream-unmappable": 46
         },
         "unclassified": 0
       },
@@ -29070,20 +29116,20 @@
         "unclassified": 0
       },
       "pricingKeys": {
-        "count": 186,
+        "count": 188,
         "dispositionCounts": {
           "supported": 144,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 42
+          "upstream-unmappable": 44
         },
         "unclassified": 0
       },
       "slugs": {
-        "count": 188,
+        "count": 190,
         "dispositionCounts": {
-          "supported": 188,
+          "supported": 190,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -29092,9 +29138,9 @@
         "unclassified": 0
       },
       "displays": {
-        "count": 188,
+        "count": 190,
         "dispositionCounts": {
-          "supported": 188,
+          "supported": 190,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -29133,6 +29179,118 @@
   },
   "runtimeCoverage": {
     "exceptions": [
+      {
+        "key": "pixverse-v6-max/text-to-video",
+        "variant": "360p|no-audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/pixverse-v6-max-2026-10-25.json: feed rows and both https://kie.ai/pixverse-v6-max tabs read 2026-10-25: 4.8-22.4 credits = 0.024-0.112 USD/s by quality and audio",
+        "rationale": "PixVerse V6 Max was added after the frozen September catalog; the dated feed and page capture supplies the rates, and the docs callback examples (44 credits for 5 s at 720p) confirm them."
+      },
+      {
+        "key": "pixverse-v6-max/text-to-video",
+        "variant": "360p|audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/pixverse-v6-max-2026-10-25.json: feed rows and both https://kie.ai/pixverse-v6-max tabs read 2026-10-25: 4.8-22.4 credits = 0.024-0.112 USD/s by quality and audio",
+        "rationale": "PixVerse V6 Max was added after the frozen September catalog; the dated feed and page capture supplies the rates, and the docs callback examples (44 credits for 5 s at 720p) confirm them."
+      },
+      {
+        "key": "pixverse-v6-max/text-to-video",
+        "variant": "540p|no-audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/pixverse-v6-max-2026-10-25.json: feed rows and both https://kie.ai/pixverse-v6-max tabs read 2026-10-25: 4.8-22.4 credits = 0.024-0.112 USD/s by quality and audio",
+        "rationale": "PixVerse V6 Max was added after the frozen September catalog; the dated feed and page capture supplies the rates, and the docs callback examples (44 credits for 5 s at 720p) confirm them."
+      },
+      {
+        "key": "pixverse-v6-max/text-to-video",
+        "variant": "540p|audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/pixverse-v6-max-2026-10-25.json: feed rows and both https://kie.ai/pixverse-v6-max tabs read 2026-10-25: 4.8-22.4 credits = 0.024-0.112 USD/s by quality and audio",
+        "rationale": "PixVerse V6 Max was added after the frozen September catalog; the dated feed and page capture supplies the rates, and the docs callback examples (44 credits for 5 s at 720p) confirm them."
+      },
+      {
+        "key": "pixverse-v6-max/text-to-video",
+        "variant": "720p|no-audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/pixverse-v6-max-2026-10-25.json: feed rows and both https://kie.ai/pixverse-v6-max tabs read 2026-10-25: 4.8-22.4 credits = 0.024-0.112 USD/s by quality and audio",
+        "rationale": "PixVerse V6 Max was added after the frozen September catalog; the dated feed and page capture supplies the rates, and the docs callback examples (44 credits for 5 s at 720p) confirm them."
+      },
+      {
+        "key": "pixverse-v6-max/text-to-video",
+        "variant": "720p|audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/pixverse-v6-max-2026-10-25.json: feed rows and both https://kie.ai/pixverse-v6-max tabs read 2026-10-25: 4.8-22.4 credits = 0.024-0.112 USD/s by quality and audio",
+        "rationale": "PixVerse V6 Max was added after the frozen September catalog; the dated feed and page capture supplies the rates, and the docs callback examples (44 credits for 5 s at 720p) confirm them."
+      },
+      {
+        "key": "pixverse-v6-max/text-to-video",
+        "variant": "1080p|no-audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/pixverse-v6-max-2026-10-25.json: feed rows and both https://kie.ai/pixverse-v6-max tabs read 2026-10-25: 4.8-22.4 credits = 0.024-0.112 USD/s by quality and audio",
+        "rationale": "PixVerse V6 Max was added after the frozen September catalog; the dated feed and page capture supplies the rates, and the docs callback examples (44 credits for 5 s at 720p) confirm them."
+      },
+      {
+        "key": "pixverse-v6-max/text-to-video",
+        "variant": "1080p|audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/pixverse-v6-max-2026-10-25.json: feed rows and both https://kie.ai/pixverse-v6-max tabs read 2026-10-25: 4.8-22.4 credits = 0.024-0.112 USD/s by quality and audio",
+        "rationale": "PixVerse V6 Max was added after the frozen September catalog; the dated feed and page capture supplies the rates, and the docs callback examples (44 credits for 5 s at 720p) confirm them."
+      },
+      {
+        "key": "pixverse-v6-max/image-to-video",
+        "variant": "360p|no-audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/pixverse-v6-max-2026-10-25.json: feed rows and both https://kie.ai/pixverse-v6-max tabs read 2026-10-25: 4.8-22.4 credits = 0.024-0.112 USD/s by quality and audio",
+        "rationale": "PixVerse V6 Max was added after the frozen September catalog; the dated feed and page capture supplies the rates, and the docs callback examples (44 credits for 5 s at 720p) confirm them."
+      },
+      {
+        "key": "pixverse-v6-max/image-to-video",
+        "variant": "360p|audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/pixverse-v6-max-2026-10-25.json: feed rows and both https://kie.ai/pixverse-v6-max tabs read 2026-10-25: 4.8-22.4 credits = 0.024-0.112 USD/s by quality and audio",
+        "rationale": "PixVerse V6 Max was added after the frozen September catalog; the dated feed and page capture supplies the rates, and the docs callback examples (44 credits for 5 s at 720p) confirm them."
+      },
+      {
+        "key": "pixverse-v6-max/image-to-video",
+        "variant": "540p|no-audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/pixverse-v6-max-2026-10-25.json: feed rows and both https://kie.ai/pixverse-v6-max tabs read 2026-10-25: 4.8-22.4 credits = 0.024-0.112 USD/s by quality and audio",
+        "rationale": "PixVerse V6 Max was added after the frozen September catalog; the dated feed and page capture supplies the rates, and the docs callback examples (44 credits for 5 s at 720p) confirm them."
+      },
+      {
+        "key": "pixverse-v6-max/image-to-video",
+        "variant": "540p|audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/pixverse-v6-max-2026-10-25.json: feed rows and both https://kie.ai/pixverse-v6-max tabs read 2026-10-25: 4.8-22.4 credits = 0.024-0.112 USD/s by quality and audio",
+        "rationale": "PixVerse V6 Max was added after the frozen September catalog; the dated feed and page capture supplies the rates, and the docs callback examples (44 credits for 5 s at 720p) confirm them."
+      },
+      {
+        "key": "pixverse-v6-max/image-to-video",
+        "variant": "720p|no-audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/pixverse-v6-max-2026-10-25.json: feed rows and both https://kie.ai/pixverse-v6-max tabs read 2026-10-25: 4.8-22.4 credits = 0.024-0.112 USD/s by quality and audio",
+        "rationale": "PixVerse V6 Max was added after the frozen September catalog; the dated feed and page capture supplies the rates, and the docs callback examples (44 credits for 5 s at 720p) confirm them."
+      },
+      {
+        "key": "pixverse-v6-max/image-to-video",
+        "variant": "720p|audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/pixverse-v6-max-2026-10-25.json: feed rows and both https://kie.ai/pixverse-v6-max tabs read 2026-10-25: 4.8-22.4 credits = 0.024-0.112 USD/s by quality and audio",
+        "rationale": "PixVerse V6 Max was added after the frozen September catalog; the dated feed and page capture supplies the rates, and the docs callback examples (44 credits for 5 s at 720p) confirm them."
+      },
+      {
+        "key": "pixverse-v6-max/image-to-video",
+        "variant": "1080p|no-audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/pixverse-v6-max-2026-10-25.json: feed rows and both https://kie.ai/pixverse-v6-max tabs read 2026-10-25: 4.8-22.4 credits = 0.024-0.112 USD/s by quality and audio",
+        "rationale": "PixVerse V6 Max was added after the frozen September catalog; the dated feed and page capture supplies the rates, and the docs callback examples (44 credits for 5 s at 720p) confirm them."
+      },
+      {
+        "key": "pixverse-v6-max/image-to-video",
+        "variant": "1080p|audio",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/pixverse-v6-max-2026-10-25.json: feed rows and both https://kie.ai/pixverse-v6-max tabs read 2026-10-25: 4.8-22.4 credits = 0.024-0.112 USD/s by quality and audio",
+        "rationale": "PixVerse V6 Max was added after the frozen September catalog; the dated feed and page capture supplies the rates, and the docs callback examples (44 credits for 5 s at 720p) confirm them."
+      },
       {
         "key": "kling-4.0/reference-to-video",
         "variant": "720p",

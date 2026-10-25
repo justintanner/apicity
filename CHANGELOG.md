@@ -29,6 +29,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added KIE PixVerse V6 Max `pixverse-v6-max/text-to-video` and `pixverse-v6-max/image-to-video` createTask models. Their request schemas follow the docs: a 1-5000 character prompt, the documented quality and aspect-ratio enums, an integer 1-15 s duration, and one first-frame image for image-to-video, which rejects `aspect_ratio` because the output follows the image. They also come with `PixverseV6MaxTaskResultJsonSchema`, `modelInputSchemas` descriptors and per-second pricing by quality and audio, from $0.024/s (360p without audio) to $0.112/s (1080p with audio). The KIE PixVerse model alias now accepts a tier after the version, such as `pixverse-v6-max/...`. Each model has a recorded 1 s 360p generation (ac-hp0emr).
+
 - Added KIE Kling 4.0 `kling-4.0/reference-to-video` and `kling-4.0/keyframe-to-video` createTask models. Their request schemas check the documented limits: material quotas, element and voice names, and the keyframe frame cap. They also come with `Kling40TaskResultJsonSchema`, `modelInputSchemas` descriptors and per-second pricing: $0.1425/s at 720p and $0.2125/s at 1080p. With video input, reference-to-video bills $0.085/s or $0.1275/s on output + max(output, input) seconds, the input read from `costHints.inputDurationSeconds`. Each model has a recorded 3 s generation (ac-0t56dd).
 
 - `@apicity/har` capture calls accept their own `context` (`HarCallMeta.context`), merged shallowly over the capture's `context` for that call only, so one capture instance can attribute concurrent books, runs or attempts. The construction-time context stays the default; recording identity and scrubbing are unchanged (ac-g0ani3).

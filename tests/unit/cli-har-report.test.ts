@@ -6,6 +6,7 @@ import {
   mkdirSync,
   symlinkSync,
   chmodSync,
+  copyFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -174,14 +175,33 @@ it("excludes input files from an explicit baseline and supports baseline-free in
   const h = save(fixture());
   const r = (await run([dir, "--baseline", dir])).data!;
   expect(r.baseline).toMatchObject({ source: "flag", files: 0, responses: 0 });
+  // Resolve the default baseline in a one-file checkout layout: scanning the
+  // committed corpus here outran the 30 s timeout under ci:local load. The
+  // smoke test pins the repository-root default under its own timeout.
+  const repo = join(dir, "repo");
+  mkdirSync(join(repo, "tests/recordings"), { recursive: true });
+  mkdirSync(join(repo, "scripts"));
+  copyFileSync(
+    `${root}/baseline/b1.har`,
+    join(repo, "tests/recordings/b1.har")
+  );
+  copyFileSync(
+    "scripts/endpoint-docs.tsv",
+    join(repo, "scripts/endpoint-docs.tsv")
+  );
   const cwd = process.cwd();
   process.chdir(dir);
   try {
     expect((await run([h])).data!.baseline.source).toBe("none");
+    process.chdir(repo);
+    expect((await run([h])).data!.baseline).toMatchObject({
+      source: "default",
+      path: "tests/recordings",
+      files: 1,
+    });
   } finally {
     process.chdir(cwd);
   }
-  expect((await run([h])).data!.baseline.source).toBe("default");
 });
 it("prints markdown even to a non-terminal and validates usage/missing inputs", async () => {
   expect(

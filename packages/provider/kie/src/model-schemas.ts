@@ -1631,7 +1631,8 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
       nsfw_checker: {
         type: "boolean",
-        description: "Content filtering (default true)",
+        description:
+          "Enable content filtering (default false; false returns raw model output)",
       },
     },
   },
@@ -1993,8 +1994,9 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
       generate_audio: {
         type: "boolean",
-        default: true,
-        description: "Generate accompanying audio (default true)",
+        default: false,
+        description:
+          "Generate accompanying audio (default false; KIE applies true when the field is omitted)",
       },
       resolution: {
         type: "string",

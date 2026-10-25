@@ -3669,8 +3669,9 @@ describe("kie stale-family refresh (REQ-004)", () => {
 
       expect(parsed.success).toBe(true);
       if (!parsed.success) return;
-      // The schema default (audio on) rides along and selects nothing.
-      expect(parsed.data.input.generate_audio).toBe(true);
+      // The schema default (audio off since 0.19.0) rides along and selects
+      // nothing.
+      expect(parsed.data.input.generate_audio).toBe(false);
 
       expectInputRuleFailure(
         kieEstimate(parsed.data),
@@ -3705,7 +3706,7 @@ describe("kie stale-family refresh (REQ-004)", () => {
     ]);
   });
 
-  it("uses Seedance 2.5 documented defaults and fresh provenance", () => {
+  it("uses Seedance 2.5 schema defaults and fresh provenance", () => {
     const parsed = Seedance25RequestSchema.safeParse({
       model: "bytedance/seedance-2-5",
       input: {},
@@ -3715,11 +3716,11 @@ describe("kie stale-family refresh (REQ-004)", () => {
     if (!parsed.success) return;
     expect(parsed.data.input.duration).toBe(5);
     expect(parsed.data.input.resolution).toBe("720p");
-    expect(parsed.data.input.generate_audio).toBe(true);
+    expect(parsed.data.input.generate_audio).toBe(false);
 
-    // EX-19: the parsed defaults (720p, 5 s, audio on, no video) are the
+    // EX-19: the parsed defaults (720p, 5 s, audio off, no video) are the
     // page's "no video" cell — $0.315/s, not the cheaper video column the
-    // audio-keyed selector used to pick.
+    // audio-keyed selector used to pick. Audio selects no rate.
     const result = kieEstimate(parsed.data);
     expect(result.usd).toBeCloseTo(1.575, 10);
     expect(result.breakdown).toEqual({

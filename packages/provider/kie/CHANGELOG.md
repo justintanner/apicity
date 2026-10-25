@@ -72,6 +72,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Breaking:** `Seedance25RequestSchema` and `Seedance25InputSchema` now
+  default `input.generate_audio` to `false`, not `true`, and the
+  `modelInputSchemas["bytedance/seedance-2-5"]` descriptor says so. KIE's
+  documented default is still `true`; every recorded seedance-2-5 run sent
+  `false`, so the schema now follows them. Parsing now adds
+  `generate_audio: false`, and `apicity describe` shows the new default.
+  createTask still sends the request as written, so an omitted field still
+  gets KIE's `true`: send `generate_audio: false` for a silent clip.
+- **Breaking:** `GrokVideo15PreviewRequestSchema` and
+  `GrokVideo15PreviewInputSchema` now default `input.nsfw_checker` to
+  `false`, not `true`, and the
+  `modelInputSchemas["grok-imagine-video-1-5-preview"]` description says so.
+  KIE's docs and live model schema now say "Defaults to false" (read
+  2026-10-25). Parsing now adds `nsfw_checker: false`, and `apicity describe`
+  shows the new default. createTask still sends the request as written, so
+  an omitted field gets KIE's own default. Pass `nsfw_checker: true` to keep
+  KIE's content filter on.
 - **Breaking:** `QwenTextToImageRequestSchema` and
   `modelInputSchemas["qwen/text-to-image"]` no longer default
   `input.image_size` to `square_hd`. KIE's docs and live model schema dropped

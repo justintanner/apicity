@@ -263,7 +263,7 @@ describe("KIE Zod schema validation", () => {
       }
     );
 
-    it("applies documented defaults while preserving text-only input", () => {
+    it("applies the schema defaults while preserving text-only input", () => {
       const result = Seedance25RequestSchema.safeParse({
         model: SEEDANCE25_MODEL,
         input: { prompt: SEEDANCE25_PROMPT },
@@ -273,7 +273,7 @@ describe("KIE Zod schema validation", () => {
       if (!result.success) throw result.error;
       expect(result.data.input).toMatchObject({
         return_last_frame: false,
-        generate_audio: true,
+        generate_audio: false,
         resolution: "720p",
         aspect_ratio: "adaptive",
         duration: 5,
@@ -281,6 +281,21 @@ describe("KIE Zod schema validation", () => {
         nsfw_checker: false,
       });
       expect(result.data.input.web_search).toBeUndefined();
+    });
+
+    // KIE documents true; every recorded run sent false, and the schema
+    // follows them (0.19.0). An explicit true still parses through.
+    it("defaults generate_audio to false in the schema, describe and descriptor", () => {
+      expect(Seedance25InputSchema.parse({}).generate_audio).toBe(false);
+      expect(
+        Seedance25InputSchema.parse({ generate_audio: true }).generate_audio
+      ).toBe(true);
+      const properties = zodToJsonSchema(Seedance25InputSchema)
+        .properties as Record<string, Record<string, unknown>>;
+      expect(properties.generate_audio.default).toBe(false);
+      expect(
+        modelInputSchemas[SEEDANCE25_MODEL].fields.generate_audio
+      ).toMatchObject({ type: "boolean", default: false });
     });
 
     it.each([-1, 4, 30])("accepts duration boundary %s", (duration) => {

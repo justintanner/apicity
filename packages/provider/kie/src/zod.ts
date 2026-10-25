@@ -161,11 +161,13 @@ const KieMediaElevenLabsModelAliasSchema = z
 // `pixverse-v6/text-to-video`. The `-v` prefix on the version is what
 // separates a real id from the bare product name — `pixverse/…` and
 // `pixverse6/…` are typos, not future releases — and the task segment is
-// required because `pixverse-v6` alone names the family, not a model.
+// required because `pixverse-v6` alone names the family, not a model. A
+// lowercase tier may follow the version (`pixverse-v6-max/text-to-video`);
+// it is letters only, so `pixverse-v6-5/…` stays a typo of `pixverse-v6.5`.
 const KieMediaPixverseModelAliasSchema = z
   .string()
   .regex(
-    /^pixverse-v\d+(?:\.\d+)*\/[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/,
+    /^pixverse-v\d+(?:\.\d+)*(?:-[a-z]+)?\/[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/,
     "Expected a listed model or a kie PixVerse alias (e.g. pixverse-v7/text-to-video)"
   );
 
@@ -353,6 +355,9 @@ export const KIE_MEDIA_MODELS = [
   "pixverse-v6/transition",
   "pixverse-v6/extend",
   "pixverse-v6/reference-to-video",
+  // PixVerse V6 Max. Docs under https://docs.kie.ai/market/pixverse/.
+  "pixverse-v6-max/text-to-video",
+  "pixverse-v6-max/image-to-video",
   "minimax-h3/text-to-video",
   "minimax-h3/image-to-video",
   "minimax-h3/reference-to-video",
@@ -5790,6 +5795,88 @@ export const PixverseV6ReferenceToVideoRequestSchema = z
     }
   });
 
+// PixVerse V6 Max (docs read 2026-10-25). It shares the V6 quality, aspect
+// ratio, duration and seed domains, but its prompt only has to be non-empty.
+// Upstream calls quality case-insensitive; the enum keeps the documented
+// lowercase spelling, the form the cost estimator selects a rate by. Every
+// field upstream marks required stays required, and generate_audio_switch
+// keeps its documented false default. Upstream documents neither of V6's
+// generate_multi_clip_switch and template_id for V6 Max, so neither schema
+// declares them.
+const PixverseV6MaxPromptSchema = z
+  .string()
+  .min(1)
+  .max(5000)
+  .describe("Generation prompt (1-5000 characters)");
+const PixverseV6MaxQualitySchema = PixverseV6QualitySchema.describe(
+  "Output resolution: 360p, 540p, 720p or 1080p"
+);
+const PixverseV6MaxDurationSchema = PixverseV6DurationSchema.describe(
+  "Output length in seconds, 1-15"
+);
+const PixverseV6MaxAudioSchema = z
+  .boolean()
+  .default(false)
+  .describe(
+    "Generate native audio synchronized with the video (default false)"
+  );
+const PixverseV6MaxSeedSchema = PixverseV6SeedSchema.describe(
+  "Random seed, 0-2147483647; omit it for a random seed"
+);
+
+export const PixverseV6MaxTextToVideoInputSchema = z.object({
+  prompt: PixverseV6MaxPromptSchema,
+  aspect_ratio: PixverseV6AspectRatioSchema.describe("Output aspect ratio"),
+  quality: PixverseV6MaxQualitySchema,
+  duration: PixverseV6MaxDurationSchema,
+  generate_audio_switch: PixverseV6MaxAudioSchema,
+  seed: PixverseV6MaxSeedSchema.optional(),
+});
+
+export const PixverseV6MaxTextToVideoRequestSchema = z.object({
+  model: z.literal("pixverse-v6-max/text-to-video"),
+  callBackUrl: z.string().url().optional(),
+  input: PixverseV6MaxTextToVideoInputSchema,
+});
+
+// Image-to-video animates exactly one first frame, and upstream says "do not
+// send aspect_ratio": the output follows the image. aspect_ratio is declared
+// `never` so a text-to-video payload reused here fails before an OTP is spent
+// instead of reaching upstream with a field it documents as forbidden.
+export const PixverseV6MaxImageToVideoInputSchema = z.object({
+  prompt: PixverseV6MaxPromptSchema,
+  image_urls: z
+    .array(z.string().url())
+    .min(1)
+    .max(1)
+    .describe(
+      "Exactly one first-frame image URL (HTTP, HTTPS or OSS; JPG, JPEG, PNG or WebP, each side at most 10,000 px, at most 20 MB). The output aspect ratio follows this image"
+    ),
+  aspect_ratio: z
+    .never({
+      error:
+        "pixverse-v6-max/image-to-video takes its aspect ratio from the source image; do not send aspect_ratio",
+    })
+    .optional()
+    .describe("Not accepted: the output aspect ratio follows the source image"),
+  quality: PixverseV6MaxQualitySchema,
+  duration: PixverseV6MaxDurationSchema,
+  generate_audio_switch: PixverseV6MaxAudioSchema,
+  seed: PixverseV6MaxSeedSchema.optional(),
+});
+
+export const PixverseV6MaxImageToVideoRequestSchema = z.object({
+  model: z.literal("pixverse-v6-max/image-to-video"),
+  callBackUrl: z.string().url().optional(),
+  input: PixverseV6MaxImageToVideoInputSchema,
+});
+
+// Both V6 Max models return their clip as resultJson's single resultUrls
+// entry.
+export const PixverseV6MaxTaskResultJsonSchema = z.object({
+  resultUrls: z.array(z.string().url()).min(1),
+});
+
 export const MiniMaxH3TextToVideoInputSchema = z
   .object({
     prompt: MiniMaxH3PromptSchema,
@@ -9011,6 +9098,8 @@ export const MediaGenerationRequestSchema = z.union([
   PixverseV6TransitionRequestSchema,
   PixverseV6ExtendRequestSchema,
   PixverseV6ReferenceToVideoRequestSchema,
+  PixverseV6MaxTextToVideoRequestSchema,
+  PixverseV6MaxImageToVideoRequestSchema,
   MiniMaxH3TextToVideoRequestSchema,
   MiniMaxH3ImageToVideoRequestSchema,
   MiniMaxH3ReferenceToVideoRequestSchema,
@@ -9952,6 +10041,37 @@ export type PixverseV6ReferenceToVideoRequestInput =
   PixverseV6ReferenceToVideoRequest;
 export type PixverseV6ReferenceToVideoParsedRequest = z.output<
   typeof PixverseV6ReferenceToVideoRequestSchema
+>;
+export type PixverseV6MaxTextToVideoInput = z.input<
+  typeof PixverseV6MaxTextToVideoInputSchema
+>;
+export type PixverseV6MaxTextToVideoParsedInput = z.output<
+  typeof PixverseV6MaxTextToVideoInputSchema
+>;
+export type PixverseV6MaxTextToVideoRequest = z.input<
+  typeof PixverseV6MaxTextToVideoRequestSchema
+>;
+export type PixverseV6MaxTextToVideoRequestInput =
+  PixverseV6MaxTextToVideoRequest;
+export type PixverseV6MaxTextToVideoParsedRequest = z.output<
+  typeof PixverseV6MaxTextToVideoRequestSchema
+>;
+export type PixverseV6MaxImageToVideoInput = z.input<
+  typeof PixverseV6MaxImageToVideoInputSchema
+>;
+export type PixverseV6MaxImageToVideoParsedInput = z.output<
+  typeof PixverseV6MaxImageToVideoInputSchema
+>;
+export type PixverseV6MaxImageToVideoRequest = z.input<
+  typeof PixverseV6MaxImageToVideoRequestSchema
+>;
+export type PixverseV6MaxImageToVideoRequestInput =
+  PixverseV6MaxImageToVideoRequest;
+export type PixverseV6MaxImageToVideoParsedRequest = z.output<
+  typeof PixverseV6MaxImageToVideoRequestSchema
+>;
+export type PixverseV6MaxTaskResultJson = z.infer<
+  typeof PixverseV6MaxTaskResultJsonSchema
 >;
 export type MiniMaxH3TextToVideoInput = z.input<
   typeof MiniMaxH3TextToVideoInputSchema

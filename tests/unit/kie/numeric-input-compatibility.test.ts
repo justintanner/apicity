@@ -189,6 +189,17 @@ function addNumericRow(
   rows.set(key, row);
 }
 
+// A field the request must not send (`z.never()`, emitted as `{ not: {} }`),
+// such as pixverse-v6-max/image-to-video's aspect_ratio. It accepts no value,
+// so it can carry no numeric input.
+function isForbiddenField(schema: JsonSchema): boolean {
+  return (
+    isRecord(schema.not) &&
+    Object.keys(schema.not).length === 0 &&
+    Object.keys(schema).every((key) => key === "not" || key === "description")
+  );
+}
+
 function walkInputSchema(
   rows: Map<string, DerivedRow>,
   model: string,
@@ -289,7 +300,8 @@ function walkInputSchema(
     schema.type === "null" ||
     Object.hasOwn(schema, "const") ||
     Array.isArray(schema.enum) ||
-    Object.keys(schema).every((key) => key === "description")
+    Object.keys(schema).every((key) => key === "description") ||
+    isForbiddenField(schema)
   ) {
     return;
   }

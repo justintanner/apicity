@@ -338,6 +338,58 @@ input clip length as `costHints.inputDurationSeconds`. See KIE's
 and [keyframe-to-video](https://docs.kie.ai/market/kling/v4-keyframe-to-video.md)
 pages.
 
+## PixVerse V6 Max text and image models
+
+KIE serves PixVerse V6 Max through the shared
+`kie.post.api.v1.jobs.createTask` endpoint as
+`pixverse-v6-max/text-to-video` and `pixverse-v6-max/image-to-video`.
+Both require `prompt` (1-5000 characters), `quality` (`"360p"`,
+`"540p"`, `"720p"` or `"1080p"`) and an integer `duration` from 1 to 15
+seconds, and take an optional `generate_audio_switch` (default `false`)
+and `seed`. Text-to-video also requires `aspect_ratio` (`"16:9"`,
+`"4:3"`, `"1:1"`, `"3:4"`, `"9:16"`, `"2:3"`, `"3:2"` or `"21:9"`).
+
+```typescript
+declare const firstFrame: string;
+
+const textTask = await kie.post.api.v1.jobs.createTask({
+  model: "pixverse-v6-max/text-to-video",
+  input: {
+    prompt: "A paper boat drifts across a calm pond at sunrise",
+    aspect_ratio: "16:9",
+    quality: "720p",
+    duration: 5,
+    generate_audio_switch: true,
+  },
+});
+
+const imageTask = await kie.post.api.v1.jobs.createTask({
+  model: "pixverse-v6-max/image-to-video",
+  input: {
+    prompt: "The cat turns its head toward the camera",
+    image_urls: [firstFrame],
+    quality: "720p",
+    duration: 5,
+  },
+});
+
+console.log(textTask.data?.taskId, imageTask.data?.taskId);
+```
+
+Image-to-video animates exactly one first-frame image, and the output
+follows its aspect ratio: the request schema rejects `aspect_ratio` there,
+as KIE's docs say not to send it. KIE documents neither of V6's
+`generate_multi_clip_switch` and `template_id` for V6 Max.
+`PixverseV6MaxTaskResultJsonSchema` parses the finished task's
+`resultJson`.
+
+Both models bill output seconds by quality and audio, from 4.8 credits
+($0.024) per second at 360p without audio to 22.4 credits ($0.112) at
+1080p with audio. See KIE's
+[text-to-video](https://docs.kie.ai/market/pixverse/v6-max-text-to-video.md)
+and [image-to-video](https://docs.kie.ai/market/pixverse/v6-max-image-to-video.md)
+pages.
+
 ## Seedance 2.5 draft rendering
 
 Create a `bytedance/seedance-2-5` task with `input.draft: true` and

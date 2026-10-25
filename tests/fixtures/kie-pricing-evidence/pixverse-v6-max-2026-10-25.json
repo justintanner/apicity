@@ -1,0 +1,251 @@
+{
+  "capturedAt": "2026-10-25",
+  "source": "https://kie.ai/pixverse-v6-max",
+  "models": ["pixverse-v6-max/text-to-video", "pixverse-v6-max/image-to-video"],
+  "basis": "Live pricing-feed rows, both product-page tabs' pricingDesc, the docs callback examples (real billing records) and the two billed recordings agree. Both models bill output seconds by quality and generate_audio_switch at $0.005 per credit.",
+  "feed": {
+    "endpoint": "POST https://api.kie.ai/client/v1/model-pricing/page",
+    "fetchedAt": "2026-10-25T05:10:12Z",
+    "pages": [
+      {
+        "pageNum": 1,
+        "status": 200,
+        "sha256": "152acffc9a58e2e6a392ce523772441b984e3feddb7c4eee8b3dd1f493a40069",
+        "records": 100
+      },
+      {
+        "pageNum": 2,
+        "status": 200,
+        "sha256": "73590180aba8820392a1411e99295d87ff409670af34444fd62f385f013d23d3",
+        "records": 100
+      },
+      {
+        "pageNum": 3,
+        "status": 200,
+        "sha256": "295bd658f2a5433feefdad13a3efff34b3055b4404e72457895e6895567bbd8a",
+        "records": 100
+      },
+      {
+        "pageNum": 4,
+        "status": 200,
+        "sha256": "59a519a4fd2f6165c7598c5b9b9d825a1929fb76fbaf7cc6d7660c0955cf6b0b",
+        "records": 100
+      },
+      {
+        "pageNum": 5,
+        "status": 200,
+        "sha256": "d0d0e17efc7cdc0f7858c6ace434010f3d6be509e930bc2e980f997f21820abd",
+        "records": 100
+      },
+      {
+        "pageNum": 6,
+        "status": 200,
+        "sha256": "79dd547fa113d27bed94ea14513680ee350b88614cfed1e3666492d41c879774",
+        "records": 100
+      },
+      {
+        "pageNum": 7,
+        "status": 200,
+        "sha256": "268842f30d0023d3557be87c54f1235c4a1cb031d7085eb574c020013f564805",
+        "records": 5
+      }
+    ],
+    "rows": [
+      {
+        "modelDescription": "pixverse-v6-max, Text /Image to Video, 360p(no audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "4.8",
+        "creditUnit": "per second",
+        "usdPrice": "0.024",
+        "falPrice": "0.0267",
+        "discountRate": 10.0,
+        "anchor": "https://kie.ai/pixverse-v6-max?model=pixverse-v6-max%2Fimage-to-video",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "pixverse-v6-max, Text /Image to Video, 360p(with audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "7.2",
+        "creditUnit": "per second",
+        "usdPrice": "0.036",
+        "falPrice": "0.0400",
+        "discountRate": 10.0,
+        "anchor": "https://kie.ai/pixverse-v6-max?model=pixverse-v6-max%2Fimage-to-video",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "pixverse-v6-max, Text /Image to Video, 540p(no audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "7.2",
+        "creditUnit": "per second",
+        "usdPrice": "0.036",
+        "falPrice": "0.0400",
+        "discountRate": 10.0,
+        "anchor": "https://kie.ai/pixverse-v6-max?model=pixverse-v6-max%2Fimage-to-video",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "pixverse-v6-max, Text /Image to Video, 540p(with audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "8.8",
+        "creditUnit": "per second",
+        "usdPrice": "0.044",
+        "falPrice": "0.0489",
+        "discountRate": 10.0,
+        "anchor": "https://kie.ai/pixverse-v6-max?model=pixverse-v6-max%2Fimage-to-video",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "pixverse-v6-max, Text /Image to Video, 720p(no audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "8.8",
+        "creditUnit": "per second",
+        "usdPrice": "0.044",
+        "falPrice": "0.0489",
+        "discountRate": 10.0,
+        "anchor": "https://kie.ai/pixverse-v6-max?model=pixverse-v6-max%2Fimage-to-video",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "pixverse-v6-max, Text /Image to Video, 720p(with audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "12",
+        "creditUnit": "per second",
+        "usdPrice": "0.060",
+        "falPrice": "0.0667",
+        "discountRate": 10.0,
+        "anchor": "https://kie.ai/pixverse-v6-max?model=pixverse-v6-max%2Fimage-to-video",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "pixverse-v6-max, Text /Image to Video, 1080p(no audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "17.6",
+        "creditUnit": "per second",
+        "usdPrice": "0.088",
+        "falPrice": "0.0978",
+        "discountRate": 10.0,
+        "anchor": "https://kie.ai/pixverse-v6-max?model=pixverse-v6-max%2Fimage-to-video",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "pixverse-v6-max, Text /Image to Video, 1080p(with audio)",
+        "interfaceType": "video",
+        "provider": "Pixverse",
+        "creditPrice": "22.4",
+        "creditUnit": "per second",
+        "usdPrice": "0.112",
+        "falPrice": "0.1244",
+        "discountRate": 10.0,
+        "anchor": "https://kie.ai/pixverse-v6-max?model=pixverse-v6-max%2Fimage-to-video",
+        "discountPrice": false
+      }
+    ]
+  },
+  "page": {
+    "url": "https://kie.ai/pixverse-v6-max",
+    "fetchedAt": "2026-10-25T05:10:28Z",
+    "sha256": "c5d98951dbb1a2c9e2b583f1f3426c26bbaae5ae87e556e20c61a2071e3ab428",
+    "groupData": [
+      {
+        "userPath": "pixverse-v6-max",
+        "path": "image-to-video",
+        "apiDocumentUrl": "https://docs.kie.ai/market/pixverse/v6-max-image-to-video",
+        "channel": "fal_request",
+        "pricingDesc": "\n360P: 4.8 credits/s ($0.024/s, no audio) | 7.2 credits/s ($0.036/s, with audio)\n540P: 7.2 credits/s ($0.036/s, no audio) | 8.8 credits/s ($0.044/s, with audio)\n720P: 8.8 credits/s ($0.044/s, no audio) | 12.0 credits/s ($0.060/s, with audio)\n1080P: 17.6 credits/s ($0.088/s, no audio) | 22.4 credits/s ($0.112/s, with audio)\n\nApproximately 10% cheaper than official pricing. \nHigh-tier top-ups bring the effective price down to approximately 90% of the prices listed above."
+      },
+      {
+        "userPath": "pixverse-v6-max",
+        "path": "text-to-video",
+        "apiDocumentUrl": "https://docs.kie.ai/market/pixverse/v6-max-text-to-video",
+        "channel": "fal_request",
+        "pricingDesc": "\n360P: 4.8 credits/s ($0.024/s, no audio) | 7.2 credits/s ($0.036/s, with audio)\n540P: 7.2 credits/s ($0.036/s, no audio) | 8.8 credits/s ($0.044/s, with audio)\n720P: 8.8 credits/s ($0.044/s, no audio) | 12.0 credits/s ($0.060/s, with audio)\n1080P: 17.6 credits/s ($0.088/s, no audio) | 22.4 credits/s ($0.112/s, with audio)\n\nApproximately 10% cheaper than official pricing. \nHigh-tier top-ups bring the effective price down to approximately 90% of the prices listed above."
+      }
+    ]
+  },
+  "docs": [
+    {
+      "model": "pixverse-v6-max/text-to-video",
+      "url": "https://docs.kie.ai/market/pixverse/v6-max-text-to-video.md",
+      "fetchedAt": "2026-10-25T05:08:23Z",
+      "sha256": "22734abcd68fbfee9564895af3a4344212e5607424b773a868304b5c101addae",
+      "callbackExamples": [
+        {
+          "creditsConsumed": 44.0,
+          "duration": 5,
+          "quality": "720p",
+          "generateAudio": false
+        }
+      ],
+      "failureExampleCreditsConsumed": 0.0
+    },
+    {
+      "model": "pixverse-v6-max/image-to-video",
+      "url": "https://docs.kie.ai/market/pixverse/v6-max-image-to-video.md",
+      "fetchedAt": "2026-10-25T05:08:24Z",
+      "sha256": "2b3b3e561d2a38764171c9d14d711cfa7b0e7df5e3156556bd7eb3b288dbef18",
+      "callbackExamples": [
+        {
+          "creditsConsumed": 44.0,
+          "duration": 5,
+          "quality": "720p",
+          "generateAudio": false
+        }
+      ],
+      "failureExampleCreditsConsumed": 0.0
+    }
+  ],
+  "recordingBudgetUsd": 5,
+  "recordings": [
+    {
+      "model": "pixverse-v6-max/text-to-video",
+      "har": "tests/recordings/kie_2079838932/pixverse-v6-max-text-to-video_2265120745/recording.har",
+      "taskId": "307298bd24aad8d310d36d16c9675ba9",
+      "request": {
+        "duration": 1,
+        "quality": "360p",
+        "generateAudio": true
+      },
+      "creditsConsumed": 7.2,
+      "firstPollCreditsConsumed": 7.2,
+      "usd": 0.036,
+      "output": {
+        "seconds": 1.042,
+        "width": 640,
+        "height": 360,
+        "audioTrack": true
+      }
+    },
+    {
+      "model": "pixverse-v6-max/image-to-video",
+      "har": "tests/recordings/kie_2079838932/pixverse-v6-max-image-to-video_2402710239/recording.har",
+      "taskId": "85a7ad93aa9e2f2089532810cc8a60d0",
+      "request": {
+        "duration": 1,
+        "quality": "360p",
+        "generateAudio": false
+      },
+      "creditsConsumed": 4.8,
+      "firstPollCreditsConsumed": 4.8,
+      "usd": 0.024,
+      "output": {
+        "seconds": 1.042,
+        "width": 640,
+        "height": 624,
+        "audioTrack": false
+      }
+    }
+  ],
+  "balanceCredits": {
+    "before": 679.86,
+    "after": 667.86
+  },
+  "observedTotalUsd": 0.06
+}

@@ -430,12 +430,14 @@ const qwen3InputImageExtra = (
 // text-to-video passes image-to-video rather than a tab of its own name.
 // `asOf` defaults to the 2026-08-22 catalog date the four feed-anchored
 // entries were priced from; a page-sourced entry (transition) passes the
-// date its own page was read.
+// date its own page was read. `product` names the kie.ai page and model
+// prefix: V6 Max is its own page, https://kie.ai/pixverse-v6-max.
 const pixverseV6 = (
   rates: Record<string, number>,
   path: string,
   defaultAudio: boolean,
-  asOf = "2026-08-22"
+  asOf = "2026-08-22",
+  product = "pixverse-v6"
 ): ModelPricing => ({
   kind: "perUnit",
   unit: "seconds",
@@ -461,7 +463,7 @@ const pixverseV6 = (
   ],
   rates,
   source: pricePage(
-    `https://kie.ai/pixverse-v6?model=pixverse-v6%2F${path}`,
+    `https://kie.ai/${product}?model=${product}%2F${path}`,
     asOf
   ),
 });
@@ -1649,6 +1651,48 @@ export const kie: Record<string, ModelPricing> = {
     "transition",
     true,
     "2026-09-22"
+  ),
+
+  // PixVerse V6 Max — the same quality × audio selection as V6 on a ladder of
+  // its own. The live feed's eight "pixverse-v6-max, Text /Image to Video"
+  // rows, both tabs of https://kie.ai/pixverse-v6-max and the two docs
+  // callback examples (5 s 720p without audio = 44 credits, both models)
+  // agree, at $0.005 per credit; read 2026-10-25,
+  // tests/fixtures/kie-pricing-evidence/pixverse-v6-max-2026-10-25.json.
+  // Both entries cite the feed anchor, which is image-to-video's tab, as the
+  // V6 text-to-video entry does. generate_audio_switch defaults to false in
+  // both request schemas, so an omitted switch selects no-audio.
+  "pixverse-v6-max/text-to-video": pixverseV6(
+    {
+      "360p|no-audio": 0.024,
+      "360p|audio": 0.036,
+      "540p|no-audio": 0.036,
+      "540p|audio": 0.044,
+      "720p|no-audio": 0.044,
+      "720p|audio": 0.06,
+      "1080p|no-audio": 0.088,
+      "1080p|audio": 0.112,
+    },
+    "image-to-video",
+    true,
+    "2026-10-25",
+    "pixverse-v6-max"
+  ),
+  "pixverse-v6-max/image-to-video": pixverseV6(
+    {
+      "360p|no-audio": 0.024,
+      "360p|audio": 0.036,
+      "540p|no-audio": 0.036,
+      "540p|audio": 0.044,
+      "720p|no-audio": 0.044,
+      "720p|audio": 0.06,
+      "1080p|no-audio": 0.088,
+      "1080p|audio": 0.112,
+    },
+    "image-to-video",
+    true,
+    "2026-10-25",
+    "pixverse-v6-max"
   ),
 
   // grok-imagine: 3 tiers by resolution as of the 2026-08-06 pull (1080p is

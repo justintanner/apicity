@@ -95,7 +95,29 @@ const KLING_40_EXCEPTION = Object.freeze({
     "Kling 4.0 was added after the frozen September catalog; the dated feed and page capture supplies the rates, and the docs callback examples (285 and 425 credits for 10 s) confirm them.",
 });
 
+// Shared by the sixteen PixVerse V6 Max variants below (ac-hp0emr).
+const PIXVERSE_V6_MAX_EXCEPTION = Object.freeze({
+  status: "pricing-only",
+  provenance:
+    "tests/fixtures/kie-pricing-evidence/pixverse-v6-max-2026-10-25.json: feed rows and both https://kie.ai/pixverse-v6-max tabs read 2026-10-25: 4.8-22.4 credits = 0.024-0.112 USD/s by quality and audio",
+  rationale:
+    "PixVerse V6 Max was added after the frozen September catalog; the dated feed and page capture supplies the rates, and the docs callback examples (44 credits for 5 s at 720p) confirm them.",
+});
+
 export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
+  ...[
+    "pixverse-v6-max/text-to-video",
+    "pixverse-v6-max/image-to-video",
+  ].flatMap((key) =>
+    ["360p", "540p", "720p", "1080p"].flatMap((quality) =>
+      ["no-audio", "audio"].map((audio) => ({
+        key,
+        variant: `${quality}|${audio}`,
+        ...PIXVERSE_V6_MAX_EXCEPTION,
+      }))
+    )
+  ),
+
   ...["720p", "720p|video", "1080p", "1080p|video"].map((variant) => ({
     key: "kling-4.0/reference-to-video",
     variant,

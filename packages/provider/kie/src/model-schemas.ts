@@ -5945,6 +5945,41 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  // - https://docs.kie.ai/market/omnihuman-2-0
+  // The output length follows the driving audio, so there is no duration
+  // field to describe.
+  "omnihuman-2-0": {
+    type: "video",
+    fields: {
+      image_urls: {
+        type: "array",
+        required: true,
+        minItems: 1,
+        maxItems: 1,
+        description:
+          "Exactly one source image URL (jpeg, png, webp, bmp, tiff, gif, heic or heif; under 30 MB; aspect ratio 0.4-2.5; each side 300-6000 px)",
+        items: { type: "string" },
+      },
+      audio_url: {
+        type: "string",
+        required: true,
+        description:
+          "Driving audio URL for motion and lip sync (wav or mp3, 4-300 seconds, under 15 MB); the video length follows the audio",
+      },
+      prompt: {
+        type: "string",
+        maxLength: 300,
+        description:
+          "Optional scene, motion and camera direction, up to 300 characters (Chinese, English, Japanese, Korean, Mexican Spanish or Indonesian)",
+      },
+      enable_watermark: {
+        type: "boolean",
+        default: true,
+        description: "Add a watermark to the output video (default true)",
+      },
+    },
+  },
+
   "volcengine/video-to-video-lip-sync": {
     type: "video",
     fields: {

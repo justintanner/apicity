@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added `omnihuman-2-0` (OmniHuman 2.0) with typed inputs: one image in `image_urls`, `audio_url`, an optional `prompt` of up to 300 characters, and `enable_watermark`, which defaults to `true`. It also comes with `Omnihuman20TaskResultJsonSchema`, per-second pricing in whole output seconds, and a recorded generation.
+
 - Added `pixverse-v6-max/text-to-video` and `pixverse-v6-max/image-to-video` (PixVerse V6 Max) with typed inputs, the documented enums and bounds, a one-image first frame for image-to-video that rejects `aspect_ratio`, `PixverseV6MaxTaskResultJsonSchema`, per-second pricing, and a recorded 1 s generation each. The PixVerse model alias accepts a tier after the version, such as `pixverse-v6-max/...`.
 
 - Added `kling-4.0/reference-to-video` and `kling-4.0/keyframe-to-video` (Kling 4.0) with typed inputs, the documented material and frame limits, `Kling40TaskResultJsonSchema`, per-second pricing, and a recorded 3 s generation each.

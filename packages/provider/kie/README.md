@@ -72,6 +72,45 @@ less than 60 seconds. Use `output_resolution: "720"` or `"1080"`;
 defaults are `"1080"` for resolution, `false` for `pe_fast_mode`, and
 `-1` for a random seed.
 
+## OmniHuman 2.0 model
+
+KIE serves OmniHuman 2.0 through the shared
+`kie.post.api.v1.jobs.createTask` endpoint as `omnihuman-2-0`. It
+animates one source image with a driving audio track: `image_urls` takes
+exactly one image URL and `audio_url` a WAV or MP3 of 4 to 300 seconds.
+The optional `prompt` (up to 300 characters) directs the scene, motion
+and camera, and `enable_watermark` defaults to `true`.
+
+```typescript
+declare const portrait: string;
+declare const speech: string;
+
+const task = await kie.post.api.v1.jobs.createTask({
+  model: "omnihuman-2-0",
+  input: {
+    image_urls: [portrait],
+    audio_url: speech,
+    prompt: "A news anchor delivers the line calmly to the camera",
+    enable_watermark: false,
+  },
+});
+
+console.log(task.data?.taskId);
+```
+
+The output is a 720P MP4 whose length follows the audio. OmniHuman 2.0
+has none of 1.5's `mask_url`, `output_resolution`, `pe_fast_mode` and
+`seed`, and the 1.5 human-identification and subject-detection sub-tasks
+have no 2.0 counterpart. `Omnihuman20TaskResultJsonSchema` parses the
+finished task's `resultJson`.
+
+It bills 14 credits ($0.07) per output second, in whole seconds: a
+6.008 s audio clip rendered a 7 s video and billed 98 credits. The
+request carries no duration, so pass the audio length as
+`costHints.durationSeconds` to estimate it; the estimate rounds it up the
+same way. See KIE's
+[OmniHuman 2.0](https://docs.kie.ai/market/omnihuman-2-0.md) page.
+
 ## Gemini Omni Character endpoint
 
 Gemini Omni Character has its own direct endpoint:

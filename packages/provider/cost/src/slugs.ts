@@ -131,6 +131,7 @@ export const MODEL_SLUGS = {
 
     // Video — lip sync / avatar
     "omnihuman-1-5": "oh1p5",
+    "omnihuman-2-0": "oh2p0",
     // `omnihuman-1-5/human-identification` and
     // `omnihuman-1-5/subject-detection` intentionally have no slug or pricing
     // key. On 2026-08-22 the catalog priced only lip sync and their docs pages
@@ -753,6 +754,7 @@ export const MODEL_DISPLAY = {
     "topaz/video-upscale": "Topaz Video Upscale",
 
     "omnihuman-1-5": "OmniHuman 1.5",
+    "omnihuman-2-0": "OmniHuman 2.0",
     "volcengine/video-to-video-lip-sync": "Volcengine Lip Sync",
     "kling/ai-avatar-standard": "Kling AI Avatar",
     "kling/ai-avatar-pro": "Kling AI Avatar Pro",

@@ -1801,10 +1801,10 @@
       "endpoints": 71
     },
     "final": {
-      "models": 162,
-      "pricingKeys": 188,
-      "slugKeys": 190,
-      "displayKeys": 190,
+      "models": 163,
+      "pricingKeys": 189,
+      "slugKeys": 191,
+      "displayKeys": 191,
       "schemaWithoutPricing": 6,
       "pricingOnly": 32,
       "endpoints": 84
@@ -1820,11 +1820,11 @@
       "endpoints": "scripts/endpoint-docs.tsv"
     },
     "hashes": {
-      "packages/provider/kie/src/zod.ts": "sha256:e221d51933b0edef22cd4e539656837d65c30f968bcd0eef1f325c2666131e51",
-      "packages/provider/kie/src/model-schemas.ts": "sha256:41372f3ee8127655a751389d68f2fc263b4fd825f9138751cd2f4767eee7b2e2",
-      "packages/provider/kie/src/kie.ts": "sha256:5815bea47fd37edba6f2a8c6c09b85cda45968771864b4fbc0ade0fcf67e19f1",
-      "packages/provider/cost/src/pricing/kie.ts": "sha256:b58eee8746df64500317ef7183516e7f1056b2e65957686fbd4af6a1e1fb4827",
-      "packages/provider/cost/src/slugs.ts": "sha256:4b52511cb4fb8aea285bb9c07bfe5347be0162486b33194c1e88b17ad5ffb70e",
+      "packages/provider/kie/src/zod.ts": "sha256:3aa2bd3426b842a8ab5f10c76e0b6f83d9e15893cf59495f8061f9bec297f3a6",
+      "packages/provider/kie/src/model-schemas.ts": "sha256:e6004cef9e12eb4a04784d177ffa06512fb501322ee70af7e673c513110d9523",
+      "packages/provider/kie/src/kie.ts": "sha256:6f38173005b380518864c6add45a0c06279378a4e02fb4aaef673ef5cd5c217f",
+      "packages/provider/cost/src/pricing/kie.ts": "sha256:d8a3b898524e107ab91f67535bcb44c2d452567d4019e02be7f06df96b787ab3",
+      "packages/provider/cost/src/slugs.ts": "sha256:49b77126eb063950b6a9d4843bf436625eeabd58b26312d04052e02b6478c6ad",
       "scripts/endpoint-docs.tsv": "sha256:1d8d4b2c722b3ceb0efef0edacb472f7aebc3b558285883271813ced6ff4f343"
     }
   },
@@ -24091,6 +24091,15 @@
         "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
       },
       {
+        "id": "omnihuman-2-0",
+        "descriptor": true,
+        "guard": true,
+        "pricingKey": "omnihuman-2-0",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "The final WI6 inventory records the model without a current runtime pricing key as an explicit audit membership."
+      },
+      {
         "id": "volcengine/video-to-video-lip-sync",
         "descriptor": true,
         "guard": true,
@@ -26201,6 +26210,12 @@
         "rationale": "Current runtime pricing key is linked to one or more frozen official occurrences."
       },
       {
+        "key": "omnihuman-2-0",
+        "linkedRows": [],
+        "disposition": "upstream-unmappable",
+        "rationale": "Legacy/current pricing key has no matching row in the frozen official pull and requires a later evidence decision."
+      },
+      {
         "key": "volcengine/video-to-video-lip-sync",
         "linkedRows": [
           "sha256:6080920ee30905505569257ddde8ceeb668e47c86eeb844047419d3378ff4520#1"
@@ -27501,6 +27516,10 @@
         "disposition": "supported"
       },
       {
+        "key": "omnihuman-2-0",
+        "disposition": "supported"
+      },
+      {
         "key": "volcengine/video-to-video-lip-sync",
         "disposition": "supported"
       },
@@ -28260,6 +28279,10 @@
       },
       {
         "key": "omnihuman-1-5",
+        "disposition": "supported"
+      },
+      {
+        "key": "omnihuman-2-0",
         "disposition": "supported"
       },
       {
@@ -29089,16 +29112,16 @@
     },
     "apiCity": {
       "models": {
-        "count": 162,
-        "descriptors": 162,
-        "guards": 162,
+        "count": 163,
+        "descriptors": 163,
+        "guards": 163,
         "withoutPricing": 6,
         "dispositionCounts": {
           "supported": 116,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 46
+          "upstream-unmappable": 47
         },
         "unclassified": 0
       },
@@ -29116,20 +29139,20 @@
         "unclassified": 0
       },
       "pricingKeys": {
-        "count": 188,
+        "count": 189,
         "dispositionCounts": {
           "supported": 144,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
-          "upstream-unmappable": 44
+          "upstream-unmappable": 45
         },
         "unclassified": 0
       },
       "slugs": {
-        "count": 190,
+        "count": 191,
         "dispositionCounts": {
-          "supported": 190,
+          "supported": 191,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -29138,9 +29161,9 @@
         "unclassified": 0
       },
       "displays": {
-        "count": 190,
+        "count": 191,
         "dispositionCounts": {
-          "supported": 190,
+          "supported": 191,
           "free-nonbillable": 0,
           "unsupported-endpoint": 0,
           "token-billed": 0,
@@ -29179,6 +29202,13 @@
   },
   "runtimeCoverage": {
     "exceptions": [
+      {
+        "key": "omnihuman-2-0",
+        "variant": "",
+        "status": "pricing-only",
+        "provenance": "tests/fixtures/kie-pricing-evidence/omnihuman-2-0-2026-10-25.json: feed row and https://kie.ai/omnihuman-2-0 read 2026-10-25: 14 credits = 0.07 USD per output second",
+        "rationale": "OmniHuman 2.0 was added after the frozen September catalog; the dated feed and page capture supplies the flat rate, and the billed recording confirms it."
+      },
       {
         "key": "pixverse-v6-max/text-to-video",
         "variant": "360p|no-audio",

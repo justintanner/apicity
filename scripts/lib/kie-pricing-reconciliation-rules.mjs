@@ -105,6 +105,16 @@ const PIXVERSE_V6_MAX_EXCEPTION = Object.freeze({
 });
 
 export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
+  {
+    key: "omnihuman-2-0",
+    variant: "",
+    status: "pricing-only",
+    provenance:
+      "tests/fixtures/kie-pricing-evidence/omnihuman-2-0-2026-10-25.json: feed row and https://kie.ai/omnihuman-2-0 read 2026-10-25: 14 credits = 0.07 USD per output second",
+    rationale:
+      "OmniHuman 2.0 was added after the frozen September catalog; the dated feed and page capture supplies the flat rate, and the billed recording confirms it.",
+  },
+
   ...[
     "pixverse-v6-max/text-to-video",
     "pixverse-v6-max/image-to-video",

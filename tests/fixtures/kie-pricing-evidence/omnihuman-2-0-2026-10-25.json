@@ -1,0 +1,142 @@
+{
+  "capturedAt": "2026-10-25",
+  "source": "https://kie.ai/omnihuman-2-0",
+  "models": ["omnihuman-2-0"],
+  "basis": "The live pricing-feed row, the product page's pricingDesc and the billed recording agree: 14 credits ($0.07) per second of output video at $0.005 per credit. The video follows the driving audio in whole seconds: 6.008 s of audio rendered and billed 7 s. The docs callback example's 1.23 credits is a template (placeholder task id and timestamps), not a billing record.",
+  "feed": {
+    "endpoint": "POST https://api.kie.ai/client/v1/model-pricing/page",
+    "fetchedAt": "2026-10-25T06:11:37Z",
+    "pages": [
+      {
+        "pageNum": 1,
+        "status": 200,
+        "sha256": "152acffc9a58e2e6a392ce523772441b984e3feddb7c4eee8b3dd1f493a40069",
+        "records": 100
+      },
+      {
+        "pageNum": 2,
+        "status": 200,
+        "sha256": "73590180aba8820392a1411e99295d87ff409670af34444fd62f385f013d23d3",
+        "records": 100
+      },
+      {
+        "pageNum": 3,
+        "status": 200,
+        "sha256": "295bd658f2a5433feefdad13a3efff34b3055b4404e72457895e6895567bbd8a",
+        "records": 100
+      },
+      {
+        "pageNum": 4,
+        "status": 200,
+        "sha256": "59a519a4fd2f6165c7598c5b9b9d825a1929fb76fbaf7cc6d7660c0955cf6b0b",
+        "records": 100
+      },
+      {
+        "pageNum": 5,
+        "status": 200,
+        "sha256": "d0d0e17efc7cdc0f7858c6ace434010f3d6be509e930bc2e980f997f21820abd",
+        "records": 100
+      },
+      {
+        "pageNum": 6,
+        "status": 200,
+        "sha256": "79dd547fa113d27bed94ea14513680ee350b88614cfed1e3666492d41c879774",
+        "records": 100
+      },
+      {
+        "pageNum": 7,
+        "status": 200,
+        "sha256": "268842f30d0023d3557be87c54f1235c4a1cb031d7085eb574c020013f564805",
+        "records": 5
+      }
+    ],
+    "rows": [
+      {
+        "modelDescription": "omnihuman-2-0, avatar video, 720p",
+        "interfaceType": "video",
+        "provider": "ByteDance",
+        "creditPrice": "14",
+        "creditUnit": "per second",
+        "usdPrice": "0.07",
+        "falPrice": "0.07",
+        "discountRate": 0.0,
+        "anchor": "https://kie.ai/omnihuman-2-0?model=omnihuman-2-0",
+        "discountPrice": false
+      }
+    ]
+  },
+  "page": {
+    "url": "https://kie.ai/omnihuman-2-0",
+    "fetchedAt": "2026-10-25T06:11:52Z",
+    "sha256": "7aac9b3b79e8287517641d1c2316a93cb1efe1f0fe117e3b6b45667c6475f9ff",
+    "groupData": [
+      {
+        "userPath": "omnihuman-2-0",
+        "path": "",
+        "apiDocumentUrl": "https://docs.kie.ai/market/omnihuman-2-0",
+        "channel": "fal_request",
+        "pricingDesc": "14 credits per second ($0.07/s), billed on the output video duration. 720P output, length follows the input audio (4–300 s).\n\nHigh-tier top-ups include +10% bonus credits. Effective pricing is approximately 10% lower than the above rates."
+      }
+    ]
+  },
+  "docs": [
+    {
+      "model": "omnihuman-2-0",
+      "url": "https://docs.kie.ai/market/omnihuman-2-0.md",
+      "fetchedAt": "2026-10-25T06:09:45Z",
+      "sha256": "4875a6e7600e8930cb42766ecce54f90df50c2835bd94a08270175a799a1ca8c",
+      "callbackExamples": [
+        {
+          "creditsConsumed": 1.23,
+          "template": true,
+          "note": "taskId task_omnihuman-2-0_1234567890, createTime 1234560000, completeTime 1234567890: placeholders, not a billing record"
+        }
+      ],
+      "failureExampleCreditsConsumed": 0.0,
+      "helperPages": {
+        "note": "docs.kie.ai/llms.txt (fetched 2026-10-25T06:10:47Z) lists one OmniHuman 2.0 page; the 1.5 helper paths under omnihuman-2-0/ answer 404",
+        "https://docs.kie.ai/market/omnihuman-2-0/human-identification.md": 404,
+        "https://docs.kie.ai/market/omnihuman-2-0/subject-detection.md": 404
+      }
+    }
+  ],
+  "recordingBudgetUsd": 5,
+  "recordings": [
+    {
+      "model": "omnihuman-2-0",
+      "har": "tests/recordings/kie_2079838932/omnihuman-2-0_961523171/recording.har",
+      "taskId": "fa68fd466030aff76c053000e7b3ede5",
+      "request": {
+        "image": {
+          "fixture": "tests/fixtures/man.jpg",
+          "width": 1920,
+          "height": 1080
+        },
+        "audio": {
+          "fixture": "tests/fixtures/dialog.mp3",
+          "seconds": 6.008163
+        },
+        "prompt": true,
+        "enableWatermark": false
+      },
+      "creditsConsumed": 98.0,
+      "firstPollCreditsConsumed": 0.0,
+      "pollsBeforeCharge": 19,
+      "costTimeSeconds": 189,
+      "usd": 0.49,
+      "output": {
+        "videoSeconds": 7.0,
+        "audioTrackSeconds": 7.008,
+        "frames": 168,
+        "fps": 24,
+        "width": 1280,
+        "height": 720
+      }
+    }
+  ],
+  "balanceCredits": {
+    "before": 667.86,
+    "after": 569.86
+  },
+  "observedTotalUsd": 0.49
+}

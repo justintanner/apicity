@@ -178,13 +178,15 @@ const KieMediaPixverseModelAliasSchema = z
 // Singleton / fixed-product ids that stay enum-only with no alias hatch:
 // `omnihuman-1-5` plus its two sub-tasks (`omnihuman-1-5/human-identification`,
 // `omnihuman-1-5/subject-detection`), `volcengine/video-to-video-lip-sync`,
-// and `gemini-omni-video`. Omnihuman's sub-tasks are
+// `gemini-omni-video` and `omnihuman-2-0`. Omnihuman's sub-tasks are
 // path-suffixed siblings of a fixed product slug, not a versioned family
 // grammar — nothing here distinguishes `omnihuman-<major>-<minor>` from a
 // product name, so any regex would be a guess that either rejects the real
 // next release or widens into the wildcard this file exists to avoid. They
 // gain an alias only if kie ships a grammar that can be justified; until then
-// each new id from those vendors is an explicit enum addition.
+// each new id from those vendors is an explicit enum addition. `omnihuman-2-0`
+// is one: it shares 1.5's dashed version spelling but neither its request
+// contract nor its sub-tasks.
 //
 // Vidu Q4 stays enum-only: documented operations do not establish a version grammar.
 // MiniMax H3 also stays enum-only even though it has three task variants. The
@@ -340,6 +342,8 @@ export const KIE_MEDIA_MODELS = [
   // Omnihuman sub-tasks — enum-only siblings of the bare product id (no alias).
   "omnihuman-1-5/human-identification",
   "omnihuman-1-5/subject-detection",
+  // OmniHuman 2.0. Docs: https://docs.kie.ai/market/omnihuman-2-0
+  "omnihuman-2-0",
   "volcengine/video-to-video-lip-sync",
   "gemini-omni-video",
   "elevenlabs/audio-isolation",
@@ -4741,6 +4745,54 @@ export const Omnihuman15SubjectDetectionRequestSchema = z.object({
   }),
 });
 
+// OmniHuman 2.0 (docs read 2026-10-25). A new request contract, not a
+// revision of 1.5's: the one source image travels as a one-element
+// image_urls array, enable_watermark (default true) is new, and 1.5's
+// mask_url, output_resolution, pe_fast_mode and seed are gone. The 720P
+// output follows the driving audio's length, which upstream bounds at
+// 4-300 s; a URL cannot show that length, so only the description states it
+// (the recorded 6.008 s clip rendered 7 whole seconds). The 1.5
+// sub-tasks have no 2.0 counterpart: 2.0 takes no mask_url for
+// subject-detection masks, and kie documents no 2.0 helper.
+export const Omnihuman20InputSchema = z.object({
+  image_urls: z
+    .array(z.string().url())
+    .min(1)
+    .max(1)
+    .describe(
+      "Exactly one source image URL (jpeg, png, webp, bmp, tiff, gif, heic or heif; under 30 MB; aspect ratio 0.4-2.5; each side 300-6000 px)"
+    ),
+  audio_url: z
+    .string()
+    .url()
+    .describe(
+      "Driving audio URL for motion and lip sync (wav or mp3, 4-300 seconds, under 15 MB); the video length follows the audio"
+    ),
+  prompt: z
+    .string()
+    .max(300)
+    .optional()
+    .describe(
+      "Optional scene, motion and camera direction, up to 300 characters (Chinese, English, Japanese, Korean, Mexican Spanish or Indonesian)"
+    ),
+  enable_watermark: z
+    .boolean()
+    .default(true)
+    .describe("Add a watermark to the output video (default true)"),
+});
+
+export const Omnihuman20RequestSchema = z.object({
+  model: z.literal("omnihuman-2-0"),
+  callBackUrl: z.string().url().optional(),
+  input: Omnihuman20InputSchema,
+});
+
+// The finished task's resultJson carries the MP4 as its single resultUrls
+// entry.
+export const Omnihuman20TaskResultJsonSchema = z.object({
+  resultUrls: z.array(z.string().url()).min(1),
+});
+
 export const VolcengineVideoToVideoLipSyncRequestSchema = z.object({
   model: z.literal("volcengine/video-to-video-lip-sync"),
   callBackUrl: z.string().optional(),
@@ -9083,6 +9135,7 @@ export const MediaGenerationRequestSchema = z.union([
   Omnihuman15RequestSchema,
   Omnihuman15HumanIdentificationRequestSchema,
   Omnihuman15SubjectDetectionRequestSchema,
+  Omnihuman20RequestSchema,
   VolcengineVideoToVideoLipSyncRequestSchema,
   GeminiOmniVideoRequestSchema,
   GoogleGeminiOmniFlash11RequestSchema,
@@ -10554,6 +10607,16 @@ export type Omnihuman15SubjectDetectionRequestInput =
   Omnihuman15SubjectDetectionRequest;
 export type Omnihuman15SubjectDetectionParsedRequest = z.output<
   typeof Omnihuman15SubjectDetectionRequestSchema
+>;
+export type Omnihuman20Input = z.input<typeof Omnihuman20InputSchema>;
+export type Omnihuman20ParsedInput = z.output<typeof Omnihuman20InputSchema>;
+export type Omnihuman20Request = z.input<typeof Omnihuman20RequestSchema>;
+export type Omnihuman20RequestInput = Omnihuman20Request;
+export type Omnihuman20ParsedRequest = z.output<
+  typeof Omnihuman20RequestSchema
+>;
+export type Omnihuman20TaskResultJson = z.infer<
+  typeof Omnihuman20TaskResultJsonSchema
 >;
 export type VolcengineVideoToVideoLipSyncRequest = z.input<
   typeof VolcengineVideoToVideoLipSyncRequestSchema

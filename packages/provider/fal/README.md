@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-243 endpoints across 55 groups. Each method mirrors an upstream URL path.
+249 endpoints across 55 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -3034,6 +3034,23 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 </details>
 
 <details>
+<summary><code>GET</code> <b><code>fal.v1.models.analytics</code></b></summary>
+
+<code>GET https://api.fal.ai/v1/models/analytics</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.fal.ai)
+
+```typescript
+const res = await fal.v1.models.analytics({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
 <summary><code>GET</code> <b><code>fal.v1.models.pricing</code></b></summary>
 
 <code>GET https://api.fal.ai/v1/models/pricing</code>
@@ -3095,6 +3112,23 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.v1.models.requests.payloads({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>fal.v1.models.usage</code></b></summary>
+
+<code>GET https://api.fal.ai/v1/models/usage</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://docs.fal.ai)
+
+```typescript
+const res = await fal.v1.models.usage({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -3642,6 +3676,40 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 </details>
 
 <details>
+<summary><code>GET</code> <b><code>fal.v1.serverless.apps.queue</code></b></summary>
+
+<code>GET https://api.fal.ai/v1/serverless/apps/{owner}/{name}/queue</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/docs/platform-apis/v1/serverless/apps/queue)
+
+```typescript
+const res = await fal.v1.serverless.apps.queue({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>fal.v1.serverless.files.list</code></b></summary>
+
+<code>GET https://api.fal.ai/v1/serverless/files/list</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/docs/platform-apis/v1/serverless/files/list)
+
+```typescript
+const res = await fal.v1.serverless.files.list({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
 <summary><code>POST</code> <b><code>fal.v1.serverless.files.uploadLocal</code></b></summary>
 
 <code>POST https://api.fal.ai/v1/serverless/files/file/local/{param}</code>
@@ -3686,6 +3754,23 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.v1.serverless.logs.stream({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>fal.v1.serverless.metrics</code></b></summary>
+
+<code>GET https://api.fal.ai/v1/serverless/metrics</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/docs/platform-apis/v1/serverless/metrics)
+
+```typescript
+const res = await fal.v1.serverless.metrics();
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
@@ -4110,6 +4195,23 @@ Cost tier: <code>prohibitive</code>
 
 ```typescript
 const res = await fal.v1.workflows({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>fal.v1.workflows.get</code></b></summary>
+
+<code>GET https://api.fal.ai/v1/workflows/{username}/{workflow_name}</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/docs/platform-apis/v1/workflows/get)
+
+```typescript
+const res = await fal.v1.workflows.get({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

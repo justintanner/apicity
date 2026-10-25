@@ -1,16 +1,16 @@
 {
   "POST api.v0.generate": {
-    "source": "machgen/happyhorse-1-1-t2v",
+    "source": "machgen/wan-2-2-a14b-t2v",
     "payload": {
-      "model": "HappyHorse-1.1",
+      "model": "Wan2.2-A14B",
       "task_type": "T2V",
       "prompt": "A red paper boat drifts across a calm pond at sunrise.",
       "video_config": {
-        "duration_secs": 3,
-        "height": 720
+        "duration_secs": 5,
+        "height": 480
       }
     },
-    "tier": "prohibitive",
+    "tier": "expensive",
     "runByDefault": false
   }
 }

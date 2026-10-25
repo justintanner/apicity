@@ -648,7 +648,7 @@ upstream never sees or bind the OTP to a hash the real call cannot reproduce.
 
 ## Bundled pricing
 
-MachGen rates are gross USD per second, verified 2026-10-22 against
+MachGen rates are gross USD per second, verified 2026-10-25 against
 https://www.machgen.ai/pricing, before any Generation Credit rebate.
 
 Rates are frozen at `PRICING_AS_OF` (currently `2026-04-30`; individual
@@ -670,7 +670,7 @@ module in `src/pricing/`, bump `PRICING_AS_OF`.
 | `openai`, `anthropic`, `xai`, `kimicoding`, `fireworks`, `alibaba` | `tokens-heuristic+table` | chars/4 ≈ tokens — no upstream call                                                 |
 | `openai` with declared usage                                       | `declared-tokens+table`  | response `usage` counts; required for `gpt-5.6-sol` and `gpt-realtime-2.1`          |
 | `elevenlabs`                                                       | `per-unit-table`         | priced per character                                                                |
-| `machgen`                                                          | `per-unit-table`         | per second of video; H3 graduated pricing and input-video hints                     |
+| `machgen`                                                          | `per-unit-table`         | per second of video by height; duration bands, audio tiers and input-video hints    |
 | `kie`                                                              | `per-unit-table`         | per second of video / per image / per generation; `endpoint` discriminator for Suno |
 | `free`                                                             | `free`                   | always $0                                                                           |
 
@@ -1033,4 +1033,4 @@ MIT — see [LICENSE](LICENSE).
 
 ### MachGen
 
-MachGen is included in bundled pricing and coverage for MiniMax H3, Seedance 2.5/2.0, Wan 3.0, HappyHorse 1.1 and Grok Imagine Video 1.5. Payloads are parsed by `model`, `task_type`, `video_config` and source media. Rates are gross USD per second before Generation Credit. H3 uses graduated pricing above 15 seconds. Pass `costHints.durationSeconds` for Smart duration and `costHints.inputDurationSeconds` for input-video billing. Unknown rates, hidden task references, unpublished H3 1080p and sharpen pricing fail closed.
+MachGen is included in bundled pricing and coverage for every image-to-video model in its models table: Wan 2.2 A14B, LTX 2.3 Pro, Vidu Q3 Turbo, Vidu Q3 Pro, MiniMax H3, MiniMax H3 Turbo, Seedance 2.5, 2.0, 2.0 Fast and 2.0 Mini, Kling 3.0, Vidu Q4 Preview, Vidu Q3 Pro Fast, Wan 3.0, PixVerse V6 and C1, HappyHorse 1.1 and 1.0, and Grok Imagine Video 1.5. Each is priced for its T2V and I2V tasks, including an I2V end frame; R2V is priced for MiniMax H3, Seedance 2.5/2.0, Wan 3.0 and HappyHorse 1.1. Payloads are parsed by `model`, `task_type`, `video_config` and source media. Rates are gross USD per second before Generation Credit. Duration bands bill one band at a time: H3 above 15 seconds, and Vidu Q3 Turbo from 1-5, 6-10 and 11-16 seconds. Kling 3.0 and PixVerse price audio on and off apart, so they need `video_config.audio`. MiniMax H3 Turbo is at its limited-time promotional rate of 0.01 USD/s (list 0.02). Pass `costHints.durationSeconds` for Smart duration and `costHints.inputDurationSeconds` for input-video billing. Unknown rates, hidden task references, unpublished H3 1080p and sharpen pricing fail closed, as do the R2V and input-video tiers of the other models. `tests/fixtures/machgen-evidence/machgen-pricing-2026-10-25.json` maps every pricebook row to the request shapes it prices.

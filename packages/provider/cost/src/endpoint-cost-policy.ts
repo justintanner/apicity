@@ -220,6 +220,12 @@ export const ENDPOINT_COST_POLICIES: readonly EndpointCostPolicy[] = [
     rationale:
       "Metered SMS provider; per-segment messaging charges bill real money",
   },
+  {
+    match: { provider: "machgen" },
+    tier: "expensive",
+    rationale:
+      "Per-second video generation priced per model by computeEstimate before the call; status, billing and asset reads share the provider policy.",
+  },
 
   // ── prohibitive: media generation (dollars per call, request-dependent) ─
   {
@@ -242,12 +248,6 @@ export const ENDPOINT_COST_POLICIES: readonly EndpointCostPolicy[] = [
     rationale:
       "Third-party proxy for Google Flow (Veo) video generation; per-call " +
       "media-generation cost is high and request-dependent",
-  },
-  {
-    match: { provider: "machgen" },
-    tier: "prohibitive",
-    rationale:
-      "Per-second video generation; status and asset reads share the provider policy.",
   },
 
   // ── exact prohibitive overrides inside otherwise-`expensive` providers ──

@@ -1,0 +1,584 @@
+{
+  "capturedAt": "2026-10-25",
+  "source": "Free probes of POST https://api.machgen.ai/api/v0/generate. MachGen rejects an off-grid request with HTTP 400 before accepting it, and a rejected request is never billed (https://www.machgen.ai/docs/rest_api#error-codes). Each probe sent one deliberately invalid value, so the 400 detail lists the allowed values. The lists match the capability contract in the www.machgen.ai Next.js bundle.",
+  "probes": 227,
+  "statuses": {
+    "400": 224,
+    "403": 3
+  },
+  "accepted": 0,
+  "checkOrder": "task type, then height, then aspect_ratio, then duration_secs, then fps, then the source-image rules (end frame, lone end frame, keyframe alignment); Vidu-Q3-Turbo checks duration_secs first, and the image count (0 or 3+) is checked before height",
+  "grids": {
+    "Wan2.2-A14B": {
+      "I2V": {
+        "heights": [480, 720],
+        "durations": [5],
+        "aspectRatios": ["16:9"]
+      },
+      "T2V": {
+        "heights": [480, 720],
+        "durations": [5],
+        "aspectRatios": ["16:9"]
+      }
+    },
+    "LTX-2.3-Pro": {
+      "I2V": {
+        "heights": [1080, 1440, 2160],
+        "durations": [6, 8, 10],
+        "aspectRatios": ["16:9"]
+      },
+      "T2V": {
+        "heights": [1080, 1440, 2160],
+        "durations": [6, 8, 10],
+        "aspectRatios": ["16:9"]
+      }
+    },
+    "Vidu-Q3-Turbo": {
+      "I2V": {
+        "durations": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+        "heights": [540, 720],
+        "aspectRatios": []
+      },
+      "T2V": {
+        "durations": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+        "heights": [540, 720],
+        "aspectRatios": ["16:9", "9:16", "1:1", "4:3"]
+      }
+    },
+    "Vidu-Q3-Pro": {
+      "I2V": {
+        "heights": [540, 720, 1080],
+        "durations": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+        "aspectRatios": []
+      },
+      "T2V": {
+        "heights": [540, 720, 1080],
+        "durations": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+        "aspectRatios": ["16:9", "9:16", "1:1", "4:3"]
+      }
+    },
+    "MiniMax-H3": {
+      "I2V": {
+        "heights": [480, 768, 1080, 1440],
+        "durations": [
+          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+          21, 22, 23, 24, 25, 26, 27, 28, 29, 30
+        ],
+        "aspectRatios": [
+          "adaptive",
+          "16:9",
+          "9:16",
+          "1:1",
+          "4:3",
+          "3:4",
+          "21:9"
+        ]
+      },
+      "T2V": {
+        "heights": [480, 768, 1080, 1440],
+        "durations": [
+          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+          21, 22, 23, 24, 25, 26, 27, 28, 29, 30
+        ],
+        "aspectRatios": ["16:9", "9:16", "1:1", "4:3", "3:4", "21:9"]
+      }
+    },
+    "MiniMax-H3-Turbo": {
+      "I2V": {
+        "heights": [480, 768, 1080],
+        "durations": [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "aspectRatios": [
+          "adaptive",
+          "16:9",
+          "9:16",
+          "1:1",
+          "4:3",
+          "3:4",
+          "21:9"
+        ]
+      },
+      "T2V": {
+        "heights": [480, 768, 1080],
+        "durations": [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "aspectRatios": ["16:9", "9:16", "1:1", "4:3", "3:4", "21:9"]
+      }
+    },
+    "Seedance-2.5": {
+      "I2V": {
+        "heights": [480, 720, 1080],
+        "durations": [
+          -1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+          22, 23, 24, 25, 26, 27, 28, 29, 30
+        ],
+        "aspectRatios": ["adaptive"]
+      },
+      "T2V": {
+        "heights": [480, 720, 1080],
+        "durations": [
+          -1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+          22, 23, 24, 25, 26, 27, 28, 29, 30
+        ],
+        "aspectRatios": [
+          "adaptive",
+          "16:9",
+          "9:16",
+          "1:1",
+          "4:3",
+          "3:4",
+          "21:9"
+        ]
+      }
+    },
+    "Seedance-2.0": {
+      "I2V": {
+        "heights": [480, 720, 1080, 2160],
+        "durations": [-1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "aspectRatios": [
+          "adaptive",
+          "16:9",
+          "9:16",
+          "1:1",
+          "4:3",
+          "3:4",
+          "21:9"
+        ]
+      },
+      "T2V": {
+        "heights": [480, 720, 1080, 2160],
+        "durations": [-1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "aspectRatios": [
+          "adaptive",
+          "16:9",
+          "9:16",
+          "1:1",
+          "4:3",
+          "3:4",
+          "21:9"
+        ]
+      }
+    },
+    "Seedance-2.0-Fast": {
+      "I2V": {
+        "heights": [480, 720],
+        "durations": [-1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "aspectRatios": [
+          "adaptive",
+          "16:9",
+          "9:16",
+          "1:1",
+          "4:3",
+          "3:4",
+          "21:9"
+        ]
+      },
+      "T2V": {
+        "heights": [480, 720],
+        "durations": [-1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "aspectRatios": [
+          "adaptive",
+          "16:9",
+          "9:16",
+          "1:1",
+          "4:3",
+          "3:4",
+          "21:9"
+        ]
+      }
+    },
+    "Seedance-2.0-Mini": {
+      "I2V": {
+        "heights": [480, 720],
+        "durations": [-1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "aspectRatios": [
+          "adaptive",
+          "16:9",
+          "9:16",
+          "1:1",
+          "4:3",
+          "3:4",
+          "21:9"
+        ]
+      },
+      "T2V": {
+        "heights": [480, 720],
+        "durations": [-1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "aspectRatios": [
+          "adaptive",
+          "16:9",
+          "9:16",
+          "1:1",
+          "4:3",
+          "3:4",
+          "21:9"
+        ]
+      }
+    },
+    "Kling-v3": {
+      "I2V": {
+        "heights": [720, 1080, 2160],
+        "durations": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "aspectRatios": []
+      },
+      "T2V": {
+        "heights": [720, 1080, 2160],
+        "durations": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "aspectRatios": ["16:9", "9:16", "1:1"]
+      }
+    },
+    "Kling-o3": {
+      "T2V": {
+        "heights": [720, 1080, 2160],
+        "durations": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+      }
+    },
+    "Vidu-Q4-Preview": {
+      "I2V": {
+        "heights": [540, 720, 1080, 1440, 2160],
+        "durations": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+        "aspectRatios": []
+      }
+    },
+    "Vidu-Q3-Pro-Fast": {
+      "I2V": {
+        "heights": [720, 1080],
+        "durations": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+        "aspectRatios": []
+      }
+    },
+    "Alibaba-Wan-3.0": {
+      "I2V": {
+        "heights": [480, 720, 1080],
+        "durations": [
+          -1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+          20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30
+        ],
+        "aspectRatios": ["adaptive", "16:9", "9:16", "1:1", "4:3", "3:4"]
+      },
+      "T2V": {
+        "heights": [480, 720, 1080],
+        "durations": [
+          -1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+          20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30
+        ],
+        "aspectRatios": ["adaptive", "16:9", "9:16", "1:1", "4:3", "3:4"]
+      }
+    },
+    "Veo-3.1": {
+      "T2V": {
+        "heights": [720, 1080, 2160],
+        "durations": [4, 6, 8]
+      }
+    },
+    "Veo-3.1-Fast": {
+      "T2V": {
+        "heights": [720, 1080, 2160],
+        "durations": [4, 6, 8]
+      }
+    },
+    "Pixverse-V6": {
+      "I2V": {
+        "heights": [360, 540, 720, 1080],
+        "durations": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "aspectRatios": []
+      },
+      "T2V": {
+        "heights": [360, 540, 720, 1080],
+        "durations": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "aspectRatios": ["16:9", "9:16", "1:1", "4:3"]
+      }
+    },
+    "Pixverse-C1": {
+      "I2V": {
+        "heights": [360, 540, 720, 1080],
+        "durations": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "aspectRatios": []
+      },
+      "T2V": {
+        "heights": [360, 540, 720, 1080],
+        "durations": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "aspectRatios": ["16:9", "9:16", "1:1", "4:3"]
+      }
+    },
+    "HappyHorse-1.1": {
+      "I2V": {
+        "heights": [720, 1080],
+        "durations": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "aspectRatios": []
+      },
+      "T2V": {
+        "heights": [720, 1080],
+        "durations": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "aspectRatios": ["16:9", "9:16", "1:1", "4:3", "21:9"]
+      }
+    },
+    "HappyHorse-1.0": {
+      "I2V": {
+        "heights": [720, 1080],
+        "durations": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "aspectRatios": []
+      },
+      "T2V": {
+        "heights": [720, 1080],
+        "durations": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "aspectRatios": ["16:9", "9:16", "1:1", "4:3", "21:9"]
+      }
+    },
+    "Grok-Imagine-Video": {
+      "T2V": {
+        "heights": [480, 720],
+        "durations": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+      }
+    },
+    "Grok-Imagine-Video-1.5": {
+      "I2V": {
+        "heights": [480, 720, 1080],
+        "durations": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "aspectRatios": []
+      }
+    }
+  },
+  "taskTypes": {
+    "LTX-2.3-Pro": ["F2F", "I2V", "T2V"],
+    "Kling-v3": ["I2V", "T2V"],
+    "Kling-o3": ["R2V", "T2V"],
+    "Vidu-Q4-Preview": ["I2V", "R2V"],
+    "Vidu-Q3-Pro-Fast": ["I2V"],
+    "Veo-3.1": ["T2V"],
+    "Grok-Imagine-Video": ["T2V"],
+    "Grok-Imagine-Video-1.5": ["I2V"],
+    "Vidu-Q3": ["R2V"],
+    "Topaz-Video-Precision": ["UPSCALE"]
+  },
+  "rules": [
+    {
+      "rule": "unsupported task type",
+      "utc": "2026-10-25T15:58:22.179Z",
+      "request": {
+        "model": "Grok-Imagine-Video-1.5",
+        "task_type": "T2V",
+        "prompt": "The cat slowly blinks.",
+        "video_config": {
+          "height": 1,
+          "duration_secs": 5
+        }
+      },
+      "status": 400,
+      "detail": "Grok-Imagine-Video-1.5 does not support task_type=T2V; allowed task types: ['I2V']"
+    },
+    {
+      "rule": "height outside the model's grid",
+      "utc": "2026-10-25T15:54:29.368Z",
+      "request": {
+        "model": "LTX-2.3-Pro",
+        "task_type": "I2V",
+        "prompt": "The cat slowly blinks.",
+        "video_config": {
+          "height": 1,
+          "duration_secs": 999
+        },
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg"
+        ]
+      },
+      "status": 400,
+      "detail": "LTX-2.3-Pro does not support I2V height=1; allowed heights: [1080, 1440, 2160]"
+    },
+    {
+      "rule": "duration outside the model's grid",
+      "utc": "2026-10-25T15:56:13.717Z",
+      "request": {
+        "model": "MiniMax-H3-Turbo",
+        "task_type": "I2V",
+        "prompt": "The cat slowly blinks.",
+        "video_config": {
+          "height": 480,
+          "duration_secs": 999
+        },
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg"
+        ]
+      },
+      "status": 400,
+      "detail": "MiniMax-H3-MultiMax does not support I2V duration_secs=999; allowed durations: [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]"
+    },
+    {
+      "rule": "aspect ratio outside the model's grid",
+      "utc": "2026-10-25T16:08:03.992Z",
+      "request": {
+        "model": "Seedance-2.5",
+        "task_type": "I2V",
+        "prompt": "The cat slowly blinks.",
+        "video_config": {
+          "height": 480,
+          "duration_secs": 999,
+          "aspect_ratio": "7:7"
+        },
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg"
+        ]
+      },
+      "status": 400,
+      "detail": "Seedance-2.5 does not support I2V aspect_ratio='7:7'; allowed aspect ratios: ['adaptive']"
+    },
+    {
+      "rule": "aspect ratio not configurable for I2V",
+      "utc": "2026-10-25T16:08:52.664Z",
+      "request": {
+        "model": "Pixverse-V6",
+        "task_type": "I2V",
+        "prompt": "The cat slowly blinks.",
+        "video_config": {
+          "height": 360,
+          "duration_secs": 999,
+          "aspect_ratio": "7:7"
+        },
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg"
+        ]
+      },
+      "status": 400,
+      "detail": "Pixverse-V6 does not support configurable aspect_ratio for I2V"
+    },
+    {
+      "rule": "frame rate outside the model's grid",
+      "utc": "2026-10-25T16:00:07.170Z",
+      "request": {
+        "model": "Pixverse-V6",
+        "task_type": "I2V",
+        "prompt": "The cat slowly blinks.",
+        "video_config": {
+          "height": 360,
+          "duration_secs": 1,
+          "audio": false,
+          "aspect_ratio": "7:7",
+          "fps": 999
+        },
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat1.jpg"
+        ]
+      },
+      "status": 400,
+      "detail": "Pixverse-V6 I2V does not support fps=999; allowed frame rates: [24]"
+    },
+    {
+      "rule": "second image on a model without an end frame",
+      "utc": "2026-10-25T16:00:36.409Z",
+      "request": {
+        "model": "Pixverse-V6",
+        "task_type": "I2V",
+        "prompt": "The cat slowly blinks.",
+        "video_config": {
+          "height": 360,
+          "duration_secs": 1,
+          "audio": false
+        },
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat1.jpg"
+        ]
+      },
+      "status": 400,
+      "detail": "Pixverse-V6 I2V accepts one source image; it does not support a last frame. Use task_type=F2F to pin both ends."
+    },
+    {
+      "rule": "lone end frame on a model that does not declare it",
+      "utc": "2026-10-25T16:00:59.091Z",
+      "request": {
+        "model": "Vidu-Q3-Turbo",
+        "task_type": "I2V",
+        "prompt": "The cat slowly blinks.",
+        "video_config": {
+          "height": 540,
+          "duration_secs": 1
+        },
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg"
+        ],
+        "keyframe_indices": [-1]
+      },
+      "status": 400,
+      "detail": "Vidu-Q3-Turbo I2V does not render towards a lone last frame; send the first frame as image 0."
+    },
+    {
+      "rule": "keyframe_indices not aligned with src_image_urls",
+      "utc": "2026-10-25T16:01:00.843Z",
+      "request": {
+        "model": "Vidu-Q3-Turbo",
+        "task_type": "I2V",
+        "prompt": "The cat slowly blinks.",
+        "video_config": {
+          "height": 540,
+          "duration_secs": 1
+        },
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg"
+        ],
+        "keyframe_indices": [0, -1]
+      },
+      "status": 400,
+      "detail": "keyframe_indices has 2 entries for 1 source images; they must align"
+    },
+    {
+      "rule": "I2V without a source image",
+      "utc": "2026-10-25T16:01:02.498Z",
+      "request": {
+        "model": "Vidu-Q3-Turbo",
+        "task_type": "I2V",
+        "prompt": "The cat slowly blinks.",
+        "video_config": {
+          "height": 540,
+          "duration_secs": 1
+        }
+      },
+      "status": 400,
+      "detail": "Value error, Vidu-Q3-Turbo I2V accepts one source image, or two to pin a start and end frame; got 0"
+    },
+    {
+      "rule": "I2V with three source images",
+      "utc": "2026-10-25T15:59:01.840Z",
+      "request": {
+        "model": "MiniMax-H3-Turbo",
+        "task_type": "I2V",
+        "prompt": "The cat slowly blinks.",
+        "video_config": {
+          "height": 1,
+          "duration_secs": 5
+        },
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat1.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg"
+        ]
+      },
+      "status": 400,
+      "detail": "Value error, I2V accepts at most 2 source images; got 3"
+    },
+    {
+      "rule": "account-gated height (403)",
+      "utc": "2026-10-25T16:05:32.606Z",
+      "request": {
+        "model": "MiniMax-H3",
+        "task_type": "I2V",
+        "prompt": "The cat slowly blinks.",
+        "video_config": {
+          "height": 1080,
+          "duration_secs": 999
+        },
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg"
+        ]
+      },
+      "status": 403,
+      "detail": "MiniMax-H3 at 1080p is not available for your account."
+    }
+  ],
+  "notes": [
+    "MiniMax-H3-Turbo is an alias: MachGen's messages name it MiniMax-H3-MultiMax.",
+    "Wan2.2-A14B resolves to Wan2.2-T2V-A14B for T2V and Wan2.2-I2V-A14B for I2V.",
+    "MiniMax-H3 and MiniMax-H3-Turbo list 1080 among allowed heights, but a 1080p request returns 403 'not available for your account' (the contract marks 1080 a private height) and the pricebook has no 1080p row.",
+    "An I2V request with an end frame validates against the same grid as a single-image I2V request (MiniMax-H3 lists 1-30 s for both).",
+    "MachGen also accepts task_type F2F for end-frame models (LTX-2.3-Pro lists ['F2F', 'I2V', 'T2V']); the docs name I2V with a second image as the documented form.",
+    "The 2026-10-25 contract caps MiniMax-H3 1440p at 15 s (highResMaxDuration), but the grid check lists 1-30 s at 1440p; that cap was not observed in a 400."
+  ]
+}

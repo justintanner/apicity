@@ -29,9 +29,85 @@ import { createMachGen } from "@apicity/machgen";
 const machgen = createMachGen({ apiKey: process.env.MACHGEN_API_KEY! });
 ```
 
+## Video models
+
+Pass a `model` id with a `task_type` it supports. For the ids below,
+`machgen.api.v0.generate.schema` also checks the height, `duration_secs`
+and `aspect_ratio` against the model's grid (`MACHGEN_VIDEO_GRIDS`, which
+holds each T2V grid too) and the I2V frame rules; other ids pass
+unchecked. MachGen answers an off-grid request with HTTP 400 before it
+accepts the task, and does not bill it. The grids were read from those
+400 responses on 2026-10-25. `-1` asks the model for a Smart length.
+
+| Model | T2V | I2V | R2V | I2V frames | I2V heights | I2V seconds | Priced |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `Wan2.2-A14B` | ✓ | ✓ |  |  | 480, 720 | 5 | T2V, I2V |
+| `LTX-2.3-Pro` | ✓ | ✓ |  | start + end | 1080, 1440, 2160 | 6, 8, 10 | T2V, I2V |
+| `Vidu-Q3-Turbo` | ✓ | ✓ | ✓ | start + end | 540, 720 | 1-16 | T2V, I2V |
+| `Vidu-Q3-Pro` | ✓ | ✓ | ✓ | start + end | 540, 720, 1080 | 1-16 | T2V, I2V |
+| `MiniMax-H3` | ✓ | ✓ | ✓ | start + end, or end only | 480, 768, 1080, 1440 | 1-30 | T2V, I2V, R2V |
+| `MiniMax-H3-Turbo` | ✓ | ✓ | ✓ | start + end, or end only | 480, 768, 1080 | 4-15 | T2V, I2V |
+| `Seedance-2.5` | ✓ | ✓ | ✓ | start + end | 480, 720, 1080 | -1, 4-30 | T2V, I2V, R2V |
+| `Seedance-2.0` | ✓ | ✓ | ✓ | start + end | 480, 720, 1080, 2160 | -1, 4-15 | T2V, I2V, R2V |
+| `Seedance-2.0-Fast` | ✓ | ✓ | ✓ | start + end | 480, 720 | -1, 4-15 | T2V, I2V |
+| `Seedance-2.0-Mini` | ✓ | ✓ | ✓ | start + end | 480, 720 | -1, 4-15 | T2V, I2V |
+| `Kling-v3` | ✓ | ✓ |  | start + end | 720, 1080, 2160 | 3-15 | T2V, I2V |
+| `Kling-o3` | ✓ |  | ✓ |  |  |  |  |
+| `Vidu-Q3` |  |  | ✓ |  |  |  |  |
+| `Vidu-Q4-Preview` |  | ✓ | ✓ |  | 540, 720, 1080, 1440, 2160 | 3-16 | I2V |
+| `Vidu-Q3-Pro-Fast` |  | ✓ |  |  | 720, 1080 | 1-16 | I2V |
+| `Alibaba-Wan-3.0` | ✓ | ✓ | ✓ | start + end | 480, 720, 1080 | -1, 2-30 | T2V, I2V, R2V |
+| `Veo-3.1` | ✓ |  |  |  |  |  |  |
+| `Veo-3.1-Fast` | ✓ |  |  |  |  |  |  |
+| `Pixverse-V6` | ✓ | ✓ | ✓ |  | 360, 540, 720, 1080 | 1-15 | T2V, I2V |
+| `Pixverse-C1` | ✓ | ✓ | ✓ |  | 360, 540, 720, 1080 | 1-15 | T2V, I2V |
+| `HappyHorse-1.1` | ✓ | ✓ | ✓ |  | 720, 1080 | 3-15 | T2V, I2V, R2V |
+| `HappyHorse-1.0` | ✓ | ✓ | ✓ |  | 720, 1080 | 3-15 | T2V, I2V |
+| `Grok-Imagine-Video` | ✓ |  |  |  |  |  |  |
+| `Grok-Imagine-Video-1.5` |  | ✓ |  |  | 480, 720, 1080 | 1-15 | I2V |
+
+An I2V request takes one start frame in `src_image_urls`. Where the table
+lists "start + end", entry 1 is the end frame; "end only" means
+`keyframe_indices: [-1]` animates toward a single image used as the end
+frame. MachGen also accepts `task_type: "F2F"` for two-image I2V; the
+schema keeps the documented I2V form. MiniMax-H3 and MiniMax-H3-Turbo list
+1080p, but MachGen answers 403 to accounts without access to it, and the
+pricebook has no 1080p rate. The pricebook's LTX-2.3-Pro 540p and 720p
+tiers are not requestable.
+
+**Priced** lists the task types `computeEstimate` from `@apicity/cost`
+prices per output second. Kling-v3 and the Pixverse models price audio on
+and off apart, so set `video_config.audio`. `api.v0.tasks.billing` returns
+a finished task's actual charge in micro-USD.
+
+```typescript
+import { createMachGen } from "@apicity/machgen";
+
+const machgen = createMachGen({ apiKey: process.env.MACHGEN_API_KEY! });
+
+const task = await machgen.api.v0.generate({
+  model: "MiniMax-H3-Turbo",
+  task_type: "I2V",
+  prompt: "The cat slowly blinks and turns its head toward the window.",
+  video_config: { height: 480, duration_secs: 4 },
+  src_image_urls: [
+    "https://example.com/start.jpg",
+    "https://example.com/end.jpg",
+  ],
+});
+
+let status = await machgen.api.v0.tasks(task.task_id);
+while (status.status === "PENDING" || status.status === "RUNNING") {
+  await new Promise((resolve) => setTimeout(resolve, 10_000));
+  status = await machgen.api.v0.tasks(task.task_id);
+}
+const bill = await machgen.api.v0.tasks.billing(task.task_id);
+console.log(bill.generation_cost_micros / 1e6); // 0.04
+```
+
 ## API Reference
 
-3 endpoints across 3 groups. Each method mirrors an upstream URL path.
+4 endpoints across 3 groups. Each method mirrors an upstream URL path.
 
 ### assets
 
@@ -40,7 +116,7 @@ const machgen = createMachGen({ apiKey: process.env.MACHGEN_API_KEY! });
 
 <code>GET https://api.machgen.ai/api/v0/assets/{taskId}</code>
 
-Cost tier: <code>prohibitive</code>
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://www.machgen.ai/docs/rest_api#check-status-and-download)
 
@@ -59,7 +135,7 @@ Source: [`packages/provider/machgen/src/machgen.ts`](src/machgen.ts)
 
 <code>POST https://api.machgen.ai/api/v0/generate</code>
 
-Cost tier: <code>prohibitive</code>
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://www.machgen.ai/docs/rest_api#submit-a-task)
 
@@ -78,12 +154,29 @@ Source: [`packages/provider/machgen/src/machgen.ts`](src/machgen.ts)
 
 <code>GET https://api.machgen.ai/api/v0/tasks/{taskId}</code>
 
-Cost tier: <code>prohibitive</code>
+Cost tier: <code>expensive</code>
 
 [Upstream docs ↗](https://www.machgen.ai/docs/reference#taskstatusresponse)
 
 ```typescript
 const res = await machgen.api.v0.tasks({ /* ... */ });
+```
+
+Source: [`packages/provider/machgen/src/machgen.ts`](src/machgen.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>machgen.api.v0.tasks.billing</code></b></summary>
+
+<code>GET https://api.machgen.ai/api/v0/tasks/{taskId}/billing</code>
+
+Cost tier: <code>expensive</code>
+
+[Upstream docs ↗](https://www.machgen.ai/docs/rest_api#check-what-a-task-cost)
+
+```typescript
+const res = await machgen.api.v0.tasks.billing({ /* ... */ });
 ```
 
 Source: [`packages/provider/machgen/src/machgen.ts`](src/machgen.ts)

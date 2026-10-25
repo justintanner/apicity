@@ -1,6 +1,7 @@
 provider	dotPath	method	fullUrl	docsUrl
 machgen	api.v0.generate	POST	https://api.machgen.ai/api/v0/generate	https://www.machgen.ai/docs/rest_api#submit-a-task
 machgen	api.v0.tasks	GET	https://api.machgen.ai/api/v0/tasks/{taskId}	https://www.machgen.ai/docs/reference#taskstatusresponse
+machgen	api.v0.tasks.billing	GET	https://api.machgen.ai/api/v0/tasks/{taskId}/billing	https://www.machgen.ai/docs/rest_api#check-what-a-task-cost
 machgen	api.v0.assets	GET	https://api.machgen.ai/api/v0/assets/{taskId}	https://www.machgen.ai/docs/rest_api#check-status-and-download
 fal	klingVideo.o3.standard.imageToVideo	POST	https://fal.run/fal-ai/kling-video/o3/standard/image-to-video	https://fal.ai/models/fal-ai/kling-video/o3/standard/image-to-video/api
 fal	flux2Flex	POST	https://fal.run/fal-ai/flux-2-flex	https://fal.ai/models/fal-ai/flux-2-flex/api

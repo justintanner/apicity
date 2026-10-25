@@ -1,0 +1,5 @@
+{
+  "endpoint": "api.v0.generate",
+  "rule": "does not support I2V height=540",
+  "source": "Recorded 2026-10-25 for ac-fs70lj: MachGen rejects the request with HTTP 400 before accepting it (never billed); one of 227 free probes in tests/fixtures/machgen-evidence/machgen-grids-2026-10-25.json"
+}

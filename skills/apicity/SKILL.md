@@ -451,7 +451,8 @@ apicity thesportsdb v1.eventsnext --data '{"id":"133604"}'
 
 Video generation: `apicity machgen api.v0.generate --data-file request.json`.
 Poll `apicity machgen api.v0.tasks --taskId <id>`, then download with
-`apicity machgen api.v0.assets --taskId <id>`. Generation bills per second.
+`apicity machgen api.v0.assets --taskId <id>`. Generation bills per second;
+`apicity machgen api.v0.tasks.billing --taskId <id>` reads the final charge.
 
 ## Credentials and configuration
 

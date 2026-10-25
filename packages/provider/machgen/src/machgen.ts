@@ -5,6 +5,7 @@ import type {
   MachGenProvider,
   MachGenGenerateRequest,
   MachGenGenerateResponse,
+  MachGenTaskBillingResponse,
   MachGenTaskStatusResponse,
 } from "./types";
 import { MachGenGenerateRequestSchema } from "./zod";
@@ -97,13 +98,26 @@ export function createMachGen(options: MachGenOptions = {}): MachGenProvider {
         ),
         // GET https://api.machgen.ai/api/v0/tasks/{taskId}
         // Docs: https://www.machgen.ai/docs/reference#taskstatusresponse
-        tasks: async (taskId: string, signal?: AbortSignal) =>
-          request<MachGenTaskStatusResponse>(
-            "GET",
-            `/api/v0/tasks/${encodeURIComponent(taskId)}`,
-            undefined,
-            signal
-          ),
+        tasks: Object.assign(
+          async (taskId: string, signal?: AbortSignal) =>
+            request<MachGenTaskStatusResponse>(
+              "GET",
+              `/api/v0/tasks/${encodeURIComponent(taskId)}`,
+              undefined,
+              signal
+            ),
+          {
+            // GET https://api.machgen.ai/api/v0/tasks/{taskId}/billing
+            // Docs: https://www.machgen.ai/docs/rest_api#check-what-a-task-cost
+            billing: async (taskId: string, signal?: AbortSignal) =>
+              request<MachGenTaskBillingResponse>(
+                "GET",
+                `/api/v0/tasks/${encodeURIComponent(taskId)}/billing`,
+                undefined,
+                signal
+              ),
+          }
+        ),
         // GET https://api.machgen.ai/api/v0/assets/{taskId}
         // Docs: https://www.machgen.ai/docs/rest_api#check-status-and-download
         assets: async (taskId: string, signal?: AbortSignal) =>

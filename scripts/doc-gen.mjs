@@ -16,6 +16,7 @@
  * matches no generated endpoint.
  */
 
+import { spawnSync } from "node:child_process";
 import fs from "node:fs/promises";
 import fsSync from "node:fs";
 import path from "node:path";
@@ -4091,6 +4092,21 @@ function renderTheSportsDBPlayerExample() {
   ].join("\n");
 }
 
+// The MachGen model matrix, rendered from the provider's grids and the
+// bundled @apicity/cost rates by a tsx bridge (scripts/lib/machgen-model-matrix.ts).
+function renderMachgenVideoModels() {
+  const script = path.join(__dirname, "lib", "machgen-model-matrix.ts");
+  const result = spawnSync(process.execPath, ["--import", "tsx", script], {
+    cwd: REPO_ROOT,
+    encoding: "utf8",
+  });
+  if (result.status !== 0) {
+    const detail = result.stderr || result.stdout || "no output";
+    throw new Error(`machgen model matrix failed:\n${detail}`);
+  }
+  return result.stdout;
+}
+
 function renderOpenF1Example() {
   return [
     "## REST Examples",
@@ -4629,6 +4645,10 @@ async function generateReadme(providerDir, providerName, endpoints) {
 
   if (providerName === "openf1") {
     sections.push(renderOpenF1Example());
+  }
+
+  if (providerName === "machgen") {
+    sections.push(renderMachgenVideoModels());
   }
 
   if (providerName === "simplefunctions") {

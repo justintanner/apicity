@@ -8,4 +8,17 @@ describe("MachGen seedance-2-0-mini", () => {
       setupPolly("machgen/seedance-2-0-mini-i2v")
     );
   }, 2000000);
+  it("generates R2V", async () => {
+    await recordMachgen(12, "R2V", () =>
+      setupPolly("machgen/seedance-2-0-mini-r2v")
+    );
+  }, 2000000);
+  it("bills R2V with a reference video on input plus output seconds", async () => {
+    await recordMachgen(
+      12,
+      "R2V",
+      () => setupPolly("machgen/seedance-2-0-mini-r2v-video"),
+      { video: {} }
+    );
+  }, 2000000);
 });

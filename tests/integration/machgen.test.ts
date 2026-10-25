@@ -5,6 +5,7 @@ import {
   MachGenError,
   MACHGEN_VIDEO_GRIDS,
   MACHGEN_VIDEO_MODEL_TASK_TYPES,
+  MACHGEN_VIDEO_UPSCALE,
   MachGenGenerateRequestSchema,
 } from "@apicity/machgen";
 import { setupPolly, teardownPolly } from "../harness";
@@ -12,6 +13,8 @@ import {
   machgenPayload,
   MACHGEN_CASES,
   MACHGEN_RECORDED,
+  MACHGEN_REF_VIDEO,
+  MACHGEN_UPSCALE_SOURCE,
 } from "../machgen-helpers";
 
 // Allowed values copied from MachGen's 400 responses on 2026-10-25.
@@ -31,6 +34,7 @@ const evidence = JSON.parse(
     >
   >;
   taskTypes: Record<string, string[]>;
+  upscale: Record<string, { heights: number[]; engines?: string[] }>;
 };
 
 const issues = (overrides: Record<string, unknown>, index = 0) => {
@@ -52,7 +56,7 @@ describe("MachGen", () => {
       "LTX-2.3-Pro": ["T2V", "I2V"],
       "Vidu-Q3-Turbo": ["T2V", "I2V", "R2V"],
       "Vidu-Q3-Pro": ["T2V", "I2V", "R2V"],
-      "MiniMax-H3": ["T2V", "I2V", "R2V"],
+      "MiniMax-H3": ["T2V", "I2V", "R2V", "UPSCALE"],
       "MiniMax-H3-Turbo": ["T2V", "I2V", "R2V"],
       "Seedance-2.5": ["T2V", "I2V", "R2V"],
       "Seedance-2.0": ["T2V", "I2V", "R2V"],
@@ -72,6 +76,10 @@ describe("MachGen", () => {
       "HappyHorse-1.0": ["T2V", "I2V", "R2V"],
       "Grok-Imagine-Video": ["T2V"],
       "Grok-Imagine-Video-1.5": ["I2V"],
+      "Topaz-Video-Precision": ["UPSCALE"],
+      "Topaz-Video-Precision-Animation": ["UPSCALE"],
+      "Topaz-Video-Generative": ["UPSCALE"],
+      "Topaz-Video-Generative-Fast": ["UPSCALE"],
     });
     const i2v = Object.entries(MACHGEN_VIDEO_MODEL_TASK_TYPES)
       .filter(([, tasks]) => (tasks as readonly string[]).includes("I2V"))
@@ -86,7 +94,7 @@ describe("MachGen", () => {
       ).toEqual(tasks.filter((t) => t !== "F2F").sort());
     }
   });
-  it("pins every T2V and I2V grid to MachGen's own 400 responses", () => {
+  it("pins every T2V, I2V and R2V grid to MachGen's own 400 responses", () => {
     expect(Object.keys(MACHGEN_VIDEO_GRIDS).sort()).toEqual(
       Object.keys(evidence.grids).sort()
     );
@@ -119,6 +127,14 @@ describe("MachGen", () => {
       .filter(([, grid]) => grid.I2V?.loneEndFrame)
       .map(([model]) => model);
     expect(loneEndFrame).toEqual(["MiniMax-H3", "MiniMax-H3-Turbo"]);
+    const r2v = Object.entries(MACHGEN_VIDEO_MODEL_TASK_TYPES)
+      .filter(([, tasks]) => (tasks as readonly string[]).includes("R2V"))
+      .map(([model]) => model);
+    expect(r2v).toHaveLength(16);
+    for (const model of r2v)
+      expect(MACHGEN_VIDEO_GRIDS[model]?.R2V, model).toBeDefined();
+    // Upscale tiers and engines from the quote's 400s.
+    expect(MACHGEN_VIDEO_UPSCALE).toEqual(evidence.upscale);
   });
   it("accepts every recorded payload", () => {
     for (const [i, task, variant] of MACHGEN_RECORDED)
@@ -130,11 +146,12 @@ describe("MachGen", () => {
     // Every case's model accepts its other declared tasks too.
     for (const [i, [, model]] of MACHGEN_CASES.entries())
       for (const task of MACHGEN_VIDEO_MODEL_TASK_TYPES[model])
-        expect(
-          MachGenGenerateRequestSchema.safeParse(machgenPayload(i, task))
-            .success,
-          `${model} ${task}`
-        ).toBe(true);
+        if (task !== "UPSCALE")
+          expect(
+            MachGenGenerateRequestSchema.safeParse(machgenPayload(i, task))
+              .success,
+            `${model} ${task}`
+          ).toBe(true);
   });
   it("restates MachGen's submit-time 400 rules", () => {
     const image = machgenPayload(0, "I2V").src_image_urls![0]!;
@@ -198,6 +215,163 @@ describe("MachGen", () => {
     ]);
     expect(issues({ src_image_urls: undefined })).toEqual([
       "src_image_urls: MiniMax-H3 I2V accepts one source image, or two to pin a start and end frame; got 0",
+    ]);
+  });
+  it("restates MachGen's R2V and UPSCALE rules", () => {
+    const image = machgenPayload(0, "I2V").src_image_urls![0]!;
+    const audio = "https://example.com/voice.mp3";
+    const r2v = (overrides: Record<string, unknown>, index = 0) => {
+      const result = MachGenGenerateRequestSchema.safeParse({
+        ...machgenPayload(index, "R2V"),
+        ...overrides,
+      });
+      return result.success
+        ? []
+        : result.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`);
+    };
+    // Pixverse-V6 (case 16) takes up to three images and nothing else.
+    expect(r2v({ src_image_urls: [image, image, image, image] }, 16)).toEqual([
+      "src_image_urls: Pixverse-V6 R2V accepts at most 3 reference images; got 4",
+    ]);
+    expect(r2v({ src_video_urls: [MACHGEN_REF_VIDEO] }, 16)).toEqual([
+      "src_video_urls: Pixverse-V6 R2V accepts at most 0 reference videos; got 1",
+    ]);
+    expect(r2v({ src_audio_urls: [audio] }, 16)).toEqual([
+      "src_audio_urls: Pixverse-V6 R2V accepts at most 0 reference audio clips; got 1",
+    ]);
+    // Seedance-2.0-Mini (case 12).
+    expect(
+      r2v(
+        {
+          src_image_urls: Array(9).fill(image),
+          src_video_urls: Array(3).fill(MACHGEN_REF_VIDEO),
+          src_audio_urls: [audio],
+        },
+        12
+      )
+    ).toEqual([
+      "src_image_urls: Seedance-2.0-Mini R2V accepts at most 12 reference files; got 13",
+    ]);
+    expect(
+      r2v({ src_image_urls: undefined, src_audio_urls: [audio] }, 12)
+    ).toEqual([
+      "src_audio_urls: Seedance-2.0-Mini R2V audio references require at least one image or video reference",
+    ]);
+    expect(
+      r2v(
+        {
+          src_image_urls: undefined,
+          src_video_urls: [MACHGEN_REF_VIDEO],
+          reference_video_start_secs: [1],
+        },
+        12
+      )
+    ).toEqual([
+      "reference_video_start_secs: Seedance-2.0-Mini R2V reads every reference video from its start; it does not support reference_video_start_secs",
+    ]);
+    expect(
+      r2v(
+        {
+          src_video_urls: [MACHGEN_REF_VIDEO],
+          reference_video_operation: "edit",
+        },
+        12
+      )
+    ).toEqual([
+      "reference_video_operation: Seedance-2.0-Mini R2V does not support reference_video_operation='edit'; allowed operations: reference",
+    ]);
+    // MiniMax-H3 (case 0) reads from an offset and takes audio alone.
+    expect(
+      r2v({
+        src_image_urls: undefined,
+        src_video_urls: [MACHGEN_REF_VIDEO],
+        reference_video_start_secs: [0, 0],
+      })
+    ).toEqual([
+      "reference_video_start_secs: reference_video_start_secs has 2 entries for 1 reference videos; they must align",
+    ]);
+    expect(
+      r2v({
+        src_video_urls: [MACHGEN_REF_VIDEO],
+        reference_video_start_secs: [1],
+      })
+    ).toEqual([]);
+    expect(r2v({ src_image_urls: undefined, src_audio_urls: [audio] })).toEqual(
+      []
+    );
+    expect(r2v({ src_video_urls: ["ftp://example.com/clip.mp4"] })).toEqual([
+      "src_video_urls.0: src_video_urls takes public http(s) URLs; reference a MachGen output with src_task_ids",
+    ]);
+    // An edit matches its source's length, so duration_secs is not checked.
+    expect(
+      r2v(
+        {
+          src_image_urls: undefined,
+          src_video_urls: [MACHGEN_REF_VIDEO],
+          reference_video_operation: "edit",
+          video_config: { height: 480, duration_secs: 999 },
+        },
+        1
+      )
+    ).toEqual([]);
+    expect(
+      r2v(
+        {
+          src_video_urls: [MACHGEN_REF_VIDEO],
+          subject_to_image_ids: { cat: [0] },
+          subject_to_video_ids: { cat: [0] },
+        },
+        2
+      )
+    ).toEqual([
+      "subject_to_video_ids.cat: subject cat appears in both subject_to_image_ids and subject_to_video_ids; a name may appear in only one map",
+    ]);
+    expect(r2v({ subject_to_image_ids: { cat: [3] } }, 2)).toEqual([
+      "subject_to_image_ids.cat: subject_to_image_ids cat points at index 3, but there are 1 references",
+    ]);
+    const upscale = (overrides: Record<string, unknown>) => {
+      const result = MachGenGenerateRequestSchema.safeParse({
+        prompt: "",
+        model: "Topaz-Video-Precision",
+        task_type: "UPSCALE",
+        src_task_ids: [MACHGEN_UPSCALE_SOURCE],
+        video_config: { height: 1080, duration_secs: 4 },
+        ...overrides,
+      });
+      return result.success
+        ? []
+        : result.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`);
+    };
+    expect(upscale({})).toEqual([]);
+    expect(upscale({ src_task_ids: undefined })).toEqual([
+      "src_task_ids: a source video or image is required for UPSCALE",
+    ]);
+    expect(upscale({ video_config: { height: 1, duration_secs: 4 } })).toEqual([
+      "video_config.height: Topaz-Video-Precision does not support UPSCALE height=1; allowed heights: 1080, 1440, 2160, 4320",
+    ]);
+    expect(upscale({ upscale_config: { engine: "starlight-hq" } })).toEqual([
+      "upscale_config.engine: Topaz-Video-Precision does not support UPSCALE engine=starlight-hq; allowed engines: artemis-hq, artemis-lq, artemis-mq, gaia-cg, gaia-hq, proteus",
+    ]);
+    // Topaz's tuning knobs pass through untouched.
+    expect(
+      MachGenGenerateRequestSchema.parse({
+        prompt: "",
+        model: "Topaz-Video-Precision",
+        task_type: "UPSCALE",
+        src_task_ids: [MACHGEN_UPSCALE_SOURCE],
+        upscale_config: { engine: "proteus", details: 0.2 },
+        video_config: { height: 1080, duration_secs: 4 },
+      }).upscale_config
+    ).toEqual({ engine: "proteus", details: 0.2 });
+    expect(upscale({ model: "Pixverse-V6" })).toEqual([
+      "task_type: Pixverse-V6 does not support task_type=UPSCALE; allowed task types: T2V, I2V, R2V",
+    ]);
+    expect(
+      issues({
+        video_config: { height: 480, duration_secs: 1, num_frames: 22 },
+      })
+    ).toEqual([
+      "video_config: set exactly one of duration_secs and num_frames",
     ]);
   });
   it("keeps video task types closed and model aliases grammar-bound", () => {

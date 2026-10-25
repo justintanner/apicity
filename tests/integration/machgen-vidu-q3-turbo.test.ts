@@ -16,4 +16,9 @@ describe("MachGen vidu-q3-turbo", () => {
       { durationSecs: 6 }
     );
   }, 2000000);
+  it("generates R2V", async () => {
+    await recordMachgen(9, "R2V", () =>
+      setupPolly("machgen/vidu-q3-turbo-r2v")
+    );
+  }, 2000000);
 });

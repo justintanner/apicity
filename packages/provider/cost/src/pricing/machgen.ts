@@ -4,24 +4,25 @@ import { asNumber, asObject, hintSeconds, hintInputSeconds } from "./helpers";
 
 // MachGen pricebook snapshot, 2026-10-25. Gross USD, before Generation Credit.
 // tests/fixtures/machgen-evidence/machgen-pricing-2026-10-25.json maps each
-// pricebook row to the request shapes priced here. Each machgen replay test
-// asserts its recorded billing receipt equals the estimate.
+// pricebook row to the request shapes priced here, and
+// machgen-pricebook-2026-10-25.json holds the exact micro-USD rates. Each
+// machgen replay test asserts its recorded billing receipt equals the estimate.
 const source = { url: "https://www.machgen.ai/pricing", asOf: "2026-10-25" };
 const config = (p: Record<string, unknown>) => asObject(p.video_config) ?? {};
 const has = (p: Record<string, unknown>, key: string) =>
   Array.isArray(p[key]) && (p[key] as unknown[]).length > 0;
+// R2V bills the seconds read from each reference video on top of the output:
+// what remains after reference_video_start_secs "is what is billed" (docs).
+// Receipts confirm it on Seedance 2.5, 2.0 Fast and 2.0 Mini, MiniMax-H3 and
+// H3-Turbo, and Wan 3.0, whose single rate covers both (ac-ks4no2).
 const inputVideo = (p: Record<string, unknown>) =>
-  has(p, "src_video_urls") &&
-  (p.model === "Seedance-2.5" ||
-    p.model === "Seedance-2.0" ||
-    (p.model === "MiniMax-H3" && p.task_type === "R2V"));
+  has(p, "src_video_urls") && p.task_type === "R2V";
 
-// Task types priced per model. R2V and the input-video tiers of the models
-// added on 2026-10-25 belong to the video-to-video catalog.
+// Task types priced per model.
 const ALL = ["T2V", "I2V", "R2V"];
 const T2V_I2V = ["T2V", "I2V"];
 const PRICED_TASKS: Record<string, readonly string[]> = {
-  "MiniMax-H3": ALL,
+  "MiniMax-H3": [...ALL, "UPSCALE"],
   "Seedance-2.5": ALL,
   "Seedance-2.0": ALL,
   "Alibaba-Wan-3.0": ALL,
@@ -29,22 +30,36 @@ const PRICED_TASKS: Record<string, readonly string[]> = {
   "Grok-Imagine-Video-1.5": ["I2V"],
   "Wan2.2-A14B": T2V_I2V,
   "LTX-2.3-Pro": T2V_I2V,
-  "Vidu-Q3-Turbo": T2V_I2V,
-  "Vidu-Q3-Pro": T2V_I2V,
-  "MiniMax-H3-Turbo": T2V_I2V,
-  "Seedance-2.0-Fast": T2V_I2V,
-  "Seedance-2.0-Mini": T2V_I2V,
+  "Vidu-Q3-Turbo": ALL,
+  "Vidu-Q3-Pro": ALL,
+  "MiniMax-H3-Turbo": ALL,
+  "Seedance-2.0-Fast": ALL,
+  "Seedance-2.0-Mini": ALL,
   "Kling-v3": T2V_I2V,
-  "Vidu-Q4-Preview": ["I2V"],
+  "Kling-o3": ["T2V", "R2V"],
+  "Vidu-Q3": ["R2V"],
+  "Vidu-Q4-Preview": ["I2V", "R2V"],
   "Vidu-Q3-Pro-Fast": ["I2V"],
-  "Pixverse-V6": T2V_I2V,
-  "Pixverse-C1": T2V_I2V,
-  "HappyHorse-1.0": T2V_I2V,
+  "Pixverse-V6": ALL,
+  "Pixverse-C1": ALL,
+  "HappyHorse-1.0": ALL,
 };
 const pricedTask = (p: Record<string, unknown>) =>
   PRICED_TASKS[String(p.model)]?.includes(String(p.task_type)) === true;
 // Models with separate audio-on and audio-off rates and no published default.
-const AUDIO_PRICED = new Set(["Kling-v3", "Pixverse-V6", "Pixverse-C1"]);
+const AUDIO_PRICED = new Set([
+  "Kling-v3",
+  "Kling-o3",
+  "Pixverse-V6",
+  "Pixverse-C1",
+]);
+const videoCount = (p: Record<string, unknown>) =>
+  Array.isArray(p.src_video_urls) ? p.src_video_urls.length : 0;
+// An edit renders the primary reference clip's length: a 4 s source billed
+// (4 + 4) x 0.06 USD on Seedance-2.5 480p (ac-ks4no2 receipt).
+const editSeconds = (p: Record<string, unknown>, hints?: CostHints) =>
+  hintSeconds(hints) ??
+  (videoCount(p) === 1 ? hintInputSeconds(hints) : undefined);
 const audioUnset = (p: Record<string, unknown>) =>
   AUDIO_PRICED.has(String(p.model)) && typeof config(p).audio !== "boolean";
 
@@ -52,6 +67,7 @@ function outputSeconds(
   p: Record<string, unknown>,
   hints?: CostHints
 ): number | undefined {
+  if (p.reference_video_operation === "edit") return editSeconds(p, hints);
   const c = config(p);
   const duration = asNumber(c.duration_secs);
   if (duration === -1) return hintSeconds(hints);
@@ -69,12 +85,20 @@ function outputSeconds(
   return Math.ceil(snapped / 24 - 0.5);
 }
 
+// An upscale renders its source's length, and MiniMax-H3, the one upscaler
+// priced here, bills it on input plus output seconds.
+function upscaleSeconds(hints?: CostHints): number | undefined {
+  const source = hintInputSeconds(hints);
+  return source === undefined ? undefined : 2 * source;
+}
+
 function seconds(
   p: Record<string, unknown>,
   hints?: CostHints
 ): number | undefined {
-  if (has(p, "src_task_ids")) return undefined;
   if (!pricedTask(p)) return undefined;
+  if (p.task_type === "UPSCALE") return upscaleSeconds(hints);
+  if (has(p, "src_task_ids")) return undefined;
   if (p.model === "MiniMax-H3" && config(p).sharpen === true) return undefined;
   if (audioUnset(p)) return undefined;
   const out = outputSeconds(p, hints);
@@ -84,14 +108,27 @@ function seconds(
   return input === undefined ? undefined : out + input;
 }
 function warn(p: Record<string, unknown>, hints?: CostHints): string[] {
-  if (has(p, "src_task_ids"))
-    return [
-      "MachGen src_task_ids hides the input type and billed seconds; an exact estimate is unavailable.",
-    ];
   const tasks = PRICED_TASKS[String(p.model)];
   if (tasks && !pricedTask(p))
     return [
       `@apicity/cost prices MachGen ${String(p.model)} for ${tasks.join(", ")} only.`,
+    ];
+  if (p.task_type === "UPSCALE")
+    return hintInputSeconds(hints) === undefined
+      ? [
+          "MachGen bills an upscale by its source's length; pass costHints.inputDurationSeconds.",
+        ]
+      : [];
+  if (has(p, "src_task_ids"))
+    return [
+      "MachGen src_task_ids hides the input type and billed seconds; an exact estimate is unavailable.",
+    ];
+  if (
+    p.reference_video_operation === "edit" &&
+    editSeconds(p, hints) === undefined
+  )
+    return [
+      "MachGen renders an edit at its source's length; pass costHints.inputDurationSeconds for one reference video, or costHints.durationSeconds.",
     ];
   if (p.model === "MiniMax-H3" && config(p).sharpen === true)
     return ["MachGen has not published the sharpen surcharge."];
@@ -182,6 +219,7 @@ const graduated = (
 // An I2V request with an end frame bills the Image to Video rate, not the
 // Frame to Frame one: 2 s at 480p billed 70000 micros (ac-fs70lj receipt).
 const h3Mode = (p: Record<string, unknown>): string | undefined => {
+  if (p.task_type === "UPSCALE") return "upscale";
   if (p.task_type === "R2V")
     return has(p, "src_video_urls") ? "r2v-video" : "r2v-f2f";
   if (p.task_type === "I2V" || p.task_type === "T2V") return "t2v-i2v";
@@ -214,17 +252,17 @@ for (const [mode, normal, adapter, extra, adapterExtra] of [
       h3ExtraRates[`${mode}|adapter|${h}`] = adapterExtra[i]!;
   }
 }
+// 2K regeneration of the model's own 768p outputs, on input plus output seconds.
+h3Rates["upscale|1440"] = 0.05;
+const h3Flat = (p: Record<string, unknown>) =>
+  h3Mode(p) === "r2v-video" || h3Mode(p) === "upscale";
 export const machgen: Record<string, ModelPricing> = {
   "MiniMax-H3": {
     kind: "perUnit",
     unit: "seconds",
     units: (p, hints) => {
       const s = seconds(p, hints);
-      return s === undefined
-        ? undefined
-        : h3Mode(p) === "r2v-video"
-          ? s
-          : Math.min(s, 15);
+      return s === undefined ? undefined : h3Flat(p) ? s : Math.min(s, 15);
     },
     select: [
       { name: "mode", pick: h3Mode, required: true },
@@ -235,7 +273,7 @@ export const machgen: Record<string, ModelPricing> = {
     extra: (p, hints) => {
       const s = seconds(p, hints);
       if (s === undefined) return undefined;
-      if (h3Mode(p) === "r2v-video" || s <= 15) return 0;
+      if (h3Flat(p) || s <= 15) return 0;
       const key = [h3Mode(p), p.adapter ? "adapter" : undefined, height.pick(p)]
         .filter(Boolean)
         .join("|");
@@ -289,10 +327,35 @@ export const machgen: Record<string, ModelPricing> = {
     ],
   }),
   "Vidu-Q3-Pro": flat({ "540": 0.053, "720": 0.118, "1080": 0.142 }),
-  // Limited-time promotional rate; the list price is 0.02 USD/s.
-  "MiniMax-H3-Turbo": flat({ "480": 0.01, "768": 0.01 }),
-  "Seedance-2.0-Fast": flat({ "480": 0.05, "720": 0.12 }),
-  "Seedance-2.0-Mini": flat({ "480": 0.033, "720": 0.08 }),
+  // Promotional rate until 2026-11-01T06:59Z (the pricebook's
+  // discount_ends_at); the list price is 0.02 USD/s.
+  "MiniMax-H3-Turbo": flat(
+    {
+      "no-video|480": 0.01,
+      "no-video|768": 0.01,
+      "video|480": 0.01,
+      "video|768": 0.01,
+    },
+    [videoInput, height]
+  ),
+  "Seedance-2.0-Fast": flat(
+    {
+      "no-video|480": 0.05,
+      "no-video|720": 0.12,
+      "video|480": 0.03,
+      "video|720": 0.07,
+    },
+    [videoInput, height]
+  ),
+  "Seedance-2.0-Mini": flat(
+    {
+      "no-video|480": 0.033,
+      "no-video|720": 0.08,
+      "video|480": 0.02,
+      "video|720": 0.045,
+    },
+    [videoInput, height]
+  ),
   "Kling-v3": flat(
     {
       "audio|720": 0.119,
@@ -339,4 +402,16 @@ export const machgen: Record<string, ModelPricing> = {
     [audio, height]
   ),
   "HappyHorse-1.0": flat({ "720": 0.132, "1080": 0.264 }),
+  "Kling-o3": flat(
+    {
+      "audio|720": 0.106,
+      "audio|1080": 0.132,
+      "audio|2160": 0.396,
+      "no-audio|720": 0.08,
+      "no-audio|1080": 0.106,
+      "no-audio|2160": 0.396,
+    },
+    [audio, height]
+  ),
+  "Vidu-Q3": flat({ "540": 0.042, "720": 0.071, "1080": 0.089 }),
 };

@@ -11,12 +11,19 @@ export type {
   MachGenTasksMethod,
   MachGenTaskBillingResponse,
   MachGenTaskStatusResponse,
+  MachGenUpscaleConfig,
   MachGenVideoConfig,
 } from "./types";
-export type { MachGenVideoGrid, MachGenVideoModel } from "./zod";
+export type {
+  MachGenUpscaleGrid,
+  MachGenVideoGrid,
+  MachGenVideoModel,
+} from "./zod";
 export {
   MACHGEN_VIDEO_MODEL_TASK_TYPES,
   MACHGEN_VIDEO_GRIDS,
+  MACHGEN_VIDEO_UPSCALE,
+  MachGenUpscaleConfigSchema,
   MachGenModelAliasSchema,
   MachGenVideoConfigSchema,
   MachGenGenerateRequestSchema,

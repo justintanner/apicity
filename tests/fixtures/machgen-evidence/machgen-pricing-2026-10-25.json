@@ -24,8 +24,11 @@
     "MiniMax H3 Turbo is at a limited-time promotional rate: 0.01 USD/s is billed now, 0.02 USD/s is the struck-through list price. The JSON-LD sku is MiniMax-H3-MultiMax; the row's label and the models table give the API id MiniMax-H3-Turbo.",
     "LTX 2.3 Pro's 540p and 720p tiers are on the pricebook, but the API accepts only heights 1080, 1440 and 2160 (machgen-grids-2026-10-25.json).",
     "Kling Video 4.0 is on the pricebook (JSON-LD sku Kling-v4) and pricing.txt, but not in the models table; the capability contract marks it private, so it is not priced here.",
+    "Rates were cross-checked against GET https://api.machgen.ai/api/v0/billing/pricebook/public (machgen-pricebook-2026-10-25.json): 165 of 167 rows match exactly; the other two are the MiniMax H3 480p 16-30 s display rounding above.",
+    "Input-video rows bill input plus output seconds; the input is what MachGen reads after reference_video_start_secs (MiniMax-H3-Turbo: a 4 s clip read from 1 s with a 4 s output billed 70000 micros = 7 x 0.01). A model without input-video rows bills its one rate on both: Alibaba-Wan-3.0 at 480p, a 4 s reference and 2 s out, billed 294000 micros = 6 x 0.049. An edit renders its source's length (Seedance-2.5: 4 s source, 480000 micros = 8 x 0.06). Audio references do not bill (MiniMax-H3: audio-only 1 s, 50000 micros).",
+    "MiniMax H3's upscale bills input plus output seconds, and its output runs the source's length: a 5 s 768p source upscaled to 1440p billed 500000 micros = 10 x 0.05.",
     "MiniMax H3 bills an I2V request with an end frame at its Image to Video rate: a 2 s 480p request with two src_image_urls billed 70000 micros (0.035 USD/s), not the Reference to Video / Frame to Frame rate of 0.05 USD/s (tests/recordings/machgen_3663587242/minimax-h3-i2v-end-frame-2s_*). The Frame to Frame rows are priced here for R2V only.",
-    "Every model with duration bands, audio tiers or an alias was checked against a billed receipt: 22 recorded 2026-10-25 tasks billed exactly their estimate (tests/machgen-helpers.ts MACHGEN_RECORDED)."
+    "Every model with duration bands, audio tiers or an alias, and every R2V and UPSCALE price added for ac-ks4no2, was checked against a billed receipt: 43 tasks recorded on 2026-10-25 billed exactly their estimate (22 for ac-fs70lj; 21 for ac-ks4no2, in tests/machgen-helpers.ts MACHGEN_RECORDED plus the MiniMax-H3 upscale and its source), and the ac-ks4no2 Topaz upscale billed exactly MachGen's quote."
   ],
   "models": [
     {
@@ -358,7 +361,7 @@
       "seconds": null,
       "usdPerSecond": 0.05,
       "example": "($0.25 / 5s clip)",
-      "prices": ["T2V", "I2V", "I2V+end-frame"]
+      "prices": ["T2V", "I2V", "I2V+end-frame", "R2V"]
     },
     {
       "display": "Seedance 2.0 Fast",
@@ -370,7 +373,7 @@
       "seconds": null,
       "usdPerSecond": 0.12,
       "example": "($0.60 / 5s clip)",
-      "prices": ["T2V", "I2V", "I2V+end-frame"]
+      "prices": ["T2V", "I2V", "I2V+end-frame", "R2V"]
     },
     {
       "display": "Seedance 2.0 Fast",
@@ -383,7 +386,7 @@
       "usdPerSecond": 0.03,
       "billing": "billed on input + output seconds",
       "example": "($0.30 / 5s + 5s input)",
-      "unpriced": "ac-ks4no2 (video-to-video catalog) prices input-video, upscale and R2V tiers"
+      "prices": ["R2V+input-video"]
     },
     {
       "display": "Seedance 2.0 Fast",
@@ -396,7 +399,7 @@
       "usdPerSecond": 0.07,
       "billing": "billed on input + output seconds",
       "example": "($0.70 / 5s + 5s input)",
-      "unpriced": "ac-ks4no2 (video-to-video catalog) prices input-video, upscale and R2V tiers"
+      "prices": ["R2V+input-video"]
     },
     {
       "display": "Seedance 2.0 Mini",
@@ -408,7 +411,7 @@
       "seconds": null,
       "usdPerSecond": 0.033,
       "example": "($0.165 / 5s clip)",
-      "prices": ["T2V", "I2V", "I2V+end-frame"]
+      "prices": ["T2V", "I2V", "I2V+end-frame", "R2V"]
     },
     {
       "display": "Seedance 2.0 Mini",
@@ -420,7 +423,7 @@
       "seconds": null,
       "usdPerSecond": 0.08,
       "example": "($0.40 / 5s clip)",
-      "prices": ["T2V", "I2V", "I2V+end-frame"]
+      "prices": ["T2V", "I2V", "I2V+end-frame", "R2V"]
     },
     {
       "display": "Seedance 2.0 Mini",
@@ -433,7 +436,7 @@
       "usdPerSecond": 0.02,
       "billing": "billed on input + output seconds",
       "example": "($0.20 / 5s + 5s input)",
-      "unpriced": "ac-ks4no2 (video-to-video catalog) prices input-video, upscale and R2V tiers"
+      "prices": ["R2V+input-video"]
     },
     {
       "display": "Seedance 2.0 Mini",
@@ -446,7 +449,7 @@
       "usdPerSecond": 0.045,
       "billing": "billed on input + output seconds",
       "example": "($0.45 / 5s + 5s input)",
-      "unpriced": "ac-ks4no2 (video-to-video catalog) prices input-video, upscale and R2V tiers"
+      "prices": ["R2V+input-video"]
     },
     {
       "display": "Seedance 2.5",
@@ -612,7 +615,7 @@
       "usdPerSecond": 0.106,
       "example": "($0.53 / 5s clip)",
       "audio": true,
-      "unpriced": "T2V-only model: validated, priced in a follow-up (its R2V belongs to ac-ks4no2)"
+      "prices": ["T2V", "R2V"]
     },
     {
       "display": "Kling Video 3.0 Omni",
@@ -625,7 +628,7 @@
       "usdPerSecond": 0.132,
       "example": "($0.66 / 5s clip)",
       "audio": true,
-      "unpriced": "T2V-only model: validated, priced in a follow-up (its R2V belongs to ac-ks4no2)"
+      "prices": ["T2V", "R2V"]
     },
     {
       "display": "Kling Video 3.0 Omni",
@@ -638,7 +641,7 @@
       "usdPerSecond": 0.396,
       "example": "($1.98 / 5s clip)",
       "audio": true,
-      "unpriced": "T2V-only model: validated, priced in a follow-up (its R2V belongs to ac-ks4no2)"
+      "prices": ["T2V", "R2V"]
     },
     {
       "display": "Kling Video 3.0 Omni",
@@ -651,7 +654,7 @@
       "usdPerSecond": 0.08,
       "example": "($0.40 / 5s clip)",
       "audio": false,
-      "unpriced": "T2V-only model: validated, priced in a follow-up (its R2V belongs to ac-ks4no2)"
+      "prices": ["T2V", "R2V"]
     },
     {
       "display": "Kling Video 3.0 Omni",
@@ -664,7 +667,7 @@
       "usdPerSecond": 0.106,
       "example": "($0.53 / 5s clip)",
       "audio": false,
-      "unpriced": "T2V-only model: validated, priced in a follow-up (its R2V belongs to ac-ks4no2)"
+      "prices": ["T2V", "R2V"]
     },
     {
       "display": "Kling Video 3.0 Omni",
@@ -677,7 +680,7 @@
       "usdPerSecond": 0.396,
       "example": "($1.98 / 5s clip)",
       "audio": false,
-      "unpriced": "T2V-only model: validated, priced in a follow-up (its R2V belongs to ac-ks4no2)"
+      "prices": ["T2V", "R2V"]
     },
     {
       "display": "Kling Video 4.0",
@@ -1000,7 +1003,7 @@
       "usdPerSecond": 0.05,
       "billing": "billed on input + output seconds",
       "example": "($0.50 / 5s + 5s input)",
-      "unpriced": "ac-ks4no2 (video-to-video catalog) prices input-video, upscale and R2V tiers"
+      "prices": ["UPSCALE"]
     },
     {
       "display": "MiniMax H3",
@@ -1229,7 +1232,7 @@
       "usdPerSecond": 0.01,
       "listUsdPerSecond": 0.02,
       "example": "($0.05 / 5s clip)",
-      "prices": ["T2V", "I2V", "I2V+end-frame", "I2V+lone-end-frame"]
+      "prices": ["T2V", "I2V", "I2V+end-frame", "I2V+lone-end-frame", "R2V"]
     },
     {
       "display": "MiniMax H3 Turbo",
@@ -1242,7 +1245,7 @@
       "usdPerSecond": 0.01,
       "listUsdPerSecond": 0.02,
       "example": "($0.05 / 5s clip)",
-      "prices": ["T2V", "I2V", "I2V+end-frame", "I2V+lone-end-frame"]
+      "prices": ["T2V", "I2V", "I2V+end-frame", "I2V+lone-end-frame", "R2V"]
     },
     {
       "display": "MiniMax H3 Turbo",
@@ -1256,7 +1259,7 @@
       "listUsdPerSecond": 0.02,
       "billing": "billed on input + output seconds",
       "example": "($0.10 / 5s + 5s input)",
-      "unpriced": "ac-ks4no2 (video-to-video catalog) prices input-video, upscale and R2V tiers"
+      "prices": ["R2V+input-video"]
     },
     {
       "display": "MiniMax H3 Turbo",
@@ -1270,7 +1273,7 @@
       "listUsdPerSecond": 0.02,
       "billing": "billed on input + output seconds",
       "example": "($0.10 / 5s + 5s input)",
-      "unpriced": "ac-ks4no2 (video-to-video catalog) prices input-video, upscale and R2V tiers"
+      "prices": ["R2V+input-video"]
     },
     {
       "display": "Grok Imagine Video",
@@ -1282,7 +1285,7 @@
       "seconds": null,
       "usdPerSecond": 0.059,
       "example": "($0.295 / 5s clip)",
-      "unpriced": "T2V-only model: validated, priced in a follow-up"
+      "unpriced": "T2V-only model: validated, priced in a follow-up (ac-5qfga3)"
     },
     {
       "display": "Grok Imagine Video",
@@ -1294,7 +1297,7 @@
       "seconds": null,
       "usdPerSecond": 0.083,
       "example": "($0.415 / 5s clip)",
-      "unpriced": "T2V-only model: validated, priced in a follow-up"
+      "unpriced": "T2V-only model: validated, priced in a follow-up (ac-5qfga3)"
     },
     {
       "display": "Grok Imagine Video 1.5",
@@ -1342,7 +1345,7 @@
       "seconds": null,
       "usdPerSecond": 0.132,
       "example": "($0.66 / 5s clip)",
-      "prices": ["T2V", "I2V"]
+      "prices": ["T2V", "I2V", "R2V"]
     },
     {
       "display": "HappyHorse 1.0",
@@ -1354,7 +1357,7 @@
       "seconds": null,
       "usdPerSecond": 0.264,
       "example": "($1.32 / 5s clip)",
-      "prices": ["T2V", "I2V"]
+      "prices": ["T2V", "I2V", "R2V"]
     },
     {
       "display": "HappyHorse 1.1",
@@ -1451,7 +1454,7 @@
       "usdPerSecond": 0.038,
       "example": "($0.19 / 5s clip)",
       "audio": true,
-      "prices": ["T2V", "I2V"]
+      "prices": ["T2V", "I2V", "R2V"]
     },
     {
       "display": "Pixverse C1",
@@ -1464,7 +1467,7 @@
       "usdPerSecond": 0.048,
       "example": "($0.24 / 5s clip)",
       "audio": true,
-      "prices": ["T2V", "I2V"]
+      "prices": ["T2V", "I2V", "R2V"]
     },
     {
       "display": "Pixverse C1",
@@ -1477,7 +1480,7 @@
       "usdPerSecond": 0.062,
       "example": "($0.31 / 5s clip)",
       "audio": true,
-      "prices": ["T2V", "I2V"]
+      "prices": ["T2V", "I2V", "R2V"]
     },
     {
       "display": "Pixverse C1",
@@ -1490,7 +1493,7 @@
       "usdPerSecond": 0.113,
       "example": "($0.565 / 5s clip)",
       "audio": true,
-      "prices": ["T2V", "I2V"]
+      "prices": ["T2V", "I2V", "R2V"]
     },
     {
       "display": "Pixverse C1",
@@ -1503,7 +1506,7 @@
       "usdPerSecond": 0.029,
       "example": "($0.145 / 5s clip)",
       "audio": false,
-      "prices": ["T2V", "I2V"]
+      "prices": ["T2V", "I2V", "R2V"]
     },
     {
       "display": "Pixverse C1",
@@ -1516,7 +1519,7 @@
       "usdPerSecond": 0.038,
       "example": "($0.19 / 5s clip)",
       "audio": false,
-      "prices": ["T2V", "I2V"]
+      "prices": ["T2V", "I2V", "R2V"]
     },
     {
       "display": "Pixverse C1",
@@ -1529,7 +1532,7 @@
       "usdPerSecond": 0.048,
       "example": "($0.24 / 5s clip)",
       "audio": false,
-      "prices": ["T2V", "I2V"]
+      "prices": ["T2V", "I2V", "R2V"]
     },
     {
       "display": "Pixverse C1",
@@ -1542,7 +1545,7 @@
       "usdPerSecond": 0.09,
       "example": "($0.45 / 5s clip)",
       "audio": false,
-      "prices": ["T2V", "I2V"]
+      "prices": ["T2V", "I2V", "R2V"]
     },
     {
       "display": "Pixverse V6",
@@ -1555,7 +1558,7 @@
       "usdPerSecond": 0.033,
       "example": "($0.165 / 5s clip)",
       "audio": true,
-      "prices": ["T2V", "I2V"]
+      "prices": ["T2V", "I2V", "R2V"]
     },
     {
       "display": "Pixverse V6",
@@ -1568,7 +1571,7 @@
       "usdPerSecond": 0.043,
       "example": "($0.215 / 5s clip)",
       "audio": true,
-      "prices": ["T2V", "I2V"]
+      "prices": ["T2V", "I2V", "R2V"]
     },
     {
       "display": "Pixverse V6",
@@ -1581,7 +1584,7 @@
       "usdPerSecond": 0.057,
       "example": "($0.285 / 5s clip)",
       "audio": true,
-      "prices": ["T2V", "I2V"]
+      "prices": ["T2V", "I2V", "R2V"]
     },
     {
       "display": "Pixverse V6",
@@ -1594,7 +1597,7 @@
       "usdPerSecond": 0.109,
       "example": "($0.545 / 5s clip)",
       "audio": true,
-      "prices": ["T2V", "I2V"]
+      "prices": ["T2V", "I2V", "R2V"]
     },
     {
       "display": "Pixverse V6",
@@ -1607,7 +1610,7 @@
       "usdPerSecond": 0.024,
       "example": "($0.12 / 5s clip)",
       "audio": false,
-      "prices": ["T2V", "I2V"]
+      "prices": ["T2V", "I2V", "R2V"]
     },
     {
       "display": "Pixverse V6",
@@ -1620,7 +1623,7 @@
       "usdPerSecond": 0.033,
       "example": "($0.165 / 5s clip)",
       "audio": false,
-      "prices": ["T2V", "I2V"]
+      "prices": ["T2V", "I2V", "R2V"]
     },
     {
       "display": "Pixverse V6",
@@ -1633,7 +1636,7 @@
       "usdPerSecond": 0.043,
       "example": "($0.215 / 5s clip)",
       "audio": false,
-      "prices": ["T2V", "I2V"]
+      "prices": ["T2V", "I2V", "R2V"]
     },
     {
       "display": "Pixverse V6",
@@ -1646,7 +1649,7 @@
       "usdPerSecond": 0.085,
       "example": "($0.425 / 5s clip)",
       "audio": false,
-      "prices": ["T2V", "I2V"]
+      "prices": ["T2V", "I2V", "R2V"]
     },
     {
       "display": "Topaz Generative",
@@ -1657,7 +1660,7 @@
       "height": null,
       "seconds": null,
       "usdPerSecond": 0.149,
-      "unpriced": "ac-ks4no2 (video-to-video catalog) prices input-video, upscale and R2V tiers"
+      "unpriced": "Topaz bills vendor credits (0.149 USD each) that depend on the source's frames and output size, not on the request; MachGen's upscale quote (POST /api/v0/upscale/quote) prices a source exactly"
     },
     {
       "display": "Topaz Generative Fast",
@@ -1668,7 +1671,7 @@
       "height": null,
       "seconds": null,
       "usdPerSecond": 0.149,
-      "unpriced": "ac-ks4no2 (video-to-video catalog) prices input-video, upscale and R2V tiers"
+      "unpriced": "Topaz bills vendor credits (0.149 USD each) that depend on the source's frames and output size, not on the request; MachGen's upscale quote (POST /api/v0/upscale/quote) prices a source exactly"
     },
     {
       "display": "Topaz Precision",
@@ -1679,7 +1682,7 @@
       "height": null,
       "seconds": null,
       "usdPerSecond": 0.149,
-      "unpriced": "ac-ks4no2 (video-to-video catalog) prices input-video, upscale and R2V tiers"
+      "unpriced": "Topaz bills vendor credits (0.149 USD each) that depend on the source's frames and output size, not on the request; MachGen's upscale quote (POST /api/v0/upscale/quote) prices a source exactly"
     },
     {
       "display": "Topaz Precision Animation",
@@ -1690,7 +1693,7 @@
       "height": null,
       "seconds": null,
       "usdPerSecond": 0.149,
-      "unpriced": "ac-ks4no2 (video-to-video catalog) prices input-video, upscale and R2V tiers"
+      "unpriced": "Topaz bills vendor credits (0.149 USD each) that depend on the source's frames and output size, not on the request; MachGen's upscale quote (POST /api/v0/upscale/quote) prices a source exactly"
     },
     {
       "display": "Veo 3.1 Fast",
@@ -1702,7 +1705,7 @@
       "seconds": null,
       "usdPerSecond": 0.118,
       "example": "($0.59 / 5s clip)",
-      "unpriced": "T2V-only model: validated, priced in a follow-up"
+      "unpriced": "T2V-only model: validated, priced in a follow-up (ac-5qfga3)"
     },
     {
       "display": "Veo 3.1 Fast",
@@ -1714,7 +1717,7 @@
       "seconds": null,
       "usdPerSecond": 0.142,
       "example": "($0.71 / 5s clip)",
-      "unpriced": "T2V-only model: validated, priced in a follow-up"
+      "unpriced": "T2V-only model: validated, priced in a follow-up (ac-5qfga3)"
     },
     {
       "display": "Veo 3.1 Fast",
@@ -1726,7 +1729,7 @@
       "seconds": null,
       "usdPerSecond": 0.353,
       "example": "($1.765 / 5s clip)",
-      "unpriced": "T2V-only model: validated, priced in a follow-up"
+      "unpriced": "T2V-only model: validated, priced in a follow-up (ac-5qfga3)"
     },
     {
       "display": "Veo 3.1 Standard",
@@ -1738,7 +1741,7 @@
       "seconds": null,
       "usdPerSecond": 0.471,
       "example": "($2.355 / 5s clip)",
-      "unpriced": "T2V-only model: validated, priced in a follow-up"
+      "unpriced": "T2V-only model: validated, priced in a follow-up (ac-5qfga3)"
     },
     {
       "display": "Veo 3.1 Standard",
@@ -1750,7 +1753,7 @@
       "seconds": null,
       "usdPerSecond": 0.471,
       "example": "($2.355 / 5s clip)",
-      "unpriced": "T2V-only model: validated, priced in a follow-up"
+      "unpriced": "T2V-only model: validated, priced in a follow-up (ac-5qfga3)"
     },
     {
       "display": "Veo 3.1 Standard",
@@ -1762,7 +1765,7 @@
       "seconds": null,
       "usdPerSecond": 0.706,
       "example": "($3.53 / 5s clip)",
-      "unpriced": "T2V-only model: validated, priced in a follow-up"
+      "unpriced": "T2V-only model: validated, priced in a follow-up (ac-5qfga3)"
     },
     {
       "display": "Vidu Q3",
@@ -1774,7 +1777,7 @@
       "seconds": [1, 5],
       "usdPerSecond": 0.042,
       "example": "($0.21 / 5s clip)",
-      "unpriced": "R2V-only model; ac-ks4no2 (video-to-video catalog) prices input-video, upscale and R2V tiers"
+      "prices": ["R2V"]
     },
     {
       "display": "Vidu Q3",
@@ -1786,7 +1789,7 @@
       "seconds": [6, 10],
       "usdPerSecond": 0.042,
       "example": "($0.42 / 10s clip)",
-      "unpriced": "R2V-only model; ac-ks4no2 (video-to-video catalog) prices input-video, upscale and R2V tiers"
+      "prices": ["R2V"]
     },
     {
       "display": "Vidu Q3",
@@ -1798,7 +1801,7 @@
       "seconds": [11, 16],
       "usdPerSecond": 0.042,
       "example": "($0.672 / 16s clip)",
-      "unpriced": "R2V-only model; ac-ks4no2 (video-to-video catalog) prices input-video, upscale and R2V tiers"
+      "prices": ["R2V"]
     },
     {
       "display": "Vidu Q3",
@@ -1810,7 +1813,7 @@
       "seconds": [1, 5],
       "usdPerSecond": 0.071,
       "example": "($0.355 / 5s clip)",
-      "unpriced": "R2V-only model; ac-ks4no2 (video-to-video catalog) prices input-video, upscale and R2V tiers"
+      "prices": ["R2V"]
     },
     {
       "display": "Vidu Q3",
@@ -1822,7 +1825,7 @@
       "seconds": [6, 10],
       "usdPerSecond": 0.071,
       "example": "($0.71 / 10s clip)",
-      "unpriced": "R2V-only model; ac-ks4no2 (video-to-video catalog) prices input-video, upscale and R2V tiers"
+      "prices": ["R2V"]
     },
     {
       "display": "Vidu Q3",
@@ -1834,7 +1837,7 @@
       "seconds": [11, 16],
       "usdPerSecond": 0.071,
       "example": "($1.136 / 16s clip)",
-      "unpriced": "R2V-only model; ac-ks4no2 (video-to-video catalog) prices input-video, upscale and R2V tiers"
+      "prices": ["R2V"]
     },
     {
       "display": "Vidu Q3",
@@ -1846,7 +1849,7 @@
       "seconds": [1, 5],
       "usdPerSecond": 0.089,
       "example": "($0.445 / 5s clip)",
-      "unpriced": "R2V-only model; ac-ks4no2 (video-to-video catalog) prices input-video, upscale and R2V tiers"
+      "prices": ["R2V"]
     },
     {
       "display": "Vidu Q3",
@@ -1858,7 +1861,7 @@
       "seconds": [6, 10],
       "usdPerSecond": 0.089,
       "example": "($0.89 / 10s clip)",
-      "unpriced": "R2V-only model; ac-ks4no2 (video-to-video catalog) prices input-video, upscale and R2V tiers"
+      "prices": ["R2V"]
     },
     {
       "display": "Vidu Q3",
@@ -1870,7 +1873,7 @@
       "seconds": [11, 16],
       "usdPerSecond": 0.089,
       "example": "($1.424 / 16s clip)",
-      "unpriced": "R2V-only model; ac-ks4no2 (video-to-video catalog) prices input-video, upscale and R2V tiers"
+      "prices": ["R2V"]
     },
     {
       "display": "Vidu Q3 Pro",
@@ -1882,7 +1885,7 @@
       "seconds": [1, 5],
       "usdPerSecond": 0.053,
       "example": "($0.265 / 5s clip)",
-      "prices": ["T2V", "I2V", "I2V+end-frame"]
+      "prices": ["T2V", "I2V", "I2V+end-frame", "R2V"]
     },
     {
       "display": "Vidu Q3 Pro",
@@ -1894,7 +1897,7 @@
       "seconds": [6, 10],
       "usdPerSecond": 0.053,
       "example": "($0.53 / 10s clip)",
-      "prices": ["T2V", "I2V", "I2V+end-frame"]
+      "prices": ["T2V", "I2V", "I2V+end-frame", "R2V"]
     },
     {
       "display": "Vidu Q3 Pro",
@@ -1906,7 +1909,7 @@
       "seconds": [11, 16],
       "usdPerSecond": 0.053,
       "example": "($0.848 / 16s clip)",
-      "prices": ["T2V", "I2V", "I2V+end-frame"]
+      "prices": ["T2V", "I2V", "I2V+end-frame", "R2V"]
     },
     {
       "display": "Vidu Q3 Pro",
@@ -1918,7 +1921,7 @@
       "seconds": [1, 5],
       "usdPerSecond": 0.118,
       "example": "($0.59 / 5s clip)",
-      "prices": ["T2V", "I2V", "I2V+end-frame"]
+      "prices": ["T2V", "I2V", "I2V+end-frame", "R2V"]
     },
     {
       "display": "Vidu Q3 Pro",
@@ -1930,7 +1933,7 @@
       "seconds": [6, 10],
       "usdPerSecond": 0.118,
       "example": "($1.18 / 10s clip)",
-      "prices": ["T2V", "I2V", "I2V+end-frame"]
+      "prices": ["T2V", "I2V", "I2V+end-frame", "R2V"]
     },
     {
       "display": "Vidu Q3 Pro",
@@ -1942,7 +1945,7 @@
       "seconds": [11, 16],
       "usdPerSecond": 0.118,
       "example": "($1.888 / 16s clip)",
-      "prices": ["T2V", "I2V", "I2V+end-frame"]
+      "prices": ["T2V", "I2V", "I2V+end-frame", "R2V"]
     },
     {
       "display": "Vidu Q3 Pro",
@@ -2062,7 +2065,7 @@
       "seconds": [1, 5],
       "usdPerSecond": 0.015,
       "example": "($0.075 / 5s clip)",
-      "prices": ["T2V", "I2V", "I2V+end-frame"]
+      "prices": ["T2V", "I2V", "I2V+end-frame", "R2V"]
     },
     {
       "display": "Vidu Q3 Turbo",
@@ -2074,7 +2077,7 @@
       "seconds": [6, 10],
       "usdPerSecond": 0.018,
       "example": "($0.165 / 10s clip)",
-      "prices": ["T2V", "I2V", "I2V+end-frame"]
+      "prices": ["T2V", "I2V", "I2V+end-frame", "R2V"]
     },
     {
       "display": "Vidu Q3 Turbo",
@@ -2086,7 +2089,7 @@
       "seconds": [11, 16],
       "usdPerSecond": 0.02,
       "example": "($0.285 / 16s clip)",
-      "prices": ["T2V", "I2V", "I2V+end-frame"]
+      "prices": ["T2V", "I2V", "I2V+end-frame", "R2V"]
     },
     {
       "display": "Vidu Q3 Turbo",
@@ -2098,7 +2101,7 @@
       "seconds": [1, 5],
       "usdPerSecond": 0.03,
       "example": "($0.15 / 5s clip)",
-      "prices": ["T2V", "I2V", "I2V+end-frame"]
+      "prices": ["T2V", "I2V", "I2V+end-frame", "R2V"]
     },
     {
       "display": "Vidu Q3 Turbo",
@@ -2110,7 +2113,7 @@
       "seconds": [6, 10],
       "usdPerSecond": 0.04,
       "example": "($0.35 / 10s clip)",
-      "prices": ["T2V", "I2V", "I2V+end-frame"]
+      "prices": ["T2V", "I2V", "I2V+end-frame", "R2V"]
     },
     {
       "display": "Vidu Q3 Turbo",
@@ -2122,7 +2125,7 @@
       "seconds": [11, 16],
       "usdPerSecond": 0.045,
       "example": "($0.62 / 16s clip)",
-      "prices": ["T2V", "I2V", "I2V+end-frame"]
+      "prices": ["T2V", "I2V", "I2V+end-frame", "R2V"]
     },
     {
       "display": "Vidu Q4 Preview",
@@ -2134,7 +2137,7 @@
       "seconds": null,
       "usdPerSecond": 0.045,
       "example": "($0.225 / 5s clip)",
-      "prices": ["I2V"]
+      "prices": ["I2V", "R2V"]
     },
     {
       "display": "Vidu Q4 Preview",
@@ -2146,7 +2149,7 @@
       "seconds": null,
       "usdPerSecond": 0.095,
       "example": "($0.475 / 5s clip)",
-      "prices": ["I2V"]
+      "prices": ["I2V", "R2V"]
     },
     {
       "display": "Vidu Q4 Preview",
@@ -2158,7 +2161,7 @@
       "seconds": null,
       "usdPerSecond": 0.12,
       "example": "($0.60 / 5s clip)",
-      "prices": ["I2V"]
+      "prices": ["I2V", "R2V"]
     },
     {
       "display": "Vidu Q4 Preview",
@@ -2170,7 +2173,7 @@
       "seconds": null,
       "usdPerSecond": 0.19,
       "example": "($0.95 / 5s clip)",
-      "prices": ["I2V"]
+      "prices": ["I2V", "R2V"]
     },
     {
       "display": "Vidu Q4 Preview",
@@ -2182,7 +2185,7 @@
       "seconds": null,
       "usdPerSecond": 0.39,
       "example": "($1.95 / 5s clip)",
-      "prices": ["I2V"]
+      "prices": ["I2V", "R2V"]
     },
     {
       "display": "Vidu-Upscale-Pro",
@@ -2194,7 +2197,7 @@
       "seconds": null,
       "usdPerSecond": 0.059,
       "example": "($0.295 / 5s clip)",
-      "unpriced": "ac-ks4no2 (video-to-video catalog) prices input-video, upscale and R2V tiers"
+      "unpriced": "MachGen answered HTTP 500 to every Vidu-Upscale-Pro upscale and quote on 2026-10-25 (nothing billed), and its models table does not list the model, so no receipt could confirm the rate"
     },
     {
       "display": "Vidu-Upscale-Pro",
@@ -2206,7 +2209,7 @@
       "seconds": null,
       "usdPerSecond": 0.118,
       "example": "($0.59 / 5s clip)",
-      "unpriced": "ac-ks4no2 (video-to-video catalog) prices input-video, upscale and R2V tiers"
+      "unpriced": "MachGen answered HTTP 500 to every Vidu-Upscale-Pro upscale and quote on 2026-10-25 (nothing billed), and its models table does not list the model, so no receipt could confirm the rate"
     },
     {
       "display": "Vidu-Upscale-Pro",
@@ -2218,7 +2221,7 @@
       "seconds": null,
       "usdPerSecond": 0.236,
       "example": "($1.18 / 5s clip)",
-      "unpriced": "ac-ks4no2 (video-to-video catalog) prices input-video, upscale and R2V tiers"
+      "unpriced": "MachGen answered HTTP 500 to every Vidu-Upscale-Pro upscale and quote on 2026-10-25 (nothing billed), and its models table does not list the model, so no receipt could confirm the rate"
     },
     {
       "display": "Vidu-Upscale-Pro",
@@ -2230,7 +2233,7 @@
       "seconds": null,
       "usdPerSecond": 0.942,
       "example": "($4.71 / 5s clip)",
-      "unpriced": "ac-ks4no2 (video-to-video catalog) prices input-video, upscale and R2V tiers"
+      "unpriced": "MachGen answered HTTP 500 to every Vidu-Upscale-Pro upscale and quote on 2026-10-25 (nothing billed), and its models table does not list the model, so no receipt could confirm the rate"
     },
     {
       "display": "Wan 2.2 A14B (I2V)",

@@ -1,6 +1,7 @@
 import type { z } from "zod";
 import type {
   MachGenGenerateRequestSchema,
+  MachGenUpscaleConfigSchema,
   MachGenVideoConfigSchema,
 } from "./zod";
 
@@ -27,6 +28,7 @@ export type MachGenGenerateRequest = z.infer<
   typeof MachGenGenerateRequestSchema
 >;
 export type MachGenVideoConfig = z.infer<typeof MachGenVideoConfigSchema>;
+export type MachGenUpscaleConfig = z.infer<typeof MachGenUpscaleConfigSchema>;
 
 export interface MachGenGenerateResponse {
   task_id: string;

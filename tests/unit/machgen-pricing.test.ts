@@ -7,6 +7,7 @@ import {
   MODEL_DISPLAY,
 } from "@apicity/cost";
 import {
+  machgenHints,
   machgenPayload,
   MACHGEN_CASES,
   MACHGEN_RECORDED,
@@ -49,6 +50,14 @@ function shapePayload(
 ): Record<string, unknown> {
   const [task, ...parts] = shape.split("+");
   const image = "https://example.com/start.jpg";
+  if (task === "UPSCALE")
+    return {
+      model: row.apiModel,
+      task_type: task,
+      prompt: "",
+      src_task_ids: ["source-task"],
+      video_config: { height: row.height, duration_secs: seconds },
+    };
   return {
     model: row.apiModel,
     task_type: task,
@@ -78,6 +87,7 @@ describe("MachGen pricing", () => {
       const result = computeEstimate({
         provider: "machgen",
         payload: machgenPayload(i, task, variant),
+        costHints: machgenHints(variant),
       });
       const label = `${MACHGEN_CASES[i]![0]} ${task} ${JSON.stringify(variant ?? {})}`;
       expect(result.usd, label).toBeCloseTo(usd, 8);
@@ -100,6 +110,8 @@ describe("MachGen pricing", () => {
         if (clip) {
           usd = Number(clip[1]);
           seconds = Number(clip[2]);
+          // An upscale renders its source's length.
+          if (shape === "UPSCALE") hints = { inputDurationSeconds: seconds };
         } else if (input) {
           usd = Number(input[1]);
           seconds = Number(input[2]);
@@ -124,7 +136,7 @@ describe("MachGen pricing", () => {
         checked++;
       }
     }
-    expect(checked).toBe(255);
+    expect(checked).toBe(324);
   });
   it("prices exactly the models the evidence prices", () => {
     const priced = new Set(
@@ -230,8 +242,10 @@ describe("MachGen pricing", () => {
       expect(estimate(overrides).warnings.length).toBeGreaterThan(0);
     }
     expect(
-      estimate({ model: "Vidu-Q4-Preview", task_type: "R2V" }).warnings
-    ).toEqual(["@apicity/cost prices MachGen Vidu-Q4-Preview for I2V only."]);
+      estimate({ model: "Vidu-Q4-Preview", task_type: "T2V" }).warnings
+    ).toEqual([
+      "@apicity/cost prices MachGen Vidu-Q4-Preview for I2V, R2V only.",
+    ]);
   });
   it("requires duration hints for Smart length and input-video charges", () => {
     const smart = { video_config: { height: 480, duration_secs: -1 } };
@@ -257,6 +271,94 @@ describe("MachGen pricing", () => {
         video_config: { height: 480, duration_secs: 4 },
       }).usd
     ).toBeCloseTo(2.36);
+  });
+  it("prices reference videos, edits and upscales by the seconds MachGen bills", () => {
+    const video = "https://example.com/ref.mp4";
+    const r2v = (
+      model: string,
+      extra: Record<string, unknown>,
+      hints?: CostHints
+    ) =>
+      computeEstimate({
+        provider: "machgen",
+        payload: {
+          model,
+          task_type: "R2V",
+          prompt: "x",
+          video_config: { height: 480, duration_secs: 4 },
+          ...extra,
+        },
+        costHints: hints,
+      });
+    // Input plus output seconds: 4 s read + 4 s out.
+    expect(
+      r2v(
+        "Seedance-2.0-Mini",
+        { src_video_urls: [video] },
+        { inputDurationSeconds: 4 }
+      ).usd
+    ).toBeCloseTo(0.16);
+    // A 4 s clip read from 1 s bills 3 s of input (receipt: 70000 micros).
+    expect(
+      r2v(
+        "MiniMax-H3-Turbo",
+        { src_video_urls: [video], reference_video_start_secs: [1] },
+        { inputDurationSeconds: 3 }
+      ).usd
+    ).toBeCloseTo(0.07);
+    // An edit renders its source's length, whatever duration_secs says.
+    const edit = { src_video_urls: [video], reference_video_operation: "edit" };
+    expect(
+      r2v("Seedance-2.5", edit, { inputDurationSeconds: 4 }).usd
+    ).toBeCloseTo(0.48);
+    expect(
+      r2v(
+        "Seedance-2.5",
+        { ...edit, src_video_urls: [video, video] },
+        { inputDurationSeconds: 8 }
+      ).warnings
+    ).toEqual([
+      "MachGen renders an edit at its source's length; pass costHints.inputDurationSeconds for one reference video, or costHints.durationSeconds.",
+    ]);
+    // Audio references do not bill (receipt: 50000 micros for 1 s).
+    expect(
+      computeEstimate({
+        provider: "machgen",
+        payload: {
+          model: "MiniMax-H3",
+          task_type: "R2V",
+          prompt: "x",
+          src_audio_urls: ["https://example.com/voice.mp3"],
+          video_config: { height: 480, duration_secs: 1 },
+        },
+      }).usd
+    ).toBeCloseTo(0.05);
+    const upscale = (model: string, height: number, hints?: CostHints) =>
+      computeEstimate({
+        provider: "machgen",
+        payload: {
+          model,
+          task_type: "UPSCALE",
+          prompt: "",
+          src_task_ids: ["source"],
+          video_config: { height, duration_secs: 5 },
+        },
+        costHints: hints,
+      });
+    // The 5 s source in and out (receipt: 500000 micros).
+    expect(
+      upscale("MiniMax-H3", 1440, { inputDurationSeconds: 5 }).usd
+    ).toBeCloseTo(0.5);
+    expect(upscale("MiniMax-H3", 1440).warnings).toEqual([
+      "MachGen bills an upscale by its source's length; pass costHints.inputDurationSeconds.",
+    ]);
+    // Topaz bills vendor credits that depend on the source, and MachGen
+    // answered HTTP 500 to every Vidu-Upscale-Pro request.
+    for (const model of ["Topaz-Video-Precision", "Vidu-Upscale-Pro"]) {
+      const result = upscale(model, 1080, { inputDurationSeconds: 5 });
+      expect(result.usd, model).toBe(0);
+      expect(result.warnings.length, model).toBeGreaterThan(0);
+    }
   });
   it("pins provenance, shared slugs and displays", () => {
     for (const row of Object.values(PRICING.machgen))
@@ -284,6 +386,8 @@ describe("MachGen pricing", () => {
       "Pixverse-V6": "pixv6",
       "Pixverse-C1": "pixc1",
       "HappyHorse-1.0": "hh",
+      "Kling-o3": "klingo3",
+      "Vidu-Q3": "viduq3",
     });
     // A model kie or xai also sells shares their slug; the rest are new.
     const elsewhere = new Set(
@@ -291,7 +395,15 @@ describe("MachGen pricing", () => {
         .filter(([provider]) => provider !== "machgen")
         .flatMap(([, slugs]) => Object.values(slugs))
     );
-    const own = ["ltx2p3p", "viduq3t", "viduq3p", "mmh3t", "viduq3pf", "pixc1"];
+    const own = [
+      "ltx2p3p",
+      "viduq3t",
+      "viduq3p",
+      "mmh3t",
+      "viduq3pf",
+      "pixc1",
+      "viduq3",
+    ];
     for (const slug of Object.values(MODEL_SLUGS.machgen)) {
       if (own.includes(slug)) expect(elsewhere.has(slug), slug).toBe(false);
       else

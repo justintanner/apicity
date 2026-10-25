@@ -8,4 +8,9 @@ describe("MachGen vidu-q4-preview", () => {
       setupPolly("machgen/vidu-q4-preview-i2v")
     );
   }, 2000000);
+  it("generates R2V", async () => {
+    await recordMachgen(14, "R2V", () =>
+      setupPolly("machgen/vidu-q4-preview-r2v")
+    );
+  }, 2000000);
 });

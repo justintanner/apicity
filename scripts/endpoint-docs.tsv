@@ -879,7 +879,9 @@ fal	v1.models.requests.byEndpoint	GET	https://api.fal.ai/v1/models/requests/by-e
 fal	v1.models.requests.payloads	DELETE	https://api.fal.ai/v1/models/requests/{param}/payloads	https://docs.fal.ai
 fal	v1.models.requests.payloads	GET	https://api.fal.ai/v1/models/requests/{param}/payloads	https://docs.fal.ai
 fal	v1.models.usage	GET	https://api.fal.ai/v1/models/usage	https://docs.fal.ai
-fal	v1.queue.submit	POST	https://api.fal.ai/v1/POST	https://docs.fal.ai
+fal	v1.queue.result	GET	https://queue.fal.run/{endpoint_id}/requests/{request_id}	https://fal.ai/docs/inference-api/queue/result
+fal	v1.queue.status	GET	https://queue.fal.run/{endpoint_id}/requests/{request_id}/status	https://fal.ai/docs/inference-api/queue/status
+fal	v1.queue.submit	POST	https://queue.fal.run/{endpoint_id}{query}	https://fal.ai/docs/inference-api/queue/submit
 fal	v1.serverless.files.uploadLocal	POST	https://api.fal.ai/v1/serverless/files/file/local/{param}	https://docs.fal.ai
 fal	v1.serverless.files.uploadUrl	POST	https://api.fal.ai/v1/serverless/files/file/url/{param}	https://docs.fal.ai
 fal	v1.serverless.logs.stream	POST	https://api.fal.ai/v1/serverless/logs/stream	https://docs.fal.ai

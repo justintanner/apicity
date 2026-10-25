@@ -894,6 +894,7 @@ const BASE_URL_IDENTIFIERS = new Set([
   "uploadBaseURL",
   "uploadBase",
   "nativeBaseURL", // alibaba uses this for /api/v1 vs /compatible-mode/v1
+  "queueBaseURL", // fal's queue.fal.run submit/status/result host
 ]);
 
 function extractPath(argNode) {

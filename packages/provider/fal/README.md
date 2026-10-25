@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-241 endpoints across 55 groups. Each method mirrors an upstream URL path.
+243 endpoints across 55 groups. Each method mirrors an upstream URL path.
 
 ### alibaba
 
@@ -3517,13 +3517,47 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 ### queue
 
 <details>
-<summary><code>POST</code> <b><code>fal.v1.queue.submit</code></b></summary>
+<summary><code>GET</code> <b><code>fal.v1.queue.result</code></b></summary>
 
-<code>POST https://api.fal.ai/v1/POST</code>
+<code>GET https://queue.fal.run/{endpoint_id}/requests/{request_id}</code>
 
 Cost tier: <code>prohibitive</code>
 
-[Upstream docs ↗](https://docs.fal.ai)
+[Upstream docs ↗](https://fal.ai/docs/inference-api/queue/result)
+
+```typescript
+const res = await fal.v1.queue.result({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>fal.v1.queue.status</code></b></summary>
+
+<code>GET https://queue.fal.run/{endpoint_id}/requests/{request_id}/status</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/docs/inference-api/queue/status)
+
+```typescript
+const res = await fal.v1.queue.status({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.v1.queue.submit</code></b></summary>
+
+<code>POST https://queue.fal.run/{endpoint_id}{query}</code>
+
+Cost tier: <code>prohibitive</code>
+
+[Upstream docs ↗](https://fal.ai/docs/inference-api/queue/submit)
 
 ```typescript
 const res = await fal.v1.queue.submit({ /* ... */ });

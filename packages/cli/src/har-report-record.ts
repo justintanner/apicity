@@ -45,6 +45,12 @@ export const outcomes = (): Outcomes => ({
 export const rowKey = (
   row: Pick<EndpointTsvRow, "provider" | "method" | "dotPath">
 ) => `${row.provider} ${row.method} ${row.dotPath}`;
+// Rows whose wire body is one member of the request object (fal's queue
+// submit sends `input`). Their schema describes the request object, so the
+// schema sections check a call's annotated input; a legacy call has none.
+const BODY_MEMBERS: Record<string, string> = {
+  "fal POST v1.queue.submit": "input",
+};
 export function variantFor(
   call: Call,
   info: SchemaInfo
@@ -79,9 +85,15 @@ export function record(
   const row = calls[0].row;
   const annotated = calls.filter((c) => c.meta);
   const primary = calls.flatMap((c) => c.primary);
+  const member = BODY_MEMBERS[rowKey(row)];
   const bodies = calls.flatMap((c) =>
     c.primary.flatMap((e) => {
-      const body = requestBody(e.entry);
+      const wire = requestBody(e.entry);
+      const body = !member
+        ? wire
+        : wire && isObject(c.meta?.input)
+          ? c.meta.input
+          : null;
       return body
         ? [
             {
@@ -97,7 +109,9 @@ export function record(
   );
   const selected = selectedSchema(info, variant);
   const schemaUnavailable = !bodies.length
-    ? "no JSON request bodies"
+    ? member
+      ? "no annotated input"
+      : "no JSON request bodies"
     : schemaReason(info);
   const introspectionUnavailable =
     schemaUnavailable ??
@@ -300,9 +314,11 @@ export function record(
     }
   const factoryBodies = annotated.flatMap((call) => {
     const body = call.primary.map((e) => requestBody(e.entry)).find(Boolean);
-    return body && isObject(call.meta?.input)
-      ? [{ body, input: call.meta.input }]
-      : [];
+    const input =
+      member && isObject(call.meta?.input)
+        ? call.meta.input[member]
+        : call.meta?.input;
+    return body && isObject(input) ? [{ body, input }] : [];
   });
   const factoryDefaults: EndpointRecord["defaults"]["factoryDefaults"] = {
     ...availability(

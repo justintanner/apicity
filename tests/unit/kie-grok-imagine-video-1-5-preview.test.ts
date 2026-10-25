@@ -110,9 +110,26 @@ describe("Grok Imagine Video 1.5 Preview frame controls", () => {
 
   // KIE's docs cap image_urls at one, but a two-image request (task
   // 27541afd290e8048d72881fd3a4f7a2c, 2026-10-25) succeeded and billed the
-  // plain rate, so the guard keeps accepting more than one.
+  // plain rate, so the guard keeps accepting more than one below 1080p.
   it("keeps accepting two image_urls", () => {
     expect(issues({ image_urls: [ANCHOR, STUDIO] })).toEqual([]);
+    expect(
+      issues({ image_urls: [ANCHOR, STUDIO], resolution: "720p" })
+    ).toEqual([]);
+  });
+
+  // The recorded 1080p request
+  // (tests/integration/kie-grok-imagine-video-1-5-preview.test.ts).
+  it("accepts 1080p with one image", () => {
+    expect(
+      issues({
+        image_urls: [ANCHOR],
+        aspect_ratio: "16:9",
+        resolution: "1080p",
+        duration: 1,
+      })
+    ).toEqual([]);
+    expect(issues({ ...FRAMES, resolution: "1080p" })).toEqual([]);
   });
 
   it("defaults audio on", () => {
@@ -190,6 +207,12 @@ describe("Grok Imagine Video 1.5 Preview frame controls", () => {
       "input.last_frame_url: loop_url cannot be combined with a different last_frame_url",
     ],
     ["no image_urls", { image_urls: [] }, "input.image_urls"],
+    [
+      "two images at 1080p",
+      { image_urls: [ANCHOR, STUDIO], resolution: "1080p" },
+      "input.image_urls: grok-imagine-video-1-5-preview accepts exactly 1 image_url at 1080p",
+    ],
+    ["a 4k resolution", { resolution: "4k" }, "input.resolution"],
     ["a string audio switch", { enable_audio: "false" }, "input.enable_audio"],
   ])("rejects %s", (_label, patch, expected) => {
     const found = issues({ image_urls: [ANCHOR], ...patch });
@@ -265,6 +288,17 @@ describe("Grok Imagine Video 1.5 Preview model input descriptor", () => {
     expect(properties.image_urls.maxItems).toBeUndefined();
   });
 
+  it("lists the 1080p tier", () => {
+    expect(properties.resolution.enum).toEqual(["480p", "720p", "1080p"]);
+    expect(properties.resolution.default).toBe("480p");
+    expect(descriptor.fields.resolution.enum).toEqual(
+      properties.resolution.enum
+    );
+    expect(descriptor.fields.image_urls.description).toContain(
+      "max 1 at 1080p"
+    );
+  });
+
   it("mirrors the frame-control fields", () => {
     for (const name of NEW_FIELDS) {
       const field = descriptor.fields[name];
@@ -300,8 +334,17 @@ describe("Grok Imagine Video 1.5 Preview frame-control pricing", () => {
 
   it("matches the recorded generations' bills", () => {
     // tests/recordings/kie_2079838932/grok-imagine-video-1-5-preview-keyframes:
-    // 3 s billed 7.2 credits; ...-loop: 2 s without audio billed 4.8 credits.
+    // 3 s billed 7.2 credits; ...-loop: 2 s without audio billed 4.8 credits;
+    // ...-1080p: 1 s at 1080p billed 8 credits.
     expect(estimate(FRAMES).usd).toBeCloseTo(7.2 * 0.005, 10);
+    expect(
+      estimate({
+        image_urls: [ANCHOR],
+        aspect_ratio: "16:9",
+        resolution: "1080p",
+        duration: 1,
+      }).usd
+    ).toBeCloseTo(8 * 0.005, 10);
     expect(
       estimate({
         image_urls: [STUDIO],

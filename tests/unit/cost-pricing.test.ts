@@ -2639,7 +2639,6 @@ describe("kie 2026-08-06 pricing pull provenance", () => {
       "wan/2-7-videoedit",
       "grok-imagine/text-to-video",
       "grok-imagine/image-to-video",
-      "grok-imagine-video-1-5-preview",
       "grok-imagine/extend",
       "grok-imagine/upscale",
       "gemini-omni-video",
@@ -3974,6 +3973,11 @@ describe("kie stale-family refresh (REQ-004)", () => {
       resolution: "720p",
       rate: 0.0225,
     },
+    {
+      model: "grok-imagine-video-1-5-preview",
+      resolution: "1080p",
+      rate: 0.04,
+    },
   ])(
     "prices $model at $resolution as $rate/s",
     ({ model, resolution, rate }) => {
@@ -3987,16 +3991,14 @@ describe("kie stale-family refresh (REQ-004)", () => {
     }
   );
 
-  // The preview model publishes no 1080p row, so its schema's top tier is
-  // where the table stops too.
-  it("does not price grok-imagine-video-1-5-preview at 1080p", () => {
-    const result = kieEstimate({
-      model: "grok-imagine-video-1-5-preview",
-      input: { prompt: "x", duration: 6, resolution: "1080p" },
+  // The preview model's feed rows stop at 720p. Its 1080p cell is the page
+  // pricingDesc's mislabeled third tier (8 credits/s), which a 1 s 1080p
+  // recording billed (8 credits) on 2026-10-25.
+  it("dates the grok-imagine-video-1-5-preview 1080p tier to its 2026-10-25 probe", () => {
+    expect(PRICING.kie["grok-imagine-video-1-5-preview"].source).toEqual({
+      url: "https://kie.ai/grok-imagine-video-1.5",
+      asOf: "2026-10-25",
     });
-
-    expect(result.usd).toBe(0);
-    expect(result.warnings).toHaveLength(1);
   });
 
   it.each([

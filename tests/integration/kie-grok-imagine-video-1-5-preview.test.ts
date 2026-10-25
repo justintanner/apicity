@@ -92,4 +92,70 @@ describe("kie grok-imagine-video-1-5-preview integration", () => {
       expect(result.resultUrls![0]).toMatch(/^https?:\/\//);
     }
   );
+
+  // The 1080p tier, which the pricing feed does not list yet: the cheapest
+  // clip (1 s) from the one image allowed at 1080p, with nsfw_checker left
+  // to KIE's default.
+  it(
+    "renders a 1 s 1080p clip from one image",
+    { timeout: 1200_000 },
+    async () => {
+      ctx = setupPollyForFileUploads(
+        "kie/grok-imagine-video-1-5-preview-1080p"
+      );
+
+      const provider = createKie({
+        paygate: { secret: TEST_PAYGATE_SECRET },
+        apiKey: process.env.KIE_API_KEY ?? "test-key",
+      });
+
+      const upload = await provider.post.api.fileStreamUpload({
+        file: new Blob(
+          [readFileSync(resolve(__dirname, "../fixtures", "man.jpg"))],
+          { type: "image/jpeg" }
+        ),
+        filename: "man.jpg",
+        uploadPath: "images/test-uploads",
+      });
+      expect(upload.data?.downloadUrl).toBeTruthy();
+
+      const request = {
+        model: "grok-imagine-video-1-5-preview",
+        input: {
+          prompt: PROMPT,
+          image_urls: [upload.data!.downloadUrl],
+          aspect_ratio: "16:9",
+          resolution: "1080p",
+          duration: 1,
+        },
+      } satisfies MediaGenerationRequest;
+      const task = await provider.post.api.v1.jobs.createTask(
+        request,
+        mintKieCreateTaskOtp(request)
+      );
+
+      expect(task.code).toBe(200);
+      expect(task.data?.taskId).toBeTruthy();
+
+      const taskId = task.data!.taskId!;
+      const pollDelay = getPollyMode() === "replay" ? 0 : 10_000;
+      let state = "waiting";
+      let resultJson: string | undefined;
+
+      for (let i = 0; i < 200; i++) {
+        const info = await provider.get.api.v1.jobs.recordInfo(taskId);
+        state = info.data?.state ?? "waiting";
+        if (state === "success" || state === "fail") {
+          expect(info.data?.taskId).toBe(taskId);
+          resultJson = info.data?.resultJson;
+          break;
+        }
+        if (pollDelay) await new Promise((r) => setTimeout(r, pollDelay));
+      }
+
+      expect(state).toBe("success");
+      const result = JSON.parse(resultJson!) as { resultUrls?: string[] };
+      expect(result.resultUrls![0]).toMatch(/^https?:\/\//);
+    }
+  );
 });

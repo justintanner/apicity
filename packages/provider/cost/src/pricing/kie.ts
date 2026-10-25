@@ -1729,15 +1729,20 @@ export const kie: Record<string, ModelPricing> = {
     "https://kie.ai/grok-imagine?model=grok-imagine%2Fimage-to-video"
   ),
 
-  // grok-imagine-video-1-5-preview: image-to-video, 2 tiers by resolution —
-  // the page publishes no 1080p row for this preview model, and its schema
-  // stops at "480p"|"720p". Defaults to 480p (matches the documented model
-  // default) when the payload omits input.resolution.
+  // grok-imagine-video-1-5-preview: image-to-video, 3 tiers by resolution.
+  // The live feed lists 480p and 720p only (read 2026-10-25). The 1080p cell
+  // is the third entry of the page pricingDesc, "8 credits per second for
+  // 720p (≈ $0.04)". That second 720p rate is the 1080p tier the docs added,
+  // at the grok-imagine/* suite's 1080p 8 credits/s, and a 1 s 1080p
+  // recording billed 8 credits (tests/fixtures/kie-pricing-evidence/
+  // grok-imagine-video-1-5-preview-2026-10-25.json). Defaults to 480p (the
+  // documented model default) when the payload omits input.resolution.
   "grok-imagine-video-1-5-preview": tieredVideoPage(
     "resolution",
-    { "480p": 0.012, "720p": 0.0225 },
+    { "480p": 0.012, "720p": 0.0225, "1080p": 0.04 },
     "https://kie.ai/grok-imagine-video-1.5",
-    "480p"
+    "480p",
+    "2026-10-25"
   ),
 
   // grok-imagine images — kie returns a fixed bundle per call (6 default,

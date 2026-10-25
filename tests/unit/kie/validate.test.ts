@@ -79,11 +79,11 @@ const grokCurrent1080pMediaRequests = [
   grokImageToVideo1080pRequest,
 ] satisfies MediaGenerationRequest[];
 
+// The preview slug gained 1080p in KIE's docs by 2026-10-25, with one image.
 const grokPreview1080pRequest = {
   model: "grok-imagine-video-1-5-preview",
   input: {
     image_urls: ["https://example.com/reference.png"],
-    // @ts-expect-error 1080p is intentionally unavailable on the legacy slug.
     resolution: "1080p",
   },
 } satisfies GrokVideo15PreviewRequestInput;
@@ -559,10 +559,34 @@ describe("kie Zod schema validation", () => {
       expect(MediaGenerationRequestSchema.safeParse(request).success).toBe(
         true
       );
+    });
+
+    it("should accept the preview slug at 1080p with one image only", () => {
+      const direct = GrokVideo15PreviewRequestSchema.safeParse(
+        grokPreview1080pRequest
+      );
+      expect(direct.success).toBe(true);
+      expect(direct.data?.input.resolution).toBe("1080p");
       expect(
-        GrokVideo15PreviewRequestSchema.safeParse(grokPreview1080pRequest)
-          .success
-      ).toBe(false);
+        MediaGenerationRequestSchema.safeParse(grokPreview1080pRequest).success
+      ).toBe(true);
+
+      const twoImages = GrokVideo15PreviewRequestSchema.safeParse({
+        ...grokPreview1080pRequest,
+        input: {
+          ...grokPreview1080pRequest.input,
+          image_urls: [
+            "https://example.com/reference.png",
+            "https://example.com/second.png",
+          ],
+        },
+      });
+      expect(twoImages.success).toBe(false);
+      expect(twoImages.error?.issues[0]).toMatchObject({
+        path: ["input", "image_urls"],
+        message:
+          "grok-imagine-video-1-5-preview accepts exactly 1 image_url at 1080p",
+      });
     });
 
     it("should keep resolution absent from text-to-image input", () => {

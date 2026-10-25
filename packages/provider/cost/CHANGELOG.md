@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- KIE `grok-imagine-video-1-5-preview` 1080p pricing at $0.04/s (8
+  credits). The pricing feed lists only 480p and 720p for this model. The
+  rate is the third tier of the https://kie.ai/grok-imagine-video-1.5
+  pricingDesc, printed as a second "720p" entry, and a recorded 1 s 1080p
+  generation billed 8 credits. A 1080p estimate used to return $0 with a
+  warning. The entry's `source.asOf` is now 2026-10-25 (ac-0039hv).
+
 - `frontier()` rows carry `price`: the min and max of a bundled per-unit rate (`{ unit, min, max, asOf, url }`), `{ unit: "dynamic" }` for a fal endpoint priced from billed units, or `null` when the row is unpriced or token-priced. No rate changed.
 
 - MachGen video pricing for six frontier models, per-second gross rates, graduated H3 pricing and input-video duration hints. Rates verified 2026-10-22 against https://www.machgen.ai/pricing; shared model slugs and display names.

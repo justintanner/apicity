@@ -3437,12 +3437,14 @@ export const GrokVideo15KeyframeSchema = z.object({
 // Docs: https://docs.kie.ai/market/grok-imagine/1-5-preview
 // The frame controls (first_frame_url, last_frame_url, loop_url, keyframes)
 // arrived on 2026-10-22 and exist only on this slug, not on the
-// grok-imagine/* suite slugs.
+// grok-imagine/* suite slugs. The docs added 1080p by 2026-10-25, with one
+// image only at that resolution. They now default nsfw_checker to false; that
+// parse-default change is Breaking and waits for a minor release (ac-xgp38d).
 export const GrokVideo15PreviewInputSchema = z.object({
   prompt: z.string().max(4096).optional(),
   image_urls: z.array(z.string()).min(1),
   aspect_ratio: GrokVideo15AspectRatioSchema.default("auto"),
-  resolution: GrokImagineLegacyResolutionSchema.default("480p"),
+  resolution: GrokImagineResolutionSchema.default("480p"),
   duration: z.number().int().min(1).max(15).default(8),
   first_frame_url: z
     .string()
@@ -3472,8 +3474,8 @@ export const GrokVideo15PreviewInputSchema = z.object({
 });
 
 // KIE's docs put each keyframe strictly inside the clip and at least 1/3 s
-// from the next, and forbid pairing loop_url with a different end frame. The
-// guard checks all three before an OTP is spent.
+// from the next, forbid pairing loop_url with a different end frame, and
+// allow one image at 1080p. The guard checks all four before an OTP is spent.
 export const GrokVideo15PreviewRequestSchema = z
   .object({
     model: z.literal("grok-imagine-video-1-5-preview"),
@@ -3514,6 +3516,15 @@ export const GrokVideo15PreviewRequestSchema = z
           path: ["input", field],
         });
       }
+    }
+
+    if (v.input.resolution === "1080p" && v.input.image_urls.length > 1) {
+      ctx.addIssue({
+        code: "custom",
+        message:
+          "grok-imagine-video-1-5-preview accepts exactly 1 image_url at 1080p",
+        path: ["input", "image_urls"],
+      });
     }
   });
 

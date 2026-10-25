@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `grok-imagine-video-1-5-preview` accepts `resolution: "1080p"` with exactly one `image_urls` entry, as KIE's docs now list it, with a recorded 1 s 1080p generation (8 credits). 480p and 720p still accept more than one image.
+
 - `grok-imagine-video-1-5-preview` accepts `first_frame_url`, `last_frame_url`, `loop_url`, up to four `keyframes` (`url` plus `timestamp_s`, checked against `duration` and at least 1/3 s apart) and `enable_audio` (default `true`), with recorded generations for the frames and the loop. The keyframe and input shapes are exported as `GrokVideo15Keyframe` and `GrokVideo15PreviewInput`.
 
 - Added `omnihuman-2-0` (OmniHuman 2.0) with typed inputs: one image in `image_urls`, `audio_url`, an optional `prompt` of up to 300 characters, and `enable_watermark`, which defaults to `true`. It also comes with `Omnihuman20TaskResultJsonSchema`, per-second pricing in whole output seconds, and a recorded generation.

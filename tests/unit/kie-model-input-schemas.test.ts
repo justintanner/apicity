@@ -40,7 +40,8 @@ describe("KIE modelInputSchemas metadata", () => {
     expect(imageFields.index.default).toBe(0);
     expect(textFields.resolution.enum).toEqual(["480p", "720p", "1080p"]);
     expect(imageFields.resolution.enum).toEqual(["480p", "720p", "1080p"]);
-    expect(previewFields.resolution.enum).toEqual(["480p", "720p"]);
+    expect(previewFields.resolution.enum).toEqual(["480p", "720p", "1080p"]);
+    expect(previewFields.image_urls.description).toContain("max 1 at 1080p");
     expect(Object.hasOwn(textToImageFields, "resolution")).toBe(false);
 
     for (const fields of [textFields, imageFields]) {

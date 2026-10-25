@@ -4812,13 +4812,14 @@ export function createFal(opts: FalOptions): FalProvider {
 
   const queue = {
     // sig-ok: stylistic dotPath divergence from URL
-    // POST https://api.fal.ai/v1/POST
-    // Docs: https://docs.fal.ai
+    // POST https://queue.fal.run/{endpoint_id}{query}
+    // Docs: https://fal.ai/docs/inference-api/queue/submit
     submit: Object.assign(
       async function submit(
         params: FalQueueSubmitParams,
         signal?: AbortSignal
       ): Promise<FalQueueSubmitResponse> {
+        const { endpoint_id } = params;
         const headers: Record<string, string> = {};
         if (params.priority) {
           headers["X-Fal-Queue-Priority"] = params.priority;
@@ -4840,13 +4841,13 @@ export function createFal(opts: FalOptions): FalProvider {
             params.object_lifecycle_preference;
         }
 
-        const path = params.webhook
-          ? `/${params.endpoint_id}?fal_webhook=${encodeURIComponent(params.webhook)}`
-          : `/${params.endpoint_id}`;
+        const query = params.webhook
+          ? `?fal_webhook=${encodeURIComponent(params.webhook)}`
+          : "";
 
         return makeRequest<FalQueueSubmitResponse>(
           "POST",
-          path,
+          `/${endpoint_id}${query}`,
           params.input,
           signal,
           headers,
@@ -4858,17 +4859,21 @@ export function createFal(opts: FalOptions): FalProvider {
       }
     ),
 
-    async status(
+    // sig-ok: stylistic dotPath divergence from URL
+    // GET https://queue.fal.run/{endpoint_id}/requests/{request_id}/status
+    // Docs: https://fal.ai/docs/inference-api/queue/status
+    status: async function status(
       params: FalQueueStatusParams,
       signal?: AbortSignal
     ): Promise<FalQueueStatusResponse> {
+      const { endpoint_id, request_id } = params;
       const queryParams: Record<string, unknown> = {};
       if (params.logs) {
         queryParams.logs = "1";
       }
       return makeRequest<FalQueueStatusResponse>(
         "GET",
-        `/${params.endpoint_id}/requests/${params.request_id}/status`,
+        `/${endpoint_id}/requests/${request_id}/status`,
         Object.keys(queryParams).length > 0 ? queryParams : undefined,
         signal,
         undefined,
@@ -4876,13 +4881,17 @@ export function createFal(opts: FalOptions): FalProvider {
       );
     },
 
-    async result(
+    // sig-ok: stylistic dotPath divergence from URL
+    // GET https://queue.fal.run/{endpoint_id}/requests/{request_id}
+    // Docs: https://fal.ai/docs/inference-api/queue/result
+    result: async function result(
       params: FalQueueResultParams,
       signal?: AbortSignal
     ): Promise<FalQueueResultResponse> {
+      const { endpoint_id, request_id } = params;
       return makeRequest<FalQueueResultResponse>(
         "GET",
-        `/${params.endpoint_id}/requests/${params.request_id}`,
+        `/${endpoint_id}/requests/${request_id}`,
         undefined,
         signal,
         undefined,
@@ -5199,17 +5208,21 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   const getV1Queue = {
-    async status(
+    // sig-ok: stylistic dotPath divergence from URL
+    // GET https://queue.fal.run/{endpoint_id}/requests/{request_id}/status
+    // Docs: https://fal.ai/docs/inference-api/queue/status
+    status: async function status(
       params: FalQueueStatusParams,
       signal?: AbortSignal
     ): Promise<FalQueueStatusResponse> {
+      const { endpoint_id, request_id } = params;
       const queryParams: Record<string, unknown> = {};
       if (params.logs) {
         queryParams.logs = "1";
       }
       return makeRequest<FalQueueStatusResponse>(
         "GET",
-        `/${params.endpoint_id}/requests/${params.request_id}/status`,
+        `/${endpoint_id}/requests/${request_id}/status`,
         Object.keys(queryParams).length > 0 ? queryParams : undefined,
         signal,
         undefined,
@@ -5217,13 +5230,17 @@ export function createFal(opts: FalOptions): FalProvider {
       );
     },
 
-    async result(
+    // sig-ok: stylistic dotPath divergence from URL
+    // GET https://queue.fal.run/{endpoint_id}/requests/{request_id}
+    // Docs: https://fal.ai/docs/inference-api/queue/result
+    result: async function result(
       params: FalQueueResultParams,
       signal?: AbortSignal
     ): Promise<FalQueueResultResponse> {
+      const { endpoint_id, request_id } = params;
       return makeRequest<FalQueueResultResponse>(
         "GET",
-        `/${params.endpoint_id}/requests/${params.request_id}`,
+        `/${endpoint_id}/requests/${request_id}`,
         undefined,
         signal,
         undefined,
@@ -5384,13 +5401,14 @@ export function createFal(opts: FalOptions): FalProvider {
 
   const postV1Queue = {
     // sig-ok: stylistic dotPath divergence from URL
-    // POST https://api.fal.ai/v1/POST
-    // Docs: https://docs.fal.ai
+    // POST https://queue.fal.run/{endpoint_id}{query}
+    // Docs: https://fal.ai/docs/inference-api/queue/submit
     submit: Object.assign(
       async function submit(
         params: FalQueueSubmitParams,
         signal?: AbortSignal
       ): Promise<FalQueueSubmitResponse> {
+        const { endpoint_id } = params;
         const headers: Record<string, string> = {};
         if (params.priority) {
           headers["X-Fal-Queue-Priority"] = params.priority;
@@ -5412,13 +5430,13 @@ export function createFal(opts: FalOptions): FalProvider {
             params.object_lifecycle_preference;
         }
 
-        const path = params.webhook
-          ? `/${params.endpoint_id}?fal_webhook=${encodeURIComponent(params.webhook)}`
-          : `/${params.endpoint_id}`;
+        const query = params.webhook
+          ? `?fal_webhook=${encodeURIComponent(params.webhook)}`
+          : "";
 
         return makeRequest<FalQueueSubmitResponse>(
           "POST",
-          path,
+          `/${endpoint_id}${query}`,
           params.input,
           signal,
           headers,

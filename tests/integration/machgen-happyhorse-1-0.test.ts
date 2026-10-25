@@ -8,4 +8,9 @@ describe("MachGen happyhorse-1-0", () => {
       setupPolly("machgen/happyhorse-1-0-i2v")
     );
   }, 2000000);
+  it("generates R2V", async () => {
+    await recordMachgen(18, "R2V", () =>
+      setupPolly("machgen/happyhorse-1-0-r2v")
+    );
+  }, 2000000);
 });

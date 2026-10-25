@@ -453,6 +453,8 @@ Video generation: `apicity machgen api.v0.generate --data-file request.json`.
 Poll `apicity machgen api.v0.tasks --taskId <id>`, then download with
 `apicity machgen api.v0.assets --taskId <id>`. Generation bills per second;
 `apicity machgen api.v0.tasks.billing --taskId <id>` reads the final charge.
+`task_type: "UPSCALE"` re-renders a finished task, named in `src_task_ids`,
+at a higher `video_config.height`.
 
 ## Credentials and configuration
 

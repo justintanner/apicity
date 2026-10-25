@@ -1,13 +1,15 @@
 import { z } from "zod";
 
 // Video task types per model, from https://www.machgen.ai/docs/models
-// (2026-10-25). UPSCALE is left to the video-to-video catalog.
+// (2026-10-25). Vidu-Upscale-Pro is on the pricebook but not in the models
+// table, and MachGen answered HTTP 500 to every request for it that day, so it
+// passes unchecked like any other id.
 export const MACHGEN_VIDEO_MODEL_TASK_TYPES = {
   "Wan2.2-A14B": ["T2V", "I2V"],
   "LTX-2.3-Pro": ["T2V", "I2V"],
   "Vidu-Q3-Turbo": ["T2V", "I2V", "R2V"],
   "Vidu-Q3-Pro": ["T2V", "I2V", "R2V"],
-  "MiniMax-H3": ["T2V", "I2V", "R2V"],
+  "MiniMax-H3": ["T2V", "I2V", "R2V", "UPSCALE"],
   "MiniMax-H3-Turbo": ["T2V", "I2V", "R2V"],
   "Seedance-2.5": ["T2V", "I2V", "R2V"],
   "Seedance-2.0": ["T2V", "I2V", "R2V"],
@@ -27,6 +29,10 @@ export const MACHGEN_VIDEO_MODEL_TASK_TYPES = {
   "HappyHorse-1.0": ["T2V", "I2V", "R2V"],
   "Grok-Imagine-Video": ["T2V"],
   "Grok-Imagine-Video-1.5": ["I2V"],
+  "Topaz-Video-Precision": ["UPSCALE"],
+  "Topaz-Video-Precision-Animation": ["UPSCALE"],
+  "Topaz-Video-Generative": ["UPSCALE"],
+  "Topaz-Video-Generative-Fast": ["UPSCALE"],
 } as const;
 
 export type MachGenVideoModel = keyof typeof MACHGEN_VIDEO_MODEL_TASK_TYPES;
@@ -41,6 +47,27 @@ export interface MachGenVideoGrid {
   endFrame?: boolean;
   /** I2V: `keyframe_indices: [-1]` animates toward one image as the end frame. */
   loneEndFrame?: boolean;
+  /** R2V: the most references of each kind; 0 means the model takes none. */
+  references?: {
+    images?: number;
+    videos?: number;
+    audios?: number;
+    /** Images, videos and audio clips together. */
+    total?: number;
+  };
+  /** R2V: an image or video reference is required; audio alone is refused. */
+  visualReference?: boolean;
+  /** R2V: `reference_video_start_secs` may be non-zero. */
+  startOffset?: boolean;
+  /** R2V: accepted `reference_video_operation` values. */
+  operations?: readonly ("reference" | "edit" | "extend")[];
+}
+
+/** UPSCALE target heights (the output's short edge) and engines per model. */
+export interface MachGenUpscaleGrid {
+  heights: readonly number[];
+  /** Accepted `upscale_config.engine` values, when MachGen checks them. */
+  engines?: readonly string[];
 }
 
 const secs = (from: number, to: number) =>
@@ -55,12 +82,33 @@ const SEEDANCE_T2V = {
 const SEEDANCE_I2V = { ...SEEDANCE_T2V, endFrame: true };
 const H3_T2V = { aspectRatios: WIDE };
 const H3_I2V = { aspectRatios: ADAPTIVE, endFrame: true, loneEndFrame: true };
+// R2V reference limits come from MachGen's capability contract; the 400s
+// in machgen-grids-2026-10-25.json confirm a sample of them.
+const H3_R2V = {
+  aspectRatios: ADAPTIVE,
+  references: { images: 9, videos: 3, audios: 3, total: 15 },
+  startOffset: true,
+  operations: ["reference"] as const,
+};
+const SEEDANCE_2_R2V = {
+  durations: [-1, ...secs(4, 15)],
+  aspectRatios: ADAPTIVE,
+  visualReference: true,
+  operations: ["reference"] as const,
+};
+const IMAGES_ONLY = (images: number) => ({
+  references: { images, videos: 0, audios: 0 },
+});
 
-// T2V and I2V grids, read from MachGen's 400 responses to off-grid requests on
-// 2026-10-25 (tests/fixtures/machgen-evidence/machgen-grids-2026-10-25.json).
-// A T2V-only model's aspect ratios were not probed, so they are not checked.
+// T2V, I2V and R2V grids, read from MachGen's 400 responses to off-grid
+// requests on 2026-10-25
+// (tests/fixtures/machgen-evidence/machgen-grids-2026-10-25.json). A T2V-only
+// model's aspect ratios were not probed, so they are not checked.
 export const MACHGEN_VIDEO_GRIDS: Readonly<
-  Record<string, Readonly<Partial<Record<"T2V" | "I2V", MachGenVideoGrid>>>>
+  Record<
+    string,
+    Readonly<Partial<Record<"T2V" | "I2V" | "R2V", MachGenVideoGrid>>>
+  >
 > = {
   "Wan2.2-A14B": {
     T2V: { heights: [480, 720], durations: [5], aspectRatios: ["16:9"] },
@@ -87,6 +135,12 @@ export const MACHGEN_VIDEO_GRIDS: Readonly<
       aspectRatios: [],
       endFrame: true,
     },
+    R2V: {
+      heights: [540, 720],
+      durations: secs(1, 16),
+      aspectRatios: VIDU,
+      ...IMAGES_ONLY(7),
+    },
   },
   "Vidu-Q3-Pro": {
     T2V: {
@@ -100,14 +154,22 @@ export const MACHGEN_VIDEO_GRIDS: Readonly<
       aspectRatios: [],
       endFrame: true,
     },
+    R2V: {
+      heights: [540, 720],
+      durations: secs(1, 16),
+      aspectRatios: VIDU,
+      ...IMAGES_ONLY(7),
+    },
   },
   "MiniMax-H3": {
     T2V: { heights: [480, 768, 1080, 1440], durations: secs(1, 30), ...H3_T2V },
     I2V: { heights: [480, 768, 1080, 1440], durations: secs(1, 30), ...H3_I2V },
+    R2V: { heights: [480, 768, 1080, 1440], durations: secs(1, 30), ...H3_R2V },
   },
   "MiniMax-H3-Turbo": {
     T2V: { heights: [480, 768, 1080], durations: secs(4, 15), ...H3_T2V },
     I2V: { heights: [480, 768, 1080], durations: secs(4, 15), ...H3_I2V },
+    R2V: { heights: [480, 768, 1080], durations: secs(4, 15), ...H3_R2V },
   },
   "Seedance-2.5": {
     T2V: {
@@ -121,18 +183,39 @@ export const MACHGEN_VIDEO_GRIDS: Readonly<
       aspectRatios: ["adaptive"],
       endFrame: true,
     },
+    R2V: {
+      heights: [480, 720, 1080],
+      durations: [-1, ...secs(4, 30)],
+      aspectRatios: ADAPTIVE,
+      operations: ["reference", "edit", "extend"],
+    },
   },
   "Seedance-2.0": {
     T2V: { heights: [480, 720, 1080, 2160], ...SEEDANCE_T2V },
     I2V: { heights: [480, 720, 1080, 2160], ...SEEDANCE_I2V },
+    R2V: {
+      heights: [480, 720, 1080, 2160],
+      ...SEEDANCE_2_R2V,
+      references: { images: 9, videos: 3, audios: 3 },
+    },
   },
   "Seedance-2.0-Fast": {
     T2V: { heights: [480, 720], ...SEEDANCE_T2V },
     I2V: { heights: [480, 720], ...SEEDANCE_I2V },
+    R2V: {
+      heights: [480, 720],
+      ...SEEDANCE_2_R2V,
+      references: { images: 9, videos: 3, audios: 3, total: 12 },
+    },
   },
   "Seedance-2.0-Mini": {
     T2V: { heights: [480, 720], ...SEEDANCE_T2V },
     I2V: { heights: [480, 720], ...SEEDANCE_I2V },
+    R2V: {
+      heights: [480, 720],
+      ...SEEDANCE_2_R2V,
+      references: { images: 9, videos: 3, audios: 3, total: 12 },
+    },
   },
   "Kling-v3": {
     T2V: {
@@ -147,12 +230,34 @@ export const MACHGEN_VIDEO_GRIDS: Readonly<
       endFrame: true,
     },
   },
-  "Kling-o3": { T2V: { heights: [720, 1080, 2160], durations: secs(3, 15) } },
+  "Kling-o3": {
+    T2V: { heights: [720, 1080, 2160], durations: secs(3, 15) },
+    R2V: {
+      heights: [720, 1080, 2160],
+      durations: secs(3, 15),
+      aspectRatios: ["16:9", "9:16", "1:1"],
+      ...IMAGES_ONLY(7),
+    },
+  },
+  "Vidu-Q3": {
+    R2V: {
+      heights: [540, 720, 1080],
+      durations: secs(3, 16),
+      aspectRatios: VIDU,
+      ...IMAGES_ONLY(7),
+    },
+  },
   "Vidu-Q4-Preview": {
     I2V: {
       heights: [540, 720, 1080, 1440, 2160],
       durations: secs(3, 16),
       aspectRatios: [],
+    },
+    R2V: {
+      heights: [540, 720, 1080, 1440, 2160],
+      durations: secs(3, 16),
+      aspectRatios: ["16:9", "9:16", "1:1", "4:3", "3:4"],
+      references: { videos: 0, audios: 3 },
     },
   },
   "Vidu-Q3-Pro-Fast": {
@@ -170,6 +275,11 @@ export const MACHGEN_VIDEO_GRIDS: Readonly<
       aspectRatios: ["adaptive", "16:9", "9:16", "1:1", "4:3", "3:4"],
       endFrame: true,
     },
+    R2V: {
+      heights: [480, 720, 1080],
+      durations: [-1, ...secs(2, 30)],
+      aspectRatios: ["adaptive", "16:9", "9:16", "1:1", "4:3", "3:4"],
+    },
   },
   "Veo-3.1": { T2V: { heights: [720, 1080, 2160], durations: [4, 6, 8] } },
   "Veo-3.1-Fast": { T2V: { heights: [720, 1080, 2160], durations: [4, 6, 8] } },
@@ -184,6 +294,12 @@ export const MACHGEN_VIDEO_GRIDS: Readonly<
       durations: secs(1, 15),
       aspectRatios: [],
     },
+    R2V: {
+      heights: [360, 540, 720, 1080],
+      durations: secs(1, 15),
+      aspectRatios: VIDU,
+      ...IMAGES_ONLY(3),
+    },
   },
   "Pixverse-C1": {
     T2V: {
@@ -196,6 +312,12 @@ export const MACHGEN_VIDEO_GRIDS: Readonly<
       durations: secs(1, 15),
       aspectRatios: [],
     },
+    R2V: {
+      heights: [360, 540, 720, 1080],
+      durations: secs(1, 15),
+      aspectRatios: VIDU,
+      ...IMAGES_ONLY(3),
+    },
   },
   "HappyHorse-1.1": {
     T2V: {
@@ -204,6 +326,11 @@ export const MACHGEN_VIDEO_GRIDS: Readonly<
       aspectRatios: [...VIDU, "21:9"],
     },
     I2V: { heights: [720, 1080], durations: secs(3, 15), aspectRatios: [] },
+    R2V: {
+      heights: [720, 1080],
+      durations: secs(3, 15),
+      aspectRatios: [...VIDU, "21:9"],
+    },
   },
   "HappyHorse-1.0": {
     T2V: {
@@ -212,6 +339,11 @@ export const MACHGEN_VIDEO_GRIDS: Readonly<
       aspectRatios: [...VIDU, "21:9"],
     },
     I2V: { heights: [720, 1080], durations: secs(3, 15), aspectRatios: [] },
+    R2V: {
+      heights: [720, 1080],
+      durations: secs(3, 15),
+      aspectRatios: [...VIDU, "21:9"],
+    },
   },
   "Grok-Imagine-Video": {
     T2V: { heights: [480, 720], durations: secs(1, 15) },
@@ -222,6 +354,43 @@ export const MACHGEN_VIDEO_GRIDS: Readonly<
       durations: secs(1, 15),
       aspectRatios: [],
     },
+  },
+};
+
+// UPSCALE target heights, read from 400s of MachGen's upscale quote, and the
+// engines it checks (2026-10-25). MachGen also requires a target above the
+// source's height, which depends on the source.
+export const MACHGEN_VIDEO_UPSCALE: Readonly<
+  Record<string, MachGenUpscaleGrid>
+> = {
+  "MiniMax-H3": { heights: [1440] },
+  "Topaz-Video-Precision": {
+    heights: [1080, 1440, 2160, 4320],
+    engines: [
+      "artemis-hq",
+      "artemis-lq",
+      "artemis-mq",
+      "gaia-cg",
+      "gaia-hq",
+      "proteus",
+    ],
+  },
+  "Topaz-Video-Precision-Animation": {
+    heights: [720, 960, 1080, 1440, 2160, 4320],
+    engines: ["gaia-2"],
+  },
+  "Topaz-Video-Generative": {
+    heights: [1080, 1440, 2160],
+    engines: [
+      "starlight-hq",
+      "starlight-mini",
+      "starlight-precise-2-5",
+      "starlight-sharp",
+    ],
+  },
+  "Topaz-Video-Generative-Fast": {
+    heights: [1080, 1440, 2160],
+    engines: ["starlight-fast-2"],
   },
 };
 
@@ -252,7 +421,14 @@ export const MachGenVideoConfigSchema = z.object({
   negative_prompt: z.string().optional(),
 });
 
+// Engine and tuning knobs for UPSCALE; Topaz takes model-specific knobs
+// (detail, noise, grain, ...) that MachGen passes through.
+export const MachGenUpscaleConfigSchema = z
+  .object({ engine: z.string().optional() })
+  .passthrough();
+
 const list = (values: readonly unknown[]) => values.join(", ");
+const isHttpUrl = (url: string) => /^https?:\/\//i.test(url);
 
 export const MachGenGenerateRequestSchema = z
   .object({
@@ -264,9 +440,10 @@ export const MachGenGenerateRequestSchema = z
         ]
       )
       .or(MachGenModelAliasSchema),
-    task_type: z.enum(["T2V", "I2V", "R2V"]),
+    task_type: z.enum(["T2V", "I2V", "R2V", "UPSCALE"]),
     prompt: z.string(),
     video_config: MachGenVideoConfigSchema,
+    upscale_config: MachGenUpscaleConfigSchema.optional(),
     enhance_prompt: z.boolean().optional(),
     prompt_enhancement_level: z
       .enum(["DEFAULT", "FAST", "BALANCED", "DEEP"])
@@ -287,7 +464,16 @@ export const MachGenGenerateRequestSchema = z
     reference_video_operation: z
       .enum(["reference", "edit", "extend"])
       .optional(),
-    reference_video_start_secs: z.number().nonnegative().optional(),
+    // Seconds into each reference video, aligned with src_video_urls.
+    reference_video_start_secs: z.array(z.number().nonnegative()).optional(),
+    reference_order: z
+      .array(
+        z.object({
+          type: z.enum(["image", "video", "audio"]),
+          index: z.number().int().nonnegative(),
+        })
+      )
+      .optional(),
     subject_to_image_ids: z
       .record(z.string(), z.array(z.number().int()))
       .optional(),
@@ -308,7 +494,46 @@ export const MachGenGenerateRequestSchema = z
     const issue = (path: (string | number)[], message: string) =>
       ctx.addIssue({ code: "custom", path, message });
     const images = req.src_image_urls ?? [];
+    const videos = req.src_video_urls ?? [];
+    const audios = req.src_audio_urls ?? [];
     const keyframes = req.keyframe_indices;
+    const { duration_secs, num_frames } = req.video_config;
+    if ((duration_secs === undefined) === (num_frames === undefined))
+      issue(
+        ["video_config"],
+        "set exactly one of duration_secs and num_frames"
+      );
+    videos.forEach((url, i) => {
+      if (!isHttpUrl(url))
+        issue(
+          ["src_video_urls", i],
+          "src_video_urls takes public http(s) URLs; reference a MachGen output with src_task_ids"
+        );
+    });
+    const subjects = new Map<string, string>();
+    for (const [map, refs] of [
+      ["subject_to_image_ids", images],
+      ["subject_to_video_ids", videos],
+      ["subject_to_audio_ids", audios],
+    ] as const) {
+      for (const [name, indices] of Object.entries(req[map] ?? {})) {
+        const seen = subjects.get(name);
+        if (seen)
+          issue(
+            [map, name],
+            `subject ${name} appears in both ${seen} and ${map}; a name may appear in only one map`
+          );
+        subjects.set(name, map);
+        // src_task_ids may append outputs after the URLs, so only check URL lists.
+        if (!req.src_task_ids?.length)
+          for (const index of indices)
+            if (index < 0 || index >= refs.length)
+              issue(
+                [map, name],
+                `${map} ${name} points at index ${index}, but there are ${refs.length} references`
+              );
+      }
+    }
     if (req.task_type === "I2V") {
       if (images.length > 2)
         issue(
@@ -331,11 +556,35 @@ export const MachGenGenerateRequestSchema = z
       );
       return;
     }
-    if (req.task_type === "R2V") return;
+    const { height, aspect_ratio } = req.video_config;
+    if (req.task_type === "UPSCALE") {
+      if (!req.src_task_ids?.length && !videos.length && !images.length)
+        issue(
+          ["src_task_ids"],
+          "a source video or image is required for UPSCALE"
+        );
+      const upscale = MACHGEN_VIDEO_UPSCALE[model];
+      if (!upscale) return;
+      if (!upscale.heights.includes(height))
+        issue(
+          ["video_config", "height"],
+          `${model} does not support UPSCALE height=${height}; allowed heights: ${list(upscale.heights)}`
+        );
+      const engine = req.upscale_config?.engine;
+      if (
+        engine !== undefined &&
+        upscale.engines &&
+        !upscale.engines.includes(engine)
+      )
+        issue(
+          ["upscale_config", "engine"],
+          `${model} does not support UPSCALE engine=${engine}; allowed engines: ${list(upscale.engines)}`
+        );
+      return;
+    }
     const grid = MACHGEN_VIDEO_GRIDS[model]?.[req.task_type];
     if (!grid) return;
     const task = req.task_type;
-    const { height, aspect_ratio, duration_secs } = req.video_config;
     if (!grid.heights.includes(height))
       issue(
         ["video_config", "height"],
@@ -352,11 +601,74 @@ export const MachGenGenerateRequestSchema = z
           ? `${model} does not support configurable aspect_ratio for ${task}`
           : `${model} does not support ${task} aspect_ratio='${aspect_ratio}'; allowed aspect ratios: ${list(grid.aspectRatios)}`
       );
-    if (duration_secs !== undefined && !grid.durations.includes(duration_secs))
+    // An edit matches the source's length, so MachGen ignores duration_secs.
+    if (
+      duration_secs !== undefined &&
+      req.reference_video_operation !== "edit" &&
+      !grid.durations.includes(duration_secs)
+    )
       issue(
         ["video_config", "duration_secs"],
         `${model} does not support ${task} duration_secs=${duration_secs}; allowed durations: ${list(grid.durations)}`
       );
+    if (task === "R2V") {
+      const caps = grid.references ?? {};
+      for (const [kind, refs, path, noun] of [
+        ["images", images, "src_image_urls", "reference images"],
+        ["videos", videos, "src_video_urls", "reference videos"],
+        ["audios", audios, "src_audio_urls", "reference audio clips"],
+      ] as const) {
+        const cap = caps[kind];
+        if (cap !== undefined && refs.length > cap)
+          issue(
+            [path],
+            `${model} R2V accepts at most ${cap} ${noun}; got ${refs.length}`
+          );
+      }
+      const total = images.length + videos.length + audios.length;
+      if (caps.total !== undefined && total > caps.total)
+        issue(
+          ["src_image_urls"],
+          `${model} R2V accepts at most ${caps.total} reference files; got ${total}`
+        );
+      if (
+        grid.visualReference &&
+        audios.length > 0 &&
+        !images.length &&
+        !videos.length &&
+        !req.src_task_ids?.length
+      )
+        issue(
+          ["src_audio_urls"],
+          `${model} R2V audio references require at least one image or video reference`
+        );
+      const starts = req.reference_video_start_secs;
+      if (
+        starts &&
+        !req.src_task_ids?.length &&
+        starts.length !== videos.length
+      )
+        issue(
+          ["reference_video_start_secs"],
+          `reference_video_start_secs has ${starts.length} entries for ${videos.length} reference videos; they must align`
+        );
+      if (starts?.some((start) => start > 0) && !grid.startOffset)
+        issue(
+          ["reference_video_start_secs"],
+          `${model} R2V reads every reference video from its start; it does not support reference_video_start_secs`
+        );
+      const operation = req.reference_video_operation;
+      if (
+        operation !== undefined &&
+        grid.operations &&
+        !grid.operations.includes(operation)
+      )
+        issue(
+          ["reference_video_operation"],
+          `${model} R2V does not support reference_video_operation='${operation}'; allowed operations: ${list(grid.operations)}`
+        );
+      return;
+    }
     if (task !== "I2V") return;
     if (images.length === 0)
       issue(

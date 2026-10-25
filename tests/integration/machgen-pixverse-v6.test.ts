@@ -14,4 +14,7 @@ describe("MachGen pixverse-v6", () => {
       { audio: true }
     );
   }, 2000000);
+  it("generates R2V", async () => {
+    await recordMachgen(16, "R2V", () => setupPolly("machgen/pixverse-v6-r2v"));
+  }, 2000000);
 });

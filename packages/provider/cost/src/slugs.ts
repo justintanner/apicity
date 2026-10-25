@@ -647,6 +647,8 @@ export const MODEL_SLUGS = {
     "Pixverse-V6": "pixv6",
     "Pixverse-C1": "pixc1",
     "HappyHorse-1.0": "hh",
+    "Kling-o3": "klingo3",
+    "Vidu-Q3": "viduq3",
   },
 } as const;
 
@@ -1283,6 +1285,8 @@ export const MODEL_DISPLAY = {
     "Pixverse-V6": "PixVerse V6",
     "Pixverse-C1": "PixVerse C1",
     "HappyHorse-1.0": "HappyHorse 1.0",
+    "Kling-o3": "Kling 3.0 Omni",
+    "Vidu-Q3": "Vidu Q3",
   },
 } as const;
 

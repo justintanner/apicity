@@ -1,12 +1,14 @@
 {
   "capturedAt": "2026-10-25",
-  "source": "Free probes of POST https://api.machgen.ai/api/v0/generate. MachGen rejects an off-grid request with HTTP 400 before accepting it, and a rejected request is never billed (https://www.machgen.ai/docs/rest_api#error-codes). Each probe sent one deliberately invalid value, so the 400 detail lists the allowed values. The lists match the capability contract in the www.machgen.ai Next.js bundle.",
-  "probes": 227,
+  "source": "Probes of POST https://api.machgen.ai/api/v0/generate and POST https://api.machgen.ai/api/v0/upscale/quote (MachGen's web app price check; it never creates a task). MachGen rejects an off-grid request with HTTP 400 before accepting it, and a rejected request is never billed (https://www.machgen.ai/docs/rest_api#error-codes). Each probe sent one deliberately invalid value, so the 400 detail lists the allowed values. Three probes in `accepted` were not rejected and billed (task ids and receipts in the ac-ks4no2 PR). The lists match the capability contract in the www.machgen.ai Next.js bundle.",
+  "probes": 426,
   "statuses": {
-    "400": 224,
-    "403": 3
+    "200": 48,
+    "400": 351,
+    "403": 3,
+    "422": 2,
+    "500": 22
   },
-  "accepted": 0,
   "checkOrder": "task type, then height, then aspect_ratio, then duration_secs, then fps, then the source-image rules (end frame, lone end frame, keyframe alignment); Vidu-Q3-Turbo checks duration_secs first, and the image count (0 or 3+) is checked before height",
   "grids": {
     "Wan2.2-A14B": {
@@ -39,6 +41,11 @@
         "heights": [540, 720],
         "aspectRatios": []
       },
+      "R2V": {
+        "durations": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+        "heights": [540, 720],
+        "aspectRatios": ["16:9", "9:16", "1:1", "4:3"]
+      },
       "T2V": {
         "durations": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
         "heights": [540, 720],
@@ -51,6 +58,11 @@
         "durations": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
         "aspectRatios": []
       },
+      "R2V": {
+        "heights": [540, 720],
+        "durations": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+        "aspectRatios": ["16:9", "9:16", "1:1", "4:3"]
+      },
       "T2V": {
         "heights": [540, 720, 1080],
         "durations": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
@@ -59,6 +71,22 @@
     },
     "MiniMax-H3": {
       "I2V": {
+        "heights": [480, 768, 1080, 1440],
+        "durations": [
+          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+          21, 22, 23, 24, 25, 26, 27, 28, 29, 30
+        ],
+        "aspectRatios": [
+          "adaptive",
+          "16:9",
+          "9:16",
+          "1:1",
+          "4:3",
+          "3:4",
+          "21:9"
+        ]
+      },
+      "R2V": {
         "heights": [480, 768, 1080, 1440],
         "durations": [
           1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
@@ -97,6 +125,19 @@
           "21:9"
         ]
       },
+      "R2V": {
+        "heights": [480, 768, 1080],
+        "durations": [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "aspectRatios": [
+          "adaptive",
+          "16:9",
+          "9:16",
+          "1:1",
+          "4:3",
+          "3:4",
+          "21:9"
+        ]
+      },
       "T2V": {
         "heights": [480, 768, 1080],
         "durations": [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
@@ -111,6 +152,22 @@
           22, 23, 24, 25, 26, 27, 28, 29, 30
         ],
         "aspectRatios": ["adaptive"]
+      },
+      "R2V": {
+        "heights": [480, 720, 1080],
+        "durations": [
+          -1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+          22, 23, 24, 25, 26, 27, 28, 29, 30
+        ],
+        "aspectRatios": [
+          "adaptive",
+          "16:9",
+          "9:16",
+          "1:1",
+          "4:3",
+          "3:4",
+          "21:9"
+        ]
       },
       "T2V": {
         "heights": [480, 720, 1080],
@@ -131,6 +188,19 @@
     },
     "Seedance-2.0": {
       "I2V": {
+        "heights": [480, 720, 1080, 2160],
+        "durations": [-1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "aspectRatios": [
+          "adaptive",
+          "16:9",
+          "9:16",
+          "1:1",
+          "4:3",
+          "3:4",
+          "21:9"
+        ]
+      },
+      "R2V": {
         "heights": [480, 720, 1080, 2160],
         "durations": [-1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
         "aspectRatios": [
@@ -171,6 +241,19 @@
           "21:9"
         ]
       },
+      "R2V": {
+        "heights": [480, 720],
+        "durations": [-1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "aspectRatios": [
+          "adaptive",
+          "16:9",
+          "9:16",
+          "1:1",
+          "4:3",
+          "3:4",
+          "21:9"
+        ]
+      },
       "T2V": {
         "heights": [480, 720],
         "durations": [-1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
@@ -187,6 +270,19 @@
     },
     "Seedance-2.0-Mini": {
       "I2V": {
+        "heights": [480, 720],
+        "durations": [-1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "aspectRatios": [
+          "adaptive",
+          "16:9",
+          "9:16",
+          "1:1",
+          "4:3",
+          "3:4",
+          "21:9"
+        ]
+      },
+      "R2V": {
         "heights": [480, 720],
         "durations": [-1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
         "aspectRatios": [
@@ -226,6 +322,11 @@
       }
     },
     "Kling-o3": {
+      "R2V": {
+        "heights": [720, 1080, 2160],
+        "durations": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "aspectRatios": ["16:9", "9:16", "1:1"]
+      },
       "T2V": {
         "heights": [720, 1080, 2160],
         "durations": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
@@ -236,6 +337,11 @@
         "heights": [540, 720, 1080, 1440, 2160],
         "durations": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
         "aspectRatios": []
+      },
+      "R2V": {
+        "heights": [540, 720, 1080, 1440, 2160],
+        "durations": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+        "aspectRatios": ["16:9", "9:16", "1:1", "4:3", "3:4"]
       }
     },
     "Vidu-Q3-Pro-Fast": {
@@ -247,6 +353,14 @@
     },
     "Alibaba-Wan-3.0": {
       "I2V": {
+        "heights": [480, 720, 1080],
+        "durations": [
+          -1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+          20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30
+        ],
+        "aspectRatios": ["adaptive", "16:9", "9:16", "1:1", "4:3", "3:4"]
+      },
+      "R2V": {
         "heights": [480, 720, 1080],
         "durations": [
           -1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
@@ -281,6 +395,11 @@
         "durations": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
         "aspectRatios": []
       },
+      "R2V": {
+        "heights": [360, 540, 720, 1080],
+        "durations": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "aspectRatios": ["16:9", "9:16", "1:1", "4:3"]
+      },
       "T2V": {
         "heights": [360, 540, 720, 1080],
         "durations": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
@@ -292,6 +411,11 @@
         "heights": [360, 540, 720, 1080],
         "durations": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
         "aspectRatios": []
+      },
+      "R2V": {
+        "heights": [360, 540, 720, 1080],
+        "durations": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "aspectRatios": ["16:9", "9:16", "1:1", "4:3"]
       },
       "T2V": {
         "heights": [360, 540, 720, 1080],
@@ -305,6 +429,11 @@
         "durations": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
         "aspectRatios": []
       },
+      "R2V": {
+        "heights": [720, 1080],
+        "durations": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "aspectRatios": ["16:9", "9:16", "1:1", "4:3", "21:9"]
+      },
       "T2V": {
         "heights": [720, 1080],
         "durations": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
@@ -316,6 +445,11 @@
         "heights": [720, 1080],
         "durations": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
         "aspectRatios": []
+      },
+      "R2V": {
+        "heights": [720, 1080],
+        "durations": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+        "aspectRatios": ["16:9", "9:16", "1:1", "4:3", "21:9"]
       },
       "T2V": {
         "heights": [720, 1080],
@@ -335,6 +469,13 @@
         "durations": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
         "aspectRatios": []
       }
+    },
+    "Vidu-Q3": {
+      "R2V": {
+        "heights": [540, 720, 1080],
+        "durations": [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+        "aspectRatios": ["16:9", "9:16", "1:1", "4:3"]
+      }
     }
   },
   "taskTypes": {
@@ -348,6 +489,39 @@
     "Grok-Imagine-Video-1.5": ["I2V"],
     "Vidu-Q3": ["R2V"],
     "Topaz-Video-Precision": ["UPSCALE"]
+  },
+  "upscale": {
+    "MiniMax-H3": {
+      "heights": [1440]
+    },
+    "Topaz-Video-Generative": {
+      "heights": [1080, 1440, 2160],
+      "engines": [
+        "starlight-hq",
+        "starlight-mini",
+        "starlight-precise-2-5",
+        "starlight-sharp"
+      ]
+    },
+    "Topaz-Video-Generative-Fast": {
+      "heights": [1080, 1440, 2160],
+      "engines": ["starlight-fast-2"]
+    },
+    "Topaz-Video-Precision": {
+      "heights": [1080, 1440, 2160, 4320],
+      "engines": [
+        "artemis-hq",
+        "artemis-lq",
+        "artemis-mq",
+        "gaia-cg",
+        "gaia-hq",
+        "proteus"
+      ]
+    },
+    "Topaz-Video-Precision-Animation": {
+      "heights": [720, 960, 1080, 1440, 2160, 4320],
+      "engines": ["gaia-2"]
+    }
   },
   "rules": [
     {
@@ -571,6 +745,427 @@
       },
       "status": 403,
       "detail": "MiniMax-H3 at 1080p is not available for your account."
+    },
+    {
+      "rule": "R2V reference videos on a model that takes none",
+      "utc": "2026-10-25T19:19:49.935Z",
+      "request": {
+        "model": "Pixverse-V6",
+        "task_type": "R2V",
+        "prompt": "The cat from the reference image walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 360,
+          "duration_secs": 1,
+          "audio": false
+        },
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg"
+        ],
+        "src_video_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/seedance-ref.mp4"
+        ]
+      },
+      "status": 400,
+      "detail": "Pixverse-V6 R2V accepts at most 0 reference videos; got 1"
+    },
+    {
+      "rule": "R2V reference audio on a model that takes none",
+      "utc": "2026-10-25T19:22:00.245Z",
+      "request": {
+        "model": "Pixverse-V6",
+        "task_type": "R2V",
+        "prompt": "The cat from the reference image walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 360,
+          "duration_secs": 1,
+          "audio": false
+        },
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg"
+        ],
+        "src_audio_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/tone.mp3"
+        ]
+      },
+      "status": 400,
+      "detail": "Pixverse-V6 R2V accepts at most 0 reference audio clips; got 1"
+    },
+    {
+      "rule": "R2V reference images over the model's cap",
+      "utc": "2026-10-25T19:22:49.549Z",
+      "request": {
+        "model": "Pixverse-V6",
+        "task_type": "R2V",
+        "prompt": "The cat from the reference image walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 360,
+          "duration_secs": 1,
+          "audio": false
+        },
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg"
+        ]
+      },
+      "status": 400,
+      "detail": "Pixverse-V6 R2V accepts at most 3 reference images; got 4"
+    },
+    {
+      "rule": "R2V reference images over a 7-image cap",
+      "utc": "2026-10-25T19:22:51.216Z",
+      "request": {
+        "model": "Vidu-Q3-Turbo",
+        "task_type": "R2V",
+        "prompt": "The cat from the reference image walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 540,
+          "duration_secs": 1
+        },
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg"
+        ]
+      },
+      "status": 400,
+      "detail": "Value error, Vidu-Q3-Turbo R2V requires from 1 to 7 reference images; got 8"
+    },
+    {
+      "rule": "R2V references over the combined cap",
+      "utc": "2026-10-25T19:20:17.034Z",
+      "request": {
+        "model": "Seedance-2.0-Mini",
+        "task_type": "R2V",
+        "prompt": "The cat from the reference image walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 480,
+          "duration_secs": 4,
+          "audio": false
+        },
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg"
+        ],
+        "src_video_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/seedance-ref.mp4",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/seedance-ref.mp4",
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/seedance-ref.mp4"
+        ],
+        "src_audio_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/tone.mp3"
+        ]
+      },
+      "status": 400,
+      "detail": "Seedance-2.0-Mini R2V accepts at most 12 reference files; got 13"
+    },
+    {
+      "rule": "R2V audio alone on a model that needs a visual reference",
+      "utc": "2026-10-25T19:20:15.300Z",
+      "request": {
+        "model": "Seedance-2.0-Mini",
+        "task_type": "R2V",
+        "prompt": "The cat from the reference image walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 480,
+          "duration_secs": 4,
+          "audio": false
+        },
+        "src_audio_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/tone.mp3"
+        ]
+      },
+      "status": 400,
+      "detail": "Seedance-2.0-Mini R2V audio references require at least one image or video reference"
+    },
+    {
+      "rule": "R2V start offset on a model that reads from the start",
+      "utc": "2026-10-25T19:22:04.181Z",
+      "request": {
+        "model": "Seedance-2.0-Mini",
+        "task_type": "R2V",
+        "prompt": "The cat from the reference image walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 480,
+          "duration_secs": 4,
+          "audio": false
+        },
+        "src_video_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/seedance-ref.mp4"
+        ],
+        "reference_video_start_secs": [1]
+      },
+      "status": 400,
+      "detail": "Seedance-2.0-Mini R2V reads every reference video from its start; it does not support reference_video_start_secs"
+    },
+    {
+      "rule": "R2V start offsets not aligned with src_video_urls",
+      "utc": "2026-10-25T19:20:18.767Z",
+      "request": {
+        "model": "MiniMax-H3",
+        "task_type": "R2V",
+        "prompt": "The cat from the reference image walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 480,
+          "duration_secs": 1,
+          "audio": false
+        },
+        "src_video_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/seedance-ref.mp4"
+        ],
+        "reference_video_start_secs": [0, 0]
+      },
+      "status": 400,
+      "detail": "reference_video_start_secs has 2 entries for 1 reference videos; they must align"
+    },
+    {
+      "rule": "R2V start offset past the clip's end",
+      "utc": "2026-10-25T19:20:20.844Z",
+      "request": {
+        "model": "MiniMax-H3",
+        "task_type": "R2V",
+        "prompt": "The cat from the reference image walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 480,
+          "duration_secs": 1,
+          "audio": false
+        },
+        "src_video_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/seedance-ref.mp4"
+        ],
+        "reference_video_start_secs": [9]
+      },
+      "status": 400,
+      "detail": "reference video 1 is 4s long; it cannot start at 9s."
+    },
+    {
+      "rule": "R2V reference_video_operation the model lacks",
+      "utc": "2026-10-25T19:22:05.923Z",
+      "request": {
+        "model": "Seedance-2.0-Mini",
+        "task_type": "R2V",
+        "prompt": "The cat from the reference image walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 480,
+          "duration_secs": 4,
+          "audio": false
+        },
+        "src_video_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/seedance-ref.mp4"
+        ],
+        "reference_video_operation": "edit"
+      },
+      "status": 400,
+      "detail": "Seedance-2.0-Mini R2V does not support reference_video_operation='edit'; allowed operations: ['reference']"
+    },
+    {
+      "rule": "R2V start offset as a number, not a list",
+      "utc": "2026-10-25T19:13:58.108Z",
+      "request": {
+        "model": "MiniMax-H3",
+        "task_type": "R2V",
+        "prompt": "The cat from the reference image walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 1,
+          "duration_secs": 999
+        },
+        "src_video_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/seedance-ref.mp4"
+        ],
+        "reference_video_start_secs": 1
+      },
+      "status": 400,
+      "detail": "reference_video_start_secs: Input should be a valid list"
+    },
+    {
+      "rule": "R2V reference video URL that is not http(s)",
+      "utc": "2026-10-25T19:20:22.585Z",
+      "request": {
+        "model": "MiniMax-H3",
+        "task_type": "R2V",
+        "prompt": "The cat from the reference image walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 480,
+          "duration_secs": 1,
+          "audio": false
+        },
+        "src_video_urls": ["ftp://example.com/a.mp4"]
+      },
+      "status": 400,
+      "detail": "Could not prepare video 1: Reference video source is not inspectable. Use a video no larger than 50 MB and 1-15 seconds long; keep all reference videos within 15 seconds total. Trim or compress the video and try again."
+    },
+    {
+      "rule": "reference_order item fields",
+      "utc": "2026-10-25T19:14:48.289Z",
+      "request": {
+        "model": "MiniMax-H3",
+        "task_type": "R2V",
+        "prompt": "The cat from the reference image walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 1,
+          "duration_secs": 999
+        },
+        "src_image_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/cat2.jpg"
+        ],
+        "reference_order": [{}]
+      },
+      "status": 400,
+      "detail": "reference_order.0.type: Field required; reference_order.0.index: Field required"
+    },
+    {
+      "rule": "UPSCALE without a source (quote)",
+      "utc": "2026-10-25T19:24:01.154Z",
+      "request": {
+        "prompt": "",
+        "model": "Topaz-Video-Precision",
+        "task_type": "UPSCALE",
+        "video_config": {
+          "height": 1080,
+          "duration_secs": 4
+        }
+      },
+      "status": 422,
+      "detail": [
+        {
+          "type": "value_error",
+          "loc": ["body"],
+          "msg": "Value error, a source video or image is required for UPSCALE",
+          "input": {
+            "prompt": "",
+            "model": "Topaz-Video-Precision",
+            "task_type": "UPSCALE",
+            "video_config": {
+              "height": 1080,
+              "duration_secs": 4
+            }
+          },
+          "ctx": {
+            "error": {}
+          }
+        }
+      ]
+    },
+    {
+      "rule": "UPSCALE engine the model lacks (quote)",
+      "utc": "2026-10-25T19:23:56.620Z",
+      "request": {
+        "prompt": "",
+        "model": "Topaz-Video-Precision",
+        "task_type": "UPSCALE",
+        "src_task_ids": ["4cef7130-22ce-4fcb-a237-a776791e22f1"],
+        "upscale_config": {
+          "engine": "starlight-hq"
+        },
+        "video_config": {
+          "height": 1080,
+          "duration_secs": 4
+        }
+      },
+      "status": 400,
+      "detail": "Topaz-Video-Precision does not support UPSCALE engine=starlight-hq; allowed engines: ['artemis-hq', 'artemis-lq', 'artemis-mq', 'gaia-cg', 'gaia-hq', 'proteus']"
+    },
+    {
+      "rule": "MiniMax-H3 UPSCALE from a source it does not take (quote)",
+      "utc": "2026-10-25T19:17:45.880Z",
+      "request": {
+        "prompt": "",
+        "model": "MiniMax-H3",
+        "task_type": "UPSCALE",
+        "src_task_ids": ["4cef7130-22ce-4fcb-a237-a776791e22f1"],
+        "video_config": {
+          "height": 1440,
+          "duration_secs": 4
+        }
+      },
+      "status": 400,
+      "detail": "MiniMax-H3 UPSCALE only accepts a completed video generated by MiniMax-H3 at 768p, or an upload in that format"
+    },
+    {
+      "rule": "UPSCALE height outside the model's tiers (quote)",
+      "utc": "2026-10-25T19:15:12.099Z",
+      "request": {
+        "prompt": "",
+        "model": "Topaz-Video-Precision",
+        "task_type": "UPSCALE",
+        "src_task_ids": ["4cef7130-22ce-4fcb-a237-a776791e22f1"],
+        "video_config": {
+          "height": 1,
+          "duration_secs": 4
+        }
+      },
+      "status": 400,
+      "detail": "Topaz-Video-Precision does not support UPSCALE height=1; allowed heights: [1080, 1440, 2160, 4320]"
+    }
+  ],
+  "accepted": [
+    {
+      "utc": "2026-10-25T19:14:10.011Z",
+      "label": "rule|op-edit|Seedance-2.5|d999",
+      "request": {
+        "model": "Seedance-2.5",
+        "task_type": "R2V",
+        "prompt": "The cat from the reference image walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 480,
+          "duration_secs": 999
+        },
+        "src_video_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/seedance-ref.mp4"
+        ],
+        "reference_video_operation": "edit"
+      },
+      "task_id": "2a6f1493-8f59-4d4b-a35a-3563cee8ab28"
+    },
+    {
+      "utc": "2026-10-25T19:20:00.162Z",
+      "label": "guard|start-secs|MiniMax-H3-Turbo|R2V",
+      "request": {
+        "model": "MiniMax-H3-Turbo",
+        "task_type": "R2V",
+        "prompt": "The cat from the reference image walks across a sunlit wooden floor.",
+        "video_config": {
+          "height": 480,
+          "duration_secs": 4,
+          "audio": false
+        },
+        "src_video_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/seedance-ref.mp4"
+        ],
+        "reference_video_start_secs": [1]
+      },
+      "task_id": "37c7994f-4346-4d91-ba89-28ffe6b2149b"
+    },
+    {
+      "utc": "2026-10-25T19:22:30.009Z",
+      "label": "guard|audio-alone-6s|MiniMax-H3|R2V",
+      "request": {
+        "model": "MiniMax-H3",
+        "task_type": "R2V",
+        "prompt": "A narrator speaks over a calm ocean at dawn.",
+        "video_config": {
+          "height": 480,
+          "duration_secs": 1,
+          "audio": false
+        },
+        "src_audio_urls": [
+          "https://raw.githubusercontent.com/justintanner/apicity/d885599410f0a904c1d78ab74019e6a5fa97f00e/tests/fixtures/dialog.mp3"
+        ]
+      },
+      "task_id": "c4569ab0-df11-4696-9ec4-66ec7ba41437"
     }
   ],
   "notes": [
@@ -579,6 +1174,10 @@
     "MiniMax-H3 and MiniMax-H3-Turbo list 1080 among allowed heights, but a 1080p request returns 403 'not available for your account' (the contract marks 1080 a private height) and the pricebook has no 1080p row.",
     "An I2V request with an end frame validates against the same grid as a single-image I2V request (MiniMax-H3 lists 1-30 s for both).",
     "MachGen also accepts task_type F2F for end-frame models (LTX-2.3-Pro lists ['F2F', 'I2V', 'T2V']); the docs name I2V with a second image as the documented form.",
-    "The 2026-10-25 contract caps MiniMax-H3 1440p at 15 s (highResMaxDuration), but the grid check lists 1-30 s at 1440p; that cap was not observed in a 400."
+    "The 2026-10-25 contract caps MiniMax-H3 1440p at 15 s (highResMaxDuration), but the grid check lists 1-30 s at 1440p; that cap was not observed in a 400.",
+    "R2V reference limits follow the capability contract; the R2V rules above confirm a sample (Pixverse-V6 takes 3 images and no video or audio, Seedance-2.0-Mini caps 12 references and needs a visual one, start offsets and edit or extend are refused where the contract does not declare them).",
+    "The docs say audio alone returns 400 and only MiniMax-H3 takes a non-zero reference_video_start_secs. MachGen accepted an audio-only R2V on MiniMax-H3 and a start offset on MiniMax-H3-Turbo (see accepted); both follow the contract's requiresVisualReference and supportsReferenceVideoStartOffset.",
+    "An edit (reference_video_operation edit) matches the source's length: Seedance-2.5 accepted duration_secs 999 and rendered the 4 s source's length.",
+    "Topaz upscale quotes depend on the source, not duration_secs: the same 4 s 24 fps source quoted 1 credit at 1080p for 1, 2 and 8 s, while a 5 s 16 fps source quoted fewer credits than the 4 s one at 1440p. Vidu-Upscale-Pro passes the task check, but its quotes return HTTP 500."
   ]
 }

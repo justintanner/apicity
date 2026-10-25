@@ -28,4 +28,12 @@ describe("MachGen minimax-h3", () => {
       { frames: "lone-end-frame", durationSecs: 2 }
     );
   }, 2000000);
+  it("bills only the reference seconds read after reference_video_start_secs", async () => {
+    await recordMachgen(
+      0,
+      "R2V",
+      () => setupPolly("machgen/minimax-h3-r2v-video-from1s-2s"),
+      { video: { startSecs: 1 }, durationSecs: 2 }
+    );
+  }, 2000000);
 });

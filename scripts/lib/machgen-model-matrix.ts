@@ -8,6 +8,8 @@
 import {
   MACHGEN_VIDEO_GRIDS,
   MACHGEN_VIDEO_MODEL_TASK_TYPES,
+  MACHGEN_VIDEO_UPSCALE,
+  type MachGenVideoGrid,
 } from "../../packages/provider/machgen/src/zod.ts";
 import { computeEstimate } from "../../packages/provider/cost/src/compute.ts";
 
@@ -29,10 +31,29 @@ function runs(values: readonly number[]): string {
   return parts.join(", ");
 }
 
+type Task = "T2V" | "I2V" | "R2V" | "UPSCALE";
+
 /** Whether `@apicity/cost` prices a grid-valid request of this task. */
-function priced(model: string, task: "T2V" | "I2V" | "R2V"): boolean {
+function priced(model: string, task: Task): boolean {
+  if (task === "UPSCALE") {
+    const estimate = computeEstimate({
+      provider: "machgen",
+      payload: {
+        model,
+        task_type: task,
+        prompt: "",
+        src_task_ids: ["source-task"],
+        video_config: {
+          height: MACHGEN_VIDEO_UPSCALE[model]?.heights[0] ?? 1080,
+          duration_secs: 5,
+        },
+      },
+      costHints: { inputDurationSeconds: 5 },
+    });
+    return estimate.usd > 0 && estimate.warnings.length === 0;
+  }
   const grid =
-    MACHGEN_VIDEO_GRIDS[model]?.[task === "R2V" ? "T2V" : task] ??
+    MACHGEN_VIDEO_GRIDS[model]?.[task] ??
     MACHGEN_VIDEO_GRIDS[model]?.I2V ??
     MACHGEN_VIDEO_GRIDS[model]?.T2V;
   const height = grid?.heights[0] ?? 720;
@@ -62,7 +83,7 @@ const rows = Object.entries(MACHGEN_VIDEO_MODEL_TASK_TYPES).map(
       : i2v.loneEndFrame
         ? "start + end, or end only"
         : "start + end";
-    const pricedTasks = (["T2V", "I2V", "R2V"] as const).filter(
+    const pricedTasks = (["T2V", "I2V", "R2V", "UPSCALE"] as const).filter(
       (task) => has(task) && priced(model, task)
     );
     return [
@@ -70,6 +91,7 @@ const rows = Object.entries(MACHGEN_VIDEO_MODEL_TASK_TYPES).map(
       has("T2V") ? yes : "",
       has("I2V") ? yes : "",
       has("R2V") ? yes : "",
+      has("UPSCALE") ? yes : "",
       frames,
       i2v ? i2v.heights.join(", ") : "",
       i2v ? runs(i2v.durations) : "",
@@ -78,11 +100,78 @@ const rows = Object.entries(MACHGEN_VIDEO_MODEL_TASK_TYPES).map(
   }
 );
 
+/** An R2V grid's reference limits: "up to 7 images; no videos or audio". */
+function references(grid: MachGenVideoGrid): string {
+  const caps = grid.references;
+  if (!caps) return "not checked";
+  const nouns = { images: "images", videos: "videos", audios: "audio" };
+  const kinds = (["images", "videos", "audios"] as const).filter(
+    (kind) => caps[kind] !== undefined
+  );
+  const capped = kinds.filter((kind) => caps[kind]! > 0);
+  const none = kinds.filter((kind) => caps[kind] === 0);
+  const open = (["images", "videos", "audios"] as const).filter(
+    (kind) => caps[kind] === undefined
+  );
+  return [
+    capped.length &&
+      `up to ${capped.map((kind) => `${caps[kind]} ${nouns[kind]}`).join(", ")}`,
+    none.length && `no ${none.map((kind) => nouns[kind]).join(" or ")}`,
+    caps.total !== undefined && `${caps.total} in all`,
+    open.length &&
+      `${open.map((kind) => nouns[kind]).join(" and ")} not checked`,
+    grid.visualReference && "audio needs an image or video",
+  ]
+    .filter(Boolean)
+    .join("; ");
+}
+
+const r2vRows = Object.entries(MACHGEN_VIDEO_GRIDS).flatMap(
+  ([model, grids]) => {
+    const grid = grids.R2V;
+    if (!grid) return [];
+    const video =
+      grid.references?.videos === 0
+        ? "none"
+        : [
+            grid.operations?.join(", "),
+            grid.startOffset ? "start offsets" : undefined,
+          ]
+            .filter(Boolean)
+            .join("; ") || "not checked";
+    return [
+      [
+        `\`${model}\``,
+        grid.heights.join(", "),
+        runs(grid.durations),
+        references(grid),
+        video,
+      ],
+    ];
+  }
+);
+
+const upscaleRows = Object.entries(MACHGEN_VIDEO_UPSCALE).map(
+  ([model, grid]) => [
+    `\`${model}\``,
+    grid.heights.join(", "),
+    grid.engines?.map((engine) => `\`${engine}\``).join(", ") ?? "",
+    priced(model, "UPSCALE") ? yes : "",
+  ]
+);
+
+const table = (head: string[], body: string[][]) => [
+  `| ${head.join(" | ")} |`,
+  `| ${head.map(() => "---").join(" | ")} |`,
+  ...body.map((row) => `| ${row.join(" | ")} |`),
+];
+
 const header = [
   "Model",
   "T2V",
   "I2V",
   "R2V",
+  "UPSCALE",
   "I2V frames",
   "I2V heights",
   "I2V seconds",
@@ -94,14 +183,13 @@ const lines = [
   "Pass a `model` id with a `task_type` it supports. For the ids below,",
   "`machgen.api.v0.generate.schema` also checks the height, `duration_secs`",
   "and `aspect_ratio` against the model's grid (`MACHGEN_VIDEO_GRIDS`, which",
-  "holds each T2V grid too) and the I2V frame rules; other ids pass",
+  "holds each T2V and R2V grid too), the I2V frame rules, the R2V reference",
+  "limits and the UPSCALE targets (`MACHGEN_VIDEO_UPSCALE`); other ids pass",
   "unchecked. MachGen answers an off-grid request with HTTP 400 before it",
   "accepts the task, and does not bill it. The grids were read from those",
   "400 responses on 2026-10-25. `-1` asks the model for a Smart length.",
   "",
-  `| ${header.join(" | ")} |`,
-  `| ${header.map(() => "---").join(" | ")} |`,
-  ...rows.map((row) => `| ${row.join(" | ")} |`),
+  ...table(header, rows),
   "",
   "An I2V request takes one start frame in `src_image_urls`. Where the table",
   'lists "start + end", entry 1 is the end frame; "end only" means',
@@ -112,10 +200,42 @@ const lines = [
   "pricebook has no 1080p rate. The pricebook's LTX-2.3-Pro 540p and 720p",
   "tiers are not requestable.",
   "",
+  "### Reference-to-video",
+  "",
+  "An R2V request takes reference images, videos and audio clips in",
+  "`src_image_urls`, `src_video_urls` (public http(s) URLs) and",
+  "`src_audio_urls`, or earlier outputs in `src_task_ids`.",
+  "`reference_video_start_secs` lists one start second per reference video.",
+  "`reference_video_operation` edits or extends the video instead of using",
+  "it as a reference; an edit renders at the video's own length, so MachGen",
+  "ignores `duration_secs`.",
+  "",
+  ...table(
+    ["Model", "R2V heights", "R2V seconds", "References", "Reference video"],
+    r2vRows
+  ),
+  "",
+  "### Upscale",
+  "",
+  "An `UPSCALE` task re-renders a finished video, named in `src_task_ids` or",
+  "`src_video_urls`, at the target `video_config.height`; set",
+  "`duration_secs` to the source's length. MiniMax-H3 upscales only its own",
+  "768p outputs of 5 s or more. MachGen also rejects a target at or below the",
+  "source's height, and a `gaia-2` target above twice it; those depend on the",
+  "source, so the schema cannot check them.",
+  "",
+  ...table(["Model", "Target heights", "Engines", "Priced"], upscaleRows),
+  "",
   "**Priced** lists the task types `computeEstimate` from `@apicity/cost`",
-  "prices per output second. Kling-v3 and the Pixverse models price audio on",
-  "and off apart, so set `video_config.audio`. `api.v0.tasks.billing` returns",
-  "a finished task's actual charge in micro-USD.",
+  "prices per output second. An R2V reference video also bills the seconds",
+  "MachGen reads from it, after any start offset, so pass their total as",
+  "`costHints.inputDurationSeconds`; an edit's output is that long too. An",
+  "upscale bills by its source's length, so it needs the same hint;",
+  "MiniMax-H3 bills those seconds in and out. Topaz bills vendor credits that",
+  "depend on the source's frames and resolution, so `computeEstimate` does",
+  "not price it. Kling-v3, Kling-o3 and the Pixverse models price audio on",
+  "and off apart, so set `video_config.audio`. `api.v0.tasks.billing`",
+  "returns a finished task's actual charge in micro-USD.",
   "",
   "```typescript",
   'import { createMachGen } from "@apicity/machgen";',

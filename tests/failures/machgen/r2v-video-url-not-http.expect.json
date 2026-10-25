@@ -1,0 +1,5 @@
+{
+  "endpoint": "api.v0.generate",
+  "rule": "src_video_urls takes public http(s) URLs",
+  "source": "Recorded 2026-10-25 for ac-ks4no2: MachGen rejects the request with HTTP 400 before accepting it (never billed); the rule is among the free R2V and UPSCALE probes in tests/fixtures/machgen-evidence/machgen-grids-2026-10-25.json"
+}

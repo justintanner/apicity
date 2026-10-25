@@ -21,5 +21,9 @@ it("reports at least fifty fal/kie endpoints from the committed corpus", async (
   expect(r.endpoints.every((e) => ["fal", "kie"].includes(e.provider))).toBe(
     true
   );
-  expect(r.baseline.files).toBe(0);
+  expect(r.baseline).toMatchObject({
+    source: "default",
+    path: "tests/recordings",
+    files: 0,
+  });
 }, 120000);

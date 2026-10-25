@@ -49,6 +49,15 @@ export interface MachGenTaskStatusResponse {
   [key: string]: unknown;
 }
 
+/** Micro-USD amounts; a failed or cancelled task is refunded and reports 0. */
+export interface MachGenTaskBillingResponse {
+  task_id: string;
+  generation_cost_micros: number;
+  generation_credit_micros: number;
+  net_cost_micros: number;
+  [key: string]: unknown;
+}
+
 export interface MachGenGenerateMethod {
   (
     request: MachGenGenerateRequest,
@@ -56,12 +65,17 @@ export interface MachGenGenerateMethod {
   ): Promise<MachGenGenerateResponse>;
   schema: typeof MachGenGenerateRequestSchema;
 }
-export interface MachGenV0Namespace {
-  generate: MachGenGenerateMethod;
-  tasks(
+export interface MachGenTasksMethod {
+  (taskId: string, signal?: AbortSignal): Promise<MachGenTaskStatusResponse>;
+  /** Final once the task is COMPLETED or FAILED; earlier calls get HTTP 409. */
+  billing(
     taskId: string,
     signal?: AbortSignal
-  ): Promise<MachGenTaskStatusResponse>;
+  ): Promise<MachGenTaskBillingResponse>;
+}
+export interface MachGenV0Namespace {
+  generate: MachGenGenerateMethod;
+  tasks: MachGenTasksMethod;
   assets(taskId: string, signal?: AbortSignal): Promise<ArrayBuffer>;
 }
 export interface MachGenApiNamespace {

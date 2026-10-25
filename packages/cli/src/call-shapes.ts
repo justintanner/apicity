@@ -65,6 +65,15 @@ export const CALL_SHAPES: Record<string, CallShape> = {
     injected: [],
     derived: [],
   },
+  "machgen\tGET\tapi.v0.tasks.billing": {
+    provider: "machgen",
+    method: "GET",
+    dotPath: "api.v0.tasks.billing",
+    positional: [{ placeholder: "taskId", param: "taskId", optional: false }],
+    fields: [],
+    injected: [],
+    derived: [],
+  },
   "machgen\tGET\tapi.v0.assets": {
     provider: "machgen",
     method: "GET",

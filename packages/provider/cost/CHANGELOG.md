@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- MachGen pricing for every image-to-video model in MachGen's models table, verified 2026-10-25 against https://www.machgen.ai/pricing. Adds Wan 2.2 A14B, LTX 2.3 Pro, Vidu Q3 Turbo, Vidu Q3 Pro, MiniMax H3 Turbo, Seedance 2.0 Fast and Mini, Kling 3.0, Vidu Q4 Preview, Vidu Q3 Pro Fast, PixVerse V6 and C1, and HappyHorse 1.0, each priced for T2V and I2V. Vidu Q3 Turbo bills its duration bands one band at a time. Kling 3.0 and PixVerse take an audio selector and fail closed without `video_config.audio`. The new models' R2V and input-video tiers fail closed. The MachGen cost-tier policy is now `expensive`. `MODEL_SLUGS.machgen` reuses the kie slug of each model kie also sells and adds `ltx2p3p`, `viduq3t`, `viduq3p`, `mmh3t`, `viduq3pf` and `pixc1`. 22 recorded tasks billed exactly their estimate. One receipt corrects an existing rate: MiniMax H3 I2V with an end frame now prices at the Image to Video rate it billed (0.035 USD/s at 480p), not the Frame to Frame rate (0.05), which applies to R2V only. Other existing MachGen rates are unchanged; their `source.asOf` is now 2026-10-25 (ac-fs70lj).
+
 - KIE `grok-imagine-video-1-5-preview` 1080p pricing at $0.04/s (8
   credits). The pricing feed lists only 480p and 720p for this model. The
   rate is the third tier of the https://kie.ai/grok-imagine-video-1.5

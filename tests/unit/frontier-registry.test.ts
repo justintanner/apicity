@@ -1296,8 +1296,10 @@ describe("frontier video snapshots", () => {
     expect(refused("t2v", "Grok-Imagine-Video-1.5")).toBe(true);
     expect(refused("r2v", "Grok-Imagine-Video-1.5")).toBe(true);
     for (const type of ["t2v", "i2v", "r2v"]) {
-      expect(refused(type, "MiniMax-H3-Turbo"), type).toBe(true);
+      expect(refused(type, "Topaz-Video-Precision"), type).toBe(true);
     }
+    expect(refused("i2v", "MiniMax-H3-Turbo")).toBe(false);
+    expect(refused("t2v", "Vidu-Q4-Preview")).toBe(true);
     expect(refused("v2v", "Seedance-2.5")).toBe(true);
     expect(refused("t2i", "MiniMax-H3")).toBe(true);
   });

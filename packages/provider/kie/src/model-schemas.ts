@@ -1565,7 +1565,8 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         type: "array",
         required: true,
         minItems: 1,
-        description: "Input image URLs (jpeg/png/webp, max 20MB each)",
+        description:
+          "Input image URLs (jpeg/png/webp, max 20MB each; max 1 at 1080p)",
         items: { type: "string" },
       },
       aspect_ratio: {
@@ -1576,7 +1577,7 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
       resolution: {
         type: "string",
-        enum: ["480p", "720p"],
+        enum: ["480p", "720p", "1080p"],
         description: "Output resolution (default 480p)",
       },
       duration: {

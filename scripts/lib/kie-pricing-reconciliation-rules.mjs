@@ -106,6 +106,15 @@ const PIXVERSE_V6_MAX_EXCEPTION = Object.freeze({
 
 export const RUNTIME_VARIANT_EXCEPTIONS = Object.freeze([
   {
+    key: "grok-imagine-video-1-5-preview",
+    variant: "1080p",
+    status: "pricing-only",
+    provenance:
+      "tests/fixtures/kie-pricing-evidence/grok-imagine-video-1-5-preview-2026-10-25.json: https://kie.ai/grok-imagine-video-1.5 pricingDesc read 2026-10-25 lists 8 credits = 0.04 USD/s as a second 720p tier; a 1 s 1080p task billed 8 credits",
+    rationale:
+      "The feed lists only 480p and 720p for this model; the page's mislabeled third tier is the documented 1080p rate, and the billed recording confirms it until the feed carries a 1080p row.",
+  },
+  {
     key: "omnihuman-2-0",
     variant: "",
     status: "pricing-only",

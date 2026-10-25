@@ -1,0 +1,177 @@
+{
+  "capturedAt": "2026-10-25",
+  "source": "https://kie.ai/grok-imagine-video-1.5",
+  "models": ["grok-imagine-video-1-5-preview"],
+  "basis": "The live pricing feed lists 480p (2.4 credits, $0.012/s) and 720p (4.5 credits, $0.0225/s) only. The product page's pricingDesc and KIE's /api/v1/models/{id}/price add a third entry, \"8 credits per second for 720p (≈ $0.04)\", which repeats 720p at another rate: it is the 1080p tier that the docs and the live model schema list, at the same 8 credits/s as the grok-imagine/* suite's 1080p feed rows. A 1 s 1080p generation billed 8 credits ($0.04) at $0.005 per credit.",
+  "feed": {
+    "endpoint": "POST https://api.kie.ai/client/v1/model-pricing/page",
+    "fetchedAt": "2026-10-25T09:29:03Z",
+    "total": 605,
+    "pages": [
+      {
+        "pageNum": 1,
+        "status": 200,
+        "sha256": "152acffc9a58e2e6a392ce523772441b984e3feddb7c4eee8b3dd1f493a40069",
+        "records": 100
+      },
+      {
+        "pageNum": 2,
+        "status": 200,
+        "sha256": "73590180aba8820392a1411e99295d87ff409670af34444fd62f385f013d23d3",
+        "records": 100
+      },
+      {
+        "pageNum": 3,
+        "status": 200,
+        "sha256": "295bd658f2a5433feefdad13a3efff34b3055b4404e72457895e6895567bbd8a",
+        "records": 100
+      },
+      {
+        "pageNum": 4,
+        "status": 200,
+        "sha256": "59a519a4fd2f6165c7598c5b9b9d825a1929fb76fbaf7cc6d7660c0955cf6b0b",
+        "records": 100
+      },
+      {
+        "pageNum": 5,
+        "status": 200,
+        "sha256": "d0d0e17efc7cdc0f7858c6ace434010f3d6be509e930bc2e980f997f21820abd",
+        "records": 100
+      },
+      {
+        "pageNum": 6,
+        "status": 200,
+        "sha256": "79dd547fa113d27bed94ea14513680ee350b88614cfed1e3666492d41c879774",
+        "records": 100
+      },
+      {
+        "pageNum": 7,
+        "status": 200,
+        "sha256": "268842f30d0023d3557be87c54f1235c4a1cb031d7085eb574c020013f564805",
+        "records": 5
+      }
+    ],
+    "rows": [
+      {
+        "modelDescription": "grok-imagine-video-1-5-preview, 480p",
+        "interfaceType": "video",
+        "provider": "Grok",
+        "creditPrice": "2.4",
+        "creditUnit": "per second",
+        "usdPrice": "0.012",
+        "falPrice": "0.08",
+        "discountRate": 85.0,
+        "anchor": "https://kie.ai/grok-imagine-video-1.5",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "grok-imagine-video-1-5-preview, 720p",
+        "interfaceType": "video",
+        "provider": "Grok",
+        "creditPrice": "4.5",
+        "creditUnit": "per second",
+        "usdPrice": "0.0225",
+        "falPrice": "0.14",
+        "discountRate": 83.93,
+        "anchor": "https://kie.ai/grok-imagine-video-1.5",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "grok-imagine, text-to-video, 1080p",
+        "interfaceType": "video",
+        "provider": "Grok",
+        "creditPrice": "8",
+        "creditUnit": "per second",
+        "usdPrice": "0.04",
+        "falPrice": "",
+        "discountRate": 0.0,
+        "anchor": "https://kie.ai/grok-imagine?model=grok-imagine%2Ftext-to-video",
+        "discountPrice": false
+      },
+      {
+        "modelDescription": "grok-imagine, image-to-video, 1080p",
+        "interfaceType": "video",
+        "provider": "Grok",
+        "creditPrice": "8",
+        "creditUnit": "per second",
+        "usdPrice": "0.04",
+        "falPrice": "",
+        "discountRate": 0.0,
+        "anchor": "https://kie.ai/grok-imagine?model=grok-imagine%2Fimage-to-video",
+        "discountPrice": false
+      }
+    ]
+  },
+  "page": {
+    "url": "https://kie.ai/grok-imagine-video-1.5",
+    "fetchedAt": "2026-10-25T09:29:18Z",
+    "sha256": "6268a1a6d8ccea9425dc4d96025284ee311c3ce3b107c2efbdcc571abb899a1d",
+    "groupData": [
+      {
+        "userPath": "grok-imagine-video-1-5-preview",
+        "path": "",
+        "apiDocumentUrl": "https://docs.kie.ai/market/grok-imagine/1-5-preview",
+        "channel": "fal_request",
+        "pricingDesc": "2.4 credits per second for 480p (≈ $0.012), 4.5 credits per second for 720p (≈ $0.0225), 8 credits per second for 720p (≈ $0.04)— video generation is about 90% of official pricing.\nHigh-tier top-ups include +10% bonus credits. Effective pricing is approximately 10% lower than the above rates."
+      }
+    ]
+  },
+  "modelPrice": {
+    "endpoint": "GET https://api.kie.ai/api/v1/models/grok-imagine-video-1-5-preview/price",
+    "fetchedAt": "2026-10-25T09:29:39Z",
+    "pricingDesc": "2.4 credits per second for 480p (≈ $0.012), 4.5 credits per second for 720p (≈ $0.0225), 8 credits per second for 720p (≈ $0.04)— video generation is about 90% of official pricing.\nHigh-tier top-ups include +10% bonus credits. Effective pricing is approximately 10% lower than the above rates."
+  },
+  "docs": [
+    {
+      "model": "grok-imagine-video-1-5-preview",
+      "url": "https://docs.kie.ai/market/grok-imagine/1-5-preview.md",
+      "fetchedAt": "2026-10-25T09:28:58Z",
+      "sha256": "fabcd764e29f047ba1a205de3acfd2fb6a4174b4ae3f5f02ce39f8772c6106a1",
+      "resolutionEnum": ["480p", "720p", "1080p"],
+      "resolutionDefault": "480p",
+      "imageUrlsRule": "Supports multi-file upload, up to 1 file.Only one is supported when the resolution is 1080p.",
+      "liveModelSchema": {
+        "endpoint": "GET https://api.kie.ai/api/v1/models/grok-imagine-video-1-5-preview/schema",
+        "fetchedAt": "2026-10-25T09:29:54Z",
+        "agreesWithDocs": true
+      }
+    }
+  ],
+  "recordingBudgetUsd": 5,
+  "recordings": [
+    {
+      "model": "grok-imagine-video-1-5-preview",
+      "har": "tests/recordings/kie_2079838932/grok-imagine-video-1-5-preview-1080p_1103911370/recording.har",
+      "taskId": "c660ddbfc683588e786883da2b4a2eb9",
+      "request": {
+        "image": {
+          "fixture": "tests/fixtures/man.jpg",
+          "width": 1920,
+          "height": 1080
+        },
+        "aspectRatio": "16:9",
+        "resolution": "1080p",
+        "duration": 1,
+        "enableAudio": "default",
+        "nsfwChecker": "omitted"
+      },
+      "creditsConsumed": 8.0,
+      "firstPollCreditsConsumed": 8.0,
+      "costTimeSeconds": 23,
+      "usd": 0.04,
+      "output": {
+        "videoSeconds": 1.042,
+        "audioTrackSeconds": 1.0,
+        "frames": 25,
+        "fps": 24,
+        "width": 1920,
+        "height": 1088
+      }
+    }
+  ],
+  "balanceCredits": {
+    "before": 555.46,
+    "after": 547.46
+  },
+  "observedTotalUsd": 0.04
+}

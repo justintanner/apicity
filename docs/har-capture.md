@@ -206,6 +206,12 @@ The seven sections count:
    changes report newly observed types. KIE/xAI business failures are excluded.
 7. Local failures: normalized error groups with attempted input shapes only.
 
+fal `v1.queue.submit` sends its request's `input` member as the whole body, so
+its schema sections (3, 4 and schema defaults) check each annotated call's
+input instead, and its factory defaults compare the body with that `input`
+member. A legacy submit has no input, so those sections report
+`no annotated input`.
+
 Baseline defaults to tests/recordings only when both that directory and
 scripts/endpoint-docs.tsv exist in the working directory; otherwise none.
 `--baseline dir` overrides it and `--no-baseline` disables it. Input files are

@@ -1,9 +1,9 @@
-import { mkdtempSync, rmSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, expect, it } from "vitest";
 import { createFal } from "@apicity/fal";
-import { createHarCapture } from "@apicity/har";
+import { createHarCapture, type Har } from "@apicity/har";
 import { describeEndpoint } from "../../packages/cli/src/discovery";
 import { runHarCommand } from "../../packages/cli/src/har";
 import type { HarReport } from "../../packages/cli/src/har-report-types";
@@ -129,6 +129,12 @@ it("har report resolves fal queue polls under their SDK dot paths", async () => 
     "v1.queue.status": { strict: 2, lenient: 0, soleEntry: 0 },
     "v1.queue.submit": { strict: 1, lenient: 0, soleEntry: 0 },
   });
+  const submitRecord = r.endpoints.find((e) => e.dotPath === "v1.queue.submit");
+  expect(submitRecord?.schemaTooStrict).toMatchObject({
+    checked: 1,
+    rejected: 0,
+    issues: [],
+  });
 });
 
 it("har report attributes every exchange of a retried queue submit to its row", async () => {
@@ -153,6 +159,57 @@ it("har report attributes every exchange of a retried queue submit to its row", 
         { status: 503, count: 1 },
       ],
     },
+    // The wire body is the request's `input`, so the schema checks the
+    // annotated input and the factory added nothing to it (ac-dvsxwf).
+    schemaTooStrict: {
+      checked: 1,
+      rejected: 0,
+      issues: [],
+      unknownKeys: { available: true, keys: [] },
+    },
+    defaults: { factoryDefaults: { calls: 1, fields: [] } },
+  });
+});
+
+const SUBMIT_FIXTURE = "tests/fixtures/har-report/fal-queue/submit-retry.har";
+function submitFixture(): Har {
+  return JSON.parse(readFileSync(SUBMIT_FIXTURE, "utf8")) as Har;
+}
+function save(har: Har): string {
+  const file = join(dir, "submit.har");
+  writeFileSync(file, JSON.stringify(har));
+  return file;
+}
+
+it("har report validates a queue submit's annotated input against the schema", async () => {
+  const har = submitFixture();
+  har.log._apicity!.input = {
+    endpoint_id: "fal-ai/flux/dev",
+    input: { prompt: "a cat" },
+    priority: "high",
+    extra: true,
+  };
+  const [submit] = (await report(save(har))).endpoints;
+  expect(submit.schemaTooStrict).toMatchObject({
+    checked: 1,
+    rejected: 1,
+    issues: [
+      expect.objectContaining({ code: "invalid_value", path: "priority" }),
+    ],
+    unknownKeys: { keys: [{ path: "extra", count: 1, acceptedBySchema: 0 }] },
+    valuesOutsideEnum: [expect.objectContaining({ path: "priority" })],
+  });
+});
+
+it("har report leaves a legacy queue submit, which has no input, unvalidated", async () => {
+  const har = submitFixture();
+  delete har.log._apicity;
+  const [submit] = (await report(save(har))).endpoints;
+  expect(submit).toMatchObject({
+    dotPath: "v1.queue.submit",
+    volume: { callsBySource: { annotated: 0, legacy: 2 } },
+    schemaTooStrict: { available: false, reason: "no annotated input" },
+    schemaTooLoose: { available: false, reason: "no annotated input" },
   });
 });
 

@@ -968,10 +968,11 @@ kimicoding	coding.v1.countTokens	POST	expensive	Metered LLM provider; per-call t
 kimicoding	coding.v1.embeddings	POST	expensive	Metered LLM provider; per-call token cost bills real money
 kimicoding	coding.v1.messages	POST	expensive	Metered LLM provider; per-call token cost bills real money
 kimicoding	coding.v1.models	GET	expensive	Metered LLM provider; per-call token cost bills real money
-machgen	api.v0.assets	GET	expensive	Per-second video generation priced per model by computeEstimate before the call; status, billing and asset reads share the provider policy.
-machgen	api.v0.generate	POST	expensive	Per-second video generation priced per model by computeEstimate before the call; status, billing and asset reads share the provider policy.
-machgen	api.v0.tasks	GET	expensive	Per-second video generation priced per model by computeEstimate before the call; status, billing and asset reads share the provider policy.
-machgen	api.v0.tasks.billing	GET	expensive	Per-second video generation priced per model by computeEstimate before the call; status, billing and asset reads share the provider policy.
+machgen	api.v0.assets	GET	expensive	Per-second video generation priced per model by computeEstimate before the call; status, billing and asset reads and the free upscale quote share the provider policy.
+machgen	api.v0.generate	POST	expensive	Per-second video generation priced per model by computeEstimate before the call; status, billing and asset reads and the free upscale quote share the provider policy.
+machgen	api.v0.tasks	GET	expensive	Per-second video generation priced per model by computeEstimate before the call; status, billing and asset reads and the free upscale quote share the provider policy.
+machgen	api.v0.tasks.billing	GET	expensive	Per-second video generation priced per model by computeEstimate before the call; status, billing and asset reads and the free upscale quote share the provider policy.
+machgen	api.v0.upscale.quote	POST	expensive	Per-second video generation priced per model by computeEstimate before the call; status, billing and asset reads and the free upscale quote share the provider policy.
 meta	v25.container	GET	cheap	Instagram Graph posting API; free, no per-call USD compute cost
 meta	v25.media	POST	cheap	Instagram Graph posting API; free, no per-call USD compute cost
 meta	v25.mediaPublish	POST	cheap	Instagram Graph posting API; free, no per-call USD compute cost

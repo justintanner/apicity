@@ -2,8 +2,13 @@ import { appendFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { expect } from "vitest";
-import { createMachGen, type MachGenGenerateRequest } from "@apicity/machgen";
+import {
+  createMachGen,
+  type MachGenGenerateRequest,
+  type MachGenUpscaleQuoteRequest,
+} from "@apicity/machgen";
 import { computeEstimate } from "../packages/provider/cost/src/compute";
+import { resolveMachGenUpscaleEstimate } from "../packages/provider/cost/src/machgen-quote";
 import type { CostHints } from "../packages/provider/cost/src/types";
 import { type PollyContext, teardownPolly, recordingExists } from "./harness";
 
@@ -327,8 +332,7 @@ export async function recordMachgen(
 /**
  * Records an UPSCALE of `sourceTaskId`, or of a source generated in the same
  * recording first. Topaz bills vendor credits that depend on the source, so
- * its receipt is checked against MachGen's upscale quote instead of an
- * estimate.
+ * its estimate comes from MachGen's upscale quote.
  */
 export async function recordMachgenUpscale(
   name: string,
@@ -340,7 +344,6 @@ export async function recordMachgenUpscale(
     sourceTaskId?: string;
     source?: MachGenGenerateRequest;
     engine?: string;
-    quote?: boolean;
   }
 ) {
   const ctx = setup();
@@ -362,50 +365,28 @@ export async function recordMachgenUpscale(
       expect(billing.generation_cost_micros / 1e6).toBeCloseTo(estimate.usd, 6);
       sourceTaskId = task.task_id;
     }
-    const payload = {
+    const payload: MachGenUpscaleQuoteRequest = {
       prompt: "",
       model: opts.model,
       task_type: "UPSCALE",
       src_task_ids: [sourceTaskId!],
       ...(opts.engine ? { upscale_config: { engine: opts.engine } } : {}),
       video_config: { height: opts.height, duration_secs: opts.sourceSecs },
-    } as MachGenGenerateRequest;
+    };
     expect(provider.api.v0.generate.schema.safeParse(payload).success).toBe(
       true
     );
-    let expectedMicros: number;
-    if (opts.quote) {
-      // MachGen's upscale price check, used by its web app; it creates no task.
-      const response = await fetch(
-        "https://api.machgen.ai/api/v0/upscale/quote",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${apiKey}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        }
-      );
-      expect(response.status).toBe(200);
-      expectedMicros = ((await response.json()) as { cost_micros: number })
-        .cost_micros;
-    } else {
-      const estimate = computeEstimate({
-        provider: "machgen",
-        payload,
-        costHints: { inputDurationSeconds: opts.sourceSecs },
-      });
-      expect(estimate.warnings).toEqual([]);
-      expectedMicros = estimate.usd * 1e6;
-    }
-    const { billing } = await runTask(
-      provider,
+    // Topaz asks MachGen's quote, which creates no task; MiniMax-H3 is priced
+    // locally from the source's length.
+    const estimate = await resolveMachGenUpscaleEstimate(
       payload,
-      name,
-      expectedMicros / 1e6
+      provider.api.v0.upscale.quote,
+      { hints: { inputDurationSeconds: opts.sourceSecs } }
     );
-    expect(billing.generation_cost_micros).toBeCloseTo(expectedMicros, 0);
+    expect(estimate.warnings).toEqual([]);
+    expect(estimate.usd).toBeGreaterThan(0);
+    const { billing } = await runTask(provider, payload, name, estimate.usd);
+    expect(billing.generation_cost_micros / 1e6).toBeCloseTo(estimate.usd, 6);
   } finally {
     await teardownPolly(ctx);
   }

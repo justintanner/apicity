@@ -133,7 +133,9 @@ MachGen reads from it, after any start offset, so pass their total as
 upscale bills by its source's length, so it needs the same hint;
 MiniMax-H3 bills those seconds in and out. Topaz bills vendor credits that
 depend on the source's frames and resolution, so `computeEstimate` does
-not price it. Kling-v3, Kling-o3 and the Pixverse models price audio on
+not price it; `api.v0.upscale.quote` asks MachGen for the exact price, and
+`resolveMachGenUpscaleEstimate` turns that quote into an estimate.
+Kling-v3, Kling-o3 and the Pixverse models price audio on
 and off apart, so set `video_config.audio`. `api.v0.tasks.billing`
 returns a finished task's actual charge in micro-USD.
 
@@ -164,7 +166,7 @@ console.log(bill.generation_cost_micros / 1e6); // 0.04
 
 ## API Reference
 
-4 endpoints across 3 groups. Each method mirrors an upstream URL path.
+5 endpoints across 4 groups. Each method mirrors an upstream URL path.
 
 ### assets
 
@@ -234,6 +236,25 @@ Cost tier: <code>expensive</code>
 
 ```typescript
 const res = await machgen.api.v0.tasks.billing({ /* ... */ });
+```
+
+Source: [`packages/provider/machgen/src/machgen.ts`](src/machgen.ts)
+
+</details>
+
+### upscale
+
+<details>
+<summary><code>POST</code> <b><code>machgen.api.v0.upscale.quote</code></b></summary>
+
+<code>POST https://api.machgen.ai/api/v0/upscale/quote</code>
+
+Cost tier: <code>expensive</code>
+
+> **Undocumented upstream:** MachGen's REST docs do not list this endpoint (read 2026-10-26), so MachGen may change or remove it without notice. MachGen's web app prices an upscale with it before submitting, and the MCP server's `quote_video_upscale` tool ([docs](https://www.machgen.ai/docs/mcp#tools)) is the documented form of the same check. The quote is free, creates no task and answers `{ cost_micros }`, the micro-USD the upscale of a source you own would bill; a recorded Topaz upscale billed exactly its quote. On 2026-10-26 a 2160p Topaz Video Generative Fast upscale of a 4 s 480p task quoted 596000 micros (recording `machgen/topaz-video-generative-fast-upscale-quote`). `resolveMachGenUpscaleEstimate` in `@apicity/cost` turns a quote into an estimate.
+
+```typescript
+const res = await machgen.api.v0.upscale.quote({ /* ... */ });
 ```
 
 Source: [`packages/provider/machgen/src/machgen.ts`](src/machgen.ts)

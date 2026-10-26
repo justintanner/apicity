@@ -34,7 +34,6 @@ describe("MachGen UPSCALE", () => {
         sourceSecs: 4,
         sourceTaskId: MACHGEN_UPSCALE_SOURCE,
         engine: "proteus",
-        quote: true,
       }
     );
   }, 2000000);

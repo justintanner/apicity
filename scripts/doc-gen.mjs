@@ -598,6 +598,24 @@ export const ENDPOINT_NOTES = new Map([
       "The option applies to every method of that client.",
     ].join(" "),
   ],
+  [
+    "machgen\tapi.v0.upscale.quote\tPOST",
+    [
+      "> **Undocumented upstream:** MachGen's REST docs do not list this",
+      "endpoint (read 2026-10-26), so MachGen may change or remove it without",
+      "notice. MachGen's web app prices an upscale with it before submitting,",
+      "and the MCP server's `quote_video_upscale` tool",
+      "([docs](https://www.machgen.ai/docs/mcp#tools)) is the documented form",
+      "of the same check. The quote is free, creates no task and answers",
+      "`{ cost_micros }`, the micro-USD the upscale of a source you own would",
+      "bill; a recorded Topaz upscale billed exactly its quote. On 2026-10-26 a",
+      "2160p Topaz Video Generative Fast upscale of a 4 s 480p task quoted",
+      "596000 micros (recording",
+      "`machgen/topaz-video-generative-fast-upscale-quote`).",
+      "`resolveMachGenUpscaleEstimate` in `@apicity/cost` turns a quote into",
+      "an estimate.",
+    ].join(" "),
+  ],
 ]);
 
 const PROVIDER_NOTES = new Map([

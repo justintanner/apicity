@@ -7,8 +7,13 @@ import type {
   MachGenGenerateResponse,
   MachGenTaskBillingResponse,
   MachGenTaskStatusResponse,
+  MachGenUpscaleQuoteRequest,
+  MachGenUpscaleQuoteResponse,
 } from "./types";
-import { MachGenGenerateRequestSchema } from "./zod";
+import {
+  MachGenGenerateRequestSchema,
+  MachGenUpscaleQuoteRequestSchema,
+} from "./zod";
 
 export function createMachGen(options: MachGenOptions = {}): MachGenProvider {
   const baseURL = (options.baseURL ?? "https://api.machgen.ai").replace(
@@ -128,6 +133,23 @@ export function createMachGen(options: MachGenOptions = {}): MachGenProvider {
             signal,
             true
           ),
+        upscale: {
+          // Not in MachGen's REST docs (read 2026-10-26). MachGen's web app
+          // prices an upscale with it before submitting, and the MCP server's
+          // quote_video_upscale tool is the documented form of the same check.
+          // POST https://api.machgen.ai/api/v0/upscale/quote
+          // Docs: https://www.machgen.ai/docs/mcp#tools
+          quote: Object.assign(
+            async (body: MachGenUpscaleQuoteRequest, signal?: AbortSignal) =>
+              request<MachGenUpscaleQuoteResponse>(
+                "POST",
+                "/api/v0/upscale/quote",
+                body,
+                signal
+              ),
+            { schema: MachGenUpscaleQuoteRequestSchema }
+          ),
+        },
       },
     },
   });

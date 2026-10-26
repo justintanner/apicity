@@ -2,6 +2,7 @@ import type { z } from "zod";
 import type {
   MachGenGenerateRequestSchema,
   MachGenUpscaleConfigSchema,
+  MachGenUpscaleQuoteRequestSchema,
   MachGenVideoConfigSchema,
 } from "./zod";
 
@@ -29,6 +30,9 @@ export type MachGenGenerateRequest = z.infer<
 >;
 export type MachGenVideoConfig = z.infer<typeof MachGenVideoConfigSchema>;
 export type MachGenUpscaleConfig = z.infer<typeof MachGenUpscaleConfigSchema>;
+export type MachGenUpscaleQuoteRequest = z.infer<
+  typeof MachGenUpscaleQuoteRequestSchema
+>;
 
 export interface MachGenGenerateResponse {
   task_id: string;
@@ -48,6 +52,12 @@ export interface MachGenTaskStatusResponse {
   queue_time_secs?: number | null;
   execution_provider?: string | null;
   overflow_converted?: boolean;
+  [key: string]: unknown;
+}
+
+/** The price an upscale would bill, in micro-USD. */
+export interface MachGenUpscaleQuoteResponse {
+  cost_micros: number;
   [key: string]: unknown;
 }
 
@@ -75,10 +85,22 @@ export interface MachGenTasksMethod {
     signal?: AbortSignal
   ): Promise<MachGenTaskBillingResponse>;
 }
+export interface MachGenUpscaleQuoteMethod {
+  (
+    request: MachGenUpscaleQuoteRequest,
+    signal?: AbortSignal
+  ): Promise<MachGenUpscaleQuoteResponse>;
+  schema: typeof MachGenUpscaleQuoteRequestSchema;
+}
+export interface MachGenUpscaleNamespace {
+  /** Free and creates no task; not in MachGen's REST docs. */
+  quote: MachGenUpscaleQuoteMethod;
+}
 export interface MachGenV0Namespace {
   generate: MachGenGenerateMethod;
   tasks: MachGenTasksMethod;
   assets(taskId: string, signal?: AbortSignal): Promise<ArrayBuffer>;
+  upscale: MachGenUpscaleNamespace;
 }
 export interface MachGenApiNamespace {
   v0: MachGenV0Namespace;

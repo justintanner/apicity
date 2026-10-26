@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import {
   computeEstimate,
+  isMachGenQuotePriced,
+  resolveMachGenUpscaleEstimate,
   PRICING,
   MODEL_SLUGS,
   MODEL_DISPLAY,
@@ -358,6 +360,87 @@ describe("MachGen pricing", () => {
       const result = upscale(model, 1080, { inputDurationSeconds: 5 });
       expect(result.usd, model).toBe(0);
       expect(result.warnings.length, model).toBeGreaterThan(0);
+    }
+  });
+  it("prices the upscales the table cannot with MachGen's quote", async () => {
+    const upscale = (model: string, height = 1080) => ({
+      model,
+      task_type: "UPSCALE",
+      prompt: "",
+      src_task_ids: ["source"],
+      video_config: { height, duration_secs: 4 },
+    });
+    const topaz = upscale("Topaz-Video-Precision");
+    for (const model of [
+      "Topaz-Video-Precision",
+      "Topaz-Video-Precision-Animation",
+      "Topaz-Video-Generative",
+      "Topaz-Video-Generative-Fast",
+      "Vidu-Upscale-Pro",
+    ])
+      expect(isMachGenQuotePriced(upscale(model)), model).toBe(true);
+    expect(isMachGenQuotePriced(upscale("MiniMax-H3", 1440))).toBe(false);
+    expect(isMachGenQuotePriced(machgenPayload(0, "T2V"))).toBe(false);
+
+    const asked: unknown[] = [];
+    const quoted = await resolveMachGenUpscaleEstimate(topaz, async (req) => {
+      asked.push(req);
+      return { cost_micros: 149000 };
+    });
+    expect(asked).toEqual([topaz]);
+    expect(quoted).toEqual({
+      usd: 0.149,
+      currency: "USD",
+      source: "per-unit-table",
+      breakdown: {},
+      rateAsOf: null,
+      warnings: [],
+    });
+
+    // Requests the table prices never reach the quote.
+    const never = async (): Promise<{ cost_micros: number }> => {
+      throw new Error("quote called");
+    };
+    const h3 = upscale("MiniMax-H3", 1440);
+    expect(
+      await resolveMachGenUpscaleEstimate(h3, never, {
+        hints: { inputDurationSeconds: 5 },
+      })
+    ).toEqual(
+      computeEstimate({
+        provider: "machgen",
+        payload: h3,
+        costHints: { inputDurationSeconds: 5 },
+      })
+    );
+    expect(
+      (await resolveMachGenUpscaleEstimate(machgenPayload(0, "T2V"), never)).usd
+    ).toBeCloseTo(0.035);
+
+    // A failed or unusable answer degrades to the local estimate.
+    const local = computeEstimate({ provider: "machgen", payload: topaz });
+    expect(local.usd).toBe(0);
+    const failed = await resolveMachGenUpscaleEstimate(topaz, async () => {
+      throw new Error(
+        "MachGen API error 400: UPSCALE target resolution must exceed the source video"
+      );
+    });
+    expect(failed).toEqual({
+      ...local,
+      warnings: [
+        ...local.warnings,
+        "MachGen upscale quote failed for 'Topaz-Video-Precision': MachGen API error 400: UPSCALE target resolution must exceed the source video",
+      ],
+    });
+    for (const answer of [{}, { cost_micros: -1 }, { cost_micros: "149000" }]) {
+      const result = await resolveMachGenUpscaleEstimate(
+        topaz,
+        async () => answer as { cost_micros: number }
+      );
+      expect(result.usd, JSON.stringify(answer)).toBe(0);
+      expect(result.warnings.at(-1)).toBe(
+        "MachGen upscale quote for 'Topaz-Video-Precision' returned no usable cost_micros"
+      );
     }
   });
   it("pins provenance, shared slugs and displays", () => {

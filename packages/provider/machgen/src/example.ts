@@ -28,6 +28,26 @@ const EXAMPLES: Record<string, EndpointExample> = {
     },
     "tier": "expensive",
     "runByDefault": false
+  },
+  "POST api.v0.upscale.quote": {
+    "source": "machgen/topaz-video-precision-upscale",
+    "payload": {
+      "prompt": "",
+      "model": "Topaz-Video-Precision",
+      "task_type": "UPSCALE",
+      "src_task_ids": [
+        "4cef7130-22ce-4fcb-a237-a776791e22f1"
+      ],
+      "upscale_config": {
+        "engine": "proteus"
+      },
+      "video_config": {
+        "height": 1080,
+        "duration_secs": 4
+      }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   }
 };
 

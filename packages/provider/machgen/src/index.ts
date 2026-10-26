@@ -12,6 +12,10 @@ export type {
   MachGenTaskBillingResponse,
   MachGenTaskStatusResponse,
   MachGenUpscaleConfig,
+  MachGenUpscaleNamespace,
+  MachGenUpscaleQuoteMethod,
+  MachGenUpscaleQuoteRequest,
+  MachGenUpscaleQuoteResponse,
   MachGenVideoConfig,
 } from "./types";
 export type {
@@ -24,6 +28,7 @@ export {
   MACHGEN_VIDEO_GRIDS,
   MACHGEN_VIDEO_UPSCALE,
   MachGenUpscaleConfigSchema,
+  MachGenUpscaleQuoteRequestSchema,
   MachGenModelAliasSchema,
   MachGenVideoConfigSchema,
   MachGenGenerateRequestSchema,

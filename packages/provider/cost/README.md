@@ -728,6 +728,43 @@ Statically priced endpoints never reach the network. `cache` (for example
 endpoint, the estimate type and the quantity. A `keyFor` result replaces the
 endpoint part, and the estimate type and quantity are always appended.
 
+## MachGen upscale quotes
+
+A Topaz upscale on MachGen bills vendor credits that depend on the source
+video's frames and resolution, not on the request, so `computeEstimate`
+returns `usd: 0` with a warning for it. MachGen prices the exact request with
+its free upscale quote, `machgen.api.v0.upscale.quote`
+(`POST https://api.machgen.ai/api/v0/upscale/quote`), which creates no task.
+MachGen's REST docs do not list that endpoint (read 2026-10-26), so MachGen
+may change it without notice. `resolveMachGenUpscaleEstimate` takes the quote
+function:
+
+```ts
+import { createMachGen } from "@apicity/machgen";
+import { resolveMachGenUpscaleEstimate } from "@apicity/cost";
+
+const machgen = createMachGen({ apiKey: process.env.MACHGEN_API_KEY });
+const est = await resolveMachGenUpscaleEstimate(
+  {
+    model: "Topaz-Video-Precision",
+    task_type: "UPSCALE",
+    prompt: "",
+    src_task_ids: [sourceTaskId], // a finished task you own
+    video_config: { height: 1080, duration_secs: 4 },
+  },
+  machgen.api.v0.upscale.quote
+);
+```
+
+- A request `isMachGenQuotePriced` accepts, an UPSCALE on a model the table has
+  no rates for, is priced at the quote's `cost_micros` / 1e6, with no warning
+  and `rateAsOf: null`. The recorded Topaz upscale billed exactly its quote.
+- Every other request falls through to `computeEstimate` and never reaches the
+  network. MiniMax-H3's upscale stays local: pass
+  `{ hints: { inputDurationSeconds } }`.
+- A failed or malformed quote degrades to the local `usd: 0`, with a warning
+  that carries the error.
+
 ## Paid endpoint guard (OTP pay gate)
 
 The cost package keeps a small, explicit **paid-endpoint registry** used for
@@ -1034,4 +1071,4 @@ MIT — see [LICENSE](LICENSE).
 
 ### MachGen
 
-MachGen is included in bundled pricing and coverage for every image-to-video model in its models table: Wan 2.2 A14B, LTX 2.3 Pro, Vidu Q3 Turbo, Vidu Q3 Pro, MiniMax H3, MiniMax H3 Turbo, Seedance 2.5, 2.0, 2.0 Fast and 2.0 Mini, Kling 3.0, Vidu Q4 Preview, Vidu Q3 Pro Fast, Wan 3.0, PixVerse V6 and C1, HappyHorse 1.1 and 1.0, and Grok Imagine Video 1.5, plus the T2V-only Veo 3.1, Veo 3.1 Fast and Grok Imagine Video. Each is priced for its T2V and I2V tasks, including an I2V end frame, and every model that takes R2V is priced for it, Kling 3.0 Omni and Vidu Q3 included. UPSCALE is priced on MiniMax H3; the Topaz upscalers bill vendor credits that depend on the source, so they fail closed, as does Vidu Upscale Pro, which answered HTTP 500 to every request on 2026-10-25. Payloads are parsed by `model`, `task_type`, `video_config` and source media. Rates are gross USD per second before Generation Credit. Duration bands bill one band at a time: H3 above 15 seconds, and Vidu Q3 Turbo from 1-5, 6-10 and 11-16 seconds. Kling 3.0, Kling 3.0 Omni and PixVerse price audio on and off apart, so they need `video_config.audio`. MiniMax H3 Turbo is at its limited-time promotional rate of 0.01 USD/s (list 0.02). Pass `costHints.durationSeconds` for Smart duration. Pass `costHints.inputDurationSeconds` for the seconds MachGen reads from an R2V reference video after any start offset, which it bills on top of the output (an edit also renders that length), and for an upscale's source length. Unknown rates, hidden task references, unpublished H3 1080p and sharpen pricing fail closed. `tests/fixtures/machgen-evidence/machgen-pricing-2026-10-25.json` maps every pricebook row to the request shapes it prices.
+MachGen is included in bundled pricing and coverage for every image-to-video model in its models table: Wan 2.2 A14B, LTX 2.3 Pro, Vidu Q3 Turbo, Vidu Q3 Pro, MiniMax H3, MiniMax H3 Turbo, Seedance 2.5, 2.0, 2.0 Fast and 2.0 Mini, Kling 3.0, Vidu Q4 Preview, Vidu Q3 Pro Fast, Wan 3.0, PixVerse V6 and C1, HappyHorse 1.1 and 1.0, and Grok Imagine Video 1.5, plus the T2V-only Veo 3.1, Veo 3.1 Fast and Grok Imagine Video. Each is priced for its T2V and I2V tasks, including an I2V end frame, and every model that takes R2V is priced for it, Kling 3.0 Omni and Vidu Q3 included. UPSCALE is priced on MiniMax H3; the Topaz upscalers bill vendor credits that depend on the source, so they fail closed, as does Vidu Upscale Pro, which answered HTTP 500 to every request on 2026-10-25. `resolveMachGenUpscaleEstimate` prices those upscales with MachGen's own quote instead (see [MachGen upscale quotes](#machgen-upscale-quotes)). Payloads are parsed by `model`, `task_type`, `video_config` and source media. Rates are gross USD per second before Generation Credit. Duration bands bill one band at a time: H3 above 15 seconds, and Vidu Q3 Turbo from 1-5, 6-10 and 11-16 seconds. Kling 3.0, Kling 3.0 Omni and PixVerse price audio on and off apart, so they need `video_config.audio`. MiniMax H3 Turbo is at its limited-time promotional rate of 0.01 USD/s (list 0.02). Pass `costHints.durationSeconds` for Smart duration. Pass `costHints.inputDurationSeconds` for the seconds MachGen reads from an R2V reference video after any start offset, which it bills on top of the output (an edit also renders that length), and for an upscale's source length. Unknown rates, hidden task references, unpublished H3 1080p and sharpen pricing fail closed. `tests/fixtures/machgen-evidence/machgen-pricing-2026-10-25.json` maps every pricebook row to the request shapes it prices.

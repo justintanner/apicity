@@ -701,3 +701,19 @@ export const MachGenGenerateRequestSchema = z
         `${model} I2V does not render towards a lone last frame; send the first frame as image 0`
       );
   });
+
+const UPSCALE_MODELS = Object.entries(MACHGEN_VIDEO_MODEL_TASK_TYPES)
+  .filter(([, tasks]) => (tasks as readonly string[]).includes("UPSCALE"))
+  .map(([model]) => model) as [MachGenVideoModel, ...MachGenVideoModel[]];
+
+// The upscale quote takes generate's task input and keeps its checks, since
+// MachGen answers a bad quote with the same 400s (2026-10-25 probes).
+export const MachGenUpscaleQuoteRequestSchema =
+  MachGenGenerateRequestSchema.safeExtend({
+    model: z.enum(UPSCALE_MODELS).or(MachGenModelAliasSchema),
+    task_type: z.literal("UPSCALE"),
+  }).describe(
+    "An UPSCALE task input, as api.v0.generate takes it, priced without " +
+      "creating a task. MachGen's REST docs do not list this endpoint " +
+      "(read 2026-10-26), so MachGen may change it without notice."
+  );

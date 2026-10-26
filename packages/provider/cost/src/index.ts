@@ -14,6 +14,15 @@ export type {
   ResolveFalDynamicEstimateOptions,
 } from "./fal-dynamic";
 export {
+  resolveMachGenUpscaleEstimate,
+  isMachGenQuotePriced,
+} from "./machgen-quote";
+export type {
+  MachGenUpscaleQuoter,
+  MachGenUpscaleQuoteLike,
+  ResolveMachGenUpscaleEstimateOptions,
+} from "./machgen-quote";
+export {
   COST_TIERS,
   CHEAP_MAX_USD,
   EXPENSIVE_MAX_USD,

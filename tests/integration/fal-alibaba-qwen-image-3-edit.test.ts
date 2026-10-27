@@ -25,6 +25,7 @@ describe("fal alibaba qwen-image-3 edit integration", () => {
       import.meta.dirname,
       "..",
       "fixtures",
+      "legacy",
       "cat1.jpg"
     );
     const imageDataUrl = `data:image/jpeg;base64,${fs

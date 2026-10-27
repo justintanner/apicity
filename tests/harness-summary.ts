@@ -225,13 +225,13 @@ function extractPrompt(entries: HarEntry[]): string {
 // ---------------------------------------------------------------------------
 
 const SOURCE_FILE_MAP: Array<[RegExp, string | null]> = [
-  [/^xai\/image-edit/, "tests/fixtures/cat1.jpg"],
-  [/^xai\/video-cat-image/, "tests/fixtures/cat1.jpg"],
-  [/^xai\/video-image-to-video/, "tests/fixtures/cat1.jpg"],
-  [/^xai\/video-reference-images/, "tests/fixtures/cat1.jpg"],
+  [/^xai\/image-edit/, "tests/fixtures/legacy/cat1.jpg"],
+  [/^xai\/video-cat-image/, "tests/fixtures/legacy/cat1.jpg"],
+  [/^xai\/video-image-to-video/, "tests/fixtures/legacy/cat1.jpg"],
+  [/^xai\/video-reference-images/, "tests/fixtures/legacy/cat1.jpg"],
   [/^openai\/vision/, "tests/fixtures/red.png"],
-  [/^fal\/nano-banana-pro-edit/, "tests/fixtures/man.jpg"],
-  [/^fal\/bytedance-seedream-v5-lite-edit/, "tests/fixtures/man.jpg"],
+  [/^fal\/nano-banana-pro-edit/, "tests/fixtures/legacy/man.jpg"],
+  [/^fal\/bytedance-seedream-v5-lite-edit/, "tests/fixtures/legacy/man.jpg"],
   [/^kimicoding\/.*image-base64/, null],
   [/^kie\/e2e-motion-control/, null],
   [/^kie\/kling-motion-control/, null],

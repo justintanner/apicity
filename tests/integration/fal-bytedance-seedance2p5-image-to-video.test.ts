@@ -25,6 +25,7 @@ describe("fal bytedance seedance2p5 image-to-video integration", () => {
       import.meta.dirname,
       "..",
       "fixtures",
+      "legacy",
       "cat1.jpg"
     );
     const imageDataUrl = `data:image/jpeg;base64,${fs

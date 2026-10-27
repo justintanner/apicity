@@ -33,7 +33,7 @@ describe("fal bytedance seedance2p5 reference-to-video integration", () => {
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
       timeout: 900000,
     });
-    const imageDataUrl = fixtureDataUrl("cat1.jpg", "image/jpeg");
+    const imageDataUrl = fixtureDataUrl("legacy/cat1.jpg", "image/jpeg");
     const videoDataUrl = fixtureDataUrl("seedance-ref.mp4", "video/mp4");
 
     const result = await provider.run.bytedance.seedance2p5.referenceToVideo({

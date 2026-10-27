@@ -29,7 +29,9 @@ describe("alibaba wan i2v integration", () => {
       apiKey: process.env.DASHSCOPE_API_KEY ?? "test-key",
     });
 
-    const imgBuffer = readFileSync(resolve(__dirname, "../fixtures/cat1.jpg"));
+    const imgBuffer = readFileSync(
+      resolve(__dirname, "../fixtures/legacy/cat1.jpg")
+    );
     const imgDataUrl = `data:image/jpeg;base64,${imgBuffer.toString("base64")}`;
 
     const submit =

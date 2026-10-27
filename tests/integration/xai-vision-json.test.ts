@@ -64,7 +64,7 @@ describe("xai vision JSON integration", () => {
   it("should analyze an image as videocity-style structured JSON", async () => {
     ctx = setupPolly("xai/vision-analysis-json");
 
-    const imagePath = resolve(__dirname, "../fixtures/man.jpg");
+    const imagePath = resolve(__dirname, "../fixtures/legacy/man.jpg");
     const image = readFileSync(imagePath);
     const base64 = image.toString("base64");
     const provider = createXaiProvider();

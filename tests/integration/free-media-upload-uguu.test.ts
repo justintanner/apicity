@@ -40,7 +40,7 @@ describe("free-media-upload uguu upload", () => {
     ctx = setupPollyForFileUploads("free-media-upload/uguu-upload-image");
     const provider = createFreeMediaUpload();
 
-    const imgPath = resolve(__dirname, "../fixtures/cat1.jpg");
+    const imgPath = resolve(__dirname, "../fixtures/legacy/cat1.jpg");
     const imgBuffer = readFileSync(imgPath);
     const file = new Blob([imgBuffer], { type: "image/jpeg" });
 

@@ -36,7 +36,9 @@ describe("b2 real asset e2e integration", () => {
     const b2 = createProvider();
     const bucket = process.env.B2_BUCKET ?? "apicity";
     const key = "apicity-tests/real-assets/cat1.jpg";
-    const asset = readFileSync(resolve(__dirname, "../fixtures/cat1.jpg"));
+    const asset = readFileSync(
+      resolve(__dirname, "../fixtures/legacy/cat1.jpg")
+    );
     const assetHash = sha256(asset);
     let uploaded = false;
     let versionId: string | undefined;

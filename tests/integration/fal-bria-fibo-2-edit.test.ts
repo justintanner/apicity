@@ -19,7 +19,7 @@ describe("fal Bria Fibo 2 edit", () => {
     const input = {
       instruction: "Give the cat in image 1 a small red knitted scarf.",
       image_urls: [
-        `data:image/jpeg;base64,${readFileSync(new URL("../fixtures/cat1.jpg", import.meta.url)).toString("base64")}`,
+        `data:image/jpeg;base64,${readFileSync(new URL("../fixtures/legacy/cat1.jpg", import.meta.url)).toString("base64")}`,
       ],
       seed: 5555,
     } satisfies FalBriaFibo2EditRequest;

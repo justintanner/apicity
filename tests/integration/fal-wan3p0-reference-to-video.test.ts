@@ -37,7 +37,7 @@ describe("fal alibaba wan3p0 reference-to-video integration", () => {
     const result = await provider.run.alibaba.wan3p0.referenceToVideo({
       prompt:
         "The cat in Image 1 blinks slowly and tilts its head, cinematic close-up.",
-      reference_image_urls: [fixtureDataUrl("cat1.jpg", "image/jpeg")],
+      reference_image_urls: [fixtureDataUrl("legacy/cat1.jpg", "image/jpeg")],
       resolution: "480p",
       aspect_ratio: "1:1",
       duration: 2,

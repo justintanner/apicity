@@ -26,6 +26,7 @@ describe("fal wan v2.7 image-to-video integration", () => {
       import.meta.dirname,
       "..",
       "fixtures",
+      "legacy",
       "cat1.jpg"
     );
     const b64 = fs.readFileSync(fixturePath).toString("base64");

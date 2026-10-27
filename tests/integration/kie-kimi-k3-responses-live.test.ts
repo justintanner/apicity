@@ -27,7 +27,7 @@ describe("kie kimi k3 responses live", () => {
     });
 
     const catBase64 = readFileSync(
-      resolve(__dirname, "../fixtures", "cat1.jpg")
+      resolve(__dirname, "../fixtures", "legacy/cat1.jpg")
     ).toString("base64");
 
     const response = await provider.post.openai.v1.responses({

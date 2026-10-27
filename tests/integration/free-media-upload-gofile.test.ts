@@ -36,7 +36,9 @@ describe("free-media-upload gofile upload", () => {
   it("should upload an image", async () => {
     ctx = setupPollyForFileUploads("free-media-upload/gofile-upload-image");
     const provider = createFreeMediaUpload();
-    const imgBuffer = readFileSync(resolve(__dirname, "../fixtures/cat1.jpg"));
+    const imgBuffer = readFileSync(
+      resolve(__dirname, "../fixtures/legacy/cat1.jpg")
+    );
     const file = new Blob([imgBuffer], { type: "image/jpeg" });
 
     const result = await provider.gofile.upload({

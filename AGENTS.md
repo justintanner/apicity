@@ -101,7 +101,7 @@ pnpm run lint                    # Full lint: format check + ESLint + repo check
 pnpm run lint:after-format       # Full lint minus format check; safe after pnpm run format
 pnpm run lint:provider -- <name-or-path> # Scoped ESLint + provider-relevant checks
 pnpm run typecheck:provider -- <name-or-path> # Fast provider typecheck; falls back to full on shared/package diffs
-pnpm run check:readme-types      # Type-check every TypeScript block in the generated READMEs and docs/middleware.md (part of ci:local)
+pnpm run check:readme-types      # Type-check every TypeScript block in the generated READMEs and hand-written docs (part of ci:local)
 pnpm run check:packed-types      # After build: pack every provider, type-check a node16 consumer (part of ci:local)
 pnpm run test:run                # Run tests once (Polly.js replay; no network)
 pnpm run test:affected           # Provider tests for provider-only diffs; full fallback otherwise

@@ -36,7 +36,7 @@ npm install @apicity/cost
 pnpm add @apicity/cost
 ```
 
-## Usage
+## Quick Start
 
 `c.estimate(req)` takes the **exact JSON body you would POST upstream** and
 lightly parses out the price-affecting fields (model, resolution, duration,
@@ -103,6 +103,8 @@ const z = c.estimate({ provider: "free-media-upload" });
 ## Return shape
 
 ```ts
+import type { CostModalityBreakdown } from "@apicity/cost";
+
 interface CostEstimate {
   usd: number;
   currency: "USD";
@@ -628,10 +630,17 @@ byte-identical whether or not you estimate with hints, and an OTP minted for a
 payload still verifies after that payload is estimated:
 
 ```ts
+import { createCost, mintOtp } from "@apicity/cost";
+import type { KieProvider, MediaGenerationRequest } from "@apicity/kie";
+
+declare const secret: string; // the pay-gate secret
+declare const provider: KieProvider; // built with that secret
+
+const c = createCost();
 const payload = {
   model: "omnihuman-1-5",
   input: { image_url: "...", audio_url: "..." },
-};
+} satisfies MediaGenerationRequest;
 const otp = mintOtp(secret, {
   dotPath: "api.v1.jobs.createTask",
   request: payload,
@@ -702,7 +711,7 @@ fal's estimator and the quantity to price:
 import { createFal } from "@apicity/fal";
 import { resolveFalDynamicEstimate } from "@apicity/cost";
 
-const fal = createFal({ apiKey: process.env.FAL_ADMIN_API_KEY });
+const fal = createFal({ apiKey: process.env.FAL_ADMIN_API_KEY! });
 const est = await resolveFalDynamicEstimate(
   "alibaba/wan-3.0/text-to-video",
   { prompt: "a red panda", duration: 5 },
@@ -743,13 +752,15 @@ function:
 import { createMachGen } from "@apicity/machgen";
 import { resolveMachGenUpscaleEstimate } from "@apicity/cost";
 
+declare const sourceTaskId: string; // a finished task you own
+
 const machgen = createMachGen({ apiKey: process.env.MACHGEN_API_KEY });
 const est = await resolveMachGenUpscaleEstimate(
   {
     model: "Topaz-Video-Precision",
     task_type: "UPSCALE",
     prompt: "",
-    src_task_ids: [sourceTaskId], // a finished task you own
+    src_task_ids: [sourceTaskId],
     video_config: { height: 1080, duration_secs: 4 },
   },
   machgen.api.v0.upscale.quote
@@ -848,13 +859,15 @@ interface ReplayStore {
 ```ts
 import { createKie } from "@apicity/kie";
 
+declare function loadSecret(): string; // your secret manager / config
+
 // Gate off: paid endpoints dispatch.
 const open = createKie({ apiKey: process.env.KIE_API_KEY! });
 
 // Gate armed: paid endpoints need an OTP minted from this secret.
 const provider = createKie({
   apiKey: process.env.KIE_API_KEY!,
-  paygate: { secret: loadSecret() }, // from your secret manager / config
+  paygate: { secret: loadSecret() },
 });
 ```
 
@@ -865,6 +878,9 @@ binds to the exact request via its canonical hash:
 
 ```ts
 import { mintOtp } from "@apicity/cost";
+
+declare const secret: string; // the secret the provider was built with
+declare const payload: Record<string, unknown>; // the request body
 
 const otp = mintOtp(secret, {
   dotPath: "api.v1.jobs.createTask", // provider/method resolved from the registry
@@ -889,7 +905,7 @@ consumed **before** dispatch — see [Retry semantics](#retry-semantics).
 
 ### Public interface
 
-```ts
+```ts nocheck
 interface PayGateApproval {
   otp: string;
 }
@@ -908,8 +924,16 @@ async function dispatchWithPaidGate<T>(
 Paid endpoint APIs accept the approval as a second options object:
 
 ```ts
+import type { KieProvider } from "@apicity/kie";
+
+declare const provider: KieProvider; // built with paygate: { secret }
+declare const otp: string; // minted for this exact request
+
 const task = await provider.post.api.v1.jobs.createTask(
-  { model: "kling-3.0/video", input: { prompt: "...", duration: "5" } },
+  {
+    model: "kling-3.0/video",
+    input: { prompt: "...", duration: "5", mode: "std", multi_shots: false },
+  },
   { otp }
 );
 ```
@@ -934,7 +958,7 @@ Each failed check throws `PayGateError` with the code shown:
 8. **Consume + dispatch** — the `jti` is recorded, then the HTTP request
    fires.
 
-```ts
+```ts nocheck
 import { PayGateError } from "@apicity/cost";
 
 try {
@@ -989,7 +1013,7 @@ behavior. The walker descends the HTTP-method roots (`post`, `get`, `delete`,
 unchanged, and schema records and other non-route properties are returned by
 reference.
 
-```ts
+```ts nocheck
 import { createReplayStore, withPaidGate } from "@apicity/cost";
 
 export function createKie(opts: KieOptions): KieProvider {
@@ -1046,7 +1070,7 @@ empty is a `usage` error, never a disarmed gate.
 3. **Mint an OTP** with the [CLI above](#cli-minting-otps).
 4. **Pass the OTP to the caller** (copy-paste, secrets manager, etc.).
 5. **Caller uses it**:
-   ```ts
+   ```ts nocheck
    await provider.post.api.v1.jobs.createTask({ ... }, { otp: "<paste>" });
    ```
 

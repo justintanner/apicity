@@ -61,7 +61,7 @@ pnpm run build                   # Build all packages
 pnpm run build:kimicoding        # Build single package (one alias per package; see below)
 pnpm run doc-gen                 # Regenerate every provider README
 pnpm run doc-gen:check           # Check generated READMEs for drift (part of ci:local)
-pnpm run check:readme-types      # Type-check every TypeScript block in the generated READMEs and docs/middleware.md (part of ci:local)
+pnpm run check:readme-types      # Type-check every TypeScript block in the generated READMEs and hand-written docs (part of ci:local)
 pnpm run doc-gen:kie             # Regenerate one provider README (one alias per provider; see below)
 pnpm run gen:call-shapes         # Regenerate packages/cli/src/call-shapes.ts from the endpoint sources
 pnpm run gen:call-shapes:check   # Check the generated call-shape table for drift (part of ci:local)
@@ -425,8 +425,9 @@ stay in sync. `pnpm run lint` includes `gen:shared:check` and fails on drift.
   generated-README drift check (`doc-gen:check`, which must precede the build
   because `pnpm run build` ends in `doc-gen`) + the README code-block type
   check (`check:readme-types`: every `ts` / `typescript` block of the
-  generated provider READMEs and `docs/middleware.md`, compiled against
-  provider source) + build + verify artifacts +
+  generated provider READMEs and of the hand-written docs in
+  `EXTRA_DOCUMENTS`, compiled against provider source) + build + verify
+  artifacts +
   the packed-provider type check (`check:packed-types`: every provider packed
   and imported by a node16 consumer with `skipLibCheck: false`) + the
   tests-project typecheck (`typecheck:tests`) + lint + integration tests via

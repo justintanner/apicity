@@ -11,8 +11,10 @@ other. Built with one, every paid call needs an approved, single-use OTP, and
 an autonomous caller cannot bypass it.
 
 ```ts
-import { createKie } from "@apicity/kie";
+import { createKie, type MediaGenerationRequest } from "@apicity/kie";
 import { mintOtp, createCost } from "@apicity/cost";
+
+declare function loadSecret(): string; // your secret manager / config
 
 // Same JSON body you'd POST to /api/v1/jobs/createTask.
 const payload = {
@@ -22,7 +24,7 @@ const payload = {
     aspect_ratio: "16:9",
     resolution: "4K",
   },
-};
+} satisfies MediaGenerationRequest;
 
 // Pure local cost preview — no keys, no network, sync.
 const estimate = createCost().estimate({ provider: "kie", payload });

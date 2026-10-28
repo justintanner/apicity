@@ -8,6 +8,9 @@ See the [capture guide](../../../docs/har-capture.md) for setup and retention de
 ```ts
 import { exchangeToEntry, scrubHar, pollyEntryId } from "@apicity/har";
 
+declare const request: Request; // the request you sent
+declare const response: Response; // its response, body unread
+
 const entry = await exchangeToEntry(request, response, {
   startedAt: new Date(),
   durationMs: 120,

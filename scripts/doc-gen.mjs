@@ -1289,7 +1289,6 @@ function renderXaiRateLimiting() {
     "",
     "const chat = withRateLimit(xai.post.v1.chat.completions, limiter);",
     "const responses = withRateLimit(xai.post.v1.responses, limiter);",
-    "const images = withRateLimit(xai.post.v1.images.generations, limiter);",
     "```",
     "",
     "### Composing with retry",
@@ -4477,7 +4476,12 @@ const PROVIDER_AUTH = {
     optionalAuth: true,
     showMiddleware: false,
   },
-  youtube: { showMiddleware: false },
+  youtube: {
+    field: "accessToken",
+    env: "YOUTUBE_ACCESS_TOKEN",
+    optionalAuth: true,
+    showMiddleware: false,
+  },
 };
 
 // The call a provider's Middleware sample wraps, for a provider whose

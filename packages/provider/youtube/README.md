@@ -23,7 +23,7 @@ pnpm add @apicity/youtube
 ```typescript
 import { createYouTube } from "@apicity/youtube";
 
-const youtube = createYouTube({ apiKey: process.env.YOUTUBE_API_KEY! });
+const youtube = createYouTube({ accessToken: process.env.YOUTUBE_ACCESS_TOKEN });
 ```
 
 ## API Reference

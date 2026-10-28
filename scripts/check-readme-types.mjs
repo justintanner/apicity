@@ -2,7 +2,8 @@
 
 /**
  * Type-check every TypeScript block in the generated provider READMEs and in
- * `docs/middleware.md` against the provider sources.
+ * the hand-written documents of `EXTRA_DOCUMENTS` against the provider
+ * sources.
  *
  *   node scripts/check-readme-types.mjs                # every covered document
  *   node scripts/check-readme-types.mjs <path> [...]   # only these documents

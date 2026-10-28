@@ -73,7 +73,7 @@ import { createKie } from "@apicity/kie";
 const kie = createKie({ apiKey: process.env.KIE_API_KEY! });
 await kie.post.api.v1.jobs.createTask({
   model: "minimax-h3/image-to-video",
-  input: { prompt: "...", image_url: "..." },
+  input: { prompt: "...", first_frame_url: "...", duration: 4 },
 });
 ```
 

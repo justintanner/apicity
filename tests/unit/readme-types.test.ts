@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
@@ -8,11 +9,9 @@ import {
   extractTypeScriptBlocks,
   readmeTypeDocuments,
   readProviderSourcePaths,
+  UNCHECKED_DOCUMENTS,
 } from "../../scripts/lib/readme-types.mjs";
-import {
-  DOC_GEN_EXEMPT,
-  REPO_ROOT,
-} from "../../scripts/lib/provider-inventory.mjs";
+import { REPO_ROOT } from "../../scripts/lib/provider-inventory.mjs";
 
 /**
  * `pnpm run check:readme-types` turns README blocks into modules and
@@ -98,6 +97,20 @@ describe("extractTypeScriptBlocks", () => {
     expect(blocks).toHaveLength(1);
     expect(blocks[0].section).toBeNull();
     expect(blocks[0].lines).toHaveLength(5);
+  });
+
+  it("leaves out a fence whose info string carries nocheck", () => {
+    const markdown = [
+      "```ts nocheck",
+      "declare function sketch(): void;",
+      "```",
+      "```ts title=example",
+      "const a = 1;",
+      "```",
+    ].join("\n");
+    expect(extractTypeScriptBlocks(markdown).map((b) => b.lines)).toEqual([
+      ["const a = 1;"],
+    ]);
   });
 
   it("strips the fence's indentation from its lines", () => {
@@ -211,18 +224,52 @@ describe("composeModules", () => {
   });
 });
 
+// Tracked regular files only: `-s` prints `<mode> <object> <stage>\t<path>`,
+// and a symlink (mode 120000) can point outside the checkout. `git ls-files`
+// keeps the untracked plans/ tree out.
+function trackedMarkdown(): string[] {
+  return execFileSync("git", ["ls-files", "-s", "-z", "--", "*.md"], {
+    cwd: REPO_ROOT,
+    encoding: "utf8",
+  })
+    .split("\0")
+    .filter((entry) => entry.startsWith("100"))
+    .map((entry) => entry.slice(entry.indexOf("\t") + 1));
+}
+
+const checkedBlocks = (document: string): number =>
+  extractTypeScriptBlocks(
+    fs.readFileSync(path.join(REPO_ROOT, document), "utf8")
+  ).length;
+
 describe("documents and module paths", () => {
-  it("covers every generated README and docs/middleware.md", () => {
+  it("covers every generated README and the hand-written samples", () => {
     const documents = readmeTypeDocuments();
     expect(documents).toContain("packages/provider/youtube/README.md");
     expect(documents).toContain("docs/middleware.md");
-    for (const exempt of Object.keys(DOC_GEN_EXEMPT)) {
-      expect(documents).not.toContain(`packages/provider/${exempt}/README.md`);
-    }
+    expect(documents).toContain("README.md");
+    expect(documents).toContain("packages/provider/cost/README.md");
+    expect(new Set(documents).size).toBe(documents.length);
     for (const document of documents) {
       expect(fs.existsSync(path.join(REPO_ROOT, document)), document).toBe(
         true
       );
+    }
+  });
+
+  it("covers or lists every tracked Markdown file with a checked block", () => {
+    const covered = new Set(readmeTypeDocuments());
+    const unchecked = Object.keys(UNCHECKED_DOCUMENTS);
+    const unclassified = trackedMarkdown().filter(
+      (document) =>
+        !covered.has(document) &&
+        !unchecked.includes(document) &&
+        checkedBlocks(document) > 0
+    );
+    expect(unclassified).toEqual([]);
+    for (const document of unchecked) {
+      expect(covered.has(document), document).toBe(false);
+      expect(checkedBlocks(document), document).toBeGreaterThan(0);
     }
   });
 
@@ -231,6 +278,7 @@ describe("documents and module paths", () => {
     expect(paths["@apicity/youtube"]).toEqual([
       "packages/provider/youtube/src/index.ts",
     ]);
+    expect(paths["@apicity/cli"]).toEqual(["packages/cli/src/index.ts"]);
     expect(paths["@apicity/xai/realtime"]).toEqual([
       "packages/provider/xai/src/realtime.ts",
     ]);

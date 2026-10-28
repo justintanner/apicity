@@ -9,7 +9,8 @@ import {
 
 /**
  * Type-check the TypeScript samples in the generated provider READMEs and in
- * `docs/middleware.md` against the provider sources.
+ * the hand-written documents of `EXTRA_DOCUMENTS` against the provider
+ * sources.
  *
  * The generated Quick Start auth field was wrong four times in a row (dolthub
  * `ac-j4lc99`, free-media-upload `ac-37sz5l`, meta `ac-dghndy`, youtube
@@ -24,8 +25,11 @@ import {
  *
  * A sample is read the way someone pasting it would run it:
  *
- *   - Every `ts` / `typescript` fence is checked. Fence a sample that is not
- *     meant to compile with another language.
+ *   - Every `ts` / `typescript` fence is checked unless its info string also
+ *     carries the word `nocheck`, as in `ts nocheck`. Renderers highlight by
+ *     the first word, so a signature or a sketch that is not meant to compile
+ *     keeps its highlighting. A block that makes a real call stays checked:
+ *     declare the values it assumes (`declare const otp: string;`) instead.
  *   - A block with a top-level `import` or `export` is a module of its own.
  *   - Any other block follows the README's Quick Start, so it can use the
  *     client the Quick Start creates.
@@ -44,8 +48,32 @@ import {
  * as the samples need them and no further.
  */
 
-/** Hand-written documents checked alongside the generated READMEs. */
-const EXTRA_DOCUMENTS = Object.freeze(["docs/middleware.md"]);
+/**
+ * Hand-written documents checked alongside the generated READMEs: every
+ * tracked Markdown file whose TypeScript blocks are samples (`ac-pxgn47`).
+ */
+const EXTRA_DOCUMENTS = Object.freeze([
+  "README.md",
+  "docs/har-capture.md",
+  "docs/middleware.md",
+  "docs/paygate.md",
+  "packages/cli/README.md",
+  "packages/provider/cost/README.md",
+  "packages/provider/har/README.md",
+  "packages/provider/s3/HARDENING.md",
+]);
+
+/**
+ * Tracked Markdown files with TypeScript blocks that the gate does not read,
+ * and why. `tests/unit/readme-types.test.ts` fails on a tracked Markdown file
+ * with a checked block that is in neither list.
+ */
+export const UNCHECKED_DOCUMENTS = Object.freeze({
+  ".claude/CLAUDE.md":
+    "agent instructions; the block is an object-property fragment that shows the endpoint comment convention",
+  "docs/google-flow-character-metadata-findings.md":
+    "a findings record; the blocks quote provider source at the cited lines",
+});
 
 /** The README section whose blocks stand alone. */
 const API_REFERENCE_SECTION = "API Reference";
@@ -54,6 +82,7 @@ const API_REFERENCE_SECTION = "API Reference";
 const QUICK_START_SECTION = "Quick Start";
 
 const TYPESCRIPT_LANGUAGES = new Set(["ts", "typescript"]);
+const NOCHECK = "nocheck";
 const PLACEHOLDER = /^\{\s*\/\*\s*\.\.\.\s*\*\/\s*\}$/;
 const MODULE_DIR = ".readme-types";
 
@@ -74,17 +103,21 @@ export function readmeTypeDocuments(repoRoot = REPO_ROOT) {
 }
 
 /**
- * Module specifiers a sample can import, mapped to provider source: one entry
- * per `exports` subpath of every provider `package.json`, so a sample that
- * imports a subpath the package does not export fails to resolve.
+ * Module specifiers a sample can import, mapped to package source: one entry
+ * per `exports` subpath of every provider `package.json` and of
+ * `packages/cli`, so a sample that imports a subpath the package does not
+ * export fails to resolve.
  *
  * @param {string} [repoRoot]
  * @returns {Record<string, string[]>}
  */
 export function readProviderSourcePaths(repoRoot = REPO_ROOT) {
   const paths = {};
-  for (const name of readProviderNames(repoRoot)) {
-    const dir = `packages/provider/${name}`;
+  const dirs = [
+    ...readProviderNames(repoRoot).map((name) => `packages/provider/${name}`),
+    "packages/cli",
+  ];
+  for (const dir of dirs) {
     const manifest = JSON.parse(
       fs.readFileSync(path.join(repoRoot, dir, "package.json"), "utf8")
     );
@@ -104,7 +137,8 @@ export function readProviderSourcePaths(repoRoot = REPO_ROOT) {
 }
 
 /**
- * The `ts` / `typescript` fenced blocks of one Markdown document, in order.
+ * The `ts` / `typescript` fenced blocks of one Markdown document, in order,
+ * leaving out a fence whose info string carries `nocheck`.
  *
  * Fences follow CommonMark: three or more backticks or tildes, indented by at
  * most three spaces, closed by a run of the same character at least as long.
@@ -130,7 +164,7 @@ export function extractTypeScriptBlocks(markdown) {
         close[1][0] === open.marker[0] &&
         close[1].length >= open.marker.length
       ) {
-        if (TYPESCRIPT_LANGUAGES.has(open.language)) {
+        if (TYPESCRIPT_LANGUAGES.has(open.language) && !open.nocheck) {
           blocks.push({
             language: open.language,
             section,
@@ -148,10 +182,12 @@ export function extractTypeScriptBlocks(markdown) {
     }
     const fence = /^( {0,3})(`{3,}|~{3,})(.*)$/.exec(line);
     if (fence && !(fence[2][0] === "`" && fence[3].includes("`"))) {
+      const [language, ...words] = fence[3].trim().split(/\s+/);
       open = {
         indent: fence[1].length,
         marker: fence[2],
-        language: fence[3].trim().split(/\s+/)[0].toLowerCase(),
+        language: language.toLowerCase(),
+        nocheck: words.includes(NOCHECK),
         fenceLine: index + 1,
         lines: [],
       };

@@ -3,6 +3,19 @@
 `@apicity/s3` keeps endpoint methods close to the upstream S3 API and adds a
 small set of provider-level helpers for operational use.
 
+## Quick Start
+
+```typescript
+import { createS3, withRetry } from "@apicity/s3";
+
+const s3 = createS3({
+  accessKeyId: process.env.S3_ACCESS_KEY_ID!,
+  secretAccessKey: process.env.S3_SECRET_ACCESS_KEY!,
+  region: process.env.S3_REGION ?? "us-east-1",
+  endpoint: process.env.S3_ENDPOINT,
+});
+```
+
 ## Presigned Object URLs
 
 Use `s3.presign.getObject`, `s3.presign.putObject`,

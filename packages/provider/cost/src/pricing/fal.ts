@@ -1497,6 +1497,16 @@ export function falDynamicBilledUnit(
 }
 
 export const fal: Record<string, ModelPricing> = {
+  // The recorded 100-step training run billed 100 units, confirmed as $0.43.
+  // CostUnit has no steps member; each billed step counts as one generation.
+  "blackforestlabs/flux-3/klein/base/trainer": {
+    kind: "perUnit",
+    unit: "generations",
+    units: (p) => Math.max(100, asNumber(p.steps) ?? 1000),
+    select: [],
+    rates: { "": 0.0043 },
+    source: source("blackforestlabs/flux-3/klein/base/trainer", "2026-10-28"),
+  },
   // Kling 4.0 reference-to-video: the card bills $0.157/s at 720p and $0.235/s
   // at 1080p, like text-to-video, and the pricing API lists the 720p rate.
   // The 3 s 720p recording with one reference image returned 3.04 s and

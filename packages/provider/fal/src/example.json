@@ -277,6 +277,17 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST blackforestlabs.flux3.klein.base.trainer": {
+    "source": "fal/flux-3-klein-base-trainer",
+    "payload": {
+      "images_data_url": "https://v3b.fal.media/files/b/0ab0295f/cWH8_IX00IlRACO7t0eIL_klein-trainer-images.zip",
+      "trigger_phrase": "apct cat",
+      "steps": 100,
+      "resolution": 512
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST blackforestlabs.flux3.textToImage": {
     "source": "fal/flux-3-text-to-image",
     "payload": {

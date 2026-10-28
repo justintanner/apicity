@@ -3980,6 +3980,18 @@ export interface FalRunFlux3KleinBaseTrainerNamespace {
   schema: ApicitySchema<FalFlux3KleinTrainerRequest>;
 }
 
+export interface FalRunFlux3KleinBaseNamespace {
+  trainer: FalRunFlux3KleinBaseTrainerNamespace;
+}
+
+export interface FalRunFlux3KleinNamespace {
+  base: FalRunFlux3KleinBaseNamespace;
+}
+
+export interface FalRunFlux3Namespace {
+  klein: FalRunFlux3KleinNamespace;
+}
+
 export interface FalXaiGrokImagineVideoV1p5LiteImageToVideoResponse {
   video: {
     url: string;

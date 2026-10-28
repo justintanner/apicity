@@ -75,7 +75,7 @@ if (!put.ok) throw new Error(`upload failed: ${put.status}`);
 //    thumbnail, and a horizontal spritesheet — all hosted on the
 //    same fal CDN. `duration` accepts 4 | 8 | 12 | 16 | 20 (seconds);
 //    `aspect_ratio` is "auto" | "9:16" | "16:9".
-const result = await fal.sora2.imageToVideo({
+const result = await fal.run.sora2.imageToVideo({
   prompt: "the man waves at the camera as the wind blows his hair",
   image_url: slot.file_url,
   aspect_ratio: "16:9",
@@ -106,14 +106,14 @@ console.log(result.spritesheet?.url);
   dance and returns the `file_url` directly — use it when you don't
   need granular control over the lifecycle or signed URL.
 - Every POST endpoint exposes a Zod schema: call
-  `fal.sora2.imageToVideo.schema.safeParse(input)` to validate a
+  `fal.run.sora2.imageToVideo.schema.safeParse(input)` to validate a
   payload before paying for inference.
 - WAN 2.7 reference-to-video validates generated duration as 2–10
   seconds. `duration: 0` remains limited to source-clip edit-video
   flows where it means keeping the original clip length.
 - Long-running calls accept an `AbortSignal` second argument and
   compose with the package's middleware, e.g.
-  `withRetry(fal.sora2.imageToVideo, { retries: 3 })` from
+  `withRetry(fal.run.sora2.imageToVideo, { retries: 3 })` from
   `@apicity/fal` to ride out transient queue / 429s.
 - Errors throw `FalError` with `status`, `type`, `request_id`, and the
   parsed `body` attached:

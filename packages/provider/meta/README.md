@@ -153,12 +153,12 @@ server.listen(8765, "127.0.0.1");
 ```typescript
 import { createMeta } from "@apicity/meta";
 
-const meta = createMeta({ accessToken: process.env.IG_ACCESS_TOKEN });
-const igUserId = process.env.IG_USER_ID;
+const meta = createMeta({ accessToken: process.env.IG_ACCESS_TOKEN! });
+const igUserId = process.env.IG_USER_ID!;
 
 // Public-URL flow: host the mp4 somewhere (e.g. via @apicity/free-media-upload) and
 // pass its URL. Meta GETs the video and processes it asynchronously.
-const container = await ig.post.v25.media(igUserId, {
+const container = await meta.post.v25.media(igUserId, {
   media_type: "REELS",
   video_url: "https://example.com/clip.mp4",
   caption: "hello from @apicity/meta",
@@ -168,14 +168,14 @@ const container = await ig.post.v25.media(igUserId, {
 let status = "IN_PROGRESS";
 while (status === "IN_PROGRESS") {
   await new Promise((r) => setTimeout(r, 5000));
-  const s = await ig.get.v25.container(container.id, {
+  const s = await meta.get.v25.container(container.id, {
     fields: "status_code,status",
   });
   status = s.status_code ?? "FINISHED";
 }
 
 // Publish.
-const post = await ig.post.v25.mediaPublish(igUserId, {
+const post = await meta.post.v25.mediaPublish(igUserId, {
   creation_id: container.id,
 });
 console.log(post.id);
@@ -211,7 +211,7 @@ const bytes = readFileSync("./jump.mp4");
 const blob = new Blob([bytes], { type: "video/mp4" });
 
 const freeMediaUpload = createFreeMediaUpload({});
-const videoUrl = await free.catbox.upload({
+const videoUrl = await freeMediaUpload.catbox.upload({
   file: blob,
   filename: "jump.mp4",
 });
@@ -226,7 +226,7 @@ console.log(videoUrl);
 //    queues the transcode against `video_url` and returns its id
 //    immediately. Containers expire 24h after creation if you don't
 //    publish them.
-const container = await ig.post.v25.media(igUserId, {
+const container = await meta.post.v25.media(igUserId, {
   media_type: "REELS",
   video_url: videoUrl,
   caption: "jump #reels",
@@ -243,7 +243,7 @@ console.log(container.id);
 let statusCode: string = "IN_PROGRESS";
 while (statusCode === "IN_PROGRESS") {
   await new Promise((r) => setTimeout(r, 5000));
-  const s = await ig.get.v25.container(container.id, {
+  const s = await meta.get.v25.container(container.id, {
     fields: "status_code,status",
   });
   statusCode = s.status_code ?? "FINISHED";
@@ -258,7 +258,7 @@ while (statusCode === "IN_PROGRESS") {
 //    and returns the new post's id — that's the permanent ig_id you'd
 //    use to construct an https://www.instagram.com/reel/<shortcode>/
 //    URL or to query insights later via Graph API.
-const post = await ig.post.v25.mediaPublish(igUserId, {
+const post = await meta.post.v25.mediaPublish(igUserId, {
   creation_id: container.id,
 });
 console.log(post.id);

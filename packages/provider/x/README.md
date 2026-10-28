@@ -150,7 +150,7 @@ server.listen(8765, "127.0.0.1");
 ```typescript
 import { createX } from "@apicity/x";
 
-const x = createX({ accessToken: process.env.X_ACCESS_TOKEN });
+const x = createX({ accessToken: process.env.X_ACCESS_TOKEN! });
 
 await x.post.v2.tweets({
   text: "hello from @apicity/x",
@@ -166,6 +166,8 @@ returns one, and keep the old one when it's omitted.
 
 ```typescript
 import { createXOAuth } from "@apicity/x";
+
+declare const storedRefreshToken: string; // the refresh_token from step 3
 
 const oauth = createXOAuth({
   clientId: process.env.X_CLIENT_ID!,

@@ -560,7 +560,7 @@ const textTask = await kie.post.api.v1.jobs.createTask({
   model: "kling/v3-turbo-text-to-video",
   input: {
     prompt: "A cinematic drone shot over glass towers at sunrise.",
-    duration: 5,
+    duration: "5",
     aspect_ratio: "16:9",
     resolution: "720p",
   },
@@ -571,7 +571,7 @@ const imageTask = await kie.post.api.v1.jobs.createTask({
   input: {
     prompt: "Animate the product photo with a slow studio turntable move.",
     image_urls: ["https://example.com/product.png"],
-    duration: 5,
+    duration: "5",
     resolution: "1080p",
   },
 });

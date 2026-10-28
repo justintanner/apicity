@@ -1386,6 +1386,7 @@ Fire requests in parallel — the limiter handles pacing automatically:
 ```typescript
 const limiter = createRateLimiter(XAI_RATE_LIMITS.tier1);
 const chat = withRateLimit(xai.post.v1.chat.completions, limiter);
+const prompts = ["Name a prime number.", "Name a noble gas."];
 
 const results = await Promise.all(
   prompts.map((p) =>

@@ -112,6 +112,14 @@ export default defineConfig({
         __dirname,
         "../packages/provider/openf1/src"
       ),
+      "@apicity/endless/zod": path.resolve(
+        __dirname,
+        "../packages/provider/endless/src/zod"
+      ),
+      "@apicity/endless": path.resolve(
+        __dirname,
+        "../packages/provider/endless/src"
+      ),
       "@apicity/s3/zod": path.resolve(
         __dirname,
         "../packages/provider/s3/src/zod"

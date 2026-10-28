@@ -61,6 +61,7 @@
     "@apicity/dolthub": "workspace:*",
     "@apicity/dropbox": "workspace:*",
     "@apicity/elevenlabs": "workspace:*",
+    "@apicity/endless": "workspace:*",
     "@apicity/fal": "workspace:*",
     "@apicity/fireworks": "workspace:*",
     "@apicity/free-media-upload": "workspace:*",

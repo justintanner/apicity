@@ -27,6 +27,7 @@ import { createBinance } from "@apicity/binance";
 import { createDoltHub } from "@apicity/dolthub";
 import { createDropbox } from "@apicity/dropbox";
 import { createElevenLabs } from "@apicity/elevenlabs";
+import { createEndless } from "@apicity/endless";
 import { createFal } from "@apicity/fal";
 import { createFireworks } from "@apicity/fireworks";
 import { createFreeMediaUpload } from "@apicity/free-media-upload";
@@ -721,6 +722,7 @@ const PROVIDER_FACTORIES = {
   dolthub: createDoltHub,
   dropbox: createDropbox,
   elevenlabs: createElevenLabs,
+  endless: createEndless,
   fal: createFal,
   fireworks: createFireworks,
   "free-media-upload": createFreeMediaUpload,

@@ -240,6 +240,7 @@ any mode.
 | `binance`           | _(none — public API)_                                                                                                                                                                                         |
 | `openligadb`        | _(none — public API)_                                                                                                                                                                                         |
 | `openf1`            | _(none — public API)_                                                                                                                                                                                         |
+| `endless`           | _(none — public API)_                                                                                                                                                                                         |
 | `elevenlabs`        | `ELEVENLABS_API_KEY`                                                                                                                                                                                          |
 | `s3`                | `S3_ACCESS_KEY_ID` + `S3_SECRET_ACCESS_KEY`                                                                                                                                                                   |
 | `b2`                | `B2_ACCESS_KEY_ID` + `B2_SECRET_ACCESS_KEY` + `B2_REGION`                                                                                                                                                     |
@@ -372,7 +373,9 @@ under the media keys `url`, `downloadUrl`, `download_url`, `audio_url`,
 `file_url`; each is downloaded and a sibling `<key>_savedTo` added next to it.
 An object that also carries an `upload_url` or `uploadUrl` is an upload ticket
 (`fal storage.upload.initiate`, say): nothing exists at its URLs until you PUT
-the bytes, so none of them is fetched and the object comes back as sent.
+the bytes, so none of them is fetched and the object comes back as sent. An
+`endless` result comes back as sent too: its `url` fields are TikTok pages,
+not media.
 A download that fails is inlined as `<key>_savedTo: "error: …"` and never fails
 the call. One that goes 60 seconds without receiving any data counts as failed,
 so a stalled transfer cannot hold the result back. The directory is

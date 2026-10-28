@@ -2,7 +2,7 @@
 name: apicity
 description: |
   Call any supported provider API (OpenAI, Anthropic, xAI, fal, KIE, ElevenLabs,
-  S3, Telegram, Polymarket and 20 more) through the apicity CLI. Use for ANY
+  S3, Telegram, Polymarket and 21 more) through the apicity CLI. Use for ANY
   task that needs a provider API: generation, upload, lookup, posting, trading
   data, or checking what an endpoint expects.
 triggers:
@@ -20,7 +20,7 @@ triggers:
   - post to x
 ---
 
-# apicity — one command line for 29 provider APIs
+# apicity — one command line for 30 provider APIs
 
 `apicity` calls any endpoint of any supported provider. There is no tool list to
 load and no catalog to memorise: three offline commands discover what exists,
@@ -152,7 +152,8 @@ output directory and reported as `{"savedTo": "<path>", "bytes": 12345}`; a JSON
 result carrying media URLs is returned with a sibling `<key>_savedTo` beside
 each one. An upload ticket, an object that also carries `upload_url` or
 `uploadUrl`, comes back untouched: nothing exists at its URLs until you PUT the
-bytes to its upload URL. The directory is `--output-dir`, else
+bytes to its upload URL. So does an `endless` result, whose URLs are web pages.
+The directory is `--output-dir`, else
 `$APICITY_OUTPUT_DIR`, else `$CLAUDE_PROJECT_DIR`, else the working directory.
 
 ## Quick Reference
@@ -437,6 +438,15 @@ apicity openf1 v1.drivers --data '{"session_key":"latest"}'
 apicity openf1 v1.laps --data '{"session_key":"latest","driver_number":1}'
 ```
 
+### endless — TikTok trends by country, no credential
+
+`--region` takes a country slug (`thailand`, `united-states`, …); `describe`
+lists them all.
+
+```bash
+apicity endless social.tiktokTrends.public --region thailand --json
+```
+
 ### thesportsdb — teams, leagues, events and results
 
 The `{apiKey}` is part of the URL and is supplied for you.
@@ -513,6 +523,7 @@ secret — never read it yourself), `$APICITY_SETUP_AGENT` (which agent
 | `binance`           | none — public market data                                                                                                                                                                                                               |
 | `openligadb`        | none — public data                                                                                                                                                                                                                      |
 | `openf1`            | none — public data                                                                                                                                                                                                                      |
+| `endless`           | none — public data                                                                                                                                                                                                                      |
 | `elevenlabs`        | `ELEVENLABS_API_KEY`                                                                                                                                                                                                                    |
 | `s3`                | `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`                                                                                                                                                                                              |
 | `b2`                | `B2_ACCESS_KEY_ID`, `B2_SECRET_ACCESS_KEY`, `B2_REGION`                                                                                                                                                                                 |

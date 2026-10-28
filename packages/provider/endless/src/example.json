@@ -1,0 +1,10 @@
+{
+  "GET social.tiktokTrends.public": {
+    "source": "static:endless-public-tiktok-trends",
+    "payload": {
+      "region": "thailand"
+    },
+    "tier": "cheap",
+    "runByDefault": true
+  }
+}

@@ -97,6 +97,11 @@ export const ENDPOINT_COST_POLICIES: readonly EndpointCostPolicy[] = [
     rationale: "Free public Formula 1 data API; no per-call USD cost",
   },
   {
+    match: { provider: "endless" },
+    tier: "cheap",
+    rationale: "Free public social-trends API; no key, no per-call USD cost",
+  },
+  {
     match: { provider: "simplefunctions" },
     tier: "cheap",
     rationale: "Public agent/world data API; no per-call USD compute cost",

@@ -1,4 +1,5 @@
 provider	dotPath	method	fullUrl	docsUrl
+endless	social.tiktokTrends.public	GET	https://api.endless.app/social/tiktok-trends/public/{region}	https://endless.app/docs/api/social/public-tiktok-trends
 machgen	api.v0.generate	POST	https://api.machgen.ai/api/v0/generate	https://www.machgen.ai/docs/rest_api#submit-a-task
 machgen	api.v0.tasks	GET	https://api.machgen.ai/api/v0/tasks/{taskId}	https://www.machgen.ai/docs/reference#taskstatusresponse
 machgen	api.v0.tasks.billing	GET	https://api.machgen.ai/api/v0/tasks/{taskId}/billing	https://www.machgen.ai/docs/rest_api#check-what-a-task-cost

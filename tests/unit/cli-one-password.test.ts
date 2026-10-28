@@ -268,7 +268,13 @@ describe("1Password credential resolution", () => {
 // (git grep 'providers whose credential is'), and the skill's credential
 // table marks them. Update all three when OPTIONAL changes.
 const OPTIONAL = ["polymarket", "simplefunctions", "thesportsdb", "youtube"];
-const KEYLESS = ["binance", "free-media-upload", "openf1", "openligadb"];
+const KEYLESS = [
+  "binance",
+  "endless",
+  "free-media-upload",
+  "openf1",
+  "openligadb",
+];
 const REQUIRED = Object.keys(PROVIDERS)
   .filter((name) => !OPTIONAL.includes(name) && !KEYLESS.includes(name))
   .sort();

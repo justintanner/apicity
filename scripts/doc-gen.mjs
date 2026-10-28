@@ -262,6 +262,9 @@ function formatUsageSnippet(
   if (providerName === "openligadb" && dotPath === "getavailablesports") {
     return `const sports = await ${call}();`;
   }
+  if (providerName === "endless" && dotPath === "social.tiktokTrends.public") {
+    return `const trends = await ${call}({ region: "thailand" });`;
+  }
   if (providerName === "openf1" && dotPath === "token") {
     return [
       `const token = await ${call}({`,
@@ -619,6 +622,16 @@ export const ENDPOINT_NOTES = new Map([
 ]);
 
 const PROVIDER_NOTES = new Map([
+  [
+    "endless",
+    [
+      "Endless's public social endpoints need no key; its authenticated API",
+      "is not covered. `region` is a country slug from",
+      "`EndlessTikTokTrendsRegionSchema.options`, and any other value is a",
+      "404 whose `EndlessError.code` is `invalid_path_parameter`. Every call",
+      "sends `Endless-Api-Version: 1` unless `apiVersion` names another major.",
+    ].join(" "),
+  ],
   [
     "openai",
     [
@@ -4377,6 +4390,10 @@ const PROVIDER_AUTH = {
     noAuth: true,
     showMiddleware: false,
   },
+  endless: {
+    noAuth: true,
+    showMiddleware: false,
+  },
   s3: {
     showMiddleware: false,
   },
@@ -4417,6 +4434,7 @@ const PROVIDER_DOCS = {
   dropbox:
     "https://www.dropbox.com/developers/documentation/http/documentation",
   openf1: "https://openf1.org/docs/",
+  endless: "https://endless.app/docs/api",
   s3: "https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html",
   b2: "https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api",
   simplefunctions:
@@ -4477,6 +4495,9 @@ const PROVIDER_DEP_NOTES = {
   },
   openf1: {
     zod: "request schemas attached to OpenF1 endpoint methods as `.schema`",
+  },
+  endless: {
+    zod: "request schemas attached to endpoint methods as `.schema`",
   },
   dropbox: {
     zod: "request schemas attached to Dropbox endpoint methods as `.schema`",

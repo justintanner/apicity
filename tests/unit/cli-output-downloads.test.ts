@@ -163,6 +163,48 @@ describe("an upload ticket", () => {
   });
 });
 
+describe("a provider whose URLs are web pages", () => {
+  // ac-cle0z4: every row of an Endless TikTok trends answer carries `url`, a
+  // TikTok video page, and the walk fetched and saved each one as HTML.
+  it("comes back from endless with no URL fetched", async () => {
+    const trends = {
+      region: "thailand",
+      videos: [{ id: "1", url: `${base}/preview.png` }],
+      longest: [{ video: { id: "1", url: `${base}/preview.png` } }],
+    };
+    const endless = {
+      social: { tiktokTrends: { public: () => trends } },
+    } as unknown as InstantiatedProvider;
+    const dir = outputDir();
+    const out: string[] = [];
+    const err: string[] = [];
+
+    const exit = await runEndpoint(
+      "endless",
+      [
+        "social.tiktokTrends.public",
+        "--region",
+        "thailand",
+        "--output-dir",
+        dir,
+        "--quiet",
+      ],
+      { out: (text) => out.push(text), err: (text) => err.push(text) },
+      {
+        env: { HOME },
+        stdoutIsTTY: false,
+        instantiate: () => Promise.resolve(endless),
+      }
+    );
+
+    expect(exit).toBe(0);
+    expect(err).toEqual([]);
+    expect(JSON.parse(out[0])).toEqual(trends);
+    expect(requested).toEqual([]);
+    expect(readdirSync(dir)).toEqual([]);
+  });
+});
+
 describe("a download that stalls", () => {
   it("is abandoned when no response arrives, without naming the URL", async () => {
     const dir = outputDir();

@@ -56,6 +56,15 @@ export function callShapeKey(
 
 /** Only endpoints whose URL carries a placeholder other than {query}. */
 export const CALL_SHAPES: Record<string, CallShape> = {
+  "endless\tGET\tsocial.tiktokTrends.public": {
+    provider: "endless",
+    method: "GET",
+    dotPath: "social.tiktokTrends.public",
+    positional: [],
+    fields: [{ placeholder: "region", property: "region" }],
+    injected: [],
+    derived: [],
+  },
   "machgen\tGET\tapi.v0.tasks": {
     provider: "machgen",
     method: "GET",

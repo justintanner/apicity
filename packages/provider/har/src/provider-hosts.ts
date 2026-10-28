@@ -14,6 +14,7 @@ export const providerHosts: Readonly<Record<string, readonly string[]>> = {
   dolthub: ["www.dolthub.com"],
   dropbox: ["api.dropboxapi.com", "content.dropboxapi.com"],
   elevenlabs: ["api.elevenlabs.io"],
+  endless: ["api.endless.app"],
   fal: ["api.fal.ai", "fal.media", "fal.run", "rest.fal.ai"],
   fireworks: ["api.fireworks.ai"],
   "free-media-upload": [

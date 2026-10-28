@@ -455,6 +455,7 @@ Unofficial endpoints TikTok can change. Without a TikTok One session a list
 holds the top 4 rows; `page` and `limit` are ignored.
 
 ```bash
+apicity tiktok-creative-center ads.creativeOne.report.getTopContentsOverview --json
 apicity tiktok-creative-center ads.creativeOne.report.creativeCenterGetTopContentsList --data '{"countryCode":"TH","periodDimension":3,"periodEndTimestamp":1792886400,"orderByMetric":1}' --json
 ```
 

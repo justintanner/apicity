@@ -28,7 +28,7 @@ export const TiktokCreativeCenterGetTopContentsListRequestSchema = z.object({
     .number()
     .int()
     .describe(
-      "Unix seconds that end the period: a week or month end Creative Center publishes, such as its overview's lastWeeklyEndTimestamp. An earlier end lists that period; any other value answers an empty list."
+      "Unix seconds that end the period, such as lastWeeklyEndTimestamp or lastMonthlyEndTimestamp from ads.creativeOne.report.getTopContentsOverview. A value Creative Center has no list for answers an empty one."
     ),
   orderByMetric: TiktokCreativeCenterOrderByMetricSchema,
   organicOnly: z.boolean().optional().describe("true drops sponsored posts."),

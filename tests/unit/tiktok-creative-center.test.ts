@@ -71,6 +71,31 @@ describe("tiktok-creative-center provider", () => {
     });
   });
 
+  it("requests the overview with no query and the same headers", async () => {
+    const overview = {
+      BaseResp: { StatusCode: 0, StatusMessage: "" },
+      lastDailyEndTimestamp: 1792886400,
+      lastMonthlyEndTimestamp: 1790726400,
+      lastWeeklyEndTimestamp: 1792886400,
+    };
+    const { requests, fetch } = capture(() =>
+      textResponse(JSON.stringify(overview))
+    );
+    const tcc = createTiktokCreativeCenter({ fetch });
+
+    await expect(
+      tcc.ads.creativeOne.report.getTopContentsOverview()
+    ).resolves.toEqual(overview);
+
+    expect(requests[0].url).toBe(
+      "https://ads.tiktok.com/CreativeOne/Report/GetTopContentsOverview"
+    );
+    expect(requests[0].init.method).toBe("GET");
+    expect(requests[0].init.headers).toMatchObject({
+      Referer: "https://ads.tiktok.com/creative/creativeCenter/trends/video",
+    });
+  });
+
   it("sends the userAgent option as User-Agent", async () => {
     const { requests, fetch } = capture(() => textResponse(EMPTY_LIST));
     const tcc = createTiktokCreativeCenter({ userAgent: "videobook/1", fetch });

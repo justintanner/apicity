@@ -13,5 +13,11 @@
     },
     "tier": "cheap",
     "runByDefault": true
+  },
+  "GET ads.creativeOne.report.getTopContentsOverview": {
+    "source": "static:tiktok-creative-center-overview",
+    "payload": {},
+    "tier": "cheap",
+    "runByDefault": true
   }
 }

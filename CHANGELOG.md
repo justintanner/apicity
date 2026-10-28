@@ -37,6 +37,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added TikTok Creative Center `ads.creativeOne.report.getTopContentsOverview` (`GET https://ads.tiktok.com/CreativeOne/Report/GetTopContentsOverview`): the Unix seconds that end the latest daily, weekly and monthly top-video lists, the values `creativeCenterGetTopContentsList` takes as `periodEndTimestamp`. Unofficial and keyless like the list. Recorded on 2026-10-28 (ac-qiac9z).
+
 - Added the TikTok Creative Center provider (`@apicity/tiktok-creative-center`), keyless and free, with `ads.creativeOne.report.creativeCenterGetTopContentsList` (`GET https://ads.tiktok.com/CreativeOne/Report/CreativeCenterGetTopContentsList`): a country's top trending videos for a week or month, with views, engagement and author data. These are unofficial, undocumented endpoints behind Creative Center's Trending videos page that TikTok can change; without a TikTok One session each list is the top 4 rows whatever `page` and `limit` ask, and session cookies are not supported. `itemID`, `authorID` and `creatorID` come back as strings because TikTok sends them as JSON numbers above 2^53, and a nonzero `BaseResp.StatusCode` (which Creative Center sends with HTTP 200) rejects with `TiktokCreativeCenterError`. Recorded for Thailand's weekly list, with and without sponsored posts (ac-qiac9z).
 
 - Added FLUX 3 Klein edit-image LoRA at `run.blackforestlabs.flux3.klein.editImage.lora`, reusing the shared edit schema and recording our trained edit LoRA with the owned cat photo (ac-6dfs70).

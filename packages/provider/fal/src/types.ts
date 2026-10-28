@@ -429,6 +429,9 @@ export type {
   FalFlux3EditImageRequestInput,
   FalFlux3EditImageParsedRequest,
   FalFlux3KleinLora,
+  FalFlux3KleinTextToImageRequest,
+  FalFlux3KleinTextToImageRequestInput,
+  FalFlux3KleinTextToImageParsedRequest,
   FalFlux3KleinTextToImageLoraRequest,
   FalFlux3KleinTextToImageLoraRequestInput,
   FalFlux3KleinTextToImageLoraParsedRequest,
@@ -938,6 +941,7 @@ import type {
   FalXaiGrokImagineVideoV1p5LiteImageToVideoRequest,
   FalFlux3TextToImageRequest,
   FalFlux3EditImageRequest,
+  FalFlux3KleinTextToImageRequest,
   FalFlux3KleinTextToImageLoraRequest,
   FalFlux3KleinEditImageLoraRequest,
   FalFlux3KleinTrainerRequest,
@@ -3920,7 +3924,7 @@ export interface FalRunFlux3Namespace {
   };
 }
 
-// FLUX 3 Klein: the output of all four LoRA endpoints.
+// FLUX 3 Klein: the output of its image endpoints, with or without LoRAs.
 export interface FalFlux3KleinImageResponse {
   images: Array<{
     url: string;
@@ -3995,8 +3999,15 @@ export interface FalRunFlux3KleinBaseNamespace {
   trainer: FalRunFlux3KleinBaseTrainerNamespace;
 }
 
+// blackforestlabs/flux-3/klein/text-to-image is callable, and its LoRA variant
+// hangs from it (run.blackforestlabs.flux3.klein.textToImage.lora).
 export interface FalRunFlux3KleinTextToImageNamespace {
   lora: FalFlux3KleinTextToImageLoraFn;
+  (
+    params: FalFlux3KleinTextToImageRequest,
+    signal?: AbortSignal
+  ): Promise<FalFlux3KleinImageResponse>;
+  schema: ApicitySchema<FalFlux3KleinTextToImageRequest>;
 }
 
 export interface FalRunFlux3KleinEditImageNamespace {

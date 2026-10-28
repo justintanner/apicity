@@ -371,6 +371,22 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST blackforestlabs.flux3.klein.textToImage": {
+    "source": "fal/flux-3-klein-text-to-image",
+    "payload": {
+      "prompt": "A photo of a cat sitting on a windowsill in soft daylight.",
+      "enable_prompt_expansion": false,
+      "seed": 5555,
+      "num_images": 1,
+      "output_format": "jpeg",
+      "image_size": {
+        "width": 256,
+        "height": 256
+      }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST blackforestlabs.flux3.klein.textToImage.lora": {
     "source": "fal/flux-3-klein-text-to-image-lora",
     "payload": {

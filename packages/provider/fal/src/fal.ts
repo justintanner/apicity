@@ -270,6 +270,7 @@ import {
   FalFlux3KleinTrainerRequest,
   FalFlux3KleinTrainerResponse,
   FalFlux3KleinEditImageLoraRequest,
+  FalFlux3KleinTextToImageRequest,
   FalFlux3KleinTextToImageLoraRequest,
   FalFlux3KleinImageResponse,
   FalFlux3EditImageRequest,
@@ -686,6 +687,7 @@ import {
   FalFlux3TextToImageRequestSchema,
   FalFlux3KleinTrainerRequestSchema,
   FalFlux3KleinEditImageLoraRequestSchema,
+  FalFlux3KleinTextToImageRequestSchema,
   FalFlux3KleinTextToImageLoraRequestSchema,
   FalIdeogramV4p5EditRequestSchema,
   FalFlux3ExtendVideoRequestSchema,
@@ -1499,6 +1501,18 @@ export function createFal(opts: FalOptions): FalProvider {
     "POST",
     "/blackforestlabs/flux-3/klein/base/text-to-image/lora",
     FalFlux3KleinTextToImageLoraRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // POST https://fal.run/blackforestlabs/flux-3/klein/text-to-image
+  // Docs: https://fal.ai/models/blackforestlabs/flux-3/klein/text-to-image/api
+  const blackforestlabsFlux3KleinTextToImage = jsonBody<
+    FalFlux3KleinTextToImageRequest,
+    FalFlux3KleinImageResponse
+  >(
+    "POST",
+    "/blackforestlabs/flux-3/klein/text-to-image",
+    FalFlux3KleinTextToImageRequestSchema,
     { base: runBaseURL }
   );
 
@@ -4534,11 +4548,13 @@ export function createFal(opts: FalOptions): FalProvider {
             // Docs: https://fal.ai/models/blackforestlabs/flux-3/klein/edit-image/lora/api
             lora: blackforestlabsFlux3KleinEditImageLora,
           },
-          textToImage: {
+          // POST https://fal.run/blackforestlabs/flux-3/klein/text-to-image
+          // Docs: https://fal.ai/models/blackforestlabs/flux-3/klein/text-to-image/api
+          textToImage: Object.assign(blackforestlabsFlux3KleinTextToImage, {
             // POST https://fal.run/blackforestlabs/flux-3/klein/text-to-image/lora
             // Docs: https://fal.ai/models/blackforestlabs/flux-3/klein/text-to-image/lora/api
             lora: blackforestlabsFlux3KleinTextToImageLora,
-          },
+          }),
           base: {
             editImage: {
               // POST https://fal.run/blackforestlabs/flux-3/klein/base/edit-image/lora

@@ -3737,6 +3737,19 @@ export type FalFlux3KleinTextToImageLoraParsedRequest = z.output<
   typeof FalFlux3KleinTextToImageLoraRequestSchema
 >;
 
+// Docs: https://fal.ai/models/blackforestlabs/flux-3/klein/text-to-image/api
+// Its queue OpenAPI Input on 2026-10-28 is the LoRA endpoint's without loras.
+export const FalFlux3KleinTextToImageRequestSchema =
+  FalFlux3KleinTextToImageLoraRequestSchema.omit({ loras: true });
+export type FalFlux3KleinTextToImageRequest = z.input<
+  typeof FalFlux3KleinTextToImageRequestSchema
+>;
+export type FalFlux3KleinTextToImageRequestInput =
+  FalFlux3KleinTextToImageRequest;
+export type FalFlux3KleinTextToImageParsedRequest = z.output<
+  typeof FalFlux3KleinTextToImageRequestSchema
+>;
+
 // Docs: https://fal.ai/models/blackforestlabs/flux-3/klein/edit-image/lora/api
 export const FalFlux3KleinEditImageLoraRequestSchema =
   FalFlux3KleinTextToImageLoraRequestSchema.extend({
@@ -16084,6 +16097,8 @@ export const FAL_ENDPOINT_REQUEST_SCHEMAS = {
     FalFlux3KleinTextToImageLoraRequestSchema,
   "blackforestlabs/flux-3/klein/text-to-image/lora":
     FalFlux3KleinTextToImageLoraRequestSchema,
+  "blackforestlabs/flux-3/klein/text-to-image":
+    FalFlux3KleinTextToImageRequestSchema,
   "blackforestlabs/flux-3/edit-image": FalFlux3EditImageRequestSchema,
   "minimax/h3-max/recast": FalMinimaxH3MaxRecastRequestSchema,
   "xai/grok-imagine-video/v1.5/lite/text-to-video":

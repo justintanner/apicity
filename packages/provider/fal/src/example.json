@@ -346,6 +346,25 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST blackforestlabs.flux3.klein.editImage": {
+    "source": "fal/flux-3-klein-edit-image",
+    "payload": {
+      "image_urls": [
+        "<inline image/jpeg data URL — replace with a real URL or upload>"
+      ],
+      "prompt": "Make the photo black and white.",
+      "enable_prompt_expansion": false,
+      "seed": 5555,
+      "num_images": 1,
+      "output_format": "jpeg",
+      "image_size": {
+        "width": 256,
+        "height": 256
+      }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST blackforestlabs.flux3.klein.editImage.lora": {
     "source": "fal/flux-3-klein-edit-image-lora",
     "payload": {

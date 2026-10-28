@@ -269,6 +269,7 @@ import {
   FalFlux3TextToImageResponse,
   FalFlux3KleinTrainerRequest,
   FalFlux3KleinTrainerResponse,
+  FalFlux3KleinEditImageRequest,
   FalFlux3KleinEditImageLoraRequest,
   FalFlux3KleinTextToImageRequest,
   FalFlux3KleinTextToImageLoraRequest,
@@ -686,6 +687,7 @@ import {
   FalFlux3EditImageRequestSchema,
   FalFlux3TextToImageRequestSchema,
   FalFlux3KleinTrainerRequestSchema,
+  FalFlux3KleinEditImageRequestSchema,
   FalFlux3KleinEditImageLoraRequestSchema,
   FalFlux3KleinTextToImageRequestSchema,
   FalFlux3KleinTextToImageLoraRequestSchema,
@@ -1537,6 +1539,18 @@ export function createFal(opts: FalOptions): FalProvider {
     "POST",
     "/blackforestlabs/flux-3/klein/base/edit-image/lora",
     FalFlux3KleinEditImageLoraRequestSchema,
+    { base: runBaseURL }
+  );
+
+  // POST https://fal.run/blackforestlabs/flux-3/klein/edit-image
+  // Docs: https://fal.ai/models/blackforestlabs/flux-3/klein/edit-image/api
+  const blackforestlabsFlux3KleinEditImage = jsonBody<
+    FalFlux3KleinEditImageRequest,
+    FalFlux3KleinImageResponse
+  >(
+    "POST",
+    "/blackforestlabs/flux-3/klein/edit-image",
+    FalFlux3KleinEditImageRequestSchema,
     { base: runBaseURL }
   );
 
@@ -4543,11 +4557,13 @@ export function createFal(opts: FalOptions): FalProvider {
     blackforestlabs: {
       flux3: {
         klein: {
-          editImage: {
+          // POST https://fal.run/blackforestlabs/flux-3/klein/edit-image
+          // Docs: https://fal.ai/models/blackforestlabs/flux-3/klein/edit-image/api
+          editImage: Object.assign(blackforestlabsFlux3KleinEditImage, {
             // POST https://fal.run/blackforestlabs/flux-3/klein/edit-image/lora
             // Docs: https://fal.ai/models/blackforestlabs/flux-3/klein/edit-image/lora/api
             lora: blackforestlabsFlux3KleinEditImageLora,
-          },
+          }),
           // POST https://fal.run/blackforestlabs/flux-3/klein/text-to-image
           // Docs: https://fal.ai/models/blackforestlabs/flux-3/klein/text-to-image/api
           textToImage: Object.assign(blackforestlabsFlux3KleinTextToImage, {

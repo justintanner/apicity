@@ -435,6 +435,9 @@ export type {
   FalFlux3KleinTextToImageLoraRequest,
   FalFlux3KleinTextToImageLoraRequestInput,
   FalFlux3KleinTextToImageLoraParsedRequest,
+  FalFlux3KleinEditImageRequest,
+  FalFlux3KleinEditImageRequestInput,
+  FalFlux3KleinEditImageParsedRequest,
   FalFlux3KleinEditImageLoraRequest,
   FalFlux3KleinEditImageLoraRequestInput,
   FalFlux3KleinEditImageLoraParsedRequest,
@@ -943,6 +946,7 @@ import type {
   FalFlux3EditImageRequest,
   FalFlux3KleinTextToImageRequest,
   FalFlux3KleinTextToImageLoraRequest,
+  FalFlux3KleinEditImageRequest,
   FalFlux3KleinEditImageLoraRequest,
   FalFlux3KleinTrainerRequest,
   FalMinimaxH3MaxRecastRequest,
@@ -4010,8 +4014,15 @@ export interface FalRunFlux3KleinTextToImageNamespace {
   schema: ApicitySchema<FalFlux3KleinTextToImageRequest>;
 }
 
+// blackforestlabs/flux-3/klein/edit-image is callable, and its LoRA variant
+// hangs from it (run.blackforestlabs.flux3.klein.editImage.lora).
 export interface FalRunFlux3KleinEditImageNamespace {
   lora: FalFlux3KleinEditImageLoraFn;
+  (
+    params: FalFlux3KleinEditImageRequest,
+    signal?: AbortSignal
+  ): Promise<FalFlux3KleinImageResponse>;
+  schema: ApicitySchema<FalFlux3KleinEditImageRequest>;
 }
 
 export interface FalRunFlux3KleinNamespace {

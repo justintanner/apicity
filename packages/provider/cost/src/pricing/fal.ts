@@ -1257,6 +1257,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "blackforestlabs/flux-3/klein/base/edit-image/lora",
   "blackforestlabs/flux-3/klein/base/text-to-image/lora",
   "blackforestlabs/flux-3/klein/base/trainer/edit",
+  "blackforestlabs/flux-3/klein/edit-image",
   "blackforestlabs/flux-3/klein/edit-image/lora",
   "blackforestlabs/flux-3/klein/text-to-image",
   "blackforestlabs/flux-3/klein/text-to-image/lora",
@@ -1350,6 +1351,13 @@ export interface FalDynamicBilledUnit {
 // pricing API were re-read on 2026-10-17 and matched the 2026-10-15 reads
 // behind each recording (ac-j3d6ki.4).
 export const FAL_DYNAMIC_BILLED_UNITS = {
+  // 2026-10-28: an edit of the owned cat photo at 256x256 billed 0.8889
+  // megapixels ($0.0080001), while the card prices output images per
+  // resolution tier ($0.008 at 768x768).
+  "blackforestlabs/flux-3/klein/edit-image": {
+    unit: "megapixels at $0.009",
+    why: "the card prices output images per resolution tier, the recorded bill counts megapixels, and no request field states the billed megapixels",
+  },
   // 2026-10-28: a 256x256 image billed 0.8889 megapixels ($0.0080001), while
   // the card prices output images per resolution tier ($0.008 at 768x768).
   "blackforestlabs/flux-3/klein/text-to-image": {

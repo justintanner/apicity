@@ -438,13 +438,14 @@ apicity openf1 v1.drivers --data '{"session_key":"latest"}'
 apicity openf1 v1.laps --data '{"session_key":"latest","driver_number":1}'
 ```
 
-### endless — TikTok trends by country, no credential
+### endless — TikTok and X trends by region, no credential
 
-`--region` takes a country slug (`thailand`, `united-states`, …); `describe`
-lists them all.
+`--region` takes a slug (`thailand`, `united-states`, … and `worldwide` for X
+trends); `describe` lists them all.
 
 ```bash
 apicity endless social.tiktokTrends.public --region thailand --json
+apicity endless social.trends.public --region worldwide --json
 ```
 
 ### thesportsdb — teams, leagues, events and results

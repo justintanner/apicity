@@ -2,6 +2,8 @@ import type { z } from "zod";
 import type {
   EndlessTikTokTrendsPublicRequestSchema,
   EndlessTikTokTrendsRegionSchema,
+  EndlessTrendsPublicRequestSchema,
+  EndlessTrendsRegionSchema,
 } from "./zod";
 
 /**
@@ -37,6 +39,10 @@ export type EndlessTikTokTrendsRegion = z.infer<
 >;
 export type EndlessTikTokTrendsPublicRequest = z.infer<
   typeof EndlessTikTokTrendsPublicRequestSchema
+>;
+export type EndlessTrendsRegion = z.infer<typeof EndlessTrendsRegionSchema>;
+export type EndlessTrendsPublicRequest = z.infer<
+  typeof EndlessTrendsPublicRequestSchema
 >;
 
 export interface EndlessTikTokMusic {
@@ -120,6 +126,41 @@ export interface EndlessTikTokTrendsPublicResponse {
   [key: string]: unknown;
 }
 
+export interface EndlessTrend {
+  name: string;
+  /** An X search link for the trend. */
+  url?: string;
+  tweet_volume: number | null;
+  [key: string]: unknown;
+}
+
+export interface EndlessTrendsTimelineEntry {
+  captured_at: string;
+  /** The trend names that snapshot carried. */
+  names: string[];
+  [key: string]: unknown;
+}
+
+export interface EndlessLongestTrend {
+  name: string;
+  /** How many snapshots in the window carried the trend. */
+  snapshots: number;
+  [key: string]: unknown;
+}
+
+/**
+ * What is trending on X in the region, read from snapshots Endless takes
+ * every few hours, with the last 24 hours of history in `timeline`.
+ */
+export interface EndlessTrendsPublicResponse {
+  region: string;
+  captured_at: string | null;
+  trends: EndlessTrend[];
+  timeline: EndlessTrendsTimelineEntry[];
+  longest: EndlessLongestTrend[];
+  [key: string]: unknown;
+}
+
 export interface EndlessTikTokTrendsPublicMethod {
   (
     request: EndlessTikTokTrendsPublicRequest,
@@ -130,8 +171,19 @@ export interface EndlessTikTokTrendsPublicMethod {
 export interface EndlessTikTokTrendsNamespace {
   public: EndlessTikTokTrendsPublicMethod;
 }
+export interface EndlessTrendsPublicMethod {
+  (
+    request: EndlessTrendsPublicRequest,
+    signal?: AbortSignal
+  ): Promise<EndlessTrendsPublicResponse>;
+  schema: typeof EndlessTrendsPublicRequestSchema;
+}
+export interface EndlessTrendsNamespace {
+  public: EndlessTrendsPublicMethod;
+}
 export interface EndlessSocialNamespace {
   tiktokTrends: EndlessTikTokTrendsNamespace;
+  trends: EndlessTrendsNamespace;
 }
 export interface EndlessProvider {
   social: EndlessSocialNamespace;

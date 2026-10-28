@@ -5,8 +5,13 @@ import type {
   EndlessProvider,
   EndlessTikTokTrendsPublicRequest,
   EndlessTikTokTrendsPublicResponse,
+  EndlessTrendsPublicRequest,
+  EndlessTrendsPublicResponse,
 } from "./types";
-import { EndlessTikTokTrendsPublicRequestSchema } from "./zod";
+import {
+  EndlessTikTokTrendsPublicRequestSchema,
+  EndlessTrendsPublicRequestSchema,
+} from "./zod";
 
 // Every Endless failure answers `{ code, status, message, data }`, whatever
 // the status; `data.code` is the specific reason to branch on.
@@ -94,6 +99,18 @@ export function createEndless(options: EndlessOptions = {}): EndlessProvider {
               signal
             ),
           { schema: EndlessTikTokTrendsPublicRequestSchema }
+        ),
+      },
+      trends: {
+        // GET https://api.endless.app/social/trends/public/{region}
+        // Docs: https://endless.app/docs/api/social/public-trends
+        public: Object.assign(
+          async (request: EndlessTrendsPublicRequest, signal?: AbortSignal) =>
+            get<EndlessTrendsPublicResponse>(
+              `/social/trends/public/${encodeURIComponent(request.region)}`,
+              signal
+            ),
+          { schema: EndlessTrendsPublicRequestSchema }
         ),
       },
     },

@@ -374,8 +374,8 @@ under the media keys `url`, `downloadUrl`, `download_url`, `audio_url`,
 An object that also carries an `upload_url` or `uploadUrl` is an upload ticket
 (`fal storage.upload.initiate`, say): nothing exists at its URLs until you PUT
 the bytes, so none of them is fetched and the object comes back as sent. An
-`endless` result comes back as sent too: its `url` fields are TikTok pages,
-not media.
+`endless` result comes back as sent too: its `url` fields are TikTok and X
+pages, not media.
 A download that fails is inlined as `<key>_savedTo: "error: …"` and never fails
 the call. One that goes 60 seconds without receiving any data counts as failed,
 so a stalled transfer cannot hold the result back. The directory is

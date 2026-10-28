@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `@apicity/free-media-upload`'s README no longer asks for an API key: its Quick Start and Middleware samples passed `process.env.FREE-MEDIA-UPLOAD_API_KEY`, which the keyless provider does not take, because doc-gen's settings for it sat under its old name, `free`. The Middleware sample now wraps `uguu.upload` instead of a `get.v1.models` the provider does not have (ac-37sz5l).
+
 - Generated READMEs no longer name a hyphenated provider's client with an invalid variable: `@apicity/free-media-upload`'s samples declared `const free-media-upload = …` and called `free-media-upload.catbox.upload(…)`; they now use `freeMediaUpload` (ac-qiac9z).
 
 - The CLI no longer saves web pages as media. A JSON result's `url` (or other media key) that answers with `text/html`, such as an OpenAI web-search citation or a docs link in an ElevenLabs answer, is left as sent with no `_savedTo` sibling, and its body is not read; it used to be saved as a `.bin` file. Downloads from one result also no longer overwrite each other: they run at once and were named to the millisecond, so a result with 40 URLs left 36 files and four `_savedTo` siblings that named another URL's file. When a result yields several files, each name now ends in its number (`-1`, `-2`, …); a single download keeps its old name (ac-ht9p12).

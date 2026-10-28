@@ -35,6 +35,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added FLUX 3 Klein edit-image LoRA at `run.blackforestlabs.flux3.klein.editImage.lora`, reusing the shared edit schema and recording our trained edit LoRA with the owned cat photo (ac-6dfs70).
+
 - Added FLUX 3 Klein base edit-image LoRA at `run.blackforestlabs.flux3.klein.base.editImage.lora`, with the shared edit schema and a recording using our trained edit LoRA and owned cat photo (ac-1rn8vm).
 
 - Added Endless `social.trends.public` (`GET https://api.endless.app/social/trends/public/{region}`): what is trending on X in a region, with each trend's search link and tweet volume (`null` when X reports none), the last 24 hours of snapshots in `timeline`, and the longest-trending names. `region` is one of 63 slugs, `worldwide` and 62 countries, checked by the request schema. The CLI calls it as `apicity endless social.trends.public --region worldwide`. Recorded for worldwide (ac-cle0z4).

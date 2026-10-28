@@ -1195,6 +1195,7 @@ export const MODEL_DISPLAY = {
     "blackforestlabs/flux-3/edit-image": "FLUX 3 Image Edit",
     "blackforestlabs/flux-3/klein/base/text-to-image/lora":
       "FLUX 3 Klein Base LoRA",
+    "blackforestlabs/flux-3/klein/text-to-image/lora": "FLUX 3 Klein LoRA",
     "blackforestlabs/flux-3/klein/base/trainer/edit":
       "FLUX 3 Klein Base Edit Trainer",
     "blackforestlabs/flux-3/text-to-image": "FLUX 3 Image",

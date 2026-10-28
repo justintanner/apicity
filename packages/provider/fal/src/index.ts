@@ -662,6 +662,7 @@ export type {
   FalRunFlux3KleinBaseTrainerNamespace,
   FalRunFlux3KleinBaseNamespace,
   FalRunFlux3KleinBaseTextToImageNamespace,
+  FalRunFlux3KleinTextToImageNamespace,
   FalRunFlux3KleinNamespace,
   FalMinimaxH3MaxRecastRequest,
   FalMinimaxH3MaxRecastRequestInput,

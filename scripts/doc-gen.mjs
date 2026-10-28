@@ -4455,9 +4455,10 @@ const PROVIDER_AUTH = {
   b2: {
     showMiddleware: false,
   },
-  free: {
+  // Keyless; it keeps the Middleware section because it ships withRetry and
+  // withFallback.
+  "free-media-upload": {
     noAuth: true,
-    showMiddleware: false,
   },
   telegram: {
     field: "botToken",
@@ -4473,6 +4474,12 @@ const PROVIDER_AUTH = {
     optionalAuth: true,
     showMiddleware: false,
   },
+};
+
+// The call a provider's Middleware sample wraps, for a provider without
+// get.v1.models.
+const MIDDLEWARE_SAMPLE_CALLS = {
+  "free-media-upload": { name: "upload", path: "uguu.upload" },
 };
 
 // Per-provider upstream documentation URLs. When set, a docs badge is
@@ -4848,16 +4855,23 @@ async function generateReadme(providerDir, providerName, endpoints) {
   sections.push(apiReference.text);
 
   if (showMiddleware) {
+    const variable = providerVariable(providerName);
+    const sample = MIDDLEWARE_SAMPLE_CALLS[providerName] ?? {
+      name: "models",
+      path: "get.v1.models",
+    };
     sections.push("## Middleware");
     sections.push("");
     sections.push("```typescript");
     sections.push(`import { ${factory}, withRetry } from "${pkgName}";`);
     sections.push("");
     sections.push(
-      `const ${providerVariable(providerName)} = ${factory}({ ${authField}: process.env.${envKey}! });`
+      noAuth
+        ? `const ${variable} = ${factory}();`
+        : `const ${variable} = ${factory}({ ${authField}: process.env.${envKey}! });`
     );
     sections.push(
-      `const models = withRetry(${providerVariable(providerName)}.get.v1.models, { retries: 3 });`
+      `const ${sample.name} = withRetry(${variable}.${sample.path}, { retries: 3 });`
     );
     sections.push("```");
     sections.push("");

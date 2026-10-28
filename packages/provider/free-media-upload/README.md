@@ -23,7 +23,7 @@ pnpm add @apicity/free-media-upload
 ```typescript
 import { createFreeMediaUpload } from "@apicity/free-media-upload";
 
-const freeMediaUpload = createFreeMediaUpload({ apiKey: process.env.FREE-MEDIA-UPLOAD_API_KEY! });
+const freeMediaUpload = createFreeMediaUpload();
 ```
 
 ## Real-world example: race a portrait across four free hosts
@@ -362,8 +362,8 @@ Source: [`packages/provider/free-media-upload/src/freeMediaUpload.ts`](src/freeM
 ```typescript
 import { createFreeMediaUpload, withRetry } from "@apicity/free-media-upload";
 
-const freeMediaUpload = createFreeMediaUpload({ apiKey: process.env.FREE-MEDIA-UPLOAD_API_KEY! });
-const models = withRetry(freeMediaUpload.get.v1.models, { retries: 3 });
+const freeMediaUpload = createFreeMediaUpload();
+const upload = withRetry(freeMediaUpload.uguu.upload, { retries: 3 });
 ```
 
 Part of the [apicity](https://github.com/justintanner/apicity) monorepo.

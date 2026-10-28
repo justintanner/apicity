@@ -288,6 +288,17 @@
     "tier": "prohibitive",
     "runByDefault": false
   },
+  "POST blackforestlabs.flux3.klein.base.trainer.edit": {
+    "source": "fal/flux-3-klein-base-trainer-edit",
+    "payload": {
+      "images_data_url": "https://v3b.fal.media/files/b/0ab02abb/NLzYeb182HMm7bICeqXbw_klein-trainer-edit-pairs.zip",
+      "trigger_phrase": "Make the photo black and white.",
+      "steps": 100,
+      "resolution": 512
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
+  },
   "POST blackforestlabs.flux3.textToImage": {
     "source": "fal/flux-3-text-to-image",
     "payload": {

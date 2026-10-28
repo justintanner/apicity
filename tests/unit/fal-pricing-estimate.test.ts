@@ -1495,6 +1495,7 @@ describe("fal edit/image pricing estimates", () => {
       "alibaba/wan-3.0/reference-to-video",
       "alibaba/wan-3.0/text-to-video",
       "blackforestlabs/flux-3/edit-image",
+      "blackforestlabs/flux-3/klein/base/trainer/edit",
       "blackforestlabs/flux-3/text-to-image",
       "blackforestlabs/flux-video-upscale",
       "bytedance/seedance-2.0/fast/reference-to-video",

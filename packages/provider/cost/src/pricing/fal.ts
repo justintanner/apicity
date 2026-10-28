@@ -1254,6 +1254,7 @@ export const FAL_DYNAMIC_PRICING_ENDPOINTS = [
   "alibaba/wan-3.0/reference-to-video",
   "alibaba/wan-3.0/text-to-video",
   "blackforestlabs/flux-3/edit-image",
+  "blackforestlabs/flux-3/klein/base/trainer/edit",
   "blackforestlabs/flux-3/text-to-image",
   "blackforestlabs/flux-video-upscale",
   "bytedance/seedance-2.0/fast/reference-to-video",
@@ -1344,6 +1345,12 @@ export interface FalDynamicBilledUnit {
 // pricing API were re-read on 2026-10-17 and matched the 2026-10-15 reads
 // behind each recording (ac-j3d6ki.4).
 export const FAL_DYNAMIC_BILLED_UNITS = {
+  // 2026-10-28: 100 steps with one reference image per pair billed
+  // 211 units at $0.002 ($0.422), confirmed by the HAR and usage API.
+  "blackforestlabs/flux-3/klein/base/trainer/edit": {
+    unit: "training steps at $0.002, times x2.11 with 1 reference image per pair up to x23.44 with 10",
+    why: "the multiplier follows the reference images per pair inside the images_data_url zip, which the request does not carry",
+  },
   // publicEndpointBilling and pricing API checked 2026-10-23: $0.034 per
   // output second (no card). Asked to keep a five-second clip under ten
   // seconds, the agent returned 3.22 s and billed 4 units ($0.136): whole

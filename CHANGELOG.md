@@ -33,6 +33,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added FLUX 3 Klein base edit trainer at `run.blackforestlabs.flux3.klein.base.trainer.edit`, preserving the callable base trainer. Pricing is dynamic because the reference-image multiplier depends on the dataset ZIP contents (ac-9uj0pi).
+
 - Added FLUX 3 Klein base trainer at `run.blackforestlabs.flux3.klein.base.trainer`, with its shared trainer schema and a recorded 100-step training run on the owned cat photo (ac-tra7ie).
 
 - Added shared FLUX 3 Klein trainer and LoRA request schemas, response types and callable types (ac-v8q1o7). The six endpoints follow separately in ac-tra7ie, ac-9uj0pi, ac-uhklr9, ac-1a7zs9, ac-1rn8vm and ac-6dfs70.
